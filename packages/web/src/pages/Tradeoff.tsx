@@ -5,6 +5,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { type TradeoffResponse, api } from '../api.js';
+import { PageHeader, PageState } from '../components/Page.js';
 import { yen } from '../format.js';
 
 const kindLabel: Record<string, string> = {
@@ -34,8 +35,20 @@ export function TradeoffPage() {
     },
   });
 
-  if (q.isLoading) return <p>読み込み中…</p>;
-  if (q.isError || !q.data) return <p>読み込みに失敗しました</p>;
+  if (q.isLoading)
+    return (
+      <>
+        <PageHeader route="tradeoff" />
+        <PageState status="loading" />
+      </>
+    );
+  if (q.isError || !q.data)
+    return (
+      <>
+        <PageHeader route="tradeoff" />
+        <PageState status="error" />
+      </>
+    );
   const d = q.data;
 
   const amt = Number(amount) || 0;
@@ -45,10 +58,7 @@ export function TradeoffPage() {
 
   return (
     <>
-      <h1 className="page-title">やりくり試算</h1>
-      <p className="page-task">
-        新規支出の捻出元(どこを削るか)を決める。新しい支出は既存コストの削減とセットで。
-      </p>
+      <PageHeader route="tradeoff" />
 
       <div className="card">
         <h2>予定している支出</h2>

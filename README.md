@@ -38,7 +38,7 @@
 
 ```bash
 pnpm install
-pnpm test          # core のスナップショットテスト (HTML版と同値であることの保証)
+pnpm test          # core・API・web の回帰テスト
 pnpm typecheck     # 全パッケージ
 pnpm lint          # Biome
 pnpm run preview   # web をビルドして wrangler dev (Workersランタイム, localhost:8787)
@@ -65,7 +65,7 @@ main へのマージで GitHub Actions が「D1マイグレーション → wran
 | ファイル | 内容 |
 |----------|------|
 | [`docs/spec-v1.1.md`](docs/spec-v1.1.md) | **正本仕様**: 要件・画面・API・スキーマ・品質ゲート |
-| [`docs/requirements.md`](docs/requirements.md) | 画面一覧と中核となる設計判断（初期版） |
+| [`docs/requirements.md`](docs/requirements.md) | 初期要件文書の履歴と正本への導線 |
 | [`docs/data-schema.md`](docs/data-schema.md) | freee / MF のCSV仕様、統合JSONの構造と不変条件 |
 | [`docs/metrics.md`](docs/metrics.md) | 統計指標の定義、費目分類の基準、異常検知のしきい値 |
 

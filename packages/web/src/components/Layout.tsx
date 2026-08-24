@@ -8,28 +8,7 @@ import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { type SummaryResponse, api } from '../api.js';
 import { monthLabel, yen } from '../format.js';
-
-const NAV: { to: string; label: string; group?: string }[] = [
-  { to: '/', label: '概況', group: '見る' },
-  { to: '/matrix', label: '増減マトリクス' },
-  { to: '/diagnosis', label: '統計診断' },
-  { to: '/subscriptions', label: 'サブスク分析' },
-  { to: '/household', label: '家計' },
-  { to: '/classify', label: '公私仕分け', group: '整える' },
-  { to: '/budget', label: '予算管理' },
-  { to: '/tradeoff', label: 'やりくり試算' },
-  { to: '/import', label: 'データ取込', group: '運用' },
-  { to: '/settings', label: '設定' },
-  { to: '/guide', label: '指標ガイド' },
-];
-
-/** モバイル下部タブ: 最頻タスク4つ+残りはメニュー(ドロワー) */
-const TABS: { to: string; label: string }[] = [
-  { to: '/', label: '概況' },
-  { to: '/matrix', label: 'マトリクス' },
-  { to: '/classify', label: '仕分け' },
-  { to: '/import', label: '取込' },
-];
+import { APP_ROUTES, MOBILE_ROUTES } from '../routeMetadata.js';
 
 const STATUS_LABEL: Record<string, string> = {
   ok: '余裕あり',
@@ -81,11 +60,15 @@ export function Layout({ children }: { children: ReactNode }) {
           <small>freee × マネーフォワード</small>
         </Link>
         <nav className="nav">
-          {NAV.map((n) => (
-            <div key={n.to}>
-              {n.group && <div className="nav-group">{n.group}</div>}
-              <NavLink to={n.to} end={n.to === '/'} className={({ isActive }) => (isActive ? 'active' : '')}>
-                {n.label}
+          {APP_ROUTES.map((route) => (
+            <div key={route.id}>
+              {route.navGroup && <div className="nav-group">{route.navGroup}</div>}
+              <NavLink
+                to={route.path}
+                end={route.path === '/'}
+                className={({ isActive }) => (isActive ? 'active' : '')}
+              >
+                {route.label}
               </NavLink>
             </div>
           ))}
@@ -136,14 +119,14 @@ export function Layout({ children }: { children: ReactNode }) {
       </footer>
 
       <nav className="tabbar" aria-label="モバイルナビゲーション">
-        {TABS.map((t) => (
+        {MOBILE_ROUTES.map((route) => (
           <NavLink
-            key={t.to}
-            to={t.to}
-            end={t.to === '/'}
+            key={route.id}
+            to={route.path}
+            end={route.path === '/'}
             className={({ isActive }) => `tab${isActive ? ' active' : ''}`}
           >
-            {t.label}
+            {route.mobileLabel}
           </NavLink>
         ))}
         <button

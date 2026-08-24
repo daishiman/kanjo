@@ -2,6 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { type SettingsResponse, api } from '../api.js';
+import { PageHeader, PageState } from '../components/Page.js';
 
 export function SettingsPage() {
   const qc = useQueryClient();
@@ -33,16 +34,27 @@ export function SettingsPage() {
     onSuccess: () => void qc.invalidateQueries(),
   });
 
-  if (q.isLoading) return <p>読み込み中…</p>;
-  if (q.isError || !q.data) return <p>読み込みに失敗しました</p>;
+  if (q.isLoading)
+    return (
+      <>
+        <PageHeader route="settings" />
+        <PageState status="loading" />
+      </>
+    );
+  if (q.isError || !q.data)
+    return (
+      <>
+        <PageHeader route="settings" />
+        <PageState status="error" />
+      </>
+    );
   const s = q.data;
   const norm = normDraft ?? Object.entries(s.normMap);
   const unrec = unrecDraft ?? s.unrecordedExpMonths.join(', ');
 
   return (
     <>
-      <h1 className="page-title">設定</h1>
-      <p className="page-task">科目正規化・未記帳月・現金補正・エクスポート/復元。</p>
+      <PageHeader route="settings" />
 
       <div className="card">
         <h2>科目正規化マップ(freee勘定科目 → 集計上の科目)</h2>

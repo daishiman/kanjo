@@ -1,7 +1,9 @@
 /** P2 増減マトリクス: 科目×月で「増えた/減った」を特定する */
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { type MatrixData, api } from '../api.js';
+import { PageHeader, PageState } from '../components/Page.js';
 import { deltaCls, monthShort, pct, yen } from '../format.js';
 
 type Mode = 'val' | 'mom' | 'yoy';
@@ -9,10 +11,36 @@ type Mode = 'val' | 'mom' | 'yoy';
 export function MatrixPage() {
   const [mode, setMode] = useState<Mode>('val');
   const q = useQuery({ queryKey: ['matrix'], queryFn: () => api<MatrixData>('/matrix') });
-  if (q.isLoading) return <p>読み込み中…</p>;
-  if (q.isError || !q.data) return <p>読み込みに失敗しました</p>;
+  if (q.isLoading)
+    return (
+      <>
+        <PageHeader route="matrix" />
+        <PageState status="loading" />
+      </>
+    );
+  if (q.isError || !q.data)
+    return (
+      <>
+        <PageHeader route="matrix" />
+        <PageState status="error" />
+      </>
+    );
   const m = q.data;
-  if (!m.months.length) return <p className="empty">データ未取込です。</p>;
+  if (!m.months.length)
+    return (
+      <>
+        <PageHeader route="matrix" />
+        <PageState
+          status="empty"
+          message="比較するデータが未取込です。"
+          action={
+            <Link className="btn primary" to="/import">
+              データ取込へ
+            </Link>
+          }
+        />
+      </>
+    );
 
   const un = new Set(m.unrecordedExpMonths);
   const mi = new Map(m.months.map((mm, i) => [mm, i]));
@@ -36,8 +64,7 @@ export function MatrixPage() {
 
   return (
     <>
-      <h1 className="page-title">増減マトリクス</h1>
-      <p className="page-task">科目×月で「増えた/減った」を特定する(増=赤・減=緑)。</p>
+      <PageHeader route="matrix" />
 
       <div className="toolbar">
         <span className="segment">

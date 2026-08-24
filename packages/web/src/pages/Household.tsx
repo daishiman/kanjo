@@ -1,16 +1,44 @@
 /** P6 家計: 個人分の月次比較を確認する(仕分け反映後) */
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { type HouseholdData, api } from '../api.js';
+import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { deltaCls, monthLabel, yen, yenS } from '../format.js';
 
 export function HouseholdPage() {
   const q = useQuery({ queryKey: ['household'], queryFn: () => api<HouseholdData>('/household') });
   const [sel, setSel] = useState<string | null>(null);
-  if (q.isLoading) return <p>読み込み中…</p>;
-  if (q.isError || !q.data) return <p>読み込みに失敗しました</p>;
+  if (q.isLoading)
+    return (
+      <>
+        <PageHeader route="household" />
+        <PageState status="loading" />
+      </>
+    );
+  if (q.isError || !q.data)
+    return (
+      <>
+        <PageHeader route="household" />
+        <PageState status="error" />
+      </>
+    );
   const d = q.data;
-  if (!d.months.length) return <p className="empty">MF明細が未取込です。</p>;
+  if (!d.months.length)
+    return (
+      <>
+        <PageHeader route="household" />
+        <PageState
+          status="empty"
+          message="MF明細が未取込です。"
+          action={
+            <Link className="btn primary" to="/import">
+              データ取込へ
+            </Link>
+          }
+        />
+      </>
+    );
 
   const month = sel && d.months.includes(sel) ? sel : d.months[d.months.length - 1];
   const mi = d.months.indexOf(month);
@@ -26,8 +54,7 @@ export function HouseholdPage() {
 
   return (
     <>
-      <h1 className="page-title">家計</h1>
-      <p className="page-task">個人分の月次比較を確認する(公私仕分け反映後)。</p>
+      <PageHeader route="household" />
 
       <div className="toolbar">
         <select value={month} onChange={(e) => setSel(e.target.value)}>
@@ -46,25 +73,20 @@ export function HouseholdPage() {
       </div>
 
       <div className="kpis">
-        <div className="kpi">
-          <div className="label">個人収入</div>
-          <div className="value">{yen(incTotal)}</div>
-        </div>
-        <div className="kpi">
-          <div className="label">個人支出</div>
-          <div className="value">{yen(expTotal)}</div>
-        </div>
-        <div className="kpi">
-          <div className="label">収支</div>
-          <div className="value">{yenS(incTotal - expTotal)}</div>
-        </div>
+        <KpiCard label="個人収入" value={yen(incTotal)} />
+        <KpiCard label="個人支出" value={yen(expTotal)} />
+        <KpiCard label="収支" value={yenS(incTotal - expTotal)} />
         {bp && (
-          <div className="kpi">
-            <div className="label">事業入金 / 事業立替(参考)</div>
-            <div className="value" style={{ color: 'var(--biz)', fontSize: 16 }}>
-              {yen(bp.income)} / {yen(bp.expense)}
-            </div>
-          </div>
+          <KpiCard
+            label="事業入金 / 事業立替(参考)"
+            value={
+              <>
+                {yen(bp.income)} / {yen(bp.expense)}
+              </>
+            }
+            tone="biz"
+            compact
+          />
         )}
       </div>
 

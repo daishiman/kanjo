@@ -1,24 +1,51 @@
 /** P4 サブスク分析: ベンダー別推移と重複・急増を確認する */
 import { useQuery } from '@tanstack/react-query';
 import { Chart } from 'react-chartjs-2';
+import { Link } from 'react-router-dom';
 import { type SubscriptionsData, api } from '../api.js';
+import { AnnualComparisonTable, PageHeader, PageState } from '../components/Page.js';
 import { VENDOR_PALETTE, yenTick } from '../components/charts.js';
-import { deltaCls, monthLabel, monthShort, yen, yenS } from '../format.js';
+import { monthLabel, monthShort, yen } from '../format.js';
 
 export function SubscriptionsPage() {
   const q = useQuery({
     queryKey: ['subscriptions'],
     queryFn: () => api<SubscriptionsData>('/subscriptions'),
   });
-  if (q.isLoading) return <p>読み込み中…</p>;
-  if (q.isError || !q.data) return <p>読み込みに失敗しました</p>;
+  if (q.isLoading)
+    return (
+      <>
+        <PageHeader route="subscriptions" />
+        <PageState status="loading" />
+      </>
+    );
+  if (q.isError || !q.data)
+    return (
+      <>
+        <PageHeader route="subscriptions" />
+        <PageState status="error" />
+      </>
+    );
   const s = q.data;
-  if (!s.months.length) return <p className="empty">データ未取込です。</p>;
+  if (!s.months.length)
+    return (
+      <>
+        <PageHeader route="subscriptions" />
+        <PageState
+          status="empty"
+          message="サブスクデータが未取込です。"
+          action={
+            <Link className="btn primary" to="/import">
+              データ取込へ
+            </Link>
+          }
+        />
+      </>
+    );
 
   return (
     <>
-      <h1 className="page-title">サブスク分析</h1>
-      <p className="page-task">ベンダー別推移と重複・急増を確認する。</p>
+      <PageHeader route="subscriptions" />
 
       {s.alerts.length > 0 && (
         <div className="notice">
@@ -60,30 +87,22 @@ export function SubscriptionsPage() {
         />
       </div>
 
-      <div className="card scroll-x">
+      <div className="card">
         <h2>
           ベンダー別 年間比較({s.years.prev}年 vs {s.years.curr}年換算)
         </h2>
-        <table className="data">
-          <thead>
-            <tr>
-              <th>ベンダー</th>
-              <th>{s.years.prev}年実績</th>
-              <th>{s.years.curr}年換算</th>
-              <th>増減</th>
-            </tr>
-          </thead>
-          <tbody>
-            {s.vendorTable.map((r) => (
-              <tr key={r.vendor}>
-                <td>{r.vendor}</td>
-                <td className="num">{yen(r.prevActual)}</td>
-                <td className="num">{yen(r.currAnnualized)}</td>
-                <td className={`num ${deltaCls(r.delta)}`}>{yenS(r.delta)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <AnnualComparisonTable
+          subjectLabel="ベンダー"
+          previousLabel={`${s.years.prev}年実績`}
+          currentLabel={`${s.years.curr}年換算`}
+          rows={s.vendorTable.map((r) => ({
+            key: r.vendor,
+            label: r.vendor,
+            previous: r.prevActual,
+            current: r.currAnnualized,
+            delta: r.delta,
+          }))}
+        />
       </div>
       <p className="sub">重複疑い=中央値の1.8倍超かつ2万円超 / 急増=3倍超かつ1.5万円超(HTML版と同一基準)。</p>
     </>

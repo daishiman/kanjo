@@ -1,11 +1,26 @@
 /** P10 指標ガイド: 指標の意味とベンチマーク(FR-07)。実データを差し込んで解説する */
 import { useQuery } from '@tanstack/react-query';
 import { type DiagnosisData, type SummaryResponse, api } from '../api.js';
+import { PageHeader, PageState } from '../components/Page.js';
 import { pct, yen } from '../format.js';
 
 export function GuidePage() {
   const sq = useQuery({ queryKey: ['summary'], queryFn: () => api<SummaryResponse>('/summary') });
   const dq = useQuery({ queryKey: ['diagnosis'], queryFn: () => api<DiagnosisData>('/diagnosis') });
+  if (sq.isLoading || dq.isLoading)
+    return (
+      <>
+        <PageHeader route="guide" />
+        <PageState status="loading" />
+      </>
+    );
+  if (sq.isError || dq.isError)
+    return (
+      <>
+        <PageHeader route="guide" />
+        <PageState status="error" />
+      </>
+    );
   const ov = sq.data?.overview;
   const d = dq.data;
   const def = sq.data?.defense;
@@ -63,8 +78,7 @@ export function GuidePage() {
 
   return (
     <>
-      <h1 className="page-title">指標ガイド</h1>
-      <p className="page-task">指標の意味とベンチマークを参照する(数値は現在のデータを差し込み表示)。</p>
+      <PageHeader route="guide" />
 
       <div className="card scroll-x">
         <table className="data">

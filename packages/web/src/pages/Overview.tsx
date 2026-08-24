@@ -4,6 +4,7 @@ import { Chart as ChartJS } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type SummaryResponse, api } from '../api.js';
+import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { COLORS, yenTick } from '../components/charts.js';
 import { deltaCls, monthShort, pct, yen, yenS } from '../format.js';
 
@@ -11,18 +12,36 @@ void ChartJS; // 登録の副作用のためimport維持
 
 export function OverviewPage() {
   const q = useQuery({ queryKey: ['summary'], queryFn: () => api<SummaryResponse>('/summary') });
-  if (q.isLoading) return <p>読み込み中…</p>;
-  if (q.isError || !q.data) return <p>読み込みに失敗しました</p>;
+  if (q.isLoading)
+    return (
+      <>
+        <PageHeader route="overview" />
+        <PageState status="loading" />
+      </>
+    );
+  if (q.isError || !q.data)
+    return (
+      <>
+        <PageHeader route="overview" />
+        <PageState status="error" />
+      </>
+    );
   const { overview: ov, defense } = q.data;
 
   if (!ov.months.length) {
     return (
-      <div className="empty">
-        <p>まだデータがありません。</p>
-        <Link className="btn primary" to="/import">
-          データ取込へ
-        </Link>
-      </div>
+      <>
+        <PageHeader route="overview" />
+        <PageState
+          status="empty"
+          message="まだデータがありません。最初に収支データを取り込んでください。"
+          action={
+            <Link className="btn primary" to="/import">
+              データ取込へ
+            </Link>
+          }
+        />
+      </>
     );
   }
 
@@ -31,33 +50,26 @@ export function OverviewPage() {
 
   return (
     <>
-      <h1 className="page-title">概況</h1>
-      <p className="page-task">今月の収支と全期間トレンドを俯瞰する。</p>
+      <PageHeader route="overview" />
 
       <div className="kpis">
-        <div className="kpi">
-          <div className="label">平均月商(売上のある{ov.kpi.revenueMonths}ヶ月)</div>
-          <div className="value">{yen(ov.kpi.avgRevenue)}</div>
-        </div>
-        <div className="kpi">
-          <div className="label">平均経費(記帳月)</div>
-          <div className="value">{yen(ov.kpi.avgExpense)}</div>
-        </div>
-        <div className="kpi">
-          <div className="label">直近経費 / 前月比</div>
-          <div className="value">{yen(ov.kpi.lastExpense)}</div>
-          <div className={`note num ${deltaCls(ov.kpi.expenseMom)}`}>{pct(ov.kpi.expenseMom)}</div>
-        </div>
-        <div className="kpi">
-          <div className="label">{ov.years.prev}年 利益(記帳ベース)</div>
-          <div className="value">{yenS(ov.kpi.prevYearProfit)}</div>
-          <div className="note">経費率 {pct(ov.kpi.prevYearExpenseRatio, 0)}</div>
-        </div>
-        <div className="kpi">
-          <div className="label">{ov.years.curr}年 経費(年換算)</div>
-          <div className="value">{yen(ov.kpi.currYearAnnualized)}</div>
-          <div className="note">前年 {yen(ov.kpi.prevYearExpense)}</div>
-        </div>
+        <KpiCard label={`平均月商(売上のある${ov.kpi.revenueMonths}ヶ月)`} value={yen(ov.kpi.avgRevenue)} />
+        <KpiCard label="平均経費(記帳月)" value={yen(ov.kpi.avgExpense)} />
+        <KpiCard
+          label="直近経費 / 前月比"
+          value={yen(ov.kpi.lastExpense)}
+          note={<span className={`num ${deltaCls(ov.kpi.expenseMom)}`}>{pct(ov.kpi.expenseMom)}</span>}
+        />
+        <KpiCard
+          label={`${ov.years.prev}年 利益(記帳ベース)`}
+          value={yenS(ov.kpi.prevYearProfit)}
+          note={<> 経費率 {pct(ov.kpi.prevYearExpenseRatio, 0)}</>}
+        />
+        <KpiCard
+          label={`${ov.years.curr}年 経費(年換算)`}
+          value={yen(ov.kpi.currYearAnnualized)}
+          note={<> 前年 {yen(ov.kpi.prevYearExpense)}</>}
+        />
       </div>
 
       <div className="card">
@@ -122,34 +134,24 @@ export function OverviewPage() {
         <h2>
           年間比較({ov.years.prev}年実績 vs {ov.years.curr}年 年換算)
         </h2>
-        <div className="scroll-x">
-          <table className="data">
-            <thead>
-              <tr>
-                <th>科目</th>
-                <th>{ov.years.prev}年実績</th>
-                <th>{ov.years.curr}年換算</th>
-                <th>増減</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ov.yearTable.map((r) => (
-                <tr key={r.account}>
-                  <td>{r.account}</td>
-                  <td className="num">{yen(r.prevActual)}</td>
-                  <td className="num">{yen(r.currAnnualized)}</td>
-                  <td className={`num ${deltaCls(r.delta)}`}>{yenS(r.delta)}</td>
-                </tr>
-              ))}
-              <tr className="total">
-                <td>経費計</td>
-                <td className="num">{yen(ov.yearTotals.prevActual)}</td>
-                <td className="num">{yen(ov.yearTotals.currAnnualized)}</td>
-                <td className={`num ${deltaCls(ov.yearTotals.delta)}`}>{yenS(ov.yearTotals.delta)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <AnnualComparisonTable
+          subjectLabel="科目"
+          previousLabel={`${ov.years.prev}年実績`}
+          currentLabel={`${ov.years.curr}年換算`}
+          rows={ov.yearTable.map((r) => ({
+            key: r.account,
+            label: r.account,
+            previous: r.prevActual,
+            current: r.currAnnualized,
+            delta: r.delta,
+          }))}
+          total={{
+            label: '経費計',
+            previous: ov.yearTotals.prevActual,
+            current: ov.yearTotals.currAnnualized,
+            delta: ov.yearTotals.delta,
+          }}
+        />
       </div>
 
       <div className="card">
