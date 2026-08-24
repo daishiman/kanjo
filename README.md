@@ -75,6 +75,7 @@ GitHub・Cloudflareの初回設定、通常リリース、D1 migration、障害�
 | [`docs/data-schema.md`](docs/data-schema.md) | freee / MF のCSV仕様、統合JSONの構造と不変条件 |
 | [`docs/metrics.md`](docs/metrics.md) | 統計指標の定義、費目分類の基準、異常検知のしきい値 |
 | [`docs/ci-cd-operations.md`](docs/ci-cd-operations.md) | CI/CD・GitHub保護設定・Cloudflare本番運用・復旧手順 |
+| [`docs/cloudflare-credentials-setup.md`](docs/cloudflare-credentials-setup.md) | Cloudflare API Token・Account ID・本番URL・Worker secretの取得と登録 |
 
 ## ディレクトリ構成
 

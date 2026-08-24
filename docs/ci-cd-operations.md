@@ -97,6 +97,8 @@ gh api repos/{owner}/{repo}/branches/main/protection \
 
 APIトークンなどの認証情報は、リポジトリ所有者本人が登録します。チャット、Issue、PR本文、コミット、Actionsログには貼り付けません。
 
+Cloudflare画面での取得、最小権限の選択、GitHubへの登録、接続確認を上から実行できる詳細手順は [`cloudflare-credentials-setup.md`](cloudflare-credentials-setup.md) を参照してください。
+
 ```bash
 gh secret set CLOUDFLARE_API_TOKEN --env production
 gh secret set CLOUDFLARE_ACCOUNT_ID --env production
