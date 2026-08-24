@@ -233,6 +233,9 @@ body {
   font-weight: 900;
   margin: 0 0 2px;
 }
+.page-heading {
+  margin: 0;
+}
 
 /* ---------------- 部品 ---------------- */
 .card {
@@ -275,6 +278,15 @@ body {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
+.kpi .value.biz {
+  color: var(--biz);
+}
+.kpi .value.per {
+  color: var(--per);
+}
+.kpi.compact .value {
+  font-size: 16px;
+}
 .kpi .note {
   font-size: 11px;
   color: var(--ink-soft);
@@ -295,14 +307,22 @@ table.data th {
   font-size: 11px;
   color: var(--ink-soft);
   font-weight: 700;
+}
+table.data thead th {
   background: var(--bg);
   position: sticky;
   top: var(--header-h);
+}
+table.data tbody th {
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
 }
 table.data th:first-child,
 table.data td:first-child {
   text-align: left;
 }
+table.data tr.total th,
 table.data tr.total td {
   font-weight: 700;
   background: #fafbfa;
@@ -318,7 +338,7 @@ table.data tr.total td {
   background: var(--surface);
   z-index: 2;
 }
-.scroll-x table.data th:first-child {
+.scroll-x table.data thead th:first-child {
   background: var(--bg);
   z-index: 3;
 }
@@ -553,6 +573,45 @@ input.num-input {
   color: var(--ink-soft);
   padding: 40px 0;
 }
+.page-state {
+  min-height: 180px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  color: var(--ink-soft);
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 32px 20px;
+}
+.page-state p {
+  margin: 0;
+}
+.skeleton-lines {
+  width: min(320px, 65vw);
+  display: grid;
+  gap: 8px;
+}
+.skeleton-lines span {
+  display: block;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--line);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+.skeleton-lines span:nth-child(2) {
+  width: 80%;
+}
+.skeleton-lines span:nth-child(3) {
+  width: 55%;
+}
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
 
 tr.kbd-focus td {
   background: #eef3fa !important;
@@ -607,12 +666,12 @@ kbd {
   font-weight: 700;
 }
 
-/* ---------------- モバイル(〜860px) ---------------- */
+/* ---------------- モバイル(〜640px) ---------------- */
 /* サイドバーはドロワー化(「メニュー」タブから開く)。最頻4画面は下部固定タブバーで1タップ。 */
 .tabbar {
   display: none;
 }
-@media (max-width: 860px) {
+@media (max-width: 640px) {
   .shell {
     grid-template-columns: 1fr;
     grid-template-areas: "head" "main" "foot";
@@ -652,7 +711,7 @@ kbd {
   .footer {
     padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 14px);
   }
-  table.data th {
+  table.data thead th {
     top: 0;
   }
   :root {

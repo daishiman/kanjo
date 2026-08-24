@@ -18,7 +18,7 @@ import { getDb, loadDataset } from './store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
-const app = new Hono<Ctx>();
+export const app = new Hono<Ctx>();
 
 /* -------- 認証エンドポイント(未認証で到達可能なのはここだけ) -------- */
 

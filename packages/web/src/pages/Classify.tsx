@@ -5,6 +5,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { type RuleRow, type TransactionsResponse, type TxRow, api } from '../api.js';
+import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { yen, yenS } from '../format.js';
 
 export function ClassifyPage() {
@@ -78,19 +79,28 @@ export function ClassifyPage() {
     return () => window.removeEventListener('keydown', onKey);
   }, [onKey]);
 
-  if (q.isLoading) return <p>読み込み中…</p>;
-  if (q.isError || !q.data) return <p>読み込みに失敗しました</p>;
+  if (q.isLoading)
+    return (
+      <>
+        <PageHeader route="classify" />
+        <PageState status="loading" />
+      </>
+    );
+  if (q.isError || !q.data)
+    return (
+      <>
+        <PageHeader route="classify" />
+        <PageState status="error" />
+      </>
+    );
   const d = q.data;
   const s = d.summary;
 
   return (
     <>
-      <h1 className="page-title">公私仕分け</h1>
-      <p className="page-task">
-        明細を事業/個人に確定する。
-        <span className="kbd-help">
-          <kbd>J</kbd>/<kbd>K</kbd> 移動・<kbd>B</kbd> 事業・<kbd>P</kbd> 個人・<kbd>A</kbd> 自動
-        </span>
+      <PageHeader route="classify" />
+      <p className="kbd-help">
+        <kbd>J</kbd>/<kbd>K</kbd> 移動・<kbd>B</kbd> 事業・<kbd>P</kbd> 個人・<kbd>A</kbd> 自動
       </p>
 
       <div className="notice info">
@@ -99,13 +109,13 @@ export function ClassifyPage() {
       </div>
 
       <div className="kpis">
-        <Kpi label="明細数" value={String(s.count)} />
-        <Kpi label="総収入" value={yen(s.totalIncome)} />
-        <Kpi label="事業入金" value={yen(s.bizIncome)} accent="biz" />
-        <Kpi label="個人収入" value={yen(s.personalIncome)} accent="per" />
-        <Kpi label="総支出" value={yen(s.totalExpense)} />
-        <Kpi label="事業立替" value={yen(s.bizExpense)} accent="biz" />
-        <Kpi label="個人支出" value={yen(s.personalExpense)} accent="per" />
+        <KpiCard label="明細数" value={String(s.count)} />
+        <KpiCard label="総収入" value={yen(s.totalIncome)} />
+        <KpiCard label="事業入金" value={yen(s.bizIncome)} tone="biz" />
+        <KpiCard label="個人収入" value={yen(s.personalIncome)} tone="per" />
+        <KpiCard label="総支出" value={yen(s.totalExpense)} />
+        <KpiCard label="事業立替" value={yen(s.bizExpense)} tone="biz" />
+        <KpiCard label="個人支出" value={yen(s.personalExpense)} tone="per" />
       </div>
 
       <div className="toolbar">
@@ -184,17 +194,6 @@ export function ClassifyPage() {
 
       <RulesCard />
     </>
-  );
-}
-
-function Kpi({ label, value, accent }: { label: string; value: string; accent?: 'biz' | 'per' }) {
-  return (
-    <div className="kpi">
-      <div className="label">{label}</div>
-      <div className="value" style={accent ? { color: `var(--${accent})` } : undefined}>
-        {value}
-      </div>
-    </div>
   );
 }
 

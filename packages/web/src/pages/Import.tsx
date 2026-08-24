@@ -5,6 +5,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { AUTH_EVENT, type ImportHistoryRow, type ImportUnitResult, api } from '../api.js';
+import { PageHeader, PageState } from '../components/Page.js';
 
 export function ImportPage() {
   const qc = useQueryClient();
@@ -54,10 +55,7 @@ export function ImportPage() {
 
   return (
     <>
-      <h1 className="page-title">データ取込</h1>
-      <p className="page-task">
-        ファイル投入と取込履歴の確認。CSV / Excel(.xlsx/.xls) / ZIP / 統合JSON に対応。
-      </p>
+      <PageHeader route="import" />
 
       <div
         className={`dropzone${drag ? ' drag' : ''}`}
@@ -162,39 +160,45 @@ export function ImportPage() {
 
       <div className="card" style={{ marginTop: 16 }}>
         <h2>取込履歴</h2>
-        <div className="scroll-x">
-          <table className="data">
-            <thead>
-              <tr>
-                <th>日時</th>
-                <th>ファイル</th>
-                <th>種別</th>
-                <th>対象月</th>
-                <th>件数</th>
-                <th>ステータス</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(history.data?.imports ?? []).map((r) => (
-                <tr key={r.id}>
-                  <td>{r.createdAt ?? ''}</td>
-                  <td>{r.filename}</td>
-                  <td>{r.kind ?? '—'}</td>
-                  <td>{r.months.join(', ')}</td>
-                  <td className="num">{r.rows ?? ''}</td>
-                  <td>{r.status}</td>
-                </tr>
-              ))}
-              {!history.data?.imports.length && (
+        {history.isLoading ? (
+          <PageState status="loading" />
+        ) : history.isError ? (
+          <PageState status="error" message="取込履歴の読み込みに失敗しました。" />
+        ) : (
+          <div className="scroll-x">
+            <table className="data">
+              <thead>
                 <tr>
-                  <td colSpan={6} className="empty">
-                    取込履歴はまだありません
-                  </td>
+                  <th>日時</th>
+                  <th>ファイル</th>
+                  <th>種別</th>
+                  <th>対象月</th>
+                  <th>件数</th>
+                  <th>ステータス</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {(history.data?.imports ?? []).map((r) => (
+                  <tr key={r.id}>
+                    <td>{r.createdAt ?? ''}</td>
+                    <td>{r.filename}</td>
+                    <td>{r.kind ?? '—'}</td>
+                    <td>{r.months.join(', ')}</td>
+                    <td className="num">{r.rows ?? ''}</td>
+                    <td>{r.status}</td>
+                  </tr>
+                ))}
+                {!history.data?.imports.length && (
+                  <tr>
+                    <td colSpan={6} className="empty">
+                      取込履歴はまだありません
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </>
   );

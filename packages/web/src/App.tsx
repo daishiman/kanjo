@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import type { ComponentType } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { AUTH_EVENT, api } from './api.js';
 import { Layout } from './components/Layout.js';
 import { BudgetPage } from './pages/Budget.js';
@@ -15,6 +16,21 @@ import { OverviewPage } from './pages/Overview.js';
 import { SettingsPage } from './pages/Settings.js';
 import { SubscriptionsPage } from './pages/Subscriptions.js';
 import { TradeoffPage } from './pages/Tradeoff.js';
+import { APP_ROUTES, type AppRouteId } from './routeMetadata.js';
+
+export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
+  overview: OverviewPage,
+  matrix: MatrixPage,
+  diagnosis: DiagnosisPage,
+  subscriptions: SubscriptionsPage,
+  household: HouseholdPage,
+  classify: ClassifyPage,
+  budget: BudgetPage,
+  tradeoff: TradeoffPage,
+  import: ImportPage,
+  settings: SettingsPage,
+  guide: GuidePage,
+};
 
 export function App() {
   const qc = useQueryClient();
@@ -49,18 +65,11 @@ export function App() {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<OverviewPage />} />
-        <Route path="/matrix" element={<MatrixPage />} />
-        <Route path="/diagnosis" element={<DiagnosisPage />} />
-        <Route path="/subscriptions" element={<SubscriptionsPage />} />
-        <Route path="/classify" element={<ClassifyPage />} />
-        <Route path="/household" element={<HouseholdPage />} />
-        <Route path="/budget" element={<BudgetPage />} />
-        <Route path="/import" element={<ImportPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/guide" element={<GuidePage />} />
-        <Route path="/tradeoff" element={<TradeoffPage />} />
-        <Route path="*" element={<OverviewPage />} />
+        {APP_ROUTES.map((route) => {
+          const Component = ROUTE_COMPONENTS[route.id];
+          return <Route key={route.id} path={route.path} element={<Component />} />;
+        })}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>
   );

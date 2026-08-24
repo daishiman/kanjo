@@ -72,8 +72,10 @@ export interface OverviewData {
     prevYearProfit: number;
     prevYearExpenseRatio: number;
   };
+  /** 比率は1=100%の小数。deltaは負値・1超を許容する増減率。 */
   yearTable: { account: string; prevActual: number; currAnnualized: number; delta: number }[];
   yearTotals: { prevActual: number; currAnnualized: number; delta: number };
+  /** 累積構成比。0..1。 */
   pareto: { account: string; total: number; cumShare: number }[];
   top2Share: number;
   years: { curr: string; prev: string };
@@ -123,9 +125,8 @@ export function overview(data: Dataset): OverviewData {
   let cum = 0;
   const pareto = totals.map((x) => {
     cum += x.total;
-    return { ...x, cumShare: grand > 0 ? (cum / grand) * 100 : 0 };
+    return { ...x, cumShare: grand > 0 ? cum / grand : 0 };
   });
-  const top2Share = grand > 0 ? (totals[0]?.total ?? 0 + (totals[1]?.total ?? 0)) / grand : 0;
 
   return {
     months: M,
@@ -154,7 +155,7 @@ export function overview(data: Dataset): OverviewData {
       delta: yPrevE > 0 ? yCurrAnn / yPrevE - 1 : yCurrAnn > 0 ? 1 : 0,
     },
     pareto,
-    top2Share: grand > 0 ? ((totals[0]?.total ?? 0) + (totals[1]?.total ?? 0)) / grand : top2Share,
+    top2Share: grand > 0 ? ((totals[0]?.total ?? 0) + (totals[1]?.total ?? 0)) / grand : 0,
     years: { curr, prev },
   };
 }
@@ -344,6 +345,7 @@ export interface SubscriptionsData {
   vendors: string[];
   matrix: Record<string, number[]>;
   other: number[];
+  /** deltaは1=100%の小数。負値・1超を許容する増減率。 */
   vendorTable: { vendor: string; prevActual: number; currAnnualized: number; delta: number }[];
   alerts: SubsAlert[];
   years: { curr: string; prev: string };
@@ -440,7 +442,7 @@ export interface BudgetRow {
   judge: '超過' | '範囲内' | '余裕' | null;
 }
 
-/** 判定: 差異が直近平均の±10%超で超過/余裕（HTML版と同一） */
+/** 判定: 実績が予算の±10%を超えれば超過/余裕。境界値は範囲内。 */
 export function budgetTable(data: Dataset): BudgetRow[] {
   return data.biz.categories
     .filter((c) => sum(catSeries(data, c)) > 0)
@@ -448,8 +450,7 @@ export function budgetTable(data: Dataset): BudgetRow[] {
       const p = catProfile(data, c);
       const b = data.budgets[c];
       const diff = b != null ? p.rAvg - b : null;
-      const judge =
-        diff === null ? null : diff > p.rAvg * 0.1 ? '超過' : diff < -p.rAvg * 0.1 ? '余裕' : '範囲内';
+      const judge = diff === null ? null : p.rAvg > b * 1.1 ? '超過' : p.rAvg < b * 0.9 ? '余裕' : '範囲内';
       return { account: c, type: p.type, recentAvg: p.rAvg, budget: b ?? null, diff, judge };
     });
 }

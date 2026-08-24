@@ -1,7 +1,9 @@
 /** P7 予算管理: 科目別予算の設定と予実確認(FR-04) */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { type BudgetRow, api } from '../api.js';
+import { PageHeader, PageState } from '../components/Page.js';
 import { yen, yenS } from '../format.js';
 
 const judgePill: Record<string, string> = { 超過: 'pill alert', 範囲内: 'pill neutral', 余裕: 'pill calm' };
@@ -35,10 +37,36 @@ export function BudgetPage() {
     },
   });
 
-  if (q.isLoading) return <p>読み込み中…</p>;
-  if (q.isError || !q.data) return <p>読み込みに失敗しました</p>;
+  if (q.isLoading)
+    return (
+      <>
+        <PageHeader route="budget" />
+        <PageState status="loading" />
+      </>
+    );
+  if (q.isError || !q.data)
+    return (
+      <>
+        <PageHeader route="budget" />
+        <PageState status="error" />
+      </>
+    );
   const rows = q.data.table;
-  if (!rows.length) return <p className="empty">freee仕訳が未取込です。</p>;
+  if (!rows.length)
+    return (
+      <>
+        <PageHeader route="budget" />
+        <PageState
+          status="empty"
+          message="freee仕訳が未取込です。"
+          action={
+            <Link className="btn primary" to="/import">
+              データ取込へ
+            </Link>
+          }
+        />
+      </>
+    );
 
   const valOf = (r: BudgetRow): string => draft[r.account] ?? (r.budget != null ? String(r.budget) : '');
 
@@ -53,8 +81,7 @@ export function BudgetPage() {
 
   return (
     <>
-      <h1 className="page-title">予算管理</h1>
-      <p className="page-task">科目別予算の設定と予実確認(判定は直近3ヶ月平均の±10%基準)。</p>
+      <PageHeader route="budget" />
 
       <div className="toolbar">
         <button type="button" onClick={() => suggest.mutate()} disabled={suggest.isPending}>
