@@ -15,7 +15,7 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "deploy": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api deploy"
+    "deploy": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api run deploy"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
