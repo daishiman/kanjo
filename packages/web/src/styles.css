@@ -13,6 +13,15 @@
   --radius: 10px;
   --font-head: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  /* モーション(因果の説明のみに使う) */
+  --motion-instant: 90ms;
+  --motion-fast: 140ms;
+  --motion-base: 200ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  /* 固定要素の高さ(スクロール退避・sticky計算の基準) */
+  --header-h: 53px;
+  --tabbar-h: 56px;
+  scroll-padding-top: calc(var(--header-h) + 8px);
 }
 
 * {
@@ -44,6 +53,30 @@ body {
   color: var(--good);
 }
 
+/* フォーカスは常に可視(キーボード現在地を失わせない) */
+:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 100;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--biz);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
 /* ---------------- レイアウト ---------------- */
 .shell {
   display: grid;
@@ -63,10 +96,14 @@ body {
   overflow-y: auto;
 }
 .brand {
+  display: block;
   font-weight: 900;
   font-size: 16px;
   letter-spacing: 0.04em;
   padding: 6px 10px 14px;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 8px;
 }
 .brand small {
   display: block;
@@ -82,14 +119,16 @@ body {
 }
 .nav a {
   display: flex;
-  gap: 8px;
   align-items: center;
-  padding: 7px 10px;
+  min-height: 36px;
+  padding: 6px 12px;
   border-radius: 8px;
   color: var(--ink);
   text-decoration: none;
   font-weight: 700;
   font-size: 13px;
+  transition: background-color var(--motion-fast) var(--ease-standard), color var(--motion-fast)
+    var(--ease-standard);
 }
 .nav a:hover {
   background: var(--bg);
@@ -97,11 +136,6 @@ body {
 .nav a.active {
   background: var(--biz);
   color: #fff;
-}
-.nav a .icon {
-  width: 18px;
-  text-align: center;
-  opacity: 0.85;
 }
 
 .header {
@@ -117,10 +151,12 @@ body {
   top: 0;
   z-index: 20;
 }
-.header h1 {
+.header-brand {
   font-size: 15px;
   font-weight: 900;
-  margin: 0;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 6px;
 }
 .header .period {
   color: var(--ink-soft);
@@ -167,6 +203,17 @@ body {
   padding: 20px;
   max-width: 1200px;
   width: 100%;
+  animation: page-in var(--motion-base) var(--ease-standard) both;
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 .footer {
   grid-area: foot;
@@ -250,7 +297,7 @@ table.data th {
   font-weight: 700;
   background: var(--bg);
   position: sticky;
-  top: 53px;
+  top: var(--header-h);
 }
 table.data th:first-child,
 table.data td:first-child {
@@ -323,22 +370,23 @@ button,
   color: var(--ink);
   border-radius: 8px;
   padding: 6px 14px;
+  min-height: 32px;
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
+  transition: background-color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast)
+    var(--ease-standard), color var(--motion-fast) var(--ease-standard), transform var(--motion-instant)
+    var(--ease-standard);
 }
-button:hover,
-.btn:hover {
-  background: var(--bg);
+button:active:not(:disabled),
+.btn:active {
+  transform: scale(0.985);
 }
 button.primary,
 .btn.primary {
   background: var(--biz);
   border-color: var(--biz);
   color: #fff;
-}
-button.primary:hover {
-  opacity: 0.92;
 }
 button.danger-btn {
   color: var(--danger);
@@ -347,6 +395,7 @@ button.danger-btn {
 button.mini {
   padding: 2px 8px;
   font-size: 11px;
+  min-height: 24px;
   border-radius: 6px;
 }
 button.mini.on-biz {
@@ -363,6 +412,26 @@ button:disabled {
   opacity: 0.5;
   cursor: default;
 }
+@media (hover: hover) and (pointer: fine) {
+  button:hover:not(:disabled),
+  .btn:hover {
+    background: var(--bg);
+    border-color: #c6cecb;
+  }
+  button.primary:hover:not(:disabled),
+  .btn.primary:hover {
+    background: var(--biz);
+    opacity: 0.92;
+  }
+  button.mini.on-biz:hover:not(:disabled) {
+    background: var(--biz);
+    opacity: 0.9;
+  }
+  button.mini.on-per:hover:not(:disabled) {
+    background: var(--per);
+    opacity: 0.9;
+  }
+}
 
 input[type="text"],
 input[type="password"],
@@ -373,12 +442,17 @@ select {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 6px 10px;
+  min-height: 32px;
   background: var(--surface);
   color: var(--ink);
+  transition: border-color var(--motion-fast) var(--ease-standard);
+}
+input:hover,
+select:hover {
+  border-color: #c6cecb;
 }
 input:focus,
-select:focus,
-button:focus-visible {
+select:focus {
   outline: 2px solid var(--biz);
   outline-offset: 1px;
 }
@@ -397,6 +471,7 @@ input.num-input {
 .segment button {
   border: none;
   border-radius: 0;
+  min-height: 30px;
   padding: 5px 14px;
 }
 .segment button.on {
@@ -412,6 +487,38 @@ input.num-input {
   margin-bottom: 12px;
 }
 
+/* 書き出し等の小メニュー(呼び出し元の直下から短く現れる) */
+.popover-host {
+  position: relative;
+  display: inline-block;
+}
+.popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  display: grid;
+  gap: 6px;
+  z-index: 30;
+  width: 200px;
+  box-shadow: 0 8px 24px rgba(29, 42, 44, 0.12);
+  transform-origin: top right;
+  animation: popover-in var(--motion-fast) var(--ease-standard) both;
+}
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .dropzone {
   border: 2px dashed var(--line);
   border-radius: var(--radius);
@@ -420,6 +527,8 @@ input.num-input {
   color: var(--ink-soft);
   background: var(--surface);
   cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast)
+    var(--ease-standard);
 }
 .dropzone.drag {
   border-color: var(--biz);
@@ -468,6 +577,7 @@ kbd {
   display: grid;
   place-items: center;
   background: var(--bg);
+  padding: 16px;
 }
 .login-card {
   background: var(--surface);
@@ -475,6 +585,7 @@ kbd {
   border-radius: 12px;
   padding: 32px;
   width: 340px;
+  max-width: 100%;
 }
 .login-card h1 {
   font-size: 18px;
@@ -496,8 +607,9 @@ kbd {
   font-weight: 700;
 }
 
-/* モバイル: サイドバーをドロワー化 */
-.menu-btn {
+/* ---------------- モバイル(〜860px) ---------------- */
+/* サイドバーはドロワー化(「メニュー」タブから開く)。最頻4画面は下部固定タブバーで1タップ。 */
+.tabbar {
   display: none;
 }
 @media (max-width: 860px) {
@@ -513,14 +625,11 @@ kbd {
     width: 240px;
     z-index: 50;
     transform: translateX(-100%);
-    transition: transform 0.18s ease;
+    transition: transform 0.18s var(--ease-standard);
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
   }
   .sidebar.open {
     transform: none;
-  }
-  .menu-btn {
-    display: inline-block;
   }
   .backdrop {
     position: fixed;
@@ -528,12 +637,76 @@ kbd {
     background: rgba(0, 0, 0, 0.3);
     z-index: 40;
   }
+  .header {
+    padding: 10px 16px;
+  }
+  /* 防衛ラインは常時表示を維持しつつ、狭幅では見込額の詳細だけ畳む */
+  .badge-detail {
+    display: none;
+  }
+  .main {
+    padding: 16px;
+    /* 下部タブバーに本文・フッターが隠れないよう退避量を確保 */
+    padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 24px);
+  }
+  .footer {
+    padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 14px);
+  }
   table.data th {
     top: 0;
   }
+  :root {
+    scroll-padding-bottom: calc(var(--tabbar-h) + 16px);
+  }
+
+  .tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .tabbar .tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tabbar-h);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-decoration: none;
+    background: none;
+    border: none;
+    border-radius: 0;
+    border-top: 2px solid transparent;
+    transition: color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast)
+      var(--ease-standard);
+  }
+  .tabbar .tab.active {
+    color: var(--biz);
+    border-top-color: var(--biz);
+  }
 }
+
+/* 動きは因果の説明のみ。reduced-motion では全停止し、意味は文言と状態で残す */
 @media (prefers-reduced-motion: reduce) {
-  .sidebar {
-    transition: none;
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@media (prefers-contrast: more) {
+  :root {
+    --line: #9aa5a2;
+    --ink-soft: var(--ink);
   }
 }

@@ -1,26 +1,34 @@
 /**
  * 全ページ共通レイアウト(spec §10.1)。
- * ヘッダー: 対象期間 / 防衛ラインバッジ(FR-08) / データ状態 / エクスポート
- * サイドバー: P1〜P11ナビ(モバイルはドロワー)
+ * ヘッダー: 対象期間 / 防衛ラインバッジ(FR-08 常時表示) / データ状態 / エクスポート
+ * ナビ: PC=サイドバー / モバイル(〜640px)=下部固定タブバー(最頻4画面+メニュー)
  */
 import { useQuery } from '@tanstack/react-query';
-import { type ReactNode, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { type SummaryResponse, api } from '../api.js';
 import { monthLabel, yen } from '../format.js';
 
-const NAV: { to: string; icon: string; label: string; group?: string }[] = [
-  { to: '/', icon: '◎', label: '概況', group: '見る' },
-  { to: '/matrix', icon: '田', label: '増減マトリクス' },
-  { to: '/diagnosis', icon: '診', label: '統計診断' },
-  { to: '/subscriptions', icon: 'S', label: 'サブスク分析' },
-  { to: '/household', icon: '家', label: '家計' },
-  { to: '/classify', icon: '仕', label: '公私仕分け', group: '整える' },
-  { to: '/budget', icon: '予', label: '予算管理' },
-  { to: '/tradeoff', icon: '算', label: 'やりくり試算' },
-  { to: '/import', icon: '入', label: 'データ取込', group: '運用' },
-  { to: '/settings', icon: '設', label: '設定' },
-  { to: '/guide', icon: '?', label: '指標ガイド' },
+const NAV: { to: string; label: string; group?: string }[] = [
+  { to: '/', label: '概況', group: '見る' },
+  { to: '/matrix', label: '増減マトリクス' },
+  { to: '/diagnosis', label: '統計診断' },
+  { to: '/subscriptions', label: 'サブスク分析' },
+  { to: '/household', label: '家計' },
+  { to: '/classify', label: '公私仕分け', group: '整える' },
+  { to: '/budget', label: '予算管理' },
+  { to: '/tradeoff', label: 'やりくり試算' },
+  { to: '/import', label: 'データ取込', group: '運用' },
+  { to: '/settings', label: '設定' },
+  { to: '/guide', label: '指標ガイド' },
+];
+
+/** モバイル下部タブ: 最頻タスク4つ+残りはメニュー(ドロワー) */
+const TABS: { to: string; label: string }[] = [
+  { to: '/', label: '概況' },
+  { to: '/matrix', label: 'マトリクス' },
+  { to: '/classify', label: '仕分け' },
+  { to: '/import', label: '取込' },
 ];
 
 const STATUS_LABEL: Record<string, string> = {
@@ -33,6 +41,20 @@ const STATUS_LABEL: Record<string, string> = {
 export function Layout({ children }: { children: ReactNode }) {
   const [drawer, setDrawer] = useState(false);
   const loc = useLocation();
+
+  // ドロワーは Escape とルート遷移で閉じる
+  useEffect(() => {
+    if (!drawer) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDrawer(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [drawer]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: 遷移で閉じるのが目的
+  useEffect(() => {
+    setDrawer(false);
+  }, [loc.pathname]);
 
   const summary = useQuery({
     queryKey: ['summary'],
@@ -49,22 +71,20 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="shell">
-      <aside className={`sidebar${drawer ? ' open' : ''}`}>
-        <div className="brand">
+      <a href="#main-content" className="skip-link">
+        本文へスキップ
+      </a>
+
+      <aside className={`sidebar${drawer ? ' open' : ''}`} aria-label="メインナビゲーション">
+        <Link to="/" className="brand">
           収支統合管理
           <small>freee × マネーフォワード</small>
-        </div>
+        </Link>
         <nav className="nav">
           {NAV.map((n) => (
             <div key={n.to}>
               {n.group && <div className="nav-group">{n.group}</div>}
-              <NavLink
-                to={n.to}
-                end={n.to === '/'}
-                className={({ isActive }) => (isActive ? 'active' : '')}
-                onClick={() => setDrawer(false)}
-              >
-                <span className="icon">{n.icon}</span>
+              <NavLink to={n.to} end={n.to === '/'} className={({ isActive }) => (isActive ? 'active' : '')}>
                 {n.label}
               </NavLink>
             </div>
@@ -75,16 +95,15 @@ export function Layout({ children }: { children: ReactNode }) {
         <div
           className="backdrop"
           onClick={() => setDrawer(false)}
-          onKeyDown={() => setDrawer(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setDrawer(false)}
           role="presentation"
         />
       )}
 
       <header className="header">
-        <button type="button" className="menu-btn" onClick={() => setDrawer(true)} aria-label="メニュー">
-          ≡
-        </button>
-        <h1>収支統合管理</h1>
+        <Link to="/" className="header-brand">
+          収支統合管理
+        </Link>
         <span className="period">{period}</span>
         <span className="spacer" />
         {d && d.status !== 'nodata' && (
@@ -92,8 +111,12 @@ export function Layout({ children }: { children: ReactNode }) {
             className={`badge ${d.status}`}
             title="防衛ライン(個人生活費3ヶ月平均+事業固定費)と今月の収入見込みの対比"
           >
-            防衛線 <span className="num">{yen(d.line)}</span> / 見込{' '}
-            <span className="num">{yen(d.incomeEstimate)}</span> {STATUS_LABEL[d.status]}
+            防衛線 <span className="num">{yen(d.line)}</span>
+            <span className="badge-detail">
+              {' '}
+              / 見込 <span className="num">{yen(d.incomeEstimate)}</span>
+            </span>{' '}
+            {STATUS_LABEL[d.status]}
           </span>
         )}
         {unrec.length > 0 && (
@@ -104,44 +127,69 @@ export function Layout({ children }: { children: ReactNode }) {
         <ExportMenu />
       </header>
 
-      <main className="main" key={loc.pathname}>
+      <main className="main" id="main-content" key={loc.pathname}>
         {children}
       </main>
 
       <footer className="footer">
         明細データは外部に送信されません(アナリティクスなし)。税務上の正はfreeeの記帳です。バックアップは毎晩自動保存(30日保持)。
       </footer>
+
+      <nav className="tabbar" aria-label="モバイルナビゲーション">
+        {TABS.map((t) => (
+          <NavLink
+            key={t.to}
+            to={t.to}
+            end={t.to === '/'}
+            className={({ isActive }) => `tab${isActive ? ' active' : ''}`}
+          >
+            {t.label}
+          </NavLink>
+        ))}
+        <button
+          type="button"
+          className={`tab${drawer ? ' active' : ''}`}
+          aria-expanded={drawer}
+          onClick={() => setDrawer((v) => !v)}
+        >
+          メニュー
+        </button>
+      </nav>
     </div>
   );
 }
 
 function ExportMenu() {
   const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('mousedown', onClick);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('mousedown', onClick);
+    };
+  }, [open]);
+
   return (
-    <span style={{ position: 'relative' }}>
-      <button type="button" onClick={() => setOpen((v) => !v)}>
+    <span className="popover-host" ref={ref}>
+      <button type="button" aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((v) => !v)}>
         書き出し ▾
       </button>
       {open && (
-        <span
-          style={{
-            position: 'absolute',
-            right: 0,
-            top: '110%',
-            background: 'var(--surface)',
-            border: '1px solid var(--line)',
-            borderRadius: 8,
-            padding: 8,
-            display: 'grid',
-            gap: 6,
-            zIndex: 30,
-            width: 200,
-          }}
-        >
-          <a className="btn" href="/api/export/json" onClick={() => setOpen(false)}>
+        <span className="popover" role="menu">
+          <a className="btn" role="menuitem" href="/api/export/json" onClick={() => setOpen(false)}>
             統合データJSON
           </a>
-          <a className="btn" href="/api/export/matrix.csv" onClick={() => setOpen(false)}>
+          <a className="btn" role="menuitem" href="/api/export/matrix.csv" onClick={() => setOpen(false)}>
             マトリクスCSV
           </a>
         </span>
