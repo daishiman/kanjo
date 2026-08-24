@@ -1,0 +1,29 @@
+{
+  "name": "@kanjo/api",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Hono Worker (REST API + Workers Assets によるSPA配信)",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.4.2",
+    "@kanjo/core": "workspace:*",
+    "drizzle-orm": "^0.38.3",
+    "fflate": "^0.8.2",
+    "hono": "^4.6.14",
+    "xlsx": "^0.18.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.30.1",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8",
+    "wrangler": "^4.33.0"
+  }
+}

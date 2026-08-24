@@ -14,6 +14,10 @@
 !/samples/**/*.csv
 !/samples/**/*.json
 
+# 匿名化済みテストフィクスチャ（合成データのみ）は許可
+!/packages/*/test/fixtures/**/*.csv
+!/packages/*/test/fixtures/**/*.json
+
 # ------------------------------------------------------------
 # Node / ビルド
 # ------------------------------------------------------------
@@ -31,6 +35,11 @@ build/
 !.env.example
 *.pem
 *.key
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.wrangler/
+packages/api/worker-configuration.d.ts
 
 # ------------------------------------------------------------
 # OS / エディタ

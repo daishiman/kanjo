@@ -1,0 +1,35 @@
+# main へのマージで本番デプロイ。順番はマイグレーション → デプロイで固定
+# (逆にすると新コードが存在しない列を読んで本番が落ちる)。
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Env 型を生成 (wrangler types)
+        run: pnpm --filter @kanjo/api exec wrangler types
+      - run: pnpm --filter @kanjo/web build
+      - name: D1 マイグレーション適用 (本番)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: pnpm --filter @kanjo/api exec wrangler d1 migrations apply kanjo-db --remote
+      - name: Worker デプロイ
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: pnpm --filter @kanjo/api exec wrangler deploy

@@ -1,0 +1,37 @@
+# PR 時の品質ゲート: lint → typecheck → test → build
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Env 型を生成 (wrangler types)
+        run: pnpm --filter @kanjo/api exec wrangler types
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Build (web → api dry-run)
+        run: |
+          pnpm --filter @kanjo/web build
+          pnpm --filter @kanjo/api exec wrangler deploy --dry-run --outdir /tmp/worker-build
+      - name: プレビュー版をアップロード (secrets 設定時のみ)
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
+            pnpm --filter @kanjo/api exec wrangler versions upload
+          else
+            echo "CLOUDFLARE_API_TOKEN 未設定のためプレビューアップロードをスキップ"
+          fi

@@ -1,0 +1,42 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kanjo-console",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "../web/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // /api/* は必ず Worker を通す(認証ゲート)。それ以外は静的アセット優先
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "kanjo-db",
+      "database_id": "fe9e732c-687c-4507-b704-1955b5367547",
+      "migrations_dir": "../../migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "FILES",
+      "bucket_name": "kanjo-files"
+    }
+  ],
+  "triggers": {
+    // JST 03:00 = UTC 18:00 前日。夜間バックアップ(D1→R2, 30日保持)
+    "crons": ["0 18 * * *"]
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    // Cloudflare Access を使う場合のみ設定(両方設定でAccess JWT検証へ切替)
+    "ACCESS_AUD": "",
+    "ACCESS_TEAM_DOMAIN": ""
+  }
+  // Secrets(wrangler secret put): AUTH_PASSWORD, SESSION_SECRET
+}
