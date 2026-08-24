@@ -428,6 +428,7 @@ main:  上記CIの成功 → wrangler deploy(production)
 - migrationは前方互換のみ許可(列削除は2段階リリース)
 - migrationはmainへのpushでは実行せず、`APPLY`確認付きの手動ワークフローだけで適用する
 - テストは外部ファイルや実データへ依存せず、テスト内で生成した架空値だけを使用する
+- 初回設定・リリース・障害対応・rollbackの正本は [`ci-cd-operations.md`](ci-cd-operations.md) とする
 
 ---
 

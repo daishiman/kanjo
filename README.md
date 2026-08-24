@@ -62,6 +62,8 @@ D1マイグレーションは自動デプロイと分離している。GitHub Ac
 
 GitHub Environment `production` に `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`、Repository Variableに `APP_URL` を登録する。認証情報の登録はリポジトリ所有者本人が行う。手元からの `pnpm run deploy` は緊急時のみ。
 
+GitHub・Cloudflareの初回設定、通常リリース、D1 migration、障害調査、rollbackの詳細は [`docs/ci-cd-operations.md`](docs/ci-cd-operations.md) を参照。
+
 本番シークレット: `wrangler secret put AUTH_PASSWORD` / `wrangler secret put SESSION_SECRET`。Cloudflare Access に切り替える場合は wrangler.jsonc の `ACCESS_AUD` / `ACCESS_TEAM_DOMAIN` を設定する（設定するとパスワード認証は無効化される）。
 
 ## ドキュメント
@@ -72,6 +74,7 @@ GitHub Environment `production` に `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT
 | [`docs/requirements.md`](docs/requirements.md) | 初期要件文書の履歴と正本への導線 |
 | [`docs/data-schema.md`](docs/data-schema.md) | freee / MF のCSV仕様、統合JSONの構造と不変条件 |
 | [`docs/metrics.md`](docs/metrics.md) | 統計指標の定義、費目分類の基準、異常検知のしきい値 |
+| [`docs/ci-cd-operations.md`](docs/ci-cd-operations.md) | CI/CD・GitHub保護設定・Cloudflare本番運用・復旧手順 |
 
 ## ディレクトリ構成
 
