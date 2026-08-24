@@ -1,0 +1,379 @@
+# AI開発エージェントキット
+
+**バージョン 1.10.2**
+
+Claude Code と OpenAI Codex の両方に、「プロの開発ノウハウ集」と「開発を自動で進める司令塔(app-orchestrator)」を同時に追加するキットです。
+
+インストールすると、どちらのツールでも、要件の整理からデザイン・開発・公開・品質チェックまでを決められた手順で進められます。
+
+## Codex の配置はこの2つだけ覚えてください
+
+| 入れるもの | プロジェクト限定 | 全プロジェクト共通 |
+|---|---|---|
+| スキル (`SKILL.md`) | `.agents/skills/<名前>/SKILL.md` | `~/.agents/skills/<名前>/SKILL.md` |
+| custom agent (`.toml`) | `.codex/agents/<名前>.toml` | `~/.codex/agents/<名前>.toml` |
+
+**AIDDはprojectの`.codex/skills`へスキルを置きません。** `.agents/skills` と `.codex/agents` は競合する候補ではなく、入れるものが違います。`AGENTS.md` は毎回読むプロジェクト規約で、スキルやcustom agentの置き場所ではありません。`$CODEX_HOME/skills`（通常`~/.codex/skills`）はCodex組込installer/plugin等が使うpersonal installed/互換領域で、AIDDは書き込みません。
+
+上の表はCodex公式の探索範囲です。AIDDが一度に両方へ書くという意味ではありません。配布キットの通常インストールはuser scope、このAIDDキット開発リポジトリはproject scopeを正とします。同名Skillをuser/projectへ二重導入してもCodexは統合しないため、二重導入は避けてください。
+
+このキット内で編集する原本と、scopeごとの反映先も固定しています。
+
+| キット内の編集元 | 反映先 |
+|---|---|
+| `skills/` と `codex/workflow-skills/` | Codex: `.agents/skills/`、Claude Code: `.claude/skills/` または `.claude/commands/` |
+| `codex/agents/*.toml` | `.codex/agents/*.toml` |
+
+`.agents`・`.codex`・`.claude` の反映済みファイルを直接編集せず、**編集原本 → 明示scope → manifest → verify** の順で反映します。詳しい探索範囲・書込scope・判断表は [`CODEX-PLACEMENT.md`](CODEX-PLACEMENT.md) にまとめています。
+
+Codexのcustom agent TOMLは必須3キーを持ち、モデル・sandbox・承認・MCPは親セッションから継承します。これは設定漏れではなく、キットが利用者の権限を勝手に拡大しないための設計です。Codex公式Hooksも利用できますが、既存のuser hookや設定を壊さないよう、AIDDインストーラーは `config.toml` と `hooks.json` を上書きしません。権限とHooksの判断基準は [`CODEX-PLACEMENT.md`](CODEX-PLACEMENT.md#custom-agent-toml権限hooksの責務) を参照してください。
+
+```text
+公式探索範囲: Codexが読む可能性のある場所
+AIDD書込scope: 今回のinstall/syncが実際に更新する場所（userまたはprojectの片方）
+```
+
+配置の診断は `./aidd-agent-kit/doctor-codex-layout.sh` で行えます。診断は読み取り専用で、同内容のAIDD二重導入は警告し、AIDD user/project間の内容差やproject `.codex/skills` の誤配置をNGにします。`$CODEX_HOME/skills` との同名は管理外の衝突候補として警告しますが、存在だけで誤配置にはしません。CIで `--strict` を付けるとこれらの重複警告もNGです。利用者所有のファイルは自動削除しません。
+
+```text
+Claude Code: /build-app 社員の勤怠を管理するアプリを作って
+OpenAI Codex: $build-app 社員の勤怠を管理するアプリを作って
+```
+
+まず業務に必要な機能一式がそろった「最初の1本」を最短で公開し、その後は次のコマンドで1機能ずつ安全に育てていきます。
+
+```text
+Claude Code: /improve-app 月ごとの集計をグラフでも見たい
+OpenAI Codex: $improve-app 月ごとの集計をグラフでも見たい
+```
+
+変更は自動的に記録されるため、うまくいかなかったときは次のコマンドで1つ前の状態に戻せます。
+
+```text
+Claude Code: /undo-app さっき追加したグラフをいったん取り消したい
+OpenAI Codex: $undo-app さっき追加したグラフをいったん取り消したい
+```
+
+## まずマニュアルをお読みください
+
+お使いのパソコンに合わせて、どちらかのマニュアルをダブルクリックで開いてください。
+
+| お使いのPC | マニュアル(見やすい版) | マニュアル(テキスト版) | インストーラー |
+|---|---|---|---|
+| Mac | `manual-mac.html` | `manual-mac.md` | `install-mac.command` |
+| Windows | `manual-windows.html` | `manual-windows.md` | `install-windows.bat` |
+
+## 事前に必要なもの
+
+- **Claude Code または OpenAI Codex** がインストール済みで、サインインが完了していること
+  - インストーラーは両方の設定を同時に用意するため、あとからもう一方を導入しても同じキットを使えます
+- **開発環境(Node.js と pnpm)** — 無くてもキットのインストールはできますが、アプリ開発を始める前に必要です
+  - 付属のセットアップスクリプトをダブルクリックするだけで両方入ります
+  - あわせて **Claude Code / Codex と Cloudflare(アプリの公開先)の連携** も自動で設定されます
+- **GitHub CLI (`gh`) とGitHubへのサインイン** — プルリクエストの作成・確認・反映に使います。GitHub MCPは必須ではありません
+  - `gh auth login` を実行し、対象リポジトリへアクセスできる状態にしてください
+
+| お使いのPC | 開発環境セットアップ |
+|---|---|
+| Mac | `setup-env-mac.command` |
+| Windows | `setup-env-windows.bat` |
+
+  - このキットのパッケージマネージャは **pnpm** に統一しています(npm は使いません)
+
+## インストールの流れ(3ステップ・約5分)
+
+1. このZIPを **展開する**(ZIPの中身を直接開いたままでは失敗します)
+2. インストーラーをダブルクリックする
+3. Claude Code と Codex を再起動し、Claude Code では `/build-app`、Codex では `$build-app` を入力できれば完了
+
+詳しい手順・つまずいたときの対処は、上のマニュアルに全部書いてあります。
+
+## インストール先
+
+Claude Code 用と Codex 用の正規の場所へ、それぞれ同じ内容を導入します。
+
+| 対象 | Mac | Windows |
+|---|---|---|
+| Claude Code | `~/.claude/` | `C:\Users\(あなたの名前)\.claude\` |
+| Codex のスキル | `~/.agents/skills/` | `C:\Users\(あなたの名前)\.agents\skills\` |
+| Codex のcustom agent・任意の旧互換prompt | `~/.codex/` | `C:\Users\(あなたの名前)\.codex\` |
+
+```
+.claude/
+├── skills/      ← 共通スキルを追加
+├── agents/      ← app-orchestrator.md を追加
+└── commands/    ← Claude Code の4コマンドを追加
+
+.agents/skills/
+├── (共通スキル)/
+├── app-orchestrator/
+└── build-app/ improve-app/ undo-app/ setup-cicd/
+
+.codex/
+├── agents/app-orchestrator.toml
+└── prompts/     ← --legacy-prompts 指定時だけ入る旧互換prompt
+```
+
+既存の同名項目だけをバックアップして更新し、このキットが入れていないスキルや設定には触れません。
+
+### 既に同じ名前のファイルがある場合
+
+インストーラーが**自動でバックアップを作ってから**上書きします。
+
+```
+.claude/backup-20260726-143000/   ← Claude Code の上書き前ファイル
+.codex/backup-20260726-143000/    ← Codex の上書き前ファイル
+```
+
+元に戻したいときは、このフォルダの中身を元の場所へ戻してください。
+
+### 注意: 設定フォルダ内にリンクを設定している方へ
+
+Claude Code / Codex の書き込み対象を**シンボリックリンク(別フォルダへの近道)**にしている場合、インストーラーは**処理を中断します**。リンク先の無関係なフォルダを書き換えてしまわないための安全装置です。
+
+その場合は画面の案内に従い、リンクを一時退避してから再実行してください。
+
+## 収録内容
+
+### エージェント(司令塔) — 1個
+
+| 名前 | 役割 |
+|---|---|
+| app-orchestrator | 要件整理→デザイン→開発→公開→品質チェックを順番に進める司令塔 |
+
+Codexにもagent／subagent機能があります。選択したscopeの `.codex/agents/app-orchestrator.toml` をcustom agentとして、同じscopeの `$app-orchestrator` を内部実行用Skillとして導入します。利用者の入口は `$build-app` / `$improve-app` です。これらから明示的に委譲し、custom agentを利用できないクライアントだけ、現在のスレッドで内部Skillを明示使用します。`$app-orchestrator` は一般のアプリ依頼から暗黙起動しません。
+
+### コマンドワークフロー — 4個
+
+| Claude Code / Codex | 役割 |
+|---|---|
+| `/build-app` / `$build-app` | 新しいアプリを最初から公開まで作る |
+| `/improve-app` / `$improve-app` | 公開済みのアプリに機能追加・改善を1件ずつ行う |
+| `/undo-app` / `$undo-app` | 直前の変更を取り消して、アプリを1つ前の状態に戻す |
+| `/setup-cicd` / `$setup-cicd` | 自動チェックと自動公開のしくみ(CI/CD)を導入する |
+
+Claude Code のcustom `/command` に対応するCodexの標準機能は、再利用可能な `$skill` です。`$build-app` などはCodexの組み込みslash commandではありません。`/skills` や `/agent` などCodex自身のslash commandは、スキル一覧やagentスレッドを操作する別の機能です。
+
+Codex の `AGENTS.md` はプロジェクト規約を毎回読み込ませる常設指示であり、特定の依頼時だけ起動する `$skill` やcustom agentの代替ではありません。このキットは用途を混ぜず、ワークフローをskills、司令塔をcustom agentに配置します。
+
+Codex custom prompts（`/prompts:build-app` など）は公式に非推奨です。そのため標準インストールでは生成しません。既存運用の移行期間だけ必要な場合は、ターミナル／コマンドプロンプトから次の任意オプションを付けてください。新しい利用方法は常に `$build-app` を使用します。
+
+```text
+Mac:     bash install-mac.command --legacy-prompts
+Windows: install-windows.bat --legacy-prompts
+```
+
+### 共通スキル(開発ノウハウ集) — 20個
+
+| 名前 | 内容 |
+|---|---|
+| app-excellence | アプリ開発全体の進め方・品質基準 |
+| mvp-first-development | まず必要な機能一式で公開し、残課題を管理しながら育てる進め方 |
+| jp-web-design | Graphite × Amber、Light/Dark、レスポンシブ、状態・モーションを含む日本語UIルール |
+| ux-design | 業務フロー、入力、一括操作、エラー回復、知覚速度を含むUXルール |
+| cloudflare-secure-deploy | 安全にインターネット公開する手順 |
+| launch-security | 公開前のセキュリティ・品質検査 |
+| testing-excellence | テストの進め方 |
+| better-auth-google-gate | Googleログイン・アクセス制限の作り方 |
+| llm-api-integration | AI機能(読み取り・分類など)の組み込み方 |
+| workers-best-practices | サーバープログラムの品質ルール |
+| wrangler | 公開ツールの正しい使い方 |
+| durable-objects | リアルタイム機能(チャット等)の作り方 |
+| cloudflare | Cloudflare(公開基盤)の総合知識 |
+| web-perf | 表示速度の計測・改善 |
+| llm-cost-simulator | AI機能の利用料金の試算 |
+| turnstile-spin | 問い合わせフォームのボット対策 |
+| cloudflare-email-service | メール送信機能の作り方 |
+| solo-git-flow | 個人開発の変更管理(ブランチ・プルリク・Issue)の進め方 |
+| ci-cd-pipeline | 自動チェック・自動公開のしくみ(GitHub Actions)の作り方と費用の抑え方 |
+| design-judgment | テンプレート感を業務構造の反映不足として診断・改善する判断基準 |
+
+## 更新するとき
+
+新しいバージョンのZIPを展開し、**同じようにインストーラーを実行するだけ**です。既にキットが入っている環境では、**後からインストールしたキットの内容が常に正**として上書き更新されます(上書き前のファイルは従来どおり `backup-(日時)` フォルダへ自動退避されます)。
+
+インストーラーは `.claude` と `.codex` に導入バージョンとmanifest(このキットが入れたものの一覧)を作ります。更新時はこの記録を参照し、**新しいキットに含まれなくなった古いスキル・コマンド・エージェントを自動でバックアップへ移動して整理します**。対象は**キットが入れたものだけ**で、ご自身で追加した項目には触れません。
+
+使用中に蓄積されたナレッジ(各スキルフォルダ内の `knowledge/` など、キットが配布していない追加ファイル)は**更新で消えず、そのまま残ります**。廃止されたスキルの中にあった場合は、バックアップフォルダの中に残ります。
+
+キット自体を開発するときは `.agents`・`.codex`・`.claude` を直接編集せず、`aidd-agent-kit/` 内の編集原本を変更してproject scopeへsyncします。AIDD同梱Skillを外部から更新する場合も、管理対象runtimeへ直接取得せず、一時領域で確認して編集原本へ反映してからsyncしてください。
+
+## アンインストールするとき
+
+`.claude`、`.agents/skills`、`.codex` から次を削除してください。
+
+- `.claude/skills/` と `.agents/skills/` の中の、上の表にある20フォルダ
+- `.claude/agents/app-orchestrator.md`
+- `.claude/commands/build-app.md`・`improve-app.md`・`undo-app.md`・`setup-cicd.md`
+- `.agents/skills/app-orchestrator/` と4つのコマンドスキル
+- `.codex/agents/app-orchestrator.toml`。`--legacy-prompts` を使った場合だけ `.codex/prompts/` 内の4ファイル
+- `.claude` と `.codex` の導入記録 `aidd-agent-kit.version` / `aidd-agent-kit.manifest`
+
+インストール時に作られた `backup-YYYYMMDD-HHMMSS/` フォルダに元のファイルが残っている場合は、そこから戻せます。不要になったバックアップフォルダは削除して構いません。
+
+## フォルダ構成
+
+```
+aidd-agent-kit/
+├── README.md                ← このファイル
+├── manual-mac.html          ← Mac用マニュアル(ブラウザで開く)
+├── manual-mac.md            ← Mac用マニュアル(テキスト)
+├── manual-windows.html      ← Windows用マニュアル(ブラウザで開く)
+├── manual-windows.md        ← Windows用マニュアル(テキスト)
+├── install-mac.command      ← Mac用インストーラー
+├── install-windows.bat      ← Windows用インストーラー
+├── sync-project-mac.command ← このリポジトリへ反映(Mac・管理用)
+├── sync-project-windows.bat ← このリポジトリへ反映(Windows・管理用)
+├── verify-codex-layout.sh   ← Codex配置と原本一致の自動検査
+├── scripts/                 ← Windows事前検証とCI用smoke test
+├── setup-env-mac.command    ← Mac用 開発環境セットアップ(Node.js + pnpm + Cloudflare連携)
+├── setup-env-windows.bat    ← Windows用 開発環境セットアップ(Node.js + pnpm + Cloudflare連携)
+├── skills/                  ← Claude Code / Codex 共通スキル20個
+├── agents/                  ← エージェント(app-orchestrator)
+├── commands/                ← Claude Code の4コマンド
+├── CODEX-PLACEMENT.md       ← Codexの配置と反映元の判断表
+└── codex/
+    ├── workflow-skills/     ← `.agents/skills` へ反映するCodex用ワークフロー
+    ├── agents/              ← `.codex/agents` へ反映するcustom agent TOML
+    └── prompts/             ← 任意の旧互換prompt
+```
+
+## 変更履歴
+
+### 1.10.2
+
+- Windowsの事前検証を、`cmd.exe`内の長大なPowerShell文字列から独立したPowerShell 5.1互換スクリプトへ分離しました。正規表現の記号がcmd側で再解釈され、インストーラーがexit 255になる問題を防ぎます
+- Windowsの受入検査を再利用可能なsmoke scriptへ集約しました。日本語・空白を含むパス、custom agent TOMLの追加設定、manifest、no-op、project同期、実USERPROFILE不変を段階名つきで検査し、失敗時は原因箇所を残します
+- 成果物先行契約に命令の優先順位を追加しました。分析限定・編集禁止・段階ゲート・承認境界を自律進行より優先し、根因未確定の障害では推測修正ではなく再現fixture・診断・原因範囲の縮小を最初の成果物にします
+- GitHub ActionsのcheckoutをNode.js 24対応版へ統一し、非推奨ランタイム警告を解消しました
+
+### 1.10.1
+
+- 全体の進め方を **Evidence → Decide → Draft → Validate → Diff** に統一しました。質問で要件を埋めるのではなく、依頼文・既存コード・資料・ログから最有力案を1つ選び、仕様初稿・代表画面・動く縦切り・修正差分を先に作ります
+- 新規開発・既存改善・UI/UXで、空欄の質問票、A/B/Cの丸投げ、複数候補からの選択待ちを既定動作から外しました。利用者は完成物を見て違う箇所だけを返せます
+- 質問は秘密、本人確認、課金・契約、公開、破壊操作、重大なデータ所有境界など本人しか決められない事項に限定しました。これらもローカル成果物やdry-runを先に作ります
+- app-excellence、mvp-first-development、design-judgment、ux-design、jp-web-design、Better Auth、Turnstile、app-orchestrator、Claude/Codex入口、T1〜T3テンプレートを同じ成果物先行契約へ揃え、CIで旧来の質問先行文言への退行を検出します
+
+### 1.10.0
+
+- UI標準のMode Aを **Graphite × Amber**へ更新しました。グラファイトを主要CTA・操作・選択、アンバーを実行中・処理中・ヒアリング中だけに限定し、AIへ紫・ネオン・専用グラデーションを付けない規律に統一しました
+- Light / Dark / OS自動追従と手動選択の永続化、IBM Plex Sans + JetBrains Mono、面の明度階層、状態色、44px操作領域、safe-areaを参照実装へ追加しました
+- ナビゲーションを参考画面の模倣で決めず、項目数と最頻作業から上部ナビまたは「212pxサイドバー → 68pxアイコンレール → モバイル下部タブ」を選ぶ導出ルールへしました
+- hover / pressed / focus / 入場 / popover / modal / accordion / toast / loading / 状態更新の短いモーションを標準化しました。入場は追加対象だけ・最大6要素・全体300ms以内とし、reduced-motionでも意味と操作が残る検収を追加しました
+- app-excellenceのT2体験設計書とapp-orchestratorへ、テーマ・ナビ骨格・Light/Darkコントラスト・状態/モーションの設計表を追加しました
+
+### 1.9.1
+
+- Codexのスキル配置を `.agents/skills`、custom agent TOMLを `.codex/agents` とする公式仕様に合わせ、判断表を追加しました
+- 配布元の `codex/skills` を `codex/workflow-skills` に改名し、project配布先の `.agents/skills` と区別しやすい構成にしました
+- project `.codex/skills` を検出した場合、既存ファイルを勝手に移動・削除せず、AIDDの正規配置先を明示するようにしました
+- インストール完了時に `.agents/skills` と `.codex/agents` の実パスを表示し、custom agent TOMLの反映先を確認できるようにしました
+
+### 1.9.0
+
+- 配布ファイル単位のSHA-256 manifestへ更新し、廃止ファイルを整理しながら、利用者が追加したファイルと `knowledge/` を実配置に保持し、配布ファイルへの変更は上書き前バックアップに保持するようにしました
+- コピー元・SKILL frontmatter・Codex custom agent TOML・スキル名衝突を導入前に検証し、コピー後も内容の一致を確認するようにしました
+- 全変更対象のバックアップを検証し、途中で失敗した場合はClaude Code／Codexの両方を導入前の状態へ戻すようにしました
+- 子フォルダを含む書き込み先のシンボリックリンク／junction／reparse pointを検出し、リンク先の誤更新を防ぐようにしました
+- Codexの非推奨custom promptsを標準導入から外し、`--legacy-prompts` 指定時だけ導入する任意互換にしました
+- Cloudflare MCPを `/mcp` のHTTP transportへ更新し、Claude Codeはuser scopeで登録、両クライアントとも設定結果を確認して失敗を正しく表示するようにしました
+- Codexのcustom agent／subagent、`$skill`、組み込みslash command、`AGENTS.md` の役割の違いを明文化し、内部オーケストレータSkillの暗黙起動を無効化しました
+- Claude Code／Codexのワークフロー、Mac／WindowsのMarkdown／HTMLマニュアル、Turnstileの保存先表記を同期しました
+
+### 1.8.0
+
+- 1回のインストールで Claude Code と OpenAI Codex の両方へ同時導入できるようにしました
+- 共通スキルは Codex の正規ユーザー配置先 `~/.agents/skills` にもコピーします
+- Claude Code の4コマンドを、Codex では `$build-app` などの推奨skill形式へ変換しました
+- `app-orchestrator` を Codex の project/user custom agent 形式(TOML)へ対応させました
+- Claude Code / Codex の両方で、同名項目のバックアップ、更新時の廃止項目整理、全件検証を行います
+- 開発環境セットアップで両クライアントのCloudflare MCPを設定するようにしました
+
+### 1.7.0
+
+- **画面づくりの順番を規律にしました**。jp-web-design に新しい手引き `references/information-design.md` を追加し、「**表を書くところから設計を始めない**」を全体の前提に置いています
+  - 画面は8つの工程で作ります(使われる場面の1文 → ラベル剥がし → 伝わらないものだけ最小限に補う → グループ化 → 優先順位 → 表示用のデータ加工 → 表示形式の導出 → 機能追加と意味づけの装飾)。**装飾を後から足しても画面は良くなりません**
+  - **表示形式を事例集から選ばせません**。主目的・情報量・件数・識別の手がかり・データの関係・求められる操作の6軸で場面を測り、そこから形を導きます。軸が埋まらない場合は「デザインの問題」ではなく**ヒアリング不足**として要件に戻します
+  - **前例のない要件を「対応できません」で終わらせません**。原理に還元 → 軸で測る → 慣習を探す → 実データで検証 → 判断を記録、の手順で導きます
+  - **表が正解の画面もある**ことを明記しました(台帳入力・照合・大量比較)。禁じているのは表そのものではなく、とりあえず表から書き始めて思考を止めることです
+- **「見づらい・ダサい・使いにくい」の直し方を手順化しました**。症状から原因を特定し、装飾を剥がして情報の並べ方から作り直します。**装飾を足す方向では対応せず、既存機能も落としません**
+- **軽量仕様メモの置き場所を統一しました**。標準は `docs/product/T2-experience-spec.md` です。通常の設計判断はここに1行ずつ残し、**前例のない例外判断だけ** `docs/product/design-decisions.md` に分離します。同じ例外判断が3画面で繰り返されたら、スキルへの昇格を提案します
+- ux-design・app-excellence・app-orchestrator・検収チェックリストを上記の工程に合わせて更新しました
+- ci-cd-pipeline の GitHub Actions 雛形で **Node.js を 22 に引き上げ**ました(公開ツール wrangler が 22 以上を要求するため、20 のままだと型生成で失敗します)
+
+### 1.6.0
+
+- 新スキル **ci-cd-pipeline** を追加: 「コードを直したら自動で検査され、問題なければ自動で公開される」しくみ(CI/CD)の作り方を標準化しました
+  - **ワークフローは3本だけ**に固定しました。分ける基準は工程ではなく**壊せる範囲**です(自動チェック=何も壊せない / 自動公開=アプリを壊せる / データベースの形の変更=データを壊せる)。壊せる範囲が違うものを同じきっかけで動かさない、という考え方に統一しています
+  - **データベースの形を変える操作だけは、自動では絶対に走らせません**。手動実行のうえ確認欄に `APPLY` と入力しないと進まず、実行前に必ずバックアップを取り、取れなければ止まります
+  - **手元から公開する方式の危うさ**を解消します。公開ツールは「保存済みの履歴」ではなく「いま手元にあるファイル」をそのまま公開するため、コミットし忘れた実験コードが本番に出たり、「反映したつもり」のものが実は出ていなかったりします。自動公開はまっさらな状態から毎回取り直すため、この食い違いが構造的に起きなくなります
+  - **公開後の確認を2回に分けました**。公開直後は古いプログラムがまだ動いていることがあるため(数十秒〜1〜2分)、30秒後と、さらに90秒後の2回確認し、両方通って初めて成功とみなします。1回だけの確認では「まだ古いものを見ている」ことに気づけません
+  - 確認に失敗しても**自動では元に戻しません**。「本当に壊れている」のか「まだ古いものが残っているだけ」なのかを機械は区別できないためです。止めて知らせるところまでを自動化し、戻す判断は人がします
+  - **費用**: 公開リポジトリなら完全無料・無制限。非公開でも月2,000分の無料枠に収まる構成にしています(実行するのは Linux のみ、連続実行時の打ち切り、重いビルドを検査側でやらない、など)
+  - **開発環境を問わず動きます**。npm / yarn / pnpm のどれを使っているかを、設定の記述ではなく**ロックファイルの実物から判別**します(宣言は書き換え忘れますが、ロックファイルは実際に入れた事実の痕跡なのでズレません)。雛形をそのまま別のプロジェクトに持っていっても動きます
+  - 認証情報の登録は**ご本人が行う前提**とし、代行しない方針を明記しました
+  - 導入手順に「**わざとテストを1つ壊して、赤くなることを目で確認する**」を必須で入れています。設定しただけでは「検査しているつもりで何もしていない」状態に気づけないためです
+- 新コマンド **`/setup-cicd`** を追加: 上記の導入を対話で進めます
+- app-orchestrator の公開ステージに ci-cd-pipeline を組み込み、**2回目以降の公開は自動公開に切り替える**進め方にしました
+
+### 1.5.0
+
+- 新スキル **solo-git-flow** を追加: 個人開発での Issue起票 → ブランチ作成 → コミット → プルリクエスト → マージ → 取り消し までの流れと、名前の付け方・書き方のテンプレートを標準化しました
+  - ブランチ名・コミットメッセージ・PRタイトルの規約を統一しました(PRタイトルはそのまま履歴に残る1行になるため、日本語で「何ができるようになったか」を書きます)
+  - **プルリクエストの説明を、開発を知らない人が読んでも分かる形に標準化**しました。上半分(目的 / 背景 / やったこと / できるようになったこと / 含めたこと・含めていないこと)は専門用語を使わず中学生でも分かる言葉で書き、下半分(技術的にやったこと / 確認したこと / 注意)はエンジニア向けに実装の実態と判断理由を書く2層構造にしています
+  - 特に「**含めていないこと**」を必須項目にしました。「頼んだのにできていない」という食い違いの大半はここを書かないことで起きるためです
+  - この雛形をキットに同梱し、リポジトリの `.github/PULL_REQUEST_TEMPLATE.md` へ自動設置するようにしました
+  - **Issueの書き方もプルリクエストと同じ2層構造**に統一しました(不具合用・要望用の2種類の雛形を同梱)。「何が起きているか / どれくらい困っているか / こうなっていれば解決」までを専門用語なしで書き、技術的な見立ては着手時に埋める形にしています。「完了の条件」を必須にし、どこまでやれば終わりかを着手前に確定させます
+  - Issueは「今やらないことの置き場」と位置づけ、立てる/立てないの判断基準を明文化しました(今すぐ1時間で終わることは起票しない)
+  - マージは squash に統一し、「PR 1件 = 履歴1行 = 取り消しの単位」を揃えました
+- **GitHub操作を GitHub MCP から `gh` コマンドに変更**しました(app-orchestrator / /undo-app)。MCPの追加設定なしに、Claude Code から直接プルリクエストの作成・マージができます
+
+### 1.4.0
+
+- **取り込んだデータと人の手直しの扱いを標準化**しました(app-excellence に `references/data-lifecycle.md` を追加)
+  - 取り込んだ値を手直しで上書きせず別に保持し、「取り込んだ値に戻す」がいつでもできるようにしました(理由・実施者・日時も記録)
+  - 基準値・対応表を直しても、**確定済みの過去の集計は勝手に変わらない**(差分をお知らせして、反映するかを選べる)ことを既定にしました
+  - 取り込むたびの変更を、見落とすと壊れるものだけ強く出す形でお知らせします。全角/半角などの表記ゆれは自動で同一視し、意味が変わりうる違いは人に確認します
+- **画面の使い勝手の規律**を追加しました
+  - 入力のやり方を画面ごとに変えない。自動計算の値は欄の中に初期値として入れ、「自動のまま」と「自分で入れた」が見分けられ、「自動に戻す」ができる(ux-design)
+  - 今どこにいるか(ステップ・タブ)と、保存・戻る・次へが**常に見える位置に固定**される(ux-design / jp-web-design)
+  - 編集できない一覧・空欄が並ぶ画面に、その理由と次にすべきことが1行で出る(ux-design)
+  - 数十〜百件を上から打ち込むときに手も目も止まらないこと、を一覧入力の判断基準にしました
+- **日本語の折返し規律**を明文化しました(jp-web-design): 語の途中で折り返さないことを既定にし、短いラベル・ボタン・表ヘッダーは折り返さない。単位や記号が行頭・行末に取り残される表示をなくしました
+
+### 1.3.0
+
+- **開発の進め方を全面改訂**しました
+  - 番号付きステージ制を廃止し、守るべき規範を一箇所にまとめました
+  - 変更履歴を git と GitHub のプライベートリポジトリ(自分たちだけが見られる保管場所)に保存し、**いつでも1つ前に戻せる**ことを保証するようにしました
+  - 追加開発は「確認 → 反映(PR で内容を確認してからマージ)」の流れに統一しました
+- 新コマンド **/undo-app** を追加: 直前の変更を取り消して、アプリを1つ前の状態に戻せます
+- 開発環境セットアップスクリプトが **Cloudflare との連携(MCP)** も自動設定するようになりました
+- インストーラーが**上書き更新**に対応しました(後からインストールしたキットが常に正・廃止された古いスキルの自動整理・蓄積したナレッジは温存)
+- **開発方式を明文化**しました: まず軽い仕様メモを合意点にたたき台を一気に作り、依頼者が確認してOKになった動きだけをテストで固定する「たたき台 → 確認 → 固定化」の3段階方式。入力チェックと公開前の脆弱性確認も標準にしました
+- スキルを軽量化しました(`wrangler` と `jp-web-design` を用途ごとに分割し、必要な部分だけ読み込むようにしました)
+- キットに含まれない外部リソースへの参照を除去しました
+
+### 1.2.0
+
+- パッケージマネージャを npm から **pnpm** に全面統一しました(全スキル・全ドキュメントのコマンドを置換)
+- 新スキル **mvp-first-development** を追加: 業務に必要な機能一式で最初の1本を最短公開し、残課題リストで育てていく進め方・1画面1目的のUI原則・社内アプリの必要最低限セキュリティライン・非エンジニアとの会話プロトコルを定義
+- 新コマンド **/improve-app** を追加: 公開済みアプリへの機能追加・改善を、既存フローを壊さずに1件ずつ進める追加開発モード
+- 開発環境セットアップスクリプト(`setup-env-mac.command` / `setup-env-windows.bat`)を追加: ダブルクリックだけで Node.js と pnpm が入ります
+- app-orchestrator に MVPファースト進行・追加開発モード・非エンジニア向け報告様式を追加
+
+### 1.1.0
+
+- インストーラーが `.claude` 内のシンボリックリンクを検出して中断するようになりました(リンク先の別フォルダを壊さないため)
+- 既存ファイルと衝突する場合、自動でバックアップを作成するようになりました
+- インストール結果を全16スキル分検証するようになりました(従来は1個のみ確認)
+- Claude Code 未起動で `.claude` が無い場合に、明確な案内を出すようになりました
+- Windows版でコピー失敗を検知するようになりました
+
+### 1.0.0
+
+- 初版
+
+---
+
+株式会社TierMind

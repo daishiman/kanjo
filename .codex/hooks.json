@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "exec_command|shell_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/scripts/hooks/guard-real-data.sh\" --host codex",
+            "timeout": 10,
+            "statusMessage": "実データ混入をチェック中..."
+          }
+        ]
+      }
+    ]
+  }
+}
