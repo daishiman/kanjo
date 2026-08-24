@@ -11,6 +11,7 @@ freee / マネーフォワードのエクスポート、統合 JSON、口座明�
 - 実データは `data/` に置き、`.gitignore` で除外している
 - コミットしてよいのは匿名化済みの `samples/` 配下のみ
 - `git add -f` で除外を突破しない
+- `packages/api/.dev.vars`（ローカル secrets）を git 操作に含めない
 
 この制約は `scripts/hooks/guard-real-data.sh` が PreToolUse フックとして
 機械的にも検査する。フックが止めた操作を回避する形で進めない。
