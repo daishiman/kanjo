@@ -1,0 +1,54 @@
+# mainのCI成功後だけ本番へ公開する。D1 migrationはmigrate.ymlへ分離する。
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      APP_URL: ${{ vars.APP_URL }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: 本番設定を検証
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::productionのCLOUDFLARE_API_TOKENが未登録です"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::productionのCLOUDFLARE_ACCOUNT_IDが未登録です"; exit 1; }
+          test -n "$APP_URL" || { echo "::error::productionのAPP_URLが未登録です"; exit 1; }
+      - run: pnpm install --frozen-lockfile
+      - name: Env型を生成
+        run: pnpm --filter @kanjo/api exec wrangler types
+      - name: Webをビルド
+        run: pnpm --filter @kanjo/web build
+      - name: Workerをデプロイ
+        run: pnpm --filter @kanjo/api exec wrangler deploy
+      - name: 反映待ち後の1回目確認
+        run: sleep 30 && pnpm run smoke
+      - name: 旧実行環境の終了待ち後の2回目確認
+        run: sleep 90 && pnpm run smoke

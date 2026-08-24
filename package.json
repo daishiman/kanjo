@@ -1,0 +1,28 @@
+{
+  "name": "kanjo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "収支統合管理システム — 事業(freee) × 家計(マネーフォワード) を1画面で統合管理する",
+  "packageManager": "pnpm@10.9.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api exec wrangler deploy --dry-run --outdir /tmp/kanjo-worker-build",
+    "dev": "pnpm --filter @kanjo/web dev",
+    "preview": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api dev",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "deploy": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api run deploy",
+    "db:migrate:local": "pnpm --filter @kanjo/api exec wrangler d1 migrations apply kanjo-db --local",
+    "db:migrate:remote": "pnpm --filter @kanjo/api exec wrangler d1 migrations apply kanjo-db --remote",
+    "db:checkpoint": "pnpm --filter @kanjo/api exec wrangler d1 time-travel info kanjo-db",
+    "smoke": "bash .github/scripts/smoke.sh"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "typescript": "^5.6.3"
+  }
+}

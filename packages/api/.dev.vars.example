@@ -1,0 +1,5 @@
+# ローカル開発用の環境変数。コピーして .dev.vars を作る (コミット禁止)。
+# AUTH_PASSWORD: ログイン画面で入力するパスワード
+# SESSION_SECRET: セッションCookie署名用 (openssl rand -hex 32 で生成)
+AUTH_PASSWORD=change-me
+SESSION_SECRET=change-me-64-hex-chars

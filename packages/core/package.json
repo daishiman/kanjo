@@ -1,0 +1,19 @@
+{
+  "name": "@kanjo/core",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "純粋な計算・仕分け・正規化ロジック（依存ゼロ）。HTML版リファレンス実装と同一結果を保証する",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}
