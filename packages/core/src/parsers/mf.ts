@@ -33,6 +33,7 @@ export function parseMfRows(rows: string[][]): MfParseResult {
     tf: col('振替'),
     c: col('内容'),
     id: col('ID'),
+    inst: col('保有金融機関'),
   };
   const txs: MfTx[] = [];
   let skipped = 0;
@@ -67,6 +68,7 @@ export function parseMfRows(rows: string[][]): MfParseResult {
       a: amt,
       big: r[ci.big] || '',
       mid: r[ci.mid] || '',
+      inst: ci.inst >= 0 ? String(r[ci.inst] ?? '').trim() || undefined : undefined,
     });
   });
   const months = [...new Set(txs.map((t) => t.m))].sort();

@@ -17,12 +17,46 @@ export interface MfTx {
   big: string;
   /** 中項目 */
   mid: string;
+  /** 保有金融機関（MFの口座名。名義の判定根拠） */
+  inst?: string;
 }
 
-/** 仕分けルール。配列の並び順＝評価順（先勝ち） */
+/** 名義。MFの保有金融機関(口座名)を設定で対応付けて決める。データに無い区分は増やさない */
+export type Owner = 'self' | 'spouse';
+
+/** 名義の表示名 */
+export type OwnerKey = Owner | 'unset';
+export interface OwnerMonth {
+  income: number;
+  expense: number;
+}
+export const OWNER_LABEL: Record<Owner | 'unset', string> = { self: '本人', spouse: '妻', unset: '未設定' };
+
+/**
+ * 仕分けルール。配列の並び順＝評価順（先勝ち）。
+ * 属性ごとに「その属性を持つ最初のルール」が採用される（cls だけのルールと 大項目だけのルールは共存できる）。
+ */
 export interface Rule {
   k: string;
-  cls: Cls;
+  cls: Cls | null;
+  big?: string | null;
+  mid?: string | null;
+  owner?: Owner | null;
+}
+
+/**
+ * 明細1件への手動編集（取込値とは別枠で保持し、再取込でも消えない）。
+ * baseBig/baseMid は編集時点の取込値。現在の取込値と違えば「取込側が変わった」と分かる。
+ */
+export interface TxEdit {
+  cls?: Cls | null;
+  big?: string | null;
+  mid?: string | null;
+  owner?: Owner | null;
+  baseBig?: string | null;
+  baseMid?: string | null;
+  note?: string | null;
+  updatedAt?: string | null;
 }
 
 /** freee仕訳1行 */
@@ -72,7 +106,14 @@ export interface Dataset {
   bizPersonal: Record<string, BizPersonalMonth>;
   mfTx: MfTx[];
   rules: Rule[];
+  /** 手動の公私判定（HTML版互換。edits から導出される） */
   overrides: Record<string, Cls>;
+  /** 明細IDごとの手動編集（公私・大項目・中項目・名義） */
+  edits: Record<string, TxEdit>;
+  /** 保有金融機関 → 名義 */
+  institutionOwners: Record<string, Owner>;
+  /** 個人分の名義別(本人/妻/未設定)の月別 収入・支出（edits/rules/institutionOwners から導出） */
+  personalByOwner: Record<string, Record<OwnerKey, OwnerMonth>>;
   budgets: Record<string, number>;
   cashOverride: Record<string, { revenue: number; expense: number }>;
   unrecordedExpMonths: string[];
@@ -103,6 +144,9 @@ export function emptyDataset(): Dataset {
     mfTx: [],
     rules: [],
     overrides: {},
+    edits: {},
+    institutionOwners: {},
+    personalByOwner: {},
     budgets: {},
     cashOverride: {},
     unrecordedExpMonths: [],

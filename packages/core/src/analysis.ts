@@ -3,7 +3,7 @@
  * 年次比較はHTML版の '2025'/'2026' 固定を「前年/当年（データ最終月の年）」に一般化した。
  */
 import { mean, median, movingAvg, std, sum, yearOf } from './stats.js';
-import type { CatProfile, Dataset } from './types.js';
+import type { CatProfile, Dataset, OwnerKey, OwnerMonth } from './types.js';
 
 export function catSeries(data: Dataset, c: string): number[] {
   return data.biz.expense[c] || data.months.map(() => 0);
@@ -504,6 +504,61 @@ export interface HouseholdData {
   totals: BalanceTotals;
   /** 生活費の大項目別(全期間、金額の大きい順) */
   livingCost: LivingCostRow[];
+  /** 事業(freee帳簿) と 個人(MF・仕分け「個人」) を並べた比較 */
+  comparison: Comparison;
+  /** 個人分の名義別(本人/妻/未設定)。根拠は MF の保有金融機関→名義の設定と手動編集 */
+  byOwner: ByOwner;
+}
+
+/** 片側(事業 or 個人)の1ヶ月。データが無い月は null */
+export interface CompareSide {
+  income: number | null;
+  expense: number | null;
+  balance: number | null;
+}
+export interface CompareRow {
+  month: string;
+  /** 事業 = freee 売上 / 事業経費(未記帳月は経費 null) */
+  biz: CompareSide;
+  /** 個人 = MF 個人収入 / 生活費 */
+  personal: CompareSide;
+}
+export interface CompareTotal {
+  /** データがあった月数 */
+  months: number;
+  income: number;
+  expense: number;
+  balance: number;
+  monthlyAvg: { income: number; expense: number; balance: number };
+  annualized: { income: number; expense: number; balance: number };
+}
+export interface Comparison {
+  rows: CompareRow[];
+  biz: CompareTotal;
+  personal: CompareTotal;
+}
+
+export interface OwnerRow {
+  month: string;
+  self: OwnerMonth;
+  spouse: OwnerMonth;
+  unset: OwnerMonth;
+}
+export interface OwnerTotal {
+  income: number;
+  expense: number;
+  monthlyAvg: { income: number; expense: number };
+  annualized: { income: number; expense: number };
+  /** 個人収入全体に占める収入の割合(1=100%) */
+  incomeShare: number;
+}
+export interface ByOwner {
+  rows: OwnerRow[];
+  totals: Record<OwnerKey, OwnerTotal>;
+  /** 名義が未設定の保有金融機関（設定画面で割り当てると解消する） */
+  unmappedInstitutions: string[];
+  /** 保有金融機関が取り込まれていない明細数（旧取込。MFの再取込で埋まる） */
+  noInstitutionCount: number;
 }
 
 export function balanceMonth(data: Dataset, m: string): BalanceMonth {
@@ -581,6 +636,89 @@ export function livingCostByBig(data: Dataset, months: string[]): LivingCostRow[
     .sort((a, b) => b.total - a.total);
 }
 
+function compareTotal(sides: CompareSide[]): CompareTotal {
+  const have = sides.filter((s) => s.income !== null || s.expense !== null);
+  const n = have.length;
+  const income = sum(have.map((s) => s.income ?? 0));
+  const expense = sum(have.map((s) => s.expense ?? 0));
+  const balance = income - expense;
+  const avg = (v: number) => (n ? v / n : 0);
+  const monthlyAvg = { income: avg(income), expense: avg(expense), balance: avg(balance) };
+  return {
+    months: n,
+    income,
+    expense,
+    balance,
+    monthlyAvg,
+    annualized: { income: monthlyAvg.income * 12, expense: monthlyAvg.expense * 12, balance: monthlyAvg.balance * 12 },
+  };
+}
+
+/** 事業(freee) と 個人(MF) を月ごとに並べる。月は両方の和集合 */
+export function comparison(data: Dataset, personalMonths: string[]): Comparison {
+  const months = Array.from(new Set([...data.months, ...personalMonths])).sort();
+  const rows: CompareRow[] = months.map((m) => {
+    const i = data.months.indexOf(m);
+    const unrecorded = data.unrecordedExpMonths.includes(m);
+    const rev = i >= 0 ? data.biz.revenue[i] : null;
+    const exp = i >= 0 && !unrecorded ? bizExpTotal(data, i) : null;
+    const biz: CompareSide = {
+      income: rev,
+      expense: exp,
+      balance: rev !== null && exp !== null ? rev - exp : null,
+    };
+    const p = data.personal[m];
+    const pin = p ? sum(Object.values(p.income)) : null;
+    const pex = p ? sum(Object.values(p.expense)) : null;
+    const personal: CompareSide = {
+      income: pin,
+      expense: pex,
+      balance: pin !== null && pex !== null ? pin - pex : null,
+    };
+    return { month: m, biz, personal };
+  });
+  return {
+    rows,
+    biz: compareTotal(rows.map((r) => r.biz)),
+    personal: compareTotal(rows.map((r) => r.personal)),
+  };
+}
+
+const OWNER_KEYS: OwnerKey[] = ['self', 'spouse', 'unset'];
+
+/** 個人分を名義別に並べる。名義の根拠は保有金融機関→名義の設定・ルール・手動編集 */
+export function byOwner(data: Dataset, months: string[]): ByOwner {
+  const zero = (): OwnerMonth => ({ income: 0, expense: 0 });
+  const rows: OwnerRow[] = months
+    .filter((m) => data.personalByOwner[m])
+    .map((m) => {
+      const o = data.personalByOwner[m];
+      return { month: m, self: o.self ?? zero(), spouse: o.spouse ?? zero(), unset: o.unset ?? zero() };
+    });
+  const n = rows.length;
+  const grandIncome = sum(rows.map((r) => r.self.income + r.spouse.income + r.unset.income));
+  const totals = {} as Record<OwnerKey, OwnerTotal>;
+  for (const k of OWNER_KEYS) {
+    const income = sum(rows.map((r) => r[k].income));
+    const expense = sum(rows.map((r) => r[k].expense));
+    const monthlyAvg = { income: n ? income / n : 0, expense: n ? expense / n : 0 };
+    totals[k] = {
+      income,
+      expense,
+      monthlyAvg,
+      annualized: { income: monthlyAvg.income * 12, expense: monthlyAvg.expense * 12 },
+      incomeShare: grandIncome > 0 ? income / grandIncome : 0,
+    };
+  }
+  const unmapped = new Set<string>();
+  let noInst = 0;
+  for (const t of data.mfTx) {
+    if (!t.inst) noInst++;
+    else if (!data.institutionOwners[t.inst]) unmapped.add(t.inst);
+  }
+  return { rows, totals, unmappedInstitutions: Array.from(unmapped).sort(), noInstitutionCount: noInst };
+}
+
 export function household(data: Dataset): HouseholdData {
   const months = Object.keys(data.personal).sort();
   let explainability: HouseholdData['explainability'] = null;
@@ -600,6 +738,8 @@ export function household(data: Dataset): HouseholdData {
     balance,
     totals: balanceTotals(balance),
     livingCost: livingCostByBig(data, months),
+    comparison: comparison(data, months),
+    byOwner: byOwner(data, months),
   };
 }
 
