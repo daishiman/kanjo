@@ -706,11 +706,17 @@ function ReportDetail({
           あと何ヶ月分のデータで出せるかを示します。用語: <Term id="contribution" /> / <Term id="sigmaBand" />{' '}
           / <Term id="movingAvg" /> / <Term id="pareto" />
         </p>
-        <div className="report-charts">
-          {b.charts.map((ch) => (
-            <ReportChartView key={ch.id} chart={ch} caption={linkFigures(ch.caption)} />
-          ))}
-        </div>
+        {b.charts.length === 0 ? (
+          <p className="sub">
+            この版は図表が固定される前(第2版以前の形式)に届いたため図はありません。「改訂版を作る」で作り直すと8枚の図が付きます。
+          </p>
+        ) : (
+          <div className="report-charts">
+            {b.charts.map((ch) => (
+              <ReportChartView key={ch.id} chart={ch} caption={linkFigures(ch.caption)} />
+            ))}
+          </div>
+        )}
       </section>
 
       {b.followUp && (

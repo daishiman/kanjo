@@ -527,15 +527,19 @@ input.num-input {
 
 .segment {
   display: inline-flex;
+  max-width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto; /* 狭い幅では群ごと横スクロール。ラベルを語の途中で折り返さない */
+  overflow-y: hidden;
 }
 .segment button {
   border: none;
   border-radius: 0;
   min-height: 30px;
   padding: 5px 14px;
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 .segment button.on {
   background: var(--biz);

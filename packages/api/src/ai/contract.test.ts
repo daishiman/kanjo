@@ -116,6 +116,30 @@ describe('AI分析レポートの契約', () => {
     expect(r.missing).toEqual(['split']);
   });
 
+  it('任意の文字列欄(note / title / gap / notes)は null でも受け付ける(ローカル検査と同じ扱い)', () => {
+    const v = validInput();
+    const input = {
+      ...v,
+      title: null,
+      model: null,
+      keyFindings: { ...v.keyFindings, notes: { quickWins: v.keyFindings.notes.quickWins, wasted: null } },
+      sections: v.sections.map((s) => ({
+        ...s,
+        title: null,
+        gap: null,
+        items: s.items.map((it) => ({ ...it, note: null, priority: null })),
+      })),
+    };
+    const parsed = reportInputSchema.safeParse(input);
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) throw new Error('expected ok');
+    const r = normalizeReport(parsed.data, PERIOD, chartsWith(['composition']));
+    expect(r.ok).toBe(true);
+    if (!r.ok) throw new Error('expected ok');
+    expect(r.body.sections[0].items[0].note).toBe('');
+    expect(r.body.keyFindings.notes.wasted).toBe('');
+  });
+
   it('短すぎる本文・3段のない要点はスキーマで弾く(要望23)', () => {
     expect(reportInputSchema.safeParse({ ...validInput(), summary: '短い' }).success).toBe(false);
     expect(

@@ -29,7 +29,7 @@ const textField = (max: number) => z.string().max(max);
 const itemSchema = z.object({
   label: textField(200).min(1),
   amount: z.number().int().safe().nullable().optional(),
-  note: textField(1000).optional(),
+  note: textField(1000).nullable().optional(),
   priority: z.enum(['high', 'mid', 'low']).nullable().optional(),
 });
 
@@ -79,7 +79,7 @@ export const TEXT_LIMITS = {
 
 const sectionSchema = z.object({
   id: z.enum(SECTION_IDS),
-  title: textField(120).optional(),
+  title: textField(120).nullable().optional(),
   body: textField(TEXT_LIMITS.sectionBody.max).min(TEXT_LIMITS.sectionBody.min),
   items: z.array(itemSchema).max(60).optional(),
   gap: textField(TEXT_LIMITS.gap.max).nullable().optional(),
@@ -116,9 +116,9 @@ const keyFindingsSchema = z.object({
   /** 該当なしの分類には、なぜ無いかを書く(空のまま黙って省くのを禁止) */
   notes: z
     .object({
-      improvements: textField(400).optional(),
-      wasted: textField(400).optional(),
-      quickWins: textField(400).optional(),
+      improvements: textField(400).nullable().optional(),
+      wasted: textField(400).nullable().optional(),
+      quickWins: textField(400).nullable().optional(),
     })
     .optional(),
 });
@@ -131,7 +131,7 @@ const followUpSchema = z.object({
 export const reportInputSchema = z.object({
   generatedBy: textField(60).min(1),
   model: textField(120).nullable().optional(),
-  title: textField(120).optional(),
+  title: textField(120).nullable().optional(),
   summary: textField(TEXT_LIMITS.summary.max).min(TEXT_LIMITS.summary.min),
   keyFindings: keyFindingsSchema,
   sections: z
