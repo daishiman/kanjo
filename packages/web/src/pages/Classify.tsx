@@ -1,10 +1,26 @@
 /**
- * P5 公私仕分け: 明細を事業/個人に確定する。
+ * P5 公私仕分け: 明細の事業/個人・科目(大項目/中項目)・名義(本人/妻)を確定する。
  * 行内3ボタン(個人/事業/自動)は楽観的更新+失敗時ロールバック。キーボード J/K移動・B/P/A判定。
+ * 編集は取込値(MFのCSV)とは別枠に保存され、再取込しても残る。ルール・名義・編集一覧の管理は設定画面。
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type FormEvent, useCallback, useEffect, useState } from 'react';
-import { type RuleRow, type TransactionsResponse, type TxRow, api } from '../api.js';
+import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  type Candidates,
+  type Cls,
+  type Owner,
+  SCOPE_LABEL,
+  type TransactionsResponse,
+  type TxRow,
+  api,
+  ownerLabel,
+} from '../api.js';
+import {
+  CategoryInputs,
+  OwnerSelect,
+  useInvalidateClassification,
+} from '../components/ClassificationSettings.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { yen, yenS } from '../format.js';
 
@@ -12,16 +28,19 @@ export function ClassifyPage() {
   const qc = useQueryClient();
   const [month, setMonth] = useState<string | null>(null);
   const [cls, setCls] = useState('');
+  const [owner, setOwner] = useState('');
   const [qtext, setQtext] = useState('');
   const [manualOnly, setManualOnly] = useState(false);
   const [focusIdx, setFocusIdx] = useState(0);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const params = new URLSearchParams();
   if (month) params.set('month', month);
   if (cls) params.set('cls', cls);
+  if (owner) params.set('owner', owner);
   if (qtext) params.set('q', qtext);
   if (manualOnly) params.set('manual', '1');
-  const key = ['transactions', month, cls, qtext, manualOnly] as const;
+  const key = ['transactions', month, cls, owner, qtext, manualOnly] as const;
 
   const q = useQuery({
     queryKey: key,
@@ -29,7 +48,7 @@ export function ClassifyPage() {
   });
 
   const setClass = useMutation({
-    mutationFn: ({ txId, next }: { txId: string; next: 'biz' | 'per' | null }) =>
+    mutationFn: ({ txId, next }: { txId: string; next: Cls | null }) =>
       api(`/transactions/${encodeURIComponent(txId)}/class`, {
         method: 'PUT',
         body: JSON.stringify({ cls: next }),
@@ -54,6 +73,7 @@ export function ClassifyPage() {
     },
     onSettled: () => {
       void qc.invalidateQueries({ queryKey: ['transactions'] });
+      void qc.invalidateQueries({ queryKey: ['classification'] });
       void qc.invalidateQueries({ queryKey: ['summary'] });
       void qc.invalidateQueries({ queryKey: ['household'] });
     },
@@ -90,7 +110,7 @@ export function ClassifyPage() {
     return (
       <>
         <PageHeader route="classify" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const d = q.data;
@@ -107,12 +127,36 @@ export function ClassifyPage() {
         事業立替 <strong className="num">{yen(s.bizExpense)}</strong>{' '}
         は「freeeへ記帳すべき金額」。税務上の正はfreeeの記帳です。
       </div>
+      {s.conflictCount > 0 && (
+        <div className="notice">
+          再取込で取込値が変わった編集済み明細が {s.conflictCount}{' '}
+          件あります(「編集済み」の行に元の値を表示)。
+          <Link to="/settings">設定の「手動で編集した明細」</Link>で見直せます。
+        </div>
+      )}
+      {s.noInstitutionCount > 0 && (
+        <div className="notice info">
+          口座(保有金融機関)が記録されていない明細が {s.noInstitutionCount}{' '}
+          件あります。MF明細を取り込み直すと口座が入り、名義の自動判定が効きます。
+        </div>
+      )}
 
       <div className="kpis">
-        <KpiCard label="明細数" value={String(s.count)} />
+        <KpiCard
+          label="明細数"
+          value={String(s.count)}
+          note={s.editedCount ? `うち手動編集 ${s.editedCount}件` : undefined}
+        />
         <KpiCard label="総収入" value={yen(s.totalIncome)} />
         <KpiCard label="事業入金" value={yen(s.bizIncome)} tone="biz" />
-        <KpiCard label="個人収入" value={yen(s.personalIncome)} tone="per" />
+        <KpiCard
+          label="個人収入"
+          value={yen(s.personalIncome)}
+          tone="per"
+          note={`本人 ${yen(s.incomeByOwner.self)} / 妻 ${yen(s.incomeByOwner.spouse)}${
+            s.incomeByOwner.unset ? ` / 未設定 ${yen(s.incomeByOwner.unset)}` : ''
+          }`}
+        />
         <KpiCard label="総支出" value={yen(s.totalExpense)} />
         <KpiCard label="事業立替" value={yen(s.bizExpense)} tone="biz" />
         <KpiCard label="個人支出" value={yen(s.personalExpense)} tone="per" />
@@ -134,28 +178,39 @@ export function ClassifyPage() {
               ['per', '個人'],
             ] as const
           ).map(([k, label]) => (
-            <button
-              key={k}
-              type="button"
-              className={cls === k && !manualOnly ? 'on' : ''}
-              onClick={() => {
-                setCls(k);
-                setManualOnly(false);
-              }}
-            >
+            <button key={k} type="button" className={cls === k ? 'on' : ''} onClick={() => setCls(k)}>
               {label}
             </button>
           ))}
+        </span>
+        <span className="segment">
+          {(
+            [
+              ['', '名義: すべて'],
+              ['self', '本人'],
+              ['spouse', '妻'],
+              ['unset', '未設定'],
+            ] as const
+          ).map(([k, label]) => (
+            <button key={k} type="button" className={owner === k ? 'on' : ''} onClick={() => setOwner(k)}>
+              {label}
+            </button>
+          ))}
+        </span>
+        <span className="segment">
           <button type="button" className={manualOnly ? 'on' : ''} onClick={() => setManualOnly((v) => !v)}>
-            手動のみ
+            編集済みのみ
           </button>
         </span>
         <input
           type="text"
-          placeholder="キーワード検索"
+          placeholder="キーワード検索(内容・科目・口座)"
           value={qtext}
           onChange={(e) => setQtext(e.target.value)}
         />
+        <Link to="/settings" className="btn">
+          ルール・名義の設定
+        </Link>
       </div>
 
       <div className="card scroll-x">
@@ -164,10 +219,11 @@ export function ClassifyPage() {
             <tr>
               <th>日付</th>
               <th>内容</th>
+              <th>口座</th>
               <th>大項目/中項目</th>
               <th>金額</th>
               <th>判定</th>
-              <th>根拠</th>
+              <th>名義</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -177,13 +233,17 @@ export function ClassifyPage() {
                 key={t.id}
                 t={t}
                 focused={i === focusIdx}
+                editing={editingId === t.id}
+                candidates={d.candidates}
                 onFocus={() => setFocusIdx(i)}
                 onSet={(next) => setClass.mutate({ txId: t.id, next })}
+                onToggleEdit={() => setEditingId((cur) => (cur === t.id ? null : t.id))}
+                onSaved={() => setEditingId(null)}
               />
             ))}
             {!rows.length && (
               <tr>
-                <td colSpan={7} className="empty">
+                <td colSpan={8} className="empty">
                   該当する明細がありません
                 </td>
               </tr>
@@ -191,8 +251,6 @@ export function ClassifyPage() {
           </tbody>
         </table>
       </div>
-
-      <RulesCard />
     </>
   );
 }
@@ -200,171 +258,237 @@ export function ClassifyPage() {
 function TxLine({
   t,
   focused,
+  editing,
+  candidates,
   onFocus,
   onSet,
+  onToggleEdit,
+  onSaved,
 }: {
   t: TxRow;
   focused: boolean;
+  editing: boolean;
+  candidates: Candidates;
   onFocus: () => void;
-  onSet: (next: 'biz' | 'per' | null) => void;
+  onSet: (next: Cls | null) => void;
+  onToggleEdit: () => void;
+  onSaved: () => void;
 }) {
+  const catEdited = t.catSrc === '手動';
   return (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: キーボード操作はページ全体のJ/K/B/P/Aハンドラで提供
-    <tr className={focused ? 'kbd-focus' : ''} onClick={onFocus}>
-      <td className="num">{t.date}</td>
-      <td style={{ maxWidth: 320, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {t.description}
-      </td>
-      <td>
-        {t.big}
-        {t.mid ? ` / ${t.mid}` : ''}
-      </td>
-      <td className={`num ${t.amount < 0 ? '' : ''}`}>{yenS(t.amount)}</td>
-      <td>
-        <span className={`pill ${t.cls}`}>{t.cls === 'biz' ? '事業' : '個人'}</span>
-      </td>
-      <td>
-        <span className="pill neutral">{t.src}</span>
-      </td>
-      <td style={{ whiteSpace: 'nowrap' }}>
-        <button
-          type="button"
-          className={`mini ${t.cls === 'per' && t.src === '手動' ? 'on-per' : ''}`}
-          onClick={() => onSet('per')}
-        >
-          個人
-        </button>{' '}
-        <button
-          type="button"
-          className={`mini ${t.cls === 'biz' && t.src === '手動' ? 'on-biz' : ''}`}
-          onClick={() => onSet('biz')}
-        >
-          事業
-        </button>{' '}
-        <button type="button" className="mini" disabled={t.src !== '手動'} onClick={() => onSet(null)}>
-          自動
-        </button>
-      </td>
-    </tr>
+    <>
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: キーボード操作はページ全体のJ/K/B/P/Aハンドラで提供 */}
+      <tr className={focused ? 'kbd-focus' : ''} onClick={onFocus}>
+        <td className="num">{t.date}</td>
+        <td style={{ maxWidth: 320, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {t.description}
+        </td>
+        <td style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {t.institution ?? '—'}
+        </td>
+        <td>
+          {t.big}
+          {t.mid ? ` / ${t.mid}` : ''}
+          {catEdited && (
+            <>
+              {' '}
+              <span className="pill edited">{t.conflict ? '編集済み・取込値が変更' : '編集済み'}</span>
+              {t.scopeMismatch && (
+                <span
+                  className="pill warn"
+                  title="公私を変えたため、科目が今の系統(事業=freee科目 / 個人=MF内訳)の候補にありません"
+                >
+                  科目が公私と不一致
+                </span>
+              )}
+              <span className="orig">
+                取込値: {t.csvBig}
+                {t.csvMid ? ` / ${t.csvMid}` : ''}
+              </span>
+            </>
+          )}
+          {t.catSrc === 'ルール' && (
+            <>
+              {' '}
+              <span className="pill neutral">ルール</span>
+              <span className="orig">
+                取込値: {t.csvBig}
+                {t.csvMid ? ` / ${t.csvMid}` : ''}
+              </span>
+            </>
+          )}
+        </td>
+        <td className="num">{yenS(t.amount)}</td>
+        <td>
+          <span className={`pill ${t.cls}`}>{t.cls === 'biz' ? '事業' : '個人'}</span>{' '}
+          <span className="pill neutral">{t.src}</span>
+        </td>
+        <td>
+          {t.owner ? ownerLabel(t.owner) : <span className="pill neutral">未設定</span>}
+          {t.owner && (
+            <span className="orig" style={{ textDecoration: 'none' }}>
+              {t.ownerSrc}
+            </span>
+          )}
+        </td>
+        <td style={{ whiteSpace: 'nowrap' }}>
+          <button
+            type="button"
+            className={`mini ${t.cls === 'per' && t.src === '手動' ? 'on-per' : ''}`}
+            onClick={() => onSet('per')}
+          >
+            個人
+          </button>{' '}
+          <button
+            type="button"
+            className={`mini ${t.cls === 'biz' && t.src === '手動' ? 'on-biz' : ''}`}
+            onClick={() => onSet('biz')}
+          >
+            事業
+          </button>{' '}
+          <button type="button" className="mini" disabled={t.src !== '手動'} onClick={() => onSet(null)}>
+            自動
+          </button>{' '}
+          <button type="button" className={`mini ${editing ? 'on-biz' : ''}`} onClick={onToggleEdit}>
+            編集
+          </button>
+        </td>
+      </tr>
+      {editing && <EditorRow t={t} candidates={candidates} onSaved={onSaved} />}
+    </>
   );
 }
 
-function RulesCard() {
-  const qc = useQueryClient();
-  const q = useQuery({
-    queryKey: ['rules'],
-    queryFn: () => api<{ rules: RuleRow[]; usingDefaults: boolean }>('/rules'),
-  });
-  const [keyword, setKeyword] = useState('');
-  const [ruleCls, setRuleCls] = useState<'biz' | 'per'>('biz');
-  const [top, setTop] = useState(false);
+/** 科目・名義・公私の編集行。保存 / 取込値に戻す / 同じ内容をルール化 */
+function EditorRow({ t, candidates, onSaved }: { t: TxRow; candidates: Candidates; onSaved: () => void }) {
+  const invalidate = useInvalidateClassification();
+  const [big, setBig] = useState(t.edit?.big ?? '');
+  const [mid, setMid] = useState(t.edit?.mid ?? '');
+  const [own, setOwn] = useState<Owner | null>(t.edit?.owner ?? null);
+  const [c, setC] = useState<Cls | null>(t.edit?.cls ?? null);
+  const [keyword, setKeyword] = useState(t.description);
+  const [ruleDone, setRuleDone] = useState(false);
 
-  const invalidate = () => {
-    void qc.invalidateQueries({ queryKey: ['rules'] });
-    void qc.invalidateQueries({ queryKey: ['transactions'] });
-    void qc.invalidateQueries({ queryKey: ['summary'] });
-  };
-  const add = useMutation({
-    mutationFn: () => api('/rules', { method: 'POST', body: JSON.stringify({ keyword, cls: ruleCls, top }) }),
+  const save = useMutation({
+    mutationFn: (body: Record<string, unknown>) =>
+      api(`/transactions/${encodeURIComponent(t.id)}/edit`, { method: 'PUT', body: JSON.stringify(body) }),
     onSuccess: () => {
-      setKeyword('');
+      invalidate();
+      onSaved();
+    },
+  });
+  const rule = useMutation({
+    mutationFn: () =>
+      api('/rules', {
+        method: 'POST',
+        body: JSON.stringify({ keyword, cls: c, big: big || null, mid: mid || null, owner: own, top: true }),
+      }),
+    onSuccess: () => {
+      setRuleDone(true);
       invalidate();
     },
   });
-  const del = useMutation({
-    mutationFn: (id: number) => api(`/rules/${id}`, { method: 'DELETE' }),
-    onSuccess: invalidate,
-  });
-  const move = useMutation({
-    mutationFn: (order: number[]) => api('/rules', { method: 'PATCH', body: JSON.stringify({ order }) }),
-    onSuccess: invalidate,
-  });
-
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    if (keyword.trim()) add.mutate();
-  };
-
-  const rules = q.data?.rules ?? [];
-  const reorder = (i: number, dir: -1 | 1) => {
-    const order = rules.map((r) => r.id);
-    const j = i + dir;
-    if (j < 0 || j >= order.length) return;
-    [order[i], order[j]] = [order[j], order[i]];
-    move.mutate(order);
-  };
+  /** 科目候補の系統 = 編集後の公私(未指定なら現在の有効値) */
+  const scope: Cls = c ?? t.cls;
+  const dirty =
+    big !== (t.edit?.big ?? '') ||
+    mid !== (t.edit?.mid ?? '') ||
+    own !== (t.edit?.owner ?? null) ||
+    c !== (t.edit?.cls ?? null);
+  const ruleAttr = !!(c || big || mid || own);
 
   return (
-    <div className="card">
-      <h2>仕分けルール(上から先勝ちで評価)</h2>
-      {q.data?.usingDefaults && (
-        <p className="sub">現在はHTML版の既定ルールを使用中。追加すると編集可能になります。</p>
-      )}
-      <form onSubmit={submit} className="toolbar">
-        <input
-          type="text"
-          placeholder="キーワード(内容/大項目/中項目に部分一致)"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          style={{ width: 280 }}
-        />
-        <select value={ruleCls} onChange={(e) => setRuleCls(e.target.value as 'biz' | 'per')}>
-          <option value="biz">事業</option>
-          <option value="per">個人</option>
-        </select>
-        <label style={{ fontSize: 12 }}>
-          <input type="checkbox" checked={top} onChange={(e) => setTop(e.target.checked)} /> 最優先に追加
-        </label>
-        <button type="submit" className="primary" disabled={!keyword.trim() || add.isPending}>
-          追加
-        </button>
-      </form>
-      <table className="data">
-        <thead>
-          <tr>
-            <th>優先</th>
-            <th>キーワード</th>
-            <th>判定</th>
-            <th>影響件数</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rules.map((r, i) => (
-            <tr key={r.id}>
-              <td className="num">{i + 1}</td>
-              <td>{r.keyword}</td>
-              <td>
-                <span className={`pill ${r.cls}`}>{r.cls === 'biz' ? '事業' : '個人'}</span>
-              </td>
-              <td className="num">{r.hits}件</td>
-              <td style={{ whiteSpace: 'nowrap' }}>
-                <button type="button" className="mini" onClick={() => reorder(i, -1)} disabled={i === 0}>
-                  ↑
-                </button>{' '}
-                <button
-                  type="button"
-                  className="mini"
-                  onClick={() => reorder(i, 1)}
-                  disabled={i === rules.length - 1}
-                >
-                  ↓
-                </button>{' '}
-                <button type="button" className="mini danger-btn" onClick={() => del.mutate(r.id)}>
-                  削除
-                </button>
-              </td>
-            </tr>
-          ))}
-          {!rules.length && !q.data?.usingDefaults && (
-            <tr>
-              <td colSpan={5} className="empty">
-                ルールがありません
-              </td>
-            </tr>
+    <tr className="editor">
+      <td colSpan={8}>
+        <div className="editor-form">
+          <span className="sub" style={{ margin: 0 }}>
+            取込値: {t.csvBig}
+            {t.csvMid ? ` / ${t.csvMid}` : ''}
+            {t.institution ? `・口座: ${t.institution}` : ''}
+          </span>
+          <label>
+            公私
+            <select
+              value={c ?? ''}
+              onChange={(e) => {
+                const next = (e.target.value || null) as Cls | null;
+                setC(next);
+                // 系統(事業/個人)が変わると候補も変わるので科目は選び直す
+                if ((next ?? t.cls) !== scope) {
+                  setBig('');
+                  setMid('');
+                }
+              }}
+            >
+              <option value="">
+                {t.cls === 'biz' ? '事業' : '個人'}のまま({t.src})
+              </option>
+              <option value="biz">事業</option>
+              <option value="per">個人</option>
+            </select>
+          </label>
+          <div className="field">
+            <span className="sub" style={{ margin: 0 }}>
+              {SCOPE_LABEL[scope]}(空欄=取込値/ルールのまま)
+            </span>
+            <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
+              <CategoryInputs
+                candidates={candidates}
+                scope={scope}
+                big={big}
+                mid={mid}
+                onChange={(v) => {
+                  setBig(v.big);
+                  setMid(v.mid);
+                }}
+              />
+            </span>
+          </div>
+          <div className="field">
+            <span className="sub" style={{ margin: 0 }}>
+              名義
+            </span>
+            <OwnerSelect value={own} onChange={setOwn} />
+          </div>
+          <button
+            type="button"
+            className="primary"
+            disabled={!dirty || save.isPending}
+            onClick={() => save.mutate({ big: big || null, mid: mid || null, owner: own, cls: c })}
+          >
+            保存
+          </button>
+          <button
+            type="button"
+            disabled={!t.edited || save.isPending}
+            onClick={() => save.mutate({ reset: true })}
+          >
+            取込値に戻す
+          </button>
+          <span style={{ borderLeft: '1px solid var(--line)', height: 24 }} />
+          <label>
+            同じ内容をルールにする(キーワード)
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              style={{ width: 220 }}
+            />
+          </label>
+          <button
+            type="button"
+            disabled={!keyword.trim() || !ruleAttr || rule.isPending || ruleDone}
+            onClick={() => rule.mutate()}
+          >
+            {ruleDone ? 'ルールを追加しました' : 'ルール化(最優先)'}
+          </button>
+          {(save.isError || rule.isError) && (
+            <span className="notice" style={{ margin: 0 }}>
+              {((save.error ?? rule.error) as Error).message}
+            </span>
           )}
-        </tbody>
-      </table>
-    </div>
+        </div>
+      </td>
+    </tr>
   );
 }

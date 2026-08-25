@@ -32,7 +32,7 @@ export function DiagnosisPage() {
     return (
       <>
         <PageHeader route="diagnosis" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const d = q.data;

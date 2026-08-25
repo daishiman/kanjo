@@ -6,6 +6,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { AUTH_EVENT, type ImportHistoryRow, type ImportUnitResult, api } from '../api.js';
 import { PageHeader, PageState } from '../components/Page.js';
+import { dateTime } from '../format.js';
+
+const KIND_LABEL: Record<string, string> = { mf: 'MF明細', freee: 'freee仕訳', json: '統合JSON' };
 
 export function ImportPage() {
   const qc = useQueryClient();
@@ -106,7 +109,12 @@ export function ImportPage() {
           </button>
         </div>
       )}
-      {upload.isError && <div className="notice">{(upload.error as Error).message}</div>}
+      {upload.isError && (
+        <div className="notice" role="alert">
+          取込を実行できませんでした: {(upload.error as Error).message}
+          。選択したファイルは残っています。通信状態を確認して、もう一度「取込を実行」を押してください。
+        </div>
+      )}
 
       {results && (
         <div className="card" style={{ marginTop: 12 }}>
@@ -126,15 +134,7 @@ export function ImportPage() {
               {results.map((r) => (
                 <tr key={`${r.filename}-${r.kind}`}>
                   <td>{r.filename}</td>
-                  <td>
-                    {r.kind === 'mf'
-                      ? 'MF明細'
-                      : r.kind === 'freee'
-                        ? 'freee仕訳'
-                        : r.kind === 'json'
-                          ? '統合JSON'
-                          : '不明'}
-                  </td>
+                  <td>{KIND_LABEL[r.kind] ?? '不明'}</td>
                   <td>{r.months.join(', ') || '—'}</td>
                   <td className="num">{r.rows}</td>
                   <td className="num">{r.skipped}</td>
@@ -146,15 +146,26 @@ export function ImportPage() {
                         {r.duplicateIds ? ` (ID重複${r.duplicateIds}件)` : ''}
                       </span>
                     ) : (
-                      <span className="pill alert" title={r.reason}>
-                        失敗: {r.reason}
-                      </span>
+                      <>
+                        <span className="pill alert">失敗</span>
+                        <div
+                          className="sub"
+                          style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                        >
+                          {r.reason}
+                        </div>
+                      </>
                     )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {results.some((r) => r.status === 'error') && (
+            <p className="sub">
+              失敗したファイルの内容は反映されていません(成功したファイルは反映済み)。理由に沿ってファイルを出力し直し、もう一度取り込んでください。
+            </p>
+          )}
         </div>
       )}
 
@@ -163,7 +174,7 @@ export function ImportPage() {
         {history.isLoading ? (
           <PageState status="loading" />
         ) : history.isError ? (
-          <PageState status="error" message="取込履歴の読み込みに失敗しました。" />
+          <PageState status="error" error={history.error} />
         ) : (
           <div className="scroll-x">
             <table className="data">
@@ -180,18 +191,32 @@ export function ImportPage() {
               <tbody>
                 {(history.data?.imports ?? []).map((r) => (
                   <tr key={r.id}>
-                    <td>{r.createdAt ?? ''}</td>
+                    <td className="num">{dateTime(r.createdAt)}</td>
                     <td>{r.filename}</td>
-                    <td>{r.kind ?? '—'}</td>
-                    <td>{r.months.join(', ')}</td>
-                    <td className="num">{r.rows ?? ''}</td>
-                    <td>{r.status}</td>
+                    <td>{(r.kind && KIND_LABEL[r.kind]) ?? '不明'}</td>
+                    <td>{r.months.join(', ') || '—'}</td>
+                    <td className="num">{r.rows ?? '—'}</td>
+                    <td>
+                      {r.status === 'ok' ? (
+                        <span className="pill calm">成功</span>
+                      ) : (
+                        <>
+                          <span className="pill alert">失敗</span>
+                          <div
+                            className="sub"
+                            style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                          >
+                            {(r.status ?? '').replace(/^error:\s*/, '') || '理由不明'}
+                          </div>
+                        </>
+                      )}
+                    </td>
                   </tr>
                 ))}
                 {!history.data?.imports.length && (
                   <tr>
                     <td colSpan={6} className="empty">
-                      取込履歴はまだありません
+                      取込履歴はまだありません。上の枠にファイルを入れると、ここに結果が残ります。
                     </td>
                   </tr>
                 )}

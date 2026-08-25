@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from './components/Page.js';
@@ -8,6 +9,7 @@ const PAGE_SOURCES = import.meta.glob('./pages/*.tsx', {
   query: '?raw',
   import: 'default',
 }) as Record<string, string>;
+const STYLE_SOURCE = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
 const ROUTED_PAGE_SOURCES = Object.entries(PAGE_SOURCES)
   .filter(([path]) => !path.endsWith('/Login.tsx'))
   .map(([, source]) => source);
@@ -67,5 +69,16 @@ describe('共通表示契約', () => {
     expect(annual).toContain('+150.0%');
     expect(annual).toContain('scope="col"');
     expect(annual).toContain('scope="row"');
+  });
+});
+
+describe('表と横スクロール容器の契約', () => {
+  it('横スクロール容器内の表見出しはページヘッダー分のオフセットを持たない', () => {
+    // overflow を持つ要素が sticky の基準になるため、top を 53px にすると見出し行が先頭行を隠す
+    expect(STYLE_SOURCE).toMatch(/\.scroll-x table\.data thead th\s*\{[^}]*top:\s*0;/);
+  });
+
+  it('サイドバーのグループ見出しは区切り線を持つ', () => {
+    expect(STYLE_SOURCE).toMatch(/\.nav-group\s*\{[^}]*border-top:\s*1px solid var\(--line\)/);
   });
 });

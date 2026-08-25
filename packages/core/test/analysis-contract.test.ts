@@ -74,7 +74,7 @@ describe('分類と診断', () => {
     expect(result.bizPersonal['2026-02']).toEqual({ income: 100000, expense: 10000 });
     expect(result.personal['2026-02'].expense).toEqual({ 生活費: 30000 });
 
-    const overridden = applyClassification(transactions, rules, { 'biz-in': 'per' });
+    const overridden = applyClassification(transactions, rules, { 'biz-in': { cls: 'per' } });
     expect(overridden.bizPersonal['2026-02'].income).toBe(0);
   });
 

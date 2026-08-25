@@ -22,7 +22,7 @@ export function MatrixPage() {
     return (
       <>
         <PageHeader route="matrix" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const m = q.data;

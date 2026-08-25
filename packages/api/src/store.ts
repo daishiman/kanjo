@@ -12,6 +12,8 @@ import {
   type Dataset,
   type FreeeDeal,
   type MfTx,
+  type Rule,
+  type TxEdit,
   emptyDataset,
   recomputeClassification,
 } from '@kanjo/core';
@@ -23,10 +25,86 @@ export type Db = ReturnType<typeof drizzle>;
 
 export const getDb = (d1: D1Database): Db => drizzle(d1);
 
+const chunk = <T>(arr: T[], n: number): T[][] => {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+  return out;
+};
+
+/* ------------------------- 行 ⇔ 型 ------------------------- */
+
+export const ruleFromRow = (r: typeof s.rules.$inferSelect): Rule => ({
+  k: r.keyword,
+  cls: r.cls ?? null,
+  big: r.categoryMajor ?? null,
+  mid: r.categoryMid ?? null,
+  owner: r.owner ?? null,
+});
+
+export const editFromRow = (r: typeof s.txEdits.$inferSelect): TxEdit => ({
+  cls: r.cls ?? null,
+  big: r.categoryMajor ?? null,
+  mid: r.categoryMid ?? null,
+  owner: r.owner ?? null,
+  baseBig: r.baseMajor ?? null,
+  baseMid: r.baseMid ?? null,
+  note: r.note ?? null,
+  updatedAt: r.updatedAt ?? null,
+});
+
+/** 編集が空(全属性 null)なら行ごと消す */
+export const editIsEmpty = (e: TxEdit): boolean => !e.cls && !e.big && !e.mid && !e.owner;
+
+export async function upsertEdit(db: Db, userId: string, txId: string, e: TxEdit): Promise<void> {
+  await db.delete(s.txEdits).where(and(eq(s.txEdits.userId, userId), eq(s.txEdits.txId, txId)));
+  if (editIsEmpty(e)) return;
+  await db.insert(s.txEdits).values({
+    userId,
+    txId,
+    cls: e.cls ?? null,
+    categoryMajor: e.big ?? null,
+    categoryMid: e.mid ?? null,
+    owner: e.owner ?? null,
+    baseMajor: e.baseBig ?? null,
+    baseMid: e.baseMid ?? null,
+    note: e.note ?? null,
+    updatedAt: e.updatedAt ?? new Date().toISOString(),
+  });
+}
+
+export async function replaceEdits(db: Db, userId: string, edits: Record<string, TxEdit>): Promise<void> {
+  await db.delete(s.txEdits).where(eq(s.txEdits.userId, userId));
+  const rows = Object.entries(edits)
+    .filter(([, e]) => !editIsEmpty(e))
+    .map(([txId, e]) => ({
+      userId,
+      txId,
+      cls: e.cls ?? null,
+      categoryMajor: e.big ?? null,
+      categoryMid: e.mid ?? null,
+      owner: e.owner ?? null,
+      baseMajor: e.baseBig ?? null,
+      baseMid: e.baseMid ?? null,
+      note: e.note ?? null,
+      updatedAt: e.updatedAt ?? null,
+    }));
+  for (const grp of chunk(rows, 9)) await db.insert(s.txEdits).values(grp);
+}
+
+export async function replaceInstitutionOwners(
+  db: Db,
+  userId: string,
+  map: Record<string, 'self' | 'spouse'>,
+): Promise<void> {
+  await db.delete(s.institutionOwners).where(eq(s.institutionOwners.userId, userId));
+  const rows = Object.entries(map).map(([institution, owner]) => ({ userId, institution, owner }));
+  for (const grp of chunk(rows, 30)) await db.insert(s.institutionOwners).values(grp);
+}
+
 /* ------------------------- 読み出し ------------------------- */
 
 export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
-  const [aggRows, txRows, ruleRows, ovRows, budgetRows, cashRows, unrecRows] = await Promise.all([
+  const [aggRows, txRows, ruleRows, editRows, budgetRows, cashRows, unrecRows, instRows] = await Promise.all([
     db.select().from(s.monthlyAgg).where(eq(s.monthlyAgg.userId, userId)),
     db
       .select()
@@ -34,10 +112,11 @@ export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
       .where(eq(s.mfTransactions.userId, userId))
       .orderBy(asc(s.mfTransactions.month), asc(s.mfTransactions.date)),
     db.select().from(s.rules).where(eq(s.rules.userId, userId)).orderBy(asc(s.rules.sortOrder)),
-    db.select().from(s.overrides).where(eq(s.overrides.userId, userId)),
+    db.select().from(s.txEdits).where(eq(s.txEdits.userId, userId)),
     db.select().from(s.budgets).where(eq(s.budgets.userId, userId)),
     db.select().from(s.cashOverrides).where(eq(s.cashOverrides.userId, userId)),
     db.select().from(s.unrecordedMonths).where(eq(s.unrecordedMonths.userId, userId)),
+    db.select().from(s.institutionOwners).where(eq(s.institutionOwners.userId, userId)),
   ]);
 
   const data = emptyDataset();
@@ -98,11 +177,15 @@ export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
       a: r.amount,
       big: r.categoryMajor ?? '',
       mid: r.categoryMid ?? '',
+      inst: r.institution ?? undefined,
     }),
   );
-  data.rules = ruleRows.length ? ruleRows.map((r) => ({ k: r.keyword, cls: r.cls })) : [...DEFAULT_RULES];
-  ovRows.forEach((r) => {
-    data.overrides[r.txId] = r.cls;
+  data.rules = ruleRows.length ? ruleRows.map(ruleFromRow) : [...DEFAULT_RULES];
+  editRows.forEach((r) => {
+    data.edits[r.txId] = editFromRow(r);
+  });
+  instRows.forEach((r) => {
+    data.institutionOwners[r.institution] = r.owner;
   });
   budgetRows.forEach((r) => {
     if (r.monthlyAmount != null) data.budgets[r.account] = r.monthlyAmount;
@@ -118,12 +201,6 @@ export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
 }
 
 /* ------------------------- 集計キャッシュ再生成 ------------------------- */
-
-const chunk = <T>(arr: T[], n: number): T[][] => {
-  const out: T[][] = [];
-  for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
-  return out;
-};
 
 /** monthly_agg を Dataset から全再生成する(spec §7.3。取込/ルール/手動判定/正規化マップ変更時) */
 export async function saveAgg(db: Db, userId: string, data: Dataset): Promise<void> {
@@ -210,6 +287,7 @@ export async function replaceMfTxs(
     amount: t.a,
     categoryMajor: t.big,
     categoryMid: t.mid,
+    institution: t.inst ?? null,
     importId,
   }));
   // 月をまたいで同一tx_idが残っている場合(UNIQUE制約)に備え、先に既存の同一IDを消す
@@ -219,7 +297,7 @@ export async function replaceMfTxs(
       .delete(s.mfTransactions)
       .where(and(eq(s.mfTransactions.userId, userId), inArray(s.mfTransactions.txId, grp)));
   }
-  for (const grp of chunk(rows, 10)) await db.insert(s.mfTransactions).values(grp);
+  for (const grp of chunk(rows, 9)) await db.insert(s.mfTransactions).values(grp);
 }
 
 /** 科目正規化マップの取得(未設定行は既定値で補完済みのマイグレーションが入る) */

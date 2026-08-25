@@ -2,8 +2,8 @@
  * データセット操作（取込の洗い替え・月枠の確保・JSON入出力）。
  * HTML版 ensureMonth / importFreee / importMF / importJSON の挙動を忠実に移植。
  */
-import { applyClassification } from './classify.js';
-import type { Cls, Dataset, FreeeDeal, MfTx, Rule } from './types.js';
+import { applyClassification, overridesFromEdits } from './classify.js';
+import type { Cls, Dataset, FreeeDeal, MfTx, Owner, Rule, TxEdit } from './types.js';
 
 export function ensureMonth(data: Dataset, m: string): number {
   if (!data.months.includes(m)) {
@@ -65,10 +65,12 @@ export function applyMfTxs(data: Dataset, txs: MfTx[]): void {
 
 /** ルール・手動判定・明細の現状から personal / bizPersonal を再生成する */
 export function recomputeClassification(data: Dataset): void {
-  const r = applyClassification(data.mfTx, data.rules, data.overrides);
+  data.overrides = overridesFromEdits(data.edits);
+  const r = applyClassification(data.mfTx, data.rules, data.edits, data.institutionOwners);
   // mfTxが無い月（JSON復元のみの月）の集計は温存する
   data.personal = { ...data.personal, ...r.personal };
   data.bizPersonal = { ...data.bizPersonal, ...r.bizPersonal };
+  data.personalByOwner = { ...data.personalByOwner, ...r.personalByOwner };
 }
 
 /** HTML版互換の統合JSONを取り込む（初期移行用） */
@@ -82,12 +84,31 @@ export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
   if (obj.mfTx) data.mfTx = obj.mfTx as MfTx[];
   if (obj.rules) {
     // HTML版のルールは {k, cls}。古い形式 {keyword, cls} も許容
-    data.rules = (obj.rules as Array<{ k?: string; keyword?: string; cls: Cls }>).map((r) => ({
+    data.rules = (
+      obj.rules as Array<{
+        k?: string;
+        keyword?: string;
+        cls?: Cls | null;
+        big?: string | null;
+        mid?: string | null;
+        owner?: Owner | null;
+      }>
+    ).map((r) => ({
       k: r.k ?? r.keyword ?? '',
-      cls: r.cls,
+      cls: r.cls ?? null,
+      big: r.big ?? null,
+      mid: r.mid ?? null,
+      owner: r.owner ?? null,
     })) as Rule[];
   }
-  if (obj.overrides) data.overrides = obj.overrides as Record<string, Cls>;
+  // 新形式 edits を優先。HTML版の overrides({id: cls}) は cls だけの編集として取り込む
+  if (obj.edits) data.edits = obj.edits as Record<string, TxEdit>;
+  else if (obj.overrides) {
+    data.edits = {};
+    for (const [id, cls] of Object.entries(obj.overrides as Record<string, Cls>)) data.edits[id] = { cls };
+  }
+  if (obj.institutionOwners) data.institutionOwners = obj.institutionOwners as Record<string, Owner>;
+  if (obj.personalByOwner) data.personalByOwner = obj.personalByOwner as Dataset['personalByOwner'];
   if (obj.bizPersonal) data.bizPersonal = obj.bizPersonal as Dataset['bizPersonal'];
   if (obj.unrecordedExpMonths) data.unrecordedExpMonths = [...(obj.unrecordedExpMonths as string[])];
   recomputeClassification(data);
@@ -104,6 +125,9 @@ export function exportJSON(data: Dataset): Record<string, unknown> {
     mfTx: data.mfTx,
     rules: data.rules,
     overrides: data.overrides,
+    edits: data.edits,
+    institutionOwners: data.institutionOwners,
+    personalByOwner: data.personalByOwner,
     budgets: data.budgets,
     cashOverride: data.cashOverride,
     unrecordedExpMonths: data.unrecordedExpMonths,

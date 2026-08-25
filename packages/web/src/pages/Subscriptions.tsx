@@ -1,11 +1,11 @@
-/** P4 サブスク分析: ベンダー別推移と重複・急増を確認する */
+/** P4 サブスク分析: いま何にいくら払っているか(月額・年換算)と、推移・重複・急増を確認する */
 import { useQuery } from '@tanstack/react-query';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type SubscriptionsData, api } from '../api.js';
-import { AnnualComparisonTable, PageHeader, PageState } from '../components/Page.js';
+import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { VENDOR_PALETTE, yenTick } from '../components/charts.js';
-import { monthLabel, monthShort, yen } from '../format.js';
+import { monthLabel, monthShort, ratio, yen } from '../format.js';
 
 export function SubscriptionsPage() {
   const q = useQuery({
@@ -23,7 +23,7 @@ export function SubscriptionsPage() {
     return (
       <>
         <PageHeader route="subscriptions" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const s = q.data;
@@ -61,6 +61,62 @@ export function SubscriptionsPage() {
           </ul>
         </div>
       )}
+
+      <div className="kpis">
+        <KpiCard
+          label={`サブスク合計(${s.now.month ? monthLabel(s.now.month) : '—'})`}
+          value={yen(s.now.monthlyTotal)}
+          note="月額"
+        />
+        <KpiCard label="年換算(月額×12)" value={yen(s.now.annualized)} note="いまの契約を1年続けた場合" />
+        <KpiCard label="直近12ヶ月の実支払" value={yen(s.now.last12Total)} note="未記帳月は除く" />
+        <KpiCard
+          label="対売上比"
+          value={s.now.revenueShare === null ? '—' : ratio(s.now.revenueShare, 1)}
+          note={s.now.revenueShare === null ? '売上データがありません' : '目安 10〜15%以内'}
+        />
+      </div>
+
+      <div className="card scroll-x">
+        <h2>いま何にいくら払っているか</h2>
+        <table className="data">
+          <thead>
+            <tr>
+              <th>ベンダー</th>
+              <th>直近月額</th>
+              <th>平均月額</th>
+              <th>支払月数</th>
+              <th>直近12ヶ月合計</th>
+              <th>年換算(直近月額×12)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...s.vendorTable]
+              .sort((a, b) => b.lastMonthly - a.lastMonthly || b.avgMonthly - a.avgMonthly)
+              .map((r) => (
+                <tr key={r.vendor}>
+                  <td>{r.vendor}</td>
+                  <td className="num">{yen(r.lastMonthly)}</td>
+                  <td className="num">{yen(r.avgMonthly)}</td>
+                  <td className="num">{r.activeMonths}</td>
+                  <td className="num">{yen(r.last12Total)}</td>
+                  <td className="num">{yen(r.lastMonthly * 12)}</td>
+                </tr>
+              ))}
+            <tr className="total">
+              <td>合計(その他を含む)</td>
+              <td className="num">{yen(s.now.monthlyTotal)}</td>
+              <td />
+              <td />
+              <td className="num">{yen(s.now.last12Total)}</td>
+              <td className="num">{yen(s.now.annualized)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p className="sub">
+          「その他」はベンダー名を特定していないサブスク・通信の支払。月3,000円のサブスクは年3.6万円。契約は月次にし、解約の見直しは四半期ごとに行う。
+        </p>
+      </div>
 
       <div className="card">
         <h2>ベンダー別月次(積み上げ)</h2>

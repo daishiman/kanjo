@@ -1,7 +1,8 @@
-/** P9 設定: 科目正規化・未記帳月・現金補正・エクスポート/復元(FR-05) */
+/** P9 設定: 分類の設定(ルール・名義・候補科目・手動編集)・科目正規化・未記帳月・現金補正・エクスポート/復元(FR-05) */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { type SettingsResponse, api } from '../api.js';
+import { ClassificationSettings } from '../components/ClassificationSettings.js';
 import { PageHeader, PageState } from '../components/Page.js';
 
 export function SettingsPage() {
@@ -45,7 +46,7 @@ export function SettingsPage() {
     return (
       <>
         <PageHeader route="settings" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const s = q.data;
@@ -55,6 +56,8 @@ export function SettingsPage() {
   return (
     <>
       <PageHeader route="settings" />
+
+      <ClassificationSettings />
 
       <div className="card">
         <h2>科目正規化マップ(freee勘定科目 → 集計上の科目)</h2>
