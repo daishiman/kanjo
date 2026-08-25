@@ -11,7 +11,7 @@
     "build": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api exec wrangler deploy --dry-run --outdir /tmp/kanjo-worker-build",
     "dev": "pnpm --filter @kanjo/web dev",
     "preview": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api dev",
-    "test": "pnpm -r test",
+    "test": "pnpm -r test && pnpm run skills:test",
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check . && node scripts/sync-project-skills.mjs --check",
     "lint:fix": "biome check --write .",
@@ -21,7 +21,8 @@
     "db:checkpoint": "pnpm --filter @kanjo/api exec wrangler d1 time-travel info kanjo-db",
     "smoke": "bash .github/scripts/smoke.sh",
     "skills:sync": "node scripts/sync-project-skills.mjs",
-    "skills:check": "node scripts/sync-project-skills.mjs --check"
+    "skills:check": "node scripts/sync-project-skills.mjs --check",
+    "skills:test": "python3 -B -m unittest discover -s skills/run-kanjo-accounting-report/scripts -p 'test_*.py'"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

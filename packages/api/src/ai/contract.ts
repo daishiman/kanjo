@@ -134,7 +134,7 @@ export function normalizeReport(
 
 /* -------- 貼り付け用の指示文 -------- */
 
-export const SKILL_NAME = 'kanjo-accounting-report';
+export const SKILL_NAME = 'run-kanjo-accounting-report';
 
 export function buildPrompt(p: {
   origin: string;

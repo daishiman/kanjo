@@ -502,11 +502,11 @@ main:  上記CIの成功 → wrangler deploy(production)
 
 **目的**: 毎月・毎年、同じ構成の会計分析(何にいくら/増減要因/削減余地/事業・個人と名義/サブスク整理)を Claude Code / Codex に作らせ、結果をアプリに蓄積して前回と比べられるようにする。アプリ自体は LLM を呼ばない(API キー不要)。
 
-**流れ(最小ループ)**: 「AI分析」画面で期間を選び指示文を作る → 指示文を Claude Code / Codex に貼る → AI がスキル `kanjo-accounting-report` の手順でデータを取得し、5節の JSON を送信 → 画面の「届いたレポート」で読む。
+**流れ(最小ループ)**: 「AI分析」画面で期間を選び指示文を作る → 指示文を Claude Code / Codex に貼る → AI がスキル `run-kanjo-accounting-report` の手順でデータを取得し、5節の JSON を送信 → 画面の「届いたレポート」で読む。
 
 | 構成要素 | 場所 | 要点 |
 |---|---|---|
-| 共通スキル | `skills/kanjo-accounting-report/`(正本)→ `pnpm skills:sync` で `.claude/skills/` と `.agents/skills/` に複製。`pnpm lint` が同期ずれを検出 | Claude Code / Codex で同じ手順。実データだけ・不足は「データ不足」・5節固定・プレーンテキスト |
+| 共通スキル | `skills/run-kanjo-accounting-report/`(正本。harness-creator 規約準拠、`eval-log/` は正本のみ)→ `pnpm skills:sync` で `.claude/skills/` と `.agents/skills/` に複製。`pnpm lint` が同期ずれを検出 | Claude Code / Codex で同じ手順。実データだけ・不足は「データ不足」・5節固定・プレーンテキスト |
 | 指示文の発行 | `POST /api/ai/tasks`(セッション) | 依頼ごとに使い捨てトークン `kjo_…`(24時間・結果受信1回)。指示文にはスキル名・期間・取得URL・送信URL・認証ヘッダーを含む |
 | データ取得 | `GET /api/ai/tasks/:id/data`(Bearer) | 集計だけ(月次・科目別・事業/個人・名義別・サブスク・比較・ベンチマーク)。明細・摘要・ルールは含めない |
 | 結果受信 | `POST /api/ai/tasks/:id/report`(Bearer) | zod 検証(5節必須・文字数上限)→ HTML タグ・制御文字を除去 → 保存。受理時にトークンを使用済みにする |

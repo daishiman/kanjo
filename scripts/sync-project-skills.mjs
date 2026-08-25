@@ -5,6 +5,7 @@
  * キット(aidd-agent-kit)が管理するスキルとは別物で、キット更新でも消えない(マニフェスト管理外のため)。
  *   node scripts/sync-project-skills.mjs          … 同期(上書き)
  *   node scripts/sync-project-skills.mjs --check  … 差分があれば終了コード1(CI用)
+ * eval-log/(構築時の設計証跡)と __pycache__ は正本にだけ置き、配布先へは同期しない。
  */
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -14,13 +15,15 @@ const root = join(fileURLToPath(import.meta.url), '..', '..');
 const SOURCE = join(root, 'skills');
 const TARGETS = [join(root, '.claude', 'skills'), join(root, '.agents', 'skills')];
 const check = process.argv.includes('--check');
+const EXCLUDED_DIRS = new Set(['eval-log', '__pycache__']);
 
 function walk(dir, base = dir) {
   const out = [];
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
-    if (statSync(p).isDirectory()) out.push(...walk(p, base));
-    else out.push(relative(base, p));
+    if (statSync(p).isDirectory()) {
+      if (!EXCLUDED_DIRS.has(name)) out.push(...walk(p, base));
+    } else out.push(relative(base, p));
   }
   return out.sort();
 }
@@ -48,7 +51,13 @@ for (const skill of readdirSync(SOURCE)) {
     }
     rmSync(dst, { recursive: true, force: true });
     mkdirSync(dst, { recursive: true });
-    cpSync(src, dst, { recursive: true });
+    cpSync(src, dst, {
+      recursive: true,
+      filter: (source) =>
+        !relative(src, source)
+          .split('/')
+          .some((seg) => EXCLUDED_DIRS.has(seg)),
+    });
     console.log(`同期: ${relative(root, dst)} (${files.length} files)`);
   }
 }
