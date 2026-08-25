@@ -3,6 +3,7 @@
  * HTML版 ensureMonth / importFreee / importMF / importJSON の挙動を忠実に移植。
  */
 import { applyClassification, overridesFromEdits } from './classify.js';
+import { type SubVendor, matchSubVendor } from './subs.js';
 import type { Cls, Dataset, FreeeDeal, MfTx, Owner, Rule, TxEdit } from './types.js';
 
 export function ensureMonth(data: Dataset, m: string): number {
@@ -18,12 +19,18 @@ export function ensureMonth(data: Dataset, m: string): number {
   return data.months.indexOf(m);
 }
 
+/** Dataset の登録ベンダーを照合用の定義に変換する */
+export function subVendorDefs(data: Dataset): SubVendor[] {
+  return data.subs.vendors.map((name) => ({ name, aliases: data.subs.aliases?.[name] ?? [] }));
+}
+
 /**
  * freee仕訳を月単位洗い替えで反映する。
  * 対象月の売上・科目別経費・サブスクベンダー行列をゼロクリアしてから加算（HTML版と同一）。
  * 取り込んだ月は未記帳月から解除する。
  */
 export function applyFreeeDeals(data: Dataset, deals: FreeeDeal[], months: string[]): void {
+  const vendorDefs = subVendorDefs(data);
   months.forEach((m) => {
     const i = ensureMonth(data, m);
     data.biz.revenue[i] = 0;
@@ -46,11 +53,10 @@ export function applyFreeeDeals(data: Dataset, deals: FreeeDeal[], months: strin
         data.biz.expense[acct] = data.months.map(() => 0);
       }
       data.biz.expense[acct][i] += dl.amount;
-      if (acct === 'サブスク・通信') {
-        const vd = dl.partner || '';
-        if (data.subs.vendors.includes(vd)) data.subs.matrix[vd][i] += dl.amount;
-        else data.subs.other[i] += dl.amount;
-      }
+      // 登録ベンダーへの支払は科目を問わずサブスクに数える。未登録は「サブスク・通信」科目の分だけ「その他」へ
+      const vd = matchSubVendor(dl.partner || '', vendorDefs);
+      if (vd) data.subs.matrix[vd][i] += dl.amount;
+      else if (acct === 'サブスク・通信') data.subs.other[i] += dl.amount;
     }
   });
   data.unrecordedExpMonths = data.unrecordedExpMonths.filter((m) => !months.includes(m));
@@ -77,7 +83,11 @@ export function recomputeClassification(data: Dataset): void {
 export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
   if (obj.months) data.months = obj.months as string[];
   if (obj.biz) data.biz = obj.biz as Dataset['biz'];
-  if (obj.subs) data.subs = obj.subs as Dataset['subs'];
+  if (obj.subs) {
+    // HTML版JSONには別名が無いので、既存の別名は保持する
+    const prev = data.subs.aliases ?? {};
+    data.subs = { aliases: prev, ...(obj.subs as Omit<Dataset['subs'], 'aliases'>) };
+  }
   if (obj.personal) data.personal = obj.personal as Dataset['personal'];
   if (obj.budgets) data.budgets = obj.budgets as Record<string, number>;
   if (obj.cashOverride) data.cashOverride = obj.cashOverride as Dataset['cashOverride'];

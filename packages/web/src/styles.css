@@ -344,6 +344,7 @@ table.data tr.total td {
    見出し行が先頭データ行の上に重なる。スクロール容器内では上端固定にする。 */
 .scroll-x table.data thead th {
   top: 0;
+  white-space: nowrap; /* 横スクロール容器内では見出しを1文字ずつ折り返さない */
 }
 .scroll-x table.data th:first-child,
 .scroll-x table.data td:first-child {

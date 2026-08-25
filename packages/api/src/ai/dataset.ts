@@ -7,6 +7,7 @@
  */
 import {
   type Dataset,
+  type SubsCandidate,
   benchmarks,
   catProfile,
   diagnosis,
@@ -141,6 +142,8 @@ export interface PreviousReportSummary {
 export interface BuildOptions {
   previousReports?: PreviousReportSummary[];
   supplement?: string | null;
+  /** 未登録の支払先のうちサブスクらしい上位(サブスク分析ページの候補と同じ採点) */
+  candidates?: SubsCandidate[];
 }
 
 export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions = {}) {
@@ -322,6 +325,8 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
       vendorTable: subs.vendorTable,
       alerts: subs.alerts,
       years: subs.years,
+      /** 登録外だが毎月続いている支払先。整理候補の材料(登録は利用者がサブスク分析ページで行う) */
+      candidates: opts.candidates ?? [],
     },
     benchmarks: benchmarks(data),
     previousReports: opts.previousReports ?? [],

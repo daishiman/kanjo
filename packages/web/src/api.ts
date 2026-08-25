@@ -10,6 +10,8 @@ import type {
   HouseholdData,
   MatrixData,
   OverviewData,
+  SubVendor,
+  SubsCandidate,
   SubscriptionsData,
   TradeoffCandidate,
 } from '@kanjo/core';
@@ -241,9 +243,15 @@ export type {
   HouseholdData,
   MatrixData,
   OverviewData,
+  SubVendor,
+  SubsCandidate,
   SubscriptionsData,
   TradeoffCandidate,
 };
+
+export interface SubVendorRow extends SubVendor {
+  id: number;
+}
 
 /* -------- AI分析(spec §16) -------- */
 

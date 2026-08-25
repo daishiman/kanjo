@@ -99,6 +99,8 @@ export interface Dataset {
   };
   subs: {
     vendors: string[];
+    /** ベンダーごとの別名(表記ゆれ)。支払先に含まれていれば同じベンダーとみなす */
+    aliases: Record<string, string[]>;
     matrix: Record<string, number[]>;
     other: number[];
   };
@@ -138,7 +140,7 @@ export function emptyDataset(): Dataset {
   return {
     months: [],
     biz: { revenue: [], categories: [], expense: {} },
-    subs: { vendors: [], matrix: {}, other: [] },
+    subs: { vendors: [], aliases: {}, matrix: {}, other: [] },
     personal: {},
     bizPersonal: {},
     mfTx: [],

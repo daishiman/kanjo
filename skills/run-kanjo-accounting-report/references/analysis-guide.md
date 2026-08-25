@@ -25,7 +25,7 @@
 | `bizPersonal[月]` | MF 明細のうち「事業」と仕分けされた分の収入・支出(freee とは別集計) |
 | `comparison` | 事業と個人を月別に並べた収支。`biz`/`personal` に合計・月平均・年換算 |
 | `byOwner` | 個人分の名義別(`self`=本人 / `spouse`=妻 / `unset`=未設定)。`unmappedInstitutions` は名義未設定の金融機関 |
-| `subscriptions.now` / `vendors` / `vendorTable` / `alerts` | 直近記帳月のサブスク合計・年換算・売上比 / ベンダー別月別支払 / ベンダー別の前年・年換算・直近月額・平均・支払月数 / 重複疑い・急増 |
+| `subscriptions.now` / `vendors` / `vendorTable` / `alerts` / `candidates` | 直近記帳月のサブスク合計・年換算・売上比 / ベンダー別月別支払 / ベンダー別の前年・年換算・直近月額・平均・支払月数 / 重複疑い・急増 / 登録外だが毎月続いている支払先(`score` 0〜100・`reasons`・`avgMonthly`・`activeMonths`/`spanMonths`・`accounts`) |
 | `benchmarks` | 経費率・サブスク比率・安全余裕率・貯蓄率・食費比率・通信費比率の現在値と目安 |
 | `previousReports[]` | 同じ型の過去レポート(最新2件。再分析なら親レポートを含む)。`version`・`summary`・`keyFindings`・`reductionItems`・`needs` が入る |
 | `supplement` | 利用者が画面で入力した補足情報(無ければ `null`)。数字の根拠に使ってよいが、データと矛盾するときはデータを優先し、その旨を書く |
@@ -74,6 +74,7 @@
 ### subscriptions(サブスク)
 - `subscriptions.now` の合計・年換算・売上比を先に置く。`alerts` を必ず反映。
 - 整理候補は「解約 / プラン変更 / 年払い切替 / 継続」の4区分で書き、理由を添える。
+- `candidates` は登録されていない支払先のうち「サブスクらしい」順に並んだもの(採点: 連続率50点・金額の一定さ30点・科目がサブスク・通信20点)。`score` 70 以上を「登録漏れの可能性」として名指しし、`needs` に `screen: "subscriptions"` で「サブスク分析ページの候補一覧で『これはサブスク』を押す」を入れる。候補に入っているだけでサブスクと断定しない(`reasons` を添えて可能性として書く)。
 
 ## 4. 統計・PL・BS の扱い(できることだけ書く)
 

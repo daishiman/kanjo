@@ -12,7 +12,12 @@ function dataset(): Dataset {
       categories: ['架空固定費', '架空サブスク'],
       expense: { 架空固定費: [100000, 100000, 100000], 架空サブスク: [30000, 30000, 30000] },
     },
-    subs: { vendors: ['架空SaaS'], matrix: { 架空SaaS: [30000, 30000, 30000] }, other: [0, 0, 0] },
+    subs: {
+      vendors: ['架空SaaS'],
+      aliases: {},
+      matrix: { 架空SaaS: [30000, 30000, 30000] },
+      other: [0, 0, 0],
+    },
     personal: {
       '2026-06': { income: { 給与: 300000 }, expense: { 食費: 60000, 通信費: 10000, 住宅: 130000 } },
       '2026-07': {

@@ -15,6 +15,7 @@ import { analyticsRoute } from './routes/analytics.js';
 import { classifyRoute } from './routes/classify.js';
 import { importsRoute } from './routes/imports.js';
 import { settingsRoute } from './routes/settings.js';
+import { subsRoute } from './routes/subs.js';
 import { getDb, loadDataset } from './store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
@@ -60,6 +61,7 @@ app.route('/api', importsRoute);
 app.route('/api', analyticsRoute);
 app.route('/api', classifyRoute);
 app.route('/api', settingsRoute);
+app.route('/api', subsRoute);
 
 app.notFound((c) => {
   if (c.req.path.startsWith('/api/')) {

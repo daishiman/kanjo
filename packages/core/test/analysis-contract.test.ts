@@ -34,6 +34,7 @@ function syntheticDataset(): Dataset {
     },
     subs: {
       vendors: ['架空SaaS'],
+      aliases: {},
       matrix: { 架空SaaS: fixed },
       other: months.map(() => 0),
     },

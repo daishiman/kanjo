@@ -1,4 +1,5 @@
 import { zValidator } from '@hono/zod-validator';
+import { subsCandidates } from '@kanjo/core';
 /**
  * AI分析レポート(spec-v1.1 §16)。
  *  - aiRoute      : ログイン済みの画面から使う(依頼の発行、レポート一覧・詳細)
@@ -24,7 +25,7 @@ import {
 import { type PreviousReportSummary, buildAgentData } from '../ai/dataset.js';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
-import { getDb, loadDataset } from '../store.js';
+import { dealFromRow, getDb, loadDataset, loadSubVendors } from '../store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 type AgentCtx = { Bindings: AuthEnv; Variables: { userId: string; task: typeof s.aiTasks.$inferSelect } };
@@ -147,8 +148,13 @@ async function loadPreviousReports(
 async function agentPayload(db: ReturnType<typeof getDb>, task: typeof s.aiTasks.$inferSelect) {
   const data = await loadDataset(db, task.userId);
   if (data.months.length === 0) return null;
-  const previousReports = await loadPreviousReports(db, task);
-  return buildAgentData(data, periodOf(task), { previousReports, supplement: task.supplement });
+  const [previousReports, vendors, dealRows] = await Promise.all([
+    loadPreviousReports(db, task),
+    loadSubVendors(db, task.userId),
+    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, task.userId)),
+  ]);
+  const candidates = subsCandidates(dealRows.map(dealFromRow), vendors, 10);
+  return buildAgentData(data, periodOf(task), { previousReports, supplement: task.supplement, candidates });
 }
 
 /* ======== 画面用(セッション認証は index.ts の authGuard が担う) ======== */

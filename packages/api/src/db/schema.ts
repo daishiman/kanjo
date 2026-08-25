@@ -99,6 +99,16 @@ export const categoryOptions = sqliteTable('category_options', {
   mid: text('mid').notNull(),
 });
 
+/** サブスクのベンダー登録(名前+別名)。aliases は JSON 配列文字列 */
+export const subVendors = sqliteTable('sub_vendors', {
+  id: integer('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  name: text('name').notNull(),
+  aliases: text('aliases').notNull().default('[]'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: text('created_at').notNull().$defaultFn(nowIso),
+});
+
 export const budgets = sqliteTable('budgets', {
   userId: text('user_id').notNull(),
   account: text('account').notNull(),

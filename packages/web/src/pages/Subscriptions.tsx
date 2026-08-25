@@ -4,6 +4,7 @@ import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type SubscriptionsData, api } from '../api.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
+import { SubVendorsPanel, SubsCandidatesPanel } from '../components/SubVendors.js';
 import { Term } from '../components/Term.js';
 import { VENDOR_PALETTE, yenTick } from '../components/charts.js';
 import { monthLabel, monthShort, ratio, yen } from '../format.js';
@@ -41,6 +42,7 @@ export function SubscriptionsPage() {
             </Link>
           }
         />
+        <SubVendorsPanel />
       </>
     );
 
@@ -183,6 +185,9 @@ export function SubscriptionsPage() {
           }))}
         />
       </div>
+      <SubVendorsPanel />
+      <SubsCandidatesPanel hasDeals={s.months.length > 0} />
+
       <p className="sub">
         <Term id="subsDup">重複疑い</Term>=中央値の1.8倍超かつ2万円超 / <Term id="subsSpike" />
         =3倍超かつ1.5万円超(HTML版と同一基準)。

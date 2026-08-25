@@ -10,6 +10,7 @@ import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
 import { type ParsedUnit, parseUpload } from '../import-pipeline.js';
 import {
+  ensureSubVendors,
   getDb,
   loadDataset,
   loadNormMap,
@@ -226,6 +227,8 @@ async function persistRestore(
   // MF明細: 全月洗い替え
   const months = [...new Set(data.mfTx.map((t) => t.m))];
   await replaceMfTxs(db, userId, data.mfTx, months, null);
+  // JSON に含まれるサブスクのベンダーを登録に加える(集計キャッシュだけにあると次の再集計で消えるため)
+  await ensureSubVendors(db, userId, data.subs.vendors);
   // ルール
   await db.delete(s.rules).where(eq(s.rules.userId, userId));
   for (let i = 0; i < data.rules.length; i++) {

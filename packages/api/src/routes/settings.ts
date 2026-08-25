@@ -4,8 +4,6 @@ import { zValidator } from '@hono/zod-validator';
  * 正規化マップ変更は集計再生成のトリガ(spec §7.3)。
  */
 import { budgetTable, suggestBudgets } from '@kanjo/core';
-import { applyFreeeDeals } from '@kanjo/core';
-import { normalizeAccount } from '@kanjo/core';
 import { resolveTx } from '@kanjo/core';
 import { and, eq, isNull } from 'drizzle-orm';
 import { Hono } from 'hono';
@@ -16,7 +14,7 @@ import {
   type Db,
   getDb,
   loadDataset,
-  loadNormMap,
+  recomputeFromDeals,
   replaceInstitutionOwners,
   saveAgg,
   upsertEdit,
@@ -350,32 +348,3 @@ settingsRoute.put('/classification', zValidator('json', classificationSchema), a
  * 正規化マップ変更時: 原本仕訳(freee_deals)から account_norm を再導出して集計を作り直す。
  * 原本の無い月(restore由来)は既存の monthly_agg 値が温存される。
  */
-async function recomputeFromDeals(db: Db, userId: string): Promise<void> {
-  const normMap = await loadNormMap(db, userId);
-  const dealRows = await db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId));
-  // account_norm列を新マップで更新
-  for (const r of dealRows) {
-    const norm = normalizeAccount(r.accountRaw ?? '', normMap);
-    if (norm !== r.accountNorm) {
-      await db.update(s.freeeDeals).set({ accountNorm: norm }).where(eq(s.freeeDeals.id, r.id));
-    }
-  }
-  const data = await loadDataset(db, userId);
-  const months = [...new Set(dealRows.map((r) => r.month))].sort();
-  if (months.length) {
-    applyFreeeDeals(
-      data,
-      dealRows.map((r) => ({
-        month: r.month,
-        date: r.date,
-        io: r.io,
-        partner: r.partner ?? '',
-        accountRaw: r.accountRaw ?? '',
-        accountNorm: normalizeAccount(r.accountRaw ?? '', normMap),
-        amount: r.amount,
-      })),
-      months,
-    );
-  }
-  await saveAgg(db, userId, data);
-}
