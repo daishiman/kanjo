@@ -1,2 +1,11 @@
 packages:
   - packages/*
+
+# Apple Silicon上でarm64 NodeとRosetta(x64) Nodeのどちらから実行しても、
+# workerdなどのネイティブ依存が欠けないようにする。
+supportedArchitectures:
+  os:
+    - current
+  cpu:
+    - x64
+    - arm64
