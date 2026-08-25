@@ -33,8 +33,8 @@ DB構造を変える変更
 | ワークフロー | ファイル | 起動条件 | 主な処理 | 外部への影響 |
 |---|---|---|---|---|
 | CI | `.github/workflows/ci.yml` | PR、`main`へのpush、手動 | 依存導入、Env型生成、lint、型検査、テスト、依存監査 | なし |
-| Deploy | `.github/workflows/deploy.yml` | `main`のCI成功後、または手動 | Webビルド、Worker公開、2回のスモークテスト | 本番アプリを更新 |
-| Migrate | `.github/workflows/migrate.yml` | `APPLY`入力付きの手動実行のみ | D1 Time Travel情報確認、リモートmigration適用 | 本番DBの構造を更新 |
+| Deploy | `.github/workflows/deploy.yml` | `main`のCI成功後、または`main`から手動 | 手動時の品質検査、Webビルド、Worker公開、2回のスモークテスト | 本番アプリを更新 |
+| Migrate | `.github/workflows/migrate.yml` | `main`から`APPLY`入力付きの手動実行のみ | D1 Time Travel情報確認、リモートmigration適用 | 本番DBの構造を更新 |
 
 共通設定:
 
@@ -46,6 +46,7 @@ DB構造を変える変更
 - 権限: `contents: read`のみ
 - `concurrency`で重複実行を制御
 - 依存監査のhigh以上はログへ警告するが、上流修正待ちで全開発を止めない
+- Node.js 22・pnpm・依存関係installは`.github/actions/setup-pnpm/action.yml`へ一元化し、3ワークフローから同じ部品を呼ぶ
 
 `verify`はCIワークフロー内のジョブ名であり、`main`の必須ステータスチェック名でもあります。
 
@@ -150,7 +151,7 @@ gh run watch <run-id> --exit-status
 pnpm --filter @kanjo/api exec wrangler deployments list
 ```
 
-`Deploy`の手動実行は、同じ`main`コミットの再実行や緊急復旧に限定します。手動実行前にも、そのコミットのCI成功を確認してください。
+`Deploy`の手動実行は、同じ`main`コミットの再実行や緊急復旧に限定します。`main`以外からはjobが起動せず、手動時もlint・型検査・テストを再実行します。
 
 ## 6. D1の構造を変えるリリース
 
@@ -267,6 +268,7 @@ pnpm --filter @kanjo/api exec wrangler d1 time-travel restore kanjo-db --bookmar
 
 - [ ] CIを意図的に1回失敗させ、`verify`が赤くなってmergeを止めることを確認した
 - [ ] 正常化後の`verify`が成功した
+- [ ] CI・Deploy・Migrateが同じ`setup-pnpm` Actionを使い、Node.js準備処理が重複していない
 - [ ] `main`の必須チェックが`verify`で、strictと管理者適用が有効
 - [ ] `production` Environmentが`main`だけを許可している
 - [ ] Cloudflare APIトークンを最小権限・単一アカウントに限定した
@@ -283,6 +285,7 @@ pnpm --filter @kanjo/api exec wrangler d1 time-travel restore kanjo-db --bookmar
 - `.github/workflows/ci.yml`
 - `.github/workflows/deploy.yml`
 - `.github/workflows/migrate.yml`
+- `.github/actions/setup-pnpm/action.yml`
 - `.github/scripts/smoke.sh`
 - `packages/api/wrangler.jsonc`
 - `migrations/`

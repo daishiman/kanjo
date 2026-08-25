@@ -1,0 +1,14 @@
+name: pnpm実行環境を準備
+description: AIDDキットで使うNode.js 22・pnpm・依存関係を一度の定義で準備する
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 22
+        cache: pnpm
+    - name: 依存関係を固定バージョンでインストール
+      shell: bash
+      run: pnpm install --frozen-lockfile
