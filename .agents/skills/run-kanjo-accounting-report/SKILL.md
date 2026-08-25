@@ -120,7 +120,7 @@ frontmatter `feedback_contract.criteria` が評価基準の正本。inner(IN1〜
 
 ### ゴール (Goal)
 
-指示文の対象期間と型について、取得した実績データだけを根拠にした第2版レポート(要点サマリー・図表・固定5節・needs)が `validate-report.py` exit 0 を経てアプリに `201` で受理され、`reportId` が利用者に示されている。
+指示文の対象期間と型について、取得した実績データだけを根拠にした第3版レポート(4欄の要点・カタログ図の読み解き・最低行数を満たす固定5節・needs)が `validate-report.py` exit 0 を経てアプリに `201` で受理され、`reportId` が利用者に示されている。
 
 ### 目的・背景 (Why)
 

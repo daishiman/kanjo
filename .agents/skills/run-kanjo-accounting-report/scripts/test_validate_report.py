@@ -208,6 +208,14 @@ class ValidateTest(unittest.TestCase):
         issues = MOD.validate(r)
         for field in ("fact", "basis", "interpretation", "action"):
             self.assertTrue(any(f"improvements[0].{field}: 必須" in i for i in issues), (field, issues))
+        r = good_report()
+        r["keyFindings"]["improvements"] = [finding(fact="外注費が増え続けており見直しが必要である")]
+        issues = MOD.validate(r)
+        self.assertTrue(any("improvements[0].fact" in i and "数値" in i for i in issues), issues)
+        r = good_report()
+        r["summary"] = r["summary"].replace("図2", "図 ２")
+        self.assertEqual(MOD.validate(r), [], "空白・全角数字の図参照も拾う")
+        r = good_report()
         r["keyFindings"]["improvements"] = [finding(fact="短い", interpretation="短い解釈")]
         issues = MOD.validate(r)
         self.assertTrue(any("improvements[0].fact" in i and "下限 10" in i for i in issues), issues)

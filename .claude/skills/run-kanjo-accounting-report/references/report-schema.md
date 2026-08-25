@@ -78,7 +78,7 @@
 | `sections[]` | 必須 | 5節すべて(`spend` `change` `reduction` `split` `subscriptions`)。`title` 任意(120字)/ `body` **80〜6,000字** / `items` 60件まで / `gap`(10〜400字・`null` 可) |
 | `sections[].items` の最低行数 | — | `spend` **3** / `change` **1** / `reduction` **2** / `split` **2** / `subscriptions` **1**。満たせないときは `gap` にデータ不足の理由(何があれば出せるか)を書く。理由なしは拒否 |
 | `sections[].items[]` / 各 item | — | `label`(必須・200字)/ `amount`(円・整数・`null` 可)/ `note`(1,000字)/ `priority` |
-| `needs[]` | 任意(推奨) | 30件まで。`gap`(300字)/ `action`(500字)/ `screen`(下表の id。以外は `null` 扱い) |
+| `needs[]` | 任意(推奨) | 30件まで。`gap`(300字)/ `action`(500字)/ `screen`(下表の id か `null`。それ以外は手元の検査で NG、アプリでは `null` 扱い) |
 | `dataGaps[]` | 任意 | 40件・各500字。出せなかった図は「図N はあと◯ヶ月分で出せる」と1行 |
 
 ### `needs[].screen` に使える画面 id

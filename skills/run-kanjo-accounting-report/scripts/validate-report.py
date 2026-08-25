@@ -43,7 +43,8 @@ PRIORITIES = {"high", "mid", "low"}
 FINDING_KEYS = ("improvements", "wasted", "quickWins")
 NEED_SCREENS = {"import", "classify", "settings", "budget", "subscriptions", "household", "overview"}
 DEFAULT_CATALOG = Path(__file__).resolve().parent.parent / "references" / "chart-catalog.json"
-FIGURE_RE = re.compile(r"図(\d+)")
+_ZEN2HAN = str.maketrans("０１２３４５６７８９", "0123456789")
+FIGURE_RE = re.compile(r"図\s*([0-9０-９]+)")  # アプリ側(contract.ts)と同じ: 空白・全角数字も拾う
 # 下限・最低行数の既定値(chart-catalog.json があればそちらで上書き。contract.ts と同じ値)
 TEXT_MIN = {"summary": 60, "body": 80, "gap": 10, "caption": 15}
 SECTION_MIN_ITEMS = {"spend": 3, "change": 1, "reduction": 2, "split": 2, "subscriptions": 1}
@@ -140,6 +141,9 @@ def _finding_issues(where: str, item: object) -> list[str]:
         return [f"{where}: オブジェクトにしてください"]
     issues = _text_issues(f"{where}.label", item.get("label"), LIMITS["item_label"], required=True)
     issues += _text_issues(f"{where}.fact", item.get("fact"), LIMITS["finding_fact"], required=True, minimum=10)
+    fact = item.get("fact")
+    if isinstance(fact, str) and fact.strip() and not re.search(r"[0-9０-９]", fact):
+        issues.append(f"{where}.fact: 数値が入っていません(金額・比率・月数など、取得データにある数字で事実を書いてください)")
     issues += _text_issues(f"{where}.basis", item.get("basis"), LIMITS["finding_basis"], required=True, minimum=5)
     issues += _text_issues(
         f"{where}.interpretation", item.get("interpretation"), LIMITS["finding_interpretation"], required=True, minimum=10
@@ -290,7 +294,7 @@ def _charts_issues(charts: object, catalog_ids: set[str]) -> list[str]:
 def _figure_refs(text: object) -> set[int]:
     if not isinstance(text, str):
         return set()
-    return {int(m) for m in FIGURE_RE.findall(text)}
+    return {int(m.translate(_ZEN2HAN)) for m in FIGURE_RE.findall(text)}
 
 
 def _availability_issues(report: dict, data: dict) -> list[str]:
