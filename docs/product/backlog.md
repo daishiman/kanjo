@@ -15,4 +15,4 @@
 
 ## 判断メモ
 
-- 参考実装 `docs/reference/収支管理ダッシュボード.html`(ローカル専用・git管理外)との差分の一覧は `docs/spec-v1.1.md` §14 を正とする。
+- 参考実装 `docs/reference/収支管理ダッシュボード.html`(ローカル専用・git管理外)との差分の一覧は `docs/spec-v1.1.md` §15 を正とする。
