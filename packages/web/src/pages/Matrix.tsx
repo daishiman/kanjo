@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type MatrixData, api } from '../api.js';
 import { PageHeader, PageState } from '../components/Page.js';
+import { Term } from '../components/Term.js';
 import { deltaCls, monthShort, pct, yen } from '../format.js';
 
 type Mode = 'val' | 'mom' | 'yoy';
@@ -99,7 +100,9 @@ export function MatrixPage() {
               {m.years.map((y) => (
                 <th key={y}>{y}年計</th>
               ))}
-              <th>前年比(換算)</th>
+              <th>
+                <Term id="yoy" />
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -125,7 +128,11 @@ export function MatrixPage() {
           </tbody>
         </table>
       </div>
-      <p className="sub">未記帳月は年計・比率から除外。前年比は今年の年換算 ÷ 前年実績。</p>
+      <p className="sub">
+        <Term id="unrecordedMonth" />
+        は年計・比率から除外。前年比は今年の
+        <Term id="annualized" /> ÷ 前年実績。
+      </p>
     </>
   );
 }

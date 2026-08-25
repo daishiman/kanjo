@@ -52,3 +52,10 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+__pycache__/
+
+# coverage.py
+.coverage
+
+# ハーネス hook が生成する作業ログ(リポジトリ直下のみ)
+/eval-log/

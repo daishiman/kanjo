@@ -9,6 +9,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { type SummaryResponse, api } from '../api.js';
 import { monthLabel, yen } from '../format.js';
 import { APP_ROUTES, MOBILE_ROUTES } from '../routeMetadata.js';
+import { Term } from './Term.js';
 
 const STATUS_LABEL: Record<string, string> = {
   ok: '余裕あり',
@@ -90,11 +91,8 @@ export function Layout({ children }: { children: ReactNode }) {
         <span className="period">{period}</span>
         <span className="spacer" />
         {d && d.status !== 'nodata' && (
-          <span
-            className={`badge ${d.status}`}
-            title="防衛ライン(個人生活費3ヶ月平均+事業固定費)と今月の収入見込みの対比"
-          >
-            防衛線 <span className="num">{yen(d.line)}</span>
+          <span className={`badge ${d.status}`}>
+            <Term id="defenseLine">防衛線</Term> <span className="num">{yen(d.line)}</span>
             <span className="badge-detail">
               {' '}
               / 見込 <span className="num">{yen(d.incomeEstimate)}</span>
@@ -103,8 +101,8 @@ export function Layout({ children }: { children: ReactNode }) {
           </span>
         )}
         {unrec.length > 0 && (
-          <span className="badge warn" title="経費が未記帳の月(統計から除外)">
-            未記帳 {unrec.map((m) => monthLabel(m)).join('・')}
+          <span className="badge warn">
+            <Term id="unrecordedMonth">未記帳</Term> {unrec.map((m) => monthLabel(m)).join('・')}
           </span>
         )}
         <ExportMenu />

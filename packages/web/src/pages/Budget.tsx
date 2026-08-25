@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type BudgetRow, api } from '../api.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
+import { Term } from '../components/Term.js';
 import { yen, yenS } from '../format.js';
 
 const judgePill: Record<string, string> = { 超過: 'pill alert', 範囲内: 'pill neutral', 余裕: 'pill calm' };
@@ -133,7 +134,9 @@ export function BudgetPage() {
           <thead>
             <tr>
               <th>科目</th>
-              <th>分類</th>
+              <th>
+                <Term id="classification" />
+              </th>
               <th>直近3ヶ月平均</th>
               <th>月次予算</th>
               <th>差異(実績−予算)</th>

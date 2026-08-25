@@ -1,0 +1,154 @@
+{
+  "rubric_id": "skill-design",
+  "rubric_version": "1.3.0",
+  "rubric_hash": "sha256:6e1843e5204accb8c76c96bf0d8189dafff6d51f2d182096424fcb6c6bfd3d0d",
+  "composition_hash": "sha256:964f754f53128715cc6da07f933f12e466d5fe943dad21929bc9b83adf7bcef9",
+  "rubric_refs": [
+    "/Users/dm/dev/dev/個人開発/harness/plugins/harness-creator/skills/ref-skill-design-rubric/references/rubric.json",
+    "/Users/dm/dev/dev/個人開発/harness/plugins/harness-creator/skills/assign-skill-design-evaluator/references/rubric.json"
+  ],
+  "target": "/Users/dm/orca/workspaces/kanjo/ui調整/skills/run-kanjo-accounting-report/SKILL.md",
+  "plugin": "ui調整",
+  "skill": "run-kanjo-accounting-report",
+  "score": 100,
+  "threshold": 80,
+  "target_kind": "skill",
+  "passed": true,
+  "coverage": {
+    "applicable_rules": 24,
+    "scored": 21,
+    "pending_human": 3,
+    "unscored": 0,
+    "not_applicable": 21,
+    "scored_ratio": 0.875
+  },
+  "machine_checks": [],
+  "findings": [],
+  "required_fixes": [],
+  "pending_human": [
+    {
+      "id": "BD-004",
+      "reason": "description の trigger と body の手順の 1:1 対応は意味判断が要る (LLM judge)"
+    },
+    {
+      "id": "PG-001",
+      "reason": "check が prompts/<R-id>.yaml を要求するが repo 内の prompts は .yaml が 0 件 / .md が 185 件。記述どおり実装すると全 skill が落ちる。訂正提案: proposals/2026-08-14-pg001-reg001-text-fix.md",
+      "blocked_on": "rubric-text"
+    },
+    {
+      "id": "REG-001",
+      "reason": "check の後半 validate-build-trace.py は build-trace.json を引数に要求するが plugins/ 配下に build-trace.json が 0 件で、repo 全体へは掛けられない。rule の半分が判定不能。訂正提案: proposals/2026-08-14-pg001-reg001-text-fix.md",
+      "blocked_on": "rubric-text"
+    }
+  ],
+  "unscored": [],
+  "not_applicable": [
+    {
+      "id": "AG-001",
+      "applies_to_kinds": ["agent"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "AG-002",
+      "applies_to_kinds": ["agent"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "AG-003",
+      "applies_to_kinds": ["agent"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "AG-004",
+      "applies_to_kinds": ["agent"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "HK-001",
+      "applies_to_kinds": ["hook"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "HK-002",
+      "applies_to_kinds": ["hook"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "HK-003",
+      "applies_to_kinds": ["hook"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "HK-004",
+      "applies_to_kinds": ["hook"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "CM-001",
+      "applies_to_kinds": ["command"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "CM-002",
+      "applies_to_kinds": ["command"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "CM-003",
+      "applies_to_kinds": ["command"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PC-001",
+      "applies_to_kinds": ["plugin-composition"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PC-002",
+      "applies_to_kinds": ["plugin-composition"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PC-003",
+      "applies_to_kinds": ["plugin-composition"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PC-004",
+      "applies_to_kinds": ["plugin-composition"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PR-001",
+      "applies_to_kinds": ["prompt"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PR-002",
+      "applies_to_kinds": ["prompt"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PR-003",
+      "applies_to_kinds": ["prompt"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "WF-001",
+      "applies_to_kinds": ["workflow"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "WF-002",
+      "applies_to_kinds": ["workflow"],
+      "target_kind": "skill"
+    },
+    {
+      "id": "WF-003",
+      "applies_to_kinds": ["workflow"],
+      "target_kind": "skill"
+    }
+  ],
+  "evaluated_at": "2026-08-25",
+  "note": "第2版契約(keyFindings/charts/needs/followUp・期間型)への更新後に再評価"
+}

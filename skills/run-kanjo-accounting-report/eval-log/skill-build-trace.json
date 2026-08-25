@@ -1,0 +1,597 @@
+{
+  "skill_name": "run-kanjo-accounting-report",
+  "skill_kind": "run",
+  "build_mode": "update",
+  "build_stage": "release",
+  "skill_path": "skills/run-kanjo-accounting-report",
+  "brief_path": "skill-brief.json",
+  "source_docs": [
+    "doc/ClaudeCodeスキルの設計書/02-claude-code-skill-spec.md",
+    "doc/ClaudeCodeスキルの設計書/03-yaml-frontmatter-reference.md",
+    "doc/ClaudeCodeスキルの設計書/06-classification-and-naming.md",
+    "doc/ClaudeCodeスキルの設計書/07-progressive-disclosure.md",
+    "doc/ClaudeCodeスキルの設計書/08-skill-writing-guidelines.md",
+    "doc/ClaudeCodeスキルの設計書/13-checklists.md",
+    "doc/ClaudeCodeスキルの設計書/22-cross-platform-runtime.md",
+    "doc/ClaudeCodeスキルの設計書/28-script-execution-model.md",
+    "plugins/harness-creator/skills/run-build-skill/SKILL.md",
+    "plugins/harness-creator/skills/run-build-skill/references/resource-map.yaml",
+    "plugins/harness-creator/skills/ref-yaml-spec-fetcher/references/yaml-spec-cache.md",
+    "plugins/harness-creator/skills/ref-cross-platform-runtime/references/runtime-portability.md",
+    "plugins/harness-creator/skills/ref-skill-design-rubric/references/rubric.json",
+    "plugins/harness-creator/skills/assign-skill-design-evaluator/references/rubric.json",
+    "plugins/harness-creator/skills/run-build-skill/schemas/skill-build-trace.schema.json",
+    "plugins/harness-creator/scripts/feedback_contract_ssot.py",
+    "skills/run-kanjo-accounting-report/eval-log/skill-brief.json",
+    "packages/api/src/ai/contract.ts",
+    "packages/api/src/ai/routes.ts (旧 skills/kanjo-accounting-report/SKILL.md の手順を移植)"
+  ],
+  "context_map_decision": {
+    "map": "plugins/harness-creator/skills/run-build-skill/references/resource-map.yaml",
+    "task_category": "baseline-skill-build + distribution-portability + checklist-gates",
+    "category": ["baseline-skill-build", "distribution-portability", "checklist-gates"],
+    "selected_docs": [
+      "doc/ClaudeCodeスキルの設計書/02-claude-code-skill-spec.md",
+      "doc/ClaudeCodeスキルの設計書/03-yaml-frontmatter-reference.md",
+      "doc/ClaudeCodeスキルの設計書/06-classification-and-naming.md",
+      "doc/ClaudeCodeスキルの設計書/07-progressive-disclosure.md",
+      "doc/ClaudeCodeスキルの設計書/08-skill-writing-guidelines.md",
+      "doc/ClaudeCodeスキルの設計書/13-checklists.md",
+      "doc/ClaudeCodeスキルの設計書/22-cross-platform-runtime.md",
+      "doc/ClaudeCodeスキルの設計書/28-script-execution-model.md",
+      "plugins/harness-creator/skills/run-build-skill/SKILL.md",
+      "plugins/harness-creator/skills/run-build-skill/references/resource-map.yaml",
+      "plugins/harness-creator/skills/ref-yaml-spec-fetcher/references/yaml-spec-cache.md",
+      "plugins/harness-creator/skills/ref-cross-platform-runtime/references/runtime-portability.md",
+      "plugins/harness-creator/skills/ref-skill-design-rubric/references/rubric.json",
+      "plugins/harness-creator/skills/assign-skill-design-evaluator/references/rubric.json",
+      "plugins/harness-creator/skills/run-build-skill/schemas/skill-build-trace.schema.json",
+      "plugins/harness-creator/scripts/feedback_contract_ssot.py",
+      "skills/run-kanjo-accounting-report/eval-log/skill-brief.json",
+      "packages/api/src/ai/contract.ts",
+      "packages/api/src/ai/routes.ts (旧 skills/kanjo-accounting-report/SKILL.md の手順を移植)"
+    ]
+  },
+  "design_model": {
+    "intent": "AI分析画面の指示文を貼るだけで、実績データに基づく5節レポートが Claude Code でも Codex でも同じ品質で届く",
+    "contract": "入力=指示文(GET/POST URL・Bearer token・期間) / 出力=POST 201 と reportId、失敗時は理由と次の一手",
+    "boundary": "GET と POST のみ。DB・設定・リポジトリを変更しない。取得データは一時領域のみ",
+    "execution": "skills/run-kanjo-accounting-report/SKILL.md(inline goal-seek) + scripts/validate-report.py",
+    "feedback": "frontmatter feedback_contract IN1-3/OUT1-2 + eval-log/design-eval.json"
+  },
+  "doc_coverage": [
+    {
+      "doc": "02-skill-structure",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/SKILL.md(本文168行、references/scripts への案内あり)"
+    },
+    {
+      "doc": "03-frontmatter",
+      "status": "PASS",
+      "evidence": "validate-frontmatter.py skills/run-kanjo-accounting-report/SKILL.md exit 0 / description は日本語・2トリガー・末尾「使う。」"
+    },
+    {
+      "doc": "04-invocation-permissions",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/SKILL.md frontmatter allowed-tools=Read, Bash(curl *), Bash(python3 *) / user-invocable true"
+    },
+    {
+      "doc": "05-layering",
+      "status": "PASS",
+      "evidence": "this trace layer_decisions(Skill+script のみ使用、Subagent/Hook/MCP/CLI は理由付き skip)"
+    },
+    {
+      "doc": "06-classification-naming",
+      "status": "PASS",
+      "evidence": "lint-skill-name.py OK / dir==name / prefix run + domain kanjo-accounting-report / effect external-mutation"
+    },
+    {
+      "doc": "07-progressive-disclosure",
+      "status": "PASS",
+      "evidence": "本文300行以下、分析の判断基準は references/analysis-guide.md、JSON の形は references/report-schema.md へ分離"
+    },
+    {
+      "doc": "08-skill-writing-guidelines",
+      "status": "PASS",
+      "evidence": "lint-skill-description.py OK(トリガー2個・≤280字) / Gotchas を ## 注意点 > ### Gotchas に集約"
+    },
+    {
+      "doc": "09-evaluation-orchestration",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/eval-log/design-eval.json(assign-skill-design-evaluator score 100 / high 0)"
+    },
+    {
+      "doc": "10-subagents-hooks-integration",
+      "status": "N/A",
+      "reason": "単一責務の1周ループで Subagent/Hook を使わない(brief.needs_independent_context=false, hook_events=[])"
+    },
+    {
+      "doc": "11-templates",
+      "status": "PASS",
+      "evidence": "run-build-skill templates/_base の章立て(Runtime root contract〜セキュリティと権限)を validate-build-plan.py --check で充足確認"
+    },
+    {
+      "doc": "13-checklists",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/SKILL.md ## 検証 の表 + eval-log/build-plan.json --check exit 0"
+    },
+    {
+      "doc": "14-dynamic-context-injection",
+      "status": "N/A",
+      "reason": "実行時に注入する動的コンテキストは指示文(貼り付け)のみで、Skill 側の自動読込マッピングは不要"
+    },
+    {
+      "doc": "15-official-source-notes",
+      "status": "PASS",
+      "evidence": "Skill(ref-yaml-spec-fetcher) 経由で references/yaml-spec-cache.md を Read し frontmatter 公式キー(name/description/allowed-tools/disable-model-invocation/user-invocable)を確認"
+    },
+    {
+      "doc": "16-official-skills-reference",
+      "status": "PASS",
+      "evidence": "同上 yaml-spec-cache.md の Skills 節(SKILL.md 配置・description 上限)を確認"
+    },
+    {
+      "doc": "26-meta-skill-dogfooding",
+      "status": "N/A",
+      "reason": "harness-creator 自身の dogfooding 章。本 build は利用者プロジェクト(kanjo)内の単一 Skill で、メタスキルではない"
+    },
+    {
+      "doc": "27-rubric-governance-runbook",
+      "status": "N/A",
+      "reason": "rubric(1.3.0)を変更していない。governance_model.proposal_required=false に記録"
+    },
+    {
+      "doc": "28-script-execution-model",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/scripts/validate-report.py の PEP723 contexts=[A, E] / lint-script-frontmatter.py OK"
+    },
+    {
+      "doc": "29-multi-project-rubric-composition",
+      "status": "N/A",
+      "reason": "rubric の合成は評価器既定(L0+L2)をそのまま使い、プロジェクト固有 rubric を追加しない"
+    },
+    {
+      "doc": "30-paradigm-analogy-map",
+      "status": "N/A",
+      "reason": "paradigm_profile 未指定。取得→分析→検査→送信の1周ループに類推モデルの選択余地がない"
+    },
+    {
+      "doc": "31-output-routing-adapter-architecture",
+      "status": "N/A",
+      "reason": "送信先は kanjo API 1系統固定で adapter registry を持たない(Sink Contract は本文 ## 局面: 送信 の fail-closed で代替)"
+    },
+    {
+      "doc": "32-creator-kit-implementation-ledger",
+      "status": "N/A",
+      "reason": "creator-kit 側の実装台帳。プロジェクト内 Skill から更新対象なし"
+    },
+    {
+      "doc": "33-change-governance",
+      "status": "N/A",
+      "reason": "harness 配布物を変更していない(読み取りのみ)"
+    },
+    {
+      "doc": "34-plugin-governance-roadmap",
+      "status": "N/A",
+      "reason": "plugin package ではなくプロジェクト内 Skill(run-plugin-package-check 同様 N/A)"
+    },
+    {
+      "doc": "35-meta-harness-feedback-loop",
+      "status": "N/A",
+      "reason": "メタハーネスへの知見還流は build-external-intelligence の対象外(プロジェクト外へ書き込まない方針)"
+    }
+  ],
+  "build_flow_coverage": [
+    {
+      "step": "problem-definition",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/eval-log/skill-brief.json(goal/boundary/key_constraints)"
+    },
+    {
+      "step": "execution-layer",
+      "status": "PASS",
+      "evidence": "this trace layer_decisions"
+    },
+    {
+      "step": "classification",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/SKILL.md#frontmatter kind=run / effect=external-mutation"
+    },
+    {
+      "step": "naming",
+      "status": "PASS",
+      "evidence": "lint-skill-name.py OK, aliases=[kanjo-accounting-report] で旧名を保持"
+    },
+    {
+      "step": "frontmatter",
+      "status": "PASS",
+      "evidence": "validate-frontmatter.py OK / lint-skill-completeness.py OK"
+    },
+    {
+      "step": "body",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/SKILL.md ## 目的と出力契約 > ### Purpose & Output Contract 〜 ## セキュリティと権限"
+    },
+    {
+      "step": "support-files",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/references/analysis-guide.md, references/report-schema.md, scripts/validate-report.py, scripts/test_validate_report.py"
+    },
+    {
+      "step": "permissions-hooks",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/SKILL.md#frontmatter allowed-tools / hooks なし(理由: layer_decisions.Hook)"
+    },
+    {
+      "step": "validation",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/eval-log/design-eval.json + lint 群(this trace reproducibility_gates) + pnpm run skills:test 20 tests OK"
+    },
+    {
+      "step": "operation-improvement",
+      "status": "PASS",
+      "evidence": "skills/run-kanjo-accounting-report/SKILL.md ## 評価・改善ループ契約(feedback_contract IN1-3/OUT1-2、max_iterations 3)"
+    }
+  ],
+  "layer_decisions": [
+    {
+      "layer": "Skill",
+      "decision": "use",
+      "reason": "指示文を貼られた時の実行契約・ゴールシーク・禁則を1つの SKILL.md で携帯し、Claude Code と Codex が同じ本文を読む。",
+      "placement_evidence": "skills/run-kanjo-accounting-report/SKILL.md",
+      "fallback": "なし(Skill が入口)。",
+      "dependency_direction_ok": true,
+      "macos_stdlib_ok": true,
+      "deterministic": false
+    },
+    {
+      "layer": "Subagent",
+      "decision": "skip",
+      "reason": "1トークン1周の直列処理で、独立 context に分ける判断がない(brief.needs_independent_context=false)。goal_seek.fork=inline。",
+      "placement_evidence": "skills/run-kanjo-accounting-report/SKILL.md#frontmatter goal_seek",
+      "fallback": "重い分析が必要になった場合は run-goal-seek へ fork する余地を残す。",
+      "dependency_direction_ok": true,
+      "macos_stdlib_ok": true,
+      "deterministic": false
+    },
+    {
+      "layer": "Hook",
+      "decision": "skip",
+      "reason": "外部送信の fail-closed は validate-report.py の exit code と本文の禁則で実現し、settings.json への hook 追加(利用者環境依存)を避ける。",
+      "placement_evidence": "skills/run-kanjo-accounting-report/SKILL.md ## 局面: 検査 / ## 局面: 送信",
+      "fallback": "必要なら PreToolUse で curl POST 前に validate を強制する hook を利用者が追加できる。",
+      "dependency_direction_ok": true,
+      "macos_stdlib_ok": true,
+      "deterministic": true
+    },
+    {
+      "layer": "MCP",
+      "decision": "skip",
+      "reason": "対象 API は同一リポジトリの Workers(curl で完結)で MCP サーバーを介す理由がない。",
+      "placement_evidence": "skills/run-kanjo-accounting-report/SKILL.md ## 境界",
+      "fallback": "標準 curl。",
+      "dependency_direction_ok": true,
+      "macos_stdlib_ok": true,
+      "deterministic": true
+    },
+    {
+      "layer": "CLI",
+      "decision": "skip",
+      "reason": "curl と python3 以外の CLI 依存を増やさない(no-deps 原則、22章)。",
+      "placement_evidence": "skills/run-kanjo-accounting-report/SKILL.md#frontmatter allowed-tools",
+      "fallback": "なし。",
+      "dependency_direction_ok": true,
+      "macos_stdlib_ok": true,
+      "deterministic": true
+    },
+    {
+      "layer": "script",
+      "decision": "use",
+      "reason": "送信 JSON の形(5節・上限・型)の検査は LLM 判断ではなく決定論スクリプトで行い、contract.ts と同じ制約を鏡写しにする。",
+      "placement_evidence": "skills/run-kanjo-accounting-report/scripts/validate-report.py(stdlib only, PEP723)",
+      "fallback": "スクリプトが読めない場合は送信せず停止(fail-closed)。",
+      "dependency_direction_ok": true,
+      "macos_stdlib_ok": true,
+      "deterministic": true
+    }
+  ],
+  "variant_support": {
+    "prefix": "run",
+    "role_suffix": "none(brief.role_suffix 空。run-<domain> のみ)",
+    "subagent": "goal_seek.fork=inline(subagent なし)",
+    "hook": "none(fail-closed は script exit code で代替)"
+  },
+  "pattern_decisions": [
+    {
+      "decision": "use",
+      "pattern_ref": "with-goal-seek(engine=inline)",
+      "reason": "固定手順ではなくチェックリスト CL-1..CL-6 の未達から局面を選ぶ。1周で終わる処理なので task-graph へ opt-down せず inline。",
+      "reuse_target": "skills/run-kanjo-accounting-report/SKILL.md ## ゴールシーク実行"
+    },
+    {
+      "decision": "use",
+      "pattern_ref": "with-feedback-contract",
+      "reason": "inner(IN1-3: script/verification-obligation)と outer(OUT1-2: live-trial/human)を frontmatter へ携帯し、評価基準を Skill が自分で持つ。",
+      "reuse_target": "skills/run-kanjo-accounting-report/SKILL.md#frontmatter feedback_contract"
+    },
+    {
+      "decision": "skip",
+      "pattern_ref": "responsibility-prompt-mass-production",
+      "reason": "責務分割(responsibilities)が空で 7層 prompt を生成しない(prompt_creator_policy=skip → run kind のため optional で宣言)。",
+      "reuse_target": "なし"
+    },
+    {
+      "decision": "skip",
+      "pattern_ref": "with-knowledge-loop",
+      "reason": "knowledge_loop=false。取得データ(実績の明細)をプロジェクト外へ蓄積しない方針と相反するため。",
+      "reuse_target": "なし"
+    },
+    {
+      "decision": "use",
+      "pattern_ref": "bilingual-headings(規約衝突の解決)",
+      "reason": "validate-build-plan.py は日本語 ## 見出し(目的と出力契約/主要ルール/注意点)を要求し、評価器 BD-001/BD-002 は英語 literal(## Purpose & Output Contract / ## Gotchas)を要求する。日本語 ## 直下に英語 ### を置く二言語構造で両方を満たした。",
+      "reuse_target": "skills/run-kanjo-accounting-report/SKILL.md"
+    }
+  ],
+  "reproducibility_gates": {
+    "lint": "PASS",
+    "evaluator": "PASS",
+    "elegant_review": "N/A",
+    "governance": "PASS"
+  },
+  "four_conditions": {
+    "C1": "PASS",
+    "C2": "PASS",
+    "C3": "PASS",
+    "C4": "PASS"
+  },
+  "script_execution_model": {
+    "contexts": ["A", "B", "C", "D", "E"],
+    "responsibility_matrix": "SKILL=取得→分析→組立→送信の判断; script=送信 JSON の決定論検査(validate-report.py); test=同スクリプトの回帰(test_validate_report.py, pnpm run skills:test)",
+    "priority_order": "validate-report.py exit 0 を POST の前提条件にする(検査が先、送信が後)。CI(E)では pnpm test の一部として同テストを実行",
+    "permission_boundary": "network=false / write-scope=none(検査だけ)。取得データと送信 JSON は ${TMPDIR:-/tmp} のみで、リポジトリへ書かない。トークンは env/引数/ログへ書き写さない",
+    "scripts": [
+      {
+        "path": "skills/run-kanjo-accounting-report/scripts/validate-report.py",
+        "type": "python-stdlib-script",
+        "allowed_contexts": ["A", "E"],
+        "frontmatter_status": "PASS"
+      },
+      {
+        "path": "skills/run-kanjo-accounting-report/scripts/test_validate_report.py",
+        "type": "python-stdlib-unittest",
+        "allowed_contexts": ["E"],
+        "frontmatter_status": "PASS"
+      }
+    ]
+  },
+  "governance_model": {
+    "rubric_version": "1.3.0",
+    "rubric_hash": "sha256:6e1843e5204accb8c76c96bf0d8189dafff6d51f2d182096424fcb6c6bfd3d0d",
+    "proposal_required": "false: rubric を変更していない",
+    "impact_assessment": "kanjo リポジトリ内 Skill と API の SKILL_NAME 定数のみ。harness 配布物は読み取りだけ",
+    "roles": {
+      "proposer": "improve-kanjo(teammate agent)",
+      "reviewer": "assign-skill-design-evaluator(決定論 rubric)",
+      "approver": "依頼者(PR 確認)",
+      "tooling": "skill-governance-lint scripts + validate-build-plan/trace"
+    },
+    "newly_failing_count": 0
+  },
+  "dogfooding_model": {
+    "artifact_type": "skill",
+    "adapter": "run-build-skill release stage(project-local)",
+    "forked_evaluator": "assign-skill-design-evaluator render-findings-score.py(cwd=harness root で実行)",
+    "eval_log_path": "skills/run-kanjo-accounting-report/eval-log/",
+    "recursive_checks": [
+      "rubric 1.3.0 FM/BD/NM/PD/RG 全21 machine rules PASS",
+      "lint 群 10本 exit 0",
+      "feedback_contract_ssot.validate_criteria 違反0",
+      "validate-build-plan --check exit 0",
+      "unittest 20 tests / line coverage 98.7%(第2版)"
+    ]
+  },
+  "rubric_composition_model": {
+    "status": "PASS",
+    "ordered_refs": [
+      "ref-skill-design-rubric@1.3.0 (L0)",
+      "assign-skill-design-evaluator/references/rubric.json (L2)"
+    ],
+    "merge_strategy": "compose-rubrics.py 既定",
+    "conflict_policy": "most-specific-wins",
+    "composition_hash_evidence": "sha256:964f754f53128715cc6da07f933f12e466d5fe943dad21929bc9b83adf7bcef9"
+  },
+  "paradigm_analogy_model": {
+    "status": "N/A",
+    "reason": "paradigm_profile 未指定。1周の直列処理で類推モデル選択の余地がない"
+  },
+  "output_routing_model": {
+    "status": "N/A",
+    "reason": "送信先は kanjo API 1系統固定(adapter registry なし)。Sink Contract 相当の fail-closed は validate-report.py と ## 局面: 送信 で実装"
+  },
+  "prompt_generation_model": {
+    "policy_resolution": {
+      "brief_policy": "skip",
+      "resolved_policy": "optional",
+      "resolved_via": "brief.prompt_creator_policy=skip だが kind=run は skip 不可のため optional へ解決。責務分割なし(responsibilities=[])で本 build は prompt を生成しない"
+    },
+    "per_responsibility": []
+  },
+  "feedback_contract": {
+    "max_iterations": 3,
+    "criteria": [
+      {
+        "id": "IN1",
+        "loop_scope": "inner",
+        "text": "送信前の JSON が scripts/validate-report.py で exit 0(5節揃い・keyFindings/charts/needs の形・上限内・型一致)",
+        "verify_by": "script"
+      },
+      {
+        "id": "IN2",
+        "loop_scope": "inner",
+        "text": "レポート内の金額・科目・ベンダー名がすべて取得データに存在するか、計算式を書ける派生値である(推測の創作ゼロ)",
+        "verify_by": "script"
+      },
+      {
+        "id": "IN3",
+        "loop_scope": "inner",
+        "text": "不足情報は本文で埋めず dataGaps に「データ不足」として列挙されている",
+        "verify_by": "script"
+      },
+      {
+        "id": "OUT1",
+        "loop_scope": "outer",
+        "text": "POST が 201 で受理され、画面の「届いたレポート」に5節が表示される(preview localhost:8787)",
+        "verify_by": "live-trial"
+      },
+      {
+        "id": "OUT2",
+        "loop_scope": "outer",
+        "text": "依頼者がレポートを読んで、根拠の分からない数字や科目が無いと判断する",
+        "verify_by": "human"
+      }
+    ]
+  },
+  "variable_contract": [
+    {
+      "name": "TMPDIR",
+      "meaning": "取得データと送信 JSON を置く一時ディレクトリ(既定 /tmp)",
+      "default": "/tmp",
+      "required": false,
+      "not_applicable_when": "never(常に一時領域を使う)",
+      "source_trace": "skills/run-kanjo-accounting-report/SKILL.md ## 変数化契約"
+    },
+    {
+      "name": "SKILL_DIR",
+      "meaning": "ホストが提示した SKILL.md の親ディレクトリ(scripts/references の解決元)",
+      "default": "host-provided SKILL.md path の parent",
+      "required": true,
+      "not_applicable_when": "never",
+      "source_trace": "skills/run-kanjo-accounting-report/SKILL.md ## Runtime root contract"
+    },
+    {
+      "name": "DATA_URL / REPORT_URL / TOKEN",
+      "meaning": "指示文に含まれる取得URL・送信URL・使い捨てトークン(値は指示文からのみ取る)",
+      "default": "なし(指示文で毎回与えられる)",
+      "required": true,
+      "not_applicable_when": "never",
+      "source_trace": "skills/run-kanjo-accounting-report/SKILL.md ## 変数化契約"
+    }
+  ],
+  "requirement_coverage": [
+    {
+      "requirement_id": "mode",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md(update: 旧 kanjo-accounting-report の手順・references を移植し規約構造へ再編)"
+    },
+    {
+      "requirement_id": "build_stage",
+      "disposition": "mapped",
+      "mapped_to": "this trace reproducibility_gates + eval-log/design-eval.json(release: evaluator 実施済み)"
+    },
+    {
+      "requirement_id": "previous_name",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md#frontmatter aliases=[kanjo-accounting-report] / packages/api/src/ai/contract.ts SKILL_NAME 更新"
+    },
+    {
+      "requirement_id": "goal",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ## ゴールシーク実行 > ### ゴール (Goal) / feedback_contract OUT1"
+    },
+    {
+      "requirement_id": "purpose_background",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ### 目的・背景 (Why)"
+    },
+    {
+      "requirement_id": "boundary",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ## 境界 / ## セキュリティと権限"
+    },
+    {
+      "requirement_id": "key_constraints[0]",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ### Key Rules 1 / feedback_contract IN2 / references/analysis-guide.md"
+    },
+    {
+      "requirement_id": "key_constraints[1]",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ### Key Rules 2 / feedback_contract IN3 / validate-report.py dataGaps 検査"
+    },
+    {
+      "requirement_id": "key_constraints[2]",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ### Key Rules 3 / validate-report.py missing sections 検査 / feedback_contract IN1"
+    },
+    {
+      "requirement_id": "key_constraints[3]",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ### Key Rules 4 / validate-report.py MARKDOWN_LINE_RE・HTML_TAG_RE 検査"
+    },
+    {
+      "requirement_id": "key_constraints[4]",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ### Key Rules 5 / ## 局面: 検査 / feedback_contract IN1"
+    },
+    {
+      "requirement_id": "key_constraints[5]",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ### Key Rules 6 / ## 局面: 取得・送信 の 401 分岐"
+    },
+    {
+      "requirement_id": "key_constraints[6]",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ## 局面: 後片付け / ## セキュリティと権限"
+    },
+    {
+      "requirement_id": "external_systems",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ## 局面: 取得(GET) / ## 局面: 送信(POST) / references/report-schema.md"
+    },
+    {
+      "requirement_id": "allowed_tools",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md#frontmatter allowed-tools"
+    },
+    {
+      "requirement_id": "prompt_creator_policy",
+      "disposition": "mapped",
+      "mapped_to": "this trace prompt_generation_model(run kind のため skip→optional で宣言、per_responsibility 空)"
+    },
+    {
+      "requirement_id": "goal_seek",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md#frontmatter goal_seek(inline/inline/3) / ### ゴールシーク配線"
+    },
+    {
+      "requirement_id": "domain",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/references/analysis-guide.md(会計分析の判断基準)"
+    },
+    {
+      "requirement_id": "owner",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md#frontmatter owner"
+    },
+    {
+      "requirement_id": "runtime_targets",
+      "disposition": "mapped",
+      "mapped_to": "skills/run-kanjo-accounting-report/SKILL.md ## Runtime root contract / scripts/sync-project-skills.mjs(.claude/skills と .agents/skills へ同期)"
+    },
+    {
+      "requirement_id": "source_of_truth_paths",
+      "disposition": "mapped",
+      "mapped_to": "scripts/sync-project-skills.mjs(EXCLUDED_DIRS=eval-log,__pycache__) / package.json skills:sync, skills:check"
+    }
+  ],
+  "decisions_log": [
+    "規約衝突1: build-plan の日本語 ## 見出し vs 評価器の英語 literal → 二言語構造(## 日本語 > ### 英語)で両立(pattern_decisions 参照)",
+    "規約衝突2: eval-log/ は run-build-skill の必須成果物だが、配布先(.claude/.agents)に置くと実行時 context を圧迫 → sync-project-skills.mjs で正本のみに残す",
+    "規約衝突3: goal-seek 既定 engine=task-graph → 1周処理のため inline に opt-down(brief.goal_seek)",
+    "判断: run-plugin-package-check は N/A(plugin package ではなくプロジェクト内 Skill。manifest/marketplace なし)",
+    "判断: Sink Contract(ref-output-routing)は N/A(送信先1系統。fail-closed は script + 本文で担保)",
+    "判断: 旧名 kanjo-accounting-report は aliases で保持し、API の SKILL_NAME を新名へ更新(指示文が新名を案内)",
+    "計測: scripts/validate-report.py 行カバレッジ 230/233 = 98.7%(第2版。未到達は if __name__ の sys.exit 行と到達不能分岐)。eval-log/coverage.json"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "skill_name": "run-kanjo-accounting-report",
+  "kind": "run",
+  "role_suffix": "",
+  "mode": "update",
+  "build_stage": "release",
+  "previous_name": "kanjo-accounting-report",
+  "goal": "kanjo(収支管理コンソール)の「AI分析」画面が発行した指示文(データ取得URL・結果送信URL・使い捨てトークン・対象期間)を受け取り、取込済みの実績データだけを根拠に固定5節(spend/change/reduction/split/subscriptions)の会計分析レポートJSONを組み立て、アプリへ送信して reportId を利用者に返す。Claude Code と Codex の両方で同一手順・同一品質で動く。",
+  "purpose_background": "手書き版スキルは手順が固定列挙で、送信JSONの形の検査が人手(LLM任せ)だった。harness-creator の規約(commonCore frontmatter・ゴールシーク・feedback_contract・決定論バリデータ)に合わせ、再現性と評価可能性を上げる。",
+  "boundary": "アプリの実績データ(GET)を読み、レポート(POST)を送るだけ。アプリのDB・設定・リポジトリのファイルは変更しない。取得データをリポジトリへ保存しない。トークンをログ・要約・別ファイルへ書き写さない。",
+  "key_constraints": [
+    "数字は取得したデータにある値と、計算式が言える派生値だけ。推測で科目・金額・ベンダーを創作しない",
+    "無いものは「データ不足」と書く(dataGaps に列挙)。埋めない・ぼかさない",
+    "5節(spend/change/reduction/split/subscriptions)を毎回すべて出す。該当なしでも節は残す",
+    "本文はプレーンテキスト(改行と「- 」の箇条書きだけ)",
+    "送信前に scripts/validate-report.py で形を検査し、exit 0 になってから POST する",
+    "401 は自分で推測して続けず、利用者に指示文の再発行を依頼する",
+    "取得データは一時ディレクトリだけに置き、終了時に削除する。リポジトリにコミットしない"
+  ],
+  "external_systems": [
+    {
+      "name": "kanjo API",
+      "direction": "read",
+      "endpoint": "GET /api/ai/tasks/:id/data",
+      "auth": "Bearer kjo_ (single-use, 24h)"
+    },
+    {
+      "name": "kanjo API",
+      "direction": "write",
+      "endpoint": "POST /api/ai/tasks/:id/report",
+      "auth": "Bearer kjo_ (same token)"
+    }
+  ],
+  "allowed_tools": ["Read", "Bash(curl *)", "Bash(python3 *)"],
+  "responsibilities": [],
+  "prompt_creator_policy": "skip",
+  "generate_pair_evaluator": false,
+  "needs_independent_context": false,
+  "hook_events": [],
+  "knowledge_loop": false,
+  "with_subagent_hint": false,
+  "goal_seek": { "engine": "inline", "fork": "inline", "max_loops": 3 },
+  "domain": "accounting-analysis",
+  "owner": "daishiman",
+  "consult_build_knowledge": true,
+  "runtime_targets": ["claude-code", "codex"],
+  "source_of_truth_paths": {
+    "source": "skills/run-kanjo-accounting-report/",
+    "derived": [".claude/skills/run-kanjo-accounting-report/", ".agents/skills/run-kanjo-accounting-report/"]
+  }
+}

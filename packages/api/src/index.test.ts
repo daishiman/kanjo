@@ -43,3 +43,24 @@ describe('API公開境界', () => {
     });
   });
 });
+
+describe('AIエージェント用API', () => {
+  const env = { ACCESS_AUD: '', ACCESS_TEAM_DOMAIN: '', SESSION_SECRET: 'synthetic-test-secret' };
+
+  it('トークン無しではデータも結果送信も受け付けない', async () => {
+    const data = await app.request('/api/ai/tasks/x/data', undefined, env);
+    expect(data.status).toBe(401);
+    const post = await app.request(
+      '/api/ai/tasks/x/report',
+      { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' },
+      env,
+    );
+    expect(post.status).toBe(401);
+    await expect(post.json()).resolves.toMatchObject({ error: { code: 'unauthorized' } });
+  });
+
+  it('セッション無しではレポート一覧を見られない', async () => {
+    const res = await app.request('/api/ai/reports', undefined, env);
+    expect(res.status).toBe(401);
+  });
+});

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { type DiagnosisData, api } from '../api.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
+import { Term } from '../components/Term.js';
 import { pct, yen } from '../format.js';
 
 const judgePill: Record<string, string> = {
@@ -58,40 +59,79 @@ export function DiagnosisPage() {
 
       <div className="kpis">
         <KpiCard
-          label={`経費 平均 / 中央値(${d.kpi.months}ヶ月)`}
+          label={
+            <>
+              経費 平均 / <Term id="median" />({d.kpi.months}ヶ月)
+            </>
+          }
           value={yen(d.kpi.expenseMean)}
           note={
             <span className="num">
-              中央値 {yen(d.kpi.expenseMedian)} / CV {d.kpi.expenseCv.toFixed(2)}
+              中央値 {yen(d.kpi.expenseMedian)} / <Term id="cv" /> {d.kpi.expenseCv.toFixed(2)}
             </span>
           }
         />
-        <KpiCard label={<>固定費(CV&lt;0.6 直近3ヶ月平均)</>} value={yen(d.kpi.fixedCost)} />
         <KpiCard
-          label="損益分岐点(BEP)"
+          label={
+            <>
+              <Term id="fixedCost" />
+              (CV&lt;0.6 直近3ヶ月平均)
+            </>
+          }
+          value={yen(d.kpi.fixedCost)}
+        />
+        <KpiCard
+          label={
+            <>
+              <Term id="breakEven" />
+              (BEP)
+            </>
+          }
           value={yen(d.bep.breakEven)}
-          note={<span className="num">安全余裕率 {pct(d.bep.safetyMargin, 0)}</span>}
+          note={
+            <span className="num">
+              <Term id="safetyMargin" /> {pct(d.bep.safetyMargin, 0)}
+            </span>
+          }
         />
         <KpiCard
           label={`平均月商(売上${d.bep.revenueMonths}ヶ月)`}
           value={yen(d.bep.avgRevenue)}
-          note={<span className="num">経費率 {pct(d.kpi.expenseRatio, 0)}</span>}
+          note={
+            <span className="num">
+              <Term id="expenseRatio" /> {pct(d.kpi.expenseRatio, 0)}
+            </span>
+          }
         />
       </div>
 
       <div className="card scroll-x">
-        <h2>科目別プロファイル(未記帳月は除外)</h2>
+        <h2>
+          科目別プロファイル(
+          <Term id="unrecordedMonth" />
+          は除外)
+        </h2>
         <table className="data">
           <thead>
             <tr>
               <th>科目</th>
-              <th>分類</th>
+              <th>
+                <Term id="classification" />
+              </th>
               <th>直近3ヶ月平均</th>
               <th>平均</th>
-              <th>中央値</th>
-              <th>CV</th>
-              <th>基準レンジ</th>
-              <th>z</th>
+              <th>
+                <Term id="median" />
+              </th>
+              <th>
+                <Term id="cv" />
+              </th>
+              <th>
+                <Term id="range" />
+              </th>
+              <th>
+                <Term id="zScore" />
+              </th>
               <th>判定</th>
               <th>シグナル</th>
             </tr>

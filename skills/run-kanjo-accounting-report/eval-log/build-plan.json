@@ -1,0 +1,57 @@
+{
+  "schema": "schemas/build-plan.schema.json",
+  "skill_name": "run-kanjo-accounting-report",
+  "kind": "run",
+  "role_suffix": "",
+  "template": "run.md",
+  "goal_seek_engine": "inline",
+  "engine_profile": "",
+  "full_task_spec_graph": null,
+  "capability_gaps": [],
+  "flags": {
+    "with_prompts": false,
+    "with_evaluator": false,
+    "with_hooks": false,
+    "with_subagent": false,
+    "with_knowledge": false,
+    "with_goal_seek": true,
+    "feedback_contract_required": true,
+    "feedback_loop_deploy": true,
+    "content_review": true,
+    "verification_profile": "incremental",
+    "build_stage": "draft"
+  },
+  "acceptance_tier": "fork",
+  "required_sections": [
+    "Runtime root contract",
+    "目的と出力契約",
+    "境界",
+    "主要ルール",
+    "評価・改善ループ契約",
+    "ゴールシーク実行",
+    "検証",
+    "注意点",
+    "変数化契約",
+    "追加リソース",
+    "セキュリティと権限"
+  ],
+  "required_deliverables": [
+    {
+      "id": "skill-md",
+      "type": "file",
+      "path": "SKILL.md",
+      "source": "kind"
+    },
+    {
+      "id": "frontmatter:feedback_contract",
+      "type": "frontmatter-key",
+      "path": "feedback_contract",
+      "source": "kind (loop 実行系)",
+      "verified_by": "lint-feedback-contract.py"
+    }
+  ],
+  "notes": [
+    "external_systems 非空: 疎通確認 (doctor) / fail-closed / portability 対応の要否を CL-11 に照らして判断し、trace に記録すること。",
+    "外部システムへ書込む投入系の場合は Skill(ref-output-routing) の Sink Contract (schema SSOT / 冪等 upsert / fail-closed) を必須参照し、その不変条件を feedback_contract.criteria と deterministic_checks に反映すること (モデル知識で毎回再発明しない)。"
+  ]
+}

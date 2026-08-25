@@ -99,6 +99,16 @@ export const categoryOptions = sqliteTable('category_options', {
   mid: text('mid').notNull(),
 });
 
+/** サブスクのベンダー登録(名前+別名)。aliases は JSON 配列文字列 */
+export const subVendors = sqliteTable('sub_vendors', {
+  id: integer('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  name: text('name').notNull(),
+  aliases: text('aliases').notNull().default('[]'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: text('created_at').notNull().$defaultFn(nowIso),
+});
+
 export const budgets = sqliteTable('budgets', {
   userId: text('user_id').notNull(),
   account: text('account').notNull(),
@@ -154,3 +164,59 @@ export const tradeoffPlans = sqliteTable('tradeoff_plans', {
   verdict: text('verdict'),
   createdAt: text('created_at').$defaultFn(nowIso),
 });
+
+/** AI分析の依頼(期間 + 使い捨てトークンのハッシュ)。原文トークンは保存しない */
+export const aiTasks = sqliteTable(
+  'ai_tasks',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    /** 旧形式(月/年)。新規行は 'range' 固定で period_from/to が正本 */
+    periodKind: text('period_kind').notNull().default('range'),
+    periodKey: text('period_key').notNull().default(''),
+    periodFrom: text('period_from').notNull(),
+    periodTo: text('period_to').notNull(),
+    reportType: text('report_type', { enum: ['monthly', 'annual', 'longterm'] }).notNull(),
+    /** 再分析時に利用者が補った情報(任意) */
+    supplement: text('supplement'),
+    /** 再分析の元になったレポート(任意) */
+    parentReportId: text('parent_report_id'),
+    tokenHash: text('token_hash').notNull(),
+    expiresAt: text('expires_at').notNull(),
+    usedAt: text('used_at'),
+    reportId: text('report_id'),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    uniqueIndex('uq_ai_tasks_token').on(t.tokenHash),
+    index('idx_ai_tasks_user').on(t.userId, t.createdAt),
+  ],
+);
+
+/** 受信したAI分析レポート(検証・無害化済みJSON) */
+export const aiReports = sqliteTable(
+  'ai_reports',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    taskId: text('task_id').notNull(),
+    periodKind: text('period_kind').notNull().default('range'),
+    periodKey: text('period_key').notNull().default(''),
+    periodFrom: text('period_from').notNull(),
+    periodTo: text('period_to').notNull(),
+    reportType: text('report_type', { enum: ['monthly', 'annual', 'longterm'] }).notNull(),
+    /** 同じ期間・型のレポートの通し番号(再分析で増える) */
+    version: integer('version').notNull().default(1),
+    parentReportId: text('parent_report_id'),
+    generatedBy: text('generated_by').notNull(),
+    title: text('title').notNull(),
+    summary: text('summary').notNull(),
+    bodyJson: text('body_json').notNull(),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    index('idx_ai_reports_user').on(t.userId, t.createdAt),
+    index('idx_ai_reports_period').on(t.userId, t.periodKind, t.periodKey),
+    index('idx_ai_reports_type').on(t.userId, t.reportType, t.periodFrom, t.periodTo),
+  ],
+);

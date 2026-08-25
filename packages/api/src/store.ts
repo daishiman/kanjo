@@ -8,13 +8,15 @@
  */
 import {
   DEFAULT_RULES,
-  DEFAULT_SUB_VENDORS,
   type Dataset,
   type FreeeDeal,
   type MfTx,
   type Rule,
+  type SubVendor,
   type TxEdit,
+  applyFreeeDeals,
   emptyDataset,
+  normalizeAccount,
   recomputeClassification,
 } from '@kanjo/core';
 import { and, asc, eq, inArray } from 'drizzle-orm';
@@ -104,20 +106,22 @@ export async function replaceInstitutionOwners(
 /* ------------------------- 読み出し ------------------------- */
 
 export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
-  const [aggRows, txRows, ruleRows, editRows, budgetRows, cashRows, unrecRows, instRows] = await Promise.all([
-    db.select().from(s.monthlyAgg).where(eq(s.monthlyAgg.userId, userId)),
-    db
-      .select()
-      .from(s.mfTransactions)
-      .where(eq(s.mfTransactions.userId, userId))
-      .orderBy(asc(s.mfTransactions.month), asc(s.mfTransactions.date)),
-    db.select().from(s.rules).where(eq(s.rules.userId, userId)).orderBy(asc(s.rules.sortOrder)),
-    db.select().from(s.txEdits).where(eq(s.txEdits.userId, userId)),
-    db.select().from(s.budgets).where(eq(s.budgets.userId, userId)),
-    db.select().from(s.cashOverrides).where(eq(s.cashOverrides.userId, userId)),
-    db.select().from(s.unrecordedMonths).where(eq(s.unrecordedMonths.userId, userId)),
-    db.select().from(s.institutionOwners).where(eq(s.institutionOwners.userId, userId)),
-  ]);
+  const [aggRows, txRows, ruleRows, editRows, budgetRows, cashRows, unrecRows, instRows, vendorRows] =
+    await Promise.all([
+      db.select().from(s.monthlyAgg).where(eq(s.monthlyAgg.userId, userId)),
+      db
+        .select()
+        .from(s.mfTransactions)
+        .where(eq(s.mfTransactions.userId, userId))
+        .orderBy(asc(s.mfTransactions.month), asc(s.mfTransactions.date)),
+      db.select().from(s.rules).where(eq(s.rules.userId, userId)).orderBy(asc(s.rules.sortOrder)),
+      db.select().from(s.txEdits).where(eq(s.txEdits.userId, userId)),
+      db.select().from(s.budgets).where(eq(s.budgets.userId, userId)),
+      db.select().from(s.cashOverrides).where(eq(s.cashOverrides.userId, userId)),
+      db.select().from(s.unrecordedMonths).where(eq(s.unrecordedMonths.userId, userId)),
+      db.select().from(s.institutionOwners).where(eq(s.institutionOwners.userId, userId)),
+      loadSubVendors(db, userId),
+    ]);
 
   const data = emptyDataset();
 
@@ -130,7 +134,8 @@ export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
 
   // 事業側の系列を monthly_agg から復元
   const catSet = new Set<string>();
-  const vendorSet = new Set<string>(DEFAULT_SUB_VENDORS);
+  // ベンダーは sub_vendors が正。集計キャッシュに残る登録外の名前(削除直後など)も読み出しだけは通す
+  const vendorSet = new Set<string>(vendorRows.map((v) => v.name));
   for (const r of aggRows) {
     if (r.scope.startsWith('biz_exp:')) catSet.add(r.scope.slice('biz_exp:'.length));
     else if (r.scope.startsWith('subs:')) vendorSet.add(r.scope.slice('subs:'.length));
@@ -141,6 +146,7 @@ export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
     data.biz.expense[c] = data.months.map(() => 0);
   });
   data.subs.vendors = [...vendorSet];
+  data.subs.aliases = Object.fromEntries(vendorRows.map((v) => [v.name, v.aliases]));
   data.subs.vendors.forEach((v) => {
     data.subs.matrix[v] = data.months.map(() => 0);
   });
@@ -199,6 +205,79 @@ export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
   recomputeClassification(data);
   return data;
 }
+
+/* ------------------------- サブスクのベンダー登録 ------------------------- */
+
+export interface SubVendorRow extends SubVendor {
+  id: number;
+}
+
+const parseAliases = (raw: string): string[] => {
+  try {
+    const v: unknown = JSON.parse(raw);
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+};
+
+/** 登録順(sort_order, id)で返す。マイグレーション 0005 で既定8件が入る */
+export async function loadSubVendors(db: Db, userId: string): Promise<SubVendorRow[]> {
+  const rows = await db
+    .select()
+    .from(s.subVendors)
+    .where(eq(s.subVendors.userId, userId))
+    .orderBy(asc(s.subVendors.sortOrder), asc(s.subVendors.id));
+  return rows.map((r) => ({ id: r.id, name: r.name, aliases: parseAliases(r.aliases) }));
+}
+
+/** 統合JSONなどに含まれるベンダー名を登録に加える(既存は無視) */
+export async function ensureSubVendors(db: Db, userId: string, names: string[]): Promise<void> {
+  const existing = new Set((await loadSubVendors(db, userId)).map((v) => v.name));
+  const add = names.filter((n) => n && !existing.has(n));
+  for (const name of add) await db.insert(s.subVendors).values({ userId, name, sortOrder: 100 });
+}
+
+/**
+ * freee 原本仕訳から事業側の集計を作り直す(正規化マップ・ベンダー登録の変更時)。
+ * account_norm 列も新マップで更新する。
+ */
+export async function recomputeFromDeals(db: Db, userId: string): Promise<void> {
+  const normMap = await loadNormMap(db, userId);
+  const dealRows = await db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId));
+  for (const r of dealRows) {
+    const norm = normalizeAccount(r.accountRaw ?? '', normMap);
+    if (norm !== r.accountNorm) {
+      await db.update(s.freeeDeals).set({ accountNorm: norm }).where(eq(s.freeeDeals.id, r.id));
+    }
+  }
+  const data = await loadDataset(db, userId);
+  // 削除済みベンダーの列を集計から落とす(読み出しでは温存されるため、ここで正本に揃える)
+  const registered = new Set(Object.keys(data.subs.aliases));
+  data.subs.vendors = data.subs.vendors.filter((v) => registered.has(v));
+  const months = [...new Set(dealRows.map((r) => r.month))].sort();
+  if (months.length) {
+    applyFreeeDeals(
+      data,
+      dealRows.map((r) => ({
+        ...dealFromRow(r),
+        accountNorm: normalizeAccount(r.accountRaw ?? '', normMap),
+      })),
+      months,
+    );
+  }
+  await saveAgg(db, userId, data);
+}
+
+export const dealFromRow = (r: typeof s.freeeDeals.$inferSelect): FreeeDeal => ({
+  month: r.month,
+  date: r.date,
+  io: r.io,
+  partner: r.partner ?? '',
+  accountRaw: r.accountRaw ?? '',
+  accountNorm: r.accountNorm ?? '',
+  amount: r.amount,
+});
 
 /* ------------------------- 集計キャッシュ再生成 ------------------------- */
 

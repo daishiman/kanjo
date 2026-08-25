@@ -210,6 +210,8 @@ body {
   padding: 20px;
   max-width: 1200px;
   width: 100%;
+  /* grid の子は min-content 幅まで広がるため、横スクロール表(.scroll-x)を含んでもページを押し広げない */
+  min-width: 0;
   animation: page-in var(--motion-base) var(--ease-standard) both;
 }
 @keyframes page-in {
@@ -342,6 +344,7 @@ table.data tr.total td {
    見出し行が先頭データ行の上に重なる。スクロール容器内では上端固定にする。 */
 .scroll-x table.data thead th {
   top: 0;
+  white-space: nowrap; /* 横スクロール容器内では見出しを1文字ずつ折り返さない */
 }
 .scroll-x table.data th:first-child,
 .scroll-x table.data td:first-child {
@@ -524,15 +527,19 @@ input.num-input {
 
 .segment {
   display: inline-flex;
+  max-width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto; /* 狭い幅では群ごと横スクロール。ラベルを語の途中で折り返さない */
+  overflow-y: hidden;
 }
 .segment button {
   border: none;
   border-radius: 0;
   min-height: 30px;
   padding: 5px 14px;
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 .segment button.on {
   background: var(--biz);
@@ -812,4 +819,266 @@ kbd {
 /* 収支バランス表: 上のセレクタで選んだ月を太字で示す(塗りは使わない) */
 table.data tr.selected td {
   font-weight: 700;
+}
+
+/* -------- AI分析(P12) -------- */
+.steps {
+  margin: 0 0 12px;
+  padding-left: 1.4em;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.steps li + li {
+  margin-top: 4px;
+}
+.prompt-box {
+  margin-top: 12px;
+}
+.prompt-box textarea,
+.report textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--surface);
+  color: var(--ink);
+  resize: vertical;
+}
+.prompt-box textarea:focus {
+  outline: 2px solid var(--biz);
+  outline-offset: 1px;
+}
+.report-section {
+  margin-top: 20px;
+}
+.report-section h3 {
+  font-size: 13px;
+  margin: 0 0 6px;
+}
+.report-text p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.report-text ul,
+.report-section ul {
+  margin: 0 0 8px;
+  padding-left: 1.4em;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* AI分析の一覧: 日付・期間・状態は短い語なので折り返さず、狭幅では横スクロール(.scroll-x)に任せる */
+table.ai-table th,
+table.ai-table td {
+  white-space: nowrap;
+}
+table.ai-table td.wrap {
+  white-space: normal;
+  min-width: 12em;
+}
+
+/* AI分析レポート: 要点サマリー(3群)と図表 */
+.findings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.finding h4,
+.report-chart h4 {
+  font-size: 12px;
+  margin: 0 0 6px;
+  color: var(--ink-soft);
+}
+.finding ol {
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.finding li + li {
+  margin-top: 6px;
+}
+.finding-label {
+  font-weight: 700;
+  margin-right: 6px;
+}
+.finding-amount {
+  margin-right: 6px;
+}
+.finding-note {
+  display: block;
+}
+.report-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+.report-chart {
+  min-width: 0;
+}
+details.prompt-box > summary {
+  cursor: pointer;
+}
+
+/* AIレポート一覧: 型ごとに最新1件を大きく、過去は畳む(要望24b) */
+.report-group + .report-group {
+  margin-top: 20px;
+}
+.report-group h3 {
+  font-size: 13px;
+  margin: 0 0 8px;
+  color: var(--ink-soft);
+}
+.report-latest {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.report-latest.selected {
+  border-color: var(--biz);
+}
+.report-latest-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+.report-latest-title {
+  font-size: 16px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.report-past {
+  margin-top: 8px;
+}
+.report-past > summary {
+  cursor: pointer;
+}
+.report-actions {
+  margin: 8px 0 4px;
+}
+
+/* 要点の3段(事実→解釈→次の一手) */
+.finding-steps {
+  display: grid;
+  grid-template-columns: 4.5em 1fr;
+  gap: 2px 8px;
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+.finding-steps dt {
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.finding-steps dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* 図表カタログ: 図番号・読み方・出せない図の枠 */
+.figure-no {
+  font-weight: 700;
+  color: var(--ink);
+  margin-right: 4px;
+}
+.figure-ref {
+  font-weight: 700;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+}
+.report-chart.unavailable {
+  opacity: 0.85;
+}
+.chart-placeholder {
+  min-height: 120px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 12px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.chart-placeholder p {
+  margin: 0 0 4px;
+}
+.chart-guide,
+.chart-caption {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 6px 0 0;
+}
+
+/* 前回との並列比較 */
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.compare-col {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.compare-col h4 {
+  font-size: 12px;
+  margin: 0 0 6px;
+}
+.compare-col ul {
+  margin: 0 0 8px;
+  padding-left: 1.2em;
+  font-size: 13px;
+}
+
+/* 用語ホバー(components/Term.tsx) */
+.term {
+  all: unset;
+  cursor: help;
+  text-decoration: underline dotted;
+  text-decoration-color: var(--ink-soft);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+.term:hover,
+.term[aria-expanded="true"] {
+  text-decoration-style: solid;
+}
+.term:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.term-tip {
+  position: fixed;
+  z-index: 50;
+  display: block;
+  padding: 8px 10px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
+  font-size: 12px;
+  line-height: 1.55;
+  font-weight: 400;
+  text-align: left;
+  white-space: normal;
+  pointer-events: none;
+}
+.term-tip strong {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 2px;
 }

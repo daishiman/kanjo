@@ -4,6 +4,8 @@ import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type SubscriptionsData, api } from '../api.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
+import { SubVendorsPanel, SubsCandidatesPanel } from '../components/SubVendors.js';
+import { Term } from '../components/Term.js';
 import { VENDOR_PALETTE, yenTick } from '../components/charts.js';
 import { monthLabel, monthShort, ratio, yen } from '../format.js';
 
@@ -40,6 +42,7 @@ export function SubscriptionsPage() {
             </Link>
           }
         />
+        <SubVendorsPanel />
       </>
     );
 
@@ -53,9 +56,10 @@ export function SubscriptionsPage() {
           <ul style={{ margin: '4px 0 0 18px', padding: 0 }}>
             {s.alerts.map((a) => (
               <li key={`${a.vendor}-${a.month}-${a.type}`}>
-                {monthLabel(a.month)} <strong>{a.vendor}</strong> {a.type === 'dup' ? '重複契約疑い' : '急増'}
-                : <span className="num">{yen(a.value)}</span>(通常月中央値{' '}
-                <span className="num">{yen(a.median)}</span>)
+                {monthLabel(a.month)} <strong>{a.vendor}</strong>{' '}
+                {a.type === 'dup' ? <Term id="subsDup" /> : <Term id="subsSpike" />}:{' '}
+                <span className="num">{yen(a.value)}</span>(通常月
+                <Term id="median" /> <span className="num">{yen(a.median)}</span>)
               </li>
             ))}
           </ul>
@@ -68,10 +72,28 @@ export function SubscriptionsPage() {
           value={yen(s.now.monthlyTotal)}
           note="月額"
         />
-        <KpiCard label="年換算(月額×12)" value={yen(s.now.annualized)} note="いまの契約を1年続けた場合" />
-        <KpiCard label="直近12ヶ月の実支払" value={yen(s.now.last12Total)} note="未記帳月は除く" />
         <KpiCard
-          label="対売上比"
+          label={
+            <>
+              <Term id="annualized" />
+              (月額×12)
+            </>
+          }
+          value={yen(s.now.annualized)}
+          note="いまの契約を1年続けた場合"
+        />
+        <KpiCard
+          label="直近12ヶ月の実支払"
+          value={yen(s.now.last12Total)}
+          note={
+            <>
+              <Term id="unrecordedMonth" />
+              は除く
+            </>
+          }
+        />
+        <KpiCard
+          label={<Term id="revenueShare" />}
           value={s.now.revenueShare === null ? '—' : ratio(s.now.revenueShare, 1)}
           note={s.now.revenueShare === null ? '売上データがありません' : '目安 10〜15%以内'}
         />
@@ -87,7 +109,10 @@ export function SubscriptionsPage() {
               <th>平均月額</th>
               <th>支払月数</th>
               <th>直近12ヶ月合計</th>
-              <th>年換算(直近月額×12)</th>
+              <th>
+                <Term id="annualized" />
+                (直近月額×12)
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -160,7 +185,13 @@ export function SubscriptionsPage() {
           }))}
         />
       </div>
-      <p className="sub">重複疑い=中央値の1.8倍超かつ2万円超 / 急増=3倍超かつ1.5万円超(HTML版と同一基準)。</p>
+      <SubVendorsPanel />
+      <SubsCandidatesPanel hasDeals={s.months.length > 0} />
+
+      <p className="sub">
+        <Term id="subsDup">重複疑い</Term>=中央値の1.8倍超かつ2万円超 / <Term id="subsSpike" />
+        =3倍超かつ1.5万円超(HTML版と同一基準)。
+      </p>
     </>
   );
 }

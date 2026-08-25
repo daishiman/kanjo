@@ -3,16 +3,17 @@
  * 候補選択→合計捻出額と予定支出の差→捻出できる/不足を判定→メモ保存(言いっぱなし防止)。
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { type TradeoffResponse, api } from '../api.js';
 import { PageHeader, PageState } from '../components/Page.js';
+import { Term } from '../components/Term.js';
 import { yen } from '../format.js';
 
-const kindLabel: Record<string, string> = {
-  subs_dup: 'サブスク重複',
-  subs_spike: 'サブスク急増',
+const kindLabel: Record<string, ReactNode> = {
+  subs_dup: <Term id="subsDup">サブスク重複</Term>,
+  subs_spike: <Term id="subsSpike">サブスク急増</Term>,
   budget_over: '予算超過',
-  above_range: 'レンジ超過',
+  above_range: <Term id="range">レンジ超過</Term>,
   unexplained: '精査期待値',
 };
 

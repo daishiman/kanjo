@@ -5,6 +5,7 @@ import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type HouseholdData, api } from '../api.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
+import { Term } from '../components/Term.js';
 import { COLORS, yenTick } from '../components/charts.js';
 import { deltaCls, gainCls, monthLabel, monthShort, ratio, yen, yenS } from '../format.js';
 
@@ -72,7 +73,7 @@ export function HouseholdPage() {
         </select>
         {d.explainability && d.explainability.month === month && (
           <span className={`badge ${d.explainability.rate >= 0.8 ? 'ok' : 'warn'}`}>
-            説明可能率 {(d.explainability.rate * 100).toFixed(0)}%(未分類+カード引落{' '}
+            <Term id="explainability" /> {(d.explainability.rate * 100).toFixed(0)}%(未分類+カード引落{' '}
             {yen(d.explainability.unexplained)})
           </span>
         )}
@@ -118,7 +119,10 @@ export function HouseholdPage() {
       </p>
 
       <div className="card">
-        <h2>事業と個人を並べる(月別・月平均・年換算)</h2>
+        <h2>
+          事業と個人を並べる(月別・月平均・
+          <Term id="annualized" />)
+        </h2>
         <p className="sub">
           事業はfreeeの売上と事業経費、個人はMF明細で「個人」と仕分けた収入と生活費。片方しか無い月は「—」。合計はデータのある月数で平均します。
         </p>
@@ -214,10 +218,14 @@ export function HouseholdPage() {
                 <th>月</th>
                 <th>収入計</th>
                 <th>生活費</th>
-                <th>事業立替</th>
+                <th>
+                  <Term id="bizAdvance" />
+                </th>
                 <th>支出計</th>
                 <th>収支</th>
-                <th>貯蓄率</th>
+                <th>
+                  <Term id="savingsRate" />
+                </th>
                 <th>freee 事業経費</th>
               </tr>
             </thead>
@@ -277,7 +285,9 @@ export function HouseholdPage() {
               <th>大項目</th>
               <th>合計</th>
               <th>月平均</th>
-              <th>年換算</th>
+              <th>
+                <Term id="annualized" />
+              </th>
               <th>構成比</th>
             </tr>
           </thead>
