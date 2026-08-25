@@ -18,7 +18,7 @@ concurrency:
 jobs:
   deploy:
     if: >-
-      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
       (github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -31,19 +31,23 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: pnpm
+      - uses: ./.github/actions/setup-pnpm
       - name: 本番設定を検証
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::productionのCLOUDFLARE_API_TOKENが未登録です"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::productionのCLOUDFLARE_ACCOUNT_IDが未登録です"; exit 1; }
-          test -n "$APP_URL" || { echo "::error::productionのAPP_URLが未登録です"; exit 1; }
-      - run: pnpm install --frozen-lockfile
+          test -n "$APP_URL" || { echo "::error::Repository VariableのAPP_URLが未登録です"; exit 1; }
       - name: Env型を生成
         run: pnpm --filter @kanjo/api exec wrangler types
+      - name: Lint（手動実行時）
+        if: github.event_name == 'workflow_dispatch'
+        run: pnpm lint
+      - name: 型チェック（手動実行時）
+        if: github.event_name == 'workflow_dispatch'
+        run: pnpm typecheck
+      - name: テスト（手動実行時）
+        if: github.event_name == 'workflow_dispatch'
+        run: pnpm test
       - name: Webをビルド
         run: pnpm --filter @kanjo/web build
       - name: Workerをデプロイ
