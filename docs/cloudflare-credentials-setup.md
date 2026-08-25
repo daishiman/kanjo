@@ -35,7 +35,7 @@ CloudflareもGlobal API KeyよりAPI Tokenを推奨しています。詳細は[C
 ## 2. 作業前チェック
 
 - [ ] Cloudflareへログインできる
-- [ ] `kanjo-console` / `kanjo-db` / `kanjo-files`があるアカウントを判別できる
+- [ ] `kanjo-console`を所有するCloudflareアカウントを判別できる
 - [ ] GitHubの`daishiman/kanjo`で管理者権限がある
 - [ ] ターミナルで`gh auth status`が成功する
 - [ ] 作業場所が`daishiman/kanjo`であることを確認した
@@ -66,9 +66,51 @@ daishiman/kanjo
 2. 複数アカウントが表示された場合は、`kanjo-console`を所有するアカウントを選ぶ。
 3. 左側の`Workers & Pages`を開く。
 4. Worker一覧に`kanjo-console`があることを確認する。
-5. `D1`で`kanjo-db`、`R2 object storage`で`kanjo-files`が同じアカウントにあることを確認する。
+5. `D1`で`kanjo-db`が同じアカウントにあることを確認する。
+6. `R2 object storage`を開き、`kanjo-files`があることを確認する。
 
-1つでも存在しない場合は、別アカウントを選んでいないか確認してください。異なるアカウントのIDをGitHubへ登録すると、Wranglerは`code 7003`などの対象不一致エラーになります。
+`kanjo-console`または`kanjo-db`が存在しない場合は、別アカウントを選んでいないか確認してください。異なるアカウントのIDをGitHubへ登録すると、Wranglerは`code 7003`などの対象不一致エラーになります。
+
+#### R2一覧に`kanjo-files`が見えない場合
+
+画面上部のアカウント選択が、`kanjo-console`を所有するアカウントになっているか最初に確認します。そのうえで、リポジトリのルートから次を実行してください。
+
+```bash
+pnpm --filter @kanjo/api exec wrangler whoami
+pnpm --filter @kanjo/api exec wrangler r2 bucket list
+```
+
+`whoami`に表示されるAccount IDと、ブラウザで選択したCloudflareアカウントのAccount IDを照合します。`bucket list`に`kanjo-files`が表示される場合、バケットはWranglerのOAuth接続先に既に存在します。ブラウザでも同じアカウントを選び直し、`R2 object storage`を再読み込みしてください。重複作成は不要です。
+
+`bucket list`にも`kanjo-files`がない場合だけ、次を実行して空のバケットを作ります。
+
+```bash
+pnpm --filter @kanjo/api exec wrangler r2 bucket create kanjo-files
+pnpm --filter @kanjo/api exec wrangler r2 bucket info kanjo-files
+```
+
+Wranglerが未認証の場合は、先に次を実行して、`kanjo-console`を所有するアカウントで認証します。
+
+```bash
+pnpm --filter @kanjo/api exec wrangler login
+```
+
+作成時にロケーションやストレージクラスを指定しない場合、Cloudflareの現行既定値であるAutomaticロケーションとStandardストレージクラスが使われます。バケット名とバケットは既定で非公開です。`packages/api/wrangler.jsonc`の`FILES` bindingからWorker経由で利用するため、`r2.dev`公開URLやカスタムドメインを有効にしないでください。
+
+非公開状態は次で確認できます。
+
+```bash
+pnpm --filter @kanjo/api exec wrangler r2 bucket dev-url get kanjo-files
+pnpm --filter @kanjo/api exec wrangler r2 bucket domain list kanjo-files
+```
+
+1つ目が`Public access ... is disabled`、2つ目がカスタムドメインなしを示せば完了です。確認目的で実データやサンプルオブジェクトをアップロードしないでください。
+
+公式手順:
+
+- [R2バケットを作成する](https://developers.cloudflare.com/r2/buckets/create-buckets/)
+- [R2のWranglerコマンド](https://developers.cloudflare.com/r2/reference/wrangler-commands/)
+- [R2の公開アクセス](https://developers.cloudflare.com/r2/buckets/public-buckets/)
 
 ### 3.2 Account IDをコピーする
 
@@ -431,6 +473,7 @@ pnpm --filter @kanjo/api exec wrangler deployments list
 | code 7003 / object identifier invalid | Account IDが`kanjo-console`所有アカウントのものか |
 | D1 permission error | `Account > D1 > Edit`があるか |
 | R2 permission error | `Account > Workers R2 Storage > Edit`があるか |
+| R2画面に`kanjo-files`がない | 3.1の`whoami`と`r2 bucket list`でブラウザとCLIの接続先アカウントを照合する。本当にない場合だけ作成する |
 | Worker upload permission error | `Account > Workers Scripts > Edit`があるか |
 | required secret missing | Worker secretの`AUTH_PASSWORD` / `SESSION_SECRET`を登録したか |
 | スモークテストで404 | `APP_URL`がpreviewや個別パスではなく固定のproduction URLか |
@@ -467,6 +510,8 @@ tokenの値を確認するためにActionsログへ出力してはいけませ�
 
 - [ ] `daishiman/kanjo`で作業している
 - [ ] Account IDは`kanjo-console`を所有するアカウントから取得した
+- [ ] `kanjo-files`が同じアカウントに存在する
+- [ ] `kanjo-files`の`r2.dev`公開は無効で、カスタムドメインもない
 - [ ] Global API KeyではなくAPI Tokenを作った
 - [ ] tokenのAccount Resourcesは対象1アカウントだけ
 - [ ] Account Settings Readを付けた
