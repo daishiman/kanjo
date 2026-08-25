@@ -247,7 +247,16 @@ export type {
 
 /* -------- AI分析(spec §16) -------- */
 
-export type AiPeriodKind = 'month' | 'year';
+export type AiReportType = 'monthly' | 'annual' | 'longterm';
+export const AI_REPORT_TYPE_LABEL: Record<AiReportType, string> = {
+  monthly: '月次',
+  annual: '年次',
+  longterm: '長期',
+};
+export interface AiPeriod {
+  from: string;
+  to: string;
+}
 export type AiSectionId = 'spend' | 'change' | 'reduction' | 'split' | 'subscriptions';
 export const AI_SECTION_LABEL: Record<AiSectionId, string> = {
   spend: '何にいくらかかっているか',
@@ -256,12 +265,23 @@ export const AI_SECTION_LABEL: Record<AiSectionId, string> = {
   split: '事業/個人・本人/妻の別',
   subscriptions: 'サブスクの整理候補',
 };
+/** 「精度を上げるために必要な情報」で案内できる画面 */
+export type AiNeedScreen =
+  | 'import'
+  | 'classify'
+  | 'settings'
+  | 'budget'
+  | 'subscriptions'
+  | 'household'
+  | 'overview';
 
 export interface AiTaskView {
   id: string;
-  kind: AiPeriodKind;
-  key: string;
+  period: AiPeriod;
+  type: AiReportType;
   label: string;
+  supplement: string | null;
+  parentReportId: string | null;
   expiresAt: string;
   createdAt: string;
   reportId: string | null;
@@ -279,25 +299,49 @@ export interface AiReportSection {
   body: string;
   items: AiReportItem[];
 }
+export interface AiReportNeed {
+  gap: string;
+  action: string;
+  screen: AiNeedScreen | null;
+}
+export interface AiReportChart {
+  id: string;
+  kind: 'bar' | 'line' | 'stackedBar';
+  title: string;
+  unit: 'yen' | 'pct' | 'count';
+  labels: string[];
+  series: { label: string; data: (number | null)[] }[];
+  note: string;
+}
 export interface AiReportBody {
-  version: 1;
+  version: 2;
   generatedBy: string;
   model: string | null;
   title: string;
   summary: string;
+  keyFindings: { improvements: AiReportItem[]; wasted: AiReportItem[]; quickWins: AiReportItem[] };
   sections: AiReportSection[];
+  followUp: { body: string; items: AiReportItem[] } | null;
+  needs: AiReportNeed[];
+  charts: AiReportChart[];
   dataGaps: string[];
 }
 export interface AiReportRow {
   id: string;
   taskId: string;
-  kind: AiPeriodKind;
-  key: string;
+  period: AiPeriod;
+  type: AiReportType;
   label: string;
+  version: number;
+  parentReportId: string | null;
   generatedBy: string;
   title: string;
   summary: string;
   createdAt: string;
+}
+export interface AiTaskCreateBody extends AiPeriod {
+  supplement?: string;
+  parentReportId?: string;
 }
 export interface AiTaskCreateResponse {
   task: AiTaskView;
@@ -306,4 +350,5 @@ export interface AiTaskCreateResponse {
 export interface AiReportDetailResponse {
   report: AiReportRow & { body: AiReportBody };
   previous: AiReportRow | null;
+  versions: AiReportRow[];
 }

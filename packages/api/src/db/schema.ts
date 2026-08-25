@@ -161,8 +161,16 @@ export const aiTasks = sqliteTable(
   {
     id: text('id').primaryKey(),
     userId: text('user_id').notNull(),
-    periodKind: text('period_kind', { enum: ['month', 'year'] }).notNull(),
-    periodKey: text('period_key').notNull(),
+    /** 旧形式(月/年)。新規行は 'range' 固定で period_from/to が正本 */
+    periodKind: text('period_kind').notNull().default('range'),
+    periodKey: text('period_key').notNull().default(''),
+    periodFrom: text('period_from').notNull(),
+    periodTo: text('period_to').notNull(),
+    reportType: text('report_type', { enum: ['monthly', 'annual', 'longterm'] }).notNull(),
+    /** 再分析時に利用者が補った情報(任意) */
+    supplement: text('supplement'),
+    /** 再分析の元になったレポート(任意) */
+    parentReportId: text('parent_report_id'),
     tokenHash: text('token_hash').notNull(),
     expiresAt: text('expires_at').notNull(),
     usedAt: text('used_at'),
@@ -182,8 +190,14 @@ export const aiReports = sqliteTable(
     id: text('id').primaryKey(),
     userId: text('user_id').notNull(),
     taskId: text('task_id').notNull(),
-    periodKind: text('period_kind', { enum: ['month', 'year'] }).notNull(),
-    periodKey: text('period_key').notNull(),
+    periodKind: text('period_kind').notNull().default('range'),
+    periodKey: text('period_key').notNull().default(''),
+    periodFrom: text('period_from').notNull(),
+    periodTo: text('period_to').notNull(),
+    reportType: text('report_type', { enum: ['monthly', 'annual', 'longterm'] }).notNull(),
+    /** 同じ期間・型のレポートの通し番号(再分析で増える) */
+    version: integer('version').notNull().default(1),
+    parentReportId: text('parent_report_id'),
     generatedBy: text('generated_by').notNull(),
     title: text('title').notNull(),
     summary: text('summary').notNull(),
@@ -193,5 +207,6 @@ export const aiReports = sqliteTable(
   (t) => [
     index('idx_ai_reports_user').on(t.userId, t.createdAt),
     index('idx_ai_reports_period').on(t.userId, t.periodKind, t.periodKey),
+    index('idx_ai_reports_type').on(t.userId, t.reportType, t.periodFrom, t.periodTo),
   ],
 );

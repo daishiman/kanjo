@@ -878,3 +878,46 @@ table.ai-table td.wrap {
   white-space: normal;
   min-width: 12em;
 }
+
+/* AI分析レポート: 要点サマリー(3群)と図表 */
+.findings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.finding h4,
+.report-chart h4 {
+  font-size: 12px;
+  margin: 0 0 6px;
+  color: var(--ink-soft);
+}
+.finding ol {
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.finding li + li {
+  margin-top: 6px;
+}
+.finding-label {
+  font-weight: 700;
+  margin-right: 6px;
+}
+.finding-amount {
+  margin-right: 6px;
+}
+.finding-note {
+  display: block;
+}
+.report-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+.report-chart {
+  min-width: 0;
+}
+details.prompt-box > summary {
+  cursor: pointer;
+}

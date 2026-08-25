@@ -10,15 +10,18 @@ import { and, desc, eq, isNull } from 'drizzle-orm';
 import { Hono, type MiddlewareHandler } from 'hono';
 import {
   type AiReportBody,
-  type PeriodKind,
+  type Period,
   type ReportInput,
+  type ReportType,
   buildPrompt,
   normalizeReport,
   periodLabel,
-  periodSchema,
   reportInputSchema,
+  reportTypeOf,
+  taskCreateSchema,
+  upgradeBody,
 } from '../ai/contract.js';
-import { buildAgentData } from '../ai/dataset.js';
+import { type PreviousReportSummary, buildAgentData } from '../ai/dataset.js';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
 import { getDb, loadDataset } from '../store.js';
@@ -64,11 +67,18 @@ function taskStatus(t: typeof s.aiTasks.$inferSelect): 'done' | 'expired' | 'wai
   return 'waiting';
 }
 
+const periodOf = (t: { periodFrom: string; periodTo: string }): Period => ({
+  from: t.periodFrom,
+  to: t.periodTo,
+});
+
 const taskView = (t: typeof s.aiTasks.$inferSelect) => ({
   id: t.id,
-  kind: t.periodKind as PeriodKind,
-  key: t.periodKey,
-  label: periodLabel(t.periodKind as PeriodKind, t.periodKey),
+  period: periodOf(t),
+  type: t.reportType as ReportType,
+  label: periodLabel(periodOf(t)),
+  supplement: t.supplement ?? null,
+  parentReportId: t.parentReportId ?? null,
   expiresAt: t.expiresAt,
   createdAt: t.createdAt,
   reportId: t.reportId,
@@ -78,23 +88,90 @@ const taskView = (t: typeof s.aiTasks.$inferSelect) => ({
 const reportView = (r: typeof s.aiReports.$inferSelect) => ({
   id: r.id,
   taskId: r.taskId,
-  kind: r.periodKind as PeriodKind,
-  key: r.periodKey,
-  label: periodLabel(r.periodKind as PeriodKind, r.periodKey),
+  period: periodOf(r),
+  type: r.reportType as ReportType,
+  label: periodLabel(periodOf(r)),
+  version: r.version,
+  parentReportId: r.parentReportId ?? null,
   generatedBy: r.generatedBy,
   title: r.title,
   summary: r.summary,
   createdAt: r.createdAt,
 });
 
+/** 前回レポート(同じ型)を LLM に渡す要約。本文全部は渡さず、指摘と対策だけ */
+function previousSummary(r: typeof s.aiReports.$inferSelect): PreviousReportSummary {
+  const body = upgradeBody(JSON.parse(r.bodyJson));
+  const texts = (items: { label: string; note: string }[] | undefined) =>
+    (items ?? []).map((i) => (i.note ? `${i.label}: ${i.note}` : i.label));
+  return {
+    id: r.id,
+    version: r.version,
+    createdAt: r.createdAt,
+    period: periodOf(r),
+    title: r.title,
+    summary: r.summary,
+    keyFindings: {
+      improvements: texts(body.keyFindings.improvements),
+      wasted: texts(body.keyFindings.wasted),
+      quickWins: texts(body.keyFindings.quickWins),
+    },
+    reductionItems: texts(body.sections.find((x) => x.id === 'reduction')?.items),
+    needs: body.needs.map((n) => n.gap),
+  };
+}
+
+/** 同じ型のレポートのうち、直近2件(自分自身を除く)。再分析なら親レポートを必ず含める */
+async function loadPreviousReports(
+  db: ReturnType<typeof getDb>,
+  task: typeof s.aiTasks.$inferSelect,
+): Promise<PreviousReportSummary[]> {
+  const rows = await db
+    .select()
+    .from(s.aiReports)
+    .where(and(eq(s.aiReports.userId, task.userId), eq(s.aiReports.reportType, task.reportType)))
+    .orderBy(desc(s.aiReports.createdAt))
+    .limit(2);
+  const list = rows.map(previousSummary);
+  if (task.parentReportId && !list.some((r) => r.id === task.parentReportId)) {
+    const parent = await db
+      .select()
+      .from(s.aiReports)
+      .where(and(eq(s.aiReports.userId, task.userId), eq(s.aiReports.id, task.parentReportId)))
+      .get();
+    if (parent) list.unshift(previousSummary(parent));
+  }
+  return list;
+}
+
+async function agentPayload(db: ReturnType<typeof getDb>, task: typeof s.aiTasks.$inferSelect) {
+  const data = await loadDataset(db, task.userId);
+  if (data.months.length === 0) return null;
+  const previousReports = await loadPreviousReports(db, task);
+  return buildAgentData(data, periodOf(task), { previousReports, supplement: task.supplement });
+}
+
 /* ======== 画面用(セッション認証は index.ts の authGuard が担う) ======== */
 
 export const aiRoute = new Hono<Ctx>();
 
-aiRoute.post('/ai/tasks', zValidator('json', periodSchema), async (c) => {
-  const { kind, key } = c.req.valid('json');
+aiRoute.post('/ai/tasks', zValidator('json', taskCreateSchema), async (c) => {
+  const { from, to, supplement, parentReportId } = c.req.valid('json');
+  const period: Period = { from, to };
   const db = getDb(c.env.DB);
   const userId = c.get('userId');
+  if (parentReportId) {
+    const parent = await db
+      .select({ id: s.aiReports.id })
+      .from(s.aiReports)
+      .where(and(eq(s.aiReports.userId, userId), eq(s.aiReports.id, parentReportId)))
+      .get();
+    if (!parent)
+      return c.json(
+        { error: { code: 'not_found', message: '再分析の元になるレポートが見つかりません' } },
+        404,
+      );
+  }
   const raw = new Uint8Array(32);
   crypto.getRandomValues(raw);
   const token = TOKEN_PREFIX + b64url(raw);
@@ -103,13 +180,24 @@ aiRoute.post('/ai/tasks', zValidator('json', periodSchema), async (c) => {
   await db.insert(s.aiTasks).values({
     id,
     userId,
-    periodKind: kind,
-    periodKey: key,
+    periodFrom: from,
+    periodTo: to,
+    reportType: reportTypeOf(period),
+    supplement: supplement?.trim() || null,
+    parentReportId: parentReportId ?? null,
     tokenHash: await sha256Hex(token),
     expiresAt,
   });
   const origin = new URL(c.req.url).origin;
-  const prompt = buildPrompt({ origin, taskId: id, token, kind, key, expiresAt });
+  const prompt = buildPrompt({
+    origin,
+    taskId: id,
+    token,
+    period,
+    expiresAt,
+    supplement: supplement?.trim() || null,
+    parentReportId: parentReportId ?? null,
+  });
   const row = (await db
     .select()
     .from(s.aiTasks)
@@ -136,8 +224,15 @@ aiRoute.get('/ai/reports', async (c) => {
     .from(s.aiReports)
     .where(eq(s.aiReports.userId, c.get('userId')))
     .orderBy(desc(s.aiReports.createdAt))
-    .limit(100);
-  return c.json({ reports: rows.map(reportView) });
+    .limit(200);
+  // 型・期間の絞り込みは件数が少ないのでサーバー側で単純に行う
+  const type = c.req.query('type');
+  const from = c.req.query('from');
+  const to = c.req.query('to');
+  const filtered = rows.filter(
+    (r) => (!type || r.reportType === type) && (!from || r.periodTo >= from) && (!to || r.periodFrom <= to),
+  );
+  return c.json({ reports: filtered.map(reportView) });
 });
 
 aiRoute.get('/ai/reports/:id', async (c) => {
@@ -148,16 +243,25 @@ aiRoute.get('/ai/reports/:id', async (c) => {
     .where(and(eq(s.aiReports.userId, c.get('userId')), eq(s.aiReports.id, c.req.param('id'))))
     .get();
   if (!row) return c.json({ error: { code: 'not_found', message: 'レポートが見つかりません' } }, 404);
-  const body = JSON.parse(row.bodyJson) as AiReportBody;
-  // 同じ種類の期間で、これより前に作られた直近のレポート(比較用)
-  const prev = await db
+  const body: AiReportBody = upgradeBody(JSON.parse(row.bodyJson));
+  const sameType = await db
     .select()
     .from(s.aiReports)
-    .where(and(eq(s.aiReports.userId, row.userId), eq(s.aiReports.periodKind, row.periodKind)))
+    .where(and(eq(s.aiReports.userId, row.userId), eq(s.aiReports.reportType, row.reportType)))
     .orderBy(desc(s.aiReports.createdAt))
-    .limit(50);
-  const previous = prev.find((p) => p.id !== row.id && p.createdAt < row.createdAt) ?? null;
-  return c.json({ report: { ...reportView(row), body }, previous: previous ? reportView(previous) : null });
+    .limit(100);
+  // 前回: 同じ型でこれより前に作られた直近のレポート
+  const previous = sameType.find((p) => p.id !== row.id && p.createdAt < row.createdAt) ?? null;
+  // 版履歴: 同じ期間のレポート(再分析で増える)。古い順
+  const versions = sameType
+    .filter((p) => p.periodFrom === row.periodFrom && p.periodTo === row.periodTo)
+    .sort((a, b) => a.version - b.version)
+    .map(reportView);
+  return c.json({
+    report: { ...reportView(row), body },
+    previous: previous ? reportView(previous) : null,
+    versions,
+  });
 });
 
 // ネットワークが使えない環境向け: 画面からデータJSONを見る(セッション認証。トークンは不要)
@@ -169,10 +273,9 @@ aiRoute.get('/ai/tasks/:id/dataset', async (c) => {
     .where(and(eq(s.aiTasks.userId, c.get('userId')), eq(s.aiTasks.id, c.req.param('id'))))
     .get();
   if (!task) return c.json({ error: { code: 'not_found', message: '依頼が見つかりません' } }, 404);
-  const data = await loadDataset(db, task.userId);
-  if (data.months.length === 0)
-    return c.json({ error: { code: 'no_data', message: '取込済みデータがありません' } }, 404);
-  return c.json(buildAgentData(data, task.periodKind, task.periodKey));
+  const payload = await agentPayload(db, task);
+  if (!payload) return c.json({ error: { code: 'no_data', message: '取込済みデータがありません' } }, 404);
+  return c.json(payload);
 });
 
 // ネットワークが使えない環境向け: 画面から結果JSONを貼り付けて保存する(セッション認証)
@@ -223,12 +326,9 @@ aiAgentRoute.use('/ai/tasks/:id/data', agentGuard);
 aiAgentRoute.use('/ai/tasks/:id/report', agentGuard);
 
 aiAgentRoute.get('/ai/tasks/:id/data', async (c) => {
-  const task = c.get('task');
-  const data = await loadDataset(getDb(c.env.DB), task.userId);
-  if (data.months.length === 0) {
-    return c.json({ error: { code: 'no_data', message: '取込済みデータがありません' } }, 404);
-  }
-  return c.json(buildAgentData(data, task.periodKind, task.periodKey));
+  const payload = await agentPayload(getDb(c.env.DB), c.get('task'));
+  if (!payload) return c.json({ error: { code: 'no_data', message: '取込済みデータがありません' } }, 404);
+  return c.json(payload);
 });
 
 aiAgentRoute.post('/ai/tasks/:id/report', reportValidator, async (c) => {
@@ -250,7 +350,7 @@ async function storeReport(
   | { ok: true; reportId: string }
   | { ok: false; status: 400 | 401; error: { code: string; message: string; missing?: string[] } }
 > {
-  const normalized = normalizeReport(input, { kind: task.periodKind, key: task.periodKey });
+  const normalized = normalizeReport(input, periodOf(task));
   if (!normalized.ok) {
     return {
       ok: false,
@@ -277,12 +377,27 @@ async function storeReport(
     };
   }
   const body = normalized.body;
+  // 同じ期間の既存レポート数 + 1 を版番号にする(再分析でなくても同じ期間なら版が進む)
+  const siblings = await db
+    .select({ version: s.aiReports.version })
+    .from(s.aiReports)
+    .where(
+      and(
+        eq(s.aiReports.userId, task.userId),
+        eq(s.aiReports.periodFrom, task.periodFrom),
+        eq(s.aiReports.periodTo, task.periodTo),
+      ),
+    );
+  const version = siblings.reduce((m, r) => Math.max(m, r.version), 0) + 1;
   await db.insert(s.aiReports).values({
     id: reportId,
     userId: task.userId,
     taskId: task.id,
-    periodKind: task.periodKind,
-    periodKey: task.periodKey,
+    periodFrom: task.periodFrom,
+    periodTo: task.periodTo,
+    reportType: task.reportType,
+    version,
+    parentReportId: task.parentReportId ?? null,
     generatedBy: body.generatedBy,
     title: body.title,
     summary: body.summary,
