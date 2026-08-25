@@ -7,7 +7,7 @@ import { budgetTable, suggestBudgets } from '@kanjo/core';
 import { applyFreeeDeals } from '@kanjo/core';
 import { normalizeAccount } from '@kanjo/core';
 import { resolveTx } from '@kanjo/core';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
@@ -166,23 +166,159 @@ settingsRoute.get('/classification', async (c) => {
       };
     })
     .sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? ''));
-  const opts = await db.select().from(s.categoryOptions).where(eq(s.categoryOptions.userId, userId));
   return c.json({
     institutions,
     noInstitutionCount,
     institutionOwners: data.institutionOwners,
-    categoryOptions: opts.map((o) => ({ major: o.major, mid: o.mid })),
+    categoryOptions: await listCategoryOptions(db, userId),
     candidates: await loadCandidates(db, userId, data.mfTx),
     edits,
   });
 });
 
+/* -------- 候補科目(追加した分)の一覧・追加・変更・削除 -------- */
+
+const optKey = (o: { scope: string; major: string; mid: string }) => `${o.scope}\t${o.major}\t${o.mid}`;
+
+/** 追加した候補科目と、それを使っている手動編集・ルールの件数 */
+async function listCategoryOptions(db: Db, userId: string) {
+  const [opts, edits, rules] = await Promise.all([
+    db.select().from(s.categoryOptions).where(eq(s.categoryOptions.userId, userId)),
+    db.select().from(s.txEdits).where(eq(s.txEdits.userId, userId)),
+    db.select().from(s.rules).where(eq(s.rules.userId, userId)),
+  ]);
+  return opts
+    .map((o) => ({
+      scope: o.scope,
+      major: o.major,
+      mid: o.mid,
+      uses: {
+        edits: edits.filter((e) => e.categoryMajor === o.major && (e.categoryMid ?? '') === o.mid).length,
+        rules: rules.filter((r) => r.categoryMajor === o.major && (r.categoryMid ?? '') === o.mid).length,
+      },
+    }))
+    .sort((a, b) => optKey(a).localeCompare(optKey(b), 'ja'));
+}
+
+const optionSchema = z.object({
+  scope: z.enum(['biz', 'per']),
+  major: z.string().trim().min(1).max(60),
+  mid: z.string().trim().max(60).default(''),
+});
+
+settingsRoute.post('/category-options', zValidator('json', optionSchema), async (c) => {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const b = c.req.valid('json');
+  if (b.scope === 'biz' && b.mid)
+    return c.json(
+      { error: { code: 'biz_has_no_mid', message: '事業の科目(freee勘定科目)には中項目がありません' } },
+      400,
+    );
+  const dup = await db
+    .select()
+    .from(s.categoryOptions)
+    .where(
+      and(
+        eq(s.categoryOptions.userId, userId),
+        eq(s.categoryOptions.scope, b.scope),
+        eq(s.categoryOptions.major, b.major),
+        eq(s.categoryOptions.mid, b.mid),
+      ),
+    );
+  if (!dup.length)
+    await db.insert(s.categoryOptions).values({ userId, scope: b.scope, major: b.major, mid: b.mid });
+  return c.json({ ok: true, option: b, existed: dup.length > 0 }, dup.length ? 200 : 201);
+});
+
+const optionRenameSchema = z.object({
+  from: optionSchema,
+  to: z.object({ major: z.string().trim().min(1).max(60), mid: z.string().trim().max(60).default('') }),
+});
+
+/** 名前の変更。使用中の手動編集・ルールも新しい名前へ追従させる */
+settingsRoute.put('/category-options', zValidator('json', optionRenameSchema), async (c) => {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const { from, to } = c.req.valid('json');
+  if (from.scope === 'biz' && to.mid)
+    return c.json(
+      { error: { code: 'biz_has_no_mid', message: '事業の科目(freee勘定科目)には中項目がありません' } },
+      400,
+    );
+  const where = and(
+    eq(s.categoryOptions.userId, userId),
+    eq(s.categoryOptions.scope, from.scope),
+    eq(s.categoryOptions.major, from.major),
+    eq(s.categoryOptions.mid, from.mid),
+  );
+  const rows = await db.select().from(s.categoryOptions).where(where);
+  if (!rows.length) return c.json({ error: { code: 'not_found', message: '候補科目が見つかりません' } }, 404);
+  await db.delete(s.categoryOptions).where(where);
+  await db.insert(s.categoryOptions).values({ userId, scope: from.scope, major: to.major, mid: to.mid });
+  const midOrNull = to.mid || null;
+  await db
+    .update(s.txEdits)
+    .set({ categoryMajor: to.major, categoryMid: midOrNull })
+    .where(
+      and(
+        eq(s.txEdits.userId, userId),
+        eq(s.txEdits.categoryMajor, from.major),
+        from.mid ? eq(s.txEdits.categoryMid, from.mid) : isNull(s.txEdits.categoryMid),
+      ),
+    );
+  await db
+    .update(s.rules)
+    .set({ categoryMajor: to.major, categoryMid: midOrNull })
+    .where(
+      and(
+        eq(s.rules.userId, userId),
+        eq(s.rules.categoryMajor, from.major),
+        from.mid ? eq(s.rules.categoryMid, from.mid) : isNull(s.rules.categoryMid),
+      ),
+    );
+  const data = await loadDataset(db, userId);
+  await saveAgg(db, userId, data);
+  return c.json({ ok: true });
+});
+
+const optionDeleteSchema = optionSchema.extend({ force: z.boolean().optional() });
+
+/** 削除。使用中(手動編集・ルール)なら force なしでは 409 を返し、件数を知らせる */
+settingsRoute.delete('/category-options', zValidator('json', optionDeleteSchema), async (c) => {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const b = c.req.valid('json');
+  const all = await listCategoryOptions(db, userId);
+  const target = all.find((o) => o.scope === b.scope && o.major === b.major && o.mid === b.mid);
+  if (!target) return c.json({ error: { code: 'not_found', message: '候補科目が見つかりません' } }, 404);
+  const inUse = target.uses.edits + target.uses.rules;
+  if (inUse && !b.force)
+    return c.json(
+      {
+        error: {
+          code: 'in_use',
+          message: `この科目は手動編集 ${target.uses.edits} 件・ルール ${target.uses.rules} 件で使われています。削除しても編集・ルールの値は残りますが、候補から外れます`,
+        },
+        uses: target.uses,
+      },
+      409,
+    );
+  await db
+    .delete(s.categoryOptions)
+    .where(
+      and(
+        eq(s.categoryOptions.userId, userId),
+        eq(s.categoryOptions.scope, b.scope),
+        eq(s.categoryOptions.major, b.major),
+        eq(s.categoryOptions.mid, b.mid),
+      ),
+    );
+  return c.json({ ok: true });
+});
+
 const classificationSchema = z.object({
   institutionOwners: z.record(z.string().max(100), z.enum(['self', 'spouse']).nullable()).optional(),
-  categoryOptions: z
-    .array(z.object({ major: z.string().min(1).max(60), mid: z.string().max(60) }))
-    .max(300)
-    .optional(),
   /** 指定した明細の編集を取込値に戻す */
   resetEdits: z.array(z.string().max(100)).max(500).optional(),
 });
@@ -199,16 +335,6 @@ settingsRoute.put('/classification', zValidator('json', classificationSchema), a
       else delete map[inst];
     }
     await replaceInstitutionOwners(db, userId, map);
-  }
-  if (b.categoryOptions) {
-    await db.delete(s.categoryOptions).where(eq(s.categoryOptions.userId, userId));
-    const seen = new Set<string>();
-    for (const o of b.categoryOptions) {
-      const key = `${o.major}\t${o.mid}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      await db.insert(s.categoryOptions).values({ userId, major: o.major, mid: o.mid });
-    }
   }
   if (b.resetEdits) {
     for (const txId of b.resetEdits) await upsertEdit(db, userId, txId, {});

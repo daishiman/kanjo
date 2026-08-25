@@ -92,13 +92,33 @@ export interface TxRow {
   edited: boolean;
   /** 編集後に取込値が変わった */
   conflict: boolean;
+  /** 手動の科目が現在の公私の系統(事業=freee科目 / 個人=MF内訳)に無い */
+  scopeMismatch: boolean;
   edit: TxEditView | null;
 }
 
-export interface Candidates {
-  majors: string[];
-  mids: Record<string, string[]>;
+export type CandidateSource = 'freee' | 'mf' | 'custom';
+export interface CandidateMajor {
+  name: string;
+  source: CandidateSource;
+  mids: { name: string; source: CandidateSource }[];
 }
+/** 科目候補の二系統: biz = freee 勘定科目(決算書の科目) / per = MF 大項目・中項目(家計の内訳) */
+export interface Candidates {
+  biz: CandidateMajor[];
+  per: CandidateMajor[];
+}
+export interface CategoryOptionRow {
+  scope: Cls;
+  major: string;
+  mid: string;
+  uses: { edits: number; rules: number };
+}
+export const SCOPE_LABEL: Record<Cls, string> = {
+  biz: '事業の科目(freee勘定科目・決算書に載る)',
+  per: '家計の科目(MF大項目/中項目)',
+};
+export const SCOPE_SHORT: Record<Cls, string> = { biz: '事業', per: '家計' };
 
 export interface TransactionsResponse {
   months: string[];
@@ -162,7 +182,7 @@ export interface ClassificationResponse {
   institutions: { institution: string; count: number; owner: Owner | null }[];
   noInstitutionCount: number;
   institutionOwners: Record<string, Owner>;
-  categoryOptions: { major: string; mid: string }[];
+  categoryOptions: CategoryOptionRow[];
   candidates: Candidates;
   edits: EditListRow[];
 }

@@ -91,6 +91,10 @@ export const institutionOwners = sqliteTable('institution_owners', {
 /** 大項目/中項目の追加候補 */
 export const categoryOptions = sqliteTable('category_options', {
   userId: text('user_id').notNull(),
+  /** biz: freee 勘定科目(決算書の科目) / per: MF 大項目・中項目(家計の内訳) */
+  scope: text('scope', { enum: ['biz', 'per'] })
+    .notNull()
+    .default('per'),
   major: text('major').notNull(),
   mid: text('mid').notNull(),
 });

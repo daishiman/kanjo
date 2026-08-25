@@ -5,7 +5,18 @@ import { zValidator } from '@hono/zod-validator';
  *
  * 手動編集は tx_edits(同一性キー = MF の ID 列)に取込値とは別枠で保存し、再取込でも保持する。
  */
-import { DEFAULT_RULES, type Rule, type TxEdit, resolveTx, ruleMatches, sum } from '@kanjo/core';
+import {
+  type Candidates,
+  DEFAULT_RULES,
+  type Rule,
+  type TxEdit,
+  buildCandidates,
+  categoryAllowed,
+  categoryRejectReason,
+  resolveTx,
+  ruleMatches,
+  sum,
+} from '@kanjo/core';
 import { and, asc, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -22,26 +33,32 @@ async function recompute(db: Db, userId: string): Promise<void> {
   await saveAgg(db, userId, data);
 }
 
-/** 大項目/中項目の候補 = 取込値に現れた組み合わせ ∪ 登録した候補 */
+/**
+ * 科目候補(二系統): 事業 = freee 取引に実在する勘定科目、個人 = MF 明細に実在する大項目/中項目。
+ * それぞれに設定画面で追加した候補(category_options.scope)を合わせる。科目を推測で作らない。
+ */
 export async function loadCandidates(
   db: Db,
   userId: string,
   txs: { big: string; mid: string }[],
-): Promise<{ majors: string[]; mids: Record<string, string[]> }> {
-  const opts = await db.select().from(s.categoryOptions).where(eq(s.categoryOptions.userId, userId));
-  const pairs = new Map<string, Set<string>>();
-  const add = (big: string, mid: string) => {
-    if (!big) return;
-    pairs.set(big, pairs.get(big) ?? new Set());
-    if (mid) pairs.get(big)?.add(mid);
-  };
-  txs.forEach((t) => add(t.big, t.mid));
-  opts.forEach((o) => add(o.major, o.mid));
-  const majors = [...pairs.keys()].sort((a, b) => a.localeCompare(b, 'ja'));
-  const mids: Record<string, string[]> = {};
-  for (const m of majors) mids[m] = [...(pairs.get(m) ?? [])].sort((a, b) => a.localeCompare(b, 'ja'));
-  return { majors, mids };
+): Promise<Candidates> {
+  const [opts, deals] = await Promise.all([
+    db.select().from(s.categoryOptions).where(eq(s.categoryOptions.userId, userId)),
+    db
+      .selectDistinct({ account: s.freeeDeals.accountRaw })
+      .from(s.freeeDeals)
+      .where(eq(s.freeeDeals.userId, userId)),
+  ]);
+  return buildCandidates(
+    deals.map((d) => d.account ?? '').filter(Boolean),
+    txs,
+    opts.map((o) => ({ scope: o.scope, major: o.major, mid: o.mid })),
+  );
 }
+
+const invalidCategory = (cls: 'biz' | 'per') => ({
+  error: { code: 'invalid_category', message: categoryRejectReason(cls) },
+});
 
 classifyRoute.get('/transactions', async (c) => {
   const userId = c.get('userId');
@@ -57,6 +74,7 @@ classifyRoute.get('/transactions', async (c) => {
   const m = month && months.includes(month) ? month : (months[months.length - 1] ?? null);
 
   const txs = data.mfTx.filter((t) => t.m === m);
+  const candidates = await loadCandidates(db, userId, data.mfTx);
   const resolved = txs.map((t) => ({ t, r: resolveTx(t, data.rules, data.edits, data.institutionOwners) }));
   const rows = resolved
     .map(({ t, r }) => {
@@ -80,6 +98,8 @@ classifyRoute.get('/transactions', async (c) => {
         ownerSrc: r.ownerSrc,
         edited: r.edited,
         conflict: r.conflict,
+        /** 手動の科目が現在の公私の系統に無い(公私を後から変えた等) */
+        scopeMismatch: r.catSrc === '手動' && !categoryAllowed(candidates, r.cls, r.big, r.mid),
         edit: e
           ? {
               cls: e.cls ?? null,
@@ -130,7 +150,6 @@ classifyRoute.get('/transactions', async (c) => {
     /** 保有金融機関が無い明細数(旧取込。MF再取込で埋まる) */
     noInstitutionCount: txs.filter((t) => !t.inst).length,
   };
-  const candidates = await loadCandidates(db, userId, data.mfTx);
   return c.json({ months, month: m, summary, transactions: rows, candidates });
 });
 
@@ -192,6 +211,14 @@ classifyRoute.put('/transactions/:txId/edit', zValidator('json', editSchema), as
       }
     }
     next.updatedAt = new Date().toISOString();
+    if (next.big || next.mid) {
+      // 会計上あり得ない組み合わせのガード: 編集後の公私(手動 > ルール > 既定)に対する候補で判定する
+      const probe = { ...data.edits, [txId]: { ...next, big: null, mid: null } };
+      const effCls = resolveTx(tx, data.rules, probe, data.institutionOwners).cls;
+      const cands = await loadCandidates(db, userId, data.mfTx);
+      if (!categoryAllowed(cands, effCls, next.big ?? null, next.mid ?? null))
+        return c.json(invalidCategory(effCls), 400);
+    }
   }
   await upsertEdit(db, userId, txId, next);
   await recompute(db, userId);
@@ -263,6 +290,25 @@ const hasAttr = (b: {
 }) => !!(b.cls || b.big || b.mid || b.owner);
 const ruleSchema = z.object({ ...ruleBody, top: z.boolean().optional() });
 
+/** ルールの科目ガード: 科目を指定するなら公私も指定し、その系統の候補にあること */
+async function ruleCategoryError(
+  db: Db,
+  userId: string,
+  b: { cls?: string | null; big?: string | null; mid?: string | null },
+) {
+  if (!b.big && !b.mid) return null;
+  if (b.cls !== 'biz' && b.cls !== 'per')
+    return {
+      error: {
+        code: 'rule_needs_cls',
+        message: '科目を指定するルールは、先に公私(事業/個人)を選んでください',
+      },
+    };
+  const data = await loadDataset(db, userId);
+  const cands = await loadCandidates(db, userId, data.mfTx);
+  return categoryAllowed(cands, b.cls, b.big ?? null, b.mid ?? null) ? null : invalidCategory(b.cls);
+}
+
 classifyRoute.post('/rules', zValidator('json', ruleSchema), async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
@@ -272,6 +318,8 @@ classifyRoute.post('/rules', zValidator('json', ruleSchema), async (c) => {
       { error: { code: 'empty_rule', message: '公私・大項目・中項目・名義のいずれかを指定してください' } },
       400,
     );
+  const catErr = await ruleCategoryError(db, userId, b);
+  if (catErr) return c.json(catErr, 400);
   await materializeDefaults(db, userId);
   const rows = await listRules(db, userId);
   const sortOrder = b.top ? (rows[0]?.sortOrder ?? 1) - 1 : (rows[rows.length - 1]?.sortOrder ?? 0) + 1;
@@ -302,6 +350,8 @@ classifyRoute.put('/rules/:id', zValidator('json', z.object(ruleBody)), async (c
       { error: { code: 'empty_rule', message: '公私・大項目・中項目・名義のいずれかを指定してください' } },
       400,
     );
+  const catErr = await ruleCategoryError(db, userId, b);
+  if (catErr) return c.json(catErr, 400);
   await db
     .update(s.rules)
     .set({

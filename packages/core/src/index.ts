@@ -7,3 +7,4 @@ export * from './parsers/freee.js';
 export * from './parsers/mf.js';
 export * from './dataset.js';
 export * from './analysis.js';
+export * from './categories.js';

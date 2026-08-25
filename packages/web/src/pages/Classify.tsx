@@ -10,6 +10,7 @@ import {
   type Candidates,
   type Cls,
   type Owner,
+  SCOPE_LABEL,
   type TransactionsResponse,
   type TxRow,
   api,
@@ -292,6 +293,14 @@ function TxLine({
             <>
               {' '}
               <span className="pill edited">{t.conflict ? '編集済み・取込値が変更' : '編集済み'}</span>
+              {t.scopeMismatch && (
+                <span
+                  className="pill warn"
+                  title="公私を変えたため、科目が今の系統(事業=freee科目 / 個人=MF内訳)の候補にありません"
+                >
+                  科目が公私と不一致
+                </span>
+              )}
               <span className="orig">
                 取込値: {t.csvBig}
                 {t.csvMid ? ` / ${t.csvMid}` : ''}
@@ -379,6 +388,8 @@ function EditorRow({ t, candidates, onSaved }: { t: TxRow; candidates: Candidate
       invalidate();
     },
   });
+  /** 科目候補の系統 = 編集後の公私(未指定なら現在の有効値) */
+  const scope: Cls = c ?? t.cls;
   const dirty =
     big !== (t.edit?.big ?? '') ||
     mid !== (t.edit?.mid ?? '') ||
@@ -395,13 +406,35 @@ function EditorRow({ t, candidates, onSaved }: { t: TxRow; candidates: Candidate
             {t.csvMid ? ` / ${t.csvMid}` : ''}
             {t.institution ? `・口座: ${t.institution}` : ''}
           </span>
+          <label>
+            公私
+            <select
+              value={c ?? ''}
+              onChange={(e) => {
+                const next = (e.target.value || null) as Cls | null;
+                setC(next);
+                // 系統(事業/個人)が変わると候補も変わるので科目は選び直す
+                if ((next ?? t.cls) !== scope) {
+                  setBig('');
+                  setMid('');
+                }
+              }}
+            >
+              <option value="">
+                {t.cls === 'biz' ? '事業' : '個人'}のまま({t.src})
+              </option>
+              <option value="biz">事業</option>
+              <option value="per">個人</option>
+            </select>
+          </label>
           <div className="field">
             <span className="sub" style={{ margin: 0 }}>
-              科目(空欄=取込値/ルールのまま)
+              {SCOPE_LABEL[scope]}(空欄=取込値/ルールのまま)
             </span>
-            <span style={{ display: 'inline-flex', gap: 6 }}>
+            <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
               <CategoryInputs
                 candidates={candidates}
+                scope={scope}
                 big={big}
                 mid={mid}
                 onChange={(v) => {
@@ -417,14 +450,6 @@ function EditorRow({ t, candidates, onSaved }: { t: TxRow; candidates: Candidate
             </span>
             <OwnerSelect value={own} onChange={setOwn} />
           </div>
-          <label>
-            公私
-            <select value={c ?? ''} onChange={(e) => setC((e.target.value || null) as Cls | null)}>
-              <option value="">公私(変えない)</option>
-              <option value="biz">事業</option>
-              <option value="per">個人</option>
-            </select>
-          </label>
           <button
             type="button"
             className="primary"

@@ -5,12 +5,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type FormEvent, useState } from 'react';
 import {
+  type CandidateMajor,
+  type CandidateSource,
   type Candidates,
+  type CategoryOptionRow,
   type ClassificationResponse,
   type Cls,
   type Owner,
   type RuleBody,
   type RuleRow,
+  SCOPE_LABEL,
+  SCOPE_SHORT,
   api,
   ownerLabel,
 } from '../api.js';
@@ -27,53 +32,161 @@ export function useInvalidateClassification() {
   };
 }
 
-/** 大項目/中項目の入力(候補から選ぶ・自由入力も可) */
+/**
+ * 科目の選択(候補からのみ)。公私(scope)で候補を切り替える:
+ * 事業 = freee の勘定科目(中項目なし) / 個人 = MF の大項目→中項目。
+ * 候補に無い科目は「候補にない科目を追加」から系統を指定して登録するとすぐ選べる。
+ */
 export function CategoryInputs({
   candidates,
+  scope,
   big,
   mid,
   onChange,
-  placeholderBig = '大項目(変えない)',
+  placeholderBig = '科目(変えない)',
   placeholderMid = '中項目(変えない)',
+  allowAdd = true,
 }: {
   candidates: Candidates;
+  scope: Cls | null;
   big: string;
   mid: string;
   onChange: (v: { big: string; mid: string }) => void;
   placeholderBig?: string;
   placeholderMid?: string;
+  allowAdd?: boolean;
 }) {
-  const listId = `cand-${big || 'all'}`;
-  const mids = big && candidates.mids[big] ? candidates.mids[big] : Object.values(candidates.mids).flat();
+  const [adding, setAdding] = useState(false);
+  if (!scope) {
+    return (
+      <span className="sub" style={{ margin: 0 }}>
+        科目を指定するには先に公私(事業/個人)を選びます
+      </span>
+    );
+  }
+  const list = candidates[scope];
+  const major = list.find((m) => m.name === big);
+  const grouped = (src: CandidateSource) => list.filter((m) => m.source === src);
+  const groups: [string, CandidateMajor[]][] =
+    scope === 'biz'
+      ? [
+          ['freeeに実在する勘定科目', grouped('freee')],
+          ['追加した事業の科目', grouped('custom')],
+        ]
+      : [
+          ['MF明細に実在する大項目', grouped('mf')],
+          ['追加した家計の科目', grouped('custom')],
+        ];
   return (
     <>
-      <input
-        type="text"
-        list="cand-majors"
-        placeholder={placeholderBig}
-        value={big}
-        onChange={(e) => onChange({ big: e.target.value, mid })}
-        style={{ width: 140 }}
-      />
-      <datalist id="cand-majors">
-        {candidates.majors.map((m) => (
-          <option key={m} value={m} />
+      <select
+        value={major ? big : ''}
+        onChange={(e) => onChange({ big: e.target.value, mid: '' })}
+        title={SCOPE_LABEL[scope]}
+      >
+        <option value="">{placeholderBig}</option>
+        {groups
+          .filter(([, g]) => g.length)
+          .map(([label, g]) => (
+            <optgroup key={label} label={label}>
+              {g.map((m) => (
+                <option key={m.name} value={m.name}>
+                  {m.name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+      </select>
+      {scope === 'per' && (
+        <select value={mid} onChange={(e) => onChange({ big, mid: e.target.value })} disabled={!major}>
+          <option value="">{placeholderMid}</option>
+          {(major?.mids ?? []).map((m) => (
+            <option key={m.name} value={m.name}>
+              {m.name}
+              {m.source === 'custom' ? '(追加)' : ''}
+            </option>
+          ))}
+        </select>
+      )}
+      {allowAdd &&
+        (adding ? (
+          <AddCategoryInline
+            scope={scope}
+            defaultMajor={scope === 'per' && major ? major.name : ''}
+            onDone={(v) => {
+              setAdding(false);
+              if (v) onChange(v);
+            }}
+          />
+        ) : (
+          <button type="button" className="mini" onClick={() => setAdding(true)}>
+            候補にない科目を追加
+          </button>
         ))}
-      </datalist>
-      <input
-        type="text"
-        list={listId}
-        placeholder={placeholderMid}
-        value={mid}
-        onChange={(e) => onChange({ big, mid: e.target.value })}
-        style={{ width: 140 }}
-      />
-      <datalist id={listId}>
-        {[...new Set(mids)].map((m) => (
-          <option key={m} value={m} />
-        ))}
-      </datalist>
     </>
+  );
+}
+
+/** その場で候補科目を追加する(系統は現在の公私で決まる)。登録後すぐ選択状態にする */
+export function AddCategoryInline({
+  scope,
+  defaultMajor,
+  onDone,
+}: {
+  scope: Cls;
+  defaultMajor: string;
+  onDone: (v: { big: string; mid: string } | null) => void;
+}) {
+  const invalidate = useInvalidateClassification();
+  const [major, setMajor] = useState(defaultMajor);
+  const [mid, setMid] = useState('');
+  const add = useMutation({
+    mutationFn: () =>
+      api('/category-options', {
+        method: 'POST',
+        body: JSON.stringify({ scope, major: major.trim(), mid: scope === 'per' ? mid.trim() : '' }),
+      }),
+    onSuccess: () => {
+      invalidate();
+      onDone({ big: major.trim(), mid: scope === 'per' ? mid.trim() : '' });
+    },
+  });
+  return (
+    <span className="editor-form" style={{ display: 'inline-flex' }}>
+      <span className="pill neutral">{SCOPE_SHORT[scope]}の科目として追加</span>
+      <input
+        type="text"
+        placeholder={scope === 'biz' ? '勘定科目名(例: 通信費)' : '大項目'}
+        value={major}
+        onChange={(e) => setMajor(e.target.value)}
+        style={{ width: 140 }}
+      />
+      {scope === 'per' && (
+        <input
+          type="text"
+          placeholder="中項目(任意)"
+          value={mid}
+          onChange={(e) => setMid(e.target.value)}
+          style={{ width: 120 }}
+        />
+      )}
+      <button
+        type="button"
+        className="primary"
+        disabled={!major.trim() || add.isPending}
+        onClick={() => add.mutate()}
+      >
+        追加して選ぶ
+      </button>
+      <button type="button" onClick={() => onDone(null)}>
+        やめる
+      </button>
+      {add.isError && (
+        <span className="notice" style={{ margin: 0 }}>
+          {(add.error as Error).message}
+        </span>
+      )}
+    </span>
   );
 }
 
@@ -183,7 +296,16 @@ function RuleFields({
       />
       <select
         value={value.cls ?? ''}
-        onChange={(e) => onChange({ ...value, cls: (e.target.value || null) as Cls | null })}
+        onChange={(e) => {
+          const cls = (e.target.value || null) as Cls | null;
+          // 系統が変わるので科目は選び直す
+          onChange({
+            ...value,
+            cls,
+            big: cls === value.cls ? value.big : null,
+            mid: cls === value.cls ? value.mid : null,
+          });
+        }}
       >
         <option value="">公私(変えない)</option>
         <option value="biz">事業</option>
@@ -191,6 +313,7 @@ function RuleFields({
       </select>
       <CategoryInputs
         candidates={candidates}
+        scope={value.cls}
         big={value.big ?? ''}
         mid={value.mid ?? ''}
         onChange={(v) => onChange({ ...value, big: v.big || null, mid: v.mid || null })}
@@ -374,75 +497,181 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
 
 export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) {
   const invalidate = useInvalidateClassification();
-  const [draft, setDraft] = useState({ big: '', mid: '' });
-  const save = useMutation({
-    mutationFn: (categoryOptions: { major: string; mid: string }[]) =>
-      api('/classification', { method: 'PUT', body: JSON.stringify({ categoryOptions }) }),
+  const [scope, setScope] = useState<Cls>('per');
+  const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState<{ key: string; major: string; mid: string } | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const rename = useMutation({
+    mutationFn: (v: { from: CategoryOptionRow; to: { major: string; mid: string } }) =>
+      api('/category-options', {
+        method: 'PUT',
+        body: JSON.stringify({
+          from: { scope: v.from.scope, major: v.from.major, mid: v.from.mid },
+          to: v.to,
+        }),
+      }),
     onSuccess: () => {
-      setDraft({ big: '', mid: '' });
+      setEditing(null);
+      setErr(null);
       invalidate();
     },
+    onError: (e) => setErr((e as Error).message),
   });
+  const del = useMutation({
+    mutationFn: (v: { o: CategoryOptionRow; force: boolean }) =>
+      api('/category-options', {
+        method: 'DELETE',
+        body: JSON.stringify({ scope: v.o.scope, major: v.o.major, mid: v.o.mid, force: v.force }),
+      }),
+    onSuccess: () => {
+      setErr(null);
+      invalidate();
+    },
+    onError: (e) => setErr((e as Error).message),
+  });
+  const removeOption = (o: CategoryOptionRow) => {
+    const inUse = o.uses.edits + o.uses.rules;
+    if (inUse) {
+      if (
+        !window.confirm(
+          `「${o.major}${o.mid ? ` / ${o.mid}` : ''}」は手動編集 ${o.uses.edits} 件・ルール ${o.uses.rules} 件で使われています。\n削除しても編集・ルールの値は残りますが候補から外れ、新しく選べなくなります。削除しますか?`,
+        )
+      )
+        return;
+      del.mutate({ o, force: true });
+    } else del.mutate({ o, force: false });
+  };
+  const key = (o: CategoryOptionRow) => `${o.scope}\t${o.major}\t${o.mid}`;
+  const count = (c: Cls) => data.candidates[c].length;
   return (
     <div className="card">
-      <h2>科目の候補(大項目 / 中項目)</h2>
+      <h2>科目の候補</h2>
       <p className="sub">
-        候補は取り込んだMF明細に現れた組み合わせ({data.candidates.majors.length}
-        大項目)から自動で作られます。取込値に無い科目を使いたいときだけここに追加してください。
+        候補はデータから自動で作られます: 事業=freeeに実在する勘定科目({count('biz')}件、決算書に載る科目) /
+        家計=MF明細に実在する大項目・中項目({count('per')}
+        件)。取込値に無い科目はここか仕分け画面の編集欄から追加できます。
       </p>
       <div className="toolbar">
-        <CategoryInputs
-          candidates={data.candidates}
-          big={draft.big}
-          mid={draft.mid}
-          onChange={setDraft}
-          placeholderBig="大項目"
-          placeholderMid="中項目"
-        />
-        <button
-          type="button"
-          className="primary"
-          disabled={!draft.big.trim() || save.isPending}
-          onClick={() =>
-            save.mutate([...data.categoryOptions, { major: draft.big.trim(), mid: draft.mid.trim() }])
-          }
-        >
-          追加
-        </button>
+        <span className="segment">
+          {(['per', 'biz'] as const).map((c) => (
+            <button key={c} type="button" className={scope === c ? 'on' : ''} onClick={() => setScope(c)}>
+              {SCOPE_SHORT[c]}の科目
+            </button>
+          ))}
+        </span>
+        {adding ? (
+          <AddCategoryInline scope={scope} defaultMajor="" onDone={() => setAdding(false)} />
+        ) : (
+          <button type="button" className="primary" onClick={() => setAdding(true)}>
+            {SCOPE_SHORT[scope]}の科目を追加
+          </button>
+        )}
       </div>
-      {data.categoryOptions.length > 0 && (
-        <table className="data" style={{ maxWidth: 480 }}>
-          <thead>
+      {err && <div className="notice">{err}</div>}
+      <table className="data" style={{ maxWidth: 640 }}>
+        <thead>
+          <tr>
+            <th>{scope === 'biz' ? '勘定科目' : '大項目'}</th>
+            {scope === 'per' && <th>中項目</th>}
+            <th>使用中</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {data.categoryOptions
+            .filter((o) => o.scope === scope)
+            .map((o) => {
+              const k = key(o);
+              const inUse = o.uses.edits + o.uses.rules;
+              if (editing?.key === k)
+                return (
+                  <tr key={k} className="editor">
+                    <td colSpan={scope === 'per' ? 4 : 3}>
+                      <div className="editor-form">
+                        <input
+                          type="text"
+                          value={editing.major}
+                          onChange={(e) => setEditing({ ...editing, major: e.target.value })}
+                          style={{ width: 140 }}
+                        />
+                        {scope === 'per' && (
+                          <input
+                            type="text"
+                            placeholder="中項目(任意)"
+                            value={editing.mid}
+                            onChange={(e) => setEditing({ ...editing, mid: e.target.value })}
+                            style={{ width: 120 }}
+                          />
+                        )}
+                        {inUse > 0 && (
+                          <span className="sub" style={{ margin: 0 }}>
+                            使用中の編集 {o.uses.edits} 件・ルール {o.uses.rules} 件も新しい名前に変わります
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          className="primary"
+                          disabled={!editing.major.trim() || rename.isPending}
+                          onClick={() =>
+                            rename.mutate({
+                              from: o,
+                              to: { major: editing.major.trim(), mid: editing.mid.trim() },
+                            })
+                          }
+                        >
+                          保存
+                        </button>
+                        <button type="button" onClick={() => setEditing(null)}>
+                          やめる
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              return (
+                <tr key={k}>
+                  <td>{o.major}</td>
+                  {scope === 'per' && <td>{o.mid || '—'}</td>}
+                  <td>
+                    {inUse ? (
+                      <span className="pill neutral">
+                        編集 {o.uses.edits} / ルール {o.uses.rules}
+                      </span>
+                    ) : (
+                      <span className="sub" style={{ margin: 0 }}>
+                        未使用
+                      </span>
+                    )}
+                  </td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <button
+                      type="button"
+                      className="mini"
+                      onClick={() => setEditing({ key: k, major: o.major, mid: o.mid })}
+                    >
+                      変更
+                    </button>{' '}
+                    <button
+                      type="button"
+                      className="mini danger-btn"
+                      disabled={del.isPending}
+                      onClick={() => removeOption(o)}
+                    >
+                      削除
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          {!data.categoryOptions.some((o) => o.scope === scope) && (
             <tr>
-              <th>大項目</th>
-              <th>中項目</th>
-              <th />
+              <td colSpan={scope === 'per' ? 4 : 3} className="empty">
+                追加した{SCOPE_SHORT[scope]}の科目はありません(データに実在する科目はそのまま候補に出ます)
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {data.categoryOptions.map((o) => (
-              <tr key={`${o.major}\t${o.mid}`}>
-                <td>{o.major}</td>
-                <td>{o.mid || '—'}</td>
-                <td>
-                  <button
-                    type="button"
-                    className="mini danger-btn"
-                    disabled={save.isPending}
-                    onClick={() =>
-                      save.mutate(
-                        data.categoryOptions.filter((x) => !(x.major === o.major && x.mid === o.mid)),
-                      )
-                    }
-                  >
-                    削除
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }

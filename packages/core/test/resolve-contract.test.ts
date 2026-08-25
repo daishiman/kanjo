@@ -47,9 +47,24 @@ describe('属性の解決順序(手動 > ルール > 口座 > 取込値/既定)'
   it('ルールは属性ごとに「その属性を持つ最初のルール」が勝つ', () => {
     const r = resolveTx(tx({}), rules, {}, inst);
     expect(r.big).toBe('日用品'); // 1本目(big だけ設定)
-    expect(r.mid).toBe('食料品'); // 誰も mid を持たないので取込値
+    expect(r.mid).toBe(''); // 大項目を差し替えたら中項目は組で置き換わる(取込値の中項目は残さない)
     expect(r.cls).toBe('biz'); // 2本目
     expect(r.owner).toBe('spouse'); // 2本目
+    expect(r.catSrc).toBe('ルール');
+  });
+
+  it('科目はルール1本の(大項目, 中項目)を組で採用し、別ルールの中項目を混ぜない', () => {
+    const r = resolveTx(
+      tx({}),
+      [
+        { k: '架空スーパー', cls: null, big: '新聞図書費', mid: null, owner: null },
+        { k: '架空', cls: null, big: null, mid: '書籍', owner: null },
+      ],
+      {},
+      inst,
+    );
+    expect(r.big).toBe('新聞図書費');
+    expect(r.mid).toBe(''); // 2本目の中項目「書籍」は混ぜない(事業科目+家計中項目の混在を防ぐ)
     expect(r.catSrc).toBe('ルール');
   });
 
@@ -68,7 +83,7 @@ describe('属性の解決順序(手動 > ルール > 口座 > 取込値/既定)'
       cls: 'per',
       clsSrc: '手動',
       big: '交際費',
-      mid: '食料品',
+      mid: '', // 大項目+中項目は1組。大項目だけ編集しても取込値の中項目は引き継がない
       catSrc: '手動',
       owner: 'self',
       ownerSrc: '手動',

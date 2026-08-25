@@ -82,16 +82,31 @@ export function resolveTx(
   let mid = t.mid || '';
   let catSrc: ResolvedTx['catSrc'] = '取込値';
   const editedCat = (e?.big != null && e.big !== '') || (e?.mid != null && e.mid !== '');
+  // 科目は「大項目+中項目」を1組として上書きする。大項目を指定したら中項目は指定値(無ければ空)に置き換え、
+  // 取込値の中項目が残って「事業科目なのにMFの中項目付き」のような系統違いにならないようにする
   if (editedCat) {
-    big = e?.big || big;
-    mid = e?.mid || mid;
+    if (e?.big) {
+      big = e.big;
+      mid = e.mid || '';
+    } else {
+      mid = e?.mid || mid;
+    }
     catSrc = '手動';
   } else {
-    const rb = firstRule('big');
-    const rm = firstRule('mid');
-    if (rb || rm) {
-      big = rb || big;
-      mid = rm || mid;
+    // 科目はルール1本の(大項目, 中項目)を組で採用する(別ルールの中項目を混ぜない)
+    const cr = rules.find(
+      (r) =>
+        ((r.big != null && r.big !== '') || (r.mid != null && r.mid !== '')) &&
+        r.k &&
+        hay.includes(r.k.toUpperCase()),
+    );
+    if (cr) {
+      if (cr.big) {
+        big = cr.big;
+        mid = cr.mid || '';
+      } else {
+        mid = cr.mid || mid;
+      }
       catSrc = 'ルール';
     }
   }
