@@ -6,12 +6,22 @@ import { zValidator } from '@hono/zod-validator';
 import { budgetTable, suggestBudgets } from '@kanjo/core';
 import { applyFreeeDeals } from '@kanjo/core';
 import { normalizeAccount } from '@kanjo/core';
+import { resolveTx } from '@kanjo/core';
 import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
-import { type Db, getDb, loadDataset, loadNormMap, saveAgg } from '../store.js';
+import {
+  type Db,
+  getDb,
+  loadDataset,
+  loadNormMap,
+  replaceInstitutionOwners,
+  saveAgg,
+  upsertEdit,
+} from '../store.js';
+import { loadCandidates } from './classify.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
@@ -108,6 +118,105 @@ settingsRoute.put('/settings', zValidator('json', settingsSchema), async (c) => 
   }
 
   if (needRecompute) await recomputeFromDeals(db, userId);
+  return c.json({ ok: true });
+});
+
+/* -------- 分類の設定(名義・候補科目・手動編集の一覧) -------- */
+
+settingsRoute.get('/classification', async (c) => {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const data = await loadDataset(db, userId);
+  // 保有金融機関ごとの件数・名義
+  const instCount = new Map<string, number>();
+  let noInstitutionCount = 0;
+  for (const t of data.mfTx) {
+    if (!t.inst) noInstitutionCount++;
+    else instCount.set(t.inst, (instCount.get(t.inst) ?? 0) + 1);
+  }
+  const institutions = [...instCount.entries()]
+    .map(([institution, count]) => ({
+      institution,
+      count,
+      owner: data.institutionOwners[institution] ?? null,
+    }))
+    .sort((a, b) => b.count - a.count);
+  const byId = new Map(data.mfTx.map((t) => [t.id, t]));
+  const edits = Object.entries(data.edits)
+    .map(([txId, e]) => {
+      const t = byId.get(txId);
+      const r = t ? resolveTx(t, data.rules, data.edits, data.institutionOwners) : null;
+      return {
+        txId,
+        month: t?.m ?? null,
+        date: t?.d ?? null,
+        description: t?.c ?? null,
+        amount: t?.a ?? null,
+        csvBig: t?.big ?? null,
+        csvMid: t?.mid ?? null,
+        cls: e.cls ?? null,
+        big: e.big ?? null,
+        mid: e.mid ?? null,
+        owner: e.owner ?? null,
+        baseBig: e.baseBig ?? null,
+        baseMid: e.baseMid ?? null,
+        updatedAt: e.updatedAt ?? null,
+        /** ok: 有効 / changed: 取込値が編集時と変わった / orphan: 元明細が無い */
+        status: !t ? 'orphan' : r?.conflict ? 'changed' : 'ok',
+      };
+    })
+    .sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? ''));
+  const opts = await db.select().from(s.categoryOptions).where(eq(s.categoryOptions.userId, userId));
+  return c.json({
+    institutions,
+    noInstitutionCount,
+    institutionOwners: data.institutionOwners,
+    categoryOptions: opts.map((o) => ({ major: o.major, mid: o.mid })),
+    candidates: await loadCandidates(db, userId, data.mfTx),
+    edits,
+  });
+});
+
+const classificationSchema = z.object({
+  institutionOwners: z.record(z.string().max(100), z.enum(['self', 'spouse']).nullable()).optional(),
+  categoryOptions: z
+    .array(z.object({ major: z.string().min(1).max(60), mid: z.string().max(60) }))
+    .max(300)
+    .optional(),
+  /** 指定した明細の編集を取込値に戻す */
+  resetEdits: z.array(z.string().max(100)).max(500).optional(),
+});
+
+settingsRoute.put('/classification', zValidator('json', classificationSchema), async (c) => {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const b = c.req.valid('json');
+  if (b.institutionOwners) {
+    const data = await loadDataset(db, userId);
+    const map = { ...data.institutionOwners };
+    for (const [inst, owner] of Object.entries(b.institutionOwners)) {
+      if (owner) map[inst] = owner;
+      else delete map[inst];
+    }
+    await replaceInstitutionOwners(db, userId, map);
+  }
+  if (b.categoryOptions) {
+    await db.delete(s.categoryOptions).where(eq(s.categoryOptions.userId, userId));
+    const seen = new Set<string>();
+    for (const o of b.categoryOptions) {
+      const key = `${o.major}\t${o.mid}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      await db.insert(s.categoryOptions).values({ userId, major: o.major, mid: o.mid });
+    }
+  }
+  if (b.resetEdits) {
+    for (const txId of b.resetEdits) await upsertEdit(db, userId, txId, {});
+  }
+  if (b.institutionOwners || b.resetEdits) {
+    const data = await loadDataset(db, userId);
+    await saveAgg(db, userId, data);
+  }
   return c.json({ ok: true });
 });
 

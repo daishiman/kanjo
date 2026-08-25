@@ -9,7 +9,16 @@ import { Hono } from 'hono';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
 import { type ParsedUnit, parseUpload } from '../import-pipeline.js';
-import { getDb, loadDataset, loadNormMap, replaceFreeeDeals, replaceMfTxs, saveAgg } from '../store.js';
+import {
+  getDb,
+  loadDataset,
+  loadNormMap,
+  replaceEdits,
+  replaceFreeeDeals,
+  replaceInstitutionOwners,
+  replaceMfTxs,
+  saveAgg,
+} from '../store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
@@ -220,15 +229,20 @@ async function persistRestore(
   // ルール
   await db.delete(s.rules).where(eq(s.rules.userId, userId));
   for (let i = 0; i < data.rules.length; i++) {
-    await db
-      .insert(s.rules)
-      .values({ userId, keyword: data.rules[i].k, cls: data.rules[i].cls, sortOrder: i });
+    const r = data.rules[i];
+    await db.insert(s.rules).values({
+      userId,
+      keyword: r.k,
+      cls: r.cls ?? null,
+      categoryMajor: r.big ?? null,
+      categoryMid: r.mid ?? null,
+      owner: r.owner ?? null,
+      sortOrder: i,
+    });
   }
-  // 手動判定
-  await db.delete(s.overrides).where(eq(s.overrides.userId, userId));
-  for (const [txId, cls] of Object.entries(data.overrides)) {
-    await db.insert(s.overrides).values({ userId, txId, cls });
-  }
+  // 手動編集(公私・科目・名義)と 口座の名義
+  await replaceEdits(db, userId, data.edits);
+  await replaceInstitutionOwners(db, userId, data.institutionOwners);
   // 予算
   await db.delete(s.budgets).where(eq(s.budgets.userId, userId));
   for (const [account, v] of Object.entries(data.budgets)) {

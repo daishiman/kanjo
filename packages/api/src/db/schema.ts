@@ -46,20 +46,53 @@ export const freeeDeals = sqliteTable(
   (t) => [index('idx_deals_month').on(t.userId, t.month, t.io)],
 );
 
+/** 仕分けルール(0001 以降: 各属性 NULL = そのルールでは変えない) */
 export const rules = sqliteTable('rules', {
   id: integer('id').primaryKey(),
   userId: text('user_id').notNull(),
   keyword: text('keyword').notNull(),
-  cls: text('cls', { enum: ['biz', 'per'] }).notNull(),
+  cls: text('cls', { enum: ['biz', 'per'] }),
+  categoryMajor: text('category_major'),
+  categoryMid: text('category_mid'),
+  owner: text('owner', { enum: ['self', 'spouse'] }),
   sortOrder: integer('sort_order').notNull(),
   createdAt: text('created_at').$defaultFn(nowIso),
 });
 
+/** 旧・手動判定(0001 で tx_edits へ移行済み。読み書きしない) */
 export const overrides = sqliteTable('overrides', {
   userId: text('user_id').notNull(),
   txId: text('tx_id').notNull(),
   cls: text('cls', { enum: ['biz', 'per'] }).notNull(),
   updatedAt: text('updated_at'),
+});
+
+/** 明細の手動編集(取込値とは別枠。同一性キー = MF の ID 列) */
+export const txEdits = sqliteTable('tx_edits', {
+  userId: text('user_id').notNull(),
+  txId: text('tx_id').notNull(),
+  cls: text('cls', { enum: ['biz', 'per'] }),
+  categoryMajor: text('category_major'),
+  categoryMid: text('category_mid'),
+  owner: text('owner', { enum: ['self', 'spouse'] }),
+  baseMajor: text('base_major'),
+  baseMid: text('base_mid'),
+  note: text('note'),
+  updatedAt: text('updated_at'),
+});
+
+/** 保有金融機関 → 名義 */
+export const institutionOwners = sqliteTable('institution_owners', {
+  userId: text('user_id').notNull(),
+  institution: text('institution').notNull(),
+  owner: text('owner', { enum: ['self', 'spouse'] }).notNull(),
+});
+
+/** 大項目/中項目の追加候補 */
+export const categoryOptions = sqliteTable('category_options', {
+  userId: text('user_id').notNull(),
+  major: text('major').notNull(),
+  mid: text('mid').notNull(),
 });
 
 export const budgets = sqliteTable('budgets', {
