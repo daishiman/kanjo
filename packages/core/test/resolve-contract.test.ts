@@ -31,7 +31,15 @@ describe('属性の解決順序(手動 > ルール > 口座 > 取込値/既定)'
 
   it('何も無ければ取込値と既定', () => {
     const r = resolveTx(tx({ c: '無関係' }), rules, {}, inst);
-    expect(r).toMatchObject({ cls: 'per', clsSrc: '既定', big: '食費', mid: '食料品', catSrc: '取込値', owner: null, ownerSrc: '既定' });
+    expect(r).toMatchObject({
+      cls: 'per',
+      clsSrc: '既定',
+      big: '食費',
+      mid: '食料品',
+      catSrc: '取込値',
+      owner: null,
+      ownerSrc: '既定',
+    });
     expect(r.edited).toBe(false);
     expect(r.conflict).toBe(false);
   });
@@ -52,9 +60,19 @@ describe('属性の解決順序(手動 > ルール > 口座 > 取込値/既定)'
   });
 
   it('手動編集は全てに勝ち、編集済みになる', () => {
-    const edits: Record<string, TxEdit> = { x: { cls: 'per', big: '交際費', owner: 'self', baseBig: '食費', baseMid: '食料品' } };
+    const edits: Record<string, TxEdit> = {
+      x: { cls: 'per', big: '交際費', owner: 'self', baseBig: '食費', baseMid: '食料品' },
+    };
     const r = resolveTx(tx({}), rules, edits, inst);
-    expect(r).toMatchObject({ cls: 'per', clsSrc: '手動', big: '交際費', mid: '食料品', catSrc: '手動', owner: 'self', ownerSrc: '手動' });
+    expect(r).toMatchObject({
+      cls: 'per',
+      clsSrc: '手動',
+      big: '交際費',
+      mid: '食料品',
+      catSrc: '手動',
+      owner: 'self',
+      ownerSrc: '手動',
+    });
     expect(r.edited).toBe(true);
     expect(r.conflict).toBe(false);
   });
@@ -80,7 +98,12 @@ describe('名義別の集計', () => {
       tx({ id: '4', a: 20000, big: '収入', mid: 'その他' }),
       tx({ id: '5', a: -9999, c: '架空事業', inst: 'A銀行' }),
     ];
-    const r = applyClassification(txs, [{ k: '架空事業', cls: 'biz' }], { '4': { owner: 'spouse' } }, { A銀行: 'self' });
+    const r = applyClassification(
+      txs,
+      [{ k: '架空事業', cls: 'biz' }],
+      { '4': { owner: 'spouse' } },
+      { A銀行: 'self' },
+    );
     const o = r.personalByOwner['2026-07'];
     expect(o.self).toEqual({ income: 300000, expense: 5000 });
     expect(o.spouse).toEqual({ income: 20000, expense: 0 });
@@ -92,11 +115,28 @@ describe('名義別の集計', () => {
 
 describe('MFパーサー: 保有金融機関', () => {
   it('列があれば inst に入り、無ければ undefined', () => {
-    const header = ['計算対象', '日付', '内容', '金額（円）', '保有金融機関', '大項目', '中項目', 'メモ', '振替', 'ID'];
-    const rows = [header, ['1', '2026/07/01', '架空スーパー', '-1000', '架空銀行 だいし', '食費', '食料品', '', '0', 'id1']];
+    const header = [
+      '計算対象',
+      '日付',
+      '内容',
+      '金額（円）',
+      '保有金融機関',
+      '大項目',
+      '中項目',
+      'メモ',
+      '振替',
+      'ID',
+    ];
+    const rows = [
+      header,
+      ['1', '2026/07/01', '架空スーパー', '-1000', '架空銀行 だいし', '食費', '食料品', '', '0', 'id1'],
+    ];
     const [t] = parseMfRows(rows).txs;
     expect(t.inst).toBe('架空銀行 だいし');
-    const [t2] = parseMfRows([header.filter((h) => h !== '保有金融機関'), ['1', '2026/07/01', 'x', '-1', '食費', '食料品', '', '0', 'id2']]).txs;
+    const [t2] = parseMfRows([
+      header.filter((h) => h !== '保有金融機関'),
+      ['1', '2026/07/01', 'x', '-1', '食費', '食料品', '', '0', 'id2'],
+    ]).txs;
     expect(t2.inst).toBeUndefined();
   });
 });
@@ -105,19 +145,40 @@ describe('事業 vs 個人の比較と名義別(家計)', () => {
   it('月ごとに freee と MF を並べ、片側だけの月は null。合計はデータのある月数で平均', () => {
     const d = emptyDataset();
     d.months = ['2026-06', '2026-07'];
-    d.biz = { revenue: [500000, 400000], categories: ['架空固定費'], expense: { 架空固定費: [100000, 100000] } };
+    d.biz = {
+      revenue: [500000, 400000],
+      categories: ['架空固定費'],
+      expense: { 架空固定費: [100000, 100000] },
+    };
     d.unrecordedExpMonths = ['2026-07'];
-    d.personal = { '2026-07': { income: { 給与: 300000 }, expense: { 食費: 50000 } }, '2026-08': { income: { 給与: 300000 }, expense: { 食費: 70000 } } };
+    d.personal = {
+      '2026-07': { income: { 給与: 300000 }, expense: { 食費: 50000 } },
+      '2026-08': { income: { 給与: 300000 }, expense: { 食費: 70000 } },
+    };
     d.personalByOwner = {
-      '2026-07': { self: { income: 300000, expense: 50000 }, spouse: { income: 0, expense: 0 }, unset: { income: 0, expense: 0 } },
-      '2026-08': { self: { income: 200000, expense: 70000 }, spouse: { income: 100000, expense: 0 }, unset: { income: 0, expense: 0 } },
+      '2026-07': {
+        self: { income: 300000, expense: 50000 },
+        spouse: { income: 0, expense: 0 },
+        unset: { income: 0, expense: 0 },
+      },
+      '2026-08': {
+        self: { income: 200000, expense: 70000 },
+        spouse: { income: 100000, expense: 0 },
+        unset: { income: 0, expense: 0 },
+      },
     };
     d.mfTx = [tx({ id: 'a', inst: '未設定銀行' }), tx({ id: 'b' })];
     const h = household(d);
     const c = h.comparison;
     expect(c.rows.map((r) => r.month)).toEqual(['2026-06', '2026-07', '2026-08']);
-    expect(c.rows[0]).toMatchObject({ biz: { income: 500000, expense: 100000, balance: 400000 }, personal: { income: null, expense: null, balance: null } });
-    expect(c.rows[1]).toMatchObject({ biz: { income: 400000, expense: null, balance: null }, personal: { income: 300000, expense: 50000, balance: 250000 } });
+    expect(c.rows[0]).toMatchObject({
+      biz: { income: 500000, expense: 100000, balance: 400000 },
+      personal: { income: null, expense: null, balance: null },
+    });
+    expect(c.rows[1]).toMatchObject({
+      biz: { income: 400000, expense: null, balance: null },
+      personal: { income: 300000, expense: 50000, balance: 250000 },
+    });
     expect(c.rows[2].biz).toEqual({ income: null, expense: null, balance: null });
     expect(c.biz.months).toBe(2);
     expect(c.biz.income).toBe(900000);
@@ -125,7 +186,7 @@ describe('事業 vs 個人の比較と名義別(家計)', () => {
     expect(c.biz.annualized.income).toBe(5400000);
     expect(c.personal.months).toBe(2);
     expect(c.personal.expense).toBe(120000);
-    expect(c.personal.annualized.balance).toBe((600000 - 120000) / 2 * 12);
+    expect(c.personal.annualized.balance).toBe(((600000 - 120000) / 2) * 12);
 
     const o = h.byOwner;
     expect(o.rows).toHaveLength(2);

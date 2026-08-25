@@ -60,15 +60,44 @@ export interface SummaryResponse {
   benchmarks: Benchmark[];
 }
 
+export type Owner = 'self' | 'spouse';
+export type Cls = 'biz' | 'per';
+
+export interface TxEditView {
+  cls: Cls | null;
+  big: string | null;
+  mid: string | null;
+  owner: Owner | null;
+  updatedAt: string | null;
+}
+
 export interface TxRow {
   id: string;
   date: string;
   description: string;
   amount: number;
+  /** MF の保有金融機関(旧取込は null) */
+  institution: string | null;
+  /** 取込値 */
+  csvBig: string;
+  csvMid: string;
+  /** 有効値(手動 > ルール > 取込値) */
   big: string;
   mid: string;
-  cls: 'biz' | 'per';
+  catSrc: '手動' | 'ルール' | '取込値';
+  cls: Cls;
   src: '手動' | 'ルール' | '既定';
+  owner: Owner | null;
+  ownerSrc: '手動' | 'ルール' | '口座' | '既定';
+  edited: boolean;
+  /** 編集後に取込値が変わった */
+  conflict: boolean;
+  edit: TxEditView | null;
+}
+
+export interface Candidates {
+  majors: string[];
+  mids: Record<string, string[]>;
 }
 
 export interface TransactionsResponse {
@@ -83,17 +112,63 @@ export interface TransactionsResponse {
     totalExpense: number;
     bizExpense: number;
     personalExpense: number;
+    incomeByOwner: { self: number; spouse: number; unset: number };
+    editedCount: number;
+    conflictCount: number;
+    noInstitutionCount: number;
   };
   transactions: TxRow[];
+  candidates: Candidates;
 }
 
 export interface RuleRow {
   id: number;
   keyword: string;
-  cls: 'biz' | 'per';
+  cls: Cls | null;
+  big: string | null;
+  mid: string | null;
+  owner: Owner | null;
   sortOrder: number;
   hits: number;
 }
+
+export interface RuleBody {
+  keyword: string;
+  cls: Cls | null;
+  big: string | null;
+  mid: string | null;
+  owner: Owner | null;
+}
+
+export interface EditListRow {
+  txId: string;
+  month: string | null;
+  date: string | null;
+  description: string | null;
+  amount: number | null;
+  csvBig: string | null;
+  csvMid: string | null;
+  cls: Cls | null;
+  big: string | null;
+  mid: string | null;
+  owner: Owner | null;
+  baseBig: string | null;
+  baseMid: string | null;
+  updatedAt: string | null;
+  status: 'ok' | 'changed' | 'orphan';
+}
+
+export interface ClassificationResponse {
+  institutions: { institution: string; count: number; owner: Owner | null }[];
+  noInstitutionCount: number;
+  institutionOwners: Record<string, Owner>;
+  categoryOptions: { major: string; mid: string }[];
+  candidates: Candidates;
+  edits: EditListRow[];
+}
+
+export const OWNER_LABEL: Record<Owner | 'unset', string> = { self: '本人', spouse: '妻', unset: '未設定' };
+export const ownerLabel = (o: Owner | null | undefined): string => OWNER_LABEL[o ?? 'unset'];
 
 export interface ImportUnitResult {
   filename: string;

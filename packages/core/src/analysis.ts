@@ -650,7 +650,11 @@ function compareTotal(sides: CompareSide[]): CompareTotal {
     expense,
     balance,
     monthlyAvg,
-    annualized: { income: monthlyAvg.income * 12, expense: monthlyAvg.expense * 12, balance: monthlyAvg.balance * 12 },
+    annualized: {
+      income: monthlyAvg.income * 12,
+      expense: monthlyAvg.expense * 12,
+      balance: monthlyAvg.balance * 12,
+    },
   };
 }
 

@@ -1,4 +1,4 @@
-/** P6 家計: 収支バランス(収入・生活費・事業立替)と生活費の内訳を月別・全期間で確認する(仕分け反映後) */
+/** P6 家計: 事業/個人の比較・収支バランス・名義別収入・生活費の内訳を月別・全期間で確認する(仕分け反映後) */
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Chart } from 'react-chartjs-2';
@@ -116,6 +116,71 @@ export function HouseholdPage() {
       <p className="sub">
         個人収入・生活費・事業入金・事業立替はMF明細(仕分け画面の結果)、売上・経費はfreeeから集計。口座間の振替は含みません。
       </p>
+
+      <div className="card">
+        <h2>事業と個人を並べる(月別・月平均・年換算)</h2>
+        <p className="sub">
+          事業はfreeeの売上と事業経費、個人はMF明細で「個人」と仕分けた収入と生活費。片方しか無い月は「—」。合計はデータのある月数で平均します。
+        </p>
+        <div className="scroll-x">
+          <table className="data">
+            <thead>
+              <tr>
+                <th rowSpan={2}>月</th>
+                <th colSpan={3}>事業(freee)</th>
+                <th colSpan={3}>個人(MF)</th>
+              </tr>
+              <tr>
+                <th>売上</th>
+                <th>経費</th>
+                <th>収支</th>
+                <th>収入</th>
+                <th>生活費</th>
+                <th>収支</th>
+              </tr>
+            </thead>
+            <tbody>
+              {d.comparison.rows.map((r) => (
+                <tr key={r.month} className={r.month === month ? 'selected' : undefined}>
+                  <td>{monthLabel(r.month)}</td>
+                  <td className="num">{yen(r.biz.income)}</td>
+                  <td className="num">{yen(r.biz.expense)}</td>
+                  <td className={`num ${gainCls(r.biz.balance)}`}>{yenS(r.biz.balance)}</td>
+                  <td className="num">{yen(r.personal.income)}</td>
+                  <td className="num">{yen(r.personal.expense)}</td>
+                  <td className={`num ${gainCls(r.personal.balance)}`}>{yenS(r.personal.balance)}</td>
+                </tr>
+              ))}
+              {(
+                [
+                  ['合計', (x: typeof d.comparison.biz) => x, true],
+                  ['月平均', (x: typeof d.comparison.biz) => x.monthlyAvg, false],
+                  ['年換算(月平均×12)', (x: typeof d.comparison.biz) => x.annualized, false],
+                ] as const
+              ).map(([label, pick, isTotal]) => {
+                const b = pick(d.comparison.biz);
+                const p = pick(d.comparison.personal);
+                return (
+                  <tr key={label} className={isTotal ? 'total' : undefined}>
+                    <td>
+                      {label}
+                      {isTotal
+                        ? `(事業${d.comparison.biz.months}ヶ月 / 個人${d.comparison.personal.months}ヶ月)`
+                        : ''}
+                    </td>
+                    <td className="num">{yen(b.income)}</td>
+                    <td className="num">{yen(b.expense)}</td>
+                    <td className={`num ${gainCls(b.balance)}`}>{yenS(b.balance)}</td>
+                    <td className="num">{yen(p.income)}</td>
+                    <td className="num">{yen(p.expense)}</td>
+                    <td className={`num ${gainCls(p.balance)}`}>{yenS(p.balance)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <div className="card">
         <h2>収支バランス(月別)</h2>
@@ -276,6 +341,83 @@ export function HouseholdPage() {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div className="card">
+        <h2>収入内訳(名義別: 本人 / 妻)</h2>
+        <p className="sub">
+          名義の根拠はMF明細の「保有金融機関」(口座ごとに設定した名義)と、明細ごとの手動編集・ルール。推測では割り振りません。
+        </p>
+        {d.byOwner.unmappedInstitutions.length > 0 && (
+          <div className="notice info">
+            名義が未設定の口座: {d.byOwner.unmappedInstitutions.join(' / ')}。
+            <Link to="/settings">設定の「口座の名義」</Link>で本人/妻を選ぶと「未設定」が解消します。
+          </div>
+        )}
+        {d.byOwner.noInstitutionCount > 0 && (
+          <div className="notice info">
+            口座が記録されていない明細が {d.byOwner.noInstitutionCount}{' '}
+            件あります。MF明細を取り込み直すと名義が判定できるようになります。
+          </div>
+        )}
+        <div className="scroll-x">
+          <table className="data">
+            <thead>
+              <tr>
+                <th>月</th>
+                <th>本人</th>
+                <th>妻</th>
+                <th>未設定</th>
+                <th>個人収入計</th>
+              </tr>
+            </thead>
+            <tbody>
+              {d.byOwner.rows.map((r) => (
+                <tr key={r.month} className={r.month === month ? 'selected' : undefined}>
+                  <td>{monthLabel(r.month)}</td>
+                  <td className="num">{yen(r.self.income)}</td>
+                  <td className="num">{yen(r.spouse.income)}</td>
+                  <td className="num">{yen(r.unset.income)}</td>
+                  <td className="num">{yen(r.self.income + r.spouse.income + r.unset.income)}</td>
+                </tr>
+              ))}
+              <tr className="total">
+                <td>合計({d.byOwner.rows.length}ヶ月)</td>
+                <td className="num">{yen(d.byOwner.totals.self.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.spouse.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.unset.income)}</td>
+                <td className="num">
+                  {yen(
+                    d.byOwner.totals.self.income +
+                      d.byOwner.totals.spouse.income +
+                      d.byOwner.totals.unset.income,
+                  )}
+                </td>
+              </tr>
+              <tr>
+                <td>構成比</td>
+                <td className="num">{ratio(d.byOwner.totals.self.incomeShare, 0)}</td>
+                <td className="num">{ratio(d.byOwner.totals.spouse.incomeShare, 0)}</td>
+                <td className="num">{ratio(d.byOwner.totals.unset.incomeShare, 0)}</td>
+                <td className="num">100%</td>
+              </tr>
+              <tr>
+                <td>月平均</td>
+                <td className="num">{yen(d.byOwner.totals.self.monthlyAvg.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.spouse.monthlyAvg.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.unset.monthlyAvg.income)}</td>
+                <td />
+              </tr>
+              <tr>
+                <td>年換算(月平均×12)</td>
+                <td className="num">{yen(d.byOwner.totals.self.annualized.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.spouse.annualized.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.unset.annualized.income)}</td>
+                <td />
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="card scroll-x">

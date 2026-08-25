@@ -381,6 +381,34 @@ table.data tr.total td {
 .pill.neutral {
   color: var(--ink-soft);
 }
+.pill.edited {
+  background: #fdf9ef;
+  color: var(--warn);
+  border-color: var(--warn);
+}
+.orig {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-soft);
+  text-decoration: line-through;
+}
+tr.editor td {
+  background: var(--surface-alt, #f6f6f4);
+}
+.editor-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.editor-form label,
+.editor-form .field {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
 .pill.biz {
   background: #eef3fa;
   color: var(--biz);
