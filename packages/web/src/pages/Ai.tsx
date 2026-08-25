@@ -4,15 +4,18 @@
  *            足りない情報を補って再分析する。
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import {
+  AI_FINDING_LABEL,
   AI_REPORT_TYPE_LABEL,
   AI_SECTION_LABEL,
+  type AiFindingKey,
   type AiPeriod,
   type AiReportChart,
   type AiReportDetailResponse,
+  type AiReportFinding,
   type AiReportItem,
   type AiReportRow,
   type AiReportType,
@@ -24,8 +27,8 @@ import {
   api,
 } from '../api.js';
 import { PageHeader, PageState, describeError } from '../components/Page.js';
+import { ReportChartView } from '../components/ReportChart.js';
 import { Term, linkTerms } from '../components/Term.js';
-import { COLORS, VENDOR_PALETTE, yenTick } from '../components/charts.js';
 import { dateTime, monthLabel, yen } from '../format.js';
 import { type AppRouteId, routeMetadata } from '../routeMetadata.js';
 
@@ -69,7 +72,18 @@ interface Reanalyze {
   title: string;
   version: number;
   period: AiPeriod;
+  /** revise=改訂版を作る(同じ期間をもう一度) / supplement=足りない情報を補って再分析 */
+  mode: 'revise' | 'supplement';
 }
+
+/** 一覧の「要点1行」: 総評の最初の1文(長ければ切る) */
+const firstLine = (text: string, max = 70): string => {
+  const one = text.split('\n').find((l) => l.trim()) ?? '';
+  const m = /^(.*?[。!?])/.exec(one);
+  const t = (m ? m[1] : one).trim();
+  return t.length > max ? `${t.slice(0, max)}…` : t;
+};
+const TYPE_ORDER: AiReportType[] = ['monthly', 'annual', 'longterm'];
 
 export function AiPage() {
   const qc = useQueryClient();
@@ -81,8 +95,6 @@ export function AiPage() {
   });
   const [openId, setOpenId] = useState<string | null>(null);
   const [reanalyze, setReanalyze] = useState<Reanalyze | null>(null);
-  const [typeFilter, setTypeFilter] = useState<AiReportType | ''>('');
-  const [periodFilter, setPeriodFilter] = useState('');
 
   if (sq.isLoading || tq.isLoading || rq.isLoading)
     return (
@@ -106,11 +118,6 @@ export function AiPage() {
     void qc.invalidateQueries({ queryKey: ['ai-tasks'] });
     void qc.invalidateQueries({ queryKey: ['ai-reports'] });
   };
-  const filtered = reports.filter(
-    (r) =>
-      (!typeFilter || r.type === typeFilter) &&
-      (!periodFilter || (r.period.from <= periodFilter && r.period.to >= periodFilter)),
-  );
   const startReanalyze = (r: Reanalyze) => {
     setReanalyze(r);
     window.scrollTo({ top: 0 });
@@ -138,79 +145,83 @@ export function AiPage() {
           </p>
         ) : (
           <>
-            <div className="toolbar">
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value as AiReportType | '')}
-                aria-label="レポートの型で絞り込む"
-              >
-                <option value="">すべての型</option>
-                {(Object.keys(AI_REPORT_TYPE_LABEL) as AiReportType[]).map((t) => (
-                  <option key={t} value={t}>
-                    {AI_REPORT_TYPE_LABEL[t]}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={periodFilter}
-                onChange={(e) => setPeriodFilter(e.target.value)}
-                aria-label="対象期間に含む月で絞り込む"
-              >
-                <option value="">すべての期間</option>
-                {[...months].reverse().map((m) => (
-                  <option key={m} value={m}>
-                    {monthLabel(m)}を含む
-                  </option>
-                ))}
-              </select>
-              <span className="sub">
-                {filtered.length}件{filtered.length !== reports.length ? ` / 全${reports.length}件` : ''}
-              </span>
-            </div>
-            {filtered.length === 0 ? (
-              <p className="empty">条件に合うレポートはありません。絞り込みを外してください。</p>
-            ) : (
-              <div className="scroll-x">
-                <table className="data ai-table">
-                  <thead>
-                    <tr>
-                      <th>届いた日時</th>
-                      <th>
-                        <Term id="reportType" />
-                      </th>
-                      <th>対象期間</th>
-                      <th>
-                        <Term id="reportVersion" />
-                      </th>
-                      <th>題名</th>
-                      <th>作成元</th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((r) => (
-                      <tr key={r.id} className={r.id === openId ? 'selected' : ''}>
-                        <td>{dateTime(r.createdAt)}</td>
-                        <td>{AI_REPORT_TYPE_LABEL[r.type]}</td>
-                        <td>{periodText(r.period)}</td>
-                        <td className="num">第{r.version}版</td>
-                        <td className="wrap">{r.title}</td>
-                        <td>{r.generatedBy}</td>
-                        <td>
-                          <button
-                            type="button"
-                            className="mini"
-                            onClick={() => setOpenId(r.id === openId ? null : r.id)}
-                          >
-                            {r.id === openId ? '閉じる' : '読む'}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            <p className="sub">
+              レポートは毎回新しく保存され、前回のものは残ります(同じ期間の作り直しは「版」が進みます)。
+              型ごとに最新の1件を大きく、過去の分は畳んで表示します。
+            </p>
+            {TYPE_ORDER.map((t) => {
+              const group = reports
+                .filter((r) => r.type === t)
+                .sort((x, y) => (x.createdAt < y.createdAt ? 1 : -1));
+              if (group.length === 0) return null;
+              const [latest, ...past] = group;
+              return (
+                <div key={t} className="report-group">
+                  <h3>
+                    <Term id="reportType">{AI_REPORT_TYPE_LABEL[t]}</Term>レポート
+                    <span className="sub"> {group.length}件</span>
+                  </h3>
+                  <div className={`report-latest${latest.id === openId ? ' selected' : ''}`}>
+                    <div className="report-latest-main">
+                      <div className="sub">
+                        最新 / {periodText(latest.period)} / {dateTime(latest.createdAt)} / 第{latest.version}
+                        版
+                      </div>
+                      <div className="report-latest-title">{latest.title}</div>
+                      <div className="wrap">{firstLine(latest.summary)}</div>
+                    </div>
+                    <button
+                      type="button"
+                      className={latest.id === openId ? 'mini' : 'primary'}
+                      onClick={() => setOpenId(latest.id === openId ? null : latest.id)}
+                    >
+                      {latest.id === openId ? '閉じる' : '読む'}
+                    </button>
+                  </div>
+                  {past.length > 0 && (
+                    <details className="report-past">
+                      <summary className="sub">
+                        過去の{AI_REPORT_TYPE_LABEL[t]}レポート {past.length}件
+                      </summary>
+                      <div className="scroll-x">
+                        <table className="data ai-table">
+                          <thead>
+                            <tr>
+                              <th>対象期間</th>
+                              <th>作成日</th>
+                              <th>
+                                <Term id="reportVersion" />
+                              </th>
+                              <th>要点</th>
+                              <th />
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {past.map((r) => (
+                              <tr key={r.id} className={r.id === openId ? 'selected' : ''}>
+                                <td>{periodText(r.period)}</td>
+                                <td>{dateTime(r.createdAt)}</td>
+                                <td className="num">第{r.version}版</td>
+                                <td className="wrap">{firstLine(r.summary)}</td>
+                                <td>
+                                  <button
+                                    type="button"
+                                    className="mini"
+                                    onClick={() => setOpenId(r.id === openId ? null : r.id)}
+                                  >
+                                    {r.id === openId ? '閉じる' : '読む'}
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </details>
+                  )}
+                </div>
+              );
+            })}
           </>
         )}
       </section>
@@ -314,8 +325,10 @@ function PromptCard({
       </p>
       {reanalyze && (
         <p className="notice info">
-          「{reanalyze.title}」(第{reanalyze.version}
-          版)を元に再分析します。下の「補足情報」に、前回のレポートで足りないとされた情報や、実行した対策を書いてください。{' '}
+          「{reanalyze.title}」(第{reanalyze.version}版)を元に
+          {reanalyze.mode === 'revise'
+            ? '改訂版(次の版)を作ります。同じ期間・同じ図表で作り直し、前回の指摘の追跡が入ります。必要なら下の「補足情報」に、実行した対策や変わった事情を書いてください。'
+            : '再分析します。下の「補足情報」に、前回のレポートで足りないとされた情報や、実行した対策を書いてください。'}{' '}
           <button type="button" className="mini" onClick={onCancelReanalyze}>
             再分析をやめる
           </button>
@@ -595,6 +608,8 @@ function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: () => v
 
 /* -------- 3. レポート本文 -------- */
 
+const FINDING_KEYS: AiFindingKey[] = ['improvements', 'wasted', 'quickWins'];
+
 function ReportDetail({
   id,
   onOpen,
@@ -608,12 +623,18 @@ function ReportDetail({
     queryKey: ['ai-report', id],
     queryFn: () => api<AiReportDetailResponse>(`/ai/reports/${id}`),
   });
+  const [compare, setCompare] = useState(false);
   if (q.isLoading) return <PageState status="loading" />;
   if (q.isError || !q.data) return <PageState status="error" error={q.error} />;
   const { report, previous, versions } = q.data;
   const b = report.body;
-  const hasFindings =
-    b.keyFindings.improvements.length + b.keyFindings.wasted.length + b.keyFindings.quickWins.length > 0;
+  const reanalyzeArg = (mode: Reanalyze['mode']): Reanalyze => ({
+    reportId: report.id,
+    title: report.title,
+    version: report.version,
+    period: report.period,
+    mode,
+  });
   return (
     <article className="card report">
       <h2>{report.title}</h2>
@@ -621,59 +642,76 @@ function ReportDetail({
         {AI_REPORT_TYPE_LABEL[report.type]}レポート / {periodText(report.period)} / 第{report.version}版 /
         作成元 {b.generatedBy}
         {b.model ? `(${b.model})` : ''} / 届いた日時 {dateTime(report.createdAt)}
-        {previous && (
-          <>
-            {' '}
-            / 前回:{' '}
-            <button type="button" className="mini" onClick={() => onOpen(previous.id)}>
-              {previous.title}({dateTime(previous.createdAt)})を読む
-            </button>
-          </>
-        )}
       </p>
-      {versions.length > 1 && (
-        <p className="sub">
-          同じ期間の版:{' '}
-          {versions.map((v) => (
-            <button
-              key={v.id}
-              type="button"
-              className="mini"
-              disabled={v.id === report.id}
-              onClick={() => onOpen(v.id)}
-            >
-              第{v.version}版({dateTime(v.createdAt)})
-            </button>
-          ))}
-        </p>
-      )}
+      <div className="toolbar report-actions">
+        {previous ? (
+          <button type="button" className={compare ? 'mini on' : 'mini'} onClick={() => setCompare(!compare)}>
+            {compare ? '比較を閉じる' : '前回と比べる'}
+          </button>
+        ) : (
+          <span className="sub">前回のレポートはありません(比較は2件目から)</span>
+        )}
+        <button type="button" className="mini" onClick={() => onReanalyze(reanalyzeArg('revise'))}>
+          改訂版を作る(第{report.version + 1}版)
+        </button>
+        <button type="button" className="mini" onClick={() => onReanalyze(reanalyzeArg('supplement'))}>
+          この点を補って再分析
+        </button>
+        {versions.length > 1 && (
+          <span className="sub">
+            同じ期間の版:{' '}
+            {versions.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                className="mini"
+                disabled={v.id === report.id}
+                onClick={() => onOpen(v.id)}
+              >
+                第{v.version}版
+              </button>
+            ))}
+          </span>
+        )}
+      </div>
+
+      {compare && previous && <CompareView current={report} previous={previous} onOpen={onOpen} />}
 
       <section className="report-section">
         <h3>総評</h3>
         <ReportText text={b.summary} />
       </section>
 
-      {hasFindings && (
-        <section className="report-section">
-          <h3>要点サマリー</h3>
-          <div className="findings">
-            <FindingList title="改善すべき点" items={b.keyFindings.improvements} />
-            <FindingList title="無駄なコスト" items={b.keyFindings.wasted} />
-            <FindingList title="すぐ効く対策" items={b.keyFindings.quickWins} />
-          </div>
-        </section>
-      )}
+      <section className="report-section">
+        <h3>要点サマリー</h3>
+        <p className="sub">
+          各項目は「事実(数値と計算根拠)→ 解釈 → 次のアクション(期待効果)」の順に固定しています。
+        </p>
+        <div className="findings">
+          {FINDING_KEYS.map((k) => (
+            <FindingList
+              key={k}
+              title={AI_FINDING_LABEL[k]}
+              items={b.keyFindings[k]}
+              note={b.keyFindings.notes[k]}
+            />
+          ))}
+        </div>
+      </section>
 
-      {b.charts.length > 0 && (
-        <section className="report-section">
-          <h3>図表</h3>
-          <div className="report-charts">
-            {b.charts.map((ch) => (
-              <ReportChartView key={ch.id} chart={ch} />
-            ))}
-          </div>
-        </section>
-      )}
+      <section className="report-section">
+        <h3>図表(毎回同じ8枚)</h3>
+        <p className="sub">
+          図の数値はすべてアプリが計算し、AIは読み解きの文だけを書きます。出せない図も枠を残し、
+          あと何ヶ月分のデータで出せるかを示します。用語: <Term id="contribution" /> / <Term id="sigmaBand" />{' '}
+          / <Term id="movingAvg" /> / <Term id="pareto" />
+        </p>
+        <div className="report-charts">
+          {b.charts.map((ch) => (
+            <ReportChartView key={ch.id} chart={ch} caption={linkFigures(ch.caption)} />
+          ))}
+        </div>
+      </section>
 
       {b.followUp && (
         <section className="report-section">
@@ -687,6 +725,7 @@ function ReportDetail({
         <section key={sec.id} className="report-section">
           <h3>{sec.title || AI_SECTION_LABEL[sec.id]}</h3>
           <ReportText text={sec.body} />
+          {sec.gap && <p className="notice">この節は行数が足りていません: {linkTerms(sec.gap)}</p>}
           <ItemTable items={sec.items} />
         </section>
       ))}
@@ -727,18 +766,7 @@ function ReportDetail({
         )}
         <p className="sub">
           情報を補ったら、同じ期間で再分析できます(第{report.version + 1}版として保存されます)。{' '}
-          <button
-            type="button"
-            className="mini"
-            onClick={() =>
-              onReanalyze({
-                reportId: report.id,
-                title: report.title,
-                version: report.version,
-                period: report.period,
-              })
-            }
-          >
+          <button type="button" className="mini" onClick={() => onReanalyze(reanalyzeArg('supplement'))}>
             この点を補って再分析する
           </button>
         </p>
@@ -760,22 +788,115 @@ function ReportDetail({
   );
 }
 
-function FindingList({ title, items }: { title: string; items: AiReportItem[] }) {
+/** 前回レポートとの並列比較(総評・要点・図の有無)。数値の再計算はせず、保存済みの本文を並べる */
+function CompareView({
+  current,
+  previous,
+  onOpen,
+}: {
+  current: AiReportDetailResponse['report'];
+  previous: AiReportRow;
+  onOpen: (id: string) => void;
+}) {
+  const q = useQuery({
+    queryKey: ['ai-report', previous.id],
+    queryFn: () => api<AiReportDetailResponse>(`/ai/reports/${previous.id}`),
+  });
+  if (q.isLoading) return <PageState status="loading" />;
+  if (q.isError || !q.data) return <PageState status="error" error={q.error} />;
+  const prev = q.data.report;
+  const cols: { head: string; r: AiReportDetailResponse['report'] }[] = [
+    { head: `前回: ${periodText(prev.period)} 第${prev.version}版(${dateTime(prev.createdAt)})`, r: prev },
+    {
+      head: `今回: ${periodText(current.period)} 第${current.version}版(${dateTime(current.createdAt)})`,
+      r: current,
+    },
+  ];
+  return (
+    <section className="report-section compare">
+      <h3>前回と比べる</h3>
+      <p className="sub">
+        左が前回、右が今回。要点は「事実」だけを並べています(解釈と対策は各レポート本文で)。{' '}
+        <button type="button" className="mini" onClick={() => onOpen(prev.id)}>
+          前回を開く
+        </button>
+      </p>
+      <div className="compare-grid">
+        {cols.map(({ head, r }) => (
+          <div key={r.id} className="compare-col">
+            <h4>{head}</h4>
+            <p className="sub">総評</p>
+            <p className="wrap">{firstLine(r.body.summary, 160)}</p>
+            {FINDING_KEYS.map((k) => (
+              <div key={k}>
+                <p className="sub">{AI_FINDING_LABEL[k]}</p>
+                {r.body.keyFindings[k].length === 0 ? (
+                  <p className="sub">なし</p>
+                ) : (
+                  <ul>
+                    {r.body.keyFindings[k].map((f, i) => (
+                      <li key={`${i}-${f.label}`}>
+                        <span className="finding-label">{f.label}</span>
+                        {f.amount != null && <span className="num finding-amount">{yen(f.amount)}</span>}
+                        <span className="sub finding-note">{f.fact}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+            <p className="sub">出せた図</p>
+            <p className="wrap">
+              {r.body.charts.filter((c) => c.available).length} / {r.body.charts.length}枚(
+              {r.body.charts
+                .filter((c) => c.available)
+                .map((c) => `図${c.figure}`)
+                .join('・') || 'なし'}
+              )
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FindingList({ title, items, note }: { title: string; items: AiReportFinding[]; note: string }) {
   return (
     <div className="finding">
       <h4>{title}</h4>
       {items.length === 0 ? (
-        <p className="sub">なし</p>
+        <p className="sub">なし{note ? `: ${note}` : ''}</p>
       ) : (
         <ol>
           {items.map((it, i) => (
             <li key={`${i}-${it.label}`}>
-              <span className="finding-label">{it.label}</span>
-              {it.amount != null && <span className="num finding-amount">{yen(it.amount)}</span>}
-              {it.priority && (
-                <span className={PRIORITY[it.priority].cls}>{PRIORITY[it.priority].label}</span>
-              )}
-              {it.note && <span className="sub finding-note">{it.note}</span>}
+              <div>
+                <span className="finding-label">{it.label}</span>
+                {it.amount != null && <span className="num finding-amount">{yen(it.amount)}</span>}
+                {it.priority && (
+                  <span className={PRIORITY[it.priority].cls}>{PRIORITY[it.priority].label}</span>
+                )}
+              </div>
+              <dl className="finding-steps">
+                <dt>事実</dt>
+                <dd>
+                  {linkFigures(it.fact)}
+                  <span className="sub"> ({linkTerms(it.basis)})</span>
+                </dd>
+                <dt>解釈</dt>
+                <dd>{linkFigures(it.interpretation)}</dd>
+                <dt>次の一手</dt>
+                <dd>
+                  {linkFigures(it.action)}
+                  {it.expectedEffect != null && (
+                    <span className="sub">
+                      {' '}
+                      期待効果 <span className="num">{yen(it.expectedEffect)}</span>
+                    </span>
+                  )}
+                </dd>
+              </dl>
             </li>
           ))}
         </ol>
@@ -818,42 +939,19 @@ function ItemTable({ items }: { items: AiReportItem[] }) {
   );
 }
 
-/** AIが返した図表データを、概況と同じ Chart.js で描く(数値だけを受け取り、HTMLは受け取らない) */
-function ReportChartView({ chart }: { chart: AiReportChart }) {
-  const palette = [COLORS.biz, COLORS.per, COLORS.warn, COLORS.good, ...VENDOR_PALETTE.slice(4)];
-  const tick =
-    chart.unit === 'yen' ? yenTick : chart.unit === 'pct' ? (v: number | string) => `${v}%` : undefined;
-  const stacked = chart.kind === 'stackedBar';
-  return (
-    <div className="report-chart">
-      <h4>{chart.title}</h4>
-      <Chart
-        type={chart.kind === 'line' ? 'line' : 'bar'}
-        height={110}
-        data={{
-          labels: chart.labels,
-          datasets: chart.series.map((sr, i) => ({
-            label: sr.label,
-            data: sr.data,
-            backgroundColor: `${palette[i % palette.length]}cc`,
-            borderColor: palette[i % palette.length],
-            borderWidth: chart.kind === 'line' ? 2 : 0,
-            pointRadius: chart.kind === 'line' ? 2 : 0,
-            tension: 0.2,
-          })),
-        }}
-        options={{
-          responsive: true,
-          scales: {
-            x: { stacked },
-            y: { stacked, ticks: tick ? { callback: tick } : undefined },
-          },
-          plugins: { legend: { position: 'bottom', display: chart.series.length > 1 } },
-        }}
-      />
-      {chart.note && <p className="sub">{chart.note}</p>}
-    </div>
-  );
+/** 本文中の「図N」を図へのリンクにし、残りは用語ホバー化する */
+function linkFigures(text: string): ReactNode[] {
+  const parts = text.split(/(図\d+)/);
+  return parts.map((p, i) => {
+    const m = /^図(\d+)$/.exec(p);
+    if (m)
+      return (
+        <a key={`f-${i}-${p}`} href={`#fig-${m[1]}`} className="figure-ref">
+          {p}
+        </a>
+      );
+    return <span key={`t-${i}-${p.slice(0, 8)}`}>{linkTerms(p)}</span>;
+  });
 }
 
 /** プレーンテキストを段落と「- 」箇条書きに整えて表示する(HTMLとしては解釈しない) */
@@ -881,11 +979,11 @@ function ReportText({ text }: { text: string }) {
           bl.kind === 'ul' ? (
             <ul key={`ul-${i}-${bl.lines[0]}`}>
               {bl.lines.map((l, j) => (
-                <li key={`${j}-${l}`}>{linkTerms(l)}</li>
+                <li key={`${j}-${l}`}>{linkFigures(l)}</li>
               ))}
             </ul>
           ) : (
-            <p key={`p-${i}-${bl.lines[0]}`}>{linkTerms(bl.lines.join('\n'))}</p>
+            <p key={`p-${i}-${bl.lines[0]}`}>{linkFigures(bl.lines.join('\n'))}</p>
           ),
         )}
     </div>

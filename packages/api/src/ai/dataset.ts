@@ -8,6 +8,7 @@
 import {
   type Dataset,
   type SubsCandidate,
+  applyClassification,
   benchmarks,
   catProfile,
   diagnosis,
@@ -16,10 +17,12 @@ import {
   recordedExpIdx,
   subscriptions,
 } from '@kanjo/core';
+import { type ChartContext, type ChartResult, buildCharts } from './catalog.js';
 import {
   type Period,
   type ReportType,
   addMonths,
+  monthIndex,
   periodLabel,
   rangeLength,
   rangeMonths,
@@ -146,6 +149,22 @@ export interface BuildOptions {
   candidates?: SubsCandidate[];
 }
 
+/** 期間プリセット(画面の「直近月 / 四半期 / 13ヶ月 / 5年」と同じ切り方)。終了月を基準に切る */
+export const PERIOD_PRESETS = [
+  { id: 'month', label: '直近月', months: 1 },
+  { id: 'quarter', label: '直近四半期', months: 3 },
+  { id: 'year13', label: '直近13ヶ月', months: 13 },
+  { id: 'year5', label: '直近5年', months: 61 },
+] as const;
+
+/** 要望25d: 図ごとに「出せた / 元データが無い / アプリ側の不備」を分けて記録する */
+export interface CoverageRow {
+  chart: string;
+  figure: number;
+  status: ChartResult['status'];
+  detail: string;
+}
+
 export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions = {}) {
   const ov = overview(data);
   const hh = household(data);
@@ -218,6 +237,167 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
     byYear[y].profit = byYear[y].revenue - byYear[y].expense;
   });
 
+  const previousTotals = periodTotals(data, prev);
+  const yearAgoTotals = periodTotals(data, yago);
+  const bench = benchmarks(data);
+  const bepAvailable = diag.bep.revenueMonths >= 3 && diag.bep.breakEven > 0;
+
+  // ---- 図表(要望23/25): 数値はここで全部計算し、AIには caption だけ書かせる ----
+  const chartCtx: ChartContext = {
+    data,
+    period,
+    type,
+    expenseTotal: ov.expenseTotal,
+    expenseMovingAvg: ov.expenseMovingAvg,
+    recordedCount,
+    current,
+    previous: previousTotals,
+    yearAgo: yearAgoTotals,
+    fixedAccounts,
+    breakEven: { monthly: round(diag.bep.breakEven), available: bepAvailable },
+    subsVendors: subs.vendors,
+    subsMatrix: subs.matrix,
+    subsOther: subs.other,
+    subsMonths: subs.months,
+  };
+  const charts = buildCharts(chartCtx);
+  const coverage: CoverageRow[] = charts.map((c) => ({
+    chart: c.id,
+    figure: c.figure,
+    status: c.status,
+    detail: c.detail,
+  }));
+
+  // ---- 切り口(要望25補足): 図とレポートに使える軸を、データにある範囲だけ列挙する ----
+  const rangeOf = (ms: string[]) => (ms.length ? { from: ms[0], to: ms[ms.length - 1] } : null);
+  const accountRange = (acct: string) =>
+    rangeOf(months.filter((m, i) => !un.has(m) && (data.biz.expense[acct]?.[i] ?? 0) > 0));
+  const sumBig = (personal: Dataset['personal']) => {
+    const out: Record<string, number> = {};
+    for (const m of inPeriod) {
+      for (const [big, v] of Object.entries(personal[m]?.expense ?? {})) out[big] = (out[big] ?? 0) + v;
+    }
+    return out;
+  };
+  // 手動編集を除いた「取込値ベース」の個人支出(edits を空にして分類し直す)
+  const imported = applyClassification(data.mfTx, data.rules, {}, data.institutionOwners);
+  const ownerTotals = { self: 0, spouse: 0, unset: 0 };
+  for (const m of inPeriod) {
+    const o = data.personalByOwner[m];
+    if (!o) continue;
+    ownerTotals.self += o.self?.expense ?? 0;
+    ownerTotals.spouse += o.spouse?.expense ?? 0;
+    ownerTotals.unset += o.unset?.expense ?? 0;
+  }
+  const presetRange = (n: number): Period => ({ from: addMonths(period.to, -(n - 1)), to: period.to });
+  const presets = PERIOD_PRESETS.map((ps) => {
+    const r = presetRange(ps.months);
+    const ms = periodMonths(months, r);
+    return {
+      id: ps.id,
+      label: ps.label,
+      from: r.from,
+      to: r.to,
+      availableMonths: ms.length,
+      recordedMonths: ms.filter((m) => !un.has(m)).length,
+    };
+  });
+  const fixedVariableAvailable = recordedCount >= STAT_MIN_MONTHS.movingAverage;
+  const axes = {
+    note: 'レポート・図に使ってよい切り口。ここに無い軸(例: 決済状況)は判定不能として扱い、推測で作らない。',
+    category: {
+      bizAccounts: accounts.map((a) => ({
+        name: a,
+        type: fixedVariableAvailable ? profiles[a].type : '判定不能',
+        currentTotal: current?.expenseByAccount[a] ?? 0,
+        range: accountRange(a),
+      })),
+      personalBig: {
+        note: 'effective=公私仕分けの手動編集を反映した値 / imported=取込値のまま(ルール分類のみ)。差があれば手修正の影響',
+        effective: sumBig(data.personal),
+        imported: sumBig(imported.personal),
+        range: rangeOf(Object.keys(data.personal).sort()),
+      },
+    },
+    segment: {
+      bizPersonal: current
+        ? { biz: current.expense, personal: current.personalExpense, range: rangeOf(inPeriod) }
+        : null,
+      owner: {
+        ...ownerTotals,
+        note: 'unset は名義未設定の金融機関分。設定画面で名義を割り当てると本人/妻に分かれる',
+        range: rangeOf(inPeriod),
+      },
+      fixedVariable: fixedVariableAvailable
+        ? {
+            available: true,
+            reason: null,
+            fixed: fixedInPeriod,
+            variable: variableInPeriod,
+            fixedAccounts,
+            variableAccounts,
+          }
+        : {
+            available: false,
+            reason: `固定費/変動費の判定には記帳済みの月が${STAT_MIN_MONTHS.movingAverage}ヶ月必要です(現在${recordedCount}ヶ月)。判定不能として扱う`,
+            fixed: null,
+            variable: null,
+            fixedAccounts: [],
+            variableAccounts: [],
+          },
+      settlement: {
+        available: false,
+        reason: '決済状況(入金済み/未入金)は取込データに無いため、この軸は使えない',
+      },
+    },
+    period: {
+      requested: { from: period.from, to: period.to, availableMonths: inPeriod.length },
+      presets,
+      previous: { from: prev.from, to: prev.to, availableMonths: periodMonths(months, prev).length },
+      yearAgo: { from: yago.from, to: yago.to, availableMonths: periodMonths(months, yago).length },
+      dataRange: rangeOf(months),
+    },
+    indicator: [
+      ...bench.map((b) => ({
+        id: b.id,
+        label: b.label,
+        value: b.value,
+        basis: b.basis,
+        guide: b.guide,
+        judge: b.judge,
+        low: b.low,
+        high: b.high,
+      })),
+      {
+        id: 'breakEven',
+        label: '損益分岐点(月あたり)',
+        value: bepAvailable ? round(diag.bep.breakEven) : null,
+        basis: '固定費に分類された科目の直近3ヶ月平均の合計',
+        guide: '平均売上がこれを下回る月が続くと赤字',
+        judge: bepAvailable
+          ? diag.bep.avgRevenue >= diag.bep.breakEven
+            ? '目安内'
+            : '目安外'
+          : 'データ不足',
+        low: null,
+        high: null,
+      },
+      {
+        id: 'fixedShare',
+        label: '固定費比率',
+        value:
+          fixedVariableAvailable && current && current.expense > 0
+            ? round3(fixedInPeriod / current.expense)
+            : null,
+        basis: '対象期間の固定費÷経費合計',
+        guide: '目安は決めていない(業種で異なる)。前期との比較に使う',
+        judge: fixedVariableAvailable && current && current.expense > 0 ? '目安内' : 'データ不足',
+        low: null,
+        high: null,
+      },
+    ],
+  };
+
   return {
     generatedAt: new Date().toISOString(),
     period: {
@@ -239,13 +419,16 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
       'stats.available が false の手法は月数不足。レポートには「データ不足(あとNヶ月分で分析可能)」と書き、結論を書かない。',
       'bs.available は false(貸借対照表は作れない)。資産・負債・現預金残高について推測で書かない。',
       'personal.expense のキーは MF の大項目(または大項目/中項目)。',
+      'charts は図表カタログの全図(固定順)。available=true の図だけ本文で「図N」と参照し、caption を付けて送る。数値はアプリが計算済みで、AIが図の数字を作ることはない。',
+      'coverage は図ごとの状態。source_missing=元データが無い / app_missing=アプリ側の不備(needs ではなく dataGaps に「アプリ側」と明記する)。',
+      'axes はレポートに使ってよい切り口(項目・区分・期間・指標)。available=false の軸は判定不能と書き、推測で埋めない。',
     ],
     months,
     unrecordedExpenseMonths: data.unrecordedExpMonths,
     summary: {
       current,
-      previous: periodTotals(data, prev),
-      yearAgo: periodTotals(data, yago),
+      previous: previousTotals,
+      yearAgo: yearAgoTotals,
     },
     pl: {
       basis: 'freee 取引エクスポートの収入・支出(発生ベース)。売上=収入の合計、経費=支出の合計',
@@ -267,7 +450,7 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
         avgMonthlyRevenue: round(diag.bep.avgRevenue),
         revenueMonths: diag.bep.revenueMonths,
         safetyMargin: round3(diag.bep.safetyMargin),
-        available: diag.bep.revenueMonths >= 3 && diag.bep.breakEven > 0,
+        available: bepAvailable,
       },
     },
     bs: {
@@ -328,7 +511,10 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
       /** 登録外だが毎月続いている支払先。整理候補の材料(登録は利用者がサブスク分析ページで行う) */
       candidates: opts.candidates ?? [],
     },
-    benchmarks: benchmarks(data),
+    benchmarks: bench,
+    charts,
+    coverage,
+    axes,
     previousReports: opts.previousReports ?? [],
     supplement: (opts.supplement ?? '').trim() || null,
   };

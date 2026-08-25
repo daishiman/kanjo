@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # /// script
 # name: test_validate_report
-# version: 2.0.0
-# purpose: validate-report.py の機能テスト(unittest・実データ非使用)
+# version: 3.0.0
+# purpose: validate-report.py(第3版)の機能テスト(unittest・実データ非使用)
 # inputs:
 #   - なし(python3 -B -m unittest discover -s <scripts dir> -p 'test_*.py' で起動)
 # outputs:
@@ -17,7 +17,7 @@
 """validate-report.py の機能テスト(標準ライブラリ unittest)。
 
 実行: python3 -B -m unittest discover -s skills/run-kanjo-accounting-report/scripts -p 'test_*.py'
-ネットワーク・実データを一切使わない。
+ネットワーク・実データを一切使わない。図表カタログは references/chart-catalog.json(生成物)を読む。
 """
 from __future__ import annotations
 
@@ -37,6 +37,24 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(MOD)
 
 SECTIONS = ("spend", "change", "reduction", "split", "subscriptions")
+BODY = "本文の説明です。この節では対象期間の経費の内訳と、前月・前年からの変化を数値の根拠つきで述べます。" * 2
+SUMMARY = "対象期間の経費は前月比で増加しました。図2が示すとおり外注費の比率が最も大きく、次いで家賃です。詳細は各節を参照してください。"
+
+
+def finding(**over: object) -> dict:
+    base = {
+        "label": "外注費の増加",
+        "fact": "外注費が3ヶ月連続で増加し、直近月は120,000円でした",
+        "basis": "直近3ヶ月の外注費合計 ÷ 3 との比較",
+        "interpretation": "案件の外部依存が高まっており、固定費化しつつあります",
+        "action": "外注先を1社に集約して単価交渉を行う",
+        "expectedEffect": 20000,
+        "amount": 120000,
+        "priority": "high",
+        "chart": "composition",
+    }
+    base.update(over)
+    return base
 
 
 def good_report() -> dict:
@@ -44,34 +62,47 @@ def good_report() -> dict:
         "generatedBy": "claude-code",
         "model": "test-model",
         "title": "テスト期間の会計分析",
-        "summary": "総評1行目。\n総評2行目。",
+        "summary": SUMMARY,
         "sections": [
             {
                 "id": sid,
-                "body": "本文。\n- 箇条書き",
-                "items": [{"label": "科目A", "amount": 1000, "note": "備考", "priority": "high"}],
+                "body": BODY,
+                "items": [{"label": f"科目{i}", "amount": 1000 * (i + 1), "note": "備考", "priority": "high"} for i in range(3)],
+                "gap": None,
             }
             for sid in SECTIONS
         ],
         "keyFindings": {
-            "improvements": [{"label": "外注費の増加", "amount": 120000, "note": "3ヶ月連続", "priority": "high"}],
-            "wasted": [{"label": "重複サブスク", "amount": 6480, "priority": "mid"}],
-            "quickWins": [{"label": "契約を1本化", "amount": 6480, "priority": "high"}],
+            "improvements": [finding()],
+            "wasted": [finding(label="重複サブスク", amount=6480, chart="subs_vendor")],
+            "quickWins": [finding(label="契約を1本化", amount=6480, chart=None)],
+            "notes": {"improvements": "", "wasted": "", "quickWins": ""},
         },
-        "charts": [
-            {
-                "id": "exp",
-                "kind": "bar",
-                "title": "月別経費",
-                "unit": "yen",
-                "labels": ["2026-01", "2026-02"],
-                "series": [{"label": "経費", "data": [1000, None]}],
-            }
-        ],
+        "charts": [{"catalogId": "composition", "caption": "外注費が全体の4割を占め、家賃と合わせて7割に達しています"}],
         "followUp": {"body": "前回指摘は解消。", "items": [{"label": "解消済み", "amount": None}]},
         "needs": [{"gap": "家賃が未仕分け", "action": "公私仕分けで家賃を個人にする", "screen": "classify"}],
         "dataGaps": ["前年同月のデータが未取込"],
     }
+
+
+def good_data(available_figures: tuple[int, ...] = (2,)) -> dict:
+    """GET /api/ai/data の charts 部分だけを模した最小データ"""
+    catalog = MOD.load_catalog(None)
+    charts = []
+    for c in catalog.get("charts", []):
+        charts.append({"id": c["id"], "figure": c["figure"], "available": c["figure"] in available_figures})
+    return {"charts": charts}
+
+
+class CatalogTest(unittest.TestCase):
+    def test_catalog_is_loaded_from_references(self) -> None:
+        catalog = MOD.load_catalog(None)
+        ids = {c["id"] for c in catalog["charts"]}
+        self.assertIn("composition", ids)
+        self.assertEqual(len(ids), 8)
+
+    def test_missing_catalog_returns_empty(self) -> None:
+        self.assertEqual(MOD.load_catalog(Path("/nonexistent/catalog.json")), {})
 
 
 class ValidateTest(unittest.TestCase):
@@ -90,34 +121,38 @@ class ValidateTest(unittest.TestCase):
     def test_duplicated_and_unknown_section(self) -> None:
         r = good_report()
         r["sections"].append(copy.deepcopy(r["sections"][0]))
-        r["sections"].append({"id": "bonus", "body": "x"})
+        r["sections"].append({"id": "bonus", "body": BODY})
         issues = MOD.validate(r)
         self.assertTrue(any("重複" in i and "spend" in i for i in issues), issues)
         self.assertTrue(any("未定義" in i for i in issues), issues)
 
-    def test_sections_must_be_list(self) -> None:
+    def test_section_min_items_or_gap(self) -> None:
         r = good_report()
-        r["sections"] = "x"
+        r["sections"][0]["items"] = [{"label": "a"}]  # spend は3行必要
         issues = MOD.validate(r)
-        self.assertTrue(any("sections: 配列" in i for i in issues), issues)
-        self.assertTrue(any("節が不足" in i for i in issues), issues)
+        self.assertTrue(any("sections[0](spend): items が3行以上" in i for i in issues), issues)
+        r["sections"][0]["gap"] = "対象期間が1ヶ月のため内訳が3件に満たない"
+        self.assertEqual(MOD.validate(r), [])
+        r["sections"][0]["gap"] = "短い"
+        self.assertTrue(any("items が3行以上" in i for i in MOD.validate(r)))
+        r = good_report()
+        r["sections"][1]["items"] = []  # change は1行
+        self.assertTrue(any("(change): items が1行以上" in i for i in MOD.validate(r)))
 
-    def test_section_object_and_items_shape(self) -> None:
+    def test_text_minimums(self) -> None:
         r = good_report()
-        r["sections"][0] = "text"
-        r["sections"][1]["items"] = "no"
-        r["sections"][2]["items"] = ["bad"]
+        r["summary"] = "短い総評"
+        r["sections"][0]["body"] = "短い本文"
         issues = MOD.validate(r)
-        self.assertTrue(any("sections[0]: オブジェクト" in i for i in issues), issues)
-        self.assertTrue(any("sections[1].items: 配列" in i for i in issues), issues)
-        self.assertTrue(any("sections[2].items[0]: オブジェクト" in i for i in issues), issues)
+        self.assertTrue(any("summary" in i and "下限 60" in i for i in issues), issues)
+        self.assertTrue(any("sections[0].body" in i and "下限 80" in i for i in issues), issues)
 
     def test_plain_text_rules(self) -> None:
         r = good_report()
-        r["summary"] = "<b>太字</b>"
-        r["sections"][0]["body"] = "## 見出し\n本文"
-        r["sections"][1]["body"] = "| a | b |"
-        r["sections"][2]["body"] = "制御\x01文字"
+        r["summary"] = "<b>太字</b>" + SUMMARY
+        r["sections"][0]["body"] = "## 見出し\n" + BODY
+        r["sections"][1]["body"] = "| a | b |" + BODY
+        r["sections"][2]["body"] = "制御\x01文字" + BODY
         issues = MOD.validate(r)
         self.assertTrue(any("HTMLタグ" in i for i in issues), issues)
         self.assertEqual(sum("Markdown" in i for i in issues), 2, issues)
@@ -125,11 +160,11 @@ class ValidateTest(unittest.TestCase):
 
     def test_length_and_count_limits(self) -> None:
         r = good_report()
-        r["summary"] = "あ" * 3001
+        r["summary"] = "あ" * 1201
         r["sections"][0]["items"] = [{"label": "x"}] * 61
         r["dataGaps"] = ["g"] * 41
         issues = MOD.validate(r)
-        self.assertTrue(any("summary" in i and "上限 3000" in i for i in issues), issues)
+        self.assertTrue(any("summary" in i and "上限 1200" in i for i in issues), issues)
         self.assertTrue(any("items: 61件" in i for i in issues), issues)
         self.assertTrue(any("dataGaps: 41件" in i for i in issues), issues)
 
@@ -159,34 +194,42 @@ class ValidateTest(unittest.TestCase):
         self.assertEqual(sum("amount" in i for i in issues), 2, issues)
         self.assertEqual(sum("priority" in i for i in issues), 1, issues)
 
-    def test_data_gap_entries_are_checked(self) -> None:
+    # --- 第3版: 要点3段 ---
+    def test_key_findings_required(self) -> None:
         r = good_report()
-        r["dataGaps"] = ["", "<i>x</i>"]
-        issues = MOD.validate(r)
-        self.assertTrue(any("dataGaps[0]: 空" in i for i in issues), issues)
-        self.assertTrue(any("dataGaps[1]" in i and "HTML" in i for i in issues), issues)
-
-
-    # --- 第2版の追加項目 ---
-    def test_v1_report_without_new_fields_is_still_valid(self) -> None:
-        r = good_report()
-        for key in ("keyFindings", "charts", "followUp", "needs"):
-            del r[key]
-        self.assertEqual(MOD.validate(r), [])
-
-    def test_key_findings_shape(self) -> None:
-        r = good_report()
+        del r["keyFindings"]
+        self.assertTrue(any("keyFindings: 必須" in i for i in MOD.validate(r)))
         r["keyFindings"] = []
         self.assertTrue(any("keyFindings: オブジェクト" in i for i in MOD.validate(r)))
+
+    def test_finding_three_steps_required(self) -> None:
         r = good_report()
+        r["keyFindings"]["improvements"] = [{"label": "x", "amount": 100}]
+        issues = MOD.validate(r)
+        for field in ("fact", "basis", "interpretation", "action"):
+            self.assertTrue(any(f"improvements[0].{field}: 必須" in i for i in issues), (field, issues))
+        r["keyFindings"]["improvements"] = [finding(fact="短い", interpretation="短い解釈")]
+        issues = MOD.validate(r)
+        self.assertTrue(any("improvements[0].fact" in i and "下限 10" in i for i in issues), issues)
+        self.assertTrue(any("improvements[0].interpretation" in i and "下限 10" in i for i in issues), issues)
+
+    def test_finding_effect_chart_priority(self) -> None:
+        r = good_report()
+        r["keyFindings"]["wasted"] = [finding(expectedEffect=1.5, chart="pie_chart", priority="urgent")]
+        issues = MOD.validate(r)
+        self.assertTrue(any("wasted[0].expectedEffect" in i for i in issues), issues)
+        self.assertTrue(any("wasted[0].chart" in i and "カタログにありません" in i for i in issues), issues)
+        self.assertTrue(any("wasted[0].priority" in i for i in issues), issues)
+
+    def test_empty_category_needs_note(self) -> None:
+        r = good_report()
+        r["keyFindings"]["wasted"] = []
+        issues = MOD.validate(r)
+        self.assertTrue(any("keyFindings.wasted が空" in i for i in issues), issues)
+        r["keyFindings"]["notes"]["wasted"] = "対象期間に重複契約や未使用サービスは見つかりませんでした"
+        self.assertEqual(MOD.validate(r), [])
         r["keyFindings"]["bogus"] = []
         self.assertTrue(any("keyFindings.bogus" in i for i in MOD.validate(r)))
-        r = good_report()
-        r["keyFindings"]["wasted"] = [{"label": "x", "priority": "urgent"}]
-        self.assertTrue(any("keyFindings.wasted[0].priority" in i for i in MOD.validate(r)))
-        r = good_report()
-        r["keyFindings"]["quickWins"] = [{"label": "x"}] * 11
-        self.assertTrue(any("keyFindings.quickWins: 11件" in i for i in MOD.validate(r)))
 
     def test_follow_up_shape(self) -> None:
         r = good_report()
@@ -196,86 +239,79 @@ class ValidateTest(unittest.TestCase):
         self.assertTrue(any("followUp: オブジェクト" in i for i in MOD.validate(r)))
         r["followUp"] = {"items": []}
         self.assertTrue(any("followUp.body: 必須" in i for i in MOD.validate(r)))
-        r["followUp"] = {"body": "ok", "items": [{"label": ""}]}
-        self.assertTrue(any("followUp.items[0].label" in i for i in MOD.validate(r)))
 
     def test_needs_shape_and_screen(self) -> None:
         r = good_report()
-        r["needs"] = {}
-        self.assertTrue(any("needs: 配列" in i for i in MOD.validate(r)))
-        r["needs"] = ["x"]
-        self.assertTrue(any("needs[0]: オブジェクト" in i for i in MOD.validate(r)))
         r["needs"] = [{"gap": "g", "action": "a", "screen": "nowhere"}]
         self.assertTrue(any("needs[0].screen" in i and "未定義" in i for i in MOD.validate(r)))
         r["needs"] = [{"gap": "g", "action": "a", "screen": None}]
         self.assertEqual(MOD.validate(r), [])
-        r["needs"] = [{"gap": "g", "action": "a", "screen": 3}]
-        self.assertTrue(any("needs[0].screen" in i for i in MOD.validate(r)))
-        r["needs"] = [{"gap": "", "action": None}]
-        issues = MOD.validate(r)
-        self.assertTrue(any("needs[0].gap: 空" in i for i in issues))
-        self.assertTrue(any("needs[0].action: 必須" in i for i in issues))
         r["needs"] = [{"gap": "g", "action": "a"}] * 31
         self.assertTrue(any("needs: 31件" in i for i in MOD.validate(r)))
 
-    def test_chart_shape(self) -> None:
+    # --- 第3版: 図表はカタログ参照だけ ---
+    def test_chart_refs(self) -> None:
         r = good_report()
         r["charts"] = {}
         self.assertTrue(any("charts: 配列" in i for i in MOD.validate(r)))
         r["charts"] = ["x"]
         self.assertTrue(any("charts[0]: オブジェクト" in i for i in MOD.validate(r)))
-
-        def chart(**over: object) -> dict:
-            base = copy.deepcopy(good_report()["charts"][0])
-            base.update(over)
-            return base
-
-        r["charts"] = [chart(kind="pie")]
-        self.assertTrue(any("charts[0].kind" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(unit="usd")]
-        self.assertTrue(any("charts[0].unit" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(labels=[])]
-        self.assertTrue(any("charts[0].labels: 1件以上" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(labels=["a"] * 73)]
-        self.assertTrue(any("charts[0].labels: 73件" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(series=[])]
-        self.assertTrue(any("charts[0].series: 1本以上" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(series=[{"label": "s", "data": [1, 2]}] * 9)]
-        self.assertTrue(any("charts[0].series: 9本" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(series=["x"])]
-        self.assertTrue(any("charts[0].series[0]: オブジェクト" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(series=[{"label": "s", "data": [1, 2, 3]}])]
-        self.assertTrue(any("同じ長さ" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(series=[{"label": "s", "data": []}])]
-        self.assertTrue(any("series[0].data: 1件以上" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(series=[{"label": "s", "data": [1, "2"]}])]
-        self.assertTrue(any("series[0].data[1]" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(series=[{"label": "s", "data": [True, 1]}])]
-        self.assertTrue(any("series[0].data[0]" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(id="dup"), chart(id="dup")]
-        self.assertTrue(any("id が重複" in i for i in MOD.validate(r)))
-        r["charts"] = [chart(id=f"c{i}") for i in range(7)]
-        self.assertTrue(any("charts: 7件" in i for i in MOD.validate(r)))
-        c = chart(series=[{"label": "s", "data": [1.5, 2]}])
-        c.pop("unit")
-        r["charts"] = [c]
+        r["charts"] = [{"catalogId": "pie_chart", "caption": "カタログにない図を指定したケースです"}]
+        self.assertTrue(any("charts[0].catalogId" in i and "カタログにありません" in i for i in MOD.validate(r)))
+        r["charts"] = [{"catalogId": "composition", "caption": "x", "labels": ["a"], "series": [{"data": [1]}]}]
+        issues = MOD.validate(r)
+        self.assertTrue(any("charts[0].labels" in i and "数値" in i for i in issues), issues)
+        self.assertTrue(any("charts[0].series" in i for i in issues), issues)
+        r["charts"] = [{"catalogId": "composition", "caption": "同じ図を2回指定したケースです"}] * 2
+        self.assertTrue(any("catalogId が重複" in i for i in MOD.validate(r)))
+        r["charts"] = [{"catalogId": "composition", "caption": "あ" * 401}]
+        self.assertTrue(any("charts[0].caption" in i and "上限 400" in i for i in MOD.validate(r)))
+        r["charts"] = [{"catalogId": f"c{i}", "caption": "x"} for i in range(9)]
+        self.assertTrue(any("charts: 9件" in i for i in MOD.validate(r)))
+        r["charts"] = None
         self.assertEqual(MOD.validate(r), [])
+
+    def test_availability_with_data(self) -> None:
+        r = good_report()
+        self.assertEqual(MOD.validate(r, data=good_data((2,))), [])
+        # 図1 も出せるのに caption も参照も無い
+        issues = MOD.validate(r, data=good_data((1, 2)))
+        self.assertTrue(any("図1(trend_ma)は出せる図" in i for i in issues), issues)
+        self.assertTrue(any("図1(trend_ma)が summary" in i for i in issues), issues)
+        # 図2 が出せないのに本文が参照
+        issues = MOD.validate(r, data=good_data(()))
+        self.assertTrue(any("「図2」を参照していますが" in i for i in issues), issues)
+        # caption が短い
+        r["charts"][0]["caption"] = "短い読み解き"
+        issues = MOD.validate(r, data=good_data((2,)))
+        self.assertTrue(any("caption を15字以上" in i for i in issues), issues)
+        # data に charts が無い
+        self.assertTrue(any("--data: charts" in i for i in MOD.validate(good_report(), data={})))
 
 
 class MainTest(unittest.TestCase):
-    def _run(self, payload: object) -> tuple[int, str]:
+    def _run(self, payload: object, data: object = None) -> tuple[int, str]:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "report.json"
             path.write_text(payload if isinstance(payload, str) else json.dumps(payload), encoding="utf-8")
+            argv = [str(path)]
+            if data is not None:
+                dpath = Path(tmp) / "data.json"
+                dpath.write_text(json.dumps(data), encoding="utf-8")
+                argv += ["--data", str(dpath)]
             buf = io.StringIO()
             with redirect_stdout(buf):
-                code = MOD.main([str(path)])
+                code = MOD.main(argv)
         return code, buf.getvalue()
 
     def test_exit_0_for_valid(self) -> None:
         code, out = self._run(good_report())
         self.assertEqual(code, 0)
         self.assertIn("OK", out)
+
+    def test_exit_0_with_data(self) -> None:
+        code, out = self._run(good_report(), good_data((2,)))
+        self.assertEqual(code, 0, out)
 
     def test_exit_1_for_invalid(self) -> None:
         r = good_report()
@@ -285,10 +321,19 @@ class MainTest(unittest.TestCase):
         self.assertIn("NG", out)
         self.assertIn("修正が必要", out)
 
+    def test_exit_1_with_data_mismatch(self) -> None:
+        code, out = self._run(good_report(), good_data(()))
+        self.assertEqual(code, 1)
+        self.assertIn("図2", out)
+
     def test_exit_2_for_broken_json(self) -> None:
         code, out = self._run("{not json")
         self.assertEqual(code, 2)
         self.assertIn("読めません", out)
+
+    def test_exit_2_for_non_object_data(self) -> None:
+        code, out = self._run(good_report(), [1])
+        self.assertEqual(code, 2)
 
     def test_exit_2_for_missing_file(self) -> None:
         buf = io.StringIO()

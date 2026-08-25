@@ -105,6 +105,9 @@ function previousSummary(r: typeof s.aiReports.$inferSelect): PreviousReportSumm
   const body = upgradeBody(JSON.parse(r.bodyJson));
   const texts = (items: { label: string; note: string }[] | undefined) =>
     (items ?? []).map((i) => (i.note ? `${i.label}: ${i.note}` : i.label));
+  // 要点は「事実 → 解釈 → 次のアクション」を1行に畳む(前回指摘の追跡に使う)
+  const findings = (items: { label: string; fact: string; action: string }[]) =>
+    items.map((f) => [f.label, f.fact, f.action].filter(Boolean).join(' / '));
   return {
     id: r.id,
     version: r.version,
@@ -113,9 +116,9 @@ function previousSummary(r: typeof s.aiReports.$inferSelect): PreviousReportSumm
     title: r.title,
     summary: r.summary,
     keyFindings: {
-      improvements: texts(body.keyFindings.improvements),
-      wasted: texts(body.keyFindings.wasted),
-      quickWins: texts(body.keyFindings.quickWins),
+      improvements: findings(body.keyFindings.improvements),
+      wasted: findings(body.keyFindings.wasted),
+      quickWins: findings(body.keyFindings.quickWins),
     },
     reductionItems: texts(body.sections.find((x) => x.id === 'reduction')?.items),
     needs: body.needs.map((n) => n.gap),
@@ -354,17 +357,30 @@ async function storeReport(
   input: ReportInput,
 ): Promise<
   | { ok: true; reportId: string }
-  | { ok: false; status: 400 | 401; error: { code: string; message: string; missing?: string[] } }
+  | {
+      ok: false;
+      status: 400 | 401;
+      error: { code: string; message: string; missing?: string[]; issues?: string[] };
+    }
 > {
-  const normalized = normalizeReport(input, periodOf(task));
+  // 図の数値は GET data と同じ計算をここでやり直し、レポートにスナップショットとして同梱する(要望25b)
+  const payload = await agentPayload(db, task);
+  if (!payload) {
+    return { ok: false, status: 400, error: { code: 'no_data', message: '取込済みデータがありません' } };
+  }
+  const normalized = normalizeReport(input, periodOf(task), payload.charts);
   if (!normalized.ok) {
     return {
       ok: false,
       status: 400,
       error: {
-        code: 'missing_sections',
-        message: `必須の節が不足しています: ${normalized.missing.join(', ')}`,
+        code: normalized.code,
+        message:
+          normalized.code === 'missing_sections'
+            ? `必須の節が不足しています: ${normalized.missing.join(', ')}`
+            : `レポートの内容が規則を満たしていません(${normalized.issues.length}箇所)。issues を直して再送してください`,
         missing: normalized.missing,
+        issues: normalized.issues,
       },
     };
   }

@@ -923,6 +923,121 @@ details.prompt-box > summary {
   cursor: pointer;
 }
 
+/* AIレポート一覧: 型ごとに最新1件を大きく、過去は畳む(要望24b) */
+.report-group + .report-group {
+  margin-top: 20px;
+}
+.report-group h3 {
+  font-size: 13px;
+  margin: 0 0 8px;
+  color: var(--ink-soft);
+}
+.report-latest {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.report-latest.selected {
+  border-color: var(--biz);
+}
+.report-latest-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+.report-latest-title {
+  font-size: 16px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.report-past {
+  margin-top: 8px;
+}
+.report-past > summary {
+  cursor: pointer;
+}
+.report-actions {
+  margin: 8px 0 4px;
+}
+
+/* 要点の3段(事実→解釈→次の一手) */
+.finding-steps {
+  display: grid;
+  grid-template-columns: 4.5em 1fr;
+  gap: 2px 8px;
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+.finding-steps dt {
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.finding-steps dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* 図表カタログ: 図番号・読み方・出せない図の枠 */
+.figure-no {
+  font-weight: 700;
+  color: var(--ink);
+  margin-right: 4px;
+}
+.figure-ref {
+  font-weight: 700;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+}
+.report-chart.unavailable {
+  opacity: 0.85;
+}
+.chart-placeholder {
+  min-height: 120px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 12px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.chart-placeholder p {
+  margin: 0 0 4px;
+}
+.chart-guide,
+.chart-caption {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 6px 0 0;
+}
+
+/* 前回との並列比較 */
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.compare-col {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.compare-col h4 {
+  font-size: 12px;
+  margin: 0 0 6px;
+}
+.compare-col ul {
+  margin: 0 0 8px;
+  padding-left: 1.2em;
+  font-size: 13px;
+}
+
 /* 用語ホバー(components/Term.tsx) */
 .term {
   all: unset;

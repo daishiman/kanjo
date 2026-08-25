@@ -22,7 +22,8 @@
     "smoke": "bash .github/scripts/smoke.sh",
     "skills:sync": "node scripts/sync-project-skills.mjs",
     "skills:check": "node scripts/sync-project-skills.mjs --check",
-    "skills:test": "python3 -B -m unittest discover -s skills/run-kanjo-accounting-report/scripts -p 'test_*.py'"
+    "skills:test": "python3 -B -m unittest discover -s skills/run-kanjo-accounting-report/scripts -p 'test_*.py'",
+    "catalog:export": "vite-node scripts/export-chart-catalog.mts"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

@@ -301,33 +301,75 @@ export interface AiReportItem {
   note: string;
   priority: 'high' | 'mid' | 'low' | null;
 }
+/** 要点1件 = 事実(数値+計算根拠) → 解釈 → 次のアクション(期待効果) の3段(spec §16 v3) */
+export interface AiReportFinding {
+  label: string;
+  fact: string;
+  basis: string;
+  interpretation: string;
+  action: string;
+  expectedEffect: number | null;
+  amount: number | null;
+  priority: 'high' | 'mid' | 'low' | null;
+  /** 根拠にした図のカタログ id。無ければ null */
+  chart: string | null;
+}
+export type AiFindingKey = 'improvements' | 'wasted' | 'quickWins';
+export const AI_FINDING_LABEL: Record<AiFindingKey, string> = {
+  improvements: '改善すべき点',
+  wasted: '無駄なコスト',
+  quickWins: 'すぐ効く対策',
+};
+export interface AiReportKeyFindings {
+  improvements: AiReportFinding[];
+  wasted: AiReportFinding[];
+  quickWins: AiReportFinding[];
+  /** 0件だった区分の理由(なぜ無いか) */
+  notes: Record<AiFindingKey, string>;
+}
 export interface AiReportSection {
   id: AiSectionId;
   title: string;
   body: string;
   items: AiReportItem[];
+  /** 最低行数を満たせなかった理由(データ不足)。満たしていれば null */
+  gap: string | null;
 }
 export interface AiReportNeed {
   gap: string;
   action: string;
   screen: AiNeedScreen | null;
 }
+export type AiChartKind = 'line' | 'bar' | 'stackedBar' | 'waterfall' | 'pareto' | 'band';
+export interface AiChartSeries {
+  label: string;
+  data: (number | null)[];
+  role?: 'line' | 'band' | 'total' | 'cum';
+}
+/** 図表カタログ1枚分の凍結スナップショット。数値はすべてアプリ側の計算結果(AIは caption だけを書く) */
 export interface AiReportChart {
   id: string;
-  kind: 'bar' | 'line' | 'stackedBar';
+  figure: number;
   title: string;
+  kind: AiChartKind;
   unit: 'yen' | 'pct' | 'count';
-  labels: string[];
-  series: { label: string; data: (number | null)[] }[];
-  note: string;
+  purpose: string;
+  readingGuide: string;
+  available: boolean;
+  reason: string | null;
+  monthsNeeded: number | null;
+  granularity: 'month' | 'quarter' | null;
+  data: { labels: string[]; series: AiChartSeries[] } | null;
+  status: 'ok' | 'source_missing' | 'app_missing';
+  caption: string;
 }
 export interface AiReportBody {
-  version: 2;
+  version: 3;
   generatedBy: string;
   model: string | null;
   title: string;
   summary: string;
-  keyFindings: { improvements: AiReportItem[]; wasted: AiReportItem[]; quickWins: AiReportItem[] };
+  keyFindings: AiReportKeyFindings;
   sections: AiReportSection[];
   followUp: { body: string; items: AiReportItem[] } | null;
   needs: AiReportNeed[];

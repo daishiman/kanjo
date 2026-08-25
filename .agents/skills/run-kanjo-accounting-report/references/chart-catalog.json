@@ -1,0 +1,241 @@
+{
+  "$comment": "pnpm catalog:export が packages/api/src/ai/catalog.ts と contract.ts から生成。手で編集しない(テストで同期を確認)",
+  "monthlyLimit": 36,
+  "maxSeries": 8,
+  "textLimits": {
+    "summary": {
+      "min": 60,
+      "max": 1200
+    },
+    "sectionBody": {
+      "min": 80,
+      "max": 6000
+    },
+    "gap": {
+      "min": 10,
+      "max": 400
+    },
+    "caption": {
+      "min": 15,
+      "max": 400
+    }
+  },
+  "sectionIds": [
+    "spend",
+    "change",
+    "reduction",
+    "split",
+    "subscriptions"
+  ],
+  "sectionMinItems": {
+    "spend": 3,
+    "change": 1,
+    "reduction": 2,
+    "split": 2,
+    "subscriptions": 1
+  },
+  "findingKeys": [
+    "improvements",
+    "wasted",
+    "quickWins"
+  ],
+  "charts": [
+    {
+      "id": "trend_ma",
+      "figure": 1,
+      "title": "売上・経費の推移と3ヶ月移動平均",
+      "kind": "line",
+      "unit": "yen",
+      "purpose": "経費の水準が上がっているのか下がっているのかを、月ごとのブレをならして見る",
+      "condition": "記帳済みの月が6ヶ月以上(移動平均を3点以上引くため)",
+      "minMonths": 6,
+      "types": [
+        "monthly",
+        "annual",
+        "longterm"
+      ],
+      "requiredData": [
+        "biz.revenue",
+        "biz.expenseTotal",
+        "stats.expenseMovingAvg3",
+        "unrecordedExpenseMonths"
+      ],
+      "axes": [
+        "期間(対象期間の前12ヶ月〜終了月)",
+        "区分(事業)"
+      ],
+      "readingGuide": "実線の経費が点線の移動平均より上にある月は「ふだんより多い月」。移動平均そのものが右肩上がりなら水準が上がっている。未記帳の月は線が途切れる。"
+    },
+    {
+      "id": "composition",
+      "figure": 2,
+      "title": "対象期間の経費構成比",
+      "kind": "bar",
+      "unit": "pct",
+      "purpose": "どの科目が経費の大半を占めているかを一目で見る",
+      "condition": "対象期間に記帳済みの経費が1円以上",
+      "minMonths": 1,
+      "types": [
+        "monthly",
+        "annual",
+        "longterm"
+      ],
+      "requiredData": [
+        "summary.current.expenseByAccount",
+        "summary.current.expense"
+      ],
+      "axes": [
+        "項目(freee勘定科目)",
+        "期間(対象期間)"
+      ],
+      "readingGuide": "上位2科目で全体の6割を超えていれば、その2科目を見直すのが最も効く。「その他」は上位8科目以外の合計。"
+    },
+    {
+      "id": "contribution",
+      "figure": 3,
+      "title": "前期からの増減の寄与度分解",
+      "kind": "waterfall",
+      "unit": "yen",
+      "purpose": "経費が前期からいくら増減し、どの科目がいくら押し上げ/押し下げたかを分ける",
+      "condition": "対象期間と、直前の同じ長さの期間の両方に記帳済みの月がある",
+      "minMonths": 0,
+      "types": [
+        "monthly",
+        "annual",
+        "longterm"
+      ],
+      "requiredData": [
+        "summary.previous.expenseByAccount",
+        "summary.current.expenseByAccount"
+      ],
+      "axes": [
+        "項目(freee勘定科目)",
+        "期間(前期→対象期間)"
+      ],
+      "readingGuide": "左端が前期の合計、右端が対象期間の合計。間の柱が科目ごとの増減で、上向き(赤)が増加、下向き(緑)が減少。柱が長い科目が増減の主因。"
+    },
+    {
+      "id": "distribution",
+      "figure": 4,
+      "title": "月次経費の分布と外れ値",
+      "kind": "band",
+      "unit": "yen",
+      "purpose": "経費が「いつもの範囲」に収まっているか、飛び抜けた月がないかを見る",
+      "condition": "記帳済みの月が6ヶ月以上(平均と標準偏差を求めるため)",
+      "minMonths": 6,
+      "types": [
+        "monthly",
+        "annual",
+        "longterm"
+      ],
+      "requiredData": [
+        "biz.expenseTotal",
+        "unrecordedExpenseMonths",
+        "stats.recordedMonths"
+      ],
+      "axes": [
+        "期間(対象期間の前12ヶ月〜終了月)",
+        "区分(事業)"
+      ],
+      "readingGuide": "帯は平均±2標準偏差(いつもの範囲)。帯の外に出た月が外れ値で、その月の科目を stats.outliers で確認する。帯が広いほど月ごとのブレが大きい。"
+    },
+    {
+      "id": "yoy",
+      "figure": 5,
+      "title": "前年同月との比較",
+      "kind": "bar",
+      "unit": "yen",
+      "purpose": "季節性(毎年その月は多い)なのか、今年だけ増えたのかを切り分ける",
+      "condition": "対象期間の各月に対応する前年同月が記帳済み。対象期間が13ヶ月以内(長期は図1で見る)",
+      "minMonths": 13,
+      "types": [
+        "monthly",
+        "annual"
+      ],
+      "requiredData": [
+        "biz.expenseTotal",
+        "summary.yearAgo.months",
+        "unrecordedExpenseMonths"
+      ],
+      "axes": [
+        "期間(対象期間 vs 前年同期)",
+        "区分(事業)"
+      ],
+      "readingGuide": "2本の柱の差が前年同月比。前年も同じ月に多ければ季節性、今年だけ多ければ今年固有の要因。"
+    },
+    {
+      "id": "fixed_variable_bep",
+      "figure": 6,
+      "title": "固定費・変動費と損益分岐点",
+      "kind": "stackedBar",
+      "unit": "yen",
+      "purpose": "売上がどこまで落ちても赤字にならないか(安全余裕)を見る",
+      "condition": "記帳済みの月が6ヶ月以上、かつ売上のある月が3ヶ月以上(固定費の判定と損益分岐点の計算に必要)",
+      "minMonths": 6,
+      "types": [
+        "monthly",
+        "annual",
+        "longterm"
+      ],
+      "requiredData": [
+        "biz.expenseByAccount",
+        "stats.accountProfiles.*.type",
+        "biz.revenue",
+        "pl.breakEven.monthly",
+        "pl.breakEven.available"
+      ],
+      "axes": [
+        "区分(固定費/変動費)",
+        "期間(対象期間の前12ヶ月〜終了月)"
+      ],
+      "readingGuide": "積み上げ柱の下段が固定費(毎月ほぼ一定の科目)、上段が変動費。横線が損益分岐点(固定費の直近3ヶ月平均)。売上の折れ線が横線を下回る月は固定費を賄えていない。"
+    },
+    {
+      "id": "pareto",
+      "figure": 7,
+      "title": "科目別パレート図",
+      "kind": "pareto",
+      "unit": "yen",
+      "purpose": "少数の科目が経費の大半を占めるかを確かめ、見直す順番を決める",
+      "condition": "対象期間に金額のある科目が3つ以上",
+      "minMonths": 0,
+      "types": [
+        "monthly",
+        "annual",
+        "longterm"
+      ],
+      "requiredData": [
+        "summary.current.expenseByAccount"
+      ],
+      "axes": [
+        "項目(freee勘定科目)",
+        "期間(対象期間)"
+      ],
+      "readingGuide": "柱は科目別金額(大きい順)、折れ線は累積構成比。折れ線が80%に達するまでの科目が「まず見直す対象」。"
+    },
+    {
+      "id": "subs_vendor",
+      "figure": 8,
+      "title": "サブスク支払先別の月次推移",
+      "kind": "stackedBar",
+      "unit": "yen",
+      "purpose": "サブスクの合計と、どの支払先が増えているかを見る",
+      "condition": "サブスクの支払先が1件以上登録され、期間内に支払いがある",
+      "minMonths": 0,
+      "types": [
+        "monthly",
+        "annual",
+        "longterm"
+      ],
+      "requiredData": [
+        "subscriptions.vendors",
+        "subscriptions.other"
+      ],
+      "axes": [
+        "項目(サブスク登録ベンダー)",
+        "期間(対象期間の前12ヶ月〜終了月)"
+      ],
+      "readingGuide": "柱の高さがサブスク合計。同じ色の帯が急に厚くなった月は値上げか二重払い(subscriptions.alerts を確認)。「その他」は未登録の支払先。"
+    }
+  ]
+}

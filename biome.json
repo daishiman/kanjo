@@ -10,7 +10,8 @@
       ".claude",
       ".codex",
       ".agents",
-      "packages/api/worker-configuration.d.ts"
+      "packages/api/worker-configuration.d.ts",
+      "skills/run-kanjo-accounting-report/references/chart-catalog.json"
     ]
   },
   "formatter": {

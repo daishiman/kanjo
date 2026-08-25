@@ -4,103 +4,49 @@
  * - 貼り付け用指示文、受信レポートの検証と無害化をここに集約する。
  * - レポートは毎回同じ5節で受け取る(節が欠けたら受け付けない)。
  *   v2 では冒頭の「要点サマリー」「精度を上げるために必要な情報」「図表データ」「前回からの変化」を追加で受け取る。
+ *   v3(要望23/24/25)では要点を「事実→解釈→次のアクション」の3段に固定し、図は図表カタログの id と説明文だけを受け取る
+ *   (数値はアプリが計算し、保存時にスナップショットとして本文へ同梱する)。節ごとの最低件数・文字数もここで検査する。
  * - 本文はプレーンテキスト(改行・箇条書きのみ)。HTMLタグ・制御文字は保存前に落とす。
  */
 import { z } from 'zod';
+import {
+  CATALOG_IDS,
+  CHART_CATALOG,
+  type ChartData,
+  type ChartKind,
+  type ChartResult,
+  type ChartUnit,
+} from './catalog.js';
 
-/* -------- 期間 -------- */
-
-/** レポートの型。期間の長さから機械的に決まる(利用者に選ばせない) */
-export type ReportType = 'monthly' | 'annual' | 'longterm';
-
-export const REPORT_TYPE_LABEL: Record<ReportType, string> = {
-  monthly: '月次',
-  annual: '年次',
-  longterm: '長期',
-};
-
-/** 1画面の説明文に使う、型の決まり方 */
-export const REPORT_TYPE_RULE = '1ヶ月=月次 / 2〜13ヶ月=年次(四半期を含む) / 14ヶ月以上=長期';
-
-const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
-/** 受け付ける最長期間(月数)。過去5年+当月 */
-export const MAX_RANGE_MONTHS = 61;
-
-export interface Period {
-  from: string;
-  to: string;
-}
-
-/** YYYY-MM の通し番号(月差の計算用) */
-export const monthIndex = (m: string): number => Number(m.slice(0, 4)) * 12 + Number(m.slice(5, 7)) - 1;
-export const monthFromIndex = (i: number): string =>
-  `${Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, '0')}`;
-export const addMonths = (m: string, n: number): string => monthFromIndex(monthIndex(m) + n);
-
-export function rangeMonths(p: Period): string[] {
-  const out: string[] = [];
-  for (let i = monthIndex(p.from); i <= monthIndex(p.to); i++) out.push(monthFromIndex(i));
-  return out;
-}
-
-export function rangeLength(p: Period): number {
-  return monthIndex(p.to) - monthIndex(p.from) + 1;
-}
-
-export function reportTypeOf(p: Period): ReportType {
-  const n = rangeLength(p);
-  if (n <= 1) return 'monthly';
-  if (n <= 13) return 'annual';
-  return 'longterm';
-}
-
-export const periodSchema = z
-  .object({
-    from: z.string().regex(MONTH_RE, '開始年月は YYYY-MM で指定してください'),
-    to: z.string().regex(MONTH_RE, '終了年月は YYYY-MM で指定してください'),
-  })
-  .refine((p) => monthIndex(p.from) <= monthIndex(p.to), {
-    message: '開始年月が終了年月より後になっています',
-  })
-  .refine((p) => rangeLength(p) <= MAX_RANGE_MONTHS, {
-    message: `期間は最長${MAX_RANGE_MONTHS}ヶ月(過去5年+当月)までです`,
-  });
-
-/** 依頼の作成(期間 + 任意の補足情報 + 再分析元のレポート) */
-export const taskCreateSchema = periodSchema.and(
-  z.object({
-    supplement: z.string().max(4000).optional(),
-    parentReportId: z.string().max(64).optional(),
-  }),
-);
-
-const monthJa = (m: string): string => `${m.slice(0, 4)}年${Number(m.slice(5, 7))}月`;
-
-export function periodLabel(p: Period): string {
-  const n = rangeLength(p);
-  const type = REPORT_TYPE_LABEL[reportTypeOf(p)];
-  if (n === 1) return `${monthJa(p.from)}(${type})`;
-  return `${monthJa(p.from)}〜${monthJa(p.to)}(${n}ヶ月・${type})`;
-}
-
-/**
- * 旧データ(period_kind=month/year, period_key)から期間を復元する。
- * マイグレーション 0004 で列は埋めるが、念のため画面側でも同じ規則で解釈できるようにしておく。
- */
-export function legacyPeriod(kind: string, key: string): Period {
-  if (kind === 'year') return { from: `${key}-01`, to: `${key}-12` };
-  return { from: key, to: key };
-}
+export * from './period.js';
+import { type Period, REPORT_TYPE_LABEL, periodLabel, reportTypeOf } from './period.js';
 
 /* -------- 受信レポートの検証 -------- */
 
 const textField = (max: number) => z.string().max(max);
 
+/** 節の中の1行(表の行)。要点(finding)より軽い */
 const itemSchema = z.object({
   label: textField(200).min(1),
   amount: z.number().int().safe().nullable().optional(),
   note: textField(1000).optional(),
   priority: z.enum(['high', 'mid', 'low']).nullable().optional(),
+});
+
+/**
+ * 要点(要望23b): 事実(数値+計算根拠)→解釈→次のアクション の3段を必ず持つ。
+ * どれか1つでも欠けたら受け付けない(zod の min で拒否)。
+ */
+const findingSchema = z.object({
+  label: textField(200).min(1),
+  fact: textField(600).min(10),
+  basis: textField(400).min(5),
+  interpretation: textField(800).min(10),
+  action: textField(600).min(5),
+  expectedEffect: z.number().int().safe().nullable().optional(),
+  amount: z.number().int().safe().nullable().optional(),
+  priority: z.enum(['high', 'mid', 'low']).nullable().optional(),
+  chart: z.string().max(40).nullable().optional(),
 });
 
 export const SECTION_IDS = ['spend', 'change', 'reduction', 'split', 'subscriptions'] as const;
@@ -114,11 +60,29 @@ export const SECTION_LABEL: Record<SectionId, string> = {
   subscriptions: 'サブスクの整理候補',
 };
 
+/** 節ごとの最低行数(要望23a)。満たせないときは section.gap にデータ不足の理由(10字以上)を書く */
+export const SECTION_MIN_ITEMS: Record<SectionId, number> = {
+  spend: 3,
+  change: 1,
+  reduction: 2,
+  split: 2,
+  subscriptions: 1,
+};
+
+/** 文字数の下限・上限(要望23a)。短すぎる=分析していない、長すぎる=読めない */
+export const TEXT_LIMITS = {
+  summary: { min: 60, max: 1200 },
+  sectionBody: { min: 80, max: 6000 },
+  gap: { min: 10, max: 400 },
+  caption: { min: 15, max: 400 },
+} as const;
+
 const sectionSchema = z.object({
   id: z.enum(SECTION_IDS),
   title: textField(120).optional(),
-  body: textField(12000),
+  body: textField(TEXT_LIMITS.sectionBody.max).min(TEXT_LIMITS.sectionBody.min),
   items: z.array(itemSchema).max(60).optional(),
+  gap: textField(TEXT_LIMITS.gap.max).nullable().optional(),
 });
 
 /** 「精度を上げるために必要な情報」の行き先(アプリ内の画面 id)。画面に無い id は保存時に落とす */
@@ -139,30 +103,24 @@ const needSchema = z.object({
   screen: z.string().max(40).nullable().optional(),
 });
 
-export const CHART_KINDS = ['bar', 'line', 'stackedBar'] as const;
-export const CHART_UNITS = ['yen', 'pct', 'count'] as const;
-const chartSchema = z.object({
-  id: textField(40).min(1),
-  kind: z.enum(CHART_KINDS),
-  title: textField(120).min(1),
-  unit: z.enum(CHART_UNITS).optional(),
-  labels: z.array(textField(40)).min(1).max(72),
-  series: z
-    .array(
-      z.object({
-        label: textField(60).min(1),
-        data: z.array(z.number().finite().nullable()).min(1).max(72),
-      }),
-    )
-    .min(1)
-    .max(8),
-  note: textField(300).optional(),
+/** 図(要望25b): AI が送るのはカタログ id と説明文だけ。数値は受け取らない */
+const chartRefSchema = z.object({
+  catalogId: textField(40).min(1),
+  caption: textField(TEXT_LIMITS.caption.max),
 });
 
 const keyFindingsSchema = z.object({
-  improvements: z.array(itemSchema).max(10).optional(),
-  wasted: z.array(itemSchema).max(10).optional(),
-  quickWins: z.array(itemSchema).max(10).optional(),
+  improvements: z.array(findingSchema).max(10).optional(),
+  wasted: z.array(findingSchema).max(10).optional(),
+  quickWins: z.array(findingSchema).max(10).optional(),
+  /** 該当なしの分類には、なぜ無いかを書く(空のまま黙って省くのを禁止) */
+  notes: z
+    .object({
+      improvements: textField(400).optional(),
+      wasted: textField(400).optional(),
+      quickWins: textField(400).optional(),
+    })
+    .optional(),
 });
 
 const followUpSchema = z.object({
@@ -174,15 +132,18 @@ export const reportInputSchema = z.object({
   generatedBy: textField(60).min(1),
   model: textField(120).nullable().optional(),
   title: textField(120).optional(),
-  summary: textField(3000).min(1),
-  keyFindings: keyFindingsSchema.optional(),
+  summary: textField(TEXT_LIMITS.summary.max).min(TEXT_LIMITS.summary.min),
+  keyFindings: keyFindingsSchema,
   sections: z
     .array(sectionSchema)
     .min(SECTION_IDS.length)
     .max(SECTION_IDS.length * 2),
   followUp: followUpSchema.nullable().optional(),
   needs: z.array(needSchema).max(30).optional(),
-  charts: z.array(chartSchema).max(6).optional(),
+  charts: z
+    .array(chartRefSchema)
+    .max(CHART_CATALOG.length * 2)
+    .optional(),
   dataGaps: z.array(textField(500)).max(40).optional(),
 });
 export type ReportInput = z.infer<typeof reportInputSchema>;
@@ -193,33 +154,56 @@ export interface ReportItem {
   note: string;
   priority: 'high' | 'mid' | 'low' | null;
 }
+export interface ReportFinding {
+  label: string;
+  fact: string;
+  basis: string;
+  interpretation: string;
+  action: string;
+  expectedEffect: number | null;
+  amount: number | null;
+  priority: 'high' | 'mid' | 'low' | null;
+  /** 根拠にした図(カタログ id)。無ければ null */
+  chart: string | null;
+}
 export interface ReportSection {
   id: SectionId;
   title: string;
   body: string;
   items: ReportItem[];
+  /** 最低行数を満たせなかった理由(データ不足)。満たしていれば null */
+  gap: string | null;
 }
 export interface ReportNeed {
   gap: string;
   action: string;
   screen: NeedScreen | null;
 }
+/** 保存される図: アプリが計算した数値のスナップショット + AI の説明文 */
 export interface ReportChart {
   id: string;
-  kind: (typeof CHART_KINDS)[number];
+  figure: number;
   title: string;
-  unit: (typeof CHART_UNITS)[number];
-  labels: string[];
-  series: { label: string; data: (number | null)[] }[];
-  note: string;
+  kind: ChartKind;
+  unit: ChartUnit;
+  purpose: string;
+  readingGuide: string;
+  available: boolean;
+  reason: string | null;
+  monthsNeeded: number | null;
+  granularity: 'month' | 'quarter' | null;
+  data: ChartData | null;
+  status: ChartResult['status'];
+  caption: string;
 }
 export interface ReportKeyFindings {
-  improvements: ReportItem[];
-  wasted: ReportItem[];
-  quickWins: ReportItem[];
+  improvements: ReportFinding[];
+  wasted: ReportFinding[];
+  quickWins: ReportFinding[];
+  notes: { improvements: string; wasted: string; quickWins: string };
 }
 export interface AiReportBody {
-  version: 2;
+  version: 3;
   generatedBy: string;
   model: string | null;
   title: string;
@@ -252,88 +236,256 @@ const normItems = (items: InputItem[] | undefined): ReportItem[] =>
     priority: it.priority ?? null,
   }));
 
-/** 5節が揃っているかを確認し、既定の順序に並べ替えて無害化する。欠けた節名を返す */
-export function normalizeReport(
-  input: ReportInput,
-  period: Period,
-): { ok: true; body: AiReportBody } | { ok: false; missing: SectionId[] } {
+type InputFinding = z.infer<typeof findingSchema>;
+const catalogSet = new Set<string>(CATALOG_IDS);
+const normFindings = (items: InputFinding[] | undefined): ReportFinding[] =>
+  (items ?? []).map((it) => ({
+    label: sanitizeText(it.label),
+    fact: sanitizeText(it.fact),
+    basis: sanitizeText(it.basis),
+    interpretation: sanitizeText(it.interpretation),
+    action: sanitizeText(it.action),
+    expectedEffect: typeof it.expectedEffect === 'number' ? it.expectedEffect : null,
+    amount: typeof it.amount === 'number' ? it.amount : null,
+    priority: it.priority ?? null,
+    chart: it.chart && catalogSet.has(it.chart) ? it.chart : null,
+  }));
+
+export const FINDING_KEYS = ['improvements', 'wasted', 'quickWins'] as const;
+export const FINDING_LABEL: Record<(typeof FINDING_KEYS)[number], string> = {
+  improvements: '改善すべき点',
+  wasted: '無駄なコスト',
+  quickWins: 'すぐ効く対策',
+};
+
+/** 図の参照表記(本文で「図3」と書く)。全角数字も受け付ける */
+const figureRefs = (text: string): Set<number> => {
+  const out = new Set<number>();
+  for (const m of text.matchAll(/図\s*([0-9０-９]+)/g)) {
+    const n = Number(m[1].replace(/[０-９]/g, (d) => String(d.charCodeAt(0) - 0xff10)));
+    if (Number.isFinite(n)) out.add(n);
+  }
+  return out;
+};
+
+export type NormalizeResult =
+  | { ok: true; body: AiReportBody }
+  | { ok: false; code: 'missing_sections'; missing: SectionId[]; issues: string[] }
+  | { ok: false; code: 'report_rules'; missing: SectionId[]; issues: string[] };
+
+/**
+ * 5節が揃っているかを確認し、既定の順序に並べ替えて無害化する。
+ * v3 では要点の3段・節の最低行数・図の参照(要望23)もここで検査し、満たさなければ理由を列挙して拒否する。
+ * charts にはアプリが計算した図(GET data と同じもの)を渡す。保存時に数値をスナップショットとして同梱する。
+ */
+export function normalizeReport(input: ReportInput, period: Period, charts: ChartResult[]): NormalizeResult {
   const byId = new Map<SectionId, (typeof input.sections)[number]>();
   for (const sec of input.sections) if (!byId.has(sec.id)) byId.set(sec.id, sec);
   const missing = SECTION_IDS.filter((id) => !byId.has(id));
-  if (missing.length) return { ok: false, missing };
+  if (missing.length)
+    return {
+      ok: false,
+      code: 'missing_sections',
+      missing,
+      issues: missing.map((m) => `節 ${m} がありません`),
+    };
+  const issues: string[] = [];
   const sections: ReportSection[] = SECTION_IDS.map((id) => {
     const sec = byId.get(id) as (typeof input.sections)[number];
+    const items = normItems(sec.items);
+    const gap = sanitizeText(sec.gap ?? '') || null;
+    if (items.length < SECTION_MIN_ITEMS[id] && (!gap || gap.length < TEXT_LIMITS.gap.min)) {
+      issues.push(
+        `節 ${id}(${SECTION_LABEL[id]})は items が${SECTION_MIN_ITEMS[id]}行以上必要です(現在${items.length}行)。データ不足なら gap に理由を${TEXT_LIMITS.gap.min}字以上で書いてください`,
+      );
+    }
     return {
       id,
       title: sanitizeText(sec.title || '') || SECTION_LABEL[id],
       body: sanitizeText(sec.body),
-      items: normItems(sec.items),
+      items,
+      gap,
     };
   });
+  const notes = {
+    improvements: sanitizeText(input.keyFindings.notes?.improvements ?? ''),
+    wasted: sanitizeText(input.keyFindings.notes?.wasted ?? ''),
+    quickWins: sanitizeText(input.keyFindings.notes?.quickWins ?? ''),
+  };
+  const keyFindings: ReportKeyFindings = {
+    improvements: normFindings(input.keyFindings.improvements),
+    wasted: normFindings(input.keyFindings.wasted),
+    quickWins: normFindings(input.keyFindings.quickWins),
+    notes,
+  };
+  for (const k of FINDING_KEYS) {
+    if (keyFindings[k].length === 0 && notes[k].length < 10)
+      issues.push(
+        `keyFindings.${k}(${FINDING_LABEL[k]})が空です。該当なしなら keyFindings.notes.${k} に理由を10字以上で書いてください`,
+      );
+  }
   const screens = new Set<string>(NEED_SCREENS);
   const needs: ReportNeed[] = (input.needs ?? []).map((n) => ({
     gap: sanitizeText(n.gap),
     action: sanitizeText(n.action),
     screen: n.screen && screens.has(n.screen) ? (n.screen as NeedScreen) : null,
   }));
-  const charts: ReportChart[] = (input.charts ?? [])
-    .map((ch) => ({
-      id: sanitizeText(ch.id),
-      kind: ch.kind,
-      title: sanitizeText(ch.title),
-      unit: ch.unit ?? 'yen',
-      labels: ch.labels.map(sanitizeText),
-      // 系列の長さはラベル数に揃える(足りない分は null、余りは捨てる)
-      series: ch.series.map((sr) => ({
-        label: sanitizeText(sr.label),
-        data: ch.labels.map((_, i) => (typeof sr.data[i] === 'number' ? (sr.data[i] as number) : null)),
-      })),
-      note: sanitizeText(ch.note ?? ''),
-    }))
-    .filter((ch) => ch.id && ch.title);
+  // 図: カタログ外の id は拒否。出せる図には caption と本文中の「図N」参照を必須にする
+  const captions = new Map<string, string>();
+  for (const ref of input.charts ?? []) {
+    const id = sanitizeText(ref.catalogId);
+    if (!catalogSet.has(id)) {
+      issues.push(
+        `charts.catalogId「${id}」は図表カタログにありません(使える id: ${CATALOG_IDS.join(', ')})`,
+      );
+      continue;
+    }
+    captions.set(id, sanitizeText(ref.caption));
+  }
+  const referenced = new Set<number>();
+  for (const t of [input.summary, ...sections.map((x) => x.body)])
+    for (const n of figureRefs(t)) referenced.add(n);
+  const storedCharts: ReportChart[] = charts.map((c) => {
+    const caption = captions.get(c.id) ?? '';
+    if (c.available) {
+      if (caption.length < TEXT_LIMITS.caption.min)
+        issues.push(
+          `図${c.figure}(${c.id})は出せる図です。charts に caption を${TEXT_LIMITS.caption.min}字以上で付けてください`,
+        );
+      if (!referenced.has(c.figure))
+        issues.push(
+          `図${c.figure}(${c.id})が summary か各節の body で「図${c.figure}」として参照されていません`,
+        );
+    }
+    return {
+      id: c.id,
+      figure: c.figure,
+      title: c.title,
+      kind: c.kind,
+      unit: c.unit,
+      purpose: c.purpose,
+      readingGuide: c.readingGuide,
+      available: c.available,
+      reason: c.reason,
+      monthsNeeded: c.monthsNeeded,
+      granularity: c.granularity,
+      data: c.data,
+      status: c.status,
+      caption,
+    };
+  });
+  const availableFigures = new Set(charts.filter((c) => c.available).map((c) => c.figure));
+  for (const n of referenced) {
+    if (!availableFigures.has(n))
+      issues.push(`本文が「図${n}」を参照していますが、その図は出せません(available=false)か存在しません`);
+  }
+  if (issues.length) return { ok: false, code: 'report_rules', missing: [], issues };
   return {
     ok: true,
     body: {
-      version: 2,
+      version: 3,
       generatedBy: sanitizeText(input.generatedBy) || 'unknown',
       model: input.model ? sanitizeText(input.model) || null : null,
       title: sanitizeText(input.title ?? '') || `${periodLabel(period)}の会計分析`,
       summary: sanitizeText(input.summary),
-      keyFindings: {
-        improvements: normItems(input.keyFindings?.improvements),
-        wasted: normItems(input.keyFindings?.wasted),
-        quickWins: normItems(input.keyFindings?.quickWins),
-      },
+      keyFindings,
       sections,
       followUp: input.followUp
         ? { body: sanitizeText(input.followUp.body), items: normItems(input.followUp.items) }
         : null,
       needs,
-      charts,
+      charts: storedCharts,
       dataGaps: (input.dataGaps ?? []).map(sanitizeText).filter((g) => g.length > 0),
     },
   };
 }
 
-/** 保存済みの本文(v1 も含む)を v2 の形に揃えて返す。画面はこの形だけを扱う */
+interface LegacyItem {
+  label?: string;
+  amount?: number | null;
+  note?: string;
+  priority?: 'high' | 'mid' | 'low' | null;
+}
+interface LegacyChart {
+  id?: string;
+  kind?: string;
+  title?: string;
+  unit?: string;
+  labels?: string[];
+  series?: { label: string; data: (number | null)[] }[];
+  note?: string;
+}
+
+const legacyFinding = (it: LegacyItem): ReportFinding => ({
+  label: it.label ?? '',
+  fact: [it.label ?? '', typeof it.amount === 'number' ? `${it.amount.toLocaleString('ja-JP')}円` : '']
+    .filter(Boolean)
+    .join(' '),
+  basis: '(旧版のレポートのため計算根拠の記録なし)',
+  interpretation: it.note ?? '',
+  action: '',
+  expectedEffect: null,
+  amount: typeof it.amount === 'number' ? it.amount : null,
+  priority: it.priority ?? null,
+  chart: null,
+});
+
+const legacyChart = (ch: LegacyChart, i: number): ReportChart => ({
+  id: ch.id ?? `legacy-${i}`,
+  figure: 0,
+  title: ch.title ?? '',
+  kind: ch.kind === 'line' || ch.kind === 'stackedBar' ? ch.kind : 'bar',
+  unit: ch.unit === 'pct' || ch.unit === 'count' ? ch.unit : 'yen',
+  purpose: '',
+  readingGuide: '',
+  available: true,
+  reason: null,
+  monthsNeeded: null,
+  granularity: null,
+  data: { labels: ch.labels ?? [], series: ch.series ?? [] },
+  status: 'ok',
+  caption: ch.note ?? '',
+});
+
+/** 保存済みの本文(v1 / v2 も含む)を v3 の形に揃えて返す。画面はこの形だけを扱う */
 export function upgradeBody(raw: unknown): AiReportBody {
-  const b = (raw ?? {}) as Partial<AiReportBody> & { version?: number };
+  const b = (raw ?? {}) as Record<string, unknown> & { version?: number };
+  const kf = (b.keyFindings ?? {}) as Record<string, unknown>;
+  const isV3 = b.version === 3;
+  const findings = (k: string): ReportFinding[] => {
+    const arr = (kf[k] ?? []) as (LegacyItem | ReportFinding)[];
+    return isV3 ? (arr as ReportFinding[]) : (arr as LegacyItem[]).map(legacyFinding);
+  };
+  const notesRaw = (kf.notes ?? {}) as Partial<ReportKeyFindings['notes']>;
+  const sections = ((b.sections ?? []) as Partial<ReportSection>[]).map((sec) => ({
+    id: sec.id as SectionId,
+    title: sec.title ?? '',
+    body: sec.body ?? '',
+    items: sec.items ?? [],
+    gap: sec.gap ?? null,
+  }));
+  const chartsRaw = (b.charts ?? []) as (LegacyChart | ReportChart)[];
   return {
-    version: 2,
-    generatedBy: b.generatedBy ?? 'unknown',
-    model: b.model ?? null,
-    title: b.title ?? '',
-    summary: b.summary ?? '',
+    version: 3,
+    generatedBy: (b.generatedBy as string) ?? 'unknown',
+    model: (b.model as string | null) ?? null,
+    title: (b.title as string) ?? '',
+    summary: (b.summary as string) ?? '',
     keyFindings: {
-      improvements: b.keyFindings?.improvements ?? [],
-      wasted: b.keyFindings?.wasted ?? [],
-      quickWins: b.keyFindings?.quickWins ?? [],
+      improvements: findings('improvements'),
+      wasted: findings('wasted'),
+      quickWins: findings('quickWins'),
+      notes: {
+        improvements: notesRaw.improvements ?? '',
+        wasted: notesRaw.wasted ?? '',
+        quickWins: notesRaw.quickWins ?? '',
+      },
     },
-    sections: b.sections ?? [],
-    followUp: b.followUp ?? null,
-    needs: b.needs ?? [],
-    charts: b.charts ?? [],
-    dataGaps: b.dataGaps ?? [],
+    sections,
+    followUp: (b.followUp as AiReportBody['followUp']) ?? null,
+    needs: (b.needs as ReportNeed[]) ?? [],
+    charts: isV3 ? (chartsRaw as ReportChart[]) : (chartsRaw as LegacyChart[]).map(legacyChart),
+    dataGaps: (b.dataGaps as string[]) ?? [],
   };
 }
 
@@ -380,7 +532,9 @@ export function buildPrompt(p: {
     '',
     '守ること:',
     '- 数字は取得したデータにある値だけを使う。推測で金額や科目を作らない。不足は「データ不足」と書き、何をすれば分かるかを needs に書く。',
-    '- レポートは Skill が定める5節(spend / change / reduction / split / subscriptions)を必ず全て含め、冒頭の keyFindings(改善すべき点・無駄なコスト・すぐ効く対策)と charts(図表データ)も付ける。',
+    '- レポートは Skill が定める5節(spend / change / reduction / split / subscriptions)を必ず全て含め、節ごとの最低行数(足りなければ gap に理由)を守る。',
+    '- 冒頭の keyFindings(改善すべき点・無駄なコスト・すぐ効く対策)は1件ごとに fact(数値+計算根拠)・basis(どのデータ・期間から)・interpretation(統計的な解釈)・action(次の一手と期待効果 expectedEffect 円)の4つを必ず書く。',
+    '- 図は取得データの charts(図表カタログ)にある図だけを使う。available=true の図は本文で「図N」と参照し、charts に {catalogId, caption} を付けて送る。図の数値は送らない(アプリが計算済み)。',
     '- 本文はプレーンテキスト(HTMLやMarkdownの表は使わない)。専門用語は括弧で言い換える。',
     '- 送信が 201 で受け付けられたら、返ってきた reportId を表示して終了する。',
   );
