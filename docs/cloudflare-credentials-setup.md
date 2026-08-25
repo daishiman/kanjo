@@ -56,6 +56,25 @@ daishiman/kanjo
 
 違うリポジトリ名が出た場合は、そこで作業を止めてリポジトリのディレクトリへ移動してください。
 
+### 2.1 Wranglerのネイティブ依存を確認する
+
+このリポジトリはApple Silicon上のarm64 NodeとRosetta上のx64 Nodeの両方を許容します。最初に依存関係とWranglerの起動を確認します。
+
+```bash
+pnpm install --frozen-lockfile
+node -p '`${process.platform} ${process.arch} ${process.version}`'
+pnpm --filter @kanjo/api exec wrangler --version
+```
+
+`You installed workerd on another platform`、`workerd-darwin-64`、`workerd-darwin-arm64`のいずれかを含むエラーになった場合は、現在のOS向けにx64・arm64両方の任意依存を入れ直します。
+
+```bash
+pnpm install --force --frozen-lockfile
+pnpm --filter @kanjo/api exec wrangler --version
+```
+
+`pnpm-workspace.yaml`の`supportedArchitectures`により、現在のOSについて両CPU向けネイティブ依存がインストールされます。`node_modules`を別のMacやDockerイメージからコピーしないでください。lockfileの削除や別パッケージマネージャーへの切り替えは不要です。設定の根拠は[pnpm 10のsupportedArchitectures](https://pnpm.io/10.x/settings#supportedarchitectures)です。
+
 ## 3. Cloudflare Account IDを取得する
 
 公式手順: [Find account and zone IDs](https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/)
@@ -151,23 +170,50 @@ gh secret list --env production
 
 公式手順: [GitHub ActionsからWorkersへデプロイする](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/)
 
-この手順では、特定の個人に依存せずCI/CD用のサービス主体として使えるaccount-owned tokenを作ります。CloudflareもCI/CDのような継続利用にはaccount-owned tokenを案内しています。作成には対象アカウントのSuper Administrator権限が必要です。詳細は[Account API tokens](https://developers.cloudflare.com/fundamentals/api/get-started/account-owned-tokens/)を参照してください。
+この手順では、特定の個人に依存せずCI/CD用のサービス主体として使えるaccount-owned tokenを作ります。CloudflareもCI/CDのような継続利用にはaccount-owned tokenを案内しており、Workers・D1・R2はいずれもaccount-owned tokenに対応しています。作成には対象アカウントのSuper Administrator権限が必要です。詳細は[Account API tokens](https://developers.cloudflare.com/fundamentals/api/get-started/account-owned-tokens/)を参照してください。
 
 `Create Token`が表示されない場合はGlobal API Keyで代用せず、対象アカウントのSuper Administratorへ作成を依頼してください。やむを得ずuser tokenを使う場合は`My Profile > API Tokens`から作成し、4.3の権限と4.4の単一アカウント制限を同じように設定します。
 
+API Tokenの秘密値は作成完了画面で1回だけ表示されます。この章の画面操作と4.7のGitHub登録はリポジトリ所有者本人が実行し、tokenをIssue・PR・チャットへ貼らないでください。
+
 ### 4.1 API Token画面を開く
 
-1. [Cloudflare Account API tokens](https://dash.cloudflare.com/?to=/:account/api-tokens)を開く。
-2. `kanjo-console`を所有するアカウントが選択されていることを確認する。
-3. `Create Token`を選ぶ。
-4. `Permission policies`の`Custom`ドロップダウンを開く。
-5. `Edit Cloudflare Workers`を選ぶ。テンプレートが表示されない場合は`Create Custom Token`を選ぶ。
+最短で間違いが少ない方法は、Cloudflare公式仕様のtemplate URLで、このプロジェクトに必要な4権限を事前入力する方法です。
 
-画面に`Use template`と表示される場合は、`Edit Cloudflare Workers`行の`Use template`を選びます。Global API Keyの`View`は選びません。
+1. [kanjo用Account API Token作成画面（4権限を事前入力）](https://dash.cloudflare.com/?to=/:account/api-tokens&permissionGroupKeys=%5B%7B%22key%22%3A%22account_settings%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_scripts%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_r2%22%2C%22type%22%3A%22edit%22%7D%5D&name=kanjo-github-actions-production)を開く。
+2. アカウント選択が出たら、3章で確定した`kanjo-console`所有アカウントを選ぶ。
+3. 画面の見出しが`Account API Tokens`であることを確認する。URLが`/profile/api-tokens`ならuser token画面なので戻る。
+4. Token nameが`kanjo-github-actions-production`になっていることを確認する。
+5. Permission policiesに4.3の4権限が入っていることを確認する。事前入力されなかった場合は、次の手動手順を使う。
+
+上のリンクはtokenを作成せず、名前と権限を作成フォームへ事前入力するだけです。アカウントIDや秘密値はURLに含みません。仕組みは[Cloudflare API token template URLs](https://developers.cloudflare.com/fundamentals/api/how-to/account-owned-token-template/)に準拠しています。
+
+#### 手動で開く場合
+
+1. [Cloudflare Account Home](https://dash.cloudflare.com/?to=/:account/home)を開き、`kanjo-console`所有アカウントを選ぶ。
+2. 左側の`Manage Account`を開き、`Account API Tokens`を選ぶ。画面幅によっては`Manage Account > API Tokens`と表示される。
+3. `Create Token`を選ぶ。
+4. `Permission policies`の現在値`Custom`を開き、スターターとして`Edit Cloudflare Workers`を選ぶ。
+5. Token nameと権限編集フォームが表示されたら、4.2と4.3へ進む。
+
+画面がテンプレート一覧形式の場合は、`Edit Cloudflare Workers`行の`Use template`を選びます。`Create Custom Token`と`Get started`が表示される画面では、それを選んで4.3の4行を手動追加しても構いません。
+
+`Edit Cloudflare Workers`は完成形ではなくスターターです。2026年8月時点の標準テンプレートにはWorkers Scripts・R2などが入りますが、`Migrate`に必要なD1権限は含まれません。4.3でD1を追加し、不要権限を削除するまで`Continue to summary`へ進まないでください。
+
+次の画面を開いていたら導線が違います。
+
+| 表示 | 判断 |
+|---|---|
+| `My Profile > API Tokens` / URLが`/profile/api-tokens` | user-owned token画面。今回は`Manage Account > Account API Tokens`へ戻る |
+| `Global API Key`と`View` | 旧方式の鍵。選ばずに戻る |
+| `R2 API Tokens` | S3互換API用。WorkersのCI/CD用ではないため戻る |
+| `Create Token`がない | アカウント違い、またはSuper Administrator権限不足を確認する |
+
+Cloudflare公式の現行GitHub Actions手順も、`Account API tokens > Create Token > Permission policies > Edit Cloudflare Workers`の導線を案内しています。
 
 ### 4.2 Token名を入力する
 
-Token nameへ次を入力します。
+Token nameへ次を入力します。4.1の事前入力リンクを使った場合は、同じ値が入っていることを確認します。
 
 ```text
 kanjo-github-actions-production
@@ -177,7 +223,7 @@ kanjo-github-actions-production
 
 ### 4.3 Permissionを最小権限へ調整する
 
-最終的な`Account`権限を次の4行にします。
+Permission policiesの各行は、左から`Resource`、`Permission`、`Level`を選びます。`Add more`、`+ Add`、`Add permission`のいずれかで行を追加し、削除アイコンで不要行を消します。最終的な`Account`権限を次の4行だけにしてください。
 
 | Resource | Permission | Level | 用途 |
 |---|---|---|---|
@@ -188,12 +234,26 @@ kanjo-github-actions-production
 
 Cloudflare画面で`Edit`ではなく`Write`と表示される場合があります。その場合は同じ権限の`Write`を選びます。現行権限名は[API token permissions](https://developers.cloudflare.com/fundamentals/api/reference/permissions/)で確認できます。
 
-テンプレートに次の権限が追加されていても、このCI/CDでは使用しません。削除できる場合は削除します。
+選択時の注意:
 
-- Workers KV Storage（KVを使っていない）
-- Workers Tail Read（GitHub Actionsからtailしない）
-- Workers Routes Edit（現在はZone routeを使わない）
-- User Details / Memberships（account-owned tokenでは不要）
+- `Workers Scripts`は`Account`権限です。`Zone > Workers Routes`と取り違えない。
+- `D1`は標準の`Edit Cloudflare Workers`テンプレートに含まれないため、必ず追加する。
+- `Workers R2 Storage`はR2 bindingの管理権限です。`R2 API Token`を別途作る必要はない。
+- `Account Settings`は`Read`にし、`Edit`へ広げない。
+
+`Edit Cloudflare Workers`テンプレートから始めた場合は、次の対応表どおりに調整します。
+
+| テンプレートの行 | 操作 | 理由 |
+|---|---|---|
+| Account Settings Read | 残す | Wranglerの対象アカウント確認 |
+| Workers Scripts Edit / Write | 残す | Workerデプロイ |
+| Workers R2 Storage Edit / Write | 残す | `FILES` binding |
+| D1 Edit / Write | **新しく追加する** | 手動`Migrate`ワークフロー |
+| Workers KV Storage Edit / Write | 削除 | このリポジトリはKV未使用 |
+| Workers Tail Read | 削除 | GitHub Actionsからtailしない |
+| Zone > Workers Routes Edit / Write | 削除 | 現在はZone route未使用 |
+| User Details Read | 削除 | account-owned tokenでは不要 |
+| User Memberships Read | 削除 | account-owned tokenでは不要 |
 
 将来Custom DomainやZone routeを追加する場合だけ、`Zone > Workers Routes > Edit`を対象Zone1件に限定して追加します。
 
@@ -209,6 +269,8 @@ account-owned tokenでは、token作成画面を開いたアカウント自体�
 4. `All accounts`になっていないことを確認する。
 
 Zone権限をすべて削除した場合、`Zone Resources`は不要です。Zone権限を追加した場合は`All zones`にせず、対象Zone1件だけを選びます。
+
+このプロジェクトの現在の完成形ではZone権限が0件なので、Summaryに`All zones`や`Workers Routes`が表示されたら4.3へ戻って削除します。
 
 ### 4.5 IP制限と有効期限を判断する
 
@@ -231,11 +293,13 @@ GitHub-hosted runnerの送信元IPは固定ではないため、`Client IP Addre
 4. `Create Token`を選ぶ。
 5. 表示されたtokenをコピーする。
 
-token値が完全な形で表示されるのはこの画面だけです。次へ移動する前に、次の4.7でGitHubへ登録してください。Issue、PR、チャット、メモ帳、スクリーンショットには保存しません。保管が必要ならパスワードマネージャーを使います。
+2026年に新規作成したaccount-owned tokenは通常`cfat_`で始まります。`cfut_`で始まる場合はuser-owned token画面で作成しているため、意図した方式かを確認してから使用してください。Global API Keyの`cfk_`は使用しません。
+
+token値が完全な形で表示されるのはこの画面だけです。次へ移動する前に、次の4.7でGitHubへ登録してください。Issue、PR、チャット、メモ帳、スクリーンショットには保存しません。保管が必要ならパスワードマネージャーを使います。token形式の根拠は[Cloudflare token formats](https://developers.cloudflare.com/fundamentals/api/get-started/token-formats/)です。
 
 ### 4.7 GitHubへtokenを登録する
 
-tokenをコピーしたまま、別のターミナルで次を実行します。
+この操作はtokenを見られるリポジトリ所有者本人が行います。tokenをコピーしたまま、別のターミナルで次を実行します。
 
 ```bash
 gh secret set CLOUDFLARE_API_TOKEN --env production
@@ -469,6 +533,7 @@ pnpm --filter @kanjo/api exec wrangler deployments list
 | `CLOUDFLARE_API_TOKENが未登録` | GitHub `production` Environment secretの名前とスコープ |
 | `CLOUDFLARE_ACCOUNT_IDが未登録` | GitHub `production` Environment secretの名前とスコープ |
 | `APP_URLが未登録` | Repository Variableとして登録したか |
+| `You installed workerd on another platform` | 2.1の`pnpm install --force --frozen-lockfile`を実行し、x64・arm64両方のネイティブ依存を入れ直す |
 | Authentication error / code 10000 | tokenがactiveか、期限切れでないか、API Key方式と混同していないか |
 | code 7003 / object identifier invalid | Account IDが`kanjo-console`所有アカウントのものか |
 | D1 permission error | `Account > D1 > Edit`があるか |
@@ -509,6 +574,7 @@ tokenの値を確認するためにActionsログへ出力してはいけませ�
 ## 11. 最終チェックリスト
 
 - [ ] `daishiman/kanjo`で作業している
+- [ ] 現在のNode環境で`wrangler --version`が成功する
 - [ ] Account IDは`kanjo-console`を所有するアカウントから取得した
 - [ ] `kanjo-files`が同じアカウントに存在する
 - [ ] `kanjo-files`の`r2.dev`公開は無効で、カスタムドメインもない
