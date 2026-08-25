@@ -114,8 +114,15 @@ body {
 .nav-group {
   font-size: 11px;
   color: var(--ink-soft);
-  margin: 12px 10px 4px;
+  margin: 10px 10px 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
   letter-spacing: 0.08em;
+}
+.nav > div:first-child .nav-group {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 .nav a {
   display: flex;
@@ -330,6 +337,11 @@ table.data tr.total td {
 
 .scroll-x {
   overflow-x: auto;
+}
+/* overflow を持つ要素は sticky の基準になるため、ページヘッダー分(53px)のオフセットを付けると
+   見出し行が先頭データ行の上に重なる。スクロール容器内では上端固定にする。 */
+.scroll-x table.data thead th {
+  top: 0;
 }
 .scroll-x table.data th:first-child,
 .scroll-x table.data td:first-child {
