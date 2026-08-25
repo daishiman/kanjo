@@ -2,13 +2,14 @@ import type { ReactNode } from 'react';
 import { ApiError } from '../api.js';
 import { deltaCls, pct, yen } from '../format.js';
 import { type AppRouteId, routeMetadata } from '../routeMetadata.js';
+import { linkTerms } from './Term.js';
 
 export function PageHeader({ route }: { route: AppRouteId }) {
   const metadata = routeMetadata(route);
   return (
     <header className="page-heading">
       <h1 className="page-title">{metadata.label}</h1>
-      <p className="page-task">{metadata.task}</p>
+      <p className="page-task">{linkTerms(metadata.task)}</p>
     </header>
   );
 }

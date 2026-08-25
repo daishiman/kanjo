@@ -24,6 +24,7 @@ import {
   api,
 } from '../api.js';
 import { PageHeader, PageState, describeError } from '../components/Page.js';
+import { Term, linkTerms } from '../components/Term.js';
 import { COLORS, VENDOR_PALETTE, yenTick } from '../components/charts.js';
 import { dateTime, monthLabel, yen } from '../format.js';
 import { type AppRouteId, routeMetadata } from '../routeMetadata.js';
@@ -174,9 +175,13 @@ export function AiPage() {
                   <thead>
                     <tr>
                       <th>届いた日時</th>
-                      <th>型</th>
+                      <th>
+                        <Term id="reportType" />
+                      </th>
                       <th>対象期間</th>
-                      <th>版</th>
+                      <th>
+                        <Term id="reportVersion" />
+                      </th>
                       <th>題名</th>
                       <th>作成元</th>
                       <th />
@@ -746,7 +751,7 @@ function ReportDetail({
         ) : (
           <ul>
             {b.dataGaps.map((g) => (
-              <li key={g}>{g}</li>
+              <li key={g}>{linkTerms(g)}</li>
             ))}
           </ul>
         )}
@@ -876,11 +881,11 @@ function ReportText({ text }: { text: string }) {
           bl.kind === 'ul' ? (
             <ul key={`ul-${i}-${bl.lines[0]}`}>
               {bl.lines.map((l, j) => (
-                <li key={`${j}-${l}`}>{l}</li>
+                <li key={`${j}-${l}`}>{linkTerms(l)}</li>
               ))}
             </ul>
           ) : (
-            <p key={`p-${i}-${bl.lines[0]}`}>{bl.lines.join('\n')}</p>
+            <p key={`p-${i}-${bl.lines[0]}`}>{linkTerms(bl.lines.join('\n'))}</p>
           ),
         )}
     </div>

@@ -13,7 +13,7 @@
     "preview": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api dev",
     "test": "pnpm -r test && pnpm run skills:test",
     "typecheck": "pnpm -r typecheck",
-    "lint": "biome check . && node scripts/sync-project-skills.mjs --check",
+    "lint": "biome check . && node scripts/sync-project-skills.mjs --check && node scripts/check-glossary.mjs",
     "lint:fix": "biome check --write .",
     "deploy": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api run deploy",
     "db:migrate:local": "pnpm --filter @kanjo/api exec wrangler d1 migrations apply kanjo-db --local",

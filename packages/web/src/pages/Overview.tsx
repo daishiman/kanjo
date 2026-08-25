@@ -5,6 +5,7 @@ import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type SummaryResponse, api } from '../api.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
+import { Term } from '../components/Term.js';
 import { COLORS, yenTick } from '../components/charts.js';
 import { deltaCls, monthShort, pct, yen, yenS } from '../format.js';
 
@@ -63,17 +64,31 @@ export function OverviewPage() {
         <KpiCard
           label={`${ov.years.prev}年 利益(記帳ベース)`}
           value={yenS(ov.kpi.prevYearProfit)}
-          note={<> 経費率 {pct(ov.kpi.prevYearExpenseRatio, 0)}</>}
+          note={
+            <>
+              {' '}
+              <Term id="expenseRatio" /> {pct(ov.kpi.prevYearExpenseRatio, 0)}
+            </>
+          }
         />
         <KpiCard
-          label={`${ov.years.curr}年 経費(年換算)`}
+          label={
+            <>
+              {ov.years.curr}年 経費(
+              <Term id="annualized" />)
+            </>
+          }
           value={yen(ov.kpi.currYearAnnualized)}
           note={<> 前年 {yen(ov.kpi.prevYearExpense)}</>}
         />
       </div>
 
       <div className="card">
-        <h2>売上・経費トレンド(防衛ライン重ね描き)</h2>
+        <h2>
+          売上・経費トレンド(
+          <Term id="defenseLine" />・<Term id="movingAvg" />
+          を重ね描き)
+        </h2>
         <Chart
           type="bar"
           height={90}
@@ -155,14 +170,19 @@ export function OverviewPage() {
       </div>
 
       <div className="card">
-        <h2>経費パレート(累積構成比)</h2>
+        <h2>
+          経費パレート(
+          <Term id="pareto" />)
+        </h2>
         <div className="scroll-x">
           <table className="data">
             <thead>
               <tr>
                 <th>科目</th>
                 <th>累計額</th>
-                <th>累積構成比</th>
+                <th>
+                  <Term id="pareto" />
+                </th>
               </tr>
             </thead>
             <tbody>

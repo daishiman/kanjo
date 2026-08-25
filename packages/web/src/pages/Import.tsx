@@ -3,12 +3,17 @@
  * 同月洗い替えの確認ダイアログを挟む。
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRef, useState } from 'react';
+import { type ReactNode, useRef, useState } from 'react';
 import { AUTH_EVENT, type ImportHistoryRow, type ImportUnitResult, api } from '../api.js';
 import { PageHeader, PageState } from '../components/Page.js';
+import { Term } from '../components/Term.js';
 import { dateTime } from '../format.js';
 
-const KIND_LABEL: Record<string, string> = { mf: 'MF明細', freee: 'freee仕訳', json: '統合JSON' };
+const KIND_LABEL: Record<string, ReactNode> = {
+  mf: 'MF明細',
+  freee: 'freee仕訳',
+  json: <Term id="mergedJson" />,
+};
 
 export function ImportPage() {
   const qc = useQueryClient();

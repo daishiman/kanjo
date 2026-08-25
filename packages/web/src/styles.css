@@ -921,3 +921,44 @@ table.ai-table td.wrap {
 details.prompt-box > summary {
   cursor: pointer;
 }
+
+/* 用語ホバー(components/Term.tsx) */
+.term {
+  all: unset;
+  cursor: help;
+  text-decoration: underline dotted;
+  text-decoration-color: var(--ink-soft);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+.term:hover,
+.term[aria-expanded="true"] {
+  text-decoration-style: solid;
+}
+.term:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.term-tip {
+  position: fixed;
+  z-index: 50;
+  display: block;
+  padding: 8px 10px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
+  font-size: 12px;
+  line-height: 1.55;
+  font-weight: 400;
+  text-align: left;
+  white-space: normal;
+  pointer-events: none;
+}
+.term-tip strong {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 2px;
+}

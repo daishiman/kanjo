@@ -22,6 +22,7 @@ import {
   useInvalidateClassification,
 } from '../components/ClassificationSettings.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
+import { Term } from '../components/Term.js';
 import { yen, yenS } from '../format.js';
 
 export function ClassifyPage() {
@@ -298,7 +299,9 @@ function TxLine({
                   className="pill warn"
                   title="公私を変えたため、科目が今の系統(事業=freee科目 / 個人=MF内訳)の候補にありません"
                 >
-                  科目が公私と不一致
+                  科目が
+                  <Term id="publicPrivate" />
+                  と不一致
                 </span>
               )}
               <span className="orig">

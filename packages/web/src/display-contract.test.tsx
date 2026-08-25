@@ -40,7 +40,8 @@ describe('共通表示契約', () => {
     for (const route of APP_ROUTES) {
       const html = renderToStaticMarkup(<PageHeader route={route.id} />);
       expect(html).toContain(route.label);
-      expect(html).toContain(route.task);
+      // 用語ホバー(<Term>)で分割されるため、表示文字列で比較する
+      expect(html.replace(/<[^>]+>/g, '')).toContain(route.task);
     }
   });
 
