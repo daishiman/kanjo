@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { ApiError } from '../api.js';
 import { deltaCls, pct, yen } from '../format.js';
 import { type AppRouteId, routeMetadata } from '../routeMetadata.js';
 
@@ -12,14 +13,31 @@ export function PageHeader({ route }: { route: AppRouteId }) {
   );
 }
 
+/** 失敗理由を「何が起きたか + 次にすること」で言い換える(生のHTTPコードは見せない) */
+export function describeError(error: unknown): string {
+  if (error instanceof ApiError) {
+    if (error.status === 401) return 'ログインの有効期限が切れました。もう一度ログインしてください。';
+    if (error.status >= 500)
+      return 'サーバー側で処理に失敗しました。少し待ってから、もう一度読み込んでください。続く場合は取込履歴に失敗が残っていないか確認してください。';
+    if (error.status === 404) return 'データの保存先が見つかりません。設定を確認してください。';
+    return `${error.message}。もう一度読み込んでください。`;
+  }
+  if (error instanceof TypeError)
+    return '通信できませんでした。ネットワーク接続を確認し、もう一度読み込んでください。';
+  return '読み込みに失敗しました。通信状態を確認し、もう一度読み込んでください。';
+}
+
 export function PageState({
   status,
   message,
   action,
+  error,
 }: {
   status: 'loading' | 'error' | 'empty';
   message?: string;
   action?: ReactNode;
+  /** 失敗時の原因(ApiError等)。message が無いときの文言に使う */
+  error?: unknown;
 }) {
   if (status === 'loading') {
     return (
@@ -34,11 +52,7 @@ export function PageState({
     );
   }
 
-  const text =
-    message ??
-    (status === 'error'
-      ? '読み込みに失敗しました。通信状態を確認し、もう一度読み込んでください。'
-      : '対象データがありません。');
+  const text = message ?? (status === 'error' ? describeError(error) : '対象データがありません。');
 
   return (
     <div className="page-state" role={status === 'error' ? 'alert' : 'status'}>

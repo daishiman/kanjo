@@ -63,12 +63,25 @@ function classifyRows(filename: string, rows: string[][], normMap: Record<string
       duplicateIds: p.duplicateIds,
     };
   }
-  const head = rows[0].slice(0, 8).join(', ');
-  return {
-    kind: 'error',
-    filename,
-    reason: `形式を判定できません(「収支区分」「計算対象」列が見つかりません)。ヘッダー: ${head}`,
-  };
+  return { kind: 'error', filename, reason: describeUnknownFormat(rows[0]) };
+}
+
+/**
+ * 形式を判定できなかったときの理由文。よくある取り違え(MFの振替・口座明細、freeeの別帳票)を名指しし、
+ * 代わりに出力すべきファイルを案内する。ヘッダー名のみ含め、明細内容や金額は含めない。
+ */
+export function describeUnknownFormat(header: string[]): string {
+  const h = header.map((c) => c.trim());
+  const has = (...names: string[]) => names.every((n) => h.some((c) => c.includes(n)));
+  const guide =
+    'このアプリが読めるのは、マネーフォワードの「家計簿 › 収入・支出詳細」CSVと、freeeの「取引」エクスポート(CSV/ZIP)です。';
+  if (has('振替日', '振替元口座'))
+    return `マネーフォワードの「振替」ファイルのため取り込めません(口座間の移動は収支に含めません)。${guide}`;
+  if (has('日付', '残高') || has('取引日', '残高')) return `口座明細(残高付き)のため取り込めません。${guide}`;
+  if (has('勘定科目', '借方') || has('借方勘定科目'))
+    return `freeeの仕訳帳形式のため取り込めません。freeeでは「取引」の一覧からエクスポートしてください。${guide}`;
+  const head = h.slice(0, 6).join(', ');
+  return `形式を判定できません(「収支区分」または「計算対象」列がありません)。${guide} 先頭の列: ${head}`;
 }
 
 function parseJsonUnit(filename: string, text: string): ParsedUnit {

@@ -23,7 +23,7 @@ export function OverviewPage() {
     return (
       <>
         <PageHeader route="overview" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const { overview: ov, defense } = q.data;

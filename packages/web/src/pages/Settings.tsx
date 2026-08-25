@@ -45,7 +45,7 @@ export function SettingsPage() {
     return (
       <>
         <PageHeader route="settings" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const s = q.data;

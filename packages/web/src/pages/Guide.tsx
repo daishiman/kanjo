@@ -18,7 +18,7 @@ export function GuidePage() {
     return (
       <>
         <PageHeader route="guide" />
-        <PageState status="error" />
+        <PageState status="error" error={sq.error} />
       </>
     );
   const ov = sq.data?.overview;

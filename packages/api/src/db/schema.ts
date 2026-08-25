@@ -4,6 +4,12 @@
  */
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
+/**
+ * 作成日時の既定値。drizzle は values() に無い列へ明示的に NULL を入れるため、
+ * SQL 側の DEFAULT datetime('now') は効かない(本番の imports.created_at が全件 NULL だった原因)。
+ */
+const nowIso = () => new Date().toISOString();
+
 export const mfTransactions = sqliteTable(
   'mf_transactions',
   {
@@ -46,7 +52,7 @@ export const rules = sqliteTable('rules', {
   keyword: text('keyword').notNull(),
   cls: text('cls', { enum: ['biz', 'per'] }).notNull(),
   sortOrder: integer('sort_order').notNull(),
-  createdAt: text('created_at'),
+  createdAt: text('created_at').$defaultFn(nowIso),
 });
 
 export const overrides = sqliteTable('overrides', {
@@ -90,7 +96,7 @@ export const imports = sqliteTable('imports', {
   rowCount: integer('row_count'),
   status: text('status'),
   r2Key: text('r2_key'),
-  createdAt: text('created_at'),
+  createdAt: text('created_at').$defaultFn(nowIso),
 });
 
 export const monthlyAgg = sqliteTable('monthly_agg', {
@@ -109,5 +115,5 @@ export const tradeoffPlans = sqliteTable('tradeoff_plans', {
   selected: text('selected'),
   covered: integer('covered'),
   verdict: text('verdict'),
-  createdAt: text('created_at'),
+  createdAt: text('created_at').$defaultFn(nowIso),
 });

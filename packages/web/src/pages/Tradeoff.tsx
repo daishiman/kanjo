@@ -46,7 +46,7 @@ export function TradeoffPage() {
     return (
       <>
         <PageHeader route="tradeoff" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const d = q.data;

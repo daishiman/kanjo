@@ -19,3 +19,13 @@ export const monthLabel = (m: string): string => {
 };
 
 export const monthShort = (m: string): string => `${Number(m.split('-')[1])}月`;
+
+/** ISO日時 → 「2026/8/25 14:30」(閲覧者のローカル時刻)。不正・未記録は「—」 */
+export const dateTime = (iso: string | null | undefined): string => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${hh}:${mm}`;
+};

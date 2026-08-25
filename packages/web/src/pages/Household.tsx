@@ -20,7 +20,7 @@ export function HouseholdPage() {
     return (
       <>
         <PageHeader route="household" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const d = q.data;

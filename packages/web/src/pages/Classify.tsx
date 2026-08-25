@@ -90,7 +90,7 @@ export function ClassifyPage() {
     return (
       <>
         <PageHeader route="classify" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const d = q.data;

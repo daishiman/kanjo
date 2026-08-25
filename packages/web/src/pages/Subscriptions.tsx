@@ -23,7 +23,7 @@ export function SubscriptionsPage() {
     return (
       <>
         <PageHeader route="subscriptions" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const s = q.data;

@@ -48,7 +48,7 @@ export function BudgetPage() {
     return (
       <>
         <PageHeader route="budget" />
-        <PageState status="error" />
+        <PageState status="error" error={q.error} />
       </>
     );
   const rows = q.data.table;
