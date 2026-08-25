@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { type DiagnosisData, type SummaryResponse, api } from '../api.js';
 import { PageHeader, PageState } from '../components/Page.js';
-import { pct, yen } from '../format.js';
+import { pct, ratio, yen } from '../format.js';
 
 export function GuidePage() {
   const sq = useQuery({ queryKey: ['summary'], queryFn: () => api<SummaryResponse>('/summary') });
@@ -24,6 +24,12 @@ export function GuidePage() {
   const ov = sq.data?.overview;
   const d = dq.data;
   const def = sq.data?.defense;
+  const bench = sq.data?.benchmarks ?? [];
+  const judgePill: Record<string, string> = {
+    目安内: 'pill calm',
+    目安外: 'pill warn',
+    データ不足: 'pill neutral',
+  };
 
   const rows: { term: string; desc: string; now: string; bench: string }[] = [
     {
@@ -81,6 +87,40 @@ export function GuidePage() {
       <PageHeader route="guide" />
 
       <div className="card scroll-x">
+        <h2>ベンチマーク(いまの数字と目安)</h2>
+        <table className="data">
+          <thead>
+            <tr>
+              <th>指標</th>
+              <th>現在値</th>
+              <th>目安</th>
+              <th>判定</th>
+              <th style={{ textAlign: 'left' }}>算出元</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bench.map((b) => (
+              <tr key={b.id}>
+                <td style={{ fontWeight: 700 }}>{b.label}</td>
+                <td className="num">{ratio(b.value, 1)}</td>
+                <td className="num">{b.guide}</td>
+                <td>
+                  <span className={judgePill[b.judge]}>{b.judge}</span>
+                </td>
+                <td style={{ textAlign: 'left' }} className="sub">
+                  {b.basis}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="sub">
+          目安は参考実装(収支管理ダッシュボード)と同じ。個人事業の一般的な水準で、業種により前後します。
+        </p>
+      </div>
+
+      <div className="card scroll-x">
+        <h2>指標の意味</h2>
         <table className="data">
           <thead>
             <tr>

@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type BudgetRow, api } from '../api.js';
-import { PageHeader, PageState } from '../components/Page.js';
+import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { yen, yenS } from '../format.js';
 
 const judgePill: Record<string, string> = { 超過: 'pill alert', 範囲内: 'pill neutral', 余裕: 'pill calm' };
@@ -70,6 +70,12 @@ export function BudgetPage() {
 
   const valOf = (r: BudgetRow): string => draft[r.account] ?? (r.budget != null ? String(r.budget) : '');
 
+  // 予算サマリー(保存済みの値で集計。編集中の下書きは保存後に反映)
+  const withBudget = rows.filter((r) => r.budget != null);
+  const budgetTotal = withBudget.reduce((a, r) => a + (r.budget ?? 0), 0);
+  const actualTotal = withBudget.reduce((a, r) => a + r.recentAvg, 0);
+  const over = rows.filter((r) => r.judge === '超過').length;
+
   const submit = () => {
     const budgets: Record<string, number | null> = {};
     for (const r of rows) {
@@ -101,6 +107,25 @@ export function BudgetPage() {
         <button type="button" className="primary" onClick={submit} disabled={!dirty || save.isPending}>
           {save.isPending ? '保存中…' : '保存'}
         </button>
+      </div>
+
+      <div className="kpis">
+        <KpiCard
+          label="予算を設定した科目"
+          value={`${withBudget.length} / ${rows.length}`}
+          note={withBudget.length < rows.length ? '未設定の科目は判定されません' : '全科目に予算があります'}
+        />
+        <KpiCard label="月次予算の合計" value={yen(budgetTotal)} note={`年間 ${yen(budgetTotal * 12)}`} />
+        <KpiCard label="直近3ヶ月平均の合計(設定済み科目)" value={yen(actualTotal)} note="実績" />
+        <KpiCard
+          label="差異(実績−予算)"
+          value={
+            <span className={actualTotal - budgetTotal > 0 ? 'pos' : 'neg'}>
+              {withBudget.length ? yenS(actualTotal - budgetTotal) : '—'}
+            </span>
+          }
+          note={withBudget.length ? `超過 ${over}科目` : '予算を設定すると差異が出ます'}
+        />
       </div>
 
       <div className="card scroll-x">

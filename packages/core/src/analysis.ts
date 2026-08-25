@@ -346,7 +346,32 @@ export interface SubscriptionsData {
   matrix: Record<string, number[]>;
   other: number[];
   /** deltaは1=100%の小数。負値・1超を許容する増減率。 */
-  vendorTable: { vendor: string; prevActual: number; currAnnualized: number; delta: number }[];
+  vendorTable: {
+    vendor: string;
+    prevActual: number;
+    currAnnualized: number;
+    delta: number;
+    /** 直近の記帳月の支払額 */
+    lastMonthly: number;
+    /** 支払があった月だけの平均月額 */
+    avgMonthly: number;
+    /** 直近12ヶ月(未記帳月を除く)の実支払合計 */
+    last12Total: number;
+    /** 支払があった月数 */
+    activeMonths: number;
+  }[];
+  /** いま何にいくら払っているか(直近の記帳月基準) */
+  now: {
+    month: string | null;
+    /** 直近月のサブスク合計(その他を含む) */
+    monthlyTotal: number;
+    /** 直近月合計×12 */
+    annualized: number;
+    /** 直近12ヶ月(未記帳月を除く)の実支払合計 */
+    last12Total: number;
+    /** サブスク対売上比(直近3ヶ月の平均月額 ÷ 売上のある月の平均売上)。売上が無ければ null */
+    revenueShare: number | null;
+  };
   alerts: SubsAlert[];
   years: { curr: string; prev: string };
 }
@@ -359,18 +384,38 @@ export function subscriptions(data: Dataset): SubscriptionsData {
   const { curr, prev } = yearPair(data);
   const yPrevI = M.map((_, i) => i).filter((i) => yearOf(M[i]) === prev);
   const yCurrI = M.map((_, i) => i).filter((i) => yearOf(M[i]) === curr && !un.has(M[i]));
+  const recordedI = M.map((_, i) => i).filter((i) => !un.has(M[i]));
+  const lastI = recordedI.length ? recordedI[recordedI.length - 1] : -1;
+  const last12I = recordedI.slice(-12);
   const vendorTable = V.map((vd) => {
     const s = data.subs.matrix[vd];
     const prevActual = sum(yPrevI.map((i) => s[i]));
     const a = sum(yCurrI.map((i) => s[i]));
     const currAnnualized = yCurrI.length ? (a / yCurrI.length) * 12 : 0;
+    const active = s.filter((x) => x > 0);
     return {
       vendor: vd,
       prevActual,
       currAnnualized,
       delta: prevActual > 0 ? currAnnualized / prevActual - 1 : currAnnualized > 0 ? 1 : 0,
+      lastMonthly: lastI >= 0 ? s[lastI] : 0,
+      avgMonthly: mean(active),
+      last12Total: sum(last12I.map((i) => s[i])),
+      activeMonths: active.length,
     };
   }).sort((a, b) => b.currAnnualized - a.currAnnualized);
+  const monthTotal = (i: number) => sum(V.map((vd) => data.subs.matrix[vd][i])) + (data.subs.other[i] || 0);
+  const monthlyTotal = lastI >= 0 ? monthTotal(lastI) : 0;
+  const rev = revenueIdx(data).map((i) => data.biz.revenue[i]);
+  const avgRev = mean(rev);
+  const recent3 = recordedI.slice(-3).map(monthTotal);
+  const now: SubscriptionsData['now'] = {
+    month: lastI >= 0 ? M[lastI] : null,
+    monthlyTotal,
+    annualized: monthlyTotal * 12,
+    last12Total: sum(last12I.map(monthTotal)),
+    revenueShare: avgRev > 0 && recent3.length ? mean(recent3) / avgRev : null,
+  };
 
   const alerts: SubsAlert[] = [];
   V.forEach((vd) => {
@@ -391,6 +436,7 @@ export function subscriptions(data: Dataset): SubscriptionsData {
     matrix: data.subs.matrix,
     other: data.subs.other,
     vendorTable,
+    now,
     alerts,
     years: { curr, prev },
   };
@@ -398,12 +444,141 @@ export function subscriptions(data: Dataset): SubscriptionsData {
 
 /* ======================== P6 家計 ======================== */
 
+/** 1ヶ月分の収支バランス。個人の財布(MF)と事業の帳簿(freee)を並べて見る */
+export interface BalanceMonth {
+  month: string;
+  /** 個人収入(MF・仕分け「個人」の入金) */
+  personalIncome: number;
+  /** 事業入金(MF・仕分け「事業」の入金=事業口座からの振替・報酬など) */
+  bizIncome: number;
+  /** 収入計 = 個人収入 + 事業入金 */
+  income: number;
+  /** 生活費(MF・仕分け「個人」の支出合計) */
+  livingCost: number;
+  /** 事業立替(MF・仕分け「事業」の支出=個人の財布から払った事業費) */
+  bizAdvance: number;
+  /** 支出計 = 生活費 + 事業立替 */
+  expense: number;
+  /** 収支 = 収入計 − 支出計 */
+  balance: number;
+  /** 貯蓄率 = 収支 ÷ 収入計。収入が無ければ null */
+  saveRate: number | null;
+  /** 同じ月のfreee売上。freeeにその月が無ければ null */
+  revenue: number | null;
+  /** 同じ月のfreee事業経費。未記帳月・freeeにその月が無ければ null */
+  bizExpense: number | null;
+}
+
+export interface BalanceTotals {
+  months: number;
+  income: number;
+  livingCost: number;
+  bizAdvance: number;
+  expense: number;
+  balance: number;
+  saveRate: number | null;
+  /** 月平均(取込月数で割る) */
+  monthlyAvg: { income: number; livingCost: number; expense: number; balance: number };
+  /** 年換算 = 月平均×12 */
+  annualized: { income: number; livingCost: number; expense: number; balance: number };
+}
+
+export interface LivingCostRow {
+  big: string;
+  total: number;
+  monthlyAvg: number;
+  annualized: number;
+  /** 生活費全体に占める割合(1=100%) */
+  share: number;
+}
+
 export interface HouseholdData {
   months: string[];
   personal: Dataset['personal'];
   bizPersonal: Dataset['bizPersonal'];
   /** 説明可能率 = (支出合計 − 未分類 − 明細不明のカード引落) ÷ 支出合計（最新月・個人分） */
   explainability: { month: string; rate: number; unexplained: number; total: number } | null;
+  /** 月別の収支バランス(取込月の昇順) */
+  balance: BalanceMonth[];
+  /** 全期間の合計・月平均・年換算 */
+  totals: BalanceTotals;
+  /** 生活費の大項目別(全期間、金額の大きい順) */
+  livingCost: LivingCostRow[];
+}
+
+export function balanceMonth(data: Dataset, m: string): BalanceMonth {
+  const p = data.personal[m] ?? { income: {}, expense: {} };
+  const bp = data.bizPersonal[m] ?? { income: 0, expense: 0 };
+  const personalIncome = sum(Object.values(p.income));
+  const livingCost = sum(Object.values(p.expense));
+  const income = personalIncome + bp.income;
+  const expense = livingCost + bp.expense;
+  const balance = income - expense;
+  const i = data.months.indexOf(m);
+  const unrecorded = data.unrecordedExpMonths.includes(m);
+  return {
+    month: m,
+    personalIncome,
+    bizIncome: bp.income,
+    income,
+    livingCost,
+    bizAdvance: bp.expense,
+    expense,
+    balance,
+    saveRate: income > 0 ? balance / income : null,
+    revenue: i >= 0 ? data.biz.revenue[i] : null,
+    bizExpense: i >= 0 && !unrecorded ? bizExpTotal(data, i) : null,
+  };
+}
+
+export function balanceTotals(rows: BalanceMonth[]): BalanceTotals {
+  const n = rows.length;
+  const income = sum(rows.map((r) => r.income));
+  const livingCost = sum(rows.map((r) => r.livingCost));
+  const bizAdvance = sum(rows.map((r) => r.bizAdvance));
+  const expense = livingCost + bizAdvance;
+  const balance = income - expense;
+  const avg = (v: number) => (n ? v / n : 0);
+  const monthlyAvg = {
+    income: avg(income),
+    livingCost: avg(livingCost),
+    expense: avg(expense),
+    balance: avg(balance),
+  };
+  return {
+    months: n,
+    income,
+    livingCost,
+    bizAdvance,
+    expense,
+    balance,
+    saveRate: income > 0 ? balance / income : null,
+    monthlyAvg,
+    annualized: {
+      income: monthlyAvg.income * 12,
+      livingCost: monthlyAvg.livingCost * 12,
+      expense: monthlyAvg.expense * 12,
+      balance: monthlyAvg.balance * 12,
+    },
+  };
+}
+
+export function livingCostByBig(data: Dataset, months: string[]): LivingCostRow[] {
+  const acc: Record<string, number> = {};
+  for (const m of months) {
+    for (const [big, v] of Object.entries(data.personal[m]?.expense ?? {})) acc[big] = (acc[big] || 0) + v;
+  }
+  const grand = sum(Object.values(acc));
+  const n = months.length;
+  return Object.entries(acc)
+    .map(([big, total]) => ({
+      big,
+      total,
+      monthlyAvg: n ? total / n : 0,
+      annualized: n ? (total / n) * 12 : 0,
+      share: grand > 0 ? total / grand : 0,
+    }))
+    .sort((a, b) => b.total - a.total);
 }
 
 export function household(data: Dataset): HouseholdData {
@@ -416,7 +591,131 @@ export function household(data: Dataset): HouseholdData {
     const unexplained = (exp['未分類'] || 0) + (exp['現金・カード'] || 0);
     explainability = { month: m, rate: total > 0 ? (total - unexplained) / total : 1, unexplained, total };
   }
-  return { months, personal: data.personal, bizPersonal: data.bizPersonal, explainability };
+  const balance = months.map((m) => balanceMonth(data, m));
+  return {
+    months,
+    personal: data.personal,
+    bizPersonal: data.bizPersonal,
+    explainability,
+    balance,
+    totals: balanceTotals(balance),
+    livingCost: livingCostByBig(data, months),
+  };
+}
+
+/* ======================== 指標ガイド: ベンチマーク ======================== */
+
+export interface Benchmark {
+  id: 'expenseRatio' | 'subsShare' | 'safetyMargin' | 'saveRate' | 'foodShare' | 'telecomShare';
+  label: string;
+  /** 現在値(1=100%)。算出に必要なデータが無ければ null */
+  value: number | null;
+  /** 目安の下限・上限(1=100%)。片側だけの目安は null */
+  low: number | null;
+  high: number | null;
+  /** 目安の読み方(画面表示用) */
+  guide: string;
+  /** 判定: 目安内 / 目安外 / データ不足 */
+  judge: '目安内' | '目安外' | 'データ不足';
+  /** 何をどのデータから割ったか */
+  basis: string;
+}
+
+function judgeRange(v: number | null, low: number | null, high: number | null): Benchmark['judge'] {
+  if (v === null) return 'データ不足';
+  if (low !== null && v < low) return '目安外';
+  if (high !== null && v > high) return '目安外';
+  return '目安内';
+}
+
+/**
+ * 参考実装(収支管理ダッシュボード)のベンチマーク表を同じ式で再現する。
+ * 経費率=直近3ヶ月の事業経費平均÷平均売上 / サブスク対売上比 / 安全余裕率 / 貯蓄率(世帯) / 食費比率 / 通信費比率
+ */
+export function benchmarks(data: Dataset): Benchmark[] {
+  const rec = recordedExpIdx(data);
+  const rev = revenueIdx(data).map((i) => data.biz.revenue[i]);
+  const avgRev = mean(rev);
+  const recent3 = rec.slice(-3);
+  const expenseRatio =
+    avgRev > 0 && recent3.length ? mean(recent3.map((i) => bizExpTotal(data, i))) / avgRev : null;
+  const subsMonthly = (i: number) =>
+    sum(data.subs.vendors.map((v) => data.subs.matrix[v][i])) + (data.subs.other[i] || 0);
+  const subsShare = avgRev > 0 && recent3.length ? mean(recent3.map(subsMonthly)) / avgRev : null;
+  const bep = diagnosis(data).bep;
+  const safetyMargin = avgRev > 0 && bep.breakEven > 0 ? bep.safetyMargin : null;
+  const hh = household(data);
+  const saveRate = hh.totals.saveRate;
+  const living = hh.totals.livingCost;
+  const share = (big: string) => {
+    if (living <= 0) return null;
+    return (hh.livingCost.find((r) => r.big === big)?.total ?? 0) / living;
+  };
+  const foodShare = share('食費');
+  const telecomShare = share('通信費');
+  const out: Benchmark[] = [
+    {
+      id: 'expenseRatio',
+      label: '経費率',
+      value: expenseRatio,
+      low: 0.2,
+      high: 0.4,
+      guide: '20〜40%',
+      judge: judgeRange(expenseRatio, 0.2, 0.4),
+      basis: 'freee: 直近3ヶ月の事業経費平均 ÷ 売上のある月の平均売上',
+    },
+    {
+      id: 'subsShare',
+      label: 'サブスク対売上比',
+      value: subsShare,
+      low: null,
+      high: 0.15,
+      guide: '10〜15%以内',
+      judge: judgeRange(subsShare, null, 0.15),
+      basis: 'freee: 直近3ヶ月のサブスク平均 ÷ 平均売上',
+    },
+    {
+      id: 'safetyMargin',
+      label: '安全余裕率',
+      value: safetyMargin,
+      low: 0.3,
+      high: null,
+      guide: '30%以上',
+      judge: judgeRange(safetyMargin, 0.3, null),
+      basis: 'freee: (平均売上 − 損益分岐点) ÷ 平均売上',
+    },
+    {
+      id: 'saveRate',
+      label: '貯蓄率(世帯)',
+      value: saveRate,
+      low: 0.2,
+      high: null,
+      guide: '20〜30%',
+      judge: judgeRange(saveRate, 0.2, null),
+      basis: 'MF: 1 − (生活費 + 事業立替) ÷ (個人収入 + 事業入金)',
+    },
+    {
+      id: 'foodShare',
+      label: '食費比率',
+      value: foodShare,
+      low: null,
+      high: 0.2,
+      guide: '15〜20%',
+      judge: judgeRange(foodShare, null, 0.2),
+      basis: 'MF: 食費 ÷ 生活費合計(全期間)',
+    },
+    {
+      id: 'telecomShare',
+      label: '通信費比率',
+      value: telecomShare,
+      low: null,
+      high: 0.05,
+      guide: '5%以内',
+      judge: judgeRange(telecomShare, null, 0.05),
+      basis: 'MF: 通信費 ÷ 生活費合計(全期間)',
+    },
+  ];
+  return out;
 }
 
 /* ======================== P7 予算 ======================== */

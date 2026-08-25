@@ -9,6 +9,14 @@ export const yenS = (v: number | null | undefined): string =>
 export const pct = (v: number | null | undefined, digits = 1): string =>
   v == null ? '—' : `${v > 0 ? '+' : ''}${(v * 100).toFixed(digits)}%`;
 
+/** 符号なしの割合(構成比・貯蓄率・対売上比など「増減」でない率) */
+export const ratio = (v: number | null | undefined, digits = 1): string =>
+  v == null ? '—' : `${(v * 100).toFixed(digits)}%`;
+
+/** 収支の色クラス(黒字=緑 / 赤字=赤)。deltaCls と逆向き */
+export const gainCls = (v: number | null | undefined): string =>
+  v == null || v === 0 ? '' : v > 0 ? 'neg' : 'pos';
+
 /** 増減の色クラス(支出文脈: 増=赤 pos / 減=緑 neg) */
 export const deltaCls = (v: number | null | undefined): string =>
   v == null || v === 0 ? '' : v > 0 ? 'pos' : 'neg';

@@ -3,6 +3,7 @@
  * 型は @kanjo/core の分析出力型をそのまま利用する(サーバと完全一致)。
  */
 import type {
+  Benchmark,
   BudgetRow,
   DefenseLine,
   DiagnosisData,
@@ -56,6 +57,7 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
 export interface SummaryResponse {
   overview: OverviewData;
   defense: DefenseLine;
+  benchmarks: Benchmark[];
 }
 
 export interface TxRow {
@@ -137,6 +139,7 @@ export interface TradeoffResponse {
 }
 
 export type {
+  Benchmark,
   BudgetRow,
   DefenseLine,
   DiagnosisData,

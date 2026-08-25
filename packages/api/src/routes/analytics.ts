@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
  * 集計はすべて packages/core の純関数に委譲し、ここでは組み立てと整形のみ行う。
  */
 import {
+  benchmarks,
   budgetTable,
   defenseLine,
   diagnosis,
@@ -27,7 +28,7 @@ export const analyticsRoute = new Hono<Ctx>();
 
 analyticsRoute.get('/summary', async (c) => {
   const data = await loadDataset(getDb(c.env.DB), c.get('userId'));
-  return c.json({ overview: overview(data), defense: defenseLine(data) });
+  return c.json({ overview: overview(data), defense: defenseLine(data), benchmarks: benchmarks(data) });
 });
 
 analyticsRoute.get('/matrix', async (c) => {

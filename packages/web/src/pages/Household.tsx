@@ -1,10 +1,14 @@
-/** P6 家計: 個人分の月次比較を確認する(仕分け反映後) */
+/** P6 家計: 収支バランス(収入・生活費・事業立替)と生活費の内訳を月別・全期間で確認する(仕分け反映後) */
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type HouseholdData, api } from '../api.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
-import { deltaCls, monthLabel, yen, yenS } from '../format.js';
+import { COLORS, yenTick } from '../components/charts.js';
+import { deltaCls, gainCls, monthLabel, monthShort, ratio, yen, yenS } from '../format.js';
+
+const rate = (v: number | null) => ratio(v, 0);
 
 export function HouseholdPage() {
   const q = useQuery({ queryKey: ['household'], queryFn: () => api<HouseholdData>('/household') });
@@ -45,7 +49,9 @@ export function HouseholdPage() {
   const prev = mi > 0 ? d.months[mi - 1] : null;
   const cur = d.personal[month];
   const pv = prev ? d.personal[prev] : null;
-  const bp = d.bizPersonal[month];
+  const bal = d.balance.find((b) => b.month === month) ?? d.balance[d.balance.length - 1];
+  const t = d.totals;
+  const single = d.balance.length === 1;
 
   const expTotal = Object.values(cur.expense).reduce((s, v) => s + v, 0);
   const incTotal = Object.values(cur.income).reduce((s, v) => s + v, 0);
@@ -73,21 +79,162 @@ export function HouseholdPage() {
       </div>
 
       <div className="kpis">
-        <KpiCard label="個人収入" value={yen(incTotal)} />
-        <KpiCard label="個人支出" value={yen(expTotal)} />
-        <KpiCard label="収支" value={yenS(incTotal - expTotal)} />
-        {bp && (
-          <KpiCard
-            label="事業入金 / 事業立替(参考)"
-            value={
+        <KpiCard
+          label={`収入計(${monthLabel(month)})`}
+          value={yen(bal.income)}
+          note={`個人 ${yen(bal.personalIncome)} + 事業入金 ${yen(bal.bizIncome)}`}
+        />
+        <KpiCard
+          label="支出計"
+          value={yen(bal.expense)}
+          note={`生活費 ${yen(bal.livingCost)} + 事業立替 ${yen(bal.bizAdvance)}`}
+        />
+        <KpiCard
+          label="収支"
+          value={<span className={gainCls(bal.balance)}>{yenS(bal.balance)}</span>}
+          note={
+            bal.saveRate === null
+              ? '収入がないため貯蓄率は出せません'
+              : `貯蓄率 ${rate(bal.saveRate)}(目安 20〜30%)`
+          }
+        />
+        <KpiCard
+          label="事業側(freee) 売上 / 経費"
+          value={
+            bal.revenue === null ? (
+              'freee未取込'
+            ) : (
               <>
-                {yen(bp.income)} / {yen(bp.expense)}
+                {yen(bal.revenue)} / {bal.bizExpense === null ? '未記帳' : yen(bal.bizExpense)}
               </>
-            }
-            tone="biz"
-            compact
+            )
+          }
+          tone="biz"
+          compact
+        />
+      </div>
+      <p className="sub">
+        個人収入・生活費・事業入金・事業立替はMF明細(仕分け画面の結果)、売上・経費はfreeeから集計。口座間の振替は含みません。
+      </p>
+
+      <div className="card">
+        <h2>収支バランス(月別)</h2>
+        {single ? (
+          <div className="notice info">
+            まだ1ヶ月分です。翌月のMF明細を取り込むと、月ごとの推移と前月比が並びます(目標:
+            未分類ゼロ・説明可能率90%・貯蓄率30%以上)。
+          </div>
+        ) : (
+          <Chart
+            type="bar"
+            height={80}
+            data={{
+              labels: d.balance.map((b) => monthShort(b.month)),
+              datasets: [
+                { label: '収入計', data: d.balance.map((b) => b.income), backgroundColor: COLORS.good },
+                { label: '支出計', data: d.balance.map((b) => b.expense), backgroundColor: COLORS.per },
+              ],
+            }}
+            options={{
+              responsive: true,
+              scales: { y: { ticks: { callback: yenTick } } },
+              plugins: { legend: { position: 'bottom' } },
+            }}
           />
         )}
+        <div className="scroll-x">
+          <table className="data">
+            <thead>
+              <tr>
+                <th>月</th>
+                <th>収入計</th>
+                <th>生活費</th>
+                <th>事業立替</th>
+                <th>支出計</th>
+                <th>収支</th>
+                <th>貯蓄率</th>
+                <th>freee 事業経費</th>
+              </tr>
+            </thead>
+            <tbody>
+              {d.balance.map((b) => (
+                <tr key={b.month} className={b.month === month ? 'selected' : undefined}>
+                  <td>{monthLabel(b.month)}</td>
+                  <td className="num">{yen(b.income)}</td>
+                  <td className="num">{yen(b.livingCost)}</td>
+                  <td className="num">{yen(b.bizAdvance)}</td>
+                  <td className="num">{yen(b.expense)}</td>
+                  <td className={`num ${gainCls(b.balance)}`}>{yenS(b.balance)}</td>
+                  <td className="num">{rate(b.saveRate)}</td>
+                  <td className="num">{b.bizExpense === null ? '—' : yen(b.bizExpense)}</td>
+                </tr>
+              ))}
+              <tr className="total">
+                <td>合計({t.months}ヶ月)</td>
+                <td className="num">{yen(t.income)}</td>
+                <td className="num">{yen(t.livingCost)}</td>
+                <td className="num">{yen(t.bizAdvance)}</td>
+                <td className="num">{yen(t.expense)}</td>
+                <td className={`num ${gainCls(t.balance)}`}>{yenS(t.balance)}</td>
+                <td className="num">{rate(t.saveRate)}</td>
+                <td />
+              </tr>
+              <tr>
+                <td>月平均</td>
+                <td className="num">{yen(t.monthlyAvg.income)}</td>
+                <td className="num">{yen(t.monthlyAvg.livingCost)}</td>
+                <td className="num">{yen(t.monthlyAvg.expense - t.monthlyAvg.livingCost)}</td>
+                <td className="num">{yen(t.monthlyAvg.expense)}</td>
+                <td className={`num ${gainCls(t.monthlyAvg.balance)}`}>{yenS(t.monthlyAvg.balance)}</td>
+                <td />
+                <td />
+              </tr>
+              <tr>
+                <td>年換算(月平均×12)</td>
+                <td className="num">{yen(t.annualized.income)}</td>
+                <td className="num">{yen(t.annualized.livingCost)}</td>
+                <td className="num">{yen(t.annualized.expense - t.annualized.livingCost)}</td>
+                <td className="num">{yen(t.annualized.expense)}</td>
+                <td className={`num ${gainCls(t.annualized.balance)}`}>{yenS(t.annualized.balance)}</td>
+                <td />
+                <td />
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="card scroll-x">
+        <h2>生活費の内訳(全期間 {t.months}ヶ月・大項目別)</h2>
+        <table className="data">
+          <thead>
+            <tr>
+              <th>大項目</th>
+              <th>合計</th>
+              <th>月平均</th>
+              <th>年換算</th>
+              <th>構成比</th>
+            </tr>
+          </thead>
+          <tbody>
+            {d.livingCost.map((r) => (
+              <tr key={r.big}>
+                <td>{r.big}</td>
+                <td className="num">{yen(r.total)}</td>
+                <td className="num">{yen(r.monthlyAvg)}</td>
+                <td className="num">{yen(r.annualized)}</td>
+                <td className="num">{ratio(r.share, 0)}</td>
+              </tr>
+            ))}
+            <tr className="total">
+              <td>生活費計</td>
+              <td className="num">{yen(t.livingCost)}</td>
+              <td className="num">{yen(t.monthlyAvg.livingCost)}</td>
+              <td className="num">{yen(t.annualized.livingCost)}</td>
+              <td className="num">100%</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div className="card scroll-x">

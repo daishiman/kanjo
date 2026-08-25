@@ -781,3 +781,7 @@ kbd {
     --ink-soft: var(--ink);
   }
 }
+/* 収支バランス表: 上のセレクタで選んだ月を太字で示す(塗りは使わない) */
+table.data tr.selected td {
+  font-weight: 700;
+}
