@@ -4,6 +4,7 @@ import type { ComponentType } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AUTH_EVENT, api } from './api.js';
 import { Layout } from './components/Layout.js';
+import { AiPage } from './pages/Ai.js';
 import { BudgetPage } from './pages/Budget.js';
 import { ClassifyPage } from './pages/Classify.js';
 import { DiagnosisPage } from './pages/Diagnosis.js';
@@ -24,6 +25,7 @@ export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
   diagnosis: DiagnosisPage,
   subscriptions: SubscriptionsPage,
   household: HouseholdPage,
+  ai: AiPage,
   classify: ClassifyPage,
   budget: BudgetPage,
   tradeoff: TradeoffPage,

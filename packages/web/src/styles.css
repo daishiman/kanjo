@@ -210,6 +210,8 @@ body {
   padding: 20px;
   max-width: 1200px;
   width: 100%;
+  /* grid の子は min-content 幅まで広がるため、横スクロール表(.scroll-x)を含んでもページを押し広げない */
+  min-width: 0;
   animation: page-in var(--motion-base) var(--ease-standard) both;
 }
 @keyframes page-in {
@@ -812,4 +814,67 @@ kbd {
 /* 収支バランス表: 上のセレクタで選んだ月を太字で示す(塗りは使わない) */
 table.data tr.selected td {
   font-weight: 700;
+}
+
+/* -------- AI分析(P12) -------- */
+.steps {
+  margin: 0 0 12px;
+  padding-left: 1.4em;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.steps li + li {
+  margin-top: 4px;
+}
+.prompt-box {
+  margin-top: 12px;
+}
+.prompt-box textarea,
+.report textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--surface);
+  color: var(--ink);
+  resize: vertical;
+}
+.prompt-box textarea:focus {
+  outline: 2px solid var(--biz);
+  outline-offset: 1px;
+}
+.report-section {
+  margin-top: 20px;
+}
+.report-section h3 {
+  font-size: 13px;
+  margin: 0 0 6px;
+}
+.report-text p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.report-text ul,
+.report-section ul {
+  margin: 0 0 8px;
+  padding-left: 1.4em;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* AI分析の一覧: 日付・期間・状態は短い語なので折り返さず、狭幅では横スクロール(.scroll-x)に任せる */
+table.ai-table th,
+table.ai-table td {
+  white-space: nowrap;
+}
+table.ai-table td.wrap {
+  white-space: normal;
+  min-width: 12em;
 }

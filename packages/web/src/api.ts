@@ -244,3 +244,66 @@ export type {
   SubscriptionsData,
   TradeoffCandidate,
 };
+
+/* -------- AI分析(spec §16) -------- */
+
+export type AiPeriodKind = 'month' | 'year';
+export type AiSectionId = 'spend' | 'change' | 'reduction' | 'split' | 'subscriptions';
+export const AI_SECTION_LABEL: Record<AiSectionId, string> = {
+  spend: '何にいくらかかっているか',
+  change: '前年・前月との増減と要因',
+  reduction: '削減余地と根拠・優先順位',
+  split: '事業/個人・本人/妻の別',
+  subscriptions: 'サブスクの整理候補',
+};
+
+export interface AiTaskView {
+  id: string;
+  kind: AiPeriodKind;
+  key: string;
+  label: string;
+  expiresAt: string;
+  createdAt: string;
+  reportId: string | null;
+  status: 'waiting' | 'expired' | 'done';
+}
+export interface AiReportItem {
+  label: string;
+  amount: number | null;
+  note: string;
+  priority: 'high' | 'mid' | 'low' | null;
+}
+export interface AiReportSection {
+  id: AiSectionId;
+  title: string;
+  body: string;
+  items: AiReportItem[];
+}
+export interface AiReportBody {
+  version: 1;
+  generatedBy: string;
+  model: string | null;
+  title: string;
+  summary: string;
+  sections: AiReportSection[];
+  dataGaps: string[];
+}
+export interface AiReportRow {
+  id: string;
+  taskId: string;
+  kind: AiPeriodKind;
+  key: string;
+  label: string;
+  generatedBy: string;
+  title: string;
+  summary: string;
+  createdAt: string;
+}
+export interface AiTaskCreateResponse {
+  task: AiTaskView;
+  prompt: string;
+}
+export interface AiReportDetailResponse {
+  report: AiReportRow & { body: AiReportBody };
+  previous: AiReportRow | null;
+}

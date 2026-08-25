@@ -1,5 +1,5 @@
 /**
- * 11画面のルート・ナビ・ページヘッダーの正本。
+ * 12画面のルート・ナビ・ページヘッダーの正本。
  * 表示順はサイドバーの業務順序と一致させる。
  */
 export const APP_ROUTES = [
@@ -40,6 +40,14 @@ export const APP_ROUTES = [
     path: '/household',
     label: '家計',
     task: '事業と個人のお金を並べ、収支と名義別の収入を確認する(公私仕分け反映後)。',
+    navGroup: null,
+    mobileLabel: null,
+  },
+  {
+    id: 'ai',
+    path: '/ai',
+    label: 'AI分析',
+    task: '期間を選んで指示文を作り、Claude Code / Codex に分析させた結果をここで読む。',
     navGroup: null,
     mobileLabel: null,
   },

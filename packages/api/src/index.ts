@@ -10,6 +10,7 @@ import { exportJSON } from '@kanjo/core';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { type AuthEnv, authGuard, clearSession, issueSession, verifyPassword } from './auth.js';
+import { aiAgentRoute, aiRoute } from './routes/ai.js';
 import { analyticsRoute } from './routes/analytics.js';
 import { classifyRoute } from './routes/classify.js';
 import { importsRoute } from './routes/imports.js';
@@ -48,9 +49,13 @@ app.post('/api/auth/logout', (c) => {
 // 認証状態の確認(ガードを通れば200)
 app.get('/api/auth/me', authGuard(), (c) => c.json({ authenticated: true }));
 
+// AIエージェント用(依頼ごとの使い捨てトークンで認証。セッション不要)
+app.route('/api', aiAgentRoute);
+
 /* -------- 保護されたAPI -------- */
 
 app.use('/api/*', authGuard());
+app.route('/api', aiRoute);
 app.route('/api', importsRoute);
 app.route('/api', analyticsRoute);
 app.route('/api', classifyRoute);
