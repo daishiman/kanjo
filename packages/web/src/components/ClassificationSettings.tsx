@@ -29,6 +29,7 @@ export function useInvalidateClassification() {
     void qc.invalidateQueries({ queryKey: ['transactions'] });
     void qc.invalidateQueries({ queryKey: ['summary'] });
     void qc.invalidateQueries({ queryKey: ['household'] });
+    void qc.invalidateQueries({ queryKey: ['cash-entries'] });
   };
 }
 

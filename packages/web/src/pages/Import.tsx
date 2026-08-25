@@ -20,6 +20,8 @@ export function ImportPage() {
   const [drag, setDrag] = useState(false);
   const [pending, setPending] = useState<File[]>([]);
   const [results, setResults] = useState<ImportUnitResult[] | null>(null);
+  // 同じ内容(ファイル名が違っても)は既定でスキップする。取り込み直したいときだけ ON にする
+  const [force, setForce] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const history = useQuery({
@@ -31,6 +33,7 @@ export function ImportPage() {
     mutationFn: async (files: File[]) => {
       const form = new FormData();
       for (const f of files) form.append('file', f);
+      if (force) form.append('force', '1');
       const res = await fetch('/api/imports', { method: 'POST', body: form });
       if (res.status === 401) {
         window.dispatchEvent(new Event(AUTH_EVENT));
@@ -44,6 +47,7 @@ export function ImportPage() {
     onSuccess: (r) => {
       setResults(r);
       setPending([]);
+      setForce(false);
       void qc.invalidateQueries(); // 全ページへ反映
     },
   });
@@ -56,7 +60,9 @@ export function ImportPage() {
   const confirmAndUpload = () => {
     // 月単位洗い替えの明示(spec §10.3)
     const ok = window.confirm(
-      'ファイルに含まれる月の既存データは削除して置き換えます(月単位の洗い替え)。手動判定は明細IDが一致する限り維持されます。取込を実行しますか?',
+      `ファイルに含まれる月の既存データは削除して置き換えます(月単位の洗い替え)。手動判定は明細IDが一致する限り維持され、現金の記帳も残ります。${
+        force ? '同じ内容を取込済みでも取り込み直します。' : '同じ内容を取込済みのファイルはスキップします。'
+      }取込を実行しますか?`,
     );
     if (ok) upload.mutate(pending);
   };
@@ -112,6 +118,10 @@ export function ImportPage() {
           <button type="button" onClick={() => setPending([])}>
             取消
           </button>
+          <label style={{ display: 'block', marginTop: 6, fontSize: 12 }}>
+            <input type="checkbox" checked={force} onChange={(e) => setForce(e.target.checked)} />{' '}
+            同じ内容でも取り込み直す(通常は不要。ファイル名が違っても内容が同じなら自動でスキップします)
+          </label>
         </div>
       )}
       {upload.isError && (
@@ -145,11 +155,35 @@ export function ImportPage() {
                   <td className="num">{r.skipped}</td>
                   <td>
                     {r.status === 'ok' ? (
-                      <span className="pill calm">
-                        成功
-                        {r.syntheticIds ? ` (ID補完${r.syntheticIds}件)` : ''}
-                        {r.duplicateIds ? ` (ID重複${r.duplicateIds}件)` : ''}
-                      </span>
+                      <>
+                        <span className="pill calm">
+                          成功
+                          {r.syntheticIds ? ` (ID補完${r.syntheticIds}件)` : ''}
+                          {r.duplicateIds ? ` (ID重複${r.duplicateIds}件)` : ''}
+                        </span>
+                        {(r.replaced ?? [])
+                          .filter((m) => m.before > m.after)
+                          .map((m) => (
+                            <div
+                              key={m.month}
+                              className="sub"
+                              style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                            >
+                              {m.month}: 取込前 {m.before}件 → 取込後 {m.after}
+                              件。件数が減っています。月の途中までのファイルではないか確認してください(前の内容に戻すには、元のファイルを取り込み直します)。
+                            </div>
+                          ))}
+                      </>
+                    ) : r.status === 'duplicate' ? (
+                      <>
+                        <span className="pill warn">取込済み(スキップ)</span>
+                        <div
+                          className="sub"
+                          style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                        >
+                          {r.reason}。取り込み直す場合は「同じ内容でも取り込み直す」を付けて実行してください。
+                        </div>
+                      </>
                     ) : (
                       <>
                         <span className="pill alert">失敗</span>
@@ -204,6 +238,18 @@ export function ImportPage() {
                     <td>
                       {r.status === 'ok' ? (
                         <span className="pill calm">成功</span>
+                      ) : r.status === 'duplicate' ? (
+                        <>
+                          <span className="pill warn">取込済み(スキップ)</span>
+                          {r.duplicateOf != null && (
+                            <div
+                              className="sub"
+                              style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                            >
+                              履歴 #{r.duplicateOf} と同じ内容
+                            </div>
+                          )}
+                        </>
                       ) : (
                         <>
                           <span className="pill alert">失敗</span>

@@ -200,8 +200,11 @@ export interface ImportUnitResult {
   skipped: number;
   syntheticIds?: number;
   duplicateIds?: number;
-  status: 'ok' | 'error';
+  /** duplicate = 同じ内容を取込済みのためスキップ(「同じ内容でも取り込み直す」で再取込できる) */
+  status: 'ok' | 'error' | 'duplicate';
   reason?: string;
+  /** 月ごとの洗い替え前後の件数(減っていれば月の途中までのファイルの可能性) */
+  replaced?: { month: string; before: number; after: number }[];
 }
 
 export interface ImportHistoryRow {
@@ -211,7 +214,43 @@ export interface ImportHistoryRow {
   months: string[];
   rows: number | null;
   status: string | null;
+  duplicateOf: number | null;
   createdAt: string | null;
+}
+
+/* -------- 現金の記帳 -------- */
+
+export interface CashEntry {
+  id: number;
+  /** YYYY-MM-DD */
+  date: string;
+  month: string;
+  side: Cls;
+  io: 'income' | 'expense';
+  /** 正の整数(円)。向きは io */
+  amount: number;
+  description: string;
+  /** 事業: freee勘定科目 / 家計: MF大項目 */
+  categoryMajor: string;
+  categoryMid: string;
+  memo: string | null;
+}
+
+export interface CashEntryBody {
+  date: string;
+  side: Cls;
+  io: 'income' | 'expense';
+  amount: number;
+  description: string;
+  big: string;
+  mid: string;
+  memo: string | null;
+}
+
+export interface CashEntriesResponse {
+  entries: CashEntry[];
+  candidates: Candidates;
+  months: string[];
 }
 
 export interface SettingsResponse {

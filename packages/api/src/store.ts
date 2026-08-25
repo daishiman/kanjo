@@ -7,6 +7,7 @@
  *   restoreのみで明細が無い月は monthly_agg の per_* スコープから温存復元する。
  */
 import {
+  type CashEntry,
   DEFAULT_RULES,
   type Dataset,
   type FreeeDeal,
@@ -15,11 +16,15 @@ import {
   type SubVendor,
   type TxEdit,
   applyFreeeDeals,
+  cashBizDeals,
+  cashToTx,
   emptyDataset,
+  ensureMonth,
+  isCashTxId,
   normalizeAccount,
   recomputeClassification,
 } from '@kanjo/core';
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import * as s from './db/schema.js';
 
@@ -106,22 +111,33 @@ export async function replaceInstitutionOwners(
 /* ------------------------- 読み出し ------------------------- */
 
 export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
-  const [aggRows, txRows, ruleRows, editRows, budgetRows, cashRows, unrecRows, instRows, vendorRows] =
-    await Promise.all([
-      db.select().from(s.monthlyAgg).where(eq(s.monthlyAgg.userId, userId)),
-      db
-        .select()
-        .from(s.mfTransactions)
-        .where(eq(s.mfTransactions.userId, userId))
-        .orderBy(asc(s.mfTransactions.month), asc(s.mfTransactions.date)),
-      db.select().from(s.rules).where(eq(s.rules.userId, userId)).orderBy(asc(s.rules.sortOrder)),
-      db.select().from(s.txEdits).where(eq(s.txEdits.userId, userId)),
-      db.select().from(s.budgets).where(eq(s.budgets.userId, userId)),
-      db.select().from(s.cashOverrides).where(eq(s.cashOverrides.userId, userId)),
-      db.select().from(s.unrecordedMonths).where(eq(s.unrecordedMonths.userId, userId)),
-      db.select().from(s.institutionOwners).where(eq(s.institutionOwners.userId, userId)),
-      loadSubVendors(db, userId),
-    ]);
+  const [
+    aggRows,
+    txRows,
+    ruleRows,
+    editRows,
+    budgetRows,
+    cashRows,
+    unrecRows,
+    instRows,
+    vendorRows,
+    cashEntries,
+  ] = await Promise.all([
+    db.select().from(s.monthlyAgg).where(eq(s.monthlyAgg.userId, userId)),
+    db
+      .select()
+      .from(s.mfTransactions)
+      .where(eq(s.mfTransactions.userId, userId))
+      .orderBy(asc(s.mfTransactions.month), asc(s.mfTransactions.date)),
+    db.select().from(s.rules).where(eq(s.rules.userId, userId)).orderBy(asc(s.rules.sortOrder)),
+    db.select().from(s.txEdits).where(eq(s.txEdits.userId, userId)),
+    db.select().from(s.budgets).where(eq(s.budgets.userId, userId)),
+    db.select().from(s.cashOverrides).where(eq(s.cashOverrides.userId, userId)),
+    db.select().from(s.unrecordedMonths).where(eq(s.unrecordedMonths.userId, userId)),
+    db.select().from(s.institutionOwners).where(eq(s.institutionOwners.userId, userId)),
+    loadSubVendors(db, userId),
+    loadCashEntries(db, userId),
+  ]);
 
   const data = emptyDataset();
 
@@ -129,6 +145,7 @@ export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
   const monthSet = new Set<string>();
   aggRows.forEach((r) => monthSet.add(r.month));
   txRows.forEach((r) => monthSet.add(r.month));
+  cashEntries.forEach((e) => monthSet.add(e.month));
   data.months = [...monthSet].sort();
   const idx = new Map(data.months.map((m, i) => [m, i]));
 
@@ -201,9 +218,45 @@ export async function loadDataset(db: Db, userId: string): Promise<Dataset> {
   });
   data.unrecordedExpMonths = unrecRows.filter((r) => r.kind === 'expense').map((r) => r.month);
 
-  // 生明細がある月は再計算が正(ルール・手動判定の現在値を反映)
-  recomputeClassification(data);
+  // 個人分の現金明細を口座「現金」の明細として合流させ、生明細がある月は再計算が正(ルール・手動判定の現在値を反映)
+  mergeCashTxs(data, cashEntries);
   return data;
+}
+
+/* ------------------------- 現金の記帳 ------------------------- */
+
+export const cashFromRow = (r: typeof s.cashEntries.$inferSelect): CashEntry => ({
+  id: r.id,
+  date: r.date,
+  month: r.month,
+  side: r.side,
+  io: r.io,
+  amount: r.amount,
+  description: r.description,
+  categoryMajor: r.categoryMajor,
+  categoryMid: r.categoryMid,
+  memo: r.memo ?? null,
+});
+
+/** 日付の新しい順(同日はIDの新しい順) */
+export async function loadCashEntries(db: Db, userId: string): Promise<CashEntry[]> {
+  const rows = await db
+    .select()
+    .from(s.cashEntries)
+    .where(eq(s.cashEntries.userId, userId))
+    .orderBy(desc(s.cashEntries.date), desc(s.cashEntries.id));
+  return rows.map(cashFromRow);
+}
+
+/**
+ * 個人分の現金明細(cash:*)を MF 明細に合流させて仕分けを再計算する。
+ * JSON復元で data.mfTx が丸ごと差し替わった後にも呼び、現金明細が落ちないようにする。
+ */
+export function mergeCashTxs(data: Dataset, entries: CashEntry[]): void {
+  const cash = entries.filter((e) => e.side === 'per').map(cashToTx);
+  data.mfTx = data.mfTx.filter((t) => !isCashTxId(t.id)).concat(cash);
+  cash.forEach((t) => ensureMonth(data, t.m));
+  recomputeClassification(data);
 }
 
 /* ------------------------- サブスクのベンダー登録 ------------------------- */
@@ -255,16 +308,27 @@ export async function recomputeFromDeals(db: Db, userId: string): Promise<void> 
   // 削除済みベンダーの列を集計から落とす(読み出しでは温存されるため、ここで正本に揃える)
   const registered = new Set(Object.keys(data.subs.aliases));
   data.subs.vendors = data.subs.vendors.filter((v) => registered.has(v));
-  const months = [...new Set(dealRows.map((r) => r.month))].sort();
+  // 事業分の現金明細は freee 仕訳と同じ経路で科目別集計に合流する(取込値とは別テーブルなので再取込で消えない)
+  const cashDeals = cashBizDeals(await loadCashEntries(db, userId), normMap);
+  const freeeMonths = new Set(dealRows.map((r) => r.month));
+  const months = [...new Set([...freeeMonths, ...cashDeals.map((d) => d.month)])].sort();
   if (months.length) {
+    const unrecBefore = data.unrecordedExpMonths;
     applyFreeeDeals(
       data,
-      dealRows.map((r) => ({
-        ...dealFromRow(r),
-        accountNorm: normalizeAccount(r.accountRaw ?? '', normMap),
-      })),
+      [
+        ...dealRows.map((r) => ({
+          ...dealFromRow(r),
+          accountNorm: normalizeAccount(r.accountRaw ?? '', normMap),
+        })),
+        ...cashDeals,
+      ],
       months,
     );
+    // 現金明細しか無い月は freee の記帳が済んでいないので、未記帳のままにする
+    data.unrecordedExpMonths = [
+      ...new Set([...data.unrecordedExpMonths, ...unrecBefore.filter((m) => !freeeMonths.has(m))]),
+    ].sort();
   }
   await saveAgg(db, userId, data);
 }

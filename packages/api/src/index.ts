@@ -12,11 +12,12 @@ import { z } from 'zod';
 import { type AuthEnv, authGuard, clearSession, issueSession, verifyPassword } from './auth.js';
 import { aiAgentRoute, aiRoute } from './routes/ai.js';
 import { analyticsRoute } from './routes/analytics.js';
+import { cashRoute } from './routes/cash.js';
 import { classifyRoute } from './routes/classify.js';
 import { importsRoute } from './routes/imports.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
-import { getDb, loadDataset } from './store.js';
+import { getDb, loadCashEntries, loadDataset } from './store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
@@ -58,6 +59,7 @@ app.route('/api', aiAgentRoute);
 app.use('/api/*', authGuard());
 app.route('/api', aiRoute);
 app.route('/api', importsRoute);
+app.route('/api', cashRoute);
 app.route('/api', analyticsRoute);
 app.route('/api', classifyRoute);
 app.route('/api', settingsRoute);
@@ -82,8 +84,10 @@ app.onError((err, c) => {
 async function nightlyBackup(env: AuthEnv): Promise<void> {
   const db = getDb(env.DB);
   const data = await loadDataset(db, 'default');
+  // 現金の記帳は取込明細とは別の正本なので、バックアップにも別枠で含める
+  const cashEntries = await loadCashEntries(db, 'default');
   const today = new Date().toISOString().slice(0, 10);
-  await env.FILES.put(`backups/${today}.json`, JSON.stringify(exportJSON(data)));
+  await env.FILES.put(`backups/${today}.json`, JSON.stringify({ ...exportJSON(data), cashEntries }));
   // 30日より古いバックアップを削除
   const list = await env.FILES.list({ prefix: 'backups/' });
   const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);

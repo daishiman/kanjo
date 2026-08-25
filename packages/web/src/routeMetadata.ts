@@ -1,5 +1,5 @@
 /**
- * 12画面のルート・ナビ・ページヘッダーの正本。
+ * 13画面のルート・ナビ・ページヘッダーの正本。
  * 表示順はサイドバーの業務順序と一致させる。
  */
 export const APP_ROUTES = [
@@ -82,6 +82,14 @@ export const APP_ROUTES = [
     task: 'ファイルを投入し、取込結果と履歴を確認する。',
     navGroup: '運用',
     mobileLabel: '取込',
+  },
+  {
+    id: 'cash',
+    path: '/cash',
+    label: '現金の記帳',
+    task: '口座やカードの明細に出ない現金の受け渡し(会議費など)を記帳する(再取込しても残る)。',
+    navGroup: null,
+    mobileLabel: null,
   },
   {
     id: 'settings',

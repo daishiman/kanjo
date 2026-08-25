@@ -143,8 +143,33 @@ export const imports = sqliteTable('imports', {
   rowCount: integer('row_count'),
   status: text('status'),
   r2Key: text('r2_key'),
+  /** 取込単位の内容指紋(0006)。ファイル名・形式・行順に依らず同じ内容なら同じ値 */
+  contentHash: text('content_hash'),
+  /** 重複としてスキップしたとき、元になった取込のID */
+  duplicateOf: integer('duplicate_of'),
   createdAt: text('created_at').$defaultFn(nowIso),
 });
+
+/** 現金の記帳(0006)。口座・カード明細に出ない現金の受け渡しを明細として持つ */
+export const cashEntries = sqliteTable(
+  'cash_entries',
+  {
+    id: integer('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    date: text('date').notNull(),
+    month: text('month').notNull(),
+    side: text('side', { enum: ['biz', 'per'] }).notNull(),
+    io: text('io', { enum: ['income', 'expense'] }).notNull(),
+    amount: integer('amount').notNull(),
+    description: text('description').notNull(),
+    categoryMajor: text('category_major').notNull(),
+    categoryMid: text('category_mid').notNull().default(''),
+    memo: text('memo'),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [index('idx_cash_month').on(t.userId, t.month)],
+);
 
 export const monthlyAgg = sqliteTable('monthly_agg', {
   userId: text('user_id').notNull(),

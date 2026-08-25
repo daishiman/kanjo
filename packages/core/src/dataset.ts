@@ -2,6 +2,7 @@
  * データセット操作（取込の洗い替え・月枠の確保・JSON入出力）。
  * HTML版 ensureMonth / importFreee / importMF / importJSON の挙動を忠実に移植。
  */
+import { isCashTxId } from './cash.js';
 import { applyClassification, overridesFromEdits } from './classify.js';
 import { type SubVendor, matchSubVendor } from './subs.js';
 import type { Cls, Dataset, FreeeDeal, MfTx, Owner, Rule, TxEdit } from './types.js';
@@ -62,10 +63,10 @@ export function applyFreeeDeals(data: Dataset, deals: FreeeDeal[], months: strin
   data.unrecordedExpMonths = data.unrecordedExpMonths.filter((m) => !months.includes(m));
 }
 
-/** MF明細を月単位洗い替えで反映し、公私仕分けを再計算する */
+/** MF明細を月単位洗い替えで反映し、公私仕分けを再計算する。現金の記帳(cash:*)は取込値ではないので洗い替えの対象外 */
 export function applyMfTxs(data: Dataset, txs: MfTx[]): void {
   const monthsIn = new Set(txs.map((t) => t.m));
-  data.mfTx = data.mfTx.filter((t) => !monthsIn.has(t.m)).concat(txs);
+  data.mfTx = data.mfTx.filter((t) => !monthsIn.has(t.m) || isCashTxId(t.id)).concat(txs);
   recomputeClassification(data);
 }
 
@@ -132,7 +133,8 @@ export function exportJSON(data: Dataset): Record<string, unknown> {
     subs: data.subs,
     personal: data.personal,
     bizPersonal: data.bizPersonal,
-    mfTx: data.mfTx,
+    // 個人分の現金明細(cash:*)は cash_entries が正本なので、取込明細の写しには含めない
+    mfTx: data.mfTx.filter((t) => !isCashTxId(t.id)),
     rules: data.rules,
     overrides: data.overrides,
     edits: data.edits,

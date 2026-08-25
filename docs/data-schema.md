@@ -101,6 +101,8 @@
 | `ai_tasks` | AI分析の依頼(0003)。`period_kind`(`month`/`year`)+`period_key`、使い捨てトークンの SHA-256(`token_hash`、原文は保存しない)、`expires_at`(24時間)、`used_at`(結果受信で確定=1回きり)、`report_id` |
 | `ai_reports` | AIから届いた分析レポート(0003)。`body_json` は固定5節(`spend`/`change`/`reduction`/`split`/`subscriptions`)+`dataGaps` を無害化済みのプレーンテキストで保持。明細は含まない(集計値と本文だけ) |
 | `overrides` | 旧テーブル。`tx_edits` へ移行済み(読み取りは `tx_edits` のみ) |
+| `cash_entries` | 現金の記帳(0006)。口座・カード明細に出ない現金の受け渡しを明細として持つ。`side`(`biz`=事業/`per`=家計)、`io`、`amount`(正の整数)、`category_major`(事業=freee勘定科目/家計=MF大項目)、`category_mid`(家計のみ)。取込値とは別テーブルなので再取込で消えない |
+| `imports.content_hash` / `duplicate_of` | 取込単位の内容指紋(0006)。ファイル名・拡張子・行順に依らず内容が同じなら同じ SHA-256。同じ指紋の成功済み取込があれば `status='duplicate'` でスキップし、元の取込IDを `duplicate_of` に持つ |
 
 ### 有効値の決め方(属性ごとに独立)
 
@@ -126,3 +128,19 @@
 - 候補科目の削除は使用中(手動編集・ルール)なら 409 で件数を返し、明示(`force`)でのみ削除する。削除しても編集・ルールの値は残る。名前変更は編集・ルールへ連動する。
 
 - 事業/個人の区分の根拠: 事業側は freee の取引(売上・経費)、個人側は MF 明細のうち仕分け(手動 > ルール > 既定=個人)で `個人` になったもの。
+
+## 現金の記帳(cash_entries)の合流先
+
+| 区分 | 合流先 | 仕組み |
+|---|---|---|
+| 事業(`biz`) | 科目別集計(`monthly_agg` の `biz_rev` / `biz_exp:{科目}`)・サブスク行列 | freee 仕訳と同じ形(`FreeeDeal`)に変換し、`applyFreeeDeals` に freee 原本と一緒に流す(`recomputeFromDeals` と取込の freee 経路)。科目の正規化も同じ対応表を使う |
+| 家計(`per`) | MF 明細(`mfTx`)に `id='cash:{id}'`, `inst='現金'` として合流 | 仕分け(手動 > ルール > 既定)・名義・家計集計は通常の明細と同じ扱い。`applyMfTxs` の月単位洗い替え、統合JSONの写し(`exportJSON`)、`persistRestore` は `cash:` を除外する |
+
+- 現金の記帳しか無い月は「未記帳月」を解除しない(freee の記帳が済んでいない月として扱う)。
+- 夜間バックアップは統合JSONに `cashEntries` を別枠で含める。`POST /restore` は現金の記帳を復元しない(残課題)。
+
+## 取込の重複検知(content_hash)
+
+- 指紋の元: freee は `月|日付|収支|取引先|勘定科目|金額` の各行、MF は `ID|月|日|内容|金額|大項目|中項目|口座` の各行を並べ替えて結合した文字列(`canonicalFreee` / `canonicalMf`)。JSON は本文全体。
+- 同じ利用者の `status='ok'` の取込に同じ指紋があれば、処理せずに `status='duplicate'` の履歴行だけ残す(理由に元の日時とファイル名)。multipart の `force=1`(画面の「同じ内容でも取り込み直す」)で取り込み直せる。
+- 別途、月ごとの取込前後の件数(`replaced`)を返し、減っていれば画面で「月の途中までのファイルではないか」を知らせる(既存どおり月単位で洗い替えるため)。

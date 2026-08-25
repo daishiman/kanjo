@@ -6,6 +6,7 @@ import { AUTH_EVENT, api } from './api.js';
 import { Layout } from './components/Layout.js';
 import { AiPage } from './pages/Ai.js';
 import { BudgetPage } from './pages/Budget.js';
+import { CashPage } from './pages/Cash.js';
 import { ClassifyPage } from './pages/Classify.js';
 import { DiagnosisPage } from './pages/Diagnosis.js';
 import { GuidePage } from './pages/Guide.js';
@@ -30,6 +31,7 @@ export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
   budget: BudgetPage,
   tradeoff: TradeoffPage,
   import: ImportPage,
+  cash: CashPage,
   settings: SettingsPage,
   guide: GuidePage,
 };

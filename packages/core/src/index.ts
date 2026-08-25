@@ -9,3 +9,5 @@ export * from './dataset.js';
 export * from './subs.js';
 export * from './analysis.js';
 export * from './categories.js';
+export * from './cash.js';
+export * from './fingerprint.js';

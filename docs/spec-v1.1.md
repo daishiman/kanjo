@@ -113,6 +113,7 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 | P9 | 設定 | `/settings` | 科目正規化・未記帳月・エクスポート |
 | P10 | 指標ガイド | `/guide` | 指標の意味とベンチマークを参照する |
 | P11 | やりくり試算 | `/tradeoff` | 新規支出の捻出元(どこを削るか)を決める |
+| P13 | 現金の記帳 | `/cash` | 口座・カード明細に出ない現金の受け渡しを記帳する(再取込しても残る) |
 
 ### 4.2 主要機能要件
 
@@ -317,8 +318,19 @@ CREATE TABLE imports (
   id INTEGER PRIMARY KEY, user_id TEXT NOT NULL,
   filename TEXT, kind TEXT CHECK(kind IN ('freee','mf','json')),
   months TEXT,                    -- 対象月CSV文字列
-  row_count INTEGER, status TEXT, r2_key TEXT,
+  row_count INTEGER, status TEXT, r2_key TEXT,   -- status: ok / duplicate / error: 理由
+  content_hash TEXT, duplicate_of INTEGER,        -- 0006: 内容指紋(SHA-256)と重複元の取込ID
   created_at TEXT DEFAULT (datetime('now'))
+);
+
+-- 現金の記帳(0006)。事業分は freee 仕訳と同じ経路で科目別集計へ、家計分は口座「現金」の明細として合流
+CREATE TABLE cash_entries (
+  id INTEGER PRIMARY KEY, user_id TEXT NOT NULL,
+  date TEXT NOT NULL, month TEXT NOT NULL,
+  side TEXT CHECK(side IN ('biz','per')), io TEXT CHECK(io IN ('income','expense')),
+  amount INTEGER NOT NULL, description TEXT NOT NULL,
+  category_major TEXT NOT NULL, category_mid TEXT NOT NULL DEFAULT '', memo TEXT,
+  created_at TEXT NOT NULL, updated_at TEXT NOT NULL
 );
 
 -- 月次集計キャッシュ(取込・仕分け変更時に再生成)
@@ -331,7 +343,7 @@ CREATE TABLE monthly_agg (
 
 ### 7.3 集計再計算のトリガ
 
-`imports 完了` / `rules 変更` / `overrides 変更` / `account_norm_map 変更` のいずれかで、影響ユーザーの `monthly_agg` を全再生成する(数千行規模のため全再生成で十分。将来増えたら月単位差分化)。
+`imports 完了` / `rules 変更` / `overrides 変更` / `account_norm_map 変更` / `cash_entries 変更` のいずれかで、影響ユーザーの `monthly_agg` を全再生成する(数千行規模のため全再生成で十分。将来増えたら月単位差分化)。
 
 ---
 
@@ -364,8 +376,9 @@ CREATE TABLE monthly_agg (
 
 | Method | Path | 概要 |
 |---|---|---|
-| POST | /imports | multipart。ファイル受領→R2保存→判定→パース→洗い替え→再集計。202/200で `{importId, kind, months, rows}` |
+| POST | /imports | multipart。ファイル受領→R2保存→判定→パース→内容指紋で重複判定(同じ内容は `status:'duplicate'` でスキップ。`force=1` で取り込み直し)→洗い替え→再集計。結果に月ごとの取込前後件数 `replaced` |
 | GET | /imports | 取込履歴一覧 |
+| GET/POST | /cash-entries | P13用: 現金の記帳の一覧(科目候補付き)/追加。PUT/DELETE `/cash-entries/:id` で編集・削除。変更のたびに再集計 |
 | GET | /summary?from&to | P1用: 月次の売上/経費計/利益/補正値/移動平均 |
 | GET | /matrix?mode=val\|mom\|yoy | P2用: 科目×月+年計 |
 | GET | /diagnosis | P3用: 科目別統計プロファイル+診断+BEP |

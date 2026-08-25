@@ -3,17 +3,19 @@
  * 受領→R2原本保存→形式判定→パース→月単位洗い替え→集計再生成。
  * セキュリティ: ログ・レスポンスに明細内容や金額は含めない(件数・月・理由のみ)。
  */
-import { applyFreeeDeals, applyMfTxs, importJSON } from '@kanjo/core';
-import { and, desc, eq } from 'drizzle-orm';
+import { applyFreeeDeals, applyMfTxs, cashBizDeals, importJSON, isCashTxId } from '@kanjo/core';
+import { and, count, desc, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
-import { type ParsedUnit, parseUpload } from '../import-pipeline.js';
+import { type ParsedUnit, parseUpload, unitFingerprint } from '../import-pipeline.js';
 import {
   ensureSubVendors,
   getDb,
+  loadCashEntries,
   loadDataset,
   loadNormMap,
+  mergeCashTxs,
   replaceEdits,
   replaceFreeeDeals,
   replaceInstitutionOwners,
@@ -25,6 +27,13 @@ type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
 export const importsRoute = new Hono<Ctx>();
 
+/** 月ごとの洗い替え前後の件数。減っていれば「月の途中までのファイル」の可能性を画面で知らせる */
+interface MonthReplace {
+  month: string;
+  before: number;
+  after: number;
+}
+
 interface UnitResult {
   filename: string;
   kind: string;
@@ -33,10 +42,22 @@ interface UnitResult {
   skipped: number;
   syntheticIds?: number;
   duplicateIds?: number;
-  status: 'ok' | 'error';
+  /** duplicate = 同じ内容を取込済みのためスキップ(force=1 で取り込み直せる) */
+  status: 'ok' | 'error' | 'duplicate';
   reason?: string;
   importId?: number;
+  replaced?: MonthReplace[];
 }
+
+const fmtWhen = (iso: string | null): string => {
+  if (!iso) return '以前';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '以前';
+  // 表示はJST(利用者は日本)
+  const j = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+  const p = (n: number): string => String(n).padStart(2, '0');
+  return `${j.getUTCFullYear()}-${p(j.getUTCMonth() + 1)}-${p(j.getUTCDate())} ${p(j.getUTCHours())}:${p(j.getUTCMinutes())}`;
+};
 
 importsRoute.post('/imports', async (c) => {
   const userId = c.get('userId');
@@ -47,8 +68,28 @@ importsRoute.post('/imports', async (c) => {
     return c.json({ error: { code: 'no_file', message: 'ファイルが指定されていません' } }, 400);
   }
 
+  // 「同じ内容でも取り込み直す」チェック。既定は重複をスキップする
+  const force = form.get('force') === '1';
+
   const normMap = await loadNormMap(db, userId);
   const data = await loadDataset(db, userId);
+  const cashEntries = await loadCashEntries(db, userId);
+  // freee 仕訳の月別件数(洗い替え前)。取込値の件数だけを数え、現金明細は含めない
+  const freeeCountRows = await db
+    .select({ month: s.freeeDeals.month, n: count() })
+    .from(s.freeeDeals)
+    .where(eq(s.freeeDeals.userId, userId))
+    .groupBy(s.freeeDeals.month);
+  const freeeCount = new Map(freeeCountRows.map((r) => [r.month, r.n]));
+  const mfCount = new Map<string, number>();
+  for (const t of data.mfTx) if (!isCashTxId(t.id)) mfCount.set(t.m, (mfCount.get(t.m) ?? 0) + 1);
+  const replacedOf = (
+    months: string[],
+    before: Map<string, number>,
+    after: Map<string, number>,
+  ): MonthReplace[] =>
+    months.map((m) => ({ month: m, before: before.get(m) ?? 0, after: after.get(m) ?? 0 }));
+
   const results: UnitResult[] = [];
   let mutated = false;
 
@@ -85,8 +126,54 @@ importsRoute.post('/imports', async (c) => {
         });
         continue;
       }
+      // 内容指紋で重複を判定する(ファイル名が変わっていても内容が同じなら重複)
+      const contentHash = await unitFingerprint(u);
+      const prior = contentHash
+        ? await db
+            .select({ id: s.imports.id, filename: s.imports.filename, createdAt: s.imports.createdAt })
+            .from(s.imports)
+            .where(
+              and(
+                eq(s.imports.userId, userId),
+                eq(s.imports.contentHash, contentHash),
+                eq(s.imports.status, 'ok'),
+              ),
+            )
+            .orderBy(desc(s.imports.id))
+            .limit(1)
+        : [];
+      const unitMonths = u.kind === 'json' ? [] : u.months;
+      const unitRows = u.kind === 'json' ? 0 : u.rows;
+      if (prior.length && !force) {
+        const [rec] = await db
+          .insert(s.imports)
+          .values({
+            userId,
+            filename: u.filename,
+            kind: u.kind,
+            months: unitMonths.join(','),
+            rowCount: unitRows,
+            status: 'duplicate',
+            r2Key,
+            contentHash,
+            duplicateOf: prior[0].id,
+          })
+          .returning({ id: s.imports.id });
+        results.push({
+          filename: u.filename,
+          kind: u.kind,
+          months: unitMonths,
+          rows: unitRows,
+          skipped: 0,
+          status: 'duplicate',
+          reason: `${fmtWhen(prior[0].createdAt)} に「${prior[0].filename}」として取込済み(内容が同一)`,
+          importId: rec.id,
+        });
+        continue;
+      }
       if (u.kind === 'json') {
         importJSON(data, u.json);
+        mergeCashTxs(data, cashEntries);
         // 復元明細・ルール等も永続化する(restoreと同じ経路)
         await persistRestore(db, userId, data);
         const months = data.months;
@@ -100,6 +187,7 @@ importsRoute.post('/imports', async (c) => {
             rowCount: data.mfTx.length,
             status: 'ok',
             r2Key,
+            contentHash,
           })
           .returning({ id: s.imports.id });
         results.push({
@@ -124,11 +212,17 @@ importsRoute.post('/imports', async (c) => {
           rowCount: u.rows,
           status: 'ok',
           r2Key,
+          contentHash,
         })
         .returning({ id: s.imports.id });
       if (u.kind === 'freee') {
-        applyFreeeDeals(data, u.deals, u.months);
+        // 対象月の事業分の現金明細も一緒に流し込む(洗い替えで消えないように)
+        applyFreeeDeals(data, [...u.deals, ...cashBizDeals(cashEntries, normMap, u.months)], u.months);
         await replaceFreeeDeals(db, userId, u.deals, u.months, rec.id);
+        const after = new Map<string, number>();
+        for (const d of u.deals) after.set(d.month, (after.get(d.month) ?? 0) + 1);
+        const replaced = replacedOf(u.months, freeeCount, after);
+        after.forEach((n, m) => freeeCount.set(m, n));
         results.push({
           filename: u.filename,
           kind: 'freee',
@@ -137,10 +231,15 @@ importsRoute.post('/imports', async (c) => {
           skipped: u.skipped,
           status: 'ok',
           importId: rec.id,
+          replaced,
         });
       } else {
         applyMfTxs(data, u.txs);
         await replaceMfTxs(db, userId, u.txs, u.months, rec.id);
+        const after = new Map<string, number>();
+        for (const t of u.txs) after.set(t.m, (after.get(t.m) ?? 0) + 1);
+        const replaced = replacedOf(u.months, mfCount, after);
+        after.forEach((n, m) => mfCount.set(m, n));
         results.push({
           filename: u.filename,
           kind: 'mf',
@@ -151,6 +250,7 @@ importsRoute.post('/imports', async (c) => {
           duplicateIds: u.duplicateIds,
           status: 'ok',
           importId: rec.id,
+          replaced,
         });
       }
       mutated = true;
@@ -163,7 +263,9 @@ importsRoute.post('/imports', async (c) => {
     await saveAgg(db, userId, data);
   }
   const ok = results.some((r) => r.status === 'ok');
-  return c.json({ results, ok }, ok ? 200 : 400);
+  // 全件が重複スキップなら「失敗」ではなく「取込済み」として 200 で返す
+  const allDuplicate = results.length > 0 && results.every((r) => r.status === 'duplicate');
+  return c.json({ results, ok }, ok || allDuplicate ? 200 : 400);
 });
 
 importsRoute.get('/imports', async (c) => {
@@ -183,6 +285,7 @@ importsRoute.get('/imports', async (c) => {
       months: r.months ? r.months.split(',').filter(Boolean) : [],
       rows: r.rowCount,
       status: r.status,
+      duplicateOf: r.duplicateOf ?? null,
       createdAt: r.createdAt,
     })),
   });
@@ -203,6 +306,7 @@ importsRoute.post('/restore', async (c) => {
   }
   const data = await loadDataset(db, userId);
   importJSON(data, body);
+  mergeCashTxs(data, await loadCashEntries(db, userId));
   await persistRestore(db, userId, data);
   await syncUnrecorded(db, userId, data.unrecordedExpMonths);
   await saveAgg(db, userId, data);
@@ -224,9 +328,10 @@ async function persistRestore(
   userId: string,
   data: Awaited<ReturnType<typeof loadDataset>>,
 ): Promise<void> {
-  // MF明細: 全月洗い替え
-  const months = [...new Set(data.mfTx.map((t) => t.m))];
-  await replaceMfTxs(db, userId, data.mfTx, months, null);
+  // MF明細: 全月洗い替え(現金の記帳 cash:* は cash_entries が正本なので書かない)
+  const txs = data.mfTx.filter((t) => !isCashTxId(t.id));
+  const months = [...new Set(txs.map((t) => t.m))];
+  await replaceMfTxs(db, userId, txs, months, null);
   // JSON に含まれるサブスクのベンダーを登録に加える(集計キャッシュだけにあると次の再集計で消えるため)
   await ensureSubVendors(db, userId, data.subs.vendors);
   // ルール

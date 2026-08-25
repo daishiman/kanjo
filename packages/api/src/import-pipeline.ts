@@ -6,6 +6,8 @@
 import {
   type FreeeDeal,
   type MfTx,
+  canonicalFreee,
+  canonicalMf,
   decodeBuf,
   isFreeeHeader,
   isMfHeader,
@@ -143,4 +145,22 @@ export function parseUpload(
   const trimmed = text.trimStart();
   if (trimmed.startsWith('{')) return [parseJsonUnit(filename, text)];
   return [classifyRows(filename, parseCSV(text), normMap)];
+}
+
+/* ------------------------- 内容指紋(重複取込の検知) ------------------------- */
+
+async function sha256Hex(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * 取込単位の内容指紋(SHA-256)。ファイル名・拡張子・行順が違っても内容が同じなら一致する。
+ * JSON は文字列全体(空白を除く)を対象にする。エラー単位は指紋を持たない。
+ */
+export async function unitFingerprint(u: ParsedUnit): Promise<string | null> {
+  if (u.kind === 'freee') return sha256Hex(canonicalFreee(u.deals));
+  if (u.kind === 'mf') return sha256Hex(canonicalMf(u.txs));
+  if (u.kind === 'json') return sha256Hex(JSON.stringify(u.json));
+  return null;
 }
