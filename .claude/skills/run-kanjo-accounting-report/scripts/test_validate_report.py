@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # name: test_validate_report
-# version: 1.0.0
+# version: 2.0.0
 # purpose: validate-report.py の機能テスト(unittest・実データ非使用)
 # inputs:
 #   - なし(python3 -B -m unittest discover -s <scripts dir> -p 'test_*.py' で起動)
@@ -53,6 +53,23 @@ def good_report() -> dict:
             }
             for sid in SECTIONS
         ],
+        "keyFindings": {
+            "improvements": [{"label": "外注費の増加", "amount": 120000, "note": "3ヶ月連続", "priority": "high"}],
+            "wasted": [{"label": "重複サブスク", "amount": 6480, "priority": "mid"}],
+            "quickWins": [{"label": "契約を1本化", "amount": 6480, "priority": "high"}],
+        },
+        "charts": [
+            {
+                "id": "exp",
+                "kind": "bar",
+                "title": "月別経費",
+                "unit": "yen",
+                "labels": ["2026-01", "2026-02"],
+                "series": [{"label": "経費", "data": [1000, None]}],
+            }
+        ],
+        "followUp": {"body": "前回指摘は解消。", "items": [{"label": "解消済み", "amount": None}]},
+        "needs": [{"gap": "家賃が未仕分け", "action": "公私仕分けで家賃を個人にする", "screen": "classify"}],
         "dataGaps": ["前年同月のデータが未取込"],
     }
 
@@ -148,6 +165,101 @@ class ValidateTest(unittest.TestCase):
         issues = MOD.validate(r)
         self.assertTrue(any("dataGaps[0]: 空" in i for i in issues), issues)
         self.assertTrue(any("dataGaps[1]" in i and "HTML" in i for i in issues), issues)
+
+
+    # --- 第2版の追加項目 ---
+    def test_v1_report_without_new_fields_is_still_valid(self) -> None:
+        r = good_report()
+        for key in ("keyFindings", "charts", "followUp", "needs"):
+            del r[key]
+        self.assertEqual(MOD.validate(r), [])
+
+    def test_key_findings_shape(self) -> None:
+        r = good_report()
+        r["keyFindings"] = []
+        self.assertTrue(any("keyFindings: オブジェクト" in i for i in MOD.validate(r)))
+        r = good_report()
+        r["keyFindings"]["bogus"] = []
+        self.assertTrue(any("keyFindings.bogus" in i for i in MOD.validate(r)))
+        r = good_report()
+        r["keyFindings"]["wasted"] = [{"label": "x", "priority": "urgent"}]
+        self.assertTrue(any("keyFindings.wasted[0].priority" in i for i in MOD.validate(r)))
+        r = good_report()
+        r["keyFindings"]["quickWins"] = [{"label": "x"}] * 11
+        self.assertTrue(any("keyFindings.quickWins: 11件" in i for i in MOD.validate(r)))
+
+    def test_follow_up_shape(self) -> None:
+        r = good_report()
+        r["followUp"] = None
+        self.assertEqual(MOD.validate(r), [])
+        r["followUp"] = "text"
+        self.assertTrue(any("followUp: オブジェクト" in i for i in MOD.validate(r)))
+        r["followUp"] = {"items": []}
+        self.assertTrue(any("followUp.body: 必須" in i for i in MOD.validate(r)))
+        r["followUp"] = {"body": "ok", "items": [{"label": ""}]}
+        self.assertTrue(any("followUp.items[0].label" in i for i in MOD.validate(r)))
+
+    def test_needs_shape_and_screen(self) -> None:
+        r = good_report()
+        r["needs"] = {}
+        self.assertTrue(any("needs: 配列" in i for i in MOD.validate(r)))
+        r["needs"] = ["x"]
+        self.assertTrue(any("needs[0]: オブジェクト" in i for i in MOD.validate(r)))
+        r["needs"] = [{"gap": "g", "action": "a", "screen": "nowhere"}]
+        self.assertTrue(any("needs[0].screen" in i and "未定義" in i for i in MOD.validate(r)))
+        r["needs"] = [{"gap": "g", "action": "a", "screen": None}]
+        self.assertEqual(MOD.validate(r), [])
+        r["needs"] = [{"gap": "g", "action": "a", "screen": 3}]
+        self.assertTrue(any("needs[0].screen" in i for i in MOD.validate(r)))
+        r["needs"] = [{"gap": "", "action": None}]
+        issues = MOD.validate(r)
+        self.assertTrue(any("needs[0].gap: 空" in i for i in issues))
+        self.assertTrue(any("needs[0].action: 必須" in i for i in issues))
+        r["needs"] = [{"gap": "g", "action": "a"}] * 31
+        self.assertTrue(any("needs: 31件" in i for i in MOD.validate(r)))
+
+    def test_chart_shape(self) -> None:
+        r = good_report()
+        r["charts"] = {}
+        self.assertTrue(any("charts: 配列" in i for i in MOD.validate(r)))
+        r["charts"] = ["x"]
+        self.assertTrue(any("charts[0]: オブジェクト" in i for i in MOD.validate(r)))
+
+        def chart(**over: object) -> dict:
+            base = copy.deepcopy(good_report()["charts"][0])
+            base.update(over)
+            return base
+
+        r["charts"] = [chart(kind="pie")]
+        self.assertTrue(any("charts[0].kind" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(unit="usd")]
+        self.assertTrue(any("charts[0].unit" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(labels=[])]
+        self.assertTrue(any("charts[0].labels: 1件以上" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(labels=["a"] * 73)]
+        self.assertTrue(any("charts[0].labels: 73件" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(series=[])]
+        self.assertTrue(any("charts[0].series: 1本以上" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(series=[{"label": "s", "data": [1, 2]}] * 9)]
+        self.assertTrue(any("charts[0].series: 9本" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(series=["x"])]
+        self.assertTrue(any("charts[0].series[0]: オブジェクト" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(series=[{"label": "s", "data": [1, 2, 3]}])]
+        self.assertTrue(any("同じ長さ" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(series=[{"label": "s", "data": []}])]
+        self.assertTrue(any("series[0].data: 1件以上" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(series=[{"label": "s", "data": [1, "2"]}])]
+        self.assertTrue(any("series[0].data[1]" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(series=[{"label": "s", "data": [True, 1]}])]
+        self.assertTrue(any("series[0].data[0]" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(id="dup"), chart(id="dup")]
+        self.assertTrue(any("id が重複" in i for i in MOD.validate(r)))
+        r["charts"] = [chart(id=f"c{i}") for i in range(7)]
+        self.assertTrue(any("charts: 7件" in i for i in MOD.validate(r)))
+        c = chart(series=[{"label": "s", "data": [1.5, 2]}])
+        c.pop("unit")
+        r["charts"] = [c]
+        self.assertEqual(MOD.validate(r), [])
 
 
 class MainTest(unittest.TestCase):

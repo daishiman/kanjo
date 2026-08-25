@@ -43,26 +43,154 @@
   ],
   "unscored": [],
   "not_applicable": [
-    { "id": "AG-001", "applies_to_kinds": ["agent"], "target_kind": "skill" },
-    { "id": "AG-002", "applies_to_kinds": ["agent"], "target_kind": "skill" },
-    { "id": "AG-003", "applies_to_kinds": ["agent"], "target_kind": "skill" },
-    { "id": "AG-004", "applies_to_kinds": ["agent"], "target_kind": "skill" },
-    { "id": "HK-001", "applies_to_kinds": ["hook"], "target_kind": "skill" },
-    { "id": "HK-002", "applies_to_kinds": ["hook"], "target_kind": "skill" },
-    { "id": "HK-003", "applies_to_kinds": ["hook"], "target_kind": "skill" },
-    { "id": "HK-004", "applies_to_kinds": ["hook"], "target_kind": "skill" },
-    { "id": "CM-001", "applies_to_kinds": ["command"], "target_kind": "skill" },
-    { "id": "CM-002", "applies_to_kinds": ["command"], "target_kind": "skill" },
-    { "id": "CM-003", "applies_to_kinds": ["command"], "target_kind": "skill" },
-    { "id": "PC-001", "applies_to_kinds": ["plugin-composition"], "target_kind": "skill" },
-    { "id": "PC-002", "applies_to_kinds": ["plugin-composition"], "target_kind": "skill" },
-    { "id": "PC-003", "applies_to_kinds": ["plugin-composition"], "target_kind": "skill" },
-    { "id": "PC-004", "applies_to_kinds": ["plugin-composition"], "target_kind": "skill" },
-    { "id": "PR-001", "applies_to_kinds": ["prompt"], "target_kind": "skill" },
-    { "id": "PR-002", "applies_to_kinds": ["prompt"], "target_kind": "skill" },
-    { "id": "PR-003", "applies_to_kinds": ["prompt"], "target_kind": "skill" },
-    { "id": "WF-001", "applies_to_kinds": ["workflow"], "target_kind": "skill" },
-    { "id": "WF-002", "applies_to_kinds": ["workflow"], "target_kind": "skill" },
-    { "id": "WF-003", "applies_to_kinds": ["workflow"], "target_kind": "skill" }
-  ]
+    {
+      "id": "AG-001",
+      "applies_to_kinds": [
+        "agent"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "AG-002",
+      "applies_to_kinds": [
+        "agent"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "AG-003",
+      "applies_to_kinds": [
+        "agent"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "AG-004",
+      "applies_to_kinds": [
+        "agent"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "HK-001",
+      "applies_to_kinds": [
+        "hook"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "HK-002",
+      "applies_to_kinds": [
+        "hook"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "HK-003",
+      "applies_to_kinds": [
+        "hook"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "HK-004",
+      "applies_to_kinds": [
+        "hook"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "CM-001",
+      "applies_to_kinds": [
+        "command"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "CM-002",
+      "applies_to_kinds": [
+        "command"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "CM-003",
+      "applies_to_kinds": [
+        "command"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PC-001",
+      "applies_to_kinds": [
+        "plugin-composition"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PC-002",
+      "applies_to_kinds": [
+        "plugin-composition"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PC-003",
+      "applies_to_kinds": [
+        "plugin-composition"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PC-004",
+      "applies_to_kinds": [
+        "plugin-composition"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PR-001",
+      "applies_to_kinds": [
+        "prompt"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PR-002",
+      "applies_to_kinds": [
+        "prompt"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "PR-003",
+      "applies_to_kinds": [
+        "prompt"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "WF-001",
+      "applies_to_kinds": [
+        "workflow"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "WF-002",
+      "applies_to_kinds": [
+        "workflow"
+      ],
+      "target_kind": "skill"
+    },
+    {
+      "id": "WF-003",
+      "applies_to_kinds": [
+        "workflow"
+      ],
+      "target_kind": "skill"
+    }
+  ],
+  "evaluated_at": "2026-08-25",
+  "note": "第2版契約(keyFindings/charts/needs/followUp・期間型)への更新後に再評価"
 }

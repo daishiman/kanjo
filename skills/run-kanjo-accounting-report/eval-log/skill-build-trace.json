@@ -225,7 +225,7 @@
     {
       "step": "validation",
       "status": "PASS",
-      "evidence": "skills/run-kanjo-accounting-report/eval-log/design-eval.json + lint 群(this trace reproducibility_gates) + pnpm run skills:test 15 tests OK"
+      "evidence": "skills/run-kanjo-accounting-report/eval-log/design-eval.json + lint 群(this trace reproducibility_gates) + pnpm run skills:test 20 tests OK"
     },
     {
       "step": "operation-improvement",
@@ -388,7 +388,7 @@
       "lint 群 10本 exit 0",
       "feedback_contract_ssot.validate_criteria 違反0",
       "validate-build-plan --check exit 0",
-      "unittest 15 tests / line coverage 99.2%"
+      "unittest 20 tests / line coverage 98.7%(第2版)"
     ]
   },
   "rubric_composition_model": {
@@ -423,7 +423,7 @@
       {
         "id": "IN1",
         "loop_scope": "inner",
-        "text": "送信前の JSON が scripts/validate-report.py で exit 0(5節揃い・上限内・型一致)",
+        "text": "送信前の JSON が scripts/validate-report.py で exit 0(5節揃い・keyFindings/charts/needs の形・上限内・型一致)",
         "verify_by": "script"
       },
       {
@@ -592,6 +592,6 @@
     "判断: run-plugin-package-check は N/A(plugin package ではなくプロジェクト内 Skill。manifest/marketplace なし)",
     "判断: Sink Contract(ref-output-routing)は N/A(送信先1系統。fail-closed は script + 本文で担保)",
     "判断: 旧名 kanjo-accounting-report は aliases で保持し、API の SKILL_NAME を新名へ更新(指示文が新名を案内)",
-    "計測: scripts/validate-report.py 行カバレッジ 122/123 = 99.2%(未到達は if __name__ の sys.exit 行のみ)。eval-log/coverage.json"
+    "計測: scripts/validate-report.py 行カバレッジ 230/233 = 98.7%(第2版。未到達は if __name__ の sys.exit 行と到達不能分岐)。eval-log/coverage.json"
   ]
 }

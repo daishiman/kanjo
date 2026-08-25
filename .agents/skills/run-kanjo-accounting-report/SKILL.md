@@ -1,13 +1,13 @@
 ---
 name: run-kanjo-accounting-report
-description: kanjo(収支管理コンソール)の「AI分析」画面が発行した指示文(取得URLと送信URLと使い捨てトークンを含む)を貼り付けられたとき、取り込み済みの実績データを会計の実務家として読み、固定5節のレポートを生成してアプリへ返したいときに使う。
+description: kanjo(収支管理コンソール)の「AI分析」画面が発行した指示文(取得URLと送信URLと使い捨てトークンを含む)を貼り付けられたとき、取り込み済みの実績データを会計の実務家として読み、要点サマリー・図表・固定5節からなる第2版レポートを生成してアプリへ返したいときに使う。
 disable-model-invocation: false
 user-invocable: true
 allowed-tools: Read, Bash(curl *), Bash(python3 *)
 kind: run
 prefix: run
 effect: external-mutation
-version: 1.0.0
+version: 2.0.0
 owner: daishiman
 since: 2026-08-25
 last-audited: 2026-08-25
@@ -31,12 +31,12 @@ feedback_contract:
   criteria:
     - id: IN1
       loop_scope: inner
-      text: 送信JSONが scripts/validate-report.py で exit 0(5節揃い・上限内・プレーンテキスト)になっている
+      text: 送信JSONが scripts/validate-report.py で exit 0(5節揃い・keyFindings/charts/needs の形・上限内・プレーンテキスト)になっている
       verify_by: script
       derived_from: [CL-3, CL-4]
     - id: IN2
       loop_scope: inner
-      text: 本文中の金額・科目・ベンダー名が取得データ(またはそこからの計算)に由来し、無いものは dataGaps と本文に「データ不足」と書かれている
+      text: 本文・keyFindings・charts の金額・科目・ベンダー名が取得データ(またはそこからの計算)に由来し、無いものは dataGaps と本文に「データ不足」、解消操作は needs に書かれている。stats.available が false の手法と BS(bs.available=false)の数字を書いていない
       verify_by: verification-obligation
       derived_from: [CL-2]
     - id: IN3
@@ -76,10 +76,11 @@ rubric_hash: sha256:6e1843e5204accb8c76c96bf0d8189dafff6d51f2d182096424fcb6c6bfd
 
 ### Purpose & Output Contract
 
-アプリ「AI分析」画面が発行した指示文(対象期間 / データ取得URL / 結果送信URL / `Authorization: Bearer kjo_…` / 有効期限)を受け取り、**データ取得 → 分析 → 送信前検査 → 送信** を1回で完了する。送信前の形式検査は必ず `scripts/validate-report.py` で行い、推測の数字を書くことは禁止。
+アプリ「AI分析」画面が発行した指示文(対象期間とレポートの型 / データ取得URL / 結果送信URL / `Authorization: Bearer kjo_…` / 有効期限。再分析なら前回レポートID、任意で利用者の補足情報)を受け取り、**データ取得 → 分析 → 送信前検査 → 送信** を1回で完了する。送信前の形式検査は必ず `scripts/validate-report.py` で行い、推測の数字を書くことは禁止。
 
-- **入力**: 貼り付けられた指示文(上記5項目)。
-- **出力**: アプリへ POST した固定5節レポート(`spend` / `change` / `reduction` / `split` / `subscriptions` + `summary` + `dataGaps`)と、受理時に返る `reportId`。形の正本は `references/report-schema.md`(APIの `reportInputSchema` を写したもの)。
+- **入力**: 貼り付けられた指示文(上記5項目 + 任意2項目)。
+- **出力**: アプリへ POST した第2版レポート = `summary` + `keyFindings`(改善すべき点 / 無駄なコスト / すぐ効く対策) + `charts`(図表データ) + 固定5節(`spend` / `change` / `reduction` / `split` / `subscriptions`) + `needs`(精度を上げるために利用者がアプリで行う操作) + `followUp`(前回レポートがあるときの追跡) + `dataGaps`。受理時に返る `reportId`。形の正本は `references/report-schema.md`(APIの `reportInputSchema` を写したもの)。
+- **レポートの型**: 期間の長さで決まる(1ヶ月=月次 / 2〜13ヶ月=年次 / 14ヶ月以上=長期)。5節は固定し、型ごとの重心と図表の既定は `references/analysis-guide.md` §2。
 - **完了条件**: `201` を受け取り `reportId` を利用者へ示す。送信不能環境では検査済みJSONをそのまま提示し、画面の「結果を貼り付ける」へ誘導する。
 
 ## 境界
@@ -100,7 +101,9 @@ rubric_hash: sha256:6e1843e5204accb8c76c96bf0d8189dafff6d51f2d182096424fcb6c6bfd
 4. 本文は**プレーンテキスト**(改行と「- 」の箇条書きだけ)。HTML・Markdownの表・見出し記号は使わない。
 5. **送信前に必ず `python3 "$SKILL_DIR/scripts/validate-report.py" <送信JSON>` を通し、exit 0 になってから POST する**(fail-closed)。
 6. `401` は期限切れか使用済み。**自分で推測して続けず、利用者に指示文の再発行を依頼する**。
-7. 立場は税理士・管理会計の実務家。**事実(数字) → 解釈 → 打ち手** の順、1文は短く、金額は「123,456円」、比率は「12.3%」、増減は「+12,000円(+8.1%)」。断定できないことは「〜の可能性(根拠: …)」。専門用語は括弧で言い換える(例: 固定費(毎月ほぼ同額で出るもの))。
+7. **統計・PL・BS はできることだけ書く**。`stats.available` が false の手法は「この手法には N ヶ月以上必要(あと M ヶ月分で分析可能)」と書く。`bs.available` が false の間は資産・負債・残高の数字を一切書かず `bs.reason` の1行だけ書く(`analysis-guide.md` §4)。
+8. **足りない情報は `needs` に「アプリでの操作」として書く**(画面 id は `report-schema.md` の表から)。`previousReports` があれば `followUp` に前回指摘の行方(解消 / 未実施 / 悪化)を書く。
+9. 立場は税理士・管理会計の実務家。**事実(数字) → 解釈 → 打ち手** の順、1文は短く、金額は「123,456円」、比率は「12.3%」、増減は「+12,000円(+8.1%)」。断定できないことは「〜の可能性(根拠: …)」。専門用語は括弧で言い換える(例: 固定費(毎月ほぼ同額で出るもの))。
 
 ## 評価・改善ループ契約
 
@@ -112,7 +115,7 @@ frontmatter `feedback_contract.criteria` が評価基準の正本。inner(IN1〜
 
 ### ゴール (Goal)
 
-指示文の対象期間について、取得した実績データだけを根拠にした固定5節のレポートが `validate-report.py` exit 0 を経てアプリに `201` で受理され、`reportId` が利用者に示されている。
+指示文の対象期間と型について、取得した実績データだけを根拠にした第2版レポート(要点サマリー・図表・固定5節・needs)が `validate-report.py` exit 0 を経てアプリに `201` で受理され、`reportId` が利用者に示されている。
 
 ### 目的・背景 (Why)
 
@@ -120,9 +123,9 @@ frontmatter `feedback_contract.criteria` が評価基準の正本。inner(IN1〜
 
 ### 完了チェックリスト (Checklist)
 
-- [ ] 指示文から 対象期間 / GET URL / POST URL / トークン / 有効期限 の5項目を読み取った <!-- CL-1 -->
-- [ ] 本文の金額・科目・ベンダーが取得JSON(または計算式を示せる派生値)に由来し、無いものは「データ不足」と本文・`dataGaps` に書いた <!-- CL-2 -->
-- [ ] 5節(`spend` `change` `reduction` `split` `subscriptions`)と `summary` を全て含む送信JSONを組み立てた <!-- CL-3 -->
+- [ ] 指示文から 対象期間と型 / GET URL / POST URL / トークン / 有効期限(+ 再分析の前回ID・補足情報)を読み取った <!-- CL-1 -->
+- [ ] 本文・keyFindings・charts の金額・科目・ベンダーが取得JSON(または計算式を示せる派生値)に由来し、無いものは「データ不足」と本文・`dataGaps` に書き、解消操作を `needs` に書いた。`stats.available=false` の手法・BS の数字を書いていない <!-- CL-2 -->
+- [ ] `summary` + `keyFindings`(3区分) + `charts`(型の既定に沿う1〜4件) + 5節(`spend` `change` `reduction` `split` `subscriptions`) + `needs`(+ 前回があれば `followUp`)を含む送信JSONを組み立てた <!-- CL-3 -->
 - [ ] `validate-report.py` が exit 0 を返した <!-- CL-4 -->
 - [ ] POST が `201` を返し `reportId` を利用者へ示した(送信不能環境ではJSONを提示し貼り付け先を案内した) <!-- CL-5 -->
 - [ ] 一時ファイルを削除し、トークンをファイル・ログ・要約に残していない <!-- CL-6 -->
@@ -153,7 +156,7 @@ curl -sS -H "Authorization: Bearer <token>" "<データ取得URL>" -o "${TMPDIR:
 
 ### 局面: 分析
 
-`references/analysis-guide.md` §1 でデータの読み方(各キーの意味)を確認し、§2 の観点チェックリストを上から順に当てる。比較対象(前月・前年同月)が無い観点は「データ不足」で確定させ、`dataGaps` へ積む。
+`references/analysis-guide.md` §1 でデータの読み方(各キーの意味)、§2 で型(月次/年次/長期)の重心と図表の既定を確認し、§3 の観点チェックリストを上から順に当てる。比較対象(`summary.previous` / `summary.yearAgo`)が `null` の観点は「データ不足」で確定させ、`dataGaps` と `needs` へ積む。統計・PL・BS は §4、前回レポートと補足情報は §5 に従う。`dataRange` が指示文の期間より狭ければ、本文冒頭に「実データは○〜○の○ヶ月分」と書く。
 
 ### 局面: 組立
 
@@ -167,13 +170,15 @@ curl -sS -H "Authorization: Bearer <token>" "<データ取得URL>" -o "${TMPDIR:
 | `split` | 事業/個人・本人/妻の別 | 事業と個人の収支、名義別の収入・支出。名義未設定の金融機関があれば明記 |
 | `subscriptions` | サブスクの整理候補 | 直近月の合計・年換算、重複/急増アラート、見直し候補と理由 |
 
+5節の外側に置くもの: `keyFindings`(各区分3〜5件・`amount` と `priority` 必須)、`charts`(型の既定に沿って1〜4件。`labels` と各 `series.data` は同じ長さ)、`needs`(`gap` / `action` / `screen`)、`followUp`(`previousReports` があるときだけ)。
+
 ### 局面: 検査
 
 ```bash
 python3 "$SKILL_DIR/scripts/validate-report.py" "${TMPDIR:-/tmp}/kanjo-ai-report.json"
 ```
 
-exit 0 で次へ。exit 1 は NG 行(節不足・上限超過・HTML混入・priority不正など)を直して再検査。exit 2 はJSONが壊れているので組立へ戻る。
+exit 0 で次へ。exit 1 は NG 行(節不足・上限超過・HTML混入・priority不正・chart の長さ不一致・未定義の画面 id など)を直して再検査。exit 2 はJSONが壊れているので組立へ戻る。
 
 ### 局面: 送信
 
@@ -210,6 +215,9 @@ curl -sS -X POST -H "Authorization: Bearer <token>" -H "Content-Type: applicatio
 - 検査スクリプトはローカルの写しで、アプリ側の上限(`summary` 3,000字 / `body` 12,000字 / `items` 60件 / `dataGaps` 40件)を先取りして落とす。API側で `400` が出たら `error.message` を優先して直す。
 - `401` を「もう一度 GET すれば直る」と誤解しない。トークンは使い捨てで、再発行は利用者の画面操作でしかできない。
 - 未記帳の月(取込が無い月)を「支出が減った」と読まない。`change` では未記帳を先に切り分ける。
+- 期間が取込済みデータより広い(例: 過去5年を指定したが2年分しか無い)ときは、無い年を推測で埋めず `dataRange` を冒頭に書く。
+- `charts` の `unit: "pct"` はパーセント値そのもの(12.3)。取得JSONの比率(0.123)を 100 倍して渡す。
+- BS(資産・負債・残高)は取得データに存在しない。「現預金が○円」のような文は書かない。
 
 ## 変数化契約
 
@@ -222,8 +230,8 @@ curl -sS -X POST -H "Authorization: Bearer <token>" -H "Content-Type: applicatio
 
 ## 追加リソース
 
-- `references/analysis-guide.md` — データの読み方(各キーの意味)と分析観点のチェックリスト
-- `references/report-schema.md` — 送信JSONの形・項目・応答コード
+- `references/analysis-guide.md` — データの読み方(各キーの意味)、型ごとの重心、分析観点のチェックリスト、統計・PL・BS の扱い、前回レポートの追跡
+- `references/report-schema.md` — 送信JSONの形(第2版: keyFindings / charts / needs / followUp)・上限・画面 id・応答コード
 - `scripts/validate-report.py` — 送信前の形式検査(標準ライブラリのみ)。`scripts/test_validate_report.py` が機能テスト
 - 契約の正本: `packages/api/src/ai/contract.ts`(`reportInputSchema` / `SKILL_NAME`)。`docs/spec-v1.1.md` §16 が仕様
 
