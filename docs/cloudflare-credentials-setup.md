@@ -456,15 +456,30 @@ pnpm --filter @kanjo/api exec wrangler login
 
 ### 7.2 AUTH_PASSWORDを作成・登録する
 
-1. パスワードマネージャーで20文字以上のランダムパスワードを生成する。
-2. 名前を`kanjo production AUTH_PASSWORD`として保存する。
-3. 次を実行する。
+macOSのターミナルで次を実行します。24バイト（192bit）の乱数から48文字の16進パスワードを作り、画面やシェル履歴へ値を出さずにクリップボードへ入れます。
+
+```bash
+openssl rand -hex 24 | tr -d '\n' | pbcopy
+```
+
+1. パスワードマネージャーで新規項目を作る。
+2. 名前を`kanjo production AUTH_PASSWORD`にする。
+3. パスワード欄へ`Command + V`で貼り付けて保存する。
+4. 次を実行する。
 
 ```bash
 pnpm --filter @kanjo/api exec wrangler secret put AUTH_PASSWORD
 ```
 
-入力待ちになったらパスワードを貼り付けて確定します。GitHub secretや`.dev.vars`の値を流用しません。
+入力待ちになったら同じ値を`Command + V`で貼り付けて確定します。入力中の文字が画面に表示されないのは正常です。GitHub secretや`.dev.vars`の値を流用しません。
+
+Wranglerの成功を確認したら、クリップボードを空にします。
+
+```bash
+pbcopy </dev/null
+```
+
+`openssl rand`の出力を`echo`したり、値をコマンド引数へ直接書いたりしないでください。パスワードマネージャーへ保存する前にクリップボードを消去すると復元できないため、保存確認後に消去します。
 
 この操作は本番Workerのsecretを直ちに更新します。既存の`AUTH_PASSWORD`を変更すると、それまでのログインパスワードは使えなくなります。
 
