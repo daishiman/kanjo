@@ -3,19 +3,24 @@ import { zValidator } from '@hono/zod-validator';
  * FR-04 予算 / P9 設定(科目正規化・未記帳月・現金補正)。
  * 正規化マップ変更は集計再生成のトリガ(spec §7.3)。
  */
-import { budgetTable, suggestBudgets } from '@kanjo/core';
-import { resolveTx } from '@kanjo/core';
-import { and, eq, isNull } from 'drizzle-orm';
+import { type MfTx, OWNER_VALUES, budgetTable, cashToTx, resolveTx, suggestBudgets } from '@kanjo/core';
+import { and, eq, inArray } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
+import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import {
   type Db,
+  cashFromRow,
+  editFromRow,
+  effectiveRules,
   getDb,
   loadDataset,
+  loadOrderedRuleRows,
   recomputeFromDeals,
   replaceInstitutionOwners,
+  ruleFromRow,
   saveAgg,
   upsertEdit,
 } from '../store.js';
@@ -40,10 +45,20 @@ settingsRoute.put('/budgets', zValidator('json', budgetsSchema), async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
   const { budgets } = c.req.valid('json');
+  const statements = [];
   for (const [account, v] of Object.entries(budgets)) {
-    await db.delete(s.budgets).where(and(eq(s.budgets.userId, userId), eq(s.budgets.account, account)));
-    if (v != null && v > 0) await db.insert(s.budgets).values({ userId, account, monthlyAmount: v });
+    statements.push(
+      db.delete(s.budgets).where(and(eq(s.budgets.userId, userId), eq(s.budgets.account, account))),
+    );
+    if (v != null && v > 0)
+      statements.push(db.insert(s.budgets).values({ userId, account, monthlyAmount: v }));
   }
+  if (statements.length)
+    await db.batch([
+      statements[0],
+      ...statements.slice(1),
+      invalidateJsonSnapshotQuery(db, userId, 'budgets'),
+    ]);
   return c.json({ ok: true });
 });
 
@@ -89,31 +104,49 @@ settingsRoute.put('/settings', zValidator('json', settingsSchema), async (c) => 
   const db = getDb(c.env.DB);
   const b = c.req.valid('json');
   let needRecompute = false;
+  const statements = [];
+  const consumers: Array<'account_norm_map' | 'unrecorded_months' | 'cash_overrides'> = [];
 
   if (b.normMap) {
-    await db.delete(s.accountNormMap).where(eq(s.accountNormMap.userId, userId));
+    statements.push(db.delete(s.accountNormMap).where(eq(s.accountNormMap.userId, userId)));
     for (const [raw, norm] of Object.entries(b.normMap)) {
-      await db.insert(s.accountNormMap).values({ userId, raw, norm });
+      statements.push(db.insert(s.accountNormMap).values({ userId, raw, norm }));
     }
+    consumers.push('account_norm_map');
     needRecompute = true;
   }
   if (b.unrecordedExpMonths) {
-    await db
-      .delete(s.unrecordedMonths)
-      .where(and(eq(s.unrecordedMonths.userId, userId), eq(s.unrecordedMonths.kind, 'expense')));
+    statements.push(
+      db
+        .delete(s.unrecordedMonths)
+        .where(and(eq(s.unrecordedMonths.userId, userId), eq(s.unrecordedMonths.kind, 'expense'))),
+    );
     for (const m of b.unrecordedExpMonths) {
-      await db.insert(s.unrecordedMonths).values({ userId, month: m, kind: 'expense' });
+      statements.push(db.insert(s.unrecordedMonths).values({ userId, month: m, kind: 'expense' }));
     }
+    consumers.push('unrecorded_months');
   }
   if (b.cashOverrides) {
     for (const [month, v] of Object.entries(b.cashOverrides)) {
-      await db
-        .delete(s.cashOverrides)
-        .where(and(eq(s.cashOverrides.userId, userId), eq(s.cashOverrides.month, month)));
+      statements.push(
+        db
+          .delete(s.cashOverrides)
+          .where(and(eq(s.cashOverrides.userId, userId), eq(s.cashOverrides.month, month))),
+      );
       if (v)
-        await db.insert(s.cashOverrides).values({ userId, month, revenue: v.revenue, expense: v.expense });
+        statements.push(
+          db.insert(s.cashOverrides).values({ userId, month, revenue: v.revenue, expense: v.expense }),
+        );
     }
+    consumers.push('cash_overrides');
   }
+
+  if (statements.length && consumers.length)
+    await db.batch([
+      statements[0],
+      ...statements.slice(1),
+      invalidateJsonSnapshotQuery(db, userId, consumers[0], ...consumers.slice(1)),
+    ]);
 
   if (needRecompute) await recomputeFromDeals(db, userId);
   return c.json({ ok: true });
@@ -178,21 +211,147 @@ settingsRoute.get('/classification', async (c) => {
 
 const optKey = (o: { scope: string; major: string; mid: string }) => `${o.scope}\t${o.major}\t${o.mid}`;
 
-/** 追加した候補科目と、それを使っている手動編集・ルールの件数 */
-async function listCategoryOptions(db: Db, userId: string) {
-  const [opts, edits, rules] = await Promise.all([
+type CategoryKey = { scope: string; major: string; mid: string };
+type CategoryConsumer = { scope?: string | null; major?: string | null; mid?: string | null };
+type CategoryUsageContext = {
+  options: Array<typeof s.categoryOptions.$inferSelect>;
+  edits: Array<typeof s.txEdits.$inferSelect>;
+  rules: Array<typeof s.rules.$inferSelect>;
+  cashEntries: Array<typeof s.cashEntries.$inferSelect>;
+  freeeMajors: Set<string>;
+  mfMajors: Set<string>;
+  mfPairs: Set<string>;
+  effectiveEditScopes: Map<string, 'biz' | 'per'>;
+};
+
+const pairKey = (major: string, mid: string) => `${major}\t${mid}`;
+
+/** categoryAllowedと同じ「個人の中項目なしは大項目だけで可」の供給関係 */
+const optionSupplies = (option: CategoryKey, consumer: CategoryConsumer): boolean => {
+  const scope = consumer.scope;
+  const mid = consumer.mid ?? '';
+  if (!scope || scope !== option.scope || consumer.major !== option.major) return false;
+  return scope === 'biz' ? !mid : !mid || mid === option.mid;
+};
+
+/**
+ * 対象optionを取り除くとconsumerの科目が候補外になるか。
+ * raw MF/freeeや他optionが供給を続ける場合は、削除・renameを過剰に防げない。
+ */
+const dependsOnCategoryOption = (
+  target: CategoryKey,
+  consumer: CategoryConsumer,
+  context: CategoryUsageContext,
+): boolean => {
+  if (!optionSupplies(target, consumer)) return false;
+  const scope = consumer.scope;
+  if (!scope) return false;
+  const major = consumer.major ?? '';
+  const mid = consumer.mid ?? '';
+  const suppliedByRaw =
+    scope === 'biz'
+      ? context.freeeMajors.has(major)
+      : mid
+        ? context.mfPairs.has(pairKey(major, mid))
+        : context.mfMajors.has(major);
+  if (suppliedByRaw) return false;
+  return !context.options.some(
+    (option) => optKey(option) !== optKey(target) && optionSupplies(option, consumer),
+  );
+};
+
+async function loadCategoryUsageContext(db: Db, userId: string): Promise<CategoryUsageContext> {
+  const [options, edits, rules, cashEntries, freeeRows, mfRows] = await Promise.all([
     db.select().from(s.categoryOptions).where(eq(s.categoryOptions.userId, userId)),
     db.select().from(s.txEdits).where(eq(s.txEdits.userId, userId)),
-    db.select().from(s.rules).where(eq(s.rules.userId, userId)),
+    loadOrderedRuleRows(db, userId),
+    db.select().from(s.cashEntries).where(eq(s.cashEntries.userId, userId)),
+    db
+      .selectDistinct({ major: s.freeeDeals.accountRaw })
+      .from(s.freeeDeals)
+      .where(eq(s.freeeDeals.userId, userId)),
+    db.select().from(s.mfTransactions).where(eq(s.mfTransactions.userId, userId)),
   ]);
-  return opts
+  const mfPairs = new Set<string>();
+  const mfMajors = new Set<string>();
+  for (const row of mfRows) {
+    const major = row.categoryMajor ?? '';
+    if (!major) continue;
+    mfMajors.add(major);
+    if (row.categoryMid) mfPairs.add(pairKey(major, row.categoryMid));
+  }
+  const resolvedRules = effectiveRules(rules);
+  const editMap = Object.fromEntries(edits.map((row) => [row.txId, editFromRow(row)]));
+  const txById = new Map<string, MfTx>(
+    mfRows.map((row) => [
+      row.txId,
+      {
+        id: row.txId,
+        m: row.month,
+        d: row.date.slice(5).replace('-', '/'),
+        c: row.description,
+        a: row.amount,
+        big: row.categoryMajor ?? '',
+        mid: row.categoryMid ?? '',
+        inst: row.institution ?? undefined,
+      },
+    ]),
+  );
+  for (const entry of cashEntries.filter((row) => row.side === 'per')) {
+    const tx = cashToTx(cashFromRow(entry));
+    txById.set(tx.id, tx);
+  }
+  const effectiveEditScopes = new Map<string, 'biz' | 'per'>();
+  for (const edit of edits) {
+    if (edit.cls) {
+      effectiveEditScopes.set(edit.txId, edit.cls);
+      continue;
+    }
+    const tx = txById.get(edit.txId);
+    if (tx) effectiveEditScopes.set(edit.txId, resolveTx(tx, resolvedRules, editMap).cls);
+  }
+  return {
+    options,
+    edits,
+    rules,
+    cashEntries,
+    freeeMajors: new Set(freeeRows.map((row) => row.major ?? '').filter(Boolean)),
+    mfMajors,
+    mfPairs,
+    effectiveEditScopes,
+  };
+}
+
+/** 追加した候補科目と、それを使っている手動編集・ルール・現金明細の件数 */
+async function listCategoryOptions(db: Db, userId: string) {
+  const context = await loadCategoryUsageContext(db, userId);
+  return context.options
     .map((o) => ({
       scope: o.scope,
       major: o.major,
       mid: o.mid,
       uses: {
-        edits: edits.filter((e) => e.categoryMajor === o.major && (e.categoryMid ?? '') === o.mid).length,
-        rules: rules.filter((r) => r.categoryMajor === o.major && (r.categoryMid ?? '') === o.mid).length,
+        edits: context.edits.filter((e) =>
+          dependsOnCategoryOption(
+            o,
+            {
+              scope: context.effectiveEditScopes.get(e.txId),
+              major: e.categoryMajor,
+              mid: e.categoryMid,
+            },
+            context,
+          ),
+        ).length,
+        rules: context.rules.filter((r) =>
+          dependsOnCategoryOption(o, { scope: r.cls, major: r.categoryMajor, mid: r.categoryMid }, context),
+        ).length,
+        cashEntries: context.cashEntries.filter((entry) =>
+          dependsOnCategoryOption(
+            o,
+            { scope: entry.side, major: entry.categoryMajor, mid: entry.categoryMid },
+            context,
+          ),
+        ).length,
       },
     }))
     .sort((a, b) => optKey(a).localeCompare(optKey(b), 'ja'));
@@ -234,7 +393,7 @@ const optionRenameSchema = z.object({
   to: z.object({ major: z.string().trim().min(1).max(60), mid: z.string().trim().max(60).default('') }),
 });
 
-/** 名前の変更。使用中の手動編集・ルールも新しい名前へ追従させる */
+/** 名前の変更。使用中の手動編集・ルール・現金明細も新しい名前へ追従させる */
 settingsRoute.put('/category-options', zValidator('json', optionRenameSchema), async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
@@ -250,39 +409,79 @@ settingsRoute.put('/category-options', zValidator('json', optionRenameSchema), a
     eq(s.categoryOptions.major, from.major),
     eq(s.categoryOptions.mid, from.mid),
   );
-  const rows = await db.select().from(s.categoryOptions).where(where);
-  if (!rows.length) return c.json({ error: { code: 'not_found', message: '候補科目が見つかりません' } }, 404);
-  await db.delete(s.categoryOptions).where(where);
-  await db.insert(s.categoryOptions).values({ userId, scope: from.scope, major: to.major, mid: to.mid });
+  const context = await loadCategoryUsageContext(db, userId);
+  if (!context.options.some((option) => optKey(option) === optKey(from)))
+    return c.json({ error: { code: 'not_found', message: '候補科目が見つかりません' } }, 404);
+  const dependentEdits = context.edits.filter((edit) =>
+    dependsOnCategoryOption(
+      from,
+      {
+        scope: context.effectiveEditScopes.get(edit.txId),
+        major: edit.categoryMajor,
+        mid: edit.categoryMid,
+      },
+      context,
+    ),
+  );
+  const dependentRules = context.rules.filter((rule) =>
+    dependsOnCategoryOption(
+      from,
+      { scope: rule.cls, major: rule.categoryMajor, mid: rule.categoryMid },
+      context,
+    ),
+  );
+  const affectedCashRows = context.cashEntries.filter((entry) =>
+    dependsOnCategoryOption(
+      from,
+      { scope: entry.side, major: entry.categoryMajor, mid: entry.categoryMid },
+      context,
+    ),
+  );
+  const splitIds = <T extends { categoryMid: string | null }, K>(rows: T[], key: (row: T) => K) => ({
+    majorOnly: rows.filter((row) => !row.categoryMid).map(key),
+    exact: rows.filter((row) => !!row.categoryMid).map(key),
+  });
+  const editIds = splitIds(dependentEdits, (row) => row.txId);
+  const ruleIds = splitIds(dependentRules, (row) => row.id);
+  const cashIds = splitIds(affectedCashRows, (row) => row.id);
   const midOrNull = to.mid || null;
-  await db
-    .update(s.txEdits)
-    .set({ categoryMajor: to.major, categoryMid: midOrNull })
-    .where(
-      and(
-        eq(s.txEdits.userId, userId),
-        eq(s.txEdits.categoryMajor, from.major),
-        from.mid ? eq(s.txEdits.categoryMid, from.mid) : isNull(s.txEdits.categoryMid),
-      ),
-    );
-  await db
-    .update(s.rules)
-    .set({ categoryMajor: to.major, categoryMid: midOrNull })
-    .where(
-      and(
-        eq(s.rules.userId, userId),
-        eq(s.rules.categoryMajor, from.major),
-        from.mid ? eq(s.rules.categoryMid, from.mid) : isNull(s.rules.categoryMid),
-      ),
-    );
-  const data = await loadDataset(db, userId);
-  await saveAgg(db, userId, data);
+  // 候補と全consumerのrenameを同じD1トランザクションで完了させる。
+  await db.batch([
+    db.delete(s.categoryOptions).where(where),
+    db.insert(s.categoryOptions).values({ userId, scope: from.scope, major: to.major, mid: to.mid }),
+    db
+      .update(s.txEdits)
+      .set({ categoryMajor: to.major })
+      .where(and(eq(s.txEdits.userId, userId), inArray(s.txEdits.txId, editIds.majorOnly))),
+    db
+      .update(s.txEdits)
+      .set({ categoryMajor: to.major, categoryMid: midOrNull })
+      .where(and(eq(s.txEdits.userId, userId), inArray(s.txEdits.txId, editIds.exact))),
+    db
+      .update(s.rules)
+      .set({ categoryMajor: to.major })
+      .where(and(eq(s.rules.userId, userId), inArray(s.rules.id, ruleIds.majorOnly))),
+    db
+      .update(s.rules)
+      .set({ categoryMajor: to.major, categoryMid: midOrNull })
+      .where(and(eq(s.rules.userId, userId), inArray(s.rules.id, ruleIds.exact))),
+    db
+      .update(s.cashEntries)
+      .set({ categoryMajor: to.major, updatedAt: new Date().toISOString() })
+      .where(and(eq(s.cashEntries.userId, userId), inArray(s.cashEntries.id, cashIds.majorOnly))),
+    db
+      .update(s.cashEntries)
+      .set({ categoryMajor: to.major, categoryMid: to.mid, updatedAt: new Date().toISOString() })
+      .where(and(eq(s.cashEntries.userId, userId), inArray(s.cashEntries.id, cashIds.exact))),
+    invalidateJsonSnapshotQuery(db, userId, 'tx_edits', 'rules', 'cash_entries'),
+  ]);
+  await recomputeFromDeals(db, userId, affectedCashRows.map(cashFromRow));
   return c.json({ ok: true });
 });
 
 const optionDeleteSchema = optionSchema.extend({ force: z.boolean().optional() });
 
-/** 削除。使用中(手動編集・ルール)なら force なしでは 409 を返し、件数を知らせる */
+/** 削除。使用中(手動編集・ルール・現金明細)なら force なしでは 409 を返し、件数を知らせる */
 settingsRoute.delete('/category-options', zValidator('json', optionDeleteSchema), async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
@@ -290,13 +489,13 @@ settingsRoute.delete('/category-options', zValidator('json', optionDeleteSchema)
   const all = await listCategoryOptions(db, userId);
   const target = all.find((o) => o.scope === b.scope && o.major === b.major && o.mid === b.mid);
   if (!target) return c.json({ error: { code: 'not_found', message: '候補科目が見つかりません' } }, 404);
-  const inUse = target.uses.edits + target.uses.rules;
+  const inUse = Object.values(target.uses).reduce((sum, count) => sum + count, 0);
   if (inUse && !b.force)
     return c.json(
       {
         error: {
           code: 'in_use',
-          message: `この科目は手動編集 ${target.uses.edits} 件・ルール ${target.uses.rules} 件で使われています。削除しても編集・ルールの値は残りますが、候補から外れます`,
+          message: `この科目は手動編集 ${target.uses.edits} 件・ルール ${target.uses.rules} 件・現金明細 ${target.uses.cashEntries} 件で使われています。削除しても使用中の値は残りますが、候補から外れます`,
         },
         uses: target.uses,
       },
@@ -316,7 +515,7 @@ settingsRoute.delete('/category-options', zValidator('json', optionDeleteSchema)
 });
 
 const classificationSchema = z.object({
-  institutionOwners: z.record(z.string().max(100), z.enum(['self', 'spouse']).nullable()).optional(),
+  institutionOwners: z.record(z.string().max(100), z.enum(OWNER_VALUES).nullable()).optional(),
   /** 指定した明細の編集を取込値に戻す */
   resetEdits: z.array(z.string().max(100)).max(500).optional(),
 });

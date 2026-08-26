@@ -20,7 +20,7 @@ export function ImportPage() {
   const [drag, setDrag] = useState(false);
   const [pending, setPending] = useState<File[]>([]);
   const [results, setResults] = useState<ImportUnitResult[] | null>(null);
-  // 同じ内容(ファイル名が違っても)は既定でスキップする。取り込み直したいときだけ ON にする
+  // 現在有効な世代と同じ内容は既定でスキップする。意図的に再適用したいときだけ ON にする
   const [force, setForce] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -61,7 +61,9 @@ export function ImportPage() {
     // 月単位洗い替えの明示(spec §10.3)
     const ok = window.confirm(
       `ファイルに含まれる月の既存データは削除して置き換えます(月単位の洗い替え)。手動判定は明細IDが一致する限り維持され、現金の記帳も残ります。${
-        force ? '同じ内容を取込済みでも取り込み直します。' : '同じ内容を取込済みのファイルはスキップします。'
+        force
+          ? '現在有効な内容と同じでも、新しい取込として再適用します。'
+          : '現在有効な内容と同じファイルだけスキップします。'
       }取込を実行しますか?`,
     );
     if (ok) upload.mutate(pending);
@@ -120,7 +122,7 @@ export function ImportPage() {
           </button>
           <label style={{ display: 'block', marginTop: 6, fontSize: 12 }}>
             <input type="checkbox" checked={force} onChange={(e) => setForce(e.target.checked)} />{' '}
-            同じ内容でも取り込み直す(通常は不要。ファイル名が違っても内容が同じなら自動でスキップします)
+            現在有効な内容と同じでも再適用する(通常は不要)
           </label>
         </div>
       )}
@@ -154,10 +156,10 @@ export function ImportPage() {
                   <td className="num">{r.rows}</td>
                   <td className="num">{r.skipped}</td>
                   <td>
-                    {r.status === 'ok' ? (
+                    {r.status === 'committed' ? (
                       <>
                         <span className="pill calm">
-                          成功
+                          取込完了
                           {r.syntheticIds ? ` (ID補完${r.syntheticIds}件)` : ''}
                           {r.duplicateIds ? ` (ID重複${r.duplicateIds}件)` : ''}
                         </span>
@@ -181,7 +183,8 @@ export function ImportPage() {
                           className="sub"
                           style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
                         >
-                          {r.reason}。取り込み直す場合は「同じ内容でも取り込み直す」を付けて実行してください。
+                          {r.reason}
+                          。意図的に再適用する場合だけ「現在有効な内容と同じでも再適用する」を付けてください。
                         </div>
                       </>
                     ) : (
@@ -200,9 +203,9 @@ export function ImportPage() {
               ))}
             </tbody>
           </table>
-          {results.some((r) => r.status === 'error') && (
+          {results.some((r) => r.status === 'failed') && (
             <p className="sub">
-              失敗したファイルの内容は反映されていません(成功したファイルは反映済み)。理由に沿ってファイルを出力し直し、もう一度取り込んでください。
+              失敗したファイルの内容は確定されていません(取込完了したファイルは反映済み)。一時的な失敗なら、同じファイルを通常どおり再実行できます。
             </p>
           )}
         </div>
@@ -236,8 +239,15 @@ export function ImportPage() {
                     <td>{r.months.join(', ') || '—'}</td>
                     <td className="num">{r.rows ?? '—'}</td>
                     <td>
-                      {r.status === 'ok' ? (
-                        <span className="pill calm">成功</span>
+                      {r.status === 'committed' || r.status === 'ok' ? (
+                        <>
+                          <span className="pill calm">{r.status === 'ok' ? '完了(旧履歴)' : '取込完了'}</span>
+                          {r.generationState === 'active' && <span className="pill calm">現在有効</span>}
+                          {r.generationState === 'partial' && (
+                            <span className="pill warn">一部が現在有効</span>
+                          )}
+                          {r.generationState === 'superseded' && <span className="pill">更新済み</span>}
+                        </>
                       ) : r.status === 'duplicate' ? (
                         <>
                           <span className="pill warn">取込済み(スキップ)</span>
@@ -246,10 +256,14 @@ export function ImportPage() {
                               className="sub"
                               style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
                             >
-                              履歴 #{r.duplicateOf} と同じ内容
+                              現在有効な履歴 #{r.duplicateOf} と同じ内容
                             </div>
                           )}
                         </>
+                      ) : r.status === 'processing' || r.status === 'applying' ? (
+                        <span className="pill warn">
+                          {r.status === 'processing' ? '解析・保存中' : '反映中'}
+                        </span>
                       ) : (
                         <>
                           <span className="pill alert">失敗</span>
@@ -257,7 +271,7 @@ export function ImportPage() {
                             className="sub"
                             style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
                           >
-                            {(r.status ?? '').replace(/^error:\s*/, '') || '理由不明'}
+                            {r.failureReason ?? ((r.status ?? '').replace(/^error:\s*/, '') || '理由不明')}
                           </div>
                         </>
                       )}

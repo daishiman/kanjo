@@ -15,6 +15,7 @@ import type {
   SubscriptionsData,
   TradeoffCandidate,
 } from '@kanjo/core';
+import { type Owner as CoreOwner, OWNER_LABEL, OWNER_VALUES } from '@kanjo/core';
 
 export class ApiError extends Error {
   status: number;
@@ -62,7 +63,8 @@ export interface SummaryResponse {
   benchmarks: Benchmark[];
 }
 
-export type Owner = 'self' | 'spouse';
+export type Owner = CoreOwner;
+export { OWNER_VALUES };
 export type Cls = 'biz' | 'per';
 
 export interface TxEditView {
@@ -114,7 +116,7 @@ export interface CategoryOptionRow {
   scope: Cls;
   major: string;
   mid: string;
-  uses: { edits: number; rules: number };
+  uses: { edits: number; rules: number; cashEntries: number };
 }
 export const SCOPE_LABEL: Record<Cls, string> = {
   biz: '事業の科目(freee勘定科目・決算書に載る)',
@@ -134,7 +136,7 @@ export interface TransactionsResponse {
     totalExpense: number;
     bizExpense: number;
     personalExpense: number;
-    incomeByOwner: { self: number; spouse: number; unset: number };
+    incomeByOwner: { business: number; spouse: number; family: number; unset: number };
     editedCount: number;
     conflictCount: number;
     noInstitutionCount: number;
@@ -189,7 +191,7 @@ export interface ClassificationResponse {
   edits: EditListRow[];
 }
 
-export const OWNER_LABEL: Record<Owner | 'unset', string> = { self: '本人', spouse: '妻', unset: '未設定' };
+export { OWNER_LABEL };
 export const ownerLabel = (o: Owner | null | undefined): string => OWNER_LABEL[o ?? 'unset'];
 
 export interface ImportUnitResult {
@@ -200,8 +202,8 @@ export interface ImportUnitResult {
   skipped: number;
   syntheticIds?: number;
   duplicateIds?: number;
-  /** duplicate = 同じ内容を取込済みのためスキップ(「同じ内容でも取り込み直す」で再取込できる) */
-  status: 'ok' | 'error' | 'duplicate';
+  /** duplicate = 現在有効な取込と同じ内容のためスキップ */
+  status: 'committed' | 'failed' | 'duplicate';
   reason?: string;
   /** 月ごとの洗い替え前後の件数(減っていれば月の途中までのファイルの可能性) */
   replaced?: { month: string; before: number; after: number }[];
@@ -215,6 +217,9 @@ export interface ImportHistoryRow {
   rows: number | null;
   status: string | null;
   duplicateOf: number | null;
+  failureReason: string | null;
+  generationState: 'active' | 'partial' | 'superseded' | 'legacy' | null;
+  committedAt: string | null;
   createdAt: string | null;
 }
 
@@ -309,7 +314,7 @@ export const AI_SECTION_LABEL: Record<AiSectionId, string> = {
   spend: '何にいくらかかっているか',
   change: '前年・前月との増減と要因',
   reduction: '削減余地と根拠・優先順位',
-  split: '事業/個人・本人/妻の別',
+  split: '事業/個人・名義(事業/妻/家族)の別',
   subscriptions: 'サブスクの整理候補',
 };
 /** 「精度を上げるために必要な情報」で案内できる画面 */

@@ -3,6 +3,7 @@
  * ヘッダー判定: 「計算対象」列を含む（部分一致）。
  */
 import { normMonth, parseAmount } from '../normalize.js';
+import { normalizeMfDisplayDate } from '../persisted-projection.js';
 import type { MfTx } from '../types.js';
 
 export interface MfParseResult {
@@ -63,7 +64,7 @@ export function parseMfRows(rows: string[][]): MfParseResult {
     txs.push({
       id,
       m,
-      d: String(r[ci.dt]).slice(5),
+      d: normalizeMfDisplayDate(String(r[ci.dt]), m),
       c: ci.c >= 0 ? String(r[ci.c]).slice(0, 40) : '',
       a: amt,
       big: r[ci.big] || '',

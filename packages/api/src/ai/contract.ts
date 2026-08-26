@@ -56,7 +56,7 @@ export const SECTION_LABEL: Record<SectionId, string> = {
   spend: '何にいくらかかっているか',
   change: '前年・前月との増減と要因',
   reduction: '削減余地と根拠・優先順位',
-  split: '事業/個人・本人/妻の別',
+  split: '事業/個人・名義(事業/妻/家族)の別',
   subscriptions: 'サブスクの整理候補',
 };
 

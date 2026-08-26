@@ -5,7 +5,9 @@ import {
   type TxEdit,
   applyClassification,
   emptyDataset,
+  exportJSON,
   household,
+  importJSON,
   overridesFromEdits,
   parseMfRows,
   resolveTx,
@@ -27,7 +29,7 @@ describe('属性の解決順序(手動 > ルール > 口座 > 取込値/既定)'
     { k: '架空スーパー', cls: null, big: '日用品', mid: null, owner: null },
     { k: '架空', cls: 'biz', big: null, mid: null, owner: 'spouse' },
   ];
-  const inst = { 楽天カード: 'self' as const };
+  const inst = { 楽天カード: 'business' as const };
 
   it('何も無ければ取込値と既定', () => {
     const r = resolveTx(tx({ c: '無関係' }), rules, {}, inst);
@@ -70,13 +72,13 @@ describe('属性の解決順序(手動 > ルール > 口座 > 取込値/既定)'
 
   it('口座の名義はルールより弱く、既定より強い', () => {
     const r = resolveTx(tx({ c: '無関係', inst: '楽天カード' }), rules, {}, inst);
-    expect(r.owner).toBe('self');
+    expect(r.owner).toBe('business');
     expect(r.ownerSrc).toBe('口座');
   });
 
   it('手動編集は全てに勝ち、編集済みになる', () => {
     const edits: Record<string, TxEdit> = {
-      x: { cls: 'per', big: '交際費', owner: 'self', baseBig: '食費', baseMid: '食料品' },
+      x: { cls: 'per', big: '交際費', owner: 'business', baseBig: '食費', baseMid: '食料品' },
     };
     const r = resolveTx(tx({}), rules, edits, inst);
     expect(r).toMatchObject({
@@ -85,7 +87,7 @@ describe('属性の解決順序(手動 > ルール > 口座 > 取込値/既定)'
       big: '交際費',
       mid: '', // 大項目+中項目は1組。大項目だけ編集しても取込値の中項目は引き継がない
       catSrc: '手動',
-      owner: 'self',
+      owner: 'business',
       ownerSrc: '手動',
     });
     expect(r.edited).toBe(true);
@@ -105,7 +107,7 @@ describe('属性の解決順序(手動 > ルール > 口座 > 取込値/既定)'
 });
 
 describe('名義別の集計', () => {
-  it('個人分の収入・支出を本人/妻/未設定に分ける', () => {
+  it('個人分の収入・支出を事業/妻/家族/未設定に分ける', () => {
     const txs: MfTx[] = [
       tx({ id: '1', a: 300000, big: '収入', mid: '給与', inst: 'A銀行' }),
       tx({ id: '2', a: 100000, big: '収入', mid: '給与', inst: 'B銀行' }),
@@ -116,15 +118,46 @@ describe('名義別の集計', () => {
     const r = applyClassification(
       txs,
       [{ k: '架空事業', cls: 'biz' }],
-      { '4': { owner: 'spouse' } },
-      { A銀行: 'self' },
+      { '4': { owner: 'spouse' }, '3': { owner: 'family' } },
+      { A銀行: 'business' },
     );
     const o = r.personalByOwner['2026-07'];
-    expect(o.self).toEqual({ income: 300000, expense: 5000 });
+    expect(o.business).toEqual({ income: 300000, expense: 0 });
     expect(o.spouse).toEqual({ income: 20000, expense: 0 });
+    expect(o.family).toEqual({ income: 0, expense: 5000 });
     expect(o.unset).toEqual({ income: 100000, expense: 0 });
     // 事業分は名義集計に入れない
     expect(r.bizPersonal['2026-07'].expense).toBe(9999);
+  });
+
+  it('旧self exportをbusinessへ正規化し、新exportはcanonical ownerだけを出す', () => {
+    const data = emptyDataset();
+    importJSON(data, {
+      months: ['2026-07'],
+      rules: [{ k: '架空', cls: null, owner: 'self' }],
+      edits: { legacy: { owner: 'self' } },
+      institutionOwners: { 架空銀行: 'self', 空欄口座: null },
+      personalByOwner: {
+        '2026-07': {
+          self: { income: 10, expense: 20 },
+          spouse: { income: 1, expense: 2 },
+          unset: { income: 0, expense: 0 },
+        },
+      },
+    });
+    expect(data.rules[0].owner).toBe('business');
+    expect(data.edits.legacy.owner).toBe('business');
+    expect(data.institutionOwners).toEqual({ 架空銀行: 'business' });
+    expect(data.personalByOwner['2026-07'].business).toEqual({ income: 10, expense: 20 });
+    const exported = exportJSON(data) as Record<string, unknown>;
+    expect(exported.ownerSchemaVersion).toBe(2);
+    expect(JSON.stringify(exported)).not.toContain('"self"');
+  });
+
+  it('未知ownerは復元時に捨てず拒否する', () => {
+    expect(() => importJSON(emptyDataset(), { institutionOwners: { 架空銀行: 'unknown' } })).toThrow(
+      'unknown owner',
+    );
   });
 });
 
@@ -172,13 +205,15 @@ describe('事業 vs 個人の比較と名義別(家計)', () => {
     };
     d.personalByOwner = {
       '2026-07': {
-        self: { income: 300000, expense: 50000 },
+        business: { income: 300000, expense: 50000 },
         spouse: { income: 0, expense: 0 },
+        family: { income: 0, expense: 0 },
         unset: { income: 0, expense: 0 },
       },
       '2026-08': {
-        self: { income: 200000, expense: 70000 },
+        business: { income: 200000, expense: 70000 },
         spouse: { income: 100000, expense: 0 },
+        family: { income: 0, expense: 0 },
         unset: { income: 0, expense: 0 },
       },
     };
@@ -205,10 +240,10 @@ describe('事業 vs 個人の比較と名義別(家計)', () => {
 
     const o = h.byOwner;
     expect(o.rows).toHaveLength(2);
-    expect(o.totals.self.income).toBe(500000);
+    expect(o.totals.business.income).toBe(500000);
     expect(o.totals.spouse.income).toBe(100000);
     expect(o.totals.spouse.incomeShare).toBeCloseTo(100000 / 600000);
-    expect(o.totals.self.annualized.income).toBe(250000 * 12);
+    expect(o.totals.business.annualized.income).toBe(250000 * 12);
     expect(o.unmappedInstitutions).toEqual(['未設定銀行']);
     expect(o.noInstitutionCount).toBe(1);
   });

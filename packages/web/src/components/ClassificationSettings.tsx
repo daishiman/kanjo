@@ -11,6 +11,7 @@ import {
   type CategoryOptionRow,
   type ClassificationResponse,
   type Cls,
+  OWNER_VALUES,
   type Owner,
   type RuleBody,
   type RuleRow,
@@ -203,8 +204,11 @@ export function OwnerSelect({
   return (
     <select value={value ?? ''} onChange={(e) => onChange((e.target.value || null) as Owner | null)}>
       {allowEmpty && <option value="">名義(変えない)</option>}
-      <option value="self">本人</option>
-      <option value="spouse">妻</option>
+      {OWNER_VALUES.map((owner) => (
+        <option key={owner} value={owner}>
+          {ownerLabel(owner)}
+        </option>
+      ))}
     </select>
   );
 }
@@ -222,7 +226,7 @@ export function InstitutionOwnersCard({ data }: { data: ClassificationResponse }
   });
   return (
     <div className="card">
-      <h2>口座の名義(本人/妻)</h2>
+      <h2>口座の名義(事業/妻/家族)</h2>
       <p className="sub">
         根拠はMF明細の「保有金融機関」列。口座ごとに名義を決めると、その口座の明細が名義別の収入・支出に入ります(明細ごとの手動編集が優先)。
       </p>
@@ -259,8 +263,9 @@ export function InstitutionOwnersCard({ data }: { data: ClassificationResponse }
                     }
                   >
                     <option value="">未設定</option>
-                    <option value="self">本人</option>
+                    <option value="business">事業</option>
                     <option value="spouse">妻</option>
+                    <option value="family">家族</option>
                   </select>
                 </td>
               </tr>
@@ -530,12 +535,15 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
     },
     onError: (e) => setErr((e as Error).message),
   });
+  const useCount = (o: CategoryOptionRow) => Object.values(o.uses).reduce((sum, count) => sum + count, 0);
+  const useSummary = (o: CategoryOptionRow) =>
+    `編集 ${o.uses.edits} 件・ルール ${o.uses.rules} 件・現金明細 ${o.uses.cashEntries} 件`;
   const removeOption = (o: CategoryOptionRow) => {
-    const inUse = o.uses.edits + o.uses.rules;
+    const inUse = useCount(o);
     if (inUse) {
       if (
         !window.confirm(
-          `「${o.major}${o.mid ? ` / ${o.mid}` : ''}」は手動編集 ${o.uses.edits} 件・ルール ${o.uses.rules} 件で使われています。\n削除しても編集・ルールの値は残りますが候補から外れ、新しく選べなくなります。削除しますか?`,
+          `「${o.major}${o.mid ? ` / ${o.mid}` : ''}」は${useSummary(o)}で使われています。\n削除しても使用中の値は残りますが候補から外れ、新しく選べなくなります。削除しますか?`,
         )
       )
         return;
@@ -583,7 +591,7 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
             .filter((o) => o.scope === scope)
             .map((o) => {
               const k = key(o);
-              const inUse = o.uses.edits + o.uses.rules;
+              const inUse = useCount(o);
               if (editing?.key === k)
                 return (
                   <tr key={k} className="editor">
@@ -606,7 +614,7 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
                         )}
                         {inUse > 0 && (
                           <span className="sub" style={{ margin: 0 }}>
-                            使用中の編集 {o.uses.edits} 件・ルール {o.uses.rules} 件も新しい名前に変わります
+                            使用中の{useSummary(o)}も新しい名前に変わります
                           </span>
                         )}
                         <button
@@ -635,9 +643,7 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
                   {scope === 'per' && <td>{o.mid || '—'}</td>}
                   <td>
                     {inUse ? (
-                      <span className="pill neutral">
-                        編集 {o.uses.edits} / ルール {o.uses.rules}
-                      </span>
+                      <span className="pill neutral">{useSummary(o)}</span>
                     ) : (
                       <span className="sub" style={{ margin: 0 }}>
                         未使用

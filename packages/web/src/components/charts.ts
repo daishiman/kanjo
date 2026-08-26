@@ -26,7 +26,8 @@ Chart.register(
   Filler,
 );
 
-Chart.defaults.font.family = "'Zen Kaku Gothic New', sans-serif";
+Chart.defaults.font.family =
+  'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif';
 Chart.defaults.font.size = 11;
 Chart.defaults.color = '#51625f';
 Chart.defaults.borderColor = '#dde3e1';

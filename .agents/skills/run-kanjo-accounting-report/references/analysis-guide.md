@@ -24,7 +24,7 @@
 | `personal.explainability` | 個人支出の説明可能率(未分類・カード引落不明を除いた割合) |
 | `bizPersonal[月]` | MF 明細のうち「事業」と仕分けされた分の収入・支出(freee とは別集計) |
 | `comparison` | 事業と個人を月別に並べた収支。`biz`/`personal` に合計・月平均・年換算 |
-| `byOwner` | 個人分の名義別(`self`=本人 / `spouse`=妻 / `unset`=未設定)。`unmappedInstitutions` は名義未設定の金融機関 |
+| `byOwner` | 個人分の名義別(`business`=事業 / `spouse`=妻 / `family`=家族 / `unset`=未設定)。`unmappedInstitutions` は名義未設定の金融機関 |
 | `subscriptions.now` / `vendors` / `vendorTable` / `alerts` / `candidates` | 直近記帳月のサブスク合計・年換算・売上比 / ベンダー別月別支払 / ベンダー別の前年・年換算・直近月額・平均・支払月数 / 重複疑い・急増 / 登録外だが毎月続いている支払先(`score` 0〜100・`reasons`・`avgMonthly`・`activeMonths`/`spanMonths`・`accounts`) |
 | `benchmarks` | 経費率・サブスク比率・安全余裕率・貯蓄率・食費比率・通信費比率の現在値と目安 |
 | `charts[]` | **図表カタログの8枚(固定順・番号固定)をアプリが計算済み**。`id` `figure` `available` `reason` `monthsNeeded` `status`(`ok` / `source_missing` / `app_missing`)`data`(描画用の数値。AIはこれを読み解くだけで数値を作らない)。対応表は `chart-catalog.md` |
@@ -73,9 +73,9 @@
 - `benchmarks` で目安外の指標があれば、その指標を動かす科目を候補にする。
 - 削れないもの(税金・社会保険・家賃など)は候補に入れず「固定で見直し対象外」と一言添える。
 
-### split(事業/個人・本人/妻)
+### split(事業/個人・事業/妻/家族)
 - `comparison` から事業と個人の収支(合計・月平均)。個人の赤字を事業収入で埋めていないか。
-- `byOwner` から本人/妻。`unset` が大きい、または `unmappedInstitutions` があれば `needs` に `screen: "settings"` で名義割り当てを入れる。
+- `byOwner` から事業/妻/家族。`unset` が大きい、または `unmappedInstitutions` があれば `needs` に `screen: "settings"` で名義割り当てを入れる。
 - `bizPersonal` が大きい月は、MF 側で事業扱いの支出が freee に未記帳の可能性を指摘する(断定しない)。
 
 ### subscriptions(サブスク)

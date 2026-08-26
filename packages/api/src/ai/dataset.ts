@@ -281,12 +281,13 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
   };
   // 手動編集を除いた「取込値ベース」の個人支出(edits を空にして分類し直す)
   const imported = applyClassification(data.mfTx, data.rules, {}, data.institutionOwners);
-  const ownerTotals = { self: 0, spouse: 0, unset: 0 };
+  const ownerTotals = { business: 0, spouse: 0, family: 0, unset: 0 };
   for (const m of inPeriod) {
     const o = data.personalByOwner[m];
     if (!o) continue;
-    ownerTotals.self += o.self?.expense ?? 0;
+    ownerTotals.business += o.business?.expense ?? 0;
     ownerTotals.spouse += o.spouse?.expense ?? 0;
+    ownerTotals.family += o.family?.expense ?? 0;
     ownerTotals.unset += o.unset?.expense ?? 0;
   }
   const presetRange = (n: number): Period => ({ from: addMonths(period.to, -(n - 1)), to: period.to });
@@ -325,7 +326,7 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
         : null,
       owner: {
         ...ownerTotals,
-        note: 'unset は名義未設定の金融機関分。設定画面で名義を割り当てると本人/妻に分かれる',
+        note: 'unset は名義未設定の金融機関分。設定画面で名義を割り当てると事業/妻/家族に分かれる',
         range: rangeOf(inPeriod),
       },
       fixedVariable: fixedVariableAvailable

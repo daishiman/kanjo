@@ -9,6 +9,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
+import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import { dealFromRow, getDb, loadSubVendors, recomputeFromDeals } from '../store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
@@ -44,9 +45,12 @@ subsRoute.post('/sub-vendors', zValidator('json', vendorSchema), async (c) => {
     return c.json({ error: { code: 'duplicate', message: '同じ名前のベンダーが既に登録されています' } }, 409);
   }
   const sortOrder = (existing.at(-1)?.id ?? 0) + 100;
-  await db
-    .insert(s.subVendors)
-    .values({ userId, name: b.name, aliases: JSON.stringify(cleanAliases(b.name, b.aliases)), sortOrder });
+  await db.batch([
+    db
+      .insert(s.subVendors)
+      .values({ userId, name: b.name, aliases: JSON.stringify(cleanAliases(b.name, b.aliases)), sortOrder }),
+    invalidateJsonSnapshotQuery(db, userId, 'sub_vendors'),
+  ]);
   await recomputeFromDeals(db, userId);
   return c.json({ ok: true });
 });
@@ -62,10 +66,13 @@ subsRoute.put('/sub-vendors/:id', zValidator('json', vendorSchema), async (c) =>
   if (existing.some((v) => v.id !== id && vendorKey(v.name) === vendorKey(b.name))) {
     return c.json({ error: { code: 'duplicate', message: '同じ名前のベンダーが既に登録されています' } }, 409);
   }
-  await db
-    .update(s.subVendors)
-    .set({ name: b.name, aliases: JSON.stringify(cleanAliases(b.name, b.aliases)) })
-    .where(and(eq(s.subVendors.userId, userId), eq(s.subVendors.id, id)));
+  await db.batch([
+    db
+      .update(s.subVendors)
+      .set({ name: b.name, aliases: JSON.stringify(cleanAliases(b.name, b.aliases)) })
+      .where(and(eq(s.subVendors.userId, userId), eq(s.subVendors.id, id))),
+    invalidateJsonSnapshotQuery(db, userId, 'sub_vendors'),
+  ]);
   await recomputeFromDeals(db, userId);
   return c.json({ ok: true });
 });
@@ -74,10 +81,13 @@ subsRoute.delete('/sub-vendors/:id', async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
   const id = Number(c.req.param('id'));
-  const r = await db
-    .delete(s.subVendors)
-    .where(and(eq(s.subVendors.userId, userId), eq(s.subVendors.id, id)))
-    .returning({ id: s.subVendors.id });
+  const [r] = await db.batch([
+    db
+      .delete(s.subVendors)
+      .where(and(eq(s.subVendors.userId, userId), eq(s.subVendors.id, id)))
+      .returning({ id: s.subVendors.id }),
+    invalidateJsonSnapshotQuery(db, userId, 'sub_vendors'),
+  ]);
   if (!r.length) return c.json({ error: { code: 'not_found', message: 'ベンダーが見つかりません' } }, 404);
   await recomputeFromDeals(db, userId);
   return c.json({ ok: true });

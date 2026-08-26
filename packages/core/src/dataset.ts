@@ -5,7 +5,52 @@
 import { isCashTxId } from './cash.js';
 import { applyClassification, overridesFromEdits } from './classify.js';
 import { type SubVendor, matchSubVendor } from './subs.js';
-import type { Cls, Dataset, FreeeDeal, MfTx, Owner, Rule, TxEdit } from './types.js';
+import {
+  type Cls,
+  type Dataset,
+  type FreeeDeal,
+  type MfTx,
+  OWNER_SCHEMA_VERSION,
+  type Owner,
+  type OwnerKey,
+  type OwnerMonth,
+  type Rule,
+  type TxEdit,
+  normalizeOwner,
+} from './types.js';
+
+const normalizeEdit = (edit: TxEdit): TxEdit => ({ ...edit, owner: normalizeOwner(edit.owner) });
+
+const normalizeInstitutionOwners = (value: unknown): Record<string, Owner> => {
+  if (!value || typeof value !== 'object') return {};
+  const result: Record<string, Owner> = {};
+  for (const [institution, rawOwner] of Object.entries(value as Record<string, unknown>)) {
+    const owner = normalizeOwner(rawOwner);
+    // null/empty is the explicit legacy spelling for "no mapping"; do not carry
+    // it toward institution_owners.owner NOT NULL.
+    if (owner) result[institution] = owner;
+  }
+  return result;
+};
+
+const normalizeOwnerMonths = (value: unknown): Record<string, Record<OwnerKey, OwnerMonth>> => {
+  if (!value || typeof value !== 'object') return {};
+  const result: Record<string, Record<OwnerKey, OwnerMonth>> = {};
+  for (const [month, raw] of Object.entries(value as Record<string, unknown>)) {
+    if (!raw || typeof raw !== 'object') continue;
+    const source = raw as Record<string, OwnerMonth | undefined>;
+    for (const key of Object.keys(source)) {
+      if (!['business', 'self', 'spouse', 'family', 'unset'].includes(key)) normalizeOwner(key);
+    }
+    result[month] = {
+      business: source.business ?? source.self ?? { income: 0, expense: 0 },
+      spouse: source.spouse ?? { income: 0, expense: 0 },
+      family: source.family ?? { income: 0, expense: 0 },
+      unset: source.unset ?? { income: 0, expense: 0 },
+    };
+  }
+  return result;
+};
 
 export function ensureMonth(data: Dataset, m: string): number {
   if (!data.months.includes(m)) {
@@ -109,17 +154,20 @@ export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
       cls: r.cls ?? null,
       big: r.big ?? null,
       mid: r.mid ?? null,
-      owner: r.owner ?? null,
+      owner: normalizeOwner(r.owner),
     })) as Rule[];
   }
   // 新形式 edits を優先。HTML版の overrides({id: cls}) は cls だけの編集として取り込む
-  if (obj.edits) data.edits = obj.edits as Record<string, TxEdit>;
-  else if (obj.overrides) {
+  if (obj.edits) {
+    data.edits = Object.fromEntries(
+      Object.entries(obj.edits as Record<string, TxEdit>).map(([id, edit]) => [id, normalizeEdit(edit)]),
+    );
+  } else if (obj.overrides) {
     data.edits = {};
     for (const [id, cls] of Object.entries(obj.overrides as Record<string, Cls>)) data.edits[id] = { cls };
   }
-  if (obj.institutionOwners) data.institutionOwners = obj.institutionOwners as Record<string, Owner>;
-  if (obj.personalByOwner) data.personalByOwner = obj.personalByOwner as Dataset['personalByOwner'];
+  if (obj.institutionOwners) data.institutionOwners = normalizeInstitutionOwners(obj.institutionOwners);
+  if (obj.personalByOwner) data.personalByOwner = normalizeOwnerMonths(obj.personalByOwner);
   if (obj.bizPersonal) data.bizPersonal = obj.bizPersonal as Dataset['bizPersonal'];
   if (obj.unrecordedExpMonths) data.unrecordedExpMonths = [...(obj.unrecordedExpMonths as string[])];
   recomputeClassification(data);
@@ -140,6 +188,7 @@ export function exportJSON(data: Dataset): Record<string, unknown> {
     edits: data.edits,
     institutionOwners: data.institutionOwners,
     personalByOwner: data.personalByOwner,
+    ownerSchemaVersion: OWNER_SCHEMA_VERSION,
     budgets: data.budgets,
     cashOverride: data.cashOverride,
     unrecordedExpMonths: data.unrecordedExpMonths,

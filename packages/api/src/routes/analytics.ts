@@ -8,7 +8,6 @@ import {
   budgetTable,
   defenseLine,
   diagnosis,
-  exportJSON,
   household,
   matrix,
   overview,
@@ -20,7 +19,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
-import { getDb, loadDataset } from '../store.js';
+import { getDb, loadBackupPayload, loadDataset } from '../store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
@@ -115,8 +114,11 @@ analyticsRoute.post('/tradeoff', zValidator('json', tradeoffSchema), async (c) =
 /* -------- エクスポート(FR-05) -------- */
 
 analyticsRoute.get('/export/json', async (c) => {
-  const data = await loadDataset(getDb(c.env.DB), c.get('userId'));
-  return new Response(JSON.stringify(exportJSON(data), null, 1), {
+  const db = getDb(c.env.DB);
+  const userId = c.get('userId');
+  const payload = await loadBackupPayload(db, userId);
+  // 現金はrestore対象外。監査用rawと、sourceで解決済みのversioned deltaを別枠で同梱する。
+  return new Response(JSON.stringify(payload, null, 1), {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'Content-Disposition': `attachment; filename="kanjo-export-${new Date().toISOString().slice(0, 10)}.json"`,

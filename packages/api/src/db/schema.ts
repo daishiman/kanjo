@@ -2,7 +2,7 @@
  * Drizzle スキーマ(spec-v1.1 §7.2)。マイグレーションは migrations/ に手書きSQLで管理し、
  * このスキーマはクエリの型付けに使う(両者の対応はレビューで担保)。
  */
-import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 /**
  * 作成日時の既定値。drizzle は values() に無い列へ明示的に NULL を入れるため、
@@ -54,7 +54,7 @@ export const rules = sqliteTable('rules', {
   cls: text('cls', { enum: ['biz', 'per'] }),
   categoryMajor: text('category_major'),
   categoryMid: text('category_mid'),
-  owner: text('owner', { enum: ['self', 'spouse'] }),
+  owner: text('owner', { enum: ['business', 'spouse', 'family'] }),
   sortOrder: integer('sort_order').notNull(),
   createdAt: text('created_at').$defaultFn(nowIso),
 });
@@ -74,7 +74,7 @@ export const txEdits = sqliteTable('tx_edits', {
   cls: text('cls', { enum: ['biz', 'per'] }),
   categoryMajor: text('category_major'),
   categoryMid: text('category_mid'),
-  owner: text('owner', { enum: ['self', 'spouse'] }),
+  owner: text('owner', { enum: ['business', 'spouse', 'family'] }),
   baseMajor: text('base_major'),
   baseMid: text('base_mid'),
   note: text('note'),
@@ -85,7 +85,7 @@ export const txEdits = sqliteTable('tx_edits', {
 export const institutionOwners = sqliteTable('institution_owners', {
   userId: text('user_id').notNull(),
   institution: text('institution').notNull(),
-  owner: text('owner', { enum: ['self', 'spouse'] }).notNull(),
+  owner: text('owner', { enum: ['business', 'spouse', 'family'] }).notNull(),
 });
 
 /** 大項目/中項目の追加候補 */
@@ -147,14 +147,66 @@ export const imports = sqliteTable('imports', {
   contentHash: text('content_hash'),
   /** 重複としてスキップしたとき、元になった取込のID */
   duplicateOf: integer('duplicate_of'),
+  /** 0008: multipart request/session */
+  runId: text('run_id'),
+  /** 0008: domain×month/globalのwrite-set key(JSON配列) */
+  targetKeys: text('target_keys'),
+  /** 0008: statusと分離したparse/runtime失敗理由 */
+  failureReason: text('failure_reason'),
+  /** 0008: content_hashのcanonical encoding version */
+  fingerprintVersion: integer('fingerprint_version'),
+  committedAt: text('committed_at'),
   createdAt: text('created_at').$defaultFn(nowIso),
 });
 
-/** 現金の記帳(0006)。口座・カード明細に出ない現金の受け渡しを明細として持つ */
+/** 0008: upload request/session。logical unitはimports.run_idで所属する。 */
+export const importRuns = sqliteTable(
+  'import_runs',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    status: text('status', {
+      enum: ['processing', 'applying', 'committed', 'failed', 'duplicate'],
+    }).notNull(),
+    failureReason: text('failure_reason'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [index('idx_import_runs_user_created').on(table.userId, table.createdAt)],
+);
+
+/**
+ * 0008: 同一利用者の取込writerをDBで1件に直列化する期限付きclaim。
+ * 受理前にもrunIdを所有tokenとして使うためFKは持たず、監査履歴には数えない。
+ */
+export const importWriterClaims = sqliteTable('import_writer_claims', {
+  userId: text('user_id').primaryKey(),
+  runId: text('run_id').notNull(),
+  claimedAt: integer('claimed_at').notNull(),
+  expiresAt: integer('expires_at').notNull(),
+});
+
+/** 0008: 現在適用中のfingerprint。過去履歴とbusiness duplicateを分離する。 */
+export const importActiveTargets = sqliteTable(
+  'import_active_targets',
+  {
+    userId: text('user_id').notNull(),
+    targetKey: text('target_key').notNull(),
+    contentHash: text('content_hash').notNull(),
+    importId: integer('import_id').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.targetKey] }),
+    index('idx_import_active_import').on(table.userId, table.importId),
+  ],
+);
+
+/** 現金の記帳(0006、ID非再利用は0007)。口座・カード明細に出ない現金の受け渡しを明細として持つ */
 export const cashEntries = sqliteTable(
   'cash_entries',
   {
-    id: integer('id').primaryKey(),
+    id: integer('id').primaryKey({ autoIncrement: true }),
     userId: text('user_id').notNull(),
     date: text('date').notNull(),
     month: text('month').notNull(),
@@ -177,6 +229,18 @@ export const monthlyAgg = sqliteTable('monthly_agg', {
   scope: text('scope').notNull(),
   amount: integer('amount').notNull(),
 });
+
+/** JSON復元由来の集計baseline(0007)。monthly_aggはこれと現在の原本/現金から作る派生キャッシュ */
+export const restoredMonthlyAgg = sqliteTable(
+  'restored_monthly_agg',
+  {
+    userId: text('user_id').notNull(),
+    month: text('month').notNull(),
+    scope: text('scope').notNull(),
+    amount: integer('amount').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.month, t.scope] })],
+);
 
 export const tradeoffPlans = sqliteTable('tradeoff_plans', {
   id: integer('id').primaryKey(),

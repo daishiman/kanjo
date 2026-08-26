@@ -5,12 +5,20 @@ import { zValidator } from '@hono/zod-validator';
  * 事業分は freee 仕訳と同じ経路で科目別集計へ、個人分は口座「現金」の明細として家計集計へ合流する。
  * 変更のたびに集計キャッシュを作り直す(spec §7.3)。ログ・レスポンスに不要な内容を出さない。
  */
-import { type CashEntry, categoryAllowed, categoryRejectReason, isCashTxId, monthOf } from '@kanjo/core';
+import {
+  type CashEntry,
+  cashTxId,
+  categoryAllowed,
+  categoryRejectReason,
+  isCashTxId,
+  monthOf,
+} from '@kanjo/core';
 import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
+import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import { type Db, cashFromRow, getDb, loadCashEntries, loadDataset, recomputeFromDeals } from '../store.js';
 import { loadCandidates } from './classify.js';
 
@@ -106,9 +114,13 @@ cashRoute.post('/cash-entries', validBody, async (c) => {
   const b = c.req.valid('json');
   const bad = await checkCategory(db, userId, b);
   if (bad) return c.json(bad, 400);
-  const [rec] = await db.insert(s.cashEntries).values(toRow(userId, b)).returning();
-  await recomputeFromDeals(db, userId);
+  const [inserted] = await db.batch([
+    db.insert(s.cashEntries).values(toRow(userId, b)).returning(),
+    invalidateJsonSnapshotQuery(db, userId, 'cash_entries'),
+  ]);
+  const [rec] = inserted;
   const entry: CashEntry = cashFromRow(rec);
+  await recomputeFromDeals(db, userId, [entry]);
   return c.json({ entry }, 201);
 });
 
@@ -118,30 +130,51 @@ cashRoute.put('/cash-entries/:id', zValidator('param', idParam), validBody, asyn
   const { id } = c.req.valid('param');
   const b = c.req.valid('json');
   const [cur] = await db
-    .select({ id: s.cashEntries.id })
+    .select()
     .from(s.cashEntries)
     .where(and(eq(s.cashEntries.userId, userId), eq(s.cashEntries.id, id)));
   if (!cur) return c.json({ error: { code: 'not_found', message: '記帳が見つかりません' } }, 404);
   const bad = await checkCategory(db, userId, b);
   if (bad) return c.json(bad, 400);
-  const [rec] = await db
+  const update = db
     .update(s.cashEntries)
     .set({ ...toRow(userId, b), updatedAt: new Date().toISOString() })
     .where(and(eq(s.cashEntries.userId, userId), eq(s.cashEntries.id, id)))
     .returning();
-  await recomputeFromDeals(db, userId);
-  return c.json({ entry: cashFromRow(rec) });
+  const before = cashFromRow(cur);
+  let rec: typeof s.cashEntries.$inferSelect;
+  if (b.side === 'biz') {
+    // per→biz と旧版由来の残存編集を、正本の更新と同じD1トランザクションで消す。
+    const [updated] = await db.batch([
+      update,
+      db.delete(s.txEdits).where(and(eq(s.txEdits.userId, userId), eq(s.txEdits.txId, cashTxId(id)))),
+      invalidateJsonSnapshotQuery(db, userId, 'cash_entries'),
+    ]);
+    [rec] = updated;
+  } else {
+    const [updated] = await db.batch([update, invalidateJsonSnapshotQuery(db, userId, 'cash_entries')]);
+    [rec] = updated;
+  }
+  const entry = cashFromRow(rec);
+  await recomputeFromDeals(db, userId, [before, entry]);
+  return c.json({ entry });
 });
 
 cashRoute.delete('/cash-entries/:id', zValidator('param', idParam), async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
   const { id } = c.req.valid('param');
-  const deleted = await db
-    .delete(s.cashEntries)
-    .where(and(eq(s.cashEntries.userId, userId), eq(s.cashEntries.id, id)))
-    .returning({ id: s.cashEntries.id });
-  if (!deleted.length) return c.json({ error: { code: 'not_found', message: '記帳が見つかりません' } }, 404);
-  await recomputeFromDeals(db, userId);
+  const [cur] = await db
+    .select()
+    .from(s.cashEntries)
+    .where(and(eq(s.cashEntries.userId, userId), eq(s.cashEntries.id, id)));
+  if (!cur) return c.json({ error: { code: 'not_found', message: '記帳が見つかりません' } }, 404);
+  // D1 batch は全体をロールバックするため、正本の削除と対応する手動編集の削除を同じ単位にする。
+  await db.batch([
+    db.delete(s.cashEntries).where(and(eq(s.cashEntries.userId, userId), eq(s.cashEntries.id, id))),
+    db.delete(s.txEdits).where(and(eq(s.txEdits.userId, userId), eq(s.txEdits.txId, cashTxId(id)))),
+    invalidateJsonSnapshotQuery(db, userId, 'cash_entries'),
+  ]);
+  await recomputeFromDeals(db, userId, [cashFromRow(cur)]);
   return c.json({ ok: true });
 });
