@@ -36,6 +36,23 @@ export function Layout({ children }: { children: ReactNode }) {
     setDrawer(false);
   }, [loc.pathname]);
 
+  // 固定ヘッダーの実高さを --header-h に反映する。狭幅ではバッジが折り返して高さが変わるため、
+  // 固定値(53px)のままだと表の見出し行がヘッダーの裏に隠れる
+  const headerRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const apply = () =>
+      document.documentElement.style.setProperty(
+        '--header-h',
+        `${Math.round(el.getBoundingClientRect().height)}px`,
+      );
+    apply();
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const summary = useQuery({
     queryKey: ['summary'],
     queryFn: () => api<SummaryResponse>('/summary'),
@@ -84,7 +101,7 @@ export function Layout({ children }: { children: ReactNode }) {
         />
       )}
 
-      <header className="header">
+      <header className="header" ref={headerRef}>
         <Link to="/" className="header-brand">
           収支統合管理
         </Link>
