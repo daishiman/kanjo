@@ -86,10 +86,8 @@ describe('共通表示契約', () => {
 });
 
 describe('表と横スクロール容器の契約', () => {
-  it('横スクロール容器内の表見出しはページヘッダー分のオフセットを持たない', () => {
-    // overflow を持つ要素が sticky の基準になるため、top を 53px にすると見出し行が先頭行を隠す
-    expect(STYLE_SOURCE).toMatch(/\.scroll-x table\.data thead th\s*\{[^}]*top:\s*0;/);
-  });
+  // 表見出しの固定位置(sticky)は CSS 文字列の正規表現では検証しない。
+  // 実描画での検証は thead-render.test.ts(scripts/check-thead-render.mjs を headless Chrome で実行)が担う。
 
   it('サイドバーのグループ見出しは区切り線を持つ', () => {
     expect(STYLE_SOURCE).toMatch(/\.nav-group\s*\{[^}]*border-top:\s*1px solid var\(--line\)/);

@@ -20,7 +20,7 @@
   --motion-base: 200ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   /* 固定要素の高さ(スクロール退避・sticky計算の基準) */
-  --header-h: 53px;
+  --header-h: 53px; /* 初期値。実際の高さは Layout が描画後に上書きする */
   --tabbar-h: 56px;
   scroll-padding-top: calc(var(--header-h) + 8px);
 }
@@ -318,9 +318,17 @@ table.data th {
   color: var(--ink-soft);
   font-weight: 700;
 }
+/* 見出し行の固定は「安全側が既定」。既定は上端 0 とし、ページと一緒にスクロールする置き方
+   (.card の直下で overflow を持つ祖先が無い表)だけページヘッダー分(--header-h)を空ける。
+   overflow を持つ要素(.scroll-x 等)が祖先にあると sticky の基準がその要素になり、
+   オフセットを付けると見出し行が先頭データ行の上に重なって隠すため、既定側を 0 にしている。
+   実描画での検証: scripts/check-thead-render.mjs(thead-render.test.ts から実行) */
 table.data thead th {
   background: var(--bg);
   position: sticky;
+  top: 0;
+}
+.card:not(.scroll-x) > table.data thead th {
   top: var(--header-h);
 }
 table.data tbody th {
@@ -341,10 +349,8 @@ table.data tr.total td {
 .scroll-x {
   overflow-x: auto;
 }
-/* overflow を持つ要素は sticky の基準になるため、ページヘッダー分(53px)のオフセットを付けると
-   見出し行が先頭データ行の上に重なる。スクロール容器内では上端固定にする。 */
+/* 横スクロール容器内の見出し行は既定(top: 0)のまま。オフセットは付けない(上記 table.data の注記) */
 .scroll-x table.data thead th {
-  top: 0;
   white-space: nowrap; /* 横スクロール容器内では見出しを1文字ずつ折り返さない */
 }
 .scroll-x table.data th:first-child,
@@ -1006,9 +1012,6 @@ kbd {
   }
   .footer {
     padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 14px);
-  }
-  table.data thead th {
-    top: 0;
   }
   :root {
     scroll-padding-bottom: calc(var(--tabbar-h) + 16px);

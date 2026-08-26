@@ -10,6 +10,7 @@
       ".claude",
       ".codex",
       ".agents",
+      ".artifact-delivery",
       "packages/api/worker-configuration.d.ts",
       "skills/run-kanjo-accounting-report/references/chart-catalog.json"
     ]
