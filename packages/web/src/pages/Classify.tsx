@@ -1,10 +1,10 @@
 /**
- * P5 公私仕分け: 明細の事業/個人・科目(大項目/中項目)・名義(本人/妻)を確定する。
+ * P5 公私仕分け: 明細の事業/個人・科目(大項目/中項目)・名義を確定する。
  * 行内3ボタン(個人/事業/自動)は楽観的更新+失敗時ロールバック。キーボード J/K移動・B/P/A判定。
  * 編集は取込値(MFのCSV)とは別枠に保存され、再取込しても残る。ルール・名義・編集一覧の管理は設定画面。
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import { type MouseEvent as ReactMouseEvent, useCallback, useEffect, useId, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   type Candidates,
@@ -25,6 +25,66 @@ import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { yen, yenS } from '../format.js';
 
+const DISCARD_CLASSIFICATION_DRAFT_MESSAGE = '未保存の変更があります。変更を破棄して編集を閉じますか?';
+
+/** 同じ行を閉じる場合と別行へ移る場合の未保存ガードを1箇所で共有する。 */
+export function canLeaveClassificationEditor(
+  currentId: string | null,
+  nextId: string | null,
+  dirty: boolean,
+  confirmDiscard: (message: string) => boolean = (message) => window.confirm(message),
+): boolean {
+  if (!currentId || currentId === nextId || !dirty) return true;
+  return confirmDiscard(DISCARD_CLASSIFICATION_DRAFT_MESSAGE);
+}
+
+/** フィルターや画面遷移は、未保存の確認後にだけ適用する。 */
+export function applyClassificationViewChange(
+  currentId: string | null,
+  dirty: boolean,
+  busy: boolean,
+  applyChange: () => void,
+  confirmDiscard?: (message: string) => boolean,
+): boolean {
+  if (busy || !canLeaveClassificationEditor(currentId, null, dirty, confirmDiscard)) return false;
+  applyChange();
+  return true;
+}
+
+export function canUseClassificationShortcuts(editingId: string | null, busyEditingId: string | null) {
+  return editingId === null && busyEditingId === null;
+}
+
+export function shouldGuardClassificationLinkClick(intent: {
+  defaultPrevented: boolean;
+  button: number;
+  metaKey: boolean;
+  ctrlKey: boolean;
+  shiftKey: boolean;
+  altKey: boolean;
+  target: string;
+  download: boolean;
+  routerLink: boolean;
+  insideMain: boolean;
+  sameOrigin: boolean;
+  sameDocumentHash: boolean;
+}): boolean {
+  return (
+    !intent.defaultPrevented &&
+    intent.button === 0 &&
+    !intent.metaKey &&
+    !intent.ctrlKey &&
+    !intent.shiftKey &&
+    !intent.altKey &&
+    (!intent.target || intent.target === '_self') &&
+    !intent.download &&
+    intent.routerLink &&
+    !intent.insideMain &&
+    intent.sameOrigin &&
+    !intent.sameDocumentHash
+  );
+}
+
 export function ClassifyPage() {
   const qc = useQueryClient();
   const [month, setMonth] = useState<string | null>(null);
@@ -34,6 +94,43 @@ export function ClassifyPage() {
   const [manualOnly, setManualOnly] = useState(false);
   const [focusIdx, setFocusIdx] = useState(0);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [dirtyEditingId, setDirtyEditingId] = useState<string | null>(null);
+  const [busyEditingId, setBusyEditingId] = useState<string | null>(null);
+
+  const requestEditingId = useCallback(
+    (nextId: string | null) => {
+      if (busyEditingId) return;
+      if (!canLeaveClassificationEditor(editingId, nextId, dirtyEditingId === editingId)) return;
+      setDirtyEditingId(null);
+      setBusyEditingId(null);
+      setEditingId(nextId);
+    },
+    [busyEditingId, dirtyEditingId, editingId],
+  );
+
+  const requestViewChange = useCallback(
+    (applyChange: () => void) =>
+      applyClassificationViewChange(editingId, dirtyEditingId === editingId, busyEditingId !== null, () => {
+        setDirtyEditingId(null);
+        setBusyEditingId(null);
+        setEditingId(null);
+        applyChange();
+      }),
+    [busyEditingId, dirtyEditingId, editingId],
+  );
+
+  const onSettingsNavigation = useCallback(
+    (event: ReactMouseEvent<HTMLAnchorElement>) => {
+      if (!requestViewChange(() => {})) event.preventDefault();
+    },
+    [requestViewChange],
+  );
+
+  const finishEditing = useCallback(() => {
+    setDirtyEditingId(null);
+    setBusyEditingId(null);
+    setEditingId(null);
+  }, []);
 
   const params = new URLSearchParams();
   if (month) params.set('month', month);
@@ -84,6 +181,7 @@ export function ClassifyPage() {
 
   const onKey = useCallback(
     (e: KeyboardEvent) => {
+      if (!canUseClassificationShortcuts(editingId, busyEditingId)) return;
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
       const k = e.key.toLowerCase();
       if (k === 'j') setFocusIdx((i) => Math.min(i + 1, rows.length - 1));
@@ -93,12 +191,58 @@ export function ClassifyPage() {
         setClass.mutate({ txId: tx.id, next: k === 'b' ? 'biz' : k === 'p' ? 'per' : null });
       }
     },
-    [rows, focusIdx, setClass],
+    [rows, focusIdx, setClass, editingId, busyEditingId],
   );
   useEffect(() => {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [onKey]);
+
+  useEffect(() => {
+    if (!editingId || dirtyEditingId !== editingId) return;
+    const preventDraftUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', preventDraftUnload);
+    return () => window.removeEventListener('beforeunload', preventDraftUnload);
+  }, [dirtyEditingId, editingId]);
+
+  useEffect(() => {
+    if (!editingId) return;
+    const guardShellNavigation = (event: MouseEvent) => {
+      if (!(event.target instanceof Element)) return;
+      const anchor = event.target.closest('a[href]');
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      const url = new URL(anchor.href, window.location.href);
+      if (
+        !shouldGuardClassificationLinkClick({
+          defaultPrevented: event.defaultPrevented,
+          button: event.button,
+          metaKey: event.metaKey,
+          ctrlKey: event.ctrlKey,
+          shiftKey: event.shiftKey,
+          altKey: event.altKey,
+          target: anchor.target,
+          download: anchor.hasAttribute('download'),
+          routerLink: anchor.hasAttribute('data-discover'),
+          insideMain: anchor.closest('#main-content') !== null,
+          sameOrigin: url.origin === window.location.origin,
+          sameDocumentHash:
+            url.pathname === window.location.pathname &&
+            url.search === window.location.search &&
+            url.hash.length > 0,
+        })
+      )
+        return;
+      if (!requestViewChange(() => {})) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+    document.addEventListener('click', guardShellNavigation, true);
+    return () => document.removeEventListener('click', guardShellNavigation, true);
+  }, [editingId, requestViewChange]);
 
   if (q.isLoading)
     return (
@@ -132,7 +276,10 @@ export function ClassifyPage() {
         <div className="notice">
           再取込で取込値が変わった編集済み明細が {s.conflictCount}{' '}
           件あります(「編集済み」の行に元の値を表示)。
-          <Link to="/settings">設定の「手動で編集した明細」</Link>で見直せます。
+          <Link to="/settings" onClick={onSettingsNavigation}>
+            設定の「手動で編集した明細」
+          </Link>
+          で見直せます。
         </div>
       )}
       {s.noInstitutionCount > 0 && (
@@ -154,7 +301,9 @@ export function ClassifyPage() {
           label="個人収入"
           value={yen(s.personalIncome)}
           tone="per"
-          note={`本人 ${yen(s.incomeByOwner.self)} / 妻 ${yen(s.incomeByOwner.spouse)}${
+          note={`${ownerLabel('business')} ${yen(s.incomeByOwner.business)} / ${ownerLabel('spouse')} ${yen(
+            s.incomeByOwner.spouse,
+          )} / ${ownerLabel('family')} ${yen(s.incomeByOwner.family)}${
             s.incomeByOwner.unset ? ` / 未設定 ${yen(s.incomeByOwner.unset)}` : ''
           }`}
         />
@@ -164,7 +313,14 @@ export function ClassifyPage() {
       </div>
 
       <div className="toolbar">
-        <select value={month ?? d.month ?? ''} onChange={(e) => setMonth(e.target.value)}>
+        <select
+          aria-label="対象月"
+          value={month ?? d.month ?? ''}
+          onChange={(e) => {
+            const next = e.target.value;
+            requestViewChange(() => setMonth(next));
+          }}
+        >
           {d.months.map((m) => (
             <option key={m} value={m}>
               {m}
@@ -179,7 +335,13 @@ export function ClassifyPage() {
               ['per', '個人'],
             ] as const
           ).map(([k, label]) => (
-            <button key={k} type="button" className={cls === k ? 'on' : ''} onClick={() => setCls(k)}>
+            <button
+              key={k}
+              type="button"
+              className={cls === k ? 'on' : ''}
+              aria-pressed={cls === k}
+              onClick={() => requestViewChange(() => setCls(k))}
+            >
               {label}
             </button>
           ))}
@@ -188,18 +350,30 @@ export function ClassifyPage() {
           {(
             [
               ['', '名義: すべて'],
-              ['self', '本人'],
-              ['spouse', '妻'],
+              ['business', ownerLabel('business')],
+              ['spouse', ownerLabel('spouse')],
+              ['family', ownerLabel('family')],
               ['unset', '未設定'],
             ] as const
           ).map(([k, label]) => (
-            <button key={k} type="button" className={owner === k ? 'on' : ''} onClick={() => setOwner(k)}>
+            <button
+              key={k}
+              type="button"
+              className={owner === k ? 'on' : ''}
+              aria-pressed={owner === k}
+              onClick={() => requestViewChange(() => setOwner(k))}
+            >
               {label}
             </button>
           ))}
         </span>
         <span className="segment">
-          <button type="button" className={manualOnly ? 'on' : ''} onClick={() => setManualOnly((v) => !v)}>
+          <button
+            type="button"
+            className={manualOnly ? 'on' : ''}
+            aria-pressed={manualOnly}
+            onClick={() => requestViewChange(() => setManualOnly((v) => !v))}
+          >
             編集済みのみ
           </button>
         </span>
@@ -207,15 +381,19 @@ export function ClassifyPage() {
           type="text"
           placeholder="キーワード検索(内容・科目・口座)"
           value={qtext}
-          onChange={(e) => setQtext(e.target.value)}
+          onChange={(e) => {
+            if ((e.nativeEvent as InputEvent).isComposing) return;
+            const next = e.target.value;
+            requestViewChange(() => setQtext(next));
+          }}
         />
-        <Link to="/settings" className="btn">
+        <Link to="/settings" className="btn" onClick={onSettingsNavigation}>
           ルール・名義の設定
         </Link>
       </div>
 
-      <div className="card scroll-x">
-        <table className="data">
+      <div className="card scroll-x classify-table-card">
+        <table className="data classify-table">
           <thead>
             <tr>
               <th>日付</th>
@@ -235,11 +413,14 @@ export function ClassifyPage() {
                 t={t}
                 focused={i === focusIdx}
                 editing={editingId === t.id}
+                editBusy={busyEditingId !== null}
                 candidates={d.candidates}
                 onFocus={() => setFocusIdx(i)}
                 onSet={(next) => setClass.mutate({ txId: t.id, next })}
-                onToggleEdit={() => setEditingId((cur) => (cur === t.id ? null : t.id))}
-                onSaved={() => setEditingId(null)}
+                onToggleEdit={() => requestEditingId(editingId === t.id ? null : t.id)}
+                onDirtyChange={(dirty) => setDirtyEditingId(dirty ? t.id : null)}
+                onBusyChange={(busy) => setBusyEditingId(busy ? t.id : null)}
+                onSaved={finishEditing}
               />
             ))}
             {!rows.length && (
@@ -260,31 +441,41 @@ function TxLine({
   t,
   focused,
   editing,
+  editBusy,
   candidates,
   onFocus,
   onSet,
   onToggleEdit,
+  onDirtyChange,
+  onBusyChange,
   onSaved,
 }: {
   t: TxRow;
   focused: boolean;
   editing: boolean;
+  editBusy: boolean;
   candidates: Candidates;
   onFocus: () => void;
   onSet: (next: Cls | null) => void;
   onToggleEdit: () => void;
+  onDirtyChange: (dirty: boolean) => void;
+  onBusyChange: (busy: boolean) => void;
   onSaved: () => void;
 }) {
   const catEdited = t.catSrc === '手動';
+  const editorId = useId();
   return (
     <>
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: キーボード操作はページ全体のJ/K/B/P/Aハンドラで提供 */}
-      <tr className={focused ? 'kbd-focus' : ''} onClick={onFocus}>
+      <tr
+        className={[focused ? 'kbd-focus' : '', editing ? 'editing-open' : ''].filter(Boolean).join(' ')}
+        onClick={onFocus}
+      >
         <td className="num">{t.date}</td>
-        <td style={{ maxWidth: 320, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <td className="tx-description" title={t.description}>
           {t.description}
         </td>
-        <td style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <td className="tx-institution" title={t.institution ?? undefined}>
           {t.institution ?? '—'}
         </td>
         <td>
@@ -328,42 +519,101 @@ function TxLine({
         </td>
         <td>
           {t.owner ? ownerLabel(t.owner) : <span className="pill neutral">未設定</span>}
-          {t.owner && (
-            <span className="orig" style={{ textDecoration: 'none' }}>
-              {t.ownerSrc}
-            </span>
-          )}
+          {t.owner && <span className="orig owner-source">{t.ownerSrc}</span>}
         </td>
-        <td style={{ whiteSpace: 'nowrap' }}>
-          <button
-            type="button"
-            className={`mini ${t.cls === 'per' && t.src === '手動' ? 'on-per' : ''}`}
-            onClick={() => onSet('per')}
-          >
-            個人
-          </button>{' '}
-          <button
-            type="button"
-            className={`mini ${t.cls === 'biz' && t.src === '手動' ? 'on-biz' : ''}`}
-            onClick={() => onSet('biz')}
-          >
-            事業
-          </button>{' '}
-          <button type="button" className="mini" disabled={t.src !== '手動'} onClick={() => onSet(null)}>
-            自動
-          </button>{' '}
-          <button type="button" className={`mini ${editing ? 'on-biz' : ''}`} onClick={onToggleEdit}>
-            編集
-          </button>
+        <td>
+          <div className="classify-quick-actions" aria-label={`${t.description}の簡易操作`}>
+            <QuickClassButton
+              label="個人"
+              selected={t.cls === 'per' && t.src === '手動'}
+              disabled={editBusy}
+              onClick={() => onSet('per')}
+            />
+            <QuickClassButton
+              label="事業"
+              selected={t.cls === 'biz' && t.src === '手動'}
+              disabled={editBusy}
+              onClick={() => onSet('biz')}
+            />
+            <button
+              type="button"
+              className="mini classify-quick"
+              disabled={editBusy || t.src !== '手動'}
+              onClick={() => onSet(null)}
+            >
+              自動に戻す
+            </button>
+            <button
+              type="button"
+              className="mini classify-quick edit-trigger"
+              aria-expanded={editing}
+              aria-controls={editorId}
+              disabled={editBusy}
+              onClick={onToggleEdit}
+            >
+              {editing ? '編集を閉じる' : '編集する'}
+            </button>
+          </div>
         </td>
       </tr>
-      {editing && <EditorRow t={t} candidates={candidates} onSaved={onSaved} />}
+      {editing && (
+        <EditorRow
+          id={editorId}
+          t={t}
+          candidates={candidates}
+          onClose={onToggleEdit}
+          onDirtyChange={onDirtyChange}
+          onBusyChange={onBusyChange}
+          onSaved={onSaved}
+        />
+      )}
     </>
   );
 }
 
-/** 科目・名義・公私の編集行。保存 / 取込値に戻す / 同じ内容をルール化 */
-function EditorRow({ t, candidates, onSaved }: { t: TxRow; candidates: Candidates; onSaved: () => void }) {
+function QuickClassButton({
+  label,
+  selected,
+  disabled,
+  onClick,
+}: {
+  label: string;
+  selected: boolean;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="mini classify-quick"
+      aria-pressed={selected}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {selected && <span aria-hidden="true">✓ </span>}
+      {label}
+    </button>
+  );
+}
+
+/** 科目・名義・公私の編集パネル。保存 / 取込値に戻す / 同じ内容をルール化 */
+function EditorRow({
+  id,
+  t,
+  candidates,
+  onClose,
+  onDirtyChange,
+  onBusyChange,
+  onSaved,
+}: {
+  id: string;
+  t: TxRow;
+  candidates: Candidates;
+  onClose: () => void;
+  onDirtyChange: (dirty: boolean) => void;
+  onBusyChange: (busy: boolean) => void;
+  onSaved: () => void;
+}) {
   const invalidate = useInvalidateClassification();
   const [big, setBig] = useState(t.edit?.big ?? '');
   const [mid, setMid] = useState(t.edit?.mid ?? '');
@@ -393,104 +643,141 @@ function EditorRow({ t, candidates, onSaved }: { t: TxRow; candidates: Candidate
   });
   /** 科目候補の系統 = 編集後の公私(未指定なら現在の有効値) */
   const scope: Cls = c ?? t.cls;
-  const dirty =
+  const editDirty =
     big !== (t.edit?.big ?? '') ||
     mid !== (t.edit?.mid ?? '') ||
     own !== (t.edit?.owner ?? null) ||
     c !== (t.edit?.cls ?? null);
+  const hasUnsavedChanges = editDirty || (!ruleDone && keyword !== t.description);
+  const busy = save.isPending || rule.isPending;
   const ruleAttr = !!(c || big || mid || own);
+
+  useEffect(() => onDirtyChange(hasUnsavedChanges), [hasUnsavedChanges, onDirtyChange]);
+  useEffect(() => onBusyChange(busy), [busy, onBusyChange]);
 
   return (
     <tr className="editor">
       <td colSpan={8}>
-        <div className="editor-form">
-          <span className="sub" style={{ margin: 0 }}>
-            取込値: {t.csvBig}
-            {t.csvMid ? ` / ${t.csvMid}` : ''}
-            {t.institution ? `・口座: ${t.institution}` : ''}
-          </span>
-          <label>
-            公私
-            <select
-              value={c ?? ''}
-              onChange={(e) => {
-                const next = (e.target.value || null) as Cls | null;
-                setC(next);
-                // 系統(事業/個人)が変わると候補も変わるので科目は選び直す
-                if ((next ?? t.cls) !== scope) {
-                  setBig('');
-                  setMid('');
-                }
-              }}
+        <section id={id} className="classification-editor" aria-labelledby={`${id}-title`}>
+          <header className="classification-editor-summary">
+            <div>
+              <h3 id={`${id}-title`}>{t.description}</h3>
+              <p>
+                <span className="num">{t.date}</span>
+                {' ・ '}
+                {t.institution ?? '口座未記録'}
+              </p>
+            </div>
+            <strong className="num classification-editor-amount">{yenS(t.amount)}</strong>
+          </header>
+
+          <p className="classification-import-summary">
+            <span>取込時の科目</span>
+            <strong>
+              {t.csvBig}
+              {t.csvMid ? ` / ${t.csvMid}` : ''}
+            </strong>
+          </p>
+
+          <fieldset className="classification-editor-fields" aria-label="変更内容" disabled={busy}>
+            <div className="classification-editor-grid">
+              <label className="classification-field">
+                <span>公私</span>
+                <select
+                  value={c ?? ''}
+                  onChange={(e) => {
+                    const next = (e.target.value || null) as Cls | null;
+                    setC(next);
+                    // 系統(事業/個人)が変わると候補も変わるので科目は選び直す
+                    if ((next ?? t.cls) !== scope) {
+                      setBig('');
+                      setMid('');
+                    }
+                  }}
+                >
+                  <option value="">
+                    {t.cls === 'biz' ? '事業' : '個人'}のまま({t.src})
+                  </option>
+                  <option value="biz">事業</option>
+                  <option value="per">個人</option>
+                </select>
+              </label>
+
+              <div className="classification-field">
+                <span>科目</span>
+                <span className="classification-field-help">
+                  {SCOPE_LABEL[scope]}(空欄は取込値・ルールを維持)
+                </span>
+                <div className="classification-category-controls">
+                  <CategoryInputs
+                    candidates={candidates}
+                    scope={scope}
+                    big={big}
+                    mid={mid}
+                    onChange={(v) => {
+                      setBig(v.big);
+                      setMid(v.mid);
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="classification-field">
+                <span>名義</span>
+                <OwnerSelect value={own} onChange={setOwn} />
+              </div>
+            </div>
+
+            <details className="classification-rule-details">
+              <summary>同じ内容にも適用</summary>
+              <div className="classification-rule-form">
+                <label className="classification-field">
+                  <span>キーワード</span>
+                  <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+                </label>
+                <button
+                  type="button"
+                  disabled={!keyword.trim() || !ruleAttr || rule.isPending || ruleDone}
+                  onClick={() => rule.mutate()}
+                >
+                  {ruleDone ? 'ルールを追加しました' : '最優先ルールを追加'}
+                </button>
+              </div>
+              {rule.isError && (
+                <p className="classification-editor-error" role="alert">
+                  {(rule.error as Error).message}
+                </p>
+              )}
+            </details>
+          </fieldset>
+
+          <div className="classification-editor-actions">
+            <button
+              type="button"
+              className="tertiary-button"
+              disabled={!t.edited || busy}
+              onClick={() => save.mutate({ reset: true })}
             >
-              <option value="">
-                {t.cls === 'biz' ? '事業' : '個人'}のまま({t.src})
-              </option>
-              <option value="biz">事業</option>
-              <option value="per">個人</option>
-            </select>
-          </label>
-          <div className="field">
-            <span className="sub" style={{ margin: 0 }}>
-              {SCOPE_LABEL[scope]}(空欄=取込値/ルールのまま)
-            </span>
-            <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
-              <CategoryInputs
-                candidates={candidates}
-                scope={scope}
-                big={big}
-                mid={mid}
-                onChange={(v) => {
-                  setBig(v.big);
-                  setMid(v.mid);
-                }}
-              />
-            </span>
+              取込値に戻す
+            </button>
+            <button type="button" disabled={busy} onClick={onClose}>
+              編集を閉じる
+            </button>
+            <button
+              type="button"
+              className="primary"
+              disabled={!editDirty || busy}
+              onClick={() => save.mutate({ big: big || null, mid: mid || null, owner: own, cls: c })}
+            >
+              変更を保存
+            </button>
           </div>
-          <div className="field">
-            <span className="sub" style={{ margin: 0 }}>
-              名義
-            </span>
-            <OwnerSelect value={own} onChange={setOwn} />
-          </div>
-          <button
-            type="button"
-            className="primary"
-            disabled={!dirty || save.isPending}
-            onClick={() => save.mutate({ big: big || null, mid: mid || null, owner: own, cls: c })}
-          >
-            保存
-          </button>
-          <button
-            type="button"
-            disabled={!t.edited || save.isPending}
-            onClick={() => save.mutate({ reset: true })}
-          >
-            取込値に戻す
-          </button>
-          <span style={{ borderLeft: '1px solid var(--line)', height: 24 }} />
-          <label>
-            同じ内容をルールにする(キーワード)
-            <input
-              type="text"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              style={{ width: 220 }}
-            />
-          </label>
-          <button
-            type="button"
-            disabled={!keyword.trim() || !ruleAttr || rule.isPending || ruleDone}
-            onClick={() => rule.mutate()}
-          >
-            {ruleDone ? 'ルールを追加しました' : 'ルール化(最優先)'}
-          </button>
-          {(save.isError || rule.isError) && (
-            <span className="notice" style={{ margin: 0 }}>
-              {((save.error ?? rule.error) as Error).message}
-            </span>
+          {save.isError && (
+            <p className="classification-editor-error" role="alert">
+              {(save.error as Error).message}
+            </p>
           )}
-        </div>
+        </section>
       </td>
     </tr>
   );

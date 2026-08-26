@@ -11,7 +11,8 @@
   --danger: #b23a3a; /* 増加=赤 */
   --good: #2e7d5b; /* 減少=緑 */
   --radius: 10px;
-  --font-head: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", sans-serif;
+  --font-head: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI",
+    "Yu Gothic", Meiryo, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   /* モーション(因果の説明のみに使う) */
   --motion-instant: 90ms;
@@ -401,8 +402,56 @@ table.data tr.total td {
   color: var(--ink-soft);
   text-decoration: line-through;
 }
+.owner-source {
+  text-decoration: none;
+}
+.tx-description,
+.tx-institution {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tx-description {
+  max-width: 320px;
+}
+.tx-institution {
+  max-width: 160px;
+}
+.classify-table-card {
+  container-type: inline-size;
+}
+.classify-table {
+  min-width: 1040px;
+}
+.classify-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(86px, 1fr));
+  gap: 6px;
+}
+button.mini.classify-quick {
+  min-height: 44px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+button.classify-quick[aria-pressed="true"] {
+  border-color: var(--biz);
+  background: #eef3fa;
+  color: var(--biz);
+  font-weight: 900;
+}
+button.edit-trigger[aria-expanded="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--surface);
+}
+tr.editing-open td {
+  border-bottom-color: transparent;
+  font-weight: 700;
+}
 tr.editor td {
   background: var(--surface-alt, #f6f6f4);
+  padding: 8px;
+  text-align: left;
 }
 .editor-form {
   display: flex;
@@ -417,6 +466,194 @@ tr.editor td {
   gap: 2px;
   font-size: 11px;
   color: var(--ink-soft);
+}
+.classification-editor {
+  position: sticky;
+  left: 8px;
+  width: calc(100cqi - 16px);
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  animation: editor-in var(--motion-base) var(--ease-standard) both;
+}
+@keyframes editor-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.classification-editor-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: start;
+  gap: 16px;
+}
+.classification-editor-summary h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+  line-height: 1.45;
+}
+.classification-editor-summary p {
+  margin: 2px 0 0;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.classification-editor-amount {
+  font-size: 18px;
+}
+.classification-editor-fields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.classification-import-summary {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 12px;
+  margin: 12px 0 18px;
+  padding: 8px 0;
+  border-block: 1px solid var(--line);
+  font-size: 12px;
+}
+.classification-import-summary span {
+  color: var(--ink-soft);
+}
+.classification-import-summary strong {
+  overflow-wrap: anywhere;
+}
+.classification-editor-grid {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.75fr) minmax(250px, 1.5fr) minmax(150px, 0.75fr);
+  gap: 16px;
+  align-items: start;
+}
+.classification-field {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.classification-field > span:first-child {
+  color: var(--ink);
+  font-weight: 700;
+}
+.classification-field select,
+.classification-field input {
+  width: 100%;
+  max-width: 100%;
+  min-height: 44px;
+}
+.classification-editor input[type="text"] {
+  min-height: 44px;
+}
+.classification-field-help {
+  min-height: 2.8em;
+  line-height: 1.4;
+}
+.classification-category-controls {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+.classification-category-controls > * {
+  max-width: 100%;
+}
+.classification-category-controls > select,
+.classification-category-controls > button {
+  width: 100%;
+  min-height: 44px;
+}
+.classification-category-controls .editor-form {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  align-items: stretch;
+}
+.classification-category-controls .editor-form input,
+.classification-category-controls .editor-form button {
+  width: 100%;
+  max-width: 100%;
+  min-height: 44px;
+}
+.classification-rule-details {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.classification-rule-details > summary {
+  display: list-item;
+  min-height: 44px;
+  width: fit-content;
+  padding: 11px 0;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+.classification-rule-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) max-content;
+  align-items: end;
+  gap: 12px;
+  padding: 6px 0 12px;
+}
+.classification-rule-form button {
+  min-height: 44px;
+  white-space: nowrap;
+}
+.classification-editor-actions {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: end;
+  gap: 8px;
+  margin-top: 18px;
+}
+.classification-editor-actions button {
+  min-height: 44px;
+  white-space: nowrap;
+}
+.tertiary-button {
+  border-color: transparent;
+  color: var(--ink-soft);
+}
+.classification-editor-error {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border: 1px solid var(--danger);
+  border-radius: 6px;
+  background: #fdf3f3;
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 700;
+}
+@container (max-width: 700px) {
+  .classification-editor {
+    padding: 14px;
+  }
+  .classification-editor-summary,
+  .classification-import-summary,
+  .classification-editor-grid,
+  .classification-rule-form,
+  .classification-editor-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .classification-editor-amount {
+    grid-row: 1;
+  }
+  .classification-field-help {
+    min-height: 0;
+  }
+  .classification-editor-actions button,
+  .classification-rule-form button {
+    width: 100%;
+  }
 }
 .pill.biz {
   background: #eef3fa;
@@ -443,9 +680,9 @@ button,
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
-  transition: background-color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast)
-    var(--ease-standard), color var(--motion-fast) var(--ease-standard), transform var(--motion-instant)
-    var(--ease-standard);
+  transition-property: background-color, border-color, color, transform;
+  transition-duration: var(--motion-fast), var(--motion-fast), var(--motion-fast), var(--motion-instant);
+  transition-timing-function: var(--ease-standard);
 }
 button:active:not(:disabled),
 .btn:active {
@@ -559,6 +796,13 @@ input.num-input {
   flex-wrap: wrap;
   margin-bottom: 12px;
 }
+.toolbar .segment button {
+  min-height: 44px;
+}
+.toolbar .segment button[aria-pressed="true"]::before {
+  content: "✓";
+  margin-right: 5px;
+}
 
 /* 書き出し等の小メニュー(呼び出し元の直下から短く現れる) */
 .popover-host {
@@ -638,6 +882,11 @@ input.num-input {
   border-radius: var(--radius);
   background: var(--surface);
   padding: 32px 20px;
+}
+.page-state.loading {
+  /* 非同期データの描画時にフッターが表示領域内から押し出されるCLSを防ぐ */
+  min-height: max(180px, calc(100vh - var(--header-h) - 40px));
+  min-height: max(180px, calc(100dvh - var(--header-h) - 40px));
 }
 .page-state p {
   margin: 0;

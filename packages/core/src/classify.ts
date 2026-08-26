@@ -145,13 +145,14 @@ export function overridesFromEdits(edits: Record<string, TxEdit>): Record<string
 export interface ClassificationResult {
   personal: Record<string, PersonalMonth>;
   bizPersonal: Record<string, BizPersonalMonth>;
-  /** 個人分の名義別（本人/妻/未設定）収入・支出 */
+  /** 個人分の名義別（事業/妻/家族/未設定）収入・支出 */
   personalByOwner: Record<string, Record<OwnerKey, OwnerMonth>>;
 }
 
 const emptyOwners = (): Record<OwnerKey, OwnerMonth> => ({
-  self: { income: 0, expense: 0 },
+  business: { income: 0, expense: 0 },
   spouse: { income: 0, expense: 0 },
+  family: { income: 0, expense: 0 },
   unset: { income: 0, expense: 0 },
 });
 

@@ -21,8 +21,29 @@ export interface MfTx {
   inst?: string;
 }
 
-/** 名義。MFの保有金融機関(口座名)を設定で対応付けて決める。データに無い区分は増やさない */
-export type Owner = 'self' | 'spouse';
+/** canonical名義。unsetは永続値ではなく、解決できない場合だけ導出する。 */
+export const OWNER_VALUES = ['business', 'spouse', 'family'] as const;
+export type Owner = (typeof OWNER_VALUES)[number];
+export type LegacyOwner = 'self';
+export const OWNER_SCHEMA_VERSION = 2;
+
+export class OwnerValidationError extends Error {
+  constructor(public readonly value: unknown) {
+    super('unknown owner');
+    this.name = 'OwnerValidationError';
+  }
+}
+
+export const isOwner = (value: unknown): value is Owner =>
+  typeof value === 'string' && (OWNER_VALUES as readonly string[]).includes(value);
+
+/** 旧exportのselfだけをbusinessへ寄せ、未知値は静かに捨てず拒否する。 */
+export function normalizeOwner(value: unknown): Owner | null {
+  if (value == null || value === '') return null;
+  if (value === 'self') return 'business';
+  if (isOwner(value)) return value;
+  throw new OwnerValidationError(value);
+}
 
 /** 名義の表示名 */
 export type OwnerKey = Owner | 'unset';
@@ -30,7 +51,12 @@ export interface OwnerMonth {
   income: number;
   expense: number;
 }
-export const OWNER_LABEL: Record<Owner | 'unset', string> = { self: '本人', spouse: '妻', unset: '未設定' };
+export const OWNER_LABEL: Record<Owner | 'unset', string> = {
+  business: '事業',
+  spouse: '妻',
+  family: '家族',
+  unset: '未設定',
+};
 
 /**
  * 仕分けルール。配列の並び順＝評価順（先勝ち）。
@@ -114,7 +140,7 @@ export interface Dataset {
   edits: Record<string, TxEdit>;
   /** 保有金融機関 → 名義 */
   institutionOwners: Record<string, Owner>;
-  /** 個人分の名義別(本人/妻/未設定)の月別 収入・支出（edits/rules/institutionOwners から導出） */
+  /** 個人分の名義別(事業/妻/家族/未設定)の月別 収入・支出（edits/rules/institutionOwners から導出） */
   personalByOwner: Record<string, Record<OwnerKey, OwnerMonth>>;
   budgets: Record<string, number>;
   cashOverride: Record<string, { revenue: number; expense: number }>;

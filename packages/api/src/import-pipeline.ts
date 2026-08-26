@@ -4,8 +4,11 @@
  * 形式はヘッダーで自動判定: 「収支区分」→freee / 「計算対象」→MF。判定不能はエラー扱い。
  */
 import {
+  FINGERPRINT_VERSION,
   type FreeeDeal,
   type MfTx,
+  canonicalFreee,
+  canonicalMf,
   decodeBuf,
   isFreeeHeader,
   isMfHeader,
@@ -143,4 +146,29 @@ export function parseUpload(
   const trimmed = text.trimStart();
   if (trimmed.startsWith('{')) return [parseJsonUnit(filename, text)];
   return [classifyRows(filename, parseCSV(text), normMap)];
+}
+
+/* ------------------------- 内容指紋(重複取込の検知) ------------------------- */
+
+async function sha256Hex(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+export async function fingerprintCanonical(canonical: string): Promise<string> {
+  return `v${FINGERPRINT_VERSION}:${await sha256Hex(canonical)}`;
+}
+
+/**
+ * 取込単位の内容指紋(SHA-256)。v2 canonical write-setをhashし、旧hashと区別する。
+ * 明示ID付きCSVは行順に依らない。JSONはpartial merge後のpersisted write-setが必要なため
+ * import lifecycle側のrestoreWriteSetFingerprintで生成する。
+ * IDなしMFは復元keyに行indexを使うため行順変更を同一視しない。
+ */
+export async function unitFingerprint(u: ParsedUnit): Promise<string | null> {
+  let canonical: string | null = null;
+  if (u.kind === 'freee') canonical = canonicalFreee(u.deals);
+  if (u.kind === 'mf') canonical = canonicalMf(u.txs);
+  if (canonical) return fingerprintCanonical(canonical);
+  return null;
 }

@@ -1,37 +1,28 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import type { ComponentType } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AUTH_EVENT, api } from './api.js';
 import { Layout } from './components/Layout.js';
-import { AiPage } from './pages/Ai.js';
-import { BudgetPage } from './pages/Budget.js';
-import { ClassifyPage } from './pages/Classify.js';
-import { DiagnosisPage } from './pages/Diagnosis.js';
-import { GuidePage } from './pages/Guide.js';
-import { HouseholdPage } from './pages/Household.js';
-import { ImportPage } from './pages/Import.js';
 import { LoginPage } from './pages/Login.js';
-import { MatrixPage } from './pages/Matrix.js';
-import { OverviewPage } from './pages/Overview.js';
-import { SettingsPage } from './pages/Settings.js';
-import { SubscriptionsPage } from './pages/Subscriptions.js';
-import { TradeoffPage } from './pages/Tradeoff.js';
 import { APP_ROUTES, type AppRouteId } from './routeMetadata.js';
 
 export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
-  overview: OverviewPage,
-  matrix: MatrixPage,
-  diagnosis: DiagnosisPage,
-  subscriptions: SubscriptionsPage,
-  household: HouseholdPage,
-  ai: AiPage,
-  classify: ClassifyPage,
-  budget: BudgetPage,
-  tradeoff: TradeoffPage,
-  import: ImportPage,
-  settings: SettingsPage,
-  guide: GuidePage,
+  overview: lazy(() => import('./pages/Overview.js').then((module) => ({ default: module.OverviewPage }))),
+  matrix: lazy(() => import('./pages/Matrix.js').then((module) => ({ default: module.MatrixPage }))),
+  diagnosis: lazy(() => import('./pages/Diagnosis.js').then((module) => ({ default: module.DiagnosisPage }))),
+  subscriptions: lazy(() =>
+    import('./pages/Subscriptions.js').then((module) => ({ default: module.SubscriptionsPage })),
+  ),
+  household: lazy(() => import('./pages/Household.js').then((module) => ({ default: module.HouseholdPage }))),
+  ai: lazy(() => import('./pages/Ai.js').then((module) => ({ default: module.AiPage }))),
+  classify: lazy(() => import('./pages/Classify.js').then((module) => ({ default: module.ClassifyPage }))),
+  budget: lazy(() => import('./pages/Budget.js').then((module) => ({ default: module.BudgetPage }))),
+  tradeoff: lazy(() => import('./pages/Tradeoff.js').then((module) => ({ default: module.TradeoffPage }))),
+  import: lazy(() => import('./pages/Import.js').then((module) => ({ default: module.ImportPage }))),
+  cash: lazy(() => import('./pages/Cash.js').then((module) => ({ default: module.CashPage }))),
+  settings: lazy(() => import('./pages/Settings.js').then((module) => ({ default: module.SettingsPage }))),
+  guide: lazy(() => import('./pages/Guide.js').then((module) => ({ default: module.GuidePage }))),
 };
 
 export function App() {
@@ -66,13 +57,21 @@ export function App() {
 
   return (
     <Layout>
-      <Routes>
-        {APP_ROUTES.map((route) => {
-          const Component = ROUTE_COMPONENTS[route.id];
-          return <Route key={route.id} path={route.path} element={<Component />} />;
-        })}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense
+        fallback={
+          <output className="page-state loading" aria-busy="true" aria-live="polite">
+            画面を読み込み中…
+          </output>
+        }
+      >
+        <Routes>
+          {APP_ROUTES.map((route) => {
+            const Component = ROUTE_COMPONENTS[route.id];
+            return <Route key={route.id} path={route.path} element={<Component />} />;
+          })}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </Layout>
   );
 }

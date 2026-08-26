@@ -7,6 +7,11 @@
   "engines": {
     "node": ">=22"
   },
+  "pnpm": {
+    "overrides": {
+      "@esbuild-kit/core-utils>esbuild": "^0.25.12"
+    }
+  },
   "scripts": {
     "build": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api exec wrangler deploy --dry-run --outdir /tmp/kanjo-worker-build",
     "dev": "pnpm --filter @kanjo/web dev",

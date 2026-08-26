@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
-import { type HouseholdData, api } from '../api.js';
+import { type HouseholdData, api, ownerLabel } from '../api.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { COLORS, yenTick } from '../components/charts.js';
@@ -354,14 +354,14 @@ export function HouseholdPage() {
       </div>
 
       <div className="card">
-        <h2>収入内訳(名義別: 本人 / 妻)</h2>
+        <h2>収入内訳(名義別: 事業 / 妻 / 家族)</h2>
         <p className="sub">
           名義の根拠はMF明細の「保有金融機関」(口座ごとに設定した名義)と、明細ごとの手動編集・ルール。推測では割り振りません。
         </p>
         {d.byOwner.unmappedInstitutions.length > 0 && (
           <div className="notice info">
             名義が未設定の口座: {d.byOwner.unmappedInstitutions.join(' / ')}。
-            <Link to="/settings">設定の「口座の名義」</Link>で本人/妻を選ぶと「未設定」が解消します。
+            <Link to="/settings">設定の「口座の名義」</Link>で事業/妻/家族を選ぶと「未設定」が解消します。
           </div>
         )}
         {d.byOwner.noInstitutionCount > 0 && (
@@ -375,9 +375,10 @@ export function HouseholdPage() {
             <thead>
               <tr>
                 <th>月</th>
-                <th>本人</th>
-                <th>妻</th>
-                <th>未設定</th>
+                <th>{ownerLabel('business')}</th>
+                <th>{ownerLabel('spouse')}</th>
+                <th>{ownerLabel('family')}</th>
+                <th>{ownerLabel(null)}</th>
                 <th>個人収入計</th>
               </tr>
             </thead>
@@ -385,43 +386,51 @@ export function HouseholdPage() {
               {d.byOwner.rows.map((r) => (
                 <tr key={r.month} className={r.month === month ? 'selected' : undefined}>
                   <td>{monthLabel(r.month)}</td>
-                  <td className="num">{yen(r.self.income)}</td>
+                  <td className="num">{yen(r.business.income)}</td>
                   <td className="num">{yen(r.spouse.income)}</td>
+                  <td className="num">{yen(r.family.income)}</td>
                   <td className="num">{yen(r.unset.income)}</td>
-                  <td className="num">{yen(r.self.income + r.spouse.income + r.unset.income)}</td>
+                  <td className="num">
+                    {yen(r.business.income + r.spouse.income + r.family.income + r.unset.income)}
+                  </td>
                 </tr>
               ))}
               <tr className="total">
                 <td>合計({d.byOwner.rows.length}ヶ月)</td>
-                <td className="num">{yen(d.byOwner.totals.self.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.business.income)}</td>
                 <td className="num">{yen(d.byOwner.totals.spouse.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.family.income)}</td>
                 <td className="num">{yen(d.byOwner.totals.unset.income)}</td>
                 <td className="num">
                   {yen(
-                    d.byOwner.totals.self.income +
+                    d.byOwner.totals.business.income +
                       d.byOwner.totals.spouse.income +
+                      d.byOwner.totals.family.income +
                       d.byOwner.totals.unset.income,
                   )}
                 </td>
               </tr>
               <tr>
                 <td>構成比</td>
-                <td className="num">{ratio(d.byOwner.totals.self.incomeShare, 0)}</td>
+                <td className="num">{ratio(d.byOwner.totals.business.incomeShare, 0)}</td>
                 <td className="num">{ratio(d.byOwner.totals.spouse.incomeShare, 0)}</td>
+                <td className="num">{ratio(d.byOwner.totals.family.incomeShare, 0)}</td>
                 <td className="num">{ratio(d.byOwner.totals.unset.incomeShare, 0)}</td>
                 <td className="num">100%</td>
               </tr>
               <tr>
                 <td>月平均</td>
-                <td className="num">{yen(d.byOwner.totals.self.monthlyAvg.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.business.monthlyAvg.income)}</td>
                 <td className="num">{yen(d.byOwner.totals.spouse.monthlyAvg.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.family.monthlyAvg.income)}</td>
                 <td className="num">{yen(d.byOwner.totals.unset.monthlyAvg.income)}</td>
                 <td />
               </tr>
               <tr>
                 <td>年換算(月平均×12)</td>
-                <td className="num">{yen(d.byOwner.totals.self.annualized.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.business.annualized.income)}</td>
                 <td className="num">{yen(d.byOwner.totals.spouse.annualized.income)}</td>
+                <td className="num">{yen(d.byOwner.totals.family.annualized.income)}</td>
                 <td className="num">{yen(d.byOwner.totals.unset.annualized.income)}</td>
                 <td />
               </tr>

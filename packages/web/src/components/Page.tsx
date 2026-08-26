@@ -42,7 +42,7 @@ export function PageState({
 }) {
   if (status === 'loading') {
     return (
-      <output className="page-state" aria-live="polite">
+      <output className="page-state loading" aria-busy="true" aria-live="polite">
         <span className="skeleton-lines" aria-hidden="true">
           <span />
           <span />

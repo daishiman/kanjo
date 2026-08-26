@@ -40,7 +40,7 @@
 | 軸 | キー | 使える値 | 使えないときの扱い |
 |---|---|---|---|
 | 項目・分類 | `axes.category.bizAccounts[]`(名前・型・期間合計・データ範囲)/ `axes.category.personalBig`(effective=手修正込み / imported=取込値) | freee 勘定科目、MF 大項目 | 科目の型は記帳6ヶ月未満で `判定不能` |
-| 区分 | `axes.segment.bizPersonal` / `owner`(self/spouse/unset)/ `fixedVariable` / `settlement` | 事業/個人、本人/妻/未設定、固定費/変動費 | `fixedVariable.available=false`(6ヶ月未満)、`settlement.available=false`(決済状況は取込データに無い。**常に使えない**) |
+| 区分 | `axes.segment.bizPersonal` / `owner`(business/spouse/family/unset)/ `fixedVariable` / `settlement` | 事業/個人、事業/妻/家族/未設定、固定費/変動費 | `fixedVariable.available=false`(6ヶ月未満)、`settlement.available=false`(決済状況は取込データに無い。**常に使えない**) |
 | 期間 | `axes.period.requested` / `presets[]`(`month` 直近月 / `quarter` 直近四半期 / `year13` 直近13ヶ月 / `year5` 直近5年)/ `previous` / `yearAgo` / `dataRange` | 各プリセットの `availableMonths` `recordedMonths` | 0 ヶ月のプリセットは本文で使わない |
 | 指標 | `axes.indicator[]`(`expenseRatio` 経費率 / `subsShare` サブスク対売上比 / `safetyMargin` 安全余裕率 / `saveRate` 貯蓄率 / `foodShare` 食費比率 / `telecomShare` 通信費比率 / `breakEven` 損益分岐点 / `fixedShare` 固定費比率) | `value` `basis`(計算式)`guide`(目安)`judge` | `judge='データ不足'` の指標は数字を書かない |
 

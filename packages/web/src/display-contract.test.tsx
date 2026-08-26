@@ -10,15 +10,16 @@ const PAGE_SOURCES = import.meta.glob('./pages/*.tsx', {
   import: 'default',
 }) as Record<string, string>;
 const STYLE_SOURCE = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
+const APP_SOURCE = readFileSync(new URL('./App.tsx', import.meta.url), 'utf8');
 const ROUTED_PAGE_SOURCES = Object.entries(PAGE_SOURCES)
   .filter(([path]) => !path.endsWith('/Login.tsx'))
   .map(([, source]) => source);
 
-describe('12ルート契約', () => {
+describe('13ルート契約', () => {
   it('パスとIDが一意で全件がナビに含まれる', () => {
-    expect(APP_ROUTES).toHaveLength(12);
-    expect(new Set(APP_ROUTES.map((route) => route.id)).size).toBe(12);
-    expect(new Set(APP_ROUTES.map((route) => route.path)).size).toBe(12);
+    expect(APP_ROUTES).toHaveLength(13);
+    expect(new Set(APP_ROUTES.map((route) => route.id)).size).toBe(13);
+    expect(new Set(APP_ROUTES.map((route) => route.path)).size).toBe(13);
     expect(APP_ROUTES.every((route) => route.label && route.task)).toBe(true);
   });
 
@@ -28,10 +29,18 @@ describe('12ルート契約', () => {
     expect(MOBILE_ROUTES.every((route) => routeIds.has(route.id))).toBe(true);
   });
 
-  it('全12ページが共通ヘッダーを使用する', () => {
-    expect(ROUTED_PAGE_SOURCES).toHaveLength(12);
+  it('全13ページが共通ヘッダーを使用する', () => {
+    expect(ROUTED_PAGE_SOURCES).toHaveLength(13);
     expect(ROUTED_PAGE_SOURCES.every((source) => source.includes('<PageHeader route='))).toBe(true);
     expect(ROUTED_PAGE_SOURCES.some((source) => source.includes('<h1 className="page-title"'))).toBe(false);
+  });
+
+  it('各ページはルート単位で遅延読み込みされる', () => {
+    expect(APP_SOURCE.match(/lazy\(\(\) =>\s*import\('\.\/pages\//g)).toHaveLength(APP_ROUTES.length);
+    expect(APP_SOURCE).toMatch(/<Suspense\s+fallback=/);
+    expect(APP_SOURCE.match(/import \{ \w+Page \} from '\.\/pages\//g)).toEqual([
+      "import { LoginPage } from './pages/",
+    ]);
   });
 });
 
@@ -49,6 +58,9 @@ describe('共通表示契約', () => {
     const loading = renderToStaticMarkup(<PageState status="loading" />);
     expect(loading).toContain('読み込み中');
     expect(loading).toContain('<output');
+    expect(loading).toContain('class="page-state loading"');
+    expect(loading).toContain('aria-busy="true"');
+    expect(STYLE_SOURCE).toMatch(/\.page-state\.loading\s*\{[^}]*100dvh/s);
     expect(renderToStaticMarkup(<PageState status="error" />)).toContain('もう一度読み込んで');
     expect(renderToStaticMarkup(<PageState status="empty" message="未取込" />)).toContain('未取込');
   });

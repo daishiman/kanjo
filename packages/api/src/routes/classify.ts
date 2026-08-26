@@ -8,6 +8,7 @@ import { zValidator } from '@hono/zod-validator';
 import {
   type Candidates,
   DEFAULT_RULES,
+  OWNER_VALUES,
   type Rule,
   type TxEdit,
   buildCandidates,
@@ -17,16 +18,26 @@ import {
   ruleMatches,
   sum,
 } from '@kanjo/core';
-import { and, asc, eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
-import { type Db, getDb, loadDataset, ruleFromRow, saveAgg, upsertEdit } from '../store.js';
+import { invalidateJsonSnapshotQuery } from '../import-active.js';
+import {
+  type Db,
+  getDb,
+  loadDataset,
+  loadOrderedRuleRows,
+  ruleFromRow,
+  saveAgg,
+  upsertEdit,
+} from '../store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
 export const classifyRoute = new Hono<Ctx>();
+const ownerSchema = z.enum(OWNER_VALUES);
 
 async function recompute(db: Db, userId: string): Promise<void> {
   const data = await loadDataset(db, userId);
@@ -113,7 +124,7 @@ classifyRoute.get('/transactions', async (c) => {
     })
     .filter((r) => {
       if ((cls === 'biz' || cls === 'per') && r.cls !== cls) return false;
-      if (owner === 'self' || owner === 'spouse') {
+      if (OWNER_VALUES.some((value) => value === owner)) {
         if (r.owner !== owner) return false;
       } else if (owner === 'unset' && r.owner !== null) return false;
       if (manualOnly && !r.edited) return false;
@@ -141,8 +152,9 @@ classifyRoute.get('/transactions', async (c) => {
     personalExpense: -pick((x) => x.r.cls === 'per' && x.t.a < 0),
     /** 個人収入の名義別 */
     incomeByOwner: {
-      self: pick((x) => x.r.cls === 'per' && x.t.a > 0 && x.r.owner === 'self'),
+      business: pick((x) => x.r.cls === 'per' && x.t.a > 0 && x.r.owner === 'business'),
       spouse: pick((x) => x.r.cls === 'per' && x.t.a > 0 && x.r.owner === 'spouse'),
+      family: pick((x) => x.r.cls === 'per' && x.t.a > 0 && x.r.owner === 'family'),
       unset: pick((x) => x.r.cls === 'per' && x.t.a > 0 && x.r.owner === null),
     },
     editedCount: resolved.filter((x) => x.r.edited).length,
@@ -174,7 +186,7 @@ const editSchema = z.object({
   cls: z.enum(['biz', 'per']).nullable().optional(),
   big: z.string().max(60).nullable().optional(),
   mid: z.string().max(60).nullable().optional(),
-  owner: z.enum(['self', 'spouse']).nullable().optional(),
+  owner: ownerSchema.nullable().optional(),
   note: z.string().max(200).nullable().optional(),
   /** true: 全属性を取込値に戻す(編集行を消す) */
   reset: z.boolean().optional(),
@@ -230,18 +242,18 @@ classifyRoute.put('/transactions/:txId/edit', zValidator('json', editSchema), as
 /* -------- ルールCRUD(表示順=評価順・先勝ち) -------- */
 
 async function listRules(db: Db, userId: string) {
-  return db.select().from(s.rules).where(eq(s.rules.userId, userId)).orderBy(asc(s.rules.sortOrder));
+  return loadOrderedRuleRows(db, userId);
 }
 
 /** 初回のルール追加時は既定ルール(HTML版)を実体化する */
 async function materializeDefaults(db: Db, userId: string): Promise<void> {
   const existing = await listRules(db, userId);
   if (existing.length) return;
-  for (let i = 0; i < DEFAULT_RULES.length; i++) {
-    await db
-      .insert(s.rules)
-      .values({ userId, keyword: DEFAULT_RULES[i].k, cls: DEFAULT_RULES[i].cls, sortOrder: i + 1 });
-  }
+  const inserts = DEFAULT_RULES.map((rule, index) =>
+    db.insert(s.rules).values({ userId, keyword: rule.k, cls: rule.cls, sortOrder: index + 1 }),
+  );
+  if (inserts.length)
+    await db.batch([inserts[0], ...inserts.slice(1), invalidateJsonSnapshotQuery(db, userId, 'rules')]);
 }
 
 classifyRoute.get('/rules', async (c) => {
@@ -280,7 +292,7 @@ const ruleBody = {
   cls: z.enum(['biz', 'per']).nullable().optional(),
   big: z.string().max(60).nullable().optional(),
   mid: z.string().max(60).nullable().optional(),
-  owner: z.enum(['self', 'spouse']).nullable().optional(),
+  owner: ownerSchema.nullable().optional(),
 };
 const hasAttr = (b: {
   cls?: string | null;
@@ -323,18 +335,22 @@ classifyRoute.post('/rules', zValidator('json', ruleSchema), async (c) => {
   await materializeDefaults(db, userId);
   const rows = await listRules(db, userId);
   const sortOrder = b.top ? (rows[0]?.sortOrder ?? 1) - 1 : (rows[rows.length - 1]?.sortOrder ?? 0) + 1;
-  const [rec] = await db
-    .insert(s.rules)
-    .values({
-      userId,
-      keyword: b.keyword,
-      cls: b.cls ?? null,
-      categoryMajor: b.big || null,
-      categoryMid: b.mid || null,
-      owner: b.owner ?? null,
-      sortOrder,
-    })
-    .returning({ id: s.rules.id });
+  const [inserted] = await db.batch([
+    db
+      .insert(s.rules)
+      .values({
+        userId,
+        keyword: b.keyword,
+        cls: b.cls ?? null,
+        categoryMajor: b.big || null,
+        categoryMid: b.mid || null,
+        owner: b.owner ?? null,
+        sortOrder,
+      })
+      .returning({ id: s.rules.id }),
+    invalidateJsonSnapshotQuery(db, userId, 'rules'),
+  ]);
+  const [rec] = inserted;
   await recompute(db, userId);
   return c.json({ ok: true, id: rec.id }, 201);
 });
@@ -352,16 +368,19 @@ classifyRoute.put('/rules/:id', zValidator('json', z.object(ruleBody)), async (c
     );
   const catErr = await ruleCategoryError(db, userId, b);
   if (catErr) return c.json(catErr, 400);
-  await db
-    .update(s.rules)
-    .set({
-      keyword: b.keyword,
-      cls: b.cls ?? null,
-      categoryMajor: b.big || null,
-      categoryMid: b.mid || null,
-      owner: b.owner ?? null,
-    })
-    .where(and(eq(s.rules.userId, userId), eq(s.rules.id, id)));
+  await db.batch([
+    db
+      .update(s.rules)
+      .set({
+        keyword: b.keyword,
+        cls: b.cls ?? null,
+        categoryMajor: b.big || null,
+        categoryMid: b.mid || null,
+        owner: b.owner ?? null,
+      })
+      .where(and(eq(s.rules.userId, userId), eq(s.rules.id, id))),
+    invalidateJsonSnapshotQuery(db, userId, 'rules'),
+  ]);
   await recompute(db, userId);
   return c.json({ ok: true });
 });
@@ -371,7 +390,10 @@ classifyRoute.delete('/rules/:id', async (c) => {
   const db = getDb(c.env.DB);
   const id = Number(c.req.param('id'));
   if (!Number.isInteger(id)) return c.json({ error: { code: 'bad_id', message: 'IDが不正です' } }, 400);
-  await db.delete(s.rules).where(and(eq(s.rules.userId, userId), eq(s.rules.id, id)));
+  await db.batch([
+    db.delete(s.rules).where(and(eq(s.rules.userId, userId), eq(s.rules.id, id))),
+    invalidateJsonSnapshotQuery(db, userId, 'rules'),
+  ]);
   await recompute(db, userId);
   return c.json({ ok: true });
 });
@@ -382,12 +404,26 @@ classifyRoute.patch('/rules', zValidator('json', reorderSchema), async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
   const { order } = c.req.valid('json');
-  for (let i = 0; i < order.length; i++) {
-    await db
+  const rows = await loadOrderedRuleRows(db, userId);
+  const expected = new Set(rows.map((row) => row.id));
+  if (
+    order.length !== rows.length ||
+    new Set(order).size !== order.length ||
+    order.some((id) => !expected.has(id))
+  ) {
+    return c.json(
+      { error: { code: 'invalid_rule_order', message: 'ルール全件を重複なく並べてください' } },
+      400,
+    );
+  }
+  const updates = order.map((id, i) =>
+    db
       .update(s.rules)
       .set({ sortOrder: i })
-      .where(and(eq(s.rules.userId, userId), eq(s.rules.id, order[i])));
-  }
+      .where(and(eq(s.rules.userId, userId), eq(s.rules.id, id))),
+  );
+  if (updates.length)
+    await db.batch([updates[0], ...updates.slice(1), invalidateJsonSnapshotQuery(db, userId, 'rules')]);
   await recompute(db, userId);
   return c.json({ ok: true });
 });

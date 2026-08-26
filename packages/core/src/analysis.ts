@@ -3,7 +3,7 @@
  * 年次比較はHTML版の '2025'/'2026' 固定を「前年/当年（データ最終月の年）」に一般化した。
  */
 import { mean, median, movingAvg, std, sum, yearOf } from './stats.js';
-import type { CatProfile, Dataset, OwnerKey, OwnerMonth } from './types.js';
+import { type CatProfile, type Dataset, OWNER_VALUES, type OwnerKey, type OwnerMonth } from './types.js';
 
 export function catSeries(data: Dataset, c: string): number[] {
   return data.biz.expense[c] || data.months.map(() => 0);
@@ -506,7 +506,7 @@ export interface HouseholdData {
   livingCost: LivingCostRow[];
   /** 事業(freee帳簿) と 個人(MF・仕分け「個人」) を並べた比較 */
   comparison: Comparison;
-  /** 個人分の名義別(本人/妻/未設定)。根拠は MF の保有金融機関→名義の設定と手動編集 */
+  /** 個人分の名義別(事業/妻/家族/未設定)。根拠は MF の保有金融機関→名義の設定と手動編集 */
   byOwner: ByOwner;
 }
 
@@ -540,8 +540,9 @@ export interface Comparison {
 
 export interface OwnerRow {
   month: string;
-  self: OwnerMonth;
+  business: OwnerMonth;
   spouse: OwnerMonth;
+  family: OwnerMonth;
   unset: OwnerMonth;
 }
 export interface OwnerTotal {
@@ -688,7 +689,7 @@ export function comparison(data: Dataset, personalMonths: string[]): Comparison 
   };
 }
 
-const OWNER_KEYS: OwnerKey[] = ['self', 'spouse', 'unset'];
+const OWNER_KEYS: OwnerKey[] = [...OWNER_VALUES, 'unset'];
 
 /** 個人分を名義別に並べる。名義の根拠は保有金融機関→名義の設定・ルール・手動編集 */
 export function byOwner(data: Dataset, months: string[]): ByOwner {
@@ -697,10 +698,18 @@ export function byOwner(data: Dataset, months: string[]): ByOwner {
     .filter((m) => data.personalByOwner[m])
     .map((m) => {
       const o = data.personalByOwner[m];
-      return { month: m, self: o.self ?? zero(), spouse: o.spouse ?? zero(), unset: o.unset ?? zero() };
+      return {
+        month: m,
+        business: o.business ?? zero(),
+        spouse: o.spouse ?? zero(),
+        family: o.family ?? zero(),
+        unset: o.unset ?? zero(),
+      };
     });
   const n = rows.length;
-  const grandIncome = sum(rows.map((r) => r.self.income + r.spouse.income + r.unset.income));
+  const grandIncome = sum(
+    rows.map((r) => r.business.income + r.spouse.income + r.family.income + r.unset.income),
+  );
   const totals = {} as Record<OwnerKey, OwnerTotal>;
   for (const k of OWNER_KEYS) {
     const income = sum(rows.map((r) => r[k].income));
