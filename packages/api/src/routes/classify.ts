@@ -9,12 +9,15 @@ import {
   type Candidates,
   DEFAULT_RULES,
   OWNER_VALUES,
+  PAYMENT_METHOD_VALUES,
   type Rule,
   type TxEdit,
   buildCandidates,
   categoryAllowed,
   categoryRejectReason,
+  classificationProgress,
   parseMfAttachmentTarget,
+  paymentMethodOf,
   resolveTx,
   ruleMatches,
   sum,
@@ -82,6 +85,7 @@ classifyRoute.get('/transactions', async (c) => {
   const owner = c.req.query('owner') ?? '';
   const q = (c.req.query('q') ?? '').toUpperCase();
   const manualOnly = c.req.query('manual') === '1';
+  const method = c.req.query('method') ?? '';
 
   const months = [...new Set(data.mfTx.map((t) => t.m))].sort();
   const m = month && months.includes(month) ? month : (months[months.length - 1] ?? null);
@@ -106,6 +110,8 @@ classifyRoute.get('/transactions', async (c) => {
         description: t.c,
         amount: t.a,
         institution: t.inst ?? null,
+        /** 支払手段(口座名と現金IDからの導出。MF自身は列を持たない) */
+        paymentMethod: paymentMethodOf(t),
         /** 取込値(MFの大項目/中項目) */
         csvBig: t.big,
         csvMid: t.mid,
@@ -140,6 +146,7 @@ classifyRoute.get('/transactions', async (c) => {
         if (r.owner !== owner) return false;
       } else if (owner === 'unset' && r.owner !== null) return false;
       if (manualOnly && !r.edited) return false;
+      if (PAYMENT_METHOD_VALUES.some((value) => value === method) && r.paymentMethod !== method) return false;
       if (
         q &&
         !`${r.description}|${r.big}|${r.mid}|${r.csvBig}|${r.csvMid}|${r.institution ?? ''}`
@@ -169,6 +176,8 @@ classifyRoute.get('/transactions', async (c) => {
       family: pick((x) => x.r.cls === 'per' && x.t.a > 0 && x.r.owner === 'family'),
       unset: pick((x) => x.r.cls === 'per' && x.t.a > 0 && x.r.owner === null),
     },
+    /** 当月の仕分けの進み具合(件数)。フィルタ前の月全体で数える */
+    progress: classificationProgress(resolved.map((x) => x.r)),
     editedCount: resolved.filter((x) => x.r.edited).length,
     conflictCount: resolved.filter((x) => x.r.conflict).length,
     /** 保有金融機関が無い明細数(旧取込。MF再取込で埋まる) */

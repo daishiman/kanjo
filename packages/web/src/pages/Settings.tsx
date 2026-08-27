@@ -31,6 +31,7 @@ export function SettingsPage() {
     revenue: '',
     expense: '',
   });
+  const [statDraft, setStatDraft] = useState<string | null>(null);
   const restoreInput = useRef<HTMLInputElement>(null);
 
   const save = useMutation({
@@ -39,6 +40,7 @@ export function SettingsPage() {
     onSuccess: () => {
       setNormDraft(null);
       setUnrecDraft(null);
+      setStatDraft(null);
       void qc.invalidateQueries();
     },
   });
@@ -68,6 +70,10 @@ export function SettingsPage() {
   const s = q.data;
   const norm = normDraft ?? Object.entries(s.normMap);
   const unrec = unrecDraft ?? s.unrecordedExpMonths.join(', ');
+  const statRange = s.statMinMonthsRange;
+  const stat = statDraft ?? String(s.statMinMonths);
+  const statValue = Number(stat);
+  const statValid = Number.isInteger(statValue) && statValue >= statRange.min && statValue <= statRange.max;
 
   return (
     <>
@@ -166,6 +172,46 @@ export function SettingsPage() {
             保存
           </button>
         </div>
+      </div>
+
+      <div className="card">
+        <h2>AI分析の統計の基準月数</h2>
+        <p className="sub">
+          平均・標準偏差・移動平均・固定費/変動費の判定に、記帳済みの月が何ヶ月あれば「判断してよい」とするかの
+          基準です。既定は{statRange.default}ヶ月({statRange.min}〜{statRange.max}
+          ヶ月)。短くすると早く図が出ますが、少ない月数で決めるぶん外れやすくなります。
+          年で決まる指標(前年同月比・季節性)は暦の周期が要るので、この設定では短くなりません。
+        </p>
+        <div className="toolbar">
+          <label htmlFor="stat-min-months">記帳済みの月が</label>
+          <input
+            id="stat-min-months"
+            className="num-input"
+            type="number"
+            min={statRange.min}
+            max={statRange.max}
+            step={1}
+            value={stat}
+            onChange={(e) => setStatDraft(e.target.value)}
+          />
+          <span>ヶ月以上で統計を使う</span>
+          <button
+            type="button"
+            className="primary"
+            disabled={statDraft === null || !statValid || save.isPending}
+            onClick={() => save.mutate({ statMinMonths: statValue })}
+          >
+            保存
+          </button>
+          {statDraft !== null && !statValid && (
+            <span className="sub">
+              {statRange.min}〜{statRange.max} の整数で入力してください。
+            </span>
+          )}
+        </div>
+        <p className="sub">
+          変更は次に作る指示文から反映されます(保存済みのレポートの図は当時の基準のまま残ります)。
+        </p>
       </div>
 
       <div className="card">

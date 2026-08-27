@@ -55,6 +55,7 @@
   },
   "subs": {
     "vendors": ["Anthropic", ...],
+    "accounts": { "Amazon": ["通信費（原本）"] }, // 支払先ごとのaccount_raw。空/未指定なら全科目
     "matrix":  { "Anthropic": [3124, ...] },
     "other":   [24826, ...]               // vendors に含まれない分
   },
@@ -72,12 +73,14 @@
   "institutionOwners": { "<保有金融機関>": "business" }, // 口座→名義(business=事業 / spouse=妻 / family=家族)
   "overrides": { "<明細ID>": "biz" },                  // 旧形式(edits.cls から導出。復元時の後方互換用)
   "personalByOwner": { "2026-07": { "business": { "income": 0, "expense": 0 }, "spouse": {...}, "family": {...}, "unset": {...} } }, // 名義別の個人分(導出値)
-  "cashEntries": [{ "id": 1, "date": "2026-07-15", "month": "2026-07", "side": "per", "io": "expense", "amount": 500, "description": "架空現金", "categoryMajor": "食費", "categoryMid": "食料品", "memo": null }], // API export/夜間backupだけの別枠。restoreは明細を復元しない
+  "cashEntries": [{ "id": 1, "date": "2026-07-15", "month": "2026-07", "side": "per", "io": "expense", "amount": 500, "description": "架空現金", "categoryMajor": "食費", "categoryMid": "食料品", "memo": null }], // API export/夜間backupだけの別枠。restoreは移行先が空かつ予算内のときだけ明細をidごと復元する
   "cashProjection": {                     // sourceで実際に加算済みの確定delta
     "version": 1,
     "basis": "post-resolution",
     "rows": [{ "month": "2026-07", "scope": "per_exp:食費", "amount": 500 }]
   },
+  "analysisSettings": { "statMinMonths": 6 }, // durableな分析意図
+  "subVendorExclusions": [{ "partner": "架空家賃" }], // 復元可能な候補除外
   "budgets":   { "サブスク・通信": 80000 },
   "unrecordedExpMonths": ["2026-07"],
   "exportedAt": "2026-08-24T..."
@@ -89,6 +92,22 @@
 1. `months` と、`biz.revenue` / `biz.expense[*]` / `subs.matrix[*]` / `subs.other` の**長さは常に一致する**。新しい月を追加するときは、全系列の同じ位置に 0 を挿入する（`ensureMonth`）。
 2. `personal` / `bizPersonal` / `personalByOwner` は `mfTx` + `rules` + `edits` + `institutionOwners` から**導出される**。手で編集せず、常に再計算する（`applyClassification`）。
 3. `rules` はDBの `(sort_order ASC, id ASC)` をcanonical total orderとし、**属性(公私 / 科目 / 名義)ごとに**その属性を持つ最初のマッチを採用する。JSONではこの順序を配列順として保存する。
+
+## サブスク支払先の対象科目と候補除外
+
+- `sub_vendors.accounts`(TEXT, JSON配列, 既定 `'[]'`)は、その支払先を**その原本科目名(`account_raw`)で記帳されたときだけ**サブスクに数える安定参照。空配列なら従来どおり全科目を数える。旧normalized labelは読取互換し、正規化map更新時にrawへ展開する。同名rawと衝突して解釈が曖昧な場合は、そのraw自体を保ちながら旧labelに属する全rawも残す。
+- `matchSubVendor(partner, vendors, account?)` は**先に科目で候補を絞ってから**名前・エイリアスを照合する。科目を渡さない呼び出し(候補一覧の「登録済みか」判定など)は絞り込みを行わない。
+- `sub_vendor_exclusions (user_id, partner, vendor_key)` は「これはサブスクではない」と記録した支払先。候補表示に効くdurable intentで、backup/restore/fingerprint対象。行を消せば除外は取り消せる。
+
+## 状態分類（正本）
+
+| 状態 | 例 | backup / restore | fingerprint | cache・lease・保持 |
+|---|---|---|---|---|
+| canonical原本 | freee/MF、cash、rules、edits、budgets、owners、norm map、sub vendors | 対象（freee原本はCSV再取込） | 実効write-set | `monthly_agg`を無効化しwriter lease下で永続保持 |
+| durable intent | `analysis_settings`、`sub_vendor_exclusions` | 対象・移行先と非破壊merge | 対象 | JSON pointerを同batchで無効化し永続保持 |
+| derived cache | `monthly_agg`、JSON active pointer | 原本から再生成 | 対象外 | mutationで無効化、再計算可能 |
+| 外部原本/棚卸し | R2添付、`attachmentArchive` | 汎用restore対象外。hash/size一致時だけ明示回復 | 対象外 | lifecycle/retentionをR2契約で管理 |
+| disposable UI | filter、開閉、未保存draft | 対象外 | 対象外 | 画面/セッション内のみ |
 
 ## 手動編集(オーバーライド)の設計
 
@@ -106,7 +125,8 @@
 | `institution_owners` | `保有金融機関` → canonical名義(`business`/`spouse`/`family`)。未設定は行を持たず、`unset`は集計時だけ導出 |
 | `category_options` | 候補科目の追加分。`scope`(`biz`=事業/`per`=家計)で系統を持つ(0002 マイグレーション)。取込値由来の候補と合わせて候補一覧になる |
 | `ai_tasks` | AI分析の依頼(0003)。`period_kind`(`month`/`year`)+`period_key`、使い捨てトークンの SHA-256(`token_hash`、原文は保存しない)、`expires_at`(24時間)、`used_at`(結果受信で確定=1回きり)、`report_id` |
-| `ai_reports` | AIから届いた分析レポート(0003)。`body_json` は固定5節(`spend`/`change`/`reduction`/`split`/`subscriptions`)+`dataGaps` を無害化済みのプレーンテキストで保持。明細は含まない(集計値と本文だけ) |
+| `ai_reports` | AIから届いた分析レポート(0003)。`body_json` は固定5節(`spend`/`change`/`reduction`/`split`/`subscriptions`)+`dataGaps` を無害化済みのプレーンテキストで保持。明細は含まない(集計値と本文だけ)。`archived_at` は片付け用(0018)で、入れると既定の一覧から外れるだけで本文は消えない |
+| `analysis_settings` | AI分析の統計指標の基準月数(0019)。利用者ごとに1行だけ持ち、`stat_min_months`(3〜24、既定6)を保存する。記帳の正本には触れないため、変更しても集計スナップショットの作り直しは要らない |
 | `overrides` | 旧テーブル。`tx_edits` へ移行済み(読み取りは `tx_edits` のみ) |
 | `cash_entries` | 現金の記帳(0006、ID非再利用は0007、交通費は0010/0011)。口座・カード明細に出ない現金の受け渡しを明細として持つ。`id` は `AUTOINCREMENT` で削除後も再利用しない。`transit_from/to`は支出で対にし、`receipt_waived`は区間がある場合のみ許可する。取込値とは別テーブルなので再取込で消えない |
 | `attachments` | 証憑メタデータ(0010、identity/lifecycleは0011、原本・親の単調factは0012)。添付先を`target_kind`(`cash`/`mf`)+`target_key`で型付き保存する。原本バイトはR2のみ |
@@ -202,7 +222,7 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 - 原本freee/MFが無い復元月は `restored_monthly_agg` をbaselineとし、`baseline + 現在のcash_entries` を `monthly_agg` へ再生成する。同月に原本がある場合は原本を正とし、baselineは加算しない。
 - 適用済みmigrationは不変とする。0006は現金明細/指紋だけを追加し、0007が`restored_monthly_agg`とAUTOINCREMENT再構築を追加する。旧`monthly_agg`の自動baseline移行は、事業scopeでは同月`side='biz'`現金とfreee原本、個人/bizPersonal scopeでは同月`side='per'`現金とMF原本が無い場合だけ行う。反対domainの現金だけなら安全なbaselineを移行し、同domainのprovenance不明値は二重固定しない。
 - API exportと夜間バックアップは、`monthly_agg`を使わず、baseline・freee/MF原本・rules・edits・owners・sub vendors・norm map・cash・budgets/override等を単一D1 read statementで取得する。同じcanonical snapshotから集計と、監査用raw `cashEntries`、source側で解決済みの `cashProjection` v1 (`basis='post-resolution'`) を一度だけ生成する。行はcanonical `month/scope`ごとに集約・決定順とし、export集計を超えるdeltaなら出力を失敗させる。
-- restore/JSON取込は現金明細を復元せず、有効な`cashProjection`の確定deltaだけを集計から厳密に差し引く。destination側の設定では再投影しない。未知version/basis/scope、重複行、欠落、非正整数、集計を超えるdeltaは書込み前に400とし、0へのclampで隠さない。有効な空rowsは正常。`cashProjection`なしで`cashEntries`が非空ならsource semantics不明として拒否し、両方なし（または空cashEntries）のpre-cash legacyだけ互換受理する。
+- restore/JSON取込は、有効な`cashProjection`の確定deltaを集計から厳密に差し引く。そのうえで移行先に`cash_entries`が1件も無い初期移行のときだけ、backupの`cashEntries`をidごと復元して同じdeltaを戻す(idは`cash:<id>` editと添付の宛先のため採番し直さない)。49 query予算に載らない場合は記帳だけ見送り、応答の`cashSkipped`で件数を返す。移行先に記帳があるときは復元せず`cashKept`で件数を返す。destination側の設定では再投影しない。未知version/basis/scope、重複行、欠落、非正整数、集計を超えるdeltaは書込み前に400とし、0へのclampで隠さない。有効な空rowsは正常。`cashProjection`なしで`cashEntries`が非空ならsource semantics不明として拒否し、両方なし（または空cashEntries）のpre-cash legacyだけ互換受理する。
 - restoreではJSON source内の `cash:*` edit/overridesを破棄する。同一DBに既存cashがある場合は、その現存IDに対応するdestination側の既存editだけをcandidateへ戻し、永続化行・集計・指紋をすべてそのcandidateから生成する。これにより、新DBで後から同じIDが採番されてもbackup由来editが誤付着しない。
 
 ## 仕分けルールの順序契約
@@ -226,4 +246,4 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 
 - `import_runs`/`imports`は取込監査の正本として自動削除しない。`import_active_targets.import_id`または`imports.duplicate_of`から参照中のattempt metadataは保持する。`failed`/`superseded`のR2原本は既定30日後に共通cleanup ledgerがexact keyだけを削除し、成功後は`imports.r2_key=NULL`へして原本なしの事実を表す。run/unitの件数・対象月・指紋・状態・失敗理由は保持する。期限付きclaimへ永続履歴と同じFK/保持規則を適用しない。
 - JSONのactive pointerは、`cash_entries`/`rules`/`tx_edits`/`institution_owners`/`budgets`/`account_norm_map`/`unrecorded_months`/`cash_overrides`/`sub_vendors`/freee・MF原本/復元baselineの変更と同じD1 batchで無効化する。JSON restore自身は新pointerをcommit batchで設定するため、設定変更後の同じJSONは再適用、無変更の連続取込だけが`duplicate`になる。
-- multipart JSONと`POST /restore`は同じrestore commit builderと状態遷移を使う。JSONはMF原本の含有月を洗い替え、rules/edits/institution owners/budgets/cash override/復元baseline/未記帳月を置換し、sub vendor名は追加する。freee原本、現金明細、現存現金用editは保持する。`POST /restore`は直接JSON bodyを受けるためR2原本を作らない。
+- multipart JSONと`POST /restore`は同じrestore commit builderと状態遷移を使う。JSONはMF原本の含有月を洗い替え、rules/edits/institution owners/budgets/cash override/復元baseline/未記帳月を置換し、sub vendor名は追加する。freee原本と現存現金用editは保持する。現金明細は移行先が空かつ予算内のときだけ復元する。`POST /restore`は直接JSON bodyを受けるためR2原本を作らない。

@@ -8,6 +8,7 @@ import type { ChartOptions, ChartData as CjsData } from 'chart.js';
 import type { ReactNode } from 'react';
 import { Chart } from 'react-chartjs-2';
 import type { AiChartSeries, AiReportChart } from '../api.js';
+import { tooltipOptions, tooltipTitle, tooltipValue } from './chart-tooltip.js';
 import { COLORS, VENDOR_PALETTE, yenTick } from './charts.js';
 
 const PALETTE = [COLORS.biz, COLORS.per, COLORS.warn, COLORS.good, ...VENDOR_PALETTE.slice(4)];
@@ -24,7 +25,11 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
   const base: ChartOptions = {
     responsive: true,
     scales: { x: {}, y: { ticks: tick ? { callback: tick } : undefined } },
-    plugins: { legend: { position: 'bottom', display: d.series.length > 1 } },
+    plugins: {
+      legend: { position: 'bottom', display: d.series.length > 1 },
+      // 触れたときの文言は用語辞書とそろえる(chart-tooltip.ts)
+      tooltip: tooltipOptions(chart.unit),
+    },
   };
   const bar = (sr: AiChartSeries, i: number) => ({
     type: 'bar' as const,
@@ -107,7 +112,17 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
             { label: '金額', data: floats as unknown as number[], backgroundColor: colors, borderWidth: 0 },
           ],
         },
-        options: { ...base, plugins: { legend: { display: false } } },
+        options: {
+          ...base,
+          plugins: {
+            legend: { display: false },
+            tooltip: tooltipOptions(
+              chart.unit,
+              [],
+              d.labels.map((_, i) => (total[i] != null ? null : (delta[i] ?? 0))),
+            ),
+          },
+        },
       };
     }
     case 'pareto': {
@@ -124,6 +139,11 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
         },
         options: {
           ...base,
+          // 累積構成比だけは右軸の割合として読ませる
+          plugins: {
+            ...base.plugins,
+            tooltip: tooltipOptions(chart.unit, cum ? [cum.label] : []),
+          },
           scales: {
             x: {},
             y: { ticks: tick ? { callback: tick } : undefined },
@@ -166,6 +186,61 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
   }
 }
 
+/**
+ * ヒートマップ(図9)。Chart.js に行列を描く仕組みが無いので、色を塗った表として出す。
+ * 濃さは「行(科目)の中での大小」。行ごとに最大月を最も濃くするので、行をまたいだ濃さの比較はしない。
+ */
+function HeatmapTable({ chart }: { chart: AiReportChart }) {
+  const d = chart.data ?? { labels: [], series: [] };
+  return (
+    <div className="heatmap-scroll">
+      <table className="data heatmap">
+        <thead>
+          <tr>
+            <th scope="col">科目</th>
+            {d.labels.map((l) => (
+              <th key={l} scope="col" className="num">
+                {tooltipTitle(l)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {d.series.map((sr) => {
+            const max = sr.data.reduce<number>((m, v) => Math.max(m, v ?? 0), 0);
+            return (
+              <tr key={sr.label}>
+                <th scope="row">{sr.label}</th>
+                {sr.data.map((v, i) => (
+                  <td
+                    // 月ラベルと1対1で並ぶ固定長の列なので、行名+月ラベルで一意になる
+                    key={`${sr.label}-${d.labels[i] ?? i}`}
+                    className="num heat"
+                    style={
+                      v == null || max <= 0
+                        ? undefined
+                        : { backgroundColor: `${COLORS.biz}${shade(v / max)}` }
+                    }
+                    title={`${sr.label} ${tooltipTitle(d.labels[i] ?? '')}: ${tooltipValue(v, chart.unit)}`}
+                  >
+                    {v == null ? '' : yenTick(v)}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/** 0〜1 の割合を16進の不透明度(薄い 0x0d 〜 濃い 0xe6)にする */
+function shade(ratio: number): string {
+  const a = Math.round(13 + Math.min(1, Math.max(0, ratio)) * (230 - 13));
+  return a.toString(16).padStart(2, '0');
+}
+
 const STATUS_TEXT: Record<AiReportChart['status'], string> = {
   ok: '',
   source_missing: '元データが足りません',
@@ -199,7 +274,11 @@ export function ReportChartView({ chart, caption }: { chart: AiReportChart; capt
         <span className="figure-no">{figure}</span> {chart.title}
         {chart.granularity === 'quarter' && <span className="sub">(四半期ごと)</span>}
       </h4>
-      <Chart type={type} height={120} data={data} options={options} />
+      {chart.kind === 'heatmap' ? (
+        <HeatmapTable chart={chart} />
+      ) : (
+        <Chart type={type} height={120} data={data} options={options} />
+      )}
       <p className="chart-guide">
         <span className="sub">読み方: </span>
         {chart.readingGuide}

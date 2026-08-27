@@ -127,7 +127,7 @@ export function HouseholdPage() {
           事業はfreeeの売上と事業経費、個人はMF明細で「個人」と仕分けた収入と生活費。片方しか無い月は「—」。合計はデータのある月数で平均します。
         </p>
         <div className="scroll-x">
-          <table className="data">
+          <table className="data stack-sm">
             <thead>
               <tr>
                 <th rowSpan={2}>月</th>
@@ -146,13 +146,25 @@ export function HouseholdPage() {
             <tbody>
               {d.comparison.rows.map((r) => (
                 <tr key={r.month} className={r.month === month ? 'selected' : undefined}>
-                  <td>{monthLabel(r.month)}</td>
-                  <td className="num">{yen(r.biz.income)}</td>
-                  <td className="num">{yen(r.biz.expense)}</td>
-                  <td className={`num ${gainCls(r.biz.balance)}`}>{yenS(r.biz.balance)}</td>
-                  <td className="num">{yen(r.personal.income)}</td>
-                  <td className="num">{yen(r.personal.expense)}</td>
-                  <td className={`num ${gainCls(r.personal.balance)}`}>{yenS(r.personal.balance)}</td>
+                  <td data-label="月">{monthLabel(r.month)}</td>
+                  <td data-label="事業 売上" className="num">
+                    {yen(r.biz.income)}
+                  </td>
+                  <td data-label="事業 経費" className="num">
+                    {yen(r.biz.expense)}
+                  </td>
+                  <td data-label="事業 収支" className={`num ${gainCls(r.biz.balance)}`}>
+                    {yenS(r.biz.balance)}
+                  </td>
+                  <td data-label="個人 収入" className="num">
+                    {yen(r.personal.income)}
+                  </td>
+                  <td data-label="個人 生活費" className="num">
+                    {yen(r.personal.expense)}
+                  </td>
+                  <td data-label="個人 収支" className={`num ${gainCls(r.personal.balance)}`}>
+                    {yenS(r.personal.balance)}
+                  </td>
                 </tr>
               ))}
               {(
@@ -166,18 +178,30 @@ export function HouseholdPage() {
                 const p = pick(d.comparison.personal);
                 return (
                   <tr key={label} className={isTotal ? 'total' : undefined}>
-                    <td>
+                    <td data-label="月">
                       {label}
                       {isTotal
                         ? `(事業${d.comparison.biz.months}ヶ月 / 個人${d.comparison.personal.months}ヶ月)`
                         : ''}
                     </td>
-                    <td className="num">{yen(b.income)}</td>
-                    <td className="num">{yen(b.expense)}</td>
-                    <td className={`num ${gainCls(b.balance)}`}>{yenS(b.balance)}</td>
-                    <td className="num">{yen(p.income)}</td>
-                    <td className="num">{yen(p.expense)}</td>
-                    <td className={`num ${gainCls(p.balance)}`}>{yenS(p.balance)}</td>
+                    <td data-label="事業 売上" className="num">
+                      {yen(b.income)}
+                    </td>
+                    <td data-label="事業 経費" className="num">
+                      {yen(b.expense)}
+                    </td>
+                    <td data-label="事業 収支" className={`num ${gainCls(b.balance)}`}>
+                      {yenS(b.balance)}
+                    </td>
+                    <td data-label="個人 収入" className="num">
+                      {yen(p.income)}
+                    </td>
+                    <td data-label="個人 生活費" className="num">
+                      {yen(p.expense)}
+                    </td>
+                    <td data-label="個人 収支" className={`num ${gainCls(p.balance)}`}>
+                      {yenS(p.balance)}
+                    </td>
                   </tr>
                 );
               })}
@@ -212,7 +236,7 @@ export function HouseholdPage() {
           />
         )}
         <div className="scroll-x">
-          <table className="data">
+          <table className="data stack-sm">
             <thead>
               <tr>
                 <th>月</th>
@@ -232,43 +256,89 @@ export function HouseholdPage() {
             <tbody>
               {d.balance.map((b) => (
                 <tr key={b.month} className={b.month === month ? 'selected' : undefined}>
-                  <td>{monthLabel(b.month)}</td>
-                  <td className="num">{yen(b.income)}</td>
-                  <td className="num">{yen(b.livingCost)}</td>
-                  <td className="num">{yen(b.bizAdvance)}</td>
-                  <td className="num">{yen(b.expense)}</td>
-                  <td className={`num ${gainCls(b.balance)}`}>{yenS(b.balance)}</td>
-                  <td className="num">{rate(b.saveRate)}</td>
-                  <td className="num">{b.bizExpense === null ? '—' : yen(b.bizExpense)}</td>
+                  <td data-label="月">{monthLabel(b.month)}</td>
+                  <td data-label="収入計" className="num">
+                    {yen(b.income)}
+                  </td>
+                  <td data-label="生活費" className="num">
+                    {yen(b.livingCost)}
+                  </td>
+                  <td data-label="事業立替" className="num">
+                    {yen(b.bizAdvance)}
+                  </td>
+                  <td data-label="支出計" className="num">
+                    {yen(b.expense)}
+                  </td>
+                  <td data-label="収支" className={`num ${gainCls(b.balance)}`}>
+                    {yenS(b.balance)}
+                  </td>
+                  <td data-label="貯蓄率" className="num">
+                    {rate(b.saveRate)}
+                  </td>
+                  <td data-label="freee 事業経費" className="num">
+                    {b.bizExpense === null ? '—' : yen(b.bizExpense)}
+                  </td>
                 </tr>
               ))}
               <tr className="total">
-                <td>合計({t.months}ヶ月)</td>
-                <td className="num">{yen(t.income)}</td>
-                <td className="num">{yen(t.livingCost)}</td>
-                <td className="num">{yen(t.bizAdvance)}</td>
-                <td className="num">{yen(t.expense)}</td>
-                <td className={`num ${gainCls(t.balance)}`}>{yenS(t.balance)}</td>
-                <td className="num">{rate(t.saveRate)}</td>
+                <td data-label="月">合計({t.months}ヶ月)</td>
+                <td data-label="収入計" className="num">
+                  {yen(t.income)}
+                </td>
+                <td data-label="生活費" className="num">
+                  {yen(t.livingCost)}
+                </td>
+                <td data-label="事業立替" className="num">
+                  {yen(t.bizAdvance)}
+                </td>
+                <td data-label="支出計" className="num">
+                  {yen(t.expense)}
+                </td>
+                <td data-label="収支" className={`num ${gainCls(t.balance)}`}>
+                  {yenS(t.balance)}
+                </td>
+                <td data-label="貯蓄率" className="num">
+                  {rate(t.saveRate)}
+                </td>
                 <td />
               </tr>
               <tr>
-                <td>月平均</td>
-                <td className="num">{yen(t.monthlyAvg.income)}</td>
-                <td className="num">{yen(t.monthlyAvg.livingCost)}</td>
-                <td className="num">{yen(t.monthlyAvg.expense - t.monthlyAvg.livingCost)}</td>
-                <td className="num">{yen(t.monthlyAvg.expense)}</td>
-                <td className={`num ${gainCls(t.monthlyAvg.balance)}`}>{yenS(t.monthlyAvg.balance)}</td>
+                <td data-label="月">月平均</td>
+                <td data-label="収入計" className="num">
+                  {yen(t.monthlyAvg.income)}
+                </td>
+                <td data-label="生活費" className="num">
+                  {yen(t.monthlyAvg.livingCost)}
+                </td>
+                <td data-label="事業立替" className="num">
+                  {yen(t.monthlyAvg.expense - t.monthlyAvg.livingCost)}
+                </td>
+                <td data-label="支出計" className="num">
+                  {yen(t.monthlyAvg.expense)}
+                </td>
+                <td data-label="収支" className={`num ${gainCls(t.monthlyAvg.balance)}`}>
+                  {yenS(t.monthlyAvg.balance)}
+                </td>
                 <td />
                 <td />
               </tr>
               <tr>
-                <td>年換算(月平均×12)</td>
-                <td className="num">{yen(t.annualized.income)}</td>
-                <td className="num">{yen(t.annualized.livingCost)}</td>
-                <td className="num">{yen(t.annualized.expense - t.annualized.livingCost)}</td>
-                <td className="num">{yen(t.annualized.expense)}</td>
-                <td className={`num ${gainCls(t.annualized.balance)}`}>{yenS(t.annualized.balance)}</td>
+                <td data-label="月">年換算(月平均×12)</td>
+                <td data-label="収入計" className="num">
+                  {yen(t.annualized.income)}
+                </td>
+                <td data-label="生活費" className="num">
+                  {yen(t.annualized.livingCost)}
+                </td>
+                <td data-label="事業立替" className="num">
+                  {yen(t.annualized.expense - t.annualized.livingCost)}
+                </td>
+                <td data-label="支出計" className="num">
+                  {yen(t.annualized.expense)}
+                </td>
+                <td data-label="収支" className={`num ${gainCls(t.annualized.balance)}`}>
+                  {yenS(t.annualized.balance)}
+                </td>
                 <td />
                 <td />
               </tr>
@@ -279,7 +349,7 @@ export function HouseholdPage() {
 
       <div className="card scroll-x">
         <h2>生活費の内訳(全期間 {t.months}ヶ月・大項目別)</h2>
-        <table className="data">
+        <table className="data stack-sm">
           <thead>
             <tr>
               <th>大項目</th>
@@ -294,19 +364,35 @@ export function HouseholdPage() {
           <tbody>
             {d.livingCost.map((r) => (
               <tr key={r.big}>
-                <td>{r.big}</td>
-                <td className="num">{yen(r.total)}</td>
-                <td className="num">{yen(r.monthlyAvg)}</td>
-                <td className="num">{yen(r.annualized)}</td>
-                <td className="num">{ratio(r.share, 0)}</td>
+                <td data-label="大項目">{r.big}</td>
+                <td data-label="合計" className="num">
+                  {yen(r.total)}
+                </td>
+                <td data-label="月平均" className="num">
+                  {yen(r.monthlyAvg)}
+                </td>
+                <td data-label="年換算" className="num">
+                  {yen(r.annualized)}
+                </td>
+                <td data-label="構成比" className="num">
+                  {ratio(r.share, 0)}
+                </td>
               </tr>
             ))}
             <tr className="total">
-              <td>生活費計</td>
-              <td className="num">{yen(t.livingCost)}</td>
-              <td className="num">{yen(t.monthlyAvg.livingCost)}</td>
-              <td className="num">{yen(t.annualized.livingCost)}</td>
-              <td className="num">100%</td>
+              <td data-label="大項目">生活費計</td>
+              <td data-label="合計" className="num">
+                {yen(t.livingCost)}
+              </td>
+              <td data-label="月平均" className="num">
+                {yen(t.monthlyAvg.livingCost)}
+              </td>
+              <td data-label="年換算" className="num">
+                {yen(t.annualized.livingCost)}
+              </td>
+              <td data-label="構成比" className="num">
+                100%
+              </td>
             </tr>
           </tbody>
         </table>
@@ -314,7 +400,7 @@ export function HouseholdPage() {
 
       <div className="card scroll-x">
         <h2>支出内訳(大項目別{prev ? ` / 前月 ${monthLabel(prev)} 比` : ''})</h2>
-        <table className="data">
+        <table className="data stack-sm">
           <thead>
             <tr>
               <th>大項目</th>
@@ -328,21 +414,36 @@ export function HouseholdPage() {
               const p = pv?.expense[k] ?? 0;
               return (
                 <tr key={k}>
-                  <td>{k}</td>
-                  <td className="num">{yen(v)}</td>
-                  {prev && <td className="num">{yen(p)}</td>}
-                  {prev && <td className={`num ${deltaCls(v - p)}`}>{yenS(v - p)}</td>}
+                  <td data-label="大項目">{k}</td>
+                  <td data-label={monthLabel(month)} className="num">
+                    {yen(v)}
+                  </td>
+                  {prev && (
+                    <td data-label="前月" className="num">
+                      {yen(p)}
+                    </td>
+                  )}
+                  {prev && (
+                    <td data-label="増減" className={`num ${deltaCls(v - p)}`}>
+                      {yenS(v - p)}
+                    </td>
+                  )}
                 </tr>
               );
             })}
             <tr className="total">
-              <td>支出計</td>
-              <td className="num">{yen(expTotal)}</td>
+              <td data-label="大項目">支出計</td>
+              <td data-label={monthLabel(month)} className="num">
+                {yen(expTotal)}
+              </td>
               {prev && pv && (
-                <td className="num">{yen(Object.values(pv.expense).reduce((s, v) => s + v, 0))}</td>
+                <td data-label="前月" className="num">
+                  {yen(Object.values(pv.expense).reduce((s, v) => s + v, 0))}
+                </td>
               )}
               {prev && pv && (
                 <td
+                  data-label="増減"
                   className={`num ${deltaCls(expTotal - Object.values(pv.expense).reduce((s, v) => s + v, 0))}`}
                 >
                   {yenS(expTotal - Object.values(pv.expense).reduce((s, v) => s + v, 0))}
@@ -371,7 +472,7 @@ export function HouseholdPage() {
           </div>
         )}
         <div className="scroll-x">
-          <table className="data">
+          <table className="data stack-sm">
             <thead>
               <tr>
                 <th>月</th>
@@ -385,23 +486,39 @@ export function HouseholdPage() {
             <tbody>
               {d.byOwner.rows.map((r) => (
                 <tr key={r.month} className={r.month === month ? 'selected' : undefined}>
-                  <td>{monthLabel(r.month)}</td>
-                  <td className="num">{yen(r.business.income)}</td>
-                  <td className="num">{yen(r.spouse.income)}</td>
-                  <td className="num">{yen(r.family.income)}</td>
-                  <td className="num">{yen(r.unset.income)}</td>
-                  <td className="num">
+                  <td data-label="月">{monthLabel(r.month)}</td>
+                  <td data-label={ownerLabel('business')} className="num">
+                    {yen(r.business.income)}
+                  </td>
+                  <td data-label={ownerLabel('spouse')} className="num">
+                    {yen(r.spouse.income)}
+                  </td>
+                  <td data-label={ownerLabel('family')} className="num">
+                    {yen(r.family.income)}
+                  </td>
+                  <td data-label={ownerLabel(null)} className="num">
+                    {yen(r.unset.income)}
+                  </td>
+                  <td data-label="個人収入計" className="num">
                     {yen(r.business.income + r.spouse.income + r.family.income + r.unset.income)}
                   </td>
                 </tr>
               ))}
               <tr className="total">
-                <td>合計({d.byOwner.rows.length}ヶ月)</td>
-                <td className="num">{yen(d.byOwner.totals.business.income)}</td>
-                <td className="num">{yen(d.byOwner.totals.spouse.income)}</td>
-                <td className="num">{yen(d.byOwner.totals.family.income)}</td>
-                <td className="num">{yen(d.byOwner.totals.unset.income)}</td>
-                <td className="num">
+                <td data-label="月">合計({d.byOwner.rows.length}ヶ月)</td>
+                <td data-label={ownerLabel('business')} className="num">
+                  {yen(d.byOwner.totals.business.income)}
+                </td>
+                <td data-label={ownerLabel('spouse')} className="num">
+                  {yen(d.byOwner.totals.spouse.income)}
+                </td>
+                <td data-label={ownerLabel('family')} className="num">
+                  {yen(d.byOwner.totals.family.income)}
+                </td>
+                <td data-label={ownerLabel(null)} className="num">
+                  {yen(d.byOwner.totals.unset.income)}
+                </td>
+                <td data-label="個人収入計" className="num">
                   {yen(
                     d.byOwner.totals.business.income +
                       d.byOwner.totals.spouse.income +
@@ -411,27 +528,53 @@ export function HouseholdPage() {
                 </td>
               </tr>
               <tr>
-                <td>構成比</td>
-                <td className="num">{ratio(d.byOwner.totals.business.incomeShare, 0)}</td>
-                <td className="num">{ratio(d.byOwner.totals.spouse.incomeShare, 0)}</td>
-                <td className="num">{ratio(d.byOwner.totals.family.incomeShare, 0)}</td>
-                <td className="num">{ratio(d.byOwner.totals.unset.incomeShare, 0)}</td>
-                <td className="num">100%</td>
+                <td data-label="月">構成比</td>
+                <td data-label={ownerLabel('business')} className="num">
+                  {ratio(d.byOwner.totals.business.incomeShare, 0)}
+                </td>
+                <td data-label={ownerLabel('spouse')} className="num">
+                  {ratio(d.byOwner.totals.spouse.incomeShare, 0)}
+                </td>
+                <td data-label={ownerLabel('family')} className="num">
+                  {ratio(d.byOwner.totals.family.incomeShare, 0)}
+                </td>
+                <td data-label={ownerLabel(null)} className="num">
+                  {ratio(d.byOwner.totals.unset.incomeShare, 0)}
+                </td>
+                <td data-label="個人収入計" className="num">
+                  100%
+                </td>
               </tr>
               <tr>
-                <td>月平均</td>
-                <td className="num">{yen(d.byOwner.totals.business.monthlyAvg.income)}</td>
-                <td className="num">{yen(d.byOwner.totals.spouse.monthlyAvg.income)}</td>
-                <td className="num">{yen(d.byOwner.totals.family.monthlyAvg.income)}</td>
-                <td className="num">{yen(d.byOwner.totals.unset.monthlyAvg.income)}</td>
+                <td data-label="月">月平均</td>
+                <td data-label={ownerLabel('business')} className="num">
+                  {yen(d.byOwner.totals.business.monthlyAvg.income)}
+                </td>
+                <td data-label={ownerLabel('spouse')} className="num">
+                  {yen(d.byOwner.totals.spouse.monthlyAvg.income)}
+                </td>
+                <td data-label={ownerLabel('family')} className="num">
+                  {yen(d.byOwner.totals.family.monthlyAvg.income)}
+                </td>
+                <td data-label={ownerLabel(null)} className="num">
+                  {yen(d.byOwner.totals.unset.monthlyAvg.income)}
+                </td>
                 <td />
               </tr>
               <tr>
-                <td>年換算(月平均×12)</td>
-                <td className="num">{yen(d.byOwner.totals.business.annualized.income)}</td>
-                <td className="num">{yen(d.byOwner.totals.spouse.annualized.income)}</td>
-                <td className="num">{yen(d.byOwner.totals.family.annualized.income)}</td>
-                <td className="num">{yen(d.byOwner.totals.unset.annualized.income)}</td>
+                <td data-label="月">年換算(月平均×12)</td>
+                <td data-label={ownerLabel('business')} className="num">
+                  {yen(d.byOwner.totals.business.annualized.income)}
+                </td>
+                <td data-label={ownerLabel('spouse')} className="num">
+                  {yen(d.byOwner.totals.spouse.annualized.income)}
+                </td>
+                <td data-label={ownerLabel('family')} className="num">
+                  {yen(d.byOwner.totals.family.annualized.income)}
+                </td>
+                <td data-label={ownerLabel(null)} className="num">
+                  {yen(d.byOwner.totals.unset.annualized.income)}
+                </td>
                 <td />
               </tr>
             </tbody>
@@ -441,7 +584,7 @@ export function HouseholdPage() {
 
       <div className="card scroll-x">
         <h2>収入内訳(中項目別)</h2>
-        <table className="data">
+        <table className="data stack-sm">
           <thead>
             <tr>
               <th>中項目</th>
@@ -451,8 +594,10 @@ export function HouseholdPage() {
           <tbody>
             {incCats.map(([k, v]) => (
               <tr key={k}>
-                <td>{k}</td>
-                <td className="num">{yen(v)}</td>
+                <td data-label="中項目">{k}</td>
+                <td data-label={monthLabel(month)} className="num">
+                  {yen(v)}
+                </td>
               </tr>
             ))}
           </tbody>

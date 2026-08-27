@@ -8,6 +8,7 @@
 import {
   type CashEntry,
   DEFAULT_RULES,
+  DEFAULT_STAT_MIN_MONTHS,
   type Dataset,
   type FreeeDeal,
   type MfTx,
@@ -22,6 +23,7 @@ import {
   emptyDataset,
   ensureMonth,
   exportJSON,
+  hasSettlementColumns,
   isCashTxId,
   matchSubVendor,
   normalizeAccount,
@@ -348,6 +350,7 @@ export async function loadDataset(
   });
   data.subs.vendors = [...vendorSet];
   data.subs.aliases = Object.fromEntries(vendorRows.map((v) => [v.name, v.aliases]));
+  data.subs.accounts = Object.fromEntries(vendorRows.map((v) => [v.name, v.accounts ?? []]));
   data.subs.vendors.forEach((v) => {
     data.subs.matrix[v] = data.months.map(() => 0);
   });
@@ -494,7 +497,10 @@ export function projectCashContribution(
       addProjection(rows, { month: deal.month, scope: 'biz_rev', amount: deal.amount });
     else {
       addProjection(rows, { month: deal.month, scope: `biz_exp:${deal.accountNorm}`, amount: deal.amount });
-      const vendor = matchSubVendor(deal.partner, vendorDefs);
+      const vendor = matchSubVendor(deal.partner, vendorDefs, {
+        raw: deal.accountRaw,
+        normalized: deal.accountNorm,
+      });
       if (vendor) addProjection(rows, { month: deal.month, scope: `subs:${vendor}`, amount: deal.amount });
       else if (deal.accountNorm === 'サブスク・通信')
         addProjection(rows, { month: deal.month, scope: 'subs_other', amount: deal.amount });
@@ -540,6 +546,14 @@ interface BackupSourceSnapshot {
   cashEntries: CashEntry[];
   attachmentArchive: AttachmentArchiveRecord[];
   normMap: Record<string, string>;
+  statMinMonths: number;
+  subVendorExclusions: Array<{ partner: string; vendorKey: string }>;
+}
+
+export interface ImportRestoreSettingsSnapshot {
+  normMap: Record<string, string>;
+  statMinMonths: number;
+  subVendorExclusions: Array<{ partner: string; vendorKey: string }>;
 }
 
 /**
@@ -612,7 +626,7 @@ FROM institution_owners WHERE user_id = ?
 UNION ALL
 SELECT * FROM (
 SELECT 'vendor', id, sort_order, NULL,
-       name, aliases, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       name, aliases, accounts, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendors WHERE user_id = ?
 UNION ALL
 SELECT 'cash', id, NULL, amount,
@@ -628,11 +642,21 @@ SELECT 'attachment', id, delete_attempts, size,
        delete_requested_at, last_delete_error, object_deleted_at, parent_missing_at, cleanup_dead_letter_at
 FROM attachments WHERE user_id = ?
 )
+UNION ALL
+SELECT * FROM (
+SELECT 'analysis_setting', NULL, NULL, stat_min_months,
+       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM analysis_settings WHERE user_id = ?
+UNION ALL
+SELECT 'sub_vendor_exclusion', id, NULL, NULL,
+       partner, vendor_key, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM sub_vendor_exclusions WHERE user_id = ?
+)
 ORDER BY source, rank, id, v1, v2`;
 
 /** export用canonical rowsを、単一D1 read statementから型付きsnapshotへ変換する。 */
 async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupSourceSnapshot> {
-  const params = Array.from({ length: 13 }, () => userId);
+  const params = Array.from({ length: 15 }, () => userId);
   const result = await db.$client
     .prepare(BACKUP_SNAPSHOT_SQL)
     .bind(...params)
@@ -705,7 +729,12 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
   }
   const vendors = bySource('vendor')
     .sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0) || (a.id ?? 0) - (b.id ?? 0))
-    .map((row) => ({ id: row.id ?? 0, name: row.v1 ?? '', aliases: parseAliases(row.v2 ?? '[]') }));
+    .map((row) => ({
+      id: row.id ?? 0,
+      name: row.v1 ?? '',
+      aliases: parseStringArray(row.v2 ?? '[]'),
+      accounts: parseStringArray(row.v3 ?? '[]'),
+    }));
   const budgets: Dataset['budgets'] = {};
   for (const row of bySource('budget')) if (row.amount != null) budgets[row.v1 ?? ''] = row.amount;
   const cashOverride: Dataset['cashOverride'] = {};
@@ -755,6 +784,11 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
   );
   const normMap: Record<string, string> = {};
   for (const row of bySource('norm')) normMap[row.v1 ?? ''] = row.v2 ?? '';
+  const statMinMonths = bySource('analysis_setting')[0]?.amount ?? DEFAULT_STAT_MIN_MONTHS;
+  const subVendorExclusions = bySource('sub_vendor_exclusion').map((row) => ({
+    partner: row.v1 ?? '',
+    vendorKey: row.v2 ?? '',
+  }));
 
   return {
     baselineRows,
@@ -770,6 +804,40 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     cashEntries,
     attachmentArchive,
     normMap,
+    statMinMonths,
+    subVendorExclusions,
+  };
+}
+
+/** restore planningが使う設定群を1 statement snapshotで読む。query budgetを増やさない。 */
+export async function loadImportRestoreSettingsSnapshot(
+  db: Db,
+  userId: string,
+): Promise<ImportRestoreSettingsSnapshot> {
+  const result = await db.$client
+    .prepare(
+      `SELECT 'norm' AS source, raw AS v1, norm AS v2, NULL AS amount
+         FROM account_norm_map WHERE user_id=?
+       UNION ALL
+       SELECT 'analysis', NULL, NULL, stat_min_months
+         FROM analysis_settings WHERE user_id=?
+       UNION ALL
+       SELECT 'exclusion', partner, vendor_key, NULL
+         FROM sub_vendor_exclusions WHERE user_id=?
+       ORDER BY source, v1, v2`,
+    )
+    .bind(userId, userId, userId)
+    .all<{ source: string; v1: string | null; v2: string | null; amount: number | null }>();
+  const normMap: Record<string, string> = {};
+  for (const row of result.results.filter((row) => row.source === 'norm')) {
+    normMap[row.v1 ?? ''] = row.v2 ?? '';
+  }
+  return {
+    normMap,
+    statMinMonths: result.results.find((row) => row.source === 'analysis')?.amount ?? DEFAULT_STAT_MIN_MONTHS,
+    subVendorExclusions: result.results
+      .filter((row) => row.source === 'exclusion')
+      .map((row) => ({ partner: row.v1 ?? '', vendorKey: row.v2 ?? '' })),
   };
 }
 
@@ -784,6 +852,9 @@ function datasetFromBackupSnapshot(snapshot: BackupSourceSnapshot): Dataset {
   data.unrecordedExpMonths = [...snapshot.unrecordedExpMonths];
   data.subs.vendors = snapshot.vendors.map((vendor) => vendor.name);
   data.subs.aliases = Object.fromEntries(snapshot.vendors.map((vendor) => [vendor.name, vendor.aliases]));
+  data.subs.accounts = Object.fromEntries(
+    snapshot.vendors.map((vendor) => [vendor.name, vendor.accounts ?? []]),
+  );
 
   const monthSet = new Set<string>();
   snapshot.baselineRows.forEach((row) => monthSet.add(row.month));
@@ -860,7 +931,22 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
     recoveryEndpoint: '/api/attachments/archive/recover',
     records: snapshot.attachmentArchive,
   } as const;
-  return { ...exportJSON(data), cashEntries: snapshot.cashEntries, cashProjection, attachmentArchive };
+  return {
+    ...exportJSON(data),
+    analysisSettings: { statMinMonths: snapshot.statMinMonths },
+    subVendorExclusions: snapshot.subVendorExclusions.map(({ partner }) => ({ partner })),
+    cashEntries: snapshot.cashEntries,
+    cashProjection,
+    attachmentArchive,
+  };
+}
+
+/** sourceで確定したcashProjectionを再演算せず、そのcanonical scopeへ戻す。 */
+export function addCashProjection(data: Dataset, rows: ReadonlyArray<AggValue>): void {
+  const months = new Set(rows.map((row) => row.month));
+  for (const month of months) ensureMonth(data, month);
+  addPersonalBaseline(data, rows, months);
+  addBusinessBaseline(data, rows, months);
 }
 
 /** valid envelopeの確定deltaをbaseline候補から厳密に差し引く。 */
@@ -907,7 +993,7 @@ export interface SubVendorRow extends SubVendor {
   id: number;
 }
 
-const parseAliases = (raw: string): string[] => {
+const parseStringArray = (raw: string): string[] => {
   try {
     const v: unknown = JSON.parse(raw);
     return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
@@ -923,7 +1009,27 @@ export async function loadSubVendors(db: Db, userId: string): Promise<SubVendorR
     .from(s.subVendors)
     .where(eq(s.subVendors.userId, userId))
     .orderBy(asc(s.subVendors.sortOrder), asc(s.subVendors.id));
-  return rows.map((r) => ({ id: r.id, name: r.name, aliases: parseAliases(r.aliases) }));
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    aliases: parseStringArray(r.aliases),
+    accounts: parseStringArray(r.accounts),
+  }));
+}
+
+export interface SubVendorExclusionRow {
+  id: number;
+  partner: string;
+}
+
+/** 「サブスクではない」と記録した支払先(候補一覧から外す)。登録が古い順 */
+export async function loadSubVendorExclusions(db: Db, userId: string): Promise<SubVendorExclusionRow[]> {
+  const rows = await db
+    .select()
+    .from(s.subVendorExclusions)
+    .where(eq(s.subVendorExclusions.userId, userId))
+    .orderBy(asc(s.subVendorExclusions.id));
+  return rows.map((r) => ({ id: r.id, partner: r.partner }));
 }
 
 /** 統合JSONなどに含まれるベンダー名を登録に加える(既存は無視) */
@@ -1132,6 +1238,16 @@ export const dealFromRow = (r: typeof s.freeeDeals.$inferSelect): FreeeDeal => (
   accountRaw: r.accountRaw ?? '',
   accountNorm: r.accountNorm ?? '',
   amount: r.amount,
+  // 決済列の無い取込(settlementKnown=0)は undefined に戻す。DB上の NULL は
+  // 「列が無い」と「空欄」の両方になるため、この区別は settlement_known だけが持っている。
+  ...(r.settlementKnown === 1
+    ? {
+        dueDate: r.dueDate,
+        settledDate: r.settledDate,
+        settleAccount: r.settleAccount,
+        settledAmount: r.settledAmount,
+      }
+    : {}),
 });
 
 /* ------------------------- 集計キャッシュ再生成 ------------------------- */
@@ -1201,6 +1317,11 @@ export async function replaceFreeeDeals(
     accountNorm: d.accountNorm,
     amount: d.amount,
     importId,
+    dueDate: d.dueDate ?? null,
+    settledDate: d.settledDate ?? null,
+    settleAccount: d.settleAccount ?? null,
+    settledAmount: d.settledAmount ?? null,
+    settlementKnown: hasSettlementColumns(d) ? 1 : 0,
   }));
   for (const grp of chunk(rows, 10)) await db.insert(s.freeeDeals).values(grp);
 }

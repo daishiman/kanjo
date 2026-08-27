@@ -3,20 +3,22 @@
 図はアプリが描く。AI は **どの図に何を読み取ったか(`catalogId` + `caption`)** だけを送る。数値・ラベル・系列を送ると検査で落ちる。
 機械可読の正本は `chart-catalog.json`(`pnpm catalog:export` が `packages/api/src/ai/catalog.ts` と `contract.ts` から生成。手で編集しない。`packages/api/src/ai/catalog.test.ts` が同期を検査する)。
 
-## 1. 毎回同じ8枚(番号固定)
+## 1. 毎回同じ10枚(番号固定)
 
-レポートの図は常にこの8枚で、番号も固定。出せない図も枠を残し「この図はあと◯ヶ月分のデータで表示できます」と理由を表示する(画面側 `ReportChart.tsx`)。
+レポートの図は常にこの10枚で、番号も固定。出せない図も枠を残し「この図はあと◯ヶ月分のデータで表示できます」と理由を表示する(画面側 `ReportChart.tsx`)。
 
 | 図 | `catalogId` | 形 | 目的 | 出せる条件(`minMonths`) | 型 |
 |---|---|---|---|---|---|
-| 図1 | `trend_ma` | 折れ線(売上・経費・3ヶ月移動平均) | 経費の水準が上がっているか下がっているかを、月ごとのブレをならして見る | 記帳済み6ヶ月以上 | 月次/年次/長期 |
+| 図1 | `trend_ma` | 折れ線(売上・経費・3ヶ月移動平均) | 経費の水準が上がっているか下がっているかを、月ごとのブレをならして見る | 記帳済み基準月数(既定6ヶ月・設定で変更可)以上 | 月次/年次/長期 |
 | 図2 | `composition` | 横棒(構成比 %) | どの科目が経費の大半を占めるかを一目で見る | 対象期間に経費1円以上 | 月次/年次/長期 |
 | 図3 | `contribution` | ウォーターフォール(寄与度) | 前期からの増減を科目ごとの押し上げ/押し下げに分ける | 対象期間と直前の同じ長さの期間の両方に記帳月がある | 月次/年次/長期 |
-| 図4 | `distribution` | 帯(平均±2σ) | 経費が「いつもの範囲」に収まっているか、飛び抜けた月がないかを見る | 記帳済み6ヶ月以上 | 月次/年次/長期 |
+| 図4 | `distribution` | 帯(平均±2σ) | 経費が「いつもの範囲」に収まっているか、飛び抜けた月がないかを見る | 記帳済み基準月数(既定6ヶ月・設定で変更可)以上 | 月次/年次/長期 |
 | 図5 | `yoy` | 柱2本(対象期間 vs 前年同月) | 季節性か今年だけの増加かを切り分ける | 前年同月が記帳済み(13ヶ月) | 月次/年次のみ(長期は図1) |
-| 図6 | `fixed_variable_bep` | 積み上げ柱+売上線+損益分岐点線 | 売上がどこまで落ちても赤字にならないか(安全余裕)を見る | 記帳済み6ヶ月以上かつ売上のある月3ヶ月以上 | 月次/年次/長期 |
+| 図6 | `fixed_variable_bep` | 積み上げ柱+売上線+損益分岐点線 | 売上がどこまで落ちても赤字にならないか(安全余裕)を見る | 記帳済み基準月数(既定6ヶ月・設定で変更可)以上かつ売上のある月3ヶ月以上 | 月次/年次/長期 |
 | 図7 | `pareto` | パレート(柱+累積線) | 少数の科目が大半を占めるかを確かめ、見直す順番を決める | 金額のある科目が3つ以上 | 月次/年次/長期 |
 | 図8 | `subs_vendor` | 積み上げ柱(支払先別) | サブスクの合計と、どの支払先が増えているかを見る | サブスク支払先が1件以上登録され期間内に支払いがある | 月次/年次/長期 |
+| 図9 | `account_month_heatmap` | ヒートマップ(科目×月の色付き表) | どの科目がどの月に偏っているか(季節性・スポット支出)を一度に見る | 記帳済み2ヶ月以上かつ金額のある科目1つ以上 | 月次/年次/長期 |
+| 図10 | `owner_trend` | 積み上げ柱(名義別) | 家計の支出が誰の名義でいくら動いているかと内訳の変化を見る | 期間内に個人支出が1円以上 | 月次/年次/長期 |
 
 読み方(`readingGuide`)は各図の下に画面が出す。AI の `caption` は「この図から何が言えるか」だけを書く(読み方の再掲は不要)。
 
@@ -34,19 +36,21 @@
 | 図6 | `biz.expenseByAccount` `stats.accountProfiles.*.type` `biz.revenue` `pl.breakEven.monthly` `pl.breakEven.available` | 区分(固定費/変動費)/ 期間(前12ヶ月〜終了月) | アプリ(固定費=CV<0.6 の科目) |
 | 図7 | `summary.current.expenseByAccount` | 項目(freee勘定科目)/ 期間(対象期間) | アプリ(降順・累積構成比) |
 | 図8 | `subscriptions.vendors` `subscriptions.other` | 項目(サブスク登録ベンダー)/ 期間(前12ヶ月〜終了月) | アプリ(上位8ベンダー+その他) |
+| 図9 | `biz.expenseByAccount` `biz.categories` `unrecordedExpenseMonths` | 項目(freee勘定科目)/ 期間(前12ヶ月〜終了月) | アプリ(core `accountMonthMatrix`。上位8科目+その他、未記帳月は空欄) |
+| 図10 | `personal.byOwner` | 区分(名義: 事業/妻/家族/未設定)/ 期間(前12ヶ月〜終了月) | アプリ(core `ownerMonthlyExpense`。支出のある名義のみ) |
 
 ### 切り口の一覧(`axes` キー。ここに無い軸は作らない)
 
 | 軸 | キー | 使える値 | 使えないときの扱い |
 |---|---|---|---|
-| 項目・分類 | `axes.category.bizAccounts[]`(名前・型・期間合計・データ範囲)/ `axes.category.personalBig`(effective=手修正込み / imported=取込値) | freee 勘定科目、MF 大項目 | 科目の型は記帳6ヶ月未満で `判定不能` |
-| 区分 | `axes.segment.bizPersonal` / `owner`(business/spouse/family/unset)/ `fixedVariable` / `settlement` | 事業/個人、事業/妻/家族/未設定、固定費/変動費 | `fixedVariable.available=false`(6ヶ月未満)、`settlement.available=false`(決済状況は取込データに無い。**常に使えない**) |
+| 項目・分類 | `axes.category.bizAccounts[]`(名前・型・期間合計・データ範囲)/ `axes.category.personalBig`(effective=手修正込み / imported=取込値) | freee 勘定科目、MF 大項目 | 科目の型は記帳が基準月数(既定6ヶ月)未満で `判定不能` |
+| 区分 | `axes.segment.bizPersonal` / `owner`(business/spouse/family/unset)/ `fixedVariable` / `settlement` | 事業/個人、事業/妻/家族/未設定、固定費/変動費 | `fixedVariable.available=false`(基準月数未満)、`settlement.available=false`(決済状況は取込データに無い。**常に使えない**) |
 | 期間 | `axes.period.requested` / `presets[]`(`month` 直近月 / `quarter` 直近四半期 / `year13` 直近13ヶ月 / `year5` 直近5年)/ `previous` / `yearAgo` / `dataRange` | 各プリセットの `availableMonths` `recordedMonths` | 0 ヶ月のプリセットは本文で使わない |
 | 指標 | `axes.indicator[]`(`expenseRatio` 経費率 / `subsShare` サブスク対売上比 / `safetyMargin` 安全余裕率 / `saveRate` 貯蓄率 / `foodShare` 食費比率 / `telecomShare` 通信費比率 / `breakEven` 損益分岐点 / `fixedShare` 固定費比率) | `value` `basis`(計算式)`guide`(目安)`judge` | `judge='データ不足'` の指標は数字を書かない |
 
 ## 3. 粒度(要望25c)
 
-- 図1・4・6・8 の期間は「対象期間の終了月から遡って最大 **36ヶ月**(`monthlyLimit`)」まで月次。それを超える期間は**四半期**(`YYYY-Qn`)にまとめる(`granularity: 'quarter'`。画面に「四半期ごと」と表示)。
+- 図1・4・6・8・9・10 の期間は「対象期間の終了月から遡って最大 **36ヶ月**(`monthlyLimit`)」まで月次。それを超える期間は**四半期**(`YYYY-Qn`)にまとめる(`granularity: 'quarter'`。画面に「四半期ごと」と表示)。
 - 図5(前年同月)は長期(14ヶ月以上)では出さない(図1 で見る)。
 - 系列は最大 8 本(`maxSeries`)。上位8科目/ベンダー以外は「その他」。
 

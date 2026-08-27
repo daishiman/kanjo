@@ -39,7 +39,7 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   {
     method: 'PUT',
     path: /^\/api\/settings$/,
-    consumers: ['account_norm_map', 'unrecorded_months', 'cash_overrides'],
+    consumers: ['account_norm_map', 'unrecorded_months', 'cash_overrides', 'analysis_settings'],
   },
   { method: 'POST', path: /^\/api\/category-options$/, consumers: ['category_options'] },
   {
@@ -52,6 +52,12 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   { method: 'POST', path: /^\/api\/sub-vendors$/, consumers: ['sub_vendors'] },
   { method: 'PUT', path: /^\/api\/sub-vendors\/[^/]+$/, consumers: ['sub_vendors'] },
   { method: 'DELETE', path: /^\/api\/sub-vendors\/[^/]+$/, consumers: ['sub_vendors'] },
+  { method: 'POST', path: /^\/api\/sub-vendors\/exclusions$/, consumers: ['sub_vendor_exclusions'] },
+  {
+    method: 'DELETE',
+    path: /^\/api\/sub-vendors\/exclusions\/[^/]+$/,
+    consumers: ['sub_vendor_exclusions'],
+  },
 ];
 
 export const SELF_MANAGED_IMPORT_CONSUMERS: readonly JsonSnapshotMutationConsumer[] = [

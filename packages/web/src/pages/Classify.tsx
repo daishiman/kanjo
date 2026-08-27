@@ -10,11 +10,13 @@ import {
   type Candidates,
   type Cls,
   type Owner,
+  type PaymentMethod,
   SCOPE_LABEL,
   type TransactionsResponse,
   type TxRow,
   api,
   ownerLabel,
+  paymentMethodLabel,
 } from '../api.js';
 import {
   type AttachmentDisclosure,
@@ -30,7 +32,7 @@ import {
 } from '../components/ClassificationSettings.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
-import { yen, yenS } from '../format.js';
+import { monthLabel, yen, yenS } from '../format.js';
 
 const DISCARD_CLASSIFICATION_DRAFT_MESSAGE = '未保存の変更があります。変更を破棄して編集を閉じますか?';
 
@@ -92,12 +94,90 @@ export function shouldGuardClassificationLinkClick(intent: {
   );
 }
 
+/**
+ * 月別の仕分けサマリー(事業/個人の件数・金額)と「仕分けの考え方」の説明枠。
+ * 金額 KPI が「いくらか」を答えるのに対し、ここは「あと何件見ればよいか」を答える。
+ */
+export function ClassificationProgressPanel({
+  summary,
+  month,
+}: {
+  summary: TransactionsResponse['summary'];
+  month: string | null;
+}) {
+  const headingId = useId();
+  const p = summary.progress;
+  const target = month ?? summary.month;
+  const done = p.total - p.reviewPending;
+
+  return (
+    <section className="classification-progress" aria-labelledby={headingId}>
+      <h2 id={headingId}>{target ? `${monthLabel(target)}の仕分け` : '今月の仕分け'}</h2>
+      <div className="kpis">
+        <KpiCard
+          compact
+          label="事業"
+          value={`${p.bizCount}件`}
+          tone="biz"
+          note={`入金 ${yen(summary.bizIncome)} / 立替 ${yen(summary.bizExpense)}`}
+        />
+        <KpiCard
+          compact
+          label="個人"
+          value={`${p.personalCount}件`}
+          tone="per"
+          note={`収入 ${yen(summary.personalIncome)} / 支出 ${yen(summary.personalExpense)}`}
+        />
+        <KpiCard
+          compact
+          label="確認済み"
+          value={`${done}件`}
+          note={`手動 ${p.bySource.手動}件 / ルール ${p.bySource.ルール}件`}
+        />
+        <KpiCard
+          compact
+          label="未確認"
+          value={`${p.reviewPending}件`}
+          note={p.reviewPending ? 'まだ人もルールも触っていない明細' : '当月は一巡しました'}
+        />
+      </div>
+      {p.reviewPending > 0 && (
+        <p className="classification-progress-hint">
+          未確認の {p.reviewPending} 件は、判断がまだ無いため既定の「個人」として集計されています。
+          事業のものが混じっていないか確認してください。
+        </p>
+      )}
+      <details className="classification-thinking">
+        <summary>仕分けの考え方</summary>
+        <ul>
+          <li>
+            <strong>事業</strong>は仕事のための収入・支出です。freee に記帳して決算書に載ります。
+            ここでの「事業立替」は、個人の口座やカードから払った事業の支出で、freee へ記帳すべき金額です。
+          </li>
+          <li>
+            <strong>個人</strong>は暮らしのための収入・支出です。家計として集計し、決算書には載りません。
+          </li>
+          <li>
+            迷ったときは「この支払いが無かったら仕事が回らないか」で決めます。
+            仕事と暮らしの両方に使うもの(通信費など)は、事業として使う割合だけを事業に入れます。
+          </li>
+          <li>同じ支払先が毎月出てくるなら、設定画面でルールに登録すると次の取込から自動で判定されます。</li>
+          <li>
+            ここでの編集は取込値(MF の大項目/中項目)とは別枠に保存されるため、取り込み直しても消えません。
+          </li>
+        </ul>
+      </details>
+    </section>
+  );
+}
+
 export function ClassifyPage() {
   const qc = useQueryClient();
   const [month, setMonth] = useState<string | null>(null);
   const [cls, setCls] = useState('');
   const [owner, setOwner] = useState('');
   const [qtext, setQtext] = useState('');
+  const [method, setMethod] = useState<PaymentMethod | ''>('');
   const [manualOnly, setManualOnly] = useState(false);
   const [focusIdx, setFocusIdx] = useState(0);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -145,8 +225,9 @@ export function ClassifyPage() {
   if (cls) params.set('cls', cls);
   if (owner) params.set('owner', owner);
   if (qtext) params.set('q', qtext);
+  if (method) params.set('method', method);
   if (manualOnly) params.set('manual', '1');
-  const key = ['transactions', month, cls, owner, qtext, manualOnly] as const;
+  const key = ['transactions', month, cls, owner, qtext, method, manualOnly] as const;
 
   const q = useQuery({
     queryKey: key,
@@ -322,6 +403,8 @@ export function ClassifyPage() {
         <KpiCard label="個人支出" value={yen(s.personalExpense)} tone="per" />
       </div>
 
+      <ClassificationProgressPanel summary={s} month={d.month} />
+
       <div className="toolbar">
         <select
           aria-label="対象月"
@@ -372,6 +455,26 @@ export function ClassifyPage() {
               className={owner === k ? 'on' : ''}
               aria-pressed={owner === k}
               onClick={() => requestViewChange(() => setOwner(k))}
+            >
+              {label}
+            </button>
+          ))}
+        </span>
+        <span className="segment">
+          {(
+            [
+              ['', '支払: すべて'],
+              ['cash', paymentMethodLabel('cash')],
+              ['account', paymentMethodLabel('account')],
+              ['card', paymentMethodLabel('card')],
+            ] as const
+          ).map(([k, label]) => (
+            <button
+              key={k}
+              type="button"
+              className={method === k ? 'on' : ''}
+              aria-pressed={method === k}
+              onClick={() => requestViewChange(() => setMethod(k))}
             >
               {label}
             </button>
@@ -492,6 +595,14 @@ function TxLine({
         </td>
         <td className="tx-institution" title={t.institution ?? undefined}>
           {t.institution ?? '—'}
+          {t.paymentMethod === 'cash' && (
+            <>
+              {' '}
+              <span className="pill neutral" title="現金の記帳から追加した明細(取込ではない)">
+                手入力
+              </span>
+            </>
+          )}
         </td>
         <td>
           {t.big}

@@ -96,6 +96,17 @@ export interface FreeeDeal {
   accountRaw: string;
   accountNorm: string;
   amount: number;
+  /**
+   * 決済情報(freee 取引エクスポートの支払期日/支払日/支払口座/支払金額)。
+   * `undefined` は「その列がエクスポートに無い」、`null` は「列はあるが空欄」を意味する。
+   * 列の無い時期の取込を「全件が未決済」と誤認しないため、この2つを潰さない。
+   */
+  dueDate?: string | null;
+  /** 支払日。空欄(null)なら未決済 */
+  settledDate?: string | null;
+  settleAccount?: string | null;
+  /** 支払金額。一部入金・一部支払のときは amount より小さい */
+  settledAmount?: number | null;
 }
 
 /** 判定結果 */
@@ -129,6 +140,8 @@ export interface Dataset {
     vendors: string[];
     /** ベンダーごとの別名(表記ゆれ)。支払先に含まれていれば同じベンダーとみなす */
     aliases: Record<string, string[]>;
+    /** ベンダーごとの対象勘定科目の原本名。空配列・未設定なら全科目を数える */
+    accounts?: Record<string, string[]>;
     matrix: Record<string, number[]>;
     other: number[];
   };
@@ -168,7 +181,7 @@ export function emptyDataset(): Dataset {
   return {
     months: [],
     biz: { revenue: [], categories: [], expense: {} },
-    subs: { vendors: [], aliases: {}, matrix: {}, other: [] },
+    subs: { vendors: [], aliases: {}, accounts: {}, matrix: {}, other: [] },
     personal: {},
     bizPersonal: {},
     mfTx: [],

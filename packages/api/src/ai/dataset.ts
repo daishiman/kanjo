@@ -6,15 +6,18 @@
  * - 貸借対照表(BS)は freee の取引エクスポートに資産・負債が無いため、作れない理由を明記して渡す。
  */
 import {
+  DEFAULT_STAT_MIN_MONTHS,
   type Dataset,
   type SubsCandidate,
   applyClassification,
   benchmarks,
   catProfile,
+  clampStatMinMonths,
   diagnosis,
   household,
   overview,
   recordedExpIdx,
+  statThresholds,
   subscriptions,
 } from '@kanjo/core';
 import { type ChartContext, type ChartResult, buildCharts } from './catalog.js';
@@ -121,14 +124,12 @@ function periodTotals(data: Dataset, p: Period): PeriodTotals | null {
   };
 }
 
-/** 統計手法ごとに必要な最低月数(記帳月ベース)。足りない手法は使わせない */
-export const STAT_MIN_MONTHS = {
-  outliers: 6,
-  movingAverage: 6,
-  trend: 12,
-  seasonality: 24,
-  yearOverYear: 13,
-} as const;
+/**
+ * 統計手法ごとに必要な最低月数(記帳月ベース)。足りない手法は使わせない。
+ * 既定値であり、実際の判定は利用者が設定画面で決めた基準月数(BuildOptions.statMinMonths)から
+ * core の statThresholds() で組み立てる。
+ */
+export const STAT_MIN_MONTHS = statThresholds(DEFAULT_STAT_MIN_MONTHS);
 
 export interface PreviousReportSummary {
   id: string;
@@ -147,6 +148,8 @@ export interface BuildOptions {
   supplement?: string | null;
   /** 未登録の支払先のうちサブスクらしい上位(サブスク分析ページの候補と同じ採点) */
   candidates?: SubsCandidate[];
+  /** 統計指標の基準月数(設定画面で変更可。既定6)。範囲外の値は core 側で丸める */
+  statMinMonths?: number;
 }
 
 /** 期間プリセット(画面の「直近月 / 四半期 / 13ヶ月 / 5年」と同じ切り方)。終了月を基準に切る */
@@ -176,6 +179,9 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
   const prev = previousPeriod(period);
   const yago = yearAgoPeriod(period);
   const recordedCount = recordedExpIdx(data).length;
+  // 利用者が設定した基準月数。暦で決まる周期(傾向12・季節性24・前年同月13)は短くならない
+  const statMinMonths = clampStatMinMonths(opts.statMinMonths ?? DEFAULT_STAT_MIN_MONTHS);
+  const minMonths = statThresholds(statMinMonths);
 
   // 科目別の統計プロファイル(全期間・未記帳月除外)。固定費/変動費の区分もここから
   const accounts = data.biz.categories.filter((c) => (data.biz.expense[c] ?? []).some((v) => v > 0));
@@ -202,7 +208,7 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
   );
   // 外れ値(異常月): 科目×月で |z| >= 2 のもの。記帳月が足りなければ空
   const outliers: { month: string; account: string; value: number; mean: number; z: number }[] = [];
-  if (recordedCount >= STAT_MIN_MONTHS.outliers) {
+  if (recordedCount >= minMonths.outliers) {
     const un = new Set(data.unrecordedExpMonths);
     for (const c of accounts) {
       const p = profiles[c];
@@ -259,6 +265,7 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
     subsMatrix: subs.matrix,
     subsOther: subs.other,
     subsMonths: subs.months,
+    minMonths: statMinMonths,
   };
   const charts = buildCharts(chartCtx);
   const coverage: CoverageRow[] = charts.map((c) => ({
@@ -303,7 +310,7 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
       recordedMonths: ms.filter((m) => !un.has(m)).length,
     };
   });
-  const fixedVariableAvailable = recordedCount >= STAT_MIN_MONTHS.movingAverage;
+  const fixedVariableAvailable = recordedCount >= minMonths.movingAverage;
   const axes = {
     note: 'レポート・図に使ってよい切り口。ここに無い軸(例: 決済状況)は判定不能として扱い、推測で作らない。',
     category: {
@@ -340,7 +347,7 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
           }
         : {
             available: false,
-            reason: `固定費/変動費の判定には記帳済みの月が${STAT_MIN_MONTHS.movingAverage}ヶ月必要です(現在${recordedCount}ヶ月)。判定不能として扱う`,
+            reason: `固定費/変動費の判定には記帳済みの月が${minMonths.movingAverage}ヶ月必要です(現在${recordedCount}ヶ月)。判定不能として扱う`,
             fixed: null,
             variable: null,
             fixedAccounts: [],
@@ -461,13 +468,13 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
     },
     stats: {
       recordedMonths: recordedCount,
-      minMonths: STAT_MIN_MONTHS,
+      minMonths,
       available: {
-        outliers: recordedCount >= STAT_MIN_MONTHS.outliers,
-        movingAverage: recordedCount >= STAT_MIN_MONTHS.movingAverage,
-        trend: recordedCount >= STAT_MIN_MONTHS.trend,
-        seasonality: recordedCount >= STAT_MIN_MONTHS.seasonality,
-        yearOverYear: recordedCount >= STAT_MIN_MONTHS.yearOverYear,
+        outliers: recordedCount >= minMonths.outliers,
+        movingAverage: recordedCount >= minMonths.movingAverage,
+        trend: recordedCount >= minMonths.trend,
+        seasonality: recordedCount >= minMonths.seasonality,
+        yearOverYear: recordedCount >= minMonths.yearOverYear,
       },
       accountProfiles: profiles,
       outliers: outliers.slice(0, 30),

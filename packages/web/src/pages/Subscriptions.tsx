@@ -101,7 +101,7 @@ export function SubscriptionsPage() {
 
       <div className="card scroll-x">
         <h2>いま何にいくら払っているか</h2>
-        <table className="data">
+        <table className="data stack-sm">
           <thead>
             <tr>
               <th>ベンダー</th>
@@ -120,21 +120,37 @@ export function SubscriptionsPage() {
               .sort((a, b) => b.lastMonthly - a.lastMonthly || b.avgMonthly - a.avgMonthly)
               .map((r) => (
                 <tr key={r.vendor}>
-                  <td>{r.vendor}</td>
-                  <td className="num">{yen(r.lastMonthly)}</td>
-                  <td className="num">{yen(r.avgMonthly)}</td>
-                  <td className="num">{r.activeMonths}</td>
-                  <td className="num">{yen(r.last12Total)}</td>
-                  <td className="num">{yen(r.lastMonthly * 12)}</td>
+                  <td data-label="ベンダー">{r.vendor}</td>
+                  <td data-label="直近月額" className="num">
+                    {yen(r.lastMonthly)}
+                  </td>
+                  <td data-label="平均月額" className="num">
+                    {yen(r.avgMonthly)}
+                  </td>
+                  <td data-label="支払月数" className="num">
+                    {r.activeMonths}
+                  </td>
+                  <td data-label="直近12ヶ月合計" className="num">
+                    {yen(r.last12Total)}
+                  </td>
+                  <td data-label="年換算" className="num">
+                    {yen(r.lastMonthly * 12)}
+                  </td>
                 </tr>
               ))}
             <tr className="total">
-              <td>合計(その他を含む)</td>
-              <td className="num">{yen(s.now.monthlyTotal)}</td>
+              <td data-label="ベンダー">合計(その他を含む)</td>
+              <td data-label="直近月額" className="num">
+                {yen(s.now.monthlyTotal)}
+              </td>
               <td />
               <td />
-              <td className="num">{yen(s.now.last12Total)}</td>
-              <td className="num">{yen(s.now.annualized)}</td>
+              <td data-label="直近12ヶ月合計" className="num">
+                {yen(s.now.last12Total)}
+              </td>
+              <td data-label="年換算" className="num">
+                {yen(s.now.annualized)}
+              </td>
             </tr>
           </tbody>
         </table>

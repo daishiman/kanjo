@@ -227,10 +227,12 @@ async function importFiles(
   database: D1Database = d1,
   bucket: R2Bucket = files,
   force = false,
+  keepOnShrink = false,
 ): Promise<Response> {
   const form = new FormData();
   for (const input of inputs) form.append('file', new File([input.body], input.name, { type: 'text/csv' }));
   if (force) form.append('force', '1');
+  if (keepOnShrink) form.append('keepOnShrink', '1');
   return app.request(
     '/api/imports',
     { method: 'POST', headers: { cookie }, body: form },
@@ -340,6 +342,45 @@ describe('active target duplicate', () => {
     ).toEqual(['committed']);
   });
 
+  it('「前回を残す」指定は件数が減る洗い替えを実行せず、既存データを無傷で残す', async () => {
+    const mfRows = async (): Promise<number> =>
+      (await d1.prepare('SELECT COUNT(*) AS n FROM mf_transactions').first<{ n: number }>())?.n ?? 0;
+    expect(await resultStatuses(await importFiles([{ name: 'full.csv', body: mfCsvRows(3) }]))).toEqual([
+      'committed',
+    ]);
+    expect(await mfRows()).toBe(3);
+
+    const kept = await importFiles([{ name: 'partial.csv', body: mfCsvRows(1) }], d1, files, false, true);
+    expect(kept.status).toBe(200); // 何も壊していないので失敗ではない
+    expect(await resultStatuses(kept)).toEqual(['kept']);
+    expect(await mfRows()).toBe(3);
+    // 見送ったunitは履歴にも残さない(取込は起きていないため)
+    const history = await d1
+      .prepare('SELECT COUNT(*) AS n FROM imports WHERE filename=?')
+      .bind('partial.csv')
+      .first<{ n: number }>();
+    expect(history?.n).toBe(0);
+
+    // 指定を外せば従来どおり洗い替える
+    expect(await resultStatuses(await importFiles([{ name: 'partial.csv', body: mfCsvRows(1) }]))).toEqual([
+      'committed',
+    ]);
+    expect(await mfRows()).toBe(1);
+  });
+
+  it('「前回を残す」でも件数が減らないファイルは通常どおり取り込む', async () => {
+    expect(
+      await resultStatuses(
+        await importFiles([{ name: 'first.csv', body: mfCsvRows(2) }], d1, files, false, true),
+      ),
+    ).toEqual(['committed']);
+    expect(
+      await resultStatuses(
+        await importFiles([{ name: 'more.csv', body: mfCsvRows(5) }], d1, files, false, true),
+      ),
+    ).toEqual(['committed']);
+  });
+
   it('無変更JSONだけduplicate、設定変更はpointerを同じtransactionで失効して再適用する', async () => {
     const first = (await (await restore()).json()) as { duplicate: boolean };
     expect(first.duplicate).toBe(false);
@@ -358,6 +399,33 @@ describe('active target duplicate', () => {
     expect(settings.status).toBe(200);
     const reapplied = (await (await restore()).json()) as { duplicate: boolean };
     expect(reapplied.duplicate).toBe(false);
+  });
+
+  it('同じvendor keyの候補除外はsource表記へ収束し、fingerprintとD1確定状態を一致させる', async () => {
+    await d1
+      .prepare(
+        `INSERT INTO sub_vendor_exclusions (user_id,partner,vendor_key)
+         VALUES ('default','架空 家賃','架空家賃')`,
+      )
+      .run();
+    const body = {
+      ...structuredClone(restoreBody),
+      subVendorExclusions: [{ partner: '架空家賃' }],
+    };
+
+    const first = await restore(body);
+    expect(first.status).toBe(200);
+    await expect(first.clone().json()).resolves.toMatchObject({ duplicate: false });
+    await expect(
+      d1
+        .prepare(
+          `SELECT partner,vendor_key AS vendorKey
+           FROM sub_vendor_exclusions WHERE user_id='default'`,
+        )
+        .first(),
+    ).resolves.toEqual({ partner: '架空家賃', vendorKey: '架空家賃' });
+
+    await expect((await restore(body)).clone().json()).resolves.toMatchObject({ duplicate: true });
   });
 
   it('JSON sourceのcash editを破棄し、destination editをpersist/集計/指紋で一致させる', async () => {
@@ -402,6 +470,52 @@ describe('active target duplicate', () => {
 
     const repeated = (await (await restore(source)).json()) as { duplicate: boolean };
     expect(repeated.duplicate).toBe(true);
+  });
+
+  it('移行先に記帳が無いときだけ、現金記帳をidごと復元して集計を保つ', async () => {
+    const body = {
+      ...structuredClone(restoreBody),
+      biz: { revenue: [0], categories: ['架空通信費'], expense: { 架空通信費: [1000] } },
+      cashEntries: [
+        {
+          id: 7,
+          date: '2026-07-10',
+          month: '2026-07',
+          side: 'biz',
+          io: 'expense',
+          amount: 1000,
+          description: '架空現金',
+          categoryMajor: '架空通信費',
+          categoryMid: '',
+          memo: null,
+          transitFrom: null,
+          transitTo: null,
+          transitRound: false,
+          receiptWaived: false,
+        },
+      ],
+      cashProjection: {
+        version: 1,
+        basis: 'post-resolution',
+        rows: [{ month: '2026-07', scope: 'biz_exp:架空通信費', amount: 1000 }],
+      },
+    };
+
+    const first = (await (await restore(body)).json()) as { cashEntries: number; cashKept: number };
+    expect(first).toMatchObject({ cashEntries: 1, cashKept: 0 });
+    expect(await d1.prepare('SELECT id,amount,category_major FROM cash_entries').all()).toMatchObject({
+      results: [{ id: 7, amount: 1000, category_major: '架空通信費' }],
+    });
+    // 投影で引いた分を復元した記帳が戻すので、集計はバックアップと同じ額に落ち着く
+    expect(
+      await d1
+        .prepare("SELECT amount FROM monthly_agg WHERE user_id='default' AND scope='biz_exp:架空通信費'")
+        .first(),
+    ).toEqual({ amount: 1000 });
+
+    const again = (await (await restore(body)).json()) as { cashEntries: number; cashKept: number };
+    expect(again).toMatchObject({ cashEntries: 0, cashKept: 1 });
+    expect(await d1.prepare('SELECT COUNT(*) AS n FROM cash_entries').first()).toEqual({ n: 1 });
   });
 });
 
@@ -948,5 +1062,91 @@ describe('failure recovery', () => {
     expect(
       await d1.prepare('SELECT status FROM imports ORDER BY id DESC LIMIT 1').first<{ status: string }>(),
     ).toEqual({ status: 'failed' });
+  });
+});
+
+describe('取込のやり直し(原本の取り出し)', () => {
+  const history = async (): Promise<Array<{ id: number; filename: string; originalRecorded: boolean }>> => {
+    const response = await app.request(
+      '/api/imports',
+      { headers: { cookie } },
+      { ...auth, DB: d1, FILES: files },
+    );
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as {
+      imports: Array<{ id: number; filename: string; originalRecorded: boolean }>;
+    };
+    return body.imports;
+  };
+
+  const original = async (id: number): Promise<Response> =>
+    app.request(`/api/imports/${id}/original`, { headers: { cookie } }, { ...auth, DB: d1, FILES: files });
+
+  it('保存した原本をそのまま返し、履歴はやり直せることを申告する', async () => {
+    const body = freeeCsv(801);
+    expect(await resultStatuses(await importFiles([{ name: 'redo.csv', body }]))).toEqual(['committed']);
+    const [row] = await history();
+    expect(row.originalRecorded).toBe(true);
+
+    const response = await original(row.id);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe(body);
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
+    expect(response.headers.get('content-disposition')).toContain(encodeURIComponent('redo.csv'));
+  });
+
+  it('取り出した原本を投入し直すと通常の取込と同じ経路で洗い替えられる', async () => {
+    const first = freeeCsvRows(3);
+    expect(await resultStatuses(await importFiles([{ name: 'gen1.csv', body: first }]))).toEqual([
+      'committed',
+    ]);
+    // 別内容で上書きし、1世代目を「更新済み」にする
+    expect(await resultStatuses(await importFiles([{ name: 'gen2.csv', body: freeeCsvRows(1) }]))).toEqual([
+      'committed',
+    ]);
+    expect(await d1.prepare('SELECT COUNT(*) AS n FROM freee_deals').first<{ n: number }>()).toEqual({
+      n: 1,
+    });
+
+    const gen1 = (await history()).find((row) => row.filename === 'gen1.csv');
+    if (!gen1) throw new Error('gen1 not found');
+    const restored = await (await original(gen1.id)).text();
+    expect(await resultStatuses(await importFiles([{ name: 'gen1.csv', body: restored }]))).toEqual([
+      'committed',
+    ]);
+    expect(await d1.prepare('SELECT COUNT(*) AS n FROM freee_deals').first<{ n: number }>()).toEqual({
+      n: 3,
+    });
+  });
+
+  it('R2から原本が消えていれば理由つきで断り、勝手にやり直さない', async () => {
+    expect(await resultStatuses(await importFiles([{ name: 'gone.csv', body: freeeCsv(802) }]))).toEqual([
+      'committed',
+    ]);
+    const [row] = await history();
+    const key = await d1
+      .prepare('SELECT r2_key AS r2Key FROM imports WHERE id=?')
+      .bind(row.id)
+      .first<{ r2Key: string }>();
+    if (!key) throw new Error('r2 key not found');
+    await files.delete(key.r2Key);
+
+    const response = await original(row.id);
+    expect(response.status).toBe(404);
+    expect(((await response.json()) as { error: { code: string } }).error.code).toBe(
+      'import_original_missing',
+    );
+  });
+
+  it('他人の取込・存在しないIDは原本を返さない', async () => {
+    expect(await resultStatuses(await importFiles([{ name: 'mine.csv', body: freeeCsv(803) }]))).toEqual([
+      'committed',
+    ]);
+    const [row] = await history();
+    await d1.prepare("UPDATE imports SET user_id='synthetic-other-user' WHERE id=?").bind(row.id).run();
+
+    expect((await original(row.id)).status).toBe(404);
+    expect((await original(999_999)).status).toBe(404);
+    expect((await original(0)).status).toBe(400);
   });
 });

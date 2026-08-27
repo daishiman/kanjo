@@ -67,7 +67,11 @@ export function ensureMonth(data: Dataset, m: string): number {
 
 /** Dataset の登録ベンダーを照合用の定義に変換する */
 export function subVendorDefs(data: Dataset): SubVendor[] {
-  return data.subs.vendors.map((name) => ({ name, aliases: data.subs.aliases?.[name] ?? [] }));
+  return data.subs.vendors.map((name) => ({
+    name,
+    aliases: data.subs.aliases?.[name] ?? [],
+    accounts: data.subs.accounts?.[name] ?? [],
+  }));
 }
 
 /**
@@ -99,8 +103,12 @@ export function applyFreeeDeals(data: Dataset, deals: FreeeDeal[], months: strin
         data.biz.expense[acct] = data.months.map(() => 0);
       }
       data.biz.expense[acct][i] += dl.amount;
-      // 登録ベンダーへの支払は科目を問わずサブスクに数える。未登録は「サブスク・通信」科目の分だけ「その他」へ
-      const vd = matchSubVendor(dl.partner || '', vendorDefs);
+      // 登録ベンダーへの支払は(対象科目を絞っていなければ)科目を問わずサブスクに数える。
+      // 対象科目を絞ったベンダーの科目外の支払と、未登録の支払先は「サブスク・通信」科目の分だけ「その他」へ
+      const vd = matchSubVendor(dl.partner || '', vendorDefs, {
+        raw: dl.accountRaw,
+        normalized: acct,
+      });
       if (vd) data.subs.matrix[vd][i] += dl.amount;
       else if (acct === 'サブスク・通信') data.subs.other[i] += dl.amount;
     }
@@ -130,9 +138,14 @@ export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
   if (obj.months) data.months = obj.months as string[];
   if (obj.biz) data.biz = obj.biz as Dataset['biz'];
   if (obj.subs) {
-    // HTML版JSONには別名が無いので、既存の別名は保持する
-    const prev = data.subs.aliases ?? {};
-    data.subs = { aliases: prev, ...(obj.subs as Omit<Dataset['subs'], 'aliases'>) };
+    // HTML版JSONには別名・対象科目が無いので、既存の登録内容は保持する
+    const prevAliases = data.subs.aliases ?? {};
+    const prevAccounts = data.subs.accounts ?? {};
+    data.subs = {
+      aliases: prevAliases,
+      accounts: prevAccounts,
+      ...(obj.subs as Omit<Dataset['subs'], 'aliases' | 'accounts'>),
+    };
   }
   if (obj.personal) data.personal = obj.personal as Dataset['personal'];
   if (obj.budgets) data.budgets = obj.budgets as Record<string, number>;

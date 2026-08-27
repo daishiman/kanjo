@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { type SummaryResponse, api } from '../api.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
+import { UnsettledPanel } from '../components/Unsettled.js';
 import { COLORS, yenTick } from '../components/charts.js';
 import { deltaCls, monthShort, pct, yen, yenS } from '../format.js';
 
@@ -200,6 +201,8 @@ export function OverviewPage() {
           上位2科目で全体の {(ov.top2Share * 100).toFixed(0)}%。82%以内(太字)が管理の主戦場。
         </p>
       </div>
+
+      <UnsettledPanel />
 
       <p className="sub">
         次は <Link to="/matrix">増減マトリクス</Link> で「どの科目が増えたか」を特定 →{' '}

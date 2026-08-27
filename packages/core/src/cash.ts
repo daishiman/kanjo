@@ -42,6 +42,41 @@ export const CASH_INSTITUTION = '現金';
 
 export const cashTxId = (id: number): string => `${CASH_TX_PREFIX}${id}`;
 export const isCashTxId = (id: string): boolean => id.startsWith(CASH_TX_PREFIX);
+
+/**
+ * 明細の支払手段。口座名(MFの保有金融機関)からの導出で、MF自身は支払手段を持たない。
+ * - cash: 手入力した現金の記帳
+ * - card: 口座名がカードを名乗るもの
+ * - account: それ以外の口座(銀行・電子マネー等)
+ * - unknown: 口座名が無い(列の無い時期の旧取込)
+ */
+export type PaymentMethod = 'cash' | 'card' | 'account' | 'unknown';
+
+export const PAYMENT_METHOD_VALUES: readonly PaymentMethod[] = ['cash', 'card', 'account', 'unknown'];
+
+export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
+  cash: '現金',
+  card: 'カード',
+  account: '口座',
+  unknown: '不明',
+};
+
+/** 口座名がカードを名乗る手がかり。名寄せはせず、名前に現れた分だけを見る */
+const CARD_HINTS = ['カード', 'ｶｰﾄﾞ', 'CARD', 'クレジット'];
+
+/**
+ * 明細1件の支払手段を決める。
+ * 現金は ID(cash:) を正とし、口座名が編集で変わっても手入力の事実を失わない。
+ */
+export function paymentMethodOf(tx: { id: string; inst?: string | null }): PaymentMethod {
+  if (isCashTxId(tx.id)) return 'cash';
+  const inst = (tx.inst ?? '').trim();
+  if (!inst) return 'unknown';
+  if (inst === CASH_INSTITUTION) return 'cash';
+  const upper = inst.toUpperCase();
+  if (CARD_HINTS.some((hint) => upper.includes(hint))) return 'card';
+  return 'account';
+}
 export const monthOf = (date: string): string => date.slice(0, 7);
 
 /** 事業分の現金明細を freee 仕訳1行として扱う(科目の正規化は取込と同じ対応表を使う) */
@@ -147,6 +182,74 @@ export const RECEIPT_STATUS_LABEL: Record<ReceiptStatus, string> = {
   waived: '証憑不要',
   missing: '未添付',
 };
+
+/* -------- 二重計上の検知 -------- */
+
+/** 突合の強さ。日付が一致するかどうかだけが違う */
+export type DuplicateConfidence = 'same_day' | 'near_day';
+
+/** 現金の記帳と freee 仕訳が同じ支払いを指している疑い */
+export interface CashDealDuplicate {
+  /** 疑いのある現金の記帳 */
+  cashEntryId: number;
+  cashDate: string;
+  /** 突合できた freee 仕訳(取込由来のみ) */
+  deal: FreeeDeal;
+  confidence: DuplicateConfidence;
+  /** 現金の記帳から見た日付の差(日)。同日は 0 */
+  dayGap: number;
+}
+
+/** near_day として拾う日数の上限。これを超えると別の支払いとみなす */
+export const DUPLICATE_NEAR_DAY_LIMIT = 3;
+
+const dayNumber = (date: string): number => Math.floor(Date.parse(`${date}T00:00:00Z`) / 86_400_000);
+
+/**
+ * 現金の記帳(事業分)と、取込由来の freee 仕訳の二重計上候補を返す。
+ *
+ * 突合は「同額・同じ入出金・同じ勘定科目(正規化後)」を必須とし、日付は同日(same_day)と
+ * 3日以内(near_day)を区別する。現金で払った日と freee へ登録した日はずれることがあるため、
+ * 日付一致だけに絞ると見逃す。逆に額や科目まで緩めると誤検知が実用に耐えないため広げない。
+ *
+ * deals には取込由来の仕訳だけを渡すこと。現金由来の仕訳(cashBizDeals)を混ぜると自分自身と一致する。
+ * 判定はあくまで候補で、消し込みはしない(同じ日に同科目・同額の支払いが本当に2件あることがある)。
+ */
+export function findCashDealDuplicates(
+  entries: CashEntry[],
+  deals: FreeeDeal[],
+  normMap: Record<string, string> = {},
+): CashDealDuplicate[] {
+  const targets = entries.filter((e) => e.side === 'biz');
+  if (targets.length === 0 || deals.length === 0) return [];
+
+  const byKey = new Map<string, FreeeDeal[]>();
+  for (const deal of deals) {
+    const key = `${deal.io}|${deal.amount}|${deal.accountNorm}`;
+    const bucket = byKey.get(key);
+    if (bucket) bucket.push(deal);
+    else byKey.set(key, [deal]);
+  }
+
+  const out: CashDealDuplicate[] = [];
+  for (const entry of targets) {
+    // 科目は cashToDeal と同じ規則で正規化してから突合する(表記違いで取りこぼさない)
+    const account = normMap[entry.categoryMajor] ?? entry.categoryMajor;
+    for (const deal of byKey.get(`${entry.io}|${entry.amount}|${account}`) ?? []) {
+      const dayGap = Math.abs(dayNumber(entry.date) - dayNumber(deal.date));
+      if (dayGap > DUPLICATE_NEAR_DAY_LIMIT) continue;
+      out.push({
+        cashEntryId: entry.id,
+        cashDate: entry.date,
+        deal,
+        confidence: dayGap === 0 ? 'same_day' : 'near_day',
+        dayGap,
+      });
+    }
+  }
+  // 疑いの強い順(同日 → 日付が近い順)に出し、同じ強さでは記帳の新しい順
+  return out.sort((a, b) => a.dayGap - b.dayGap || b.cashEntryId - a.cashEntryId);
+}
 
 /** 事業分だけを freee 仕訳の配列にする(対象月を絞れる) */
 export function cashBizDeals(

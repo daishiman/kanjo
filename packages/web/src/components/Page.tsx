@@ -115,15 +115,22 @@ export function AnnualComparisonTable({
   const row = (item: Omit<AnnualComparisonRow, 'key'>, key?: string) => (
     <tr key={key} className={key ? undefined : 'total'}>
       <th scope="row">{item.label}</th>
-      <td className="num">{yen(item.previous)}</td>
-      <td className="num">{yen(item.current)}</td>
-      <td className={`num ${deltaCls(item.delta)}`}>{pct(item.delta)}</td>
+      <td className="num" data-label={previousLabel}>
+        {yen(item.previous)}
+      </td>
+      <td className="num" data-label={currentLabel}>
+        {yen(item.current)}
+      </td>
+      <td className={`num ${deltaCls(item.delta)}`} data-label="増減率">
+        {pct(item.delta)}
+      </td>
     </tr>
   );
 
   return (
     <div className="scroll-x">
-      <table className="data">
+      {/* stack-sm: 640px以下では1行=1カード。列が4つでも「何年と何年の比較か」を見失わない */}
+      <table className="data stack-sm">
         <thead>
           <tr>
             <th scope="col">{subjectLabel}</th>

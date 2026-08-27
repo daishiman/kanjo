@@ -33,3 +33,60 @@ describe('用語辞書', () => {
     expect(linkTerms('今月は特に問題ありません。')).toEqual(['今月は特に問題ありません。']);
   });
 });
+
+describe('表記ゆれの別名', () => {
+  /** 自由文を linkTerms にかけ、ホバー化された表記とその用語IDの組を取り出す */
+  const hovered = (text: string): { id: string; text: string }[] =>
+    linkTerms(text).flatMap((node) =>
+      typeof node === 'string' || !node || typeof node !== 'object' || !('props' in node)
+        ? []
+        : [{ id: String(node.props.id), text: String(node.props.children) }],
+    );
+
+  it.each([
+    ['損益分岐', 'breakEven'],
+    ['BEP', 'breakEven'],
+    ['損益分岐点売上高', 'breakEven'],
+    ['安全余裕度', 'safetyMargin'],
+    ['年率換算', 'annualized'],
+    ['Zスコア', 'zScore'],
+    ['経費比率', 'expenseRatio'],
+    ['二重契約', 'subsDup'],
+    ['メジアン', 'median'],
+    ['前年同期比', 'yoy'],
+    ['増減寄与', 'contribution'],
+    ['2シグマ', 'sigmaBand'],
+    ['3か月移動平均', 'movingAvg'],
+    ['公私区分', 'publicPrivate'],
+    ['立替経費', 'bizAdvance'],
+  ])('別名「%s」でも %s の説明を引ける', (alias, id) => {
+    expect(hovered(`今月は${alias}を確認した。`)).toEqual([{ id, text: alias }]);
+  });
+
+  it('同じ表記を2つの用語が取り合わない', () => {
+    const owner = new Map<string, string>();
+    for (const { id, text } of TERM_ALIASES) {
+      expect(text.trim()).not.toBe('');
+      expect(owner.get(text) ?? id).toBe(id);
+      owner.set(text, id);
+    }
+  });
+
+  it('別名が別の用語の別名を丸ごと含まない(どちらが出るかが表記次第にならない)', () => {
+    const conflicts = TERM_ALIASES.flatMap((a) =>
+      TERM_ALIASES.filter((b) => a.id !== b.id && a.text !== b.text && a.text.includes(b.text)).map(
+        (b) => `${a.text}(${a.id}) ⊃ ${b.text}(${b.id})`,
+      ),
+    );
+    expect(conflicts).toEqual([]);
+  });
+
+  it('長い別名は短い別名より先に当たる(「損益分岐点」が「損益分岐」に食われない)', () => {
+    expect(hovered('損益分岐点を下回った。')).toEqual([{ id: 'breakEven', text: '損益分岐点' }]);
+  });
+
+  it('「版」単体は拾わず、「HTML版」を誤ってホバー化しない', () => {
+    expect(hovered('HTML版から書き出したファイルを取り込む。')).toEqual([]);
+    expect(hovered('レポートの版を確認する。')).toEqual([{ id: 'reportVersion', text: 'レポートの版' }]);
+  });
+});

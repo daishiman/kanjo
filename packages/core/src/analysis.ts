@@ -895,16 +895,66 @@ export interface BudgetRow {
 }
 
 /** 判定: 実績が予算の±10%を超えれば超過/余裕。境界値は範囲内。 */
+export function judgeBudget(recentAvg: number, budget: number | null): Pick<BudgetRow, 'diff' | 'judge'> {
+  if (budget == null) return { diff: null, judge: null };
+  const judge = recentAvg > budget * 1.1 ? '超過' : recentAvg < budget * 0.9 ? '余裕' : '範囲内';
+  return { diff: recentAvg - budget, judge };
+}
+
 export function budgetTable(data: Dataset): BudgetRow[] {
   return data.biz.categories
     .filter((c) => sum(catSeries(data, c)) > 0)
     .map((c) => {
       const p = catProfile(data, c);
-      const b = data.budgets[c];
-      const diff = b != null ? p.rAvg - b : null;
-      const judge = diff === null ? null : p.rAvg > b * 1.1 ? '超過' : p.rAvg < b * 0.9 ? '余裕' : '範囲内';
-      return { account: c, type: p.type, recentAvg: p.rAvg, budget: b ?? null, diff, judge };
+      const b = data.budgets[c] ?? null;
+      return { account: c, type: p.type, recentAvg: p.rAvg, budget: b, ...judgeBudget(p.rAvg, b) };
     });
+}
+
+/**
+ * 画面の入力欄1つを予算額へ読む。空欄は「未設定」、数値でない入力は保存済みの値を保つ
+ * (打ちかけの `-` や `1e` で表が壊れないように)。
+ */
+export function parseBudgetDraft(raw: string | undefined, saved: number | null): number | null {
+  if (raw === undefined) return saved;
+  if (raw.trim() === '') return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : saved;
+}
+
+/**
+ * 保存済みの表へ編集中の下書きを重ねる。保存前でも保存後と同じ判定規則で見えるようにするため、
+ * 判定は `judgeBudget` を共有する(画面側で条件式を書き写さない)。
+ */
+export function budgetRowsWithDraft(
+  rows: ReadonlyArray<BudgetRow>,
+  draft: Readonly<Record<string, string>>,
+): BudgetRow[] {
+  return rows.map((row) => {
+    const budget = parseBudgetDraft(draft[row.account], row.budget);
+    return { ...row, budget, ...judgeBudget(row.recentAvg, budget) };
+  });
+}
+
+export interface BudgetSummary {
+  /** 予算を設定した科目数 */
+  withBudget: number;
+  /** 月次予算の合計 */
+  budgetTotal: number;
+  /** 予算を設定した科目の直近3ヶ月平均の合計 */
+  actualTotal: number;
+  /** 超過と判定された科目数 */
+  over: number;
+}
+
+export function budgetSummary(rows: ReadonlyArray<BudgetRow>): BudgetSummary {
+  const set = rows.filter((row) => row.budget != null);
+  return {
+    withBudget: set.length,
+    budgetTotal: set.reduce((total, row) => total + (row.budget ?? 0), 0),
+    actualTotal: set.reduce((total, row) => total + row.recentAvg, 0),
+    over: rows.filter((row) => row.judge === '超過').length,
+  };
 }
 
 /* ======================== FR-08 防衛ライン ======================== */

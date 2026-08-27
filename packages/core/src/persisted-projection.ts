@@ -2,6 +2,7 @@
  * Parser・fingerprint・D1 commitが共有するcanonical保存行。
  * user/import provenanceは内容同値性に含めず、DBへ永続化する業務値だけを射影する。
  */
+import { hasSettlementColumns } from './settlement.js';
 import type { FreeeDeal, MfTx } from './types.js';
 
 export type FreeePersistedRow = readonly [
@@ -12,6 +13,19 @@ export type FreeePersistedRow = readonly [
   accountRaw: string,
   accountNorm: string,
   amount: number,
+  // 決済列。エクスポートに列が無ければ null で埋める(DB上は空欄と同じ扱い)。
+  // 同値性に含めるのは、決済済みになった同じ月のファイルを取り込み直したとき
+  // 「重複」と判定されて未決済のまま据え置かれるのを防ぐため。
+  dueDate: string | null,
+  settledDate: string | null,
+  settleAccount: string | null,
+  settledAmount: number | null,
+  /**
+   * その取込に決済列があったか(1=あった)。
+   * DB では「列が無い」も「空欄」も NULL になるため、区別をこの一列で持ち越す。
+   * これが 0 の仕訳は未決済の判定に入れない(列の無い時期の取込が全件未決済に見えるのを防ぐ)。
+   */
+  settlementKnown: 0 | 1,
 ];
 
 export type MfPersistedRow = readonly [
@@ -47,6 +61,11 @@ export const freeePersistedRow = (deal: FreeeDeal): FreeePersistedRow => [
   deal.accountRaw,
   deal.accountNorm,
   deal.amount,
+  deal.dueDate ?? null,
+  deal.settledDate ?? null,
+  deal.settleAccount ?? null,
+  deal.settledAmount ?? null,
+  hasSettlementColumns(deal) ? 1 : 0,
 ];
 
 export const mfPersistedRow = (tx: MfTx): MfPersistedRow => [

@@ -584,6 +584,54 @@ tr.editor td {
   max-width: 100%;
   min-height: 44px;
 }
+.classification-progress {
+  margin-bottom: 16px;
+}
+.classification-progress > h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+}
+.classification-progress-hint {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.classification-thinking > summary {
+  display: list-item;
+  min-height: 44px;
+  width: fit-content;
+  padding: 11px 0;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+.classification-thinking ul {
+  margin: 0 0 8px;
+  padding-left: 20px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
+/* 未決済。損益に既に載っている分の再掲なので、収支のカードと色で区別する */
+.unsettled {
+  border-left: 3px solid var(--accent, #2563eb);
+}
+.unsettled > .kpis {
+  margin: 12px 0;
+}
+/* 二重計上の疑い。集計は変えないため警告色は見出しの帯だけに留める */
+.cash-duplicates {
+  border-left: 3px solid var(--warn, #d97706);
+}
+.cash-duplicates ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.9;
+}
 .classification-rule-details {
   margin-top: 18px;
   border-top: 1px solid var(--line);
@@ -1274,6 +1322,27 @@ details.prompt-box > summary {
   margin: 6px 0 0;
 }
 
+/* 科目×月のヒートマップ(図9)。Chart.js ではなく色を塗った表として出す */
+.heatmap-scroll {
+  overflow-x: auto;
+}
+table.heatmap {
+  font-size: 12px;
+  white-space: nowrap;
+}
+table.heatmap th[scope="row"] {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  background: var(--bg);
+  z-index: 1;
+}
+table.heatmap td.heat {
+  min-width: 56px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 /* 前回との並列比較 */
 .compare-grid {
   display: grid;
@@ -1384,6 +1453,24 @@ details.prompt-box > summary {
 .attachment-filename {
   overflow-wrap: anywhere;
 }
+/* サムネイルは原本をCSSで縮めて出す(別サイズを保管しない)。枠を固定して一覧の行が揺れないようにする */
+.attach-thumb {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg);
+  object-fit: cover;
+}
+.attach-thumb.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--ink-soft);
+}
 .attachment-usage {
   font-variant-numeric: tabular-nums;
 }
@@ -1436,4 +1523,108 @@ label.check {
   font-size: 12px;
   min-height: 44px;
   white-space: nowrap;
+}
+
+/* ---------------- 表のカード化(スマホ幅) ---------------- */
+/* 家計・サブスクの表は列が多く、横スクロールだと「その行が何の月・何の支払先か」を見失う。
+   .stack-sm を付けた表は 640px 以下で 1行=1カードに切り替える。
+   見出しは各 td の data-label から ::before で出すため、td には data-label が要る。 */
+@media (max-width: 640px) {
+  table.data.stack-sm,
+  table.data.stack-sm tbody,
+  table.data.stack-sm tr,
+  table.data.stack-sm td,
+  table.data.stack-sm th[scope="row"] {
+    display: block;
+    width: auto;
+  }
+  /* 見出しは視覚だけ隠し、読み上げと列の意味は保つ。 */
+  table.data.stack-sm thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  table.data.stack-sm tr {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    background: var(--surface);
+  }
+  table.data.stack-sm tr.total {
+    background: #fafbfa;
+  }
+  table.data.stack-sm td {
+    border-bottom: none;
+    padding: 3px 0;
+    text-align: right;
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    justify-content: space-between;
+    white-space: normal;
+  }
+  /* 1列目(月・支払先など)はカードの見出しとして左寄せで目立たせる。
+     年間比較表は1列目が th[scope="row"] なので、読み上げ用の意味を保ったまま同じ見た目にする */
+  table.data.stack-sm td:first-child,
+  table.data.stack-sm th[scope="row"] {
+    text-align: left;
+    font-weight: 700;
+    display: block;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+  }
+  table.data.stack-sm td[data-label]::before {
+    content: attr(data-label);
+    color: var(--ink-soft);
+    font-size: 11px;
+    font-weight: 700;
+    text-align: left;
+    flex: 0 0 auto;
+  }
+  table.data.stack-sm td:first-child[data-label]::before {
+    display: block;
+    margin-bottom: 2px;
+  }
+  /* 値の無いセル(合計行の空欄)はカードを間延びさせるので畳む */
+  table.data.stack-sm td:empty {
+    display: none;
+  }
+  /* カード化した表は横スクロールも1列目の固定も要らない */
+  .scroll-x table.data.stack-sm th:first-child,
+  .scroll-x table.data.stack-sm td:first-child {
+    position: static;
+  }
+  .scroll-x:has(> table.data.stack-sm) {
+    overflow-x: visible;
+  }
+}
+
+/* サブスク候補の採点根拠: 広い画面は常時表示、スマホ幅は <details> で畳む */
+.reasons-narrow {
+  display: none;
+}
+.reasons-narrow > summary {
+  font-size: 11px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 640px) {
+  .reasons-wide {
+    display: none;
+  }
+  .reasons-narrow {
+    display: block;
+    font-weight: 400;
+  }
 }

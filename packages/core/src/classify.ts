@@ -142,6 +142,41 @@ export function overridesFromEdits(edits: Record<string, TxEdit>): Record<string
   return out;
 }
 
+/** 仕分けの進み具合（1ヶ月分）。金額ではなく「何件を人が見たか」を表す。 */
+export interface ClassificationProgress {
+  /** 対象件数 */
+  total: number;
+  /** 事業と判定された件数 */
+  bizCount: number;
+  /** 個人と判定された件数 */
+  personalCount: number;
+  /** 判定の出どころ別の件数。合計は total に一致する */
+  bySource: { 手動: number; ルール: number; 既定: number };
+  /**
+   * まだ人もルールも触っていない件数（clsSrc === '既定'）。
+   * cls の既定は 'per' なので「個人」に見えるが判断されたわけではない。ここが 0 なら当月の仕分けは一巡している。
+   */
+  reviewPending: number;
+}
+
+/**
+ * 解決済み明細から仕分けの進み具合を数える。
+ * 「未分類」という状態は resolveTx に無いため、残作業は clsSrc === '既定' で数える。
+ */
+export function classificationProgress(
+  resolved: Pick<ResolvedTx, 'cls' | 'clsSrc'>[],
+): ClassificationProgress {
+  const bySource: ClassificationProgress['bySource'] = { 手動: 0, ルール: 0, 既定: 0 };
+  let bizCount = 0;
+  let personalCount = 0;
+  for (const r of resolved) {
+    bySource[r.clsSrc] += 1;
+    if (r.cls === 'biz') bizCount += 1;
+    else personalCount += 1;
+  }
+  return { total: resolved.length, bizCount, personalCount, bySource, reviewPending: bySource.既定 };
+}
+
 export interface ClassificationResult {
   personal: Record<string, PersonalMonth>;
   bizPersonal: Record<string, BizPersonalMonth>;
