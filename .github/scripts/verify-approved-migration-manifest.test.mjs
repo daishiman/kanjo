@@ -117,17 +117,54 @@ test('未承認またはfreshness未確認のmanifestを拒否する', () => {
   );
 });
 
-test('Wrangler pending一覧を順序どおり抽出し、失敗・未知形式はfail-closedにする', () => {
+test('装飾付きWrangler pending一覧を順序どおり抽出する', () => {
   assert.deepEqual(
     pendingMigrationsFromWrangler({
       exitCode: 0,
       stdout:
-        'Migrations to be applied:\n┌──────┐\n│ 0014_password_login_rate_limits.sql │\n│ 0015_mf_source_columns.sql │\n└──────┘\n',
+        ' ⛅️ wrangler 4.84.1 (update available 4.127.0)\n' +
+        '──────────────────────────────────────────────\n' +
+        'Resource location: remote\n\n' +
+        'Migrations to be applied:\n' +
+        '┌──────┐\n' +
+        '│ Name │\n' +
+        '├──────┤\n' +
+        '│ 0014_password_login_rate_limits.sql │\n' +
+        '│ 0015_mf_source_columns.sql │\n' +
+        '└──────┘\n',
+      stderr:
+        '▲ [WARNING] Processing wrangler.jsonc configuration:\n\n    - "secrets" fields are experimental.\n',
     }),
     pendingFilenames,
   );
-  assert.throws(() => pendingMigrationsFromWrangler({ exitCode: 1, stderr: 'must-not-be-logged' }));
-  assert.throws(() => pendingMigrationsFromWrangler({ exitCode: 0, stdout: '{"pending":[]}' }));
+});
+
+test('Wrangler command失敗と未知出力を別のエラーに分類する', () => {
+  assert.throws(
+    () => pendingMigrationsFromWrangler({ exitCode: 1, stderr: 'must-not-be-logged' }),
+    /remote-inspection-failed/,
+  );
+  assert.throws(
+    () => pendingMigrationsFromWrangler({ exitCode: 0, stdout: '{"pending":[]}' }),
+    /remote-inspection-unparseable/,
+  );
+  assert.throws(
+    () =>
+      pendingMigrationsFromWrangler({
+        exitCode: 0,
+        stdout: 'Migrations to be applied:\n┌──────┐\n│ Name │\n├──────┤\n└──────┘',
+      }),
+    /remote-pending-empty-or-unparseable/,
+  );
+  assert.throws(
+    () =>
+      pendingMigrationsFromWrangler({
+        exitCode: 0,
+        stdout: '✅ No migrations to apply!',
+        stderr: '▲ [WARNING] unexpected warning',
+      }),
+    /remote-inspection-failed/,
+  );
   assert.equal(
     MANIFEST_REMEDIATION,
     '承認manifest・repository head・remote pendingを再取得して承認し直してから、Migrateを再実行してください。',

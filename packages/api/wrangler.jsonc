@@ -34,12 +34,13 @@
     "enabled": true,
     "head_sampling_rate": 1
   },
+  // 値はCloudflareのsecret storeだけに置き、ここでは必須名だけを機械検証する。
+  "secrets": {
+    "required": ["AUTH_PASSWORD", "SESSION_SECRET"]
+  },
   "vars": {
     // Cloudflare Access を使う場合のみ設定(両方設定でAccess JWT検証へ切替)
     "ACCESS_AUD": "",
     "ACCESS_TEAM_DOMAIN": ""
-  },
-  "secrets": {
-    "required": ["AUTH_PASSWORD", "SESSION_SECRET"]
   }
 }
