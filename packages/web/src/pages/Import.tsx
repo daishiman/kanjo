@@ -8,7 +8,7 @@ import { AUTH_EVENT, type ImportHistoryRow, type ImportUnitResult, api } from '.
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { dateTime } from '../format.js';
-import { fileForUnit, retryableFiles } from '../import-retry.js';
+import { fileForUnit, retryableFiles, rootFileName } from '../import-retry.js';
 
 const KIND_LABEL: Record<string, ReactNode> = {
   mf: 'MF明細',
@@ -27,6 +27,8 @@ export function ImportPage() {
   const [force, setForce] = useState(false);
   // 月の途中までのファイルを掴んだときの安全弁。既定は OFF(通常の月次取込は件数が増えるため)
   const [keepOnShrink, setKeepOnShrink] = useState(false);
+  // 取込履歴から原本を戻したときの出どころ(#ID)。戻しただけで、まだ何も書き換えていないことを示す
+  const [reimportedFrom, setReimportedFrom] = useState<number | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const history = useQuery({
@@ -53,6 +55,7 @@ export function ImportPage() {
     onSuccess: (r, files) => {
       setResults(r);
       setPending([]);
+      setReimportedFrom(null);
       setSubmitted(files);
       setForce(false);
       void qc.invalidateQueries(); // 全ページへ反映
@@ -61,8 +64,37 @@ export function ImportPage() {
 
   const accept = (files: FileList | File[]) => {
     const arr = [...files];
-    if (arr.length) setPending(arr);
+    if (arr.length) {
+      setPending(arr);
+      setReimportedFrom(null);
+    }
   };
+
+  /**
+   * 取込履歴の原本(R2)を取込枠へ戻す。ここでは何も書き換えない。
+   * 月単位の洗い替えは DELETE→INSERT で取り返しがつかないため、実行の確認は
+   * 通常の取込と同じ「取込を実行」→ confirm に一本化する(確認の二重管理を作らない)。
+   */
+  const reimport = useMutation({
+    mutationFn: async (row: ImportHistoryRow) => {
+      const res = await fetch(`/api/imports/${row.id}/original`);
+      if (res.status === 401) {
+        window.dispatchEvent(new Event(AUTH_EVENT));
+        throw new Error('unauthorized');
+      }
+      if (!res.ok) {
+        const body = (await res.json().catch(() => null)) as { error?: { message: string } } | null;
+        throw new Error(body?.error?.message ?? `原本を取り出せませんでした(${res.status})`);
+      }
+      const blob = await res.blob();
+      return new File([blob], rootFileName(row.filename), { type: blob.type });
+    },
+    onSuccess: (file, row) => {
+      setResults(null);
+      setPending([file]);
+      setReimportedFrom(row.id);
+    },
+  });
 
   const confirmAndUpload = () => {
     // 月単位洗い替えの明示(spec §10.3)
@@ -130,9 +162,21 @@ export function ImportPage() {
           <button type="button" className="primary" onClick={confirmAndUpload} disabled={upload.isPending}>
             {upload.isPending ? '取込中…' : '取込を実行'}
           </button>{' '}
-          <button type="button" onClick={() => setPending([])}>
+          <button
+            type="button"
+            onClick={() => {
+              setPending([]);
+              setReimportedFrom(null);
+            }}
+          >
             取消
           </button>
+          {reimportedFrom !== null && (
+            <div className="sub" style={{ marginTop: 6, whiteSpace: 'normal', textAlign: 'left' }}>
+              取込履歴 #{reimportedFrom}
+              の原本を戻しました。まだ何も書き換えていません。内容を確かめて「取込を実行」を押すと、このファイルに含まれる月が洗い替えられます。現在有効な内容と同じ場合はスキップされます。
+            </div>
+          )}
           <label style={{ display: 'block', marginTop: 6, fontSize: 12 }}>
             <input type="checkbox" checked={force} onChange={(e) => setForce(e.target.checked)} />{' '}
             現在有効な内容と同じでも再適用する(通常は不要)
@@ -279,6 +323,9 @@ export function ImportPage() {
 
       <div className="card" style={{ marginTop: 16 }}>
         <h2>取込履歴</h2>
+        <p className="sub">
+          「この取込をやり直す」は、そのとき投入した原本を取込枠へ戻すだけです。実際の書き換えは、内容を確かめて「取込を実行」を押したときに、通常の取込と同じ確認を経て行われます。
+        </p>
         {history.isLoading ? (
           <PageState status="loading" />
         ) : history.isError ? (
@@ -294,6 +341,7 @@ export function ImportPage() {
                   <th>対象月</th>
                   <th>件数</th>
                   <th>ステータス</th>
+                  <th>やり直し</th>
                 </tr>
               </thead>
               <tbody>
@@ -342,11 +390,37 @@ export function ImportPage() {
                         </>
                       )}
                     </td>
+                    <td>
+                      {r.originalRecorded === true ? (
+                        <button
+                          type="button"
+                          disabled={reimport.isPending || upload.isPending}
+                          onClick={() => reimport.mutate(r)}
+                        >
+                          {reimport.isPending && reimport.variables?.id === r.id
+                            ? '原本を取り出し中…'
+                            : 'この取込をやり直す'}
+                        </button>
+                      ) : (
+                        <span className="sub" title="この取込は投入した原本を保存していません">
+                          原本なし
+                        </span>
+                      )}
+                      {reimport.isError && reimport.variables?.id === r.id && (
+                        <div
+                          className="sub"
+                          style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                          role="alert"
+                        >
+                          {(reimport.error as Error).message}
+                        </div>
+                      )}
+                    </td>
                   </tr>
                 ))}
                 {!history.data?.imports.length && (
                   <tr>
-                    <td colSpan={6} className="empty">
+                    <td colSpan={7} className="empty">
                       取込履歴はまだありません。上の枠にファイルを入れると、ここに結果が残ります。
                     </td>
                   </tr>

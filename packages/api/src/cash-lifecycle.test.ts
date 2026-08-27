@@ -454,7 +454,13 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
     const fresh = await freshFixture('cash-export-restore-fresh');
     try {
       const restored = await fresh.request('/restore', 'POST', exported);
-      expect(restored.status).toBe(200);
+      expect(restored.status, await restored.clone().text()).toBe(200);
+      // この規模の集計では記帳4件を足すと49 query予算を超えるため、記帳だけ見送る。
+      // 見送りは黙って0件にせず cashSkipped で返す
+      await expect(restored.clone().json()).resolves.toMatchObject({
+        cashEntries: 0,
+        cashSkipped: 4,
+      });
       expect(
         await fresh.db
           .prepare(

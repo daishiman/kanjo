@@ -3,6 +3,7 @@
  * R2はD1 transaction外なので先にrun/unitへ関連付け、D1側はbatchで1unitを全commitする。
  */
 import {
+  type CashEntry,
   type Dataset,
   FINGERPRINT_VERSION,
   type FreeeDeal,
@@ -643,7 +644,12 @@ const editRows = (edits: Record<string, TxEdit>): unknown[][] =>
 
 export interface RestoreWriteSet {
   mfRows: ReturnType<typeof mfPersistedIdentityRow>[];
-  vendors: string[];
+  vendorRows: unknown[][];
+  analysisSettingsRow: [number];
+  subVendorExclusionRows: unknown[][];
+  /** commitの差分計画。fingerprintは最終行だけを使い、この実行手順は含めない。 */
+  analysisSettingsChanged: boolean;
+  subVendorExclusionsChanged: boolean;
   ruleRows: unknown[][];
   editRows: unknown[][];
   ownerRows: unknown[][];
@@ -652,6 +658,11 @@ export interface RestoreWriteSet {
   restoredAggRows: unknown[][];
   unrecordedMonths: string[];
   monthlyAggRows: unknown[][];
+  /**
+   * 復元する現金の記帳。移行先に1件も記帳が無いときだけ入る(空なら現金は一切触らない)。
+   * `cash:<id>` は手動判定・証憑の宛先なので、idはバックアップの値をそのまま使う。
+   */
+  cashEntryRows: unknown[][];
 }
 
 /** restoreのmerge/default適用後に、実際にpersistするtable行を一度だけ構成する。 */
@@ -659,6 +670,12 @@ export function prepareRestoreWriteSet(args: {
   userId: string;
   data: Dataset;
   restored: Dataset;
+  statMinMonths?: number;
+  subVendorExclusions?: ReadonlyArray<{ partner: string; vendorKey: string }>;
+  existingStatMinMonths?: number;
+  existingSubVendorExclusions?: ReadonlyArray<{ partner: string; vendorKey: string }>;
+  /** 復元する現金の記帳。移行先に既存の記帳があるときは渡さない */
+  restoredCashEntries?: ReadonlyArray<CashEntry>;
 }): RestoreWriteSet {
   const rawTxs = canonicalMfTransactions(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)));
   return {
@@ -666,7 +683,28 @@ export function prepareRestoreWriteSet(args: {
     mfRows: rawTxs
       .map(mfPersistedIdentityRow)
       .sort((a, b) => canonicalEncode(a).localeCompare(canonicalEncode(b))),
-    vendors: [...new Set(args.data.subs.vendors)].sort(),
+    vendorRows: [...new Set(args.data.subs.vendors)].map((name, index) => [
+      name,
+      JSON.stringify([...new Set(args.data.subs.aliases?.[name] ?? [])].sort()),
+      JSON.stringify([...new Set(args.data.subs.accounts?.[name] ?? [])].sort()),
+      index,
+    ]),
+    analysisSettingsRow: [args.statMinMonths ?? 6],
+    subVendorExclusionRows: [...(args.subVendorExclusions ?? [])]
+      .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey))
+      .map((entry) => [entry.partner, entry.vendorKey]),
+    analysisSettingsChanged: (args.statMinMonths ?? 6) !== args.existingStatMinMonths,
+    subVendorExclusionsChanged:
+      canonicalEncode(
+        [...(args.subVendorExclusions ?? [])]
+          .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey))
+          .map((entry) => [entry.partner, entry.vendorKey]),
+      ) !==
+      canonicalEncode(
+        [...(args.existingSubVendorExclusions ?? [])]
+          .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey))
+          .map((entry) => [entry.partner, entry.vendorKey]),
+      ),
     ruleRows: args.data.rules.map((rule, index) => [
       rule.k,
       rule.cls ?? null,
@@ -688,12 +726,35 @@ export function prepareRestoreWriteSet(args: {
     monthlyAggRows: aggRowsFromDataset(args.userId, args.data)
       .map((row) => [row.month, row.scope, row.amount])
       .sort(([am, as], [bm, bs]) => `${am}\0${as}`.localeCompare(`${bm}\0${bs}`)),
+    cashEntryRows: [...(args.restoredCashEntries ?? [])]
+      .sort((a, b) => a.id - b.id)
+      .map((entry) => [
+        entry.id,
+        entry.date,
+        entry.month,
+        entry.side,
+        entry.io,
+        entry.amount,
+        entry.description,
+        entry.categoryMajor,
+        entry.categoryMid,
+        entry.memo ?? null,
+        entry.transitFrom ?? null,
+        entry.transitTo ?? null,
+        entry.transitRound ? 1 : 0,
+        entry.receiptWaived ? 1 : 0,
+      ]),
   };
 }
 
 /** merge後の実効的な永続write-set全体をbusiness fingerprintにする。 */
 export async function restoreWriteSetFingerprint(writeSet: RestoreWriteSet): Promise<string> {
-  return fingerprintCanonical(`v${FINGERPRINT_VERSION}:json-write-set:${canonicalEncode(writeSet)}`);
+  const {
+    analysisSettingsChanged: _analysisChanged,
+    subVendorExclusionsChanged: _exclusionsChanged,
+    ...rows
+  } = writeSet;
+  return fingerprintCanonical(`v${FINGERPRINT_VERSION}:json-write-set:${canonicalEncode(rows)}`);
 }
 
 /** multipart JSONとPOST /restoreが共有するrestore commandのD1 write-set。 */
@@ -713,19 +774,48 @@ export function restoreCommitStatements(args: {
   return [
     ...beginImportCommitStatements({ database, userId, runId, importId }),
     ...mfStatements,
-    ...chunkJsonRowsByBytes(writeSet.vendors.map((name) => [name])).map((payload) =>
+    ...chunkJsonRowsByBytes(writeSet.vendorRows).map((payload) =>
       database
         .prepare(
-          `INSERT INTO sub_vendors (user_id,name,aliases,sort_order,created_at)
-           SELECT ?, CAST(json_extract(item.value,'$[0]') AS TEXT), '[]', 100, ?
-           FROM json_each(?) AS item
-           WHERE NOT EXISTS (
-             SELECT 1 FROM sub_vendors
-             WHERE user_id=? AND name=CAST(json_extract(item.value,'$[0]') AS TEXT)
-           )`,
+          `INSERT INTO sub_vendors (user_id,name,aliases,accounts,sort_order,created_at)
+           SELECT ?,
+                  CAST(json_extract(item.value,'$[0]') AS TEXT),
+                  CAST(json_extract(item.value,'$[1]') AS TEXT),
+                  CAST(json_extract(item.value,'$[2]') AS TEXT),
+                  CAST(json_extract(item.value,'$[3]') AS INTEGER), ?
+           FROM json_each(?) AS item WHERE 1
+           ON CONFLICT(user_id,name) DO UPDATE SET
+             aliases=excluded.aliases, accounts=excluded.accounts, sort_order=excluded.sort_order`,
         )
-        .bind(userId, now, payload, userId),
+        .bind(userId, now, payload),
     ),
+    ...(writeSet.analysisSettingsChanged
+      ? [
+          database
+            .prepare(
+              `INSERT INTO analysis_settings (user_id,stat_min_months,updated_at) VALUES (?,?,?)
+               ON CONFLICT(user_id) DO UPDATE SET
+                 stat_min_months=excluded.stat_min_months, updated_at=excluded.updated_at`,
+            )
+            .bind(userId, writeSet.analysisSettingsRow[0], now),
+        ]
+      : []),
+    ...(writeSet.subVendorExclusionsChanged && writeSet.subVendorExclusionRows.length
+      ? chunkJsonRowsByBytes(writeSet.subVendorExclusionRows).map((payload) =>
+          database
+            .prepare(
+              `INSERT INTO sub_vendor_exclusions
+                 (user_id,partner,vendor_key,created_at)
+               SELECT ?,
+                      CAST(json_extract(item.value,'$[0]') AS TEXT),
+                      CAST(json_extract(item.value,'$[1]') AS TEXT), ?
+               FROM json_each(?) AS item WHERE 1
+               ON CONFLICT(user_id,vendor_key) DO UPDATE SET
+                 partner=excluded.partner`,
+            )
+            .bind(userId, now, payload),
+        )
+      : []),
     database.prepare('DELETE FROM rules WHERE user_id=?').bind(userId),
     ...insertJsonRows(
       database,
@@ -779,6 +869,7 @@ export function restoreCommitStatements(args: {
       writeSet.restoredAggRows,
       [{ column: 'user_id', value: userId }],
     ),
+    ...restoreCashEntryStatements(database, userId, writeSet.cashEntryRows, now),
     ...replaceUnrecordedStatements(database, userId, writeSet.unrecordedMonths),
     database.prepare('DELETE FROM monthly_agg WHERE user_id=?').bind(userId),
     ...insertJsonRows(database, 'monthly_agg', ['month', 'scope', 'amount'], writeSet.monthlyAggRows, [
@@ -786,6 +877,52 @@ export function restoreCommitStatements(args: {
     ]),
     ...finalizeStatements(database, userId, runId, importId, contentHash, targetKeys, 'json', now),
   ];
+}
+
+/**
+ * 現金の記帳を復元する。移行先に記帳が1件も無いときだけ呼ばれるので DELETE はしない
+ * (既存の記帳を消すのは復元ではなく破壊であり、この経路の役目ではない)。
+ *
+ * id はバックアップの値をそのまま入れる。`cash:<id>` が手動判定と証憑の宛先だからで、
+ * 採番し直すと復元済みの証憑メタデータが宛先を失う。
+ *
+ * 証憑の `parent_missing_at` はここで消さない。49 query予算に1 queryも積めないうえ、
+ * 親の生死判定は証憑のsafe recovery(`/api/attachments/archive/recover`)側の役目で、
+ * 復元後にそちらを回せば同じ結果になる。
+ */
+function restoreCashEntryStatements(
+  database: D1Database,
+  userId: string,
+  rows: ReadonlyArray<readonly unknown[]>,
+  now: string,
+): D1PreparedStatement[] {
+  if (rows.length === 0) return [];
+  return insertJsonRows(
+    database,
+    'cash_entries',
+    [
+      'id',
+      'date',
+      'month',
+      'side',
+      'io',
+      'amount',
+      'description',
+      'category_major',
+      'category_mid',
+      'memo',
+      'transit_from',
+      'transit_to',
+      'transit_round',
+      'receipt_waived',
+    ],
+    rows,
+    [
+      { column: 'user_id', value: userId },
+      { column: 'created_at', value: now },
+      { column: 'updated_at', value: now },
+    ],
+  );
 }
 
 function mfReplaceOnlyStatements(

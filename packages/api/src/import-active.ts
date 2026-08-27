@@ -17,6 +17,8 @@ export const JSON_SNAPSHOT_MUTATION_CONSUMERS = [
   'unrecorded_months',
   'cash_overrides',
   'sub_vendors',
+  'sub_vendor_exclusions',
+  'analysis_settings',
   'freee_deals',
   'mf_transactions',
   'restored_monthly_agg',
