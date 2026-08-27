@@ -73,7 +73,8 @@ LIMITS = {
     "need_gap": 300,
     "need_action": 500,
     "need_screen": 40,
-    "charts": 8,
+    # カタログの図の枚数(chart-catalog.json があればそこから上書きする)
+    "charts": 10,
     "chart_id": 40,
     "caption": 400,
 }
@@ -253,6 +254,9 @@ def _apply_catalog_limits(catalog: dict) -> None:
                     TEXT_MIN[name] = v["min"]
                 if isinstance(v.get("max"), int):
                     LIMITS[name] = v["max"]
+    entries = catalog.get("charts")
+    if isinstance(entries, list) and entries:
+        LIMITS["charts"] = len(entries)
     smi = catalog.get("sectionMinItems")
     if isinstance(smi, dict):
         for k, v in smi.items():

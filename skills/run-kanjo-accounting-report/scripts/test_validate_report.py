@@ -99,7 +99,8 @@ class CatalogTest(unittest.TestCase):
         catalog = MOD.load_catalog(None)
         ids = {c["id"] for c in catalog["charts"]}
         self.assertIn("composition", ids)
-        self.assertEqual(len(ids), 8)
+        # 枚数はカタログ(catalog.ts → pnpm catalog:export)が正本。増減したらここも直す
+        self.assertEqual(len(ids), 10)
 
     def test_missing_catalog_returns_empty(self) -> None:
         self.assertEqual(MOD.load_catalog(Path("/nonexistent/catalog.json")), {})
@@ -274,8 +275,9 @@ class ValidateTest(unittest.TestCase):
         self.assertTrue(any("catalogId が重複" in i for i in MOD.validate(r)))
         r["charts"] = [{"catalogId": "composition", "caption": "あ" * 401}]
         self.assertTrue(any("charts[0].caption" in i and "上限 400" in i for i in MOD.validate(r)))
-        r["charts"] = [{"catalogId": f"c{i}", "caption": "x"} for i in range(9)]
-        self.assertTrue(any("charts: 9件" in i for i in MOD.validate(r)))
+        over = MOD.LIMITS["charts"] + 1
+        r["charts"] = [{"catalogId": f"c{i}", "caption": "x"} for i in range(over)]
+        self.assertTrue(any(f"charts: {over}件" in i for i in MOD.validate(r)))
         r["charts"] = None
         self.assertEqual(MOD.validate(r), [])
 

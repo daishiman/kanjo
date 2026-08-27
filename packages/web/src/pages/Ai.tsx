@@ -89,12 +89,45 @@ export function AiPage() {
   const qc = useQueryClient();
   const sq = useQuery({ queryKey: ['summary'], queryFn: () => api<SummaryResponse>('/summary') });
   const tq = useQuery({ queryKey: ['ai-tasks'], queryFn: () => api<{ tasks: AiTaskView[] }>('/ai/tasks') });
+  const [showArchived, setShowArchived] = useState(false);
   const rq = useQuery({
-    queryKey: ['ai-reports'],
-    queryFn: () => api<{ reports: AiReportRow[] }>('/ai/reports'),
+    queryKey: ['ai-reports', showArchived],
+    queryFn: () =>
+      api<{ reports: AiReportRow[]; archivedCount: number }>(
+        showArchived ? '/ai/reports?archived=1' : '/ai/reports',
+      ),
   });
   const [openId, setOpenId] = useState<string | null>(null);
   const [reanalyze, setReanalyze] = useState<Reanalyze | null>(null);
+  const [reportMsg, setReportMsg] = useState<string | null>(null);
+
+  const invalidateReports = () => {
+    void qc.invalidateQueries({ queryKey: ['ai-reports'] });
+    void qc.invalidateQueries({ queryKey: ['ai-report'] });
+  };
+  const archive = useMutation({
+    mutationFn: ({ id, archived }: { id: string; archived: boolean }) =>
+      api<{ ok: true }>(`/ai/reports/${id}/archive`, {
+        method: 'PUT',
+        body: JSON.stringify({ archived }),
+      }),
+    onSuccess: (_r, v) => {
+      setReportMsg(
+        v.archived ? 'アーカイブしました。「アーカイブも表示」から戻せます。' : 'アーカイブから戻しました。',
+      );
+      invalidateReports();
+    },
+    onError: (e) => setReportMsg(e instanceof ApiError ? e.message : describeError(e)),
+  });
+  const remove = useMutation({
+    mutationFn: (id: string) => api<{ ok: true }>(`/ai/reports/${id}`, { method: 'DELETE' }),
+    onSuccess: (_r, id) => {
+      setReportMsg('レポートを削除しました。');
+      setOpenId((cur) => (cur === id ? null : cur));
+      invalidateReports();
+    },
+    onError: (e) => setReportMsg(e instanceof ApiError ? e.message : describeError(e)),
+  });
 
   if (sq.isLoading || tq.isLoading || rq.isLoading)
     return (
@@ -114,10 +147,40 @@ export function AiPage() {
   const months = sq.data?.overview.months ?? [];
   const tasks = tq.data?.tasks ?? [];
   const reports = rq.data?.reports ?? [];
+  const archivedCount = rq.data?.archivedCount ?? 0;
   const refresh = () => {
     void qc.invalidateQueries({ queryKey: ['ai-tasks'] });
     void qc.invalidateQueries({ queryKey: ['ai-reports'] });
   };
+  /** 1件分の操作(アーカイブ/削除)。削除は元に戻せないので必ず確認を挟む */
+  const reportActions = (r: AiReportRow) => (
+    <>
+      <button
+        type="button"
+        className="mini"
+        disabled={archive.isPending}
+        onClick={() => archive.mutate({ id: r.id, archived: !r.archivedAt })}
+      >
+        {r.archivedAt ? 'アーカイブから戻す' : 'アーカイブ'}
+      </button>{' '}
+      <button
+        type="button"
+        className="mini danger"
+        disabled={remove.isPending}
+        onClick={() => {
+          if (
+            window.confirm(
+              `「${r.title}」(${periodText(r.period)} 第${r.version}版)を削除します。\n本文も図も消え、元に戻せません。よろしいですか?`,
+            )
+          )
+            remove.mutate(r.id);
+        }}
+      >
+        削除
+      </button>
+    </>
+  );
+
   const startReanalyze = (r: Reanalyze) => {
     setReanalyze(r);
     window.scrollTo({ top: 0 });
@@ -138,16 +201,31 @@ export function AiPage() {
       <RunCard tasks={tasks} onChanged={refresh} />
       <section className="card">
         <h2>3. 届いたレポート</h2>
+        {(archivedCount > 0 || showArchived) && (
+          <p className="toolbar">
+            <label>
+              <input
+                type="checkbox"
+                checked={showArchived}
+                onChange={(e) => setShowArchived(e.target.checked)}
+              />{' '}
+              アーカイブも表示する{archivedCount > 0 ? `(${archivedCount}件)` : ''}
+            </label>
+          </p>
+        )}
+        {reportMsg && <p className="notice info">{reportMsg}</p>}
         {reports.length === 0 ? (
           <p className="empty">
-            まだレポートはありません。上の手順で指示文を作り、Claude Code / Codex
-            で実行すると、ここに届きます。
+            {archivedCount > 0 && !showArchived
+              ? '表示中のレポートはありません。「アーカイブも表示する」から戻せます。'
+              : 'まだレポートはありません。上の手順で指示文を作り、Claude Code / Codex で実行すると、ここに届きます。'}
           </p>
         ) : (
           <>
             <p className="sub">
               レポートは毎回新しく保存され、前回のものは残ります(同じ期間の作り直しは「版」が進みます)。
               型ごとに最新の1件を大きく、過去の分は畳んで表示します。
+              読み終えたものは「アーカイブ」で一覧から外せます(本文は残ります)。
             </p>
             {TYPE_ORDER.map((t) => {
               const group = reports
@@ -167,16 +245,22 @@ export function AiPage() {
                         最新 / {periodText(latest.period)} / {dateTime(latest.createdAt)} / 第{latest.version}
                         版
                       </div>
-                      <div className="report-latest-title">{latest.title}</div>
+                      <div className="report-latest-title">
+                        {latest.title}
+                        {latest.archivedAt && <span className="pill neutral">アーカイブ済み</span>}
+                      </div>
                       <div className="wrap">{firstLine(latest.summary)}</div>
                     </div>
-                    <button
-                      type="button"
-                      className={latest.id === openId ? 'mini' : 'primary'}
-                      onClick={() => setOpenId(latest.id === openId ? null : latest.id)}
-                    >
-                      {latest.id === openId ? '閉じる' : '読む'}
-                    </button>
+                    <div className="report-latest-actions">
+                      <button
+                        type="button"
+                        className={latest.id === openId ? 'mini' : 'primary'}
+                        onClick={() => setOpenId(latest.id === openId ? null : latest.id)}
+                      >
+                        {latest.id === openId ? '閉じる' : '読む'}
+                      </button>{' '}
+                      {reportActions(latest)}
+                    </div>
                   </div>
                   {past.length > 0 && (
                     <details className="report-past">
@@ -210,7 +294,8 @@ export function AiPage() {
                                     onClick={() => setOpenId(r.id === openId ? null : r.id)}
                                   >
                                     {r.id === openId ? '閉じる' : '読む'}
-                                  </button>
+                                  </button>{' '}
+                                  {reportActions(r)}
                                 </td>
                               </tr>
                             ))}
@@ -453,7 +538,8 @@ function PromptCard({
 
 /* -------- 2. 実行する -------- */
 
-function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: () => void }) {
+/** 依頼一覧(2. 実行する)。畳み方を固定するテストから直接使うので export する */
+export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: () => void }) {
   const [pasteFor, setPasteFor] = useState<string | null>(null);
   const [pasteText, setPasteText] = useState('');
   const [pasteMsg, setPasteMsg] = useState<string | null>(null);
@@ -494,6 +580,90 @@ function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: () => v
     }
   };
 
+  const cancel = useMutation({
+    mutationFn: (id: string) => api<{ ok: true }>(`/ai/tasks/${id}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      setPasteMsg('結果待ちの依頼を取り消しました。');
+      onChanged();
+    },
+    onError: (e) => setPasteMsg(e instanceof ApiError ? e.message : describeError(e)),
+  });
+
+  const confirmCancel = (t: AiTaskView) => {
+    // 取り消すと発行済みトークンが無効になり、実行中のAIは結果を送れなくなる
+    if (
+      !window.confirm(
+        `${t.label} の依頼(${dateTime(t.createdAt)})を取り消します。\n実行中のAIがあれば結果を送れなくなります。よろしいですか?`,
+      )
+    )
+      return;
+    setPasteMsg(null);
+    if (pasteFor === t.id) setPasteFor(null);
+    cancel.mutate(t.id);
+  };
+
+  const rows = (list: AiTaskView[]) => (
+    <div className="scroll-x">
+      <table className="data ai-table">
+        <thead>
+          <tr>
+            <th>作成日時</th>
+            <th>対象期間</th>
+            <th>状態</th>
+            <th>うまく送れなかったとき</th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.map((t) => (
+            <tr key={t.id}>
+              <td>{dateTime(t.createdAt)}</td>
+              <td>
+                {t.label}
+                {t.parentReportId ? '(再分析)' : ''}
+              </td>
+              <td>
+                <span className={STATUS_PILL[t.status].cls}>{STATUS_PILL[t.status].label}</span>
+              </td>
+              <td>
+                {t.status === 'done' ? (
+                  <span className="sub">—</span>
+                ) : (
+                  <>
+                    <button type="button" className="mini" onClick={() => void showData(t.id)}>
+                      データを表示
+                    </button>{' '}
+                    <button
+                      type="button"
+                      className="mini"
+                      onClick={() => {
+                        setPasteFor(pasteFor === t.id ? null : t.id);
+                        setPasteMsg(null);
+                      }}
+                    >
+                      結果を貼り付ける
+                    </button>{' '}
+                    <button
+                      type="button"
+                      className="mini danger"
+                      disabled={cancel.isPending}
+                      onClick={() => confirmCancel(t)}
+                    >
+                      取り消す
+                    </button>
+                  </>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  // 検証で依頼を何度も作ると一覧が伸びるので、受信済みは畳んで「今どうなっているか」だけを出す
+  const openTasks = tasks.filter((t) => t.status !== 'done');
+  const doneTasks = tasks.filter((t) => t.status === 'done');
+
   return (
     <section className="card">
       <h2>2. Claude Code / Codex で実行する</h2>
@@ -508,54 +678,15 @@ function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: () => v
           )と「3. 届いたレポート」に並ぶ。
         </li>
       </ol>
-      {tasks.length > 0 && (
-        <div className="scroll-x">
-          <table className="data ai-table">
-            <thead>
-              <tr>
-                <th>作成日時</th>
-                <th>対象期間</th>
-                <th>状態</th>
-                <th>うまく送れなかったとき</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tasks.map((t) => (
-                <tr key={t.id}>
-                  <td>{dateTime(t.createdAt)}</td>
-                  <td>
-                    {t.label}
-                    {t.parentReportId ? '(再分析)' : ''}
-                  </td>
-                  <td>
-                    <span className={STATUS_PILL[t.status].cls}>{STATUS_PILL[t.status].label}</span>
-                  </td>
-                  <td>
-                    {t.status === 'done' ? (
-                      <span className="sub">—</span>
-                    ) : (
-                      <>
-                        <button type="button" className="mini" onClick={() => void showData(t.id)}>
-                          データを表示
-                        </button>{' '}
-                        <button
-                          type="button"
-                          className="mini"
-                          onClick={() => {
-                            setPasteFor(pasteFor === t.id ? null : t.id);
-                            setPasteMsg(null);
-                          }}
-                        >
-                          結果を貼り付ける
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {openTasks.length > 0 && rows(openTasks)}
+      {tasks.length > 0 && openTasks.length === 0 && (
+        <p className="sub">結果待ちの依頼はありません(受け取り済みの依頼だけです)。</p>
+      )}
+      {doneTasks.length > 0 && (
+        <details className="task-done">
+          <summary className="sub">受信済みの依頼 {doneTasks.length}件</summary>
+          {rows(doneTasks)}
+        </details>
       )}
       {dataFor && (
         <div className="prompt-box">
@@ -700,7 +831,7 @@ function ReportDetail({
       </section>
 
       <section className="report-section">
-        <h3>図表(毎回同じ8枚)</h3>
+        <h3>図表(毎回同じ10枚)</h3>
         <p className="sub">
           図の数値はすべてアプリが計算し、AIは読み解きの文だけを書きます。出せない図も枠を残し、
           あと何ヶ月分のデータで出せるかを示します。用語: <Term id="contribution" /> / <Term id="sigmaBand" />{' '}
@@ -708,7 +839,7 @@ function ReportDetail({
         </p>
         {b.charts.length === 0 ? (
           <p className="sub">
-            この版は図表が固定される前(第2版以前の形式)に届いたため図はありません。「改訂版を作る」で作り直すと8枚の図が付きます。
+            この版は図表が固定される前(第2版以前の形式)に届いたため図はありません。「改訂版を作る」で作り直すと10枚の図が付きます。
           </p>
         ) : (
           <div className="report-charts">

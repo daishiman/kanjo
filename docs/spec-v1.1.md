@@ -130,7 +130,7 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 - canonical原本、月次集計キャッシュ、active pointer、unit terminal、unit状態からのrun reconcileを同じD1 atomic batchで確定する。途中失敗したunitは確定せず、同じ入力の通常再試行で回復できる
 - 利用者ごとの取込writerを期限付きDB claimで直列化し、claim取得後の正規化map/canonical snapshotだけを計画と実行で共有する。受理前claimはrun未作成の所有tokenなので`import_runs`へのFKを持たず、拒否時はrun/R2/canonicalを作らずreleaseする。stale takeoverでは旧run配下の未完了unitだけを同じ回復batchで`failed`へCAS更新し、terminal unitを保持してrunを再計算する。同一multipartの同domain×month競合とJSON併用は副作用前に拒否し、異なるunit間だけpartial successを許す
 - 重複は過去履歴ではなく現在有効なdomain×month/JSON snapshotのv4指紋と比較する。同月A→B→Aは再適用し、A→Aだけをスキップする。`force=1`は現在有効な世代を意図的に再適用する場合だけ使う
-- v4指紋はtype+length prefixでcell境界衝突を防ぎ、parser・指紋・commit builderがcanonical保存行射影を共有する。MFはID列由来かどうか、メモ原文、計算対象、振替も保存行と指紋に含め、日付はslash/hyphenを同じ`YYYY-MM-DD`へ一度だけ正規化する。JSONはpartial/default/merge後の実効write-setをhashし、`exportedAt`/`cashEntries`等のmetadataと非永続subs aliasesは除外する。source `cash:*` editは破棄し、destinationで現存cashに付いているeditをcandidateへ戻し、永続化行・集計・指紋を同じ実効集合から生成する。旧hashとの互換比較はせず、移行直後は同じ内容でも1回だけ通常取込になる
+- v4指紋はtype+length prefixでcell境界衝突を防ぎ、parser・指紋・commit builderがcanonical保存行射影を共有する。MFはID列由来かどうか、メモ原文、計算対象、振替も保存行と指紋に含め、日付はslash/hyphenを同じ`YYYY-MM-DD`へ一度だけ正規化する。JSONはpartial/default/merge後の実効write-setをhashし、`exportedAt`等のmetadataと監査用raw `cashEntries`は除外する一方、実復元するcash行、sub vendorのaliases/accounts、分析設定、候補除外は含める。source `cash:*` editは復元cashだけに限定し、destinationで現存cashに付いているeditをcandidateへ戻し、永続化行・集計・指紋を同じ実効集合から生成する。旧hashとの互換比較はせず、移行直後は同じ内容でも1回だけ通常取込になる
 - CSVはJSON1のUTF-8 80KiB payloadでbulk delete/insertし、`import_id`・`user_id`・確定時刻はchunk JSON外のscalar bindにする。routeは実builderのpayload/cache/active/finalizationとread/claim/attempt/heartbeat/reconcile/release・duplicate/失敗/commit応答喪失回復のworst-caseを合算し、49 D1 queriesまでを受理する。受理後は実attempt IDのbuilderをR2前に再計測し、commit直前にも`actual <= planned`をfail-closedで保証する。通常幅の5,000行freee/MFは50未満、長大列・大量cache scope・複数unitで超える場合はR2/run/canonical書込み前に413とする
 - JSON active pointerはrestore write-setを変えるrules、edits、owners、budgets、settings、vendor、cash、freee/MF/baselineの各mutationと同じD1 batchで無効化し、restore自身はcommit batchで新pointerを設定する
 - MFの明示ID付き行は順序非依存。ID列が無い旧exportは合成IDが行indexに依存するため順序非依存を保証せず、並べ替えると手動編集も引き継げない旨を画面のID補完件数で知らせる
@@ -155,8 +155,7 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 - 予実差異と判定(超過/範囲内/余裕: 実績が予算±10%基準)
 
 **FR-05 エクスポート(P9)**
-- 統合データJSONのダウンロードと、HTML版互換JSONから集計・設定を初期移行する。現金明細、添付metadata、
-  R2原本は汎用restoreの対象ではない。添付はinventoryと明示的safe recoveryを別契約にする
+- 統合データJSONのダウンロードと、HTML版互換JSONから集計・設定を初期移行する。現金明細は移行先が空かつ49 query予算内の場合だけidを保持して復元する。添付metadata/R2原本は汎用restoreせず、inventoryと明示的safe recoveryを別契約にする
 - 増減マトリクスCSV(BOM付きUTF-8)
 
 **FR-06 認証**
@@ -409,7 +408,7 @@ CREATE TABLE restored_monthly_agg (
 
 ### 7.3 集計再計算のトリガ
 
-`imports committed` / `rules 変更` / `overrides 変更` / `account_norm_map 変更` / `cash_entries 変更` のいずれかで、影響ユーザーの `monthly_agg` を全再生成する(数千行規模のため全再生成で十分。将来増えたら月単位差分化)。取込時はcanonical原本・baseline・cache・active target・commit markerを同じD1 batchへ含め、partial cacheを公開しない。export/夜間backupは`monthly_agg`に依存せず、baseline・freee/MF原本・rules・edits・owners・sub vendors・norm map・cash・attachments・budgets/override等を単一D1 read statementで取得し、同じcanonical snapshotから表示集計と`cashProjection:{version:1,basis:'post-resolution',rows}`、棚卸し用の`attachmentArchive:{version:1,basis:'inventory-only',restoreCapable:false,records}`を生成する。archive自体はR2原本のcopyではなく、汎用restoreも現金明細・添付metadata・R2原本を復元しない。添付の明示的safe recoveryだけが、認証owner配下のexact R2 keyを実byteのhash/sizeまで照合し、一致するmetadataを再結合して欠損・不一致を別件数で返す。これによりcanonical writeとcache再生成の間でも世代を混在させない。JSON復元はdestination設定で再投影せず、このdeltaだけを厳密に差し引いて`restored_monthly_agg`を作る。invalid/unknown/duplicate/underflowはR2/DB書込み前400、valid-emptyは正常、projectionなし+非空cashEntriesは拒否、両方なしのpre-cash legacyは受理する。原本が無い月はbaselineへ現在DBの現金明細を1回だけ加算し、同月にfreee/MF原本があればbaselineは加算せず原本を正とする。0007の旧cache移行はscope domainごとに判定し、事業scopeはbiz現金、個人/bizPersonal scopeはper現金だけを曖昧要因とする。
+`imports committed` / `rules 変更` / `overrides 変更` / `account_norm_map 変更` / `cash_entries 変更` のいずれかで、影響ユーザーの `monthly_agg` を全再生成する(数千行規模のため全再生成で十分。将来増えたら月単位差分化)。取込時はcanonical原本・baseline・cache・active target・commit markerを同じD1 batchへ含め、partial cacheを公開しない。export/夜間backupは`monthly_agg`に依存せず、baseline・freee/MF原本・rules・edits・owners・sub vendors・norm map・cash・attachments・budgets/override等を単一D1 read statementで取得し、同じcanonical snapshotから表示集計と`cashProjection:{version:1,basis:'post-resolution',rows}`、棚卸し用の`attachmentArchive:{version:1,basis:'inventory-only',restoreCapable:false,records}`を生成する。archive自体はR2原本のcopyではなく、汎用restoreも添付metadata・R2原本は復元しない(現金明細は移行先が空かつ予算内のときだけ復元する)。添付の明示的safe recoveryだけが、認証owner配下のexact R2 keyを実byteのhash/sizeまで照合し、一致するmetadataを再結合して欠損・不一致を別件数で返す。これによりcanonical writeとcache再生成の間でも世代を混在させない。JSON復元はdestination設定で再投影せず、このdeltaだけを厳密に差し引いて`restored_monthly_agg`を作る。invalid/unknown/duplicate/underflowはR2/DB書込み前400、valid-emptyは正常、projectionなし+非空cashEntriesは拒否、両方なしのpre-cash legacyは受理する。原本が無い月はbaselineへ現在DBの現金明細を1回だけ加算し、同月にfreee/MF原本があればbaselineは加算せず原本を正とする。0007の旧cache移行はscope domainごとに判定し、事業scopeはbiz現金、個人/bizPersonal scopeはper現金だけを曖昧要因とする。
 
 ---
 
@@ -443,7 +442,8 @@ CREATE TABLE restored_monthly_agg (
 | Method | Path | 概要 |
 |---|---|---|
 | POST | /imports | multipart。全unitを解析してwrite-set競合をpreflight→run/claim→unit履歴→R2保存→active v4指紋判定→unit単位D1 atomic commit。結果は`committed`/`failed`/`duplicate`と月ごとの取込前後件数`replaced`。異なるunit間はpartial success |
-| GET | /imports | 取込履歴一覧。失敗理由とactive/partial/superseded/legacy世代表示を含む |
+| GET | /imports | 取込履歴一覧。失敗理由とactive/partial/superseded/legacy世代表示、原本保存済みか(`originalRecorded`)を含む |
+| GET | /imports/:id/original | 投入原本(R2)をそのまま返す。画面はこれを取込枠へ戻すだけで、洗い替えは通常の`POST /imports`と同じ確認を経る。keyが無い/R2に実体が無い場合は理由つき404 |
 | GET/POST | /cash-entries | P13用: 現金の記帳の一覧(科目候補付き)/追加。PUT/DELETE `/cash-entries/:id` で編集・削除。変更のたびに再集計 |
 | GET/POST | /attachments | target別の証憑metadata+利用者quota取得 / magic検証済み原本の登録 |
 | GET | /attachments/orphans | MF洗替えで親が消えたstable ID証憑の管理一覧 |
@@ -464,7 +464,7 @@ CREATE TABLE restored_monthly_agg (
 | GET | /defense-line | FR-08用: 防衛ライン額と当月収入見込み・差分 |
 | GET/POST | /tradeoff | FR-09用: 削減候補リスト取得 / 試算結果の保存 |
 | GET | /export/json, /export/matrix.csv | エクスポート。JSONは監査用`cashEntries`とversion付き確定delta`cashProjection`を同梱 |
-| POST | /restore | HTML版互換JSONから集計・設定を初期移行。multipart JSONと同じfingerprint/claim/状態/atomic handlerを使うが、直接bodyなのでR2は作らない。現金明細・添付metadata・添付原本は復元せず、validな`cashProjection`だけをbaselineから除外。imported `cash:*` editは破棄し、現存cash用のDB editは保持 |
+| POST | /restore | HTML版互換JSONから集計・設定を初期移行。multipart JSONと同じfingerprint/claim/状態/atomic handlerを使うが、直接bodyなのでR2は作らない。添付metadata・添付原本は復元せず、validな`cashProjection`だけをbaselineから除外。現金明細は移行先が空かつ49 query予算内のときだけidごと復元し(`cashEntries`件数)、既存があれば`cashKept`、予算超過なら`cashSkipped`で返す。imported `cash:*` editは破棄し、現存cash用のDB editは保持 |
 
 エラーは `{error:{code,message}}` 統一。バリデーションは全エンドポイントでzod。
 
@@ -529,7 +529,7 @@ main:  上記CIの成功 → wrangler deploy(production)
 ## 12. データ移行
 
 1. HTML版の「統合データを書き出し(JSON)」を実行
-2. 本システムの `POST /restore` に投入する。これは集計・設定の初期移行であり、受信fieldは現在値へmergeしてから、MF原本は含有月を洗い替え、rules/edits/institution owners/budgets/cash override/復元baseline/未記帳月は全置換、sub vendor名は追加する。freee原本・現金明細・添付metadata/R2原本・現存現金用editは保持する。API export/backupの `cashProjection` v1をbaselineから差し引き、監査用`cashEntries`から再演算しない。`POST /restore`はR2原本を作らない
+2. 本システムの `POST /restore` に投入する。これは集計・設定の初期移行であり、受信fieldは現在値へmergeしてから、MF原本は含有月を洗い替え、rules/edits/institution owners/budgets/cash override/復元baseline/未記帳月は全置換する。sub vendorは移行先固有行を保持しつつ同名のaliases/accountsをsourceで更新し、分析設定と候補除外もdurable intentとして移行する。freee原本・添付metadata/R2原本・現存現金用editは保持する。現金明細は移行先が空かつ予算内のときだけidごと復元する。API export/backupの `cashProjection` v1をbaselineから差し引き、監査用`cashEntries`から再演算せずsource確定scopeへ戻す。`POST /restore`はR2原本を作らない
 3. freee/MFの原本CSVを再取込し、restore値と集計一致を確認して切替完了
 
 ---
@@ -553,7 +553,7 @@ main:  上記CIの成功 → wrangler deploy(production)
 | MFのID列欠落・重複でtx_idが不安定 → 手動判定が引き継げない | 合成キー(月+行+金額+内容ハッシュ)をフォールバック。取込時にID重複を検知し警告 |
 | CSVフォーマット変更(freee/MF側) | ヘッダー名の部分一致マッチ+パーサをcoreに隔離し、フィクスチャ追加のみで追随 |
 | Workers CPU制限(巨大Excel) | 5,000行超でQueuesへ非同期化。UIはポーリングで進捗表示 |
-| D1障害・誤操作 | 夜間R2エクスポートから集計・設定を初期移行し、freee/MF原本を再取込する。現金明細は自動復元せず、添付は同一bucketに残る原本をowner/key/hash/size照合できた場合だけmetadataを明示回復する。欠損・不一致は件数で報告する |
+| D1障害・誤操作 | 夜間R2エクスポートから集計・設定を初期移行し、freee/MF原本を再取込する。現金明細は移行先が空かつ予算内のときだけ復元し、添付は同一bucketに残る原本をowner/key/hash/size照合できた場合だけmetadataを明示回復する。欠損・不一致は件数で報告する |
 | 仕分けルールの誤爆(広すぎるキーワード) | ルール追加時に「影響件数プレビュー」を表示(該当明細数と金額) |
 
 ---
@@ -605,6 +605,8 @@ main:  上記CIの成功 → wrangler deploy(production)
 | データ取得 | `GET /api/ai/tasks/:id/data`(Bearer) | 集計だけ(月次・科目別・事業/個人・名義別・サブスク・比較・ベンチマーク)。明細・摘要・ルールは含めない |
 | 結果受信 | `POST /api/ai/tasks/:id/report`(Bearer) | zod 検証(5節必須・文字数上限)→ HTML タグ・制御文字を除去 → 保存。受理時にトークンを使用済みにする |
 | 予備経路 | 「データを表示」= `GET /api/ai/tasks/:id/dataset`、「結果を貼り付ける」= `POST /api/ai/tasks/:id/paste`(いずれもセッション) | ネットワークの無いサンドボックスでも回せる |
-| 閲覧 | `GET /api/ai/reports`, `GET /api/ai/reports/:id`(前回の同種レポートへのリンク付き) | 本文は React でテキスト描画(HTML として解釈しない) |
+| 閲覧 | `GET /api/ai/reports`, `GET /api/ai/reports/:id`(前回の同種レポートへのリンク付き) | 本文は React でテキスト描画(HTML として解釈しない)。`?archived=1` で片付けたものも含めて出す |
+| 片付け | `PUT /api/ai/reports/:id/archive`, `DELETE /api/ai/reports/:id`, `DELETE /api/ai/tasks/:id`(セッション) | アーカイブは一覧から外すだけで本文は残る。削除は本文ごと消え戻せないので画面で確認を挟む。結果を受け取り済みの依頼は出所なので取り消せない(409) |
+| 統計の基準月数 | `GET/PUT /api/settings` の `statMinMonths`(3〜24、既定6) | 移動平均・外れ値・図の出し分けが必要とする記帳済み月数。暦で決まる周期(トレンド12・季節性24・前年同月13)は下限を割らない |
 
 **データの渡し方の判断**: 指示文にデータを埋め込まず、API 取得にした。理由: (1) 指示文が短く貼り付けやすい (2) 年間だと数十KB になり貼り付けミスが起きる (3) 取得と送信を同じトークンで縛れるので、期限・1回きりの制御が一か所で済む。埋め込み相当の経路は「データを表示」で残した。

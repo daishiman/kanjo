@@ -11,6 +11,7 @@ import {
   cashTxId,
   categoryAllowed,
   categoryRejectReason,
+  findCashDealDuplicates,
   isCashTxId,
   monthOf,
 } from '@kanjo/core';
@@ -25,9 +26,11 @@ import {
   type Db,
   LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
   cashFromRow,
+  dealFromRow,
   getDb,
   loadCashEntries,
   loadDataset,
+  loadNormMap,
   planRecomputeFromDeals,
   recomputeFromDeals,
   recomputePlanQueries,
@@ -196,14 +199,22 @@ cashRoute.get('/cash-entries', async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
   const data = await loadDataset(db, userId);
-  const [entries, candidates] = await Promise.all([
+  const [entries, candidates, normMap, dealRows] = await Promise.all([
     loadCashEntries(db, userId),
     loadCandidates(
       db,
       userId,
       data.mfTx.filter((t) => !isCashTxId(t.id)),
     ),
+    loadNormMap(db, userId),
+    // 取込由来の仕訳(freee_deals)だけを読む。現金由来の仕訳は集計側で合流するもので、
+    // ここに混ぜると記帳が自分自身と突合してしまう。
+    db
+      .select()
+      .from(s.freeeDeals)
+      .where(eq(s.freeeDeals.userId, userId)),
   ]);
+  const duplicates = findCashDealDuplicates(entries, dealRows.map(dealFromRow), normMap);
   // 証憑バッジ用。添付は集計に関与しないため、明細本体とは別に件数だけを添える。
   const counts = await loadAttachmentCounts(
     db,
@@ -212,7 +223,7 @@ cashRoute.get('/cash-entries', async (c) => {
     entries.map((e) => cashTxId(e.id)),
   );
   const withCounts = entries.map((e) => ({ ...e, attachmentCount: counts[cashTxId(e.id)] ?? 0 }));
-  return c.json({ entries: withCounts, candidates, months: data.months });
+  return c.json({ entries: withCounts, candidates, months: data.months, duplicates });
 });
 
 cashRoute.post('/cash-entries', validBody, async (c) => {

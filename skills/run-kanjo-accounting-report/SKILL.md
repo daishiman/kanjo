@@ -82,13 +82,13 @@ rubric_hash: sha256:6e1843e5204accb8c76c96bf0d8189dafff6d51f2d182096424fcb6c6bfd
 
 - **入力**: 貼り付けられた指示文(上記5項目 + 任意2項目)。
 - **出力**: アプリへ POST した第3版レポート = `summary` + `keyFindings`(改善すべき点 / 無駄なコスト / すぐ効く対策。**1件 = 事実(数値+計算根拠) → 解釈 → 次のアクション(期待効果)**) + `charts`(図表カタログの id と読み解きだけ。**図の数値はアプリが計算する**) + 固定5節(`spend` / `change` / `reduction` / `split` / `subscriptions`。節ごとの最低行数あり) + `needs`(精度を上げるために利用者がアプリで行う操作) + `followUp`(前回レポートがあるときの追跡) + `dataGaps`。受理時に返る `reportId`。形の正本は `references/report-schema.md`(APIの `reportInputSchema` を写したもの)、図は `references/chart-catalog.md`。
-- **レポートの型**: 期間の長さで決まる(1ヶ月=月次 / 2〜13ヶ月=年次 / 14ヶ月以上=長期)。5節と8図は固定し、型ごとの重心と主役にする図は `references/analysis-guide.md` §2。
+- **レポートの型**: 期間の長さで決まる(1ヶ月=月次 / 2〜13ヶ月=年次 / 14ヶ月以上=長期)。5節と10図は固定し、型ごとの重心と主役にする図は `references/analysis-guide.md` §2。
 - **完了条件**: `201` を受け取り `reportId` を利用者へ示す。送信不能環境では検査済みJSONをそのまま提示し、画面の「結果を貼り付ける」へ誘導する。
 
 ## 境界
 
 - 数字・科目・ベンダー名は取得データに由来するものだけ。差額・比率・年換算は計算式が言える範囲だけ使う。判定の閾値は `references/analysis-guide.md` §8 に固定(独自の閾値を作らない)。
-- 図の数値・形は作らない。取得データの `charts`(カタログ8枚・計算済み)を読み解くだけで、`axes` に無い切り口(例: 決済状況)を持ち出さない。
+- 図の数値・形は作らない。取得データの `charts`(カタログ10枚・計算済み)を読み解くだけで、`axes` に無い切り口(例: 決済状況)を持ち出さない。
 - データを保存しない。取得JSON・送信JSONはリポジトリ外の一時ファイルに置き、終了時に消す。
 - トークンは指示文の中と curl の引数にだけ使う。ファイル・ログ・要約へ書き写さない。
 - アプリ側のスキーマ(`packages/api/src/ai/contract.ts`)を変える提案はしない。形が合わないときはレポート側を直す。
@@ -238,7 +238,7 @@ curl -sS -X POST -H "Authorization: Bearer <token>" -H "Content-Type: applicatio
 
 - `references/analysis-guide.md` — データの読み方(各キーの意味)、型ごとの重心、分析観点のチェックリスト、統計・PL・BS の扱い、前回レポートの追跡
 - `references/report-schema.md` — 送信JSONの形(第3版: 要点4欄 / charts はカタログ参照 / 節の最低行数と gap)・上限下限・画面 id・応答コード
-- `references/chart-catalog.md` — 図表カタログ8枚と必要データ・切り口・粒度・出せない理由の区別・検査規則の対応表。`chart-catalog.json` は機械可読の正本(`pnpm catalog:export` 生成)
+- `references/chart-catalog.md` — 図表カタログ10枚と必要データ・切り口・粒度・出せない理由の区別・検査規則の対応表。`chart-catalog.json` は機械可読の正本(`pnpm catalog:export` 生成)
 - `scripts/validate-report.py` — 送信前の形式検査(標準ライブラリのみ)。`scripts/test_validate_report.py` が機能テスト
 - 契約の正本: `packages/api/src/ai/contract.ts`(`reportInputSchema` / `SKILL_NAME`)。`docs/spec-v1.1.md` §16 が仕様
 

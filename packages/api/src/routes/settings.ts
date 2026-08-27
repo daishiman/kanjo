@@ -3,8 +3,20 @@ import { zValidator } from '@hono/zod-validator';
  * FR-04 予算 / P9 設定(科目正規化・未記帳月・現金補正)。
  * 正規化マップ変更は集計再生成のトリガ(spec §7.3)。
  */
-import { type MfTx, OWNER_VALUES, budgetTable, cashToTx, resolveTx, suggestBudgets } from '@kanjo/core';
-import { and, eq, inArray } from 'drizzle-orm';
+import {
+  DEFAULT_STAT_MIN_MONTHS,
+  type MfTx,
+  OWNER_VALUES,
+  STAT_MIN_MONTHS_MAX,
+  STAT_MIN_MONTHS_MIN,
+  budgetTable,
+  cashToTx,
+  clampStatMinMonths,
+  normalizeAccount,
+  resolveTx,
+  suggestBudgets,
+} from '@kanjo/core';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
@@ -72,12 +84,19 @@ settingsRoute.post('/budgets/suggest', async (c) => {
 settingsRoute.get('/settings', async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const [normRows, unrecRows, cashRows] = await Promise.all([
+  const [normRows, unrecRows, cashRows, analysisRows] = await Promise.all([
     db.select().from(s.accountNormMap).where(eq(s.accountNormMap.userId, userId)),
     db.select().from(s.unrecordedMonths).where(eq(s.unrecordedMonths.userId, userId)),
     db.select().from(s.cashOverrides).where(eq(s.cashOverrides.userId, userId)),
+    db.select().from(s.analysisSettings).where(eq(s.analysisSettings.userId, userId)),
   ]);
   return c.json({
+    statMinMonths: clampStatMinMonths(analysisRows[0]?.statMinMonths ?? DEFAULT_STAT_MIN_MONTHS),
+    statMinMonthsRange: {
+      min: STAT_MIN_MONTHS_MIN,
+      max: STAT_MIN_MONTHS_MAX,
+      default: DEFAULT_STAT_MIN_MONTHS,
+    },
     normMap: Object.fromEntries(normRows.map((r) => [r.raw, r.norm])),
     unrecordedExpMonths: unrecRows.filter((r) => r.kind === 'expense').map((r) => r.month),
     cashOverrides: Object.fromEntries(
@@ -97,6 +116,8 @@ const settingsSchema = z.object({
         .nullable(),
     )
     .optional(),
+  /** AI分析の統計指標が必要とする記帳月数。既定6・3〜24 */
+  statMinMonths: z.number().int().min(STAT_MIN_MONTHS_MIN).max(STAT_MIN_MONTHS_MAX).optional(),
 });
 
 settingsRoute.put('/settings', zValidator('json', settingsSchema), async (c) => {
@@ -105,9 +126,80 @@ settingsRoute.put('/settings', zValidator('json', settingsSchema), async (c) => 
   const b = c.req.valid('json');
   let needRecompute = false;
   const statements = [];
-  const consumers: Array<'account_norm_map' | 'unrecorded_months' | 'cash_overrides'> = [];
+  const consumers: Array<
+    'account_norm_map' | 'unrecorded_months' | 'cash_overrides' | 'sub_vendors' | 'analysis_settings'
+  > = [];
 
   if (b.normMap) {
+    // 旧版はnormalized labelを永続参照にしていた。現在のmapを変える前に、該当する
+    // account_rawへ展開して安定参照へ移す（同じlabelのrawが複数なら全てを残す）。
+    const [oldNormRows, rawRows, vendorRows] = await Promise.all([
+      db.select().from(s.accountNormMap).where(eq(s.accountNormMap.userId, userId)),
+      db
+        .selectDistinct({ raw: s.freeeDeals.accountRaw })
+        .from(s.freeeDeals)
+        .where(eq(s.freeeDeals.userId, userId)),
+      db
+        .select({ id: s.subVendors.id, accounts: s.subVendors.accounts })
+        .from(s.subVendors)
+        .where(eq(s.subVendors.userId, userId)),
+    ]);
+    const oldMap = Object.fromEntries(oldNormRows.map((row) => [row.raw, row.norm]));
+    const rawAccounts = [
+      ...new Set([
+        ...rawRows.map((row) => row.raw ?? '').filter(Boolean),
+        ...Object.keys(oldMap),
+        ...Object.keys(b.normMap),
+      ]),
+    ].sort();
+    const rawSet = new Set(rawAccounts);
+    const migrated = vendorRows.flatMap((vendor) => {
+      let stored: string[];
+      try {
+        const parsed: unknown = JSON.parse(vendor.accounts);
+        stored = Array.isArray(parsed)
+          ? parsed.filter((value): value is string => typeof value === 'string')
+          : [];
+      } catch {
+        stored = [];
+      }
+      const accounts = [
+        ...new Set(
+          stored.flatMap((account) => {
+            const matches = rawAccounts.filter((raw) => normalizeAccount(raw, oldMap) === account);
+            // 旧normalized labelと同名のrawがある場合は、どちらの意味だったか判別できない。
+            // raw解釈を保持しつつ、そのlabelへ属していた全rawへ展開して取りこぼしを防ぐ。
+            if (rawSet.has(account)) return [account, ...matches];
+            return matches.length ? matches : [account];
+          }),
+        ),
+      ];
+      const encoded = JSON.stringify(accounts);
+      return encoded === vendor.accounts ? [] : [[vendor.id, encoded] as const];
+    });
+    if (migrated.length) {
+      const payload = JSON.stringify(migrated);
+      statements.push(
+        db
+          .update(s.subVendors)
+          .set({
+            accounts: sql<string>`(
+              SELECT CAST(json_extract(value, '$[1]') AS TEXT)
+              FROM json_each(${payload})
+              WHERE CAST(json_extract(value, '$[0]') AS INTEGER) = ${s.subVendors.id}
+            )`,
+          })
+          .where(
+            and(
+              eq(s.subVendors.userId, userId),
+              sql`${s.subVendors.id} IN (
+                SELECT CAST(json_extract(value, '$[0]') AS INTEGER) FROM json_each(${payload})
+              )`,
+            ),
+          ),
+      );
+      consumers.push('sub_vendors');
+    }
     statements.push(db.delete(s.accountNormMap).where(eq(s.accountNormMap.userId, userId)));
     for (const [raw, norm] of Object.entries(b.normMap)) {
       statements.push(db.insert(s.accountNormMap).values({ userId, raw, norm }));
@@ -139,6 +231,20 @@ settingsRoute.put('/settings', zValidator('json', settingsSchema), async (c) => 
         );
     }
     consumers.push('cash_overrides');
+  }
+
+  // AI分析の基準月数も復元対象のdurable intent。同じbatchでpointerを無効化する。
+  if (b.statMinMonths != null) {
+    statements.push(
+      db
+        .insert(s.analysisSettings)
+        .values({ userId, statMinMonths: b.statMinMonths })
+        .onConflictDoUpdate({
+          target: s.analysisSettings.userId,
+          set: { statMinMonths: b.statMinMonths, updatedAt: new Date().toISOString() },
+        }),
+    );
+    consumers.push('analysis_settings');
   }
 
   if (statements.length && consumers.length)

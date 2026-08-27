@@ -5,6 +5,7 @@
  */
 import {
   type CashEntry,
+  DEFAULT_STAT_MIN_MONTHS,
   type Dataset,
   FINGERPRINT_VERSION,
   type FreeeDeal,
@@ -17,8 +18,9 @@ import {
   emptyDataset,
   importJSON,
   isCashTxId,
+  vendorKey,
 } from '@kanjo/core';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
@@ -40,6 +42,7 @@ import {
   releaseImportWriter,
   restoreCommitStatements,
   restoreWriteSetFingerprint,
+  shrinkingMonths,
   targetKeysForUnit,
 } from '../import-lifecycle.js';
 import {
@@ -53,11 +56,13 @@ import {
 import {
   type CashProjectionEnvelope,
   CashProjectionError,
+  type ImportRestoreSettingsSnapshot,
+  addCashProjection,
   dealFromRow,
   getDb,
   loadCashEntries,
   loadDataset,
-  loadNormMap,
+  loadImportRestoreSettingsSnapshot,
   mergeRestoreCanonicalSources,
   removeCashProjection,
 } from '../store.js';
@@ -85,6 +90,43 @@ const restoredCashEntrySchema = z
     receiptWaived: z.boolean().default(false),
   })
   .strict();
+
+const analysisSettingsBackupSchema = z.object({ statMinMonths: z.number().int().min(3).max(24) }).strict();
+const subVendorExclusionsBackupSchema = z
+  .array(z.object({ partner: z.string().trim().min(1).max(120) }).strict())
+  .max(5_000);
+
+class InvalidRestoreSettingsError extends Error {
+  constructor() {
+    super('invalid_restore_settings');
+    this.name = 'InvalidRestoreSettingsError';
+  }
+}
+
+const resolveRestoreSettings = (
+  obj: Record<string, unknown>,
+  destination: ImportRestoreSettingsSnapshot,
+): ImportRestoreSettingsSnapshot => {
+  const analysis = Object.prototype.hasOwnProperty.call(obj, 'analysisSettings')
+    ? analysisSettingsBackupSchema.safeParse(obj.analysisSettings)
+    : { success: true as const, data: { statMinMonths: destination.statMinMonths } };
+  const sourceExclusions = Object.prototype.hasOwnProperty.call(obj, 'subVendorExclusions')
+    ? subVendorExclusionsBackupSchema.safeParse(obj.subVendorExclusions)
+    : { success: true as const, data: [] };
+  if (!analysis.success || !sourceExclusions.success) throw new InvalidRestoreSettingsError();
+  const byKey = new Map<string, { partner: string; vendorKey: string }>();
+  for (const entry of [...destination.subVendorExclusions, ...sourceExclusions.data]) {
+    const partner = entry.partner;
+    const key =
+      'vendorKey' in entry && typeof entry.vendorKey === 'string' ? entry.vendorKey : vendorKey(partner);
+    if (key) byKey.set(key, { partner, vendorKey: key });
+  }
+  return {
+    normMap: destination.normMap,
+    statMinMonths: analysis.data.statMinMonths ?? DEFAULT_STAT_MIN_MONTHS,
+    subVendorExclusions: [...byKey.values()],
+  };
+};
 
 const canonicalScope = z
   .string()
@@ -134,10 +176,32 @@ const projectedCashRows = (
   return { ok: true, rows: parsed.data.rows };
 };
 
+/**
+ * バックアップに入っている現金の記帳のうち、復元してよい分。
+ *
+ * 移行先に記帳が1件でもあれば空を返す。この経路は初期移行であり、いま使っている記帳を
+ * バックアップ時点へ巻き戻すことは意図していない。idも重なるため、混ぜると宛先が壊れる。
+ */
+const restorableCashEntries = (
+  obj: Record<string, unknown>,
+  destination: ReadonlyArray<CashEntry>,
+): CashEntry[] => {
+  if (destination.length > 0) return [];
+  const parsed = z.array(restoredCashEntrySchema).safeParse(obj.cashEntries);
+  return parsed.success ? parsed.data : [];
+};
+
 const badCashProjection = {
   error: {
     code: 'invalid_cash_projection',
     message: '現金投影情報が不正か不足しているため、復元を中止しました',
+  },
+};
+
+const badRestoreSettings = {
+  error: {
+    code: 'invalid_restore_settings',
+    message: '復元設定の形式が不正なため、復元を中止しました',
   },
 };
 
@@ -162,13 +226,15 @@ const restoredAggregateSnapshot = (obj: Record<string, unknown>): Dataset => {
 };
 
 /** projection検証と現金delta控除を、R2/DBへの書込みより前に完了させる。 */
-const restoredWithoutCashProjection = (obj: Record<string, unknown>): Dataset | null => {
+const restoredWithoutCashProjection = (
+  obj: Record<string, unknown>,
+): { data: Dataset; projectionRows: CashProjectionEnvelope['rows'] } | null => {
   const projection = projectedCashRows(obj);
   if (!projection.ok) return null;
   const restored = restoredAggregateSnapshot(obj);
   try {
     removeCashProjection(restored, projection.rows);
-    return restored;
+    return { data: restored, projectionRows: projection.rows };
   } catch (error) {
     if (error instanceof CashProjectionError) return null;
     throw error;
@@ -193,8 +259,11 @@ interface UnitResult {
   skipped: number;
   syntheticIds?: number;
   duplicateIds?: number;
-  /** committed=原本/canonical/cache/active pointerの確定完了 */
-  status: 'committed' | 'failed' | 'duplicate';
+  /**
+   * committed=原本/canonical/cache/active pointerの確定完了。
+   * kept=「前回を残す」指定により、件数が減る洗い替えを実行しなかった(既存データは無傷)。
+   */
+  status: 'committed' | 'failed' | 'duplicate' | 'kept';
   reason?: string;
   importId?: number;
   replaced?: MonthReplace[];
@@ -225,6 +294,10 @@ interface PreparedUnit {
   contentHash: string | null;
   targetKeys: string[];
   restored: Dataset | null;
+  /** 検証済みsource cash delta。cashEntriesを実復元するときだけ再加算する */
+  cashProjectionRows: CashProjectionEnvelope['rows'];
+  /** 復元する現金の記帳。移行先に記帳があるとき・JSON以外のunitでは空 */
+  restoredCash: CashEntry[];
 }
 
 interface PreparedFile {
@@ -244,7 +317,10 @@ const currentCashEdits = (data: Dataset, entries: CashEntry[]): Dataset['edits']
 const withoutCashEdits = (edits: Dataset['edits']): Dataset['edits'] =>
   Object.fromEntries(Object.entries(edits).filter(([txId]) => !isCashTxId(txId)));
 
-/** source cash editを破棄し、destination cash editを戻した単一candidateから全派生物を作る。 */
+/**
+ * source cash editを破棄し、destination cash editを戻した単一candidateから全派生物を作る。
+ * ただし現金の記帳ごと復元する場合は、記帳もその手動判定もsource側が正本になる。
+ */
 const prepareJsonApplication = async (args: {
   userId: string;
   data: Dataset;
@@ -252,31 +328,67 @@ const prepareJsonApplication = async (args: {
   json: Record<string, unknown>;
   cashEntries: CashEntry[];
   freeeDeals: FreeeDeal[];
-  normMap: Record<string, string>;
+  destinationSettings: ImportRestoreSettingsSnapshot;
+  cashProjectionRows: CashProjectionEnvelope['rows'];
+  /** 復元する現金の記帳(移行先が空のときだけ非空) */
+  restoredCashEntries?: CashEntry[];
 }): Promise<{
   candidate: Dataset;
   writeSet: ReturnType<typeof prepareRestoreWriteSet>;
   contentHash: string;
 }> => {
   const candidate = structuredClone(args.data);
-  const destinationCashEdits = currentCashEdits(candidate, args.cashEntries);
+  // 現金を復元する場合、記帳の正本はバックアップ側になる。手動判定もその記帳に付いていたものを採る
+  const restoringCash = args.restoredCashEntries !== undefined && args.restoredCashEntries.length > 0;
+  const effectiveCash = restoringCash ? (args.restoredCashEntries ?? []) : args.cashEntries;
+  const restoreSettings = resolveRestoreSettings(args.json, args.destinationSettings);
+  const destinationCashEdits = restoringCash ? {} : currentCashEdits(candidate, args.cashEntries);
+  const destinationVendors = candidate.subs.vendors.map((name) => ({
+    name,
+    aliases: candidate.subs.aliases?.[name] ?? [],
+    accounts: candidate.subs.accounts?.[name] ?? [],
+  }));
   // importJSON assigns the aggregate maps from its input by reference. The same
   // restore unit is prepared during planning, runtime validation, and execution,
   // so mutating those maps would make each pass inflate the next one. Clone the
   // source and rebuild derived aggregates from the authoritative raw sources.
   importJSON(candidate, structuredClone(args.json));
+  // JSON restoreは初期移行。sourceの同名設定を優先しつつ、移行先だけの登録を削除しない。
+  for (const vendor of destinationVendors) {
+    if (candidate.subs.vendors.includes(vendor.name)) continue;
+    candidate.subs.vendors.push(vendor.name);
+    candidate.subs.aliases[vendor.name] = vendor.aliases;
+    candidate.subs.accounts ??= {};
+    candidate.subs.accounts[vendor.name] = vendor.accounts;
+    candidate.subs.matrix[vendor.name] = candidate.months.map(() => 0);
+  }
   candidate.personal = {};
   candidate.bizPersonal = {};
   candidate.personalByOwner = {};
-  candidate.edits = { ...withoutCashEdits(candidate.edits), ...destinationCashEdits };
+  // 復元する記帳に対応する手動判定だけを残す。宛先の無い cash edit は持ち込まない
+  const restoredCashEdits = restoringCash
+    ? currentCashEdits(candidate, args.restoredCashEntries ?? [])
+    : destinationCashEdits;
+  candidate.edits = { ...withoutCashEdits(candidate.edits), ...restoredCashEdits };
   mergeRestoreCanonicalSources({
     data: candidate,
     restored: args.restored,
     freeeDeals: args.freeeDeals,
-    cashEntries: args.cashEntries,
-    normMap: args.normMap,
+    // sourceのcash deltaはsourceで確定済み。destination設定では再投影しない。
+    cashEntries: restoringCash ? [] : effectiveCash,
+    normMap: restoringCash ? restoreSettings.normMap : args.destinationSettings.normMap,
   });
-  const writeSet = prepareRestoreWriteSet({ userId: args.userId, data: candidate, restored: args.restored });
+  if (restoringCash) addCashProjection(candidate, args.cashProjectionRows);
+  const writeSet = prepareRestoreWriteSet({
+    userId: args.userId,
+    data: candidate,
+    restored: args.restored,
+    statMinMonths: restoreSettings.statMinMonths,
+    subVendorExclusions: restoreSettings.subVendorExclusions,
+    existingStatMinMonths: args.destinationSettings.statMinMonths,
+    existingSubVendorExclusions: args.destinationSettings.subVendorExclusions,
+    restoredCashEntries: restoringCash ? args.restoredCashEntries : undefined,
+  });
   return {
     candidate,
     writeSet,
@@ -292,6 +404,7 @@ const planCommitStatementCounts = async (args: {
   data: Dataset;
   cashEntries: CashEntry[];
   normMap: Record<string, string>;
+  restoreSettings: ImportRestoreSettingsSnapshot;
   freeeDeals: FreeeDeal[];
   runId?: string;
   importIds?: number[];
@@ -312,7 +425,9 @@ const planCommitStatementCounts = async (args: {
         json: unit.json,
         cashEntries: args.cashEntries,
         freeeDeals: args.freeeDeals,
-        normMap: args.normMap,
+        destinationSettings: args.restoreSettings,
+        cashProjectionRows: prepared.cashProjectionRows,
+        restoredCashEntries: prepared.restoredCash,
       });
       counts.push(
         restoreCommitStatements({
@@ -401,6 +516,7 @@ async function executePreparedUnit(args: {
   data: Dataset;
   cashEntries: CashEntry[];
   normMap: Record<string, string>;
+  restoreSettings: ImportRestoreSettingsSnapshot;
   freeeCount: Map<string, number>;
   mfCount: Map<string, number>;
   plannedCommitStatementCount: number;
@@ -425,7 +541,9 @@ async function executePreparedUnit(args: {
       json: unit.json,
       cashEntries,
       freeeDeals: args.freeeDeals,
-      normMap,
+      destinationSettings: args.restoreSettings,
+      cashProjectionRows: prepared.cashProjectionRows,
+      restoredCashEntries: prepared.restoredCash,
     });
     candidate = application.candidate;
     restoreWriteSet = application.writeSet;
@@ -656,6 +774,8 @@ importsRoute.post('/imports', async (c) => {
 
   // 「同じ内容でも取り込み直す」チェック。既定は重複をスキップする
   const force = form.get('force') === '1';
+  // 「件数が減る取込は実行せず、前回の内容を残す」チェック。月の途中までのファイルを掴んだときの安全弁
+  const keepOnShrink = form.get('keepOnShrink') === '1';
   const bufferedFiles: Array<{ file: File; buf: Uint8Array }> = [];
   for (const file of files) {
     if (file.size > 25 * 1024 * 1024) {
@@ -673,8 +793,15 @@ importsRoute.post('/imports', async (c) => {
     );
   }
 
-  const preparedFiles: PreparedFile[] = [];
+  let preparedFiles: PreparedFile[] = [];
+  // 「前回を残す」で実行しなかったunit。runにもR2にも載せないため、ここで結果だけ持つ
+  const keptResults: UnitResult[] = [];
   let normMap: Record<string, string> = {};
+  let restoreSettings: ImportRestoreSettingsSnapshot = {
+    normMap: {},
+    statMinMonths: DEFAULT_STAT_MIN_MONTHS,
+    subVendorExclusions: [],
+  };
   let cashEntries: CashEntry[] = [];
   let data = emptyDataset();
   let freeeCount = new Map<string, number>();
@@ -685,18 +812,22 @@ importsRoute.post('/imports', async (c) => {
   let preflightAccepted = false;
   try {
     // writer claim取得後のsnapshotだけを、計画と実行の双方で共有する。
-    normMap = await loadNormMap(db, userId);
+    restoreSettings = await loadImportRestoreSettingsSnapshot(db, userId);
+    normMap = restoreSettings.normMap;
     for (const { file, buf } of bufferedFiles) {
       const units = parseUpload(file.name, buf, normMap);
       const preparedUnits: PreparedUnit[] = [];
       for (const unit of units) {
-        const restored = unit.kind === 'json' ? restoredWithoutCashProjection(unit.json) : null;
-        if (unit.kind === 'json' && !restored) return c.json(badCashProjection, 400);
+        const restoredSnapshot = unit.kind === 'json' ? restoredWithoutCashProjection(unit.json) : null;
+        if (unit.kind === 'json' && !restoredSnapshot) return c.json(badCashProjection, 400);
         preparedUnits.push({
           unit,
           contentHash: unit.kind === 'json' ? null : await unitFingerprint(unit),
           targetKeys: targetKeysForUnit(unit),
-          restored,
+          restored: restoredSnapshot?.data ?? null,
+          cashProjectionRows: restoredSnapshot?.projectionRows ?? [],
+          // 移行先の記帳を読むのはこの後。復元対象は下でまとめて決める
+          restoredCash: [],
         });
       }
       preparedFiles.push({ file, buf, units: preparedUnits });
@@ -717,6 +848,12 @@ importsRoute.post('/imports', async (c) => {
     }
 
     cashEntries = await loadCashEntries(db, userId);
+    // 現金の記帳ごと復元するのは、移行先に記帳が1件も無いときだけ(初期移行)
+    for (const prepared of preparedFiles.flatMap((preparedFile) => preparedFile.units)) {
+      if (prepared.unit.kind === 'json') {
+        prepared.restoredCash = restorableCashEntries(prepared.unit.json, cashEntries);
+      }
+    }
     data = await loadDataset(db, userId, cashEntries);
     const freeeDealRows = await db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId));
     freeeDeals = freeeDealRows.map(dealFromRow);
@@ -728,6 +865,39 @@ importsRoute.post('/imports', async (c) => {
     for (const tx of data.mfTx) {
       if (!isCashTxId(tx.id)) mfCount.set(tx.m, (mfCount.get(tx.m) ?? 0) + 1);
     }
+    if (keepOnShrink) {
+      // 実行前に判定する。洗い替えは月単位でDELETEしてから入れ直すため、実行後に「前回を残す」ことはできない
+      for (const preparedFile of preparedFiles) {
+        preparedFile.units = preparedFile.units.filter((prepared) => {
+          const unit = prepared.unit;
+          if (unit.kind !== 'freee' && unit.kind !== 'mf') return true;
+          const after = new Map<string, number>();
+          if (unit.kind === 'freee') {
+            for (const deal of unit.deals) after.set(deal.month, (after.get(deal.month) ?? 0) + 1);
+          } else {
+            for (const tx of canonicalMfTransactions(unit.txs)) after.set(tx.m, (after.get(tx.m) ?? 0) + 1);
+          }
+          const shrink = shrinkingMonths(unit.months, unit.kind === 'freee' ? freeeCount : mfCount, after);
+          if (!shrink.length) return true;
+          keptResults.push({
+            filename: unit.filename,
+            kind: unit.kind,
+            months: unit.months,
+            // 見送りは1行も確定しないため、失敗・重複と同じく保存側の件数は0で返す
+            ...unitCountFields(unit, false),
+            status: 'kept',
+            reason: `件数が減るため取り込みませんでした(${shrink
+              .map((m) => `${m.month}: ${m.before}件 → ${m.after}件`)
+              .join(' / ')})。前回の内容はそのまま残っています`,
+            replaced: shrink,
+          });
+          return false;
+        });
+      }
+      preparedFiles = preparedFiles.filter((preparedFile) => preparedFile.units.length > 0);
+      // 全部を見送ったならrunもR2も作らない。writer claimは finally が解放する
+      if (!preparedFiles.length) return c.json({ results: keptResults });
+    }
     commitStatementCounts = await planCommitStatementCounts({
       database: c.env.DB,
       userId,
@@ -735,6 +905,7 @@ importsRoute.post('/imports', async (c) => {
       data,
       cashEntries,
       normMap,
+      restoreSettings,
       freeeDeals,
     });
     const applicableUnits = preparedFiles
@@ -751,6 +922,7 @@ importsRoute.post('/imports', async (c) => {
     preflightAccepted = true;
   } catch (error) {
     if (error instanceof OwnerValidationError) return c.json(badOwner, 400);
+    if (error instanceof InvalidRestoreSettingsError) return c.json(badRestoreSettings, 400);
     if (error instanceof Error && error.message.includes('D1 JSON payload上限')) {
       return c.json(queryBudgetError(), 413);
     }
@@ -813,6 +985,7 @@ importsRoute.post('/imports', async (c) => {
       data,
       cashEntries,
       normMap,
+      restoreSettings,
       freeeDeals,
       runId,
       importIds: attemptFiles.flatMap((file) =>
@@ -877,6 +1050,7 @@ importsRoute.post('/imports', async (c) => {
           data,
           cashEntries,
           normMap,
+          restoreSettings,
           freeeCount,
           mfCount,
           plannedCommitStatementCount: attempt.plannedCommitStatementCount,
@@ -900,10 +1074,13 @@ importsRoute.post('/imports', async (c) => {
   } finally {
     await releaseImportWriter(c.env.DB, userId, runId);
   }
-  const ok = results.some((result) => result.status === 'committed');
-  // 全件が重複スキップなら「失敗」ではなく「取込済み」として 200 で返す
-  const allDuplicate = results.length > 0 && results.every((result) => result.status === 'duplicate');
-  return c.json({ runId, results, ok, queryPlan }, ok || allDuplicate ? 200 : 400);
+  // 見送ったunitも画面には出す。実行した分と混ざらないよう、順序は「実行→見送り」で固定する
+  const all = [...results, ...keptResults];
+  const ok = all.some((result) => result.status === 'committed');
+  // 全件が重複スキップ/見送りなら「失敗」ではなく正常終了として 200 で返す(何も壊していない)
+  const allSkipped =
+    all.length > 0 && all.every((result) => result.status === 'duplicate' || result.status === 'kept');
+  return c.json({ runId, results: all, ok, queryPlan }, ok || allSkipped ? 200 : 400);
 });
 
 importsRoute.get('/imports', async (c) => {
@@ -948,7 +1125,54 @@ importsRoute.get('/imports', async (c) => {
       })(),
       createdAt: r.createdAt,
       committedAt: r.committedAt ?? null,
+      // 投入した原本をR2へ保存できた取込だけ、やり直し(再取込)の入口を出せる。
+      // ここはkeyの有無しか見ない(100行ぶんHEADを打つのは割に合わない)。実在確認は原本取得時に行う。
+      originalRecorded: r.r2Key !== null,
     })),
+  });
+});
+
+/** R2に残る投入原本をそのまま返す。画面はこれを取込枠へ戻し、通常の取込と同じ確認・経路で流す */
+importsRoute.get('/imports/:id/original', async (c) => {
+  const userId = c.get('userId');
+  const id = Number(c.req.param('id'));
+  if (!Number.isInteger(id) || id <= 0)
+    return c.json({ error: { code: 'invalid_input', message: '取込履歴が見つかりません' } }, 400);
+  const [row] = await getDb(c.env.DB)
+    .select()
+    .from(s.imports)
+    .where(and(eq(s.imports.userId, userId), eq(s.imports.id, id)));
+  if (!row) return c.json({ error: { code: 'not_found', message: '取込履歴が見つかりません' } }, 404);
+  if (!row.r2Key)
+    return c.json(
+      {
+        error: {
+          code: 'import_original_not_recorded',
+          message: 'この取込は原本を保存していないため、やり直せません',
+        },
+      },
+      404,
+    );
+  const object = await c.env.FILES.get(row.r2Key);
+  if (!object)
+    return c.json(
+      {
+        error: {
+          code: 'import_original_missing',
+          message: '取込の原本が保管先に見つかりません。同じファイルを選び直してください',
+        },
+      },
+      404,
+    );
+  // ZIPの中身は `zip名/中身名` で1行ずつ残るが、原本は投入したファイルそのもの。先頭だけを名前にする
+  const filename = (row.filename ?? 'import').split('/')[0] || 'import';
+  return new Response(object.body, {
+    headers: {
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`,
+      'Cache-Control': 'private, no-store',
+      'X-Content-Type-Options': 'nosniff',
+    },
   });
 });
 
@@ -965,20 +1189,23 @@ importsRoute.post('/restore', async (c) => {
   if (!body || (!body.months && !body.mfTx && !body.biz)) {
     return c.json({ error: { code: 'bad_format', message: 'HTML版互換JSONではありません' } }, 400);
   }
-  let restored: Dataset | null;
+  let restoredSnapshot: { data: Dataset; projectionRows: CashProjectionEnvelope['rows'] } | null;
   try {
-    restored = restoredWithoutCashProjection(body);
+    restoredSnapshot = restoredWithoutCashProjection(body);
   } catch (error) {
     if (error instanceof OwnerValidationError) return c.json(badOwner, 400);
     throw error;
   }
-  if (!restored) return c.json(badCashProjection, 400);
+  if (!restoredSnapshot) return c.json(badCashProjection, 400);
+  const restored = restoredSnapshot.data;
   const unit: ParsedUnit = { kind: 'json', filename: 'restore.json', json: body };
   const prepared: PreparedUnit = {
     unit,
     contentHash: null,
     targetKeys: targetKeysForUnit(unit),
     restored,
+    cashProjectionRows: restoredSnapshot.projectionRows,
+    restoredCash: [],
   };
 
   const runId = crypto.randomUUID();
@@ -992,41 +1219,63 @@ importsRoute.post('/restore', async (c) => {
   let cashEntries: CashEntry[] = [];
   let data = emptyDataset();
   let normMap: Record<string, string> = {};
+  let restoreSettings: ImportRestoreSettingsSnapshot = {
+    normMap: {},
+    statMinMonths: DEFAULT_STAT_MIN_MONTHS,
+    subVendorExclusions: [],
+  };
   let freeeDeals: FreeeDeal[] = [];
   let restoreCommitCount = 0;
+  let cashSkipped = 0;
   let queryPlan: ReturnType<typeof planRestoreImportQueries> | null = null;
   let preflightAccepted = false;
   try {
     // multipartと同じく、claim取得後のauthoritative snapshotで計画と実行を行う。
     cashEntries = await loadCashEntries(db, userId);
+    prepared.restoredCash = restorableCashEntries(body, cashEntries);
     data = await loadDataset(db, userId, cashEntries);
-    normMap = await loadNormMap(db, userId);
+    restoreSettings = await loadImportRestoreSettingsSnapshot(db, userId);
+    normMap = restoreSettings.normMap;
     freeeDeals = (await db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId))).map(
       dealFromRow,
     );
-    const application = await prepareJsonApplication({
-      userId,
-      data,
-      restored,
-      json: body,
-      cashEntries,
-      freeeDeals,
-      normMap,
-    });
-    restoreCommitCount = restoreCommitStatements({
-      database: c.env.DB,
-      userId,
-      runId: 'query-plan',
-      writeSet: application.writeSet,
-      importId: 0,
-      contentHash: application.contentHash,
-      targetKeys: prepared.targetKeys,
-    }).length;
+    const planFor = async (restoredCashEntries: CashEntry[]): Promise<number> => {
+      const application = await prepareJsonApplication({
+        userId,
+        data,
+        restored,
+        json: body,
+        cashEntries,
+        freeeDeals,
+        destinationSettings: restoreSettings,
+        cashProjectionRows: prepared.cashProjectionRows,
+        restoredCashEntries,
+      });
+      return restoreCommitStatements({
+        database: c.env.DB,
+        userId,
+        runId: 'query-plan',
+        writeSet: application.writeSet,
+        importId: 0,
+        contentHash: application.contentHash,
+        targetKeys: prepared.targetKeys,
+      }).length;
+    };
+    restoreCommitCount = await planFor(prepared.restoredCash);
     queryPlan = planRestoreImportQueries(restoreCommitCount);
+    // 現金の記帳は集計・設定より後回しにする。予算に載らないなら記帳だけ見送り、
+    // 見送った件数を応答で返す(黙って0件にすると「バックアップに無かった」と区別が付かない)
+    if (!queryPlan.accepted && prepared.restoredCash.length > 0) {
+      cashSkipped = prepared.restoredCash.length;
+      prepared.restoredCash = [];
+      restoreCommitCount = await planFor([]);
+      queryPlan = planRestoreImportQueries(restoreCommitCount);
+    }
     if (!queryPlan.accepted) return c.json(queryBudgetError(queryPlan.total), 413);
     preflightAccepted = true;
   } catch (error) {
     if (error instanceof OwnerValidationError) return c.json(badOwner, 400);
+    if (error instanceof InvalidRestoreSettingsError) return c.json(badRestoreSettings, 400);
     if (error instanceof Error && error.message.includes('D1 JSON payload上限')) {
       return c.json(queryBudgetError(), 413);
     }
@@ -1064,6 +1313,7 @@ importsRoute.post('/restore', async (c) => {
         data,
         cashEntries,
         normMap,
+        restoreSettings,
         freeeDeals,
         runId,
         importIds: [attempt.id],
@@ -1082,6 +1332,7 @@ importsRoute.post('/restore', async (c) => {
       data,
       cashEntries,
       normMap,
+      restoreSettings,
       freeeCount: new Map(),
       mfCount: new Map(),
       plannedCommitStatementCount: restoreCommitCount,
@@ -1096,6 +1347,12 @@ importsRoute.post('/restore', async (c) => {
       months: executed.data.months,
       mfTxCount: executed.data.mfTx.length,
       rules: executed.data.rules.length,
+      // 現金の記帳をいくつ戻したか。0でも「バックアップに無かった」と「移行先に既にあった」で
+      // 意味が違うため、後者は cashKept で区別する
+      cashEntries: executed.result.status === 'duplicate' ? 0 : prepared.restoredCash.length,
+      cashKept: cashEntries.length,
+      // 予算(49 queries)に載らず記帳だけ見送った件数。0なら見送りは無い
+      cashSkipped,
       runId,
       queryPlan,
     });

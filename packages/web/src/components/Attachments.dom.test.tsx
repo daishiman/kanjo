@@ -321,6 +321,84 @@ describe('AttachmentPanel DOM contract', () => {
     expect(within(item).queryByRole('button', { name: /リンクをコピー/ })).toBeNull();
   });
 
+  it('画像はサムネイルを原本から出し、PDF・原本なし・表示できない画像は代替表示に落とす', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        json({
+          attachments: [
+            {
+              id: 11,
+              filename: 'レシート.jpg',
+              contentType: 'image/jpeg',
+              size: 1_024,
+              state: 'ready',
+              retryable: false,
+              originalAvailable: true,
+              cleanupStage: 'none',
+            },
+            {
+              id: 12,
+              filename: '請求書.pdf',
+              contentType: 'application/pdf',
+              size: 2_048,
+              state: 'ready',
+              retryable: false,
+              originalAvailable: true,
+              cleanupStage: 'none',
+            },
+            {
+              id: 13,
+              filename: '消えた.png',
+              contentType: 'image/png',
+              size: 3_072,
+              state: 'ready',
+              retryable: false,
+              originalAvailable: false,
+              cleanupStage: 'original_missing',
+            },
+            {
+              id: 14,
+              filename: 'iphone.heic',
+              contentType: 'image/heic',
+              size: 4_096,
+              state: 'ready',
+              retryable: false,
+              originalAvailable: true,
+              cleanupStage: 'none',
+            },
+          ],
+          limit: 10,
+          usage,
+        }),
+      ),
+    );
+
+    withQueryClient(<AttachmentPanel targetId="mf-thumb" />);
+    const items = await screen.findAllByRole('listitem');
+
+    // 画像は別サイズを作らず、原本の content をそのまま縮めて出す
+    const thumb = items[0].querySelector('img') as HTMLImageElement;
+    expect(thumb.getAttribute('src')).toBe('/api/attachments/11/content');
+    expect(thumb.getAttribute('loading')).toBe('lazy');
+    // ファイル名がすぐ隣にあるので、読み上げが二重にならないよう alt は空(装飾扱い)
+    expect(thumb.getAttribute('alt')).toBe('');
+    expect(within(items[0]).queryByRole('img')).toBeNull();
+
+    // 画像でないもの・原本が無いものは、代替表示を名前つきで出す
+    expect(items[1].querySelector('img')).toBeNull();
+    expect(within(items[1]).getByRole('img', { name: '請求書.pdf(PDF)' }).textContent).toBe('PDF');
+    expect(items[2].querySelector('img')).toBeNull();
+    expect(within(items[2]).getByRole('img', { name: '消えた.png(原本なし)' }).textContent).toBe('原本なし');
+
+    // HEIC は Safari 以外で描けない。ブラウザが失敗を返してから代替へ落とす
+    const heic = items[3].querySelector('img') as HTMLImageElement;
+    expect(heic.getAttribute('src')).toBe('/api/attachments/14/content');
+    fireEvent.error(heic);
+    expect(items[3].querySelector('img')).toBeNull();
+    expect(within(items[3]).getByRole('img', { name: 'iphone.heic(写真)' }).textContent).toBe('写真');
+  });
+
   it('ready行の通常deleteはconfirm後にDELETEし、一覧と親badgeをinvalidateして空一覧を再取得する', async () => {
     const onChanged = vi.fn();
     let listRequests = 0;

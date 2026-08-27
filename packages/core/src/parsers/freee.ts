@@ -29,6 +29,20 @@ export function parseFreeeRows(rows: string[][], normMap: Record<string, string>
     acct: col('勘定科目'),
     amt: col('金額'),
     vendor: col('取引先'),
+    // 決済列。エクスポートの設定によっては存在しないため、列ごとに有無を見る
+    due: col('支払期日'),
+    settledAt: col('支払日'),
+    settleAcct: col('支払口座'),
+    settledAmt: col('支払金額'),
+  };
+  /** 列が無ければ undefined、列はあるが空欄なら null を返す(未決済判定でこの2つを区別する) */
+  const optDate = (r: string[], i: number): string | null | undefined =>
+    i < 0 ? undefined : (normDate(r[i] ?? '') ?? null);
+  const optText = (r: string[], i: number): string | null | undefined =>
+    i < 0 ? undefined : (r[i] ?? '').trim() || null;
+  const optAmount = (r: string[], i: number): number | null | undefined => {
+    if (i < 0) return undefined;
+    return (r[i] ?? '').trim() ? parseAmount(r[i]) : null;
   };
   const deals: FreeeDeal[] = [];
   const months = new Set<string>();
@@ -50,6 +64,10 @@ export function parseFreeeRows(rows: string[][], normMap: Record<string, string>
       accountRaw: acctRaw,
       accountNorm: normalizeAccount(acctRaw, normMap),
       amount: amt,
+      dueDate: optDate(r, ci.due),
+      settledDate: optDate(r, ci.settledAt),
+      settleAccount: optText(r, ci.settleAcct),
+      settledAmount: optAmount(r, ci.settledAmt),
     });
   });
   return { deals, months: [...months].sort(), rows: deals.length, skipped };

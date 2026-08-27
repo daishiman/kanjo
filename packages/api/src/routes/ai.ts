@@ -7,8 +7,9 @@ import { subsCandidates } from '@kanjo/core';
  *                   セッションではなく、依頼ごとの使い捨てトークン(Bearer)で認証する。
  * トークンは原文を保存せず SHA-256 で照合する。期限切れ・使用済みは 401。
  */
-import { and, desc, eq, isNull } from 'drizzle-orm';
+import { and, count, desc, eq, gte, isNotNull, isNull, lte } from 'drizzle-orm';
 import { Hono, type MiddlewareHandler } from 'hono';
+import { z } from 'zod';
 import {
   type AiReportBody,
   type Period,
@@ -26,7 +27,7 @@ import { type PreviousReportSummary, buildAgentData } from '../ai/dataset.js';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
 import { runtimeSchemaGuard } from '../schema-guard.js';
-import { dealFromRow, getDb, loadDataset, loadSubVendors } from '../store.js';
+import { dealFromRow, getDb, loadDataset, loadSubVendorExclusions, loadSubVendors } from '../store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 type AgentCtx = { Bindings: AuthEnv; Variables: { userId: string; task: typeof s.aiTasks.$inferSelect } };
@@ -99,6 +100,8 @@ const reportView = (r: typeof s.aiReports.$inferSelect) => ({
   title: r.title,
   summary: r.summary,
   createdAt: r.createdAt,
+  /** アーカイブした日時。null = 通常表示 */
+  archivedAt: r.archivedAt ?? null,
 });
 
 /** 前回レポート(同じ型)を LLM に渡す要約。本文全部は渡さず、指摘と対策だけ */
@@ -152,13 +155,27 @@ async function loadPreviousReports(
 async function agentPayload(db: ReturnType<typeof getDb>, task: typeof s.aiTasks.$inferSelect) {
   const data = await loadDataset(db, task.userId);
   if (data.months.length === 0) return null;
-  const [previousReports, vendors, dealRows] = await Promise.all([
+  const [previousReports, vendors, excluded, dealRows, analysis] = await Promise.all([
     loadPreviousReports(db, task),
     loadSubVendors(db, task.userId),
+    loadSubVendorExclusions(db, task.userId),
     db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, task.userId)),
+    db.select().from(s.analysisSettings).where(eq(s.analysisSettings.userId, task.userId)),
   ]);
-  const candidates = subsCandidates(dealRows.map(dealFromRow), vendors, 10);
-  return buildAgentData(data, periodOf(task), { previousReports, supplement: task.supplement, candidates });
+  // 「サブスクではない」と記録済みの支払先は、AIへの指示文でも候補に挙げない
+  const candidates = subsCandidates(
+    dealRows.map(dealFromRow),
+    vendors,
+    10,
+    excluded.map((e) => e.partner),
+  );
+  return buildAgentData(data, periodOf(task), {
+    previousReports,
+    supplement: task.supplement,
+    candidates,
+    // 設定画面で変えられる統計の基準月数(行が無ければ既定の6ヶ月)
+    statMinMonths: analysis[0]?.statMinMonths,
+  });
 }
 
 /* ======== 画面用(セッション認証は index.ts の authGuard が担う) ======== */
@@ -229,20 +246,35 @@ aiRoute.get('/ai/tasks', async (c) => {
 
 aiRoute.get('/ai/reports', async (c) => {
   const db = getDb(c.env.DB);
-  const rows = await db
-    .select()
-    .from(s.aiReports)
-    .where(eq(s.aiReports.userId, c.get('userId')))
-    .orderBy(desc(s.aiReports.createdAt))
-    .limit(200);
-  // 型・期間の絞り込みは件数が少ないのでサーバー側で単純に行う
   const type = c.req.query('type');
   const from = c.req.query('from');
   const to = c.req.query('to');
-  const filtered = rows.filter(
-    (r) => (!type || r.reportType === type) && (!from || r.periodTo >= from) && (!to || r.periodFrom <= to),
+  // 既定ではアーカイブ済みを隠す(?archived=1 で一緒に返す)
+  const withArchived = c.req.query('archived') === '1';
+  // 絞り込みを LIMIT より前に行い、古い一致行も一覧上限の母集団へ含める。
+  const population = and(
+    eq(s.aiReports.userId, c.get('userId')),
+    type ? eq(s.aiReports.reportType, type as ReportType) : undefined,
+    from ? gte(s.aiReports.periodTo, from) : undefined,
+    to ? lte(s.aiReports.periodFrom, to) : undefined,
   );
-  return c.json({ reports: filtered.map(reportView) });
+  const [rows, archived] = await db.batch([
+    db
+      .select()
+      .from(s.aiReports)
+      .where(and(population, withArchived ? undefined : isNull(s.aiReports.archivedAt)))
+      .orderBy(desc(s.aiReports.createdAt))
+      .limit(200),
+    // archivedCount は表示上限や archived=1 に依存せず、同じ型・期間母集団を数える。
+    db
+      .select({ value: count() })
+      .from(s.aiReports)
+      .where(and(population, isNotNull(s.aiReports.archivedAt))),
+  ]);
+  return c.json({
+    reports: rows.map(reportView),
+    archivedCount: archived[0]?.value ?? 0,
+  });
 });
 
 aiRoute.get('/ai/reports/:id', async (c) => {
@@ -272,6 +304,104 @@ aiRoute.get('/ai/reports/:id', async (c) => {
     previous: previous ? reportView(previous) : null,
     versions,
   });
+});
+
+/**
+ * アーカイブの切り替え(本文は消さずに一覧から外す)。
+ * 削除と違って元に戻せるので、確認は挟まない。
+ */
+aiRoute.put('/ai/reports/:id/archive', zValidator('json', z.object({ archived: z.boolean() })), async (c) => {
+  const db = getDb(c.env.DB);
+  const userId = c.get('userId');
+  const id = c.req.param('id');
+  const row = await db
+    .select()
+    .from(s.aiReports)
+    .where(and(eq(s.aiReports.userId, userId), eq(s.aiReports.id, id)))
+    .get();
+  if (!row) return c.json({ error: { code: 'not_found', message: 'レポートが見つかりません' } }, 404);
+  const archivedAt = c.req.valid('json').archived ? new Date().toISOString() : null;
+  await db
+    .update(s.aiReports)
+    .set({ archivedAt })
+    .where(and(eq(s.aiReports.userId, userId), eq(s.aiReports.id, id)));
+  return c.json({ ok: true, archivedAt });
+});
+
+/**
+ * レポートの削除。本文ごと消えて元に戻せないので、画面側で確認を挟んでから呼ぶ。
+ * 発行元の依頼(ai_tasks)からの参照は外し、依頼の履歴自体は残す(いつ何を依頼したかは追えるようにする)。
+ */
+aiRoute.delete('/ai/reports/:id', async (c) => {
+  const db = getDb(c.env.DB);
+  const userId = c.get('userId');
+  const id = c.req.param('id');
+  const row = await db
+    .select()
+    .from(s.aiReports)
+    .where(and(eq(s.aiReports.userId, userId), eq(s.aiReports.id, id)))
+    .get();
+  if (!row) return c.json({ error: { code: 'not_found', message: 'レポートが見つかりません' } }, 404);
+  await db.batch([
+    db
+      .update(s.aiTasks)
+      .set({ reportId: null })
+      .where(and(eq(s.aiTasks.userId, userId), eq(s.aiTasks.reportId, id))),
+    db
+      .update(s.aiTasks)
+      .set({ parentReportId: null })
+      .where(and(eq(s.aiTasks.userId, userId), eq(s.aiTasks.parentReportId, id))),
+    // 再分析の親として参照している後続レポートは、親を失っても本文は読めるので参照だけ外す
+    db
+      .update(s.aiReports)
+      .set({ parentReportId: null })
+      .where(and(eq(s.aiReports.userId, userId), eq(s.aiReports.parentReportId, id))),
+    db.delete(s.aiReports).where(and(eq(s.aiReports.userId, userId), eq(s.aiReports.id, id))),
+  ]);
+  return c.json({ ok: true });
+});
+
+/**
+ * 結果待ちの依頼の取り消し。まだ結果を受け取っていない依頼だけ消せる。
+ * 受信済み(usedAt あり)の依頼はレポートの出所なので消さない。
+ */
+aiRoute.delete('/ai/tasks/:id', async (c) => {
+  const db = getDb(c.env.DB);
+  const userId = c.get('userId');
+  const id = c.req.param('id');
+  const task = await db
+    .select()
+    .from(s.aiTasks)
+    .where(and(eq(s.aiTasks.userId, userId), eq(s.aiTasks.id, id)))
+    .get();
+  if (!task) return c.json({ error: { code: 'not_found', message: '依頼が見つかりません' } }, 404);
+  if (taskStatus(task) === 'done')
+    return c.json(
+      {
+        code: 'already_done',
+        error: {
+          code: 'already_done',
+          message: 'この依頼はすでに結果を受け取っています。取り消せるのは結果待ちの依頼だけです',
+        },
+      },
+      409,
+    );
+  // 結果受信との競合で used_at が入った依頼を消さないよう、削除自体をCASにする。
+  const deleted = await db
+    .delete(s.aiTasks)
+    .where(and(eq(s.aiTasks.userId, userId), eq(s.aiTasks.id, id), isNull(s.aiTasks.usedAt)))
+    .run();
+  if (deleted.meta.changes) return c.json({ ok: true });
+  return c.json(
+    {
+      code: 'already_done',
+      error: {
+        code: 'already_done',
+        message: 'この依頼はすでに結果を受け取っています。取り消せるのは結果待ちの依頼だけです',
+      },
+    },
+    409,
+  );
 });
 
 // ネットワークが使えない環境向け: 画面からデータJSONを見る(セッション認証。トークンは不要)

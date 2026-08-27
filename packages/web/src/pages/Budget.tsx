@@ -1,4 +1,5 @@
 /** P7 予算管理: 科目別予算の設定と予実確認(FR-04) */
+import { budgetRowsWithDraft, budgetSummary } from '@kanjo/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -71,18 +72,13 @@ export function BudgetPage() {
 
   const valOf = (r: BudgetRow): string => draft[r.account] ?? (r.budget != null ? String(r.budget) : '');
 
-  // 予算サマリー(保存済みの値で集計。編集中の下書きは保存後に反映)
-  const withBudget = rows.filter((r) => r.budget != null);
-  const budgetTotal = withBudget.reduce((a, r) => a + (r.budget ?? 0), 0);
-  const actualTotal = withBudget.reduce((a, r) => a + r.recentAvg, 0);
-  const over = rows.filter((r) => r.judge === '超過').length;
+  // 編集中の下書きを重ねた表。判定規則は core と共有するので、保存前後で見え方が変わらない
+  const view = budgetRowsWithDraft(rows, draft);
+  const summary = budgetSummary(view);
 
   const submit = () => {
     const budgets: Record<string, number | null> = {};
-    for (const r of rows) {
-      const raw = valOf(r);
-      budgets[r.account] = raw === '' ? null : Number(raw) || 0;
-    }
+    for (const r of view) budgets[r.account] = r.budget;
     save.mutate(budgets);
   };
 
@@ -110,22 +106,32 @@ export function BudgetPage() {
         </button>
       </div>
 
+      {dirty && (
+        <output className="sub">
+          下書き反映中(未保存)。下の集計と判定は、いま入力中の予算で計算しています。
+        </output>
+      )}
+
       <div className="kpis">
         <KpiCard
           label="予算を設定した科目"
-          value={`${withBudget.length} / ${rows.length}`}
-          note={withBudget.length < rows.length ? '未設定の科目は判定されません' : '全科目に予算があります'}
+          value={`${summary.withBudget} / ${rows.length}`}
+          note={summary.withBudget < rows.length ? '未設定の科目は判定されません' : '全科目に予算があります'}
         />
-        <KpiCard label="月次予算の合計" value={yen(budgetTotal)} note={`年間 ${yen(budgetTotal * 12)}`} />
-        <KpiCard label="直近3ヶ月平均の合計(設定済み科目)" value={yen(actualTotal)} note="実績" />
+        <KpiCard
+          label="月次予算の合計"
+          value={yen(summary.budgetTotal)}
+          note={`年間 ${yen(summary.budgetTotal * 12)}`}
+        />
+        <KpiCard label="直近3ヶ月平均の合計(設定済み科目)" value={yen(summary.actualTotal)} note="実績" />
         <KpiCard
           label="差異(実績−予算)"
           value={
-            <span className={actualTotal - budgetTotal > 0 ? 'pos' : 'neg'}>
-              {withBudget.length ? yenS(actualTotal - budgetTotal) : '—'}
+            <span className={summary.actualTotal - summary.budgetTotal > 0 ? 'pos' : 'neg'}>
+              {summary.withBudget ? yenS(summary.actualTotal - summary.budgetTotal) : '—'}
             </span>
           }
-          note={withBudget.length ? `超過 ${over}科目` : '予算を設定すると差異が出ます'}
+          note={summary.withBudget ? `超過 ${summary.over}科目` : '予算を設定すると差異が出ます'}
         />
       </div>
 
@@ -144,7 +150,7 @@ export function BudgetPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
+            {view.map((r) => (
               <tr key={r.account}>
                 <td>{r.account}</td>
                 <td>

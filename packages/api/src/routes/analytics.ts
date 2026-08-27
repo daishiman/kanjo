@@ -13,13 +13,15 @@ import {
   overview,
   subscriptions,
   tradeoffCandidates,
+  unsettledDeals,
+  unsettledSummary,
 } from '@kanjo/core';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
-import { getDb, loadBackupPayload, loadDataset } from '../store.js';
+import { dealFromRow, getDb, loadBackupPayload, loadDataset } from '../store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
@@ -48,6 +50,22 @@ analyticsRoute.get('/subscriptions', async (c) => {
 analyticsRoute.get('/household', async (c) => {
   const data = await loadDataset(getDb(c.env.DB), c.get('userId'));
   return c.json(household(data));
+});
+
+/**
+ * freee 未決済(未入金・未払)の一覧。
+ * 損益(発生ベース)には既に載っているため集計とは別経路で、原本の freee_deals を期日順に並べ直す。
+ * 「今日」は Worker 側で決める(純関数は時計を持たない)。
+ */
+analyticsRoute.get('/unsettled', async (c) => {
+  const db = getDb(c.env.DB);
+  const rows = await db
+    .select()
+    .from(s.freeeDeals)
+    .where(and(eq(s.freeeDeals.userId, c.get('userId')), eq(s.freeeDeals.settlementKnown, 1)));
+  const today = new Date().toISOString().slice(0, 10);
+  const unsettled = unsettledDeals(rows.map(dealFromRow), today);
+  return c.json({ today, rows: unsettled, summary: unsettledSummary(unsettled) });
 });
 
 analyticsRoute.get('/defense-line', async (c) => {

@@ -31,6 +31,60 @@ describe('ベンダー照合(名前は完全一致・別名は部分一致、表
   });
 });
 
+describe('ベンダーごとの対象勘定科目', () => {
+  const vendors = [
+    { name: '架空モール', aliases: [], accounts: ['サブスク・通信'] },
+    { name: 'note株式会社', aliases: [], accounts: [] },
+  ];
+  it('対象科目を指定したベンダーは、その科目のときだけ一致する', () => {
+    expect(matchSubVendor('架空モール', vendors, 'サブスク・通信')).toBe('架空モール');
+    expect(matchSubVendor('架空モール', vendors, '消耗品費')).toBeNull();
+  });
+  it('対象科目が空(未指定)なら従来どおり全科目で一致する', () => {
+    expect(matchSubVendor('note株式会社', vendors, '消耗品費')).toBe('note株式会社');
+    expect(matchSubVendor('note株式会社', vendors, 'サブスク・通信')).toBe('note株式会社');
+  });
+  it('科目を渡さなければ絞り込まない(登録済み判定など、科目を見ない用途)', () => {
+    expect(matchSubVendor('架空モール', vendors)).toBe('架空モール');
+
+    expect(
+      matchSubVendor('架空モール', [{ ...vendors[0], accounts: ['架空通信原'] }], {
+        raw: '架空通信原',
+        normalized: '架空新通信区分',
+      }),
+    ).toBe('架空モール');
+  });
+  it('科目違いのベンダーが先に並んでいても、後続の一致するベンダーを取りこぼさない', () => {
+    const both = [
+      { name: '架空モール', aliases: [], accounts: ['消耗品費'] },
+      { name: '架空モール決済', aliases: ['架空モール'], accounts: ['サブスク・通信'] },
+    ];
+    expect(matchSubVendor('架空モール', both, 'サブスク・通信')).toBe('架空モール決済');
+  });
+});
+
+describe('applyFreeeDeals の対象科目しぼり', () => {
+  it('対象科目を絞ったベンダーは、科目外の支払をサブスクに数えない', () => {
+    const data = emptyDataset();
+    data.subs.vendors = ['架空モール'];
+    data.subs.aliases = {};
+    data.subs.accounts = { 架空モール: ['サブスク・通信'] };
+    data.subs.matrix = { 架空モール: [] };
+    applyFreeeDeals(
+      data,
+      [
+        deal({ partner: '架空モール', amount: 980 }),
+        deal({ partner: '架空モール', accountRaw: '消耗品費', accountNorm: '消耗品費', amount: 12000 }),
+      ],
+      ['2026-01'],
+    );
+    expect(data.subs.matrix['架空モール'][0]).toBe(980);
+    // 科目外の物販はサブスクにも「その他」にも入らず、経費側にだけ残る
+    expect(data.subs.other[0]).toBe(0);
+    expect(data.biz.expense['消耗品費'][0]).toBe(12000);
+  });
+});
+
 describe('applyFreeeDeals のサブスク集計', () => {
   it('登録ベンダーは科目を問わず集計し、未登録はサブスク・通信の分だけ「その他」に入る', () => {
     const data = emptyDataset();
@@ -73,5 +127,15 @@ describe('サブスク候補の採点', () => {
     expect(c[1].spanMonths).toBe(4);
     expect(c[1].activeMonths).toBe(2);
     expect(c[1].score).toBeLessThan(60);
+  });
+
+  it('「サブスクではない」と記録した支払先は表記ゆれを含めて候補から外れる', () => {
+    const deals: FreeeDeal[] = [
+      ...months.map((m) => deal({ month: m, partner: '架空定額サービス', amount: 1980 })),
+      ...months.map((m) => deal({ month: m, partner: '架空家賃', amount: 80000 })),
+    ];
+    expect(subsCandidates(deals, [], 20, []).map((x) => x.partner)).toEqual(['架空家賃', '架空定額サービス']);
+    // 除外は正規化キーで突き合わせるので、全角・空白のゆれがあっても効く
+    expect(subsCandidates(deals, [], 20, ['架空 家賃']).map((x) => x.partner)).toEqual(['架空定額サービス']);
   });
 });

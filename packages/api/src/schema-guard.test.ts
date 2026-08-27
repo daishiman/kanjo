@@ -69,7 +69,8 @@ describe('runtime schema guard', () => {
   });
 
   it('期待head以上なら業務処理へ進め、TTL内はD1を再検査しない', async () => {
-    const database = await databaseWithHead('0016_future.sql');
+    // 期待headより必ず新しい番号にする(migration追加で追い越されないよう十分大きく取る)。
+    const database = await databaseWithHead('0999_future.sql');
     let now = 1_000;
     let inspectionCount = 0;
     const countingDatabase = new Proxy(database, {

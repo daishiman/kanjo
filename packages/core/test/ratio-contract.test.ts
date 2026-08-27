@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { budgetTable, emptyDataset, overview } from '../src/index.js';
+import {
+  budgetRowsWithDraft,
+  budgetSummary,
+  budgetTable,
+  emptyDataset,
+  overview,
+  parseBudgetDraft,
+} from '../src/index.js';
 import type { Dataset } from '../src/index.js';
 
 function expenseDataset(amount: number, budget = 100): Dataset {
@@ -57,5 +64,44 @@ describe('予算±10%判定', () => {
     [89, '余裕'],
   ] as const)('実績%sは%s', (actual, expected) => {
     expect(budgetTable(expenseDataset(actual))[0].judge).toBe(expected);
+  });
+});
+
+describe('編集中の下書きを重ねた予算表', () => {
+  const saved = budgetTable(expenseDataset(110));
+
+  it('下書きの予算で、保存後と同じ規則の判定と差異になる', () => {
+    const [row] = budgetRowsWithDraft(saved, { テスト科目: '90' });
+    expect(row).toMatchObject({ budget: 90, diff: 20, judge: '超過' });
+  });
+
+  it('空欄は未設定に戻し、判定も差異も消す', () => {
+    expect(budgetRowsWithDraft(saved, { テスト科目: '' })[0]).toMatchObject({
+      budget: null,
+      diff: null,
+      judge: null,
+    });
+  });
+
+  it('打ちかけの入力は保存済みの値を保ち、表を壊さない', () => {
+    expect(parseBudgetDraft('-', 100)).toBe(100);
+    expect(parseBudgetDraft(undefined, 100)).toBe(100);
+    expect(parseBudgetDraft('0', 100)).toBe(0);
+  });
+
+  it('サマリーは下書きを重ねた表から数える', () => {
+    const rows = budgetRowsWithDraft(saved, { テスト科目: '50' });
+    expect(budgetSummary(rows)).toEqual({
+      withBudget: 1,
+      budgetTotal: 50,
+      actualTotal: 110,
+      over: 1,
+    });
+    expect(budgetSummary(budgetRowsWithDraft(saved, { テスト科目: '' }))).toEqual({
+      withBudget: 0,
+      budgetTotal: 0,
+      actualTotal: 0,
+      over: 0,
+    });
   });
 });

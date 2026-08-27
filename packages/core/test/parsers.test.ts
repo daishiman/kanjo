@@ -10,6 +10,7 @@ import {
   countableMfTxs,
   decodeBuf,
   emptyDataset,
+  hasSettlementColumns,
   isFreeeHeader,
   isMfHeader,
   normMonth,
@@ -97,6 +98,28 @@ describe('freee取込', () => {
     expect(data.biz.expense['サブスク・通信'][monthIndex]).toBe(5000);
     expect(data.subs.matrix['架空SaaS'][monthIndex]).toBe(3000);
     expect(data.subs.other[monthIndex]).toBe(2000);
+  });
+
+  it('決済列が無いエクスポートでは決済情報を持たない(空欄と取り違えない)', () => {
+    expect(parsed.deals.every((d) => !hasSettlementColumns(d))).toBe(true);
+  });
+
+  it('決済列があれば支払期日・支払日・支払口座・支払金額を読む', () => {
+    const withSettlement = parseCSV(
+      [
+        '収支区分,発生日,勘定科目,金額,取引先,支払期日,支払日,支払口座,支払金額',
+        '支出,2026/07/02,外注費,30000,架空印刷,2026/08/31,,架空銀行,',
+        '支出,2026/07/03,通信費,2000,架空ベンダー,2026/07/31,2026/07/31,架空銀行,2000',
+      ].join('\n'),
+    );
+    const [unsettled, settled] = parseFreeeRows(withSettlement, DEFAULT_ACCOUNT_NORM).deals;
+    expect(unsettled).toMatchObject({
+      dueDate: '2026-08-31',
+      settledDate: null,
+      settleAccount: '架空銀行',
+      settledAmount: null,
+    });
+    expect(settled).toMatchObject({ settledDate: '2026-07-31', settledAmount: 2000 });
   });
 });
 
