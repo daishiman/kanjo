@@ -104,6 +104,9 @@ export function cashToTx(e: CashEntry): MfTx {
     big: e.categoryMajor,
     mid: e.categoryMid,
     inst: CASH_INSTITUTION,
+    // 手入力の現金記帳は常に収支集計の対象（MFの計算対象/振替に相当する概念を持たない）
+    isTarget: true,
+    isTransfer: false,
   };
 }
 

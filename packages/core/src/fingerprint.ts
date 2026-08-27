@@ -10,7 +10,8 @@ import {
  */
 import { type FreeeDeal, type MfTx, normalizeOwner } from './types.js';
 
-export const FINGERPRINT_VERSION = 3;
+/** v4: MFのmemo/isTarget/isTransferをbusiness write-setに追加。 */
+export const FINGERPRINT_VERSION = 4;
 
 const atom = (tag: string, value: string): string => `${tag}${value.length}:${value}`;
 

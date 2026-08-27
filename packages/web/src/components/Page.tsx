@@ -18,6 +18,8 @@ export function PageHeader({ route }: { route: AppRouteId }) {
 export function describeError(error: unknown): string {
   if (error instanceof ApiError) {
     if (error.status === 401) return 'ログインの有効期限が切れました。もう一度ログインしてください。';
+    if (error.code === 'schema_unavailable')
+      return 'システム更新の適用待ちです。お客様の操作やファイルが原因ではありません。時間をおいて、もう一度読み込んでください。';
     if (error.status >= 500)
       return 'サーバー側で処理に失敗しました。少し待ってから、もう一度読み込んでください。続く場合は取込履歴に失敗が残っていないか確認してください。';
     if (error.status === 404) return 'データの保存先が見つかりません。設定を確認してください。';

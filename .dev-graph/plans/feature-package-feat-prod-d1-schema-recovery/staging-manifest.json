@@ -1,0 +1,35 @@
+{
+  "status": "blocked",
+  "blocking_reason": "system-spec completeness FAIL と現行成果物変更により、記録済み digest は再評価・再生成まで promotion に使用不可",
+  "canonical_digest": "sha256:d2200d619bf36766512afad32507a5f4bddc52558812a8883c276a4873dfc716",
+  "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+  "files": {
+    "feature-package.json": "36e2fa14bcf07ae72359702c4b99c16d43f80bab170890f2f84a0ab8f8f9b927",
+    "system-build-handoff.json": "22b59dce63bfb5f7339c67b68d36e5f397df8fcb14e446333d0cc1ab1de6aef0",
+    "task-graph.json": "7a259836560493e59b81577154dd16f0a4222f3c6381003bab367f98069ad493",
+    "task-specs/phase-01-requirements.md": "d8e058ec378733b26106bef9bba3ad582b15faa4d4113e49e22c9f8c4b795a40",
+    "task-specs/phase-02-architecture.md": "d36faaaca05c59aa2bc075dfbc006d45e8887bd6e6c726ab03c4340d9d90db8d",
+    "task-specs/phase-03-design-review.md": "8c0384bd97c474bdfeb437e827c4a3faa07df7ddccc6fa22c99741bcf4d2bcd5",
+    "task-specs/phase-04-test-design.md": "7efeb3682749a0a56cdeb51ee9c1b396386c035b163ee28e644b95697b541702",
+    "task-specs/phase-05-implementation.md": "0389d767fb524fff3d302414e901ac1f896bfd99b03599a156a25677272511fe",
+    "task-specs/phase-06-test-run.md": "d33088d74d1288985d30e91b17e95eff8a94ae6c096485217da6fd77684f0c35",
+    "task-specs/phase-07-acceptance.md": "b52041f22eb57867c7c2d7f33bc04b1af65f615045b5c65f877b6808bd53eee9",
+    "task-specs/phase-08-refactoring-migration.md": "adee46e3dd1da2784c014d64dce4bbf669acb12deff884e51277f2718ae2aeaa",
+    "task-specs/phase-09-quality-assurance.md": "5d401571f0738ea7b539817bcdf730f6f48426126aff373e40d5067cb80a9aba",
+    "task-specs/phase-10-final-review.md": "dd490a02b3fbfd39560f506b393412284009cf68ddd1d406f4f83243c1f67b89",
+    "task-specs/phase-11-evidence.md": "cc5c185e358dea8e0018f58d3f8162312be1d05ddae93ff29ab9702f441fb15c",
+    "task-specs/phase-12-documentation-operations.md": "4d8f0b3f3717aaccdcafcd7cc5df9a8b78b5349759210230bb1f1115c54d729e",
+    "task-specs/phase-13-release-deploy.md": "bd24d3d32661f6438c6360af7735566d91f474f73fd82fb4f60d8f69e4a4b8cc",
+    "workstream-inventory.json": "e4695046ed6d0d7e79b883ef6d908ad9ad550a325a14bfb669322b59d25a3a5f"
+  },
+  "handoff_contract": {
+    "manifest_is_commit_point": true,
+    "path": "system-build-handoff.json",
+    "schema_version": "1.0.0",
+    "self_reference_policy": "handoff hash and final digest are manifest-only",
+    "sha256": "22b59dce63bfb5f7339c67b68d36e5f397df8fcb14e446333d0cc1ab1de6aef0",
+    "source_canonical_digest": "sha256:56acb9a6adfd347465ad560b49231f11d81775a01ac72685d3d8209ec004f3ee"
+  },
+  "parent_feature": "feat-prod-d1-schema-recovery",
+  "schema_version": "1.0.0"
+}

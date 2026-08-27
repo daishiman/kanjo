@@ -4,11 +4,15 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
+  FINGERPRINT_VERSION,
   type FreeeDeal,
+  MF_PERSISTED_COLUMNS,
+  MF_PERSISTED_IDENTITY_COLUMNS,
   type MfTx,
   canonicalFreee,
   canonicalJsonSnapshot,
   canonicalMf,
+  mfPersistedIdentityRow,
   mfPersistedRow,
   parseCSV,
   parseFreeeRows,
@@ -91,6 +95,72 @@ describe('canonicalMf', () => {
     expect(mfPersistedRow(slash)[2]).toBe('2026-07-01');
     expect(mfPersistedRow(hyphen)[2]).toBe('2026-07-01');
     expect(canonicalMf([slash])).toBe(canonicalMf([hyphen]));
+  });
+
+  it('v4の完全保存射影でmemo・計算対象・振替の差をそれぞれ指紋差にする', () => {
+    const base = parse([m1])[0];
+    expect(FINGERPRINT_VERSION).toBe(4);
+    for (const changed of [
+      { ...base, memo: '架空メモ' },
+      { ...base, isTarget: false },
+      { ...base, isTransfer: true },
+    ]) {
+      expect(canonicalMf([changed])).not.toBe(canonicalMf([base]));
+    }
+  });
+
+  it('memoの前後空白・空白のみ・空文字・列欠落を別の保存値として指紋で区別する', () => {
+    const memoHeader = `${header},メモ`;
+    const parseMemo = (memo: string): MfTx =>
+      parseMfRows(parseCSV([memoHeader, `${m1},${memo}`].join('\n'))).txs[0];
+    const spaced = parseMemo('  架空メモ  ');
+    const trimmed = parseMemo('架空メモ');
+    const whitespaceOnly = parseMemo('   ');
+    const empty = parseMemo('');
+    const missing = parse([m1])[0];
+
+    expect(spaced.memo).toBe('  架空メモ  ');
+    expect(whitespaceOnly.memo).toBe('   ');
+    expect(empty.memo).toBe('');
+    expect(missing.memo).toBeUndefined();
+    expect(canonicalMf([spaced])).not.toBe(canonicalMf([trimmed]));
+    expect(canonicalMf([whitespaceOnly])).not.toBe(canonicalMf([empty]));
+    expect(canonicalMf([empty])).not.toBe(canonicalMf([missing]));
+  });
+
+  it('旧データのundefinedを計算対象・非振替として完全保存行へ映射する', () => {
+    const legacy = { ...parse([m1])[0], isTarget: undefined, isTransfer: undefined };
+    const explicitDefaults = { ...legacy, isTarget: true, isTransfer: false };
+
+    expect(MF_PERSISTED_COLUMNS).toEqual([
+      'tx_id',
+      'month',
+      'date',
+      'description',
+      'amount',
+      'category_major',
+      'category_mid',
+      'institution',
+      'memo',
+      'is_target',
+      'is_transfer',
+    ]);
+    expect(MF_PERSISTED_IDENTITY_COLUMNS).toEqual([...MF_PERSISTED_COLUMNS, 'identity_stable']);
+    expect(mfPersistedRow(legacy)).toEqual([
+      legacy.id,
+      legacy.m,
+      '2026-07-01',
+      legacy.c,
+      legacy.a,
+      legacy.big,
+      legacy.mid,
+      null,
+      null,
+      1,
+      0,
+    ]);
+    expect(mfPersistedIdentityRow(legacy)).toEqual([...mfPersistedRow(legacy), 1]);
+    expect(canonicalMf([legacy])).toBe(canonicalMf([explicitDefaults]));
   });
 });
 

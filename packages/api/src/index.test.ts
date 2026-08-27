@@ -1,22 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { signedSessionCookieForTest } from './auth.test-support.js';
 import { app } from './index.js';
+import { EXPECTED_D1_MIGRATION } from './schema-guard.js';
 
-const sessionCookie = async (secret: string): Promise<string> => {
-  const expiresAt = String(Date.now() + 60_000);
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign'],
-  );
-  const signature = new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(expiresAt)));
-  const encoded = btoa(String.fromCharCode(...signature))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-  return `kanjo_session=${expiresAt}.${encoded}`;
+const schemaReadyDatabase = {
+  prepare: () => ({ first: async () => EXPECTED_D1_MIGRATION }),
 };
 
 describe('API公開境界', () => {
@@ -32,14 +20,33 @@ describe('API公開境界', () => {
     });
   });
 
+  it('未認証リクエストはschema照合より先に401で停止する', async () => {
+    let schemaQueries = 0;
+    const response = await app.request('/api/summary', undefined, {
+      ACCESS_AUD: '',
+      ACCESS_TEAM_DOMAIN: '',
+      SESSION_SECRET: 'synthetic-test-secret',
+      DB: {
+        prepare: () => {
+          schemaQueries += 1;
+          throw new Error('schema lookup must not run before authentication');
+        },
+      },
+    });
+
+    expect(response.status).toBe(401);
+    expect(schemaQueries).toBe(0);
+  });
+
   it('存在しないAPIもSPAではなくJSONエラーにする', async () => {
     const env = {
       ACCESS_AUD: '',
       ACCESS_TEAM_DOMAIN: '',
       AUTH_PASSWORD: 'synthetic-test-password',
       SESSION_SECRET: 'synthetic-test-secret',
+      DB: schemaReadyDatabase,
     };
-    const cookie = await sessionCookie(env.SESSION_SECRET);
+    const cookie = await signedSessionCookieForTest(env.SESSION_SECRET);
 
     const response = await app.request('/api/not-found', { headers: { cookie } }, env);
 

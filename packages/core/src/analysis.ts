@@ -3,7 +3,14 @@
  * 年次比較はHTML版の '2025'/'2026' 固定を「前年/当年（データ最終月の年）」に一般化した。
  */
 import { mean, median, movingAvg, std, sum, yearOf } from './stats.js';
-import { type CatProfile, type Dataset, OWNER_VALUES, type OwnerKey, type OwnerMonth } from './types.js';
+import {
+  type CatProfile,
+  type Dataset,
+  OWNER_VALUES,
+  type OwnerKey,
+  type OwnerMonth,
+  isMfCountable,
+} from './types.js';
 
 export function catSeries(data: Dataset, c: string): number[] {
   return data.biz.expense[c] || data.months.map(() => 0);
@@ -726,6 +733,8 @@ export function byOwner(data: Dataset, months: string[]): ByOwner {
   const unmapped = new Set<string>();
   let noInst = 0;
   for (const t of data.mfTx) {
+    // 名義マッピングの過不足は収支集計に載る明細を基準に測る(振替・計算対象外は載らない)
+    if (!isMfCountable(t)) continue;
     if (!t.inst) noInst++;
     else if (!data.institutionOwners[t.inst]) unmapped.add(t.inst);
   }

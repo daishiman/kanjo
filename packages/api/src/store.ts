@@ -389,6 +389,9 @@ export async function loadDataset(
       big: r.categoryMajor ?? '',
       mid: r.categoryMid ?? '',
       inst: r.institution ?? undefined,
+      memo: r.memo ?? undefined,
+      isTarget: r.isTarget === 1,
+      isTransfer: r.isTransfer === 1,
     }),
   );
   data.rules = effectiveRules(ruleRows);
@@ -594,7 +597,8 @@ SELECT 'freee', id, NULL, amount,
 FROM freee_deals WHERE user_id = ?
 UNION ALL
 SELECT 'mf', id, NULL, amount,
-       tx_id, month, date, description, category_major, category_mid, institution, NULL, NULL, NULL, NULL, identity_stable, NULL
+       tx_id, month, date, description, category_major, category_mid, institution, memo,
+       CAST(is_target AS TEXT), CAST(is_transfer AS TEXT), NULL, identity_stable, NULL
 FROM mf_transactions WHERE user_id = ?
 UNION ALL
 SELECT 'rule', id, sort_order, NULL,
@@ -691,6 +695,10 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
         big: row.v5 ?? '',
         mid: row.v6 ?? '',
         inst: row.v7 ?? undefined,
+        memo: row.v8 ?? undefined,
+        // CAST(... AS TEXT) 済み。'0' のときだけ非対象/振替と読む
+        isTarget: row.v9 !== '0',
+        isTransfer: row.v10 === '1',
       }),
     )
     .sort((a, b) => a.m.localeCompare(b.m) || a.d.localeCompare(b.d) || a.id.localeCompare(b.id));
@@ -1324,43 +1332,6 @@ export async function replaceFreeeDeals(
     settlementKnown: hasSettlementColumns(d) ? 1 : 0,
   }));
   for (const grp of chunk(rows, 10)) await db.insert(s.freeeDeals).values(grp);
-}
-
-export async function replaceMfTxs(
-  db: Db,
-  userId: string,
-  txs: MfTx[],
-  months: string[],
-  importId: number | null,
-): Promise<void> {
-  if (months.length) {
-    await db
-      .delete(s.mfTransactions)
-      .where(and(eq(s.mfTransactions.userId, userId), inArray(s.mfTransactions.month, months)));
-  }
-  // ファイル内のID重複(MF側の稀な重複)は後勝ちで1件に畳む
-  const byId = new Map<string, MfTx>();
-  txs.forEach((t) => byId.set(t.id, t));
-  const rows = [...byId.values()].map((t) => ({
-    userId,
-    txId: t.id,
-    month: t.m,
-    date: `${t.m}-${(t.d.split('/')[1] ?? '01').padStart(2, '0')}`,
-    description: t.c,
-    amount: t.a,
-    categoryMajor: t.big,
-    categoryMid: t.mid,
-    institution: t.inst ?? null,
-    importId,
-  }));
-  // 月をまたいで同一tx_idが残っている場合(UNIQUE制約)に備え、先に既存の同一IDを消す
-  const ids = rows.map((r) => r.txId);
-  for (const grp of chunk(ids, 90)) {
-    await db
-      .delete(s.mfTransactions)
-      .where(and(eq(s.mfTransactions.userId, userId), inArray(s.mfTransactions.txId, grp)));
-  }
-  for (const grp of chunk(rows, 9)) await db.insert(s.mfTransactions).values(grp);
 }
 
 /** 科目正規化マップの取得(未設定行は既定値で補完済みのマイグレーションが入る) */

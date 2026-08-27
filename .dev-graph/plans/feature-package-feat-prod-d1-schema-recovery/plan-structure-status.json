@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py derived view + upstream completeness FAIL blocked overlay",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 0,
+      "running": 0,
+      "done": 0,
+      "blocked": 13
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": ["SYS-PDSR-P01", "SYS-PDSR-P02", "SYS-PDSR-P03", "SYS-PDSR-P04", "SYS-PDSR-P05", "SYS-PDSR-P06", "SYS-PDSR-P07", "SYS-PDSR-P08", "SYS-PDSR-P09", "SYS-PDSR-P10", "SYS-PDSR-P11", "SYS-PDSR-P12", "SYS-PDSR-P13"],
+    "route_report_count": 0,
+    "completion_gate": "system-spec/completeness-findings.json must be PASS",
+    "effective_status": "blocked"
+  },
+  "nodes": [
+    {
+      "id": "SYS-PDSR-P01",
+      "title": "復旧要件のベースライン確定",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P02",
+      "title": "適用順序と不変条件の設計",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P03",
+      "title": "復旧設計の独立レビュー",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P04",
+      "title": "行数突合と動作確認の検証設計",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P05",
+      "title": "復旧手順書と突合スクリプトの作成",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P06",
+      "title": "ローカル環境での適用予行",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P07",
+      "title": "本番適用の受入判定",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P08",
+      "title": "既存データの互換確認と派生テーブルの初期状態",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P09",
+      "title": "品質・セキュリティ・運用準備の確認",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P10",
+      "title": "復旧完了の最終ゲート",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P11",
+      "title": "再現可能な証跡の整備",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P12",
+      "title": "運用文書と引き継ぎの整備",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "blocked"
+    },
+    {
+      "id": "SYS-PDSR-P13",
+      "title": "復旧後の稼働確認と事後観察",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "blocked"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

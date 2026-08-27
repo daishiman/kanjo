@@ -25,6 +25,7 @@ const summary = (over: Partial<TransactionsResponse['summary']> = {}): Transacti
   editedCount: 2,
   conflictCount: 0,
   noInstitutionCount: 0,
+  nonCountableCount: 0,
   ...over,
 });
 

@@ -10,12 +10,16 @@
                                       ↓
                                 mainのCI成功
                                       ↓
-                                   Deploy
+                          Deploy: D1未適用を検査
+                              ↓なし       ↓あり/判定不能
+                            Deploy      停止→Migrate(APPLY+manifest)
                                       ↓
                          30秒後確認 → 90秒後確認
 
 DB構造を変える変更
-  migrationだけのPR → main → Migrateを手動実行(APPLY)
+  migrationだけのPR → main → pending manifestを承認
+                                ↓
+                       Migrateを手動実行(APPLY+manifest)
                                 ↓
                          アプリ側のPRをmerge
                                 ↓
@@ -25,7 +29,7 @@ DB構造を変える変更
 重要な原則は次の3点です。
 
 1. `main`へ直接pushせず、必ずPRとCIを経由する。
-2. D1の構造変更は自動デプロイに混ぜず、`Migrate`を先に手動実行する。
+2. D1の構造変更は自動デプロイに混ぜず、承認済みpending manifestを`Migrate`で先に手動適用する。`Deploy`は未適用または判定不能なら配信前に停止する。
 3. Cloudflareへの公開はGitHub Actionsへ一本化し、Cloudflare Workers BuildsのGit連携を併用しない。
 
 ## 2. ワークフロー構成
@@ -33,8 +37,8 @@ DB構造を変える変更
 | ワークフロー | ファイル | 起動条件 | 主な処理 | 外部への影響 |
 |---|---|---|---|---|
 | CI | `.github/workflows/ci.yml` | PR、`main`へのpush、手動 | 依存導入、Env型生成、lint、型検査、テスト、依存監査 | なし |
-| Deploy | `.github/workflows/deploy.yml` | `main`のCI成功後、または`main`から手動 | 手動時の品質検査、Webビルド、Worker公開、2回のスモークテスト | 本番アプリを更新 |
-| Migrate | `.github/workflows/migrate.yml` | `main`から`APPLY`入力付きの手動実行のみ | D1 Time Travel情報確認、リモートmigration適用 | 本番DBの構造を更新 |
+| Deploy | `.github/workflows/deploy.yml` | `main`のCI成功後、または`main`から手動 | 手動時の品質検査、remote D1未適用のfail-closed検査、Webビルド、Worker公開、2回のスモークテスト | 検査通過時だけ本番アプリを更新 |
+| Migrate | `.github/workflows/migrate.yml` | `main`から`APPLY`と承認済みmanifest入力付きの手動実行のみ | repository head・ordered migrations digest・remote pendingの再照合、D1 Time Travel情報確認、リモートmigration適用 | 本番DBの構造を更新 |
 
 共通設定:
 
@@ -137,7 +141,7 @@ Cloudflareダッシュボードで、このWorkerに対するWorkers BuildsのGi
 2. 変更をcommitし、`main`向けPRを作る。
 3. PRの`verify`が成功するまでmergeしない。
 4. PRをsquash mergeする。
-5. `main`のCI成功後に`Deploy`が自動起動したことを確認する。
+5. `main`のCI成功後に`Deploy`が自動起動し、D1 migration検査を通過したことを確認する。
 6. 30秒後と、さらに90秒後のスモークテストが両方成功したことを確認する。
 7. 必要なリリースでは、本番確認後にタグを付ける。
 
@@ -153,23 +157,30 @@ pnpm --filter @kanjo/api exec wrangler deployments list
 
 `Deploy`の手動実行は、同じ`main`コミットの再実行や緊急復旧に限定します。`main`以外からはjobが起動せず、手動時もlint・型検査・テストを再実行します。
 
+`Deploy`は `wrangler d1 migrations list kanjo-db --remote` の明示的な未適用なし応答だけを許可します。未適用あり、認証・通信失敗、未知の出力形式はすべて配信前に停止します。Wranglerの生出力は再表示せず、`Migrate`を`APPLY`で手動実行してから`Deploy`を再実行する固定案内だけを出します。`Deploy`自身はmigrationを適用しません。
+
 ## 6. D1の構造を変えるリリース
 
 ### 6.1 列・テーブルを追加する場合（expand）
 
 1. 前方互換なmigrationだけのPRをmergeする。
-2. GitHub Actionsの`Migrate`を開く。
-3. 対象ブランチが`main`であることを確認する。
-4. 確認欄へ`APPLY`と入力して実行する。
-5. Time Travel情報確認とmigration適用が成功したことを確認する。
-6. 新しいDB構造を使うアプリ側のPRをmergeする。
-7. 自動デプロイと本番スモークテストを確認する。
+2. `main`のrepository head、`migrations/*.sql`のファイル別SHA-256とordered digest、remote pending一覧を同一時点で取得する。
+3. [`approved-pending-manifest.example.json`](runbooks/templates/approved-pending-manifest.example.json)を基に、pending順序・各SHA-256・承認者・承認時刻を持つ非secret manifestを作る。明細・金額・認証情報は含めない。
+4. 適用直前にrepository head・ordered migrations digest・remote pendingを再取得する。差分があればmanifestを失効させ、手順2から承認し直す。
+5. GitHub Actionsの`Migrate`を`main`から開き、確認欄へ`APPLY`、manifest欄へ1行JSONを入力して実行する。
+6. ワークフロー内の再照合、Time Travel情報確認、migration適用が成功したことを確認する。再照合はhead・digest・pendingのいずれかが違えば適用前に停止する。
+7. 新しいDB構造を使うアプリ側のPRをmergeする。
+8. 自動`Deploy`のD1検査と本番スモークテストを確認する。
 
 CLIから起動する場合:
 
 ```bash
-gh workflow run Migrate --ref main -f confirm=APPLY
+gh workflow run Migrate --ref main \
+  -f confirm=APPLY \
+  -f approved_manifest="$(jq -c . <非公開の承認済みmanifestへのパス>)"
 ```
+
+manifestはGit管理対象へ追加せず、incident evidenceとして非公開に保管します。`Migrate`は入力されたmanifestを信用してそのまま適用せず、`.github/scripts/verify-approved-migration-manifest.mjs`でcheckout済み`main`とremote pendingを再照合します。
 
 ### 6.2 列を削除する場合（contract）
 
@@ -228,6 +239,8 @@ gh variable list
 |---|---|
 | CIが失敗 | frozen lockfile、Env型生成、Linuxでの大文字小文字、未commitファイルへの依存 |
 | Deployが認証エラー | Environment secret名、APIトークン期限、Workers/D1/R2権限 |
+| DeployがD1検査で停止 | `Migrate`を`APPLY`＋承認済みmanifestで実行し、成功後に同じ`Deploy`を再実行。判定不能時も安全側で停止する |
+| Migrateがmanifest再照合で停止 | repository head・ordered migrations digest・remote pendingを再取得し、manifestを承認し直す。古いmanifestを再利用しない |
 | Deployは成功したが画面が古い | 30秒・90秒後の結果、対象deployment、`APP_URL` |
 | 本番でDBエラー | migrationがコードより先に適用されたか |
 | スモークテスト失敗 | `/`の200、title、未認証APIの401、本番ログ |
@@ -275,7 +288,9 @@ pnpm --filter @kanjo/api exec wrangler d1 time-travel restore kanjo-db --bookmar
 - [ ] GitHub secretsと`APP_URL`をリポジトリ所有者本人が登録した
 - [ ] Worker secretsの`AUTH_PASSWORD` / `SESSION_SECRET`を登録した
 - [ ] Cloudflare Workers BuildsのGit連携を無効にした
-- [ ] D1 migrationが手動実行で、コードデプロイより先に適用される
+- [ ] `Deploy`が未適用・判定不能を配信前に停止し、migrationを自動適用しない
+- [ ] D1 migrationが`APPLY`＋承認済みmanifestの手動実行で、コードデプロイより先に適用される
+- [ ] `Migrate`がrepository head・ordered migrations digest・remote pendingを適用直前に再照合する
 - [ ] 30秒後・90秒後のスモークテストが両方成功する
 - [ ] `wrangler deployments list`で公開履歴を確認できる
 - [ ] アプリrollbackとD1 Time Travelの判断手順を確認した
@@ -286,6 +301,8 @@ pnpm --filter @kanjo/api exec wrangler d1 time-travel restore kanjo-db --bookmar
 - `.github/workflows/deploy.yml`
 - `.github/workflows/migrate.yml`
 - `.github/actions/setup-pnpm/action.yml`
+- `.github/scripts/check-d1-migrations.mjs`
+- `.github/scripts/verify-approved-migration-manifest.mjs`
 - `.github/scripts/smoke.sh`
 - `packages/api/wrangler.jsonc`
 - `migrations/`

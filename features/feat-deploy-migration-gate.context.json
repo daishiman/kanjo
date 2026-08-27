@@ -1,0 +1,33 @@
+{
+  "graph_node_id": "feat-deploy-migration-gate",
+  "artifact_kind": "feature",
+  "purpose": "deploy.yml が自動、migrate.yml が手動という非対称のため、コードだけが先行する状態が無検知で成立する。人間の注意力ではなく仕組みで再発を止める。",
+  "goal": "乖離したままのデプロイが本番へ到達できず、判定不能時も停止し、固定の安全な案内からMigrate手動適用へ一意に進める。",
+  "scope_in": [
+    "deploy.yml への検査ステップ追加",
+    "未適用判定",
+    "fail-closed の停止処理",
+    "Wrangler出力を再表示しない固定復旧案内",
+    "3 状態の動作確認"
+  ],
+  "scope_out": [
+    "マイグレーションの自動適用",
+    "ロールバックの自動化",
+    "デプロイ承認フローの導入",
+    "migrate.yml の手動運用の変更"
+  ],
+  "acceptance": [
+    "未適用が存在する状態で検査ステップが非ゼロ終了し wrangler deploy に到達しない",
+    "未適用が 0 件の状態で検査ステップが通過しデプロイが完了する",
+    "判定不能になった場合もデプロイが停止する",
+    "停止時はWranglerのstdout/stderrを再表示せずMigrate(APPLY)後のDeploy再実行だけを案内する",
+    "実行ログに明細内容・金額が含まれない",
+    "検査による D1 への読み取りが 1 デプロイあたり 1 回に収まる"
+  ],
+  "architecture_refs": [
+    "architecture/arch-deploy-migration-gate.md",
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md"
+  ],
+  "updated_at": "2026-08-27T05:10:00Z"
+}

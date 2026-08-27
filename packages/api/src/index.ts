@@ -29,6 +29,7 @@ import { classifyRoute } from './routes/classify.js';
 import { importsRoute } from './routes/imports.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
+import { runtimeSchemaGuard } from './schema-guard.js';
 import { getDb, loadBackupPayload } from './store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
@@ -83,6 +84,7 @@ app.route('/api', aiAgentRoute);
 /* -------- 保護されたAPI -------- */
 
 app.use('/api/*', authGuard());
+app.use('/api/*', runtimeSchemaGuard);
 app.use('/api/*', canonicalMutationFence());
 app.route('/api', aiRoute);
 app.route('/api', importsRoute);

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0",
+  "status": "blocked",
+  "promoted_at": "2026-08-27T05:41:41Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+  "evaluated_digest": "sha256:d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+  "published_digest": "sha256:d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+  "implementation_readiness": "blocked",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS",
+    "system_spec_completeness": "FAIL"
+  },
+  "blocking_reason": "system-spec/completeness-findings.json が FAIL のため、既存の promotion 記録は現行成果物の昇格根拠として無効",
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/dev-graph-registration.json"
+}

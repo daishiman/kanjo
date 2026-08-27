@@ -26,6 +26,7 @@ import {
 import { type PreviousReportSummary, buildAgentData } from '../ai/dataset.js';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
+import { runtimeSchemaGuard } from '../schema-guard.js';
 import { dealFromRow, getDb, loadDataset, loadSubVendorExclusions, loadSubVendors } from '../store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
@@ -463,6 +464,9 @@ const agentGuard: MiddlewareHandler<AgentCtx, '/ai/tasks/:id/data' | '/ai/tasks/
 };
 aiAgentRoute.use('/ai/tasks/:id/data', agentGuard);
 aiAgentRoute.use('/ai/tasks/:id/report', agentGuard);
+// token検証はD1に保存したtaskで行い、schema検査はその認証後・payload/reportの業務D1前に置く。
+aiAgentRoute.use('/ai/tasks/:id/data', runtimeSchemaGuard);
+aiAgentRoute.use('/ai/tasks/:id/report', runtimeSchemaGuard);
 
 aiAgentRoute.get('/ai/tasks/:id/data', async (c) => {
   const payload = await agentPayload(getDb(c.env.DB), c.get('task'));

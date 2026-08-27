@@ -23,6 +23,12 @@ export const mfTransactions = sqliteTable(
     categoryMajor: text('category_major'),
     categoryMid: text('category_mid'),
     institution: text('institution'),
+    /** MFの「メモ」列。原本のまま保持する */
+    memo: text('memo'),
+    /** MFの「計算対象」列。0 = 集計に含めない行 */
+    isTarget: integer('is_target').notNull().default(1),
+    /** MFの「振替」列。1 = 口座間振替であり収支集計に含めない行 */
+    isTransfer: integer('is_transfer').notNull().default(0),
     /** 1 = MFのID列由来。0/旧データは添付不可とする */
     identityStable: integer('identity_stable').notNull().default(0),
     importId: integer('import_id'),

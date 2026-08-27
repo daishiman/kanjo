@@ -9,6 +9,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { app } from './index.js';
 import { planCashParentDeleteQueries } from './routes/cash.js';
+import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
 import {
   D1BulkPayloadError,
   D1_JSON_BIND_SAFE_BYTES,
@@ -46,6 +47,7 @@ async function applyMigrations(database: D1Database, filenames = migrationFiles(
       .filter(Boolean);
     for (const sql of statements) await database.prepare(sql).run();
   }
+  await recordTestMigrationHead(database, filenames);
 }
 
 async function jsonRequest(path: string, method = 'GET', body?: unknown): Promise<Response> {
@@ -161,7 +163,8 @@ beforeEach(async () => {
       "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT GLOB '_cf_*'",
     )
     .all<{ name: string }>();
-  for (const { name } of tables.results) await d1.prepare(`DELETE FROM "${name}"`).run();
+  for (const { name } of tables.results.filter(({ name }) => isApplicationTableForTestReset(name)))
+    await d1.prepare(`DELETE FROM "${name}"`).run();
   const login = await app.request(
     '/api/auth/login',
     {

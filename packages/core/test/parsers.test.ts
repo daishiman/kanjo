@@ -7,6 +7,7 @@ import {
   DEFAULT_ACCOUNT_NORM,
   applyFreeeDeals,
   applyMfTxs,
+  countableMfTxs,
   decodeBuf,
   emptyDataset,
   hasSettlementColumns,
@@ -17,6 +18,7 @@ import {
   parseCSV,
   parseFreeeRows,
   parseMfRows,
+  recomputeClassification,
 } from '../src/index.js';
 
 const freeeCsv = [
@@ -125,11 +127,19 @@ describe('マネーフォワード取込', () => {
   const rows = parseCSV(mfCsv);
   const parsed = parseMfRows(rows);
 
-  it('計算対象かつ振替でない行だけを取り込む', () => {
+  it('CSVの全行を保存し、計算対象外・振替には印を付ける', () => {
     expect(isMfHeader(rows[0])).toBe(true);
     expect(isFreeeHeader(rows[0])).toBe(false);
-    expect(parsed.rows).toBe(3);
-    expect(parsed.skipped).toBe(2);
+    // 保存は全行。skipped は「日付を読めず保存できなかった行」だけを数える
+    expect(parsed.rows).toBe(5);
+    expect(parsed.skipped).toBe(0);
+    // 計算対象=0 の tx-3 と 振替=1 の tx-4 は保存されるが集計には載らない
+    expect(parsed.txs.find((t) => t.id === 'tx-3')?.isTarget).toBe(false);
+    expect(parsed.txs.find((t) => t.id === 'tx-4')?.isTransfer).toBe(true);
+  });
+
+  it('集計に載せる明細は countableMfTxs で絞る', () => {
+    expect(countableMfTxs(parsed.txs).map((t) => t.id)).toEqual(['tx-1', 'tx-2', '2026-07_4_-5000']);
   });
 
   it('ID欠落時に合成キーを使い、同月再取込を置換する', () => {
@@ -141,7 +151,7 @@ describe('マネーフォワード取込', () => {
     const data = emptyDataset();
     applyMfTxs(data, parsed.txs);
     applyMfTxs(data, parsed.txs);
-    expect(data.mfTx).toHaveLength(3);
+    expect(data.mfTx).toHaveLength(5);
   });
 
   it('現金記帳用のcash名前空間と衝突するMF IDを検出する', () => {
@@ -154,5 +164,63 @@ describe('マネーフォワード取込', () => {
       ),
     );
     expect(collision.reservedIds).toBe(1);
+  });
+
+  it('メモは列の有無と空文字を区別し、CSVセルの空白を原文のまま保持する', () => {
+    const header = ['計算対象', '日付', '金額', '大項目', '中項目', '振替', '内容', 'ID', 'メモ'];
+    const txs = parseMfRows([
+      header,
+      ['1', '2026/07/06', '-100', '架空費', '前後空白', '0', '架空明細A', 'memo-a', '  架空メモ  '],
+      ['1', '2026/07/07', '-200', '架空費', '空白のみ', '0', '架空明細B', 'memo-b', '   '],
+      ['1', '2026/07/08', '-300', '架空費', '空文字', '0', '架空明細C', 'memo-c', ''],
+    ]).txs;
+    expect(txs.map((tx) => tx.memo)).toEqual(['  架空メモ  ', '   ', '']);
+
+    const [withoutColumn] = parseMfRows([
+      header.slice(0, -1),
+      ['1', '2026/07/09', '-400', '架空費', '列なし', '0', '架空明細D', 'memo-d'],
+    ]).txs;
+    expect(withoutColumn.memo).toBeUndefined();
+  });
+
+  it('raw MF行がある月は集計対象0件でも旧集計をゼロ結果へ置換する', () => {
+    const data = emptyDataset();
+    const countable = parsed.txs.find((tx) => tx.id === 'tx-2');
+    expect(countable).toBeDefined();
+    applyMfTxs(data, [countable!]);
+    expect(data.personal['2026-07']?.expense).toEqual({ 食費: 15000 });
+
+    applyMfTxs(data, [{ ...countable!, isTarget: false }]);
+    expect(data.personal['2026-07']).toEqual({ income: {}, expense: {} });
+    expect(data.bizPersonal['2026-07']).toEqual({ income: 0, expense: 0 });
+    expect(data.personalByOwner['2026-07']).toEqual({
+      business: { income: 0, expense: 0 },
+      spouse: { income: 0, expense: 0 },
+      family: { income: 0, expense: 0 },
+      unset: { income: 0, expense: 0 },
+    });
+  });
+
+  it('raw MF行が無いJSON復元月の既存集計は再計算でも保持する', () => {
+    const data = emptyDataset();
+    data.personal['2026-08'] = { income: { 架空給与: 123 }, expense: { 架空費: 45 } };
+    data.bizPersonal['2026-08'] = { income: 67, expense: 89 };
+    data.personalByOwner['2026-08'] = {
+      business: { income: 1, expense: 2 },
+      spouse: { income: 3, expense: 4 },
+      family: { income: 5, expense: 6 },
+      unset: { income: 7, expense: 8 },
+    };
+
+    recomputeClassification(data);
+
+    expect(data.personal['2026-08']).toEqual({ income: { 架空給与: 123 }, expense: { 架空費: 45 } });
+    expect(data.bizPersonal['2026-08']).toEqual({ income: 67, expense: 89 });
+    expect(data.personalByOwner['2026-08']).toEqual({
+      business: { income: 1, expense: 2 },
+      spouse: { income: 3, expense: 4 },
+      family: { income: 5, expense: 6 },
+      unset: { income: 7, expense: 8 },
+    });
   });
 });

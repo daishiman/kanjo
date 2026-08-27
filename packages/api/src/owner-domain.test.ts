@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterEach, describe, expect, it } from 'vitest';
 import { app } from './index.js';
+import { recordTestMigrationHead } from './schema-guard.test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
 const migrationFiles = () =>
@@ -23,6 +24,7 @@ async function apply(database: D1Database, filenames: string[]): Promise<void> {
   for (const filename of filenames) {
     for (const sql of statements(filename)) await database.prepare(sql).run();
   }
+  await recordTestMigrationHead(database, filenames);
 }
 
 const instances: Miniflare[] = [];
