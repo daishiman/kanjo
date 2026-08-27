@@ -584,6 +584,37 @@ tr.editor td {
   max-width: 100%;
   min-height: 44px;
 }
+.classification-progress {
+  margin-bottom: 16px;
+}
+.classification-progress > h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+}
+.classification-progress-hint {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.classification-thinking > summary {
+  display: list-item;
+  min-height: 44px;
+  width: fit-content;
+  padding: 11px 0;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+.classification-thinking ul {
+  margin: 0 0 8px;
+  padding-left: 20px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
 .classification-rule-details {
   margin-top: 18px;
   border-top: 1px solid var(--line);

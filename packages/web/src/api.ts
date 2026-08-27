@@ -18,7 +18,14 @@ import type {
   SubscriptionsData,
   TradeoffCandidate,
 } from '@kanjo/core';
-import { type Owner as CoreOwner, OWNER_LABEL, OWNER_VALUES } from '@kanjo/core';
+import {
+  type Owner as CoreOwner,
+  OWNER_LABEL,
+  OWNER_VALUES,
+  PAYMENT_METHOD_LABEL,
+  PAYMENT_METHOD_VALUES,
+  type PaymentMethod,
+} from '@kanjo/core';
 
 export class ApiError extends Error {
   status: number;
@@ -86,7 +93,9 @@ export interface SummaryResponse {
 }
 
 export type Owner = CoreOwner;
-export { OWNER_VALUES };
+export { OWNER_VALUES, PAYMENT_METHOD_VALUES };
+export type { PaymentMethod };
+export const paymentMethodLabel = (m: PaymentMethod): string => PAYMENT_METHOD_LABEL[m];
 export type Cls = 'biz' | 'per';
 
 export interface TxEditView {
@@ -106,6 +115,8 @@ export interface TxRow {
   amount: number;
   /** MF の保有金融機関(旧取込は null) */
   institution: string | null;
+  /** 支払手段(口座名と現金IDからの導出) */
+  paymentMethod: PaymentMethod;
   /** 取込値 */
   csvBig: string;
   csvMid: string;
@@ -163,6 +174,14 @@ export interface TransactionsResponse {
     bizExpense: number;
     personalExpense: number;
     incomeByOwner: { business: number; spouse: number; family: number; unset: number };
+    /** 当月の仕分けの進み具合(件数)。reviewPending は人もルールも触っていない残り件数 */
+    progress: {
+      total: number;
+      bizCount: number;
+      personalCount: number;
+      bySource: { 手動: number; ルール: number; 既定: number };
+      reviewPending: number;
+    };
     editedCount: number;
     conflictCount: number;
     noInstitutionCount: number;

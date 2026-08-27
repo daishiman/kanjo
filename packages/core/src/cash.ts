@@ -42,6 +42,41 @@ export const CASH_INSTITUTION = '現金';
 
 export const cashTxId = (id: number): string => `${CASH_TX_PREFIX}${id}`;
 export const isCashTxId = (id: string): boolean => id.startsWith(CASH_TX_PREFIX);
+
+/**
+ * 明細の支払手段。口座名(MFの保有金融機関)からの導出で、MF自身は支払手段を持たない。
+ * - cash: 手入力した現金の記帳
+ * - card: 口座名がカードを名乗るもの
+ * - account: それ以外の口座(銀行・電子マネー等)
+ * - unknown: 口座名が無い(列の無い時期の旧取込)
+ */
+export type PaymentMethod = 'cash' | 'card' | 'account' | 'unknown';
+
+export const PAYMENT_METHOD_VALUES: readonly PaymentMethod[] = ['cash', 'card', 'account', 'unknown'];
+
+export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
+  cash: '現金',
+  card: 'カード',
+  account: '口座',
+  unknown: '不明',
+};
+
+/** 口座名がカードを名乗る手がかり。名寄せはせず、名前に現れた分だけを見る */
+const CARD_HINTS = ['カード', 'ｶｰﾄﾞ', 'CARD', 'クレジット'];
+
+/**
+ * 明細1件の支払手段を決める。
+ * 現金は ID(cash:) を正とし、口座名が編集で変わっても手入力の事実を失わない。
+ */
+export function paymentMethodOf(tx: { id: string; inst?: string | null }): PaymentMethod {
+  if (isCashTxId(tx.id)) return 'cash';
+  const inst = (tx.inst ?? '').trim();
+  if (!inst) return 'unknown';
+  if (inst === CASH_INSTITUTION) return 'cash';
+  const upper = inst.toUpperCase();
+  if (CARD_HINTS.some((hint) => upper.includes(hint))) return 'card';
+  return 'account';
+}
 export const monthOf = (date: string): string => date.slice(0, 7);
 
 /** 事業分の現金明細を freee 仕訳1行として扱う(科目の正規化は取込と同じ対応表を使う) */
