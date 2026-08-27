@@ -130,6 +130,7 @@ test('装飾付きWrangler pending一覧を順序どおり抽出する', () => {
         '│ Name │\n' +
         '├──────┤\n' +
         '│ 0014_password_login_rate_limits.sql │\n' +
+        '├──────┤\n' +
         '│ 0015_mf_source_columns.sql │\n' +
         '└──────┘\n',
       stderr:

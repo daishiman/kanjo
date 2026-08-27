@@ -13,12 +13,16 @@ const banner = (version = '4.84.1', update = '4.127.0') =>
 const pendingTable = (...filenames) => {
   const width = Math.max('Name'.length, ...filenames.map((filename) => filename.length)) + 2;
   const row = (value) => `│ ${value.padEnd(width - 2)} │`;
+  const divider = `├${'─'.repeat(width)}┤`;
+  const migrationRows = filenames.flatMap((filename, index) =>
+    index === filenames.length - 1 ? [row(filename)] : [row(filename), divider],
+  );
   return [
     'Migrations to be applied:',
     `┌${'─'.repeat(width)}┐`,
     row('Name'),
-    `├${'─'.repeat(width)}┤`,
-    ...filenames.map(row),
+    divider,
+    ...migrationRows,
     `└${'─'.repeat(width)}┘`,
   ].join('\n');
 };
@@ -103,4 +107,19 @@ test('pending filenameはMIGRATION_NAMEの単一文法で抽出し重複を除�
     ),
   );
   assert.deepEqual(parsed?.filenames, ['0014_password_login_rate_limits.sql', '0015_mf_source_columns.sql']);
+});
+
+test('複数migration行の間に区切り線がない未知table形式を拒否する', () => {
+  assert.equal(
+    parse(
+      'Migrations to be applied:\n' +
+        '┌──────┐\n' +
+        '│ Name │\n' +
+        '├──────┤\n' +
+        '│ 0014_password_login_rate_limits.sql │\n' +
+        '│ 0015_mf_source_columns.sql │\n' +
+        '└──────┘',
+    ),
+    null,
+  );
 });
