@@ -391,10 +391,21 @@ export interface CashEntryBody {
   receiptWaived: boolean;
 }
 
+/** 現金の記帳と freee 仕訳が同じ支払いを指している疑い(候補のみ。消し込みはしない) */
+export interface CashDealDuplicate {
+  cashEntryId: number;
+  cashDate: string;
+  deal: { date: string; partner: string; accountNorm: string; amount: number };
+  /** same_day は同日、near_day は数日ずれ */
+  confidence: 'same_day' | 'near_day';
+  dayGap: number;
+}
+
 export interface CashEntriesResponse {
   entries: CashEntry[];
   candidates: Candidates;
   months: string[];
+  duplicates: CashDealDuplicate[];
 }
 
 export interface SettingsResponse {

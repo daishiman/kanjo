@@ -15,6 +15,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type FormEvent, Fragment, useState } from 'react';
 import {
+  type CashDealDuplicate,
   type CashEntriesResponse,
   type CashEntry,
   type CashEntryBody,
@@ -388,6 +389,46 @@ const prepareCashEntry = (body: CashEntryBody, mode: CashEntryMode): CashEntryBo
   return setCashTransitInput(body, { ...transit, from: transit.from.trim(), to: transit.to.trim() });
 };
 
+/**
+ * 二重計上の疑い(現金の記帳 × freee 仕訳)の知らせ。
+ * 自動で消し込みはしない。同じ日に同科目・同額の支払いが本当に2件あることがあるため、
+ * 「どちらを残すか」は人が決める前提で、突合できた仕訳の中身をそのまま並べる。
+ */
+export function CashDuplicateNotice({
+  duplicates,
+  entries,
+}: {
+  duplicates: CashDealDuplicate[];
+  entries: CashEntry[];
+}) {
+  if (!duplicates.length) return null;
+  const byId = new Map(entries.map((e) => [e.id, e]));
+  return (
+    <div className="card cash-duplicates" style={{ marginTop: 16 }}>
+      <h2>二重計上の疑い {duplicates.length}件</h2>
+      <p className="sub">
+        現金で記帳した支払いと同じ内容の仕訳が freee 側にもあります。現金払いを後から freee
+        にも登録すると、同じ支払いが経費として2回数えられます。どちらか一方だけを残してください(この画面は数え直しません)。
+      </p>
+      <ul>
+        {duplicates.map((d) => {
+          const e = byId.get(d.cashEntryId);
+          if (!e) return null;
+          return (
+            <li key={`${d.cashEntryId}-${d.deal.date}-${d.deal.partner}-${d.deal.amount}`}>
+              <span className={`pill ${d.confidence === 'same_day' ? 'warn' : 'neutral'}`}>
+                {d.confidence === 'same_day' ? '同日' : `${d.dayGap}日ちがい`}
+              </span>{' '}
+              現金の記帳「{e.description}」({d.cashDate} / {e.categoryMajor} / {yen(e.amount)}) と、freee
+              の仕訳「{d.deal.partner}」({d.deal.date} / {d.deal.accountNorm} / {yen(d.deal.amount)})
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 export function CashPage() {
   const qc = useQueryClient();
   const q = useQuery({
@@ -439,6 +480,10 @@ export function CashPage() {
   const { candidates, entries } = q.data;
   const months = [...new Set(entries.map((e) => e.month))].sort().reverse();
   const shown = month ? entries.filter((e) => e.month === month) : entries;
+  // 疑いも表と同じ月で絞る(表に無い行の警告だけが残ると探せない)
+  const shownIds = new Set(shown.map((e) => e.id));
+  const duplicates = (q.data.duplicates ?? []).filter((d) => shownIds.has(d.cashEntryId));
+  const duplicateIds = new Set(duplicates.map((d) => d.cashEntryId));
   const noBizCandidates = candidates.biz.length === 0;
 
   return (
@@ -478,6 +523,8 @@ export function CashPage() {
           </div>
         )}
       </div>
+
+      <CashDuplicateNotice duplicates={duplicates} entries={shown} />
 
       <div className="card" style={{ marginTop: 16 }}>
         <div className="toolbar">
@@ -565,7 +612,20 @@ export function CashPage() {
                           {SCOPE_SHORT[e.side]}
                         </span>
                       </td>
-                      <td>{e.description}</td>
+                      <td>
+                        {e.description}
+                        {duplicateIds.has(e.id) && (
+                          <>
+                            {' '}
+                            <span
+                              className="pill warn"
+                              title="同じ支払いが freee の仕訳にもある疑いがあります。上の知らせを確認してください"
+                            >
+                              二重計上の疑い
+                            </span>
+                          </>
+                        )}
+                      </td>
                       <td>{e.categoryMid ? `${e.categoryMajor} / ${e.categoryMid}` : e.categoryMajor}</td>
                       <td className="num">
                         {e.io === 'income' ? '+' : '-'}
