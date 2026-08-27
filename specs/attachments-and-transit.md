@@ -221,7 +221,7 @@ route、scheduled、画面が別々の既定値を持たない。
 
 `attachmentArchive`は`version=1 / basis=inventory-only / restoreCapable=false`の棚卸しenvelopeで、
 canonical dataと同じSQLite statement snapshotから作る。汎用`POST /restore`は集計・設定の初期移行であり、
-現金明細・添付metadata・R2原本を復元しない。
+現金明細は移行先が空かつ49 query予算内の場合だけidを保持して復元する。添付metadata・R2原本は汎用restoreせず、棚卸し後の明示的safe recoveryだけを許可する。
 
 添付の明示的なsafe recoveryだけがarchive consumerになる。requestのownerは認証userへ固定し、
 `attachments/<user_id>/`配下のexact key以外はskipする。各recordは同一bindingのR2から原本を取得して
