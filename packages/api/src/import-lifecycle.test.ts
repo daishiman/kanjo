@@ -227,10 +227,12 @@ async function importFiles(
   database: D1Database = d1,
   bucket: R2Bucket = files,
   force = false,
+  keepOnShrink = false,
 ): Promise<Response> {
   const form = new FormData();
   for (const input of inputs) form.append('file', new File([input.body], input.name, { type: 'text/csv' }));
   if (force) form.append('force', '1');
+  if (keepOnShrink) form.append('keepOnShrink', '1');
   return app.request(
     '/api/imports',
     { method: 'POST', headers: { cookie }, body: form },
@@ -336,6 +338,45 @@ describe('active target duplicate', () => {
     expect(
       await resultStatuses(
         await importFiles([{ name: 'a-force.csv', body: freeeCsv(100) }], d1, files, true),
+      ),
+    ).toEqual(['committed']);
+  });
+
+  it('「前回を残す」指定は件数が減る洗い替えを実行せず、既存データを無傷で残す', async () => {
+    const mfRows = async (): Promise<number> =>
+      (await d1.prepare('SELECT COUNT(*) AS n FROM mf_transactions').first<{ n: number }>())?.n ?? 0;
+    expect(await resultStatuses(await importFiles([{ name: 'full.csv', body: mfCsvRows(3) }]))).toEqual([
+      'committed',
+    ]);
+    expect(await mfRows()).toBe(3);
+
+    const kept = await importFiles([{ name: 'partial.csv', body: mfCsvRows(1) }], d1, files, false, true);
+    expect(kept.status).toBe(200); // 何も壊していないので失敗ではない
+    expect(await resultStatuses(kept)).toEqual(['kept']);
+    expect(await mfRows()).toBe(3);
+    // 見送ったunitは履歴にも残さない(取込は起きていないため)
+    const history = await d1
+      .prepare('SELECT COUNT(*) AS n FROM imports WHERE filename=?')
+      .bind('partial.csv')
+      .first<{ n: number }>();
+    expect(history?.n).toBe(0);
+
+    // 指定を外せば従来どおり洗い替える
+    expect(await resultStatuses(await importFiles([{ name: 'partial.csv', body: mfCsvRows(1) }]))).toEqual([
+      'committed',
+    ]);
+    expect(await mfRows()).toBe(1);
+  });
+
+  it('「前回を残す」でも件数が減らないファイルは通常どおり取り込む', async () => {
+    expect(
+      await resultStatuses(
+        await importFiles([{ name: 'first.csv', body: mfCsvRows(2) }], d1, files, false, true),
+      ),
+    ).toEqual(['committed']);
+    expect(
+      await resultStatuses(
+        await importFiles([{ name: 'more.csv', body: mfCsvRows(5) }], d1, files, false, true),
       ),
     ).toEqual(['committed']);
   });

@@ -21,6 +21,7 @@ import {
   prepareRestoreWriteSet,
   restoreCommitStatements,
   restoreWriteSetFingerprint,
+  shrinkingMonths,
 } from './import-lifecycle.js';
 
 const fakeStatement = {
@@ -538,5 +539,38 @@ describe('canonical mutation lease predicate', () => {
       ...SELF_MANAGED_IMPORT_CONSUMERS,
     ]);
     expect(JSON_SNAPSHOT_MUTATION_CONSUMERS.every((consumer) => fencedConsumers.has(consumer))).toBe(true);
+  });
+});
+
+describe('件数が減る洗い替えの検知', () => {
+  const counts = (pairs: [string, number][]) => new Map(pairs);
+
+  it('減る月だけを返す', () => {
+    const got = shrinkingMonths(
+      ['2026-07', '2026-08'],
+      counts([
+        ['2026-07', 120],
+        ['2026-08', 30],
+      ]),
+      counts([
+        ['2026-07', 60],
+        ['2026-08', 45],
+      ]),
+    );
+    expect(got).toEqual([{ month: '2026-07', before: 120, after: 60 }]);
+  });
+
+  it('件数が同じなら返さない(洗い替え直しを妨げない)', () => {
+    expect(shrinkingMonths(['2026-07'], counts([['2026-07', 10]]), counts([['2026-07', 10]]))).toEqual([]);
+  });
+
+  it('初めて取り込む月は before 0 のため減らない', () => {
+    expect(shrinkingMonths(['2026-09'], counts([]), counts([['2026-09', 5]]))).toEqual([]);
+  });
+
+  it('対象月なのに1件も無いファイルは「全消し」として減少に数える', () => {
+    expect(shrinkingMonths(['2026-07'], counts([['2026-07', 3]]), counts([]))).toEqual([
+      { month: '2026-07', before: 3, after: 0 },
+    ]);
   });
 });

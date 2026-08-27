@@ -40,6 +40,7 @@ import {
   releaseImportWriter,
   restoreCommitStatements,
   restoreWriteSetFingerprint,
+  shrinkingMonths,
   targetKeysForUnit,
 } from '../import-lifecycle.js';
 import { type ParsedUnit, parseUpload, unitFingerprint } from '../import-pipeline.js';
@@ -183,8 +184,11 @@ interface UnitResult {
   skipped: number;
   syntheticIds?: number;
   duplicateIds?: number;
-  /** committed=原本/canonical/cache/active pointerの確定完了 */
-  status: 'committed' | 'failed' | 'duplicate';
+  /**
+   * committed=原本/canonical/cache/active pointerの確定完了。
+   * kept=「前回を残す」指定により、件数が減る洗い替えを実行しなかった(既存データは無傷)。
+   */
+  status: 'committed' | 'failed' | 'duplicate' | 'kept';
   reason?: string;
   importId?: number;
   replaced?: MonthReplace[];
@@ -613,6 +617,8 @@ importsRoute.post('/imports', async (c) => {
 
   // 「同じ内容でも取り込み直す」チェック。既定は重複をスキップする
   const force = form.get('force') === '1';
+  // 「件数が減る取込は実行せず、前回の内容を残す」チェック。月の途中までのファイルを掴んだときの安全弁
+  const keepOnShrink = form.get('keepOnShrink') === '1';
   const bufferedFiles: Array<{ file: File; buf: Uint8Array }> = [];
   for (const file of files) {
     if (file.size > 25 * 1024 * 1024) {
@@ -630,7 +636,9 @@ importsRoute.post('/imports', async (c) => {
     );
   }
 
-  const preparedFiles: PreparedFile[] = [];
+  let preparedFiles: PreparedFile[] = [];
+  // 「前回を残す」で実行しなかったunit。runにもR2にも載せないため、ここで結果だけ持つ
+  const keptResults: UnitResult[] = [];
   let normMap: Record<string, string> = {};
   let cashEntries: CashEntry[] = [];
   let data = emptyDataset();
@@ -684,6 +692,39 @@ importsRoute.post('/imports', async (c) => {
     mfCount = new Map<string, number>();
     for (const tx of data.mfTx) {
       if (!isCashTxId(tx.id)) mfCount.set(tx.m, (mfCount.get(tx.m) ?? 0) + 1);
+    }
+    if (keepOnShrink) {
+      // 実行前に判定する。洗い替えは月単位でDELETEしてから入れ直すため、実行後に「前回を残す」ことはできない
+      for (const preparedFile of preparedFiles) {
+        preparedFile.units = preparedFile.units.filter((prepared) => {
+          const unit = prepared.unit;
+          if (unit.kind !== 'freee' && unit.kind !== 'mf') return true;
+          const after = new Map<string, number>();
+          if (unit.kind === 'freee') {
+            for (const deal of unit.deals) after.set(deal.month, (after.get(deal.month) ?? 0) + 1);
+          } else {
+            for (const tx of canonicalMfTransactions(unit.txs)) after.set(tx.m, (after.get(tx.m) ?? 0) + 1);
+          }
+          const shrink = shrinkingMonths(unit.months, unit.kind === 'freee' ? freeeCount : mfCount, after);
+          if (!shrink.length) return true;
+          keptResults.push({
+            filename: unit.filename,
+            kind: unit.kind,
+            months: unit.months,
+            rows: unit.rows,
+            skipped: unit.skipped,
+            status: 'kept',
+            reason: `件数が減るため取り込みませんでした(${shrink
+              .map((m) => `${m.month}: ${m.before}件 → ${m.after}件`)
+              .join(' / ')})。前回の内容はそのまま残っています`,
+            replaced: shrink,
+          });
+          return false;
+        });
+      }
+      preparedFiles = preparedFiles.filter((preparedFile) => preparedFile.units.length > 0);
+      // 全部を見送ったならrunもR2も作らない。writer claimは finally が解放する
+      if (!preparedFiles.length) return c.json({ results: keptResults });
     }
     commitStatementCounts = await planCommitStatementCounts({
       database: c.env.DB,
@@ -859,10 +900,13 @@ importsRoute.post('/imports', async (c) => {
   } finally {
     await releaseImportWriter(c.env.DB, userId, runId);
   }
-  const ok = results.some((result) => result.status === 'committed');
-  // 全件が重複スキップなら「失敗」ではなく「取込済み」として 200 で返す
-  const allDuplicate = results.length > 0 && results.every((result) => result.status === 'duplicate');
-  return c.json({ runId, results, ok, queryPlan }, ok || allDuplicate ? 200 : 400);
+  // 見送ったunitも画面には出す。実行した分と混ざらないよう、順序は「実行→見送り」で固定する
+  const all = [...results, ...keptResults];
+  const ok = all.some((result) => result.status === 'committed');
+  // 全件が重複スキップ/見送りなら「失敗」ではなく正常終了として 200 で返す(何も壊していない)
+  const allSkipped =
+    all.length > 0 && all.every((result) => result.status === 'duplicate' || result.status === 'kept');
+  return c.json({ runId, results: all, ok, queryPlan }, ok || allSkipped ? 200 : 400);
 });
 
 importsRoute.get('/imports', async (c) => {

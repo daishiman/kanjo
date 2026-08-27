@@ -265,8 +265,11 @@ export interface ImportUnitResult {
   skipped: number;
   syntheticIds?: number;
   duplicateIds?: number;
-  /** duplicate = 現在有効な取込と同じ内容のためスキップ */
-  status: 'committed' | 'failed' | 'duplicate';
+  /**
+   * duplicate = 現在有効な取込と同じ内容のためスキップ。
+   * kept = 「前回を残す」指定で、件数が減る洗い替えを実行しなかった(既存データは無傷)
+   */
+  status: 'committed' | 'failed' | 'duplicate' | 'kept';
   reason?: string;
   /** 月ごとの洗い替え前後の件数(減っていれば月の途中までのファイルの可能性) */
   replaced?: { month: string; before: number; after: number }[];

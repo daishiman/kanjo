@@ -8,6 +8,7 @@ import { AUTH_EVENT, type ImportHistoryRow, type ImportUnitResult, api } from '.
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { dateTime } from '../format.js';
+import { fileForUnit, retryableFiles } from '../import-retry.js';
 
 const KIND_LABEL: Record<string, ReactNode> = {
   mf: 'MF明細',
@@ -20,8 +21,12 @@ export function ImportPage() {
   const [drag, setDrag] = useState(false);
   const [pending, setPending] = useState<File[]>([]);
   const [results, setResults] = useState<ImportUnitResult[] | null>(null);
+  // 直前に投入したファイル。失敗した分を選び直さずに戻すためだけに持つ(送信済みなので中身は変わらない)
+  const [submitted, setSubmitted] = useState<File[]>([]);
   // 現在有効な世代と同じ内容は既定でスキップする。意図的に再適用したいときだけ ON にする
   const [force, setForce] = useState(false);
+  // 月の途中までのファイルを掴んだときの安全弁。既定は OFF(通常の月次取込は件数が増えるため)
+  const [keepOnShrink, setKeepOnShrink] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const history = useQuery({
@@ -34,6 +39,7 @@ export function ImportPage() {
       const form = new FormData();
       for (const f of files) form.append('file', f);
       if (force) form.append('force', '1');
+      if (keepOnShrink) form.append('keepOnShrink', '1');
       const res = await fetch('/api/imports', { method: 'POST', body: form });
       if (res.status === 401) {
         window.dispatchEvent(new Event(AUTH_EVENT));
@@ -44,9 +50,10 @@ export function ImportPage() {
         throw new Error(body.error?.message ?? `取込に失敗しました(${res.status})`);
       return body.results ?? [];
     },
-    onSuccess: (r) => {
+    onSuccess: (r, files) => {
       setResults(r);
       setPending([]);
+      setSubmitted(files);
       setForce(false);
       void qc.invalidateQueries(); // 全ページへ反映
     },
@@ -64,10 +71,16 @@ export function ImportPage() {
         force
           ? '現在有効な内容と同じでも、新しい取込として再適用します。'
           : '現在有効な内容と同じファイルだけスキップします。'
+      }${
+        keepOnShrink ? '件数が減る月がある場合は、そのファイルを取り込まずに前回の内容を残します。' : ''
       }取込を実行しますか?`,
     );
     if (ok) upload.mutate(pending);
   };
+
+  /** 失敗行に対応する元ファイル。手元に無ければ null(その行にはボタンを出さない) */
+  const retryFile = (unit: ImportUnitResult) => fileForUnit(unit, submitted);
+  const retryAll = results ? retryableFiles(results, submitted) : [];
 
   return (
     <>
@@ -124,6 +137,14 @@ export function ImportPage() {
             <input type="checkbox" checked={force} onChange={(e) => setForce(e.target.checked)} />{' '}
             現在有効な内容と同じでも再適用する(通常は不要)
           </label>
+          <label style={{ display: 'block', marginTop: 4, fontSize: 12 }}>
+            <input
+              type="checkbox"
+              checked={keepOnShrink}
+              onChange={(e) => setKeepOnShrink(e.target.checked)}
+            />{' '}
+            件数が減る月は取り込まず、前回の内容を残す(月の途中までのファイルか自信がないとき)
+          </label>
         </div>
       )}
       {upload.isError && (
@@ -172,9 +193,34 @@ export function ImportPage() {
                               style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
                             >
                               {m.month}: 取込前 {m.before}件 → 取込後 {m.after}
-                              件。件数が減っています。月の途中までのファイルではないか確認してください(前の内容に戻すには、元のファイルを取り込み直します)。
+                              件。件数が減っています。月の途中までのファイルではないか確認してください(前の内容に戻すには、元のファイルを取り込み直します。次からは「件数が減る月は取り込まず、前回の内容を残す」を付けると、この置き換え自体を止められます)。
                             </div>
                           ))}
+                      </>
+                    ) : r.status === 'kept' ? (
+                      <>
+                        <span className="pill warn">前回を残しました</span>
+                        <div
+                          className="sub"
+                          style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                        >
+                          {r.reason}
+                        </div>
+                        {retryFile(r) && (
+                          <button
+                            type="button"
+                            style={{ marginTop: 6 }}
+                            onClick={() => {
+                              const f = retryFile(r);
+                              if (!f) return;
+                              // 見送りを解除しないと同じ結果になるため、この操作で一緒に外す
+                              setKeepOnShrink(false);
+                              setPending([f]);
+                            }}
+                          >
+                            前回を残さずに取り込む
+                          </button>
+                        )}
                       </>
                     ) : r.status === 'duplicate' ? (
                       <>
@@ -196,6 +242,18 @@ export function ImportPage() {
                         >
                           {r.reason}
                         </div>
+                        {retryFile(r) && (
+                          <button
+                            type="button"
+                            style={{ marginTop: 6 }}
+                            onClick={() => {
+                              const f = retryFile(r);
+                              if (f) setPending([f]);
+                            }}
+                          >
+                            再取込
+                          </button>
+                        )}
                       </>
                     )}
                   </td>
@@ -206,6 +264,14 @@ export function ImportPage() {
           {results.some((r) => r.status === 'failed') && (
             <p className="sub">
               失敗したファイルの内容は確定されていません(取込完了したファイルは反映済み)。一時的な失敗なら、同じファイルを通常どおり再実行できます。
+              {retryAll.length > 1 && (
+                <>
+                  {' '}
+                  <button type="button" onClick={() => setPending(retryAll)}>
+                    失敗した{retryAll.length}件をまとめて再取込
+                  </button>
+                </>
+              )}
             </p>
           )}
         </div>

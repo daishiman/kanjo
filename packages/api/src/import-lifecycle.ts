@@ -20,6 +20,29 @@ import { LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT, aggRowsFromDataset } from 
 
 export type ImportOutcome = 'processing' | 'applying' | 'committed' | 'failed' | 'duplicate';
 
+/** 月ごとの洗い替え前後の件数 */
+export interface MonthCountChange {
+  month: string;
+  before: number;
+  after: number;
+}
+
+/**
+ * 洗い替えで件数が減る月。「月の途中までのファイル」を取り込んでしまった疑いの唯一の手掛かり。
+ *
+ * 件数が同じ・増える月は返さない。減る月が1つでもあれば、その取込は月全体を置き換える前提と
+ * 食い違っている可能性がある(freee 側で行を消した場合など、正しく減ることもあるので判断は利用者に返す)。
+ */
+export function shrinkingMonths(
+  months: string[],
+  before: Map<string, number>,
+  after: Map<string, number>,
+): MonthCountChange[] {
+  return months
+    .map((month) => ({ month, before: before.get(month) ?? 0, after: after.get(month) ?? 0 }))
+    .filter((m) => m.before > m.after);
+}
+
 /** Worker request上限より十分長く、各unit前にheartbeatする。crash後は15分で回復可能。 */
 export const IMPORT_CLAIM_TTL_MS = 15 * 60 * 1000;
 /** D1の1query 100KB上限に余白を取り、UTF-8 bytesでchunkする。 */
