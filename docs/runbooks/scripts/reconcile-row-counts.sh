@@ -208,10 +208,10 @@ if [[ "$phase" == "compare" ]]; then
 fi
 
 sql=""
-separator=""
 while IFS= read -r table; do
-  sql+="${separator}SELECT '${table}' AS table_name, COUNT(*) AS row_count FROM \"${table}\""
-  separator=" UNION ALL "
+  # D1のcompound SELECT上限に依存しないよう、各tableを独立statementで数える。
+  # Wranglerはstatementごとのresultを配列で返すため、後段で全resultを平坦化する。
+  sql+="SELECT '${table}' AS table_name, COUNT(*) AS row_count FROM \"${table}\";"
 done < <(jq -r '.[]' "$existing_tables")
 
 if ! pnpm --filter @kanjo/api exec wrangler d1 execute "$database" \
@@ -224,10 +224,10 @@ fi
 
 existing_json="$(<"$existing_tables")"
 if ! jq -ce --argjson expected "$existing_json" '
-  if type != "array" or length != 1 or .[0].success != true or (.[0].results | type) != "array" then
+  if type != "array" or length == 0 or any(.[]; .success != true or (.results | type) != "array") then
     error("unexpected Wrangler response")
   else
-    (.[0].results | map(
+    ([.[].results[]] | map(
       if (.table_name | type) == "string" and
          (.row_count | type) == "number" and
          .row_count >= 0 and
