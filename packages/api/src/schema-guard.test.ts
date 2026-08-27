@@ -105,6 +105,23 @@ describe('runtime schema guard', () => {
     expect(body).not.toMatch(/d1_migrations|001[0-9]|stack/i);
   });
 
+  it('migration適用後はTTL満了時に再検査し、Worker再公開なしで自動復帰する', async () => {
+    const database = await databaseWithHead('0014_password_login_rate_limits.sql');
+    let now = 1_000;
+    const target = guardedApp(database, () => now);
+
+    expect((await target.request()).status).toBe(503);
+    await database.prepare('INSERT INTO d1_migrations (name) VALUES (?)').bind(EXPECTED_D1_MIGRATION).run();
+
+    now += 29_999;
+    expect((await target.request()).status).toBe(503);
+    expect(target.businessCalls()).toBe(0);
+
+    now += 1;
+    expect((await target.request()).status).toBe(200);
+    expect(target.businessCalls()).toBe(1);
+  });
+
   it('検査不能でもfail-closed 503にして業務処理へ進まない', async () => {
     const database = await databaseWithHead(EXPECTED_D1_MIGRATION);
     await database.prepare('DROP TABLE d1_migrations').run();

@@ -34,9 +34,10 @@
     "enabled": true,
     "head_sampling_rate": 1
   },
-  // 必須secret: AUTH_PASSWORD, SESSION_SECRET (`wrangler secret put` で登録する)
-  // ここに "secrets" フィールドを書かない。experimental扱いでwranglerがstderrへ警告を出し、
-  // CIのmigration検査(.github/scripts/*.mjs)がその警告で停止するため。
+  // 値はCloudflareのsecret storeだけに置き、ここでは必須名だけを機械検証する。
+  "secrets": {
+    "required": ["AUTH_PASSWORD", "SESSION_SECRET"]
+  },
   "vars": {
     // Cloudflare Access を使う場合のみ設定(両方設定でAccess JWT検証へ切替)
     "ACCESS_AUD": "",

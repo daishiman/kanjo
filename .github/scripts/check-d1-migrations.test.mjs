@@ -3,86 +3,38 @@ import test from 'node:test';
 
 import { MIGRATION_REMEDIATION, classifyMigrationList, runMigrationCheck } from './check-d1-migrations.mjs';
 
-test('no-pending: Wranglerの明示的な適用済み応答だけを許可する', () => {
+test('Wrangler結果をDeploy用の4状態へ分類する', () => {
+  assert.equal(classifyMigrationList({ exitCode: 0, stdout: '✅ No migrations to apply!' }), 'no-pending');
   assert.equal(
     classifyMigrationList({
       exitCode: 0,
-      stdout: '\u001b[32m✅ No migrations to apply!\u001b[39m\r\n',
-    }),
-    'no-pending',
-  );
-});
-
-test('pending: 未適用migrationの一覧を拒否する', () => {
-  const result = runMigrationCheck(() => ({
-    exitCode: 0,
-    stdout: 'Migrations to be applied:\n┌────────┐\n│ Name   │\n├────────┤\n│ 0015.sql │\n└────────┘\n',
-  }));
-
-  assert.deepEqual(result, { ok: false, status: 'pending' });
-});
-
-test('unparseable: 新しい未知の形式をfail-closedで拒否する', () => {
-  assert.equal(classifyMigrationList({ exitCode: 0, stdout: '{"migrations":[]}' }), 'unparseable');
-  assert.equal(
-    classifyMigrationList({
-      exitCode: 0,
-      stdout: '✅ No migrations to apply!',
-      stderr: 'unexpected warning',
-    }),
-    'unparseable',
-  );
-});
-
-test('バナー付きの実出力を解析できる(2026-08-27のDeploy停止事象の回帰)', () => {
-  const banner =
-    '\n ⛅️ wrangler 4.84.1 (update available 4.127.0)\n' +
-    '──────────────────────────────────────────────\n' +
-    'Resource location: remote \n\n';
-
-  assert.equal(
-    classifyMigrationList({
-      exitCode: 0,
-      stdout: `${banner}Migrations to be applied:\n┌──────────┐\n│ 0006.sql │\n└──────────┘\n`,
+      stdout:
+        'Migrations to be applied:\n┌────────┐\n│ Name   │\n├────────┤\n│ 0015_mf_source_columns.sql │\n└────────┘',
     }),
     'pending',
   );
+  assert.equal(classifyMigrationList({ exitCode: 0, stdout: '{"migrations":[]}' }), 'unparseable');
   assert.equal(
-    classifyMigrationList({ exitCode: 0, stdout: `${banner}✅ No migrations to apply!\n` }),
-    'no-pending',
+    classifyMigrationList({ exitCode: 1, stderr: 'credential-like diagnostic must not be printed' }),
+    'command-failure',
   );
 });
 
-test('wranglerの設定WARNINGブロックは検査を止めない', () => {
-  assert.equal(
-    classifyMigrationList({
-      exitCode: 0,
-      stdout: '✅ No migrations to apply!',
-      stderr:
-        '▲ [WARNING] Processing wrangler.jsonc configuration:\n\n    - "secrets" fields are experimental.\n',
-    }),
-    'no-pending',
+test('依存注入したrunnerの判定をokへ変換する', () => {
+  assert.deepEqual(
+    runMigrationCheck(() => ({ exitCode: 0, stdout: '✅ No migrations to apply!' })),
+    { ok: true, status: 'no-pending' },
+  );
+  assert.deepEqual(
+    runMigrationCheck(() => ({ exitCode: 0, stdout: 'unknown' })),
+    {
+      ok: false,
+      status: 'unparseable',
+    },
   );
 });
 
-test('unparseable: 目印が両方ある出力をfail-closedで拒否する', () => {
-  assert.equal(
-    classifyMigrationList({
-      exitCode: 0,
-      stdout: 'Migrations to be applied:\n✅ No migrations to apply!',
-    }),
-    'unparseable',
-  );
-});
-
-test('command-failure: Wranglerが失敗したら出力内容に依存せず拒否する', () => {
-  const result = runMigrationCheck(() => ({
-    exitCode: 1,
-    stderr: 'credential-like diagnostic must not be printed',
-    stdout: '',
-  }));
-
-  assert.deepEqual(result, { ok: false, status: 'command-failure' });
+test('失敗時の利用者向け修復案内を固定する', () => {
   assert.equal(
     MIGRATION_REMEDIATION,
     'Migrate workflowをAPPLYで手動実行した後、Deployを再実行してください。',

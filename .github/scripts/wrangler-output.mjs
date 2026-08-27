@@ -1,65 +1,116 @@
-/**
- * wrangler の人間向け出力を fail-closed に解析する共通ヘルパ。
- *
- * wrangler は判定本文の前にバナー(版数・区切り線・Resource location)を出し、
- * 設定内容によっては stderr へ警告を出す。厳密一致で解析すると、
- * それだけで Deploy と Migrate の両方が停止する(2026-08-27 の事象)。
- * ここでは「既知の目印を1つだけ含む」ことを条件にし、
- * 未知の形式は従来どおり拒否する。
- */
+import { spawnSync } from 'node:child_process';
+
+/** wrangler の migration list 出力だけを fail-closed に解析する adapter。 */
 
 const ANSI_ESCAPE = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, 'g');
+const SEMVER = String.raw`\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?`;
+const WRANGLER_BANNER = new RegExp(`^⛅️?\\s+wrangler ${SEMVER}(?: \\(update available ${SEMVER}\\))?$`);
+const BANNER_SEPARATOR = /^(?:─{3,}|-{3,})$/;
+const RESOURCE_LOCATION = /^Resource location:\s+remote$/;
+const TABLE_TOP = /^┌─+┐$/;
+const TABLE_DIVIDER = /^├─+┤$/;
+const TABLE_BOTTOM = /^└─+┘$/;
+const TABLE_CELL = /^│\s*(.*?)\s*│$/;
+const KNOWN_WARNING_HEADING = /^(?:▲\s*)?\[WARNING\]\s+Processing wrangler\.jsonc configuration:$/;
+const KNOWN_WARNING_DETAIL = /^-\s*"secrets" fields are experimental\.$/;
 
 export const NO_PENDING_MARKER = '✅ No migrations to apply!';
 export const PENDING_MARKER = 'Migrations to be applied:';
 export const MIGRATION_NAME = /^\d{4}_[A-Za-z0-9][A-Za-z0-9._-]*\.sql$/;
 
-/** wrangler の警告見出し。これに続くインデント行までを1ブロックとして許容する。 */
-const WARNING_HEADING = /^(?:▲\s*)?\[WARNING\]/;
-
 export function normalizeOutput(value) {
   return value.replace(ANSI_ESCAPE, '').replaceAll('\r\n', '\n').trim();
 }
 
-/**
- * 判定に使える本文を取り出す。
- * 目印が両方ある、またはどちらも無い出力は判定不能として null を返す。
- */
-export function migrationListBody(normalizedStdout) {
-  const pendingIndex = normalizedStdout.indexOf(PENDING_MARKER);
-  const noPendingIndex = normalizedStdout.indexOf(NO_PENDING_MARKER);
-  const hasPending = pendingIndex >= 0;
-  const hasNoPending = noPendingIndex >= 0;
-  if (hasPending === hasNoPending) return null;
-  return hasPending
-    ? { state: 'pending', body: normalizedStdout.slice(pendingIndex) }
-    : { state: 'no-pending', body: normalizedStdout.slice(noPendingIndex) };
+const nonEmptyLines = (value) =>
+  value
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line !== '');
+
+function hasKnownPreamble(lines) {
+  return (
+    lines.length === 0 ||
+    (lines.length === 3 &&
+      WRANGLER_BANNER.test(lines[0]) &&
+      BANNER_SEPARATOR.test(lines[1]) &&
+      RESOURCE_LOCATION.test(lines[2]))
+  );
+}
+
+function parsePendingTable(lines) {
+  if (
+    lines.length < 4 ||
+    !TABLE_TOP.test(lines[0]) ||
+    TABLE_CELL.exec(lines[1])?.[1] !== 'Name' ||
+    !TABLE_DIVIDER.test(lines[2]) ||
+    !TABLE_BOTTOM.test(lines.at(-1))
+  ) {
+    return null;
+  }
+
+  const filenames = [];
+  for (const line of lines.slice(3, -1)) {
+    const filename = TABLE_CELL.exec(line)?.[1];
+    if (filename === undefined || !MIGRATION_NAME.test(filename)) return null;
+    filenames.push(filename);
+  }
+  return [...new Set(filenames)];
 }
 
 /**
- * wrangler が stderr へ出した内容を、検査続行してよい無害な出力とみなすか判定する。
- *
- * 判定材料は正規化済み(ANSI除去・trim済み)の stderr 文字列ひとつ。
- * 空文字列は必ず true。ここで true を返した stderr は以降の判定で無視される。
+ * stdout 全体を消費し、既知の banner + 状態別本文だけを受理する。
+ * marker は独立行でちょうど一度だけ現れる必要がある。
  */
+export function parseMigrationListOutput(normalizedStdout) {
+  const lines = nonEmptyLines(normalizedStdout);
+  const pendingIndexes = lines.flatMap((line, index) => (line === PENDING_MARKER ? [index] : []));
+  const noPendingIndexes = lines.flatMap((line, index) => (line === NO_PENDING_MARKER ? [index] : []));
+  if (pendingIndexes.length + noPendingIndexes.length !== 1) return null;
+
+  const markerIndex = pendingIndexes[0] ?? noPendingIndexes[0];
+  if (!hasKnownPreamble(lines.slice(0, markerIndex))) return null;
+
+  if (noPendingIndexes.length === 1) {
+    return markerIndex === lines.length - 1 ? { state: 'no-pending', body: NO_PENDING_MARKER } : null;
+  }
+
+  const bodyLines = lines.slice(markerIndex);
+  const filenames = parsePendingTable(bodyLines.slice(1));
+  return filenames === null ? null : { state: 'pending', body: bodyLines.join('\n'), filenames };
+}
+
+/** 実際に観測された wrangler.jsonc secrets 警告だけを許容する。 */
 export function isAcceptableStderr(normalizedStderr) {
   if (normalizedStderr === '') return true;
-  let insideWarningBlock = false;
-  for (const line of normalizedStderr.split('\n')) {
-    if (line.trim() === '') continue;
-    if (WARNING_HEADING.test(line.trim())) {
-      insideWarningBlock = true;
-      continue;
-    }
-    // 警告見出しに続くインデント行だけを同じブロックの一部として許容する
-    if (insideWarningBlock && /^\s/.test(line)) continue;
-    return false;
-  }
-  return true;
+  const lines = nonEmptyLines(normalizedStderr);
+  return lines.length === 2 && KNOWN_WARNING_HEADING.test(lines[0]) && KNOWN_WARNING_DETAIL.test(lines[1]);
 }
 
-/** pending 本文から migration ファイル名を重複なく取り出す。 */
-export function pendingFilenamesFromBody(body) {
-  const matches = body.match(/\b\d{4}_[A-Za-z0-9][A-Za-z0-9._-]*\.sql\b/g) ?? [];
-  return [...new Set(matches)];
+/** command 結果を Deploy/Migrate 共通の判別型へ正規化する。 */
+export function parseWranglerMigrationListResult({ exitCode, stdout = '', stderr = '', error }) {
+  if (error !== undefined || exitCode !== 0) return { state: 'command-failure' };
+  if (!isAcceptableStderr(normalizeOutput(stderr))) return { state: 'unparseable', reason: 'stderr' };
+  return parseMigrationListOutput(normalizeOutput(stdout)) ?? { state: 'unparseable', reason: 'stdout' };
+}
+
+/** Wrangler 呼び出しの引数・上限・返却形を一つに固定する。 */
+export function runWranglerMigrationList() {
+  const result = spawnSync(
+    'pnpm',
+    ['--filter', '@kanjo/api', 'exec', 'wrangler', 'd1', 'migrations', 'list', 'kanjo-db', '--remote'],
+    {
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      timeout: 120_000,
+    },
+  );
+
+  return {
+    error: result.error,
+    exitCode: result.status,
+    stderr: result.stderr ?? '',
+    stdout: result.stdout ?? '',
+  };
 }

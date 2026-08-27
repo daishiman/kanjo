@@ -1,4 +1,3 @@
-import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -6,10 +5,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import {
   MIGRATION_NAME,
-  isAcceptableStderr,
-  migrationListBody,
-  normalizeOutput,
-  pendingFilenamesFromBody,
+  parseWranglerMigrationListResult,
+  runWranglerMigrationList,
 } from './wrangler-output.mjs';
 
 export const MANIFEST_REMEDIATION =
@@ -36,15 +33,14 @@ export function migrationSnapshot(migrationsDir) {
   };
 }
 
-export function pendingMigrationsFromWrangler({ exitCode, stdout = '', stderr = '', error }) {
-  if (error !== undefined || exitCode !== 0 || !isAcceptableStderr(normalizeOutput(stderr))) {
+export function pendingMigrationsFromWrangler(result) {
+  const parsed = parseWranglerMigrationListResult(result);
+  if (parsed.state === 'command-failure' || parsed.reason === 'stderr') {
     throw new Error('remote-inspection-failed');
   }
-  const parsed = migrationListBody(normalizeOutput(stdout));
-  if (parsed?.state !== 'pending') throw new Error('remote-inspection-unparseable');
-  const filenames = pendingFilenamesFromBody(parsed.body);
-  if (filenames.length === 0) throw new Error('remote-pending-empty-or-unparseable');
-  return filenames;
+  if (parsed.state !== 'pending') throw new Error('remote-inspection-unparseable');
+  if (parsed.filenames.length === 0) throw new Error('remote-pending-empty-or-unparseable');
+  return parsed.filenames;
 }
 
 const isNonEmptyString = (value) => typeof value === 'string' && value.trim() !== '';
@@ -126,21 +122,12 @@ export function verifyApprovedManifest({ manifest, repositoryHead, snapshot, pen
   return canonicalApproved;
 }
 
-function runWranglerMigrationList() {
-  const result = spawnSync(
-    'pnpm',
-    ['--filter', '@kanjo/api', 'exec', 'wrangler', 'd1', 'migrations', 'list', 'kanjo-db', '--remote'],
-    { encoding: 'utf8', maxBuffer: 64 * 1024, stdio: ['ignore', 'pipe', 'pipe'], timeout: 120_000 },
-  );
-  return {
-    error: result.error,
-    exitCode: result.status,
-    stderr: result.stderr ?? '',
-    stdout: result.stdout ?? '',
-  };
-}
-
-export function verifyForWorkflow({ manifestJson, repositoryHead, migrationsDir, runRemoteList }) {
+export function verifyForWorkflow({
+  manifestJson,
+  repositoryHead,
+  migrationsDir,
+  runRemoteList = runWranglerMigrationList,
+}) {
   const manifest = JSON.parse(manifestJson);
   const snapshot = migrationSnapshot(migrationsDir);
   const pendingFilenames = pendingMigrationsFromWrangler(runRemoteList());
@@ -158,7 +145,6 @@ if (isMainModule()) {
       manifestJson: process.env.APPROVED_MIGRATION_MANIFEST_JSON ?? '',
       repositoryHead: process.env.GITHUB_SHA ?? '',
       migrationsDir: resolve(repositoryRoot, 'migrations'),
-      runRemoteList: runWranglerMigrationList,
     });
     console.log('✅ 承認manifestと現在のpending migrationが一致しました。');
   } catch {

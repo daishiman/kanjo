@@ -44,7 +44,6 @@ packages/api/worker-configuration.d.ts
 # AIDD同期時のローカル復旧バックアップ（実行時配置の複製）
 .claude/backup-*/
 .codex/backup-*/
-/eval-log/
 
 # ------------------------------------------------------------
 # OS / エディタ
