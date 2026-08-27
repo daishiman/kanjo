@@ -49,8 +49,15 @@ function parsePendingTable(lines) {
     return null;
   }
 
+  const rowSection = lines.slice(3, -1);
+  if (rowSection.length % 2 === 0 && rowSection.length !== 0) return null;
+
   const filenames = [];
-  for (const line of lines.slice(3, -1)) {
+  for (const [index, line] of rowSection.entries()) {
+    if (index % 2 === 1) {
+      if (!TABLE_DIVIDER.test(line)) return null;
+      continue;
+    }
     const filename = TABLE_CELL.exec(line)?.[1];
     if (filename === undefined || !MIGRATION_NAME.test(filename)) return null;
     filenames.push(filename);
