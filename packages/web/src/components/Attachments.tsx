@@ -94,6 +94,55 @@ function cleanupPresentation(attachment: Attachment): {
   return { badge: null, badgeClass: 'neutral', action: '削除する', retry: false };
 }
 
+/**
+ * 一覧のサムネイル。
+ *
+ * 【判断】R2 にサムネイル用の別画像は作らず、原本をそのまま CSS で縮めて出す。
+ * - Workers 上に画像を縮小する手段が無い(Cloudflare Images / Image Resizing は有料アドオン、
+ *   WASM デコーダは CPU 時間とバンドル上限に見合わない、HEIC はそもそもデコードできない)。
+ * - 別画像を持つと R2 のオブジェクトが倍になり、削除・tombstone・アーカイブ照合という
+ *   既にある後始末の経路すべてに「サムネイルだけ残った/消えた」という新しい壊れ方が増える。
+ *   見た目のための機能に対して、証憑の整合性リスクが割に合わない。
+ * - 1明細あたり最大10件・1件8MBまでで、パネルは同時に1つしか開かないので転送量は上限が読める。
+ *   loading="lazy" で、実際に見えた分だけ取りに行く。
+ */
+const THUMBNAILABLE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif']);
+
+function AttachmentThumbnail({ attachment }: { attachment: Attachment }) {
+  // HEIC は Safari 以外で描けない。表示できたかはブラウザにしか分からないので、失敗を見てから代替に落とす
+  const [undisplayable, setUndisplayable] = useState(false);
+  const isImage = THUMBNAILABLE_TYPES.has(attachment.contentType);
+
+  if (originalAvailable(attachment) && isImage && !undisplayable)
+    return (
+      <img
+        className="attach-thumb"
+        // alt は空。すぐ隣にファイル名があるので、読み上げで同じ情報を二度言わせない
+        alt=""
+        src={`/api/attachments/${attachment.id}/content`}
+        title={attachment.filename}
+        loading="lazy"
+        decoding="async"
+        width={44}
+        height={44}
+        onError={() => setUndisplayable(true)}
+      />
+    );
+
+  const label = !originalAvailable(attachment)
+    ? '原本なし'
+    : attachment.contentType === 'application/pdf'
+      ? 'PDF'
+      : isImage
+        ? '写真'
+        : 'ファイル';
+  return (
+    <span className="attach-thumb placeholder" role="img" aria-label={`${attachment.filename}(${label})`}>
+      {label}
+    </span>
+  );
+}
+
 function AttachmentList({
   attachments,
   busy,
@@ -124,6 +173,7 @@ function AttachmentList({
         const canOpen = originalAvailable(attachment);
         return (
           <li key={attachment.id}>
+            <AttachmentThumbnail attachment={attachment} />
             {canOpen ? (
               <>
                 <a href={`/api/attachments/${attachment.id}/content`} target="_blank" rel="noreferrer">
