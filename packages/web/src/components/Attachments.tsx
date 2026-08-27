@@ -26,6 +26,7 @@ import {
   api,
   apiUpload,
 } from '../api.js';
+import { readFileText } from '../file-text.js';
 
 /** input[accept] は MIME をそのまま並べる(HEIC は拡張子も添えないと iOS 以外で弾かれる) */
 const ACCEPT = `${Object.keys(ATTACHMENT_TYPES).join(',')},.heic,.heif`;
@@ -616,7 +617,7 @@ const isArchiveInventory = (value: unknown): value is AttachmentArchiveInventory
 };
 
 async function archiveInventoryFromFile(file: File): Promise<AttachmentArchiveInventory> {
-  const parsed = JSON.parse(await file.text()) as { attachmentArchive?: unknown };
+  const parsed = JSON.parse(await readFileText(file)) as { attachmentArchive?: unknown };
   if (!isArchiveInventory(parsed.attachmentArchive))
     throw new Error('証憑アーカイブ情報を含む書き出しJSONを選んでください');
   return parsed.attachmentArchive;

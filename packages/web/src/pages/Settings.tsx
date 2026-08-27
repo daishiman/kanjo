@@ -5,6 +5,7 @@ import { type LegacyRestoreResponse, type SettingsResponse, api } from '../api.j
 import { AttachmentArchiveRecovery } from '../components/Attachments.js';
 import { ClassificationSettings } from '../components/ClassificationSettings.js';
 import { PageHeader, PageState } from '../components/Page.js';
+import { readFileText } from '../file-text.js';
 
 export const LEGACY_RESTORE_CONFIRMATION =
   '集計・分類・設定データを初期移行します。現金明細、証憑の原本と管理情報は対象外です。続けますか?';
@@ -44,7 +45,7 @@ export function SettingsPage() {
 
   const restore = useMutation({
     mutationFn: async (file: File) => {
-      const text = await file.text();
+      const text = await readFileText(file);
       return api<LegacyRestoreResponse>('/restore', { method: 'POST', body: text });
     },
     onSuccess: () => void qc.invalidateQueries(),

@@ -229,5 +229,11 @@ try {
     chrome.kill('SIGKILL');
     await waitForChromeExit(1_000);
   }
-  rmSync(dir, { recursive: true, force: true });
+  // Chromeの子プロセスがprofile配下を掴んだまま終わることがある(Linuxで顕著)。
+  // 一時ディレクトリの後片付けは再試行し、それでも残る場合も検査結果は落とさない。
+  try {
+    rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
+  } catch (error) {
+    console.warn(`一時ディレクトリを削除できませんでした(検査結果には影響しません): ${dir}\n${error}`);
+  }
 }
