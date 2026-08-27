@@ -1,37 +1,21 @@
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
-const NO_PENDING_OUTPUT = '✅ No migrations to apply!';
-const PENDING_OUTPUT_PREFIX = 'Migrations to be applied:';
-const ANSI_ESCAPE = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, 'g');
+import { isAcceptableStderr, migrationListBody, normalizeOutput } from './wrangler-output.mjs';
 
 export const MIGRATION_REMEDIATION = 'Migrate workflowをAPPLYで手動実行した後、Deployを再実行してください。';
-
-function normalizeOutput(value) {
-  return value.replace(ANSI_ESCAPE, '').replaceAll('\r\n', '\n').trim();
-}
 
 export function classifyMigrationList({ exitCode, stdout = '', stderr = '', error }) {
   if (error !== undefined || exitCode !== 0) {
     return 'command-failure';
   }
 
-  const normalizedStdout = normalizeOutput(stdout);
-  const normalizedStderr = normalizeOutput(stderr);
-
-  if (normalizedStderr !== '') {
+  if (!isAcceptableStderr(normalizeOutput(stderr))) {
     return 'unparseable';
   }
-  if (normalizedStdout === NO_PENDING_OUTPUT) {
-    return 'no-pending';
-  }
-  if (
-    normalizedStdout === PENDING_OUTPUT_PREFIX ||
-    normalizedStdout.startsWith(`${PENDING_OUTPUT_PREFIX}\n`)
-  ) {
-    return 'pending';
-  }
-  return 'unparseable';
+
+  const parsed = migrationListBody(normalizeOutput(stdout));
+  return parsed === null ? 'unparseable' : parsed.state;
 }
 
 export function runMigrationCheck(runCommand = runWranglerMigrationList) {

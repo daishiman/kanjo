@@ -34,6 +34,47 @@ test('unparseable: 新しい未知の形式をfail-closedで拒否する', () =>
   );
 });
 
+test('バナー付きの実出力を解析できる(2026-08-27のDeploy停止事象の回帰)', () => {
+  const banner =
+    '\n ⛅️ wrangler 4.84.1 (update available 4.127.0)\n' +
+    '──────────────────────────────────────────────\n' +
+    'Resource location: remote \n\n';
+
+  assert.equal(
+    classifyMigrationList({
+      exitCode: 0,
+      stdout: `${banner}Migrations to be applied:\n┌──────────┐\n│ 0006.sql │\n└──────────┘\n`,
+    }),
+    'pending',
+  );
+  assert.equal(
+    classifyMigrationList({ exitCode: 0, stdout: `${banner}✅ No migrations to apply!\n` }),
+    'no-pending',
+  );
+});
+
+test('wranglerの設定WARNINGブロックは検査を止めない', () => {
+  assert.equal(
+    classifyMigrationList({
+      exitCode: 0,
+      stdout: '✅ No migrations to apply!',
+      stderr:
+        '▲ [WARNING] Processing wrangler.jsonc configuration:\n\n    - "secrets" fields are experimental.\n',
+    }),
+    'no-pending',
+  );
+});
+
+test('unparseable: 目印が両方ある出力をfail-closedで拒否する', () => {
+  assert.equal(
+    classifyMigrationList({
+      exitCode: 0,
+      stdout: 'Migrations to be applied:\n✅ No migrations to apply!',
+    }),
+    'unparseable',
+  );
+});
+
 test('command-failure: Wranglerが失敗したら出力内容に依存せず拒否する', () => {
   const result = runMigrationCheck(() => ({
     exitCode: 1,

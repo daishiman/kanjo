@@ -71,6 +71,7 @@ __pycache__/
 .dev-graph/locks/
 .dev-graph/receipts/
 .dev-graph/staging/
+.dev-graph/eval-log/
 
 # ハーネスが生成するセッションログ(成果物ではない)
 .claude/logs/

@@ -4,9 +4,13 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const ANSI_ESCAPE = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, 'g');
-const MIGRATION_NAME = /^\d{4}_[A-Za-z0-9][A-Za-z0-9._-]*\.sql$/;
-const PENDING_PREFIX = 'Migrations to be applied:';
+import {
+  MIGRATION_NAME,
+  isAcceptableStderr,
+  migrationListBody,
+  normalizeOutput,
+  pendingFilenamesFromBody,
+} from './wrangler-output.mjs';
 
 export const MANIFEST_REMEDIATION =
   '承認manifest・repository head・remote pendingを再取得して承認し直してから、Migrateを再実行してください。';
@@ -32,18 +36,13 @@ export function migrationSnapshot(migrationsDir) {
   };
 }
 
-function normalizeOutput(value) {
-  return value.replace(ANSI_ESCAPE, '').replaceAll('\r\n', '\n').trim();
-}
-
 export function pendingMigrationsFromWrangler({ exitCode, stdout = '', stderr = '', error }) {
-  if (error !== undefined || exitCode !== 0 || normalizeOutput(stderr) !== '') {
+  if (error !== undefined || exitCode !== 0 || !isAcceptableStderr(normalizeOutput(stderr))) {
     throw new Error('remote-inspection-failed');
   }
-  const normalized = normalizeOutput(stdout);
-  if (!normalized.startsWith(`${PENDING_PREFIX}\n`)) throw new Error('remote-inspection-unparseable');
-  const matches = normalized.match(/\b\d{4}_[A-Za-z0-9][A-Za-z0-9._-]*\.sql\b/g) ?? [];
-  const filenames = [...new Set(matches)];
+  const parsed = migrationListBody(normalizeOutput(stdout));
+  if (parsed?.state !== 'pending') throw new Error('remote-inspection-unparseable');
+  const filenames = pendingFilenamesFromBody(parsed.body);
   if (filenames.length === 0) throw new Error('remote-pending-empty-or-unparseable');
   return filenames;
 }
