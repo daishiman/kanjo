@@ -15,8 +15,9 @@
   "scripts": {
     "build": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api exec wrangler deploy --dry-run --outdir /tmp/kanjo-worker-build",
     "dev": "pnpm --filter @kanjo/web dev",
-    "preview": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api dev",
-    "test": "pnpm -r test && pnpm run skills:test",
+    "preview": "node scripts/preview-local.mjs",
+    "preview:smoke": "node --test scripts/preview-smoke.test.mjs",
+    "test": "pnpm -r --workspace-concurrency=1 test && pnpm run skills:test",
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check . && node scripts/sync-project-skills.mjs --check && node scripts/check-glossary.mjs",
     "lint:fix": "biome check --write .",

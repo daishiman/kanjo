@@ -71,6 +71,11 @@ const restoredCashEntrySchema = z
     categoryMajor: z.string(),
     categoryMid: z.string().default(''),
     memo: z.string().nullable().default(null),
+    // 交通費・証憑の項目。旧バックアップには無いので既定値で補う(復元は投影行が正本のため監査目的のみ)
+    transitFrom: z.string().nullable().default(null),
+    transitTo: z.string().nullable().default(null),
+    transitRound: z.boolean().default(false),
+    receiptWaived: z.boolean().default(false),
   })
   .strict();
 

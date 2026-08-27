@@ -1,9 +1,24 @@
 /** P9 設定: 分類の設定(ルール・名義・候補科目・手動編集)・科目正規化・未記帳月・現金補正・エクスポート/復元(FR-05) */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
-import { type SettingsResponse, api } from '../api.js';
+import { type LegacyRestoreResponse, type SettingsResponse, api } from '../api.js';
+import { AttachmentArchiveRecovery } from '../components/Attachments.js';
 import { ClassificationSettings } from '../components/ClassificationSettings.js';
 import { PageHeader, PageState } from '../components/Page.js';
+
+export const LEGACY_RESTORE_CONFIRMATION =
+  '集計・分類・設定データを初期移行します。現金明細、証憑の原本と管理情報は対象外です。続けますか?';
+
+export function LegacyRestoreNotice({ result }: { result: LegacyRestoreResponse }) {
+  if (result.duplicate)
+    return <p className="sub">同じ集計データは取り込み済みです。現金明細と証憑は変更していません。</p>;
+  return (
+    <p className="sub">
+      集計データを取り込みました(対象月 {result.months.length}件 / MF明細 {result.mfTxCount}件 / 分類ルール{' '}
+      {result.rules}件)。現金明細、証憑の原本と管理情報はこの操作の対象外です。
+    </p>
+  );
+}
 
 export function SettingsPage() {
   const qc = useQueryClient();
@@ -30,7 +45,7 @@ export function SettingsPage() {
   const restore = useMutation({
     mutationFn: async (file: File) => {
       const text = await file.text();
-      return api('/restore', { method: 'POST', body: text });
+      return api<LegacyRestoreResponse>('/restore', { method: 'POST', body: text });
     },
     onSuccess: () => void qc.invalidateQueries(),
   });
@@ -210,7 +225,8 @@ export function SettingsPage() {
       </div>
 
       <div className="card">
-        <h2>エクスポート / 復元</h2>
+        <h2>データの書き出し / 初期移行</h2>
+        <p className="sub">集計・分類・設定データの書き出しと、旧HTML版からの初期移行用です。</p>
         <div className="toolbar">
           <a className="btn" href="/api/export/json">
             統合データJSONをダウンロード
@@ -224,19 +240,23 @@ export function SettingsPage() {
           <input
             ref={restoreInput}
             type="file"
+            aria-label="初期移行用JSONを選ぶ"
             accept=".json"
             style={{ display: 'none' }}
             onChange={(e) => {
               const f = e.target.files?.[0];
-              if (f && window.confirm('JSONの内容で全データを復元します。よろしいですか?')) restore.mutate(f);
+              if (f && window.confirm(LEGACY_RESTORE_CONFIRMATION)) restore.mutate(f);
               e.target.value = '';
             }}
           />
         </div>
-        {restore.isSuccess && <p className="sub">復元が完了しました。</p>}
+        {restore.isSuccess && <LegacyRestoreNotice result={restore.data} />}
         {restore.isError && (
-          <div className="notice">復元に失敗しました: {(restore.error as Error).message}</div>
+          <div className="notice">
+            初期移行に失敗しました。データは反映されていません: {(restore.error as Error).message}
+          </div>
         )}
+        <AttachmentArchiveRecovery />
       </div>
     </>
   );

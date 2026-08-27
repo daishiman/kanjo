@@ -29,6 +29,10 @@ const meeting: CashEntry = {
   categoryMajor: '会議費',
   categoryMid: '',
   memo: null,
+  transitFrom: null,
+  transitTo: null,
+  transitRound: false,
+  receiptWaived: false,
 };
 const lunch: CashEntry = {
   id: 8,
@@ -41,6 +45,10 @@ const lunch: CashEntry = {
   categoryMajor: '食費',
   categoryMid: '外食',
   memo: null,
+  transitFrom: null,
+  transitTo: null,
+  transitRound: false,
+  receiptWaived: false,
 };
 
 const fileDeals: FreeeDeal[] = [

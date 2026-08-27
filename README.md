@@ -13,7 +13,8 @@
 - **公私が混ざる** → 個人口座の明細1件ずつを事業／個人に仕分け、freeeに登録すべき「事業立替」額を算出する
 - **統計の知識が要る** → すべての指標を実データ入りの日本語解説とセットで提示する
 
-正本仕様は [`docs/spec-v1.1.md`](docs/spec-v1.1.md)。
+製品全体の正本は [`docs/spec-v1.1.md`](docs/spec-v1.1.md)。機能固有の規範文書は同書と
+下記ドキュメント表から一方向に参照する。
 
 ## アーキテクチャ
 
@@ -41,7 +42,8 @@ pnpm install
 pnpm test          # core・API・web の回帰テスト
 pnpm typecheck     # 全パッケージ
 pnpm lint          # Biome
-pnpm run preview   # web をビルドして wrangler dev (Workersランタイム, localhost:8787)
+pnpm run preview   # local migration→web build→wrangler dev (Workersランタイム, localhost:8787)
+pnpm run preview:smoke # 一時D1/R2+架空認証で起動確認し、自動停止
 ```
 
 初回のみ:
@@ -49,10 +51,13 @@ pnpm run preview   # web をビルドして wrangler dev (Workersランタイム
 ```bash
 cd packages/api
 cp .dev.vars.example .dev.vars   # AUTH_PASSWORD / SESSION_SECRET を設定
-pnpm exec wrangler d1 migrations apply kanjo-db --local
 ```
 
-確認は必ず `pnpm run preview`(8787、Workersランタイム)で行う。`pnpm dev`(3000、Vite)は画面開発の補助。
+`pnpm run preview`は起動前に未適用のlocal migrationを自動適用する。CIや有限の動作確認は
+`pnpm run preview:smoke`を使い、`.dev.vars`を読まず一時ディレクトリのD1/R2と架空認証値で
+SPA・未認証ガード・ログインに加え、架空現金明細の作成→小型PNG添付→一覧/件数/原本取得→削除→
+空一覧まで確認して自動停止する。人が画面を確認するときは必ず
+`pnpm run preview`(8787、Workersランタイム)を使う。`pnpm dev`(3000、Vite)は画面開発の補助。
 
 ## デプロイ
 
@@ -65,14 +70,18 @@ GitHub Environment `production` に `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT
 GitHub・Cloudflareの初回設定、通常リリース、D1 migration、障害調査、rollbackの詳細は [`docs/ci-cd-operations.md`](docs/ci-cd-operations.md) を参照。
 
 本番シークレット: `wrangler secret put AUTH_PASSWORD` / `wrangler secret put SESSION_SECRET`。Cloudflare Access に切り替える場合は wrangler.jsonc の `ACCESS_AUD` / `ACCESS_TEAM_DOMAIN` を設定する（設定するとパスワード認証は無効化される）。
+パスワード認証はD1の接続元scope別rate limitで保護され、既定は15分間に5回失敗で15分lock。
+変更が必要な場合だけ、非secretの`PASSWORD_LOGIN_WINDOW_SECONDS` / `PASSWORD_LOGIN_MAX_FAILURES` /
+`PASSWORD_LOGIN_LOCK_SECONDS` / `PASSWORD_LOGIN_STALE_AFTER_SECONDS`をWorker varsでoverrideする。不正値は安全な既定値へ戻る。
 
 ## ドキュメント
 
 | ファイル | 内容 |
 |----------|------|
-| [`docs/spec-v1.1.md`](docs/spec-v1.1.md) | **正本仕様**: 要件・画面・API・スキーマ・品質ゲート |
+| [`docs/spec-v1.1.md`](docs/spec-v1.1.md) | **製品仕様の正本**: 不変条件・画面・API一覧と詳細仕様への導線 |
+| [`specs/attachments-and-transit.md`](specs/attachments-and-transit.md) | 証憑添付と交通費の詳細lifecycle・受入の正本 |
 | [`docs/requirements.md`](docs/requirements.md) | 初期要件文書の履歴と正本への導線 |
-| [`docs/data-schema.md`](docs/data-schema.md) | freee / MF のCSV仕様、統合JSONの構造と不変条件 |
+| [`docs/data-schema.md`](docs/data-schema.md) | freee / MF・添付・復旧の永続形状と不変条件の正本 |
 | [`docs/metrics.md`](docs/metrics.md) | 統計指標の定義、費目分類の基準、異常検知のしきい値 |
 | [`docs/ci-cd-operations.md`](docs/ci-cd-operations.md) | CI/CD・GitHub保護設定・Cloudflare本番運用・復旧手順 |
 | [`docs/cloudflare-credentials-setup.md`](docs/cloudflare-credentials-setup.md) | Cloudflare API Token・Account ID・本番URL・Worker secretの取得と登録 |

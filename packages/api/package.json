@@ -9,7 +9,7 @@
     "deploy": "wrangler deploy",
     "types": "wrangler types",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --testTimeout=30000"
+    "test": "vitest run --testTimeout=60000 --hookTimeout=60000 --fileParallelism=false --maxWorkers=1"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.4.2",

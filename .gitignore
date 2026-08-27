@@ -62,3 +62,13 @@ __pycache__/
 
 # 外部操作ガードの受領票(作業ごとの一時記録。成果物ではない)
 .artifact-delivery/
+
+# dev-graph のローカル実行状態(config.json と templates/ は共有するのでコミットする)
+.dev-graph/state/
+.dev-graph/cache/
+.dev-graph/locks/
+.dev-graph/receipts/
+.dev-graph/staging/
+
+# ハーネスが生成するセッションログ(成果物ではない)
+.claude/logs/

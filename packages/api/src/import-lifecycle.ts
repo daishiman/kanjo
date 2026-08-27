@@ -12,7 +12,7 @@ import {
   canonicalMfTransactions,
   freeePersistedRow,
   isCashTxId,
-  mfPersistedRow,
+  mfPersistedIdentityRow,
 } from '@kanjo/core';
 import { JSON_ACTIVE_TARGET, invalidateJsonSnapshotStatement } from './import-active.js';
 import { type ParsedUnit, fingerprintCanonical } from './import-pipeline.js';
@@ -536,27 +536,57 @@ export function mfCommitStatements(args: {
   const { database, userId, months, runId, importId, contentHash, targetKeys, data } = args;
   const now = args.now ?? new Date().toISOString();
   const txs = canonicalMfTransactions(args.txs);
-  const deleteIds = deleteJsonValues(
-    database,
-    'mf_transactions',
-    userId,
-    'tx_id',
-    txs.map((tx) => tx.id),
-  );
+  const deleteReplacement = database
+    .prepare(
+      `DELETE FROM mf_transactions
+        WHERE user_id=?
+          AND (month IN (SELECT CAST(value AS TEXT) FROM json_each(?))
+            OR tx_id IN (SELECT CAST(value AS TEXT) FROM json_each(?)))`,
+    )
+    .bind(userId, JSON.stringify(months), JSON.stringify(txs.map((tx) => tx.id)));
+  const syncAttachmentParents = database
+    .prepare(
+      `UPDATE attachments
+          SET parent_missing_at=CASE
+            WHEN EXISTS (
+              SELECT 1 FROM mf_transactions m
+               WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
+            ) THEN NULL ELSE COALESCE(parent_missing_at,?) END
+        WHERE user_id=? AND target_kind='mf'
+          AND ((parent_missing_at IS NULL AND NOT EXISTS (
+                  SELECT 1 FROM mf_transactions m
+                   WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
+               ))
+            OR (parent_missing_at IS NOT NULL AND EXISTS (
+                  SELECT 1 FROM mf_transactions m
+                   WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
+               )))`,
+    )
+    .bind(now, userId);
   return [
     ...beginImportCommitStatements({ database, userId, runId, importId }),
-    ...monthDelete(database, 'mf_transactions', userId, months),
-    ...deleteIds,
+    deleteReplacement,
     ...insertJsonRows(
       database,
       'mf_transactions',
-      ['tx_id', 'month', 'date', 'description', 'amount', 'category_major', 'category_mid', 'institution'],
-      txs.map((tx) => mfPersistedRow(tx)),
+      [
+        'tx_id',
+        'month',
+        'date',
+        'description',
+        'amount',
+        'category_major',
+        'category_mid',
+        'institution',
+        'identity_stable',
+      ],
+      txs.map((tx) => mfPersistedIdentityRow(tx)),
       [
         { column: 'user_id', value: userId },
         { column: 'import_id', value: importId },
       ],
     ),
+    syncAttachmentParents,
     ...replaceAggStatements(database, userId, data),
     ...finalizeStatements(database, userId, runId, importId, contentHash, targetKeys, 'mf', now),
   ];
@@ -576,7 +606,7 @@ const editRows = (edits: Record<string, TxEdit>): unknown[][] =>
   ]);
 
 export interface RestoreWriteSet {
-  mfRows: ReturnType<typeof mfPersistedRow>[];
+  mfRows: ReturnType<typeof mfPersistedIdentityRow>[];
   vendors: string[];
   ruleRows: unknown[][];
   editRows: unknown[][];
@@ -597,7 +627,9 @@ export function prepareRestoreWriteSet(args: {
   const rawTxs = canonicalMfTransactions(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)));
   return {
     // MF/editsはDBでは集合として永続化される。JSON配列/object挿入順を指紋へ混ぜない。
-    mfRows: rawTxs.map(mfPersistedRow).sort((a, b) => canonicalEncode(a).localeCompare(canonicalEncode(b))),
+    mfRows: rawTxs
+      .map(mfPersistedIdentityRow)
+      .sort((a, b) => canonicalEncode(a).localeCompare(canonicalEncode(b))),
     vendors: [...new Set(args.data.subs.vendors)].sort(),
     ruleRows: args.data.rules.map((rule, index) => [
       rule.k,
@@ -723,28 +755,59 @@ export function restoreCommitStatements(args: {
 function mfReplaceOnlyStatements(
   database: D1Database,
   userId: string,
-  rows: ReturnType<typeof mfPersistedRow>[],
+  rows: ReturnType<typeof mfPersistedIdentityRow>[],
   importId: number,
 ): D1PreparedStatement[] {
+  if (rows.length === 0) return [];
   const months = [...new Set(rows.map((row) => row[1]))].sort();
+  const now = new Date().toISOString();
   return [
-    ...monthDelete(database, 'mf_transactions', userId, months),
-    ...deleteJsonValues(
-      database,
-      'mf_transactions',
-      userId,
-      'tx_id',
-      rows.map((row) => row[0]),
-    ),
+    database
+      .prepare(
+        `DELETE FROM mf_transactions
+          WHERE user_id=?
+            AND (month IN (SELECT CAST(value AS TEXT) FROM json_each(?))
+              OR tx_id IN (SELECT CAST(value AS TEXT) FROM json_each(?)))`,
+      )
+      .bind(userId, JSON.stringify(months), JSON.stringify(rows.map((row) => row[0]))),
     ...insertJsonRows(
       database,
       'mf_transactions',
-      ['tx_id', 'month', 'date', 'description', 'amount', 'category_major', 'category_mid', 'institution'],
+      [
+        'tx_id',
+        'month',
+        'date',
+        'description',
+        'amount',
+        'category_major',
+        'category_mid',
+        'institution',
+        'identity_stable',
+      ],
       rows,
       [
         { column: 'user_id', value: userId },
         { column: 'import_id', value: importId },
       ],
     ),
+    database
+      .prepare(
+        `UPDATE attachments
+            SET parent_missing_at=CASE
+              WHEN EXISTS (
+                SELECT 1 FROM mf_transactions m
+                 WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
+              ) THEN NULL ELSE COALESCE(parent_missing_at,?) END
+          WHERE user_id=? AND target_kind='mf'
+            AND ((parent_missing_at IS NULL AND NOT EXISTS (
+                    SELECT 1 FROM mf_transactions m
+                     WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
+                 ))
+              OR (parent_missing_at IS NOT NULL AND EXISTS (
+                    SELECT 1 FROM mf_transactions m
+                     WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
+                 )))`,
+      )
+      .bind(now, userId),
   ];
 }

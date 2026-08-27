@@ -3,7 +3,7 @@
 // 「見出し行が先頭データ行に重なるのは、ページ上部の固定ヘッダー直下に固定されている時だけ」を全パターン・全幅で実測する。
 // 使い方: node scripts/check-thead-render.mjs  (CHROME_PATH で Chrome の場所を指定できる。無ければ既定の場所を探す)
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -94,6 +94,23 @@ const chrome = spawn(
   ],
   { stdio: ['ignore', 'ignore', 'ignore'] },
 );
+let ws;
+
+const waitForChromeExit = (timeoutMs) => {
+  if (chrome.exitCode !== null) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    const onExit = () => {
+      clearTimeout(timer);
+      resolve(true);
+    };
+    const timer = setTimeout(() => {
+      chrome.off('exit', onExit);
+      resolve(false);
+    }, timeoutMs);
+    chrome.once('exit', onExit);
+  });
+};
+
 try {
   let targets;
   for (let i = 0; i < 60; i++) {
@@ -107,7 +124,7 @@ try {
   let page = targets.find((t) => t.type === 'page');
   if (!page)
     page = await (await fetch(`http://127.0.0.1:${PORT}/json/new?about:blank`, { method: 'PUT' })).json();
-  const ws = new WebSocket(page.webSocketDebuggerUrl);
+  ws = new WebSocket(page.webSocketDebuggerUrl);
   await new Promise((resolve) => {
     ws.onopen = resolve;
   });
@@ -206,5 +223,11 @@ try {
     console.log('\n表の見出し固定の実描画検査: すべて合格');
   }
 } finally {
-  chrome.kill();
+  if (ws && ws.readyState < WebSocket.CLOSING) ws.close();
+  if (chrome.exitCode === null) chrome.kill('SIGTERM');
+  if (!(await waitForChromeExit(5_000)) && chrome.exitCode === null) {
+    chrome.kill('SIGKILL');
+    await waitForChromeExit(1_000);
+  }
+  rmSync(dir, { recursive: true, force: true });
 }

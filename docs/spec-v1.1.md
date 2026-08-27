@@ -3,7 +3,9 @@
 - 版数: v1.1(根本目的・設計原則を反映)
 - 作成日: 2026-08-24
 - 対象: 収支管理ダッシュボード(HTML版)のWebシステム化
-- 正本: 本書を要件・計算契約・画面・APIの唯一の正本とする。HTML版は移植元の参照実装であり、競合時は本書を優先する
+- 正本: 本書は製品全体の目的・不変条件・画面/API一覧の正本とする。機能固有の詳細は本書から
+  規範extensionへ一方向に参照し、永続形状は[`data-schema.md`](data-schema.md)を正とする。HTML版は移植元の
+  参照実装であり、競合時は本書と参照先の規範文書を優先する
 
 ---
 
@@ -66,6 +68,7 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 - HTML版の全機能のWeb化: 概況 / 増減マトリクス / 統計診断 / サブスク分析 / 公私仕分け / 家計 / 予算管理 / データ取込 / 指標ガイド
 - freee取引CSV・Excel、マネーフォワード収入支出詳細CSV・Excelの取込と月次正規化
 - 明細・ルール・手動判定・予算のDB永続化
+- 現金・交通費の記帳と、現金/MF安定ID明細への証憑原本添付
 - 単一利用者の認証(将来の家族共有を考慮した設計)
 - CI/CDによる自動デプロイ
 
@@ -126,8 +129,8 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 - freee仕訳は発生日から月を導出。科目正規化マップを適用する
 - canonical原本、月次集計キャッシュ、active pointer、unit terminal、unit状態からのrun reconcileを同じD1 atomic batchで確定する。途中失敗したunitは確定せず、同じ入力の通常再試行で回復できる
 - 利用者ごとの取込writerを期限付きDB claimで直列化し、claim取得後の正規化map/canonical snapshotだけを計画と実行で共有する。受理前claimはrun未作成の所有tokenなので`import_runs`へのFKを持たず、拒否時はrun/R2/canonicalを作らずreleaseする。stale takeoverでは旧run配下の未完了unitだけを同じ回復batchで`failed`へCAS更新し、terminal unitを保持してrunを再計算する。同一multipartの同domain×month競合とJSON併用は副作用前に拒否し、異なるunit間だけpartial successを許す
-- 重複は過去履歴ではなく現在有効なdomain×month/JSON snapshotのv2指紋と比較する。同月A→B→Aは再適用し、A→Aだけをスキップする。`force=1`は現在有効な世代を意図的に再適用する場合だけ使う
-- v2指紋はtype+length prefixでcell境界衝突を防ぎ、parser・指紋・commit builderがcanonical保存行射影を共有する。MF日付はslash/hyphenを同じ`YYYY-MM-DD`へ一度だけ正規化する。JSONはpartial/default/merge後の実効write-setをhashし、`exportedAt`/`cashEntries`等のmetadataと非永続subs aliasesは除外する。source `cash:*` editは破棄し、destinationで現存cashに付いているeditをcandidateへ戻し、永続化行・集計・指紋を同じ実効集合から生成する。旧hashとの互換比較はせず、移行直後は同じ内容でも1回だけ通常取込になる
+- 重複は過去履歴ではなく現在有効なdomain×month/JSON snapshotのv3指紋と比較する。同月A→B→Aは再適用し、A→Aだけをスキップする。`force=1`は現在有効な世代を意図的に再適用する場合だけ使う
+- v3指紋はtype+length prefixでcell境界衝突を防ぎ、parser・指紋・commit builderがcanonical保存行射影を共有する。MFはID列由来かどうかも保存行と指紋に含め、日付はslash/hyphenを同じ`YYYY-MM-DD`へ一度だけ正規化する。JSONはpartial/default/merge後の実効write-setをhashし、`exportedAt`/`cashEntries`等のmetadataと非永続subs aliasesは除外する。source `cash:*` editは破棄し、destinationで現存cashに付いているeditをcandidateへ戻し、永続化行・集計・指紋を同じ実効集合から生成する。旧hashとの互換比較はせず、移行直後は同じ内容でも1回だけ通常取込になる
 - CSVはJSON1のUTF-8 80KiB payloadでbulk delete/insertし、`import_id`・`user_id`・確定時刻はchunk JSON外のscalar bindにする。routeは実builderのpayload/cache/active/finalizationとread/claim/attempt/heartbeat/reconcile/release・duplicate/失敗/commit応答喪失回復のworst-caseを合算し、49 D1 queriesまでを受理する。受理後は実attempt IDのbuilderをR2前に再計測し、commit直前にも`actual <= planned`をfail-closedで保証する。通常幅の5,000行freee/MFは50未満、長大列・大量cache scope・複数unitで超える場合はR2/run/canonical書込み前に413とする
 - JSON active pointerはrestore write-setを変えるrules、edits、owners、budgets、settings、vendor、cash、freee/MF/baselineの各mutationと同じD1 batchで無効化し、restore自身はcommit batchで新pointerを設定する
 - MFの明示ID付き行は順序非依存。ID列が無い旧exportは合成IDが行indexに依存するため順序非依存を保証せず、並べ替えると手動編集も引き継げない旨を画面のID補完件数で知らせる
@@ -152,11 +155,15 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 - 予実差異と判定(超過/範囲内/余裕: 実績が予算±10%基準)
 
 **FR-05 エクスポート(P9)**
-- 統合データJSON(全テーブル相当)のダウンロード/アップロード復元(HTML版JSONとの互換を維持し、初期移行に使用する)
+- 統合データJSONのダウンロードと、HTML版互換JSONから集計・設定を初期移行する。現金明細、添付metadata、
+  R2原本は汎用restoreの対象ではない。添付はinventoryと明示的safe recoveryを別契約にする
 - 増減マトリクスCSV(BOM付きUTF-8)
 
 **FR-06 認証**
 - Cloudflare Access(Zero Trust)によるメールOTP/IdP認証を第一候補とする。アプリ側はAccessのJWT(`Cf-Access-Jwt-Assertion`)を検証する
+- Access未設定時のpassword loginは、Cloudflareが付与する`CF-Connecting-IP`をnamespace付きSHA-256にしたscopeだけをD1に保存する。raw IP・password・request headerは保存/ログ出力しない
+- 既定は15分windowで5回目の失敗から15分lockし、`Retry-After`付き429を返す。成功時はそのscopeの失敗履歴だけを消去する。更新はD1のatomic UPSERTで並行失敗をlost updateさせない
+- 非secret overrideは`PASSWORD_LOGIN_WINDOW_SECONDS` / `PASSWORD_LOGIN_MAX_FAILURES` / `PASSWORD_LOGIN_LOCK_SECONDS` / `PASSWORD_LOGIN_STALE_AFTER_SECONDS`。validationとfallbackは`packages/api/src/login-rate-limit.ts`を正本とし、古い履歴はnightly scheduledが100件/1 queryで有界回収する
 - 単一ユーザー運用だが、全テーブルに `user_id` を持たせ将来の共有に備える
 
 **FR-07 指標ガイド(P10)**
@@ -177,6 +184,18 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
   - 未分類・説明不能支出(精査による削減期待値)
 - 候補を選択すると合計捻出額と予定支出額の差を表示し、「捻出できる/不足」を判定する。選択結果はメモとして保存し、翌月の実績と突合できるようにする(言いっぱなし防止)
 
+**FR-10 証憑添付・交通費(P5/P9/P13)**
+- 現金記帳と明示IDを持つMF明細へ、認証済みWorker経由でR2原本とD1 metadataを紐付ける
+- `object_deleted_at`はWorkerが行ったR2 DELETE成功の単調なD1 factとし、wireの原本可用性と件数は
+  応答生成時のexact-key R2 HEADで確認する。HEAD不能は503、帯域外欠損はlink/件数から外して明示する。
+  R2/D1非transaction境界はPUT前cleanup intentと既存nightly scheduledの有界reconcilerで収束させ、
+  ready原本は利用者の明示削除まで保持する
+- MF親が月洗替えで消えても孤児管理から閲覧・削除でき、同ID再出現で通常状態へ戻す
+- archiveは同一bucketのowner/key/hash/sizeを照合し、一致する原本のmetadataだけを明示回復する。
+  原本欠損・不一致を復元成功と表示しない
+- lifecycle・UI・quota/retention・受入の規範詳細は
+  [`specs/attachments-and-transit.md`](../specs/attachments-and-transit.md)を正とする
+
 ---
 
 ## 5. 非機能要件
@@ -184,8 +203,8 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 | 項目 | 要件 |
 |---|---|
 | 性能 | 各ページ初期表示 P95 1.5秒以内(集計はDB側で事前計算)。通常幅5,000行の取込は49 D1 queries以内（productionの30秒batch実測は未実施） |
-| 可用性 | Cloudflareマネージド範囲に準拠。個人利用のためSLA目標は設けないが、D1の自動バックアップ+日次エクスポート(R2)を行う |
-| セキュリティ | 全経路HTTPS。Access認証必須。R2/D1へは Worker 経由のみアクセス(公開バケット禁止)。金融明細のためログに明細内容・金額を出力しない |
+| 可用性 | Cloudflareマネージド範囲に準拠。個人利用のためSLA目標は設けないが、D1の自動バックアップ+日次エクスポート(R2)を行う。添付cleanupは既存nightly scheduledで全bucket scanなしの有界batch・backoff・dead-letterへ接続する |
+| セキュリティ | 全経路HTTPS。Cloudflare Accessまたは署名付きHttpOnlyセッションのどちらかで認証必須。password loginはraw IP/passwordを残さないD1 atomic rate limitで保護する。R2/D1へは Worker 経由のみアクセス(公開バケット禁止)。金融明細のためログに明細内容・金額・添付ファイル名/keyを出力しない。添付は8MiB/件、許可6形式のmagic、利用者別quotaをR2 PUT前に検証する |
 | プライバシー | 明細の外部送信なし。アナリティクスは導入しない(または自己ホストのみ) |
 | 保守性 | 計算ロジックは純関数として `packages/core` に分離し、HTML版の数値と一致するスナップショットテストを持つ |
 | 対応環境 | 最新版 Chrome / Safari / Edge。モバイルは閲覧+仕分け操作を最適化 |
@@ -267,6 +286,7 @@ users 1─n budgets
 users 1─n cash_overrides
 users 1─n monthly_agg (集計キャッシュ)
 users 1─n restored_monthly_agg (JSON復元baseline)
+users 1─n attachments 1─0..1 attachment_cleanup_jobs
 ```
 
 ### 7.2 テーブル定義(主要列)
@@ -283,6 +303,7 @@ CREATE TABLE mf_transactions (
   amount INTEGER NOT NULL,        -- 円。正=収入/負=支出
   category_major TEXT, category_mid TEXT,   -- 大項目/中項目
   institution TEXT,               -- 保有金融機関
+  identity_stable INTEGER NOT NULL DEFAULT 0 CHECK(identity_stable IN (0,1)), -- MF ID列由来だけ1
   import_id INTEGER REFERENCES imports(id),
   UNIQUE(user_id, tx_id)
 );
@@ -358,8 +379,14 @@ CREATE TABLE cash_entries (
   side TEXT CHECK(side IN ('biz','per')), io TEXT CHECK(io IN ('income','expense')),
   amount INTEGER NOT NULL, description TEXT NOT NULL,
   category_major TEXT NOT NULL, category_mid TEXT NOT NULL DEFAULT '', memo TEXT,
+  transit_from TEXT, transit_to TEXT,
+  transit_round INTEGER NOT NULL DEFAULT 0,
+  receipt_waived INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL, updated_at TEXT NOT NULL
 );
+
+-- 証憑添付(0010〜0012)の列・index・cleanup ledgerはdocs/data-schema.mdを正とする。
+-- 原本はR2、D1はmetadata、object_deleted_at等の単調fact、durable cleanup intentを持つ。
 
 -- 月次集計キャッシュ(取込・仕分け変更時に再生成)
 CREATE TABLE monthly_agg (
@@ -377,7 +404,7 @@ CREATE TABLE restored_monthly_agg (
 
 ### 7.3 集計再計算のトリガ
 
-`imports committed` / `rules 変更` / `overrides 変更` / `account_norm_map 変更` / `cash_entries 変更` のいずれかで、影響ユーザーの `monthly_agg` を全再生成する(数千行規模のため全再生成で十分。将来増えたら月単位差分化)。取込時はcanonical原本・baseline・cache・active target・commit markerを同じD1 batchへ含め、partial cacheを公開しない。export/夜間backupは`monthly_agg`に依存せず、baseline・freee/MF原本・rules・edits・owners・sub vendors・norm map・cash・budgets/override等を単一D1 read statementで取得し、同じcanonical snapshotから表示集計と`cashProjection:{version:1,basis:'post-resolution',rows}`を生成する。これによりcanonical writeとcache再生成の間でも世代を混在させない。JSON復元はdestination設定で再投影せず、このdeltaだけを厳密に差し引いて`restored_monthly_agg`を作る。invalid/unknown/duplicate/underflowはR2/DB書込み前400、valid-emptyは正常、projectionなし+非空cashEntriesは拒否、両方なしのpre-cash legacyは受理する。原本が無い月はbaselineへ現在DBの現金明細を1回だけ加算し、同月にfreee/MF原本があればbaselineは加算せず原本を正とする。0007の旧cache移行はscope domainごとに判定し、事業scopeはbiz現金、個人/bizPersonal scopeはper現金だけを曖昧要因とする。
+`imports committed` / `rules 変更` / `overrides 変更` / `account_norm_map 変更` / `cash_entries 変更` のいずれかで、影響ユーザーの `monthly_agg` を全再生成する(数千行規模のため全再生成で十分。将来増えたら月単位差分化)。取込時はcanonical原本・baseline・cache・active target・commit markerを同じD1 batchへ含め、partial cacheを公開しない。export/夜間backupは`monthly_agg`に依存せず、baseline・freee/MF原本・rules・edits・owners・sub vendors・norm map・cash・attachments・budgets/override等を単一D1 read statementで取得し、同じcanonical snapshotから表示集計と`cashProjection:{version:1,basis:'post-resolution',rows}`、棚卸し用の`attachmentArchive:{version:1,basis:'inventory-only',restoreCapable:false,records}`を生成する。archive自体はR2原本のcopyではなく、汎用restoreも現金明細・添付metadata・R2原本を復元しない。添付の明示的safe recoveryだけが、認証owner配下のexact R2 keyを実byteのhash/sizeまで照合し、一致するmetadataを再結合して欠損・不一致を別件数で返す。これによりcanonical writeとcache再生成の間でも世代を混在させない。JSON復元はdestination設定で再投影せず、このdeltaだけを厳密に差し引いて`restored_monthly_agg`を作る。invalid/unknown/duplicate/underflowはR2/DB書込み前400、valid-emptyは正常、projectionなし+非空cashEntriesは拒否、両方なしのpre-cash legacyは受理する。原本が無い月はbaselineへ現在DBの現金明細を1回だけ加算し、同月にfreee/MF原本があればbaselineは加算せず原本を正とする。0007の旧cache移行はscope domainごとに判定し、事業scopeはbiz現金、個人/bizPersonal scopeはper現金だけを曖昧要因とする。
 
 ---
 
@@ -410,9 +437,15 @@ CREATE TABLE restored_monthly_agg (
 
 | Method | Path | 概要 |
 |---|---|---|
-| POST | /imports | multipart。全unitを解析してwrite-set競合をpreflight→run/claim→unit履歴→R2保存→active v2指紋判定→unit単位D1 atomic commit。結果は`committed`/`failed`/`duplicate`と月ごとの取込前後件数`replaced`。異なるunit間はpartial success |
+| POST | /imports | multipart。全unitを解析してwrite-set競合をpreflight→run/claim→unit履歴→R2保存→active v3指紋判定→unit単位D1 atomic commit。結果は`committed`/`failed`/`duplicate`と月ごとの取込前後件数`replaced`。異なるunit間はpartial success |
 | GET | /imports | 取込履歴一覧。失敗理由とactive/partial/superseded/legacy世代表示を含む |
 | GET/POST | /cash-entries | P13用: 現金の記帳の一覧(科目候補付き)/追加。PUT/DELETE `/cash-entries/:id` で編集・削除。変更のたびに再集計 |
+| GET/POST | /attachments | target別の証憑metadata+利用者quota取得 / magic検証済み原本の登録 |
+| GET | /attachments/orphans | MF洗替えで親が消えたstable ID証憑の管理一覧 |
+| GET | /attachments/quota | 利用者別の証憑使用量・上限・残量 |
+| GET/DELETE | /attachments/:id/content, /attachments/:id | 原本取得 / durable cleanup ledgerを使う冪等削除・再試行 |
+| POST | /attachments/archive/reconcile | `attachmentArchive`と同一bucket原本のowner/key/hash/sizeを照合する書込みなしreport |
+| POST | /attachments/archive/recover | 明示confirm時だけ、照合一致した原本のmetadataを再結合 |
 | GET | /summary?from&to | P1用: 月次の売上/経費計/利益/補正値/移動平均 |
 | GET | /matrix?mode=val\|mom\|yoy | P2用: 科目×月+年計 |
 | GET | /diagnosis | P3用: 科目別統計プロファイル+診断+BEP |
@@ -426,7 +459,7 @@ CREATE TABLE restored_monthly_agg (
 | GET | /defense-line | FR-08用: 防衛ライン額と当月収入見込み・差分 |
 | GET/POST | /tradeoff | FR-09用: 削減候補リスト取得 / 試算結果の保存 |
 | GET | /export/json, /export/matrix.csv | エクスポート。JSONは監査用`cashEntries`とversion付き確定delta`cashProjection`を同梱 |
-| POST | /restore | HTML版互換JSONの直接取込(初期移行)。multipart JSONと同じfingerprint/claim/状態/atomic restore handlerを使うが、直接bodyなのでR2は作らない。現金明細は復元せず、validな`cashProjection`だけをbaselineから除外。imported `cash:*` editは破棄し、現存cash用のDB editは保持 |
+| POST | /restore | HTML版互換JSONから集計・設定を初期移行。multipart JSONと同じfingerprint/claim/状態/atomic handlerを使うが、直接bodyなのでR2は作らない。現金明細・添付metadata・添付原本は復元せず、validな`cashProjection`だけをbaselineから除外。imported `cash:*` editは破棄し、現存cash用のDB editは保持 |
 
 エラーは `{error:{code,message}}` 統一。バリデーションは全エンドポイントでzod。
 
@@ -458,6 +491,11 @@ CREATE TABLE restored_monthly_agg (
 - 形式は「table+選択行直下panel」を採用する。modalは編集中に前後明細と列文脈を隠し、月次の上から確認する流れを中断するため採用しない。
 - マトリクス: 先頭列固定・横スクロール。モード切替はセグメントコントロール
 - 取込: ドラッグ&ドロップ+進捗表示+結果ログ(件数/対象月/スキップ理由)。同月洗い替えの旨を確認ダイアログで明示
+- 証憑: Cash/Classifyで共通panelを使い、0件は「未添付」+「証憑を追加」、1件以上は
+  「添付ありN」+「証憑を管理」とする。原本link、cleanup文言、quota、親なし表示は
+  APIの`originalAvailable/cleanupStage/orphaned/usage`だけから導出する
+- 設定: HTML版JSONは集計・設定の初期移行と明記する。添付archiveは照合reportを先に表示し、
+  原本欠損・hash/size不一致を復元成功へ含めない
 - 空状態: データ未取込のページは「取込へ」導線を表示
 
 ---
@@ -486,7 +524,7 @@ main:  上記CIの成功 → wrangler deploy(production)
 ## 12. データ移行
 
 1. HTML版の「統合データを書き出し(JSON)」を実行
-2. 本システムの `POST /restore` に投入する。受信fieldは現在値へmergeしてから、MF原本は含有月を洗い替え、rules/edits/institution owners/budgets/cash override/復元baseline/未記帳月は全置換、sub vendor名は追加する。freee原本・現金明細・現存現金用editは保持する。API export/backupの `cashProjection` v1をbaselineから差し引き、監査用`cashEntries`から再演算しない。`POST /restore`はR2原本を作らない
+2. 本システムの `POST /restore` に投入する。これは集計・設定の初期移行であり、受信fieldは現在値へmergeしてから、MF原本は含有月を洗い替え、rules/edits/institution owners/budgets/cash override/復元baseline/未記帳月は全置換、sub vendor名は追加する。freee原本・現金明細・添付metadata/R2原本・現存現金用editは保持する。API export/backupの `cashProjection` v1をbaselineから差し引き、監査用`cashEntries`から再演算しない。`POST /restore`はR2原本を作らない
 3. freee/MFの原本CSVを再取込し、restore値と集計一致を確認して切替完了
 
 ---
@@ -498,7 +536,7 @@ main:  上記CIの成功 → wrangler deploy(production)
 | M1 基盤 | monorepo/CI/CD/認証/D1スキーマ/コア移植 | 架空データによるcore契約テスト全緑・本番dry-run成功 |
 | M2 取込と仕分け(MVP) | P8取込パイプライン+P5仕分け+**防衛ライン表示(FR-08)** | CSV/Excel投入→仕分け→防衛ラインが見える。**この時点で「毎月かかる額と稼ぐべき基準」の管理という根本目的は達成**。以降は原則5に従い運用しながら拡張 |
 | M3 分析画面 | P1〜P4, P6の可視化 | HTML版と同一数値・同一判定を表示 |
-| M4 予算・試算・移行 | P7/P9/P10/**P11(FR-09)**+restore | HTML版JSONから完全移行、二重運用終了 |
+| M4 予算・試算・移行 | P7/P9/P10/**P11(FR-09)**+restore | HTML版JSONから集計・設定を移行し、二重運用終了 |
 | M5 運用改善 | バックアップ・監査履歴・モバイル調整 | 月次運用1サイクル完走 |
 
 ---
@@ -510,7 +548,7 @@ main:  上記CIの成功 → wrangler deploy(production)
 | MFのID列欠落・重複でtx_idが不安定 → 手動判定が引き継げない | 合成キー(月+行+金額+内容ハッシュ)をフォールバック。取込時にID重複を検知し警告 |
 | CSVフォーマット変更(freee/MF側) | ヘッダー名の部分一致マッチ+パーサをcoreに隔離し、フィクスチャ追加のみで追随 |
 | Workers CPU制限(巨大Excel) | 5,000行超でQueuesへ非同期化。UIはポーリングで進捗表示 |
-| D1障害・誤操作 | 夜間R2エクスポート+取込原本保持により全量再構築可能 |
+| D1障害・誤操作 | 夜間R2エクスポートから集計・設定を初期移行し、freee/MF原本を再取込する。現金明細は自動復元せず、添付は同一bucketに残る原本をowner/key/hash/size照合できた場合だけmetadataを明示回復する。欠損・不一致は件数で報告する |
 | 仕分けルールの誤爆(広すぎるキーワード) | ルール追加時に「影響件数プレビュー」を表示(該当明細数と金額) |
 
 ---

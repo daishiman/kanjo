@@ -15,6 +15,8 @@ export interface MfParseResult {
   syntheticIds: number;
   /** ファイル内でIDが重複した件数（後勝ちで上書きされる） */
   duplicateIds: number;
+  /** 現金記帳の予約名前空間 `cash:` と衝突した取込ID件数 */
+  reservedIds: number;
 }
 
 export function isMfHeader(header: string[]): boolean {
@@ -41,6 +43,7 @@ export function parseMfRows(rows: string[][]): MfParseResult {
   let syntheticIds = 0;
   const seen = new Set<string>();
   let duplicateIds = 0;
+  let reservedIds = 0;
   rows.slice(1).forEach((r, ri) => {
     if (r[ci.tgt] !== '1' || r[ci.tf] === '1') {
       skipped++;
@@ -60,9 +63,11 @@ export function parseMfRows(rows: string[][]): MfParseResult {
       syntheticIds++;
     }
     if (seen.has(id)) duplicateIds++;
+    if (id.startsWith('cash:')) reservedIds++;
     seen.add(id);
     txs.push({
       id,
+      idStable: ci.id >= 0 && !!r[ci.id],
       m,
       d: normalizeMfDisplayDate(String(r[ci.dt]), m),
       c: ci.c >= 0 ? String(r[ci.c]).slice(0, 40) : '',
@@ -73,5 +78,5 @@ export function parseMfRows(rows: string[][]): MfParseResult {
     });
   });
   const months = [...new Set(txs.map((t) => t.m))].sort();
-  return { txs, months, rows: txs.length, skipped, syntheticIds, duplicateIds };
+  return { txs, months, rows: txs.length, skipped, syntheticIds, duplicateIds, reservedIds };
 }

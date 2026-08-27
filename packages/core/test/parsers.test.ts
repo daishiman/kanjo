@@ -112,10 +112,24 @@ describe('マネーフォワード取込', () => {
   it('ID欠落時に合成キーを使い、同月再取込を置換する', () => {
     expect(parsed.syntheticIds).toBe(1);
     expect(parsed.txs.at(-1)?.id).toBe('2026-07_4_-5000');
+    expect(parsed.txs.at(-1)?.idStable).toBe(false);
+    expect(parsed.txs[0]?.idStable).toBe(true);
 
     const data = emptyDataset();
     applyMfTxs(data, parsed.txs);
     applyMfTxs(data, parsed.txs);
     expect(data.mfTx).toHaveLength(3);
+  });
+
+  it('現金記帳用のcash名前空間と衝突するMF IDを検出する', () => {
+    const collision = parseMfRows(
+      parseCSV(
+        [
+          '計算対象,日付,金額,大項目,中項目,振替,内容,ID',
+          '1,2026/07/06,-1000,交通費,電車,0,架空交通費,cash:1',
+        ].join('\n'),
+      ),
+    );
+    expect(collision.reservedIds).toBe(1);
   });
 });

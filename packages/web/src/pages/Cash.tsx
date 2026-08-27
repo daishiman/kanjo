@@ -3,8 +3,17 @@
  * 事業分は freee 仕訳と同じ経路で科目別集計に、家計分は口座「現金」の明細として家計集計に反映される。
  * CSV/Excel の再取込では消えない(取込値とは別に保管する)。
  */
+import {
+  TRANSIT_CATEGORY,
+  type TransitInput,
+  buildTransitEntry,
+  cashTxId,
+  missingReceiptSeverity,
+  receiptStatus,
+  transitInputError,
+} from '@kanjo/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, Fragment, useState } from 'react';
 import {
   type CashEntriesResponse,
   type CashEntry,
@@ -13,6 +22,11 @@ import {
   SCOPE_SHORT,
   api,
 } from '../api.js';
+import {
+  AttachmentDisclosureCell,
+  AttachmentDisclosureRow,
+  useAttachmentDisclosure,
+} from '../components/Attachments.js';
 import { CategoryInputs } from '../components/ClassificationSettings.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { monthLabel, yen } from '../format.js';
@@ -32,6 +46,10 @@ const emptyBody = (): CashEntryBody => ({
   big: '',
   mid: '',
   memo: null,
+  transitFrom: null,
+  transitTo: null,
+  transitRound: false,
+  receiptWaived: false,
 });
 
 const toBody = (e: CashEntry): CashEntryBody => ({
@@ -43,13 +61,86 @@ const toBody = (e: CashEntry): CashEntryBody => ({
   big: e.categoryMajor,
   mid: e.categoryMid,
   memo: e.memo,
+  transitFrom: e.transitFrom,
+  transitTo: e.transitTo,
+  transitRound: e.transitRound,
+  receiptWaived: e.receiptWaived,
 });
 
-const canSubmit = (b: CashEntryBody): boolean =>
+export type CashEntryMode = 'normal' | 'transit';
+
+export const transitInputFromCashBody = (body: CashEntryBody): TransitInput => ({
+  from: body.transitFrom ?? '',
+  to: body.transitTo ?? '',
+  oneWayAmount: body.transitRound ? body.amount / 2 : body.amount,
+  round: body.transitRound,
+});
+
+export function setCashTransitInput(body: CashEntryBody, transit: TransitInput): CashEntryBody {
+  const built = buildTransitEntry(transit);
+  return {
+    ...body,
+    io: 'expense',
+    amount: built.amount,
+    description: built.description,
+    transitFrom: transit.from,
+    transitTo: transit.to,
+    transitRound: transit.round,
+    receiptWaived: true,
+  };
+}
+
+export function changeCashEntryMode(body: CashEntryBody, mode: CashEntryMode): CashEntryBody {
+  const currentMode: CashEntryMode =
+    body.transitFrom !== null || body.transitTo !== null ? 'transit' : 'normal';
+  if (currentMode === mode) return body;
+  if (mode === 'transit') {
+    return {
+      ...body,
+      io: 'expense',
+      amount: 0,
+      description: '',
+      big: body.side === 'biz' ? TRANSIT_CATEGORY : '',
+      mid: '',
+      transitFrom: '',
+      transitTo: '',
+      transitRound: true,
+      receiptWaived: true,
+    };
+  }
+  return {
+    ...body,
+    amount: 0,
+    description: '',
+    transitFrom: null,
+    transitTo: null,
+    transitRound: false,
+    receiptWaived: false,
+  };
+}
+
+export const cashEntryMode = (body: CashEntryBody): CashEntryMode =>
+  body.transitFrom !== null || body.transitTo !== null ? 'transit' : 'normal';
+
+export const resetCashEntryAfterCreate = (body: CashEntryBody): CashEntryBody => ({
+  ...body,
+  amount: 0,
+  description: '',
+  big: '',
+  mid: '',
+  memo: null,
+  transitFrom: null,
+  transitTo: null,
+  transitRound: false,
+  receiptWaived: false,
+});
+
+const canSubmit = (b: CashEntryBody, mode: CashEntryMode): boolean =>
   /^\d{4}-\d{2}-\d{2}$/.test(b.date) &&
   b.amount > 0 &&
   b.description.trim().length > 0 &&
-  b.big.trim().length > 0;
+  b.big.trim().length > 0 &&
+  (mode === 'normal' || transitInputError(transitInputFromCashBody(b)) === null);
 
 /** 追加と編集で同じ入力作法(1組)を使う */
 function EntryFields({
@@ -129,6 +220,174 @@ function EntryFields({
   );
 }
 
+/**
+ * 交通費の新規・編集で共用する入力。CashEntryBodyを1つの正本とし、
+ * 区間と片道運賃から同じsetCashTransitInputで金額・内容・metadataを導出する。
+ */
+function TransitFields({
+  value,
+  onChange,
+  candidates,
+}: {
+  value: CashEntryBody;
+  onChange: (body: CashEntryBody) => void;
+  candidates: CashEntriesResponse['candidates'];
+}) {
+  const t = transitInputFromCashBody(value);
+  const setTransit = (patch: Partial<TransitInput>) =>
+    onChange(setCashTransitInput(value, { ...t, ...patch }));
+  const setBody = (patch: Partial<CashEntryBody>) => onChange({ ...value, ...patch });
+  const error = transitInputError(t);
+  const built = buildTransitEntry(t);
+
+  return (
+    <>
+      <input
+        type="date"
+        value={value.date}
+        onChange={(e) => setBody({ date: e.target.value })}
+        aria-label="日付"
+        required
+      />
+      <select
+        value={value.side}
+        onChange={(e) => {
+          const v = e.target.value as Cls;
+          setBody({ side: v, big: v === 'biz' ? TRANSIT_CATEGORY : '', mid: '' });
+        }}
+        aria-label="事業か家計か"
+      >
+        <option value="biz">事業</option>
+        <option value="per">家計</option>
+      </select>
+      <input
+        type="text"
+        placeholder="出発(例: 名古屋)"
+        aria-label="出発地"
+        maxLength={40}
+        value={t.from}
+        onChange={(e) => setTransit({ from: e.target.value })}
+        style={{ width: 140 }}
+      />
+      <span aria-hidden="true">→</span>
+      <input
+        type="text"
+        placeholder="到着(例: 金山)"
+        aria-label="到着地"
+        maxLength={40}
+        value={t.to}
+        onChange={(e) => setTransit({ to: e.target.value })}
+        style={{ width: 140 }}
+      />
+      <input
+        type="number"
+        min={1}
+        step={1}
+        inputMode="numeric"
+        placeholder="片道(円)"
+        aria-label="片道の運賃(円)"
+        value={t.oneWayAmount || ''}
+        onChange={(e) => setTransit({ oneWayAmount: Math.floor(Number(e.target.value) || 0) })}
+        style={{ width: 110 }}
+      />
+      <label className="check">
+        <input type="checkbox" checked={t.round} onChange={(e) => setTransit({ round: e.target.checked })} />
+        往復
+      </label>
+      <CategoryInputs
+        candidates={candidates}
+        scope={value.side}
+        big={value.big}
+        mid={value.mid}
+        onChange={setBody}
+        placeholderBig={value.side === 'biz' ? '勘定科目を選ぶ' : '大項目を選ぶ'}
+        placeholderMid="中項目(任意)"
+      />
+      <span className="sub" style={{ margin: 0 }}>
+        {error ?? `${built.description} / ${yen(built.amount)}`}
+      </span>
+      <span className="sub" style={{ margin: 0 }}>
+        電車代は領収書が出ない交通費として「証憑不要」で記帳します。
+      </span>
+    </>
+  );
+}
+
+function EntryModeTabs({
+  mode,
+  onChange,
+}: {
+  mode: CashEntryMode;
+  onChange: (mode: CashEntryMode) => void;
+}) {
+  return (
+    <span className="segment" role="tablist" aria-label="記帳の種類">
+      <button
+        type="button"
+        role="tab"
+        aria-selected={mode === 'normal'}
+        className={mode === 'normal' ? 'on' : ''}
+        onClick={() => {
+          if (mode !== 'normal') onChange('normal');
+        }}
+      >
+        通常の記帳
+      </button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={mode === 'transit'}
+        className={mode === 'transit' ? 'on' : ''}
+        onClick={() => {
+          if (mode !== 'transit') onChange('transit');
+        }}
+      >
+        交通費(電車代)
+      </button>
+    </span>
+  );
+}
+
+function CashEntryInputs({
+  mode,
+  value,
+  onChange,
+  onModeChange,
+  candidates,
+}: {
+  mode: CashEntryMode;
+  value: CashEntryBody;
+  onChange: (body: CashEntryBody) => void;
+  onModeChange: (mode: CashEntryMode) => void;
+  candidates: CashEntriesResponse['candidates'];
+}) {
+  return (
+    <>
+      <EntryModeTabs mode={mode} onChange={onModeChange} />
+      {mode === 'normal' ? (
+        <EntryFields value={value} onChange={onChange} candidates={candidates} />
+      ) : (
+        <TransitFields value={value} onChange={onChange} candidates={candidates} />
+      )}
+    </>
+  );
+}
+
+const prepareCashEntry = (body: CashEntryBody, mode: CashEntryMode): CashEntryBody => {
+  if (mode === 'normal') {
+    return {
+      ...body,
+      description: body.description.trim(),
+      transitFrom: null,
+      transitTo: null,
+      transitRound: false,
+      receiptWaived: false,
+    };
+  }
+  const transit = transitInputFromCashBody(body);
+  return setCashTransitInput(body, { ...transit, from: transit.from.trim(), to: transit.to.trim() });
+};
+
 export function CashPage() {
   const qc = useQueryClient();
   const q = useQuery({
@@ -136,8 +395,14 @@ export function CashPage() {
     queryFn: () => api<CashEntriesResponse>('/cash-entries'),
   });
   const [draft, setDraft] = useState<CashEntryBody>(emptyBody);
-  const [editing, setEditing] = useState<{ id: number; body: CashEntryBody } | null>(null);
+  const [editing, setEditing] = useState<{
+    id: number;
+    body: CashEntryBody;
+    mode: CashEntryMode;
+  } | null>(null);
   const [month, setMonth] = useState<string>('');
+  const [mode, setMode] = useState<CashEntryMode>('normal');
+  const attachments = useAttachmentDisclosure();
 
   // 集計は全ページに波及するため、変更後はすべて読み直す
   const refreshAll = () => void qc.invalidateQueries();
@@ -145,8 +410,9 @@ export function CashPage() {
   const add = useMutation({
     mutationFn: (body: CashEntryBody) => api('/cash-entries', { method: 'POST', body: JSON.stringify(body) }),
     onSuccess: () => {
-      // 続けて記帳しやすいよう日付と区分は残し、金額・内容・科目だけ空にする
-      setDraft((d) => ({ ...d, amount: 0, description: '', big: '', mid: '', memo: null }));
+      // 日付と区分は残すが、証憑不要と交通費metadataは次の記帳へ持ち越さない。
+      setDraft(resetCashEntryAfterCreate);
+      setMode('normal');
       refreshAll();
     },
   });
@@ -165,7 +431,7 @@ export function CashPage() {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    if (canSubmit(draft)) add.mutate({ ...draft, description: draft.description.trim() });
+    if (canSubmit(draft, mode)) add.mutate(prepareCashEntry(draft, mode));
   };
 
   if (q.isLoading) return <PageState status="loading" />;
@@ -192,8 +458,17 @@ export function CashPage() {
           </div>
         )}
         <form onSubmit={submit} className="toolbar">
-          <EntryFields value={draft} onChange={setDraft} candidates={candidates} />
-          <button type="submit" className="primary" disabled={!canSubmit(draft) || add.isPending}>
+          <CashEntryInputs
+            mode={mode}
+            value={draft}
+            onChange={setDraft}
+            onModeChange={(nextMode) => {
+              setDraft((current) => changeCashEntryMode(current, nextMode));
+              setMode(nextMode);
+            }}
+            candidates={candidates}
+          />
+          <button type="submit" className="primary" disabled={!canSubmit(draft, mode) || add.isPending}>
             {add.isPending ? '記帳中…' : '記帳する'}
           </button>
         </form>
@@ -239,6 +514,7 @@ export function CashPage() {
                 <th>科目</th>
                 <th>金額</th>
                 <th>メモ</th>
+                <th>証憑</th>
                 <th>操作</th>
               </tr>
             </thead>
@@ -246,21 +522,29 @@ export function CashPage() {
               {shown.map((e) =>
                 editing?.id === e.id ? (
                   <tr key={e.id} className="editor">
-                    <td colSpan={7}>
+                    <td colSpan={8}>
                       <div className="editor-form">
-                        <EntryFields
+                        <CashEntryInputs
+                          mode={editing.mode}
                           value={editing.body}
-                          onChange={(body) => setEditing({ id: e.id, body })}
+                          onChange={(body) => setEditing({ ...editing, body })}
+                          onModeChange={(nextMode) =>
+                            setEditing({
+                              ...editing,
+                              mode: nextMode,
+                              body: changeCashEntryMode(editing.body, nextMode),
+                            })
+                          }
                           candidates={candidates}
                         />
                         <button
                           type="button"
                           className="primary"
-                          disabled={!canSubmit(editing.body) || update.isPending}
+                          disabled={!canSubmit(editing.body, editing.mode) || update.isPending}
                           onClick={() =>
                             update.mutate({
                               id: e.id,
-                              body: { ...editing.body, description: editing.body.description.trim() },
+                              body: prepareCashEntry(editing.body, editing.mode),
                             })
                           }
                         >
@@ -273,50 +557,70 @@ export function CashPage() {
                     </td>
                   </tr>
                 ) : (
-                  <tr key={e.id}>
-                    <td className="num">{e.date}</td>
-                    <td>
-                      <span className={`pill ${e.side === 'biz' ? 'biz' : 'per'}`}>
-                        {SCOPE_SHORT[e.side]}
-                      </span>
-                    </td>
-                    <td>{e.description}</td>
-                    <td>{e.categoryMid ? `${e.categoryMajor} / ${e.categoryMid}` : e.categoryMajor}</td>
-                    <td className="num">
-                      {e.io === 'income' ? '+' : '-'}
-                      {yen(e.amount)}
-                    </td>
-                    <td>{e.memo ?? ''}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="mini"
-                        onClick={() => setEditing({ id: e.id, body: toBody(e) })}
-                      >
-                        編集
-                      </button>{' '}
-                      <button
-                        type="button"
-                        className="mini"
-                        disabled={del.isPending}
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              `${e.date} の「${e.description}」(${yen(e.amount)})を削除しますか?`,
+                  <Fragment key={e.id}>
+                    <tr>
+                      <td className="num">{e.date}</td>
+                      <td>
+                        <span className={`pill ${e.side === 'biz' ? 'biz' : 'per'}`}>
+                          {SCOPE_SHORT[e.side]}
+                        </span>
+                      </td>
+                      <td>{e.description}</td>
+                      <td>{e.categoryMid ? `${e.categoryMajor} / ${e.categoryMid}` : e.categoryMajor}</td>
+                      <td className="num">
+                        {e.io === 'income' ? '+' : '-'}
+                        {yen(e.amount)}
+                      </td>
+                      <td>{e.memo ?? ''}</td>
+                      <td>
+                        <AttachmentDisclosureCell
+                          targetId={cashTxId(e.id)}
+                          status={receiptStatus(e, e.attachmentCount)}
+                          count={e.attachmentCount}
+                          severity={missingReceiptSeverity(e)}
+                          disclosure={attachments}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className="mini"
+                          onClick={() => {
+                            const body = toBody(e);
+                            setEditing({ id: e.id, body, mode: cashEntryMode(body) });
+                          }}
+                        >
+                          編集
+                        </button>{' '}
+                        <button
+                          type="button"
+                          className="mini"
+                          disabled={del.isPending}
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                `${e.date} の「${e.description}」(${yen(e.amount)})を削除しますか?`,
+                              )
                             )
-                          )
-                            del.mutate(e.id);
-                        }}
-                      >
-                        削除
-                      </button>
-                    </td>
-                  </tr>
+                              del.mutate(e.id);
+                          }}
+                        >
+                          削除
+                        </button>
+                      </td>
+                    </tr>
+                    <AttachmentDisclosureRow
+                      targetId={cashTxId(e.id)}
+                      colSpan={8}
+                      disclosure={attachments}
+                      onChanged={() => void qc.invalidateQueries({ queryKey: ['cash-entries'] })}
+                    />
+                  </Fragment>
                 ),
               )}
               {!shown.length && (
                 <tr>
-                  <td colSpan={7} className="empty">
+                  <td colSpan={8} className="empty">
                     {entries.length
                       ? 'この月の現金の記帳はありません。上の「すべての月」に戻すか、別の月を選んでください。'
                       : '現金の記帳はまだありません。口座やカードの明細に出ない現金の支払い(商工会議所の会議費など)を、上のフォームから追加してください。'}

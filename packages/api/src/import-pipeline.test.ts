@@ -43,3 +43,19 @@ describe('Excel取込', () => {
     ]);
   });
 });
+
+describe('MF IDの永続同一性', () => {
+  it('cash:で始まるIDを現金記帳との衝突としてファイル単位で拒否する', () => {
+    const csv = [
+      '計算対象,日付,金額,大項目,中項目,振替,内容,ID',
+      '1,2026/08/01,-1200,日用品,雑貨,0,架空店舗,cash:42',
+    ].join('\n');
+    expect(parseUpload('anonymous.csv', new TextEncoder().encode(csv), {})).toEqual([
+      {
+        kind: 'error',
+        filename: 'anonymous.csv',
+        reason: 'IDがcash:で始まる明細があるため取り込めません。現金記帳と衝突しないIDで再出力してください',
+      },
+    ]);
+  });
+});
