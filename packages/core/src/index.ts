@@ -14,3 +14,4 @@ export * from './settlement.js';
 export * from './attachments.js';
 export * from './fingerprint.js';
 export * from './persisted-projection.js';
+export * from './chart-aggregates.js';

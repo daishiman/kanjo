@@ -110,15 +110,31 @@ export const categoryOptions = sqliteTable('category_options', {
   mid: text('mid').notNull(),
 });
 
-/** サブスクのベンダー登録(名前+別名)。aliases は JSON 配列文字列 */
+/** サブスクのベンダー登録(名前+別名+対象科目)。aliases / accounts は JSON 配列文字列 */
 export const subVendors = sqliteTable('sub_vendors', {
   id: integer('id').primaryKey(),
   userId: text('user_id').notNull(),
   name: text('name').notNull(),
   aliases: text('aliases').notNull().default('[]'),
+  /** 対象勘定科目の原本名。旧行の正規化後ラベルも互換照合する。'[]' なら全科目 */
+  accounts: text('accounts').notNull().default('[]'),
   sortOrder: integer('sort_order').notNull().default(0),
   createdAt: text('created_at').notNull().$defaultFn(nowIso),
 });
+
+/** 「これはサブスクではない」と記録した支払先。候補一覧から外すためだけに使う */
+export const subVendorExclusions = sqliteTable(
+  'sub_vendor_exclusions',
+  {
+    id: integer('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    partner: text('partner').notNull(),
+    /** 表記ゆれを吸収した照合キー(core の vendorKey) */
+    vendorKey: text('vendor_key').notNull(),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [uniqueIndex('uq_sub_vendor_exclusions_user_key').on(t.userId, t.vendorKey)],
+);
 
 export const budgets = sqliteTable('budgets', {
   userId: text('user_id').notNull(),
@@ -410,11 +426,22 @@ export const aiReports = sqliteTable(
     title: text('title').notNull(),
     summary: text('summary').notNull(),
     bodyJson: text('body_json').notNull(),
+    /** アーカイブした日時。NULL = 通常表示(削除ではないので本文は残る) */
+    archivedAt: text('archived_at'),
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
   },
   (t) => [
     index('idx_ai_reports_user').on(t.userId, t.createdAt),
     index('idx_ai_reports_period').on(t.userId, t.periodKind, t.periodKey),
     index('idx_ai_reports_type').on(t.userId, t.reportType, t.periodFrom, t.periodTo),
+    index('idx_ai_reports_archived').on(t.userId, t.archivedAt, t.createdAt),
   ],
 );
+
+/** AI分析の統計設定(利用者ごと)。行が無ければ既定値として扱う */
+export const analysisSettings = sqliteTable('analysis_settings', {
+  userId: text('user_id').primaryKey(),
+  /** 平均・標準偏差・移動平均・固定費判定に必要な記帳月数(既定6) */
+  statMinMonths: integer('stat_min_months').notNull().default(6),
+  updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+});

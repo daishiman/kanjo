@@ -195,7 +195,7 @@ describe('D1 statement budget', () => {
     ).toMatchObject({ total: 49, accepted: true });
 
     const writeSet = prepareRestoreWriteSet({ userId: common.userId, data, restored: emptyDataset() });
-    writeSet.editRows = Array.from({ length: 7 }, (_, index) => [
+    writeSet.editRows = Array.from({ length: 6 }, (_, index) => [
       `synthetic-${index}`,
       null,
       null,
@@ -348,8 +348,9 @@ describe('D1 statement budget', () => {
 });
 
 describe('JSON restore persisted projection', () => {
-  it('subs aliasesは除外し、実際に永続化するcash/non-cash editは区別する', async () => {
+  it('subs aliases/accountsと、実際に永続化するcash/non-cash editを区別する', async () => {
     const data = emptyDataset();
+    data.subs.vendors = ['架空SaaS'];
     data.subs.aliases = { 架空SaaS: ['ALIAS-A'] };
     data.edits['cash:1'] = { note: 'A' };
     const restored = emptyDataset();
@@ -357,7 +358,15 @@ describe('JSON restore persisted projection', () => {
     const aliasesChanged = structuredClone(data);
     aliasesChanged.subs.aliases = { 架空SaaS: ['ALIAS-B'] };
     const semanticSame = prepareRestoreWriteSet({ userId: 'synthetic-user', data: aliasesChanged, restored });
-    expect(await restoreWriteSetFingerprint(base)).toBe(await restoreWriteSetFingerprint(semanticSame));
+    expect(await restoreWriteSetFingerprint(base)).not.toBe(await restoreWriteSetFingerprint(semanticSame));
+
+    const accountsChanged = structuredClone(data);
+    accountsChanged.subs.accounts = { 架空SaaS: ['架空原科目'] };
+    expect(
+      await restoreWriteSetFingerprint(
+        prepareRestoreWriteSet({ userId: 'synthetic-user', data: accountsChanged, restored }),
+      ),
+    ).not.toBe(await restoreWriteSetFingerprint(base));
 
     const cashChanged = structuredClone(data);
     cashChanged.edits['cash:1'] = { note: 'B' };
@@ -420,6 +429,8 @@ describe('JSON pointer invalidation consumers', () => {
       'unrecorded_months',
       'cash_overrides',
       'sub_vendors',
+      'sub_vendor_exclusions',
+      'analysis_settings',
       'freee_deals',
       'mf_transactions',
       'restored_monthly_agg',
@@ -451,6 +462,8 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/sub-vendors'],
       ['PUT', '/api/sub-vendors/1'],
       ['DELETE', '/api/sub-vendors/1'],
+      ['POST', '/api/sub-vendors/exclusions'],
+      ['DELETE', '/api/sub-vendors/exclusions/1'],
     ] as const;
     const selfManaged = [
       ['POST', '/api/imports'],
@@ -462,6 +475,10 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/ai/tasks'],
       ['POST', '/api/ai/tasks/1/paste'],
       ['POST', '/api/ai/tasks/1/report'],
+      ['DELETE', '/api/ai/tasks/1'],
+      ['DELETE', '/api/ai/reports/1'],
+      // アーカイブは表示の出し分けだけを変え、記帳の正本には触れない。
+      ['PUT', '/api/ai/reports/1/archive'],
       ['POST', '/api/tradeoff'],
       // suggestionは読み取りのみでbudgetを書かない。
       ['POST', '/api/budgets/suggest'],
@@ -521,12 +538,17 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/sub-vendors',
       'PUT /api/sub-vendors/:id',
       'DELETE /api/sub-vendors/:id',
+      'POST /api/sub-vendors/exclusions',
+      'DELETE /api/sub-vendors/exclusions/:id',
       'POST /api/imports',
       'POST /api/restore',
       'POST /api/tradeoff',
       'POST /api/ai/tasks',
       'POST /api/ai/tasks/:id/paste',
       'POST /api/ai/tasks/:id/report',
+      'PUT /api/ai/reports/:id/archive',
+      'DELETE /api/ai/reports/:id',
+      'DELETE /api/ai/tasks/:id',
       'POST /api/auth/login',
       'POST /api/auth/logout',
     ].sort();

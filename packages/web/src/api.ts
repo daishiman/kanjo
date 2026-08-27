@@ -287,6 +287,8 @@ export interface ImportHistoryRow {
   generationState: 'active' | 'partial' | 'superseded' | 'legacy' | null;
   committedAt: string | null;
   createdAt: string | null;
+  /** 投入原本をR2に保存済み=やり直し(再取込)の入口を出せる。旧APIからの段階更新中はundefined */
+  originalRecorded?: boolean;
 }
 
 /* -------- 添付(レシート・領収書) -------- */
@@ -433,6 +435,9 @@ export interface SettingsResponse {
   normMap: Record<string, string>;
   unrecordedExpMonths: string[];
   cashOverrides: Record<string, { revenue: number; expense: number }>;
+  /** AI分析の統計指標が必要とする記帳月数(既定6) */
+  statMinMonths: number;
+  statMinMonthsRange: { min: number; max: number; default: number };
 }
 
 export interface TradeoffResponse {
@@ -466,6 +471,12 @@ export type {
 
 export interface SubVendorRow extends SubVendor {
   id: number;
+}
+
+/** 「これはサブスクではない」と記録した支払先(候補一覧から外れる) */
+export interface SubVendorExclusionRow {
+  id: number;
+  partner: string;
 }
 
 /* -------- AI分析(spec §16) -------- */
@@ -555,7 +566,7 @@ export interface AiReportNeed {
   action: string;
   screen: AiNeedScreen | null;
 }
-export type AiChartKind = 'line' | 'bar' | 'stackedBar' | 'waterfall' | 'pareto' | 'band';
+export type AiChartKind = 'line' | 'bar' | 'stackedBar' | 'waterfall' | 'pareto' | 'band' | 'heatmap';
 export interface AiChartSeries {
   label: string;
   data: (number | null)[];
@@ -603,6 +614,8 @@ export interface AiReportRow {
   title: string;
   summary: string;
   createdAt: string;
+  /** アーカイブした日時。null = 通常表示 */
+  archivedAt: string | null;
 }
 export interface AiTaskCreateBody extends AiPeriod {
   supplement?: string;
