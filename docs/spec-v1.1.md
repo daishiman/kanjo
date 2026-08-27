@@ -85,7 +85,7 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 
 | 用語 | 定義 |
 |---|---|
-| 明細(Transaction) | MFの1行(計算対象=1かつ振替=0のみ有効) |
+| 明細(Transaction) | 日付を解釈できるMFの1行。全行を保存し、計算対象=1かつ振替=0の行だけを収支集計へ含める |
 | 仕訳(Deal) | freeeの1取引行 |
 | 公私仕分け(Classification) | 明細を biz(事業)/per(個人) に判定すること。優先順位: 手動 > ルール > 既定(per) |
 | 仕分けルール(Rule) | キーワード(内容・大項目・中項目に部分一致、大文字小文字無視)→ biz/per。並び順の先勝ち |
@@ -125,12 +125,12 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 - ヘッダーで形式を自動判定する: 「収支区分」列→freee仕訳、「計算対象」列→MF明細。判定不能はエラー表示し取り込まない
 - 原本ファイルはR2へ保存し、upload runとlogical unitへ関連付ける。状態は`processing`/`applying`/`committed`/`failed`/`duplicate`の閉じた値、失敗理由は別列で記録する
 - **月単位の洗い替え**: 取込ファイルに含まれる月は、その月の既存データを削除して置換する(HTML版と同一仕様)。手動判定(override)は明細IDが一致する限り維持する
-- MF明細は 計算対象=1 かつ 振替=0 のみ有効化。金額の正=収入、負=支出
+- 日付を解釈できるMF明細は全行を保存し、`計算対象`・`振替`・`メモ`の原文属性を保持する。収支集計は計算対象=1かつ振替=0だけを含める。金額の正=収入、負=支出
 - freee仕訳は発生日から月を導出。科目正規化マップを適用する
 - canonical原本、月次集計キャッシュ、active pointer、unit terminal、unit状態からのrun reconcileを同じD1 atomic batchで確定する。途中失敗したunitは確定せず、同じ入力の通常再試行で回復できる
 - 利用者ごとの取込writerを期限付きDB claimで直列化し、claim取得後の正規化map/canonical snapshotだけを計画と実行で共有する。受理前claimはrun未作成の所有tokenなので`import_runs`へのFKを持たず、拒否時はrun/R2/canonicalを作らずreleaseする。stale takeoverでは旧run配下の未完了unitだけを同じ回復batchで`failed`へCAS更新し、terminal unitを保持してrunを再計算する。同一multipartの同domain×month競合とJSON併用は副作用前に拒否し、異なるunit間だけpartial successを許す
-- 重複は過去履歴ではなく現在有効なdomain×month/JSON snapshotのv3指紋と比較する。同月A→B→Aは再適用し、A→Aだけをスキップする。`force=1`は現在有効な世代を意図的に再適用する場合だけ使う
-- v3指紋はtype+length prefixでcell境界衝突を防ぎ、parser・指紋・commit builderがcanonical保存行射影を共有する。MFはID列由来かどうかも保存行と指紋に含め、日付はslash/hyphenを同じ`YYYY-MM-DD`へ一度だけ正規化する。JSONはpartial/default/merge後の実効write-setをhashし、`exportedAt`/`cashEntries`等のmetadataと非永続subs aliasesは除外する。source `cash:*` editは破棄し、destinationで現存cashに付いているeditをcandidateへ戻し、永続化行・集計・指紋を同じ実効集合から生成する。旧hashとの互換比較はせず、移行直後は同じ内容でも1回だけ通常取込になる
+- 重複は過去履歴ではなく現在有効なdomain×month/JSON snapshotのv4指紋と比較する。同月A→B→Aは再適用し、A→Aだけをスキップする。`force=1`は現在有効な世代を意図的に再適用する場合だけ使う
+- v4指紋はtype+length prefixでcell境界衝突を防ぎ、parser・指紋・commit builderがcanonical保存行射影を共有する。MFはID列由来かどうか、メモ原文、計算対象、振替も保存行と指紋に含め、日付はslash/hyphenを同じ`YYYY-MM-DD`へ一度だけ正規化する。JSONはpartial/default/merge後の実効write-setをhashし、`exportedAt`/`cashEntries`等のmetadataと非永続subs aliasesは除外する。source `cash:*` editは破棄し、destinationで現存cashに付いているeditをcandidateへ戻し、永続化行・集計・指紋を同じ実効集合から生成する。旧hashとの互換比較はせず、移行直後は同じ内容でも1回だけ通常取込になる
 - CSVはJSON1のUTF-8 80KiB payloadでbulk delete/insertし、`import_id`・`user_id`・確定時刻はchunk JSON外のscalar bindにする。routeは実builderのpayload/cache/active/finalizationとread/claim/attempt/heartbeat/reconcile/release・duplicate/失敗/commit応答喪失回復のworst-caseを合算し、49 D1 queriesまでを受理する。受理後は実attempt IDのbuilderをR2前に再計測し、commit直前にも`actual <= planned`をfail-closedで保証する。通常幅の5,000行freee/MFは50未満、長大列・大量cache scope・複数unitで超える場合はR2/run/canonical書込み前に413とする
 - JSON active pointerはrestore write-setを変えるrules、edits、owners、budgets、settings、vendor、cash、freee/MF/baselineの各mutationと同じD1 batchで無効化し、restore自身はcommit batchで新pointerを設定する
 - MFの明示ID付き行は順序非依存。ID列が無い旧exportは合成IDが行indexに依存するため順序非依存を保証せず、並べ替えると手動編集も引き継げない旨を画面のID補完件数で知らせる
@@ -303,11 +303,16 @@ CREATE TABLE mf_transactions (
   amount INTEGER NOT NULL,        -- 円。正=収入/負=支出
   category_major TEXT, category_mid TEXT,   -- 大項目/中項目
   institution TEXT,               -- 保有金融機関
+  memo TEXT,                      -- メモ原文。列欠落はNULL、空セルは空文字
+  is_target INTEGER NOT NULL DEFAULT 1,
+  is_transfer INTEGER NOT NULL DEFAULT 0,
   identity_stable INTEGER NOT NULL DEFAULT 0 CHECK(identity_stable IN (0,1)), -- MF ID列由来だけ1
   import_id INTEGER REFERENCES imports(id),
   UNIQUE(user_id, tx_id)
 );
 CREATE INDEX idx_mftx_month ON mf_transactions(user_id, month);
+CREATE INDEX idx_mftx_active_month ON mf_transactions(user_id, month)
+  WHERE is_target = 1 AND is_transfer = 0;
 
 -- freee仕訳
 CREATE TABLE freee_deals (
@@ -414,7 +419,7 @@ CREATE TABLE restored_monthly_agg (
 
 **比率の共通契約**: core・API・UI間の比率はすべて `1 = 100%` の小数で受け渡す。構成比は `0..1`、増減率は減少時の負値と100%超の増加を許容する。百分率への変換はUI/CSVの表示境界でのみ行う。
 
-1. **有効明細**: 計算対象=1 かつ 振替=0
+1. **保存明細と集計対象**: 日付を解釈できるMF行は全て保存し、計算対象=1かつ振替=0だけを収支集計へ含める
 2. **公私判定**: `overrides[tx_id]` → ルール先勝ち(内容|大項目|中項目 を大文字化して部分一致) → 既定 per
 3. **個人集計**: per明細のみ。収入=中項目別 / 支出=大項目別(絶対値)
 4. **事業立替**: biz明細の支出合計。**事業入金**: biz明細の収入合計
@@ -437,7 +442,7 @@ CREATE TABLE restored_monthly_agg (
 
 | Method | Path | 概要 |
 |---|---|---|
-| POST | /imports | multipart。全unitを解析してwrite-set競合をpreflight→run/claim→unit履歴→R2保存→active v3指紋判定→unit単位D1 atomic commit。結果は`committed`/`failed`/`duplicate`と月ごとの取込前後件数`replaced`。異なるunit間はpartial success |
+| POST | /imports | multipart。全unitを解析してwrite-set競合をpreflight→run/claim→unit履歴→R2保存→active v4指紋判定→unit単位D1 atomic commit。結果は`committed`/`failed`/`duplicate`と月ごとの取込前後件数`replaced`。異なるunit間はpartial success |
 | GET | /imports | 取込履歴一覧。失敗理由とactive/partial/superseded/legacy世代表示を含む |
 | GET/POST | /cash-entries | P13用: 現金の記帳の一覧(科目候補付き)/追加。PUT/DELETE `/cash-entries/:id` で編集・削除。変更のたびに再集計 |
 | GET/POST | /attachments | target別の証憑metadata+利用者quota取得 / magic検証済み原本の登録 |

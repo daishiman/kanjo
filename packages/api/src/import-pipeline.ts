@@ -9,8 +9,10 @@ import {
   type MfTx,
   canonicalFreee,
   canonicalMf,
+  canonicalMfTransactions,
   decodeBuf,
   isFreeeHeader,
+  isMfCountable,
   isMfHeader,
   parseCSV,
   parseFreeeRows,
@@ -74,6 +76,75 @@ function classifyRows(filename: string, rows: string[][], normMap: Record<string
     };
   }
   return { kind: 'error', filename, reason: describeUnknownFormat(rows[0]) };
+}
+
+/**
+ * 取込結果の数量契約。CSVの入力行と、ID重複を整理した永続行を同じ件数として扱わない。
+ * committed時は stored = countable + nonCountable。rejected は parsed の外側にある。
+ */
+export interface ImportCountSummary {
+  /** 日付を解釈でき、明細へ変換できた入力行（同一IDの重複を含む） */
+  parsed: number;
+  /** 同一IDを後勝ちで整理した正規保存行 */
+  stored: number;
+  /** 正規保存行のうち収支集計へ含める行 */
+  countable: number;
+  /** 正規保存行のうち保存はするが収支集計へ含めない行 */
+  nonCountable: number;
+  /** 日付を解釈できず明細として保存できない入力行 */
+  rejected: number;
+}
+
+const emptyImportCountSummary = (): ImportCountSummary => ({
+  parsed: 0,
+  stored: 0,
+  countable: 0,
+  nonCountable: 0,
+  rejected: 0,
+});
+
+/** parser出力から、永続化と集計が実際に使うcanonical件数を一度だけ導出する。 */
+export function importCountSummary(unit: ParsedUnit, jsonMfTx: readonly MfTx[] = []): ImportCountSummary {
+  if (unit.kind === 'error') return emptyImportCountSummary();
+  if (unit.kind === 'freee') {
+    return {
+      parsed: unit.rows,
+      stored: unit.deals.length,
+      countable: unit.deals.length,
+      nonCountable: 0,
+      rejected: unit.skipped,
+    };
+  }
+
+  const parsed = unit.kind === 'mf' ? unit.rows : jsonMfTx.length;
+  const rejected = unit.kind === 'mf' ? unit.skipped : 0;
+  const canonical = canonicalMfTransactions(unit.kind === 'mf' ? unit.txs : jsonMfTx);
+  const countable = canonical.filter(isMfCountable).length;
+  return {
+    parsed,
+    stored: canonical.length,
+    countable,
+    nonCountable: canonical.length - countable,
+    rejected,
+  };
+}
+
+/**
+ * counts導入前のconsumerへ返す数量。旧MF parserの「有効行/スキップ」定義を維持し、
+ * 新しいparsed/rejectedを別の意味でaliasしない。
+ */
+export function legacyImportCountAliases(
+  unit: ParsedUnit,
+  jsonMfTx: readonly MfTx[] = [],
+): { rows: number; skipped: number } {
+  if (unit.kind === 'error') return { rows: 0, skipped: 0 };
+  if (unit.kind === 'freee') return { rows: unit.rows, skipped: unit.skipped };
+  const transactions = unit.kind === 'mf' ? unit.txs : canonicalMfTransactions(jsonMfTx);
+  const rows = transactions.filter(isMfCountable).length;
+  return {
+    rows,
+    skipped: (unit.kind === 'mf' ? unit.skipped : 0) + transactions.length - rows,
+  };
 }
 
 /**
@@ -167,7 +238,7 @@ export async function fingerprintCanonical(canonical: string): Promise<string> {
 }
 
 /**
- * 取込単位の内容指紋(SHA-256)。v2 canonical write-setをhashし、旧hashと区別する。
+ * 取込単位の内容指紋(SHA-256)。現行v4 canonical write-setをhashし、旧hashと区別する。
  * 明示ID付きCSVは行順に依らない。JSONはpartial merge後のpersisted write-setが必要なため
  * import lifecycle側のrestoreWriteSetFingerprintで生成する。
  * IDなしMFは復元keyに行indexを使うため行順変更を同一視しない。

@@ -42,7 +42,14 @@ import {
   restoreWriteSetFingerprint,
   targetKeysForUnit,
 } from '../import-lifecycle.js';
-import { type ParsedUnit, parseUpload, unitFingerprint } from '../import-pipeline.js';
+import {
+  type ImportCountSummary,
+  type ParsedUnit,
+  importCountSummary,
+  legacyImportCountAliases,
+  parseUpload,
+  unitFingerprint,
+} from '../import-pipeline.js';
 import {
   type CashProjectionEnvelope,
   CashProjectionError,
@@ -179,7 +186,10 @@ interface UnitResult {
   filename: string;
   kind: string;
   months: string[];
+  counts: ImportCountSummary;
+  /** 後方互換: 旧parserの集計有効行 */
   rows: number;
+  /** 後方互換: 旧parserの対象外・振替・保存不能行 */
   skipped: number;
   syntheticIds?: number;
   duplicateIds?: number;
@@ -189,6 +199,26 @@ interface UnitResult {
   importId?: number;
   replaced?: MonthReplace[];
 }
+
+/**
+ * parserの入力件数と、今回の試行で実際に確定した保存件数をwireへ揃える。
+ * failed/duplicateは新しい永続行を確定しないため、stored側3項目だけ0にする。
+ */
+const unitCountFields = (
+  unit: ParsedUnit,
+  committed: boolean,
+  jsonMfTx: Dataset['mfTx'] = [],
+): Pick<UnitResult, 'counts' | 'rows' | 'skipped' | 'syntheticIds' | 'duplicateIds'> => {
+  const parsedCounts = importCountSummary(unit, jsonMfTx);
+  const counts = committed ? parsedCounts : { ...parsedCounts, stored: 0, countable: 0, nonCountable: 0 };
+  const legacy = legacyImportCountAliases(unit, jsonMfTx);
+  return {
+    counts,
+    ...legacy,
+    syntheticIds: unit.kind === 'mf' ? unit.syntheticIds : undefined,
+    duplicateIds: unit.kind === 'mf' ? unit.duplicateIds : undefined,
+  };
+};
 
 interface PreparedUnit {
   unit: ParsedUnit;
@@ -443,8 +473,11 @@ async function executePreparedUnit(args: {
             filename: unit.filename,
             kind: unit.kind,
             months: unit.kind === 'json' ? [] : unit.months,
-            rows: unit.kind === 'json' ? 0 : unit.rows,
-            skipped: unit.kind === 'json' ? 0 : unit.skipped,
+            ...unitCountFields(
+              unit,
+              false,
+              candidate.mfTx.filter((tx) => !isCashTxId(tx.id)),
+            ),
             status: 'failed',
             reason: runtimeFailureReason,
             importId: attemptId,
@@ -462,8 +495,11 @@ async function executePreparedUnit(args: {
         filename: unit.filename,
         kind: unit.kind,
         months: unit.kind === 'json' ? [] : unit.months,
-        rows: unit.kind === 'json' ? 0 : unit.rows,
-        skipped: 0,
+        ...unitCountFields(
+          unit,
+          false,
+          candidate.mfTx.filter((tx) => !isCashTxId(tx.id)),
+        ),
         status: 'duplicate',
         reason: `${fmtWhen(active?.created_at ?? null)} に「${active?.filename ?? '過去の取込'}」として現在適用中(内容が同一)`,
         importId: attemptId,
@@ -549,10 +585,11 @@ async function executePreparedUnit(args: {
         filename: unit.filename,
         kind: unit.kind,
         months: unit.kind === 'json' ? candidate.months : unit.months,
-        rows: unit.kind === 'json' ? candidate.mfTx.length : unit.rows,
-        skipped: unit.kind === 'json' ? 0 : unit.skipped,
-        syntheticIds: unit.kind === 'mf' ? unit.syntheticIds : undefined,
-        duplicateIds: unit.kind === 'mf' ? unit.duplicateIds : undefined,
+        ...unitCountFields(
+          unit,
+          true,
+          candidate.mfTx.filter((tx) => !isCashTxId(tx.id)),
+        ),
         status: 'committed',
         importId: attemptId,
         replaced,
@@ -579,8 +616,11 @@ async function executePreparedUnit(args: {
           filename: unit.filename,
           kind: unit.kind,
           months: unit.kind === 'json' ? candidate.months : unit.months,
-          rows: unit.kind === 'json' ? candidate.mfTx.length : unit.rows,
-          skipped: unit.kind === 'json' ? 0 : unit.skipped,
+          ...unitCountFields(
+            unit,
+            true,
+            candidate.mfTx.filter((tx) => !isCashTxId(tx.id)),
+          ),
           status: 'committed',
           importId: attemptId,
         },
@@ -592,8 +632,11 @@ async function executePreparedUnit(args: {
         filename: unit.filename,
         kind: unit.kind,
         months: unit.kind === 'json' ? [] : unit.months,
-        rows: unit.kind === 'json' ? 0 : unit.rows,
-        skipped: unit.kind === 'json' ? 0 : unit.skipped,
+        ...unitCountFields(
+          unit,
+          false,
+          candidate.mfTx.filter((tx) => !isCashTxId(tx.id)),
+        ),
         status: 'failed',
         reason: runtimeFailureReason,
         importId: attemptId,
@@ -798,8 +841,7 @@ importsRoute.post('/imports', async (c) => {
             filename: unit.filename,
             kind: 'unknown',
             months: [],
-            rows: 0,
-            skipped: 0,
+            ...unitCountFields(unit, false),
             status: 'failed',
             reason: unit.reason,
             importId: attempt.id,
@@ -817,8 +859,7 @@ importsRoute.post('/imports', async (c) => {
             filename: unit.filename,
             kind: unit.kind,
             months: unit.kind === 'json' ? [] : unit.months,
-            rows: unit.kind === 'json' ? 0 : unit.rows,
-            skipped: unit.kind === 'json' ? 0 : unit.skipped,
+            ...unitCountFields(unit, false, attempt.prepared.restored?.mfTx ?? []),
             status: 'failed',
             reason: r2FailureReason,
             importId: attempt.id,

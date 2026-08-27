@@ -23,7 +23,12 @@ export function isMfHeader(header: string[]): boolean {
   return header.join(',').includes('計算対象');
 }
 
-/** 有効明細 = 計算対象=1 かつ 振替≠1 のみ。id無し行は `${month}_${行index}_${金額}` の合成キー */
+/**
+ * CSVの全明細行を保存対象として返す。計算対象=0 / 振替=1 の行も落とさず、
+ * isTarget / isTransfer に原本の値を持たせて集計側で絞る。
+ * skipped は日付を解釈できなかった行だけ（保存できないため）。
+ * id無し行は `${month}_${行index}_${金額}` の合成キー。
+ */
 export function parseMfRows(rows: string[][]): MfParseResult {
   const H = rows[0] ?? [];
   const col = (n: string) => H.findIndex((h) => h.includes(n));
@@ -37,6 +42,7 @@ export function parseMfRows(rows: string[][]): MfParseResult {
     c: col('内容'),
     id: col('ID'),
     inst: col('保有金融機関'),
+    memo: col('メモ'),
   };
   const txs: MfTx[] = [];
   let skipped = 0;
@@ -45,10 +51,6 @@ export function parseMfRows(rows: string[][]): MfParseResult {
   let duplicateIds = 0;
   let reservedIds = 0;
   rows.slice(1).forEach((r, ri) => {
-    if (r[ci.tgt] !== '1' || r[ci.tf] === '1') {
-      skipped++;
-      return;
-    }
     const m = normMonth(r[ci.dt] ?? '');
     if (!m) {
       skipped++;
@@ -65,16 +67,23 @@ export function parseMfRows(rows: string[][]): MfParseResult {
     if (seen.has(id)) duplicateIds++;
     if (id.startsWith('cash:')) reservedIds++;
     seen.add(id);
+    // 「計算対象」列が無いCSVは全行を対象とみなす（列があるときだけ 0 を非対象と読む）
+    const isTarget = ci.tgt >= 0 ? r[ci.tgt] === '1' : true;
+    const isTransfer = ci.tf >= 0 && r[ci.tf] === '1';
     txs.push({
       id,
       idStable: ci.id >= 0 && !!r[ci.id],
       m,
       d: normalizeMfDisplayDate(String(r[ci.dt]), m),
-      c: ci.c >= 0 ? String(r[ci.c]).slice(0, 40) : '',
+      c: ci.c >= 0 ? String(r[ci.c]) : '',
       a: amt,
       big: r[ci.big] || '',
       mid: r[ci.mid] || '',
       inst: ci.inst >= 0 ? String(r[ci.inst] ?? '').trim() || undefined : undefined,
+      // メモは照合・監査用の原文。列なしだけundefined、列があれば空文字・空白も含めセル値を保持する。
+      memo: ci.memo >= 0 ? String(r[ci.memo] ?? '') : undefined,
+      isTarget,
+      isTransfer,
     });
   });
   const months = [...new Set(txs.map((t) => t.m))].sort();

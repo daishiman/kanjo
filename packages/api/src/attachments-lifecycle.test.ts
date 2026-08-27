@@ -9,6 +9,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ATTACHMENT_SCHEDULED_MAX_D1_QUERIES, runAttachmentMaintenance } from './attachment-recovery.js';
 import { app, scheduledMaintenance } from './index.js';
+import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
 import { getDb, loadBackupPayload } from './store.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
@@ -25,9 +26,10 @@ let files: R2Bucket;
 let cookie: string;
 
 async function applyMigrations(database: D1Database): Promise<void> {
-  for (const filename of readdirSync(migrationsDir)
+  const migrationNames = readdirSync(migrationsDir)
     .filter((f) => f.endsWith('.sql'))
-    .sort()) {
+    .sort();
+  for (const filename of migrationNames) {
     const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
       .replace(/^\s*--.*$/gm, '')
       .split(';')
@@ -35,6 +37,7 @@ async function applyMigrations(database: D1Database): Promise<void> {
       .filter(Boolean);
     for (const sql of statements) await database.prepare(sql).run();
   }
+  await recordTestMigrationHead(database, migrationNames);
 }
 
 const env = (filesBinding: R2Bucket = files, dbBinding: D1Database = d1) => ({
@@ -422,7 +425,8 @@ beforeEach(async () => {
       "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT GLOB '_cf_*'",
     )
     .all<{ name: string }>();
-  for (const { name } of tables.results) await d1.prepare(`DELETE FROM "${name}"`).run();
+  for (const { name } of tables.results.filter(({ name }) => isApplicationTableForTestReset(name)))
+    await d1.prepare(`DELETE FROM "${name}"`).run();
   const login = await app.request(
     '/api/auth/login',
     {

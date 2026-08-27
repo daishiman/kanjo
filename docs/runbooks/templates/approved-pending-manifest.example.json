@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "document_type": "approved_pending_migration_manifest",
+  "template_notice": "This is a non-secret example, not an approved production manifest.",
+  "manifest_status": "unapproved",
+  "target": {
+    "environment": "production",
+    "database": "kanjo-db"
+  },
+  "repository": {
+    "head": null,
+    "migration_head": null,
+    "ordered_migrations_digest_sha256": null
+  },
+  "remote_inspection": {
+    "captured_at": null,
+    "evidence_ref": null,
+    "applied_head": null,
+    "pending_count": null
+  },
+  "approved_pending_entries": [
+    {
+      "order": 1,
+      "filename": "REPLACE_WITH_REMOTE_VERIFIED_PENDING_FILE.sql",
+      "sha256": "REPLACE_WITH_REPOSITORY_FILE_SHA256"
+    }
+  ],
+  "approval": {
+    "approved_by": null,
+    "approved_at": null
+  },
+  "pre_apply_freshness_check": {
+    "checked_at": null,
+    "repository_head_matches": false,
+    "ordered_migrations_digest_matches": false,
+    "remote_inspection_matches": false,
+    "evidence_ref": null
+  },
+  "invalidation_rules": [
+    "Invalidate when repository head or ordered migration digest changes.",
+    "Invalidate when remote applied head or ordered pending entries change.",
+    "Do not apply while manifest_status is not approved.",
+    "Do not apply while any pre_apply_freshness_check value is false."
+  ]
+}

@@ -1,0 +1,1050 @@
+{
+  "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+  "parent_feature": "feat-prod-d1-schema-recovery",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "explicit-cli"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": false,
+    "source_paths": [
+      "system-spec/index.md",
+      "system-spec/00-requirements-definition.md",
+      "architecture/arch-d1-schema-lifecycle.md",
+      "features/feat-prod-d1-schema-recovery.md"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "未適用マイグレーションのファイル名一覧が確定し作業記録に残っている",
+        "保全対象テーブルの一覧と、それぞれの適用前行数の取得方法が確定している",
+        "成功判定基準 (未適用 0 件・行数非減少・取込と取込履歴の正常応答) が明文化されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P01.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P01.md",
+        "graph_node_id": "SYS-PDSR-P01",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-PDSR-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "baseline は読み取りのみで本番状態を変えないため、記録を破棄して再取得すれば戻せる。",
+      "secondary_workstreams": [
+        "data"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "復旧要件のベースライン確定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "wrangler d1 migrations list kanjo-db --remote の出力を作業記録へ転記し未適用ファイル名を確定する",
+        "リポジトリの migrations ディレクトリのファイル一覧と突き合わせ、欠落と余剰が無いことを確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-01-remote-baseline.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "適用順序が連番順に固定され、飛ばし適用を許さない記述になっている",
+        "適用前バックアップとして全件エクスポートを取得する手順が前置きされている",
+        "失敗時の再開位置の判定方法が記録ベースで書かれている",
+        "本番への適用コマンドの実行主体がユーザーであることが設計節に明記されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P02.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P01"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P02.md",
+        "graph_node_id": "SYS-PDSR-P02",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-PDSR-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "設計節の記述を前版へ戻す。本番状態には触れていないため副作用は無い。",
+      "secondary_workstreams": [
+        "infrastructure"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "適用順序と不変条件の設計",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "設計節が連番順の逐次適用のみを許し、部分適用と順序逸脱と手書き DDL を明示的に禁止していることを確認する",
+        "失敗時にどのファイルまで適用済みかを d1_migrations の記録から判定する手順が書かれていることを確認する"
+      ],
+      "workstream_kind": "data",
+      "write_scope": []
+    },
+    {
+      "acceptance": [
+        "バックアップ取得が適用の前提として省略不能な形で置かれている",
+        "本番への書込みコマンドの実行主体がユーザーであることが全該当箇所で一貫している",
+        "レビュー指摘とその対応結果が記録されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P03.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P02"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P03.md",
+        "graph_node_id": "SYS-PDSR-P03",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-PDSR-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "レビュー節の記述を差し戻す。本番状態には影響しない。",
+      "secondary_workstreams": [
+        "security"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "復旧設計の独立レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "バックアップ取得が適用より前に置かれ、省略できない手順として書かれているかを確認する",
+        "本番への書込みコマンドが手順書のうちユーザー実行と明示された箇所にのみ存在することを確認する",
+        "手順中の出力例に明細内容と金額が含まれていないことを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-03-design-review.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "適用前に基準値を取得する手順が適用手順より前に置かれている",
+        "突合の判定式が明文化され、機械的に合否判定できる",
+        "動作確認手順が明細内容と金額を出力しない形で書かれている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P04.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P03"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P04.md",
+        "graph_node_id": "SYS-PDSR-P04",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-PDSR-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "検証設計節を差し戻す。本番状態には影響しない。",
+      "secondary_workstreams": [
+        "data"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "行数突合と動作確認の検証設計",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "突合対象テーブルが保全対象一覧と一致していることを確認する",
+        "判定式が行数の非減少であり、増加を異常としないことを確認する",
+        "取込と取込履歴の動作確認が応答コードのみで判定でき、明細内容を参照しないことを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-04-verification-design.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "runbook が docs/ci-cd-operations.md を SSOT として参照し、incident 固有の baseline・manifest・行数突合・証跡リンクだけを持つ",
+        "行数突合スクリプトがローカル環境で実行でき、差異検出時に非ゼロ終了する",
+        "手順書と突合スクリプトのいずれも本番への書込みを自動では行わない",
+        "スクリプトの出力に明細内容と金額が現れない"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P05.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P04"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P05.md",
+        "graph_node_id": "SYS-PDSR-P05",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-PDSR-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "作成した手順書とスクリプトを削除または前版へ戻す。本番状態には影響しない。",
+      "secondary_workstreams": [
+        "data",
+        "operations"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "復旧手順書と突合スクリプトの作成",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "runbook が docs/ci-cd-operations.md を SSOT として参照し通常手順を複製していないことを確認する",
+        "突合スクリプトをローカル D1 に対して実行し、非ゼロ終了が期待どおり起きることを確認する",
+        "スクリプトの出力に明細内容と金額が含まれないことを確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/runbooks/prod-d1-schema-recovery.md",
+        "docs/runbooks/scripts/reconcile-row-counts.sh"
+      ]
+    },
+    {
+      "acceptance": [
+        "ローカル D1 で全マイグレーションが連番順に適用され、未適用が 0 件になる",
+        "ローカルで取込と取込履歴の経路が正常応答を返す",
+        "突合スクリプトが適用前後の比較を完了し合格判定を返す",
+        "予行で見つかった手順の不備が P05 へ差し戻され、唯一writer境界で反映・再検証されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P06.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P05"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P06.md",
+        "graph_node_id": "SYS-PDSR-P06",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-PDSR-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "ローカル D1 を初期化して再作成する。本番状態には影響しない。",
+      "secondary_workstreams": [
+        "data"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "ローカル環境での適用予行",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "ローカル D1 に対して migrations apply を実行し、全マイグレーションが連番順に適用されることを確認する",
+        "適用後に取込と取込履歴の経路が正常応答を返すことをローカルで確認する",
+        "突合スクリプトを適用前後で実行し、行数の非減少判定が機能することを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-06-local-rehearsal.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "適用直前の全件エクスポートが取得され、主要テーブルの行数が基準値として記録されている",
+        "repository head / ordered migrations digest・remote applied head・ordered pending files・captured_at・approved_at を持つ manifest が人間承認され、適用直前の再取得結果と一致している",
+        "適用後の未適用マイグレーション件数が 0 である",
+        "適用後の主要テーブル行数が基準値から減少していない",
+        "取込と取込履歴の経路が本番で正常応答を返す",
+        "本番への適用コマンドをユーザーが実行した事実が作業記録に残っている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P07.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P06"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P07.md",
+        "graph_node_id": "SYS-PDSR-P07",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-PDSR-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "合格条件を満たさない場合は取得済みエクスポートからの復元を検討する。復元の実行判断と実行はユーザーが行う。",
+      "secondary_workstreams": [
+        "data"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "本番適用の受入判定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "適用直前に remote list と repository head / ordered migrations digest を再取得し、承認済み manifest と一致することを確認する",
+        "適用後に migrations list を実行し未適用件数が 0 であることを確認する",
+        "突合スクリプトを実行し主要テーブルの行数が基準値から減少していないことを確認する",
+        "取込と取込履歴の経路が本番で正常応答を返すことを確認する"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-07-approved-pending-manifest.json",
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-07-acceptance.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "新規テーブルが空の状態でも取込と取込履歴の経路が正常応答を返す",
+        "既存データを持つテーブルの読み出しが成功する",
+        "データの補正投入を行っていないことが記録されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P08.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P07"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P08.md",
+        "graph_node_id": "SYS-PDSR-P08",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-PDSR-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "本 task は読み取り確認のみで状態を変えないため、記録の破棄で戻る。",
+      "secondary_workstreams": [
+        "backend"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "既存データの互換確認と派生テーブルの初期状態",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "新規作成されたテーブルが空である場合に画面と API が異常終了しないことを確認する",
+        "既存データを持つテーブルの読み出しが従来どおり成功することを確認する"
+      ],
+      "workstream_kind": "data",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-08-compatibility.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "作業記録・手順書・スクリプト出力のいずれにも明細内容と金額が現れない",
+        "取得したダンプが削除され、その事実が記録されている",
+        "夜間バックアップが成功し当日分のスナップショットが存在する"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P09.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P08"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P09.md",
+        "graph_node_id": "SYS-PDSR-P09",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-PDSR-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "削除済みダンプは復元しない。必要が生じた場合は改めて取得手順から実施する。",
+      "secondary_workstreams": [
+        "operations",
+        "quality"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "品質・セキュリティ・運用準備の確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "作業記録と手順書の出力例に明細内容と金額が含まれていないことを確認する",
+        "取得したダンプが作業完了後に削除されたことを確認する",
+        "夜間バックアップが成功し当日分のスナップショットが保存されていることを確認する"
+      ],
+      "workstream_kind": "security",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-09-quality.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "全 phase の受入条件と証跡の対応表が作成されている",
+        "証跡が欠落している受入条件が 0 件である",
+        "未達が残る場合は完了とせず該当 phase へ差し戻されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P10.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P09"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P10.md",
+        "graph_node_id": "SYS-PDSR-P10",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-PDSR-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "対応表を差し戻す。本番状態には影響しない。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "復旧完了の最終ゲート",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "各 phase の受入条件に対応する証跡が実在することを一件ずつ確認する",
+        "証跡が欠落している受入条件が 0 件であることを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-10-final-gate.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "適用前後の未適用一覧、行数突合結果、動作確認結果、ダンプ削除記録が証跡集に揃っている",
+        "証跡集に明細内容と金額が含まれていない",
+        "各証跡が取得日時とともに記録されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P11.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P10"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P11.md",
+        "graph_node_id": "SYS-PDSR-P11",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-PDSR-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "証跡集を差し戻す。本番状態には影響しない。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "再現可能な証跡の整備",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "証跡集の各項目が実際のコマンド出力または記録に基づくことを確認する",
+        "証跡集に明細内容と金額が含まれていないことを確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-11-recovery-evidence.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "docs/ci-cd-operations.md が恒久 policy/通常手順の SSOT として示されている",
+        "runbook が incident 固有リンクだけを持ち、通常手順を複製していない",
+        "tracker handoff が SSOT・runbook・P11 evidence の3リンクを持つ"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P12.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P11"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P12.md",
+        "graph_node_id": "SYS-PDSR-P12",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-PDSR-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "runbook を前版へ戻す。本番状態には影響しない。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "運用文書と引き継ぎの整備",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "docs/ci-cd-operations.md が恒久 policy/通常手順の SSOT と明示されていることを確認する",
+        "runbook が incident 固有リンクだけを持ち通常手順を複製していないことを確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": []
+    },
+    {
+      "acceptance": [
+        "復旧後に取込と取込履歴の経路が継続して正常応答を返す",
+        "夜間バックアップが成功し当日分のスナップショットが存在する",
+        "事後観察の結果が作業記録に残っている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P13.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。"
+      },
+      "depends_on": [
+        "SYS-PDSR-P12"
+      ],
+      "deploy_unit": "cloudflare-d1/kanjo-db (production)",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+        "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P13.md",
+        "graph_node_id": "SYS-PDSR-P13",
+        "parent_feature": "feat-prod-d1-schema-recovery",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-PDSR-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      },
+      "owners": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "rollback": "異常を検知した場合は稼働を止めず、取得済み証跡をもとに原因を切り分けたうえでユーザーの判断で対処する。",
+      "secondary_workstreams": [
+        "backend"
+      ],
+      "source_lineage": [
+        "architecture/arch-d1-schema-lifecycle.md",
+        "features/feat-prod-d1-schema-recovery.md"
+      ],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "title": "復旧後の稼働確認と事後観察",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "復旧後の取込と取込履歴の経路が継続して正常応答を返すことを確認する",
+        "夜間バックアップが成功しスナップショットが保存されていることを確認する"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-13-observation.md"
+      ]
+    }
+  ]
+}

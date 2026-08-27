@@ -1,0 +1,37 @@
+{
+  "graph_node_id": "feat-runtime-schema-guard",
+  "artifact_kind": "feature",
+  "purpose": "利用者が見たのは汎用のサーバーエラー文言だけで、自分の操作の誤りか待てば直るのかを判断できなかった。乖離時に次の行動が分かる応答を返す最後の防波堤を置く。",
+  "goal": "session/token認証後の共通middlewareで版数照合が行われ、乖離時は認証済みの全D1利用エンドポイントが専用コードを返し、画面には待機を促す文言が出る。内部構造は応答にもログにも現れない。",
+  "scope_in": [
+    "入口 middleware での版数照合",
+    "期待版のビルド時確定",
+    "isolate 内キャッシュ",
+    "照合失敗時の fail-closed 503",
+    "専用エラーコードの定義",
+    "フロントの表示分岐追加",
+    "乖離状態での動作確認"
+  ],
+  "scope_out": [
+    "乖離の自動修復",
+    "実行時のマイグレーション適用",
+    "技術的詳細の開示",
+    "既存の汎用エラー表示の全面刷新"
+  ],
+  "acceptance": [
+    "乖離状態で POST /api/imports と GET /api/imports の双方が専用エラーコードを返す",
+    "乖離状態でその他のエンドポイントも同じ専用コードを返す",
+    "照合自体が失敗した場合も専用503となり業務D1アクセスへ進まない",
+    "照合の D1 問い合わせがキャッシュ有効期間内に 1 回に収まる",
+    "public auth はguard対象外で認証前のschema照合がない",
+    "応答本文とログにテーブル名・スキーマ版数・スタックトレース・明細内容・金額が現れない",
+    "画面に復旧作業中である旨と時間をおいた再試行を促す文言が表示される",
+    "session経路ではguardが認証後、token経路ではai_tasksのBearer認証後かつpayload/reportの業務D1アクセス前に置かれる"
+  ],
+  "architecture_refs": [
+    "architecture/arch-schema-guard-error-contract.md",
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md"
+  ],
+  "updated_at": "2026-08-27T05:10:00Z"
+}

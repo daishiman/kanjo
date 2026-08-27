@@ -4,8 +4,8 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useRef, useState } from 'react';
-import { AUTH_EVENT, type ImportHistoryRow, type ImportUnitResult, api } from '../api.js';
-import { PageHeader, PageState } from '../components/Page.js';
+import { type ImportHistoryRow, type ImportUnitResult, api, apiUpload } from '../api.js';
+import { PageHeader, PageState, describeError } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { dateTime } from '../format.js';
 
@@ -14,6 +14,94 @@ const KIND_LABEL: Record<string, ReactNode> = {
   freee: 'freee仕訳',
   json: <Term id="mergedJson" />,
 };
+
+/** 取込結果の数量・状態を同じ語彙で表示する再利用単位。 */
+export function ImportResultTable({ results }: { results: ImportUnitResult[] }) {
+  return (
+    <>
+      <table className="data">
+        <thead>
+          <tr>
+            <th>ファイル</th>
+            <th>種別</th>
+            <th>対象月</th>
+            <th title="日付を解釈できた入力行。同一IDの重複を含みます">解析行</th>
+            <th title="同一IDは最後の行だけを保存します">保存行</th>
+            <th title="保存行のうち収支集計に含める行です">集計対象</th>
+            <th title="保存はするが収支集計には含めない行です">集計対象外</th>
+            <th title="日付を解釈できず保存できなかった行です">保存不可</th>
+            <th>結果</th>
+          </tr>
+        </thead>
+        <tbody>
+          {results.map((r) => {
+            const counts = r.counts;
+            return (
+              <tr key={`${r.filename}-${r.kind}`}>
+                <td>{r.filename}</td>
+                <td>{KIND_LABEL[r.kind] ?? '不明'}</td>
+                <td>{r.months.join(', ') || '—'}</td>
+                <td className="num">{counts?.parsed ?? '—'}</td>
+                <td className="num">{counts?.stored ?? '—'}</td>
+                <td className="num">{counts?.countable ?? '—'}</td>
+                <td className="num">{counts?.nonCountable ?? '—'}</td>
+                <td className="num">{counts?.rejected ?? '—'}</td>
+                <td>
+                  {r.status === 'committed' ? (
+                    <>
+                      <span className="pill calm">
+                        取込完了
+                        {r.syntheticIds ? ` (ID補完${r.syntheticIds}件)` : ''}
+                        {r.duplicateIds ? ` (ID重複${r.duplicateIds}件)` : ''}
+                      </span>
+                      {(r.replaced ?? [])
+                        .filter((m) => m.before > m.after)
+                        .map((m) => (
+                          <div
+                            key={m.month}
+                            className="sub"
+                            style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                          >
+                            {m.month}: 取込前 {m.before}件 → 取込後 {m.after}
+                            件。件数が減っています。月の途中までのファイルではないか確認してください(前の内容に戻すには、元のファイルを取り込み直します)。
+                          </div>
+                        ))}
+                    </>
+                  ) : r.status === 'duplicate' ? (
+                    <>
+                      <span className="pill warn">取込済み(スキップ)</span>
+                      <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
+                        {r.reason}
+                        。意図的に再適用する場合だけ「現在有効な内容と同じでも再適用する」を付けてください。
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <span className="pill alert">失敗</span>
+                      <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
+                        {r.reason}
+                      </div>
+                    </>
+                  )}
+                  {!counts && (
+                    <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
+                      旧API: 旧有効{r.rows}行・旧スキップ{r.skipped}行（内訳不明）
+                    </div>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      {results.some((r) => r.status === 'failed') && (
+        <p className="sub">
+          失敗したファイルの内容は確定されていません(取込完了したファイルは反映済み)。一時的な失敗なら、同じファイルを通常どおり再実行できます。
+        </p>
+      )}
+    </>
+  );
+}
 
 export function ImportPage() {
   const qc = useQueryClient();
@@ -34,14 +122,11 @@ export function ImportPage() {
       const form = new FormData();
       for (const f of files) form.append('file', f);
       if (force) form.append('force', '1');
-      const res = await fetch('/api/imports', { method: 'POST', body: form });
-      if (res.status === 401) {
-        window.dispatchEvent(new Event(AUTH_EVENT));
-        throw new Error('unauthorized');
-      }
-      const body = (await res.json()) as { results?: ImportUnitResult[]; error?: { message: string } };
-      if (!res.ok && !body.results)
-        throw new Error(body.error?.message ?? `取込に失敗しました(${res.status})`);
+      const body = await apiUpload<{ results?: ImportUnitResult[] }>('/imports', form, {
+        // 複数ファイルの一部成功はHTTPエラーでも結果表を保つ。
+        acceptErrorBody: (candidate) =>
+          !!candidate && typeof candidate === 'object' && Array.isArray(Reflect.get(candidate, 'results')),
+      });
       return body.results ?? [];
     },
     onSuccess: (r) => {
@@ -102,6 +187,28 @@ export function ImportPage() {
           </small>
         </p>
       </div>
+
+      <div className="notice" style={{ marginTop: 12 }}>
+        <strong>ファイルの取得元</strong>
+        <ul style={{ margin: '6px 0 0', paddingLeft: 18, fontSize: 13, lineHeight: 1.7 }}>
+          <li>
+            マネーフォワード ME —{' '}
+            <a href="https://moneyforward.com/cf" target="_blank" rel="noreferrer">
+              家計簿・収支詳細を開く
+            </a>
+            <br />
+            期間を選び「ダウンロード」から <code>収入・支出詳細_YYYY-MM-DD_YYYY-MM-DD.csv</code> を保存
+          </li>
+          <li style={{ marginTop: 6 }}>
+            freee 会計 —{' '}
+            <a href="https://secure.freee.co.jp/deals#code=deals" target="_blank" rel="noreferrer">
+              取引一覧を開く
+            </a>
+            <br />
+            期間を絞って「エクスポート」から取引データ(CSV / ZIP)を保存
+          </li>
+        </ul>
+      </div>
       <input
         ref={fileInput}
         type="file"
@@ -128,86 +235,15 @@ export function ImportPage() {
       )}
       {upload.isError && (
         <div className="notice" role="alert">
-          取込を実行できませんでした: {(upload.error as Error).message}
-          。選択したファイルは残っています。通信状態を確認して、もう一度「取込を実行」を押してください。
+          取込を実行できませんでした: {describeError(upload.error)}
+          選択したファイルは残っています。
         </div>
       )}
 
       {results && (
         <div className="card" style={{ marginTop: 12 }}>
           <h2>取込結果</h2>
-          <table className="data">
-            <thead>
-              <tr>
-                <th>ファイル</th>
-                <th>種別</th>
-                <th>対象月</th>
-                <th>有効行</th>
-                <th>スキップ</th>
-                <th>結果</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((r) => (
-                <tr key={`${r.filename}-${r.kind}`}>
-                  <td>{r.filename}</td>
-                  <td>{KIND_LABEL[r.kind] ?? '不明'}</td>
-                  <td>{r.months.join(', ') || '—'}</td>
-                  <td className="num">{r.rows}</td>
-                  <td className="num">{r.skipped}</td>
-                  <td>
-                    {r.status === 'committed' ? (
-                      <>
-                        <span className="pill calm">
-                          取込完了
-                          {r.syntheticIds ? ` (ID補完${r.syntheticIds}件)` : ''}
-                          {r.duplicateIds ? ` (ID重複${r.duplicateIds}件)` : ''}
-                        </span>
-                        {(r.replaced ?? [])
-                          .filter((m) => m.before > m.after)
-                          .map((m) => (
-                            <div
-                              key={m.month}
-                              className="sub"
-                              style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
-                            >
-                              {m.month}: 取込前 {m.before}件 → 取込後 {m.after}
-                              件。件数が減っています。月の途中までのファイルではないか確認してください(前の内容に戻すには、元のファイルを取り込み直します)。
-                            </div>
-                          ))}
-                      </>
-                    ) : r.status === 'duplicate' ? (
-                      <>
-                        <span className="pill warn">取込済み(スキップ)</span>
-                        <div
-                          className="sub"
-                          style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
-                        >
-                          {r.reason}
-                          。意図的に再適用する場合だけ「現在有効な内容と同じでも再適用する」を付けてください。
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <span className="pill alert">失敗</span>
-                        <div
-                          className="sub"
-                          style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
-                        >
-                          {r.reason}
-                        </div>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {results.some((r) => r.status === 'failed') && (
-            <p className="sub">
-              失敗したファイルの内容は確定されていません(取込完了したファイルは反映済み)。一時的な失敗なら、同じファイルを通常どおり再実行できます。
-            </p>
-          )}
+          <ImportResultTable results={results} />
         </div>
       )}
 
@@ -226,7 +262,7 @@ export function ImportPage() {
                   <th>ファイル</th>
                   <th>種別</th>
                   <th>対象月</th>
-                  <th>件数</th>
+                  <th title="保存不能行を除く解析済みの入力行です">解析行</th>
                   <th>ステータス</th>
                 </tr>
               </thead>

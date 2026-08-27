@@ -6,6 +6,7 @@ import {
   type Dataset,
   FINGERPRINT_VERSION,
   type FreeeDeal,
+  MF_PERSISTED_IDENTITY_COLUMNS,
   type MfTx,
   type TxEdit,
   canonicalEncode,
@@ -328,7 +329,7 @@ export function chunkJsonRowsByBytes(
 const insertJsonRows = (
   database: D1Database,
   table: string,
-  jsonColumns: string[],
+  jsonColumns: readonly string[],
   rows: ReadonlyArray<readonly unknown[]>,
   scalarColumns: ReadonlyArray<{ column: string; value: unknown }> = [],
 ): D1PreparedStatement[] => {
@@ -569,17 +570,7 @@ export function mfCommitStatements(args: {
     ...insertJsonRows(
       database,
       'mf_transactions',
-      [
-        'tx_id',
-        'month',
-        'date',
-        'description',
-        'amount',
-        'category_major',
-        'category_mid',
-        'institution',
-        'identity_stable',
-      ],
+      MF_PERSISTED_IDENTITY_COLUMNS,
       txs.map((tx) => mfPersistedIdentityRow(tx)),
       [
         { column: 'user_id', value: userId },
@@ -770,26 +761,10 @@ function mfReplaceOnlyStatements(
               OR tx_id IN (SELECT CAST(value AS TEXT) FROM json_each(?)))`,
       )
       .bind(userId, JSON.stringify(months), JSON.stringify(rows.map((row) => row[0]))),
-    ...insertJsonRows(
-      database,
-      'mf_transactions',
-      [
-        'tx_id',
-        'month',
-        'date',
-        'description',
-        'amount',
-        'category_major',
-        'category_mid',
-        'institution',
-        'identity_stable',
-      ],
-      rows,
-      [
-        { column: 'user_id', value: userId },
-        { column: 'import_id', value: importId },
-      ],
-    ),
+    ...insertJsonRows(database, 'mf_transactions', MF_PERSISTED_IDENTITY_COLUMNS, rows, [
+      { column: 'user_id', value: userId },
+      { column: 'import_id', value: importId },
+    ]),
     database
       .prepare(
         `UPDATE attachments

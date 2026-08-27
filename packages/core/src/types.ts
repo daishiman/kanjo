@@ -11,7 +11,7 @@ export interface MfTx {
   m: string;
   /** 'MM/DD'（表示用） */
   d: string;
-  /** 内容（40文字まで） */
+  /** 内容（CSV原本のまま。切り詰めない） */
   c: string;
   /** 金額。正=収入 / 負=支出 */
   a: number;
@@ -21,6 +21,24 @@ export interface MfTx {
   mid: string;
   /** 保有金融機関（MFの口座名。名義の判定根拠） */
   inst?: string;
+  /** メモ（MFの「メモ」列。原本のまま） */
+  memo?: string;
+  /**
+   * MFの「計算対象」列。false = 集計に含めない行。
+   * CSV由来でない明細(統合JSON復元・旧データ)は列自体を持たないので undefined。
+   */
+  isTarget?: boolean;
+  /** MFの「振替」列。true = 口座間振替であり収支集計に含めない行。未取得は undefined */
+  isTransfer?: boolean;
+}
+
+/**
+ * 収支集計に含める明細か。保存は全行、集計はこの判定で絞る。
+ * HTML版統合JSONから復元した明細は両フィールドを持たない(undefined)。
+ * 旧データは「計算対象=1 / 振替=0 の行だけが保存されていた」ので、未定義は対象として扱う。
+ */
+export function isMfCountable(t: Pick<MfTx, 'isTarget' | 'isTransfer'>): boolean {
+  return t.isTarget !== false && t.isTransfer !== true;
 }
 
 /** canonical名義。unsetは永続値ではなく、解決できない場合だけ導出する。 */

@@ -14,6 +14,7 @@ import {
   buildCandidates,
   categoryAllowed,
   categoryRejectReason,
+  countableMfTxs,
   parseMfAttachmentTarget,
   resolveTx,
   ruleMatches,
@@ -83,10 +84,15 @@ classifyRoute.get('/transactions', async (c) => {
   const q = (c.req.query('q') ?? '').toUpperCase();
   const manualOnly = c.req.query('manual') === '1';
 
-  const months = [...new Set(data.mfTx.map((t) => t.m))].sort();
+  // 仕分けの対象は収支集計に載る明細だけ。MFの振替・計算対象外はDBには残すが
+  // 一覧にも summary にも入れない(入れると家計/事業の集計と合計が食い違う)
+  const countable = countableMfTxs(data.mfTx);
+  const months = [...new Set(countable.map((t) => t.m))].sort();
   const m = month && months.includes(month) ? month : (months[months.length - 1] ?? null);
 
-  const txs = data.mfTx.filter((t) => t.m === m);
+  const txs = countable.filter((t) => t.m === m);
+  /** 同月に取り込まれたが集計対象外だった件数(振替・計算対象=0)。取込漏れとの取り違えを防ぐため件数だけ返す */
+  const nonCountableCount = data.mfTx.filter((t) => t.m === m).length - txs.length;
   const attachmentTargets = txs
     .map((t) => parseMfAttachmentTarget(t.id))
     .filter((target): target is NonNullable<typeof target> => target !== null);
@@ -173,6 +179,8 @@ classifyRoute.get('/transactions', async (c) => {
     conflictCount: resolved.filter((x) => x.r.conflict).length,
     /** 保有金融機関が無い明細数(旧取込。MF再取込で埋まる) */
     noInstitutionCount: txs.filter((t) => !t.inst).length,
+    /** 取り込んだが集計対象外だった明細数(MFの振替・計算対象=0)。0なら注記を出さない */
+    nonCountableCount,
   };
   return c.json({ months, month: m, summary, transactions: rows, candidates });
 });

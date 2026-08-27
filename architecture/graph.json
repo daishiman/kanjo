@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0.0",
+  "projected_from": ".dev-graph/state/graph.json",
+  "projection_note": "dev-graph macro graph の architecture ノードのみを写像した従属成果物。編集は dev-graph 側で行う。",
+  "nodes": [
+    {
+      "id": "arch-d1-schema-lifecycle",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data",
+        "infrastructure"
+      ],
+      "title": "本番 D1 スキーマ版数ライフサイクル",
+      "file_path": "architecture/arch-d1-schema-lifecycle.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.11",
+        "source_digest": "75aad1e24be701c779a9a444cdb747e56bdcdfbc148ca2af819ca480976d68f6",
+        "imported_at": "2026-08-27T05:10:00Z"
+      },
+      "referenced_by": [
+        "feat-prod-d1-schema-recovery"
+      ]
+    },
+    {
+      "id": "arch-deploy-migration-gate",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "デプロイ前マイグレーション検査ゲート",
+      "file_path": "architecture/arch-deploy-migration-gate.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.11",
+        "source_digest": "0cb82aac382b24a14d69e150e9866d1cd7c58e83039bb4e39db187f66b06515a",
+        "imported_at": "2026-08-27T05:10:00Z"
+      },
+      "referenced_by": [
+        "feat-deploy-migration-gate"
+      ]
+    },
+    {
+      "id": "arch-schema-guard-error-contract",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend",
+        "frontend",
+        "security"
+      ],
+      "title": "実行時スキーマ版数ガードと説明可能なエラー契約",
+      "file_path": "architecture/arch-schema-guard-error-contract.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.11",
+        "source_digest": "9e686b473abcc5d659c6795c88470ddfa31ef27931a3d829555dff2d0c6da8a0",
+        "imported_at": "2026-08-27T05:10:00Z"
+      },
+      "referenced_by": [
+        "feat-runtime-schema-guard"
+      ]
+    }
+  ]
+}

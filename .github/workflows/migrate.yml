@@ -8,6 +8,10 @@ on:
         description: 本番DBを変更します。実行するにはAPPLYと入力してください
         required: true
         type: string
+      approved_manifest:
+        description: 承認済みpending manifestのJSON（secretや明細を含めない）
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -35,6 +39,10 @@ jobs:
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::productionのCLOUDFLARE_API_TOKENが未登録です"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::productionのCLOUDFLARE_ACCOUNT_IDが未登録です"; exit 1; }
+      - name: 承認manifestと現在のpendingを再照合
+        env:
+          APPROVED_MIGRATION_MANIFEST_JSON: ${{ inputs.approved_manifest }}
+        run: node .github/scripts/verify-approved-migration-manifest.mjs
       - name: Time Travelの復元地点を確認
         run: pnpm run db:checkpoint
       - name: D1 migrationを適用

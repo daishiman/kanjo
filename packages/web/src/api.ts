@@ -36,18 +36,22 @@ export class ApiError extends Error {
 export const AUTH_EVENT = 'kanjo:unauthorized';
 
 async function apiErrorFromResponse(res: Response): Promise<ApiError> {
-  let code = 'error';
-  let message = `エラー(${res.status})`;
   let body: unknown;
   try {
     body = await res.json();
-    const error = (body as { error?: { code?: string; message?: string } })?.error;
-    if (error?.code) code = error.code;
-    if (error?.message) message = error.message;
   } catch {
     // JSONでないエラーは状態コードだけを使う
   }
-  return new ApiError(res.status, code, message, body);
+  return apiErrorFromBody(res.status, body);
+}
+
+function apiErrorFromBody(status: number, body: unknown): ApiError {
+  let code = 'error';
+  let message = `エラー(${status})`;
+  const error = (body as { error?: { code?: string; message?: string } } | undefined)?.error;
+  if (error?.code) code = error.code;
+  if (error?.message) message = error.message;
+  return new ApiError(status, code, message, body);
 }
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
@@ -67,13 +71,26 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
  * 添付のアップロード。multipart のため Content-Type をブラウザに決めさせる
  * (境界文字列を自分で書けないため、api() の JSON ヘッダをそのまま使えない)。
  */
-export async function apiUpload<T>(path: string, form: FormData): Promise<T> {
+export async function apiUpload<T>(
+  path: string,
+  form: FormData,
+  options: { acceptErrorBody?: (body: unknown) => boolean } = {},
+): Promise<T> {
   const res = await fetch(`/api${path}`, { method: 'POST', body: form });
   if (res.status === 401) {
     window.dispatchEvent(new Event(AUTH_EVENT));
     throw new ApiError(401, 'unauthorized', '認証が必要です');
   }
-  if (!res.ok) throw await apiErrorFromResponse(res);
+  if (!res.ok) {
+    let body: unknown;
+    try {
+      body = await res.json();
+    } catch {
+      throw apiErrorFromBody(res.status, undefined);
+    }
+    if (options.acceptErrorBody?.(body)) return body as T;
+    throw apiErrorFromBody(res.status, body);
+  }
   return (await res.json()) as T;
 }
 
@@ -166,6 +183,8 @@ export interface TransactionsResponse {
     editedCount: number;
     conflictCount: number;
     noInstitutionCount: number;
+    /** 取り込んだが集計対象外だった明細数(MFの振替・計算対象=0) */
+    nonCountableCount: number;
   };
   transactions: TxRow[];
   candidates: Candidates;
@@ -220,11 +239,28 @@ export interface ClassificationResponse {
 export { OWNER_LABEL };
 export const ownerLabel = (o: Owner | null | undefined): string => OWNER_LABEL[o ?? 'unset'];
 
+export interface ImportCountSummary {
+  /** 明細へ変換できた入力行（同一IDの重複を含む） */
+  parsed: number;
+  /** 今回の試行で正規保存された一意行 */
+  stored: number;
+  /** 保存行のうち収支集計へ含める行 */
+  countable: number;
+  /** 保存行のうち保存はするが収支集計へ含めない行 */
+  nonCountable: number;
+  /** 日付を解釈できず保存できない入力行 */
+  rejected: number;
+}
+
 export interface ImportUnitResult {
   filename: string;
   kind: string;
   months: string[];
+  /** 新しい件数契約。optionalはAPI/Webのローリング更新中の後方互換用 */
+  counts?: ImportCountSummary;
+  /** 後方互換: 旧parserの集計有効行（countsとは別定義） */
   rows: number;
+  /** 後方互換: 旧parserの対象外・振替・保存不能行（countsとは別定義） */
   skipped: number;
   syntheticIds?: number;
   duplicateIds?: number;
@@ -240,6 +276,7 @@ export interface ImportHistoryRow {
   filename: string;
   kind: string | null;
   months: string[];
+  /** 旧履歴を含むparser受理行。保存一意行の件数ではない */
   rows: number | null;
   status: string | null;
   duplicateOf: number | null;

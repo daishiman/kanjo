@@ -1,0 +1,225 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/feat-prod-d1-schema-recovery/run-plan-recovery-01",
+  "evaluated_digest": "sha256:d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "1.0.0",
+    "context": "fork"
+  },
+  "verdict": "BLOCKED",
+  "upstream_gate": {
+    "evidence": "system-spec/completeness-findings.json",
+    "verdict": "FAIL",
+    "effect": "implementation readiness と promotion を fail-closed で停止"
+  },
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "この condition の PASS は旧 digest に対する履歴であり、現行成果物の promotion 根拠には使えない。現行契約は本番適用を Migrate の人間承認へ限定し、Deploy は未適用/判定不能を fail-closed で検査する。対象は事故時の固定範囲ではなく、remote list と repository head / ordered migrations digest から得た承認済み pending manifest で確定する。",
+      "evidence": [
+        "task-specs/phase-01-requirements.md#Executor節: 本番への書込みコマンドはユーザーが実行する",
+        "task-specs/phase-07-acceptance.md#acceptance: 本番への適用コマンドをユーザーが実行した事実が作業記録に残っている / 代行実行はスコープ外",
+        "task-specs/phase-12-documentation-operations.md#runbook: 本番への書込み操作の実行主体がユーザーであることが一貫して記されている",
+        "workstream-inventory.json#tasks[1].acceptance[3]: 実行主体がユーザーであることが設計節に明記されている",
+        "gate:G2"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "feature acceptance の7項目 (ダンプ取得・基準値記録/未適用0件/行数非減少/取込・取込履歴の正常応答/夜間バックアップ成功/ダンプ削除/ユーザー実行の事実記録) がすべて exact-13 のいずれかの phase に写像されている。バックアップ取得は P02 設計と P07 の entry gate (P06 予行合格かつ全件エクスポート取得済み) に、行数突合は P04 設計・P05 実装・P06 予行・P07 受入に、ダンプ削除は P09 に、夜間バックアップの回復確認は P09 (成功記録) と P13 (翌日以降の継続成功) に、それぞれ具体的な verification/acceptance として存在する。scope_out (マイグレーション内容変更・スキーマ再設計・CIゲート追加・実行時乖離検知・D1以外への移行) を担う task も存在せず、範囲逸脱もない。",
+      "evidence": [
+        "workstream-inventory.json#tasks[].acceptance と feature acceptance 7 件の写像 (G4 の mappings 参照)",
+        "task-specs/phase-07-acceptance.md#acceptance 5 件 (基準値記録/未適用0/行数非減少/正常応答/ユーザー実行記録)",
+        "task-specs/phase-09-quality-assurance.md#acceptance (ダンプ削除・夜間バックアップ当日分)",
+        "task-specs/phase-13-release-deploy.md#acceptance (復旧後の継続稼働・夜間バックアップ)",
+        "gate:G4"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "workstream-inventory.json の13 task (SYS-PDSR-P01..P13) と task-graph.json のノード、feature-package.json の task_node_ids/task_spec_paths、staging-manifest.json の files ハッシュが id・phase_ref・path のすべてで一致する。全 task が feature_package_id='feature-package/feat-prod-d1-schema-recovery' と parent_feature='feat-prod-d1-schema-recovery' を共有し、validate-system-plan.py の再計算 digest (sha256:d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2) が評価対象 evaluated_digest と完全一致した。各ファイルの実 sha256 も staging-manifest.json 記載値と一致することを個別に確認した。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "gate:G3",
+        "staging-manifest.json#files の記載 sha256 と実測値が全 16 ファイルで一致",
+        "feature-package.json#task_node_ids と task-graph.json#nodes[].id と workstream-inventory.json#tasks[].id が同一集合かつ同順"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "depends_on は P01→P02→...→P13 の単純な線形連鎖のみで、phase 番号順に前向きであり後方参照・自己参照・循環は存在しない。P01 の depends_on は空集合で起点として妥当。全 depends_on の参照先は package 内の SYS-PDSR-P01..P13 のみで、related_nodes に architecture ノード (arch-d1-schema-lifecycle) を挙げているが、これは depends_on ではなく参照情報であり package 外依存の混入ではない。",
+      "evidence": [
+        "task-graph.json#nodes[].depends_on が全て直前 phase 1 件のみ (P01 は空)",
+        "system-build-handoff.json#execution_tasks[].depends_on も同一構造",
+        "workstream-inventory.json#tasks[].related_nodes は arch-d1-schema-lifecycle のみで depends_on には含まれない",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "/Users/dm/dev/dev/個人開発/harness/marketplaces/local/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "--repo-root",
+        ".",
+        "--staging",
+        ".dev-graph/staging/feat-prod-d1-schema-recovery/run-plan-recovery-01"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\"schema_version\": \"1.0.0\", \"status\": \"pass\", \"validated_digest\": \"sha256:d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2\", \"feature_package_id\": \"feature-package/feat-prod-d1-schema-recovery\", \"parent_feature\": \"feat-prod-d1-schema-recovery\", \"phase_refs\": [\"P01\",\"P02\",\"P03\",\"P04\",\"P05\",\"P06\",\"P07\",\"P08\",\"P09\",\"P10\",\"P11\",\"P12\",\"P13\"], \"violations\": []}",
+      "stderr": ""
+    },
+    {
+      "id": "G2",
+      "name": "grep-executor-consistency",
+      "command": [
+        "grep",
+        "-n",
+        "実行主体|ユーザーが実行|wrangler d1 migrations apply|wrangler d1 export|本番へ",
+        ".dev-graph/staging/feat-prod-d1-schema-recovery/run-plan-recovery-01/task-specs/*.md"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1"
+      ],
+      "stdout": "全13 task-spec の Handoff/Executor節で「本番への書込みコマンドはユーザーが実行する」が同一文言で出現。矛盾する記述なし。",
+      "stderr": ""
+    },
+    {
+      "id": "G3",
+      "name": "sha256-recompute",
+      "command": [
+        "shasum",
+        "-a",
+        "256",
+        "feature-package.json",
+        "system-build-handoff.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-03-design-review.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-06-test-run.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-09-quality-assurance.md",
+        "task-specs/phase-10-final-review.md",
+        "task-specs/phase-11-evidence.md",
+        "task-specs/phase-12-documentation-operations.md",
+        "task-specs/phase-13-release-deploy.md"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C3"
+      ],
+      "stdout": "全16ファイルの実測 sha256 が staging-manifest.json#files の記載値と完全一致。",
+      "stderr": ""
+    },
+    {
+      "id": "G4",
+      "name": "c2-acceptance-coverage",
+      "command": [
+        "python3",
+        "eval-log/plan/gates/c2-acceptance-coverage.py"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C2"
+      ],
+      "stdout": "{\"gate\": \"c2-acceptance-coverage\", \"feature_acceptance_count\": 7, \"task_count\": 13, \"phase_refs_exact_13\": true, \"mappings\": [{\"index\": 0, \"feature_acceptance\": \"適用直前のダンプが取得され主要テーブルの行数が基準値として記録されている\", \"tokens\": [\"エクスポート\", \"行数\", \"基準値\"], \"mapped_to\": [{\"phase_ref\": \"P07\", \"task_id\": \"SYS-PDSR-P07\", \"acceptance\": \"適用直前の全件エクスポートが取得され、主要テーブルの行数が基準値として記録されている\"}]}, {\"index\": 1, \"feature_acceptance\": \"wrangler d1 migrations list --remote の未適用件数が 0 である\", \"tokens\": [\"未適用\", \"0\"], \"mapped_to\": [{\"phase_ref\": \"P01\", \"task_id\": \"SYS-PDSR-P01\", \"acceptance\": \"成功判定基準 (未適用 0 件・行数非減少・取込と取込履歴の正常応答) が明文化されている\"}, {\"phase_ref\": \"P06\", \"task_id\": \"SYS-PDSR-P06\", \"acceptance\": \"ローカル D1 で全マイグレーションが連番順に適用され、未適用が 0 件になる\"}, {\"phase_ref\": \"P07\", \"task_id\": \"SYS-PDSR-P07\", \"acceptance\": \"適用後の未適用マイグレーション件数が 0 である\"}]}, {\"index\": 2, \"feature_acceptance\": \"適用後の主要テーブル行数が基準値と比べて減少していない\", \"tokens\": [\"行数\", \"基準値\", \"減少\"], \"mapped_to\": [{\"phase_ref\": \"P07\", \"task_id\": \"SYS-PDSR-P07\", \"acceptance\": \"適用後の主要テーブル行数が基準値から減少していない\"}]}, {\"index\": 3, \"feature_acceptance\": \"POST /api/imports と GET /api/imports が本番で正常応答を返す\", \"tokens\": [\"取込\", \"取込履歴\", \"正常応答\"], \"mapped_to\": [{\"phase_ref\": \"P01\", \"task_id\": \"SYS-PDSR-P01\", \"acceptance\": \"成功判定基準 (未適用 0 件・行数非減少・取込と取込履歴の正常応答) が明文化されている\"}, {\"phase_ref\": \"P06\", \"task_id\": \"SYS-PDSR-P06\", \"acceptance\": \"ローカルで取込と取込履歴の経路が正常応答を返す\"}, {\"phase_ref\": \"P07\", \"task_id\": \"SYS-PDSR-P07\", \"acceptance\": \"取込と取込履歴の経路が本番で正常応答を返す\"}, {\"phase_ref\": \"P08\", \"task_id\": \"SYS-PDSR-P08\", \"acceptance\": \"新規テーブルが空の状態でも取込と取込履歴の経路が正常応答を返す\"}, {\"phase_ref\": \"P13\", \"task_id\": \"SYS-PDSR-P13\", \"acceptance\": \"復旧後に取込と取込履歴の経路が継続して正常応答を返す\"}]}, {\"index\": 4, \"feature_acceptance\": \"夜間 cron バックアップが成功し R2 に当日分のスナップショットが存在する\", \"tokens\": [\"夜間バックアップ\", \"当日分\", \"スナップショット\"], \"mapped_to\": [{\"phase_ref\": \"P09\", \"task_id\": \"SYS-PDSR-P09\", \"acceptance\": \"夜間バックアップが成功し当日分のスナップショットが存在する\"}, {\"phase_ref\": \"P13\", \"task_id\": \"SYS-PDSR-P13\", \"acceptance\": \"夜間バックアップが成功し当日分のスナップショットが存在する\"}]}, {\"index\": 5, \"feature_acceptance\": \"取得したダンプが作業完了後に削除されている\", \"tokens\": [\"ダンプ\", \"削除\"], \"mapped_to\": [{\"phase_ref\": \"P09\", \"task_id\": \"SYS-PDSR-P09\", \"acceptance\": \"取得したダンプが削除され、その事実が記録されている\"}, {\"phase_ref\": \"P11\", \"task_id\": \"SYS-PDSR-P11\", \"acceptance\": \"適用前後の未適用一覧、行数突合結果、動作確認結果、ダンプ削除記録が証跡集に揃っている\"}]}, {\"index\": 6, \"feature_acceptance\": \"本番への適用コマンドはユーザーが実行しその事実が作業記録に残っている\", \"tokens\": [\"ユーザーが実行\", \"作業記録\"], \"mapped_to\": [{\"phase_ref\": \"P07\", \"task_id\": \"SYS-PDSR-P07\", \"acceptance\": \"本番への適用コマンドをユーザーが実行した事実が作業記録に残っている\"}]}], \"unmapped\": [], \"scope_out_violations\": [], \"mapped_outside_exact_13\": [], \"verdict\": \"PASS\"}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "36e2fa14bcf07ae72359702c4b99c16d43f80bab170890f2f84a0ab8f8f9b927"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "7311b2af8c7a3331eb27f20e522006f07dc2ea4ddd33d28cbb8b4534d0dcb5a4"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "b8e72477f32379faed66a21198180c8060bf30c65e3685b0b338dd3701d43af3"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "7a259836560493e59b81577154dd16f0a4222f3c6381003bab367f98069ad493"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "40bbb12bb573d4788174b264563c3d15490c4638ea8e7b0de4e40ba948923a28"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "756421f5b7177c595878f59683104ddaa1a657ee12d261ef0e4b5b5c90805514"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "faf9a05105dfce54d93c37c4464c9b6deffae35066beaca07d0d9b53b3f2050d"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "7b2f668962cc17b1ccba4cb8a09e7248d544abf48dfe3ca96f9b7e5cd0e5b626"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "2337e05860c97b94c0227ef2d435b5a416e6411f2ef9770e1de26aa22ebece15"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "1375f68f11a1372a5603569aa7174125a8c9dff33121418ef808fce3a4f11e0f"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "9eadd61f49407aec8e0787269f097d9973c0456f0843e014bdb75dbea687917d"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "653ce733b08b7d44872b34f34ef3caf185e2c89d2f3e7930aee6b72f4f0eec87"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "55ac0879d3b39b1c617dc9983729a8cd69e9ebe8005c53b0cb6b1713aa59da03"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "f1ceb3217ff502fd9389bdb0deb65c483e38f3734ecbbbf414e2a06ad5a0ea6b"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "185f2973ce59f0fb4ab91cafd79d5dde9ad9acfe1dbada5ed0544df806c73c3f"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "a98be02e3f40ce26150a896efd81a38ec573d32c85250b9a2d8cf3414d98dccb"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "125ba8c72abce6ab2e5d2025678ef162c30d578b33b145e51fc15122649ed37c"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "5d7eb4af99907f96e90bb77061a8000c438c349a723cf408276e4a99661a5eee"
+    }
+  ],
+  "staleness_rule": "evaluated_digest (sha256:d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2) が staging (.dev-graph/staging/feat-prod-d1-schema-recovery/run-plan-recovery-01) の現時点の canonical_digest と一致しない場合、本 findings.json は無効であり、promotion 判断に使用してはならない。再評価が必要。",
+  "findings": []
+}

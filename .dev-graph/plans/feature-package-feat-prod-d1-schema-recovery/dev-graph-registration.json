@@ -1,0 +1,1128 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+  "parent_feature": "feat-prod-d1-schema-recovery",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-PDSR-P01": "beads",
+    "SYS-PDSR-P02": "beads",
+    "SYS-PDSR-P03": "beads",
+    "SYS-PDSR-P04": "beads",
+    "SYS-PDSR-P05": "beads",
+    "SYS-PDSR-P06": "beads",
+    "SYS-PDSR-P07": "beads",
+    "SYS-PDSR-P08": "beads",
+    "SYS-PDSR-P09": "beads",
+    "SYS-PDSR-P10": "beads",
+    "SYS-PDSR-P11": "beads",
+    "SYS-PDSR-P12": "beads",
+    "SYS-PDSR-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-PDSR-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "復旧要件のベースライン確定",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-01-remote-baseline.json"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P01.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "適用順序と不変条件の設計",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "data",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P01"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P02.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "復旧設計の独立レビュー",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P02"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-03-design-review.md"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P03.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "行数突合と動作確認の検証設計",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P03"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-04-verification-design.md"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P04.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "復旧手順書と突合スクリプトの作成",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P04"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        "docs/runbooks/prod-d1-schema-recovery.md",
+        "docs/runbooks/scripts/reconcile-row-counts.sh"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P05.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "ローカル環境での適用予行",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P05"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-06-local-rehearsal.md"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P06.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "本番適用の受入判定",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "operations",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P06"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-07-approved-pending-manifest.json",
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-07-acceptance.md"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P07.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "既存データの互換確認と派生テーブルの初期状態",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "data",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P07"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-08-compatibility.md"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P08.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "品質・セキュリティ・運用準備の確認",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "security",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P08"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-09-quality.md"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P09.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "復旧完了の最終ゲート",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P09"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-10-final-gate.md"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P10.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡の整備",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P10"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-11-recovery-evidence.md"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P11.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "運用文書と引き継ぎの整備",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P11"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P12.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    },
+    {
+      "graph_node_id": "SYS-PDSR-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "復旧後の稼働確認と事後観察",
+      "project_id": "feature-package-feat-prod-d1-schema-recovery",
+      "domain": "operations",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "server-error-recovery",
+        "prod-d1-recovery"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-27T05:41:41Z",
+      "updated_at": "2026-08-27T05:41:41Z",
+      "depends_on": [
+        "SYS-PDSR-P12"
+      ],
+      "related_nodes": [
+        "arch-d1-schema-lifecycle"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-13-observation.md"
+      ],
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/plan-findings.json",
+        "evaluated_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "d1bed1896845416803c6d9bd3a192a355cc66341200fd5a36c8cfc383317a1b2",
+        "imported_at": "2026-08-27T05:41:41Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "dev-graph feature 配下の単一 phase 実行単位として生成されたため分類は一意。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P13.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-27T04:55:00Z",
+        "missing_sections": ["system-spec completeness verdict が FAIL のため promotion 不可"],
+        "status": "blocked"
+      }
+    }
+  ]
+}

@@ -11,6 +11,7 @@ import {
   applyClassification,
   benchmarks,
   catProfile,
+  countableMfTxs,
   diagnosis,
   household,
   overview,
@@ -280,7 +281,7 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
     return out;
   };
   // 手動編集を除いた「取込値ベース」の個人支出(edits を空にして分類し直す)
-  const imported = applyClassification(data.mfTx, data.rules, {}, data.institutionOwners);
+  const imported = applyClassification(countableMfTxs(data.mfTx), data.rules, {}, data.institutionOwners);
   const ownerTotals = { business: 0, spouse: 0, family: 0, unset: 0 };
   for (const m of inPeriod) {
     const o = data.personalByOwner[m];

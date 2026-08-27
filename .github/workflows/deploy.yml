@@ -48,6 +48,8 @@ jobs:
       - name: テスト（手動実行時）
         if: github.event_name == 'workflow_dispatch'
         run: pnpm test
+      - name: D1 migrationの未適用を検査
+        run: node .github/scripts/check-d1-migrations.mjs
       - name: Webをビルド
         run: pnpm --filter @kanjo/web build
       - name: Workerをデプロイ

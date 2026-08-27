@@ -18,6 +18,7 @@ import {
 } from './import-lifecycle.js';
 import { parseUpload } from './import-pipeline.js';
 import { app } from './index.js';
+import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
 import {
   LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
   getDb,
@@ -51,6 +52,7 @@ async function applyMigrations(database: D1Database): Promise<void> {
       .filter(Boolean);
     for (const sql of statements) await database.prepare(sql).run();
   }
+  await recordTestMigrationHead(database, files);
 }
 
 const freeeCsv = (amount: number): string =>
@@ -74,6 +76,14 @@ const mfCsvRows = (count: number, descriptionWidth = 0): string =>
       (_, index) =>
         `1,2026/08/${String((index % 28) + 1).padStart(2, '0')},-${index + 1},架空費,架空内訳,0,架空-${index}-${'幅'.repeat(descriptionWidth)},mf-${index},架空口座`,
     ),
+  ].join('\n');
+
+const mfCompleteProjectionCsv = (): string =>
+  [
+    '計算対象,日付,金額,大項目,中項目,振替,内容,ID,保有金融機関,メモ',
+    '1,2026/10/01,-101,架空費,通常,0,架空通常,mf-full-1,架空口座,  通常メモ  ',
+    '0,2026/10/02,-202,架空費,非対象,0,架空非対象,mf-full-2,架空口座,   ',
+    '1,2026/10/03,-303,架空費,振替,1,架空振替,mf-full-3,架空口座,',
   ].join('\n');
 
 const countingDatabase = (database: D1Database): { database: D1Database; count: () => number } => {
@@ -271,7 +281,8 @@ beforeEach(async () => {
       "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT GLOB '_cf_*'",
     )
     .all<{ name: string }>();
-  for (const { name } of tables.results) await d1.prepare(`DELETE FROM "${name}"`).run();
+  for (const { name } of tables.results.filter(({ name }) => isApplicationTableForTestReset(name)))
+    await d1.prepare(`DELETE FROM "${name}"`).run();
   const listed = await files.list();
   for (const object of listed.objects) await files.delete(object.key);
   const login = await app.request(
@@ -293,6 +304,219 @@ afterAll(async () => {
 }, 30_000);
 
 describe('active target duplicate', () => {
+  it('MF取込結果は解析・保存・集計対象・集計対象外・保存不能を別々に返す', async () => {
+    const csv = [
+      '計算対象,日付,金額,大項目,中項目,振替,内容,ID,保有金融機関',
+      '0,2026/12/01,-100,架空費,旧値,0,架空旧値,shared-id,架空口座',
+      '1,2026/12/02,-200,架空費,新値,0,架空新値,shared-id,架空口座',
+      '1,2026/12/03,-300,架空費,振替,1,架空振替,transfer-id,架空口座',
+      '1,日付不明,-400,架空費,不正,0,架空不正,rejected-id,架空口座',
+    ].join('\n');
+
+    const response = await importFiles([{ name: 'anonymous-counts.csv', body: csv }]);
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      results: [
+        {
+          status: 'committed',
+          counts: { parsed: 3, stored: 2, countable: 1, nonCountable: 1, rejected: 1 },
+          rows: 1,
+          skipped: 3,
+          duplicateIds: 1,
+        },
+      ],
+    });
+    await expect(
+      d1.prepare('SELECT COUNT(*) AS n FROM mf_transactions').first<{ n: number }>(),
+    ).resolves.toEqual({ n: 2 });
+
+    const duplicate = await importFiles([{ name: 'anonymous-counts-again.csv', body: csv }]);
+    expect(duplicate.status).toBe(200);
+    await expect(duplicate.json()).resolves.toMatchObject({
+      results: [
+        {
+          status: 'duplicate',
+          counts: { parsed: 3, stored: 0, countable: 0, nonCountable: 0, rejected: 1 },
+          rows: 1,
+          skipped: 3,
+          duplicateIds: 1,
+        },
+      ],
+    });
+  });
+
+  it('通常MF取込は全行のメモ・計算対象・振替をD1と再読込に保つ', async () => {
+    expect(
+      await resultStatuses(
+        await importFiles([{ name: 'complete-projection.csv', body: mfCompleteProjectionCsv() }]),
+      ),
+    ).toEqual(['committed']);
+
+    const rows = await d1
+      .prepare(
+        `SELECT tx_id AS txId, memo, is_target AS isTarget, is_transfer AS isTransfer
+         FROM mf_transactions ORDER BY tx_id`,
+      )
+      .all<{ txId: string; memo: string | null; isTarget: number; isTransfer: number }>();
+    expect(rows.results).toEqual([
+      { txId: 'mf-full-1', memo: '  通常メモ  ', isTarget: 1, isTransfer: 0 },
+      { txId: 'mf-full-2', memo: '   ', isTarget: 0, isTransfer: 0 },
+      { txId: 'mf-full-3', memo: '', isTarget: 1, isTransfer: 1 },
+    ]);
+
+    const reloaded = await loadDataset(getDb(d1), 'default', []);
+    expect(
+      reloaded.mfTx.map(({ id, memo, isTarget, isTransfer }) => ({ id, memo, isTarget, isTransfer })),
+    ).toEqual([
+      { id: 'mf-full-1', memo: '  通常メモ  ', isTarget: true, isTransfer: false },
+      { id: 'mf-full-2', memo: '   ', isTarget: false, isTransfer: false },
+      { id: 'mf-full-3', memo: '', isTarget: true, isTransfer: true },
+    ]);
+  });
+
+  it('raw MF月を全て集計対象外へ洗い替えると旧集計をD1と再読込結果から除く', async () => {
+    const header = '計算対象,日付,金額,大項目,中項目,振替,内容,ID,保有金融機関,メモ';
+    const countable = [header, '1,2027/01/01,-123,架空費,通常,0,架空通常,mf-zero-month,架空口座,原本'].join(
+      '\n',
+    );
+    const nonCountable = [
+      header,
+      '0,2027/01/01,-123,架空費,通常,0,架空通常,mf-zero-month,架空口座,原本',
+    ].join('\n');
+
+    expect(await resultStatuses(await importFiles([{ name: 'countable.csv', body: countable }]))).toEqual([
+      'committed',
+    ]);
+    expect(
+      await d1
+        .prepare("SELECT amount FROM monthly_agg WHERE month='2027-01' AND scope='per_exp:架空費'")
+        .first(),
+    ).toEqual({ amount: 123 });
+
+    expect(
+      await resultStatuses(await importFiles([{ name: 'non-countable.csv', body: nonCountable }])),
+    ).toEqual(['committed']);
+    const reloaded = await loadDataset(getDb(d1), 'default', []);
+    expect(reloaded.mfTx).toMatchObject([{ id: 'mf-zero-month', isTarget: false, isTransfer: false }]);
+    expect(reloaded.personal['2027-01']).toEqual({ income: {}, expense: {} });
+    expect(reloaded.bizPersonal['2027-01']).toEqual({ income: 0, expense: 0 });
+    expect(reloaded.personalByOwner['2027-01']).toEqual({
+      business: { income: 0, expense: 0 },
+      spouse: { income: 0, expense: 0 },
+      family: { income: 0, expense: 0 },
+      unset: { income: 0, expense: 0 },
+    });
+    expect(
+      await d1
+        .prepare(
+          `SELECT scope,amount FROM monthly_agg
+           WHERE month='2027-01' AND (scope LIKE 'per_%' OR scope LIKE 'biz_personal_%')
+           ORDER BY scope`,
+        )
+        .all(),
+    ).toMatchObject({
+      results: [
+        { scope: 'biz_personal_in', amount: 0 },
+        { scope: 'biz_personal_out', amount: 0 },
+      ],
+    });
+  });
+
+  it('raw MF行が無いJSON復元月はpersonal baselineをD1再読込後も保持する', async () => {
+    const source = structuredClone(restoreBody) as Record<string, unknown> & { mfTx: unknown[] };
+    source.months = ['2027-02'];
+    source.mfTx = [];
+    source.personal = {
+      '2027-02': { income: { 架空給与: 321 }, expense: { 架空生活費: 45 } },
+    };
+    source.bizPersonal = { '2027-02': { income: 67, expense: 89 } };
+
+    await expect(restore(source).then((response) => response.json())).resolves.toMatchObject({ ok: true });
+    const reloaded = await loadDataset(getDb(d1), 'default', []);
+    expect(reloaded.personal['2027-02']).toEqual({
+      income: { 架空給与: 321 },
+      expense: { 架空生活費: 45 },
+    });
+    expect(reloaded.bizPersonal['2027-02']).toEqual({ income: 67, expense: 89 });
+    expect(
+      await d1
+        .prepare(
+          `SELECT scope,amount FROM monthly_agg
+           WHERE month='2027-02' AND (scope LIKE 'per_%' OR scope LIKE 'biz_personal_%')
+           ORDER BY scope`,
+        )
+        .all(),
+    ).toMatchObject({
+      results: [
+        { scope: 'biz_personal_in', amount: 67 },
+        { scope: 'biz_personal_out', amount: 89 },
+        { scope: 'per_exp:架空生活費', amount: 45 },
+        { scope: 'per_inc:架空給与', amount: 321 },
+      ],
+    });
+  });
+
+  it('JSON復元は同じ完全射影と旧undefinedの既定意味をD1と再読込に保つ', async () => {
+    const source = structuredClone(restoreBody) as Record<string, unknown> & { mfTx: unknown[] };
+    source.months = ['2026-11'];
+    source.mfTx = [
+      {
+        id: 'json-full',
+        idStable: true,
+        m: '2026-11',
+        d: '11/01',
+        c: '架空JSON完全',
+        a: -404,
+        big: '架空費',
+        mid: '復元',
+        inst: '架空口座',
+        memo: '  復元メモ  ',
+        isTarget: false,
+        isTransfer: true,
+      },
+      {
+        id: 'json-legacy',
+        m: '2026-11',
+        d: '11/02',
+        c: '架空JSON旧形式',
+        a: -505,
+        big: '架空費',
+        mid: '復元',
+      },
+    ];
+
+    await expect(restore(source).then((response) => response.json())).resolves.toMatchObject({
+      ok: true,
+      duplicate: false,
+      mfTxCount: 2,
+    });
+    const rows = await d1
+      .prepare(
+        `SELECT tx_id AS txId, memo, is_target AS isTarget, is_transfer AS isTransfer,
+                identity_stable AS identityStable
+         FROM mf_transactions ORDER BY tx_id`,
+      )
+      .all<{
+        txId: string;
+        memo: string | null;
+        isTarget: number;
+        isTransfer: number;
+        identityStable: number;
+      }>();
+    expect(rows.results).toEqual([
+      { txId: 'json-full', memo: '  復元メモ  ', isTarget: 0, isTransfer: 1, identityStable: 1 },
+      { txId: 'json-legacy', memo: null, isTarget: 1, isTransfer: 0, identityStable: 0 },
+    ]);
+
+    const reloaded = await loadDataset(getDb(d1), 'default', []);
+    expect(
+      reloaded.mfTx.map(({ id, memo, isTarget, isTransfer }) => ({ id, memo, isTarget, isTransfer })),
+    ).toEqual([
+      { id: 'json-full', memo: '  復元メモ  ', isTarget: false, isTransfer: true },
+      { id: 'json-legacy', memo: undefined, isTarget: true, isTransfer: false },
+    ]);
+  });
+
   it('MFの明示IDと合成IDをD1で区別し、添付可否の根拠を失わない', async () => {
     expect(await resultStatuses(await importFiles([{ name: 'stable-mf.csv', body: mfCsvRows(1) }]))).toEqual([
       'committed',
