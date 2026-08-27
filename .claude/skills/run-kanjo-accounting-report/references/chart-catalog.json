@@ -47,8 +47,9 @@
       "kind": "line",
       "unit": "yen",
       "purpose": "経費の水準が上がっているのか下がっているのかを、月ごとのブレをならして見る",
-      "condition": "記帳済みの月が6ヶ月以上(移動平均を3点以上引くため)",
+      "condition": "記帳済みの月が基準月数(既定6ヶ月・設定画面で変更可)以上あること(移動平均を3点以上引くため)",
       "minMonths": 6,
+      "statBased": true,
       "types": [
         "monthly",
         "annual",
@@ -121,8 +122,9 @@
       "kind": "band",
       "unit": "yen",
       "purpose": "経費が「いつもの範囲」に収まっているか、飛び抜けた月がないかを見る",
-      "condition": "記帳済みの月が6ヶ月以上(平均と標準偏差を求めるため)",
+      "condition": "記帳済みの月が基準月数(既定6ヶ月・設定画面で変更可)以上あること(平均と標準偏差を求めるため)",
       "minMonths": 6,
+      "statBased": true,
       "types": [
         "monthly",
         "annual",
@@ -170,8 +172,9 @@
       "kind": "stackedBar",
       "unit": "yen",
       "purpose": "売上がどこまで落ちても赤字にならないか(安全余裕)を見る",
-      "condition": "記帳済みの月が6ヶ月以上、かつ売上のある月が3ヶ月以上(固定費の判定と損益分岐点の計算に必要)",
+      "condition": "記帳済みの月が基準月数(既定6ヶ月・設定画面で変更可)以上、かつ売上のある月が3ヶ月以上(固定費の判定と損益分岐点の計算に必要)",
       "minMonths": 6,
+      "statBased": true,
       "types": [
         "monthly",
         "annual",
@@ -236,6 +239,54 @@
         "期間(対象期間の前12ヶ月〜終了月)"
       ],
       "readingGuide": "柱の高さがサブスク合計。同じ色の帯が急に厚くなった月は値上げか二重払い(subscriptions.alerts を確認)。「その他」は未登録の支払先。"
+    },
+    {
+      "id": "account_month_heatmap",
+      "figure": 9,
+      "title": "科目×月のヒートマップ",
+      "kind": "heatmap",
+      "unit": "yen",
+      "purpose": "どの科目がどの月に偏っているか(季節性・スポット支出)を、科目ごとの濃さで一度に見る",
+      "condition": "記帳済みの月が2ヶ月以上、かつ金額のある科目が1つ以上",
+      "minMonths": 2,
+      "types": [
+        "monthly",
+        "annual",
+        "longterm"
+      ],
+      "requiredData": [
+        "biz.expenseByAccount",
+        "biz.categories",
+        "unrecordedExpenseMonths"
+      ],
+      "axes": [
+        "項目(freee勘定科目)",
+        "期間(対象期間の前12ヶ月〜終了月)"
+      ],
+      "readingGuide": "行が科目(期間合計の大きい順)、列が月。濃さはその科目の中での大小(行ごとに最大月を最も濃く塗る)なので、行をまたいで濃さを比べない。ぽつんと濃い1マスはスポット支出、毎年同じ月が濃ければ季節性。空欄は未記帳の月。"
+    },
+    {
+      "id": "owner_trend",
+      "figure": 10,
+      "title": "名義別の個人支出の推移",
+      "kind": "stackedBar",
+      "unit": "yen",
+      "purpose": "家計の支出が誰の名義でいくら動いているかと、その内訳の変化を見る",
+      "condition": "個人支出が期間内に1円以上あること",
+      "minMonths": 0,
+      "types": [
+        "monthly",
+        "annual",
+        "longterm"
+      ],
+      "requiredData": [
+        "personal.byOwner"
+      ],
+      "axes": [
+        "区分(名義: 事業/妻/家族/未設定)",
+        "期間(対象期間の前12ヶ月〜終了月)"
+      ],
+      "readingGuide": "柱の高さが個人支出の合計、色の帯が名義の内訳。特定の名義の帯だけが厚くなっている月はその名義の支出が増えている。すべて「未設定」の場合は名義の割り当てが済んでいないだけなので、内訳としては読まない。"
     }
   ]
 }

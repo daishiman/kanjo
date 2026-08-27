@@ -7,19 +7,26 @@
  * - 同じ内容を skills/run-kanjo-accounting-report/references/chart-catalog.json に書き出し、検証スクリプトと同期する
  *   (同期はテストで確認する)。
  */
-import { type Dataset, mean, std } from '@kanjo/core';
+import {
+  DEFAULT_STAT_MIN_MONTHS,
+  type Dataset,
+  accountMonthMatrix,
+  mean,
+  ownerMonthlyExpense,
+  std,
+} from '@kanjo/core';
 import type { PeriodTotals } from './dataset.js';
 import { type Period, type ReportType, addMonths, monthIndex, rangeLength } from './period.js';
 
-export const CHART_KINDS = ['line', 'bar', 'stackedBar', 'waterfall', 'pareto', 'band'] as const;
+export const CHART_KINDS = ['line', 'bar', 'stackedBar', 'waterfall', 'pareto', 'band', 'heatmap'] as const;
 export type ChartKind = (typeof CHART_KINDS)[number];
 export const CHART_UNITS = ['yen', 'pct', 'count'] as const;
 export type ChartUnit = (typeof CHART_UNITS)[number];
 
 /** 月別系列は最長36ヶ月まで月次、それを超える窓は四半期に丸める(要望25c: 粒度の上限) */
 export const MONTHLY_LIMIT = 36;
-/** 図に載せる系列(科目・支払先)の最大本数。超える分は「その他」にまとめる */
-export const MAX_SERIES = 8;
+/** 図に載せる名前付き系列の最大本数。「その他」は必要な場合に9本目として加わる。 */
+export const MAX_NAMED_SERIES = 8;
 
 export interface ChartSeries {
   label: string;
@@ -42,8 +49,13 @@ export interface CatalogEntry {
   purpose: string;
   /** 出せる条件(人が読む文) */
   condition: string;
-  /** 条件の数値(記帳月数)。月数条件が無い図は 0 */
+  /**
+   * 条件の数値(記帳月数)。月数条件が無い図は 0。
+   * statBased=true の図はここが既定値で、実際の判定は利用者が設定した基準月数(ChartContext.minMonths)を使う。
+   */
   minMonths: number;
+  /** 統計の基準月数(設定画面で変更可)に連動する図か */
+  statBased?: boolean;
   /** 適用するレポート型 */
   types: ReportType[];
   /** 使う元データ(GET data のパス)。要望25a の対応表 */
@@ -62,8 +74,9 @@ export const CHART_CATALOG: readonly CatalogEntry[] = [
     kind: 'line',
     unit: 'yen',
     purpose: '経費の水準が上がっているのか下がっているのかを、月ごとのブレをならして見る',
-    condition: '記帳済みの月が6ヶ月以上(移動平均を3点以上引くため)',
-    minMonths: 6,
+    condition: '記帳済みの月が基準月数(既定6ヶ月・設定画面で変更可)以上あること(移動平均を3点以上引くため)',
+    minMonths: DEFAULT_STAT_MIN_MONTHS,
+    statBased: true,
     types: ['monthly', 'annual', 'longterm'],
     requiredData: ['biz.revenue', 'biz.expenseTotal', 'stats.expenseMovingAvg3', 'unrecordedExpenseMonths'],
     axes: ['期間(対象期間の前12ヶ月〜終了月)', '区分(事業)'],
@@ -107,8 +120,9 @@ export const CHART_CATALOG: readonly CatalogEntry[] = [
     kind: 'band',
     unit: 'yen',
     purpose: '経費が「いつもの範囲」に収まっているか、飛び抜けた月がないかを見る',
-    condition: '記帳済みの月が6ヶ月以上(平均と標準偏差を求めるため)',
-    minMonths: 6,
+    condition: '記帳済みの月が基準月数(既定6ヶ月・設定画面で変更可)以上あること(平均と標準偏差を求めるため)',
+    minMonths: DEFAULT_STAT_MIN_MONTHS,
+    statBased: true,
     types: ['monthly', 'annual', 'longterm'],
     requiredData: ['biz.expenseTotal', 'unrecordedExpenseMonths', 'stats.recordedMonths'],
     axes: ['期間(対象期間の前12ヶ月〜終了月)', '区分(事業)'],
@@ -136,8 +150,10 @@ export const CHART_CATALOG: readonly CatalogEntry[] = [
     kind: 'stackedBar',
     unit: 'yen',
     purpose: '売上がどこまで落ちても赤字にならないか(安全余裕)を見る',
-    condition: '記帳済みの月が6ヶ月以上、かつ売上のある月が3ヶ月以上(固定費の判定と損益分岐点の計算に必要)',
-    minMonths: 6,
+    condition:
+      '記帳済みの月が基準月数(既定6ヶ月・設定画面で変更可)以上、かつ売上のある月が3ヶ月以上(固定費の判定と損益分岐点の計算に必要)',
+    minMonths: DEFAULT_STAT_MIN_MONTHS,
+    statBased: true,
     types: ['monthly', 'annual', 'longterm'],
     requiredData: [
       'biz.expenseByAccount',
@@ -179,6 +195,36 @@ export const CHART_CATALOG: readonly CatalogEntry[] = [
     axes: ['項目(サブスク登録ベンダー)', '期間(対象期間の前12ヶ月〜終了月)'],
     readingGuide:
       '柱の高さがサブスク合計。同じ色の帯が急に厚くなった月は値上げか二重払い(subscriptions.alerts を確認)。「その他」は未登録の支払先。',
+  },
+  {
+    id: 'account_month_heatmap',
+    figure: 9,
+    title: '科目×月のヒートマップ',
+    kind: 'heatmap',
+    unit: 'yen',
+    purpose: 'どの科目がどの月に偏っているか(季節性・スポット支出)を、科目ごとの濃さで一度に見る',
+    condition: '記帳済みの月が2ヶ月以上、かつ金額のある科目が1つ以上',
+    minMonths: 2,
+    types: ['monthly', 'annual', 'longterm'],
+    requiredData: ['biz.expenseByAccount', 'biz.categories', 'unrecordedExpenseMonths'],
+    axes: ['項目(freee勘定科目)', '期間(対象期間の前12ヶ月〜終了月)'],
+    readingGuide:
+      '行が科目(期間合計の大きい順)、列が月。濃さはその科目の中での大小(行ごとに最大月を最も濃く塗る)なので、行をまたいで濃さを比べない。ぽつんと濃い1マスはスポット支出、毎年同じ月が濃ければ季節性。空欄は未記帳の月。',
+  },
+  {
+    id: 'owner_trend',
+    figure: 10,
+    title: '名義別の個人支出の推移',
+    kind: 'stackedBar',
+    unit: 'yen',
+    purpose: '家計の支出が誰の名義でいくら動いているかと、その内訳の変化を見る',
+    condition: '個人支出が期間内に1円以上あること',
+    minMonths: 0,
+    types: ['monthly', 'annual', 'longterm'],
+    requiredData: ['personal.byOwner'],
+    axes: ['区分(名義: 事業/妻/家族/未設定)', '期間(対象期間の前12ヶ月〜終了月)'],
+    readingGuide:
+      '柱の高さが個人支出の合計、色の帯が名義の内訳。特定の名義の帯だけが厚くなっている月はその名義の支出が増えている。すべて「未設定」の場合は名義の割り当てが済んでいないだけなので、内訳としては読まない。',
   },
 ];
 
@@ -226,7 +272,15 @@ export interface ChartContext {
   subsMatrix: Record<string, number[]>;
   subsOther: number[];
   subsMonths: string[];
+  /**
+   * 統計の基準月数(設定画面で変更可、既定6)。
+   * 平均・標準偏差・移動平均・固定費判定など「ふだんの姿」を測る図が必要とする記帳月数。
+   */
+  minMonths?: number;
 }
+
+/** ctx から基準月数を取り出す(未設定なら既定の6ヶ月) */
+const statMonths = (ctx: ChartContext): number => ctx.minMonths ?? DEFAULT_STAT_MIN_MONTHS;
 
 const round = (v: number): number => Math.round(v);
 const round3 = (v: number): number => Math.round(v * 1000) / 1000;
@@ -284,10 +338,10 @@ const unavailable = (reason: string, monthsNeeded: number | null = null): BuildO
 const needMonths = (have: number, need: number, what: string): BuildOutcome =>
   unavailable(`${what}には記帳済みの月が${need}ヶ月必要です(現在${have}ヶ月)。`, need - have);
 
-/** 科目別合計を大きい順に並べ、MAX_SERIES を超える分を「その他」にまとめる */
+/** 科目別合計を大きい順に並べ、MAX_NAMED_SERIES を超える分を「その他」にまとめる */
 function topAccounts(
   byAccount: Record<string, number>,
-  limit = MAX_SERIES,
+  limit = MAX_NAMED_SERIES,
 ): { label: string; value: number }[] {
   const rows = Object.entries(byAccount)
     .filter(([, v]) => v > 0)
@@ -304,7 +358,8 @@ const builders: Record<string, Builder> = {
     const win = chartWindow(ctx.data.months, ctx.period);
     const un = new Set(ctx.data.unrecordedExpMonths);
     const recorded = win.filter((m) => !un.has(m)).length;
-    if (recorded < 6) return needMonths(recorded, 6, '移動平均');
+    const need = statMonths(ctx);
+    if (recorded < need) return needMonths(recorded, need, '移動平均');
     const idx = (m: string) => ctx.data.months.indexOf(m);
     const rev = bucketize(win, (m) => ctx.data.biz.revenue[idx(m)] ?? 0);
     const exp = bucketize(win, (m) => (un.has(m) ? null : (ctx.expenseTotal[idx(m)] ?? 0)));
@@ -360,8 +415,8 @@ const builders: Record<string, Builder> = {
       .map((a) => ({ label: a, value: (cur.expenseByAccount[a] ?? 0) - (prev.expenseByAccount[a] ?? 0) }))
       .filter((d) => d.value !== 0)
       .sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
-    const head = deltas.slice(0, MAX_SERIES);
-    const rest = deltas.slice(MAX_SERIES).reduce((s, d) => s + d.value, 0);
+    const head = deltas.slice(0, MAX_NAMED_SERIES);
+    const rest = deltas.slice(MAX_NAMED_SERIES).reduce((s, d) => s + d.value, 0);
     const steps = rest !== 0 ? [...head, { label: 'その他', value: rest }] : head;
     return {
       available: true,
@@ -379,7 +434,8 @@ const builders: Record<string, Builder> = {
     const win = chartWindow(ctx.data.months, ctx.period);
     const un = new Set(ctx.data.unrecordedExpMonths);
     const rec = win.filter((m) => !un.has(m));
-    if (rec.length < 6) return needMonths(rec.length, 6, '分布(平均±2σ)');
+    const need = statMonths(ctx);
+    if (rec.length < need) return needMonths(rec.length, need, '分布(平均±2σ)');
     const idx = (m: string) => ctx.data.months.indexOf(m);
     const vals = rec.map((m) => ctx.expenseTotal[idx(m)] ?? 0);
     const mu = mean(vals);
@@ -434,7 +490,8 @@ const builders: Record<string, Builder> = {
     };
   },
   fixed_variable_bep: (ctx) => {
-    if (ctx.recordedCount < 6) return needMonths(ctx.recordedCount, 6, '固定費/変動費の判定');
+    const need = statMonths(ctx);
+    if (ctx.recordedCount < need) return needMonths(ctx.recordedCount, need, '固定費/変動費の判定');
     if (!ctx.breakEven.available)
       return unavailable('売上のある月が3ヶ月未満か固定費がゼロのため、損益分岐点を計算できません。');
     const win = chartWindow(ctx.data.months, ctx.period);
@@ -509,8 +566,8 @@ const builders: Record<string, Builder> = {
     }));
     if (totals.every((t) => t.total === 0)) return unavailable('期間内にサブスクの支払いがありません。');
     const sorted = totals.filter((t) => t.total > 0).sort((a, b) => b.total - a.total);
-    const head = sorted.slice(0, MAX_SERIES);
-    const tail = sorted.slice(MAX_SERIES).map((t) => t.vendor);
+    const head = sorted.slice(0, MAX_NAMED_SERIES);
+    const tail = sorted.slice(MAX_NAMED_SERIES).map((t) => t.vendor);
     const series: ChartSeries[] = [];
     let labels: string[] = win;
     let granularity: 'month' | 'quarter' = 'month';
@@ -525,6 +582,41 @@ const builders: Record<string, Builder> = {
       (m) => tail.reduce((s, v) => s + (ctx.subsMatrix[v]?.[idx(m)] ?? 0), 0) + (ctx.subsOther[idx(m)] ?? 0),
     );
     if (other.values.some((v) => (v ?? 0) > 0)) series.push({ label: 'その他', data: other.values });
+    return { available: true, granularity, data: { labels, series } };
+  },
+  account_month_heatmap: (ctx) => {
+    const win = chartWindow(ctx.data.months, ctx.period);
+    const un = new Set(ctx.data.unrecordedExpMonths);
+    const recorded = win.filter((m) => !un.has(m)).length;
+    if (recorded < 2) return needMonths(recorded, 2, '科目×月のヒートマップ');
+    // 集計は core の純関数(accountMonthMatrix)に任せる。ここは窓の切り出しと粒度の丸めだけ
+    const matrix = accountMonthMatrix(ctx.data, win, MAX_NAMED_SERIES);
+    if (matrix.rows.length === 0) return unavailable('対象の窓に金額のある科目がありません。');
+    let labels: string[] = win;
+    let granularity: 'month' | 'quarter' = 'month';
+    const series: ChartSeries[] = matrix.rows.map((row) => {
+      const at = new Map(win.map((m, i) => [m, row.values[i]]));
+      const b = bucketize(win, (m) => at.get(m) ?? null);
+      labels = b.labels;
+      granularity = b.granularity;
+      return { label: row.account, data: b.values };
+    });
+    return { available: true, granularity, data: { labels, series } };
+  },
+  owner_trend: (ctx) => {
+    const win = chartWindow(ctx.data.months, ctx.period);
+    if (win.length === 0) return unavailable('対象の窓に取込済みの月がありません。');
+    const owners = ownerMonthlyExpense(ctx.data, win);
+    if (owners.rows.length === 0) return unavailable('期間内に個人支出の記録がありません。');
+    let labels: string[] = win;
+    let granularity: 'month' | 'quarter' = 'month';
+    const series: ChartSeries[] = owners.rows.map((row) => {
+      const at = new Map(win.map((m, i) => [m, row.values[i]]));
+      const b = bucketize(win, (m) => at.get(m) ?? 0);
+      labels = b.labels;
+      granularity = b.granularity;
+      return { label: row.label, data: b.values };
+    });
     return { available: true, granularity, data: { labels, series } };
   },
 };
