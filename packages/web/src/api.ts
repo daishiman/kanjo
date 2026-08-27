@@ -92,6 +92,24 @@ export interface SummaryResponse {
   benchmarks: Benchmark[];
 }
 
+/** freee 未決済(未入金・未払)。決済列のあるエクスポートを取り込んだ分だけが対象 */
+export interface UnsettledResponse {
+  /** サーバー側で決めた「今日」。期日超過の判定基準を画面にも示す */
+  today: string;
+  rows: {
+    deal: { date: string; io: 'income' | 'expense'; partner: string; accountNorm: string; amount: number };
+    remaining: number;
+    dueDate: string | null;
+    daysOverdue: number;
+    status: 'overdue' | 'due_soon' | 'scheduled' | 'no_due';
+  }[];
+  summary: {
+    payable: { count: number; amount: number };
+    receivable: { count: number; amount: number };
+    overdue: { count: number; amount: number };
+  };
+}
+
 export type Owner = CoreOwner;
 export { OWNER_VALUES, PAYMENT_METHOD_VALUES };
 export type { PaymentMethod };

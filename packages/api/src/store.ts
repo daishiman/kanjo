@@ -22,6 +22,7 @@ import {
   emptyDataset,
   ensureMonth,
   exportJSON,
+  hasSettlementColumns,
   isCashTxId,
   matchSubVendor,
   normalizeAccount,
@@ -1132,6 +1133,16 @@ export const dealFromRow = (r: typeof s.freeeDeals.$inferSelect): FreeeDeal => (
   accountRaw: r.accountRaw ?? '',
   accountNorm: r.accountNorm ?? '',
   amount: r.amount,
+  // 決済列の無い取込(settlementKnown=0)は undefined に戻す。DB上の NULL は
+  // 「列が無い」と「空欄」の両方になるため、この区別は settlement_known だけが持っている。
+  ...(r.settlementKnown === 1
+    ? {
+        dueDate: r.dueDate,
+        settledDate: r.settledDate,
+        settleAccount: r.settleAccount,
+        settledAmount: r.settledAmount,
+      }
+    : {}),
 });
 
 /* ------------------------- 集計キャッシュ再生成 ------------------------- */
@@ -1201,6 +1212,11 @@ export async function replaceFreeeDeals(
     accountNorm: d.accountNorm,
     amount: d.amount,
     importId,
+    dueDate: d.dueDate ?? null,
+    settledDate: d.settledDate ?? null,
+    settleAccount: d.settleAccount ?? null,
+    settledAmount: d.settledAmount ?? null,
+    settlementKnown: hasSettlementColumns(d) ? 1 : 0,
   }));
   for (const grp of chunk(rows, 10)) await db.insert(s.freeeDeals).values(grp);
 }

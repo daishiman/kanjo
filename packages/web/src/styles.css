@@ -615,6 +615,13 @@ tr.editor td {
   line-height: 1.8;
   color: var(--ink-soft);
 }
+/* 未決済。損益に既に載っている分の再掲なので、収支のカードと色で区別する */
+.unsettled {
+  border-left: 3px solid var(--accent, #2563eb);
+}
+.unsettled > .kpis {
+  margin: 12px 0;
+}
 /* 二重計上の疑い。集計は変えないため警告色は見出しの帯だけに留める */
 .cash-duplicates {
   border-left: 3px solid var(--warn, #d97706);

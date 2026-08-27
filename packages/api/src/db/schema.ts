@@ -44,8 +44,17 @@ export const freeeDeals = sqliteTable(
     amount: integer('amount').notNull(),
     memo: text('memo'),
     importId: integer('import_id'),
+    /* 決済(0015)。settlementKnown=0 は決済列の無い取込で、未決済判定の対象外 */
+    dueDate: text('due_date'),
+    settledDate: text('settled_date'),
+    settleAccount: text('settle_account'),
+    settledAmount: integer('settled_amount'),
+    settlementKnown: integer('settlement_known').notNull().default(0),
   },
-  (t) => [index('idx_deals_month').on(t.userId, t.month, t.io)],
+  (t) => [
+    index('idx_deals_month').on(t.userId, t.month, t.io),
+    index('idx_deals_settlement').on(t.userId, t.settlementKnown, t.settledDate, t.dueDate),
+  ],
 );
 
 /** 仕分けルール(0001 以降: 各属性 NULL = そのルールでは変えない) */

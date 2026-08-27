@@ -508,7 +508,20 @@ export function freeeCommitStatements(args: {
     ...insertJsonRows(
       database,
       'freee_deals',
-      ['month', 'date', 'io', 'partner', 'account_raw', 'account_norm', 'amount'],
+      [
+        'month',
+        'date',
+        'io',
+        'partner',
+        'account_raw',
+        'account_norm',
+        'amount',
+        'due_date',
+        'settled_date',
+        'settle_account',
+        'settled_amount',
+        'settlement_known',
+      ],
       deals.map((deal) => freeePersistedRow(deal)),
       [
         { column: 'user_id', value: userId },
