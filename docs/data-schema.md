@@ -108,18 +108,62 @@
 | `ai_tasks` | AI分析の依頼(0003)。`period_kind`(`month`/`year`)+`period_key`、使い捨てトークンの SHA-256(`token_hash`、原文は保存しない)、`expires_at`(24時間)、`used_at`(結果受信で確定=1回きり)、`report_id` |
 | `ai_reports` | AIから届いた分析レポート(0003)。`body_json` は固定5節(`spend`/`change`/`reduction`/`split`/`subscriptions`)+`dataGaps` を無害化済みのプレーンテキストで保持。明細は含まない(集計値と本文だけ) |
 | `overrides` | 旧テーブル。`tx_edits` へ移行済み(読み取りは `tx_edits` のみ) |
-| `cash_entries` | 現金の記帳(0006、ID非再利用は0007)。口座・カード明細に出ない現金の受け渡しを明細として持つ。`id` は `AUTOINCREMENT` で削除後も再利用しない。`side`(`biz`=事業/`per`=家計)、`io`、`amount`(正の整数)、`category_major`(事業=freee勘定科目/家計=MF大項目)、`category_mid`(家計のみ)。取込値とは別テーブルなので再取込で消えない |
+| `cash_entries` | 現金の記帳(0006、ID非再利用は0007、交通費は0010/0011)。口座・カード明細に出ない現金の受け渡しを明細として持つ。`id` は `AUTOINCREMENT` で削除後も再利用しない。`transit_from/to`は支出で対にし、`receipt_waived`は区間がある場合のみ許可する。取込値とは別テーブルなので再取込で消えない |
+| `attachments` | 証憑メタデータ(0010、identity/lifecycleは0011、原本・親の単調factは0012)。添付先を`target_kind`(`cash`/`mf`)+`target_key`で型付き保存する。原本バイトはR2のみ |
+| `attachment_cleanup_jobs` | R2/D1非transaction境界の耐久cleanup ledger(0012)。R2操作前のintent、対象key、理由、再試行時刻・回数・定型errorを持ち、既存nightly scheduledと手動DELETEが同じprocessorを使う |
+| `password_login_rate_limits` | Access未設定時のpassword login throttle(0014)。`scope_hash`には`CF-Connecting-IP`のnamespace付きSHA-256だけを持ち、raw IP/password/headerは保存しない。`window_started_at` / `failure_count` / `locked_until` / `updated_at`をatomic UPSERTし、成功時は対象scopeだけDELETEする |
 | `restored_monthly_agg` | JSON復元由来で原本明細から再導出できない月次集計のbaseline(0007)。`monthly_agg`(現在値の派生キャッシュ)と分離し、同月の現金明細の増減で失わない |
 | `import_runs` / `imports` | 0008以降、前者はmultipart request/session、後者はそのlogical unit/attempt。状態は`processing`→`applying`→`committed`、または`failed`/`duplicate`で、理由は`failure_reason`へ分離する。全unitを最初に作成し、unitのterminal更新と同じbatchでrunをunit状態から再計算する。旧履歴の`ok`/`error: ...`は表示互換のため残すが、新規処理は生成しない |
 | `import_writer_claims` | 利用者ごとの取込writer claim。受理前にCAS獲得してから正規化map/canonical snapshot/query計画を読み、計画と実行の世代を同じwriter区間へ固定する。拒否時はrunを作らずreleaseする。crashで解放されなくても15分後に新runが回復し、同じ回復batchで旧run配下の`processing`/`applying` unitだけを`failed`へCAS更新して旧runを再計算する。受理前は`run_id`に対応する`import_runs`がまだ無いことが正しいためFKは付けない。claimはTTL/明示releaseで消える一時調整データで、監査正本ではない |
 | `import_active_targets` | 現在適用中の取込指紋。CSVは`freee:YYYY-MM`/`mf:YYYY-MM`、JSONは`json:global`をキーにし、過去履歴とは分離する |
 | `imports.content_hash` / `duplicate_of` | 取込単位のversion付き内容指紋。現在の全targetが同じ指紋の場合だけ`duplicate`でスキップし、そのactive取込IDを`duplicate_of`に持つ |
 
+### 証憑原本・親・cleanupの永続fact
+
+`attachments.state`は操作の互換状態であり、原本の所在そのものではない。D1の永続factは削除進捗と
+再試行を表す。wireの表示・件数・原本linkは応答生成時のexact-key R2 HEAD結果と組み合わせて導出し、
+診断errorや過去のD1観測だけで現在の物理存在を断定しない。
+
+| 永続値 | 意味・不変条件 |
+|---|---|
+| `attachments.object_deleted_at` | NULLはWorkerによるR2 DELETE成功をまだ記録していないこと、非NULLはR2 DELETE成功済みであることを示す単調なD1 fact。NULLは帯域外欠損を否定せず、物理存在の保証ではない。いったん記録した時刻はNULLへ戻さない |
+| `attachments.parent_missing_at` | MFのstable `tx_id`が月洗替え後の親集合から消えた時刻。同IDが再出現した場合だけNULLへ戻す。親なしでもmetadataと原本は保持し、孤児管理画面から閲覧・削除できる |
+| `attachments.cleanup_dead_letter_at` | 共通cleanup processorが最大試行回数以上かつgrace経過後に停止した時刻。原本の所在とは独立し、運用者が件数だけを観測する |
+| `attachment_cleanup_jobs.action` | `delete_object` / `delete_metadata`。R2 DELETE成功後はmetadata整理へ単調に進む |
+| `attachment_cleanup_jobs.reason` | `upload_intent` / `attachment_delete` / `import_retention`。POST補償、明示削除、期限切れ取込原本を同じprocessorへ集約する |
+| `attachment_cleanup_jobs.state` | `pending` / `retry` / `dead`。`not_before`、`attempts`、`last_error`を持ち、全bucket scanなしの有界batchで処理する |
+| `attachment_object_tombstones` | 明示的な`attachment_delete`完了後だけ残す単調fact。古いarchiveによる削除済みmetadataの復活を防ぐ。upload補償・import retentionには作らず、不要な永久行を増やさない |
+
+POSTはR2 PUT前に`upload_intent`を永続化し、添付metadata確定時にintentを閉じる。D1 insertと
+補償R2 DELETEが両方失敗してもkeyはledgerに残る。DELETEは先に同じledgerへintentを置き、
+R2成功を`object_deleted_at`へ記録してからmetadataを整理するため、R2 DELETEの冪等再試行で収束する。
+
+password login throttleの既定は15分window / 5回目から15分lock / 7日後stale cleanupで、
+1 requestは成功・失敗とも最大2 D1 queries。nightly scheduledは`updated_at`のindexから
+最大100件を1 queryで消去し、添付cleanup・backupを含む最悪予算を44 queriesに固定する。
+validation、安全なfallback、非secret override名は`packages/api/src/login-rate-limit.ts`を正本とする。
+
+保持の正本値は`packages/core/src/attachments.ts`、安全なruntime overrideの読取りは
+`packages/api/src/attachment-recovery.ts`に一元化する。`ready`と親なし`ready`の証憑は明示削除まで
+保持し、cleanup intentは7日graceとする。失敗・重複・完全にsupersededの取込R2 uploadだけを30日後に回収し、
+partialなrunのcommitted unitやactive/shared keyは保持する。
+既定quotaは利用者ごとに100MiB、reconcileは1回10件、最大5回でdead-letterとする。quota判定は
+利用者別writer lease内かつR2 PUT前に行い、未完の`delete_object` jobのbytesも使用中として数える。
+
+API wireの`originalAvailable`は永続列ではない。通常一覧・親なし一覧・現金/MFの`attachmentCount`を
+返す直前に対象metadataのexact-key R2 HEADを最大4並列・900 unique候補まで実行し、実在するkeyだけをtrue/
+件数へ含める。HEAD障害・候補超過は503、欠損は`cleanupStage=original_missing`とし、古い可用性を
+返さない。これは応答生成時の観測であり、HEAD後に外部主体が削除する不可避race後の永続保証ではない。
+900はWorkers FreeのCloudflare内部service subrequest上限1,000から認証/D1等の100を予約した上限である。
+`object_deleted_at!=NULL`はこの枠にもHEADにも含めず、同keyが外部再出現しても削除進捗を優先してfalseとする。
+POSTの201 wireもmetadata確定後に同じexact-key HEAD結果から生成する。HEAD障害時はD1/R2 commit済みを
+structured errorで区別し、`originalAvailable=true`を推測で返さない。
+
 ### 名義schema v2
 
 - 保存・新規exportで認める名義は `business`(事業) / `spouse`(妻) / `family`(家族)の3値だけ。`unset`は口座やルールから名義を解決できない明細の導出bucketであり、D1に名義値として書かない。
 - 旧JSON入力の `self` だけは `business` へ正規化する。口座名義のnull/空値は「対応なし」として行を作らない。それ以外の未知ownerはD1書込み前に400で拒否する。
-- migration 0009は `rules` / `tx_edits` / `institution_owners` を新CHECKで再構築し、旧 `self` を `business` へ移す。JSONの意味表現が変わるため `json:global` active pointerだけを無効化し、次回のrestoreでcanonical v2指紋を再確立する。
+- migration 0009は `rules` / `tx_edits` / `institution_owners` を新CHECKで再構築し、旧 `self` を `business` へ移す。JSONの意味表現が変わるため `json:global` active pointerだけを無効化し、次回のrestoreで現行canonical指紋を再確立する。
 
 ### 有効値の決め方(属性ごとに独立)
 
@@ -168,8 +212,8 @@
 
 ## 取込の重複検知(content_hash)
 
-- v2指紋はtype+length prefixの衝突しないcanonical encodingを使う。freeeは保存行の`月/日付/収支/取引先/原本科目/正規化科目/金額`、MFは`ID/月/正規化したYYYY-MM-DD/内容/金額/大項目/中項目/口座`を、parser・指紋・commit builderが同じ保存行射影として使う。JSONはraw payloadではなく、partial/default/merge後の実効的な保存行をhashする。`exportedAt`等のmetadata、非永続subs aliases、監査用`cashEntries`は除外するが、実際に永続化・集計に使うdestination `cash:*` editは含める。旧指紋とは互換比較せず、移行後の最初の1回だけ通常取込になる。
-- MFのID列が無い旧exportは復元用IDが行index依存である。安全な安定IDは導入せず、行順を変えたファイルは別内容として扱い、手動編集の引継ぎも保証しない。
+- v3指紋はtype+length prefixの衝突しないcanonical encodingを使う。freeeは保存行の`月/日付/収支/取引先/原本科目/正規化科目/金額`、MFは`ID/月/正規化したYYYY-MM-DD/内容/金額/大項目/中項目/口座/ID安定性`を、parser・指紋・commit builderが同じ保存行射影として使う。JSONはraw payloadではなく、partial/default/merge後の実効的な保存行をhashする。`exportedAt`等のmetadata、非永続subs aliases、監査用`cashEntries`は除外するが、実際に永続化・集計に使うdestination `cash:*` editは含める。旧指紋とは互換比較せず、移行後の最初の1回だけ通常取込になる。
+- MFのID列が無い旧exportは復元用IDが行index依存である。`mf_transactions.identity_stable=0`として添付を拒否し、行順を変えたファイルは別内容として扱う。MFのID列から読み込んだ行だけを1とする。
 - 過去ever-seenではなく現在有効なtargetだけを比較する。同月A→B→AはforceなしでAを再適用し、A→Aだけを`duplicate`にする。`force=1`は現在有効なcommitted世代を意図的にもう一度適用するときだけ使う。
 - 別途、月ごとの取込前後の件数(`replaced`)を返し、減っていれば画面で「月の途中までのファイルではないか」を知らせる(既存どおり月単位で洗い替えるため)。
 
@@ -180,6 +224,6 @@
 - unit内部はD1 `batch()`でcanonical原本、復元baseline、`monthly_agg`、active target、unit terminal marker、run reconcileを一括確定する。応答喪失やcommit直後crashでもunitからrunを再計算でき、`committed` unit + 未完runを正規状態にしない。unit間はpartial successを許し、完了済unitは残し、失敗unitだけ再試行可能にする。
 - CSVの大量行はJSON1 `json_each` のUTF-8 80KiB payloadへ分割し、1行1 DELETE/INSERTを行わない。`import_id`・`user_id`・確定時刻等の実行時値は行JSONへ埋め込まずscalar bindへ分離するため、受理前sentinelと実attempt IDの桁数でchunk数は変わらない。routeは実commit builderが作るpayload/cache/active/finalizationのstatement数と、read/claim/attempt/heartbeat/reconcile/release・duplicate/失敗/commit応答喪失回復のworst-caseを合算し、49 queriesまでだけ受理する。受理後は実attempt IDでR2保存前にbuilderを再構成し、各commit直前にも`actual statements <= planned statements`を検査する。通常幅の5,000行freee/MFは50未満だが、同じ5,000行でも長大な列や大量のcache scope、複数unitで予算を超える場合は、R2/run/canonical書込み前に413で拒否する。各queryは100KB未満で、行payloadは1つのJSON bindへ集約する。
 
-- `import_runs`/`imports`は取込監査の正本として自動削除しない。`import_active_targets.import_id`または`imports.duplicate_of`から参照中のattempt metadataは保持する。R2原本はterminal runの保持期限を別途決めたreconcilerだけが削除対象にでき、その場合もrun/unitの件数・対象月・指紋・状態・失敗理由・`r2_key`は残す。期限付きclaimへ永続履歴と同じFK/保持規則を適用しない。
+- `import_runs`/`imports`は取込監査の正本として自動削除しない。`import_active_targets.import_id`または`imports.duplicate_of`から参照中のattempt metadataは保持する。`failed`/`superseded`のR2原本は既定30日後に共通cleanup ledgerがexact keyだけを削除し、成功後は`imports.r2_key=NULL`へして原本なしの事実を表す。run/unitの件数・対象月・指紋・状態・失敗理由は保持する。期限付きclaimへ永続履歴と同じFK/保持規則を適用しない。
 - JSONのactive pointerは、`cash_entries`/`rules`/`tx_edits`/`institution_owners`/`budgets`/`account_norm_map`/`unrecorded_months`/`cash_overrides`/`sub_vendors`/freee・MF原本/復元baselineの変更と同じD1 batchで無効化する。JSON restore自身は新pointerをcommit batchで設定するため、設定変更後の同じJSONは再適用、無変更の連続取込だけが`duplicate`になる。
 - multipart JSONと`POST /restore`は同じrestore commit builderと状態遷移を使う。JSONはMF原本の含有月を洗い替え、rules/edits/institution owners/budgets/cash override/復元baseline/未記帳月を置換し、sub vendor名は追加する。freee原本、現金明細、現存現金用editは保持する。`POST /restore`は直接JSON bodyを受けるためR2原本を作らない。

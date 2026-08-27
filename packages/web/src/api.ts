@@ -3,8 +3,11 @@
  * 型は @kanjo/core の分析出力型をそのまま利用する(サーバと完全一致)。
  */
 import type {
+  AttachmentQuotaUsage,
   Benchmark,
   BudgetRow,
+  Attachment as CoreAttachment,
+  AttachmentCleanupStage as CoreAttachmentCleanupStage,
   DefenseLine,
   DiagnosisData,
   HouseholdData,
@@ -20,14 +23,32 @@ import { type Owner as CoreOwner, OWNER_LABEL, OWNER_VALUES } from '@kanjo/core'
 export class ApiError extends Error {
   status: number;
   code: string;
-  constructor(status: number, code: string, message: string) {
+  /** 409 partial-safe responseなど、UIが失敗内訳を正直に表示するための検証済み候補body */
+  body: unknown;
+  constructor(status: number, code: string, message: string, body?: unknown) {
     super(message);
     this.status = status;
     this.code = code;
+    this.body = body;
   }
 }
 
 export const AUTH_EVENT = 'kanjo:unauthorized';
+
+async function apiErrorFromResponse(res: Response): Promise<ApiError> {
+  let code = 'error';
+  let message = `エラー(${res.status})`;
+  let body: unknown;
+  try {
+    body = await res.json();
+    const error = (body as { error?: { code?: string; message?: string } })?.error;
+    if (error?.code) code = error.code;
+    if (error?.message) message = error.message;
+  } catch {
+    // JSONでないエラーは状態コードだけを使う
+  }
+  return new ApiError(res.status, code, message, body);
+}
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`/api${path}`, {
@@ -38,20 +59,21 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
     window.dispatchEvent(new Event(AUTH_EVENT));
     throw new ApiError(401, 'unauthorized', '認証が必要です');
   }
-  if (!res.ok) {
-    let code = 'error';
-    let message = `エラー(${res.status})`;
-    try {
-      const body = (await res.json()) as { error?: { code: string; message: string } };
-      if (body.error) {
-        code = body.error.code;
-        message = body.error.message;
-      }
-    } catch {
-      // JSONでないエラーはそのまま
-    }
-    throw new ApiError(res.status, code, message);
+  if (!res.ok) throw await apiErrorFromResponse(res);
+  return (await res.json()) as T;
+}
+
+/**
+ * 添付のアップロード。multipart のため Content-Type をブラウザに決めさせる
+ * (境界文字列を自分で書けないため、api() の JSON ヘッダをそのまま使えない)。
+ */
+export async function apiUpload<T>(path: string, form: FormData): Promise<T> {
+  const res = await fetch(`/api${path}`, { method: 'POST', body: form });
+  if (res.status === 401) {
+    window.dispatchEvent(new Event(AUTH_EVENT));
+    throw new ApiError(401, 'unauthorized', '認証が必要です');
   }
+  if (!res.ok) throw await apiErrorFromResponse(res);
   return (await res.json()) as T;
 }
 
@@ -77,6 +99,8 @@ export interface TxEditView {
 
 export interface TxRow {
   id: string;
+  /** MF出力のID列由来で、再取込後も同一明細と判定できる */
+  idStable: boolean;
   date: string;
   description: string;
   amount: number;
@@ -98,6 +122,8 @@ export interface TxRow {
   conflict: boolean;
   /** 手動の科目が現在の公私の系統(事業=freee科目 / 個人=MF内訳)に無い */
   scopeMismatch: boolean;
+  /** 添付されている証憑の件数(0 = 未添付) */
+  attachmentCount: number;
   edit: TxEditView | null;
 }
 
@@ -223,6 +249,89 @@ export interface ImportHistoryRow {
   createdAt: string | null;
 }
 
+/* -------- 添付(レシート・領収書) -------- */
+
+export interface AttachmentsResponse {
+  attachments: Attachment[];
+  limit: number;
+  /** 旧APIからの段階更新中も一覧を壊さないようoptionalで受ける */
+  usage?: AttachmentQuotaUsage;
+}
+
+/** backend wireはcore反映までの移行中もoriginal_missingを正しく受信する */
+export type AttachmentCleanupStage = CoreAttachmentCleanupStage | 'original_missing';
+
+export interface Attachment extends Omit<CoreAttachment, 'cleanupStage'> {
+  cleanupStage: AttachmentCleanupStage;
+}
+
+export interface AttachmentOrphansResponse {
+  attachments: Attachment[];
+  usage?: AttachmentQuotaUsage;
+}
+
+export interface AttachmentArchiveRecord {
+  r2Key: string;
+  target: { kind: 'cash' | 'mf'; key: string };
+  filename: string;
+  contentType: string;
+  size: number;
+  contentHash: string;
+  createdAt: string;
+}
+
+export interface AttachmentArchiveInventory {
+  version: 1;
+  basis: 'inventory-only';
+  restoreCapable: false;
+  metadataRecoveryCapable: true;
+  /** データ由来URLは使わず、UIは固定した同一オリジンAPIだけを呼ぶ */
+  recoveryEndpoint: string;
+  records: AttachmentArchiveRecord[];
+}
+
+export type AttachmentArchiveRecordStatus =
+  | 'matched'
+  | 'metadata_missing'
+  | 'target_missing'
+  | 'missing'
+  | 'mismatch'
+  | 'skipped';
+
+export interface AttachmentArchiveReport {
+  matched: number;
+  metadataMissing: number;
+  targetMissing: number;
+  missing: number;
+  mismatch: number;
+  skipped: number;
+  records: { r2Key: string; status: AttachmentArchiveRecordStatus }[];
+}
+
+export interface AttachmentArchiveReconcileResponse {
+  ok: true;
+  report: AttachmentArchiveReport;
+}
+
+export interface AttachmentArchiveRecoverResponse {
+  /** 409でも検証一致分は復旧済みのpartial-safe responseを返す */
+  ok: boolean;
+  recovered: number;
+  alreadyPresent: number;
+  skipped: number;
+  report: AttachmentArchiveReport;
+}
+
+export interface LegacyRestoreResponse {
+  ok: true;
+  duplicate: boolean;
+  months: string[];
+  mfTxCount: number;
+  rules: number;
+}
+
+export type { AttachmentQuotaUsage };
+
 /* -------- 現金の記帳 -------- */
 
 export interface CashEntry {
@@ -239,6 +348,13 @@ export interface CashEntry {
   categoryMajor: string;
   categoryMid: string;
   memo: string | null;
+  transitFrom: string | null;
+  transitTo: string | null;
+  transitRound: boolean;
+  /** 領収書が構造上出ない支出(電車代など) */
+  receiptWaived: boolean;
+  /** 添付されている証憑の件数 */
+  attachmentCount: number;
 }
 
 export interface CashEntryBody {
@@ -250,6 +366,10 @@ export interface CashEntryBody {
   big: string;
   mid: string;
   memo: string | null;
+  transitFrom: string | null;
+  transitTo: string | null;
+  transitRound: boolean;
+  receiptWaived: boolean;
 }
 
 export interface CashEntriesResponse {

@@ -25,6 +25,9 @@ export type MfPersistedRow = readonly [
   institution: string | null,
 ];
 
+/** 添付の同一性判定を含むD1保存行。指紋とcommitで共有する。 */
+export type MfPersistedIdentityRow = readonly [...MfPersistedRow, identityStable: 0 | 1];
+
 /** slash/hyphen双方を一度ここでMM/DDへ正規化する。 */
 export function normalizeMfDisplayDate(raw: string, month: string): string {
   const normalized = raw.trim().replaceAll('-', '/');
@@ -55,6 +58,11 @@ export const mfPersistedRow = (tx: MfTx): MfPersistedRow => [
   tx.big,
   tx.mid,
   tx.inst ?? null,
+];
+
+export const mfPersistedIdentityRow = (tx: MfTx): MfPersistedIdentityRow => [
+  ...mfPersistedRow(tx),
+  tx.idStable === true ? 1 : 0,
 ];
 
 /** DBのUNIQUE(user_id,tx_id)と同じlast-write-wins。 */

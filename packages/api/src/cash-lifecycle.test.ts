@@ -8,7 +8,16 @@ import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { app } from './index.js';
-import { getDb, loadBackupPayload, recomputeFromDeals } from './store.js';
+import { planCashParentDeleteQueries } from './routes/cash.js';
+import {
+  D1BulkPayloadError,
+  D1_JSON_BIND_SAFE_BYTES,
+  d1JsonPayload,
+  getDb,
+  loadBackupPayload,
+  normalizedDealUpdatesQuery,
+  recomputeFromDeals,
+} from './store.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
 const auth = {
@@ -160,7 +169,7 @@ beforeEach(async () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
     },
-    auth,
+    { ...auth, DB: d1 },
   );
   expect(login.status).toBe(200);
   cookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
@@ -1223,4 +1232,63 @@ describe('仕分けルールのcanonical total order', () => {
     };
     expect(tie.transactions.find((row) => row.id === 'mf-rule-order')?.cls).toBe(firstCls);
   }, 20_000);
+});
+
+describe('cash親削除のD1 query budget', () => {
+  it('添付10件+正規化差分多数でもquery数が行数非依存で49以下に収まる', () => {
+    const oneDifference = planCashParentDeleteQueries(10, 1);
+    const manyDifferences = planCashParentDeleteQueries(10, 100_000);
+    expect(manyDifferences).toEqual({
+      total: 41,
+      success: 39,
+      attachmentFailure: 41,
+      limit: 50,
+      accepted: true,
+    });
+    expect(manyDifferences.success).toBe(oneDifference.success);
+    expect(manyDifferences.total).toBeLessThanOrEqual(49);
+    expect(() => planCashParentDeleteQueries(11, 0)).toThrow('invalid_cash_parent_delete_query_plan');
+  });
+
+  it('正規化差分100件を1つのjson_each UPDATEで更新し、空・重複・不正入力を安全に扱う', async () => {
+    await d1
+      .prepare(
+        `WITH RECURSIVE seq(n) AS (SELECT 1 UNION ALL SELECT n + 1 FROM seq WHERE n < 100)
+         INSERT INTO freee_deals (user_id,month,date,io,account_raw,account_norm,amount)
+         SELECT 'default','2026-07','2026-07-01','expense','架空旧科目','旧正規化',n FROM seq`,
+      )
+      .run();
+    const ids = (
+      await d1.prepare("SELECT id FROM freee_deals WHERE user_id='default' ORDER BY id").all<{ id: number }>()
+    ).results.map((row) => row.id);
+    const updates = ids.map((id) => ({ id, accountNorm: '新正規化' }));
+    updates.push({ id: ids[0] ?? 0, accountNorm: '新正規化' });
+
+    const query = normalizedDealUpdatesQuery(getDb(d1), 'default', updates);
+    expect(query).not.toBeNull();
+    expect(query?.toSQL().sql.match(/json_each/g)).toHaveLength(2);
+    await query;
+    expect(
+      await d1
+        .prepare("SELECT COUNT(*) AS n FROM freee_deals WHERE user_id='default' AND account_norm='新正規化'")
+        .first(),
+    ).toEqual({ n: 100 });
+
+    expect(normalizedDealUpdatesQuery(getDb(d1), 'default', [])).toBeNull();
+    expect(() =>
+      normalizedDealUpdatesQuery(getDb(d1), 'default', [
+        { id: ids[0] ?? 0, accountNorm: 'A' },
+        { id: ids[0] ?? 0, accountNorm: 'B' },
+      ]),
+    ).toThrow(D1BulkPayloadError);
+    expect(() =>
+      normalizedDealUpdatesQuery(getDb(d1), 'default', [{ id: Number.NaN, accountNorm: '不正' }]),
+    ).toThrow(D1BulkPayloadError);
+  });
+
+  it('JSON bulk payloadはD1の2MB上限に達する前にfail-fastする', () => {
+    expect(() => d1JsonPayload(['x'.repeat(D1_JSON_BIND_SAFE_BYTES)])).toThrowError(
+      expect.objectContaining({ code: 'bulk_payload_too_large' }),
+    );
+  });
 });

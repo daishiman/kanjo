@@ -5,6 +5,8 @@ export type Cls = 'biz' | 'per';
 export interface MfTx {
   /** MFのID列。無ければ `${month}_${row}_${amount}` の合成キー */
   id: string;
+  /** trueのときだけ、MF出力のID列による再取込跨ぎの同一性を保証できる */
+  idStable?: boolean;
   /** 'YYYY-MM' */
   m: string;
   /** 'MM/DD'（表示用） */

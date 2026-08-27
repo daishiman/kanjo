@@ -29,7 +29,7 @@ import {
   recomputeClassification,
   subVendorDefs,
 } from '@kanjo/core';
-import { and, asc, desc, eq, inArray } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import * as s from './db/schema.js';
 import { invalidateJsonSnapshotQuery } from './import-active.js';
@@ -378,6 +378,7 @@ export async function loadDataset(
   data.mfTx = txRows.map(
     (r): MfTx => ({
       id: r.txId,
+      idStable: r.identityStable === 1,
       m: r.month,
       d: r.date.slice(5).replace('-', '/'),
       c: r.description,
@@ -425,6 +426,10 @@ export const cashFromRow = (r: typeof s.cashEntries.$inferSelect): CashEntry => 
   categoryMajor: r.categoryMajor,
   categoryMid: r.categoryMid,
   memo: r.memo ?? null,
+  transitFrom: r.transitFrom ?? null,
+  transitTo: r.transitTo ?? null,
+  transitRound: r.transitRound === 1,
+  receiptWaived: r.receiptWaived === 1,
 });
 
 /** 日付の新しい順(同日はIDの新しい順) */
@@ -515,6 +520,10 @@ type BackupSnapshotRow = {
   v7: string | null;
   v8: string | null;
   v9: string | null;
+  v10: string | null;
+  v11: string | null;
+  v12: string | number | null;
+  v13: string | number | null;
 };
 
 interface BackupSourceSnapshot {
@@ -529,7 +538,29 @@ interface BackupSourceSnapshot {
   cashOverride: Dataset['cashOverride'];
   unrecordedExpMonths: string[];
   cashEntries: CashEntry[];
+  attachmentArchive: AttachmentArchiveRecord[];
   normMap: Record<string, string>;
+}
+
+/**
+ * 添付の復元データではなく、D1とR2の照合・棚卸しに使うarchive record。
+ * restoreはこの形を受け取らないことをloadBackupPayloadのenvelopeで明示する。
+ */
+interface AttachmentArchiveRecord {
+  target: { kind: 'cash' | 'mf'; key: string };
+  r2Key: string;
+  filename: string;
+  contentType: string;
+  size: number;
+  contentHash: string;
+  state: 'ready' | 'delete_pending' | 'delete_failed';
+  deleteAttempts: number;
+  deleteRequestedAt: string | null;
+  lastDeleteError: string | null;
+  objectDeletedAt: string | null;
+  parentMissingAt: string | null;
+  cleanupDeadLetterAt: string | null;
+  createdAt: string;
 }
 
 /*
@@ -541,62 +572,67 @@ const BACKUP_SNAPSHOT_SQL = `
 SELECT * FROM (
 SELECT 'baseline' AS source, NULL AS id, NULL AS rank, amount,
        month AS v1, scope AS v2, NULL AS v3, NULL AS v4, NULL AS v5,
-       NULL AS v6, NULL AS v7, NULL AS v8, NULL AS v9
+       NULL AS v6, NULL AS v7, NULL AS v8, NULL AS v9, NULL AS v10, NULL AS v11, NULL AS v12, NULL AS v13
 FROM restored_monthly_agg WHERE user_id = ?
 UNION ALL
 SELECT 'freee', id, NULL, amount,
-       month, date, io, partner, account_raw, account_norm, memo, NULL, NULL
+       month, date, io, partner, account_raw, account_norm, memo, NULL, NULL, NULL, NULL, NULL, NULL
 FROM freee_deals WHERE user_id = ?
 UNION ALL
 SELECT 'mf', id, NULL, amount,
-       tx_id, month, date, description, category_major, category_mid, institution, NULL, NULL
+       tx_id, month, date, description, category_major, category_mid, institution, NULL, NULL, NULL, NULL, identity_stable, NULL
 FROM mf_transactions WHERE user_id = ?
 UNION ALL
 SELECT 'rule', id, sort_order, NULL,
-       keyword, cls, category_major, category_mid, owner, NULL, NULL, NULL, NULL
+       keyword, cls, category_major, category_mid, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM rules WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
 SELECT 'edit', NULL, NULL, NULL,
-       tx_id, cls, category_major, category_mid, owner, base_major, base_mid, note, updated_at
+       tx_id, cls, category_major, category_mid, owner, base_major, base_mid, note, updated_at, NULL, NULL, NULL, NULL
 FROM tx_edits WHERE user_id = ?
 UNION ALL
 SELECT 'budget', NULL, NULL, monthly_amount,
-       account, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       account, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM budgets WHERE user_id = ?
 UNION ALL
 SELECT 'cash_override', NULL, expense, revenue,
-       month, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       month, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM cash_overrides WHERE user_id = ?
 UNION ALL
 SELECT 'unrecorded', NULL, NULL, NULL,
-       month, kind, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       month, kind, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM unrecorded_months WHERE user_id = ?
 UNION ALL
 SELECT 'institution', NULL, NULL, NULL,
-       institution, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       institution, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM institution_owners WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
 SELECT 'vendor', id, sort_order, NULL,
-       name, aliases, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       name, aliases, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendors WHERE user_id = ?
 UNION ALL
 SELECT 'cash', id, NULL, amount,
-       date, month, side, io, description, category_major, category_mid, memo, NULL
+       date, month, side, io, description, category_major, category_mid, memo, NULL, transit_from, transit_to, transit_round, receipt_waived
 FROM cash_entries WHERE user_id = ?
 UNION ALL
 SELECT 'norm', NULL, NULL, NULL,
-       raw, norm, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       raw, norm, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM account_norm_map WHERE user_id = ?
+UNION ALL
+SELECT 'attachment', id, delete_attempts, size,
+       target_kind, target_key, r2_key, filename, content_type, content_hash, created_at, state,
+       delete_requested_at, last_delete_error, object_deleted_at, parent_missing_at, cleanup_dead_letter_at
+FROM attachments WHERE user_id = ?
 )
 ORDER BY source, rank, id, v1, v2`;
 
 /** export用canonical rowsを、単一D1 read statementから型付きsnapshotへ変換する。 */
 async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupSourceSnapshot> {
-  const params = Array.from({ length: 12 }, () => userId);
+  const params = Array.from({ length: 13 }, () => userId);
   const result = await db.$client
     .prepare(BACKUP_SNAPSHOT_SQL)
     .bind(...params)
@@ -623,6 +659,7 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     .map(
       (row): MfTx => ({
         id: row.v1 ?? '',
+        idStable: row.v12 === 1,
         m: row.v2 ?? '',
         d: (row.v3 ?? '').slice(5).replace('-', '/'),
         c: row.v4 ?? '',
@@ -691,9 +728,31 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
         categoryMajor: row.v6 ?? '',
         categoryMid: row.v7 ?? '',
         memo: row.v8,
+        transitFrom: row.v10,
+        transitTo: row.v11,
+        transitRound: row.v12 === 1,
+        receiptWaived: row.v13 === 1,
       }),
     )
     .sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+  const attachmentArchive = bySource('attachment').map(
+    (row): AttachmentArchiveRecord => ({
+      target: { kind: row.v1 === 'cash' ? 'cash' : 'mf', key: row.v2 ?? '' },
+      r2Key: row.v3 ?? '',
+      filename: row.v4 ?? '',
+      contentType: row.v5 ?? '',
+      size: row.amount ?? 0,
+      contentHash: row.v6 ?? '',
+      createdAt: row.v7 ?? '',
+      state: row.v8 === 'delete_pending' || row.v8 === 'delete_failed' ? row.v8 : 'ready',
+      deleteAttempts: row.rank ?? 0,
+      deleteRequestedAt: row.v9,
+      lastDeleteError: row.v10,
+      objectDeletedAt: row.v11,
+      parentMissingAt: typeof row.v12 === 'string' ? row.v12 : null,
+      cleanupDeadLetterAt: typeof row.v13 === 'string' ? row.v13 : null,
+    }),
+  );
   const normMap: Record<string, string> = {};
   for (const row of bySource('norm')) normMap[row.v1 ?? ''] = row.v2 ?? '';
 
@@ -709,6 +768,7 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     cashOverride,
     unrecordedExpMonths,
     cashEntries,
+    attachmentArchive,
     normMap,
   };
 }
@@ -789,7 +849,18 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
     throw new CashProjectionError('cash_projection_underflow');
   }
   const cashProjection: CashProjectionEnvelope = { version: 1, basis: 'post-resolution', rows };
-  return { ...exportJSON(data), cashEntries: snapshot.cashEntries, cashProjection };
+  // 添付も他のcanonical rowsと同一SQLite statement snapshotから取る。
+  // ただしR2原本のcopy/restoreは行わないため、復元可能とは主張せず
+  // inventory/archive契約として明示する。
+  const attachmentArchive = {
+    version: 1,
+    basis: 'inventory-only',
+    restoreCapable: false,
+    metadataRecoveryCapable: true,
+    recoveryEndpoint: '/api/attachments/archive/recover',
+    records: snapshot.attachmentArchive,
+  } as const;
+  return { ...exportJSON(data), cashEntries: snapshot.cashEntries, cashProjection, attachmentArchive };
 }
 
 /** valid envelopeの確定deltaをbaseline候補から厳密に差し引く。 */
@@ -862,15 +933,41 @@ export async function ensureSubVendors(db: Db, userId: string, names: string[]):
   for (const name of add) await db.insert(s.subVendors).values({ userId, name, sortOrder: 100 });
 }
 
+export interface RecomputePlan {
+  data: Dataset;
+  normalizedDealUpdates: Array<{ id: number; accountNorm: string }>;
+}
+
+/** D1のTEXT/BLOB 2MB上限に5%の余白を取ったJSON bind上限。 */
+export const D1_JSON_BIND_SAFE_BYTES = 1_900_000;
+
+export class D1BulkPayloadError extends Error {
+  constructor(public readonly code: 'invalid_bulk_update' | 'bulk_payload_too_large') {
+    super(code);
+    this.name = 'D1BulkPayloadError';
+  }
+}
+
+/** JSON virtual tableへ渡す値をUTF-8 byteでfail-fastさせる共通境界。 */
+export function d1JsonPayload(value: unknown): string {
+  const payload = JSON.stringify(value);
+  if (payload === undefined) throw new D1BulkPayloadError('invalid_bulk_update');
+  if (new TextEncoder().encode(payload).byteLength > D1_JSON_BIND_SAFE_BYTES) {
+    throw new D1BulkPayloadError('bulk_payload_too_large');
+  }
+  return payload;
+}
+
 /**
- * freee 原本仕訳から事業側の集計を作り直す(正規化マップ・ベンダー登録の変更時)。
- * account_norm 列も新マップで更新する。
+ * freee/MF/現金の正本から集計の書込み計画を副作用なしで作る。
+ * cashEntriesSnapshotを渡すと、未確定の親削除後状態を先に計算し、後続の単一D1 batchに参加できる。
  */
-export async function recomputeFromDeals(
+export async function planRecomputeFromDeals(
   db: Db,
   userId: string,
   affectedCashEntries: ReadonlyArray<Pick<CashEntry, 'month' | 'side'>> = [],
-): Promise<void> {
+  cashEntriesSnapshot?: ReadonlyArray<CashEntry>,
+): Promise<RecomputePlan> {
   const [normMap, dealRows, baselineRows, rawMfRows, cashEntries] = await Promise.all([
     loadNormMap(db, userId),
     db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
@@ -879,15 +976,14 @@ export async function recomputeFromDeals(
       .select({ month: s.mfTransactions.month })
       .from(s.mfTransactions)
       .where(eq(s.mfTransactions.userId, userId)),
-    loadCashEntries(db, userId),
+    cashEntriesSnapshot === undefined
+      ? loadCashEntries(db, userId)
+      : Promise.resolve([...cashEntriesSnapshot]),
   ]);
-  for (const r of dealRows) {
-    const norm = normalizeAccount(r.accountRaw ?? '', normMap);
-    if (norm !== r.accountNorm) {
-      await db.update(s.freeeDeals).set({ accountNorm: norm }).where(eq(s.freeeDeals.id, r.id));
-    }
-  }
-  const data = await loadDataset(db, userId);
+  const normalizedDealUpdates = dealRows
+    .map((row) => ({ id: row.id, accountNorm: normalizeAccount(row.accountRaw ?? '', normMap) }))
+    .filter((row, index) => row.accountNorm !== dealRows[index]?.accountNorm);
+  const data = await loadDataset(db, userId, cashEntries);
   const rawMfMonths = new Set(rawMfRows.map((r) => r.month));
   const personalMonths = new Set([
     ...rawMfMonths,
@@ -942,7 +1038,90 @@ export async function recomputeFromDeals(
       ...new Set([...data.unrecordedExpMonths, ...unrecBefore.filter((m) => !freeeMonths.has(m))]),
     ].sort();
   }
-  await saveAgg(db, userId, data);
+  return { data, normalizedDealUpdates };
+}
+
+type DbBatchQueries = Parameters<Db['batch']>[0];
+
+/** 集計キャッシュ全件入れ替えを他の正本mutationと同じbatchへ組み込む。 */
+export function aggregateReplacementQueries(db: Db, userId: string, data: Dataset): DbBatchQueries {
+  const rows = aggRowsFromDataset(userId, data);
+  // json_eachに1パラメータで渡し、集計行数に関係なくINSERTを1 statementに保つ。
+  // これによりD1 Freeのinvocation query上限下でも、親削除と全集計のatomic入れ替えを両立できる。
+  const payload = d1JsonPayload(rows.map((row) => [row.userId, row.month, row.scope, row.amount]));
+  return [
+    db.delete(s.monthlyAgg).where(eq(s.monthlyAgg.userId, userId)),
+    db.insert(s.monthlyAgg).select(sql`
+      SELECT
+        json_extract(value, '$[0]'),
+        json_extract(value, '$[1]'),
+        json_extract(value, '$[2]'),
+        json_extract(value, '$[3]')
+      FROM json_each(${payload})
+    `),
+  ];
+}
+
+/**
+ * account_norm差分を行数に依存しない1 UPDATEにする。
+ * 同じID+同じ値は重複除去し、不正ID/値と同一IDの競合値はD1へ触る前に拒否する。
+ */
+export function normalizedDealUpdatesQuery(
+  db: Db,
+  userId: string,
+  updates: ReadonlyArray<{ id: number; accountNorm: string }>,
+) {
+  const unique = new Map<number, string>();
+  for (const update of updates) {
+    if (!Number.isSafeInteger(update.id) || update.id <= 0 || typeof update.accountNorm !== 'string') {
+      throw new D1BulkPayloadError('invalid_bulk_update');
+    }
+    if (unique.has(update.id) && unique.get(update.id) !== update.accountNorm) {
+      throw new D1BulkPayloadError('invalid_bulk_update');
+    }
+    unique.set(update.id, update.accountNorm);
+  }
+  if (unique.size === 0) return null;
+
+  const payload = d1JsonPayload([...unique].map(([id, accountNorm]) => [id, accountNorm]));
+  return db
+    .update(s.freeeDeals)
+    .set({
+      accountNorm: sql<string>`(
+        SELECT CAST(json_extract(value, '$[1]') AS TEXT)
+        FROM json_each(${payload})
+        WHERE CAST(json_extract(value, '$[0]') AS INTEGER) = ${s.freeeDeals.id}
+      )`,
+    })
+    .where(
+      and(
+        eq(s.freeeDeals.userId, userId),
+        sql`${s.freeeDeals.id} IN (
+          SELECT CAST(json_extract(value, '$[0]') AS INTEGER)
+          FROM json_each(${payload})
+        )`,
+      ),
+    );
+}
+
+/** 正規化列と集計キャッシュを同じD1 batchへ組み込む。 */
+export function recomputePlanQueries(db: Db, userId: string, plan: RecomputePlan): DbBatchQueries {
+  const aggregateQueries = aggregateReplacementQueries(db, userId, plan.data);
+  const normalizeDeals = normalizedDealUpdatesQuery(db, userId, plan.normalizedDealUpdates);
+  return normalizeDeals ? [normalizeDeals, ...aggregateQueries] : aggregateQueries;
+}
+
+/**
+ * freee 原本仕訳から事業側の集計を作り直す(正規化マップ・ベンダー登録の変更時)。
+ * account_norm 列とmonthly_aggは一つのD1 batchで入れ替える。
+ */
+export async function recomputeFromDeals(
+  db: Db,
+  userId: string,
+  affectedCashEntries: ReadonlyArray<Pick<CashEntry, 'month' | 'side'>> = [],
+): Promise<void> {
+  const plan = await planRecomputeFromDeals(db, userId, affectedCashEntries);
+  await db.batch(recomputePlanQueries(db, userId, plan));
 }
 
 export const dealFromRow = (r: typeof s.freeeDeals.$inferSelect): FreeeDeal => ({
@@ -987,12 +1166,8 @@ export function aggRowsFromDataset(userId: string, data: Dataset) {
 
 /** monthly_agg を Dataset から全再生成する(spec §7.3。取込/ルール/手動判定/正規化マップ変更時) */
 export async function saveAgg(db: Db, userId: string, data: Dataset): Promise<void> {
-  const rows = aggRowsFromDataset(userId, data);
-  await db.delete(s.monthlyAgg).where(eq(s.monthlyAgg.userId, userId));
-  // D1のバインド変数上限(100/文)に収まるよう分割して一括投入
-  for (const grp of chunk(rows, 24)) {
-    await db.insert(s.monthlyAgg).values(grp);
-  }
+  // DELETE + json_each INSERTの2 statementsで、全行をatomicに入れ替える。
+  await db.batch(aggregateReplacementQueries(db, userId, data));
 }
 
 /** JSON復元スナップショットの集計値を、派生キャッシュとは別のbaselineとして入れ替える */

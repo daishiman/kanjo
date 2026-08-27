@@ -11,7 +11,7 @@ type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
 export type CanonicalMutationClass = 'canonical-mutation' | 'self-managed-import' | 'not-canonical-mutation';
 
-type CanonicalConsumer = JsonSnapshotMutationConsumer | 'category_options';
+type CanonicalConsumer = JsonSnapshotMutationConsumer | 'attachments' | 'category_options';
 
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -20,7 +20,16 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
 }> = [
   { method: 'POST', path: /^\/api\/cash-entries$/, consumers: ['cash_entries'] },
   { method: 'PUT', path: /^\/api\/cash-entries\/[^/]+$/, consumers: ['cash_entries', 'tx_edits'] },
-  { method: 'DELETE', path: /^\/api\/cash-entries\/[^/]+$/, consumers: ['cash_entries', 'tx_edits'] },
+  {
+    method: 'DELETE',
+    path: /^\/api\/cash-entries\/[^/]+$/,
+    consumers: ['cash_entries', 'tx_edits', 'attachments'],
+  },
+  // 親明細の削除/MF洗替えと添付登録を同じleaseで直列化する。
+  // 同じ明細への並行POSTも件数上限を越えてcommitできない。
+  { method: 'POST', path: /^\/api\/attachments$/, consumers: ['attachments'] },
+  { method: 'POST', path: /^\/api\/attachments\/archive\/recover$/, consumers: ['attachments'] },
+  { method: 'DELETE', path: /^\/api\/attachments\/[^/]+$/, consumers: ['attachments'] },
   { method: 'PUT', path: /^\/api\/transactions\/[^/]+\/(?:class|edit)$/, consumers: ['tx_edits'] },
   { method: 'POST', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PATCH', path: /^\/api\/rules$/, consumers: ['rules'] },

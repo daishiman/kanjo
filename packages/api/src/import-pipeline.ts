@@ -55,6 +55,13 @@ function classifyRows(filename: string, rows: string[][], normMap: Record<string
   }
   if (isMfHeader(rows[0])) {
     const p = parseMfRows(rows);
+    if (p.reservedIds > 0) {
+      return {
+        kind: 'error',
+        filename,
+        reason: 'IDがcash:で始まる明細があるため取り込めません。現金記帳と衝突しないIDで再出力してください',
+      };
+    }
     return {
       kind: 'mf',
       filename,

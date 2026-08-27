@@ -8,10 +8,22 @@ import { zValidator } from '@hono/zod-validator';
  */
 import { Hono } from 'hono';
 import { z } from 'zod';
+import { ATTACHMENT_AVAILABILITY_ERROR, AttachmentAvailabilityError } from './attachment-availability.js';
+import { runAttachmentMaintenance } from './attachment-recovery.js';
 import { type AuthEnv, authGuard, clearSession, issueSession, verifyPassword } from './auth.js';
 import { canonicalMutationFence } from './canonical-mutation-fence.js';
+import {
+  PASSWORD_LOGIN_RATE_LIMIT_ERROR,
+  cleanupStalePasswordLoginRateLimits,
+  clearPasswordLoginRateLimit,
+  inspectPasswordLoginRateLimit,
+  passwordLoginRateLimitConfig,
+  passwordLoginRetryAfterSeconds,
+  recordPasswordLoginFailure,
+} from './login-rate-limit.js';
 import { aiAgentRoute, aiRoute } from './routes/ai.js';
 import { analyticsRoute } from './routes/analytics.js';
+import { attachmentsRoute } from './routes/attachments.js';
 import { cashRoute } from './routes/cash.js';
 import { classifyRoute } from './routes/classify.js';
 import { importsRoute } from './routes/imports.js';
@@ -35,10 +47,24 @@ app.post('/api/auth/login', zValidator('json', loginSchema), async (c) => {
   if (!env.AUTH_PASSWORD || !env.SESSION_SECRET) {
     return c.json({ error: { code: 'auth_not_configured', message: '認証が未設定です' } }, 503);
   }
+  const config = passwordLoginRateLimitConfig(env);
+  const rateLimit = await inspectPasswordLoginRateLimit(env.DB, c.req.raw);
+  if (rateLimit.lockedUntil) {
+    const retryAfterSeconds = passwordLoginRetryAfterSeconds(rateLimit.lockedUntil);
+    c.header('Retry-After', String(retryAfterSeconds));
+    return c.json({ error: PASSWORD_LOGIN_RATE_LIMIT_ERROR, retryAfterSeconds }, 429);
+  }
   const { password } = c.req.valid('json');
   if (!(await verifyPassword(password, env.AUTH_PASSWORD))) {
+    const failure = await recordPasswordLoginFailure(env.DB, rateLimit, config);
+    if (failure.lockedUntil) {
+      const retryAfterSeconds = passwordLoginRetryAfterSeconds(failure.lockedUntil);
+      c.header('Retry-After', String(retryAfterSeconds));
+      return c.json({ error: PASSWORD_LOGIN_RATE_LIMIT_ERROR, retryAfterSeconds }, 429);
+    }
     return c.json({ error: { code: 'invalid_credentials', message: 'パスワードが違います' } }, 401);
   }
+  await clearPasswordLoginRateLimit(env.DB, rateLimit);
   await issueSession(c, env.SESSION_SECRET);
   return c.json({ ok: true });
 });
@@ -65,6 +91,7 @@ app.route('/api', analyticsRoute);
 app.route('/api', classifyRoute);
 app.route('/api', settingsRoute);
 app.route('/api', subsRoute);
+app.route('/api', attachmentsRoute);
 
 app.notFound((c) => {
   if (c.req.path.startsWith('/api/')) {
@@ -77,12 +104,14 @@ app.notFound((c) => {
 app.onError((err, c) => {
   // 金融明細のため、エラーログにも明細内容・金額は出さない(種別のみ)
   console.error(JSON.stringify({ level: 'error', path: c.req.path, name: err.name }));
+  if (err instanceof AttachmentAvailabilityError)
+    return c.json({ error: ATTACHMENT_AVAILABILITY_ERROR }, 503);
   return c.json({ error: { code: 'internal', message: 'サーバーエラーが発生しました' } }, 500);
 });
 
 /* -------- 夜間バックアップ(cron) -------- */
 
-async function nightlyBackup(env: AuthEnv): Promise<void> {
+async function nightlyBackup(env: Pick<AuthEnv, 'DB' | 'FILES'>): Promise<void> {
   const db = getDb(env.DB);
   const payload = await loadBackupPayload(db, 'default');
   const today = new Date().toISOString().slice(0, 10);
@@ -97,9 +126,62 @@ async function nightlyBackup(env: AuthEnv): Promise<void> {
   console.log(JSON.stringify({ level: 'info', job: 'nightly_backup', key: `backups/${today}.json` }));
 }
 
+/** R2 key/filename/user IDをログへ出さず、bounded jobの件数だけを残す。 */
+export async function scheduledMaintenance(
+  env: Pick<AuthEnv, 'DB' | 'FILES'> & Partial<AuthEnv>,
+): Promise<void> {
+  const [cleanup, backup, loginRateLimit] = await Promise.allSettled([
+    runAttachmentMaintenance(env),
+    nightlyBackup(env),
+    cleanupStalePasswordLoginRateLimits(env),
+  ]);
+  if (cleanup.status === 'fulfilled') {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        job: 'attachment_maintenance',
+        selected: cleanup.value.selected,
+        completed: cleanup.value.completed,
+        retried: cleanup.value.retried,
+        dead: cleanup.value.dead,
+        importJobsEnqueued: cleanup.value.importJobsEnqueued,
+      }),
+    );
+  } else {
+    console.error(
+      JSON.stringify({ level: 'error', job: 'attachment_maintenance', name: errorName(cleanup.reason) }),
+    );
+  }
+  if (backup.status === 'rejected') {
+    console.error(JSON.stringify({ level: 'error', job: 'nightly_backup', name: errorName(backup.reason) }));
+  }
+  if (loginRateLimit.status === 'fulfilled') {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        job: 'password_login_rate_limit_cleanup',
+        deleted: loginRateLimit.value,
+      }),
+    );
+  } else {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        job: 'password_login_rate_limit_cleanup',
+        name: errorName(loginRateLimit.reason),
+      }),
+    );
+  }
+  if (cleanup.status === 'rejected' || backup.status === 'rejected' || loginRateLimit.status === 'rejected') {
+    throw new Error('scheduled_maintenance_failed');
+  }
+}
+
+const errorName = (reason: unknown): string => (reason instanceof Error ? reason.name : 'UnknownError');
+
 export default {
   fetch: app.fetch,
   async scheduled(_controller: ScheduledController, env: AuthEnv, ctx: ExecutionContext): Promise<void> {
-    ctx.waitUntil(nightlyBackup(env));
+    ctx.waitUntil(scheduledMaintenance(env));
   },
 };

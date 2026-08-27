@@ -421,7 +421,8 @@ table.data tr.total td {
   container-type: inline-size;
 }
 .classify-table {
-  min-width: 1040px;
+  /* 証憑列を足したぶん広げる(狭めると内容列が潰れて読めなくなる) */
+  min-width: 1160px;
 }
 .classify-quick-actions {
   display: grid;
@@ -854,6 +855,7 @@ input.num-input {
 }
 
 .notice {
+  display: block;
   border-left: 4px solid var(--warn);
   background: #fdf9ef;
   padding: 10px 14px;
@@ -1333,4 +1335,105 @@ details.prompt-box > summary {
   display: block;
   font-size: 12px;
   margin-bottom: 2px;
+}
+
+/* 証憑の添付(components/Attachments.tsx) */
+.attach {
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--bg);
+}
+.attach:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: 2px;
+}
+.attach.dragging {
+  border-color: var(--biz);
+  background: #f1f6f9;
+}
+.attach-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.attach .sub {
+  margin: 6px 0 0;
+}
+.attach-hint {
+  margin: 0 !important;
+}
+.attach-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.attach-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.attach-list .sub {
+  margin: 0;
+}
+.attachment-filename {
+  overflow-wrap: anywhere;
+}
+.attachment-usage {
+  font-variant-numeric: tabular-nums;
+}
+.attachment-recovery .attach-list {
+  margin-top: 12px;
+}
+.attachment-archive-recovery {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.attachment-archive-recovery h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+.attachment-archive-file {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.attachment-archive-file input {
+  min-height: 44px;
+  max-width: 100%;
+}
+.attachment-archive-report {
+  margin-top: 8px;
+}
+.attach button.mini,
+button.mini.attachment-toggle,
+.editor-form .segment button {
+  min-height: 44px;
+}
+/* スマホでは撮影が主経路。ドロップ・貼り付けの案内は場所を取るだけなので隠す */
+@media (max-width: 640px) {
+  .attach-hint {
+    display: none;
+  }
+}
+
+/* toolbar 内のチェックボックス(交通費の往復・証憑不要) */
+label.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  min-height: 44px;
+  white-space: nowrap;
 }

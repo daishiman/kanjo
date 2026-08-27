@@ -432,6 +432,9 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/cash-entries'],
       ['PUT', '/api/cash-entries/1'],
       ['DELETE', '/api/cash-entries/1'],
+      ['POST', '/api/attachments'],
+      ['POST', '/api/attachments/archive/recover'],
+      ['DELETE', '/api/attachments/1'],
       ['PUT', '/api/transactions/tx-1/class'],
       ['PUT', '/api/transactions/tx-1/edit'],
       ['POST', '/api/rules'],
@@ -461,6 +464,7 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/tradeoff'],
       // suggestionは読み取りのみでbudgetを書かない。
       ['POST', '/api/budgets/suggest'],
+      ['POST', '/api/attachments/archive/reconcile'],
     ] as const;
     for (const [method, path] of canonical) {
       expect(classifyCanonicalMutation(method, path), `${method} ${path}`).toBe('canonical-mutation');
@@ -478,6 +482,7 @@ describe('canonical mutation lease predicate', () => {
       'index.ts',
       'routes/ai.ts',
       'routes/analytics.ts',
+      'routes/attachments.ts',
       'routes/cash.ts',
       'routes/classify.ts',
       'routes/imports.ts',
@@ -495,6 +500,10 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/cash-entries',
       'PUT /api/cash-entries/:id',
       'DELETE /api/cash-entries/:id',
+      'POST /api/attachments',
+      'POST /api/attachments/archive/reconcile',
+      'POST /api/attachments/archive/recover',
+      'DELETE /api/attachments/:id',
       'PUT /api/transactions/:txId/class',
       'PUT /api/transactions/:txId/edit',
       'POST /api/rules',

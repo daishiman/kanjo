@@ -281,7 +281,7 @@ beforeEach(async () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
     },
-    auth,
+    { ...auth, DB: d1 },
   );
   cookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
   expect(login.status).toBe(200);
@@ -293,6 +293,27 @@ afterAll(async () => {
 }, 30_000);
 
 describe('active target duplicate', () => {
+  it('MFの明示IDと合成IDをD1で区別し、添付可否の根拠を失わない', async () => {
+    expect(await resultStatuses(await importFiles([{ name: 'stable-mf.csv', body: mfCsvRows(1) }]))).toEqual([
+      'committed',
+    ]);
+    const withoutId = [
+      '計算対象,日付,金額,大項目,中項目,振替,内容,保有金融機関',
+      '1,2026/09/01,-500,架空費,架空内訳,0,架空-IDなし,架空口座',
+    ].join('\n');
+    expect(await resultStatuses(await importFiles([{ name: 'unstable-mf.csv', body: withoutId }]))).toEqual([
+      'committed',
+    ]);
+
+    const rows = await d1
+      .prepare('SELECT tx_id AS txId, identity_stable AS identityStable FROM mf_transactions ORDER BY month')
+      .all<{ txId: string; identityStable: number }>();
+    expect(rows.results).toEqual([
+      { txId: 'mf-0', identityStable: 1 },
+      { txId: '2026-09_0_-500', identityStable: 0 },
+    ]);
+  });
+
   it('active A→B→Aはforceなしで再適用する', async () => {
     expect(await resultStatuses(await importFiles([{ name: 'a.csv', body: freeeCsv(100) }]))).toEqual([
       'committed',

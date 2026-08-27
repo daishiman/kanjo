@@ -14,6 +14,7 @@ import {
   buildCandidates,
   categoryAllowed,
   categoryRejectReason,
+  parseMfAttachmentTarget,
   resolveTx,
   ruleMatches,
   sum,
@@ -33,6 +34,7 @@ import {
   saveAgg,
   upsertEdit,
 } from '../store.js';
+import { loadAttachmentCounts } from './attachments.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
@@ -85,13 +87,21 @@ classifyRoute.get('/transactions', async (c) => {
   const m = month && months.includes(month) ? month : (months[months.length - 1] ?? null);
 
   const txs = data.mfTx.filter((t) => t.m === m);
-  const candidates = await loadCandidates(db, userId, data.mfTx);
+  const attachmentTargets = txs
+    .map((t) => parseMfAttachmentTarget(t.id))
+    .filter((target): target is NonNullable<typeof target> => target !== null);
+  const [candidates, attachmentCounts] = await Promise.all([
+    loadCandidates(db, userId, data.mfTx),
+    // 証憑バッジ用。表示中の月の明細だけを引く
+    loadAttachmentCounts(db, c.env.FILES, userId, attachmentTargets),
+  ]);
   const resolved = txs.map((t) => ({ t, r: resolveTx(t, data.rules, data.edits, data.institutionOwners) }));
   const rows = resolved
     .map(({ t, r }) => {
       const e = data.edits[t.id];
       return {
         id: t.id,
+        idStable: t.idStable === true,
         date: t.d,
         description: t.c,
         amount: t.a,
@@ -111,6 +121,8 @@ classifyRoute.get('/transactions', async (c) => {
         conflict: r.conflict,
         /** 手動の科目が現在の公私の系統に無い(公私を後から変えた等) */
         scopeMismatch: r.catSrc === '手動' && !categoryAllowed(candidates, r.cls, r.big, r.mid),
+        /** 添付されている証憑の件数(0 = 未添付) */
+        attachmentCount: attachmentCounts[t.id] ?? 0,
         edit: e
           ? {
               cls: e.cls ?? null,

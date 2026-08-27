@@ -26,6 +26,13 @@ export interface CashEntry {
   /** per のみ(biz は空) */
   categoryMid: string;
   memo: string | null;
+  /** 交通費の出発地。transitTo と対で入るか、両方 null */
+  transitFrom: string | null;
+  transitTo: string | null;
+  /** 往復なら true(金額は既に往復分で入っている) */
+  transitRound: boolean;
+  /** 領収書が構造上出ない支出(電車代など)。未添付の警告対象から外す */
+  receiptWaived: boolean;
 }
 
 /** 個人分の現金明細を MF 明細として扱うときの ID 接頭辞 */
@@ -64,6 +71,82 @@ export function cashToTx(e: CashEntry): MfTx {
     inst: CASH_INSTITUTION,
   };
 }
+
+/* -------- 交通費(0010) -------- */
+
+/** 交通費の既定科目。候補に無ければ画面側で選び直す */
+export const TRANSIT_CATEGORY = '旅費交通費';
+
+export interface TransitInput {
+  from: string;
+  to: string;
+  /** 片道の金額(円) */
+  oneWayAmount: number;
+  round: boolean;
+}
+
+/**
+ * 区間と片道金額から、記帳1件分の金額と内容文を組み立てる。
+ * 電車代は領収書が出ないため、ここで作った明細は receiptWaived = true で保存する。
+ */
+export function buildTransitEntry(input: TransitInput): { amount: number; description: string } {
+  const from = input.from.trim();
+  const to = input.to.trim();
+  const amount = input.round ? input.oneWayAmount * 2 : input.oneWayAmount;
+  return {
+    amount,
+    description: `電車代 ${from}→${to}(${input.round ? '往復' : '片道'})`,
+  };
+}
+
+/** 区間の入力が成立しているか(片方だけの入力を弾く) */
+export function transitInputError(input: TransitInput): string | null {
+  if (!input.from.trim() || !input.to.trim()) return '出発地と到着地の両方を入力してください';
+  if (!Number.isInteger(input.oneWayAmount) || input.oneWayAmount <= 0)
+    return '片道の金額を1円以上の整数で入力してください';
+  if (input.oneWayAmount * (input.round ? 2 : 1) > 1_000_000_000) return '金額が大きすぎます';
+  return null;
+}
+
+export type ReceiptStatus = 'attached' | 'waived' | 'missing';
+
+/**
+ * 明細の証憑状態。「添付あり」「証憑不要」「未添付」の3つに分ける。
+ * 未添付は不備ではなく「まだ貼っていない」ことを示すだけで、集計には一切影響しない。
+ */
+export function receiptStatus(entry: { receiptWaived: boolean }, attachmentCount: number): ReceiptStatus {
+  if (attachmentCount > 0) return 'attached';
+  return entry.receiptWaived ? 'waived' : 'missing';
+}
+
+/** 事業支出でレシート未添付を警告色にする下限(円)。これ未満は薄く出すだけ */
+export const RECEIPT_WARN_THRESHOLD = 1_000;
+
+/**
+ * 未添付をどのくらい強く出すか。
+ * 'warn' は黄色のバッジで目を引かせ、'quiet' は薄い灰色で「まだ貼っていない」とだけ伝える。
+ * 現金の記帳は1件ずつ手で入れるため件数は少ないが、全件が黄色だと画面が警告だらけになり
+ * 本当に貼るべき1件が埋もれる。どこで線を引くかは運用の判断。
+ */
+export function missingReceiptSeverity(entry: {
+  io: 'income' | 'expense';
+  side: 'biz' | 'per';
+  amount: number;
+}): 'warn' | 'quiet' {
+  // 収入は証憑を求める性質の取引ではない。
+  if (entry.io === 'income') return 'quiet';
+  // 家計は自分用の記録で、税務上の裏付けを求められない。
+  if (entry.side === 'per') return 'quiet';
+  // 事業の支出でも少額は経費の裏付けとして問われにくい。
+  // ここを 0 にすれば全件が黄色に戻る(運用で調整する前提の唯一のつまみ)。
+  return entry.amount >= RECEIPT_WARN_THRESHOLD ? 'warn' : 'quiet';
+}
+
+export const RECEIPT_STATUS_LABEL: Record<ReceiptStatus, string> = {
+  attached: '添付あり',
+  waived: '証憑不要',
+  missing: '未添付',
+};
 
 /** 事業分だけを freee 仕訳の配列にする(対象月を絞れる) */
 export function cashBizDeals(

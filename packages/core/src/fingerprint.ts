@@ -1,4 +1,8 @@
-import { canonicalMfTransactions, freeePersistedRow, mfPersistedRow } from './persisted-projection.js';
+import {
+  canonicalMfTransactions,
+  freeePersistedRow,
+  mfPersistedIdentityRow,
+} from './persisted-projection.js';
 /**
  * 取込の内容指紋に使うversioned canonical encoding。
  * v2は各値を型+長さで符号化するため、改行・区切り文字を値に含んでもcell境界が衝突しない。
@@ -6,7 +10,7 @@ import { canonicalMfTransactions, freeePersistedRow, mfPersistedRow } from './pe
  */
 import { type FreeeDeal, type MfTx, normalizeOwner } from './types.js';
 
-export const FINGERPRINT_VERSION = 2;
+export const FINGERPRINT_VERSION = 3;
 
 const atom = (tag: string, value: string): string => `${tag}${value.length}:${value}`;
 
@@ -40,7 +44,7 @@ export function canonicalFreee(deals: FreeeDeal[]): string {
 
 /** MF保存行の意味射影。明示IDがある場合は行順に依らない。 */
 export function canonicalMf(txs: MfTx[]): string {
-  return canonicalRows('mf', canonicalMfTransactions(txs).map(mfPersistedRow));
+  return canonicalRows('mf', canonicalMfTransactions(txs).map(mfPersistedIdentityRow));
 }
 
 /**

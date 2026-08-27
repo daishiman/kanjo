@@ -15,6 +15,17 @@ export interface AuthEnv {
   ACCESS_TEAM_DOMAIN: string;
   AUTH_PASSWORD?: string;
   SESSION_SECRET?: string;
+  /** 添付運用の非secret override。不正値はcoreの安全な既定値へfallbackする。 */
+  ATTACHMENT_QUOTA_BYTES?: string;
+  ATTACHMENT_CLEANUP_GRACE_DAYS?: string;
+  ATTACHMENT_IMPORT_UPLOAD_DAYS?: string;
+  ATTACHMENT_RECONCILE_BATCH_SIZE?: string;
+  ATTACHMENT_CLEANUP_MAX_ATTEMPTS?: string;
+  /** 非secret override。正本・validation・fallbackはlogin-rate-limit.tsに集約する。 */
+  PASSWORD_LOGIN_WINDOW_SECONDS?: string;
+  PASSWORD_LOGIN_MAX_FAILURES?: string;
+  PASSWORD_LOGIN_LOCK_SECONDS?: string;
+  PASSWORD_LOGIN_STALE_AFTER_SECONDS?: string;
 }
 
 const COOKIE = 'kanjo_session';

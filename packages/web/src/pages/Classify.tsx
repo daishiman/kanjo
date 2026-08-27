@@ -17,6 +17,13 @@ import {
   ownerLabel,
 } from '../api.js';
 import {
+  type AttachmentDisclosure,
+  AttachmentDisclosureCell,
+  AttachmentDisclosureRow,
+  OrphanedAttachmentRecovery,
+  useAttachmentDisclosure,
+} from '../components/Attachments.js';
+import {
   CategoryInputs,
   OwnerSelect,
   useInvalidateClassification,
@@ -96,6 +103,7 @@ export function ClassifyPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dirtyEditingId, setDirtyEditingId] = useState<string | null>(null);
   const [busyEditingId, setBusyEditingId] = useState<string | null>(null);
+  const attachments = useAttachmentDisclosure();
 
   const requestEditingId = useCallback(
     (nextId: string | null) => {
@@ -289,6 +297,8 @@ export function ClassifyPage() {
         </div>
       )}
 
+      <OrphanedAttachmentRecovery />
+
       <div className="kpis">
         <KpiCard
           label="明細数"
@@ -403,6 +413,7 @@ export function ClassifyPage() {
               <th>金額</th>
               <th>判定</th>
               <th>名義</th>
+              <th>証憑</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -421,11 +432,12 @@ export function ClassifyPage() {
                 onDirtyChange={(dirty) => setDirtyEditingId(dirty ? t.id : null)}
                 onBusyChange={(busy) => setBusyEditingId(busy ? t.id : null)}
                 onSaved={finishEditing}
+                attachments={attachments}
               />
             ))}
             {!rows.length && (
               <tr>
-                <td colSpan={8} className="empty">
+                <td colSpan={9} className="empty">
                   該当する明細がありません
                 </td>
               </tr>
@@ -449,6 +461,7 @@ function TxLine({
   onDirtyChange,
   onBusyChange,
   onSaved,
+  attachments,
 }: {
   t: TxRow;
   focused: boolean;
@@ -461,9 +474,11 @@ function TxLine({
   onDirtyChange: (dirty: boolean) => void;
   onBusyChange: (busy: boolean) => void;
   onSaved: () => void;
+  attachments: AttachmentDisclosure;
 }) {
   const catEdited = t.catSrc === '手動';
   const editorId = useId();
+  const qc = useQueryClient();
   return (
     <>
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: キーボード操作はページ全体のJ/K/B/P/Aハンドラで提供 */}
@@ -522,6 +537,20 @@ function TxLine({
           {t.owner && <span className="orig owner-source">{t.ownerSrc}</span>}
         </td>
         <td>
+          <AttachmentDisclosureCell
+            targetId={t.id}
+            status={t.attachmentCount > 0 ? 'attached' : undefined}
+            count={t.attachmentCount}
+            disclosure={attachments}
+            buttonClassName="classify-quick"
+            disabledReason={
+              t.idStable
+                ? undefined
+                : 'MFのID列がない明細は、再取込後の同一性を保証できないため添付できません'
+            }
+          />
+        </td>
+        <td>
           <div className="classify-quick-actions" aria-label={`${t.description}の簡易操作`}>
             <QuickClassButton
               label="個人"
@@ -567,6 +596,13 @@ function TxLine({
           onSaved={onSaved}
         />
       )}
+      <AttachmentDisclosureRow
+        targetId={t.id}
+        colSpan={9}
+        disclosure={attachments}
+        rowClassName="editing-open"
+        onChanged={() => void qc.invalidateQueries({ queryKey: ['transactions'] })}
+      />
     </>
   );
 }
@@ -657,7 +693,7 @@ function EditorRow({
 
   return (
     <tr className="editor">
-      <td colSpan={8}>
+      <td colSpan={9}>
         <section id={id} className="classification-editor" aria-labelledby={`${id}-title`}>
           <header className="classification-editor-summary">
             <div>

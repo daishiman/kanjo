@@ -23,6 +23,8 @@ export const mfTransactions = sqliteTable(
     categoryMajor: text('category_major'),
     categoryMid: text('category_mid'),
     institution: text('institution'),
+    /** 1 = MFのID列由来。0/旧データは添付不可とする */
+    identityStable: integer('identity_stable').notNull().default(0),
     importId: integer('import_id'),
   },
   (t) => [uniqueIndex('uq_mftx_user_tx').on(t.userId, t.txId), index('idx_mftx_month').on(t.userId, t.month)],
@@ -217,10 +219,108 @@ export const cashEntries = sqliteTable(
     categoryMajor: text('category_major').notNull(),
     categoryMid: text('category_mid').notNull().default(''),
     memo: text('memo'),
+    /** 0010: 交通費の区間。from/to は両方入るか両方 NULL */
+    transitFrom: text('transit_from'),
+    transitTo: text('transit_to'),
+    /** 0010: 1 = 往復 */
+    transitRound: integer('transit_round').notNull().default(0),
+    /** 0010: 1 = 証憑不要(電車代など領収書が出ない支出) */
+    receiptWaived: integer('receipt_waived').notNull().default(0),
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
     updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
   },
   (t) => [index('idx_cash_month').on(t.userId, t.month)],
+);
+
+/**
+ * 0010/0011: レシート・領収書の添付。原本は R2、この表はメタデータと
+ * R2削除の再試行状態を持つ。添付先は接頭辞付き文字列ではなく種別+安定keyで表す。
+ */
+export const attachments = sqliteTable(
+  'attachments',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: text('user_id').notNull(),
+    targetKind: text('target_kind', { enum: ['cash', 'mf'] }).notNull(),
+    targetKey: text('target_key').notNull(),
+    r2Key: text('r2_key').notNull(),
+    filename: text('filename').notNull(),
+    contentType: text('content_type').notNull(),
+    size: integer('size').notNull(),
+    contentHash: text('content_hash').notNull(),
+    state: text('state', { enum: ['ready', 'delete_pending', 'delete_failed'] })
+      .notNull()
+      .default('ready'),
+    deleteAttempts: integer('delete_attempts').notNull().default(0),
+    deleteRequestedAt: text('delete_requested_at'),
+    lastDeleteError: text('last_delete_error'),
+    /** 0012: NULLなら原本が存在し得る。非NULLはR2 DELETE成功済みの単調fact */
+    objectDeletedAt: text('object_deleted_at'),
+    /** 0012: MF洗替えで親が不在になった時刻。再出現時はNULLへ戻す */
+    parentMissingAt: text('parent_missing_at'),
+    cleanupDeadLetterAt: text('cleanup_dead_letter_at'),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    index('idx_attachments_target').on(t.userId, t.targetKind, t.targetKey, t.state),
+    uniqueIndex('uq_attachments_r2key').on(t.r2Key),
+    uniqueIndex('uq_attachments_dup').on(t.userId, t.targetKind, t.targetKey, t.contentHash),
+  ],
+);
+
+/** 0012: R2/D1境界をscheduled処理へ引き継ぐdurable outbox。 */
+export const attachmentCleanupJobs = sqliteTable(
+  'attachment_cleanup_jobs',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: text('user_id').notNull(),
+    attachmentId: integer('attachment_id'),
+    importId: integer('import_id'),
+    r2Key: text('r2_key').notNull(),
+    size: integer('size').notNull().default(0),
+    action: text('action', { enum: ['delete_object', 'delete_metadata'] }).notNull(),
+    reason: text('reason', { enum: ['upload_intent', 'attachment_delete', 'import_retention'] }).notNull(),
+    state: text('state', { enum: ['pending', 'retry', 'dead'] })
+      .notNull()
+      .default('pending'),
+    attempts: integer('attempts').notNull().default(0),
+    notBefore: text('not_before').notNull(),
+    lastError: text('last_error'),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    uniqueIndex('uq_attachment_cleanup_r2key').on(t.userId, t.r2Key),
+    index('idx_attachment_cleanup_due').on(t.state, t.notBefore, t.id),
+    index('idx_attachment_cleanup_attachment').on(t.userId, t.attachmentId),
+  ],
+);
+
+/** 0013: cleanup job/metadata消去後も明示削除済みkeyをarchiveから復活させない単調fact。 */
+export const attachmentObjectTombstones = sqliteTable(
+  'attachment_object_tombstones',
+  {
+    userId: text('user_id').notNull(),
+    r2Key: text('r2_key').notNull(),
+    deletedAt: text('deleted_at').notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.r2Key] }),
+    index('idx_attachment_object_tombstones_deleted').on(table.deletedAt),
+  ],
+);
+
+/** 0014: password loginの接続元scope別rate limit。raw IP/passwordは保存しない。 */
+export const passwordLoginRateLimits = sqliteTable(
+  'password_login_rate_limits',
+  {
+    scopeHash: text('scope_hash').primaryKey(),
+    windowStartedAt: integer('window_started_at').notNull(),
+    failureCount: integer('failure_count').notNull(),
+    lockedUntil: integer('locked_until'),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (table) => [index('idx_password_login_rate_limits_updated').on(table.updatedAt)],
 );
 
 export const monthlyAgg = sqliteTable('monthly_agg', {
