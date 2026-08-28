@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { ApiError } from '../api.js';
 import { deltaCls, pct, yen } from '../format.js';
 import { type AppRouteId, routeMetadata } from '../routeMetadata.js';
+import { DataTable } from './DataTable.js';
 import { linkTerms } from './Term.js';
 
 export function PageHeader({ route }: { route: AppRouteId }) {
@@ -132,20 +133,13 @@ export function AnnualComparisonTable({
   return (
     <div className="scroll-x">
       {/* stack-sm: 640px以下では1行=1カード。列が4つでも「何年と何年の比較か」を見失わない */}
-      <table className="data stack-sm">
-        <thead>
-          <tr>
-            <th scope="col">{subjectLabel}</th>
-            <th scope="col">{previousLabel}</th>
-            <th scope="col">{currentLabel}</th>
-            <th scope="col">増減率</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((item) => row(item, item.key))}
-          {total && row(total)}
-        </tbody>
-      </table>
+      <DataTable
+        className="data stack-sm"
+        columns={[subjectLabel, previousLabel, currentLabel, '増減率']}
+        foot={total && row(total)}
+      >
+        {rows.map((item) => row(item, item.key))}
+      </DataTable>
     </div>
   );
 }

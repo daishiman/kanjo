@@ -55,7 +55,9 @@ const PATTERNS = [
   },
 ];
 
-const fixture = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><style>${STYLES}</style></head><body>
+// viewport 指定は index.html と揃える。無いと狭幅のエミュレーションで画面高が実機とかけ離れ、
+// 100vh を基準にした高さ(--table-max-h)が検査だけ別物になる。
+const fixture = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${STYLES}</style></head><body>
 <div class="shell">
   <aside class="sidebar"><a class="brand" href="#">収支統合管理</a></aside>
   <header class="header"><a class="header-brand" href="#">収支統合管理</a><span class="period">2026年7月</span><span class="spacer"></span><span class="badge ok">防衛ライン OK</span><span class="badge warn">未記帳 2026年5月・2026年6月</span></header>
@@ -171,6 +173,34 @@ try {
       window.scrollTo(0, t.getBoundingClientRect().top + window.scrollY + 150);
       await wait();
       states.scrolled = { thTop: th.getBoundingClientRect().top, thBottom: th.getBoundingClientRect().bottom, row1Top: row1.getBoundingClientRect().top, headerBottom: header.getBoundingClientRect().bottom, headerPos: getComputedStyle(header).position };
+      // 3) 表の途中の行を読んでいる状態。
+      //    見出し行が固定されていても、それが「表の入れ物の上端」でしかなければ、
+      //    入れ物ごとページ外へ出た時点で見出しは消える。ここではその状態を作って、
+      //    データ行が見えている間は見出し行も画面内に残ることを確かめる。
+      const box = t.parentElement.closest('.scroll-x') ?? (t.closest('.scroll-x'));
+      if (box && box.scrollHeight > box.clientHeight + 1) {
+        // 入れ物の中でスクロールする表: 入れ物を画面内に置いてから、中ほどまで進める
+        window.scrollTo(0, box.getBoundingClientRect().top + window.scrollY - 200);
+        await wait();
+        box.scrollTop = Math.round(box.scrollHeight / 2);
+      } else {
+        // ページごとスクロールする表: 表の中ほどが画面に来るまで進める
+        window.scrollTo(0, t.getBoundingClientRect().top + window.scrollY + Math.round(t.offsetHeight / 2));
+      }
+      await wait();
+      const rows = [...t.querySelectorAll('tbody tr')];
+      const visibleRows = rows.filter((r) => {
+        const b = r.getBoundingClientRect();
+        return b.bottom > header.getBoundingClientRect().bottom && b.top < window.innerHeight;
+      }).length;
+      states.mid = {
+        thTop: th.getBoundingClientRect().top,
+        thBottom: th.getBoundingClientRect().bottom,
+        headerBottom: header.getBoundingClientRect().bottom,
+        viewportH: window.innerHeight,
+        visibleRows,
+        scrolledInsideBox: Boolean(box && box.scrollTop > 0),
+      };
       out.push({ pattern, states });
     }
     window.scrollTo(0, 0);
@@ -210,8 +240,16 @@ try {
           `${width}px ${label}: 読み進めた状態で見出し行(上端 ${Math.round(s.thTop)}px)が固定ヘッダー(下端 ${Math.round(s.headerBottom)}px)の裏に隠れている`,
         );
       }
+      // 表の途中の行を読んでいる間は、見出し行も画面に残っていなければ列の意味が分からなくなる。
+      // データ行が1行でも見えているのに見出しが画面外にある置き方を不合格にする。
+      const m = states.mid;
+      if (m.visibleRows > 0 && (m.thBottom <= m.headerBottom + 0.5 || m.thTop >= m.viewportH)) {
+        failures.push(
+          `${width}px ${label}: 表の途中(データ行${m.visibleRows}行が見えている状態)で見出し行が画面外(上端 ${Math.round(m.thTop)}px / 表示域 ${Math.round(m.headerBottom)}〜${m.viewportH}px)にある`,
+        );
+      }
       console.log(
-        `${String(width).padStart(4)}px ${pattern.padEnd(20)} 自然: 見出し下端 ${Math.round(n.thBottom)} / 先頭行上端 ${Math.round(n.row1Top)}  読み進め: 見出し上端 ${Math.round(s.thTop)} / ヘッダー下端 ${Math.round(s.headerBottom)} / 先頭行上端 ${Math.round(s.row1Top)}`,
+        `${String(width).padStart(4)}px ${pattern.padEnd(20)} 自然: 見出し下端 ${Math.round(n.thBottom)} / 先頭行上端 ${Math.round(n.row1Top)}  読み進め: 見出し上端 ${Math.round(s.thTop)} / ヘッダー下端 ${Math.round(s.headerBottom)} / 先頭行上端 ${Math.round(s.row1Top)}  途中: 見出し上端 ${Math.round(m.thTop)} / 可視行 ${m.visibleRows}${m.scrolledInsideBox ? ' (枠内スクロール)' : ''}`,
       );
     }
   }

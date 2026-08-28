@@ -27,6 +27,7 @@ import {
   apiUpload,
 } from '../api.js';
 import { readFileText } from '../file-text.js';
+import { shrinkImageFile } from '../shrink-image.js';
 
 /** input[accept] は MIME をそのまま並べる(HEIC は拡張子も添えないと iOS 以外で弾かれる) */
 const ACCEPT = `${Object.keys(ATTACHMENT_TYPES).join(',')},.heic,.heif`;
@@ -277,12 +278,16 @@ export async function uploadAttachmentFiles(
   existingCount: number,
   send: (file: File) => Promise<unknown>,
   remainingBytes = Number.POSITIVE_INFINITY,
+  /** 送る前の縮小。テストから差し替えられるよう引数で受ける(既定は実際に縮める) */
+  shrink: (file: File) => Promise<File> = shrinkImageFile,
 ): Promise<AttachmentUploadResult> {
   const result: AttachmentUploadResult = { succeeded: [], failed: [] };
   let count = existingCount;
   let remaining = remainingBytes;
 
-  for (const file of files) {
+  for (const original of files) {
+    // 大きさの判定は縮小後の姿で行う。原寸で弾くと、縮めれば入るものまで断ってしまう
+    const file = await shrink(original);
     const reject = attachmentRejectReason({
       contentType: file.type,
       filename: file.name,
@@ -290,12 +295,12 @@ export async function uploadAttachmentFiles(
       existingCount: count,
     });
     if (reject) {
-      result.failed.push({ filename: file.name, message: reject.message });
+      result.failed.push({ filename: original.name, message: reject.message });
       continue;
     }
     if (file.size > remaining) {
       result.failed.push({
-        filename: file.name,
+        filename: original.name,
         message: '保存容量の上限を超えます。不要な証憑を削除してからもう一度お試しください',
       });
       continue;
@@ -307,7 +312,7 @@ export async function uploadAttachmentFiles(
       remaining -= file.size;
     } catch (error) {
       result.failed.push({
-        filename: file.name,
+        filename: original.name,
         message: error instanceof Error ? error.message : '添付できませんでした',
       });
     }

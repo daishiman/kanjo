@@ -31,6 +31,7 @@ import {
   useAttachmentDisclosure,
 } from '../components/Attachments.js';
 import { CategoryPicker } from '../components/CategoryPicker.js';
+import { DataTable } from '../components/DataTable.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { monthLabel, yen } from '../format.js';
 
@@ -586,143 +587,140 @@ export function CashPage() {
           </div>
         )}
         <div className="scroll-x">
-          <table className="data">
-            <thead>
-              <tr>
-                <th>日付</th>
-                <th>区分</th>
-                <th>内容・支払先</th>
-                <th>科目</th>
-                <th>金額</th>
-                <th>メモ</th>
-                <th>証憑</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((e) =>
-                editing?.id === e.id ? (
-                  <tr key={e.id} className="editor">
-                    <td colSpan={8}>
-                      <div className="editor-form">
-                        <CashEntryInputs
-                          mode={editing.mode}
-                          value={editing.body}
-                          onChange={(body) => setEditing({ ...editing, body })}
-                          onModeChange={(nextMode) =>
-                            setEditing({
-                              ...editing,
-                              mode: nextMode,
-                              body: changeCashEntryMode(editing.body, nextMode),
-                            })
-                          }
-                          candidates={candidates}
-                        />
-                        <button
-                          type="button"
-                          className="primary"
-                          disabled={!canSubmit(editing.body, editing.mode) || update.isPending}
-                          onClick={() =>
-                            update.mutate({
-                              id: e.id,
-                              body: prepareCashEntry(editing.body, editing.mode),
-                            })
-                          }
-                        >
-                          保存
-                        </button>
-                        <button type="button" onClick={() => setEditing(null)}>
-                          取消
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  <Fragment key={e.id}>
-                    <tr>
-                      <td className="num">{e.date}</td>
-                      <td>
-                        <span className={`pill ${e.side === 'biz' ? 'biz' : 'per'}`}>
-                          {SCOPE_SHORT[e.side]}
-                        </span>
-                      </td>
-                      <td>
-                        {e.description}
-                        {duplicateIds.has(e.id) && (
-                          <>
-                            {' '}
-                            <span
-                              className="pill warn"
-                              title="同じ支払いが freee の仕訳にもある疑いがあります。上の知らせを確認してください"
-                            >
-                              二重計上の疑い
-                            </span>
-                          </>
-                        )}
-                      </td>
-                      <td>{e.categoryMid ? `${e.categoryMajor} / ${e.categoryMid}` : e.categoryMajor}</td>
-                      <td className="num">
-                        {e.io === 'income' ? '+' : '-'}
-                        {yen(e.amount)}
-                      </td>
-                      <td>{e.memo ?? ''}</td>
-                      <td>
-                        <AttachmentDisclosureCell
-                          targetId={cashTxId(e.id)}
-                          status={receiptStatus(e, e.attachmentCount)}
-                          count={e.attachmentCount}
-                          severity={missingReceiptSeverity(e)}
-                          disclosure={attachments}
-                        />
-                      </td>
-                      <td>
-                        <button
-                          type="button"
-                          className="mini"
-                          onClick={() => {
-                            const body = toBody(e);
-                            setEditing({ id: e.id, body, mode: cashEntryMode(body) });
-                          }}
-                        >
-                          編集
-                        </button>{' '}
-                        <button
-                          type="button"
-                          className="mini"
-                          disabled={del.isPending}
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                `${e.date} の「${e.description}」(${yen(e.amount)})を削除しますか?`,
-                              )
-                            )
-                              del.mutate(e.id);
-                          }}
-                        >
-                          削除
-                        </button>
-                      </td>
-                    </tr>
-                    <AttachmentDisclosureRow
-                      targetId={cashTxId(e.id)}
-                      colSpan={8}
-                      disclosure={attachments}
-                      onChanged={() => void qc.invalidateQueries({ queryKey: ['cash-entries'] })}
-                    />
-                  </Fragment>
-                ),
-              )}
-              {!shown.length && (
-                <tr>
-                  <td colSpan={8} className="empty">
-                    {entries.length
-                      ? 'この月の現金の記帳はありません。上の「すべての月」に戻すか、別の月を選んでください。'
-                      : '現金の記帳はまだありません。口座やカードの明細に出ない現金の支払い(商工会議所の会議費など)を、上のフォームから追加してください。'}
+          <DataTable
+            columns={[
+              '日付',
+              '区分',
+              '内容・支払先',
+              '科目',
+              '金額',
+              'メモ',
+              '証憑',
+              { label: '操作', sortable: false },
+            ]}
+          >
+            {shown.map((e) =>
+              editing?.id === e.id ? (
+                <tr key={e.id} className="editor">
+                  <td colSpan={8}>
+                    <div className="editor-form">
+                      <CashEntryInputs
+                        mode={editing.mode}
+                        value={editing.body}
+                        onChange={(body) => setEditing({ ...editing, body })}
+                        onModeChange={(nextMode) =>
+                          setEditing({
+                            ...editing,
+                            mode: nextMode,
+                            body: changeCashEntryMode(editing.body, nextMode),
+                          })
+                        }
+                        candidates={candidates}
+                      />
+                      <button
+                        type="button"
+                        className="primary"
+                        disabled={!canSubmit(editing.body, editing.mode) || update.isPending}
+                        onClick={() =>
+                          update.mutate({
+                            id: e.id,
+                            body: prepareCashEntry(editing.body, editing.mode),
+                          })
+                        }
+                      >
+                        保存
+                      </button>
+                      <button type="button" onClick={() => setEditing(null)}>
+                        取消
+                      </button>
+                    </div>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              ) : (
+                <Fragment key={e.id}>
+                  <tr>
+                    <td className="num">{e.date}</td>
+                    <td>
+                      <span className={`pill ${e.side === 'biz' ? 'biz' : 'per'}`}>
+                        {SCOPE_SHORT[e.side]}
+                      </span>
+                    </td>
+                    <td>
+                      {e.description}
+                      {duplicateIds.has(e.id) && (
+                        <>
+                          {' '}
+                          <span
+                            className="pill warn"
+                            title="同じ支払いが freee の仕訳にもある疑いがあります。上の知らせを確認してください"
+                          >
+                            二重計上の疑い
+                          </span>
+                        </>
+                      )}
+                    </td>
+                    <td>{e.categoryMid ? `${e.categoryMajor} / ${e.categoryMid}` : e.categoryMajor}</td>
+                    <td className="num">
+                      {e.io === 'income' ? '+' : '-'}
+                      {yen(e.amount)}
+                    </td>
+                    <td>{e.memo ?? ''}</td>
+                    <td>
+                      <AttachmentDisclosureCell
+                        targetId={cashTxId(e.id)}
+                        status={receiptStatus(e, e.attachmentCount)}
+                        count={e.attachmentCount}
+                        severity={missingReceiptSeverity(e)}
+                        disclosure={attachments}
+                      />
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        className="mini"
+                        onClick={() => {
+                          const body = toBody(e);
+                          setEditing({ id: e.id, body, mode: cashEntryMode(body) });
+                        }}
+                      >
+                        編集
+                      </button>{' '}
+                      <button
+                        type="button"
+                        className="mini"
+                        disabled={del.isPending}
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `${e.date} の「${e.description}」(${yen(e.amount)})を削除しますか?`,
+                            )
+                          )
+                            del.mutate(e.id);
+                        }}
+                      >
+                        削除
+                      </button>
+                    </td>
+                  </tr>
+                  <AttachmentDisclosureRow
+                    targetId={cashTxId(e.id)}
+                    colSpan={8}
+                    disclosure={attachments}
+                    onChanged={() => void qc.invalidateQueries({ queryKey: ['cash-entries'] })}
+                  />
+                </Fragment>
+              ),
+            )}
+            {!shown.length && (
+              <tr>
+                <td colSpan={8} className="empty">
+                  {entries.length
+                    ? 'この月の現金の記帳はありません。上の「すべての月」に戻すか、別の月を選んでください。'
+                    : '現金の記帳はまだありません。口座やカードの明細に出ない現金の支払い(商工会議所の会議費など)を、上のフォームから追加してください。'}
+                </td>
+              </tr>
+            )}
+          </DataTable>
         </div>
       </div>
     </>

@@ -7,6 +7,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ImportHistoryRow } from './api.js';
 import { ImportPage } from './pages/Import.js';
@@ -34,7 +35,12 @@ function renderPage() {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
-  return render(<QueryClientProvider client={client}>{(<ImportPage />) as ReactNode}</QueryClientProvider>);
+  // 取込画面は資産推移の説明から他ページへリンクするため、Router が無いと描画できない
+  return render(
+    <QueryClientProvider client={client}>
+      <MemoryRouter>{(<ImportPage />) as ReactNode}</MemoryRouter>
+    </QueryClientProvider>,
+  );
 }
 
 /** 履歴GETと原本GETだけを返す fetch。原本は呼ばれた回数を数える */

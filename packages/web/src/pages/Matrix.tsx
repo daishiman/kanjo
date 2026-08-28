@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type MatrixData, api } from '../api.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
+import { MatrixMoversChart } from '../components/FinancialCharts.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { deltaCls, monthShort, pct, yen } from '../format.js';
@@ -92,46 +94,51 @@ export function MatrixPage() {
         </a>
       </div>
 
-      <div className="card scroll-x">
-        <table className="data">
-          <thead>
-            <tr>
-              <th>科目</th>
-              {m.months.map((mm) => (
-                <th key={mm} title={mm}>
-                  {mm.slice(2, 4)}/{monthShort(mm)}
-                </th>
-              ))}
-              {m.years.map((y) => (
-                <th key={y}>{y}年計</th>
-              ))}
-              <th>
-                <Term id="yoy" />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {m.rows.map((r) => (
-              <tr key={r.label} className={r.isTotal ? 'total' : ''}>
-                <td>{r.label}</td>
-                {m.months.map((mm, i) => {
-                  const c = cell(r.series, i);
-                  return (
-                    <td key={mm} className={`num ${c.cls}`}>
-                      {c.text}
-                    </td>
-                  );
-                })}
-                {r.yearTotals.map((t) => (
-                  <td key={t.year} className="num">
-                    {yen(t.total)}
+      <section className="card matrix-summary">
+        <MatrixMoversChart data={m} />
+      </section>
+
+      <div className="table-heading">
+        <div>
+          <h2>科目別の月次明細</h2>
+          <p className="sub">科目は左に固定。月別の数値だけ横にスクロールできます。</p>
+        </div>
+        <span className="table-unit">{mode === 'val' ? '単位: 円' : '単位: %'}</span>
+      </div>
+      <div className="card scroll-x matrix-table-card">
+        <DataTable
+          className="data matrix-table"
+          caption={<caption className="visually-hidden">科目別の月次増減明細</caption>}
+          columns={[
+            '科目',
+            ...m.months.map((mm) => ({
+              label: `${mm.slice(2, 4)}/${monthShort(mm)}`,
+              title: mm,
+            })),
+            ...m.years.map((y) => `${y}年計`),
+            termColumn('yoy'),
+          ]}
+        >
+          {m.rows.map((r) => (
+            <tr key={r.label} className={r.isTotal ? 'total' : ''}>
+              <th scope="row">{r.label}</th>
+              {m.months.map((mm, i) => {
+                const c = cell(r.series, i);
+                return (
+                  <td key={mm} className={`num ${c.cls}`}>
+                    {c.text}
                   </td>
-                ))}
-                <td className={`num ${deltaCls(r.yoy)}`}>{pct(r.yoy)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                );
+              })}
+              {r.yearTotals.map((t) => (
+                <td key={t.year} className="num">
+                  {yen(t.total)}
+                </td>
+              ))}
+              <td className={`num ${deltaCls(r.yoy)}`}>{pct(r.yoy)}</td>
+            </tr>
+          ))}
+        </DataTable>
       </div>
       <p className="sub">
         <Term id="unrecordedMonth" />

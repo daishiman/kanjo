@@ -17,6 +17,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BalanceSheet, StatementsResponse } from './api.js';
 import { StatementsPage } from './pages/Statements.js';
 
+vi.mock('react-chartjs-2', () => ({
+  Chart: ({ 'aria-label': ariaLabel }: { 'aria-label'?: string }) => (
+    <div role="img" aria-label={ariaLabel} />
+  ),
+}));
+
 const LIABILITY_OPTIONS = ['クレジットカード未払金', '借入金', '未払金・買掛金', 'その他の負債'];
 
 const emptyBs: BalanceSheet = {
@@ -128,6 +134,7 @@ describe('決算書のBS', () => {
     expect(rowCells('資産合計')).toEqual(['¥400,000', '¥500,000']);
     // 8月は資産だけ入っている。ここに 500,000 と出ると、借金の無い人の数字に見える
     expect(rowCells('純資産')).toEqual(['¥250,000', '—']);
+    expect(screen.getByRole('img', { name: /資産.*負債.*純資産/ })).toBeTruthy();
   });
 
   it('未入力の月を名指しする', async () => {

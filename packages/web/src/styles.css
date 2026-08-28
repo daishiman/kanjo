@@ -36,6 +36,10 @@
   /* 固定要素の高さ(スクロール退避・sticky計算の基準) */
   --header-h: 53px; /* 初期値。実際の高さは Layout が描画後に上書きする */
   --tabbar-h: 56px;
+  /* 表の入れ物(.scroll-x)の高さの上限。
+     行が多い表はこの中で縦スクロールさせ、見出し行を箱の上端に留める。
+     画面の高さから固定ヘッダーと余白を引いた分。短い表はこの値に達しないので影響しない。 */
+  --table-max-h: calc(100vh - var(--header-h) - 96px);
   scroll-padding-top: calc(var(--header-h) + 8px);
 }
 
@@ -406,6 +410,130 @@ body {
   color: var(--ink-soft);
 }
 
+/* ---------------- 分析図表 ----------------
+ * 図は結論を見つける層、表は正確な値を照合する層。カードを入れ子にせず、
+ * 見出し・図・読み方の順を全分析画面で揃える。 */
+.analysis-visual {
+  margin: 18px 0 20px;
+}
+.financial-figure {
+  min-width: 0;
+  margin: 0;
+}
+.financial-figure figcaption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.financial-figure figcaption strong {
+  font-size: var(--fs-base);
+}
+.financial-figure figcaption span,
+.chart-guide {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+.chart-guide {
+  margin: 6px 0 0;
+}
+.chart-shell {
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+}
+.matrix-movers-chart {
+  min-height: 320px;
+}
+.cashflow-cumulative-chart {
+  min-height: 190px;
+}
+.balance-chart {
+  min-height: 190px;
+}
+.matrix-summary .financial-figure {
+  max-width: 1040px;
+}
+.financial-equation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.financial-equation > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.financial-equation span {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+.financial-equation strong {
+  font-size: var(--fs-xl);
+}
+.financial-equation > .equation-operator {
+  color: var(--ink-soft);
+  font-size: var(--fs-xl);
+}
+.table-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 18px 0 8px;
+}
+.table-heading h2,
+.table-heading h3,
+.table-heading p {
+  margin: 0;
+}
+.table-heading h2 {
+  font-size: var(--fs-base);
+}
+.table-heading h3 {
+  font-size: var(--fs-md);
+}
+.table-heading.compact {
+  margin-top: 16px;
+}
+.table-unit {
+  flex: none;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .financial-figure figcaption {
+    display: grid;
+    gap: 0;
+  }
+  .chart-shell {
+    min-height: 240px;
+  }
+  .matrix-movers-chart {
+    min-height: 300px;
+  }
+  .financial-equation {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .financial-equation > .equation-operator {
+    line-height: 1;
+    text-align: center;
+  }
+  .table-heading {
+    align-items: flex-end;
+  }
+}
+
 table.data {
   width: 100%;
   border-collapse: collapse;
@@ -422,6 +550,11 @@ table.data th {
   color: var(--ink-soft);
   font-weight: 700;
 }
+/* 見出しも折り返さない。列名が2行に割れると、どこまでが1列の名前か分からなくなる。
+   用語ヘルプ(?)を伴う見出しは、名前とヘルプが離れて別行に落ちるのを防ぐ意味もある */
+table.data thead th {
+  white-space: nowrap;
+}
 /* 見出し行の固定は「安全側が既定」。既定は上端 0 とし、ページと一緒にスクロールする置き方
    (.card の直下で overflow を持つ祖先が無い表)だけページヘッダー分(--header-h)を空ける。
    overflow を持つ要素(.scroll-x 等)が祖先にあると sticky の基準がその要素になり、
@@ -434,6 +567,64 @@ table.data thead th {
 }
 .card:not(.scroll-x) > table.data thead th {
   top: var(--header-h);
+}
+/*
+ * 並べ替えの見出し。見出し全体を押せるようにするため button を敷き詰める。
+ * 押せることは矢印で示す: 普段は薄く出しておき(押せると分かる)、効いている列だけ濃くする。
+ * 矢印を hover でしか出さないと、触って確かめるまで並べ替えられると分からない。
+ */
+table.data thead th:has(> .th-sort) {
+  padding: 0;
+}
+.th-sort {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+.th-sort:hover {
+  background: var(--surface-2, rgba(0, 0, 0, 0.04));
+}
+/*
+ * 用語ヘルプ(?)の付く見出し。ヘルプは並べ替えボタンの外に置くので(ボタンの中にボタンは置けない)、
+ * ボタンを見出し全体に敷き詰めたままだとヘルプが次の行へ落ちる。ここだけ内容幅にして横に並べる。
+ */
+table.data thead th:has(> .term) {
+  padding: 4px 8px;
+}
+table.data thead th:has(> .term) > .th-sort {
+  display: inline-flex;
+  width: auto;
+  padding: 4px 2px 4px 0;
+}
+/* 数値列は右寄せなので、矢印が数字の右に付くよう見出しも寄せる */
+table.data thead th.num .th-sort {
+  justify-content: flex-end;
+}
+/*
+ * 矢印は CSS で描く。文字として置くと見出しの文言が「金額▲」になり、
+ * 読み上げも、data-label で見出しを引くモバイル表示も、見出しを照合するテストも巻き込む。
+ * 向きは th の aria-sort から取る(表示と読み上げで別の情報源を持たない)。
+ */
+.th-sort::after {
+  content: "▲";
+  font-size: 9px;
+  line-height: 1;
+  opacity: 0.25;
+}
+th[aria-sort] .th-sort::after {
+  opacity: 1;
+  color: var(--accent, #2f5da8);
+}
+th[aria-sort="descending"] .th-sort::after {
+  content: "▼";
 }
 /*
  * 横に長い表は、罫線だけだと目線が1行ぶんずれる。1行おきに薄く敷いて帯として追わせる。
@@ -459,6 +650,14 @@ table.data tbody th {
 }
 table.data th:first-child,
 table.data td:first-child {
+  text-align: left;
+  /* 1列目は行の見出し。「外/注/費」のように1文字ずつ縦へ折り返すと、行が何の行か読めなくなる。
+     折り返さない代わりに表が横へ伸びるので、列の多い表は .scroll-x で包む(下の注記) */
+  white-space: nowrap;
+}
+/* 数値でない列を明示的に左寄せする(既定は右寄せ) */
+table.data th.left,
+table.data td.left {
   text-align: left;
 }
 /* 特別な行は縞より優先する。塗りは --row-bg に入れて、固定した先頭列とも色を合わせる */
@@ -494,8 +693,23 @@ table.data th.stmt-account {
   font-weight: 400;
 }
 
+/*
+ * 横に長い表の入れ物。縦にもスクロールさせて、見出し行をこの箱の上端に留める。
+ *
+ * overflow-x だけだと、縦に伸びたままでもここが sticky の基準になる。すると見出し行は
+ * 「箱の上端」に貼り付くだけで、箱ごとページ外へ出れば一緒に消える。行が多い表を読み進めると
+ * 見出しが見えなくなり、どの列の数字か分からなくなっていた。
+ * overflow-y: visible は仕様上 auto に強制されるため、逃げ道は「箱自体を縦スクロールにする」しかない。
+ * 実描画での検証: scripts/check-thead-render.mjs
+ */
 .scroll-x {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: var(--table-max-h);
+  /* 横は箱の中で止める。iOSで左右のはみ出しが親へ伝わると、ページごと横に持っていかれるため。
+     縦は既定(auto)のまま伝える: 表の下端まで読んだらそのままページが続けて動いてほしい。
+     ここを contain にすると、表の上にマウスがある限りページが一切動かず、
+     読み進めるたびに表の外へマウスを逃がす必要が出る。 */
+  overscroll-behavior-x: contain;
 }
 /*
  * 横スクロールに任せる表は、列を詰めるより表自体を伸ばす。
@@ -523,6 +737,36 @@ table.data th.stmt-account {
 .scroll-x table.data thead th:first-child {
   background: var(--bg);
   z-index: 3;
+}
+
+/*
+ * 増減マトリクスの科目は月次の数字を読むための軸。
+ * 月数が増えてもこの列を縮めず、名称を必ず1行で読める幅に保つ。
+ */
+.scroll-x table.data.matrix-table th:first-child,
+.scroll-x table.data.matrix-table td:first-child {
+  width: 12rem;
+  min-width: 12rem;
+  white-space: nowrap;
+}
+
+/* collapse の共有境界は sticky 列の下に数pxだけ下層セルを描くことがある。Matrixだけ分離して遮蔽する。 */
+.scroll-x table.data.matrix-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Matrix は card 自体がスクロール枠。左右の余白を無くし、固定列の手前から月次値が覗く隙間を作らない。 */
+.matrix-table-card {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+/* 決算書も科目を読む表。月数が増えても科目名を縦積みにしない。 */
+.scroll-x table.data.statement-table th:first-child,
+.scroll-x table.data.statement-table td:first-child {
+  min-width: 12rem;
+  white-space: nowrap;
 }
 
 .pill {

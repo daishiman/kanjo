@@ -437,6 +437,8 @@ export interface ImportUnitResult {
   skipped: number;
   syntheticIds?: number;
   duplicateIds?: number;
+  /** 資産推移CSVで、合計欄と内訳の和が合わなかった月(列が欠けている可能性) */
+  totalMismatchMonths?: string[];
   /**
    * duplicate = 現在有効な取込と同じ内容のためスキップ。
    * kept = 「前回を残す」指定で、件数が減る洗い替えを実行しなかった(既存データは無傷)

@@ -12,6 +12,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type BalanceSheet as BalanceSheetData, type StatementsResponse, api } from '../api.js';
+import { DataTable } from '../components/DataTable.js';
+import { BalanceSheetChart, CashFlowCharts, ProfitAndLossCharts } from '../components/FinancialCharts.js';
 import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
@@ -103,8 +105,14 @@ export function StatementsPage() {
           <br />
           グループ名を押すと、中の科目まで開きます。
         </p>
+        <ProfitAndLossCharts pl={pl} />
+        <div className="table-heading compact">
+          <h3>月別の照合表</h3>
+          <span className="table-unit">単位: 円</span>
+        </div>
         <div className="scroll-x">
-          <table className="data">
+          <table className="data statement-table">
+            <caption className="visually-hidden">損益計算書の月別明細</caption>
             <thead>
               <tr>
                 <th scope="col">科目</th>
@@ -212,19 +220,18 @@ export function StatementsPage() {
         {cf.months.length === 0 ? (
           <p className="sub">記帳のある月がありません。</p>
         ) : (
-          <div className="scroll-x">
-            <table className="data stack-sm">
-              <thead>
-                <tr>
-                  <th scope="col">月</th>
-                  <th scope="col">利益</th>
-                  <th scope="col">入金待ち(増)</th>
-                  <th scope="col">支払待ち(増)</th>
-                  <th scope="col">営業キャッシュフロー</th>
-                  <th scope="col">累計</th>
-                </tr>
-              </thead>
-              <tbody>
+          <>
+            <CashFlowCharts cf={cf} />
+            <div className="table-heading compact">
+              <h3>月別の照合表</h3>
+              <span className="table-unit">単位: 円</span>
+            </div>
+            <div className="scroll-x">
+              <DataTable
+                className="data stack-sm"
+                caption={<caption className="visually-hidden">キャッシュフローの月別明細</caption>}
+                columns={['月', '利益', '入金待ち(増)', '支払待ち(増)', '営業キャッシュフロー', '累計']}
+              >
                 {cf.months.map((m, i) => (
                   <tr key={m.month}>
                     <th scope="row">{monthShort(m.month)}</th>
@@ -263,9 +270,9 @@ export function StatementsPage() {
                     {yenS(cf.total)}
                   </td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
+              </DataTable>
+            </div>
+          </>
         )}
         <Limits items={cf.limits} />
       </section>
@@ -375,8 +382,14 @@ function BalanceSheet({ bs, options }: { bs: BalanceSheetData; options: string[]
           未入力: {bs.monthsWithoutLiabilities.map(monthShort).join(' / ')}
         </p>
       ) : null}
+      <BalanceSheetChart bs={bs} />
+      <div className="table-heading compact">
+        <h3>月別の照合表</h3>
+        <span className="table-unit">単位: 円</span>
+      </div>
       <div className="scroll-x">
-        <table className="data">
+        <table className="data statement-table">
+          <caption className="visually-hidden">貸借対照表の月別明細</caption>
           <thead>
             <tr>
               <th scope="col">項目</th>
@@ -479,7 +492,7 @@ function LiabilityForm({ months, options }: { months: string[]; options: string[
   });
 
   return (
-    <div className="stack-sm">
+    <div className="stack-sm liability-form">
       <h3>負債を入れる</h3>
       <p className="sub lines">
         空欄のままにすると「入力していない」として扱い、その月の純資産は出しません。
@@ -556,44 +569,35 @@ function BalanceSheetSources({ sources }: { sources: StatementsResponse['balance
         途中でやめても、手前の番号まででは形になります。
       </p>
       <div className="scroll-x">
-        <table className="data stack-sm">
-          <thead>
-            <tr>
-              <th scope="col">順</th>
-              <th scope="col">CSV</th>
-              <th scope="col">元</th>
-              <th scope="col">書き出す場所</th>
-              <th scope="col">要る列</th>
-              <th scope="col">これで分かること</th>
+        <DataTable
+          className="data stack-sm"
+          columns={['順', 'CSV', '元', '書き出す場所', '要る列', 'これで分かること']}
+        >
+          {sources.map((s) => (
+            <tr key={`${s.service}/${s.name}`}>
+              <th scope="row">{s.step}</th>
+              <td data-label="CSV">{s.name}</td>
+              <td data-label="元">
+                <span className={`pill ${s.service === 'freee' ? 'biz' : 'per'}`}>{s.service}</span>
+              </td>
+              <td data-label="書き出す場所">
+                {s.where}
+                {/* メニューのたどり方だけだと、書いてある画面に行き着けない人が出る */}
+                {s.url ? (
+                  <a className="sub stmt-note" href={s.url} target="_blank" rel="noreferrer">
+                    {s.url}
+                  </a>
+                ) : null}
+              </td>
+              <td data-label="要る列">{s.columns.join(' / ')}</td>
+              <td data-label="これで分かること">
+                {s.use}
+                {/* 注意は use と同じセルに置く。列を増やすと、読む前に横スクロールが要る */}
+                {s.note ? <span className="sub stmt-note">{s.note}</span> : null}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {sources.map((s) => (
-              <tr key={`${s.service}/${s.name}`}>
-                <th scope="row">{s.step}</th>
-                <td data-label="CSV">{s.name}</td>
-                <td data-label="元">
-                  <span className={`pill ${s.service === 'freee' ? 'biz' : 'per'}`}>{s.service}</span>
-                </td>
-                <td data-label="書き出す場所">
-                  {s.where}
-                  {/* メニューのたどり方だけだと、書いてある画面に行き着けない人が出る */}
-                  {s.url ? (
-                    <a className="sub stmt-note" href={s.url} target="_blank" rel="noreferrer">
-                      {s.url}
-                    </a>
-                  ) : null}
-                </td>
-                <td data-label="要る列">{s.columns.join(' / ')}</td>
-                <td data-label="これで分かること">
-                  {s.use}
-                  {/* 注意は use と同じセルに置く。列を増やすと、読む前に横スクロールが要る */}
-                  {s.note ? <span className="sub stmt-note">{s.note}</span> : null}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       </div>
       <p className="sub lines">
         手元資金が何ヶ月もつか(

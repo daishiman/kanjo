@@ -27,6 +27,7 @@ import {
 } from '../components/Attachments.js';
 import { CategoryPicker } from '../components/CategoryPicker.js';
 import { OwnerSelect, useInvalidateClassification } from '../components/ClassificationSettings.js';
+import { DataTable } from '../components/DataTable.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { SplitEditor } from '../components/SplitEditor.js';
 import { Term } from '../components/Term.js';
@@ -517,63 +518,60 @@ export function ClassifyPage() {
       <div className="card scroll-x classify-table-card">
         {/* stack-sm: 640px以下では1行=1カード。仕分けは電車内など片手で回す作業なので、
             横スクロールで「この金額がどの明細のものか」を見失わせない */}
-        <table className="data classify-table stack-sm">
-          <thead>
-            <tr>
-              <th>日付</th>
-              <th>内容</th>
-              <th>口座</th>
-              <th>大項目/中項目</th>
-              <th>金額</th>
-              <th>判定</th>
-              <th>名義</th>
-              <th>証憑</th>
-              <th>操作</th>
+        <DataTable
+          className="data classify-table stack-sm"
+          columns={[
+            '日付',
+            '内容',
+            '口座',
+            '大項目/中項目',
+            '金額',
+            '判定',
+            '名義',
+            '証憑',
+            // 操作列はボタンだけなので並べ替えの手がかりが無い
+            { label: '操作', sortable: false },
+          ]}
+        >
+          {rows.map((t, i) => {
+            const editSession = `edit:${t.rowKey}`;
+            const splitSession = `split:${t.parentTxId ?? t.id}`;
+            const editing = editingId === editSession && editingRowKey === t.rowKey;
+            const splitting = editingId === splitSession && editingRowKey === t.rowKey;
+            return (
+              <TxLine
+                key={t.rowKey}
+                t={t}
+                focused={i === focusIdx}
+                editing={editing}
+                splitting={splitting}
+                editBusy={busyEditingId !== null}
+                candidates={d.candidates}
+                onFocus={() => setFocusIdx(i)}
+                onSet={(next) => setClass.mutate({ txId: t.id, next })}
+                onToggleEdit={() => requestEditingId(editing ? null : editSession, editing ? null : t.rowKey)}
+                onToggleSplit={() =>
+                  requestEditingId(splitting ? null : splitSession, splitting ? null : t.rowKey)
+                }
+                onDirtyChange={(dirty) =>
+                  setDirtyEditingId(dirty ? (splitting ? splitSession : editSession) : null)
+                }
+                onBusyChange={(busy) =>
+                  setBusyEditingId(busy ? (splitting ? splitSession : editSession) : null)
+                }
+                onSaved={finishEditing}
+                attachments={attachments}
+              />
+            );
+          })}
+          {!rows.length && (
+            <tr key="empty">
+              <td colSpan={9} className="empty">
+                該当する明細がありません
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {rows.map((t, i) => {
-              const editSession = `edit:${t.rowKey}`;
-              const splitSession = `split:${t.parentTxId ?? t.id}`;
-              const editing = editingId === editSession && editingRowKey === t.rowKey;
-              const splitting = editingId === splitSession && editingRowKey === t.rowKey;
-              return (
-                <TxLine
-                  key={t.rowKey}
-                  t={t}
-                  focused={i === focusIdx}
-                  editing={editing}
-                  splitting={splitting}
-                  editBusy={busyEditingId !== null}
-                  candidates={d.candidates}
-                  onFocus={() => setFocusIdx(i)}
-                  onSet={(next) => setClass.mutate({ txId: t.id, next })}
-                  onToggleEdit={() =>
-                    requestEditingId(editing ? null : editSession, editing ? null : t.rowKey)
-                  }
-                  onToggleSplit={() =>
-                    requestEditingId(splitting ? null : splitSession, splitting ? null : t.rowKey)
-                  }
-                  onDirtyChange={(dirty) =>
-                    setDirtyEditingId(dirty ? (splitting ? splitSession : editSession) : null)
-                  }
-                  onBusyChange={(busy) =>
-                    setBusyEditingId(busy ? (splitting ? splitSession : editSession) : null)
-                  }
-                  onSaved={finishEditing}
-                  attachments={attachments}
-                />
-              );
-            })}
-            {!rows.length && (
-              <tr>
-                <td colSpan={9} className="empty">
-                  該当する明細がありません
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+          )}
+        </DataTable>
       </div>
     </>
   );

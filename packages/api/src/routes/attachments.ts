@@ -38,6 +38,7 @@ import {
   processAttachmentCleanupNow,
 } from '../attachment-recovery.js';
 import type { AuthEnv } from '../auth.js';
+import { inClauseChunkSize } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { type Db, getDb } from '../store.js';
 
@@ -125,6 +126,16 @@ async function targetStatus(db: Db, userId: string, target: AttachmentTarget): P
   return row.identityStable === 1 ? 'attachable' : 'unstable_identity';
 }
 
+/**
+ * 証憑の件数を数えるときに、1文へ載せる明細IDの数。
+ * IN() のほかに user_id と target_kind の2つを同じ文に載せるので、その分だけ減らす。
+ *
+ * 本番で 1 ヶ月に 107 件の明細が集まったとき、ここが上限と同じ 100 だったために
+ * 固定条件2つを足して 102 個になり、公私仕分けの一覧が丸ごと 500 で開けなくなった。
+ * 「1ヶ月の明細が100件を超えたときだけ落ちる」ので、平常時は誰も踏まない。
+ */
+export const ATTACHMENT_COUNT_CHUNK = inClauseChunkSize(2);
+
 /** object_deleted_atがNULLの物理原本だけを数える。操作stateを原本存在の代理にしない。 */
 export async function loadAttachmentCounts(
   db: Db,
@@ -143,12 +154,11 @@ export async function loadAttachmentCounts(
 
   const candidates: Array<Pick<AttachmentRow, 'targetKind' | 'targetKey' | 'r2Key' | 'objectDeletedAt'>> = [];
 
-  const CHUNK = 100;
   for (const targetKind of ['cash', 'mf'] as const) {
     const keys = unique
       .filter((target) => target.kind === targetKind)
       .map((target) => attachmentTargetColumns(target).targetKey);
-    for (let i = 0; i < keys.length; i += CHUNK) {
+    for (let i = 0; i < keys.length; i += ATTACHMENT_COUNT_CHUNK) {
       const rows = await db
         .select({
           targetKind: s.attachments.targetKind,
@@ -161,7 +171,7 @@ export async function loadAttachmentCounts(
           and(
             eq(s.attachments.userId, userId),
             eq(s.attachments.targetKind, targetKind),
-            inArray(s.attachments.targetKey, keys.slice(i, i + CHUNK)),
+            inArray(s.attachments.targetKey, keys.slice(i, i + ATTACHMENT_COUNT_CHUNK)),
           ),
         );
       candidates.push(...rows);

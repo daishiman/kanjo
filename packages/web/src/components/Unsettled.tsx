@@ -10,6 +10,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { type UnsettledResponse, api } from '../api.js';
 import { yen } from '../format.js';
+import { DataTable } from './DataTable.js';
 import { KpiCard } from './Page.js';
 
 const STATUS_LABEL: Record<UnsettledResponse['rows'][number]['status'], string> = {
@@ -59,34 +60,22 @@ export function UnsettledPanel() {
         />
       </div>
       <div className="scroll-x">
-        <table className="data">
-          <thead>
-            <tr>
-              <th>期日</th>
-              <th>状態</th>
-              <th>区分</th>
-              <th>取引先</th>
-              <th>科目</th>
-              <th>残額</th>
+        <DataTable columns={['期日', '状態', '区分', '取引先', '科目', '残額']}>
+          {/* 同じ取引先へ同じ額・同じ期日の請求が2件あることは普通にあるため、行の識別は位置で持つ */}
+          {shown.map((row, i) => (
+            <tr key={`${i}-${row.deal.date}-${row.deal.partner}-${row.deal.amount}`}>
+              <td className="num">{row.dueDate ?? '—'}</td>
+              <td>
+                <span className={statusPill(row.status)}>{STATUS_LABEL[row.status]}</span>
+                {row.status === 'overdue' && <span className="sub"> {row.daysOverdue}日</span>}
+              </td>
+              <td>{row.deal.io === 'expense' ? '未払' : '未入金'}</td>
+              <td>{row.deal.partner || '—'}</td>
+              <td>{row.deal.accountNorm}</td>
+              <td className="num">{yen(row.remaining)}</td>
             </tr>
-          </thead>
-          <tbody>
-            {/* 同じ取引先へ同じ額・同じ期日の請求が2件あることは普通にあるため、行の識別は位置で持つ */}
-            {shown.map((row, i) => (
-              <tr key={`${i}-${row.deal.date}-${row.deal.partner}-${row.deal.amount}`}>
-                <td className="num">{row.dueDate ?? '—'}</td>
-                <td>
-                  <span className={statusPill(row.status)}>{STATUS_LABEL[row.status]}</span>
-                  {row.status === 'overdue' && <span className="sub"> {row.daysOverdue}日</span>}
-                </td>
-                <td>{row.deal.io === 'expense' ? '未払' : '未入金'}</td>
-                <td>{row.deal.partner || '—'}</td>
-                <td>{row.deal.accountNorm}</td>
-                <td className="num">{yen(row.remaining)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       </div>
       {rows.length > shown.length && (
         <p className="sub">

@@ -106,8 +106,24 @@ app.notFound((c) => {
 });
 
 app.onError((err, c) => {
-  // 金融明細のため、エラーログにも明細内容・金額は出さない(種別のみ)
-  console.error(JSON.stringify({ level: 'error', path: c.req.path, name: err.name }));
+  // 金融明細のため、エラーログにも明細内容・金額は出さない。
+  // ただし種別だけでは本番の障害を追えない(どの行で落ちたか分からず、再現に何時間もかかる)。
+  // スタックはコードの位置しか含まないので、先頭数フレームだけ残す。message は
+  // 値を埋め込んで投げる箇所があり得るため出さない。
+  console.error(
+    JSON.stringify({
+      level: 'error',
+      path: c.req.path,
+      name: err.name,
+      // message は複数行のことがあり(drizzle は失敗したSQLの実パラメータを並べる)、
+      // 行番号で切ると明細IDが混ざる。「at 〜」で始まる呼び出し位置の行だけを採る。
+      at: (err.stack ?? '')
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith('at '))
+        .slice(0, 4),
+    }),
+  );
   if (err instanceof AttachmentAvailabilityError)
     return c.json({ error: ATTACHMENT_AVAILABILITY_ERROR }, 503);
   return c.json({ error: { code: 'internal', message: 'サーバーエラーが発生しました' } }, 500);

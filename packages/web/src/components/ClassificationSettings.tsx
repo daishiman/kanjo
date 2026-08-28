@@ -22,6 +22,7 @@ import {
 } from '../api.js';
 import { dateTime, yenS } from '../format.js';
 import { AddCategoryInline, CategoryPicker } from './CategoryPicker.js';
+import { DataTable } from './DataTable.js';
 import { useInvalidateClassification } from './classification-invalidate.js';
 
 /**
@@ -79,39 +80,30 @@ export function InstitutionOwnersCard({ data }: { data: ClassificationResponse }
       {!data.institutions.length ? (
         <p className="empty">保有金融機関つきの明細がまだありません。MF明細を取り込むと口座が並びます。</p>
       ) : (
-        <table className="data" style={{ maxWidth: 560 }}>
-          <thead>
-            <tr>
-              <th>保有金融機関</th>
-              <th>明細数</th>
-              <th>名義</th>
+        <DataTable style={{ maxWidth: 560 }} columns={['保有金融機関', '明細数', '名義']}>
+          {data.institutions.map((r) => (
+            <tr key={r.institution}>
+              <td>{r.institution}</td>
+              <td className="num">{r.count}件</td>
+              <td>
+                <select
+                  value={r.owner ?? ''}
+                  disabled={save.isPending}
+                  onChange={(e) =>
+                    save.mutate({
+                      institutionOwners: { [r.institution]: (e.target.value || null) as Owner | null },
+                    })
+                  }
+                >
+                  <option value="">未設定</option>
+                  <option value="business">事業</option>
+                  <option value="spouse">妻</option>
+                  <option value="family">家族</option>
+                </select>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {data.institutions.map((r) => (
-              <tr key={r.institution}>
-                <td>{r.institution}</td>
-                <td className="num">{r.count}件</td>
-                <td>
-                  <select
-                    value={r.owner ?? ''}
-                    disabled={save.isPending}
-                    onChange={(e) =>
-                      save.mutate({
-                        institutionOwners: { [r.institution]: (e.target.value || null) as Owner | null },
-                      })
-                    }
-                  >
-                    <option value="">未設定</option>
-                    <option value="business">事業</option>
-                    <option value="spouse">妻</option>
-                    <option value="family">家族</option>
-                  </select>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       )}
     </div>
   );
@@ -243,100 +235,97 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
       </form>
       {add.isError && <div className="notice">{(add.error as Error).message}</div>}
       <div className="scroll-x">
-        <table className="data">
-          <thead>
-            <tr>
-              <th>優先</th>
-              <th>キーワード</th>
-              <th>公私</th>
-              <th>大項目 / 中項目</th>
-              <th>名義</th>
-              <th>影響件数</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rules.map((r, i) =>
-              editing?.id === r.id ? (
-                <tr key={r.id} className="editor">
-                  <td className="num">{i + 1}</td>
-                  <td colSpan={5}>
-                    <div className="editor-form">
-                      <RuleFields
-                        value={editing.body}
-                        onChange={(body) => setEditing({ id: r.id, body })}
-                        candidates={candidates}
-                      />
-                    </div>
-                  </td>
-                  <td style={{ whiteSpace: 'nowrap' }}>
-                    <button
-                      type="button"
-                      className="mini primary"
-                      disabled={!editing.body.keyword.trim() || !hasAttr(editing.body) || update.isPending}
-                      onClick={() => update.mutate(editing)}
-                    >
-                      保存
-                    </button>{' '}
-                    <button type="button" className="mini" onClick={() => setEditing(null)}>
-                      取消
-                    </button>
-                  </td>
-                </tr>
-              ) : (
-                <tr key={r.id}>
-                  <td className="num">{i + 1}</td>
-                  <td>{r.keyword}</td>
-                  <td>{r.cls ? <span className={`pill ${r.cls}`}>{clsLabel(r.cls)}</span> : '—'}</td>
-                  <td>{r.big || r.mid ? `${r.big ?? '（変えない）'} / ${r.mid ?? '（変えない）'}` : '—'}</td>
-                  <td>{r.owner ? ownerLabel(r.owner) : '—'}</td>
-                  <td className="num">{r.hits}件</td>
-                  <td style={{ whiteSpace: 'nowrap' }}>
-                    <button type="button" className="mini" onClick={() => reorder(i, -1)} disabled={i === 0}>
-                      ↑
-                    </button>{' '}
-                    <button
-                      type="button"
-                      className="mini"
-                      onClick={() => reorder(i, 1)}
-                      disabled={i === rules.length - 1}
-                    >
-                      ↓
-                    </button>{' '}
-                    <button
-                      type="button"
-                      className="mini"
-                      onClick={() =>
-                        setEditing({
-                          id: r.id,
-                          body: { keyword: r.keyword, cls: r.cls, big: r.big, mid: r.mid, owner: r.owner },
-                        })
-                      }
-                    >
-                      変更
-                    </button>{' '}
-                    <button
-                      type="button"
-                      className="mini danger-btn"
-                      onClick={() => {
-                        if (window.confirm(`ルール「${r.keyword}」を削除しますか?`)) del.mutate(r.id);
-                      }}
-                    >
-                      削除
-                    </button>
-                  </td>
-                </tr>
-              ),
-            )}
-            {!rules.length && !q.data?.usingDefaults && (
-              <tr>
-                <td colSpan={7} className="empty">
-                  ルールがありません
+        <DataTable
+          columns={[
+            '優先',
+            'キーワード',
+            '公私',
+            '大項目 / 中項目',
+            '名義',
+            '影響件数',
+            { label: '操作', sortable: false },
+          ]}
+        >
+          {rules.map((r, i) =>
+            editing?.id === r.id ? (
+              <tr key={r.id} className="editor">
+                <td className="num">{i + 1}</td>
+                <td colSpan={5}>
+                  <div className="editor-form">
+                    <RuleFields
+                      value={editing.body}
+                      onChange={(body) => setEditing({ id: r.id, body })}
+                      candidates={candidates}
+                    />
+                  </div>
+                </td>
+                <td style={{ whiteSpace: 'nowrap' }}>
+                  <button
+                    type="button"
+                    className="mini primary"
+                    disabled={!editing.body.keyword.trim() || !hasAttr(editing.body) || update.isPending}
+                    onClick={() => update.mutate(editing)}
+                  >
+                    保存
+                  </button>{' '}
+                  <button type="button" className="mini" onClick={() => setEditing(null)}>
+                    取消
+                  </button>
                 </td>
               </tr>
-            )}
-          </tbody>
-        </table>
+            ) : (
+              <tr key={r.id}>
+                <td className="num">{i + 1}</td>
+                <td>{r.keyword}</td>
+                <td>{r.cls ? <span className={`pill ${r.cls}`}>{clsLabel(r.cls)}</span> : '—'}</td>
+                <td>{r.big || r.mid ? `${r.big ?? '（変えない）'} / ${r.mid ?? '（変えない）'}` : '—'}</td>
+                <td>{r.owner ? ownerLabel(r.owner) : '—'}</td>
+                <td className="num">{r.hits}件</td>
+                <td style={{ whiteSpace: 'nowrap' }}>
+                  <button type="button" className="mini" onClick={() => reorder(i, -1)} disabled={i === 0}>
+                    ↑
+                  </button>{' '}
+                  <button
+                    type="button"
+                    className="mini"
+                    onClick={() => reorder(i, 1)}
+                    disabled={i === rules.length - 1}
+                  >
+                    ↓
+                  </button>{' '}
+                  <button
+                    type="button"
+                    className="mini"
+                    onClick={() =>
+                      setEditing({
+                        id: r.id,
+                        body: { keyword: r.keyword, cls: r.cls, big: r.big, mid: r.mid, owner: r.owner },
+                      })
+                    }
+                  >
+                    変更
+                  </button>{' '}
+                  <button
+                    type="button"
+                    className="mini danger-btn"
+                    onClick={() => {
+                      if (window.confirm(`ルール「${r.keyword}」を削除しますか?`)) del.mutate(r.id);
+                    }}
+                  >
+                    削除
+                  </button>
+                </td>
+              </tr>
+            ),
+          )}
+          {!rules.length && !q.data?.usingDefaults && (
+            <tr key="empty">
+              <td colSpan={7} className="empty">
+                ルールがありません
+              </td>
+            </tr>
+          )}
+        </DataTable>
       </div>
     </div>
   );
@@ -420,108 +409,106 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
         )}
       </div>
       {err && <div className="notice">{err}</div>}
-      <table className="data" style={{ maxWidth: 640 }}>
-        <thead>
-          <tr>
-            <th>{scope === 'biz' ? '勘定科目' : '大項目'}</th>
-            {scope === 'per' && <th>中項目</th>}
-            <th>使用中</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {data.categoryOptions
-            .filter((o) => o.scope === scope)
-            .map((o) => {
-              const k = key(o);
-              const inUse = useCount(o);
-              if (editing?.key === k)
-                return (
-                  <tr key={k} className="editor">
-                    <td colSpan={scope === 'per' ? 4 : 3}>
-                      <div className="editor-form">
+      <DataTable
+        style={{ maxWidth: 640 }}
+        columns={[
+          scope === 'biz' ? '勘定科目' : '大項目',
+          ...(scope === 'per' ? ['中項目'] : []),
+          '使用中',
+          { label: '', sortable: false },
+        ]}
+      >
+        {data.categoryOptions
+          .filter((o) => o.scope === scope)
+          .map((o) => {
+            const k = key(o);
+            const inUse = useCount(o);
+            if (editing?.key === k)
+              return (
+                <tr key={k} className="editor">
+                  <td colSpan={scope === 'per' ? 4 : 3}>
+                    <div className="editor-form">
+                      <input
+                        type="text"
+                        value={editing.major}
+                        onChange={(e) => setEditing({ ...editing, major: e.target.value })}
+                        style={{ width: 140 }}
+                      />
+                      {scope === 'per' && (
                         <input
                           type="text"
-                          value={editing.major}
-                          onChange={(e) => setEditing({ ...editing, major: e.target.value })}
-                          style={{ width: 140 }}
+                          placeholder="中項目(任意)"
+                          value={editing.mid}
+                          onChange={(e) => setEditing({ ...editing, mid: e.target.value })}
+                          style={{ width: 120 }}
                         />
-                        {scope === 'per' && (
-                          <input
-                            type="text"
-                            placeholder="中項目(任意)"
-                            value={editing.mid}
-                            onChange={(e) => setEditing({ ...editing, mid: e.target.value })}
-                            style={{ width: 120 }}
-                          />
-                        )}
-                        {inUse > 0 && (
-                          <span className="sub" style={{ margin: 0 }}>
-                            使用中の{useSummary(o)}も新しい名前に変わります
-                          </span>
-                        )}
-                        <button
-                          type="button"
-                          className="primary"
-                          disabled={!editing.major.trim() || rename.isPending}
-                          onClick={() =>
-                            rename.mutate({
-                              from: o,
-                              to: { major: editing.major.trim(), mid: editing.mid.trim() },
-                            })
-                          }
-                        >
-                          保存
-                        </button>
-                        <button type="button" onClick={() => setEditing(null)}>
-                          やめる
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              return (
-                <tr key={k}>
-                  <td>{o.major}</td>
-                  {scope === 'per' && <td>{o.mid || '—'}</td>}
-                  <td>
-                    {inUse ? (
-                      <span className="pill neutral">{useSummary(o)}</span>
-                    ) : (
-                      <span className="sub" style={{ margin: 0 }}>
-                        未使用
-                      </span>
-                    )}
-                  </td>
-                  <td style={{ whiteSpace: 'nowrap' }}>
-                    <button
-                      type="button"
-                      className="mini"
-                      onClick={() => setEditing({ key: k, major: o.major, mid: o.mid })}
-                    >
-                      変更
-                    </button>{' '}
-                    <button
-                      type="button"
-                      className="mini danger-btn"
-                      disabled={del.isPending}
-                      onClick={() => removeOption(o)}
-                    >
-                      削除
-                    </button>
+                      )}
+                      {inUse > 0 && (
+                        <span className="sub" style={{ margin: 0 }}>
+                          使用中の{useSummary(o)}も新しい名前に変わります
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        className="primary"
+                        disabled={!editing.major.trim() || rename.isPending}
+                        onClick={() =>
+                          rename.mutate({
+                            from: o,
+                            to: { major: editing.major.trim(), mid: editing.mid.trim() },
+                          })
+                        }
+                      >
+                        保存
+                      </button>
+                      <button type="button" onClick={() => setEditing(null)}>
+                        やめる
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );
-            })}
-          {!data.categoryOptions.some((o) => o.scope === scope) && (
-            <tr>
-              <td colSpan={scope === 'per' ? 4 : 3} className="empty">
-                追加した{SCOPE_SHORT[scope]}の科目はありません(データに実在する科目はそのまま候補に出ます)
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            return (
+              <tr key={k}>
+                <td>{o.major}</td>
+                {scope === 'per' && <td>{o.mid || '—'}</td>}
+                <td>
+                  {inUse ? (
+                    <span className="pill neutral">{useSummary(o)}</span>
+                  ) : (
+                    <span className="sub" style={{ margin: 0 }}>
+                      未使用
+                    </span>
+                  )}
+                </td>
+                <td style={{ whiteSpace: 'nowrap' }}>
+                  <button
+                    type="button"
+                    className="mini"
+                    onClick={() => setEditing({ key: k, major: o.major, mid: o.mid })}
+                  >
+                    変更
+                  </button>{' '}
+                  <button
+                    type="button"
+                    className="mini danger-btn"
+                    disabled={del.isPending}
+                    onClick={() => removeOption(o)}
+                  >
+                    削除
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        {!data.categoryOptions.some((o) => o.scope === scope) && (
+          <tr key="empty">
+            <td colSpan={scope === 'per' ? 4 : 3} className="empty">
+              追加した{SCOPE_SHORT[scope]}の科目はありません(データに実在する科目はそのまま候補に出ます)
+            </td>
+          </tr>
+        )}
+      </DataTable>
     </div>
   );
 }
@@ -555,75 +542,71 @@ export function EditsCard({ data }: { data: ClassificationResponse }) {
         </p>
       ) : (
         <div className="scroll-x">
-          <table className="data">
-            <thead>
-              <tr>
-                <th>状態</th>
-                <th>日付</th>
-                <th>内容</th>
-                <th>金額</th>
-                <th>取込値(大項目/中項目)</th>
-                <th>編集値</th>
-                <th>編集日時</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.edits.map((e) => {
-                const st = STATUS_LABEL[e.status];
-                const parts: string[] = [];
-                if (e.cls) parts.push(`公私: ${clsLabel(e.cls)}`);
-                if (e.big || e.mid)
-                  parts.push(`科目: ${e.big ?? e.csvBig ?? ''} / ${e.mid ?? e.csvMid ?? ''}`);
-                if (e.owner) parts.push(`名義: ${ownerLabel(e.owner)}`);
-                return (
-                  <tr key={e.txId}>
-                    <td>
-                      <span className={`pill ${st.cls}`}>{st.label}</span>
-                    </td>
-                    <td className="num">{e.date ?? '—'}</td>
-                    <td
-                      style={{
-                        maxWidth: 260,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
+          <DataTable
+            columns={[
+              '状態',
+              '日付',
+              '内容',
+              '金額',
+              '取込値(大項目/中項目)',
+              '編集値',
+              '編集日時',
+              { label: '操作', sortable: false },
+            ]}
+          >
+            {data.edits.map((e) => {
+              const st = STATUS_LABEL[e.status];
+              const parts: string[] = [];
+              if (e.cls) parts.push(`公私: ${clsLabel(e.cls)}`);
+              if (e.big || e.mid) parts.push(`科目: ${e.big ?? e.csvBig ?? ''} / ${e.mid ?? e.csvMid ?? ''}`);
+              if (e.owner) parts.push(`名義: ${ownerLabel(e.owner)}`);
+              return (
+                <tr key={e.txId}>
+                  <td>
+                    <span className={`pill ${st.cls}`}>{st.label}</span>
+                  </td>
+                  <td className="num">{e.date ?? '—'}</td>
+                  <td
+                    style={{
+                      maxWidth: 260,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {e.description ?? `(ID: ${e.txId})`}
+                  </td>
+                  <td className="num">{e.amount === null ? '—' : yenS(e.amount)}</td>
+                  <td>
+                    {e.csvBig === null ? (
+                      '—'
+                    ) : (
+                      <>
+                        {e.csvBig} / {e.csvMid}
+                        {e.status === 'changed' && (
+                          <span className="orig">
+                            編集時: {e.baseBig} / {e.baseMid}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </td>
+                  <td>{parts.join(' ・ ')}</td>
+                  <td className="num">{dateTime(e.updatedAt)}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="mini"
+                      disabled={reset.isPending}
+                      onClick={() => reset.mutate([e.txId])}
                     >
-                      {e.description ?? `(ID: ${e.txId})`}
-                    </td>
-                    <td className="num">{e.amount === null ? '—' : yenS(e.amount)}</td>
-                    <td>
-                      {e.csvBig === null ? (
-                        '—'
-                      ) : (
-                        <>
-                          {e.csvBig} / {e.csvMid}
-                          {e.status === 'changed' && (
-                            <span className="orig">
-                              編集時: {e.baseBig} / {e.baseMid}
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </td>
-                    <td>{parts.join(' ・ ')}</td>
-                    <td className="num">{dateTime(e.updatedAt)}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="mini"
-                        disabled={reset.isPending}
-                        onClick={() => reset.mutate([e.txId])}
-                      >
-                        取込値に戻す
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      取込値に戻す
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </DataTable>
         </div>
       )}
     </div>

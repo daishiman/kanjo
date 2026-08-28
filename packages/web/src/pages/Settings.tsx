@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { type BackupItem, type LegacyRestoreResponse, type SettingsResponse, api } from '../api.js';
 import { AttachmentArchiveRecovery } from '../components/Attachments.js';
 import { ClassificationSettings } from '../components/ClassificationSettings.js';
+import { DataTable } from '../components/DataTable.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { readFileText } from '../file-text.js';
 
@@ -84,53 +85,47 @@ export function SettingsPage() {
       <div className="card">
         <h2>科目正規化マップ(freee勘定科目 → 集計上の科目)</h2>
         <p className="sub">変更すると全期間の集計が作り直されます。</p>
-        <table className="data" style={{ maxWidth: 560 }}>
-          <thead>
-            <tr>
-              <th>元の勘定科目</th>
-              <th>正規化後</th>
-              <th />
+        <DataTable
+          style={{ maxWidth: 560 }}
+          columns={['元の勘定科目', '正規化後', { label: '', sortable: false }]}
+        >
+          {norm.map(([raw, to], i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: 行は位置で編集するドラフト。内容をkeyにすると入力のたびに再マウントされフォーカスを失う
+            <tr key={i}>
+              <td>
+                <input
+                  type="text"
+                  value={raw}
+                  onChange={(e) => {
+                    const next = [...norm] as [string, string][];
+                    next[i] = [e.target.value, to];
+                    setNormDraft(next);
+                  }}
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  value={to}
+                  onChange={(e) => {
+                    const next = [...norm] as [string, string][];
+                    next[i] = [raw, e.target.value];
+                    setNormDraft(next);
+                  }}
+                />
+              </td>
+              <td>
+                <button
+                  type="button"
+                  className="mini danger-btn"
+                  onClick={() => setNormDraft(norm.filter((_, j) => j !== i))}
+                >
+                  削除
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {norm.map(([raw, to], i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: 行は位置で編集するドラフト。内容をkeyにすると入力のたびに再マウントされフォーカスを失う
-              <tr key={i}>
-                <td>
-                  <input
-                    type="text"
-                    value={raw}
-                    onChange={(e) => {
-                      const next = [...norm] as [string, string][];
-                      next[i] = [e.target.value, to];
-                      setNormDraft(next);
-                    }}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    value={to}
-                    onChange={(e) => {
-                      const next = [...norm] as [string, string][];
-                      next[i] = [raw, e.target.value];
-                      setNormDraft(next);
-                    }}
-                  />
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    className="mini danger-btn"
-                    onClick={() => setNormDraft(norm.filter((_, j) => j !== i))}
-                  >
-                    削除
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
         <div className="toolbar" style={{ marginTop: 8 }}>
           <button type="button" onClick={() => setNormDraft([...norm, ['', '']])}>
             行を追加
@@ -354,36 +349,27 @@ export function NightlyBackups() {
         <p className="sub">まだバックアップがありません(初回の夜間実行後に出ます)。</p>
       )}
       {backups.length > 0 && (
-        <table className="data stack-sm">
-          <thead>
-            <tr>
-              <th>日付</th>
-              <th>サイズ</th>
-              <th>操作</th>
+        <DataTable className="data stack-sm" columns={['日付', 'サイズ', { label: '操作', sortable: false }]}>
+          {backups.map((b) => (
+            <tr key={b.date}>
+              <td data-label="日付">{b.date}</td>
+              <td className="num" data-label="サイズ">
+                {Math.max(1, Math.round(b.size / 1024)).toLocaleString('ja-JP')} KB
+              </td>
+              <td data-label="操作">
+                <button
+                  type="button"
+                  disabled={restore.isPending}
+                  onClick={() => {
+                    if (window.confirm(BACKUP_RESTORE_CONFIRMATION)) restore.mutate(b.date);
+                  }}
+                >
+                  この日に戻す
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {backups.map((b) => (
-              <tr key={b.date}>
-                <td data-label="日付">{b.date}</td>
-                <td className="num" data-label="サイズ">
-                  {Math.max(1, Math.round(b.size / 1024)).toLocaleString('ja-JP')} KB
-                </td>
-                <td data-label="操作">
-                  <button
-                    type="button"
-                    disabled={restore.isPending}
-                    onClick={() => {
-                      if (window.confirm(BACKUP_RESTORE_CONFIRMATION)) restore.mutate(b.date);
-                    }}
-                  >
-                    この日に戻す
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       )}
       {restore.isSuccess && <LegacyRestoreNotice result={restore.data} />}
       {restore.isError && (

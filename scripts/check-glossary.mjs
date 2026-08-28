@@ -1,6 +1,8 @@
 // 用語辞書(packages/web/src/glossary.ts)の整合チェック。
-// 1) 辞書の全項目が、少なくとも1画面で <Term id="…"> として使われている(画面に出ない用語を辞書に溜めない)
+// 1) 辞書の全項目が、少なくとも1画面で使われている(画面に出ない用語を辞書に溜めない)
 // 2) 画面で使っている id が辞書に存在する(型検査でも弾けるが、文字列検索でも二重に確認する)
+// 「使われている」の形は2つある。自由文やラベルに置く <Term id="…"> と、
+// 表の見出しに置く termColumn('…')。後者は見出しの文言も辞書から引くので、同じく画面に出る。
 // 3) short が空でない・全角120字以内(ホバーで読める長さ)
 // 4) 別名(aliases)が空でなく、別々の用語で取り合いにならない(同じ表記の重複・別用語の別名を丸ごと含む表記を禁じる)
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -25,23 +27,28 @@ const files = [];
   }
 })(root);
 
+/** 画面から用語を指す書き方。どちらもホバーの説明が出る */
+const USE_PATTERNS = [/<Term id="(\w+)"/g, /termColumn\('(\w+)'/g];
+
 const used = new Map();
 for (const f of files) {
   const src = readFileSync(f, 'utf8');
-  for (const m of src.matchAll(/<Term id="(\w+)"/g)) {
-    if (!used.has(m[1])) used.set(m[1], []);
-    used.get(m[1]).push(relative(root, f));
-  }
+  for (const pattern of USE_PATTERNS)
+    for (const m of src.matchAll(pattern)) {
+      if (!used.has(m[1])) used.set(m[1], []);
+      used.get(m[1]).push(relative(root, f));
+    }
 }
 
 const errors = [];
 for (const id of ids)
   if (!used.has(id))
     errors.push(
-      `辞書の「${id}」はどの画面でも <Term id="${id}"> として使われていません。画面に出ない用語は辞書から外してください。`,
+      `辞書の「${id}」はどの画面でも <Term id="${id}"> / termColumn('${id}') として使われていません。画面に出ない用語は辞書から外してください。`,
     );
 for (const id of used.keys())
-  if (!ids.includes(id)) errors.push(`<Term id="${id}"> が辞書にありません(${used.get(id).join(', ')})。`);
+  if (!ids.includes(id))
+    errors.push(`画面が指す用語「${id}」が辞書にありません(${used.get(id).join(', ')})。`);
 for (const m of body.matchAll(/^ {2}(\w+): \{[\s\S]*?short: '([^']*)'/gm)) {
   const [, id, short] = m;
   if (!short.trim()) errors.push(`「${id}」の short が空です。`);
