@@ -1,6 +1,7 @@
 /** P10 指標ガイド: 指標の意味とベンチマーク(FR-07)。実データを差し込んで解説する */
 import { useQuery } from '@tanstack/react-query';
 import { type DiagnosisData, type SummaryResponse, api } from '../api.js';
+import { DataTable } from '../components/DataTable.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { pct, ratio, yen } from '../format.js';
 import { ABBREVIATIONS, GLOSSARY, GUIDE_ORDER, type GlossaryEntry, type TermId } from '../glossary.js';
@@ -78,32 +79,21 @@ export function GuidePage() {
 
       <div className="card scroll-x">
         <h2>ベンチマーク(いまの数字と目安)</h2>
-        <table className="data">
-          <thead>
-            <tr>
-              <th>指標</th>
-              <th>現在値</th>
-              <th>目安</th>
-              <th>判定</th>
-              <th style={{ textAlign: 'left' }}>算出元</th>
+        <DataTable columns={['指標', '現在値', '目安', '判定', { label: '算出元', className: 'left' }]}>
+          {bench.map((b) => (
+            <tr key={b.id}>
+              <td style={{ fontWeight: 700 }}>{b.label}</td>
+              <td className="num">{ratio(b.value, 1)}</td>
+              <td className="num">{b.guide}</td>
+              <td>
+                <span className={judgePill[b.judge]}>{b.judge}</span>
+              </td>
+              <td style={{ textAlign: 'left' }} className="sub">
+                {b.basis}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {bench.map((b) => (
-              <tr key={b.id}>
-                <td style={{ fontWeight: 700 }}>{b.label}</td>
-                <td className="num">{ratio(b.value, 1)}</td>
-                <td className="num">{b.guide}</td>
-                <td>
-                  <span className={judgePill[b.judge]}>{b.judge}</span>
-                </td>
-                <td style={{ textAlign: 'left' }} className="sub">
-                  {b.basis}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
         <p className="sub">
           目安は参考実装(収支管理ダッシュボード)と同じ。個人事業の一般的な水準で、業種により前後します。
         </p>
@@ -121,64 +111,53 @@ export function GuidePage() {
           <br />
           元の英語と、日本語での呼び方を並べています。
         </p>
-        <table className="data stack-sm">
-          <thead>
-            <tr>
-              <th scope="col">略語</th>
-              <th scope="col" style={{ textAlign: 'left' }}>
-                元の言葉
-              </th>
-              <th scope="col" style={{ textAlign: 'left' }}>
-                日本語
-              </th>
-              <th scope="col" style={{ textAlign: 'left' }}>
-                意味
-              </th>
+        <DataTable
+          className="data stack-sm"
+          columns={[
+            '略語',
+            { label: '元の言葉', className: 'left' },
+            { label: '日本語', className: 'left' },
+            { label: '意味', className: 'left' },
+          ]}
+        >
+          {ABBREVIATIONS.map((a) => (
+            <tr key={a.id}>
+              <th scope="row">{a.abbr.abbr}</th>
+              <td style={{ textAlign: 'left' }} data-label="元の言葉">
+                {a.abbr.full}
+              </td>
+              <td style={{ textAlign: 'left' }} data-label="日本語">
+                {a.abbr.ja}
+              </td>
+              <td style={{ textAlign: 'left' }} className="sub" data-label="意味">
+                {a.meaning}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {ABBREVIATIONS.map((a) => (
-              <tr key={a.id}>
-                <th scope="row">{a.abbr.abbr}</th>
-                <td style={{ textAlign: 'left' }} data-label="元の言葉">
-                  {a.abbr.full}
-                </td>
-                <td style={{ textAlign: 'left' }} data-label="日本語">
-                  {a.abbr.ja}
-                </td>
-                <td style={{ textAlign: 'left' }} className="sub" data-label="意味">
-                  {a.meaning}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       </div>
 
       <div className="card scroll-x">
         <h2>用語の意味</h2>
-        <table className="data">
-          <thead>
-            <tr>
-              <th>指標</th>
-              <th style={{ textAlign: 'left' }}>意味</th>
-              <th>現在値</th>
-              <th style={{ textAlign: 'left' }}>目安</th>
+        <DataTable
+          columns={[
+            '指標',
+            { label: '意味', className: 'left' },
+            '現在値',
+            { label: '目安', className: 'left' },
+          ]}
+        >
+          {rows.map((r) => (
+            <tr key={r.id}>
+              <td style={{ fontWeight: 700 }}>{r.term}</td>
+              <td style={{ textAlign: 'left' }}>{r.desc}</td>
+              <td className="num">{r.now}</td>
+              <td style={{ textAlign: 'left' }} className="sub">
+                {r.bench}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id}>
-                <td style={{ fontWeight: 700 }}>{r.term}</td>
-                <td style={{ textAlign: 'left' }}>{r.desc}</td>
-                <td className="num">{r.now}</td>
-                <td style={{ textAlign: 'left' }} className="sub">
-                  {r.bench}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       </div>
 
       <div className="card">

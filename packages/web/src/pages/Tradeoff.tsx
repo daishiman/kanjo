@@ -5,6 +5,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
 import { type TradeoffResponse, type TradeoffReviewRow, api } from '../api.js';
+import { DataTable } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
@@ -169,50 +170,47 @@ export function TradeoffPage() {
 
       <div className="card">
         <h2>保存済みの試算(翌月の実績と突合)</h2>
-        <table className="data">
-          <thead>
-            <tr>
-              <th>日時</th>
-              <th>内容</th>
-              <th>予定支出</th>
-              <th>捻出額</th>
-              <th>判定</th>
-              <th>翌月の実績</th>
-              <th style={{ textAlign: 'left' }}>選択した削減策</th>
+        <DataTable
+          columns={[
+            '日時',
+            '内容',
+            '予定支出',
+            '捻出額',
+            '判定',
+            '翌月の実績',
+            { label: '選択した削減策', sortable: false, className: 'left' },
+          ]}
+        >
+          {d.plans.map((p) => (
+            <tr key={p.id}>
+              <td>{p.createdAt ?? ''}</td>
+              <td>
+                {p.title ?? '—'}
+                {p.recurring && <span className="pill warn">毎月</span>}
+              </td>
+              <td className="num">{yen(p.amount)}</td>
+              <td className="num">{yen(p.covered)}</td>
+              <td>
+                {p.verdict === 'covered' ? (
+                  <span className="pill calm">捻出可</span>
+                ) : (
+                  <span className="pill alert">不足</span>
+                )}
+              </td>
+              <ReviewCell row={d.review.find((r) => r.id === p.id)} />
+              <td style={{ textAlign: 'left' }} className="sub">
+                {p.selected.map((sel) => sel.label).join(' / ')}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {d.plans.map((p) => (
-              <tr key={p.id}>
-                <td>{p.createdAt ?? ''}</td>
-                <td>
-                  {p.title ?? '—'}
-                  {p.recurring && <span className="pill warn">毎月</span>}
-                </td>
-                <td className="num">{yen(p.amount)}</td>
-                <td className="num">{yen(p.covered)}</td>
-                <td>
-                  {p.verdict === 'covered' ? (
-                    <span className="pill calm">捻出可</span>
-                  ) : (
-                    <span className="pill alert">不足</span>
-                  )}
-                </td>
-                <ReviewCell row={d.review.find((r) => r.id === p.id)} />
-                <td style={{ textAlign: 'left' }} className="sub">
-                  {p.selected.map((sel) => sel.label).join(' / ')}
-                </td>
-              </tr>
-            ))}
-            {!d.plans.length && (
-              <tr>
-                <td colSpan={7} className="empty">
-                  保存された試算はまだありません
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+          ))}
+          {!d.plans.length && (
+            <tr key="empty">
+              <td colSpan={7} className="empty">
+                保存された試算はまだありません
+              </td>
+            </tr>
+          )}
+        </DataTable>
       </div>
     </>
   );

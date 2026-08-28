@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { type DiagnosisData, api } from '../api.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { pct, yen } from '../format.js';
@@ -116,63 +117,50 @@ export function DiagnosisPage() {
           <Term id="unrecordedMonth" />
           は除外)
         </h2>
-        <table className="data">
-          <thead>
-            <tr>
-              <th>科目</th>
-              <th>
-                <Term id="classification" />
-              </th>
-              <th>直近3ヶ月平均</th>
-              <th>平均</th>
-              <th>
-                <Term id="median" />
-              </th>
-              <th>
-                <Term id="cv" />
-              </th>
-              <th>
-                <Term id="range" />
-              </th>
-              <th>
-                <Term id="zScore" />
-              </th>
-              <th>判定</th>
-              <th>シグナル</th>
+        <DataTable
+          columns={[
+            '科目',
+            termColumn('classification'),
+            '直近3ヶ月平均',
+            '平均',
+            termColumn('median'),
+            termColumn('cv'),
+            termColumn('range'),
+            termColumn('zScore'),
+            '判定',
+            'シグナル',
+          ]}
+        >
+          {d.entries.map((e) => (
+            <tr key={e.account}>
+              <td>{e.account}</td>
+              <td>
+                <span className="pill neutral">{e.profile.type}</span>
+              </td>
+              <td className="num">{yen(e.profile.rAvg)}</td>
+              <td className="num">{yen(e.profile.mean)}</td>
+              <td className="num">{yen(e.profile.med)}</td>
+              <td className="num">{e.profile.cv.toFixed(2)}</td>
+              <td className="num">
+                {yen(e.range.lo)}〜{yen(e.range.hi)}
+              </td>
+              <td className="num">{e.profile.z.toFixed(1)}</td>
+              <td>
+                <span className={judgePill[e.judge]}>{e.judge}</span>
+              </td>
+              <td>
+                {e.signals.map((s) => (
+                  <span
+                    key={s}
+                    className={`pill ${s === '契約見直し対象' ? 'warn' : s === '上昇' ? 'alert' : 'calm'}`}
+                  >
+                    {s}
+                  </span>
+                ))}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {d.entries.map((e) => (
-              <tr key={e.account}>
-                <td>{e.account}</td>
-                <td>
-                  <span className="pill neutral">{e.profile.type}</span>
-                </td>
-                <td className="num">{yen(e.profile.rAvg)}</td>
-                <td className="num">{yen(e.profile.mean)}</td>
-                <td className="num">{yen(e.profile.med)}</td>
-                <td className="num">{e.profile.cv.toFixed(2)}</td>
-                <td className="num">
-                  {yen(e.range.lo)}〜{yen(e.range.hi)}
-                </td>
-                <td className="num">{e.profile.z.toFixed(1)}</td>
-                <td>
-                  <span className={judgePill[e.judge]}>{e.judge}</span>
-                </td>
-                <td>
-                  {e.signals.map((s) => (
-                    <span
-                      key={s}
-                      className={`pill ${s === '契約見直し対象' ? 'warn' : s === '上昇' ? 'alert' : 'calm'}`}
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       </div>
 
       <div className="card">

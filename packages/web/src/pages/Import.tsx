@@ -14,6 +14,7 @@ import {
   api,
   apiUpload,
 } from '../api.js';
+import { DataTable } from '../components/DataTable.js';
 import { PageHeader, PageState, describeError } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { dateTime } from '../format.js';
@@ -22,6 +23,7 @@ import { fileForUnit, retryableFiles, rootFileName } from '../import-retry.js';
 const KIND_LABEL: Record<string, ReactNode> = {
   mf: 'MF明細',
   freee: 'freee仕訳',
+  assets: 'MF資産推移',
   json: <Term id="mergedJson" />,
 };
 
@@ -54,91 +56,102 @@ export function ImportResultTable({
   };
   return (
     <>
-      <table className="data">
-        <thead>
-          <tr>
-            <th>ファイル</th>
-            <th>種別</th>
-            <th>対象月</th>
-            <th title="日付を解釈できた入力行。同一IDの重複を含みます">解析行</th>
-            <th title="同一IDは最後の行だけを保存します">保存行</th>
-            <th title="保存行のうち収支集計に含める行です">集計対象</th>
-            <th title="保存はするが収支集計には含めない行です">集計対象外</th>
-            <th title="日付を解釈できず保存できなかった行です">保存不可</th>
-            <th>結果</th>
-          </tr>
-        </thead>
-        <tbody>
-          {results.map((r) => {
-            const counts = r.counts;
-            return (
-              <tr key={`${r.filename}-${r.kind}`}>
-                <td>{r.filename}</td>
-                <td>{KIND_LABEL[r.kind] ?? '不明'}</td>
-                <td>{r.months.join(', ') || '—'}</td>
-                <td className="num">{counts?.parsed ?? '—'}</td>
-                <td className="num">{counts?.stored ?? '—'}</td>
-                <td className="num">{counts?.countable ?? '—'}</td>
-                <td className="num">{counts?.nonCountable ?? '—'}</td>
-                <td className="num">{counts?.rejected ?? '—'}</td>
-                <td>
-                  {r.status === 'committed' ? (
-                    <>
-                      <span className="pill calm">
-                        取込完了
-                        {r.syntheticIds ? ` (ID補完${r.syntheticIds}件)` : ''}
-                        {r.duplicateIds ? ` (ID重複${r.duplicateIds}件)` : ''}
-                      </span>
-                      {(r.replaced ?? [])
-                        .filter((m) => m.before > m.after)
-                        .map((m) => (
-                          <div
-                            key={m.month}
-                            className="sub"
-                            style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
-                          >
-                            {m.month}: 取込前 {m.before}件 → 取込後 {m.after}
-                            件。件数が減っています。月の途中までのファイルではないか確認してください(前の内容に戻すには、元のファイルを取り込み直します。次からは「件数が減る月は取り込まず、前回の内容を残す」を付けると、この置き換え自体を止められます)。
-                          </div>
-                        ))}
-                    </>
-                  ) : r.status === 'kept' ? (
-                    <>
-                      <span className="pill warn">前回を残しました</span>
+      <DataTable
+        columns={[
+          'ファイル',
+          '種別',
+          '対象月',
+          { label: '解析行', title: '日付を解釈できた入力行。同一IDの重複を含みます' },
+          { label: '保存行', title: '同一IDは最後の行だけを保存します' },
+          { label: '集計対象', title: '保存行のうち収支集計に含める行です' },
+          { label: '集計対象外', title: '保存はするが収支集計には含めない行です' },
+          { label: '保存不可', title: '日付を解釈できず保存できなかった行です' },
+          '結果',
+        ]}
+      >
+        {results.map((r) => {
+          const counts = r.counts;
+          return (
+            <tr key={`${r.filename}-${r.kind}`}>
+              <td>{r.filename}</td>
+              <td>{KIND_LABEL[r.kind] ?? '不明'}</td>
+              <td>{r.months.join(', ') || '—'}</td>
+              <td className="num">{counts?.parsed ?? '—'}</td>
+              <td className="num">{counts?.stored ?? '—'}</td>
+              <td className="num">{counts?.countable ?? '—'}</td>
+              <td className="num">{counts?.nonCountable ?? '—'}</td>
+              <td className="num">{counts?.rejected ?? '—'}</td>
+              <td>
+                {r.status === 'committed' ? (
+                  <>
+                    <span className="pill calm">
+                      取込完了
+                      {r.syntheticIds ? ` (ID補完${r.syntheticIds}件)` : ''}
+                      {r.duplicateIds ? ` (ID重複${r.duplicateIds}件)` : ''}
+                    </span>
+                    {/* 残高だけ入っても、負債を入れるまで純資産は出ない。取込直後に次の一手を出す */}
+                    {r.kind === 'assets' ? (
                       <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
-                        {r.reason}
+                        <Link to="/statements">決算書</Link>
+                        の<Term id="bs" />
+                        に反映しました。クレカ未払い・借入はこのCSVに列が無いので、同じ画面で月ごとに入れてください。
                       </div>
-                      {/* 見送り設定を外さないと同じ結果になるため、この操作で一緒に外す */}
-                      {retryButton(r, '前回を残さずに取り込む', true)}
-                    </>
-                  ) : r.status === 'duplicate' ? (
-                    <>
-                      <span className="pill warn">取込済み(スキップ)</span>
+                    ) : null}
+                    {r.totalMismatchMonths?.length ? (
                       <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
-                        {r.reason}
-                        。意図的に再適用する場合だけ「現在有効な内容と同じでも再適用する」を付けてください。
+                        {r.totalMismatchMonths.join(', ')}:
+                        合計欄と内訳の和が合いません。CSVに列が足りていない可能性があります(その月の資産は内訳の和で入っています)。
                       </div>
-                    </>
-                  ) : (
-                    <>
-                      <span className="pill alert">失敗</span>
-                      <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
-                        {r.reason}
-                      </div>
-                      {retryButton(r, '再取込', false)}
-                    </>
-                  )}
-                  {!counts && (
+                    ) : null}
+                    {(r.replaced ?? [])
+                      .filter((m) => m.before > m.after)
+                      .map((m) => (
+                        <div
+                          key={m.month}
+                          className="sub"
+                          style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                        >
+                          {m.month}: 取込前 {m.before}件 → 取込後 {m.after}
+                          件。件数が減っています。月の途中までのファイルではないか確認してください(前の内容に戻すには、元のファイルを取り込み直します。次からは「件数が減る月は取り込まず、前回の内容を残す」を付けると、この置き換え自体を止められます)。
+                        </div>
+                      ))}
+                  </>
+                ) : r.status === 'kept' ? (
+                  <>
+                    <span className="pill warn">前回を残しました</span>
                     <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
-                      旧API: 旧有効{r.rows}行・旧スキップ{r.skipped}行（内訳不明）
+                      {r.reason}
                     </div>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                    {/* 見送り設定を外さないと同じ結果になるため、この操作で一緒に外す */}
+                    {retryButton(r, '前回を残さずに取り込む', true)}
+                  </>
+                ) : r.status === 'duplicate' ? (
+                  <>
+                    <span className="pill warn">取込済み(スキップ)</span>
+                    <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
+                      {r.reason}
+                      。意図的に再適用する場合だけ「現在有効な内容と同じでも再適用する」を付けてください。
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="pill alert">失敗</span>
+                    <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
+                      {r.reason}
+                    </div>
+                    {retryButton(r, '再取込', false)}
+                  </>
+                )}
+                {!counts && (
+                  <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
+                    旧API: 旧有効{r.rows}行・旧スキップ{r.skipped}行（内訳不明）
+                  </div>
+                )}
+              </td>
+            </tr>
+          );
+        })}
+      </DataTable>
       {results.some((r) => r.status === 'failed') && (
         <p className="sub">
           失敗したファイルの内容は確定されていません(取込完了したファイルは反映済み)。一時的な失敗なら、同じファイルを通常どおり再実行できます。
@@ -279,8 +292,8 @@ export function ImportPage() {
           ここにファイルをドラッグ&ドロップ
           <br />
           <small>
-            またはクリックして選択。マネーフォワード「収入・支出詳細」CSV / freee取引エクスポート(ZIP可) /
-            HTML版の統合JSON
+            またはクリックして選択。マネーフォワード「収入・支出詳細」CSV / 同「資産推移」CSV /
+            freee取引エクスポート(ZIP可) / HTML版の統合JSON
           </small>
         </p>
       </div>
@@ -295,6 +308,26 @@ export function ImportPage() {
             </a>
             <br />
             期間を選び「ダウンロード」から <code>収入・支出詳細_YYYY-MM-DD_YYYY-MM-DD.csv</code> を保存
+          </li>
+          {/*
+            口座の残高はこのCSVだけでそろう。freee側は口座の設定をしていないため、
+            残高(BS)はMFを正とする。負債の列は無いので、決算書画面で月ごとに手入力する。
+          */}
+          <li style={{ marginTop: 6 }}>
+            マネーフォワード ME —{' '}
+            <a href="https://moneyforward.com/bs/history" target="_blank" rel="noreferrer">
+              資産推移を開く
+            </a>
+            <br />
+            期間を選び「ダウンロード」から <code>資産推移_YYYY-MM-DD_YYYY-MM-DD.csv</code> を保存。
+            連携した全口座の月末残高が1ファイルで出ます(
+            <Link to="/statements">決算書</Link>の
+            <Term id="bs" />
+            の資産の部になります)
+            <br />
+            <span className="sub">
+              直近1ヶ月は日ごとに出ますが、月ごと1点に畳んで取り込みます。CSV出力はプレミアム限定です。クレカ未払い・借入は列が無いので、決算書の画面から月ごとに入れてください。
+            </span>
           </li>
           <li style={{ marginTop: 6 }}>
             freee 会計 —{' '}
@@ -384,101 +417,96 @@ export function ImportPage() {
           <PageState status="error" error={history.error} />
         ) : (
           <div className="scroll-x">
-            <table className="data">
-              <thead>
-                <tr>
-                  <th>日時</th>
-                  <th>ファイル</th>
-                  <th>種別</th>
-                  <th>対象月</th>
-                  <th title="保存不能行を除く解析済みの入力行です">解析行</th>
-                  <th>ステータス</th>
-                  <th>やり直し</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(history.data?.imports ?? []).map((r) => (
-                  <tr key={r.id}>
-                    <td className="num">{dateTime(r.createdAt)}</td>
-                    <td>{r.filename}</td>
-                    <td>{(r.kind && KIND_LABEL[r.kind]) ?? '不明'}</td>
-                    <td>{r.months.join(', ') || '—'}</td>
-                    <td className="num">{r.rows ?? '—'}</td>
-                    <td>
-                      {r.status === 'committed' || r.status === 'ok' ? (
-                        <>
-                          <span className="pill calm">{r.status === 'ok' ? '完了(旧履歴)' : '取込完了'}</span>
-                          {r.generationState === 'active' && <span className="pill calm">現在有効</span>}
-                          {r.generationState === 'partial' && (
-                            <span className="pill warn">一部が現在有効</span>
-                          )}
-                          {r.generationState === 'superseded' && <span className="pill">更新済み</span>}
-                        </>
-                      ) : r.status === 'duplicate' ? (
-                        <>
-                          <span className="pill warn">取込済み(スキップ)</span>
-                          {r.duplicateOf != null && (
-                            <div
-                              className="sub"
-                              style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
-                            >
-                              現在有効な履歴 #{r.duplicateOf} と同じ内容
-                            </div>
-                          )}
-                        </>
-                      ) : r.status === 'processing' || r.status === 'applying' ? (
-                        <span className="pill warn">
-                          {r.status === 'processing' ? '解析・保存中' : '反映中'}
-                        </span>
-                      ) : (
-                        <>
-                          <span className="pill alert">失敗</span>
+            <DataTable
+              columns={[
+                '日時',
+                'ファイル',
+                '種別',
+                '対象月',
+                { label: '解析行', title: '保存不能行を除く解析済みの入力行です' },
+                'ステータス',
+                { label: 'やり直し', sortable: false },
+              ]}
+            >
+              {(history.data?.imports ?? []).map((r) => (
+                <tr key={r.id}>
+                  <td className="num">{dateTime(r.createdAt)}</td>
+                  <td>{r.filename}</td>
+                  <td>{(r.kind && KIND_LABEL[r.kind]) ?? '不明'}</td>
+                  <td>{r.months.join(', ') || '—'}</td>
+                  <td className="num">{r.rows ?? '—'}</td>
+                  <td>
+                    {r.status === 'committed' || r.status === 'ok' ? (
+                      <>
+                        <span className="pill calm">{r.status === 'ok' ? '完了(旧履歴)' : '取込完了'}</span>
+                        {r.generationState === 'active' && <span className="pill calm">現在有効</span>}
+                        {r.generationState === 'partial' && <span className="pill warn">一部が現在有効</span>}
+                        {r.generationState === 'superseded' && <span className="pill">更新済み</span>}
+                      </>
+                    ) : r.status === 'duplicate' ? (
+                      <>
+                        <span className="pill warn">取込済み(スキップ)</span>
+                        {r.duplicateOf != null && (
                           <div
                             className="sub"
                             style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
                           >
-                            {r.failureReason ?? ((r.status ?? '').replace(/^error:\s*/, '') || '理由不明')}
+                            現在有効な履歴 #{r.duplicateOf} と同じ内容
                           </div>
-                        </>
-                      )}
-                    </td>
-                    <td>
-                      {r.originalRecorded === true ? (
-                        <button
-                          type="button"
-                          disabled={reimport.isPending || upload.isPending}
-                          onClick={() => reimport.mutate(r)}
-                        >
-                          {reimport.isPending && reimport.variables?.id === r.id
-                            ? '原本を取り出し中…'
-                            : 'この取込をやり直す'}
-                        </button>
-                      ) : (
-                        <span className="sub" title="この取込は投入した原本を保存していません">
-                          原本なし
-                        </span>
-                      )}
-                      {reimport.isError && reimport.variables?.id === r.id && (
+                        )}
+                      </>
+                    ) : r.status === 'processing' || r.status === 'applying' ? (
+                      <span className="pill warn">
+                        {r.status === 'processing' ? '解析・保存中' : '反映中'}
+                      </span>
+                    ) : (
+                      <>
+                        <span className="pill alert">失敗</span>
                         <div
                           className="sub"
                           style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
-                          role="alert"
                         >
-                          {(reimport.error as Error).message}
+                          {r.failureReason ?? ((r.status ?? '').replace(/^error:\s*/, '') || '理由不明')}
                         </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                {!history.data?.imports.length && (
-                  <tr>
-                    <td colSpan={7} className="empty">
-                      取込履歴はまだありません。上の枠にファイルを入れると、ここに結果が残ります。
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                      </>
+                    )}
+                  </td>
+                  <td>
+                    {r.originalRecorded === true ? (
+                      <button
+                        type="button"
+                        disabled={reimport.isPending || upload.isPending}
+                        onClick={() => reimport.mutate(r)}
+                      >
+                        {reimport.isPending && reimport.variables?.id === r.id
+                          ? '原本を取り出し中…'
+                          : 'この取込をやり直す'}
+                      </button>
+                    ) : (
+                      <span className="sub" title="この取込は投入した原本を保存していません">
+                        原本なし
+                      </span>
+                    )}
+                    {reimport.isError && reimport.variables?.id === r.id && (
+                      <div
+                        className="sub"
+                        style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                        role="alert"
+                      >
+                        {(reimport.error as Error).message}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {!history.data?.imports.length && (
+                <tr key="empty">
+                  <td colSpan={7} className="empty">
+                    取込履歴はまだありません。上の枠にファイルを入れると、ここに結果が残ります。
+                  </td>
+                </tr>
+              )}
+            </DataTable>
           </div>
         )}
       </div>

@@ -1,8 +1,10 @@
 /** P4 サブスク分析: いま何にいくら払っているか(月額・年換算)と、推移・重複・急増を確認する */
 import { useQuery } from '@tanstack/react-query';
+import { Fragment } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type SubscriptionsData, api } from '../api.js';
+import { DataTable } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { SubVendorsPanel, SubsCandidatesPanel } from '../components/SubVendors.js';
@@ -104,43 +106,20 @@ export function SubscriptionsPage() {
 
       <div className="card scroll-x">
         <h2>いま何にいくら払っているか</h2>
-        <table className="data stack-sm">
-          <thead>
-            <tr>
-              <th>ベンダー</th>
-              <th>直近月額</th>
-              <th>平均月額</th>
-              <th>支払月数</th>
-              <th>直近12ヶ月合計</th>
-              <th>
-                <Term id="annualized" />
-                (直近月額×12)
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {[...s.vendorTable]
-              .sort((a, b) => b.lastMonthly - a.lastMonthly || b.avgMonthly - a.avgMonthly)
-              .map((r) => (
-                <tr key={r.vendor}>
-                  <td data-label="ベンダー">{r.vendor}</td>
-                  <td data-label="直近月額" className="num">
-                    {yen(r.lastMonthly)}
-                  </td>
-                  <td data-label="平均月額" className="num">
-                    {yen(r.avgMonthly)}
-                  </td>
-                  <td data-label="支払月数" className="num">
-                    {r.activeMonths}
-                  </td>
-                  <td data-label="直近12ヶ月合計" className="num">
-                    {yen(r.last12Total)}
-                  </td>
-                  <td data-label="年換算" className="num">
-                    {yen(r.lastMonthly * 12)}
-                  </td>
-                </tr>
-              ))}
+        <DataTable
+          className="data stack-sm"
+          columns={[
+            'ベンダー',
+            '直近月額',
+            '平均月額',
+            '支払月数',
+            '直近12ヶ月合計',
+            <Fragment key="annualized">
+              <Term id="annualized" />
+              (直近月額×12)
+            </Fragment>,
+          ]}
+          foot={
             <tr className="total">
               <td data-label="ベンダー">合計(その他を含む)</td>
               <td data-label="直近月額" className="num">
@@ -155,8 +134,31 @@ export function SubscriptionsPage() {
                 {yen(s.now.annualized)}
               </td>
             </tr>
-          </tbody>
-        </table>
+          }
+        >
+          {[...s.vendorTable]
+            .sort((a, b) => b.lastMonthly - a.lastMonthly || b.avgMonthly - a.avgMonthly)
+            .map((r) => (
+              <tr key={r.vendor}>
+                <td data-label="ベンダー">{r.vendor}</td>
+                <td data-label="直近月額" className="num">
+                  {yen(r.lastMonthly)}
+                </td>
+                <td data-label="平均月額" className="num">
+                  {yen(r.avgMonthly)}
+                </td>
+                <td data-label="支払月数" className="num">
+                  {r.activeMonths}
+                </td>
+                <td data-label="直近12ヶ月合計" className="num">
+                  {yen(r.last12Total)}
+                </td>
+                <td data-label="年換算" className="num">
+                  {yen(r.lastMonthly * 12)}
+                </td>
+              </tr>
+            ))}
+        </DataTable>
         <p className="sub">
           「その他」はベンダー名を特定していないサブスク・通信の支払。月3,000円のサブスクは年3.6万円。契約は月次にし、解約の見直しは四半期ごとに行う。
         </p>

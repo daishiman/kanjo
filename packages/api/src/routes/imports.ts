@@ -273,6 +273,11 @@ interface UnitResult {
   syntheticIds?: number;
   duplicateIds?: number;
   /**
+   * 資産推移CSVで、合計欄と内訳の和が合わなかった月。
+   * 列が欠けたCSVを黙って取り込むと、資産が実際より少ないBSができる。
+   */
+  totalMismatchMonths?: string[];
+  /**
    * committed=原本/canonical/cache/active pointerの確定完了。
    * kept=「前回を残す」指定により、件数が減る洗い替えを実行しなかった(既存データは無傷)。
    */
@@ -290,7 +295,10 @@ const unitCountFields = (
   unit: ParsedUnit,
   committed: boolean,
   jsonMfTx: Dataset['mfTx'] = [],
-): Pick<UnitResult, 'counts' | 'rows' | 'skipped' | 'syntheticIds' | 'duplicateIds'> => {
+): Pick<
+  UnitResult,
+  'counts' | 'rows' | 'skipped' | 'syntheticIds' | 'duplicateIds' | 'totalMismatchMonths'
+> => {
   const parsedCounts = importCountSummary(unit, jsonMfTx);
   const counts = committed ? parsedCounts : { ...parsedCounts, stored: 0, countable: 0, nonCountable: 0 };
   const legacy = legacyImportCountAliases(unit, jsonMfTx);
@@ -299,6 +307,8 @@ const unitCountFields = (
     ...legacy,
     syntheticIds: unit.kind === 'mf' ? unit.syntheticIds : undefined,
     duplicateIds: unit.kind === 'mf' ? unit.duplicateIds : undefined,
+    totalMismatchMonths:
+      unit.kind === 'assets' && unit.totalMismatchMonths.length ? unit.totalMismatchMonths : undefined,
   };
 };
 

@@ -9,6 +9,7 @@ import { Fragment, useState } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type ExpenseScope, type TrendRow, type TrendsResponse, api } from '../api.js';
+import { DataTable } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
@@ -115,18 +116,17 @@ export function TrendsPage() {
         <div className="card">
           <h2>事業と家計の内訳</h2>
           <HowTo id="trendsSplit" />
-          <table className="data">
-            <thead>
-              <tr>
-                <th>区分</th>
-                <th className="num">合計</th>
-                <th className="num">月あたり</th>
-                <th className="num">構成比</th>
-                <th className="num">科目数</th>
-                <th>最大の科目</th>
-              </tr>
-            </thead>
-            <tbody>
+          <div className="scroll-x">
+            <DataTable
+              columns={[
+                '区分',
+                { label: '合計', className: 'num' },
+                { label: '月あたり', className: 'num' },
+                { label: '構成比', className: 'num' },
+                { label: '科目数', className: 'num' },
+                '最大の科目',
+              ]}
+            >
               {t.sides.map((s) => (
                 <tr key={s.side}>
                   <td data-label="区分">
@@ -149,8 +149,8 @@ export function TrendsPage() {
                   </td>
                 </tr>
               ))}
-            </tbody>
-          </table>
+            </DataTable>
+          </div>
           <Chart
             type="bar"
             height={90}
@@ -294,17 +294,16 @@ export function TrendsPage() {
             plugins: { legend: { display: false } },
           }}
         />
-        <table className="data">
-          <thead>
-            <tr>
-              <th>科目</th>
-              <th className="num">前半(月平均)</th>
-              <th className="num">後半(月平均)</th>
-              <th className="num">差</th>
-              <th className="num">全体の増減への寄与</th>
-            </tr>
-          </thead>
-          <tbody>
+        <div className="scroll-x">
+          <DataTable
+            columns={[
+              '科目',
+              { label: '前半(月平均)', className: 'num' },
+              { label: '後半(月平均)', className: 'num' },
+              { label: '差', className: 'num' },
+              { label: '全体の増減への寄与', className: 'num' },
+            ]}
+          >
             {waterfall(t).map((r) => (
               <tr key={r.key}>
                 <td data-label="科目">
@@ -327,8 +326,8 @@ export function TrendsPage() {
                 </td>
               </tr>
             ))}
-          </tbody>
-        </table>
+          </DataTable>
+        </div>
         <p className="sub">
           「先月より5万円増えた」だけでは動けない。それが外注費の+6万と通信費の-1万の合成だと分かって
           初めて手を打つ先が決まる。寄与は全体の増減に対する割合で、増えた科目と減った科目が打ち消し合う。

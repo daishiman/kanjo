@@ -21,6 +21,7 @@ import { and, eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
+import { inClauseChunkSize } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import {
@@ -544,6 +545,19 @@ settingsRoute.put('/category-options', zValidator('json', optionRenameSchema), a
       context,
     ),
   );
+  /**
+   * IN() に並べる値を D1 のバインド上限内へ割る。
+   *
+   * fixed は同じ文に載る IN() 以外のバインド数(user_id と SET 句の値)。上限そのものを
+   * 分割数に使うと、その fixed のぶんだけ必ず溢れて文ごと SQLITE_ERROR になる。
+   * 値が空なら1文も作らない(更新する対象が無く、IN () は書けない)。
+   */
+  const chunkedIn = <T, S>(values: T[], fixed: number, build: (part: T[]) => S): S[] => {
+    const size = inClauseChunkSize(fixed);
+    const out: S[] = [];
+    for (let i = 0; i < values.length; i += size) out.push(build(values.slice(i, i + size)));
+    return out;
+  };
   const splitIds = <T extends { categoryMid: string | null }, K>(rows: T[], key: (row: T) => K) => ({
     majorOnly: rows.filter((row) => !row.categoryMid).map(key),
     exact: rows.filter((row) => !!row.categoryMid).map(key),
@@ -552,36 +566,52 @@ settingsRoute.put('/category-options', zValidator('json', optionRenameSchema), a
   const ruleIds = splitIds(dependentRules, (row) => row.id);
   const cashIds = splitIds(affectedCashRows, (row) => row.id);
   const midOrNull = to.mid || null;
+  const now = new Date().toISOString();
   // 候補と全consumerのrenameを同じD1トランザクションで完了させる。
-  await db.batch([
+  // IN() は D1 のバインド上限で割るので文が増えるが、batch は1トランザクションなので
+  // 「一部の明細だけ新しい科目名になる」中途半端な状態にはならない。
+  const statements = [
     db.delete(s.categoryOptions).where(where),
     db.insert(s.categoryOptions).values({ userId, scope: from.scope, major: to.major, mid: to.mid }),
-    db
-      .update(s.txEdits)
-      .set({ categoryMajor: to.major })
-      .where(and(eq(s.txEdits.userId, userId), inArray(s.txEdits.txId, editIds.majorOnly))),
-    db
-      .update(s.txEdits)
-      .set({ categoryMajor: to.major, categoryMid: midOrNull })
-      .where(and(eq(s.txEdits.userId, userId), inArray(s.txEdits.txId, editIds.exact))),
-    db
-      .update(s.rules)
-      .set({ categoryMajor: to.major })
-      .where(and(eq(s.rules.userId, userId), inArray(s.rules.id, ruleIds.majorOnly))),
-    db
-      .update(s.rules)
-      .set({ categoryMajor: to.major, categoryMid: midOrNull })
-      .where(and(eq(s.rules.userId, userId), inArray(s.rules.id, ruleIds.exact))),
-    db
-      .update(s.cashEntries)
-      .set({ categoryMajor: to.major, updatedAt: new Date().toISOString() })
-      .where(and(eq(s.cashEntries.userId, userId), inArray(s.cashEntries.id, cashIds.majorOnly))),
-    db
-      .update(s.cashEntries)
-      .set({ categoryMajor: to.major, categoryMid: to.mid, updatedAt: new Date().toISOString() })
-      .where(and(eq(s.cashEntries.userId, userId), inArray(s.cashEntries.id, cashIds.exact))),
+    ...chunkedIn(editIds.majorOnly, 2, (ids) =>
+      db
+        .update(s.txEdits)
+        .set({ categoryMajor: to.major })
+        .where(and(eq(s.txEdits.userId, userId), inArray(s.txEdits.txId, ids))),
+    ),
+    ...chunkedIn(editIds.exact, 3, (ids) =>
+      db
+        .update(s.txEdits)
+        .set({ categoryMajor: to.major, categoryMid: midOrNull })
+        .where(and(eq(s.txEdits.userId, userId), inArray(s.txEdits.txId, ids))),
+    ),
+    ...chunkedIn(ruleIds.majorOnly, 2, (ids) =>
+      db
+        .update(s.rules)
+        .set({ categoryMajor: to.major })
+        .where(and(eq(s.rules.userId, userId), inArray(s.rules.id, ids))),
+    ),
+    ...chunkedIn(ruleIds.exact, 3, (ids) =>
+      db
+        .update(s.rules)
+        .set({ categoryMajor: to.major, categoryMid: midOrNull })
+        .where(and(eq(s.rules.userId, userId), inArray(s.rules.id, ids))),
+    ),
+    ...chunkedIn(cashIds.majorOnly, 3, (ids) =>
+      db
+        .update(s.cashEntries)
+        .set({ categoryMajor: to.major, updatedAt: now })
+        .where(and(eq(s.cashEntries.userId, userId), inArray(s.cashEntries.id, ids))),
+    ),
+    ...chunkedIn(cashIds.exact, 4, (ids) =>
+      db
+        .update(s.cashEntries)
+        .set({ categoryMajor: to.major, categoryMid: to.mid, updatedAt: now })
+        .where(and(eq(s.cashEntries.userId, userId), inArray(s.cashEntries.id, ids))),
+    ),
     invalidateJsonSnapshotQuery(db, userId, 'tx_edits', 'rules', 'cash_entries'),
-  ]);
+  ];
+  await db.batch(statements as [(typeof statements)[number], ...typeof statements]);
   await recomputeFromDeals(db, userId, affectedCashRows.map(cashFromRow));
   return c.json({ ok: true });
 });

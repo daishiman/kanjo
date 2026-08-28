@@ -26,6 +26,7 @@ import {
   type SummaryResponse,
   api,
 } from '../api.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
 import { PageHeader, PageState, describeError } from '../components/Page.js';
 import { ReportChartView } from '../components/ReportChart.js';
 import { Term, linkTerms } from '../components/Term.js';
@@ -273,39 +274,35 @@ export function AiPage() {
                         過去の{AI_REPORT_TYPE_LABEL[t]}レポート {past.length}件
                       </summary>
                       <div className="scroll-x">
-                        <table className="data ai-table">
-                          <thead>
-                            <tr>
-                              <th>対象期間</th>
-                              <th>作成日</th>
-                              <th>
-                                <Term id="reportVersion" />
-                              </th>
-                              <th>要点</th>
-                              <th />
+                        <DataTable
+                          className="data ai-table"
+                          columns={[
+                            '対象期間',
+                            '作成日',
+                            termColumn('reportVersion'),
+                            '要点',
+                            { label: '', sortable: false },
+                          ]}
+                        >
+                          {past.map((r) => (
+                            <tr key={r.id} className={r.id === openId ? 'selected' : ''}>
+                              <td>{periodText(r.period)}</td>
+                              <td>{dateTime(r.createdAt)}</td>
+                              <td className="num">第{r.version}版</td>
+                              <td className="wrap">{firstLine(r.summary)}</td>
+                              <td>
+                                <button
+                                  type="button"
+                                  className="mini"
+                                  onClick={() => setOpenId(r.id === openId ? null : r.id)}
+                                >
+                                  {r.id === openId ? '閉じる' : '読む'}
+                                </button>{' '}
+                                {reportActions(r)}
+                              </td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {past.map((r) => (
-                              <tr key={r.id} className={r.id === openId ? 'selected' : ''}>
-                                <td>{periodText(r.period)}</td>
-                                <td>{dateTime(r.createdAt)}</td>
-                                <td className="num">第{r.version}版</td>
-                                <td className="wrap">{firstLine(r.summary)}</td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    className="mini"
-                                    onClick={() => setOpenId(r.id === openId ? null : r.id)}
-                                  >
-                                    {r.id === openId ? '閉じる' : '読む'}
-                                  </button>{' '}
-                                  {reportActions(r)}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                          ))}
+                        </DataTable>
                       </div>
                     </details>
                   )}
@@ -625,65 +622,63 @@ export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: 
 
   const rows = (list: AiTaskView[]) => (
     <div className="scroll-x">
-      <table className="data ai-table">
-        <thead>
-          <tr>
-            <th>作成日時</th>
-            <th>対象期間</th>
-            <th>状態</th>
-            <th>コピー</th>
-            <th>うまく送れなかったとき</th>
+      <DataTable
+        className="data ai-table"
+        columns={[
+          '作成日時',
+          '対象期間',
+          '状態',
+          { label: 'コピー', sortable: false },
+          { label: 'うまく送れなかったとき', sortable: false },
+        ]}
+      >
+        {list.map((t) => (
+          <tr key={t.id}>
+            <td>{dateTime(t.createdAt)}</td>
+            <td>
+              {t.label}
+              {t.parentReportId ? '(再分析)' : ''}
+            </td>
+            <td>
+              <span className={STATUS_PILL[t.status].cls}>{STATUS_PILL[t.status].label}</span>
+            </td>
+            <td className="sub">
+              {t.copiedAt
+                ? `${dateTime(t.copiedAt)} / ${t.copiedTarget ? TARGET_LABEL[t.copiedTarget] : '不明'}`
+                : '未コピー'}
+            </td>
+            <td>
+              {t.status === 'done' ? (
+                <span className="sub">—</span>
+              ) : (
+                <>
+                  <button type="button" className="mini" onClick={() => void showData(t.id)}>
+                    データを表示
+                  </button>{' '}
+                  <button
+                    type="button"
+                    className="mini"
+                    onClick={() => {
+                      setPasteFor(pasteFor === t.id ? null : t.id);
+                      setPasteMsg(null);
+                    }}
+                  >
+                    結果を貼り付ける
+                  </button>{' '}
+                  <button
+                    type="button"
+                    className="mini danger"
+                    disabled={cancel.isPending}
+                    onClick={() => confirmCancel(t)}
+                  >
+                    取り消す
+                  </button>
+                </>
+              )}
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {list.map((t) => (
-            <tr key={t.id}>
-              <td>{dateTime(t.createdAt)}</td>
-              <td>
-                {t.label}
-                {t.parentReportId ? '(再分析)' : ''}
-              </td>
-              <td>
-                <span className={STATUS_PILL[t.status].cls}>{STATUS_PILL[t.status].label}</span>
-              </td>
-              <td className="sub">
-                {t.copiedAt
-                  ? `${dateTime(t.copiedAt)} / ${t.copiedTarget ? TARGET_LABEL[t.copiedTarget] : '不明'}`
-                  : '未コピー'}
-              </td>
-              <td>
-                {t.status === 'done' ? (
-                  <span className="sub">—</span>
-                ) : (
-                  <>
-                    <button type="button" className="mini" onClick={() => void showData(t.id)}>
-                      データを表示
-                    </button>{' '}
-                    <button
-                      type="button"
-                      className="mini"
-                      onClick={() => {
-                        setPasteFor(pasteFor === t.id ? null : t.id);
-                        setPasteMsg(null);
-                      }}
-                    >
-                      結果を貼り付ける
-                    </button>{' '}
-                    <button
-                      type="button"
-                      className="mini danger"
-                      disabled={cancel.isPending}
-                      onClick={() => confirmCancel(t)}
-                    >
-                      取り消す
-                    </button>
-                  </>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        ))}
+      </DataTable>
     </div>
   );
 
@@ -900,32 +895,23 @@ function ReportDetail({
           <p className="sub">なし(今のデータで判断できています)</p>
         ) : (
           <div className="scroll-x">
-            <table className="data">
-              <thead>
-                <tr>
-                  <th>足りないもの</th>
-                  <th>アプリでの操作</th>
-                  <th>画面</th>
+            <DataTable columns={['足りないもの', 'アプリでの操作', '画面']}>
+              {b.needs.map((n, i) => (
+                <tr key={`${i}-${n.gap}`}>
+                  <td className="wrap">{n.gap}</td>
+                  <td className="wrap">{n.action}</td>
+                  <td>
+                    {n.screen ? (
+                      <Link to={routeMetadata(n.screen as AppRouteId).path}>
+                        {routeMetadata(n.screen as AppRouteId).label}へ
+                      </Link>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {b.needs.map((n, i) => (
-                  <tr key={`${i}-${n.gap}`}>
-                    <td className="wrap">{n.gap}</td>
-                    <td className="wrap">{n.action}</td>
-                    <td>
-                      {n.screen ? (
-                        <Link to={routeMetadata(n.screen as AppRouteId).path}>
-                          {routeMetadata(n.screen as AppRouteId).label}へ
-                        </Link>
-                      ) : (
-                        ''
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              ))}
+            </DataTable>
           </div>
         )}
         <p className="sub">
@@ -1073,32 +1059,25 @@ function ItemTable({ items }: { items: AiReportItem[] }) {
   if (items.length === 0) return null;
   return (
     <div className="scroll-x">
-      <table className="data ai-table">
-        <thead>
-          <tr>
-            <th>項目</th>
-            <th className="num">金額(円)</th>
-            <th>優先度</th>
-            <th>補足</th>
+      <DataTable
+        className="data ai-table"
+        columns={['項目', { label: '金額(円)', className: 'num' }, '優先度', '補足']}
+      >
+        {items.map((it, i) => (
+          <tr key={`${i}-${it.label}`}>
+            <td className="wrap">{it.label}</td>
+            <td className="num">{it.amount == null ? '—' : yen(it.amount)}</td>
+            <td>
+              {it.priority ? (
+                <span className={PRIORITY[it.priority].cls}>{PRIORITY[it.priority].label}</span>
+              ) : (
+                ''
+              )}
+            </td>
+            <td className="wrap">{it.note}</td>
           </tr>
-        </thead>
-        <tbody>
-          {items.map((it, i) => (
-            <tr key={`${i}-${it.label}`}>
-              <td className="wrap">{it.label}</td>
-              <td className="num">{it.amount == null ? '—' : yen(it.amount)}</td>
-              <td>
-                {it.priority ? (
-                  <span className={PRIORITY[it.priority].cls}>{PRIORITY[it.priority].label}</span>
-                ) : (
-                  ''
-                )}
-              </td>
-              <td className="wrap">{it.note}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        ))}
+      </DataTable>
     </div>
   );
 }

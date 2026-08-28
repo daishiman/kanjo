@@ -20,6 +20,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { type Candidates, type Cls, type SplitsResponse, api } from '../api.js';
 import { yen } from '../format.js';
 import { CategoryPicker } from './CategoryPicker.js';
+import { DataTable } from './DataTable.js';
 import { useInvalidateClassification } from './classification-invalidate.js';
 
 /** 画面で編集している最中の1行。金額と割合の両方を持つ(入力欄の状態そのもの) */
@@ -218,95 +219,93 @@ export function SplitEditor({
       )}
 
       <div className="scroll-x">
-        <table className="data stack-sm">
-          <thead>
-            <tr>
-              <th scope="col">公私</th>
-              <th scope="col">科目</th>
-              <th scope="col">{mode === 'amount' ? '金額' : '割合'}</th>
-              {mode === 'ratio' && <th scope="col">金額</th>}
-              <th scope="col">メモ</th>
-              <th scope="col">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lines.map((l, i) => (
-              <tr key={l.lineId}>
-                <td data-label="公私">
-                  <select
-                    aria-label={`${i + 1}行目の公私`}
-                    value={l.cls}
-                    onChange={(e) => {
-                      // 系統が変わると科目候補も変わるので選び直す
-                      update(l.lineId, { cls: e.target.value as Cls, big: '', mid: '' });
-                    }}
-                  >
-                    <option value="per">個人</option>
-                    <option value="biz">事業</option>
-                  </select>
-                </td>
-                <td data-label="科目">
-                  <CategoryPicker
-                    candidates={candidates}
-                    scope={l.cls}
-                    big={l.big}
-                    mid={l.mid}
-                    onChange={(v) => update(l.lineId, { big: v.big, mid: v.mid })}
-                    hintText={q.data.description}
-                  />
-                </td>
-                <td className="num" data-label={mode === 'amount' ? '金額' : '割合'}>
-                  {mode === 'amount' ? (
-                    <input
-                      type="number"
-                      inputMode="numeric"
-                      aria-label={`${i + 1}行目の金額`}
-                      value={l.amount}
-                      onChange={(e) => update(l.lineId, { amount: e.target.value })}
-                    />
-                  ) : (
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      aria-label={`${i + 1}行目の割合`}
-                      value={l.ratio}
-                      onChange={(e) => update(l.lineId, { ratio: e.target.value })}
-                    />
-                  )}
-                </td>
-                {mode === 'ratio' && (
-                  <td className="num" data-label="金額">
-                    {yen(resolved[i])}
-                  </td>
-                )}
-                <td data-label="メモ">
+        <DataTable
+          className="data stack-sm"
+          columns={[
+            '公私',
+            '科目',
+            mode === 'amount' ? '金額' : '割合',
+            ...(mode === 'ratio' ? ['金額'] : []),
+            'メモ',
+            { label: '操作', sortable: false },
+          ]}
+        >
+          {lines.map((l, i) => (
+            <tr key={l.lineId}>
+              <td data-label="公私">
+                <select
+                  aria-label={`${i + 1}行目の公私`}
+                  value={l.cls}
+                  onChange={(e) => {
+                    // 系統が変わると科目候補も変わるので選び直す
+                    update(l.lineId, { cls: e.target.value as Cls, big: '', mid: '' });
+                  }}
+                >
+                  <option value="per">個人</option>
+                  <option value="biz">事業</option>
+                </select>
+              </td>
+              <td data-label="科目">
+                <CategoryPicker
+                  candidates={candidates}
+                  scope={l.cls}
+                  big={l.big}
+                  mid={l.mid}
+                  onChange={(v) => update(l.lineId, { big: v.big, mid: v.mid })}
+                  hintText={q.data.description}
+                />
+              </td>
+              <td className="num" data-label={mode === 'amount' ? '金額' : '割合'}>
+                {mode === 'amount' ? (
                   <input
-                    type="text"
-                    aria-label={`${i + 1}行目のメモ`}
-                    value={l.memo}
-                    maxLength={q.data.constraints.memoMaxLength}
-                    onChange={(e) => update(l.lineId, { memo: e.target.value })}
+                    type="number"
+                    inputMode="numeric"
+                    aria-label={`${i + 1}行目の金額`}
+                    value={l.amount}
+                    onChange={(e) => update(l.lineId, { amount: e.target.value })}
                   />
+                ) : (
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    aria-label={`${i + 1}行目の割合`}
+                    value={l.ratio}
+                    onChange={(e) => update(l.lineId, { ratio: e.target.value })}
+                  />
+                )}
+              </td>
+              {mode === 'ratio' && (
+                <td className="num" data-label="金額">
+                  {yen(resolved[i])}
                 </td>
-                <td data-label="操作">
-                  {mode === 'amount' && (
-                    <button type="button" className="mini" onClick={() => fillRest(l.lineId)}>
-                      残りを入れる
-                    </button>
-                  )}{' '}
-                  <button
-                    type="button"
-                    className="mini"
-                    disabled={lines.length <= q.data.constraints.minLines}
-                    onClick={() => setLines((prev) => prev.filter((o) => o.lineId !== l.lineId))}
-                  >
-                    この行を消す
+              )}
+              <td data-label="メモ">
+                <input
+                  type="text"
+                  aria-label={`${i + 1}行目のメモ`}
+                  value={l.memo}
+                  maxLength={q.data.constraints.memoMaxLength}
+                  onChange={(e) => update(l.lineId, { memo: e.target.value })}
+                />
+              </td>
+              <td data-label="操作">
+                {mode === 'amount' && (
+                  <button type="button" className="mini" onClick={() => fillRest(l.lineId)}>
+                    残りを入れる
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                )}{' '}
+                <button
+                  type="button"
+                  className="mini"
+                  disabled={lines.length <= q.data.constraints.minLines}
+                  onClick={() => setLines((prev) => prev.filter((o) => o.lineId !== l.lineId))}
+                >
+                  この行を消す
+                </button>
+              </td>
+            </tr>
+          ))}
+        </DataTable>
       </div>
 
       <p className={`notice ${rest === 0 ? 'info' : 'warn'} lines`}>

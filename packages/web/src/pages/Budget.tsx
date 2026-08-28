@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type BudgetOutlook, type BudgetRow, api } from '../api.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { yen, yenS } from '../format.js';
@@ -137,55 +138,50 @@ export function BudgetPage() {
       </div>
 
       <div className="card scroll-x">
-        <table className="data">
-          <thead>
-            <tr>
-              <th>科目</th>
-              <th>
-                <Term id="classification" />
-              </th>
-              <th>直近3ヶ月平均</th>
-              <th>月次予算</th>
-              <th>差異(実績−予算)</th>
-              <th>判定</th>
+        <DataTable
+          columns={[
+            '科目',
+            termColumn('classification'),
+            '直近3ヶ月平均',
+            '月次予算',
+            '差異(実績−予算)',
+            '判定',
+          ]}
+        >
+          {view.map((r) => (
+            <tr key={r.account}>
+              <td>{r.account}</td>
+              <td>
+                <span className="pill neutral">{r.type}</span>
+              </td>
+              <td className="num">{yen(r.recentAvg)}</td>
+              <td>
+                <input
+                  className="num-input"
+                  type="number"
+                  min={0}
+                  step={1000}
+                  value={valOf(r)}
+                  placeholder="未設定"
+                  onChange={(e) => {
+                    setDraft((d) => ({ ...d, [r.account]: e.target.value }));
+                    setDirty(true);
+                  }}
+                />
+              </td>
+              <td className={`num ${r.diff != null && r.diff > 0 ? 'pos' : r.diff != null ? 'neg' : ''}`}>
+                {r.diff != null ? yenS(r.diff) : '—'}
+              </td>
+              <td>
+                {r.judge ? (
+                  <span className={judgePill[r.judge]}>{r.judge}</span>
+                ) : (
+                  <span className="sub">未設定</span>
+                )}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {view.map((r) => (
-              <tr key={r.account}>
-                <td>{r.account}</td>
-                <td>
-                  <span className="pill neutral">{r.type}</span>
-                </td>
-                <td className="num">{yen(r.recentAvg)}</td>
-                <td>
-                  <input
-                    className="num-input"
-                    type="number"
-                    min={0}
-                    step={1000}
-                    value={valOf(r)}
-                    placeholder="未設定"
-                    onChange={(e) => {
-                      setDraft((d) => ({ ...d, [r.account]: e.target.value }));
-                      setDirty(true);
-                    }}
-                  />
-                </td>
-                <td className={`num ${r.diff != null && r.diff > 0 ? 'pos' : r.diff != null ? 'neg' : ''}`}>
-                  {r.diff != null ? yenS(r.diff) : '—'}
-                </td>
-                <td>
-                  {r.judge ? (
-                    <span className={judgePill[r.judge]}>{r.judge}</span>
-                  ) : (
-                    <span className="sub">未設定</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       </div>
 
       <AnnualOutlook outlook={q.data.outlook} draft={draft} />
@@ -231,49 +227,10 @@ function AnnualOutlook({
         着地見込み = 実績累計 + 直近3ヶ月平均 × 残り月数。年平均ではなく直近平均で伸ばすので、年の途中で
         単価や契約が変わった科目もいまの水準で見えます。未記帳月は実績にも残り月数にも数えません。
       </p>
-      <table className="data stack-sm">
-        <thead>
-          <tr>
-            <th>科目</th>
-            <th>実績累計</th>
-            <th>直近3ヶ月平均</th>
-            <th>着地見込み</th>
-            <th>年間予算</th>
-            <th>差異(着地−予算)</th>
-            <th>判定</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.account}>
-              <td data-label="科目">{r.account}</td>
-              <td className="num" data-label="実績累計">
-                {yen(r.ytd)}
-              </td>
-              <td className="num" data-label="直近3ヶ月平均">
-                {yen(r.recentAvg)}
-              </td>
-              <td className="num" data-label="着地見込み">
-                {yen(r.landing)}
-              </td>
-              <td className="num" data-label="年間予算">
-                {r.annualBudget != null ? yen(r.annualBudget) : '—'}
-              </td>
-              <td
-                className={`num ${r.diff != null && r.diff > 0 ? 'pos' : r.diff != null ? 'neg' : ''}`}
-                data-label="差異(着地−予算)"
-              >
-                {r.diff != null ? yenS(r.diff) : '—'}
-              </td>
-              <td data-label="判定">
-                {r.judge ? (
-                  <span className={judgePill[r.judge]}>{r.judge}</span>
-                ) : (
-                  <span className="sub">未設定</span>
-                )}
-              </td>
-            </tr>
-          ))}
+      <DataTable
+        className="data stack-sm"
+        columns={['科目', '実績累計', '直近3ヶ月平均', '着地見込み', '年間予算', '差異(着地−予算)', '判定']}
+        foot={
           <tr className="total">
             <td data-label="科目">合計(予算設定済み)</td>
             <td className="num" data-label="実績累計">
@@ -291,8 +248,39 @@ function AnnualOutlook({
             </td>
             <td data-label="判定" />
           </tr>
-        </tbody>
-      </table>
+        }
+      >
+        {rows.map((r) => (
+          <tr key={r.account}>
+            <td data-label="科目">{r.account}</td>
+            <td className="num" data-label="実績累計">
+              {yen(r.ytd)}
+            </td>
+            <td className="num" data-label="直近3ヶ月平均">
+              {yen(r.recentAvg)}
+            </td>
+            <td className="num" data-label="着地見込み">
+              {yen(r.landing)}
+            </td>
+            <td className="num" data-label="年間予算">
+              {r.annualBudget != null ? yen(r.annualBudget) : '—'}
+            </td>
+            <td
+              className={`num ${r.diff != null && r.diff > 0 ? 'pos' : r.diff != null ? 'neg' : ''}`}
+              data-label="差異(着地−予算)"
+            >
+              {r.diff != null ? yenS(r.diff) : '—'}
+            </td>
+            <td data-label="判定">
+              {r.judge ? (
+                <span className={judgePill[r.judge]}>{r.judge}</span>
+              ) : (
+                <span className="sub">未設定</span>
+              )}
+            </td>
+          </tr>
+        ))}
+      </DataTable>
     </div>
   );
 }

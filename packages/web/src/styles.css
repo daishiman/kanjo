@@ -550,6 +550,11 @@ table.data th {
   color: var(--ink-soft);
   font-weight: 700;
 }
+/* 見出しも折り返さない。列名が2行に割れると、どこまでが1列の名前か分からなくなる。
+   用語ヘルプ(?)を伴う見出しは、名前とヘルプが離れて別行に落ちるのを防ぐ意味もある */
+table.data thead th {
+  white-space: nowrap;
+}
 /* 見出し行の固定は「安全側が既定」。既定は上端 0 とし、ページと一緒にスクロールする置き方
    (.card の直下で overflow を持つ祖先が無い表)だけページヘッダー分(--header-h)を空ける。
    overflow を持つ要素(.scroll-x 等)が祖先にあると sticky の基準がその要素になり、
@@ -562,6 +567,64 @@ table.data thead th {
 }
 .card:not(.scroll-x) > table.data thead th {
   top: var(--header-h);
+}
+/*
+ * 並べ替えの見出し。見出し全体を押せるようにするため button を敷き詰める。
+ * 押せることは矢印で示す: 普段は薄く出しておき(押せると分かる)、効いている列だけ濃くする。
+ * 矢印を hover でしか出さないと、触って確かめるまで並べ替えられると分からない。
+ */
+table.data thead th:has(> .th-sort) {
+  padding: 0;
+}
+.th-sort {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+.th-sort:hover {
+  background: var(--surface-2, rgba(0, 0, 0, 0.04));
+}
+/*
+ * 用語ヘルプ(?)の付く見出し。ヘルプは並べ替えボタンの外に置くので(ボタンの中にボタンは置けない)、
+ * ボタンを見出し全体に敷き詰めたままだとヘルプが次の行へ落ちる。ここだけ内容幅にして横に並べる。
+ */
+table.data thead th:has(> .term) {
+  padding: 4px 8px;
+}
+table.data thead th:has(> .term) > .th-sort {
+  display: inline-flex;
+  width: auto;
+  padding: 4px 2px 4px 0;
+}
+/* 数値列は右寄せなので、矢印が数字の右に付くよう見出しも寄せる */
+table.data thead th.num .th-sort {
+  justify-content: flex-end;
+}
+/*
+ * 矢印は CSS で描く。文字として置くと見出しの文言が「金額▲」になり、
+ * 読み上げも、data-label で見出しを引くモバイル表示も、見出しを照合するテストも巻き込む。
+ * 向きは th の aria-sort から取る(表示と読み上げで別の情報源を持たない)。
+ */
+.th-sort::after {
+  content: "▲";
+  font-size: 9px;
+  line-height: 1;
+  opacity: 0.25;
+}
+th[aria-sort] .th-sort::after {
+  opacity: 1;
+  color: var(--accent, #2f5da8);
+}
+th[aria-sort="descending"] .th-sort::after {
+  content: "▼";
 }
 /*
  * 横に長い表は、罫線だけだと目線が1行ぶんずれる。1行おきに薄く敷いて帯として追わせる。
@@ -587,6 +650,14 @@ table.data tbody th {
 }
 table.data th:first-child,
 table.data td:first-child {
+  text-align: left;
+  /* 1列目は行の見出し。「外/注/費」のように1文字ずつ縦へ折り返すと、行が何の行か読めなくなる。
+     折り返さない代わりに表が横へ伸びるので、列の多い表は .scroll-x で包む(下の注記) */
+  white-space: nowrap;
+}
+/* 数値でない列を明示的に左寄せする(既定は右寄せ) */
+table.data th.left,
+table.data td.left {
   text-align: left;
 }
 /* 特別な行は縞より優先する。塗りは --row-bg に入れて、固定した先頭列とも色を合わせる */
@@ -634,8 +705,11 @@ table.data th.stmt-account {
 .scroll-x {
   overflow: auto;
   max-height: var(--table-max-h);
-  /* iOSで箱の中のスクロールが親へ伝播して、ページごと動くのを止める */
-  overscroll-behavior: contain;
+  /* 横は箱の中で止める。iOSで左右のはみ出しが親へ伝わると、ページごと横に持っていかれるため。
+     縦は既定(auto)のまま伝える: 表の下端まで読んだらそのままページが続けて動いてほしい。
+     ここを contain にすると、表の上にマウスがある限りページが一切動かず、
+     読み進めるたびに表の外へマウスを逃がす必要が出る。 */
+  overscroll-behavior-x: contain;
 }
 /*
  * 横スクロールに任せる表は、列を詰めるより表自体を伸ばす。

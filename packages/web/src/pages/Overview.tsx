@@ -4,6 +4,7 @@ import { Chart as ChartJS } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type DefenseForecast, type SummaryResponse, api } from '../api.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
@@ -222,26 +223,15 @@ export function OverviewPage() {
         </h2>
         <HowTo id="overviewPareto" />
         <div className="scroll-x">
-          <table className="data">
-            <thead>
-              <tr>
-                <th>科目</th>
-                <th>累計額</th>
-                <th>
-                  <Term id="pareto" />
-                </th>
+          <DataTable columns={['科目', '累計額', termColumn('pareto')]}>
+            {ov.pareto.map((r) => (
+              <tr key={r.account} style={r.cumShare <= 0.82 ? { fontWeight: 700 } : undefined}>
+                <td>{r.account}</td>
+                <td className="num">{yen(r.total)}</td>
+                <td className="num">{(r.cumShare * 100).toFixed(1)}%</td>
               </tr>
-            </thead>
-            <tbody>
-              {ov.pareto.map((r) => (
-                <tr key={r.account} style={r.cumShare <= 0.82 ? { fontWeight: 700 } : undefined}>
-                  <td>{r.account}</td>
-                  <td className="num">{yen(r.total)}</td>
-                  <td className="num">{(r.cumShare * 100).toFixed(1)}%</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </DataTable>
         </div>
         <p className="sub">
           上位2科目で全体の {(ov.top2Share * 100).toFixed(0)}%。82%以内(太字)が管理の主戦場。
