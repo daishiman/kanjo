@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import * as XLSX from 'xlsx';
-import { describeUnknownFormat, parseUpload } from './import-pipeline.js';
+import {
+  describeUnknownFormat,
+  importCountSummary,
+  legacyImportCountAliases,
+  parseUpload,
+} from './import-pipeline.js';
 
 describe('describeUnknownFormat: 読めないファイルの理由を言葉で返す', () => {
   it('MFの振替ファイル(本番で実際に失敗した形式)を名指しする', () => {
@@ -57,5 +62,31 @@ describe('MF IDの永続同一性', () => {
         reason: 'IDがcash:で始まる明細があるため取り込めません。現金記帳と衝突しないIDで再出力してください',
       },
     ]);
+  });
+
+  it('解析行・ID重複整理後の保存行・集計対象外・保存不能を混同しない', () => {
+    const csv = [
+      '計算対象,日付,金額,大項目,中項目,振替,内容,ID',
+      '0,2026/08/01,-100,架空費,旧値,0,架空旧値,shared-id',
+      '1,2026/08/02,-200,架空費,新値,0,架空新値,shared-id',
+      '1,2026/08/03,-300,架空費,振替,1,架空振替,transfer-id',
+      '1,日付不明,-400,架空費,不正,0,架空不正,rejected-id',
+    ].join('\n');
+    const [unit] = parseUpload('anonymous-counts.csv', new TextEncoder().encode(csv), {});
+
+    expect(unit).toMatchObject({
+      kind: 'mf',
+      rows: 3,
+      skipped: 1,
+      duplicateIds: 1,
+    });
+    expect(unit && importCountSummary(unit)).toEqual({
+      parsed: 3,
+      stored: 2,
+      countable: 1,
+      nonCountable: 1,
+      rejected: 1,
+    });
+    expect(unit && legacyImportCountAliases(unit)).toEqual({ rows: 1, skipped: 3 });
   });
 });

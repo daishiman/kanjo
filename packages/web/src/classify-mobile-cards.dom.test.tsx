@@ -63,6 +63,7 @@ const response = (transactions: TxRow[]): TransactionsResponse => ({
     editedCount: 0,
     conflictCount: 0,
     noInstitutionCount: 0,
+    nonCountableCount: 0,
   },
   transactions,
   candidates: { biz: [], per: [] } as unknown as TransactionsResponse['candidates'],

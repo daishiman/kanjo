@@ -37,10 +37,31 @@ export type MfPersistedRow = readonly [
   categoryMajor: string,
   categoryMid: string,
   institution: string | null,
+  memo: string | null,
+  isTarget: 0 | 1,
+  isTransfer: 0 | 1,
 ];
 
 /** 添付の同一性判定を含むD1保存行。指紋とcommitで共有する。 */
 export type MfPersistedIdentityRow = readonly [...MfPersistedRow, identityStable: 0 | 1];
+
+/** MfPersistedRowと必ず同じ順序で使うD1列。 */
+export const MF_PERSISTED_COLUMNS = [
+  'tx_id',
+  'month',
+  'date',
+  'description',
+  'amount',
+  'category_major',
+  'category_mid',
+  'institution',
+  'memo',
+  'is_target',
+  'is_transfer',
+] as const;
+
+/** MfPersistedIdentityRowと必ず同じ順序で使うD1列。 */
+export const MF_PERSISTED_IDENTITY_COLUMNS = [...MF_PERSISTED_COLUMNS, 'identity_stable'] as const;
 
 /** slash/hyphen双方を一度ここでMM/DDへ正規化する。 */
 export function normalizeMfDisplayDate(raw: string, month: string): string {
@@ -77,6 +98,10 @@ export const mfPersistedRow = (tx: MfTx): MfPersistedRow => [
   tx.big,
   tx.mid,
   tx.inst ?? null,
+  tx.memo ?? null,
+  // 旧データのundefinedは従来どおり「計算対象・非振替」として保存する。
+  tx.isTarget === false ? 0 : 1,
+  tx.isTransfer === true ? 1 : 0,
 ];
 
 export const mfPersistedIdentityRow = (tx: MfTx): MfPersistedIdentityRow => [

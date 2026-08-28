@@ -5,6 +5,7 @@
       "node_modules",
       "dist",
       "build",
+      "data",
       ".wrangler",
       "aidd-agent-kit",
       ".claude",
@@ -12,7 +13,11 @@
       ".agents",
       ".artifact-delivery",
       "eval-log",
+      ".dev-graph",
+      "architecture",
+      "system-spec",
       "packages/api/worker-configuration.d.ts",
+      "packages/core/test/__tmp-*",
       "skills/run-kanjo-accounting-report/references/chart-catalog.json"
     ]
   },

@@ -1,0 +1,1197 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>D1 schema recovery · task specifications</title><style>:root{color-scheme:light;--ink:#222532;--muted:#65697a;--paper:#f6f3ec;--panel:#fffdf8;--line:#ddd7ca;--navy:#24334a;--red:#9b3042;--blue:#376b8c}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.75 system-ui,-apple-system,"Noto Sans JP",sans-serif}a{color:var(--blue)}code{background:#eee9df;border-radius:5px;padding:.05em .35em;overflow-wrap:anywhere}.layout{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--navy);padding:20px 14px}.side a{display:block;color:#e7edf1;text-decoration:none;padding:5px 9px;border-radius:7px}.side a:hover{background:#ffffff18}main{width:min(960px,100%);margin:auto;padding:34px clamp(18px,4vw,54px)}article,.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:clamp(18px,4vw,34px);margin:0 0 28px;box-shadow:0 8px 24px #34313a0b}h1{line-height:1.2}h2{font-size:1.55rem;border-bottom:2px solid var(--line);padding-bottom:.25em;margin-top:.2em}h3{font-size:1.16rem;margin-top:1.7em}.source,.muted{color:var(--muted)}.blocked{border-left:6px solid var(--red);background:#f7e8eb;padding:12px 16px;border-radius:8px}.pager{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:18px;margin-top:30px}table{width:100%;border-collapse:collapse}th,td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:.8rem;color:var(--muted)}.state{color:var(--red);font-weight:700}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}.metric strong{display:block;font-size:1.8rem}.flow{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0}.flow li{background:#f4e0e3;border:1px solid #d8aab2;border-radius:999px;padding:5px 10px}.flow li:not(:last-child)::after{content:" →";margin-left:8px;color:var(--muted)}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#262735;color:#f4f1e9;padding:18px;border-radius:12px}@media(max-width:760px){.layout{display:block}.side{position:static;height:auto;max-height:260px}.metrics{grid-template-columns:1fr 1fr}}@media print{.side{display:none}.layout{display:block}body{background:#fff}article,.panel{box-shadow:none}}</style></head><body><div class="layout"><nav class="side"><a href="#index"><strong>タスク仕様一覧</strong></a><a href="plan-structure-report.html">構造レポート</a><a href="#task-phase-01-requirements">phase-01-requirements</a><a href="#task-phase-02-architecture">phase-02-architecture</a><a href="#task-phase-03-design-review">phase-03-design-review</a><a href="#task-phase-04-test-design">phase-04-test-design</a><a href="#task-phase-05-implementation">phase-05-implementation</a><a href="#task-phase-06-test-run">phase-06-test-run</a><a href="#task-phase-07-acceptance">phase-07-acceptance</a><a href="#task-phase-08-refactoring-migration">phase-08-refactoring-migration</a><a href="#task-phase-09-quality-assurance">phase-09-quality-assurance</a><a href="#task-phase-10-final-review">phase-10-final-review</a><a href="#task-phase-11-evidence">phase-11-evidence</a><a href="#task-phase-12-documentation-operations">phase-12-documentation-operations</a><a href="#task-phase-13-release-deploy">phase-13-release-deploy</a></nav><main><section id="index" class="panel"><h1>D1 schema recovery · task specifications</h1><p class="blocked"><strong>Blocked:</strong> system-spec completeness が FAIL の間、全13 taskは実装・promotionへ進めません。</p><p class="muted">task-specs/*.mdから決定論的に再生成した派生ビューです。監査ではMarkdown原本を使用してください。</p></section><article id="task-phase-01-requirements"><header><p class="source">phase-01-requirements.md · blocked until completeness PASS</p></header><h2>System task overlay: 復旧要件のベースライン確定</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P01 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P01.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>本番 D1 の未適用マイグレーション一覧、保全対象テーブル、成功判定基準の三つが観測値として確定し、以降の全 phase がこの baseline だけを参照して進める状態。</p>
+<h3>背景</h3>
+<p>取込と取込履歴が同時に 500 を返す原因は、本番 d1_migrations の記録が 0005 で止まり 0006 以降が未適用であることにある。復旧作業の各手順が何をもって完了とするかを先に固定しないと、部分適用や取りこぼしを成功と誤認する余地が残る。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: system-spec completeness が PASS であること。PASS 前は本 task を含む実装 phase へ進まない。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: 該当。本番 D1 のスキーマ適用と行数保全を扱う。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: N/A: 適用前後の検証と受入判定を扱うため本 task では扱わない。</li>
+<li>Documentation: 該当。復旧 runbook と証跡の整備を扱う。</li>
+<li>Operations: N/A: 本番適用の実行と事後観察を扱うため本 task では扱わない。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: 作業開始時の remote list、repository head / ordered migrations digest、remote applied head、ordered pending files、保全対象、成功判定を持つ incident baseline を作成する。事故時の 0006〜0014 は履歴情報であり、適用対象の上限には使わない。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-01-remote-baseline.json</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>マイグレーションファイル自体の内容変更。スキーマの再設計。本番への書込みを伴う一切の操作。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: wrangler d1 migrations list kanjo-db --remote の出力を作業記録へ転記し未適用ファイル名を確定する / リポジトリの migrations ディレクトリのファイル一覧と突き合わせ、欠落と余剰が無いことを確認する</li>
+<li>Required evidence: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-01-remote-baseline.json</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: 読み取り専用 baseline を記録するだけで、稼働中システムへの影響は無い。</li>
+<li>Rollback trigger and steps: baseline は読み取りのみで本番状態を変えないため、記録を破棄して再取得すれば戻せる。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec/completeness-findings.json が PASS へ再評価され、参照元の implementation_readiness の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P01 (requirements)</li>
+<li>Dependencies: task-graph node なし (本 package の起点)</li>
+<li>Secondary workstreams: data</li>
+</ul><nav class="pager"><a href="#index">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-02-architecture">次へ →</a></nav></article>
+<article id="task-phase-02-architecture"><header><p class="source">phase-02-architecture.md · blocked until completeness PASS</p></header><h2>System task overlay: 適用順序と不変条件の設計</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P02 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P02.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>未適用マイグレーションを連番順に逐次適用する手順と、その間に守るべき不変条件 (部分適用の禁止・順序逸脱の禁止・手書き DDL の禁止) が設計として確定している状態。</p>
+<h3>背景</h3>
+<p>D1 の migrations 機構は d1_migrations テーブルの記録と migrations ディレクトリの差分を連番順に適用する。途中で失敗した場合にどこまで進んだかを記録から読み取れる設計にしておかないと、再実行が安全に行えない。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P01 の baseline が確定していること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: 該当。本番 D1 のスキーマ適用と行数保全を扱う。</li>
+<li>Infrastructure: 該当。既存の D1 と wrangler 設定を前提とし構成変更を伴わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: N/A: 適用前後の検証と受入判定を扱うため本 task では扱わない。</li>
+<li>Documentation: N/A: 復旧 runbook と証跡の整備を扱うため本 task では扱わない。</li>
+<li>Operations: N/A: 本番適用の実行と事後観察を扱うため本 task では扱わない。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: arch-d1-schema-lifecycle の承認済み pending manifest、不変条件、失敗時の再開判定を read-only で確認し、task completion evidence に合否だけを記録する。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: なし (read-only gate)</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>マイグレーション内容の再設計。適用の自動化。CI への検査ゲート追加 (別 feature が所有)。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: 設計節が連番順の逐次適用のみを許し、部分適用と順序逸脱と手書き DDL を明示的に禁止していることを確認する / 失敗時にどのファイルまで適用済みかを d1_migrations の記録から判定する手順が書かれていることを確認する</li>
+<li>Required evidence: P01 baseline と architecture/arch-d1-schema-lifecycle.md の参照結果</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: 読み取り専用 gate のため変更なし。</li>
+<li>Rollback trigger and steps: 設計節の記述を前版へ戻す。本番状態には触れていないため副作用は無い。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P01 baseline が存在し、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P02 (architecture)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P01 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: infrastructure</li>
+</ul><nav class="pager"><a href="#task-phase-01-requirements">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-03-design-review">次へ →</a></nav></article>
+<article id="task-phase-03-design-review"><header><p class="source">phase-03-design-review.md · blocked until completeness PASS</p></header><h2>System task overlay: 復旧設計の独立レビュー</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P03 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P03.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>P02 の設計が、データ保全と権限境界の両方を破らないことを、設計者とは独立した観点で確認し終えている状態。</p>
+<h3>背景</h3>
+<p>復旧作業は不可逆な操作を含む。設計した本人が手順の妥当性を判定すると、保全の抜けと権限境界の逸脱が同時に見落とされやすい。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P02 の設計節が確定していること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: N/A: 本番 D1 のスキーマ適用と行数保全を扱うため本 task では扱わない。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: 該当。本番全件ダンプの取扱いとログ非出力方針の遵守を扱う。</li>
+<li>Quality: 該当。適用前後の検証と受入判定を扱う。</li>
+<li>Documentation: N/A: 復旧 runbook と証跡の整備を扱うため本 task では扱わない。</li>
+<li>Operations: N/A: 本番適用の実行と事後観察を扱うため本 task では扱わない。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: 設計レビューの指摘と対応結果を phase 固有 evidence として記録する。runbook/script は変更しない。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-03-design-review.md</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>設計の全面的な作り直し。本番での試行によるレビュー。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: バックアップ取得が適用より前に置かれ、省略できない手順として書かれているかを確認する / 本番への書込みコマンドが手順書のうちユーザー実行と明示された箇所にのみ存在することを確認する / 手順中の出力例に明細内容と金額が含まれていないことを確認する</li>
+<li>Required evidence: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-03-design-review.md</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: phase 固有 evidence の追加のみ。</li>
+<li>Rollback trigger and steps: レビュー節の記述を差し戻す。本番状態には影響しない。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P02 gate が合格し、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P03 (design-review)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P02 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: security</li>
+</ul><nav class="pager"><a href="#task-phase-02-architecture">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-04-test-design">次へ →</a></nav></article>
+<article id="task-phase-04-test-design"><header><p class="source">phase-04-test-design.md · blocked until completeness PASS</p></header><h2>System task overlay: 行数突合と動作確認の検証設計</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P04 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P04.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>適用前後で何をどう比較すれば「データが失われていない」と言えるかが、実行可能な検証手順として確定している状態。</p>
+<h3>背景</h3>
+<p>成功基準にデータ喪失ゼロを掲げても、比較対象と判定式が曖昧なら合否を判定できない。適用前に基準値を取得しておかないと後から比較できない点も設計に織り込む必要がある。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P01 の保全対象テーブル一覧が確定していること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: 該当。本番 D1 のスキーマ適用と行数保全を扱う。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: 該当。適用前後の検証と受入判定を扱う。</li>
+<li>Documentation: N/A: 復旧 runbook と証跡の整備を扱うため本 task では扱わない。</li>
+<li>Operations: N/A: 本番適用の実行と事後観察を扱うため本 task では扱わない。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: 行数突合スクリプトの仕様と、取込および取込履歴の動作確認契約を phase 固有 evidence に記す。runbook/script は変更しない。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-04-verification-design.md</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>性能試験。負荷試験。本番データの内容そのものの検査。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: 突合対象テーブルが保全対象一覧と一致していることを確認する / 判定式が行数の非減少であり、増加を異常としないことを確認する / 取込と取込履歴の動作確認が応答コードのみで判定でき、明細内容を参照しないことを確認する</li>
+<li>Required evidence: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-04-verification-design.md</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: phase 固有 evidence の追加のみ。</li>
+<li>Rollback trigger and steps: 検証設計節を差し戻す。本番状態には影響しない。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P01 baseline が存在し、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P04 (test-design)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P03 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: data</li>
+</ul><nav class="pager"><a href="#task-phase-03-design-review">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-05-implementation">次へ →</a></nav></article>
+<article id="task-phase-05-implementation"><header><p class="source">phase-05-implementation.md · blocked until completeness PASS</p></header><h2>System task overlay: 復旧手順書と突合スクリプトの作成</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P05 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P05.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>恒久手順の SSOT へ迷わず到達できる薄い incident checklist と、行数突合を機械的に行うスクリプトが揃い、本番以外の環境で検証可能になっている状態。</p>
+<h3>背景</h3>
+<p>復旧の実行主体はユーザーである。通常手順は <code>docs/ci-cd-operations.md</code> に一元化し、incident checklist は固有値と証跡リンクだけを扱う。突合を目視に頼ると、テーブル数が増えたときに見落とす。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P02 の設計節と P04 の検証設計節が確定していること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: 該当。本番 D1 のスキーマ適用と行数保全を扱う。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: N/A: 適用前後の検証と受入判定を扱うため本 task では扱わない。</li>
+<li>Documentation: 該当。復旧 runbook と証跡の整備を扱う。</li>
+<li>Operations: 該当。本番適用の実行と事後観察を扱う。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: 復旧runbookと行数突合スクリプトを作成する本 package 唯一の writer。runbook は <code>docs/ci-cd-operations.md</code> を恒久 policy/通常手順の SSOT として参照し、incident baseline・承認済み pending manifest・行数突合・証跡へのリンクだけを持つ薄い checklist とする。両者とも本番への書込みを自動実行しない。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: docs/runbooks/prod-d1-schema-recovery.md および docs/runbooks/scripts/reconcile-row-counts.sh</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>本番への適用の実施。CI からの自動実行。バックアップの自動削除。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: runbook が SSOT・baseline・manifest・行数突合・証跡のリンク以外の通常手順を複製していないことを確認する / 突合スクリプトをローカル D1 に対して実行し、非ゼロ終了が期待どおり起きることを確認する / スクリプトの出力に明細内容と金額が含まれないことを確認する</li>
+<li>Required evidence: runbook が docs/ci-cd-operations.md を参照し通常手順を複製していないこと、および突合スクリプトのローカル検査結果</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: リポジトリへ手順書とスクリプトを追加するのみ。稼働中システムへの影響は無い。</li>
+<li>Rollback trigger and steps: version history で手順書とスクリプトを前版へ戻す。本番状態には影響しない。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P02/P04 の契約が確定し、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P05 (implementation)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P04 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: data、operations</li>
+</ul><nav class="pager"><a href="#task-phase-04-test-design">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-06-test-run">次へ →</a></nav></article>
+<article id="task-phase-06-test-run"><header><p class="source">phase-06-test-run.md · blocked until completeness PASS</p></header><h2>System task overlay: ローカル環境での適用予行</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P06 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P06.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>本番と同じ連番のマイグレーションをローカル D1 に対して適用し、手順書と突合スクリプトが想定どおり動くことを確認し終えている状態。</p>
+<h3>背景</h3>
+<p>本番で初めて手順を試すと、手順の誤りがそのままデータへの不可逆な影響になる。ローカルで一度通しておくことで、手順の欠落とコマンドの誤りを本番前に除ける。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P05 の手順書と突合スクリプトが存在すること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: 該当。本番 D1 のスキーマ適用と行数保全を扱う。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: 該当。適用前後の検証と受入判定を扱う。</li>
+<li>Documentation: N/A: 復旧 runbook と証跡の整備を扱うため本 task では扱わない。</li>
+<li>Operations: N/A: 本番適用の実行と事後観察を扱うため本 task では扱わない。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: 予行の実行ログと検出した不備を phase 固有 evidence に記録する。runbook/script の修正が必要なら唯一writerの P05 へ差し戻す。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-06-local-rehearsal.md</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>本番環境での実行。性能測定。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: ローカル D1 に対して migrations apply を実行し、全マイグレーションが連番順に適用されることを確認する / 適用後に取込と取込履歴の経路が正常応答を返すことをローカルで確認する / 突合スクリプトを適用前後で実行し、行数の非減少判定が機能することを確認する</li>
+<li>Required evidence: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-06-local-rehearsal.md</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: ローカル環境のみで完結する。</li>
+<li>Rollback trigger and steps: ローカル D1 を初期化して再作成する。本番状態には影響しない。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P05 の成果物が存在し、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P06 (test-run)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P05 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: data</li>
+</ul><nav class="pager"><a href="#task-phase-05-implementation">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-07-acceptance">次へ →</a></nav></article>
+<article id="task-phase-07-acceptance"><header><p class="source">phase-07-acceptance.md · blocked until completeness PASS</p></header><h2>System task overlay: 本番適用の受入判定</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P07 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P07.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>ユーザーが本番へ適用を実施し、未適用 0 件・行数非減少・取込および取込履歴の正常応答という三つの合格条件がすべて観測値で確認されている状態。</p>
+<h3>背景</h3>
+<p>本 feature の価値は本番の稼働回復そのものにある。適用コマンドの実行権限はユーザーが保持するという決定に従い、本 task は手順の提示と結果の検証を担い、適用の実行そのものは担わない。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P06 の予行が合格し、適用直前の全件エクスポートが取得済みであること。remote list と repository head / ordered migrations digest を再取得し、P01 baseline から変化していれば承認せず P01 へ差し戻すこと。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: 該当。本番 D1 のスキーマ適用と行数保全を扱う。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: N/A: 適用前後の検証と受入判定を扱うため本 task では扱わない。</li>
+<li>Documentation: N/A: 復旧 runbook と証跡の整備を扱うため本 task では扱わない。</li>
+<li>Operations: 該当。本番適用の実行と事後観察を扱う。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: repository head / ordered migrations digest、remote applied head、ordered pending files、captured_at、approved_at を持つ人間承認済み manifest と、適用後の受入記録を phase 固有 evidence として残す。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-07-approved-pending-manifest.json および .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-07-acceptance.md</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>適用コマンドの代行実行。合格条件を満たさない状態での受入。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: 適用直前に remote list と repository head / ordered migrations digest を再取得し承認済み manifest と一致することを確認する / 適用後に migrations list を実行し未適用件数が 0 であることを確認する / 突合スクリプトを実行し主要テーブルの行数が基準値から減少していないことを確認する / 取込と取込履歴の経路が本番で正常応答を返すことを確認する</li>
+<li>Required evidence: 人間承認済み manifest、Migrate 実行記録、適用後の remote list、行数突合、動作確認</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: ユーザーが承認済み manifest を確認して Migrate を <code>APPLY</code> で実行する。Deploy は適用しない。manifest の remote list または repository head / ordered migrations digest が変わっていれば実行せず再取得する。</li>
+<li>Rollback trigger and steps: 合格条件を満たさない場合は取得済みエクスポートからの復元を検討する。復元の実行判断と実行はユーザーが行う。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P06 が合格し、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P07 (acceptance)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P06 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: data</li>
+</ul><nav class="pager"><a href="#task-phase-06-test-run">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-08-refactoring-migration">次へ →</a></nav></article>
+<article id="task-phase-08-refactoring-migration"><header><p class="source">phase-08-refactoring-migration.md · blocked until completeness PASS</p></header><h2>System task overlay: 既存データの互換確認と派生テーブルの初期状態</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P08 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P08.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>新規に作られたテーブルの初期状態が意図どおりであり、既存データが新スキーマのもとで従来どおり読めることが確認されている状態。</p>
+<h3>背景</h3>
+<p>未適用だったマイグレーションには新規テーブルの追加が含まれる。作成直後は空であるため、集計や履歴の表示が空を異常として扱わないかを確認しておく必要がある。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P07 の受入が合格していること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: 該当。アプリケーションコードの変更を伴わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: 該当。本番 D1 のスキーマ適用と行数保全を扱う。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: N/A: 適用前後の検証と受入判定を扱うため本 task では扱わない。</li>
+<li>Documentation: N/A: 復旧 runbook と証跡の整備を扱うため本 task では扱わない。</li>
+<li>Operations: N/A: 本番適用の実行と事後観察を扱うため本 task では扱わない。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: 新規テーブルの初期状態と既存データの読み出し確認結果を phase 固有 evidence に記録する。runbook/script は変更しない。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-08-compatibility.md</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>データの補正投入。過去分の再集計。スキーマの追加変更。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: 新規作成されたテーブルが空である場合に画面と API が異常終了しないことを確認する / 既存データを持つテーブルの読み出しが従来どおり成功することを確認する</li>
+<li>Required evidence: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-08-compatibility.md</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: 確認結果を作業記録へ追記するのみ。</li>
+<li>Rollback trigger and steps: 本 task は読み取り確認のみで状態を変えないため、記録の破棄で戻る。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P07 が合格し、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P08 (refactoring-migration)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P07 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: backend</li>
+</ul><nav class="pager"><a href="#task-phase-07-acceptance">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-09-quality-assurance">次へ →</a></nav></article>
+<article id="task-phase-09-quality-assurance"><header><p class="source">phase-09-quality-assurance.md · blocked until completeness PASS</p></header><h2>System task overlay: 品質・セキュリティ・運用準備の確認</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P09 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P09.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>復旧作業で生じた成果物と記録が、ログとレスポンスに明細内容および金額を残さないという既存方針を守っていることが確認され、取得したダンプの取扱いが完了している状態。</p>
+<h3>背景</h3>
+<p>復旧作業では本番の全件エクスポートという最も機微な成果物を扱う。作業が終わった後にこれが残り続けると、障害対応が新たな露出面を作ってしまう。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P07 の受入が合格していること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: N/A: 本番 D1 のスキーマ適用と行数保全を扱うため本 task では扱わない。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: 該当。本番全件ダンプの取扱いとログ非出力方針の遵守を扱う。</li>
+<li>Quality: 該当。適用前後の検証と受入判定を扱う。</li>
+<li>Documentation: N/A: 復旧 runbook と証跡の整備を扱うため本 task では扱わない。</li>
+<li>Operations: 該当。本番適用の実行と事後観察を扱う。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: ダンプ削除とログ非露出の確認結果を phase 固有 evidence に残す。runbook/script は read-only で検査する。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-09-quality.md</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>既存のログ基盤の作り直し。権限管理の全面見直し。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: 作業記録と手順書の出力例に明細内容と金額が含まれていないことを確認する / 取得したダンプが作業完了後に削除されたことを確認する / 夜間バックアップが成功し当日分のスナップショットが保存されていることを確認する</li>
+<li>Required evidence: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-09-quality.md</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: 確認と削除を実施し、結果を作業記録へ追記する。</li>
+<li>Rollback trigger and steps: 削除済みダンプは復元しない。必要が生じた場合は改めて取得手順から実施する。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P07 が合格し、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P09 (quality-assurance)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P08 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: operations、quality</li>
+</ul><nav class="pager"><a href="#task-phase-08-refactoring-migration">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-10-final-review">次へ →</a></nav></article>
+<article id="task-phase-10-final-review"><header><p class="source">phase-10-final-review.md · blocked until completeness PASS</p></header><h2>System task overlay: 復旧完了の最終ゲート</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P10 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P10.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>P01 から P09 までの受入条件がすべて満たされていることを、実施者とは独立した観点で通し確認し終えている状態。</p>
+<h3>背景</h3>
+<p>個々の phase が合格していても、通しで見ると記録の欠落や条件の読み替えが残ることがある。最終ゲートを独立に置くことで、部分的な達成を全体の完了と誤認しない。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P01 から P09 の受入が記録上すべて合格していること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: N/A: 本番 D1 のスキーマ適用と行数保全を扱うため本 task では扱わない。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: 該当。適用前後の検証と受入判定を扱う。</li>
+<li>Documentation: N/A: 復旧 runbook と証跡の整備を扱うため本 task では扱わない。</li>
+<li>Operations: 該当。本番適用の実行と事後観察を扱う。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: 全 phase の受入条件と対応する証跡の対応表を phase 固有 evidence に作成する。既存成果物は read-only で検査する。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-10-final-gate.md</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>未達項目の実作業による解消。作業の再設計。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: 各 phase の受入条件に対応する証跡が実在することを一件ずつ確認する / 証跡が欠落している受入条件が 0 件であることを確認する</li>
+<li>Required evidence: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-10-final-gate.md</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: 対応表を作業記録へ追加するのみ。</li>
+<li>Rollback trigger and steps: 対応表を差し戻す。本番状態には影響しない。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P01〜P09 の evidence が揃い、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P10 (final-review)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P09 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: operations</li>
+</ul><nav class="pager"><a href="#task-phase-09-quality-assurance">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-11-evidence">次へ →</a></nav></article>
+<article id="task-phase-11-evidence"><header><p class="source">phase-11-evidence.md · blocked until completeness PASS</p></header><h2>System task overlay: 再現可能な証跡の整備</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P11 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P11.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>第三者が後から復旧の妥当性を検証できるだけの証跡が、参照可能な形で揃っている状態。</p>
+<h3>背景</h3>
+<p>復旧作業は再発時にも参照される。そのときに「何を根拠に成功と判断したか」が辿れないと、同じ調査を最初からやり直すことになる。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P10 の最終ゲートが合格していること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: N/A: 本番 D1 のスキーマ適用と行数保全を扱うため本 task では扱わない。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: 該当。適用前後の検証と受入判定を扱う。</li>
+<li>Documentation: 該当。復旧 runbook と証跡の整備を扱う。</li>
+<li>Operations: N/A: 本番適用の実行と事後観察を扱うため本 task では扱わない。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: 未適用一覧の適用前後の出力、行数突合、動作確認、ダンプ削除のリンクを phase 固有 evidence にまとめる。runbook/script は変更しない。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-11-recovery-evidence.md</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>本番データそのものの保存。個別明細の記録。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: 証跡集の各項目が実際のコマンド出力または記録に基づくことを確認する / 証跡集に明細内容と金額が含まれていないことを確認する</li>
+<li>Required evidence: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-11-recovery-evidence.md</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: 証跡集をリポジトリへ追加するのみ。</li>
+<li>Rollback trigger and steps: 証跡集を差し戻す。本番状態には影響しない。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P10 が合格し、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P11 (evidence)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P10 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: quality</li>
+</ul><nav class="pager"><a href="#task-phase-10-final-review">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-12-documentation-operations">次へ →</a></nav></article>
+<article id="task-phase-12-documentation-operations"><header><p class="source">phase-12-documentation-operations.md · blocked until completeness PASS</p></header><h2>System task overlay: 運用文書と引き継ぎの整備</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P12 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P12.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>同種の事象が再び起きたときに、担当者が恒久運用の SSOT と incident checklist の責務を迷わず判別し、両方のリンクから復旧に着手できる状態。</p>
+<h3>背景</h3>
+<p>今回の障害は、コードの進行に対してスキーマ適用が運用工程として組み込まれていないという構造から生じた。構造への対処は別 feature が担うが、それが入るまでの間も手順で対処できるようにしておく必要がある。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P11 の証跡集が揃っていること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: N/A: アプリケーションコードの変更を伴わないため本 task では扱わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: N/A: 本番 D1 のスキーマ適用と行数保全を扱うため本 task では扱わない。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: N/A: 適用前後の検証と受入判定を扱うため本 task では扱わない。</li>
+<li>Documentation: 該当。復旧 runbook と証跡の整備を扱う。</li>
+<li>Operations: 該当。本番適用の実行と事後観察を扱う。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: <code>docs/ci-cd-operations.md</code> が恒久 policy/通常手順の SSOT、復旧 runbook が incident 固有 checklist であることを read-only で確認し、tracker handoff に両リンクを渡す。文書は変更しない。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: なし (リンク/引継ぎのみ)</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>デプロイ工程そのものの変更。検査ゲートの実装 (別 feature が所有)。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: <code>docs/ci-cd-operations.md</code> が恒久 policy/通常手順の SSOT と明示されていることを確認する / runbook が baseline・承認済み manifest・行数突合・証跡へのリンクだけを持ち、通常手順を複製していないことを確認する / 本番への書込み操作の実行主体がユーザーであることを確認する</li>
+<li>Required evidence: docs/ci-cd-operations.md、docs/runbooks/prod-d1-schema-recovery.md、P11 evidence の参照リンク</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: tracker handoff に正本リンクを渡すだけで、リポジトリ成果物は変更しない。</li>
+<li>Rollback trigger and steps: tracker handoff のリンクを訂正する。本番状態とリポジトリ成果物には影響しない。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P11 evidence が揃い、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P12 (documentation-operations)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P11 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: operations</li>
+</ul><nav class="pager"><a href="#task-phase-11-evidence">← 前へ</a><a href="#index">一覧</a><a href="#task-phase-13-release-deploy">次へ →</a></nav></article>
+<article id="task-phase-13-release-deploy"><header><p class="source">phase-13-release-deploy.md · blocked until completeness PASS</p></header><h2>System task overlay: 復旧後の稼働確認と事後観察</h2>
+<h3>Machine-readable registration fields</h3>
+<ul>
+<li>feature_package_id: feature-package/feat-prod-d1-schema-recovery (13 task で共有)</li>
+<li>owners / tags / related_nodes: owners は空、tags は server-error-recovery と prod-d1-recovery、related_nodes は arch-d1-schema-lifecycle</li>
+<li>parent_feature: feat-prod-d1-schema-recovery</li>
+<li>phase_ref: P13 (本 package 内で 1 件のみ)</li>
+<li>classification: confidence 1.0。理由は本 task が dev-graph feature の配下で単一 phase の実行単位として生成されたため。候補 path は tasks/feat-prod-d1-schema-recovery/SYS-PDSR-P13.md</li>
+<li>tracker_binding_intent: beads</li>
+<li>github_publication: mode は local_only、project_aliases と labels は空、milestone は無し</li>
+<li>pr_completion_policy: linked_pr_merged_all</li>
+<li>branch_policy: one-task-one-branch、worktree lease 必須、default-branch reconciliation、assignment_owner は dev-graph-scheduler</li>
+</ul>
+<h3>目的</h3>
+<p>復旧の効果が一時的なものでないことを、翌日以降の夜間バックアップ成功と主要経路の正常応答で確認し終えている状態。</p>
+<h3>背景</h3>
+<p>今回の障害では夜間バックアップも同じ原因で毎晩失敗していた。適用直後の正常応答だけを見て完了とすると、周期的に走る処理の回復を見落とす。</p>
+<h3>前提条件</h3>
+<ul>
+<li>Required spec/architecture/phase/task nodes: arch-d1-schema-lifecycle および feature ノード feat-prod-d1-schema-recovery</li>
+<li>Entry gate: P07 の受入が合格していること。</li>
+<li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li>
+<li>Repository context: repo_identity は github:daishiman/kanjo、root_resolution_source は explicit-cli、config は .dev-graph/config.json。絶対 path を成果物へ書かない</li>
+</ul>
+<h3>Workstream applicability</h3>
+<ul>
+<li>Frontend: N/A: 本 feature の成果物は運用手順と検証スクリプトであり画面変更を含まないため本 task では扱わない。</li>
+<li>Backend: 該当。アプリケーションコードの変更を伴わない。</li>
+<li>API: N/A: API 契約の変更を伴わないため本 task では扱わない。</li>
+<li>Data: N/A: 本番 D1 のスキーマ適用と行数保全を扱うため本 task では扱わない。</li>
+<li>Infrastructure: N/A: 既存の D1 と wrangler 設定を前提とし構成変更を伴わないため本 task では扱わない。</li>
+<li>Security: N/A: 本番全件ダンプの取扱いとログ非出力方針の遵守を扱うため本 task では扱わない。</li>
+<li>Quality: N/A: 適用前後の検証と受入判定を扱うため本 task では扱わない。</li>
+<li>Documentation: N/A: 復旧 runbook と証跡の整備を扱うため本 task では扱わない。</li>
+<li>Operations: 該当。本番適用の実行と事後観察を扱う。</li>
+</ul>
+<h3>Architecture and deploy unit</h3>
+<ul>
+<li>Architecture decisions: arch-d1-schema-lifecycle (D1 migration gate / D2 backup / D3 approved pending manifest / D4 document ownership)</li>
+<li>Deploy unit/environment: Cloudflare D1 の本番データベース kanjo-db。本 task 自体はアプリケーションのデプロイを伴わない</li>
+<li>Compatibility/migration/backfill: 未適用マイグレーションを連番順に逐次適用する。部分適用と順序逸脱を許さず、データの補正投入は行わない</li>
+</ul>
+<h3>成果物</h3>
+<ul>
+<li>Produced artifacts: 復旧後の稼働確認結果と夜間バックアップの成功記録を phase 固有 evidence に残す。追加デプロイやrunbook/script変更は行わない。</li>
+<li>Consumed artifacts: arch-d1-schema-lifecycle の設計判断、feature feat-prod-d1-schema-recovery の受入条件</li>
+<li>Write scope/touches: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-13-observation.md</li>
+</ul>
+<h3>Tracker publication and completion</h3>
+<ul>
+<li>Tracker binding intent: beads</li>
+<li>Publication mode: local_only</li>
+<li>Project aliases / labels / milestone: N/A: 本 package は beads 束縛のため GitHub 側の公開先を持たない</li>
+<li>PR completion policy: linked_pr_merged_all</li>
+<li>PR body contract: 対応する beads issue 識別子と dev-graph の graph_node_id を本文へ記載し、既定ブランチを対象とする</li>
+<li>Ownership boundary: 本 spec は intent の宣言のみを行い、起票と完了収束は dev-graph が所有する</li>
+</ul>
+<h3>Branch and worktree execution</h3>
+<ul>
+<li>Branch: dev-graph への登録後に scheduler が devgraph 接頭辞と graph_node_id から採番する。本 spec では事前に割り当てない</li>
+<li>Worktree lease: 実装着手前に graph_node_id で lease を claim し、作業中は heartbeat を送り、完了時に release する</li>
+<li>Parallel safety: depends_on が完了しており、resource_scope と有効な lease が他 task と重ならないこと</li>
+<li>Completion projection: feature ブランチ上では保留イベントのみを記録し、既定ブランチが清浄な状態で確定的な完了を書き込む</li>
+</ul>
+<h3>スコープ外</h3>
+<ul>
+<li>新機能の投入。追加のデプロイ。監視基盤の新規導入。</li>
+</ul>
+<h3>Verification and evidence</h3>
+<ul>
+<li>Automated commands: 復旧後の取込と取込履歴の経路が継続して正常応答を返すことを確認する / 夜間バックアップが成功しスナップショットが保存されていることを確認する</li>
+<li>Required evidence: .dev-graph/plans/feature-package-feat-prod-d1-schema-recovery/evidence/phase-13-observation.md</li>
+</ul>
+<h3>Rollout and rollback</h3>
+<ul>
+<li>Rollout: 追加のデプロイを伴わず、稼働状態の観察のみを行う。</li>
+<li>Rollback trigger and steps: 異常を検知した場合は稼働を止めず、取得済み証跡をもとに原因を切り分けたうえでユーザーの判断で対処する。</li>
+</ul>
+<h3>Handoff</h3>
+<ul>
+<li>Executor: dev-graph が登録した task ノードを worktree lease のもとで実行する。本番への書込みコマンドはユーザーが実行する</li>
+<li>Ready when: system-spec completeness が PASS で、P12 handoff が完了し、参照元の blocked が解除されていること</li>
+</ul>
+<h3>参照情報</h3>
+<ul>
+<li>System specification: system-spec-harness が生成した確定仕様の index ノード</li>
+<li>Architecture: arch-d1-schema-lifecycle</li>
+<li>Feature: feat-prod-d1-schema-recovery</li>
+<li>Phase doc: 生成側 13 phase 表の P13 (release-deploy)</li>
+<li>Dependencies: task-graph node SYS-PDSR-P12 (直前 phase の完了を前提とする)</li>
+<li>Secondary workstreams: backend</li>
+</ul><nav class="pager"><a href="#task-phase-12-documentation-operations">← 前へ</a><a href="#index">一覧</a><a href="#index">次へ →</a></nav></article></main></div></body></html>

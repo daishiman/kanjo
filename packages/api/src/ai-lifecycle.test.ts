@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { app } from './index.js';
+import { recordTestMigrationHead } from './schema-guard.test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
 const auth = {
@@ -22,9 +23,10 @@ let d1: D1Database;
 let cookie: string;
 
 async function applyMigrations(database: D1Database): Promise<void> {
-  for (const filename of readdirSync(migrationsDir)
+  const filenames = readdirSync(migrationsDir)
     .filter((f) => f.endsWith('.sql'))
-    .sort()) {
+    .sort();
+  for (const filename of filenames) {
     const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
       .replace(/^\s*--.*$/gm, '')
       .split(';')
@@ -32,6 +34,8 @@ async function applyMigrations(database: D1Database): Promise<void> {
       .filter(Boolean);
     for (const sql of statements) await database.prepare(sql).run();
   }
+  // 実行時スキーマガードは d1_migrations の先頭名で判定するため、テストD1にも台帳を記録する。
+  await recordTestMigrationHead(database, filenames);
 }
 
 const request = async (path: string, method = 'GET', body?: unknown): Promise<Response> =>

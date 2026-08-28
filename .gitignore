@@ -11,6 +11,8 @@
 増減マトリクス.csv
 # 参考実装HTML・要件定義書(実明細を含む)はローカル専用。git管理しない
 /docs/reference/
+# 実データを参照するローカル一時テスト。匿名fixtureへ置換するまで管理・通常検査対象外。
+/packages/core/test/__tmp-*
 
 # 匿名化済みサンプルのみ例外的に許可
 !/samples/**/*.csv
@@ -42,7 +44,6 @@ packages/api/worker-configuration.d.ts
 # AIDD同期時のローカル復旧バックアップ（実行時配置の複製）
 .claude/backup-*/
 .codex/backup-*/
-/eval-log/
 
 # ------------------------------------------------------------
 # OS / エディタ
@@ -69,6 +70,7 @@ __pycache__/
 .dev-graph/locks/
 .dev-graph/receipts/
 .dev-graph/staging/
+.dev-graph/eval-log/
 
 # ハーネスが生成するセッションログ(成果物ではない)
 .claude/logs/

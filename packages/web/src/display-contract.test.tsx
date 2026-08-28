@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
+import { ApiError } from './api.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from './components/Page.js';
 import { APP_ROUTES, MOBILE_ROUTES } from './routeMetadata.js';
 
@@ -12,7 +13,7 @@ const PAGE_SOURCES = import.meta.glob('./pages/*.tsx', {
 const STYLE_SOURCE = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
 const APP_SOURCE = readFileSync(new URL('./App.tsx', import.meta.url), 'utf8');
 const ROUTED_PAGE_SOURCES = Object.entries(PAGE_SOURCES)
-  .filter(([path]) => !path.endsWith('/Login.tsx'))
+  .filter(([path]) => !path.endsWith('/Login.tsx') && !path.includes('.test.'))
   .map(([, source]) => source);
 
 describe('15ルート契約', () => {
@@ -63,6 +64,15 @@ describe('共通表示契約', () => {
     expect(STYLE_SOURCE).toMatch(/\.page-state\.loading\s*\{[^}]*100dvh/s);
     expect(renderToStaticMarkup(<PageState status="error" />)).toContain('もう一度読み込んで');
     expect(renderToStaticMarkup(<PageState status="empty" message="未取込" />)).toContain('未取込');
+  });
+
+  it('schema更新待ちは汎用サーバーエラーでなく復旧待ちと表示する', () => {
+    const html = renderToStaticMarkup(
+      <PageState status="error" error={new ApiError(503, 'schema_unavailable', '復旧作業中です')} />,
+    );
+    expect(html).toContain('システム更新の適用待ちです');
+    expect(html).toContain('時間をおいて');
+    expect(html).not.toContain('取込履歴');
   });
 
   it('KPIと年間増減率を共通表記で表示する', () => {

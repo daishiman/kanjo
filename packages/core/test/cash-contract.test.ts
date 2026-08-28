@@ -111,6 +111,9 @@ describe('個人分の現金明細', () => {
       big: '食費',
       mid: '外食',
       inst: CASH_INSTITUTION,
+      // 手入力の現金記帳はMFの計算対象/振替の概念を持たず、常に集計対象
+      isTarget: true,
+      isTransfer: false,
     });
     expect(isCashTxId(tx.id)).toBe(true);
     expect(cashToTx({ ...lunch, io: 'income' }).a).toBe(1200);

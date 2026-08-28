@@ -1,0 +1,135 @@
+{
+  "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P01",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P01",
+      "title": "復旧要件のベースライン確定"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P01"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P02",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P02",
+      "title": "適用順序と不変条件の設計"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P02"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P03",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P03",
+      "title": "復旧設計の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P03"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P04",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P04",
+      "title": "行数突合と動作確認の検証設計"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P04"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P05",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P05",
+      "title": "復旧手順書と突合スクリプトの作成"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P05"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P06",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P06",
+      "title": "ローカル環境での適用予行"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P06"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P07",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P07",
+      "title": "本番適用の受入判定"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P07"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P08",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P08",
+      "title": "既存データの互換確認と派生テーブルの初期状態"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P08"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P09",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P09",
+      "title": "品質・セキュリティ・運用準備の確認"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P09"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P10",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P10",
+      "title": "復旧完了の最終ゲート"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P10"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P11",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡の整備"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P11"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P12",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P12",
+      "title": "運用文書と引き継ぎの整備"
+    },
+    {
+      "depends_on": [
+        "SYS-PDSR-P12"
+      ],
+      "feature_package_id": "feature-package/feat-prod-d1-schema-recovery",
+      "id": "SYS-PDSR-P13",
+      "parent_feature": "feat-prod-d1-schema-recovery",
+      "phase_ref": "P13",
+      "title": "復旧後の稼働確認と事後観察"
+    }
+  ],
+  "parent_feature": "feat-prod-d1-schema-recovery",
+  "schema_version": "1.0.0"
+}

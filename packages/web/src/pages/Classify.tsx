@@ -368,6 +368,12 @@ export function ClassifyPage() {
           で見直せます。
         </div>
       )}
+      {s.nonCountableCount > 0 && (
+        <div className="notice info">
+          この月はCSVの {s.nonCountableCount}{' '}
+          件が集計対象外(口座間の振替、またはMFで「計算対象」を外した明細)です。取込漏れではなく、記録は残したうえで収支には数えていません。
+        </div>
+      )}
       {s.noInstitutionCount > 0 && (
         <div className="notice info">
           口座(保有金融機関)が記録されていない明細が {s.noInstitutionCount}{' '}

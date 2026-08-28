@@ -1,0 +1,38 @@
+{
+  "graph_node_id": "feat-prod-d1-schema-recovery",
+  "artifact_kind": "feature",
+  "purpose": "事故時に本番 D1 の未適用マイグレーション 0006〜0014 により、データ取込と取込履歴が同時に 500 を返し記帳業務が停止した。実行時点の remote list と repository head から適用対象を再確定し、稼働の回復と既存データの保全を同時に成立させる。",
+  "goal": "承認済み pending manifest の適用後、同じ repository head / ordered migrations digest に対する未適用件数が 0 になり、取込・取込履歴・夜間バックアップが正常化し、適用前後で行の減少が 0 であることを突合で確認できている。",
+  "scope_in": [
+    "適用直前の全件ダンプ取得",
+    "未適用一覧の確認",
+    "remote list と repository head からの人間承認済み pending manifest の確定",
+    "MigrateをAPPLYで実行するincident checklist",
+    "適用前後の行数突合",
+    "ダンプの安全な削除",
+    "復旧後の動作確認"
+  ],
+  "scope_out": [
+    "マイグレーションファイル自体の内容変更",
+    "スキーマ再設計",
+    "CI への検査ゲート追加",
+    "実行時の乖離検知",
+    "D1 以外への移行"
+  ],
+  "acceptance": [
+    "適用直前のダンプが取得され主要テーブルの行数が基準値として記録されている",
+    "repository head・ordered migrations digest・remote applied head・ordered pending files・captured_at・approved_atを持つmanifestが人間承認され適用直前の再取得結果と一致している",
+    "wrangler d1 migrations list --remote の未適用件数が 0 である",
+    "適用後の主要テーブル行数が基準値と比べて減少していない",
+    "POST /api/imports と GET /api/imports が本番で正常応答を返す",
+    "夜間 cron バックアップが成功し R2 に当日分のスナップショットが存在する",
+    "取得したダンプが作業完了後に削除されている",
+    "本番への適用コマンドはユーザーが実行しその事実が作業記録に残っている"
+  ],
+  "architecture_refs": [
+    "architecture/arch-d1-schema-lifecycle.md",
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md"
+  ],
+  "updated_at": "2026-08-27T05:10:00Z"
+}

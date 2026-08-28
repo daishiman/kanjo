@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+scenario="${WRANGLER_STUB_SCENARIO:-}"
+command_text=""
+has_remote=0
+has_json=0
+has_database=0
+has_config=0
+has_wrangler_environment=0
+
+args=("$@")
+for ((index = 0; index < ${#args[@]}; index += 1)); do
+  case "${args[$index]}" in
+    kanjo-db)
+      has_database=1
+      ;;
+    --config)
+      has_config=1
+      index=$((index + 1))
+      ;;
+    --env)
+      has_wrangler_environment=1
+      index=$((index + 1))
+      ;;
+    --remote)
+      has_remote=1
+      ;;
+    --json)
+      has_json=1
+      ;;
+    --command)
+      index=$((index + 1))
+      command_text="${args[$index]}"
+      ;;
+  esac
+done
+
+if [[ $has_database -ne 1 || $has_config -ne 1 || $has_remote -ne 1 || $has_json -ne 1 ]]; then
+  printf '%s\n' "stub: required wrangler arguments are missing" >&2
+  exit 64
+fi
+
+if [[ $has_wrangler_environment -ne 0 ]]; then
+  printf '%s\n' "stub: top-level production config must not be remapped to a missing Wrangler environment" >&2
+  exit 64
+fi
+
+if [[ "$command_text" =~ (^|[[:space:];])(UPDATE|DELETE|INSERT|ALTER|DROP|CREATE|REPLACE|PRAGMA)([[:space:];]|$) ]]; then
+  printf '%s\n' "stub: mutating SQL detected" >&2
+  exit 66
+fi
+
+tables=(
+  account_norm_map
+  ai_reports
+  ai_tasks
+  budgets
+  cash_overrides
+  cash_entries
+  category_options
+  attachment_cleanup_jobs
+  attachment_object_tombstones
+  attachments
+  freee_deals
+  import_active_targets
+  import_runs
+  import_writer_claims
+  imports
+  institution_owners
+  mf_transactions
+  monthly_agg
+  overrides
+  password_login_rate_limits
+  restored_monthly_agg
+  rules
+  sub_vendors
+  tradeoff_plans
+  tx_edits
+  unrecorded_months
+)
+
+subset_tables=("${tables[@]:0:17}")
+
+case "$scenario" in
+  subset_before|full_after|missing_baseline_table|decrease|empty_discovery|unknown_table)
+    ;;
+  command_failure)
+    printf '%s\n' "SHOULD_NOT_LEAK: simulated credential detail" >&2
+    exit 1
+    ;;
+  malformed)
+    printf '%s\n' "this is not JSON"
+    exit 0
+    ;;
+  *)
+    printf '%s\n' "stub: unknown scenario" >&2
+    exit 67
+    ;;
+esac
+
+if [[ "$command_text" == *"FROM sqlite_master"* ]]; then
+  if [[ "$command_text" != *"name IN ("* ]]; then
+    printf '%s\n' "stub: discovery query did not use the fixed allowlist" >&2
+    exit 68
+  fi
+  for table in "${tables[@]}"; do
+    if [[ "$command_text" != *"'${table}'"* ]]; then
+      printf '%s\n' "stub: discovery query omitted an allowlisted table" >&2
+      exit 68
+    fi
+  done
+
+  case "$scenario" in
+    subset_before)
+      existing_tables=("${subset_tables[@]}")
+      ;;
+    missing_baseline_table)
+      existing_tables=()
+      for table in "${tables[@]}"; do
+        [[ "$table" == "mf_transactions" ]] || existing_tables+=("$table")
+      done
+      ;;
+    empty_discovery)
+      existing_tables=()
+      ;;
+    unknown_table)
+      existing_tables=(unexpected_private_table)
+      ;;
+    *)
+      existing_tables=("${tables[@]}")
+      ;;
+  esac
+
+  results='[]'
+  for table in "${existing_tables[@]}"; do
+    results="$(jq -cn --argjson rows "$results" --arg table "$table" \
+      '$rows + [{table_name:$table}]')"
+  done
+  jq -cn --argjson results "$results" '[{results:$results,success:true,meta:{duration:0}}]'
+  exit 0
+fi
+
+if [[ "$command_text" != *"COUNT(*) AS row_count"* ]]; then
+  printf '%s\n' "stub: fixed read-only inspection query was not supplied" >&2
+  exit 65
+fi
+
+if [[ "$command_text" == *"UNION ALL"* ]]; then
+  printf '%s\n' "stub: compound COUNT query exceeds the production D1 term limit" >&2
+  exit 71
+fi
+
+if [[ "$scenario" == "missing_baseline_table" ]]; then
+  printf '%s\n' "stub: COUNT must not run when a baseline table is absent" >&2
+  exit 69
+fi
+
+if [[ "$scenario" == "subset_before" ]]; then
+  for table in "${tables[@]:17}"; do
+    if [[ "$command_text" == *"FROM \"${table}\""* ]]; then
+      printf '%s\n' "stub: COUNT referenced a table absent from the baseline schema" >&2
+      exit 70
+    fi
+  done
+fi
+
+responses='[]'
+for table in "${tables[@]}"; do
+  [[ "$command_text" == *"FROM \"${table}\""* ]] || continue
+  count=2
+  if [[ "$scenario" == "full_after" || "$scenario" == "decrease" ]]; then
+    count=3
+  fi
+  if [[ "$scenario" == "decrease" && "$table" == "mf_transactions" ]]; then
+    count=1
+  fi
+  responses="$(jq -cn --argjson rows "$responses" --arg table "$table" --argjson count "$count" \
+    '$rows + [{results:[{table_name:$table,row_count:$count}],success:true,meta:{duration:0}}]')"
+done
+
+jq -cn --argjson responses "$responses" '$responses'

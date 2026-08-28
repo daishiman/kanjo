@@ -6,8 +6,15 @@ import { autoRegisterable } from '@kanjo/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AUTH_EVENT, type ImportHistoryRow, type ImportUnitResult, type SubsCandidate, api } from '../api.js';
-import { PageHeader, PageState } from '../components/Page.js';
+import {
+  AUTH_EVENT,
+  type ImportHistoryRow,
+  type ImportUnitResult,
+  type SubsCandidate,
+  api,
+  apiUpload,
+} from '../api.js';
+import { PageHeader, PageState, describeError } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { dateTime } from '../format.js';
 import { fileForUnit, retryableFiles, rootFileName } from '../import-retry.js';
@@ -17,6 +24,137 @@ const KIND_LABEL: Record<string, ReactNode> = {
   freee: 'freee仕訳',
   json: <Term id="mergedJson" />,
 };
+
+/**
+ * 取込結果の数量・状態を同じ語彙で表示する再利用単位。
+ * 再取込は「どのファイルで、見送り設定を外すか」だけを親へ伝え、state は持たない。
+ */
+export function ImportResultTable({
+  results,
+  retryFile,
+  onRetry,
+  retryAll,
+}: {
+  results: ImportUnitResult[];
+  /** その行の再取込に使える元ファイル。手元に無ければ null を返し、ボタンを出さない */
+  retryFile?: (unit: ImportUnitResult) => File | null;
+  /** releaseKeep=true は「件数が減る月を見送る」を外したうえで取り込み直す意思表示 */
+  onRetry?: (files: File[], opts: { releaseKeep: boolean }) => void;
+  /** まとめて再取込できる失敗ファイル。2件以上のときだけ一括ボタンを出す */
+  retryAll?: File[];
+}) {
+  const retryButton = (unit: ImportUnitResult, label: string, releaseKeep: boolean) => {
+    const f = retryFile?.(unit) ?? null;
+    if (!f || !onRetry) return null;
+    return (
+      <button type="button" style={{ marginTop: 6 }} onClick={() => onRetry([f], { releaseKeep })}>
+        {label}
+      </button>
+    );
+  };
+  return (
+    <>
+      <table className="data">
+        <thead>
+          <tr>
+            <th>ファイル</th>
+            <th>種別</th>
+            <th>対象月</th>
+            <th title="日付を解釈できた入力行。同一IDの重複を含みます">解析行</th>
+            <th title="同一IDは最後の行だけを保存します">保存行</th>
+            <th title="保存行のうち収支集計に含める行です">集計対象</th>
+            <th title="保存はするが収支集計には含めない行です">集計対象外</th>
+            <th title="日付を解釈できず保存できなかった行です">保存不可</th>
+            <th>結果</th>
+          </tr>
+        </thead>
+        <tbody>
+          {results.map((r) => {
+            const counts = r.counts;
+            return (
+              <tr key={`${r.filename}-${r.kind}`}>
+                <td>{r.filename}</td>
+                <td>{KIND_LABEL[r.kind] ?? '不明'}</td>
+                <td>{r.months.join(', ') || '—'}</td>
+                <td className="num">{counts?.parsed ?? '—'}</td>
+                <td className="num">{counts?.stored ?? '—'}</td>
+                <td className="num">{counts?.countable ?? '—'}</td>
+                <td className="num">{counts?.nonCountable ?? '—'}</td>
+                <td className="num">{counts?.rejected ?? '—'}</td>
+                <td>
+                  {r.status === 'committed' ? (
+                    <>
+                      <span className="pill calm">
+                        取込完了
+                        {r.syntheticIds ? ` (ID補完${r.syntheticIds}件)` : ''}
+                        {r.duplicateIds ? ` (ID重複${r.duplicateIds}件)` : ''}
+                      </span>
+                      {(r.replaced ?? [])
+                        .filter((m) => m.before > m.after)
+                        .map((m) => (
+                          <div
+                            key={m.month}
+                            className="sub"
+                            style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
+                          >
+                            {m.month}: 取込前 {m.before}件 → 取込後 {m.after}
+                            件。件数が減っています。月の途中までのファイルではないか確認してください(前の内容に戻すには、元のファイルを取り込み直します。次からは「件数が減る月は取り込まず、前回の内容を残す」を付けると、この置き換え自体を止められます)。
+                          </div>
+                        ))}
+                    </>
+                  ) : r.status === 'kept' ? (
+                    <>
+                      <span className="pill warn">前回を残しました</span>
+                      <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
+                        {r.reason}
+                      </div>
+                      {/* 見送り設定を外さないと同じ結果になるため、この操作で一緒に外す */}
+                      {retryButton(r, '前回を残さずに取り込む', true)}
+                    </>
+                  ) : r.status === 'duplicate' ? (
+                    <>
+                      <span className="pill warn">取込済み(スキップ)</span>
+                      <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
+                        {r.reason}
+                        。意図的に再適用する場合だけ「現在有効な内容と同じでも再適用する」を付けてください。
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <span className="pill alert">失敗</span>
+                      <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
+                        {r.reason}
+                      </div>
+                      {retryButton(r, '再取込', false)}
+                    </>
+                  )}
+                  {!counts && (
+                    <div className="sub" style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}>
+                      旧API: 旧有効{r.rows}行・旧スキップ{r.skipped}行（内訳不明）
+                    </div>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      {results.some((r) => r.status === 'failed') && (
+        <p className="sub">
+          失敗したファイルの内容は確定されていません(取込完了したファイルは反映済み)。一時的な失敗なら、同じファイルを通常どおり再実行できます。
+          {onRetry && (retryAll?.length ?? 0) > 1 && (
+            <>
+              {' '}
+              <button type="button" onClick={() => onRetry(retryAll ?? [], { releaseKeep: false })}>
+                失敗した{retryAll?.length}件をまとめて再取込
+              </button>
+            </>
+          )}
+        </p>
+      )}
+    </>
+  );
+}
 
 export function ImportPage() {
   const qc = useQueryClient();
@@ -44,14 +182,11 @@ export function ImportPage() {
       for (const f of files) form.append('file', f);
       if (force) form.append('force', '1');
       if (keepOnShrink) form.append('keepOnShrink', '1');
-      const res = await fetch('/api/imports', { method: 'POST', body: form });
-      if (res.status === 401) {
-        window.dispatchEvent(new Event(AUTH_EVENT));
-        throw new Error('unauthorized');
-      }
-      const body = (await res.json()) as { results?: ImportUnitResult[]; error?: { message: string } };
-      if (!res.ok && !body.results)
-        throw new Error(body.error?.message ?? `取込に失敗しました(${res.status})`);
+      const body = await apiUpload<{ results?: ImportUnitResult[] }>('/imports', form, {
+        // 複数ファイルの一部成功はHTTPエラーでも結果表を保つ。
+        acceptErrorBody: (candidate) =>
+          !!candidate && typeof candidate === 'object' && Array.isArray(Reflect.get(candidate, 'results')),
+      });
       return body.results ?? [];
     },
     onSuccess: (r, files) => {
@@ -149,6 +284,28 @@ export function ImportPage() {
           </small>
         </p>
       </div>
+
+      <div className="notice" style={{ marginTop: 12 }}>
+        <strong>ファイルの取得元</strong>
+        <ul style={{ margin: '6px 0 0', paddingLeft: 18, fontSize: 13, lineHeight: 1.7 }}>
+          <li>
+            マネーフォワード ME —{' '}
+            <a href="https://moneyforward.com/cf" target="_blank" rel="noreferrer">
+              家計簿・収支詳細を開く
+            </a>
+            <br />
+            期間を選び「ダウンロード」から <code>収入・支出詳細_YYYY-MM-DD_YYYY-MM-DD.csv</code> を保存
+          </li>
+          <li style={{ marginTop: 6 }}>
+            freee 会計 —{' '}
+            <a href="https://secure.freee.co.jp/deals#code=deals" target="_blank" rel="noreferrer">
+              取引一覧を開く
+            </a>
+            <br />
+            期間を絞って「エクスポート」から取引データ(CSV / ZIP)を保存
+          </li>
+        </ul>
+      </div>
       <input
         ref={fileInput}
         type="file"
@@ -195,131 +352,23 @@ export function ImportPage() {
       )}
       {upload.isError && (
         <div className="notice" role="alert">
-          取込を実行できませんでした: {(upload.error as Error).message}
-          。選択したファイルは残っています。通信状態を確認して、もう一度「取込を実行」を押してください。
+          取込を実行できませんでした: {describeError(upload.error)}
+          選択したファイルは残っています。
         </div>
       )}
 
       {results && (
         <div className="card" style={{ marginTop: 12 }}>
           <h2>取込結果</h2>
-          <table className="data">
-            <thead>
-              <tr>
-                <th>ファイル</th>
-                <th>種別</th>
-                <th>対象月</th>
-                <th>有効行</th>
-                <th>スキップ</th>
-                <th>結果</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((r) => (
-                <tr key={`${r.filename}-${r.kind}`}>
-                  <td>{r.filename}</td>
-                  <td>{KIND_LABEL[r.kind] ?? '不明'}</td>
-                  <td>{r.months.join(', ') || '—'}</td>
-                  <td className="num">{r.rows}</td>
-                  <td className="num">{r.skipped}</td>
-                  <td>
-                    {r.status === 'committed' ? (
-                      <>
-                        <span className="pill calm">
-                          取込完了
-                          {r.syntheticIds ? ` (ID補完${r.syntheticIds}件)` : ''}
-                          {r.duplicateIds ? ` (ID重複${r.duplicateIds}件)` : ''}
-                        </span>
-                        {(r.replaced ?? [])
-                          .filter((m) => m.before > m.after)
-                          .map((m) => (
-                            <div
-                              key={m.month}
-                              className="sub"
-                              style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
-                            >
-                              {m.month}: 取込前 {m.before}件 → 取込後 {m.after}
-                              件。件数が減っています。月の途中までのファイルではないか確認してください(前の内容に戻すには、元のファイルを取り込み直します。次からは「件数が減る月は取り込まず、前回の内容を残す」を付けると、この置き換え自体を止められます)。
-                            </div>
-                          ))}
-                      </>
-                    ) : r.status === 'kept' ? (
-                      <>
-                        <span className="pill warn">前回を残しました</span>
-                        <div
-                          className="sub"
-                          style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
-                        >
-                          {r.reason}
-                        </div>
-                        {retryFile(r) && (
-                          <button
-                            type="button"
-                            style={{ marginTop: 6 }}
-                            onClick={() => {
-                              const f = retryFile(r);
-                              if (!f) return;
-                              // 見送りを解除しないと同じ結果になるため、この操作で一緒に外す
-                              setKeepOnShrink(false);
-                              setPending([f]);
-                            }}
-                          >
-                            前回を残さずに取り込む
-                          </button>
-                        )}
-                      </>
-                    ) : r.status === 'duplicate' ? (
-                      <>
-                        <span className="pill warn">取込済み(スキップ)</span>
-                        <div
-                          className="sub"
-                          style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
-                        >
-                          {r.reason}
-                          。意図的に再適用する場合だけ「現在有効な内容と同じでも再適用する」を付けてください。
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <span className="pill alert">失敗</span>
-                        <div
-                          className="sub"
-                          style={{ marginTop: 4, whiteSpace: 'normal', textAlign: 'left' }}
-                        >
-                          {r.reason}
-                        </div>
-                        {retryFile(r) && (
-                          <button
-                            type="button"
-                            style={{ marginTop: 6 }}
-                            onClick={() => {
-                              const f = retryFile(r);
-                              if (f) setPending([f]);
-                            }}
-                          >
-                            再取込
-                          </button>
-                        )}
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {results.some((r) => r.status === 'failed') && (
-            <p className="sub">
-              失敗したファイルの内容は確定されていません(取込完了したファイルは反映済み)。一時的な失敗なら、同じファイルを通常どおり再実行できます。
-              {retryAll.length > 1 && (
-                <>
-                  {' '}
-                  <button type="button" onClick={() => setPending(retryAll)}>
-                    失敗した{retryAll.length}件をまとめて再取込
-                  </button>
-                </>
-              )}
-            </p>
-          )}
+          <ImportResultTable
+            results={results}
+            retryFile={retryFile}
+            retryAll={retryAll}
+            onRetry={(files, { releaseKeep }) => {
+              if (releaseKeep) setKeepOnShrink(false);
+              setPending(files);
+            }}
+          />
           <SubsHandoff results={results} />
         </div>
       )}
@@ -342,7 +391,7 @@ export function ImportPage() {
                   <th>ファイル</th>
                   <th>種別</th>
                   <th>対象月</th>
-                  <th>件数</th>
+                  <th title="保存不能行を除く解析済みの入力行です">解析行</th>
                   <th>ステータス</th>
                   <th>やり直し</th>
                 </tr>
