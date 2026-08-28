@@ -7,7 +7,7 @@ import { HowTo } from '../components/HowTo.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { SubVendorsPanel, SubsCandidatesPanel } from '../components/SubVendors.js';
 import { Term } from '../components/Term.js';
-import { VENDOR_PALETTE, yenTick } from '../components/charts.js';
+import { VENDOR_PALETTE, stackTotalLabels, yenTick } from '../components/charts.js';
 import { monthLabel, monthShort, ratio, yen } from '../format.js';
 import { usePeriod } from '../period.js';
 
@@ -168,6 +168,8 @@ export function SubscriptionsPage() {
         <Chart
           type="bar"
           height={90}
+          /* 棒の上に月の合計を書く。色が20を超える図で、目分量の足し算をさせないため */
+          plugins={[stackTotalLabels]}
           data={{
             labels: s.months.map(monthShort),
             datasets: [
@@ -183,9 +185,25 @@ export function SubscriptionsPage() {
           options={{
             responsive: true,
             scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: yenTick } } },
-            plugins: { legend: { position: 'bottom' } },
+            /* 触れた月は、その月に払った全ベンダーを一度に出す(1社ずつ触って足させない) */
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: { position: 'bottom' },
+              tooltip: {
+                // 払っていないベンダーまで並べると、実際に払った数社が埋もれる
+                filter: (item) => Number(item.parsed.y) > 0,
+                callbacks: {
+                  label: (item) => `${item.dataset.label}: ${yen(Number(item.parsed.y))}`,
+                  footer: (items) =>
+                    `この月の合計: ${yen(items.reduce((sum, i) => sum + Number(i.parsed.y), 0))}`,
+                },
+              },
+            },
           }}
         />
+        <p className="sub">
+          棒の上の数字はその月の合計。凡例をクリックしてベンダーを隠すと、隠した分を除いた合計に変わります。
+        </p>
       </div>
 
       <div className="card">

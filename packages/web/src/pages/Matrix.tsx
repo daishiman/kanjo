@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type MatrixData, api } from '../api.js';
+import { MatrixMoversChart } from '../components/FinancialCharts.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { deltaCls, monthShort, pct, yen } from '../format.js';
@@ -92,8 +93,20 @@ export function MatrixPage() {
         </a>
       </div>
 
-      <div className="card scroll-x">
-        <table className="data">
+      <section className="card matrix-summary">
+        <MatrixMoversChart data={m} />
+      </section>
+
+      <div className="table-heading">
+        <div>
+          <h2>科目別の月次明細</h2>
+          <p className="sub">科目は左に固定。月別の数値だけ横にスクロールできます。</p>
+        </div>
+        <span className="table-unit">{mode === 'val' ? '単位: 円' : '単位: %'}</span>
+      </div>
+      <div className="card scroll-x matrix-table-card">
+        <table className="data matrix-table">
+          <caption className="visually-hidden">科目別の月次増減明細</caption>
           <thead>
             <tr>
               <th>科目</th>
@@ -113,7 +126,7 @@ export function MatrixPage() {
           <tbody>
             {m.rows.map((r) => (
               <tr key={r.label} className={r.isTotal ? 'total' : ''}>
-                <td>{r.label}</td>
+                <th scope="row">{r.label}</th>
                 {m.months.map((mm, i) => {
                   const c = cell(r.series, i);
                   return (

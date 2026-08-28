@@ -12,6 +12,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type BalanceSheet as BalanceSheetData, type StatementsResponse, api } from '../api.js';
+import { BalanceSheetChart, CashFlowCharts, ProfitAndLossCharts } from '../components/FinancialCharts.js';
 import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
@@ -103,8 +104,14 @@ export function StatementsPage() {
           <br />
           グループ名を押すと、中の科目まで開きます。
         </p>
+        <ProfitAndLossCharts pl={pl} />
+        <div className="table-heading compact">
+          <h3>月別の照合表</h3>
+          <span className="table-unit">単位: 円</span>
+        </div>
         <div className="scroll-x">
-          <table className="data">
+          <table className="data statement-table">
+            <caption className="visually-hidden">損益計算書の月別明細</caption>
             <thead>
               <tr>
                 <th scope="col">科目</th>
@@ -212,60 +219,68 @@ export function StatementsPage() {
         {cf.months.length === 0 ? (
           <p className="sub">記帳のある月がありません。</p>
         ) : (
-          <div className="scroll-x">
-            <table className="data stack-sm">
-              <thead>
-                <tr>
-                  <th scope="col">月</th>
-                  <th scope="col">利益</th>
-                  <th scope="col">入金待ち(増)</th>
-                  <th scope="col">支払待ち(増)</th>
-                  <th scope="col">営業キャッシュフロー</th>
-                  <th scope="col">累計</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cf.months.map((m, i) => (
-                  <tr key={m.month}>
-                    <th scope="row">{monthShort(m.month)}</th>
-                    <td className={`num ${gainCls(m.profit)}`} data-label="利益">
-                      {yenS(m.profit)}
+          <>
+            <CashFlowCharts cf={cf} />
+            <div className="table-heading compact">
+              <h3>月別の照合表</h3>
+              <span className="table-unit">単位: 円</span>
+            </div>
+            <div className="scroll-x">
+              <table className="data stack-sm">
+                <caption className="visually-hidden">キャッシュフローの月別明細</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">月</th>
+                    <th scope="col">利益</th>
+                    <th scope="col">入金待ち(増)</th>
+                    <th scope="col">支払待ち(増)</th>
+                    <th scope="col">営業キャッシュフロー</th>
+                    <th scope="col">累計</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cf.months.map((m, i) => (
+                    <tr key={m.month}>
+                      <th scope="row">{monthShort(m.month)}</th>
+                      <td className={`num ${gainCls(m.profit)}`} data-label="利益">
+                        {yenS(m.profit)}
+                      </td>
+                      <td className="num" data-label="入金待ち(増)">
+                        {yen(m.receivableIncrease)}
+                      </td>
+                      <td className="num" data-label="支払待ち(増)">
+                        {yen(m.payableIncrease)}
+                      </td>
+                      <td className={`num ${gainCls(m.operating)}`} data-label="営業キャッシュフロー">
+                        {yenS(m.operating)}
+                      </td>
+                      <td className={`num ${gainCls(cf.cumulative[i])}`} data-label="累計">
+                        {yenS(cf.cumulative[i])}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="total">
+                    <th scope="row">合計</th>
+                    <td className="num" data-label="利益">
+                      —
                     </td>
                     <td className="num" data-label="入金待ち(増)">
-                      {yen(m.receivableIncrease)}
+                      —
                     </td>
                     <td className="num" data-label="支払待ち(増)">
-                      {yen(m.payableIncrease)}
+                      —
                     </td>
-                    <td className={`num ${gainCls(m.operating)}`} data-label="営業キャッシュフロー">
-                      {yenS(m.operating)}
+                    <td className={`num ${gainCls(cf.total)}`} data-label="営業キャッシュフロー">
+                      {yenS(cf.total)}
                     </td>
-                    <td className={`num ${gainCls(cf.cumulative[i])}`} data-label="累計">
-                      {yenS(cf.cumulative[i])}
+                    <td className={`num ${gainCls(cf.total)}`} data-label="累計">
+                      {yenS(cf.total)}
                     </td>
                   </tr>
-                ))}
-                <tr className="total">
-                  <th scope="row">合計</th>
-                  <td className="num" data-label="利益">
-                    —
-                  </td>
-                  <td className="num" data-label="入金待ち(増)">
-                    —
-                  </td>
-                  <td className="num" data-label="支払待ち(増)">
-                    —
-                  </td>
-                  <td className={`num ${gainCls(cf.total)}`} data-label="営業キャッシュフロー">
-                    {yenS(cf.total)}
-                  </td>
-                  <td className={`num ${gainCls(cf.total)}`} data-label="累計">
-                    {yenS(cf.total)}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
         <Limits items={cf.limits} />
       </section>
@@ -375,8 +390,14 @@ function BalanceSheet({ bs, options }: { bs: BalanceSheetData; options: string[]
           未入力: {bs.monthsWithoutLiabilities.map(monthShort).join(' / ')}
         </p>
       ) : null}
+      <BalanceSheetChart bs={bs} />
+      <div className="table-heading compact">
+        <h3>月別の照合表</h3>
+        <span className="table-unit">単位: 円</span>
+      </div>
       <div className="scroll-x">
-        <table className="data">
+        <table className="data statement-table">
+          <caption className="visually-hidden">貸借対照表の月別明細</caption>
           <thead>
             <tr>
               <th scope="col">項目</th>
@@ -479,7 +500,7 @@ function LiabilityForm({ months, options }: { months: string[]; options: string[
   });
 
   return (
-    <div className="stack-sm">
+    <div className="stack-sm liability-form">
       <h3>負債を入れる</h3>
       <p className="sub lines">
         空欄のままにすると「入力していない」として扱い、その月の純資産は出しません。
