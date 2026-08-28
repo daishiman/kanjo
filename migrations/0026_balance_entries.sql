@@ -39,6 +39,32 @@ CREATE INDEX IF NOT EXISTS idx_balance_entries_month
 -- 取込履歴の kind に 'assets' を足す。
 -- 0000 が CHECK(kind IN ('freee','mf','json')) を持っており、
 -- SQLite は CHECK を後から外せないので、0004 と同じくテーブルを作り直す。
+--
+-- mf_transactions.import_id と freee_deals.import_id が imports(id) を参照しているので、
+-- 素の DROP TABLE は外部キー制約で弾かれる(FOREIGN KEY constraint failed)。
+-- 参照している行が1つも無い環境では通ってしまい、取込を済ませた本番でだけ落ちる。
+--
+-- D1 では外部キーを切れない。PRAGMA foreign_keys=OFF は黙って無視され、
+-- defer_foreign_keys も文をまたいでは効かない(DROP の文だけで検査が走る)。
+-- そこで、検査の側を止める代わりに、参照している側を一時的に外す。
+-- import_id は NULL を許すので、NULL の間は検査の対象にならない。
+--
+-- 元の値は退避表に控え、作り直しが済んだら書き戻す。この移行全体は1つの
+-- トランザクションなので、途中で落ちれば import_id が欠けたままにはならない。
+CREATE TABLE imports_fk_backup (
+  table_name TEXT NOT NULL,
+  row_id     INTEGER NOT NULL,
+  import_id  INTEGER NOT NULL
+);
+
+INSERT INTO imports_fk_backup (table_name, row_id, import_id)
+SELECT 'mf_transactions', id, import_id FROM mf_transactions WHERE import_id IS NOT NULL;
+INSERT INTO imports_fk_backup (table_name, row_id, import_id)
+SELECT 'freee_deals', id, import_id FROM freee_deals WHERE import_id IS NOT NULL;
+
+UPDATE mf_transactions SET import_id = NULL WHERE import_id IS NOT NULL;
+UPDATE freee_deals SET import_id = NULL WHERE import_id IS NOT NULL;
+
 CREATE TABLE imports_new (
   id INTEGER PRIMARY KEY,
   user_id TEXT NOT NULL,
@@ -72,3 +98,20 @@ ALTER TABLE imports_new RENAME TO imports;
 
 CREATE INDEX IF NOT EXISTS idx_imports_hash ON imports(user_id, content_hash);
 CREATE INDEX IF NOT EXISTS idx_imports_run ON imports(run_id, id);
+
+-- 外した参照を戻す。この時点で imports は同じ id を持っているので、検査に通る。
+UPDATE mf_transactions
+SET import_id = (
+  SELECT b.import_id FROM imports_fk_backup b
+  WHERE b.table_name = 'mf_transactions' AND b.row_id = mf_transactions.id
+)
+WHERE id IN (SELECT row_id FROM imports_fk_backup WHERE table_name = 'mf_transactions');
+
+UPDATE freee_deals
+SET import_id = (
+  SELECT b.import_id FROM imports_fk_backup b
+  WHERE b.table_name = 'freee_deals' AND b.row_id = freee_deals.id
+)
+WHERE id IN (SELECT row_id FROM imports_fk_backup WHERE table_name = 'freee_deals');
+
+DROP TABLE imports_fk_backup;
