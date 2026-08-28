@@ -25,11 +25,8 @@ import {
   OrphanedAttachmentRecovery,
   useAttachmentDisclosure,
 } from '../components/Attachments.js';
-import {
-  CategoryInputs,
-  OwnerSelect,
-  useInvalidateClassification,
-} from '../components/ClassificationSettings.js';
+import { CategoryPicker } from '../components/CategoryPicker.js';
+import { OwnerSelect, useInvalidateClassification } from '../components/ClassificationSettings.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { monthLabel, yen, yenS } from '../format.js';
@@ -506,7 +503,9 @@ export function ClassifyPage() {
       </div>
 
       <div className="card scroll-x classify-table-card">
-        <table className="data classify-table">
+        {/* stack-sm: 640px以下では1行=1カード。仕分けは電車内など片手で回す作業なので、
+            横スクロールで「この金額がどの明細のものか」を見失わせない */}
+        <table className="data classify-table stack-sm">
           <thead>
             <tr>
               <th>日付</th>
@@ -589,11 +588,13 @@ function TxLine({
         className={[focused ? 'kbd-focus' : '', editing ? 'editing-open' : ''].filter(Boolean).join(' ')}
         onClick={onFocus}
       >
-        <td className="num">{t.date}</td>
-        <td className="tx-description" title={t.description}>
+        <td className="num" data-label="日付">
+          {t.date}
+        </td>
+        <td className="tx-description" title={t.description} data-label="内容">
           {t.description}
         </td>
-        <td className="tx-institution" title={t.institution ?? undefined}>
+        <td className="tx-institution" title={t.institution ?? undefined} data-label="口座">
           {t.institution ?? '—'}
           {t.paymentMethod === 'cash' && (
             <>
@@ -604,7 +605,7 @@ function TxLine({
             </>
           )}
         </td>
-        <td>
+        <td data-label="大項目/中項目">
           {t.big}
           {t.mid ? ` / ${t.mid}` : ''}
           {catEdited && (
@@ -638,16 +639,18 @@ function TxLine({
             </>
           )}
         </td>
-        <td className="num">{yenS(t.amount)}</td>
-        <td>
+        <td className="num" data-label="金額">
+          {yenS(t.amount)}
+        </td>
+        <td data-label="判定">
           <span className={`pill ${t.cls}`}>{t.cls === 'biz' ? '事業' : '個人'}</span>{' '}
           <span className="pill neutral">{t.src}</span>
         </td>
-        <td>
+        <td data-label="名義">
           {t.owner ? ownerLabel(t.owner) : <span className="pill neutral">未設定</span>}
           {t.owner && <span className="orig owner-source">{t.ownerSrc}</span>}
         </td>
-        <td>
+        <td data-label="証憑">
           <AttachmentDisclosureCell
             targetId={t.id}
             status={t.attachmentCount > 0 ? 'attached' : undefined}
@@ -661,7 +664,7 @@ function TxLine({
             }
           />
         </td>
-        <td>
+        <td data-label="操作">
           <div className="classify-quick-actions" aria-label={`${t.description}の簡易操作`}>
             <QuickClassButton
               label="個人"
@@ -856,7 +859,7 @@ function EditorRow({
                   {SCOPE_LABEL[scope]}(空欄は取込値・ルールを維持)
                 </span>
                 <div className="classification-category-controls">
-                  <CategoryInputs
+                  <CategoryPicker
                     candidates={candidates}
                     scope={scope}
                     big={big}
@@ -865,6 +868,9 @@ function EditorRow({
                       setBig(v.big);
                       setMid(v.mid);
                     }}
+                    placeholderBig="科目(変えない)"
+                    placeholderMid="中項目(変えない)"
+                    clearLabel="科目を指定しない(取込値・ルールのまま)"
                   />
                 </div>
               </div>

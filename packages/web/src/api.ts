@@ -5,18 +5,26 @@
 import type {
   AttachmentQuotaUsage,
   Benchmark,
+  BudgetOutlook,
   BudgetRow,
+  Candidates,
+  CashFlow,
   Attachment as CoreAttachment,
   AttachmentCleanupStage as CoreAttachmentCleanupStage,
+  DefenseForecast,
   DefenseLine,
   DiagnosisData,
   HouseholdData,
   MatrixData,
   OverviewData,
+  ProfitAndLoss,
+  StatementSource,
   SubVendor,
   SubsCandidate,
+  SubsReviewRow,
   SubscriptionsData,
   TradeoffCandidate,
+  TradeoffReviewRow,
 } from '@kanjo/core';
 import {
   type Owner as CoreOwner,
@@ -86,10 +94,108 @@ export async function apiUpload<T>(path: string, form: FormData): Promise<T> {
 
 /* -------- エンドポイント別の型 -------- */
 
+/** 対象期間の情報。サーバが絞り込み前の Dataset から作る */
+export interface PeriodMeta {
+  applied: { from: string; to: string } | null;
+  label: string;
+  full: { from: string; to: string } | null;
+  years: string[];
+  monthCount: number;
+}
+
+/** 防衛ラインの実績判定に、先行き見通し(事前警告)を足したもの */
+export interface DefenseLineWithForecast extends DefenseLine {
+  forecast: DefenseForecast;
+}
+
 export interface SummaryResponse {
   overview: OverviewData;
-  defense: DefenseLine;
+  defense: DefenseLineWithForecast;
   benchmarks: Benchmark[];
+  /** 絞り込み前のデータから作った期間の情報。選択肢はここから作る */
+  period: PeriodMeta;
+}
+
+/* -------- 支出トレンド(規模・増減・優先度) -------- */
+
+export type ExpenseScope = 'all' | 'biz' | 'personal';
+export type TrendDirection = '増加' | '減少' | '横ばい' | '判定不可';
+export type PriorityAction = '削減を検討' | '継続監視' | '記録を整える' | '対応不要';
+
+export interface TrendRow {
+  account: string;
+  side: 'biz' | 'personal';
+  key: string;
+  total: number;
+  share: number;
+  monthlyAvg: number;
+  /** 変動係数。小さいほど毎月一定 */
+  cv: number;
+  type: '固定費' | '準変動' | 'スポット';
+  /** Theil-Sen の傾き(円/月) */
+  slopePerMonth: number;
+  slopeRatio: number;
+  /** この傾きが1年続いた場合の差(円) */
+  annualImpact: number;
+  mk: { s: number; tau: number; z: number; p: number; n: number };
+  direction: TrendDirection;
+  recentAvg: number;
+  priorAvg: number;
+  presenceRate: number;
+  /** 固定費なのに金額が立っていない月。取込漏れの疑い */
+  gapMonths: string[];
+  series: number[];
+  action: PriorityAction;
+  score: number;
+  reason: string;
+}
+
+export interface TrendsResponse {
+  months: string[];
+  recordedMonths: string[];
+  unrecordedExpMonths: string[];
+  expenseTotal: number;
+  monthlyAvg: number;
+  rows: TrendRow[];
+  pareto: {
+    account: string;
+    side: 'biz' | 'personal';
+    key: string;
+    total: number;
+    share: number;
+    cumShare: number;
+  }[];
+  coreCount: number;
+  breakdown: {
+    beforeMonths: string[];
+    afterMonths: string[];
+    beforeTotal: number;
+    afterTotal: number;
+    diff: number;
+    rows: {
+      account: string;
+      side: 'biz' | 'personal';
+      key: string;
+      before: number;
+      after: number;
+      diff: number;
+      contribution: number;
+    }[];
+  };
+  counts: Record<PriorityAction, number>;
+  scope: ExpenseScope;
+  scopeLabel: string;
+  sides: {
+    side: 'biz' | 'personal';
+    label: string;
+    total: number;
+    monthlyAvg: number;
+    share: number;
+    accountCount: number;
+    topAccount: { account: string; total: number } | null;
+  }[];
+  monthlySides: { month: string; biz: number; personal: number; total: number }[];
+  period: PeriodMeta;
 }
 
 /** freee 未決済(未入金・未払)。決済列のあるエクスポートを取り込んだ分だけが対象 */
@@ -156,17 +262,11 @@ export interface TxRow {
   edit: TxEditView | null;
 }
 
-export type CandidateSource = 'freee' | 'mf' | 'custom';
-export interface CandidateMajor {
-  name: string;
-  source: CandidateSource;
-  mids: { name: string; source: CandidateSource }[];
-}
-/** 科目候補の二系統: biz = freee 勘定科目(決算書の科目) / per = MF 大項目・中項目(家計の内訳) */
-export interface Candidates {
-  biz: CandidateMajor[];
-  per: CandidateMajor[];
-}
+/**
+ * 科目候補の二系統: biz = freee 勘定科目 + 確定申告の標準科目 / per = MF 大項目・中項目(家計の内訳)。
+ * 出どころ(source)が増えたときに画面だけ古い型のままになるのを避けるため、core の型をそのまま使う。
+ */
+export type { CandidateMajor, CandidateSource, Candidates } from '@kanjo/core';
 export interface CategoryOptionRow {
   scope: Cls;
   major: string;
@@ -440,6 +540,13 @@ export interface SettingsResponse {
   statMinMonthsRange: { min: number; max: number; default: number };
 }
 
+/** 夜間バックアップ(R2 に30日保持)の一覧行 */
+export interface BackupItem {
+  date: string;
+  size: number;
+  uploaded: string | null;
+}
+
 export interface TradeoffResponse {
   candidates: TradeoffCandidate[];
   budgets: BudgetRow[];
@@ -453,20 +560,39 @@ export interface TradeoffResponse {
     verdict: string | null;
     createdAt: string | null;
   }[];
+  /** 立てた計画が翌月に効いたかの突合(plans と同じ id で対応する) */
+  review: TradeoffReviewRow[];
+}
+
+/* -------- 決算書(PL・キャッシュフロー・BSの取込元) -------- */
+
+export interface StatementsResponse {
+  pl: ProfitAndLoss;
+  cf: CashFlow;
+  /** BSはまだ作れないので、代わりに「何を取り込めば作れるか」を出す */
+  balanceSheetSources: StatementSource[];
+  period: PeriodMeta;
 }
 
 export type {
   Benchmark,
+  BudgetOutlook,
   BudgetRow,
+  CashFlow,
+  DefenseForecast,
   DefenseLine,
   DiagnosisData,
   HouseholdData,
   MatrixData,
   OverviewData,
+  ProfitAndLoss,
+  StatementSource,
   SubVendor,
   SubsCandidate,
+  SubsReviewRow,
   SubscriptionsData,
   TradeoffCandidate,
+  TradeoffReviewRow,
 };
 
 export interface SubVendorRow extends SubVendor {
@@ -520,6 +646,9 @@ export interface AiTaskView {
   createdAt: string;
   reportId: string | null;
   status: 'waiting' | 'expired' | 'done';
+  /** 指示文を最後にコピーした日時。null は一度もコピーしていない */
+  copiedAt: string | null;
+  copiedTarget: 'claude_code' | 'codex' | null;
 }
 export interface AiReportItem {
   label: string;

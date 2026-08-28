@@ -83,6 +83,8 @@ const taskView = (t: typeof s.aiTasks.$inferSelect) => ({
   parentReportId: t.parentReportId ?? null,
   expiresAt: t.expiresAt,
   createdAt: t.createdAt,
+  copiedAt: t.copiedAt ?? null,
+  copiedTarget: t.copiedTarget ?? null,
   reportId: t.reportId,
   status: taskStatus(t),
 });
@@ -557,3 +559,18 @@ async function storeReport(
   });
   return { ok: true, reportId };
 }
+
+/** 指示文をコピーした事実の記録。作っただけの依頼と、渡したのに返ってこない依頼を見分ける */
+const copySchema = z.object({ target: z.enum(['claude_code', 'codex']) });
+
+aiRoute.post('/ai/tasks/:id/copied', zValidator('json', copySchema), async (c) => {
+  const db = getDb(c.env.DB);
+  const copiedAt = new Date().toISOString();
+  const updated = await db
+    .update(s.aiTasks)
+    .set({ copiedAt, copiedTarget: c.req.valid('json').target })
+    .where(and(eq(s.aiTasks.userId, c.get('userId')), eq(s.aiTasks.id, c.req.param('id'))))
+    .returning({ id: s.aiTasks.id });
+  if (!updated.length) return c.json({ error: { code: 'not_found', message: 'その依頼はありません' } }, 404);
+  return c.json({ ok: true, copiedAt });
+});

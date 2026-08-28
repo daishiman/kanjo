@@ -5,6 +5,7 @@ import { type DiagnosisData, api } from '../api.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { pct, yen } from '../format.js';
+import { usePeriod } from '../period.js';
 
 const judgePill: Record<string, string> = {
   要確認: 'pill alert',
@@ -21,7 +22,11 @@ const kindLabel: Record<string, string> = {
 };
 
 export function DiagnosisPage() {
-  const q = useQuery({ queryKey: ['diagnosis'], queryFn: () => api<DiagnosisData>('/diagnosis') });
+  const { key, withPeriod } = usePeriod();
+  const q = useQuery({
+    queryKey: ['diagnosis', key],
+    queryFn: () => api<DiagnosisData>(withPeriod('/diagnosis')),
+  });
   if (q.isLoading)
     return (
       <>

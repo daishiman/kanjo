@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { Term, linkTerms } from './components/Term.js';
-import { GLOSSARY, GUIDE_ORDER, TERM_ALIASES } from './glossary.js';
+import { ABBREVIATIONS, GLOSSARY, GUIDE_ORDER, TERM_ALIASES } from './glossary.js';
 
 describe('用語辞書', () => {
   it('指標ガイドの並び順は辞書の全項目を1回ずつ含む', () => {
@@ -31,6 +31,36 @@ describe('用語辞書', () => {
 
   it('辞書の語が無い文はそのまま返す', () => {
     expect(linkTerms('今月は特に問題ありません。')).toEqual(['今月は特に問題ありません。']);
+  });
+});
+
+describe('略語の読み方', () => {
+  it('略語には元の英語と日本語の呼び方が両方ある', () => {
+    // 英語だけ・日本語だけだと、片方しか知らない相手との会話で結び付かない
+    expect(ABBREVIATIONS.length).toBeGreaterThan(0);
+    for (const a of ABBREVIATIONS) {
+      expect(a.abbr.abbr.trim(), a.id).not.toBe('');
+      expect(a.abbr.full.trim(), a.id).not.toBe('');
+      expect(a.abbr.ja.trim(), a.id).not.toBe('');
+      expect(a.meaning.trim(), a.id).not.toBe('');
+    }
+  });
+
+  it('経営で最初に見る略語(PL・BS)が載っている', () => {
+    const ids = ABBREVIATIONS.map((a) => a.id);
+    expect(ids).toContain('pl');
+    expect(ids).toContain('bs');
+    expect(ids).toContain('cv');
+  });
+
+  it('同じ略語表記を2つの用語が使っていない', () => {
+    const seen = ABBREVIATIONS.map((a) => a.abbr.abbr);
+    expect(new Set(seen).size).toBe(seen.length);
+  });
+
+  it('並びは指標ガイドと同じ順(行き来しても順番が変わらない)', () => {
+    const order = ABBREVIATIONS.map((a) => GUIDE_ORDER.indexOf(a.id));
+    expect([...order].sort((x, y) => x - y)).toEqual(order);
   });
 });
 

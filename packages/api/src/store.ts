@@ -993,6 +993,16 @@ export interface SubVendorRow extends SubVendor {
   id: number;
 }
 
+/**
+ * 見直し記録つきのベンダー行。
+ * 集計(loadDataset)には見直し日は要らないので、SubVendorRow とは別の型にして
+ * 「集計経路では取っていない」ことを型で見えるようにする。
+ */
+export interface SubVendorWithReview extends SubVendorRow {
+  /** 最後に契約を見直した日時(ISO)。null は一度も見直していない */
+  reviewedAt: string | null;
+}
+
 const parseStringArray = (raw: string): string[] => {
   try {
     const v: unknown = JSON.parse(raw);
@@ -1003,7 +1013,7 @@ const parseStringArray = (raw: string): string[] => {
 };
 
 /** 登録順(sort_order, id)で返す。マイグレーション 0005 で既定8件が入る */
-export async function loadSubVendors(db: Db, userId: string): Promise<SubVendorRow[]> {
+export async function loadSubVendors(db: Db, userId: string): Promise<SubVendorWithReview[]> {
   const rows = await db
     .select()
     .from(s.subVendors)
@@ -1014,6 +1024,7 @@ export async function loadSubVendors(db: Db, userId: string): Promise<SubVendorR
     name: r.name,
     aliases: parseStringArray(r.aliases),
     accounts: parseStringArray(r.accounts),
+    reviewedAt: r.reviewedAt ?? null,
   }));
 }
 

@@ -21,176 +21,16 @@ import {
   ownerLabel,
 } from '../api.js';
 import { dateTime, yenS } from '../format.js';
-
-export function useInvalidateClassification() {
-  const qc = useQueryClient();
-  return () => {
-    void qc.invalidateQueries({ queryKey: ['rules'] });
-    void qc.invalidateQueries({ queryKey: ['classification'] });
-    void qc.invalidateQueries({ queryKey: ['transactions'] });
-    void qc.invalidateQueries({ queryKey: ['summary'] });
-    void qc.invalidateQueries({ queryKey: ['household'] });
-    void qc.invalidateQueries({ queryKey: ['cash-entries'] });
-  };
-}
+import { AddCategoryInline, CategoryPicker } from './CategoryPicker.js';
+import { useInvalidateClassification } from './classification-invalidate.js';
 
 /**
- * 科目の選択(候補からのみ)。公私(scope)で候補を切り替える:
- * 事業 = freee の勘定科目(中項目なし) / 個人 = MF の大項目→中項目。
- * 候補に無い科目は「候補にない科目を追加」から系統を指定して登録するとすぐ選べる。
+ * 科目の選択と追加は CategoryPicker(分類 → 科目の2クリック)に一本化した。
+ * 確定申告の標準科目まで候補に入ると <select> では選べる状態にならないため。
+ * 既存の読み込み口を保つためにここから再輸出する。
  */
-export function CategoryInputs({
-  candidates,
-  scope,
-  big,
-  mid,
-  onChange,
-  placeholderBig = '科目(変えない)',
-  placeholderMid = '中項目(変えない)',
-  allowAdd = true,
-}: {
-  candidates: Candidates;
-  scope: Cls | null;
-  big: string;
-  mid: string;
-  onChange: (v: { big: string; mid: string }) => void;
-  placeholderBig?: string;
-  placeholderMid?: string;
-  allowAdd?: boolean;
-}) {
-  const [adding, setAdding] = useState(false);
-  if (!scope) {
-    return (
-      <span className="sub" style={{ margin: 0 }}>
-        科目を指定するには先に公私(事業/個人)を選びます
-      </span>
-    );
-  }
-  const list = candidates[scope];
-  const major = list.find((m) => m.name === big);
-  const grouped = (src: CandidateSource) => list.filter((m) => m.source === src);
-  const groups: [string, CandidateMajor[]][] =
-    scope === 'biz'
-      ? [
-          ['freeeに実在する勘定科目', grouped('freee')],
-          ['追加した事業の科目', grouped('custom')],
-        ]
-      : [
-          ['MF明細に実在する大項目', grouped('mf')],
-          ['追加した家計の科目', grouped('custom')],
-        ];
-  return (
-    <>
-      <select
-        value={major ? big : ''}
-        onChange={(e) => onChange({ big: e.target.value, mid: '' })}
-        title={SCOPE_LABEL[scope]}
-      >
-        <option value="">{placeholderBig}</option>
-        {groups
-          .filter(([, g]) => g.length)
-          .map(([label, g]) => (
-            <optgroup key={label} label={label}>
-              {g.map((m) => (
-                <option key={m.name} value={m.name}>
-                  {m.name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-      </select>
-      {scope === 'per' && (
-        <select value={mid} onChange={(e) => onChange({ big, mid: e.target.value })} disabled={!major}>
-          <option value="">{placeholderMid}</option>
-          {(major?.mids ?? []).map((m) => (
-            <option key={m.name} value={m.name}>
-              {m.name}
-              {m.source === 'custom' ? '(追加)' : ''}
-            </option>
-          ))}
-        </select>
-      )}
-      {allowAdd &&
-        (adding ? (
-          <AddCategoryInline
-            scope={scope}
-            defaultMajor={scope === 'per' && major ? major.name : ''}
-            onDone={(v) => {
-              setAdding(false);
-              if (v) onChange(v);
-            }}
-          />
-        ) : (
-          <button type="button" className="mini" onClick={() => setAdding(true)}>
-            候補にない科目を追加
-          </button>
-        ))}
-    </>
-  );
-}
-
-/** その場で候補科目を追加する(系統は現在の公私で決まる)。登録後すぐ選択状態にする */
-export function AddCategoryInline({
-  scope,
-  defaultMajor,
-  onDone,
-}: {
-  scope: Cls;
-  defaultMajor: string;
-  onDone: (v: { big: string; mid: string } | null) => void;
-}) {
-  const invalidate = useInvalidateClassification();
-  const [major, setMajor] = useState(defaultMajor);
-  const [mid, setMid] = useState('');
-  const add = useMutation({
-    mutationFn: () =>
-      api('/category-options', {
-        method: 'POST',
-        body: JSON.stringify({ scope, major: major.trim(), mid: scope === 'per' ? mid.trim() : '' }),
-      }),
-    onSuccess: () => {
-      invalidate();
-      onDone({ big: major.trim(), mid: scope === 'per' ? mid.trim() : '' });
-    },
-  });
-  return (
-    <span className="editor-form" style={{ display: 'inline-flex' }}>
-      <span className="pill neutral">{SCOPE_SHORT[scope]}の科目として追加</span>
-      <input
-        type="text"
-        placeholder={scope === 'biz' ? '勘定科目名(例: 通信費)' : '大項目'}
-        value={major}
-        onChange={(e) => setMajor(e.target.value)}
-        style={{ width: 140 }}
-      />
-      {scope === 'per' && (
-        <input
-          type="text"
-          placeholder="中項目(任意)"
-          value={mid}
-          onChange={(e) => setMid(e.target.value)}
-          style={{ width: 120 }}
-        />
-      )}
-      <button
-        type="button"
-        className="primary"
-        disabled={!major.trim() || add.isPending}
-        onClick={() => add.mutate()}
-      >
-        追加して選ぶ
-      </button>
-      <button type="button" onClick={() => onDone(null)}>
-        やめる
-      </button>
-      {add.isError && (
-        <span className="notice" style={{ margin: 0 }}>
-          {(add.error as Error).message}
-        </span>
-      )}
-    </span>
-  );
-}
+export { useInvalidateClassification } from './classification-invalidate.js';
+export { AddCategoryInline, CategoryPicker } from './CategoryPicker.js';
 
 export function OwnerSelect({
   value,
@@ -317,12 +157,15 @@ function RuleFields({
         <option value="biz">事業</option>
         <option value="per">個人</option>
       </select>
-      <CategoryInputs
+      <CategoryPicker
         candidates={candidates}
         scope={value.cls}
         big={value.big ?? ''}
         mid={value.mid ?? ''}
         onChange={(v) => onChange({ ...value, big: v.big || null, mid: v.mid || null })}
+        placeholderBig="科目(変えない)"
+        placeholderMid="中項目(変えない)"
+        clearLabel="科目を指定しない(変えない)"
       />
       <OwnerSelect value={value.owner} onChange={(owner) => onChange({ ...value, owner })} />
     </>

@@ -4,6 +4,21 @@
  * - 定義は packages/core/src/analysis.ts の計算式に合わせる。式を変えたらここも直す。
  * - 画面に実際に出ている用語だけを載せる(未使用の項目は scripts/check-glossary.mjs が検出する)。
  */
+
+/**
+ * 略語の展開。「CV」「BS」のようなアルファベットだけの表記は、
+ * ホバーの説明文を読んでも「何の略か」が分からないままになりやすい。
+ * 元の英語と日本語の呼び方を持たせ、指標ガイドの「略語の読み方」に一覧で出す。
+ */
+export interface Abbreviation {
+  /** 画面や資料に出てくる略語そのもの */
+  abbr: string;
+  /** 略語の元になった英語 */
+  full: string;
+  /** 日本語での呼び方 */
+  ja: string;
+}
+
 export interface GlossaryEntry {
   /** 画面に出す用語(短い表記) */
   term: string;
@@ -22,6 +37,8 @@ export interface GlossaryEntry {
    * 別名同士の重複・取り違えは scripts/check-glossary.mjs と glossary.test.tsx が検査する。
    */
   aliases?: readonly string[];
+  /** アルファベットの略語を使っている用語だけ。指標ガイドの「略語の読み方」に出る */
+  abbr?: Abbreviation;
 }
 
 export const GLOSSARY = {
@@ -39,6 +56,22 @@ export const GLOSSARY = {
     desc: '標準偏差÷平均。月ごとのブレの大きさ。小さいほど毎月同じ額=固定費。',
     bench: '0.6未満=固定費 / 0.6〜1.5=準変動 / 1.5超=スポット',
     aliases: ['変動係数', 'CV', 'ばらつき係数'],
+    abbr: { abbr: 'CV', full: 'Coefficient of Variation', ja: '変動係数' },
+  },
+  mannKendall: {
+    term: 'Mann-Kendall検定',
+    short:
+      '増えているか減っているかを、金額そのものではなく「前より上がった月が何回あるか」で判定する方法。単発の大きな支払い1件に振り回されない。',
+    desc: '全ての月の組み合わせで前後の大小を数え、増えた組が偶然では説明できないほど多いかを見る順位ベースの検定。金額の大きさを使わないので、1件だけ極端に大きい支払いがあっても「増加」と判定されにくい。',
+    bench: 'p<0.05 で「増加」または「減少」、それ以外は「横ばい」。6ヶ月未満は「判定不可」',
+    aliases: ['Mann-Kendall検定', 'マンケンドール検定', '傾向検定'],
+  },
+  theilSen: {
+    term: 'Theil-Sen傾き',
+    short: '月あたりいくら増えているかの目安。全ての2点間の傾きを出し、その真ん中の値を採る。',
+    desc: '全ての月のペアについて傾き(金額差÷月数差)を計算し、その中央値を傾きとする。平均ではなく中央値なので、単発の高額支払いが1件混ざっても値がほとんど動かない。',
+    bench: '傾き×12を「1年続いた場合の差」として示す',
+    aliases: ['Theil-Sen傾き', 'タイル・セン推定', 'Theil-Sen'],
   },
   zScore: {
     term: 'z',
@@ -46,6 +79,7 @@ export const GLOSSARY = {
     desc: '(直近値−平均)÷標準偏差。直近月が普段からどれだけ離れているか。',
     bench: 'z≥2で「要確認」、1≤z<2「やや高い」、z≤−1「低め」',
     aliases: ['zスコア', 'z値', 'Zスコア', 'Z値', '標準化得点'],
+    abbr: { abbr: 'z', full: 'z-score (standard score)', ja: '標準化得点' },
   },
   breakEven: {
     term: '損益分岐点',
@@ -53,6 +87,7 @@ export const GLOSSARY = {
     desc: '固定費に分類された科目の直近3ヶ月平均合計。これを下回る月商だと赤字。',
     bench: '安全余裕率30%以上が望ましい',
     aliases: ['損益分岐点売上高', '損益分岐点売上', '損益分岐点', '損益分岐', 'BEP'],
+    abbr: { abbr: 'BEP', full: 'Break-Even Point', ja: '損益分岐点' },
   },
   safetyMargin: {
     term: '安全余裕率',
@@ -186,11 +221,53 @@ export const GLOSSARY = {
     desc: '平均±2×標準偏差の帯。正規分布ならこの外に出るのは約5%だけ。',
     bench: '帯の外かつ1万円超の差がある月を外れ値として扱う',
     aliases: ['±2シグマ', '±2σ', '2シグマ', '2σ', '外れ値'],
+    abbr: { abbr: 'σ', full: 'sigma (standard deviation)', ja: '標準偏差' },
+  },
+  pl: {
+    term: 'PL(損益計算書)',
+    short:
+      '一定期間の売上と経費を並べ、いくら儲かったかを示す表。Profit and Loss statement の略。期間中に動いた金額を見る。',
+    desc: '期間中の売上から経費を引いて利益を出す表。この画面では確定申告の分類で経費をまとめている。',
+    bench: '利益率(利益÷売上)が前期より下がっていないかを見る',
+    aliases: ['損益計算書', 'P/L'],
+    abbr: { abbr: 'PL', full: 'Profit and Loss statement', ja: '損益計算書' },
+  },
+  bs: {
+    term: 'BS(貸借対照表)',
+    short:
+      'ある時点の資産・負債・純資産の残高を示す表。Balance Sheet の略。取引を足しても出ず、期首の残高が要る。',
+    desc: '決算日など「ある一日」の残高の表。左に資産、右に負債と純資産が並び、左右の合計が必ず一致する。',
+    bench: '自己資本比率(純資産÷資産)30%以上が目安',
+    aliases: ['貸借対照表', 'バランスシート', 'B/S'],
+    abbr: { abbr: 'BS', full: 'Balance Sheet', ja: '貸借対照表' },
+  },
+  cashFlow: {
+    term: 'キャッシュフロー',
+    short: '期間中に現金が実際いくら増えたか。売掛・買掛のズレがあるので、利益とは一致しない。',
+    desc: '利益に「まだ入金されていない売上」「まだ払っていない経費」を差し引きして、現金の動きに直したもの。',
+    bench: '利益が黒字でもキャッシュフローが続けてマイナスなら資金繰りが危ない',
+    aliases: ['キャッシュフロー', '資金繰り'],
+  },
+  bcp: {
+    term: 'BCP(事業継続計画)',
+    short:
+      '売上が止まっても事業を続けるための備え。Business Continuity Plan の略。手元資金が何ヶ月もつかから考える。',
+    desc: '災害・取引先の離脱・体調不良などで売上が止まったときに、事業をどう続けるかを決めておく計画。',
+    bench: '固定費の6ヶ月分の手元資金が一つの目安',
+    aliases: ['事業継続計画', 'BCP'],
+    abbr: { abbr: 'BCP', full: 'Business Continuity Plan', ja: '事業継続計画' },
+  },
+  runway: {
+    term: 'ランウェイ',
+    short: '手元資金 ÷ 毎月の固定費。売上がゼロになっても何ヶ月もつかの月数。',
+    bench: '6ヶ月以上あると打ち手を考える時間が取れる',
+    aliases: ['ランウェイ', '資金持続月数'],
   },
   yoy: {
     term: '前年比(換算)',
     short: '今年の年換算÷前年の実績。未記帳月は除いて計算する。',
     aliases: ['前年同月比', '前年同期比', '前年同月', '前年対比', '前年比'],
+    abbr: { abbr: 'YoY', full: 'Year over Year', ja: '前年比' },
   },
 } as const satisfies Record<string, GlossaryEntry>;
 
@@ -198,6 +275,9 @@ export type TermId = keyof typeof GLOSSARY;
 
 /** 指標ガイドに並べる順(業務上の重要度順) */
 export const GUIDE_ORDER: readonly TermId[] = [
+  'pl',
+  'bs',
+  'cashFlow',
   'defenseLine',
   'breakEven',
   'safetyMargin',
@@ -206,6 +286,8 @@ export const GUIDE_ORDER: readonly TermId[] = [
   'yoy',
   'pareto',
   'cv',
+  'mannKendall',
+  'theilSen',
   'classification',
   'fixedCost',
   'median',
@@ -220,12 +302,24 @@ export const GUIDE_ORDER: readonly TermId[] = [
   'explainability',
   'savingsRate',
   'bizAdvance',
+  'runway',
+  'bcp',
   'unrecordedMonth',
   'publicPrivate',
   'reportType',
   'reportVersion',
   'mergedJson',
 ];
+
+/**
+ * 略語の一覧。指標ガイドの「略語の読み方」に出す。
+ * 並びは GUIDE_ORDER に従う(ガイド本文と行き来したときに順番が変わらない)。
+ */
+export const ABBREVIATIONS: readonly { id: TermId; abbr: Abbreviation; meaning: string }[] =
+  GUIDE_ORDER.flatMap((id) => {
+    const e = GLOSSARY[id] as GlossaryEntry;
+    return e.abbr ? [{ id, abbr: e.abbr, meaning: e.desc ?? e.short }] : [];
+  });
 
 /** 自由文の中で辞書の用語を探すための一覧(長い表記から先に照合する) */
 export const TERM_ALIASES: readonly { id: TermId; text: string }[] = (

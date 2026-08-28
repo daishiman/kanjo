@@ -18,6 +18,8 @@ const task = (id: string, status: AiTaskView['status'], createdAt: string): AiTa
   type: 'monthly',
   label: '2026年1月',
   supplement: null,
+  copiedAt: null,
+  copiedTarget: null,
   parentReportId: null,
   expiresAt: '2026-02-02T00:00:00.000Z',
   createdAt,

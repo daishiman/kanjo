@@ -5,11 +5,13 @@
  */
 import {
   TRANSIT_CATEGORY,
+  TRANSIT_SAME_ACCOUNT_NOTE,
   type TransitInput,
   buildTransitEntry,
   cashTxId,
   missingReceiptSeverity,
   receiptStatus,
+  shouldSwitchToTransit,
   transitInputError,
 } from '@kanjo/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -28,7 +30,7 @@ import {
   AttachmentDisclosureRow,
   useAttachmentDisclosure,
 } from '../components/Attachments.js';
-import { CategoryInputs } from '../components/ClassificationSettings.js';
+import { CategoryPicker } from '../components/CategoryPicker.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { monthLabel, yen } from '../format.js';
 
@@ -147,13 +149,25 @@ const canSubmit = (b: CashEntryBody, mode: CashEntryMode): boolean =>
 function EntryFields({
   value,
   onChange,
+  onModeChange,
   candidates,
 }: {
   value: CashEntryBody;
   onChange: (v: CashEntryBody) => void;
+  onModeChange: (mode: CashEntryMode) => void;
   candidates: CashEntriesResponse['candidates'];
 }) {
   const set = (patch: Partial<CashEntryBody>) => onChange({ ...value, ...patch });
+  // 交通費の科目を選んだら、区間から金額を組み立てられる入力に寄せる。
+  // ただし内容や金額を入れたあとは勝手に捨てず、切り替えるかどうかを本人に選ばせる。
+  const setCategory = (v: { big: string; mid: string }) => {
+    if (shouldSwitchToTransit(v.big, value)) {
+      onModeChange('transit');
+      return;
+    }
+    set(v);
+  };
+  const offerTransit = value.big.trim() === TRANSIT_CATEGORY;
   return (
     <>
       <input
@@ -199,15 +213,26 @@ function EntryFields({
         onChange={(e) => set({ description: e.target.value })}
         style={{ width: 260 }}
       />
-      <CategoryInputs
+      <CategoryPicker
         candidates={candidates}
         scope={value.side}
         big={value.big}
         mid={value.mid}
-        onChange={(v) => set(v)}
+        onChange={setCategory}
         placeholderBig={value.side === 'biz' ? '勘定科目を選ぶ' : '大項目を選ぶ'}
         placeholderMid="中項目(任意)"
+        hintText={value.description}
       />
+      {offerTransit && (
+        <span className="sub transit-offer" style={{ margin: 0 }}>
+          {TRANSIT_SAME_ACCOUNT_NOTE}
+          <br />
+          区間と片道運賃から金額を組み立てるなら、
+          <button type="button" className="mini linklike" onClick={() => onModeChange('transit')}>
+            交通費(電車代)の入力に切り替える
+          </button>
+        </span>
+      )}
       <input
         type="text"
         placeholder="メモ(任意)"
@@ -295,7 +320,7 @@ function TransitFields({
         <input type="checkbox" checked={t.round} onChange={(e) => setTransit({ round: e.target.checked })} />
         往復
       </label>
-      <CategoryInputs
+      <CategoryPicker
         candidates={candidates}
         scope={value.side}
         big={value.big}
@@ -308,7 +333,9 @@ function TransitFields({
         {error ?? `${built.description} / ${yen(built.amount)}`}
       </span>
       <span className="sub" style={{ margin: 0 }}>
-        電車代は領収書が出ない交通費として「証憑不要」で記帳します。
+        電車代は領収書が出ないため「証憑不要」で記帳します。
+        <br />
+        {TRANSIT_SAME_ACCOUNT_NOTE}
       </span>
     </>
   );
@@ -366,7 +393,7 @@ function CashEntryInputs({
     <>
       <EntryModeTabs mode={mode} onChange={onModeChange} />
       {mode === 'normal' ? (
-        <EntryFields value={value} onChange={onChange} candidates={candidates} />
+        <EntryFields value={value} onChange={onChange} onModeChange={onModeChange} candidates={candidates} />
       ) : (
         <TransitFields value={value} onChange={onChange} candidates={candidates} />
       )}
@@ -484,7 +511,8 @@ export function CashPage() {
   const shownIds = new Set(shown.map((e) => e.id));
   const duplicates = (q.data.duplicates ?? []).filter((d) => shownIds.has(d.cashEntryId));
   const duplicateIds = new Set(duplicates.map((d) => d.cashEntryId));
-  const noBizCandidates = candidates.biz.length === 0;
+  // 標準科目は常に並ぶので「候補ゼロ」は起きない。実績が1件も無い状態を知らせる
+  const noBizCandidates = !candidates.biz.some((m) => m.source === 'freee' || m.source === 'custom');
 
   return (
     <>
@@ -492,14 +520,20 @@ export function CashPage() {
 
       <div className="card">
         <h2>現金の記帳を追加</h2>
-        <p className="sub">
-          事業の支払いは freee の勘定科目で、家計の支払いは MF
-          の大項目/中項目で記帳します。事業分は科目別の集計と統計診断に、家計分は口座「現金」の明細として公私仕分けと家計に反映されます。
+        <p className="sub lines">
+          事業は freee の勘定科目と確定申告の標準科目から選びます。
+          <br />
+          家計は MF の大項目/中項目と生活の標準費目から選びます。
+          <br />
+          科目は「分類 → 科目」の2クリック。選ぶ前に基準と例が出ます。
+          <br />
+          事業分は科目別の集計へ、家計分は口座「現金」の明細へ入ります。
         </p>
         {noBizCandidates && draft.side === 'biz' && (
-          <div className="notice info">
-            事業の勘定科目の候補がまだありません。先に「データ取込」で freee
-            仕訳を取り込むと候補が揃います。取込前でも「候補にない科目を追加」から科目を登録すれば記帳できます。
+          <div className="notice info lines">
+            freee 仕訳が未取込のため、標準科目だけが出ています。
+            <br />
+            「データ取込」で仕訳を入れると、使った科目が先頭に並びます。
           </div>
         )}
         <form onSubmit={submit} className="toolbar">

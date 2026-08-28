@@ -119,6 +119,8 @@ export const subVendors = sqliteTable('sub_vendors', {
   /** 対象勘定科目の原本名。旧行の正規化後ラベルも互換照合する。'[]' なら全科目 */
   accounts: text('accounts').notNull().default('[]'),
   sortOrder: integer('sort_order').notNull().default(0),
+  /** 最後に契約を見直した日時(ISO)。NULL は一度も見直していない */
+  reviewedAt: text('reviewed_at'),
   createdAt: text('created_at').notNull().$defaultFn(nowIso),
 });
 
@@ -398,6 +400,9 @@ export const aiTasks = sqliteTable(
     tokenHash: text('token_hash').notNull(),
     expiresAt: text('expires_at').notNull(),
     usedAt: text('used_at'),
+    /** 指示文を最後にコピーした日時と貼り付け先('claude_code' | 'codex')。上書き方式 */
+    copiedAt: text('copied_at'),
+    copiedTarget: text('copied_target', { enum: ['claude_code', 'codex'] }),
     reportId: text('report_id'),
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
   },

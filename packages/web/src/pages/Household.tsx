@@ -4,15 +4,21 @@ import { useState } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type HouseholdData, api, ownerLabel } from '../api.js';
+import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { COLORS, yenTick } from '../components/charts.js';
 import { deltaCls, gainCls, monthLabel, monthShort, ratio, yen, yenS } from '../format.js';
+import { usePeriod } from '../period.js';
 
 const rate = (v: number | null) => ratio(v, 0);
 
 export function HouseholdPage() {
-  const q = useQuery({ queryKey: ['household'], queryFn: () => api<HouseholdData>('/household') });
+  const { key, withPeriod } = usePeriod();
+  const q = useQuery({
+    queryKey: ['household', key],
+    queryFn: () => api<HouseholdData>(withPeriod('/household')),
+  });
   const [sel, setSel] = useState<string | null>(null);
   if (q.isLoading)
     return (
@@ -212,6 +218,7 @@ export function HouseholdPage() {
 
       <div className="card">
         <h2>収支バランス(月別)</h2>
+        <HowTo id="householdBalance" />
         {single ? (
           <div className="notice info">
             まだ1ヶ月分です。翌月のMF明細を取り込むと、月ごとの推移と前月比が並びます(目標:
@@ -349,6 +356,7 @@ export function HouseholdPage() {
 
       <div className="card scroll-x">
         <h2>生活費の内訳(全期間 {t.months}ヶ月・大項目別)</h2>
+        <HowTo id="householdBreakdown" />
         <table className="data stack-sm">
           <thead>
             <tr>

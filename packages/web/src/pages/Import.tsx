@@ -1,10 +1,12 @@
+import { autoRegisterable } from '@kanjo/core';
 /**
  * P8 データ取込: ZIP・CSV・Excel・HTML版互換JSONの投入と取込履歴(FR-01)。
  * 同月洗い替えの確認ダイアログを挟む。
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useRef, useState } from 'react';
-import { AUTH_EVENT, type ImportHistoryRow, type ImportUnitResult, api } from '../api.js';
+import { Link } from 'react-router-dom';
+import { AUTH_EVENT, type ImportHistoryRow, type ImportUnitResult, type SubsCandidate, api } from '../api.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { dateTime } from '../format.js';
@@ -318,6 +320,7 @@ export function ImportPage() {
               )}
             </p>
           )}
+          <SubsHandoff results={results} />
         </div>
       )}
 
@@ -431,5 +434,33 @@ export function ImportPage() {
         )}
       </div>
     </>
+  );
+}
+
+/**
+ * 取込のあと、サブスク候補が出ていることをその場で知らせる。
+ *
+ * 取込画面を閉じてしまうと、候補が出ていること自体に気づかない。
+ * ここで件数だけ見せて、確認はサブスク画面に任せる(判断は1箇所にまとめる)。
+ * freee を取り込んでいないときは候補が増えないので出さない。
+ */
+function SubsHandoff({ results }: { results: ImportUnitResult[] }) {
+  const gotFreee = results.some((r) => r.status !== 'failed' && r.kind === 'freee');
+  const q = useQuery({
+    queryKey: ['sub-candidates'],
+    queryFn: () => api<{ candidates: SubsCandidate[] }>('/sub-vendors/candidates'),
+    enabled: gotFreee,
+  });
+  if (!gotFreee) return null;
+  const sure = autoRegisterable(q.data?.candidates ?? []);
+  if (!sure.length) return null;
+  return (
+    <div className="notice info lines">
+      サブスクとして登録できそうな支払先が {sure.length}件 見つかりました。
+      <br />
+      毎月ほぼ同額で続いている支払先です。まとめて登録できます。
+      <br />
+      <Link to="/subscriptions">サブスク分析で確認する</Link>
+    </div>
   );
 }

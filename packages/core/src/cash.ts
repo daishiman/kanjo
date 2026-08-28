@@ -112,6 +112,27 @@ export function cashToTx(e: CashEntry): MfTx {
 /** 交通費の既定科目。候補に無ければ画面側で選び直す */
 export const TRANSIT_CATEGORY = '旅費交通費';
 
+/**
+ * 「通常の記帳」と「交通費(電車代)」は保存先も科目も同じ1つの現金明細で、
+ * 違うのは入力の作法だけ(区間と片道運賃から金額・内容文を組み立て、証憑不要にする)。
+ * 画面にこの1行を出して、2つの旅費交通費が別勘定に見えるのを防ぐ。
+ */
+export const TRANSIT_SAME_ACCOUNT_NOTE =
+  '交通費も通常の記帳も同じ「旅費交通費」に入ります。違うのは入力方法だけです。';
+
+/**
+ * 通常の記帳で交通費の科目を選んだとき、交通費の入力に切り替えてよいか。
+ * 内容や金額を入れたあとに切り替えると、それを捨てることになる。
+ * まだ何も入れていないときだけ自動で切り替え、入力済みなら画面から誘うだけにする。
+ */
+export function shouldSwitchToTransit(
+  big: string,
+  entered: { description: string; amount: number },
+): boolean {
+  if (big.trim() !== TRANSIT_CATEGORY) return false;
+  return !entered.description.trim() && entered.amount <= 0;
+}
+
 export interface TransitInput {
   from: string;
   to: string;

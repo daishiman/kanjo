@@ -480,6 +480,9 @@ describe('canonical mutation lease predicate', () => {
       // アーカイブは表示の出し分けだけを変え、記帳の正本には触れない。
       ['PUT', '/api/ai/reports/1/archive'],
       ['POST', '/api/tradeoff'],
+      // 見直し記録・コピー記録はどちらも「いつ操作したか」だけで、記帳の正本に触れない。
+      ['POST', '/api/sub-vendors/1/review'],
+      ['POST', '/api/ai/tasks/1/copied'],
       // suggestionは読み取りのみでbudgetを書かない。
       ['POST', '/api/budgets/suggest'],
       ['POST', '/api/attachments/archive/reconcile'],
@@ -538,12 +541,14 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/sub-vendors',
       'PUT /api/sub-vendors/:id',
       'DELETE /api/sub-vendors/:id',
+      'POST /api/sub-vendors/:id/review',
       'POST /api/sub-vendors/exclusions',
       'DELETE /api/sub-vendors/exclusions/:id',
       'POST /api/imports',
       'POST /api/restore',
       'POST /api/tradeoff',
       'POST /api/ai/tasks',
+      'POST /api/ai/tasks/:id/copied',
       'POST /api/ai/tasks/:id/paste',
       'POST /api/ai/tasks/:id/report',
       'PUT /api/ai/reports/:id/archive',

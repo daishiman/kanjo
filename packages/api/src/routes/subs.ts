@@ -4,7 +4,7 @@ import { zValidator } from '@hono/zod-validator';
  * 登録を変えたら freee 原本から集計を作り直す(取込のたびに消えない)。
  * 候補から外した支払先(「サブスクではない」)は集計に影響しないので、再計算はしない。
  */
-import { subsCandidates, vendorKey } from '@kanjo/core';
+import { subsCandidates, subsReviewStatus, vendorKey } from '@kanjo/core';
 import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -59,7 +59,12 @@ subsRoute.get('/sub-vendors', async (c) => {
       .where(eq(s.freeeDeals.userId, userId)),
   ]);
   const accountOptions = [...new Set(dealRows.map((r) => r.accountRaw ?? '').filter(Boolean))].sort();
-  return c.json({ vendors, accountOptions });
+  // 解約し忘れは金額の異常では拾えないので、最後に見直した日から四半期で催促する
+  const review = subsReviewStatus(
+    vendors.map((v) => ({ id: v.id, name: v.name, reviewedAt: v.reviewedAt })),
+    new Date().toISOString().slice(0, 10),
+  );
+  return c.json({ vendors, accountOptions, review });
 });
 
 subsRoute.post('/sub-vendors', zValidator('json', vendorSchema), async (c) => {
@@ -188,4 +193,20 @@ subsRoute.delete('/sub-vendors/exclusions/:id', async (c) => {
     return c.json({ error: { code: 'not_found', message: '除外の記録が見つかりません' } }, 404);
   }
   return c.json({ ok: true });
+});
+
+/** 「いま見直した」の記録。契約内容そのものは変えないので集計の作り直しは要らない */
+subsRoute.post('/sub-vendors/:id/review', async (c) => {
+  const userId = c.get('userId');
+  const id = Number(c.req.param('id'));
+  if (!Number.isInteger(id)) return c.json({ error: { code: 'bad_id', message: 'IDが不正です' } }, 400);
+  const db = getDb(c.env.DB);
+  const reviewedAt = new Date().toISOString();
+  const updated = await db
+    .update(s.subVendors)
+    .set({ reviewedAt })
+    .where(and(eq(s.subVendors.userId, userId), eq(s.subVendors.id, id)))
+    .returning({ id: s.subVendors.id });
+  if (!updated.length) return c.json({ error: { code: 'not_found', message: 'その登録はありません' } }, 404);
+  return c.json({ ok: true, reviewedAt });
 });

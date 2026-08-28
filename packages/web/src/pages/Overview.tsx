@@ -3,17 +3,59 @@ import { useQuery } from '@tanstack/react-query';
 import { Chart as ChartJS } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
-import { type SummaryResponse, api } from '../api.js';
+import { type DefenseForecast, type SummaryResponse, api } from '../api.js';
+import { HowTo } from '../components/HowTo.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { UnsettledPanel } from '../components/Unsettled.js';
 import { COLORS, yenTick } from '../components/charts.js';
 import { deltaCls, monthShort, pct, yen, yenS } from '../format.js';
+import { usePeriod } from '../period.js';
 
 void ChartJS; // 登録の副作用のためimport維持
 
+/**
+ * FR-08 防衛ライン割れの事前警告。
+ *
+ * 実績のバッジ(ヘッダー)は「もう割れた」ことしか教えられない。ここでは翌月の見込みと
+ * 直近の割れ方を先に見せ、まだ手を打てるうちに やりくり試算 へ送る。
+ * 判定そのものより「なぜそう判定したか」を読ませたいので、内訳を必ず併記する。
+ */
+function DefenseForecastPanel({ forecast }: { forecast: DefenseForecast }) {
+  if (forecast.level === 'nodata' || forecast.level === 'none') return null;
+  const warn = forecast.level === 'warn';
+  const breached = forecast.history.filter((h) => h.breached);
+  return (
+    <div className={`notice${warn ? ' danger' : ''}`} role={warn ? 'alert' : undefined}>
+      <strong>
+        {warn ? '防衛ライン割れの事前警告' : '防衛ラインの見通しに注意'}
+        {forecast.nextMonth ? `(${monthShort(forecast.nextMonth)}の見込み)` : ''}
+      </strong>
+      <p style={{ margin: '4px 0' }}>{forecast.reason}</p>
+      <p style={{ margin: '4px 0' }}>
+        内訳: 給与 <span className="num">{yen(forecast.nextSalary)}</span>(直近3ヶ月の中央値) + 事業入金{' '}
+        <span className="num">{yen(forecast.nextBizIncome)}</span>(直近3ヶ月の平均) ={' '}
+        <span className="num">{yen(forecast.nextEstimate)}</span> / <Term id="defenseLine" />{' '}
+        <span className="num">{yen(forecast.line)}</span>
+      </p>
+      {breached.length > 0 && (
+        <p style={{ margin: '4px 0' }}>
+          割れた月: {breached.map((h) => `${monthShort(h.month)}(${yenS(h.diff)})`).join('・')}
+        </p>
+      )}
+      <Link className="btn" to="/tradeoff">
+        やりくり試算で捻出元を探す
+      </Link>
+    </div>
+  );
+}
+
 export function OverviewPage() {
-  const q = useQuery({ queryKey: ['summary'], queryFn: () => api<SummaryResponse>('/summary') });
+  const { key, withPeriod } = usePeriod();
+  const q = useQuery({
+    queryKey: ['summary', key],
+    queryFn: () => api<SummaryResponse>(withPeriod('/summary')),
+  });
   if (q.isLoading)
     return (
       <>
@@ -84,12 +126,15 @@ export function OverviewPage() {
         />
       </div>
 
+      <DefenseForecastPanel forecast={defense.forecast} />
+
       <div className="card">
         <h2>
           売上・経費トレンド(
           <Term id="defenseLine" />・<Term id="movingAvg" />
           を重ね描き)
         </h2>
+        <HowTo id="overviewMonthly" />
         <Chart
           type="bar"
           height={90}
@@ -175,6 +220,7 @@ export function OverviewPage() {
           経費パレート(
           <Term id="pareto" />)
         </h2>
+        <HowTo id="overviewPareto" />
         <div className="scroll-x">
           <table className="data">
             <thead>

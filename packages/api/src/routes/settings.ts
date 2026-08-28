@@ -9,6 +9,7 @@ import {
   OWNER_VALUES,
   STAT_MIN_MONTHS_MAX,
   STAT_MIN_MONTHS_MIN,
+  budgetOutlook,
   budgetTable,
   cashToTx,
   clampStatMinMonths,
@@ -46,7 +47,7 @@ export const settingsRoute = new Hono<Ctx>();
 
 settingsRoute.get('/budgets', async (c) => {
   const data = await loadDataset(getDb(c.env.DB), c.get('userId'));
-  return c.json({ budgets: data.budgets, table: budgetTable(data) });
+  return c.json({ budgets: data.budgets, table: budgetTable(data), outlook: budgetOutlook(data) });
 });
 
 const budgetsSchema = z.object({
@@ -653,3 +654,39 @@ settingsRoute.put('/classification', zValidator('json', classificationSchema), a
  * 正規化マップ変更時: 原本仕訳(freee_deals)から account_norm を再導出して集計を作り直す。
  * 原本の無い月(restore由来)は既存の monthly_agg 値が温存される。
  */
+
+/* -------- 夜間バックアップの取り出し(FR-05) -------- */
+
+/** `backups/YYYY-MM-DD.json` の日付部分だけを許す。R2 のキーを外から組み立てさせない */
+const backupDateSchema = z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) });
+
+/**
+ * cron が R2 に置いた夜間バックアップの一覧。
+ *
+ * バックアップは取っていても、画面から取り出せなければ「戻せる」ことにならない。
+ * 復元そのものは監査済みの POST /api/restore を通す方針なので、
+ * ここは一覧と本文の取り出しだけを担う。
+ */
+settingsRoute.get('/backups', async (c) => {
+  const list = await c.env.FILES.list({ prefix: 'backups/' });
+  const items = list.objects
+    .map((o) => ({
+      date: o.key.slice('backups/'.length, 'backups/'.length + 10),
+      size: o.size,
+      uploaded: o.uploaded instanceof Date ? o.uploaded.toISOString() : null,
+    }))
+    .filter((o) => /^\d{4}-\d{2}-\d{2}$/.test(o.date))
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+  return c.json({ backups: items });
+});
+
+settingsRoute.get('/backups/:date', zValidator('param', backupDateSchema), async (c) => {
+  const { date } = c.req.valid('param');
+  const obj = await c.env.FILES.get(`backups/${date}.json`);
+  if (!obj)
+    return c.json(
+      { error: { code: 'backup_not_found', message: 'そのバックアップは残っていません(保持は30日)' } },
+      404,
+    );
+  return new Response(obj.body, { headers: { 'Content-Type': 'application/json' } });
+});
