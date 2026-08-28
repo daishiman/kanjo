@@ -7,7 +7,16 @@
  * 端数・0円行・入力途中の状態を、どれも「合計が合う」側に寄せて確かめる。
  */
 import { describe, expect, it } from 'vitest';
-import { type RatioLine, type SplitLine, splitByRatio, validateSplits } from '../src/splits.js';
+import { projectAccountingDataset } from '../src/dataset.js';
+import {
+  type RatioLine,
+  type SplitLine,
+  type TxSplit,
+  applySplits,
+  splitByRatio,
+  validateSplits,
+} from '../src/splits.js';
+import { type MfTx, emptyDataset } from '../src/types.js';
 
 const r = (ratio: number, categoryMajor = '食費'): RatioLine => ({
   cls: 'per',
@@ -143,5 +152,153 @@ describe('分割の検証', () => {
       const lines = splitByRatio(total, [r(1), r(1, '交通費'), r(1, '日用品')]);
       expect(validateSplits(total, lines), String(total)).toEqual([]);
     }
+  });
+});
+
+describe('集計への反映', () => {
+  const tx = (id: string, a: number): MfTx => ({
+    id,
+    idStable: true,
+    m: '2026-07',
+    d: '07/25',
+    c: 'カード引き落とし',
+    a,
+    big: '未分類',
+    mid: '',
+  });
+
+  /** 明細だけを持つ最小の Dataset */
+  const dataWith = (...txs: MfTx[]) => {
+    const d = emptyDataset();
+    d.months = ['2026-07'];
+    d.mfTx = txs;
+    return d;
+  };
+
+  const split = (
+    txId: string,
+    seq: number,
+    amount: number,
+    major: string,
+    parentAmount = 100000,
+  ): TxSplit => ({
+    txId,
+    lineId: `00000000-0000-4000-8000-${String(seq).padStart(12, '0')}`,
+    seq,
+    parentAmount,
+    amount,
+    cls: 'per',
+    categoryMajor: major,
+    categoryMid: '',
+  });
+
+  it('元の1行が内訳N行に置き換わる(元の行は残らない)', () => {
+    // 元の行を残したまま内訳を足すと、同じ10万円を2回数えることになる
+    const d = dataWith(tx('t1', -100000));
+    applySplits(d, [split('t1', 1, 60000, '食費'), split('t1', 2, 40000, '交通費')]);
+    expect(d.mfTx.map((t) => t.id)).toEqual([
+      '00000000-0000-4000-8000-000000000001',
+      '00000000-0000-4000-8000-000000000002',
+    ]);
+    expect(d.mfTx.map((t) => t.a)).toEqual([-60000, -40000]);
+  });
+
+  it('内訳の金額を足すと元の明細と同じになる', () => {
+    const d = dataWith(tx('t1', -100000));
+    applySplits(d, [
+      split('t1', 1, 33334, '食費'),
+      split('t1', 2, 33333, '交通費'),
+      split('t1', 3, 33333, '日用品'),
+    ]);
+    expect(d.mfTx.reduce((s, t) => s + t.a, 0)).toBe(-100000);
+  });
+
+  it('収入の明細を分割しても符号が保たれる', () => {
+    // 内訳は正の数で持つので、符号は元の明細から復元するしかない
+    const d = dataWith(tx('t1', 50000));
+    applySplits(d, [split('t1', 1, 30000, '給与', 50000), split('t1', 2, 20000, '雑収入', 50000)]);
+    expect(d.mfTx.map((t) => t.a)).toEqual([30000, 20000]);
+  });
+
+  it('内訳の分類は手動編集と同じ枠に入る(仕分けの経路を増やさない)', () => {
+    const d = dataWith(tx('t1', -100000));
+    applySplits(d, [
+      { ...split('t1', 1, 60000, '食費'), cls: 'biz' },
+      { ...split('t1', 2, 40000, '交通費'), cls: 'biz' },
+    ]);
+    expect(d.mfTx[0].projectedEdit).toMatchObject({ cls: 'biz', big: '食費' });
+  });
+
+  it('親のowner/noteを残し、分類だけを内訳の値へ投影する', () => {
+    const d = dataWith(tx('t1', -100000));
+    d.edits.t1 = { cls: 'per', big: '未分類', owner: 'spouse', note: '親のメモ' };
+    d.overrides.t1 = 'per';
+    applySplits(d, [split('t1', 1, 60000, '食費'), split('t1', 2, 40000, '交通費')]);
+    expect(d.edits.t1).toMatchObject({ owner: 'spouse', note: '親のメモ' });
+    expect(d.overrides.t1).toBe('per');
+    expect(d.mfTx[0].projectedEdit).toMatchObject({ owner: 'spouse', note: '親のメモ', big: '食費' });
+  });
+
+  it('合計が合わない分割は無視して元の行を残す', () => {
+    // 元の明細は銀行の記録で必ず正しい。内訳は人が入れたもので間違いうる
+    const d = dataWith(tx('t1', -100000));
+    applySplits(d, [split('t1', 1, 60000, '食費'), split('t1', 2, 30000, '交通費')]);
+    expect(d.mfTx.map((t) => t.id)).toEqual(['t1']);
+    expect(d.mfTx[0].a).toBe(-100000);
+  });
+
+  it('分割の無い明細には触らない', () => {
+    const d = dataWith(tx('t1', -100000), tx('t2', -5000));
+    applySplits(d, [split('t1', 1, 60000, '食費'), split('t1', 2, 40000, '交通費')]);
+    expect(d.mfTx.map((t) => t.id)).toEqual([
+      '00000000-0000-4000-8000-000000000001',
+      '00000000-0000-4000-8000-000000000002',
+      't2',
+    ]);
+  });
+
+  it('内訳は並び順(seq)で出る。DBの返す順に左右されない', () => {
+    const d = dataWith(tx('t1', -100000));
+    applySplits(d, [
+      split('t1', 3, 30000, '日用品'),
+      split('t1', 1, 50000, '食費'),
+      split('t1', 2, 20000, '交通費'),
+    ]);
+    expect(d.mfTx.map((t) => t.splitProjection?.kind)).toEqual(['split', 'split', 'split']);
+    expect(d.mfTx.map((t) => t.a)).toEqual([-50000, -20000, -30000]);
+  });
+
+  it('メモは内容欄に足して、どの内訳かを一覧で見分けられるようにする', () => {
+    const d = dataWith(tx('t1', -100000));
+    applySplits(d, [
+      { ...split('t1', 1, 60000, '食費'), memo: '週末の買い出し' },
+      split('t1', 2, 40000, '交通費'),
+    ]);
+    expect(d.mfTx[0].c).toBe('カード引き落とし / 週末の買い出し');
+  });
+
+  it('外部IDの#末尾を型判定せず、親と子を構造化metadataで区別する', () => {
+    const d = dataWith(tx('raw#1', -100000));
+    d.txSplits = [split('raw#1', 1, 60000, '食費'), split('raw#1', 2, 40000, '交通費')];
+    const projected = projectAccountingDataset(d);
+    expect(projected.mfTx[0].splitProjection).toMatchObject({ kind: 'split', parentTxId: 'raw#1' });
+    expect(projected.mfTx[1].splitProjection).toMatchObject({ kind: 'split', parentTxId: 'raw#1' });
+  });
+
+  it('親金額が変わった分割は元明細へfail-closedし、要確認状態を残す', () => {
+    const d = dataWith(tx('t1', -120000));
+    applySplits(d, [split('t1', 1, 60000, '食費'), split('t1', 2, 40000, '交通費')]);
+    expect(d.mfTx).toHaveLength(1);
+    expect(d.mfTx[0]).toMatchObject({
+      id: 't1',
+      a: -120000,
+      splitProjection: { kind: 'split-parent', state: 'amount_conflict' },
+    });
+  });
+
+  it('分割が1件も無ければ何も起きない', () => {
+    const d = dataWith(tx('t1', -100000));
+    applySplits(d, []);
+    expect(d.mfTx.map((t) => t.id)).toEqual(['t1']);
   });
 });

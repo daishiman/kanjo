@@ -10,6 +10,7 @@ import {
   FINGERPRINT_VERSION,
   type FreeeDeal,
   OwnerValidationError,
+  TxSplitsSnapshotError,
   applyFreeeDeals,
   applyMfTxs,
   canonicalMfTransactions,
@@ -18,6 +19,8 @@ import {
   emptyDataset,
   importJSON,
   isCashTxId,
+  projectAccountingDataset,
+  validateTxSplitsForDataset,
   vendorKey,
 } from '@kanjo/core';
 import { and, desc, eq } from 'drizzle-orm';
@@ -28,6 +31,7 @@ import * as s from '../db/schema.js';
 import {
   acquireImportWriter,
   activeDuplicateOf,
+  assetsCommitStatements,
   createImportRun,
   freeeCommitStatements,
   heartbeatImportWriter,
@@ -58,9 +62,7 @@ import {
   CashProjectionError,
   type ImportRestoreSettingsSnapshot,
   addCashProjection,
-  dealFromRow,
   getDb,
-  loadCashEntries,
   loadDataset,
   loadImportRestoreSettingsSnapshot,
   mergeRestoreCanonicalSources,
@@ -125,6 +127,9 @@ const resolveRestoreSettings = (
     normMap: destination.normMap,
     statMinMonths: analysis.data.statMinMonths ?? DEFAULT_STAT_MIN_MONTHS,
     subVendorExclusions: [...byKey.values()],
+    cashEntries: destination.cashEntries,
+    freeeDeals: destination.freeeDeals,
+    txSplits: destination.txSplits,
   };
 };
 
@@ -212,12 +217,20 @@ const badOwner = {
   },
 };
 
+const badTxSplits = {
+  error: {
+    code: 'invalid_tx_splits_snapshot',
+    message: '明細の分割情報が親明細と整合しないため、復元を中止しました',
+  },
+};
+
 /**
  * importJSONはmfTxからpersonal/bizPersonalを再計算するため、export済みaggregate snapshotを
  * cash delta控除前に戻す。cloneにより控除が受信body自体へ波及することも防ぐ。
  */
 const restoredAggregateSnapshot = (obj: Record<string, unknown>): Dataset => {
-  const snapshot = structuredClone(obj);
+  // aggregate baselineの復元にはcanonical childは不要。参照整合性はcandidate構成後に検査する。
+  const { txSplits: _txSplits, ...snapshot } = structuredClone(obj);
   const restored = emptyDataset();
   importJSON(restored, snapshot);
   if (snapshot.personal) restored.personal = snapshot.personal as Dataset['personal'];
@@ -352,6 +365,8 @@ const prepareJsonApplication = async (args: {
   // restore unit is prepared during planning, runtime validation, and execution,
   // so mutating those maps would make each pass inflate the next one. Clone the
   // source and rebuild derived aggregates from the authoritative raw sources.
+  // 旧snapshotにtxSplitsが無い場合も、移行先の現在値を残さずcanonical集合を空へ置換する。
+  candidate.txSplits = [];
   importJSON(candidate, structuredClone(args.json));
   // JSON restoreは初期移行。sourceの同名設定を優先しつつ、移行先だけの登録を削除しない。
   for (const vendor of destinationVendors) {
@@ -379,9 +394,12 @@ const prepareJsonApplication = async (args: {
     normMap: restoringCash ? restoreSettings.normMap : args.destinationSettings.normMap,
   });
   if (restoringCash) addCashProjection(candidate, args.cashProjectionRows);
+  if (validateTxSplitsForDataset(candidate).length > 0) throw new TxSplitsSnapshotError();
+  const accounting = projectAccountingDataset(candidate);
   const writeSet = prepareRestoreWriteSet({
     userId: args.userId,
     data: candidate,
+    accountingData: accounting,
     restored: args.restored,
     statMinMonths: restoreSettings.statMinMonths,
     subVendorExclusions: restoreSettings.subVendorExclusions,
@@ -444,6 +462,23 @@ const planCommitStatementCounts = async (args: {
       continue;
     }
 
+    if (unit.kind === 'assets') {
+      // 残高は Dataset(収支)を一切変えない。候補データを作り直す必要がない
+      counts.push(
+        assetsCommitStatements({
+          database: args.database,
+          userId: args.userId,
+          runId,
+          balances: unit.balances,
+          months: unit.months,
+          importId,
+          contentHash: prepared.contentHash ?? 'query-plan',
+          targetKeys: prepared.targetKeys,
+        }).length,
+      );
+      continue;
+    }
+
     const candidate = structuredClone(data);
     if (unit.kind === 'freee') {
       applyFreeeDeals(
@@ -461,10 +496,10 @@ const planCommitStatementCounts = async (args: {
           importId,
           contentHash: prepared.contentHash ?? 'query-plan',
           targetKeys: prepared.targetKeys,
-          data: candidate,
+          data: projectAccountingDataset(candidate),
         }).length,
       );
-    } else {
+    } else if (unit.kind === 'mf') {
       const txs = canonicalMfTransactions(unit.txs);
       applyMfTxs(candidate, txs);
       counts.push(
@@ -477,7 +512,7 @@ const planCommitStatementCounts = async (args: {
           importId,
           contentHash: prepared.contentHash ?? 'query-plan',
           targetKeys: prepared.targetKeys,
-          data: candidate,
+          data: projectAccountingDataset(candidate),
         }).length,
       );
     }
@@ -642,7 +677,18 @@ async function executePreparedUnit(args: {
         importId: attemptId,
         contentHash,
         targetKeys: prepared.targetKeys,
-        data: candidate,
+        data: projectAccountingDataset(candidate),
+      });
+    } else if (unit.kind === 'assets') {
+      statements = assetsCommitStatements({
+        database,
+        userId,
+        runId,
+        balances: unit.balances,
+        months: unit.months,
+        importId: attemptId,
+        contentHash,
+        targetKeys: prepared.targetKeys,
       });
     } else if (unit.kind === 'mf') {
       const canonicalTxs = canonicalMfTransactions(unit.txs);
@@ -656,7 +702,7 @@ async function executePreparedUnit(args: {
         importId: attemptId,
         contentHash,
         targetKeys: prepared.targetKeys,
-        data: candidate,
+        data: projectAccountingDataset(candidate),
       });
     } else {
       if (!restoreWriteSet) throw new Error('restore write-setを生成できません');
@@ -801,6 +847,9 @@ importsRoute.post('/imports', async (c) => {
     normMap: {},
     statMinMonths: DEFAULT_STAT_MIN_MONTHS,
     subVendorExclusions: [],
+    cashEntries: [],
+    freeeDeals: [],
+    txSplits: [],
   };
   let cashEntries: CashEntry[] = [];
   let data = emptyDataset();
@@ -847,16 +896,16 @@ importsRoute.post('/imports', async (c) => {
       );
     }
 
-    cashEntries = await loadCashEntries(db, userId);
+    cashEntries = restoreSettings.cashEntries;
     // 現金の記帳ごと復元するのは、移行先に記帳が1件も無いときだけ(初期移行)
     for (const prepared of preparedFiles.flatMap((preparedFile) => preparedFile.units)) {
       if (prepared.unit.kind === 'json') {
         prepared.restoredCash = restorableCashEntries(prepared.unit.json, cashEntries);
       }
     }
-    data = await loadDataset(db, userId, cashEntries);
-    const freeeDealRows = await db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId));
-    freeeDeals = freeeDealRows.map(dealFromRow);
+    data = await loadDataset(db, userId, cashEntries, { withSplits: false });
+    data.txSplits = restoreSettings.txSplits;
+    freeeDeals = restoreSettings.freeeDeals;
     freeeCount = new Map<string, number>();
     for (const deal of freeeDeals) {
       freeeCount.set(deal.month, (freeeCount.get(deal.month) ?? 0) + 1);
@@ -922,6 +971,7 @@ importsRoute.post('/imports', async (c) => {
     preflightAccepted = true;
   } catch (error) {
     if (error instanceof OwnerValidationError) return c.json(badOwner, 400);
+    if (error instanceof TxSplitsSnapshotError) return c.json(badTxSplits, 400);
     if (error instanceof InvalidRestoreSettingsError) return c.json(badRestoreSettings, 400);
     if (error instanceof Error && error.message.includes('D1 JSON payload上限')) {
       return c.json(queryBudgetError(), 413);
@@ -1223,6 +1273,9 @@ importsRoute.post('/restore', async (c) => {
     normMap: {},
     statMinMonths: DEFAULT_STAT_MIN_MONTHS,
     subVendorExclusions: [],
+    cashEntries: [],
+    freeeDeals: [],
+    txSplits: [],
   };
   let freeeDeals: FreeeDeal[] = [];
   let restoreCommitCount = 0;
@@ -1231,14 +1284,13 @@ importsRoute.post('/restore', async (c) => {
   let preflightAccepted = false;
   try {
     // multipartと同じく、claim取得後のauthoritative snapshotで計画と実行を行う。
-    cashEntries = await loadCashEntries(db, userId);
-    prepared.restoredCash = restorableCashEntries(body, cashEntries);
-    data = await loadDataset(db, userId, cashEntries);
     restoreSettings = await loadImportRestoreSettingsSnapshot(db, userId);
+    cashEntries = restoreSettings.cashEntries;
+    prepared.restoredCash = restorableCashEntries(body, cashEntries);
+    data = await loadDataset(db, userId, cashEntries, { withSplits: false });
+    data.txSplits = restoreSettings.txSplits;
     normMap = restoreSettings.normMap;
-    freeeDeals = (await db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId))).map(
-      dealFromRow,
-    );
+    freeeDeals = restoreSettings.freeeDeals;
     const planFor = async (restoredCashEntries: CashEntry[]): Promise<number> => {
       const application = await prepareJsonApplication({
         userId,
@@ -1275,6 +1327,7 @@ importsRoute.post('/restore', async (c) => {
     preflightAccepted = true;
   } catch (error) {
     if (error instanceof OwnerValidationError) return c.json(badOwner, 400);
+    if (error instanceof TxSplitsSnapshotError) return c.json(badTxSplits, 400);
     if (error instanceof InvalidRestoreSettingsError) return c.json(badRestoreSettings, 400);
     if (error instanceof Error && error.message.includes('D1 JSON payload上限')) {
       return c.json(queryBudgetError(), 413);

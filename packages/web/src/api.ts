@@ -4,6 +4,7 @@
  */
 import type {
   AttachmentQuotaUsage,
+  BalanceSheet,
   Benchmark,
   BudgetOutlook,
   BudgetRow,
@@ -247,8 +248,43 @@ export interface TxEditView {
   updatedAt: string | null;
 }
 
+/* -------- 明細の分割記帳 -------- */
+
+/** 分割の1行。金額で持つ(割合は入力の手段であって、保存する形ではない) */
+export interface SplitLineView {
+  /** seqや並び替えと独立した内訳行の安定ID */
+  lineId: string;
+  amount: number;
+  cls: Cls;
+  big: string;
+  mid: string;
+  memo: string;
+}
+
+export interface SplitsResponse {
+  txId: string;
+  /** 元の明細の金額(絶対値)。内訳の合計はこれと一致していなければならない */
+  total: number;
+  description: string;
+  date: string;
+  state: 'ready' | 'amount_conflict';
+  constraints: { minLines: number; maxLines: number; memoMaxLength: number };
+  lines: SplitLineView[];
+}
+
 export interface TxRow {
   id: string;
+  /** React表示key。canonical identityとしてAPIへ送り返さない */
+  rowKey: string;
+  rowKind: 'mf' | 'cash' | 'split';
+  parentTxId: string | null;
+  lineId: string | null;
+  splitSeq: number | null;
+  splitLineCount: number | null;
+  splitState: 'amount_conflict' | 'identity_unstable' | null;
+  capabilities: { quickClass: boolean; edit: boolean; split: boolean; attach: boolean };
+  /** split childは親MFへ正規化済み */
+  attachmentTargetId: string | null;
   /** MF出力のID列由来で、再取込後も同一明細と判定できる */
   idStable: boolean;
   date: string;
@@ -606,12 +642,17 @@ export interface TradeoffResponse {
 export interface StatementsResponse {
   pl: ProfitAndLoss;
   cf: CashFlow;
-  /** BSはまだ作れないので、代わりに「何を取り込めば作れるか」を出す */
+  /** 残高。1件も入っていなければ months が空になる */
+  bs: BalanceSheet;
+  /** 手入力で受ける負債の種類。画面の入力欄をこの並びで作る */
+  liabilityCategoryOptions: string[];
+  /** BSがまだ作れないときに出す「何を取り込めば作れるか」 */
   balanceSheetSources: StatementSource[];
   period: PeriodMeta;
 }
 
 export type {
+  BalanceSheet,
   Benchmark,
   BudgetOutlook,
   BudgetRow,

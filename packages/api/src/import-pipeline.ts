@@ -1,9 +1,11 @@
 /**
  * FR-01 取込パイプライン: ファイル1個(ZIP/CSV/Excel/HTML互換JSON)を解析して
  * 「取込単位」の配列へ展開する。ZIPは自動展開して中身を再帰判定する。
- * 形式はヘッダーで自動判定: 「収支区分」→freee / 「計算対象」→MF。判定不能はエラー扱い。
+ * 形式はヘッダーで自動判定: 「収支区分」→freee / 「計算対象」→MF /
+ * 「日付」+「合計（円）」→MFの資産推移(残高)。判定不能はエラー扱い。
  */
 import {
+  type BalanceRow,
   FINGERPRINT_VERSION,
   type FreeeDeal,
   type MfTx,
@@ -12,10 +14,12 @@ import {
   canonicalMfTransactions,
   decodeBuf,
   isFreeeHeader,
+  isMfAssetHistoryHeader,
   isMfCountable,
   isMfHeader,
   parseCSV,
   parseFreeeRows,
+  parseMfAssetHistoryRows,
   parseMfRows,
 } from '@kanjo/core';
 import { unzipSync } from 'fflate';
@@ -32,6 +36,23 @@ export type ParsedUnit =
       skipped: number;
       syntheticIds: number;
       duplicateIds: number;
+    }
+  /**
+   * MFの資産推移CSV。明細ではなく「ある時点の残高」なので、収支には1円も入らない。
+   * 入る先は balance_entries だけで、月次集計は書き換えない。
+   */
+  | {
+      kind: 'assets';
+      filename: string;
+      balances: BalanceRow[];
+      months: string[];
+      rows: number;
+      skipped: number;
+      /** 日次の行を月1点へ丸めたときに落ちた行数 */
+      collapsed: number;
+      categories: string[];
+      /** 内訳の和がCSVの「合計」列と合わなかった月 */
+      totalMismatchMonths: string[];
     }
   | { kind: 'json'; filename: string; json: Record<string, unknown> }
   | { kind: 'error'; filename: string; reason: string };
@@ -75,6 +96,24 @@ function classifyRows(filename: string, rows: string[][], normMap: Record<string
       duplicateIds: p.duplicateIds,
     };
   }
+  // 資産推移は「日付」列を持つので、口座明細(残高付き)の先回り拒否より前に判定する
+  if (isMfAssetHistoryHeader(rows[0])) {
+    const p = parseMfAssetHistoryRows(rows);
+    if (!p.months.length) {
+      return { kind: 'error', filename, reason: '資産推移CSVですが、日付を読める行が1行もありません' };
+    }
+    return {
+      kind: 'assets',
+      filename,
+      balances: p.balances,
+      months: p.months,
+      rows: p.rows,
+      skipped: p.skipped,
+      collapsed: p.collapsed,
+      categories: p.categories,
+      totalMismatchMonths: p.totalMismatchMonths,
+    };
+  }
   return { kind: 'error', filename, reason: describeUnknownFormat(rows[0]) };
 }
 
@@ -106,6 +145,16 @@ const emptyImportCountSummary = (): ImportCountSummary => ({
 /** parser出力から、永続化と集計が実際に使うcanonical件数を一度だけ導出する。 */
 export function importCountSummary(unit: ParsedUnit, jsonMfTx: readonly MfTx[] = []): ImportCountSummary {
   if (unit.kind === 'error') return emptyImportCountSummary();
+  if (unit.kind === 'assets') {
+    // 残高は収支に入らない。countable(集計へ入る行)は必ず0になる
+    return {
+      parsed: unit.rows,
+      stored: unit.balances.length,
+      countable: 0,
+      nonCountable: unit.balances.length,
+      rejected: unit.skipped,
+    };
+  }
   if (unit.kind === 'freee') {
     return {
       parsed: unit.rows,
@@ -139,6 +188,10 @@ export function legacyImportCountAliases(
 ): { rows: number; skipped: number } {
   if (unit.kind === 'error') return { rows: 0, skipped: 0 };
   if (unit.kind === 'freee') return { rows: unit.rows, skipped: unit.skipped };
+  // 資産推移の「有効行」は保存する残高の本数。日次→月次で落とした行はskipped側へ寄せる
+  if (unit.kind === 'assets') {
+    return { rows: unit.balances.length, skipped: unit.skipped + unit.collapsed };
+  }
   const transactions = unit.kind === 'mf' ? unit.txs : canonicalMfTransactions(jsonMfTx);
   const rows = transactions.filter(isMfCountable).length;
   return {
@@ -155,7 +208,7 @@ export function describeUnknownFormat(header: string[]): string {
   const h = header.map((c) => c.trim());
   const has = (...names: string[]) => names.every((n) => h.some((c) => c.includes(n)));
   const guide =
-    'このアプリが読めるのは、マネーフォワードの「家計簿 › 収入・支出詳細」CSVと、freeeの「取引」エクスポート(CSV/ZIP)です。';
+    'このアプリが読めるのは、マネーフォワードの「家計簿 › 収入・支出詳細」CSV、マネーフォワードの「資産 › 資産推移」CSV(残高)、freeeの「取引」エクスポート(CSV/ZIP)です。';
   if (has('振替日', '振替元口座'))
     return `マネーフォワードの「振替」ファイルのため取り込めません(口座間の移動は収支に含めません)。${guide}`;
   if (has('日付', '残高') || has('取引日', '残高')) return `口座明細(残高付き)のため取り込めません。${guide}`;
@@ -247,6 +300,11 @@ export async function unitFingerprint(u: ParsedUnit): Promise<string | null> {
   let canonical: string | null = null;
   if (u.kind === 'freee') canonical = canonicalFreee(u.deals);
   if (u.kind === 'mf') canonical = canonicalMf(u.txs);
+  // 残高は月ごとに1点へ丸めた後の値だけを見る。日次の行が1本増減しても、
+  // 月末の残高が同じなら同じ内容として扱う(取り込み直しを重複と判定できる)
+  if (u.kind === 'assets') {
+    canonical = u.balances.map((b) => [b.month, b.date, b.side, b.category, b.amount].join('\t')).join('\n');
+  }
   if (canonical) return fingerprintCanonical(canonical);
   return null;
 }

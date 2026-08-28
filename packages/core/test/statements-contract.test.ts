@@ -165,11 +165,13 @@ describe('貸借対照表', () => {
     expect(BALANCE_SHEET_SOURCES.map((s) => s.step)).toEqual(BALANCE_SHEET_SOURCES.map((_, i) => i + 1));
   });
 
-  it('最初に取るのは銀行口座の残高(MF)', () => {
+  it('最初に取るのは全口座の残高(MF)で、開くURLまで持っている', () => {
     // 全口座がMFに連携済みなら、1ファイルで現預金がそろう。ここだけで手元資金は見える
     const first = BALANCE_SHEET_SOURCES[0];
     expect(first.service).toBe('MF');
-    expect(first.columns).toContain('残高');
+    expect(first.columns).toContain('合計（円）');
+    // メニューのたどり方だけだと、書いてある画面に行き着けない人が出る
+    expect(first.url).toBe('https://moneyforward.com/bs/history');
   });
 
   it('プラン制限や列の欠けで詰まる手順には、代わりの手を書いておく', () => {

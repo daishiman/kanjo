@@ -56,7 +56,7 @@ export function resolveTx(
   edits: Record<string, TxEdit>,
   institutionOwners: Record<string, Owner> = {},
 ): ResolvedTx {
-  const e = edits[t.id];
+  const e = t.projectedEdit ?? edits[t.id];
   const hay = hayOf(t);
   const firstRule = <K extends 'cls' | 'big' | 'mid' | 'owner'>(key: K): Rule[K] | undefined => {
     for (const r of rules) {

@@ -85,8 +85,8 @@ describe('D1 statement budget', () => {
       applicableUnitCount: 1,
       jsonUnitCount: 0,
     };
-    const accepted = planMultipartImportQueries({ ...base, commitStatementCounts: [19] });
-    const rejected = planMultipartImportQueries({ ...base, commitStatementCounts: [20] });
+    const accepted = planMultipartImportQueries({ ...base, commitStatementCounts: [21] });
+    const rejected = planMultipartImportQueries({ ...base, commitStatementCounts: [22] });
     expect(accepted).toMatchObject({ total: 49, accepted: true });
     expect(rejected).toMatchObject({ total: 50, accepted: false });
 
@@ -122,8 +122,8 @@ describe('D1 statement budget', () => {
       jsonUnitCount: 0,
     };
     for (const kind of ['freee', 'mf'] as const) {
-      const accepted = planMultipartImportQueries({ ...multipartBase, commitStatementCounts: [19] });
-      const rejected = planMultipartImportQueries({ ...multipartBase, commitStatementCounts: [20] });
+      const accepted = planMultipartImportQueries({ ...multipartBase, commitStatementCounts: [21] });
+      const rejected = planMultipartImportQueries({ ...multipartBase, commitStatementCounts: [22] });
       expect({ kind, total: accepted.total, accepted: accepted.accepted }).toEqual({
         kind,
         total: 49,
@@ -136,7 +136,7 @@ describe('D1 statement budget', () => {
     expect(planRestoreImportQueries(50 - restoreBase)).toMatchObject({ total: 50, accepted: false });
   });
 
-  it('実builderがfreee/MF/restoreそれぞれのexact-49 envelopeを構成できる', () => {
+  it('実builderがfreee/MF/restoreすべて49未満のenvelopeに収まる', () => {
     const wide = '幅'.repeat(20_000);
     const data = emptyDataset();
     const common = {
@@ -174,7 +174,7 @@ describe('D1 statement budget', () => {
     }).length;
     const mfCount = mfCommitStatements({ ...common, txs, targetKeys: ['mf:2026-07'] }).length;
     expect(freeeCount).toBe(19);
-    expect(mfCount).toBe(19);
+    expect(mfCount).toBe(20);
     expect(
       planMultipartImportQueries({
         fileCount: 1,
@@ -183,7 +183,7 @@ describe('D1 statement budget', () => {
         jsonUnitCount: 0,
         commitStatementCounts: [freeeCount],
       }),
-    ).toMatchObject({ total: 49, accepted: true });
+    ).toMatchObject({ total: 47, accepted: true });
     expect(
       planMultipartImportQueries({
         fileCount: 1,
@@ -192,7 +192,7 @@ describe('D1 statement budget', () => {
         jsonUnitCount: 0,
         commitStatementCounts: [mfCount],
       }),
-    ).toMatchObject({ total: 49, accepted: true });
+    ).toMatchObject({ total: 48, accepted: true });
 
     const writeSet = prepareRestoreWriteSet({ userId: common.userId, data, restored: emptyDataset() });
     writeSet.editRows = Array.from({ length: 6 }, (_, index) => [
@@ -215,7 +215,7 @@ describe('D1 statement budget', () => {
       contentHash: common.contentHash,
       targetKeys: ['json:global'],
     }).length;
-    expect(planRestoreImportQueries(restoreCount)).toMatchObject({ total: 49, accepted: true });
+    expect(planRestoreImportQueries(restoreCount)).toMatchObject({ total: 48, accepted: true });
   });
 
   it('各JSON payloadをUTF-8 80KiB以下に分け、1行超過は拒否する', () => {
@@ -423,6 +423,7 @@ describe('JSON pointer invalidation consumers', () => {
       'cash_entries',
       'rules',
       'tx_edits',
+      'tx_splits',
       'institution_owners',
       'budgets',
       'account_norm_map',
@@ -449,6 +450,8 @@ describe('canonical mutation lease predicate', () => {
       ['DELETE', '/api/attachments/1'],
       ['PUT', '/api/transactions/tx-1/class'],
       ['PUT', '/api/transactions/tx-1/edit'],
+      ['PUT', '/api/transactions/tx-1/splits'],
+      ['PUT', '/api/balances/liabilities'],
       ['POST', '/api/rules'],
       ['PUT', '/api/rules/1'],
       ['DELETE', '/api/rules/1'],
@@ -527,6 +530,7 @@ describe('canonical mutation lease predicate', () => {
       'DELETE /api/attachments/:id',
       'PUT /api/transactions/:txId/class',
       'PUT /api/transactions/:txId/edit',
+      'PUT /api/transactions/:txId/splits',
       'POST /api/rules',
       'PUT /api/rules/:id',
       'DELETE /api/rules/:id',

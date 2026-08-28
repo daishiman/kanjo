@@ -5,6 +5,7 @@ import {
   importCountSummary,
   legacyImportCountAliases,
   parseUpload,
+  unitFingerprint,
 } from './import-pipeline.js';
 
 describe('describeUnknownFormat: 読めないファイルの理由を言葉で返す', () => {
@@ -88,5 +89,56 @@ describe('MF IDの永続同一性', () => {
       rejected: 1,
     });
     expect(unit && legacyImportCountAliases(unit)).toEqual({ rows: 1, skipped: 3 });
+  });
+});
+
+describe('MFの資産推移CSV', () => {
+  const csv = (...lines: string[]) =>
+    new TextEncoder().encode(['日付,合計（円）,預金・現金（円）,投資信託（円）', ...lines].join('\n'));
+
+  it('残高付きの口座明細と間違えず、資産推移として受ける', () => {
+    // どちらも「日付」列を持つので、先に口座明細として蹴られると資産推移が一切入らない
+    const [unit] = parseUpload('資産推移.csv', csv('2026/08/31,300,100,200'), {});
+    expect(unit).toMatchObject({
+      kind: 'assets',
+      months: ['2026-08'],
+      categories: ['預金・現金', '投資信託'],
+    });
+  });
+
+  it('日次の行を月ごと1点にまとめ、まとめた数を数える', () => {
+    const [unit] = parseUpload(
+      '資産推移.csv',
+      csv('2026/08/28,300,100,200', '2026/08/27,280,80,200', '2026/07/31,240,40,200'),
+      {},
+    );
+    expect(unit).toMatchObject({ kind: 'assets', rows: 3, collapsed: 1, months: ['2026-07', '2026-08'] });
+    // 残高は収支ではないので、集計対象は0件。取り込んだ実感は非集計側で見せる
+    expect(unit && importCountSummary(unit)).toMatchObject({ countable: 0, nonCountable: 4 });
+    expect(unit && legacyImportCountAliases(unit)).toEqual({ rows: 4, skipped: 1 });
+  });
+
+  it('合計欄と内訳の和が合わない月を控える', () => {
+    // 列が欠けたCSVを黙って取り込むと、資産が実際より少ないBSができる
+    const [unit] = parseUpload('資産推移.csv', csv('2026/08/31,999,100,200'), {});
+    expect(unit).toMatchObject({ kind: 'assets', totalMismatchMonths: ['2026-08'] });
+  });
+
+  it('日次の行が増えても、月末残高が同じなら同じ内容として扱う', async () => {
+    const [a] = parseUpload('a.csv', csv('2026/08/31,300,100,200'), {});
+    const [b] = parseUpload('b.csv', csv('2026/08/31,300,100,200', '2026/08/30,290,90,200'), {});
+    const [c] = parseUpload('c.csv', csv('2026/08/31,500,300,200'), {});
+    expect(a && (await unitFingerprint(a))).toBe(b && (await unitFingerprint(b)));
+    expect(a && (await unitFingerprint(a))).not.toBe(c && (await unitFingerprint(c)));
+  });
+
+  it('日付を1行も読めないCSVは、理由を言って断る', () => {
+    expect(parseUpload('資産推移.csv', csv('日付不明,300,100,200'), {})).toEqual([
+      {
+        kind: 'error',
+        filename: '資産推移.csv',
+        reason: '資産推移CSVですが、日付を読める行が1行もありません',
+      },
+    ]);
   });
 });

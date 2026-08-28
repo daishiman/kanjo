@@ -16,6 +16,7 @@ import {
   type Rule,
   type SubVendor,
   type TxEdit,
+  type TxSplit,
   applyClassification,
   applyFreeeDeals,
   cashBizDeals,
@@ -28,6 +29,7 @@ import {
   matchSubVendor,
   normalizeAccount,
   normalizeOwner,
+  projectAccountingDataset,
   recomputeClassification,
   subVendorDefs,
 } from '@kanjo/core';
@@ -212,6 +214,18 @@ export async function loadOrderedRuleRows(db: Db, userId: string) {
 export const effectiveRules = (rows: ReadonlyArray<typeof s.rules.$inferSelect>): Rule[] =>
   rows.length ? rows.map(ruleFromRow) : [...DEFAULT_RULES];
 
+export const splitFromRow = (r: typeof s.txSplits.$inferSelect): TxSplit => ({
+  txId: r.txId,
+  lineId: r.lineId,
+  seq: r.seq,
+  parentAmount: r.parentAmount,
+  amount: r.amount,
+  cls: r.cls,
+  categoryMajor: r.categoryMajor,
+  categoryMid: r.categoryMid,
+  ...(r.memo ? { memo: r.memo } : {}),
+});
+
 export const editFromRow = (r: typeof s.txEdits.$inferSelect): TxEdit => ({
   cls: r.cls ?? null,
   big: r.categoryMajor ?? null,
@@ -286,14 +300,26 @@ export async function replaceInstitutionOwners(
 
 /* ------------------------- 読み出し ------------------------- */
 
-/** cash snapshotを渡したloadDatasetが発行するSELECT数。query plannerとloaderの契約。 */
+/**
+ * cash snapshotを渡し、分割の内訳を読まないloadDatasetが発行するSELECT数。
+ * query plannerとloaderの契約。
+ *
+ * 取込の1リクエストはD1の50 query上限に対してほぼ満杯で、
+ * ここに1本足すとJSON復元が丸ごと入らなくなる(413)。
+ * そのため取込の下見だけは内訳を読まない。詳しくは applySplits の呼び出し側。
+ */
 export const LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT = 10;
+
+/** 分割の内訳まで読むloadDatasetのSELECT数。集計を書き直す経路はこちら。 */
+export const LOAD_DATASET_QUERY_COUNT_WITH_SPLITS = LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT + 1;
 
 export async function loadDataset(
   db: Db,
   userId: string,
   cashEntriesSnapshot?: ReadonlyArray<CashEntry>,
+  options: { withSplits?: boolean } = {},
 ): Promise<Dataset> {
+  const withSplits = options.withSplits ?? true;
   const [
     aggRows,
     baselineRows,
@@ -306,6 +332,7 @@ export async function loadDataset(
     instRows,
     vendorRows,
     cashEntries,
+    splitRows,
   ] = await Promise.all([
     db.select().from(s.monthlyAgg).where(eq(s.monthlyAgg.userId, userId)),
     db.select().from(s.restoredMonthlyAgg).where(eq(s.restoredMonthlyAgg.userId, userId)),
@@ -322,6 +349,9 @@ export async function loadDataset(
     db.select().from(s.institutionOwners).where(eq(s.institutionOwners.userId, userId)),
     loadSubVendors(db, userId),
     cashEntriesSnapshot ? Promise.resolve([...cashEntriesSnapshot]) : loadCashEntries(db, userId),
+    withSplits
+      ? db.select().from(s.txSplits).where(eq(s.txSplits.userId, userId))
+      : Promise.resolve([] as (typeof s.txSplits.$inferSelect)[]),
   ]);
 
   const data = emptyDataset();
@@ -409,6 +439,8 @@ export async function loadDataset(
   });
   data.unrecordedExpMonths = unrecRows.filter((r) => r.kind === 'expense').map((r) => r.month);
 
+  data.txSplits = splitRows.map(splitFromRow);
+
   // 個人分の現金明細を口座「現金」の明細として合流させ、生明細がある月は再計算が正(ルール・手動判定の現在値を反映)
   mergeCashTxs(data, cashEntries);
   const rawMfMonths = new Set(txRows.map((r) => r.month));
@@ -416,7 +448,9 @@ export async function loadDataset(
     cashEntries.filter((e) => e.side === 'per' && !rawMfMonths.has(e.month)).map((e) => e.month),
   );
   addPersonalBaseline(data, baselineRows, cashOnlyPersonalMonths);
-  return data;
+  // withSplits:false は取込計画専用のraw canonical Dataset。通常のconsumerには
+  // 明示的なaccounting projectionを返し、canonical parentと派生childを混在させない。
+  return withSplits ? projectAccountingDataset(data) : data;
 }
 
 /* ------------------------- 現金の記帳 ------------------------- */
@@ -547,6 +581,7 @@ interface BackupSourceSnapshot {
   cashOverride: Dataset['cashOverride'];
   unrecordedExpMonths: string[];
   cashEntries: CashEntry[];
+  txSplits: TxSplit[];
   attachmentArchive: AttachmentArchiveRecord[];
   normMap: Record<string, string>;
   statMinMonths: number;
@@ -557,6 +592,9 @@ export interface ImportRestoreSettingsSnapshot {
   normMap: Record<string, string>;
   statMinMonths: number;
   subVendorExclusions: Array<{ partner: string; vendorKey: string }>;
+  cashEntries: CashEntry[];
+  freeeDeals: FreeeDeal[];
+  txSplits: TxSplit[];
 }
 
 /**
@@ -637,6 +675,11 @@ SELECT 'cash', id, NULL, amount,
        date, month, side, io, description, category_major, category_mid, memo, NULL, transit_from, transit_to, transit_round, receipt_waived
 FROM cash_entries WHERE user_id = ?
 UNION ALL
+SELECT 'split', id, seq, amount,
+       tx_id, line_id, cls, category_major, category_mid, memo, created_at, updated_at,
+       NULL, NULL, NULL, parent_amount, NULL
+FROM tx_splits WHERE user_id = ?
+UNION ALL
 SELECT 'norm', NULL, NULL, NULL,
        raw, norm, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM account_norm_map WHERE user_id = ?
@@ -660,7 +703,7 @@ ORDER BY source, rank, id, v1, v2`;
 
 /** export用canonical rowsを、単一D1 read statementから型付きsnapshotへ変換する。 */
 async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupSourceSnapshot> {
-  const params = Array.from({ length: 15 }, () => userId);
+  const params = Array.from({ length: 16 }, () => userId);
   const result = await db.$client
     .prepare(BACKUP_SNAPSHOT_SQL)
     .bind(...params)
@@ -772,6 +815,23 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
       }),
     )
     .sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+  const txSplits = bySource('split')
+    .map(
+      (row): TxSplit => ({
+        txId: row.v1 ?? '',
+        lineId: row.v2 ?? '',
+        seq: row.rank ?? 0,
+        parentAmount: typeof row.v12 === 'number' ? row.v12 : Number(row.v12 ?? 0),
+        amount: row.amount ?? 0,
+        cls: row.v3 === 'biz' ? 'biz' : 'per',
+        categoryMajor: row.v4 ?? '',
+        categoryMid: row.v5 ?? '',
+        ...(row.v6 ? { memo: row.v6 } : {}),
+        ...(row.v7 ? { createdAt: row.v7 } : {}),
+        ...(row.v8 ? { updatedAt: row.v8 } : {}),
+      }),
+    )
+    .sort((a, b) => a.txId.localeCompare(b.txId) || a.seq - b.seq);
   const attachmentArchive = bySource('attachment').map(
     (row): AttachmentArchiveRecord => ({
       target: { kind: row.v1 === 'cash' ? 'cash' : 'mf', key: row.v2 ?? '' },
@@ -810,6 +870,7 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     cashOverride,
     unrecordedExpMonths,
     cashEntries,
+    txSplits,
     attachmentArchive,
     normMap,
     statMinMonths,
@@ -824,7 +885,8 @@ export async function loadImportRestoreSettingsSnapshot(
 ): Promise<ImportRestoreSettingsSnapshot> {
   const result = await db.$client
     .prepare(
-      `SELECT 'norm' AS source, raw AS v1, norm AS v2, NULL AS amount
+      `SELECT * FROM (
+       SELECT 'norm' AS source, raw AS v1, norm AS v2, NULL AS amount
          FROM account_norm_map WHERE user_id=?
        UNION ALL
        SELECT 'analysis', NULL, NULL, stat_min_months
@@ -832,20 +894,83 @@ export async function loadImportRestoreSettingsSnapshot(
        UNION ALL
        SELECT 'exclusion', partner, vendor_key, NULL
          FROM sub_vendor_exclusions WHERE user_id=?
+       )
+       UNION ALL
+       SELECT * FROM (
+       SELECT 'cash', json_object(
+         'id',id,'date',date,'month',month,'side',side,'io',io,'amount',amount,
+         'description',description,'categoryMajor',category_major,'categoryMid',category_mid,
+         'memo',memo,'transitFrom',transit_from,'transitTo',transit_to,
+         'transitRound',transit_round,'receiptWaived',receipt_waived), NULL, NULL
+         FROM cash_entries WHERE user_id=?
+       UNION ALL
+       SELECT 'freee', json_object(
+         'month',month,'date',date,'io',io,'partner',partner,'accountRaw',account_raw,
+         'accountNorm',account_norm,'amount',amount,'dueDate',due_date,'settledDate',settled_date,
+         'settleAccount',settle_account,'settledAmount',settled_amount,'settlementKnown',settlement_known), NULL, NULL
+         FROM freee_deals WHERE user_id=?
+       UNION ALL
+       SELECT 'split', json_object(
+         'txId',tx_id,'lineId',line_id,'seq',seq,'parentAmount',parent_amount,'amount',amount,
+         'cls',cls,'categoryMajor',category_major,'categoryMid',category_mid,'memo',memo,
+         'createdAt',created_at,'updatedAt',updated_at), NULL, NULL
+         FROM tx_splits WHERE user_id=?
+       )
        ORDER BY source, v1, v2`,
     )
-    .bind(userId, userId, userId)
+    .bind(userId, userId, userId, userId, userId, userId)
     .all<{ source: string; v1: string | null; v2: string | null; amount: number | null }>();
   const normMap: Record<string, string> = {};
   for (const row of result.results.filter((row) => row.source === 'norm')) {
     normMap[row.v1 ?? ''] = row.v2 ?? '';
   }
+  const payloads = <T>(source: string): T[] =>
+    result.results
+      .filter((row) => row.source === source && row.v1)
+      .map((row) => JSON.parse(row.v1 ?? 'null') as T);
+  const cashEntries = payloads<
+    Omit<CashEntry, 'transitRound' | 'receiptWaived'> & { transitRound: number; receiptWaived: number }
+  >('cash').map((row) => ({
+    ...row,
+    transitRound: row.transitRound === 1,
+    receiptWaived: row.receiptWaived === 1,
+  }));
+  const freeeDeals = payloads<
+    Omit<FreeeDeal, 'partner' | 'accountRaw' | 'accountNorm'> & {
+      partner: string | null;
+      accountRaw: string | null;
+      accountNorm: string | null;
+      settlementKnown: number;
+    }
+  >('freee').map((row) => {
+    const { settlementKnown, dueDate, settledDate, settleAccount, settledAmount, ...base } = row;
+    const normalized = {
+      ...base,
+      partner: base.partner ?? '',
+      accountRaw: base.accountRaw ?? '',
+      accountNorm: base.accountNorm ?? '',
+    };
+    return settlementKnown === 1
+      ? { ...normalized, dueDate, settledDate, settleAccount, settledAmount }
+      : normalized;
+  });
+  const txSplits = payloads<
+    TxSplit & { memo?: string | null; createdAt?: string | null; updatedAt?: string | null }
+  >('split').map(({ memo, createdAt, updatedAt, ...row }) => ({
+    ...row,
+    ...(memo ? { memo } : {}),
+    ...(createdAt ? { createdAt } : {}),
+    ...(updatedAt ? { updatedAt } : {}),
+  }));
   return {
     normMap,
     statMinMonths: result.results.find((row) => row.source === 'analysis')?.amount ?? DEFAULT_STAT_MIN_MONTHS,
     subVendorExclusions: result.results
       .filter((row) => row.source === 'exclusion')
       .map((row) => ({ partner: row.v1 ?? '', vendorKey: row.v2 ?? '' })),
+    cashEntries,
+    freeeDeals,
+    txSplits,
   };
 }
 
@@ -858,6 +983,7 @@ function datasetFromBackupSnapshot(snapshot: BackupSourceSnapshot): Dataset {
   data.budgets = snapshot.budgets;
   data.cashOverride = snapshot.cashOverride;
   data.unrecordedExpMonths = [...snapshot.unrecordedExpMonths];
+  data.txSplits = [...snapshot.txSplits];
   data.subs.vendors = snapshot.vendors.map((vendor) => vendor.name);
   data.subs.aliases = Object.fromEntries(snapshot.vendors.map((vendor) => [vendor.name, vendor.aliases]));
   data.subs.accounts = Object.fromEntries(
@@ -921,9 +1047,10 @@ function datasetFromBackupSnapshot(snapshot: BackupSourceSnapshot): Dataset {
 /** export/cronが共有する単一canonical snapshot。aggregateとdeltaを同じin-memory rowsから作る。 */
 export async function loadBackupPayload(db: Db, userId: string): Promise<Record<string, unknown>> {
   const snapshot = await loadBackupSourceSnapshot(db, userId);
-  const data = datasetFromBackupSnapshot(snapshot);
-  const rows = projectCashContribution(data, snapshot.cashEntries, snapshot.normMap);
-  const aggregate = aggregateAmounts(data);
+  const raw = datasetFromBackupSnapshot(snapshot);
+  const accounting = projectAccountingDataset(raw);
+  const rows = projectCashContribution(accounting, snapshot.cashEntries, snapshot.normMap);
+  const aggregate = aggregateAmounts(accounting);
   if (rows.some((row) => row.amount > (aggregate.get(projectionKey(row)) ?? 0))) {
     throw new CashProjectionError('cash_projection_underflow');
   }
@@ -940,7 +1067,9 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
     records: snapshot.attachmentArchive,
   } as const;
   return {
-    ...exportJSON(data),
+    ...exportJSON(accounting),
+    // projection childは表示・集計専用。snapshotのcanonical MF原本は親行のまま保存する。
+    mfTx: raw.mfTx,
     analysisSettings: { statMinMonths: snapshot.statMinMonths },
     subVendorExclusions: snapshot.subVendorExclusions.map(({ partner }) => ({ partner })),
     cashEntries: snapshot.cashEntries,
@@ -1182,6 +1311,50 @@ export function aggregateReplacementQueries(db: Db, userId: string, data: Datase
         json_extract(value, '$[1]'),
         json_extract(value, '$[2]'),
         json_extract(value, '$[3]')
+      FROM json_each(${payload})
+    `),
+  ];
+}
+
+/** canonical split集合の親単位置換。行数に依存せず、aggregateと同じbatchへ組み込める。 */
+export function splitReplacementQueries(
+  db: Db,
+  userId: string,
+  txId: string,
+  rows: ReadonlyArray<TxSplit>,
+  now = new Date().toISOString(),
+): DbBatchQueries {
+  const remove = db.delete(s.txSplits).where(and(eq(s.txSplits.userId, userId), eq(s.txSplits.txId, txId)));
+  if (rows.length === 0) return [remove];
+  const payload = d1JsonPayload(
+    rows.map((row) => [
+      row.lineId,
+      row.seq,
+      row.parentAmount,
+      row.amount,
+      row.cls,
+      row.categoryMajor,
+      row.categoryMid,
+      row.memo ?? null,
+      row.createdAt ?? now,
+      now,
+    ]),
+  );
+  return [
+    remove,
+    db.insert(s.txSplits).select(sql`
+      SELECT
+        NULL, ${userId}, ${txId},
+        json_extract(value, '$[0]'),
+        json_extract(value, '$[1]'),
+        json_extract(value, '$[2]'),
+        json_extract(value, '$[3]'),
+        json_extract(value, '$[4]'),
+        json_extract(value, '$[5]'),
+        json_extract(value, '$[6]'),
+        json_extract(value, '$[7]'),
+        json_extract(value, '$[8]'),
+        json_extract(value, '$[9]')
       FROM json_each(${payload})
     `),
   ];

@@ -22,8 +22,10 @@ import { isApplicationTableForTestReset, recordTestMigrationHead } from './schem
 import {
   LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
   getDb,
+  loadBackupPayload,
   loadCashEntries,
   loadDataset,
+  loadImportRestoreSettingsSnapshot,
   loadNormMap,
 } from './store.js';
 
@@ -741,6 +743,84 @@ describe('active target duplicate', () => {
     expect(again).toMatchObject({ cashEntries: 0, cashKept: 1 });
     expect(await d1.prepare('SELECT COUNT(*) AS n FROM cash_entries').first()).toEqual({ n: 1 });
   });
+
+  it('分割済みMFを再取込してもraw planningとaccounting projectionを混ぜず、内訳集計を保存する', async () => {
+    const first = [
+      '計算対象,日付,金額,大項目,中項目,振替,内容,ID,保有金融機関',
+      '1,2026/09/01,-100000,未分類,,0,架空引き落とし,split-parent,架空口座',
+    ].join('\n');
+    expect(await resultStatuses(await importFiles([{ name: 'split-parent.csv', body: first }]))).toEqual([
+      'committed',
+    ]);
+    await d1
+      .prepare(
+        `INSERT INTO tx_splits
+          (user_id,tx_id,line_id,seq,parent_amount,amount,cls,category_major,category_mid,created_at,updated_at)
+         VALUES
+          ('default','split-parent','00000000-0000-4000-8000-000000000001',1,100000,60000,'per','食費','',datetime('now'),datetime('now')),
+          ('default','split-parent','00000000-0000-4000-8000-000000000002',2,100000,40000,'per','日用品','',datetime('now'),datetime('now'))`,
+      )
+      .run();
+
+    const second = first.replace('架空引き落とし', '架空引き落とし（更新）');
+    const response = await importFiles([{ name: 'split-parent-updated.csv', body: second }]);
+    expect(response.status).toBe(200);
+    expect(await resultStatuses(response)).toEqual(['committed']);
+    const aggregates = await d1
+      .prepare(
+        `SELECT scope,amount FROM monthly_agg
+          WHERE user_id='default' AND month='2026-09' AND scope LIKE 'per_exp:%'
+          ORDER BY scope`,
+      )
+      .all<{ scope: string; amount: number }>();
+    expect(aggregates.results).toEqual([
+      { scope: 'per_exp:日用品', amount: 40000 },
+      { scope: 'per_exp:食費', amount: 60000 },
+    ]);
+    expect(await d1.prepare("SELECT COUNT(*) AS n FROM tx_splits WHERE user_id='default'").first()).toEqual({
+      n: 2,
+    });
+  });
+
+  it('backup/export/fingerprint/restoreのcanonical inventoryにtx_splitsを含めて往復する', async () => {
+    const csv = [
+      '計算対象,日付,金額,大項目,中項目,振替,内容,ID,保有金融機関',
+      '1,2026/09/01,-100000,未分類,,0,架空引き落とし,backup-parent,架空口座',
+    ].join('\n');
+    expect(await resultStatuses(await importFiles([{ name: 'backup-parent.csv', body: csv }]))).toEqual([
+      'committed',
+    ]);
+    await d1
+      .prepare(
+        `INSERT INTO tx_splits
+          (user_id,tx_id,line_id,seq,parent_amount,amount,cls,category_major,category_mid,created_at,updated_at)
+         VALUES
+          ('default','backup-parent','00000000-0000-4000-8000-000000000011',1,100000,70000,'per','食費','',datetime('now'),datetime('now')),
+          ('default','backup-parent','00000000-0000-4000-8000-000000000012',2,100000,30000,'per','日用品','',datetime('now'),datetime('now'))`,
+      )
+      .run();
+    const backup = await loadBackupPayload(getDb(d1), 'default');
+    expect(backup.txSplits).toMatchObject({
+      version: 1,
+      rows: [{ txId: 'backup-parent' }, { txId: 'backup-parent' }],
+    });
+
+    await d1.prepare("DELETE FROM tx_splits WHERE user_id='default'").run();
+    const response = await restore(backup);
+    expect(response.status).toBe(200);
+    expect(
+      await d1
+        .prepare(
+          "SELECT line_id AS lineId,parent_amount AS parentAmount FROM tx_splits WHERE user_id='default' ORDER BY seq",
+        )
+        .all(),
+    ).toMatchObject({
+      results: [
+        { lineId: '00000000-0000-4000-8000-000000000011', parentAmount: 100000 },
+        { lineId: '00000000-0000-4000-8000-000000000012', parentAmount: 100000 },
+      ],
+    });
+  });
 });
 
 describe('writer claim', () => {
@@ -1145,10 +1225,12 @@ describe('preflight write-set', () => {
   it('手書きpreflight ledgerをloadDataset実測と固定し、loader追加queryのdriftを検出する', async () => {
     const observed = countingDatabase(d1);
     const observedDb = getDb(observed.database);
-    const cashEntries = await loadCashEntries(observedDb, 'default');
-    await loadDataset(observedDb, 'default', cashEntries);
-    await loadNormMap(observedDb, 'default');
-    expect(observed.count()).toBe(2 + LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT);
+    const planningSnapshot = await loadImportRestoreSettingsSnapshot(observedDb, 'default');
+    // 取込の下見はD1の50 query上限に張り付いているので、分割の内訳は読まない。
+    // ledgerもその呼び方に合わせる(実際の呼び出しとずれると予算が意味を失う)
+    const raw = await loadDataset(observedDb, 'default', planningSnapshot.cashEntries, { withSplits: false });
+    raw.txSplits = planningSnapshot.txSplits;
+    expect(observed.count()).toBe(1 + LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT);
 
     const plan = planMultipartImportQueries({
       fileCount: 1,
@@ -1157,8 +1239,8 @@ describe('preflight write-set', () => {
       jsonUnitCount: 0,
       commitStatementCounts: [1],
     });
-    // routeは上のcash/loadDataset/normにfreee件数readを1本足す。
-    expect(plan.breakdown.preflightReads).toBe(observed.count() + 1);
+    // routeはcanonical planning snapshot 1本とraw loadDatasetを同じ呼び方で使う。
+    expect(plan.breakdown.preflightReads).toBe(observed.count());
   });
 
   it('同じ5,000行でもcanonical byte/query予算超過はR2/DB副作用前に413', async () => {

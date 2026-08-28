@@ -173,7 +173,7 @@ export const imports = sqliteTable('imports', {
   id: integer('id').primaryKey(),
   userId: text('user_id').notNull(),
   filename: text('filename'),
-  kind: text('kind', { enum: ['freee', 'mf', 'json'] }),
+  kind: text('kind', { enum: ['freee', 'mf', 'json', 'assets'] }),
   months: text('months'),
   rowCount: integer('row_count'),
   status: text('status'),
@@ -263,6 +263,65 @@ export const cashEntries = sqliteTable(
     updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
   },
   (t) => [index('idx_cash_month').on(t.userId, t.month)],
+);
+
+/**
+ * 0025: 明細の分割記帳。10万円の引き落としの中身を「食品3万・交通費2万…」に割る。
+ * 元の明細(mf_transactions)は消さない。集計するときだけ内訳N行に差し替える。
+ */
+export const txSplits = sqliteTable(
+  'tx_splits',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: text('user_id').notNull(),
+    /** 元の明細のID。分割は明細に付く */
+    txId: text('tx_id').notNull(),
+    /** seqの変更や再利用に影響されない、内訳行そのものの識別子 */
+    lineId: text('line_id').notNull(),
+    /** 同じ明細の中の並び。1から振る */
+    seq: integer('seq').notNull(),
+    /** 保存時の親金額。再取込で金額が変わったときのfail-closed判定に使う */
+    parentAmount: integer('parent_amount').notNull(),
+    /** 常に正。収入か支出かは元の明細の符号で決まる */
+    amount: integer('amount').notNull(),
+    cls: text('cls', { enum: ['biz', 'per'] }).notNull(),
+    categoryMajor: text('category_major').notNull(),
+    categoryMid: text('category_mid').notNull().default(''),
+    memo: text('memo'),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    uniqueIndex('idx_tx_splits_tx').on(t.userId, t.txId, t.seq),
+    uniqueIndex('uq_tx_splits_line').on(t.userId, t.lineId),
+  ],
+);
+
+/**
+ * 0026: 月次の残高(BS)。資産はMFの資産推移CSVから、負債は画面の手入力から入る。
+ * source を持つのは、CSVの取り込み直しで手入力の負債を消さないため。
+ */
+export const balanceEntries = sqliteTable(
+  'balance_entries',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: text('user_id').notNull(),
+    /** 'YYYY-MM' */
+    month: text('month').notNull(),
+    /** その月で採用した日付。月末とは限らない(まだ終わっていない月は取得日) */
+    date: text('date').notNull(),
+    side: text('side', { enum: ['asset', 'liability'] }).notNull(),
+    category: text('category').notNull(),
+    amount: integer('amount').notNull(),
+    source: text('source', { enum: ['mf', 'manual'] }).notNull(),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    // 1つの月・側・種類につき1行。取込は upsert になる
+    uniqueIndex('uq_balance_entries').on(t.userId, t.month, t.side, t.category),
+    index('idx_balance_entries_month').on(t.userId, t.month),
+  ],
 );
 
 /**

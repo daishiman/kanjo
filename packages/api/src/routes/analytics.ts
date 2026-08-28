@@ -7,12 +7,14 @@ import {
   BALANCE_SHEET_SOURCES,
   type Dataset,
   type ExpenseScope,
+  LIABILITY_CATEGORIES,
   type PeriodRange,
   TRANSACTION_EXPORT_HEADER,
   applyPeriod,
   availableYears,
   benchmarks,
   budgetTable,
+  buildBalanceSheet,
   buildReportHtml,
   cashFlow,
   defenseForecast,
@@ -163,9 +165,18 @@ analyticsRoute.get('/statements', async (c) => {
     .from(s.freeeDeals)
     .where(eq(s.freeeDeals.userId, c.get('userId')));
   const deals = rows.map(dealFromRow);
+  // 残高はloadDatasetに混ぜない。取込の1リクエストがD1の50 query上限に張り付いており、
+  // loaderのSELECTを1本増やすと取込が落ちる。ここでだけ直接読む
+  const balances = await db
+    .select()
+    .from(s.balanceEntries)
+    .where(eq(s.balanceEntries.userId, c.get('userId')))
+    .orderBy(s.balanceEntries.month);
   return c.json({
     pl: profitAndLoss(data),
     cf: cashFlow(data, deals),
+    bs: buildBalanceSheet(balances),
+    liabilityCategoryOptions: LIABILITY_CATEGORIES,
     balanceSheetSources: BALANCE_SHEET_SOURCES,
     period,
   });

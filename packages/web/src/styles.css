@@ -835,6 +835,43 @@ tr.editor td {
   border-color: transparent;
   color: var(--ink-soft);
 }
+/* 明細の分割記帳。1つの引き落としを用途ごとに小分けする編集欄。
+   入力の途中は必ず「合計が合っていない」状態を通るので、
+   残額の表示(.split-rest)は常に見える位置に置き、行の下に固定する */
+.split-editor {
+  padding: 14px 4px;
+}
+.split-mode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+.split-mode button[aria-pressed="true"] {
+  border-color: var(--biz);
+  color: var(--biz);
+  font-weight: 700;
+}
+.split-editor input[type="number"] {
+  width: 9em;
+  text-align: right;
+}
+.split-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+.split-actions button {
+  min-height: 44px;
+  white-space: nowrap;
+}
+@container (max-width: 700px) {
+  .split-actions button {
+    width: 100%;
+  }
+}
 .classification-editor-error {
   margin: 8px 0 0;
   padding: 8px 10px;

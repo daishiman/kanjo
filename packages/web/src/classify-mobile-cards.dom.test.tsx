@@ -38,6 +38,15 @@ const row = (over: Partial<TxRow> = {}): TxRow => ({
   attachmentCount: 0,
   edit: null,
   ...over,
+  rowKey: over.rowKey ?? `mf:${over.id ?? 'A1'}`,
+  rowKind: over.rowKind ?? 'mf',
+  parentTxId: over.parentTxId ?? null,
+  lineId: over.lineId ?? null,
+  splitSeq: over.splitSeq ?? null,
+  splitLineCount: over.splitLineCount ?? null,
+  splitState: over.splitState ?? null,
+  capabilities: over.capabilities ?? { quickClass: true, edit: true, split: true, attach: true },
+  attachmentTargetId: over.attachmentTargetId ?? over.id ?? 'A1',
 });
 
 const response = (transactions: TxRow[]): TransactionsResponse => ({

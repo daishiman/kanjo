@@ -5,13 +5,13 @@
  *   PL   … 儲かったか(期間の話)
  *   CF   … 現金が回っているか(同じ期間を現金で見た話)
  *   BS   … いま何を持っているか(時点の話)
- * PLとCFは今のデータで出せる。BSは残高が要るのでまだ出せないので、
- * 空欄を出す代わりに「何を取り込めば作れるか」を出す。
+ * PLとCFは今のデータで出せる。BSは残高が要るので、
+ * MFの資産推移CSVが入っていれば表を、まだなら「何を取り込めば作れるか」を出す。
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { type StatementsResponse, api } from '../api.js';
+import { type BalanceSheet as BalanceSheetData, type StatementsResponse, api } from '../api.js';
 import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
@@ -42,13 +42,14 @@ export function StatementsPage() {
       </>
     );
 
-  const { pl, cf, balanceSheetSources } = q.data;
+  const { pl, cf, bs, liabilityCategoryOptions, balanceSheetSources } = q.data;
+  const hasBalances = bs.months.length > 0;
 
   if (!pl.months.length)
     return (
       <>
         <PageHeader route="statements" />
-        <StatementsIntro />
+        <StatementsIntro hasBalances={hasBalances} />
         <PageState
           status="empty"
           message="freee仕訳が未取込です。決算書は取り込んだ仕訳から作ります。"
@@ -58,7 +59,11 @@ export function StatementsPage() {
             </Link>
           }
         />
-        <BalanceSheetSources sources={balanceSheetSources} />
+        {hasBalances ? (
+          <BalanceSheet bs={bs} options={liabilityCategoryOptions} />
+        ) : (
+          <BalanceSheetSources sources={balanceSheetSources} />
+        )}
       </>
     );
 
@@ -75,7 +80,7 @@ export function StatementsPage() {
     <>
       <PageHeader route="statements" />
 
-      <StatementsIntro />
+      <StatementsIntro hasBalances={hasBalances} />
 
       <div className="kpis">
         <KpiCard label="売上" value={yen(pl.revenue.total)} note={`${months.length}ヶ月の合計`} />
@@ -265,7 +270,11 @@ export function StatementsPage() {
         <Limits items={cf.limits} />
       </section>
 
-      <BalanceSheetSources sources={balanceSheetSources} />
+      {hasBalances ? (
+        <BalanceSheet bs={bs} options={liabilityCategoryOptions} />
+      ) : (
+        <BalanceSheetSources sources={balanceSheetSources} />
+      )}
     </>
   );
 }
@@ -274,7 +283,7 @@ export function StatementsPage() {
  * 3つの表が何を答える表なのかを、数字を出す前に置く。
  * 「PLとCFで数字が違う」を後から説明すると、どちらかが間違っていると読まれる。
  */
-function StatementsIntro() {
+function StatementsIntro({ hasBalances }: { hasBalances: boolean }) {
   return (
     <section className="card">
       <h2>この画面で分かること</h2>
@@ -311,7 +320,9 @@ function StatementsIntro() {
           <dd>
             いま何を持っているか。ある一日の残高の表です。
             <br />
-            残高のCSVがまだ無いので、下に取り方を出しています。
+            {hasBalances
+              ? '事業と家計を分けず、MFに連携した全口座の残高で出しています。'
+              : '残高のCSVがまだ無いので、下に取り方を出しています。'}
           </dd>
         </div>
       </dl>
@@ -331,6 +342,194 @@ function Limits({ items }: { items: string[] }) {
         </span>
       ))}
     </p>
+  );
+}
+
+/**
+ * 残高の表。列が月、行が資産・負債の種類。
+ *
+ * 純資産の欄が空くのは、その月の負債を一度も入れていないとき。
+ * 資産合計で埋めてしまうと「返し終えた月」と「入力し忘れた月」が同じ顔になるので、
+ * 空欄のまま出して、下の入力欄で名指しする。
+ */
+function BalanceSheet({ bs, options }: { bs: BalanceSheetData; options: string[] }) {
+  const months = bs.months;
+  const amountOf = (lines: Array<{ category: string; amount: number }>, category: string) =>
+    lines.find((l) => l.category === category)?.amount;
+
+  return (
+    <section className="card">
+      <h2>
+        <Term id="bs" />
+      </h2>
+      <HowTo id="statementsBs" />
+      <p className="sub lines">
+        資産はマネーフォワードの資産推移CSVから入っています。
+        <br />
+        負債はこのCSVに列が無いので、下の欄から月ごとに入れてください。
+      </p>
+      {bs.monthsWithoutLiabilities.length > 0 ? (
+        <p className="notice warn lines">
+          負債を入れていない月があるため、その月の純資産は出していません。
+          <br />
+          未入力: {bs.monthsWithoutLiabilities.map(monthShort).join(' / ')}
+        </p>
+      ) : null}
+      <div className="scroll-x">
+        <table className="data">
+          <thead>
+            <tr>
+              <th scope="col">項目</th>
+              {months.map((m) => (
+                <th key={m.month} scope="col">
+                  {monthShort(m.month)}
+                  {/* 月末に達していない月は、何日時点かを出さないと前月と並べて読めない */}
+                  {m.partial ? <span className="sub stmt-note">{m.asOf}時点</span> : null}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {bs.assetCategories.map((category) => (
+              <tr key={`asset/${category}`}>
+                <th scope="row">{category}</th>
+                {months.map((m) => (
+                  <td key={m.month} className="num">
+                    {amountOf(m.assets, category) === undefined
+                      ? '—'
+                      : yen(amountOf(m.assets, category) ?? 0)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+            <tr className="total">
+              <th scope="row">資産合計</th>
+              {months.map((m) => (
+                <td key={m.month} className="num">
+                  {yen(m.assetTotal)}
+                </td>
+              ))}
+            </tr>
+            {bs.liabilityCategories.map((category) => (
+              <tr key={`liability/${category}`}>
+                <th scope="row">{category}</th>
+                {months.map((m) => (
+                  <td key={m.month} className="num">
+                    {amountOf(m.liabilities, category) === undefined
+                      ? '—'
+                      : yen(amountOf(m.liabilities, category) ?? 0)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+            <tr className="total">
+              <th scope="row">負債合計</th>
+              {months.map((m) => (
+                <td key={m.month} className="num">
+                  {yen(m.liabilityTotal)}
+                </td>
+              ))}
+            </tr>
+            <tr className="total">
+              <th scope="row">純資産</th>
+              {months.map((m) => (
+                <td key={m.month} className={`num ${m.netAssets === null ? '' : gainCls(m.netAssets)}`}>
+                  {m.netAssets === null ? '—' : yenS(m.netAssets)}
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <LiabilityForm months={months.map((m) => m.month)} options={options} />
+      <Limits items={bs.limits} />
+    </section>
+  );
+}
+
+/** 負債の手入力。月を選んで、種類ごとの残高を入れて保存する */
+function LiabilityForm({ months, options }: { months: string[]; options: string[] }) {
+  const qc = useQueryClient();
+  // 既定は最新の月。毎月ここへ来て今月を入れる使い方が中心になる
+  const [month, setMonth] = useState(() => months.at(-1) ?? '');
+  const [amounts, setAmounts] = useState<Record<string, string>>({});
+  const [saved, setSaved] = useState(false);
+
+  const save = useMutation({
+    mutationFn: () =>
+      api('/balances/liabilities', {
+        method: 'PUT',
+        body: JSON.stringify({
+          month,
+          // 空欄は「入れていない」。0と書いた欄は「返し終えた」なので送る
+          lines: options
+            .filter((category) => (amounts[category] ?? '').trim() !== '')
+            .map((category) => ({ category, amount: Number(amounts[category]) })),
+        }),
+      }),
+    onSuccess: () => {
+      setSaved(true);
+      qc.invalidateQueries({ queryKey: ['statements'] });
+    },
+  });
+
+  const invalid = options.some((category) => {
+    const raw = (amounts[category] ?? '').trim();
+    return raw !== '' && !/^\d+$/.test(raw);
+  });
+
+  return (
+    <div className="stack-sm">
+      <h3>負債を入れる</h3>
+      <p className="sub lines">
+        空欄のままにすると「入力していない」として扱い、その月の純資産は出しません。
+        <br />
+        返し終えた種類は 0 と入れてください。
+      </p>
+      <label>
+        月
+        <select
+          value={month}
+          onChange={(e) => {
+            setMonth(e.target.value);
+            setSaved(false);
+          }}
+        >
+          {months.map((m) => (
+            <option key={m} value={m}>
+              {monthShort(m)}
+            </option>
+          ))}
+        </select>
+      </label>
+      {options.map((category) => (
+        <label key={category}>
+          {category}
+          <input
+            type="text"
+            inputMode="numeric"
+            value={amounts[category] ?? ''}
+            onChange={(e) => {
+              setAmounts((prev) => ({ ...prev, [category]: e.target.value }));
+              setSaved(false);
+            }}
+          />
+        </label>
+      ))}
+      {invalid ? <p className="notice warn">金額は0以上の整数で入れてください。</p> : null}
+      <button
+        type="button"
+        className="btn primary"
+        disabled={!month || invalid || save.isPending}
+        onClick={() => save.mutate()}
+      >
+        {save.isPending ? '保存中…' : 'この月の負債を保存'}
+      </button>
+      {saved ? <p className="notice info">保存しました。</p> : null}
+      {save.isError ? (
+        <p className="notice warn">保存できませんでした。時間をおいて再試行してください。</p>
+      ) : null}
+    </div>
   );
 }
 
@@ -376,7 +575,15 @@ function BalanceSheetSources({ sources }: { sources: StatementsResponse['balance
                 <td data-label="元">
                   <span className={`pill ${s.service === 'freee' ? 'biz' : 'per'}`}>{s.service}</span>
                 </td>
-                <td data-label="書き出す場所">{s.where}</td>
+                <td data-label="書き出す場所">
+                  {s.where}
+                  {/* メニューのたどり方だけだと、書いてある画面に行き着けない人が出る */}
+                  {s.url ? (
+                    <a className="sub stmt-note" href={s.url} target="_blank" rel="noreferrer">
+                      {s.url}
+                    </a>
+                  ) : null}
+                </td>
                 <td data-label="要る列">{s.columns.join(' / ')}</td>
                 <td data-label="これで分かること">
                   {s.use}

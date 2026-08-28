@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from 'hono';
 
 /** Workerが前提とするD1 schema head。migration追加時はテストが更新漏れを検知する。 */
-export const EXPECTED_D1_MIGRATION = '0024_ai_task_copy_log.sql';
+export const EXPECTED_D1_MIGRATION = '0026_balance_entries.sql';
 
 export const SCHEMA_UNAVAILABLE_ERROR = {
   code: 'schema_unavailable',

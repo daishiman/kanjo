@@ -11,6 +11,7 @@ export const JSON_SNAPSHOT_MUTATION_CONSUMERS = [
   'cash_entries',
   'rules',
   'tx_edits',
+  'tx_splits',
   'institution_owners',
   'budgets',
   'account_norm_map',
