@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { type DiagnosisData, type SummaryResponse, api } from '../api.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { pct, ratio, yen } from '../format.js';
-import { GLOSSARY, GUIDE_ORDER, type GlossaryEntry, type TermId } from '../glossary.js';
+import { ABBREVIATIONS, GLOSSARY, GUIDE_ORDER, type GlossaryEntry, type TermId } from '../glossary.js';
 
 export function GuidePage() {
   const sq = useQuery({ queryKey: ['summary'], queryFn: () => api<SummaryResponse>('/summary') });
@@ -43,6 +43,12 @@ export function GuidePage() {
     cv: d ? d.kpi.expenseCv.toFixed(2) : '—',
     fixedCost: d ? yen(d.kpi.fixedCost) : '—',
     median: d ? yen(d.kpi.expenseMedian) : '—',
+    pl: '決算書ページで表示',
+    cashFlow: '決算書ページで表示',
+    // BS・ランウェイ・BCPは残高が要る。まだ出せないことを「—」で流さず、条件を書く
+    bs: '残高のCSV取込後に作成(決算書ページ参照)',
+    runway: 'BSの取込後に算出',
+    bcp: '手元資金が固定費の何ヶ月分かで判断',
     zScore: '科目別に診断ページで表示',
     range: '科目別に診断ページで表示',
     subsDup: 'サブスク分析ページで表示',
@@ -101,6 +107,52 @@ export function GuidePage() {
         <p className="sub">
           目安は参考実装(収支管理ダッシュボード)と同じ。個人事業の一般的な水準で、業種により前後します。
         </p>
+      </div>
+
+      {/*
+        略語だけは意味より先に「何の略か」を出す。
+        CV・BS のようなアルファベット2文字は、意味の説明を読んでも
+        元の言葉が分からないままだと、資料や税理士との会話で結び付かない。
+      */}
+      <div className="card scroll-x">
+        <h2>略語の読み方</h2>
+        <p className="sub lines">
+          この画面やレポートに出てくるアルファベットの略語です。
+          <br />
+          元の英語と、日本語での呼び方を並べています。
+        </p>
+        <table className="data stack-sm">
+          <thead>
+            <tr>
+              <th scope="col">略語</th>
+              <th scope="col" style={{ textAlign: 'left' }}>
+                元の言葉
+              </th>
+              <th scope="col" style={{ textAlign: 'left' }}>
+                日本語
+              </th>
+              <th scope="col" style={{ textAlign: 'left' }}>
+                意味
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {ABBREVIATIONS.map((a) => (
+              <tr key={a.id}>
+                <th scope="row">{a.abbr.abbr}</th>
+                <td style={{ textAlign: 'left' }} data-label="元の言葉">
+                  {a.abbr.full}
+                </td>
+                <td style={{ textAlign: 'left' }} data-label="日本語">
+                  {a.abbr.ja}
+                </td>
+                <td style={{ textAlign: 'left' }} className="sub" data-label="意味">
+                  {a.meaning}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div className="card scroll-x">

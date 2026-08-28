@@ -25,12 +25,10 @@ import {
   OrphanedAttachmentRecovery,
   useAttachmentDisclosure,
 } from '../components/Attachments.js';
-import {
-  CategoryInputs,
-  OwnerSelect,
-  useInvalidateClassification,
-} from '../components/ClassificationSettings.js';
+import { CategoryPicker } from '../components/CategoryPicker.js';
+import { OwnerSelect, useInvalidateClassification } from '../components/ClassificationSettings.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
+import { SplitEditor } from '../components/SplitEditor.js';
 import { Term } from '../components/Term.js';
 import { monthLabel, yen, yenS } from '../format.js';
 
@@ -181,17 +179,19 @@ export function ClassifyPage() {
   const [manualOnly, setManualOnly] = useState(false);
   const [focusIdx, setFocusIdx] = useState(0);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingRowKey, setEditingRowKey] = useState<string | null>(null);
   const [dirtyEditingId, setDirtyEditingId] = useState<string | null>(null);
   const [busyEditingId, setBusyEditingId] = useState<string | null>(null);
   const attachments = useAttachmentDisclosure();
 
   const requestEditingId = useCallback(
-    (nextId: string | null) => {
+    (nextId: string | null, nextRowKey: string | null = null) => {
       if (busyEditingId) return;
       if (!canLeaveClassificationEditor(editingId, nextId, dirtyEditingId === editingId)) return;
       setDirtyEditingId(null);
       setBusyEditingId(null);
       setEditingId(nextId);
+      setEditingRowKey(nextRowKey);
     },
     [busyEditingId, dirtyEditingId, editingId],
   );
@@ -202,6 +202,7 @@ export function ClassifyPage() {
         setDirtyEditingId(null);
         setBusyEditingId(null);
         setEditingId(null);
+        setEditingRowKey(null);
         applyChange();
       }),
     [busyEditingId, dirtyEditingId, editingId],
@@ -218,6 +219,7 @@ export function ClassifyPage() {
     setDirtyEditingId(null);
     setBusyEditingId(null);
     setEditingId(null);
+    setEditingRowKey(null);
   }, []);
 
   const params = new URLSearchParams();
@@ -277,6 +279,7 @@ export function ClassifyPage() {
       else if (k === 'k') setFocusIdx((i) => Math.max(i - 1, 0));
       else if ((k === 'b' || k === 'p' || k === 'a') && rows[focusIdx]) {
         const tx = rows[focusIdx];
+        if (!tx.capabilities.quickClass) return;
         setClass.mutate({ txId: tx.id, next: k === 'b' ? 'biz' : k === 'p' ? 'per' : null });
       }
     },
@@ -512,7 +515,9 @@ export function ClassifyPage() {
       </div>
 
       <div className="card scroll-x classify-table-card">
-        <table className="data classify-table">
+        {/* stack-sm: 640px以下では1行=1カード。仕分けは電車内など片手で回す作業なので、
+            横スクロールで「この金額がどの明細のものか」を見失わせない */}
+        <table className="data classify-table stack-sm">
           <thead>
             <tr>
               <th>日付</th>
@@ -527,23 +532,39 @@ export function ClassifyPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((t, i) => (
-              <TxLine
-                key={t.id}
-                t={t}
-                focused={i === focusIdx}
-                editing={editingId === t.id}
-                editBusy={busyEditingId !== null}
-                candidates={d.candidates}
-                onFocus={() => setFocusIdx(i)}
-                onSet={(next) => setClass.mutate({ txId: t.id, next })}
-                onToggleEdit={() => requestEditingId(editingId === t.id ? null : t.id)}
-                onDirtyChange={(dirty) => setDirtyEditingId(dirty ? t.id : null)}
-                onBusyChange={(busy) => setBusyEditingId(busy ? t.id : null)}
-                onSaved={finishEditing}
-                attachments={attachments}
-              />
-            ))}
+            {rows.map((t, i) => {
+              const editSession = `edit:${t.rowKey}`;
+              const splitSession = `split:${t.parentTxId ?? t.id}`;
+              const editing = editingId === editSession && editingRowKey === t.rowKey;
+              const splitting = editingId === splitSession && editingRowKey === t.rowKey;
+              return (
+                <TxLine
+                  key={t.rowKey}
+                  t={t}
+                  focused={i === focusIdx}
+                  editing={editing}
+                  splitting={splitting}
+                  editBusy={busyEditingId !== null}
+                  candidates={d.candidates}
+                  onFocus={() => setFocusIdx(i)}
+                  onSet={(next) => setClass.mutate({ txId: t.id, next })}
+                  onToggleEdit={() =>
+                    requestEditingId(editing ? null : editSession, editing ? null : t.rowKey)
+                  }
+                  onToggleSplit={() =>
+                    requestEditingId(splitting ? null : splitSession, splitting ? null : t.rowKey)
+                  }
+                  onDirtyChange={(dirty) =>
+                    setDirtyEditingId(dirty ? (splitting ? splitSession : editSession) : null)
+                  }
+                  onBusyChange={(busy) =>
+                    setBusyEditingId(busy ? (splitting ? splitSession : editSession) : null)
+                  }
+                  onSaved={finishEditing}
+                  attachments={attachments}
+                />
+              );
+            })}
             {!rows.length && (
               <tr>
                 <td colSpan={9} className="empty">
@@ -562,11 +583,13 @@ function TxLine({
   t,
   focused,
   editing,
+  splitting,
   editBusy,
   candidates,
   onFocus,
   onSet,
   onToggleEdit,
+  onToggleSplit,
   onDirtyChange,
   onBusyChange,
   onSaved,
@@ -575,11 +598,13 @@ function TxLine({
   t: TxRow;
   focused: boolean;
   editing: boolean;
+  splitting: boolean;
   editBusy: boolean;
   candidates: Candidates;
   onFocus: () => void;
   onSet: (next: Cls | null) => void;
   onToggleEdit: () => void;
+  onToggleSplit: () => void;
   onDirtyChange: (dirty: boolean) => void;
   onBusyChange: (busy: boolean) => void;
   onSaved: () => void;
@@ -587,7 +612,10 @@ function TxLine({
 }) {
   const catEdited = t.catSrc === '手動';
   const editorId = useId();
+  const splitId = useId();
   const qc = useQueryClient();
+  const splitTarget = t.parentTxId ?? t.id;
+  const isSplitPart = t.rowKind === 'split';
   return (
     <>
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: キーボード操作はページ全体のJ/K/B/P/Aハンドラで提供 */}
@@ -595,11 +623,26 @@ function TxLine({
         className={[focused ? 'kbd-focus' : '', editing ? 'editing-open' : ''].filter(Boolean).join(' ')}
         onClick={onFocus}
       >
-        <td className="num">{t.date}</td>
-        <td className="tx-description" title={t.description}>
-          {t.description}
+        <td className="num" data-label="日付">
+          {t.date}
         </td>
-        <td className="tx-institution" title={t.institution ?? undefined}>
+        <td className="tx-description" title={t.description} data-label="内容">
+          {t.description}
+          {isSplitPart && (
+            <>
+              {' '}
+              <span className="pill neutral" title="1つの引き落としを用途ごとに分けた、その1つ">
+                内訳
+              </span>
+            </>
+          )}
+          {t.splitState === 'amount_conflict' && (
+            <span className="pill warn" title="再取込で元の金額が変わったため、元明細を集計しています">
+              内訳の再確認が必要
+            </span>
+          )}
+        </td>
+        <td className="tx-institution" title={t.institution ?? undefined} data-label="口座">
           {t.institution ?? '—'}
           {t.paymentMethod === 'cash' && (
             <>
@@ -610,7 +653,7 @@ function TxLine({
             </>
           )}
         </td>
-        <td>
+        <td data-label="大項目/中項目">
           {t.big}
           {t.mid ? ` / ${t.mid}` : ''}
           {catEdited && (
@@ -644,64 +687,104 @@ function TxLine({
             </>
           )}
         </td>
-        <td className="num">{yenS(t.amount)}</td>
-        <td>
+        <td className="num" data-label="金額">
+          {yenS(t.amount)}
+        </td>
+        <td data-label="判定">
           <span className={`pill ${t.cls}`}>{t.cls === 'biz' ? '事業' : '個人'}</span>{' '}
           <span className="pill neutral">{t.src}</span>
         </td>
-        <td>
+        <td data-label="名義">
           {t.owner ? ownerLabel(t.owner) : <span className="pill neutral">未設定</span>}
           {t.owner && <span className="orig owner-source">{t.ownerSrc}</span>}
         </td>
-        <td>
-          <AttachmentDisclosureCell
-            targetId={t.id}
-            status={t.attachmentCount > 0 ? 'attached' : undefined}
-            count={t.attachmentCount}
-            disclosure={attachments}
-            buttonClassName="classify-quick"
-            disabledReason={
-              t.idStable
-                ? undefined
-                : 'MFのID列がない明細は、再取込後の同一性を保証できないため添付できません'
-            }
-          />
+        <td data-label="証憑">
+          {t.attachmentTargetId ? (
+            <AttachmentDisclosureCell
+              targetId={t.attachmentTargetId}
+              status={t.attachmentCount > 0 ? 'attached' : undefined}
+              count={t.attachmentCount}
+              disclosure={attachments}
+              buttonClassName="classify-quick"
+              disabledReason={
+                t.capabilities.attach
+                  ? undefined
+                  : 'MFのID列がない明細は、再取込後の同一性を保証できないため添付できません'
+              }
+            />
+          ) : (
+            <span className="sub">対象外</span>
+          )}
         </td>
-        <td>
+        <td data-label="操作">
           <div className="classify-quick-actions" aria-label={`${t.description}の簡易操作`}>
-            <QuickClassButton
-              label="個人"
-              selected={t.cls === 'per' && t.src === '手動'}
-              disabled={editBusy}
-              onClick={() => onSet('per')}
-            />
-            <QuickClassButton
-              label="事業"
-              selected={t.cls === 'biz' && t.src === '手動'}
-              disabled={editBusy}
-              onClick={() => onSet('biz')}
-            />
-            <button
-              type="button"
-              className="mini classify-quick"
-              disabled={editBusy || t.src !== '手動'}
-              onClick={() => onSet(null)}
-            >
-              自動に戻す
-            </button>
-            <button
-              type="button"
-              className="mini classify-quick edit-trigger"
-              aria-expanded={editing}
-              aria-controls={editorId}
-              disabled={editBusy}
-              onClick={onToggleEdit}
-            >
-              {editing ? '編集を閉じる' : '編集する'}
-            </button>
+            {t.capabilities.quickClass && (
+              <>
+                <QuickClassButton
+                  label="個人"
+                  selected={t.cls === 'per' && t.src === '手動'}
+                  disabled={editBusy}
+                  onClick={() => onSet('per')}
+                />
+                <QuickClassButton
+                  label="事業"
+                  selected={t.cls === 'biz' && t.src === '手動'}
+                  disabled={editBusy}
+                  onClick={() => onSet('biz')}
+                />
+                <button
+                  type="button"
+                  className="mini classify-quick"
+                  disabled={editBusy || t.src !== '手動'}
+                  onClick={() => onSet(null)}
+                >
+                  自動に戻す
+                </button>
+              </>
+            )}
+            {t.capabilities.edit && (
+              <button
+                type="button"
+                className="mini classify-quick edit-trigger"
+                aria-expanded={editing}
+                aria-controls={editorId}
+                disabled={editBusy}
+                onClick={onToggleEdit}
+              >
+                {editing ? '編集を閉じる' : '編集する'}
+              </button>
+            )}
+            {t.capabilities.split && (
+              <button
+                type="button"
+                className="mini classify-quick"
+                aria-expanded={splitting}
+                aria-controls={splitId}
+                disabled={editBusy}
+                onClick={onToggleSplit}
+                title="現金払いなどで中身が分からない引き落としを、用途ごとに小分けします"
+              >
+                {splitting ? '分割を閉じる' : isSplitPart ? '内訳を直す' : '分割する'}
+              </button>
+            )}
           </div>
         </td>
       </tr>
+      {splitting && (
+        <tr className="editing-open" id={splitId}>
+          <td colSpan={9}>
+            <SplitEditor
+              txId={splitTarget}
+              candidates={candidates}
+              defaultCls={t.cls}
+              onClose={onToggleSplit}
+              onSaved={onSaved}
+              onDirtyChange={onDirtyChange}
+              onBusyChange={onBusyChange}
+            />
+          </td>
+        </tr>
+      )}
       {editing && (
         <EditorRow
           id={editorId}
@@ -713,13 +796,15 @@ function TxLine({
           onSaved={onSaved}
         />
       )}
-      <AttachmentDisclosureRow
-        targetId={t.id}
-        colSpan={9}
-        disclosure={attachments}
-        rowClassName="editing-open"
-        onChanged={() => void qc.invalidateQueries({ queryKey: ['transactions'] })}
-      />
+      {t.attachmentTargetId && (
+        <AttachmentDisclosureRow
+          targetId={t.attachmentTargetId}
+          colSpan={9}
+          disclosure={attachments}
+          rowClassName="editing-open"
+          onChanged={() => void qc.invalidateQueries({ queryKey: ['transactions'] })}
+        />
+      )}
     </>
   );
 }
@@ -862,7 +947,7 @@ function EditorRow({
                   {SCOPE_LABEL[scope]}(空欄は取込値・ルールを維持)
                 </span>
                 <div className="classification-category-controls">
-                  <CategoryInputs
+                  <CategoryPicker
                     candidates={candidates}
                     scope={scope}
                     big={big}
@@ -871,6 +956,9 @@ function EditorRow({
                       setBig(v.big);
                       setMid(v.mid);
                     }}
+                    placeholderBig="科目(変えない)"
+                    placeholderMid="中項目(変えない)"
+                    clearLabel="科目を指定しない(取込値・ルールのまま)"
                   />
                 </div>
               </div>

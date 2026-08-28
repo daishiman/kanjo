@@ -4,6 +4,7 @@
  */
 import { isCashTxId } from './cash.js';
 import { applyClassification, overridesFromEdits } from './classify.js';
+import { applySplits, reconcileTxSplits, txSplitsFromSnapshot, txSplitsSnapshot } from './splits.js';
 import { type SubVendor, matchSubVendor } from './subs.js';
 import {
   type Cls,
@@ -121,6 +122,8 @@ export function applyFreeeDeals(data: Dataset, deals: FreeeDeal[], months: strin
 export function applyMfTxs(data: Dataset, txs: MfTx[]): void {
   const monthsIn = new Set(txs.map((t) => t.m));
   data.mfTx = data.mfTx.filter((t) => !monthsIn.has(t.m) || isCashTxId(t.id)).concat(txs);
+  // 洗替えで親が消えたcanonical childは同じcandidateから外す。再出現時の誤再接続を防ぐ。
+  reconcileTxSplits(data);
   recomputeClassification(data);
 }
 
@@ -134,7 +137,7 @@ export function countableMfTxs(txs: MfTx[]): MfTx[] {
 }
 
 /** ルール・手動判定・明細の現状から personal / bizPersonal を再生成する */
-export function recomputeClassification(data: Dataset): void {
+export function recomputeClassification(data: Dataset, replaceMonths?: ReadonlySet<string>): void {
   data.overrides = overridesFromEdits(data.edits);
   const r = applyClassification(countableMfTxs(data.mfTx), data.rules, data.edits, data.institutionOwners);
   // raw MF行がある月は、集計対象が0件でも「空の再計算結果」で旧値を置換する。
@@ -151,9 +154,22 @@ export function recomputeClassification(data: Dataset): void {
     };
   }
   // mfTxが無い月（JSON復元のみの月）の集計は温存する
-  data.personal = { ...data.personal, ...r.personal };
-  data.bizPersonal = { ...data.bizPersonal, ...r.bizPersonal };
-  data.personalByOwner = { ...data.personalByOwner, ...r.personalByOwner };
+  const inScope = <T>(values: Record<string, T>): Record<string, T> =>
+    replaceMonths
+      ? Object.fromEntries(Object.entries(values).filter(([month]) => replaceMonths.has(month)))
+      : values;
+  data.personal = { ...data.personal, ...inScope(r.personal) };
+  data.bizPersonal = { ...data.bizPersonal, ...inScope(r.bizPersonal) };
+  data.personalByOwner = { ...data.personalByOwner, ...inScope(r.personalByOwner) };
+}
+
+/** raw canonical Datasetから、集計・表示専用の派生Datasetを明示的に作る。 */
+export function projectAccountingDataset(raw: Dataset): Dataset {
+  const projected = structuredClone(raw);
+  const rawMfMonths = new Set(projected.mfTx.filter((tx) => !isCashTxId(tx.id)).map((tx) => tx.m));
+  applySplits(projected, projected.txSplits);
+  recomputeClassification(projected, rawMfMonths);
+  return projected;
 }
 
 /** HTML版互換の統合JSONを取り込む（初期移行用） */
@@ -174,6 +190,8 @@ export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
   if (obj.budgets) data.budgets = obj.budgets as Record<string, number>;
   if (obj.cashOverride) data.cashOverride = obj.cashOverride as Dataset['cashOverride'];
   if (obj.mfTx) data.mfTx = obj.mfTx as MfTx[];
+  if (Object.prototype.hasOwnProperty.call(obj, 'txSplits'))
+    data.txSplits = txSplitsFromSnapshot(obj.txSplits);
   if (obj.rules) {
     // HTML版のルールは {k, cls}。古い形式 {keyword, cls} も許容
     data.rules = (
@@ -219,6 +237,7 @@ export function exportJSON(data: Dataset): Record<string, unknown> {
     bizPersonal: data.bizPersonal,
     // 個人分の現金明細(cash:*)は cash_entries が正本なので、取込明細の写しには含めない
     mfTx: data.mfTx.filter((t) => !isCashTxId(t.id)),
+    txSplits: txSplitsSnapshot(data.txSplits),
     rules: data.rules,
     overrides: data.overrides,
     edits: data.edits,

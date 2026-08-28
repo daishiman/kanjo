@@ -857,6 +857,13 @@ describe('append-only migrationのprovenanceとID契約', () => {
         { month: '2025-04', scope: 'per_exp:cashなし家計', amount: 404 },
       ]);
 
+      // ここから先は現行スキーマでの再集計を見る。
+      // loaderは常に最新の表(分割の内訳など)を読むので、0007止まりのDBでは動かない
+      await applyMigrations(
+        legacyDb,
+        files.filter((filename) => filename >= '0008'),
+      );
+
       const storeDb = getDb(legacyDb);
       await recomputeFromDeals(storeDb, 'legacy');
       const assertBaselineAgg = async () => {
@@ -1248,9 +1255,9 @@ describe('cash親削除のD1 query budget', () => {
     const oneDifference = planCashParentDeleteQueries(10, 1);
     const manyDifferences = planCashParentDeleteQueries(10, 100_000);
     expect(manyDifferences).toEqual({
-      total: 41,
-      success: 39,
-      attachmentFailure: 41,
+      total: 42,
+      success: 40,
+      attachmentFailure: 42,
       limit: 50,
       accepted: true,
     });

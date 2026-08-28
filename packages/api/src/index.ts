@@ -24,6 +24,7 @@ import {
 import { aiAgentRoute, aiRoute } from './routes/ai.js';
 import { analyticsRoute } from './routes/analytics.js';
 import { attachmentsRoute } from './routes/attachments.js';
+import { balancesRoute } from './routes/balances.js';
 import { cashRoute } from './routes/cash.js';
 import { classifyRoute } from './routes/classify.js';
 import { importsRoute } from './routes/imports.js';
@@ -94,6 +95,7 @@ app.route('/api', classifyRoute);
 app.route('/api', settingsRoute);
 app.route('/api', subsRoute);
 app.route('/api', attachmentsRoute);
+app.route('/api', balancesRoute);
 
 app.notFound((c) => {
   if (c.req.path.startsWith('/api/')) {

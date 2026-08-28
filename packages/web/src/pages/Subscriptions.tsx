@@ -3,16 +3,19 @@ import { useQuery } from '@tanstack/react-query';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type SubscriptionsData, api } from '../api.js';
+import { HowTo } from '../components/HowTo.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { SubVendorsPanel, SubsCandidatesPanel } from '../components/SubVendors.js';
 import { Term } from '../components/Term.js';
 import { VENDOR_PALETTE, yenTick } from '../components/charts.js';
 import { monthLabel, monthShort, ratio, yen } from '../format.js';
+import { usePeriod } from '../period.js';
 
 export function SubscriptionsPage() {
+  const { key, withPeriod } = usePeriod();
   const q = useQuery({
-    queryKey: ['subscriptions'],
-    queryFn: () => api<SubscriptionsData>('/subscriptions'),
+    queryKey: ['subscriptions', key],
+    queryFn: () => api<SubscriptionsData>(withPeriod('/subscriptions')),
   });
   if (q.isLoading)
     return (
@@ -161,6 +164,7 @@ export function SubscriptionsPage() {
 
       <div className="card">
         <h2>ベンダー別月次(積み上げ)</h2>
+        <HowTo id="subsMonthly" />
         <Chart
           type="bar"
           height={90}

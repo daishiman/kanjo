@@ -11,7 +11,16 @@ type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
 export type CanonicalMutationClass = 'canonical-mutation' | 'self-managed-import' | 'not-canonical-mutation';
 
-type CanonicalConsumer = JsonSnapshotMutationConsumer | 'attachments' | 'category_options';
+/**
+ * balance_entries はJSONバックアップのwrite-setに入らない(復元は残高に触らない)ので
+ * JsonSnapshotMutationConsumer ではないが、資産推移CSVの取込と同じ表を書く。
+ * 取込の洗い替えと手入力が重なると、消した直後の行だけが残りうるのでleaseは要る。
+ */
+type CanonicalConsumer =
+  | JsonSnapshotMutationConsumer
+  | 'attachments'
+  | 'category_options'
+  | 'balance_entries';
 
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -31,6 +40,10 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   { method: 'POST', path: /^\/api\/attachments\/archive\/recover$/, consumers: ['attachments'] },
   { method: 'DELETE', path: /^\/api\/attachments\/[^/]+$/, consumers: ['attachments'] },
   { method: 'PUT', path: /^\/api\/transactions\/[^/]+\/(?:class|edit)$/, consumers: ['tx_edits'] },
+  // 分割は明細そのものを内訳N行に差し替える。取込の洗替えと重なると、
+  // 元の明細が消えた後の内訳だけが残りうるので同じleaseで直列化する
+  { method: 'PUT', path: /^\/api\/transactions\/[^/]+\/splits$/, consumers: ['tx_splits'] },
+  { method: 'PUT', path: /^\/api\/balances\/liabilities$/, consumers: ['balance_entries'] },
   { method: 'POST', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PATCH', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PUT', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },

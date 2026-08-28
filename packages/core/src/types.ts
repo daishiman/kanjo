@@ -1,6 +1,52 @@
 /** 公私判定の区分 */
 export type Cls = 'biz' | 'per';
 
+/** 分割記帳の保存上限。API と画面が同じ値を使う。 */
+export const MIN_SPLIT_LINES = 2;
+export const MAX_SPLIT_LINES = 50;
+export const SPLIT_MEMO_MAX_LENGTH = 120;
+export const TX_SPLITS_SNAPSHOT_VERSION = 1;
+
+/** 分割の1行。割合入力も保存前にこの金額形へ確定する。 */
+export interface SplitLine {
+  cls: Cls;
+  categoryMajor: string;
+  categoryMid: string;
+  amount: number;
+  memo?: string;
+}
+
+/** canonical child。並び順(seq)と不変identity(lineId)を混ぜない。 */
+export interface TxSplit extends SplitLine {
+  txId: string;
+  lineId: string;
+  seq: number;
+  /** 保存時の親金額(絶対値)。再取込後の金額変更を観測する。 */
+  parentAmount: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TxSplitsSnapshot {
+  version: typeof TX_SPLITS_SNAPSHOT_VERSION;
+  rows: TxSplit[];
+}
+
+export type SplitProjection =
+  | {
+      kind: 'split';
+      parentTxId: string;
+      lineId: string;
+      seq: number;
+      lineCount: number;
+      parentAmount: number;
+    }
+  | {
+      kind: 'split-parent';
+      parentTxId: string;
+      state: 'amount_conflict' | 'identity_unstable';
+    };
+
 /** MF明細（HTML版の mfTx 要素と同一形状） */
 export interface MfTx {
   /** MFのID列。無ければ `${month}_${row}_${amount}` の合成キー */
@@ -30,6 +76,10 @@ export interface MfTx {
   isTarget?: boolean;
   /** MFの「振替」列。true = 口座間振替であり収支集計に含めない行。未取得は undefined */
   isTransfer?: boolean;
+  /** 集計用の派生行か、要確認の親行かを文字列ID解析なしで判別する。 */
+  splitProjection?: SplitProjection;
+  /** 派生行専用。canonical tx_editsへ書かず、親属性を投影時だけ継承する。 */
+  projectedEdit?: TxEdit;
 }
 
 /**
@@ -166,6 +216,8 @@ export interface Dataset {
   personal: Record<string, PersonalMonth>;
   bizPersonal: Record<string, BizPersonalMonth>;
   mfTx: MfTx[];
+  /** canonical child。mfTxはraw親を保持し、集計時だけ投影する。 */
+  txSplits: TxSplit[];
   rules: Rule[];
   /** 手動の公私判定（HTML版互換。edits から導出される） */
   overrides: Record<string, Cls>;
@@ -203,6 +255,7 @@ export function emptyDataset(): Dataset {
     personal: {},
     bizPersonal: {},
     mfTx: [],
+    txSplits: [],
     rules: [],
     overrides: {},
     edits: {},

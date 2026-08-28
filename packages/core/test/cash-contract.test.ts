@@ -9,6 +9,8 @@ import {
   CASH_INSTITUTION,
   type CashEntry,
   type FreeeDeal,
+  TRANSIT_CATEGORY,
+  TRANSIT_SAME_ACCOUNT_NOTE,
   applyFreeeDeals,
   applyMfTxs,
   cashBizDeals,
@@ -16,6 +18,7 @@ import {
   emptyDataset,
   exportJSON,
   isCashTxId,
+  shouldSwitchToTransit,
 } from '../src/index.js';
 
 const meeting: CashEntry = {
@@ -131,5 +134,31 @@ describe('個人分の現金明細', () => {
     data.mfTx = [cashToTx(lunch), { id: 'A1', m: '2026-07', d: '07/01', c: 'x', a: -1, big: '', mid: '' }];
     const out = exportJSON(data) as { mfTx: { id: string }[] };
     expect(out.mfTx.map((t) => t.id)).toEqual(['A1']);
+  });
+});
+
+/**
+ * 「通常の記帳」と「交通費(電車代)」は同じ現金明細・同じ科目に入る。
+ * 違うのは入力の作法だけで、集計上は1つの旅費交通費になる。
+ */
+describe('交通費の入力への切り替え', () => {
+  it('まだ何も入れていなければ、交通費の科目を選んだ時点で切り替える', () => {
+    expect(shouldSwitchToTransit(TRANSIT_CATEGORY, { description: '', amount: 0 })).toBe(true);
+    expect(shouldSwitchToTransit(' 旅費交通費 ', { description: '', amount: 0 })).toBe(true);
+  });
+
+  it('入力済みの内容や金額は勝手に捨てない', () => {
+    // 切り替えると区間からの組み立てに変わり、入れた内容と金額が消える
+    expect(shouldSwitchToTransit(TRANSIT_CATEGORY, { description: '高速代', amount: 0 })).toBe(false);
+    expect(shouldSwitchToTransit(TRANSIT_CATEGORY, { description: '', amount: 800 })).toBe(false);
+  });
+
+  it('交通費以外の科目では切り替えない', () => {
+    expect(shouldSwitchToTransit('会議費', { description: '', amount: 0 })).toBe(false);
+    expect(shouldSwitchToTransit('', { description: '', amount: 0 })).toBe(false);
+  });
+
+  it('2つの入力方法が同じ科目に入ることを画面に出せる', () => {
+    expect(TRANSIT_SAME_ACCOUNT_NOTE).toContain(TRANSIT_CATEGORY);
   });
 });

@@ -1,5 +1,5 @@
 /**
- * 13画面のルート・ナビ・ページヘッダーの正本。
+ * 15画面のルート・ナビ・ページヘッダーの正本。
  * 表示順はサイドバーの業務順序と一致させる。
  */
 export const APP_ROUTES = [
@@ -18,6 +18,14 @@ export const APP_ROUTES = [
     task: '科目×月で「増えた/減った」を特定する(増=赤・減=緑)。',
     navGroup: null,
     mobileLabel: 'マトリクス',
+  },
+  {
+    id: 'trends',
+    path: '/trends',
+    label: '支出トレンド',
+    task: '項目ごとの規模と増減を見て、次に手を打つ科目を決める(事業・家計を並べて比較できる)。',
+    navGroup: null,
+    mobileLabel: null,
   },
   {
     id: 'diagnosis',
@@ -40,6 +48,14 @@ export const APP_ROUTES = [
     path: '/household',
     label: '家計',
     task: '事業と個人のお金を並べ、収支と名義別の収入を確認する(公私仕分け反映後)。',
+    navGroup: null,
+    mobileLabel: null,
+  },
+  {
+    id: 'statements',
+    path: '/statements',
+    label: '決算書',
+    task: '売上と経費の損益計算書(PL)、現金の動き(キャッシュフロー)を見る。貸借対照表(BS)は必要なCSVを確認する。',
     navGroup: null,
     mobileLabel: null,
   },

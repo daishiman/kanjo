@@ -8,22 +8,31 @@ import { zValidator } from '@hono/zod-validator';
 import {
   type Candidates,
   DEFAULT_RULES,
+  MAX_SPLIT_LINES,
+  MIN_SPLIT_LINES,
   OWNER_VALUES,
   PAYMENT_METHOD_VALUES,
   type Rule,
+  SPLIT_MEMO_MAX_LENGTH,
   type TxEdit,
+  type TxSplit,
   buildCandidates,
   categoryAllowed,
   categoryRejectReason,
   classificationProgress,
   countableMfTxs,
+  isCashTxId,
+  parseAttachmentTarget,
   parseMfAttachmentTarget,
   paymentMethodOf,
+  projectAccountingDataset,
   resolveTx,
   ruleMatches,
+  serializeAttachmentTarget,
   sum,
+  validateSplits,
 } from '@kanjo/core';
-import { and, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
@@ -31,11 +40,14 @@ import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import {
   type Db,
+  aggregateReplacementQueries,
   getDb,
   loadDataset,
   loadOrderedRuleRows,
   ruleFromRow,
   saveAgg,
+  splitFromRow,
+  splitReplacementQueries,
   upsertEdit,
 } from '../store.js';
 import { loadAttachmentCounts } from './attachments.js';
@@ -97,8 +109,12 @@ classifyRoute.get('/transactions', async (c) => {
   const txs = countable.filter((t) => t.m === m);
   /** 同月に取り込まれたが集計対象外だった件数(振替・計算対象=0)。取込漏れとの取り違えを防ぐため件数だけ返す */
   const nonCountableCount = data.mfTx.filter((t) => t.m === m).length - txs.length;
+  const attachmentTargetFor = (t: (typeof txs)[number]) => {
+    if (t.splitProjection?.kind === 'split') return parseMfAttachmentTarget(t.splitProjection.parentTxId);
+    return parseAttachmentTarget(t.id);
+  };
   const attachmentTargets = txs
-    .map((t) => parseMfAttachmentTarget(t.id))
+    .map(attachmentTargetFor)
     .filter((target): target is NonNullable<typeof target> => target !== null);
   const [candidates, attachmentCounts] = await Promise.all([
     loadCandidates(db, userId, data.mfTx),
@@ -108,9 +124,29 @@ classifyRoute.get('/transactions', async (c) => {
   const resolved = txs.map((t) => ({ t, r: resolveTx(t, data.rules, data.edits, data.institutionOwners) }));
   const rows = resolved
     .map(({ t, r }) => {
-      const e = data.edits[t.id];
+      const split = t.splitProjection?.kind === 'split' ? t.splitProjection : null;
+      const splitParent = t.splitProjection?.kind === 'split-parent' ? t.splitProjection : null;
+      const rowKind = split ? 'split' : isCashTxId(t.id) ? 'cash' : 'mf';
+      const parentTxId = split?.parentTxId ?? splitParent?.parentTxId ?? null;
+      const e = split ? data.edits[split.parentTxId] : data.edits[t.id];
+      const attachmentTarget = attachmentTargetFor(t);
+      const attachmentTargetId = attachmentTarget ? serializeAttachmentTarget(attachmentTarget) : null;
       return {
         id: t.id,
+        rowKey: split ? `split:${split.lineId}` : `${rowKind}:${t.id}`,
+        rowKind,
+        parentTxId,
+        lineId: split?.lineId ?? null,
+        splitSeq: split?.seq ?? null,
+        splitLineCount: split?.lineCount ?? null,
+        splitState: splitParent?.state ?? null,
+        capabilities: {
+          quickClass: rowKind !== 'split',
+          edit: rowKind !== 'split',
+          split: rowKind !== 'cash' && t.idStable === true,
+          attach: attachmentTarget !== null && (attachmentTarget.kind === 'cash' || t.idStable === true),
+        },
+        attachmentTargetId,
         idStable: t.idStable === true,
         date: t.d,
         description: t.c,
@@ -134,7 +170,7 @@ classifyRoute.get('/transactions', async (c) => {
         /** 手動の科目が現在の公私の系統に無い(公私を後から変えた等) */
         scopeMismatch: r.catSrc === '手動' && !categoryAllowed(candidates, r.cls, r.big, r.mid),
         /** 添付されている証憑の件数(0 = 未添付) */
-        attachmentCount: attachmentCounts[t.id] ?? 0,
+        attachmentCount: attachmentTargetId ? (attachmentCounts[attachmentTargetId] ?? 0) : 0,
         edit: e
           ? {
               cls: e.cls ?? null,
@@ -144,6 +180,9 @@ classifyRoute.get('/transactions', async (c) => {
               updatedAt: e.updatedAt ?? null,
             }
           : null,
+        /** 親子を離さず並べるためだけの内部sort metadata */
+        sortAmount: split?.parentAmount ?? Math.abs(t.a),
+        groupKey: parentTxId ?? t.id,
       };
     })
     .filter((r) => {
@@ -162,7 +201,13 @@ classifyRoute.get('/transactions', async (c) => {
         return false;
       return true;
     })
-    .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
+    .sort(
+      (a, b) =>
+        b.sortAmount - a.sortAmount ||
+        a.groupKey.localeCompare(b.groupKey) ||
+        (a.splitSeq ?? 0) - (b.splitSeq ?? 0),
+    )
+    .map(({ sortAmount: _sortAmount, groupKey: _groupKey, ...row }) => row);
 
   const pick = (f: (x: { t: (typeof txs)[number]; r: ReturnType<typeof resolveTx> }) => boolean) =>
     sum(resolved.filter(f).map((x) => x.t.a));
@@ -197,6 +242,12 @@ classifyRoute.get('/transactions', async (c) => {
 /* -------- 手動編集(公私・大項目・中項目・名義) -------- */
 
 const clsSchema = z.object({ cls: z.enum(['biz', 'per']).nullable() });
+const derivedMutationError = {
+  error: {
+    code: 'split_line_read_only',
+    message: '分割後の内訳は「内訳を編集」からまとめて変更してください',
+  },
+};
 
 /** 互換: 公私だけを変える */
 classifyRoute.put('/transactions/:txId/class', zValidator('json', clsSchema), async (c) => {
@@ -205,6 +256,9 @@ classifyRoute.put('/transactions/:txId/class', zValidator('json', clsSchema), as
   const txId = c.req.param('txId');
   const { cls } = c.req.valid('json');
   const data = await loadDataset(db, userId);
+  const tx = data.mfTx.find((candidate) => candidate.id === txId);
+  if (!tx) return c.json({ error: { code: 'not_found', message: '明細が見つかりません' } }, 404);
+  if (tx.splitProjection?.kind === 'split') return c.json(derivedMutationError, 409);
   const cur = data.edits[txId] ?? {};
   await upsertEdit(db, userId, txId, { ...cur, cls, updatedAt: new Date().toISOString() });
   await recompute(db, userId);
@@ -233,6 +287,7 @@ classifyRoute.put('/transactions/:txId/edit', zValidator('json', editSchema), as
   const data = await loadDataset(db, userId);
   const tx = data.mfTx.find((t) => t.id === txId);
   if (!tx) return c.json({ error: { code: 'not_found', message: '明細が見つかりません' } }, 404);
+  if (tx.splitProjection?.kind === 'split') return c.json(derivedMutationError, 409);
   const cur: TxEdit = data.edits[txId] ?? {};
   const next: TxEdit = b.reset ? {} : { ...cur };
   if (!b.reset) {
@@ -266,6 +321,183 @@ classifyRoute.put('/transactions/:txId/edit', zValidator('json', editSchema), as
   const after = await loadDataset(db, userId);
   const r = resolveTx(tx, after.rules, after.edits, after.institutionOwners);
   return c.json({ ok: true, txId, resolved: r, edit: after.edits[txId] ?? null });
+});
+
+/* -------- 分割記帳(1つの引き落としを用途ごとに小分けする) -------- */
+
+const splitLineSchema = z.object({
+  lineId: z.string().uuid().optional(),
+  amount: z.number().int().positive(),
+  cls: z.enum(['biz', 'per']),
+  big: z.string().min(1),
+  mid: z.string().default(''),
+  memo: z.string().max(SPLIT_MEMO_MAX_LENGTH).optional(),
+});
+/**
+ * 内訳はまるごと差し替える(行ごとのCRUDにしない)。
+ * 1行ずつ更新すると、途中の状態が「合計が合わない分割」としてDBに残る。
+ * 全部まとめて受け取れば、保存されているものは常に合計が合っている。
+ */
+const splitsSchema = z.object({ lines: z.array(splitLineSchema).max(MAX_SPLIT_LINES) });
+
+/** 元の明細を分割前の姿で引く(loadDatasetは分割適用後なので、そちらからは取れない) */
+async function loadRawTx(db: Db, userId: string, txId: string) {
+  const rows = await db
+    .select()
+    .from(s.mfTransactions)
+    .where(and(eq(s.mfTransactions.userId, userId), eq(s.mfTransactions.txId, txId)))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
+const splitRowsOf = (db: Db, userId: string, txId: string) =>
+  db
+    .select()
+    .from(s.txSplits)
+    .where(and(eq(s.txSplits.userId, userId), eq(s.txSplits.txId, txId)))
+    .orderBy(asc(s.txSplits.seq));
+
+classifyRoute.get('/transactions/:txId/splits', async (c) => {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const txId = c.req.param('txId');
+  const tx = await loadRawTx(db, userId, txId);
+  if (!tx) return c.json({ error: { code: 'not_found', message: '明細が見つかりません' } }, 404);
+  if (tx.identityStable !== 1)
+    return c.json(
+      {
+        error: {
+          code: 'unstable_identity',
+          message: '安定した明細IDがないため分割できません。MFを再取り込みしてください',
+        },
+      },
+      409,
+    );
+  const rows = await splitRowsOf(db, userId, txId);
+  return c.json({
+    txId,
+    // 内訳は常に正の数で持つ。収入か支出かは元の明細の符号が決める
+    total: Math.abs(tx.amount),
+    description: tx.description,
+    date: tx.date,
+    state: rows.some((row) => row.parentAmount !== Math.abs(tx.amount)) ? 'amount_conflict' : 'ready',
+    constraints: {
+      minLines: MIN_SPLIT_LINES,
+      maxLines: MAX_SPLIT_LINES,
+      memoMaxLength: SPLIT_MEMO_MAX_LENGTH,
+    },
+    lines: rows.map((r) => ({
+      lineId: r.lineId,
+      amount: r.amount,
+      cls: r.cls,
+      big: r.categoryMajor,
+      mid: r.categoryMid,
+      memo: r.memo ?? '',
+    })),
+  });
+});
+
+classifyRoute.put('/transactions/:txId/splits', zValidator('json', splitsSchema), async (c) => {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const txId = c.req.param('txId');
+  const [data, storedRows] = await Promise.all([
+    loadDataset(db, userId, undefined, { withSplits: false }),
+    db.select().from(s.txSplits).where(eq(s.txSplits.userId, userId)),
+  ]);
+  data.txSplits = storedRows.map(splitFromRow);
+  const tx = data.mfTx.find((candidate) => candidate.id === txId && !isCashTxId(candidate.id));
+  if (!tx) return c.json({ error: { code: 'not_found', message: '明細が見つかりません' } }, 404);
+  if (tx.idStable !== true)
+    return c.json(
+      {
+        error: {
+          code: 'unstable_identity',
+          message: '安定した明細IDがないため分割できません。MFを再取り込みしてください',
+        },
+      },
+      409,
+    );
+
+  const { lines } = c.req.valid('json');
+  const total = Math.abs(tx.a);
+
+  const issues = lines.length
+    ? validateSplits(
+        total,
+        lines.map((l) => ({
+          cls: l.cls,
+          categoryMajor: l.big,
+          categoryMid: l.mid,
+          amount: l.amount,
+          ...(l.memo ? { memo: l.memo } : {}),
+        })),
+      )
+    : [];
+  if (issues.length)
+    return c.json({ error: { code: 'invalid_split', message: issues[0].message, issues } }, 400);
+
+  // 科目は公私ごとの候補に無いものを弾く(通常の科目編集と同じ基準)
+  const cands = await loadCandidates(db, userId, data.mfTx);
+  for (const l of lines)
+    if (!categoryAllowed(cands, l.cls, l.big, l.mid || null)) return c.json(invalidCategory(l.cls), 400);
+
+  const now = new Date().toISOString();
+  const existingForParent = new Map(
+    data.txSplits.filter((row) => row.txId === txId).map((row) => [row.lineId, row]),
+  );
+  const claimedElsewhere = new Set(data.txSplits.filter((row) => row.txId !== txId).map((row) => row.lineId));
+  const canonicalLines: TxSplit[] = lines.map((line, index) => {
+    const lineId = line.lineId ?? crypto.randomUUID();
+    const existing = existingForParent.get(lineId);
+    return {
+      txId,
+      lineId,
+      seq: index + 1,
+      parentAmount: total,
+      amount: line.amount,
+      cls: line.cls,
+      categoryMajor: line.big,
+      categoryMid: line.mid,
+      ...(line.memo ? { memo: line.memo } : {}),
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+    };
+  });
+  if (
+    new Set(canonicalLines.map((row) => row.lineId)).size !== canonicalLines.length ||
+    canonicalLines.some((row) => claimedElsewhere.has(row.lineId))
+  ) {
+    return c.json(
+      {
+        error: {
+          code: 'duplicate_split_line_id',
+          message: '内訳行の識別子が重複しています。再読込してください',
+        },
+      },
+      409,
+    );
+  }
+
+  data.txSplits = data.txSplits.filter((row) => row.txId !== txId).concat(canonicalLines);
+  const accounting = projectAccountingDataset(data);
+  await db.batch([
+    ...splitReplacementQueries(db, userId, txId, canonicalLines, now),
+    invalidateJsonSnapshotQuery(db, userId, 'tx_splits'),
+    ...aggregateReplacementQueries(db, userId, accounting),
+  ]);
+  return c.json({
+    ok: true,
+    txId,
+    lines: canonicalLines.map((row) => ({
+      lineId: row.lineId,
+      amount: row.amount,
+      cls: row.cls,
+      big: row.categoryMajor,
+      mid: row.categoryMid,
+      memo: row.memo ?? '',
+    })),
+  });
 });
 
 /* -------- ルールCRUD(表示順=評価順・先勝ち) -------- */

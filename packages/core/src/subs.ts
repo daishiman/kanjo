@@ -168,3 +168,53 @@ export function subsCandidates(
   }
   return out.sort((a, b) => b.score - a.score || b.total - a.total).slice(0, limit);
 }
+
+/**
+ * 候補をどこまで自動で信じてよいか。
+ *
+ * 点数(0〜100)をそのまま出しても「何点なら登録していいのか」が分からず、結局1件ずつ考えることになる。
+ * そこで3段階に丸めて、まとめて登録できるものと、目で見るものを分ける。
+ *
+ * - sure   … 取込直後にまとめて登録してよい。あとから「登録を外す」で戻せる
+ * - likely … 1件ずつ確かめる。中身は合っていることが多いが、単発の可能性も残る
+ * - weak   … 既定では出さない。探しにきた人だけが見る
+ */
+export type SubsConfidence = 'sure' | 'likely' | 'weak';
+
+export const SUBS_CONFIDENCE_LABEL: Record<SubsConfidence, string> = {
+  sure: 'ほぼ確実',
+  likely: 'たぶんサブスク',
+  weak: '可能性は低い',
+};
+
+/**
+ * 判定の根拠は score だけに頼らない。
+ * score は連続率・金額の一定さ・科目の3つを足した合成値なので、
+ * 「たまたま合計が高いだけ(3ヶ月連続だが金額はバラバラ)」を弾けない。
+ * 実際に効くのは「毎月続いている」ことなので、連続率と月数も一緒に見る。
+ */
+export function subsConfidence(c: SubsCandidate): SubsConfidence {
+  const continuity = c.spanMonths > 0 ? c.activeMonths / c.spanMonths : 0;
+
+  /*
+   * sure は3条件をすべて満たしたときだけ。and で繋ぐのは、どれか1つでは言い切れないため。
+   *   - 3ヶ月以上   … 2ヶ月連続は「先月と今月たまたま買った」で普通に起きる
+   *   - 連続率 0.8以上 … 抜けが1〜2割まで。年払いや隔月の契約はここで likely に落ちる
+   *   - CV 0.25未満 … 毎回ほぼ同じ額。従量課金や物販が混ざると必ずこれを超える
+   * 科目が「サブスク・通信」かどうかは条件に入れない。実データでは同じベンダーが
+   * 支払手数料・新聞図書費に散っており、科目を必須にすると本命が軒並み likely に落ちる。
+   */
+  if (c.activeMonths >= 3 && continuity >= 0.8 && c.cv < 0.25) return 'sure';
+
+  /*
+   * weak は「期間の半分以下しか払っていない」ものだけに絞る。
+   * 候補表は既定で全件出す(隠すと探しにきた人が見つけられない)ので、
+   * ここは色を分けて後回しにする合図であって、除外ではない。
+   */
+  if (continuity <= 0.5 || c.activeMonths < 2) return 'weak';
+  return 'likely';
+}
+
+/** まとめて登録してよい候補だけを取り出す */
+export const autoRegisterable = (list: SubsCandidate[]): SubsCandidate[] =>
+  list.filter((c) => subsConfidence(c) === 'sure');

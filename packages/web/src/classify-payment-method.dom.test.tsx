@@ -11,30 +11,46 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TransactionsResponse, TxRow } from './api.js';
 import { ClassifyPage } from './pages/Classify.js';
 
-const row = (over: Partial<TxRow>): TxRow => ({
-  id: 'A1',
-  idStable: true,
-  date: '07/01',
-  description: '架空スーパー',
-  amount: -1000,
-  institution: '架空銀行',
-  paymentMethod: 'account',
-  csvBig: '食費',
-  csvMid: '食料品',
-  big: '食費',
-  mid: '食料品',
-  catSrc: '取込値',
-  cls: 'per',
-  src: '既定',
-  owner: null,
-  ownerSrc: '既定',
-  edited: false,
-  conflict: false,
-  scopeMismatch: false,
-  attachmentCount: 0,
-  edit: null,
-  ...over,
-});
+const row = (over: Partial<TxRow>): TxRow => {
+  const rowKind = over.rowKind ?? (over.paymentMethod === 'cash' ? 'cash' : 'mf');
+  return {
+    id: 'A1',
+    idStable: true,
+    date: '07/01',
+    description: '架空スーパー',
+    amount: -1000,
+    institution: '架空銀行',
+    paymentMethod: 'account',
+    csvBig: '食費',
+    csvMid: '食料品',
+    big: '食費',
+    mid: '食料品',
+    catSrc: '取込値',
+    cls: 'per',
+    src: '既定',
+    owner: null,
+    ownerSrc: '既定',
+    edited: false,
+    conflict: false,
+    scopeMismatch: false,
+    attachmentCount: 0,
+    edit: null,
+    ...over,
+    rowKey: over.rowKey ?? `${rowKind}:${over.id ?? 'A1'}`,
+    rowKind,
+    parentTxId: over.parentTxId ?? null,
+    lineId: over.lineId ?? null,
+    splitSeq: over.splitSeq ?? null,
+    splitLineCount: over.splitLineCount ?? null,
+    splitState: over.splitState ?? null,
+    capabilities:
+      over.capabilities ??
+      (rowKind === 'cash'
+        ? { quickClass: true, edit: true, split: false, attach: true }
+        : { quickClass: true, edit: true, split: true, attach: true }),
+    attachmentTargetId: over.attachmentTargetId ?? over.id ?? 'A1',
+  };
+};
 
 const response = (transactions: TxRow[]): TransactionsResponse => ({
   months: ['2026-07'],
@@ -110,6 +126,7 @@ describe('支払手段の見え方と絞り込み', () => {
     renderPage();
     const cell = await screen.findByTitle('現金の記帳から追加した明細(取込ではない)');
     expect(cell.textContent).toBe('手入力');
+    expect(screen.queryByRole('button', { name: '分割する' })).toBeNull();
   });
 
   it('取込明細にはバッジを出さない', async () => {

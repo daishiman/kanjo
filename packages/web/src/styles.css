@@ -14,6 +14,20 @@
   --font-head: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI",
     "Yu Gothic", Meiryo, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  /*
+   * 文字サイズは全ページここだけで決める(px の直書きはしない)。
+   * 数字の桁を追う画面なので、本文 15px を基準に一段ずつ。
+   * 変えるときはこの7つだけを動かせば全ページが揃う。
+   */
+  --fs-2xs: 11px; /* 補足の中でもさらに小さい注記 */
+  --fs-xs: 13px; /* ラベル・表の見出し */
+  --fs-sm: 14px; /* 補足文(.sub)・ピル */
+  --fs-md: 15px; /* 表の本文 */
+  --fs-base: 16px; /* 画面の本文・カード見出し */
+  --fs-lg: 17px; /* ヘッダーのブランド */
+  --fs-xl: 19px; /* 見出し */
+  --fs-2xl: 21px; /* 大きい見出し */
+  --fs-3xl: 24px; /* KPI の数値・ページ見出し */
   /* モーション(因果の説明のみに使う) */
   --motion-instant: 90ms;
   --motion-fast: 140ms;
@@ -38,7 +52,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-head);
-  font-size: 14px;
+  font-size: var(--fs-base);
   line-height: 1.6;
 }
 
@@ -99,7 +113,7 @@ body {
 .brand {
   display: block;
   font-weight: 900;
-  font-size: 16px;
+  font-size: var(--fs-xl);
   letter-spacing: 0.04em;
   padding: 6px 10px 14px;
   color: var(--ink);
@@ -110,10 +124,10 @@ body {
   display: block;
   font-weight: 400;
   color: var(--ink-soft);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 .nav-group {
-  font-size: 11px;
+  font-size: var(--fs-xs);
   color: var(--ink-soft);
   margin: 10px 10px 4px;
   padding-top: 10px;
@@ -134,7 +148,7 @@ body {
   color: var(--ink);
   text-decoration: none;
   font-weight: 700;
-  font-size: 13px;
+  font-size: var(--fs-md);
   transition: background-color var(--motion-fast) var(--ease-standard), color var(--motion-fast)
     var(--ease-standard);
 }
@@ -160,7 +174,7 @@ body {
   z-index: 20;
 }
 .header-brand {
-  font-size: 15px;
+  font-size: var(--fs-lg);
   font-weight: 900;
   color: var(--ink);
   text-decoration: none;
@@ -168,10 +182,44 @@ body {
 }
 .header .period {
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .header .spacer {
   flex: 1;
+}
+
+/* 対象期間の選択。ヘッダーが狭いときは折り返して高さが伸びる(--header-h が追従する) */
+.period-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.period-select,
+.period-month {
+  font: inherit;
+  font-size: var(--fs-sm);
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.period-picker .period-month {
+  width: 8.5em;
+}
+
+/* 読み上げにだけ出すラベル。display:none だと読み上げからも消える */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .badge {
@@ -181,12 +229,12 @@ body {
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 4px 12px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   background: var(--surface);
 }
 .badge .num {
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .badge.ok {
   border-color: var(--good);
@@ -209,7 +257,12 @@ body {
 .main {
   grid-area: main;
   padding: 20px;
-  max-width: 1200px;
+  /*
+   * 月×科目の表は横に長い。1200px で頭打ちにすると、広い画面でも表だけが
+   * 内側でスクロールし、左右に使われない余白が残る。画面幅に追従させ、
+   * 文章が1行で長くなりすぎないよう上限だけ広めに置く。
+   */
+  max-width: 1800px;
   width: 100%;
   /* grid の子は min-content 幅まで広がるため、横スクロール表(.scroll-x)を含んでもページを押し広げない */
   min-width: 0;
@@ -228,18 +281,18 @@ body {
 .footer {
   grid-area: foot;
   color: var(--ink-soft);
-  font-size: 11px;
+  font-size: var(--fs-xs);
   padding: 14px 20px;
   border-top: 1px solid var(--line);
 }
 
 .page-task {
   color: var(--ink-soft);
-  font-size: 13px;
+  font-size: var(--fs-md);
   margin: 0 0 16px;
 }
 .page-title {
-  font-size: 20px;
+  font-size: var(--fs-3xl);
   font-weight: 900;
   margin: 0 0 2px;
 }
@@ -256,13 +309,64 @@ body {
   margin-bottom: 16px;
 }
 .card h2 {
-  font-size: 14px;
+  font-size: var(--fs-base);
   font-weight: 900;
   margin: 0 0 10px;
 }
 .card .sub {
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--fs-sm);
+}
+/*
+ * 説明文は1文ずつ改行して置く(1行あたり40〜50字)。
+ * 長い1段落は読み飛ばされる。折り返しでできる行より、意味の切れ目で改行するほうが速く読める。
+ */
+.lines {
+  line-height: 1.8;
+}
+.lines br {
+  content: "";
+}
+
+/*
+ * 図・表の見方(HowTo)。図の「上」に置く。
+ * ラベル列の幅を固定して3行を揃えると、2枚目以降のカードで必要な行だけ拾い読みできる。
+ * 罫線は左の1本だけにする。枠で囲うと図と同じ重さになり、どちらを先に読むか迷う。
+ */
+.howto {
+  margin: 0 0 12px;
+  padding: 8px 0 8px 12px;
+  border-left: 3px solid var(--line);
+  background: var(--surface-alt, #f6f6f4);
+  border-radius: 0 6px 6px 0;
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+}
+.howto-row {
+  display: grid;
+  grid-template-columns: 5.5em 1fr;
+  gap: 8px;
+}
+.howto dt {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  /* ラベルは補助。本文と同じ濃さだと、読む順が「ラベル→本文」で毎回2度手間になる */
+  padding-top: 2px;
+}
+.howto dd {
+  margin: 0;
+  color: var(--ink);
+}
+@media (max-width: 560px) {
+  /* 幅が足りないと本文が2〜3字で折り返す。縦積みにして本文の1行を長く取る */
+  .howto-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .howto-row + .howto-row {
+    margin-top: 6px;
+  }
 }
 
 .kpis {
@@ -278,12 +382,12 @@ body {
   padding: 12px 14px;
 }
 .kpi .label {
-  font-size: 11px;
+  font-size: var(--fs-xs);
   color: var(--ink-soft);
   font-weight: 700;
 }
 .kpi .value {
-  font-size: 20px;
+  font-size: var(--fs-3xl);
   font-weight: 700;
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -295,17 +399,17 @@ body {
   color: var(--per);
 }
 .kpi.compact .value {
-  font-size: 16px;
+  font-size: var(--fs-xl);
 }
 .kpi .note {
-  font-size: 11px;
+  font-size: var(--fs-xs);
   color: var(--ink-soft);
 }
 
 table.data {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 table.data th,
 table.data td {
@@ -314,7 +418,7 @@ table.data td {
   text-align: right;
 }
 table.data th {
-  font-size: 11px;
+  font-size: var(--fs-xs);
   color: var(--ink-soft);
   font-weight: 700;
 }
@@ -331,23 +435,75 @@ table.data thead th {
 .card:not(.scroll-x) > table.data thead th {
   top: var(--header-h);
 }
+/*
+ * 横に長い表は、罫線だけだと目線が1行ぶんずれる。1行おきに薄く敷いて帯として追わせる。
+ * 行の色は --row-bg に持たせる: 先頭列は sticky で自前の背景が要るため、
+ * 同じ変数を読ませないと縞が先頭列だけ切れて「別の行」に見える。
+ */
+table.data tbody tr {
+  --row-bg: var(--surface);
+}
+table.data tbody tr:nth-child(even) {
+  --row-bg: #f6f8f8;
+}
+table.data tbody tr:hover {
+  --row-bg: #eef3f6; /* 今どの行を見ているかを、横スクロール中も見失わせない */
+}
+table.data tbody td {
+  background: var(--row-bg);
+}
 table.data tbody th {
-  background: var(--surface);
+  background: var(--row-bg);
   color: var(--ink);
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 table.data th:first-child,
 table.data td:first-child {
   text-align: left;
 }
+/* 特別な行は縞より優先する。塗りは --row-bg に入れて、固定した先頭列とも色を合わせる */
+table.data tbody tr.total {
+  --row-bg: #eff3f1;
+}
 table.data tr.total th,
 table.data tr.total td {
   font-weight: 700;
-  background: #fafbfa;
+}
+
+/*
+ * 決算書の経費グループ行。合計行(total)ほど強くせず、明細行より少しだけ濃くする。
+ * 3段(合計 > グループ > 科目)の濃さの差で、開いたときの入れ子が字下げ無しでも分かる。
+ */
+table.data tbody tr.stmt-group {
+  --row-bg: #f2f5f7;
+}
+table.data tr.stmt-group td {
+  font-weight: 600;
+}
+table.data tr.stmt-group th button.mini {
+  font-weight: 600;
+}
+/* CSVの取り方に添える注意。用途の下に改行して置き、行を増やさない */
+.stmt-note {
+  display: block;
+  margin-top: 4px;
+}
+/* 開いた中の科目名。字下げで「グループの中身」だと示す */
+table.data th.stmt-account {
+  padding-left: 22px;
+  font-weight: 400;
 }
 
 .scroll-x {
   overflow-x: auto;
+}
+/*
+ * 横スクロールに任せる表は、列を詰めるより表自体を伸ばす。
+ * width:100% のままだと月の列数だけ科目名が縦に潰れ、「外/注/費」のように読めなくなる。
+ */
+.scroll-x table.data {
+  width: auto;
+  min-width: 100%;
 }
 /* 横スクロール容器内の見出し行は既定(top: 0)のまま。オフセットは付けない(上記 table.data の注記) */
 .scroll-x table.data thead th {
@@ -357,8 +513,12 @@ table.data tr.total td {
 .scroll-x table.data td:first-child {
   position: sticky;
   left: 0;
-  background: var(--surface);
+  background: var(--row-bg, var(--surface));
   z-index: 2;
+  /* 科目名は行の見出し。折り返して縦積みになると表が読めない */
+  white-space: nowrap;
+  /* 固定列と本体の境目。ここが無いと数字が科目名の上に流れ込んだように見える */
+  box-shadow: 1px 0 0 var(--line);
 }
 .scroll-x table.data thead th:first-child {
   background: var(--bg);
@@ -369,7 +529,7 @@ table.data tr.total td {
   display: inline-block;
   border-radius: 999px;
   padding: 1px 10px;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 700;
   border: 1px solid var(--line);
 }
@@ -398,7 +558,7 @@ table.data tr.total td {
 }
 .orig {
   display: block;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   color: var(--ink-soft);
   text-decoration: line-through;
 }
@@ -449,6 +609,9 @@ tr.editing-open td {
   border-bottom-color: transparent;
   font-weight: 700;
 }
+table.data tbody tr.editor {
+  --row-bg: var(--surface-alt, #f6f6f4);
+}
 tr.editor td {
   background: var(--surface-alt, #f6f6f4);
   padding: 8px;
@@ -465,7 +628,7 @@ tr.editor td {
   display: inline-flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   color: var(--ink-soft);
 }
 .classification-editor {
@@ -497,16 +660,16 @@ tr.editor td {
 .classification-editor-summary h3 {
   margin: 0;
   overflow-wrap: anywhere;
-  font-size: 16px;
+  font-size: var(--fs-xl);
   line-height: 1.45;
 }
 .classification-editor-summary p {
   margin: 2px 0 0;
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .classification-editor-amount {
-  font-size: 18px;
+  font-size: var(--fs-2xl);
 }
 .classification-editor-fields {
   min-width: 0;
@@ -521,7 +684,7 @@ tr.editor td {
   margin: 12px 0 18px;
   padding: 8px 0;
   border-block: 1px solid var(--line);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .classification-import-summary span {
   color: var(--ink-soft);
@@ -540,7 +703,7 @@ tr.editor td {
   min-width: 0;
   gap: 6px;
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .classification-field > span:first-child {
   color: var(--ink);
@@ -588,14 +751,14 @@ tr.editor td {
   margin-bottom: 16px;
 }
 .classification-progress > h2 {
-  font-size: 13px;
+  font-size: var(--fs-md);
   font-weight: 700;
   color: var(--ink-soft);
   margin: 0 0 8px;
 }
 .classification-progress-hint {
   margin: 0 0 8px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: var(--ink-soft);
 }
 .classification-thinking > summary {
@@ -605,13 +768,13 @@ tr.editor td {
   padding: 11px 0;
   color: var(--ink-soft);
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 700;
 }
 .classification-thinking ul {
   margin: 0 0 8px;
   padding-left: 20px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 1.8;
   color: var(--ink-soft);
 }
@@ -629,7 +792,7 @@ tr.editor td {
 .cash-duplicates ul {
   margin: 8px 0 0;
   padding-left: 20px;
-  font-size: 13px;
+  font-size: var(--fs-md);
   line-height: 1.9;
 }
 .classification-rule-details {
@@ -643,7 +806,7 @@ tr.editor td {
   padding: 11px 0;
   color: var(--ink-soft);
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 700;
 }
 .classification-rule-form {
@@ -672,6 +835,43 @@ tr.editor td {
   border-color: transparent;
   color: var(--ink-soft);
 }
+/* 明細の分割記帳。1つの引き落としを用途ごとに小分けする編集欄。
+   入力の途中は必ず「合計が合っていない」状態を通るので、
+   残額の表示(.split-rest)は常に見える位置に置き、行の下に固定する */
+.split-editor {
+  padding: 14px 4px;
+}
+.split-mode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+.split-mode button[aria-pressed="true"] {
+  border-color: var(--biz);
+  color: var(--biz);
+  font-weight: 700;
+}
+.split-editor input[type="number"] {
+  width: 9em;
+  text-align: right;
+}
+.split-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+.split-actions button {
+  min-height: 44px;
+  white-space: nowrap;
+}
+@container (max-width: 700px) {
+  .split-actions button {
+    width: 100%;
+  }
+}
 .classification-editor-error {
   margin: 8px 0 0;
   padding: 8px 10px;
@@ -679,7 +879,7 @@ tr.editor td {
   border-radius: 6px;
   background: #fdf3f3;
   color: var(--danger);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 700;
 }
 @container (max-width: 700px) {
@@ -704,6 +904,142 @@ tr.editor td {
     width: 100%;
   }
 }
+/* 科目の選択(分類タブ → 科目チップ)。
+   選択肢が30を超えるので、縦に並べずクリックで辿れる形にする。
+   パネルは position: absolute で浮かせる。行の高さが変わると下の入力欄が動いて押し間違える */
+.cat-picker {
+  position: relative;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+button.cat-current {
+  min-width: 140px;
+  text-align: left;
+  color: var(--ink-soft);
+}
+button.cat-current.on {
+  color: var(--ink);
+  border-color: var(--biz);
+}
+.cat-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cat-principle {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+.cat-tabs,
+.cat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.cat-tabs {
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+.cat-tabs button.mini.on {
+  background: var(--biz);
+  border-color: var(--biz);
+  color: #fff;
+}
+button.cat-chip {
+  padding: 4px 10px;
+  font-size: var(--fs-sm);
+  min-height: 28px;
+  border-radius: 999px;
+}
+button.cat-chip.on {
+  background: var(--biz);
+  border-color: var(--biz);
+  color: #fff;
+}
+/* 触れた科目の説明。高さを固定しないと、狙った科目が動いて押せなくなる */
+.cat-detail {
+  min-height: 72px;
+  padding: 6px 8px;
+  background: var(--bg);
+  border-radius: 8px;
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+.cat-when {
+  margin: 0 0 4px;
+}
+.cat-examples,
+.cat-guide ul {
+  margin: 0;
+  padding-left: 16px;
+}
+.cat-guide {
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+.cat-guide-head {
+  font-weight: 700;
+  color: var(--ink);
+}
+/* 入力した支払先から先回りした候補。分類を開かずに1クリックで届かせる */
+.cat-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+}
+button.cat-chip.suggest {
+  border-color: var(--biz);
+  color: var(--biz);
+  font-weight: 700;
+}
+@media (max-width: 640px) {
+  .cat-panel {
+    width: calc(100vw - 32px);
+  }
+}
+
+/* 行を開くための、見た目はリンク・実体はボタン。開閉はページ遷移ではないので button にする */
+.linklike {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--biz);
+  text-decoration: underline;
+  cursor: pointer;
+}
+table.data tbody tr.detail-row {
+  --row-bg: #f7faf9;
+}
+table.data tr.detail-row td {
+  color: var(--ink-soft);
+}
+table.data tr.detail-row p {
+  margin: 0 0 4px;
+}
+/* 科目ごとの推移。数字の羅列より形のほうが速く読める */
+.spark {
+  display: block;
+  width: 84px;
+  height: 20px;
+  color: var(--ink-soft);
+}
+
 .pill.biz {
   background: #eef3fa;
   color: var(--biz);
@@ -718,7 +1054,7 @@ tr.editor td {
 button,
 .btn {
   font-family: var(--font-head);
-  font-size: 13px;
+  font-size: var(--fs-md);
   font-weight: 700;
   border: 1px solid var(--line);
   background: var(--surface);
@@ -749,7 +1085,7 @@ button.danger-btn {
 }
 button.mini {
   padding: 2px 8px;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   min-height: 24px;
   border-radius: 6px;
 }
@@ -793,7 +1129,7 @@ input[type="password"],
 input[type="number"],
 select {
   font-family: var(--font-head);
-  font-size: 13px;
+  font-size: var(--fs-md);
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 6px 10px;
@@ -908,12 +1244,17 @@ input.num-input {
   background: #fdf9ef;
   padding: 10px 14px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   margin-bottom: 12px;
 }
 .notice.info {
   border-color: var(--biz);
   background: #eef3fa;
+}
+/* 手を打つ猶予がもう無い警告。注意(既定の warn 色)より一段強く出す */
+.notice.danger {
+  border-color: var(--danger);
+  background: #fdf0ef;
 }
 .empty {
   text-align: center;
@@ -970,7 +1311,7 @@ tr.kbd-focus td {
 }
 .kbd-help {
   color: var(--ink-soft);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 kbd {
   font-family: var(--font-mono);
@@ -978,7 +1319,7 @@ kbd {
   border-bottom-width: 2px;
   border-radius: 4px;
   padding: 0 4px;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   background: var(--bg);
 }
 
@@ -999,13 +1340,13 @@ kbd {
   max-width: 100%;
 }
 .login-card h1 {
-  font-size: 18px;
+  font-size: var(--fs-2xl);
   font-weight: 900;
   margin: 0 0 4px;
 }
 .login-card p {
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .login-card form {
   display: grid;
@@ -1014,7 +1355,7 @@ kbd {
 }
 .login-error {
   color: var(--danger);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 700;
 }
 
@@ -1084,7 +1425,7 @@ kbd {
     align-items: center;
     justify-content: center;
     min-height: var(--tabbar-h);
-    font-size: 12px;
+    font-size: var(--fs-sm);
     font-weight: 700;
     color: var(--ink-soft);
     text-decoration: none;
@@ -1127,7 +1468,7 @@ table.data tr.selected td {
 .steps {
   margin: 0 0 12px;
   padding-left: 1.4em;
-  font-size: 13px;
+  font-size: var(--fs-md);
   line-height: 1.7;
 }
 .steps li + li {
@@ -1141,7 +1482,7 @@ table.data tr.selected td {
   width: 100%;
   box-sizing: border-box;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 1.5;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1158,12 +1499,12 @@ table.data tr.selected td {
   margin-top: 20px;
 }
 .report-section h3 {
-  font-size: 13px;
+  font-size: var(--fs-md);
   margin: 0 0 6px;
 }
 .report-text p {
   margin: 0 0 8px;
-  font-size: 13px;
+  font-size: var(--fs-md);
   line-height: 1.7;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -1172,7 +1513,7 @@ table.data tr.selected td {
 .report-section ul {
   margin: 0 0 8px;
   padding-left: 1.4em;
-  font-size: 13px;
+  font-size: var(--fs-md);
   line-height: 1.7;
 }
 
@@ -1194,14 +1535,14 @@ table.ai-table td.wrap {
 }
 .finding h4,
 .report-chart h4 {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   margin: 0 0 6px;
   color: var(--ink-soft);
 }
 .finding ol {
   margin: 0;
   padding-left: 1.4em;
-  font-size: 13px;
+  font-size: var(--fs-md);
   line-height: 1.6;
 }
 .finding li + li {
@@ -1234,7 +1575,7 @@ details.prompt-box > summary {
   margin-top: 20px;
 }
 .report-group h3 {
-  font-size: 13px;
+  font-size: var(--fs-md);
   margin: 0 0 8px;
   color: var(--ink-soft);
 }
@@ -1257,7 +1598,7 @@ details.prompt-box > summary {
   gap: 4px;
 }
 .report-latest-title {
-  font-size: 16px;
+  font-size: var(--fs-xl);
   font-weight: 700;
   overflow-wrap: anywhere;
 }
@@ -1277,11 +1618,11 @@ details.prompt-box > summary {
   grid-template-columns: 4.5em 1fr;
   gap: 2px 8px;
   margin: 4px 0 0;
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 .finding-steps dt {
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .finding-steps dd {
   margin: 0;
@@ -1310,14 +1651,14 @@ details.prompt-box > summary {
   padding: 12px;
   border: 1px dashed var(--line);
   border-radius: 8px;
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 .chart-placeholder p {
   margin: 0 0 4px;
 }
 .chart-guide,
 .chart-caption {
-  font-size: 13px;
+  font-size: var(--fs-md);
   line-height: 1.6;
   margin: 6px 0 0;
 }
@@ -1327,7 +1668,7 @@ details.prompt-box > summary {
   overflow-x: auto;
 }
 table.heatmap {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   white-space: nowrap;
 }
 table.heatmap th[scope="row"] {
@@ -1356,13 +1697,13 @@ table.heatmap td.heat {
   border-radius: 8px;
 }
 .compare-col h4 {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   margin: 0 0 6px;
 }
 .compare-col ul {
   margin: 0 0 8px;
   padding-left: 1.2em;
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 
 /* 用語ホバー(components/Term.tsx) */
@@ -1393,7 +1734,7 @@ table.heatmap td.heat {
   border: 1px solid var(--line);
   border-radius: 6px;
   box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 1.55;
   font-weight: 400;
   text-align: left;
@@ -1402,7 +1743,7 @@ table.heatmap td.heat {
 }
 .term-tip strong {
   display: block;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   margin-bottom: 2px;
 }
 
@@ -1467,7 +1808,7 @@ table.heatmap td.heat {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: var(--fs-2xs);
   line-height: 1;
   color: var(--ink-soft);
 }
@@ -1484,7 +1825,7 @@ table.heatmap td.heat {
 }
 .attachment-archive-recovery h3 {
   margin: 0 0 6px;
-  font-size: 14px;
+  font-size: var(--fs-base);
 }
 .attachment-archive-file {
   display: flex;
@@ -1493,7 +1834,7 @@ table.heatmap td.heat {
   gap: 8px;
   min-height: 44px;
   margin-top: 10px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 600;
 }
 .attachment-archive-file input {
@@ -1520,7 +1861,7 @@ label.check {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   min-height: 44px;
   white-space: nowrap;
 }
@@ -1584,7 +1925,7 @@ label.check {
   table.data.stack-sm td[data-label]::before {
     content: attr(data-label);
     color: var(--ink-soft);
-    font-size: 11px;
+    font-size: var(--fs-xs);
     font-weight: 700;
     text-align: left;
     flex: 0 0 auto;
@@ -1605,6 +1946,78 @@ label.check {
   .scroll-x:has(> table.data.stack-sm) {
     overflow-x: visible;
   }
+
+  /* ---- 仕分け表のカード化 ----
+     この表だけ1列目が「日付」で、カードの見出しとしては弱い。判断の主語は「内容」なので、
+     DOM順(=デスクトップの列順・読み上げ順)は変えずに、flex の order で内容を先頭へ出す。 */
+  /* デスクトップ用の min-width(1160px)を外す。外し忘れると表がカードの形になっても
+     幅 1160px を主張し続け、ページ全体が横スクロールしてカード化の意味が消える */
+  table.data.classify-table.stack-sm {
+    min-width: 0;
+  }
+  table.data.classify-table.stack-sm tr {
+    display: flex;
+    flex-direction: column;
+  }
+  table.data.classify-table.stack-sm td.tx-description {
+    order: -2;
+  }
+  table.data.classify-table.stack-sm td.num:first-child {
+    order: -1;
+  }
+  /* 見出しの太字・下線は「内容」へ移す。1列目(日付)は日付らしい控えめな添え書きに戻す */
+  table.data.classify-table.stack-sm td:first-child {
+    text-align: right;
+    font-weight: 400;
+    display: flex;
+    border-bottom: none;
+    padding-bottom: 3px;
+    margin-bottom: 0;
+  }
+  table.data.classify-table.stack-sm td:first-child[data-label]::before {
+    display: inline;
+    margin-bottom: 0;
+  }
+  table.data.classify-table.stack-sm td.tx-description {
+    display: block;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+  }
+  table.data.classify-table.stack-sm td.tx-description[data-label]::before {
+    display: block;
+    margin-bottom: 2px;
+  }
+  /* 簡易操作はカード幅いっぱいに広げ、44px のタップ領域を折り返しで確保する */
+  table.data.classify-table.stack-sm td:last-child {
+    display: block;
+    text-align: left;
+    padding-top: 6px;
+  }
+  table.data.classify-table.stack-sm .classify-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  table.data.classify-table.stack-sm .classify-quick-actions > * {
+    flex: 1 1 calc(50% - 6px);
+    min-height: 44px;
+  }
+  /* 編集フォームの行はカードの装飾を持たせず、中身(section)に任せる */
+  table.data.classify-table.stack-sm tr.editor {
+    padding: 0;
+    border: none;
+    background: none;
+  }
+  table.data.classify-table.stack-sm tr.editor > td:first-child {
+    display: block;
+    text-align: left;
+    padding: 0;
+    margin: 0;
+    border-bottom: none;
+  }
 }
 
 /* サブスク候補の採点根拠: 広い画面は常時表示、スマホ幅は <details> で畳む */
@@ -1612,7 +2025,7 @@ label.check {
   display: none;
 }
 .reasons-narrow > summary {
-  font-size: 11px;
+  font-size: var(--fs-xs);
   color: var(--ink-soft);
   cursor: pointer;
   min-height: 44px;

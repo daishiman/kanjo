@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { applyFreeeDeals } from '../src/dataset.js';
-import { matchSubVendor, subsCandidates, vendorKey } from '../src/subs.js';
+import {
+  type SubsCandidate,
+  autoRegisterable,
+  matchSubVendor,
+  subsCandidates,
+  subsConfidence,
+  vendorKey,
+} from '../src/subs.js';
 import { type FreeeDeal, emptyDataset } from '../src/types.js';
 
 const deal = (p: Partial<FreeeDeal>): FreeeDeal => ({
@@ -137,5 +144,58 @@ describe('サブスク候補の採点', () => {
     expect(subsCandidates(deals, [], 20, []).map((x) => x.partner)).toEqual(['架空家賃', '架空定額サービス']);
     // 除外は正規化キーで突き合わせるので、全角・空白のゆれがあっても効く
     expect(subsCandidates(deals, [], 20, ['架空 家賃']).map((x) => x.partner)).toEqual(['架空定額サービス']);
+  });
+});
+
+/**
+ * 取込直後の「まとめて登録」で、何を最初から選んでおくかの契約。
+ *
+ * sure は画面を開いた時点でチェックが入る=事実上の自動登録なので、
+ * 「毎月・ほぼ同額・3ヶ月以上」の3つが揃ったときだけに限る。
+ * どれか1つでは、たまたま2ヶ月続いた買い物と区別がつかない。
+ */
+describe('サブスク候補の確度', () => {
+  const months = ['2026-01', '2026-02', '2026-03', '2026-04'];
+
+  it('毎月ほぼ同額で3ヶ月以上続く支払先だけを、まとめて登録の対象にする', () => {
+    const deals: FreeeDeal[] = [
+      ...months.map((m) => deal({ month: m, partner: '架空定額サービス', amount: 1980 })),
+      // 毎月あるが金額がバラバラ。従量課金や物販が混ざるとこうなる
+      ...months.map((m, i) => deal({ month: m, partner: '架空従量課金', amount: 1000 + i * 4000 })),
+      // 4ヶ月のうち2ヶ月だけ。単発の買い物が2回あっただけの可能性が残る
+      deal({ month: '2026-01', partner: '架空バラ買い', amount: 800 }),
+      deal({ month: '2026-04', partner: '架空バラ買い', amount: 900 }),
+    ];
+    const byName = new Map(subsCandidates(deals, []).map((c) => [c.partner, c]));
+    expect(subsConfidence(byName.get('架空定額サービス') as SubsCandidate)).toBe('sure');
+    expect(subsConfidence(byName.get('架空従量課金') as SubsCandidate)).toBe('likely');
+    expect(subsConfidence(byName.get('架空バラ買い') as SubsCandidate)).toBe('weak');
+    expect(autoRegisterable([...byName.values()]).map((c) => c.partner)).toEqual(['架空定額サービス']);
+  });
+
+  it('科目がサブスク・通信でなくても、毎月同額なら対象にする', () => {
+    // 同じベンダーが支払手数料・新聞図書費に散る実データがあるため、科目は必須条件にしない
+    const deals = months.map((m) =>
+      deal({
+        month: m,
+        partner: '架空顧問料',
+        accountRaw: '支払手数料',
+        accountNorm: '支払手数料',
+        amount: 33000,
+      }),
+    );
+    const [c] = subsCandidates(deals, []);
+    expect(c.accounts).toEqual(['支払手数料']);
+    expect(subsConfidence(c)).toBe('sure');
+  });
+
+  it('抜けのある支払先は、まとめて登録に混ぜない', () => {
+    // 4ヶ月中3ヶ月(連続率0.75)。隔月・年払いの契約はここに落ちて、目で見て判断する
+    const deals = ['2026-01', '2026-02', '2026-04'].map((m) =>
+      deal({ month: m, partner: '架空隔月サービス', amount: 2000 }),
+    );
+    const [c] = subsCandidates(deals, []);
+    expect(subsConfidence(c)).toBe('likely');
+    expect(autoRegisterable([c])).toEqual([]);
   });
 });

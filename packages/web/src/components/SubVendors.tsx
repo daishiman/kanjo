@@ -1,7 +1,15 @@
+import { SUBS_CONFIDENCE_LABEL, type SubsConfidence, subsConfidence } from '@kanjo/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type KeyboardEvent, useState } from 'react';
-import { type SubVendorExclusionRow, type SubVendorRow, type SubsCandidate, api } from '../api.js';
+import { type KeyboardEvent, useMemo, useState } from 'react';
+import {
+  type SubVendorExclusionRow,
+  type SubVendorRow,
+  type SubsCandidate,
+  type SubsReviewRow,
+  api,
+} from '../api.js';
 import { monthLabel, yen } from '../format.js';
+import { HowTo } from './HowTo.js';
 
 const SUBS_KEYS = [['subscriptions'], ['sub-vendors'], ['sub-candidates'], ['summary']];
 
@@ -29,7 +37,8 @@ function errorText(e: unknown): string {
 export function SubVendorsPanel() {
   const q = useQuery({
     queryKey: ['sub-vendors'],
-    queryFn: () => api<{ vendors: SubVendorRow[]; accountOptions: string[] }>('/sub-vendors'),
+    queryFn: () =>
+      api<{ vendors: SubVendorRow[]; accountOptions: string[]; review: SubsReviewRow[] }>('/sub-vendors'),
   });
   const invalidate = useInvalidateSubs();
   const [newName, setNewName] = useState('');
@@ -56,6 +65,8 @@ export function SubVendorsPanel() {
 
   const vendors = q.data?.vendors ?? [];
   const accountOptions = q.data?.accountOptions ?? [];
+  const review = new Map((q.data?.review ?? []).map((r) => [r.id, r]));
+  const dueCount = (q.data?.review ?? []).filter((r) => r.due).length;
   const submitNew = () => {
     const name = newName.trim();
     if (name) add.mutate(name);
@@ -71,6 +82,15 @@ export function SubVendorsPanel() {
         「対象科目」を入れると、その科目で記帳された支払だけを数えます(例: Amazon
         のように物販が混ざる支払先を「サブスク・通信」だけに絞る)。空欄なら全科目です。
       </p>
+      {dueCount > 0 && (
+        <div className="notice">
+          <strong>見直し待ちが {dueCount}件</strong>
+          <p style={{ margin: '4px 0' }}>
+            サブスクの無駄は金額の異常ではなく「解約し忘れ」で出ます。最後に見直してから3ヶ月経った支払先を
+            まとめました。まだ要るか確かめて「見直した」を押すと、次は3ヶ月後にまた出ます。
+          </p>
+        </div>
+      )}
       {q.isLoading && <p className="sub">読み込み中…</p>}
       {q.isError && <p className="sub">登録一覧を読み込めませんでした。</p>}
       {vendors.length > 0 && (
@@ -80,6 +100,7 @@ export function SubVendorsPanel() {
               <th>支払先</th>
               <th>別名(カンマ区切り)</th>
               <th>対象科目(空欄=全科目)</th>
+              <th>見直し</th>
               <th />
             </tr>
           </thead>
@@ -88,6 +109,7 @@ export function SubVendorsPanel() {
               <VendorRow
                 key={`${v.id}:${v.aliases.join('\u0000')}:${(v.accounts ?? []).join('\u0000')}`}
                 vendor={v}
+                review={review.get(v.id)}
                 accountOptions={accountOptions}
                 onError={setError}
                 onDelete={() => {
@@ -130,11 +152,13 @@ export function SubVendorsPanel() {
 
 function VendorRow({
   vendor,
+  review,
   accountOptions,
   onDelete,
   onError,
 }: {
   vendor: SubVendorRow;
+  review?: SubsReviewRow;
   accountOptions: string[];
   onDelete: () => void;
   onError: (msg: string | null) => void;
@@ -191,12 +215,60 @@ function VendorRow({
           )}
         </span>
       </td>
+      <ReviewCell vendor={vendor} review={review} onError={onError} />
       <td data-label="登録">
         <button type="button" className="mini danger-btn" onClick={onDelete}>
           登録を外す
         </button>
       </td>
     </tr>
+  );
+}
+
+/**
+ * 四半期の見直し記録。
+ *
+ * 契約内容そのものは変えないので集計は作り直さない。押した事実だけを残し、
+ * 次の四半期にまた催促する。未確認(一度も押していない)は月数を出さず言い切る。
+ */
+function ReviewCell({
+  vendor,
+  review,
+  onError,
+}: {
+  vendor: SubVendorRow;
+  review?: SubsReviewRow;
+  onError: (msg: string | null) => void;
+}) {
+  const invalidate = useInvalidateSubs();
+  const mark = useMutation({
+    mutationFn: () => api(`/sub-vendors/${vendor.id}/review`, { method: 'POST' }),
+    onSuccess: () => {
+      onError(null);
+      invalidate();
+    },
+    onError: (e) => onError(errorText(e)),
+  });
+  const due = review?.due ?? true;
+  const label =
+    review?.monthsSince == null
+      ? '未確認'
+      : review.monthsSince === 0
+        ? '今月'
+        : `${review.monthsSince}ヶ月前`;
+  return (
+    <td data-label="見直し">
+      <span className={due ? 'pill warn' : 'pill calm'}>{label}</span>{' '}
+      <button
+        type="button"
+        className="mini"
+        disabled={mark.isPending}
+        aria-label={`${vendor.name}を見直した`}
+        onClick={() => mark.mutate()}
+      >
+        見直した
+      </button>
+    </td>
   );
 }
 
@@ -271,6 +343,13 @@ function Reasons({ partner, reasons }: { partner: string; reasons: string[] }) {
   );
 }
 
+/** 確度の見た目。増=赤の原則は使わず、確かなものを落ち着いた色にする(押していい合図) */
+const CONFIDENCE_CLS: Record<SubsConfidence, string> = {
+  sure: 'pill calm',
+  likely: 'pill warn',
+  weak: 'pill neutral',
+};
+
 /** 「その他」に含まれる支払先をサブスクらしさ順に並べ、1クリックで登録する */
 export function SubsCandidatesPanel({ hasDeals }: { hasDeals: boolean }) {
   const q = useQuery({
@@ -313,11 +392,67 @@ export function SubsCandidatesPanel({ hasDeals }: { hasDeals: boolean }) {
   const excluded = q.data?.excluded ?? [];
   const dealRows = q.data?.dealRows ?? 0;
 
+  /**
+   * 確度は候補の内容だけで決まるので、候補が変わらない限り計算し直さない。
+   * 「ほぼ確実」の初期チェックもここで作る(毎回の再描画でチェックが戻るのを防ぐ)。
+   */
+  const ranked = useMemo(() => candidates.map((c) => ({ c, confidence: subsConfidence(c) })), [candidates]);
+  const sureKeys = useMemo(
+    () => ranked.filter((r) => r.confidence === 'sure').map((r) => r.c.partner),
+    [ranked],
+  );
+  // 取込のたびに候補が入れ替わるので、選択は候補の顔ぶれをキーにして作り直す
+  const [picked, setPicked] = useState<Set<string>>(() => new Set(sureKeys));
+  const [pickedFor, setPickedFor] = useState<string>('');
+  const signature = ranked.map((r) => r.c.partner).join(' ');
+  if (signature !== pickedFor) {
+    setPickedFor(signature);
+    setPicked(new Set(sureKeys));
+  }
+  const toggle = (partner: string) =>
+    setPicked((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(partner)) next.add(partner);
+      return next;
+    });
+
+  /**
+   * まとめて登録。既存の1件ずつの登録と同じ経路を順に呼ぶ(専用のAPIを増やさない)。
+   * 途中で失敗しても、そこまでに登録できた分は残す。全部やり直すほうが手間が増えるため。
+   */
+  const bulk = useMutation({
+    mutationFn: async (names: string[]) => {
+      const failed: string[] = [];
+      for (const name of names) {
+        try {
+          await api('/sub-vendors', {
+            method: 'POST',
+            body: JSON.stringify({ name, aliases: [], accounts: [] }),
+          });
+        } catch {
+          failed.push(name);
+        }
+      }
+      return failed;
+    },
+    onSuccess: (failed) => {
+      setError(failed.length ? `登録できなかった支払先: ${failed.join('、')}` : null);
+      invalidate();
+    },
+    onError: (e) => setError(errorText(e)),
+  });
+
   return (
     <div className="card scroll-x">
       <h2>サブスクかもしれない支払先(未登録)</h2>
-      <p className="sub">
-        freeeの経費取引のうち、まだ登録されていない支払先を「毎月払っているか・毎回同じ金額か・科目がサブスク・通信か」で採点しています。「これはサブスク」を押すと登録され、上の一覧と集計に加わります。候補は上位20件までなので、違うものは「サブスクではない」を押して候補から外してください(あとで取り消せます)。
+      <HowTo id="subsCandidates" />
+      <p className="sub lines">
+        取り込んだfreeeの経費から、未登録の支払先を自動で採点しています。
+        <br />「{SUBS_CONFIDENCE_LABEL.sure}」は最初から選んであります。まとめて登録できます。
+        <br />
+        違うものはチェックを外すか、「サブスクではない」で候補から消せます。
+        <br />
+        登録はあとから「登録を外す」で取り消せます。先に入れて構いません。
       </p>
       {q.isLoading && <p className="sub">読み込み中…</p>}
       {q.isError && <p className="sub">候補を読み込めませんでした。</p>}
@@ -333,9 +468,32 @@ export function SubsCandidatesPanel({ hasDeals }: { hasDeals: boolean }) {
         </p>
       )}
       {candidates.length > 0 && (
+        <div className="toolbar" style={{ gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+          <button
+            type="button"
+            className="primary"
+            disabled={picked.size === 0 || bulk.isPending}
+            onClick={() => bulk.mutate([...picked])}
+          >
+            選んだ{picked.size}件をまとめて登録
+          </button>
+          <button
+            type="button"
+            className="mini"
+            onClick={() => setPicked(new Set(ranked.map((r) => r.c.partner)))}
+          >
+            すべて選ぶ
+          </button>
+          <button type="button" className="mini" onClick={() => setPicked(new Set())}>
+            選択を外す
+          </button>
+        </div>
+      )}
+      {candidates.length > 0 && (
         <table className="data stack-sm">
           <thead>
             <tr>
+              <th>登録</th>
               <th>支払先</th>
               <th>サブスクらしさ</th>
               <th>平均月額</th>
@@ -346,13 +504,22 @@ export function SubsCandidatesPanel({ hasDeals }: { hasDeals: boolean }) {
             </tr>
           </thead>
           <tbody>
-            {candidates.map((c) => (
+            {ranked.map(({ c, confidence }) => (
               <tr key={c.partner}>
+                <td data-label="登録">
+                  <input
+                    type="checkbox"
+                    checked={picked.has(c.partner)}
+                    aria-label={`${c.partner}をサブスクとして登録する`}
+                    onChange={() => toggle(c.partner)}
+                  />
+                </td>
                 <td data-label="支払先" style={{ whiteSpace: 'nowrap' }}>
                   {c.partner}
                   <Reasons partner={c.partner} reasons={c.reasons} />
                 </td>
                 <td data-label="サブスクらしさ" className="num">
+                  <span className={CONFIDENCE_CLS[confidence]}>{SUBS_CONFIDENCE_LABEL[confidence]}</span>{' '}
                   {c.score}点
                 </td>
                 <td data-label="平均月額" className="num">

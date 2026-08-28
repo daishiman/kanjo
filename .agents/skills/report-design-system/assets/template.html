@@ -1,0 +1,111 @@
+<title>レポートの題名（名詞句・2〜4語）</title>
+<style>
+/* ここに assets/report.css の全文を貼る（単一ファイル・外部参照ゼロ） */
+</style>
+
+<div class="wrap">
+<header class="doc">
+  <p class="crumb">会社名｜レポートの系列名（例: 車両別収支 13ヶ月パネル分析）</p>
+  <h1>題名 — 結論を要約した副題を続ける</h1>
+  <p class="sub">対象: データの範囲と件数｜手法や前提の1行要約｜作成日</p>
+</header>
+
+<!-- 結論: ヒーロー数字3〜4個。文書で一番大事な数字をここに -->
+<section>
+  <span class="secno">結論</span>
+  <h2>見出しは体言止めでなく「結論そのもの」を文で書く</h2>
+  <div class="hero">
+    <div class="cell"><div class="k">指標の名前</div><div class="v num">32.6<span class="unit">pt</span></div><div class="s">補足を1行（何と何の差か）</div></div>
+    <div class="cell"><div class="k">悪い数字</div><div class="v num red">92<span class="unit">%</span></div><div class="s">補足</div></div>
+    <div class="cell"><div class="k">結論のキー数字（1〜2箇所だけ）</div><div class="v num acc">280<span class="unit">万円/月</span></div><div class="s">補足</div></div>
+  </div>
+  <p>結論の段落。<strong>太字は数字と結論だけ</strong>に使う。</p>
+</section>
+
+<!-- 分析セクションの基本形: method(前提の明示) → figure(チャート) → 解釈の段落 -->
+<section>
+  <span class="secno">分析 1</span>
+  <h2>この分析で何が分かったかを見出しに書く</h2>
+  <div class="method">
+    <b>仮説</b><span>検証したかったこと</span>
+    <b>手法</b><span>使った計算と、それを選んだ理由</span>
+    <b>結果</b><span>数字つきの結果</span>
+    <b>前提と限界</b><span>言えないこと・注意点</span>
+  </div>
+  <figure>
+    <figcaption>図の題名<small>凡例・単位・データ範囲の説明</small></figcaption>
+    <div class="chartbox">
+      <!-- SVG直書き。外部ライブラリ不使用。クラス: .ax(軸) .lb(項目) .vl/.vl2(値) .an(注記)
+           要素に data-tip="ホバーで出す説明" を付ける -->
+      <svg viewBox="0 0 760 200" class="chart" role="img" aria-label="図の内容の説明">
+        <line x1="60" y1="160" x2="740" y2="160" stroke="#b9c0c9"/>
+        <rect x="100" y="60" width="80" height="100" rx="3" fill="#1d63be" data-tip="項目A: 値"/>
+        <rect x="220" y="90" width="80" height="70" rx="3" fill="#d93025" data-tip="項目B: 値"/>
+        <text x="140" y="52" text-anchor="middle" class="vl">値</text>
+        <text x="140" y="180" text-anchor="middle" class="lb">項目A</text>
+      </svg>
+    </div>
+  </figure>
+  <p>解釈の段落。事実（数字）と解釈（〜とみられる）を語尾で書き分ける。</p>
+</section>
+
+<!-- 表の基本形: 数値列は th.r + td.r、単位は列ヘッダーに -->
+<section>
+  <span class="secno">分析 2</span>
+  <h2>表が主役のセクション</h2>
+  <div class="tblwrap"><table>
+    <thead><tr><th>項目</th><th class="r">目標</th><th class="r">実績（円/km）</th><th class="r">差</th></tr></thead>
+    <tbody>
+      <tr><td>行1</td><td class="r">149.0</td><td class="r">141.5</td><td class="r loss">▲7.5</td></tr>
+      <tr><td class="ex">（記入例の行は td.ex）</td><td class="r ex">—</td><td class="r ex">—</td><td class="r ex">—</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 類型カード(良い型/悪い型の対比が必要なときだけ) -->
+<section>
+  <span class="secno">類型</span>
+  <h2>型の対比</h2>
+  <div class="typecards">
+    <div class="tc good"><div class="h">高収益タイプ</div><h4>型の名前</h4><p>説明2〜3行。</p>
+      <div class="kv"><span>指標 <b>+30%</b></span><span>例: 具体例</span></div></div>
+    <div class="tc bad"><div class="h">低収益タイプ</div><h4>型の名前</h4><p>説明。</p>
+      <div class="kv"><span>指標 <b>−8%</b></span><span>例: 具体例</span></div></div>
+  </div>
+</section>
+
+<!-- アクション: 連番+担当チップ。手順書粒度なら .say(現場に伝える言葉) .guard(禁止事項) を併用 -->
+<section>
+  <span class="secno">ACTION</span>
+  <h2>打ち手</h2>
+  <div class="actions">
+    <div class="act"><div class="body"><b>動詞で始まる指示文</b><small>根拠と金額を1行</small></div><span class="who">担当</span></div>
+    <div class="act"><div class="body"><b>2つ目</b><small>補足</small></div><span class="who">担当</span></div>
+  </div>
+  <div class="say"><b>現場に伝える言葉（朝礼でそのまま読める）</b>理由→行動→記録の順で、統計用語を使わずに書く。</div>
+  <div class="guard"><b>やってはいけないこと</b>禁止事項と、よくある失敗を1〜2個。</div>
+</section>
+
+<footer>
+会社名｜レポート名｜データの出所（ファイル名まで）｜使った手法の列挙｜「数値はすべて実データからの計算結果」
+</footer>
+</div>
+
+<!-- ツールチップ(data-tip)を使う場合はこの2つをbody末尾に -->
+<div id="tip" role="status" aria-hidden="true"></div>
+<script>
+(function(){
+  var tip=document.getElementById('tip');
+  document.addEventListener('mouseover',function(e){
+    var t=e.target.closest('[data-tip]');
+    if(!t){tip.style.opacity=0;return}
+    tip.textContent=t.getAttribute('data-tip'); tip.style.opacity=1;
+  });
+  document.addEventListener('mousemove',function(e){
+    if(tip.style.opacity=='1'){
+      var x=Math.min(e.clientX+14,window.innerWidth-tip.offsetWidth-8);
+      tip.style.left=x+'px'; tip.style.top=(e.clientY+16)+'px';
+    }
+  });
+})();
+</script>

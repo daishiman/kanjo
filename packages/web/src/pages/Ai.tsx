@@ -54,6 +54,11 @@ const PRESETS: { id: Exclude<PresetId, 'custom'>; label: string; length: number;
   { id: 'year5', label: '過去5年', length: 60, note: '長期のトレンドを見る(長期)' },
 ];
 
+const TARGET_LABEL: Record<'claude_code' | 'codex', string> = {
+  claude_code: 'Claude Code',
+  codex: 'Codex',
+};
+
 const STATUS_PILL: Record<AiTaskView['status'], { cls: string; label: string }> = {
   waiting: { cls: 'pill warn', label: '結果待ち' },
   expired: { cls: 'pill neutral', label: '期限切れ' },
@@ -380,13 +385,26 @@ function PromptCard({
   const inRange = period ? monthsIn(months, period) : [];
   const type = period ? typeOf(period) : null;
 
-  const copy = async () => {
+  // どちらへ渡したかをコピー時点で記録する。作っただけの依頼と、
+  // 渡したのに結果が返っていない依頼は、記録が無いと一覧で見分けが付かない
+  const copy = async (target: 'claude_code' | 'codex') => {
     if (!result) return;
     try {
       await navigator.clipboard.writeText(result.prompt);
-      setCopied('コピーしました。Claude Code / Codex に貼り付けてください。');
+      setCopied(`コピーしました。${TARGET_LABEL[target]} に貼り付けてください。`);
     } catch {
       setCopied('コピーできませんでした。枠の中を全選択してコピーしてください。');
+      return;
+    }
+    // 記録に失敗しても、コピー自体は成功しているので操作は止めない
+    try {
+      await api(`/ai/tasks/${result.task.id}/copied`, {
+        method: 'POST',
+        body: JSON.stringify({ target }),
+      });
+      onCreated();
+    } catch {
+      /* 記録は補助情報なので握りつぶす */
     }
   };
 
@@ -515,8 +533,11 @@ function PromptCard({
             <span className="badge">
               対象 {result.task.label} / 有効期限 {dateTime(result.task.expiresAt)} / 結果の受付は1回
             </span>
-            <button type="button" className="primary" onClick={() => void copy()}>
-              指示文をコピー
+            <button type="button" className="primary" onClick={() => void copy('claude_code')}>
+              コピー(Claude Code へ)
+            </button>
+            <button type="button" onClick={() => void copy('codex')}>
+              コピー(Codex へ)
             </button>
             {copied && <span className="sub">{copied}</span>}
           </div>
@@ -610,6 +631,7 @@ export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: 
             <th>作成日時</th>
             <th>対象期間</th>
             <th>状態</th>
+            <th>コピー</th>
             <th>うまく送れなかったとき</th>
           </tr>
         </thead>
@@ -623,6 +645,11 @@ export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: 
               </td>
               <td>
                 <span className={STATUS_PILL[t.status].cls}>{STATUS_PILL[t.status].label}</span>
+              </td>
+              <td className="sub">
+                {t.copiedAt
+                  ? `${dateTime(t.copiedAt)} / ${t.copiedTarget ? TARGET_LABEL[t.copiedTarget] : '不明'}`
+                  : '未コピー'}
               </td>
               <td>
                 {t.status === 'done' ? (

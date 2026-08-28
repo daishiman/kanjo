@@ -3,6 +3,7 @@
  * R2はD1 transaction外なので先にrun/unitへ関連付け、D1側はbatchで1unitを全commitする。
  */
 import {
+  type BalanceRow,
   type CashEntry,
   type Dataset,
   FINGERPRINT_VERSION,
@@ -85,8 +86,8 @@ export function planMultipartImportQueries(args: {
 }): ImportQueryPlan {
   const { fileCount, unitCount, applicableUnitCount, jsonUnitCount, commitStatementCounts } = args;
   return sumPlan({
-    // norm map + cash + loadDataset(cash snapshot) + freee count
-    preflightReads: 3 + LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
+    // canonical planning snapshot(norm/cash/freee/splits) + loadDataset(cash snapshot)
+    preflightReads: 1 + LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
     // run create + worst claim + attempt inserts + initial reconcile + release + outer catch cleanup(2)
     lifecycle: 5 + IMPORT_CLAIM_WORST_CASE_QUERY_COUNT + unitCount,
     heartbeats: fileCount + applicableUnitCount,
@@ -99,8 +100,8 @@ export function planMultipartImportQueries(args: {
 /** POST /restore用。R2/file heartbeat/freee countは無いがJSON content_hash確定は行う。 */
 export function planRestoreImportQueries(commitStatementCount: number): ImportQueryPlan {
   return sumPlan({
-    // cash + loadDataset(cash snapshot) + norm map + retained freee原本
-    preflightReads: 3 + LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
+    // canonical planning snapshot(norm/cash/freee/splits) + loadDataset(cash snapshot)
+    preflightReads: 1 + LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
     // run create + worst claim + attempt insert + release + outer catch cleanup(2)
     lifecycle: 5 + IMPORT_CLAIM_WORST_CASE_QUERY_COUNT,
     heartbeats: 0,
@@ -469,10 +470,26 @@ const finalizeStatements = (
   importId: number,
   contentHash: string,
   targetKeys: string[],
-  sourceKind: 'freee' | 'mf' | 'json',
+  sourceKind: 'freee' | 'mf' | 'json' | 'assets',
   now: string,
 ): D1PreparedStatement[] => {
   const globalSnapshot = targetKeys.includes(JSON_ACTIVE_TARGET);
+  /**
+   * JSONバックアップの復元write-setを変えたときだけ、activeなJSON pointerを落とす。
+   * 残高(balance_entries)はその write-set に入っていないので落とす理由がない。
+   * 無用に落とすと、同じバックアップの入れ直しが重複と判定できなくなる。
+   */
+  const pointerStatements: D1PreparedStatement[] = globalSnapshot
+    ? [database.prepare('DELETE FROM import_active_targets WHERE user_id=?').bind(userId)]
+    : sourceKind === 'assets'
+      ? []
+      : [
+          invalidateJsonSnapshotStatement(
+            database,
+            userId,
+            sourceKind === 'freee' ? 'freee_deals' : 'mf_transactions',
+          ),
+        ];
   const activeUpserts = chunkJsonRowsByBytes(targetKeys.map((targetKey) => [targetKey])).map((payload) =>
     database
       .prepare(
@@ -487,13 +504,7 @@ const finalizeStatements = (
       .bind(userId, contentHash, importId, now, payload),
   );
   return [
-    globalSnapshot
-      ? database.prepare('DELETE FROM import_active_targets WHERE user_id=?').bind(userId)
-      : invalidateJsonSnapshotStatement(
-          database,
-          userId,
-          sourceKind === 'freee' ? 'freee_deals' : 'mf_transactions',
-        ),
+    ...pointerStatements,
     database
       .prepare(
         `UPDATE imports
@@ -559,6 +570,58 @@ export function freeeCommitStatements(args: {
   ];
 }
 
+/**
+ * MFの資産推移CSV(残高)を確定する。
+ *
+ * 消すのは source='mf' の行だけ。負債は画面で手入力したもの(source='manual')で、
+ * CSVには最初から入っていない。月ごと全消しにすると、CSVを入れ直すたびに
+ * 手入力した負債が黙って消える。
+ *
+ * 月次集計(monthly_agg)は書き換えない。残高は収支に1円も入らないため。
+ */
+export function assetsCommitStatements(args: {
+  database: D1Database;
+  userId: string;
+  balances: readonly BalanceRow[];
+  months: string[];
+  runId: string;
+  importId: number;
+  contentHash: string;
+  targetKeys: string[];
+  now?: string;
+}): D1PreparedStatement[] {
+  const { database, userId, balances, months, runId, importId, contentHash, targetKeys } = args;
+  const now = args.now ?? new Date().toISOString();
+  const deleteImported = chunkJsonRowsByBytes(months.map((month) => [month])).map((payload) =>
+    database
+      .prepare(
+        `DELETE FROM balance_entries
+          WHERE user_id=? AND source='mf'
+            AND month IN (
+              SELECT CAST(json_extract(item.value,'$[0]') AS TEXT) FROM json_each(?) AS item
+            )`,
+      )
+      .bind(userId, payload),
+  );
+  return [
+    ...beginImportCommitStatements({ database, userId, runId, importId }),
+    ...deleteImported,
+    ...insertJsonRows(
+      database,
+      'balance_entries',
+      ['month', 'date', 'side', 'category', 'amount'],
+      balances.map((b) => [b.month, b.date, b.side, b.category, b.amount]),
+      [
+        { column: 'user_id', value: userId },
+        { column: 'source', value: 'mf' },
+        { column: 'created_at', value: now },
+        { column: 'updated_at', value: now },
+      ],
+    ),
+    ...finalizeStatements(database, userId, runId, importId, contentHash, targetKeys, 'assets', now),
+  ];
+}
+
 export function mfCommitStatements(args: {
   database: D1Database;
   userId: string;
@@ -601,6 +664,18 @@ export function mfCommitStatements(args: {
                )))`,
     )
     .bind(now, userId);
+  const removeOrphanSplits = database
+    .prepare(
+      `DELETE FROM tx_splits
+        WHERE user_id=?
+          AND NOT EXISTS (
+            SELECT 1 FROM mf_transactions m
+             WHERE m.user_id=tx_splits.user_id
+               AND m.tx_id=tx_splits.tx_id
+               AND m.identity_stable=1
+          )`,
+    )
+    .bind(userId);
   return [
     ...beginImportCommitStatements({ database, userId, runId, importId }),
     deleteReplacement,
@@ -614,6 +689,7 @@ export function mfCommitStatements(args: {
         { column: 'import_id', value: importId },
       ],
     ),
+    removeOrphanSplits,
     syncAttachmentParents,
     ...replaceAggStatements(database, userId, data),
     ...finalizeStatements(database, userId, runId, importId, contentHash, targetKeys, 'mf', now),
@@ -649,6 +725,8 @@ export interface RestoreWriteSet {
   restoredAggRows: unknown[][];
   unrecordedMonths: string[];
   monthlyAggRows: unknown[][];
+  /** canonical split children。projection行は永続化しない。 */
+  splitRows: unknown[][];
   /**
    * 復元する現金の記帳。移行先に1件も記帳が無いときだけ入る(空なら現金は一切触らない)。
    * `cash:<id>` は手動判定・証憑の宛先なので、idはバックアップの値をそのまま使う。
@@ -667,6 +745,8 @@ export function prepareRestoreWriteSet(args: {
   existingSubVendorExclusions?: ReadonlyArray<{ partner: string; vendorKey: string }>;
   /** 復元する現金の記帳。移行先に既存の記帳があるときは渡さない */
   restoredCashEntries?: ReadonlyArray<CashEntry>;
+  /** raw canonical dataから明示的に作った集計・表示用projection */
+  accountingData?: Dataset;
 }): RestoreWriteSet {
   const rawTxs = canonicalMfTransactions(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)));
   return {
@@ -714,9 +794,24 @@ export function prepareRestoreWriteSet(args: {
       .map((row) => [row.month, row.scope, row.amount])
       .sort(([am, as], [bm, bs]) => `${am}\0${as}`.localeCompare(`${bm}\0${bs}`)),
     unrecordedMonths: [...new Set(args.data.unrecordedExpMonths)].sort(),
-    monthlyAggRows: aggRowsFromDataset(args.userId, args.data)
+    monthlyAggRows: aggRowsFromDataset(args.userId, args.accountingData ?? args.data)
       .map((row) => [row.month, row.scope, row.amount])
       .sort(([am, as], [bm, bs]) => `${am}\0${as}`.localeCompare(`${bm}\0${bs}`)),
+    splitRows: [...args.data.txSplits]
+      .sort((a, b) => a.txId.localeCompare(b.txId) || a.seq - b.seq || a.lineId.localeCompare(b.lineId))
+      .map((row) => [
+        row.txId,
+        row.lineId,
+        row.seq,
+        row.parentAmount,
+        row.amount,
+        row.cls,
+        row.categoryMajor,
+        row.categoryMid,
+        row.memo ?? null,
+        row.createdAt ?? null,
+        row.updatedAt ?? null,
+      ]),
     cashEntryRows: [...(args.restoredCashEntries ?? [])]
       .sort((a, b) => a.id - b.id)
       .map((entry) => [
@@ -765,6 +860,26 @@ export function restoreCommitStatements(args: {
   return [
     ...beginImportCommitStatements({ database, userId, runId, importId }),
     ...mfStatements,
+    database.prepare('DELETE FROM tx_splits WHERE user_id=?').bind(userId),
+    ...insertJsonRows(
+      database,
+      'tx_splits',
+      [
+        'tx_id',
+        'line_id',
+        'seq',
+        'parent_amount',
+        'amount',
+        'cls',
+        'category_major',
+        'category_mid',
+        'memo',
+        'created_at',
+        'updated_at',
+      ],
+      writeSet.splitRows,
+      [{ column: 'user_id', value: userId }],
+    ),
     ...chunkJsonRowsByBytes(writeSet.vendorRows).map((payload) =>
       database
         .prepare(

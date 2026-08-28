@@ -1,7 +1,7 @@
 /** P9 設定: 分類の設定(ルール・名義・候補科目・手動編集)・科目正規化・未記帳月・現金補正・エクスポート/復元(FR-05) */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
-import { type LegacyRestoreResponse, type SettingsResponse, api } from '../api.js';
+import { type BackupItem, type LegacyRestoreResponse, type SettingsResponse, api } from '../api.js';
 import { AttachmentArchiveRecovery } from '../components/Attachments.js';
 import { ClassificationSettings } from '../components/ClassificationSettings.js';
 import { PageHeader, PageState } from '../components/Page.js';
@@ -281,6 +281,13 @@ export function SettingsPage() {
           <a className="btn" href="/api/export/matrix.csv">
             マトリクスCSV(BOM付きUTF-8)
           </a>
+          {/* 集計だけだと「この金額はどの明細か」を追えない。明細の粒度で渡せる口を並べる */}
+          <a className="btn" href="/api/export/transactions.csv">
+            明細CSV(解決後の科目・公私・名義つき)
+          </a>
+          <a className="btn" href="/api/export/report.html">
+            会計レポートHTML(単一ファイル)
+          </a>
           <button type="button" onClick={() => restoreInput.current?.click()} disabled={restore.isPending}>
             {restore.isPending ? '復元中…' : 'HTML版JSONから復元(初期移行)'}
           </button>
@@ -303,8 +310,87 @@ export function SettingsPage() {
             初期移行に失敗しました。データは反映されていません: {(restore.error as Error).message}
           </div>
         )}
+        <NightlyBackups />
         <AttachmentArchiveRecovery />
       </div>
     </>
+  );
+}
+
+export const BACKUP_RESTORE_CONFIRMATION =
+  'この日の夜間バックアップで集計・分類・設定データを上書きします。現金明細、証憑の原本と管理情報は対象外です。続けますか?';
+
+/**
+ * 夜間バックアップ(R2 に30日保持)からの復元導線。
+ *
+ * cron でバックアップは取れていても、画面から取り出せなければ「戻せる」ことにならない。
+ * 復元経路は初期移行と同じ POST /api/restore に合流させ、検証・冪等性の実装を1本に保つ。
+ */
+export function NightlyBackups() {
+  const qc = useQueryClient();
+  const q = useQuery({
+    queryKey: ['backups'],
+    queryFn: () => api<{ backups: BackupItem[] }>('/backups'),
+  });
+  const restore = useMutation({
+    mutationFn: async (date: string) => {
+      const payload = await api<unknown>(`/backups/${date}`);
+      return api<LegacyRestoreResponse>('/restore', { method: 'POST', body: JSON.stringify(payload) });
+    },
+    onSuccess: () => void qc.invalidateQueries(),
+  });
+
+  if (q.isError) return <p className="sub">夜間バックアップの一覧を取得できませんでした。</p>;
+  const backups = q.data?.backups ?? [];
+
+  return (
+    <div style={{ marginTop: 16 }}>
+      <h3>夜間バックアップから戻す</h3>
+      <p className="sub">
+        毎晩の自動バックアップ(30日保持)です。選んだ日の集計・分類・設定データで上書きします。
+        現金明細と証憑は対象外なので、そのまま残ります。
+      </p>
+      {!backups.length && !q.isLoading && (
+        <p className="sub">まだバックアップがありません(初回の夜間実行後に出ます)。</p>
+      )}
+      {backups.length > 0 && (
+        <table className="data stack-sm">
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>サイズ</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {backups.map((b) => (
+              <tr key={b.date}>
+                <td data-label="日付">{b.date}</td>
+                <td className="num" data-label="サイズ">
+                  {Math.max(1, Math.round(b.size / 1024)).toLocaleString('ja-JP')} KB
+                </td>
+                <td data-label="操作">
+                  <button
+                    type="button"
+                    disabled={restore.isPending}
+                    onClick={() => {
+                      if (window.confirm(BACKUP_RESTORE_CONFIRMATION)) restore.mutate(b.date);
+                    }}
+                  >
+                    この日に戻す
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {restore.isSuccess && <LegacyRestoreNotice result={restore.data} />}
+      {restore.isError && (
+        <div className="notice">
+          復元に失敗しました。データは反映されていません: {(restore.error as Error).message}
+        </div>
+      )}
+    </div>
   );
 }

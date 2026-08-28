@@ -6,12 +6,17 @@ import { type MatrixData, api } from '../api.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { deltaCls, monthShort, pct, yen } from '../format.js';
+import { usePeriod } from '../period.js';
 
 type Mode = 'val' | 'mom' | 'yoy';
 
 export function MatrixPage() {
   const [mode, setMode] = useState<Mode>('val');
-  const q = useQuery({ queryKey: ['matrix'], queryFn: () => api<MatrixData>('/matrix') });
+  const { key, withPeriod } = usePeriod();
+  const q = useQuery({
+    queryKey: ['matrix', key],
+    queryFn: () => api<MatrixData>(withPeriod('/matrix')),
+  });
   if (q.isLoading)
     return (
       <>

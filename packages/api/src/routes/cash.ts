@@ -24,7 +24,7 @@ import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import { D1_FREE_QUERY_LIMIT, IMPORT_CLAIM_WORST_CASE_QUERY_COUNT } from '../import-lifecycle.js';
 import {
   type Db,
-  LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
+  LOAD_DATASET_QUERY_COUNT_WITH_SPLITS,
   cashFromRow,
   dealFromRow,
   getDb,
@@ -52,8 +52,8 @@ export const CASH_PARENT_DELETE_QUERY_LEDGER = {
   // prior claim SELECT + stale takeoverを含むclaim batch + finally release
   writerLeaseWorstCase: IMPORT_CLAIM_WORST_CASE_QUERY_COUNT + 1,
   cashSnapshot: 1,
-  // norm/freee/baseline/MF + loadDataset(cash snapshot)
-  recomputePlan: 4 + LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
+  // norm/freee/baseline/MF + loadDataset(cash snapshot + 分割の内訳)
+  recomputePlan: 4 + LOAD_DATASET_QUERY_COUNT_WITH_SPLITS,
   attachmentTargetRead: 1,
   attachmentPendingPerRow: 1,
   attachmentFailurePerRow: 1,

@@ -966,6 +966,87 @@ export function budgetSummary(rows: ReadonlyArray<BudgetRow>): BudgetSummary {
   };
 }
 
+export interface BudgetOutlookRow {
+  account: string;
+  /** 月次予算 */
+  budget: number | null;
+  /** 年間予算 = 月次予算 × 12 */
+  annualBudget: number | null;
+  /** 当年の記帳済み月の実績累計 */
+  ytd: number;
+  /** 直近3ヶ月平均(月あたり)。残り月数の見込みに使う */
+  recentAvg: number;
+  /** 年末の着地見込み = 実績累計 + 直近平均 × 残り月数 */
+  landing: number;
+  /** 着地見込み - 年間予算 */
+  diff: number | null;
+  judge: BudgetRow['judge'];
+}
+
+export interface BudgetOutlook {
+  year: string;
+  /** 当年のうち記帳済みの月数(未記帳月は実績にも残り月数にも数えない) */
+  recordedMonths: number;
+  /** 年内に残っている月数 */
+  remainingMonths: number;
+  rows: BudgetOutlookRow[];
+  totals: { annualBudget: number; ytd: number; landing: number; diff: number };
+}
+
+/**
+ * 予算の年間・着地見込み。
+ *
+ * 月次予算だけでは「今月は範囲内」の積み重ねが年間でどこへ着地するか分からない。
+ * 残り月数は「当年の未記帳でない月」から数え、見込みは年平均ではなく直近3ヶ月平均で伸ばす。
+ * 年の途中で単価や契約が変わった科目を、年初の水準に引き戻して見誤らないようにするため。
+ */
+export function budgetOutlook(data: Dataset): BudgetOutlook {
+  const { curr } = yearPair(data);
+  const un = new Set(data.unrecordedExpMonths);
+  const currIdx = data.months.map((_, i) => i).filter((i) => yearOf(data.months[i]) === curr);
+  const recordedIdx = currIdx.filter((i) => !un.has(data.months[i]));
+  const recordedMonths = recordedIdx.length;
+  const remainingMonths = Math.max(0, 12 - recordedMonths);
+
+  const rows: BudgetOutlookRow[] = data.biz.categories
+    .filter((c) => sum(catSeries(data, c)) > 0)
+    .map((c) => {
+      const series = catSeries(data, c);
+      const ytd = sum(recordedIdx.map((i) => series[i] || 0));
+      const recentAvg = catProfile(data, c).rAvg;
+      const budget = data.budgets[c] ?? null;
+      const annualBudget = budget == null ? null : budget * 12;
+      const landing = ytd + recentAvg * remainingMonths;
+      const judged = judgeBudget(landing, annualBudget);
+      return {
+        account: c,
+        budget,
+        annualBudget,
+        ytd,
+        recentAvg,
+        landing,
+        diff: judged.diff,
+        judge: judged.judge,
+      };
+    });
+
+  const withBudget = rows.filter((r) => r.annualBudget != null);
+  const annualBudget = sum(withBudget.map((r) => r.annualBudget ?? 0));
+  const landing = sum(withBudget.map((r) => r.landing));
+  return {
+    year: curr,
+    recordedMonths,
+    remainingMonths,
+    rows,
+    totals: {
+      annualBudget,
+      ytd: sum(withBudget.map((r) => r.ytd)),
+      landing,
+      diff: landing - annualBudget,
+    },
+  };
+}
+
 /* ======================== FR-08 防衛ライン ======================== */
 
 export interface DefenseLine {
@@ -1006,6 +1087,183 @@ export function defenseLine(data: Dataset): DefenseLine {
         ? 'tight'
         : 'danger';
   return { line, personalAvg, bizFixedAvg, month, incomeEstimate, salary, bizIncome, diff, status };
+}
+
+/** 防衛ラインの先行き見通しで振り返る月数 */
+const DEFENSE_HISTORY_MONTHS = 6;
+/** 翌月見込みの材料にする月数 */
+const DEFENSE_ESTIMATE_MONTHS = 3;
+
+export interface DefenseMonth {
+  month: string;
+  income: number;
+  /** 収入見込み - 防衛ライン。マイナスならその月はラインを割っている */
+  diff: number;
+  breached: boolean;
+}
+
+export interface DefenseForecast {
+  line: number;
+  /** 直近の実績。古い順 */
+  history: DefenseMonth[];
+  /** 直近でラインを割った月数 */
+  breachCount: number;
+  /** 翌月の収入見込み。給与は中央値(安定)、事業入金は平均(変動)で見る */
+  nextMonth: string | null;
+  nextEstimate: number;
+  nextSalary: number;
+  nextBizIncome: number;
+  nextDiff: number;
+  /** 直近の収入の傾き(円/月)。マイナスなら先細り */
+  slope: number;
+  level: 'none' | 'watch' | 'warn' | 'nodata';
+  /** 画面にそのまま出せる根拠の文言 */
+  reason: string;
+}
+
+/** 最小二乗法で「1ヶ月あたりいくら増減しているか」を出す。2点未満なら傾きなし */
+function slopePerMonth(values: number[]): number {
+  const n = values.length;
+  if (n < 2) return 0;
+  const xMean = (n - 1) / 2;
+  const yMean = mean(values);
+  let num = 0;
+  let den = 0;
+  for (let i = 0; i < n; i++) {
+    num += (i - xMean) * (values[i] - yMean);
+    den += (i - xMean) ** 2;
+  }
+  return den === 0 ? 0 : num / den;
+}
+
+/** 月文字列 'YYYY-MM' の翌月 */
+function nextMonthOf(month: string): string {
+  const [y, m] = month.split('-').map(Number);
+  return m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, '0')}`;
+}
+
+/**
+ * 防衛ライン割れの事前警告。
+ *
+ * 「割れてから気づく」を「割れる前に気づく」へ変えるのが目的なので、
+ * 判定の材料(実績・翌月見込み・傾き)をすべて返し、画面で根拠を示せるようにする。
+ */
+export function defenseForecast(data: Dataset): DefenseForecast {
+  const base = defenseLine(data);
+  const months = Object.keys(data.personal).sort();
+  const history: DefenseMonth[] = months.slice(-DEFENSE_HISTORY_MONTHS).map((month) => {
+    const income = (data.personal[month].income['給与'] || 0) + (data.bizPersonal[month]?.income || 0);
+    const diff = income - base.line;
+    return { month, income, diff, breached: diff < 0 };
+  });
+  const breachCount = history.filter((h) => h.breached).length;
+  const slope = slopePerMonth(history.map((h) => h.income));
+
+  const recent = months.slice(-DEFENSE_ESTIMATE_MONTHS);
+  const nextSalary = median(recent.map((m) => data.personal[m].income['給与'] || 0));
+  const nextBizIncome = recent.length ? mean(recent.map((m) => data.bizPersonal[m]?.income || 0)) : 0;
+  const nextEstimate = nextSalary + nextBizIncome;
+  const nextMonth = base.month ? nextMonthOf(base.month) : null;
+  const nextDiff = nextEstimate - base.line;
+
+  const { level, reason } = judgeDefenseForecast({
+    line: base.line,
+    history,
+    breachCount,
+    nextDiff,
+    slope,
+    hasData: base.status !== 'nodata',
+  });
+
+  return {
+    line: base.line,
+    history,
+    breachCount,
+    nextMonth,
+    nextEstimate,
+    nextSalary,
+    nextBizIncome,
+    nextDiff,
+    slope,
+    level,
+    reason,
+  };
+}
+
+export interface DefenseForecastInput {
+  line: number;
+  history: ReadonlyArray<DefenseMonth>;
+  breachCount: number;
+  /** 翌月見込み - 防衛ライン */
+  nextDiff: number;
+  /** 直近の収入の傾き(円/月) */
+  slope: number;
+  hasData: boolean;
+}
+
+/** 根拠文に埋め込む金額。core の他の説明文(サブスク候補など)と同じ表記に合わせる */
+const money = (v: number): string => `¥${Math.round(v).toLocaleString()}`;
+
+/** 「まだ余裕がある」と言えるラインからの上振れ幅。防衛ラインの10% */
+const DEFENSE_MARGIN_RATIO = 0.1;
+/** 先細りを警告に格上げする猶予。これ以内にラインへ届く見込みなら注意を出す */
+const DEFENSE_RUNWAY_MONTHS = 3;
+
+/**
+ * 事前警告の強さを決める。
+ *
+ * 事業入金は月ごとの振れが大きいので、単月の落ち込みだけでは warn にしない。
+ * warn は「翌月そのものが割れる見込み」か「割れがもう常態化している」場合に限り、
+ * 「今は足りているが先細りで数ヶ月内に届く」は watch にとどめる。
+ * 警告を出しすぎると利用者が警告そのものを無視するようになるため。
+ */
+export function judgeDefenseForecast(input: DefenseForecastInput): {
+  level: DefenseForecast['level'];
+  reason: string;
+} {
+  const { line, history, breachCount, nextDiff, slope, hasData } = input;
+  if (!hasData || !history.length) return { level: 'nodata', reason: 'まだ判定に使える実績がありません。' };
+
+  const estimate = line + nextDiff;
+  // 防衛ラインが 0 のとき比率は意味を持たないので、比率を使う判定は素通りさせる
+  const margin = line > 0 ? nextDiff / line : Number.POSITIVE_INFINITY;
+  // 割れが直近の過半なら、単月の振れではなく水準そのものが足りていない
+  const chronic = breachCount * 2 > history.length;
+
+  if (nextDiff < 0)
+    return {
+      level: 'warn',
+      reason: `翌月の収入見込み ${money(estimate)} が防衛ライン ${money(line)} を ${money(-nextDiff)} 下回る見込みです。`,
+    };
+  if (chronic)
+    return {
+      level: 'warn',
+      reason: `直近${history.length}ヶ月のうち${breachCount}ヶ月が防衛ライン ${money(line)} を割っています。翌月の見込み ${money(estimate)} も余裕は ${money(nextDiff)} だけです。`,
+    };
+  if (breachCount > 0)
+    return {
+      level: 'watch',
+      reason: `直近${history.length}ヶ月のうち${breachCount}ヶ月が防衛ライン ${money(line)} を割りました。翌月の見込みは ${money(estimate)} です。`,
+    };
+
+  // 今は足りている。このままの傾きで何ヶ月後にラインへ届くかを見る
+  if (slope < 0) {
+    const runway = nextDiff / -slope;
+    if (runway <= DEFENSE_RUNWAY_MONTHS)
+      return {
+        level: 'watch',
+        reason: `収入が月あたり ${money(-slope)} のペースで減っています。この傾きが続くと約${Math.max(1, Math.round(runway))}ヶ月後に防衛ライン ${money(line)} へ届きます。`,
+      };
+  }
+  if (margin < DEFENSE_MARGIN_RATIO)
+    return {
+      level: 'watch',
+      reason: `翌月の収入見込み ${money(estimate)} は防衛ライン ${money(line)} を上回りますが、余裕は ${money(nextDiff)} しかありません。`,
+    };
+  return {
+    level: 'none',
+    reason: `翌月の収入見込み ${money(estimate)} は防衛ライン ${money(line)} を ${money(nextDiff)} 上回る見込みです。`,
+  };
 }
 
 /* ======================== FR-09 やりくり試算 ======================== */
@@ -1077,4 +1335,147 @@ export function tradeoffCandidates(data: Dataset): TradeoffCandidate[] {
     });
   }
   return out.filter((c) => c.amount > 0).sort((a, b) => b.amount - a.amount);
+}
+
+/** 突合に使う、保存済みのやりくり計画。DB行のうち判定に必要な列だけ */
+export interface TradeoffPlanRecord {
+  id: number;
+  title: string | null;
+  amount: number;
+  /** 削減候補から積み上げた捻出予定額 */
+  covered: number | null;
+  /** ISO 日時。この日が属する月の「翌月」を突合対象にする */
+  createdAt: string | null;
+}
+
+export interface TradeoffReviewRow {
+  id: number;
+  title: string | null;
+  amount: number;
+  covered: number;
+  planMonth: string | null;
+  /** 突合対象の月(計画を立てた月の翌月)。実績が揃うまでは判定しない */
+  targetMonth: string | null;
+  /** 計画月までの直近3ヶ月の経費平均。ここから減ったかを見る */
+  baseline: number;
+  actual: number | null;
+  reduced: number | null;
+  /** 捻出予定額に対する達成率。covered が 0 なら null */
+  rate: number | null;
+  status: 'pending' | 'achieved' | 'partial' | 'missed';
+}
+
+/** 達成とみなす下限。予定どおり削れることは稀なので、8割で「達成」に入れる */
+const TRADEOFF_ACHIEVED_RATIO = 0.8;
+/** 一部達成の下限。これを下回ると「効かなかった」側に置く */
+const TRADEOFF_PARTIAL_RATIO = 0.3;
+
+/**
+ * FR-09 やりくり計画の翌月実績突合。
+ *
+ * 「捻出できる見込み」を出しただけでは、実際に減ったかは分からない。
+ * 計画を立てた月の翌月の経費合計を、計画時点の直近3ヶ月平均と比べて
+ * 効いたかどうかを返す。対象月が未記帳・未到来なら判定を保留する。
+ */
+export function tradeoffReview(data: Dataset, plans: TradeoffPlanRecord[]): TradeoffReviewRow[] {
+  const un = new Set(data.unrecordedExpMonths);
+  const expT = data.months.map((_, i) => bizExpTotal(data, i));
+  const idxOf = (m: string): number => data.months.indexOf(m);
+
+  return plans.map((p) => {
+    const planMonth = p.createdAt ? p.createdAt.slice(0, 7) : null;
+    const targetMonth = planMonth ? nextMonthOf(planMonth) : null;
+    const covered = p.covered ?? 0;
+    const base: TradeoffReviewRow = {
+      id: p.id,
+      title: p.title,
+      amount: p.amount,
+      covered,
+      planMonth,
+      targetMonth,
+      baseline: 0,
+      actual: null,
+      reduced: null,
+      rate: null,
+      status: 'pending',
+    };
+    if (!planMonth || !targetMonth) return base;
+
+    // 計画月そのものを含む直近3ヶ月(記帳済みのみ)を基準にする
+    const planIdx = idxOf(planMonth);
+    const upTo = planIdx >= 0 ? planIdx : data.months.length - 1;
+    const hist = data.months
+      .map((m, i) => ({ m, i }))
+      .filter((x) => x.i <= upTo && !un.has(x.m))
+      .slice(-DEFENSE_ESTIMATE_MONTHS)
+      .map((x) => expT[x.i]);
+    base.baseline = Math.round(mean(hist));
+
+    const ti = idxOf(targetMonth);
+    if (ti < 0 || un.has(targetMonth) || !hist.length) return base;
+
+    const actual = expT[ti];
+    const reduced = base.baseline - actual;
+    const rate = covered > 0 ? reduced / covered : null;
+    const status: TradeoffReviewRow['status'] =
+      rate == null
+        ? reduced > 0
+          ? 'achieved'
+          : 'missed'
+        : rate >= TRADEOFF_ACHIEVED_RATIO
+          ? 'achieved'
+          : rate >= TRADEOFF_PARTIAL_RATIO
+            ? 'partial'
+            : 'missed';
+    return { ...base, actual, reduced, rate, status };
+  });
+}
+
+/* ======================== サブスクの見直し記録 ======================== */
+
+/** 見直しの推奨間隔。四半期に一度、契約が要るかを確かめる */
+export const SUBS_REVIEW_INTERVAL_MONTHS = 3;
+
+export interface SubsReviewInput {
+  id: number;
+  name: string;
+  /** 最後に見直した日時(ISO)。null は一度も見直していない */
+  reviewedAt: string | null;
+}
+
+export interface SubsReviewRow extends SubsReviewInput {
+  /** 最後の見直しからの経過月数。未レビューなら null */
+  monthsSince: number | null;
+  due: boolean;
+}
+
+/**
+ * サブスクの見直し期限。
+ *
+ * サブスクの無駄は「解約し忘れ」で生まれるので、金額の異常だけでは拾えない。
+ * 最後に見直した日から四半期が過ぎた登録を、期限切れの古い順に並べて返す。
+ */
+export function subsReviewStatus(vendors: SubsReviewInput[], today: string): SubsReviewRow[] {
+  const nowM = today.slice(0, 7);
+  return vendors
+    .map((v) => {
+      if (!v.reviewedAt) return { ...v, monthsSince: null, due: true };
+      const monthsSince = monthDiff(v.reviewedAt.slice(0, 7), nowM);
+      return { ...v, monthsSince, due: monthsSince >= SUBS_REVIEW_INTERVAL_MONTHS };
+    })
+    .sort((a, b) => {
+      if (a.due !== b.due) return a.due ? -1 : 1;
+      // 未レビューを先頭に、そのあとは放置が長い順
+      if (a.monthsSince == null) return b.monthsSince == null ? 0 : -1;
+      if (b.monthsSince == null) return 1;
+      return b.monthsSince - a.monthsSince;
+    });
+}
+
+/** 'YYYY-MM' 同士の月数差。過去日付なら正の値 */
+function monthDiff(from: string, to: string): number {
+  const [fy, fm] = from.split('-').map(Number);
+  const [ty, tm] = to.split('-').map(Number);
+  if (!fy || !fm || !ty || !tm) return 0;
+  return (ty - fy) * 12 + (tm - fm);
 }

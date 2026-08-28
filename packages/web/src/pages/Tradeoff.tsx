@@ -4,10 +4,12 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
-import { type TradeoffResponse, api } from '../api.js';
+import { type TradeoffResponse, type TradeoffReviewRow, api } from '../api.js';
+import { HowTo } from '../components/HowTo.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
-import { yen } from '../format.js';
+import { yen, yenS } from '../format.js';
+import { usePeriod } from '../period.js';
 
 const kindLabel: Record<string, ReactNode> = {
   subs_dup: <Term id="subsDup">サブスク重複</Term>,
@@ -19,7 +21,11 @@ const kindLabel: Record<string, ReactNode> = {
 
 export function TradeoffPage() {
   const qc = useQueryClient();
-  const q = useQuery({ queryKey: ['tradeoff'], queryFn: () => api<TradeoffResponse>('/tradeoff') });
+  const { key, withPeriod } = usePeriod();
+  const q = useQuery({
+    queryKey: ['tradeoff', key],
+    queryFn: () => api<TradeoffResponse>(withPeriod('/tradeoff')),
+  });
   const [amount, setAmount] = useState('');
   const [recurring, setRecurring] = useState(false);
   const [title, setTitle] = useState('');
@@ -97,6 +103,7 @@ export function TradeoffPage() {
 
       <div className="card">
         <h2>削減余地リスト(効果額の大きい順)</h2>
+        <HowTo id="tradeoffCuts" />
         {!d.candidates.length && <p className="empty">現在、検知された削減候補はありません。</p>}
         <table className="data">
           <tbody>
@@ -170,6 +177,7 @@ export function TradeoffPage() {
               <th>予定支出</th>
               <th>捻出額</th>
               <th>判定</th>
+              <th>翌月の実績</th>
               <th style={{ textAlign: 'left' }}>選択した削減策</th>
             </tr>
           </thead>
@@ -190,6 +198,7 @@ export function TradeoffPage() {
                     <span className="pill alert">不足</span>
                   )}
                 </td>
+                <ReviewCell row={d.review.find((r) => r.id === p.id)} />
                 <td style={{ textAlign: 'left' }} className="sub">
                   {p.selected.map((sel) => sel.label).join(' / ')}
                 </td>
@@ -197,7 +206,7 @@ export function TradeoffPage() {
             ))}
             {!d.plans.length && (
               <tr>
-                <td colSpan={6} className="empty">
+                <td colSpan={7} className="empty">
                   保存された試算はまだありません
                 </td>
               </tr>
@@ -206,5 +215,29 @@ export function TradeoffPage() {
         </table>
       </div>
     </>
+  );
+}
+
+/**
+ * 計画の翌月実績突合。
+ *
+ * 「捻出できる見込み」を出しただけでは実際に減ったかは分からない。
+ * 対象月の経費合計を、計画時点の直近3ヶ月平均と比べて効いたかを出す。
+ * 対象月が未到来・未記帳のあいだは判定せず、待っていることを見せる。
+ */
+function ReviewCell({ row }: { row?: TradeoffReviewRow }) {
+  if (!row) return <td className="sub">—</td>;
+  if (row.status === 'pending' || row.reduced == null)
+    return <td className="sub">{row.targetMonth ? `${row.targetMonth} の記帳待ち` : '突合できません'}</td>;
+  const pill =
+    row.status === 'achieved' ? 'pill calm' : row.status === 'partial' ? 'pill warn' : 'pill alert';
+  const label = row.status === 'achieved' ? '達成' : row.status === 'partial' ? '一部' : '未達';
+  return (
+    <td>
+      <span className={pill}>{label}</span> <span className="num">{yenS(row.reduced)}</span>
+      <div className="sub">
+        {row.targetMonth} {yen(row.actual)} / 基準 {yen(row.baseline)}
+      </div>
+    </td>
   );
 }
