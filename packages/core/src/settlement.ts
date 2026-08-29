@@ -114,3 +114,76 @@ export function unsettledSummary(rows: ReadonlyArray<UnsettledDeal>): UnsettledS
   }
   return sum;
 }
+
+/** 入金・支払の予定を月単位でまとめた1行 */
+export interface SettlementMonth {
+  /** 'YYYY-MM'。期日の無い分は month が null の行に集める */
+  month: string | null;
+  /** その月に入る予定の額 */
+  receipt: number;
+  /** その月に出る予定の額 */
+  payment: number;
+  /** receipt − payment。マイナスなら、その月は現金が減る */
+  net: number;
+  /** 期日をすでに過ぎている分。予定ではなく「本来もう動いていたはずの額」 */
+  overdue: number;
+  count: number;
+}
+
+/** 未決済APIが返す一式。core→API→webで同じ契約を使う。 */
+export interface UnsettledReport {
+  /** 期日超過を判定した基準日 */
+  today: string;
+  rows: UnsettledDeal[];
+  summary: UnsettledSummary;
+  schedule: SettlementMonth[];
+}
+
+/**
+ * 未決済を期日の月ごとに束ね、これから現金がいつ動くかを並べる。
+ *
+ * 決算書のキャッシュフローが「もう起きたこと」を現金に直すのに対し、こちらは「これから起きること」。
+ * 損益にも過去のキャッシュフローにも出てこない、将来の入出金予定だけを示す。
+ * 手元残高は含まないため、この差引だけで資金不足かどうかは判定しない。
+ *
+ * 期日を過ぎた分は、過ぎた月ではなく今月に寄せる。回収も支払も、実際に動くとしたらこれから先だから。
+ * 期日の無い分は月に割り当てられないので、末尾の month=null にまとめて「予定に数えられない額」として残す。
+ */
+export function settlementSchedule(rows: ReadonlyArray<UnsettledDeal>, today: string): SettlementMonth[] {
+  const thisMonth = today.slice(0, 7);
+  const byMonth = new Map<string | null, SettlementMonth>();
+  const at = (month: string | null): SettlementMonth => {
+    let m = byMonth.get(month);
+    if (!m) {
+      m = { month, receipt: 0, payment: 0, net: 0, overdue: 0, count: 0 };
+      byMonth.set(month, m);
+    }
+    return m;
+  };
+  for (const row of rows) {
+    const month = row.dueDate ? (row.status === 'overdue' ? thisMonth : row.dueDate.slice(0, 7)) : null;
+    const m = at(month);
+    if (row.deal.io === 'expense') m.payment += row.remaining;
+    else m.receipt += row.remaining;
+    if (row.status === 'overdue') m.overdue += row.remaining;
+    m.count += 1;
+  }
+  for (const m of byMonth.values()) m.net = m.receipt - m.payment;
+  return [...byMonth.values()].sort((a, b) => {
+    // 期日なしは予定として読めないので、月のある行をすべて出しきってから最後に置く
+    if (a.month === null) return 1;
+    if (b.month === null) return -1;
+    return a.month.localeCompare(b.month);
+  });
+}
+
+/** 未決済の明細・集計・月別予定を、APIがそのまま返せる一つの契約へまとめる。 */
+export function unsettledReport(deals: ReadonlyArray<FreeeDeal>, today: string): UnsettledReport {
+  const rows = unsettledDeals(deals, today);
+  return {
+    today,
+    rows,
+    summary: unsettledSummary(rows),
+    schedule: settlementSchedule(rows, today),
+  };
+}

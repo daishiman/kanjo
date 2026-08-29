@@ -33,7 +33,7 @@
 |---|---|
 | `packages/core` | 依存ゼロの純関数群: パーサー(freee/MF/SJIS)・仕分け・統計・分析。**スナップショットテストの対象** |
 | `packages/api` | Hono Worker: 認証・取込パイプライン(ZIP/CSV/Excel/JSON)・集計API・バックアップ |
-| `packages/web` | React 18 + Vite + TanStack Query + Chart.js の SPA (11ページ) |
+| `packages/web` | React 18 + Vite + TanStack Query + Chart.js の SPA |
 
 ## 開発
 

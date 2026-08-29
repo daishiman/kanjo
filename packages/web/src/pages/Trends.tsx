@@ -9,7 +9,7 @@ import { Fragment, useState } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type ExpenseScope, type TrendRow, type TrendsResponse, api } from '../api.js';
-import { DataTable } from '../components/DataTable.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
@@ -122,7 +122,7 @@ export function TrendsPage() {
                 '区分',
                 { label: '合計', className: 'num' },
                 { label: '月あたり', className: 'num' },
-                { label: '構成比', className: 'num' },
+                termColumn('share', { label: '構成比', className: 'num' }),
                 { label: '科目数', className: 'num' },
                 '最大の科目',
               ]}
@@ -244,9 +244,9 @@ export function TrendsPage() {
                       <td colSpan={7}>
                         <p>{r.reason}</p>
                         <p className="sub">
-                          傾き {yenS(Math.round(r.slopePerMonth))}/月 ・ 有意確率 p={r.mk.p.toFixed(3)} ・
-                          <Term id="cv">変動係数</Term> {r.cv.toFixed(2)} ・ 直近平均 {yen(r.recentAvg)} /
-                          それ以前 {yen(r.priorAvg)}
+                          傾き {yenS(Math.round(r.slopePerMonth))}/月 ・ <Term id="pValue" />=
+                          {r.mk.p.toFixed(3)} ・<Term id="cv">変動係数</Term> {r.cv.toFixed(2)} ・ 直近平均{' '}
+                          {yen(r.recentAvg)} / それ以前 {yen(r.priorAvg)}
                           {r.gapMonths.length > 0 && (
                             <> ・ 金額が立っていない月: {r.gapMonths.map(monthShort).join('・')}</>
                           )}
@@ -301,7 +301,7 @@ export function TrendsPage() {
               { label: '前半(月平均)', className: 'num' },
               { label: '後半(月平均)', className: 'num' },
               { label: '差', className: 'num' },
-              { label: '全体の増減への寄与', className: 'num' },
+              termColumn('contribution', { className: 'num' }),
             ]}
           >
             {waterfall(t).map((r) => (
@@ -321,7 +321,7 @@ export function TrendsPage() {
                 <td data-label="差" className={`num ${deltaCls(r.diff)}`}>
                   {yenS(r.diff)}
                 </td>
-                <td data-label="全体の増減への寄与" className="num">
+                <td data-label="寄与度" className="num">
                   {t.breakdown.diff === 0 ? '—' : pct(r.contribution)}
                 </td>
               </tr>
@@ -335,7 +335,9 @@ export function TrendsPage() {
       </div>
 
       <div className="card">
-        <h2>金額の集中(パレート)</h2>
+        <h2>
+          金額の集中(<Term id="pareto">パレート</Term>)
+        </h2>
         <HowTo id="trendsPareto" />
         <Chart
           type="bar"

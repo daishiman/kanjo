@@ -12,7 +12,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type BalanceSheet as BalanceSheetData, type StatementsResponse, api } from '../api.js';
-import { DataTable } from '../components/DataTable.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
 import { BalanceSheetChart, CashFlowCharts, ProfitAndLossCharts } from '../components/FinancialCharts.js';
 import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
@@ -86,13 +86,28 @@ export function StatementsPage() {
 
       <div className="kpis">
         <KpiCard label="売上" value={yen(pl.revenue.total)} note={`${months.length}ヶ月の合計`} />
-        <KpiCard label="経費" value={yen(pl.expense.total)} note="家事按分の前の金額" />
+        <KpiCard
+          label="経費"
+          value={yen(pl.expense.total)}
+          note={
+            <>
+              <Term id="houseworkSplit" />
+              の前の金額
+            </>
+          }
+        />
         <KpiCard
           label="利益"
           value={<span className={gainCls(pl.profit.total)}>{yenS(pl.profit.total)}</span>}
-          note="売上 − 経費(決算整理の前)"
+          note={
+            <>
+              売上 − 経費(
+              <Term id="closingAdjust" />
+              の前)
+            </>
+          }
         />
-        <KpiCard label="利益率" value={ratio(pl.profitRate)} note="利益 ÷ 売上" />
+        <KpiCard label={<Term id="profitMargin" />} value={ratio(pl.profitRate)} note="利益 ÷ 売上" />
       </div>
 
       <section className="card">
@@ -122,7 +137,9 @@ export function StatementsPage() {
                   </th>
                 ))}
                 <th scope="col">合計</th>
-                <th scope="col">構成比</th>
+                <th scope="col">
+                  <Term id="share" />
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -212,9 +229,17 @@ export function StatementsPage() {
           </p>
         ) : (
           <p className="sub lines">
-            利益から、まだ入金されていない売上を引きます。
+            利益は
+            <Term id="accrual" />
+            で計算するため、現金の動きとはズレます。
             <br />
-            まだ払っていない経費は足し戻します。
+            そこで利益から、まだ入金されていない売上(
+            <Term id="receivable" />
+            )を引きます。
+            <br />
+            まだ払っていない経費(
+            <Term id="payable" />
+            )は足し戻します。
           </p>
         )}
         {cf.months.length === 0 ? (
@@ -230,7 +255,14 @@ export function StatementsPage() {
               <DataTable
                 className="data stack-sm"
                 caption={<caption className="visually-hidden">キャッシュフローの月別明細</caption>}
-                columns={['月', '利益', '入金待ち(増)', '支払待ち(増)', '営業キャッシュフロー', '累計']}
+                columns={[
+                  '月',
+                  '利益',
+                  '入金待ち(増)',
+                  '支払待ち(増)',
+                  termColumn('operatingCf', { className: 'num' }),
+                  '累計',
+                ]}
               >
                 {cf.months.map((m, i) => (
                   <tr key={m.month}>
@@ -444,7 +476,9 @@ function BalanceSheet({ bs, options }: { bs: BalanceSheetData; options: string[]
               ))}
             </tr>
             <tr className="total">
-              <th scope="row">純資産</th>
+              <th scope="row">
+                <Term id="netAssets" />
+              </th>
               {months.map((m) => (
                 <td key={m.month} className={`num ${m.netAssets === null ? '' : gainCls(m.netAssets)}`}>
                   {m.netAssets === null ? '—' : yenS(m.netAssets)}
@@ -557,7 +591,7 @@ function BalanceSheetSources({ sources }: { sources: StatementsResponse['balance
       <p className="sub lines">
         BSは「ある時点の残高」の表です。
         <br />
-        取引をいくら足しても、期首の残高が無いと出せません。
+        取引をいくら足しても、<Term id="openingBalance">期首の残高</Term>が無いと出せません。
         <br />
         下のCSVを取り込めるようにすると作れるようになります。
       </p>

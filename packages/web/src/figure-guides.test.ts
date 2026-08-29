@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 /**
  * 図・表の見方の契約。
  *
@@ -8,6 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { FIGURE_GUIDES, type FigureGuide } from './figure-guides.js';
 
 const entries = Object.entries(FIGURE_GUIDES) as [string, FigureGuide][];
+const matrixSource = readFileSync(new URL('./pages/Matrix.tsx', import.meta.url), 'utf8');
 
 describe('図・表の見方', () => {
   it('1行は40〜50字程度に収める', () => {
@@ -39,5 +41,11 @@ describe('図・表の見方', () => {
 
   it('図のidが重複しない', () => {
     expect(new Set(entries.map(([id]) => id)).size).toBe(entries.length);
+  });
+
+  it('Matrixでも説明を図より先に置く', () => {
+    expect(matrixSource.indexOf('<HowTo id="matrixMovers" />')).toBeLessThan(
+      matrixSource.indexOf('<MatrixMoversChart data={m} />'),
+    );
   });
 });

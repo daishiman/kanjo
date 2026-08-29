@@ -12,6 +12,11 @@ import {
   isMfCountable,
 } from './types.js';
 
+/** 診断シグナルの判定値。用語説明とテストもこの契約に追随させる。 */
+export const DIAGNOSIS_SIGNAL_CHANGE_THRESHOLD = 0.3;
+export const DIAGNOSIS_SIGNAL_MIN_AVERAGE = 10_000;
+export const DIAGNOSIS_FIXED_COST_REVIEW_THRESHOLD = 30_000;
+
 export function catSeries(data: Dataset, c: string): number[] {
   return data.biz.expense[c] || data.months.map(() => 0);
 }
@@ -260,9 +265,12 @@ export function diagnosis(data: Dataset): DiagnosisData {
     .sort((a, b) => b.p.rAvg - a.p.rAvg)
     .map(({ c, p }) => {
       const signals: DiagnosisEntry['signals'] = [];
-      if (p.slope > 0.3 && p.rAvg > 10000) signals.push('上昇');
-      if (p.slope < -0.3 && p.pAvg > 10000) signals.push('低下');
-      if (p.type === '固定費' && p.rAvg > 30000) signals.push('契約見直し対象');
+      if (p.slope > DIAGNOSIS_SIGNAL_CHANGE_THRESHOLD && p.rAvg > DIAGNOSIS_SIGNAL_MIN_AVERAGE)
+        signals.push('上昇');
+      if (p.slope < -DIAGNOSIS_SIGNAL_CHANGE_THRESHOLD && p.pAvg > DIAGNOSIS_SIGNAL_MIN_AVERAGE)
+        signals.push('低下');
+      if (p.type === '固定費' && p.rAvg > DIAGNOSIS_FIXED_COST_REVIEW_THRESHOLD)
+        signals.push('契約見直し対象');
       const judge = p.z >= 2 ? '要確認' : p.z >= 1 ? 'やや高い' : p.z <= -1 ? '低め' : '通常レンジ';
       return {
         account: c,

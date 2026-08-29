@@ -128,7 +128,12 @@ describe('仕分け表のスマホカード化', () => {
     const { container } = renderPage();
     await screen.findByText('架空スーパー');
     const table = container.querySelector('table.classify-table');
-    const headers = [...(table?.querySelectorAll('thead th') ?? [])].map((th) => th.textContent);
+    // 用語ホバーの「?」印は見出しの語ではなく助けの印なので、data-label と突き合わせる前に落とす
+    const headers = [...(table?.querySelectorAll('thead th') ?? [])].map((th) => {
+      const copy = th.cloneNode(true) as HTMLElement;
+      for (const mark of copy.querySelectorAll('.term')) mark.remove();
+      return copy.textContent;
+    });
     expect(headers).toEqual(HEADERS);
 
     const cells = [...(table?.querySelectorAll('tbody tr:not(.editor) > td') ?? [])];

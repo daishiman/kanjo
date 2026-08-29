@@ -5,7 +5,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
 import { type TradeoffResponse, type TradeoffReviewRow, api } from '../api.js';
-import { DataTable } from '../components/DataTable.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
@@ -15,9 +15,9 @@ import { usePeriod } from '../period.js';
 const kindLabel: Record<string, ReactNode> = {
   subs_dup: <Term id="subsDup">サブスク重複</Term>,
   subs_spike: <Term id="subsSpike">サブスク急増</Term>,
-  budget_over: '予算超過',
+  budget_over: <Term id="budgetOver" />,
   above_range: <Term id="range">レンジ超過</Term>,
-  unexplained: '精査期待値',
+  unexplained: <Term id="unexplained" />,
 };
 
 export function TradeoffPage() {
@@ -176,7 +176,7 @@ export function TradeoffPage() {
             '内容',
             '予定支出',
             '捻出額',
-            '判定',
+            termColumn('judge'),
             '翌月の実績',
             { label: '選択した削減策', sortable: false, className: 'left' },
           ]}

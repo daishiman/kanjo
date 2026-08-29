@@ -27,7 +27,7 @@ import {
 } from '../components/Attachments.js';
 import { CategoryPicker } from '../components/CategoryPicker.js';
 import { OwnerSelect, useInvalidateClassification } from '../components/ClassificationSettings.js';
-import { DataTable } from '../components/DataTable.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { SplitEditor } from '../components/SplitEditor.js';
 import { Term } from '../components/Term.js';
@@ -409,7 +409,7 @@ export function ClassifyPage() {
           }`}
         />
         <KpiCard label="総支出" value={yen(s.totalExpense)} />
-        <KpiCard label="事業立替" value={yen(s.bizExpense)} tone="biz" />
+        <KpiCard label={<Term id="bizAdvance" />} value={yen(s.bizExpense)} tone="biz" />
         <KpiCard label="個人支出" value={yen(s.personalExpense)} tone="per" />
       </div>
 
@@ -526,9 +526,10 @@ export function ClassifyPage() {
             '口座',
             '大項目/中項目',
             '金額',
-            '判定',
-            '名義',
-            '証憑',
+            // ここの「判定」は統計の判定ではなく公私の判定。見出し文は変えずホバーだけ辞書に繋ぐ
+            termColumn('publicPrivate', { label: '判定' }),
+            termColumn('holderName'),
+            termColumn('voucher'),
             // 操作列はボタンだけなので並べ替えの手がかりが無い
             { label: '操作', sortable: false },
           ]}

@@ -182,8 +182,9 @@ describe('支出トレンドの表示', () => {
     // 「増加」とだけ言われても納得できない。p値と傾きを出して判断を委ねる
     renderWith();
     fireEvent.click(await screen.findByRole('button', { name: '外注費' }));
-    expect(await screen.findByText(/毎月じわじわ増えている/)).toBeTruthy();
-    expect(screen.getByText(/p=0.009/)).toBeTruthy();
+    const detail = (await screen.findByText(/毎月じわじわ増えている/)).closest('tr');
+    // 「有意確率p」は用語ホバーの button なので p と =0.009 が別ノードになる。行全体の文字列で見る
+    expect(detail?.textContent).toContain('有意確率p=0.009');
   });
 
   it('対応不要の科目は「手を打つ順番」に出さない', async () => {

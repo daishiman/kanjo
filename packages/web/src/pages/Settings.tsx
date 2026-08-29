@@ -4,8 +4,9 @@ import { useRef, useState } from 'react';
 import { type BackupItem, type LegacyRestoreResponse, type SettingsResponse, api } from '../api.js';
 import { AttachmentArchiveRecovery } from '../components/Attachments.js';
 import { ClassificationSettings } from '../components/ClassificationSettings.js';
-import { DataTable } from '../components/DataTable.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
 import { PageHeader, PageState } from '../components/Page.js';
+import { Term } from '../components/Term.js';
 import { readFileText } from '../file-text.js';
 
 export const LEGACY_RESTORE_CONFIRMATION =
@@ -83,11 +84,20 @@ export function SettingsPage() {
       <ClassificationSettings />
 
       <div className="card">
-        <h2>科目正規化マップ(freee勘定科目 → 集計上の科目)</h2>
-        <p className="sub">変更すると全期間の集計が作り直されます。</p>
+        <h2>
+          科目正規化マップ(freeeの
+          <Term id="account" /> → 集計上の科目)
+        </h2>
+        <p className="sub">
+          freee側で「通信費」「通信費用」のように名前がぶれていると、同じ支出が別の科目として数えられ、平均も判定もずれます。ここで1つの名前にまとめます。変更すると全期間の集計が作り直されます。
+        </p>
         <DataTable
           style={{ maxWidth: 560 }}
-          columns={['元の勘定科目', '正規化後', { label: '', sortable: false }]}
+          columns={[
+            termColumn('account', { label: '元の勘定科目' }),
+            '正規化後',
+            { label: '', sortable: false },
+          ]}
         >
           {norm.map(([raw, to], i) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: 行は位置で編集するドラフト。内容をkeyにすると入力のたびに再マウントされフォーカスを失う
@@ -142,7 +152,10 @@ export function SettingsPage() {
       </div>
 
       <div className="card">
-        <h2>未記帳月(経費統計から除外する月)</h2>
+        <h2>
+          <Term id="unrecordedMonth" />
+          (経費統計から除外する月)
+        </h2>
         <div className="toolbar">
           <input
             type="text"
@@ -172,7 +185,9 @@ export function SettingsPage() {
       <div className="card">
         <h2>AI分析の統計の基準月数</h2>
         <p className="sub">
-          平均・標準偏差・移動平均・固定費/変動費の判定に、記帳済みの月が何ヶ月あれば「判断してよい」とするかの
+          平均・標準偏差・
+          <Term id="movingAvg" />・<Term id="fixedCost" />
+          /変動費の判定に、<Term id="journalize">記帳</Term>済みの月が何ヶ月あれば「判断してよい」とするかの
           基準です。既定は{statRange.default}ヶ月({statRange.min}〜{statRange.max}
           ヶ月)。短くすると早く図が出ますが、少ない月数で決めるぶん外れやすくなります。
           年で決まる指標(前年同月比・季節性)は暦の周期が要るので、この設定では短くなりません。

@@ -122,7 +122,8 @@ export function HouseholdPage() {
         />
       </div>
       <p className="sub">
-        個人収入・生活費・事業入金・事業立替はMF明細(仕分け画面の結果)、売上・経費はfreeeから集計。口座間の振替は含みません。
+        個人収入・生活費・事業入金・事業立替はMF明細(仕分け画面の結果)、売上・経費はfreeeから集計。
+        <Term id="transfer">口座間の振替</Term>は含みません。
       </p>
 
       <div className="card">
@@ -359,7 +360,13 @@ export function HouseholdPage() {
         <HowTo id="householdBreakdown" />
         <DataTable
           className="data stack-sm"
-          columns={['大項目', '合計', '月平均', termColumn('annualized'), '構成比']}
+          columns={[
+            '大項目',
+            '合計',
+            '月平均',
+            termColumn('annualized'),
+            termColumn('share', { label: '構成比' }),
+          ]}
           foot={
             <tr className="total">
               <td data-label="大項目">生活費計</td>
