@@ -6,7 +6,7 @@
   "description": "React SPA。HTML版のデザイントークンを移植",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/check-initial-js-budget.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

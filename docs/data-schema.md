@@ -97,6 +97,9 @@
     "rows": [{ "month": "2026-07", "scope": "per_exp:食費", "amount": 500 }]
   },
   "analysisSettings": { "statMinMonths": 6 }, // durableな分析意図
+  "taxAccountSettings": [{ "taxYear": 2025, "account": "通信費", "taxAccount": "通信費", "businessPercent": 100, "basis": null }], // 年別の申告方針。100%も確認済みの明示値
+  "receiptSourceProfiles": [{ "profileKey": "架空クラウド::請求ポータル", "merchantKey": "架空クラウド", "serviceName": "請求ポータル", "sourceUrl": "https://billing.example.test/receipts", "loginAccount": "account@example.test", "memo": "利用明細から取得" }], // password/tokenは持たない
+  "receiptSourceOverrides": [{ "targetKind": "cash", "targetKey": "1", "merchantKey": "架空クラウド", "profileKey": "架空クラウド::請求ポータル", "serviceName": null, "sourceUrl": null, "loginAccount": null, "memo": null }], // 明細だけの疎な例外
   "subVendorExclusions": [{ "partner": "架空家賃" }], // 復元可能な候補除外
   "budgets":   { "サブスク・通信": 80000 },
   "unrecordedExpMonths": ["2026-07"],
@@ -149,6 +152,9 @@
 | `overrides` | 旧テーブル。`tx_edits` へ移行済み(読み取りは `tx_edits` のみ) |
 | `cash_entries` | 現金の記帳(0006、ID非再利用は0007、交通費は0010/0011)。口座・カード明細に出ない現金の受け渡しを明細として持つ。`id` は `AUTOINCREMENT` で削除後も再利用しない。`transit_from/to`は支出で対にし、`receipt_waived`は区間がある場合のみ許可する。取込値とは別テーブルなので再取込で消えない |
 | `attachments` | 証憑メタデータ(0010、identity/lifecycleは0011、原本・親の単調factは0012)。添付先を`target_kind`(`cash`/`mf`)+`target_key`で型付き保存する。原本バイトはR2のみ |
+| `tax_account_settings` | 年別の確定申告準備方針(0027)。主キーは`user_id + tax_year + account`。行なしだけを未確認とし、全額事業でも`business_percent=100`を明示保存する。`tax_year`は2000〜2099、`tax_account`はAPIで経費用許可科目だけを受理する |
+| `receipt_source_profiles` | 証憑取得先の正本(0028)。`profile_key=merchant_key::service_key`を利用者内の参照キーとし、同じ取引先に複数サービスを持てる。`source_url`はhttp/https必須、`login_account`は識別子だけでpassword/tokenは保存しない。月別行は作らない |
+| `receipt_source_overrides` | 安定した`target_kind`+`target_key`ごとの証憑取得先例外(0028)。同一利用者の`profile_key`参照、または必須の明示`service_name`+`source_url`のどちらか一方だけを持つ |
 | `attachment_cleanup_jobs` | R2/D1非transaction境界の耐久cleanup ledger(0012)。R2操作前のintent、対象key、理由、再試行時刻・回数・定型errorを持ち、既存nightly scheduledと手動DELETEが同じprocessorを使う |
 | `password_login_rate_limits` | Access未設定時のpassword login throttle(0014)。`scope_hash`には`CF-Connecting-IP`のnamespace付きSHA-256だけを持ち、raw IP/password/headerは保存しない。`window_started_at` / `failure_count` / `locked_until` / `updated_at`をatomic UPSERTし、成功時は対象scopeだけDELETEする |
 | `restored_monthly_agg` | JSON復元由来で原本明細から再導出できない月次集計のbaseline(0007)。`monthly_agg`(現在値の派生キャッシュ)と分離し、同月の現金明細の増減で失わない |
@@ -241,6 +247,7 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 - 原本freee/MFが無い復元月は `restored_monthly_agg` をbaselineとし、`baseline + 現在のcash_entries` を `monthly_agg` へ再生成する。同月に原本がある場合は原本を正とし、baselineは加算しない。
 - 適用済みmigrationは不変とする。0006は現金明細/指紋だけを追加し、0007が`restored_monthly_agg`とAUTOINCREMENT再構築を追加する。旧`monthly_agg`の自動baseline移行は、事業scopeでは同月`side='biz'`現金とfreee原本、個人/bizPersonal scopeでは同月`side='per'`現金とMF原本が無い場合だけ行う。反対domainの現金だけなら安全なbaselineを移行し、同domainのprovenance不明値は二重固定しない。
 - API exportと夜間バックアップは、`monthly_agg`を使わず、baseline・freee/MF原本・rules・edits・owners・sub vendors・norm map・cash・budgets/override等を単一D1 read statementで取得する。同じcanonical snapshotから集計と、監査用raw `cashEntries`、source側で解決済みの `cashProjection` v1 (`basis='post-resolution'`) を一度だけ生成する。行はcanonical `month/scope`ごとに集約・決定順とし、export集計を超えるdeltaなら出力を失敗させる。
+- 同じcanonical snapshotは`taxAccountSettings`、`receiptSourceProfiles`、`receiptSourceOverrides`も含む。restoreは利用者内キーでmergeし、年別方針・取引先profile・明細overrideを復元する。証憑のR2原本と添付metadataは従来どおり汎用restore対象外であり、取得先profileにpassword/token等の秘密値を追加してはならない。
 - restore/JSON取込は、有効な`cashProjection`の確定deltaを集計から厳密に差し引く。そのうえで移行先に`cash_entries`が1件も無い初期移行のときだけ、backupの`cashEntries`をidごと復元して同じdeltaを戻す(idは`cash:<id>` editと添付の宛先のため採番し直さない)。49 query予算に載らない場合は記帳だけ見送り、応答の`cashSkipped`で件数を返す。移行先に記帳があるときは復元せず`cashKept`で件数を返す。destination側の設定では再投影しない。未知version/basis/scope、重複行、欠落、非正整数、集計を超えるdeltaは書込み前に400とし、0へのclampで隠さない。有効な空rowsは正常。`cashProjection`なしで`cashEntries`が非空ならsource semantics不明として拒否し、両方なし（または空cashEntries）のpre-cash legacyだけ互換受理する。
 - restoreではJSON source内の `cash:*` edit/overridesを破棄する。同一DBに既存cashがある場合は、その現存IDに対応するdestination側の既存editだけをcandidateへ戻し、永続化行・集計・指紋をすべてそのcandidateから生成する。これにより、新DBで後から同じIDが採番されてもbackup由来editが誤付着しない。
 

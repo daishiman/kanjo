@@ -1371,6 +1371,8 @@ button:disabled {
 input[type="text"],
 input[type="password"],
 input[type="number"],
+input[type="url"],
+textarea,
 select {
   font-family: var(--font-head);
   font-size: var(--fs-md);
@@ -1383,10 +1385,12 @@ select {
   transition: border-color var(--motion-fast) var(--ease-standard);
 }
 input:hover,
+textarea:hover,
 select:hover {
   border-color: #c6cecb;
 }
 input:focus,
+textarea:focus,
 select:focus {
   outline: 2px solid var(--biz);
   outline-offset: 1px;
@@ -1636,6 +1640,30 @@ kbd {
   .header {
     padding: 10px 16px;
   }
+  /*
+   * 書き出しはヘッダー右端起点の小箱だと、200%拡大時に左側が viewport 外へ出る。
+   * 狭幅だけ visual viewport 両端に固定し、ヘッダーの実高さの直下から開く action sheet にする。
+   */
+  .header .popover-host > button {
+    min-height: 44px;
+  }
+  .header .popover {
+    position: fixed;
+    inset-inline: 8px;
+    top: calc(var(--header-h) + 4px);
+    width: auto;
+    max-height: calc(100dvh - var(--header-h) - var(--tabbar-h) - 12px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform-origin: top center;
+  }
+  .header .popover .btn {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    width: 100%;
+    white-space: nowrap;
+  }
   /* 防衛ラインは常時表示を維持しつつ、狭幅では見込額の詳細だけ畳む */
   .badge-detail {
     display: none;
@@ -1653,8 +1681,10 @@ kbd {
   }
 
   .tabbar {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
     position: fixed;
     left: 0;
     right: 0;
@@ -1669,6 +1699,9 @@ kbd {
     align-items: center;
     justify-content: center;
     min-height: var(--tabbar-h);
+    min-width: 64px;
+    flex: 0 0 auto;
+    white-space: nowrap;
     font-size: var(--fs-sm);
     font-weight: 700;
     color: var(--ink-soft);
@@ -1683,6 +1716,9 @@ kbd {
   .tabbar .tab.active {
     color: var(--biz);
     border-top-color: var(--biz);
+  }
+  .tabbar::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -2283,5 +2319,190 @@ label.check {
   .reasons-narrow {
     display: block;
     font-weight: 400;
+  }
+}
+
+/*
+ * 確定申告の準備チェック。
+ * 「要対応 → 確認 → 完了」を左の色帯だけで区別する。
+ * 全部を同じ見た目で並べると、警告に慣れて全部読み飛ばされる。
+ */
+.tax-checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.tax-check {
+  border-left: 4px solid var(--line);
+  background: var(--surface-soft, #fafafa);
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+.tax-check.blocked {
+  border-left-color: var(--danger);
+  background: #fdf0ef;
+}
+.tax-check.warn {
+  border-left-color: var(--warn);
+  background: #fdf9ef;
+}
+.tax-check.ok {
+  border-left-color: var(--good);
+}
+.tax-check-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tax-check-detail,
+.tax-check-action {
+  margin: 4px 0 0;
+  font-size: var(--fs-sm);
+}
+.tax-check-action {
+  color: var(--ink-soft);
+}
+.tax-check.ok .tax-check-detail {
+  color: var(--ink-soft);
+}
+/* 転記シートの合計行。決算書へ書き写す位置を目で追えるよう罫線で区切る */
+.tax-total td {
+  font-weight: 800;
+  border-top: 2px solid var(--line);
+}
+.tax-unassigned td {
+  background: #fdf0ef;
+}
+.tax-sources {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+.tax-save-status {
+  min-height: 1.5rem;
+  margin: 8px 0;
+  color: var(--good);
+  font-size: var(--fs-sm);
+}
+.tax-work-nav {
+  display: flex;
+  margin-bottom: 12px;
+}
+.tax-year-picker select,
+.tax-policy-table select,
+.tax-policy-table input,
+.tax-check-action a,
+.tax-work-nav .btn,
+.tax-save-action,
+.tax-empty-action,
+.tax-export-actions .btn {
+  min-height: 44px;
+}
+.tax-check-action a,
+.tax-work-nav .btn,
+.tax-empty-action,
+.tax-export-actions .btn {
+  display: inline-flex;
+  align-items: center;
+}
+.tax-policy-table select,
+.tax-policy-table input {
+  min-width: 10rem;
+}
+.receipt-source {
+  min-width: 18rem;
+  flex: 1 1 auto;
+}
+.receipt-source-head,
+.receipt-source-candidates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.receipt-source-head .btn,
+.receipt-source-candidates .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+.receipt-source-summary {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0 0;
+  font-size: var(--fs-xs);
+}
+.receipt-source-summary > div {
+  display: grid;
+  grid-template-columns: minmax(5rem, auto) 1fr;
+  gap: 8px;
+}
+.receipt-source-summary dt {
+  color: var(--ink-soft);
+}
+.receipt-source-summary dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.receipt-source-form {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft, #fafafa);
+}
+.receipt-source-form input,
+.receipt-source-form textarea {
+  width: 100%;
+  min-height: 44px;
+}
+.receipt-source-form textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+.receipt-source-inherit {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 44px;
+}
+.receipt-source-inherit input {
+  width: auto;
+  margin-top: 4px;
+}
+.receipt-source-status {
+  min-height: 1.25rem;
+  margin: 4px 0 0;
+  color: var(--good);
+  font-size: var(--fs-xs);
+}
+.receipt-source-status.error {
+  color: var(--danger);
+}
+.tax-receipt-table td[data-label="取得先"] {
+  align-items: flex-start;
+}
+@media (max-width: 640px) {
+  .tax-work-nav .btn {
+    width: 100%;
+  }
+  .tax-policy-table select,
+  .tax-policy-table input {
+    width: 100%;
+    min-width: 0;
+  }
+  .tax-receipt-table .tx-description {
+    font-weight: 700;
+  }
+  .receipt-source {
+    min-width: 0;
+  }
+  .receipt-source-head .btn,
+  .receipt-source-candidates .btn {
+    flex: 1 1 10rem;
   }
 }

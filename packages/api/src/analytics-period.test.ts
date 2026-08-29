@@ -11,7 +11,9 @@ import { describe, expect, it } from 'vitest';
  * ここで「Dataset を読むのは loadScoped 経由だけ」を機械的に固定する。
  */
 
-const SOURCE = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), 'routes/analytics.ts'), 'utf8');
+const here = dirname(fileURLToPath(import.meta.url));
+const SOURCE = readFileSync(resolve(here, 'routes/analytics.ts'), 'utf8');
+const TAX_SOURCE = readFileSync(resolve(here, 'routes/tax.ts'), 'utf8');
 
 describe('分析ルートの期間対応', () => {
   it('Dataset の読み込みは loadScoped の中の1箇所だけ', () => {
@@ -44,5 +46,27 @@ describe('分析ルートの期間対応', () => {
   it('壊れた期間指定でも 400 にしない', () => {
     // 古いブックマークや保存値で画面が出なくなるのを避け、全期間に倒す
     expect(SOURCE).not.toMatch(/resolvePeriodQuery[\s\S]{0,200}?\b400\b/);
+  });
+});
+
+describe('確定申告ルートの期間対応', () => {
+  it('Dataset を loadScoped 経由でしか読まない', () => {
+    // 転記シートだけ全期間のまま出ると、選んだ年と違う金額を申告することになる
+    expect(TAX_SOURCE).not.toMatch(/loadDataset\(/);
+    expect(TAX_SOURCE).toContain("from './analytics.js'");
+  });
+
+  it('申告計算はexact-year境界を通し、共通bundleだけがloadScopedへ接続する', () => {
+    expect(TAX_SOURCE.match(/await loadScoped\(c\)/g)).toHaveLength(1);
+    expect(TAX_SOURCE).toMatch(/async function loadTaxYearScoped[\s\S]*?await loadScoped\(c\)/);
+    expect(TAX_SOURCE).toMatch(/async function buildTaxYearBundle[\s\S]*?loadTaxYearScoped/);
+
+    const dataRoutes = [...TAX_SOURCE.matchAll(/taxRoute\.(get|put)\('([^']+)'[\s\S]*?\n\}\);/g)].filter(
+      ([body]) => /buildTaxYearBundle/.test(body),
+    );
+    expect(dataRoutes.length).toBeGreaterThanOrEqual(4);
+    for (const [body, , path] of dataRoutes) {
+      expect(body, `${path} が対象年をfail-closedにしていない`).toContain('taxYearRequest(c)');
+    }
   });
 });

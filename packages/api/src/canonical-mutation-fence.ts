@@ -32,7 +32,7 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   {
     method: 'DELETE',
     path: /^\/api\/cash-entries\/[^/]+$/,
-    consumers: ['cash_entries', 'tx_edits', 'attachments'],
+    consumers: ['cash_entries', 'tx_edits', 'receipt_source_overrides', 'attachments'],
   },
   // 親明細の削除/MF洗替えと添付登録を同じleaseで直列化する。
   // 同じ明細への並行POSTも件数上限を越えてcommitできない。
@@ -53,6 +53,12 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
     method: 'PUT',
     path: /^\/api\/settings$/,
     consumers: ['account_norm_map', 'unrecorded_months', 'cash_overrides', 'analysis_settings'],
+  },
+  { method: 'PUT', path: /^\/api\/tax\/accounts$/, consumers: ['tax_account_settings'] },
+  {
+    method: 'PUT',
+    path: /^\/api\/tax\/receipt-sources$/,
+    consumers: ['receipt_source_profiles', 'receipt_source_overrides'],
   },
   { method: 'POST', path: /^\/api\/category-options$/, consumers: ['category_options'] },
   {

@@ -136,23 +136,38 @@ async function targetStatus(db: Db, userId: string, target: AttachmentTarget): P
  */
 export const ATTACHMENT_COUNT_CHUNK = inClauseChunkSize(2);
 
-/** object_deleted_atがNULLの物理原本だけを数える。操作stateを原本存在の代理にしない。 */
-export async function loadAttachmentCounts(
+export type AvailableAttachmentRow = Pick<
+  AttachmentRow,
+  | 'id'
+  | 'targetKind'
+  | 'targetKey'
+  | 'r2Key'
+  | 'filename'
+  | 'contentType'
+  | 'size'
+  | 'createdAt'
+  | 'objectDeletedAt'
+>;
+
+/**
+ * 指定した親明細に紐づき、R2原本が現在も存在する証憑だけを返す。
+ * 件数表示と申告用ZIPの双方がこの同じ棚卸しを使い、D1のstateだけで原本存在を推測しない。
+ */
+export async function loadAvailableAttachmentRows(
   db: Db,
   files: R2Bucket,
   userId: string,
   targets: readonly (AttachmentTarget | string)[],
-): Promise<Record<string, number>> {
-  const counts: Record<string, number> = {};
+): Promise<AvailableAttachmentRow[]> {
   const normalized = targets
     .map(normalizeTarget)
     .filter((target): target is AttachmentTarget => target !== null);
   const unique = [
     ...new Map(normalized.map((target) => [serializeAttachmentTarget(target), target])).values(),
   ];
-  if (!unique.length) return counts;
+  if (!unique.length) return [];
 
-  const candidates: Array<Pick<AttachmentRow, 'targetKind' | 'targetKey' | 'r2Key' | 'objectDeletedAt'>> = [];
+  const candidates: AvailableAttachmentRow[] = [];
 
   for (const targetKind of ['cash', 'mf'] as const) {
     const keys = unique
@@ -161,9 +176,14 @@ export async function loadAttachmentCounts(
     for (let i = 0; i < keys.length; i += ATTACHMENT_COUNT_CHUNK) {
       const rows = await db
         .select({
+          id: s.attachments.id,
           targetKind: s.attachments.targetKind,
           targetKey: s.attachments.targetKey,
           r2Key: s.attachments.r2Key,
+          filename: s.attachments.filename,
+          contentType: s.attachments.contentType,
+          size: s.attachments.size,
+          createdAt: s.attachments.createdAt,
           objectDeletedAt: s.attachments.objectDeletedAt,
         })
         .from(s.attachments)
@@ -178,8 +198,26 @@ export async function loadAttachmentCounts(
     }
   }
   const availability = await resolveAttachmentAvailability(files, candidates);
-  for (const row of candidates) {
-    if (!availability.get(row.r2Key)) continue;
+  return candidates.filter((row) => availability.get(row.r2Key) === true);
+}
+
+/** object_deleted_atがNULLの物理原本だけを数える。操作stateを原本存在の代理にしない。 */
+export async function loadAttachmentCounts(
+  db: Db,
+  files: R2Bucket,
+  userId: string,
+  targets: readonly (AttachmentTarget | string)[],
+): Promise<Record<string, number>> {
+  const rows = await loadAvailableAttachmentRows(db, files, userId, targets);
+  return attachmentCountsFromRows(rows);
+}
+
+/** 同じR2棚卸し結果から件数とZIP対象を分岐させ、再HEADと判定差を作らない。 */
+export function attachmentCountsFromRows(
+  rows: readonly Pick<AvailableAttachmentRow, 'targetKind' | 'targetKey'>[],
+): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const row of rows) {
     const target = attachmentTargetFromColumns(row.targetKind, row.targetKey);
     if (!target) continue;
     const key = serializeAttachmentTarget(target);

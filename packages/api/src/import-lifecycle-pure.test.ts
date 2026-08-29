@@ -218,6 +218,44 @@ describe('D1 statement budget', () => {
     expect(planRestoreImportQueries(restoreCount)).toMatchObject({ total: 48, accepted: true });
   });
 
+  it('年別の確定申告判定をrestoreしてもFree枠の49 queriesに収める', () => {
+    const data = emptyDataset();
+    const writeSet = prepareRestoreWriteSet({
+      userId: 'synthetic-user',
+      data,
+      restored: emptyDataset(),
+      taxAccountSettings: [
+        {
+          taxYear: 2026,
+          account: '架空通信費',
+          taxAccount: '通信費',
+          businessPercent: 100,
+          basis: null,
+        },
+      ],
+      existingTaxAccountSettings: [],
+    });
+    const statementsFor = (candidate: typeof writeSet) =>
+      restoreCommitStatements({
+        database: fakeDb,
+        userId: 'synthetic-user',
+        runId: 'synthetic-run',
+        writeSet: candidate,
+        importId: 1,
+        contentHash: 'v2:synthetic',
+        targetKeys: ['json:global'],
+      }).length;
+    const withoutTax = prepareRestoreWriteSet({
+      userId: 'synthetic-user',
+      data,
+      restored: emptyDataset(),
+    });
+    const plan = planRestoreImportQueries(statementsFor(writeSet));
+    expect(plan).toMatchObject({ accepted: true });
+    expect(plan.total).toBeLessThan(D1_FREE_QUERY_LIMIT);
+    expect(statementsFor(writeSet)).toBe(statementsFor(withoutTax) + 1);
+  });
+
   it('各JSON payloadをUTF-8 80KiB以下に分け、1行超過は拒否する', () => {
     const chunks = chunkJsonRowsByBytes(Array.from({ length: 5_000 }, (_, index) => [`架空-${index}`]));
     for (const payload of chunks)
@@ -415,6 +453,92 @@ describe('JSON restore persisted projection', () => {
       restoreWriteSetFingerprint(prepareRestoreWriteSet({ userId: 'synthetic-user', data, restored }));
     expect(await hash(a)).toBe(await hash(b));
   });
+
+  it('確定申告判定の内容は指紋に含め、宛先との差分有無は含めない', async () => {
+    const setting = {
+      taxYear: 2026,
+      account: '架空通信費',
+      taxAccount: '通信費',
+      businessPercent: 100,
+      basis: null,
+    } as const;
+    const make = (businessPercent: number, existing: (typeof setting)[] = []) =>
+      prepareRestoreWriteSet({
+        userId: 'synthetic-user',
+        data: emptyDataset(),
+        restored: emptyDataset(),
+        taxAccountSettings: [{ ...setting, businessPercent }],
+        existingTaxAccountSettings: existing,
+      });
+
+    expect(await restoreWriteSetFingerprint(make(100))).not.toBe(await restoreWriteSetFingerprint(make(80)));
+    expect(await restoreWriteSetFingerprint(make(100))).toBe(
+      await restoreWriteSetFingerprint(make(100, [setting])),
+    );
+  });
+
+  it('証憑取得先と明細例外を指紋とrestore予算の両方に含める', async () => {
+    const profile = {
+      profileKey: '架空saas::架空クラウド',
+      merchantKey: '架空saas',
+      serviceName: '架空クラウド',
+      sourceUrl: 'https://example.invalid/receipts',
+      loginAccount: null,
+      memo: null,
+    };
+    const override = {
+      targetKind: 'mf' as const,
+      targetKey: 'synthetic-mf-1',
+      merchantKey: '架空店',
+      profileKey: profile.profileKey,
+      serviceName: null,
+      sourceUrl: null,
+      loginAccount: null,
+      memo: null,
+    };
+    const make = (sourceUrl: string, existing = false) =>
+      prepareRestoreWriteSet({
+        userId: 'synthetic-user',
+        data: emptyDataset(),
+        restored: emptyDataset(),
+        receiptSourceProfiles: [{ ...profile, sourceUrl }],
+        existingReceiptSourceProfiles: existing ? [{ ...profile, sourceUrl }] : [],
+        receiptSourceOverrides: [override],
+        existingReceiptSourceOverrides: existing ? [override] : [],
+      });
+
+    expect(await restoreWriteSetFingerprint(make(profile.sourceUrl))).not.toBe(
+      await restoreWriteSetFingerprint(make('https://changed.invalid/receipts')),
+    );
+    expect(await restoreWriteSetFingerprint(make(profile.sourceUrl))).toBe(
+      await restoreWriteSetFingerprint(make(profile.sourceUrl, true)),
+    );
+
+    const withReceipt = restoreCommitStatements({
+      database: fakeDb,
+      userId: 'synthetic-user',
+      runId: 'synthetic-run',
+      writeSet: make(profile.sourceUrl),
+      importId: 1,
+      contentHash: 'v2:synthetic',
+      targetKeys: ['json:global'],
+    }).length;
+    const withoutReceipt = restoreCommitStatements({
+      database: fakeDb,
+      userId: 'synthetic-user',
+      runId: 'synthetic-run',
+      writeSet: prepareRestoreWriteSet({
+        userId: 'synthetic-user',
+        data: emptyDataset(),
+        restored: emptyDataset(),
+      }),
+      importId: 1,
+      contentHash: 'v2:synthetic',
+      targetKeys: ['json:global'],
+    }).length;
+    expect(withReceipt).toBe(withoutReceipt + 2);
+    expect(planRestoreImportQueries(withReceipt)).toMatchObject({ accepted: true });
+  });
 });
 
 describe('JSON pointer invalidation consumers', () => {
@@ -432,6 +556,9 @@ describe('JSON pointer invalidation consumers', () => {
       'sub_vendors',
       'sub_vendor_exclusions',
       'analysis_settings',
+      'tax_account_settings',
+      'receipt_source_profiles',
+      'receipt_source_overrides',
       'freee_deals',
       'mf_transactions',
       'restored_monthly_agg',
@@ -458,6 +585,8 @@ describe('canonical mutation lease predicate', () => {
       ['PATCH', '/api/rules'],
       ['PUT', '/api/budgets'],
       ['PUT', '/api/settings'],
+      ['PUT', '/api/tax/accounts'],
+      ['PUT', '/api/tax/receipt-sources'],
       ['POST', '/api/category-options'],
       ['PUT', '/api/category-options'],
       ['DELETE', '/api/category-options'],
@@ -512,6 +641,7 @@ describe('canonical mutation lease predicate', () => {
       'routes/imports.ts',
       'routes/settings.ts',
       'routes/subs.ts',
+      'routes/tax.ts',
     ];
     const discovered = routeSources.flatMap((filename) => {
       const source = readFileSync(resolve(sourceDir, filename), 'utf8');
@@ -538,6 +668,8 @@ describe('canonical mutation lease predicate', () => {
       'PUT /api/budgets',
       'POST /api/budgets/suggest',
       'PUT /api/settings',
+      'PUT /api/tax/accounts',
+      'PUT /api/tax/receipt-sources',
       'POST /api/category-options',
       'PUT /api/category-options',
       'DELETE /api/category-options',

@@ -285,8 +285,13 @@ beforeEach(async () => {
       "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT GLOB '_cf_*'",
     )
     .all<{ name: string }>();
-  for (const { name } of tables.results.filter(({ name }) => isApplicationTableForTestReset(name)))
-    await d1.prepare(`DELETE FROM "${name}"`).run();
+  const resetTables = tables.results
+    .filter(({ name }) => isApplicationTableForTestReset(name))
+    // 0028の同一利用者FKは親profileをRESTRICTするため子から消す。
+    .sort(
+      (a, b) => Number(b.name === 'receipt_source_overrides') - Number(a.name === 'receipt_source_overrides'),
+    );
+  for (const { name } of resetTables) await d1.prepare(`DELETE FROM "${name}"`).run();
   const listed = await files.list();
   for (const object of listed.objects) await files.delete(object.key);
   const login = await app.request(
@@ -652,6 +657,270 @@ describe('active target duplicate', () => {
     ).resolves.toEqual({ partner: '架空家賃', vendorKey: '架空家賃' });
 
     await expect((await restore(body)).clone().json()).resolves.toMatchObject({ duplicate: true });
+  });
+
+  it('確定申告の科目判定を年別にbackupし、100%も含めてrestoreで再現する', async () => {
+    await d1
+      .prepare(
+        `INSERT INTO tax_account_settings
+           (user_id,tax_year,account,tax_account,business_percent,basis)
+         VALUES
+           ('default',2025,'架空通信費','通信費',65,'作業時間'),
+           ('default',2026,'架空通信費','通信費',100,NULL),
+           ('default',2026,'架空地代',NULL,80,'面積比')`,
+      )
+      .run();
+
+    const backup = await loadBackupPayload(getDb(d1), 'default');
+    expect(backup.taxAccountSettings).toEqual([
+      {
+        taxYear: 2025,
+        account: '架空通信費',
+        taxAccount: '通信費',
+        businessPercent: 65,
+        basis: '作業時間',
+      },
+      {
+        taxYear: 2026,
+        account: '架空地代',
+        taxAccount: null,
+        businessPercent: 80,
+        basis: '面積比',
+      },
+      {
+        taxYear: 2026,
+        account: '架空通信費',
+        taxAccount: '通信費',
+        businessPercent: 100,
+        basis: null,
+      },
+    ]);
+
+    await d1.prepare("DELETE FROM tax_account_settings WHERE user_id='default'").run();
+    const response = await restore(backup);
+    expect(response.status, await response.clone().text()).toBe(200);
+    await expect(
+      d1
+        .prepare(
+          `SELECT tax_year AS taxYear, account, tax_account AS taxAccount,
+                  business_percent AS businessPercent, basis
+             FROM tax_account_settings WHERE user_id='default'
+            ORDER BY tax_year, account`,
+        )
+        .all(),
+    ).resolves.toMatchObject({ results: backup.taxAccountSettings });
+  });
+
+  it('確定申告年と事業割合のD1制約は曖昧な値を受け入れない', async () => {
+    const insert = (taxYear: unknown, percent: unknown) =>
+      d1
+        .prepare(
+          `INSERT INTO tax_account_settings
+             (user_id,tax_year,account,tax_account,business_percent)
+           VALUES ('constraint-test',?,'架空費','諸会費',?)`,
+        )
+        .bind(taxYear, percent)
+        .run();
+
+    await expect(insert(1999, 100)).rejects.toThrow();
+    await expect(insert(2100, 100)).rejects.toThrow();
+    await expect(insert(2026.5, 100)).rejects.toThrow();
+    await expect(insert(2026, null)).rejects.toThrow();
+    await expect(insert(2026, 101)).rejects.toThrow();
+    await expect(insert(2026, 100)).resolves.toBeDefined();
+    await expect(insert(2027, 100)).resolves.toBeDefined();
+  });
+
+  it('証憑の取得先と明細別例外をbackupし、利用者を混ぜずにrestoreする', async () => {
+    await d1
+      .prepare(
+        `INSERT INTO receipt_source_profiles
+           (user_id,profile_key,merchant_key,service_name,source_url,login_account,memo)
+         VALUES
+           ('default','架空saas::架空クラウド','架空saas','架空クラウド','https://example.invalid/billing','account@example.invalid','月初に取得'),
+           ('default','架空saas::架空ストア','架空saas','架空ストア','https://store.invalid/receipts',NULL,NULL),
+           ('default','架空通販::架空ポータル','架空通販','架空ポータル','https://shop.invalid/receipts',NULL,NULL),
+           ('other-user','架空saas::架空クラウド','架空saas','他人の取得先','https://other.invalid',NULL,NULL)`,
+      )
+      .run();
+    await d1
+      .prepare(
+        `INSERT INTO receipt_source_overrides
+           (user_id,target_kind,target_key,merchant_key,profile_key,
+            service_name,source_url,login_account,memo)
+         VALUES
+           ('default','cash','7','架空店舗','架空saas::架空クラウド',NULL,NULL,NULL,NULL),
+           ('default','mf','mf-source-1','架空直販',NULL,
+            '架空ポータル','https://direct.invalid/receipts','direct@example.invalid','個別取得')`,
+      )
+      .run();
+
+    const backup = await loadBackupPayload(getDb(d1), 'default');
+    expect(backup.receiptSourceProfiles).toEqual([
+      {
+        profileKey: '架空saas::架空クラウド',
+        merchantKey: '架空saas',
+        serviceName: '架空クラウド',
+        sourceUrl: 'https://example.invalid/billing',
+        loginAccount: 'account@example.invalid',
+        memo: '月初に取得',
+      },
+      {
+        profileKey: '架空saas::架空ストア',
+        merchantKey: '架空saas',
+        serviceName: '架空ストア',
+        sourceUrl: 'https://store.invalid/receipts',
+        loginAccount: null,
+        memo: null,
+      },
+      {
+        profileKey: '架空通販::架空ポータル',
+        merchantKey: '架空通販',
+        serviceName: '架空ポータル',
+        sourceUrl: 'https://shop.invalid/receipts',
+        loginAccount: null,
+        memo: null,
+      },
+    ]);
+    expect(backup.receiptSourceOverrides).toEqual([
+      {
+        targetKind: 'cash',
+        targetKey: '7',
+        merchantKey: '架空店舗',
+        profileKey: '架空saas::架空クラウド',
+        serviceName: null,
+        sourceUrl: null,
+        loginAccount: null,
+        memo: null,
+      },
+      {
+        targetKind: 'mf',
+        targetKey: 'mf-source-1',
+        merchantKey: '架空直販',
+        profileKey: null,
+        serviceName: '架空ポータル',
+        sourceUrl: 'https://direct.invalid/receipts',
+        loginAccount: 'direct@example.invalid',
+        memo: '個別取得',
+      },
+    ]);
+
+    await d1.prepare("DELETE FROM receipt_source_overrides WHERE user_id='default'").run();
+    await d1.prepare("DELETE FROM receipt_source_profiles WHERE user_id='default'").run();
+    await expect(loadImportRestoreSettingsSnapshot(getDb(d1), 'default')).resolves.toMatchObject({
+      receiptSourceProfiles: [],
+      receiptSourceOverrides: [],
+    });
+    const response = await restore(backup);
+    expect(response.status, await response.clone().text()).toBe(200);
+    await expect(
+      d1
+        .prepare(
+          `SELECT profile_key AS profileKey, merchant_key AS merchantKey, service_name AS serviceName,
+                  source_url AS sourceUrl, login_account AS loginAccount, memo
+             FROM receipt_source_profiles WHERE user_id='default' ORDER BY profile_key`,
+        )
+        .all(),
+    ).resolves.toMatchObject({ results: backup.receiptSourceProfiles });
+    await expect(
+      d1
+        .prepare(
+          `SELECT target_kind AS targetKind, target_key AS targetKey, merchant_key AS merchantKey,
+                  profile_key AS profileKey, service_name AS serviceName,
+                  source_url AS sourceUrl, login_account AS loginAccount, memo
+             FROM receipt_source_overrides WHERE user_id='default' ORDER BY target_kind,target_key`,
+        )
+        .all(),
+    ).resolves.toMatchObject({ results: backup.receiptSourceOverrides });
+    await expect(
+      d1
+        .prepare("SELECT service_name AS serviceName FROM receipt_source_profiles WHERE user_id='other-user'")
+        .first(),
+    ).resolves.toEqual({ serviceName: '他人の取得先' });
+  });
+
+  it('証憑取得先の参照は同一利用者に限定し、秘密値列を持たない', async () => {
+    await expect(
+      d1
+        .prepare(
+          `INSERT INTO receipt_source_profiles
+             (user_id,profile_key,merchant_key,service_name)
+           VALUES ('owner-a','架空取得先::URLなし','架空取得先','URLなし')`,
+        )
+        .run(),
+    ).rejects.toThrow();
+    await expect(
+      d1
+        .prepare(
+          `INSERT INTO receipt_source_profiles
+             (user_id,profile_key,merchant_key,service_name,source_url)
+           VALUES ('owner-a','架空取得先::FTP','架空取得先','FTP','ftp://source.invalid')`,
+        )
+        .run(),
+    ).rejects.toThrow();
+    await d1
+      .prepare(
+        `INSERT INTO receipt_source_profiles
+           (user_id,profile_key,merchant_key,service_name,source_url)
+         VALUES ('owner-a','架空取得先::架空サービス','架空取得先','架空サービス','https://source.invalid')`,
+      )
+      .run();
+    const profileOverride = (userId: string) =>
+      d1
+        .prepare(
+          `INSERT INTO receipt_source_overrides
+             (user_id,target_kind,target_key,merchant_key,profile_key)
+           VALUES (?,'mf','mf-1','架空店','架空取得先::架空サービス')`,
+        )
+        .bind(userId)
+        .run();
+    await expect(profileOverride('owner-b')).rejects.toThrow();
+    await expect(
+      d1
+        .prepare(
+          `INSERT INTO receipt_source_overrides
+             (user_id,target_kind,target_key,merchant_key)
+           VALUES ('owner-a','cash','1','架空店')`,
+        )
+        .run(),
+    ).rejects.toThrow();
+    await expect(
+      d1
+        .prepare(
+          `INSERT INTO receipt_source_overrides
+             (user_id,target_kind,target_key,merchant_key,service_name)
+           VALUES ('owner-a','cash','2','架空店','架空取得先')`,
+        )
+        .run(),
+    ).rejects.toThrow();
+    await expect(profileOverride('owner-a')).resolves.toBeDefined();
+    await expect(
+      d1
+        .prepare(
+          `UPDATE receipt_source_profiles SET profile_key='架空取得先::架空新サービス'
+            WHERE user_id='owner-a' AND profile_key='架空取得先::架空サービス'`,
+        )
+        .run(),
+    ).resolves.toBeDefined();
+    await expect(
+      d1
+        .prepare(
+          `SELECT profile_key AS profileKey
+             FROM receipt_source_overrides WHERE user_id='owner-a'`,
+        )
+        .first(),
+    ).resolves.toEqual({ profileKey: '架空取得先::架空新サービス' });
+    await expect(
+      d1
+        .prepare(
+          `DELETE FROM receipt_source_profiles
+            WHERE user_id='owner-a' AND profile_key='架空取得先::架空新サービス'`,
+        )
+        .run(),
+    ).rejects.toThrow();
+    const columns = await d1.prepare('PRAGMA table_info(receipt_source_profiles)').all<{ name: string }>();
+    expect(columns.results.map((column) => column.name)).not.toContain('password');
+    expect(columns.results.map((column) => column.name)).not.toContain('token');
   });
 
   it('JSON sourceのcash editを破棄し、destination editをpersist/集計/指紋で一致させる', async () => {

@@ -59,7 +59,7 @@ export const analyticsRoute = new Hono<Ctx>();
  * 選択肢は必ず絞り込み前の Dataset から作る。絞り込み後から作ると、
  * 2025年を選んだ瞬間に選択肢から2026年が消えて戻れなくなる。
  */
-async function loadScoped(c: Context<Ctx>): Promise<{ data: Dataset; period: PeriodMeta }> {
+export async function loadScoped(c: Context<Ctx>): Promise<{ data: Dataset; period: PeriodMeta }> {
   const all = await loadDataset(getDb(c.env.DB), c.get('userId'));
   const range = resolvePeriodQuery(all, {
     from: c.req.query('from'),

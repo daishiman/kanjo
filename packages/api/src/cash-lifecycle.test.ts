@@ -276,11 +276,27 @@ describe('現金記帳の月次集計ライフサイクル', () => {
       )
       .bind('default', `cash:${entry.id}`)
       .run();
+    await d1
+      .prepare(
+        `INSERT INTO receipt_source_overrides
+          (user_id,target_kind,target_key,merchant_key,service_name,source_url,updated_at)
+         VALUES ('default','cash',?,'架空商工会議所','架空ポータル','https://billing.example.test','2026-08-02T00:00:00.000Z')`,
+      )
+      .bind(String(entry.id))
+      .run();
 
     const deleted = await jsonRequest(`/cash-entries/${entry.id}`, 'DELETE');
     expect(deleted.status).toBe(200);
     expect(await aggregate('2026-07', 'biz_exp:架空会議費')).toBe(777);
     expect(await cashEditExists(entry.id)).toBe(false);
+    expect(
+      await d1
+        .prepare(
+          "SELECT 1 FROM receipt_source_overrides WHERE user_id='default' AND target_kind='cash' AND target_key=?",
+        )
+        .bind(String(entry.id))
+        .first(),
+    ).toBeNull();
 
     const personal = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-07-20',
@@ -937,6 +953,54 @@ describe('append-only migrationのprovenanceとID契約', () => {
 });
 
 describe('候補科目と現金記帳の参照整合', () => {
+  it('事業科目のrenameは全年の確定申告判定を追従させ、移行先の判定を優先する', async () => {
+    await addOption('biz', '架空旧科目');
+    await d1
+      .prepare(
+        `INSERT INTO tax_account_settings
+           (user_id,tax_year,account,tax_account,business_percent,basis)
+         VALUES
+           ('default',2025,'架空旧科目','通信費',80,'古い根拠'),
+           ('default',2026,'架空旧科目','通信費',70,'移行元'),
+           ('default',2026,'架空新科目','地代家賃',60,'移行先を優先')`,
+      )
+      .run();
+
+    const renamed = await jsonRequest('/category-options', 'PUT', {
+      from: { scope: 'biz', major: '架空旧科目', mid: '' },
+      to: { major: '架空新科目', mid: '' },
+    });
+    expect(renamed.status, await renamed.clone().text()).toBe(200);
+
+    await expect(
+      d1
+        .prepare(
+          `SELECT tax_year AS taxYear, account, tax_account AS taxAccount,
+                  business_percent AS businessPercent, basis
+             FROM tax_account_settings WHERE user_id='default'
+            ORDER BY tax_year, account`,
+        )
+        .all(),
+    ).resolves.toMatchObject({
+      results: [
+        {
+          taxYear: 2025,
+          account: '架空新科目',
+          taxAccount: '通信費',
+          businessPercent: 80,
+          basis: '古い根拠',
+        },
+        {
+          taxYear: 2026,
+          account: '架空新科目',
+          taxAccount: '地代家賃',
+          businessPercent: 60,
+          basis: '移行先を優先',
+        },
+      ],
+    });
+  });
+
   it('使用数・rename・delete guardが現金明細を同じconsumerとして扱う', async () => {
     await addOption('per', '架空食費', '架空外食');
     const created = await jsonRequest('/cash-entries', 'POST', {
@@ -1256,7 +1320,7 @@ describe('cash親削除のD1 query budget', () => {
     const manyDifferences = planCashParentDeleteQueries(10, 100_000);
     expect(manyDifferences).toEqual({
       total: 42,
-      success: 40,
+      success: 41,
       attachmentFailure: 42,
       limit: 50,
       accepted: true,

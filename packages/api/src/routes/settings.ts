@@ -517,7 +517,20 @@ settingsRoute.put('/category-options', zValidator('json', optionRenameSchema), a
     eq(s.categoryOptions.major, from.major),
     eq(s.categoryOptions.mid, from.mid),
   );
-  const context = await loadCategoryUsageContext(db, userId);
+  const [context, taxRenameRows] = await Promise.all([
+    loadCategoryUsageContext(db, userId),
+    from.scope === 'biz' && from.major !== to.major
+      ? db
+          .select({ taxYear: s.taxAccountSettings.taxYear, account: s.taxAccountSettings.account })
+          .from(s.taxAccountSettings)
+          .where(
+            and(
+              eq(s.taxAccountSettings.userId, userId),
+              inArray(s.taxAccountSettings.account, [from.major, to.major]),
+            ),
+          )
+      : Promise.resolve([]),
+  ]);
   if (!context.options.some((option) => optKey(option) === optKey(from)))
     return c.json({ error: { code: 'not_found', message: '候補科目が見つかりません' } }, 404);
   const dependentEdits = context.edits.filter((edit) =>
@@ -567,6 +580,39 @@ settingsRoute.put('/category-options', zValidator('json', optionRenameSchema), a
   const cashIds = splitIds(affectedCashRows, (row) => row.id);
   const midOrNull = to.mid || null;
   const now = new Date().toISOString();
+  const taxAccountsByYear = new Map<number, Set<string>>();
+  for (const row of taxRenameRows) {
+    const accounts = taxAccountsByYear.get(row.taxYear) ?? new Set<string>();
+    accounts.add(row.account);
+    taxAccountsByYear.set(row.taxYear, accounts);
+  }
+  const taxCollisionYears = [...taxAccountsByYear]
+    .filter(([, accounts]) => accounts.has(from.major) && accounts.has(to.major))
+    .map(([taxYear]) => taxYear);
+  const taxRenameStatements =
+    from.scope === 'biz' && from.major !== to.major
+      ? [
+          ...(taxCollisionYears.length
+            ? [
+                db
+                  .delete(s.taxAccountSettings)
+                  .where(
+                    and(
+                      eq(s.taxAccountSettings.userId, userId),
+                      eq(s.taxAccountSettings.account, from.major),
+                      inArray(s.taxAccountSettings.taxYear, taxCollisionYears),
+                    ),
+                  ),
+              ]
+            : []),
+          db
+            .update(s.taxAccountSettings)
+            .set({ account: to.major, updatedAt: now })
+            .where(
+              and(eq(s.taxAccountSettings.userId, userId), eq(s.taxAccountSettings.account, from.major)),
+            ),
+        ]
+      : [];
   // 候補と全consumerのrenameを同じD1トランザクションで完了させる。
   // IN() は D1 のバインド上限で割るので文が増えるが、batch は1トランザクションなので
   // 「一部の明細だけ新しい科目名になる」中途半端な状態にはならない。
@@ -609,6 +655,7 @@ settingsRoute.put('/category-options', zValidator('json', optionRenameSchema), a
         .set({ categoryMajor: to.major, categoryMid: to.mid, updatedAt: now })
         .where(and(eq(s.cashEntries.userId, userId), inArray(s.cashEntries.id, ids))),
     ),
+    ...taxRenameStatements,
     invalidateJsonSnapshotQuery(db, userId, 'tx_edits', 'rules', 'cash_entries'),
   ];
   await db.batch(statements as [(typeof statements)[number], ...typeof statements]);

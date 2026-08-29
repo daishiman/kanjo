@@ -1,5 +1,5 @@
 /**
- * 15画面のルート・ナビ・ページヘッダーの正本。
+ * 17画面のルート・ナビ・ページヘッダーの正本。
  * 表示順はサイドバーの業務順序と一致させる。
  */
 export const APP_ROUTES = [
@@ -90,6 +90,22 @@ export const APP_ROUTES = [
     task: '新規支出の捻出元(どこを削るか)を決める。',
     navGroup: null,
     mobileLabel: null,
+  },
+  {
+    id: 'tax',
+    path: '/tax',
+    label: '確定申告の準備',
+    task: '対象年の不足を確認し、freee・e-Taxへ転記するための準備シートを作る(申告書の生成や適法性の保証はしない)。',
+    navGroup: '申告',
+    mobileLabel: null,
+  },
+  {
+    id: 'taxReceipts',
+    path: '/tax/receipts',
+    label: '領収書の残り',
+    task: 'このアプリで管理する事業支出の未添付を優先順に解消する。freee仕訳の証憑はfreee側で確認する。',
+    navGroup: null,
+    mobileLabel: '領収書',
   },
   {
     id: 'import',

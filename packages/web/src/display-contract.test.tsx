@@ -16,32 +16,34 @@ const ROUTED_PAGE_SOURCES = Object.entries(PAGE_SOURCES)
   .filter(([path]) => !path.endsWith('/Login.tsx') && !path.includes('.test.'))
   .map(([, source]) => source);
 
-describe('15ルート契約', () => {
+describe('17ルート契約', () => {
   it('パスとIDが一意で全件がナビに含まれる', () => {
-    expect(APP_ROUTES).toHaveLength(15);
-    expect(new Set(APP_ROUTES.map((route) => route.id)).size).toBe(15);
-    expect(new Set(APP_ROUTES.map((route) => route.path)).size).toBe(15);
+    expect(APP_ROUTES).toHaveLength(17);
+    expect(new Set(APP_ROUTES.map((route) => route.id)).size).toBe(17);
+    expect(new Set(APP_ROUTES.map((route) => route.path)).size).toBe(17);
     expect(APP_ROUTES.every((route) => route.label && route.task)).toBe(true);
   });
 
   it('モバイルタブは正本ルートの部分集合', () => {
     const routeIds = new Set(APP_ROUTES.map((route) => route.id));
-    expect(MOBILE_ROUTES).toHaveLength(4);
+    expect(MOBILE_ROUTES).toHaveLength(5);
     expect(MOBILE_ROUTES.every((route) => routeIds.has(route.id))).toBe(true);
   });
 
-  it('全15ページが共通ヘッダーを使用する', () => {
-    expect(ROUTED_PAGE_SOURCES).toHaveLength(15);
+  it('全17ページが共通ヘッダーを使用する', () => {
+    expect(ROUTED_PAGE_SOURCES).toHaveLength(17);
     expect(ROUTED_PAGE_SOURCES.every((source) => source.includes('<PageHeader route='))).toBe(true);
     expect(ROUTED_PAGE_SOURCES.some((source) => source.includes('<h1 className="page-title"'))).toBe(false);
   });
 
-  it('各ページはルート単位で遅延読み込みされる', () => {
-    expect(APP_SOURCE.match(/lazy\(\(\) =>\s*import\('\.\/pages\//g)).toHaveLength(APP_ROUTES.length);
+  it('申告画面だけをcold-load短縮のためeagerにし、残りはルート単位で遅延読み込みする', () => {
+    expect(APP_SOURCE.match(/lazy\(\(\) =>\s*import\('\.\/pages\//g)).toHaveLength(APP_ROUTES.length - 1);
     expect(APP_SOURCE).toMatch(/<Suspense\s+fallback=/);
     expect(APP_SOURCE.match(/import \{ \w+Page \} from '\.\/pages\//g)).toEqual([
       "import { LoginPage } from './pages/",
+      "import { TaxReturnPage } from './pages/",
     ]);
+    expect(APP_SOURCE).toMatch(/tax:\s*TaxReturnPage,/);
   });
 });
 

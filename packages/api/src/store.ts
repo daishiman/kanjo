@@ -586,6 +586,37 @@ interface BackupSourceSnapshot {
   normMap: Record<string, string>;
   statMinMonths: number;
   subVendorExclusions: Array<{ partner: string; vendorKey: string }>;
+  taxAccountSettings: TaxAccountSettingSnapshot[];
+  receiptSourceProfiles: ReceiptSourceProfileSnapshot[];
+  receiptSourceOverrides: ReceiptSourceOverrideSnapshot[];
+}
+
+export interface TaxAccountSettingSnapshot {
+  taxYear: number;
+  account: string;
+  taxAccount: string | null;
+  businessPercent: number;
+  basis: string | null;
+}
+
+export interface ReceiptSourceProfileSnapshot {
+  profileKey: string;
+  merchantKey: string;
+  serviceName: string;
+  sourceUrl: string;
+  loginAccount: string | null;
+  memo: string | null;
+}
+
+export interface ReceiptSourceOverrideSnapshot {
+  targetKind: 'cash' | 'mf';
+  targetKey: string;
+  merchantKey: string;
+  profileKey: string | null;
+  serviceName: string | null;
+  sourceUrl: string | null;
+  loginAccount: string | null;
+  memo: string | null;
 }
 
 export interface ImportRestoreSettingsSnapshot {
@@ -595,6 +626,9 @@ export interface ImportRestoreSettingsSnapshot {
   cashEntries: CashEntry[];
   freeeDeals: FreeeDeal[];
   txSplits: TxSplit[];
+  taxAccountSettings: TaxAccountSettingSnapshot[];
+  receiptSourceProfiles: ReceiptSourceProfileSnapshot[];
+  receiptSourceOverrides: ReceiptSourceOverrideSnapshot[];
 }
 
 /**
@@ -698,12 +732,26 @@ UNION ALL
 SELECT 'sub_vendor_exclusion', id, NULL, NULL,
        partner, vendor_key, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendor_exclusions WHERE user_id = ?
+UNION ALL
+SELECT 'tax_account_setting', NULL, tax_year, business_percent,
+       account, tax_account, basis, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM tax_account_settings WHERE user_id = ?
+UNION ALL
+SELECT 'receipt_source_profile', NULL, NULL, NULL,
+       profile_key, merchant_key, service_name, source_url, login_account, memo,
+       NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM receipt_source_profiles WHERE user_id = ?
+UNION ALL
+SELECT 'receipt_source_override', NULL, NULL, NULL,
+       target_kind, target_key, merchant_key, profile_key,
+       service_name, source_url, login_account, memo, NULL, NULL, NULL, NULL, NULL
+FROM receipt_source_overrides WHERE user_id = ?
 )
 ORDER BY source, rank, id, v1, v2`;
 
 /** export用canonical rowsを、単一D1 read statementから型付きsnapshotへ変換する。 */
 async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupSourceSnapshot> {
-  const params = Array.from({ length: 16 }, () => userId);
+  const params = Array.from({ length: 19 }, () => userId);
   const result = await db.$client
     .prepare(BACKUP_SNAPSHOT_SQL)
     .bind(...params)
@@ -857,6 +905,43 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     partner: row.v1 ?? '',
     vendorKey: row.v2 ?? '',
   }));
+  const taxAccountSettings = bySource('tax_account_setting')
+    .map(
+      (row): TaxAccountSettingSnapshot => ({
+        taxYear: row.rank ?? 0,
+        account: row.v1 ?? '',
+        taxAccount: row.v2,
+        businessPercent: row.amount ?? 100,
+        basis: row.v3,
+      }),
+    )
+    .sort((a, b) => a.taxYear - b.taxYear || a.account.localeCompare(b.account, 'ja'));
+  const receiptSourceProfiles = bySource('receipt_source_profile')
+    .map(
+      (row): ReceiptSourceProfileSnapshot => ({
+        profileKey: row.v1 ?? '',
+        merchantKey: row.v2 ?? '',
+        serviceName: row.v3 ?? '',
+        sourceUrl: row.v4 ?? '',
+        loginAccount: row.v5,
+        memo: row.v6,
+      }),
+    )
+    .sort((a, b) => a.profileKey.localeCompare(b.profileKey));
+  const receiptSourceOverrides = bySource('receipt_source_override')
+    .map(
+      (row): ReceiptSourceOverrideSnapshot => ({
+        targetKind: row.v1 === 'cash' ? 'cash' : 'mf',
+        targetKey: row.v2 ?? '',
+        merchantKey: row.v3 ?? '',
+        profileKey: row.v4,
+        serviceName: row.v5,
+        sourceUrl: row.v6,
+        loginAccount: row.v7,
+        memo: row.v8,
+      }),
+    )
+    .sort((a, b) => a.targetKind.localeCompare(b.targetKind) || a.targetKey.localeCompare(b.targetKey));
 
   return {
     baselineRows,
@@ -875,6 +960,9 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     normMap,
     statMinMonths,
     subVendorExclusions,
+    taxAccountSettings,
+    receiptSourceProfiles,
+    receiptSourceOverrides,
   };
 }
 
@@ -915,10 +1003,31 @@ export async function loadImportRestoreSettingsSnapshot(
          'cls',cls,'categoryMajor',category_major,'categoryMid',category_mid,'memo',memo,
          'createdAt',created_at,'updatedAt',updated_at), NULL, NULL
          FROM tx_splits WHERE user_id=?
+       UNION ALL
+       SELECT 'tax', json_object(
+         'taxYear',tax_year,'account',account,'taxAccount',tax_account,
+         'businessPercent',business_percent,'basis',basis), NULL, NULL
+         FROM tax_account_settings WHERE user_id=?
+       UNION ALL
+       SELECT 'receipt_sources', json_object(
+         'profiles', json((
+           SELECT json_group_array(json_object(
+             'profileKey',profile_key,'merchantKey',merchant_key,'serviceName',service_name,
+             'sourceUrl',source_url,'loginAccount',login_account,'memo',memo))
+           FROM receipt_source_profiles WHERE user_id=?
+         )),
+         'overrides', json((
+           SELECT json_group_array(json_object(
+             'targetKind',target_kind,'targetKey',target_key,'merchantKey',merchant_key,
+             'profileKey',profile_key,'serviceName',service_name,'sourceUrl',source_url,
+             'loginAccount',login_account,'memo',memo))
+           FROM receipt_source_overrides WHERE user_id=?
+         ))
+       ), NULL, NULL
        )
        ORDER BY source, v1, v2`,
     )
-    .bind(userId, userId, userId, userId, userId, userId)
+    .bind(userId, userId, userId, userId, userId, userId, userId, userId, userId)
     .all<{ source: string; v1: string | null; v2: string | null; amount: number | null }>();
   const normMap: Record<string, string> = {};
   for (const row of result.results.filter((row) => row.source === 'norm')) {
@@ -962,6 +1071,19 @@ export async function loadImportRestoreSettingsSnapshot(
     ...(createdAt ? { createdAt } : {}),
     ...(updatedAt ? { updatedAt } : {}),
   }));
+  const taxAccountSettings = payloads<TaxAccountSettingSnapshot>('tax').sort(
+    (a, b) => a.taxYear - b.taxYear || a.account.localeCompare(b.account, 'ja'),
+  );
+  const receiptSources = payloads<{
+    profiles: ReceiptSourceProfileSnapshot[];
+    overrides: ReceiptSourceOverrideSnapshot[];
+  }>('receipt_sources')[0] ?? { profiles: [], overrides: [] };
+  const receiptSourceProfiles = receiptSources.profiles.sort((a, b) =>
+    a.profileKey.localeCompare(b.profileKey),
+  );
+  const receiptSourceOverrides = receiptSources.overrides.sort(
+    (a, b) => a.targetKind.localeCompare(b.targetKind) || a.targetKey.localeCompare(b.targetKey),
+  );
   return {
     normMap,
     statMinMonths: result.results.find((row) => row.source === 'analysis')?.amount ?? DEFAULT_STAT_MIN_MONTHS,
@@ -971,6 +1093,9 @@ export async function loadImportRestoreSettingsSnapshot(
     cashEntries,
     freeeDeals,
     txSplits,
+    taxAccountSettings,
+    receiptSourceProfiles,
+    receiptSourceOverrides,
   };
 }
 
@@ -1072,6 +1197,9 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
     mfTx: raw.mfTx,
     analysisSettings: { statMinMonths: snapshot.statMinMonths },
     subVendorExclusions: snapshot.subVendorExclusions.map(({ partner }) => ({ partner })),
+    taxAccountSettings: snapshot.taxAccountSettings,
+    receiptSourceProfiles: snapshot.receiptSourceProfiles,
+    receiptSourceOverrides: snapshot.receiptSourceOverrides,
     cashEntries: snapshot.cashEntries,
     cashProjection,
     attachmentArchive,

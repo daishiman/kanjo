@@ -2,7 +2,15 @@
  * Drizzle スキーマ(spec-v1.1 §7.2)。マイグレーションは migrations/ に手書きSQLで管理し、
  * このスキーマはクエリの型付けに使う(両者の対応はレビューで担保)。
  */
-import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import {
+  foreignKey,
+  index,
+  integer,
+  primaryKey,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from 'drizzle-orm/sqlite-core';
 
 /**
  * 作成日時の既定値。drizzle は values() に無い列へ明示的に NULL を入れるため、
@@ -360,6 +368,54 @@ export const attachments = sqliteTable(
   ],
 );
 
+/** 0028: 取引先ごとの証憑取得先。ログイン識別子のみで秘密値は持たない */
+export const receiptSourceProfiles = sqliteTable(
+  'receipt_source_profiles',
+  {
+    userId: text('user_id').notNull(),
+    profileKey: text('profile_key').notNull(),
+    merchantKey: text('merchant_key').notNull(),
+    serviceName: text('service_name').notNull(),
+    sourceUrl: text('source_url').notNull(),
+    loginAccount: text('login_account'),
+    memo: text('memo'),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.profileKey] }),
+    index('idx_receipt_source_profiles_merchant').on(t.userId, t.merchantKey),
+  ],
+);
+
+/** 0028: 安定targetごとの取得先例外。profile参照か明示値の一方を持つ */
+export const receiptSourceOverrides = sqliteTable(
+  'receipt_source_overrides',
+  {
+    userId: text('user_id').notNull(),
+    targetKind: text('target_kind', { enum: ['cash', 'mf'] }).notNull(),
+    targetKey: text('target_key').notNull(),
+    /** 明細側の正規化した取引先キー */
+    merchantKey: text('merchant_key').notNull(),
+    /** 別の取引先profileを使う場合の参照先。明示例外ではNULL */
+    profileKey: text('profile_key'),
+    serviceName: text('service_name'),
+    sourceUrl: text('source_url'),
+    loginAccount: text('login_account'),
+    memo: text('memo'),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.targetKind, t.targetKey] }),
+    foreignKey({
+      columns: [t.userId, t.profileKey],
+      foreignColumns: [receiptSourceProfiles.userId, receiptSourceProfiles.profileKey],
+    })
+      .onUpdate('cascade')
+      .onDelete('restrict'),
+    index('idx_receipt_source_overrides_profile').on(t.userId, t.profileKey),
+  ],
+);
+
 /** 0012: R2/D1境界をscheduled処理へ引き継ぐdurable outbox。 */
 export const attachmentCleanupJobs = sqliteTable(
   'attachment_cleanup_jobs',
@@ -506,6 +562,29 @@ export const aiReports = sqliteTable(
     index('idx_ai_reports_type').on(t.userId, t.reportType, t.periodFrom, t.periodTo),
     index('idx_ai_reports_archived').on(t.userId, t.archivedAt, t.createdAt),
   ],
+);
+
+/**
+ * 0027: 確定申告での科目の扱い。申告年ごとに決算書への割り当てと家事按分を1行で持つ。
+ * 行が無い科目は未確認。全額事業でも100%を明示保存した行だけを確認済みとして扱う。
+ */
+export const taxAccountSettings = sqliteTable(
+  'tax_account_settings',
+  {
+    userId: text('user_id').notNull(),
+    /** 対象の申告年(2000..2099) */
+    taxYear: integer('tax_year').notNull(),
+    /** 帳簿上の科目名(正規化後) */
+    account: text('account').notNull(),
+    /** 転記先の決算書科目。NULL は未割当 */
+    taxAccount: text('tax_account'),
+    /** 家事按分の事業割合(0..100)。100は按分なし */
+    businessPercent: integer('business_percent').notNull().default(100),
+    /** 按分率の根拠。税務調査で聞かれるのはここ */
+    basis: text('basis'),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.taxYear, t.account] })],
 );
 
 /** AI分析の統計設定(利用者ごと)。行が無ければ既定値として扱う */
