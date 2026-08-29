@@ -64,7 +64,9 @@ SPA・未認証ガード・ログインに加え、架空現金明細の作成�
 
 main への反映後、CIが成功したコミットだけをGitHub Actionsが自動デプロイする。公開後は30秒後と、さらに90秒後の2回、本番URLを自動確認する。
 
-D1マイグレーションは自動デプロイと分離している。GitHub Actionsの「Migrate」を手動実行し、確認欄へ `APPLY` と入力した場合だけ、Time Travelの復元地点を確認してから適用する。必ずマイグレーション完了後にコードをmainへ反映する。
+D1マイグレーションも同じDeployが適用する。Worker配信の**前に**pendingを判定し、追加だけの変更ならTime Travelの復元地点を記録してから自動適用する。列や行を失う変更（`DROP TABLE` / `DROP COLUMN` / `DELETE` など）と、本番D1のpendingを判定できなかった場合はDeployを止める。この場合だけGitHub Actionsの「Migrate」を承認manifestつきで手動実行し、確認欄へ `APPLY` と入力してから、Deployを再実行する。
+
+DeployとMigrateは同じconcurrency群 `production-mutation` に入れており、本番D1への書き換えが重なることはない。
 
 GitHub Environment `production` に `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`、Repository Variableに `APP_URL` を登録する。認証情報の登録はリポジトリ所有者本人が行う。手元からの `pnpm run deploy` は緊急時のみ。
 

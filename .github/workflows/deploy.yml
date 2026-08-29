@@ -1,4 +1,6 @@
-# mainのCI成功後だけ本番へ公開する。D1 migrationはmigrate.ymlへ分離する。
+# mainのCI成功後だけ本番へ公開する。
+# 取り返しのつくD1 migrationはここで自動適用し、列や行を失う変更だけをmigrate.ymlの手動承認へ倒す。
+# 適用は必ずWorker配信より前に行う（schema-guardが期待版へ達するまで全D1経路を503で閉じるため）。
 name: Deploy
 
 on:
@@ -11,8 +13,9 @@ on:
 permissions:
   contents: read
 
+# DeployもMigrateも本番D1を書き換えうるので、同じ群で直列化する。
 concurrency:
-  group: deploy-production
+  group: production-mutation
   cancel-in-progress: false
 
 jobs:
@@ -48,6 +51,15 @@ jobs:
       - name: テスト（手動実行時）
         if: github.event_name == 'workflow_dispatch'
         run: pnpm test
+      - name: 自動適用してよいD1 migrationか判定
+        id: migration_plan
+        run: node .github/scripts/plan-auto-migration.mjs
+      - name: Time Travelの復元地点を記録
+        if: steps.migration_plan.outputs.decision == 'apply'
+        run: pnpm run db:checkpoint
+      - name: D1 migrationを適用
+        if: steps.migration_plan.outputs.decision == 'apply'
+        run: pnpm run db:migrate:remote
       - name: D1 migrationの未適用を検査
         run: node .github/scripts/check-d1-migrations.mjs
       - name: Webをビルド
