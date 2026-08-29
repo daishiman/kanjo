@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "projected_from": ".dev-graph/state/graph.json",
-  "projection_note": "dev-graph macro graph の architecture ノードのみを写像した従属成果物。編集は dev-graph 側で行う。",
+  "projection_note": "dev-graph macro graph の architecture ノードのみを写像した従属成果物。dev-graph 由来ノードの編集は dev-graph 側で行う。source_lineage.origin_kind='manual' のノードは dev-graph 計画を経ずに直接登録したもので、次回 projection 時に上書きせず突合する。",
   "nodes": [
     {
       "id": "arch-d1-schema-lifecycle",
@@ -73,6 +73,32 @@
       },
       "referenced_by": [
         "feat-runtime-schema-guard"
+      ]
+    },
+    {
+      "id": "arch-tax-preparation-boundary",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend",
+        "frontend",
+        "data",
+        "security"
+      ],
+      "title": "確定申告準備の対象年境界と証憑完全性の契約",
+      "file_path": "architecture/arch-tax-preparation-boundary.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "docs/spec-v1.1.md",
+        "source_version": "1.1",
+        "source_digest": null,
+        "imported_at": "2026-08-29T00:00:00Z"
+      },
+      "referenced_by": [
+        "feat-tax-preparation"
       ]
     }
   ]

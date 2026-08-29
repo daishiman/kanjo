@@ -13,5 +13,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    // build後の初期JS budget検査だけに使い、検査スクリプトが削除する。
+    manifest: true,
   },
 });

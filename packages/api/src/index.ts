@@ -7,6 +7,7 @@ import { zValidator } from '@hono/zod-validator';
  * - scheduled: 夜間バックアップ(統合JSON→R2 backups/、30日保持)
  */
 import { Hono } from 'hono';
+import { secureHeaders } from 'hono/secure-headers';
 import { z } from 'zod';
 import { ATTACHMENT_AVAILABILITY_ERROR, AttachmentAvailabilityError } from './attachment-availability.js';
 import { runAttachmentMaintenance } from './attachment-recovery.js';
@@ -30,12 +31,43 @@ import { classifyRoute } from './routes/classify.js';
 import { importsRoute } from './routes/imports.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
+import { taxRoute } from './routes/tax.js';
 import { runtimeSchemaGuard } from './schema-guard.js';
 import { getDb, loadBackupPayload } from './store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
 export const app = new Hono<Ctx>();
+
+// APIとWorkers Assetsの全レスポンスで同じ防御境界を使う。
+// Reactの既存inline styleを維持するためstyle-srcだけunsafe-inlineを許可する。
+app.use(
+  '*',
+  secureHeaders({
+    contentSecurityPolicy: {
+      defaultSrc: ["'self'"],
+      baseUri: ["'none'"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'", 'data:'],
+      formAction: ["'self'"],
+      frameAncestors: ["'none'"],
+      imgSrc: ["'self'", 'blob:', 'data:'],
+      objectSrc: ["'none'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+    },
+    permissionsPolicy: {
+      // 証憑撮影は同一originのfile inputから使う。埋め込み先へは許可しない。
+      camera: ['self'],
+      geolocation: [],
+      microphone: [],
+      payment: [],
+      usb: [],
+    },
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    xFrameOptions: 'DENY',
+  }),
+);
 
 /* -------- 認証エンドポイント(未認証で到達可能なのはここだけ) -------- */
 
@@ -96,6 +128,7 @@ app.route('/api', settingsRoute);
 app.route('/api', subsRoute);
 app.route('/api', attachmentsRoute);
 app.route('/api', balancesRoute);
+app.route('/api', taxRoute);
 
 app.notFound((c) => {
   if (c.req.path.startsWith('/api/')) {

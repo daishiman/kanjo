@@ -5,6 +5,8 @@
 //   2. .stack-sm の表が本当に1行=1カードへ畳まれている(セルが縦に積まれている)
 //   3. 仕分けカードの見出しが「内容」で、日付より上に出ている(order の効き)
 //   4. 主要な操作ボタンのタップ領域が 44px 以上ある
+//   5. 200%相当でも下部navのラベルを分断せず、nav内だけを横スクロールできる
+//   6. 書き出しaction sheetがvisual viewportの左右に収まり、項目が欠けない
 // 使い方: node scripts/check-mobile-layout.mjs  (CHROME_PATH で Chrome の場所を指定できる)
 import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -16,6 +18,7 @@ const WEB_DIR = fileURLToPath(new URL('..', import.meta.url));
 const STYLES = readFileSync(process.env.STYLES_PATH ?? join(WEB_DIR, 'src/styles.css'), 'utf8');
 /** iPhone SE(375) と小型 Android(360)。640px 超は既存の thead 検査が見ている */
 const WIDTHS = [375, 360];
+const CASES = [...WIDTHS.map((width) => ({ width, zoom: 1 })), { width: 375, zoom: 2 }];
 const PORT = 9700 + Math.floor(Math.random() * 200);
 /** タップ領域の下限。WCAG 2.5.5 の 44x44 CSS px に合わせる */
 const MIN_TAP = 44;
@@ -74,14 +77,14 @@ const WIDE_TABLE = `
 const fixture = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${STYLES}</style></head><body>
 <div class="shell">
   <aside class="sidebar"><a class="brand" href="#">収支統合管理</a></aside>
-  <header class="header"><a class="header-brand" href="#">収支統合管理</a><span class="period">2026年8月</span><span class="spacer"></span><span class="badge ok">防衛ライン OK<span class="badge-detail"> 見込 ¥714,353</span></span></header>
+  <header class="header"><a class="header-brand" href="#">収支統合管理</a><span class="period">2026年8月</span><span class="spacer"></span><span class="badge ok">防衛ライン OK<span class="badge-detail"> 見込 ¥714,353</span></span><span class="popover-host"><button type="button" aria-expanded="true" aria-haspopup="menu">書き出し ▾</button><span class="popover" role="menu"><a class="btn" role="menuitem" href="#json">統合データJSON</a><a class="btn" role="menuitem" href="#csv">マトリクスCSV</a></span></span></header>
   <main class="main">
     <h1 class="page-title">公私仕分け</h1>
     ${CLASSIFY_TABLE}
     ${WIDE_TABLE}
   </main>
   <footer class="footer">footer</footer>
-  <nav class="tabbar">${['概況', '仕分け', '家計', '取込', '設定'].map((t) => `<a class="tab" href="#">${t}</a>`).join('')}</nav>
+  <nav class="tabbar">${['概況', 'マトリクス', '仕分け', '領収書', '取込', 'メニュー'].map((t) => `<a class="tab" href="#">${t}</a>`).join('')}</nav>
 </div>
 <script>
   const header = document.querySelector('.header');
@@ -155,14 +158,44 @@ const MEASURE = `(async () => {
     .map((td) => ({ label: td.dataset.label, scrollWidth: td.scrollWidth, clientWidth: td.clientWidth }));
 
   // 5) タップ領域
-  const taps = [...document.querySelectorAll('.classify-quick-actions button, .tabbar .tab, td[data-label="証憑"] button')]
+  const taps = [...document.querySelectorAll('.classify-quick-actions button, .tabbar .tab, td[data-label="証憑"] button, .header .popover-host > button, .header .popover .btn')]
     .map((el) => ({ text: el.textContent.trim(), h: el.getBoundingClientRect().height, w: el.getBoundingClientRect().width }));
 
-  // 6) 広い表は表の枠内でスクロールする
+  // 6) 200%相当でもnavラベルは1行。横幅不足はページ本体でなくnav自身が受け持つ。
+  const tabbar = document.querySelector('.tabbar');
+  const tabLabels = [...tabbar.querySelectorAll('.tab')].map((el) => {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    return {
+      text: el.textContent.trim(),
+      lines: range.getClientRects().length,
+      whiteSpace: getComputedStyle(el).whiteSpace,
+    };
+  });
+  const tabScroll = { scrollWidth: tabbar.scrollWidth, clientWidth: tabbar.clientWidth };
+
+  // 7) 書き出しaction sheetと文字がvisual viewport内に収まるか
+  const exportSheet = document.querySelector('.header .popover');
+  const exportRect = exportSheet.getBoundingClientRect();
+  const exportLabels = [...exportSheet.querySelectorAll('[role="menuitem"]')].map((el) => ({
+    text: el.textContent.trim(),
+    scrollWidth: el.scrollWidth,
+    clientWidth: el.clientWidth,
+    whiteSpace: getComputedStyle(el).whiteSpace,
+  }));
+  const exportSheetLayout = {
+    left: exportRect.left,
+    right: exportRect.right,
+    viewport: doc.clientWidth,
+    scrollWidth: exportSheet.scrollWidth,
+    clientWidth: exportSheet.clientWidth,
+  };
+
+  // 8) 広い表は表の枠内でスクロールする
   const wide = document.querySelector('[data-pattern="matrix"]');
   const wideScrolls = { scrollWidth: wide.scrollWidth, clientWidth: wide.clientWidth };
 
-  return { overflow, stacked, theadHidden, order, overflowingCells, taps, wideScrolls };
+  return { overflow, stacked, theadHidden, order, overflowingCells, taps, tabLabels, tabScroll, exportSheetLayout, exportLabels, wideScrolls };
 })()`;
 
 try {
@@ -205,7 +238,7 @@ try {
   await send('Page.enable');
 
   const failures = [];
-  for (const width of WIDTHS) {
+  for (const { width, zoom } of CASES) {
     await send('Emulation.setDeviceMetricsOverride', {
       width,
       height: 800,
@@ -214,34 +247,63 @@ try {
     });
     await send('Page.navigate', { url: pathToFileURL(fixturePath).href });
     await new Promise((r) => setTimeout(r, 600));
+    await evalJs(`document.body.style.zoom = '${zoom}'`);
     const m = await evalJs(MEASURE);
 
     if (m.overflow.scrollWidth > m.overflow.viewport + 1)
       failures.push(
         `${width}px ページ本体が横スクロールする(内容 ${m.overflow.scrollWidth}px > 画面 ${m.overflow.viewport}px)`,
       );
-    if (!m.theadHidden) failures.push(`${width}px カード化した表の見出し行が視覚的に残っている`);
-    // order で並べ替えるので上下どちらが先かは問わない。「同じ行に並んでいない」ことだけを見る
-    if (Math.abs(m.stacked.second.top - m.stacked.first.top) <= 1)
-      failures.push(
-        `${width}px 仕分け表が畳まれていない(1つ目と2つ目のセルが同じ行 ${Math.round(m.stacked.first.top)}px に並んでいる)`,
-      );
-    if (m.order.descTop >= m.order.dateTop)
-      failures.push(
-        `${width}px カードの見出しが「内容」になっていない(内容 ${Math.round(m.order.descTop)}px が日付 ${Math.round(m.order.dateTop)}px より下)`,
-      );
-    for (const c of m.overflowingCells)
-      failures.push(
-        `${width}px セル「${c.label}」の中身がカードから溢れている(${c.scrollWidth}px > ${c.clientWidth}px)`,
-      );
+    // 200%相当ではnavの不変条件だけを追加検査する。仕分けfixtureのセル幅は実ページの
+    // tax contentではなく、zoom 1の既存mobile contractで引き続き固定する。
+    if (zoom === 1) {
+      if (!m.theadHidden) failures.push(`${width}px カード化した表の見出し行が視覚的に残っている`);
+      // order で並べ替えるので上下どちらが先かは問わない。「同じ行に並んでいない」ことだけを見る
+      if (Math.abs(m.stacked.second.top - m.stacked.first.top) <= 1)
+        failures.push(
+          `${width}px 仕分け表が畳まれていない(1つ目と2つ目のセルが同じ行 ${Math.round(m.stacked.first.top)}px に並んでいる)`,
+        );
+      if (m.order.descTop >= m.order.dateTop)
+        failures.push(
+          `${width}px カードの見出しが「内容」になっていない(内容 ${Math.round(m.order.descTop)}px が日付 ${Math.round(m.order.dateTop)}px より下)`,
+        );
+      for (const c of m.overflowingCells)
+        failures.push(
+          `${width}px セル「${c.label}」の中身がカードから溢れている(${c.scrollWidth}px > ${c.clientWidth}px)`,
+        );
+    }
     for (const t of m.taps)
       if (t.h < MIN_TAP - 0.5)
-        failures.push(`${width}px 操作「${t.text}」のタップ領域が ${Math.round(t.h)}px で ${MIN_TAP}px 未満`);
+        failures.push(
+          `${width}px/zoom${zoom} 操作「${t.text}」のタップ領域が ${Math.round(t.h)}px で ${MIN_TAP}px 未満`,
+        );
+    for (const label of m.tabLabels)
+      if (label.lines !== 1 || label.whiteSpace !== 'nowrap')
+        failures.push(
+          `${width}px/zoom${zoom} nav「${label.text}」が${label.lines}行・white-space=${label.whiteSpace}で分断される`,
+        );
+    if (m.tabScroll.scrollWidth <= m.tabScroll.clientWidth)
+      failures.push(
+        `${width}px/zoom${zoom} navが横幅不足を自身のscrollで受けていない(${m.tabScroll.scrollWidth}/${m.tabScroll.clientWidth})`,
+      );
+    if (m.exportSheetLayout.left < -0.5 || m.exportSheetLayout.right > m.exportSheetLayout.viewport + 0.5)
+      failures.push(
+        `${width}px/zoom${zoom} 書き出しが画面外に欠ける(left ${Math.round(m.exportSheetLayout.left)}px / right ${Math.round(m.exportSheetLayout.right)}px / viewport ${m.exportSheetLayout.viewport}px)`,
+      );
+    if (m.exportSheetLayout.scrollWidth > m.exportSheetLayout.clientWidth + 1)
+      failures.push(
+        `${width}px/zoom${zoom} 書き出し内容が横に欠ける(${m.exportSheetLayout.scrollWidth}px > ${m.exportSheetLayout.clientWidth}px)`,
+      );
+    for (const label of m.exportLabels)
+      if (label.scrollWidth > label.clientWidth + 1 || label.whiteSpace !== 'nowrap')
+        failures.push(
+          `${width}px/zoom${zoom} 書き出し「${label.text}」が欠ける(${label.scrollWidth}px/${label.clientWidth}px, white-space=${label.whiteSpace})`,
+        );
     if (m.wideScrolls.scrollWidth <= m.wideScrolls.clientWidth)
       failures.push(`${width}px 広い表が枠内でスクロールしていない(検査用フィクスチャが横に広くない)`);
 
     console.log(
-      `${String(width).padStart(4)}px 本体幅 ${m.overflow.scrollWidth}/${m.overflow.viewport}  カード化 ${Math.abs(m.stacked.second.top - m.stacked.first.top) > 1 ? 'OK' : 'NG'}  見出し=内容 ${m.order.descTop < m.order.dateTop ? 'OK' : 'NG'}  タップ最小 ${Math.round(Math.min(...m.taps.map((t) => t.h)))}px  広い表 ${m.wideScrolls.scrollWidth}/${m.wideScrolls.clientWidth}`,
+      `${String(width).padStart(4)}px zoom${zoom} 本体幅 ${m.overflow.scrollWidth}/${m.overflow.viewport}  カード化 ${Math.abs(m.stacked.second.top - m.stacked.first.top) > 1 ? 'OK' : 'NG'}  見出し=内容 ${m.order.descTop < m.order.dateTop ? 'OK' : 'NG'}  タップ最小 ${Math.round(Math.min(...m.taps.map((t) => t.h)))}px  nav ${m.tabScroll.scrollWidth}/${m.tabScroll.clientWidth}  書き出し ${Math.round(m.exportSheetLayout.left)}-${Math.round(m.exportSheetLayout.right)}/${m.exportSheetLayout.viewport}  広い表 ${m.wideScrolls.scrollWidth}/${m.wideScrolls.clientWidth}`,
     );
   }
   await send('Page.navigate', { url: 'about:blank' });

@@ -19,11 +19,21 @@ import type {
   MatrixData,
   OverviewData,
   ProfitAndLoss,
+  ReceiptGapRow,
+  ReceiptGapSummary,
+  ReceiptGapUrgency,
+  ReceiptSourceResolution,
+  ResolvedTaxAccountSetting,
   StatementSource,
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
   SubscriptionsData,
+  TaxAccountSetting,
+  TaxReadinessCheck,
+  TaxReadinessLevel,
+  TaxReturnStatement,
+  TaxYear,
   TradeoffCandidate,
   TradeoffReviewRow,
   UnsettledDeal,
@@ -661,11 +671,18 @@ export type {
   MatrixData,
   OverviewData,
   ProfitAndLoss,
+  ReceiptGapRow,
+  ReceiptGapSummary,
+  ReceiptGapUrgency,
   StatementSource,
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
   SubscriptionsData,
+  TaxAccountSetting,
+  TaxReadinessCheck,
+  TaxReadinessLevel,
+  TaxReturnStatement,
   TradeoffCandidate,
   TradeoffReviewRow,
 };
@@ -833,4 +850,35 @@ export interface AiReportDetailResponse {
   report: AiReportRow & { body: AiReportBody };
   previous: AiReportRow | null;
   versions: AiReportRow[];
+}
+
+/* -------- 確定申告(転記シート・家事按分・証憑) -------- */
+
+/**
+ * 申告画面1枚ぶん。判定・転記シート・科目設定を1回で受け取る。
+ * 分けて取ると、按分を保存した直後に判定だけ古い、という画面が出る。
+ */
+export interface TaxOverviewResponse {
+  period: PeriodMeta;
+  year: TaxYear;
+  statement: TaxReturnStatement;
+  checks: TaxReadinessCheck[];
+  verdict: TaxReadinessLevel;
+  receipts: ReceiptGapSummary;
+  /** 帳簿の全科目に保存済み設定を重ねたもの。未保存行は候補値つきの未確認statusで並ぶ */
+  settings: ResolvedTaxAccountSetting[];
+  taxAccountOptions: { printed: string[]; additional: string[]; separate: string[] };
+  receiptArchive: { fileCount: number; maxFilesPerPart: number; parts: number };
+  externalReceiptSources: readonly [{ source: 'freee'; responsibility: 'external-confirmation' }];
+}
+
+export interface TaxReceiptGapsResponse {
+  period: PeriodMeta;
+  year: TaxYear;
+  summary: ReceiptGapSummary;
+  rows: (ReceiptGapRow & { urgency: ReceiptGapUrgency; receiptSource: ReceiptSourceResolution })[];
+  checks: TaxReadinessCheck[];
+  verdict: TaxReadinessLevel;
+  receiptArchive: { fileCount: number; maxFilesPerPart: number; parts: number };
+  externalReceiptSources: readonly [{ source: 'freee'; responsibility: 'external-confirmation' }];
 }

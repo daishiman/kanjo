@@ -5,8 +5,10 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AUTH_EVENT, api } from './api.js';
 import { Layout } from './components/Layout.js';
 import { LoginPage } from './pages/Login.js';
+import { TaxReturnPage } from './pages/TaxReturn.js';
 import { PeriodProvider } from './period.js';
 import { APP_ROUTES, type AppRouteId } from './routeMetadata.js';
+import { TaxYearProvider } from './tax-year.js';
 
 export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
   overview: lazy(() => import('./pages/Overview.js').then((module) => ({ default: module.OverviewPage }))),
@@ -28,6 +30,12 @@ export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
   cash: lazy(() => import('./pages/Cash.js').then((module) => ({ default: module.CashPage }))),
   settings: lazy(() => import('./pages/Settings.js').then((module) => ({ default: module.SettingsPage }))),
   guide: lazy(() => import('./pages/Guide.js').then((module) => ({ default: module.GuidePage }))),
+  // 申告画面は年1回のcold-loadが主経路。4KB gzip程度をmainへ含め、
+  // main取得後にTaxReturn chunkを発見する直列requestを1段減らす。
+  tax: TaxReturnPage,
+  taxReceipts: lazy(() =>
+    import('./pages/TaxReceipts.js').then((module) => ({ default: module.TaxReceiptsPage })),
+  ),
 };
 
 export function App() {
@@ -62,23 +70,25 @@ export function App() {
 
   return (
     <PeriodProvider>
-      <Layout>
-        <Suspense
-          fallback={
-            <output className="page-state loading" aria-busy="true" aria-live="polite">
-              画面を読み込み中…
-            </output>
-          }
-        >
-          <Routes>
-            {APP_ROUTES.map((route) => {
-              const Component = ROUTE_COMPONENTS[route.id];
-              return <Route key={route.id} path={route.path} element={<Component />} />;
-            })}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
-      </Layout>
+      <TaxYearProvider>
+        <Layout>
+          <Suspense
+            fallback={
+              <output className="page-state loading" aria-busy="true" aria-live="polite">
+                画面を読み込み中…
+              </output>
+            }
+          >
+            <Routes>
+              {APP_ROUTES.map((route) => {
+                const Component = ROUTE_COMPONENTS[route.id];
+                return <Route key={route.id} path={route.path} element={<Component />} />;
+              })}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
+        </Layout>
+      </TaxYearProvider>
     </PeriodProvider>
   );
 }

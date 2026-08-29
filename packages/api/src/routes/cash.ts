@@ -58,8 +58,8 @@ export const CASH_PARENT_DELETE_QUERY_LEDGER = {
   attachmentPendingPerRow: 1,
   attachmentFailurePerRow: 1,
   attachmentTombstoneBulk: 1,
-  // cash + tx_edit + attachment metadata + JSON pointer
-  finalMutationBase: 4,
+  // cash + tx_edit + receipt source override + attachment metadata + JSON pointer
+  finalMutationBase: 5,
   normalizedDealsBulk: 1,
   aggregateReplacement: 2,
 } as const;
@@ -326,8 +326,17 @@ cashRoute.delete('/cash-entries/:id', zValidator('param', idParam), async (c) =>
   await db.batch([
     db.delete(s.cashEntries).where(and(eq(s.cashEntries.userId, userId), eq(s.cashEntries.id, id))),
     db.delete(s.txEdits).where(and(eq(s.txEdits.userId, userId), eq(s.txEdits.txId, cashTxId(id)))),
+    db
+      .delete(s.receiptSourceOverrides)
+      .where(
+        and(
+          eq(s.receiptSourceOverrides.userId, userId),
+          eq(s.receiptSourceOverrides.targetKind, 'cash'),
+          eq(s.receiptSourceOverrides.targetKey, String(id)),
+        ),
+      ),
     deleteAttachmentMetadataForTargetQuery(db, userId, cashTxId(id)),
-    invalidateJsonSnapshotQuery(db, userId, 'cash_entries'),
+    invalidateJsonSnapshotQuery(db, userId, 'cash_entries', 'receipt_source_overrides'),
     ...recomputeQueries,
   ]);
   return c.json({ ok: true });

@@ -9,6 +9,7 @@ import {
   type Dataset,
   FINGERPRINT_VERSION,
   type FreeeDeal,
+  HOUSEHOLD_RATIO_BASIS_MAX,
   OwnerValidationError,
   TxSplitsSnapshotError,
   applyFreeeDeals,
@@ -61,6 +62,9 @@ import {
   type CashProjectionEnvelope,
   CashProjectionError,
   type ImportRestoreSettingsSnapshot,
+  type ReceiptSourceOverrideSnapshot,
+  type ReceiptSourceProfileSnapshot,
+  type TaxAccountSettingSnapshot,
   addCashProjection,
   getDb,
   loadDataset,
@@ -97,6 +101,106 @@ const analysisSettingsBackupSchema = z.object({ statMinMonths: z.number().int().
 const subVendorExclusionsBackupSchema = z
   .array(z.object({ partner: z.string().trim().min(1).max(120) }).strict())
   .max(5_000);
+const taxAccountSettingsBackupSchema = z
+  .array(
+    z
+      .object({
+        taxYear: z.number().int().min(2000).max(2099),
+        account: z.string().trim().min(1).max(60),
+        taxAccount: z.string().trim().min(1).max(60).nullable(),
+        businessPercent: z.number().int().min(0).max(100),
+        basis: z.string().max(HOUSEHOLD_RATIO_BASIS_MAX).nullable(),
+      })
+      .strict(),
+  )
+  .max(10_000)
+  .superRefine((rows, context) => {
+    const keys = new Set<string>();
+    rows.forEach((row, index) => {
+      const key = `${row.taxYear}\0${row.account}`;
+      if (keys.has(key))
+        context.addIssue({ code: 'custom', path: [index], message: '年と科目が重複しています' });
+      keys.add(key);
+    });
+  });
+const nullableTrimmed = (max: number) => z.string().trim().min(1).max(max).nullable();
+const httpUrl = z
+  .string()
+  .trim()
+  .min(1)
+  .max(2_000)
+  .refine((value) => {
+    try {
+      const url = new URL(value);
+      return (
+        (url.protocol === 'http:' || url.protocol === 'https:') &&
+        !!url.hostname &&
+        !url.username &&
+        !url.password
+      );
+    } catch {
+      return false;
+    }
+  }, '取得先URLが不正です');
+const receiptSourceProfilesBackupSchema = z
+  .array(
+    z
+      .object({
+        profileKey: z
+          .string()
+          .trim()
+          .min(3)
+          .max(400)
+          .refine((value) => value.includes('::')),
+        merchantKey: z.string().trim().min(1).max(200),
+        serviceName: z.string().trim().min(1).max(120),
+        sourceUrl: httpUrl,
+        loginAccount: nullableTrimmed(254),
+        memo: nullableTrimmed(500),
+      })
+      .strict(),
+  )
+  .max(10_000)
+  .superRefine((rows, context) => {
+    const keys = new Set<string>();
+    rows.forEach((row, index) => {
+      if (keys.has(row.profileKey))
+        context.addIssue({ code: 'custom', path: [index], message: '取得先が重複しています' });
+      keys.add(row.profileKey);
+    });
+  });
+const receiptSourceOverridesBackupSchema = z
+  .array(
+    z
+      .object({
+        targetKind: z.enum(['cash', 'mf']),
+        targetKey: z.string().min(1).max(200),
+        merchantKey: z.string().trim().min(1).max(200),
+        profileKey: nullableTrimmed(400),
+        serviceName: nullableTrimmed(120),
+        sourceUrl: httpUrl.nullable(),
+        loginAccount: nullableTrimmed(254),
+        memo: nullableTrimmed(500),
+      })
+      .strict(),
+  )
+  .max(20_000)
+  .superRefine((rows, context) => {
+    const keys = new Set<string>();
+    rows.forEach((row, index) => {
+      const key = `${row.targetKind}\0${row.targetKey}`;
+      if (keys.has(key)) context.addIssue({ code: 'custom', path: [index], message: '明細が重複しています' });
+      keys.add(key);
+      const explicit = [row.serviceName, row.sourceUrl, row.loginAccount, row.memo];
+      if (
+        row.profileKey
+          ? explicit.some((value) => value !== null)
+          : row.serviceName === null || row.sourceUrl === null
+      ) {
+        context.addIssue({ code: 'custom', path: [index], message: '参照と明示値はどちらか一方です' });
+      }
+    });
+  });
 
 class InvalidRestoreSettingsError extends Error {
   constructor() {
@@ -115,13 +219,45 @@ const resolveRestoreSettings = (
   const sourceExclusions = Object.prototype.hasOwnProperty.call(obj, 'subVendorExclusions')
     ? subVendorExclusionsBackupSchema.safeParse(obj.subVendorExclusions)
     : { success: true as const, data: [] };
-  if (!analysis.success || !sourceExclusions.success) throw new InvalidRestoreSettingsError();
+  const sourceTaxSettings = Object.prototype.hasOwnProperty.call(obj, 'taxAccountSettings')
+    ? taxAccountSettingsBackupSchema.safeParse(obj.taxAccountSettings)
+    : { success: true as const, data: destination.taxAccountSettings };
+  const sourceReceiptProfiles = Object.prototype.hasOwnProperty.call(obj, 'receiptSourceProfiles')
+    ? receiptSourceProfilesBackupSchema.safeParse(obj.receiptSourceProfiles)
+    : { success: true as const, data: destination.receiptSourceProfiles };
+  const sourceReceiptOverrides = Object.prototype.hasOwnProperty.call(obj, 'receiptSourceOverrides')
+    ? receiptSourceOverridesBackupSchema.safeParse(obj.receiptSourceOverrides)
+    : { success: true as const, data: destination.receiptSourceOverrides };
+  if (
+    !analysis.success ||
+    !sourceExclusions.success ||
+    !sourceTaxSettings.success ||
+    !sourceReceiptProfiles.success ||
+    !sourceReceiptOverrides.success
+  ) {
+    throw new InvalidRestoreSettingsError();
+  }
   const byKey = new Map<string, { partner: string; vendorKey: string }>();
   for (const entry of [...destination.subVendorExclusions, ...sourceExclusions.data]) {
     const partner = entry.partner;
     const key =
       'vendorKey' in entry && typeof entry.vendorKey === 'string' ? entry.vendorKey : vendorKey(partner);
     if (key) byKey.set(key, { partner, vendorKey: key });
+  }
+  const taxByKey = new Map<string, TaxAccountSettingSnapshot>();
+  for (const setting of [...destination.taxAccountSettings, ...sourceTaxSettings.data]) {
+    taxByKey.set(`${setting.taxYear}\0${setting.account}`, setting);
+  }
+  const receiptProfilesByKey = new Map<string, ReceiptSourceProfileSnapshot>();
+  for (const profile of [...destination.receiptSourceProfiles, ...sourceReceiptProfiles.data]) {
+    receiptProfilesByKey.set(profile.profileKey, profile);
+  }
+  const receiptOverridesByKey = new Map<string, ReceiptSourceOverrideSnapshot>();
+  for (const override of [...destination.receiptSourceOverrides, ...sourceReceiptOverrides.data]) {
+    if (override.profileKey && !receiptProfilesByKey.has(override.profileKey)) {
+      throw new InvalidRestoreSettingsError();
+    }
+    receiptOverridesByKey.set(`${override.targetKind}\0${override.targetKey}`, override);
   }
   return {
     normMap: destination.normMap,
@@ -130,6 +266,15 @@ const resolveRestoreSettings = (
     cashEntries: destination.cashEntries,
     freeeDeals: destination.freeeDeals,
     txSplits: destination.txSplits,
+    taxAccountSettings: [...taxByKey.values()].sort(
+      (a, b) => a.taxYear - b.taxYear || a.account.localeCompare(b.account, 'ja'),
+    ),
+    receiptSourceProfiles: [...receiptProfilesByKey.values()].sort((a, b) =>
+      a.profileKey.localeCompare(b.profileKey),
+    ),
+    receiptSourceOverrides: [...receiptOverridesByKey.values()].sort(
+      (a, b) => a.targetKind.localeCompare(b.targetKind) || a.targetKey.localeCompare(b.targetKey),
+    ),
   };
 };
 
@@ -415,6 +560,12 @@ const prepareJsonApplication = async (args: {
     subVendorExclusions: restoreSettings.subVendorExclusions,
     existingStatMinMonths: args.destinationSettings.statMinMonths,
     existingSubVendorExclusions: args.destinationSettings.subVendorExclusions,
+    taxAccountSettings: restoreSettings.taxAccountSettings,
+    existingTaxAccountSettings: args.destinationSettings.taxAccountSettings,
+    receiptSourceProfiles: restoreSettings.receiptSourceProfiles,
+    existingReceiptSourceProfiles: args.destinationSettings.receiptSourceProfiles,
+    receiptSourceOverrides: restoreSettings.receiptSourceOverrides,
+    existingReceiptSourceOverrides: args.destinationSettings.receiptSourceOverrides,
     restoredCashEntries: restoringCash ? args.restoredCashEntries : undefined,
   });
   return {
@@ -860,6 +1011,9 @@ importsRoute.post('/imports', async (c) => {
     cashEntries: [],
     freeeDeals: [],
     txSplits: [],
+    taxAccountSettings: [],
+    receiptSourceProfiles: [],
+    receiptSourceOverrides: [],
   };
   let cashEntries: CashEntry[] = [];
   let data = emptyDataset();
@@ -1286,6 +1440,9 @@ importsRoute.post('/restore', async (c) => {
     cashEntries: [],
     freeeDeals: [],
     txSplits: [],
+    taxAccountSettings: [],
+    receiptSourceProfiles: [],
+    receiptSourceOverrides: [],
   };
   let freeeDeals: FreeeDeal[] = [];
   let restoreCommitCount = 0;

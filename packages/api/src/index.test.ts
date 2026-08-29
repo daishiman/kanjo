@@ -8,6 +8,20 @@ const schemaReadyDatabase = {
 };
 
 describe('API公開境界', () => {
+  it('未認証エラーにも共通セキュリティヘッダーを付ける', async () => {
+    const response = await app.request('/api/summary', undefined, {
+      ACCESS_AUD: '',
+      ACCESS_TEAM_DOMAIN: '',
+    });
+
+    expect(response.headers.get('content-security-policy')).toContain("default-src 'self'");
+    expect(response.headers.get('permissions-policy')).toContain('camera=(self)');
+    expect(response.headers.get('referrer-policy')).toBe('strict-origin-when-cross-origin');
+    expect(response.headers.get('strict-transport-security')).toContain('includeSubDomains');
+    expect(response.headers.get('x-content-type-options')).toBe('nosniff');
+    expect(response.headers.get('x-frame-options')).toBe('DENY');
+  });
+
   it('認証未設定で保護APIを公開しない', async () => {
     const response = await app.request('/api/summary', undefined, {
       ACCESS_AUD: '',
