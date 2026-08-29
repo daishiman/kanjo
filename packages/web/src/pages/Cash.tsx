@@ -31,8 +31,10 @@ import {
   useAttachmentDisclosure,
 } from '../components/Attachments.js';
 import { CategoryPicker } from '../components/CategoryPicker.js';
-import { DataTable } from '../components/DataTable.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
+import { HowTo } from '../components/HowTo.js';
 import { PageHeader, PageState } from '../components/Page.js';
+import { Term } from '../components/Term.js';
 import { monthLabel, yen } from '../format.js';
 
 const today = (): string => {
@@ -334,7 +336,9 @@ function TransitFields({
         {error ?? `${built.description} / ${yen(built.amount)}`}
       </span>
       <span className="sub" style={{ margin: 0 }}>
-        電車代は領収書が出ないため「証憑不要」で記帳します。
+        電車代は
+        <Term id="voucher" />
+        (領収書)が出ないため「証憑不要」で記帳します。
         <br />
         {TRANSIT_SAME_ACCOUNT_NOTE}
       </span>
@@ -433,7 +437,10 @@ export function CashDuplicateNotice({
   const byId = new Map(entries.map((e) => [e.id, e]));
   return (
     <div className="card cash-duplicates" style={{ marginTop: 16 }}>
-      <h2>二重計上の疑い {duplicates.length}件</h2>
+      <h2>
+        <Term id="doubleCount" />
+        の疑い {duplicates.length}件
+      </h2>
       <p className="sub">
         現金で記帳した支払いと同じ内容の仕訳が freee 側にもあります。現金払いを後から freee
         にも登録すると、同じ支払いが経費として2回数えられます。どちらか一方だけを残してください(この画面は数え直しません)。
@@ -520,9 +527,12 @@ export function CashPage() {
       <PageHeader route="cash" />
 
       <div className="card">
-        <h2>現金の記帳を追加</h2>
+        <h2>
+          現金の<Term id="journalize">記帳</Term>を追加
+        </h2>
         <p className="sub lines">
-          事業は freee の勘定科目と確定申告の標準科目から選びます。
+          事業は freee の<Term id="account" />
+          と確定申告の標準科目から選びます。
           <br />
           家計は MF の大項目/中項目と生活の標準費目から選びます。
           <br />
@@ -576,6 +586,7 @@ export function CashPage() {
             {shown.length}件
           </span>
         </div>
+        <HowTo id="cashLedger" />
         {update.isError && (
           <div className="notice" role="alert">
             変更を保存できませんでした: {(update.error as Error).message}
@@ -595,7 +606,7 @@ export function CashPage() {
               '科目',
               '金額',
               'メモ',
-              '証憑',
+              termColumn('voucher'),
               { label: '操作', sortable: false },
             ]}
           >

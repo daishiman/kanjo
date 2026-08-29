@@ -4,7 +4,7 @@ import { Fragment } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type SubscriptionsData, api } from '../api.js';
-import { DataTable } from '../components/DataTable.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { SubVendorsPanel, SubsCandidatesPanel } from '../components/SubVendors.js';
@@ -109,7 +109,7 @@ export function SubscriptionsPage() {
         <DataTable
           className="data stack-sm"
           columns={[
-            'ベンダー',
+            termColumn('vendor'),
             '直近月額',
             '平均月額',
             '支払月数',

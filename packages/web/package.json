@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "React SPA (P1〜P11)。HTML版のデザイントークンを移植",
+  "description": "React SPA。HTML版のデザイントークンを移植",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

@@ -1,3 +1,8 @@
+import {
+  DIAGNOSIS_FIXED_COST_REVIEW_THRESHOLD,
+  DIAGNOSIS_SIGNAL_CHANGE_THRESHOLD,
+  DIAGNOSIS_SIGNAL_MIN_AVERAGE,
+} from '@kanjo/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { Term, linkTerms } from './components/Term.js';
@@ -61,6 +66,26 @@ describe('略語の読み方', () => {
   it('並びは指標ガイドと同じ順(行き来しても順番が変わらない)', () => {
     const order = ABBREVIATIONS.map((a) => GUIDE_ORDER.indexOf(a.id));
     expect([...order].sort((x, y) => x - y)).toEqual(order);
+  });
+});
+
+describe('実装由来の判定基準', () => {
+  it('診断シグナルを長期トレンドのTheil-Sen判定と混同しない', () => {
+    expect(GLOSSARY.signal.short).toContain(`${DIAGNOSIS_SIGNAL_CHANGE_THRESHOLD * 100}%`);
+    expect(GLOSSARY.signal.desc).toContain(`${DIAGNOSIS_SIGNAL_MIN_AVERAGE / 10_000}万円`);
+    expect(GLOSSARY.signal.desc).toContain(`${DIAGNOSIS_FIXED_COST_REVIEW_THRESHOLD / 10_000}万円`);
+    expect(GLOSSARY.signal.desc).toContain('Theil-Sen傾きとp値による長期トレンド判定は');
+    expect(GLOSSARY.signal.short).not.toContain('300円');
+  });
+
+  it('p値を帰無仮説が正しい確率や増減が本物である確率として説明しない', () => {
+    const text = `${GLOSSARY.pValue.short} ${GLOSSARY.pValue.desc} ${GLOSSARY.pValue.bench}`;
+    expect(text).toContain('帰無仮説');
+    expect(text).toContain('観測値以上に極端な結果');
+    expect(text).toContain('増減がない確率');
+    expect(text).toContain('増減が本物である確率');
+    expect(text).not.toContain('本物の増減とみなす');
+    expect(text).not.toContain('増えていないのにこう見える確率');
   });
 });
 

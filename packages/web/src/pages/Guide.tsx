@@ -1,99 +1,85 @@
 /** P10 指標ガイド: 指標の意味とベンチマーク(FR-07)。実データを差し込んで解説する */
 import { useQuery } from '@tanstack/react-query';
 import { type DiagnosisData, type SummaryResponse, api } from '../api.js';
-import { DataTable } from '../components/DataTable.js';
-import { PageHeader, PageState } from '../components/Page.js';
-import { pct, ratio, yen } from '../format.js';
-import { ABBREVIATIONS, GLOSSARY, GUIDE_ORDER, type GlossaryEntry, type TermId } from '../glossary.js';
+import { DataTable, termColumn } from '../components/DataTable.js';
+import { PageHeader } from '../components/Page.js';
+import { ratio } from '../format.js';
+import { ABBREVIATIONS } from '../glossary.js';
+import { buildGuideSections } from '../guide-sections.js';
 
 export function GuidePage() {
   const sq = useQuery({ queryKey: ['summary'], queryFn: () => api<SummaryResponse>('/summary') });
   const dq = useQuery({ queryKey: ['diagnosis'], queryFn: () => api<DiagnosisData>('/diagnosis') });
-  if (sq.isLoading || dq.isLoading)
-    return (
-      <>
-        <PageHeader route="guide" />
-        <PageState status="loading" />
-      </>
-    );
-  if (sq.isError || dq.isError)
-    return (
-      <>
-        <PageHeader route="guide" />
-        <PageState status="error" error={sq.error} />
-      </>
-    );
   const ov = sq.data?.overview;
-  const d = dq.data;
-  const def = sq.data?.defense;
   const bench = sq.data?.benchmarks ?? [];
+  const overviewUnavailable = sq.isError
+    ? '取得できませんでした'
+    : sq.isLoading
+      ? '読み込み中'
+      : !ov
+        ? '—'
+        : null;
+  const importedPeriod =
+    overviewUnavailable ??
+    (ov?.months.length
+      ? `${ov.months[0]} 〜 ${ov.months[ov.months.length - 1]}(${ov.months.length}ヶ月)`
+      : '未取込');
+  const revenueMonths = overviewUnavailable ?? (ov ? `${ov.kpi.revenueMonths}ヶ月` : '—');
+  const unrecordedMonths =
+    overviewUnavailable ??
+    (ov ? (ov.unrecordedExpMonths.length ? ov.unrecordedExpMonths.join(', ') : 'なし') : '—');
   const judgePill: Record<string, string> = {
     目安内: 'pill calm',
     目安外: 'pill warn',
     データ不足: 'pill neutral',
   };
 
-  // 用語の意味と目安は glossary.ts が正本。ここでは「現在値」と、実データで補える目安だけを足す。
-  const now: Partial<Record<TermId, string>> = {
-    defenseLine: def && def.status !== 'nodata' ? yen(def.line) : '—',
-    breakEven: d ? yen(d.bep.breakEven) : '—',
-    safetyMargin: d ? pct(d.bep.safetyMargin, 0) : '—',
-    expenseRatio: d ? pct(d.kpi.expenseRatio, 0) : '—',
-    annualized: ov ? yen(ov.kpi.currYearAnnualized) : '—',
-    pareto: ov ? `上位2科目で${(ov.top2Share * 100).toFixed(0)}%` : '—',
-    cv: d ? d.kpi.expenseCv.toFixed(2) : '—',
-    fixedCost: d ? yen(d.kpi.fixedCost) : '—',
-    median: d ? yen(d.kpi.expenseMedian) : '—',
-    pl: '決算書ページで表示',
-    cashFlow: '決算書ページで表示',
-    // BS・ランウェイ・BCPは残高が要る。まだ出せないことを「—」で流さず、条件を書く
-    bs: '残高のCSV取込後に作成(決算書ページ参照)',
-    runway: 'BSの取込後に算出',
-    bcp: '手元資金が固定費の何ヶ月分かで判断',
-    zScore: '科目別に診断ページで表示',
-    range: '科目別に診断ページで表示',
-    subsDup: 'サブスク分析ページで表示',
-    subsSpike: 'サブスク分析ページで表示',
-    revenueShare: 'サブスク分析ページで表示',
-    explainability: '家計ページで表示',
-    savingsRate: '家計ページで表示',
-    unrecordedMonth: ov?.unrecordedExpMonths.length ? ov.unrecordedExpMonths.join(', ') : 'なし',
-  };
-  const benchNow: Partial<Record<TermId, string>> = {
-    annualized: `前年実績${ov ? yen(ov.kpi.prevYearExpense) : '—'}との比較で増減を判断`,
-  };
-  const rows = GUIDE_ORDER.map((id) => {
-    const e = GLOSSARY[id] as GlossaryEntry;
-    return {
-      id,
-      term: e.term,
-      desc: e.desc ?? e.short,
-      now: now[id] ?? '—',
-      bench: benchNow[id] ?? e.bench ?? '—',
-    };
-  });
+  const sections = buildGuideSections(sq.data, dq.data);
 
   return (
     <>
       <PageHeader route="guide" />
 
+      {(sq.isLoading || dq.isLoading) && (
+        <output className="notice">現在値を読み込み中です。用語の意味と目安は先に参照できます。</output>
+      )}
+      {(sq.isError || dq.isError) && (
+        <p className="notice warn" role="alert">
+          現在値を取得できませんでした。用語の意味と目安はそのまま参照できます。
+        </p>
+      )}
+
       <div className="card scroll-x">
         <h2>ベンチマーク(いまの数字と目安)</h2>
-        <DataTable columns={['指標', '現在値', '目安', '判定', { label: '算出元', className: 'left' }]}>
-          {bench.map((b) => (
-            <tr key={b.id}>
-              <td style={{ fontWeight: 700 }}>{b.label}</td>
-              <td className="num">{ratio(b.value, 1)}</td>
-              <td className="num">{b.guide}</td>
-              <td>
-                <span className={judgePill[b.judge]}>{b.judge}</span>
-              </td>
-              <td style={{ textAlign: 'left' }} className="sub">
-                {b.basis}
-              </td>
-            </tr>
-          ))}
-        </DataTable>
+        {sq.isLoading ? (
+          <p className="sub">ベンチマークを読み込み中です。</p>
+        ) : sq.isError ? (
+          <p className="sub">ベンチマークの現在値は取得できませんでした。</p>
+        ) : (
+          <DataTable
+            columns={[
+              '指標',
+              '現在値',
+              '目安',
+              termColumn('judge', { label: '判定' }),
+              { label: '算出元', className: 'left' },
+            ]}
+          >
+            {bench.map((b) => (
+              <tr key={b.id}>
+                <td style={{ fontWeight: 700 }}>{b.label}</td>
+                <td className="num">{ratio(b.value, 1)}</td>
+                <td className="num">{b.guide}</td>
+                <td>
+                  <span className={judgePill[b.judge]}>{b.judge}</span>
+                </td>
+                <td style={{ textAlign: 'left' }} className="sub">
+                  {b.basis}
+                </td>
+              </tr>
+            ))}
+          </DataTable>
+        )}
         <p className="sub">
           目安は参考実装(収支管理ダッシュボード)と同じ。個人事業の一般的な水準で、業種により前後します。
         </p>
@@ -137,28 +123,35 @@ export function GuidePage() {
         </DataTable>
       </div>
 
-      <div className="card scroll-x">
-        <h2>用語の意味</h2>
-        <DataTable
-          columns={[
-            '指標',
-            { label: '意味', className: 'left' },
-            '現在値',
-            { label: '目安', className: 'left' },
-          ]}
-        >
-          {rows.map((r) => (
-            <tr key={r.id}>
-              <td style={{ fontWeight: 700 }}>{r.term}</td>
-              <td style={{ textAlign: 'left' }}>{r.desc}</td>
-              <td className="num">{r.now}</td>
-              <td style={{ textAlign: 'left' }} className="sub">
-                {r.bench}
-              </td>
-            </tr>
-          ))}
-        </DataTable>
-      </div>
+      {/*
+        用語は60語近くある。1枚の表に並べると目的の語まで辿り着けないので、
+        「何を知りたいときに読む節か」を1行付けて分けて出す(節の定義は glossary.ts が正本)。
+      */}
+      {sections.map((sec) => (
+        <div key={sec.title} className="card scroll-x">
+          <h2>{sec.title}</h2>
+          <p className="sub">{sec.lead}</p>
+          <DataTable
+            columns={[
+              '用語',
+              { label: '意味', className: 'left' },
+              '現在値',
+              { label: '目安・判定の基準', className: 'left' },
+            ]}
+          >
+            {sec.rows.map((r) => (
+              <tr key={r.id}>
+                <td style={{ fontWeight: 700 }}>{r.term}</td>
+                <td style={{ textAlign: 'left' }}>{r.desc}</td>
+                <td className="num">{r.now}</td>
+                <td style={{ textAlign: 'left' }} className="sub">
+                  {r.bench}
+                </td>
+              </tr>
+            ))}
+          </DataTable>
+        </div>
+      ))}
 
       <div className="card">
         <h2>データ充足度チェック</h2>
@@ -166,19 +159,15 @@ export function GuidePage() {
           <tbody>
             <tr>
               <td>取込済み期間</td>
-              <td className="num">
-                {ov?.months.length
-                  ? `${ov.months[0]} 〜 ${ov.months[ov.months.length - 1]}(${ov.months.length}ヶ月)`
-                  : '未取込'}
-              </td>
+              <td className="num">{importedPeriod}</td>
             </tr>
             <tr>
               <td>売上のある月</td>
-              <td className="num">{ov ? `${ov.kpi.revenueMonths}ヶ月` : '—'}</td>
+              <td className="num">{revenueMonths}</td>
             </tr>
             <tr>
               <td>未記帳月(統計から除外)</td>
-              <td className="num">{ov?.unrecordedExpMonths.join(', ') || 'なし'}</td>
+              <td className="num">{unrecordedMonths}</td>
             </tr>
           </tbody>
         </table>

@@ -66,10 +66,15 @@ const columnOf = (
     : { label: c as ReactNode, sortable: true };
 
 /**
- * 用語ヘルプ付きの見出し。見出しの文言は辞書から引くので、辞書を直せば表の見出しも揃って変わる。
- * ヘルプは並べ替えボタンの外に出す(押し分けられるようにするため)。
+ * 辞書の用語を見出しにした列。
+ * label を渡すと見出し文だけ差し替える(「元の勘定科目」のように文脈で言い換えたいが、
+ * ホバーは同じ辞書項目を出したい場合)。ヘルプは並べ替えボタンの外に出し、
+ * data-label と揃える必要があるlabel差し替えは明示指定にする。
  */
-export const termColumn = (id: TermId, rest?: { className?: string; sortable?: boolean }): DataColumn => ({
+export const termColumn = (
+  id: TermId,
+  rest?: { className?: string; sortable?: boolean; label?: string },
+): DataColumn => ({
   label: GLOSSARY[id].term,
   // 用語名は label 側で出しているので、ヘルプ側は印だけにする(同じ文字が二度並ぶのを避ける)
   after: <Term id={id}>?</Term>,

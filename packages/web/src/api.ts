@@ -26,6 +26,8 @@ import type {
   SubscriptionsData,
   TradeoffCandidate,
   TradeoffReviewRow,
+  UnsettledDeal,
+  UnsettledReport,
 } from '@kanjo/core';
 import {
   type Owner as CoreOwner,
@@ -216,23 +218,16 @@ export interface TrendsResponse {
   period: PeriodMeta;
 }
 
-/** freee 未決済(未入金・未払)。決済列のあるエクスポートを取り込んだ分だけが対象 */
-export interface UnsettledResponse {
-  /** サーバー側で決めた「今日」。期日超過の判定基準を画面にも示す */
-  today: string;
-  rows: {
-    deal: { date: string; io: 'income' | 'expense'; partner: string; accountNorm: string; amount: number };
-    remaining: number;
-    dueDate: string | null;
-    daysOverdue: number;
-    status: 'overdue' | 'due_soon' | 'scheduled' | 'no_due';
-  }[];
-  summary: {
-    payable: { count: number; amount: number };
-    receivable: { count: number; amount: number };
-    overdue: { count: number; amount: number };
-  };
-}
+/** API表示に必要なdeal項目だけを公開し、集計・状態・予定の型はcore契約を再利用する。 */
+type UnsettledDealView = Omit<UnsettledDeal, 'deal'> & {
+  deal: Pick<UnsettledDeal['deal'], 'date' | 'io' | 'partner' | 'accountNorm' | 'amount'>;
+};
+
+/** rolling deploy中は旧Workerがscheduleを返さないため、取得境界ではoptionalとして表す。 */
+export type UnsettledResponse = Omit<UnsettledReport, 'rows' | 'schedule'> & {
+  rows: UnsettledDealView[];
+  schedule?: UnsettledReport['schedule'];
+};
 
 export type Owner = CoreOwner;
 export { OWNER_VALUES, PAYMENT_METHOD_VALUES };

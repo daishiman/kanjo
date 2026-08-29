@@ -8,7 +8,9 @@ import {
   type FreeeDeal,
   freeePersistedRow,
   hasSettlementColumns,
+  settlementSchedule,
   unsettledDeals,
+  unsettledReport,
   unsettledSummary,
 } from '../src/index.js';
 
@@ -141,5 +143,65 @@ describe('保存行への射影', () => {
     const before = freeePersistedRow(deal());
     const after = freeePersistedRow(deal({ settledDate: '2026-08-25' }));
     expect(JSON.stringify(after)).not.toBe(JSON.stringify(before));
+  });
+});
+
+describe('入金・支払の予定(キャッシュフローの先読み)', () => {
+  it('期日の月ごとに、入る額・出る額・差引を束ねる', () => {
+    const rows = unsettledDeals(
+      [
+        deal({ io: 'income', amount: 50_000, dueDate: '2026-09-30' }),
+        deal({ amount: 30_000, dueDate: '2026-09-15' }),
+        deal({ io: 'income', amount: 80_000, dueDate: '2026-10-31' }),
+      ],
+      TODAY,
+    );
+    expect(settlementSchedule(rows, TODAY)).toEqual([
+      { month: '2026-09', receipt: 50_000, payment: 30_000, net: 20_000, overdue: 0, count: 2 },
+      { month: '2026-10', receipt: 80_000, payment: 0, net: 80_000, overdue: 0, count: 1 },
+    ]);
+  });
+
+  it('期日を過ぎた分は、過ぎた月ではなく今月へ寄せる', () => {
+    // 6月の期日を過ぎた入金は、6月ではなくこれから入る額として今月に立てる
+    const rows = unsettledDeals([deal({ io: 'income', amount: 40_000, dueDate: '2026-06-30' })], TODAY);
+    expect(settlementSchedule(rows, TODAY)).toEqual([
+      { month: '2026-08', receipt: 40_000, payment: 0, net: 40_000, overdue: 40_000, count: 1 },
+    ]);
+  });
+
+  it('期日の無い分は月に混ぜず、末尾に分けて残す', () => {
+    const rows = unsettledDeals(
+      [deal({ amount: 30_000, dueDate: '2026-09-15' }), deal({ amount: 10_000, dueDate: null })],
+      TODAY,
+    );
+    const out = settlementSchedule(rows, TODAY);
+    expect(out.map((m) => m.month)).toEqual(['2026-09', null]);
+    expect(out.at(-1)).toMatchObject({ payment: 10_000, net: -10_000, count: 1 });
+  });
+
+  it('未決済が無ければ空(予定が無いことと、取込が無いことを混ぜない)', () => {
+    expect(settlementSchedule([], TODAY)).toEqual([]);
+  });
+});
+
+describe('未決済APIの共有契約', () => {
+  it('明細・集計・月別予定を同じ行から一度に組み立てる', () => {
+    const report = unsettledReport(
+      [
+        deal({ io: 'expense', amount: 30_000, dueDate: '2026-09-15' }),
+        deal({ io: 'income', amount: 50_000, dueDate: '2026-09-30' }),
+      ],
+      TODAY,
+    );
+    expect(report.today).toBe(TODAY);
+    expect(report.rows).toHaveLength(2);
+    expect(report.summary).toMatchObject({
+      payable: { count: 1, amount: 30_000 },
+      receivable: { count: 1, amount: 50_000 },
+    });
+    expect(report.schedule).toEqual([
+      { month: '2026-09', receipt: 50_000, payment: 30_000, net: 20_000, overdue: 0, count: 2 },
+    ]);
   });
 });

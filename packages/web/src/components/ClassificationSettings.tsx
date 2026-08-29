@@ -22,7 +22,8 @@ import {
 } from '../api.js';
 import { dateTime, yenS } from '../format.js';
 import { AddCategoryInline, CategoryPicker } from './CategoryPicker.js';
-import { DataTable } from './DataTable.js';
+import { DataTable, termColumn } from './DataTable.js';
+import { Term } from './Term.js';
 import { useInvalidateClassification } from './classification-invalidate.js';
 
 /**
@@ -67,7 +68,11 @@ export function InstitutionOwnersCard({ data }: { data: ClassificationResponse }
   });
   return (
     <div className="card">
-      <h2>口座の名義(事業/妻/家族)</h2>
+      <h2>
+        口座の
+        <Term id="holderName" />
+        (事業/妻/家族)
+      </h2>
       <p className="sub">
         根拠はMF明細の「保有金融機関」列。口座ごとに名義を決めると、その口座の明細が名義別の収入・支出に入ります(明細ごとの手動編集が優先)。
       </p>
@@ -80,7 +85,7 @@ export function InstitutionOwnersCard({ data }: { data: ClassificationResponse }
       {!data.institutions.length ? (
         <p className="empty">保有金融機関つきの明細がまだありません。MF明細を取り込むと口座が並びます。</p>
       ) : (
-        <DataTable style={{ maxWidth: 560 }} columns={['保有金融機関', '明細数', '名義']}>
+        <DataTable style={{ maxWidth: 560 }} columns={['保有金融機関', '明細数', termColumn('holderName')]}>
           {data.institutions.map((r) => (
             <tr key={r.institution}>
               <td>{r.institution}</td>
@@ -241,7 +246,7 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
             'キーワード',
             '公私',
             '大項目 / 中項目',
-            '名義',
+            termColumn('holderName'),
             '影響件数',
             { label: '操作', sortable: false },
           ]}
@@ -412,7 +417,7 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
       <DataTable
         style={{ maxWidth: 640 }}
         columns={[
-          scope === 'biz' ? '勘定科目' : '大項目',
+          scope === 'biz' ? termColumn('account', { label: '勘定科目' }) : '大項目',
           ...(scope === 'per' ? ['中項目'] : []),
           '使用中',
           { label: '', sortable: false },

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type BudgetOutlook, type BudgetRow, api } from '../api.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
+import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { yen, yenS } from '../format.js';
@@ -127,7 +128,7 @@ export function BudgetPage() {
         />
         <KpiCard label="直近3ヶ月平均の合計(設定済み科目)" value={yen(summary.actualTotal)} note="実績" />
         <KpiCard
-          label="差異(実績−予算)"
+          label={<Term id="variance">差異(実績−予算)</Term>}
           value={
             <span className={summary.actualTotal - summary.budgetTotal > 0 ? 'pos' : 'neg'}>
               {summary.withBudget ? yenS(summary.actualTotal - summary.budgetTotal) : '—'}
@@ -145,7 +146,7 @@ export function BudgetPage() {
             '直近3ヶ月平均',
             '月次予算',
             '差異(実績−予算)',
-            '判定',
+            termColumn('judge'),
           ]}
         >
           {view.map((r) => (
@@ -224,12 +225,22 @@ function AnnualOutlook({
         ヶ月)
       </h2>
       <p className="sub">
-        着地見込み = 実績累計 + 直近3ヶ月平均 × 残り月数。年平均ではなく直近平均で伸ばすので、年の途中で
+        <Term id="landing" /> = 実績累計 + 直近3ヶ月平均 ×
+        残り月数。年平均ではなく直近平均で伸ばすので、年の途中で
         単価や契約が変わった科目もいまの水準で見えます。未記帳月は実績にも残り月数にも数えません。
       </p>
+      <HowTo id="budgetProgress" />
       <DataTable
         className="data stack-sm"
-        columns={['科目', '実績累計', '直近3ヶ月平均', '着地見込み', '年間予算', '差異(着地−予算)', '判定']}
+        columns={[
+          '科目',
+          '実績累計',
+          '直近3ヶ月平均',
+          '着地見込み',
+          '年間予算',
+          '差異(着地−予算)',
+          termColumn('judge'),
+        ]}
         foot={
           <tr className="total">
             <td data-label="科目">合計(予算設定済み)</td>

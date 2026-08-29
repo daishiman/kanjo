@@ -107,6 +107,30 @@ export const FIGURE_GUIDES = {
     read: '効果額と、削ったときの手間・影響を並べて見ます。',
     act: '効果額の大きい順ではなく、影響の小さいものから着手します。',
   },
+  /** Matrix: 増減の大きい科目 */
+  matrixMovers: {
+    shows: '前年から金額が動いた幅の大きい科目を並べた図です。',
+    read: '右に伸びた棒が増えた科目、左が減った科目を表します。',
+    act: '右に長い棒の科目を、下の月次表で月単位まで追いかけます。',
+  },
+  /** Diagnosis: 科目別プロファイル */
+  diagnosisProfile: {
+    shows: '科目ごとに、いくら使い、どれだけぶれたかを並べた表です。',
+    read: '判定の列だけ先に見て、要確認の行があるかを確かめます。',
+    act: '要確認の行だけを、レンジと直近3ヶ月平均の差で確認します。',
+  },
+  /** Budget: 予算の消化状況 */
+  budgetProgress: {
+    shows: '科目ごとの予算と、実際に使った額を並べた表です。',
+    read: '差異の列の符号を見て、超過している科目だけを拾います。',
+    act: '着地見込みが予算を超える科目から、上限を決め直します。',
+  },
+  /** Cash: 現金の記帳一覧 */
+  cashLedger: {
+    shows: 'freeeに載らない現金払いを、自分で足した記録の一覧です。',
+    read: '証憑の列が空の行は、あとで根拠を出せない支出になります。',
+    act: '証憑の無い行から先に、レシートを撮って添付していきます。',
+  },
 } as const satisfies Record<string, FigureGuide>;
 
 export type FigureId = keyof typeof FIGURE_GUIDES;

@@ -33,8 +33,7 @@ import {
   tradeoffReview,
   transactionExportRows,
   trendsReport,
-  unsettledDeals,
-  unsettledSummary,
+  unsettledReport,
 } from '@kanjo/core';
 import { and, desc, eq } from 'drizzle-orm';
 import type { Context } from 'hono';
@@ -146,8 +145,7 @@ analyticsRoute.get('/unsettled', async (c) => {
     .from(s.freeeDeals)
     .where(and(eq(s.freeeDeals.userId, c.get('userId')), eq(s.freeeDeals.settlementKnown, 1)));
   const today = new Date().toISOString().slice(0, 10);
-  const unsettled = unsettledDeals(rows.map(dealFromRow), today);
-  return c.json({ today, rows: unsettled, summary: unsettledSummary(unsettled) });
+  return c.json(unsettledReport(rows.map(dealFromRow), today));
 });
 
 /**

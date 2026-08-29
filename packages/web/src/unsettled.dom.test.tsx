@@ -42,6 +42,7 @@ const response = (rows: UnsettledResponse['rows']): UnsettledResponse => ({
     receivable: { count: 0, amount: 0 },
     overdue: { count: rows.filter((r) => r.status === 'overdue').length, amount: 0 },
   },
+  schedule: [],
 });
 
 afterEach(() => {
@@ -94,5 +95,53 @@ describe('未決済の一覧', () => {
     mount(response(Array.from({ length: UNSETTLED_ROW_LIMIT + 3 }, () => row())));
     expect(await screen.findByText(/残り3件/)).toBeTruthy();
     expect(screen.getAllByText('架空印刷')).toHaveLength(UNSETTLED_ROW_LIMIT);
+  });
+});
+
+describe('これから現金がいつ動くか', () => {
+  const withSchedule = (schedule: UnsettledResponse['schedule']): UnsettledResponse => ({
+    ...response([row()]),
+    schedule,
+  });
+
+  it('月ごとの差引を累計し、手元残高を含まない予定純増減として示す', async () => {
+    mount(
+      withSchedule([
+        { month: '2026-09', receipt: 0, payment: 30_000, net: -30_000, overdue: 0, count: 1 },
+        { month: '2026-10', receipt: 50_000, payment: 0, net: 50_000, overdue: 0, count: 1 },
+      ]),
+    );
+    const rows = await screen.findAllByRole('row');
+    const nine = rows.find((r) => r.textContent?.startsWith('2026-09'));
+    const ten = rows.find((r) => r.textContent?.startsWith('2026-10'));
+    // 9月に3万沈み(累計 −¥30,000)、10月の入金で累計 ¥20,000 まで戻る
+    expect(nine?.textContent).toContain('−¥30,000');
+    expect(ten?.textContent?.endsWith('¥20,000')).toBe(true);
+    expect(screen.getByText(/それだけで資金不足とは判定しません/)).toBeTruthy();
+  });
+
+  it('旧Workerがscheduleを返さなくても未決済一覧を表示する', async () => {
+    const legacy = response([row()]);
+    legacy.schedule = undefined;
+    mount(legacy);
+    expect(await screen.findByText('架空印刷')).toBeTruthy();
+    expect(screen.queryByText('これから現金がいつ動くか')).toBeNull();
+  });
+
+  it('期日の無い分は表に混ぜず、件数と額を別に伝える', async () => {
+    mount(
+      withSchedule([
+        { month: '2026-09', receipt: 0, payment: 30_000, net: -30_000, overdue: 0, count: 1 },
+        { month: null, receipt: 10_000, payment: 0, net: 10_000, overdue: 0, count: 2 },
+      ]),
+    );
+    expect(await screen.findByText(/期日の入っていない2件/)).toBeTruthy();
+    expect(screen.queryByText('null')).toBeNull();
+  });
+
+  it('予定が無ければ表そのものを出さない', async () => {
+    mount(withSchedule([]));
+    await screen.findByText('架空印刷');
+    expect(screen.queryByText('これから現金がいつ動くか')).toBeNull();
   });
 });

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { type MatrixData, api } from '../api.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { MatrixMoversChart } from '../components/FinancialCharts.js';
+import { HowTo } from '../components/HowTo.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { deltaCls, monthShort, pct, yen } from '../format.js';
@@ -95,6 +96,7 @@ export function MatrixPage() {
       </div>
 
       <section className="card matrix-summary">
+        <HowTo id="matrixMovers" />
         <MatrixMoversChart data={m} />
       </section>
 

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { type DiagnosisData, api } from '../api.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
+import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { pct, yen } from '../format.js';
@@ -117,6 +118,7 @@ export function DiagnosisPage() {
           <Term id="unrecordedMonth" />
           は除外)
         </h2>
+        <HowTo id="diagnosisProfile" />
         <DataTable
           columns={[
             '科目',
@@ -127,8 +129,8 @@ export function DiagnosisPage() {
             termColumn('cv'),
             termColumn('range'),
             termColumn('zScore'),
-            '判定',
-            'シグナル',
+            termColumn('judge'),
+            termColumn('signal'),
           ]}
         >
           {d.entries.map((e) => (

@@ -47,7 +47,8 @@ describe('二重計上の疑いの知らせ', () => {
 
   it('件数と両方の中身を出す', () => {
     render(<CashDuplicateNotice duplicates={[dup()]} entries={[entry()]} />);
-    expect(screen.getByText('二重計上の疑い 1件')).toBeTruthy();
+    // 「二重計上」は用語ホバーの button に包まれ、見出しは複数ノードに割れる。見え方は変わらないので見出し全体で見る
+    expect(screen.getByRole('heading').textContent).toBe('二重計上の疑い 1件');
     const item = screen.getByRole('listitem');
     expect(item.textContent).toContain('架空商工会議所 定例会');
     expect(item.textContent).toContain('会議費');
