@@ -10,8 +10,29 @@ export function PageHeader({ route }: { route: AppRouteId }) {
   return (
     <header className="page-heading">
       <h1 className="page-title">{metadata.label}</h1>
-      <p className="page-task">{linkTerms(metadata.task)}</p>
+      {/* 段階表示: 見出しは1文に保ちつつ、判定基準・色の意味・免責といった
+          「知らないと誤読する情報」は畳んで残す。<details> なのでJSなしで開閉でき、
+          用語ホバー(linkTerms)も task と同じように効く。 */}
+      <TaskCopy task={metadata.task} detail={metadata.taskDetail} summary="この画面のくわしい説明" />
     </header>
+  );
+}
+
+/**
+ * 「この単位は何をする場所か」の1文と、畳んだ詳細。
+ *
+ * 画面(PageHeader)と、画面の中のタブ(支出分析)で同じ形を使う。タブは元は独立した画面で、
+ * それぞれの説明文を持っていた。束ねたときにその文を捨てると、用語ホバーごと説明が消える。
+ */
+export function TaskCopy({ task, detail, summary }: { task: string; detail: string; summary: string }) {
+  return (
+    <>
+      <p className="page-task">{linkTerms(task)}</p>
+      <details className="page-task-detail">
+        <summary>{summary}</summary>
+        <p>{linkTerms(detail)}</p>
+      </details>
+    </>
   );
 }
 

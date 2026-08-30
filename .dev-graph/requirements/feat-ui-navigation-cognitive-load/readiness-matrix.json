@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-ui-navigation-cognitive-load",
+  "snapshot_digest": "sha256:90aee26caa05b5c72a070661be81cbdceb2f9044c14bd8c9c955ea45fb7d5185",
+  "status": "ready",
+  "missing_sections": [],
+  "remediation_owners": {},
+  "gates": {
+    "C11_snapshot_validation": {
+      "status": "PASS",
+      "source_inputs": [
+        {
+          "path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/atomic-promotion-receipt.json",
+          "sha256": "854091dfaf5aa89af32fdf760f3a30ea6a602bceb5e7bc5e8b7c5d0a7ffe3d6d"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/dev-graph-registration-receipt.json",
+          "sha256": "940bf6b42854bb58cfe4a7345c2145d4375c45077f24483cfd7c25d6c93c0196"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/staging-manifest.json",
+          "sha256": "4dc2f36dc2a371015432b7169341cf779d6c77dbb47acd53f5ce98770f65594f"
+        },
+        {
+          "path": ".dev-graph/state/graph.json",
+          "sha256": "08f8cc611a7743721a400cf2fba19a52223426d85e53ddb99f85fd4490c78483"
+        },
+        {
+          "path": "features/feat-ui-navigation-cognitive-load.context.json",
+          "sha256": "696689ce189bff95b1a0c3ae066e320478d933b2afad935755ae80ab1c08d107"
+        }
+      ]
+    },
+    "C02_saved_state": {
+      "status": "PASS",
+      "feature": {
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete"
+      },
+      "tasks": {
+        "count": 13,
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete",
+        "missing_sections": []
+      }
+    },
+    "system_plan_validation": {
+      "status": "PASS",
+      "validated_digest": "sha256:be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+      "phase_count": 13,
+      "node_count": 13,
+      "violations": []
+    }
+  },
+  "staleness_rule": "source input、feature context、graph、promotion receipt、registration receipt のいずれかの sha256 が変化した場合は handoff を無効化して再生成する。",
+  "downstream_projection": {
+    "required": true,
+    "owner": "dev-graph node",
+    "source_task_specs": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs",
+    "target_task_root": "tasks/feat-ui-navigation-cognitive-load",
+    "reason": "requirements は task spec を生成せず、plan producer の確定 bytes を node verb が graph file_path へ登録する。"
+  }
+}
+

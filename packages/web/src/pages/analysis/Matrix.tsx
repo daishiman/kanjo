@@ -2,16 +2,34 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { type MatrixData, api } from '../api.js';
-import { DataTable, termColumn } from '../components/DataTable.js';
-import { MatrixMoversChart } from '../components/FinancialCharts.js';
-import { HowTo } from '../components/HowTo.js';
-import { PageHeader, PageState } from '../components/Page.js';
-import { Term } from '../components/Term.js';
-import { deltaCls, monthShort, pct, yen } from '../format.js';
-import { usePeriod } from '../period.js';
+import { type MatrixData, api } from '../../api.js';
+import { DataTable, termColumn } from '../../components/DataTable.js';
+import { MatrixMoversChart } from '../../components/FinancialCharts.js';
+import { HowTo } from '../../components/HowTo.js';
+import { PageState } from '../../components/Page.js';
+import { Term } from '../../components/Term.js';
+import { deltaCls, monthShort, pct, yen } from '../../format.js';
+import { usePeriod } from '../../period.js';
 
 type Mode = 'val' | 'mom' | 'yoy';
+
+/**
+ * 増=赤・減=緑の凡例。Trends.tsx の DIRECTION_CLS と同じ規約だが、一般的な
+ * 「赤=悪・緑=良」とは向きが逆に見えるので、色を使う画面には凡例を置く。
+ * 色だけに頼らせないため、符号(+ / -)と「増えた/減った」の語を必ず添える。
+ * 見本の色クラスは cell() と同じ deltaCls の出力(pos / neg)をそのまま使う。
+ */
+function ColorLegend() {
+  return (
+    <p className="sub">
+      <strong>色の凡例</strong>(支出が基準): <span className="num pos">{pct(0.123)}</span> のように
+      <strong>先頭がプラスで赤</strong>なら増えた、<span className="num neg">{pct(-0.123)}</span> のように
+      <strong>先頭がマイナスで緑</strong>なら減った。
+      <span className="pill neutral">未記帳</span>の月は年計・比率から除外、比較できる前の月がないところは
+      「—」。色がつくのは比率(前月比・前年同月比・前年比)で、金額表示には色をつけません。
+    </p>
+  );
+}
 
 export function MatrixPage() {
   const [mode, setMode] = useState<Mode>('val');
@@ -23,14 +41,12 @@ export function MatrixPage() {
   if (q.isLoading)
     return (
       <>
-        <PageHeader route="matrix" />
         <PageState status="loading" />
       </>
     );
   if (q.isError || !q.data)
     return (
       <>
-        <PageHeader route="matrix" />
         <PageState status="error" error={q.error} />
       </>
     );
@@ -38,7 +54,6 @@ export function MatrixPage() {
   if (!m.months.length)
     return (
       <>
-        <PageHeader route="matrix" />
         <PageState
           status="empty"
           message="比較するデータが未取込です。"
@@ -73,7 +88,7 @@ export function MatrixPage() {
 
   return (
     <>
-      <PageHeader route="matrix" />
+      <ColorLegend />
 
       <div className="toolbar">
         <span className="segment">

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "promoted",
+  "promoted_at": "2026-08-29T15:48:08Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+  "evaluated_digest": "sha256:be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+  "published_digest": "sha256:be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+  "implementation_readiness": "complete",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS"
+  },
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/dev-graph-registration.json"
+}

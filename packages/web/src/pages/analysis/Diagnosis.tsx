@@ -1,13 +1,13 @@
 /** P3 統計診断: 信号(判定)を見て対応すべき科目を決める */
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { type DiagnosisData, api } from '../api.js';
-import { DataTable, termColumn } from '../components/DataTable.js';
-import { HowTo } from '../components/HowTo.js';
-import { KpiCard, PageHeader, PageState } from '../components/Page.js';
-import { Term } from '../components/Term.js';
-import { pct, yen } from '../format.js';
-import { usePeriod } from '../period.js';
+import { type DiagnosisData, api } from '../../api.js';
+import { DataTable, termColumn } from '../../components/DataTable.js';
+import { HowTo } from '../../components/HowTo.js';
+import { KpiCard, PageState } from '../../components/Page.js';
+import { Term } from '../../components/Term.js';
+import { pct, yen } from '../../format.js';
+import { usePeriod } from '../../period.js';
 
 const judgePill: Record<string, string> = {
   要確認: 'pill alert',
@@ -32,14 +32,12 @@ export function DiagnosisPage() {
   if (q.isLoading)
     return (
       <>
-        <PageHeader route="diagnosis" />
         <PageState status="loading" />
       </>
     );
   if (q.isError || !q.data)
     return (
       <>
-        <PageHeader route="diagnosis" />
         <PageState status="error" error={q.error} />
       </>
     );
@@ -47,7 +45,6 @@ export function DiagnosisPage() {
   if (!d.entries.length)
     return (
       <>
-        <PageHeader route="diagnosis" />
         <PageState
           status="empty"
           message="診断できるデータが未取込です。"
@@ -62,8 +59,6 @@ export function DiagnosisPage() {
 
   return (
     <>
-      <PageHeader route="diagnosis" />
-
       <div className="kpis">
         <KpiCard
           label={

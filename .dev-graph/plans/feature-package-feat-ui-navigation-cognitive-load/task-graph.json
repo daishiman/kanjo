@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0.0",
+  "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+  "parent_feature": "feat-ui-navigation-cognitive-load",
+  "nodes": [
+    {
+      "id": "SYS-UINAV-P01",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P01",
+      "title": "要求・現状UI監査の確定",
+      "depends_on": []
+    },
+    {
+      "id": "SYS-UINAV-P02",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P02",
+      "title": "共通ナビゲーション設計の確定",
+      "depends_on": [
+        "SYS-UINAV-P01"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P03",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P03",
+      "title": "直感性・アクセシビリティ設計レビュー",
+      "depends_on": [
+        "SYS-UINAV-P02"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P04",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P04",
+      "title": "回帰・視覚テスト設計",
+      "depends_on": [
+        "SYS-UINAV-P03"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P05",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P05",
+      "title": "共通サイドバーと低認知負荷UIの実装",
+      "depends_on": [
+        "SYS-UINAV-P04"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P06",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P06",
+      "title": "自動テストとビルド検証",
+      "depends_on": [
+        "SYS-UINAV-P05"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P07",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P07",
+      "title": "受入条件と主要導線の確認",
+      "depends_on": [
+        "SYS-UINAV-P06"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P08",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P08",
+      "title": "共通化と全ページ整合の仕上げ",
+      "depends_on": [
+        "SYS-UINAV-P07"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P09",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P09",
+      "title": "品質・アクセシビリティ・レスポンシブ監査",
+      "depends_on": [
+        "SYS-UINAV-P08"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P10",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P10",
+      "title": "最終コード・UXレビュー",
+      "depends_on": [
+        "SYS-UINAV-P09"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P11",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P11",
+      "title": "再現可能な検証証跡の集約",
+      "depends_on": [
+        "SYS-UINAV-P10"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P12",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P12",
+      "title": "利用・運用文書の更新",
+      "depends_on": [
+        "SYS-UINAV-P11"
+      ]
+    },
+    {
+      "id": "SYS-UINAV-P13",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "phase_ref": "P13",
+      "title": "PR直前のリリース準備",
+      "depends_on": [
+        "SYS-UINAV-P12"
+      ]
+    }
+  ]
+}
+

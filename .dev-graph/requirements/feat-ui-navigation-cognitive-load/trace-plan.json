@@ -1,0 +1,176 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-ui-navigation-cognitive-load",
+  "snapshot_digest": "sha256:90aee26caa05b5c72a070661be81cbdceb2f9044c14bd8c9c955ea45fb7d5185",
+  "source_lineage": [
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md",
+    "specs/ui-navigation-cognitive-load.md",
+    "architecture/arch-ui-navigation-experience.md",
+    "architecture/arch-ui-navigation-frontend.md",
+    "features/feat-ui-navigation-cognitive-load.md"
+  ],
+  "plan_package": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load",
+  "plan_digest": "sha256:be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+  "requirements": [
+    {
+      "requirement_id": "REQ-NAV-001",
+      "title": "現在地は常に一意",
+      "statement": "`/tax` と `/tax/receipts` を含む全ルートで active は1件だけとし、`aria-current=page` を現在ページだけに付与する。",
+      "source_refs": [
+        "features/feat-ui-navigation-cognitive-load.md",
+        "specs/ui-navigation-cognitive-load.md"
+      ],
+      "system_tasks": [
+        "SYS-UINAV-P02",
+        "SYS-UINAV-P05",
+        "SYS-UINAV-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-NAV-002",
+      "title": "全ルートの意味的アイコン",
+      "statement": "17 route 全てに重複しない意味の icon key と可視ラベルを持たせ、アイコン単独で意味を伝えない。",
+      "source_refs": [
+        "features/feat-ui-navigation-cognitive-load.md",
+        "specs/ui-navigation-cognitive-load.md"
+      ],
+      "system_tasks": [
+        "SYS-UINAV-P02",
+        "SYS-UINAV-P05",
+        "SYS-UINAV-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-NAV-003",
+      "title": "読みやすい間隔",
+      "statement": "icon-label、nav row、group separator、sidebar width を共通 token で整え、長い日本語ラベルを崩さない。",
+      "source_refs": [
+        "features/feat-ui-navigation-cognitive-load.md",
+        "specs/ui-navigation-cognitive-load.md"
+      ],
+      "system_tasks": [
+        "SYS-UINAV-P02",
+        "SYS-UINAV-P05",
+        "SYS-UINAV-P09"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-NAV-004",
+      "title": "色以外の状態手掛かり",
+      "statement": "current は色に加えて形状・indicator・aria-current で識別でき、hover と focus-visible を分離する。",
+      "source_refs": [
+        "features/feat-ui-navigation-cognitive-load.md",
+        "specs/ui-navigation-cognitive-load.md"
+      ],
+      "system_tasks": [
+        "SYS-UINAV-P03",
+        "SYS-UINAV-P05",
+        "SYS-UINAV-P09"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-UX-005",
+      "title": "初期表示の情報優先度",
+      "statement": "各ページで目的、重要状態、主操作を先に見せ、補足や低頻度操作を同じ強度で並べない。",
+      "source_refs": [
+        "features/feat-ui-navigation-cognitive-load.md",
+        "specs/ui-navigation-cognitive-load.md"
+      ],
+      "system_tasks": [
+        "SYS-UINAV-P01",
+        "SYS-UINAV-P05",
+        "SYS-UINAV-P07",
+        "SYS-UINAV-P08"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-UX-006",
+      "title": "文脈を保つ段階的開示",
+      "statement": "詳細は inline disclosure、drawer、必要な modal を用途で使い分け、通常の画面遷移を modal で遮らない。",
+      "source_refs": [
+        "features/feat-ui-navigation-cognitive-load.md",
+        "specs/ui-navigation-cognitive-load.md"
+      ],
+      "system_tasks": [
+        "SYS-UINAV-P03",
+        "SYS-UINAV-P05",
+        "SYS-UINAV-P07",
+        "SYS-UINAV-P08"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-EDIT-007",
+      "title": "安全な編集面",
+      "statement": "編集面で対象、変更内容、保存、取消、危険性、処理中、成功・失敗を識別でき、閉じる前に未保存変更を守る。",
+      "source_refs": [
+        "features/feat-ui-navigation-cognitive-load.md",
+        "specs/ui-navigation-cognitive-load.md"
+      ],
+      "system_tasks": [
+        "SYS-UINAV-P03",
+        "SYS-UINAV-P05",
+        "SYS-UINAV-P07",
+        "SYS-UINAV-P09"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-QA-008",
+      "title": "回帰と視覚検証",
+      "statement": "unit、DOM、typecheck、build、主要 viewport、200%相当、keyboard、reduced motion を検証し、匿名化証跡を残す。",
+      "source_refs": [
+        "features/feat-ui-navigation-cognitive-load.md",
+        "specs/ui-navigation-cognitive-load.md"
+      ],
+      "system_tasks": [
+        "SYS-UINAV-P04",
+        "SYS-UINAV-P06",
+        "SYS-UINAV-P09",
+        "SYS-UINAV-P10",
+        "SYS-UINAV-P11",
+        "SYS-UINAV-P13"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    }
+  ]
+}
+

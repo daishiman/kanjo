@@ -2,33 +2,16 @@
 // CSS 文字列の正規表現ではなく、本物の styles.css を headless Chrome に読み込ませ、
 // 「見出し行が先頭データ行に重なるのは、ページ上部の固定ヘッダー直下に固定されている時だけ」を全パターン・全幅で実測する。
 // 使い方: node scripts/check-thead-render.mjs  (CHROME_PATH で Chrome の場所を指定できる。無ければ既定の場所を探す)
-import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { launchHeadlessChrome, stopHeadlessChrome } from './headless-chrome.mjs';
 
 const WEB_DIR = fileURLToPath(new URL('..', import.meta.url));
 // STYLES_PATH を指定すると別の CSS で検査できる(過去版で不合格になることの確認用)
 const STYLES = readFileSync(process.env.STYLES_PATH ?? join(WEB_DIR, 'src/styles.css'), 'utf8');
 const WIDTHS = [1280, 768, 375];
-const PORT = 9400 + Math.floor(Math.random() * 300);
-
-function chromePath() {
-  const candidates = [
-    process.env.CHROME_PATH,
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable',
-    '/usr/bin/chromium-browser',
-    '/usr/bin/chromium',
-  ].filter(Boolean);
-  const found = candidates.find((p) => existsSync(p));
-  if (!found)
-    throw new Error(`Chrome が見つかりません。CHROME_PATH を指定してください: ${candidates.join(', ')}`);
-  return found;
-}
-
 // 画面で実際に使っている表の置き方を網羅する(新しい置き方を増やしたらここにも足す)
 const rows = (n) =>
   Array.from(
@@ -82,50 +65,16 @@ const dir = mkdtempSync(join(tmpdir(), 'kanjo-thead-'));
 const fixturePath = join(dir, 'fixture.html');
 writeFileSync(fixturePath, fixture);
 
-const chrome = spawn(
-  chromePath(),
-  [
-    '--headless=new',
-    '--disable-gpu',
-    '--no-sandbox',
-    `--remote-debugging-port=${PORT}`,
-    `--user-data-dir=${join(dir, 'profile')}`,
-    '--no-first-run',
-    '--window-size=1280,900',
-    'about:blank',
-  ],
-  { stdio: ['ignore', 'ignore', 'ignore'] },
-);
+let chrome;
 let ws;
 
-const waitForChromeExit = (timeoutMs) => {
-  if (chrome.exitCode !== null) return Promise.resolve(true);
-  return new Promise((resolve) => {
-    const onExit = () => {
-      clearTimeout(timer);
-      resolve(true);
-    };
-    const timer = setTimeout(() => {
-      chrome.off('exit', onExit);
-      resolve(false);
-    }, timeoutMs);
-    chrome.once('exit', onExit);
-  });
-};
-
 try {
-  let targets;
-  for (let i = 0; i < 60; i++) {
-    await new Promise((r) => setTimeout(r, 500));
-    try {
-      targets = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json();
-      break;
-    } catch {}
-  }
-  if (!targets) throw new Error('Chrome が起動しませんでした');
+  const launched = await launchHeadlessChrome({ profileRoot: dir, windowSize: '1280,900' });
+  chrome = launched.chrome;
+  const { port, targets } = launched;
   let page = targets.find((t) => t.type === 'page');
   if (!page)
-    page = await (await fetch(`http://127.0.0.1:${PORT}/json/new?about:blank`, { method: 'PUT' })).json();
+    page = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' })).json();
   ws = new WebSocket(page.webSocketDebuggerUrl);
   await new Promise((resolve) => {
     ws.onopen = resolve;
@@ -262,11 +211,7 @@ try {
   }
 } finally {
   if (ws && ws.readyState < WebSocket.CLOSING) ws.close();
-  if (chrome.exitCode === null) chrome.kill('SIGTERM');
-  if (!(await waitForChromeExit(5_000)) && chrome.exitCode === null) {
-    chrome.kill('SIGKILL');
-    await waitForChromeExit(1_000);
-  }
+  await stopHeadlessChrome(chrome);
   // Chromeの子プロセスがprofile配下を掴んだまま終わることがある(Linuxで顕著)。
   // 一時ディレクトリの後片付けは再試行し、それでも残る場合も検査結果は落とさない。
   try {

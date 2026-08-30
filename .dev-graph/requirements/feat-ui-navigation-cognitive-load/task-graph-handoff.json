@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "requirements-handoff",
+  "status": "ready",
+  "feature_id": "feat-ui-navigation-cognitive-load",
+  "parent_feature": "feat-ui-navigation-cognitive-load",
+  "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+  "handoff_target": "task-graph",
+  "snapshot_digest": "sha256:90aee26caa05b5c72a070661be81cbdceb2f9044c14bd8c9c955ea45fb7d5185",
+  "validated_plan_digest": "sha256:be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+  "requirements_document": ".dev-graph/requirements/feat-ui-navigation-cognitive-load/requirements.md",
+  "readiness_matrix": ".dev-graph/requirements/feat-ui-navigation-cognitive-load/readiness-matrix.json",
+  "trace_plan": ".dev-graph/requirements/feat-ui-navigation-cognitive-load/trace-plan.json",
+  "task_graph": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-graph.json",
+  "system_build_handoff": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/system-build-handoff.json",
+  "task_spec_source_root": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs",
+  "task_projection_target_root": "tasks/feat-ui-navigation-cognitive-load",
+  "requirement_count": 8,
+  "task_count": 13,
+  "missing_sections": [],
+  "self_generated_code_files": [],
+  "consumer_action": "dev-graph node で確定 task spec を graph file_path へ dry-run 後に登録し、task-graph build を開始する。"
+}
+

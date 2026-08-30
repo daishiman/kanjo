@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { FIGURE_GUIDES, type FigureGuide } from './figure-guides.js';
 
 const entries = Object.entries(FIGURE_GUIDES) as [string, FigureGuide][];
-const matrixSource = readFileSync(new URL('./pages/Matrix.tsx', import.meta.url), 'utf8');
+const matrixSource = readFileSync(new URL('./pages/analysis/Matrix.tsx', import.meta.url), 'utf8');
 
 describe('図・表の見方', () => {
   it('1行は40〜50字程度に収める', () => {

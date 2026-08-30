@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+  "parent_feature": "feat-ui-navigation-cognitive-load",
+  "source_feature_digest": "sha256:696689ce189bff95b1a0c3ae066e320478d933b2afad935755ae80ab1c08d107",
+  "task_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "task_spec_paths": [
+    "task-specs/phase-01-requirements.md",
+    "task-specs/phase-02-architecture.md",
+    "task-specs/phase-03-design-review.md",
+    "task-specs/phase-04-test-design.md",
+    "task-specs/phase-05-implementation.md",
+    "task-specs/phase-06-test-run.md",
+    "task-specs/phase-07-acceptance.md",
+    "task-specs/phase-08-refactoring-migration.md",
+    "task-specs/phase-09-quality-assurance.md",
+    "task-specs/phase-10-final-review.md",
+    "task-specs/phase-11-evidence.md",
+    "task-specs/phase-12-documentation-operations.md",
+    "task-specs/phase-13-release-deploy.md"
+  ],
+  "task_node_ids": [
+    "SYS-UINAV-P01",
+    "SYS-UINAV-P02",
+    "SYS-UINAV-P03",
+    "SYS-UINAV-P04",
+    "SYS-UINAV-P05",
+    "SYS-UINAV-P06",
+    "SYS-UINAV-P07",
+    "SYS-UINAV-P08",
+    "SYS-UINAV-P09",
+    "SYS-UINAV-P10",
+    "SYS-UINAV-P11",
+    "SYS-UINAV-P12",
+    "SYS-UINAV-P13"
+  ]
+}
+

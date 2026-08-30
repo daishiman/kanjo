@@ -1,0 +1,73 @@
+{
+  "feature_id": "feat-ui-navigation-cognitive-load",
+  "task_id": "SYS-UINAV-P06",
+  "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+  "result": "PASS",
+  "privacy": "anonymous fixtures and source code only; data/ and .dev.vars were not read",
+  "commands": [
+    {
+      "command": "pnpm --filter @kanjo/web exec vitest run --maxWorkers=1",
+      "exit_code": 0,
+      "summary": "47 files, 273 tests passed; both real-render Chrome checks passed after launcher hardening and async test-process integration"
+    },
+    {
+      "command": "pnpm test (diagnostic run before Chrome launcher hardening)",
+      "exit_code": 1,
+      "summary": "core 449 passed / 6 opt-in real-data tests skipped and API 239 passed; web 272 passed / one Chrome startup timed out after the old fixed 30-second wait"
+    },
+    {
+      "command": "pnpm --filter @kanjo/web exec vitest run src/thead-render.test.ts src/mobile-layout-render.test.ts --maxWorkers=1",
+      "exit_code": 0,
+      "summary": "2 real-render tests passed; the shared launcher recovered a delayed first Chrome startup with a bounded retry"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "summary": "all workspace TypeScript noEmit checks passed"
+    },
+    {
+      "command": "pnpm lint",
+      "exit_code": 0,
+      "summary": "Biome, skill sync, glossary and report CSS checks passed across 259 files"
+    },
+    {
+      "command": "pnpm build",
+      "exit_code": 0,
+      "summary": "Web production build and Wrangler Worker deploy dry-run passed; initial JS 102.10 KiB / 110 KiB; no deployment performed"
+    },
+    {
+      "command": "pnpm run runbooks:test",
+      "exit_code": 0,
+      "summary": "offline row-count reconciliation scenarios passed"
+    },
+    {
+      "command": "pnpm run github-scripts:test",
+      "exit_code": 0,
+      "summary": "34 GitHub helper-script tests passed"
+    },
+    {
+      "command": "pnpm run skills:test",
+      "exit_code": 0,
+      "summary": "27 accounting-report skill tests passed"
+    },
+    {
+      "command": "pnpm audit --prod --audit-level high",
+      "exit_code": 0,
+      "summary": "No known production dependency vulnerabilities found"
+    },
+    {
+      "command": "pnpm test (final aggregate run after Chrome launcher and async wrapper hardening)",
+      "exit_code": 0,
+      "summary": "core 449 passed / 6 opt-in real-data tests skipped; API 239 passed; web 273 passed; runbook, 34 GitHub helper-script tests and 27 skill tests passed"
+    }
+  ],
+  "tdd": {
+    "red": "Before implementation, 7 navigation contract tests produced 5 expected failures: tax double current, missing 17 icon keys, missing icon DOM, missing 44px/current cue tokens.",
+    "green": "After implementation, 22 navigation contract tests and all 273 web regressions passed. The duplicated fixed-port Chrome startup code was consolidated into an OS-assigned-port launcher with bounded retry, and the render-test wrapper was made asynchronous so a slow retry cannot block Vitest worker communication."
+  },
+  "coverage": {
+    "status": "not_configured",
+    "reason": "The workspace has no coverage script or installed Vitest coverage provider; no dependency was added solely to manufacture a metric."
+  },
+  "high_severity_open": 0
+}

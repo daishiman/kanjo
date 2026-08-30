@@ -12,7 +12,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { TrendRow, TrendsResponse } from './api.js';
-import { TrendsPage } from './pages/Trends.js';
+import { TrendsPage } from './pages/analysis/Trends.js';
 
 // jsdom には canvas が無く、再描画のたびに Chart.js が実サイズを測ろうとして落ちる。
 // この画面で検証したいのは表と操作なので、グラフは差し替える

@@ -1,7 +1,7 @@
-import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { runRenderScript } from './render-script-test-helper';
 
 // 表見出しの固定(sticky)を、本物の styles.css を headless Chrome に描画させて実測する。
 // CSS 文字列の正規表現検査では「押し出されて先頭行を隠す」不具合を捕まえられなかったため、実描画で判定する。
@@ -27,18 +27,8 @@ describe('表見出しの固定(実描画)', () => {
   const run = hasChrome ? it : it.skip;
   run(
     '全ての置き方・全ての幅で、見出し行が先頭行を隠さず、読み進めると固定ヘッダー直下に固定される',
-    () => {
-      let output = '';
-      try {
-        output = execFileSync(process.execPath, [SCRIPT], {
-          encoding: 'utf8',
-          stdio: ['ignore', 'pipe', 'pipe'],
-          timeout: 90_000,
-        });
-      } catch (error) {
-        const e = error as { stdout?: string; stderr?: string; message: string };
-        throw new Error(`${e.message}\n${e.stdout ?? ''}\n${e.stderr ?? ''}`);
-      }
+    async () => {
+      const output = await runRenderScript(SCRIPT);
       expect(output).toContain('すべて合格');
     },
     120_000,
