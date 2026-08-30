@@ -100,6 +100,31 @@
       "referenced_by": [
         "feat-tax-preparation"
       ]
+    },
+    {
+      "id": "arch-transaction-split-projection",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend",
+        "frontend",
+        "data"
+      ],
+      "title": "明細の分割記帳を投影で解く境界",
+      "file_path": "architecture/arch-transaction-split-projection.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "specs/transaction-splits.md",
+        "source_version": "1.1",
+        "source_digest": null,
+        "imported_at": "2026-08-30T00:00:00Z"
+      },
+      "referenced_by": [
+        "feat-transaction-split-readability"
+      ]
     }
   ]
 }

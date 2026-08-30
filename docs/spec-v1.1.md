@@ -218,6 +218,17 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 - lifecycle・画面・API・受入の規範詳細は
   [`specs/tax-preparation.md`](../specs/tax-preparation.md)を正とする
 
+**FR-12 明細の分割記帳(P5)**
+- 1件の引き落としを、用途ごとの内訳N行(2〜50)へ分ける。入力は「金額」と「割合」の2通りで、保存するのは常に金額だけ(割合保存は元金額の変動で確定済み記帳が動く)
+- 内訳の合計は元の金額と1円の差も許さない。合計が合うまで保存させず、残額を入力中ずっと表示する。上限超過は「はみ出し」として同じ検証で弾く
+- 内訳ごとに公私(事業/個人)と科目を割り当てる。名義・メモは親から引き継ぎ、内訳ごとに選び直させない
+- 集計は投影(`projectAccountingDataset`)で行い、親1行を内訳N行に置き換える。家計の科目別支出・名義別・事業立替のすべてが内訳の姿で出る
+- 合計不一致・親金額の変動・IDが安定しない明細は、内訳を集計へ出さず親の金額のまま数える(fail-closed)。黙って隠さず、画面へ要確認状態を返す
+- 証憑は内訳ごとではなく**親取引に1件**添付する。棚卸しでは子行を親へ畳み、内訳の科目をすべて併記する
+- MF CSVのID列が空の明細(`identity_stable=0`)は分割・添付とも不可。再取込を案内する
+- 不変条件・UI表示契約・受入の規範詳細は
+  [`specs/transaction-splits.md`](../specs/transaction-splits.md)を正とする
+
 ---
 
 ## 5. 非機能要件
@@ -543,7 +554,7 @@ CREATE TABLE restored_monthly_agg (
 GitHub Actions、ブランチ戦略は `main`(production)+PR(品質ゲート)。
 
 ```
-PR:    wrangler types → lint(Biome) → typecheck → unit test(core/api/web)
+PR:    lint(Biome) → typecheck(wrangler typesを内包) → unit test(core/api/web)
 main:  上記CIの成功 → wrangler deploy(production)
        → 30秒後とさらに90秒後の2回スモークテスト
 手動:  D1 Time Travelの復元地点確認 → D1 migration適用

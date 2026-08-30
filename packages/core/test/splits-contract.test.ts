@@ -301,4 +301,53 @@ describe('集計への反映', () => {
     applySplits(d, []);
     expect(d.mfTx.map((t) => t.id)).toEqual(['t1']);
   });
+
+  // 分割は仕分け画面の中だけの表示ではない。
+  // 集計は projectAccountingDataset を通した結果を使うので、
+  // 家計の科目別・名義別・事業立替のどれもが内訳の姿で出る必要がある。
+  // ここが繋がっていないと、画面では分けたのに家計簿は「未分類10万円」のまま静かにずれる。
+  describe('他ページの集計への波及', () => {
+    it('家計の科目別支出は、親の1行ではなく内訳の科目で積まれる', () => {
+      const d = dataWith(tx('t1', -100000));
+      d.txSplits = [split('t1', 1, 60000, '食費'), split('t1', 2, 40000, '水道光熱費')];
+      const projected = projectAccountingDataset(d);
+      expect(projected.personal['2026-07'].expense).toEqual({ 食費: 60000, 水道光熱費: 40000 });
+    });
+
+    it('家計の収入は、分割した内訳の中項目ごとに積まれる', () => {
+      const d = dataWith(tx('t1', 50000));
+      d.txSplits = [
+        { ...split('t1', 1, 30000, '収入', 50000), categoryMid: '給与' },
+        { ...split('t1', 2, 20000, '収入', 50000), categoryMid: 'その他' },
+      ];
+      const projected = projectAccountingDataset(d);
+      expect(projected.personal['2026-07'].income).toEqual({ 給与: 30000, その他: 20000 });
+    });
+
+    it('名義は親から引き継ぐ。内訳ごとに選び直させない', () => {
+      const d = dataWith(tx('t1', -100000));
+      d.edits.t1 = { owner: 'spouse' };
+      d.txSplits = [split('t1', 1, 60000, '食費'), split('t1', 2, 40000, '水道光熱費')];
+      const projected = projectAccountingDataset(d);
+      expect(projected.personalByOwner['2026-07'].spouse.expense).toBe(100000);
+      expect(projected.personalByOwner['2026-07'].unset.expense).toBe(0);
+    });
+
+    it('事業にした内訳は事業立替へ回り、家計の科目別からは外れる', () => {
+      // 事業側の科目別内訳はfreee帳簿(data.biz)が正本。
+      // MF側は「事業立替がいくらか」までを持つ。ここを取り違えると二重計上になる
+      const d = dataWith(tx('t1', -100000));
+      d.txSplits = [{ ...split('t1', 1, 70000, '通信費'), cls: 'biz' }, split('t1', 2, 30000, '水道光熱費')];
+      const projected = projectAccountingDataset(d);
+      expect(projected.bizPersonal['2026-07'].expense).toBe(70000);
+      expect(projected.personal['2026-07'].expense).toEqual({ 水道光熱費: 30000 });
+    });
+
+    it('合計が合わない内訳は集計にも出さず、親の金額のまま数える', () => {
+      const d = dataWith(tx('t1', -100000));
+      d.txSplits = [split('t1', 1, 60000, '食費'), split('t1', 2, 30000, '水道光熱費')];
+      const projected = projectAccountingDataset(d);
+      expect(projected.personal['2026-07'].expense).toEqual({ 未分類: 100000 });
+    });
+  });
 });

@@ -49,7 +49,7 @@ SQLiteで列の型や制約を変える定型手順（新テーブル作成 → 
 
 | ワークフロー | ファイル | 起動条件 | 主な処理 | 外部への影響 |
 |---|---|---|---|---|
-| CI | `.github/workflows/ci.yml` | PR、`main`へのpush、手動 | 依存導入、Env型生成、lint、型検査、テスト、依存監査 | なし |
+| CI | `.github/workflows/ci.yml` | PR、`main`へのpush、手動 | 依存導入、lint、Env型生成を内包した型検査、テスト、依存監査 | なし |
 | Deploy | `.github/workflows/deploy.yml` | `main`のCI成功後、または`main`から手動 | 手動時の品質検査、pending migrationの判定、追加だけの自動適用（Time Travel記録つき）、remote D1未適用のfail-closed検査、Webビルド、Worker公開、2回のスモークテスト | 本番DBへ追加だけのmigrationを適用し、本番アプリを更新 |
 | Migrate | `.github/workflows/migrate.yml` | `main`から`APPLY`と承認済みmanifest入力付きの手動実行のみ | repository head・ordered migrations digest・remote pendingの再照合、D1 Time Travel情報確認、リモートmigration適用 | 本番DBの構造を更新。破壊的変更の適用経路 |
 
