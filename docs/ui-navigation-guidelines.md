@@ -24,7 +24,7 @@ route、表示順、label、icon keyは`APP_ROUTES`、公式Lucide geometryとic
 
 ## 見た目と読みやすさ
 
-- 行高は`--nav-row-min`で決める。既定は44px、`min-width: 641px`かつ`pointer: fine`のデスクトップだけ36pxへ下げる。44pxはWCAG 2.5.5(AAA)の値で、この達成基準はポインタ環境に掛からない。掛かるのはSC 2.5.8(AA)の24pxで、36pxはこれを上回る。タップ環境と640px以下のドロワーは44pxのまま。
+- 行高は`--nav-row-min`で決める。既定は44px、`min-width: 641px`で36pxへ下げ、そのうち`pointer: coarse`だけ44pxへ戻す。`and (pointer: fine)`と書かない理由は、pointerには`none`(ポインタデバイスなし)もあり、`fine`条件だと`none`の環境が緩和から漏れるため。実際CIのLinux headless Chromeは`none`を返して総高が上限超過で落ちた。44pxはWCAG 2.5.5(AAA)の値で、この達成基準はポインタ環境に掛からない。掛かるのはSC 2.5.8(AA)の24pxで、36pxはこれを上回る。タップ環境と640px以下のドロワーは44pxのまま。
 - desktop iconは20px、mobile tab iconは18px。アイコンと文字の間隔、group間隔、sidebar幅は`styles.css`の共通tokenで決める。
 - currentは色だけで伝えず、`aria-current`と色以外の手掛かりを併用する。ただし**手掛かりを重ねるほど良いわけではない**。背景と識別できない強調(白地に対し1.11:1で、hoverの1.10:1と見分けられない塗りなど)は現在地を伝えず、hoverと混同させる。現行は「文字色+左帯(6.46:1)」の2重で、増やすときは実測してから足す。
 - アイコンは単色stroke、装飾扱いの`aria-hidden="true"`とし、リンク名は隣の文字が担う。

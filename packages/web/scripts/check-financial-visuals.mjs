@@ -2,10 +2,10 @@
 // 使い方:
 //   pnpm --filter @kanjo/web dev --host 127.0.0.1 --port 4175
 //   KANJO_VISUAL_BASE_URL=http://127.0.0.1:4175 node scripts/check-financial-visuals.mjs
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { launchHeadlessChrome, stopHeadlessChrome } from './headless-chrome.mjs';
+import { launchHeadlessChrome, removeProfileRoot, stopHeadlessChrome } from './headless-chrome.mjs';
 
 const BASE_URL = process.env.KANJO_VISUAL_BASE_URL ?? 'http://127.0.0.1:4175';
 const WIDTHS = [375, 768, 1280, 1600];
@@ -384,9 +384,5 @@ try {
 } finally {
   if (ws && ws.readyState < WebSocket.CLOSING) ws.close();
   await stopHeadlessChrome(chrome);
-  try {
-    rmSync(profileDir, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
-  } catch (error) {
-    console.warn(`Chrome一時領域を削除できませんでした: ${profileDir}\n${error}`);
-  }
+  await removeProfileRoot(profileDir);
 }

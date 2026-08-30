@@ -92,7 +92,7 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 ## 非機能要件
 
 - Performance: 外部icon runtimeを追加せず型付きinline SVG registryを使う。支出分析は表示中のタブのAPIだけを呼び、3本を束ねて同時に投げない。
-- Accessibility/Usability: keyboard、focus-visible、200%拡大、reduced-motionを維持する。操作領域はタップ環境(`pointer: coarse`)と640px以下で44px、`pointer: fine`のデスクトップでは36pxとする(WCAG 2.5.5はAAAでポインタ環境には SC 2.5.8 の24pxが掛かるため)。画面検索はネイティブ`<dialog>`で組み、Escape・フォーカストラップ・背面の不活性化をブラウザ実装に任せる。候補は素のbuttonとし`role="listbox"`を手組みしない。
+- Accessibility/Usability: keyboard、focus-visible、200%拡大、reduced-motionを維持する。操作領域はタップ環境(`pointer: coarse`)と640px以下で44px、それ以外の常設幅(641px以上)では36pxとする(WCAG 2.5.5はAAAでポインタ環境には SC 2.5.8 の24pxが掛かるため)。画面検索はネイティブ`<dialog>`で組み、Escape・フォーカストラップ・背面の不活性化をブラウザ実装に任せる。候補は素のbuttonとし`role="listbox"`を手組みしない。
 - Security/Privacy: 表示構造だけを変更し実データ・認証・API境界は変えない。
 - Maintainability/Operability: route metadataと共通componentを正本にし全単位へ重複実装しない。画面数・タブ本数のような数値は`routeMetadata.ts`を正本とし、文書側で二重に持たない。
 

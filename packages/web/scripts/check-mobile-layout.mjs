@@ -11,7 +11,7 @@
 //   8. デスクトップ幅のサイドバー総高(同じフィクスチャを常設サイドバーの幅で描き直して測る。
 //      画面を足すたびに縦が伸びて一覧性を失う退行を、上限で止める)
 // 使い方: node scripts/check-mobile-layout.mjs  (CHROME_PATH で Chrome の場所を指定できる)
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -19,7 +19,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 // 画面を1つ足した時にフィクスチャだけ古いまま「合格」を出す。
 // Node 22.18以降の型ストリップで .ts をそのまま読める(CIも node-version: 22)。
 import { APP_ROUTES, MOBILE_ROUTES } from '../src/routeMetadata.ts';
-import { launchHeadlessChrome, stopHeadlessChrome } from './headless-chrome.mjs';
+import { launchHeadlessChrome, removeProfileRoot, stopHeadlessChrome } from './headless-chrome.mjs';
 
 const WEB_DIR = fileURLToPath(new URL('..', import.meta.url));
 const STYLES = readFileSync(process.env.STYLES_PATH ?? join(WEB_DIR, 'src/styles.css'), 'utf8');
@@ -39,7 +39,7 @@ const TAB_ICON_SIZE = 18;
  *
  * 実測値そのものではなく上限で持つ(実測値を書くと、詰めた/緩めた両方向で落ちてしまい、
  * 「今の値」を写経するだけの検査になる)。880px の根拠:
- *   - 一般的なノートPCのブラウザ実効高は 600〜700px。17画面ある以上どの行高でも収まらないので、
+ *   - 一般的なノートPCのブラウザ実効高は 600〜700px。15画面ある以上どの行高でも収まらないので、
  *     「収まる」ではなく「増え続けない」を守る値にする。
  *   - icon とグループ見出しを足す前の総高が約870px。ここへ戻し、+40px の余地だけ残す。
  *     画面を1つ足すと超えるので、そのとき行高ではなく情報設計を見直す合図になる。
@@ -475,17 +475,21 @@ try {
   });
   await send('Page.navigate', { url: pathToFileURL(fixturePath).href });
   await new Promise((r) => setTimeout(r, 400));
-  // 行を詰めるのは「常設幅 かつ ポインタ」のときだけ。pointer メディア特性は setEmulatedMedia では
-  // 動かせず(features に pointer は無い)、タッチのエミュレーションで決まるので、
-  // touch 無効=fine / touch 有効=coarse の2状態を実際に切り替えて両方測る。
+  // 行を詰めるのは「常設幅 かつ タップ環境でない」ときだけ。pointer メディア特性は
+  // setEmulatedMedia では動かせず(features に pointer は無い)、タッチのエミュレーションで
+  // 決まるので、touch 無効 / 有効 の2状態を実際に切り替えて両方測る。
+  //
+  // touch 無効側は fine とは限らない。ポインタデバイスを持たない環境(CI の Linux headless)は
+  // none を返す。ここで見たいのは「タップ環境かどうか」なので、fine の成立ではなく
+  // coarse の切り替わりを判定に使う。
   await send('Emulation.setTouchEmulationEnabled', { enabled: false });
   const sidebar = await evalJs(SIDEBAR_PROBE);
   await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
   const sidebarCoarse = await evalJs(SIDEBAR_PROBE);
   await send('Emulation.setTouchEmulationEnabled', { enabled: false });
-  if (!sidebar.pointerFine || !sidebarCoarse.pointerCoarse)
+  if (sidebar.pointerCoarse || !sidebarCoarse.pointerCoarse)
     failures.push(
-      `pointer のエミュレーションが効いていない(fine側 fine=${sidebar.pointerFine} / coarse側 coarse=${sidebarCoarse.pointerCoarse})。行高の分岐を検査できていない`,
+      `pointer のエミュレーションが効いていない(touch無効側 coarse=${sidebar.pointerCoarse} fine=${sidebar.pointerFine} / touch有効側 coarse=${sidebarCoarse.pointerCoarse})。行高の分岐を検査できていない`,
     );
   console.log(
     `     サイドバー総高 ${sidebar.content}px (nav ${Math.round(sidebar.navHeight)}px / ${sidebar.rowCount}行 ${Math.round(sidebar.rowMin)}〜${Math.round(sidebar.rowMax)}px / 見出し ${sidebar.groups.map((g) => Math.round(g.h)).join(',')}px) / タップ環境 ${sidebarCoarse.content}px 行 ${Math.round(sidebarCoarse.rowMin)}px`,
@@ -502,7 +506,7 @@ try {
   // (pointer 条件を落として全環境で詰めてしまう変更は、この行がないと素通りする)
   if (sidebarCoarse.rowMin < MIN_NAV_ROW - 0.5)
     failures.push(
-      `タップ環境のnav行が ${Math.round(sidebarCoarse.rowMin)}px で ${MIN_NAV_ROW}px 未満。行の緩和が pointer: fine に閉じていない`,
+      `タップ環境のnav行が ${Math.round(sidebarCoarse.rowMin)}px で ${MIN_NAV_ROW}px 未満。行の緩和が「タップ環境以外」に閉じていない`,
     );
 
   // prefers-contrast: more。既定では2重に絞った現在地の強調を、要求されたときだけ
@@ -559,9 +563,5 @@ try {
 } finally {
   if (ws && ws.readyState < WebSocket.CLOSING) ws.close();
   await stopHeadlessChrome(chrome);
-  try {
-    rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
-  } catch (error) {
-    console.warn(`一時ディレクトリを削除できませんでした(検査結果には影響しません): ${dir}\n${error}`);
-  }
+  await removeProfileRoot(dir);
 }

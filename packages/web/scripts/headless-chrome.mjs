@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
 const CHROME_CANDIDATES = [
@@ -43,6 +43,23 @@ export async function stopHeadlessChrome(chrome) {
   if (!(await waitForExit(chrome, 5_000)) && chrome.exitCode === null) {
     chrome.kill('SIGKILL');
     await waitForExit(chrome, 1_000);
+  }
+}
+
+/**
+ * 使い終わったプロファイルを消す。
+ *
+ * 親プロセスの exit を待っても、Chrome の子プロセス(zygote / renderer)が
+ * まだプロファイルへ書いていることがあり、その最中の削除は ENOTEMPTY になる。
+ * rmSync の maxRetries だけでは CI で足りなかったので、先に猶予を置く。
+ * 消せなくても検査結果は変わらないので、警告だけ出して続ける。
+ */
+export async function removeProfileRoot(dir, { graceMs = 500 } = {}) {
+  await delay(graceMs);
+  try {
+    rmSync(dir, { recursive: true, force: true, maxRetries: 40, retryDelay: 100 });
+  } catch (error) {
+    console.warn(`一時ディレクトリを削除できませんでした(検査結果には影響しません): ${dir}\n${error}`);
   }
 }
 

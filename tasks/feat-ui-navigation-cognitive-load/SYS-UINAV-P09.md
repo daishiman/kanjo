@@ -165,6 +165,6 @@ implementation_readiness: {"checked_at":"2026-08-29T15:41:55Z","missing_sections
 
 - 検査は実Chrome(CDP)の実描画計測で行った。`scripts/check-mobile-layout.mjs` が
   icon-label 間隔・nav行高・tab icon 寸法を 375 / 360 / 375@zoom2 / 1280 の4条件で計測する。
-- 行高は `pointer: fine` のデスクトップだけ36pxへ下げ、タップ環境と640px以下は44pxのまま
+- 行高は641px以上で36pxへ下げ、タップ環境(`pointer: coarse`)と640px以下は44pxのまま
   (WCAG 2.5.5 は AAA、ポインタ環境に掛かるのは SC 2.5.8 の24px)。
 - 未実施は P07 と同じ2点(意匠の妥当性の人手レビュー / Chrome以外のブラウザ)。

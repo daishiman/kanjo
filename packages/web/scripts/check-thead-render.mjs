@@ -2,11 +2,11 @@
 // CSS 文字列の正規表現ではなく、本物の styles.css を headless Chrome に読み込ませ、
 // 「見出し行が先頭データ行に重なるのは、ページ上部の固定ヘッダー直下に固定されている時だけ」を全パターン・全幅で実測する。
 // 使い方: node scripts/check-thead-render.mjs  (CHROME_PATH で Chrome の場所を指定できる。無ければ既定の場所を探す)
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { launchHeadlessChrome, stopHeadlessChrome } from './headless-chrome.mjs';
+import { launchHeadlessChrome, removeProfileRoot, stopHeadlessChrome } from './headless-chrome.mjs';
 
 const WEB_DIR = fileURLToPath(new URL('..', import.meta.url));
 // STYLES_PATH を指定すると別の CSS で検査できる(過去版で不合格になることの確認用)
@@ -212,11 +212,5 @@ try {
 } finally {
   if (ws && ws.readyState < WebSocket.CLOSING) ws.close();
   await stopHeadlessChrome(chrome);
-  // Chromeの子プロセスがprofile配下を掴んだまま終わることがある(Linuxで顕著)。
-  // 一時ディレクトリの後片付けは再試行し、それでも残る場合も検査結果は落とさない。
-  try {
-    rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
-  } catch (error) {
-    console.warn(`一時ディレクトリを削除できませんでした(検査結果には影響しません): ${dir}\n${error}`);
-  }
+  await removeProfileRoot(dir);
 }

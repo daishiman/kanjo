@@ -225,17 +225,28 @@ body {
  * 「ポインタ入力」に対する要件。ノートPCのマウス/トラックパッドで操作する常設サイドバーに
  * 掛かるのは SC 2.5.8 Target Size (Minimum, AA) の 24px で、36px はこれを大きく上回る。
  * タップ環境(pointer: coarse)と、640px以下でドロワーになるときは 44px のまま。
- * この2条件(常設幅であること・ポインタであること)の両方を満たすときだけ緩める。
  *
- * 17画面 + 4つのグループ見出し + ブランドは、行高をいくら詰めてもノートPCの実効高
+ * 条件を `and (pointer: fine)` と書かず「常設幅で詰めて、タップ環境だけ戻す」の2段にしてある。
+ * pointer には fine / coarse のほかに none(ポインタデバイスなし)があり、`pointer: fine` だと
+ * none の環境が緩和から漏れて 44px のまま残る。実際 CI の Linux headless Chrome は none を返し、
+ * 総高が上限を超えて落ちた。緩和したいのは「タップ主体でないこと」なので、否定形の方が意図に近い。
+ * `not (pointer: coarse)` 一発でも書けるが Media Queries 4 の記法なので、2段で書いて対応幅を広く取る。
+ *
+ * 15画面 + 4つのグループ見出し + ブランドは、行高をいくら詰めてもノートPCの実効高
  * (600〜700px)には収まらない。.sidebar は overflow-y: auto なので下端は元からスクロールする。
  * ここでやっているのは「iconとグループ見出しを足した分の退行を戻す」ことで、
  * 総高の上限は scripts/check-mobile-layout.mjs が実描画で固定している。
  */
-@media (min-width: 641px) and (pointer: fine) {
+@media (min-width: 641px) {
   :root {
     --nav-row-min: 36px;
     --nav-group-gap: 10px;
+  }
+}
+@media (min-width: 641px) and (pointer: coarse) {
+  :root {
+    --nav-row-min: 44px;
+    --nav-group-gap: 14px;
   }
 }
 
