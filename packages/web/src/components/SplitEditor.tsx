@@ -218,7 +218,7 @@ export function SplitEditor({
         </p>
       )}
 
-      <div className="scroll-x">
+      <div className="split-lines">
         <DataTable
           className="data stack-sm"
           columns={[

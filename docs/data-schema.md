@@ -251,6 +251,26 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 - restore/JSON取込は、有効な`cashProjection`の確定deltaを集計から厳密に差し引く。そのうえで移行先に`cash_entries`が1件も無い初期移行のときだけ、backupの`cashEntries`をidごと復元して同じdeltaを戻す(idは`cash:<id>` editと添付の宛先のため採番し直さない)。49 query予算に載らない場合は記帳だけ見送り、応答の`cashSkipped`で件数を返す。移行先に記帳があるときは復元せず`cashKept`で件数を返す。destination側の設定では再投影しない。未知version/basis/scope、重複行、欠落、非正整数、集計を超えるdeltaは書込み前に400とし、0へのclampで隠さない。有効な空rowsは正常。`cashProjection`なしで`cashEntries`が非空ならsource semantics不明として拒否し、両方なし（または空cashEntries）のpre-cash legacyだけ互換受理する。
 - restoreではJSON source内の `cash:*` edit/overridesを破棄する。同一DBに既存cashがある場合は、その現存IDに対応するdestination側の既存editだけをcandidateへ戻し、永続化行・集計・指紋をすべてそのcandidateから生成する。これにより、新DBで後から同じIDが採番されてもbackup由来editが誤付着しない。
 
+## 明細の分割記帳(tx_splits)の投影先
+
+`tx_splits`(migration 0025) は1件のMF明細を用途ごとの内訳へ分ける保存形式。列は
+`id / user_id / tx_id / line_id / seq / parent_amount / amount / cls / category_major / category_mid / memo / created_at / updated_at`、
+一意制約は `(user_id, tx_id, seq)` と `(user_id, line_id)`。
+
+- **合計＝親金額はDB制約ではなくアプリで検証する。** SQLiteに行間合計の制約を置くと、1行ずつのUPDATEが必ず途中で不整合になる。保存はPUTで全行入れ替えの1トランザクションとし、検証は `validateSplits` 1箇所に集約する。
+- `line_id` はUUIDv4。子行の同一性は採番順(`seq`)から独立して維持する。並べ替えても添付先・編集の宛先が動かない。
+- `parent_amount` は保存時点の親金額の写し。再取込で親金額が変わったことを、内訳を見るだけで検知するために持つ。
+
+| 区分 | 合流先 | 仕組み |
+|---|---|---|
+| 集計(家計・名義別・事業立替) | `personal[月].expense[科目]` / `personalByOwner` / `bizPersonal` | `projectAccountingDataset` が `applySplits` で親1行を内訳N行へ置き換え、`recomputeClassification` を投影後に走らせる。子行は `projectedEdit` に `cls`/`big`/`mid` を持ち、`resolveTx` が `t.projectedEdit ?? edits[t.id]` の順で先に読む(仕分けの経路を増やさない) |
+| 証憑の棚卸し | 親取引1件 | `receiptInventory` が子行を `splitProjection.parentTxId` へ畳み、`accounts` に内訳の科目を全部並べる。領収書は1枚しかないため、添付先も親だけ |
+| 確定申告書の科目別金額 | **合流しない** | 科目別の正本はfreee帳簿(`data.biz.categories`)。MF側の分割は「事業立替の合計」までを持つ。ここを合流させると同じ支出をfreeeと二重計上する |
+| 取込計画(下見) | 合流しない | `withSplits:false` のraw canonical Datasetを使う(`classify.ts` の候補算出、`imports.ts` の取込計画)。親と派生子を混ぜたまま洗い替え判定をしない |
+
+- 合計不一致・`parent_amount` 不一致・`line_id` 重複・`identity_stable=0` のいずれかで、内訳は集計へ出さず親の金額のまま数える(fail-closed)。無かったことにはせず `splitProjection.state` を `amount_conflict` / `identity_unstable` として画面へ返す。
+- 統合JSONは canonical な親行(`raw.mfTx`)を保存し、投影後の子行は保存しない。子行は表示・集計専用の派生である。
+
 ## 仕分けルールの順序契約
 
 - 全consumer（明細解決、hit count、候補科目usage/rename/delete guard）は共通loaderの `sort_order ASC, id ASC` を使う。DBにルールが無い場合の既定fallbackも同loader境界で一元化する。

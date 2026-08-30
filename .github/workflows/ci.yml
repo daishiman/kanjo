@@ -21,8 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-pnpm
-      - name: Env型を生成
-        run: pnpm --filter @kanjo/api exec wrangler types
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test

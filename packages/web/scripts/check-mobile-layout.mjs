@@ -1,6 +1,6 @@
 // スマホ幅のレイアウトを実描画で検証する。
 // 「モバイルは閲覧+仕分け操作を最適化」(非機能要件)を、CSS の目視ではなく実測で固定する。
-// 検査する不変条件は7つ:
+// 検査する不変条件は9つ:
 //   1. ページ本体が横スクロールしない(広い表は表自身の枠内でスクロールする)
 //   2. .stack-sm の表が本当に1行=1カードへ畳まれている(セルが縦に積まれている)
 //   3. 仕分けカードの見出しが「内容」で、日付より上に出ている(order の効き)
@@ -10,6 +10,7 @@
 //   7. ナビの視覚契約(44pxの行、iconとlabelの間隔、現在地の色以外の手掛かり、reduced-motion)
 //   8. デスクトップ幅のサイドバー総高(同じフィクスチャを常設サイドバーの幅で描き直して測る。
 //      画面を足すたびに縦が伸びて一覧性を失う退行を、上限で止める)
+//   9. 開いた分割科目パネルが切れず、狭幅でも科目をタップして選べる
 // 使い方: node scripts/check-mobile-layout.mjs  (CHROME_PATH で Chrome の場所を指定できる)
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -99,11 +100,45 @@ const classifyRow = (i) => `
   </div></td>
 </tr>`;
 
+/** SplitEditor と開いた CategoryPicker の実DOMに合わせた最小フィクスチャ */
+const OPEN_SPLIT_EDITOR = `
+<tr class="editing-open" data-pattern="split-editor">
+  <td colspan="9">
+    <div class="split-editor">
+      <p class="sub lines">架空カード引き落としの 50,000円 を、用途ごとに分けます。</p>
+      <fieldset class="split-mode"><legend class="visually-hidden">入力の仕方</legend><button type="button" class="mini" aria-pressed="true">✓ 金額で入れる</button><button type="button" class="mini" aria-pressed="false">割合で入れる</button></fieldset>
+      <div class="split-lines">
+        <table class="data stack-sm">
+          <thead><tr><th>公私</th><th>科目</th><th>金額</th><th>メモ</th><th>操作</th></tr></thead>
+          <tbody><tr>
+            <td data-label="公私"><select aria-label="1行目の公私"><option>個人</option></select></td>
+            <td data-label="科目"><span class="cat-picker">
+              <button type="button" class="cat-current on" aria-expanded="true" aria-controls="split-category-panel">食費</button>
+              <select aria-label="中項目"><option>食料品</option></select>
+              <div class="cat-panel" id="split-category-panel">
+                <p class="cat-principle">仕事に必要だった理由を説明できる支出だけを事業にします。</p>
+                <div class="cat-tabs" role="tablist" aria-label="科目の分類"><button type="button" role="tab" aria-selected="true" class="mini on">よく使う</button><button type="button" role="tab" aria-selected="false" class="mini">食べる</button></div>
+                <div class="cat-grid" role="tabpanel" aria-label="よく使う"><button type="button" class="cat-chip on">食費</button><button type="button" class="cat-chip">日用品</button></div>
+                <div class="cat-detail"><p class="cat-when">毎月かならず出る費目。</p></div>
+                <button type="button" class="mini linklike">候補にない科目を追加</button>
+              </div>
+            </span></td>
+            <td class="num" data-label="金額"><input type="number" inputmode="numeric" aria-label="1行目の金額" value="50000"></td>
+            <td data-label="メモ"><input type="text" aria-label="1行目のメモ" value="食料品"></td>
+            <td data-label="操作"><button type="button" class="mini">残りを入れる</button></td>
+          </tr></tbody>
+        </table>
+      </div>
+      <div class="split-actions"><button type="button">行を足す</button><button type="button" class="primary">分割を保存</button><button type="button">閉じる</button></div>
+    </div>
+  </td>
+</tr>`;
+
 const CLASSIFY_TABLE = `
 <div class="card scroll-x classify-table-card" data-pattern="classify">
   <table class="data classify-table stack-sm">
     <thead><tr><th>日付</th><th>内容</th><th>口座</th><th>大項目/中項目</th><th>金額</th><th>判定</th><th>名義</th><th>証憑</th><th>操作</th></tr></thead>
-    <tbody>${[0, 1, 2].map(classifyRow).join('')}</tbody>
+    <tbody>${[0, 1, 2].map(classifyRow).join('')}${OPEN_SPLIT_EDITOR}</tbody>
   </table>
 </div>`;
 
@@ -211,7 +246,49 @@ const MEASURE = `(async () => {
   const wide = document.querySelector('[data-pattern="matrix"]');
   const wideScrolls = { scrollWidth: wide.scrollWidth, clientWidth: wide.clientWidth };
 
-  // 9) ナビの視覚契約。token が styles.css に「書いてあるか」ではなく、
+  // 9) 開いた分割科目パネル。祖先の overflow で切られず、狭幅で選択操作を押せること。
+  const splitEditor = document.querySelector('[data-pattern="split-editor"] .split-editor');
+  const splitPanel = splitEditor.querySelector('.cat-panel');
+  const splitPanelRect = splitPanel.getBoundingClientRect();
+  const splitPanelStyle = getComputedStyle(splitPanel);
+  const splitPanelClippers = [];
+  // 外側の明細一覧は意図したスクロール領域で、パネルへ到達できる。
+  // ここでは、以前パネルを小窓にしていた分割エディタ内部の overflow だけを検出する。
+  for (let ancestor = splitPanel.parentElement; ancestor && splitEditor.contains(ancestor); ancestor = ancestor.parentElement) {
+    const style = getComputedStyle(ancestor);
+    if (style.overflowX === 'visible' && style.overflowY === 'visible') continue;
+    const bounds = ancestor.getBoundingClientRect();
+    if (splitPanelRect.left < bounds.left - 1 || splitPanelRect.right > bounds.right + 1 || splitPanelRect.top < bounds.top - 1 || splitPanelRect.bottom > bounds.bottom + 1)
+      splitPanelClippers.push({ className: ancestor.className, overflowX: style.overflowX, overflowY: style.overflowY });
+  }
+  const splitPanelLayout = {
+    display: splitPanelStyle.display,
+    visibility: splitPanelStyle.visibility,
+    w: splitPanelRect.width,
+    h: splitPanelRect.height,
+    scrollHeight: splitPanel.scrollHeight,
+    clientHeight: splitPanel.clientHeight,
+    clippers: splitPanelClippers,
+  };
+  const splitCategoryTaps = [...splitEditor.querySelectorAll('.cat-current, .cat-panel button')]
+    .map((el) => ({ text: el.textContent.trim(), h: el.getBoundingClientRect().height, w: el.getBoundingClientRect().width }));
+  const splitEditorRect = splitEditor.getBoundingClientRect();
+  const splitOverflowers = [...splitEditor.querySelectorAll('*')]
+    .map((el) => ({
+      name: el.className ? String(el.className) : el.tagName.toLowerCase(),
+      right: el.getBoundingClientRect().right,
+      scrollWidth: el.scrollWidth,
+      clientWidth: el.clientWidth,
+    }))
+    .filter((el) => el.right > splitEditorRect.right + 1 || el.scrollWidth > el.clientWidth + 1)
+    .slice(0, 5);
+  const splitEditorWidth = {
+    scrollWidth: splitEditor.scrollWidth,
+    clientWidth: splitEditor.clientWidth,
+    overflowers: splitOverflowers,
+  };
+
+  // 7・8) ナビの視覚契約。token が styles.css に「書いてあるか」ではなく、
   //    カスケード後に実際その寸法・手掛かりで描かれているかを見る。
   //    サイドバーは狭幅ではドロワー(translateX(-100%))だが、幅・高さ・間隔は画面外でも同じに測れる。
   const navLinks = [...document.querySelectorAll('.nav a')];
@@ -255,7 +332,7 @@ const MEASURE = `(async () => {
   const tabIconRect = tabbar.querySelector('.route-icon').getBoundingClientRect();
   const tabIcon = { w: tabIconRect.width, h: tabIconRect.height };
 
-  return { overflow, stacked, theadHidden, order, overflowingCells, taps, tabLabels, tabScroll, exportSheetLayout, exportLabels, wideScrolls, navRows, navCurrentMark, navCurrentStyle, tabCurrentMark, tabIcon };
+  return { overflow, stacked, theadHidden, order, overflowingCells, taps, tabLabels, tabScroll, exportSheetLayout, exportLabels, wideScrolls, splitPanelLayout, splitCategoryTaps, splitEditorWidth, navRows, navCurrentMark, navCurrentStyle, tabCurrentMark, tabIcon };
 })()`;
 
 /**
@@ -389,6 +466,26 @@ try {
         failures.push(
           `${width}px セル「${c.label}」の中身がカードから溢れている(${c.scrollWidth}px > ${c.clientWidth}px)`,
         );
+      const panel = m.splitPanelLayout;
+      if (panel.display === 'none' || panel.visibility === 'hidden' || panel.w < 1 || panel.h < 1)
+        failures.push(`${width}px 分割の科目パネルが開いた状態で描画されていない`);
+      if (panel.scrollHeight > panel.clientHeight + 1)
+        failures.push(
+          `${width}px 分割の科目パネル内が縦に切れている(${panel.scrollHeight}px > ${panel.clientHeight}px)`,
+        );
+      for (const clipper of panel.clippers)
+        failures.push(
+          `${width}px 分割の科目パネルが祖先「${clipper.className || '(classなし)'}」の overflow=${clipper.overflowX}/${clipper.overflowY} で切れる`,
+        );
+      if (m.splitEditorWidth.scrollWidth > m.splitEditorWidth.clientWidth + 1)
+        failures.push(
+          `${width}px 分割エディタが横に溢れている(${m.splitEditorWidth.scrollWidth}px > ${m.splitEditorWidth.clientWidth}px): ${m.splitEditorWidth.overflowers.map((el) => `${el.name}=${el.scrollWidth}/${el.clientWidth}`).join(', ')}`,
+        );
+      for (const target of m.splitCategoryTaps)
+        if (target.h < MIN_TAP - 0.5)
+          failures.push(
+            `${width}px 分割の科目操作「${target.text}」のタップ領域が ${Math.round(target.h)}px で ${MIN_TAP}px 未満`,
+          );
 
       // ナビの視覚契約。zoom 2 では全長が2倍になるので、寸法の契約は等倍でだけ見る
       for (const row of m.navRows) {
@@ -462,7 +559,7 @@ try {
       failures.push(`${width}px 広い表が枠内でスクロールしていない(検査用フィクスチャが横に広くない)`);
 
     console.log(
-      `${String(width).padStart(4)}px zoom${zoom} 本体幅 ${m.overflow.scrollWidth}/${m.overflow.viewport}  カード化 ${Math.abs(m.stacked.second.top - m.stacked.first.top) > 1 ? 'OK' : 'NG'}  見出し=内容 ${m.order.descTop < m.order.dateTop ? 'OK' : 'NG'}  タップ最小 ${Math.round(Math.min(...m.taps.map((t) => t.h)))}px  nav ${m.tabScroll.scrollWidth}/${m.tabScroll.clientWidth}  書き出し ${Math.round(m.exportSheetLayout.left)}-${Math.round(m.exportSheetLayout.right)}/${m.exportSheetLayout.viewport}  広い表 ${m.wideScrolls.scrollWidth}/${m.wideScrolls.clientWidth}  nav行最小 ${Math.round(Math.min(...m.navRows.map((r) => r.h)))}px  tab icon ${Math.round(m.tabIcon.w)}px`,
+      `${String(width).padStart(4)}px zoom${zoom} 本体幅 ${m.overflow.scrollWidth}/${m.overflow.viewport}  カード化 ${Math.abs(m.stacked.second.top - m.stacked.first.top) > 1 ? 'OK' : 'NG'}  見出し=内容 ${m.order.descTop < m.order.dateTop ? 'OK' : 'NG'}  タップ最小 ${Math.round(Math.min(...m.taps.map((t) => t.h)))}px  分割科目 ${Math.round(m.splitPanelLayout.w)}x${Math.round(m.splitPanelLayout.h)}px/操作最小${Math.round(Math.min(...m.splitCategoryTaps.map((t) => t.h)))}px  nav ${m.tabScroll.scrollWidth}/${m.tabScroll.clientWidth}  書き出し ${Math.round(m.exportSheetLayout.left)}-${Math.round(m.exportSheetLayout.right)}/${m.exportSheetLayout.viewport}  広い表 ${m.wideScrolls.scrollWidth}/${m.wideScrolls.clientWidth}  nav行最小 ${Math.round(Math.min(...m.navRows.map((r) => r.h)))}px  tab icon ${Math.round(m.tabIcon.w)}px`,
     );
   }
 
