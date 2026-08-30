@@ -1,0 +1,1175 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+  "parent_feature": "feat-ui-navigation-cognitive-load",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-UINAV-P01": "beads",
+    "SYS-UINAV-P02": "beads",
+    "SYS-UINAV-P03": "beads",
+    "SYS-UINAV-P04": "beads",
+    "SYS-UINAV-P05": "beads",
+    "SYS-UINAV-P06": "beads",
+    "SYS-UINAV-P07": "beads",
+    "SYS-UINAV-P08": "beads",
+    "SYS-UINAV-P09": "beads",
+    "SYS-UINAV-P10": "beads",
+    "SYS-UINAV-P11": "beads",
+    "SYS-UINAV-P12": "beads",
+    "SYS-UINAV-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-UINAV-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要求・現状UI監査の確定",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/evidence/phase-01-ui-audit.md"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P01.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "共通ナビゲーション設計の確定",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P01"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/evidence/phase-02-navigation-contract.md"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P02.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "直感性・アクセシビリティ設計レビュー",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P02"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/evidence/phase-03-design-review.md"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P03.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "回帰・視覚テスト設計",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P03"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/evidence/phase-04-test-design.md"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P04.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "共通サイドバーと低認知負荷UIの実装",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P04"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/components/RouteIcon.tsx",
+        "packages/web/src/styles.css",
+        "packages/web/src/navigation-ux.dom.test.tsx"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P05.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "自動テストとビルド検証",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P05"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/evidence/phase-06-test-run.json"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P06.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入条件と主要導線の確認",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P06"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/evidence/phase-07-acceptance.md"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P07.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "共通化と全ページ整合の仕上げ",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P07"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/styles.css"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P08.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "品質・アクセシビリティ・レスポンシブ監査",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P08"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/evidence/phase-09-quality-assurance.md"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P09.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "最終コード・UXレビュー",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P09"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/evidence/phase-10-final-review.md"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P10.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な検証証跡の集約",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P10"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/evidence/phase-11-evidence-index.md"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P11.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "利用・運用文書の更新",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P11"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        "docs/ui-navigation-guidelines.md"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P12.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-UINAV-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "PR直前のリリース準備",
+      "project_id": "feature-package-feat-ui-navigation-cognitive-load",
+      "domain": "operations",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "ui-navigation",
+        "cognitive-load",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-29T15:48:08Z",
+      "updated_at": "2026-08-29T15:48:08Z",
+      "depends_on": [
+        "SYS-UINAV-P12"
+      ],
+      "related_nodes": [
+        "spec-ui-navigation-cognitive-load",
+        "arch-ui-navigation-experience",
+        "arch-ui-navigation-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/evidence/phase-13-pr-readiness.md"
+      ],
+      "parent_feature": "feat-ui-navigation-cognitive-load",
+      "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/plan-findings.json",
+        "evaluated_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+        "imported_at": "2026-08-29T15:48:08Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-ui-navigation-cognitive-load/SYS-UINAV-P13.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-29T15:41:55Z"
+      }
+    }
+  ]
+}

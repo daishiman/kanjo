@@ -1,0 +1,46 @@
+{
+  "graph_node_id": "feat-ui-navigation-cognitive-load",
+  "artifact_kind": "feature",
+  "purpose": "長い文字中心のサイドバー、親子routeの二重選択、常時表示情報の過多により、利用者が現在地・次の操作・安全な編集方法を判断しづらい状態を解消する。",
+  "goal": "全画面単位(15route+支出分析3タブ=18)で現在地が一意かつアイコンとラベルで識別でき、重要情報と主操作を先に理解し、必要時だけ詳細や編集UIへ進める。行き先が分かっているときは画面検索(Cmd+K)で直接移動できる。",
+  "scope_in": [
+    "/taxと/tax/receiptsのcurrent一意化",
+    "全18単位の型付きアイコン(図形の署名で一意)",
+    "「見る」群3画面の/analysis/:tabへの統合と旧URLリダイレクト",
+    "画面検索(Cmd+K/Ctrl+K)",
+    "sidebarのicon-label-group spacingと行高(desktop 36px / タップ環境44px)",
+    "情報優先度と段階表示の共通パターン(taskDetail)",
+    "編集対象・保存・取消・危険性の明示",
+    "desktop/mobile/zoom/keyboardの回帰確認"
+  ],
+  "scope_out": [
+    "会計計算変更",
+    "API変更",
+    "データモデル変更",
+    "認証変更",
+    "インフラ変更",
+    "専用ネイティブアプリ",
+    "通常遷移をmodal化",
+    "本番deployとPR作成"
+  ],
+  "acceptance": [
+    "/tax/receiptsでcurrent navが領収書の残り1件だけになる",
+    "全18単位に意味の異なるiconと可視labelがある",
+    "icon-label間隔とnav行高・group間隔が共通tokenで整う",
+    "currentがaria-current=pageと色以外の手掛かりを持つ",
+    "全18単位で目的・重要状態・主操作が初期表示から失われない",
+    "Cmd+K/Ctrl+Kの画面検索で18単位すべてを名前と群名で引ける",
+    "旧URL /matrix /trends /diagnosis が対応するタブへリダイレクトされる",
+    "補足情報は文脈を保つ段階表示になり通常遷移をmodalが遮らない",
+    "編集surfaceで対象・保存・取消・危険性・処理結果を識別できる",
+    "unit・DOM・build・UI contract・主要viewport visual確認がPASSする"
+  ],
+  "architecture_refs": [
+    "architecture/arch-ui-navigation-experience.md",
+    "architecture/arch-ui-navigation-frontend.md",
+    "specs/ui-navigation-cognitive-load.md",
+    "system-spec/index.md",
+    "system-spec/completeness-findings.json"
+  ],
+  "updated_at": "2026-08-30T00:00:00Z"
+}

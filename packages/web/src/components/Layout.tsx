@@ -1,16 +1,22 @@
 /**
  * 全ページ共通レイアウト(spec §10.1)。
  * ヘッダー: 対象期間 / 防衛ラインバッジ(FR-08 常時表示) / データ状態 / エクスポート
- * ナビ: PC=サイドバー / モバイル(〜640px)=下部固定タブバー(最頻4画面+メニュー)
+ * ナビ: PC=サイドバー / モバイル(〜640px)=下部固定タブバー(最頻5画面+メニュー)
+ *
+ * ここが持つのは「枠と、枠に固有の状態(ドロワー / ヘッダー実高さ)」だけ。
+ * ナビ1項目は NavItem.tsx、期間の選択は period.tsx、書き出しは ExportMenu.tsx。
  */
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { type SummaryResponse, api } from '../api.js';
 import { monthLabel, yen } from '../format.js';
-import { type PeriodMeta, type PeriodSelection, SPAN_LABEL, type SpanYears, usePeriod } from '../period.js';
-import { APP_ROUTES, MOBILE_ROUTES } from '../routeMetadata.js';
+import { PeriodPicker, usePeriod } from '../period.js';
+import { APP_ROUTES, MOBILE_ROUTES, TABBED_ROUTE_IDS } from '../routeMetadata.js';
 import { TaxYearPicker, useTaxYear } from '../tax-year.js';
+import { CommandPalette } from './CommandPalette.js';
+import { ExportMenu } from './ExportMenu.js';
+import { NavItem } from './NavItem.js';
 import { Term } from './Term.js';
 
 const STATUS_LABEL: Record<string, string> = {
@@ -76,23 +82,26 @@ export function Layout({ children }: { children: ReactNode }) {
       <a href="#main-content" className="skip-link">
         本文へスキップ
       </a>
+      <CommandPalette />
 
-      <aside className={`sidebar${drawer ? ' open' : ''}`} aria-label="メインナビゲーション">
+      {/* aside は幅とドロワーの入れ物。名前を持つべきランドマークは中の nav なので、
+          aria-label は nav 側に置く(両方に同じ名前を付けると landmark が二重になる) */}
+      <aside className={`sidebar${drawer ? ' open' : ''}`}>
         <Link to="/" className="brand">
           収支統合管理
           <small>freee × マネーフォワード</small>
         </Link>
-        <nav className="nav">
+        <nav className="nav" aria-label="メインナビゲーション">
           {APP_ROUTES.map((route) => (
             <div key={route.id}>
               {route.navGroup && <div className="nav-group">{route.navGroup}</div>}
-              <NavLink
+              <NavItem
                 to={route.path}
-                end={route.path === '/'}
-                className={({ isActive }) => (isActive ? 'active' : '')}
-              >
-                {route.label}
-              </NavLink>
+                icon={route.icon}
+                label={route.label}
+                variant="sidebar"
+                end={!TABBED_ROUTE_IDS.has(route.id)}
+              />
             </div>
           ))}
         </nav>
@@ -145,15 +154,18 @@ export function Layout({ children }: { children: ReactNode }) {
 
       <nav className="tabbar" aria-label="モバイルナビゲーション">
         {MOBILE_ROUTES.map((route) => (
-          <NavLink
+          // MOBILE_ROUTES の filter は推論型述語が効くので、ここでの mobileLabel は string
+          <NavItem
             key={route.id}
             to={route.path}
-            end={route.path === '/'}
-            className={({ isActive }) => `tab${isActive ? ' active' : ''}`}
-          >
-            {route.mobileLabel}
-          </NavLink>
+            icon={route.icon}
+            label={route.mobileLabel}
+            variant="tab"
+            end={!TABBED_ROUTE_IDS.has(route.id)}
+          />
         ))}
+        {/* .active はここだけの表現で「ドロワーが開いている」を意味する。
+            現在のルートは NavItem 側の aria-current="page" が持つ */}
         <button
           type="button"
           className={`tab${drawer ? ' active' : ''}`}
@@ -164,137 +176,5 @@ export function Layout({ children }: { children: ReactNode }) {
         </button>
       </nav>
     </div>
-  );
-}
-
-/**
- * 対象期間の選択。
- *
- * 年・直近n年・任意期間を1つのselectにまとめる。選択肢は必ずサーバが返した
- * 絞り込み前の年一覧から作る(絞り込み後から作ると、2025年を選んだ瞬間に
- * 2026年が選択肢から消えて戻れなくなる)。
- */
-function PeriodPicker({ meta }: { meta?: PeriodMeta }) {
-  const { selection, setSelection } = usePeriod();
-  const years = meta?.years ?? [];
-  const full = meta?.full ?? null;
-
-  const value =
-    selection.mode === 'year'
-      ? `year:${selection.year}`
-      : selection.mode === 'span'
-        ? `span:${selection.span}`
-        : selection.mode === 'custom'
-          ? 'custom'
-          : 'all';
-
-  const onSelect = (v: string) => {
-    if (v === 'all') return setSelection({ mode: 'all' });
-    if (v.startsWith('year:')) return setSelection({ mode: 'year', year: v.slice(5) });
-    if (v.startsWith('span:')) return setSelection({ mode: 'span', span: Number(v.slice(5)) as SpanYears });
-    // 任意期間は、いまの全体期間を初期値にしておく。空欄から始めると必ず1回は無効になる
-    setSelection({ mode: 'custom', from: full?.from ?? '', to: full?.to ?? '' });
-  };
-
-  const setCustom = (patch: Partial<{ from: string; to: string }>) => {
-    if (selection.mode !== 'custom') return;
-    const next: PeriodSelection = { ...selection, ...patch };
-    // from > to の瞬間はサーバが全期間に倒すので、入力途中でも画面は壊れない
-    setSelection(next);
-  };
-
-  return (
-    <span className="period-picker">
-      <label className="visually-hidden" htmlFor="period-select">
-        対象期間
-      </label>
-      <select
-        id="period-select"
-        className="period-select"
-        value={value}
-        onChange={(e) => onSelect(e.target.value)}
-      >
-        <option value="all">全期間</option>
-        {([1, 2, 3] as SpanYears[]).map((n) => (
-          <option key={n} value={`span:${n}`}>
-            {SPAN_LABEL[n]}
-          </option>
-        ))}
-        {years.map((y) => (
-          <option key={y} value={`year:${y}`}>
-            {y}年
-          </option>
-        ))}
-        <option value="custom">期間を指定…</option>
-      </select>
-      {selection.mode === 'custom' && (
-        <>
-          <input
-            type="month"
-            className="period-month"
-            aria-label="開始月"
-            min={full?.from}
-            max={full?.to}
-            value={selection.from}
-            onChange={(e) => setCustom({ from: e.target.value })}
-          />
-          <span aria-hidden="true">〜</span>
-          <input
-            type="month"
-            className="period-month"
-            aria-label="終了月"
-            min={full?.from}
-            max={full?.to}
-            value={selection.to}
-            onChange={(e) => setCustom({ to: e.target.value })}
-          />
-        </>
-      )}
-    </span>
-  );
-}
-
-function ExportMenu() {
-  const [open, setOpen] = useState(false);
-  const { withPeriod } = usePeriod();
-  const ref = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-    const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    window.addEventListener('mousedown', onClick);
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      window.removeEventListener('mousedown', onClick);
-    };
-  }, [open]);
-
-  return (
-    <span className="popover-host" ref={ref}>
-      <button type="button" aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((v) => !v)}>
-        書き出し ▾
-      </button>
-      {open && (
-        <span className="popover" role="menu">
-          <a className="btn" role="menuitem" href="/api/export/json" onClick={() => setOpen(false)}>
-            統合データJSON
-          </a>
-          <a
-            className="btn"
-            role="menuitem"
-            href={withPeriod('/api/export/matrix.csv')}
-            onClick={() => setOpen(false)}
-          >
-            マトリクスCSV
-          </a>
-        </span>
-      )}
-    </span>
   );
 }

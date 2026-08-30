@@ -1,7 +1,7 @@
-import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { runRenderScript } from './render-script-test-helper';
 
 // スマホ幅のカード化を、本物の styles.css を headless Chrome に描画させて実測する。
 // jsdom はレイアウトを計算しないため、classify-mobile-cards.dom.test.tsx は
@@ -30,18 +30,8 @@ describe('スマホ幅のカード化(実描画)', () => {
   const run = hasChrome ? it : it.skip;
   run(
     'スマホ幅でページ本体が横スクロールせず、仕分け表が1行=1カードに畳まれ、操作のタップ領域が44px以上ある',
-    () => {
-      let output = '';
-      try {
-        output = execFileSync(process.execPath, [SCRIPT], {
-          encoding: 'utf8',
-          stdio: ['ignore', 'pipe', 'pipe'],
-          timeout: 90_000,
-        });
-      } catch (error) {
-        const e = error as { stdout?: string; stderr?: string; message: string };
-        throw new Error(`${e.message}\n${e.stdout ?? ''}\n${e.stderr ?? ''}`);
-      }
+    async () => {
+      const output = await runRenderScript(SCRIPT);
       expect(output).toContain('すべて合格');
     },
     120_000,

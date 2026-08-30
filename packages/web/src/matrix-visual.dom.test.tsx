@@ -5,7 +5,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, expect, it, vi } from 'vitest';
 import type { MatrixData } from './api.js';
-import { MatrixPage } from './pages/Matrix.js';
+import { MatrixPage } from './pages/analysis/Matrix.js';
 
 vi.mock('react-chartjs-2', () => ({
   Chart: ({ 'aria-label': ariaLabel }: { 'aria-label'?: string }) => (

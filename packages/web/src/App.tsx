@@ -7,14 +7,12 @@ import { Layout } from './components/Layout.js';
 import { LoginPage } from './pages/Login.js';
 import { TaxReturnPage } from './pages/TaxReturn.js';
 import { PeriodProvider } from './period.js';
-import { APP_ROUTES, type AppRouteId } from './routeMetadata.js';
+import { APP_ROUTES, type AppRouteId, LEGACY_ROUTE_REDIRECTS } from './routeMetadata.js';
 import { TaxYearProvider } from './tax-year.js';
 
 export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
   overview: lazy(() => import('./pages/Overview.js').then((module) => ({ default: module.OverviewPage }))),
-  matrix: lazy(() => import('./pages/Matrix.js').then((module) => ({ default: module.MatrixPage }))),
-  trends: lazy(() => import('./pages/Trends.js').then((module) => ({ default: module.TrendsPage }))),
-  diagnosis: lazy(() => import('./pages/Diagnosis.js').then((module) => ({ default: module.DiagnosisPage }))),
+  analysis: lazy(() => import('./pages/Analysis.js').then((module) => ({ default: module.AnalysisPage }))),
   subscriptions: lazy(() =>
     import('./pages/Subscriptions.js').then((module) => ({ default: module.SubscriptionsPage })),
   ),
@@ -84,6 +82,16 @@ export function App() {
                 const Component = ROUTE_COMPONENTS[route.id];
                 return <Route key={route.id} path={route.path} element={<Component />} />;
               })}
+              {/* 支出分析は切り口をURLに持つ。/analysis 単体は AnalysisPage が既定タブへ寄せる */}
+              <Route path="/analysis/:tab" element={<ROUTE_COMPONENTS.analysis />} />
+              {/* 統合前の /matrix などは外に出ている可能性がある。トップへ落とさず該当タブへ送る */}
+              {LEGACY_ROUTE_REDIRECTS.map((redirect) => (
+                <Route
+                  key={redirect.from}
+                  path={redirect.from}
+                  element={<Navigate to={redirect.to} replace />}
+                />
+              ))}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>

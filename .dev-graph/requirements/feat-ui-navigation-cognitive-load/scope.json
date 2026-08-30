@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-ui-navigation-cognitive-load",
+  "parent_feature": "feat-ui-navigation-cognitive-load",
+  "feature_package_id": "feature-package/feat-ui-navigation-cognitive-load",
+  "handoff_target": "task-graph",
+  "selected_nodes": [
+    "spec-ui-navigation-cognitive-load",
+    "arch-ui-navigation-experience",
+    "arch-ui-navigation-frontend",
+    "feat-ui-navigation-cognitive-load",
+    "SYS-UINAV-P01",
+    "SYS-UINAV-P02",
+    "SYS-UINAV-P03",
+    "SYS-UINAV-P04",
+    "SYS-UINAV-P05",
+    "SYS-UINAV-P06",
+    "SYS-UINAV-P07",
+    "SYS-UINAV-P08",
+    "SYS-UINAV-P09",
+    "SYS-UINAV-P10",
+    "SYS-UINAV-P11",
+    "SYS-UINAV-P12",
+    "SYS-UINAV-P13"
+  ],
+  "artifact_kinds": [
+    "specification",
+    "architecture",
+    "feature",
+    "task",
+    "document"
+  ],
+  "closure_status": "complete",
+  "missing_nodes": [],
+  "snapshot_digest": "sha256:90aee26caa05b5c72a070661be81cbdceb2f9044c14bd8c9c955ea45fb7d5185"
+}
+

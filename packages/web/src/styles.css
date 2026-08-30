@@ -10,6 +10,11 @@
   --warn: #a8781c;
   --danger: #b23a3a; /* 増加=赤 */
   --good: #2e7d5b; /* 減少=緑 */
+  /* 事業色(--biz)の淡い面。現在地・選択・情報など「青で塗る」箇所はすべてここを見る。
+     生値を各所に置くと prefers-contrast: more の上書きから漏れるので、必ずこの3つを使う。 */
+  --biz-soft: #eef3fa; /* 塗り */
+  --biz-soft-line: #bdcce3; /* 塗りに添える枠 */
+  --biz-strong: #183b72; /* 塗りの上の文字 */
   --radius: 10px;
   --font-head: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI",
     "Yu Gothic", Meiryo, sans-serif;
@@ -36,6 +41,14 @@
   /* 固定要素の高さ(スクロール退避・sticky計算の基準) */
   --header-h: 53px; /* 初期値。実際の高さは Layout が描画後に上書きする */
   --tabbar-h: 56px;
+  --sidebar-w: 236px;
+  /* 狭幅のドロワーは常設sidebarより一段広い(重ねて開くので本文幅を削らない) */
+  --drawer-w: 240px;
+  --nav-row-min: 44px;
+  --nav-icon-size: 20px;
+  --tab-icon-size: 18px;
+  --nav-icon-label-gap: 10px;
+  --nav-group-gap: 14px;
   /* 表の入れ物(.scroll-x)の高さの上限。
      行が多い表はこの中で縦スクロールさせ、見出し行を箱の上端に留める。
      画面の高さから固定ヘッダーと余白を引いた分。短い表はこの値に達しないので影響しない。 */
@@ -99,7 +112,7 @@ body {
 /* ---------------- レイアウト ---------------- */
 .shell {
   display: grid;
-  grid-template-columns: 218px 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr;
   grid-template-rows: auto 1fr auto;
   grid-template-areas: "side head" "side main" "side foot";
   min-height: 100vh;
@@ -119,7 +132,7 @@ body {
   font-weight: 900;
   font-size: var(--fs-xl);
   letter-spacing: 0.04em;
-  padding: 6px 10px 14px;
+  padding: 6px 10px 10px;
   color: var(--ink);
   text-decoration: none;
   border-radius: 8px;
@@ -129,12 +142,14 @@ body {
   font-weight: 400;
   color: var(--ink-soft);
   font-size: var(--fs-xs);
+  /* ブランドの副題は1行固定なので、本文用の 1.6 を継ぐと行箱だけが伸びる */
+  line-height: 1.4;
 }
 .nav-group {
   font-size: var(--fs-xs);
   color: var(--ink-soft);
-  margin: 10px 10px 4px;
-  padding-top: 10px;
+  margin: calc(var(--nav-group-gap) / 2) 10px 4px;
+  padding-top: calc(var(--nav-group-gap) / 2);
   border-top: 1px solid var(--line);
   letter-spacing: 0.08em;
 }
@@ -146,22 +161,93 @@ body {
 .nav a {
   display: flex;
   align-items: center;
-  min-height: 36px;
-  padding: 6px 12px;
+  gap: var(--nav-icon-label-gap);
+  min-height: var(--nav-row-min);
+  padding: 7px 10px;
+  position: relative;
+  border: 1px solid transparent;
   border-radius: 8px;
   color: var(--ink);
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 650;
   font-size: var(--fs-md);
   transition: background-color var(--motion-fast) var(--ease-standard), color var(--motion-fast)
     var(--ease-standard);
 }
+.route-icon {
+  width: var(--nav-icon-size);
+  height: var(--nav-icon-size);
+  flex: 0 0 var(--nav-icon-size);
+  color: var(--ink-soft);
+}
+.nav-label {
+  min-width: 0;
+  line-height: 1.35;
+}
 .nav a:hover {
   background: var(--bg);
 }
-.nav a.active {
+/*
+ * 現在地の強調は「帯」と「色」の2つだけ。以前は 塗り・枠・文字色・太字・帯・icon別色 の
+ * 6つが同時に効いていて、17行のサイドバーが本文より騒がしくなっていた。
+ * 落とした3つは、いずれも「目立たせているつもりで実は見分けがつかない」ものだった:
+ *   - 塗り --biz-soft は白地と 1.11:1。WCAG 1.4.11 が非文字要素に求める 3:1 に遠く届かない。
+ *     しかも hover の --bg が 1.10:1 で輝度がほぼ同じなので、hover した行が現在地に見えていた。
+ *   - 枠 --biz-soft-line は白地と 1.63:1。これも 3:1 未満で、帯のすぐ隣に2本目の輪郭を足すだけ。
+ *   - icon だけ --biz にすると、1行の中に「濃い青の文字」と「明るい青のicon」の2色が並ぶ。
+ *     currentColor を継がせて文字と同じ色にすれば、色数を増やさずに現在地の色が届く。
+ * 残した2つは根拠がある:
+ *   - 帯 --biz は白地と 6.46:1 で 3:1 を満たす唯一の手掛かり。位置と形なので
+ *     グレースケール・色覚特性でも消えない(WCAG 1.4.1 を色以外で満たす)。
+ *   - 文字色 --biz-strong は白地と 11.0:1(元の塗りの上では 9.88:1 で、通常行の 14.79:1 より
+ *     低かった。塗りをやめたことで現在地の文字はむしろ読みやすくなっている)。
+ * border は透明のまま残す。現在地でだけ枠が現れると 1px 分の行のズレが起きるため。
+ */
+.nav a[aria-current="page"] {
+  color: var(--biz-strong);
+}
+.nav a[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  inset-block: 8px;
+  left: -1px;
+  width: 3px;
+  border-radius: 999px;
   background: var(--biz);
-  color: #fff;
+}
+.nav a[aria-current="page"] .route-icon {
+  color: inherit;
+}
+/*
+ * ポインタ環境の常設サイドバーだけ行を詰める。
+ *
+ * --nav-row-min: 44px は WCAG 2.5.5 Target Size (Enhanced, AAA) の値で、この達成基準は
+ * 「ポインタ入力」に対する要件。ノートPCのマウス/トラックパッドで操作する常設サイドバーに
+ * 掛かるのは SC 2.5.8 Target Size (Minimum, AA) の 24px で、36px はこれを大きく上回る。
+ * タップ環境(pointer: coarse)と、640px以下でドロワーになるときは 44px のまま。
+ *
+ * 条件を `and (pointer: fine)` と書かず「常設幅で詰めて、タップ環境だけ戻す」の2段にしてある。
+ * pointer には fine / coarse のほかに none(ポインタデバイスなし)があり、`pointer: fine` だと
+ * none の環境が緩和から漏れて 44px のまま残る。実際 CI の Linux headless Chrome は none を返し、
+ * 総高が上限を超えて落ちた。緩和したいのは「タップ主体でないこと」なので、否定形の方が意図に近い。
+ * `not (pointer: coarse)` 一発でも書けるが Media Queries 4 の記法なので、2段で書いて対応幅を広く取る。
+ *
+ * 15画面 + 4つのグループ見出し + ブランドは、行高をいくら詰めてもノートPCの実効高
+ * (600〜700px)には収まらない。.sidebar は overflow-y: auto なので下端は元からスクロールする。
+ * ここでやっているのは「iconとグループ見出しを足した分の退行を戻す」ことで、
+ * 総高の上限は scripts/check-mobile-layout.mjs が実描画で固定している。
+ */
+@media (min-width: 641px) {
+  :root {
+    --nav-row-min: 36px;
+    --nav-group-gap: 10px;
+  }
+}
+@media (min-width: 641px) and (pointer: coarse) {
+  :root {
+    --nav-row-min: 44px;
+    --nav-group-gap: 14px;
+  }
 }
 
 .header {
@@ -294,7 +380,99 @@ body {
   color: var(--ink-soft);
   font-size: var(--fs-md);
   margin: 0 0 16px;
+  max-width: 60ch;
 }
+/*
+ * ページの補足(.page-task の従属情報)。既定は畳み、読みたい人だけ開く。
+ * 左の縦線と一段小さい文字で「この説明は上の一文にぶら下がる」ことを見せる。
+ * 開閉の動きは全体の prefers-reduced-motion: reduce 指定でまとめて止まる。
+ */
+.page-task-detail {
+  margin: -8px 0 16px;
+  max-width: 60ch;
+  padding-left: 12px;
+  border-left: 2px solid var(--line);
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+.page-task-detail > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-left: -4px;
+  padding: 4px;
+  border-radius: 6px;
+  color: var(--biz);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none; /* 既定のマーカーは幅も色も揃わないので自前の三角に置き換える */
+  transition: background-color var(--motion-fast) var(--ease-standard);
+}
+.page-task-detail > summary::-webkit-details-marker {
+  display: none;
+}
+.page-task-detail > summary::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform var(--motion-fast) var(--ease-standard);
+}
+.page-task-detail[open] > summary::before {
+  transform: rotate(90deg);
+}
+.page-task-detail > summary:hover {
+  background: var(--bg);
+}
+.page-task-detail[open] > summary {
+  color: var(--ink);
+}
+.page-task-detail > :not(summary) {
+  margin: 0 0 8px;
+  line-height: 1.7;
+}
+.page-task-detail > :last-child {
+  margin-bottom: 8px;
+}
+/*
+ * 画面の中の切り口(支出分析のタブ)。中身はリンクで、現在地は aria-current="page"。
+ * 下線1本の帯にするのは、上の .page-title と下の本文の間に「同じ画面の中の選択」だと
+ * 見えるようにするため。ボタン風の枠にすると、上の期間セレクタ等と同じ重さになり
+ * 「別の操作」に見えてしまう。
+ */
+.page-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 0 0 16px;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto; /* 狭い幅では帯ごと横スクロール。ラベルを語の途中で折り返さない */
+}
+.page-tabs a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-height: 44px; /* 指で押せる高さ */
+  padding: 0 14px;
+  border-bottom: 3px solid transparent;
+  color: var(--ink-soft);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.page-tabs a:hover {
+  background: var(--bg);
+  color: var(--ink);
+}
+.page-tabs a[aria-current="page"] {
+  color: var(--biz);
+  border-bottom-color: var(--biz);
+}
+
 .page-title {
   font-size: var(--fs-3xl);
   font-weight: 900;
@@ -840,7 +1018,7 @@ button.mini.classify-quick {
 }
 button.classify-quick[aria-pressed="true"] {
   border-color: var(--biz);
-  background: #eef3fa;
+  background: var(--biz-soft);
   color: var(--biz);
   font-weight: 900;
 }
@@ -1285,7 +1463,7 @@ table.data tr.detail-row p {
 }
 
 .pill.biz {
-  background: #eef3fa;
+  background: var(--biz-soft);
   color: var(--biz);
   border-color: var(--biz);
 }
@@ -1483,7 +1661,7 @@ input.num-input {
 .dropzone.drag {
   border-color: var(--biz);
   color: var(--biz);
-  background: #eef3fa;
+  background: var(--biz-soft);
 }
 
 .notice {
@@ -1497,7 +1675,7 @@ input.num-input {
 }
 .notice.info {
   border-color: var(--biz);
-  background: #eef3fa;
+  background: var(--biz-soft);
 }
 /* 手を打つ猶予がもう無い警告。注意(既定の warn 色)より一段強く出す */
 .notice.danger {
@@ -1555,7 +1733,7 @@ input.num-input {
 }
 
 tr.kbd-focus td {
-  background: #eef3fa !important;
+  background: var(--biz-soft) !important;
 }
 .kbd-help {
   color: var(--ink-soft);
@@ -1622,7 +1800,7 @@ kbd {
     left: 0;
     top: 0;
     bottom: 0;
-    width: 240px;
+    width: min(var(--drawer-w), calc(100vw - 48px));
     z-index: 50;
     transform: translateX(-100%);
     transition: transform 0.18s var(--ease-standard);
@@ -1698,6 +1876,8 @@ kbd {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    gap: 2px;
     min-height: var(--tabbar-h);
     min-width: 64px;
     flex: 0 0 auto;
@@ -1713,9 +1893,21 @@ kbd {
     transition: color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast)
       var(--ease-standard);
   }
-  .tabbar .tab.active {
+  .tabbar .route-icon {
+    width: var(--tab-icon-size);
+    height: var(--tab-icon-size);
+    flex-basis: var(--tab-icon-size);
+  }
+  .tabbar .tab[aria-current="page"],
+  .tabbar button.tab.active {
     color: var(--biz);
     border-top-color: var(--biz);
+    font-weight: 800;
+  }
+  /* サイドバーと同じで、iconは独自のアクセントを持たず現在地の文字色を継ぐ
+     (.route-icon の既定 --ink-soft を打ち消すためだけの行) */
+  .tabbar .tab[aria-current="page"] .route-icon {
+    color: inherit;
   }
   .tabbar::-webkit-scrollbar {
     display: none;
@@ -1737,6 +1929,22 @@ kbd {
   :root {
     --line: #9aa5a2;
     --ink-soft: var(--ink);
+    /* 青の面は「薄い塗り」だと現在地が地と紛れる。塗りを一段濃く、枠を事業色そのものにして輪郭を立てる */
+    --biz-soft: #dbe6f8;
+    --biz-soft-line: var(--biz);
+    --biz-strong: #10294f;
+  }
+  /*
+   * ナビの現在地は既定では帯と文字色の2つに絞っている(上の .nav a[aria-current] 参照)。
+   * 強調を「要求されたときだけ」足す場所がここ。帯を太くして輪郭を、太字で色以外の手掛かりを
+   * 一段増やす。塗りは戻さない — 濃くしても白地と 1.26:1 で、3:1 の手掛かりにはならないため。
+   */
+  .nav a[aria-current="page"] {
+    font-weight: 800;
+  }
+  .nav a[aria-current="page"]::before {
+    inset-block: 4px;
+    width: 5px;
   }
 }
 /* 収支バランス表: 上のセレクタで選んだ月を太字で示す(塗りは使わない) */
@@ -2505,4 +2713,68 @@ label.check {
   .receipt-source-candidates .btn {
     flex: 1 1 10rem;
   }
+}
+
+/* 画面検索パレット(Cmd+K)。ネイティブ <dialog> なので開閉・背面の不活性化はブラウザが持つ */
+.palette {
+  width: min(560px, calc(100vw - 32px));
+  margin: 12vh auto auto;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(29, 42, 44, 0.12);
+}
+.palette::backdrop {
+  background: rgba(29, 42, 44, 0.32);
+}
+.palette[open] {
+  animation: popover-in var(--motion-fast) var(--ease-standard) both;
+}
+.palette-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: var(--fs-base);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.palette-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  max-height: min(56vh, 420px);
+  overflow-y: auto;
+}
+.palette-opt {
+  display: flex;
+  align-items: center;
+  gap: var(--nav-icon-label-gap);
+  width: 100%;
+  /* サイドバーの行と揃える。ここはタップ環境も通るので 44px を緩めない */
+  min-height: var(--nav-row-min);
+  padding: 6px 10px;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+}
+.palette-opt:hover {
+  background: var(--bg);
+}
+/* 現在の候補は実フォーカスなので、既定のフォーカスリングがそのまま手掛かりになる */
+.palette-opt:focus-visible {
+  background: var(--bg);
+}
+.palette-label {
+  font-weight: 650;
+  white-space: nowrap;
+}
+.palette-task {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.palette-empty {
+  margin: 12px 10px;
 }

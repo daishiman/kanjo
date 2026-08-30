@@ -2,14 +2,13 @@
 // 使い方:
 //   pnpm --filter @kanjo/web dev --host 127.0.0.1 --port 4175
 //   KANJO_VISUAL_BASE_URL=http://127.0.0.1:4175 node scripts/check-financial-visuals.mjs
-import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { launchHeadlessChrome, removeProfileRoot, stopHeadlessChrome } from './headless-chrome.mjs';
 
 const BASE_URL = process.env.KANJO_VISUAL_BASE_URL ?? 'http://127.0.0.1:4175';
 const WIDTHS = [375, 768, 1280, 1600];
-const PORT = 9800 + Math.floor(Math.random() * 150);
 const OUTPUT_DIR = join(tmpdir(), 'kanjo-financial-review');
 const months = Array.from({ length: 20 }, (_, index) => {
   const date = new Date(Date.UTC(2025, index, 1));
@@ -165,20 +164,6 @@ const summary = {
   period: statements.period,
 };
 
-function chromePath() {
-  const candidates = [
-    process.env.CHROME_PATH,
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable',
-    '/usr/bin/chromium-browser',
-    '/usr/bin/chromium',
-  ].filter(Boolean);
-  const found = candidates.find((path) => existsSync(path));
-  if (!found) throw new Error(`Chrome が見つかりません: ${candidates.join(', ')}`);
-  return found;
-}
-
 const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64');
 const responseFor = (url) => {
   const path = new URL(url).pathname;
@@ -191,49 +176,18 @@ const responseFor = (url) => {
 
 mkdirSync(OUTPUT_DIR, { recursive: true });
 const profileDir = mkdtempSync(join(tmpdir(), 'kanjo-financial-chrome-'));
-const chrome = spawn(
-  chromePath(),
-  [
-    '--headless=new',
-    '--disable-gpu',
-    '--no-sandbox',
-    `--remote-debugging-port=${PORT}`,
-    `--user-data-dir=${join(profileDir, 'profile')}`,
-    '--no-first-run',
-    '--window-size=1600,1000',
-    'about:blank',
-  ],
-  { stdio: ['ignore', 'ignore', 'ignore'] },
-);
 
+let chrome;
 let ws;
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
-const waitForChromeExit = (timeoutMs) => {
-  if (chrome.exitCode !== null) return Promise.resolve(true);
-  return new Promise((resolve) => {
-    const onExit = () => {
-      clearTimeout(timer);
-      resolve(true);
-    };
-    const timer = setTimeout(() => {
-      chrome.off('exit', onExit);
-      resolve(false);
-    }, timeoutMs);
-    chrome.once('exit', onExit);
-  });
-};
 
 try {
-  let targets;
-  for (let index = 0; index < 60; index += 1) {
-    await sleep(300);
-    try {
-      targets = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json();
-      break;
-    } catch {}
-  }
-  if (!targets) throw new Error('Chrome が起動しませんでした');
-  const page = targets.find((target) => target.type === 'page');
+  const launched = await launchHeadlessChrome({ profileRoot: profileDir, windowSize: '1600,1000' });
+  chrome = launched.chrome;
+  const { port, targets } = launched;
+  let page = targets.find((target) => target.type === 'page');
+  if (!page)
+    page = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' })).json();
   ws = new WebSocket(page.webSocketDebuggerUrl);
   await new Promise((resolve) => {
     ws.onopen = resolve;
@@ -429,14 +383,6 @@ try {
   }
 } finally {
   if (ws && ws.readyState < WebSocket.CLOSING) ws.close();
-  if (chrome.exitCode === null) chrome.kill('SIGTERM');
-  if (!(await waitForChromeExit(5_000)) && chrome.exitCode === null) {
-    chrome.kill('SIGKILL');
-    await waitForChromeExit(1_000);
-  }
-  try {
-    rmSync(profileDir, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
-  } catch (error) {
-    console.warn(`Chrome一時領域を削除できませんでした: ${profileDir}\n${error}`);
-  }
+  await stopHeadlessChrome(chrome);
+  await removeProfileRoot(profileDir);
 }

@@ -112,3 +112,90 @@ const FALLBACK: PeriodContextValue = {
 };
 
 export const usePeriod = (): PeriodContextValue => useContext(PeriodContext) ?? FALLBACK;
+
+/**
+ * 対象期間の選択UI(tax-year.tsx が context と TaxYearPicker を同居させているのと同じ形)。
+ *
+ * 年・直近n年・任意期間を1つのselectにまとめる。選択肢は必ずサーバが返した
+ * 絞り込み前の年一覧から作る(絞り込み後から作ると、2025年を選んだ瞬間に
+ * 2026年が選択肢から消えて戻れなくなる)。
+ */
+export function PeriodPicker({ meta }: { meta?: PeriodMeta }) {
+  const { selection, setSelection } = usePeriod();
+  const years = meta?.years ?? [];
+  const full = meta?.full ?? null;
+
+  const value =
+    selection.mode === 'year'
+      ? `year:${selection.year}`
+      : selection.mode === 'span'
+        ? `span:${selection.span}`
+        : selection.mode === 'custom'
+          ? 'custom'
+          : 'all';
+
+  const onSelect = (v: string) => {
+    if (v === 'all') return setSelection({ mode: 'all' });
+    if (v.startsWith('year:')) return setSelection({ mode: 'year', year: v.slice(5) });
+    if (v.startsWith('span:')) return setSelection({ mode: 'span', span: Number(v.slice(5)) as SpanYears });
+    // 任意期間は、いまの全体期間を初期値にしておく。空欄から始めると必ず1回は無効になる
+    setSelection({ mode: 'custom', from: full?.from ?? '', to: full?.to ?? '' });
+  };
+
+  const setCustom = (patch: Partial<{ from: string; to: string }>) => {
+    if (selection.mode !== 'custom') return;
+    const next: PeriodSelection = { ...selection, ...patch };
+    // from > to の瞬間はサーバが全期間に倒すので、入力途中でも画面は壊れない
+    setSelection(next);
+  };
+
+  return (
+    <span className="period-picker">
+      <label className="visually-hidden" htmlFor="period-select">
+        対象期間
+      </label>
+      <select
+        id="period-select"
+        className="period-select"
+        value={value}
+        onChange={(e) => onSelect(e.target.value)}
+      >
+        <option value="all">全期間</option>
+        {([1, 2, 3] as SpanYears[]).map((n) => (
+          <option key={n} value={`span:${n}`}>
+            {SPAN_LABEL[n]}
+          </option>
+        ))}
+        {years.map((y) => (
+          <option key={y} value={`year:${y}`}>
+            {y}年
+          </option>
+        ))}
+        <option value="custom">期間を指定…</option>
+      </select>
+      {selection.mode === 'custom' && (
+        <>
+          <input
+            type="month"
+            className="period-month"
+            aria-label="開始月"
+            min={full?.from}
+            max={full?.to}
+            value={selection.from}
+            onChange={(e) => setCustom({ from: e.target.value })}
+          />
+          <span aria-hidden="true">〜</span>
+          <input
+            type="month"
+            className="period-month"
+            aria-label="終了月"
+            min={full?.from}
+            max={full?.to}
+            value={selection.to}
+            onChange={(e) => setCustom({ to: e.target.value })}
+          />
+        </>
+      )}
+    </span>
+  );
+}

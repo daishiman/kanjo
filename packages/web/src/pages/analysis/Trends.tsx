@@ -8,14 +8,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
-import { type ExpenseScope, type TrendRow, type TrendsResponse, api } from '../api.js';
-import { DataTable, termColumn } from '../components/DataTable.js';
-import { HowTo } from '../components/HowTo.js';
-import { KpiCard, PageHeader, PageState } from '../components/Page.js';
-import { Term } from '../components/Term.js';
-import { COLORS, yenTick } from '../components/charts.js';
-import { deltaCls, monthShort, pct, yen, yenS } from '../format.js';
-import { usePeriod } from '../period.js';
+import { type ExpenseScope, type TrendRow, type TrendsResponse, api } from '../../api.js';
+import { DataTable, termColumn } from '../../components/DataTable.js';
+import { HowTo } from '../../components/HowTo.js';
+import { KpiCard, PageState } from '../../components/Page.js';
+import { Term } from '../../components/Term.js';
+import { COLORS, yenTick } from '../../components/charts.js';
+import { deltaCls, monthShort, pct, yen, yenS } from '../../format.js';
+import { usePeriod } from '../../period.js';
 
 const SCOPES: { id: ExpenseScope; label: string }[] = [
   { id: 'all', label: '事業+家計' },
@@ -50,14 +50,12 @@ export function TrendsPage() {
   if (q.isLoading)
     return (
       <>
-        <PageHeader route="trends" />
         <PageState status="loading" />
       </>
     );
   if (q.isError || !q.data)
     return (
       <>
-        <PageHeader route="trends" />
         <PageState status="error" error={q.error} />
       </>
     );
@@ -66,7 +64,6 @@ export function TrendsPage() {
   if (!t.recordedMonths.length)
     return (
       <>
-        <PageHeader route="trends" />
         <ScopeTabs scope={scope} onChange={setScope} />
         <PageState
           status="empty"
@@ -86,7 +83,6 @@ export function TrendsPage() {
 
   return (
     <>
-      <PageHeader route="trends" />
       <ScopeTabs scope={scope} onChange={setScope} />
 
       <div className="kpis">

@@ -241,8 +241,8 @@ export function OverviewPage() {
       <UnsettledPanel />
 
       <p className="sub">
-        次は <Link to="/matrix">増減マトリクス</Link> で「どの科目が増えたか」を特定 →{' '}
-        <Link to="/diagnosis">統計診断</Link> で対応を決める。
+        次は <Link to="/analysis/matrix">増減マトリクス</Link> で「どの科目が増えたか」を特定 →{' '}
+        <Link to="/analysis/diagnosis">統計診断</Link> で対応を決める。
       </p>
     </>
   );

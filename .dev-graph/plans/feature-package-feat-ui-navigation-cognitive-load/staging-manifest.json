@@ -1,0 +1,33 @@
+{
+  "canonical_digest": "sha256:be365873e506ea86341c1df37ab821656834663dd168ce6eb1aa4beb7bd13ccd",
+  "feature_id": "feat-ui-navigation-cognitive-load",
+  "files": {
+    "feature-package.json": "b65b6d08838fed75f2002a7ee23dab6de57d370d72407a5202c3cab50ede4609",
+    "system-build-handoff.json": "b9b7a1ee734402cc07d04e66822c7a8923dd693a8346e019be6c06c3e120ea05",
+    "task-graph.json": "0288b38e22ab36ecdcbbba902adc08a75acc3bd5f73eb9d8f59bf0ed885c5dbd",
+    "task-specs/phase-01-requirements.md": "2582e5fbd06f8a5068c77361b519b01fa8aee2e0e0516e91d22152b9fbd85900",
+    "task-specs/phase-02-architecture.md": "ffb98db8bb6c664700ed1c102cfcc637cc269ac712b4af9238668580de6c1fa9",
+    "task-specs/phase-03-design-review.md": "5d5f2a7ee74cdbac3295534eafff048f544e4484423f907ab9508d766befe62d",
+    "task-specs/phase-04-test-design.md": "7795570ea90558e5f3aa98b18a1dc251f6f76b383960743f6967471a2eabed47",
+    "task-specs/phase-05-implementation.md": "29567d9ebe2fc92b19f88afe59da70a816e419ec928e05e16864d3f7d6d6e614",
+    "task-specs/phase-06-test-run.md": "5d523f96122979539f82c7fe39fd1e42e885917f6a86fa31d8a9bec38d863e49",
+    "task-specs/phase-07-acceptance.md": "2725fd93f588dd42a5c68530574406df6f187ec4ac664294ff76328db235ebaf",
+    "task-specs/phase-08-refactoring-migration.md": "4e380d525f17e253fd5f3910843f3183956ffe3f86191c1a9201b16e30c05d8b",
+    "task-specs/phase-09-quality-assurance.md": "83a1448c28de6d040d04ceb4454f954a9326e82a3d8cb7150bd3627f41cee2f8",
+    "task-specs/phase-10-final-review.md": "97d3ffd2f47888210fbd30d21d93dbf4b07770a15230e806b4e4e8b494c69efa",
+    "task-specs/phase-11-evidence.md": "0543a0c26a5d63a958d1f7f77144351d35c37f3056d0e8416df1eb2394c1cd21",
+    "task-specs/phase-12-documentation-operations.md": "b343b7a8375e111a3eb655dbbab07a5379095ca98bbcc4f3662bab10016a6ffb",
+    "task-specs/phase-13-release-deploy.md": "02f61074bedbc2b34e2c11c1db579c875c75c6981f8a6ca8a9e78f7d2360c376",
+    "workstream-inventory.json": "b3042f961c2c55169bc55c1f271221c3f8046cc51963c52d59cc55af1afa766f"
+  },
+  "handoff_contract": {
+    "manifest_is_commit_point": true,
+    "path": "system-build-handoff.json",
+    "schema_version": "1.0.0",
+    "self_reference_policy": "handoff hash and final digest are manifest-only",
+    "sha256": "b9b7a1ee734402cc07d04e66822c7a8923dd693a8346e019be6c06c3e120ea05",
+    "source_canonical_digest": "sha256:085a5eb33517781cb2bc75fee4572b7308a65c3c90415763a27bfd736fabe642"
+  },
+  "run_id": "run-plan-uiux-01",
+  "schema_version": "1.0.0"
+}
