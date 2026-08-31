@@ -252,6 +252,26 @@ for f in $(find "$KIT_DIR" -name '*.ps1'); do
   fi
 done
 
+# --- 5-c. ファイルの読み方が Windows の言語設定に依存しないこと -----------
+# Windows PowerShell 5.1 の Get-Content は、BOM の無いファイルを ANSI コード
+# ページ (英語 Windows なら 1252、日本語 Windows なら 932) で読む。UTF-8 で
+# 書かれた日本語はそこで別の文字に化ける。
+#   - 日本語の有無を見る検査は「書かれていない」と誤って落ちる
+#   - 日本語を含むパスの一覧は壊れ、存在しない場所を指す。安全確認は
+#     Get-Item が null を返して静かに素通りする(何も調べていないのに合格)
+# どちらも利用者の Windows の言語設定次第で結果が変わる。-Encoding UTF8 か
+# [IO.File]::ReadAllText を明示すること。
+for f in $(find "$KIT_DIR" \( -name '*.ps1' -o -name '*.bat' \)); do
+  label="${f#$KIT_DIR/}"
+  # コメント行は対象外。理由を書けなくなる。
+  if grep -v '^\s*#' "$f" | grep -o 'Get-Content[^;){]*' |
+     grep -qv '\-Encoding'; then
+    fail "$label に -Encoding を付けない Get-Content がある (ANSI で読まれる)"
+  else
+    pass "$label ファイルの読み方は言語設定に依存しない"
+  fi
+done
+
 # --- 6. Mac の環境差(Intel / Apple Silicon / Node の入れ方) --------------
 # 静的検査では「PATH の組み立てが正しいか」までは分からない。
 # 実機を用意する代わりに環境を注入して確かめる。

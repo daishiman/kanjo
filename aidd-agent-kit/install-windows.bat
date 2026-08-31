@@ -109,7 +109,7 @@ rem 旧manifestをコマンドとして解釈させないため、読み込み�
 set "AIDD_PHASE=old-manifest"
 set "OLD_CLAUDE_MANIFEST=%CLAUDE_MANIFEST%"
 set "OLD_CODEX_MANIFEST=%CODEX_MANIFEST%"
-powershell -NoProfile -Command "$ErrorActionPreference='Stop'; foreach($path in @($env:OLD_CLAUDE_MANIFEST,$env:OLD_CODEX_MANIFEST)){if(-not (Test-Path -LiteralPath $path -PathType Leaf)){continue}; foreach($line in Get-Content -LiteralPath $path){if([string]::IsNullOrWhiteSpace($line)){continue}; $p=$line.Split('|',2); if($p.Count -eq 2 -and $p[0] -notmatch '^[0-9a-fA-F]{64}$'){throw ('invalid manifest hash: '+$path)}; $rel=$p[$p.Count-1]; if($rel -notmatch '^[A-Za-z0-9_.\\-]+$' -or $rel -match '(^|\\)\.\.?($|\\)' -or $rel -notmatch '^(skills|agents|commands|prompts)\\'){throw ('unsafe manifest path: '+$path)}}}" >>"%AIDD_LOG%" 2>&1
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; foreach($path in @($env:OLD_CLAUDE_MANIFEST,$env:OLD_CODEX_MANIFEST)){if(-not (Test-Path -LiteralPath $path -PathType Leaf)){continue}; foreach($line in Get-Content -LiteralPath $path -Encoding UTF8){if([string]::IsNullOrWhiteSpace($line)){continue}; $p=$line.Split('|',2); if($p.Count -eq 2 -and $p[0] -notmatch '^[0-9a-fA-F]{64}$'){throw ('invalid manifest hash: '+$path)}; $rel=$p[$p.Count-1]; if($rel -notmatch '^[A-Za-z0-9_.\\-]+$' -or $rel -match '(^|\\)\.\.?($|\\)' -or $rel -notmatch '^(skills|agents|commands|prompts)\\'){throw ('unsafe manifest path: '+$path)}}}" >>"%AIDD_LOG%" 2>&1
 if errorlevel 1 goto ERR_FORMAT
 
 set "AIDD_PHASE=map-claude-skills"
@@ -193,7 +193,7 @@ for /f "usebackq tokens=1,2,3 delims=|" %%A in ("%AFFECTED%") do call :ADD_TARGE
 >> "%TARGET_LIST%" echo(%CODEX_BACKUP_DIR%
 set "CHECK_LIST=%TARGET_LIST%"
 set "CHECK_DIR_LIST=%DIR_TARGET_LIST%"
-powershell -NoProfile -Command "$ErrorActionPreference='Stop'; foreach($raw in Get-Content -LiteralPath $env:CHECK_LIST){$p=[IO.Path]::GetFullPath($raw); while($p){$i=Get-Item -LiteralPath $p -Force -ErrorAction SilentlyContinue; if($null -ne $i -and (($i.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)){throw ('destination reparse point: '+$p)}; $parent=[IO.Directory]::GetParent($p); if($null -eq $parent){break}; $next=$parent.FullName; if($next -eq $p){break}; $p=$next}}; foreach($root in Get-Content -LiteralPath $env:CHECK_DIR_LIST){if(-not (Test-Path -LiteralPath $root -PathType Container)){continue}; foreach($i in Get-ChildItem -LiteralPath $root -Recurse -Force){if(($i.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0){throw ('destination child reparse point: '+$i.FullName)}}}" >>"%AIDD_LOG%" 2>&1
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; foreach($raw in Get-Content -LiteralPath $env:CHECK_LIST -Encoding UTF8){$p=[IO.Path]::GetFullPath($raw); while($p){$i=Get-Item -LiteralPath $p -Force -ErrorAction SilentlyContinue; if($null -ne $i -and (($i.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)){throw ('destination reparse point: '+$p)}; $parent=[IO.Directory]::GetParent($p); if($null -eq $parent){break}; $next=$parent.FullName; if($next -eq $p){break}; $p=$next}}; foreach($root in Get-Content -LiteralPath $env:CHECK_DIR_LIST -Encoding UTF8){if(-not (Test-Path -LiteralPath $root -PathType Container)){continue}; foreach($i in Get-ChildItem -LiteralPath $root -Recurse -Force){if(($i.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0){throw ('destination child reparse point: '+$i.FullName)}}}" >>"%AIDD_LOG%" 2>&1
 if errorlevel 1 goto ERR_SYMLINK
 
 rem --- ステップ 3/6: 変更対象を検証付きでバックアップ ------------

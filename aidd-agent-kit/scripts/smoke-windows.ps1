@@ -506,7 +506,13 @@ try {
   $manifestPath = Join-Path $targetHome '.codex\aidd-agent-kit.manifest'
   Write-AiddPhase -Phase 'installer-artifacts' -Category 'manifest' `
     -Path $manifestPath
-  $manifestText = (Get-Content -LiteralPath $manifestPath) -join "`n"
+  # ここも ANSI 読みを避ける。照合表は今のところ ASCII だけだが、
+  # 読み方が環境依存のまま残ると、日本語を含めた瞬間に壊れる。
+  # 下の照合は Multiline の $ で行末を見る。.NET の $ は \n の直前に合うので、
+  # CRLF のままだと行末に \r が残って一致しない。Get-Content は改行を
+  # 落として返していたため、素朴に置き換えると静かに素通りする検査になる。
+  $manifestText = ([IO.File]::ReadAllText($manifestPath, [Text.Encoding]::UTF8)) `
+    -replace "`r`n", "`n"
   foreach ($pattern in @(
     '\|skills\\build-app\\SKILL\.md$',
     '\|agents\\app-orchestrator\.toml$'
