@@ -3,6 +3,13 @@
 # 適用は必ずWorker配信より前に行う（schema-guardが期待版へ達するまで全D1経路を503で閉じるため）。
 name: Deploy
 
+# workflow_run起動のrunは既定でworkflow名しか出ず、どのマージの配信か一覧から追えない。
+# 一覧で自分のマージと結び付けられるよう、起動元のコミット表題を名前に出す。
+run-name: >-
+  Deploy ${{ github.event_name == 'workflow_run'
+  && github.event.workflow_run.display_title
+  || format('手動実行 ({0})', github.sha) }}
+
 on:
   workflow_run:
     workflows: [CI]
@@ -49,6 +56,17 @@ jobs:
       - name: テスト（手動実行時）
         if: github.event_name == 'workflow_dispatch'
         run: pnpm test
+      # buildは本番を一切触らないので、不可逆なmigration適用より前に置く。
+      # 逆順にすると、buildが落ちたとき「D1だけ新しくWorkerは旧版」という
+      # 誰にも見えない不一致が本番に残る（2026-08-31 run 33354126817 で実際に発生した）。
+      # wranglerがdist/を読むので、Workerデプロイより前であることは変えられない。
+      #
+      # build:artifactにはJS予算検査が入らない。予算は「意図しない依存流入」の回帰検知で、
+      # 超過しても本番は正しく動く。可逆な品質閾値で不可逆なmigrationを含む配信を
+      # 止めると、mainに入った変更が無言で本番に出ないままになる。予算はCIのpnpm build
+      # （PRゲート）で守り、ここは出すことだけをする。
+      - name: Webをビルド
+        run: pnpm --filter @kanjo/web build:artifact
       - name: 自動適用してよいD1 migrationか判定
         id: migration_plan
         run: node .github/scripts/plan-auto-migration.mjs
@@ -60,8 +78,6 @@ jobs:
         run: pnpm run db:migrate:remote
       - name: D1 migrationの未適用を検査
         run: node .github/scripts/check-d1-migrations.mjs
-      - name: Webをビルド
-        run: pnpm --filter @kanjo/web build
       - name: Workerをデプロイ
         run: pnpm --filter @kanjo/api exec wrangler deploy
       - name: 反映待ち後の1回目確認

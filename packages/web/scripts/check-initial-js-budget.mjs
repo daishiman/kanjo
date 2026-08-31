@@ -1,4 +1,4 @@
-import { readFileSync, rmSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
 const WEB_DIR = new URL('../', import.meta.url);
@@ -29,8 +29,6 @@ while (pending.length) {
   pending.push(...(item.imports ?? []));
 }
 
-// 実行時assetsに内部manifestを含めない。
-rmSync(MANIFEST_URL);
 if (total > MAX_INITIAL_JS_GZIP) {
   throw new Error(
     `初期JSがbudget超過です: ${(total / 1024).toFixed(2)}KiB > ${MAX_INITIAL_JS_GZIP / 1024}KiB (${files.join(', ')})`,

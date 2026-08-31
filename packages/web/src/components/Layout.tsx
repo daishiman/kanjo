@@ -7,7 +7,7 @@
  * ナビ1項目は NavItem.tsx、期間の選択は period.tsx、書き出しは ExportMenu.tsx。
  */
 import { useQuery } from '@tanstack/react-query';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { type SummaryResponse, api } from '../api.js';
 import { monthLabel, yen } from '../format.js';
@@ -16,9 +16,31 @@ import { APP_ROUTES, MOBILE_ROUTES, TABBED_ROUTE_IDS } from '../routeMetadata.js
 import { TaxYearPicker, useTaxYear } from '../tax-year.js';
 import { CommandPalette } from './CommandPalette.js';
 import { ExportMenu } from './ExportMenu.js';
-import { ImprovementRequestButton } from './ImprovementRequestButton.js';
 import { NavItem } from './NavItem.js';
 import { Term } from './Term.js';
+
+/**
+ * 改善要望ボタンは押されるまで撮影も注釈も使わないので、初期バンドルから外す。
+ * 押した瞬間に import を待つ形にはしない。それだと待ち時間の分だけ画面が進み、
+ * 「押した瞬間に見えていたものが送られる」という ImprovementRequestButton の
+ * 順序の保証が崩れる。lazy は初回描画の直後に取得を始めるので、押す頃には揃っている。
+ */
+const ImprovementRequestButton = lazy(() =>
+  import('./ImprovementRequestButton.js').then((module) => ({
+    default: module.ImprovementRequestButton,
+  })),
+);
+
+/**
+ * 取得が終わるまでの間、右下には何も出さない。
+ *
+ * 見た目だけのボタンを置くと、押せてしまう。押しても capture() がまだ無いので
+ * 何も起きず、利用者は「壊れている」と読む。撮れない瞬間に撮れるふりをするのは、
+ * ボタンが無いことより悪い。
+ * fixed 配置なので後から現れてもレイアウトはずれず、遅れて出ても実害がない。
+ * この間に本当に困った人には、サイドバーの「改善要望」(/improvement) が残っている。
+ */
+const IMPROVEMENT_BUTTON_FALLBACK: ReactNode = null;
 
 const STATUS_LABEL: Record<string, string> = {
   ok: '余裕あり',
@@ -178,7 +200,9 @@ export function Layout({ children }: { children: ReactNode }) {
       {/* 右下に固定する。どの画面のどこまでスクロールしていても同じ位置にあり、
           「困ったらここ」を覚えれば済む。撮影は押した瞬間に始まるので、
           いま見えているものがそのまま送られる */}
-      <ImprovementRequestButton />
+      <Suspense fallback={IMPROVEMENT_BUTTON_FALLBACK}>
+        <ImprovementRequestButton />
+      </Suspense>
 
       <nav className="tabbar" aria-label="モバイルナビゲーション">
         {MOBILE_ROUTES.map((route) => (

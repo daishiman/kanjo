@@ -21,7 +21,7 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check . && node scripts/sync-project-skills.mjs --check && node scripts/check-glossary.mjs && node scripts/check-report-css.mjs && node scripts/check-graph-lineage.mjs",
     "lint:fix": "biome check --write .",
-    "deploy": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api run deploy",
+    "deploy": "pnpm --filter @kanjo/web build:artifact && pnpm --filter @kanjo/api run deploy",
     "db:migrate:local": "pnpm --filter @kanjo/api exec wrangler d1 migrations apply kanjo-db --local",
     "db:migrate:remote": "pnpm --filter @kanjo/api exec wrangler d1 migrations apply kanjo-db --remote",
     "db:checkpoint": "pnpm --filter @kanjo/api exec wrangler d1 time-travel info kanjo-db",

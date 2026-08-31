@@ -10,6 +10,8 @@
                                       ↓
                                 mainのCI成功
                                       ↓
+                        Deploy: Webビルド（build:artifact／品質閾値は課さない）
+                                      ↓
                         Deploy: pending migrationを判定
                      ↓なし        ↓追加だけ         ↓破壊的/判定不能
                       │      Time Travel記録         停止
@@ -19,16 +21,17 @@
                                    ↓
                         D1未適用の検査（後条件）
                                    ↓
-                        Webビルド → Worker公開
+                              Worker公開
                                    ↓
                         30秒後確認 → 90秒後確認
 ```
 
-重要な原則は次の3点です。
+重要な原則は次の4点です。
 
 1. `main`へ直接pushせず、必ずPRとCIを経由する。
 2. D1の構造変更は`Deploy`がWorker配信の**前に**適用する。取り返しのつく追加だけを自動適用し、列や行を失う変更と判定不能は配信前に停止して`Migrate`の手動承認へ倒す。適用がコード配信より後になる順序は作らない。
 3. Cloudflareへの公開はGitHub Actionsへ一本化し、Cloudflare Workers BuildsのGit連携を併用しない。
+4. 品質閾値は`CI`で止め、`Deploy`では止めない。JS予算のような「超えても本番は動く」検査が配信を止めると、`main`に入った変更が無言で本番に出ないまま残る。`Deploy`が止まってよいのは、進めると壊れるとき（破壊的migration、remote D1の未適用、スモークの失敗）だけです。
 
 ### 自動適用の境界
 
@@ -49,8 +52,8 @@ SQLiteで列の型や制約を変える定型手順（新テーブル作成 → 
 
 | ワークフロー | ファイル | 起動条件 | 主な処理 | 外部への影響 |
 |---|---|---|---|---|
-| CI | `.github/workflows/ci.yml` | PR、`main`へのpush、手動 | 依存導入、lint、Env型生成を内包した型検査、テスト、依存監査 | なし |
-| Deploy | `.github/workflows/deploy.yml` | `main`のCI成功後、または`main`から手動 | 手動時の品質検査、pending migrationの判定、追加だけの自動適用（Time Travel記録つき）、remote D1未適用のfail-closed検査、Webビルド、Worker公開、2回のスモークテスト | 本番DBへ追加だけのmigrationを適用し、本番アプリを更新 |
+| CI | `.github/workflows/ci.yml` | PR、`main`へのpush、手動 | 依存導入、lint、Env型生成を内包した型検査、テスト、依存監査、ビルド確認（WebのJS予算とWorkerバンドルをmergeの前に検査する） | なし |
+| Deploy | `.github/workflows/deploy.yml` | `main`のCI成功後、または`main`から手動 | 手動時の品質検査、Webビルド（`build:artifact`。JS予算はCI側で守るので配信は止めない）、pending migrationの判定、追加だけの自動適用（Time Travel記録つき）、remote D1未適用のfail-closed検査、Worker公開、2回のスモークテスト | 本番DBへ追加だけのmigrationを適用し、本番アプリを更新 |
 | Migrate | `.github/workflows/migrate.yml` | `main`から`APPLY`と承認済みmanifest入力付きの手動実行のみ | repository head・ordered migrations digest・remote pendingの再照合、D1 Time Travel情報確認、リモートmigration適用 | 本番DBの構造を更新。破壊的変更の適用経路 |
 
 共通設定:
