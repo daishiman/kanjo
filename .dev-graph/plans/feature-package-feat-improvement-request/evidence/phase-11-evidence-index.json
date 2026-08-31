@@ -1,0 +1,125 @@
+{
+  "phase_ref": "P11",
+  "graph_node_id": "SYS-IMPREQ-P11",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:56:12Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "13 phase のうち証跡を持つ12件を列挙し、digest を固定する。利用者報告による是正のあと再計算した。",
+  "phase_coverage": {
+    "expected": 13,
+    "recorded": 13,
+    "missing": []
+  },
+  "evidence_index": [
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-01-requirements-baseline.json",
+      "digest": "sha256:a8b9aca57ded62cd6b44d625bff7f5186ac64cb94fc3dd0023780c169f773177"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-02-boundary-design.json",
+      "digest": "sha256:ee1925817f0eab759b4831e88df0a29b68d3ab6ad610b0d2911e1a38d4d09ab6"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-03-design-review.json",
+      "digest": "sha256:9426db5c1c878a0ec61dcc1d592c8fd1820ffe4948edfa91fb631c2239ff0009"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-04-test-design.json",
+      "digest": "sha256:4f0d432c7a3edae4d97500f7be4c22a76919594ecb1c4d5fb98019863c89c74e"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-05-implementation.json",
+      "digest": "sha256:1a72f337a998405715a7dc789dca36eee51acdd46172ca6a58b65159702f3162"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-06-test-run.json",
+      "digest": "sha256:ec2a0a117d2b84c3dee1676a481ce4d49924aadd5a7aae95c74c89c79194aae6"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-07-acceptance.json",
+      "digest": "sha256:258ec3a55d93d8795f1dca7bc63229cf41cc1f9706553dc2331ebf34e83a2e7f"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-08-refactoring-migration.json",
+      "digest": "sha256:bb8e1b3b728ee69e5a8e423daf866cdd7f329f4c83277bfc737c66383f124e53"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-09-quality-assurance.json",
+      "digest": "sha256:08724953a33cdd5377e72a41c8fad7810ca194341e731925c538b902f42bebff"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-10-final-review.json",
+      "digest": "sha256:f5972c920104859a7e541e9dccc6c0db628b871faecaf390425933a1258b4ac4"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-12-documentation-operations.json",
+      "digest": "sha256:61f4e863f28fce9290a05c59bc28b64a1b45eb851ca43081537a3e14e4e50d5f"
+    },
+    {
+      "file": ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-13-release-gate.json",
+      "digest": "sha256:07569fbe3d8108ac57aadc2752ab59dcf005b6f78fab6146214e0e7bd26b622e"
+    }
+  ],
+  "artifact_index": [
+    {
+      "file": "features/feat-improvement-request.md",
+      "digest": "sha256:3b9c905feec612d5a8f2778f1723686fcd2f90d705b7134c6e6ed88fb88d34a6"
+    },
+    {
+      "file": "architecture/arch-improvement-request-pipeline.md",
+      "digest": "sha256:c8d669b48320b1d57b5dd90cf6c28281e6fb4e5572b8e636914c5e2ce019be63"
+    },
+    {
+      "file": "migrations/0029_improvement_requests.sql",
+      "digest": "sha256:9942a1108e0fa18e95bd604163ac2ef4557ea79dd727d68d09ef1492bb678f72"
+    },
+    {
+      "file": "docs/improvement-request.md",
+      "digest": "sha256:0fefd916ec7c97efdba88871fc3116332aaf6f0b7b2a10425560e88a2b1fe951"
+    },
+    {
+      "file": "packages/core/src/improvement.ts",
+      "digest": "sha256:7be6e783698511c6e6aab305f4091aff1db75bc5c98e2cfc832a5e8f23d5964e"
+    },
+    {
+      "file": "packages/api/src/routes/improvement.ts",
+      "digest": "sha256:330ee8f98158a0dcf40ffbec9fca2c3ae0150b923c36ced9c14edf0475ca459d"
+    },
+    {
+      "file": "packages/api/src/improvement/contract.ts",
+      "digest": "sha256:725a7105eb8de3315d165135db30f6e0971170bb01928b582c93c9d44ff89758"
+    },
+    {
+      "file": "packages/api/src/improvement/redact.ts",
+      "digest": "sha256:ea9b4b18789c9ecd8a8f64956c46f52c0167668d2a7969560339714cc3d37bfa"
+    },
+    {
+      "file": "packages/web/src/capture-screen.ts",
+      "digest": "sha256:aea4c19fcde1b6778a7f83bbc653f334f3d71fa6a23a91b5916d8f3a38522d1c"
+    },
+    {
+      "file": "packages/web/src/diagnostics-buffer.ts",
+      "digest": "sha256:ad5a4059be235678f20b9bc56a4f5221249bdd20bc1f8d358298cd271b891cce"
+    },
+    {
+      "file": "packages/web/src/components/ImprovementRequestButton.tsx",
+      "digest": "sha256:963168d8cb4b4297c6b1acc6d60f68692a07a014b30314c5ee0557dcb4934b7c"
+    },
+    {
+      "file": "packages/web/src/pages/Improvement.tsx",
+      "digest": "sha256:c5fe2dfd30be01236f3412de6685170bd0b18ddbc02eb927f660f1e0df13c84a"
+    },
+    {
+      "file": "packages/web/src/annotate-image.ts",
+      "digest": "sha256:50a28fccedb73f5dd0b3de5809f675c852587f37378f592022c82e88b42bbbd9"
+    },
+    {
+      "file": "packages/web/src/components/ScreenshotAnnotator.tsx",
+      "digest": "sha256:d4bbc15766b9e965900fe964e8b8637decb8f8002f2c5d38dbe44acc2209df42"
+    }
+  ],
+  "note": "phase-11 自身の digest は自己参照になるため index に含めない。 仕様反映後に artifact digest を再計算した。",
+  "result": "PASS",
+  "spec_reflection_receipt": ".dev-graph/requirements/feat-improvement-request/spec-reflection-receipt.json"
+}

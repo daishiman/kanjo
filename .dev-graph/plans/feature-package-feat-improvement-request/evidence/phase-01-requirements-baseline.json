@@ -1,0 +1,182 @@
+{
+  "phase_ref": "P01",
+  "graph_node_id": "SYS-IMPREQ-P01",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:13:04Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "受入条件15件を観測点つきでベースライン化し、4層それぞれの可変資産と不可変資産を確定した。",
+  "source_digests": [
+    {
+      "path": "system-spec/index.md",
+      "digest": "sha256:ddf9d13227fd61d9c67241acdb03fc62595ddb7dd848ab229ae949cb5bbff1ee"
+    },
+    {
+      "path": "system-spec/00-requirements-definition.md",
+      "digest": "sha256:a71a62931f1e068821a43ee02bddd797a2568e16bad86f86e0013fd797d89e04"
+    },
+    {
+      "path": "architecture/arch-improvement-request-pipeline.md",
+      "digest": "sha256:d9b4ad89161d7c4a86da7a659b606037bdad3a56e2ba896341c1af20d4586af1"
+    },
+    {
+      "path": "features/feat-improvement-request.md",
+      "digest": "sha256:fe1fb4cdeb7eb616a03bc798e9cf46e91e465cedacad60a5f58a94b44c49f139"
+    },
+    {
+      "path": "features/feat-improvement-request.context.json",
+      "digest": "sha256:76f17b4ba504e5c7d7410ecc034d27f2ffa293f3922c3b751f006768bcc0d7ad"
+    }
+  ],
+  "acceptance_baseline": [
+    {
+      "id": "A01",
+      "condition": "改善要望ボタン押下で撮影された画像に、その押下で開くモーダルの DOM が含まれない",
+      "layer": "撮影",
+      "observation_point": "撮影コールバック実行時点で document に dialog.improve-modal が存在しないこと"
+    },
+    {
+      "id": "A02",
+      "condition": "撮影が失敗してもモーダルは開き、スクリーンショットなしの本文だけで投稿が 2xx で成立する",
+      "layer": "撮影",
+      "observation_point": "capture が null / 例外でもモーダルが開き、POST /api/improvements が 201 を返すこと"
+    },
+    {
+      "id": "A03",
+      "condition": "撮影中はボタンが押下不可で、待機していることが画面に出る",
+      "layer": "撮影",
+      "observation_point": "撮影中のボタンが disabled かつ aria-busy=true で、待機文言が表示されること"
+    },
+    {
+      "id": "A04",
+      "condition": "送信前にスクリーンショットの縮小プレビューが見え、添付を外して送信できる",
+      "layer": "撮影",
+      "observation_point": "縮小プレビューの img と添付チェックボックスが存在し、外すと screenshot が null で送信されること"
+    },
+    {
+      "id": "A05",
+      "condition": "改善要望ボタンを押す前に発生した未捕捉例外・unhandledrejection・console error/warn・失敗した通信が、投稿された診断情報に含まれる",
+      "layer": "診断",
+      "observation_point": "installDiagnostics 後に発生させた4種の事象が snapshot().entries に現れること"
+    },
+    {
+      "id": "A06",
+      "condition": "診断情報が件数上限または総バイト上限を超えたとき、切り詰められたうえで省略件数が保存され画面にも出る",
+      "layer": "診断",
+      "observation_point": "件数上限・バイト上限のそれぞれで omittedCount>0 になり、画面に省略件数が出ること"
+    },
+    {
+      "id": "A07",
+      "condition": "クライアント側マスクを外した診断情報を直接 POST しても、保存後の値から Cookie / Authorization / Bearer / パスワード相当の値が除去されている",
+      "layer": "診断",
+      "observation_point": "クライアントマスクを通さない直接 POST 後、D1 行の JSON 表現に平文が現れないこと"
+    },
+    {
+      "id": "A08",
+      "condition": "発行した Bearer トークンの平文が D1 のどの列にも保存されておらず、SHA-256 ハッシュだけが保存されている",
+      "layer": "受け渡し",
+      "observation_point": "D1 行の全列を文字列化してトークン原文が含まれず、token_hash が 64桁hex であること"
+    },
+    {
+      "id": "A09",
+      "condition": "TTL 超過のトークンと取得回数上限超過のトークンが、互いに区別できる拒否理由で拒否され、いずれも 500 にならない",
+      "layer": "受け渡し",
+      "observation_point": "token_expired / token_fetch_limit の別コードで 401 が返ること"
+    },
+    {
+      "id": "A10",
+      "condition": "トークン値がアプリケーションログのどこにも出力されない",
+      "layer": "受け渡し",
+      "observation_point": "発行・検証経路にトークン値を出力するログが存在しないこと"
+    },
+    {
+      "id": "A11",
+      "condition": "R2 のスクリーンショットに対する公開 URL・署名付き URL が発行されず、取得経路が Worker 経由の1本だけである",
+      "layer": "受け渡し",
+      "observation_point": "応答の screenshot.url が r2.cloudflarestorage.com / X-Amz-Signature を含まないこと"
+    },
+    {
+      "id": "A12",
+      "condition": "投稿済みの改善要望から Claude Code 向け / Codex 向けの指示文がコピーでき、その指示文が指す API をコピーしたトークンだけで実行するとスクリーンショットと診断情報が取得できる",
+      "layer": "受け渡し",
+      "observation_point": "指示文から抽出したトークンだけで agent/data と agent/screenshot が 200 になること"
+    },
+    {
+      "id": "A13",
+      "condition": "status=done かつ完了から30日を超えた要望の、スクリーンショット R2 オブジェクトと診断情報列が削除され、本文・状態・対応記録は参照できる",
+      "layer": "失効",
+      "observation_point": "runImprovementRetention 後に R2 head が null、詳細取得は 200 で本文・状態・done_at が読めること"
+    },
+    {
+      "id": "A14",
+      "condition": "改善要望のテーブル名が packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL に1つも現れないことをテストが固定している",
+      "layer": "失効",
+      "observation_point": "store.ts の BACKUP_SNAPSHOT_SQL テンプレート本文に improvement_requests が現れないこと"
+    },
+    {
+      "id": "A15",
+      "condition": "削除ジョブが既存 scheduledMaintenance の Promise.allSettled 配下で他ジョブと独立に成否を記録し、新規 Cron トリガが wrangler.jsonc に増えていない",
+      "layer": "失効",
+      "observation_point": "index.ts の Promise.allSettled 配下に runImprovementRetention があり、wrangler.jsonc の crons が1件であること"
+    }
+  ],
+  "asset_boundaries": {
+    "撮影": {
+      "may_touch": [
+        "packages/web/src/components/ImprovementRequestButton.tsx",
+        "packages/web/src/capture-screen.ts",
+        "packages/web/src/styles.css"
+      ],
+      "must_not_touch": [
+        "Screen Capture API 経由の撮影経路(未導入・導入しない)",
+        "既存 Layout の業務ルート定義"
+      ]
+    },
+    "診断": {
+      "may_touch": [
+        "packages/web/src/diagnostics-buffer.ts",
+        "packages/core/src/improvement.ts"
+      ],
+      "must_not_touch": [
+        "外部エラートラッキング SaaS への送信経路",
+        "レスポンスbodyの記録"
+      ]
+    },
+    "受け渡し": {
+      "may_touch": [
+        "packages/api/src/routes/improvement.ts",
+        "packages/api/src/improvement/contract.ts",
+        "packages/api/src/improvement/redact.ts",
+        "packages/api/src/index.ts"
+      ],
+      "must_not_touch": [
+        "packages/api/src/routes/ai.ts の既存 agentGuard 契約",
+        "R2 の公開URL・署名付きURL 発行"
+      ]
+    },
+    "失効": {
+      "may_touch": [
+        "packages/api/src/index.ts の scheduledMaintenance 配下",
+        "packages/api/src/routes/improvement.ts の runImprovementRetention"
+      ],
+      "must_not_touch": [
+        "packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL 列挙",
+        "既存 nightlyBackup 実装",
+        "packages/api/wrangler.jsonc の triggers.crons"
+      ]
+    }
+  },
+  "preconditions": [
+    {
+      "id": "PRE-1",
+      "statement": "本番 D1 の d1_migrations は 0005_sub_vendors.sql までしか記録しておらず、0029 を本番へ配信できない。",
+      "consequence": "本 feature の migration 適用は feat-prod-d1-schema-recovery の完了まで実行しない。ローカルとテスト環境での完成はこれに妨げられない。"
+    },
+    {
+      "id": "PRE-2",
+      "statement": "@testing-library/user-event は未導入で、packages/web/package.json は write scope 外。",
+      "consequence": "DOM テストは fireEvent で書く。"
+    }
+  ],
+  "result": "PASS"
+}

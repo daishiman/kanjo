@@ -656,6 +656,12 @@ interface AttachmentArchiveRecord {
  * D1 batch/withSessionは逐次整合性までは型契約にあるが、複数readの同一snapshotは保証しない。
  * backupに影響する全canonical tableを1本のSQLite statementで読み、statement snapshotを境界にする。
  * monthly_aggは派生cacheなので意図的に含めない。
+ *
+ * 禁止事項: improvement_requests をここへ追加しない。
+ * 改善要望のスクリーンショットと診断情報は「対応完了から30日で削除する」ことが確定仕様
+ * (system-spec の D6/D7)。バックアップ側へ複製すると、その削除が最大30日ぶん骨抜きになる。
+ * 改善要望は利用者の一次資産(記帳データ)ではなく、D1障害時に復元できないことを許容している。
+ * この不在は packages/api/src/improvement-retention.test.ts が固定する。
  */
 const BACKUP_SNAPSHOT_SQL = `
 SELECT * FROM (

@@ -1,0 +1,254 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/feature-package-feat-improvement-request",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "13 task spec の Architecture decisions・Compatibility・スコープ外 (8項目に拡張) は全件同文で、features/feat-improvement-request.md の決定と一致する。前回 medium とした2件の矛盾が解消された。P05 の Automated commands から未存在 test の実行前提が削除され『新規検証の作成と実行は P06 が所有するため、この phase の write scope には検証ファイルを含めない』と所有境界が明記され、P05 の write scope 16ファイルに検証ファイルが1件も含まれないことを実測で確認した。P13 のスコープ外は『feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない』へ変更され、配信分岐が本番 migration 適用を含意しないことが明示された。残る差異は P13 の verification 文言が『配信または保留』のままである点のみで low。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-06-test-run.md",
+        "task-specs/phase-13-release-deploy.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "受入15件は P01/P04/P06/P07 の件数明示ゲートに加え、個別再述の被覆が前回より広がった。P05 の受入条件が5件から8件へ増え、前回 medium とした UI 3件 (撮影中の押下不可と待機表示 / 縮小プレビューと添付解除 / 省略件数の画面表示) がいずれも実装 phase の受入条件として明文化され、P05 の Automated commands にも同3点の目視確認が1件追加された。workstream-inventory.json の P05 acceptance も8件で spec と一致する。scope_out 8件は13 spec すべてのスコープ外節へ8項目 (feature の8件を統合・展開したもの) として反映され、外部エラートラッキング SaaS と Screen Capture API の2件が全13ファイルに存在することを実測した。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-06-test-run.md",
+        "task-specs/phase-07-acceptance.md",
+        "workstream-inventory.json"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "feature-package.json と task-graph.json は今回の修正で不変 (sha256 が前回と同一) で、13 node の id・phase_ref・spec path 構造は維持されている。workstream-inventory.json / system-build-handoff.json / 13 spec の更新後も、id・phase_ref・spec path・depends_on・build_target_kind の4者一致を再確認した。handoff の source_inputs 16件と staging-manifest.json の files 17件について sha256 を全件再計算し、不一致0件。source_feature_digest (sha256:76f17b4b...) は features/feat-improvement-request.context.json の digest と一致しており、今回編集された features/feat-improvement-request.md ではないため lineage は失効していない。resource_scope 逸脱は解消され、P12 の docs/ 2ファイルは features 側と .dev-graph/state/graph.json 側の双方で resource_scope に含まれる。",
+      "evidence": [
+        "feature-package.json",
+        "workstream-inventory.json",
+        "task-graph.json",
+        "system-build-handoff.json",
+        "task-specs/phase-12-documentation-operations.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "13 node の depends_on を再計算した結果、P01 が空、P02..P13 が直前 node ちょうど1件を指す前方直列で、循環・後方 edge・dangling reference・self-loop はいずれも0件。task-graph.json は今回の修正で変更されておらず (sha256 不変)、handoff の execution_tasks と workstream-inventory.json の tasks も同一の depends_on を宣言する。各 task spec の『前提条件』と『Dependency』行も同じ直前 node を指し、文書側と機械側の依存宣言に乖離が無い。P05 の verification から test 実行前提が外れたことで、P05→P06 の test 所有権と実行順序の宣言も整合した。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "workstream-inventory.json",
+        "task-specs/phase-05-implementation.md",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "/Users/dm/dev/dev/個人開発/harness/marketplaces/local/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "--repo-root",
+        "/Users/dm/orca/workspaces/kanjo/改善要望対応",
+        "--staging",
+        ".dev-graph/staging/feature-package-feat-improvement-request"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07\",\n  \"feature_package_id\": \"feature-package/feat-improvement-request\",\n  \"parent_feature\": \"feat-improvement-request\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "7e33abe3ad694553a3cecbaf00971b8529988ba350664cf9e458f0339ba45a0b"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "9b0f9a148e7915170b6724028262554b244e3a80852b33a42b0e83122825f01a"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "feb4767bf8f2da733c2d84bc7e4a861616309b74cad5240d133f6fd016670203"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "f72a6db8a17657b234b753675b0e0289799c9a17965df4dda197be9b20c99e63"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "7879f7fda5de04b492bbd57e335d4e3afe329ed9b3ff29f28d1bc095b2b788db"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "aaae8615e63c58b3a2e6820474f04056a34d6d3f48a5608ac470528eb8594ee6"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "c82ebfd2d4447579b3c16c431cd1e882362d2495619caf9f11edb69f1e210293"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "24526a9e062647f32390b94d8af57209bc13a30c5e1995bbff9a0d3b20dad6b5"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "1f72d539d204c6122a9c7722f2ece5c9c10b041a8d742cecf733f9afa9915604"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "36b3c03876845437d1f4b5b813ddc5f0a5c2954a858a6c6a30aad6307bee7a6e"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "1092e246300f0fd48c114c69fe57c9fa83720fa132a7d101a719e62f92527668"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "e6cfccb20e95a79d00acbd3df2949d388b1fe240849bc7b5590587bf8c5d6bfc"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "9c632a4d1cfc6ce8068532cd13c1e7100be77e9a8fd96e4fd5327098f3bf6527"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "aac52fe6cffb987131269617db64bbbc6f0f3be28d77c8892625d7c71a1ad2de"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "7ee9765e0536842cf2ee84b6dd43a730bcad76af04e586d1f802dd6286e3dec6"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "419e793069a38582b10adee17c21aa774e14cb637dbd00fae3c6d82f23ce1474"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "94417c9be91e8f731a6f9d44afb6af349c940980ee5606809251635c07ffddee"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "274f9bfe099ea9e3e9cc9f7e848a92643afcd54a67116d0975947c8060185e4d"
+    }
+  ],
+  "staleness_rule": "この findings は evaluated_digest (sha256:e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07) に対してのみ有効である。staging 配下のいずれかのファイルが変更され validate-system-plan.py の validated_digest がこの値と一致しなくなった時点で本 findings は stale となり、C11 promotion の根拠として使用してはならない。その場合は staging を再評価して findings を作り直すこと。上位正本については、source_feature_digest の実体である features/feat-improvement-request.context.json (sha256:76f17b4ba504e5c7d7410ecc034d27f2ffa293f3922c3b751f006768bcc0d7ad) が変わった場合も同様に stale とする。加えて本評価は features/feat-improvement-request.md (sha256:fe1fb4cdeb7eb616a03bc798e9cf46e91e465cedacad60a5f58a94b44c49f139) の resource_scope 5要素と scope_out 8件、および .dev-graph/state/graph.json の feature node の resource_scope 5要素を前提としており、これらが変わった場合も再評価が必要である。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "scope_out_propagation",
+      "observation": "前回 medium の指摘は解消された。13 task spec すべての『スコープ外』節が6項目から8項目へ拡張され、『外部エラートラッキング SaaS への診断情報の送信』と『Screen Capture API による画面共有ダイアログ経由の撮影』が全13ファイルに存在することを実測で確認した (grep -l で 13/13)。実装 phase である P05 の spec 単体からもこの2つの禁止が読み取れる。なお workstream-inventory.json は task 単位のスキーマに scope-out 相当のフィールドを持たないため、この情報を担う唯一の成果物である task spec 側での反映をもって完了と判定した。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-13-release-deploy.md",
+        "workstream-inventory.json"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "scope_out_wording",
+      "observation": "追加された1項目の文言が『外部エラートラッキング SaaS への診断情報の送信』であり、features/feat-improvement-request.md の scope_out 原文『外部エラートラッキング SaaS への送信』より対象が診断情報へ限定されている。D8 の決定根拠が診断情報の外部送出を問題にしているため意図としては忠実だが、字義どおりには診断情報以外を同種 SaaS へ送る経路が禁止から外れる。原文どおりの無限定表現に揃えるのが安全である。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "acceptance_mapping",
+      "observation": "前回 medium の指摘は解消された。P05 の受入条件が5件から8件へ増え、『撮影中は改善要望ボタンが押下不可になり、待機していることが画面に出る』『送信前にスクリーンショットの縮小プレビューが見え、添付を外して送信できる』『診断情報が上限を超えて切り詰められたとき、省略件数が画面にも出る』が明文化された。文言は feature の受入 A3・A4・A6 の観測点をそのまま保持しており、単なる形式追加ではない。workstream-inventory.json の P05 acceptance も8件で spec と一致する。さらに P05 の Automated commands へ『ローカルで画面を起動し、撮影中の押下不可表示・縮小プレビュー・添付解除・省略件数表示を目視で確認する』が追加され、受入条件と検証手段が対で揃った。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md",
+        "workstream-inventory.json"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "phase_ordering",
+      "observation": "前回 medium の指摘は解消された。P05 の Automated commands から『追加した検証が通ることを確認する』が削除され、『既存の pnpm test を実行し、この phase の変更によって既存検証が1件も退行していないことを確認する。受入条件に対応する新規検証の作成と実行は P06 が所有するため、この phase の write scope には検証ファイルを含めない』へ置き換わった。P05 の write scope 16ファイルに .test.ts / .test.tsx が1件も含まれないことを実測で確認しており、宣言と write scope が一致している。所有権が P06 に明示されたことで、P05 完了判定の曖昧さも消えた。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-06-test-run.md"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "scope_contradiction",
+      "observation": "前回 medium の矛盾は実質的に解消された。13 spec のスコープ外が『本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない』となり、P13 の配信分岐が本番 migration 適用を含意しないことが明示的に切り離された。残る差異は P13 の Automated commands が『配信または保留のいずれを選んだか』のままで、migration を保留したまま選びうる『配信』が何を指すのか (Worker と web のみの配信か) を述べていない点のみ。判断の記録内容が実行者によってぶれる余地が残るが、scope 逸脱には至らない。",
+      "evidence": [
+        "task-specs/phase-13-release-deploy.md"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "resource_scope",
+      "observation": "前回 medium の指摘は解消された。features/feat-improvement-request.md の frontmatter resource_scope と .dev-graph/state/graph.json の feature node の resource_scope が、いずれも packages/web/src・packages/api/src・packages/core/src・migrations・docs の5要素で一致することを実測で確認した。P12 の write scope (docs/improvement-request.md、docs/ci-cd-operations.md) はこれに収まる。exact-13 契約で P12 が必須 phase である以上、文書成果物を持てない resource_scope の側を直すという判断は妥当である。features/feat-improvement-request.context.json は resource_scope フィールドを持たないため、.md との間に新たな不一致は生じていない。",
+      "evidence": [
+        "task-specs/phase-12-documentation-operations.md",
+        "workstream-inventory.json"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "artifact_provenance",
+      "observation": "features/feat-improvement-request.md は confirmation_status: confirmed かつ evaluation_status: pass の確定成果物だが、resource_scope への docs 追加後も updated_at が 2026-08-30T00:00:00Z のまま更新されていない。source_feature_digest が指すのは context.json (sha256:76f17b4b...、今回不変) であるため package の lineage は失効していないが、確定済み artifact が確認経路の外で編集され、その痕跡が updated_at に残らない状態になっている。",
+      "evidence": [
+        "feature-package.json",
+        "system-build-handoff.json"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "artifact_ownership",
+      "observation": "前回から未修正で残存 (今回の修正対象外)。packages/api/src/improvement-redaction.test.ts と packages/api/src/improvement-backup-exclusion.test.ts が P06 と P09 の双方で produced artifacts かつ write scope として宣言されている。DAG が直列 (P06→P07→P08→P09) のため並列競合は起きないが、どちらの phase が正本の所有者かが宣言から読み取れない。P05 の修正で test 所有権が P06 にあると明記された分、P09 が同じファイルを produced として再宣言する点の曖昧さは相対的に目立つようになった。",
+      "evidence": [
+        "task-specs/phase-06-test-run.md",
+        "task-specs/phase-09-quality-assurance.md"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "review_coverage",
+      "observation": "前回から未修正で残存 (今回の修正対象外)。P10 の受入条件1は『変更ファイル一覧が P05・P06・P08・P09 の write scope の和に収まり』と定義されるが、P12 は P10 より後 (P10→P11→P12) に docs/ 配下2ファイルを変更するため、P12 のドキュメント変更は最終レビューの対象範囲に入らない。docs が resource_scope へ正式に加わったことで、レビュー範囲外に残る成果物が feature の正式スコープ内という位置づけになり、この抜けの意味は前回より重くなっている。",
+      "evidence": [
+        "task-specs/phase-10-final-review.md",
+        "task-specs/phase-12-documentation-operations.md"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "digest_integrity",
+      "observation": "system-build-handoff.json の source_inputs 16件と staging-manifest.json の files 17件すべての sha256 を独立に再計算し、宣言値と完全一致することを確認した。validate-system-plan.py の validated_digest は staging-manifest.json の canonical_digest と同値 sha256:e5aaef0b... で、handoff の canonical_digest_before_handoff (sha256:c756faed...) とは正しく分離されている。feature-package.json と task-graph.json は今回の修正で sha256 が変わっておらず、13 node の構造そのものには手が入っていないことが digest レベルで裏づけられた。",
+      "evidence": [
+        "system-build-handoff.json",
+        "feature-package.json",
+        "task-graph.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "phase_ref": "P09",
+  "graph_node_id": "SYS-IMPREQ-P09",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:56:12Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "秘匿値の非到達と「添付だけが30日で消える」ことを回帰テストで固定した。",
+  "added_tests": [
+    {
+      "file": "packages/api/src/improvement-retention.test.ts",
+      "tests": 8,
+      "design": "improvement-lifecycle.test.ts が D1 の行の姿を固定するのに対し、こちらは利用者とエージェントから見える振る舞いを固定する。重複を避けるため観測点をずらした。"
+    }
+  ],
+  "guarantees": [
+    {
+      "id": "Q-1",
+      "claim": "削除後も画面の詳細取得は 200 で、本文・状態・doneAt・purgedAt が読める",
+      "test": "削除後も画面の詳細取得は 200 で、本文・状態・対応記録が読める"
+    },
+    {
+      "id": "Q-2",
+      "claim": "30日の境界は ±1日で正しく分かれる",
+      "test": "対応完了から30日を1日でも過ぎたら消え、1日でも足りなければ残る"
+    },
+    {
+      "id": "Q-3",
+      "claim": "二度実行しても selected=0 で冪等",
+      "test": "同じ実行を二度掛けても対象が増えず、二重削除で落ちない"
+    },
+    {
+      "id": "Q-4",
+      "claim": "期限切れと回数超過は別コードの 401 で、500 にならない",
+      "test": "2つの理由は互いに別の文字列で、呼び出し側が対処を選べる"
+    },
+    {
+      "id": "Q-5",
+      "claim": "添付削除でトークンも失効する",
+      "test": "添付の削除でトークンも失効し、以後は認証が通らない"
+    },
+    {
+      "id": "Q-6",
+      "claim": "D1 にトークン平文が無く token_hash は64桁hex",
+      "test": "improvement-lifecycle.test.ts: 平文が D1 に無く token_hash が 64桁hex"
+    },
+    {
+      "id": "Q-7",
+      "claim": "画面側のマスクを迂回しても平文が保存されない",
+      "test": "improvement-redaction.test.ts: 直接投稿でも平文が残らない"
+    }
+  ],
+  "backup_decision": {
+    "id": "D7-improvement-backup-cadence",
+    "value": "opt-keep-daily-exclude-improvement-artifacts",
+    "detail": "夜間バックアップは日次のまま変更しない。改善要望テーブルは会計の正本ではないため BACKUP_SNAPSHOT_SQL に列挙せず、バックアップ容量を増やさない。",
+    "test": "packages/api/src/improvement-backup-exclusion.test.ts"
+  },
+  "result": "PASS"
+}

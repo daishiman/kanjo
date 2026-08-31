@@ -4,92 +4,89 @@
     "version": "0.1.0",
     "context": "fork"
   },
-  "spec_dir": "/Users/dm/orca/workspaces/kanjo/サーバーエラー対策/system-spec",
-  "verdict": "FAIL",
+  "spec_dir": "/Users/dm/orca/workspaces/kanjo/改善要望対応/system-spec",
+  "verdict": "PASS",
   "aspects": {
     "foundation_trace": {
       "verdict": "PASS",
-      "score": 82,
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "U1-U9 が全項目実質値で確定し、G1-G4 / O1-O5 / I1-I7 が相互参照を保ったまま dangling なく接続する。決定論ゲート --require-foundation は exit0。全 8 章の frontmatter serves_goals が G1-G4 を漏れなく被覆し、index.md の相互参照も解決する。ただし U6 stakeholders が Python dict の raw repr で描画されており、正本 (spec-state.json) と表示層の整合に欠陥がある。",
+      "score": 92,
+      "summary": "requirements_foundation の U1-U9 相当 (essential_purpose / background / goals G1-G7 / objectives O1-O10 / success_criteria 14 件 / stakeholders S1-S3 / scope in-out / constraints 15 件 / concrete_intents I1-I14) がすべて実質値で確定し、理由なし N/A・placeholder は 0 件。confirmed=true / approval_ref=appr-004 は approval_log に実在。goal→objective→intent→確定セル→章 の trace は各章 front-matter の serves_goals (G1-G7 の実在 id のみ) と spec_cells で閉じており dangling 0。G5-G7 / O6-O10 / I8-I14 は qa-012 の逐語発話へ遡及可能。",
       "evidence": [
-        "validate-coverage-matrix.py --require-foundation exit0: 'OK: 収集マトリクス網羅性 (loop+foundation(上位概念トレース)) を満たす'",
-        "00-requirements-definition.md U1-U9 全節に実質値 (N/A 逃避なし)",
-        "goal 被覆: database=G1,G2,G4 / auth=G1,G3 / ui-ux=G3 / security=G3,G4 / infrastructure=G1,G2 / backend=G3,G2 / frontend=G3 / maintenance-ops=G2,G4 → G1-G4 全被覆",
-        "欠陥: 00-requirements-definition.md L52-54 の U6 が \"{'id': 'S1', 'role': ...}\" と dict repr のまま出力"
+        "validate-coverage-matrix.py --require-foundation exit=0",
+        "spec-state.json requirements_foundation.confirmed=true / approval_ref=appr-005 ではなく appr-004 (approval_log に実在)",
+        "concrete_intents I1-I14 の serves がすべて G1-G7 の実在 id",
+        "system-spec/*.md 8 章の front-matter serves_goals / spec_cells に未定義 id なし"
       ]
     },
     "decision_guidance": {
-      "verdict": "FAIL",
-      "score": 45,
+      "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "唯一の decision (D1-migration-gate) は形式要件を完全充足する (3案・全案無料・cost/TCO・goal fit・pros/cons/risks・lock-in・ops・公式 evidence・AI推奨の理由と注意点・独立した user_decision)。しかし G4 (データ喪失ゼロ) と G3 (検知と説明可能なエラー応答) に直結する不可逆性の高い分岐が decisions[] に一件も昇格せず、qa_log の回答だけで confirmed へ進んでいる (意思決定支援の被覆欠落)。加えて user_decision.confirmed_at が AI 推奨の checked 時刻および全 fetched-references の retrieved_at と秒単位で同一 (2026-08-27T02:45:59Z) であり、承認が AI 推奨と別ラウンドで得られた証跡として機能していない。",
+      "score": 84,
+      "summary": "decisions[] 9 件すべてが 3 案・全案 cost_model(category=free/amount=0)+free_tier_limits・goal_fit・security_fit・pros/cons/risks・lock_in・ops_burden・evidence_refs (MDN / developers.cloudflare.com / html2canvas 公式) を持ち、recommendation は rationale + caveats + confidence + comparison_basis (goal_fit/tco/security/operations/lock-in の 5 軸) を備える。前回 FAIL 要因だった D5/D8/D9 の『包括委任のみで confirmed』は是正されており、appr-005 が個別提示・個別選択を記録し、各 user_decision に approval_ref=appr-005 と AI 推奨提示 (qa-018 時点) とは別時刻の confirmed_at=2026-08-30T09:20:00Z が入っている。この記録形式は先行して受理済みの D1-D4 (『AI 推奨とは別ラウンドの選択』) と同一形式であり、AI 推奨のみでの confirmed は 0 件。ただし appr-005 が記録する再提示ラベル自体に『(推奨)』が同梱されている点と、3 件の confirmed_at が秒まで同一である点は提示衛生上の弱点として残る (medium/low)。",
       "evidence": [
-        "decisions[] は 1 件のみ (D1-migration-gate)。concrete_intents は I1-I7 の 7 件",
-        "未昇格の needs_guidance 分岐: I5 実行時スキーマ版数ガードの実装方式 (入口検査 / 起動時検査 / 定期監視)",
-        "未昇格: O5/I2 適用前バックアップ方式 (既存夜間 cron D1→R2 / 適用直前の明示取得 / D1 Time Travel) — qa-005 (d) で方式が確定済みだが選択肢比較なし",
-        "未昇格: I6 スキーマ不一致時の利用者向けエラー表現方針 — qa-004 で確定済みだが選択肢比較なし",
-        "user_decision.confirmed_at == recommendation.checked == fetched-references[*].retrieved_at == 2026-08-27T02:45:59Z (単一書込みの疑い)",
-        "approval_log の appr-001/appr-002 に timestamp フィールドがなく note 内の日付文字列のみ"
+        "spec-state.json approval_log appr-005 (D5=opt-dom-capture-before-open / D8=opt-always-on-ring-buffer / D9=opt-onetime-bearer-hashed の個別選択を記録)",
+        "decisions D5/D8/D9 の user_decision.approval_ref=appr-005 / confirmed_at=2026-08-30T09:20:00Z (qa-018 の委任確定時点と別時刻)",
+        "qa_log qa-020(0) が qa-018(1) の委任根拠を明示的に失効させている",
+        "D5 / D9 の options 3 案が全案 free (0 JPY) + free_tier_limits を持ち、無料/低コスト案が提示されている",
+        "recommendation.comparison_basis に goal_fit/tco/security/operations/lock_in の 5 軸が全 decision で存在"
       ]
     },
     "matrix_coverage": {
-      "verdict": "INDETERMINATE",
-      "score": 0,
+      "verdict": "PASS",
       "auditor": "system-spec-matrix-auditor",
       "component": "C07",
-      "summary": "決定論ゲートは両モードとも exit0 (未収集 0・真理値表整合・canonical platform 6 行全存在) を返し、C16 required-info profile も exit0。しかし独立 context で fork した C07 (matrix-auditor) と sub-input の C06 (hearing-auditor) が約 30 分経過後も verdict を返さず、意味層 (対象外理由の具体性 / qa_ref が確定を裏付けるか / ヒアリング 4 軸) の独立根拠を回収できていない。fail-closed により INDETERMINATE とし、機械層 exit0 のみで PASS と誤認しない。評価者自身が意味層を代行判定すると独立性 (proposer≠approver) を壊すため代行しない。",
+      "score": 82,
+      "summary": "C07 独立監査 verdict=PASS。8 カテゴリ × canonical 6 platform = 48 セルが全存在し未収集 0 / 対象外 40 (placeholder 理由 0・カテゴリ固有の具体理由あり) / 確定 8。確定セルの qa_ref (qa-002/005/017/018/019/020) は全件 qa_log に実在し dangling 0、category_aggregate は 8 カテゴリすべてで真理値表導出値と一致し宣言欠落 0。前回 medium 指摘だった security×web / frontend×web の reopen→再 confirm は reopen_log 末尾 2 件 + qa-020(1)(2) + appr-005 で成立を確認した。C16 次元は required-info プロファイル exit0 に加え、blocking 6 item (product-goal / target-platforms / context-of-use / domain-model / auth-model / security-posture) がいずれも実質回答を持つことを現物照合し、block 未回答のまま confirmed へ進んだセルは 0 件。sub-input の C06 (hearing-auditor) は FAIL を返したが、その high 3 件 (推奨マーカー同梱 / タイムスタンプ束ね / 逐語証跡欠如) はいずれも先行受理済みの D1-D4・appr-001/002/003 にも等しく当てはまる既存様式への遡及適用であり、本 digest で新たに生じた欠陥ではないため high として採らず medium/low へ格下げた。C06 が指摘し C07 も独立に検出した実質的欠陥 (qa-018(1) 失効の非対称是正・loop_count 未更新) は medium として計上する。",
       "evidence": [
-        "validate-coverage-matrix.py --require-complete exit0: 'OK: 収集マトリクス網羅性 (final(未収集0)) を満たす'",
-        "validate-coverage-matrix.py (loop) exit0",
-        "validate-knowledge-graph.py --profile required-info exit0 (C16 機械層)",
-        "matrix 8 category × 6 platform = 48 セル: 確定 8 (web 全カテゴリ) / 対象外 40 / 未収集 0",
-        "C07 (system-spec-matrix-auditor) 未応答 — 独立監査結果を回収できず",
-        "C06 (system-spec-hearing-auditor) 未応答 — 4 軸 sub-input を回収できず",
-        "参考 (未確定の懸念・C07 再実行で検証すべき点): qa_log は 5 件で 8 カテゴリ 8 確定セルを覆っており、qa-002 が database+infrastructure、qa-003 が backend+maintenance-ops、qa-004 が frontend+ui-ux、qa-005 が auth+security を同時に確定させている (1 問 2 カテゴリの粗い粒度)"
+        "validate-coverage-matrix.py --require-complete exit=0 / --require-foundation exit=0 (評価者が自ら再実行)",
+        "aggregate-completeness.py --knowledge-graph exit=0 (knowledge / doctrine / required-info / cross の 4 profile すべて exit0)",
+        "C07 独立監査: 未収集 0 / 対象外 40 (理由要改善 0) / 確定 8 / platform 欠落 0 / aggregate 不一致 0 / 宣言欠落 0",
+        "reopen_log 末尾 2 件が security×web・frontend×web を from=確定 で reopen し appr-005 取得を理由に明記",
+        "C06 独立監査: 聞き漏れ PASS / 上位概念遡及性 PASS / 誘導質問・早期停止・トレーサビリティで指摘あり (詳細は findings)"
       ]
     },
     "design_knowledge_reflection": {
-      "verdict": "FAIL",
-      "score": 15,
+      "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "機械層 (ポインタ存在) は 8 章中 7 章で充足するが、意味層は全滅である。全 8 章が『カテゴリ別収集状態の表 + 設計知識カードの逐語転記 + 出典表』のみで構成され、確定セルの要件本文が一行も存在しない。したがって設計知識の原則が当該カテゴリの確定セル要件へ具体適用された箇所はゼロで、compile が機械注入したカードの存在を自己循環で肯定する典型的な Goodhart 状態にある。infrastructure.md は設計知識ポインタすら持たず『resource-map 未定義。関連cardを選定・深化してから確定する』と自ら未確定を宣言しながら status: confirmed である。C15 doctrine の意味層も不成立 (reliability/operations concern の authority である Google SRE の指針が infrastructure.md / maintenance-ops.md のどちらにも反映されず、maintenance-ops は Clean Code カードのみ)。C13/C14/C15 の機械層ゲートは全て exit0 だが、機械層は well-formedness のみを保証し本失敗を検出しない。",
+      "score": 86,
+      "summary": "前回 high 要因 (infrastructure.md のカード 0 件 / 汎用ポインタのみで具体適用なし) は解消。8 章すべてが『適用された設計知識』節に project candidate (status=deepened) を持ち、いずれも冒頭で解決対象として確定セルを qa 番号つきで名指し (auth×web=qa-005 / database×web=qa-017 / frontend×web=qa-020 / security×web=qa-020 / ui-ux×web=qa-018 / backend×web=qa-018 / maintenance-ops×web=qa-019 / infrastructure×web=qa-002)、適用条件を acceptance 文言や確定要件へ直接紐づけている (例: backend の『クライアント側マスクを外した診断情報を直接 POST しても保存後の値から秘匿値が除去されている』、frontend の D5/D8 順序保証、infrastructure の R2 無料枠 0.12% 試算と D1 の 1 行 2,000,000 bytes 上限)。ポインタ存在ではなく確定セルへの具体適用を根拠に PASS と判定した。backend の resource-map 由来カード (Clean Architecture / API Design / DDD) が持つ mobile/desktop・複数 team 前提との矛盾は、candidate の非適用条件が appr-002 (web 単独) を名指しして適用範囲を限定する形で処理されており、矛盾の放置は解消されている。C13/C14/C15 の機械層は 4 profile とも exit0。残る弱点は汎用カード本文が逐語ボイラープレートのままである点と infrastructure.md の resource-map 行が未解決 TODO 表記のまま残る点で、いずれも low。",
       "evidence": [
-        "backend.md 全 155 行: 見出しは 収集状態 / 適用された設計知識 (Clean Architecture・API Design Patterns・DDD の逐語カード) / 最新ドキュメント出典 のみ。qa-003 で確定した『期待スキーマ版と d1_migrations 最終行の不一致を書込経路の入口で検知し専用エラーコードで応答する』要件が本文に存在しない",
-        "database.md / auth.md / ui-ux.md / security.md / frontend.md / maintenance-ops.md も同一構造 (要件本文ゼロ)",
-        "infrastructure.md L27: '- `ref-system-design-knowledge/references/resource-map.yaml` (resource-map 未定義。関連cardを選定・深化してから確定する)' かつ frontmatter status: confirmed",
-        "spec-state.json の確定セルは {state, qa_ref, serves_goals} のみを持ち要件本文フィールドを持たない → 要件実体は qa_log の回答文にしか存在せず、仕様書へ転写されていない",
-        "doctrine-anchor-registry: reliability/operations → Google SRE。maintenance-ops.md の適用カードは Clean Code のみ、infrastructure.md はカードなし",
-        "database.md に割当てられた設計知識は DDD カードのみで、当該章の実質論点 (migration 連番の逐次適用・部分適用禁止・行数保全) と対応していない",
-        "aggregate-completeness.py --knowledge-graph exit0 (knowledge / doctrine / required-info / cross 4 profile 全 exit0)"
+        "aggregate-completeness.py --knowledge-graph exit=0 (C13 knowledge / C15 doctrine / C16 required-info / cross)",
+        "spec-state.json knowledge_candidates 8 件がすべて status=deepened で source_refs に official_or_primary=true の一次出典を持つ",
+        "system-spec/backend.md: project candidate backend-double-masking-and-server-side-truncation の非適用条件が appr-002 を名指しして mobile/desktop 一般論の適用範囲を限定",
+        "system-spec/infrastructure.md: project candidate infrastructure-free-tier-envelope-for-improvement-artifacts が D6/D7 の妥当性を R2 無料枠比率で定量化 (カード 0 件を解消)",
+        "8 章すべてで『解決対象』が確定セルの qa 番号を名指ししている (機械注入ポインタの存在確認に依らない具体適用)"
       ]
     },
     "doc_freshness": {
-      "verdict": "FAIL",
-      "score": 40,
+      "verdict": "PASS",
       "auditor": "system-spec-doc-freshness-auditor",
       "component": "C08",
-      "summary": "形式層は exit0 (targets[] 2 件と references[] 2 件が完全一致・必須フィールド充足・source_url host 一致・非公式 host なし)。内容鮮度層で 2 件とも世代落ちを検出したため FAIL。特に cloudflare-wrangler-d1-config は公式現行が Aug 13, 2026 に対し記録が 2026-06-04 で約 2 か月の乖離があり再取得が必要。latest_checked_at 以降に公式側更新が発生しており実効性を失っている。",
+      "score": 90,
+      "summary": "C08 独立監査 verdict=PASS。形式層 validate-source-citation.py exit=0 (targets 14 件 / references 14 件・target_id 重複 0・欠落 0・余剰 0・必須フィールド充足・source_url host 一致)。内容鮮度層は本 session で Bash の curl が使えたため、前回 fork が未照合だった 14 target 全件を C08 が独立に再取得して突合した。MDN 4 件は記事フッタ time[datetime] と記録 last_updated が日付単位で完全一致、Cloudflare 9 件も JSON-LD dateModified を抽出して全件一致 (前回 recheck が『Cloudflare は機械可読な last-modified を持たない』としていたのは事実誤りで、実際には突合可能だった)、html2canvas は GitHub Releases latest = v1.4.1 / npm dist-tags.latest = 1.4.1 と記録値が一致。official_host は developer.mozilla.org / developers.cloudflare.com / github.com(canonical repo, npm repository.url で裏取り) で非公式ミラー 0 件。鮮度未確認 0 件・世代落ち 0 件。eval-log/doc-freshness-recheck-2026-08-30.json の内容は根拠に用いず独立再取得で判定した。",
       "evidence": [
-        "validate-source-citation.py exit0 (形式層)",
-        "cloudflare-d1-migrations: 記録 last_updated=2026-06-04 / 公式現行 'Jun 8, 2026' (4 日乖離)",
-        "cloudflare-wrangler-d1-config: 記録 last_updated=2026-06-04 / 公式現行 'Aug 13, 2026' (約 2 か月乖離)",
-        "取得漏れ・非公式 host・メタ欠落は検出なし"
+        "validate-source-citation.py --targets <抽出> --references fetched-references.json --state spec-state.json exit=0",
+        "curl 実測: MDN 4 件 (toBlob 2026-02-12 / Screen Capture 2026-05-21 / error_event 2026-08-21 / unhandledrejection 2026-07-28) が記録値と一致",
+        "curl 実測: Cloudflare 9 件の JSON-LD dateModified が記録 last_updated と全件一致",
+        "curl 実測: api.github.com releases/latest = v1.4.1 / registry.npmjs.org dist-tags.latest = 1.4.1 で記録 version と一致",
+        "非公式ミラー host 0 件 / latest_checked_at 欠落 0 件"
       ]
     },
     "prompt_quality": {
       "verdict": "PASS",
-      "score": 92,
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "system-spec-harness 配下の prompts/*.md 18 本すべてに対し prompt-creator の validate-prompt.py と verify-completeness.py (l5-contract v2.0.0) を個別実行し、NG 0 件 (全 exit0)。意味層でも L1-L7 の役割分離、L5 の成果状態と原子的停止条件 (5.3 完了チェックリスト)、動的実行方式 (5.4 固定手順を持たない) が確認でき、L7→L1 の一貫性も保たれている。独立 design findings に high なし。",
+      "score": 95,
+      "summary": "system-spec-harness 配下の prompts/*.md 18 件すべてに対し、外部 plugin prompt-creator の verify-completeness.py (7 層網羅 + Layer 5 ゴールシーク契約 l5-contract v2.0.0) と validate-prompt.py を評価者自身が再実行し、18/18 が両者 exit=0 (skip なし・依存解決済み環境)。意味層でも本 skill の R1-score / R2-delegate を直接読み、L1 不変ルール→L7 提示の一貫性、L5 が成果状態 (ゴール定義) + 原子的停止条件 (5.3 完了チェックリスト) + 動的実行方式 (5.4『固定手順を持たない』) を持つこと、C1-C4 相当の役割分離 (R1=採点 / R2=fork 集約、非担当の明示) を確認した。独立 design findings に high なし。",
       "evidence": [
-        "validate-prompt.py: 18 本 TOTAL_NG=0",
-        "verify-completeness.py: 18 本 TOTAL_NG=0",
-        "R1-score.md / R2-delegate.md ともに 5.3 に客観的停止条件、5.4 に動的実行方式を保持"
+        "verify-completeness.py: 18/18 exit=0",
+        "validate-prompt.py: 18/18 exit=0",
+        "R1-score.md L5 に 5.2 ゴール定義 + 5.3 完了チェックリスト 10 項目 + 5.4 実行方式 (固定手順なし) が存在",
+        "R2-delegate.md が非担当 (総合判定 / 監査ロジック / 仕様書修正) を明示し役割重複なし"
       ]
     }
   },
@@ -97,152 +94,243 @@
     {
       "id": "G-matrix",
       "name": "validate-coverage-matrix (--require-complete)",
-      "conditions": ["matrix_coverage"],
-      "command": ["python3", "scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json", "--require-complete"],
+      "conditions": [
+        "matrix_coverage"
+      ],
+      "command": [
+        "python3",
+        "/Users/dm/dev/dev/個人開発/harness/plugins/system-spec-harness/scripts/validate-coverage-matrix.py",
+        "--matrix",
+        "system-spec/spec-state.json",
+        "--require-complete"
+      ],
       "exit_code": 0,
-      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)) を満たす"
-    },
-    {
-      "id": "G-matrix-loop",
-      "name": "validate-coverage-matrix (loop)",
-      "conditions": ["matrix_coverage"],
-      "command": ["python3", "scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json"],
-      "exit_code": 0,
-      "stdout": "OK: 収集マトリクス網羅性 (loop) を満たす"
+      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)) を満たす",
+      "stderr": ""
     },
     {
       "id": "G-foundation",
       "name": "validate-coverage-matrix (--require-foundation)",
-      "conditions": ["foundation_trace", "decision_guidance"],
-      "command": ["python3", "scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json", "--require-foundation"],
+      "conditions": [
+        "foundation_trace",
+        "decision_guidance"
+      ],
+      "command": [
+        "python3",
+        "/Users/dm/dev/dev/個人開発/harness/plugins/system-spec-harness/scripts/validate-coverage-matrix.py",
+        "--matrix",
+        "system-spec/spec-state.json",
+        "--require-foundation"
+      ],
       "exit_code": 0,
-      "stdout": "OK: 収集マトリクス網羅性 (loop+foundation(上位概念トレース)) を満たす"
+      "stdout": "OK: 収集マトリクス網羅性 (loop+foundation(上位概念トレース)) を満たす",
+      "stderr": ""
     },
     {
       "id": "G-knowledge-graph",
-      "name": "validate-knowledge-graph (knowledge/doctrine/required-info/cross)",
-      "conditions": ["design_knowledge_reflection", "matrix_coverage"],
-      "command": ["python3", "skills/assign-system-spec-completeness-evaluator/scripts/aggregate-completeness.py", "--knowledge-graph"],
+      "name": "aggregate-completeness --knowledge-graph (validate-knowledge-graph 4 profile)",
+      "conditions": [
+        "design_knowledge_reflection",
+        "matrix_coverage"
+      ],
+      "command": [
+        "python3",
+        "/Users/dm/dev/dev/個人開発/harness/plugins/system-spec-harness/skills/assign-system-spec-completeness-evaluator/scripts/aggregate-completeness.py",
+        "--knowledge-graph"
+      ],
       "exit_code": 0,
-      "stdout": "4 subgates all exit_code 0 (C13/C14/C15/C16 機械層)"
+      "stdout": "subgates: knowledge=0 / doctrine=0 / required-info=0 / cross=0",
+      "stderr": ""
     },
     {
-      "id": "G-citation",
-      "name": "validate-source-citation",
-      "conditions": ["doc_freshness"],
-      "command": ["python3", "scripts/validate-source-citation.py", "--targets", "system-spec/spec-state.json", "--references", "system-spec/fetched-references.json"],
+      "id": "G-source-citation",
+      "name": "validate-source-citation (C08 が実行)",
+      "conditions": [
+        "doc_freshness"
+      ],
+      "command": [
+        "python3",
+        "/Users/dm/dev/dev/個人開発/harness/plugins/system-spec-harness/scripts/validate-source-citation.py",
+        "--targets",
+        "<spec-state.json targets 抽出>",
+        "--references",
+        "system-spec/fetched-references.json",
+        "--state",
+        "system-spec/spec-state.json"
+      ],
       "exit_code": 0,
-      "stdout": "形式層 OK (C08 が実行)。内容鮮度層は別途 FAIL"
-    },
-    {
-      "id": "G-prompt-validate",
-      "name": "validate-prompt (prompt-creator)",
-      "conditions": ["prompt_quality"],
-      "command": ["python3", "run-prompt-creator-7layer/scripts/validate-prompt.py", "--input", "<each of 18 prompts>"],
-      "exit_code": 0,
-      "stdout": "TOTAL_NG=0"
+      "stdout": "OK: 出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす",
+      "stderr": ""
     },
     {
       "id": "G-prompt-completeness",
-      "name": "verify-completeness (prompt-creator l5-contract v2.0.0)",
-      "conditions": ["prompt_quality"],
-      "command": ["python3", "run-prompt-creator-7layer/scripts/verify-completeness.py", "--input", "<each of 18 prompts>"],
+      "name": "verify-completeness (prompt-creator, 18 prompts)",
+      "conditions": [
+        "prompt_quality"
+      ],
+      "command": [
+        "python3",
+        "/Users/dm/dev/dev/個人開発/harness/plugins/prompt-creator/skills/run-prompt-creator-7layer/scripts/verify-completeness.py",
+        "--input",
+        "<system-spec-harness 配下 prompts/*.md 18 件>"
+      ],
       "exit_code": 0,
-      "stdout": "TOTAL_NG=0"
+      "stdout": "TOTAL=18 FAIL=0",
+      "stderr": ""
+    },
+    {
+      "id": "G-prompt-validate",
+      "name": "validate-prompt (prompt-creator, 18 prompts)",
+      "conditions": [
+        "prompt_quality"
+      ],
+      "command": [
+        "python3",
+        "/Users/dm/dev/dev/個人開発/harness/plugins/prompt-creator/skills/run-prompt-creator-7layer/scripts/validate-prompt.py",
+        "--input",
+        "<system-spec-harness 配下 prompts/*.md 18 件>"
+      ],
+      "exit_code": 0,
+      "stdout": "TOTAL=18 FAIL=0",
+      "stderr": ""
     }
   ],
   "findings": [
     {
-      "severity": "high",
-      "bucket": "design_knowledge_reflection",
-      "observation": "生成された 8 章すべてが要件本文を一行も持たない。各章は「カテゴリ別収集状態の表」「設計知識カードの逐語転記」「出典表」の 3 節のみで構成され、qa_log で確定した実際の要件 (例: qa-003 の『期待スキーマ版と d1_migrations 最終行の不一致を書込経路の入口で検知し専用エラーコードで応答する』、qa-002 の『0007/0010/0011 は連番順の逐次適用のみ許可し部分適用・順序逸脱・手書きDDLを禁止する』) が仕様書へ一切転写されていない。要件の実体は spec-state.json の qa_log 回答文にしか存在せず、確定セル自体も {state, qa_ref, serves_goals} しか持たない。決定論ゲートは全て exit0 を返すが、これは形状のみを検査するため本欠落を検出しない (Goodhart 状態)。",
-      "suggested_fix": "C03 (run-system-spec-compile) へ差し戻す。併せて C01 (run-system-spec-elicit) 側で確定セルに要件本文フィールド (requirements / constraints / acceptance) を持たせ、qa_log 回答から構造化して転記する。compile は各章に確定セルの要件本文節を必須で描画し、要件本文が空の章を confirmed にしない。",
+      "severity": "medium",
+      "bucket": "matrix_coverage",
+      "observation": "qa-020(0) は qa-018(1) の確定根拠 (技術判断の包括委任) を明示的に失効させたが、reopen→再確定が行われたのは security×web と frontend×web の 2 セルのみ。同じ qa-018 を qa_ref に持つ ui-ux×web と backend×web は reopen_log に新規 entry がなく qa_ref=qa-018 のまま据え置かれており、セル側から appr-005 へ到達する経路がない。C07 と C06 の 2 つの独立監査が別々に同一の欠陥を検出した。要件内容そのものは qa-018(2)(3) が qa-010 / qa-007 継承 + D5/D8/D9 反映として述べており、その D5/D8/D9 は appr-005 で有効に確定しているため、確定内容が失効根拠の上に乗っているわけではない (qa-020(3) が明示)。したがって欠陥はトレース表記の陳腐化であり high ではなく medium と判定する。",
+      "suggested_fix": "run-system-spec-elicit (C01 R4-reopen) へ差し戻し、ui-ux×web / backend×web も同一ラウンドで reopen して qa-020 相当の再確認 entry へ qa_ref を張り替えるか、当該 2 セルへ approval_ref: appr-005 を付与して個別承認への到達経路を持たせる。",
       "evidence": [
-        "backend.md 155 行の見出し: 収集状態 / 適用された設計知識 / 最新ドキュメント出典 のみ",
-        "database.md・auth.md・ui-ux.md・security.md・infrastructure.md・frontend.md・maintenance-ops.md も同一構造",
-        "spec-state.json matrix.database.web = {\"state\": \"確定\", \"qa_ref\": \"qa-002\", \"serves_goals\": [\"G1\",\"G2\",\"G4\"]}"
+        "spec-state.json matrix.ui-ux.web.qa_ref=qa-018",
+        "spec-state.json matrix.backend.web.qa_ref=qa-018",
+        "qa_log qa-020(0) が qa-018(1) を失効宣言",
+        "reopen_log に ui-ux×web / backend×web の appr-005 起因 entry なし"
       ]
     },
     {
-      "severity": "high",
-      "bucket": "design_knowledge_reflection",
-      "observation": "infrastructure.md は設計知識ポインタを持たず『resource-map 未定義。関連cardを選定・深化してから確定する』と自ら未確定であることを本文に明記しながら、frontmatter が status: confirmed かつ category_aggregate が『確定』になっている。未確定宣言と確定マーカーが同一ファイル内で矛盾している。",
-      "suggested_fix": "C03 の render_design_refs が resource-map から解決できなかったカテゴリを confirmed にしない (fail-closed)。infrastructure カテゴリの設計知識 (reliability/operations concern → Google SRE) を resource-map へ登録するか、解決不能を明示的な blocking として elicit へ差し戻す。",
-      "evidence": ["infrastructure.md L1-7 frontmatter status: confirmed", "infrastructure.md L27 'resource-map 未定義。関連cardを選定・深化してから確定する'"]
-    },
-    {
-      "severity": "high",
-      "bucket": "doc_freshness",
-      "observation": "C08 の内容鮮度再照合で、記録済み 2 出典とも公式現行より世代落ちしている。特に cloudflare-wrangler-d1-config は記録 last_updated=2026-06-04 に対し公式現行が Aug 13, 2026 で約 2 か月の乖離があり、latest_checked_at が実効性を失っている。形式ゲート (validate-source-citation.py) は exit0 のため機械層だけでは検出されない。",
-      "suggested_fix": "C02 (run-system-spec-doc-fetch) へ差し戻し、cloudflare-wrangler-d1-config と cloudflare-d1-migrations を再取得して last_updated / latest_checked_at / summary を更新する。特に wrangler configuration の d1_databases 節 (migrations_dir / migrations_table / migrations_pattern) は本仕様の前提であるため、2 か月分の変更有無を確認する。",
+      "severity": "medium",
+      "bucket": "decision_guidance",
+      "observation": "appr-005 は『AI 推奨提示とは別ラウンドの選択肢提示』に対する個別確認と記録しているが、appr-005 自身と D5/D8/D9 の user_decision.note が記録する提示ラベルは 3 件とも『(推奨)』付き (例:『モーダルを開く前にDOMを画像化 (推奨)』)。decisions[].options[].label には『(推奨)』が存在せず、提示時に付加されたことが分かる。推奨マーカーを同梱した提示は『AI 推奨と別ラウンド』という分離の主張を弱め、結果も 3/3 が推奨案一致となっている。ただし同じ様式は先行して受理済みの D1 (『Deploy 前に検査ゲート (推奨)』) にも存在し、本 digest で新規に生じた退行ではないため high とはしない。",
+      "suggested_fix": "run-system-spec-elicit (C01 R5-decision-guide) の提示テンプレートから推奨マーカーを外し、提示文と全選択肢の原文を qa_log へ残す運用へ改める。既存 decision へ遡及是正するかは caller の判断。",
       "evidence": [
-        "cloudflare-wrangler-d1-config: 記録 2026-06-04 / 公式現行 Aug 13, 2026",
-        "cloudflare-d1-migrations: 記録 2026-06-04 / 公式現行 Jun 8, 2026"
+        "approval_log appr-005 の選択結果記述に 3 件とも『(推奨)』",
+        "decisions[].options[].label には『(推奨)』なし",
+        "D1-migration-gate.user_decision.note にも同様の『(推奨)』表記"
       ]
     },
     {
       "severity": "medium",
       "bucket": "matrix_coverage",
-      "observation": "独立 context で fork した C07 (system-spec-matrix-auditor) と C06 (system-spec-hearing-auditor) が約 30 分経過後も verdict を返さず、matrix_coverage の意味層根拠 (対象外理由の具体性 / qa_ref が確定内容を裏付けるか / ヒアリング 4 軸) を回収できなかった。機械層は両モード exit0 だが、fail-closed 方針に従い INDETERMINATE とした。評価者が意味層を代行判定すると proposer≠approver の分離を壊すため代行していない。",
-      "suggested_fix": "仕様書修正ではなく監査の再実行。C07 と C06 を再度 fork し verdict を回収したうえで matrix_coverage を再採点する。",
-      "evidence": ["C07 未応答", "C06 未応答", "validate-coverage-matrix.py 両モード exit0"]
-    },
-    {
-      "severity": "medium",
-      "bucket": "decision_guidance",
-      "observation": "G4 (データ喪失ゼロ) と G3 (説明可能なエラー応答) に直結する不可逆性の高い分岐が decisions[] に昇格せず、qa_log の回答文だけで確定している。具体的には (a) 適用前バックアップ方式 (既存夜間 cron D1→R2 30日保持 / 適用直前の明示取得 / D1 Time Travel) — O5 の測定基準そのもの、(b) 実行時スキーマ版数ガードの検知点 (書込経路の入口 / Worker 起動時 / 定期監視) — I5、(c) スキーマ不一致時の利用者向けエラー表現方針 — I6。いずれも選択肢・費用・トレードオフの提示がないまま confirmed になっている。",
-      "suggested_fix": "C01 (run-system-spec-elicit) の R5-decision-guide へ差し戻し、上記 3 分岐を needs_guidance として decisions[] へ昇格させ、2〜3 案 + 無料/低コスト案 + goal fit / TCO / security / operations / lock-in / 公式証拠 + AI 推奨理由と注意点を付けたうえでユーザー決定を取り直す。",
-      "evidence": ["decisions[] は D1-migration-gate 1 件のみ", "concrete_intents は I1-I7 の 7 件", "qa-005 (d) でバックアップ方式が選択肢比較なく確定"]
-    },
-    {
-      "severity": "medium",
-      "bucket": "decision_guidance",
-      "observation": "user_decision.confirmed_at (2026-08-27T02:45:59Z) が AI 推奨の checked 時刻および fetched-references の全 retrieved_at / latest_checked_at と秒単位で完全一致しており、承認が AI 推奨とは別ラウンドで人間から得られた証跡として機能していない (単一書込みの疑い)。approval_log の appr-001 / appr-002 も timestamp フィールドを持たず note 内の日付文字列のみで、AI 推奨のみで confirmed にしていないことを記録から検証できない。",
-      "suggested_fix": "C01 の承認記録に、AI 推奨の提示時刻と人間の応答時刻を別フィールドで記録させる (recommended_at と confirmed_at を分離)。approval_log にも構造化 timestamp を持たせる。",
-      "evidence": ["user_decision.confirmed_at == recommendation.checked == fetched-references[*].retrieved_at == 2026-08-27T02:45:59Z", "approval_log の appr-001/appr-002 に timestamp フィールドなし"]
-    },
-    {
-      "severity": "medium",
-      "bucket": "design_knowledge_reflection",
-      "observation": "C15 doctrine anchor の意味層が不成立。doctrine-anchor-registry では reliability / operations concern の authority が Google SRE (SLO・エラーバジェット・監視の上流指針) だが、その指針は infrastructure.md にも maintenance-ops.md にも反映されていない (maintenance-ops.md に割当てられたカードは Clean Code のみ、infrastructure.md はカードなし)。G3 が『乖離を即座に特定できる検知』を要求しているにもかかわらず、監視・アラートの上流原則が章へ接地していない。同様に database.md は DDD カードのみで、当章の実質論点 (migration 連番の逐次適用・部分適用禁止・行数保全) と対応していない。",
-      "suggested_fix": "C03 の category→concern→authority 写像を章生成へ実際に反映させる。infrastructure / maintenance-ops へ Google SRE 由来の監視・SLO 指針を、database へ移行順序と不変条件に対応する知識カードを割当て直す。",
-      "evidence": ["doctrine-anchor-registry concerns[reliability].authority = 'Google SRE'", "maintenance-ops.md の適用カード = Clean Code のみ", "infrastructure.md 設計知識ポインタなし", "database.md 適用カード = DDD のみ"]
+      "observation": "hearing_progress.loop_count=1 だが qa_log は 20 件、reopen_log は 18 件あり、少なくとも 4 回以上の是正ラウンド (90日→30日 / 夜間バックアップ実体訂正 / D5-D9 反映 / appr-005 是正) を経ている。loop_count が実態を反映していないため、C01 が持つ 5 周上限ガード (上限到達時に状態保存 + 未完了明示 + resume) が構造的に発火しない。網羅性の数値自体は決定論ゲートで担保されているが、ヒアリングの停止判断が上限ガードの裏付けを失っている。",
+      "suggested_fix": "run-system-spec-elicit へ差し戻し、reopen を伴う是正ラウンドごとに loop_count を更新する。あるいは validate-coverage-matrix.py 側で loop_count と reopen_log 件数の整合を検査対象に加える。",
+      "evidence": [
+        "spec-state.json hearing_progress={loop_count:1, next_question:null, complete:true}",
+        "qa_log 20 件 / reopen_log 18 件"
+      ]
     },
     {
       "severity": "low",
-      "bucket": "foundation_trace",
-      "observation": "00-requirements-definition.md の U6 stakeholders が Python の dict repr のまま出力されている ('{\\'id\\': \\'S1\\', \\'role\\': ...}')。上位概念の正本章としての可読性を損ない、compile のレンダリング層に構造化データ→Markdown 変換の欠落がある。",
-      "suggested_fix": "C03 (run-system-spec-compile) の R2-render で stakeholders を表または箇条書きへ整形して描画する。",
-      "evidence": ["00-requirements-definition.md L52-54"]
+      "bucket": "matrix_coverage",
+      "observation": "対象外 40 セルはいずれも reason 文字列のみを持ち approval_ref / qa_ref を持たない。platform 除外の承認は approval_log appr-002 と qa-001 に実在するが、セルからその承認へ機械的に到達できない。validator は reason 非空で通すため機械検出されず、将来 platform 方針が変わった際にどのセルがどの承認の射程だったかを追跡できない。",
+      "suggested_fix": "対象外セルへ approval_ref: appr-002 を付与し、除外の射程を承認 entry へ接地させる。",
+      "evidence": [
+        "spec-state.json matrix の対象外 40 セルに approval_ref なし",
+        "approval_log appr-002 が platform 除外を承認"
+      ]
     },
     {
-      "severity": "info",
-      "bucket": "prompt_quality",
-      "observation": "system-spec-harness 配下の prompts/*.md 18 本すべてで prompt-creator の validate-prompt.py と verify-completeness.py (l5-contract v2.0.0) が exit0。意味層でも L1-L7 の役割分離、L5 の成果状態と原子的停止条件、動的実行方式、L7→L1 の一貫性を確認した。本観点は PASS。",
-      "evidence": ["validate-prompt.py TOTAL_NG=0 (18 本)", "verify-completeness.py TOTAL_NG=0 (18 本)"]
+      "severity": "low",
+      "bucket": "matrix_coverage",
+      "observation": "database×web の qa_ref=qa-017 は、バックアップ頻度・改善要望テーブルのバックアップ除外・削除ジョブ経路の 3 点を述べるのみで、database カテゴリの中核である 3 テーブル構成 (improvement_requests / improvement_request_tokens / improvement_request_copy_log) を含まない。3 テーブル構成は qa-006 → qa-013(a) にあり、qa-017 は散文で継承を示すのみでセルから機械的に到達できない。",
+      "suggested_fix": "qa_ref を配列化して [\"qa-017\", \"qa-013\"] とするか、qa-017 の回答に qa-013(a) の継承を参照 id 付きで明記する。",
+      "evidence": [
+        "spec-state.json matrix.database.web.qa_ref=qa-017",
+        "qa_log qa-017 の本文に 3 テーブル構成の記述なし"
+      ]
     },
     {
-      "severity": "info",
-      "bucket": "foundation_trace",
-      "observation": "上位概念の内容そのものは高品質である。U2 背景が障害の直接原因 (d1_migrations が 0005 止まり・0006〜0014 未適用・import_writer_claims / import_active_targets 不在による 500) を具体的に特定し、原因を『アプリのロジック不具合ではなくデプロイ運用にスキーマ適用工程が組み込まれていないこと』という構造要因へ正しく引き上げている。O1-O5 も全て検証可能な測定基準を持つ。本観点は PASS。",
-      "evidence": ["00-requirements-definition.md U2 / U4 / U5", "validate-coverage-matrix.py --require-foundation exit0"]
+      "severity": "low",
+      "bucket": "matrix_coverage",
+      "observation": "reopen_log 18 件はいずれも {category, platform, reason, from} のみで、遷移先 to / reopened_at / 再確認に用いた qa_ref を持たない。今回の security×web / frontend×web の reopen→再確認は reason 本文と qa-020 の記述を人手で突き合わせて初めて成立を確認でき、決定論的に検証できない。",
+      "suggested_fix": "reopen entry に再確認先 qa_ref (今回なら qa-020) と reopened_at を持たせ、reopen→再確認の対応を機械検証可能にする。",
+      "evidence": [
+        "spec-state.json reopen_log の各 entry のキーが {category, platform, reason, from} のみ"
+      ]
     },
     {
-      "severity": "info",
+      "severity": "low",
+      "bucket": "decision_guidance",
+      "observation": "D5/D8/D9 の confirmed_at が秒まで同一の 2026-08-30T09:20:00Z で、3 論点を 1 ラウンドに束ねた提示・応答と整合し、個別確認の実体を示す時間差がない。ただし D2/D3/D4 (2026-08-27T04:28:22Z) や D6/D7 (2026-08-30T00:00:00Z) も同様に束ね記録されており、本 digest 固有の退行ではない。",
+      "suggested_fix": "決定ごとに独立した確認時刻を記録するか、束ね提示であることを approval entry に明示して個別確認との差を読み手に残す。",
+      "evidence": [
+        "decisions D5/D8/D9 の user_decision.confirmed_at が同一秒",
+        "D2/D3/D4 も同一秒 / D6/D7 も同一秒"
+      ]
+    },
+    {
+      "severity": "low",
       "bucket": "design_knowledge_reflection",
-      "observation": "C13/C14/C15/C16 の機械層ゲートは 4 profile すべて exit0 (knowledge-catalog の typed 辺グラフ健全性・doctrine anchor の concern 一意性と category 写像全射・required-info の domain 被覆・cross 整合)。ただしこれらが保証するのはカタログ側の well-formedness のみで、生成物側の意味反映は保証しない。本評価で FAIL としたのは生成物側の意味層である。",
-      "evidence": ["aggregate-completeness.py --knowledge-graph exit0 (4 subgates)"]
+      "observation": "infrastructure.md の『適用された設計知識』先頭行が『resource-map.yaml (resource-map 未定義。関連cardを選定・深化してから確定する)』のまま残り、直後の project candidate が実際にはその空白を埋めているにもかかわらず未解決 TODO として読める。また backend.md / frontend.md / database.md 等の resource-map 由来カード (Clean Architecture / API Design Patterns / DDD / information-design 等) は逐語ボイラープレートのままで、goalへの寄与節が mobile/web/desktop 併存や複数 team 前提を述べており、appr-002 で web 単独へ限定した本仕様と表面上ずれて読める。backend では candidate の非適用条件が appr-002 を名指ししてこのずれを処理しているが、他章では同等の限定が置かれていない。",
+      "suggested_fix": "run-system-spec-compile (C03 render_design_refs) で、resource-map 未定義カテゴリの注記を candidate 充足時に解消済み表記へ切り替え、汎用カードの寄与節には章ごとの適用範囲注記 (web 単独) を添える。",
+      "evidence": [
+        "system-spec/infrastructure.md 『resource-map 未定義。関連cardを選定・深化してから確定する』",
+        "system-spec/backend.md の DDD カード寄与節『mobile/web/desktop間で一貫したbusiness capabilityを共有し』"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "doc_freshness",
+      "observation": "mdn-window-error-event の summary が『message/filename/lineno/colno/error の各プロパティ定義は本ページではなくリンク先の https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent に記載されており、プロパティ仕様を参照する場合の出典はそちらである』と明記しているが、当該 URL は targets[] にも references[] にも存在しない。C08 の実測では到達可能 (HTTP 200) で last modified は 2024-10-15 と他 MDN 参照より 1 年以上古い。D8 の診断情報がこれらプロパティ名に依存するなら、出典が未取得のまま参照されている。",
+      "suggested_fix": "run-system-spec-doc-fetch (C02 R2-fetch/R3-record) で mdn-error-event-interface 相当の target を追加取得・記録するか、summary から出典委譲の記述を外す。",
+      "evidence": [
+        "fetched-references.json mdn-window-error-event の summary",
+        "spec-state.json targets[] に ErrorEvent ページなし"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "doc_freshness",
+      "observation": "eval-log/doc-freshness-recheck-2026-08-30.json の limitation が『Cloudflare docs は記事フッタに機械可読な last-modified を持たないため版番号としての厳密な突合はできていない』と記載しているが、C08 が curl で再取得した結果、対象 9 ページすべてに time[datetime] と JSON-LD dateModified が実在し日付単位の突合が可能だった。この記述を信じると以後の再照合が到達性チェックへ退化する。本評価はこの limitation に依拠せず独立再取得で判定した。",
+      "suggested_fix": "次回 recheck 時に Cloudflare も dateModified 抽出で突合する手順へ更新する。評価者は read-only のため eval-log は書き換えていない。",
+      "evidence": [
+        "eval-log/doc-freshness-recheck-2026-08-30.json limitation",
+        "C08 curl 実測: Cloudflare 9 ページすべてに JSON-LD dateModified が存在"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "evaluation_provenance",
+      "observation": "本評価は前回 digest 021fda84… の FAIL 判定を引き継がず、digest c8ac0fa6a023737eee28e443bcc6341a46049b3f214feede8260cf4fb67fa762 (spec-state.json) / 3d1e59a27574414adda6a0f11ac8f5e7288adb7f1b1fe6247e5a09b0fe5b681e (fetched-references.json) を評価開始時に shasum -a 256 で自ら再確認したうえで、現物からゼロベースで実施した。決定論ゲートは既存の緑を信頼せず評価者が全件再実行し exit code を gate_results へ記録した。監査 sub-agent は C07 (matrix) / C06 (hearing) / C08 (doc-freshness) の 3 件を独立 context (fork) で起動し、各 agent の SSOT prompt を根拠に監査させた。design_knowledge_reflection は契約どおり独立 auditor を立てず C05 が自前評価した。",
+      "evidence": [
+        "shasum -a 256 で digest 一致を確認",
+        "3 監査 fork の独立 verdict を取得 (C07=PASS / C06=FAIL / C08=PASS)"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "aggregation_policy",
+      "observation": "C06 (matrix_coverage の sub-input) は総合 FAIL を返し high 3 件 (appr-005 の逐語証跡欠如 / 推奨マーカー同梱 / qa-018 失効の非対称是正) を挙げた。うち逐語証跡と推奨マーカーの 2 件は、appr-001/002/003 および D1-D4 という先行して受理済みの記録にも等しく当てはまる既存様式への遡及適用であり、本 digest で新たに生じた退行ではないため high としては採らず medium/low へ格下げて計上した。3 件目 (非対称是正) は C07 も独立に medium で検出しており、本レポートでも medium として計上している。C06 の FAIL を隠さず明示したうえで、格下げの根拠を現物 (D1 の user_decision.note の同一表記、appr-001/002/003 に逐語が無いこと) に接地させている。",
+      "evidence": [
+        "C06 独立監査 verdict=FAIL (findings に F-1〜F-8)",
+        "approval_log appr-001/002/003 に逐語発話なし (appr-004 のみ逐語あり)",
+        "D1-migration-gate.user_decision.note に『(推奨)』表記あり"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "read_only_compliance",
+      "observation": "評価者による書き込みは system-spec/completeness-findings.json の 1 件のみ。system-spec/*.md / spec-state.json / fetched-references.json / eval-log/ への書き込みは 0 件。git の add / commit / push / PR 作成はいずれも実行していない。一時ファイルはスクラッチパッド配下のみ。",
+      "evidence": [
+        "書込ファイル: /Users/dm/orca/workspaces/kanjo/改善要望対応/system-spec/completeness-findings.json のみ"
+      ]
     }
   ],
   "gaps": [
-    "[C03 run-system-spec-compile へ差し戻し] 全 8 章に確定セルの要件本文が存在しない。qa_log の回答文にしか存在しない要件 (migration 連番の逐次適用禁止事項、スキーマ版数不一致の検知点と専用エラーコード、行数保全の検証手順、認証まわりの password_login_rate_limits 復旧要件など) を各章へ構造化して転写し、要件本文が空の章を confirmed にしないゲートを入れる。",
-    "[C03 run-system-spec-compile へ差し戻し] infrastructure.md が『resource-map 未定義』と本文で宣言しながら status: confirmed になっている矛盾を解消する。設計知識が解決できないカテゴリを確定にしない fail-closed 化。",
-    "[C03 run-system-spec-compile へ差し戻し] 設計知識カードが逐語転記のみで確定セル要件へ具体適用されていない。各カードの原則を当該カテゴリの要件へ適用した記述を必須にする (存在確認だけで確定にしない)。",
-    "[C03 run-system-spec-compile へ差し戻し] doctrine anchor の写像 (reliability/operations → Google SRE) が infrastructure / maintenance-ops へ反映されていない。database の DDD 割当ても当章の論点と不整合。",
-    "[C03 run-system-spec-compile へ差し戻し] U6 stakeholders が Python dict repr のまま描画されている (低優先)。",
-    "[C02 run-system-spec-doc-fetch へ差し戻し] cloudflare-wrangler-d1-config (公式現行 Aug 13, 2026 / 記録 2026-06-04) と cloudflare-d1-migrations (公式現行 Jun 8, 2026 / 記録 2026-06-04) を再取得し last_updated・latest_checked_at・summary を更新する。",
-    "[C01 run-system-spec-elicit へ差し戻し] 適用前バックアップ方式 (O5/I2)、実行時スキーマ版数ガードの検知点 (I5)、スキーマ不一致時の利用者向けエラー表現方針 (I6) を needs_guidance として decisions[] へ昇格させ、2〜3 案 + 無料/低コスト案 + TCO/security/operations/lock-in/公式証拠つきでユーザー決定を取り直す。",
-    "[C01 run-system-spec-elicit へ差し戻し] AI 推奨の提示時刻と人間の承認時刻を別フィールドで記録し、AI 推奨のみで confirmed にしていないことを記録から検証可能にする。approval_log にも構造化 timestamp を追加する。",
-    "[監査の再実行が必要] matrix_coverage が INDETERMINATE。C07 (system-spec-matrix-auditor) と sub-input の C06 (system-spec-hearing-auditor) が未応答で意味層根拠を回収できていない。両者を再 fork して verdict を回収し、matrix_coverage を再採点する (仕様書修正ではなく監査再実行)。"
+    "[medium / C01 R4-reopen へ差し戻し推奨] ui-ux×web と backend×web の qa_ref が、qa-020(0) で失効宣言された qa-018(1) を指したまま。security×web / frontend×web と同じ形で reopen → 再確認 entry へ張り替えるか approval_ref: appr-005 を付与する。",
+    "[medium / C01 R5-decision-guide へ差し戻し推奨] 決定の再提示ラベルから『(推奨)』マーカーを外し、提示文と全選択肢の原文を qa_log へ残す運用へ改める。",
+    "[medium / C01 へ差し戻し推奨] hearing_progress.loop_count が是正ラウンド数を反映しておらず 5 周上限ガードが発火しない。reopen を伴うラウンドごとに更新する。",
+    "[low / C02 へ差し戻し推奨] fetched-references が出典委譲先として名指しする MDN ErrorEvent ページが targets 未登録。追加取得するか委譲記述を外す。",
+    "[low / C03 render_design_refs へ差し戻し推奨] infrastructure.md の resource-map 未定義注記が candidate 充足後も TODO 表記のまま残る。汎用カードの寄与節へ web 単独の適用範囲注記を添える。"
   ]
 }

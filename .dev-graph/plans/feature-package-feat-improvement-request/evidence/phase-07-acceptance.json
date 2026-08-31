@@ -1,0 +1,252 @@
+{
+  "phase_ref": "P07",
+  "graph_node_id": "SYS-IMPREQ-P07",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:21:06Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "受入条件15件を実行済みテストへ突き合わせ、全件 PASS。未検証は0件。利用者報告による是正4件も受入条件 A16..A19 として追加し検証した。",
+  "suites": [
+    {
+      "file": "packages/api/src/improvement-lifecycle.test.ts",
+      "tests": 18,
+      "status": "PASS"
+    },
+    {
+      "file": "packages/api/src/improvement-redaction.test.ts",
+      "tests": 18,
+      "status": "PASS"
+    },
+    {
+      "file": "packages/api/src/improvement-retention.test.ts",
+      "tests": 8,
+      "status": "PASS"
+    },
+    {
+      "file": "packages/api/src/improvement-backup-exclusion.test.ts",
+      "tests": 6,
+      "status": "PASS"
+    },
+    {
+      "file": "packages/web/src/improvement-capture.dom.test.tsx",
+      "tests": 14,
+      "status": "PASS"
+    },
+    {
+      "file": "packages/web/src/diagnostics-buffer.test.ts",
+      "tests": 12,
+      "status": "PASS"
+    },
+    {
+      "file": "packages/web/src/display-contract.test.tsx",
+      "tests": 9,
+      "status": "PASS",
+      "note": "新ページ追加に伴う画面数契約の更新"
+    },
+    {
+      "file": "packages/web/src/navigation-ux.dom.test.tsx",
+      "tests": 20,
+      "status": "PASS",
+      "note": "新ルート追加に伴う導線契約の更新"
+    },
+    {
+      "file": "packages/web/src/capture-screen.dom.test.ts",
+      "tests": 7,
+      "status": "PASS",
+      "note": "撮影用 SVG の組み立て契約(焼き付き対策の順序を含む)"
+    },
+    {
+      "file": "packages/web/src/annotate-image.dom.test.ts",
+      "tests": 8,
+      "status": "PASS",
+      "note": "書き込みの座標正規化と焼き込みの退避動作"
+    },
+    {
+      "file": "packages/core/test/improvement-highlights-contract.test.ts",
+      "tests": 7,
+      "status": "PASS",
+      "note": "『問題点』の順位付け契約"
+    }
+  ],
+  "suite_totals": {
+    "core": 7,
+    "api": 50,
+    "web": 41
+  },
+  "full_run": {
+    "core": {
+      "files": 34,
+      "passed": 456,
+      "skipped": 6
+    },
+    "api": {
+      "files": 26,
+      "passed": 289
+    },
+    "web": {
+      "files": 56,
+      "passed": 337
+    },
+    "failed": 0,
+    "exit": 0
+  },
+  "acceptance": [
+    {
+      "id": "A01",
+      "tests": [
+        "improvement-capture.dom.test.tsx: 撮影関数が呼ばれた時点でモーダルの要素が DOM に無い"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A02",
+      "tests": [
+        "improvement-capture.dom.test.tsx: 撮影できなくてもモーダルは開き、本文だけで送信できる",
+        "improvement-capture.dom.test.tsx: 撮影関数が例外を投げても投稿経路が止まらない",
+        "improvement-lifecycle.test.ts: スクリーンショット無しでも 201"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A03",
+      "tests": [
+        "improvement-capture.dom.test.tsx: 撮影中はボタンを押せず、待機中だと分かる"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A04",
+      "tests": [
+        "improvement-capture.dom.test.tsx: 撮れた画像は既定で添付し、チェックを外すと送らない"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A05",
+      "tests": [
+        "diagnostics-buffer.test.ts: 4種の事象の記録"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A06",
+      "tests": [
+        "improvement-redaction.test.ts: 件数上限/バイト上限の切り詰め",
+        "improvement-capture.dom.test.tsx: 省略件数の表示"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A07",
+      "tests": [
+        "improvement-redaction.test.ts: 画面のマスクを通さない直接投稿でも平文が残らない"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A08",
+      "tests": [
+        "improvement-lifecycle.test.ts: 平文が D1 に無く token_hash が 64桁hex"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A09",
+      "tests": [
+        "improvement-retention.test.ts: token_expired / token_fetch_limit",
+        "improvement-lifecycle.test.ts: 拒否理由の区別"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A10",
+      "tests": [
+        "improvement-lifecycle.test.ts: 応答・ログ経路にトークン原文が現れない"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A11",
+      "tests": [
+        "improvement-lifecycle.test.ts: screenshot.url が署名URLでない"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A12",
+      "tests": [
+        "improvement-lifecycle.test.ts: 指示文のトークンだけで agent/data と agent/screenshot が 200",
+        "improvement-capture.dom.test.tsx: Claude Code/Codex 用コピー"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A13",
+      "tests": [
+        "improvement-retention.test.ts: 30日境界と削除後の詳細取得",
+        "improvement-lifecycle.test.ts: 添付だけ消え本文は残る"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A14",
+      "tests": [
+        "improvement-backup-exclusion.test.ts: BACKUP_SNAPSHOT_SQL に現れない"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A15",
+      "tests": [
+        "improvement-backup-exclusion.test.ts: allSettled 配下 / crons 1本",
+        "improvement-backup-exclusion.test.ts: 1件失敗しても他が進む"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A16",
+      "origin": "利用者報告(2026-08-30)",
+      "statement": "撮影した画像に、サイドバーとヘッダーだけでなく本文も写る",
+      "tests": [
+        "capture-screen.dom.test.ts: 本文もサイドバーも写す対象に含める",
+        "capture-screen.dom.test.ts: 止める規則はページ側 CSS より後ろに置く"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A17",
+      "origin": "利用者報告(2026-08-30)",
+      "statement": "そのときの画面情報・記録・問題点を、送信前に画面で読める",
+      "tests": [
+        "improvement-capture.dom.test.tsx: 発生していた画面と表示環境を、送る前に読める",
+        "improvement-capture.dom.test.tsx: 記録された不具合の中身そのものを一覧で見せる",
+        "improvement-capture.dom.test.tsx: 先に見るべき数件を、全件の折りたたみより前に出す",
+        "improvement-lifecycle.test.ts: 指示文に発生時の画面と表示環境が載る",
+        "improvement-lifecycle.test.ts: 先に見るべき記録が指示文に出て、上限を超えて並ばない",
+        "improvement-highlights-contract.test.ts: 順位付けの全契約"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A18",
+      "origin": "利用者報告(2026-08-30)",
+      "statement": "スクリーンショットに書き込みができ、書き込みが送信画像へ反映される",
+      "tests": [
+        "annotate-image.dom.test.ts: ドラッグから枠を作る/比率と画素/枠を描く/焼き込み"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "A19",
+      "origin": "利用者報告(2026-08-30)",
+      "statement": "起動ボタンが画面右下にあり、撮影対象には写らない",
+      "tests": [
+        "capture-screen.dom.test.ts: data-capture-hide を付けた要素は写さない",
+        "navigation-ux.dom.test.tsx / display-contract.test.tsx: ヘッダーから外れても導線契約が保たれる"
+      ],
+      "verdict": "PASS"
+    }
+  ],
+  "unverified_acceptance": 0,
+  "result": "PASS"
+}

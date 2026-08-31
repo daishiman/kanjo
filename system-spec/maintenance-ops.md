@@ -3,7 +3,7 @@ status: confirmed
 category: maintenance-ops
 aggregate: 確定
 spec_cells: [maintenance-ops.web, maintenance-ops.mobile, maintenance-ops.tablet, maintenance-ops.desktop-windows, maintenance-ops.desktop-linux, maintenance-ops.desktop-macos]
-serves_goals: [G2, G4]
+serves_goals: [G1, G2, G4, G5, G7]
 ---
 
 # 保守運用管理 (maintenance-ops)
@@ -15,7 +15,7 @@ serves_goals: [G2, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-003 |
+| Web (web) | 確定 | 確定質疑: qa-019 |
 | モバイル (mobile) | 対象外 | 理由: 運用対象は Worker/D1/R2 の単一環境で、モバイル配布の運用系統を持たない |
 | タブレット (tablet) | 対象外 | 理由: 運用対象は Worker/D1/R2 の単一環境で、タブレット配布の運用系統を持たない |
 | デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
@@ -65,6 +65,52 @@ codeを、次の変更者が意図・制約・failureを短時間で理解し、
 - maintenance objectiveには変更lead time、review指摘、escaped defect、rollback率などのoutcomeを使う。
 - 無料toolの導入自体を成功とせず、teamが継続運用でき、重要riskを減らすかで判断する。
 
+---
+
+### 既存 Cron へ相乗りする定期削除と、失敗の独立記録
+
+- project candidate: `maintenance-ops-piggyback-on-existing-scheduled-job` (`deepened`)
+- 解決対象: 確定セル maintenance-ops×web (qa-019) は、相乗り先の scheduledMaintenance が本番で毎晩失敗しているという実体の上に成り立つ。汎用カードの『定期処理は既存スケジューラへ集約する』という原則だけでは、この前提が章に残らない。
+
+#### 目的
+
+相乗り (piggyback) の利点と、相乗り先が壊れている場合の切り分け可能性を、本仕様の確定要件へ接地させる。
+
+#### 解決する問題
+
+- 新規 Cron を足すと、実行時刻の重複と課金対象の増加を招く
+- 相乗り先がすでに失敗している場合、新ジョブの失敗が既存の失敗に紛れて検知できない
+- 『設定が存在すること』を『機能していること』と取り違えると、毎晩の失敗が観測されないまま残る
+
+#### 適用条件
+
+- acceptance『削除ジョブが既存 scheduledMaintenance の Promise.allSettled 配下で他ジョブと独立に成否を記録し、新規 Cron トリガが wrangler.jsonc に増えていない』: 既存の allSettled 粒度を維持したまま4本目として追加する
+- 詳細取得時にも期限判定を行い、削除ジョブ失敗時の縮退経路とする (arch 4章)
+- R2 孤児オブジェクトの突合は既存 runAttachmentMaintenance と同様に行う
+
+#### 非適用条件
+
+- 既存 nightlyBackup の実装と Cron 設定の変更 (scope_out)。本機能のスコープは4本目のジョブ追加に限る
+- 新規 Cron トリガの追加 (scope_out)
+
+#### トレードオフ
+
+- 相乗りにより実行タイミングを個別調整できない。日次 1 回で十分な削除処理のため許容する
+- scheduledMaintenance 全体は 1 本でも reject すれば失敗扱いになる。ジョブ単位のログがその粒度を補う
+
+#### 失敗モード
+
+- 相乗り先が毎晩失敗している事実に気づかないまま、削除ジョブも動いていると誤認する
+- 削除ジョブの例外が他ジョブへ波及し、記帳データのバックアップまで止める
+- R2 オブジェクトの削除だけ成功し D1 側が残る (またはその逆) で不整合が残る
+
+#### goalへの寄与
+
+G7 (最小保持) の実行主体。同時に、ジョブ単位の成否記録が G3 (原因を即座に特定できる検知) を運用面から支える。
+
 ## 最新ドキュメント出典
 
-- (このカテゴリに割り当てた取得済みドキュメントなし。全体出典は index.md 参照)
+| 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
+|---|---|---|---|---|---|
+| cloudflare-r2-object-lifecycles | 2026-04-21 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/r2/buckets/object-lifecycles/ | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |
+| cloudflare-workers-cron-triggers | 2026-06-20 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/workers/configuration/cron-triggers/ | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |

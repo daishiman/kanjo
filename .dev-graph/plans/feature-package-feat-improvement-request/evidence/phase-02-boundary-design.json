@@ -1,0 +1,201 @@
+{
+  "phase_ref": "P02",
+  "graph_node_id": "SYS-IMPREQ-P02",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:13:04Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "テーブル列・API経路・診断上限・削除対象の4契約を確定した。AI分析(routes/ai.ts)と同型に保ち、新方式を作らない。",
+  "schema": {
+    "table": "improvement_requests",
+    "migration": "migrations/0029_improvement_requests.sql",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "note": "primary key (crypto.randomUUID)"
+      },
+      {
+        "name": "user_id",
+        "type": "text",
+        "note": "not null"
+      },
+      {
+        "name": "title",
+        "type": "text",
+        "note": "not null / 最大 120 文字"
+      },
+      {
+        "name": "body",
+        "type": "text",
+        "note": "not null / 最大 4000 文字"
+      },
+      {
+        "name": "route",
+        "type": "text",
+        "note": "not null default '' / クエリ値はマスク済み"
+      },
+      {
+        "name": "status",
+        "type": "text",
+        "note": "open|in_progress|done|wontfix"
+      },
+      {
+        "name": "screenshot_key",
+        "type": "text",
+        "note": "R2 key。削除済みは NULL"
+      },
+      {
+        "name": "screenshot_size",
+        "type": "integer",
+        "note": "nullable"
+      },
+      {
+        "name": "diagnostics_json",
+        "type": "text",
+        "note": "マスク・切り詰め済み DiagnosticPayload"
+      },
+      {
+        "name": "diagnostics_omitted",
+        "type": "integer",
+        "note": "not null default 0"
+      },
+      {
+        "name": "token_hash",
+        "type": "text",
+        "note": "SHA-256 の16進64桁のみ。平文列は存在しない"
+      },
+      {
+        "name": "token_expires_at",
+        "type": "text",
+        "note": "ISO8601"
+      },
+      {
+        "name": "token_fetch_count",
+        "type": "integer",
+        "note": "not null default 0"
+      },
+      {
+        "name": "copied_at",
+        "type": "text",
+        "note": "nullable"
+      },
+      {
+        "name": "copied_target",
+        "type": "text",
+        "note": "claude_code|codex"
+      },
+      {
+        "name": "done_at",
+        "type": "text",
+        "note": "30日削除の起点"
+      },
+      {
+        "name": "purged_at",
+        "type": "text",
+        "note": "削除済みの印。冪等性の根拠"
+      },
+      {
+        "name": "created_at",
+        "type": "text",
+        "note": "not null"
+      },
+      {
+        "name": "updated_at",
+        "type": "text",
+        "note": "not null"
+      }
+    ],
+    "plaintext_token_columns": 0
+  },
+  "endpoints": [
+    {
+      "path": "POST /api/improvements",
+      "auth": "Cookie (authGuard)",
+      "ai_counterpart": "POST /api/ai/tasks",
+      "response": "201 {request, prompt, screenshotRejected, diagnosticsRejected}"
+    },
+    {
+      "path": "GET /api/improvements",
+      "auth": "Cookie",
+      "ai_counterpart": "GET /api/ai/reports",
+      "response": "200 {requests[]}"
+    },
+    {
+      "path": "GET /api/improvements/:id",
+      "auth": "Cookie",
+      "ai_counterpart": "GET /api/ai/reports/:id",
+      "response": "200 {request, diagnostics}"
+    },
+    {
+      "path": "GET /api/improvements/:id/screenshot",
+      "auth": "Cookie",
+      "ai_counterpart": "(添付配信と同型)",
+      "response": "200 image/jpeg / 410 削除済み"
+    },
+    {
+      "path": "POST /api/improvements/:id/status",
+      "auth": "Cookie",
+      "ai_counterpart": "-",
+      "response": "200 {request}"
+    },
+    {
+      "path": "POST /api/improvements/:id/prompt",
+      "auth": "Cookie",
+      "ai_counterpart": "POST /api/ai/tasks/:id/prompt",
+      "response": "200 {prompt} / 410 削除済み"
+    },
+    {
+      "path": "POST /api/improvements/:id/copied",
+      "auth": "Cookie",
+      "ai_counterpart": "-",
+      "response": "200 {ok}"
+    },
+    {
+      "path": "GET /api/improvements/:id/agent/data",
+      "auth": "使い捨て Bearer (imp_)",
+      "ai_counterpart": "GET /api/ai/tasks/:id/payload",
+      "response": "200 JSON / 401 token_expired|token_fetch_limit"
+    },
+    {
+      "path": "GET /api/improvements/:id/agent/screenshot",
+      "auth": "使い捨て Bearer (imp_)",
+      "ai_counterpart": "-",
+      "response": "200 image/jpeg"
+    }
+  ],
+  "mount_order": "app.route(\"/api\", improvementAgentRoute) を app.use(\"/api/*\", authGuard()) より前に登録する。AI分析の aiAgentRoute と同じ順序。",
+  "diagnostics_limits": {
+    "max_entries": 60,
+    "max_bytes": 32768,
+    "max_message_chars": 400,
+    "max_detail_chars": 800,
+    "omitted_representation": "DiagnosticPayload.omittedCount を 0 でも省略せずに持ち、improvement_requests.diagnostics_omitted へ保存し、画面と指示文の双方に出す。"
+  },
+  "retention_contract": {
+    "trigger": "status=done かつ done_at から30日経過",
+    "deletes": [
+      "R2 のスクリーンショット",
+      "diagnostics_json",
+      "token_hash",
+      "token_expires_at"
+    ],
+    "never_deletes": [
+      "title",
+      "body",
+      "route",
+      "status",
+      "done_at",
+      "created_at",
+      "updated_at",
+      "copied_at",
+      "copied_target"
+    ],
+    "rationale": "何をいつ直したかの記録は改善の履歴そのもので、添付とは寿命が違う。"
+  },
+  "backup_exclusion": {
+    "table_appears_in_BACKUP_SNAPSHOT_SQL": false,
+    "decision": "D7-improvement-backup-cadence = opt-keep-daily-exclude-improvement-artifacts"
+  },
+  "result": "PASS"
+}

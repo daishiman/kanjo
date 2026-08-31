@@ -1,0 +1,113 @@
+{
+  "phase_ref": "P03",
+  "graph_node_id": "SYS-IMPREQ-P03",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:13:04Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "秘匿値の経路追跡と scope_out 8件の突き合わせ。高重大度の未解決指摘は0件。",
+  "secret_flow_trace": [
+    {
+      "stage": "収集(ブラウザ)",
+      "carrier": "console.error / fetch 失敗 / 例外",
+      "control": "diagnostics-buffer が record 時点で redactSecrets を適用",
+      "residual": "なし"
+    },
+    {
+      "stage": "送信",
+      "carrier": "multipart の diagnostics フィールド",
+      "control": "HTTPS のみ。ボディはログしない",
+      "residual": "クライアント側マスクは改竄可能"
+    },
+    {
+      "stage": "受信(Worker)",
+      "carrier": "parseDiagnosticsField",
+      "control": "sanitizeDiagnosticPayload が同じ規則をもう一度適用(二重マスク)",
+      "residual": "なし"
+    },
+    {
+      "stage": "保存(D1)",
+      "carrier": "diagnostics_json / title / body / route",
+      "control": "redactText を通してから insert",
+      "residual": "なし"
+    },
+    {
+      "stage": "ログ",
+      "carrier": "console.log/error",
+      "control": "improvement_retention の集計値(件数)だけを出力。トークン・本文・診断は出力しない",
+      "residual": "なし"
+    },
+    {
+      "stage": "トークン",
+      "carrier": "発行時の応答 prompt",
+      "control": "原文は応答1回のみ。D1 は sha256Hex の結果だけ。ログ出力箇所なし",
+      "residual": "指示文をコピーした先の管理は利用者責任(TTL 24h / 20回で緩和)"
+    }
+  ],
+  "copy_paths_reviewed": [
+    {
+      "path": "夜間バックアップ (BACKUP_SNAPSHOT_SQL)",
+      "verdict": "非対象。テーブルを列挙しない。sqlite_master 総なめでもない",
+      "why_it_matters": "ここに入ると30日削除後もバックアップ側に添付相当の情報が残り、削除が骨抜きになる"
+    },
+    {
+      "path": "エクスポート",
+      "verdict": "非対象。改善要望のエクスポート経路を追加していない"
+    },
+    {
+      "path": "詳細取得 GET /api/improvements/:id",
+      "verdict": "purgeIfExpired により、削除ジョブが失敗していても期限超過なら取得時にその場で落とす(縮退経路)"
+    },
+    {
+      "path": "R2 直接配信",
+      "verdict": "公開URL・署名付きURL を発行しない。配信は Worker 1本"
+    }
+  ],
+  "scope_out_check": [
+    {
+      "item": "改善要望テーブルを BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること",
+      "violations": 0
+    },
+    {
+      "item": "既存 nightlyBackup の実装と Cron 設定の変更",
+      "violations": 0
+    },
+    {
+      "item": "新規 Cron トリガの追加",
+      "violations": 0
+    },
+    {
+      "item": "R2 の公開 URL・署名付き URL の発行",
+      "violations": 0
+    },
+    {
+      "item": "外部エラートラッキング SaaS への送信",
+      "violations": 0
+    },
+    {
+      "item": "Screen Capture API による画面共有ダイアログ経由の撮影",
+      "violations": 0
+    },
+    {
+      "item": "要望本文・状態・対応記録の30日削除 (削除対象は添付物のみ)",
+      "violations": 0
+    },
+    {
+      "item": "本番 D1 への migration 適用 (feat-prod-d1-schema-recovery の完了が前提)",
+      "violations": 0
+    }
+  ],
+  "findings": {
+    "high": 0,
+    "medium": 0,
+    "low": 1,
+    "low_items": [
+      {
+        "id": "L-1",
+        "statement": "routes/ai.ts はトークン原始関数を自前で持ち続ける。",
+        "why_not_fixed": "ai.ts はどの phase の write scope にも含まれない。改善要望側は core を正本にし、ai.ts の追随は follow-up candidate とする。"
+      }
+    ]
+  },
+  "result": "PASS"
+}

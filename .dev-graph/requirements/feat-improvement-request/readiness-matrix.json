@@ -1,0 +1,272 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-improvement-request",
+  "snapshot_digest": "sha256:763ce8a7e2860327494190167401712679a1f2122bb842f57e380f3b0cfa5204",
+  "snapshot_digest_method": "sha256 over sorted(rel + NUL + bytes + NUL) of gates.C11_snapshot_validation.source_inputs",
+  "status": "ready",
+  "missing_sections": [],
+  "remediation_owners": {},
+  "gates": {
+    "C11_snapshot_validation": {
+      "status": "PASS",
+      "source_inputs": [
+        {
+          "path": ".dev-graph/plans/feature-package-feat-improvement-request/atomic-promotion-receipt.json",
+          "sha256": "bbb748391c7fb39a5ad2515a06969ca10095ec953c839c8c17d8bb76e175bca7"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-improvement-request/dev-graph-registration-receipt.json",
+          "sha256": "409fb42fcf0ed5b1ed4d2b0515a9fb2cadacc1ce88c66a132b61e5202a72686a"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-improvement-request/staging-manifest.json",
+          "sha256": "9b0f9a148e7915170b6724028262554b244e3a80852b33a42b0e83122825f01a"
+        },
+        {
+          "path": ".dev-graph/state/graph.json",
+          "sha256": "95944307d95b6f6de204d9e65a3d20da5fb88d370558073906a4d6d7098cebbc"
+        },
+        {
+          "path": "features/feat-improvement-request.context.json",
+          "sha256": "76f17b4ba504e5c7d7410ecc034d27f2ffa293f3922c3b751f006768bcc0d7ad"
+        }
+      ],
+      "note": "promotion receipt / registration receipt / staging manifest / graph / feature context の bytes を再測定し、published digest と registration receipt の整合を確認した。"
+    },
+    "C02_saved_state": {
+      "status": "PASS",
+      "feature": {
+        "graph_node_id": "feat-improvement-request",
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete",
+        "source_digest": "ddf9d13227fd61d9c67241acdb03fc62595ddb7dd848ab229ae949cb5bbff1ee"
+      },
+      "architecture": {
+        "graph_node_id": "arch-improvement-request-pipeline",
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete"
+      },
+      "tasks": [
+        {
+          "graph_node_id": "SYS-IMPREQ-P01",
+          "phase_ref": "P01",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P01.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P02",
+          "phase_ref": "P02",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P02.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P03",
+          "phase_ref": "P03",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P03.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P04",
+          "phase_ref": "P04",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P04.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P05",
+          "phase_ref": "P05",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P05.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P06",
+          "phase_ref": "P06",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P06.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P07",
+          "phase_ref": "P07",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P07.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P08",
+          "phase_ref": "P08",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P08.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P09",
+          "phase_ref": "P09",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P09.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P10",
+          "phase_ref": "P10",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P10.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P11",
+          "phase_ref": "P11",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P11.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P12",
+          "phase_ref": "P12",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P12.md",
+          "projected": false
+        },
+        {
+          "graph_node_id": "SYS-IMPREQ-P13",
+          "phase_ref": "P13",
+          "parent_feature": "feat-improvement-request",
+          "feature_package_id": "feature-package/feat-improvement-request",
+          "confirmation_status": "confirmed",
+          "evaluation_status": "pass",
+          "implementation_readiness": "complete",
+          "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+          "digest_matches_plan": true,
+          "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P13.md",
+          "projected": false
+        }
+      ]
+    },
+    "C08_implementation_readiness": {
+      "status": "PASS",
+      "report": ".dev-graph/cache/readiness-feat-improvement-request.json",
+      "readiness_status": "complete",
+      "missing_sections": [],
+      "source_pin": {
+        "plugin": "system-spec-harness",
+        "version": "0.1.11",
+        "compile_entrypoint": "run-system-spec-compile",
+        "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+        "source_digest": "sha256:5fc14a3d7e1e8d3bbaf1948d23127521f90f48ec67bd8c332f22438b873aa622"
+      }
+    },
+    "C12_external_plan_validation": {
+      "status": "PASS",
+      "validator": "system-dev-planner/scripts/validate-system-plan.py",
+      "validator_version": "0.1.10",
+      "staging": ".dev-graph/plans/feature-package-feat-improvement-request",
+      "validated_digest": "sha256:e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+      "phase_refs_exact_13": true,
+      "dag_node_count": 13,
+      "violations": []
+    }
+  },
+  "digest_agreement": {
+    "plan_validated_digest": "sha256:e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+    "graph_task_source_digest": "sha256:e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+    "agreed": true
+  },
+  "self_generated_code_files": [],
+  "deferred_to_node_verb": {
+    "reason": "確定 task spec の tasks/<parent_feature>/<id>.md への投影は C02 の node 登録が所有する。requirements は投影を実行しない。",
+    "pending_paths": [
+      "tasks/feat-improvement-request/SYS-IMPREQ-P01.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P02.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P03.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P04.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P05.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P06.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P07.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P08.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P09.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P10.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P11.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P12.md",
+      "tasks/feat-improvement-request/SYS-IMPREQ-P13.md"
+    ]
+  },
+  "checked_at": "2026-08-30T13:05:00Z"
+}

@@ -1,0 +1,143 @@
+{
+  "phase_ref": "P04",
+  "graph_node_id": "SYS-IMPREQ-P04",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:13:04Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "受入条件15件へ自動検証を割り当て、5つの独立検証軸を設計した。未割当は0件。",
+  "runtimes": {
+    "packages/web": "vitest 3.2.6 + jsdom (// @vitest-environment jsdom)",
+    "packages/api": "vitest + Miniflare(convertV4MiniflareOptions) の D1/R2",
+    "packages/core": "vitest (node)"
+  },
+  "assignment": [
+    {
+      "id": "A01",
+      "tests": [
+        "improvement-capture.dom.test.tsx: 撮影関数が呼ばれた時点でモーダルの要素が DOM に無い"
+      ]
+    },
+    {
+      "id": "A02",
+      "tests": [
+        "improvement-capture.dom.test.tsx: 撮影できなくてもモーダルは開き、本文だけで送信できる",
+        "improvement-capture.dom.test.tsx: 撮影関数が例外を投げても投稿経路が止まらない",
+        "improvement-lifecycle.test.ts: スクリーンショット無しでも 201"
+      ]
+    },
+    {
+      "id": "A03",
+      "tests": [
+        "improvement-capture.dom.test.tsx: 撮影中はボタンを押せず、待機中だと分かる"
+      ]
+    },
+    {
+      "id": "A04",
+      "tests": [
+        "improvement-capture.dom.test.tsx: 撮れた画像は既定で添付し、チェックを外すと送らない"
+      ]
+    },
+    {
+      "id": "A05",
+      "tests": [
+        "diagnostics-buffer.test.ts: 4種の事象の記録"
+      ]
+    },
+    {
+      "id": "A06",
+      "tests": [
+        "improvement-redaction.test.ts: 件数上限/バイト上限の切り詰め",
+        "improvement-capture.dom.test.tsx: 省略件数の表示"
+      ]
+    },
+    {
+      "id": "A07",
+      "tests": [
+        "improvement-redaction.test.ts: 画面のマスクを通さない直接投稿でも平文が残らない"
+      ]
+    },
+    {
+      "id": "A08",
+      "tests": [
+        "improvement-lifecycle.test.ts: 平文が D1 に無く token_hash が 64桁hex"
+      ]
+    },
+    {
+      "id": "A09",
+      "tests": [
+        "improvement-retention.test.ts: token_expired / token_fetch_limit",
+        "improvement-lifecycle.test.ts: 拒否理由の区別"
+      ]
+    },
+    {
+      "id": "A10",
+      "tests": [
+        "improvement-lifecycle.test.ts: 応答・ログ経路にトークン原文が現れない"
+      ]
+    },
+    {
+      "id": "A11",
+      "tests": [
+        "improvement-lifecycle.test.ts: screenshot.url が署名URLでない"
+      ]
+    },
+    {
+      "id": "A12",
+      "tests": [
+        "improvement-lifecycle.test.ts: 指示文のトークンだけで agent/data と agent/screenshot が 200",
+        "improvement-capture.dom.test.tsx: Claude Code/Codex 用コピー"
+      ]
+    },
+    {
+      "id": "A13",
+      "tests": [
+        "improvement-retention.test.ts: 30日境界と削除後の詳細取得",
+        "improvement-lifecycle.test.ts: 添付だけ消え本文は残る"
+      ]
+    },
+    {
+      "id": "A14",
+      "tests": [
+        "improvement-backup-exclusion.test.ts: BACKUP_SNAPSHOT_SQL に現れない"
+      ]
+    },
+    {
+      "id": "A15",
+      "tests": [
+        "improvement-backup-exclusion.test.ts: allSettled 配下 / crons 1本",
+        "improvement-backup-exclusion.test.ts: 1件失敗しても他が進む"
+      ]
+    }
+  ],
+  "independent_axes": [
+    {
+      "axis": "撮影順序",
+      "file": "packages/web/src/improvement-capture.dom.test.tsx",
+      "approach": "画素は見ない。撮影コールバック実行時点の DOM を観測し、原因側(条件付きマウント)を固定する"
+    },
+    {
+      "axis": "二重マスク",
+      "file": "packages/api/src/improvement-redaction.test.ts",
+      "approach": "画面側を通さず生の秘匿値を直接 POST する"
+    },
+    {
+      "axis": "トークンのハッシュ保存",
+      "file": "packages/api/src/improvement-lifecycle.test.ts",
+      "approach": "D1 行を丸ごと JSON 文字列化して原文の不在を確かめる"
+    },
+    {
+      "axis": "拒否理由の区別",
+      "file": "packages/api/src/improvement-retention.test.ts",
+      "approach": "期限切れと回数超過を別々に再現し、コードの集合サイズが2であることを見る"
+    },
+    {
+      "axis": "バックアップ非追加",
+      "file": "packages/api/src/improvement-backup-exclusion.test.ts",
+      "approach": "非公開定数のため store.ts のソーステキストからテンプレートリテラルを抽出する"
+    }
+  ],
+  "synthetic_data_policy": "JPEG はマジックナンバー(0xFF D8 FF E0)だけ本物の8バイト。認証は AUTH_PASSWORD=\"synthetic-test-password\"。要望本文は架空の操作文のみで、口座明細・金額・実在の個人情報を含めない。",
+  "unassigned_acceptance": 0,
+  "result": "PASS"
+}

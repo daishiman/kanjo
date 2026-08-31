@@ -12,8 +12,14 @@ const PAGE_SOURCES = import.meta.glob('./pages/*.tsx', {
 }) as Record<string, string>;
 const STYLE_SOURCE = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
 const APP_SOURCE = readFileSync(new URL('./App.tsx', import.meta.url), 'utf8');
+// Login と Improvement は routeMetadata の業務ルートではない。前者は認証前、
+// 後者は「アプリの不具合を伝える」ための画面で、どちらも PageHeader が要求する
+// route id を持たない。15ルートの表示契約はこの2枚を除いた集合に掛ける
 const ROUTED_PAGE_SOURCES = Object.entries(PAGE_SOURCES)
-  .filter(([path]) => !path.endsWith('/Login.tsx') && !path.includes('.test.'))
+  .filter(
+    ([path]) =>
+      !path.endsWith('/Login.tsx') && !path.endsWith('/Improvement.tsx') && !path.includes('.test.'),
+  )
   .map(([, source]) => source);
 
 describe('15ルート契約', () => {
@@ -37,7 +43,8 @@ describe('15ルート契約', () => {
   });
 
   it('申告画面だけをcold-load短縮のためeagerにし、残りはルート単位で遅延読み込みする', () => {
-    expect(APP_SOURCE.match(/lazy\(\(\) =>\s*import\('\.\/pages\//g)).toHaveLength(APP_ROUTES.length - 1);
+    // 業務ルート15枚のうち申告だけが eager、残り14枚 + routeMetadata 外の改善要望1枚が lazy
+    expect(APP_SOURCE.match(/lazy\(\(\) =>\s*import\('\.\/pages\//g)).toHaveLength(APP_ROUTES.length);
     expect(APP_SOURCE).toMatch(/<Suspense\s+fallback=/);
     expect(APP_SOURCE.match(/import \{ \w+Page \} from '\.\/pages\//g)).toEqual([
       "import { LoginPage } from './pages/",

@@ -1,0 +1,1163 @@
+{
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "parent_feature": "feat-improvement-request",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "explicit-cli"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/index.md",
+      "system-spec/00-requirements-definition.md",
+      "architecture/arch-improvement-request-pipeline.md",
+      "features/feat-improvement-request.md",
+      "features/feat-improvement-request.context.json"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "features/feat-improvement-request.md の受入条件15件が漏れなくベースラインへ写され、各件に検証可能な観測点が付いている",
+        "撮影・診断・受け渡し・失効の4層それぞれについて、実装が触れてよい既存資産と触れてはならない既存資産が列挙されている",
+        "本番 D1 のスキーマ版数が不足しており migration を本番へ配信できないという前提が、ベースラインに明記されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P01.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P01.md",
+        "graph_node_id": "SYS-IMPREQ-P01",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-IMPREQ-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "ベースラインは読み取りと記録だけで既存コードを変えないため、生成した証跡ファイルを削除すれば元に戻る。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "改善要望の実行要件ベースライン確定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "受入条件15件とベースライン項目の対応表を作り、対応先が空の行が0件であることを確認する",
+        "参照した system-spec と architecture の digest がベースラインに記録され、現行ファイルの digest と一致することを確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-01-requirements-baseline.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "改善要望本体・スクリーンショット参照・診断情報・使い捨てトークンの各テーブル列と型が確定し、平文トークンを保持する列が1つも無い",
+        "画面用 API とエージェント用 API の経路・認証・応答形が確定し、既存 AI 分析の authGuard と agentGuard の同型であることが示されている",
+        "診断情報の件数上限と総バイト上限の具体値、および切り詰め時に残す省略件数の表現が確定している",
+        "対応完了から30日での削除対象が添付物のみであり、本文・状態・対応記録が削除対象に入らないことが契約として明示されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P02.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P01"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P02.md",
+        "graph_node_id": "SYS-IMPREQ-P02",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-IMPREQ-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "設計文書のみの変更のため、生成した証跡ファイルを削除または前版へ戻す。既存コードには影響しない。",
+      "secondary_workstreams": [
+        "frontend",
+        "data",
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "4層の境界とデータ契約の設計",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "設計した各エンドポイントを packages/api/src/routes/ai.ts の既存 aiRoute と aiAgentRoute の構造へ対応づけ、差分が意図的なものだけであることを確認する",
+        "設計したテーブル名が packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL に1つも現れない設計であることを確認する"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-02-boundary-design.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "トークン値・Cookie・Authorization ヘッダが保存先とログのどこにも到達しないことが、経路単位で追跡され記録されている",
+        "30日削除が複製経路によって骨抜きにならないことが、バックアップ・エクスポート・詳細取得の各経路について確認されている",
+        "高重大度の未解決指摘が0件である"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P03.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P02"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P03.md",
+        "graph_node_id": "SYS-IMPREQ-P03",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-IMPREQ-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "レビュー記録のみの変更のため、証跡ファイルを削除すれば元に戻る。",
+      "secondary_workstreams": [
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "境界設計の独立レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "秘匿値の流れをクライアント収集からサーバー保存とログ出力まで経路単位で追跡し、マスクが二重に掛かることを確認する",
+        "P02 の契約と features/feat-improvement-request.md の scope_out 8件を突き合わせ、逸脱が0件であることを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-03-design-review.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入条件15件のすべてに、対応する自動検証が少なくとも1件割り当てられている",
+        "撮影順序・二重マスク・トークンのハッシュ保存・拒否理由の区別・バックアップ非追加の5点が、それぞれ独立した検証として設計されている",
+        "実データと秘密情報を用いない検証データの作り方が設計に含まれている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P04.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P03"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P04.md",
+        "graph_node_id": "SYS-IMPREQ-P04",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-IMPREQ-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "試験設計のみの変更のため、証跡ファイルを削除または前版へ戻す。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "受入条件を検証へ写す試験設計",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "受入条件と検証の対応表を作り、検証が割り当てられていない受入条件が0件であることを確認する",
+        "設計した検証が既存の vitest 構成 (packages/web は jsdom、packages/api は Workers) の上で実行可能な形であることを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-04-test-design.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "改善要望ボタンの押下でモーダルを開く前に撮影が完了し、撮影された画像に、その押下で開くモーダルの DOM が含まれない",
+        "撮影が失敗してもモーダルは開き、スクリーンショットなしの本文だけで投稿が 2xx で成立する",
+        "アプリ起動時から動く診断リングバッファが、未捕捉例外・unhandledrejection・console error と warn・失敗した通信を記録し、件数上限と総バイト上限の双方で切り詰めて省略件数を残す",
+        "使い捨て Bearer トークンの平文が D1 のどの列にも保存されず、SHA-256 ハッシュだけが保存される",
+        "投稿済みの改善要望から Claude Code 向けと Codex 向けの指示文がコピーでき、その指示文が指す API がトークンだけでスクリーンショットと診断情報を返す",
+        "撮影中は改善要望ボタンが押下不可になり、待機していることが画面に出る",
+        "送信前にスクリーンショットの縮小プレビューが見え、添付を外して送信できる",
+        "診断情報が上限を超えて切り詰められたとき、省略件数が画面にも出る"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P05.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P04"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P05.md",
+        "graph_node_id": "SYS-IMPREQ-P05",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-IMPREQ-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "write scope の変更ファイルを直前版へ戻し、追加した migration を適用前の状態へ戻す。既存の入出金・分類・AI 分析の契約には触れていないため他機能へ波及しない。",
+      "secondary_workstreams": [
+        "backend",
+        "api",
+        "data",
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "撮影・診断・受け渡し・失効の実装",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint と pnpm typecheck を実行し、新規ファイルを含めて指摘が0件であることを確認する",
+        "既存の pnpm test を実行し、この phase の変更によって既存検証が1件も退行していないことを確認する。受入条件に対応する新規検証の作成と実行は P06 が所有するため、この phase の write scope には検証ファイルを含めない",
+        "packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL に改善要望のテーブル名が現れないことを確認する",
+        "ローカルで画面を起動し、撮影中の押下不可表示・縮小プレビュー・添付解除・省略件数表示を目視で確認する"
+      ],
+      "workstream_kind": "frontend",
+      "write_scope": [
+        "migrations/0029_improvement_requests.sql",
+        "packages/api/src/routes/improvement.ts",
+        "packages/api/src/improvement/contract.ts",
+        "packages/api/src/improvement/redact.ts",
+        "packages/api/src/index.ts",
+        "packages/api/src/store.ts",
+        "packages/core/src/improvement.ts",
+        "packages/core/src/index.ts",
+        "packages/web/src/components/ImprovementRequestButton.tsx",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/diagnostics-buffer.ts",
+        "packages/web/src/capture-screen.ts",
+        "packages/web/src/pages/Improvement.tsx",
+        "packages/web/src/App.tsx",
+        "packages/web/src/api.ts",
+        "packages/web/src/styles.css"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入条件15件に対応する検証がすべて実行され、失敗が0件である",
+        "既存の検証が1件も退行していない",
+        "実行結果が証跡として記録され、実行日時と対象コミット相当の識別子が残っている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P06.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P05"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P06.md",
+        "graph_node_id": "SYS-IMPREQ-P06",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-IMPREQ-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "検証ファイルの追加のみのため、追加した検証ファイルを削除すれば元に戻る。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "検証の実行と失敗の解消",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test をリポジトリ全体で実行し、失敗が0件であることを確認する",
+        "実行前後の検証件数を比較し、既存検証の欠落が0件であることを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/web/src/improvement-capture.dom.test.tsx",
+        "packages/web/src/diagnostics-buffer.test.ts",
+        "packages/api/src/improvement-lifecycle.test.ts",
+        "packages/api/src/improvement-redaction.test.ts",
+        "packages/api/src/improvement-backup-exclusion.test.ts"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入条件15件それぞれに、判定結果と根拠となる検証名または観測結果が対応づいている",
+        "未達の受入条件が0件である",
+        "画面での手動確認の手順と結果が、実データを含まない形で記録されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P07.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P06"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P07.md",
+        "graph_node_id": "SYS-IMPREQ-P07",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-IMPREQ-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "判定記録のみの変更のため、証跡ファイルを削除すれば元に戻る。",
+      "secondary_workstreams": [
+        "frontend",
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "受入条件15件の判定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "受入条件15件の判定表を作り、根拠が空の行が0件であることを確認する",
+        "ローカルで画面を起動し、改善要望の投稿から指示文コピーまでを通しで実行して結果を記録する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-07-acceptance.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "添付削除が既存 scheduledMaintenance の Promise.allSettled 配下で他ジョブと独立に成否を記録し、新規 Cron トリガが wrangler.jsonc に増えていない",
+        "使い捨てトークンの発行・ハッシュ化・検証が AI 分析と改善要望で同じ実装を共有し、方式の二重管理が発生していない",
+        "R2 の孤児オブジェクト突合が既存 runAttachmentMaintenance と同じ考え方で行われている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P08.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P07"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P08.md",
+        "graph_node_id": "SYS-IMPREQ-P08",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-IMPREQ-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "共有化した実装を分離前の状態へ戻し、削除ジョブの登録を取り消す。既存 nightlyBackup には触れていないため他ジョブへ波及しない。",
+      "secondary_workstreams": [
+        "operations",
+        "data"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "既存資産への相乗りと重複の整理",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "wrangler.jsonc の triggers 定義を変更前後で比較し、増減が0件であることを確認する",
+        "トークン処理の実装箇所を検索し、AI 分析と改善要望で別実装になっていないことを確認する"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "packages/api/src/attachment-archive.ts",
+        "packages/api/src/index.ts",
+        "packages/api/src/improvement/contract.ts",
+        "packages/core/src/improvement.ts"
+      ]
+    },
+    {
+      "acceptance": [
+        "クライアント側マスクを外した診断情報を直接投稿しても、保存後の値から Cookie と Authorization と Bearer とパスワード相当の値が除去されている",
+        "TTL 超過のトークンと取得回数上限超過のトークンが、互いに区別できる拒否理由で拒否され、いずれも 500 にならない",
+        "改善要望のテーブル名が packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL に1つも現れないことを検証が固定している",
+        "対応完了から30日を超えた要望の添付が削除され、本文と状態と対応記録が参照できることを検証が固定している"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P09.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P08"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P09.md",
+        "graph_node_id": "SYS-IMPREQ-P09",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-IMPREQ-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "追加した検証ファイルを削除すれば元に戻る。実装側の変更は含まない。",
+      "secondary_workstreams": [
+        "quality",
+        "data"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "秘匿値と保持期間の品質保証",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "マスクを外した入力を投稿する検証を実行し、保存値に秘匿値が残らないことを確認する",
+        "期限超過と回数超過をそれぞれ再現し、応答の拒否理由が区別できることを確認する"
+      ],
+      "workstream_kind": "security",
+      "write_scope": [
+        "packages/api/src/improvement-redaction.test.ts",
+        "packages/api/src/improvement-retention.test.ts",
+        "packages/api/src/improvement-backup-exclusion.test.ts"
+      ]
+    },
+    {
+      "acceptance": [
+        "変更ファイル一覧が P05・P06・P08・P09 の write scope の和に収まり、対象外ファイルの変更が0件である",
+        "features/feat-improvement-request.md の scope_out 8件のいずれにも触れていないことが確認されている",
+        "高重大度の未解決指摘が0件である"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P10.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P09"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P10.md",
+        "graph_node_id": "SYS-IMPREQ-P10",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-IMPREQ-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "レビュー記録のみの変更のため、証跡ファイルを削除すれば元に戻る。",
+      "secondary_workstreams": [
+        "security",
+        "operations"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "変更全体の最終レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "変更ファイル一覧を write scope の和と突き合わせ、範囲外の変更が0件であることを確認する",
+        "scope_out 8件を1件ずつ確認し、該当する変更が0件であることを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-10-final-review.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "P01 から P10 までの各 phase の証跡が索引から辿れ、欠落が0件である",
+        "証跡に実データと秘密情報が含まれていない",
+        "画面の証跡が合成データまたは既存の匿名表示のみで構成されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P11.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P10"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P11.md",
+        "graph_node_id": "SYS-IMPREQ-P11",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-IMPREQ-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "索引ファイルを削除すれば元に戻る。参照先の証跡には影響しない。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "証跡の収集と保全",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "索引の各項目が実在するファイルを指していることを確認する",
+        "証跡ファイルを走査し、口座明細と金額の実データおよび認証情報が含まれないことを確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-11-evidence-index.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "利用者向けに、改善要望の送り方と添付が30日で消えることが平易な言葉で書かれている",
+        "運用向けに、削除ジョブの相乗り先と失敗時の確認手順が書かれている",
+        "既存 docs の記述と重複せず、既存文書を正本として参照している"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P12.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P11"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P12.md",
+        "graph_node_id": "SYS-IMPREQ-P12",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-IMPREQ-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "追加または変更した文書を直前版へ戻す。実装には影響しない。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "利用手順と運用手順の記載",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "追加した記述が既存 docs の内容を複製していないことを確認する",
+        "記載した手順どおりにローカルで操作し、記述と実際の画面と応答が一致することを確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/improvement-request.md",
+        "docs/ci-cd-operations.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "本番 D1 のスキーマ整合が回復しているかどうかの判定結果が記録されている",
+        "回復していない場合、本番への migration 適用を実行せず、feat-prod-d1-schema-recovery の完了を待つ判断が記録されている",
+        "ローカルとテスト環境での完成が配信保留によって妨げられていないことが記録されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P13.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-IMPREQ-P12"
+      ],
+      "deploy_unit": "packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-improvement-request",
+        "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P13.md",
+        "graph_node_id": "SYS-IMPREQ-P13",
+        "parent_feature": "feat-improvement-request",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-IMPREQ-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "rollback": "保留判断の場合は本番へ何も適用していないため戻す対象が無い。配信した場合は適用した migration を前版へ戻す手順に従う。",
+      "secondary_workstreams": [
+        "infrastructure",
+        "data"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "architecture/arch-improvement-request-pipeline.md",
+        "features/feat-improvement-request.md",
+        "features/feat-improvement-request.context.json"
+      ],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "title": "配信条件の確定と保留判断",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "本番 D1 の適用済み migration 一覧を確認し、BACKUP_SNAPSHOT_SQL が参照するテーブルの有無を判定する",
+        "判定結果に応じて配信または保留のいずれを選んだかと、その根拠を証跡へ記録する"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-13-release-gate.json"
+      ]
+    }
+  ]
+}

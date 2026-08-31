@@ -1,0 +1,37 @@
+{
+  "phase_ref": "P13",
+  "graph_node_id": "SYS-IMPREQ-P13",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:21:06Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "配信は保留。本番D1のスキーマ復旧が先行依存であり、コミット/プッシュ/PR 作成は利用者指示により未実施。",
+  "branch_state": {
+    "committed": false,
+    "pushed": false,
+    "pull_request": null,
+    "reason": "利用者から「commit、push、PR作成はまだ行わない」との明示指示"
+  },
+  "blocking_precondition": {
+    "id": "PRE-1",
+    "detail": "本番 D1 の d1_migrations は 0005_sub_vendors.sql までしか記録が無い。0029 を含む未適用分は feat-prod-d1-schema-recovery の完了後でなければ配信できない。",
+    "status": "未解消"
+  },
+  "decision": "hold",
+  "local_verification": {
+    "server": "wrangler dev --local --port 8788",
+    "migrations_applied": "0029_improvement_requests.sql",
+    "seed": {
+      "imports": 1,
+      "mf_transactions": 90,
+      "months": 3,
+      "synthetic": true
+    }
+  },
+  "post_hold_checklist": [
+    "feat-prod-d1-schema-recovery の完了を確認する",
+    "本番 D1 へ 0006..0029 を順に適用する",
+    "wrangler tail で improvement_retention の1行ログが出ることを翌朝確認する"
+  ],
+  "result": "HOLD"
+}

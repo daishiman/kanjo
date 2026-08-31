@@ -16,6 +16,7 @@ import { APP_ROUTES, MOBILE_ROUTES, TABBED_ROUTE_IDS } from '../routeMetadata.js
 import { TaxYearPicker, useTaxYear } from '../tax-year.js';
 import { CommandPalette } from './CommandPalette.js';
 import { ExportMenu } from './ExportMenu.js';
+import { ImprovementRequestButton } from './ImprovementRequestButton.js';
 import { NavItem } from './NavItem.js';
 import { Term } from './Term.js';
 
@@ -104,6 +105,14 @@ export function Layout({ children }: { children: ReactNode }) {
               />
             </div>
           ))}
+          {/* 改善要望は routeMetadata の業務画面ではなく、アプリ自身への窓口。
+              タブバーの最頻5画面を押し出さないよう、サイドバーにだけ出す */}
+          <div>
+            <div className="nav-group">その他</div>
+            {/* RouteIcon は routeMetadata 用の固定集合。新しい絵は足さず、
+                サイドバーで未使用の scan-search を借りる */}
+            <NavItem to="/improvement" icon="scan-search" label="改善要望" variant="sidebar" end />
+          </div>
         </nav>
       </aside>
       {drawer && (
@@ -151,6 +160,11 @@ export function Layout({ children }: { children: ReactNode }) {
       <footer className="footer">
         明細データは外部に送信されません(アナリティクスなし)。税務上の正はfreeeの記帳です。バックアップは毎晩自動保存(30日保持)。
       </footer>
+
+      {/* 右下に固定する。どの画面のどこまでスクロールしていても同じ位置にあり、
+          「困ったらここ」を覚えれば済む。撮影は押した瞬間に始まるので、
+          いま見えているものがそのまま送られる */}
+      <ImprovementRequestButton />
 
       <nav className="tabbar" aria-label="モバイルナビゲーション">
         {MOBILE_ROUTES.map((route) => (

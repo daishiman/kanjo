@@ -1,0 +1,62 @@
+{
+  "phase_ref": "P06",
+  "graph_node_id": "SYS-IMPREQ-P06",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:56:12Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "P04 が設計した検証を実行し、検出した欠陥1件を解消して全件 PASS にした。利用者報告による是正の回帰も同じ集合へ追加した。",
+  "defects_found": [
+    {
+      "id": "D-1",
+      "severity": "high",
+      "found_by": "packages/api/src/improvement-redaction.test.ts",
+      "detail": "MASK_RULES の key=value 規則が、console.error(obj) の JSON 形式 (\"token\": \"...\") を取りこぼしていた。画面側のマスクを通さず直接 POST した場合に平文が保存され得た。",
+      "fix": "packages/core/src/improvement.ts の該当規則でキー名直後の `\"` を捕捉群に含め、`\"?\\s*[:=]\\s*` と閉じ引用符の後方参照を追加した。",
+      "regression_test": "improvement-redaction.test.ts: 画面のマスクを通さない直接投稿でも平文が残らない",
+      "status": "解消済み"
+    },
+    {
+      "id": "D-2",
+      "severity": "high",
+      "found_by": "利用者からの報告(画面確認)",
+      "detail": "撮影した画像にサイドバーとヘッダーしか写らない。<img> 経由の SVG は t=0 で静止するため、.main の animation: page-in ... both が from { opacity: 0 } のまま焼き付いていた。",
+      "fix": "capture-screen.ts で撮影用 SVG を組み立てる buildCaptureSvg を切り出し、ページ側 CSS の後ろに animation/transition を無効化する規則を差し込んだ。",
+      "regression_test": "capture-screen.dom.test.ts: 本文もサイドバーも写す / 止める規則はページ側 CSS より後ろに置く(順序まで検査)",
+      "status": "解消済み"
+    }
+  ],
+  "jsdom_workaround": "jsdom に HTMLDialogElement.prototype.showModal が無いため、improvement-capture.dom.test.tsx にテストローカルの polyfill を置いた。@testing-library/user-event は未導入のため操作は fireEvent で行う。 撮影と書き込みは画素を比較できない(jsdom に canvas 描画の実体が無い)ため、生成される SVG 文字列と strokeRect の呼び出し順という契約で固定した。",
+  "runs": {
+    "core": {
+      "files": 1,
+      "tests": 7,
+      "failed": 0,
+      "note": "highlightDiagnostics の順位付け契約"
+    },
+    "api": {
+      "files": 4,
+      "tests": 50,
+      "failed": 0
+    },
+    "web": {
+      "files": 4,
+      "tests": 41,
+      "failed": 0,
+      "breakdown": {
+        "improvement-capture.dom": 14,
+        "capture-screen.dom": 7,
+        "annotate-image.dom": 8,
+        "diagnostics-buffer": 12
+      }
+    },
+    "full_suite": {
+      "core": "449→456 passed / 6 skipped",
+      "api": "288→289 passed",
+      "web": "336→337 passed",
+      "failed": 0,
+      "exit": 0
+    }
+  },
+  "result": "PASS"
+}
