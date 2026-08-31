@@ -25,8 +25,8 @@ template_id: "architecture"
 template_version: "1.0.1"
 confirmation_status: "confirmed"
 evaluation_status: "pending"
-confirmation_evidence: {"evaluator": "manual-review", "evidence_ref": "system-spec/spec-state.json", "evaluated_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027"}
-source_lineage: {"origin_kind": "manual", "source_plugin": null, "source_path": "system-spec/spec-state.json", "source_version": "1.0", "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027", "imported_at": "2026-08-31T00:00:00Z"}
+confirmation_evidence: {"evaluator": "manual-review", "evidence_ref": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json", "evaluated_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027"}
+source_lineage: {"origin_kind": "manual", "source_plugin": null, "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json", "source_version": "1.0", "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027", "imported_at": "2026-08-31T00:00:00Z"}
 classification_confidence: 1.0
 classification_reason: "4粒度の削除が明細・派生状態・指紋・手動記録の4系統をまたぐ横断契約であり、単一 feature の実装詳細に収まらないためアーキテクチャ層。"
 classification_candidates: []
@@ -49,7 +49,7 @@ architecture_refs: []
 
 # Architecture overview
 
-取込 API には削除系の入口が1本も無く、既存の破壊操作は月単位の洗い替え (`mfCommitStatements` / `assetsCommitStatements`) が内部で暗黙に行うものだけである。本ノードは、利用者が明示して行う削除・上書きを **preflight (事前提示) → 退避 → 実行 → 再収束** という単一経路へ閉じ、その各段が何を保証し何を保証しないかを定める。規範の正本は `system-spec/spec-state.json` (G1/G3/G4/G5、O1/O2/O5/O6/O7、決定 D1-undo-snapshot-store) にあり、本書はそれを再掲せず境界だけを書く。
+取込 API には削除系の入口が1本も無く、既存の破壊操作は月単位の洗い替え (`mfCommitStatements` / `assetsCommitStatements`) が内部で暗黙に行うものだけである。本ノードは、利用者が明示して行う削除・上書きを **preflight (事前提示) → 退避 → 実行 → 再収束** という単一経路へ閉じ、その各段が何を保証し何を保証しないかを定める。規範の正本は `system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json` (G1/G3/G4/G5、O1/O2/O5/O6/O7、決定 D1-undo-snapshot-store) にあり、本書はそれを再掲せず境界だけを書く。
 
 ## Context and drivers
 

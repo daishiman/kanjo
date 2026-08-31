@@ -1,0 +1,130 @@
+{
+  "status": "PASS",
+  "requirement_count": 8,
+  "untraced_requirements": [],
+  "findings": [
+    {
+      "id": "R2-INPUT-AUTHORITY",
+      "status": "PASS",
+      "summary": "R1-elicit review は PASS、missing_nodes は空で、scope、readiness、handoff、trace plan は同一 snapshot digest に固定されている。system plan は validator PASS の canonical digest に接地する。"
+    },
+    {
+      "id": "R2-REQ-MOBFIN-001",
+      "status": "PASS",
+      "summary": "狭幅でfigureを失わず0寸法を防ぐ要件は、confirmed feature/specの受入条件から、P01要求inventory、P04実Chromeテスト設計、P05実装、P06回帰実行、P07受入へ連続して追跡できる。",
+      "source_refs": ["features/feat-mobile-financial-visualization.md", "specs/mobile-financial-visualization.md"],
+      "task_phase_trace": ["SYS-MOBFIN-P01:P01", "SYS-MOBFIN-P04:P04", "SYS-MOBFIN-P05:P05", "SYS-MOBFIN-P06:P06", "SYS-MOBFIN-P07:P07"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "id": "R2-REQ-MOBFIN-002",
+      "status": "PASS",
+      "summary": "canvas非依存の七要素とsemantic tableは、confirmed feature/spec/experience architectureから、P02設計、P04テスト、P05実装、P07受入、P08共通化へ追跡できる。",
+      "source_refs": ["features/feat-mobile-financial-visualization.md", "specs/mobile-financial-visualization.md", "architecture/arch-mobile-financial-experience.md"],
+      "task_phase_trace": ["SYS-MOBFIN-P02:P02", "SYS-MOBFIN-P04:P04", "SYS-MOBFIN-P05:P05", "SYS-MOBFIN-P07:P07", "SYS-MOBFIN-P08:P08"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "id": "R2-REQ-MOBFIN-003",
+      "status": "PASS",
+      "summary": "responsive簡略化でseries・符号・期間・単位・比較基準を変えない要件は、confirmed spec/frontend architectureから、P02設計、P05実装、P08互換性整理へ追跡できる。",
+      "source_refs": ["specs/mobile-financial-visualization.md", "architecture/arch-mobile-financial-frontend.md"],
+      "task_phase_trace": ["SYS-MOBFIN-P02:P02", "SYS-MOBFIN-P05:P05", "SYS-MOBFIN-P08:P08"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "id": "R2-REQ-MOBFIN-004",
+      "status": "PASS",
+      "summary": "document横overflow禁止と文脈付き局所scrollは、confirmed feature/specから、P04geometry test、P05実装、P07受入、P09品質保証へ追跡できる。",
+      "source_refs": ["features/feat-mobile-financial-visualization.md", "specs/mobile-financial-visualization.md"],
+      "task_phase_trace": ["SYS-MOBFIN-P04:P04", "SYS-MOBFIN-P05:P05", "SYS-MOBFIN-P07:P07", "SYS-MOBFIN-P09:P09"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "id": "R2-REQ-MOBFIN-005",
+      "status": "PASS",
+      "summary": "44px、safe-area、固定tabbarの片手操作要件は、confirmed spec/experience architectureから、P03独立設計review、P05実装、P07受入、P09a11y監査へ追跡できる。",
+      "source_refs": ["specs/mobile-financial-visualization.md", "architecture/arch-mobile-financial-experience.md"],
+      "task_phase_trace": ["SYS-MOBFIN-P03:P03", "SYS-MOBFIN-P05:P05", "SYS-MOBFIN-P07:P07", "SYS-MOBFIN-P09:P09"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "id": "R2-REQ-MOBFIN-006",
+      "status": "PASS",
+      "summary": "320 CSS px reflow、200%相当、keyboard、focus-visible、screen reader、reduced motion、非色依存は、confirmed specと両architectureから、P03review、P04test design、P05実装、P09品質保証へ追跡できる。",
+      "source_refs": ["specs/mobile-financial-visualization.md", "architecture/arch-mobile-financial-experience.md", "architecture/arch-mobile-financial-frontend.md"],
+      "task_phase_trace": ["SYS-MOBFIN-P03:P03", "SYS-MOBFIN-P04:P04", "SYS-MOBFIN-P05:P05", "SYS-MOBFIN-P09:P09"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "id": "R2-REQ-MOBFIN-007",
+      "status": "PASS",
+      "summary": "単一view-modelとroute・API・認証・保存data不変は、confirmed feature/spec/frontend architectureから、P02設計、P05実装、P08互換性整理、P10scope最終reviewへ追跡できる。",
+      "source_refs": ["features/feat-mobile-financial-visualization.md", "specs/mobile-financial-visualization.md", "architecture/arch-mobile-financial-frontend.md"],
+      "task_phase_trace": ["SYS-MOBFIN-P02:P02", "SYS-MOBFIN-P05:P05", "SYS-MOBFIN-P08:P08", "SYS-MOBFIN-P10:P10"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "id": "R2-REQ-MOBFIN-008",
+      "status": "PASS",
+      "summary": "匿名fixtureによるunit・DOM・typecheck・build・実Chrome・zoom検証と再現可能な引継ぎは、confirmed feature/specから、P04test design、P06test run、P07acceptance、P09QA、P10final review、P11evidence、P12runbook、P13非deploy close-outへ追跡できる。",
+      "source_refs": ["features/feat-mobile-financial-visualization.md", "specs/mobile-financial-visualization.md"],
+      "task_phase_trace": ["SYS-MOBFIN-P04:P04", "SYS-MOBFIN-P06:P06", "SYS-MOBFIN-P07:P07", "SYS-MOBFIN-P09:P09", "SYS-MOBFIN-P10:P10", "SYS-MOBFIN-P11:P11", "SYS-MOBFIN-P12:P12", "SYS-MOBFIN-P13:P13"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "id": "R2-SOURCE-LINEAGE",
+      "status": "PASS",
+      "summary": "全source_refsはrepository内に実在しconfirmation_status=confirmed、evaluation_status=passである。specとarchitectureはC19でsystem-spec/index.md、system-spec/ui-ux.md、system-spec/frontend.mdからimportされ、trace-plan全体のsource_lineageにはsystem-spec/index.mdと00-requirements-definition.mdも含まれるため、system-specからfeature要求までの引用経路が閉じている。"
+    },
+    {
+      "id": "R2-EXACT13-PHASES",
+      "status": "PASS",
+      "summary": "参照taskはすべてcanonical SYS-MOBFIN-P01..P13 exact-set内にあり、phase_refはrequirements、architecture、design-review、test-design、implementation、test-run、acceptance、refactoring-migration、quality-assurance、final-review、evidence、documentation-operations、release-deployの責務に一致する。dangling task、cross-feature task、14件目はない。"
+    },
+    {
+      "id": "R2-HANDOFF-FIELDS",
+      "status": "PASS",
+      "summary": "全8 requirementはacceptance、verification、resource_scopeの3 handoff fieldを欠落なく宣言する。acceptanceとverificationはsystem plan inventoryおよび各taskのVerification and evidenceへ接地し、write_scopeはcanonical task registration時にresource_scopeへ投影済みである。"
+    },
+    {
+      "id": "R2-SCOPE-COMPLETENESS",
+      "status": "PASS",
+      "summary": "requirements.mdとtrace-planはfeatureの全5 acceptance、全機能・非機能論点を8要件へ覆い、API・会計計算・認証・保存data・infra・native app・production deploy・commit・push・PRを実装scopeへ混入させていない。self_generated_code_filesは空で、R2-planの責務境界を守る。"
+    }
+  ],
+  "evidence_paths": [
+    ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R1-elicit-review.json",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/scope.json",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/readiness-matrix.json",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/requirements.md",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/trace-plan.json",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/task-graph-handoff.json",
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md",
+    "system-spec/ui-ux.md",
+    "system-spec/frontend.md",
+    "specs/mobile-financial-visualization.md",
+    "architecture/arch-mobile-financial-experience.md",
+    "architecture/arch-mobile-financial-frontend.md",
+    "features/feat-mobile-financial-visualization.md",
+    ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/feature-package.json",
+    ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/workstream-inventory.json",
+    ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-graph.json",
+    ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/system-build-handoff.json",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p01.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p02.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p03.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p04.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p05.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p06.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p07.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p08.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p09.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p10.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p11.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p12.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p13.md"
+  ],
+  "snapshot_digest": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275"
+}

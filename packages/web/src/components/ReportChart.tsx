@@ -8,10 +8,11 @@ import type { ChartOptions, ChartData as CjsData } from 'chart.js';
 import type { ReactNode } from 'react';
 import { Chart } from 'react-chartjs-2';
 import type { AiChartSeries, AiReportChart } from '../api.js';
+import { FinancialFigure } from './FinancialFigure.js';
 import { tooltipOptions, tooltipTitle, tooltipValue } from './chart-tooltip.js';
-import { COLORS, VENDOR_PALETTE, yenTick } from './charts.js';
+import { COLORS, baseChartOptions, vendorPalette, yenTick } from './charts.js';
+import { createFinancialFigureModel, financialPeriod } from './figure-view-model.js';
 
-const PALETTE = [COLORS.biz, COLORS.per, COLORS.warn, COLORS.good, ...VENDOR_PALETTE.slice(4)];
 const pctTick = (v: number | string) => `${Math.round(Number(v) * 100)}%`;
 
 function tickFor(unit: AiReportChart['unit']) {
@@ -22,8 +23,9 @@ function tickFor(unit: AiReportChart['unit']) {
 function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; options: ChartOptions } {
   const d = chart.data ?? { labels: [], series: [] };
   const tick = tickFor(chart.unit);
+  const palette = vendorPalette();
   const base: ChartOptions = {
-    responsive: true,
+    ...baseChartOptions(),
     scales: { x: {}, y: { ticks: tick ? { callback: tick } : undefined } },
     plugins: {
       legend: { position: 'bottom', display: d.series.length > 1 },
@@ -35,15 +37,15 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
     type: 'bar' as const,
     label: sr.label,
     data: sr.data,
-    backgroundColor: `${PALETTE[i % PALETTE.length]}cc`,
+    backgroundColor: `${palette[i % palette.length]}cc`,
     borderWidth: 0,
   });
   const line = (sr: AiChartSeries, i: number, extra: Record<string, unknown> = {}) => ({
     type: 'line' as const,
     label: sr.label,
     data: sr.data,
-    borderColor: PALETTE[i % PALETTE.length],
-    backgroundColor: `${PALETTE[i % PALETTE.length]}33`,
+    borderColor: palette[i % palette.length],
+    backgroundColor: `${palette[i % palette.length]}33`,
     borderWidth: 2,
     pointRadius: 2,
     tension: 0.2,
@@ -116,11 +118,11 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
           ...base,
           plugins: {
             legend: { display: false },
-            tooltip: tooltipOptions(
-              chart.unit,
-              [],
-              d.labels.map((_, i) => (total[i] != null ? null : (delta[i] ?? 0))),
-            ),
+            tooltip: tooltipOptions(chart.unit, {
+              signedFloatingValues: d.labels.map((_, i) => (total[i] != null ? null : (delta[i] ?? 0))),
+              // 表側の series.signed(下の createFinancialFigureModel)と同じ条件
+              signed: true,
+            }),
           },
         },
       };
@@ -142,7 +144,7 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
           // 累積構成比だけは右軸の割合として読ませる
           plugins: {
             ...base.plugins,
-            tooltip: tooltipOptions(chart.unit, cum ? [cum.label] : []),
+            tooltip: tooltipOptions(chart.unit, { pctSeries: cum ? [cum.label] : [] }),
           },
           scales: {
             x: {},
@@ -193,6 +195,8 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
 function HeatmapTable({ chart }: { chart: AiReportChart }) {
   const d = chart.data ?? { labels: [], series: [] };
   return (
+    // FinancialFigure の <details> 表を出さない図なので、この表が正確な値の正本。
+    // 読み上げから隠すと、ヒートマップの数値に辿り着く手段が無くなる
     <div className="heatmap-scroll">
       <table className="data heatmap">
         <thead>
@@ -268,27 +272,68 @@ export function ReportChartView({ chart, caption }: { chart: AiReportChart; capt
     );
   }
   const { type, data, options } = datasets(chart);
+  const labels = chart.data.labels.map(tooltipTitle);
+  // 凡例チップの色は、図のデータセットを決めたのと同じ場所から取る(別に色を選ぶと図と食い違う)。
+  // kind ごとに色の付け方が違うので、系列名で引き当てる。引けない系列は色なし。
+  const seriesColors = new Map<string, string | undefined>(
+    data.datasets.map((ds) => [
+      String(ds.label ?? ''),
+      typeof (ds as { borderColor?: unknown }).borderColor === 'string'
+        ? (ds as { borderColor: string }).borderColor
+        : typeof ds.backgroundColor === 'string'
+          ? ds.backgroundColor
+          : undefined,
+    ]),
+  );
+  const model = createFinancialFigureModel({
+    id: `report-chart-${chart.figure}`,
+    title: `${figure} ${chart.title}${chart.granularity === 'quarter' ? '（四半期ごと）' : ''}`,
+    summary: chart.readingGuide,
+    period: financialPeriod(labels),
+    unitLabel: chart.unit === 'yen' ? '円' : chart.unit === 'pct' ? '%' : '件数',
+    rowHeader: chart.granularity === 'quarter' ? '四半期' : '期間',
+    labels,
+    series: chart.data.series.map((series, index) => ({
+      key: `${index}-${series.label}`,
+      label: series.label,
+      values: series.data,
+      unit: series.role === 'cum' ? 'pct' : chart.unit,
+      signed: chart.kind === 'waterfall',
+      color: seriesColors.get(series.label),
+    })),
+    action: chart.purpose,
+  });
+  const isHeatmap = chart.kind === 'heatmap';
   return (
-    <div className="report-chart" id={`fig-${chart.figure}`}>
-      <h4>
-        <span className="figure-no">{figure}</span> {chart.title}
-        {chart.granularity === 'quarter' && <span className="sub">(四半期ごと)</span>}
-      </h4>
-      {chart.kind === 'heatmap' ? (
+    <FinancialFigure
+      model={model}
+      className="report-chart"
+      anchorId={`fig-${chart.figure}`}
+      headingLevel={4}
+      // ヒートマップは図そのものが表。<details> の表を出すと、同じ数字が行と列を入れ替えて2度並ぶ
+      hideDetails={isHeatmap}
+      afterChart={
+        // 読み方は model.summary が正本。ここに同じ文をもう一度置かない
+        caption ? (
+          <p className="chart-caption">
+            <span className="sub">AIの読み解き: </span>
+            {caption}
+          </p>
+        ) : null
+      }
+    >
+      {isHeatmap ? (
         <HeatmapTable chart={chart} />
       ) : (
-        <Chart type={type} height={120} data={data} options={options} />
+        <Chart
+          type={type}
+          role="img"
+          aria-label={`${chart.title}の関係を示す図`}
+          fallbackContent={`${chart.title}の関係を示す図`}
+          data={data}
+          options={options}
+        />
       )}
-      <p className="chart-guide">
-        <span className="sub">読み方: </span>
-        {chart.readingGuide}
-      </p>
-      {caption && (
-        <p className="chart-caption">
-          <span className="sub">AIの読み解き: </span>
-          {caption}
-        </p>
-      )}
-    </div>
+    </FinancialFigure>
   );
 }

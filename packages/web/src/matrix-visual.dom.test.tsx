@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, expect, it, vi } from 'vitest';
 import type { MatrixData } from './api.js';
@@ -56,7 +56,12 @@ it('増減の要約図から、1行の科目見出しを持つ明細表へ照合
     </QueryClientProvider>,
   );
 
-  expect(await screen.findByRole('img', { name: /広告宣伝費.*¥30,000/ })).toBeTruthy();
-  expect(screen.getByRole('rowheader', { name: '広告宣伝費' })).toBeTruthy();
+  const chart = await screen.findByRole('img', { name: /科目別増減/ });
+  expect(chart.getAttribute('aria-label')).not.toContain('¥30,000');
+  const exactTable = screen.getByRole('table', { name: /変化が大きい科目の正確な値/ });
+  expect(within(exactTable).getByRole('rowheader', { name: '広告宣伝費' })).toBeTruthy();
+  expect(within(exactTable).getByRole('cell', { name: '+¥30,000' })).toBeTruthy();
+  const monthlyTable = screen.getByRole('table', { name: /科目別の月次増減明細/ });
+  expect(within(monthlyTable).getByRole('rowheader', { name: '広告宣伝費' })).toBeTruthy();
   expect(screen.getByText(/月別の数値だけ横にスクロール/)).toBeTruthy();
 });

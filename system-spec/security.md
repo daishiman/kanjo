@@ -16,39 +16,13 @@ serves_goals: [G3, G4]
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
 | Web (web) | 確定 | 確定質疑: qa-005 |
-| モバイル (mobile) | 対象外 | 理由: 専用モバイルアプリを提供せず、webのレスポンシブ表示で到達するためモバイル固有の要件を持たない |
-| タブレット (tablet) | 対象外 | 理由: 専用タブレットアプリを提供せず、webのレスポンシブ表示で到達するためタブレット固有の要件を持たない |
+| モバイル (mobile) | 対象外 | 理由: モバイル固有のストレージ/権限モデルを使わず、web と同一のセキュリティ境界に収まるため対象外 |
+| タブレット (tablet) | 対象外 | 理由: タブレット固有のストレージ/権限モデルを使わず、web と同一のセキュリティ境界に収まるため対象外 |
 | デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
 | デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
 | デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
 
-## 確定内容 (質疑録)
-
-### qa-005 (対応セル: web)
-
-**質問**: web の認証とセキュリティの要件は何か。削除という不可逆操作を足すにあたり守るべき境界は何か。
-
-**回答**: 認証はパスワード + 署名付きセッションCookie方式で、Cloudflare Access を使う場合のみ ACCESS_AUD/ACCESS_TEAM_DOMAIN を設定して Access JWT 検証へ切り替わる。AUTH_PASSWORD と SESSION_SECRET は wrangler secrets で管理し、リポジトリへ平文で置かない。削除・上書き・差分プレビュー・取り消しの各APIは、既存の session/token 認証後の共通入口の配下に置き、public auth 経路からは到達させない。認証方式そのものは変更せず、単一利用者の運用であるため削除操作に対する追加の再認証 (step-up) は求めない代わりに、画面側の二段階確認と、サーバ側の範囲指定の明示をもって誤操作の歯止めとする。セキュリティ要件として、(a) 明細内容・金額をログおよびエラー応答へ含めない既存方針を維持する、(b) 監査記録には操作種別・範囲・件数・日時のみを残し、明細本体を複製しない、(c) undoスナップショットは明細を含むため、保持期間を定めて期限切れを確実に消し、期間中も user_id スコープの外から読めないようにする、(d) 削除範囲の指定はサーバ側で user_id スコープに閉じ、クライアントから渡された範囲をそのまま信用して他利用者のデータへ及ばないようにする、(e) 全件削除のような影響最大の操作は、範囲の明示入力と確認を必須とし、単一のクリックで到達させない、(f) 税務上の正はfreeeの記帳であり、本システムの削除がfreee側へ波及しないこと (本システムは読み取ったCSV/ZIPの取込結果のみを扱う) を保つ、を定める。
-
-## 上流指針 (doctrine anchor)
-
-| concern | authority (正本) | 導く上流原則 | 出典 |
-|---|---|---|---|
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ |
-
-- 本章の確定内容 (質疑録) は上記 authority を上流指針として適用する。具体技術の選定はこの指針に従属し、指針との乖離は再オープン (R4-reopen) の根拠になる。
-
-### 条項引用の可否 (clause citation)
-
-| concern | 可否 | 引ける条項 / 引けない理由 |
-|---|---|---|
-| security | **条項引用不可** — 取得したが本文が無い (取得経路を変えれば可になる) | authentication と同一 authority・同一取得物 (landing page)。条項が取得物に無い点も同じ。 |
-
-- **security が引用可になる条件**: authentication の reversal と同じ。ASVS 本体を取得できた日に両 concern を同時に available へ変える。
-
 ## 適用された設計知識
-
-> 以下の deep knowledge card は設計判断を支援する**非規範の参考資料**であり、実装済み・検証済みの証拠ではない。カード内の `採否: applied` は設計採用を意味し、実装状態は意味しない。規範となる差分は本章の To-Be / Delta 節と参照先仕様で管理する。
 
 ### Secure by Design — deep knowledge card
 
@@ -91,19 +65,20 @@ serves_goals: [G3, G4]
 - security controlは「導入済み」ではなく、阻止/検知/復旧時間、権限範囲、data exposureで効果を測る。
 - 予算0制約でも、secure default、最小data、短命credential、標準機能、open-source検査を優先し、残余riskを隠さない。
 
----
+## 章の注記 (chapter_notes)
 
-#### 本章での適用
+> 正本 `spec-state.json` の `chapter_notes` を描く。**利用者の回答ではない。**確定内容 (質疑録) と混ぜて読まないために節を分けてある。
 
-##### 確定内容 qa-005 (対応セル: web)
+### 今回の feature scope
 
-- 確定要件: 認証はパスワード + 署名付きセッションCookie方式で、Cloudflare Access を使う場合のみ ACCESS_AUD/ACCESS_TEAM_DOMAIN を設定して Access JWT 検証へ切り替わる。AUTH_PASSWORD と SESSION_SECRET は wrangler secrets で管理し、リポジトリへ平文で置かない。削除・上書き・差分プレビュー・取り消しの各APIは、既存の session/token 認証後の共通入口の配下に置き、public auth 経路からは到達させない。認証方式そのものは変更せず、単一利用者の運用であるため削除操作に対する追加の再認証 (step-up) は求めない代わりに、画面側の二段階確認と、サーバ側の範囲指定の明示をもって誤操作の歯止めとする。セキュリティ要件として、(a) 明細内容・金額をログおよびエラー応答へ含めない既存方針を維持する、(b) 監査記録には操作種別・範囲・件数・日時のみを残し、明細本体を複製しない、(c) undoスナップショットは明細を含むため、保持期間を定めて期限切れを確実に消し、期間中も user_id スコープの外から読めないようにする、(d) 削除範囲の指定はサーバ側で user_id スコープに閉じ、クライアントから渡された範囲をそのまま信用して他利用者のデータへ及ばないようにする、(e) 全件削除のような影響最大の操作は、範囲の明示入力と確認を必須とし、単一のクリックで到達させない、(f) 税務上の正はfreeeの記帳であり、本システムの削除がfreee側へ波及しないこと (本システムは読み取ったCSV/ZIPの取込結果のみを扱う) を保つ、を定める。
-- 設計解釈の記録経路: `unrecorded`
-- 設計原則の採否根拠: (未記録 — qa_log[].design_applications を writer 経由で補完すること)
-- 資するゴール: G3, G4
+本章の仕様は確定済みであり、今回の feature `feat-mobile-financial-visualization` では**変更しない**。
+
+- feature scope: 変更対象は ui-ux / frontend のみ (承認: `appr-mobile-scope-narrowing-001`)
+- 本章の spec cell state は「確定」のまま維持する。「今回触らない」ことと「仕様が存在しない (対象外)」ことは別軸であり、feature scope を cell state へ書くと D1・認証・Workers の実在する契約が仕様上消え、以後の completeness 評価や dev-graph の要件導出がその前提で走ってしまう。
+- 境界維持の検証は ui-ux / frontend 側の制約と受入条件で行う (`qa-mobile-boundaries-001`)。
+
+- 正本へ入れた理由: feature 単位の「今回触らない」を恒久的な spec cell state (確定/対象外) と取り違えた降格が起きたため、意図を state とは別の軸で保持する。
 
 ## 最新ドキュメント出典
 
-| 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
-|---|---|---|---|---|---|
-| cloudflare-workers-ai-pricing | 2026-08-28 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/workers-ai/platform/pricing/ | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |
+- (このカテゴリに割り当てた取得済みドキュメントなし。全体出典は index.md 参照)

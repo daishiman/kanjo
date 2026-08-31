@@ -1,0 +1,22 @@
+{
+  "operation": "C02/run-dev-graph-node system-spec import",
+  "status": "PASS",
+  "source_index": "system-spec/index.md",
+  "source_plugin": "system-spec-harness",
+  "source_version": "0.1.11",
+  "evaluator": {
+    "status": "PASS",
+    "evidence_ref": "system-spec/completeness-findings.json",
+    "evidence_digest": "dd31cbbaa03f048503eeafd5a8d2eb99ae19ec088c86e3388be59dbcb060c168"
+  },
+  "imported_node_ids": [
+    "spec-mobile-financial-visualization",
+    "arch-mobile-financial-experience",
+    "arch-mobile-financial-frontend"
+  ],
+  "confirmation_status": "confirmed",
+  "evaluation_status": "pass",
+  "implementation_readiness": "complete",
+  "graph_revision": 1,
+  "imported_at": "2026-08-30T09:25:39Z"
+}

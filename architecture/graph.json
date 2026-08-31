@@ -66,12 +66,58 @@
       "source_lineage": {
         "origin_kind": "manual",
         "source_plugin": null,
-        "source_path": "system-spec/spec-state.json",
+        "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json",
         "source_version": "1.0",
         "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027",
         "imported_at": "2026-08-31T00:00:00Z"
       },
       "referenced_by": []
+    },
+    {
+      "id": "arch-mobile-financial-experience",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "モバイル財務情報の体験アーキテクチャ",
+      "file_path": "architecture/arch-mobile-financial-experience.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.11",
+        "source_digest": "fbd336e38b9ea195c110b680c41d9bef18d7c98353787fa3d1ef784de52ca5d1",
+        "imported_at": "2026-08-30T09:25:39Z"
+      },
+      "referenced_by": [
+        "feat-mobile-financial-visualization"
+      ]
+    },
+    {
+      "id": "arch-mobile-financial-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "モバイル財務chartのフロントエンドアーキテクチャ",
+      "file_path": "architecture/arch-mobile-financial-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.11",
+        "source_digest": "7bb30af6d3a0c9aa4d2cb7a497f47cda3700b4294de3f9a49ff2f5747b066562",
+        "imported_at": "2026-08-30T09:25:39Z"
+      },
+      "referenced_by": [
+        "feat-mobile-financial-visualization"
+      ]
     },
     {
       "id": "arch-override-reapply-three-way-merge",
@@ -89,7 +135,7 @@
       "source_lineage": {
         "origin_kind": "manual",
         "source_plugin": null,
-        "source_path": "system-spec/spec-state.json",
+        "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json",
         "source_version": "1.0",
         "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027",
         "imported_at": "2026-08-31T00:00:00Z"

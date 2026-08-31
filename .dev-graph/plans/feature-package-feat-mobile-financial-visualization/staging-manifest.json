@@ -1,0 +1,33 @@
+{
+  "canonical_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+  "feature_id": "feat-mobile-financial-visualization",
+  "files": {
+    "feature-package.json": "756b3b6a8fa6983e8e1551b17484433815c1b35f7585324787004f318b6e7df0",
+    "system-build-handoff.json": "38a460efb5ec4783e296b9bad1da357ee609669824e2e454a87cfda151989c98",
+    "task-graph.json": "e7fc60b33e1601ca3a3f6bab4cb2dc4bc11383f634857a21f237b2c65c195315",
+    "task-specs/phase-01-requirements.md": "462d09066efb5567fab07249ebbeec2bf35bfa008c470abf6e5aa9babdcb6626",
+    "task-specs/phase-02-architecture.md": "1baa47a4f090750315df86f6f8d01f58000025dda2f323a6c22c3a45be69f9d4",
+    "task-specs/phase-03-design-review.md": "23ebb5c9911b8d84f9daa2b6d5a5b4e700f96cd07d4c6858631c5f01ba5db79d",
+    "task-specs/phase-04-test-design.md": "1cde9d8f6e91947ff7c94e0b7cdec0801d7b78fa82ec99215b5f9030100d5eb1",
+    "task-specs/phase-05-implementation.md": "b46cc3da167634577693a3712a92a07adf0c1ad007c7beec4727919380b99b61",
+    "task-specs/phase-06-test-run.md": "14fa14ecb7a041d29cce95229b84e4310d82758c60911385506f54e5b91cf06d",
+    "task-specs/phase-07-acceptance.md": "1946cd6c18ab27d9731b282ee4ed0a138e74534cb303f036a14e6f272ad1832d",
+    "task-specs/phase-08-refactoring-migration.md": "6faf2bb5e3f058e7b9785fe6567b6ba47a0ae101afe206d83e02a283d8d4a36a",
+    "task-specs/phase-09-quality-assurance.md": "404abef76d247ecd934e01f03997861ee031340a139bdf6eed11440cae135db9",
+    "task-specs/phase-10-final-review.md": "3b26a5359c2f1a9c5ca6b247e23702743e4db96390d3d8fadf4785a23229d756",
+    "task-specs/phase-11-evidence.md": "8e183eae2ba73f6d9f566e76b9ecb5205369ee103a411bf78f1fe8aaeef0e31c",
+    "task-specs/phase-12-documentation-operations.md": "baad7126a6b75ea6976121f0c496d6eab0d7795e809742194b5dfeb92a3da19e",
+    "task-specs/phase-13-release-deploy.md": "b72551722e46623312f2330c3d46dc93bc0fc80870b0274b4622896e34b7ade4",
+    "workstream-inventory.json": "22bac8d4449a9b79bc6b1771b26626ce71149b0786f0a6538e58ab67d8cbb2e7"
+  },
+  "handoff_contract": {
+    "manifest_is_commit_point": true,
+    "path": "system-build-handoff.json",
+    "schema_version": "1.0.0",
+    "self_reference_policy": "handoff hash and final digest are manifest-only",
+    "sha256": "38a460efb5ec4783e296b9bad1da357ee609669824e2e454a87cfda151989c98",
+    "source_canonical_digest": "sha256:206060db6222cf2793c81b333ef306e999d34b3a7f907cb4f2538bb1d3c501df"
+  },
+  "run_id": "sdp-feat-mobile-financial-visualization-20260830t0944z",
+  "schema_version": "1.0.0"
+}

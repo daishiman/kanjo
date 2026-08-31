@@ -14,7 +14,7 @@ tags: ["import", "deletion", "undo", "audit", "three-way-merge", "vendor-memory"
 
 # 文書所有権
 
-- `system-spec/spec-state.json` と `system-spec/*.md`: 本件の要件の正本(G1〜G7 / O1〜O11 / I1〜I13 / D1〜D3 / qa-002・005・009・010・011)。本書はそこから詳細仕様へ落としたものであり、要件そのものを書き換えない。
+- `system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json` と `system-spec/archive/2026-08-31-import-deletion-override-reapply/*.md`: 本件の要件の正本(G1〜G7 / O1〜O11 / I1〜I13 / D1〜D3 / qa-002・005・009・010・011)。本書はそこから詳細仕様へ落としたものであり、要件そのものを書き換えない。
 - `docs/spec-v1.1.md`: 製品全体の不変条件と、本詳細仕様への規範的な導線を持つ(FR-01 / P8)。
 - 本書: 削除の4粒度・上書き・undo・監査・3点比較による手当ての継続再適用の lifecycle、画面、API、受入を持つ。
 - `docs/data-schema.md`: migrationごとの永続形状とデータ不変条件を持つ。
@@ -52,7 +52,7 @@ base があれば、base / current(利用者の手当て) / incoming(新規原�
 本件は**この既存機構を4属性へ広げ、衝突の検出だけで止まっているものを解決まで運ぶ**ものであり、
 ゼロから作るものではない。
 
-背景と方式選定は `system-spec/spec-state.json` の decisions
+背景と方式選定は `system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json` の decisions
 (D1-undo-snapshot-store / D2-overwrite-default-policy / D3-auto-classification-method)。
 
 # 非目標
@@ -390,7 +390,7 @@ DR-9 の「採用根拠を残す」を満たせない。
 
 # 未決事項
 
-正本(`system-spec/spec-state.json`)で未確定のまま確定へ持ち越された項目。実装着手前に決めること。
+正本(`system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json`)で未確定のまま確定へ持ち越された項目。実装着手前に決めること。
 
 - **`vendor_memory` の confidence 算出式・初期閾値・段階的緩和基準が未数値化。**
   `hit_count` と `disagree_count` から算出するとまでは決まっているが、式も初期閾値も

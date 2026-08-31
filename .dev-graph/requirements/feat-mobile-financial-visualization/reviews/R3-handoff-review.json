@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0.0",
+  "review_id": "R3-handoff",
+  "feature_id": "feat-mobile-financial-visualization",
+  "handoff_target": "task-graph",
+  "status": "PASS",
+  "input_reviews": {
+    "R1-elicit": {
+      "status": "PASS",
+      "path": ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R1-elicit-review.json"
+    },
+    "R2-plan": {
+      "status": "PASS",
+      "path": ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R2-plan-review.json"
+    },
+    "R2b-readiness": {
+      "status": "PASS",
+      "path": ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R2b-readiness-review.json"
+    }
+  },
+  "criteria": {
+    "IN1": {
+      "status": "PASS",
+      "summary": "C11 graph snapshot、C02保存済みfeature/13 task、system-dev-planner plan validatorはcomplete/pass/confirmed、missing_sections=0、同一source/plan/snapshot anchorで整合する。P01..P13 exact-setと13-node前方DAGもPASSである。",
+      "evidence": [
+        ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R2b-readiness-review.json",
+        ".dev-graph/requirements/feat-mobile-financial-visualization/readiness-matrix.json",
+        ".dev-graph/state/requirements-graph-validation-feat-mobile-financial-visualization.json",
+        ".dev-graph/state/requirements-plan-validation-feat-mobile-financial-visualization.json"
+      ]
+    },
+    "OUT1": {
+      "status": "PASS",
+      "summary": "8要件のsource/package/task参照とacceptance/verification/resource_scopeを解決でき、task-graph consumer live trialはready handoffを8要件・13 taskとして消費した。requirements側のself-generated codeは0件である。",
+      "evidence": [
+        ".dev-graph/requirements/feat-mobile-financial-visualization/requirements.md",
+        ".dev-graph/requirements/feat-mobile-financial-visualization/trace-plan.json",
+        ".dev-graph/requirements/feat-mobile-financial-visualization/task-graph-handoff.json"
+      ]
+    },
+    "OUT2": {
+      "status": "PASS",
+      "summary": "R2bのrepository外一時copy試験でincompleteとstaleをそれぞれnode-scoped missing_sectionsへsurfaceし、partial handoffを行わずhandoff_count=0で保留した。",
+      "evidence": [
+        ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R2b-readiness-review.json#negative_trial"
+      ]
+    }
+  },
+  "content_review": {
+    "status": "PASS",
+    "artifact_snapshot_alignment": {
+      "scope.json": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275",
+      "trace-plan.json": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275",
+      "readiness-matrix.json": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275",
+      "requirements.md": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275",
+      "task-graph-handoff.json": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275",
+      "all_match": true
+    },
+    "requirements": {
+      "count": 8,
+      "source_refs_present_and_resolved": 8,
+      "package_ref_present_and_resolved": true,
+      "task_refs_present_and_in_exact_set": 8,
+      "handoff_fields_complete": 8,
+      "unresolved_refs": []
+    },
+    "task_paths": {
+      "source_root": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs",
+      "source_existing_count": 13,
+      "target_root": "tasks/feat-mobile-financial-visualization",
+      "target_existing_count": 13,
+      "missing_source_paths": [],
+      "missing_target_paths": []
+    },
+    "handoff": {
+      "status": "ready",
+      "handoff_target": "task-graph",
+      "requirement_count": 8,
+      "task_count": 13,
+      "missing_sections": [],
+      "self_generated_code_files": []
+    }
+  },
+  "live_trial": {
+    "status": "PASS",
+    "consumer": "task-graph",
+    "resolved_artifact_refs": [
+      "requirements_document",
+      "readiness_matrix",
+      "trace_plan",
+      "task_graph",
+      "system_build_handoff",
+      "task_spec_source_root",
+      "task_projection_target_root"
+    ],
+    "requirements_consumed": 8,
+    "task_refs_exact_set": true,
+    "handoff_status_observed": "ready",
+    "code_generation_count": 0,
+    "implementation_code_change_count": 0,
+    "implementation_code_roots_checked": ["packages", "apps", "src", "lib"]
+  },
+  "findings": [],
+  "artifact_digests": {
+    ".dev-graph/requirements/feat-mobile-financial-visualization/scope.json": "eb83adefbbdcec5d2d0a2ab082f841371ebaf0a19f80b037ddaa233d6f36eec8",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/trace-plan.json": "302b5ce089049f07cd589a38e357273e8bd8b7652cff66d3808c8e1aba687646",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/readiness-matrix.json": "95dee53647ab9a7f787db4884ae0da16442a87267a6c91982350c74b8695c219",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/requirements.md": "62e5ca8dd01bae799f491dd5840a89d987247658b640d712d958ff5a5fc4994e",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/task-graph-handoff.json": "2f608ded41f58f0091cb94dab1475ed94a76264fbb5c09162dc9a5cbdbfc8db6",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R1-elicit-review.json": "a2573198166104d98d8bec4ac327e59540176728ae1eb9edf99f8999fa2c82f8",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R2-plan-review.json": "913592cb3fcb37c0c73ce9e7fccc3573c5dd4ed6edc8cba7b53c2c292a4abb7a",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R2b-readiness-review.json": "36d883948a9c129bd43f7cec4b9e5158f75aa31901a8f8add770597aac843932"
+  },
+  "snapshot_digest": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275"
+}

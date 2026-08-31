@@ -25,8 +25,8 @@ template_id: "feature"
 template_version: "1.0.1"
 confirmation_status: "confirmed"
 evaluation_status: "pending"
-confirmation_evidence: {"evaluator": "manual-review", "evidence_ref": "system-spec/spec-state.json", "evaluated_digest": null}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/spec-state.json", "source_version": "1.0", "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027", "imported_at": "2026-08-31T00:00:00Z"}
+confirmation_evidence: {"evaluator": "manual-review", "evidence_ref": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json", "evaluated_digest": null}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json", "source_version": "1.0", "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027", "imported_at": "2026-08-31T00:00:00Z"}
 classification_confidence: 1.0
 classification_reason: "1画面への追加・10APIの新設・複数migrationを束ねる利用者向け機能単位であるため feature 層。"
 classification_candidates: []
@@ -94,7 +94,7 @@ architecture_refs: ["arch-import-deletion-undo-boundary", "arch-override-reapply
 
 - `architecture_refs`: `arch-import-deletion-undo-boundary` / `arch-override-reapply-three-way-merge`
 - 詳細仕様: `specs/import-deletion-and-override-reapply.md`
-- 要件正本: `system-spec/spec-state.json` および `system-spec/*.md`
+- 要件正本: `system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json` および `system-spec/archive/2026-08-31-import-deletion-override-reapply/*.md`
 - 製品正本: `docs/spec-v1.1.md` FR-01 / P8
 - 永続形状: `docs/data-schema.md`
 

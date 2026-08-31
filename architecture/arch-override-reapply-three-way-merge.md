@@ -25,8 +25,8 @@ template_id: "architecture"
 template_version: "1.0.1"
 confirmation_status: "confirmed"
 evaluation_status: "pending"
-confirmation_evidence: {"evaluator": "manual-review", "evidence_ref": "system-spec/spec-state.json", "evaluated_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027"}
-source_lineage: {"origin_kind": "manual", "source_plugin": null, "source_path": "system-spec/spec-state.json", "source_version": "1.0", "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027", "imported_at": "2026-08-31T00:00:00Z"}
+confirmation_evidence: {"evaluator": "manual-review", "evidence_ref": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json", "evaluated_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027"}
+source_lineage: {"origin_kind": "manual", "source_plugin": null, "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json", "source_version": "1.0", "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027", "imported_at": "2026-08-31T00:00:00Z"}
 classification_confidence: 1.0
 classification_reason: "変更元の判別と手当ての再適用が、取込・仕分け・画面提示・学習の各経路に共通の判定契約を課すためアーキテクチャ層。"
 classification_candidates: []
@@ -49,7 +49,7 @@ architecture_refs: []
 
 # Architecture overview
 
-同じ対象を取り込み直すとき、いま画面にある値と新しい CSV の値が食い違う。このとき「利用者が直したのか、取込元が変わったのか」は、現在値と新規値の2点だけでは**原理的に区別できない**。本ノードは、前回取込時の原本値 (base) を第3の基準として持つことで判定を確定させる境界と、そこから導かれる手当ての再適用・学習の契約を定める。規範の正本は `system-spec/spec-state.json` (G2/G3/G6/G7、O8/O9/O10/O11、決定 D2-overwrite-default-policy / D3-auto-classification-method) にあり、本書はそれを再掲せず境界だけを書く。
+同じ対象を取り込み直すとき、いま画面にある値と新しい CSV の値が食い違う。このとき「利用者が直したのか、取込元が変わったのか」は、現在値と新規値の2点だけでは**原理的に区別できない**。本ノードは、前回取込時の原本値 (base) を第3の基準として持つことで判定を確定させる境界と、そこから導かれる手当ての再適用・学習の契約を定める。規範の正本は `system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json` (G2/G3/G6/G7、O8/O9/O10/O11、決定 D2-overwrite-default-policy / D3-auto-classification-method) にあり、本書はそれを再掲せず境界だけを書く。
 
 ## Context and drivers
 

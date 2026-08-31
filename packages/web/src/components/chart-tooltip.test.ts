@@ -23,7 +23,7 @@ describe('ツールチップの期間見出し', () => {
 
 describe('ツールチップの数値', () => {
   it('単位ごとに画面と同じ表記にする', () => {
-    expect(tooltipValue(123456, 'yen')).toBe('123,456円');
+    expect(tooltipValue(123456, 'yen')).toBe('¥123,456');
     expect(tooltipValue(0.4567, 'pct')).toBe('45.7%');
     expect(tooltipValue(3, 'count')).toBe('3件');
   });
@@ -50,10 +50,10 @@ describe('系列名と用語解説の対応', () => {
 
   it('辞書の用語名を添え、説明は用語ホバーと同じ文を使う', () => {
     expect(tooltipLine('経費の3点移動平均', 100000, 'yen')).toBe(
-      `経費の3点移動平均(${GLOSSARY.movingAvg.term}): 100,000円`,
+      `経費の3点移動平均(${GLOSSARY.movingAvg.term}): ¥100,000`,
     );
     // 系列名がすでに用語そのものなら重ねて書かない
-    expect(tooltipLine('累積構成比', 0.8, 'pct')).toBe('累積構成比: 80%');
+    expect(tooltipLine('累積構成比', 0.8, 'pct')).toBe('累積構成比: 80.0%');
     expect(tooltipNote(['売上', '平均+2σ'])).toEqual([GLOSSARY.sigmaBand.short]);
     expect(tooltipNote(['売上', '経費'])).toEqual([]);
   });

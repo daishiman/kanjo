@@ -79,8 +79,8 @@ function renderWith(f: DefenseForecast) {
   vi.stubGlobal(
     'fetch',
     vi.fn(
-      async () =>
-        new Response(JSON.stringify(summary(f)), {
+      async (input: RequestInfo | URL) =>
+        new Response(JSON.stringify(String(input).includes('/unsettled') ? { rows: [] } : summary(f)), {
           headers: { 'Content-Type': 'application/json' },
         }),
     ),
@@ -127,13 +127,13 @@ describe('防衛ライン割れの事前警告', () => {
 
   it('none と nodata では何も出さない(警告の出しすぎで無視されるのを避ける)', async () => {
     const { container } = renderWith(forecast({ level: 'none' }));
-    await screen.findByText(/売上・経費トレンド/);
+    await screen.findByRole('heading', { name: '売上・経費トレンド' });
     expect(container.querySelector('.notice')).toBeNull();
 
     cleanup();
     vi.unstubAllGlobals();
     const second = renderWith(forecast({ level: 'nodata' }));
-    await screen.findByText(/売上・経費トレンド/);
+    await screen.findByRole('heading', { name: '売上・経費トレンド' });
     expect(second.container.querySelector('.notice')).toBeNull();
   });
 });

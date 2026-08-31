@@ -43,7 +43,7 @@
     "architecture/arch-import-deletion-undo-boundary.md",
     "architecture/arch-override-reapply-three-way-merge.md",
     "specs/import-deletion-and-override-reapply.md",
-    "system-spec/spec-state.json",
+    "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json",
     "docs/spec-v1.1.md",
     "docs/data-schema.md"
   ],

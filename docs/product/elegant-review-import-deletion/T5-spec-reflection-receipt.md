@@ -34,7 +34,7 @@
 
 | 層 | ファイル | 反映内容 |
 |---|---|---|
-| 要件正本 | `system-spec/spec-state.json` + 8章 + `00-requirements-definition.md` + `index.md`(再生成) | 上位概念 U1〜U9、ゴール G1〜G7、目標 O1〜O11、不変条件 I1〜I13、決定 D1〜D3。旧テーマは `system-spec/archive/2026-08-27-d1-schema-recovery/` へ退避(README つき) |
+| 要件正本 | `system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json` + 8章 + `00-requirements-definition.md` + `index.md`(再生成) | 上位概念 U1〜U9、ゴール G1〜G7、目標 O1〜O11、不変条件 I1〜I13、決定 D1〜D3。旧テーマは `system-spec/archive/2026-08-27-d1-schema-recovery/` へ退避(README つき) |
 | 詳細仕様 | `specs/import-deletion-and-override-reapply.md`(新規) | 文書所有権、目的、非目標、到達状態、不変条件 DR-1〜DR-16、削除の4粒度、undo と監査、3点比較と `vendor_memory`、既存資産との接続点、D1 Free 制約、画面、API 10本、受入27件、未決事項4件 |
 | 設計判断 | `architecture/arch-import-deletion-undo-boundary.md`(新規) | 削除範囲のサーバ側再解釈、退避先の選定(D1 退避テーブル vs Time Travel)、writer claim の共用、指紋巻き戻しの対性、派生状態の再計算、監査の非複製 |
 | 設計判断 | `architecture/arch-override-reapply-three-way-merge.md`(新規) | git merge と同型の3点比較を選んだ理由、4属性への base 拡張、同一性キーの二段構え、適用の優先順位、`vendor_memory` の確信度、D1 クエリ本数への収め方 |
@@ -126,3 +126,38 @@ migration のコメントに残された「なぜこの列なのか」を読ま�
   ハーネス側の `resource-map.yaml` と `_render_markdown_card()` が持つため、
   この repo から1行も減らせない。
 - **0.2.0 の foundation provenance 要求は未対応**。MVP 段階のため 0.1.0 のゲートで完了とした。
+
+## `system-spec/` の衝突と、本テーマの退避 (2026-08-31 追記)
+
+本ブランチの作業中に `#28`(数字の図を、読めて検算できる形にそろえる)が main へ入り、
+`system-spec/` の11ファイルが衝突した。原因は個別の編集競合ではなく**構造**にある。
+`system-spec/` は一度に1テーマしか持てない置き場であり、`#28` と本件の双方が
+「テーマを作り直す」という同じ手順を踏んだため、同じ場所を奪い合った。
+
+**解決: main を正本とし、後発の本テーマが道を譲る。**
+`system-spec/` 直下は `origin/main`(`#28` のモバイル可視化テーマ)の内容へ戻し、
+本テーマの14ファイルは `system-spec/archive/2026-08-31-import-deletion-override-reapply/`
+へ退避した。**1行も失っていない。** 本テーマの成果物
+(`specs/` / `architecture/` / `features/` / `tasks/`)が指す正本パスは退避先へ張り替えた。
+
+### この衝突で見つかった、より重い問題
+
+`#28` は `architecture/*.md` を2件追加したが `architecture/graph.json` を更新していない。
+**`#26` で起きた登録漏れが、`#28` でも同じ形で再発していた。**
+本 PR で追加した `scripts/check-graph-lineage.mjs` がこれを検出し、
+frontmatter から2ノードを復元して登録した(graph 9 → 11ノード)。
+ゲートを CI に入れた回の、その同じマージでゲートが仕事をしたことになる。
+
+あわせて、`#28` の frontmatter が持つ `source_digest` は
+リポジトリに残るどの commit 版とも一致しなかった(`#28` 直前・直後の双方と不一致を確認)。
+章を取り込んで node を作ったあとに章がさらに更新され、node が追随しなかった中間状態を指している。
+旧テーマの件は「記録 digest が archive 側と完全一致していた」= 記録が正しくパスが誤っていたが、
+今回は逆で**現物が正本**であるため、現物から打ち直した。
+MISMATCH に対する処置は毎回同じではなく、記録がどこかの現物と一致するかで分岐する。
+
+### 残る構造的な問題
+
+`system-spec/` がテーマごとに上書きされる限り、次のテーマでも同じ衝突が起きる。
+テーマ単位のディレクトリを最初から切る(`system-spec/<theme>/`)か、
+`archive/` への退避を `/dev-graph spec` の手順へ組み込むかの、どちらかが要る。
+本 PR の範囲外だが、3回連続で同じ事象が起きている以上、次に着手する価値がある。
