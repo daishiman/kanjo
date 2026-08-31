@@ -77,17 +77,40 @@
 いずれも復元済み。実際に、`arch-import-deletion-undo-boundary.md` を作って graph.json へ
 登録する前の瞬間にこのゲートが赤くなり、**#26 で起きた登録漏れと同じ事象を機械が捕えた**。
 
+## 実装との突合で仕様を訂正した6件
+
+仕様を書いたあと `origin/main` の実装を実測で読み直し、次の6件を訂正した。
+**うち2件は、そのままなら実装者を誤らせるものだった。**
+
+| # | 訂正前 | 実測 | 訂正後 |
+|---|---|---|---|
+| 1 | 「`base_major` / `base_mid` の比較は現状使われていない」 | `core/classify.ts:131-134` が `conflict` を算出し、`routes/classify.ts:233` が集計し、`Classify.tsx:368-370, 661` が「編集済み・取込値が変更」まで表示している | 「科目2属性については**検出・表示まで到達済み**。本件は4属性への拡張と、検出で止まっているものを解決まで運ぶこと」 |
+| 2 | 「`base_cls` / `base_owner` を足す」(列追加のみ) | `routes/classify.ts` は**科目編集時にしか base を書かず**、`core/classify.ts:132` の `conflict` は `editedCat` を前提条件にしている | 列追加に加え、**base の書込条件と `conflict` の算出式の両方を作り替える**ことを明記 |
+| 3 | 「`balance_entries` / `cash_entries` の `import_id` の持ち方は未決。無ければ migration で追加する」 | `migrations/0026` は意図して `source ('mf'\|'manual')` で区別し「取込は `source='mf'` の行しか消さない。これが無いと、CSVを入れ直すたびに手入力した負債が消える」と明記。`cash_entries`(`0006`/`0007`)も意図して非取込由来 | **「`import_id` を足さない」を不変条件として明記。** 追加していれば手入力した負債が取込のたびに消える欠陥を作っていた |
+| 4 | DR-4「該当 target の現行指紋を巻き戻す」 | `import_active_targets` は PK `(user_id, target_key)` の現行値のみで履歴を持たず、JSON 復元時は `DELETE ... WHERE user_id=?` で全消し。**巻き戻し先が存在しない** | 「退避行に削除前の `content_hash` / `import_id` / `updated_at` を含める」を明記。`imports.content_hash` からの再構成は、同じ target を複数の取込が上書きした場合に直前を一意に決められないため採らない |
+| 5 | 「上書きの判断が実装に固定されている」 | `keepOnShrink`(`routes/imports.ts:984, 1093-1105` / `Import.tsx:382`)で利用者が選べる経路が既にある | 「選択肢が**月単位までしか無い**」へ。画面も既存 `keepOnShrink` の拡張として置き、別設定として並べない |
+| 6 | (記載なし) | `import-active.ts` の `JSON_SNAPSHOT_MUTATION_CONSUMERS` が型で列挙外の mutation を接続不能にしている。migration の次番号は `0029`(`0016`/`0017` は欠番) | 新設テーブルの同配列への登録必須と、次番号を明記 |
+
+3と4は**そのまま実装すると既存の保護を壊すか、実装不能になる**ものだった。
+仕様を書いた時点で `system-spec/` の qa-002 は `import_writer_claims` /
+`planMultipartImportQueries` を正しく名指ししており、上位層は main を読んで書かれていた。
+破れたのは**その下の、テーブル1枚ごとの意図**である。
+migration のコメントに残された「なぜこの列なのか」を読まずに、列名だけで判断していた。
+
 ## 残課題
 
 - **仕様の「未決事項」4件が未決**。`vendor_memory` の confidence 算出式と初期閾値、
-  `balance_entries` / `cash_entries` の由来 `import_id` の持ち方、既存明細への base 埋め移行の
+  `core/classify.ts` の `conflict` を属性単位へ作り替える範囲の見積り、既存明細への base 埋め移行の
   経路と検証、undo 退避行の保持期間。タスク側では Slice -1(D01〜D04)として先頭に置いた。
   とくに confidence が数値化されるまで、上位目標 O10「利用者へ問う件数を逓減させる」は
   **達成を判定できない**。
-- **`origin/feat/import-lifecycle-and-classification` が未マージのまま 70ファイル・8,831行を抱えている**。
-  うち `packages/api/src/routes/imports.ts`(+1,145) と `packages/api/src/store.ts`(+802) は
-  本仕様の Slice 1 が触る場所と正面から重なる。実装着手の前にこのブランチの去就
-  (マージするか破棄するか)を決めないと、同じ場所を二重に書くことになる。
+- **`origin/feat/import-lifecycle-and-classification` は懸念ではなかった**(調査で解消)。
+  `0aefe44 feat: 取込・名義・仕分けを安全に運用できるようにする (#11)` として squash-merge 済みで、
+  main はその上をさらに進んでいる(`FINGERPRINT_VERSION` は main `4` / ブランチ `2`、
+  migrations は main `0000`〜`0028` / ブランチ `0009` まで、`0008_import_lifecycle.sql` は差分ゼロ)。
+  「70ファイル・8,831行」は merge-base が squash 前の `b1856a1` であることによる
+  three-dot diff の見かけの数字だった。ブランチ側にしか無い61行はすべて main で置き換わった旧版で、
+  失われた作業は無い。
 - **`system-spec/` の各章の `#### 本章での適用` が `unrecorded` のまま**。
   compile 0.2.0 は `qa_log[].design_applications` から設計原則の採否根拠を書き出すが、
   本件の `spec-state.json` は `schema_version: 1.0` でこのフィールドを持たない。

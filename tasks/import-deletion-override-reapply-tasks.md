@@ -30,14 +30,23 @@ Slice 1 以降が仮定の上に載る。D01〜D04 を先に閉じること。
   N回目の質問件数の比、という形で判定できる）。
 - 依存: なし
 
-### D02 balance_entries / cash_entries の由来を確認する
+### D02 conflict を属性単位へ作り替える範囲を見積もる
 
-- 対象: `migrations/`、`packages/api/src/store.ts`
-- 内容: 現行スキーマで両テーブルが `import_id` を辿れるかを実測する。辿れないなら
-  append-only の連番 migration で列を足す。
-- 受入: 取込単位削除の対象特定が `mf_transactions` / `freee_deals` /
-  `balance_entries` / `cash_entries` の4種すべてで成立する。
+- 対象: `packages/core/src/classify.ts`, `packages/api/src/routes/classify.ts`,
+  `packages/web/src/pages/Classify.tsx`
+- 内容: 現行の `conflict` は明細単位の真偽1つで、どの属性が衝突したかを持たない。
+  4属性それぞれの3分岐を返す形へ変えると `resolveTx` の戻り値型が変わり、呼出側と既存テストが波及する。
+  互換のため明細単位の `conflict` を導出値として残すか、呼出側をすべて直すかを決める。
+- 受入: 波及するファイルとテストが列挙され、どちらの方針を採るかが決まっている。
 - 依存: なし
+
+> **注意 — `balance_entries` / `cash_entries` に `import_id` を足さないこと。**
+> `migrations/0026` は意図して `source ('mf'|'manual')` で区別し、
+> 「取込は `source='mf'` の行しか消さない。これが無いと、CSVを入れ直すたびに手入力した負債が消える」と
+> 明記している。`cash_entries`(`0006` / `0007`)も意図して非取込由来で、
+> `0007` は `cash:*` edit の誤付着防止に `AUTOINCREMENT` 再構築までしている。
+> 取込単位削除の対象特定は `balance_entries` は `source='mf'` かつ対象月で行い、
+> `cash_entries` は DR-6 の巻き添え防止対象として削除の対象集合に入れない。
 
 ### D03 既存明細への base 埋め移行を設計する
 
@@ -60,12 +69,14 @@ Slice 1 以降が仮定の上に載る。D01〜D04 を先に閉じること。
 
 ### T01 コア — 3点比較の真理値
 
-- 変更: `packages/core/src/persisted-projection.ts`（または新規 `three-way.ts`）,
+- 変更: `packages/core/src/classify.ts`（既存 `resolveTx` の `conflict` を作り替える）,
   `packages/core/src/index.ts`
-- 内容: 属性ごとの `resolveThreeWay(base, current, incoming)` を4属性
-  （`cls` / `category_major` / `category_mid` / `owner`）へ適用する純関数。
-  DR-10 の3分岐（手当て維持 / incoming 採用と base 前進 / 衝突）だけを返し、
-  4分岐目を作らない。
+- 内容: **ゼロから作らない。** 現行の `classify.ts:131-134` は `base_major` / `base_mid` から
+  明細単位の `conflict` を既に算出している。これを属性ごとの
+  `resolveThreeWay(base, current, incoming)` へ作り替え、4属性
+  （`cls` / `category_major` / `category_mid` / `owner`）へ適用する。
+  DR-10 の3分岐（手当て維持 / incoming 採用と base 前進 / 衝突）だけを返し、4分岐目を作らない。
+  現行が `editedCat` を前提条件にしている制約を外す。
 - 受入: `base == incoming` で current が残る。`base != incoming` かつ
   `current == base` で incoming が採られ base が incoming へ進む。
   双方が変わったときだけ `conflict` を返す。
@@ -108,11 +119,15 @@ Slice 1 以降が仮定の上に載る。D01〜D04 を先に閉じること。
 
 ### T05 永続 — 退避・監査・決め事のスキーマ
 
-- 変更: `migrations/0029_*.sql` 以降（append-only の連番）
-- 内容: 退避テーブル（削除1行につき1行）、操作監査テーブル、`vendor_memory` テーブル、
+- 変更: `migrations/0029_*.sql` 以降（append-only の連番。`0016` / `0017` は欠番で詰めない）,
+  `packages/api/src/import-active.ts`
+- 内容: 退避テーブル（削除1行につき1行。**削除前の `content_hash` / `import_id` / `updated_at` を含める** —
+  DR-4 の巻き戻し先はここからしか得られない）、操作監査テーブル、`vendor_memory` テーブル、
   `tx_edits` への `base_cls` / `base_owner` / `stable_key` / `fingerprint_version` 追加。
   既存テーブルの破壊的再定義をしない。
+  **JSON 復元の write-set を変えるテーブルは `JSON_SNAPSHOT_MUTATION_CONSUMERS` へ登録する。**
 - 受入: `docs/data-schema.md` の記述と実スキーマが一致する。既存 migration が壊れない。
+  列挙外の mutation が型で接続不能なまま保たれている。
 - 証拠: `packages/api/src/schema-guard.test.ts`
 - 依存: D02, D03
 
