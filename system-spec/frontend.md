@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G3, G5, G6, G7]
+serves_goals: [G3, G5, G6, G7, G8, G9, G10, G11]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G3, G5, G6, G7]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-020 |
-| モバイル (mobile) | 対象外 | 理由: フロントは単一の React SPA バンドルで、モバイル専用ビルドを持たない |
-| タブレット (tablet) | 対象外 | 理由: フロントは単一の React SPA バンドルで、タブレット専用ビルドを持たない |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
+| Web (web) | 確定 | 確定質疑: qa-020 / 確定質疑: qa-mobile-frontend-001 |
+| モバイル (mobile) | 確定 | 確定質疑: qa-mobile-frontend-001 |
+| タブレット (tablet) | 確定 | 確定質疑: qa-mobile-frontend-001 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 / 理由: 承認: appr-mobile-platform-001 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 / 理由: 承認: appr-mobile-platform-001 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 / 理由: 承認: appr-mobile-platform-001 |
 
 ## 適用された設計知識
 
@@ -142,7 +142,7 @@ serves_goals: [G3, G5, G6, G7]
 #### 非適用条件
 
 - Screen Capture API 経由の画面共有ダイアログを挟む方式 (scope_out)。報告のたびに利用者操作が増え、日常導線として成立しない
-- 外部エラートラッキング SaaS への常時送出 (scope_out)。記帳内容に由来しうる情報を第三者へ渡し G7 と衝突する
+- 外部エラートラッキング SaaS への常時送出 (scope_out)。記帳内容に由来しうる情報を第三者へ渡し G11 と衝突する
 - web 以外のプラットフォーム。mobile/tablet/desktop は appr-002 で全カテゴリ対象外
 
 #### トレードオフ
@@ -160,7 +160,49 @@ serves_goals: [G3, G5, G6, G7]
 
 #### goalへの寄与
 
-G5 (画面から離れず、見えていた画面と起きていた不具合ごと届ける) の中核。写り込みのない画像と押下前の失敗記録の両方が揃って初めて G6 (エージェントがそのまま着手できる証跡) が成立する。二重上限は G7 (最小範囲) を構造的に支える。
+G9 (画面から離れず、見えていた画面と起きていた不具合ごと届ける) の中核。写り込みのない画像と押下前の失敗記録の両方が揃って初めて G10 (エージェントがそのまま着手できる証跡) が成立する。二重上限は G11 (最小範囲) を構造的に支える。
+
+---
+
+### responsive financial chart container
+
+- project candidate: `responsive-financial-chart-container` (`deepened`)
+- 解決対象: Chart.jsのresponsive描画が狭幅や親要素寸法の変化で0寸法・過小表示にならず、視覚表現と意味表現を同期させる必要がある
+
+#### 目的
+
+Chart.jsのcanvasを全対象viewportで可視寸法に保ち、同一の既存API集計結果から視覚表現と読み上げ可能な意味表現を生成する。
+
+#### 解決する問題
+
+- gridやflexの最小内容幅でchart containerが縮まずページ全体を横あふれさせる
+- 親高さ未確定や非表示切替のタイミングでcanvasが0寸法になりfigureが存在しても読めない
+- canvasと代替表が別計算だと金額・符号・期間の不一致を起こす
+
+#### 適用条件
+
+- react-chartjs-2で財務seriesを360px、375px、390px、tablet、desktopへ描画するとき
+
+#### 非適用条件
+
+- 静的な単一値や短いKPIはcanvasを導入せずsemantic HTMLだけで表現する
+
+#### トレードオフ
+
+- 狭幅でchart高さを確保すると縦スクロールは増えるが、情報欠落より可逆であり要約と段階表示で負荷を抑える
+
+#### 失敗モード
+
+- canvas要素へ相対サイズを直接指定して親containerのresponsive contractを持たない
+- ラベル重なりを避けるため主要seriesや期間情報を削除する
+- snapshotやCSS文字列検査だけで実際のcanvas寸法を確認しない
+
+#### goalへの寄与
+
+- G1へは全figureの可視寸法と主要series保持で寄与する
+- G2へはtick間引き・legend再配置・結論要約で寄与する
+- G3へはcanvas非依存のsemantic tableとkeyboard/zoom対応で寄与する
+- G4へは匿名fixtureの実Chromeでfigure数・bounding box・意味情報同等性を固定して寄与する
 
 ## 最新ドキュメント出典
 
@@ -171,3 +213,4 @@ G5 (画面から離れず、見えていた画面と起きていた不具合ご�
 | mdn-window-error-event | 2026-08-21 | Mozilla (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Window/error_event | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |
 | mdn-unhandledrejection-event | 2026-07-28 | Mozilla (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Window/unhandledrejection_event | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |
 | html2canvas | 1.4.1 | niklasvh (html2canvas project) (github.com) | https://github.com/niklasvh/html2canvas | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |
+| chartjs-responsive-charts | 4.x latest documentation | Chart.js Project (www.chartjs.org) | https://www.chartjs.org/docs/latest/configuration/responsive.html | 2026-08-30T08:58:25Z | 2026-08-30T08:58:25Z |

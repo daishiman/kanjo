@@ -1,0 +1,37 @@
+{
+  "graph_node_id": "feat-mobile-financial-visualization",
+  "artifact_kind": "feature",
+  "purpose": "外出先や片手操作でも、財務グラフ・KPI・高密度表が消えたり読めなくなったりせず、会計に不慣れな利用者が短時間で変化・異常・次の確認先を判断できるようにする。",
+  "goal": "360px以上のモバイル、タブレット、デスクトップ、200%相当の拡大で、全財務figureの意味情報が欠けず、結論から詳細へ一貫した順序で読めて操作できる。",
+  "scope_in": [
+    "packages/webの全routeにある財務chart・figure・KPI・高密度表のinventoryと改善",
+    "Chart.js canvasのresponsive containerと0寸法防止",
+    "結論・期間・単位・主要series・次の行動・semantic tableの同一view-model化",
+    "ページ横overflow防止と文脈を保つ局所scrollまたはカード化",
+    "safe-area・固定tabbar・44px操作領域・focus-visible・非色依存",
+    "360px・375px・390px・tablet・desktop・200% zoomの匿名実Chrome回帰"
+  ],
+  "scope_out": [
+    "会計計算・集計定義の変更",
+    "API・認証認可・D1・R2・Cloudflare構成の変更",
+    "ネイティブiOSまたはAndroidアプリ化",
+    "既に完了した共通ナビゲーションicon・route統合の再実装",
+    "本番deploy・commit・push・PR作成",
+    "実データを使うfixture・log・screenshot"
+  ],
+  "acceptance": [
+    "360px・375px・390pxで対象figureの可視数がdesktopと意味的に一致し、canvasまたは表示containerの0寸法が0件である",
+    "documentの横あふれが0件で、高密度表の例外は見出し文脈とedge affordanceを持つ局所scroll containerに限定される",
+    "各figureに可視見出し・結論要約・期間・単位・主要series・同一view-model由来のsemantic tableがありcanvas非依存で結論を読める",
+    "coarse pointerの主要操作が44x44 CSS px以上で、focus-visible欠落・色だけに依存する状態・200% zoomでの情報欠落が0件である",
+    "unit・React DOM contract・build・desktop/mobile実Chrome回帰が匿名fixtureで全PASSし、既存route・API・会計値に回帰がない"
+  ],
+  "architecture_refs": [
+    "architecture/arch-mobile-financial-experience.md",
+    "architecture/arch-mobile-financial-frontend.md",
+    "specs/mobile-financial-visualization.md",
+    "system-spec/index.md",
+    "system-spec/completeness-findings.json"
+  ],
+  "updated_at": "2026-08-30T09:39:25Z"
+}

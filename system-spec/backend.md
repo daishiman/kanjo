@@ -3,7 +3,7 @@ status: confirmed
 category: backend
 aggregate: 確定
 spec_cells: [backend.web, backend.mobile, backend.tablet, backend.desktop-windows, backend.desktop-linux, backend.desktop-macos]
-serves_goals: [G2, G3, G5, G6, G7]
+serves_goals: [G2, G3, G9, G10, G11]
 ---
 
 # バックエンド (backend)
@@ -190,7 +190,21 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 #### goalへの寄与
 
-G7 (秘匿すべき値を含めない) を、クライアントの善意に依存せず構造的に保証する。G3 (説明可能なエラー応答) は専用エラーコードの側から支える。
+G11 (秘匿すべき値を含めない) を、クライアントの善意に依存せず構造的に保証する。G3 (説明可能なエラー応答) は専用エラーコードの側から支える。
+
+## 章の注記 (chapter_notes)
+
+> 正本 `spec-state.json` の `chapter_notes` を描く。**利用者の回答ではない。**確定内容 (質疑録) と混ぜて読まないために節を分けてある。
+
+### 今回の feature scope
+
+本章の仕様は確定済みであり、今回の feature `feat-mobile-financial-visualization` では**変更しない**。
+
+- feature scope: 変更対象は ui-ux / frontend のみ (承認: `appr-mobile-scope-narrowing-001`)
+- 本章の spec cell state は「確定」のまま維持する。「今回触らない」ことと「仕様が存在しない (対象外)」ことは別軸であり、feature scope を cell state へ書くと D1・認証・Workers の実在する契約が仕様上消え、以後の completeness 評価や dev-graph の要件導出がその前提で走ってしまう。
+- 境界維持の検証は ui-ux / frontend 側の制約と受入条件で行う (`qa-mobile-boundaries-001`)。
+
+- 正本へ入れた理由: feature 単位の「今回触らない」を恒久的な spec cell state (確定/対象外) と取り違えた降格が起きたため、意図を state とは別の軸で保持する。
 
 ## 最新ドキュメント出典
 

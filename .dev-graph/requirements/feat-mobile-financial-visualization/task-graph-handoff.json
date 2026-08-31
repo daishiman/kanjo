@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "requirements-handoff",
+  "status": "ready",
+  "feature_id": "feat-mobile-financial-visualization",
+  "parent_feature": "feat-mobile-financial-visualization",
+  "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+  "handoff_target": "task-graph",
+  "snapshot_digest": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275",
+  "validated_plan_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+  "requirements_document": ".dev-graph/requirements/feat-mobile-financial-visualization/requirements.md",
+  "readiness_matrix": ".dev-graph/requirements/feat-mobile-financial-visualization/readiness-matrix.json",
+  "trace_plan": ".dev-graph/requirements/feat-mobile-financial-visualization/trace-plan.json",
+  "task_graph": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-graph.json",
+  "system_build_handoff": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/system-build-handoff.json",
+  "task_spec_source_root": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs",
+  "task_projection_target_root": "tasks/feat-mobile-financial-visualization",
+  "requirement_count": 8,
+  "task_count": 13,
+  "missing_sections": [],
+  "self_generated_code_files": [],
+  "consumer_action": "task-graph の ready batch を算出し、worktree lease確認後に各 task をclaimして実装を開始する。"
+}

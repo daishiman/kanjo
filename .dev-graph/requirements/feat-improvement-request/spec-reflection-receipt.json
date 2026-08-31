@@ -25,7 +25,7 @@
     {
       "id": "I3",
       "finding": "スクリーンショットへの書き込みと送信前確認が要件定義書の outcome に存在しない (新規要求)。",
-      "action": "00-requirements-definition.md へ O11/O12 と成功基準3行を追加。起動導線は『右下などの導線』から『右下に固定』へ具体化。",
+      "action": "00-requirements-definition.md へ O15/O16 と成功基準3行を追加。起動導線は『右下などの導線』から『右下に固定』へ具体化。",
       "files": [
         "system-spec/00-requirements-definition.md"
       ]
@@ -64,15 +64,15 @@
   "reflected_files": [
     {
       "file": "system-spec/00-requirements-definition.md",
-      "digest": "sha256:9af588bb4ff13b6660d045cb346810cd9e79d0cf03a179511201b8934a9214ee"
+      "digest": "sha256:e60b7f8d98d5c27d0bfb9d9b1e1c98432a69e2e1ffc7ec4fb1b1384260c5c69d"
     },
     {
       "file": "system-spec/ui-ux.md",
-      "digest": "sha256:e3f9080a7a54ed5ab1510ce75b7f487e221eacea1a565b6a53494293f42d7201"
+      "digest": "sha256:7638a33287d1cf64541556c0ff6c2bb01177112d0b593fb25f14069a2bf82e70"
     },
     {
       "file": "system-spec/frontend.md",
-      "digest": "sha256:d283c23adc6e2097bbc138b09ec71a32dddb3b2bd0ec5b8ad5cbddf23944bb92"
+      "digest": "sha256:a1e7983b026e86e7add4a160a17add636815798ccb226cc20f9114fb08d3153b"
     },
     {
       "file": "features/feat-improvement-request.md",
@@ -102,5 +102,6 @@
       "exit": 0
     }
   },
-  "result": "PASS"
+  "result": "PASS",
+  "merge_note": "origin/main (PR #28 feat-mobile-financial-visualization) との併合時、双方が同じ base から requirements_foundation を加算的に書き換えており、G5-G7 / O6-O12 / I8-I14 が両ブランチで別内容を指す名前空間衝突が生じた。main を共有正本として採番を保持し、本ブランチ側を G9-G11 / O10-O16 / I14-I20 へ繰り下げて両機能のゴール群を union で残した。単一値しか許されない approval_ref / matrix.*.web.qa_ref は main 側の確定値を採用し、本ブランチの qa-018 / qa-020 は qa_log に保持している。"
 }

@@ -41,6 +41,14 @@ function renderLayout() {
 }
 
 describe('ヘッダーの書き出しメニュー', () => {
+  it('概要の読込中もモバイル用の防衛線領域を予約する', () => {
+    renderLayout();
+
+    const placeholder = document.querySelector('.header-defense-placeholder');
+    expect(placeholder).toBeTruthy();
+    expect(placeholder?.getAttribute('aria-hidden')).toBe('true');
+  });
+
   it('2つの書き出し導線を示し、Escapeで閉じる', () => {
     renderLayout();
     const trigger = screen.getByRole('button', { name: /書き出し/ });

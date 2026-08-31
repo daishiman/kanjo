@@ -1,0 +1,63 @@
+{
+  "status": "PASS",
+  "missing_nodes": [],
+  "findings": [
+    {
+      "id": "R1-SCOPE-IDENTITY",
+      "status": "PASS",
+      "summary": "feature_id、parent_feature、feature_package_id は canonical feature package と一致し、handoff_target は task-graph に固定されている。"
+    },
+    {
+      "id": "R1-NODE-CLOSURE",
+      "status": "PASS",
+      "summary": "graph revision 3 に上位 specification 1、architecture 2、feature 1、SYS-MOBFIN-P01..P13 の exact-13 task が実在する。選択17 node の depends_on、related_nodes、architecture_refs に dangling 参照や選択範囲外参照はない。"
+    },
+    {
+      "id": "R1-CANONICAL-STATE",
+      "status": "PASS",
+      "summary": "選択17 node はすべて confirmation_status=confirmed、evaluation_status=pass、implementation_readiness.status=complete、missing_sections=[] を満たす。各 canonical file_path と source_lineage.source_path は repository 内で実在する。"
+    },
+    {
+      "id": "R1-PACKAGE-LINEAGE",
+      "status": "PASS",
+      "summary": "feature package はtask_count=13、P01..P13、SYS-MOBFIN-P01..P13の exact set であり、atomic promotion、independent evaluation、13件の atomic registration、各task lineageが同一の validated plan digest sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda に接地する。"
+    },
+    {
+      "id": "R1-SNAPSHOT-FRESHNESS",
+      "status": "PASS",
+      "summary": "readiness matrix に固定された promotion receipt、registration receipt、manifest、canonical graph、feature context、graph/plan validation の7 input SHA-256は現在byteと一致し、scope/readiness/handoff の snapshot digest は一致する。"
+    }
+  ],
+  "evidence_paths": [
+    ".dev-graph/requirements/feat-mobile-financial-visualization/scope.json",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/readiness-matrix.json",
+    ".dev-graph/requirements/feat-mobile-financial-visualization/task-graph-handoff.json",
+    ".dev-graph/state/graph.json",
+    ".dev-graph/state/requirements-graph-validation-feat-mobile-financial-visualization.json",
+    ".dev-graph/state/requirements-plan-validation-feat-mobile-financial-visualization.json",
+    "features/feat-mobile-financial-visualization.md",
+    "features/feat-mobile-financial-visualization.context.json",
+    "specs/mobile-financial-visualization.md",
+    "architecture/arch-mobile-financial-experience.md",
+    "architecture/arch-mobile-financial-frontend.md",
+    ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/feature-package.json",
+    ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-graph.json",
+    ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/staging-manifest.json",
+    ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/atomic-promotion-receipt.json",
+    ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/dev-graph-registration-receipt.json",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p01.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p02.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p03.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p04.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p05.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p06.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p07.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p08.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p09.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p10.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p11.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p12.md",
+    "tasks/feat-mobile-financial-visualization/sys-mobfin-p13.md"
+  ],
+  "snapshot_digest": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275"
+}

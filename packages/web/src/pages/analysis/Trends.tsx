@@ -10,10 +10,17 @@ import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type ExpenseScope, type TrendRow, type TrendsResponse, api } from '../../api.js';
 import { DataTable, termColumn } from '../../components/DataTable.js';
+import { FinancialFigure } from '../../components/FinancialFigure.js';
 import { HowTo } from '../../components/HowTo.js';
 import { KpiCard, PageState } from '../../components/Page.js';
 import { Term } from '../../components/Term.js';
-import { COLORS, yenTick } from '../../components/charts.js';
+import { COLORS, baseChartOptions, yenTick } from '../../components/charts.js';
+import {
+  createFinancialFigureModel,
+  figureLabels,
+  financialPeriod,
+  seriesData,
+} from '../../components/figure-view-model.js';
 import { deltaCls, monthShort, pct, yen, yenS } from '../../format.js';
 import { usePeriod } from '../../period.js';
 
@@ -80,6 +87,78 @@ export function TrendsPage() {
   const need = t.counts.削減を検討 + t.counts.記録を整える;
   const top = t.rows.filter((r) => r.action !== '対応不要').slice(0, 12);
   const months = t.recordedMonths;
+  const splitLabels = t.monthlySides.map((entry) => monthShort(entry.month));
+  const splitLatest = t.monthlySides[t.monthlySides.length - 1];
+  const splitModel = createFinancialFigureModel({
+    id: 'trends-side-split',
+    title: '事業・家計の月別推移',
+    summary: `${splitLabels[splitLabels.length - 1]}は事業${yen(splitLatest?.biz)}、家計${yen(
+      splitLatest?.personal,
+    )}です。`,
+    period: financialPeriod(splitLabels),
+    labels: splitLabels,
+    series: [
+      {
+        key: 'business',
+        label: '事業',
+        values: t.monthlySides.map((entry) => entry.biz),
+        unit: 'yen',
+        color: COLORS.biz,
+      },
+      {
+        key: 'personal',
+        label: '家計',
+        values: t.monthlySides.map((entry) => entry.personal),
+        unit: 'yen',
+        color: COLORS.per,
+      },
+    ],
+    action: '増えた側へ対象スコープを切り替え、その内訳まで掘り下げます。',
+  });
+  const waterfallRows = waterfall(t);
+  const largestChange = [...waterfallRows].sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff))[0];
+  const waterfallModel = createFinancialFigureModel({
+    id: 'trends-waterfall',
+    title: '科目別の前半・後半差',
+    summary: largestChange
+      ? `${largestChange.account}が最も大きく変化し、月あたり${yenS(largestChange.diff)}です。`
+      : '前半と後半で大きな変化はありません。',
+    period: `前半${t.breakdown.beforeMonths.length}ヶ月〜後半${t.breakdown.afterMonths.length}ヶ月`,
+    unitLabel: '月あたりの増減額（円）',
+    rowHeader: '科目',
+    labels: waterfallRows.map((row) => row.account),
+    series: [
+      {
+        key: 'difference',
+        label: '月あたりの差',
+        values: waterfallRows.map((row) => row.diff),
+        unit: 'yen',
+        signed: true,
+      },
+    ],
+    action: '増加寄与の大きい科目から順に、手を打つ順番を決めます。',
+  });
+  const paretoRows = t.pareto.slice(0, 15);
+  const paretoModel = createFinancialFigureModel({
+    id: 'trends-pareto',
+    title: '上位科目と累積構成比',
+    summary: `上位${t.coreCount}科目で支出の8割を占めます。`,
+    period: financialPeriod(months.map(monthShort)),
+    unitLabel: '合計額（円） / 累積構成比（%）',
+    rowHeader: '科目',
+    labels: paretoRows.map((row) => row.account),
+    series: [
+      { key: 'amount', label: '合計', values: paretoRows.map((row) => row.total), unit: 'yen' },
+      {
+        key: 'cumulative-share',
+        label: '累積構成比',
+        values: paretoRows.map((row) => row.cumShare),
+        unit: 'pct',
+        color: COLORS.warn,
+      },
+    ],
+    action: '8割を占める上位科目だけに絞って、削減と監視の優先度を決めます。',
+  });
 
   return (
     <>
@@ -147,32 +226,36 @@ export function TrendsPage() {
               ))}
             </DataTable>
           </div>
-          <Chart
-            type="bar"
-            height={90}
-            data={{
-              labels: t.monthlySides.map((m) => monthShort(m.month)),
-              datasets: [
-                {
-                  label: '事業',
-                  data: t.monthlySides.map((m) => m.biz),
-                  backgroundColor: COLORS.biz,
-                  stack: 's',
-                },
-                {
-                  label: '家計',
-                  data: t.monthlySides.map((m) => m.personal),
-                  backgroundColor: COLORS.per,
-                  stack: 's',
-                },
-              ],
-            }}
-            options={{
-              responsive: true,
-              scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: yenTick } } },
-              plugins: { legend: { position: 'bottom' } },
-            }}
-          />
+          <FinancialFigure model={splitModel}>
+            <Chart
+              type="bar"
+              role="img"
+              aria-label="月別の事業支出と家計支出の内訳を示す図"
+              fallbackContent="月別の事業支出と家計支出の内訳を示す図"
+              data={{
+                labels: figureLabels(splitModel),
+                datasets: [
+                  {
+                    label: splitModel.series[0]?.label,
+                    data: seriesData(splitModel, 0),
+                    backgroundColor: COLORS.biz,
+                    stack: 's',
+                  },
+                  {
+                    label: splitModel.series[1]?.label,
+                    data: seriesData(splitModel, 1),
+                    backgroundColor: COLORS.per,
+                    stack: 's',
+                  },
+                ],
+              }}
+              options={{
+                ...baseChartOptions(),
+                scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: yenTick } } },
+                plugins: { legend: { position: 'bottom' } },
+              }}
+            />
+          </FinancialFigure>
           <p className="sub">
             スコープを切り替えても、この推移は事業と家計の両方を出す。片方だけを見ているときに
             「もう片方はどうなのか」が同じ画面で分かるようにするため。
@@ -186,7 +269,7 @@ export function TrendsPage() {
         {top.length === 0 ? (
           <p className="sub">いま対応が要る科目はありません。今の水準を保てています。</p>
         ) : (
-          <table className="data">
+          <table className="data stack-sm">
             <thead>
               <tr>
                 <th>科目</th>
@@ -270,26 +353,32 @@ export function TrendsPage() {
           {t.breakdown.afterMonths.length}ヶ月)
         </h2>
         <HowTo id="trendsWaterfall" />
-        <Chart
-          type="bar"
-          height={90}
-          data={{
-            labels: waterfall(t).map((r) => r.account),
-            datasets: [
-              {
-                label: '月あたりの差',
-                data: waterfall(t).map((r) => r.diff),
-                backgroundColor: waterfall(t).map((r) => (r.diff > 0 ? COLORS.danger : COLORS.good)),
-              },
-            ],
-          }}
-          options={{
-            indexAxis: 'y' as const,
-            responsive: true,
-            scales: { x: { ticks: { callback: yenTick } } },
-            plugins: { legend: { display: false } },
-          }}
-        />
+        <FinancialFigure model={waterfallModel} chartClassName="financial-figure__chart--horizontal">
+          <Chart
+            type="bar"
+            role="img"
+            aria-label="科目別の前半と後半の増減を比較する図"
+            fallbackContent="科目別の前半と後半の増減を比較する図"
+            data={{
+              labels: figureLabels(waterfallModel),
+              datasets: [
+                {
+                  label: waterfallModel.series[0]?.label,
+                  data: seriesData(waterfallModel, 0),
+                  backgroundColor: seriesData(waterfallModel, 0).map((value) =>
+                    (value ?? 0) > 0 ? COLORS.danger : COLORS.good,
+                  ),
+                },
+              ],
+            }}
+            options={{
+              ...baseChartOptions(),
+              indexAxis: 'y' as const,
+              scales: { x: { ticks: { callback: yenTick } } },
+              plugins: { legend: { display: false } },
+            }}
+          />
+        </FinancialFigure>
         <div className="scroll-x">
           <DataTable
             columns={[
@@ -300,7 +389,7 @@ export function TrendsPage() {
               termColumn('contribution', { className: 'num' }),
             ]}
           >
-            {waterfall(t).map((r) => (
+            {waterfallRows.map((r) => (
               <tr key={r.key}>
                 <td data-label="科目">
                   {r.account}{' '}
@@ -335,46 +424,48 @@ export function TrendsPage() {
           金額の集中(<Term id="pareto">パレート</Term>)
         </h2>
         <HowTo id="trendsPareto" />
-        <Chart
-          type="bar"
-          height={90}
-          data={{
-            labels: t.pareto.slice(0, 15).map((p) => p.account),
-            datasets: [
-              {
-                type: 'bar' as const,
-                label: '合計',
-                data: t.pareto.slice(0, 15).map((p) => p.total),
-                backgroundColor: t.pareto
-                  .slice(0, 15)
-                  .map((p) => (p.side === 'biz' ? COLORS.biz : COLORS.per)),
-                yAxisID: 'y',
+        <FinancialFigure model={paretoModel}>
+          <Chart
+            type="bar"
+            role="img"
+            aria-label="上位科目の合計額と累積構成比の関係を示す図"
+            fallbackContent="上位科目の合計額と累積構成比の関係を示す図"
+            data={{
+              labels: figureLabels(paretoModel),
+              datasets: [
+                {
+                  type: 'bar' as const,
+                  label: paretoModel.series[0]?.label,
+                  data: seriesData(paretoModel, 0),
+                  backgroundColor: paretoRows.map((row) => (row.side === 'biz' ? COLORS.biz : COLORS.per)),
+                  yAxisID: 'y',
+                },
+                {
+                  type: 'line' as const,
+                  label: paretoModel.series[1]?.label,
+                  data: seriesData(paretoModel, 1).map((value) => (value ?? 0) * 100),
+                  borderColor: COLORS.warn,
+                  backgroundColor: COLORS.warn,
+                  yAxisID: 'y1',
+                },
+              ],
+            }}
+            options={{
+              ...baseChartOptions(),
+              scales: {
+                y: { ticks: { callback: yenTick } },
+                y1: {
+                  position: 'right' as const,
+                  min: 0,
+                  max: 100,
+                  grid: { drawOnChartArea: false },
+                  ticks: { callback: (v: number | string) => `${v}%` },
+                },
               },
-              {
-                type: 'line' as const,
-                label: '累積構成比',
-                data: t.pareto.slice(0, 15).map((p) => p.cumShare * 100),
-                borderColor: COLORS.warn,
-                backgroundColor: COLORS.warn,
-                yAxisID: 'y1',
-              },
-            ],
-          }}
-          options={{
-            responsive: true,
-            scales: {
-              y: { ticks: { callback: yenTick } },
-              y1: {
-                position: 'right' as const,
-                min: 0,
-                max: 100,
-                grid: { drawOnChartArea: false },
-                ticks: { callback: (v: number | string) => `${v}%` },
-              },
-            },
-            plugins: { legend: { position: 'bottom' } },
-          }}
-        />
+              plugins: { legend: { position: 'bottom' } },
+            }}
+          />
+        </FinancialFigure>
         <p className="sub">
           上位{t.coreCount}科目で支出の8割。まずここを動かさない限り、合計はほとんど変わらない。
         </p>

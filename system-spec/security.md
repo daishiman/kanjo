@@ -3,7 +3,7 @@ status: confirmed
 category: security
 aggregate: 確定
 spec_cells: [security.web, security.mobile, security.tablet, security.desktop-windows, security.desktop-linux, security.desktop-macos]
-serves_goals: [G1, G3, G6, G7]
+serves_goals: [G1, G3, G10, G11]
 ---
 
 # セキュリティ (security)
@@ -107,7 +107,21 @@ D9 (opt-onetime-bearer-hashed) の確定を、失効可能性という一点で�
 
 #### goalへの寄与
 
-G6 (エージェントが証跡を取り出せる) を、G7 (最小範囲・秘匿値を含めない) を壊さずに成立させる唯一の接点。失効可能性がなければ G6 の実現がそのまま G7 の違反になる。
+G10 (エージェントが証跡を取り出せる) を、G11 (最小範囲・秘匿値を含めない) を壊さずに成立させる唯一の接点。失効可能性がなければ G10 の実現がそのまま G11 の違反になる。
+
+## 章の注記 (chapter_notes)
+
+> 正本 `spec-state.json` の `chapter_notes` を描く。**利用者の回答ではない。**確定内容 (質疑録) と混ぜて読まないために節を分けてある。
+
+### 今回の feature scope
+
+本章の仕様は確定済みであり、今回の feature `feat-mobile-financial-visualization` では**変更しない**。
+
+- feature scope: 変更対象は ui-ux / frontend のみ (承認: `appr-mobile-scope-narrowing-001`)
+- 本章の spec cell state は「確定」のまま維持する。「今回触らない」ことと「仕様が存在しない (対象外)」ことは別軸であり、feature scope を cell state へ書くと D1・認証・Workers の実在する契約が仕様上消え、以後の completeness 評価や dev-graph の要件導出がその前提で走ってしまう。
+- 境界維持の検証は ui-ux / frontend 側の制約と受入条件で行う (`qa-mobile-boundaries-001`)。
+
+- 正本へ入れた理由: feature 単位の「今回触らない」を恒久的な spec cell state (確定/対象外) と取り違えた降格が起きたため、意図を state とは別の軸で保持する。
 
 ## 最新ドキュメント出典
 

@@ -5,11 +5,17 @@ import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type SubscriptionsData, api } from '../api.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
+import { FinancialFigure } from '../components/FinancialFigure.js';
 import { HowTo } from '../components/HowTo.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { SubVendorsPanel, SubsCandidatesPanel } from '../components/SubVendors.js';
 import { Term } from '../components/Term.js';
-import { VENDOR_PALETTE, stackTotalLabels, yenTick } from '../components/charts.js';
+import { baseChartOptions, stackTotalLabels, vendorPalette, yenTick } from '../components/charts.js';
+import {
+  createFinancialFigureModel,
+  figureLabels,
+  financialPeriod,
+} from '../components/figure-view-model.js';
 import { monthLabel, monthShort, ratio, yen } from '../format.js';
 import { usePeriod } from '../period.js';
 
@@ -50,6 +56,61 @@ export function SubscriptionsPage() {
         <SubVendorsPanel />
       </>
     );
+  const labels = s.months.map(monthShort);
+  const latestMonthIndex = s.months.length - 1;
+  const rankedVendors = s.vendors
+    .map((vendor, originalIndex) => ({
+      vendor,
+      originalIndex,
+      total: (s.matrix[vendor] ?? []).reduce((total, value) => total + Math.abs(value), 0),
+    }))
+    .sort((left, right) => right.total - left.total || left.originalIndex - right.originalIndex);
+  const visibleVendors = rankedVendors.slice(0, 6);
+  const hiddenVendors = rankedVendors.slice(6);
+  const chartSeries = [
+    ...visibleVendors.map(({ vendor }) => ({
+      key: vendor,
+      label: vendor,
+      values: s.matrix[vendor] ?? [],
+    })),
+    hiddenVendors.length > 0
+      ? {
+          key: 'collapsed',
+          label: `他${hiddenVendors.length}件`,
+          values: s.months.map(
+            (_, monthIndex) =>
+              (s.other[monthIndex] ?? 0) +
+              hiddenVendors.reduce((total, { vendor }) => total + (s.matrix[vendor]?.[monthIndex] ?? 0), 0),
+          ),
+        }
+      : { key: 'other', label: 'その他', values: s.other },
+  ];
+  /* 図の色と凡例チップの色を1箇所で決める(別々に選ぶと凡例が図の色と対応しなくなる) */
+  const palette = vendorPalette();
+  const chartSeriesColor = (key: string, index: number) =>
+    key === 'other' || key === 'collapsed' ? '#c4ccc9' : (palette[index % palette.length] as string);
+  const vendorModel = createFinancialFigureModel({
+    id: 'subscriptions-vendor-monthly',
+    title: '支払いの内訳推移',
+    summary: `${labels[latestMonthIndex]}のサブスク合計は${yen(s.now.monthlyTotal)}です。`,
+    period: financialPeriod(labels),
+    labels,
+    summarySeries: chartSeries.map(({ key, label }, index) => ({
+      key,
+      label,
+      color: chartSeriesColor(key, index),
+    })),
+    series: [
+      ...s.vendors.map((vendor) => ({
+        key: vendor,
+        label: vendor,
+        values: s.matrix[vendor],
+        unit: 'yen' as const,
+      })),
+      { key: 'other', label: 'その他', values: s.other, unit: 'yen' as const },
+    ],
+    action: '月額が増えた月に始まった契約を洗い出し、重複と解約候補を見直します。',
+  });
 
   return (
     <>
@@ -167,42 +228,45 @@ export function SubscriptionsPage() {
       <div className="card">
         <h2>ベンダー別月次(積み上げ)</h2>
         <HowTo id="subsMonthly" />
-        <Chart
-          type="bar"
-          height={90}
-          /* 棒の上に月の合計を書く。色が20を超える図で、目分量の足し算をさせないため */
-          plugins={[stackTotalLabels]}
-          data={{
-            labels: s.months.map(monthShort),
-            datasets: [
-              ...s.vendors.map((v, i) => ({
-                label: v,
-                data: s.matrix[v],
-                backgroundColor: VENDOR_PALETTE[i % VENDOR_PALETTE.length],
+        <FinancialFigure model={vendorModel}>
+          <Chart
+            type="bar"
+            role="img"
+            aria-label="月別のサブスク支払い内訳を積み上げで示す図"
+            fallbackContent="月別のサブスク支払い内訳を積み上げで示す図"
+            data-financial-dataset-count={chartSeries.length}
+            data-financial-dataset-labels={chartSeries.map(({ label }) => label).join('|')}
+            /* 棒の上に月の合計を書く。色が20を超える図で、目分量の足し算をさせないため */
+            plugins={[stackTotalLabels]}
+            data={{
+              labels: figureLabels(vendorModel),
+              datasets: chartSeries.map((series, index) => ({
+                label: series.label,
+                data: series.values,
+                backgroundColor: chartSeriesColor(series.key, index),
                 stack: 's',
               })),
-              { label: 'その他', data: s.other, backgroundColor: '#c4ccc9', stack: 's' },
-            ],
-          }}
-          options={{
-            responsive: true,
-            scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: yenTick } } },
-            /* 触れた月は、その月に払った全ベンダーを一度に出す(1社ずつ触って足させない) */
-            interaction: { mode: 'index', intersect: false },
-            plugins: {
-              legend: { position: 'bottom' },
-              tooltip: {
-                // 払っていないベンダーまで並べると、実際に払った数社が埋もれる
-                filter: (item) => Number(item.parsed.y) > 0,
-                callbacks: {
-                  label: (item) => `${item.dataset.label}: ${yen(Number(item.parsed.y))}`,
-                  footer: (items) =>
-                    `この月の合計: ${yen(items.reduce((sum, i) => sum + Number(i.parsed.y), 0))}`,
+            }}
+            options={{
+              ...baseChartOptions(),
+              scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: yenTick } } },
+              /* 触れた月は、その月に払った全ベンダーを一度に出す(1社ずつ触って足させない) */
+              interaction: { mode: 'index', intersect: false },
+              plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                  // 払っていないベンダーまで並べると、実際に払った数社が埋もれる
+                  filter: (item) => Number(item.parsed.y) > 0,
+                  callbacks: {
+                    label: (item) => `${item.dataset.label}: ${yen(Number(item.parsed.y))}`,
+                    footer: (items) =>
+                      `この月の合計: ${yen(items.reduce((sum, i) => sum + Number(i.parsed.y), 0))}`,
+                  },
                 },
               },
-            },
-          }}
-        />
+            }}
+          />
+        </FinancialFigure>
         <p className="sub">
           棒の上の数字はその月の合計。凡例をクリックしてベンダーを隠すと、隠した分を除いた合計に変わります。
         </p>

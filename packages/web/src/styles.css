@@ -7,7 +7,7 @@
   --line: #dde3e1;
   --biz: #2f5da8;
   --per: #9c4257;
-  --warn: #a8781c;
+  --warn: #805a12;
   --danger: #b23a3a; /* 増加=赤 */
   --good: #2e7d5b; /* 減少=緑 */
   /* 事業色(--biz)の淡い面。現在地・選択・情報など「青で塗る」箇所はすべてここを見る。
@@ -44,7 +44,10 @@
   --sidebar-w: 236px;
   /* 狭幅のドロワーは常設sidebarより一段広い(重ねて開くので本文幅を削らない) */
   --drawer-w: 240px;
-  --nav-row-min: 44px;
+  --financial-chart-height: 300px;
+  /* WCAG 2.5.5 Target Size (Enhanced, AAA) のタップ領域。緩和しない基準値 */
+  --tap-target-min: 44px;
+  --nav-row-min: var(--tap-target-min);
   --nav-icon-size: 20px;
   --tab-icon-size: 18px;
   --nav-icon-label-gap: 10px;
@@ -245,7 +248,7 @@ body {
 }
 @media (min-width: 641px) and (pointer: coarse) {
   :root {
-    --nav-row-min: 44px;
+    --nav-row-min: var(--tap-target-min);
     --nav-group-gap: 14px;
   }
 }
@@ -342,6 +345,21 @@ body {
 .badge.warn {
   border-color: var(--warn);
   color: var(--warn);
+}
+/*
+ * 防衛線バッジは集計の到着後に現れる。ヘッダは flex 行なので、到着した瞬間に
+ * 右側(未記帳バッジ・書き出しメニュー)が押し出されてずれる。幅の予約は
+ * 狭幅だけの問題ではないので、広幅でも場所を取らせる。
+ *
+ * 予約幅は完全一致ではない。実バッジは広幅で .badge-detail(「/ 見込 ¥…」)を
+ * 併せて出すが、プレースホルダの文言にはそれが無いぶん短い。残差を消すには
+ * Layout.tsx 側でプレースホルダにも .badge-detail を持たせる必要があり、
+ * ここでは「バッジ丸ごとぶんのずれ」を「見込表示ぶんのずれ」まで縮めている。
+ */
+.header-defense-placeholder {
+  display: inline-flex;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .main {
@@ -595,40 +613,223 @@ body {
   margin: 18px 0 20px;
 }
 .financial-figure {
+  container-type: inline-size;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
   margin: 0;
 }
-.financial-figure figcaption {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
+.financial-figure + .financial-figure {
+  margin-top: 24px;
 }
-.financial-figure figcaption strong {
+.financial-figure__caption {
+  margin: 0;
+}
+.financial-figure__caption h2,
+.financial-figure__caption h3,
+.financial-figure__caption h4 {
+  margin: 0;
   font-size: var(--fs-base);
+  font-weight: 900;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
-.financial-figure figcaption span,
-.chart-guide {
+.financial-figure__summary {
+  margin: 6px 0 0;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.financial-figure__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 8px 0 0;
+}
+.financial-figure__meta > div {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+.financial-figure__meta dt,
+.financial-figure__meta dd {
+  margin: 0;
+  font-size: var(--fs-xs);
+}
+.financial-figure__meta dt {
+  color: var(--ink-soft);
+}
+.financial-figure__meta dd {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.financial-figure__series {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 8px 0 10px;
+  padding: 0;
+  list-style: none;
   color: var(--ink-soft);
   font-size: var(--fs-xs);
 }
-.chart-guide {
-  margin: 6px 0 0;
+.financial-figure__series li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
-.chart-shell {
+/*
+ * 凡例チップの色。--series-color が渡されればその色で塗り、渡されなければ
+ * 従来どおり文字色の枠だけにする。色の対応がない凡例は凡例として働かないが、
+ * 色を持たない系列（単色の図）で灰色の四角が並ぶのも意味がないので、
+ * 「色が来たときだけ色になる」形にしてある。変数名は TSX 側と共有。
+ */
+.financial-figure__series li > span {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  background: var(--series-color, transparent);
+  border: 1px solid var(--series-color, currentColor);
+  border-radius: 2px;
+}
+/*
+ * 図の高さ。狭幅の調整は「クラス別の値を container 側で書き直す」のではなく
+ * 「クラス別の値に上限を掛ける」形にしてある。
+ *
+ * @container は詳細度に寄与しないので、container ブロックで
+ * --financial-chart-height を再指定すると、後から書いたクラス別指定と
+ * 同一要素・同一詳細度でぶつかりソース順で決まってしまう。実際それで
+ * cashflow/balance の 220px が狭幅で 248px に「増えて」いた。
+ *
+ * min() なら container 側はクラスを列挙しない。新しいクラスが
+ * --financial-chart-height だけ足して上限を書き忘れても、狭幅では既定上限まで
+ * 縮むだけで、背が高くなる方向には絶対に壊れない。
+ */
+.financial-figure__chart {
   position: relative;
   width: 100%;
-  min-height: 280px;
+  max-width: 100%;
+  min-width: 0;
+  --financial-chart-height-narrow-max: 248px;
+  height: var(--financial-chart-height);
 }
+/*
+ * heatmap は行数で高さが決まるため固定枠に収まらない。子要素を高さ100%に
+ * 揃える下の規則が .heatmap-scroll を除外しているのと同じ意図を、親の高さにも通す。
+ * :has() は (0,2,0) なので狭幅の上限規則にも勝つ。
+ */
+.financial-figure__chart:has(.heatmap-scroll) {
+  height: auto;
+}
+.financial-figure__chart > canvas,
+.financial-figure__chart > div:not(.heatmap-scroll) {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+}
+.financial-figure__chart--horizontal,
 .matrix-movers-chart {
-  min-height: 320px;
+  --financial-chart-height: 320px;
+  /* 横棒は項目数だけ行が要る。狭幅でも既定より高い上限を許す */
+  --financial-chart-height-narrow-max: 300px;
 }
-.cashflow-cumulative-chart {
-  min-height: 190px;
-}
+.cashflow-cumulative-chart,
 .balance-chart {
-  min-height: 190px;
+  --financial-chart-height: 220px;
+}
+.financial-figure__action {
+  margin: 10px 0 4px;
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+.financial-figure__action strong {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+.financial-figure__details {
+  margin-top: 4px;
+  min-width: 0;
+}
+.financial-figure__details > summary {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  min-width: var(--tap-target-min);
+  min-height: var(--tap-target-min);
+  padding: 8px 10px;
+  margin-left: -10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--biz);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--motion-instant) var(--ease-standard), border-color var(--motion-instant)
+    var(--ease-standard), transform var(--motion-instant) var(--ease-standard);
+}
+.financial-figure__details > summary:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: 2px;
+}
+.financial-figure__details > summary:active {
+  background: var(--biz-soft);
+  border-color: var(--biz-soft-line);
+  transform: scale(0.985);
+}
+.financial-figure__details[open] > summary {
+  color: var(--ink);
+}
+.financial-figure__table-frame {
+  min-width: 0;
+  max-width: 100%;
+  margin-top: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.financial-figure__table-scroll {
+  width: 100%;
+  max-width: 100%;
+  max-height: min(52vh, 420px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+.financial-figure__table-scroll:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: -2px;
+}
+.financial-figure__table-scroll table.data {
+  width: max-content;
+  min-width: 100%;
+}
+.financial-figure__table-scroll table.data th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--surface);
+  text-align: left;
+  white-space: nowrap;
+}
+.financial-figure__table-scroll table.data thead th:first-child {
+  z-index: 3;
+  background: var(--bg);
+}
+.financial-figure .btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target-min);
+}
+.chart-guide {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
 }
 .matrix-summary .financial-figure {
   max-width: 1040px;
@@ -689,16 +890,6 @@ body {
 }
 
 @media (max-width: 560px) {
-  .financial-figure figcaption {
-    display: grid;
-    gap: 0;
-  }
-  .chart-shell {
-    min-height: 240px;
-  }
-  .matrix-movers-chart {
-    min-height: 300px;
-  }
   .financial-equation {
     grid-template-columns: 1fr;
     gap: 4px;
@@ -709,6 +900,21 @@ body {
   }
   .table-heading {
     align-items: flex-end;
+  }
+}
+
+@container (max-width: 420px) {
+  /* クラスを列挙しない。各クラスが宣言した上限を掛けるだけ */
+  .financial-figure__chart {
+    height: min(var(--financial-chart-height), var(--financial-chart-height-narrow-max));
+  }
+  .financial-figure__series {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 8px;
+  }
+  .financial-figure__series li {
+    overflow-wrap: anywhere;
   }
 }
 
@@ -781,6 +987,14 @@ table.data thead th:has(> .term) > .th-sort {
   display: inline-flex;
   width: auto;
   padding: 4px 2px 4px 0;
+}
+/* 見出し内の「?」も、隣のsort操作と誤タップしない独立targetにする。 */
+table.data thead th:has(> .term) > .term {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap-target-min);
+  min-height: var(--tap-target-min);
 }
 /* 数値列は右寄せなので、矢印が数字の右に付くよう見出しも寄せる */
 table.data thead th.num .th-sort {
@@ -1829,7 +2043,7 @@ kbd {
 }
 @media (max-width: 640px) {
   .shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas: "head" "main" "foot";
   }
   .sidebar {
@@ -1856,6 +2070,16 @@ kbd {
     padding: 10px 16px;
   }
   /*
+   * データ取得後に「2025年1月 〜 2026年8月」のような期間へ置き換わっても、
+   * 期間selectが次の行へ移る前提の幅を最初から予約し、mainのCLSを防ぐ。
+  */
+  .header .period {
+    flex: 0 1 161px;
+    width: 161px;
+    min-width: 0;
+    max-width: calc(100% - 32px);
+  }
+  /*
    * 書き出しはヘッダー右端起点の小箱だと、200%拡大時に左側が viewport 外へ出る。
    * 狭幅だけ visual viewport 両端に固定し、ヘッダーの実高さの直下から開く action sheet にする。
    */
@@ -1880,6 +2104,13 @@ kbd {
     white-space: nowrap;
   }
   /* 防衛ラインは常時表示を維持しつつ、狭幅では見込額の詳細だけ畳む */
+  .header-defense {
+    flex: 0 1 205px;
+    width: 205px;
+    min-width: 0;
+    max-width: calc(100% - 32px);
+    flex-wrap: wrap;
+  }
   .badge-detail {
     display: none;
   }
@@ -2085,7 +2316,7 @@ table.ai-table td.wrap {
 }
 .report-charts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: 16px;
 }
 .report-chart {

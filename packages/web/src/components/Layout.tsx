@@ -135,14 +135,28 @@ export function Layout({ children }: { children: ReactNode }) {
           <PeriodPicker meta={summary.data?.period} />
         )}
         <span className="spacer" />
-        {d && d.status !== 'nodata' && (
-          <span className={`badge ${d.status}`}>
+        {d && d.status !== 'nodata' ? (
+          <span className={`badge header-defense ${d.status}`}>
             <Term id="defenseLine">防衛線</Term> <span className="num">{yen(d.line)}</span>
             <span className="badge-detail">
               {' '}
               / 見込 <span className="num">{yen(d.incomeEstimate)}</span>
             </span>{' '}
             {STATUS_LABEL[d.status]}
+          </span>
+        ) : (
+          /*
+           * 実バッジ(上の分岐)と同じ入れ子・同じ桁数のダミーで幅を予約する。
+           * .badge-detail まで含めないと広幅で予約幅が実バッジより短くなり、
+           * 取得完了時にヘッダーが横に伸びて CLS が出る。
+           */
+          <span className="badge header-defense header-defense-placeholder" aria-hidden="true">
+            防衛線 <span className="num">¥000,000</span>
+            <span className="badge-detail">
+              {' '}
+              / 見込 <span className="num">¥000,000</span>
+            </span>{' '}
+            要注意
           </span>
         )}
         {unrec.length > 0 && (
