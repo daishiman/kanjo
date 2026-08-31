@@ -38,18 +38,36 @@ const TIMEOUT_MS = 4000;
 const STATIC_CSS = `*,*::before,*::after{animation:none!important;transition:none!important;
   animation-delay:0s!important;animation-duration:0s!important;caret-color:transparent!important}`;
 
+/**
+ * @font-face かどうかを cssText から判定する。
+ * `instanceof CSSFontFaceRule` は使わない。この識別子を公開しない実行環境があり、
+ * 未定義だと instanceof 自体が TypeError を投げて、規則ではなくシート全体が失われる。
+ */
+function isFontFaceRule(rule: CSSRule): boolean {
+  return rule.cssText.trimStart().startsWith('@font-face');
+}
+
 /** 同一オリジンの CSS をまとめる。cross-origin の stylesheet は cssRules が読めないので飛ばす */
 function collectCss(doc: Document): string {
   const chunks: string[] = [];
   for (const sheet of Array.from(doc.styleSheets)) {
+    let rules: CSSRule[];
     try {
-      for (const rule of Array.from((sheet as CSSStyleSheet).cssRules)) {
-        // @font-face は foreignObject 内で解決できず、解決待ちで文字が消える環境がある
-        if (rule instanceof CSSFontFaceRule) continue;
-        chunks.push(rule.cssText);
-      }
+      rules = Array.from((sheet as CSSStyleSheet).cssRules);
     } catch {
       // cross-origin。読めないものは諦める
+      continue;
+    }
+    for (const rule of rules) {
+      // 1 規則の失敗でシート全体を捨てない。捨てるとページ CSS が丸ごと消え、
+      // 無スタイルのまま焼き付く (サイドバーしか写らない不具合と同じ結果になる)
+      try {
+        // @font-face は foreignObject 内で解決できず、解決待ちで文字が消える環境がある
+        if (isFontFaceRule(rule)) continue;
+        chunks.push(rule.cssText);
+      } catch {
+        // 読めない規則だけを飛ばす
+      }
     }
   }
   return chunks.join('\n');

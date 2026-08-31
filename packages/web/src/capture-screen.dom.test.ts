@@ -63,6 +63,33 @@ describe('撮影対象の組み立て', () => {
     expect(stopRule).toBeGreaterThan(pageRule);
   });
 
+  it('CSSFontFaceRule を持たない環境でもページ側 CSS を落とさない', () => {
+    // instanceof CSSFontFaceRule に頼ると、この識別子が無い環境で TypeError になり
+    // シート全体が catch に飲まれて消える。実際 jsdom 26 と一部ブラウザがこれに当たる
+    const g = globalThis as { CSSFontFaceRule?: unknown };
+    const saved = g.CSSFontFaceRule;
+    // biome-ignore lint/performance/noDelete: グローバル未定義そのものを再現する
+    delete g.CSSFontFaceRule;
+    try {
+      setupPage();
+      expect(svg()).toContain('page-in');
+    } finally {
+      if (saved !== undefined) g.CSSFontFaceRule = saved;
+    }
+  });
+
+  it('@font-face だけを外し、同じシートの他の規則は残す', () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @font-face { font-family: Foo; src: url(https://example.test/foo.woff2); }
+      .after-font { color: rgb(1, 2, 3); }
+    `;
+    document.head.append(style);
+    const out = svg();
+    expect(out).not.toContain('@font-face');
+    expect(out).toContain('.after-font');
+  });
+
   it('遅延つきアニメーションも 0 に潰す(遅延中は開始前の状態で焼き付くため)', () => {
     setupPage();
     const out = svg();

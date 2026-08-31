@@ -74,6 +74,33 @@
       "referenced_by": []
     },
     {
+      "id": "arch-improvement-request-pipeline",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend",
+        "backend",
+        "data",
+        "security",
+        "infrastructure"
+      ],
+      "title": "改善要望の収集・受け渡し・失効の境界",
+      "file_path": "architecture/arch-improvement-request-pipeline.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/index.md",
+        "source_version": "0.1.11",
+        "source_digest": "3be8aad9e13b562e1c1365d327633fbfe6e665e3c687ea4f3aba90a156bc8254",
+        "imported_at": "2026-08-31T00:00:00Z"
+      },
+      "referenced_by": [
+        "feat-improvement-request"
+      ]
+    },
+    {
       "id": "arch-mobile-financial-experience",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -89,8 +116,8 @@
         "source_plugin": "system-spec-harness",
         "source_path": "system-spec/ui-ux.md",
         "source_version": "0.1.11",
-        "source_digest": "fbd336e38b9ea195c110b680c41d9bef18d7c98353787fa3d1ef784de52ca5d1",
-        "imported_at": "2026-08-30T09:25:39Z"
+        "source_digest": "7638a33287d1cf64541556c0ff6c2bb01177112d0b593fb25f14069a2bf82e70",
+        "imported_at": "2026-08-31T00:00:00Z"
       },
       "referenced_by": [
         "feat-mobile-financial-visualization"
@@ -112,8 +139,8 @@
         "source_plugin": "system-spec-harness",
         "source_path": "system-spec/frontend.md",
         "source_version": "0.1.11",
-        "source_digest": "7bb30af6d3a0c9aa4d2cb7a497f47cda3700b4294de3f9a49ff2f5747b066562",
-        "imported_at": "2026-08-30T09:25:39Z"
+        "source_digest": "a1e7983b026e86e7add4a160a17add636815798ccb226cc20f9114fb08d3153b",
+        "imported_at": "2026-08-31T00:00:00Z"
       },
       "referenced_by": [
         "feat-mobile-financial-visualization"
