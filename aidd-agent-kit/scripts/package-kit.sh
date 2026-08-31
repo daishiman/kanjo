@@ -56,6 +56,36 @@ case "$NODE_MIN_MAJOR" in
 esac
 NODE_REQUIREMENT="Node.js $NODE_MIN_MAJOR 以上"
 
+# UTF-8 として妥当かを、環境に左右されずに判定する。
+#
+# ここでは iconv を使ってはいけない。
+#   * macOS 標準の /usr/bin/iconv は、全バイトを変換し切ったあとに
+#     errno の取りこぼし (ENOTTY) をそのまま終了状態 1 として返すことがある。
+#     同じファイルでも出力先が /dev/null か実ファイルかで結果が変わる。
+#     つまり終了状態が「入力が UTF-8 か」を表していない。
+#   * PATH に Homebrew や conda の GNU libiconv が入っていると、そちらは
+#     正しく 0 を返す。結果として「開発者の手元では通り、CI では落ちる」
+#     検査になる (実際にそうなった)。
+# 判定の根拠を、どの iconv が先に見つかるかではなく、UTF-8 の規格そのものに置く。
+if command -v python3 >/dev/null 2>&1; then
+  UTF8_CHECKER=python3
+else
+  # 黙って検査を飛ばさない。判定できないことは合格ではない。
+  echo "  [NG] python3 が無いため UTF-8 判定ができない" >&2
+  exit 1
+fi
+
+utf8_ok() {
+  "$UTF8_CHECKER" - "$1" <<'PY'
+import sys
+try:
+    with open(sys.argv[1], 'rb') as f:
+        f.read().decode('utf-8')
+except Exception:
+    sys.exit(1)
+PY
+}
+
 # --- 2. Windows 向けファイルの改行コードと BOM -------------------------
 # cmd.exe はバッチをバイトオフセットで読むため、LF のみだと goto / call :LABEL /
 # ( ... ) ブロックが壊れる。PowerShell 5.1 は BOM なしを CP932 として読むため、
@@ -81,7 +111,7 @@ check_win_file() {
     fi
     return
   fi
-  if ! iconv -f UTF-8 -t UTF-8 "$path" >/dev/null 2>&1; then
+  if ! utf8_ok "$path"; then
     fail "$label が UTF-8 として読めない"
     return
   fi
