@@ -302,6 +302,62 @@ for f in $(find "$KIT_DIR" \( -name '*.ps1' -o -name '*.bat' \)); do
   fi
 done
 
+# --- 5-d. cmd.exe の括弧ブロックの中で文が切られていないこと ---------------
+# cmd.exe は if ( ... ) else ( ... ) や for ... do ( ... ) を、実行前にブロック
+# ごと解析する。その中に生の ) があるとそこがブロックの終わりとして解釈され、
+# 続く語が文の先頭になって「xxx was unexpected at this time.」で即死する。
+#   例: echo (1/4) pnpm はインストール済みです   -> pnpm was unexpected...
+# 同じ文字列でもブロックの外なら壊れるため、文字列だけを見ても判定できない。
+# 括弧の深さを数えながら見る必要がある。macOS では一切再現しない。
+paren_report=$(python3 - "$KIT_DIR" <<'PY'
+import glob
+import os
+import re
+import sys
+
+kit = sys.argv[1]
+
+
+def strip_noise(line):
+    """深さの計算から外すもの。"""
+    if re.match(r'(?i)^\s*rem\b', line):
+        return ''
+    s = re.sub(r'\^.', '', line)          # ^( ^) は文字であって括弧ではない
+    s = re.sub(r'"[^"]*"', '', s)         # 引用符の中は解析されない
+    # echo( は「空文字や記号でも安全に出す」ための定型で、ブロックを開かない。
+    # ここを括弧として数えると深さが以後ずっとずれ、正常な行を大量に NG にする。
+    # 行頭とは限らない (& で連結された後にも出る) ので \b で拾い、ECHO( も見る。
+    # 除外はこの形だけに絞る。この検査は落ちると ZIP を作らないため、
+    # 誤検出のコストは「配れない」であり、緩めに倒す方が安全側になる。
+    s = re.sub(r'(?i)\becho\(', 'echo ', s)
+    return s
+
+
+for path in sorted(glob.glob(os.path.join(kit, '**', '*.bat'), recursive=True)):
+    depth = 0
+    with open(path, encoding='utf-8', newline='') as f:
+        lines = f.read().splitlines()
+    for i, raw in enumerate(lines, 1):
+        line = raw.strip()
+        if depth > 0 and re.match(r'(?i)^(echo|set)\b', line):
+            bare = re.sub(r'\^.', '', line)
+            bare = re.sub(r'"[^"]*"', '', bare)
+            bare = re.sub(r'(?i)^echo\(', 'echo ', bare)
+            if '(' in bare or ')' in bare:
+                print('%s:%d: %s' % (os.path.relpath(path, kit), i, line))
+        s = strip_noise(raw)
+        depth = max(0, depth + s.count('(') - s.count(')'))
+PY
+)
+if [ -n "$paren_report" ]; then
+  printf '%s\n' "$paren_report" | while IFS= read -r line; do
+    fail "括弧ブロックの中に生の ( ) がある -> $line"
+  done
+  FAILED=1
+else
+  pass "cmd.exe の括弧ブロックの中で文が切られていない"
+fi
+
 # --- 6. Mac の環境差(Intel / Apple Silicon / Node の入れ方) --------------
 # 静的検査では「PATH の組み立てが正しいか」までは分からない。
 # 実機を用意する代わりに環境を注入して確かめる。
