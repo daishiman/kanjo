@@ -1,24 +1,74 @@
 {
   "references": [
     {
-      "target_id": "cloudflare-d1-migrations",
-      "retrieved_at": "2026-08-27T03:38:13Z",
-      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
+      "target_id": "cloudflare-d1-limits",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "D1 の上限。Free プランでは 1データベースあたり最大 500 MB、アカウント総ストレージ 5 GB、データベース数 1〜10、Time Travel (時点復旧) の保持は 7 日。Worker 1回の呼び出しあたりのクエリ本数は Free で 50、Paid で 1000。1テーブルあたりの列数は 100、行数は無制限 (ストレージ上限まで)。1行または文字列/BLOB の最大は 2,000,000 バイト、SQL 文の最大長は 100,000 バイト、1クエリのバインドパラメータ上限は 100、SQL の最大実行時間は 30 秒。batch 内の個々の文にも同じ上限が適用される。本件では (a) undo 退避テーブルを D1 に置く場合、単一データベース 500 MB (Free) が実質の容量上限になること、(b) 既存実装の D1_FREE_QUERY_LIMIT=50 が Free の 'Queries per Worker invocation 50' に由来する制約であり、削除・退避・3点比較の各処理を分割実行しなければ超過すること、(c) Time Travel が Free で 7 日しか遡れないため、undo をプラットフォーム機能に依存せず自前の退避テーブルで持つ必要があること、を裏付ける。"
+    },
+    {
+      "target_id": "cloudflare-d1-pricing",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/d1/platform/pricing/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "D1 の課金は使用量 (rows read / rows written)、スケールトゥゼロ (クエリを流さない間は計算資源の課金なし)、ストレージ (プラン込み分を超えた分のみ) の3軸。Workers Free では rows read 500万/日、rows written 10万/日、ストレージ 5 GB (総量) が含まれる。Workers Paid では rows read 月250億まで込みで超過分 $0.001/百万行、rows written 月5000万まで込みで超過分 $1.00/百万行、ストレージ 5 GB 込みで超過分 $0.75/GB-月。rows read は行のサイズによらず走査した行数を数えるため、索引の効かない絞り込みは返す行数より多くの読取を計上する。rows written は INSERT / UPDATE / DELETE すべてが対象になる。本件では、削除時に退避行を書き込む設計が rows written を二重に消費すること (削除 1 行 + 退避 1 行)、および Free の 10万 rows written/日 が大量削除+退避で到達しうることを裏付ける。"
+    },
+    {
+      "target_id": "cloudflare-r2-pricing",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/r2/pricing/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-08-07",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "R2 の課金はストレージ量と2種の操作クラス。Standard ストレージは $0.015/GB-月、Class A 操作 (状態を変えるもの) $4.50/百万リクエスト、Class B 操作 (既存状態を読むもの) $0.36/百万リクエスト、インターネットへの下り転送は無料。無料枠は月あたりストレージ 10 GB-月、Class A 100万リクエスト、Class B 1000万リクエスト。課金単位は切り上げで、100万1操作は200万操作として計上される。本件では、undo スナップショットを R2 に置く案について、退避のたびに Class A 操作が発生し切り上げ課金の対象になること、および下り無料のため復元時の読み出しは転送費がかからないことを裏付ける。"
+    },
+    {
+      "target_id": "cloudflare-r2-limits",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/r2/platform/limits/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-06-08",
-      "latest_checked_at": "2026-08-27T03:38:13Z",
-      "summary": "D1 のスキーマ版管理は migrations フォルダ配下の連番 .sql ファイルで行い、適用済みの記録はデータベース内の d1_migrations テーブルに残る。機能は create (空ファイル生成) / list (未適用の列挙) / apply (残りの適用) の3つで、ファイルは連番順に列挙され未適用分だけが apply で適用される。--local はローカル SQLite、--remote は Cloudflare ネットワーク上の本番D1を対象とする。binding 名は変わり得るがデータベース名は不変のため、誤った binding への適用を避けるにはデータベース名の指定が推奨される。外部キー制約に抵触する変更では PRAGMA defer_foreign_keys = true を用いる。既定の探索対象は migrations_dir 直下の .sql で、2026-05-29 に追加された migrations_pattern により Drizzle 等の入れ子レイアウト (migrations/0001_init/migration.sql) も glob 指定で扱えるようになった (既定値は ${migrations_dir}/*.sql のため既存構成は無変更で動作する)。本件の kanjo-db は既定レイアウト (migrations/*.sql) であり、d1_migrations の記録が 0005 までで migrations/ 配下の 0006〜0014 が未適用である事実を list コマンドで機械判定できる。"
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "R2 の上限。バケットあたりのデータ量とオブジェクト数は無制限、アカウントあたりのバケット数は100万。オブジェクトキー長は1,024バイト、メタデータは8,192バイト、1オブジェクトは最大 5 TiB、単発アップロードは 5 GiB (マルチパートで 4.995 TiB)、アップロードのパート数は最大 10,000。同一キーへの同時書込は毎秒1回まで。本件では、undo スナップショットを R2 に置く場合に容量面の制約は事実上ないが、同一キーへの秒1回の書込制限があるため、退避オブジェクトのキー設計で削除操作ごとに一意なキーを振る必要があることを裏付ける。"
     },
     {
-      "target_id": "cloudflare-wrangler-d1-config",
-      "retrieved_at": "2026-08-27T03:38:13Z",
-      "source_url": "https://developers.cloudflare.com/workers/wrangler/configuration/",
+      "target_id": "git-merge-three-way",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://git-scm.com/docs/git-merge",
+      "official_publisher": "Git",
+      "official_host": "git-scm.com",
+      "last_updated": "2026-04-20",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "git-merge の公式マニュアル (2.54.0 時点で更新)。3方向マージは共通祖先 (merge base)・自分側の変更・相手側の変更の3点を突き合わせ、片側だけが変更した箇所は自動的にその変更を採り、双方が同じ箇所を変更した場合だけを衝突として作業ツリーへ残し、利用者の判断を求める。衝突は自動的にどちらかを選ばず、両者を並べて提示する。本件の『先月と今月で内容が食い違うとき、どちらが正しいかを判定する』要件は構造的にこれと同型であり、前回取込時の原本値 (base) を共通祖先、利用者の手当てを自分側の変更、新しい取込元の値を相手側の変更とみなせば、片側しか変わっていない箇所は機械的に決まり、双方が変わった箇所だけを提示すればよいという設計指針を裏付ける。"
+    },
+    {
+      "target_id": "sqlite-upsert",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://www.sqlite.org/lang_upsert.html",
+      "official_publisher": "SQLite",
+      "official_host": "www.sqlite.org",
+      "last_updated": "2026-08-30",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "SQLite の UPSERT は INSERT に ON CONFLICT 句を付け、一意制約に反する挿入を UPDATE または no-op へ振り替える構文。ON CONFLICT と DO の間に書く衝突対象 (conflict target) が、どの一意制約で発火するかを指定する。複数の ON CONFLICT 句は記述順に評価され、最後の句だけ衝突対象を省略できる。挿入が衝突対象の一意制約に反する場合、挿入は行われず対応する DO NOTHING / DO UPDATE が実行される。本件では、tx_edits (PRIMARY KEY(user_id, tx_id)) や新設する vendor_memory (PRIMARY KEY(user_id, vendor_key)) の更新を、存在確認の SELECT を挟まず1文で行えることを裏付ける。これは D1 の Free で 50 に制限されたクエリ本数を節約する上で重要である。"
+    },
+    {
+      "target_id": "cloudflare-workers-ai-pricing",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/workers-ai/platform/pricing/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-08-13",
-      "latest_checked_at": "2026-08-27T03:38:13Z",
-      "summary": "Wrangler 設定の d1_databases バインディングでは migrations_dir で移行ファイル置き場を、migrations_table で適用記録テーブル名を、migrations_pattern で探索 glob を指定できる。migrations_dir はモノレポ構成で複数の apps/packages が単一の D1 インスタンスを共有する用途を明示的に想定した設定項目である。migrations_pattern は Wrangler 設定ファイルからの相対 glob で既定は migrations/*.sql、設定する場合は migrations_dir も必須かつ migrations_pattern が migrations_dir で始まる必要があり、各マイグレーション名は migrations_dir からの相対パスとして記録テーブルに残る。本プロジェクトの packages/api/wrangler.jsonc は migrations_dir を ../../migrations に設定し migrations_pattern を持たないため、リポジトリ直下 migrations/ の *.sql が本番D1のスキーマ正本であることを裏付ける。"
+      "last_updated": "2026-08-28",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "Workers AI は Free / Paid いずれの Workers プランにも含まれ、$0.011 / 1,000 Neurons で課金される。無料枠は1日あたり合計 10,000 Neurons で、これを超えるには Workers Paid が必要となり、超過分は $0.011 / 1,000 Neurons で課金される。上限は毎日 00:00 UTC にリセットされ、超過した時点で以降の操作はエラーになる。本件では、明細の分類を推論モデルへ委ねる案について、(a) 1日 10,000 Neurons の無料枠は毎月数百〜数千件の明細を分類するには早期に枯渇しうること、(b) 超過時に操作がエラーになるため取込処理が推論の可用性に依存すること、(c) 費用が明細件数に比例して発生することを裏付ける。"
     }
   ]
 }

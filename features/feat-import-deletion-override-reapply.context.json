@@ -1,0 +1,50 @@
+{
+  "graph_node_id": "feat-import-deletion-override-reapply",
+  "artifact_kind": "feature",
+  "purpose": "取り込んだあとに取込元が動く以上、帳簿を最新へ収束させる手段が要る。いま削除APIは1本も無く、上書きの判断は実装に固定され、利用者が一度直した科目・公私区分は次の取込で消える。消す・選ぶ・戻すを利用者の手に渡し、一度した手当てを二度させない。",
+  "goal": "取込単位・期間単位・種別単位・全件の4粒度で消せ、実行前に巻き添えを見せ、実行後に戻せる。取込のたびの3点比較で手当てが自動的に維持され、真の衝突だけが行として提示され、取引先単位の決め事が蓄積して問われる件数が逓減する。",
+  "scope_in": [
+    "取込単位/期間/種別/全件の4粒度削除",
+    "実行前 preflight と確認指紋",
+    "D1退避テーブルによる undo と有限保持",
+    "削除・上書きの監査記録",
+    "取込実行前の差分プレビュー",
+    "base/current/incoming の3点比較による手当ての継続再適用",
+    "tx_edits への base_cls / base_owner / stable_key 追加",
+    "取引先単位の決め事(vendor_memory)と確信度",
+    "決め事の一覧・取消・pin・再判定"
+  ],
+  "scope_out": [
+    "freee・マネーフォワード側のデータ変更",
+    "Time Travel を undo の代替とすること",
+    "overrides テーブルの復活",
+    "既存の月単位洗い替え・POST /restore の挙動変更",
+    "分割記帳そのものの不変条件",
+    "証憑原本の lifecycle"
+  ],
+  "acceptance": [
+    "取込履歴から任意の取込を取り消せ、その import_id を参照する行が0件になり、他の取込由来の明細が1件も減らない",
+    "月・期間・種別・全件を指定した削除で指定範囲外のデータが1件も変化しない",
+    "削除の確認画面に対象件数・対象期間・巻き添えになる手動記録の件数が出る",
+    "確認指紋が一致しない実行が409で拒否され、状態が動かない",
+    "実行直後の取り消しで各テーブルの行数と内容が実行前と完全に一致する",
+    "保持期間を過ぎた undo が410で拒否され、退避行が掃除されている",
+    "削除後に import_active_targets の指紋が巻き戻り、同じファイルを duplicate にならず入れ直せる",
+    "監査記録に操作種別・範囲・件数・日時が残り、明細本体・金額がログとエラー応答に含まれない",
+    "base == incoming の属性で手当てが維持され、双方が変わった属性だけが衝突として提示される",
+    "MF側で tx_id が振り直されても stable_key で手当てが追随する",
+    "適用の優先順位が tx_edits > rules > vendor_memory > 取込原本値 の順で解決される",
+    "確信度が閾値未満の決め事は自動適用されず候補提示に留まり、取り消すと再判定で戻せる",
+    "通常幅5,000行の取込に対する3点比較と書戻しが 49 D1 queries 以内に収まる",
+    "削除・上書きが freee・マネーフォワード側へ一切波及しない"
+  ],
+  "architecture_refs": [
+    "architecture/arch-import-deletion-undo-boundary.md",
+    "architecture/arch-override-reapply-three-way-merge.md",
+    "specs/import-deletion-and-override-reapply.md",
+    "system-spec/spec-state.json",
+    "docs/spec-v1.1.md",
+    "docs/data-schema.md"
+  ],
+  "updated_at": "2026-08-31T00:00:00Z"
+}
