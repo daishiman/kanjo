@@ -38,9 +38,9 @@ if %errorlevel%==0 (
         echo pnpm のインストールを修復してから、もう一度実行してください。
         goto :fail
     )
-    echo (1/4) pnpm はインストール済みです ^(!PNPM_VERSION!^)
+    echo ^(1/4^) pnpm はインストール済みです ^(!PNPM_VERSION!^)
 ) else (
-    echo (1/4) pnpm をインストールしています(1〜2分)...
+    echo ^(1/4^) pnpm をインストールしています^(1〜2分^)...
     powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr https://get.pnpm.io/install.ps1 -useb | iex"
     set "PATH=%PNPM_HOME%;%PATH%"
     call :GET_TOOL_VERSION pnpm PNPM_VERSION
@@ -68,7 +68,7 @@ if %errorlevel%==0 (
     call :ENSURE_NODE_OK
     if errorlevel 1 goto :fail
 ) else (
-    echo       Node.js をインストールしています(2〜3分)...
+    echo       Node.js をインストールしています^(2〜3分^)...
     call pnpm env use --global lts
     set "PATH=%PNPM_HOME%;%PATH%"
     call :GET_TOOL_VERSION node NODE_VERSION
