@@ -12,7 +12,19 @@ describe('確定申告cold-loadの性能・操作領域契約', () => {
     expect(APP).toMatch(/tax:\s*TaxReturnPage,/);
     expect(APP).not.toContain("import('./pages/TaxReturn.js')");
     expect(APP).toContain("import('./pages/TaxReceipts.js')");
-    expect(PACKAGE).toContain('check-initial-js-budget.mjs');
+  });
+
+  // 予算は「mergeを止める」ためだけにあり、「本番配信を止める」ためには無い。
+  // 文字列の存在だけを見ると、buildから検査が外れてもbuild:artifact側に残っていれば
+  // 緑のままになる。どちらのscriptが呼ぶかまで固定する。
+  it('初期JS予算をPRゲートのbuildで強制し、本番配信のbuild:artifactでは強制しない', () => {
+    const scripts = JSON.parse(PACKAGE).scripts as Record<string, string>;
+    expect(scripts['check:js-budget']).toContain('check-initial-js-budget.mjs');
+    expect(scripts.build).toContain('check:js-budget');
+    expect(scripts['build:artifact']).not.toContain('check:js-budget');
+    // 検査の有無にかかわらず、内部manifestは配信物から必ず除く
+    expect(scripts.build).toContain('strip:manifest');
+    expect(scripts['build:artifact']).toContain('strip:manifest');
   });
 
   it('対象年・科目・保存・空状態・exportの主要操作を44px以上へ揃える', () => {
