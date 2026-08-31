@@ -194,8 +194,8 @@ the only verdict that opens P11, after all recorded high/medium findings were cl
 
 ## Post-close-out independent re-review — PASS
 
-- Reviewed digest: `7eb4f647552b06eb6b88d6d44b6ac963416992dd00530a26fd0fabe0e120c717`
-  - **過去の値 (消さずに残す)**: 第1世代 `6bb30856604f1dd065d78f707fd45771942a40ce00a15f5dd501f8aca144080a`（算出方法・対象ファイル集合が記録されておらず、以降の値とは**比較できない**）／第2世代 `866cee535cba13facc6494a449021036dd240f96ed5e12b2b1fa84933b4d999e`（`source-digest.mjs` 導入後の実計算値。M03 実装で対象3ファイルが変わったため第3世代へ）。digest は working tree のスナップショットであり、対象15ファイルが変われば動くのが正常。値そのものを追うのではなく、`mobile-viewport-results.json` の `digestInputs` でその値が何を測ったかを見ること。詳細は `phase-11-reproducible-evidence.md` の Addendum。
+- Reviewed digest: `a81b0e0f564e7c82e4bf6ac6f7506d35de32582647f42178e63ba56a837745df`
+  - **過去の値 (消さずに残す)**: 第1世代 `6bb30856604f1dd065d78f707fd45771942a40ce00a15f5dd501f8aca144080a`（算出方法・対象ファイル集合が記録されておらず、以降の値とは**比較できない**）／第2世代 `866cee535cba13facc6494a449021036dd240f96ed5e12b2b1fa84933b4d999e`（`source-digest.mjs` 導入後の実計算値。M03 実装で対象3ファイルが変わったため第3世代へ）／第3世代 `7eb4f647552b06eb6b88d6d44b6ac963416992dd00530a26fd0fabe0e120c717`（M03 で3ファイルが変わった値。CI 赤 (#66) を受けた M04 で `mobile-financial-visualization.dom.test.tsx` の1ファイルが変わり第4世代へ）。digest は working tree のスナップショットであり、対象15ファイルが変われば動くのが正常。値そのものを追うのではなく、`mobile-viewport-results.json` の `digestInputs` でその値が何を測ったかを見ること。詳細は `phase-11-reproducible-evidence.md` の Addendum。
 - Reviewer: `/root/mobile_implementation/mobile_design_review` (Nash)
 - Independence: read-only; source, test, evidence, and tracker were not modified
 - Verdict: **PASS**

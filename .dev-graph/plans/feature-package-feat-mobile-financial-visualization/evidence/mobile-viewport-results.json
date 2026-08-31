@@ -1,28 +1,15 @@
 {
   "schemaVersion": 3,
   "featureId": "feat-mobile-financial-visualization",
-  "sourceDigest": "7eb4f647552b06eb6b88d6d44b6ac963416992dd00530a26fd0fabe0e120c717",
+  "sourceDigest": "a81b0e0f564e7c82e4bf6ac6f7506d35de32582647f42178e63ba56a837745df",
   "digestInputs": {
     "algorithm": "sha256",
     "method": "sha256(各対象ファイルについて \"<ファイルのsha256>  <packages/webからの相対パス>\\n\" をパスの昇順(コードポイント順)で連結した文字列)",
     "root": "packages/web",
     "commit": {
-      "sha": "6b98b32e99100a29ca9e6ad567a26f2f596c2867",
+      "sha": "3956bac1f116324f545ed6cc285f0d8fc5fa1748",
       "sourcesMatchCommit": false,
       "uncommittedSources": [
-        "packages/web/scripts/check-financial-visuals.mjs",
-        "packages/web/src/components/FinancialCharts.tsx",
-        "packages/web/src/components/ReportChart.tsx",
-        "packages/web/src/components/charts.ts",
-        "packages/web/src/styles.css",
-        "packages/web/scripts/cdp.mjs",
-        "packages/web/scripts/check-mobile-financial-layout.mjs",
-        "packages/web/scripts/source-digest.mjs",
-        "packages/web/scripts/viewports.mjs",
-        "packages/web/src/components/FinancialFigure.tsx",
-        "packages/web/src/components/figure-view-model.ts",
-        "packages/web/src/mobile-financial-layout.test.ts",
-        "packages/web/src/mobile-financial-visualization-render.test.ts",
         "packages/web/src/mobile-financial-visualization.dom.test.tsx"
       ]
     },
@@ -81,7 +68,7 @@
       },
       {
         "path": "src/mobile-financial-visualization.dom.test.tsx",
-        "sha256": "54e116f03235c7640c64f09465bb68f9ca9ff8fe2d8686717cc583d8478341a6"
+        "sha256": "c44e169baf23f41963478e5a645487e2fba3ed5e16e3a76950375ce1aa542e57"
       },
       {
         "path": "src/styles.css",
@@ -89,8 +76,8 @@
       }
     ]
   },
-  "startedAt": "2026-08-31T00:00:22.865Z",
-  "completedAt": "2026-08-31T00:00:25.785Z",
+  "startedAt": "2026-08-31T01:10:53.074Z",
+  "completedAt": "2026-08-31T01:10:55.917Z",
   "runtime": {
     "node": "v22.21.1",
     "chrome": "Chrome/151.0.7922.174",

@@ -3,8 +3,8 @@
 - Task: `SYS-MOBFIN-P11`
 - Result: **PASS**
 - Source/test digest:
-  `7eb4f647552b06eb6b88d6d44b6ac963416992dd00530a26fd0fabe0e120c717`
-  - **過去の値 (消さずに残す)**: 第1世代 `6bb30856604f1dd065d78f707fd45771942a40ce00a15f5dd501f8aca144080a`（算出方法・対象ファイル集合が記録されておらず、以降の値とは**比較できない**）／第2世代 `866cee535cba13facc6494a449021036dd240f96ed5e12b2b1fa84933b4d999e`（`source-digest.mjs` 導入後の実計算値。M03 実装で対象3ファイルが変わったため第3世代へ）。digest は working tree のスナップショットであり、対象15ファイルが変われば動くのが正常。値そのものを追うのではなく、`mobile-viewport-results.json` の `digestInputs` でその値が何を測ったかを見ること。詳細は `phase-11-reproducible-evidence.md` の Addendum。
+  `a81b0e0f564e7c82e4bf6ac6f7506d35de32582647f42178e63ba56a837745df`
+  - **過去の値 (消さずに残す)**: 第1世代 `6bb30856604f1dd065d78f707fd45771942a40ce00a15f5dd501f8aca144080a`（算出方法・対象ファイル集合が記録されておらず、以降の値とは**比較できない**）／第2世代 `866cee535cba13facc6494a449021036dd240f96ed5e12b2b1fa84933b4d999e`（`source-digest.mjs` 導入後の実計算値。M03 実装で対象3ファイルが変わったため第3世代へ）／第3世代 `7eb4f647552b06eb6b88d6d44b6ac963416992dd00530a26fd0fabe0e120c717`（M03 で3ファイルが変わった値。CI 赤 (#66) を受けた M04 で `mobile-financial-visualization.dom.test.tsx` の1ファイルが変わり第4世代へ）。digest は working tree のスナップショットであり、対象15ファイルが変われば動くのが正常。値そのものを追うのではなく、`mobile-viewport-results.json` の `digestInputs` でその値が何を測ったかを見ること。詳細は `phase-11-reproducible-evidence.md` の Addendum。
 - Environment: macOS arm64, Node.js v22.21.1, pnpm 10.9.0
 - Chrome path: `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
 - Chrome version: 151.0.7922.174
@@ -82,7 +82,7 @@ P12 handoff gate: **OPEN**.
 
 | 何を知りたいか | どこを見るか |
 |---|---|
-| 値 | `mobile-viewport-results.json` の `sourceDigest` = `866cee535cba13facc6494a449021036dd240f96ed5e12b2b1fa84933b4d999e` |
+| 値 | `mobile-viewport-results.json` の `sourceDigest`（世代ごとに動く。**この表に値を書き写さない**。書き写した瞬間に、JSON が測った値ではなく人が転記した文字列になるため。現行値は下の世代表を見ること） |
 | 何を対象に測ったか | 同 JSON の `digestInputs.sources` — 対象15ファイルの相対パスと個別 sha256 |
 | どう算出したか | 同 JSON の `digestInputs.method` / `algorithm` / `root`（実行時の値として出力）と、正本コード `packages/web/scripts/source-digest.mjs` の `DIGEST_SOURCES` / `DIGEST_METHOD` |
 
@@ -91,10 +91,12 @@ P12 handoff gate: **OPEN**.
 
 ### 独立検算 (2026-08-31)
 
-`digestInputs.method` の説明文だけを読んで別実装（Python）で再計算し、
-`866cee53…` が一致することを確認した。相手のスクリプトは呼んでいない
-（呼べば「同じコードが同じ値を出す」ことしか言えないため）。
+`digestInputs.method` の説明文だけを読んで別実装（Python）で再計算し、一致することを確認した。
+相手のスクリプトは呼んでいない（呼べば「同じコードが同じ値を出す」ことしか言えないため）。
 `digestInputs.sources` 15件の個別ハッシュも全件 working tree と一致。
+
+この検算は世代ごとに実施している。第2世代 `866cee53…`、第4世代 `a81b0e0f…` のいずれも
+別実装での再計算が一致した。
 
 ### `--source-digest=` は廃止された
 
@@ -108,11 +110,11 @@ JSON に別の値が入ってしまうためである。
 
 `digestInputs.commit` に以下が入る。
 
-| 欄 | 今回の値 |
-|---|---|
-| `sha` | `6b98b32e99100a29ca9e6ad567a26f2f596c2867` |
-| `sourcesMatchCommit` | **`false`** |
-| `uncommittedSources` | 15中 **14ファイル**（フェーズ3の変更が未コミットのため） |
+| 欄 | 第2世代 (当時) | 第4世代 (現行) |
+|---|---|---|
+| `sha` | `6b98b32e99100a29ca9e6ad567a26f2f596c2867` | `3956bac1f116324f545ed6cc285f0d8fc5fa1748` |
+| `sourcesMatchCommit` | **`false`** | **`false`** |
+| `uncommittedSources` | 15中 **14ファイル**（フェーズ3の変更が未コミット） | 15中 **1ファイル**（`mobile-financial-visualization.dom.test.tsx`。M04 の修正が未コミット） |
 
 digest を commit へ固定する設計は採らなかった。固定すると、未コミット状態では
 **digest が実際に測ったソースを指さなくなる**からである。
@@ -129,11 +131,28 @@ digest は **working tree のスナップショット**である。対象15フ�
 |---|---|---|---|
 | 第1世代 | `6bb30856604f1dd065d78f707fd45771942a40ce00a15f5dd501f8aca144080a` | 当時の記録。`--source-digest=` で外から渡したラベル | **無し**。以降の値と比較できない |
 | 第2世代 | `866cee535cba13facc6494a449021036dd240f96ed5e12b2b1fa84933b4d999e` | `source-digest.mjs` 導入後の最初の実計算値 | `digestInputs` に同梱 |
-| 第3世代 | `7eb4f647552b06eb6b88d6d44b6ac963416992dd00530a26fd0fabe0e120c717` | **現行**。M03 (`次の行動` の重複解消) で対象3ファイルが変わった | `digestInputs` に同梱 |
+| 第3世代 | `7eb4f647552b06eb6b88d6d44b6ac963416992dd00530a26fd0fabe0e120c717` | M03 (`次の行動` の重複解消) で対象3ファイルが変わった | `digestInputs` に同梱 |
+| 第4世代 | `a81b0e0f564e7c82e4bf6ac6f7506d35de32582647f42178e63ba56a837745df` | **現行**。CI 赤 (#66) を受けた M04 で `mobile-financial-visualization.dom.test.tsx` の1ファイルが変わった | `digestInputs` に同梱 |
 
 第2→第3の変化は異常ではなく、この設計が意図どおり動いている実例である。
 M03 で `FinancialCharts.tsx` / `figure-view-model.ts` /
 `mobile-financial-visualization.dom.test.tsx` の3ファイルが変わり、値が追従した。
+
+第3→第4も同じ形である。M04 は表の見出しの検証を
+「アクセシブル名の文字列一致」から「表記と読み上げ用の単位を別々に確認」へ変えた変更で、
+対象ファイルは `mobile-financial-visualization.dom.test.tsx` の1件だけ。
+`digestInputs.sources` の個別ハッシュを第3世代と比べれば、動いたのがこの1ファイルであることが特定できる。
+
+M04 の経緯: アクセシブル名は `<th>` の中の
+「ラベルのテキストノード」と「`<span class="visually-hidden">（円）</span>`」を連結して作られる。
+その連結に区切りの空白を入れるかは算出側の実装差で、依存バージョン (jsdom 26.1.0 /
+@testing-library/dom 10.4.1 / dom-accessibility-api 0.5.16) と Node 22 が
+`--frozen-lockfile` で同一にもかかわらず、macOS では `支払先01（円）`、
+CI (Linux) では `支払先01 （円）` になった。**原因の特定には至っていない。**
+名前の文字列一致は契約ではないため、契約 (表記・単位) を直接見る形に変えて依存を断った。
+同時に、20件中2件だけを抜き取っていた検証を**見出し22件の全件固定**に変更している
+(「図は上位6件+他N件に畳むが、表は全支払先を残す」という主張は、抜き取りでは守れないため)。
+畳まれた表を想定した期待値では `22件 vs 8件` で落ちることを確認済み。
 第1→第2との違いは、**第2以降は「何が変わったから値が動いたか」を `digestInputs.sources` の
 個別ハッシュ差分で特定できる**点にある。第1世代にはその手段が無い。
 

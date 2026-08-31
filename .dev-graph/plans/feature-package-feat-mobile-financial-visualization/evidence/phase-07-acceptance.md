@@ -95,9 +95,9 @@ phase: the exact browser inspector now reports 0 px document overflow at 375 px,
 with 44 px normal and 88 px zoomed tap targets. The eight-condition financial
 fixture (訂正 2026-08-31: 現在は 3 条件。末尾の Addendum 参照),
 actual React/Chart.js routes, and 55-file full suite all pass at final
-digest `7eb4f647552b06eb6b88d6d44b6ac963416992dd00530a26fd0fabe0e120c717`
+digest `a81b0e0f564e7c82e4bf6ac6f7506d35de32582647f42178e63ba56a837745df`
 (**訂正 2026-08-31**: 当時の記録値は第1世代 `6bb3085…` だったが算出方法が残っておらず比較できない。
-第2世代 `866cee53…` を経て現在は第3世代。過去の値は phase 冒頭に残置。
+第2世代 `866cee53…`・第3世代 `7eb4f647…` を経て現在は第4世代。過去の値は phase 冒頭に残置。
 世代の整理は `phase-11-reproducible-evidence.md` の Addendum)。
 
 ## Addendum (2026-08-31) — 証跡の訂正: viewport ケース削減と過大報告

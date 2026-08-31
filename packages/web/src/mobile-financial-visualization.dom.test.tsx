@@ -239,8 +239,24 @@ describe('モバイル財務figureの意味同等性', () => {
         .map((item) => item.textContent?.trim()),
     ).toEqual(['支払先20', '支払先19', '支払先18', '支払先17', '支払先16', '支払先15', '他14件']);
     const table = within(figure).getByRole('table', { name: /正確な値/ });
-    expect(within(table).getByRole('columnheader', { name: '支払先01（円）' })).toBeTruthy();
-    expect(within(table).getByRole('columnheader', { name: '支払先20（円）' })).toBeTruthy();
+    // 図は上位6件+他N件へ畳むが、正確な表は20支払先すべてを残す。ここが表の存在理由なので、
+    // 一部を抜き取るのではなく見出しの全件を固定する(畳まれたら件数が合わずに落ちる)。
+    //
+    // アクセシブル名の文字列そのものは見ない。見出しは「ラベルのテキストノード + 単位のspan」の
+    // 2ノードでできており、その連結に区切りの空白を入れるかは算出側の実装差になる
+    // (同一バージョンでも macOS では「支払先01（円）」、CI(Linux)では「支払先01 （円）」)。
+    // 守りたいのは表記と読み上げ用の単位が両方あることなので、その2つを別々に確かめる。
+    const headers = within(table).getAllByRole('columnheader');
+    const headerLabels = headers.map((th) => {
+      const visible = th.cloneNode(true) as HTMLElement;
+      for (const hidden of visible.querySelectorAll('.visually-hidden')) hidden.remove();
+      return visible.textContent?.trim() ?? '';
+    });
+    expect(headerLabels).toEqual(['月', ...vendors, 'その他']);
+    // 数値列は見出し文に単位を出さず、読み上げにだけ渡す。
+    expect(headers.slice(1).map((th) => th.querySelector('.visually-hidden')?.textContent)).toEqual(
+      Array.from({ length: vendors.length + 1 }, () => '（円）'),
+    );
 
     // 集約後の7系列は、凡例チップと図で同じ色でなければ対応が読めない。
     const legend = legendColors(figure);
