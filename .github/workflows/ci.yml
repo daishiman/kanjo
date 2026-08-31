@@ -31,3 +31,301 @@ jobs:
         run: pnpm build
       - name: 依存関係の脆弱性を確認
         run: pnpm audit --prod --audit-level high || echo "::warning::high以上の既知脆弱性があります。詳細はログを確認してください。"
+
+  # 配布キットの品質ゲート。
+  # 改行コード・BOM・実行権限・隔離属性は、いずれも macOS/Windows 実機でだけ
+  # 壊れる。開発者の手元では再現しないため、CIで押さえないと出荷されてしまう。
+  kit-package:
+    name: 配布キット (パッケージ検査)
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: 配布できる状態か検査し、ZIPを作る
+        run: bash aidd-agent-kit/scripts/package-kit.sh
+      - name: 配布物を成果物として残す
+        uses: actions/upload-artifact@v4
+        with:
+          name: aidd-agent-kit-zip
+          path: dist/aidd-agent-kit.zip
+          if-no-files-found: error
+
+  # Windows 実機でインストーラーを通しで動かす。
+  #
+  # 検証の入力は「チェックアウト」ではなく「kit-package が作った ZIP」。
+  # 利用者が手にするのは ZIP の中身であって、リポジトリの作業コピーではない。
+  # 別物を検証していると、ZIP 化で壊れる欠陥(実行権限・改行・ダウンロードの印)
+  # だけが検査をすり抜け、利用者が最初の実行者になってしまう。
+  kit-windows:
+    name: 配布キット (Windows 実機)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    needs: kit-package
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v4
+        with:
+          name: aidd-agent-kit-zip
+          path: ${{ runner.temp }}/dl
+
+      # ダウンロードしてきた状態を再現する。
+      # Windows は「どこから来たか」を Zone.Identifier という副ストリームに
+      # 記録し、これが付いたファイルは実行時に警告や失敗を起こす。
+      # 印は展開前の ZIP に付けるのが本番と同じ順序。解除は展開前が
+      # 最も簡単だが、展開後でもインストーラーの自動回復経路を後段で検証する。
+      - name: ダウンロード直後の ZIP を再現して展開
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = Join-Path $env:RUNNER_TEMP 'dl\aidd-agent-kit.zip'
+          if (-not (Test-Path -LiteralPath $zip)) { throw "ZIP が見つかりません: $zip" }
+          Set-Content -LiteralPath $zip -Stream 'Zone.Identifier' `
+            -Value "[ZoneTransfer]`r`nZoneId=3"
+          $dest = Join-Path $env:RUNNER_TEMP 'kit'
+          Expand-Archive -LiteralPath $zip -DestinationPath $dest -Force
+          $kit = Join-Path $dest 'aidd-agent-kit'
+          if (-not (Test-Path -LiteralPath (Join-Path $kit 'install-windows.bat'))) {
+            throw "展開結果に install-windows.bat がありません: $kit"
+          }
+          # 印が展開先へ伝播したかは Windows の版で変わる。伝播の有無ではなく
+          # 「その状態でも導入できるか」を後段で見るので、ここでは記録に留める。
+          $marked = @(Get-ChildItem -LiteralPath $kit -Recurse -File |
+            Where-Object { Get-Item -LiteralPath $_.FullName -Stream 'Zone.Identifier' `
+              -ErrorAction SilentlyContinue }).Count
+          Write-Host "展開先で印が付いたファイル: $marked"
+          "AIDD_KIT=$kit" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: 展開した ZIP でインストーラーの通し確認
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+            -File "$env:AIDD_KIT\scripts\smoke-windows.ps1" `
+            -KitPath "$env:AIDD_KIT" -AssertMotwRecovery
+          if ($LASTEXITCODE -ne 0) {
+            throw "smoke-windows.ps1 が失敗しました (exit $LASTEXITCODE)"
+          }
+
+      - name: 展開した ZIP で Windows 開発環境セットアップを確認
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+            -File "$env:AIDD_KIT\scripts\smoke-setup-env-windows.ps1" `
+            -KitPath "$env:AIDD_KIT"
+          if ($LASTEXITCODE -ne 0) {
+            throw "smoke-setup-env-windows.ps1 が失敗しました (exit $LASTEXITCODE)"
+          }
+
+  # macOS 実機でインストーラーを通しで動かす。
+  # Windows 側と同じ理由で、入力は kit-package が作った ZIP を展開したもの。
+  kit-macos:
+    name: 配布キット (macOS 実機)
+    runs-on: macos-latest
+    timeout-minutes: 15
+    needs: kit-package
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v4
+        with:
+          name: aidd-agent-kit-zip
+          path: ${{ runner.temp }}/dl
+
+      - name: 配布 ZIP を展開する
+        run: |
+          set -Eeuo pipefail
+          ZIP="$RUNNER_TEMP/dl/aidd-agent-kit.zip"
+          [ -f "$ZIP" ] || { echo "::error::ZIP が見つかりません: $ZIP"; exit 1; }
+          unzip -q "$ZIP" -d "$RUNNER_TEMP/kit"
+          KIT="$RUNNER_TEMP/kit/aidd-agent-kit"
+          [ -f "$KIT/install-mac.command" ] \
+            || { echo "::error::展開結果に install-mac.command がありません"; exit 1; }
+          echo "AIDD_KIT=$KIT" >> "$GITHUB_ENV"
+
+      - name: 隔離属性つきでもインストールできることを確認
+        run: |
+          set -Eeuo pipefail
+          KIT="$AIDD_KIT"
+          # 利用者の手元と同じ状態を作る: 隔離属性つき・実行権限なし。
+          xattr -w com.apple.quarantine "0083;00000000;Safari;" "$KIT/install-mac.command"
+          chmod 644 "$KIT/install-mac.command"
+
+          export AIDD_TARGET_HOME="$RUNNER_TEMP/home"
+          export AIDD_CODEX_TARGET="$RUNNER_TEMP/home/.codex"
+          export AIDD_NONINTERACTIVE=1
+          mkdir -p "$AIDD_TARGET_HOME"
+
+          # ターミナル経由の起動には Gatekeeper が適用されない。ここが利用者への案内と同じ経路。
+          bash "$KIT/install-mac.command"
+
+          # 自己修復が効いていること: 隔離属性が消え、実行権限が戻っている。
+          if xattr "$KIT/install-mac.command" | grep -q com.apple.quarantine; then
+            echo "::error::self_heal_kit が隔離属性を外していない"
+            exit 1
+          fi
+          if [ ! -x "$KIT/install-mac.command" ]; then
+            echo "::error::self_heal_kit が実行権限を戻していない"
+            exit 1
+          fi
+
+          # version ファイルが空でないこと (Windows 側の W-1 と同じ欠陥を Mac でも防ぐ)。
+          for vf in "$AIDD_TARGET_HOME/.claude/aidd-agent-kit.version" \
+                    "$AIDD_CODEX_TARGET/aidd-agent-kit.version"; do
+            [ -s "$vf" ] || { echo "::error::version ファイルが空: $vf"; exit 1; }
+            diff <(tr -d ' \t\r\n' < "$KIT/VERSION") <(tr -d ' \t\r\n' < "$vf") \
+              || { echo "::error::version 不一致: $vf"; exit 1; }
+          done
+          echo "OK: 隔離解除・実行権限・version すべて確認"
+
+      # SHA256 の取り方は環境によって使える道具が違う。
+      # 1つに賭けると、その道具が消えた時点で丸ごと動かなくなる。
+      - name: 照合の道具が1つでも使えれば動くことを確認
+        run: |
+          set -Eeuo pipefail
+          KIT="$AIDD_KIT"
+          sed -n '/^hash_file_list() {/,/^}$/p' "$KIT/install-mac.command" > "$RUNNER_TEMP/hfl.sh"
+          [ -s "$RUNNER_TEMP/hfl.sh" ] || { echo "::error::hash_file_list を取り出せない"; exit 1; }
+
+          mkdir -p "$RUNNER_TEMP/hd"
+          printf 'a\n' > "$RUNNER_TEMP/hd/with space.txt"
+          printf '%s\n' "$RUNNER_TEMP/hd/with space.txt" > "$RUNNER_TEMP/hlist"
+          expected="87428fc522803d31065e7bce3cf03fe475096631e5e07bbd7a0fde60c4cf25c7"
+
+          for backend in shasum openssl perl; do
+            bin="$RUNNER_TEMP/bin-$backend"
+            mkdir -p "$bin"
+            for c in tr xargs sed; do ln -sf "$(command -v "$c")" "$bin/$c"; done
+            ln -sf "$(command -v "$backend")" "$bin/$backend"
+            got=$(env -i PATH="$bin" /bin/bash -c ". '$RUNNER_TEMP/hfl.sh'; hash_file_list" \
+                  < "$RUNNER_TEMP/hlist" | cut -d'|' -f1)
+            [ "$got" = "$expected" ] \
+              || { echo "::error::$backend の結果が違う: $got"; exit 1; }
+            echo "OK: $backend 単独で正しい指紋を出せる"
+          done
+
+          # どれも使えないときは、黙って空を返さず必ず失敗すること。
+          bin="$RUNNER_TEMP/bin-none"
+          mkdir -p "$bin"
+          for c in tr xargs sed; do ln -sf "$(command -v "$c")" "$bin/$c"; done
+          if env -i PATH="$bin" /bin/bash -c ". '$RUNNER_TEMP/hfl.sh'; hash_file_list" \
+             < "$RUNNER_TEMP/hlist" >/dev/null 2>&1; then
+            echo "::error::道具が無いのに成功を返した"
+            exit 1
+          fi
+          echo "OK: 道具が1つも無いときは失敗する"
+
+      # Xcode コマンドラインツール未導入の Mac を模す。
+      # /usr/bin/python3 はそこではスタブで、実行すると利用者の画面に
+      # インストーラーと無関係な GUI ダイアログが出る。触らずに済むこと。
+      - name: python3 が使えない Mac でも導入できることを確認
+        run: |
+          set -Eeuo pipefail
+          KIT="$AIDD_KIT"
+          BIN="$RUNNER_TEMP/nopy-bin"
+          mkdir -p "$BIN"
+          # コマンドを列挙すると列挙漏れが偽陽性になるので、python* だけ外す。
+          for d in /bin /usr/bin /usr/sbin /sbin; do
+            for p in "$d"/*; do
+              [ -f "$p" ] || continue
+              b=$(basename "$p")
+              case "$b" in python*) continue ;; esac
+              [ -e "$BIN/$b" ] || ln -sf "$p" "$BIN/$b"
+            done
+          done
+          if env -i PATH="$BIN" /bin/bash -c 'command -v python3' >/dev/null 2>&1; then
+            echo "::error::python3 を隠せていない"
+            exit 1
+          fi
+
+          H="$RUNNER_TEMP/nopy-home"
+          mkdir -p "$H"
+          env -i PATH="$BIN" HOME="$H" \
+            AIDD_TARGET_HOME="$H" AIDD_CODEX_TARGET="$H/.codex" \
+            AIDD_NONINTERACTIVE=1 \
+            /bin/bash "$KIT/install-mac.command"
+
+          # TOML 検査が awk 版へ落ちても、カスタムエージェントが入ること。
+          n=$(find "$H/.codex/agents" -name '*.toml' 2>/dev/null | wc -l | tr -d ' ')
+          [ "$n" -ge 1 ] || { echo "::error::カスタムエージェントが入っていない"; exit 1; }
+          echo "OK: python3 なしでも導入できた (カスタムエージェント $n 個)"
+
+      # setup-env-mac.command は、これまで一度も実行検査を受けていなかった。
+      # CPU による差(pnpm が取ってくる Node のアーキ)が最も出る場所であり、
+      # かつ「動くけれど嘘の完了を告げる」種類の欠陥が住みつきやすい。
+      #
+      # ランナーのログインシェルが PATH を戻す経路まで含め、通し実行自体を
+      # 隔離 fixture に固定する。ログインシェルが呼ばれたら記録して落とし、
+      # 実行前後の同一環境で実 CLI が不在と機械的に確認する。
+      - name: 環境セットアップの通し確認 (CLI 未導入の利用者)
+        run: |
+          set -Eeuo pipefail
+          KIT="$AIDD_KIT"
+          H="$RUNNER_TEMP/envhome"
+          BIN="$RUNNER_TEMP/env-fixture-bin"
+          SHELL_CALLED="$RUNNER_TEMP/login-shell-was-called"
+          NODE_MIN=$(tr -d ' \t\r\n' < "$KIT/NODE_MIN_MAJOR")
+          case "$NODE_MIN" in
+            ''|*[!0-9]*|0) echo "::error::NODE_MIN_MAJOR が不正: $NODE_MIN"; exit 1 ;;
+          esac
+          mkdir -p "$H" "$BIN"
+
+          cat > "$BIN/node" <<'EOF'
+          #!/bin/bash
+          case "${1:-}" in
+            --version) printf 'v%s.0.0\n' "$AIDD_NODE_MIN" ;;
+            -p) uname -m | sed 's/^x86_64$/x64/' ;;
+            *) exit 1 ;;
+          esac
+          EOF
+          cat > "$BIN/pnpm" <<'EOF'
+          #!/bin/bash
+          [ "${1:-}" = "--version" ] || exit 97
+          echo 9.15.0
+          EOF
+          cat > "$BIN/fixture-login-shell" <<'EOF'
+          #!/bin/bash
+          echo fixture-login-shell >> "$AIDD_SHELL_CALLED"
+          exit 97
+          EOF
+          chmod +x "$BIN"/*
+
+          fixture_env=(env -i \
+            PATH="$BIN:/usr/bin:/bin" HOME="$H" SHELL="$BIN/fixture-login-shell" \
+            AIDD_SHELL_CALLED="$SHELL_CALLED" AIDD_NODE_MIN="$NODE_MIN" \
+            AIDD_PATH_MODE=isolated AIDD_NONINTERACTIVE=1)
+          if "${fixture_env[@]}" /bin/bash -c \
+             'command -v claude >/dev/null || command -v codex >/dev/null'; then
+            echo "::error::隔離環境に実 CLI が見えています(実行前)"
+            exit 1
+          fi
+
+          set +e
+          out=$("${fixture_env[@]}" /bin/bash "$KIT/setup-env-mac.command" 2>&1)
+          code=$?
+          set -e
+          printf '%s\n' "$out"
+
+          if [ -e "$SHELL_CALLED" ]; then
+            echo "::error::isolated モードがログインシェルを呼び出しました"
+            cat "$SHELL_CALLED"
+            exit 1
+          fi
+          if "${fixture_env[@]}" /bin/bash -c \
+             'command -v claude >/dev/null || command -v codex >/dev/null'; then
+            echo "::error::隔離環境に実 CLI が見えています(実行後)"
+            exit 1
+          fi
+
+          if [ "$code" -ne 0 ]; then
+            echo "::error::setup-env-mac.command が失敗しました (exit $code)"
+            exit 1
+          fi
+          if printf '%s' "$out" | grep -q '完全に完了'; then
+            echo "::error::MCP を1つも設定していないのに『完全に完了』と表示した"
+            exit 1
+          fi
+          if ! printf '%s' "$out" | grep -q '一部の連携は未設定'; then
+            echo "::error::未設定であることを利用者に伝えていない"
+            exit 1
+          fi
+          echo "OK: できた範囲だけを正しく報告している"

@@ -1,7 +1,14 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
   [string]$RepoRoot = (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)),
-  [string]$TempRoot = [IO.Path]::GetTempPath()
+  [string]$TempRoot = [IO.Path]::GetTempPath(),
+  # 検査したいキットの場所。既定はリポジトリの中身だが、CI からは
+  # 配布 ZIP を展開した場所を渡す。利用者が実際に手にするのは ZIP の中身で
+  # あって、リポジトリのチェックアウトではないため。
+  [string]$KitPath = '',
+  # CI では実行対象の fixture 自体に Mark of the Web を付け、
+  # インストーラーの通常経路が実際に全件解除することを確かめる。
+  [switch]$AssertMotwRecovery
 )
 
 $ErrorActionPreference = 'Stop'
@@ -211,6 +218,19 @@ function Assert-AiddFile {
   }
 }
 
+function Get-AiddMotwCount {
+  param([Parameter(Mandatory = $true)][string]$Root)
+
+  $count = 0
+  foreach ($file in Get-ChildItem -LiteralPath $Root -Recurse -Force -File) {
+    if ($null -ne (Get-Item -LiteralPath $file.FullName `
+      -Stream 'Zone.Identifier' -ErrorAction SilentlyContinue)) {
+      $count++
+    }
+  }
+  return $count
+}
+
 function Restore-AiddEnvironment {
   param([Parameter(Mandatory = $true)][hashtable]$Original)
 
@@ -226,7 +246,12 @@ function Restore-AiddEnvironment {
 
 $repo = [IO.Path]::GetFullPath($RepoRoot)
 $temp = [IO.Path]::GetFullPath($TempRoot)
-$sourceKit = Join-Path $repo 'aidd-agent-kit'
+if ([string]::IsNullOrWhiteSpace($KitPath)) {
+  $sourceKit = Join-Path $repo 'aidd-agent-kit'
+} else {
+  $sourceKit = [IO.Path]::GetFullPath($KitPath)
+}
+Write-Host ('[AIDD-SMOKE] kit="{0}"' -f $sourceKit)
 $realUserProfile = $env:USERPROFILE
 $originalEnvironment = @{}
 foreach ($name in @('AIDD_TARGET_HOME', 'AIDD_CODEX_TARGET', 'AIDD_NONINTERACTIVE')) {
@@ -353,8 +378,37 @@ try {
   $env:AIDD_NONINTERACTIVE = '1'
 
   $installer = Join-Path $fixtureKit 'install-windows.bat'
+  if ($AssertMotwRecovery) {
+    Write-AiddPhase -Phase 'motw-before' -Category 'mark-fixture' `
+      -Path $fixtureKit
+    foreach ($file in Get-ChildItem -LiteralPath $fixtureKit `
+      -Recurse -Force -File) {
+      Set-Content -LiteralPath $file.FullName -Stream 'Zone.Identifier' `
+        -Value "[ZoneTransfer]`r`nZoneId=3"
+    }
+    $markedBefore = Get-AiddMotwCount -Root $fixtureKit
+    if ($markedBefore -le 0) {
+      Stop-AiddSmoke -Phase 'motw-before' -Category 'mark-fixture' `
+        -Path $fixtureKit -ExitCode 'contract' `
+        -Message 'fixture has no Zone.Identifier immediately before install'
+    }
+    Write-Host ('[AIDD-SMOKE] motw-before={0}' -f $markedBefore)
+  }
+
   [void](Invoke-AiddBatch -Phase 'installer-first' `
     -Category 'windows-installer' -BatchPath $installer)
+
+  if ($AssertMotwRecovery) {
+    Write-AiddPhase -Phase 'motw-after' -Category 'unblock-fixture' `
+      -Path $fixtureKit
+    $markedAfter = Get-AiddMotwCount -Root $fixtureKit
+    Write-Host ('[AIDD-SMOKE] motw-after={0}' -f $markedAfter)
+    if ($markedAfter -ne 0) {
+      Stop-AiddSmoke -Phase 'motw-after' -Category 'unblock-fixture' `
+        -Path $fixtureKit -ExitCode 'contract' `
+        -Message 'Zone.Identifier remained after successful install'
+    }
+  }
 
   Write-AiddPhase -Phase 'installer-artifacts' -Category 'required-files' `
     -Path $targetHome
@@ -364,6 +418,33 @@ try {
     (Join-Path $targetHome '.codex\aidd-agent-kit.manifest')
   )) {
     Assert-AiddFile -Phase 'installer-artifacts' -Path $path
+  }
+
+  # version ファイルは「存在する」だけの確認では不十分。
+  # cmd.exe は `echo %VER%> file` の VER 末尾の数字をファイルハンドル番号と解釈するため、
+  # 空の version ファイルができてもインストール自体は成功してしまう。
+  # さらに :CHECK_NO_CHANGES の fc /b は「空 vs 空」で一致するので、以後ずっと無症状になる。
+  # 中身まで照合して初めて、この種の欠陥がリリース前に落ちる。
+  $expectedVersion = ([IO.File]::ReadAllText(
+    (Join-Path $fixtureKit 'VERSION'))).Trim()
+  if ([string]::IsNullOrWhiteSpace($expectedVersion)) {
+    Stop-AiddSmoke -Phase 'installer-artifacts' -Category 'version-content' `
+      -Path (Join-Path $fixtureKit 'VERSION') -ExitCode 'contract' `
+      -Message 'fixture VERSION is empty'
+  }
+  foreach ($versionFile in @(
+    (Join-Path $targetHome '.claude\aidd-agent-kit.version'),
+    (Join-Path $targetHome '.codex\aidd-agent-kit.version')
+  )) {
+    Write-AiddPhase -Phase 'installer-artifacts' -Category 'version-content' `
+      -Path $versionFile
+    Assert-AiddFile -Phase 'installer-artifacts' -Path $versionFile
+    $actualVersion = ([IO.File]::ReadAllText($versionFile)).Trim()
+    if ($actualVersion -ne $expectedVersion) {
+      Stop-AiddSmoke -Phase 'installer-artifacts' -Category 'version-content' `
+        -Path $versionFile -ExitCode 'contract' `
+        -Message "version mismatch: expected '$expectedVersion' but got '$actualVersion'"
+    }
   }
 
   $installedToml = Join-Path $targetHome '.codex\agents\app-orchestrator.toml'
