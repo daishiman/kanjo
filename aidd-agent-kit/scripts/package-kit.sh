@@ -229,6 +229,29 @@ for f in "$KIT_DIR"/*.bat; do
   fi
 done
 
+# --- 5-b. PowerShell の param 既定値が起動のされ方に依存しないこと --------
+# param の既定式は「その引数を実際に使うか」に関係なく、束縛時に必ず評価される。
+# そこで $PSScriptRoot などを計算していると、引数を明示的に渡していて既定値が
+# 不要な呼び出しでも、その計算の失敗だけでスクリプトが本体に入る前に落ちる。
+# しかも $PSScriptRoot は起動のされ方 (-File / dot-source / スクリプトブロック
+# 経由) で空になりうるので、失敗は環境依存で、手元では再現しない。
+for f in $(find "$KIT_DIR" -name '*.ps1'); do
+  label="${f#$KIT_DIR/}"
+  # 注意すべきなのは実行される既定式だけ。コメントで名前に言及しただけの行を
+  # 落とすと、理由を書けなくなる (実際にこの検査を書いた時に自分で踏んだ)。
+  # 見るのはスクリプト自身の param だけ。範囲指定を字下げ込みで書くと、
+  # 関数の param まで拾い、その範囲が本体のコードを飲み込んで誤検出する。
+  # 桁0の param( から最初の桁0の ) までに限る。
+  block=$(awk '/^param\(/ {inside=1} inside {print} inside && /^\)/ {exit}' "$f" |
+    sed 's/#.*//')
+  if printf '%s' "$block" |
+     grep -q '\$PSScriptRoot\|\$PSCommandPath\|\$MyInvocation'; then
+    fail "$label の param 既定値が \$PSScriptRoot 等に依存している (本体で解決すること)"
+  else
+    pass "$label param 既定値は起動方法に依存しない"
+  fi
+done
+
 # --- 6. Mac の環境差(Intel / Apple Silicon / Node の入れ方) --------------
 # 静的検査では「PATH の組み立てが正しいか」までは分からない。
 # 実機を用意する代わりに環境を注入して確かめる。

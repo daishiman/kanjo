@@ -1,6 +1,10 @@
 ﻿[CmdletBinding()]
 param(
-  [string]$RepoRoot = (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)),
+  # 既定値をここで計算してはいけない。param の既定式は「その引数を使うか
+  # どうか」に関係なく束縛時に必ず評価される。CI は -KitPath を渡すので
+  # RepoRoot は一度も使わないのに、その計算の失敗だけでスクリプトが
+  # 起動前に落ちていた。必要になった場所で解決する。
+  [string]$RepoRoot = '',
   [string]$TempRoot = [IO.Path]::GetTempPath(),
   # 検査したいキットの場所。既定はリポジトリの中身だが、CI からは
   # 配布 ZIP を展開した場所を渡す。利用者が実際に手にするのは ZIP の中身で
@@ -244,12 +248,42 @@ function Restore-AiddEnvironment {
   }
 }
 
-$repo = [IO.Path]::GetFullPath($RepoRoot)
 $temp = [IO.Path]::GetFullPath($TempRoot)
+
+# 検査対象の決め方:
+#   -KitPath があればそれ。無ければリポジトリの中の aidd-agent-kit。
+# リポジトリ位置の解決は、KitPath が無いときだけ行う。
+# $PSScriptRoot は起動のされ方 (dot-source, -Command "& {...}",
+# スクリプトブロック経由) によっては空になる。空のまま Split-Path へ
+# 渡すと、原因の分からない束縛エラーで止まるので、順に候補を試し、
+# 全部だめなら何が起きたのかを名指しして落とす。
 if ([string]::IsNullOrWhiteSpace($KitPath)) {
+  # $MyInvocation はスクリプトブロックの中では「そのブロック自身」を指す。
+  # 候補集めを & { } で包むと、この行だけ常に空になる。ここは素の
+  # スクリプト直下 (if はスコープを作らない) なので、そのまま書く。
+  $scriptFile = $PSCommandPath
+  if ([string]::IsNullOrWhiteSpace($scriptFile)) {
+    $scriptFile = $MyInvocation.MyCommand.Path
+  }
+  $scriptDir = $PSScriptRoot
+  if ([string]::IsNullOrWhiteSpace($scriptDir) -and
+      -not [string]::IsNullOrWhiteSpace($scriptFile)) {
+    $scriptDir = Split-Path -Parent $scriptFile
+  }
+  if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
+    if ([string]::IsNullOrWhiteSpace($scriptDir)) {
+      throw ('スクリプトの位置を特定できません。-KitPath ' +
+             'でキットの場所を明示してください。')
+    }
+    $RepoRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
+  }
+  $repo = [IO.Path]::GetFullPath($RepoRoot)
   $sourceKit = Join-Path $repo 'aidd-agent-kit'
 } else {
   $sourceKit = [IO.Path]::GetFullPath($KitPath)
+}
+if (-not (Test-Path -LiteralPath $sourceKit -PathType Container)) {
+  throw ('検査対象のキットが見つかりません: ' + $sourceKit)
 }
 Write-Host ('[AIDD-SMOKE] kit="{0}"' -f $sourceKit)
 $realUserProfile = $env:USERPROFILE
