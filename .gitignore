@@ -72,5 +72,11 @@ __pycache__/
 .dev-graph/staging/
 .dev-graph/eval-log/
 
+# 検証スクリプトが撮るスクリーンショット(実行のたびに作り直される生成物)。
+# 判定は証跡JSONの計測値が行っており、画像はそれを人が目で確かめるための補助。
+# 再生成手順は各featureの evidence/phase-11-reproducible-evidence.md にある。
+.dev-graph/plans/*/evidence/screenshots/
+.dev-graph/render/*.png
+
 # ハーネスが生成するセッションログ(成果物ではない)
 .claude/logs/

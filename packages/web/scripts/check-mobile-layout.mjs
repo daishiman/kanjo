@@ -20,6 +20,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 // 画面を1つ足した時にフィクスチャだけ古いまま「合格」を出す。
 // Node 22.18以降の型ストリップで .ts をそのまま読める(CIも node-version: 22)。
 import { APP_ROUTES, MOBILE_ROUTES } from '../src/routeMetadata.ts';
+import { openCdpSession } from './cdp.mjs';
 import { launchHeadlessChrome, removeProfileRoot, stopHeadlessChrome } from './headless-chrome.mjs';
 
 const WEB_DIR = fileURLToPath(new URL('..', import.meta.url));
@@ -189,6 +190,33 @@ const MEASURE = `(async () => {
   //    レイアウトが実際に使っている幅 = documentElement.clientWidth と比べる。
   const doc = document.documentElement;
   const overflow = { scrollWidth: doc.scrollWidth, viewport: doc.clientWidth };
+  const headerChildren = [...document.querySelector('.header').children].map((el) => {
+    const box = el.getBoundingClientRect();
+    const style = getComputedStyle(el);
+    return {
+      name: el.className || el.tagName.toLowerCase(),
+      text: el.textContent.trim().replace(/\s+/g, ' ').slice(0, 40),
+      left: Math.round(box.left),
+      right: Math.round(box.right),
+      width: Math.round(box.width),
+      minWidth: style.minWidth,
+      maxWidth: style.maxWidth,
+      flexBasis: style.flexBasis,
+    };
+  });
+  const pageBoxes = [...document.querySelectorAll('.shell, .header, .main, .footer, .tabbar, .card, .split-editor')].map(
+    (el) => {
+      const box = el.getBoundingClientRect();
+      return {
+        name: el.className || el.tagName.toLowerCase(),
+        left: Math.round(box.left),
+        right: Math.round(box.right),
+        width: Math.round(box.width),
+        scrollWidth: el.scrollWidth,
+        clientWidth: el.clientWidth,
+      };
+    },
+  );
 
   // 2) stack-sm が畳まれているか: 同じ行の1つ目と2つ目のセルが別の行に乗っている
   const table = document.querySelector('table.classify-table');
@@ -332,7 +360,7 @@ const MEASURE = `(async () => {
   const tabIconRect = tabbar.querySelector('.route-icon').getBoundingClientRect();
   const tabIcon = { w: tabIconRect.width, h: tabIconRect.height };
 
-  return { overflow, stacked, theadHidden, order, overflowingCells, taps, tabLabels, tabScroll, exportSheetLayout, exportLabels, wideScrolls, splitPanelLayout, splitCategoryTaps, splitEditorWidth, navRows, navCurrentMark, navCurrentStyle, tabCurrentMark, tabIcon };
+  return { overflow, headerChildren, pageBoxes, stacked, theadHidden, order, overflowingCells, taps, tabLabels, tabScroll, exportSheetLayout, exportLabels, wideScrolls, splitPanelLayout, splitCategoryTaps, splitEditorWidth, navRows, navCurrentMark, navCurrentStyle, tabCurrentMark, tabIcon };
 })()`;
 
 /**
@@ -402,34 +430,9 @@ const MOTION_PROBE = `(() => {
 try {
   const launched = await launchHeadlessChrome({ profileRoot: dir, windowSize: '375,800' });
   chrome = launched.chrome;
-  const { port, targets } = launched;
-  let page = targets.find((t) => t.type === 'page');
-  if (!page)
-    page = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' })).json();
-  ws = new WebSocket(page.webSocketDebuggerUrl);
-  await new Promise((resolve) => {
-    ws.onopen = resolve;
-  });
-  let id = 0;
-  const pending = new Map();
-  ws.onmessage = (e) => {
-    const m = JSON.parse(e.data);
-    if (m.id && pending.has(m.id)) {
-      pending.get(m.id)(m);
-      pending.delete(m.id);
-    }
-  };
-  const send = (method, params = {}) =>
-    new Promise((r) => {
-      const i = ++id;
-      pending.set(i, r);
-      ws.send(JSON.stringify({ id: i, method, params }));
-    });
-  const evalJs = async (expression) => {
-    const res = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
-    if (res.result?.exceptionDetails) throw new Error(JSON.stringify(res.result.exceptionDetails));
-    return res.result?.result?.value;
-  };
+  const session = await openCdpSession(launched);
+  ws = session.socket;
+  const { send, evaluate: evalJs } = session;
   await send('Page.enable');
 
   const failures = [];
@@ -447,7 +450,7 @@ try {
 
     if (m.overflow.scrollWidth > m.overflow.viewport + 1)
       failures.push(
-        `${width}px ページ本体が横スクロールする(内容 ${m.overflow.scrollWidth}px > 画面 ${m.overflow.viewport}px)`,
+        `${width}px ページ本体が横スクロールする(内容 ${m.overflow.scrollWidth}px > 画面 ${m.overflow.viewport}px): header=${m.headerChildren.map((child) => `${child.name}[${child.left}-${child.right}/${child.width};min=${child.minWidth};max=${child.maxWidth};basis=${child.flexBasis}]`).join(', ')}; boxes=${m.pageBoxes.map((box) => `${box.name}[${box.left}-${box.right}/${box.width};scroll=${box.scrollWidth}/${box.clientWidth}]`).join(', ')}`,
       );
     // 200%相当ではnavの不変条件だけを追加検査する。仕分けfixtureのセル幅は実ページの
     // tax contentではなく、zoom 1の既存mobile contractで引き続き固定する。

@@ -10,8 +10,8 @@ kind: index
 ## 要件定義書 (上位概念・憲法)
 
 - [要件定義書](./00-requirements-definition.md) — 上位概念 U1-U9 の正本 (確定マーカー: `confirmed`)。各技術章は serves_goals でここのゴールへトレース (anchor) する。
-- **本質的目的 (U1)**: 本番環境のデータベーススキーマを、デプロイ済みアプリケーションコードが前提とする版へ確実に一致させ続けることで、利用者が「取込を実行できませんでした: サーバーエラーが発生しました」に遭遇せず日々の記帳を完了できる状態を保つ。
-- **ゴール (U3)**: G1=本番D1のスキーマをコードが前提とする最新版へ復旧し、データ取込と取込履歴が正常に動作する状態へ戻す, G2=Migrateの人間承認による適用とDeployのfail-closed検査を分離し、コード配信とスキーマ適用が乖離したまま本番へ到達しない状態を構造的に保証する, G3=万一乖離した場合でも、利用者と開発者が原因を即座に特定できる検知と説明可能なエラー応答を備える, G4=復旧作業を通じて本番の既存データを一件も失わない
+- **本質的目的 (U1)**: 外出先や片手操作のモバイル環境でも、収支の変化・異常・次に確認すべきことをグラフと要約から即座に理解し、見落としや誤操作なく判断を完了できるようにする。
+- **ゴール (U3)**: G1=本番D1のスキーマをコードが前提とする最新版へ復旧し、データ取込と取込履歴が正常に動作する状態へ戻す, G2=Migrate の人間承認による適用と Deploy の fail-closed 検査を分離し、コード配信とスキーマ適用が乖離したまま本番へ到達しない状態を構造的に保証する, G3=万一乖離した場合でも、利用者と開発者が原因を即座に特定できる検知と説明可能なエラー応答を備える, G4=復旧作業を通じて本番の既存データを一件も失わない, G5=モバイルでもデスクトップと同じ財務上の結論へ到達でき、グラフや重要状態が幅を理由に消えない, G6=情報の優先順位を利用頻度と失敗コストで整理し、片手・短時間でも主状態と次の操作を迷わず認識できる, G7=iPhoneを含むタッチ端末で安全領域、可読性、44px以上の操作領域、ズーム、支援技術を一貫して満たす, G8=匿名fixtureによる実描画検査でモバイルとデスクトップの情報同等性を継続的に保証する
 
 ## 章一覧と集約状態
 
@@ -19,11 +19,11 @@ kind: index
 |---|---|---|---|---|---|
 | データベース (database) | [database.md](./database.md) | 確定 | `confirmed` | G1 G2 G4 | database.web database.mobile database.tablet database.desktop-windows database.desktop-linux database.desktop-macos |
 | 認証(ログイン) (auth) | [auth.md](./auth.md) | 確定 | `confirmed` | G1 G3 | auth.web auth.mobile auth.tablet auth.desktop-windows auth.desktop-linux auth.desktop-macos |
-| UI-UX (ui-ux) | [ui-ux.md](./ui-ux.md) | 確定 | `confirmed` | G3 | ui-ux.web ui-ux.mobile ui-ux.tablet ui-ux.desktop-windows ui-ux.desktop-linux ui-ux.desktop-macos |
+| UI-UX (ui-ux) | [ui-ux.md](./ui-ux.md) | 確定 | `confirmed` | G5 G6 G7 | ui-ux.web ui-ux.mobile ui-ux.tablet ui-ux.desktop-windows ui-ux.desktop-linux ui-ux.desktop-macos |
 | セキュリティ (security) | [security.md](./security.md) | 確定 | `confirmed` | G3 G4 | security.web security.mobile security.tablet security.desktop-windows security.desktop-linux security.desktop-macos |
 | インフラ (infrastructure) | [infrastructure.md](./infrastructure.md) | 確定 | `confirmed` | G1 G2 | infrastructure.web infrastructure.mobile infrastructure.tablet infrastructure.desktop-windows infrastructure.desktop-linux infrastructure.desktop-macos |
 | バックエンド (backend) | [backend.md](./backend.md) | 確定 | `confirmed` | G3 G2 | backend.web backend.mobile backend.tablet backend.desktop-windows backend.desktop-linux backend.desktop-macos |
-| フロントエンド (frontend) | [frontend.md](./frontend.md) | 確定 | `confirmed` | G3 | frontend.web frontend.mobile frontend.tablet frontend.desktop-windows frontend.desktop-linux frontend.desktop-macos |
+| フロントエンド (frontend) | [frontend.md](./frontend.md) | 確定 | `confirmed` | G5 G6 G8 G7 | frontend.web frontend.mobile frontend.tablet frontend.desktop-windows frontend.desktop-linux frontend.desktop-macos |
 | 保守運用管理 (maintenance-ops) | [maintenance-ops.md](./maintenance-ops.md) | 確定 | `confirmed` | G2 G4 | maintenance-ops.web maintenance-ops.mobile maintenance-ops.tablet maintenance-ops.desktop-windows maintenance-ops.desktop-linux maintenance-ops.desktop-macos |
 
 ## 集約状態サマリ

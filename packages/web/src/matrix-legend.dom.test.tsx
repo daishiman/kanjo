@@ -5,7 +5,7 @@
 // 一致していること(凡例が嘘をつかないこと)まで確かめる。
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, expect, it, vi } from 'vitest';
 import type { MatrixData } from './api.js';
@@ -59,7 +59,8 @@ async function renderMatrix() {
       </MemoryRouter>
     </QueryClientProvider>,
   );
-  return await screen.findByRole('rowheader', { name: '広告宣伝費' });
+  const table = await screen.findByRole('table', { name: /科目別の月次増減明細/ });
+  return within(table).getByRole('rowheader', { name: '広告宣伝費' });
 }
 
 it('色凡例が初期表示で見えていて、色以外の手掛かり(符号と語)を伴う', async () => {
@@ -86,6 +87,7 @@ it('凡例の見本の色クラスが、表のセルに実際に付く色クラ�
   // 実データ: 増えた科目の前年比セルは pos、減った科目は neg
   const upCell = head.parentElement?.querySelector('td.pos');
   expect(upCell?.textContent).toBe('+25.0%');
-  const downRow = screen.getByRole('rowheader', { name: '通信費' }).parentElement;
+  const monthlyTable = screen.getByRole('table', { name: /科目別の月次増減明細/ });
+  const downRow = within(monthlyTable).getByRole('rowheader', { name: '通信費' }).parentElement;
   expect(downRow?.querySelector('td.neg')?.textContent).toBe('-25.0%');
 });

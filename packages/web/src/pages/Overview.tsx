@@ -5,11 +5,18 @@ import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type DefenseForecast, type SummaryResponse, api } from '../api.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
+import { FinancialFigure } from '../components/FinancialFigure.js';
 import { HowTo } from '../components/HowTo.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { UnsettledPanel } from '../components/Unsettled.js';
-import { COLORS, yenTick } from '../components/charts.js';
+import { COLORS, baseChartOptions, yenTick } from '../components/charts.js';
+import {
+  createFinancialFigureModel,
+  figureLabels,
+  financialPeriod,
+  seriesData,
+} from '../components/figure-view-model.js';
 import { deltaCls, monthShort, pct, yen, yenS } from '../format.js';
 import { usePeriod } from '../period.js';
 
@@ -92,6 +99,43 @@ export function OverviewPage() {
 
   const labels = ov.months.map(monthShort);
   const co = ov.cashOverride ?? {};
+  const expenseValues = ov.expenseTotal.map((value, index) =>
+    ov.unrecordedExpMonths.includes(ov.months[index]) ? null : value,
+  );
+  const latestIndex = ov.months.length - 1;
+  const latestRevenue = ov.revenue[latestIndex] ?? 0;
+  const latestExpense = expenseValues[latestIndex];
+  const trendModel = createFinancialFigureModel({
+    id: 'overview-monthly-trend',
+    title: '売上・経費トレンド',
+    summary:
+      latestExpense == null
+        ? `${labels[latestIndex]}は経費未記帳のため、売上との比較は保留です。`
+        : `${labels[latestIndex]}は売上${yen(latestRevenue)}、経費${yen(latestExpense)}で、${
+            latestRevenue >= latestExpense ? '売上が経費を上回っています' : '経費が売上を上回っています'
+          }。`,
+    period: financialPeriod(labels),
+    labels,
+    series: [
+      { key: 'revenue', label: '売上（記帳）', values: ov.revenue, unit: 'yen', color: COLORS.biz },
+      { key: 'expense', label: '経費計', values: expenseValues, unit: 'yen', color: COLORS.per },
+      {
+        key: 'moving-average',
+        label: '経費3ヶ月移動平均',
+        values: ov.expenseMovingAvg,
+        unit: 'yen',
+        color: COLORS.warn,
+      },
+      {
+        key: 'defense-line',
+        label: '防衛ライン',
+        values: ov.months.map(() => (defense.status === 'nodata' ? null : defense.line)),
+        unit: 'yen',
+        color: COLORS.danger,
+      },
+    ],
+    action: '防衛ラインを割った月について、やりくり試算で回復の見込みを立てます。',
+  });
 
   return (
     <>
@@ -130,58 +174,66 @@ export function OverviewPage() {
       <DefenseForecastPanel forecast={defense.forecast} />
 
       <div className="card">
-        <h2>
-          売上・経費トレンド(
-          <Term id="defenseLine" />・<Term id="movingAvg" />
-          を重ね描き)
-        </h2>
-        <HowTo id="overviewMonthly" />
-        <Chart
-          type="bar"
-          height={90}
-          data={{
-            labels,
-            datasets: [
-              {
-                type: 'bar' as const,
-                label: '売上(記帳)',
-                data: ov.revenue,
-                backgroundColor: `${COLORS.biz}cc`,
-              },
-              {
-                type: 'bar' as const,
-                label: '経費計',
-                data: ov.expenseTotal.map((v, i) =>
-                  ov.unrecordedExpMonths.includes(ov.months[i]) ? null : v,
-                ),
-                backgroundColor: `${COLORS.per}b3`,
-              },
-              {
-                type: 'line' as const,
-                label: '経費3ヶ月移動平均',
-                data: ov.expenseMovingAvg,
-                borderColor: COLORS.warn,
-                pointRadius: 0,
-                borderWidth: 2,
-                tension: 0.2,
-              },
-              {
-                type: 'line' as const,
-                label: '防衛ライン',
-                data: ov.months.map(() => (defense.status === 'nodata' ? null : defense.line)),
-                borderColor: COLORS.danger,
-                borderDash: [6, 4],
-                pointRadius: 0,
-                borderWidth: 2,
-              },
-            ],
-          }}
-          options={{
-            responsive: true,
-            scales: { y: { ticks: { callback: yenTick } } },
-            plugins: { legend: { position: 'bottom' } },
-          }}
-        />
+        <FinancialFigure
+          model={trendModel}
+          headingLevel={2}
+          beforeChart={
+            <>
+              <p className="sub">
+                <Term id="defenseLine" />と<Term id="movingAvg" />
+                を重ねています。
+              </p>
+              <HowTo id="overviewMonthly" />
+            </>
+          }
+        >
+          <Chart
+            type="bar"
+            role="img"
+            aria-label="月別の売上・経費・防衛ラインの関係を示す図"
+            fallbackContent="月別の売上・経費・防衛ラインの関係を示す図"
+            data={{
+              labels: figureLabels(trendModel),
+              datasets: [
+                {
+                  type: 'bar' as const,
+                  label: trendModel.series[0]?.label,
+                  data: seriesData(trendModel, 0),
+                  backgroundColor: `${COLORS.biz}cc`,
+                },
+                {
+                  type: 'bar' as const,
+                  label: trendModel.series[1]?.label,
+                  data: seriesData(trendModel, 1),
+                  backgroundColor: `${COLORS.per}b3`,
+                },
+                {
+                  type: 'line' as const,
+                  label: trendModel.series[2]?.label,
+                  data: seriesData(trendModel, 2),
+                  borderColor: COLORS.warn,
+                  pointRadius: 0,
+                  borderWidth: 2,
+                  tension: 0.2,
+                },
+                {
+                  type: 'line' as const,
+                  label: trendModel.series[3]?.label,
+                  data: seriesData(trendModel, 3),
+                  borderColor: COLORS.danger,
+                  borderDash: [6, 4],
+                  pointRadius: 0,
+                  borderWidth: 2,
+                },
+              ],
+            }}
+            options={{
+              ...baseChartOptions(),
+              scales: { y: { ticks: { callback: yenTick } } },
+              plugins: { legend: { position: 'bottom' } },
+            }}
+          />
+        </FinancialFigure>
         {Object.keys(co).length > 0 && (
           <p className="sub">
             銀行実測の補正値:{' '}

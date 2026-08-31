@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 3,
+  "featureId": "feat-mobile-financial-visualization",
+  "sourceDigest": "a81b0e0f564e7c82e4bf6ac6f7506d35de32582647f42178e63ba56a837745df",
+  "digestInputs": {
+    "algorithm": "sha256",
+    "method": "sha256(各対象ファイルについて \"<ファイルのsha256>  <packages/webからの相対パス>\\n\" をパスの昇順(コードポイント順)で連結した文字列)",
+    "root": "packages/web",
+    "commit": {
+      "sha": "3956bac1f116324f545ed6cc285f0d8fc5fa1748",
+      "sourcesMatchCommit": false,
+      "uncommittedSources": [
+        "packages/web/src/mobile-financial-visualization.dom.test.tsx"
+      ]
+    },
+    "sources": [
+      {
+        "path": "scripts/cdp.mjs",
+        "sha256": "063c8a741eab2737ff5c670b8cfd7573e148e1121dd472f81b5825bda7ec0efe"
+      },
+      {
+        "path": "scripts/check-financial-visuals.mjs",
+        "sha256": "ca57ecf563ab70e6ce5e1d744af4ae019b48a317456ea50ea1846ccfade1ce42"
+      },
+      {
+        "path": "scripts/check-mobile-financial-layout.mjs",
+        "sha256": "d95ebc8969e8f3d92dcadf4325ecd8571b54913d8e4de4400cd930f31abd8762"
+      },
+      {
+        "path": "scripts/headless-chrome.mjs",
+        "sha256": "9d58cda672ebf8ee7529af33ec1b05267d035ba7eaf7385dbf395ec35649acb5"
+      },
+      {
+        "path": "scripts/source-digest.mjs",
+        "sha256": "9d52639473c6a2b66e45740935d2eddbbb3b9cfdd80c621a26b6d86aaa3b2103"
+      },
+      {
+        "path": "scripts/viewports.mjs",
+        "sha256": "f3912b9b2c28167b788ca8d75c9852a2c02b404eff7775e98c1717a08195599f"
+      },
+      {
+        "path": "src/components/FinancialCharts.tsx",
+        "sha256": "8cdd82ffadd3aa5ef9183af25fda219c91f648687c0cc0922c128455b862d0d9"
+      },
+      {
+        "path": "src/components/FinancialFigure.tsx",
+        "sha256": "50dd489046164e16637803d0bba550da9b5a60e53e09d9ed71eeb7d69090eb88"
+      },
+      {
+        "path": "src/components/ReportChart.tsx",
+        "sha256": "ec19145e9967e6458251fc264f73cffc8afeb968fe6259ab749115eb33ba600c"
+      },
+      {
+        "path": "src/components/charts.ts",
+        "sha256": "d6bbb4c390f3cf5e65766b14543202f393832d99a05ddb9968b42a8962d12f5f"
+      },
+      {
+        "path": "src/components/figure-view-model.ts",
+        "sha256": "5ff124b206553dff70342c96e4787e314a01c83604df348c56d15ac80cc0c542"
+      },
+      {
+        "path": "src/mobile-financial-layout.test.ts",
+        "sha256": "d1399216691974833670f255251ced76e790947c79ae8c092c729d5ceac8620f"
+      },
+      {
+        "path": "src/mobile-financial-visualization-render.test.ts",
+        "sha256": "6e710b06bb9adc7ba4382720937ce210d573a14fdf03f87faf2c3cd94f65b226"
+      },
+      {
+        "path": "src/mobile-financial-visualization.dom.test.tsx",
+        "sha256": "c44e169baf23f41963478e5a645487e2fba3ed5e16e3a76950375ce1aa542e57"
+      },
+      {
+        "path": "src/styles.css",
+        "sha256": "8dcddd96322126685afe09ab42b1f0599b27aa6f8fdb1601869a7b40a12203db"
+      }
+    ]
+  },
+  "startedAt": "2026-08-31T01:10:53.074Z",
+  "completedAt": "2026-08-31T01:10:55.917Z",
+  "runtime": {
+    "node": "v22.21.1",
+    "chrome": "Chrome/151.0.7922.174",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36"
+  },
+  "fixture": "FinancialFigure.tsx を renderToStaticMarkup で描画し、src/styles.css を被せた匿名データ",
+  "result": "PASS",
+  "measurements": [
+    {
+      "case": "320",
+      "width": 320,
+      "height": 720,
+      "zoom": 1,
+      "reducedMotion": false,
+      "result": "PASS",
+      "screenshot": "screenshots/320.png",
+      "actual": {
+        "viewport": 320,
+        "closed": {
+          "overflow": 0,
+          "detailsOpen": false,
+          "detailsHeight": 44
+        },
+        "overflow": 0,
+        "figure": {
+          "top": -252.40625,
+          "right": 304,
+          "bottom": 648.390625,
+          "left": 16,
+          "width": 288,
+          "height": 900.796875
+        },
+        "chart": {
+          "top": -82.78125,
+          "right": 304,
+          "bottom": 165.21875,
+          "left": 16,
+          "width": 288,
+          "height": 248
+        },
+        "seven": true,
+        "scroll": {
+          "top": 273,
+          "right": 303,
+          "bottom": 647.390625,
+          "left": 17,
+          "width": 286,
+          "height": 374.390625,
+          "overflow": 312,
+          "role": "region",
+          "label": "売上・経費トレンドの正確な値",
+          "tabIndex": 0
+        },
+        "summary": {
+          "top": 224,
+          "right": 154,
+          "bottom": 268,
+          "left": 6,
+          "width": 148,
+          "height": 44
+        },
+        "details": {
+          "top": 224,
+          "right": 304,
+          "bottom": 648.390625,
+          "left": 16,
+          "width": 288,
+          "height": 424.390625
+        },
+        "tabbar": {
+          "top": 663,
+          "right": 320,
+          "bottom": 720,
+          "left": 0,
+          "width": 320,
+          "height": 57
+        },
+        "mainPaddingBottom": 80,
+        "containerType": "inline-size",
+        "focusOutline": "solid",
+        "focusTarget": true,
+        "canvasName": "売上・経費トレンドの図",
+        "mainAnimationSeconds": 0.2
+      }
+    },
+    {
+      "case": "375",
+      "width": 375,
+      "height": 812,
+      "zoom": 1,
+      "reducedMotion": false,
+      "result": "PASS",
+      "screenshot": "screenshots/375.png",
+      "actual": {
+        "viewport": 375,
+        "closed": {
+          "overflow": 0,
+          "detailsOpen": false,
+          "detailsHeight": 44
+        },
+        "overflow": 0,
+        "figure": {
+          "top": -184.40625,
+          "right": 359,
+          "bottom": 739.609375,
+          "left": 16,
+          "width": 343,
+          "height": 924.015625
+        },
+        "chart": {
+          "top": -14.78125,
+          "right": 359,
+          "bottom": 233.21875,
+          "left": 16,
+          "width": 343,
+          "height": 248
+        },
+        "seven": true,
+        "scroll": {
+          "top": 318.609375,
+          "right": 358,
+          "bottom": 738.609375,
+          "left": 17,
+          "width": 341,
+          "height": 420,
+          "overflow": 257,
+          "role": "region",
+          "label": "売上・経費トレンドの正確な値",
+          "tabIndex": 0
+        },
+        "summary": {
+          "top": 269.609375,
+          "right": 154,
+          "bottom": 313.609375,
+          "left": 6,
+          "width": 148,
+          "height": 44
+        },
+        "details": {
+          "top": 269.609375,
+          "right": 359,
+          "bottom": 739.609375,
+          "left": 16,
+          "width": 343,
+          "height": 470
+        },
+        "tabbar": {
+          "top": 755,
+          "right": 375,
+          "bottom": 812,
+          "left": 0,
+          "width": 375,
+          "height": 57
+        },
+        "mainPaddingBottom": 80,
+        "containerType": "inline-size",
+        "focusOutline": "solid",
+        "focusTarget": true,
+        "canvasName": "売上・経費トレンドの図",
+        "mainAnimationSeconds": 0.2
+      }
+    },
+    {
+      "case": "reduced-motion",
+      "width": 320,
+      "height": 640,
+      "zoom": 1,
+      "reducedMotion": true,
+      "result": "PASS",
+      "screenshot": "screenshots/reduced-motion.png",
+      "actual": {
+        "viewport": 320,
+        "closed": {
+          "overflow": 0,
+          "detailsOpen": false,
+          "detailsHeight": 44
+        },
+        "overflow": 0,
+        "figure": {
+          "top": -291.40625,
+          "right": 304,
+          "bottom": 567.796875,
+          "left": 16,
+          "width": 288,
+          "height": 859.203125
+        },
+        "chart": {
+          "top": -121.78125,
+          "right": 304,
+          "bottom": 126.21875,
+          "left": 16,
+          "width": 288,
+          "height": 248
+        },
+        "seven": true,
+        "scroll": {
+          "top": 234,
+          "right": 303,
+          "bottom": 566.796875,
+          "left": 17,
+          "width": 286,
+          "height": 332.796875,
+          "overflow": 312,
+          "role": "region",
+          "label": "売上・経費トレンドの正確な値",
+          "tabIndex": 0
+        },
+        "summary": {
+          "top": 185,
+          "right": 154,
+          "bottom": 229,
+          "left": 6,
+          "width": 148,
+          "height": 44
+        },
+        "details": {
+          "top": 185,
+          "right": 304,
+          "bottom": 567.796875,
+          "left": 16,
+          "width": 288,
+          "height": 382.796875
+        },
+        "tabbar": {
+          "top": 583,
+          "right": 320,
+          "bottom": 640,
+          "left": 0,
+          "width": 320,
+          "height": 57
+        },
+        "mainPaddingBottom": 80,
+        "containerType": "inline-size",
+        "focusOutline": "solid",
+        "focusTarget": true,
+        "canvasName": "売上・経費トレンドの図",
+        "mainAnimationSeconds": 0.00001
+      }
+    }
+  ]
+}

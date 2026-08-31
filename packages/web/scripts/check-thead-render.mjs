@@ -6,6 +6,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { openCdpSession } from './cdp.mjs';
 import { launchHeadlessChrome, removeProfileRoot, stopHeadlessChrome } from './headless-chrome.mjs';
 
 const WEB_DIR = fileURLToPath(new URL('..', import.meta.url));
@@ -71,34 +72,9 @@ let ws;
 try {
   const launched = await launchHeadlessChrome({ profileRoot: dir, windowSize: '1280,900' });
   chrome = launched.chrome;
-  const { port, targets } = launched;
-  let page = targets.find((t) => t.type === 'page');
-  if (!page)
-    page = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' })).json();
-  ws = new WebSocket(page.webSocketDebuggerUrl);
-  await new Promise((resolve) => {
-    ws.onopen = resolve;
-  });
-  let id = 0;
-  const pending = new Map();
-  ws.onmessage = (e) => {
-    const m = JSON.parse(e.data);
-    if (m.id && pending.has(m.id)) {
-      pending.get(m.id)(m);
-      pending.delete(m.id);
-    }
-  };
-  const send = (method, params = {}) =>
-    new Promise((r) => {
-      const i = ++id;
-      pending.set(i, r);
-      ws.send(JSON.stringify({ id: i, method, params }));
-    });
-  const evalJs = async (expression) => {
-    const res = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
-    if (res.result?.exceptionDetails) throw new Error(JSON.stringify(res.result.exceptionDetails));
-    return res.result?.result?.value;
-  };
+  const session = await openCdpSession(launched);
+  ws = session.socket;
+  const { send, evaluate: evalJs } = session;
   await send('Page.enable');
 
   const MEASURE = `(async () => {

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "promoted",
+  "promoted_at": "2026-08-30T10:09:51Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+  "evaluated_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+  "published_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+  "implementation_readiness": "complete",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS"
+  },
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/dev-graph-registration.json"
+}

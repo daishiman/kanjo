@@ -1,0 +1,1178 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+  "parent_feature": "feat-mobile-financial-visualization",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-MOBFIN-P01": "beads",
+    "SYS-MOBFIN-P02": "beads",
+    "SYS-MOBFIN-P03": "beads",
+    "SYS-MOBFIN-P04": "beads",
+    "SYS-MOBFIN-P05": "beads",
+    "SYS-MOBFIN-P06": "beads",
+    "SYS-MOBFIN-P07": "beads",
+    "SYS-MOBFIN-P08": "beads",
+    "SYS-MOBFIN-P09": "beads",
+    "SYS-MOBFIN-P10": "beads",
+    "SYS-MOBFIN-P11": "beads",
+    "SYS-MOBFIN-P12": "beads",
+    "SYS-MOBFIN-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-MOBFIN-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "モバイル財務表示の要求基線とfigure inventoryを確定",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "financial-figure",
+        "accessibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [],
+      "related_nodes": [
+        "spec-mobile-financial-visualization",
+        "arch-mobile-financial-experience",
+        "arch-mobile-financial-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-01-figure-inventory.md"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "全routeの財務figure、KPI、高密度表を受入条件へ結ぶ要求基線の確定作業。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p01.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "同一view-modelとresponsive figureアーキテクチャを確定",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "responsive-chart",
+        "view-model"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P01"
+      ],
+      "related_nodes": [
+        "spec-mobile-financial-visualization",
+        "arch-mobile-financial-experience",
+        "arch-mobile-financial-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-02-figure-contract.md"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "figureの意味モデル、描画container、semantic fallback、局所scrollを実装前に固定する設計作業。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p02.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "モバイルUX・アクセシビリティ設計を独立レビュー",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "design-review",
+        "wcag"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P02"
+      ],
+      "related_nodes": [
+        "arch-mobile-financial-experience",
+        "arch-mobile-financial-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-03-design-review.md"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "実装者と分離してApple HIG、WCAG、Chart.js契約の欠落を検出する品質ゲート。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p03.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "figure parityと実Chrome回帰をテストファースト設計",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "test-first",
+        "chrome"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P03"
+      ],
+      "related_nodes": [
+        "spec-mobile-financial-visualization",
+        "arch-mobile-financial-frontend"
+      ],
+      "resource_scope": [
+        "packages/web/src/mobile-financial-visualization.dom.test.tsx",
+        "packages/web/src/mobile-financial-layout.test.ts",
+        "packages/web/scripts/check-mobile-financial-layout.mjs"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "実装前に意味情報、寸法、overflow、操作領域の失敗を再現する自動契約を作る作業。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p04.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全財務figureと高密度表のモバイル体験を実装",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "frontend",
+        "financial-figure"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P04"
+      ],
+      "related_nodes": [
+        "spec-mobile-financial-visualization",
+        "arch-mobile-financial-experience",
+        "arch-mobile-financial-frontend"
+      ],
+      "resource_scope": [
+        "packages/web/src/components/FinancialFigure.tsx",
+        "packages/web/src/components/financial-figure-model.ts",
+        "packages/web/src/components/FinancialCharts.tsx",
+        "packages/web/src/components/ReportChart.tsx",
+        "packages/web/src/pages/Overview.tsx",
+        "packages/web/src/pages/Household.tsx",
+        "packages/web/src/pages/Subscriptions.tsx",
+        "packages/web/src/pages/analysis/Trends.tsx",
+        "packages/web/src/pages/analysis/Matrix.tsx",
+        "packages/web/src/pages/Statements.tsx",
+        "packages/web/src/styles.css"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "全財務figureの表示欠落、認知負荷、操作性をpackages/webだけで解消する本体実装。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p05.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "unit・DOM・実Chrome・build回帰を実行",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "regression",
+        "build"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P05"
+      ],
+      "related_nodes": [
+        "SYS-MOBFIN-P04",
+        "SYS-MOBFIN-P05"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-06-test-results.md"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "P04契約と既存web回帰を実行し、P05実装の機械的品質を確定する作業。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p06.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "モバイルfigureの意味情報と操作性を受入確認",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "acceptance",
+        "ux"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P06"
+      ],
+      "related_nodes": [
+        "spec-mobile-financial-visualization",
+        "SYS-MOBFIN-P06"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-07-acceptance.md"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "feature purposeから導いた五受入条件を匿名画面と機械証跡で判定する作業。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p07.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "figure共通化と互換性境界を整理",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "refactoring",
+        "compatibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P07"
+      ],
+      "related_nodes": [
+        "SYS-MOBFIN-P05",
+        "SYS-MOBFIN-P07"
+      ],
+      "resource_scope": [
+        "packages/web/src/components/FinancialFigure.tsx",
+        "packages/web/src/components/financial-figure-model.ts",
+        "packages/web/src/components/FinancialCharts.tsx",
+        "packages/web/src/components/ReportChart.tsx",
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-08-refactoring-migration.md"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "重複figure契約を安全に共通化し、data migration不要の判断も明示するrequired node。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p08.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "品質・アクセシビリティ・運用安全性を保証",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "quality-assurance",
+        "privacy"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P08"
+      ],
+      "related_nodes": [
+        "SYS-MOBFIN-P06",
+        "SYS-MOBFIN-P08"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-09-quality-assurance.md"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "a11y、privacy、性能、運用の非機能条件をリリース判断前に一括保証する作業。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p09.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "最終コード・UX・scopeを独立レビュー",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "final-review",
+        "scope"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P09"
+      ],
+      "related_nodes": [
+        "SYS-MOBFIN-P07",
+        "SYS-MOBFIN-P09"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-10-final-review.md"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "実装者から分離して全差分、全受入条件、scope逸脱を最終判定する独立gate。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p10.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "匿名で再現可能な検証証跡を固定",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "evidence",
+        "reproducibility"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P10"
+      ],
+      "related_nodes": [
+        "SYS-MOBFIN-P06",
+        "SYS-MOBFIN-P07",
+        "SYS-MOBFIN-P10"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-11-reproducible-evidence.md",
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/mobile-viewport-results.json"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "第三者が匿名fixtureと固定commandで同じ判定を再現できる証跡を作る作業。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p11.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "ローカル画面テスト手順と引継ぎを整備",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "documentation",
+        "handover"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P11"
+      ],
+      "related_nodes": [
+        "SYS-MOBFIN-P11"
+      ],
+      "resource_scope": [
+        "docs/runbooks/mobile-financial-visualization-test.md",
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-12-handover.md"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "利用者がlocalhostと匿名sampleで同じ画面確認を行える運用引継ぎ作業。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p12.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MOBFIN-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "非deploy close-outとrollback確認を記録",
+      "project_id": "feature-package-feat-mobile-financial-visualization",
+      "domain": "operations",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "mobile",
+        "close-out",
+        "rollback"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T10:09:51Z",
+      "updated_at": "2026-08-30T10:09:51Z",
+      "depends_on": [
+        "SYS-MOBFIN-P12"
+      ],
+      "related_nodes": [
+        "SYS-MOBFIN-P10",
+        "SYS-MOBFIN-P11",
+        "SYS-MOBFIN-P12"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/evidence/phase-13-close-out.md"
+      ],
+      "parent_feature": "feat-mobile-financial-visualization",
+      "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/plan-findings.json",
+        "evaluated_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "imported_at": "2026-08-30T10:09:51Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "実deployを行わない理由、local completion、rollback、残存制約を証跡化するrequired node。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1,
+          "candidate_path": "tasks/feat-mobile-financial-visualization/sys-mobfin-p13.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-08-30T09:44:51Z"
+      }
+    }
+  ]
+}

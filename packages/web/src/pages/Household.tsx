@@ -5,10 +5,17 @@ import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type HouseholdData, api, ownerLabel } from '../api.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
+import { FinancialFigure } from '../components/FinancialFigure.js';
 import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
-import { COLORS, yenTick } from '../components/charts.js';
+import { COLORS, baseChartOptions, yenTick } from '../components/charts.js';
+import {
+  createFinancialFigureModel,
+  figureLabels,
+  financialPeriod,
+  seriesData,
+} from '../components/figure-view-model.js';
 import { deltaCls, gainCls, monthLabel, monthShort, ratio, yen, yenS } from '../format.js';
 import { usePeriod } from '../period.js';
 
@@ -60,6 +67,35 @@ export function HouseholdPage() {
   const bal = d.balance.find((b) => b.month === month) ?? d.balance[d.balance.length - 1];
   const t = d.totals;
   const single = d.balance.length === 1;
+  const balanceLabels = d.balance.map((entry) => monthShort(entry.month));
+  const latestBalance = d.balance[d.balance.length - 1];
+  const latestBalanceTone = (latestBalance?.balance ?? 0) >= 0 ? '黒字' : '赤字';
+  const balanceModel = createFinancialFigureModel({
+    id: 'household-monthly-balance',
+    title: '収入と支出の推移',
+    summary: `${balanceLabels[balanceLabels.length - 1]}の収支は${yenS(
+      latestBalance?.balance,
+    )}で、${latestBalanceTone}です。`,
+    period: financialPeriod(balanceLabels),
+    labels: balanceLabels,
+    series: [
+      {
+        key: 'income',
+        label: '収入計',
+        values: d.balance.map((entry) => entry.income),
+        unit: 'yen',
+        color: COLORS.good,
+      },
+      {
+        key: 'expense',
+        label: '支出計',
+        values: d.balance.map((entry) => entry.expense),
+        unit: 'yen',
+        color: COLORS.per,
+      },
+    ],
+    action: '支出が収入を上回った月の生活費の内訳を開き、固定費から見直します。',
+  });
 
   const expTotal = Object.values(cur.expense).reduce((s, v) => s + v, 0);
   const incTotal = Object.values(cur.income).reduce((s, v) => s + v, 0);
@@ -227,22 +263,34 @@ export function HouseholdPage() {
             未分類ゼロ・説明可能率90%・貯蓄率30%以上)。
           </div>
         ) : (
-          <Chart
-            type="bar"
-            height={80}
-            data={{
-              labels: d.balance.map((b) => monthShort(b.month)),
-              datasets: [
-                { label: '収入計', data: d.balance.map((b) => b.income), backgroundColor: COLORS.good },
-                { label: '支出計', data: d.balance.map((b) => b.expense), backgroundColor: COLORS.per },
-              ],
-            }}
-            options={{
-              responsive: true,
-              scales: { y: { ticks: { callback: yenTick } } },
-              plugins: { legend: { position: 'bottom' } },
-            }}
-          />
+          <FinancialFigure model={balanceModel}>
+            <Chart
+              type="bar"
+              role="img"
+              aria-label="月別の家計収入と支出を比較する図"
+              fallbackContent="月別の家計収入と支出を比較する図"
+              data={{
+                labels: figureLabels(balanceModel),
+                datasets: [
+                  {
+                    label: balanceModel.series[0]?.label,
+                    data: seriesData(balanceModel, 0),
+                    backgroundColor: COLORS.good,
+                  },
+                  {
+                    label: balanceModel.series[1]?.label,
+                    data: seriesData(balanceModel, 1),
+                    backgroundColor: COLORS.per,
+                  },
+                ],
+              }}
+              options={{
+                ...baseChartOptions(),
+                scales: { y: { ticks: { callback: yenTick } } },
+                plugins: { legend: { position: 'bottom' } },
+              }}
+            />
+          </FinancialFigure>
         )}
         <div className="scroll-x">
           <DataTable

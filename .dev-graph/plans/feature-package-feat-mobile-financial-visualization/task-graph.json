@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0",
+  "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+  "parent_feature": "feat-mobile-financial-visualization",
+  "nodes": [
+    {"id":"SYS-MOBFIN-P01","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P01","title":"モバイル財務表示の要求基線とfigure inventoryを確定","depends_on":[]},
+    {"id":"SYS-MOBFIN-P02","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P02","title":"同一view-modelとresponsive figureアーキテクチャを確定","depends_on":["SYS-MOBFIN-P01"]},
+    {"id":"SYS-MOBFIN-P03","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P03","title":"モバイルUX・アクセシビリティ設計を独立レビュー","depends_on":["SYS-MOBFIN-P02"]},
+    {"id":"SYS-MOBFIN-P04","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P04","title":"figure parityと実Chrome回帰をテストファースト設計","depends_on":["SYS-MOBFIN-P03"]},
+    {"id":"SYS-MOBFIN-P05","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P05","title":"全財務figureと高密度表のモバイル体験を実装","depends_on":["SYS-MOBFIN-P04"]},
+    {"id":"SYS-MOBFIN-P06","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P06","title":"unit・DOM・実Chrome・build回帰を実行","depends_on":["SYS-MOBFIN-P05"]},
+    {"id":"SYS-MOBFIN-P07","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P07","title":"モバイルfigureの意味情報と操作性を受入確認","depends_on":["SYS-MOBFIN-P06"]},
+    {"id":"SYS-MOBFIN-P08","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P08","title":"figure共通化と互換性境界を整理","depends_on":["SYS-MOBFIN-P07"]},
+    {"id":"SYS-MOBFIN-P09","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P09","title":"品質・アクセシビリティ・運用安全性を保証","depends_on":["SYS-MOBFIN-P08"]},
+    {"id":"SYS-MOBFIN-P10","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P10","title":"最終コード・UX・scopeを独立レビュー","depends_on":["SYS-MOBFIN-P09"]},
+    {"id":"SYS-MOBFIN-P11","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P11","title":"匿名で再現可能な検証証跡を固定","depends_on":["SYS-MOBFIN-P10"]},
+    {"id":"SYS-MOBFIN-P12","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P12","title":"ローカル画面テスト手順と引継ぎを整備","depends_on":["SYS-MOBFIN-P11"]},
+    {"id":"SYS-MOBFIN-P13","feature_package_id":"feature-package/feat-mobile-financial-visualization","parent_feature":"feat-mobile-financial-visualization","phase_ref":"P13","title":"非deploy close-outとrollback確認を記録","depends_on":["SYS-MOBFIN-P12"]}
+  ]
+}

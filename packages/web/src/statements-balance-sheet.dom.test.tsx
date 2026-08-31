@@ -11,7 +11,7 @@
  * 残高がまだ1件も無いときは、代わりに「何を取り込めば作れるか」を出す。
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BalanceSheet, StatementsResponse } from './api.js';
@@ -118,7 +118,8 @@ function renderWith(over: Partial<StatementsResponse> = {}) {
 
 /** 行見出しから、その行の各月のセルを取り出す */
 const rowCells = (label: string) => {
-  const head = screen.getByRole('rowheader', { name: label });
+  const table = screen.getByRole('table', { name: '貸借対照表の月別明細' });
+  const head = within(table).getByRole('rowheader', { name: label });
   return [...(head.closest('tr')?.querySelectorAll('td') ?? [])].map((td) => td.textContent);
 };
 

@@ -30,32 +30,122 @@ Chart.register(
 Chart.defaults.font.family =
   'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif';
 Chart.defaults.font.size = 11;
-Chart.defaults.color = '#51625f';
-Chart.defaults.borderColor = '#dde3e1';
 
-export const COLORS = {
+/*
+ * 図の色の正本は styles.css の :root カスタムプロパティ。
+ * ここに同じ16進を並べると、CSSバッジと図の系列で「警告色が2種類ある」状態(実際に --warn で発生した)
+ * を止められない。フォールバックは styles.css と同じ値にしてあり、CSS が読めない環境
+ * (SSR・jsdom・CSS適用前のモジュール初期化)でも見た目は変わらない。
+ */
+const COLOR_FALLBACKS = {
   biz: '#2f5da8',
   per: '#9c4257',
   neutral: '#7b8784',
-  warn: '#a8781c',
+  warn: '#805a12',
   danger: '#b23a3a',
   good: '#2e7d5b',
   ink: '#1d2a2c',
+  inkSoft: '#51625f',
   line: '#dde3e1',
+} as const;
+
+type ColorName = keyof typeof COLOR_FALLBACKS;
+
+/** styles.css に対応する変数を持たない、図の中でしか使わない中間色。 */
+const WITHOUT_CSS_VARIABLE: ReadonlySet<ColorName> = new Set<ColorName>(['neutral']);
+
+/** CSS変数名。名前が `--<キー>` と一致しないものだけ明示する。 */
+const CSS_VARIABLE: Partial<Record<ColorName, string>> = { inkSoft: '--ink-soft' };
+
+const resolved = new Map<ColorName, string>();
+
+/**
+ * CSS変数を1度だけ読んで覚える。
+ * 読めなかった(空文字が返った)ときは覚えない ─ CSS適用前に一度触られただけで
+ * フォールバックが焼き付いてしまうのを避けるため。
+ */
+function themeColor(name: ColorName): string {
+  const cached = resolved.get(name);
+  if (cached) return cached;
+  if (WITHOUT_CSS_VARIABLE.has(name)) return COLOR_FALLBACKS[name];
+  let value = '';
+  try {
+    if (typeof document !== 'undefined' && typeof getComputedStyle === 'function') {
+      value = getComputedStyle(document.documentElement)
+        .getPropertyValue(CSS_VARIABLE[name] ?? `--${name}`)
+        .trim();
+    }
+  } catch {
+    value = '';
+  }
+  if (!value) return COLOR_FALLBACKS[name];
+  resolved.set(name, value);
+  return value;
+}
+
+/** 図の系列色。参照のたびに CSS 変数を引く(初回だけ実読み)。 */
+export const COLORS: Record<ColorName, string> = {
+  get biz() {
+    return themeColor('biz');
+  },
+  get per() {
+    return themeColor('per');
+  },
+  get neutral() {
+    return themeColor('neutral');
+  },
+  get warn() {
+    return themeColor('warn');
+  },
+  get danger() {
+    return themeColor('danger');
+  },
+  get good() {
+    return themeColor('good');
+  },
+  get ink() {
+    return themeColor('ink');
+  },
+  get inkSoft() {
+    return themeColor('inkSoft');
+  },
+  get line() {
+    return themeColor('line');
+  },
 };
 
-/** ベンダー積み上げ用のパレット(HTML版の系統色) */
-export const VENDOR_PALETTE = [
-  '#2f5da8',
-  '#9c4257',
-  '#a8781c',
-  '#2e7d5b',
-  '#5b4f9c',
-  '#3a8ea8',
-  '#b06a3a',
-  '#6a7f3a',
-  '#8a8a8a',
-];
+Chart.defaults.color = COLORS.inkSoft;
+Chart.defaults.borderColor = COLORS.line;
+
+/** ベンダー積み上げ用の追加色(テーマ色で足りない5色目以降)。 */
+const VENDOR_EXTRA_COLORS = ['#5b4f9c', '#3a8ea8', '#b06a3a', '#6a7f3a', '#8a8a8a'];
+
+/**
+ * ベンダー積み上げ・レポート図のパレット(HTML版の系統色)。
+ * 先頭4色はテーマ色そのものなので、COLORS 経由で CSS 変数に追随させる。
+ */
+export function vendorPalette(): string[] {
+  return [COLORS.biz, COLORS.per, COLORS.warn, COLORS.good, ...VENDOR_EXTRA_COLORS];
+}
+
+/**
+ * 図のアニメーション。動きを減らす設定の利用者には出さない。
+ * ページ側で個別に animation:false と書くと画面ごとに方針がずれるので、必ずこれを通す。
+ */
+export const chartAnimation = (): false | { duration: number } =>
+  typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    ? false
+    : { duration: 220 };
+
+/**
+ * 全図に共通の骨格。高さは CSS(.financial-figure__chart)が決めるので
+ * maintainAspectRatio は必ず false にする。
+ */
+export const baseChartOptions = () => ({
+  responsive: true as const,
+  maintainAspectRatio: false as const,
+  animation: chartAnimation(),
+});
 
 export const yenTick = (v: number | string): string => {
   const n = Number(v);

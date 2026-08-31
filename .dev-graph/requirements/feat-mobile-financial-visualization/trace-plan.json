@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-mobile-financial-visualization",
+  "snapshot_digest": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275",
+  "source_lineage": [
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md",
+    "specs/mobile-financial-visualization.md",
+    "architecture/arch-mobile-financial-experience.md",
+    "architecture/arch-mobile-financial-frontend.md",
+    "features/feat-mobile-financial-visualization.md"
+  ],
+  "plan_package": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization",
+  "plan_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+  "requirements": [
+    {
+      "requirement_id": "REQ-MOBFIN-001",
+      "title": "狭幅でも財務figureを失わない",
+      "statement": "360px・375px・390pxで全対象figureを表示し、canvasと表示containerの0寸法を0件にする。",
+      "source_refs": ["features/feat-mobile-financial-visualization.md", "specs/mobile-financial-visualization.md"],
+      "system_tasks": ["SYS-MOBFIN-P01", "SYS-MOBFIN-P04", "SYS-MOBFIN-P05", "SYS-MOBFIN-P06", "SYS-MOBFIN-P07"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "requirement_id": "REQ-MOBFIN-002",
+      "title": "canvasに依存しない意味同等表現",
+      "statement": "各figureに見出し、結論、期間、単位、主要series、次の行動、同一view-model由来のsemantic tableを持たせる。",
+      "source_refs": ["features/feat-mobile-financial-visualization.md", "specs/mobile-financial-visualization.md", "architecture/arch-mobile-financial-experience.md"],
+      "system_tasks": ["SYS-MOBFIN-P02", "SYS-MOBFIN-P04", "SYS-MOBFIN-P05", "SYS-MOBFIN-P07", "SYS-MOBFIN-P08"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "requirement_id": "REQ-MOBFIN-003",
+      "title": "意味を保つresponsive表現",
+      "statement": "tick間引き、凡例再配置、高さ調整、段階的開示を用いても、主要series・符号・期間・単位・比較基準を変えない。",
+      "source_refs": ["specs/mobile-financial-visualization.md", "architecture/arch-mobile-financial-frontend.md"],
+      "system_tasks": ["SYS-MOBFIN-P02", "SYS-MOBFIN-P05", "SYS-MOBFIN-P08"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "requirement_id": "REQ-MOBFIN-004",
+      "title": "高密度表と横overflowを局所化",
+      "statement": "document全体の横あふれを0件にし、高密度表は見出し文脈とedge affordanceを保つ局所scrollまたは意味単位カードに限定する。",
+      "source_refs": ["features/feat-mobile-financial-visualization.md", "specs/mobile-financial-visualization.md"],
+      "system_tasks": ["SYS-MOBFIN-P04", "SYS-MOBFIN-P05", "SYS-MOBFIN-P07", "SYS-MOBFIN-P09"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "requirement_id": "REQ-MOBFIN-005",
+      "title": "片手操作とsafe-area",
+      "statement": "coarse pointerの主要操作を44×44 CSS px以上とし、safe-areaと固定tabbarで本文最終行・主操作・補助表示を隠さない。",
+      "source_refs": ["specs/mobile-financial-visualization.md", "architecture/arch-mobile-financial-experience.md"],
+      "system_tasks": ["SYS-MOBFIN-P03", "SYS-MOBFIN-P05", "SYS-MOBFIN-P07", "SYS-MOBFIN-P09"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "requirement_id": "REQ-MOBFIN-006",
+      "title": "拡大・keyboard・非色依存",
+      "statement": "320 CSS px reflow、200%相当、keyboard、focus-visible、screen reader、reduced motionで意味情報と操作を失わず、色だけで状態を伝えない。",
+      "source_refs": ["specs/mobile-financial-visualization.md", "architecture/arch-mobile-financial-experience.md", "architecture/arch-mobile-financial-frontend.md"],
+      "system_tasks": ["SYS-MOBFIN-P03", "SYS-MOBFIN-P04", "SYS-MOBFIN-P05", "SYS-MOBFIN-P09"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "requirement_id": "REQ-MOBFIN-007",
+      "title": "単一view-modelと既存契約維持",
+      "statement": "chart・要約・表を同じ派生view-modelから生成し、会計値を二重計算せず、route・API・認証・保存データの契約を変更しない。",
+      "source_refs": ["features/feat-mobile-financial-visualization.md", "specs/mobile-financial-visualization.md", "architecture/arch-mobile-financial-frontend.md"],
+      "system_tasks": ["SYS-MOBFIN-P02", "SYS-MOBFIN-P05", "SYS-MOBFIN-P08", "SYS-MOBFIN-P10"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    },
+    {
+      "requirement_id": "REQ-MOBFIN-008",
+      "title": "匿名fixtureによる再現可能な品質証跡",
+      "statement": "unit、React DOM contract、typecheck、build、desktop/mobile実Chrome、200%相当の検証を匿名fixtureでPASSさせ、再実行可能な証跡と手順を残す。",
+      "source_refs": ["features/feat-mobile-financial-visualization.md", "specs/mobile-financial-visualization.md"],
+      "system_tasks": ["SYS-MOBFIN-P04", "SYS-MOBFIN-P06", "SYS-MOBFIN-P07", "SYS-MOBFIN-P09", "SYS-MOBFIN-P10", "SYS-MOBFIN-P11", "SYS-MOBFIN-P12", "SYS-MOBFIN-P13"],
+      "handoff_fields": ["acceptance", "verification", "resource_scope"]
+    }
+  ]
+}

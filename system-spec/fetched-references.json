@@ -2,23 +2,81 @@
   "references": [
     {
       "target_id": "cloudflare-d1-migrations",
-      "retrieved_at": "2026-08-27T03:38:13Z",
+      "retrieved_at": "2026-08-31T01:30:39Z",
       "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-06-08",
-      "latest_checked_at": "2026-08-27T03:38:13Z",
-      "summary": "D1 のスキーマ版管理は migrations フォルダ配下の連番 .sql ファイルで行い、適用済みの記録はデータベース内の d1_migrations テーブルに残る。機能は create (空ファイル生成) / list (未適用の列挙) / apply (残りの適用) の3つで、ファイルは連番順に列挙され未適用分だけが apply で適用される。--local はローカル SQLite、--remote は Cloudflare ネットワーク上の本番D1を対象とする。binding 名は変わり得るがデータベース名は不変のため、誤った binding への適用を避けるにはデータベース名の指定が推奨される。外部キー制約に抵触する変更では PRAGMA defer_foreign_keys = true を用いる。既定の探索対象は migrations_dir 直下の .sql で、2026-05-29 に追加された migrations_pattern により Drizzle 等の入れ子レイアウト (migrations/0001_init/migration.sql) も glob 指定で扱えるようになった (既定値は ${migrations_dir}/*.sql のため既存構成は無変更で動作する)。本件の kanjo-db は既定レイアウト (migrations/*.sql) であり、d1_migrations の記録が 0005 までで migrations/ 配下の 0006〜0014 が未適用である事実を list コマンドで機械判定できる。"
+      "latest_checked_at": "2026-08-31T01:30:39Z",
+      "summary": "D1 のスキーマ版管理は migrations フォルダ配下の連番 .sql ファイルで行い、適用済みの記録はデータベース内の d1_migrations テーブルに残る。機能は create (空ファイル生成) / list (未適用の列挙) / apply (残りの適用) の3つで、ファイルは連番順に列挙され未適用分だけが apply で適用される。--local はローカル SQLite、--remote は Cloudflare ネットワーク上の本番D1を対象とする。binding 名は変わり得るがデータベース名は不変のため、誤った binding への適用を避けるにはデータベース名の指定が推奨される。外部キー制約に抵触する変更では PRAGMA defer_foreign_keys = true を用いる。既定の探索対象は migrations_dir 直下の .sql で、2026-05-29 に追加された migrations_pattern により Drizzle 等の入れ子レイアウト (migrations/0001_init/migration.sql) も glob 指定で扱えるようになった (既定値は ${migrations_dir}/*.sql のため既存構成は無変更で動作する)。本件の kanjo-db は既定レイアウト (migrations/*.sql) であり、d1_migrations の記録が 0005 までで migrations/ 配下の 0006〜0014 が未適用である事実を list コマンドで機械判定できる。",
+      "evidence_ref": "system-spec/retrieval-evidence/cloudflare-d1-migrations.json",
+      "evidence_sha256": "73576aa9bfb2302fceed90cd57ced4785118896491d90d367b3226cba949c75f",
+      "retrieval_note": "2026-08-31 に再取得。以前の記録は evidence_ref / evidence_sha256 を持たず、retrieved_at も全件同一時刻だったため、出典が主張どおりの内容かを機械で確かめられなかった。この record の retrieved_at / latest_checked_at はこの再取得の実時刻であり、過去の取得時刻を再現したものではない。last_updated は本文から機械的に再導出できないため以前の値を据え置いている(未検証)。"
     },
     {
       "target_id": "cloudflare-wrangler-d1-config",
-      "retrieved_at": "2026-08-27T03:38:13Z",
+      "retrieved_at": "2026-08-31T01:30:40Z",
       "source_url": "https://developers.cloudflare.com/workers/wrangler/configuration/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-08-13",
-      "latest_checked_at": "2026-08-27T03:38:13Z",
-      "summary": "Wrangler 設定の d1_databases バインディングでは migrations_dir で移行ファイル置き場を、migrations_table で適用記録テーブル名を、migrations_pattern で探索 glob を指定できる。migrations_dir はモノレポ構成で複数の apps/packages が単一の D1 インスタンスを共有する用途を明示的に想定した設定項目である。migrations_pattern は Wrangler 設定ファイルからの相対 glob で既定は migrations/*.sql、設定する場合は migrations_dir も必須かつ migrations_pattern が migrations_dir で始まる必要があり、各マイグレーション名は migrations_dir からの相対パスとして記録テーブルに残る。本プロジェクトの packages/api/wrangler.jsonc は migrations_dir を ../../migrations に設定し migrations_pattern を持たないため、リポジトリ直下 migrations/ の *.sql が本番D1のスキーマ正本であることを裏付ける。"
+      "latest_checked_at": "2026-08-31T01:30:40Z",
+      "summary": "Wrangler 設定の d1_databases バインディングは binding / database_name / database_id (必須) と preview_database_id / migrations_dir / migrations_pattern (任意) を持つ。migrations_dir は移行ファイル置き場、migrations_pattern は探索 glob (既定 migrations/*.sql) で、Drizzle のような入れ子レイアウト (migrations/*/migration.sql) に対応する。migrations_pattern を設定する場合は migrations_dir も必須で、pattern は migrations_dir で始まらなければならない。各移行は migrations_dir からの相対パスとして migrations テーブルに記録される。既定のローカル開発モードではファイルは preview/production ではなくローカルストレージへ書かれる。\n【訂正 2026-08-31】以前の summary は「migrations_table で適用記録テーブル名を指定できる」と書いていたが、再取得した本文に migrations_table は 0 回しか出現せず (migrations_dir は 5 回、migrations_pattern は 3 回)、d1_databases の項目として文書化されていない。根拠を持たない記述だったため削除した。ページ側の変更か当初の誤りかは、当時の取得実体が残っていないため判別できない。",
+      "evidence_ref": "system-spec/retrieval-evidence/cloudflare-wrangler-d1-config.json",
+      "evidence_sha256": "dcda994789242181b403495f4656534811b326afdcc7af2d4e7468b435102a05",
+      "retrieval_note": "2026-08-31 に再取得。以前の記録は evidence_ref / evidence_sha256 を持たず、retrieved_at も全件同一時刻だったため、出典が主張どおりの内容かを機械で確かめられなかった。この record の retrieved_at / latest_checked_at はこの再取得の実時刻であり、過去の取得時刻を再現したものではない。last_updated は本文から機械的に再導出できないため以前の値を据え置いている(未検証)。"
+    },
+    {
+      "target_id": "apple-human-interface-guidelines-accessibility",
+      "retrieved_at": "2026-08-31T01:31:48Z",
+      "source_url": "https://developer.apple.com/design/human-interface-guidelines/accessibility",
+      "official_publisher": "Apple Inc.",
+      "official_host": "developer.apple.com",
+      "version": "Current HIG (rolling)",
+      "latest_checked_at": "2026-08-31T01:31:48Z",
+      "summary": "Appleは操作を単純・直感的かつ一貫させ、iOS/iPadOSの既定control sizeを44×44ptとし、control間隔も誤タップ防止に重要とする。モバイルWebでは主要操作44×44 CSS px以上、学習を要する独自gestureを避ける設計へ写像する。",
+      "evidence_ref": "system-spec/retrieval-evidence/apple-human-interface-guidelines-accessibility.json",
+      "evidence_sha256": "5be6af998a035c1bf48061dbffe74376064a68667bb9f419a9a5cf4544d4222d",
+      "retrieval_note": "2026-08-31 に再取得。以前の記録は evidence_ref / evidence_sha256 を持たず、retrieved_at も全件同一時刻だったため、出典が主張どおりの内容かを機械で確かめられなかった。この record の retrieved_at / latest_checked_at はこの再取得の実時刻であり、過去の取得時刻を再現したものではない。last_updated は本文から機械的に再導出できないため以前の値を据え置いている(未検証)。"
+    },
+    {
+      "target_id": "apple-human-interface-guidelines-layout",
+      "retrieved_at": "2026-08-31T01:31:51Z",
+      "source_url": "https://developer.apple.com/design/human-interface-guidelines/layout",
+      "official_publisher": "Apple Inc.",
+      "official_host": "developer.apple.com",
+      "version": "Current HIG (rolling)",
+      "latest_checked_at": "2026-08-31T01:31:51Z",
+      "summary": "Appleは一貫した関係と適応的layoutで内容理解を支え、iPadのwindow resizeではcompact化を遅らせ、幅変化で予期しないUI変更を最小化し、一般的なsystem sizeでsmooth transitionを試験するよう求める。",
+      "evidence_ref": "system-spec/retrieval-evidence/apple-human-interface-guidelines-layout.json",
+      "evidence_sha256": "491bc69f1ecbb01c83484edcba7bd9dbb9d1e6f50548da185545a6792eaf90af",
+      "retrieval_note": "2026-08-31 に再取得。以前の記録は evidence_ref / evidence_sha256 を持たず、retrieved_at も全件同一時刻だったため、出典が主張どおりの内容かを機械で確かめられなかった。この record の retrieved_at / latest_checked_at はこの再取得の実時刻であり、過去の取得時刻を再現したものではない。last_updated は本文から機械的に再導出できないため以前の値を据え置いている(未検証)。"
+    },
+    {
+      "target_id": "w3c-wcag-2-2",
+      "retrieved_at": "2026-08-31T01:30:41Z",
+      "source_url": "https://www.w3.org/TR/WCAG22/",
+      "official_publisher": "World Wide Web Consortium (W3C)",
+      "official_host": "www.w3.org",
+      "version": "2.2",
+      "latest_checked_at": "2026-08-31T01:30:41Z",
+      "summary": "WCAG 2.2は320 CSS px相当で情報・機能を失わず二方向scrollを避けるReflow、keyboard/focus、non-text contrast、24×24 CSS pxのTarget Size Minimumなどを規定する。本featureは会計操作の失敗コストを踏まえ、主要操作をより厳しい44px契約で固定する。",
+      "evidence_ref": "system-spec/retrieval-evidence/w3c-wcag-2-2.json",
+      "evidence_sha256": "178e91a746a4d4ef5d1619b7b0ba91d434c562d73a7900f18ce0a26969cbb167",
+      "retrieval_note": "2026-08-31 に再取得。以前の記録は evidence_ref / evidence_sha256 を持たず、retrieved_at も全件同一時刻だったため、出典が主張どおりの内容かを機械で確かめられなかった。この record の retrieved_at / latest_checked_at はこの再取得の実時刻であり、過去の取得時刻を再現したものではない。last_updated は本文から機械的に再導出できないため以前の値を据え置いている(未検証)。"
+    },
+    {
+      "target_id": "chartjs-responsive-charts",
+      "retrieved_at": "2026-08-31T01:30:42Z",
+      "source_url": "https://www.chartjs.org/docs/latest/configuration/responsive.html",
+      "official_publisher": "Chart.js Project",
+      "official_host": "www.chartjs.org",
+      "version": "4.x latest documentation",
+      "latest_checked_at": "2026-08-31T01:30:42Z",
+      "summary": "Chart.jsはcanvas自身でなく専用かつposition:relativeの親container寸法を監視してresponsive描画する。明示高さを変更する場合はmaintainAspectRatio=falseが必要で、responsive、onResize、resizeDelayの契約がある。",
+      "evidence_ref": "system-spec/retrieval-evidence/chartjs-responsive-charts.json",
+      "evidence_sha256": "b4dc2f20237d7c140d13df235e60ff2eecfc85eb12c3f7016e17d085cbfc0e11",
+      "retrieval_note": "2026-08-31 に再取得。以前の記録は evidence_ref / evidence_sha256 を持たず、retrieved_at も全件同一時刻だったため、出典が主張どおりの内容かを機械で確かめられなかった。この record の retrieved_at / latest_checked_at はこの再取得の実時刻であり、過去の取得時刻を再現したものではない。last_updated は本文から機械的に再導出できないため以前の値を据え置いている(未検証)。"
     }
   ]
 }

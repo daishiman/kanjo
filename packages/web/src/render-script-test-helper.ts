@@ -14,11 +14,15 @@ const execFileAsync = promisify(execFile);
  */
 const HARD_KILL_MS = 110_000;
 
-export async function runRenderScript(script: string): Promise<string> {
+export async function runRenderScript(
+  script: string,
+  options: { env?: NodeJS.ProcessEnv; timeoutMs?: number } = {},
+): Promise<string> {
   try {
     const { stdout } = await execFileAsync(process.execPath, [script], {
       encoding: 'utf8',
-      timeout: HARD_KILL_MS,
+      env: options.env,
+      timeout: options.timeoutMs ?? HARD_KILL_MS,
     });
     return stdout;
   } catch (error) {
