@@ -137,6 +137,8 @@
 
 明細の同一性キーは **MF エクスポートの `ID` 列**(`tx_id`)。根拠: MF の `ID` は明細ごとに MF 側で採番される固定値で、再エクスポートしても同じ明細は同じ `ID` で出る(実データで確認済み)。日付+金額+内容の組は同日同額の外食などで重複するため使えない。`ID` 列が無い古いエクスポートだけ `月_行番号_金額` の合成IDになり、その場合は行の並びが変わると編集が外れる(設定画面の「手動で編集した明細」で「取込値が変わった/明細なし」として検出できる)。
 
+MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_key`)と、`base_major`/`base_mid` を4属性へ広げた3点比較の契約は `specs/import-deletion-and-override-reapply.md` が持つ。同一性キーの第一は常に `tx_id` のまま。
+
 ### 保持の仕方(D1)
 
 | テーブル | 役割 |
@@ -282,6 +284,7 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 - MFのID列が無い旧exportは復元用IDが行index依存である。`mf_transactions.identity_stable=0`として添付を拒否し、行順を変えたファイルは別内容として扱う。MFのID列から読み込んだ行だけを1とする。
 - 過去ever-seenではなく現在有効なtargetだけを比較する。同月A→B→AはforceなしでAを再適用し、A→Aだけを`duplicate`にする。`force=1`は現在有効なcommitted世代を意図的にもう一度適用するときだけ使う。
 - 別途、月ごとの取込前後の件数(`replaced`)を返し、減っていれば画面で「月の途中までのファイルではないか」を知らせる(既存どおり月単位で洗い替えるため)。
+- 明細を消すときは `import_active_targets` の現行指紋の巻き戻しと必ず対で行う。指紋が残ったまま明細だけ消えると同じファイルが `duplicate` で弾かれ、消したものを戻せなくなる。削除の粒度・退避・監査は `specs/import-deletion-and-override-reapply.md`。
 
 ## 取込のcommit/部分成功契約
 

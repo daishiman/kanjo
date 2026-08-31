@@ -146,6 +146,7 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 - CSVはJSON1のUTF-8 80KiB payloadでbulk delete/insertし、`import_id`・`user_id`・確定時刻はchunk JSON外のscalar bindにする。routeは実builderのpayload/cache/active/finalizationとread/claim/attempt/heartbeat/reconcile/release・duplicate/失敗/commit応答喪失回復のworst-caseを合算し、49 D1 queriesまでを受理する。受理後は実attempt IDのbuilderをR2前に再計測し、commit直前にも`actual <= planned`をfail-closedで保証する。通常幅の5,000行freee/MFは50未満、長大列・大量cache scope・複数unitで超える場合はR2/run/canonical書込み前に413とする
 - JSON active pointerはrestore write-setを変えるrules、edits、owners、budgets、settings、vendor、cash、freee/MF/baselineの各mutationと同じD1 batchで無効化し、restore自身はcommit batchで新pointerを設定する
 - MFの明示ID付き行は順序非依存。ID列が無い旧exportは合成IDが行indexに依存するため順序非依存を保証せず、並べ替えると手動編集も引き継げない旨を画面のID補完件数で知らせる
+- **取込データの削除(取込単位/期間/種別/全件)・上書きポリシーの選択・undo・監査記録、および前回取込原本値(base)を基準にした手当ての継続再適用は`specs/import-deletion-and-override-reapply.md`が持つ。** 上の月単位の洗い替えは取込の副作用であり、利用者が意図して選ぶ削除ではない。同仕様の追加後も洗い替えと`POST /restore`の挙動は変えない
 
 **FR-02 公私仕分け(P5)**
 - 明細一覧: 月選択・判定フィルタ(すべて/事業/個人/手動のみ)・キーワード検索・金額降順

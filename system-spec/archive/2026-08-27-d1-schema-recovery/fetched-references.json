@@ -1,0 +1,24 @@
+{
+  "references": [
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "retrieved_at": "2026-08-27T03:38:13Z",
+      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-08",
+      "latest_checked_at": "2026-08-27T03:38:13Z",
+      "summary": "D1 のスキーマ版管理は migrations フォルダ配下の連番 .sql ファイルで行い、適用済みの記録はデータベース内の d1_migrations テーブルに残る。機能は create (空ファイル生成) / list (未適用の列挙) / apply (残りの適用) の3つで、ファイルは連番順に列挙され未適用分だけが apply で適用される。--local はローカル SQLite、--remote は Cloudflare ネットワーク上の本番D1を対象とする。binding 名は変わり得るがデータベース名は不変のため、誤った binding への適用を避けるにはデータベース名の指定が推奨される。外部キー制約に抵触する変更では PRAGMA defer_foreign_keys = true を用いる。既定の探索対象は migrations_dir 直下の .sql で、2026-05-29 に追加された migrations_pattern により Drizzle 等の入れ子レイアウト (migrations/0001_init/migration.sql) も glob 指定で扱えるようになった (既定値は ${migrations_dir}/*.sql のため既存構成は無変更で動作する)。本件の kanjo-db は既定レイアウト (migrations/*.sql) であり、d1_migrations の記録が 0005 までで migrations/ 配下の 0006〜0014 が未適用である事実を list コマンドで機械判定できる。"
+    },
+    {
+      "target_id": "cloudflare-wrangler-d1-config",
+      "retrieved_at": "2026-08-27T03:38:13Z",
+      "source_url": "https://developers.cloudflare.com/workers/wrangler/configuration/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-08-13",
+      "latest_checked_at": "2026-08-27T03:38:13Z",
+      "summary": "Wrangler 設定の d1_databases バインディングでは migrations_dir で移行ファイル置き場を、migrations_table で適用記録テーブル名を、migrations_pattern で探索 glob を指定できる。migrations_dir はモノレポ構成で複数の apps/packages が単一の D1 インスタンスを共有する用途を明示的に想定した設定項目である。migrations_pattern は Wrangler 設定ファイルからの相対 glob で既定は migrations/*.sql、設定する場合は migrations_dir も必須かつ migrations_pattern が migrations_dir で始まる必要があり、各マイグレーション名は migrations_dir からの相対パスとして記録テーブルに残る。本プロジェクトの packages/api/wrangler.jsonc は migrations_dir を ../../migrations に設定し migrations_pattern を持たないため、リポジトリ直下 migrations/ の *.sql が本番D1のスキーマ正本であることを裏付ける。"
+    }
+  ]
+}
