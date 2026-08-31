@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-mobile-financial-visualization",
+  "snapshot_digest": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275",
+  "status": "ready",
+  "missing_sections": [],
+  "remediation_owners": {},
+  "gates": {
+    "C11_snapshot_validation": {
+      "status": "PASS",
+      "source_inputs": [
+        {"path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/atomic-promotion-receipt.json", "sha256": "beebaabb9a96e1632d0c03411b43f0636c52c11c475fe53fe970abcfcc6eacc2"},
+        {"path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/dev-graph-registration-receipt.json", "sha256": "ffca59838cb865eae1467fb55e0f27279e11b0e506fa472ea6f9802ce0e6e838"},
+        {"path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/staging-manifest.json", "sha256": "ac44991e7dd8225edb5e4c0ae3972289752b51b08af5e1cfa7b0e57c36b6883d"},
+        {"path": ".dev-graph/state/graph.json", "sha256": "542741553ce0a369c7663a41f318c8d5501368263fc886f030aa9b7fcc18e402"},
+        {"path": "features/feat-mobile-financial-visualization.context.json", "sha256": "2a0504f87f87055166e5adc6e1dafb1c57783e494b5d7bfa9d7d9c4f506cfd6a"},
+        {"path": ".dev-graph/state/requirements-graph-validation-feat-mobile-financial-visualization.json", "sha256": "692637cee3281fdf0e059b154d30516d5d449a0b4b55f69678a8b362c6ec38c4"},
+        {"path": ".dev-graph/state/requirements-plan-validation-feat-mobile-financial-visualization.json", "sha256": "c53d561c112673741e8fb7ec95bcfa7f83d9a82d17f9ad526c9deff6c7888fc1"}
+      ]
+    },
+    "C02_saved_state": {
+      "status": "PASS",
+      "feature": {"confirmation_status": "confirmed", "evaluation_status": "pass", "implementation_readiness": "complete"},
+      "tasks": {"count": 13, "confirmation_status": "confirmed", "evaluation_status": "pass", "implementation_readiness": "complete", "missing_sections": []}
+    },
+    "system_plan_validation": {
+      "status": "PASS",
+      "validated_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+      "phase_count": 13,
+      "node_count": 13,
+      "violations": []
+    }
+  },
+  "staleness_rule": "source input、feature context、graph、validation report、promotion receipt、registration receipt のいずれかの sha256 が変化した場合は handoff を無効化して再生成する。",
+  "downstream_projection": {
+    "required": false,
+    "owner": "dev-graph plan",
+    "source_task_specs": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/task-specs",
+    "target_task_root": "tasks/feat-mobile-financial-visualization",
+    "reason": "plan の exact-13 atomic registration 時に全 canonical task 文書が登録済みである。"
+  }
+}

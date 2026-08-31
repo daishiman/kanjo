@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "verb": "render",
+  "status": "pass",
+  "output": ".dev-graph/render/index.html",
+  "scope": "all",
+  "graph_revision": 10,
+  "counts": {
+    "nodes": 17,
+    "edges": 12,
+    "feature_progress": {
+      "feat-mobile-financial-visualization": {
+        "done": 0,
+        "total": 13
+      }
+    }
+  },
+  "registration": {
+    "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+    "expected_count": 13,
+    "applied_count": 13,
+    "source_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+    "receipt": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/dev-graph-registration-receipt.json"
+  },
+  "digests": {
+    "input_sha256": "27286040bcded9313153204288eda5938b1ef10f869845174be4a9e22be1bace",
+    "output_sha256": "f578966aa127ef26b2a0843675555a2ca7e7c49a7a2e5beb2baa796bd554fa8e"
+  },
+  "zero_dependency": {
+    "external_script_count": 0,
+    "external_link_count": 0,
+    "external_url_count": 0,
+    "svg_count": 1,
+    "inline_script_count": 2
+  }
+}

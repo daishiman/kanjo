@@ -3,7 +3,7 @@ status: confirmed
 category: ui-ux
 aggregate: 確定
 spec_cells: [ui-ux.web, ui-ux.mobile, ui-ux.tablet, ui-ux.desktop-windows, ui-ux.desktop-linux, ui-ux.desktop-macos]
-serves_goals: [G3]
+serves_goals: [G5, G6, G7]
 ---
 
 # UI-UX (ui-ux)
@@ -15,12 +15,12 @@ serves_goals: [G3]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-004 |
-| モバイル (mobile) | 対象外 | 理由: モバイルはweb画面のレスポンシブ表示で到達し、モバイル固有のUI成果物を作らない |
-| タブレット (tablet) | 対象外 | 理由: タブレットはweb画面のレスポンシブ表示で到達し、タブレット固有のUI成果物を作らない |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
+| Web (web) | 確定 | 確定質疑: qa-mobile-ui-001 |
+| モバイル (mobile) | 確定 | 確定質疑: qa-mobile-ui-001 |
+| タブレット (tablet) | 確定 | 確定質疑: qa-mobile-ui-001 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: 承認: appr-mobile-platform-001 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: 承認: appr-mobile-platform-001 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: 承認: appr-mobile-platform-001 |
 
 ## 適用された設計知識
 
@@ -71,6 +71,50 @@ serves_goals: [G3]
 - 順位・グループ・削除理由・加工理由が構造化データとして残るため、生成 AI・人間のどちらが作っても同じ根拠で検証できる。決定論ゲート (`../../../scripts/validate-information-priority.py`) が手順の順序制約 (装飾より前に順位が確定していること) を機械検査する。
 - 成果は「見た目の評価」ではなく outcome で測る: 目的達成までの操作数・初見での到達率・誤操作率・問い合わせ件数。装飾の量では測らない。
 
+---
+
+### mobile financial information parity
+
+- project candidate: `mobile-financial-information-parity` (`deepened`)
+- 解決対象: 狭い画面で財務グラフが消える、または視覚操作だけでは結論へ到達できない状態を防ぐ必要がある
+
+#### 目的
+
+モバイルでもグラフの有無や操作能力に左右されず、デスクトップと同じ財務上の結論へ短時間で到達できるようにする。
+
+#### 解決する問題
+
+- canvasが0寸法または非表示になり主要な変化・異常・比較基準を認識できない
+- tooltipや色だけに意味を持たせるとタッチ・読み上げ・ズーム利用者が同じ結論へ到達できない
+
+#### 適用条件
+
+- 360pxから390pxのモバイルviewportで財務情報を短時間・片手で確認するとき
+
+#### 非適用条件
+
+- 法定原本や監査用の高密度一覧で元値の全件表示が主目的のときは、要約だけに置換せず局所スクロールと原値表を残す
+
+#### トレードオフ
+
+- tickや凡例の密度を下げる代わりに詳細値のsemantic tableと段階表示を維持する必要がある
+
+#### 失敗モード
+
+- display:noneでグラフと重要状態をまとめて消す
+- 見た目を簡潔にするため期間・単位・符号・比較基準まで削る
+- safe-areaや下部tabbarで最終行・主操作・tooltipを隠す
+
+#### goalへの寄与
+
+- G1へはfigure欠落0と意味等価な要約・表で寄与する
+- G2へは結論から詳細へ読む情報優先順で寄与する
+- G3へは44px操作領域、keyboard、focus-visible、screen reader、200% zoomで寄与する
+
 ## 最新ドキュメント出典
 
-- (このカテゴリに割り当てた取得済みドキュメントなし。全体出典は index.md 参照)
+| 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
+|---|---|---|---|---|---|
+| apple-human-interface-guidelines-accessibility | Current HIG (rolling) | Apple Inc. (developer.apple.com) | https://developer.apple.com/design/human-interface-guidelines/accessibility | 2026-08-30T08:58:25Z | 2026-08-30T08:58:25Z |
+| apple-human-interface-guidelines-layout | Current HIG (rolling) | Apple Inc. (developer.apple.com) | https://developer.apple.com/design/human-interface-guidelines/layout | 2026-08-30T08:58:25Z | 2026-08-30T08:58:25Z |
+| w3c-wcag-2-2 | 2.2 | World Wide Web Consortium (W3C) (www.w3.org) | https://www.w3.org/TR/WCAG22/ | 2026-08-30T08:58:25Z | 2026-08-30T08:58:25Z |

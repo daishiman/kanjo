@@ -6,9 +6,14 @@
   "description": "React SPA。HTML版のデザイントークンを移植",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && node scripts/check-initial-js-budget.mjs",
+    "build": "tsc --noEmit && vite build && pnpm run check:js-budget",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check:js-budget": "node scripts/check-initial-js-budget.mjs",
+    "check:thead": "node scripts/check-thead-render.mjs",
+    "check:mobile-layout": "node scripts/check-mobile-layout.mjs",
+    "check:financial-figure": "node scripts/check-mobile-financial-layout.mjs",
+    "check:financial-routes": "node scripts/check-financial-visuals.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.1.0",

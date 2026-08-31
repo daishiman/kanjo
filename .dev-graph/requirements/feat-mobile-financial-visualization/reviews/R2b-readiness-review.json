@@ -1,0 +1,156 @@
+{
+  "schema_version": "1.0.0",
+  "review_id": "R2b-readiness",
+  "feature_id": "feat-mobile-financial-visualization",
+  "handoff_target": "task-graph",
+  "status": "PASS",
+  "inputs": {
+    "R1_review": {
+      "path": ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R1-elicit-review.json",
+      "status": "PASS",
+      "missing_nodes": []
+    },
+    "R2_review": {
+      "path": ".dev-graph/requirements/feat-mobile-financial-visualization/reviews/R2-plan-review.json",
+      "status": "PASS",
+      "untraced_requirements": []
+    }
+  },
+  "gates": {
+    "C11_snapshot_validation": {
+      "status": "PASS",
+      "report_path": ".dev-graph/state/requirements-graph-validation-feat-mobile-financial-visualization.json",
+      "command": [
+        "python3",
+        "dev-graph/scripts/validate-graph-schema.py",
+        "--graph",
+        ".dev-graph/state/graph.json",
+        "--repo-root",
+        "<repo-root>"
+      ],
+      "validator_source_sha256": "e1a7ab366c2535242c47e507da98e6349e4313e922c4583ae89536642c4fba91",
+      "exit_code": 0,
+      "valid": true,
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "violations": [],
+      "source_input_count": 7,
+      "source_inputs_all_current": true,
+      "source_inputs": [
+        {"path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/atomic-promotion-receipt.json", "sha256": "beebaabb9a96e1632d0c03411b43f0636c52c11c475fe53fe970abcfcc6eacc2", "match": true},
+        {"path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/dev-graph-registration-receipt.json", "sha256": "ffca59838cb865eae1467fb55e0f27279e11b0e506fa472ea6f9802ce0e6e838", "match": true},
+        {"path": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/staging-manifest.json", "sha256": "ac44991e7dd8225edb5e4c0ae3972289752b51b08af5e1cfa7b0e57c36b6883d", "match": true},
+        {"path": ".dev-graph/state/graph.json", "sha256": "542741553ce0a369c7663a41f318c8d5501368263fc886f030aa9b7fcc18e402", "match": true},
+        {"path": "features/feat-mobile-financial-visualization.context.json", "sha256": "2a0504f87f87055166e5adc6e1dafb1c57783e494b5d7bfa9d7d9c4f506cfd6a", "match": true},
+        {"path": ".dev-graph/state/requirements-graph-validation-feat-mobile-financial-visualization.json", "sha256": "692637cee3281fdf0e059b154d30516d5d449a0b4b55f69678a8b362c6ec38c4", "match": true},
+        {"path": ".dev-graph/state/requirements-plan-validation-feat-mobile-financial-visualization.json", "sha256": "c53d561c112673741e8fb7ec95bcfa7f83d9a82d17f9ad526c9deff6c7888fc1", "match": true}
+      ]
+    },
+    "C02_saved_state": {
+      "status": "PASS",
+      "feature": {
+        "node_id": "feat-mobile-financial-visualization",
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete",
+        "missing_sections": [],
+        "source_path": "specs/mobile-financial-visualization.md",
+        "source_digest": "sha256:4cb4c416c4656537ece66fa7d3c115b26f1137ef77740b51cc78f5c3a284b9a7",
+        "source_digest_current": true
+      },
+      "tasks": {
+        "count": 13,
+        "node_ids": [
+          "SYS-MOBFIN-P01", "SYS-MOBFIN-P02", "SYS-MOBFIN-P03", "SYS-MOBFIN-P04", "SYS-MOBFIN-P05",
+          "SYS-MOBFIN-P06", "SYS-MOBFIN-P07", "SYS-MOBFIN-P08", "SYS-MOBFIN-P09", "SYS-MOBFIN-P10",
+          "SYS-MOBFIN-P11", "SYS-MOBFIN-P12", "SYS-MOBFIN-P13"
+        ],
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete",
+        "missing_sections": [],
+        "source_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+        "source_digest_all_match": true
+      },
+      "feature_context_digest": "sha256:2a0504f87f87055166e5adc6e1dafb1c57783e494b5d7bfa9d7d9c4f506cfd6a",
+      "feature_context_digest_current": true,
+      "registration_expected_count": 13,
+      "registration_applied_count": 13,
+      "registration_exact_set": true
+    },
+    "system_plan_validation": {
+      "status": "PASS",
+      "report_path": ".dev-graph/state/requirements-plan-validation-feat-mobile-financial-visualization.json",
+      "command": [
+        "python3",
+        "system-dev-planner/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<repo-root>",
+        "--staging",
+        ".dev-graph/plans/feature-package-feat-mobile-financial-visualization"
+      ],
+      "validator_source_sha256": "68e6c4255b7c244f2871dd8ae13c2d2a4ac9f38d9bffc01a56428e87c4a9a46f",
+      "exit_code": 0,
+      "validated_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+      "plan_digest_alignment": true,
+      "phase_refs": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10", "P11", "P12", "P13"],
+      "phase_exact_set": true,
+      "node_count": 13,
+      "node_exact_set": true,
+      "common_parent_feature": "feat-mobile-financial-visualization",
+      "common_feature_package_id": "feature-package/feat-mobile-financial-visualization",
+      "forward_dag": true,
+      "violations": []
+    }
+  },
+  "digest_alignment": {
+    "source_feature_digest": "sha256:2a0504f87f87055166e5adc6e1dafb1c57783e494b5d7bfa9d7d9c4f506cfd6a",
+    "plan_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+    "snapshot_digest": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275",
+    "promotion_registration_plan_aligned": true,
+    "snapshot_anchor_aligned_across_scope_readiness_trace_handoff_R1_R2_goal": true,
+    "stale_inputs": []
+  },
+  "missing_sections": [],
+  "negative_trial": {
+    "status": "PASS",
+    "method": "repository外のOS一時directoryへcanonical graph/planと参照artifactを複製し、original repositoryを変更せずfail-closed contractを評価した。",
+    "temporary_copy_removed_after_trial": true,
+    "cases": [
+      {
+        "id": "readiness-incomplete",
+        "mutation": "一時copyのSYS-MOBFIN-P01をimplementation_readiness=incomplete、missing_sections=[Verification and evidence]へ変更した。",
+        "graph_validator_exit_code": 1,
+        "graph_validator_status": "incomplete",
+        "graph_validator_violation_codes": ["active_not_ready", "schema_violation"],
+        "plan_validator_exit_code": 0,
+        "surfaced_missing_sections": ["SYS-MOBFIN-P01:Verification and evidence"],
+        "expected_handoff": "withheld",
+        "actual_handoff": "withheld",
+        "handoff_count": 0,
+        "contract_result": "PASS"
+      },
+      {
+        "id": "source-digest-stale",
+        "mutation": "一時copyのSYS-MOBFIN-P06 source_lineage.source_digestをplan digestと不一致にした。",
+        "graph_validator_exit_code": 0,
+        "graph_validator_status": "complete",
+        "plan_validator_exit_code": 0,
+        "r2b_digest_crosscheck": "FAIL",
+        "surfaced_missing_sections": ["SYS-MOBFIN-P06:source_lineage.source_digest(stale)"],
+        "expected_handoff": "withheld",
+        "actual_handoff": "withheld",
+        "handoff_count": 0,
+        "contract_result": "PASS"
+      }
+    ],
+    "assertions": {
+      "incomplete_never_ready": true,
+      "stale_never_ready": true,
+      "missing_sections_are_node_scoped": true,
+      "partial_handoff_forbidden": true
+    }
+  },
+  "findings": [],
+  "snapshot_digest": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275"
+}

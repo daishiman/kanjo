@@ -107,30 +107,42 @@
     "ui-ux": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-004",
+        "qa_ref": "qa-mobile-ui-001",
         "serves_goals": [
-          "G3"
+          "G5",
+          "G6",
+          "G7"
         ]
       },
       "mobile": {
-        "state": "対象外",
-        "reason": "モバイルはweb画面のレスポンシブ表示で到達し、モバイル固有のUI成果物を作らない"
+        "state": "確定",
+        "qa_ref": "qa-mobile-ui-001",
+        "serves_goals": [
+          "G5",
+          "G6",
+          "G7"
+        ]
       },
       "tablet": {
-        "state": "対象外",
-        "reason": "タブレットはweb画面のレスポンシブ表示で到達し、タブレット固有のUI成果物を作らない"
+        "state": "確定",
+        "qa_ref": "qa-mobile-ui-001",
+        "serves_goals": [
+          "G5",
+          "G6",
+          "G7"
+        ]
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "デスクトップ配布物を持たずブラウザのみで提供するため対象外"
+        "approval_ref": "appr-mobile-platform-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "デスクトップ配布物を持たずブラウザのみで提供するため対象外"
+        "approval_ref": "appr-mobile-platform-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "デスクトップ配布物を持たずブラウザのみで提供するため対象外"
+        "approval_ref": "appr-mobile-platform-001"
       }
     },
     "security": {
@@ -226,30 +238,44 @@
     "frontend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-004",
+        "qa_ref": "qa-mobile-frontend-001",
         "serves_goals": [
-          "G3"
+          "G5",
+          "G6",
+          "G8"
         ]
       },
       "mobile": {
-        "state": "対象外",
-        "reason": "フロントは単一の React SPA バンドルで、モバイル専用ビルドを持たない"
+        "state": "確定",
+        "qa_ref": "qa-mobile-frontend-001",
+        "serves_goals": [
+          "G5",
+          "G6",
+          "G7",
+          "G8"
+        ]
       },
       "tablet": {
-        "state": "対象外",
-        "reason": "フロントは単一の React SPA バンドルで、タブレット専用ビルドを持たない"
+        "state": "確定",
+        "qa_ref": "qa-mobile-frontend-001",
+        "serves_goals": [
+          "G5",
+          "G6",
+          "G7",
+          "G8"
+        ]
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "デスクトップ配布物を持たずブラウザのみで提供するため対象外"
+        "approval_ref": "appr-mobile-platform-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "デスクトップ配布物を持たずブラウザのみで提供するため対象外"
+        "approval_ref": "appr-mobile-platform-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "デスクトップ配布物を持たずブラウザのみで提供するため対象外"
+        "approval_ref": "appr-mobile-platform-001"
       }
     },
     "maintenance-ops": {
@@ -287,27 +313,82 @@
     {
       "id": "qa-001",
       "question": "本システムはどの実行プラットフォームへ提供するか。mobile/tablet/desktop向けの専用アプリや配布物はあるか。",
-      "answer": "収支統合管理は Cloudflare Workers 上で SPA (packages/web) を配信するブラウザ専用アプリであり、URLは kanjo-console.daishimanju.workers.dev の1経路のみ。mobile/tablet からはブラウザのレスポンシブ表示で同じwebへ到達し、専用アプリのストア配布はない。desktop-windows/linux/macos 向けのインストーラ・Electron等の配布物も存在しない。したがって web 以外の5 platform は全カテゴリで対象外とする。"
+      "answer": "収支統合管理は Cloudflare Workers 上で SPA (packages/web) を配信するブラウザ専用アプリであり、URLは kanjo-console.daishimanju.workers.dev の1経路のみ。mobile/tablet からはブラウザのレスポンシブ表示で同じwebへ到達し、専用アプリのストア配布はない。desktop-windows/linux/macos 向けのインストーラ・Electron等の配布物も存在しない。したがって web 以外の5 platform は全カテゴリで対象外とする。",
+      "source": {
+        "kind": "user-dialogue"
+      }
     },
     {
       "id": "qa-002",
       "question": "web におけるデータベース層とインフラ層の要件は何か。今回の障害を踏まえ、スキーマ適用の正本と適用順序、実行基盤の制約をどう定めるか。",
-      "answer": "データベースは Cloudflare D1 (kanjo-db / fe9e732c-687c-4507-b704-1955b5367547) 単一で、スキーマ変更の正本は repo の migrations/ 配下の連番SQLである。適用済みの正本状態は D1 の d1_migrations テーブルが持つ。事故観測時は 0005_sub_vendors.sql までで 0006〜0014 の9本が未適用だったが、現在のremote状態は未確認であり、実際の適用対象は作業開始時のremote listとrepository headから作る承認済みpending manifestで確定する。0007/0010/0011 のような既存テーブル再定義を安全に扱うため、承認対象は連番順の逐次適用のみを許し、部分適用・順序逸脱・手書きDDLを禁止する。適用は wrangler の migrations_dir (../../migrations) を経由し、適用前に必ずバックアップを取得する。既存データ (mf_transactions / freee_deals / imports など) は保全必須で、適用前後の行数が減らないことを検証する。インフラは Cloudflare Workers (compatibility_date 2026-08-24, nodejs_compat) + D1 + R2 (kanjo-files) の構成で、静的アセットは同一 Worker から配信し /api/* のみ run_worker_first で Worker を通す。D1 には1リクエストあたりのクエリ本数上限があり、既存の query budget 設計 (上限未満50) を壊さない。"
+      "answer": "データベースは Cloudflare D1 (kanjo-db / fe9e732c-687c-4507-b704-1955b5367547) 単一で、スキーマ変更の正本は repo の migrations/ 配下の連番SQLである。適用済みの正本状態は D1 の d1_migrations テーブルが持つ。事故観測時は 0005_sub_vendors.sql までで 0006〜0014 の9本が未適用だったが、現在のremote状態は未確認であり、実際の適用対象は作業開始時のremote listとrepository headから作る承認済みpending manifestで確定する。0007/0010/0011 のような既存テーブル再定義を安全に扱うため、承認対象は連番順の逐次適用のみを許し、部分適用・順序逸脱・手書きDDLを禁止する。適用は wrangler の migrations_dir (../../migrations) を経由し、適用前に必ずバックアップを取得する。既存データ (mf_transactions / freee_deals / imports など) は保全必須で、適用前後の行数が減らないことを検証する。インフラは Cloudflare Workers (compatibility_date 2026-08-24, nodejs_compat) + D1 + R2 (kanjo-files) の構成で、静的アセットは同一 Worker から配信し /api/* のみ run_worker_first で Worker を通す。D1 には1リクエストあたりのクエリ本数上限があり、既存の query budget 設計 (上限未満50) を壊さない。",
+      "source": {
+        "kind": "user-dialogue"
+      }
     },
     {
       "id": "qa-003",
       "question": "web のバックエンドと運用保守の要件は何か。スキーマ乖離の再発をどの工程で防ぎ、どう検知するか。",
-      "answer": "バックエンドは Hono 製の単一 Worker (packages/api) で /api/* を提供する。今回の恒久対策として、期待スキーマ版 (repo の migrations/ 最終連番) と実際の適用版 (d1_migrations の最終行) の不一致を実行時に検知し、汎用の500ではなく原因を特定できる専用エラーコードで応答する責務を backend に置く。検知は public auth を除く session/token 認証後の共通入口で行い、業務 D1 アクセスより前に fail-closed 503 とする。明細内容や金額をログ・応答に含めない既存方針を維持する。運用保守としては、Migrate を人間承認付きの唯一の適用経路とし、CI/CD の Deploy は Worker 配信前に remote の未適用状態を読み取り検査する。未適用がある場合も判定不能な場合も新版の Worker を配信しない (fail-closed)。Deploy は migration を適用しない。加えて本番D1への適用は不可逆であるため、適用前バックアップの取得と、適用後の行数比較による保全確認を運用手順に含める。本番への適用コマンドの実行主体はユーザー本人とし、AIは差分列挙・dry-run・手順提示・適用後検証までを担う。"
+      "answer": "バックエンドは Hono 製の単一 Worker (packages/api) で /api/* を提供する。今回の恒久対策として、期待スキーマ版 (repo の migrations/ 最終連番) と実際の適用版 (d1_migrations の最終行) の不一致を実行時に検知し、汎用の500ではなく原因を特定できる専用エラーコードで応答する責務を backend に置く。検知は public auth を除く session/token 認証後の共通入口で行い、業務 D1 アクセスより前に fail-closed 503 とする。明細内容や金額をログ・応答に含めない既存方針を維持する。運用保守としては、Migrate を人間承認付きの唯一の適用経路とし、CI/CD の Deploy は Worker 配信前に remote の未適用状態を読み取り検査する。未適用がある場合も判定不能な場合も新版の Worker を配信しない (fail-closed)。Deploy は migration を適用しない。加えて本番D1への適用は不可逆であるため、適用前バックアップの取得と、適用後の行数比較による保全確認を運用手順に含める。本番への適用コマンドの実行主体はユーザー本人とし、AIは差分列挙・dry-run・手順提示・適用後検証までを担う。",
+      "source": {
+        "kind": "user-dialogue"
+      }
     },
     {
       "id": "qa-004",
       "question": "web のフロントエンドと UI/UX の要件は何か。スキーマ不一致に起因するエラーを利用者にどう伝えるか。",
-      "answer": "フロントエンドは React SPA (packages/web) で、取込画面 (Import.tsx) がファイル選択・取込実行・取込履歴を担う。現状はサーバーの500を「サーバーエラーが発生しました。通信状態を確認して、もう一度取込を実行してください」という汎用文言へ丸めているため、通信起因でない構成不一致に対して利用者へ誤った行動 (再試行) を促してしまう。恒久対策として、バックエンドが返すスキーマ版数不一致の専用エラーコードを識別し、再試行では解決しないこと・システム側の更新適用が必要であることが分かる文言へ分岐させる。情報優先度の方針として、取込画面で最優先に残す情報は「今の操作が成功したか」「失敗したなら次に取るべき行動」であり、内部のテーブル名やSQLエラー詳細は画面へ出さない (税務データの秘匿方針と、利用者が判断できない情報を載せない方針の両立)。取込履歴の読込失敗も同様に、再読み込みで回復し得るのか、システム更新待ちなのかを区別して示す。"
+      "answer": "フロントエンドは React SPA (packages/web) で、取込画面 (Import.tsx) がファイル選択・取込実行・取込履歴を担う。現状はサーバーの500を「サーバーエラーが発生しました。通信状態を確認して、もう一度取込を実行してください」という汎用文言へ丸めているため、通信起因でない構成不一致に対して利用者へ誤った行動 (再試行) を促してしまう。恒久対策として、バックエンドが返すスキーマ版数不一致の専用エラーコードを識別し、再試行では解決しないこと・システム側の更新適用が必要であることが分かる文言へ分岐させる。情報優先度の方針として、取込画面で最優先に残す情報は「今の操作が成功したか」「失敗したなら次に取るべき行動」であり、内部のテーブル名やSQLエラー詳細は画面へ出さない (税務データの秘匿方針と、利用者が判断できない情報を載せない方針の両立)。取込履歴の読込失敗も同様に、再読み込みで回復し得るのか、システム更新待ちなのかを区別して示す。",
+      "source": {
+        "kind": "user-dialogue"
+      }
     },
     {
       "id": "qa-005",
       "question": "web の認証とセキュリティの要件は何か。今回の復旧作業で守るべき境界は何か。",
-      "answer": "認証はパスワード + 署名付きセッションCookie方式で、Cloudflare Access を使う場合のみ ACCESS_AUD/ACCESS_TEAM_DOMAIN を設定して Access JWT 検証へ切り替わる。AUTH_PASSWORD と SESSION_SECRET は wrangler secrets で管理し、リポジトリや設定ファイルへ平文で置かない。未適用マイグレーション 0014 は password_login_rate_limits を作るもので、これが本番に無い間はログイン試行のレート制限が機能しない可能性があるため、復旧対象に含める。セキュリティ要件として、(a) 明細内容・金額をログおよびエラー応答へ含めない既存方針を維持する、(b) スキーマ不一致の専用エラーでも内部のテーブル名・SQL文・スタックトレースを利用者へ露出しない、(c) 本番D1への不可逆な適用操作は人間の承認を必須とし、適用前バックアップの存在を前提条件とする、(d) バックアップは既存の夜間cron (JST03:00 / D1→R2 30日保持) に加え、適用直前の明示取得を求める。"
+      "answer": "認証はパスワード + 署名付きセッションCookie方式で、Cloudflare Access を使う場合のみ ACCESS_AUD/ACCESS_TEAM_DOMAIN を設定して Access JWT 検証へ切り替わる。AUTH_PASSWORD と SESSION_SECRET は wrangler secrets で管理し、リポジトリや設定ファイルへ平文で置かない。未適用マイグレーション 0014 は password_login_rate_limits を作るもので、これが本番に無い間はログイン試行のレート制限が機能しない可能性があるため、復旧対象に含める。セキュリティ要件として、(a) 明細内容・金額をログおよびエラー応答へ含めない既存方針を維持する、(b) スキーマ不一致の専用エラーでも内部のテーブル名・SQL文・スタックトレースを利用者へ露出しない、(c) 本番D1への不可逆な適用操作は人間の承認を必須とし、適用前バックアップの存在を前提条件とする、(d) バックアップは既存の夜間cron (JST03:00 / D1→R2 30日保持) に加え、適用直前の明示取得を求める。",
+      "source": {
+        "kind": "user-dialogue"
+      }
+    },
+    {
+      "id": "qa-mobile-ui-001",
+      "question": "web/mobile/tabletのUI-UX、利用文脈、情報優先度、アクセシビリティ要件は何か。",
+      "answer": "対象は収支確認画面・分析グラフ・比較図・高密度表・警告・主要操作。利用者は外出先や短い空き時間に片手で頻繁に今月の状態と異常を確認し、誤認すると支出見落としや誤操作につながる。初期表示は結論・期間・単位・異常・次の行動を優先し、詳細値は表/段階表示へ、装飾や重複説明は落とす。グラフは狭幅でも消さず、密度調整と意味等価な要約・代替表を持つ。Apple HIGの階層・一貫性・44pt操作領域をWebの44 CSS px契約へ写像し、safe-area、200% zoom、keyboard、screen reader、contrast、reduced-motionを満たす。",
+      "source": {
+        "kind": "user-dialogue"
+      }
+    },
+    {
+      "id": "qa-mobile-frontend-001",
+      "question": "web/mobile/tabletのフロントエンド構成とグラフのレスポンシブ契約は何か。",
+      "answer": "React 18、Chart.js 4、react-chartjs-2、既存route metadata/CSS tokenを正本にする。chart containerはmin-width:0と明示高さを持ち、ResizeObserver/Chart.js responsive処理が0寸法にならないことを実描画で確認する。狭幅ではtick間引き、凡例再配置、canvas高さ調整、局所scroll、カード化を選ぶが、期間・単位・符号・比較基準・主要seriesは保持する。visual要約とsemantic table/テキストを同じ集計modelから生成し、二重計算を避ける。",
+      "source": {
+        "kind": "user-dialogue"
+      }
+    },
+    {
+      "id": "qa-mobile-boundaries-001",
+      "question": "database/auth/backend/securityの既存境界を今回どう扱うか。",
+      "answer": "中核ドメインは取引・収支集計・期間比較・財務諸表で既存契約を維持する。Cloudflare D1/R2の永続化、schema migration、API endpoint/response、React Query境界、認証・認可・session/token・owner/tenant境界を変更しない。表示変換は既存APIの集計結果だけを使い、入力値や会計計算を変えない。脅威モデルは実データ・明細・金額・秘密情報をfixture/ログ/成果物へ出さず、HTML/label生成の既存escapeと認可境界を維持する。",
+      "source": {
+        "kind": "user-dialogue"
+      }
+    },
+    {
+      "id": "qa-mobile-ops-001",
+      "question": "infrastructure/maintenance-opsの実行・検証・運用契約は何か。",
+      "answer": "Cloudflare Workersと既存CI/CD構成は変更しない。Web bundle変更として配信し、匿名fixtureのunit/DOM/buildに加え、実Chromeで360/375/390px、tablet、desktop、200%相当を検査する。document横あふれ、figure数、canvas可視寸法、意味要約、44px操作領域、safe-area/tabbar遮蔽、keyboard/reduced-motionを証跡化し、検査不能はPASSにしない。依存導入前に既存Chart.js/CSSで解決し、bundle budgetを維持する。",
+      "source": {
+        "kind": "user-dialogue"
+      }
+    },
+    {
+      "id": "qa-mobile-scope-narrowing-001",
+      "question": "C05完成度評価を踏まえ、今回変更しないシステムカテゴリはどこまで対象外として扱うか。",
+      "answer": "今回変更するのはpackages/webの財務可視化とモバイル体験だけである。database、auth、backend、security、infrastructure、maintenance-opsは既存契約を維持し、schema、API、認証認可、Cloudflare構成、運用手順を変更しないため、全platformで今回の実装対象外とする。境界維持はui-ux/frontendの制約と受入条件で検証する。",
+      "source": {
+        "kind": "user-dialogue"
+      }
     }
   ],
   "approval_log": [
@@ -318,6 +399,18 @@
     {
       "id": "appr-002",
       "note": "対象platformを web 単独とし、mobile/tablet/desktop-windows/desktop-linux/desktop-macos を全カテゴリで対象外とすることをユーザー承認済み(2026-08-27)。根拠: wrangler.jsonc の assets 配信はSPA1経路のみで、ネイティブ/デスクトップ配布物がリポジトリに存在しない。"
+    },
+    {
+      "id": "appr-mobile-ui-001",
+      "note": "ユーザーが2026-08-30の依頼で、モバイルで欠落するグラフを含むUI/UX全体をAppleのモバイルエンジニア観点で見直し、認知負荷を下げること、およびspecヒアリングにはこの新機能内容を先に回答することを明示した。"
+    },
+    {
+      "id": "appr-mobile-platform-001",
+      "note": "対象はレスポンシブWebを使うweb/mobile/tablet。OS固有desktop配布物は作らず、Windows/Linux/macOSはブラウザ共通のweb契約で扱うためdesktop固有セルを対象外とする。 (appr-002 のうち mobile/tablet を全カテゴリ対象外とした部分を ui-ux/frontend について更新する。desktop-* は appr-002 の判断を維持。)"
+    },
+    {
+      "id": "appr-mobile-scope-narrowing-001",
+      "note": "feat-mobile-financial-visualization の**変更対象**を ui-ux/frontend に限定する。database/auth/backend/security/infrastructure/maintenance-ops は今回の feature では触らないが、仕様としては確定済みのまま維持する (spec cell の state を 対象外 へ降格させない)。feature 単位の scope は各章の chapter_notes 「今回の feature scope」に記録する。"
     }
   ],
   "reopen_log": [],
@@ -339,11 +432,27 @@
     {
       "target_id": "cloudflare-wrangler-d1-config",
       "category": "infrastructure"
+    },
+    {
+      "target_id": "apple-human-interface-guidelines-accessibility",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "apple-human-interface-guidelines-layout",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "w3c-wcag-2-2",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "chartjs-responsive-charts",
+      "category": "frontend"
     }
   ],
   "requirements_foundation": {
-    "essential_purpose": "本番環境のデータベーススキーマを、デプロイ済みアプリケーションコードが前提とする版へ確実に一致させ続けることで、利用者が「取込を実行できませんでした: サーバーエラーが発生しました」に遭遇せず日々の記帳を完了できる状態を保つ。",
-    "background": "事故観測時、本番D1 (kanjo-db / fe9e732c-687c-4507-b704-1955b5367547) の d1_migrations は 0005_sub_vendors.sql までしか記録されておらず、migrations/0006〜0014 の9本が未適用だった。一方 Worker のコードは 0014 相当のスキーマを前提としており、POST /api/imports は acquireImportWriter が参照する import_writer_claims テーブル不在で、GET /api/imports は import_active_targets 参照で、いずれも D1 の no such table により 500 を返した。現在の repository head には 0015 も存在するため、0006〜0014 は事故時の事実に限定し、実際の適用対象は作業開始時の remote list から決める。原因はアプリのロジック不具合ではなく、デプロイ運用にスキーマ適用工程が組み込まれていないこと (人手依存で適用漏れが検出されないこと) である。",
+    "essential_purpose": "外出先や片手操作のモバイル環境でも、収支の変化・異常・次に確認すべきことをグラフと要約から即座に理解し、見落としや誤操作なく判断を完了できるようにする。",
+    "background": "現行Webアプリはナビゲーションや一部の表をモバイル対応済みだが、財務グラフ・比較図・高密度情報はデスクトップ前提が残り、モバイルでは表示欠落、狭幅での判読困難、横スクロール中の文脈喪失が起き得る。直前featureは現在地と画面探索を改善したため、今回は画面内の財務可視化と主要操作をAppleのモバイル設計原則に照らして見直す。",
     "goals": [
       {
         "id": "G1",
@@ -360,6 +469,22 @@
       {
         "id": "G4",
         "text": "復旧作業を通じて本番の既存データを一件も失わない"
+      },
+      {
+        "id": "G5",
+        "text": "モバイルでもデスクトップと同じ財務上の結論へ到達でき、グラフや重要状態が幅を理由に消えない"
+      },
+      {
+        "id": "G6",
+        "text": "情報の優先順位を利用頻度と失敗コストで整理し、片手・短時間でも主状態と次の操作を迷わず認識できる"
+      },
+      {
+        "id": "G7",
+        "text": "iPhoneを含むタッチ端末で安全領域、可読性、44px以上の操作領域、ズーム、支援技術を一貫して満たす"
+      },
+      {
+        "id": "G8",
+        "text": "匿名fixtureによる実描画検査でモバイルとデスクトップの情報同等性を継続的に保証する"
       }
     ],
     "objectives": [
@@ -387,59 +512,82 @@
         "id": "O5",
         "text": "適用前バックアップから復元可能な状態を確保する",
         "measure": "適用直前のバックアップが取得済みで、行数比較により適用前後のデータ件数が保全されている"
+      },
+      {
+        "id": "O6",
+        "text": "全財務chart/figureを360px・375px・390pxで表示または意味等価な要約へフォールバックさせる",
+        "measure": "対象figureの欠落0件、canvasまたは意味等価なtable/summaryが各対象に1件以上"
+      },
+      {
+        "id": "O7",
+        "text": "ページ全体の意図しない横スクロールをなくし、高密度表は文脈を保つ局所スクロールまたはカードへ変換する",
+        "measure": "document scrollWidthがviewport幅以下、例外は明示されたscroll container内のみ"
+      },
+      {
+        "id": "O8",
+        "text": "モバイルの主要操作をタッチ・キーボード・読み上げで完了可能にする",
+        "measure": "coarse pointerの主要操作領域44×44 CSS px以上、focus-visible欠落0、色だけに依存する状態0"
+      },
+      {
+        "id": "O9",
+        "text": "実Chromeのviewport/zoom検査へ財務グラフの可視性・寸法・legend/tooltip代替・情報同等性を追加する",
+        "measure": "360/375/390px、tablet、desktop、200%相当の回帰検査がexit0"
       }
     ],
     "success_criteria": [
-      "承認済み pending manifest の全項目が本番の d1_migrations に記録され、同じ repository head / ordered migrations digest に対する未適用が0件である",
-      "本番画面でファイルを選び「取込を実行」してサーバーエラーが発生しない",
-      "取込履歴が「サーバー側で処理に失敗しました」を出さず一覧表示される",
-      "適用前後で mf_transactions / freee_deals / imports の行数が減少していない",
-      "デプロイパイプラインで未適用がある、または状態を判定できない場合、Worker の新版が配信されない",
-      "スキーマ版数不一致時のエラー応答が、汎用サーバーエラーではなく原因を特定できる内容である"
+      "モバイル幅で主要な財務グラフ・比較図がCSSやレイアウト都合で非表示にならない",
+      "グラフを操作しなくても見出し・要約・凡例・値の代替表から結論を理解できる",
+      "グラフの軸・ラベル・凡例が狭幅で重なった場合は、表示密度を下げても意味情報を失わない",
+      "safe-areaと下部タブバーに本文・操作・tooltipが隠れない",
+      "ページ全体の横あふれ、44px未満の主要タップ領域、200%拡大時の情報欠落が0件",
+      "匿名データだけを使うunit/DOM/build/実描画回帰検査がすべてPASSする"
     ],
     "stakeholders": [
       {
         "id": "S1",
-        "role": "利用者 (個人事業の記帳担当)",
-        "need": "月次のCSV/ZIP取込を止めずに完了したい。エラー時は次に何をすべきか分かること"
+        "role": "個人事業の記帳・収支確認を行う本人",
+        "need": "移動中や短い空き時間に、今月の収支・異常・次の確認先を片手で判断したい"
       },
       {
         "id": "S2",
-        "role": "開発兼運用者 (daishiman)",
-        "need": "デプロイのたびにスキーマ適用を手動で思い出さなくてよいこと。乖離を即座に検知できること"
+        "role": "会計に不慣れな利用者",
+        "need": "グラフの読み方を覚えなくても、結論と次の行動を平易な日本語で理解したい"
       },
       {
         "id": "S3",
-        "role": "税務上の記録の正確性を担保する立場",
-        "need": "復旧作業で既存の会計データが失われないこと"
+        "role": "開発兼運用者",
+        "need": "画面追加やChart.js更新でモバイルだけ情報が消える退行を自動検出したい"
+      },
+      {
+        "id": "S4",
+        "role": "キーボード・ズーム・読み上げを利用する人",
+        "need": "視覚・ポインタ操作だけに依存せず同じ情報と操作へ到達したい"
       }
     ],
     "scope": {
       "in": [
-        "作業開始時のremote listとrepository headから承認済みpending manifestを作る手順と検証",
-        "適用前バックアップとデータ保全の確認手順",
-        "CI/CD Deployへの読み取り専用fail-closed検査の組み込み",
-        "実行時のスキーマ版数不一致検知と、原因を特定できるエラー応答",
-        "取込実行・取込履歴の本番動作確認"
+        "packages/webの全routeにおけるモバイルUI監査",
+        "財務グラフ、比較図、heatmap、高密度表、KPI、legend、tooltip、読み方ガイドのレスポンシブ表示",
+        "情報優先度、段階表示、カード化・局所スクロール・要約の使い分け",
+        "safe-area、下部タブバー、dynamic viewport、200%拡大、coarse pointer、keyboard、screen reader、reduced-motion",
+        "匿名fixtureによるunit/DOM/build/実Chrome回帰検査"
       ],
       "out": [
-        "取込パイプラインそのもののロジック変更 (パース/正規化/集計の仕様変更)",
-        "マイグレーションファイル自体の追加・変更",
-        "Deployによるmigration自動適用",
-        "D1以外のストア (R2/KV) のスキーマ運用",
-        "認証方式の変更"
+        "会計計算・集計ロジック・永続データモデルの変更",
+        "API・認証・認可・テナント境界の変更",
+        "Cloudflare Workers/D1/R2の構成変更",
+        "専用iOS/Androidネイティブアプリの開発",
+        "実データを用いたfixture・スクリーンショット・ログの作成",
+        "本番deploy、PR作成、worktree claim"
       ]
     },
     "constraints": [
-      "実行基盤は Cloudflare Workers + D1 + R2 で、wrangler.jsonc の migrations_dir は ../../migrations である",
-      "本番D1への適用コマンドの実行主体は利用者本人とし、AIは手順の提示と検証までを担う (不可逆操作の承認を人間が握る)",
-      "適用対象は番号上限で固定せず、作業開始時と適用直前のremote listとrepositoryのmigrations/を突合して得たordered pending listを、人間がMigrateで承認したmanifestに限る",
-      "manifestはrepository head・ordered migrations digest・remote applied head・ordered pending files・取得日時・人間の承認日時を持ち、承認後にrepository head・ordered migrations digest・remote listのいずれかが変われば承認を無効化して再取得する",
-      "恒久policyと通常のD1変更手順のSSOTはdocs/ci-cd-operations.mdとし、incident runbookはremote baseline・承認済みpending manifest・行数突合・証跡へのリンクだけを持つ",
-      "本番には既存データが存在し、データ喪失ゼロが必須である",
-      "0007/0010/0011 は cash_entries / attachments を再定義するため、適用順序の逸脱や部分適用を許さない",
-      "D1 には1リクエストあたりのクエリ本数上限があり、取込処理は既存の query budget 設計 (上限未満50) を壊さない",
-      "明細内容や金額をログ・エラー応答へ含めない既存のセキュリティ方針を維持する"
+      "React 18、Chart.js 4、react-chartjs-2、既存route metadataとCSS tokenを維持する",
+      "モバイルは専用ネイティブアプリではなくレスポンシブWebとして提供する",
+      "情報を単にdisplay:noneで削除せず、優先度に応じて要約・段階表示・密度調整へ変換する",
+      "会計値の正確性を保ち、視覚簡略化で符号・期間・単位・比較基準を失わない",
+      "public repositoryのため実データ・口座明細・秘密情報を成果物やテストへ含めない",
+      "外部UI/chart依存の追加は原則避け、bundle budgetとreduced-motionを維持する"
     ],
     "concrete_intents": [
       {
@@ -492,10 +640,56 @@
         "serves": [
           "G1"
         ]
+      },
+      {
+        "id": "I8",
+        "text": "全routeとchart/figure inventoryを作り、モバイルで非表示・0寸法・重なり・文脈喪失する箇所を特定する",
+        "serves": [
+          "G5",
+          "G8"
+        ]
+      },
+      {
+        "id": "I9",
+        "text": "財務グラフをモバイルでも必ず描画し、見出し・結論要約・単位・期間・凡例・値の代替表を揃える",
+        "serves": [
+          "G5",
+          "G6"
+        ]
+      },
+      {
+        "id": "I10",
+        "text": "ラベル密度、凡例配置、tooltip、canvas高さ、scroll/stack方針をviewportごとの一貫した契約にする",
+        "serves": [
+          "G5",
+          "G6",
+          "G7"
+        ]
+      },
+      {
+        "id": "I11",
+        "text": "safe-areaと固定tabbarを考慮し、主操作・popover・tooltip・最終行が隠れないようにする",
+        "serves": [
+          "G7"
+        ]
+      },
+      {
+        "id": "I12",
+        "text": "主要操作を44px以上にし、keyboard、focus-visible、screen reader、200% zoom、contrast、reduced-motionを検証する",
+        "serves": [
+          "G7"
+        ]
+      },
+      {
+        "id": "I13",
+        "text": "匿名fixtureの実Chrome検査でモバイルとデスクトップのfigure数・可視性・寸法・意味情報の同等性を固定する",
+        "serves": [
+          "G8"
+        ]
       }
     ],
     "confirmed": true,
-    "approval_ref": "appr-001"
+    "approval_ref": "appr-mobile-ui-001"
   },
   "decisions": [
     {
@@ -999,10 +1193,243 @@
       }
     }
   ],
-  "knowledge_candidates": [],
+  "knowledge_candidates": [
+    {
+      "id": "mobile-financial-information-parity",
+      "topic": "mobile financial information parity",
+      "status": "deepened",
+      "problem": "狭い画面で財務グラフが消える、または視覚操作だけでは結論へ到達できない状態を防ぐ必要がある",
+      "serves_goals": [
+        "G5",
+        "G6",
+        "G7"
+      ],
+      "categories": [
+        "ui-ux"
+      ],
+      "source_refs": [
+        {
+          "url": "https://developer.apple.com/design/human-interface-guidelines/accessibility",
+          "official_or_primary": true,
+          "checked_at": "2026-08-30T08:58:25Z"
+        },
+        {
+          "url": "https://developer.apple.com/design/human-interface-guidelines/layout",
+          "official_or_primary": true,
+          "checked_at": "2026-08-30T08:58:25Z"
+        },
+        {
+          "url": "https://www.w3.org/TR/WCAG22/",
+          "official_or_primary": true,
+          "checked_at": "2026-08-30T08:58:25Z"
+        }
+      ],
+      "card": {
+        "knowledge_id": "mobile-financial-information-parity",
+        "title": "モバイル財務情報の意味同等性",
+        "status": "project-candidate",
+        "purpose": "モバイルでもグラフの有無や操作能力に左右されず、デスクトップと同じ財務上の結論へ短時間で到達できるようにする。",
+        "background": "Kanjoでは財務グラフ、比較図、heatmap、高密度表を狭幅で扱うため、単純な縮小や非表示は情報欠落と認知負荷を生む。",
+        "problems": [
+          "canvasが0寸法または非表示になり主要な変化・異常・比較基準を認識できない",
+          "tooltipや色だけに意味を持たせるとタッチ・読み上げ・ズーム利用者が同じ結論へ到達できない"
+        ],
+        "core_concepts": [
+          "結論、期間、単位、異常、次の行動を初期表示の情報優先順とする",
+          "グラフと同じ集計値から見出し要約、凡例、semantic tableを生成し意味を二重管理しない",
+          "Apple HIGの44pt操作領域をcoarse pointerの44 CSS px契約へ写像する"
+        ],
+        "applies_when": [
+          "360pxから390pxのモバイルviewportで財務情報を短時間・片手で確認するとき"
+        ],
+        "does_not_apply_when": [
+          "法定原本や監査用の高密度一覧で元値の全件表示が主目的のときは、要約だけに置換せず局所スクロールと原値表を残す"
+        ],
+        "tradeoffs": [
+          "tickや凡例の密度を下げる代わりに詳細値のsemantic tableと段階表示を維持する必要がある"
+        ],
+        "failure_modes": [
+          "display:noneでグラフと重要状態をまとめて消す",
+          "見た目を簡潔にするため期間・単位・符号・比較基準まで削る",
+          "safe-areaや下部tabbarで最終行・主操作・tooltipを隠す"
+        ],
+        "goal_contribution": [
+          "G1へはfigure欠落0と意味等価な要約・表で寄与する",
+          "G2へは結論から詳細へ読む情報優先順で寄与する",
+          "G3へは44px操作領域、keyboard、focus-visible、screen reader、200% zoomで寄与する"
+        ],
+        "primary_sources": [
+          {
+            "title": "Human Interface Guidelines: Accessibility",
+            "publisher_or_author": "Apple Inc.",
+            "locator": "https://developer.apple.com/design/human-interface-guidelines/accessibility"
+          },
+          {
+            "title": "Human Interface Guidelines: Layout",
+            "publisher_or_author": "Apple Inc.",
+            "locator": "https://developer.apple.com/design/human-interface-guidelines/layout"
+          },
+          {
+            "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+            "publisher_or_author": "W3C",
+            "locator": "https://www.w3.org/TR/WCAG22/",
+            "published_or_updated": "2024-12-12"
+          }
+        ],
+        "freshness": {
+          "class": "standard-tracked",
+          "last_checked": "2026-08-30",
+          "review_by": "2027-02-28",
+          "triggers": [
+            "Apple HIG更新",
+            "WCAG改訂",
+            "モバイルviewport回帰"
+          ]
+        }
+      }
+    },
+    {
+      "id": "responsive-financial-chart-container",
+      "topic": "responsive financial chart container",
+      "status": "deepened",
+      "problem": "Chart.jsのresponsive描画が狭幅や親要素寸法の変化で0寸法・過小表示にならず、視覚表現と意味表現を同期させる必要がある",
+      "serves_goals": [
+        "G5",
+        "G6",
+        "G7",
+        "G8"
+      ],
+      "categories": [
+        "frontend"
+      ],
+      "source_refs": [
+        {
+          "url": "https://www.chartjs.org/docs/latest/configuration/responsive.html",
+          "official_or_primary": true,
+          "checked_at": "2026-08-30T08:58:25Z"
+        },
+        {
+          "url": "https://www.w3.org/TR/WCAG22/",
+          "official_or_primary": true,
+          "checked_at": "2026-08-30T08:58:25Z"
+        }
+      ],
+      "card": {
+        "knowledge_id": "responsive-financial-chart-container",
+        "title": "財務chartのresponsive container契約",
+        "status": "project-candidate",
+        "purpose": "Chart.jsのcanvasを全対象viewportで可視寸法に保ち、同一の既存API集計結果から視覚表現と読み上げ可能な意味表現を生成する。",
+        "background": "Chart.jsはcanvas自体ではなく親containerの寸法へ追随するため、grid/flex子のmin-widthや明示高さが欠けるとモバイルだけ描画領域を失う。",
+        "problems": [
+          "gridやflexの最小内容幅でchart containerが縮まずページ全体を横あふれさせる",
+          "親高さ未確定や非表示切替のタイミングでcanvasが0寸法になりfigureが存在しても読めない",
+          "canvasと代替表が別計算だと金額・符号・期間の不一致を起こす"
+        ],
+        "core_concepts": [
+          "chart専用のposition relative親containerへmin-width 0とviewport別の明示高さを与える",
+          "maintainAspectRatio falseとresponsive resizeを使いtick、legend、tooltip代替をviewport契約で調整する",
+          "既存API境界と会計計算を変えず単一view-modelからcanvas、要約、semantic tableを導出する"
+        ],
+        "applies_when": [
+          "react-chartjs-2で財務seriesを360px、375px、390px、tablet、desktopへ描画するとき"
+        ],
+        "does_not_apply_when": [
+          "静的な単一値や短いKPIはcanvasを導入せずsemantic HTMLだけで表現する"
+        ],
+        "tradeoffs": [
+          "狭幅でchart高さを確保すると縦スクロールは増えるが、情報欠落より可逆であり要約と段階表示で負荷を抑える"
+        ],
+        "failure_modes": [
+          "canvas要素へ相対サイズを直接指定して親containerのresponsive contractを持たない",
+          "ラベル重なりを避けるため主要seriesや期間情報を削除する",
+          "snapshotやCSS文字列検査だけで実際のcanvas寸法を確認しない"
+        ],
+        "goal_contribution": [
+          "G1へは全figureの可視寸法と主要series保持で寄与する",
+          "G2へはtick間引き・legend再配置・結論要約で寄与する",
+          "G3へはcanvas非依存のsemantic tableとkeyboard/zoom対応で寄与する",
+          "G4へは匿名fixtureの実Chromeでfigure数・bounding box・意味情報同等性を固定して寄与する"
+        ],
+        "primary_sources": [
+          {
+            "title": "Responsive Charts",
+            "publisher_or_author": "Chart.js Project",
+            "locator": "https://www.chartjs.org/docs/latest/configuration/responsive.html",
+            "published_or_updated": "2025-10-13"
+          },
+          {
+            "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+            "publisher_or_author": "W3C",
+            "locator": "https://www.w3.org/TR/WCAG22/",
+            "published_or_updated": "2024-12-12"
+          }
+        ],
+        "freshness": {
+          "class": "vendor-tracked",
+          "last_checked": "2026-08-30",
+          "review_by": "2027-02-28",
+          "triggers": [
+            "Chart.js major/minor更新",
+            "react-chartjs-2更新",
+            "実描画回帰"
+          ]
+        }
+      }
+    }
+  ],
   "hearing_progress": {
-    "loop_count": 5,
+    "loop_count": 6,
     "next_question": null,
     "complete": true
+  },
+  "chapter_notes": {
+    "database": [
+      {
+        "heading": "今回の feature scope",
+        "body": "本章の仕様は確定済みであり、今回の feature `feat-mobile-financial-visualization` では**変更しない**。\n\n- feature scope: 変更対象は ui-ux / frontend のみ (承認: `appr-mobile-scope-narrowing-001`)\n- 本章の spec cell state は「確定」のまま維持する。「今回触らない」ことと「仕様が存在しない (対象外)」ことは別軸であり、feature scope を cell state へ書くと D1・認証・Workers の実在する契約が仕様上消え、以後の completeness 評価や dev-graph の要件導出がその前提で走ってしまう。\n- 境界維持の検証は ui-ux / frontend 側の制約と受入条件で行う (`qa-mobile-boundaries-001`)。",
+        "reason": "feature 単位の「今回触らない」を恒久的な spec cell state (確定/対象外) と取り違えた降格が起きたため、意図を state とは別の軸で保持する。",
+        "recorded_with": "set-chapter-note"
+      }
+    ],
+    "auth": [
+      {
+        "heading": "今回の feature scope",
+        "body": "本章の仕様は確定済みであり、今回の feature `feat-mobile-financial-visualization` では**変更しない**。\n\n- feature scope: 変更対象は ui-ux / frontend のみ (承認: `appr-mobile-scope-narrowing-001`)\n- 本章の spec cell state は「確定」のまま維持する。「今回触らない」ことと「仕様が存在しない (対象外)」ことは別軸であり、feature scope を cell state へ書くと D1・認証・Workers の実在する契約が仕様上消え、以後の completeness 評価や dev-graph の要件導出がその前提で走ってしまう。\n- 境界維持の検証は ui-ux / frontend 側の制約と受入条件で行う (`qa-mobile-boundaries-001`)。",
+        "reason": "feature 単位の「今回触らない」を恒久的な spec cell state (確定/対象外) と取り違えた降格が起きたため、意図を state とは別の軸で保持する。",
+        "recorded_with": "set-chapter-note"
+      }
+    ],
+    "backend": [
+      {
+        "heading": "今回の feature scope",
+        "body": "本章の仕様は確定済みであり、今回の feature `feat-mobile-financial-visualization` では**変更しない**。\n\n- feature scope: 変更対象は ui-ux / frontend のみ (承認: `appr-mobile-scope-narrowing-001`)\n- 本章の spec cell state は「確定」のまま維持する。「今回触らない」ことと「仕様が存在しない (対象外)」ことは別軸であり、feature scope を cell state へ書くと D1・認証・Workers の実在する契約が仕様上消え、以後の completeness 評価や dev-graph の要件導出がその前提で走ってしまう。\n- 境界維持の検証は ui-ux / frontend 側の制約と受入条件で行う (`qa-mobile-boundaries-001`)。",
+        "reason": "feature 単位の「今回触らない」を恒久的な spec cell state (確定/対象外) と取り違えた降格が起きたため、意図を state とは別の軸で保持する。",
+        "recorded_with": "set-chapter-note"
+      }
+    ],
+    "security": [
+      {
+        "heading": "今回の feature scope",
+        "body": "本章の仕様は確定済みであり、今回の feature `feat-mobile-financial-visualization` では**変更しない**。\n\n- feature scope: 変更対象は ui-ux / frontend のみ (承認: `appr-mobile-scope-narrowing-001`)\n- 本章の spec cell state は「確定」のまま維持する。「今回触らない」ことと「仕様が存在しない (対象外)」ことは別軸であり、feature scope を cell state へ書くと D1・認証・Workers の実在する契約が仕様上消え、以後の completeness 評価や dev-graph の要件導出がその前提で走ってしまう。\n- 境界維持の検証は ui-ux / frontend 側の制約と受入条件で行う (`qa-mobile-boundaries-001`)。",
+        "reason": "feature 単位の「今回触らない」を恒久的な spec cell state (確定/対象外) と取り違えた降格が起きたため、意図を state とは別の軸で保持する。",
+        "recorded_with": "set-chapter-note"
+      }
+    ],
+    "infrastructure": [
+      {
+        "heading": "今回の feature scope",
+        "body": "本章の仕様は確定済みであり、今回の feature `feat-mobile-financial-visualization` では**変更しない**。\n\n- feature scope: 変更対象は ui-ux / frontend のみ (承認: `appr-mobile-scope-narrowing-001`)\n- 本章の spec cell state は「確定」のまま維持する。「今回触らない」ことと「仕様が存在しない (対象外)」ことは別軸であり、feature scope を cell state へ書くと D1・認証・Workers の実在する契約が仕様上消え、以後の completeness 評価や dev-graph の要件導出がその前提で走ってしまう。\n- 境界維持の検証は ui-ux / frontend 側の制約と受入条件で行う (`qa-mobile-boundaries-001`)。",
+        "reason": "feature 単位の「今回触らない」を恒久的な spec cell state (確定/対象外) と取り違えた降格が起きたため、意図を state とは別の軸で保持する。",
+        "recorded_with": "set-chapter-note"
+      }
+    ],
+    "maintenance-ops": [
+      {
+        "heading": "今回の feature scope",
+        "body": "本章の仕様は確定済みであり、今回の feature `feat-mobile-financial-visualization` では**変更しない**。\n\n- feature scope: 変更対象は ui-ux / frontend のみ (承認: `appr-mobile-scope-narrowing-001`)\n- 本章の spec cell state は「確定」のまま維持する。「今回触らない」ことと「仕様が存在しない (対象外)」ことは別軸であり、feature scope を cell state へ書くと D1・認証・Workers の実在する契約が仕様上消え、以後の completeness 評価や dev-graph の要件導出がその前提で走ってしまう。\n- 境界維持の検証は ui-ux / frontend 側の制約と受入条件で行う (`qa-mobile-boundaries-001`)。",
+        "reason": "feature 単位の「今回触らない」を恒久的な spec cell state (確定/対象外) と取り違えた降格が起きたため、意図を state とは別の軸で保持する。",
+        "recorded_with": "set-chapter-note"
+      }
+    ]
   }
 }

@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-mobile-financial-visualization",
+  "parent_feature": "feat-mobile-financial-visualization",
+  "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+  "handoff_target": "task-graph",
+  "selected_nodes": [
+    "spec-mobile-financial-visualization",
+    "arch-mobile-financial-experience",
+    "arch-mobile-financial-frontend",
+    "feat-mobile-financial-visualization",
+    "SYS-MOBFIN-P01",
+    "SYS-MOBFIN-P02",
+    "SYS-MOBFIN-P03",
+    "SYS-MOBFIN-P04",
+    "SYS-MOBFIN-P05",
+    "SYS-MOBFIN-P06",
+    "SYS-MOBFIN-P07",
+    "SYS-MOBFIN-P08",
+    "SYS-MOBFIN-P09",
+    "SYS-MOBFIN-P10",
+    "SYS-MOBFIN-P11",
+    "SYS-MOBFIN-P12",
+    "SYS-MOBFIN-P13"
+  ],
+  "artifact_kinds": [
+    "specification",
+    "architecture",
+    "feature",
+    "task",
+    "document"
+  ],
+  "closure_status": "complete",
+  "missing_nodes": [],
+  "snapshot_digest": "sha256:53dcebcef2335c141bfddff53841f5c6548b9f0acae944878435a1e7137bf275"
+}

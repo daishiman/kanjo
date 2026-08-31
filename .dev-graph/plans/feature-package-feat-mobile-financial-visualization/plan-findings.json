@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/sdp-feat-mobile-financial-visualization-20260830t0944z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "13 task、inventory、graph、handoffは単一featureの目的・scopeと矛盾せず、五つのfeature acceptanceをP01〜P13へ一貫して写像している。",
+      "evidence": [
+        "feature-package.json",
+        "workstream-inventory.json#tasks",
+        "task-graph.json#nodes",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-13-release-deploy.md",
+        "system-build-handoff.json#identity",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "P01〜P13はexact-13で、各taskは目的、背景、前提、workstream、成果物、検証、rollback、handoffを具体化している。五受入条件、匿名fixture、local test identity、非deploy close-outまで漏れなく含み、generic pseudo-taskやplaceholderはない。",
+      "evidence": [
+        "feature-package.json#phase_refs",
+        "workstream-inventory.json#tasks",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-03-design-review.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-06-test-run.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-09-quality-assurance.md",
+        "task-specs/phase-10-final-review.md",
+        "task-specs/phase-11-evidence.md",
+        "task-specs/phase-12-documentation-operations.md",
+        "task-specs/phase-13-release-deploy.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "ID、phase、repository、registration path、workstream語彙は整合する。workstream inventoryのsource_lineage.source_version=0.1.0はinventory schemaが固定するproducer interface contract versionであり、goal-spec/readinessが保持するruntime producer patch 0.1.11とは異なる意味のdual pinなので矛盾ではない。",
+      "evidence": [
+        "workstream-inventory.json#source_lineage/source_version",
+        "system-build-handoff.json#identity",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "DAGは同一parent_feature・feature_package内のP01→P13前方chainで、循環、後方edge、dangling参照、cross-feature参照がない。C14 handoffはsource exact-setとdigestを保持し、promotion receiptをsystem-dev-planner/C11、registration receiptをdev-graph/C02へ正しく分離している。",
+      "evidence": [
+        "task-graph.json#nodes",
+        "workstream-inventory.json#tasks",
+        "system-build-handoff.json#source_inputs",
+        "system-build-handoff.json#registration_request",
+        "staging-manifest.json#handoff_contract",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "/Users/dm/dev/dev/個人開発/harness/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "--repo-root",
+        "/Users/dm/orca/workspaces/kanjo/モバイル対応",
+        "--staging",
+        ".dev-graph/staging/sdp-feat-mobile-financial-visualization-20260830t0944z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda\",\n  \"feature_package_id\": \"feature-package/feat-mobile-financial-visualization\",\n  \"parent_feature\": \"feat-mobile-financial-visualization\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "756b3b6a8fa6983e8e1551b17484433815c1b35f7585324787004f318b6e7df0"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "38a460efb5ec4783e296b9bad1da357ee609669824e2e454a87cfda151989c98"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "e7fc60b33e1601ca3a3f6bab4cb2dc4bc11383f634857a21f237b2c65c195315"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "462d09066efb5567fab07249ebbeec2bf35bfa008c470abf6e5aa9babdcb6626"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "1baa47a4f090750315df86f6f8d01f58000025dda2f323a6c22c3a45be69f9d4"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "23ebb5c9911b8d84f9daa2b6d5a5b4e700f96cd07d4c6858631c5f01ba5db79d"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "1cde9d8f6e91947ff7c94e0b7cdec0801d7b78fa82ec99215b5f9030100d5eb1"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "b46cc3da167634577693a3712a92a07adf0c1ad007c7beec4727919380b99b61"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "14fa14ecb7a041d29cce95229b84e4310d82758c60911385506f54e5b91cf06d"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "1946cd6c18ab27d9731b282ee4ed0a138e74534cb303f036a14e6f272ad1832d"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "6faf2bb5e3f058e7b9785fe6567b6ba47a0ae101afe206d83e02a283d8d4a36a"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "404abef76d247ecd934e01f03997861ee031340a139bdf6eed11440cae135db9"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "3b26a5359c2f1a9c5ca6b247e23702743e4db96390d3d8fadf4785a23229d756"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "8e183eae2ba73f6d9f566e76b9ecb5205369ee103a411bf78f1fe8aaeef0e31c"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "baad7126a6b75ea6976121f0c496d6eab0d7795e809742194b5dfeb92a3da19e"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "b72551722e46623312f2330c3d46dc93bc0fc80870b0274b4622896e34b7ade4"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "22bac8d4449a9b79bc6b1771b26626ce71149b0786f0a6538e58ab67d8cbb2e7"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "ac44991e7dd8225edb5e4c0ae3972289752b51b08af5e1cfa7b0e57c36b6883d"
+    }
+  ],
+  "staleness_rule": "promotion直前にstaging-manifest.jsonのfiles exact-setとevaluated_inputsを再照合し、各current byteのSHA-256が一件でも異なる場合は本verdictを失効させる。canonical validatorを再実行し、validated_digestとstaging-manifest.json#canonical_digestが一致する新しい独立評価を要求する。",
+  "findings": []
+}

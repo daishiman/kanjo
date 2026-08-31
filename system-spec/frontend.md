@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G3]
+serves_goals: [G5, G6, G8, G7]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G3]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-004 |
-| モバイル (mobile) | 対象外 | 理由: フロントは単一の React SPA バンドルで、モバイル専用ビルドを持たない |
-| タブレット (tablet) | 対象外 | 理由: フロントは単一の React SPA バンドルで、タブレット専用ビルドを持たない |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 |
+| Web (web) | 確定 | 確定質疑: qa-mobile-frontend-001 |
+| モバイル (mobile) | 確定 | 確定質疑: qa-mobile-frontend-001 |
+| タブレット (tablet) | 確定 | 確定質疑: qa-mobile-frontend-001 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: 承認: appr-mobile-platform-001 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: 承認: appr-mobile-platform-001 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: 承認: appr-mobile-platform-001 |
 
 ## 適用された設計知識
 
@@ -112,6 +112,50 @@ serves_goals: [G3]
 - 順位・グループ・削除理由・加工理由が構造化データとして残るため、生成 AI・人間のどちらが作っても同じ根拠で検証できる。決定論ゲート (`../../../scripts/validate-information-priority.py`) が手順の順序制約 (装飾より前に順位が確定していること) を機械検査する。
 - 成果は「見た目の評価」ではなく outcome で測る: 目的達成までの操作数・初見での到達率・誤操作率・問い合わせ件数。装飾の量では測らない。
 
+---
+
+### responsive financial chart container
+
+- project candidate: `responsive-financial-chart-container` (`deepened`)
+- 解決対象: Chart.jsのresponsive描画が狭幅や親要素寸法の変化で0寸法・過小表示にならず、視覚表現と意味表現を同期させる必要がある
+
+#### 目的
+
+Chart.jsのcanvasを全対象viewportで可視寸法に保ち、同一の既存API集計結果から視覚表現と読み上げ可能な意味表現を生成する。
+
+#### 解決する問題
+
+- gridやflexの最小内容幅でchart containerが縮まずページ全体を横あふれさせる
+- 親高さ未確定や非表示切替のタイミングでcanvasが0寸法になりfigureが存在しても読めない
+- canvasと代替表が別計算だと金額・符号・期間の不一致を起こす
+
+#### 適用条件
+
+- react-chartjs-2で財務seriesを360px、375px、390px、tablet、desktopへ描画するとき
+
+#### 非適用条件
+
+- 静的な単一値や短いKPIはcanvasを導入せずsemantic HTMLだけで表現する
+
+#### トレードオフ
+
+- 狭幅でchart高さを確保すると縦スクロールは増えるが、情報欠落より可逆であり要約と段階表示で負荷を抑える
+
+#### 失敗モード
+
+- canvas要素へ相対サイズを直接指定して親containerのresponsive contractを持たない
+- ラベル重なりを避けるため主要seriesや期間情報を削除する
+- snapshotやCSS文字列検査だけで実際のcanvas寸法を確認しない
+
+#### goalへの寄与
+
+- G1へは全figureの可視寸法と主要series保持で寄与する
+- G2へはtick間引き・legend再配置・結論要約で寄与する
+- G3へはcanvas非依存のsemantic tableとkeyboard/zoom対応で寄与する
+- G4へは匿名fixtureの実Chromeでfigure数・bounding box・意味情報同等性を固定して寄与する
+
 ## 最新ドキュメント出典
 
-- (このカテゴリに割り当てた取得済みドキュメントなし。全体出典は index.md 参照)
+| 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
+|---|---|---|---|---|---|
+| chartjs-responsive-charts | 4.x latest documentation | Chart.js Project (www.chartjs.org) | https://www.chartjs.org/docs/latest/configuration/responsive.html | 2026-08-30T08:58:25Z | 2026-08-30T08:58:25Z |

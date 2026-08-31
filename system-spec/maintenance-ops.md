@@ -65,6 +65,20 @@ codeを、次の変更者が意図・制約・failureを短時間で理解し、
 - maintenance objectiveには変更lead time、review指摘、escaped defect、rollback率などのoutcomeを使う。
 - 無料toolの導入自体を成功とせず、teamが継続運用でき、重要riskを減らすかで判断する。
 
+## 章の注記 (chapter_notes)
+
+> 正本 `spec-state.json` の `chapter_notes` を描く。**利用者の回答ではない。**確定内容 (質疑録) と混ぜて読まないために節を分けてある。
+
+### 今回の feature scope
+
+本章の仕様は確定済みであり、今回の feature `feat-mobile-financial-visualization` では**変更しない**。
+
+- feature scope: 変更対象は ui-ux / frontend のみ (承認: `appr-mobile-scope-narrowing-001`)
+- 本章の spec cell state は「確定」のまま維持する。「今回触らない」ことと「仕様が存在しない (対象外)」ことは別軸であり、feature scope を cell state へ書くと D1・認証・Workers の実在する契約が仕様上消え、以後の completeness 評価や dev-graph の要件導出がその前提で走ってしまう。
+- 境界維持の検証は ui-ux / frontend 側の制約と受入条件で行う (`qa-mobile-boundaries-001`)。
+
+- 正本へ入れた理由: feature 単位の「今回触らない」を恒久的な spec cell state (確定/対象外) と取り違えた降格が起きたため、意図を state とは別の軸で保持する。
+
 ## 最新ドキュメント出典
 
 - (このカテゴリに割り当てた取得済みドキュメントなし。全体出典は index.md 参照)

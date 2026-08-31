@@ -7,6 +7,7 @@
 import type { TooltipItem } from 'chart.js';
 import type { AiReportChart } from '../api.js';
 import { GLOSSARY, TERM_ALIASES, type TermId } from '../glossary.js';
+import { formatFinancialValue } from './figure-view-model.js';
 
 /** 系列名・軸ラベルから用語辞書の項目を引く(表記ゆれは TERM_ALIASES が吸収する) */
 export function termInLabel(label: string): TermId | null {
@@ -27,12 +28,23 @@ export function tooltipTitle(label: string): string {
 /**
  * 金額・割合の表記。
  * 軸の目盛りは「12万」のように丸めるが、触れたときは正確な値を知りたいので円単位まで出す。
+ *
+ * 表記そのものは figure-view-model.ts の formatFinancialValue が正本。ここで別に組み立てると
+ * 同じ値が図では「1,234円」表では「¥1,234」になる。図に固有なのは「値が無い月の言い方」だけで、
+ * 表は列の中の空欄なので「—」で足りるが、ツールチップは触れて初めて出るので理由まで書く。
+ *
+ * signed は表側(FinancialFigureSeries.signed)と同じ意味・同じ値を渡すこと。
+ * 片方だけ立てると、同じ増減が図で「¥1,234」表で「+¥1,234」になる。
  */
-export function tooltipValue(value: number | null | undefined, unit: AiReportChart['unit']): string {
-  if (value == null || Number.isNaN(value)) return '未記帳(まだ入力していない月)';
-  if (unit === 'pct') return `${(Math.round(value * 1000) / 10).toLocaleString('ja-JP')}%`;
-  if (unit === 'count') return `${value.toLocaleString('ja-JP')}件`;
-  return `${Math.round(value).toLocaleString('ja-JP')}円`;
+export function tooltipValue(
+  value: number | null | undefined,
+  unit: AiReportChart['unit'],
+  options: { signed?: boolean } = {},
+): string {
+  return formatFinancialValue(value, unit, {
+    signed: options.signed,
+    nullText: '未記帳(まだ入力していない月)',
+  });
 }
 
 /** 1系列分の行。用語辞書に載っている言葉はそのまま使い、無ければ系列名を出す */
@@ -40,10 +52,11 @@ export function tooltipLine(
   label: string,
   value: number | null | undefined,
   unit: AiReportChart['unit'],
+  options: { signed?: boolean } = {},
 ): string {
   const id = termInLabel(label);
   const name = id && !label.includes(GLOSSARY[id].term) ? `${label}(${GLOSSARY[id].term})` : label;
-  return `${name}: ${tooltipValue(value, unit)}`;
+  return `${name}: ${tooltipValue(value, unit, options)}`;
 }
 
 /** 触れた系列に用語があれば、用語ホバーと同じ説明文を下に添える(最大1件で読みやすさを保つ) */
@@ -78,22 +91,28 @@ const rawValue = (
     signedFloatingValues[item.dataIndex],
   );
 
+/** kind ごとの読み方の差。位置引数で並べると呼び出し側で `[], []` が続いて意味が消えるので名前で渡す */
+export interface TooltipConfig {
+  /** 図の単位が円でも割合で読む系列名(パレート図の累積構成比など) */
+  pctSeries?: readonly string[];
+  /** 浮動棒の座標から符号を復元できない図(ウォーターフォール)で、builder が持つ元delta */
+  signedFloatingValues?: readonly (number | null)[];
+  /** 増減そのものを見る図で +/- を明示する。表の series.signed と必ず同じ値にする */
+  signed?: boolean;
+}
+
 /**
  * Chart.js に渡すツールチップ設定。文言はすべて上の純関数が作る。
- * pctSeries には、図の単位が円でも割合で読む系列名(パレート図の累積構成比など)を渡す。
  */
-export function tooltipOptions(
-  unit: AiReportChart['unit'],
-  pctSeries: readonly string[] = [],
-  signedFloatingValues: readonly (number | null)[] = [],
-) {
+export function tooltipOptions(unit: AiReportChart['unit'], config: TooltipConfig = {}) {
+  const { pctSeries = [], signedFloatingValues = [], signed = false } = config;
   const unitOf = (label: string): AiReportChart['unit'] => (pctSeries.includes(label) ? 'pct' : unit);
   return {
     callbacks: {
       title: (items: TooltipItem<'bar' | 'line'>[]) => (items[0] ? tooltipTitle(items[0].label) : ''),
       label: (item: TooltipItem<'bar' | 'line'>) => {
         const label = item.dataset.label ?? item.label;
-        return tooltipLine(label, rawValue(item, signedFloatingValues), unitOf(label));
+        return tooltipLine(label, rawValue(item, signedFloatingValues), unitOf(label), { signed });
       },
       afterBody: (items: TooltipItem<'bar' | 'line'>[]) =>
         tooltipNote(items.map((i) => i.dataset.label ?? i.label)),
