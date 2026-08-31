@@ -1278,6 +1278,43 @@ tr.editor td {
   width: 9em;
   text-align: right;
 }
+/* 分割の入力表。.scroll-x で囲まない。
+   囲むと、科目のパネル(.cat-panel は position: absolute)がその枠で切られて、
+   2〜3行だけ見える窓の中をスクロールして選ぶ形になり、何を選んでいるか分からなくなる。
+   分割編集は元の明細表(min-width 1160px)の中に置かれるので、
+   横幅はもともと確保されている。ここで枠を作り直す必要はない */
+.split-lines td {
+  vertical-align: top;
+  padding-block: 10px;
+}
+/* 科目の欄は開く前から広げておく。
+   開いた瞬間に列幅が伸びると、隣の金額欄が動いて押し間違える */
+.split-lines th:nth-child(2),
+.split-lines td:nth-child(2) {
+  width: 480px;
+}
+/* 分割の中では科目パネルを浮かせず、その場に開く。
+   浮かせるとどこかの枠で必ず切られるので、行の高さが伸びるほうを取る */
+.split-editor .cat-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.split-editor .cat-panel {
+  position: static;
+  width: 100%;
+  max-width: none;
+  margin-top: 6px;
+  box-shadow: none;
+}
+.split-editor button.cat-current {
+  min-width: 12em;
+}
+/* 分割中の科目選択も、ほかの主要操作と同じ44pxの押下領域を保つ。 */
+.split-editor button.cat-current,
+.split-editor .cat-panel button {
+  min-height: 44px;
+}
 .split-actions {
   display: flex;
   flex-wrap: wrap;
@@ -2493,15 +2530,18 @@ label.check {
     flex: 1 1 calc(50% - 6px);
     min-height: 44px;
   }
-  /* 編集フォームの行はカードの装飾を持たせず、中身(section)に任せる */
-  table.data.classify-table.stack-sm tr.editor {
+  /* 展開フォームの行はカードの装飾を持たせず、中身に任せる。
+     編集・分割・証憑で同じ「全列を使う行」の契約を共有する。 */
+  table.data.classify-table.stack-sm tr:is(.editor, .editing-open:has(> td[colspan])) {
     padding: 0;
     border: none;
     background: none;
   }
-  table.data.classify-table.stack-sm tr.editor > td:first-child {
+  table.data.classify-table.stack-sm tr:is(.editor, .editing-open:has(> td[colspan])) > td:first-child {
     display: block;
+    min-width: 0;
     text-align: left;
+    white-space: normal;
     padding: 0;
     margin: 0;
     border-bottom: none;

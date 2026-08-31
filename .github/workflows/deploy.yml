@@ -40,8 +40,6 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::productionのCLOUDFLARE_API_TOKENが未登録です"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::productionのCLOUDFLARE_ACCOUNT_IDが未登録です"; exit 1; }
           test -n "$APP_URL" || { echo "::error::Repository VariableのAPP_URLが未登録です"; exit 1; }
-      - name: Env型を生成
-        run: pnpm --filter @kanjo/api exec wrangler types
       - name: Lint（手動実行時）
         if: github.event_name == 'workflow_dispatch'
         run: pnpm lint
