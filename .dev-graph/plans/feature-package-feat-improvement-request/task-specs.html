@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>feature-package-feat-improvement-request · タスク仕様書ブラウザ</title>
+<style>
+:root{--ink:#242330;--muted:#666477;--paper:#f6f3ec;--panel:#fffdf7;--line:#ded8cb;--navy:#26334a;--blue:#376b8c;--green:#27745c;--shadow:0 10px 30px rgba(45,42,50,.08)}
+*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,"Noto Sans JP","Hiragino Sans",system-ui,sans-serif;font-size:16px;line-height:1.8}
+a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline} code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.88em;background:#efeadf;padding:.05em .35em;border-radius:5px;overflow-wrap:anywhere}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:0;min-height:100vh}
+.spec-nav{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;background:var(--navy);color:#eef2f5;padding:20px 14px}
+.spec-nav a{display:block;color:#d7dde3;padding:5px 10px;border-radius:8px;font-size:.9rem;overflow-wrap:anywhere} .spec-nav a:hover{background:rgba(255,255,255,.08);text-decoration:none} .spec-nav a.active{background:var(--blue);color:#fff}
+.nav-home{font-weight:800;margin-bottom:10px} .nav-ext{color:#bfe3d3!important;font-weight:700} .nav-group{margin:14px 0} .nav-grp{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#9fb0bd;padding:0 10px;margin-bottom:4px}
+main{padding:34px clamp(18px,4vw,56px);width:min(920px,100%);margin:auto}
+.spec-page[hidden]{display:none} .spec-page:target{display:block}
+.spec-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px} .back{font-weight:700} .grp{font-size:.78rem;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px}
+h1{font-size:clamp(1.5rem,3.4vw,2.3rem);line-height:1.25;margin:.2em 0 .1em} .spec-src{color:var(--muted);font-size:.85rem;margin:.2em 0 1.2em} .lead{color:var(--muted);max-width:60ch}
+.spec-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 20px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:0 0 24px} .meta-pair{display:flex;gap:8px;font-size:.85rem;border-bottom:1px dotted var(--line);padding-bottom:5px} .meta-pair dt{color:var(--muted);font-weight:700;min-width:110px;margin:0} .meta-pair dd{margin:0;overflow-wrap:anywhere}
+.spec-body h2{font-size:1.4rem;margin:1.6em 0 .5em;padding-bottom:.25em;border-bottom:2px solid var(--line)} .spec-body h3{font-size:1.15rem;margin:1.3em 0 .4em;color:var(--navy)} .spec-body h4{margin:1.1em 0 .3em}
+.spec-body ul,.spec-body ol{padding-left:1.4rem} .spec-body li{margin:.3em 0} .spec-body pre{background:#2a2735;color:#f3f1ea;padding:16px;border-radius:12px;overflow:auto;font-size:.82rem} .spec-body pre code{background:none;color:inherit;padding:0}
+.spec-body blockquote{border-left:4px solid var(--green);margin:1em 0;padding:.4em 1em;background:#eef4f1;color:#33463f;border-radius:0 10px 10px 0} .tbl{overflow:auto;margin:1em 0} .spec-body table{width:100%;border-collapse:collapse;font-size:.9rem} .spec-body th,.spec-body td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top} .spec-body th{background:var(--panel)} .spec-body hr{border:none;border-top:1px solid var(--line);margin:1.6em 0}
+.pn-row{display:flex;justify-content:space-between;margin-top:40px;padding-top:18px;border-top:1px solid var(--line)} .pn{font-weight:700}
+.idx-group{margin:1.4em 0} .idx-group h2{font-size:1.1rem;border-bottom:2px solid var(--line);padding-bottom:.25em} .idx-group ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px} .idx-group li a{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.spec-nav{position:static;height:auto;max-height:220px}}
+@media print{.spec-nav{display:none}.spec-page[hidden]{display:block!important}.pn-row,.spec-top .back{display:none}body{background:#fff}}
+</style></head>
+<body>
+<div class="layout">
+<nav class="spec-nav"><a class="nav-home" href="#index">🏠 一覧トップ</a><div class="nav-group"><span class="nav-grp">関連レポート</span><a class="nav-ext" href="plan-structure-report.html">📊 構造・依存レポート</a></div><div class="nav-group"><span class="nav-grp">タスク別仕様書</span><a href="#task-phase-01-requirements">phase-01-requirements</a><a href="#task-phase-02-architecture">phase-02-architecture</a><a href="#task-phase-03-design-review">phase-03-design-review</a><a href="#task-phase-04-test-design">phase-04-test-design</a><a href="#task-phase-05-implementation">phase-05-implementation</a><a href="#task-phase-06-test-run">phase-06-test-run</a><a href="#task-phase-07-acceptance">phase-07-acceptance</a><a href="#task-phase-08-refactoring-migration">phase-08-refactoring-migration</a><a href="#task-phase-09-quality-assurance">phase-09-quality-assurance</a><a href="#task-phase-10-final-review">phase-10-final-review</a><a href="#task-phase-11-evidence">phase-11-evidence</a><a href="#task-phase-12-documentation-operations">phase-12-documentation-operations</a><a href="#task-phase-13-release-deploy">phase-13-release-deploy</a></div></nav>
+<main><section class="spec-page spec-index" id="index" hidden><h1>feature-package-feat-improvement-request · タスク仕様書ブラウザ</h1><p class="lead">各仕様書のタイトルをクリックすると本文へ移動します。ブラウザの「戻る」でこの一覧へ戻れます。左のサイドバーからも直接ジャンプできます。</p><div class="idx-group"><h2>タスク別仕様書</h2><ul><li><a href="#task-phase-01-requirements">phase-01-requirements</a></li><li><a href="#task-phase-02-architecture">phase-02-architecture</a></li><li><a href="#task-phase-03-design-review">phase-03-design-review</a></li><li><a href="#task-phase-04-test-design">phase-04-test-design</a></li><li><a href="#task-phase-05-implementation">phase-05-implementation</a></li><li><a href="#task-phase-06-test-run">phase-06-test-run</a></li><li><a href="#task-phase-07-acceptance">phase-07-acceptance</a></li><li><a href="#task-phase-08-refactoring-migration">phase-08-refactoring-migration</a></li><li><a href="#task-phase-09-quality-assurance">phase-09-quality-assurance</a></li><li><a href="#task-phase-10-final-review">phase-10-final-review</a></li><li><a href="#task-phase-11-evidence">phase-11-evidence</a></li><li><a href="#task-phase-12-documentation-operations">phase-12-documentation-operations</a></li><li><a href="#task-phase-13-release-deploy">phase-13-release-deploy</a></li></ul></div></section><section class="spec-page" id="task-phase-01-requirements" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-01-requirements</h1><p class="spec-src">出典: <code>phase-01-requirements.md</code></p><div class="spec-body"><h2>System task overlay: 改善要望の実行要件ベースライン確定</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P01.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P01</li><li>phase_ref: P01</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>確定仕様の受入15件を、実装が参照できる粒度の要件ベースラインへ写し取り、参照先の digest とともに固定する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>先行 phase は無い。features/feat-improvement-request.md が confirmed であることが起点となる</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 非該当。この phase では契約や実装を変更しない。</li><li>Backend: 非該当。この phase では契約や実装を変更しない。</li><li>API: 非該当。この phase では契約や実装を変更しない。</li><li>Data: 非該当。この phase では契約や実装を変更しない。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 非該当。この phase では契約や実装を変更しない。</li><li>Quality: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Documentation: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Operations: 非該当。この phase では契約や実装を変更しない。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-01-requirements-baseline.json</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-01-requirements-baseline.json</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: 受入条件15件とベースライン項目の対応表を作り、対応先が空の行が0件であることを確認する / 参照した system-spec と architecture の digest がベースラインに記録され、現行ファイルの digest と一致することを確認する</li><li>Required evidence: P01 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: ベースラインは読み取りと記録だけで既存コードを変えないため、生成した証跡ファイルを削除すれば元に戻る。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: 先行 phase 無し</li><li>Task graph: task-graph.json の P01 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>features/feat-improvement-request.md の受入条件15件が漏れなくベースラインへ写され、各件に検証可能な観測点が付いている</li><li>撮影・診断・受け渡し・失効の4層それぞれについて、実装が触れてよい既存資産と触れてはならない既存資産が列挙されている</li><li>本番 D1 のスキーマ版数が不足しており migration を本番へ配信できないという前提が、ベースラインに明記されている</li></ul></div><div class="pn-row"><a class="pn" href="#index">← 前の仕様書</a><a class="pn" href="#task-phase-02-architecture">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-02-architecture" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-02-architecture</h1><p class="spec-src">出典: <code>phase-02-architecture.md</code></p><div class="spec-body"><h2>System task overlay: 4層の境界とデータ契約の設計</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P02.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P02</li><li>phase_ref: P02</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>撮影層・診断層・受け渡し層・失効層それぞれの入出力と不変条件を、実装が従える契約として確定する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P01 SYS-IMPREQ-P01 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Backend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>API: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Data: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Quality: 非該当。この phase では契約や実装を変更しない。</li><li>Documentation: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Operations: 非該当。この phase では契約や実装を変更しない。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-02-boundary-design.json</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-02-boundary-design.json</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: 設計した各エンドポイントを packages/api/src/routes/ai.ts の既存 aiRoute と aiAgentRoute の構造へ対応づけ、差分が意図的なものだけであることを確認する / 設計したテーブル名が packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL に1つも現れない設計であることを確認する</li><li>Required evidence: P02 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: 設計文書のみの変更のため、生成した証跡ファイルを削除または前版へ戻す。既存コードには影響しない。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P01</li><li>Task graph: task-graph.json の P02 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>改善要望本体・スクリーンショット参照・診断情報・使い捨てトークンの各テーブル列と型が確定し、平文トークンを保持する列が1つも無い</li><li>画面用 API とエージェント用 API の経路・認証・応答形が確定し、既存 AI 分析の authGuard と agentGuard の同型であることが示されている</li><li>診断情報の件数上限と総バイト上限の具体値、および切り詰め時に残す省略件数の表現が確定している</li><li>対応完了から30日での削除対象が添付物のみであり、本文・状態・対応記録が削除対象に入らないことが契約として明示されている</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-01-requirements">← 前の仕様書</a><a class="pn" href="#task-phase-03-design-review">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-03-design-review" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-03-design-review</h1><p class="spec-src">出典: <code>phase-03-design-review.md</code></p><div class="spec-body"><h2>System task overlay: 境界設計の独立レビュー</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P03.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P03</li><li>phase_ref: P03</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>P02 の契約を実装着手前に独立の観点でレビューし、秘匿値の漏えい経路と保持期間の抜け穴を先に潰す。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P02 SYS-IMPREQ-P02 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 非該当。この phase では契約や実装を変更しない。</li><li>Backend: 非該当。この phase では契約や実装を変更しない。</li><li>API: 非該当。この phase では契約や実装を変更しない。</li><li>Data: 非該当。この phase では契約や実装を変更しない。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Quality: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Documentation: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Operations: 非該当。この phase では契約や実装を変更しない。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-03-design-review.json</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-03-design-review.json</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: 秘匿値の流れをクライアント収集からサーバー保存とログ出力まで経路単位で追跡し、マスクが二重に掛かることを確認する / P02 の契約と features/feat-improvement-request.md の scope_out 8件を突き合わせ、逸脱が0件であることを確認する</li><li>Required evidence: P03 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: レビュー記録のみの変更のため、証跡ファイルを削除すれば元に戻る。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P02</li><li>Task graph: task-graph.json の P03 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>トークン値・Cookie・Authorization ヘッダが保存先とログのどこにも到達しないことが、経路単位で追跡され記録されている</li><li>30日削除が複製経路によって骨抜きにならないことが、バックアップ・エクスポート・詳細取得の各経路について確認されている</li><li>高重大度の未解決指摘が0件である</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-02-architecture">← 前の仕様書</a><a class="pn" href="#task-phase-04-test-design">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-04-test-design" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-04-test-design</h1><p class="spec-src">出典: <code>phase-04-test-design.md</code></p><div class="spec-body"><h2>System task overlay: 受入条件を検証へ写す試験設計</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P04.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P04</li><li>phase_ref: P04</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>受入15件それぞれを、自動実行できる検証へ機械的に写像し、どの検証がどの受入条件を守るかを固定する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P03 SYS-IMPREQ-P03 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Backend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>API: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Data: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Quality: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Documentation: 非該当。この phase では契約や実装を変更しない。</li><li>Operations: 非該当。この phase では契約や実装を変更しない。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-04-test-design.json</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-04-test-design.json</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: 受入条件と検証の対応表を作り、検証が割り当てられていない受入条件が0件であることを確認する / 設計した検証が既存の vitest 構成 (packages/web は jsdom、packages/api は Workers) の上で実行可能な形であることを確認する</li><li>Required evidence: P04 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: 試験設計のみの変更のため、証跡ファイルを削除または前版へ戻す。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P03</li><li>Task graph: task-graph.json の P04 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>受入条件15件のすべてに、対応する自動検証が少なくとも1件割り当てられている</li><li>撮影順序・二重マスク・トークンのハッシュ保存・拒否理由の区別・バックアップ非追加の5点が、それぞれ独立した検証として設計されている</li><li>実データと秘密情報を用いない検証データの作り方が設計に含まれている</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-03-design-review">← 前の仕様書</a><a class="pn" href="#task-phase-05-implementation">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-05-implementation" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-05-implementation</h1><p class="spec-src">出典: <code>phase-05-implementation.md</code></p><div class="spec-body"><h2>System task overlay: 撮影・診断・受け渡し・失効の実装</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P05.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P05</li><li>phase_ref: P05</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>確定した契約どおりに、改善要望の画面導線・API・D1 テーブル・R2 保存・添付削除を実装する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P04 SYS-IMPREQ-P04 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Backend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>API: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Data: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Quality: 非該当。この phase では契約や実装を変更しない。</li><li>Documentation: 非該当。この phase では契約や実装を変更しない。</li><li>Operations: 非該当。この phase では契約や実装を変更しない。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: migrations/0029_improvement_requests.sql、packages/api/src/routes/improvement.ts、packages/api/src/improvement/contract.ts、packages/api/src/improvement/redact.ts、packages/api/src/index.ts、packages/api/src/store.ts、packages/core/src/improvement.ts、packages/core/src/index.ts、packages/web/src/components/ImprovementRequestButton.tsx、packages/web/src/components/Layout.tsx、packages/web/src/diagnostics-buffer.ts、packages/web/src/capture-screen.ts、packages/web/src/pages/Improvement.tsx、packages/web/src/App.tsx、packages/web/src/api.ts、packages/web/src/styles.css</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: migrations/0029_improvement_requests.sql、packages/api/src/routes/improvement.ts、packages/api/src/improvement/contract.ts、packages/api/src/improvement/redact.ts、packages/api/src/index.ts、packages/api/src/store.ts、packages/core/src/improvement.ts、packages/core/src/index.ts、packages/web/src/components/ImprovementRequestButton.tsx、packages/web/src/components/Layout.tsx、packages/web/src/diagnostics-buffer.ts、packages/web/src/capture-screen.ts、packages/web/src/pages/Improvement.tsx、packages/web/src/App.tsx、packages/web/src/api.ts、packages/web/src/styles.css</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: pnpm lint と pnpm typecheck を実行し、新規ファイルを含めて指摘が0件であることを確認する / 既存の pnpm test を実行し、この phase の変更によって既存検証が1件も退行していないことを確認する。受入条件に対応する新規検証の作成と実行は P06 が所有するため、この phase の write scope には検証ファイルを含めない / packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL に改善要望のテーブル名が現れないことを確認する / ローカルで画面を起動し、撮影中の押下不可表示・縮小プレビュー・添付解除・省略件数表示を目視で確認する</li><li>Required evidence: P05 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: write scope の変更ファイルを直前版へ戻し、追加した migration を適用前の状態へ戻す。既存の入出金・分類・AI 分析の契約には触れていないため他機能へ波及しない。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P04</li><li>Task graph: task-graph.json の P05 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>改善要望ボタンの押下でモーダルを開く前に撮影が完了し、撮影された画像に、その押下で開くモーダルの DOM が含まれない</li><li>撮影が失敗してもモーダルは開き、スクリーンショットなしの本文だけで投稿が 2xx で成立する</li><li>アプリ起動時から動く診断リングバッファが、未捕捉例外・unhandledrejection・console error と warn・失敗した通信を記録し、件数上限と総バイト上限の双方で切り詰めて省略件数を残す</li><li>使い捨て Bearer トークンの平文が D1 のどの列にも保存されず、SHA-256 ハッシュだけが保存される</li><li>投稿済みの改善要望から Claude Code 向けと Codex 向けの指示文がコピーでき、その指示文が指す API がトークンだけでスクリーンショットと診断情報を返す</li><li>撮影中は改善要望ボタンが押下不可になり、待機していることが画面に出る</li><li>送信前にスクリーンショットの縮小プレビューが見え、添付を外して送信できる</li><li>診断情報が上限を超えて切り詰められたとき、省略件数が画面にも出る</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-04-test-design">← 前の仕様書</a><a class="pn" href="#task-phase-06-test-run">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-06-test-run" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-06-test-run</h1><p class="spec-src">出典: <code>phase-06-test-run.md</code></p><div class="spec-body"><h2>System task overlay: 検証の実行と失敗の解消</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P06.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P06</li><li>phase_ref: P06</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>P04 が設計した検証を実際に走らせ、受入条件に紐づく失敗を残らず解消する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P05 SYS-IMPREQ-P05 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Backend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>API: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Data: 非該当。この phase では契約や実装を変更しない。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 非該当。この phase では契約や実装を変更しない。</li><li>Quality: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Documentation: 非該当。この phase では契約や実装を変更しない。</li><li>Operations: 非該当。この phase では契約や実装を変更しない。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: packages/web/src/improvement-capture.dom.test.tsx、packages/web/src/diagnostics-buffer.test.ts、packages/api/src/improvement-lifecycle.test.ts、packages/api/src/improvement-redaction.test.ts、packages/api/src/improvement-backup-exclusion.test.ts</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: packages/web/src/improvement-capture.dom.test.tsx、packages/web/src/diagnostics-buffer.test.ts、packages/api/src/improvement-lifecycle.test.ts、packages/api/src/improvement-redaction.test.ts、packages/api/src/improvement-backup-exclusion.test.ts</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: pnpm test をリポジトリ全体で実行し、失敗が0件であることを確認する / 実行前後の検証件数を比較し、既存検証の欠落が0件であることを確認する</li><li>Required evidence: P06 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: 検証ファイルの追加のみのため、追加した検証ファイルを削除すれば元に戻る。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P05</li><li>Task graph: task-graph.json の P06 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>受入条件15件に対応する検証がすべて実行され、失敗が0件である</li><li>既存の検証が1件も退行していない</li><li>実行結果が証跡として記録され、実行日時と対象コミット相当の識別子が残っている</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-05-implementation">← 前の仕様書</a><a class="pn" href="#task-phase-07-acceptance">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-07-acceptance" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-07-acceptance</h1><p class="spec-src">出典: <code>phase-07-acceptance.md</code></p><div class="spec-body"><h2>System task overlay: 受入条件15件の判定</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P07.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P07</li><li>phase_ref: P07</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>実装と検証の結果を受入条件へ突き合わせ、機能として成立しているかを判定する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P06 SYS-IMPREQ-P06 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Backend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>API: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Data: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Quality: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Documentation: 非該当。この phase では契約や実装を変更しない。</li><li>Operations: 非該当。この phase では契約や実装を変更しない。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-07-acceptance.json</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-07-acceptance.json</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: 受入条件15件の判定表を作り、根拠が空の行が0件であることを確認する / ローカルで画面を起動し、改善要望の投稿から指示文コピーまでを通しで実行して結果を記録する</li><li>Required evidence: P07 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: 判定記録のみの変更のため、証跡ファイルを削除すれば元に戻る。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P06</li><li>Task graph: task-graph.json の P07 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>受入条件15件それぞれに、判定結果と根拠となる検証名または観測結果が対応づいている</li><li>未達の受入条件が0件である</li><li>画面での手動確認の手順と結果が、実データを含まない形で記録されている</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-06-test-run">← 前の仕様書</a><a class="pn" href="#task-phase-08-refactoring-migration">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-08-refactoring-migration" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-08-refactoring-migration</h1><p class="spec-src">出典: <code>phase-08-refactoring-migration.md</code></p><div class="spec-body"><h2>System task overlay: 既存資産への相乗りと重複の整理</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P08.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P08</li><li>phase_ref: P08</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>追加した削除処理を既存 scheduledMaintenance へ相乗りさせ、AI 分析と重複する実装を共有部品へ寄せる。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P07 SYS-IMPREQ-P07 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 非該当。この phase では契約や実装を変更しない。</li><li>Backend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>API: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Data: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 非該当。この phase では契約や実装を変更しない。</li><li>Quality: 非該当。この phase では契約や実装を変更しない。</li><li>Documentation: 非該当。この phase では契約や実装を変更しない。</li><li>Operations: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: packages/api/src/attachment-archive.ts、packages/api/src/index.ts、packages/api/src/improvement/contract.ts、packages/core/src/improvement.ts</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: packages/api/src/attachment-archive.ts、packages/api/src/index.ts、packages/api/src/improvement/contract.ts、packages/core/src/improvement.ts</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: wrangler.jsonc の triggers 定義を変更前後で比較し、増減が0件であることを確認する / トークン処理の実装箇所を検索し、AI 分析と改善要望で別実装になっていないことを確認する</li><li>Required evidence: P08 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: 共有化した実装を分離前の状態へ戻し、削除ジョブの登録を取り消す。既存 nightlyBackup には触れていないため他ジョブへ波及しない。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P07</li><li>Task graph: task-graph.json の P08 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>添付削除が既存 scheduledMaintenance の Promise.allSettled 配下で他ジョブと独立に成否を記録し、新規 Cron トリガが wrangler.jsonc に増えていない</li><li>使い捨てトークンの発行・ハッシュ化・検証が AI 分析と改善要望で同じ実装を共有し、方式の二重管理が発生していない</li><li>R2 の孤児オブジェクト突合が既存 runAttachmentMaintenance と同じ考え方で行われている</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-07-acceptance">← 前の仕様書</a><a class="pn" href="#task-phase-09-quality-assurance">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-09-quality-assurance" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-09-quality-assurance</h1><p class="spec-src">出典: <code>phase-09-quality-assurance.md</code></p><div class="spec-body"><h2>System task overlay: 秘匿値と保持期間の品質保証</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P09.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P09</li><li>phase_ref: P09</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>秘匿値が保存とログへ到達しないこと、および30日で添付だけが消えることを、退行しない形で固定する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P08 SYS-IMPREQ-P08 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 非該当。この phase では契約や実装を変更しない。</li><li>Backend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>API: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Data: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Quality: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Documentation: 非該当。この phase では契約や実装を変更しない。</li><li>Operations: 非該当。この phase では契約や実装を変更しない。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: packages/api/src/improvement-redaction.test.ts、packages/api/src/improvement-retention.test.ts、packages/api/src/improvement-backup-exclusion.test.ts</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: packages/api/src/improvement-redaction.test.ts、packages/api/src/improvement-retention.test.ts、packages/api/src/improvement-backup-exclusion.test.ts</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: マスクを外した入力を投稿する検証を実行し、保存値に秘匿値が残らないことを確認する / 期限超過と回数超過をそれぞれ再現し、応答の拒否理由が区別できることを確認する</li><li>Required evidence: P09 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: 追加した検証ファイルを削除すれば元に戻る。実装側の変更は含まない。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P08</li><li>Task graph: task-graph.json の P09 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>クライアント側マスクを外した診断情報を直接投稿しても、保存後の値から Cookie と Authorization と Bearer とパスワード相当の値が除去されている</li><li>TTL 超過のトークンと取得回数上限超過のトークンが、互いに区別できる拒否理由で拒否され、いずれも 500 にならない</li><li>改善要望のテーブル名が packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL に1つも現れないことを検証が固定している</li><li>対応完了から30日を超えた要望の添付が削除され、本文と状態と対応記録が参照できることを検証が固定している</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-08-refactoring-migration">← 前の仕様書</a><a class="pn" href="#task-phase-10-final-review">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-10-final-review" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-10-final-review</h1><p class="spec-src">出典: <code>phase-10-final-review.md</code></p><div class="spec-body"><h2>System task overlay: 変更全体の最終レビュー</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P10.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P10</li><li>phase_ref: P10</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>実装・検証・運用整理をまとめて見直し、scope_out への逸脱と未解決の高重大度指摘が残っていないことを確定する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P09 SYS-IMPREQ-P09 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Backend: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>API: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Data: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Quality: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Documentation: 非該当。この phase では契約や実装を変更しない。</li><li>Operations: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-10-final-review.json</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-10-final-review.json</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: 変更ファイル一覧を write scope の和と突き合わせ、範囲外の変更が0件であることを確認する / scope_out 8件を1件ずつ確認し、該当する変更が0件であることを確認する</li><li>Required evidence: P10 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: レビュー記録のみの変更のため、証跡ファイルを削除すれば元に戻る。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P09</li><li>Task graph: task-graph.json の P10 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>変更ファイル一覧が P05・P06・P08・P09 の write scope の和に収まり、対象外ファイルの変更が0件である</li><li>features/feat-improvement-request.md の scope_out 8件のいずれにも触れていないことが確認されている</li><li>高重大度の未解決指摘が0件である</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-09-quality-assurance">← 前の仕様書</a><a class="pn" href="#task-phase-11-evidence">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-11-evidence" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-11-evidence</h1><p class="spec-src">出典: <code>phase-11-evidence.md</code></p><div class="spec-body"><h2>System task overlay: 証跡の収集と保全</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P11.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P11</li><li>phase_ref: P11</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>後から第三者が判断を再現できるよう、検証結果と受入判定と設計根拠を1か所へ集約する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P10 SYS-IMPREQ-P10 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 非該当。この phase では契約や実装を変更しない。</li><li>Backend: 非該当。この phase では契約や実装を変更しない。</li><li>API: 非該当。この phase では契約や実装を変更しない。</li><li>Data: 非該当。この phase では契約や実装を変更しない。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 非該当。この phase では契約や実装を変更しない。</li><li>Quality: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Documentation: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Operations: 非該当。この phase では契約や実装を変更しない。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-11-evidence-index.json</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-11-evidence-index.json</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: 索引の各項目が実在するファイルを指していることを確認する / 証跡ファイルを走査し、口座明細と金額の実データおよび認証情報が含まれないことを確認する</li><li>Required evidence: P11 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: 索引ファイルを削除すれば元に戻る。参照先の証跡には影響しない。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P10</li><li>Task graph: task-graph.json の P11 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>P01 から P10 までの各 phase の証跡が索引から辿れ、欠落が0件である</li><li>証跡に実データと秘密情報が含まれていない</li><li>画面の証跡が合成データまたは既存の匿名表示のみで構成されている</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-10-final-review">← 前の仕様書</a><a class="pn" href="#task-phase-12-documentation-operations">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-12-documentation-operations" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-12-documentation-operations</h1><p class="spec-src">出典: <code>phase-12-documentation-operations.md</code></p><div class="spec-body"><h2>System task overlay: 利用手順と運用手順の記載</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P12.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P12</li><li>phase_ref: P12</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>利用者が改善要望を送る手順と、運用側が削除ジョブと保持期間を扱う手順を文書化する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P11 SYS-IMPREQ-P11 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 非該当。この phase では契約や実装を変更しない。</li><li>Backend: 非該当。この phase では契約や実装を変更しない。</li><li>API: 非該当。この phase では契約や実装を変更しない。</li><li>Data: 非該当。この phase では契約や実装を変更しない。</li><li>Infrastructure: 非該当。この phase では契約や実装を変更しない。</li><li>Security: 非該当。この phase では契約や実装を変更しない。</li><li>Quality: 非該当。この phase では契約や実装を変更しない。</li><li>Documentation: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Operations: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: docs/improvement-request.md、docs/ci-cd-operations.md</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: docs/improvement-request.md、docs/ci-cd-operations.md</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: 追加した記述が既存 docs の内容を複製していないことを確認する / 記載した手順どおりにローカルで操作し、記述と実際の画面と応答が一致することを確認する</li><li>Required evidence: P12 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: 追加または変更した文書を直前版へ戻す。実装には影響しない。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P11</li><li>Task graph: task-graph.json の P12 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>利用者向けに、改善要望の送り方と添付が30日で消えることが平易な言葉で書かれている</li><li>運用向けに、削除ジョブの相乗り先と失敗時の確認手順が書かれている</li><li>既存 docs の記述と重複せず、既存文書を正本として参照している</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-11-evidence">← 前の仕様書</a><a class="pn" href="#task-phase-13-release-deploy">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-13-release-deploy" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-13-release-deploy</h1><p class="spec-src">出典: <code>phase-13-release-deploy.md</code></p><div class="spec-body"><h2>System task overlay: 配信条件の確定と保留判断</h2>
+<blockquote><strong>正本ではない。</strong> 本書は system-dev-planner が生成した staging snapshot で、promotion 済みの正本は tasks/feat-improvement-request/SYS-IMPREQ-P13.md である。内容の更新はそちらへ入れる。</blockquote>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-improvement-request</li><li>parent_feature: feat-improvement-request</li><li>graph_node_id: SYS-IMPREQ-P13</li><li>phase_ref: P13</li><li>owners: 未割当。scheduler が lease とともに実行者を確定する</li><li>tags: improvement-request、screenshot、diagnostics、agent-handoff、retention</li><li>related_nodes: arch-improvement-request-pipeline</li><li>tracker_binding_intent: beads</li><li>github_publication: local_only</li><li>pr_completion_policy: linked_pr_merged_all</li></ul>
+<h3>目的</h3>
+<p>本番配信の前提が満たされているかを判定し、満たされていない場合は配信せず条件を明示して保留する。</p>
+<h3>背景</h3>
+<p>改善要望は現在この製品に存在せず、困りごとは文章でしか届かない。文章には、書いた人が気づいたことしか載らない。画面の裏で実際に失敗していた通信や例外は書いた人に見えていないため、受け取った側は再現条件の推測から始めることになる。押した瞬間の画面と、そのとき起きていた技術的な失敗を要望へ自動で添え、Claude Code と Codex がその指示文だけで調査に入れる形にする。</p>
+<h3>前提条件</h3>
+<ul><li>P12 SYS-IMPREQ-P12 が完了していること</li><li>implementation readiness は complete、missing sections は空</li><li>repository identity は github:daishiman/kanjo、config は .dev-graph/config.json</li><li>実データ、data 配下、packages/api/.dev.vars を成果物や Git 対象へ含めない</li><li>本番 D1 のスキーマ整合が未回復のため、本番への migration 適用は feat-prod-d1-schema-recovery の完了を待つ</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: 非該当。この phase では契約や実装を変更しない。</li><li>Backend: 非該当。この phase では契約や実装を変更しない。</li><li>API: 非該当。この phase では契約や実装を変更しない。</li><li>Data: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Infrastructure: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li><li>Security: 非該当。この phase では契約や実装を変更しない。</li><li>Quality: 非該当。この phase では契約や実装を変更しない。</li><li>Documentation: 非該当。この phase では契約や実装を変更しない。</li><li>Operations: 該当。成果物・検証・引き継ぎの担当境界として扱う。</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: 撮影は capture の Promise を await し終えてからモーダルを開く順序で固定し、除外リスト方式は採らない。診断はアプリ起動時から件数と総バイトの二重上限つきリングバッファへ常時記録する。エージェント取得は既存 AI 分析と同型の使い捨て Bearer で、D1 には SHA-256 ハッシュだけを保存する。R2 の公開 URL と署名付き URL は発行せず配信は Worker 経由の1本に限る。添付は対応完了から30日で削除し、既存 scheduledMaintenance へ相乗りして新規 Cron を増やさない</li><li>Deploy unit/environment: packages/web React SPA と packages/api Cloudflare Workers、および Cloudflare D1 kanjo-db・R2 kanjo-files</li><li>Compatibility: 既存 Cookie セッション認証と既存 agentGuard の契約を変えない。改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL へ追加しない。既存 nightlyBackup と wrangler.jsonc の Cron 設定を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-13-release-gate.json</li><li>Consumed artifacts: system-spec/index.md、system-spec/00-requirements-definition.md、architecture/arch-improvement-request-pipeline.md、features/feat-improvement-request.md、features/feat-improvement-request.context.json</li><li>Write scope: .dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-13-release-gate.json</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>GitHub project、labels、milestone: beads が authority のため設定しない</li><li>PR completion policy: linked_pr_merged_all</li><li>起票・状態収束は dev-graph が所有し、この task spec は intent と完了条件だけを宣言する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: scheduler が graph_node_id から割り当てる</li><li>Worktree lease: 実装開始時に claim し、作業中に heartbeat、完了時に release する</li><li>Parallel safety: depends_on 完了と resource scope 非競合を確認する</li><li>Completion projection: 既定ブランチとの reconciliation で確定する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>改善要望のテーブルを packages/api/src/store.ts の BACKUP_SNAPSHOT_SQL の列挙対象へ追加すること</li><li>既存 nightlyBackup の実装と Cron 設定の変更、および新規 Cron トリガの追加</li><li>R2 の公開 URL と署名付き URL の発行</li><li>外部エラートラッキング SaaS への診断情報の送信</li><li>Screen Capture API による画面共有ダイアログ経由の撮影</li><li>要望本文・状態・対応記録の30日削除。削除対象は添付物のみとする</li><li>本番 D1 への migration 適用。feat-prod-d1-schema-recovery が未完了である間は、配信判定の結果にかかわらず適用を実行しない</li><li>commit、push、Pull Request 作成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands: 本番 D1 の適用済み migration 一覧を確認し、BACKUP_SNAPSHOT_SQL が参照するテーブルの有無を判定する / 判定結果に応じて配信または保留のいずれを選んだかと、その根拠を証跡へ記録する</li><li>Required evidence: P13 の受入条件、実行結果、差分対象、未解決指摘の有無を記録する</li><li>Privacy: 画面証跡は合成または既存の匿名表示のみとし、口座明細や金額の実データを含めない</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 依存 phase の完了後に write scope 内だけを変更し、ローカルとテスト環境で確認する</li><li>Rollback trigger and steps: 保留判断の場合は本番へ何も適用していないため戻す対象が無い。配信した場合は適用した migration を前版へ戻す手順に従う。</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph scheduler が有効な worktree lease とともに割り当てた実行者</li><li>Ready when: 受入条件と verification が全て PASS し、高重大度の未解決指摘がなく、後続 phase が参照できる証跡がある</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: system-spec/index.md、system-spec/00-requirements-definition.md</li><li>Feature: features/feat-improvement-request.md</li><li>Architecture: architecture/arch-improvement-request-pipeline.md</li><li>Dependency: SYS-IMPREQ-P12</li><li>Task graph: task-graph.json の P13 node</li></ul>
+<h4>受入条件</h4>
+<ul><li>本番 D1 のスキーマ整合が回復しているかどうかの判定結果が記録されている</li><li>回復していない場合、本番への migration 適用を実行せず、feat-prod-d1-schema-recovery の完了を待つ判断が記録されている</li><li>ローカルとテスト環境での完成が配信保留によって妨げられていないことが記録されている</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-12-documentation-operations">← 前の仕様書</a><span></span></div></section></main>
+</div>
+<script>
+(function(){
+  function ids(){return Array.prototype.map.call(document.querySelectorAll('.spec-page'),function(s){return s.id;});}
+  function show(){
+    var h=(location.hash||'#index').slice(1); if(!document.getElementById(h)){h='index';}
+    document.querySelectorAll('.spec-page').forEach(function(s){s.hidden=(s.id!==h);});
+    document.querySelectorAll('.spec-nav a, .idx-group a').forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href')==='#'+h);});
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange', show);
+  document.addEventListener('DOMContentLoaded', show); show();
+})();
+</script>
+</body></html>

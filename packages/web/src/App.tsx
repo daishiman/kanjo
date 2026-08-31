@@ -4,11 +4,21 @@ import type { ComponentType } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AUTH_EVENT, api } from './api.js';
 import { Layout } from './components/Layout.js';
+import { installDiagnostics } from './diagnostics-buffer.js';
 import { LoginPage } from './pages/Login.js';
 import { TaxReturnPage } from './pages/TaxReturn.js';
 import { PeriodProvider } from './period.js';
 import { APP_ROUTES, type AppRouteId, LEGACY_ROUTE_REDIRECTS } from './routeMetadata.js';
 import { TaxYearProvider } from './tax-year.js';
+
+// 収集は最初の描画より前に始める。エラーは改善要望ボタンを押す「前」に起きているため、
+// useEffect まで待つと肝心の1件目を取り逃がす。二重 install は buffer 側が弾く
+installDiagnostics();
+
+/** 改善要望は業務画面ではないため routeMetadata に載せず、ここで明示的に登録する */
+const ImprovementPage = lazy(() =>
+  import('./pages/Improvement.js').then((module) => ({ default: module.ImprovementPage })),
+);
 
 export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
   overview: lazy(() => import('./pages/Overview.js').then((module) => ({ default: module.OverviewPage }))),
@@ -84,6 +94,7 @@ export function App() {
               })}
               {/* 支出分析は切り口をURLに持つ。/analysis 単体は AnalysisPage が既定タブへ寄せる */}
               <Route path="/analysis/:tab" element={<ROUTE_COMPONENTS.analysis />} />
+              <Route path="/improvement" element={<ImprovementPage />} />
               {/* 統合前の /matrix などは外に出ている可能性がある。トップへ落とさず該当タブへ送る */}
               {LEGACY_ROUTE_REDIRECTS.map((redirect) => (
                 <Route

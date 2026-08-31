@@ -304,6 +304,14 @@ pnpm --filter @kanjo/api exec wrangler d1 time-travel restore kanjo-db --bookmar
 
 本番D1のrestore、手動`UPDATE` / `DELETE`、リソース削除は通常運用に含めず、実行前に必ず対象と影響を確認します。
 
+## 10.5 夜間メンテナンスへ相乗りするジョブ
+
+`wrangler.jsonc`の`triggers.crons`は1本だけです。定期処理を足すときはCronを増やさず、`packages/api/src/index.ts`の`scheduledMaintenance`が持つ`Promise.allSettled`へ足します。Cronを増やすと実行時刻が分散し、どのジョブがどの時刻に動いたかを`wrangler tail`から追えなくなります。
+
+相乗りしているジョブは1回の実行につき1行のJSONを`job`名つきで出します。ジョブ単位の確認手順は各機能の文書が持ちます。
+
+- `improvement_retention`（改善要望の添付削除）: `docs/improvement-request.md` 2章
+
 ## 11. 導入・変更時チェックリスト
 
 - [ ] CIを意図的に1回失敗させ、`verify`が赤くなってmergeを止めることを確認した

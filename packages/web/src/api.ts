@@ -15,6 +15,7 @@ import type {
   DefenseForecast,
   DefenseLine,
   DiagnosisData,
+  DiagnosticPayload,
   HouseholdData,
   MatrixData,
   OverviewData,
@@ -41,6 +42,7 @@ import type {
 } from '@kanjo/core';
 import {
   type Owner as CoreOwner,
+  type ImprovementStatus,
   OWNER_LABEL,
   OWNER_VALUES,
   PAYMENT_METHOD_LABEL,
@@ -882,3 +884,85 @@ export interface TaxReceiptGapsResponse {
   receiptArchive: { fileCount: number; maxFilesPerPart: number; parts: number };
   externalReceiptSources: readonly [{ source: 'freee'; responsibility: 'external-confirmation' }];
 }
+
+/* -------- 改善要望(system-spec D5〜D9) -------- */
+
+export interface ImprovementRequestView {
+  id: string;
+  title: string;
+  body: string;
+  route: string;
+  status: ImprovementStatus;
+  screenshot: { available: boolean; size: number | null };
+  diagnostics: { available: boolean; entryCount: number; omittedCount: number };
+  token: {
+    status: 'none' | 'active' | 'expired' | 'exhausted';
+    expiresAt: string | null;
+    fetchCount: number;
+  };
+  copiedAt: string | null;
+  copiedTarget: 'claude_code' | 'codex' | null;
+  doneAt: string | null;
+  purgedAt: string | null;
+  /** 添付が消える予定時刻。未完了は null(調査中に証跡を消さない) */
+  attachmentExpiresAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ImprovementCreateResponse {
+  request: ImprovementRequestView;
+  /** トークン原文を含む指示文。作成時のこの1回だけ返る */
+  prompt: string;
+  /** 画像を受け付けなかった理由。null は問題なし */
+  screenshotRejected: 'too_large' | 'unsupported_type' | null;
+  diagnosticsRejected: boolean;
+}
+
+export interface ImprovementDetailResponse {
+  request: ImprovementRequestView;
+  diagnostics: DiagnosticPayload | null;
+}
+
+export const listImprovements = () => api<{ requests: ImprovementRequestView[] }>('/improvements');
+
+export const getImprovement = (id: string) => api<ImprovementDetailResponse>(`/improvements/${id}`);
+
+/**
+ * 改善要望の投稿。スクリーンショットは multipart で送るため apiUpload を使う。
+ * 画像が無くても投稿は成立する(撮影の失敗は投稿の失敗ではない)。
+ */
+export function createImprovement(input: {
+  title: string;
+  body: string;
+  route: string;
+  diagnostics: DiagnosticPayload;
+  screenshot: File | null;
+}): Promise<ImprovementCreateResponse> {
+  const form = new FormData();
+  form.set('title', input.title);
+  form.set('body', input.body);
+  form.set('route', input.route);
+  form.set('diagnostics', JSON.stringify(input.diagnostics));
+  if (input.screenshot) form.set('screenshot', input.screenshot);
+  return apiUpload<ImprovementCreateResponse>('/improvements', form);
+}
+
+/** 指示文の作り直し。前に配った指示文はこの時点で失効する */
+export const reissueImprovementPrompt = (id: string) =>
+  api<{ prompt: string; expiresAt: string }>(`/improvements/${id}/prompt`, { method: 'POST' });
+
+export const markImprovementCopied = (id: string, target: 'claude_code' | 'codex') =>
+  api<{ ok: true; copiedAt: string }>(`/improvements/${id}/copied`, {
+    method: 'POST',
+    body: JSON.stringify({ target }),
+  });
+
+export const setImprovementStatus = (id: string, status: ImprovementStatus) =>
+  api<{ request: ImprovementRequestView }>(`/improvements/${id}/status`, {
+    method: 'POST',
+    body: JSON.stringify({ status }),
+  });
+
+/** スクリーンショットの取得先。R2 の公開URLではなく必ず Worker を通す */
+export const improvementScreenshotUrl = (id: string) => `/api/improvements/${id}/screenshot`;

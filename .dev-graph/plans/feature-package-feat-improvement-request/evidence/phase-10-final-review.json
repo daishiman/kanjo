@@ -1,0 +1,120 @@
+{
+  "phase_ref": "P10",
+  "graph_node_id": "SYS-IMPREQ-P10",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:21:06Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "変更ファイル全件を書込範囲と突き合わせ、範囲外の改変0件を確認した。範囲追記4件は理由つきで記録する。",
+  "changed_files": {
+    "added": [
+      "migrations/0029_improvement_requests.sql",
+      "packages/core/src/improvement.ts",
+      "packages/api/src/improvement/contract.ts",
+      "packages/api/src/improvement/redact.ts",
+      "packages/api/src/routes/improvement.ts",
+      "packages/api/src/improvement-lifecycle.test.ts",
+      "packages/api/src/improvement-redaction.test.ts",
+      "packages/api/src/improvement-retention.test.ts",
+      "packages/api/src/improvement-backup-exclusion.test.ts",
+      "packages/web/src/capture-screen.ts",
+      "packages/web/src/diagnostics-buffer.ts",
+      "packages/web/src/diagnostics-buffer.test.ts",
+      "packages/web/src/components/ImprovementRequestButton.tsx",
+      "packages/web/src/pages/Improvement.tsx",
+      "packages/web/src/improvement-capture.dom.test.tsx",
+      "docs/improvement-request.md",
+      "architecture/arch-improvement-request-pipeline.md",
+      "features/feat-improvement-request.md",
+      "features/feat-improvement-request.context.json"
+    ],
+    "modified": [
+      "packages/api/src/index.ts",
+      "packages/api/src/store.ts",
+      "packages/api/src/schema-guard.ts",
+      "packages/core/src/index.ts",
+      "packages/web/src/App.tsx",
+      "packages/web/src/api.ts",
+      "packages/web/src/components/Layout.tsx",
+      "packages/web/src/styles.css",
+      "packages/web/src/display-contract.test.tsx",
+      "packages/web/src/navigation-ux.dom.test.tsx",
+      "docs/ci-cd-operations.md",
+      "system-spec/*"
+    ],
+    "preexisting_untouched": [
+      "samples/sample-freee-2025.csv",
+      "samples/sample-freee-2026.csv",
+      "samples/sample-mf-2025.csv",
+      "samples/sample-mf-2026.csv"
+    ]
+  },
+  "scope_addenda": [
+    {
+      "path": "packages/api/src/schema-guard.ts",
+      "reason": "schema-guard.test.ts:67 が最新マイグレーション名の登録を要求するため、0029 の追加で機械的に必須になった"
+    },
+    {
+      "path": "packages/core/src/improvement.ts",
+      "reason": "P06 が見つけたマスク規則の取りこぼし修正と、P08 のトークン原始関数の正本化"
+    },
+    {
+      "path": "packages/web/src/display-contract.test.tsx",
+      "reason": "画面が1つ増えたことで画面数の契約値が変わる"
+    },
+    {
+      "path": "packages/web/src/navigation-ux.dom.test.tsx",
+      "reason": "ルートが1つ増えたことで導線の契約値が変わる"
+    },
+    {
+      "path": "docs/ci-cd-operations.md",
+      "reason": "P12 の運用文書。Cron を増やさない一般規則と参照先の1節を追加"
+    }
+  ],
+  "prohibitions": [
+    {
+      "rule": "BACKUP_SNAPSHOT_SQL へ改善要望テーブルを追加しない",
+      "status": "守られている",
+      "evidence": "improvement-backup-exclusion.test.ts"
+    },
+    {
+      "rule": "Cron トリガーを増やさない",
+      "status": "守られている",
+      "evidence": "wrangler.jsonc の crons は1本のまま"
+    },
+    {
+      "rule": "R2 の公開/署名URLを発行しない",
+      "status": "守られている",
+      "evidence": "improvement-lifecycle.test.ts screenshot.url が署名URLでない"
+    },
+    {
+      "rule": "トークン原文をログに出さない",
+      "status": "守られている",
+      "evidence": "improvement-lifecycle.test.ts 応答・ログ経路の検査"
+    },
+    {
+      "rule": "本番D1へのマイグレーション配信は範囲外",
+      "status": "守られている",
+      "evidence": "本番 d1_migrations は 0005 まで。feat-prod-d1-schema-recovery 完了までブロック"
+    }
+  ],
+  "gates": {
+    "typecheck": "PASS",
+    "biome_check": "PASS (257 files, no fixes)",
+    "tests": "PASS (1054 passed / 6 skipped / 0 failed)",
+    "web_bundle_budget": "108.61KiB / 110KiB"
+  },
+  "findings": {
+    "high": 0,
+    "medium": 0,
+    "low": 1
+  },
+  "low_findings": [
+    {
+      "id": "L-1",
+      "path": "packages/api/src/routes/ai.ts",
+      "detail": "AI分析側は自前のトークン原始関数を保持したまま。どの phase の書込範囲にも入らないため意図的に触らず、後続 feature 候補として残す。"
+    }
+  ],
+  "result": "PASS"
+}

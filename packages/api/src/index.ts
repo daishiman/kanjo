@@ -29,6 +29,7 @@ import { balancesRoute } from './routes/balances.js';
 import { cashRoute } from './routes/cash.js';
 import { classifyRoute } from './routes/classify.js';
 import { importsRoute } from './routes/imports.js';
+import { improvementAgentRoute, improvementRoute, runImprovementRetention } from './routes/improvement.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
 import { taxRoute } from './routes/tax.js';
@@ -113,6 +114,8 @@ app.get('/api/auth/me', authGuard(), (c) => c.json({ authenticated: true }));
 
 // AIエージェント用(依頼ごとの使い捨てトークンで認証。セッション不要)
 app.route('/api', aiAgentRoute);
+// 改善要望のエージェント取得も同型。要望ごとの使い捨てトークン(Bearer)で認証する
+app.route('/api', improvementAgentRoute);
 
 /* -------- 保護されたAPI -------- */
 
@@ -129,6 +132,7 @@ app.route('/api', subsRoute);
 app.route('/api', attachmentsRoute);
 app.route('/api', balancesRoute);
 app.route('/api', taxRoute);
+app.route('/api', improvementRoute);
 
 app.notFound((c) => {
   if (c.req.path.startsWith('/api/')) {
@@ -183,10 +187,12 @@ async function nightlyBackup(env: Pick<AuthEnv, 'DB' | 'FILES'>): Promise<void> 
 export async function scheduledMaintenance(
   env: Pick<AuthEnv, 'DB' | 'FILES'> & Partial<AuthEnv>,
 ): Promise<void> {
-  const [cleanup, backup, loginRateLimit] = await Promise.allSettled([
+  const [cleanup, backup, loginRateLimit, improvement] = await Promise.allSettled([
     runAttachmentMaintenance(env),
     nightlyBackup(env),
     cleanupStalePasswordLoginRateLimits(env),
+    // 改善要望の添付は対応完了から30日で消す。新規 Cron は増やさずここへ相乗りさせる
+    runImprovementRetention(env),
   ]);
   if (cleanup.status === 'fulfilled') {
     console.log(
@@ -225,6 +231,24 @@ export async function scheduledMaintenance(
       }),
     );
   }
+  if (improvement.status === 'fulfilled') {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        job: 'improvement_retention',
+        selected: improvement.value.selected,
+        purged: improvement.value.purged,
+        failed: improvement.value.failed,
+        orphans: improvement.value.orphans,
+      }),
+    );
+  } else {
+    console.error(
+      JSON.stringify({ level: 'error', job: 'improvement_retention', name: errorName(improvement.reason) }),
+    );
+  }
+  // 改善要望の削除失敗は throw に含めない。二次資産の後始末であり、次回の実行が同じ行を
+  // 冪等に拾い直す。ここで throw すると記帳データのバックアップまで失敗扱いになる。
   if (cleanup.status === 'rejected' || backup.status === 'rejected' || loginRateLimit.status === 'rejected') {
     throw new Error('scheduled_maintenance_failed');
   }

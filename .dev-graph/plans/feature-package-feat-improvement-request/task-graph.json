@@ -1,0 +1,134 @@
+{
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P01",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P01",
+      "title": "改善要望の実行要件ベースライン確定"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P01"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P02",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P02",
+      "title": "4層の境界とデータ契約の設計"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P02"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P03",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P03",
+      "title": "境界設計の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P03"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P04",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P04",
+      "title": "受入条件を検証へ写す試験設計"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P04"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P05",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P05",
+      "title": "撮影・診断・受け渡し・失効の実装"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P05"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P06",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P06",
+      "title": "検証の実行と失敗の解消"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P06"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P07",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P07",
+      "title": "受入条件15件の判定"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P07"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P08",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P08",
+      "title": "既存資産への相乗りと重複の整理"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P08"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P09",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P09",
+      "title": "秘匿値と保持期間の品質保証"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P09"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P10",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P10",
+      "title": "変更全体の最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P10"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P11",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P11",
+      "title": "証跡の収集と保全"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P11"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P12",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P12",
+      "title": "利用手順と運用手順の記載"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPREQ-P12"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "id": "SYS-IMPREQ-P13",
+      "parent_feature": "feat-improvement-request",
+      "phase_ref": "P13",
+      "title": "配信条件の確定と保留判断"
+    }
+  ],
+  "parent_feature": "feat-improvement-request"
+}

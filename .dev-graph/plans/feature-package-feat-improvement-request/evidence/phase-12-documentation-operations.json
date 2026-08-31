@@ -1,0 +1,52 @@
+{
+  "phase_ref": "P12",
+  "graph_node_id": "SYS-IMPREQ-P12",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:56:12Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "利用者向けの送り方と運用向けの削除ジョブ手順を文書化した。既存文書とは重複させず、一般規則と参照だけを足した。",
+  "documents": [
+    {
+      "path": "docs/improvement-request.md",
+      "kind": "新規",
+      "sections": [
+        "1.1 送り方（5手順・ボタンは画面右下）",
+        "1.1.1 画像に書き込む（ドラッグで赤枠、1つ戻す/全部消す、送信時に焼き込み）",
+        "1.1.2 一緒に送られる情報を送信前に確かめる（画面/表示サイズ/取得時刻/ブラウザ/言語、気になっている点、全記録）",
+        "1.2 送ったあとに出るもの（Claude Code / Codex コピー、合言葉は送信直後の1回だけ、24時間・20回）",
+        "1.3 送られる技術的な記録について（60件・32KB、二重マスク、省略件数の表示）",
+        "1.4 添付はいつ消えるか（対応済みから30日、消えるのは添付だけ）",
+        "2.1 削除ジョブの相乗り先",
+        "2.2 実行結果の確認手順（wrangler tail と4指標の表）",
+        "2.3 失敗が続くときの切り分け（3手順）",
+        "2.4 関連ファイル"
+      ]
+    },
+    {
+      "path": "docs/ci-cd-operations.md",
+      "kind": "追記",
+      "section": "10.5 夜間メンテナンスへ相乗りするジョブ",
+      "rationale": "ジョブ固有の詳細は機能側の文書が持つ。ここには「Cron を増やさず scheduledMaintenance へ足す」という一般規則と参照先だけを置き、二重管理を避ける"
+    }
+  ],
+  "operational_indicators": [
+    {
+      "name": "selected",
+      "abnormal": "毎晩ゼロでない状態が続く＝削除が進んでいない"
+    },
+    {
+      "name": "purged",
+      "abnormal": "selected と一致しない"
+    },
+    {
+      "name": "failed",
+      "abnormal": "同じ件数が何日も続く"
+    },
+    {
+      "name": "orphans",
+      "abnormal": "継続して増える＝投稿処理が途中で落ちている"
+    }
+  ],
+  "result": "PASS"
+}

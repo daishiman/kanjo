@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py (派生ビュー・手書き編集しない・再生成で上書き)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-IMPREQ-P01",
+      "title": "改善要望の実行要件ベースライン確定",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P02",
+      "title": "4層の境界とデータ契約の設計",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P03",
+      "title": "境界設計の独立レビュー",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P04",
+      "title": "受入条件を検証へ写す試験設計",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P05",
+      "title": "撮影・診断・受け渡し・失効の実装",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P06",
+      "title": "検証の実行と失敗の解消",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P07",
+      "title": "受入条件15件の判定",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P08",
+      "title": "既存資産への相乗りと重複の整理",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P09",
+      "title": "秘匿値と保持期間の品質保証",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P10",
+      "title": "変更全体の最終レビュー",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P11",
+      "title": "証跡の収集と保全",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P12",
+      "title": "利用手順と運用手順の記載",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-IMPREQ-P13",
+      "title": "配信条件の確定と保留判断",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

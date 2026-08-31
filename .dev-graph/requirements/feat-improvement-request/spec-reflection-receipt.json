@@ -1,0 +1,107 @@
+{
+  "receipt_kind": "spec-reflection",
+  "parent_feature": "feat-improvement-request",
+  "graph_node_id": "SYS-IMPREQ-P05",
+  "recorded_at": "2026-08-31T00:00:00Z",
+  "verdict": "IMPACTED_AND_REFLECTED",
+  "summary": "利用者報告 2026-08-30 による4件の是正は仕様への影響があると判定し、system-spec/ features/ architecture/ tasks/ docs/ へ反映した。",
+  "impacts": [
+    {
+      "id": "I1",
+      "finding": "system-spec/ui-ux.md が『診断情報は件数だけを出し、内容は出さない』を確定原則としており、中身を表示する是正と正面から矛盾していた。",
+      "action": "ui-ux.md の 解決する問題/適用条件/非適用条件/トレードオフ/失敗モード/goalへの寄与 を更新。二重マスク済みの値だけを出す、順位付けは core が正本、detail 全文は非適用、という境界を明記した。",
+      "files": [
+        "system-spec/ui-ux.md"
+      ]
+    },
+    {
+      "id": "I2",
+      "finding": "撮影が本文を写さない原因 (SVG は t=0 でラスタライズされ animation の開始状態が焼き付く) が frontend.md に無く、同じ退行を防げない。",
+      "action": "frontend.md の 解決する問題/適用条件/失敗モード に CSS 適用順の制約と data-capture-hide の限定用途を追記。",
+      "files": [
+        "system-spec/frontend.md"
+      ]
+    },
+    {
+      "id": "I3",
+      "finding": "スクリーンショットへの書き込みと送信前確認が要件定義書の outcome に存在しない (新規要求)。",
+      "action": "00-requirements-definition.md へ O15/O16 と成功基準3行を追加。起動導線は『右下などの導線』から『右下に固定』へ具体化。",
+      "files": [
+        "system-spec/00-requirements-definition.md"
+      ]
+    },
+    {
+      "id": "I4",
+      "finding": "feature の acceptance 15件が是正後の受入条件を覆わない。",
+      "action": "acceptance を20件へ拡張 (A16..A19 相当5項目)。",
+      "files": [
+        "features/feat-improvement-request.md"
+      ]
+    },
+    {
+      "id": "I5",
+      "finding": "architecture に書き込み層と順位付けの正本位置が無い。",
+      "action": "1.1 書き込み層を新設し、撮影層へ CSS 順序と data-capture-hide の境界、診断層へ highlightDiagnostics の正本位置を追記。",
+      "files": [
+        "architecture/arch-improvement-request-pipeline.md"
+      ]
+    }
+  ],
+  "not_impacted": [
+    {
+      "area": "security / auth",
+      "reason": "トークン方式・取得経路・マスク規則に変更なし。追加した表示は既に二重マスクを通った値だけを並べ、新たな露出面を作らない。"
+    },
+    {
+      "area": "database / migrations",
+      "reason": "0029 のスキーマに変更なし。書き込みは送信前に画像へ焼き込まれるため、注記用の列も表も増えない。"
+    },
+    {
+      "area": "maintenance-ops / infrastructure",
+      "reason": "Cron 追加なし、BACKUP_SNAPSHOT_SQL 不変、保持30日も不変 (D7 の決定に変更なし)。"
+    }
+  ],
+  "reflected_files": [
+    {
+      "file": "system-spec/00-requirements-definition.md",
+      "digest": "sha256:e60b7f8d98d5c27d0bfb9d9b1e1c98432a69e2e1ffc7ec4fb1b1384260c5c69d"
+    },
+    {
+      "file": "system-spec/ui-ux.md",
+      "digest": "sha256:7638a33287d1cf64541556c0ff6c2bb01177112d0b593fb25f14069a2bf82e70"
+    },
+    {
+      "file": "system-spec/frontend.md",
+      "digest": "sha256:a1e7983b026e86e7add4a160a17add636815798ccb226cc20f9114fb08d3153b"
+    },
+    {
+      "file": "features/feat-improvement-request.md",
+      "digest": "sha256:3b9c905feec612d5a8f2778f1723686fcd2f90d705b7134c6e6ed88fb88d34a6"
+    },
+    {
+      "file": "architecture/arch-improvement-request-pipeline.md",
+      "digest": "sha256:c8d669b48320b1d57b5dd90cf6c28281e6fb4e5572b8e636914c5e2ce019be63"
+    },
+    {
+      "file": "tasks/feat-improvement-request/SYS-IMPREQ-P05.md",
+      "digest": "sha256:a056f2f5cc045bec0632d50442550eccbd3b906bda26c06dbdc5d4ea7c8f58db"
+    },
+    {
+      "file": "docs/improvement-request.md",
+      "digest": "sha256:0fefd916ec7c97efdba88871fc3116332aaf6f0b7b2a10425560e88a2b1fe951"
+    }
+  ],
+  "gates": {
+    "typecheck": "PASS",
+    "biome": "PASS (262 files)",
+    "test": {
+      "core": 456,
+      "api": 289,
+      "web": 337,
+      "failed": 0,
+      "exit": 0
+    }
+  },
+  "result": "PASS",
+  "merge_note": "origin/main (PR #28 feat-mobile-financial-visualization) との併合時、双方が同じ base から requirements_foundation を加算的に書き換えており、G5-G7 / O6-O12 / I8-I14 が両ブランチで別内容を指す名前空間衝突が生じた。main を共有正本として採番を保持し、本ブランチ側を G9-G11 / O10-O16 / I14-I20 へ繰り下げて両機能のゴール群を union で残した。単一値しか許されない approval_ref / matrix.*.web.qa_ref は main 側の確定値を採用し、本ブランチの qa-018 / qa-020 は qa_log に保持している。"
+}

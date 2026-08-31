@@ -3049,3 +3049,337 @@ label.check {
 .palette-empty {
   margin: 12px 10px;
 }
+
+/* ===== 改善要望(モーダル前に撮影 → 指示文の受け渡し) ===== */
+
+/*
+ * 右下に固定する浮きボタン。
+ *
+ * ヘッダーではなくここに置くのは、ヘッダーが画面上端にあるため下までスクロールした
+ * 状態から戻る操作が要ったから。困っている瞬間に一番近い場所へ置く。
+ * z-index はモーダル(<dialog> のトップレイヤー)より下でよい。tabbar より上にする。
+ */
+.improve-trigger {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60;
+  padding: 12px 18px;
+  border: 1px solid var(--biz);
+  border-radius: 999px;
+  background: var(--biz);
+  color: #fff;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgb(29 42 44 / 28%);
+}
+.improve-trigger:hover {
+  filter: brightness(1.08);
+}
+.improve-trigger[disabled] {
+  background: var(--ink-soft);
+  border-color: var(--ink-soft);
+  cursor: progress;
+}
+/* 640px 以下はタブバーが下端に出る(.tabbar と同じ境界)。その上へ逃がす */
+@media (max-width: 640px) {
+  .improve-trigger {
+    right: 14px;
+    bottom: calc(var(--tabbar-h) + 14px);
+    padding: 10px 16px;
+  }
+}
+/* 動きを減らす設定では影の強調を控える(浮き上がりの表現だけを弱める) */
+@media (prefers-reduced-motion: reduce) {
+  .improve-trigger {
+    box-shadow: 0 2px 8px rgb(29 42 44 / 20%);
+  }
+}
+/* 撮影中の告知は読み上げ用。視覚的には trigger のラベル変化で足りる */
+.improve-capturing {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* ネイティブ <dialog>。焦点の閉じ込めと Escape はブラウザ側が持つ */
+.improve-modal {
+  width: min(720px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  overflow-y: auto;
+  box-shadow: 0 12px 32px rgb(29 42 44 / 25%);
+}
+.improve-modal::backdrop {
+  background: rgb(29 42 44 / 45%);
+}
+.improve-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.improve-modal h2 {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+.improve-modal label {
+  font-size: var(--fs-sm);
+  font-weight: 650;
+}
+.improve-modal input[type="text"],
+.improve-modal input:not([type]),
+.improve-modal textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
+.improve-attach {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.improve-attach h3 {
+  margin: 0 0 6px;
+  font-size: var(--fs-sm);
+}
+.improve-attach label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+}
+/* プレビューは「何が送られるか」を確かめる用途。原寸は要らない */
+.improve-preview,
+.improvement-shot {
+  display: block;
+  max-width: 100%;
+  max-height: 320px;
+  margin-bottom: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  object-fit: contain;
+}
+.improvement-shot {
+  max-height: 520px;
+}
+.improve-prompt {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+.improve-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.improve-actions button {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  font: inherit;
+  cursor: pointer;
+}
+.improve-actions button:hover {
+  background: var(--bg);
+}
+.improve-copied {
+  color: var(--good);
+  font-size: var(--fs-sm);
+}
+.improve-note {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+/* ---- スクリーンショットへの書き込み ---- */
+.improve-annotate-canvas {
+  position: relative;
+  display: block;
+  /* 枠を引く操作なので、ブラウザ既定のスクロール/選択を止める。
+     touch-action を切らないと、タッチ端末ではドラッグがページのスクロールに取られる */
+  touch-action: none;
+  user-select: none;
+  cursor: crosshair;
+  line-height: 0;
+}
+.improve-annotate-canvas img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.improve-annotate-canvas canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* 当たり判定は親が持つ。canvas に取られるとドラッグの座標がずれる */
+  pointer-events: none;
+}
+.improve-annotate-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.improve-annotate-actions .improve-note {
+  margin: 0;
+  flex: 1 1 auto;
+}
+.improve-annotate-actions button {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+.improve-annotate-actions button[disabled] {
+  color: var(--ink-soft);
+  cursor: default;
+}
+
+/* ---- 一緒に送られる情報 ---- */
+.improve-context {
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+.improve-context h3 {
+  margin: 0 0 6px;
+  font-size: var(--fs-sm);
+}
+.improve-envinfo {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+  font-size: var(--fs-xs);
+}
+.improve-envinfo > div {
+  display: grid;
+  grid-template-columns: 6.5em 1fr;
+  gap: 8px;
+}
+.improve-envinfo dt {
+  color: var(--ink-soft);
+}
+.improve-envinfo dd {
+  margin: 0;
+  /* UA は長い。折り返して器を押し広げない */
+  overflow-wrap: anywhere;
+}
+.improve-ua {
+  font-family: var(--font-mono);
+}
+/* 先に読ませたい数件。折りたたみの中ではなく、開いた状態で目に入る位置に置く */
+.improve-highlights {
+  margin-top: 10px;
+}
+.improve-highlights h4 {
+  margin: 0 0 4px;
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+.improve-highlights ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+.improve-highlights li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: var(--fs-xs);
+}
+.improve-diaglist {
+  margin-top: 8px;
+  font-size: var(--fs-xs);
+}
+.improve-diaglist summary {
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.improve-diagentries {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+  display: grid;
+  gap: 4px;
+}
+.improve-diagentries li {
+  display: grid;
+  grid-template-columns: 8.5em 1fr;
+  gap: 8px;
+  align-items: baseline;
+}
+.improve-kind {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 8px;
+  text-align: center;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.improve-kind.kind-error,
+.improve-kind.kind-unhandledrejection,
+.improve-kind.kind-console_error {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.improve-diagmsg {
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+}
+.improve-error {
+  margin: 6px 0 0;
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+
+.improvement-table .selected {
+  background: var(--biz-soft);
+}
+.improvement-detail {
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+/* 改行と空白を保つ。要望本文は貼り付けたログを含むことが多い */
+.improvement-body {
+  white-space: pre-wrap;
+}
+.improvement-diagnostics td {
+  vertical-align: top;
+}
+.improvement-detail-line {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+  word-break: break-all;
+}

@@ -19,12 +19,132 @@
       "source_url": "https://developers.cloudflare.com/workers/wrangler/configuration/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-08-13",
+      "last_updated": "2026-08-28",
       "latest_checked_at": "2026-08-31T01:30:40Z",
       "summary": "Wrangler 設定の d1_databases バインディングは binding / database_name / database_id (必須) と preview_database_id / migrations_dir / migrations_pattern (任意) を持つ。migrations_dir は移行ファイル置き場、migrations_pattern は探索 glob (既定 migrations/*.sql) で、Drizzle のような入れ子レイアウト (migrations/*/migration.sql) に対応する。migrations_pattern を設定する場合は migrations_dir も必須で、pattern は migrations_dir で始まらなければならない。各移行は migrations_dir からの相対パスとして migrations テーブルに記録される。既定のローカル開発モードではファイルは preview/production ではなくローカルストレージへ書かれる。\n【訂正 2026-08-31】以前の summary は「migrations_table で適用記録テーブル名を指定できる」と書いていたが、再取得した本文に migrations_table は 0 回しか出現せず (migrations_dir は 5 回、migrations_pattern は 3 回)、d1_databases の項目として文書化されていない。根拠を持たない記述だったため削除した。ページ側の変更か当初の誤りかは、当時の取得実体が残っていないため判別できない。",
       "evidence_ref": "system-spec/retrieval-evidence/cloudflare-wrangler-d1-config.json",
       "evidence_sha256": "dcda994789242181b403495f4656534811b326afdcc7af2d4e7468b435102a05",
       "retrieval_note": "2026-08-31 に再取得。以前の記録は evidence_ref / evidence_sha256 を持たず、retrieved_at も全件同一時刻だったため、出典が主張どおりの内容かを機械で確かめられなかった。この record の retrieved_at / latest_checked_at はこの再取得の実時刻であり、過去の取得時刻を再現したものではない。last_updated は本文から機械的に再導出できないため以前の値を据え置いている(未検証)。"
+    },
+    {
+      "target_id": "mdn-canvas-toblob",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob",
+      "official_publisher": "Mozilla",
+      "official_host": "developer.mozilla.org",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "HTMLCanvasElement.toBlob() は canvas の内容を Blob として生成し、コールバックへ渡す非同期メソッド。第2引数の type で MIME (既定 image/png)、第3引数 quality で image/jpeg / image/webp のとき 0〜1 の品質を指定する。範囲外・非数値の quality は既定値へ丸められる。本件では既存 packages/web/src/shrink-image.ts が image/jpeg・0.82 で用いている縮小方針を、改善要望のスクリーンショットへそのまま適用する根拠として参照する。",
+      "last_updated": "2026-02-12"
+    },
+    {
+      "target_id": "mdn-screen-capture-api",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/Screen_Capture_API/Using_Screen_Capture",
+      "official_publisher": "Mozilla",
+      "official_host": "developer.mozilla.org",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "Screen Capture API は getDisplayMedia() で画面・ウィンドウ・タブの映像ストリームを取得する。取得には利用者が共有対象を選ぶブラウザ標準のダイアログを必ず経由し、スクリプト側から無操作で開始できない。D5 でこの案を採らなかった根拠であり、改善要望の投稿という日常導線では報告のたびに追加操作が発生する点を確認するために参照する。",
+      "last_updated": "2026-05-21"
+    },
+    {
+      "target_id": "mdn-window-error-event",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/error_event",
+      "official_publisher": "Mozilla",
+      "official_host": "developer.mozilla.org",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "window の error イベントは、未捕捉の実行時例外およびリソース読み込み失敗で発火する。D8 の常時リングバッファが、押下前に発生した未捕捉例外を捕捉できる根拠として参照する。ハンドラが受け取る ErrorEvent の message / filename / lineno / colno / error の各プロパティ定義は本ページではなくリンク先の https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent に記載されており、プロパティ仕様を参照する場合の出典はそちらである。",
+      "last_updated": "2026-08-21"
+    },
+    {
+      "target_id": "mdn-unhandledrejection-event",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/unhandledrejection_event",
+      "official_publisher": "Mozilla",
+      "official_host": "developer.mozilla.org",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "unhandledrejection イベントは、Promise が reject されたまま拒否ハンドラが付かなかったときに発火し、reason に拒否理由を持つ。同期例外を拾う error イベントだけでは非同期の失敗が漏れるため、D8 のリングバッファは両方を購読する必要がある根拠として参照する。",
+      "last_updated": "2026-07-28"
+    },
+    {
+      "target_id": "cloudflare-d1-limits",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "D1 の上限表。Time Travel の復元可能期間は 30 days (Workers Paid) / 7 days (Free) と明記され、D7 の廃止案が無料プランでは7日しか遡れないことの一次根拠になる。最大データベースサイズは 10 GB (Paid) / 500 MB (Free)、1行・BLOB の最大は 2,000,000 bytes (2 MB)、SQL 文の最大長は 100,000 bytes、1クエリのバインドパラメータ上限は 100、SQL クエリの最大実行時間は 30 秒。診断情報 JSON を D1 列へ保存する設計では 2 MB 行上限が実効的な天井となるため、O12 の総バイト上限をこれより十分小さく取る根拠として参照する。",
+      "last_updated": "2026-04-21"
+    },
+    {
+      "target_id": "cloudflare-d1-time-travel",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/d1/reference/time-travel/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "Time Travel は D1 の標準機能で、過去の任意時点 (bookmark またはタイムスタンプ指定) へデータベースを復元できる。復元可能範囲は Workers Paid プランで過去30日、Workers Free プランでは過去7日。手動スナップショットの作成は不要で、既定で有効。D7 で「バックアップを廃止して Time Travel に委ねる」案を退けた根拠であり、無料枠運用では実効7日となり現行の R2 30世代を下回ることを確認するために参照する。",
+      "last_updated": "2026-04-21"
+    },
+    {
+      "target_id": "cloudflare-d1-import-export",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/d1/best-practices/import-export-data/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "D1 のデータ入出力は wrangler d1 execute --file による SQL 取り込みと wrangler d1 export によるダンプで行う。D2 (適用前バックアップ) および D7 (バックアップ形式) で、可搬な形式による退避経路が D1 固有機能に依らず維持できることの根拠として参照する。なお wrangler d1 execute のファイル取り込み上限 5 GB は本ページではなく cloudflare-d1-limits (https://developers.cloudflare.com/d1/platform/limits/) の \"Maximum file import (d1 execute) size\" に記載されており、その数値を参照する場合の出典はそちらである。",
+      "last_updated": "2026-04-21"
+    },
+    {
+      "target_id": "cloudflare-r2-pricing",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/r2/pricing/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "R2 の課金は保存容量と2種のオペレーション (状態を変える Class A、読み取りの Class B) に基づき、Egress は無料。無料枠は Standard storage 10 GB-month / 月、Class A 1,000,000 requests / 月、Class B 10,000,000 requests / 月 (Infrequent Access には無料枠が適用されない)。超過分は Standard で $0.015/GB-month、Class A $4.50/百万、Class B $0.36/百万。D6 の容量試算 (月50件×約230KB≒12MB/月 → 無料枠の0.2%未満) と D7 の「3案とも実費0円」という比較の一次根拠。",
+      "last_updated": "2026-08-07"
+    },
+    {
+      "target_id": "cloudflare-r2-object-lifecycles",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/r2/buckets/object-lifecycles/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "R2 のオブジェクトライフサイクルは、バケット単位のルールで一定日数経過後の削除や Infrequent Access への移行を宣言できる。削除は x-amz-expiration の時点から概ね24時間以内に反映され、即時ではない。改善要望の添付削除を R2 ライフサイクルだけに委ねると「対応完了から30日」という status 依存の条件を表現できず削除時点も保証されないため、D6/qa-018 で削除を既存 scheduledMaintenance のジョブとして実装する根拠として参照する。",
+      "last_updated": "2026-04-21"
+    },
+    {
+      "target_id": "cloudflare-workers-cron-triggers",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/workers/configuration/cron-triggers/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "Cron Triggers は cron 式を Worker の scheduled() ハンドラへ対応づけ、定期実行を行う。実行時刻は UTC 基準。設定ファイルの triggers.crons に複数式を列挙でき、ハンドラ側は controller.cron で発火した式を判別できる。本プロジェクトの wrangler.jsonc は \"0 18 * * *\" (JST 03:00) 単一で scheduledMaintenance を呼んでおり、D7/qa-018 で新規 Cron を増やさず既存ジョブへ相乗りさせる方針の根拠として参照する。",
+      "last_updated": "2026-06-20"
+    },
+    {
+      "target_id": "cloudflare-workers-web-crypto",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://developers.cloudflare.com/workers/runtime-apis/web-crypto/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "Workers の Web Crypto は SubtleCrypto を crypto.subtle として提供し、crypto.subtle.digest({name:\"SHA-256\"}, data) でハッシュを計算できる。大きなデータ向けに crypto.DigestStream があり、非標準拡張として timingSafeEqual(a, b) がタイミング攻撃に耐える比較を提供する。D9 の使い捨て Bearer トークンをハッシュのみで保存し、照合を定数時間で行う実装の根拠として参照する (既存 packages/api/src/auth.ts の timingSafeEq も同じ方針)。",
+      "last_updated": "2026-04-23"
+    },
+    {
+      "target_id": "html2canvas",
+      "retrieved_at": "2026-08-30T00:00:00Z",
+      "source_url": "https://github.com/niklasvh/html2canvas",
+      "official_publisher": "niklasvh (html2canvas project)",
+      "official_host": "github.com",
+      "latest_checked_at": "2026-08-30T00:00:00Z",
+      "summary": "html2canvas は DOM を読み取り canvas へ描画してスクリーンショット相当の画像を得るクライアント側ライブラリ。外部サーバーへ画面内容を送らずブラウザ内で完結するため、制約「スクリーンショット撮影はブラウザ内で完結させ、外部のレンダリングサービスへ画面内容を送出しない」を満たす。npm の最新公開版は 1.4.1 (2022-01-22 公開) で、以降の公開リリースがない点は採用時の既知リスクとして D5 の caveat に含める。描画は実 DOM の読み取りに基づくため、モーダルを開く前に撮影を完了させれば写り込みが構造的に起こらない。",
+      "version": "1.4.1"
     },
     {
       "target_id": "apple-human-interface-guidelines-accessibility",

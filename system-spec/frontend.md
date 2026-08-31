@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G5, G6, G8, G7]
+serves_goals: [G3, G5, G6, G7, G8, G9, G10, G11]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G5, G6, G8, G7]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-mobile-frontend-001 |
+| Web (web) | 確定 | 確定質疑: qa-020 / 確定質疑: qa-mobile-frontend-001 |
 | モバイル (mobile) | 確定 | 確定質疑: qa-mobile-frontend-001 |
 | タブレット (tablet) | 確定 | 確定質疑: qa-mobile-frontend-001 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: 承認: appr-mobile-platform-001 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: 承認: appr-mobile-platform-001 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: 承認: appr-mobile-platform-001 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 / 理由: 承認: appr-mobile-platform-001 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 / 理由: 承認: appr-mobile-platform-001 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: デスクトップ配布物を持たずブラウザのみで提供するため対象外 / 理由: 承認: appr-mobile-platform-001 |
 
 ## 適用された設計知識
 
@@ -114,6 +114,56 @@ serves_goals: [G5, G6, G8, G7]
 
 ---
 
+### モーダル表示前スクリーンショットの順序保証と診断リングバッファ
+
+- project candidate: `frontend-capture-before-modal-open` (`deepened`)
+- 解決対象: 確定セル frontend×web (qa-020) の要件『撮影された画像に、その押下で開くモーダルの DOM が含まれない』『改善要望ボタンを押す前に発生した失敗が診断情報に含まれる』を、除外規則やモーダル open 時収集といった網羅性依存の方式では満たせない。
+
+#### 目的
+
+汎用カードが述べる『非同期処理の順序は制御構造で固定する』という原則を、本仕様の確定要件 D5 (opt-dom-capture-before-open) と D8 (opt-always-on-ring-buffer) へ具体的に適用する。
+
+#### 解決する問題
+
+- 撮影対象からモーダルを除外リストで外す方式は、将来モーダル外へ描画されるトースト・ポータルを取りこぼす (除外規則の網羅性に依存する)
+- モーダル open 時に診断収集を開始する方式は、押下より前に起きた未捕捉例外を1件も含められない
+- 上限を件数だけで課すと1件が巨大なケースが、バイト数だけで課すと小さい大量のケースが漏れる
+- SVG `<foreignObject>` を `<img>` 経由でラスタライズすると描画は t=0 に固定される。`animation: page-in ... both` のような開始状態 opacity:0 の規則が本文へ効いていると、本文が透明のまま焼き付く (利用者報告 2026-08-30 の『サイドバーとヘッダーしか写らない』の原因)
+
+#### 適用条件
+
+- acceptance『改善要望ボタン押下で撮影された画像に、その押下で開くモーダルの DOM が含まれない』: capture() の Promise を await し終えてから open=true にする。この1行の順序が受入条件そのものである
+- acceptance『撮影中はボタンが押下不可で、待機していることが画面に出る』: await 区間は必ず可視化する。無反応に見える待機は二重押下を誘発する
+- acceptance『押す前に発生した未捕捉例外・unhandledrejection・console error/warn・失敗した通信が診断情報に含まれる』: window error / unhandledrejection の購読をアプリ起動時に張る
+- acceptance『件数上限または総バイト上限を超えたとき、切り詰められたうえで省略件数が保存され画面にも出る』: リングバッファの押し出し時に省略件数を加算する
+- acceptance『撮影された画像に、そのとき見えていた本文が写る』: 全アニメーション/トランジションを止める規則を、複製したページ CSS より**後ろ**へ置く。順序が逆だと詳細度に関わらず負ける。この順序自体をテストで固定する
+- acceptance『起動導線は撮影対象に写らない』: 除外は `data-capture-hide` を付けた要素だけに限定する。モーダルの除外は依然として順序 (開く前に撮る) で保証し、リストへ足さない
+
+#### 非適用条件
+
+- Screen Capture API 経由の画面共有ダイアログを挟む方式 (scope_out)。報告のたびに利用者操作が増え、日常導線として成立しない
+- 外部エラートラッキング SaaS への常時送出 (scope_out)。記帳内容に由来しうる情報を第三者へ渡し G11 と衝突する
+- web 以外のプラットフォーム。mobile/tablet/desktop は appr-002 で全カテゴリ対象外
+
+#### トレードオフ
+
+- await を挟むぶんモーダルの表示が遅れる。この遅延は待機表示で受け止め、撮影失敗時は待たせ続けずモーダルを開く
+- 常時収集はメモリを占有する。件数と総バイトの二重上限がその代償を有界にする
+
+#### 失敗モード
+
+- 撮影失敗を投稿の失敗として扱ってしまい、報告そのものが届かなくなる (acceptance で明示的に禁止)
+- 省略件数を記録せず黙って捨て、受け取った側が『これで全部』と誤解する
+- await を忘れた変更が入っても既存テストが緑のままになる (順序を固定するテストが必要)
+- 撮影結果を『画像が生成されたか』だけで判定し、中身が透明であることを検知できない (CSS の適用順を固定するテストが必要)
+- `data-capture-hide` を除外の一般手段として使い始め、モーダル除外までリスト依存へ退行する
+
+#### goalへの寄与
+
+G9 (画面から離れず、見えていた画面と起きていた不具合ごと届ける) の中核。写り込みのない画像と押下前の失敗記録の両方が揃って初めて G10 (エージェントがそのまま着手できる証跡) が成立する。二重上限は G11 (最小範囲) を構造的に支える。
+
+---
+
 ### responsive financial chart container
 
 - project candidate: `responsive-financial-chart-container` (`deepened`)
@@ -158,4 +208,9 @@ Chart.jsのcanvasを全対象viewportで可視寸法に保ち、同一の既存A
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
+| mdn-canvas-toblob | 2026-02-12 | Mozilla (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |
+| mdn-screen-capture-api | 2026-05-21 | Mozilla (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Screen_Capture_API/Using_Screen_Capture | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |
+| mdn-window-error-event | 2026-08-21 | Mozilla (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Window/error_event | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |
+| mdn-unhandledrejection-event | 2026-07-28 | Mozilla (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Window/unhandledrejection_event | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |
+| html2canvas | 1.4.1 | niklasvh (html2canvas project) (github.com) | https://github.com/niklasvh/html2canvas | 2026-08-30T00:00:00Z | 2026-08-30T00:00:00Z |
 | chartjs-responsive-charts | 4.x latest documentation | Chart.js Project (www.chartjs.org) | https://www.chartjs.org/docs/latest/configuration/responsive.html | 2026-08-30T08:58:25Z | 2026-08-30T08:58:25Z |

@@ -27,6 +27,7 @@ export * from './exports.js';
 export * from './tax-return.js';
 export * from './receipts.js';
 export * from './receipt-source-profile.js';
+export * from './improvement.js';
 export * from './zip.js';
 export * from './report-css.js';
 export * from './report-html.js';

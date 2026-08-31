@@ -1,0 +1,1194 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-improvement-request/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "parent_feature": "feat-improvement-request",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-IMPREQ-P01": "beads",
+    "SYS-IMPREQ-P02": "beads",
+    "SYS-IMPREQ-P03": "beads",
+    "SYS-IMPREQ-P04": "beads",
+    "SYS-IMPREQ-P05": "beads",
+    "SYS-IMPREQ-P06": "beads",
+    "SYS-IMPREQ-P07": "beads",
+    "SYS-IMPREQ-P08": "beads",
+    "SYS-IMPREQ-P09": "beads",
+    "SYS-IMPREQ-P10": "beads",
+    "SYS-IMPREQ-P11": "beads",
+    "SYS-IMPREQ-P12": "beads",
+    "SYS-IMPREQ-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-IMPREQ-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "改善要望の実行要件ベースライン確定",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-01-requirements-baseline.json"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P01.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "4層の境界とデータ契約の設計",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "backend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P01"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-02-boundary-design.json"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P02.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "境界設計の独立レビュー",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P02"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-03-design-review.json"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P03.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入条件を検証へ写す試験設計",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P03"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-04-test-design.json"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P04.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "撮影・診断・受け渡し・失効の実装",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P04"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        "migrations/0029_improvement_requests.sql",
+        "packages/api/src/routes/improvement.ts",
+        "packages/api/src/improvement/contract.ts",
+        "packages/api/src/improvement/redact.ts",
+        "packages/api/src/index.ts",
+        "packages/api/src/store.ts",
+        "packages/core/src/improvement.ts",
+        "packages/core/src/index.ts",
+        "packages/web/src/components/ImprovementRequestButton.tsx",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/diagnostics-buffer.ts",
+        "packages/web/src/capture-screen.ts",
+        "packages/web/src/pages/Improvement.tsx",
+        "packages/web/src/App.tsx",
+        "packages/web/src/api.ts",
+        "packages/web/src/styles.css"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P05.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "検証の実行と失敗の解消",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P05"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        "packages/web/src/improvement-capture.dom.test.tsx",
+        "packages/web/src/diagnostics-buffer.test.ts",
+        "packages/api/src/improvement-lifecycle.test.ts",
+        "packages/api/src/improvement-redaction.test.ts",
+        "packages/api/src/improvement-backup-exclusion.test.ts"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P06.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入条件15件の判定",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P06"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-07-acceptance.json"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P07.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "既存資産への相乗りと重複の整理",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "backend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P07"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        "packages/api/src/attachment-archive.ts",
+        "packages/api/src/index.ts",
+        "packages/api/src/improvement/contract.ts",
+        "packages/core/src/improvement.ts"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P08.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "秘匿値と保持期間の品質保証",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "security",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P08"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        "packages/api/src/improvement-redaction.test.ts",
+        "packages/api/src/improvement-retention.test.ts",
+        "packages/api/src/improvement-backup-exclusion.test.ts"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P09.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "変更全体の最終レビュー",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P09"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-10-final-review.json"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P10.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "証跡の収集と保全",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P10"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-11-evidence-index.json"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P11.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "利用手順と運用手順の記載",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P11"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        "docs/improvement-request.md",
+        "docs/ci-cd-operations.md"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P12.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPREQ-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "配信条件の確定と保留判断",
+      "project_id": "feature-package-feat-improvement-request",
+      "domain": "operations",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "improvement-request",
+        "screenshot",
+        "diagnostics",
+        "agent-handoff",
+        "retention"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-08-30T12:47:55Z",
+      "updated_at": "2026-08-30T12:47:55Z",
+      "depends_on": [
+        "SYS-IMPREQ-P12"
+      ],
+      "related_nodes": [
+        "arch-improvement-request-pipeline"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-improvement-request/evidence/phase-13-release-gate.json"
+      ],
+      "parent_feature": "feat-improvement-request",
+      "feature_package_id": "feature-package/feat-improvement-request",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-improvement-request/SYS-IMPREQ-P13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-request/plan-findings.json",
+        "evaluated_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-request/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "e5aaef0b452885b06b9210c427c16a97c47e85a0a1c9716a17e183e53f08cf07",
+        "imported_at": "2026-08-30T12:47:55Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-request/SYS-IMPREQ-P13.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-08-30T12:30:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-improvement-request",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "handoff_target": "task-graph",
+  "selected_nodes": [
+    "arch-improvement-request-pipeline",
+    "feat-improvement-request",
+    "SYS-IMPREQ-P01",
+    "SYS-IMPREQ-P02",
+    "SYS-IMPREQ-P03",
+    "SYS-IMPREQ-P04",
+    "SYS-IMPREQ-P05",
+    "SYS-IMPREQ-P06",
+    "SYS-IMPREQ-P07",
+    "SYS-IMPREQ-P08",
+    "SYS-IMPREQ-P09",
+    "SYS-IMPREQ-P10",
+    "SYS-IMPREQ-P11",
+    "SYS-IMPREQ-P12",
+    "SYS-IMPREQ-P13"
+  ],
+  "artifact_kinds": [
+    "architecture",
+    "feature",
+    "task"
+  ],
+  "closure_status": "complete",
+  "missing_nodes": [],
+  "snapshot_digest": "sha256:763ce8a7e2860327494190167401712679a1f2122bb842f57e380f3b0cfa5204"
+}

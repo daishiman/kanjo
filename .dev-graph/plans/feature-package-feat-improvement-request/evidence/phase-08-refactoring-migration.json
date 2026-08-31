@@ -1,0 +1,33 @@
+{
+  "phase_ref": "P08",
+  "graph_node_id": "SYS-IMPREQ-P08",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:56:12Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "削除処理を既存 scheduledMaintenance へ相乗りさせ、トークンの発行/ハッシュ化を core へ正本化した。",
+  "ride_along": {
+    "host": "packages/api/src/index.ts scheduledMaintenance",
+    "mechanism": "Promise.allSettled([runAttachmentMaintenance, nightlyBackup, cleanupStalePasswordLoginRateLimits, runImprovementRetention])",
+    "new_cron_added": false,
+    "crons_after": 1,
+    "failure_isolation": "改善要望側の失敗は scheduledMaintenance の throw に含めない。失敗行は purged_at が NULL のまま翌日再度拾われる",
+    "log_line": "{\"level\":\"info\",\"job\":\"improvement_retention\",\"selected\":N,\"purged\":N,\"failed\":N,\"orphans\":N}"
+  },
+  "deduplication": {
+    "moved_to": "packages/core/src/improvement.ts",
+    "symbols": [
+      "toBase64Url",
+      "sha256Hex",
+      "mintAgentToken",
+      "IMPROVEMENT_TOKEN_PREFIX"
+    ],
+    "consumer": "packages/api/src/routes/improvement.ts（ローカル定義の TOKEN_PREFIX / b64url / sha256Hex を削除）",
+    "rationale": "32バイト乱数 → base64url → 原文は1回だけ返し保存は SHA-256 の16進のみ、という規則の正本を1つにする。2箇所に書くと片方だけ乱数長を縮めても両方「動く」ため欠陥が沈黙する",
+    "not_migrated": {
+      "path": "packages/api/src/routes/ai.ts",
+      "reason": "どの phase の書込範囲にも含まれないため意図的に据え置き。低重要度 finding L-1 として記録"
+    }
+  },
+  "result": "PASS"
+}

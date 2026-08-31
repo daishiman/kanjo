@@ -83,13 +83,17 @@ describe('routeのiconとlabel', () => {
     const navigation = screen.getByRole('navigation', { name: 'メインナビゲーション' });
     const routeLinks = within(navigation).getAllByRole('link');
 
-    expect(routeLinks).toHaveLength(APP_ROUTES.length);
-    for (const [index, link] of routeLinks.entries()) {
+    // 業務ルートが先頭に並び、その後ろに「その他」として改善要望が1件だけ続く
+    expect(routeLinks).toHaveLength(APP_ROUTES.length + 1);
+    for (const [index, link] of routeLinks.slice(0, APP_ROUTES.length).entries()) {
       expect(link.textContent).toContain(APP_ROUTES[index]?.label);
       const icon = link.querySelector('svg.route-icon');
       expect(icon?.getAttribute('aria-hidden')).toBe('true');
       expect(icon?.getAttribute('focusable')).toBe('false');
     }
+    const extra = routeLinks[APP_ROUTES.length];
+    expect(extra.textContent).toContain('改善要望');
+    expect(extra.querySelector('svg.route-icon')?.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('bottom tabは同じrouteのsidebarと同一のiconを描き、labelはmobileLabelになる', () => {

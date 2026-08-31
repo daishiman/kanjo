@@ -1,0 +1,160 @@
+{
+  "phase_ref": "P05",
+  "graph_node_id": "SYS-IMPREQ-P05",
+  "parent_feature": "feat-improvement-request",
+  "feature_package_id": "feature-package/feat-improvement-request",
+  "recorded_at": "2026-08-30T14:56:12Z",
+  "base_commit": "0bb4654304919be16045f7c4a9cc6c8a1b9844f9",
+  "summary": "4層すべてを実装した。新規11ファイル・1マイグレーション、公開エンドポイント8本。利用者報告を受けた是正(撮影の焼き付き・書き込み・送信前の可視化・起動ボタンの位置)を反映済み。",
+  "layers": [
+    {
+      "layer": "撮影層",
+      "files": [
+        {
+          "path": "packages/web/src/capture-screen.ts",
+          "lines": 177,
+          "role": "DOM を画像化する単一入口。失敗は例外にせず null を返し、投稿経路を止めない。SVG は <img> 経由で t=0 に静止するため、ページ側 CSS の後ろで全アニメーションを無効化してから写す"
+        },
+        {
+          "path": "packages/web/src/components/ImprovementRequestButton.tsx",
+          "lines": 379,
+          "role": "撮影 → 解決後にモーダルを条件付きマウント。撮影中はボタンを disabled にして待機を可視化。起動ボタンは画面右下に固定し、data-capture-hide で自分自身だけ撮影対象から外す。モーダルには『一緒に送られる情報』(環境・気になっている点・全記録)を出す"
+        },
+        {
+          "path": "packages/web/src/annotate-image.ts",
+          "lines": 125,
+          "role": "書き込みの座標を比率(0..1)で保持し、送信直前に1回だけ焼き込む。プレビューと焼き込みは同じ drawAnnotations を通す"
+        },
+        {
+          "path": "packages/web/src/components/ScreenshotAnnotator.tsx",
+          "lines": 110,
+          "role": "画像へ重ねた canvas に赤枠を描く。Pointer Events でマウス・タッチ・ペンを1経路で扱う"
+        }
+      ]
+    },
+    {
+      "layer": "診断層",
+      "files": [
+        {
+          "path": "packages/web/src/diagnostics-buffer.ts",
+          "lines": 184,
+          "role": "起動時から常時記録するリングバッファ。4種の事象(error/unhandledrejection/console.error/fetch失敗)を捕捉"
+        },
+        {
+          "path": "packages/core/src/improvement.ts",
+          "lines": 366,
+          "role": "MASK_RULES・上限定数・trimDiagnostics・improvementPurgeDueAt・highlightDiagnostics の正本"
+        }
+      ]
+    },
+    {
+      "layer": "受け渡し層",
+      "files": [
+        {
+          "path": "packages/api/src/improvement/contract.ts",
+          "lines": 256,
+          "role": "テーブル定義・zod スキーマ・improvementView・buildImprovementPrompt(表示環境と『先に見るべき記録』の行を含む)"
+        },
+        {
+          "path": "packages/api/src/improvement/redact.ts",
+          "lines": 79,
+          "role": "サーバ側の再マスク(2回目)"
+        },
+        {
+          "path": "packages/api/src/routes/improvement.ts",
+          "lines": 539,
+          "role": "Cookie 経路と Bearer 経路の2ルーター、および runImprovementRetention"
+        },
+        {
+          "path": "packages/web/src/pages/Improvement.tsx",
+          "lines": 270,
+          "role": "一覧・詳細・指示文の再発行・対応状態の変更"
+        }
+      ]
+    },
+    {
+      "layer": "失効層",
+      "files": [
+        {
+          "path": "packages/api/src/index.ts",
+          "lines": null,
+          "role": "scheduledMaintenance の Promise.allSettled へ runImprovementRetention を追加"
+        }
+      ]
+    }
+  ],
+  "migration": {
+    "file": "migrations/0029_improvement_requests.sql",
+    "columns": 19,
+    "plaintext_token_columns": 0
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/improvements",
+      "auth": "cookie"
+    },
+    {
+      "method": "GET",
+      "path": "/api/improvements",
+      "auth": "cookie"
+    },
+    {
+      "method": "GET",
+      "path": "/api/improvements/:id",
+      "auth": "cookie"
+    },
+    {
+      "method": "GET",
+      "path": "/api/improvements/:id/screenshot",
+      "auth": "cookie"
+    },
+    {
+      "method": "POST",
+      "path": "/api/improvements/:id/prompt",
+      "auth": "cookie",
+      "note": "指示文の再発行。旧トークンは同時に失効"
+    },
+    {
+      "method": "POST",
+      "path": "/api/improvements/:id/copied",
+      "auth": "cookie"
+    },
+    {
+      "method": "POST",
+      "path": "/api/improvements/:id/status",
+      "auth": "cookie"
+    },
+    {
+      "method": "GET",
+      "path": "/api/improvements/:id/agent/data",
+      "auth": "bearer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/improvements/:id/agent/screenshot",
+      "auth": "bearer"
+    }
+  ],
+  "mount_order": "improvementAgentRoute(Bearer) を authGuard() より前に登録する。AI分析の aiAgentRoute と同じ順序",
+  "result": "PASS",
+  "corrections": [
+    {
+      "report": "スクリーンショットにサイドバーとヘッダーしか写らない",
+      "cause": "<img> 経由の SVG は t=0 で静止するため、.main の animation: page-in ... both が from { opacity: 0 } のまま焼き付いていた",
+      "fix": "capture-screen.ts で、ページ側 CSS の後ろに animation/transition を無効化する規則を差し込む。順序も回帰テストで固定"
+    },
+    {
+      "report": "ページ情報・DevTools の記録・問題点が反映されていない",
+      "fix": "モーダルに『一緒に送られる情報』(画面/表示サイズ/取得時刻/ブラウザ/言語)、『気になっている点』(highlightDiagnostics 上位3件)、全記録の折りたたみを追加。指示文にも同じ環境行と『先に見るべき記録』を載せる"
+    },
+    {
+      "report": "スクリーンショットに書き込みができない",
+      "fix": "annotate-image.ts と ScreenshotAnnotator.tsx を追加。ドラッグで赤枠、1つ戻す/全部消す、送信時に焼き込み"
+    },
+    {
+      "report": "改善要望のボタンは右下にあるほうが分かりやすい",
+      "fix": "Layout.tsx のヘッダーから外し、position: fixed の右下ボタンへ。スマホでは下タブバーの上に逃がす"
+    }
+  ]
+}
