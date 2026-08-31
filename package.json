@@ -19,7 +19,7 @@
     "preview:smoke": "node --test scripts/preview-smoke.test.mjs",
     "test": "pnpm -r --workspace-concurrency=1 test && pnpm run runbooks:test && pnpm run github-scripts:test && pnpm run skills:test",
     "typecheck": "pnpm -r typecheck",
-    "lint": "biome check . && node scripts/sync-project-skills.mjs --check && node scripts/check-glossary.mjs && node scripts/check-report-css.mjs",
+    "lint": "biome check . && node scripts/sync-project-skills.mjs --check && node scripts/check-glossary.mjs && node scripts/check-report-css.mjs && node scripts/check-graph-lineage.mjs",
     "lint:fix": "biome check --write .",
     "deploy": "pnpm --filter @kanjo/web build && pnpm --filter @kanjo/api run deploy",
     "db:migrate:local": "pnpm --filter @kanjo/api exec wrangler d1 migrations apply kanjo-db --local",
