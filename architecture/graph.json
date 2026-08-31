@@ -18,7 +18,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-08-27-d1-schema-recovery/database.md",
         "source_version": "0.1.11",
         "source_digest": "75aad1e24be701c779a9a444cdb747e56bdcdfbc148ca2af819ca480976d68f6",
         "imported_at": "2026-08-27T05:10:00Z"
@@ -41,7 +41,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-08-27-d1-schema-recovery/infrastructure.md",
         "source_version": "0.1.11",
         "source_digest": "0cb82aac382b24a14d69e150e9866d1cd7c58e83039bb4e39db187f66b06515a",
         "imported_at": "2026-08-27T05:10:00Z"
@@ -49,6 +49,98 @@
       "referenced_by": [
         "feat-deploy-migration-gate"
       ]
+    },
+    {
+      "id": "arch-import-deletion-undo-boundary",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend",
+        "data",
+        "infrastructure"
+      ],
+      "title": "取込データ削除・上書きと取り消しの境界",
+      "file_path": "architecture/arch-import-deletion-undo-boundary.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json",
+        "source_version": "1.0",
+        "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027",
+        "imported_at": "2026-08-31T00:00:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-mobile-financial-experience",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "モバイル財務情報の体験アーキテクチャ",
+      "file_path": "architecture/arch-mobile-financial-experience.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.11",
+        "source_digest": "fbd336e38b9ea195c110b680c41d9bef18d7c98353787fa3d1ef784de52ca5d1",
+        "imported_at": "2026-08-30T09:25:39Z"
+      },
+      "referenced_by": [
+        "feat-mobile-financial-visualization"
+      ]
+    },
+    {
+      "id": "arch-mobile-financial-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "モバイル財務chartのフロントエンドアーキテクチャ",
+      "file_path": "architecture/arch-mobile-financial-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.11",
+        "source_digest": "7bb30af6d3a0c9aa4d2cb7a497f47cda3700b4294de3f9a49ff2f5747b066562",
+        "imported_at": "2026-08-30T09:25:39Z"
+      },
+      "referenced_by": [
+        "feat-mobile-financial-visualization"
+      ]
+    },
+    {
+      "id": "arch-override-reapply-three-way-merge",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend",
+        "data",
+        "frontend"
+      ],
+      "title": "手当ての継続再適用と3点比較の境界",
+      "file_path": "architecture/arch-override-reapply-three-way-merge.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json",
+        "source_version": "1.0",
+        "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027",
+        "imported_at": "2026-08-31T00:00:00Z"
+      },
+      "referenced_by": []
     },
     {
       "id": "arch-schema-guard-error-contract",
@@ -66,7 +158,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-08-27-d1-schema-recovery/backend.md",
         "source_version": "0.1.11",
         "source_digest": "9e686b473abcc5d659c6795c88470ddfa31ef27931a3d829555dff2d0c6da8a0",
         "imported_at": "2026-08-27T05:10:00Z"
@@ -94,7 +186,7 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": null,
+        "source_digest": "fb17094f16ec220a70934207ffb125ffe983fe06125d41d841c1126395b7e913",
         "imported_at": "2026-08-29T00:00:00Z"
       },
       "referenced_by": [
@@ -119,11 +211,57 @@
         "source_plugin": null,
         "source_path": "specs/transaction-splits.md",
         "source_version": "1.1",
-        "source_digest": null,
+        "source_digest": "99a3fb633780af09065b263bff8b2858f85bf4f4bec63634c9db441bbde530a2",
         "imported_at": "2026-08-30T00:00:00Z"
       },
       "referenced_by": [
         "feat-transaction-split-readability"
+      ]
+    },
+    {
+      "id": "arch-ui-navigation-experience",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "ナビゲーションと情報階層の体験設計",
+      "file_path": "architecture/arch-ui-navigation-experience.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "specs/ui-navigation-cognitive-load.md",
+        "source_version": "1.0",
+        "source_digest": "e51d411c296dc69b75979cd3e5d951fe7a0d4dcccd65ffe131140837c5bff5c0",
+        "imported_at": "2026-08-29T15:30:44Z"
+      },
+      "referenced_by": [
+        "feat-ui-navigation-cognitive-load"
+      ]
+    },
+    {
+      "id": "arch-ui-navigation-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "共通UI実装境界と回帰防止",
+      "file_path": "architecture/arch-ui-navigation-frontend.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "specs/ui-navigation-cognitive-load.md",
+        "source_version": "1.0",
+        "source_digest": "e51d411c296dc69b75979cd3e5d951fe7a0d4dcccd65ffe131140837c5bff5c0",
+        "imported_at": "2026-08-29T15:30:44Z"
+      },
+      "referenced_by": [
+        "feat-ui-navigation-cognitive-load"
       ]
     }
   ]
