@@ -233,8 +233,10 @@ describe('データを入れ替える', () => {
     expect(within(dialog).getByText('freee仕訳')).toBeTruthy();
     expect(within(dialog).getByText('MF資産残高')).toBeTruthy();
     expect(within(dialog).getByText(/削除後30日間は取り消せます/)).toBeTruthy();
-    const cancel = within(dialog).getByRole('button', { name: 'やめる' });
-    await waitFor(() => expect(document.activeElement).toBe(cancel));
+    const title = within(dialog).getByRole('heading', {
+      name: '取り込んだデータを入れ替えますか？',
+    });
+    await waitFor(() => expect(document.activeElement).toBe(title));
     expect(calls).toContain('POST /api/data/deletions/preflight');
     expect(calls).not.toContain('POST /api/data/deletions');
 

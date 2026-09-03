@@ -252,6 +252,7 @@ export function ImportReplacementButton({
   const [confirmation, setConfirmation] = useState('');
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
+  const dialogTitleRef = useRef<HTMLHeadingElement | null>(null);
   const triggerButtonRef = useRef<HTMLButtonElement | null>(null);
   const dialogTitleId = useId();
 
@@ -262,10 +263,13 @@ export function ImportReplacementButton({
     triggerButtonRef.current?.focus();
   });
 
-  const focusStage = !open ? 'closed' : flow.preflight ? 'ready' : 'checking';
   useEffect(() => {
-    if (focusStage !== 'closed') cancelButtonRef.current?.focus();
-  }, [focusStage]);
+    if (!open) return;
+    // 下端のボタンへ初期フォーカスすると、短い画面ではdialogが自動スクロールして
+    // 「何をする確認か」が隠れる。見出しを起点にし、文脈を上から読める状態を保つ。
+    dialogTitleRef.current?.focus({ preventScroll: true });
+    if (dialogRef.current) dialogRef.current.scrollTop = 0;
+  }, [open]);
 
   const openDialog = (node: HTMLDialogElement | null) => {
     dialogRef.current = node;
@@ -314,7 +318,9 @@ export function ImportReplacementButton({
           }}
         >
           <div className="import-replacement-confirmation">
-            <h3 id={dialogTitleId}>取り込んだデータを入れ替えますか？</h3>
+            <h3 ref={dialogTitleRef} id={dialogTitleId} tabIndex={-1}>
+              取り込んだデータを入れ替えますか？
+            </h3>
             <p>現在の取込データをいったん全て削除し、その後に新しいファイルを選びます。</p>
             <p className="import-safe-note">
               freee・マネーフォワード側の元データ、手入力した現金・負債、設定は消えません。
