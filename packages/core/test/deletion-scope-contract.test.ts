@@ -209,6 +209,20 @@ describe('確認指紋', () => {
     });
     expect(after).not.toBe(before);
   });
+
+  it('全件初期化で退避するbaseline行が変われば指紋が変わる', () => {
+    const targets = deletionScope(scope({ granularity: 'all' }));
+    const before = deletionFingerprint(targets, manual, {
+      fullResetRows: [{ table: 'restored_monthly_agg', rowId: '["2026-06","biz"]', month: '2026-06' }],
+    });
+    const after = deletionFingerprint(targets, manual, {
+      fullResetRows: [
+        { table: 'restored_monthly_agg', rowId: '["2026-06","biz"]', month: '2026-06' },
+        { table: 'restored_monthly_agg', rowId: '["2026-07","biz"]', month: '2026-07' },
+      ],
+    });
+    expect(after).not.toBe(before);
+  });
 });
 
 describe('preflight のまとめ', () => {

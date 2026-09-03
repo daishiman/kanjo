@@ -8,13 +8,20 @@ import { type ReactNode, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   AUTH_EVENT,
+  type DeletionResult,
   type ImportHistoryRow,
   type ImportUnitResult,
   type SubsCandidate,
   api,
   apiUpload,
 } from '../api.js';
-import { DeletionPanel, ImportDiscardButton, ImportUndoButton } from '../components/ImportDeletion.js';
+import {
+  DeletedNotice,
+  DeletionPanel,
+  ImportDiscardButton,
+  ImportReplacementButton,
+  ImportUndoButton,
+} from '../components/ImportDeletion.js';
 import { type ConflictDecision, DiffPreview } from '../components/ImportDiff.js';
 import { PageHeader, PageState, describeError } from '../components/Page.js';
 import { Term } from '../components/Term.js';
@@ -222,6 +229,7 @@ export function ImportPage() {
   const [decisions, setDecisions] = useState<ConflictDecision[]>([]);
   const [previewFingerprint, setPreviewFingerprint] = useState<string | null>(null);
   const [applied, setApplied] = useState<{ reset: number; remembered: number } | null>(null);
+  const [replacementResult, setReplacementResult] = useState<DeletionResult | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const history = useQuery({
@@ -256,6 +264,7 @@ export function ImportPage() {
       setForce(false);
       // 差分解決は取込POSTの同じ確定単位で反映済み。後続PUT/PATCHは行わない。
       setApplied(resolution && (resolution.reset || resolution.remembered) ? resolution : null);
+      setReplacementResult(null);
       setDecisions([]);
       setPreviewFingerprint(null);
       void qc.invalidateQueries(); // 全ページへ反映
@@ -338,7 +347,6 @@ export function ImportPage() {
       row.status !== 'processing' &&
       row.status !== 'applying',
   ).length;
-
   return (
     <>
       <PageHeader route="import" />
@@ -349,8 +357,29 @@ export function ImportPage() {
               <span className="import-eyebrow">次に処理するもの</span>
               <h2 id="import-upload-title">新しいファイルを取り込む</h2>
             </div>
-            <span className="import-file-types">CSV・ZIP・Excel・JSON</span>
+            <div className="import-upload-heading-actions">
+              <span className="import-file-types">CSV・ZIP・Excel・JSON</span>
+              <ImportReplacementButton
+                disabled={upload.isPending}
+                onDeleted={(result) => {
+                  setReplacementResult(result);
+                  setResults(null);
+                  void qc.invalidateQueries();
+                }}
+              />
+            </div>
           </div>
+
+          {replacementResult && (
+            <DeletedNotice
+              result={replacementResult}
+              onUndone={() => setReplacementResult(null)}
+              nextAction={{
+                label: '新しいファイルを選ぶ',
+                onClick: () => fileInput.current?.click(),
+              }}
+            />
+          )}
 
           <div
             className={`dropzone import-dropzone${drag ? ' drag' : ''}`}
@@ -643,7 +672,7 @@ export function ImportPage() {
         </section>
 
         {/* 消す入口は履歴の後ろで畳む。取込に来た人の最初の選択肢にしない。 */}
-        <DeletionPanel months={[...new Set(historyRows.flatMap((row) => row.months))]} />
+        <DeletionPanel />
       </div>
     </>
   );

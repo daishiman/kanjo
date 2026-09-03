@@ -5,6 +5,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STABLE_KEY_VERSION, emptyDataset } from '@kanjo/core';
+import { zipSync } from 'fflate';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
@@ -249,6 +250,16 @@ async function importFiles(
     '/api/imports',
     { method: 'POST', headers: { cookie }, body: form },
     { ...auth, DB: database, FILES: bucket },
+  );
+}
+
+async function importBinaryFile(name: string, body: Uint8Array): Promise<Response> {
+  const form = new FormData();
+  form.append('file', new File([body], name, { type: 'application/zip' }));
+  return app.request(
+    '/api/imports',
+    { method: 'POST', headers: { cookie }, body: form },
+    { ...auth, DB: d1, FILES: files },
   );
 }
 
@@ -1401,6 +1412,30 @@ describe('run terminal convergence', () => {
     ).toEqual({
       status: 'failed',
     });
+  });
+
+  it('freee標準ZIPはdealsだけを取り込み、同梱transfersで失敗履歴を作らない', async () => {
+    const encode = (value: string) => new TextEncoder().encode(value);
+    const zip = zipSync({
+      'deals.csv': encode(freeeCsv(777)),
+      'transfers.csv': encode(
+        ['振替日,振替元口座,振替先口座,金額(円)', '2026/07/03,架空口座A,架空口座B,777'].join('\n'),
+      ),
+    });
+
+    const response = await importBinaryFile('freee_journals_20260903.zip', zip);
+    expect(response.status).toBe(200);
+    expect(await resultStatuses(response)).toEqual(['committed']);
+    expect(await d1.prepare('SELECT filename,status FROM imports ORDER BY id').all()).toMatchObject({
+      results: [
+        {
+          filename: 'freee_journals_20260903.zip/deals.csv',
+          status: 'committed',
+        },
+      ],
+    });
+    expect(await d1.prepare('SELECT status FROM import_runs').first()).toEqual({ status: 'committed' });
+    expect(await d1.prepare('SELECT COUNT(*) AS n FROM freee_deals').first()).toEqual({ n: 1 });
   });
 });
 

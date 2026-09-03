@@ -24,6 +24,7 @@ import { useMemo, useState } from 'react';
 import {
   type Cls,
   type ImportDiffConflict,
+  type ImportDiffResponse,
   type ImportDiffResult,
   type ImportVendorCandidate,
   type Owner,
@@ -295,18 +296,30 @@ export function DiffPreview({
   onFingerprintChange: (fingerprint: string | null) => void;
 }) {
   const [diff, setDiff] = useState<ImportDiffResult | null>(null);
+  const [unavailableMessage, setUnavailableMessage] = useState<string | null>(null);
   const check = useMutation({
     mutationFn: async () => {
       const form = new FormData();
       for (const file of files) form.append('file', file);
-      return apiUpload<ImportDiffResult>('/imports/diff', form);
+      return apiUpload<ImportDiffResponse>('/imports/diff', form);
     },
     onSuccess: (result) => {
+      if (result.supported === false) {
+        setDiff(null);
+        setUnavailableMessage(result.message);
+        onDecisionsChange([]);
+        onFingerprintChange(null);
+        return;
+      }
       setDiff(result);
+      setUnavailableMessage(null);
       onDecisionsChange([]);
       onFingerprintChange(result.fingerprint);
     },
-    onError: () => onFingerprintChange(null),
+    onError: () => {
+      setUnavailableMessage(null);
+      onFingerprintChange(null);
+    },
   });
 
   const descriptions = useDescriptions(diff?.months ?? []);
@@ -335,6 +348,11 @@ export function DiffPreview({
         <div className="notice" role="alert">
           差分を確認できませんでした: {describeError(check.error)}
         </div>
+      )}
+      {unavailableMessage && (
+        <output className="notice info" aria-live="polite">
+          {unavailableMessage}
+        </output>
       )}
 
       {diff && (

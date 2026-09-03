@@ -5,7 +5,7 @@
  *
  * 見張っているのは4つ。
  *   1. 1回のクリックでは何も消えない。必ず確認を挟む。
- *   2. 全件は範囲を自分で書かないと確認へ進めない。
+ *   2. 全件はサーバ導出期間と対象を見せ、明示文言を入力するまで実行できない。
  *   3. 確認画面に巻き添えの件数が出る。
  *   4. 消したあと、その場と履歴の両方から取り消せる(期限つき)。
  */
@@ -14,7 +14,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { DeletionOperation, ImportHistoryRow } from '../api.js';
+import type { DeletionOperation, DeletionPreflight, ImportHistoryRow } from '../api.js';
 import { ImportPage } from './Import.js';
 
 const json = (body: unknown, status = 200) =>
@@ -41,6 +41,7 @@ const PREFLIGHT = {
   counts: { mfTx: 12, freeeDeals: 0, balanceEntries: 0, months: 1 },
   collateral: { txEdits: 3, txSplits: 1, attachments: 2, cashEntries: 0 },
   months: ['2026-06'],
+  fullRange: { from: '2026-06', to: '2026-06' },
   fingerprint: 'fp-架空',
   undoable: true,
   undoRetentionDays: 30,
@@ -78,7 +79,15 @@ function renderPage() {
 }
 
 /** 取込履歴・削除の各経路を返す fetch。呼ばれた順に記録する */
-const stubFetch = (options: { operations?: DeletionOperation[] } = {}) => {
+const stubFetch = (
+  options: {
+    operations?: DeletionOperation[];
+    preflight?: DeletionPreflight;
+    imports?: ImportHistoryRow[];
+    historyError?: boolean;
+    deletionResponse?: () => Promise<Response>;
+  } = {},
+) => {
   const calls: string[] = [];
   vi.stubGlobal(
     'fetch',
@@ -87,12 +96,16 @@ const stubFetch = (options: { operations?: DeletionOperation[] } = {}) => {
       const method = init?.method ?? 'GET';
       calls.push(`${method} ${path}`);
       if (path === '/api/data/operations') return json({ operations: options.operations ?? [] });
-      if (path.endsWith('/preflight')) return json(PREFLIGHT);
-      if (path === '/api/data/deletions') return json(DELETED);
+      if (path.endsWith('/preflight')) return json(options.preflight ?? PREFLIGHT);
+      if (path === '/api/data/deletions')
+        return options.deletionResponse ? options.deletionResponse() : json(DELETED);
       if (path.startsWith('/api/data/undo/'))
         return json({ operationId: 'op-undo', restored: {}, months: [] });
       if (/^\/api\/imports\/\d+\/undo$/.test(path)) return json(DELETED);
-      if (path.startsWith('/api/imports')) return json({ imports: [historyRow()] });
+      if (path.startsWith('/api/imports'))
+        return options.historyError
+          ? json({ error: { code: 'history_unavailable', message: '履歴を読み込めません' } }, 500)
+          : json({ imports: options.imports ?? [historyRow()] });
       throw new Error(`unexpected request: ${path}`);
     }),
   );
@@ -102,6 +115,7 @@ const stubFetch = (options: { operations?: DeletionOperation[] } = {}) => {
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 const panel = () =>
@@ -192,46 +206,143 @@ describe('期間で消す', () => {
   });
 });
 
-describe('全件を消す', () => {
-  it('全件を選ぶだけでは進めない。取り込んである範囲を自分で書かせる', async () => {
+describe('データを入れ替える', () => {
+  it('下部メンテナンスは期間指定に絞り、全件の二重入口を作らない', async () => {
     stubFetch();
     renderPage();
-    // 取込履歴が読めるまで待つ(全期間はそこから決まる)
-    await screen.findByText('架空-2026-07.csv');
+    await screen.findByRole('button', { name: 'データを入れ替える' });
 
-    const scope = openPanel();
-    fireEvent.click(scope.getByRole('radio', { name: /全件を消す/ }));
-    const button = scope.getByRole('button', { name: '消える内容を確認' }) as HTMLButtonElement;
-    expect(button.disabled).toBe(true);
-
-    // 範囲の一部だけでは足りない
-    fireEvent.change(scope.getByLabelText('はじめの月'), { target: { value: '2026-06' } });
-    fireEvent.change(scope.getByLabelText('おわりの月'), { target: { value: '2026-06' } });
-    expect(button.disabled).toBe(true);
-
-    // 全期間を書いて初めて進める
-    fireEvent.change(scope.getByLabelText('おわりの月'), { target: { value: '2026-07' } });
-    expect(button.disabled).toBe(false);
+    const maintenance = openPanel();
+    expect(maintenance.queryByRole('radio', { name: /全件/ })).toBeNull();
+    expect(maintenance.getByText('指定した期間だけを対象にします')).toBeTruthy();
   });
 
-  it('自分で書いた全期間を実行時の確認fieldとしてサーバへ渡す', async () => {
+  it('全件削除を上部の1入口にまとめ、安全条件と対象を確認するまで実行しない', async () => {
     const calls = stubFetch();
     renderPage();
-    await screen.findByText('架空-2026-07.csv');
 
-    const scope = openPanel();
-    fireEvent.click(scope.getByRole('radio', { name: /全件を消す/ }));
-    fireEvent.change(scope.getByLabelText('はじめの月'), { target: { value: '2026-06' } });
-    fireEvent.change(scope.getByLabelText('おわりの月'), { target: { value: '2026-07' } });
-    fireEvent.click(scope.getByRole('button', { name: '消える内容を確認' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'この内容で消す' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'データを入れ替える' }));
+    const dialog = await screen.findByRole('dialog', {
+      name: '取り込んだデータを入れ替えますか？',
+    });
+    expect(within(dialog).getByText(/freee・マネーフォワード側の元データ/)).toBeTruthy();
+    expect(within(dialog).getByText(/手入力した現金・負債、設定は消えません/)).toBeTruthy();
+    expect(within(dialog).getByText(/取込履歴と削除記録/)).toBeTruthy();
+    expect(await within(dialog).findByText('公私・科目の手当て 3件')).toBeTruthy();
+    expect(within(dialog).getByText('MF明細')).toBeTruthy();
+    expect(within(dialog).getByText('freee仕訳')).toBeTruthy();
+    expect(within(dialog).getByText('MF資産残高')).toBeTruthy();
+    expect(within(dialog).getByText(/削除後30日間は取り消せます/)).toBeTruthy();
+    const cancel = within(dialog).getByRole('button', { name: 'やめる' });
+    await waitFor(() => expect(document.activeElement).toBe(cancel));
+    expect(calls).toContain('POST /api/data/deletions/preflight');
+    expect(calls).not.toContain('POST /api/data/deletions');
+
+    const execute = within(dialog).getByRole('button', {
+      name: '全データを削除して次へ',
+    }) as HTMLButtonElement;
+    expect(execute.disabled).toBe(true);
+    fireEvent.change(within(dialog).getByLabelText(/入れ替える/), {
+      target: { value: '入れ替える' },
+    });
+    expect(execute.disabled).toBe(false);
+  });
+
+  it('履歴が空でも取得失敗でも、サーバpreflightへの入口は常に表示する', async () => {
+    stubFetch({ imports: [] });
+    const first = renderPage();
+    expect(await screen.findByRole('button', { name: 'データを入れ替える' })).toBeTruthy();
+
+    first.unmount();
+    cleanup();
+    vi.unstubAllGlobals();
+
+    stubFetch({ historyError: true });
+    renderPage();
+    expect(await screen.findByRole('button', { name: 'データを入れ替える' })).toBeTruthy();
+  });
+
+  it('履歴100件ではなくpreflightが返した真の全期間と指紋を使う', async () => {
+    const calls = stubFetch({
+      preflight: {
+        ...PREFLIGHT,
+        months: ['2025-01', '2026-06', '2026-07'],
+        counts: { ...PREFLIGHT.counts, months: 3 },
+        fullRange: { from: '2025-01', to: '2026-07' },
+      },
+    });
+    renderPage();
+    fireEvent.click(await screen.findByRole('button', { name: 'データを入れ替える' }));
+    const dialog = await screen.findByRole('dialog');
+    fireEvent.change(within(dialog).getByLabelText(/入れ替える/), {
+      target: { value: '入れ替える' },
+    });
+    fireEvent.click(within(dialog).getByRole('button', { name: '全データを削除して次へ' }));
 
     await waitFor(() => expect(calls).toContain('POST /api/data/deletions'));
     const body = JSON.parse(
       (vi.mocked(fetch).mock.calls.find(([path]) => path === '/api/data/deletions')?.[1]?.body ??
         '{}') as string,
     );
-    expect(body.confirmedPeriod).toEqual({ from: '2026-06', to: '2026-07' });
+    expect(body).toMatchObject({
+      granularity: 'all',
+      confirmedPeriod: { from: '2025-01', to: '2026-07' },
+      fingerprint: 'fp-架空',
+    });
+  });
+
+  it('削除後は新規取込とundoを同じ場所に出し、ファイル選択を実際に開ける', async () => {
+    stubFetch();
+    const inputClick = vi.spyOn(HTMLInputElement.prototype, 'click').mockImplementation(() => undefined);
+    renderPage();
+    fireEvent.click(await screen.findByRole('button', { name: 'データを入れ替える' }));
+    const dialog = await screen.findByRole('dialog');
+    fireEvent.change(within(dialog).getByLabelText(/入れ替える/), {
+      target: { value: '入れ替える' },
+    });
+    fireEvent.click(within(dialog).getByRole('button', { name: '全データを削除して次へ' }));
+
+    expect(await screen.findByText('入れ替えの準備ができました')).toBeTruthy();
+    expect(screen.getByText(/取込履歴・削除記録/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'いま取り消す' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '新しいファイルを選ぶ' }));
+    expect(inputClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('preflightの対象月が空なら実行ボタンを出さない', async () => {
+    const calls = stubFetch({
+      preflight: { ...PREFLIGHT, months: [], counts: { ...PREFLIGHT.counts, months: 0 }, fullRange: null },
+    });
+    renderPage();
+    fireEvent.click(await screen.findByRole('button', { name: 'データを入れ替える' }));
+
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).getByText('入れ替えで削除する取込データはありません。')).toBeTruthy();
+    expect(within(dialog).queryByRole('button', { name: '全データを削除して次へ' })).toBeNull();
+    expect(calls).not.toContain('POST /api/data/deletions');
+  });
+
+  it('削除実行中はEscapeでダイアログを閉じない', async () => {
+    let resolveDeletion: ((response: Response) => void) | undefined;
+    const pendingDeletion = new Promise<Response>((resolve) => {
+      resolveDeletion = resolve;
+    });
+    stubFetch({ deletionResponse: () => pendingDeletion });
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'データを入れ替える' }));
+    const dialog = await screen.findByRole('dialog');
+    fireEvent.change(within(dialog).getByLabelText(/入れ替える/), {
+      target: { value: '入れ替える' },
+    });
+    fireEvent.click(within(dialog).getByRole('button', { name: '全データを削除して次へ' }));
+    expect(await within(dialog).findByRole('button', { name: '削除中…' })).toBeTruthy();
+
+    fireEvent(dialog, new Event('cancel', { bubbles: false, cancelable: true }));
+    expect(screen.getByRole('dialog')).toBeTruthy();
+
+    resolveDeletion?.(json(DELETED));
+    expect(await screen.findByText('入れ替えの準備ができました')).toBeTruthy();
   });
 });
 

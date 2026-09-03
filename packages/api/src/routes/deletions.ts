@@ -160,15 +160,20 @@ deletionsRoute.post(
 );
 
 /** 画面へ返す preflight の形。件数と月だけを出す。 */
-const preflightBody = (preflight: Awaited<ReturnType<typeof planDeletion>>) => ({
-  counts: preflight.counts,
-  collateral: preflight.collateral,
-  months: preflight.targets.months,
-  fingerprint: preflight.fingerprint,
-  /** 実行時刻は未確定なので、絶対時刻ではなく実行後の保持日数を返す。 */
-  undoable: true,
-  undoRetentionDays: DELETION_UNDO_RETENTION_DAYS,
-});
+const preflightBody = (preflight: Awaited<ReturnType<typeof planDeletion>>) => {
+  const months = preflight.targets.months;
+  return {
+    counts: preflight.counts,
+    collateral: preflight.collateral,
+    months,
+    /** all実行時にクライアントがそのまま返す、サーバ導出の厳密な全期間。 */
+    fullRange: months.length ? { from: months[0], to: months[months.length - 1] } : null,
+    fingerprint: preflight.fingerprint,
+    /** 実行時刻は未確定なので、絶対時刻ではなく実行後の保持日数を返す。 */
+    undoable: true,
+    undoRetentionDays: DELETION_UNDO_RETENTION_DAYS,
+  };
+};
 
 deletionsRoute.post('/imports/:id/undo/preflight', zValidator('param', importIdParam), async (c) => {
   const { id } = c.req.valid('param');

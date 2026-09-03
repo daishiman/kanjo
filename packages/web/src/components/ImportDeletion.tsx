@@ -3,7 +3,7 @@
  *
  * ここで守っていること:
  *  - 1回のクリックで消えない。必ず「消える内容の確認」を挟む二段階にする。
- *  - 全件は範囲を自分で書かせる。選ぶだけでは進めない。
+ *  - 全件はサーバが導出した真の全期間を見せ、明示文言を入力するまで進めない。
  *  - 画面にはテーブル名も SQL も明細の中身も出さない。件数と月だけを出す(DR-9)。
  *  - 消したあとは、その場と履歴の両方から取り消せる。期限を必ず添える。
  */
@@ -27,8 +27,6 @@ type DeletionRequest =
   | {
       granularity: 'all';
       kinds?: string[];
-      /** 画面で利用者が入力した全期間。実行時だけサーバへ送る。 */
-      confirmedPeriod: { from: string; to: string };
     }
   | { granularity: 'import'; importId: number };
 
@@ -79,15 +77,15 @@ function PreflightSummary({
       </div>
       <dl className="deletion-count-grid">
         <div>
-          <dt>明細</dt>
+          <dt>MF明細</dt>
           <dd className="num">{counts.mfTx}件</dd>
         </div>
         <div>
-          <dt>仕訳</dt>
+          <dt>freee仕訳</dt>
           <dd className="num">{counts.freeeDeals}件</dd>
         </div>
         <div>
-          <dt>残高</dt>
+          <dt>MF資産残高</dt>
           <dd className="num">{counts.balanceEntries}件</dd>
         </div>
         <div>
@@ -152,11 +150,17 @@ function useDeletionFlow(onDone: (result: DeletionResult) => void) {
   const run = useMutation({
     mutationFn: async () => {
       if (!request || !preflight) throw new Error('確認していない削除は実行できません');
+      if (request.granularity === 'all' && !preflight.fullRange)
+        throw new Error('全期間を確認できないため実行できません');
       const path = request.granularity === 'import' ? `/imports/${request.importId}/undo` : '/data/deletions';
       const body =
         request.granularity === 'import'
           ? JSON.stringify({ fingerprint: preflight.fingerprint })
-          : JSON.stringify({ ...request, fingerprint: preflight.fingerprint });
+          : JSON.stringify({
+              ...request,
+              ...(request.granularity === 'all' ? { confirmedPeriod: preflight.fullRange } : {}),
+              fingerprint: preflight.fingerprint,
+            });
       return api<DeletionResult>(path, { method: 'POST', body });
     },
     onSuccess: (result) => {
@@ -177,7 +181,15 @@ function useDeletionFlow(onDone: (result: DeletionResult) => void) {
 }
 
 /** 消した直後の知らせと、その場での取り消し。 */
-export function DeletedNotice({ result, onUndone }: { result: DeletionResult; onUndone: () => void }) {
+export function DeletedNotice({
+  result,
+  onUndone,
+  nextAction,
+}: {
+  result: DeletionResult;
+  onUndone: () => void;
+  nextAction?: { label: string; onClick: () => void };
+}) {
   const qc = useQueryClient();
   const undo = useMutation({
     mutationFn: () => api<UndoResult>(`/data/undo/${result.operationId}`, { method: 'POST' }),
@@ -189,22 +201,197 @@ export function DeletedNotice({ result, onUndone }: { result: DeletionResult; on
   return (
     <div className="deleted-notice" aria-live="polite">
       <div>
-        <strong>取込データを削除しました</strong>
+        <strong>{nextAction ? '入れ替えの準備ができました' : '取込データを削除しました'}</strong>
         <span>
           明細 {result.counts.mfTx}件・仕訳 {result.counts.freeeDeals}件・残高 {result.counts.balanceEntries}
           件
         </span>
+        {nextAction && <span>取込履歴・削除記録と、設定・手入力データは残っています。</span>}
         <span>
           {day(result.expiresAt)}まで（あと{daysLeft(result.expiresAt)}日）取り消せます
         </span>
       </div>
-      <button type="button" className="primary" onClick={() => undo.mutate()} disabled={undo.isPending}>
-        {undo.isPending ? '戻しています…' : 'いま取り消す'}
-      </button>
+      <div className="deleted-notice-actions">
+        {nextAction && (
+          <button type="button" className="primary" onClick={nextAction.onClick}>
+            {nextAction.label}
+          </button>
+        )}
+        <button
+          type="button"
+          className={nextAction ? undefined : 'primary'}
+          onClick={() => undo.mutate()}
+          disabled={undo.isPending}
+        >
+          {undo.isPending ? '戻しています…' : 'いま取り消す'}
+        </button>
+      </div>
       {undo.isError && (
         <div className="sub deleted-notice-error" role="alert">
           取り消せませんでした: {describeError(undo.error)}
         </div>
+      )}
+    </div>
+  );
+}
+
+const REPLACEMENT_CONFIRMATION = '入れ替える';
+
+/**
+ * 現在の取込データを全件退避・削除し、次の新規取込へ進む専用入口。
+ * 削除エンジンは既存の all preflight / fingerprint / undo をそのまま再利用する。
+ */
+export function ImportReplacementButton({
+  disabled,
+  onDeleted,
+}: {
+  disabled?: boolean;
+  onDeleted: (result: DeletionResult) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [confirmation, setConfirmation] = useState('');
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
+  const triggerButtonRef = useRef<HTMLButtonElement | null>(null);
+  const dialogTitleId = useId();
+
+  const flow = useDeletionFlow((result) => {
+    setOpen(false);
+    setConfirmation('');
+    onDeleted(result);
+    triggerButtonRef.current?.focus();
+  });
+
+  const focusStage = !open ? 'closed' : flow.preflight ? 'ready' : 'checking';
+  useEffect(() => {
+    if (focusStage !== 'closed') cancelButtonRef.current?.focus();
+  }, [focusStage]);
+
+  const openDialog = (node: HTMLDialogElement | null) => {
+    dialogRef.current = node;
+    if (!node || node.open) return;
+    if (typeof node.showModal === 'function') node.showModal();
+    else node.setAttribute('open', '');
+  };
+
+  const closeDialog = () => {
+    if (flow.run.isPending) return;
+    const dialog = dialogRef.current;
+    if (dialog?.open && typeof dialog.close === 'function') dialog.close();
+    else dialog?.removeAttribute('open');
+    setOpen(false);
+    setConfirmation('');
+    flow.cancel();
+    triggerButtonRef.current?.focus();
+  };
+
+  const start = () => {
+    setConfirmation('');
+    setOpen(true);
+    flow.check.mutate({ granularity: 'all' });
+  };
+
+  return (
+    <div className="import-replacement-entry">
+      <button
+        ref={triggerButtonRef}
+        type="button"
+        className="import-replace-trigger"
+        disabled={disabled || flow.check.isPending || flow.run.isPending}
+        onClick={start}
+      >
+        データを入れ替える
+      </button>
+      {open && (
+        <dialog
+          ref={openDialog}
+          className="deletion-confirm-dialog import-replacement-dialog"
+          aria-labelledby={dialogTitleId}
+          onClose={closeDialog}
+          onCancel={(event) => {
+            event.preventDefault();
+            if (!flow.run.isPending) closeDialog();
+          }}
+        >
+          <div className="import-replacement-confirmation">
+            <h3 id={dialogTitleId}>取り込んだデータを入れ替えますか？</h3>
+            <p>現在の取込データをいったん全て削除し、その後に新しいファイルを選びます。</p>
+            <p className="import-safe-note">
+              freee・マネーフォワード側の元データ、手入力した現金・負債、設定は消えません。
+            </p>
+            <p className="import-replacement-retained">
+              取込履歴と削除記録も、監査と30日以内の取り消しのため残ります。
+            </p>
+
+            {flow.check.isPending && <p aria-live="polite">削除される件数と期間を確認しています…</p>}
+            {flow.check.isError && (
+              <div className="notice" role="alert">
+                確認できませんでした: {describeError(flow.check.error)}
+              </div>
+            )}
+
+            {flow.preflight && (
+              <>
+                <PreflightSummary preflight={flow.preflight} headingId={`${dialogTitleId}-scope`} />
+                {flow.preflight.fullRange ? (
+                  <>
+                    <label className="import-replacement-confirm-field">
+                      <span>
+                        内容を確認し、「<strong>{REPLACEMENT_CONFIRMATION}</strong>」と入力
+                      </span>
+                      <input
+                        type="text"
+                        value={confirmation}
+                        autoComplete="off"
+                        onChange={(event) => setConfirmation(event.target.value)}
+                      />
+                    </label>
+                    <div className="deletion-run-actions">
+                      <button
+                        type="button"
+                        className="danger-btn"
+                        disabled={confirmation !== REPLACEMENT_CONFIRMATION || flow.run.isPending}
+                        onClick={() => flow.run.mutate()}
+                      >
+                        {flow.run.isPending ? '削除中…' : '全データを削除して次へ'}
+                      </button>
+                      <button
+                        ref={cancelButtonRef}
+                        type="button"
+                        onClick={closeDialog}
+                        disabled={flow.run.isPending}
+                      >
+                        やめる
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="notice">入れ替えで削除する取込データはありません。</p>
+                    <div className="deletion-run-actions">
+                      <button ref={cancelButtonRef} type="button" onClick={closeDialog}>
+                        閉じる
+                      </button>
+                    </div>
+                  </>
+                )}
+                {flow.run.isError && (
+                  <div className="notice" role="alert">
+                    削除できませんでした: {describeError(flow.run.error)}
+                  </div>
+                )}
+              </>
+            )}
+
+            {!flow.preflight && (
+              <div className="deletion-run-actions">
+                <button ref={cancelButtonRef} type="button" onClick={closeDialog}>
+                  やめる
+                </button>
+              </div>
+            )}
+          </div>
+        </dialog>
       )}
     </div>
   );
@@ -525,16 +712,11 @@ export function ImportDiscardButton({
 }
 
 /**
- * 期間・全件の入口。種別はどちらの粒度でも任意の絞り込みとして使う。
- *
- * 全件は「全件」を選ぶだけでは進めない。取り込んである最初の月と最後の月を
- * 自分で書いて、初めて確認へ進める。押し間違いで全部消える道をここで塞ぐ。
+ * 期間を限定したメンテナンス削除。
+ * 全件の入れ替えは上部の ImportReplacementButton に一本化し、同じ概念の二重入口を作らない。
  */
-export function DeletionPanel({ months }: { months: string[] }) {
+export function DeletionPanel() {
   const qc = useQueryClient();
-  const sorted = [...months].sort();
-  const fullRange = { from: sorted[0] ?? '', to: sorted[sorted.length - 1] ?? '' };
-  const [scope, setScope] = useState<'period' | 'all'>('period');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [kinds, setKinds] = useState<string[]>([]);
@@ -544,17 +726,11 @@ export function DeletionPanel({ months }: { months: string[] }) {
     void qc.invalidateQueries();
   });
 
-  /** 全件のときだけ、書いた範囲が実際の全期間と一致しているかを見る */
-  const fullRangeTyped = !!fullRange.from && from === fullRange.from && to === fullRange.to;
-  const ready = scope === 'all' ? fullRangeTyped : !!from && !!to && from <= to;
+  const ready = !!from && !!to && from <= to;
 
   const submit = () => {
     const selectedKinds = kinds.length ? kinds : undefined;
-    flow.check.mutate(
-      scope === 'all'
-        ? { granularity: 'all', kinds: selectedKinds, confirmedPeriod: { from, to } }
-        : { granularity: 'period', period: { from, to }, kinds: selectedKinds },
-    );
+    flow.check.mutate({ granularity: 'period', period: { from, to }, kinds: selectedKinds });
   };
 
   return (
@@ -568,7 +744,7 @@ export function DeletionPanel({ months }: { months: string[] }) {
         <h2 aria-label="取り込んだデータを消す">
           <span className="import-deletion-copy">
             <span className="import-eyebrow">メンテナンス</span>
-            <span className="import-deletion-title">取り込んだデータを消す</span>
+            <span className="import-deletion-title">期間を指定してデータを消す</span>
             <small>範囲と取り消し可否を実行前に確認できます</small>
           </span>
           <span className="import-disclosure-label" aria-hidden="true">
@@ -587,45 +763,8 @@ export function DeletionPanel({ months }: { months: string[] }) {
             <span className="deletion-step-number">1</span>
             <div>
               <strong id="deletion-scope-title">対象を選ぶ</strong>
-              <span>
-                {scope === 'period' ? '指定した期間だけを対象にします' : '取り込んだ全期間を対象にします'}
-              </span>
+              <span>指定した期間だけを対象にします</span>
             </div>
-          </div>
-
-          <div className="deletion-scope-options">
-            <label>
-              <input
-                type="radio"
-                name="deletion-scope"
-                checked={scope === 'period'}
-                disabled={flow.check.isPending || flow.run.isPending}
-                onChange={() => {
-                  setScope('period');
-                  flow.cancel();
-                }}
-              />
-              <span>
-                <strong>期間で消す</strong>
-                <small>月を指定して削除</small>
-              </span>
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="deletion-scope"
-                checked={scope === 'all'}
-                disabled={flow.check.isPending || flow.run.isPending}
-                onChange={() => {
-                  setScope('all');
-                  flow.cancel();
-                }}
-              />
-              <span>
-                <strong>全件を消す</strong>
-                <small>全期間を手入力で確認</small>
-              </span>
-            </label>
           </div>
 
           <div className="deletion-period-fields">
@@ -656,13 +795,6 @@ export function DeletionPanel({ months }: { months: string[] }) {
             </label>
           </div>
 
-          {scope === 'all' && (
-            <p className="deletion-range-confirmation">
-              全件削除では、実際の範囲（{fullRange.from || '—'} 〜 {fullRange.to || '—'}
-              ）を上の欄へ入力します。
-            </p>
-          )}
-
           <fieldset className="deletion-kind-options">
             <legend>種別で絞る（未選択ならすべて）</legend>
             {KIND_CHOICES.map((kind) => (
@@ -688,13 +820,7 @@ export function DeletionPanel({ months }: { months: string[] }) {
             <button type="button" onClick={submit} disabled={!ready || flow.check.isPending}>
               {flow.check.isPending ? '確認中…' : '消える内容を確認'}
             </button>
-            {!ready && (
-              <span>
-                {scope === 'all'
-                  ? '表示された全期間を入力すると確認できます'
-                  : '開始月と終了月を選んでください'}
-              </span>
-            )}
+            {!ready && <span>開始月と終了月を選んでください</span>}
           </div>
           {flow.check.isError && (
             <div className="notice" role="alert">

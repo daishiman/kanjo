@@ -67,6 +67,13 @@ importDiffRoute.post('/imports/diff', async (c) => {
   const mfUnits = units.filter((candidate) => candidate.kind === 'mf');
   if (!mfUnits.length) {
     const reason = units.find((candidate) => candidate.kind === 'error');
+    if (!reason) {
+      const onlyFreee = units.length > 0 && units.every((candidate) => candidate.kind === 'freee');
+      return c.json({
+        supported: false as const,
+        message: `${onlyFreee ? 'freeeの取引' : 'このファイル'}は明細ごとの差分確認の対象外です。このまま取込を実行できます。`,
+      });
+    }
     return c.json(
       {
         error: {
@@ -132,6 +139,7 @@ importDiffRoute.post('/imports/diff', async (c) => {
   }
 
   return c.json({
+    supported: true as const,
     months: diff.months,
     counts: diff.counts,
     conflicts: diff.conflicts,

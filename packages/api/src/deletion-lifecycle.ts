@@ -16,6 +16,7 @@ import {
   type DeletionTargets,
   type ImportKind,
   type ManualRecords,
+  collateralCounts,
   deletionFingerprint,
   deletionPreflight,
   deletionScope,
@@ -236,16 +237,49 @@ export async function loadManualRecords(database: D1Database, userId: string): P
 }
 
 /** 何を消すことになるかを、状態を動かさずに返す。 */
+interface DeletionPlanContext {
+  preflight: DeletionPreflight;
+  fullResetTombstones: FullResetTombstoneRow[];
+}
+
+async function planDeletionContext(
+  database: D1Database,
+  userId: string,
+  request: DeletionRequest,
+): Promise<DeletionPlanContext> {
+  const [scope, manual, fullResetTombstones] = await Promise.all([
+    loadDeletionScope(database, userId, request),
+    loadManualRecords(database, userId),
+    isFullReset(request) ? readFullResetTombstones(database, userId) : Promise.resolve([]),
+  ]);
+  const base = deletionPreflight(scope, manual);
+  if (!isFullReset(request) || fullResetTombstones.length === 0)
+    return { preflight: base, fullResetTombstones };
+
+  const resetMonths = fullResetTombstones.map((row) => row.month).filter((month): month is string => !!month);
+  const targets: DeletionTargets = {
+    ...base.targets,
+    months: [...new Set([...base.targets.months, ...resetMonths])].sort(),
+  };
+  return {
+    preflight: {
+      targets,
+      counts: { ...base.counts, months: targets.months.length },
+      collateral: collateralCounts(targets, manual),
+      fingerprint: deletionFingerprint(targets, manual, {
+        fullResetRows: fullResetTombstones.map(({ table, rowId, month }) => ({ table, rowId, month })),
+      }),
+    },
+    fullResetTombstones,
+  };
+}
+
 export async function planDeletion(
   database: D1Database,
   userId: string,
   request: DeletionRequest,
 ): Promise<DeletionPreflight> {
-  const [scope, manual] = await Promise.all([
-    loadDeletionScope(database, userId, request),
-    loadManualRecords(database, userId),
-  ]);
-  return deletionPreflight(scope, manual);
+  return (await planDeletionContext(database, userId, request)).preflight;
 }
 
 interface TombstoneRow {
@@ -627,9 +661,11 @@ export async function executeDeletion(args: {
   const now = args.now ?? new Date();
 
   // 範囲をサーバ側で読み直す。画面が送ってきた件数やIDは信用しない(DR-1)
-  const scope = await loadDeletionScope(database, userId, request);
-  const manual = await loadManualRecords(database, userId);
-  const preflight = deletionPreflight(scope, manual);
+  const { preflight, fullResetTombstones: resetTombstones } = await planDeletionContext(
+    database,
+    userId,
+    request,
+  );
   const targets = preflight.targets;
   const fingerprint = preflight.fingerprint;
 
@@ -638,10 +674,9 @@ export async function executeDeletion(args: {
 
   if (request.granularity === 'all' && !args.confirmedPeriod) throw new AllScopeConfirmationError('required');
 
-  const [detailTombstones, affectedTargets, resetTombstones] = await Promise.all([
+  const [detailTombstones, affectedTargets] = await Promise.all([
     readTombstoneRows(database, userId, targets),
     readAffectedTargets(database, userId, targets),
-    isFullReset(request) ? readFullResetTombstones(database, userId) : Promise.resolve([]),
   ]);
   const tombstones: TombstoneRow[] = [...detailTombstones, ...resetTombstones];
 
@@ -652,10 +687,11 @@ export async function executeDeletion(args: {
         .map((row: FullResetTombstoneRow) => row.month)
         .filter((month): month is string => !!month),
     ]);
+    const orderedMonths = [...actualMonths].sort();
     if (
-      [...actualMonths].some(
-        (month) => month < args.confirmedPeriod!.from || month > args.confirmedPeriod!.to,
-      )
+      orderedMonths.length > 0 &&
+      (args.confirmedPeriod.from !== orderedMonths[0] ||
+        args.confirmedPeriod.to !== orderedMonths[orderedMonths.length - 1])
     )
       throw new AllScopeConfirmationError('mismatch');
   }

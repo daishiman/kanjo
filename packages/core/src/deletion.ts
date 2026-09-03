@@ -313,7 +313,16 @@ export function collateralCounts(targets: DeletionTargets, manual: ManualRecords
  * 同じ範囲からは何度でも同じ値が出る。件数ではなく対象そのものから作るので、
  * 「件数は同じだが中身が入れ替わった」場合も検出できる。
  */
-export function deletionFingerprint(targets: DeletionTargets, manual: ManualRecords): string {
+export interface DeletionFingerprintContext {
+  /** 真の全件初期化で追加退避するbaseline/legacy行の安全な識別子。 */
+  fullResetRows?: readonly { table: string; rowId: string; month: string | null }[];
+}
+
+export function deletionFingerprint(
+  targets: DeletionTargets,
+  manual: ManualRecords,
+  context: DeletionFingerprintContext = {},
+): string {
   const txIds = new Set(targets.mfTxIds);
   const months = new Set(targets.months);
   return `v1:del:${canonicalEncode({
@@ -341,6 +350,9 @@ export function deletionFingerprint(targets: DeletionTargets, manual: ManualReco
         .map((row) => [row.txId, row.month])
         .sort((a, b) => canonicalEncode(a).localeCompare(canonicalEncode(b))),
     },
+    fullResetRows: [...(context.fullResetRows ?? [])]
+      .map((row) => [row.table, row.rowId, row.month])
+      .sort((a, b) => canonicalEncode(a).localeCompare(canonicalEncode(b))),
   })}`;
 }
 

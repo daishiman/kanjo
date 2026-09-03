@@ -3438,6 +3438,19 @@ label.check {
   font-size: var(--fs-xs);
   white-space: nowrap;
 }
+.import-upload-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.import-replacement-entry {
+  flex: none;
+}
+.import-replace-trigger {
+  min-height: var(--tap-target-min);
+  padding-inline: 12px;
+  white-space: nowrap;
+}
 
 .import-upload-panel {
   padding: 20px;
@@ -4211,6 +4224,39 @@ label.check {
   margin: 8px 0;
   line-height: 1.7;
 }
+.import-replacement-confirmation {
+  padding-top: 16px;
+}
+.import-replacement-confirmation > h3 {
+  margin: 0 0 8px;
+  font-size: var(--fs-lg);
+}
+.import-replacement-confirmation > p {
+  margin: 8px 0;
+  line-height: 1.7;
+}
+.import-replacement-retained {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+.import-replacement-confirm-field {
+  margin-top: 16px;
+  padding-top: 16px;
+  display: grid;
+  gap: 6px;
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-sm);
+}
+.import-replacement-confirm-field input {
+  width: min(100%, 320px);
+  min-height: var(--tap-target-min);
+  padding: 8px 10px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
 .deletion-run-actions {
   margin-top: 14px;
   display: flex;
@@ -4242,6 +4288,11 @@ label.check {
 .deleted-notice button {
   min-height: var(--tap-target-min);
   white-space: nowrap;
+}
+.deleted-notice-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .deleted-notice-error {
   grid-column: 1 / -1;
@@ -4348,6 +4399,10 @@ label.check {
   .import-section-heading {
     align-items: flex-start;
   }
+  .import-upload-heading-actions {
+    align-items: flex-end;
+    flex-direction: column;
+  }
   .import-dropzone {
     min-height: 190px;
     padding-inline: 14px;
@@ -4367,6 +4422,10 @@ label.check {
   .deleted-notice {
     align-items: stretch;
     grid-template-columns: 1fr;
+  }
+  .deleted-notice-actions {
+    align-items: stretch;
+    flex-direction: column;
   }
   .import-primary-actions {
     display: flex;

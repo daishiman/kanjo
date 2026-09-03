@@ -951,13 +951,31 @@ describe('クエリ数', () => {
 });
 
 describe('対応していない入力', () => {
-  it('資産推移CSVは差分の対象にしない', async () => {
+  it('資産推移CSVはエラーにせず、差分対象外と案内する', async () => {
     const assets = ['日付,合計（円）,預金・現金（円）', '2026/07/31,100,100'].join('\n');
     const response = await upload('/api/imports/diff', assets, '資産推移.csv');
-    expect(response.status).toBe(400);
-    expect((await response.json()) as { error: { code: string } }).toMatchObject({
-      error: { code: 'diff_unsupported' },
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      supported: false,
+      message: expect.stringContaining('このまま取込を実行できます'),
     });
+  });
+
+  it('freeeの取引は400にせず、通常取込へ進めると案内する', async () => {
+    const freee = ['収支区分,発生日,勘定科目,金額,取引先', '支出,2026/07/31,通信費,100,架空先'].join('\n');
+    const response = await upload('/api/imports/diff', freee, 'deals.csv');
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      supported: false,
+      message: 'freeeの取引は明細ごとの差分確認の対象外です。このまま取込を実行できます。',
+    });
+  });
+
+  it('判定できないファイルはdiff_unsupportedで拒否する', async () => {
+    const response = await upload('/api/imports/diff', '未知の列\n架空値', 'unknown.csv');
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: { code: 'diff_unsupported' } });
   });
 
   it('ファイルが無ければ400', async () => {

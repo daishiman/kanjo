@@ -514,6 +514,8 @@ export interface DeletionPreflight {
   counts: DeletionCounts;
   collateral: DeletionCollateral;
   months: string[];
+  /** 全件初期化で実行APIへそのまま返す、サーバ導出の対象範囲 */
+  fullRange: { from: string; to: string } | null;
   /** 確認した対象の指紋。実行時にそのまま送る。付けないと実行できない */
   fingerprint: string;
   /** この操作が実行後に取り消せるか。 */
@@ -578,6 +580,7 @@ export interface ImportVendorCandidate {
 }
 
 export interface ImportDiffResult {
+  supported: true;
   /** previewと確定の対象・入力が同一であることをサーバが再検証する鍵 */
   fingerprint: string;
   months: string[];
@@ -588,6 +591,14 @@ export interface ImportDiffResult {
   candidates: ImportVendorCandidate[];
   queries: { planned: number; limit: number };
 }
+
+/** freee・資産推移・JSONなど、3点比較をしない正常な取込形式。 */
+export interface ImportDiffUnavailable {
+  supported: false;
+  message: string;
+}
+
+export type ImportDiffResponse = ImportDiffResult | ImportDiffUnavailable;
 
 /* -------- 取引先ごとの決め事 -------- */
 

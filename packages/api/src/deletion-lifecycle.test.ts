@@ -69,11 +69,61 @@ const JUNE_JULY = mfCsv([
   '1,2026/07/05,-3000,架空費,架空内訳,0,架空の支払い7a,tx-jul-a,架空口座',
 ]);
 
+const ASSETS_JUNE_JULY = [
+  '日付,合計（円）,預金・現金（円）,株式（円）',
+  '2026/06/30,300,100,200',
+  '2026/07/31,500,200,300',
+].join('\n');
+
 async function importMf(body: string, name: string): Promise<Response> {
   const form = new FormData();
   form.append('file', new File([body], name, { type: 'text/csv' }));
   return app.request('/api/imports', { method: 'POST', headers: { cookie }, body: form }, env());
 }
+
+const restoreJson = (body: Record<string, unknown>): Promise<Response> =>
+  Promise.resolve(
+    app.request(
+      '/api/restore',
+      {
+        method: 'POST',
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      },
+      env(),
+    ),
+  );
+
+const JSON_RESTORE = {
+  months: ['2027-02'],
+  biz: { revenue: [0], categories: [], expense: {} },
+  subs: { vendors: [], matrix: {}, other: [0] },
+  personal: {
+    '2027-02': { income: { 架空給与: 321 }, expense: { 架空生活費: 45 } },
+  },
+  bizPersonal: { '2027-02': { income: 67, expense: 89 } },
+  mfTx: [
+    {
+      id: 'json-reimport',
+      idStable: true,
+      m: '2027-02',
+      d: '02/01',
+      c: '架空JSON復元',
+      a: -404,
+      big: '架空費',
+      mid: '復元',
+      inst: '架空口座',
+      isTarget: true,
+      isTransfer: false,
+    },
+  ],
+  rules: [],
+  edits: {},
+  institutionOwners: {},
+  budgets: { 架空費: 100 },
+  cashOverride: {},
+  unrecordedExpMonths: [],
+};
 
 const FREEE_HEADER = '収支区分,発生日,勘定科目,金額,取引先,支払期日,支払日,支払口座,支払金額';
 /**
@@ -90,10 +140,13 @@ const FREEE_JUNE = [
 ].join('\n');
 
 /** 全件削除をAPIから実行するときに、利用者が画面で明示した対象範囲。 */
-const CONFIRMED_ALL_MONTHS = { from: '2026-06', to: '2026-08' } as const;
-const confirmedAll = (fingerprint: string) => ({
+const CONFIRMED_ALL_MONTHS = { from: '2026-06', to: '2026-07' } as const;
+const confirmedAll = (
+  fingerprint: string,
+  confirmedPeriod: { from: string; to: string } = CONFIRMED_ALL_MONTHS,
+) => ({
   granularity: 'all' as const,
-  confirmedPeriod: CONFIRMED_ALL_MONTHS,
+  confirmedPeriod,
   fingerprint,
 });
 
@@ -472,6 +525,76 @@ describe('削除の実行', () => {
     expect(await txIds()).toEqual([]);
   });
 
+  it('全件の確認期間は実際のmin/maxと完全一致しなければ拒否する', async () => {
+    expect((await importMf(JUNE_JULY, 'mf-a.csv')).status).toBe(200);
+    const preflight = (await (
+      await jsonRequest('/data/deletions/preflight', 'POST', { granularity: 'all' })
+    ).json()) as { fingerprint: string };
+
+    const broader = await jsonRequest('/data/deletions', 'POST', {
+      granularity: 'all',
+      confirmedPeriod: { from: '2026-05', to: '2026-08' },
+      fingerprint: preflight.fingerprint,
+    });
+    expect(broader.status).toBe(400);
+    expect(await broader.json()).toMatchObject({ error: { code: 'all_scope_confirmation_mismatch' } });
+    expect(await txIds()).toHaveLength(3);
+  });
+
+  it('canonical行が無くてもfull resetで消えるbaseline月をpreflightと指紋に含める', async () => {
+    await d1
+      .prepare('INSERT INTO restored_monthly_agg (user_id,month,scope,amount) VALUES (?,?,?,?)')
+      .bind('default', '2025-12', 'biz_exp:架空復元', 4321)
+      .run();
+
+    const response = await jsonRequest('/data/deletions/preflight', 'POST', { granularity: 'all' });
+    expect(response.status).toBe(200);
+    const preflight = (await response.json()) as {
+      fingerprint: string;
+      months: string[];
+      counts: { months: number };
+      fullRange: { from: string; to: string } | null;
+    };
+    expect(preflight.months).toEqual(['2025-12']);
+    expect(preflight.counts.months).toBe(1);
+    expect(preflight.fullRange).toEqual({ from: '2025-12', to: '2025-12' });
+
+    const deleted = await jsonRequest(
+      '/data/deletions',
+      'POST',
+      confirmedAll(preflight.fingerprint, preflight.fullRange ?? { from: '', to: '' }),
+    );
+    expect(deleted.status).toBe(200);
+    await expect(
+      d1.prepare('SELECT COUNT(*) AS n FROM restored_monthly_agg WHERE user_id=?').bind('default').first('n'),
+    ).resolves.toBe(0);
+  });
+
+  it('preflight後にfull resetのbaseline対象が増えたら指紋不一致で止める', async () => {
+    await d1
+      .prepare('INSERT INTO restored_monthly_agg (user_id,month,scope,amount) VALUES (?,?,?,?)')
+      .bind('default', '2025-12', 'biz_exp:架空復元A', 1)
+      .run();
+    const preflight = (await (
+      await jsonRequest('/data/deletions/preflight', 'POST', { granularity: 'all' })
+    ).json()) as { fingerprint: string; fullRange: { from: string; to: string } };
+    await d1
+      .prepare('INSERT INTO restored_monthly_agg (user_id,month,scope,amount) VALUES (?,?,?,?)')
+      .bind('default', '2025-12', 'biz_exp:架空復元B', 2)
+      .run();
+
+    const changed = await jsonRequest(
+      '/data/deletions',
+      'POST',
+      confirmedAll(preflight.fingerprint, preflight.fullRange),
+    );
+    expect(changed.status).toBe(409);
+    expect(await changed.json()).toMatchObject({ error: { code: 'deletion_scope_changed' } });
+    await expect(
+      d1.prepare('SELECT COUNT(*) AS n FROM restored_monthly_agg WHERE user_id=?').bind('default').first('n'),
+    ).resolves.toBe(2);
+  });
+
   it('指定した期間だけを消し、範囲外は1件も消さない(DR-1)', async () => {
     expect((await importMf(JUNE_JULY, 'mf-a.csv')).status).toBe(200);
     const preflight = (await (
@@ -564,6 +687,102 @@ describe('削除の実行', () => {
     expect(await balanceRowCount()).toBe(imported);
   });
 
+  it('MF明細・MF資産残高・freee仕訳の混在データを全件消し、それぞれ新規取込できる', async () => {
+    expect((await importMf(JUNE_JULY, 'mf-mixed.csv')).status).toBe(200);
+    expect((await importMf(FREEE_JUNE, 'freee-mixed.csv')).status).toBe(200);
+    expect((await importMf(ASSETS_JUNE_JULY, 'assets-mixed.csv')).status).toBe(200);
+
+    const importedBalances = await balanceRowCount();
+    expect(importedBalances).toBeGreaterThan(0);
+    const preflightResponse = await jsonRequest('/data/deletions/preflight', 'POST', {
+      granularity: 'all',
+    });
+    const preflight = (await preflightResponse.json()) as {
+      counts: { mfTx: number; freeeDeals: number; balanceEntries: number };
+      fingerprint: string;
+      fullRange: { from: string; to: string };
+    };
+    expect(preflightResponse.status).toBe(200);
+    expect(preflight.counts).toMatchObject({
+      mfTx: 3,
+      freeeDeals: 3,
+      balanceEntries: importedBalances,
+    });
+    expect(preflight.fullRange).toEqual({ from: '2026-06', to: '2026-07' });
+
+    const deleted = await jsonRequest(
+      '/data/deletions',
+      'POST',
+      confirmedAll(preflight.fingerprint, preflight.fullRange),
+    );
+    expect(deleted.status).toBe(200);
+    expect(await txIds()).toEqual([]);
+    expect(await freeeDealCount()).toBe(0);
+    expect(await balanceRowCount()).toBe(0);
+    expect(await activeTargetKeys()).toEqual([]);
+
+    expect((await importMf(JUNE_JULY, 'mf-replacement.csv')).status).toBe(200);
+    expect((await importMf(FREEE_JUNE, 'freee-replacement.csv')).status).toBe(200);
+    expect((await importMf(ASSETS_JUNE_JULY, 'assets-replacement.csv')).status).toBe(200);
+    expect(await txIds()).toEqual(['tx-jul-a', 'tx-jun-a', 'tx-jun-b']);
+    expect(await freeeDealCount()).toBe(3);
+    expect(await balanceRowCount()).toBe(importedBalances);
+    expect(await activeTargetKeys()).toEqual(
+      expect.arrayContaining([
+        'mf:2026-06',
+        'mf:2026-07',
+        'freee:2026-06',
+        'assets:2026-06',
+        'assets:2026-07',
+      ]),
+    );
+  });
+
+  it('JSON復元後の明細とbaselineも全件消し、同じJSONを新規復元できる', async () => {
+    const first = await restoreJson(JSON_RESTORE);
+    expect(first.status).toBe(200);
+    await expect(first.json()).resolves.toMatchObject({ ok: true, duplicate: false, mfTxCount: 1 });
+
+    const preflightResponse = await jsonRequest('/data/deletions/preflight', 'POST', {
+      granularity: 'all',
+    });
+    const preflight = (await preflightResponse.json()) as {
+      counts: { mfTx: number; months: number };
+      months: string[];
+      fingerprint: string;
+      fullRange: { from: string; to: string };
+    };
+    expect(preflightResponse.status).toBe(200);
+    expect(preflight.counts.mfTx).toBe(1);
+    expect(preflight.months).toEqual(['2027-02']);
+    expect(preflight.fullRange).toEqual({ from: '2027-02', to: '2027-02' });
+
+    const deleted = await jsonRequest(
+      '/data/deletions',
+      'POST',
+      confirmedAll(preflight.fingerprint, preflight.fullRange),
+    );
+    expect(deleted.status).toBe(200);
+    expect(await txIds()).toEqual([]);
+    await expect(
+      d1
+        .prepare('SELECT COUNT(*) AS n FROM restored_monthly_agg WHERE user_id=?')
+        .bind('default')
+        .first<number>('n'),
+    ).resolves.toBe(0);
+
+    const second = await restoreJson(JSON_RESTORE);
+    expect(second.status).toBe(200);
+    await expect(second.json()).resolves.toMatchObject({ ok: true, duplicate: false, mfTxCount: 1 });
+    expect(await txIds()).toEqual(['json-reimport']);
+    await expect(
+      d1
+        .prepare('SELECT COUNT(*) AS n FROM restored_monthly_agg WHERE user_id=?')
+        .bind('default')
+        .first<number>('n'),
+    ).resolves.toBeGreaterThan(0);
+  });
+
   it('確認していない削除は受け付けない', async () => {
     expect((await importMf(JUNE_JULY, 'mf-a.csv')).status).toBe(200);
     const response = await jsonRequest('/data/deletions', 'POST', { granularity: 'all' });
@@ -612,9 +831,15 @@ describe('削除の実行', () => {
     const preflight = (await (
       await jsonRequest('/data/deletions/preflight', 'POST', { granularity: 'all' })
     ).json()) as { fingerprint: string };
-    expect((await jsonRequest('/data/deletions', 'POST', confirmedAll(preflight.fingerprint))).status).toBe(
-      200,
-    );
+    expect(
+      (
+        await jsonRequest(
+          '/data/deletions',
+          'POST',
+          confirmedAll(preflight.fingerprint, { from: '2026-06', to: '2026-06' }),
+        )
+      ).status,
+    ).toBe(200);
 
     const rows = (
       await d1
