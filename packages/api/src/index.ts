@@ -11,8 +11,10 @@ import { secureHeaders } from 'hono/secure-headers';
 import { z } from 'zod';
 import { ATTACHMENT_AVAILABILITY_ERROR, AttachmentAvailabilityError } from './attachment-availability.js';
 import { runAttachmentMaintenance } from './attachment-recovery.js';
+import { runAuditDetailRetention, runAuditHeaderRetention } from './audit-log.js';
 import { type AuthEnv, authGuard, clearSession, issueSession, verifyPassword } from './auth.js';
 import { canonicalMutationFence } from './canonical-mutation-fence.js';
+import { runDeletionRetention } from './deletion-retention.js';
 import {
   PASSWORD_LOGIN_RATE_LIMIT_ERROR,
   cleanupStalePasswordLoginRateLimits,
@@ -28,11 +30,19 @@ import { attachmentsRoute } from './routes/attachments.js';
 import { balancesRoute } from './routes/balances.js';
 import { cashRoute } from './routes/cash.js';
 import { classifyRoute } from './routes/classify.js';
+import { deletionsRoute } from './routes/deletions.js';
+import { importDiffRoute } from './routes/import-diff.js';
 import { importsRoute } from './routes/imports.js';
 import { improvementAgentRoute, improvementRoute, runImprovementRetention } from './routes/improvement.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
 import { taxRoute } from './routes/tax.js';
+import { vendorMemoryRoute } from './routes/vendor-memory.js';
+import {
+  SCHEDULED_ATTACHMENT_JOB_LIMIT,
+  SCHEDULED_MAINTENANCE_D1_PLAN,
+  type ScheduledMaintenanceJobName,
+} from './scheduled-maintenance-budget.js';
 import { runtimeSchemaGuard } from './schema-guard.js';
 import { getDb, loadBackupPayload } from './store.js';
 
@@ -40,7 +50,8 @@ type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
 export const app = new Hono<Ctx>();
 
-// APIとWorkers Assetsの全レスポンスで同じ防御境界を使う。
+// APIレスポンスの防御境界。静的アセット側は packages/web/public/_headers に同じ値を置き、
+// index.test.ts の契約テストで差分を止める。
 // Reactの既存inline styleを維持するためstyle-srcだけunsafe-inlineを許可する。
 app.use(
   '*',
@@ -123,10 +134,14 @@ app.use('/api/*', authGuard());
 app.use('/api/*', runtimeSchemaGuard);
 app.use('/api/*', canonicalMutationFence());
 app.route('/api', aiRoute);
+// 差分は importsRoute より先に載せる。/imports/:id 形のルートに /imports/diff を拾わせない
+app.route('/api', importDiffRoute);
 app.route('/api', importsRoute);
+app.route('/api', deletionsRoute);
 app.route('/api', cashRoute);
 app.route('/api', analyticsRoute);
 app.route('/api', classifyRoute);
+app.route('/api', vendorMemoryRoute);
 app.route('/api', settingsRoute);
 app.route('/api', subsRoute);
 app.route('/api', attachmentsRoute);
@@ -168,7 +183,12 @@ app.onError((err, c) => {
 
 /* -------- 夜間バックアップ(cron) -------- */
 
-async function nightlyBackup(env: Pick<AuthEnv, 'DB' | 'FILES'>): Promise<void> {
+interface NightlyBackupSummary {
+  stored: 1;
+  deleted: number;
+}
+
+async function nightlyBackup(env: Pick<AuthEnv, 'DB' | 'FILES'>): Promise<NightlyBackupSummary> {
   const db = getDb(env.DB);
   const payload = await loadBackupPayload(db, 'default');
   const today = new Date().toISOString().slice(0, 10);
@@ -176,24 +196,70 @@ async function nightlyBackup(env: Pick<AuthEnv, 'DB' | 'FILES'>): Promise<void> 
   // 30日より古いバックアップを削除
   const list = await env.FILES.list({ prefix: 'backups/' });
   const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  let deleted = 0;
   for (const obj of list.objects) {
     const day = obj.key.slice('backups/'.length, 'backups/'.length + 10);
-    if (day && day < cutoff) await env.FILES.delete(obj.key);
+    if (day && day < cutoff) {
+      await env.FILES.delete(obj.key);
+      deleted += 1;
+    }
   }
-  console.log(JSON.stringify({ level: 'info', job: 'nightly_backup', key: `backups/${today}.json` }));
+  return { stored: 1, deleted };
 }
 
 /** R2 key/filename/user IDをログへ出さず、bounded jobの件数だけを残す。 */
 export async function scheduledMaintenance(
   env: Pick<AuthEnv, 'DB' | 'FILES'> & Partial<AuthEnv>,
 ): Promise<void> {
-  const [cleanup, backup, loginRateLimit, improvement] = await Promise.allSettled([
-    runAttachmentMaintenance(env),
-    nightlyBackup(env),
-    cleanupStalePasswordLoginRateLimits(env),
-    // 改善要望の添付は対応完了から30日で消す。新規 Cron は増やさずここへ相乗りさせる
-    runImprovementRetention(env),
+  // 回復資産を先に確定する。backup失敗時も後続の独立jobは観測のため実行する。
+  const [backup] = await Promise.allSettled([nightlyBackup(env)]);
+  type ConcurrentJobName = Exclude<ScheduledMaintenanceJobName, 'nightly_backup'>;
+  // Recordで予算表と実行jobを型結合する。jobの追加・宣言漏れはtypecheckで止まる。
+  const concurrentJobs = {
+    attachment_maintenance: runAttachmentMaintenance(env, new Date(), {
+      maxJobs: SCHEDULED_ATTACHMENT_JOB_LIMIT,
+    }),
+    password_login_rate_limit_cleanup: cleanupStalePasswordLoginRateLimits(env),
+    improvement_retention: runImprovementRetention(env),
+    deletion_undo_retention: runDeletionRetention(env),
+    audit_header_retention: runAuditHeaderRetention(env),
+    audit_detail_retention: runAuditDetailRetention(env),
+  } satisfies Record<ConcurrentJobName, Promise<unknown>>;
+  const [
+    cleanup,
+    loginRateLimit,
+    improvement,
+    deletionRetention,
+    auditHeaderRetention,
+    auditDetailRetention,
+  ] = await Promise.allSettled([
+    concurrentJobs.attachment_maintenance,
+    concurrentJobs.password_login_rate_limit_cleanup,
+    concurrentJobs.improvement_retention,
+    concurrentJobs.deletion_undo_retention,
+    concurrentJobs.audit_header_retention,
+    concurrentJobs.audit_detail_retention,
   ]);
+  console.log(
+    JSON.stringify({
+      level: 'info',
+      job: 'scheduled_maintenance_budget',
+      plannedQueries: SCHEDULED_MAINTENANCE_D1_PLAN.total,
+      limit: SCHEDULED_MAINTENANCE_D1_PLAN.limit,
+    }),
+  );
+  if (backup.status === 'fulfilled') {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        job: 'nightly_backup',
+        stored: backup.value.stored,
+        deleted: backup.value.deleted,
+      }),
+    );
+  } else {
+    console.error(JSON.stringify({ level: 'error', job: 'nightly_backup', name: errorName(backup.reason) }));
+  }
   if (cleanup.status === 'fulfilled') {
     console.log(
       JSON.stringify({
@@ -210,9 +276,6 @@ export async function scheduledMaintenance(
     console.error(
       JSON.stringify({ level: 'error', job: 'attachment_maintenance', name: errorName(cleanup.reason) }),
     );
-  }
-  if (backup.status === 'rejected') {
-    console.error(JSON.stringify({ level: 'error', job: 'nightly_backup', name: errorName(backup.reason) }));
   }
   if (loginRateLimit.status === 'fulfilled') {
     console.log(
@@ -240,6 +303,10 @@ export async function scheduledMaintenance(
         purged: improvement.value.purged,
         failed: improvement.value.failed,
         orphans: improvement.value.orphans,
+        orphanScanned: improvement.value.orphanScanned,
+        orphanDeferredRecent: improvement.value.orphanDeferredRecent,
+        orphanHasMore: improvement.value.orphanHasMore,
+        orphanCycleCompleted: improvement.value.orphanCycleCompleted,
       }),
     );
   } else {
@@ -247,9 +314,86 @@ export async function scheduledMaintenance(
       JSON.stringify({ level: 'error', job: 'improvement_retention', name: errorName(improvement.reason) }),
     );
   }
-  // 改善要望の削除失敗は throw に含めない。二次資産の後始末であり、次回の実行が同じ行を
-  // 冪等に拾い直す。ここで throw すると記帳データのバックアップまで失敗扱いになる。
-  if (cleanup.status === 'rejected' || backup.status === 'rejected' || loginRateLimit.status === 'rejected') {
+  if (deletionRetention.status === 'fulfilled') {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        job: 'deletion_undo_retention',
+        metadata: deletionRetention.value.metadata,
+        rows: deletionRetention.value.rows,
+        targets: deletionRetention.value.targets,
+        early: deletionRetention.value.early,
+        bytes: deletionRetention.value.bytes,
+      }),
+    );
+  } else {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        job: 'deletion_undo_retention',
+        name: errorName(deletionRetention.reason),
+      }),
+    );
+  }
+  if (auditHeaderRetention.status === 'fulfilled') {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        job: 'audit_header_retention',
+        expired: auditHeaderRetention.value.expired,
+        early: auditHeaderRetention.value.early,
+        beforeRows: auditHeaderRetention.value.before.rows,
+        beforeBytes: auditHeaderRetention.value.before.bytes,
+        afterRows: auditHeaderRetention.value.after.rows,
+        afterBytes: auditHeaderRetention.value.after.bytes,
+        queries: auditHeaderRetention.value.queries,
+      }),
+    );
+  } else {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        job: 'audit_header_retention',
+        name: errorName(auditHeaderRetention.reason),
+      }),
+    );
+  }
+  if (auditDetailRetention.status === 'fulfilled') {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        job: 'audit_detail_retention',
+        expired: auditDetailRetention.value.expired,
+        early: auditDetailRetention.value.early,
+        beforeRows: auditDetailRetention.value.before.rows,
+        beforeBytes: auditDetailRetention.value.before.bytes,
+        afterRows: auditDetailRetention.value.after.rows,
+        afterBytes: auditDetailRetention.value.after.bytes,
+        queries: auditDetailRetention.value.queries,
+      }),
+    );
+  } else {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        job: 'audit_detail_retention',
+        name: errorName(auditDetailRetention.reason),
+      }),
+    );
+  }
+  // 全jobを完走・個別記録してからCronへ失敗を返す。飲み込むとPast Eventsが成功になり、
+  // 後始末が止まった事実を運用から観測できない。元errorのmessageは外へ出さない。
+  if (
+    [
+      backup,
+      cleanup,
+      loginRateLimit,
+      improvement,
+      deletionRetention,
+      auditHeaderRetention,
+      auditDetailRetention,
+    ].some((result) => result.status === 'rejected')
+  ) {
     throw new Error('scheduled_maintenance_failed');
   }
 }

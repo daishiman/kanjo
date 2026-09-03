@@ -4,7 +4,8 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { emptyDataset } from '@kanjo/core';
+import { STABLE_KEY_VERSION, emptyDataset } from '@kanjo/core';
+import { zipSync } from 'fflate';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
@@ -249,6 +250,16 @@ async function importFiles(
     '/api/imports',
     { method: 'POST', headers: { cookie }, body: form },
     { ...auth, DB: database, FILES: bucket },
+  );
+}
+
+async function importBinaryFile(name: string, body: Uint8Array): Promise<Response> {
+  const form = new FormData();
+  form.append('file', new File([body], name, { type: 'application/zip' }));
+  return app.request(
+    '/api/imports',
+    { method: 'POST', headers: { cookie }, body: form },
+    { ...auth, DB: d1, FILES: files },
   );
 }
 
@@ -1402,6 +1413,30 @@ describe('run terminal convergence', () => {
       status: 'failed',
     });
   });
+
+  it('freee標準ZIPはdealsだけを取り込み、同梱transfersで失敗履歴を作らない', async () => {
+    const encode = (value: string) => new TextEncoder().encode(value);
+    const zip = zipSync({
+      'deals.csv': encode(freeeCsv(777)),
+      'transfers.csv': encode(
+        ['振替日,振替元口座,振替先口座,金額(円)', '2026/07/03,架空口座A,架空口座B,777'].join('\n'),
+      ),
+    });
+
+    const response = await importBinaryFile('freee_journals_20260903.zip', zip);
+    expect(response.status).toBe(200);
+    expect(await resultStatuses(response)).toEqual(['committed']);
+    expect(await d1.prepare('SELECT filename,status FROM imports ORDER BY id').all()).toMatchObject({
+      results: [
+        {
+          filename: 'freee_journals_20260903.zip/deals.csv',
+          status: 'committed',
+        },
+      ],
+    });
+    expect(await d1.prepare('SELECT status FROM import_runs').first()).toEqual({ status: 'committed' });
+    expect(await d1.prepare('SELECT COUNT(*) AS n FROM freee_deals').first()).toEqual({ n: 1 });
+  });
 });
 
 describe('preflight write-set', () => {
@@ -1723,5 +1758,154 @@ describe('取込のやり直し(原本の取り出し)', () => {
     expect((await original(row.id)).status).toBe(404);
     expect((await original(999_999)).status).toBe(404);
     expect((await original(0)).status).toBe(400);
+  });
+});
+
+/**
+ * 3点比較の基準値がバックアップの往復を越えるか(T05 の積み残し / D6)。
+ *
+ * `base_major` / `base_mid` は前から backup の投影に入っていたが、0030 で足した
+ * `base_cls` / `base_owner` は入っていなかった。基準値が落ちると、復元後の最初の
+ * 再取込で「利用者が触っていない」と読み違える経路ができる。
+ */
+describe('3点比較の基準値のbackup往復', () => {
+  /** 手当てと4属性ぶんの基準値を1件だけ持つ状態を作る */
+  const seedEdit = async (): Promise<void> => {
+    await d1
+      .prepare(
+        `INSERT INTO tx_edits
+           (user_id, tx_id, cls, category_major, category_mid, owner,
+            base_major, base_mid, base_cls, base_owner, base_known, updated_at)
+         VALUES ('default','tx-架空-1','biz','架空費','架空内訳','business',
+                 '取込時大','取込時中','per','family',15,'2026-07-01T00:00:00.000Z')`,
+      )
+      .run();
+  };
+
+  it('4属性すべての基準値がbackupに載り、restoreで戻る', async () => {
+    await seedEdit();
+
+    const backup = await loadBackupPayload(getDb(d1), 'default');
+    const edit = (backup.edits as Record<string, Record<string, unknown>>)['tx-架空-1'];
+    // 既に載っていた2つと、0030 で足した2つを同じ強さで見る
+    expect(edit).toMatchObject({
+      baseBig: '取込時大',
+      baseMid: '取込時中',
+      baseCls: 'per',
+      baseOwner: 'family',
+      baseKnown: 15,
+    });
+
+    await d1.prepare("DELETE FROM tx_edits WHERE user_id='default'").run();
+    expect((await restore(backup as unknown as Record<string, unknown>)).status).toBe(200);
+
+    await expect(
+      d1
+        .prepare(
+          `SELECT base_major AS baseMajor, base_mid AS baseMid,
+                  base_cls AS baseCls, base_owner AS baseOwner, base_known AS baseKnown
+             FROM tx_edits WHERE user_id='default' AND tx_id='tx-架空-1'`,
+        )
+        .first(),
+    ).resolves.toEqual({
+      baseMajor: '取込時大',
+      baseMid: '取込時中',
+      baseCls: 'per',
+      baseOwner: 'family',
+      baseKnown: 15,
+    });
+  });
+
+  it('手当てそのものは往復で変わらない', async () => {
+    await seedEdit();
+    const backup = await loadBackupPayload(getDb(d1), 'default');
+    await d1.prepare("DELETE FROM tx_edits WHERE user_id='default'").run();
+    expect((await restore(backup as unknown as Record<string, unknown>)).status).toBe(200);
+
+    await expect(
+      d1
+        .prepare(
+          `SELECT cls, category_major AS big, category_mid AS mid, owner
+             FROM tx_edits WHERE user_id='default' AND tx_id='tx-架空-1'`,
+        )
+        .first(),
+    ).resolves.toEqual({ cls: 'biz', big: '架空費', mid: '架空内訳', owner: 'business' });
+  });
+
+  it('記録済みのnull/空文字baseをbackup往復で未記録に戻さない', async () => {
+    await d1
+      .prepare(
+        `INSERT INTO tx_edits
+           (user_id,tx_id,category_major,owner,base_mid,base_owner,base_known,updated_at)
+         VALUES ('default','tx-known-empty','架空費','business','',NULL,12,'2026-07-01T00:00:00.000Z')`,
+      )
+      .run();
+    const backup = await loadBackupPayload(getDb(d1), 'default');
+    expect((backup.edits as Record<string, Record<string, unknown>>)['tx-known-empty']).toMatchObject({
+      baseMid: '',
+      baseOwner: null,
+      baseKnown: 12,
+    });
+
+    await d1.prepare("DELETE FROM tx_edits WHERE user_id='default'").run();
+    expect((await restore(backup as unknown as Record<string, unknown>)).status).toBe(200);
+    await expect(
+      d1
+        .prepare(
+          "SELECT base_mid AS baseMid,base_owner AS baseOwner,base_known AS baseKnown FROM tx_edits WHERE tx_id='tx-known-empty'",
+        )
+        .first(),
+    ).resolves.toEqual({ baseMid: '', baseOwner: null, baseKnown: 12 });
+  });
+});
+
+/**
+ * 第二の引き当て鍵が往復するか(DR-13)。
+ *
+ * `base_*` と違い、`stable_key` は落とすと自己修復しない。復元と次の取込の間に
+ * MF が tx_id を振り直すと、手当てを引き当てる手掛かりがどこにも無くなる。
+ * ただし版が今と違う鍵は突き合わせに使われないので、運ばずに捨てる。
+ */
+describe('第二の引き当て鍵のbackup往復', () => {
+  /** 鍵と版を指定して手当てを1件だけ置く */
+  const seedKeyedEdit = async (stableKey: string, version: number | null): Promise<void> => {
+    await d1
+      .prepare(
+        `INSERT INTO tx_edits (user_id, tx_id, cls, stable_key, fingerprint_version, updated_at)
+         VALUES ('default','tx-架空-9','biz',?,?,'2026-07-01T00:00:00.000Z')`,
+      )
+      .bind(stableKey, version)
+      .run();
+  };
+
+  /** backup → tx_edits 全消し → restore を通し、戻った鍵と版を返す */
+  const roundTrip = async (): Promise<Record<string, unknown> | null> => {
+    const backup = await loadBackupPayload(getDb(d1), 'default');
+    await d1.prepare("DELETE FROM tx_edits WHERE user_id='default'").run();
+    expect((await restore(backup as unknown as Record<string, unknown>)).status).toBe(200);
+    return await d1
+      .prepare(
+        `SELECT stable_key AS stableKey, fingerprint_version AS fingerprintVersion
+           FROM tx_edits WHERE user_id='default' AND tx_id='tx-架空-9'`,
+      )
+      .first();
+  };
+
+  it('版が今と同じ鍵は戻る', async () => {
+    await seedKeyedEdit('v1:mf:架空の鍵', STABLE_KEY_VERSION);
+    await expect(roundTrip()).resolves.toEqual({
+      stableKey: 'v1:mf:架空の鍵',
+      fingerprintVersion: STABLE_KEY_VERSION,
+    });
+  });
+
+  it('版が古い鍵は運ばず捨てる', async () => {
+    await seedKeyedEdit('v0:mf:古い鍵', STABLE_KEY_VERSION - 1);
+    await expect(roundTrip()).resolves.toEqual({ stableKey: null, fingerprintVersion: null });
+  });
+
+  it('版が欠けている鍵も運ばない', async () => {
+    await seedKeyedEdit('v1:mf:版なし', null);
+    await expect(roundTrip()).resolves.toEqual({ stableKey: null, fingerprintVersion: null });
   });
 });

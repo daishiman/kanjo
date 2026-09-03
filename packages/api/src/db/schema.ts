@@ -102,6 +102,18 @@ export const txEdits = sqliteTable('tx_edits', {
   owner: text('owner', { enum: ['business', 'spouse', 'family'] }),
   baseMajor: text('base_major'),
   baseMid: text('base_mid'),
+  /** 0030: 3点比較の基準値(種別・名義)。NULL は「基準が分からない」で、空欄とは違う */
+  baseCls: text('base_cls', { enum: ['biz', 'per'] }),
+  baseOwner: text('base_owner', { enum: ['business', 'spouse', 'family'] }),
+  /** 0032: NULL/''の「記録済み空」と未記録を区別。cls=1,big=2,mid=4,owner=8 */
+  baseKnown: integer('base_known').notNull().default(0),
+  /** 0030: tx_id が取れないときだけ使う第二の鍵(DR-13)。重複しうるので UNIQUE にしない */
+  stableKey: text('stable_key'),
+  /** 0030: stable_key の作り方の版。版違いの鍵を誤って照合しないための番号 */
+  fingerprintVersion: integer('fingerprint_version'),
+  /** 0031: 値一致で推測せず、決め事由来の手当てだけを安全に取り消す。 */
+  origin: text('origin', { enum: ['manual', 'vendor_memory'] }),
+  originKey: text('origin_key'),
   note: text('note'),
   updatedAt: text('updated_at'),
 });
@@ -594,3 +606,167 @@ export const analysisSettings = sqliteTable('analysis_settings', {
   statMinMonths: integer('stat_min_months').notNull().default(6),
   updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
 });
+
+/**
+ * 0030: 削除・取り消しの操作1回ぶんの記録。
+ * 範囲だけを持ち、明細の内容・金額は持たない(DR-9)。中身は importDeletedRows にある。
+ */
+export const importDeletionOperations = sqliteTable(
+  'import_deletion_operations',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    kind: text('kind', { enum: ['delete', 'undo'] }).notNull(),
+    granularity: text('granularity', {
+      enum: ['transaction', 'import', 'period', 'all'],
+    }).notNull(),
+    /** 範囲の指定そのもの(JSON)。件数ではなく指定を残すので、あとから再現できる */
+    requestJson: text('request_json').notNull(),
+    /** preflight で見せた対象集合の指紋。実行時に一致しなければ 409(DR-1) */
+    fingerprint: text('fingerprint').notNull(),
+    countsJson: text('counts_json').notNull().default('{}'),
+    /** この操作を取り消した操作のID。NULL なら未取り消し */
+    undoneBy: text('undone_by'),
+    /** 退避行を捨ててよくなる時刻(D04: 既定30日)。過ぎた操作の undo は 410 */
+    expiresAt: text('expires_at').notNull(),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [index('idx_deletion_operations_user').on(t.userId, t.createdAt)],
+);
+
+/**
+ * 0030: 消した行そのものの退避。消す前に必ず書く(DR-2)。
+ * undo は payloadJson を INSERT し直すだけで済む形にしてある。
+ */
+export const importDeletedRows = sqliteTable(
+  'import_deleted_rows',
+  {
+    id: integer('id').primaryKey(),
+    operationId: text('operation_id').notNull(),
+    userId: text('user_id').notNull(),
+    /** 戻し先のテーブル名。undo はこの名前で分岐する */
+    tableName: text('table_name').notNull(),
+    /** 元の行のID。mf_transactions が TEXT、他が INTEGER なので文字列で揃える */
+    rowId: text('row_id').notNull(),
+    /** 集計を作り直す対象月(DR-5) */
+    month: text('month'),
+    payloadJson: text('payload_json').notNull(),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    index('idx_deleted_rows_operation').on(t.operationId, t.tableName),
+    uniqueIndex('uq_deleted_rows_row').on(t.operationId, t.tableName, t.rowId),
+  ],
+);
+
+/**
+ * 0030: 削除で巻き戻す取込指紋の退避(DR-4)。
+ * import_active_targets は現在値しか持たないため、削除前の値はここにしか残らない。
+ * 粒度が行ではなく target_key なので importDeletedRows とは別に持つ。
+ */
+export const importDeletedTargets = sqliteTable(
+  'import_deleted_targets',
+  {
+    id: integer('id').primaryKey(),
+    operationId: text('operation_id').notNull(),
+    userId: text('user_id').notNull(),
+    targetKey: text('target_key').notNull(),
+    contentHash: text('content_hash').notNull(),
+    importId: integer('import_id').notNull(),
+    updatedAt: text('updated_at').notNull(),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [uniqueIndex('uq_deleted_targets_key').on(t.operationId, t.targetKey)],
+);
+
+/**
+ * 0030: 取引先ごとの決め事。
+ * hit と disagree を別々に持つ。割合1つに畳むと「1件中1件」と「40件中40件」が
+ * どちらも 1.00 になり、区別できなくなる(D01)。
+ */
+export const vendorMemory = sqliteTable(
+  'vendor_memory',
+  {
+    id: integer('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    /** 表記ゆれを寄せた照合キー(core の normalizeVendorKey) */
+    vendorKey: text('vendor_key').notNull(),
+    /** 画面に出す元の表記。照合には使わない */
+    vendorLabel: text('vendor_label').notNull().default(''),
+    cls: text('cls', { enum: ['biz', 'per'] }),
+    categoryMajor: text('category_major'),
+    categoryMid: text('category_mid'),
+    owner: text('owner', { enum: ['business', 'spouse', 'family'] }),
+    hitCount: integer('hit_count').notNull().default(0),
+    disagreeCount: integer('disagree_count').notNull().default(0),
+    /** 利用者が留めた決め事。件数によらず当てる */
+    pinned: integer('pinned').notNull().default(0),
+    /** 利用者が取り消した決め事。当てない・候補にも出さない */
+    revoked: integer('revoked').notNull().default(0),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [uniqueIndex('uq_vendor_memory_key').on(t.userId, t.vendorKey)],
+);
+
+/**
+ * 0033 / 0034 / D8: 1操作1行の監査ヘッダ。400日保持。
+ * 明細内容・金額の列を持たないことがプライバシー境界である。
+ */
+export const auditLogs = sqliteTable(
+  'audit_log',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    operationId: text('operation_id').notNull(),
+    action: text('action', {
+      enum: ['delete', 'undo', 'import_resolution', 'import_discard'],
+    }).notNull(),
+    /** 粒度と安全な期間/取込IDだけ。transactionの明細IDは含めない。 */
+    scope: text('scope').notNull(),
+    /** 件数だけの有界JSON。キーと値はaudit builderが検証する。 */
+    countsJson: text('counts_json').notNull(),
+    occurredAt: text('occurred_at').notNull(),
+    result: text('result', { enum: ['succeeded', 'failed', 'rejected'] }).notNull(),
+  },
+  (t) => [
+    uniqueIndex('uq_audit_log_operation').on(t.operationId),
+    uniqueIndex('uq_audit_log_tenant_ref').on(t.id, t.userId),
+    index('idx_audit_log_user_occurred').on(t.userId, t.occurredAt),
+    index('idx_audit_log_retention').on(t.occurredAt, t.id),
+  ],
+);
+
+/**
+ * 0033 / D8: 判定した1属性1行の短期明細。90日保持。
+ * txKey/sourceKeyは不透明keyで、明細本体は複製しない。
+ */
+export const auditLogDetails = sqliteTable(
+  'audit_log_detail',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    auditId: text('audit_id').notNull(),
+    userId: text('user_id').notNull(),
+    txKey: text('tx_key').notNull(),
+    attribute: text('attribute', {
+      enum: ['cls', 'category_major', 'category_mid', 'owner'],
+    }).notNull(),
+    beforeValue: text('before_value'),
+    afterValue: text('after_value'),
+    reasonCode: text('reason_code').notNull(),
+    sourceType: text('source_type', {
+      enum: ['tx_edit', 'rule', 'vendor_memory', 'import', 'default', 'user_resolution', 'system'],
+    }).notNull(),
+    sourceKey: text('source_key'),
+    occurredAt: text('occurred_at').notNull(),
+  },
+  (t) => [
+    foreignKey({
+      columns: [t.auditId, t.userId],
+      foreignColumns: [auditLogs.id, auditLogs.userId],
+    }).onDelete('cascade'),
+    uniqueIndex('uq_audit_log_detail_decision').on(t.auditId, t.txKey, t.attribute),
+    index('idx_audit_log_detail_user_occurred').on(t.userId, t.occurredAt),
+    index('idx_audit_log_detail_retention').on(t.occurredAt, t.id),
+  ],
+);

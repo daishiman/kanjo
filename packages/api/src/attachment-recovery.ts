@@ -136,9 +136,6 @@ export interface AttachmentMaintenanceSummary {
   importJobsEnqueued: number;
 }
 
-/** 1 invocation: bulk retention enqueue(1) + due scan(1) + worst-case job(4×10) + backup read(1)。 */
-export const ATTACHMENT_SCHEDULED_MAX_D1_QUERIES = 43;
-
 const backoffAt = (now: Date, attempts: number): string =>
   new Date(now.getTime() + Math.min(24 * 60, 2 ** Math.min(attempts, 10)) * 60_000).toISOString();
 
@@ -285,6 +282,7 @@ async function enqueueExpiredImportUploads(
   env: Pick<AuthEnv, 'DB'>,
   config: AttachmentRuntimeConfig,
   now: Date,
+  limit: number,
 ): Promise<number> {
   const cutoff = new Date(now.getTime() - config.importUploadDays * 24 * 60 * 60 * 1000).toISOString();
   const result = await env.DB.prepare(
@@ -317,7 +315,7 @@ async function enqueueExpiredImportUploads(
       ORDER BY i.created_at,i.id
       LIMIT ?`,
   )
-    .bind(now.toISOString(), now.toISOString(), now.toISOString(), cutoff, config.reconcileBatchSize)
+    .bind(now.toISOString(), now.toISOString(), now.toISOString(), cutoff, limit)
     .run();
   return result.meta.changes ?? 0;
 }
@@ -326,9 +324,15 @@ async function enqueueExpiredImportUploads(
 export async function runAttachmentMaintenance(
   env: Pick<AuthEnv, 'DB' | 'FILES'> & Partial<AuthEnv>,
   nowInput = new Date(),
+  options: { maxJobs?: number } = {},
 ): Promise<AttachmentMaintenanceSummary> {
   const config = attachmentRuntimeConfig(env as AuthEnv);
-  const importJobsEnqueued = await enqueueExpiredImportUploads(env, config, nowInput);
+  const requestedMax = options.maxJobs ?? config.reconcileBatchSize;
+  if (!Number.isSafeInteger(requestedMax) || requestedMax < 1 || requestedMax > 10)
+    throw new Error('invalid_attachment_maintenance_limit');
+  // envで通常上限を下げている場合は、その意図をscheduled側の指定で引き上げない。
+  const maxJobs = Math.min(config.reconcileBatchSize, requestedMax);
+  const importJobsEnqueued = await enqueueExpiredImportUploads(env, config, nowInput, maxJobs);
   const jobs = await env.DB.prepare(
     `SELECT id,user_id,attachment_id,import_id,r2_key,action,reason,attempts,created_at
        FROM attachment_cleanup_jobs
@@ -336,7 +340,7 @@ export async function runAttachmentMaintenance(
       ORDER BY not_before,id
       LIMIT ?`,
   )
-    .bind(nowInput.toISOString(), config.reconcileBatchSize)
+    .bind(nowInput.toISOString(), maxJobs)
     .all<CleanupJob>();
   const summary: AttachmentMaintenanceSummary = {
     selected: jobs.results.length,

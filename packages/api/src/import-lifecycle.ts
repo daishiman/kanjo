@@ -10,6 +10,7 @@ import {
   type FreeeDeal,
   MF_PERSISTED_IDENTITY_COLUMNS,
   type MfTx,
+  STABLE_KEY_VERSION,
   type TxEdit,
   canonicalEncode,
   canonicalMfTransactions,
@@ -17,6 +18,15 @@ import {
   isCashTxId,
   mfPersistedIdentityRow,
 } from '@kanjo/core';
+import {
+  type AuditAttribute,
+  type AuditSourceType,
+  type AuditStatementPlan,
+  buildAuditStatements,
+  opaqueAuditSourceKey,
+  opaqueAuditTransactionKey,
+} from './audit-log.js';
+import { reconcileMfAttachmentParentsStatement } from './canonical-parent-convergence.js';
 import { JSON_ACTIVE_TARGET, invalidateJsonSnapshotStatement } from './import-active.js';
 import { type ParsedUnit, fingerprintCanonical } from './import-pipeline.js';
 import {
@@ -26,6 +36,7 @@ import {
   type TaxAccountSettingSnapshot,
   aggRowsFromDataset,
 } from './store.js';
+import { txEditRestoreRow } from './tx-edit-codec.js';
 
 export type ImportOutcome = 'processing' | 'applying' | 'committed' | 'failed' | 'duplicate';
 
@@ -34,6 +45,242 @@ export interface MonthCountChange {
   month: string;
   before: number;
   after: number;
+}
+
+/** MF洗い替えと同じD1 batchへ入れる手当て解決。 */
+export interface MfEditResolution {
+  existingTxId: string;
+  incomingTxId: string;
+  choice: 'keep' | 'incoming';
+  baseCls: string | null;
+  baseOwner: string | null;
+  baseMajor: string | null;
+  baseMid: string | null;
+  baseKnown: number;
+  stableKey: string;
+}
+
+export interface MfMemoryResolution {
+  vendorKey: string;
+  vendorLabel: string;
+  cls: string | null;
+  big: string | null;
+  mid: string | null;
+  owner: string | null;
+}
+
+/** 既存の高確信memoryを通常取込で適用する。今回の回答から学ぶmemoriesとは別物。 */
+export interface MfAutoEditResolution {
+  txId: string;
+  vendorKey: string;
+  cls: string | null;
+  big: string | null;
+  mid: string | null;
+  owner: string | null;
+  stableKey: string;
+}
+
+/**
+ * 確定前に解決済みの属性判定。tx/sourceの生identityは一時的にだけ持ち、
+ * D1 statement化時に不透明keyへ変換する。API応答へは出さない。
+ */
+export interface MfResolutionAuditDecision {
+  txIdentity: string;
+  attribute: AuditAttribute;
+  before: string | null;
+  after: string | null;
+  reason: string;
+  sourceType: AuditSourceType;
+  sourceIdentity?: string;
+}
+
+export interface MfResolutionPlan {
+  edits: MfEditResolution[];
+  autoEdits: MfAutoEditResolution[];
+  memories: MfMemoryResolution[];
+  auditDecisions?: MfResolutionAuditDecision[];
+}
+
+/** import-resolutionの判定があるunitにだけ、ヘッダ+detailを構成する。 */
+export async function buildMfResolutionAuditStatements(args: {
+  database: D1Database;
+  userId: string;
+  runId: string;
+  importId: number;
+  resolution?: MfResolutionPlan;
+  occurredAt: string;
+}): Promise<AuditStatementPlan | null> {
+  const decisions = args.resolution?.auditDecisions ?? [];
+  if (!decisions.length) return null;
+  const operationId = `import-resolution:${args.runId}:${args.importId}`;
+  const details = await Promise.all(
+    decisions.map(async (decision) => ({
+      txKey: await opaqueAuditTransactionKey(args.userId, operationId, decision.txIdentity),
+      attribute: decision.attribute,
+      before: decision.before,
+      after: decision.after,
+      reason: decision.reason,
+      sourceType: decision.sourceType,
+      sourceKey: decision.sourceIdentity
+        ? await opaqueAuditSourceKey(args.userId, decision.sourceType, decision.sourceIdentity)
+        : null,
+    })),
+  );
+  const countTransactions = (predicate: (decision: MfResolutionAuditDecision) => boolean): number =>
+    new Set(decisions.filter(predicate).map((decision) => decision.txIdentity)).size;
+  const kept = countTransactions((decision) => decision.reason.startsWith('three_way_keep'));
+  const incoming = countTransactions((decision) => decision.reason === 'three_way_incoming');
+  const conflicts = countTransactions((decision) => decision.reason.startsWith('three_way_'));
+  const autoApplied = countTransactions(
+    (decision) => decision.sourceType === 'rule' || decision.sourceType === 'vendor_memory',
+  );
+  return buildAuditStatements({
+    database: args.database,
+    auditId: operationId,
+    userId: args.userId,
+    operationId,
+    action: 'import_resolution',
+    scope: args.importId > 0 ? { kind: 'import', importId: args.importId } : { kind: 'import' },
+    counts: {
+      resolved: decisions.length,
+      kept,
+      incoming,
+      autoApplied,
+      conflicts,
+      remembered: args.resolution?.memories.length ?? 0,
+    },
+    occurredAt: args.occurredAt,
+    result: 'succeeded',
+    details,
+  });
+}
+
+/** 行数に比例する書込みをJSON tableで1文ずつに束ねる。 */
+export function mfResolutionStatements(
+  database: D1Database,
+  userId: string,
+  plan: MfResolutionPlan | undefined,
+  now = new Date().toISOString(),
+): D1PreparedStatement[] {
+  if (!plan) return [];
+  const reset = plan.edits.filter((row) => row.choice === 'incoming');
+  const keep = plan.edits.filter((row) => row.choice === 'keep');
+  const statements: D1PreparedStatement[] = [];
+  for (const payload of chunkJsonRowsByBytes(reset.map((row) => [row.existingTxId])))
+    statements.push(
+      database
+        .prepare(
+          `DELETE FROM tx_edits WHERE user_id=? AND tx_id IN (
+             SELECT CAST(json_extract(value,'$[0]') AS TEXT) FROM json_each(?)
+           )`,
+        )
+        .bind(userId, payload),
+    );
+  for (const payload of chunkJsonRowsByBytes(
+    keep.map((row) => [
+      row.existingTxId,
+      row.incomingTxId,
+      row.baseCls,
+      row.baseOwner,
+      row.baseMajor,
+      row.baseMid,
+      row.stableKey,
+      row.baseKnown,
+    ]),
+  ))
+    statements.push(
+      database
+        .prepare(
+          `UPDATE tx_edits
+              SET tx_id=(SELECT CAST(json_extract(value,'$[1]') AS TEXT) FROM json_each(?)
+                           WHERE CAST(json_extract(value,'$[0]') AS TEXT)=tx_edits.tx_id),
+                  base_cls=CASE WHEN (base_known & 1)=0
+                           THEN (SELECT json_extract(value,'$[2]') FROM json_each(?)
+                                 WHERE CAST(json_extract(value,'$[0]') AS TEXT)=tx_edits.tx_id)
+                           ELSE base_cls END,
+                  base_owner=CASE WHEN (base_known & 8)=0
+                           THEN (SELECT json_extract(value,'$[3]') FROM json_each(?)
+                                 WHERE CAST(json_extract(value,'$[0]') AS TEXT)=tx_edits.tx_id)
+                           ELSE base_owner END,
+                  base_major=CASE WHEN (base_known & 2)=0
+                           THEN (SELECT json_extract(value,'$[4]') FROM json_each(?)
+                                 WHERE CAST(json_extract(value,'$[0]') AS TEXT)=tx_edits.tx_id)
+                           ELSE base_major END,
+                  base_mid=CASE WHEN (base_known & 4)=0
+                           THEN (SELECT json_extract(value,'$[5]') FROM json_each(?)
+                                 WHERE CAST(json_extract(value,'$[0]') AS TEXT)=tx_edits.tx_id)
+                           ELSE base_mid END,
+                  stable_key=(SELECT CAST(json_extract(value,'$[6]') AS TEXT) FROM json_each(?)
+                           WHERE CAST(json_extract(value,'$[0]') AS TEXT)=tx_edits.tx_id),
+                  base_known=base_known | COALESCE((SELECT CAST(json_extract(value,'$[7]') AS INTEGER)
+                           FROM json_each(?) WHERE CAST(json_extract(value,'$[0]') AS TEXT)=tx_edits.tx_id),0),
+                  fingerprint_version=?
+            WHERE user_id=? AND tx_id IN (
+              SELECT CAST(json_extract(value,'$[0]') AS TEXT) FROM json_each(?)
+            )`,
+        )
+        .bind(
+          payload,
+          payload,
+          payload,
+          payload,
+          payload,
+          payload,
+          payload,
+          STABLE_KEY_VERSION,
+          userId,
+          payload,
+        ),
+    );
+  for (const payload of chunkJsonRowsByBytes(
+    plan.autoEdits.map((row) => [
+      row.txId,
+      row.cls,
+      row.big,
+      row.mid,
+      row.owner,
+      row.stableKey,
+      row.vendorKey,
+    ]),
+  ))
+    statements.push(
+      database
+        .prepare(
+          `INSERT INTO tx_edits
+             (user_id,tx_id,cls,category_major,category_mid,owner,stable_key,
+              fingerprint_version,origin,origin_key,updated_at)
+           SELECT ?,
+                  CAST(json_extract(value,'$[0]') AS TEXT),
+                  json_extract(value,'$[1]'), json_extract(value,'$[2]'),
+                  json_extract(value,'$[3]'), json_extract(value,'$[4]'),
+                  CAST(json_extract(value,'$[5]') AS TEXT),
+                  ?, 'vendor_memory', CAST(json_extract(value,'$[6]') AS TEXT), ?
+             FROM json_each(?) WHERE 1
+           ON CONFLICT(user_id,tx_id) DO NOTHING`,
+        )
+        .bind(userId, STABLE_KEY_VERSION, now, payload),
+    );
+  for (const payload of chunkJsonRowsByBytes(
+    plan.memories.map((row) => [row.vendorKey, row.vendorLabel, row.cls, row.big, row.mid, row.owner]),
+  ))
+    statements.push(
+      database
+        .prepare(
+          `INSERT INTO vendor_memory
+             (user_id,vendor_key,vendor_label,cls,category_major,category_mid,owner,
+              hit_count,disagree_count,pinned,revoked,created_at,updated_at)
+           SELECT ?, json_extract(value,'$[0]'), json_extract(value,'$[1]'), json_extract(value,'$[2]'),
+                  json_extract(value,'$[3]'), json_extract(value,'$[4]'), json_extract(value,'$[5]'),
+                  1,0,1,0,?,? FROM json_each(?) WHERE 1
+           ON CONFLICT(user_id,vendor_key) DO UPDATE SET
+             vendor_label=excluded.vendor_label, cls=excluded.cls,
+             category_major=excluded.category_major, category_mid=excluded.category_mid,
+             owner=excluded.owner, hit_count=vendor_memory.hit_count+1,
+             pinned=1, revoked=0, updated_at=excluded.updated_at`,
+        )
+        .bind(userId, now, now, payload),
+    );
+  return statements;
 }
 
 /**
@@ -357,7 +604,7 @@ export function chunkJsonRowsByBytes(
   return chunks;
 }
 
-const insertJsonRows = (
+export const insertJsonRows = (
   database: D1Database,
   table: string,
   jsonColumns: readonly string[],
@@ -638,11 +885,14 @@ export function mfCommitStatements(args: {
   contentHash: string;
   targetKeys: string[];
   data: Dataset;
+  resolution?: MfResolutionPlan;
+  audit?: AuditStatementPlan | null;
   now?: string;
 }): D1PreparedStatement[] {
   const { database, userId, months, runId, importId, contentHash, targetKeys, data } = args;
   const now = args.now ?? new Date().toISOString();
   const txs = canonicalMfTransactions(args.txs);
+  const resolution = mfResolutionStatements(database, userId, args.resolution, now);
   const deleteReplacement = database
     .prepare(
       `DELETE FROM mf_transactions
@@ -651,25 +901,6 @@ export function mfCommitStatements(args: {
             OR tx_id IN (SELECT CAST(value AS TEXT) FROM json_each(?)))`,
     )
     .bind(userId, JSON.stringify(months), JSON.stringify(txs.map((tx) => tx.id)));
-  const syncAttachmentParents = database
-    .prepare(
-      `UPDATE attachments
-          SET parent_missing_at=CASE
-            WHEN EXISTS (
-              SELECT 1 FROM mf_transactions m
-               WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
-            ) THEN NULL ELSE COALESCE(parent_missing_at,?) END
-        WHERE user_id=? AND target_kind='mf'
-          AND ((parent_missing_at IS NULL AND NOT EXISTS (
-                  SELECT 1 FROM mf_transactions m
-                   WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
-               ))
-            OR (parent_missing_at IS NOT NULL AND EXISTS (
-                  SELECT 1 FROM mf_transactions m
-                   WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
-               )))`,
-    )
-    .bind(now, userId);
   const removeOrphanSplits = database
     .prepare(
       `DELETE FROM tx_splits
@@ -695,25 +926,24 @@ export function mfCommitStatements(args: {
         { column: 'import_id', value: importId },
       ],
     ),
+    ...resolution,
     removeOrphanSplits,
-    syncAttachmentParents,
+    reconcileMfAttachmentParentsStatement(database, userId, now),
     ...replaceAggStatements(database, userId, data),
     ...finalizeStatements(database, userId, runId, importId, contentHash, targetKeys, 'mf', now),
+    ...(args.audit?.statements ?? []),
   ];
 }
 
+/**
+ * 復元するとき、手当てに第二の引き当て鍵(DR-13)を持たせるかどうかを決める。
+ *
+ * `stable_key` は tx_id が振り直されたときに手当てを追うための鍵で、
+ * `fingerprint_version` はその鍵を作った版。版が違う鍵どうしは突き合わせない。
+ * 戻り値は `[stable_key, fingerprint_version]` の順で、そのまま行に載る。
+ */
 const editRows = (edits: Record<string, TxEdit>): unknown[][] =>
-  Object.entries(edits).map(([txId, edit]) => [
-    txId,
-    edit.cls ?? null,
-    edit.big ?? null,
-    edit.mid ?? null,
-    edit.owner ?? null,
-    edit.baseBig ?? null,
-    edit.baseMid ?? null,
-    edit.note ?? null,
-    edit.updatedAt ?? null,
-  ]);
+  Object.entries(edits).map(([txId, edit]) => txEditRestoreRow(txId, edit));
 
 export interface RestoreWriteSet {
   mfRows: ReturnType<typeof mfPersistedIdentityRow>[];
@@ -1085,8 +1315,15 @@ export function restoreCommitStatements(args: {
         'owner',
         'base_major',
         'base_mid',
+        // 4属性ぶんの基準値をそろえて戻す。2つだけ戻すと、復元直後の再取込で
+        // 公私・名義だけが「利用者は触っていない」と読まれ、手当てが消える(D6)
+        'base_cls',
+        'base_owner',
+        'base_known',
         'note',
         'updated_at',
+        'stable_key',
+        'fingerprint_version',
       ],
       writeSet.editRows,
       [{ column: 'user_id', value: userId }],
@@ -1193,24 +1430,6 @@ function mfReplaceOnlyStatements(
       { column: 'user_id', value: userId },
       { column: 'import_id', value: importId },
     ]),
-    database
-      .prepare(
-        `UPDATE attachments
-            SET parent_missing_at=CASE
-              WHEN EXISTS (
-                SELECT 1 FROM mf_transactions m
-                 WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
-              ) THEN NULL ELSE COALESCE(parent_missing_at,?) END
-          WHERE user_id=? AND target_kind='mf'
-            AND ((parent_missing_at IS NULL AND NOT EXISTS (
-                    SELECT 1 FROM mf_transactions m
-                     WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
-                 ))
-              OR (parent_missing_at IS NOT NULL AND EXISTS (
-                    SELECT 1 FROM mf_transactions m
-                     WHERE m.user_id=attachments.user_id AND m.tx_id=attachments.target_key
-                 )))`,
-      )
-      .bind(now, userId),
+    reconcileMfAttachmentParentsStatement(database, userId, now),
   ];
 }

@@ -1,3 +1,4 @@
+import { zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import * as XLSX from 'xlsx';
 import {
@@ -9,9 +10,11 @@ import {
 } from './import-pipeline.js';
 
 describe('describeUnknownFormat: 読めないファイルの理由を言葉で返す', () => {
-  it('MFの振替ファイル(本番で実際に失敗した形式)を名指しする', () => {
+  it('口座間の振替データをベンダーによらない言葉で案内する', () => {
     const r = describeUnknownFormat(['振替日', '振替元口座', '振替先口座', '金額(円)']);
     expect(r).toContain('振替');
+    expect(r).toContain('口座間');
+    expect(r).not.toContain('マネーフォワードの「振替」');
     expect(r).toContain('収入・支出詳細');
   });
   it('残高付きの口座明細を名指しする', () => {
@@ -24,6 +27,62 @@ describe('describeUnknownFormat: 読めないファイルの理由を言葉で�
     const r = describeUnknownFormat(['a', 'b', 'c']);
     expect(r).toContain('形式を判定できません');
     expect(r).toContain('a, b, c');
+  });
+});
+
+describe('freeeの取引ZIP', () => {
+  const encode = (value: string) => new TextEncoder().encode(value);
+  const deals = ['収支区分,発生日,勘定科目,金額,取引先', '支出,2026/08/01,通信費,1200,架空ベンダー'].join(
+    '\n',
+  );
+  const transfers = ['振替日,振替元口座,振替先口座,金額(円)', '2026/08/02,架空口座A,架空叧B,10000'].join(
+    '\n',
+  );
+
+  it('deals.csvは取り込み、同梱transfers.csvは口座間移動として失敗にしない', () => {
+    const zip = zipSync({
+      'transfers.csv': encode(transfers),
+      'deals.csv': encode(deals),
+    });
+
+    expect(parseUpload('freee_journals_20260903.zip', zip, {})).toMatchObject([
+      {
+        kind: 'freee',
+        filename: 'freee_journals_20260903.zip/deals.csv',
+        rows: 1,
+        months: ['2026-08'],
+      },
+    ]);
+  });
+
+  it('transfers.csv単体は従来どおり読めない理由を案内する', () => {
+    expect(parseUpload('transfers.csv', encode(transfers), {})).toMatchObject([
+      { kind: 'error', filename: 'transfers.csv', reason: expect.stringContaining('振替') },
+    ]);
+  });
+
+  it('別フォルダのtransfers.csvをdeals.csvの同梱ファイルと誤認しない', () => {
+    const zip = zipSync({
+      'freee/deals.csv': encode(deals),
+      'unrelated/transfers.csv': encode(transfers),
+    });
+
+    expect(parseUpload('mixed.zip', zip, {})).toMatchObject([
+      { kind: 'freee' },
+      { kind: 'error', reason: expect.stringContaining('口座間の「振替」') },
+    ]);
+  });
+
+  it('deals.csv以外の読めない同梱ファイルは黙って落とさない', () => {
+    const zip = zipSync({
+      'deals.csv': encode(deals),
+      'notes.csv': encode('未知の列\n架空値'),
+    });
+
+    expect(parseUpload('mixed.zip', zip, {})).toMatchObject([
+      { kind: 'freee' },
+      { kind: 'error', filename: 'mixed.zip/notes.csv' },
+    ]);
   });
 });
 

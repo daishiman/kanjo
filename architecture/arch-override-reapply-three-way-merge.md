@@ -13,7 +13,7 @@ start_date: null
 target_date: null
 iteration: null
 created_at: "2026-08-31T00:00:00Z"
-updated_at: "2026-08-31T00:00:00Z"
+updated_at: "2026-09-02T00:00:00Z"
 depends_on: []
 related_nodes: ["arch-import-deletion-undo-boundary", "arch-transaction-split-projection"]
 resource_scope: ["architecture/arch-override-reapply-three-way-merge.md"]
@@ -91,8 +91,9 @@ flowchart LR
 
 | Container/Component | Responsibility | Interface | Data owner | Deployment unit |
 |---|---|---|---|---|
-| base 値 | 属性ごとの前回取込原本値を保持し、比較の基準を与える | 手当てテーブルの列 | D1 | migrations |
+| base 値 | 4属性を最初に手動編集する時点で、`tx_edit`を除く有効値を保持する。`base_known` bitmaskで記録済み空と未記録を分ける | `tx_edits.base_* / base_known` | D1 | migrations / Worker |
 | 安定同一性キー | 日付・金額・保有金融機関・正規化内容から明細の同一性を与え、取込元 ID の振り直しに耐える | 明細行の列 (指紋版数つき) | D1 | migrations |
+| incoming resolver | MF原本が直接運ばない `cls` / `owner`も含め、`rules > 適用可能なvendor_memory > import/default`を一意に解く | `resolveIncomingTx` | core | Worker / web |
 | 3点比較 | 属性ごとに base / current / incoming を突き合わせ、自動確定と衝突を分ける | 取込処理の内部 | backend | Worker |
 | vendor_memory | 取引先単位の決め事と確信度を蓄積する | SQL (UPSERT) | D1 | migrations |
 | 判定根拠の記録 | 自動判定か衝突か、どの経路で決まったかを残す | 監査記録 | D1 | migrations |
@@ -102,7 +103,7 @@ flowchart LR
 ## Cross-cutting contracts
 
 - Identity/access: 判定・学習はすべて `user_id` スコープに閉じる。決め事は利用者を跨いで共有しない。
-- 優先順位: 明示的な手当て > 利用者が定義した規則 > 学習した決め事 > 取込原本値。学習が利用者の明示登録を上書きしない、が不変条件である。
+- 優先順位: `manual tx_edits > rules > materialized vendor_memory edit > import/default`。編集時baseと再取込時incomingは同じ `resolveIncomingTx`を使い、原本にない `cls` / `owner`を空欄と偽装しない。
 - Errors/resilience: 既定は常に「手当ての維持」。無操作で確定しても手当てが消えない。判定不能を「取込元を採る」へ倒さない。
 - Observability/audit: 判定ごとに自動確定か衝突かの別と採用根拠を残し、自動適用された明細には決め事由来の印を付けて決め事へ辿れるようにする。説明できない自動適用を作らない。
 - Configuration/secrets: 追加なし。確信度の閾値はコードで持ち、秘密値を伴わない。
@@ -124,7 +125,8 @@ flowchart LR
 | MRG-003 | 提示するのは真の衝突と低確信度の候補の2種類だけに絞る | 差分を全件提示する | 全件提示は確認が苦役になり、読まれない確認は無いのと同じになる。自動確定分は件数の要約と事後追跡で足りる | 「提示されなかったが変わった」を後から辿れる記録が必須になる |
 | MRG-004 | 明細の同一性を取込元 ID だけに頼らず、安定同一性キーでも辿れるようにする | 取込元 ID のみを同一性とする | マネーフォワード側で ID が振り直されると手当てが黙って孤立する。無言の孤立は利用者が気づけない | 正規化が緩いと別明細を誤って同一視して手当てが混線するため、指紋版数と正規化方針の共有が前提になる |
 | MRG-005 | 決め事は確信度つきで蓄積し、閾値以上のみ自動適用、pin は確信度によらず常に適用 | 一致すれば常に自動適用 / 学習しない | 学習の誤りは取り消すまで広がるため、自動適用の範囲を確信度で絞る。閾値は候補提示から始め、取消率を見ながら段階的に緩める | 確信度の算出規則と閾値そのものが検証対象になる |
-| MRG-006 | 判定と書き戻しは取込単位でまとめ読みし、UPSERT で1文にまとめる | 明細ごとに個別クエリを発行する | Worker 1回の呼び出しあたりのクエリ本数は D1 Free で 50 本であり、明細比例のクエリは即座に上限へ当たる | 件数に応じた分割実行が必要で、`arch-import-deletion-undo-boundary` と同じ分割設計を共有する |
+| MRG-006 | previewは読み取り専用とし、base補完・stable-key・解決選択・自動適用は通常 `POST /imports` の確定batchでのみ書く | previewの `apply=1` でbaseだけ先に書く / 明細ごとの個別クエリ | 確認だけで状態を動かさず、同じfingerprintの計画でcanonicalと手当てを一緒に確定できる | 旧`apply=1`は400 `diff_read_only`。決め事は利用者単位で一括読みし、N+1を作らない |
+| MRG-007 | 自動適用を `tx_edits.origin='vendor_memory'` と `origin_key`で明示し、表示・取消は値一致ではなく由来だけを見る | 現在値と決め事の値一致から自動適用を推測する | 手動値が偶然同じでも取消されない | 取消は該当由来行だけを外し、`disagree_count`を同じ書込単位で更新する |
 
 ## Delivery, migration and rollback
 
@@ -138,6 +140,14 @@ flowchart LR
 - リスク/前提: 安定同一性キーの正規化が緩いと手当てが混線する。誤学習した決め事は取り消すまで誤分類を広げる。閾値を最初から緩めると誤りの発見が遅れる。
 - アーキテクチャ適合テスト: 判定経路が明細件数に比例したクエリを発行しないこと (`D1_FREE_QUERY_LIMIT` 未満)。明細を外部へ送る依存・通信が存在しないこと。学習した決め事が利用者の明示登録を上書きする経路が存在しないこと。
 - 検証: 利用者が触っていない属性で新規値が採られること、触った属性で手当てが維持されること、両方が動いた箇所だけが提示されること、明細 ID が振り直されても手当てが追随すること、決め事を取り消せば以後適用されないこと、同種の取引について問われる件数が回を追って減ること。
+
+## 2026-09-02 実装証拠 (D6 / T09 / T10)
+
+- D6: quick class / full edit は `applyManualEditWithBase`を共用し、初回の手動編集で4属性のbaseを保存する。既存baseは上書きしない。
+- D6: `base_known` により `owner=null` / `mid=''` を既知としてbackup・復元・再取込まで保つ。
+- T09: `POST /imports/diff` はwriter leaseも含め完全に読み取り専用。現金明細をMF identity/fingerprintに混ぜず、確定POSTは同じresolver/fingerprintでcanonicalと一緒に書く。
+- T10: 通常取込が決め事を1 statement snapshotで一括読みし、高確信はprovenance付き `tx_edit`へmaterialize、低確信は今回previewの `txId/vendorKey/label/候補値/根拠` だけを返す。
+- 試験: `packages/api/src/import-diff.test.ts`、`packages/api/src/tx-edit-codec.test.ts`、`packages/core/test/identity-precedence-contract.test.ts`、`packages/web/src/components/VendorMemory.test.tsx`。
 
 ## 出典
 

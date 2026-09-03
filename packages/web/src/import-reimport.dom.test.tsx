@@ -5,7 +5,7 @@
  * 押しただけでは何も書き換わらず、月単位の洗い替えは通常の取込と同じ確認を経てから起きること。
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -80,10 +80,17 @@ describe('取込履歴のやり直し', () => {
 
     expect(await screen.findByText(/取込履歴 #41/)).toBeTruthy();
     expect(screen.getByText(/まだ何も書き換えていません/)).toBeTruthy();
-    expect(screen.getByText(/選択中: 架空-2026-07.csv/)).toBeTruthy();
+    expect(screen.getByRole('heading', { name: '1件のファイルを選択中' })).toBeTruthy();
+    expect(screen.getAllByText('架空-2026-07.csv')).toHaveLength(2);
+    const cancel = screen.getAllByRole('button', { name: 'やり直しをやめる' });
+    expect(cancel).toHaveLength(2);
     // 戻しただけの段階では書き換え系のリクエストを一切出さない
     expect(calls.filter((call) => call.startsWith('POST'))).toEqual([]);
     expect(confirm).not.toHaveBeenCalled();
+
+    fireEvent.click(cancel[1]);
+    expect(screen.queryByRole('heading', { name: '1件のファイルを選択中' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'この取込をやり直す' })).toBeTruthy();
   });
 
   it('戻した原本は「取込を実行」で初めて、月単位の洗い替え確認を経て送られる', async () => {
@@ -118,19 +125,19 @@ describe('取込履歴のやり直し', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: 'この取込をやり直す' }));
 
+    fireEvent.click(await screen.findByText('詳細を見る'));
     expect(await screen.findByRole('alert')).toHaveProperty(
       'textContent',
       '取込の原本が保管先に見つかりません',
     );
-    expect(screen.queryByText(/選択中:/)).toBeNull();
+    expect(screen.queryByRole('heading', { name: /ファイルを選択中/ })).toBeNull();
   });
 
   it('原本を保存していない履歴にはボタンを出さない', async () => {
     stubFetch([historyRow({ originalRecorded: false }), historyRow({ id: 42 })], () => new Response(''));
     renderPage();
 
-    const rows = await screen.findAllByRole('row');
-    const legacy = rows.find((row) => within(row).queryByText('原本なし'));
+    const legacy = (await screen.findByText('原本なし')).closest('.import-record');
     expect(legacy).toBeTruthy();
     expect(screen.getAllByRole('button', { name: 'この取込をやり直す' })).toHaveLength(1);
   });

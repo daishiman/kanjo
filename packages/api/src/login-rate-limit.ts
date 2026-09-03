@@ -1,4 +1,3 @@
-import { ATTACHMENT_SCHEDULED_MAX_D1_QUERIES } from './attachment-recovery.js';
 import type { AuthEnv } from './auth.js';
 
 const SECOND_MS = 1_000;
@@ -16,12 +15,7 @@ export const PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS = Object.freeze({
   staleAfterSeconds: 7 * DAY_SECONDS,
   cleanupBatchSize: 100,
   routeMaxD1Queries: 2,
-  scheduledMaxD1Queries: 1,
 });
-
-/** attachment ledger/backupの43 + password throttle stale cleanupの1。Worker入口からはexportしない。 */
-export const SCHEDULED_MAINTENANCE_MAX_D1_QUERIES =
-  ATTACHMENT_SCHEDULED_MAX_D1_QUERIES + PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.scheduledMaxD1Queries;
 
 export const PASSWORD_LOGIN_RATE_LIMIT_ERROR = Object.freeze({
   code: 'login_rate_limited',

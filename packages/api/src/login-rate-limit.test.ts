@@ -6,9 +6,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { app } from './index.js';
 import {
   PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS,
-  SCHEDULED_MAINTENANCE_MAX_D1_QUERIES,
   cleanupStalePasswordLoginRateLimits,
 } from './login-rate-limit.js';
+import { SCHEDULED_MAINTENANCE_D1_PLAN } from './scheduled-maintenance-budget.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
 const auth = {
@@ -155,11 +155,11 @@ describe('password login D1 rate limit', () => {
     });
   });
 
-  it('stale cleanupは100件を1 queryにboundedし、scheduled総D1 worst-caseを44で固定する', async () => {
+  it('stale cleanupは100件を1 queryにboundedし、scheduled全体予算へ1本だけ計上する', async () => {
     expect(PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.cleanupBatchSize).toBe(100);
-    expect(PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.scheduledMaxD1Queries).toBe(1);
-    expect(SCHEDULED_MAINTENANCE_MAX_D1_QUERIES).toBe(44);
-    expect(SCHEDULED_MAINTENANCE_MAX_D1_QUERIES).toBeLessThan(50);
+    expect(SCHEDULED_MAINTENANCE_D1_PLAN.jobs.password_login_rate_limit_cleanup).toBe(1);
+    expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBe(46);
+    expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBeLessThan(50);
     const now = Date.now();
     const stale = now - (PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.staleAfterSeconds + 1) * 1_000;
     await d1

@@ -169,13 +169,14 @@ export function ImprovementRequestButton({
       <button
         type="button"
         className="improve-trigger"
+        aria-label={phase === 'capturing' ? '画面を撮影中…' : '改善要望'}
         // 右下に固定した結果、このボタン自身が撮影対象の右下を必ず覆う。自分だけ除く
         data-capture-hide=""
         onClick={() => void start()}
         disabled={phase === 'capturing'}
         aria-busy={phase === 'capturing'}
       >
-        {phase === 'capturing' ? '画面を撮影中…' : '改善要望'}
+        {phase === 'capturing' ? '画面を撮影中…' : '改善を送る'}
       </button>
       {phase === 'capturing' && (
         <output className="improve-capturing" aria-live="polite">

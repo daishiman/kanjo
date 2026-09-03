@@ -253,6 +253,8 @@ export interface TxEditView {
   mid: string | null;
   owner: Owner | null;
   updatedAt: string | null;
+  origin: 'manual' | 'vendor_memory' | null;
+  originKey: string | null;
 }
 
 /* -------- 明細の分割記帳 -------- */
@@ -315,6 +317,9 @@ export interface TxRow {
   edited: boolean;
   /** 編集後に取込値が変わった */
   conflict: boolean;
+  /** 保存された由来。値一致から推測しない。 */
+  origin: 'manual' | 'vendor_memory' | null;
+  originKey: string | null;
   /** 手動の科目が現在の公私の系統(事業=freee科目 / 個人=MF内訳)に無い */
   scopeMismatch: boolean;
   /** 添付されている証憑の件数(0 = 未添付) */
@@ -471,6 +476,159 @@ export interface ImportHistoryRow {
   createdAt: string | null;
   /** 投入原本をR2に保存済み=やり直し(再取込)の入口を出せる。旧APIからの段階更新中はundefined */
   originalRecorded?: boolean;
+  /** 帳簿データの現在参照をサーバが数えた、取込単位の取消可否 */
+  cancelable?: boolean;
+  /** 帳簿データを変えずに、この履歴と他から参照されない保存原本だけを破棄できる */
+  discardable?: boolean;
+}
+
+export interface ImportHistoryDiscardPreflight {
+  fingerprint: string;
+  originalDisposition: 'delete' | 'keep_shared' | 'none';
+}
+
+export interface ImportHistoryDiscardResult {
+  discarded: true;
+  original: 'deleted' | 'deletion_pending' | 'kept_shared' | 'not_recorded';
+}
+
+/* -------- 取込データの削除・取り消し -------- */
+
+/** 削除で消える件数。明細の内容・金額はサーバから返ってこない(DR-9) */
+export interface DeletionCounts {
+  mfTx: number;
+  freeeDeals: number;
+  balanceEntries: number;
+  months: number;
+}
+
+/** 手入力のうち巻き添えになる件数。cashEntries は常に0(DR-6) */
+export interface DeletionCollateral {
+  txEdits: number;
+  txSplits: number;
+  attachments: number;
+  cashEntries: number;
+}
+
+export interface DeletionPreflight {
+  counts: DeletionCounts;
+  collateral: DeletionCollateral;
+  months: string[];
+  /** 全件初期化で実行APIへそのまま返す、サーバ導出の対象範囲 */
+  fullRange: { from: string; to: string } | null;
+  /** 確認した対象の指紋。実行時にそのまま送る。付けないと実行できない */
+  fingerprint: string;
+  /** この操作が実行後に取り消せるか。 */
+  undoable: boolean;
+  /** 実行時刻からの保持日数。preflight時点の絶対期限ではない。 */
+  undoRetentionDays: number;
+}
+
+export interface DeletionResult {
+  operationId: string;
+  counts: DeletionCounts;
+  months: string[];
+  /** ここまでは取り消せる、という期限 */
+  expiresAt: string;
+}
+
+export interface DeletionOperation {
+  id: string;
+  kind: 'delete' | 'undo';
+  granularity: 'transaction' | 'import' | 'period' | 'all';
+  counts: Record<string, number>;
+  undone: boolean;
+  /** まだ戻せるか。期限内でも、保管量の上限で前倒しに捨てられていれば false */
+  undoable: boolean;
+  /** undo metadataが30日保持を終えた後はnull。操作事実は400日層に残る。 */
+  expiresAt: string | null;
+  createdAt: string;
+  result: 'succeeded' | 'failed' | 'rejected';
+}
+
+export interface UndoResult {
+  operationId: string;
+  restored: Record<string, number>;
+  months: string[];
+}
+
+/* -------- 取込の差分プレビュー -------- */
+
+/** 3点比較で食い違った属性1つぶんの値。空文字は「指定なし」 */
+export interface ImportDiffAttrConflict {
+  base: string | null;
+  current: string | null;
+  incoming: string | null;
+}
+
+/** 行として出す明細。属性ごとに、どこが食い違ったかだけを持つ */
+export interface ImportDiffConflict {
+  txId: string;
+  attrs: Partial<Record<'cls' | 'big' | 'mid' | 'owner', ImportDiffAttrConflict>>;
+}
+
+/** 今回preview内で低確信だった明細と候補。全memory一覧ではない。 */
+export interface ImportVendorCandidate {
+  txId: string;
+  vendorKey: string;
+  vendorLabel: string;
+  cls: Cls | null;
+  big: string | null;
+  mid: string | null;
+  owner: Owner | null;
+  reason: string;
+}
+
+export interface ImportDiffResult {
+  supported: true;
+  /** previewと確定の対象・入力が同一であることをサーバが再検証する鍵 */
+  fingerprint: string;
+  months: string[];
+  counts: { added: number; changed: number; deleted: number; unchanged: number };
+  conflicts: ImportDiffConflict[];
+  backfilled: number;
+  automation: { autoApplied: number; candidates: number; learned: number };
+  candidates: ImportVendorCandidate[];
+  queries: { planned: number; limit: number };
+}
+
+/** freee・資産推移・JSONなど、3点比較をしない正常な取込形式。 */
+export interface ImportDiffUnavailable {
+  supported: false;
+  message: string;
+}
+
+export type ImportDiffResponse = ImportDiffResult | ImportDiffUnavailable;
+
+/* -------- 取引先ごとの決め事 -------- */
+
+export interface VendorMemoryRow {
+  vendorKey: string;
+  vendorLabel: string;
+  cls: 'biz' | 'per' | null;
+  big: string | null;
+  mid: string | null;
+  owner: CoreOwner | null;
+  hitCount: number;
+  disagreeCount: number;
+  pinned: boolean;
+  revoked: boolean;
+  /** auto-apply = 自動で当てる / suggest = 候補として出す / inactive = 出さない */
+  disposition: 'auto-apply' | 'suggest' | 'inactive';
+  confidence: number;
+  /** 画面へそのまま出す説明。割合ではなく件数で書いてある */
+  reason: string;
+  /** 最後にこの決め事が動いた日時 */
+  updatedAt: string;
+}
+
+export interface VendorMemoryReapply {
+  vendorKey: string;
+  disposition: VendorMemoryRow['disposition'];
+  reason: string;
+  matched: number;
+  applied: number;
+  withdrawn: number;
 }
 
 /* -------- 添付(レシート・領収書) -------- */

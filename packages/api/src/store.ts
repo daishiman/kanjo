@@ -17,6 +17,7 @@ import {
   type SubVendor,
   type TxEdit,
   type TxSplit,
+  type VendorMemoryRecord,
   applyClassification,
   applyFreeeDeals,
   cashBizDeals,
@@ -37,6 +38,7 @@ import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import * as s from './db/schema.js';
 import { invalidateJsonSnapshotQuery } from './import-active.js';
+import { txEditFromRow, txEditInsertValues } from './tx-edit-codec.js';
 
 export type Db = ReturnType<typeof drizzle>;
 
@@ -201,6 +203,26 @@ export const ruleFromRow = (r: typeof s.rules.$inferSelect): Rule => ({
   owner: r.owner ?? null,
 });
 
+/** vendor_memoryのDB行をcoreの純粋resolverへ渡す唯一の投影。 */
+export const vendorMemoryFromRow = (row: typeof s.vendorMemory.$inferSelect): VendorMemoryRecord => ({
+  vendorKey: row.vendorKey,
+  vendorLabel: row.vendorLabel,
+  cls: row.cls,
+  big: row.categoryMajor,
+  mid: row.categoryMid,
+  owner: row.owner,
+  hitCount: row.hitCount,
+  disagreeCount: row.disagreeCount,
+  pinned: row.pinned === 1,
+  revoked: row.revoked === 1,
+});
+
+/** 1利用者ぶんを1 queryで読み、明細ごとのN+1を作らない。 */
+export async function loadVendorMemories(db: Db, userId: string): Promise<VendorMemoryRecord[]> {
+  const rows = await db.select().from(s.vendorMemory).where(eq(s.vendorMemory.userId, userId));
+  return rows.map(vendorMemoryFromRow);
+}
+
 /** ルール評価の正規順序。sort_order同値時もidで決定的にする。 */
 export async function loadOrderedRuleRows(db: Db, userId: string) {
   return db
@@ -226,40 +248,37 @@ export const splitFromRow = (r: typeof s.txSplits.$inferSelect): TxSplit => ({
   ...(r.memo ? { memo: r.memo } : {}),
 });
 
-export const editFromRow = (r: typeof s.txEdits.$inferSelect): TxEdit => ({
-  cls: r.cls ?? null,
-  big: r.categoryMajor ?? null,
-  mid: r.categoryMid ?? null,
-  owner: r.owner ?? null,
-  baseBig: r.baseMajor ?? null,
-  baseMid: r.baseMid ?? null,
-  note: r.note ?? null,
-  updatedAt: r.updatedAt ?? null,
-});
+/** @deprecated tx_edits の列投影は tx-edit-codec が正本。既存callerの名前だけ保つ。 */
+export const editFromRow = txEditFromRow;
 
 /** 編集が空(全属性 null)なら行ごと消す */
 export const editIsEmpty = (e: TxEdit): boolean => !e.cls && !e.big && !e.mid && !e.owner;
 
-export async function upsertEdit(db: Db, userId: string, txId: string, e: TxEdit): Promise<void> {
+export async function upsertEdit(
+  db: Db,
+  userId: string,
+  txId: string,
+  e: TxEdit,
+  options: { disagreeOriginKey?: string | null } = {},
+): Promise<void> {
   const remove = db.delete(s.txEdits).where(and(eq(s.txEdits.userId, userId), eq(s.txEdits.txId, txId)));
   const invalidate = invalidateJsonSnapshotQuery(db, userId, 'tx_edits');
+  const now = new Date().toISOString();
+  const disagreement = options.disagreeOriginKey
+    ? db
+        .update(s.vendorMemory)
+        .set({ disagreeCount: sql`${s.vendorMemory.disagreeCount} + 1`, updatedAt: now })
+        .where(
+          and(eq(s.vendorMemory.userId, userId), eq(s.vendorMemory.vendorKey, options.disagreeOriginKey)),
+        )
+    : null;
   if (editIsEmpty(e)) {
-    await db.batch([remove, invalidate]);
+    await db.batch([remove, ...(disagreement ? [disagreement] : []), invalidate]);
   } else {
     await db.batch([
       remove,
-      db.insert(s.txEdits).values({
-        userId,
-        txId,
-        cls: e.cls ?? null,
-        categoryMajor: e.big ?? null,
-        categoryMid: e.mid ?? null,
-        owner: e.owner ?? null,
-        baseMajor: e.baseBig ?? null,
-        baseMid: e.baseMid ?? null,
-        note: e.note ?? null,
-        updatedAt: e.updatedAt ?? new Date().toISOString(),
-      }),
+      db.insert(s.txEdits).values(txEditInsertValues(userId, txId, e, now)),
+      ...(disagreement ? [disagreement] : []),
       invalidate,
     ]);
   }
@@ -269,19 +288,9 @@ export async function replaceEdits(db: Db, userId: string, edits: Record<string,
   await db.delete(s.txEdits).where(eq(s.txEdits.userId, userId));
   const rows = Object.entries(edits)
     .filter(([, e]) => !editIsEmpty(e))
-    .map(([txId, e]) => ({
-      userId,
-      txId,
-      cls: e.cls ?? null,
-      categoryMajor: e.big ?? null,
-      categoryMid: e.mid ?? null,
-      owner: e.owner ?? null,
-      baseMajor: e.baseBig ?? null,
-      baseMid: e.baseMid ?? null,
-      note: e.note ?? null,
-      updatedAt: e.updatedAt ?? null,
-    }));
-  for (const grp of chunk(rows, 9)) await db.insert(s.txEdits).values(grp);
+    .map(([txId, e]) => txEditInsertValues(userId, txId, e));
+  // 1行あたりの列が増えたぶん、1文へ載せられる行数を減らす(D1のバインド上限)
+  for (const grp of chunk(rows, 7)) await db.insert(s.txEdits).values(grp);
 }
 
 export async function replaceInstitutionOwners(
@@ -317,9 +326,12 @@ export async function loadDataset(
   db: Db,
   userId: string,
   cashEntriesSnapshot?: ReadonlyArray<CashEntry>,
-  options: { withSplits?: boolean } = {},
+  options: { withSplits?: boolean; loadSplitRows?: boolean } = {},
 ): Promise<Dataset> {
   const withSplits = options.withSplits ?? true;
+  // canonical mutationの事前計画は、生の親明細を保ったまま分割metadataも要る。
+  // 通常のwithSplits:false(取込preview)は従来どおり1 query節約する。
+  const loadSplitRows = options.loadSplitRows ?? withSplits;
   const [
     aggRows,
     baselineRows,
@@ -349,7 +361,7 @@ export async function loadDataset(
     db.select().from(s.institutionOwners).where(eq(s.institutionOwners.userId, userId)),
     loadSubVendors(db, userId),
     cashEntriesSnapshot ? Promise.resolve([...cashEntriesSnapshot]) : loadCashEntries(db, userId),
-    withSplits
+    loadSplitRows
       ? db.select().from(s.txSplits).where(eq(s.txSplits.userId, userId))
       : Promise.resolve([] as (typeof s.txSplits.$inferSelect)[]),
   ]);
@@ -567,6 +579,7 @@ type BackupSnapshotRow = {
   v11: string | null;
   v12: string | number | null;
   v13: string | number | null;
+  v14: string | number | null;
 };
 
 interface BackupSourceSnapshot {
@@ -629,6 +642,8 @@ export interface ImportRestoreSettingsSnapshot {
   taxAccountSettings: TaxAccountSettingSnapshot[];
   receiptSourceProfiles: ReceiptSourceProfileSnapshot[];
   receiptSourceOverrides: ReceiptSourceOverrideSnapshot[];
+  /** 通常取込が1 statement snapshotで読む、利用者単位の決め事。 */
+  vendorMemories: VendorMemoryRecord[];
 }
 
 /**
@@ -667,90 +682,91 @@ const BACKUP_SNAPSHOT_SQL = `
 SELECT * FROM (
 SELECT 'baseline' AS source, NULL AS id, NULL AS rank, amount,
        month AS v1, scope AS v2, NULL AS v3, NULL AS v4, NULL AS v5,
-       NULL AS v6, NULL AS v7, NULL AS v8, NULL AS v9, NULL AS v10, NULL AS v11, NULL AS v12, NULL AS v13
+       NULL AS v6, NULL AS v7, NULL AS v8, NULL AS v9, NULL AS v10, NULL AS v11, NULL AS v12, NULL AS v13, NULL AS v14
 FROM restored_monthly_agg WHERE user_id = ?
 UNION ALL
 SELECT 'freee', id, NULL, amount,
-       month, date, io, partner, account_raw, account_norm, memo, NULL, NULL, NULL, NULL, NULL, NULL
+       month, date, io, partner, account_raw, account_norm, memo, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM freee_deals WHERE user_id = ?
 UNION ALL
 SELECT 'mf', id, NULL, amount,
        tx_id, month, date, description, category_major, category_mid, institution, memo,
-       CAST(is_target AS TEXT), CAST(is_transfer AS TEXT), NULL, identity_stable, NULL
+       CAST(is_target AS TEXT), CAST(is_transfer AS TEXT), NULL, identity_stable, NULL, NULL
 FROM mf_transactions WHERE user_id = ?
 UNION ALL
 SELECT 'rule', id, sort_order, NULL,
-       keyword, cls, category_major, category_mid, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       keyword, cls, category_major, category_mid, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM rules WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
 SELECT 'edit', NULL, NULL, NULL,
-       tx_id, cls, category_major, category_mid, owner, base_major, base_mid, note, updated_at, NULL, NULL, NULL, NULL
+       tx_id, cls, category_major, category_mid, owner, base_major, base_mid, note, updated_at,
+       base_cls, base_owner, stable_key, CAST(fingerprint_version AS TEXT), base_known
 FROM tx_edits WHERE user_id = ?
 UNION ALL
 SELECT 'budget', NULL, NULL, monthly_amount,
-       account, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       account, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM budgets WHERE user_id = ?
 UNION ALL
 SELECT 'cash_override', NULL, expense, revenue,
-       month, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       month, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM cash_overrides WHERE user_id = ?
 UNION ALL
 SELECT 'unrecorded', NULL, NULL, NULL,
-       month, kind, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       month, kind, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM unrecorded_months WHERE user_id = ?
 UNION ALL
 SELECT 'institution', NULL, NULL, NULL,
-       institution, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       institution, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM institution_owners WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
 SELECT 'vendor', id, sort_order, NULL,
-       name, aliases, accounts, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       name, aliases, accounts, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendors WHERE user_id = ?
 UNION ALL
 SELECT 'cash', id, NULL, amount,
-       date, month, side, io, description, category_major, category_mid, memo, NULL, transit_from, transit_to, transit_round, receipt_waived
+       date, month, side, io, description, category_major, category_mid, memo, NULL, transit_from, transit_to, transit_round, receipt_waived, NULL
 FROM cash_entries WHERE user_id = ?
 UNION ALL
 SELECT 'split', id, seq, amount,
        tx_id, line_id, cls, category_major, category_mid, memo, created_at, updated_at,
-       NULL, NULL, NULL, parent_amount, NULL
+       NULL, NULL, NULL, parent_amount, NULL, NULL
 FROM tx_splits WHERE user_id = ?
 UNION ALL
 SELECT 'norm', NULL, NULL, NULL,
-       raw, norm, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       raw, norm, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM account_norm_map WHERE user_id = ?
 UNION ALL
 SELECT 'attachment', id, delete_attempts, size,
        target_kind, target_key, r2_key, filename, content_type, content_hash, created_at, state,
-       delete_requested_at, last_delete_error, object_deleted_at, parent_missing_at, cleanup_dead_letter_at
+       delete_requested_at, last_delete_error, object_deleted_at, parent_missing_at, cleanup_dead_letter_at, NULL
 FROM attachments WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
 SELECT 'analysis_setting', NULL, NULL, stat_min_months,
-       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM analysis_settings WHERE user_id = ?
 UNION ALL
 SELECT 'sub_vendor_exclusion', id, NULL, NULL,
-       partner, vendor_key, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       partner, vendor_key, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendor_exclusions WHERE user_id = ?
 UNION ALL
 SELECT 'tax_account_setting', NULL, tax_year, business_percent,
-       account, tax_account, basis, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       account, tax_account, basis, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM tax_account_settings WHERE user_id = ?
 UNION ALL
 SELECT 'receipt_source_profile', NULL, NULL, NULL,
        profile_key, merchant_key, service_name, source_url, login_account, memo,
-       NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM receipt_source_profiles WHERE user_id = ?
 UNION ALL
 SELECT 'receipt_source_override', NULL, NULL, NULL,
        target_kind, target_key, merchant_key, profile_key,
-       service_name, source_url, login_account, memo, NULL, NULL, NULL, NULL, NULL
+       service_name, source_url, login_account, memo, NULL, NULL, NULL, NULL, NULL, NULL
 FROM receipt_source_overrides WHERE user_id = ?
 )
 ORDER BY source, rank, id, v1, v2`;
@@ -825,6 +841,14 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
       baseMid: row.v7,
       note: row.v8,
       updatedAt: row.v9,
+      // 0030 で足した基準値。base_major/base_mid と同じ扱いにしないと、復元の直後の
+      // 再取込で公私・名義だけが「利用者は触っていない」と読まれ、手当てが失われる(D6)
+      baseCls: row.v10 === 'biz' || row.v10 === 'per' ? row.v10 : null,
+      baseOwner: normalizeOwner(row.v11),
+      // 第二の引き当て鍵(DR-13)。SQL側で TEXT に寄せてあるので数へ戻す
+      stableKey: row.v12 == null ? null : String(row.v12),
+      fingerprintVersion: row.v13 == null ? null : Number(row.v13),
+      baseKnown: row.v14 == null ? undefined : Number(row.v14),
     };
   }
   const institutionOwners: Dataset['institutionOwners'] = {};
@@ -1028,12 +1052,20 @@ export async function loadImportRestoreSettingsSnapshot(
              'profileKey',profile_key,'serviceName',service_name,'sourceUrl',source_url,
              'loginAccount',login_account,'memo',memo))
            FROM receipt_source_overrides WHERE user_id=?
+         )),
+         'vendorMemories', json((
+           SELECT json_group_array(json_object(
+             'vendorKey',vendor_key,'vendorLabel',vendor_label,'cls',cls,
+             'big',category_major,'mid',category_mid,'owner',owner,
+             'hitCount',hit_count,'disagreeCount',disagree_count,
+             'pinned',pinned,'revoked',revoked))
+           FROM vendor_memory WHERE user_id=?
          ))
        ), NULL, NULL
        )
        ORDER BY source, v1, v2`,
     )
-    .bind(userId, userId, userId, userId, userId, userId, userId, userId, userId)
+    .bind(userId, userId, userId, userId, userId, userId, userId, userId, userId, userId)
     .all<{ source: string; v1: string | null; v2: string | null; amount: number | null }>();
   const normMap: Record<string, string> = {};
   for (const row of result.results.filter((row) => row.source === 'norm')) {
@@ -1083,13 +1115,23 @@ export async function loadImportRestoreSettingsSnapshot(
   const receiptSources = payloads<{
     profiles: ReceiptSourceProfileSnapshot[];
     overrides: ReceiptSourceOverrideSnapshot[];
-  }>('receipt_sources')[0] ?? { profiles: [], overrides: [] };
+    vendorMemories: Array<
+      Omit<VendorMemoryRecord, 'pinned' | 'revoked'> & { pinned: number; revoked: number }
+    >;
+  }>('receipt_sources')[0] ?? { profiles: [], overrides: [], vendorMemories: [] };
   const receiptSourceProfiles = receiptSources.profiles.sort((a, b) =>
     a.profileKey.localeCompare(b.profileKey),
   );
   const receiptSourceOverrides = receiptSources.overrides.sort(
     (a, b) => a.targetKind.localeCompare(b.targetKind) || a.targetKey.localeCompare(b.targetKey),
   );
+  const vendorMemories = receiptSources.vendorMemories
+    .map((row) => ({
+      ...row,
+      pinned: row.pinned === 1,
+      revoked: row.revoked === 1,
+    }))
+    .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey, 'ja'));
   return {
     normMap,
     statMinMonths: result.results.find((row) => row.source === 'analysis')?.amount ?? DEFAULT_STAT_MIN_MONTHS,
@@ -1102,6 +1144,7 @@ export async function loadImportRestoreSettingsSnapshot(
     taxAccountSettings,
     receiptSourceProfiles,
     receiptSourceOverrides,
+    vendorMemories,
   };
 }
 
@@ -1326,6 +1369,20 @@ export interface RecomputePlan {
   normalizedDealUpdates: Array<{ id: number; accountNorm: string }>;
 }
 
+/**
+ * canonical書込みとmonthly_agg入れ替えを1つのD1 batchにするための、未確定状態。
+ * 削除/undoはDBを先に動かさず、この差分を現在snapshotへ重ねて派生集計を計画する。
+ */
+export interface RecomputeCanonicalMutation {
+  affectedMonths: readonly string[];
+  removeMfTxIds?: readonly string[];
+  removeFreeeDealIds?: readonly number[];
+  clearRestoredMonthlyAgg?: boolean;
+  restoreMfTx?: readonly MfTx[];
+  restoreFreeeDeals?: readonly FreeeDeal[];
+  restoreMonthlyAgg?: ReadonlyArray<{ month: string; scope: string; amount: number }>;
+}
+
 /** D1のTEXT/BLOB 2MB上限に5%の余白を取ったJSON bind上限。 */
 export const D1_JSON_BIND_SAFE_BYTES = 1_900_000;
 
@@ -1355,29 +1412,63 @@ export async function planRecomputeFromDeals(
   userId: string,
   affectedCashEntries: ReadonlyArray<Pick<CashEntry, 'month' | 'side'>> = [],
   cashEntriesSnapshot?: ReadonlyArray<CashEntry>,
+  canonicalMutation?: RecomputeCanonicalMutation,
 ): Promise<RecomputePlan> {
-  const [normMap, dealRows, baselineRows, rawMfRows, cashEntries] = await Promise.all([
+  const [normMap, databaseDealRows, databaseBaselineRows, rawMfRows, cashEntries] = await Promise.all([
     loadNormMap(db, userId),
     db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
     db.select().from(s.restoredMonthlyAgg).where(eq(s.restoredMonthlyAgg.userId, userId)),
     db
-      .select({ month: s.mfTransactions.month })
+      .select({ txId: s.mfTransactions.txId, month: s.mfTransactions.month })
       .from(s.mfTransactions)
       .where(eq(s.mfTransactions.userId, userId)),
     cashEntriesSnapshot === undefined
       ? loadCashEntries(db, userId)
       : Promise.resolve([...cashEntriesSnapshot]),
   ]);
+  const removedDeals = new Set(canonicalMutation?.removeFreeeDealIds ?? []);
+  const dealRows = databaseDealRows.filter((row) => !removedDeals.has(row.id));
+  const baselineRows = canonicalMutation?.clearRestoredMonthlyAgg ? [] : [...databaseBaselineRows];
+  for (const row of canonicalMutation?.restoreMonthlyAgg ?? []) {
+    const index = baselineRows.findIndex(
+      (current) => current.month === row.month && current.scope === row.scope,
+    );
+    if (index >= 0) baselineRows[index] = { ...baselineRows[index]!, amount: row.amount };
+    else baselineRows.push({ userId, ...row });
+  }
+
   const normalizedDealUpdates = dealRows
     .map((row) => ({ id: row.id, accountNorm: normalizeAccount(row.accountRaw ?? '', normMap) }))
     .filter((row, index) => row.accountNorm !== dealRows[index]?.accountNorm);
-  const data = await loadDataset(db, userId, cashEntries);
-  const rawMfMonths = new Set(rawMfRows.map((r) => r.month));
+  let data = await loadDataset(
+    db,
+    userId,
+    cashEntries,
+    canonicalMutation ? { withSplits: false, loadSplitRows: true } : undefined,
+  );
+  if (canonicalMutation) {
+    const removedMf = new Set(canonicalMutation.removeMfTxIds ?? []);
+    data.mfTx = data.mfTx.filter((tx) => !removedMf.has(tx.id));
+    const byId = new Map(data.mfTx.map((tx) => [tx.id, tx]));
+    for (const tx of canonicalMutation.restoreMfTx ?? []) {
+      byId.set(tx.id, { ...tx });
+      ensureMonth(data, tx.m);
+    }
+    data.mfTx = [...byId.values()];
+    data = projectAccountingDataset(data);
+  }
+  const restoredMfMonths = (canonicalMutation?.restoreMfTx ?? []).map((row) => row.m);
+  const removedMfTxIds = new Set(canonicalMutation?.removeMfTxIds ?? []);
+  const rawMfMonths = new Set([
+    ...rawMfRows.filter((row) => !removedMfTxIds.has(row.txId)).map((row) => row.month),
+    ...restoredMfMonths,
+  ]);
   const personalMonths = new Set([
     ...rawMfMonths,
     ...personalBaselineMonths(baselineRows),
     ...cashEntries.filter((entry) => entry.side === 'per').map((entry) => entry.month),
     ...affectedCashEntries.filter((entry) => entry.side === 'per').map((entry) => entry.month),
+    ...(canonicalMutation?.affectedMonths ?? []),
   ]);
   for (const month of personalMonths) {
     delete data.personal[month];
@@ -1395,7 +1486,11 @@ export async function planRecomputeFromDeals(
   data.subs.vendors = data.subs.vendors.filter((v) => registered.has(v));
   // 事業分の現金明細は freee 仕訳と同じ経路で科目別集計に合流する(取込値とは別テーブルなので再取込で消えない)
   const cashDeals = cashBizDeals(cashEntries, normMap);
-  const freeeMonths = new Set(dealRows.map((r) => r.month));
+  const restoredDeals = (canonicalMutation?.restoreFreeeDeals ?? []).map((deal) => ({
+    ...deal,
+    accountNorm: normalizeAccount(deal.accountRaw, normMap),
+  }));
+  const freeeMonths = new Set([...dealRows.map((r) => r.month), ...restoredDeals.map((r) => r.month)]);
   const affectedBusinessMonths = affectedCashEntries
     .filter((entry) => entry.side === 'biz')
     .map((entry) => entry.month);
@@ -1405,6 +1500,7 @@ export async function planRecomputeFromDeals(
       ...businessBaselineMonths(baselineRows),
       ...cashDeals.map((d) => d.month),
       ...affectedBusinessMonths,
+      ...(canonicalMutation?.affectedMonths ?? []),
     ]),
   ].sort();
   if (months.length) {
@@ -1416,6 +1512,7 @@ export async function planRecomputeFromDeals(
           ...dealFromRow(r),
           accountNorm: normalizeAccount(r.accountRaw ?? '', normMap),
         })),
+        ...restoredDeals,
         ...cashDeals,
       ],
       months,
@@ -1541,6 +1638,22 @@ export function recomputePlanQueries(db: Db, userId: string, plan: RecomputePlan
   const aggregateQueries = aggregateReplacementQueries(db, userId, plan.data);
   const normalizeDeals = normalizedDealUpdatesQuery(db, userId, plan.normalizedDealUpdates);
   return normalizeDeals ? [normalizeDeals, ...aggregateQueries] : aggregateQueries;
+}
+
+/** Drizzleの集計正本を、native D1 batchの他statementと同居できる形へ変換する。 */
+export function recomputePlanStatements(
+  database: D1Database,
+  userId: string,
+  plan: RecomputePlan,
+): D1PreparedStatement[] {
+  const queries = recomputePlanQueries(getDb(database), userId, plan);
+  return queries.map((query) => {
+    if (!('toSQL' in query) || typeof query.toSQL !== 'function') {
+      throw new D1BulkPayloadError('invalid_bulk_update');
+    }
+    const built = query.toSQL();
+    return database.prepare(built.sql).bind(...built.params);
+  });
 }
 
 /**

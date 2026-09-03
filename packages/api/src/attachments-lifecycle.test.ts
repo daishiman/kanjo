@@ -7,8 +7,12 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ATTACHMENT_SCHEDULED_MAX_D1_QUERIES, runAttachmentMaintenance } from './attachment-recovery.js';
+import { runAttachmentMaintenance } from './attachment-recovery.js';
 import { app, scheduledMaintenance } from './index.js';
+import {
+  SCHEDULED_ATTACHMENT_JOB_LIMIT,
+  SCHEDULED_MAINTENANCE_D1_PLAN,
+} from './scheduled-maintenance-budget.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
 import { getDb, loadBackupPayload } from './store.js';
 
@@ -832,9 +836,9 @@ describe('証憑の添付', () => {
     });
   });
 
-  it('scheduled cleanupは10件bounded・43 queries以下で、grace経過+max attemptsだけdead-letter化する', async () => {
-    expect(ATTACHMENT_SCHEDULED_MAX_D1_QUERIES).toBe(43);
-    expect(ATTACHMENT_SCHEDULED_MAX_D1_QUERIES).toBeLessThan(50);
+  it('scheduled cleanupは3件・20 queries以下で、grace経過+max attemptsだけdead-letter化する', async () => {
+    expect(SCHEDULED_ATTACHMENT_JOB_LIMIT).toBe(3);
+    expect(SCHEDULED_MAINTENANCE_D1_PLAN.jobs.attachment_maintenance).toBe(20);
     const target = await seedCashEntry();
     const created = await upload(target);
     const { attachment } = (await created.json()) as { attachment: { id: number } };

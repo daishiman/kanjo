@@ -62,6 +62,12 @@ const ext = (name: string): string => name.toLowerCase().split('.').pop() ?? '';
 const isZipMagic = (b: Uint8Array): boolean => b.length > 3 && b[0] === 0x50 && b[1] === 0x4b;
 const isXlsMagic = (b: Uint8Array): boolean => b.length > 3 && b[0] === 0xd0 && b[1] === 0xcf;
 
+/** freeeの取引ZIPに同梱される、口座間の振替ファイルのヘッダー。 */
+const isTransferHeader = (header: readonly string[]): boolean => {
+  const normalized = header.map((cell) => cell.trim());
+  return ['振替日', '振替元口座'].every((name) => normalized.some((cell) => cell.includes(name)));
+};
+
 function rowsFromXlsx(buf: Uint8Array): string[][] {
   const wb = XLSX.read(buf, { type: 'array' });
   const ws = wb.Sheets[wb.SheetNames[0]];
@@ -209,8 +215,8 @@ export function describeUnknownFormat(header: string[]): string {
   const has = (...names: string[]) => names.every((n) => h.some((c) => c.includes(n)));
   const guide =
     'このアプリが読めるのは、マネーフォワードの「家計簿 › 収入・支出詳細」CSV、マネーフォワードの「資産 › 資産推移」CSV(残高)、freeeの「取引」エクスポート(CSV/ZIP)です。';
-  if (has('振替日', '振替元口座'))
-    return `マネーフォワードの「振替」ファイルのため取り込めません(口座間の移動は収支に含めません)。${guide}`;
+  if (isTransferHeader(header))
+    return `口座間の「振替」データのため、単体では取り込めません(口座間の移動は収支に含めません)。${guide}`;
   if (has('日付', '残高') || has('取引日', '残高')) return `口座明細(残高付き)のため取り込めません。${guide}`;
   if (has('勘定科目', '借方') || has('借方勘定科目'))
     return `freeeの仕訳帳形式のため取り込めません。freeeでは「取引」の一覧からエクスポートしてください。${guide}`;
@@ -251,12 +257,41 @@ export function parseUpload(
     if (entries['[Content_Types].xml']) {
       return [classifyRows(filename, rowsFromXlsx(buf), normMap)];
     }
-    const units: ParsedUnit[] = [];
+    const parsedEntries: Array<{ base: string; parent: string; data: Uint8Array; units: ParsedUnit[] }> = [];
     for (const [name, data] of Object.entries(entries)) {
       const base = name.split('/').pop() ?? name;
       if (!base || base.startsWith('.') || name.endsWith('/') || name.includes('__MACOSX')) continue;
-      units.push(...parseUpload(`${filename}/${base}`, data, normMap, depth + 1));
+      const lastSlash = name.lastIndexOf('/');
+      const parent = lastSlash < 0 ? '' : name.slice(0, lastSlash);
+      parsedEntries.push({
+        base,
+        parent,
+        data,
+        units: parseUpload(`${filename}/${base}`, data, normMap, depth + 1),
+      });
     }
+
+    // freeeの標準「取引」ZIPは deals.csv と transfers.csv の2本立て。
+    // transfers.csv は口座間移動で収支に含めないため、deals.csv が同じZIPで
+    // freeeと確定できた場合だけ「失敗」にせず同梱ファイルとして除外する。
+    // transfers.csv 単体は従来どおり対応形式への案内エラーにする。
+    const freeeDealParents = new Set(
+      parsedEntries
+        .filter(
+          ({ base, units }) =>
+            base.toLowerCase() === 'deals.csv' && units.some((unit) => unit.kind === 'freee'),
+        )
+        .map(({ parent }) => parent),
+    );
+    const units = parsedEntries.flatMap(({ base, parent, data, units: entryUnits }) => {
+      if (
+        freeeDealParents.has(parent) &&
+        base.toLowerCase() === 'transfers.csv' &&
+        isTransferHeader(parseCSV(decodeBuf(data))[0] ?? [])
+      )
+        return [];
+      return entryUnits;
+    });
     return units.length ? units : [{ kind: 'error', filename, reason: 'ZIPに取込対象がありません' }];
   }
 

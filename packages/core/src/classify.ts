@@ -1,11 +1,18 @@
 /**
  * 公私仕分けと属性の解決。
- * 優先順位（属性ごと）: 手動編集(edits) > ルール(配列順で先勝ち。その属性を持つルールだけ対象) > 既定
+ * 優先順位（属性ごと）: 手動編集 > ルール > materialize済みvendor memory > 既定。
+ * vendor memory由来のeditだけは、後から効いたルールに譲る。
  *   - cls  の既定: 'per'
  *   - big/mid の既定: 取込値（MFの大項目/中項目）
  *   - owner の既定: 保有金融機関→名義の設定（institutionOwners）。無ければ null（未設定）
  * 取込値と手動編集は別枠で持ち、表示・集計では「編集があればそれを、なければ取込値を」使う。
  */
+import {
+  TX_EDIT_BASE_BITS,
+  type ThreeWayByAttr,
+  conflictingAttrs,
+  resolveThreeWayAttrs,
+} from './three-way.js';
 import type {
   BizPersonalMonth,
   Classification,
@@ -18,6 +25,12 @@ import type {
   Rule,
   TxEdit,
 } from './types.js';
+import {
+  type VendorMemoryDisposition,
+  type VendorMemoryRecord,
+  judgeVendorMemory,
+  normalizeVendorKey,
+} from './vendor-memory.js';
 
 export type AttrSrc = '手動' | 'ルール' | '口座' | '取込値' | '既定';
 
@@ -32,13 +45,117 @@ export interface ResolvedTx {
   ownerSrc: '手動' | 'ルール' | '口座' | '既定';
   /** 手動編集の有無（どれか1属性でも） */
   edited: boolean;
-  /** 編集時点の取込値と現在の取込値が違う（再取込でMF側の分類が変わった） */
+  /**
+   * 編集時点の取込値と現在の取込値が違う（再取込でMF側の分類が変わった）。
+   * `threeWay` から導出した明細単位の要約であり、独立した判定ではない。
+   * 既存の画面・API はこの真偽1つだけを読む（D02 の互換方針）。
+   */
   conflict: boolean;
+  /** 属性ごとの3点比較(DR-10)。どの属性が衝突したかはここだけが持つ。 */
+  threeWay: ThreeWayByAttr;
 }
 
 const hayOf = (t: MfTx): string => `${t.c || ''}|${t.big || ''}|${t.mid || ''}`.toUpperCase();
 
 export const ruleMatches = (t: MfTx, r: Rule): boolean => !!r.k && hayOf(t).includes(r.k.toUpperCase());
+
+export type IncomingValueSource = 'rules' | 'vendor_memory' | 'import';
+
+/**
+ * tx_edit を除いた「今回入ってくる有効値」。
+ *
+ * MF原本は cls / owner を直接運ばない。その2属性を空欄扱いにせず、ルール、適用可能な
+ * 取引先の決め事、取込/既定の順で解く。手動編集時のbaseと再取込のincomingは必ずこの
+ * 関数を通し、同じ明細を経路ごとに別の基準で比較しない。
+ */
+export interface IncomingResolvedTx {
+  cls: Cls;
+  big: string;
+  mid: string;
+  owner: Owner | null;
+  sources: Record<'cls' | 'big' | 'mid' | 'owner', IncomingValueSource>;
+  vendorMemory: VendorMemoryRecord | null;
+  vendorDisposition: VendorMemoryDisposition | null;
+}
+
+export function resolveIncomingTx(
+  t: MfTx,
+  rules: readonly Rule[],
+  institutionOwners: Readonly<Record<string, Owner>> = {},
+  vendorMemories: readonly VendorMemoryRecord[] = [],
+): IncomingResolvedTx {
+  const hay = hayOf(t);
+  const firstRule = <K extends 'cls' | 'owner'>(key: K): Rule[K] | undefined => {
+    for (const rule of rules) {
+      if (rule[key] != null && rule.k && hay.includes(rule.k.toUpperCase())) {
+        return rule[key];
+      }
+    }
+    return undefined;
+  };
+  const categoryRule = rules.find(
+    (rule) =>
+      ((rule.big != null && rule.big !== '') || (rule.mid != null && rule.mid !== '')) &&
+      rule.k &&
+      hay.includes(rule.k.toUpperCase()),
+  );
+
+  // DBは利用者+vendor_keyを一意にするが、純関数へ壊れた入力が来ても黙って先勝ちしない。
+  const memoryMatches = vendorMemories.filter((memory) => memory.vendorKey === normalizeVendorKey(t.c));
+  const vendorMemory = memoryMatches.length === 1 ? memoryMatches[0]! : null;
+  const vendorDisposition = vendorMemory ? judgeVendorMemory(vendorMemory).disposition : null;
+  const eligibleMemory = vendorDisposition === 'auto-apply' ? vendorMemory : null;
+
+  const ruleCls = firstRule('cls');
+  const cls = ruleCls ?? eligibleMemory?.cls ?? 'per';
+  const clsSource: IncomingValueSource = ruleCls ? 'rules' : eligibleMemory?.cls ? 'vendor_memory' : 'import';
+
+  let big = t.big || '';
+  let mid = t.mid || '';
+  let bigSource: IncomingValueSource = 'import';
+  let midSource: IncomingValueSource = 'import';
+  if (categoryRule) {
+    // 科目は1本のルールが組として所有する。下位の決め事と半分ずつ混ぜない。
+    if (categoryRule.big) {
+      big = categoryRule.big;
+      mid = categoryRule.mid || '';
+      bigSource = 'rules';
+      midSource = 'rules';
+    } else if (categoryRule.mid) {
+      mid = categoryRule.mid;
+      midSource = 'rules';
+    }
+  } else {
+    if (eligibleMemory?.big) {
+      big = eligibleMemory.big;
+      bigSource = 'vendor_memory';
+      mid = eligibleMemory.mid || '';
+      midSource = 'vendor_memory';
+    } else if (eligibleMemory?.mid) {
+      mid = eligibleMemory.mid;
+      midSource = 'vendor_memory';
+    }
+  }
+
+  const ruleOwner = firstRule('owner');
+  const accountOwner = t.inst ? institutionOwners[t.inst] : undefined;
+  const owner = ruleOwner ?? eligibleMemory?.owner ?? accountOwner ?? null;
+  const ownerSource: IncomingValueSource = ruleOwner
+    ? 'rules'
+    : eligibleMemory?.owner
+      ? 'vendor_memory'
+      : 'import';
+
+  return {
+    cls,
+    big,
+    mid,
+    owner,
+    sources: { cls: clsSource, big: bigSource, mid: midSource, owner: ownerSource },
+    vendorMemory,
+    vendorDisposition,
+  };
+}
 
 /** HTML版互換の公私判定（overrides = 手動のclsだけを抜き出した写像） */
 export function classifyTx(t: MfTx, rules: Rule[], overrides: Record<string, Cls>): Classification {
@@ -57,34 +174,27 @@ export function resolveTx(
   institutionOwners: Record<string, Owner> = {},
 ): ResolvedTx {
   const e = t.projectedEdit ?? edits[t.id];
-  const hay = hayOf(t);
-  const firstRule = <K extends 'cls' | 'big' | 'mid' | 'owner'>(key: K): Rule[K] | undefined => {
-    for (const r of rules) {
-      if (r[key] != null && r[key] !== '' && r.k && hay.includes(r.k.toUpperCase())) return r[key];
-    }
-    return undefined;
-  };
+  // vendor_memoryは取込確定時にprovenance付きtx_editへmaterializeする。
+  // 表示だけ動的適用する第二経路を作らない。
+  const incoming = resolveIncomingTx(t, rules, institutionOwners);
+  const vendorEdit = e?.origin === 'vendor_memory';
 
-  let cls: Cls = 'per';
-  let clsSrc: ResolvedTx['clsSrc'] = '既定';
-  if (e?.cls) {
+  let cls: Cls = incoming.cls;
+  let clsSrc: ResolvedTx['clsSrc'] = incoming.sources.cls === 'rules' ? 'ルール' : '既定';
+  if (e?.cls && (!vendorEdit || incoming.sources.cls !== 'rules')) {
     cls = e.cls;
     clsSrc = '手動';
-  } else {
-    const rc = firstRule('cls');
-    if (rc) {
-      cls = rc;
-      clsSrc = 'ルール';
-    }
   }
 
-  let big = t.big || '';
-  let mid = t.mid || '';
-  let catSrc: ResolvedTx['catSrc'] = '取込値';
+  let big = incoming.big;
+  let mid = incoming.mid;
+  let catSrc: ResolvedTx['catSrc'] =
+    incoming.sources.big === 'rules' || incoming.sources.mid === 'rules' ? 'ルール' : '取込値';
   const editedCat = (e?.big != null && e.big !== '') || (e?.mid != null && e.mid !== '');
   // 科目は「大項目+中項目」を1組として上書きする。大項目を指定したら中項目は指定値(無ければ空)に置き換え、
   // 取込値の中項目が残って「事業科目なのにMFの中項目付き」のような系統違いにならないようにする
-  if (editedCat) {
+  const categoryRuled = incoming.sources.big === 'rules' || incoming.sources.mid === 'rules';
+  if (editedCat && (!vendorEdit || !categoryRuled)) {
     if (e?.big) {
       big = e.big;
       mid = e.mid || '';
@@ -92,47 +202,62 @@ export function resolveTx(
       mid = e?.mid || mid;
     }
     catSrc = '手動';
-  } else {
-    // 科目はルール1本の(大項目, 中項目)を組で採用する(別ルールの中項目を混ぜない)
-    const cr = rules.find(
-      (r) =>
-        ((r.big != null && r.big !== '') || (r.mid != null && r.mid !== '')) &&
-        r.k &&
-        hay.includes(r.k.toUpperCase()),
-    );
-    if (cr) {
-      if (cr.big) {
-        big = cr.big;
-        mid = cr.mid || '';
-      } else {
-        mid = cr.mid || mid;
-      }
-      catSrc = 'ルール';
-    }
   }
 
-  let owner: Owner | null = null;
-  let ownerSrc: ResolvedTx['ownerSrc'] = '既定';
-  if (e?.owner) {
+  let owner: Owner | null = incoming.owner;
+  let ownerSrc: ResolvedTx['ownerSrc'] =
+    incoming.sources.owner === 'rules' ? 'ルール' : t.inst && institutionOwners[t.inst] ? '口座' : '既定';
+  if (e?.owner && (!vendorEdit || incoming.sources.owner !== 'rules')) {
     owner = e.owner;
     ownerSrc = '手動';
-  } else {
-    const ro = firstRule('owner');
-    if (ro) {
-      owner = ro;
-      ownerSrc = 'ルール';
-    } else if (t.inst && institutionOwners[t.inst]) {
-      owner = institutionOwners[t.inst];
-      ownerSrc = '口座';
-    }
   }
 
   const edited = !!e && (!!e.cls || editedCat || !!e.owner);
-  const conflict =
-    editedCat && ((e?.baseBig ?? null) !== null || (e?.baseMid ?? null) !== null)
-      ? (e?.baseBig ?? '') !== (t.big || '') || (e?.baseMid ?? '') !== (t.mid || '')
-      : false;
-  return { cls, clsSrc, big, mid, catSrc, owner, ownerSrc, edited, conflict };
+  const activeManualAttrs =
+    (e?.cls ? TX_EDIT_BASE_BITS.cls : 0) |
+    (editedCat ? TX_EDIT_BASE_BITS.big | TX_EDIT_BASE_BITS.mid : 0) |
+    (e?.owner ? TX_EDIT_BASE_BITS.owner : 0);
+
+  // 原本が直接運ばないcls/ownerも、編集baseと同じresolverの有効値をincomingにする。
+  const threeWay = resolveThreeWayAttrs(
+    {
+      cls: e?.baseCls ?? null,
+      big: e?.baseBig ?? null,
+      mid: e?.baseMid ?? null,
+      owner: e?.baseOwner ?? null,
+    },
+    { cls, big, mid, owner },
+    { cls: incoming.cls, big: incoming.big, mid: incoming.mid, owner: incoming.owner },
+    e?.baseKnown,
+  );
+  return {
+    cls,
+    clsSrc,
+    big,
+    mid,
+    catSrc,
+    owner,
+    ownerSrc,
+    edited,
+    conflict: conflictingAttrs(threeWay).some((attr) => (activeManualAttrs & TX_EDIT_BASE_BITS[attr]) !== 0),
+    threeWay,
+  };
+}
+
+/** provenanceは保存値が実際に1属性以上寄与するときだけ表示する。 */
+export function vendorMemoryEditContributes(
+  t: MfTx,
+  rules: readonly Rule[],
+  edit: TxEdit | undefined,
+): boolean {
+  if (edit?.origin !== 'vendor_memory' || !edit.originKey) return false;
+  const incoming = resolveIncomingTx(t, rules);
+  const categoryRuled = incoming.sources.big === 'rules' || incoming.sources.mid === 'rules';
+  return (
+    (!!edit.cls && incoming.sources.cls !== 'rules') ||
+    (!!edit.owner && incoming.sources.owner !== 'rules') ||
+    ((!!edit.big || !!edit.mid) && !categoryRuled)
+  );
 }
 
 /** edits から HTML版互換の overrides（手動cls）を導出する */
