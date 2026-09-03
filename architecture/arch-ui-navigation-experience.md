@@ -53,7 +53,7 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 
 ## Context and drivers
 
-- Business/technical context: 15画面(2026-08-30に17画面から統合)の文字ナビで現在地が弱く、親子routeが同時activeになる。
+- Business/technical context: 15 routeと支出分析4タブの文字ナビで現在地が弱く、親子routeが同時activeになる。
 - Quality priorities: learnability、accessibility、predictability、bundle size、route互換。
 - Constraints: labelを残す、税務警告を隠さない、通常遷移へmodalを挟まない、外部icon runtimeを追加しない。
 
@@ -111,5 +111,5 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 ## Risks and verification
 
 - Risk: 似たiconで識別性が下がる。route固有glyphとlabel併記をreview。
-- Architecture fitness test: route=15(+支出分析の3タブ)、icon exhaustive、current≤1、external icon dependency=0。
+- Architecture fitness test: route=15(+支出分析の4タブ)、icon exhaustive、current≤1、external icon dependency=0。
 - Validation: bundle差分、200% zoom、mobile drawer、keyboard/focus、reduced motion。

@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator';
-import { subsCandidates } from '@kanjo/core';
+import { sourceNeutralSubscriptionDeals, subsCandidates } from '@kanjo/core';
 /**
  * AI分析レポート(spec-v1.1 §16)。
  *  - aiRoute      : ログイン済みの画面から使う(依頼の発行、レポート一覧・詳細)
@@ -166,7 +166,7 @@ async function agentPayload(db: ReturnType<typeof getDb>, task: typeof s.aiTasks
   ]);
   // 「サブスクではない」と記録済みの支払先は、AIへの指示文でも候補に挙げない
   const candidates = subsCandidates(
-    dealRows.map(dealFromRow),
+    sourceNeutralSubscriptionDeals(data, dealRows.map(dealFromRow)),
     vendors,
     10,
     excluded.map((e) => e.partner),

@@ -4,7 +4,7 @@ import { zValidator } from '@hono/zod-validator';
  * 登録を変えたら freee 原本から集計を作り直す(取込のたびに消えない)。
  * 候補から外した支払先(「サブスクではない」)は集計に影響しないので、再計算はしない。
  */
-import { subsCandidates, subsReviewStatus, vendorKey } from '@kanjo/core';
+import { sourceNeutralSubscriptionDeals, subsCandidates, subsReviewStatus, vendorKey } from '@kanjo/core';
 import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -14,6 +14,7 @@ import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import {
   dealFromRow,
   getDb,
+  loadDataset,
   loadNormMap,
   loadSubVendorExclusions,
   loadSubVendors,
@@ -51,14 +52,32 @@ const cleanAccounts = (a: string[]): string[] => [...new Set(a.filter(Boolean))]
 subsRoute.get('/sub-vendors', async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const [vendors, dealRows] = await Promise.all([
+  const [vendors, dealRows, mfRows] = await Promise.all([
     loadSubVendors(db, userId),
     db
       .selectDistinct({ accountRaw: s.freeeDeals.accountRaw })
       .from(s.freeeDeals)
       .where(eq(s.freeeDeals.userId, userId)),
+    db
+      .selectDistinct({
+        categoryMajor: s.mfTransactions.categoryMajor,
+        categoryMid: s.mfTransactions.categoryMid,
+      })
+      .from(s.mfTransactions)
+      .where(eq(s.mfTransactions.userId, userId)),
   ]);
-  const accountOptions = [...new Set(dealRows.map((r) => r.accountRaw ?? '').filter(Boolean))].sort();
+  const accountOptions = [
+    ...new Set(
+      [
+        ...dealRows.map((row) => row.accountRaw ?? ''),
+        ...mfRows.flatMap((row) => [
+          row.categoryMajor ?? '',
+          row.categoryMid ?? '',
+          row.categoryMajor && row.categoryMid ? `${row.categoryMajor}/${row.categoryMid}` : '',
+        ]),
+      ].filter(Boolean),
+    ),
+  ].sort();
   // 解約し忘れは金額の異常では拾えないので、最後に見直した日から四半期で催促する
   const review = subsReviewStatus(
     vendors.map((v) => ({ id: v.id, name: v.name, reviewedAt: v.reviewedAt })),
@@ -139,20 +158,22 @@ subsRoute.delete('/sub-vendors/:id', async (c) => {
 subsRoute.get('/sub-vendors/candidates', async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const [vendors, excluded, rows] = await Promise.all([
+  const [vendors, excluded, rows, data] = await Promise.all([
     loadSubVendors(db, userId),
     loadSubVendorExclusions(db, userId),
     db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
+    loadDataset(db, userId),
   ]);
+  const sourceNeutralDeals = sourceNeutralSubscriptionDeals(data, rows.map(dealFromRow));
   return c.json({
     candidates: subsCandidates(
-      rows.map(dealFromRow),
+      sourceNeutralDeals,
       vendors,
       20,
       excluded.map((e) => e.partner),
     ),
     excluded,
-    dealRows: rows.length,
+    dealRows: sourceNeutralDeals.length,
   });
 });
 

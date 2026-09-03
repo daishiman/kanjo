@@ -165,6 +165,14 @@ export function SubscriptionsPage() {
         />
       </div>
 
+      {s.sourceCoverage && (
+        <p className="sub subscriptions-source-note">
+          freee {s.sourceCoverage.freee}件とMoney Forward {s.sourceCoverage.moneyForward}
+          件から集計。両方の厳密一致 {s.sourceCoverage.matched}件は1度だけ数え、要確認{' '}
+          {s.sourceCoverage.review}件は自動統合していません。
+        </p>
+      )}
+
       <div className="card scroll-x">
         <h2>いま何にいくら払っているか</h2>
         <DataTable

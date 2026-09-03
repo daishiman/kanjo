@@ -55,6 +55,37 @@ describe('freeeの取引ZIP', () => {
     ]);
   });
 
+  it('deals.csvの日付空欄の継続明細も親取引の日付で保存件数へ含める', () => {
+    const continuationDeals = [
+      '収支区分,発生日,勘定科目,金額,取引先',
+      '支出,2026/08/01,通信費,1200,架空ベンダー',
+      ',,消耗品費,300,',
+    ].join('\n');
+    const [unit] = parseUpload(
+      'freee_journals_20260903.zip',
+      zipSync({ 'deals.csv': encode(continuationDeals) }),
+      {},
+    );
+
+    expect(unit).toMatchObject({
+      kind: 'freee',
+      rows: 2,
+      skipped: 0,
+      months: ['2026-08'],
+      deals: [
+        { date: '2026-08-01', amount: 1200 },
+        { date: '2026-08-01', amount: 300, partner: '架空ベンダー' },
+      ],
+    });
+    expect(unit && importCountSummary(unit)).toEqual({
+      parsed: 2,
+      stored: 2,
+      countable: 2,
+      nonCountable: 0,
+      rejected: 0,
+    });
+  });
+
   it('transfers.csv単体は従来どおり読めない理由を案内する', () => {
     expect(parseUpload('transfers.csv', encode(transfers), {})).toMatchObject([
       { kind: 'error', filename: 'transfers.csv', reason: expect.stringContaining('振替') },

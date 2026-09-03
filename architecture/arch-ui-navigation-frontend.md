@@ -72,7 +72,7 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 
 | Container/Component | Responsibility | Interface | Data owner | Deployment unit |
 |---|---|---|---|---|
-| routeMetadata.ts | 15 routeと支出分析3タブのiconを含む正本 | AppRouteId/APP_ROUTES/ANALYSIS_TABS/SEARCH_ROUTES | frontend | web |
+| routeMetadata.ts | 15 routeと支出分析4タブのiconを含む正本 | AppRouteId/APP_ROUTES/ANALYSIS_TABS/SEARCH_ROUTES | frontend | web |
 | pages/Analysis.tsx | 増減マトリクス・支出トレンド・統計診断をURL付きタブで束ねる画面 | AnalysisPage | frontend | web |
 | RouteIcon.tsx | 装飾SVG描画 | RouteIconName | frontend | web |
 | Layout.tsx | desktop/mobile/current | location+metadata | frontend | web |
@@ -100,7 +100,7 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 | 参照ADR | この境界での実装帰結 | 回帰を止める場所 |
 |---|---|---|
 | ADR-UI-001 (`end`によるcurrent一意化) | `NavItem.tsx`が全nav項目に`end`を適用し、currentは`aria-current="page"`だけで表す(`className`を関数で渡し`.active`の二重表現を作らない)。CSSで選択表示を隠す回避はしない | DOM testで`/tax`・`/tax/receipts`のcurrent数を固定 |
-| ADR-UI-002 (型付きinline SVG) | `routeMetadata.ts`のicon keyを必須とし`RouteIcon.tsx`が網羅する。外部icon runtimeを追加しない | 型のexhaustive checkと18 icon(15 route+3タブ)のtest |
+| ADR-UI-002 (型付きinline SVG) | `routeMetadata.ts`のicon keyを必須とし`RouteIcon.tsx`が網羅する。外部icon runtimeを追加しない | 型のexhaustive checkと19 icon(15 route+4タブ)のtest |
 | ADR-UI-003 (見る群の統合) | 同じ判断のための切り口だった `/matrix` `/trends` `/diagnosis` を `/analysis/:tab` の1画面へ束ね、旧URLはredirectで残す | `display-contract.test.tsx`(route=15)、`route-task-detail.test.tsx`(タブの説明文を含む用語リンク総数)、`check-mobile-layout.mjs`(サイドバー総高) |
 | ADR-UI-003 (inline disclosure既定) | `details`等の既存要素で段階表示し、遷移経路へmodalを挟まない | DOM testと実ブラウザ確認 |
 | ADR-UI-004 (shared primitive優先) | `PageHeader`/`PageState`/`styles.css` tokenへ寄せ、画面ごとの独自実装を増やさない | lint/typecheckと差分review |
@@ -114,5 +114,5 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 ## Risks and verification
 
 - Risk: APP_ROUTES型推論がmobile filterへ波及。既存contractで固定。
-- Fitness test: 15 route/18 icon、unique id/path、tax exact match、/analysis は前方一致でcurrent、external dependencyなし。
+- Fitness test: 15 route/19 icon、unique id/path、tax exact match、/analysis は前方一致でcurrent、external dependencyなし。
 - Validation: web unit/DOM/build、headless mobile、visual、secret scan。

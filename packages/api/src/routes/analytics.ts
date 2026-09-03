@@ -15,6 +15,7 @@ import {
   benchmarks,
   budgetTable,
   buildBalanceSheet,
+  buildExpenseProjection,
   buildReportHtml,
   cashFlow,
   defenseForecast,
@@ -27,7 +28,7 @@ import {
   periodLabel,
   profitAndLoss,
   resolvePeriodQuery,
-  subscriptions,
+  sourceNeutralSubscriptions,
   toCsv,
   tradeoffCandidates,
   tradeoffReview,
@@ -59,7 +60,9 @@ export const analyticsRoute = new Hono<Ctx>();
  * 選択肢は必ず絞り込み前の Dataset から作る。絞り込み後から作ると、
  * 2025年を選んだ瞬間に選択肢から2026年が消えて戻れなくなる。
  */
-export async function loadScoped(c: Context<Ctx>): Promise<{ data: Dataset; period: PeriodMeta }> {
+export async function loadScoped(
+  c: Context<Ctx>,
+): Promise<{ data: Dataset; all: Dataset; period: PeriodMeta }> {
   const all = await loadDataset(getDb(c.env.DB), c.get('userId'));
   const range = resolvePeriodQuery(all, {
     from: c.req.query('from'),
@@ -69,6 +72,7 @@ export async function loadScoped(c: Context<Ctx>): Promise<{ data: Dataset; peri
   });
   return {
     data: applyPeriod(all, range),
+    all,
     period: {
       applied: range,
       label: periodLabel(range),
@@ -124,8 +128,72 @@ analyticsRoute.get('/trends', async (c) => {
 });
 
 analyticsRoute.get('/subscriptions', async (c) => {
-  const { data } = await loadScoped(c);
-  return c.json(subscriptions(data));
+  const { data, all } = await loadScoped(c);
+  // 期間絞り込みは従来、値が0の支払先を表から落とす。しかし登録定義まで落とすと、
+  // MFにしか無い支払先をここから新たに集計できない。設定は全期間側から戻す。
+  data.subs.vendors = [...all.subs.vendors];
+  data.subs.aliases = structuredClone(all.subs.aliases);
+  data.subs.accounts = structuredClone(all.subs.accounts);
+  data.subs.matrix = Object.fromEntries(
+    data.subs.vendors.map((vendor) => [vendor, data.months.map(() => 0)]),
+  );
+  const months = new Set(data.months);
+  const rows = await getDb(c.env.DB)
+    .select()
+    .from(s.freeeDeals)
+    .where(eq(s.freeeDeals.userId, c.get('userId')));
+  const deals = rows.map(dealFromRow).filter((deal) => months.has(deal.month));
+  return c.json(sourceNeutralSubscriptions(data, deals));
+});
+
+/**
+ * freeeの帳簿確定額と、MFの未記帳事業支出を混同せず照合する。
+ * canonicalは書き換えず、現在のuser scopeの行から毎回導出する。
+ */
+analyticsRoute.get('/business-spend', async (c) => {
+  const { data, period } = await loadScoped(c);
+  const months = new Set(data.months);
+  const rows = await getDb(c.env.DB)
+    .select()
+    .from(s.freeeDeals)
+    .where(eq(s.freeeDeals.userId, c.get('userId')));
+  const projection = buildExpenseProjection(
+    data,
+    rows.map(dealFromRow).filter((deal) => months.has(deal.month)),
+  );
+  return c.json({
+    summary: projection.summary,
+    months: projection.months,
+    unbooked: projection.unbooked.map((fact) => ({
+      id: fact.sourceId,
+      month: fact.month,
+      date: fact.date,
+      amount: fact.amount,
+      party: fact.party,
+      category: fact.categoryNorm || fact.categoryRaw,
+    })),
+    review: projection.review.map((item) => ({
+      mf: {
+        id: item.mf.sourceId,
+        month: item.mf.month,
+        date: item.mf.date,
+        amount: item.mf.amount,
+        party: item.mf.party,
+        purpose: item.mf.purpose,
+      },
+      freee: item.freee
+        ? {
+            date: item.freee.date,
+            amount: item.freee.amount,
+            party: item.freee.party,
+            purpose: item.freee.purpose,
+          }
+        : null,
+      candidateCount: item.candidateCount,
+      reason: item.reason,
+    })),
+    period,
+  });
 });
 
 analyticsRoute.get('/household', async (c) => {

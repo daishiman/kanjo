@@ -78,6 +78,7 @@ describe('支出分析のタブ', () => {
     expect(calls.some((url) => url.includes('/diagnosis'))).toBe(true);
     expect(calls.some((url) => url.includes('/matrix'))).toBe(false);
     expect(calls.some((url) => url.includes('/trends'))).toBe(false);
+    expect(calls.some((url) => url.includes('/business-spend'))).toBe(false);
   });
 
   it('タブごとの説明文が残っていて、用語ホバーが効く', async () => {
@@ -92,15 +93,20 @@ describe('支出分析のタブ', () => {
 
   it('タブ名の無いURLと綴りの違うURLは既定のタブへ寄せる', async () => {
     renderAt('/analysis');
-    expect(await screen.findByText(/比較するデータが未取込です/)).toBeTruthy();
+    expect(await screen.findByText(/照合できる支出がまだありません/)).toBeTruthy();
     cleanup();
 
     renderAt('/analysis/nonexistent');
-    expect(await screen.findByText(/比較するデータが未取込です/)).toBeTruthy();
+    expect(await screen.findByText(/照合できる支出がまだありません/)).toBeTruthy();
   });
 
   it('統合前のURLは行き先を失わない', () => {
-    expect(LEGACY_ROUTE_REDIRECTS.map((r) => r.from)).toEqual(['/matrix', '/trends', '/diagnosis']);
+    expect(LEGACY_ROUTE_REDIRECTS.map((r) => r.from)).toEqual([
+      '/reconciliation',
+      '/matrix',
+      '/trends',
+      '/diagnosis',
+    ]);
     expect(LEGACY_ROUTE_REDIRECTS.map((r) => r.to)).toEqual(ANALYSIS_TABS.map((tab) => tab.path));
   });
 });

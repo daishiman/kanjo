@@ -545,7 +545,7 @@ export function ImportPage() {
           </section>
         )}
 
-        <section className="import-section" aria-labelledby="import-history-title">
+        <section id="import-history" className="import-section" aria-labelledby="import-history-title">
           <div className="import-section-heading">
             <div>
               <span className="import-eyebrow">次に処理すべき取込</span>

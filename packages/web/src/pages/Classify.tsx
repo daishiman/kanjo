@@ -5,7 +5,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type MouseEvent as ReactMouseEvent, useCallback, useEffect, useId, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   type Candidates,
   type Cls,
@@ -175,8 +175,15 @@ export function ClassificationProgressPanel({
 
 export function ClassifyPage() {
   const qc = useQueryClient();
-  const [month, setMonth] = useState<string | null>(null);
-  const [cls, setCls] = useState('');
+  const [initialParams] = useSearchParams();
+  const [month, setMonth] = useState<string | null>(() => {
+    const value = initialParams.get('month');
+    return /^\d{4}-\d{2}$/.test(value ?? '') ? value : null;
+  });
+  const [cls, setCls] = useState(() => {
+    const value = initialParams.get('cls');
+    return value === 'biz' || value === 'per' ? value : '';
+  });
   const [owner, setOwner] = useState('');
   const [qtext, setQtext] = useState('');
   const [method, setMethod] = useState<PaymentMethod | ''>('');

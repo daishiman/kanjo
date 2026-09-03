@@ -76,11 +76,10 @@ export function SubVendorsPanel() {
     <div className="card scroll-x">
       <h2>サブスクとして数える支払先</h2>
       <p className="sub">
-        ここに登録した支払先は、既定では勘定科目に関係なくサブスクとして集計されます(例:
-        note株式会社は支払手数料・新聞図書費・通信費のどれで記帳されていても合算)。
+        ここに登録した支払先は、freeeとMoney
+        Forwardのどちらにあっても、既定では科目に関係なくサブスクとして集計されます。
         別名は「支払先の表記ゆれ」をカンマ区切りで登録します(部分一致)。
-        「対象科目」を入れると、その科目で記帳された支払だけを数えます(例: Amazon
-        のように物販が混ざる支払先を「サブスク・通信」だけに絞る)。空欄なら全科目です。
+        「対象科目」を入れると、freeeの勘定科目またはMFの大・中項目が一致した支払だけを数えます。空欄なら全科目です。
       </p>
       {dueCount > 0 && (
         <div className="notice">
@@ -129,7 +128,7 @@ export function SubVendorsPanel() {
         <input
           type="text"
           value={newName}
-          placeholder="支払先の名前(freeeの取引先名)"
+          placeholder="支払先の名前(freee / MF)"
           aria-label="追加する支払先"
           style={{ minWidth: 220 }}
           onChange={(e) => setNewName(e.target.value)}

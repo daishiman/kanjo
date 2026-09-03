@@ -47,8 +47,8 @@ route、表示順、label、icon keyは`APP_ROUTES`、公式Lucide geometryとic
 ## リリース前チェック
 
 - `/tax`と`/tax/receipts`でcurrentがそれぞれ1件。
-- 15 routeと支出分析の3タブすべてに可視labelとiconがある。アイコンは図形の署名で一意(キー一致では見た目の重複を見逃す)。
-- `Cmd+K` / `Ctrl+K`で画面検索が開き、18単位すべてを名前と群名で引ける。Escape・背景クリックで閉じ、矢印キーで候補を移動できる。
+- 15 routeと支出分析の4タブすべてに可視labelとiconがある。アイコンは図形の署名で一意(キー一致では見た目の重複を見逃す)。
+- `Cmd+K` / `Ctrl+K`で画面検索が開き、19単位すべてを名前と群名で引ける。Escape・背景クリックで閉じ、矢印キーで候補を移動できる。
 - 旧URL `/matrix` `/trends` `/diagnosis` が対応するタブへリダイレクトされる。
 - 375 / 768 / 1280 / 1600px、200%相当、keyboard、`prefers-reduced-motion`で操作できる。
 - DOM testのPASSは構造契約、実ブラウザ4幅のPASSは視覚・操作契約として分け、片方で代替しない。

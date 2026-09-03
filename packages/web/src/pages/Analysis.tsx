@@ -19,6 +19,9 @@ import { RouteIcon } from '../components/RouteIcon.js';
 import { ANALYSIS_TABS, type AnalysisTabId, DEFAULT_ANALYSIS_TAB, analysisTab } from '../routeMetadata.js';
 
 const PANELS: Record<AnalysisTabId, ComponentType> = {
+  reconciliation: lazy(() =>
+    import('./analysis/Reconciliation.js').then((module) => ({ default: module.ReconciliationPage })),
+  ),
   matrix: lazy(() => import('./analysis/Matrix.js').then((module) => ({ default: module.MatrixPage }))),
   trends: lazy(() => import('./analysis/Trends.js').then((module) => ({ default: module.TrendsPage }))),
   diagnosis: lazy(() =>

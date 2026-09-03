@@ -96,11 +96,11 @@ function mockFetch(transactions: TxRow[]) {
   );
 }
 
-function renderPage() {
+function renderPage(path = '/classify') {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={client}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[path]}>
         <ClassifyPage />
       </MemoryRouter>
     </QueryClientProvider>,
@@ -116,6 +116,16 @@ afterEach(() => {
 const HEADERS = ['日付', '内容', '口座', '大項目/中項目', '金額', '判定', '名義', '証憑', '操作'];
 
 describe('仕分け表のスマホカード化', () => {
+  it('支出照合から指定された月と公私を最初の取得へ反映する', async () => {
+    mockFetch([row()]);
+    renderPage('/classify?month=2026-07&cls=biz');
+    await screen.findByText('架空スーパー');
+    expect(vi.mocked(fetch)).toHaveBeenCalledWith(
+      expect.stringContaining('/api/transactions?month=2026-07&cls=biz'),
+      expect.any(Object),
+    );
+  });
+
   it('仕分け表に stack-sm を付け、640px以下で1行=1カードへ切り替えられる状態にする', async () => {
     mockFetch([row()]);
     const { container } = renderPage();
