@@ -17,10 +17,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BalanceSheet, StatementsResponse } from './api.js';
 import { StatementsPage } from './pages/Statements.js';
 
-vi.mock('react-chartjs-2', () => ({
-  Chart: ({ 'aria-label': ariaLabel }: { 'aria-label'?: string }) => (
-    <div role="img" aria-label={ariaLabel} />
-  ),
+vi.mock('react-chartjs-2', async () => ({
+  Chart: (await import('./test-support/chart-test-doubles.js')).AccessibleChart,
 }));
 
 const LIABILITY_OPTIONS = ['クレジットカード未払金', '借入金', '未払金・買掛金', 'その他の負債'];

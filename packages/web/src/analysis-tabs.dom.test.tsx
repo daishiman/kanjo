@@ -16,7 +16,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AnalysisPage } from './pages/Analysis.js';
 import { ANALYSIS_TABS, LEGACY_ROUTE_REDIRECTS } from './routeMetadata.js';
 
-vi.mock('react-chartjs-2', () => ({ Chart: () => null }));
+vi.mock('react-chartjs-2', async () => ({
+  Chart: (await import('./test-support/chart-test-doubles.js')).SilentChart,
+}));
 
 const EMPTY: Record<string, unknown> = {
   months: [],
