@@ -12,6 +12,7 @@ import type {
   CashFlow,
   Attachment as CoreAttachment,
   AttachmentCleanupStage as CoreAttachmentCleanupStage,
+  SubscriptionsData as CoreSubscriptionsData,
   DefenseForecast,
   DefenseLine,
   DiagnosisData,
@@ -29,7 +30,6 @@ import type {
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
-  SubscriptionsData,
   TaxAccountSetting,
   TaxReadinessCheck,
   TaxReadinessLevel,
@@ -228,6 +228,51 @@ export interface TrendsResponse {
   }[];
   monthlySides: { month: string; biz: number; personal: number; total: number }[];
   period: PeriodMeta;
+}
+
+/* -------- 支出照合(freee帳簿とMF未記帳) -------- */
+
+export interface BusinessSpendResponse {
+  summary: {
+    booked: number;
+    unbooked: number;
+    effective: number;
+    matchedCount: number;
+    reviewCount: number;
+  };
+  months: Array<{ month: string; booked: number; unbooked: number; effective: number }>;
+  unbooked: Array<{
+    id: string;
+    month: string;
+    date: string;
+    amount: number;
+    party: string;
+    category: string;
+  }>;
+  review: Array<{
+    mf: {
+      id: string;
+      month: string;
+      date: string;
+      amount: number;
+      party: string;
+      purpose: 'business' | 'personal';
+    };
+    freee: {
+      date: string;
+      amount: number;
+      party: string;
+      purpose: 'business' | 'personal';
+    } | null;
+    candidateCount: number;
+    reason: string;
+  }>;
+  period: PeriodMeta;
+}
+
+export interface SubscriptionsData extends CoreSubscriptionsData {
+  /** rolling deploy中の旧Worker応答では未定義。画面は数値本体を優先して描画する。 */
+  sourceCoverage?: { freee: number; moneyForward: number; matched: number; review: number };
 }
 
 /** API表示に必要なdeal項目だけを公開し、集計・状態・予定の型はcore契約を再利用する。 */
@@ -838,7 +883,6 @@ export type {
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
-  SubscriptionsData,
   TaxAccountSetting,
   TaxReadinessCheck,
   TaxReadinessLevel,

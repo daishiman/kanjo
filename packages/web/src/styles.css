@@ -606,6 +606,106 @@ body {
   color: var(--ink-soft);
 }
 
+/* 支出照合: 主役は帳簿/未記帳/実質の差。照合明細は必要なときだけ開く。 */
+.reconciliation-kpis .kpi:last-child {
+  border-color: var(--biz-soft-line);
+  background: var(--biz-soft);
+}
+.reconciliation-next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0 18px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.reconciliation-next.needs-action {
+  border-bottom-color: color-mix(in srgb, var(--warn) 45%, var(--line));
+}
+.reconciliation-next h2,
+.reconciliation-next p {
+  margin: 0;
+}
+.reconciliation-next p {
+  color: var(--ink-soft);
+}
+.reconciliation-next .btn {
+  min-height: var(--tap-target-min);
+  display: inline-flex;
+  align-items: center;
+}
+.reconciliation-effective {
+  font-weight: 800;
+}
+.reconciliation-disclosure > summary {
+  min-height: var(--tap-target-min);
+  display: flex;
+  align-items: center;
+  font-weight: 800;
+  cursor: pointer;
+}
+.reconciliation-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+.reconciliation-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto max-content;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.reconciliation-list li > div {
+  min-width: 0;
+}
+.reconciliation-list li strong,
+.reconciliation-list li span {
+  display: block;
+}
+.reconciliation-list li div > span {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+.reconciliation-list li a {
+  min-height: var(--tap-target-min);
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.reconciliation-safe-actions,
+.subscriptions-source-note {
+  margin: 0 0 16px;
+  color: var(--ink-soft);
+}
+.reconciliation-safe-actions a {
+  margin: 0 3px;
+  white-space: nowrap;
+}
+@media (max-width: 639px) {
+  .reconciliation-kpis .kpi:last-child {
+    grid-column: 1 / -1;
+  }
+  .reconciliation-next {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .reconciliation-next .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .reconciliation-list li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 12px;
+  }
+  .reconciliation-list li a {
+    grid-column: 1 / -1;
+  }
+}
+
 /* ---------------- 分析図表 ----------------
  * 図は結論を見つける層、表は正確な値を照合する層。カードを入れ子にせず、
  * 見出し・図・読み方の順を全分析画面で揃える。 */

@@ -213,7 +213,7 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": "fb17094f16ec220a70934207ffb125ffe983fe06125d41d841c1126395b7e913",
+        "source_digest": "6e8368059a6c18928e2c69467610965a79b63c897fce7593d2f63c1364c8bbc0",
         "imported_at": "2026-08-29T00:00:00Z"
       },
       "referenced_by": [
@@ -261,7 +261,7 @@
         "source_plugin": null,
         "source_path": "specs/ui-navigation-cognitive-load.md",
         "source_version": "1.0",
-        "source_digest": "e51d411c296dc69b75979cd3e5d951fe7a0d4dcccd65ffe131140837c5bff5c0",
+        "source_digest": "56f0d52ea1c84ee48450acbee2c10397b809a1858f2c83fcef21bb4ae972a264",
         "imported_at": "2026-08-29T15:30:44Z"
       },
       "referenced_by": [
@@ -284,7 +284,7 @@
         "source_plugin": null,
         "source_path": "specs/ui-navigation-cognitive-load.md",
         "source_version": "1.0",
-        "source_digest": "e51d411c296dc69b75979cd3e5d951fe7a0d4dcccd65ffe131140837c5bff5c0",
+        "source_digest": "56f0d52ea1c84ee48450acbee2c10397b809a1858f2c83fcef21bb4ae972a264",
         "imported_at": "2026-08-29T15:30:44Z"
       },
       "referenced_by": [

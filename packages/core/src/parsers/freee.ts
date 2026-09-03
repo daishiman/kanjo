@@ -18,7 +18,8 @@ export function isFreeeHeader(header: string[]): boolean {
 }
 
 /**
- * rows[0]=ヘッダー。発生日が読めない行（複数明細の継続行など）はHTML版同様スキップする。
+ * rows[0]=ヘッダー。freeeの複数行取引は、継続明細の発生日と収支区分が空欄になる。
+ * 直前の正常な取引から日付と収支を継承するが、不正行を跨いで古い取引へ戻らない。
  */
 export function parseFreeeRows(rows: string[][], normMap: Record<string, string>): FreeeParseResult {
   const H = rows[0] ?? [];
@@ -47,28 +48,82 @@ export function parseFreeeRows(rows: string[][], normMap: Record<string, string>
   const deals: FreeeDeal[] = [];
   const months = new Set<string>();
   let skipped = 0;
-  rows.slice(1).forEach((r) => {
-    const m = normMonth(r[ci.dt] ?? '');
-    if (!m) {
-      skipped++;
-      return;
+  type Parent = Pick<
+    FreeeDeal,
+    'month' | 'date' | 'io' | 'partner' | 'dueDate' | 'settledDate' | 'settleAccount'
+  >;
+  const continuationIoMatches = (candidate: Parent | null, raw: string): boolean =>
+    raw === '' || (candidate !== null && raw === (candidate.io === 'income' ? '収入' : '支出'));
+  let parent: Parent | null = null;
+  for (const r of rows.slice(1)) {
+    const rawDate = (r[ci.dt] ?? '').trim();
+    const rawIo = (r[ci.kb] ?? '').trim();
+    const accountRaw = r[ci.acct] ?? '';
+    const rawAmount = (r[ci.amt] ?? '').trim();
+    const explicitDate = normDate(rawDate);
+    const explicitMonth = normMonth(rawDate);
+    const explicitIo = rawIo === '収入' ? 'income' : rawIo === '支出' ? 'expense' : null;
+    const isContinuation = rawDate === '';
+
+    let month: string;
+    let date: string;
+    let io: FreeeDeal['io'];
+    if (isContinuation) {
+      const sameIo = continuationIoMatches(parent, rawIo);
+      // 継続行は「今の行の明細」が完成し、直前取引との接続も一意なときだけ受理する。
+      if (!parent || !sameIo || !accountRaw.trim() || !rawAmount || parseAmount(rawAmount) === 0) {
+        skipped++;
+        parent = null;
+        continue;
+      }
+      ({ month, date, io } = parent);
+    } else {
+      // 「値はあるが日付ではない」行で文脈を切る。その次の空欄行を古い取引へ繋げない。
+      if (!explicitDate || !explicitMonth) {
+        skipped++;
+        parent = null;
+        continue;
+      }
+      month = explicitMonth;
+      date = explicitDate;
+      io = explicitIo ?? 'expense';
     }
-    months.add(m);
-    const amt = parseAmount(r[ci.amt]);
-    const acctRaw = r[ci.acct] ?? '';
-    deals.push({
-      month: m,
-      date: normDate(r[ci.dt] ?? '') ?? `${m}-01`,
-      io: r[ci.kb] === '収入' ? 'income' : 'expense',
-      partner: ci.vendor >= 0 ? (r[ci.vendor] ?? '') : '',
-      accountRaw: acctRaw,
-      accountNorm: normalizeAccount(acctRaw, normMap),
-      amount: amt,
-      dueDate: optDate(r, ci.due),
-      settledDate: optDate(r, ci.settledAt),
-      settleAccount: optText(r, ci.settleAcct),
+
+    const currentPartner = ci.vendor >= 0 ? (r[ci.vendor] ?? '') : '';
+    const dueDate = optDate(r, ci.due);
+    const settledDate = optDate(r, ci.settledAt);
+    const settleAccount = optText(r, ci.settleAcct);
+    const deal: FreeeDeal = {
+      month,
+      date,
+      io,
+      partner: isContinuation && !currentPartner.trim() ? (parent?.partner ?? '') : currentPartner,
+      accountRaw,
+      accountNorm: normalizeAccount(accountRaw, normMap),
+      amount: parseAmount(rawAmount),
+      dueDate: isContinuation && dueDate === null ? parent?.dueDate : dueDate,
+      settledDate: isContinuation && settledDate === null ? parent?.settledDate : settledDate,
+      settleAccount: isContinuation && settleAccount === null ? parent?.settleAccount : settleAccount,
+      // 親の総決済額を各明細へ複製すると二重計上になる。この行に明記された値だけを持つ。
       settledAmount: optAmount(r, ci.settledAmt),
-    });
-  });
+    };
+    deals.push(deal);
+    months.add(month);
+
+    // 日付ありで収支区分も正常な行だけが、新しい継承元になる。
+    if (!isContinuation) {
+      parent = explicitIo
+        ? {
+            month,
+            date,
+            io,
+            partner: currentPartner,
+            dueDate,
+            settledDate,
+            settleAccount,
+          }
+        : null;
+    }
+  }
   return { deals, months: [...months].sort(), rows: deals.length, skipped };
 }

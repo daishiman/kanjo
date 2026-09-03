@@ -78,11 +78,19 @@ describe('freee取込', () => {
   const rows = parseCSV(freeeCsv);
   const parsed = parseFreeeRows(rows, DEFAULT_ACCOUNT_NORM);
 
-  it('ヘッダーを識別し、日付のない行だけを除外する', () => {
+  it('ヘッダーを識別し、freeeの日付空欄の継続明細を直前取引へ継承する', () => {
     expect(isFreeeHeader(rows[0])).toBe(true);
     expect(isMfHeader(rows[0])).toBe(false);
-    expect(parsed.rows).toBe(3);
-    expect(parsed.skipped).toBe(1);
+    expect(parsed.rows).toBe(4);
+    expect(parsed.skipped).toBe(0);
+    expect(parsed.deals[3]).toMatchObject({
+      month: '2026-07',
+      date: '2026-07-03',
+      io: 'expense',
+      partner: '架空の継続行',
+      accountRaw: '通信費',
+      amount: 500,
+    });
   });
 
   it('科目を正規化し、同じ月を加算せず洗い替える', () => {
@@ -95,9 +103,27 @@ describe('freee取込', () => {
 
     const monthIndex = data.months.indexOf('2026-07');
     expect(data.biz.revenue[monthIndex]).toBe(120000);
-    expect(data.biz.expense['サブスク・通信'][monthIndex]).toBe(5000);
+    expect(data.biz.expense['サブスク・通信'][monthIndex]).toBe(5500);
     expect(data.subs.matrix['架空SaaS'][monthIndex]).toBe(3000);
-    expect(data.subs.other[monthIndex]).toBe(2000);
+    expect(data.subs.other[monthIndex]).toBe(2500);
+  });
+
+  it('日付空欄の先頭行・逆の収支区分・不正日付の後続は継承しない', () => {
+    const guarded = parseFreeeRows(
+      parseCSV(
+        [
+          '収支区分,発生日,勘定科目,金額,取引先',
+          ',,通信費,100,先頭',
+          '支出,2026/08/01,通信費,200,親',
+          '収入,,売上高,300,逆区分',
+          '支出,壊れた日付,通信費,400,不正',
+          ',,通信費,500,古い親へ戻ってはいけない',
+        ].join('\n'),
+      ),
+      DEFAULT_ACCOUNT_NORM,
+    );
+    expect(guarded.deals).toHaveLength(1);
+    expect(guarded.skipped).toBe(4);
   });
 
   it('決済列が無いエクスポートでは決済情報を持たない(空欄と取り違えない)', () => {

@@ -21,9 +21,9 @@ export const APP_ROUTES = [
     id: 'analysis',
     path: '/analysis',
     label: '支出分析',
-    task: '支出を3つの切り口で見比べ、見直す科目を決めます。',
+    task: '帳簿と実際の支出を照合し、次に手を打つ場所を決めます。',
     taskDetail:
-      '月別の増減・手を打つ順番・統計的な判定は、どれも「どの勘定科目に手を打つか」を決めるための別々の切り口。タブを切り替えても対象期間は変わらず、未記帳月はどの切り口でも集計から除く。',
+      'freeeの帳簿確定、Money Forwardの未記帳、重複を除いた実質支出を切り分ける。その後、月別の増減・手を打つ順番・統計判定へ進む。',
     icon: 'chart-pie',
     navGroup: null,
     mobileLabel: '分析',
@@ -183,6 +183,16 @@ export type AppRouteId = (typeof APP_ROUTES)[number]['id'];
  * icon は Cmd+K の検索結果とタブ見出しで使い、以前と同じ絵で辿り着けるようにしている。
  */
 export const ANALYSIS_TABS = [
+  {
+    id: 'reconciliation',
+    path: '/analysis/reconciliation',
+    label: '支出照合',
+    task: 'freeeとMoney Forwardの支出を一度だけ数えます。',
+    taskDetail:
+      '税務の正本はfreee。MFで事業と仕分けた支出のうち、freeeと厳密に一致するものは二重に数えず、それ以外を未記帳として示す。曖昧な一致は自動で統合しない。',
+    icon: 'git-compare-arrows',
+    navGroup: null,
+  },
   {
     id: 'matrix',
     path: '/analysis/matrix',
