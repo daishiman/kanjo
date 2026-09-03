@@ -20,7 +20,8 @@ type CanonicalConsumer =
   | JsonSnapshotMutationConsumer
   | 'attachments'
   | 'category_options'
-  | 'balance_entries';
+  | 'balance_entries'
+  | 'overrides';
 
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -44,6 +45,36 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   // 元の明細が消えた後の内訳だけが残りうるので同じleaseで直列化する
   { method: 'PUT', path: /^\/api\/transactions\/[^/]+\/splits$/, consumers: ['tx_splits'] },
   { method: 'PUT', path: /^\/api\/balances\/liabilities$/, consumers: ['balance_entries'] },
+  // 取込データの削除・取り消し。取込の洗替えと重なると、
+  // 消した直後に同じCSVが入って半分だけ戻る状態が作れるので同じleaseで直列化する(DR-3)
+  {
+    method: 'POST',
+    path: /^\/api\/imports\/[^/]+\/undo$/,
+    consumers: ['mf_transactions', 'freee_deals', 'balance_entries'],
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/imports\/[^/]+\/discard$/,
+    consumers: [],
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/data\/deletions$/,
+    consumers: ['mf_transactions', 'freee_deals', 'balance_entries', 'restored_monthly_agg', 'overrides'],
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/data\/undo\/[^/]+$/,
+    consumers: ['mf_transactions', 'freee_deals', 'balance_entries', 'restored_monthly_agg', 'overrides'],
+  },
+  // 取引先の決め事。当て直しは手当て(tx_edits)を書き換えるため、
+  // 取込の洗替えと重なると「消えかけの明細に決め事を当てる」が起きうる
+  { method: 'PATCH', path: /^\/api\/vendor-memory\/[^/]+$/, consumers: ['vendor_memory'] },
+  {
+    method: 'POST',
+    path: /^\/api\/vendor-memory\/[^/]+\/reapply$/,
+    consumers: ['vendor_memory', 'tx_edits'],
+  },
   { method: 'POST', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PATCH', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PUT', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },

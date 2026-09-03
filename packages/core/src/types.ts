@@ -142,7 +142,9 @@ export interface Rule {
 
 /**
  * 明細1件への手動編集（取込値とは別枠で保持し、再取込でも消えない）。
- * baseBig/baseMid は編集時点の取込値。現在の取込値と違えば「取込側が変わった」と分かる。
+ * base* は編集時点の取込値。現在の取込値と違えば「取込側が変わった」と分かる。
+ * 4属性それぞれに base を持つのは、3点比較(DR-10)を属性単位で行うため。
+ * base が未記録の行は D03 の遅延移行で埋める（`resolveThreeWay` の baseBackfilled）。
  */
 export interface TxEdit {
   cls?: Cls | null;
@@ -151,8 +153,23 @@ export interface TxEdit {
   owner?: Owner | null;
   baseBig?: string | null;
   baseMid?: string | null;
+  baseCls?: Cls | null;
+  baseOwner?: Owner | null;
+  /**
+   * base* が「未記録」か「記録済みの空」かを区別するbitmask。
+   * cls=1 / big=2 / mid=4 / owner=8。旧JSONの未指定は非nullのbaseから安全に推定する。
+   */
+  baseKnown?: number | null;
   note?: string | null;
   updatedAt?: string | null;
+  /** 再取込を跨いで明細を追う第二の鍵(DR-13)。tx_id が振り直されたときに使う。 */
+  stableKey?: string | null;
+  /** stableKey を作った版。版が違う鍵どうしを突き合わせない。 */
+  fingerprintVersion?: number | null;
+  /** NULL/manual=利用者の手動、vendor_memory=取引先の決め事からの自動適用。 */
+  origin?: 'manual' | 'vendor_memory' | null;
+  /** origin=vendor_memory のときの正規化済み取引先キー。 */
+  originKey?: string | null;
 }
 
 /** freee仕訳1行 */

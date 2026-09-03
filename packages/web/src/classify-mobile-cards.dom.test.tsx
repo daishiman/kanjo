@@ -34,6 +34,8 @@ const row = (over: Partial<TxRow> = {}): TxRow => ({
   ownerSrc: '既定',
   edited: false,
   conflict: false,
+  origin: null,
+  originKey: null,
   scopeMismatch: false,
   attachmentCount: 0,
   edit: null,

@@ -84,7 +84,7 @@ export function ImprovementPage() {
     <div className="page improvement-page">
       <h1>改善要望</h1>
       <p className="page-lead">
-        画面の右上(または下部メニュー)の「改善要望」から出した要望の一覧です。 指示文を Claude Code や Codex
+        画面端の「改善を送る」から出した要望の一覧です。 指示文を Claude Code や Codex
         に貼ると、そのときの画面と診断情報を読みに行って直します。
       </p>
 

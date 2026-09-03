@@ -16,7 +16,7 @@ import { IMPROVEMENT_TOKEN_MAX_FETCH } from '@kanjo/core';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { app } from './index.js';
-import { runImprovementRetention } from './routes/improvement.js';
+import { IMPROVEMENT_ORPHAN_CHECKPOINT_KEY, runImprovementRetention } from './routes/improvement.js';
 import { recordTestMigrationHead } from './schema-guard.test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
@@ -158,6 +158,7 @@ beforeEach(async () => {
   // R2 も一緒に空にする。消し忘れると前のテストの画像が次のテストで孤児として数えられる
   const listed = await files.list({ prefix: 'improvements/' });
   for (const object of listed.objects) await files.delete(object.key);
+  await files.delete(IMPROVEMENT_ORPHAN_CHECKPOINT_KEY);
 });
 
 describe('投稿', () => {
@@ -420,20 +421,17 @@ describe('保持期限', () => {
 
   it('D1 に対応する行が無い R2 オブジェクトは孤児として消える', async () => {
     await files.put('improvements/default/orphan.jpg', jpeg());
+    const stored = await files.head('improvements/default/orphan.jpg');
+    expect(stored).not.toBeNull();
+    const uploadedMs = stored?.uploaded.getTime() ?? 0;
     // 直近5分の猶予をまたぐよう、置いた直後は消えないことも同時に確かめる
-    const immediate = await runImprovementRetention(env(), '2026-02-15T00:00:00.000Z');
+    const immediate = await runImprovementRetention(env(), new Date(uploadedMs).toISOString());
     expect(immediate.orphans).toBe(0);
     expect(await files.head('improvements/default/orphan.jpg')).not.toBeNull();
 
-    // 猶予を過ぎた状態を作る。R2 の uploaded は書けないので、現在時刻の方を進める
-    const real = Date.now();
-    const clock = vi.spyOn(Date, 'now').mockReturnValue(real + 10 * 60_000);
-    try {
-      const later = await runImprovementRetention(env(), '2026-02-15T00:00:00.000Z');
-      expect(later.orphans).toBe(1);
-      expect(await files.head('improvements/default/orphan.jpg')).toBeNull();
-    } finally {
-      clock.mockRestore();
-    }
+    // R2 の uploaded は書けないので、注入する実行時刻を10分進める
+    const later = await runImprovementRetention(env(), new Date(uploadedMs + 10 * 60_000).toISOString());
+    expect(later.orphans).toBe(1);
+    expect(await files.head('improvements/default/orphan.jpg')).toBeNull();
   });
 });

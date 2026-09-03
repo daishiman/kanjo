@@ -14,7 +14,8 @@ tags: ["import", "deletion", "undo", "audit", "three-way-merge", "vendor-memory"
 
 # 文書所有権
 
-- `system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json` と `system-spec/archive/2026-08-31-import-deletion-override-reapply/*.md`: 本件の要件の正本(G1〜G7 / O1〜O11 / I1〜I13 / D1〜D3 / qa-002・005・009・010・011)。本書はそこから詳細仕様へ落としたものであり、要件そのものを書き換えない。
+- `system-spec/spec-state.json`: 本件の現行要件と決定(D1〜D8)の正本。`system-spec/archive/2026-08-31-import-deletion-override-reapply/`
+  は初期決定の履歴であり、現行仕様の依存先にはしない。
 - `docs/spec-v1.1.md`: 製品全体の不変条件と、本詳細仕様への規範的な導線を持つ(FR-01 / P8)。
 - 本書: 削除の4粒度・上書き・undo・監査・3点比較による手当ての継続再適用の lifecycle、画面、API、受入を持つ。
 - `docs/data-schema.md`: migrationごとの永続形状とデータ不変条件を持つ。
@@ -52,8 +53,8 @@ base があれば、base / current(利用者の手当て) / incoming(新規原�
 本件は**この既存機構を4属性へ広げ、衝突の検出だけで止まっているものを解決まで運ぶ**ものであり、
 ゼロから作るものではない。
 
-背景と方式選定は `system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json` の decisions
-(D1-undo-snapshot-store / D2-overwrite-default-policy / D3-auto-classification-method)。
+背景と方式選定は `system-spec/spec-state.json` の decisions
+(D1-undo-snapshot-store〜D8-audit-log-retention)。
 
 # 非目標
 
@@ -64,12 +65,13 @@ base があれば、base / current(利用者の手当て) / incoming(新規原�
 5. 取込以外の経路で作られたデータ(手入力の予算・ルール定義)の一括削除
 6. 認証方式の変更。単一利用者運用のため削除に対する再認証(step-up)は求めない
 7. R2原本オブジェクトの保持期間ポリシーの変更
+8. 有効な取込データの取消と、非有効な取込履歴の破棄を同じ操作として扱うこと
 
 # 到達状態
 
 - 取込履歴の各行から「この取込を取り消す」ができ、取り消し後にその `import_id` を参照する行が0件になる。
   他の取込由来の明細は1件も減らない。
-- 期間(月・範囲)・種別(freee仕訳 / MF明細 / 資産推移 / 現金記帳)・全件を指定して消せる。
+- 期間(月・範囲)・種別(freee仕訳 / MF明細 / 資産推移)・全件を指定して消せる。
   指定範囲外の行が1件も減らない。
 - 削除・上書きの実行前に、**対象件数・対象期間・巻き添えになる手動記録の有無**が必ず出る。
 - 実行直後にその操作を取り消せる。取り消せる期限が画面に出ている。
@@ -89,7 +91,7 @@ base があれば、base / current(利用者の手当て) / incoming(新規原�
 ## DR-2 退避を先に書き、同じ batch で本体を変える
 
 削除・上書きは、直前状態を D1 の退避テーブルへ書いてから本体を変更し、
-**退避と本体変更を同じ D1 batch に載せる**。
+**退避・本体変更・正本から計画した `monthly_agg` の置換を同じ D1 batch に載せる**。
 理由: 途中失敗で「退避のない削除」または「本体が変わっていない退避」が残ると、
 undo が成立しない。D1 と R2 をまたぐと原子性が取れないため退避先は D1 とする(D1-undo-snapshot-store)。
 
@@ -115,7 +117,8 @@ undo が成立しない。D1 と R2 をまたぐと原子性が取れないた�
 
 ## DR-5 派生状態は実データから再計算する
 
-削除・上書き・undo のあと、`monthly_agg` は差分更新ではなく実データからの再生成で収束させる。
+削除・上書き・undo は、正本の変更後 snapshot を書込み前に計画し、`monthly_agg` を差分更新ではなく
+その snapshot から再生成する。正本の変更と集計の置換は同じ D1 batch に載せる。
 `imports` の世代表示・`balance_entries` も同様に実データと矛盾しない状態へ戻す。
 理由: 数千行規模では全再生成で足り、差分更新は消え方の場合分けが増えるほど収束を保証できなくなる。
 
@@ -125,6 +128,8 @@ undo が成立しない。D1 と R2 をまたぐと原子性が取れないた�
 明細の削除で連鎖削除しない。**失われるものがある場合は実行前に件数で示し、示した件数以外は失わない。**
 理由: 現金の記帳と証憑は取込元に存在しない情報で、消えると復元手段が無い。
 明細が消えても手当てが孤立しないよう、参照は DR-13 の二段構えで持つ。
+`cash_entries` は取込削除の対象種別にせず、preflight では「手で記帳した現金 0件
+(取込の削除では消えません)」と常に表示する。
 
 ## DR-7 事前確認と実行を指紋で照合する
 
@@ -142,9 +147,17 @@ D1 の Time Travel は Free で7日・データベース単位の復元にとど
 
 ## DR-9 監査記録は明細本体を複製しない
 
-監査記録に残すのは操作種別・範囲・件数・日時・**採用根拠**(どの規則・決め事・分岐で決まったか)だけとし、
-明細本体を複製しない。明細内容・金額はログとエラー応答にも含めない(既存方針の維持)。
-理由: 監査のために明細の写しを増やすと、退避と監査の両方に税務データが散る。
+監査は D8 の決定どおり、操作ヘッダ(操作種別・範囲・件数・日時・結果)と、
+判断に使った属性の before/after・採用根拠の明細を別層で持つ。
+明細本体・金額はどちらにも持たず、ログとエラー応答にも含めない。
+undo 用の `import_deletion_operations` / `import_deleted_rows` / `import_deleted_targets` は
+期限付きの非公開ライフサイクルデータであり、監査ログではない。
+判定明細の明細identityは利用者・操作を名前空間に含めたSHA-256、source identityは利用者・
+source種別を名前空間に含めたSHA-256の不透明keyにし、
+属性値は120文字、理由コードは64文字、件数JSONは512文字を上限とする。
+ヘッダは400日、判定明細は90日を超えた行を別々に掃除し、判定明細が300MB以上なら
+期限前でも古い順に有界掃除する。各呼び出しは49 queries未満で、undo退避掃除と対象・結果を混ぜない。
+理由: 年単位で必要な操作の事実と、短期間だけ必要な判断根拠の寿命と容量が異なる。
 
 ## DR-10 3点比較の真理値は3分岐しかない
 
@@ -154,12 +167,19 @@ base(前回取込原本値) / current(`tx_edits` の手当て) / incoming(新規
 | # | 条件 | 既定の振る舞い |
 |---|---|---|
 | 1 | `base == incoming` | 取込元は変わっていない。current をそのまま維持する |
-| 2 | `base != incoming` かつ 当該列が NULL(利用者が触っていない) | incoming を採り、base を incoming へ進める |
-| 3 | `base != incoming` かつ 当該列が非NULL(利用者が触っている) | **真の衝突**。この箇所だけを利用者へ提示する |
+| 2 | `base != incoming` かつ `current == base` | 取込元だけが動いた。incoming を採り、base を incoming へ進める |
+| 3 | `base != incoming` かつ `current != base` | **真の衝突**。この箇所だけを利用者へ提示する |
 
 3で利用者が取込元を採ると決めた場合だけ current を捨て、base を incoming へ進める。
 理由: 「先月と今月で値が違う、どちらが正しいか」は base という共通の基準なしには原理的に答えられない。
 base があれば3以外はすべて自動で決まり、問うべき件数が衝突だけに絞られる。
+
+`incoming` はCSV列の生値そのものではなく、`tx_edit`を除いた取込時の有効値とする。
+優先順位は `rules > 適用可能なvendor_memory > import/default`。MF原本が直接運ばない
+`cls` / `owner`も、空欄ではなくこの解決後値を incoming とする。手動編集時のbaseも同じ
+resolverから取り、経路ごとに異なる「編集前」を作らない。
+`base` 値と記録有無は別に持つ。`base_known` bitmask (`cls=1 / major=2 / mid=4 / owner=8`)
+により、`owner=null` や `mid=''` といった「記録済みの空」を未記録と混同しない。
 
 ## DR-11 無操作で確定しても手当ては消えない
 
@@ -169,8 +189,9 @@ base があれば3以外はすべて自動で決まり、問うべき件数が�
 
 ## DR-12 適用の優先順位は固定する
 
-`tx_edits`(明細個別の手当て) > `rules`(利用者が明示登録したキーワード規則) >
-`vendor_memory`(学習した決め事) > 取込原本値。
+`tx_edits`(利用者の手動値) > `rules`(利用者が明示登録したキーワード規則) >
+`vendor_memory`由来のmaterialized `tx_edit` > 取込原本値。`vendor_memory`は確定取込で
+`origin='vendor_memory'` の `tx_edit` へ一本化し、表示だけの動的適用は行わない。
 理由: 学習が利用者の明示した規則を上書きすると、「規則を書いたのに効かない」が起き、
 規則そのものが信用されなくなる。
 
@@ -188,7 +209,7 @@ base があれば3以外はすべて自動で決まり、問うべき件数が�
 3点比較・確信度算出・自動適用はすべて D1 内のデータだけで行い、
 明細を外部サービスや推論モデルへ送らない。
 理由: 上位概念の scope.out(明細の外部送信禁止)。加えて確率的推論は判定根拠を示せず、
-DR-9 の「採用根拠を残す」を満たせない。
+DR-15 の「どの決め事を適用したかを利用者が辿れる」を満たせない。
 
 ## DR-15 自動適用には由来の印を残す
 
@@ -202,21 +223,45 @@ DR-9 の「採用根拠を残す」を満たせない。
 本システムの削除・上書きは freee・マネーフォワード側へ一切波及しない。
 理由: 取込先の操作が取込元を壊す経路を作らない。
 
+## DR-17 取込履歴の破棄は非有効な世代に限定する
+
+「この取込を取り消す」は現行データを消して30日間取り消せる操作であり、「履歴を削除」は
+`failed` / `duplicate` な取込のメタデータと保存原本を破棄する操作である。
+後者は `active` / `partial` / `processing` / `applying` / `legacy` をサーバ側で拒否し、
+`committed` は完全更新済みでも provenance を証明できない種類があるため許可しない。
+`mf_transactions` / `freee_deals` または30日undoの退避行に対象 `import_id` が残る場合も拒否する。
+画面の状態表示だけを削除可否の根拠にしない。
+一方、帳簿データの取消入口は `committed` かつ active pointer または
+`mf_transactions` / `freee_deals` の参照が残る履歴に出す。`generationState="superseded"` でも
+JSON 復元後に canonical 行が残る場合があるため、取消可否もサーバの参照数から導出する。
+`balance_entries` は `import_id` を持たないため、assets の取消入口は active ownership を根拠にする。
+
+同じ upload / ZIP の logical unit は `imports.r2_key` を共有するため、履歴1行の破棄で共有原本を
+消さない。最後の非有効参照を破棄するときだけ cleanup outbox へ原本削除を登録し、R2失敗は
+再試行へ引き継ぐ。`duplicate_of` は破棄するIDへの参照を同じD1 batchで外し、空になった
+`import_runs` も同じbatchで消す。実行前後で件数以外の内容を応答・監査・ログへ出さない。
+
+理由: 履歴の整理を現行データ削除と混同すると、見た目を整えるための操作で帳簿本体を失う。
+逆に共有原本を考慮せずR2を消すと、同じZIPから成功した有効な取込をやり直せなくなる。
+
 # 削除の4粒度
 
 | 粒度 | 対象の特定 | 巻き戻す派生状態 |
 |---|---|---|
 | 明細単位 | `tx_id`(または `stable_key`)の集合 | 当該月の `monthly_agg` |
 | 取込単位 | `import_id`。取り消し後、その `import_id` を参照する行が0件 | `import_active_targets` の該当 target 指紋、`imports` の世代、`monthly_agg` |
-| 期間単位 | 月または期間 × 種別。`freee` / `mf` / `assets` / `cash` | 期間内の全 target 指紋、`monthly_agg` |
-| 全件 | 利用者の取込データ全体(初期化) | 全 target 指紋、`monthly_agg`、`restored_monthly_agg` |
+| 期間単位 | 月または期間。任意で種別 (`freee` / `mf` / `assets`) を絞り込む | 期間内の全 target 指紋、`monthly_agg` |
+| 全件 | 利用者の取込データ全体(初期化) | 全 target 指紋、`monthly_agg`、`restored_monthly_agg`、legacy `overrides` |
 
 実行前に必ず次を返す(preflight)。
+
+種別は5つ目の粒度ではなく、期間単位・全件の対象を狭めるフィルタとする。明細単位の入口は
+仕分け画面に表示中の MF 親明細だけに置き、内部 ID の入力欄は作らない。
 
 - 対象件数(種別ごとの内訳)
 - 対象期間
 - **巻き添えになる手動記録の有無と件数** — 公私仕分け(`tx_edits`)・分割(`tx_splits`)・
-  現金の記帳(`cash_entries`)・証憑(`attachments`)
+  証憑(`attachments`)。`cash_entries` は対象外のため巻き添え 0 件として表示する
 - 取り消せるかどうかと、取り消せる期限
 
 全件削除のように影響が最大のものは、対象の要約を読ませたうえで**範囲の明示入力**を求め、
@@ -228,35 +273,26 @@ DR-9 の「採用根拠を残す」を満たせない。
 削除1行につき退避1行を書く。退避行から巻き戻し対象を SQL で直接絞り込めるため、
 4粒度のいずれでも部分巻き戻しができる。undo 後の各テーブルの行数と内容が実行前と一致することを保証する。
 
-**保持期間**: 有限に定め、期限切れを掃除する経路を持つ(DR-8)。
+**保持期間**: undo payloadと `import_deletion_operations` は同じ30日のライフサイクルとし、
+期限切れを世代ごとに掃除する(DR-8)。
 掃除ジョブは既存の夜間 scheduled と同じ経路に載せる。
 
-**監査記録**: 誰が・いつ・どの範囲を・何件、削除/上書きしたかを新設テーブルへ残す。
-3点比較の判定ごとに「自動判定か衝突か」と採用根拠も残す(DR-9)。
+**監査記録**: 操作ヘッダは、誰が・いつ・どの範囲を・何件、削除/上書きし、どう終了したかを持つ。
+判断明細は属性の before/after と採用根拠に限定する。明細本体・金額は両層とも持たない(DR-9)。
+復元に必要な行 payload は undo 退避にだけ持つ。
 これは `docs/product/backlog.md` の「取込履歴に『誰が・どの画面から』の監査情報を持たせる」を包含する。
 
 # 手当ての継続再適用
 
-## 3点比較の成立条件
+## 3点比較の実装状態（2026-09-02）
 
-**既に動いている範囲**: `tx_edits` の `base_major` / `base_mid`(編集時点の取込値)は
-`packages/api/src/routes/classify.ts` が科目編集時に書き、`packages/core/src/classify.ts` の
-`resolveTx` が `conflict` を算出し、`packages/web/src/pages/Classify.tsx` が
-「再取込で取込値が変わった編集済み明細が N 件」の要約と行バッジ「編集済み・取込値が変更」まで
-出している。**DR-10 の分岐3(真の衝突)は科目2属性について検出・表示まで到達済み**である。
-
-**欠けている範囲**: 3点あり、列の追加だけでは成立しない。
-
-1. **属性が足りない。** `base_cls` / `base_owner` を足し、`cls` / `category_major` /
-   `category_mid` / `owner` の4属性すべてに base を持たせる。
-2. **base の書込条件が科目編集に閉じている。** `routes/classify.ts` は**科目を編集したときにしか**
-   base を書かないため、`cls` / `owner` 単独の編集では base が残らない。書込側を4属性へ広げる。
-3. **判定式が `editedCat` を前提にしている。** `core/classify.ts` の `conflict` は
-   `editedCat` が真のときしか評価しない。属性ごとに独立して3分岐を返す形へ作り替える
-   (現状は明細単位の真偽1つで、どの属性が衝突したかを持たない)。
-
-そして分岐1(手当ての維持)と分岐2(incoming 採用・base 前進)は現状どこにも無い。
-**衝突の検出で止まっており、解決まで運ぶ経路が無い**のが本件の中心である。
+- `resolveIncomingTx` が `rules > 適用可能なvendor_memory > import/default`の単一正本となり、
+  手動編集時baseと再取込時incomingの両方が共用する。
+- quick class / full edit は `applyManualEditWithBase`で、属性を最初に手で変える直前の
+  有効値を `base_cls` / `base_major` / `base_mid` / `base_owner` へ保存する。既存baseは上書きしない。
+- 旧行のbase遅延補完・stable-key移動・解決選択はpreviewでは書かず、同じfingerprintを
+  検証した通常 `POST /imports` のcanonical確定batchだけが書く。
+- 属性別の3分岐が正本で、明細単位の `conflict` はそこから導出する互換値に限定する。
 
 ## 取引先単位の決め事(vendor_memory)
 
@@ -267,8 +303,13 @@ DR-9 の「採用根拠を残す」を満たせない。
 自動適用が取り消された回数 `disagree_count` から算出し、利用者の回答があるたびに更新する。
 `pinned` が立った決め事は `confidence` によらず常に適用する。
 `vendor_key` は正規化文字列で取引先数に比例するため、数百行規模に収まり 500 MB を圧迫しない。
+通常 `POST /imports` は利用者単位の決め事を1文で一括読みし、明細ごとのN+1を行わない。
+高確信の自動適用は `tx_edits.origin='vendor_memory'` / `origin_key=vendor_key` を保存し、
+低確信の候補と今回の回答からのlearningとは別の件数として返す。
 
 **誤学習の巻き戻し**: 決め事の取消は即時反映し、過去に自動適用された明細は「取消して再判定」で戻せる。
+明細上の個別の「決め事を外す」は、決め事を除いた有効値をmanual `tx_edit`として固定する。
+そのため高信頼の決め事でも次回取込で即再適用されず、`disagree_count`も最初の取消時のみ増える。
 長期間当たらない `vendor_key` は棚卸しで掃除する。
 
 # 既存資産との接続点
@@ -283,15 +324,19 @@ DR-9 の「採用根拠を残す」を満たせない。
 | `balance_entries` | **`import_id` を足さない。** `migrations/0026` は意図して `source ('mf'\|'manual')` で区別し、「取込は `source='mf'` の行しか消さない。これが無いと、CSVを入れ直すたびに手入力した負債が消える」と明記している。取込単位削除の対象特定は `source='mf'` かつ対象月、で行う |
 | `cash_entries` | **取込由来ではない。** `migrations/0006` / `0007` が意図して非取込由来とし、`0007` は `cash:*` edit の誤付着防止に `AUTOINCREMENT` 再構築までしている。DR-6 の巻き添え防止対象として扱い、削除の対象集合に入れない |
 | `overrides` | 旧テーブル。`migrations/0000_init.sql` に今も実在し `0001` が「互換のため残す」としている。読み取りは `tx_edits` のみ。本件で復活させないが、**全件削除(初期化)の対象範囲には含める** — 残しておくと初期化後も古い手当てが残留する |
-| `tx_edits` | 手当ての正本。`base_cls` / `base_owner` / `stable_key` / `fingerprint_version` を append-only で追加する |
+| `tx_edits` | 手当ての正本。`base_cls` / `base_owner` / `stable_key` / `fingerprint_version` は0030、自動適用を値一致から推測しないための `origin` / `origin_key` は0031で append-only 追加する |
 | `rules` | キーワード規則。優先順位は `tx_edits` の次(DR-12) |
 | `account_norm_map` / `institution_owners` / `category_options` | 既存のまま。本件は変更しない |
 | `tx_splits` | 削除の巻き添えにしない(DR-6)。`identity_stable=0` の明細に対する既存契約は `specs/transaction-splits.md` が持つ |
-| `monthly_agg` / `restored_monthly_agg` | 削除・undo 後に実データから再生成する(DR-5) |
+| `monthly_agg` | 削除・undo 後に正本から再生成する(DR-5) |
+| `restored_monthly_agg` | 復元 baseline の正本。全件初期化では他の正本行と同じ batch で退避・削除し、undo で復元する |
 | `attachments` | 削除の巻き添えにしない。原本 lifecycle は `specs/attachments-and-transit.md` が持つ |
 
 スキーマ追加はすべて `migrations/` へ連番で append-only に足し、既存テーブルの破壊的再定義を避ける。
-**次の番号は `0029`**(現行は `0028` まで。`0016` / `0017` は欠番であり詰めない)。
+本件は既存 `0029_improvement_requests.sql` に続く
+`0030_import_deletion_and_vendor_memory.sql` / `0031_tx_edit_provenance.sql` /
+`0032_tx_edit_base_known.sql` / `0033_audit_log.sql` / `0034_import_discard_audit.sql` として実装済み。
+**次の番号は `0035`**。
 
 新設する `vendor_memory` / undo 退避 / 監査記録の各テーブルのうち、
 **JSON 復元の write-set を変えるものは `packages/api/src/import-active.ts` の
@@ -307,16 +352,19 @@ DR-9 の「採用根拠を残す」を満たせない。
 | 制約 | 本件への影響 |
 |---|---|
 | Worker 1回の呼び出しあたりクエリ 50 本(既存 `D1_FREE_QUERY_LIMIT`、受理上限は 49) | 削除も件数に応じて分割実行する。3点比較は明細ごとに個別クエリを発行せず**取込単位でまとめ読み**し、書戻しは SQLite の UPSERT(`INSERT ... ON CONFLICT DO UPDATE`)で存在確認の SELECT を省いて1文にまとめる。既存の `planMultipartImportQueries` / `planRestoreImportQueries` と同じ考え方で計画し、commit 直前に `actual <= planned` を fail-closed で保証する |
+| 夜間 scheduled 全体の同一 invocation 上限 | `scheduled-maintenance-budget.ts` を7 jobの単一予算表とし、backup 1 + attachment 20 + password throttle 1 + improvement 3 + undo retention 12 + audit header 3 + audit detail 6 = **46 queries** を上界とする。backupを先に確定し、残る6 jobは `Promise.allSettled` で独立観測する。batchは呼出し1回でなく内包statement数で数える |
 | rows written 10万/日 | 削除1行につき退避1行の書込が加わり **rows written を二重に消費する**。1日あたりの削除規模の見積りを実装時に確認する |
 | 1データベース 500 MB | 退避行の保持期間を長く取ると本体を圧迫する。DR-8 の有限保持と掃除が必須 |
 | Time Travel 7日・データベース単位 | undo の代替にならない。自前の退避テーブルが要る |
 
 # 画面
 
-取込画面(`packages/web/src/pages/Import.tsx`)へ足す。新しい最上位画面は作らない。
+既存の仕分け画面 (`packages/web/src/pages/Classify.tsx`) と取込画面
+(`packages/web/src/pages/Import.tsx`) へ足す。新しい最上位画面は作らない。
 
+- **仕分け中の MF 親明細**: 既存の明細操作に「この明細を削除」を追加する。現金明細と分割子には出さない。
 - **取込履歴の各行**: 「この取込を取り消す」を追加する(現状は「この取込をやり直す」のみ)。
-- **削除の入口**: 期間・種別・全件を選ぶ経路。実行前に preflight の要約を挟む。二段階確認とする。
+- **削除の入口**: 期間・全件を選び、必要なら種別で絞る経路。実行前に preflight の要約を挟む。二段階確認とする。
 - **取込プレビュー**: 追加 / 変更 / 削除 / 不変の件数を先に出す。
   自動で決まった分(取込元だけが変わった箇所・手当てが維持された箇所・決め事が自動適用された箇所)は
   **件数と内訳の要約だけ**を示し、一行ずつ確認させない。
@@ -342,34 +390,44 @@ DR-9 の「採用根拠を残す」を満たせない。
 
 すべて認証ガード下(既存の session/token 認証後の共通入口の配下)。public auth 経路からは到達させない。
 削除系・undo は `import_writer_claims` 配下で実行する。
+preflight の2本は書き込みが1件も無いため lease を取らない(DR-1)。数えるだけの経路が
+書込の直列化待ちに巻き込まれると、確認を出すこと自体が取込と競合するようになる。
 
 | メソッド | パス | 内容 |
 |---|---|---|
 | POST | `/api/imports/:id/undo/preflight` | 取込単位の取り消しの事前確認。件数・期間・巻き添え手動記録・確認指紋を返す。書き込みなし |
 | POST | `/api/imports/:id/undo` | 取込単位の取り消し。確認指紋を必須とし、不一致なら実行せず409 |
-| POST | `/api/data/deletions/preflight` | 期間・種別・全件の事前確認。範囲はサーバ側で再解釈する。書き込みなし |
-| POST | `/api/data/deletions` | 期間・種別・全件の削除。確認指紋必須。全件は範囲の明示入力を必須とする |
-| POST | `/api/imports/diff` | 取込実行前の差分プレビュー。追加/変更/削除/不変の件数と、衝突行の base/current/incoming を返す |
+| POST | `/api/imports/:id/discard/preflight` | 非有効な取込履歴を破棄できるかサーバ状態から判定し、保存原本が単独か共有かと確認指紋を返す。書き込みなし |
+| POST | `/api/imports/:id/discard` | 確認指紋が一致する非有効履歴だけを破棄する。最後の参照ならR2原本削除をoutboxへ登録する |
+| POST | `/api/data/deletions/preflight` | 明細・期間・全件の事前確認。種別は期間・全件の任意フィルタ。範囲はサーバ側で再解釈する。書き込みなし |
+| POST | `/api/data/deletions` | 明細・期間・全件の削除。確認指紋必須。全件は範囲の明示入力を必須とする |
+| POST | `/api/imports/diff` | 読み取り専用の差分プレビュー。追加/変更/削除/不変の件数、衝突行の base/current/incoming、自動適用/候補の件数を返す。`apply=1` は400 `diff_read_only` |
 | POST | `/api/data/undo/:operationId` | 直前の削除・上書きの取り消し。保持期間外は410 |
-| GET | `/api/data/operations` | 削除・上書きの監査記録一覧(操作種別・範囲・件数・日時)。明細本体は含めない |
+| GET | `/api/data/operations` | 削除・上書きの操作監査一覧(操作種別・範囲・件数・日時・結果・`undoable`)。明細・属性値・金額・採用根拠は含めない。`undoable` は期限だけでなく退避行の実在で決まり、容量上限で前倒しに捨てられた世代も false になる |
 | GET | `/api/vendor-memory` | 学習した決め事の一覧(取引先・適用内容・確信度・適用件数・最終適用日) |
 | PATCH | `/api/vendor-memory/:vendorKey` | 決め事の取消 / pin / 内容の修正 |
 | POST | `/api/vendor-memory/:vendorKey/reapply` | 過去に自動適用された明細の再判定 |
 
-既存の `POST /imports` / `GET /imports` / `GET /imports/:id/original` / `POST /restore` の
-挙動は変えない。差分プレビューを経ずに `POST /imports` を実行する経路も、
-既存の月単位洗い替えとして残す(後方互換)。
+差分プレビューを経ずに `POST /imports` を実行する経路も後方互換として残す。
+その通常経路でも同じresolverを使い、高確信の決め事とbase遅延補完をcanonical取込と同じbatchで確定する。
 
 # 受入
 
 - [ ] 取込履歴から任意の取込を取り消せ、その `import_id` を参照する行が0件になり、他の取込由来の明細が1件も減らない
-- [ ] 月・期間・種別・全件を指定した削除ができ、**指定範囲外のデータが1件も変化しない**
+- [ ] 失敗・重複の履歴を確認後に破棄でき、有効・一部有効・更新済み・処理中・旧履歴はAPIで拒否される
+- [ ] 同じR2原本を参照する兄弟履歴がある間は原本が残り、最後の非有効参照を破棄したときだけoutbox経由で削除される
+- [ ] 明細・取込・期間・全件の4粒度で削除でき、種別は期間・全件の絞り込みとしてだけ働き、**指定範囲外のデータが1件も変化しない**
 - [ ] 削除の確認画面に対象件数・対象期間・巻き添えになる手動記録の件数が出る
 - [ ] 示された件数以外の手動記録(`tx_edits` / `tx_splits` / `cash_entries` / `attachments`)が失われない
 - [ ] 確認指紋が一致しない実行が409で拒否され、状態が動かない
 - [ ] 実行直後の取り消しで、各テーブルの行数と内容が実行前と完全に一致する
 - [ ] 保持期間を過ぎた undo が410で拒否され、退避行が掃除されている
+- [ ] 掃除でundo退避・target・`import_deletion_operations`が同じ世代で消え、`audit_log`の操作ヘッダは残る
+- [ ] 1回の掃除で扱う操作数に上限があり、残りは次回が拾い、掃除済みを拾い直さない
+- [ ] 容量上限に達したとき、期限内でも古い世代から前倒しで捨てられ、新しい世代は残る
+- [ ] 前倒しで捨てられた世代は期限内でも `undoable:false` となり、期限切れとは別の文言で画面に出る
 - [ ] 削除後に `import_active_targets` の指紋が巻き戻り、同じファイルを `duplicate` にならず入れ直せる
+- [ ] 削除・undo の正本変更と `monthly_agg` 置換が同じ D1 batch で確定し、途中失敗では片側だけ残らない
 - [ ] 削除・上書き後の `monthly_agg` / `imports` / `balance_entries` が実データから再計算した値と一致する
 - [ ] 監査記録に操作種別・範囲・件数・日時が残り、明細本体・金額がログとエラー応答に含まれない
 - [ ] `base == incoming` の属性で手当てが維持される
@@ -388,26 +446,49 @@ DR-9 の「採用根拠を残す」を満たせない。
 - [ ] 他利用者の明細・退避行・監査記録・決め事を参照・更新できない
 - [ ] 削除・上書きが freee・マネーフォワード側へ一切波及しない
 
-# 未決事項
+# 決定済み事項 (旧・未決事項)
 
-正本(`system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json`)で未確定のまま確定へ持ち越された項目。実装着手前に決めること。
+かつて未確定のまま確定へ持ち越されていた4項目は、2026-09-02 に利用者決裁を経て確定した。
+正本は `system-spec/spec-state.json` の `decisions` (D4〜D7) と `qa_log` (qa-012〜qa-015)。
 
-- **`vendor_memory` の confidence 算出式・初期閾値・段階的緩和基準が未数値化。**
-  `hit_count` と `disagree_count` から算出するとまでは決まっているが、式も初期閾値も
-  「取消率を見ながら段階的に緩める」の判断基準も数値になっていない。
-  結果として **O10「利用者へ問う件数を逓減させる」に測定基準が無く、達成を判定できない**。
-  D3 の caveat は「最初から自動適用を広げすぎず、まず候補提示から始める」とだけ言う。
-- **`core/classify.ts` の `conflict` を属性単位へ作り替える範囲が未見積り。**
-  現行の `conflict` は明細単位の真偽1つで、どの属性が衝突したかを持たない。
-  4属性それぞれの3分岐を返す形へ変えると、`resolveTx` の戻り値型が変わり、
-  これを読む `routes/classify.ts` / `Classify.tsx` / 既存テストが波及する。
-  互換のため明細単位の `conflict` を導出値として残すか、呼出側をすべて直すかが決まっていない。
-- **既存明細への base 埋め移行処理が qa_log へ未着地。**
-  D2 と D3 の caveat には「base が無い既存明細については初回取込時に現在の取込値を base として
-  埋める移行処理が要る」「移行の前後で手当ての扱いが変わらないことを確認すること」とあるが、
-  この移行を**どの時点で・どの経路で・どう検証するか**が qa_log のどの章にも落ちていない。
-  移行前の明細は全属性が「利用者が触っていない」扱いになるため、初回だけ
-  DR-10 の分岐2(incoming 採用)へ倒れるおそれがある。
-- **undo 退避行の保持期間の具体値が未定。** DR-8 は「有限」とだけ定める。
-  D1 Free の 500 MB と rows written 10万/日 に対する1日あたり削除規模の見積りも
-  「実装時に確認」のままである。
+- **D4: `vendor_memory` の confidence 算出式・初期閾値・段階的緩和基準** → 確定。
+  `confidence = hit_count / (hit_count + disagree_count)`。自動適用は `hit_count >= 3` かつ
+  `confidence >= 0.80` の両方を満たす場合に限り、満たさないものは候補提示に留める。
+  直近30日の自動適用に対する利用者取消率が 5% を超えたら閾値を 0.05 上げ、取消率 1% 未満が
+  30日続いたら 0.05 下げる。可動域は 0.70〜0.95。取消率の集計対象は自動適用された明細に限り、
+  利用者が自分で入れた手当てを取り消した場合を混ぜない。閾値を上下させた事実・時刻・
+  その時点の取消率を監査記録へ残す。これにより O10「利用者へ問う件数を逓減させる」は
+  `hit_count` の増加と取消率として測定できる。判定は D1 内の算術で閉じる (DR-14)。
+- **D5: `core/classify.ts` の `conflict` を属性単位へ作り替える範囲** → 確定。
+  呼出側をすべて属性単位へ直す。`resolveTx` は4属性それぞれについて DR-10 の3分岐を返し、
+  属性別結果のみを正本とする。後方互換の `conflict: boolean` を残す場合は、
+  「属性別結果に衝突が1つでもあるか」から都度算出する API 互換値に限定し、別の保存・判定・件数の正本にしない。
+  これにより真実の源を1つに保つ。波及する `routes/classify.ts` / `Classify.tsx` / 既存テストは
+  同一の変更単位で追随させ、取込経路が動かない期間を作らない。属性が将来増えたときに
+  3分岐の網羅が崩れないよう、属性の集合と3分岐を型で表し、分岐漏れが型検査で落ちる形にする。
+- **D6: 既存明細への base 埋め移行処理** → 確定。
+  一括の書換 migration は行わない。新しい手動編集は、属性を最初に変える時点で
+  `tx_edit`を除く有効値をbaseへ保存し、既存baseを上書きしない。古い手当てでbaseを持たない行だけは、
+  再取込の確定時に「取込を始める直前の有効値」を遅延補完する。どちらも
+  `rules > 適用可能なvendor_memory > import/default` の共通resolverを使う。埋め込みは必ず3点比較より
+  **前**に置く。後に置くと移行前の明細が初回だけ DR-10 の分岐2(incoming 採用)へ倒れ、手当てが失われる。
+  埋め込みと本体更新は同じ書込単位に入れ、途中失敗で base だけが進んだ状態を残さない。
+  移行完了という時点は存在しないため、base を持たない明細の残件数を取込画面と監査記録へ出し、
+  これを唯一の進捗指標とする。移行の前後で手当ての扱いが変わらないことは、base を持つ明細と
+  持たない明細の双方に対し3分岐がそれぞれ期待どおりに倒れることを、件数を固定した試験で確かめる。
+- **D7: undo 退避行の保持期間** → 確定。
+  保持期間 30 日と容量上限 300 MB (D1 単一データベース上限 500 MB の 60%) の二段構えとし、
+  いずれか先に到達した側で古い世代から掃除する。掃除は1回の Worker 呼び出しあたりの
+  D1 クエリ本数が 50 本未満に収まるよう分割実行する。世代ごとの期限を画面へ明示し、
+  容量上限による前倒しの掃除が起きた場合はその事実と対象世代も示す (DR-8)。
+  削除1行につき退避1行の書込が加わり rows written を二重に消費するため、1日あたりの
+  削除対象は 5万行以内を前提として運用を始める。保持期間 30 日は D1 の Time Travel が遡れる
+  7 日より長く、その差の 23 日ぶんは退避テーブルが唯一の回復手段になる。
+- **D8: 操作監査と undo payload の境界** → 確定。
+  操作ヘッダは 400 日、属性別 before/after と採用根拠の判定明細は 90 日保持する。
+  判定明細に明細本体・金額は含めない。復元に必要な行 payload は D7 の
+  `import_deleted_rows` に限定し、30 日と 300 MB のいずれか先に達した側で消す。
+  判定明細も容量上限で古い順に掃除し、操作ヘッダと独立した寿命とする。
+
+いずれの数値 (0.80 / 3 件 / 300 MB / 5万行) も実データのない段階での出発点であり、
+取消率と退避量の実測を見て見直すことを運用手順へ組み込む。

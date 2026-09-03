@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { URL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { signedSessionCookieForTest } from './auth.test-support.js';
 import { app } from './index.js';
@@ -7,6 +9,28 @@ const schemaReadyDatabase = {
   prepare: () => ({ first: async () => EXPECTED_D1_MIGRATION }),
 };
 
+const staticHeaders = new Map(
+  readFileSync(new URL('../../web/public/_headers', import.meta.url), 'utf8')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith('/') && !line.startsWith('#'))
+    .map((line) => {
+      const separator = line.indexOf(':');
+      return [line.slice(0, separator).toLowerCase(), line.slice(separator + 1).trim()] as const;
+    }),
+);
+const requiredStaticHeaders = new Map([
+  ['strict-transport-security', 'max-age=15552000; includeSubDomains'],
+  [
+    'content-security-policy',
+    "default-src 'self'; base-uri 'none'; connect-src 'self'; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+  ],
+  ['permissions-policy', 'camera=(self), geolocation=(), microphone=(), payment=(), usb=()'],
+  ['referrer-policy', 'strict-origin-when-cross-origin'],
+  ['x-content-type-options', 'nosniff'],
+  ['x-frame-options', 'DENY'],
+]);
+
 describe('API公開境界', () => {
   it('未認証エラーにも共通セキュリティヘッダーを付ける', async () => {
     const response = await app.request('/api/summary', undefined, {
@@ -14,12 +38,10 @@ describe('API公開境界', () => {
       ACCESS_TEAM_DOMAIN: '',
     });
 
-    expect(response.headers.get('content-security-policy')).toContain("default-src 'self'");
-    expect(response.headers.get('permissions-policy')).toContain('camera=(self)');
-    expect(response.headers.get('referrer-policy')).toBe('strict-origin-when-cross-origin');
-    expect(response.headers.get('strict-transport-security')).toContain('includeSubDomains');
-    expect(response.headers.get('x-content-type-options')).toBe('nosniff');
-    expect(response.headers.get('x-frame-options')).toBe('DENY');
+    expect(staticHeaders).toEqual(requiredStaticHeaders);
+    for (const [name, expected] of requiredStaticHeaders) {
+      expect(response.headers.get(name), name).toBe(expected);
+    }
   });
 
   it('認証未設定で保護APIを公開しない', async () => {

@@ -91,7 +91,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/index.md",
+        "source_path": "system-spec/archive/2026-09-02-mobile-visualization-and-improvement-request/index.md",
         "source_version": "0.1.11",
         "source_digest": "3be8aad9e13b562e1c1365d327633fbfe6e665e3c687ea4f3aba90a156bc8254",
         "imported_at": "2026-08-31T00:00:00Z"
@@ -114,7 +114,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-02-mobile-visualization-and-improvement-request/ui-ux.md",
         "source_version": "0.1.11",
         "source_digest": "7638a33287d1cf64541556c0ff6c2bb01177112d0b593fb25f14069a2bf82e70",
         "imported_at": "2026-08-31T00:00:00Z"
@@ -137,7 +137,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-02-mobile-visualization-and-improvement-request/frontend.md",
         "source_version": "0.1.11",
         "source_digest": "a1e7983b026e86e7add4a160a17add636815798ccb226cc20f9114fb08d3153b",
         "imported_at": "2026-08-31T00:00:00Z"

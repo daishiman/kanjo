@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { ImportUnitResult } from '../api.js';
 import { ImportResultTable } from './Import.js';
@@ -24,17 +24,20 @@ describe('取込結果の件数表示', () => {
 
     render(<ImportResultTable results={results} />);
 
-    expect(screen.getByRole('columnheader', { name: '保存行' })).toBeTruthy();
-    expect(screen.getByRole('columnheader', { name: '解析行' })).toBeTruthy();
-    expect(screen.getByRole('columnheader', { name: '集計対象' })).toBeTruthy();
-    expect(screen.getByRole('columnheader', { name: '集計対象外' })).toBeTruthy();
-    expect(screen.getByRole('columnheader', { name: '保存不可' })).toBeTruthy();
-    expect(screen.getByText('2')).toBeTruthy();
-    expect(screen.getAllByText('1')).toHaveLength(3);
-    expect(screen.getByText('3')).toBeTruthy();
-    expect(screen.getByText(/ID重複1件/)).toBeTruthy();
-    expect(screen.queryByRole('columnheader', { name: '有効行' })).toBeNull();
-    expect(screen.queryByRole('columnheader', { name: 'スキップ' })).toBeNull();
+    const record = screen.getByText('anonymous-counts.csv').closest('.import-record') as HTMLElement;
+    const scope = within(record);
+    expect(scope.getByText('取込完了')).toBeTruthy();
+    expect(scope.getByText('2', { selector: '.import-record-count .num' })).toBeTruthy();
+    expect(scope.getByText('2026-12')).toBeTruthy();
+
+    fireEvent.click(scope.getByText('件数の内訳'));
+    expect(scope.getByText('解析行')).toBeTruthy();
+    expect(scope.getByText('保存行')).toBeTruthy();
+    expect(scope.getByText('集計対象')).toBeTruthy();
+    expect(scope.getByText('集計対象外')).toBeTruthy();
+    expect(scope.getByText('保存不可')).toBeTruthy();
+    expect(scope.getByText(/ID重複 1件/)).toBeTruthy();
+    expect(screen.queryByRole('table')).toBeNull();
   });
 
   it('旧APIレスポンスはスキップ内訳を新件数に推測せず不明と示す', () => {
@@ -51,14 +54,50 @@ describe('取込結果の件数表示', () => {
 
     render(<ImportResultTable results={results} />);
 
-    const row = screen.getByRole('row', { name: /anonymous-legacy\.csv/ });
-    const cells = within(row).getAllByRole('cell');
-    expect(cells[3].textContent).toBe('—');
-    expect(cells[4].textContent).toBe('—');
-    expect(cells[5].textContent).toBe('—');
-    expect(cells[6].textContent).toBe('—');
-    expect(cells[7].textContent).toBe('—');
-    expect(within(row).getByText('旧API: 旧有効8行・旧スキップ3行（内訳不明）')).toBeTruthy();
-    expect(within(row).queryByText(/解析8行・保存8行/)).toBeNull();
+    const record = screen.getByText('anonymous-legacy.csv').closest('.import-record') as HTMLElement;
+    const scope = within(record);
+    fireEvent.click(scope.getByText('件数の内訳'));
+    expect(scope.getByText('旧API: 旧有効8行・旧スキップ3行（内訳不明）')).toBeTruthy();
+    expect(scope.queryByText(/解析8行・保存8行/)).toBeNull();
+    expect(scope.queryByText('解析行')).toBeNull();
+  });
+
+  it('連続する対象月を範囲と件数に圧縮して走査しやすくする', () => {
+    render(
+      <ImportResultTable
+        results={[
+          {
+            filename: 'anonymous-range.csv',
+            kind: 'freee',
+            months: ['2026-01', '2026-02', '2026-03'],
+            rows: 3,
+            skipped: 0,
+            status: 'committed',
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('2026-01 〜 2026-03（3ヶ月）')).toBeTruthy();
+  });
+
+  it('対象月が連続していないときは連続範囲のように見せない', () => {
+    render(
+      <ImportResultTable
+        results={[
+          {
+            filename: 'anonymous-gapped-range.csv',
+            kind: 'mf',
+            months: ['2026-01', '2026-03'],
+            rows: 2,
+            skipped: 0,
+            status: 'committed',
+          },
+        ]}
+      />,
+    );
+
+    const summary = screen.getByText('2026-01 〜 2026-03（2ヶ月・一部月を除く）');
+    expect(summary).toHaveProperty('title', '2026-01, 2026-03');
   });
 });

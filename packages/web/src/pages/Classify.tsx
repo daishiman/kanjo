@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import {
   type Candidates,
   type Cls,
+  type DeletionResult,
   type Owner,
   type PaymentMethod,
   SCOPE_LABEL,
@@ -28,9 +29,11 @@ import {
 import { CategoryPicker } from '../components/CategoryPicker.js';
 import { OwnerSelect, useInvalidateClassification } from '../components/ClassificationSettings.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
+import { DeletedNotice, TransactionDeletionButton } from '../components/ImportDeletion.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { SplitEditor } from '../components/SplitEditor.js';
 import { Term } from '../components/Term.js';
+import { VendorMemoryBadge } from '../components/VendorMemory.js';
 import { monthLabel, yen, yenS } from '../format.js';
 
 const DISCARD_CLASSIFICATION_DRAFT_MESSAGE = '未保存の変更があります。変更を破棄して編集を閉じますか?';
@@ -183,6 +186,7 @@ export function ClassifyPage() {
   const [editingRowKey, setEditingRowKey] = useState<string | null>(null);
   const [dirtyEditingId, setDirtyEditingId] = useState<string | null>(null);
   const [busyEditingId, setBusyEditingId] = useState<string | null>(null);
+  const [recentDeletion, setRecentDeletion] = useState<DeletionResult | null>(null);
   const attachments = useAttachmentDisclosure();
 
   const requestEditingId = useCallback(
@@ -390,6 +394,8 @@ export function ClassifyPage() {
 
       <OrphanedAttachmentRecovery />
 
+      {recentDeletion && <DeletedNotice result={recentDeletion} onUndone={() => setRecentDeletion(null)} />}
+
       <div className="kpis">
         <KpiCard
           label="明細数"
@@ -562,6 +568,7 @@ export function ClassifyPage() {
                 }
                 onSaved={finishEditing}
                 attachments={attachments}
+                onDeleted={setRecentDeletion}
               />
             );
           })}
@@ -593,6 +600,7 @@ function TxLine({
   onBusyChange,
   onSaved,
   attachments,
+  onDeleted,
 }: {
   t: TxRow;
   focused: boolean;
@@ -608,6 +616,7 @@ function TxLine({
   onBusyChange: (busy: boolean) => void;
   onSaved: () => void;
   attachments: AttachmentDisclosure;
+  onDeleted: (result: import('../api.js').DeletionResult) => void;
 }) {
   const catEdited = t.catSrc === '手動';
   const editorId = useId();
@@ -654,7 +663,7 @@ function TxLine({
         </td>
         <td data-label="大項目/中項目">
           {t.big}
-          {t.mid ? ` / ${t.mid}` : ''}
+          {t.mid ? ` / ${t.mid}` : ''} <VendorMemoryBadge origin={t.origin} originKey={t.originKey} />
           {catEdited && (
             <>
               {' '}
@@ -737,7 +746,7 @@ function TxLine({
                   disabled={editBusy || t.src !== '手動'}
                   onClick={() => onSet(null)}
                 >
-                  自動に戻す
+                  {t.origin === 'vendor_memory' ? '決め事を外す' : '自動に戻す'}
                 </button>
               </>
             )}
@@ -765,6 +774,9 @@ function TxLine({
               >
                 {splitting ? '分割を閉じる' : isSplitPart ? '内訳を直す' : '分割する'}
               </button>
+            )}
+            {t.rowKind === 'mf' && (
+              <TransactionDeletionButton txId={t.id} disabled={editBusy} onDeleted={onDeleted} />
             )}
           </div>
         </td>
@@ -998,7 +1010,7 @@ function EditorRow({
               disabled={!t.edited || busy}
               onClick={() => save.mutate({ reset: true })}
             >
-              取込値に戻す
+              {t.origin === 'vendor_memory' ? '決め事を外す' : '取込値に戻す'}
             </button>
             <button type="button" disabled={busy} onClick={onClose}>
               編集を閉じる

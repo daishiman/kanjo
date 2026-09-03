@@ -33,6 +33,61 @@ export function canonicalEncode(value: unknown): string {
   throw new TypeError(`canonical encoding対象外の型です: ${typeof value}`);
 }
 
+/**
+ * 再取込を跨いで明細を追う第二の鍵(DR-13)の版。
+ * `FINGERPRINT_VERSION` とは別に持つ。内容指紋は「取込の中身が変わったか」を見るのに対し、
+ * こちらは「同じ明細か」を見るもので、変えたい理由も変えてよい時期も違う。
+ * 版が違う鍵どうしは突き合わせない。突き合わせると、別の明細の手当てが移る。
+ */
+export const STABLE_KEY_VERSION = 1;
+
+/** stable_key の材料。tx_id が振り直されても変わらない値だけを採る。 */
+export interface StableKeyParts {
+  /** 'YYYY-MM' */
+  m: string;
+  /** 表示日付。`normalizeMfDisplayDate` 後の 'MM/DD' */
+  d: string;
+  /** 内容(CSV原本のまま) */
+  c: string;
+  /** 金額。正=収入 / 負=支出 */
+  a: number;
+  /** 保有金融機関 */
+  inst?: string | null;
+  /** 大項目 */
+  big?: string | null;
+  /** 中項目 */
+  mid?: string | null;
+  /** メモ */
+  memo?: string | null;
+}
+
+/**
+ * stable_key に載せる値。
+ *
+ * 採るのは「取引そのものに紐づき、再取込で動かない」値だけである。
+ *   - m / d … いつの取引か。日まで入れないと、同月・同額・同店の明細が衝突する。
+ *   - c     … 何の取引か。CSV原本のまま使う(切り詰めると別取引が同じ鍵になる)。
+ *   - a     … いくらの取引か。符号込みで、収入と支出を別物として扱う。
+ *   - inst  … どの口座の取引か。同日・同額・同店が複数口座に並ぶ場合を分ける。
+ *
+ * 外したものと、その理由:
+ *   - big / mid … 再取込でMF側が動かす値そのもの。鍵に入れると、3点比較にかけたい
+ *     まさにその場面で鍵が変わり、追跡が切れて手当ての持ち主を見失う。
+ *   - memo … MF側で後から編集できる。利用者がメモを直しただけで別明細になる。
+ *   - id / idStable … これは第一の鍵(tx_id)側の関心事。第二の鍵が第一に依存すると、
+ *     tx_id が振り直されたときに両方いっしょに切れて、二重に持つ意味が無くなる。
+ */
+export function stableKeyFields(parts: StableKeyParts): readonly unknown[] {
+  return [parts.m, parts.d, parts.c, parts.a, parts.inst ?? null];
+}
+
+/**
+ * 明細の第二の鍵。`tx_id` が使えないときだけ使う(第一は常に `tx_id`)。
+ * 正規化は `normalizeMfDisplayDate` と同じ関数を通したものを受け取る前提で、ここでは複製しない。
+ */
+export const stableKeyOf = (parts: StableKeyParts): string =>
+  `v${STABLE_KEY_VERSION}:mf:${canonicalEncode(stableKeyFields(parts))}`;
+
 const canonicalRows = (kind: 'freee' | 'mf', rows: ReadonlyArray<readonly unknown[]>): string => {
   const encodedRows = rows.map((row) => canonicalEncode(row)).sort();
   return `v${FINGERPRINT_VERSION}:${kind}:${canonicalEncode(encodedRows)}`;

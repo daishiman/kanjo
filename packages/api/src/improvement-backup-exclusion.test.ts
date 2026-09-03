@@ -120,12 +120,13 @@ describe('削除ジョブの失敗が他へ波及しないこと', () => {
     await mf?.dispose();
   });
 
-  it('1件の削除が失敗しても例外を投げず、成功と失敗を別々に数える', async () => {
+  it('R2個別失敗とR2成功後のD1集合更新失敗を、どちらも次回へ安全に持ち越す', async () => {
     const failing = {
       delete: (key: string) => {
         if (key.endsWith('imp-a.jpg')) throw new Error('synthetic R2 failure');
         return Promise.resolve();
       },
+      get: () => Promise.resolve(null),
       list: () => Promise.resolve({ objects: [] }),
     } as unknown as R2Bucket;
     const env = {
@@ -146,5 +147,71 @@ describe('削除ジョブの失敗が他へ波及しないこと', () => {
       .prepare("SELECT id FROM improvement_requests WHERE purged_at IS NULL AND status = 'done'")
       .all<{ id: string }>();
     expect(remaining.results.map((r) => r.id)).toEqual(['imp-a']);
+
+    // 集合UPDATE失敗時に、同じsweepでR2削除済みの全行が未処理に戻ることを複数行で確認する。
+    await d1
+      .prepare(
+        `INSERT INTO improvement_requests
+           (id, user_id, title, body, route, status, screenshot_key, done_at, created_at, updated_at)
+         VALUES ('imp-c', 'default', '架空の要望', '本文', '/', 'done',
+                 'improvements/default/imp-c.jpg', ?, ?, ?)`,
+      )
+      .bind('2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z')
+      .run();
+
+    const successfulFiles: Partial<R2Bucket> = {
+      delete: () => Promise.resolve(),
+      get: () => Promise.resolve(null),
+      list: () => Promise.resolve({ objects: [], truncated: false, delimitedPrefixes: [] }),
+    };
+    const failBoundUpdate = (statement: D1PreparedStatement): D1PreparedStatement => {
+      const proxy = new Proxy(statement, {
+        get(target, property, receiver) {
+          if (property === 'run') return () => Promise.reject(new Error('synthetic D1 set update failure'));
+          const value = Reflect.get(target, property, receiver);
+          return typeof value === 'function' ? value.bind(target) : value;
+        },
+      });
+      return proxy;
+    };
+    const updateFails = new Proxy(d1, {
+      get(database, property, receiver) {
+        if (property === 'prepare')
+          return (query: string) => {
+            const statement = database.prepare(query);
+            if (!/^\s*UPDATE improvement_requests/i.test(query)) return statement;
+            return new Proxy(statement, {
+              get(target, member, statementReceiver) {
+                if (member === 'bind')
+                  return (...values: unknown[]) => failBoundUpdate(target.bind(...values));
+                const value = Reflect.get(target, member, statementReceiver);
+                return typeof value === 'function' ? value.bind(target) : value;
+              },
+            });
+          };
+        const value = Reflect.get(database, property, receiver);
+        return typeof value === 'function' ? value.bind(database) : value;
+      },
+    }) as D1Database;
+    const deferred = await runImprovementRetention(
+      { ...env, DB: updateFails, FILES: successfulFiles as R2Bucket },
+      '2026-02-15T00:00:00.000Z',
+    );
+    expect(deferred).toMatchObject({ selected: 2, purged: 0, failed: 2 });
+    expect(
+      (
+        await d1
+          .prepare(
+            "SELECT id FROM improvement_requests WHERE id IN ('imp-a','imp-c') AND purged_at IS NULL ORDER BY id",
+          )
+          .all<{ id: string }>()
+      ).results.map((row) => row.id),
+    ).toEqual(['imp-a', 'imp-c']);
+
+    const retried = await runImprovementRetention(
+      { ...env, FILES: successfulFiles as R2Bucket },
+      '2026-02-15T00:00:00.000Z',
+    );
+    expect(retried).toMatchObject({ selected: 2, purged: 2, failed: 0 });
   });
 });

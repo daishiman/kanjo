@@ -7,6 +7,7 @@ import { ClassificationSettings } from '../components/ClassificationSettings.js'
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
+import { VendorMemorySettings } from '../components/VendorMemory.js';
 import { readFileText } from '../file-text.js';
 
 export const LEGACY_RESTORE_CONFIRMATION =
@@ -82,6 +83,11 @@ export function SettingsPage() {
       <PageHeader route="settings" />
 
       <ClassificationSettings />
+
+      {/* 自動で当たっているものは仕分けの設定の隣に置く。明細から辿ってこられる先でもある */}
+      <div id="vendor-memory">
+        <VendorMemorySettings />
+      </div>
 
       <div className="card">
         <h2>

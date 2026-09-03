@@ -80,7 +80,9 @@ describe('属性の解決順序(手動 > ルール > 口座 > 取込値/既定)'
     const edits: Record<string, TxEdit> = {
       x: { cls: 'per', big: '交際費', owner: 'business', baseBig: '食費', baseMid: '食料品' },
     };
-    const r = resolveTx(tx({}), rules, edits, inst);
+    // ルール側も動いた場合は、表示は手動値のままでも「双方が動いた」衝突になる。
+    // ここでは手動の表示優先順位だけを見るため、ルール非該当の明細にする。
+    const r = resolveTx(tx({ c: '無関係' }), rules, edits, inst);
     expect(r).toMatchObject({
       cls: 'per',
       clsSrc: '手動',

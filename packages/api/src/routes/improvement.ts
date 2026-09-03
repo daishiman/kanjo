@@ -12,6 +12,7 @@ import { zValidator } from '@hono/zod-validator';
  */
 import {
   IMPROVEMENT_BODY_MAX,
+  IMPROVEMENT_RETENTION_DAYS,
   IMPROVEMENT_SCREENSHOT_MAX_BYTES,
   IMPROVEMENT_TITLE_MAX,
   IMPROVEMENT_TOKEN_MAX_FETCH,
@@ -22,9 +23,10 @@ import {
   mintAgentToken,
   sha256Hex,
 } from '@kanjo/core';
-import { and, desc, eq, isNotNull, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { Hono, type MiddlewareHandler } from 'hono';
 import type { AuthEnv } from '../auth.js';
+import { sweepImprovementOrphans } from '../improvement-orphan-sweep.js';
 import {
   type ImprovementRow,
   buildImprovementPrompt,
@@ -39,6 +41,14 @@ import {
 import { parseDiagnosticsField, redactText, sniffScreenshotType } from '../improvement/redact.js';
 import { runtimeSchemaGuard } from '../schema-guard.js';
 import { type Db, getDb } from '../store.js';
+
+export {
+  IMPROVEMENT_ORPHAN_CHECKPOINT_KEY,
+  IMPROVEMENT_ORPHAN_GRACE_MS,
+  IMPROVEMENT_ORPHAN_LOOKUP_MAX_BYTES,
+  IMPROVEMENT_ORPHAN_SCAN_LIMIT,
+  serializeImprovementOrphanLookupKeys,
+} from '../improvement-orphan-sweep.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 type AgentCtx = { Bindings: AuthEnv; Variables: { userId: string; request: ImprovementRow } };
@@ -471,10 +481,15 @@ export interface ImprovementRetentionResult {
   failed: number;
   /** D1 に対応する行が無い R2 オブジェクトを消した件数 */
   orphans: number;
+  /** この実行で照合したR2 object数 */
+  orphanScanned: number;
+  /** 投稿処理中の可能性があり、5分の猶予で次回へ送った件数 */
+  orphanDeferredRecent: number;
+  /** R2の続きpageがあるか */
+  orphanHasMore: boolean;
+  /** R2の末尾へ到達し、次回は先頭から始まるか */
+  orphanCycleCompleted: boolean;
 }
-
-/** 1回の実行で触る R2 オブジェクトの上限。長時間の Cron で他ジョブを圧迫しない */
-const ORPHAN_SCAN_LIMIT = 1000;
 
 /**
  * 対応完了から30日を過ぎた要望の添付だけを消す。新規 Cron は増やさない。
@@ -484,56 +499,63 @@ export async function runImprovementRetention(
   env: Pick<AuthEnv, 'DB' | 'FILES'>,
   now = new Date().toISOString(),
 ): Promise<ImprovementRetentionResult> {
-  const db = getDb(env.DB);
-  const rows = await db
-    .select()
-    .from(improvementRequests)
-    .where(and(eq(improvementRequests.status, 'done'), isNotNull(improvementRequests.doneAt)))
-    .limit(500);
-  // 1回のCronで無制限に消さない。期限超過だけを対象にし、失敗は次回へ持ち越す
-  const due = rows.filter((row) => !row.purgedAt && improvementAttachmentExpired(row.doneAt, now));
-  let purged = 0;
+  const nowMs = Date.parse(now);
+  if (Number.isNaN(nowMs)) throw new Error('invalid_improvement_retention_time');
+  const cutoff = new Date(nowMs - IMPROVEMENT_RETENTION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  // 期限超過だけを古い順に最大500件読む。本文・診断・利用者IDはCronへ持ち出さない。
+  const due = await env.DB.prepare(
+    `SELECT id,screenshot_key
+       FROM improvement_requests
+      WHERE status='done' AND done_at IS NOT NULL AND purged_at IS NULL
+        AND julianday(done_at) IS NOT NULL AND done_at<=?
+      ORDER BY done_at,id
+      LIMIT 500`,
+  )
+    .bind(cutoff)
+    .all<{ id: string; screenshot_key: string | null }>();
+  const deletedIds: string[] = [];
   let failed = 0;
-  for (const row of due) {
+  // R2は1件ごとに成否が分かれる。成功IDだけを後段の集合更新へ渡す。
+  for (const row of due.results) {
     try {
-      await deleteAttachments(env, db, row, now);
-      purged += 1;
+      if (row.screenshot_key) await env.FILES.delete(row.screenshot_key);
+      deletedIds.push(row.id);
     } catch {
-      // R2 と D1 のどちらで落ちても次回の Cron が同じ行を拾い直す(冪等)
+      // D1を触らないため、失敗行は次回も同じ対象として拾われる。
       failed += 1;
     }
   }
-  return { selected: due.length, purged, failed, orphans: await sweepOrphans(env) };
-}
 
-/**
- * R2 だけに残ったスクリーンショットを消す。
- *
- * 投稿時に「R2 へ put → D1 へ insert」の順で書くため、間で落ちると原本だけが残る。
- * 投稿経路は catch で消しにいくが、Worker ごと落ちた場合はそこも通らない。
- * D1 側に生きているキーの集合を作り、そこに無いオブジェクトを孤児として消す。
- */
-async function sweepOrphans(env: Pick<AuthEnv, 'DB' | 'FILES'>): Promise<number> {
-  const db = getDb(env.DB);
-  const live = new Set(
-    (
-      await db
-        .select({ key: improvementRequests.screenshotKey })
-        .from(improvementRequests)
-        .where(isNotNull(improvementRequests.screenshotKey))
-        .limit(ORPHAN_SCAN_LIMIT)
-    )
-      .map((row) => row.key)
-      .filter((key): key is string => key !== null),
-  );
-  const listed = await env.FILES.list({ prefix: 'improvements/', limit: ORPHAN_SCAN_LIMIT });
-  let removed = 0;
-  for (const object of listed.objects) {
-    if (live.has(object.key)) continue;
-    // 直近に置かれたものは投稿処理の途中かもしれない。5分の猶予を置く
-    if (Date.now() - object.uploaded.getTime() < 5 * 60_000) continue;
-    await env.FILES.delete(object.key);
-    removed += 1;
+  let purged = 0;
+  if (deletedIds.length) {
+    try {
+      // D1のbind上限100を避け、500 IDをJSON 1 paramの集合更新へ閉じ込める。
+      // idはこのserviceが発行するUUIDなので、500件でもJSONは約20KBに有界である。
+      const updated = await env.DB.prepare(
+        `UPDATE improvement_requests
+            SET screenshot_key=NULL,screenshot_size=NULL,diagnostics_json=NULL,
+                token_hash=NULL,token_expires_at=NULL,purged_at=?,updated_at=?
+          WHERE purged_at IS NULL
+            AND id IN (SELECT CAST(value AS TEXT) FROM json_each(?))`,
+      )
+        .bind(now, now, JSON.stringify(deletedIds))
+        .run();
+      purged = Number(updated.meta.changes ?? 0);
+      failed += deletedIds.length - purged;
+    } catch {
+      // R2 deleteは冪等。集合更新が失敗した全行を未処理のまま次回へ回す。
+      failed += deletedIds.length;
+    }
   }
-  return removed;
+  const orphanSweep = await sweepImprovementOrphans(env, nowMs);
+  return {
+    selected: due.results.length,
+    purged,
+    failed,
+    orphans: orphanSweep.removed,
+    orphanScanned: orphanSweep.scanned,
+    orphanDeferredRecent: orphanSweep.deferredRecent,
+    orphanHasMore: orphanSweep.hasMore,
+    orphanCycleCompleted: orphanSweep.cycleCompleted,
+  };
 }

@@ -253,5 +253,8 @@ cross-service raceは残るが、次の一覧HEADで`original_missing`となり�
   DB制約で同時requestにも適用し、競合結果を日本語409へ正規化する。
 - 削除: routeとscheduledが共通processorを使い、R2成功を`object_deleted_at`へ記録してから
   metadataを整理する。R2失敗、R2成功後のD1失敗、route応答喪失のいずれも同じintentから冪等に再開する。
-- 自動処理: 既存nightly scheduledへ1回最大10件のreconcilerを接続する。指数backoffし、
+- 自動処理: 通常reconcilerの最大10件は維持し、既存nightly scheduledからはplannerが最大3件を渡す。
+  夜間分は固定2 queries + 1件あたり最大6 queriesの20 queries、7 job合計は46 queriesとする。
+  backupを先に確定してから残る6 jobを並列で全完走し、全結果の記録後に1件でもjob-level rejectがあれば
+  内容を含まないgeneric errorをCronへ返す。指数backoffし、
   5回以上の試行と7日graceの両方を満たしたjobだけdead-letterへ移す。全bucket scanはしない。

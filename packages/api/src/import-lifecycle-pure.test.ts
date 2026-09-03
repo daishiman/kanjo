@@ -13,6 +13,7 @@ import { JSON_SNAPSHOT_MUTATION_CONSUMERS } from './import-active.js';
 import {
   D1_FREE_QUERY_LIMIT,
   D1_JSON_PAYLOAD_MAX_BYTES,
+  buildMfResolutionAuditStatements,
   chunkJsonRowsByBytes,
   freeeCommitStatements,
   mfCommitStatements,
@@ -32,7 +33,58 @@ const fakeStatement = {
 const fakeDb = { prepare: () => fakeStatement } as unknown as D1Database;
 
 describe('D1 statement budget', () => {
-  it('5,000行のfreee/MF unitをそれぞれ50 statements未満にする', () => {
+  it('import-resolution監査のstatement数をcanonical commitと同じ予算に足す', async () => {
+    const common = {
+      database: fakeDb,
+      userId: 'synthetic-user',
+      runId: 'synthetic-run',
+      months: ['2026-07'],
+      importId: 1,
+      contentHash: 'v2:synthetic',
+      targetKeys: ['mf:2026-07'],
+      data: emptyDataset(),
+      txs: [] as MfTx[],
+    };
+    const resolution = {
+      edits: [],
+      memories: [],
+      autoEdits: [],
+      auditDecisions: [
+        {
+          txIdentity: 'synthetic-tx',
+          attribute: 'cls' as const,
+          before: 'per',
+          after: 'biz',
+          reason: 'rule_match',
+          sourceType: 'rule' as const,
+          sourceIdentity: 'synthetic-rule',
+        },
+      ],
+    };
+    const audit = await buildMfResolutionAuditStatements({
+      database: fakeDb,
+      userId: common.userId,
+      runId: common.runId,
+      importId: common.importId,
+      resolution,
+      occurredAt: '2026-09-03T00:00:00.000Z',
+    });
+    const withoutAudit = mfCommitStatements({ ...common, resolution }).length;
+    const withAudit = mfCommitStatements({ ...common, resolution, audit }).length;
+    expect(audit).not.toBeNull();
+    expect(withAudit).toBe(withoutAudit + (audit?.queryCount ?? 0));
+    expect(
+      planMultipartImportQueries({
+        fileCount: 1,
+        unitCount: 1,
+        applicableUnitCount: 1,
+        jsonUnitCount: 0,
+        commitStatementCounts: [withAudit],
+      }).breakdown.commitStatements,
+    ).toBe(withAudit);
+  });
+
+  it('5,000行のfreee/MF unitと自動適用planを実builderで予算判定する', () => {
     const data = emptyDataset();
     const deals: FreeeDeal[] = Array.from({ length: 5_000 }, (_, index) => ({
       month: '2026-07',
@@ -64,6 +116,24 @@ describe('D1 statement budget', () => {
     };
     const freeeQueries = freeeCommitStatements({ ...common, deals, targetKeys: ['freee:2026-07'] }).length;
     const mfQueries = mfCommitStatements({ ...common, txs, targetKeys: ['mf:2026-07'] }).length;
+    const mfAutoQueries = mfCommitStatements({
+      ...common,
+      txs,
+      targetKeys: ['mf:2026-07'],
+      resolution: {
+        edits: [],
+        memories: [],
+        autoEdits: txs.map((tx, index) => ({
+          txId: tx.id,
+          vendorKey: `synthetic-vendor-${index}`,
+          cls: 'biz',
+          big: '架空費',
+          mid: '架空内訳',
+          owner: 'business',
+          stableKey: `v1:mf:synthetic-${index}`,
+        })),
+      },
+    }).length;
     const plan = (commitStatements: number) =>
       planMultipartImportQueries({
         fileCount: 1,
@@ -74,8 +144,12 @@ describe('D1 statement budget', () => {
       });
     expect(plan(freeeQueries)).toMatchObject({ accepted: true });
     expect(plan(mfQueries)).toMatchObject({ accepted: true });
+    // 5,000件すべてへ長いprovenanceを保存するケースは、
+    // payloadの分割数を含めた実行前見積りでFree枠超過として拒否する。
+    expect(plan(mfAutoQueries)).toMatchObject({ accepted: false });
     expect(plan(freeeQueries).total).toBeLessThan(D1_FREE_QUERY_LIMIT);
     expect(plan(mfQueries).total).toBeLessThan(D1_FREE_QUERY_LIMIT);
+    expect(plan(mfAutoQueries).total).toBeGreaterThanOrEqual(D1_FREE_QUERY_LIMIT);
   });
 
   it('cache行も実builderから予算化し、49 queriesは受理、50 queriesは拒否する', () => {
@@ -562,6 +636,7 @@ describe('JSON pointer invalidation consumers', () => {
       'freee_deals',
       'mf_transactions',
       'restored_monthly_agg',
+      'vendor_memory',
     ]);
   });
 });
@@ -579,6 +654,13 @@ describe('canonical mutation lease predicate', () => {
       ['PUT', '/api/transactions/tx-1/edit'],
       ['PUT', '/api/transactions/tx-1/splits'],
       ['PUT', '/api/balances/liabilities'],
+      // 取込データの削除・取り消しと取引先の決め事は正本を書くためleaseで直列化する。
+      ['POST', '/api/imports/1/undo'],
+      ['POST', '/api/imports/1/discard'],
+      ['POST', '/api/data/deletions'],
+      ['POST', '/api/data/undo/op-1'],
+      ['PATCH', '/api/vendor-memory/abc'],
+      ['POST', '/api/vendor-memory/abc/reapply'],
       ['POST', '/api/rules'],
       ['PUT', '/api/rules/1'],
       ['DELETE', '/api/rules/1'],
@@ -618,6 +700,12 @@ describe('canonical mutation lease predicate', () => {
       // suggestionは読み取りのみでbudgetを書かない。
       ['POST', '/api/budgets/suggest'],
       ['POST', '/api/attachments/archive/reconcile'],
+      // preflight は「何がどうなるか」を数えて返すだけで、1件も書き換えない(DR-1)。
+      ['POST', '/api/data/deletions/preflight'],
+      ['POST', '/api/imports/1/undo/preflight'],
+      ['POST', '/api/imports/1/discard/preflight'],
+      // 差分previewは完全にread-only。writer claimすら書かない。
+      ['POST', '/api/imports/diff'],
     ] as const;
     for (const [method, path] of canonical) {
       expect(classifyCanonicalMutation(method, path), `${method} ${path}`).toBe('canonical-mutation');
@@ -638,14 +726,17 @@ describe('canonical mutation lease predicate', () => {
       'routes/attachments.ts',
       'routes/cash.ts',
       'routes/classify.ts',
+      'routes/deletions.ts',
+      'routes/import-diff.ts',
       'routes/imports.ts',
       'routes/settings.ts',
       'routes/subs.ts',
       'routes/tax.ts',
+      'routes/vendor-memory.ts',
     ];
     const discovered = routeSources.flatMap((filename) => {
       const source = readFileSync(resolve(sourceDir, filename), 'utf8');
-      return [...source.matchAll(/\.(post|put|patch|delete)\('([^']+)'/g)].map((match) => {
+      return [...source.matchAll(/\.(post|put|patch|delete)\(\s*'([^']+)'/g)].map((match) => {
         const routePath = match[2] ?? '';
         return `${(match[1] ?? '').toUpperCase()} ${routePath.startsWith('/api/') ? routePath : `/api${routePath}`}`;
       });
@@ -681,6 +772,16 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/sub-vendors/exclusions',
       'DELETE /api/sub-vendors/exclusions/:id',
       'POST /api/imports',
+      'POST /api/imports/diff',
+      'POST /api/imports/:id/undo',
+      'POST /api/imports/:id/undo/preflight',
+      'POST /api/imports/:id/discard',
+      'POST /api/imports/:id/discard/preflight',
+      'POST /api/data/deletions',
+      'POST /api/data/deletions/preflight',
+      'POST /api/data/undo/:operationId',
+      'PATCH /api/vendor-memory/:vendorKey',
+      'POST /api/vendor-memory/:vendorKey/reapply',
       'POST /api/restore',
       'POST /api/tradeoff',
       'POST /api/ai/tasks',

@@ -11,28 +11,40 @@ import {
   type FreeeDeal,
   HOUSEHOLD_RATIO_BASIS_MAX,
   OwnerValidationError,
+  TX_EDIT_BASE_BITS,
   TxSplitsSnapshotError,
   applyFreeeDeals,
   applyMfTxs,
+  canonicalEncode,
   canonicalMfTransactions,
   cashBizDeals,
   cashTxId,
   emptyDataset,
+  importHistoryCancelable,
+  importHistoryDiscardBlock,
   importJSON,
   isCashTxId,
+  normalizeBaseKnown,
+  normalizeVendorKey,
   projectAccountingDataset,
+  resolveIncomingTx,
   validateTxSplitsForDataset,
   vendorKey,
 } from '@kanjo/core';
 import { and, desc, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
+import { AuditValidationError } from '../audit-log.js';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
+import { computeImportDiff, diffBaselineFromDataset, importResolutionFingerprint } from '../import-diff.js';
 import {
+  type MfResolutionAuditDecision,
+  type MfResolutionPlan,
   acquireImportWriter,
   activeDuplicateOf,
   assetsCommitStatements,
+  buildMfResolutionAuditStatements,
   createImportRun,
   freeeCommitStatements,
   heartbeatImportWriter,
@@ -123,6 +135,39 @@ const taxAccountSettingsBackupSchema = z
       keys.add(key);
     });
   });
+
+const resolutionDecisionSchema = z
+  .object({
+    txIds: z.array(z.string().min(1)).min(1).max(200),
+    choice: z.enum(['keep', 'incoming']),
+    remember: z.boolean(),
+    vendorKey: z.string().max(200).optional(),
+    vendorLabel: z.string().max(200).optional(),
+    memoryValue: z
+      .object({
+        cls: z.enum(['biz', 'per']).nullable(),
+        big: z.string().max(100).nullable(),
+        mid: z.string().max(100).nullable(),
+        owner: z.enum(['business', 'spouse', 'family']).nullable(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
+const resolutionRequestSchema = z
+  .object({
+    fingerprint: z.string().min(1),
+    decisions: z.array(resolutionDecisionSchema).max(200),
+  })
+  .strict();
+type ResolutionRequest = z.infer<typeof resolutionRequestSchema>;
+
+class ImportResolutionError extends Error {
+  constructor(readonly code: 'resolution_scope_changed' | 'invalid_resolution') {
+    super(code);
+    this.name = 'ImportResolutionError';
+  }
+}
 const nullableTrimmed = (max: number) => z.string().trim().min(1).max(max).nullable();
 const httpUrl = z
   .string()
@@ -275,6 +320,8 @@ const resolveRestoreSettings = (
     receiptSourceOverrides: [...receiptOverridesByKey.values()].sort(
       (a, b) => a.targetKind.localeCompare(b.targetKind) || a.targetKey.localeCompare(b.targetKey),
     ),
+    // JSON復元は現在の取引先の決め事を置き換えない。通常取込の解決入力として保持する。
+    vendorMemories: destination.vendorMemories,
   };
 };
 
@@ -466,12 +513,223 @@ interface PreparedUnit {
   cashProjectionRows: CashProjectionEnvelope['rows'];
   /** 復元する現金の記帳。移行先に記帳があるとき・JSON以外のunitでは空 */
   restoredCash: CashEntry[];
+  /** MF取込と同じbatchへ入れる解決。非MFは未定義。 */
+  resolution?: MfResolutionPlan;
 }
 
 interface PreparedFile {
   file: File;
   buf: Uint8Array;
   units: PreparedUnit[];
+}
+
+const AUDIT_ATTRIBUTE = {
+  cls: 'cls',
+  big: 'category_major',
+  mid: 'category_mid',
+  owner: 'owner',
+} as const;
+
+/**
+ * previewと同じ解決結果から、実際に採用した属性根拠だけを作る。
+ * 3点比較はrule/vendorより後の最終判定なので、同一属性を上書きする。
+ */
+const resolutionAuditDecisions = (args: {
+  incoming: Dataset['mfTx'];
+  diff: ReturnType<typeof computeImportDiff>;
+  requested: ResolutionRequest | null;
+  fingerprint: string;
+  data: Dataset;
+  vendorMemories: ImportRestoreSettingsSnapshot['vendorMemories'];
+}): MfResolutionAuditDecision[] => {
+  const decisions = new Map<string, MfResolutionAuditDecision>();
+  const rulesIdentity = canonicalEncode(args.data.rules);
+  const matchedByIncoming = new Map(args.diff.matches.map((match) => [match.incomingTxId, match]));
+  const attributes = ['cls', 'big', 'mid', 'owner'] as const;
+
+  for (const tx of canonicalMfTransactions(args.incoming)) {
+    const match = matchedByIncoming.get(tx.id);
+    const manual = match?.edit && match.edit.origin !== 'vendor_memory' ? match.edit : null;
+    const resolved = resolveIncomingTx(tx, args.data.rules, args.data.institutionOwners, args.vendorMemories);
+    const withoutRules = resolveIncomingTx(tx, [], args.data.institutionOwners, args.vendorMemories);
+    const withoutMemory = resolveIncomingTx(tx, args.data.rules, args.data.institutionOwners, []);
+    for (const attribute of attributes) {
+      const categoryEdited = !!manual?.categoryMajor || !!manual?.categoryMid;
+      const manuallyDecided =
+        (attribute === 'cls' && !!manual?.cls) ||
+        ((attribute === 'big' || attribute === 'mid') && categoryEdited) ||
+        (attribute === 'owner' && !!manual?.owner);
+      // この属性の手動編集が有効なら、自動rule/vendorは最終根拠ではない。
+      if (manuallyDecided) continue;
+      const source = resolved.sources[attribute];
+      if (source !== 'rules' && source !== 'vendor_memory') continue;
+      const sourceType = source === 'rules' ? ('rule' as const) : ('vendor_memory' as const);
+      const sourceIdentity =
+        sourceType === 'rule' ? `${attribute}:${rulesIdentity}` : (resolved.vendorMemory?.vendorKey ?? '');
+      if (!sourceIdentity) throw new ImportResolutionError('invalid_resolution');
+      decisions.set(`${tx.id}\u0000${attribute}`, {
+        txIdentity: tx.id,
+        attribute: AUDIT_ATTRIBUTE[attribute],
+        before: source === 'rules' ? withoutRules[attribute] : withoutMemory[attribute],
+        after: resolved[attribute],
+        reason: source === 'rules' ? 'rule_match' : 'vendor_memory_auto_apply',
+        sourceType,
+        sourceIdentity,
+      });
+    }
+  }
+
+  const requestedByTxId = new Map<string, 'keep' | 'incoming'>();
+  for (const row of args.requested?.decisions ?? [])
+    for (const txId of row.txIds) requestedByTxId.set(txId, row.choice);
+  for (const conflict of args.diff.conflicts) {
+    const match = args.diff.matches.find((row) => row.existingTxId === conflict.txId);
+    if (!match) throw new ImportResolutionError('invalid_resolution');
+    const explicitChoice = requestedByTxId.get(conflict.txId);
+    const choice = explicitChoice ?? 'keep';
+    for (const [attribute, values] of Object.entries(conflict.attrs) as Array<
+      [keyof typeof AUDIT_ATTRIBUTE, { current: string | null; incoming: string | null }]
+    >) {
+      decisions.set(`${match.incomingTxId}\u0000${attribute}`, {
+        txIdentity: match.incomingTxId,
+        attribute: AUDIT_ATTRIBUTE[attribute],
+        before: values.current,
+        after: choice === 'incoming' ? values.incoming : values.current,
+        reason: explicitChoice ? `three_way_${choice}` : 'three_way_keep_default',
+        sourceType: explicitChoice ? 'user_resolution' : 'system',
+        sourceIdentity: explicitChoice ? args.fingerprint : undefined,
+      });
+    }
+  }
+  return [...decisions.values()].sort(
+    (a, b) => a.txIdentity.localeCompare(b.txIdentity) || a.attribute.localeCompare(b.attribute),
+  );
+};
+
+/** previewと同じ全MF unitを1度だけ解決し、各commit unitへ配る。 */
+async function attachMfResolutionPlans(
+  preparedFiles: PreparedFile[],
+  data: Dataset,
+  requested: ResolutionRequest | null,
+  vendorMemories: ImportRestoreSettingsSnapshot['vendorMemories'],
+): Promise<{
+  fingerprint: string | null;
+  reset: number;
+  remembered: number;
+  learned: number;
+  autoApplied: number;
+  candidates: number;
+}> {
+  const preparedMf = preparedFiles.flatMap((file) => file.units).filter((item) => item.unit.kind === 'mf');
+  if (!preparedMf.length) {
+    if (requested) throw new ImportResolutionError('invalid_resolution');
+    return { fingerprint: null, reset: 0, remembered: 0, learned: 0, autoApplied: 0, candidates: 0 };
+  }
+  const incoming = preparedMf.flatMap((item) => (item.unit.kind === 'mf' ? item.unit.txs : []));
+  const months = [
+    ...new Set(preparedMf.flatMap((item) => (item.unit.kind === 'mf' ? item.unit.months : []))),
+  ].sort();
+  const baseline = diffBaselineFromDataset(data);
+  const diff = computeImportDiff({
+    incoming,
+    months,
+    ...baseline,
+    rules: data.rules,
+    institutionOwners: data.institutionOwners,
+    vendorMemories,
+  });
+  const fingerprint = await importResolutionFingerprint(
+    preparedMf.map((item) => item.contentHash ?? ''),
+    diff,
+  );
+  if (requested && requested.fingerprint !== fingerprint)
+    throw new ImportResolutionError('resolution_scope_changed');
+
+  const conflictIds = new Set(diff.conflicts.map((row) => row.txId));
+  const choiceByTxId = new Map<string, 'keep' | 'incoming'>();
+  for (const decision of requested?.decisions ?? []) {
+    for (const txId of decision.txIds) {
+      if (!conflictIds.has(txId) || choiceByTxId.has(txId))
+        throw new ImportResolutionError('invalid_resolution');
+      choiceByTxId.set(txId, decision.choice);
+    }
+  }
+  const incomingById = new Map(canonicalMfTransactions(incoming).map((tx) => [tx.id, tx]));
+  const backfillByTxId = new Map(diff.backfill.map((row) => [row.txId, row]));
+  const rows = diff.matches
+    .filter((match) => match.edit !== null)
+    .map((match) => {
+      const tx = incomingById.get(match.incomingTxId);
+      if (!tx) throw new ImportResolutionError('invalid_resolution');
+      const planned = backfillByTxId.get(match.existingTxId);
+      return {
+        existingTxId: match.existingTxId,
+        incomingTxId: match.incomingTxId,
+        // 自動適用行は手動編集ではない。毎回いったん外し、今回のrules/memory計画から作り直す。
+        choice:
+          match.edit?.origin === 'vendor_memory'
+            ? ('incoming' as const)
+            : (choiceByTxId.get(match.existingTxId) ?? ('keep' as const)),
+        baseCls: planned ? planned.baseCls : (match.edit?.baseCls ?? null),
+        baseOwner: planned ? planned.baseOwner : (match.edit?.baseOwner ?? null),
+        baseMajor: planned ? planned.baseMajor : (match.edit?.baseMajor ?? tx.big),
+        baseMid: planned ? planned.baseMid : (match.edit?.baseMid ?? tx.mid),
+        baseKnown:
+          planned?.baseKnown ??
+          normalizeBaseKnown(match.edit?.baseKnown, {
+            cls: match.edit?.baseCls,
+            big: match.edit?.baseMajor,
+            mid: match.edit?.baseMid,
+            owner: match.edit?.baseOwner,
+          }),
+        stableKey: match.stableKey,
+      };
+    });
+  const memories = (requested?.decisions ?? [])
+    .filter((decision) => decision.remember)
+    .map((decision) => {
+      if (!decision.vendorKey || !decision.vendorLabel || !decision.memoryValue)
+        throw new ImportResolutionError('invalid_resolution');
+      return {
+        vendorKey: normalizeVendorKey(decision.vendorKey),
+        vendorLabel: decision.vendorLabel,
+        ...decision.memoryValue,
+      };
+    });
+  const memoryByKey = new Map(memories.map((row) => [row.vendorKey, row]));
+  const auditDecisions = resolutionAuditDecisions({
+    incoming,
+    diff,
+    requested,
+    fingerprint,
+    data,
+    vendorMemories,
+  });
+  const firstMf = preparedMf[0];
+  for (const prepared of preparedMf) {
+    const ids = new Set(
+      prepared.unit.kind === 'mf' ? canonicalMfTransactions(prepared.unit.txs).map((tx) => tx.id) : [],
+    );
+    prepared.resolution = {
+      edits: rows.filter((row) => ids.has(row.incomingTxId)),
+      autoEdits: diff.autoApply.filter((row) => ids.has(row.txId)),
+      memories: prepared === firstMf ? [...memoryByKey.values()] : [],
+      auditDecisions: auditDecisions.filter((row) => ids.has(row.txIdentity)),
+    };
+  }
+  return {
+    fingerprint,
+    reset: rows.filter(
+      (row) =>
+        row.choice === 'incoming' &&
+        diff.matches.find((match) => match.existingTxId === row.existingTxId)?.edit?.origin !==
+          'vendor_memory',
+    ).length,
+    remembered: memoryByKey.size,
+    learned: memoryByKey.size,
+    autoApplied: diff.autoApply.length,
+    candidates: diff.vendorCandidates.length,
+  };
 }
 
 const runtimeFailureReason = '内部処理を完了できませんでした。同じファイルでそのまま再試行できます';
@@ -484,6 +742,55 @@ const currentCashEdits = (data: Dataset, entries: CashEntry[]): Dataset['edits']
 
 const withoutCashEdits = (edits: Dataset['edits']): Dataset['edits'] =>
   Object.fromEntries(Object.entries(edits).filter(([txId]) => !isCashTxId(txId)));
+
+/** 確定用candidateにもDB batchと同じ手当て移動/解除を先に適用する。 */
+const applyMfResolution = (data: Dataset, plan: MfResolutionPlan | undefined): void => {
+  for (const row of plan?.edits ?? []) {
+    const current = data.edits[row.existingTxId];
+    if (row.choice === 'incoming') {
+      delete data.edits[row.existingTxId];
+      continue;
+    }
+    if (!current) continue;
+    if (row.existingTxId !== row.incomingTxId) delete data.edits[row.existingTxId];
+    const known = normalizeBaseKnown(current.baseKnown, {
+      cls: current.baseCls,
+      big: current.baseBig,
+      mid: current.baseMid,
+      owner: current.baseOwner,
+    });
+    data.edits[row.incomingTxId] = {
+      ...current,
+      baseCls:
+        (known & TX_EDIT_BASE_BITS.cls) !== 0
+          ? current.baseCls
+          : (row.baseCls as Dataset['edits'][string]['baseCls']),
+      baseOwner:
+        (known & TX_EDIT_BASE_BITS.owner) !== 0
+          ? current.baseOwner
+          : (row.baseOwner as Dataset['edits'][string]['baseOwner']),
+      baseBig: (known & TX_EDIT_BASE_BITS.big) !== 0 ? current.baseBig : row.baseMajor,
+      baseMid: (known & TX_EDIT_BASE_BITS.mid) !== 0 ? current.baseMid : row.baseMid,
+      baseKnown: row.baseKnown,
+      stableKey: row.stableKey,
+      fingerprintVersion: 1,
+    };
+  }
+  for (const row of plan?.autoEdits ?? []) {
+    // 手動行は常に強い。plan側でも除外しているが、candidate投影でも二重に守る。
+    if (data.edits[row.txId]) continue;
+    data.edits[row.txId] = {
+      cls: row.cls as Dataset['edits'][string]['cls'],
+      big: row.big,
+      mid: row.mid,
+      owner: row.owner as Dataset['edits'][string]['owner'],
+      stableKey: row.stableKey,
+      fingerprintVersion: 1,
+      origin: 'vendor_memory',
+      originKey: row.vendorKey,
+    };
+  }
+};
 
 /**
  * source cash editを破棄し、destination cash editを戻した単一candidateから全派生物を作る。
@@ -662,7 +969,17 @@ const planCommitStatementCounts = async (args: {
       );
     } else if (unit.kind === 'mf') {
       const txs = canonicalMfTransactions(unit.txs);
+      applyMfResolution(candidate, prepared.resolution);
       applyMfTxs(candidate, txs);
+      const now = new Date().toISOString();
+      const audit = await buildMfResolutionAuditStatements({
+        database: args.database,
+        userId: args.userId,
+        runId,
+        importId,
+        resolution: prepared.resolution,
+        occurredAt: now,
+      });
       counts.push(
         mfCommitStatements({
           database: args.database,
@@ -674,6 +991,9 @@ const planCommitStatementCounts = async (args: {
           contentHash: prepared.contentHash ?? 'query-plan',
           targetKeys: prepared.targetKeys,
           data: projectAccountingDataset(candidate),
+          resolution: prepared.resolution,
+          audit,
+          now,
         }).length,
       );
     }
@@ -853,7 +1173,17 @@ async function executePreparedUnit(args: {
       });
     } else if (unit.kind === 'mf') {
       const canonicalTxs = canonicalMfTransactions(unit.txs);
+      applyMfResolution(candidate, prepared.resolution);
       applyMfTxs(candidate, canonicalTxs);
+      const now = new Date().toISOString();
+      const audit = await buildMfResolutionAuditStatements({
+        database,
+        userId,
+        runId,
+        importId: attemptId,
+        resolution: prepared.resolution,
+        occurredAt: now,
+      });
       statements = mfCommitStatements({
         database,
         userId,
@@ -864,6 +1194,9 @@ async function executePreparedUnit(args: {
         contentHash,
         targetKeys: prepared.targetKeys,
         data: projectAccountingDataset(candidate),
+        resolution: prepared.resolution,
+        audit,
+        now,
       });
     } else {
       if (!restoreWriteSet) throw new Error('restore write-setを生成できません');
@@ -983,6 +1316,20 @@ importsRoute.post('/imports', async (c) => {
   const force = form.get('force') === '1';
   // 「件数が減る取込は実行せず、前回の内容を残す」チェック。月の途中までのファイルを掴んだときの安全弁
   const keepOnShrink = form.get('keepOnShrink') === '1';
+  let requestedResolution: ResolutionRequest | null = null;
+  const resolutionRaw = form.get('resolutionPlan');
+  if (resolutionRaw !== null) {
+    if (typeof resolutionRaw !== 'string')
+      return c.json({ error: { code: 'invalid_resolution', message: '取込の解決内容が不正です' } }, 400);
+    try {
+      const parsed = resolutionRequestSchema.safeParse(JSON.parse(resolutionRaw));
+      if (!parsed.success)
+        return c.json({ error: { code: 'invalid_resolution', message: '取込の解決内容が不正です' } }, 400);
+      requestedResolution = parsed.data;
+    } catch {
+      return c.json({ error: { code: 'invalid_resolution', message: '取込の解決内容が不正です' } }, 400);
+    }
+  }
   const bufferedFiles: Array<{ file: File; buf: Uint8Array }> = [];
   for (const file of files) {
     if (file.size > 25 * 1024 * 1024) {
@@ -1014,6 +1361,7 @@ importsRoute.post('/imports', async (c) => {
     taxAccountSettings: [],
     receiptSourceProfiles: [],
     receiptSourceOverrides: [],
+    vendorMemories: [],
   };
   let cashEntries: CashEntry[] = [];
   let data = emptyDataset();
@@ -1022,6 +1370,14 @@ importsRoute.post('/imports', async (c) => {
   let mfCount = new Map<string, number>();
   let commitStatementCounts: number[] = [];
   let queryPlan: ReturnType<typeof planMultipartImportQueries> | null = null;
+  let resolutionSummary = {
+    fingerprint: null as string | null,
+    reset: 0,
+    remembered: 0,
+    learned: 0,
+    autoApplied: 0,
+    candidates: 0,
+  };
   let preflightAccepted = false;
   try {
     // writer claim取得後のsnapshotだけを、計画と実行の双方で共有する。
@@ -1111,6 +1467,12 @@ importsRoute.post('/imports', async (c) => {
       // 全部を見送ったならrunもR2も作らない。writer claimは finally が解放する
       if (!preparedFiles.length) return c.json({ results: keptResults });
     }
+    resolutionSummary = await attachMfResolutionPlans(
+      preparedFiles,
+      data,
+      requestedResolution,
+      restoreSettings.vendorMemories,
+    );
     commitStatementCounts = await planCommitStatementCounts({
       database: c.env.DB,
       userId,
@@ -1137,6 +1499,29 @@ importsRoute.post('/imports', async (c) => {
     if (error instanceof OwnerValidationError) return c.json(badOwner, 400);
     if (error instanceof TxSplitsSnapshotError) return c.json(badTxSplits, 400);
     if (error instanceof InvalidRestoreSettingsError) return c.json(badRestoreSettings, 400);
+    if (error instanceof ImportResolutionError)
+      return c.json(
+        {
+          error: {
+            code: error.code,
+            message:
+              error.code === 'resolution_scope_changed'
+                ? '差分を確認した後に取込対象が変わりました。もう一度差分を確認してください'
+                : '取込の解決内容が差分と一致しません',
+          },
+        },
+        error.code === 'resolution_scope_changed' ? 409 : 400,
+      );
+    if (error instanceof AuditValidationError)
+      return c.json(
+        {
+          error: {
+            code: 'invalid_audit_resolution',
+            message: '判定履歴として安全に保存できない属性値があるため、取込を中止しました',
+          },
+        },
+        400,
+      );
     if (error instanceof Error && error.message.includes('D1 JSON payload上限')) {
       return c.json(queryBudgetError(), 413);
     }
@@ -1294,7 +1679,10 @@ importsRoute.post('/imports', async (c) => {
   // 全件が重複スキップ/見送りなら「失敗」ではなく正常終了として 200 で返す(何も壊していない)
   const allSkipped =
     all.length > 0 && all.every((result) => result.status === 'duplicate' || result.status === 'kept');
-  return c.json({ runId, results: all, ok, queryPlan }, ok || allSkipped ? 200 : 400);
+  return c.json(
+    { runId, results: all, ok, queryPlan, resolution: resolutionSummary },
+    ok || allSkipped ? 200 : 400,
+  );
 });
 
 importsRoute.get('/imports', async (c) => {
@@ -1312,6 +1700,29 @@ importsRoute.get('/imports', async (c) => {
     .where(eq(s.importActiveTargets.userId, userId));
   const activeCounts = new Map<number, number>();
   for (const row of activeRows) activeCounts.set(row.importId, (activeCounts.get(row.importId) ?? 0) + 1);
+  const protectedReferences = await c.env.DB.prepare(
+    `SELECT import_id,SUM(canonical_rows) AS canonical_rows,SUM(undo_snapshots) AS undo_snapshots
+       FROM (
+         SELECT import_id,COUNT(*) AS canonical_rows,0 AS undo_snapshots
+           FROM mf_transactions WHERE user_id=? AND import_id IS NOT NULL GROUP BY import_id
+         UNION ALL
+         SELECT import_id,COUNT(*),0
+           FROM freee_deals WHERE user_id=? AND import_id IS NOT NULL GROUP BY import_id
+         UNION ALL
+         SELECT import_id,0,COUNT(*)
+           FROM import_deleted_targets WHERE user_id=? GROUP BY import_id
+         UNION ALL
+         SELECT CAST(json_extract(payload_json,'$.import_id') AS INTEGER),0,COUNT(*)
+           FROM import_deleted_rows
+          WHERE user_id=? AND json_valid(payload_json)
+            AND json_extract(payload_json,'$.import_id') IS NOT NULL
+          GROUP BY CAST(json_extract(payload_json,'$.import_id') AS INTEGER)
+       )
+      GROUP BY import_id`,
+  )
+    .bind(userId, userId, userId, userId)
+    .all<{ import_id: number; canonical_rows: number; undo_snapshots: number }>();
+  const protectedCounts = new Map(protectedReferences.results.map((row) => [row.import_id, row] as const));
   return c.json({
     imports: rows.map((r) => ({
       id: r.id,
@@ -1342,6 +1753,20 @@ importsRoute.get('/imports', async (c) => {
       // 投入した原本をR2へ保存できた取込だけ、やり直し(再取込)の入口を出せる。
       // ここはkeyの有無しか見ない(100行ぶんHEADを打つのは割に合わない)。実在確認は原本取得時に行う。
       originalRecorded: r.r2Key !== null,
+      /** 取込状態名ではなく、現在の所有・参照から帳簿取消の入口を出す。 */
+      cancelable: importHistoryCancelable({
+        status: r.status,
+        activeTargetCount: activeCounts.get(r.id) ?? 0,
+        canonicalRowCount: Number(protectedCounts.get(r.id)?.canonical_rows ?? 0),
+      }),
+      /** 帳簿本体ではなく、この履歴と不要原本だけを破棄できるか。最終判定は実行APIで再度行う。 */
+      discardable:
+        importHistoryDiscardBlock({
+          status: r.status,
+          activeTargetCount: activeCounts.get(r.id) ?? 0,
+          canonicalRowCount: Number(protectedCounts.get(r.id)?.canonical_rows ?? 0),
+          undoSnapshotCount: Number(protectedCounts.get(r.id)?.undo_snapshots ?? 0),
+        }) === null,
     })),
   });
 });
@@ -1443,6 +1868,7 @@ importsRoute.post('/restore', async (c) => {
     taxAccountSettings: [],
     receiptSourceProfiles: [],
     receiptSourceOverrides: [],
+    vendorMemories: [],
   };
   let freeeDeals: FreeeDeal[] = [];
   let restoreCommitCount = 0;

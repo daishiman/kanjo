@@ -14,6 +14,7 @@ import {
   PAYMENT_METHOD_VALUES,
   type Rule,
   SPLIT_MEMO_MAX_LENGTH,
+  STABLE_KEY_VERSION,
   type TxEdit,
   type TxSplit,
   buildCandidates,
@@ -22,15 +23,18 @@ import {
   classificationProgress,
   countableMfTxs,
   isCashTxId,
+  mfStableKey,
   parseAttachmentTarget,
   parseMfAttachmentTarget,
   paymentMethodOf,
   projectAccountingDataset,
+  resolveIncomingTx,
   resolveTx,
   ruleMatches,
   serializeAttachmentTarget,
   sum,
   validateSplits,
+  vendorMemoryEditContributes,
 } from '@kanjo/core';
 import { and, asc, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
@@ -44,12 +48,14 @@ import {
   getDb,
   loadDataset,
   loadOrderedRuleRows,
+  loadVendorMemories,
   ruleFromRow,
   saveAgg,
   splitFromRow,
   splitReplacementQueries,
   upsertEdit,
 } from '../store.js';
+import { applyManualEditWithBase, materializeManualFallback } from '../tx-edit-codec.js';
 import { loadAttachmentCounts } from './attachments.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
@@ -121,7 +127,10 @@ classifyRoute.get('/transactions', async (c) => {
     // 証憑バッジ用。表示中の月の明細だけを引く
     loadAttachmentCounts(db, c.env.FILES, userId, attachmentTargets),
   ]);
-  const resolved = txs.map((t) => ({ t, r: resolveTx(t, data.rules, data.edits, data.institutionOwners) }));
+  const resolved = txs.map((t) => ({
+    t,
+    r: resolveTx(t, data.rules, data.edits, data.institutionOwners),
+  }));
   const rows = resolved
     .map(({ t, r }) => {
       const split = t.splitProjection?.kind === 'split' ? t.splitProjection : null;
@@ -129,6 +138,7 @@ classifyRoute.get('/transactions', async (c) => {
       const rowKind = split ? 'split' : isCashTxId(t.id) ? 'cash' : 'mf';
       const parentTxId = split?.parentTxId ?? splitParent?.parentTxId ?? null;
       const e = split ? data.edits[split.parentTxId] : data.edits[t.id];
+      const memoryContributes = vendorMemoryEditContributes(t, data.rules, e);
       const attachmentTarget = attachmentTargetFor(t);
       const attachmentTargetId = attachmentTarget ? serializeAttachmentTarget(attachmentTarget) : null;
       return {
@@ -167,6 +177,9 @@ classifyRoute.get('/transactions', async (c) => {
         ownerSrc: r.ownerSrc,
         edited: r.edited,
         conflict: r.conflict,
+        /** 値一致ではなく、保存された適用由来をそのまま画面へ渡す。 */
+        origin: memoryContributes ? 'vendor_memory' : e?.origin === 'manual' ? 'manual' : null,
+        originKey: memoryContributes ? (e?.originKey ?? null) : null,
         /** 手動の科目が現在の公私の系統に無い(公私を後から変えた等) */
         scopeMismatch: r.catSrc === '手動' && !categoryAllowed(candidates, r.cls, r.big, r.mid),
         /** 添付されている証憑の件数(0 = 未添付) */
@@ -178,6 +191,8 @@ classifyRoute.get('/transactions', async (c) => {
               mid: e.mid ?? null,
               owner: e.owner ?? null,
               updatedAt: e.updatedAt ?? null,
+              origin: memoryContributes ? 'vendor_memory' : e.origin === 'manual' ? 'manual' : null,
+              originKey: memoryContributes ? (e.originKey ?? null) : null,
             }
           : null,
         /** 親子を離さず並べるためだけの内部sort metadata */
@@ -255,12 +270,26 @@ classifyRoute.put('/transactions/:txId/class', zValidator('json', clsSchema), as
   const db = getDb(c.env.DB);
   const txId = c.req.param('txId');
   const { cls } = c.req.valid('json');
-  const data = await loadDataset(db, userId);
+  const [data, vendorMemories] = await Promise.all([loadDataset(db, userId), loadVendorMemories(db, userId)]);
   const tx = data.mfTx.find((candidate) => candidate.id === txId);
   if (!tx) return c.json({ error: { code: 'not_found', message: '明細が見つかりません' } }, 404);
   if (tx.splitProjection?.kind === 'split') return c.json(derivedMutationError, 409);
-  const cur = data.edits[txId] ?? {};
-  await upsertEdit(db, userId, txId, { ...cur, cls, updatedAt: new Date().toISOString() });
+  const cur: TxEdit = data.edits[txId] ?? {};
+  const incoming = resolveIncomingTx(tx, data.rules, data.institutionOwners, vendorMemories);
+  const fallback = resolveIncomingTx(tx, data.rules, data.institutionOwners);
+  const next =
+    cur.origin === 'vendor_memory' && cls === null
+      ? materializeManualFallback(cur, incoming, fallback)
+      : applyManualEditWithBase(cur, { cls }, incoming);
+  Object.assign(next, {
+    updatedAt: new Date().toISOString(),
+    ...(isCashTxId(txId) ? {} : { stableKey: mfStableKey(tx), fingerprintVersion: STABLE_KEY_VERSION }),
+  });
+  const disagreeOriginKey =
+    cur.origin === 'vendor_memory' && (cls === null || cls !== cur.cls) ? cur.originKey : null;
+  await upsertEdit(db, userId, txId, next, {
+    disagreeOriginKey,
+  });
   await recompute(db, userId);
   return c.json({ ok: true, txId, cls });
 });
@@ -284,29 +313,25 @@ classifyRoute.put('/transactions/:txId/edit', zValidator('json', editSchema), as
   const db = getDb(c.env.DB);
   const txId = c.req.param('txId');
   const b = c.req.valid('json');
-  const data = await loadDataset(db, userId);
+  const [data, vendorMemories] = await Promise.all([loadDataset(db, userId), loadVendorMemories(db, userId)]);
   const tx = data.mfTx.find((t) => t.id === txId);
   if (!tx) return c.json({ error: { code: 'not_found', message: '明細が見つかりません' } }, 404);
   if (tx.splitProjection?.kind === 'split') return c.json(derivedMutationError, 409);
   const cur: TxEdit = data.edits[txId] ?? {};
-  const next: TxEdit = b.reset ? {} : { ...cur };
-  if (!b.reset) {
-    if (b.cls !== undefined) next.cls = b.cls;
-    if (b.owner !== undefined) next.owner = b.owner;
-    if (b.note !== undefined) next.note = b.note;
-    if (b.big !== undefined || b.mid !== undefined) {
-      if (b.big !== undefined) next.big = b.big || null;
-      if (b.mid !== undefined) next.mid = b.mid || null;
-      // 科目編集が残るなら取込値を控える。外れたら控えも消す
-      if (next.big || next.mid) {
-        next.baseBig = tx.big;
-        next.baseMid = tx.mid;
-      } else {
-        next.baseBig = null;
-        next.baseMid = null;
-      }
-    }
+  const incoming = resolveIncomingTx(tx, data.rules, data.institutionOwners, vendorMemories);
+  const fallback = resolveIncomingTx(tx, data.rules, data.institutionOwners);
+  const suppressMemory = b.reset && cur.origin === 'vendor_memory';
+  const next: TxEdit = b.reset
+    ? suppressMemory
+      ? materializeManualFallback(cur, incoming, fallback)
+      : {}
+    : applyManualEditWithBase(cur, b, incoming);
+  if (!b.reset || suppressMemory) {
     next.updatedAt = new Date().toISOString();
+    if (!isCashTxId(txId)) {
+      next.stableKey = mfStableKey(tx);
+      next.fingerprintVersion = STABLE_KEY_VERSION;
+    }
     if (next.big || next.mid) {
       // 会計上あり得ない組み合わせのガード: 編集後の公私(手動 > ルール > 既定)に対する候補で判定する
       const probe = { ...data.edits, [txId]: { ...next, big: null, mid: null } };
@@ -316,7 +341,16 @@ classifyRoute.put('/transactions/:txId/edit', zValidator('json', editSchema), as
         return c.json(invalidCategory(effCls), 400);
     }
   }
-  await upsertEdit(db, userId, txId, next);
+  const changedVendorValue =
+    cur.origin === 'vendor_memory' &&
+    (b.reset ||
+      (b.cls !== undefined && b.cls !== cur.cls) ||
+      (b.big !== undefined && (b.big || null) !== (cur.big ?? null)) ||
+      (b.mid !== undefined && (b.mid || null) !== (cur.mid ?? null)) ||
+      (b.owner !== undefined && b.owner !== cur.owner));
+  await upsertEdit(db, userId, txId, next, {
+    disagreeOriginKey: changedVendorValue ? cur.originKey : null,
+  });
   await recompute(db, userId);
   const after = await loadDataset(db, userId);
   const r = resolveTx(tx, after.rules, after.edits, after.institutionOwners);

@@ -72,20 +72,30 @@
 
 Cron の設定・実行の全体像は `docs/ci-cd-operations.md` が正本です。ここではこのジョブに固有の点だけを書きます。
 
-- 添付削除の失敗は `scheduledMaintenance` の throw に含めません。二次資産の後始末であり、既存のバックアップや添付メンテナンスを道連れにしないためです。
-- 失敗した行は `purged_at` が NULL のまま残るので、翌日の実行が同じ行を拾い直します。復旧のための手動操作は不要です。
+- R2の個別削除失敗は件数`failed`として返し、成功したIDだけを1本の集合UPDATEで失効させます。
+  個別失敗行、または集合UPDATE自体が失敗した全行は`purged_at`がNULLのまま残り、翌日に冪等再試行されます。
+  これは処理済みの件数結果であって、job-level rejectではありません。
+- D1障害や孤児照合payload guardなどでjob自体がrejectした場合、backupを先に確定した後の残る6 jobは
+  `Promise.allSettled`で最後まで実行・記録されます。その後`scheduledMaintenance`が内容を含まない
+  `scheduled_maintenance_failed`をthrowし、Cron全体を失敗として観測可能にします。
 - 改善要望のテーブルは `packages/api/src/store.ts` の `BACKUP_SNAPSHOT_SQL` に**含めません**。会計の正本ではないため、夜間バックアップの対象外です（`packages/api/src/improvement-backup-exclusion.test.ts` が固定しています）。
+- 孤児照合はR2から最大300 keyだけを先に取得し、そのexact keyだけをJSON 1 bindでD1に照合します。
+  300件は最大1024-byte keyが全て6倍へJSON escapeされても1,844,101 bytesで、D1の2,000,000-byte
+  string上限を下回ります。実UTF-8 byte guardもbind前に行い、超過時はR2を削除せずjob-level rejectにします。
+- R2の続きがある場合はopaque cursorだけを`improvements/`外のversion付きcheckpointへ保存し、
+  次の夜間実行で次pageを1枚進めます。D1照合またはR2削除の失敗時はcheckpointを進めず同じpageを再試行し、
+  末尾pageでcheckpointを消して次回は先頭に戻ります。cursorやR2 keyはログに出しません。
 
 ### 2.2 実行結果の確認手順
 
-Worker のログに、1回の実行につき1行だけ JSON が出ます。
+Worker のログに、このjobについて1回の実行につき1行だけ JSON が出ます。
 
 ```bash
 pnpm --filter @kanjo/api exec wrangler tail --format json
 ```
 
 ```json
-{ "level": "info", "job": "improvement_retention", "selected": 3, "purged": 3, "failed": 0, "orphans": 0 }
+{ "level": "info", "job": "improvement_retention", "selected": 3, "purged": 3, "failed": 0, "orphans": 0, "orphanScanned": 300, "orphanDeferredRecent": 0, "orphanHasMore": true, "orphanCycleCompleted": false }
 ```
 
 | 項目 | 意味 | 異常のサイン |
@@ -94,8 +104,14 @@ pnpm --filter @kanjo/api exec wrangler tail --format json
 | `purged` | 添付を消せた件数 | `selected` と一致しない |
 | `failed` | R2 か D1 で落ちた件数 | 同じ件数が何日も続く（一時障害なら翌日ゼロに戻る） |
 | `orphans` | D1 に対応する行が無い R2 オブジェクトを消した件数 | 継続して増える＝投稿処理が途中で落ちている |
+| `orphanScanned` | 今回照合したR2 object数（最大300） | 孤児候補があるのに継続して0 |
+| `orphanDeferredRecent` | 投稿途中を避ける5分猶予で今回は保留し、先頭に戻った次の巡回cycleで再訪する件数 | 同じ件数が長期間減らない |
+| `orphanHasMore` | 次pageがあるか | `true`のまま長期間変化しない |
+| `orphanCycleCompleted` | 末尾pageへ到達し、次回は先頭に戻るか | 長期間`true`にならない |
 
-ジョブ自体が例外で落ちた場合は `{"level":"error","job":"improvement_retention","name":"..."}` が出ます。この行が出ても他のジョブ（`attachment_maintenance` / `nightly_backup` / `password_login_rate_limit_cleanup`）は独立に完走します。
+ジョブ自体が例外で落ちた場合は `{"level":"error","job":"improvement_retention","name":"..."}` が出ます。
+backupは先に確定し、他の5つを含む残り6 jobも独立に完走します。全jobの結果を記録してからCronは
+`scheduled_maintenance_failed`で失敗し、内部message・利用者情報・金融内容・R2 keyはログへ出しません。
 
 ### 2.3 失敗が続くときの切り分け
 
@@ -107,7 +123,7 @@ pnpm --filter @kanjo/api exec wrangler tail --format json
    ```
 
 2. 件数が残っていれば R2 側の削除権限を疑います。`FILES` バインディングは `packages/api/wrangler.jsonc` にあります。
-3. `orphans` が増え続ける場合は、投稿経路（R2 へ put → D1 へ insert）の途中で落ちています。`improvement_requests` への insert が失敗するログを探します。孤児は置かれてから5分の猶予後に自動で消えるため、手動削除は不要です。
+3. `orphans` が増え続ける場合は、投稿経路（R2 へ put → D1 へ insert）の途中で落ちています。`improvement_requests` への insert が失敗するログを探します。孤児は配置から5分が経過した後、夜間巡回がそのpageへ到達した際に自動で消えるため、手動削除は不要です。
 
 本番 D1 への手動 `UPDATE` / `DELETE` は通常運用に含めません（`docs/ci-cd-operations.md` 10章と同じ扱い）。
 

@@ -144,7 +144,7 @@ MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_
 | テーブル | 役割 |
 |---|---|
 | `mf_transactions` | 取込値そのもの。再取込で**全置換**される(手で書き換えない) |
-| `tx_edits` | 明細ごとの手動編集。`cls`(公私)/`category_major`/`category_mid`/`owner`(名義)を個別に持ち、未指定は NULL。`base_major`/`base_mid` は編集時点の取込値(食い違い検出用)。再取込では**触らない** |
+| `tx_edits` | 明細ごとの手動編集。`cls`(公私)/`category_major`/`category_mid`/`owner`(名義)を個別に持ち、未指定は NULL。`base_major`/`base_mid`/`base_cls`/`base_owner` は編集時点の取込値(4属性それぞれの食い違い検出用、`base_cls`/`base_owner` は0030)。既存行の base は NULL のまま入り、「基準が分からない」を表す。次の再取込で3点比較より**前**に取込値を埋める(D6 の遅延 backfill)。`stable_key`/`fingerprint_version` は `tx_id` が取れないときの第二の引き当て鍵(0030、UNIQUE にしない)。手当ての中身(`cls`/`category_*`/`owner`)は再取込で**触らない**が、鍵のほうは同じ backfill で毎回いまの版へ入れ直す。backup からの復元では**版が今と一致する鍵だけ**を戻す(版違いは照合に使われないので運ばない)。`origin`/`origin_key`(0031)は `vendor_memory` が自動適用した行だけに明示し、NULL/既存行は安全側の手動編集として値一致から由来を推測しない |
 | `rules` | キーワードルール。`cls`/`category_major`/`category_mid`/`owner` を任意の組み合わせで持てる(いずれか1つ以上) |
 | `institution_owners` | `保有金融機関` → canonical名義(`business`/`spouse`/`family`)。未設定は行を持たず、`unset`は集計時だけ導出 |
 | `category_options` | 候補科目の追加分。`scope`(`biz`=事業/`per`=家計)で系統を持つ(0002 マイグレーション)。取込値由来の候補と合わせて候補一覧になる |
@@ -164,6 +164,10 @@ MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_
 | `import_writer_claims` | 利用者ごとの取込writer claim。受理前にCAS獲得してから正規化map/canonical snapshot/query計画を読み、計画と実行の世代を同じwriter区間へ固定する。拒否時はrunを作らずreleaseする。crashで解放されなくても15分後に新runが回復し、同じ回復batchで旧run配下の`processing`/`applying` unitだけを`failed`へCAS更新して旧runを再計算する。受理前は`run_id`に対応する`import_runs`がまだ無いことが正しいためFKは付けない。claimはTTL/明示releaseで消える一時調整データで、監査正本ではない |
 | `import_active_targets` | 現在適用中の取込指紋。CSVは`freee:YYYY-MM`/`mf:YYYY-MM`、JSONは`json:global`をキーにし、過去履歴とは分離する |
 | `imports.content_hash` / `duplicate_of` | 取込単位のversion付き内容指紋。現在の全targetが同じ指紋の場合だけ`duplicate`でスキップし、そのactive取込IDを`duplicate_of`に持つ |
+| `import_deletion_operations` | 削除のundo lifecycle metadata(0030)。`granularity`、期限内の範囲再現用`request_json`、preflightの`fingerprint`、件数、`undone_by`、`expires_at`を持つ。`import_deleted_rows` / `import_deleted_targets`と同じ30日後に有界掃除する一時メタデータであり、監査の正本ではない |
+| `import_deleted_rows` | 消した行そのものの退避(0030)。消す**前**に必ず書く(DR-2)。`payload_json` に全列を持ち、undoはこれをINSERTし直すだけで済む。`month` は集計を作り直す対象月(DR-5)。undo専用で、画面・ログ・エラー応答のどれからも中身を出さない。`(operation_id, table_name, row_id)` がUNIQUEで、undoの二重INSERTをDB側で止める |
+| `import_deleted_targets` | 削除で巻き戻す取込指紋の退避(0030、DR-4)。`import_active_targets` は現行の指紋しか持たず履歴が無いため、削除前の`content_hash`/`import_id`/`updated_at` をここへ写す。粒度が明細ではなく対象キーなので `import_deleted_rows` と分ける(同居させると5,000行の削除で同じ指紋を5,000回複製する) |
+| `vendor_memory` | 取引先ごとの「いつもの手当て」(0030)。`vendor_key` は core の `normalizeVendorKey` で表記ゆれを寄せた照合キー、`vendor_label` は表示専用。確信度は1つの数で持たず `hit_count` / `disagree_count` を別々に持つ(「1件中1件」と「40件中40件」を区別するため)。`pinned` は件数によらず当てる、`revoked` は以後当てない・候補にも出さない。`(user_id, vendor_key)` がUNIQUE |
 
 ### 証憑原本・親・cleanupの永続fact
 
@@ -187,14 +191,18 @@ R2成功を`object_deleted_at`へ記録してからmetadataを整理するため
 
 password login throttleの既定は15分window / 5回目から15分lock / 7日後stale cleanupで、
 1 requestは成功・失敗とも最大2 D1 queries。nightly scheduledは`updated_at`のindexから
-最大100件を1 queryで消去し、添付cleanup・backupを含む最悪予算を44 queriesに固定する。
+最大100件を1 queryで消去する。夜間7 jobの同一invocation予算は中央SSOTで46 queries
+（backup 1 + attachment 20 + password throttle 1 + improvement 3 + undo 12 + audit header 3 + audit detail 6）
+に固定し、backupを先に確定して残る6 jobを並列実行する。全jobを記録後、1件でもjob-level rejectなら
+内容を含まないgeneric errorをCronへ返す。
 validation、安全なfallback、非secret override名は`packages/api/src/login-rate-limit.ts`を正本とする。
 
 保持の正本値は`packages/core/src/attachments.ts`、安全なruntime overrideの読取りは
 `packages/api/src/attachment-recovery.ts`に一元化する。`ready`と親なし`ready`の証憑は明示削除まで
 保持し、cleanup intentは7日graceとする。失敗・重複・完全にsupersededの取込R2 uploadだけを30日後に回収し、
 partialなrunのcommitted unitやactive/shared keyは保持する。
-既定quotaは利用者ごとに100MiB、reconcileは1回10件、最大5回でdead-letterとする。quota判定は
+既定quotaは利用者ごとに100MiB、通常reconcileは1回10件を維持し、夜間scheduledだけplannerから3件へ絞る。
+最大5回でdead-letterとする。quota判定は
 利用者別writer lease内かつR2 PUT前に行い、未完の`delete_object` jobのbytesも使用中として数える。
 
 API wireの`originalAvailable`は永続列ではない。通常一覧・親なし一覧・現金/MFの`attachmentCount`を
@@ -293,6 +301,54 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 - unit内部はD1 `batch()`でcanonical原本、復元baseline、`monthly_agg`、active target、unit terminal marker、run reconcileを一括確定する。応答喪失やcommit直後crashでもunitからrunを再計算でき、`committed` unit + 未完runを正規状態にしない。unit間はpartial successを許し、完了済unitは残し、失敗unitだけ再試行可能にする。
 - CSVの大量行はJSON1 `json_each` のUTF-8 80KiB payloadへ分割し、1行1 DELETE/INSERTを行わない。`import_id`・`user_id`・確定時刻等の実行時値は行JSONへ埋め込まずscalar bindへ分離するため、受理前sentinelと実attempt IDの桁数でchunk数は変わらない。routeは実commit builderが作るpayload/cache/active/finalizationのstatement数と、read/claim/attempt/heartbeat/reconcile/release・duplicate/失敗/commit応答喪失回復のworst-caseを合算し、49 queriesまでだけ受理する。受理後は実attempt IDでR2保存前にbuilderを再構成し、各commit直前にも`actual statements <= planned statements`を検査する。通常幅の5,000行freee/MFは50未満だが、同じ5,000行でも長大な列や大量のcache scope、複数unitで予算を超える場合は、R2/run/canonical書込み前に413で拒否する。各queryは100KB未満で、行payloadは1つのJSON bindへ集約する。
 
-- `import_runs`/`imports`は取込監査の正本として自動削除しない。`import_active_targets.import_id`または`imports.duplicate_of`から参照中のattempt metadataは保持する。`failed`/`superseded`のR2原本は既定30日後に共通cleanup ledgerがexact keyだけを削除し、成功後は`imports.r2_key=NULL`へして原本なしの事実を表す。run/unitの件数・対象月・指紋・状態・失敗理由は保持する。期限付きclaimへ永続履歴と同じFK/保持規則を適用しない。
+- `import_runs`/`imports`は取込監査の正本として**自動では**削除しない。利用者が明示した「履歴を削除」だけは、`failed`/`duplicate` であり、active target・canonical行・undo退避の参照がすべて0件のattemptに限って履歴を削除する。最後の参照ならR2原本を共通cleanup ledgerへ登録し、共有中なら原本を保持する。操作事実は明細・ファイル名・R2 keyを含まない`import_discard`監査ヘッダとして400日保持する。自動保持では、`import_active_targets.import_id`または`imports.duplicate_of`から参照中のattempt metadataを保持し、`failed`/`superseded`のR2原本は既定30日後にexact keyだけを削除して`imports.r2_key=NULL`へする。期限付きclaimへ永続履歴と同じFK/保持規則を適用しない。
 - JSONのactive pointerは、`cash_entries`/`rules`/`tx_edits`/`institution_owners`/`budgets`/`account_norm_map`/`unrecorded_months`/`cash_overrides`/`sub_vendors`/freee・MF原本/復元baselineの変更と同じD1 batchで無効化する。JSON restore自身は新pointerをcommit batchで設定するため、設定変更後の同じJSONは再適用、無変更の連続取込だけが`duplicate`になる。
 - multipart JSONと`POST /restore`は同じrestore commit builderと状態遷移を使う。JSONはMF原本の含有月を洗い替え、rules/edits/institution owners/budgets/cash override/復元baseline/未記帳月を置換し、sub vendor名は追加する。freee原本と現存現金用editは保持する。現金明細は移行先が空かつ予算内のときだけ復元する。`POST /restore`は直接JSON bodyを受けるためR2原本を作らない。
+
+## 取込データの削除と退避の保持(0030)
+
+契約の正本は `specs/import-deletion-and-override-reapply.md`。ここには保存側の帰結だけを書く。
+
+### 消す対象は「取り込んだ複製」だけ
+
+- 削除は `mf_transactions` / freee原本 / `import_active_targets` と、それに紐づく手当て(`tx_edits` / `tx_splits` / `attachments`)にだけ及ぶ。freee・マネーフォワード側のデータは書き換えない。
+- **`balance_entries` / `cash_entries` は `import_id` を持たない。持たせない。** どちらも取込ではなく利用者が手で入れた記帳だからで、外部キーを1本足した瞬間に「取込を消したら手入力の残高・現金も消える」経路ができる。この2つは削除の巻き添えにならないことを、preflightの確認画面へ `手で記帳した現金 0件(取込の削除では消えません)` と0件で明示する(DR-6)。0件を出さずに黙って除外すると、消えないことを利用者が確認できない。
+- 退避の書込は削除より**前**に置く(DR-2)。逆順にすると、退避の途中で落ちたときに「消えたが戻せない」行が残る。
+
+### 退避の保持は30日と300MBの二段構え(D7)
+
+| 値 | 実装の定数 | 根拠 |
+|---|---|---|
+| 30日 | `DELETION_UNDO_RETENTION_DAYS` | D1のTime Travelが遡れる7日より長い。その差の23日ぶんは退避テーブルが唯一の回復手段になる |
+| 300MB | `DELETION_TOMBSTONE_BUDGET_BYTES` | D1 単一データベース上限 500MB の 60% |
+| 50件/回 | `DELETION_RETENTION_BATCH` | 1回のWorker呼び出しあたりのD1クエリ本数を50本未満に収めるための分割単位 |
+
+- 掃除は既存の夜間 Cron (`scheduledMaintenance`) へ相乗りさせ、新しい Cron を増やさない。実装は `packages/api/src/deletion-retention.ts`。
+- 先に到達した側で古い世代から掃除する。期限切れを片づけてなお300MBを超える場合だけ、期限内の退避を `expires_at` の古い順に前倒しで捨てる。期限内のものへ手を付けるのは最後の手段である。
+- **掃除済みの旗は持たない。** 期限切れの `import_deletion_operations` を世代の根とし、退避行・target・metadataを同じ有界掃除で消す。容量による前倒しではundo payloadだけを捨て、期限表示用metadataは30日まで保つ。
+- 「いつ何を消したか」の正本は400日保持の `audit_log`。`GET /api/data/operations` もこれを読み、期限内のdeleteだけundo metadata/退避物をjoinして `undoable` を作る。
+- 期限切れでmetadataが消えた操作、または容量前倒しで退避だけが消えた操作は `undoable:false` になる。`POST /api/data/undo/:id` は長期監査ヘッダが残る場合410、他利用者または未知のIDは404にする。
+- 削除1行につき退避1行の書込が加わり rows written を二重に消費する。1日あたりの削除対象は5万行以内を前提に運用を始める。
+
+### 操作ヘッダと判定明細は別層で保持する(0033 / D8)
+
+| 層 | 保存内容 | 保持 | 容量時の扱い |
+|---|---|---:|---|
+| `audit_log` | 1操作1行の user / operation / action / scope / counts / occurred_at / result | 400日 | 期限掃除のみ |
+| `audit_log_detail` | 不透明tx key、1判定属性、before/after、理由コード、不透明source key | 90日 | 300MB以上で期限前の古い行も有界掃除 |
+
+- 両表とも明細本体・金額の列を持たない。detailの属性は `cls` / `category_major` /
+  `category_mid` / `owner` の4種だけで、before/afterは120文字、理由コードは64文字に制限する。
+- `buildAuditStatements` はヘッダ1文と属性明細のまとめ書き文を返す。呼び出し側はdelete / undo /
+  import-resolutionの正本変更と同じD1 batchへ追加し、返された`queryCount`を既存plannerの予算に足す。
+- `runAuditHeaderRetention` / `runAuditDetailRetention` / `runDeletionRetention` はそれぞれ別のjobとして
+  `scheduledMaintenance`から呼び、層別の前後行数・概算byte・掃除件数・query数を別々に記録する。
+- 容量は明細値をWorkerへ読み出さず、D1内で列のUTF-8 byte数と固定overheadを合算する。
+  1回の掃除は最大80行・6 queriesで打ち切り、残りは次回が拾う。
+
+### `vendor_memory` の確信度(D4)
+
+- `confidence = hit_count / (hit_count + disagree_count)`。列としては持たず、引くたびに2つの件数から作る。
+- 自動適用は `hit_count >= 3` かつ `confidence >= 0.80` の両方を満たす場合だけ(実装の定数は `VENDOR_MEMORY_MIN_HITS` / `VENDOR_MEMORY_MIN_CONFIDENCE`)。満たさないものは候補提示に留める。`pinned` は件数によらず当て、`revoked` は候補にも出さない。
+- 閾値の段階的な上下(可動域 0.70〜0.95)の基準は仕様書のD4に置く。判定はD1内の算術で閉じ、明細を外部へ送らない(DR-14)。
+- 画面へは割合ではなく件数で出す。「40件中40件」と「1件中1件」を同じ 1.00 として見せないため。

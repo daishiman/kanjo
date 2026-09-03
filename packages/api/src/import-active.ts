@@ -26,6 +26,8 @@ export const JSON_SNAPSHOT_MUTATION_CONSUMERS = [
   'freee_deals',
   'mf_transactions',
   'restored_monthly_agg',
+  // 0030: 取引先ごとの決め事。rules と同じく、変えると復元後の分類結果が変わる
+  'vendor_memory',
 ] as const;
 
 export type JsonSnapshotMutationConsumer = (typeof JSON_SNAPSHOT_MUTATION_CONSUMERS)[number];
