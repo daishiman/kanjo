@@ -61,7 +61,7 @@ SQLiteで列の型や制約を変える定型手順（新テーブル作成 → 
 - ランナー: `ubuntu-latest`
 - アプリのNode.js: 22
 - GitHub公式Actions: Node.js 24対応版
-- CIタイムアウト: ジョブごと（静的検査10分 / core・webテスト15分 / apiテスト20分 / ビルド10分 / `verify`5分）
+- CIタイムアウト: ジョブごと（静的検査20分 / core・webテスト15分 / apiテスト20分 / ビルド10分 / `verify`5分）
 - Deploy / Migrateタイムアウト: 20分
 - 権限: `contents: read`のみ
 - `concurrency`で重複実行を制御
@@ -92,10 +92,6 @@ CIジョブを増やすときは`verify`の`needs`にも足してください。
 `test-core-web`ジョブのコマンドは66ファイル・408件が53秒、
 `pnpm lint && pnpm typecheck && pnpm build && pnpm test`を通しで回すと約4.5分でした。
 
-GitHub Actionsのrunnerは手元より遅く、同じ変更で`test-api`は6分7秒
-（`test-core-web`は4分15秒、`static-checks`は6分32秒）。`test-api`の20分枠は
-この実測に対する余白です。手元の秒数だけを見てタイムアウトを詰めないでください。
-
 同じ条件で再測定するコマンド（`N`を1、2、4、10へ置き換える）:
 
 ```bash
@@ -120,6 +116,42 @@ Miniflareがファイルごとにworkerdプロセスとproxy socketを開きま�
 - ルートの`--workspace-concurrency=1`を変更した
 - `EADDRNOTAVAIL`などsocket・port関連の失敗が再発した
 - `test-api`が20分へ近づく、または打ち切られた
+
+### 2.2 CIジョブのタイムアウトの決め方
+
+GitHub Actionsのrunnerは手元より遅く、**同じコミットでも実行ごとの振れが大きい**です。
+`test-api`は6分7秒と10分56秒（手元186秒の2倍から3.5倍）、`test-core-web`は
+4分15秒と6分22秒、`static-checks`は6分7秒と6分32秒でした。
+
+さらに、所要を決めているのは検査の重さではありません。2026-09-04に`static-checks`が
+10分枠を超えて打ち切られたとき、内訳はこうでした。
+
+| ステップ | 所要 |
+|---|---|
+| `pnpm/action-setup` | 7分3秒 |
+| `pnpm install --frozen-lockfile` | 1秒 |
+| `pnpm lint` | 1秒 |
+| `pnpm typecheck` | 17秒 |
+| `pnpm run test:aux` | 2秒 |
+| `pnpm audit` | 2分42秒で打ち切り（未完） |
+
+検査そのものは合計20秒で、枠を食い潰したのは環境構築とネットワーク待ちです。
+**タイムアウトは検査の実測秒数ではなく、この外部要因が振れる幅に合わせてください。**
+手元の秒数を基準に詰めると、コードが健全なまま赤くなります。
+
+打ち切りは何が壊れているかを1つも教えないため、枠を削って得るものより失うものが
+大きい側です。詰めるなら、CIで複数回測った上振れ側を根拠にしてください。
+
+`pnpm audit`はregistryへの問い合わせで、応答が返らないと際限なく待ちます。結果は警告に
+しかしない検査なので、`timeout-minutes: 3`と`continue-on-error: true`を付けて、
+ジョブの枠を食い潰さないようにしてあります。
+
+#### `cancelled` は時間切れでも付く
+
+`timeout-minutes`を超えたジョブの結論は`failure`ではなく**`cancelled`**です。
+`verify`が「success でない検査があります」と言っているとき、`cancelled`は
+並行実行による打ち切りとは限りません。まず該当ジョブのログで最後に走っていた
+ステップを見てください。`verify`はどのジョブが落ちたかを名前で出します。
 
 ## 3. GitHubの設定
 
