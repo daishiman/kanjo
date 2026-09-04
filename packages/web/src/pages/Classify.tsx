@@ -4,7 +4,7 @@
  * 編集は取込値(MFのCSV)とは別枠に保存され、再取込しても残る。ルール・名義・編集一覧の管理は設定画面。
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type MouseEvent as ReactMouseEvent, useCallback, useEffect, useId, useState } from 'react';
+import { type MouseEvent as ReactMouseEvent, useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   type Candidates,
@@ -561,6 +561,7 @@ export function ClassifyPage() {
                 splitting={splitting}
                 editBusy={busyEditingId !== null}
                 candidates={d.candidates}
+                institutions={d.institutions}
                 onFocus={() => setFocusIdx(i)}
                 onSet={(next) => setClass.mutate({ txId: t.id, next })}
                 onToggleEdit={() => requestEditingId(editing ? null : editSession, editing ? null : t.rowKey)}
@@ -599,6 +600,7 @@ function TxLine({
   splitting,
   editBusy,
   candidates,
+  institutions,
   onFocus,
   onSet,
   onToggleEdit,
@@ -615,6 +617,8 @@ function TxLine({
   splitting: boolean;
   editBusy: boolean;
   candidates: Candidates;
+  /** 口座の振替先候補。行から編集パネルへ渡すだけ */
+  institutions: string[];
   onFocus: () => void;
   onSet: (next: Cls | null) => void;
   onToggleEdit: () => void;
@@ -659,6 +663,13 @@ function TxLine({
         </td>
         <td className="tx-institution" title={t.institution ?? undefined} data-label="口座">
           {t.institution ?? '—'}
+          {t.instSrc === '手動' && (
+            <>
+              {' '}
+              <span className="pill edited">振替済み</span>
+              <span className="orig">取込値: {t.csvInstitution ?? '口座未記録'}</span>
+            </>
+          )}
           {t.paymentMethod === 'cash' && (
             <>
               {' '}
@@ -795,6 +806,7 @@ function TxLine({
               txId={splitTarget}
               candidates={candidates}
               defaultCls={t.cls}
+              defaultOwner={t.owner}
               onClose={onToggleSplit}
               onSaved={onSaved}
               onDirtyChange={onDirtyChange}
@@ -808,6 +820,7 @@ function TxLine({
           id={editorId}
           t={t}
           candidates={candidates}
+          institutions={institutions}
           onClose={onToggleEdit}
           onDirtyChange={onDirtyChange}
           onBusyChange={onBusyChange}
@@ -857,6 +870,7 @@ function EditorRow({
   id,
   t,
   candidates,
+  institutions,
   onClose,
   onDirtyChange,
   onBusyChange,
@@ -865,6 +879,7 @@ function EditorRow({
   id: string;
   t: TxRow;
   candidates: Candidates;
+  institutions: string[];
   onClose: () => void;
   onDirtyChange: (dirty: boolean) => void;
   onBusyChange: (busy: boolean) => void;
@@ -874,6 +889,7 @@ function EditorRow({
   const [big, setBig] = useState(t.edit?.big ?? '');
   const [mid, setMid] = useState(t.edit?.mid ?? '');
   const [own, setOwn] = useState<Owner | null>(t.edit?.owner ?? null);
+  const [inst, setInst] = useState(t.edit?.inst ?? '');
   const [c, setC] = useState<Cls | null>(t.edit?.cls ?? null);
   const [keyword, setKeyword] = useState(t.description);
   const [ruleDone, setRuleDone] = useState(false);
@@ -897,12 +913,21 @@ function EditorRow({
       invalidate();
     },
   });
+  /**
+   * 口座の選択肢。一覧が古くて今の振替先が落ちていても、選択中の値だけは必ず残す。
+   * 残さないと <select> が空欄(=取込値のまま)へ勝手に戻り、保存で振替が消える。
+   */
+  const instOptions = useMemo(
+    () => [...new Set([...institutions, ...(inst ? [inst] : [])])].sort((a, b) => a.localeCompare(b, 'ja')),
+    [institutions, inst],
+  );
   /** 科目候補の系統 = 編集後の公私(未指定なら現在の有効値) */
   const scope: Cls = c ?? t.cls;
   const editDirty =
     big !== (t.edit?.big ?? '') ||
     mid !== (t.edit?.mid ?? '') ||
     own !== (t.edit?.owner ?? null) ||
+    inst !== (t.edit?.inst ?? '') ||
     c !== (t.edit?.cls ?? null);
   const hasUnsavedChanges = editDirty || (!ruleDone && keyword !== t.description);
   const busy = save.isPending || rule.isPending;
@@ -985,6 +1010,21 @@ function EditorRow({
                 <span>名義</span>
                 <OwnerSelect value={own} onChange={setOwn} />
               </div>
+
+              <label className="classification-field">
+                <span>口座</span>
+                <span className="classification-field-help">
+                  引き落とし先の口座が取込値と違うときに振り替えます(空欄は取込値のまま)
+                </span>
+                <select value={inst} onChange={(e) => setInst(e.target.value)}>
+                  <option value="">取込値のまま({t.csvInstitution ?? '口座未記録'})</option>
+                  {instOptions.map((name: string) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
 
             <details className="classification-rule-details">
@@ -1026,7 +1066,9 @@ function EditorRow({
               type="button"
               className="primary"
               disabled={!editDirty || busy}
-              onClick={() => save.mutate({ big: big || null, mid: mid || null, owner: own, cls: c })}
+              onClick={() =>
+                save.mutate({ big: big || null, mid: mid || null, owner: own, cls: c, inst: inst || null })
+              }
             >
               変更を保存
             </button>

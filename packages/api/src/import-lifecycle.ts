@@ -1102,6 +1102,7 @@ export function prepareRestoreWriteSet(args: {
         row.memo ?? null,
         row.createdAt ?? null,
         row.updatedAt ?? null,
+        row.owner ?? null,
       ]),
     cashEntryRows: [...(args.restoredCashEntries ?? [])]
       .sort((a, b) => a.id - b.id)
@@ -1170,6 +1171,8 @@ export function restoreCommitStatements(args: {
         'memo',
         'created_at',
         'updated_at',
+        // 0035: 内訳1行の名義
+        'owner',
       ],
       writeSet.splitRows,
       [{ column: 'user_id', value: userId }],
@@ -1324,6 +1327,8 @@ export function restoreCommitStatements(args: {
         'updated_at',
         'stable_key',
         'fingerprint_version',
+        // 0035: 口座の振替。戻さないと、復元後に振り替えた明細が元の口座へ戻る
+        'institution',
       ],
       writeSet.editRows,
       [{ column: 'user_id', value: userId }],

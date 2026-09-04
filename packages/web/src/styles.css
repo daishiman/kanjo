@@ -1320,6 +1320,27 @@ table.data th.stmt-account {
   /* 証憑列を足したぶん広げる(狭めると内容列が潰れて読めなくなる) */
   min-width: 1160px;
 }
+/*
+ * 操作列を箱の右端に貼り付ける。
+ *
+ * この表は min-width 1160px で、入れ物(.scroll-x)の中を横スクロールする。操作列は最後尾なので、
+ * 画面が狭いと既定の表示位置では枠の外に出ていた。「編集する」「分割する」があること自体に
+ * 気づけず、公私や名義を直す道が無いように見えていた。列を固定して、横位置に関係なく届かせる。
+ *
+ * 対象は明細行の最後のセルだけ。編集・分割・証憑の展開行は colspan で1セルしか無く、
+ * そこに :last-child が当たると展開パネルごと右端へ貼り付いてしまうため外す。
+ */
+.classify-table tr:not(.editor):not(.editing-open) > :is(th, td):last-child {
+  position: sticky;
+  right: 0;
+  background: var(--bg);
+  /* 下を流れる列との境目。影が無いと固定列が本文の一部に見える */
+  box-shadow: inset 1px 0 0 var(--line);
+}
+.classify-table thead th:last-child {
+  /* 見出しは上下どちらの固定とも重なるので、本文セルより前へ出す */
+  z-index: 2;
+}
 .classify-quick-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(86px, 1fr));
@@ -2851,6 +2872,9 @@ label.check {
     display: block;
     text-align: left;
     padding-top: 6px;
+    /* カード表示では横スクロールが無いので固定を解く。残すと影だけが線として出る */
+    position: static;
+    box-shadow: none;
   }
   table.data.classify-table.stack-sm .classify-quick-actions {
     display: flex;

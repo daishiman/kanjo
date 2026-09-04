@@ -15,7 +15,7 @@ import type * as s from './db/schema.js';
 
 export type TxEditDbRow = typeof s.txEdits.$inferSelect;
 
-export type ManualEditPatch = Partial<Pick<TxEdit, 'cls' | 'big' | 'mid' | 'owner' | 'note'>>;
+export type ManualEditPatch = Partial<Pick<TxEdit, 'cls' | 'big' | 'mid' | 'owner' | 'inst' | 'note'>>;
 export type EffectiveEditBase = Required<Pick<TxEdit, 'cls' | 'big' | 'mid' | 'owner'>>;
 
 /**
@@ -59,6 +59,8 @@ export function applyManualEditWithBase(
     if ((baseKnown & TX_EDIT_BASE_BITS.mid) === 0) next.baseMid = effectiveBefore.mid;
     baseKnown |= TX_EDIT_BASE_BITS.big | TX_EDIT_BASE_BITS.mid;
   }
+  // 口座は3点比較に載せないので base を控えない(TxEdit.inst の注記)。空文字は「振替なし」に寄せる。
+  if (patch.inst !== undefined) next.inst = patch.inst || null;
   if (patch.note !== undefined) next.note = patch.note;
 
   next.origin = 'manual';
@@ -90,6 +92,7 @@ export const txEditFromRow = (row: TxEditDbRow): TxEdit => ({
   big: row.categoryMajor ?? null,
   mid: row.categoryMid ?? null,
   owner: row.owner ?? null,
+  inst: row.institution ?? null,
   baseBig: row.baseMajor ?? null,
   baseMid: row.baseMid ?? null,
   baseCls: row.baseCls ?? null,
@@ -116,6 +119,7 @@ export const txEditInsertValues = (
   categoryMajor: edit.big ?? null,
   categoryMid: edit.mid ?? null,
   owner: edit.owner ?? null,
+  institution: edit.inst ?? null,
   baseMajor: edit.baseBig ?? null,
   baseMid: edit.baseMid ?? null,
   baseCls: edit.baseCls ?? null,
@@ -155,4 +159,6 @@ export const txEditRestoreRow = (txId: string, edit: TxEdit): unknown[] => [
   edit.updatedAt ?? null,
   edit.stableKey && edit.fingerprintVersion === STABLE_KEY_VERSION ? edit.stableKey : null,
   edit.stableKey && edit.fingerprintVersion === STABLE_KEY_VERSION ? edit.fingerprintVersion : null,
+  // 0035: 口座の振替。列は末尾に足す(既存列順は動かさない)
+  edit.inst ?? null,
 ];

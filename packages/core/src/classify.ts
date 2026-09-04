@@ -43,6 +43,9 @@ export interface ResolvedTx {
   catSrc: '手動' | 'ルール' | '取込値';
   owner: Owner | null;
   ownerSrc: '手動' | 'ルール' | '口座' | '既定';
+  /** 振替後の口座(保有金融機関)。手当てが無ければ取込値そのまま。 */
+  inst: string | null;
+  instSrc: '手動' | '取込値';
   /** 手動編集の有無（どれか1属性でも） */
   edited: boolean;
   /**
@@ -166,6 +169,24 @@ export function classifyTx(t: MfTx, rules: Rule[], overrides: Record<string, Cls
   return { cls: 'per', src: '既定' };
 }
 
+/**
+ * 名義の既定(institutionOwners)を引くときに、どちらの口座を根拠にするか。
+ *
+ * 口座を振り替えた明細は「取込時の口座」と「振替後の口座」の2つを持つ。名義の既定は
+ * 口座→名義の対応表から引くので、どちらを根拠にするかで既定の名義が変わりうる。
+ * 手動で名義を指定した明細はどちらでも結果が同じ(手動が最優先)なので、効くのは
+ * 名義を指定していない明細だけである。
+ *
+ * @param t 取込のままの明細(t.inst は取込値)
+ * @param resolvedInst 振替後の口座。振替していなければ t.inst と同じ
+ */
+function ownerBasisTx(t: MfTx, resolvedInst: string | null): MfTx {
+  // 振替後の口座で引く。取込時の口座で引くと、口座を直したあとも名義が前の口座に紐づいたままになり、
+  // 画面の「口座」由来バッジが指す口座と実際の引き当て先が食い違う。名義を手で決めた明細は
+  // 手動が最優先なのでここは効かず、動くのは名義を人がまだ決めていない明細だけである。
+  return resolvedInst === (t.inst ?? null) ? t : { ...t, inst: resolvedInst ?? undefined };
+}
+
 /** 全属性を優先順位に従って解決する */
 export function resolveTx(
   t: MfTx,
@@ -174,9 +195,14 @@ export function resolveTx(
   institutionOwners: Record<string, Owner> = {},
 ): ResolvedTx {
   const e = t.projectedEdit ?? edits[t.id];
+  // 口座の振替は3点比較に載せない(TxEdit.inst の注記)。手当てがあればそれ、無ければ取込値。
+  const editedInst = e?.inst != null && e.inst !== '' ? e.inst : null;
+  const inst = editedInst ?? t.inst ?? null;
+  const instSrc: ResolvedTx['instSrc'] = editedInst ? '手動' : '取込値';
   // vendor_memoryは取込確定時にprovenance付きtx_editへmaterializeする。
   // 表示だけ動的適用する第二経路を作らない。
-  const incoming = resolveIncomingTx(t, rules, institutionOwners);
+  const ownerBasis = ownerBasisTx(t, inst);
+  const incoming = resolveIncomingTx(ownerBasis, rules, institutionOwners);
   const vendorEdit = e?.origin === 'vendor_memory';
 
   let cls: Cls = incoming.cls;
@@ -206,13 +232,17 @@ export function resolveTx(
 
   let owner: Owner | null = incoming.owner;
   let ownerSrc: ResolvedTx['ownerSrc'] =
-    incoming.sources.owner === 'rules' ? 'ルール' : t.inst && institutionOwners[t.inst] ? '口座' : '既定';
+    incoming.sources.owner === 'rules'
+      ? 'ルール'
+      : ownerBasis.inst && institutionOwners[ownerBasis.inst]
+        ? '口座'
+        : '既定';
   if (e?.owner && (!vendorEdit || incoming.sources.owner !== 'rules')) {
     owner = e.owner;
     ownerSrc = '手動';
   }
 
-  const edited = !!e && (!!e.cls || editedCat || !!e.owner);
+  const edited = !!e && (!!e.cls || editedCat || !!e.owner || !!editedInst);
   const activeManualAttrs =
     (e?.cls ? TX_EDIT_BASE_BITS.cls : 0) |
     (editedCat ? TX_EDIT_BASE_BITS.big | TX_EDIT_BASE_BITS.mid : 0) |
@@ -238,6 +268,8 @@ export function resolveTx(
     catSrc,
     owner,
     ownerSrc,
+    inst,
+    instSrc,
     edited,
     conflict: conflictingAttrs(threeWay).some((attr) => (activeManualAttrs & TX_EDIT_BASE_BITS[attr]) !== 0),
     threeWay,

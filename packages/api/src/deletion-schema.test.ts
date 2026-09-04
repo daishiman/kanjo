@@ -62,7 +62,7 @@ describe('0030 の適用', () => {
       .sort()
       .at(-1);
     expect(latest).toBe(EXPECTED_D1_MIGRATION);
-    expect(EXPECTED_D1_MIGRATION).toBe('0034_import_discard_audit.sql');
+    expect(EXPECTED_D1_MIGRATION).toBe('0035_tx_edit_institution_and_split_owner.sql');
   });
 
   it('削除・決め事・二層監査のテーブルが揃う', async () => {

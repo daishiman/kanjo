@@ -268,3 +268,94 @@ describe('明細の分割記帳', () => {
     expect(await splitRows()).toHaveLength(50);
   });
 });
+
+/**
+ * 内訳1行ごとの名義。
+ *
+ * 妻と家族で分け合う引き落としは、これが無いと「分割して、さらに名義のために
+ * もう一度別の手当てをする」という二重運用になり、片方だけ直した状態が普通に残る。
+ * 未指定を「名義なし」に潰さないことが要。潰すと、親に付けた名義が内訳へ降りない。
+ */
+describe('内訳1行ごとの名義', () => {
+  const ownerRows = async () =>
+    (
+      await d1
+        .prepare('SELECT seq, owner FROM tx_splits WHERE user_id = ? ORDER BY seq')
+        .bind('default')
+        .all<{ seq: number; owner: string | null }>()
+    ).results;
+
+  const listOwners = async () => {
+    const body = (await (await jsonRequest('/transactions?month=2026-07')).json()) as {
+      transactions: { owner: string | null; ownerSrc: string }[];
+    };
+    return body.transactions.map((t) => t.owner);
+  };
+
+  it('行ごとに違う名義を保存し、読み出しでも返す', async () => {
+    await addOption('per', '食費');
+    await addOption('per', '日用品');
+    const saved = await jsonRequest('/transactions/T1/splits', 'PUT', {
+      lines: [line(60000, '食費', { owner: 'spouse' }), line(40000, '日用品', { owner: 'family' })],
+    });
+    expect(saved.status).toBe(200);
+    expect(await ownerRows()).toEqual([
+      { seq: 1, owner: 'spouse' },
+      { seq: 2, owner: 'family' },
+    ]);
+
+    const body = (await (await jsonRequest('/transactions/T1/splits')).json()) as {
+      lines: { owner: string | null }[];
+    };
+    expect(body.lines.map((l) => l.owner)).toEqual(['spouse', 'family']);
+    expect(await listOwners()).toEqual(['spouse', 'family']);
+  });
+
+  it('名義を指定しない行は元の明細の名義に従う', async () => {
+    await addOption('per', '食費');
+    await addOption('per', '日用品');
+    // 元の明細に手で名義を付けてから分割する
+    expect((await jsonRequest('/transactions/T1/edit', 'PUT', { owner: 'business' })).status).toBe(200);
+    expect(
+      (
+        await jsonRequest('/transactions/T1/splits', 'PUT', {
+          lines: [line(60000, '食費'), line(40000, '日用品', { owner: 'family' })],
+        })
+      ).status,
+    ).toBe(200);
+
+    // 未指定は NULL で保存する。'unset' に潰すと、親の名義が降りてこない
+    expect(await ownerRows()).toEqual([
+      { seq: 1, owner: null },
+      { seq: 2, owner: 'family' },
+    ]);
+    expect(await listOwners()).toEqual(['business', 'family']);
+  });
+
+  it('名義を外して保存し直すと、また元の明細の名義に戻る', async () => {
+    await addOption('per', '食費');
+    await jsonRequest('/transactions/T1/edit', 'PUT', { owner: 'business' });
+    await jsonRequest('/transactions/T1/splits', 'PUT', {
+      lines: [line(60000, '食費', { owner: 'spouse' }), line(40000, '食費', { owner: 'spouse' })],
+    });
+    expect(await listOwners()).toEqual(['spouse', 'spouse']);
+
+    await jsonRequest('/transactions/T1/splits', 'PUT', {
+      lines: [line(60000, '食費'), line(40000, '食費')],
+    });
+    expect(await ownerRows()).toEqual([
+      { seq: 1, owner: null },
+      { seq: 2, owner: null },
+    ]);
+    expect(await listOwners()).toEqual(['business', 'business']);
+  });
+
+  it('名義に無い値は保存しない', async () => {
+    await addOption('per', '食費');
+    const response = await jsonRequest('/transactions/T1/splits', 'PUT', {
+      lines: [line(60000, '食費', { owner: '祖父' }), line(40000, '食費')],
+    });
+    expect(response.status).toBe(400);
+    expect(await ownerRows()).toEqual([]);
+  });
+});

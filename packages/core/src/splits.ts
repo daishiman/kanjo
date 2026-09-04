@@ -324,6 +324,9 @@ export function applySplits(data: Dataset, splits: TxSplit[]): void {
           mid: l.categoryMid,
           baseBig: l.categoryMajor,
           baseMid: l.categoryMid,
+          // 内訳の名義は指定があるときだけ効かせる。未指定(null)は元の明細の名義に従う。
+          // 科目と同じく base も内訳値で固定し、親の base との差でいつわりの衝突を作らない。
+          ...(l.owner ? { owner: l.owner, baseOwner: l.owner } : {}),
         },
       });
     }

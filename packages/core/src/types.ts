@@ -14,6 +14,8 @@ export interface SplitLine {
   categoryMid: string;
   amount: number;
   memo?: string;
+  /** 内訳1行の名義。null/未指定は「元の明細の名義に従う」で、名義なしとは違う。 */
+  owner?: Owner | null;
 }
 
 /** canonical child。並び順(seq)と不変identity(lineId)を混ぜない。 */
@@ -151,6 +153,14 @@ export interface TxEdit {
   big?: string | null;
   mid?: string | null;
   owner?: Owner | null;
+  /**
+   * 口座(保有金融機関)の振替。null/未指定は取込値のまま。
+   *
+   * base を持たないのは、口座が stable_key(DR-13)の材料そのものだからである。
+   * 取込側で口座が変われば別の明細として入るので、3点比較にかける相手がいない。
+   * 取込値は MfTx.inst が常に運ぶので、突き合わせ表示はそちらを見る。
+   */
+  inst?: string | null;
   baseBig?: string | null;
   baseMid?: string | null;
   baseCls?: Cls | null;
