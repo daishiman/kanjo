@@ -297,6 +297,8 @@ export interface TxEditView {
   big: string | null;
   mid: string | null;
   owner: Owner | null;
+  /** 口座の振替。null は「取込値の口座のまま」 */
+  inst: string | null;
   updatedAt: string | null;
   origin: 'manual' | 'vendor_memory' | null;
   originKey: string | null;
@@ -312,6 +314,8 @@ export interface SplitLineView {
   cls: Cls;
   big: string;
   mid: string;
+  /** 内訳1行の名義。null は「元の明細の名義に従う」で、名義なし(unset)とは違う */
+  owner: Owner | null;
   memo: string;
 }
 
@@ -344,8 +348,11 @@ export interface TxRow {
   date: string;
   description: string;
   amount: number;
-  /** MF の保有金融機関(旧取込は null) */
+  /** 有効値の口座(振替してあればその先)。旧取込は null */
   institution: string | null;
+  instSrc: '手動' | '取込値';
+  /** 取込値の口座。振替したときに「元は何だったか」を出すために持つ */
+  csvInstitution: string | null;
   /** 支払手段(口座名と現金IDからの導出) */
   paymentMethod: PaymentMethod;
   /** 取込値 */
@@ -418,6 +425,8 @@ export interface TransactionsResponse {
   };
   transactions: TxRow[];
   candidates: Candidates;
+  /** 口座の振替先候補。取込に現れた口座と、名義を割り当て済みの口座 */
+  institutions: string[];
 }
 
 export interface RuleRow {

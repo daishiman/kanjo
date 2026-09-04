@@ -161,12 +161,15 @@ classifyRoute.get('/transactions', async (c) => {
         date: t.d,
         description: t.c,
         amount: t.a,
-        institution: t.inst ?? null,
+        /** 有効値(振替後の口座)。取込値は csvInstitution が別に運ぶ */
+        institution: r.inst,
+        instSrc: r.instSrc,
         /** 支払手段(口座名と現金IDからの導出。MF自身は列を持たない) */
-        paymentMethod: paymentMethodOf(t),
-        /** 取込値(MFの大項目/中項目) */
+        paymentMethod: paymentMethodOf({ id: t.id, inst: r.inst }),
+        /** 取込値(MFの大項目/中項目・保有金融機関) */
         csvBig: t.big,
         csvMid: t.mid,
+        csvInstitution: t.inst ?? null,
         /** 有効値 */
         big: r.big,
         mid: r.mid,
@@ -190,6 +193,7 @@ classifyRoute.get('/transactions', async (c) => {
               big: e.big ?? null,
               mid: e.mid ?? null,
               owner: e.owner ?? null,
+              inst: e.inst ?? null,
               updatedAt: e.updatedAt ?? null,
               origin: memoryContributes ? 'vendor_memory' : e.origin === 'manual' ? 'manual' : null,
               originKey: memoryContributes ? (e.originKey ?? null) : null,
@@ -209,7 +213,7 @@ classifyRoute.get('/transactions', async (c) => {
       if (PAYMENT_METHOD_VALUES.some((value) => value === method) && r.paymentMethod !== method) return false;
       if (
         q &&
-        !`${r.description}|${r.big}|${r.mid}|${r.csvBig}|${r.csvMid}|${r.institution ?? ''}`
+        !`${r.description}|${r.big}|${r.mid}|${r.csvBig}|${r.csvMid}|${r.institution ?? ''}|${r.csvInstitution ?? ''}`
           .toUpperCase()
           .includes(q)
       )
@@ -247,11 +251,24 @@ classifyRoute.get('/transactions', async (c) => {
     editedCount: resolved.filter((x) => x.r.edited).length,
     conflictCount: resolved.filter((x) => x.r.conflict).length,
     /** 保有金融機関が無い明細数(旧取込。MF再取込で埋まる) */
-    noInstitutionCount: txs.filter((t) => !t.inst).length,
+    noInstitutionCount: resolved.filter((x) => !x.r.inst).length,
     /** 取り込んだが集計対象外だった明細数(MFの振替・計算対象=0)。0なら注記を出さない */
     nonCountableCount,
   };
-  return c.json({ months, month: m, summary, transactions: rows, candidates });
+  /**
+   * 口座の振替先候補。取込に現れた保有金融機関と、名義を割り当て済みの口座を合わせる。
+   * 科目と同じく、存在しない口座を推測で作らない(利用者が持っている口座だけを出す)。
+   */
+  const institutions = [
+    ...new Set([
+      ...data.mfTx.map((tx) => tx.inst ?? '').filter(Boolean),
+      ...Object.values(data.edits)
+        .map((edit) => edit.inst ?? '')
+        .filter(Boolean),
+      ...Object.keys(data.institutionOwners),
+    ]),
+  ].sort((a, b) => a.localeCompare(b, 'ja'));
+  return c.json({ months, month: m, summary, transactions: rows, candidates, institutions });
 });
 
 /* -------- 手動編集(公私・大項目・中項目・名義) -------- */
@@ -299,6 +316,8 @@ const editSchema = z.object({
   big: z.string().max(60).nullable().optional(),
   mid: z.string().max(60).nullable().optional(),
   owner: ownerSchema.nullable().optional(),
+  /** 口座(保有金融機関)の振替。null は「取込値の口座に戻す」 */
+  inst: z.string().max(100).nullable().optional(),
   note: z.string().max(200).nullable().optional(),
   /** true: 全属性を取込値に戻す(編集行を消す) */
   reset: z.boolean().optional(),
@@ -365,6 +384,8 @@ const splitLineSchema = z.object({
   cls: z.enum(['biz', 'per']),
   big: z.string().min(1),
   mid: z.string().default(''),
+  /** 内訳1行の名義。null/未指定は元の明細の名義に従う */
+  owner: ownerSchema.nullable().optional(),
   memo: z.string().max(SPLIT_MEMO_MAX_LENGTH).optional(),
 });
 /**
@@ -426,6 +447,7 @@ classifyRoute.get('/transactions/:txId/splits', async (c) => {
       cls: r.cls,
       big: r.categoryMajor,
       mid: r.categoryMid,
+      owner: r.owner ?? null,
       memo: r.memo ?? '',
     })),
   });
@@ -493,6 +515,8 @@ classifyRoute.put('/transactions/:txId/splits', zValidator('json', splitsSchema)
       cls: line.cls,
       categoryMajor: line.big,
       categoryMid: line.mid,
+      // 未指定は「元の明細の名義に従う」。キーを置かないことでその既定を表す
+      ...(line.owner ? { owner: line.owner } : {}),
       ...(line.memo ? { memo: line.memo } : {}),
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
@@ -529,6 +553,7 @@ classifyRoute.put('/transactions/:txId/splits', zValidator('json', splitsSchema)
       cls: row.cls,
       big: row.categoryMajor,
       mid: row.categoryMid,
+      owner: row.owner ?? null,
       memo: row.memo ?? '',
     })),
   });

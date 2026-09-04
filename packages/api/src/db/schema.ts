@@ -116,6 +116,11 @@ export const txEdits = sqliteTable('tx_edits', {
   originKey: text('origin_key'),
   note: text('note'),
   updatedAt: text('updated_at'),
+  /**
+   * 0035: 口座(保有金融機関)の振替。base を持たない理由は TxEdit.inst の注記。
+   * ALTER TABLE は列を末尾に足すので、宣言の並びも物理の並びに合わせて末尾に置く。
+   */
+  institution: text('institution'),
 });
 
 /** 保有金融機関 → 名義 */
@@ -310,6 +315,12 @@ export const txSplits = sqliteTable(
     memo: text('memo'),
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
     updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+    /**
+     * 0035: 内訳1行の名義。NULL は「元の明細の名義に従う」。
+     * splitReplacementQueries は列名を書かない位置指定 INSERT なので、
+     * ALTER TABLE が足す物理の並び(末尾)と宣言の並びを必ず一致させる。
+     */
+    owner: text('owner', { enum: ['business', 'spouse', 'family'] }),
   },
   (t) => [
     uniqueIndex('idx_tx_splits_tx').on(t.userId, t.txId, t.seq),

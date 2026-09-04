@@ -14,8 +14,18 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# 品質ゲートは1本の長いジョブではなく、並列に走る複数のジョブに分けてある。
+#
+# apiのテストだけで8分前後かかる。以前は lint・typecheck・全テスト・build を
+# 1ジョブに詰めていたため、10分の枠に対する余白が数十秒しか無く、
+# 依存インストールが少し詰まっただけで打ち切られていた。
+# 打ち切りは「何が壊れているか」を1つも教えてくれないので、最も高くつく落ち方である。
+#
+# 分けたことで、各ジョブは自分の仕事の何倍もの枠を持てる。
+# どこで落ちたのかもジョブ名でそのまま分かる。
 jobs:
-  verify:
+  static-checks:
+    name: 静的検査 (lint・型・周辺スクリプト)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -23,14 +33,71 @@ jobs:
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm lint
       - run: pnpm typecheck
-      - run: pnpm test
-      # Deployのbuildが落ちると、本番D1だけが先に進んだ状態が残る。
-      # 同じbuildをここで通し、壊れたものがmainへ入らないようにする。
-      # webのJS予算超過もWorkerのバンドル失敗も、この1本で先に捕まえる。
-      - name: ビルドできることを確認
-        run: pnpm build
+      # ワークスペース外の検査。中身は root の test:aux ただ1つに置いてある。
+      # ここへコマンドを並べ直すと、手元の pnpm test と CI がいずれ違うものを見る。
+      - name: 手順書・GitHubスクリプト・スキルの検査
+        run: pnpm run test:aux
       - name: 依存関係の脆弱性を確認
         run: pnpm audit --prod --audit-level high || echo "::warning::high以上の既知脆弱性があります。詳細はログを確認してください。"
+
+  # api を名指しで除外する。新しいパッケージが増えたら黙ってこちら側で走る。
+  # 名指しで列挙すると、追加したパッケージがどのジョブにも入らないまま
+  # 検査されずに通ってしまう。
+  test-core-web:
+    name: テスト (core・web)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-pnpm
+      - run: pnpm -r --workspace-concurrency=1 --filter '!@kanjo/api' test
+
+  # apiはMiniflare上のD1を1ファイルずつ直列で叩くため、他より一桁遅い。
+  # 単独ジョブにして、他の検査を道連れにしないようにする。
+  test-api:
+    name: テスト (api)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-pnpm
+      - run: pnpm --filter @kanjo/api test
+
+  # Deployのbuildが落ちると、本番D1だけが先に進んだ状態が残る。
+  # 同じbuildをここで通し、壊れたものがmainへ入らないようにする。
+  # webのJS予算超過もWorkerのバンドル失敗も、この1本で先に捕まえる。
+  build:
+    name: ビルドできることを確認
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-pnpm
+      - run: pnpm build
+
+  # mainのブランチ保護が必須にしているチェックはこの verify ただ1つ。
+  # 上を素直に並べただけだと、必須でないジョブが落ちてもmergeできてしまう。
+  # ここで全ジョブの結果を1つに束ね、保護の対象を増やさずに守る範囲だけを広げる。
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [static-checks, test-core-web, test-api, build]
+    if: always()
+    steps:
+      # skipped と cancelled も success ではない。success 以外が1つでもあれば落とす。
+      # 「failure だけ見る」書き方だと、打ち切られたジョブが素通りする。
+      #
+      # 式の文字列はシングルクォートしか使えない(ダブルクォートはワークフロー全体が
+      # 構文エラーになり、ジョブが1つも作られないまま落ちる)。
+      # 結果は run へ直接展開せず env 経由で渡す。
+      - name: すべての検査が通ったことを確認
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "各ジョブの結果: $RESULTS"
+          for r in $RESULTS; do
+            [ "$r" = "success" ] || { echo "::error::success でない検査があります: $r"; exit 1; }
+          done
 
   # 配布キットの品質ゲート。
   # 改行コード・BOM・実行権限・隔離属性は、いずれも macOS/Windows 実機でだけ

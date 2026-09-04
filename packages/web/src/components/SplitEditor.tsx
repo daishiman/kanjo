@@ -17,7 +17,15 @@
 import { type RatioLine, splitByRatio, validateSplits } from '@kanjo/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
-import { type Candidates, type Cls, type SplitsResponse, api } from '../api.js';
+import {
+  type Candidates,
+  type Cls,
+  OWNER_VALUES,
+  type Owner,
+  type SplitsResponse,
+  api,
+  ownerLabel,
+} from '../api.js';
 import { yen } from '../format.js';
 import { CategoryPicker } from './CategoryPicker.js';
 import { DataTable } from './DataTable.js';
@@ -30,6 +38,8 @@ interface DraftLine {
   cls: Cls;
   big: string;
   mid: string;
+  /** 空文字は「元の明細の名義に従う」。名義なし(unset)を選んだ状態とは別物 */
+  owner: Owner | '';
   memo: string;
   /** 金額モードの入力値。空文字は「まだ入れていない」 */
   amount: string;
@@ -44,6 +54,7 @@ const newLine = (cls: Cls): DraftLine => ({
   cls,
   big: '',
   mid: '',
+  owner: '',
   memo: '',
   amount: '',
   ratio: '',
@@ -62,6 +73,7 @@ export function SplitEditor({
   txId,
   candidates,
   defaultCls,
+  defaultOwner,
   onClose,
   onSaved,
   onDirtyChange,
@@ -71,6 +83,8 @@ export function SplitEditor({
   candidates: Candidates;
   /** 元の明細の公私。行を足すたびに選び直させない */
   defaultCls: Cls;
+  /** 元の明細の名義。行ごとに指定しなかったときに何になるかを見せるためだけに使う */
+  defaultOwner: Owner | null;
   onClose: () => void;
   onSaved: () => void;
   onDirtyChange: (dirty: boolean) => void;
@@ -94,6 +108,7 @@ export function SplitEditor({
           cls: l.cls,
           big: l.big,
           mid: l.mid,
+          owner: l.owner ?? ('' as const),
           memo: l.memo,
           amount: String(l.amount),
           ratio: '',
@@ -224,6 +239,7 @@ export function SplitEditor({
           columns={[
             '公私',
             '科目',
+            '名義',
             mode === 'amount' ? '金額' : '割合',
             ...(mode === 'ratio' ? ['金額'] : []),
             'メモ',
@@ -254,6 +270,21 @@ export function SplitEditor({
                   onChange={(v) => update(l.lineId, { big: v.big, mid: v.mid })}
                   hintText={q.data.description}
                 />
+              </td>
+              <td data-label="名義">
+                <select
+                  aria-label={`${i + 1}行目の名義`}
+                  value={l.owner}
+                  onChange={(e) => update(l.lineId, { owner: e.target.value as Owner | '' })}
+                >
+                  {/* 空欄は「名義なし」ではなく「指定しない」。元の明細の名義がそのまま効く */}
+                  <option value="">元のまま（{ownerLabel(defaultOwner)}）</option>
+                  {OWNER_VALUES.map((owner) => (
+                    <option key={owner} value={owner}>
+                      {ownerLabel(owner)}
+                    </option>
+                  ))}
+                </select>
               </td>
               <td className="num" data-label={mode === 'amount' ? '金額' : '割合'}>
                 {mode === 'amount' ? (
@@ -338,6 +369,8 @@ export function SplitEditor({
                 cls: l.cls,
                 big: l.big,
                 mid: l.mid,
+                // 指定なしはキーを送らない。null を送ると「名義なしに直す」と区別できない
+                ...(l.owner ? { owner: l.owner } : {}),
                 ...(l.memo ? { memo: l.memo } : {}),
               })),
             })

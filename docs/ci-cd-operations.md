@@ -52,7 +52,7 @@ SQLiteで列の型や制約を変える定型手順（新テーブル作成 → 
 
 | ワークフロー | ファイル | 起動条件 | 主な処理 | 外部への影響 |
 |---|---|---|---|---|
-| CI | `.github/workflows/ci.yml` | PR、`main`へのpush、手動 | 依存導入、lint、Env型生成を内包した型検査、テスト、依存監査、ビルド確認（WebのJS予算とWorkerバンドルをmergeの前に検査する） | なし |
+| CI | `.github/workflows/ci.yml` | PR、`main`へのpush、手動 | 4ジョブ並列（lint・Env型生成を内包した型検査・周辺スクリプト検査・依存監査 / core・webテスト / apiテスト / ビルド確認）と、それらを束ねる`verify` | なし |
 | Deploy | `.github/workflows/deploy.yml` | `main`のCI成功後、または`main`から手動 | 手動時の品質検査、Webビルド（`build:artifact`。JS予算はCI側で守るので配信は止めない）、pending migrationの判定、追加だけの自動適用（Time Travel記録つき）、remote D1未適用のfail-closed検査、Worker公開、2回のスモークテスト | 本番DBへ追加だけのmigrationを適用し、本番アプリを更新 |
 | Migrate | `.github/workflows/migrate.yml` | `main`から`APPLY`と承認済みmanifest入力付きの手動実行のみ | repository head・ordered migrations digest・remote pendingの再照合、D1 Time Travel情報確認、リモートmigration適用 | 本番DBの構造を更新。破壊的変更の適用経路 |
 
@@ -61,14 +61,18 @@ SQLiteで列の型や制約を変える定型手順（新テーブル作成 → 
 - ランナー: `ubuntu-latest`
 - アプリのNode.js: 22
 - GitHub公式Actions: Node.js 24対応版
-- CIタイムアウト: 10分
+- CIタイムアウト: ジョブごと（静的検査10分 / core・webテスト15分 / apiテスト20分 / ビルド10分 / `verify`5分）
 - Deploy / Migrateタイムアウト: 20分
 - 権限: `contents: read`のみ
 - `concurrency`で重複実行を制御
 - 依存監査のhigh以上はログへ警告するが、上流修正待ちで全開発を止めない
 - Node.js 22・pnpm・依存関係installは`.github/actions/setup-pnpm/action.yml`へ一元化し、3ワークフローから同じ部品を呼ぶ
 
-`verify`はCIワークフロー内のジョブ名であり、`main`の必須ステータスチェック名でもあります。
+CIの品質ゲートは4つのジョブ（`static-checks` / `test-core-web` / `test-api` / `build`）に分かれて並列に走ります。以前は1ジョブに詰めていましたが、apiのテストだけで8分前後かかるため10分の枠に余白がほとんど無く、依存導入が少し詰まっただけで打ち切られていました。打ち切りは何が壊れているかを1つも教えてくれないため、最も高くつく落ち方です。
+
+`verify`はその4つを束ねる集約ジョブであり、`main`の必須ステータスチェック名でもあります。必須チェックが`verify`ただ1つなので、実体のジョブを素直に並べただけでは、必須でないジョブが落ちてもmergeできてしまいます。`verify`は`needs`の結果に`success`以外が1つでもあれば失敗します（`failure`だけでなく`skipped`・`cancelled`も落とす）。
+
+CIジョブを増やすときは`verify`の`needs`にも足してください。足し忘れると、そのジョブは走るのにmergeを止めません。
 
 ## 3. GitHubの設定
 

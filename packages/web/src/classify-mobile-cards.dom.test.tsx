@@ -22,6 +22,8 @@ const row = (over: Partial<TxRow> = {}): TxRow => ({
   description: '架空スーパー',
   amount: -1000,
   institution: '架空銀行',
+  instSrc: '取込値',
+  csvInstitution: '架空銀行',
   paymentMethod: 'account',
   csvBig: '食費',
   csvMid: '食料品',
@@ -78,6 +80,7 @@ const response = (transactions: TxRow[]): TransactionsResponse => ({
   },
   transactions,
   candidates: { biz: [], per: [] } as unknown as TransactionsResponse['candidates'],
+  institutions: ['架空銀行'],
 });
 
 function mockFetch(transactions: TxRow[]) {

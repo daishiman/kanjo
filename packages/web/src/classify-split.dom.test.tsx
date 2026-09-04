@@ -67,6 +67,7 @@ function renderEditor(onDirtyChange: (dirty: boolean) => void = () => {}) {
         txId="A1"
         candidates={candidates}
         defaultCls="per"
+        defaultOwner={null}
         onClose={() => {}}
         onSaved={() => {}}
         onDirtyChange={onDirtyChange}
@@ -146,6 +147,7 @@ describe('明細の分割記帳', () => {
           cls: 'per',
           big: '食費',
           mid: '',
+          owner: null,
           memo: '',
         },
         {
@@ -154,6 +156,7 @@ describe('明細の分割記帳', () => {
           cls: 'per',
           big: '日用品',
           mid: '',
+          owner: null,
           memo: '',
         },
       ]),
@@ -190,6 +193,7 @@ describe('明細の分割記帳', () => {
       cls: 'per' as const,
       big: '食費',
       mid: '',
+      owner: null,
       memo: '',
     }));
     mockFetch(splits(lines));

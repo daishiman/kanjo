@@ -245,6 +245,7 @@ export const splitFromRow = (r: typeof s.txSplits.$inferSelect): TxSplit => ({
   cls: r.cls,
   categoryMajor: r.categoryMajor,
   categoryMid: r.categoryMid,
+  ...(r.owner ? { owner: r.owner } : {}),
   ...(r.memo ? { memo: r.memo } : {}),
 });
 
@@ -252,7 +253,7 @@ export const splitFromRow = (r: typeof s.txSplits.$inferSelect): TxSplit => ({
 export const editFromRow = txEditFromRow;
 
 /** 編集が空(全属性 null)なら行ごと消す */
-export const editIsEmpty = (e: TxEdit): boolean => !e.cls && !e.big && !e.mid && !e.owner;
+export const editIsEmpty = (e: TxEdit): boolean => !e.cls && !e.big && !e.mid && !e.owner && !e.inst;
 
 export async function upsertEdit(
   db: Db,
@@ -580,6 +581,8 @@ type BackupSnapshotRow = {
   v12: string | number | null;
   v13: string | number | null;
   v14: string | number | null;
+  /** 0035: tx_edits.institution / tx_splits.owner が載る枠 */
+  v15: string | null;
 };
 
 interface BackupSourceSnapshot {
@@ -682,91 +685,91 @@ const BACKUP_SNAPSHOT_SQL = `
 SELECT * FROM (
 SELECT 'baseline' AS source, NULL AS id, NULL AS rank, amount,
        month AS v1, scope AS v2, NULL AS v3, NULL AS v4, NULL AS v5,
-       NULL AS v6, NULL AS v7, NULL AS v8, NULL AS v9, NULL AS v10, NULL AS v11, NULL AS v12, NULL AS v13, NULL AS v14
+       NULL AS v6, NULL AS v7, NULL AS v8, NULL AS v9, NULL AS v10, NULL AS v11, NULL AS v12, NULL AS v13, NULL AS v14, NULL AS v15
 FROM restored_monthly_agg WHERE user_id = ?
 UNION ALL
 SELECT 'freee', id, NULL, amount,
-       month, date, io, partner, account_raw, account_norm, memo, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       month, date, io, partner, account_raw, account_norm, memo, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM freee_deals WHERE user_id = ?
 UNION ALL
 SELECT 'mf', id, NULL, amount,
        tx_id, month, date, description, category_major, category_mid, institution, memo,
-       CAST(is_target AS TEXT), CAST(is_transfer AS TEXT), NULL, identity_stable, NULL, NULL
+       CAST(is_target AS TEXT), CAST(is_transfer AS TEXT), NULL, identity_stable, NULL, NULL, NULL
 FROM mf_transactions WHERE user_id = ?
 UNION ALL
 SELECT 'rule', id, sort_order, NULL,
-       keyword, cls, category_major, category_mid, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       keyword, cls, category_major, category_mid, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM rules WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
 SELECT 'edit', NULL, NULL, NULL,
        tx_id, cls, category_major, category_mid, owner, base_major, base_mid, note, updated_at,
-       base_cls, base_owner, stable_key, CAST(fingerprint_version AS TEXT), base_known
+       base_cls, base_owner, stable_key, CAST(fingerprint_version AS TEXT), base_known, institution
 FROM tx_edits WHERE user_id = ?
 UNION ALL
 SELECT 'budget', NULL, NULL, monthly_amount,
-       account, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       account, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM budgets WHERE user_id = ?
 UNION ALL
 SELECT 'cash_override', NULL, expense, revenue,
-       month, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       month, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM cash_overrides WHERE user_id = ?
 UNION ALL
 SELECT 'unrecorded', NULL, NULL, NULL,
-       month, kind, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       month, kind, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM unrecorded_months WHERE user_id = ?
 UNION ALL
 SELECT 'institution', NULL, NULL, NULL,
-       institution, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       institution, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM institution_owners WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
 SELECT 'vendor', id, sort_order, NULL,
-       name, aliases, accounts, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       name, aliases, accounts, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendors WHERE user_id = ?
 UNION ALL
 SELECT 'cash', id, NULL, amount,
-       date, month, side, io, description, category_major, category_mid, memo, NULL, transit_from, transit_to, transit_round, receipt_waived, NULL
+       date, month, side, io, description, category_major, category_mid, memo, NULL, transit_from, transit_to, transit_round, receipt_waived, NULL, NULL
 FROM cash_entries WHERE user_id = ?
 UNION ALL
 SELECT 'split', id, seq, amount,
        tx_id, line_id, cls, category_major, category_mid, memo, created_at, updated_at,
-       NULL, NULL, NULL, parent_amount, NULL, NULL
+       owner, NULL, NULL, parent_amount, NULL, NULL, NULL
 FROM tx_splits WHERE user_id = ?
 UNION ALL
 SELECT 'norm', NULL, NULL, NULL,
-       raw, norm, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       raw, norm, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM account_norm_map WHERE user_id = ?
 UNION ALL
 SELECT 'attachment', id, delete_attempts, size,
        target_kind, target_key, r2_key, filename, content_type, content_hash, created_at, state,
-       delete_requested_at, last_delete_error, object_deleted_at, parent_missing_at, cleanup_dead_letter_at, NULL
+       delete_requested_at, last_delete_error, object_deleted_at, parent_missing_at, cleanup_dead_letter_at, NULL, NULL
 FROM attachments WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
 SELECT 'analysis_setting', NULL, NULL, stat_min_months,
-       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM analysis_settings WHERE user_id = ?
 UNION ALL
 SELECT 'sub_vendor_exclusion', id, NULL, NULL,
-       partner, vendor_key, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       partner, vendor_key, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendor_exclusions WHERE user_id = ?
 UNION ALL
 SELECT 'tax_account_setting', NULL, tax_year, business_percent,
-       account, tax_account, basis, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       account, tax_account, basis, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM tax_account_settings WHERE user_id = ?
 UNION ALL
 SELECT 'receipt_source_profile', NULL, NULL, NULL,
        profile_key, merchant_key, service_name, source_url, login_account, memo,
-       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM receipt_source_profiles WHERE user_id = ?
 UNION ALL
 SELECT 'receipt_source_override', NULL, NULL, NULL,
        target_kind, target_key, merchant_key, profile_key,
-       service_name, source_url, login_account, memo, NULL, NULL, NULL, NULL, NULL, NULL
+       service_name, source_url, login_account, memo, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM receipt_source_overrides WHERE user_id = ?
 )
 ORDER BY source, rank, id, v1, v2`;
@@ -849,6 +852,8 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
       stableKey: row.v12 == null ? null : String(row.v12),
       fingerprintVersion: row.v13 == null ? null : Number(row.v13),
       baseKnown: row.v14 == null ? undefined : Number(row.v14),
+      // 0035 の口座の振替。base を持たないので、値そのものだけを運ぶ
+      inst: row.v15,
     };
   }
   const institutionOwners: Dataset['institutionOwners'] = {};
@@ -904,6 +909,8 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
         cls: row.v3 === 'biz' ? 'biz' : 'per',
         categoryMajor: row.v4 ?? '',
         categoryMid: row.v5 ?? '',
+        // 0035: 内訳1行の名義。未指定(NULL)は元の明細の名義に従う
+        ...(normalizeOwner(row.v9) ? { owner: normalizeOwner(row.v9) } : {}),
         ...(row.v6 ? { memo: row.v6 } : {}),
         ...(row.v7 ? { createdAt: row.v7 } : {}),
         ...(row.v8 ? { updatedAt: row.v8 } : {}),
@@ -1031,7 +1038,7 @@ export async function loadImportRestoreSettingsSnapshot(
        SELECT 'split', json_object(
          'txId',tx_id,'lineId',line_id,'seq',seq,'parentAmount',parent_amount,'amount',amount,
          'cls',cls,'categoryMajor',category_major,'categoryMid',category_mid,'memo',memo,
-         'createdAt',created_at,'updatedAt',updated_at), NULL, NULL
+         'owner',owner,'createdAt',created_at,'updatedAt',updated_at), NULL, NULL
          FROM tx_splits WHERE user_id=?
        UNION ALL
        SELECT 'tax', json_object(
@@ -1103,8 +1110,10 @@ export async function loadImportRestoreSettingsSnapshot(
   });
   const txSplits = payloads<
     TxSplit & { memo?: string | null; createdAt?: string | null; updatedAt?: string | null }
-  >('split').map(({ memo, createdAt, updatedAt, ...row }) => ({
+  >('split').map(({ memo, createdAt, updatedAt, owner, ...row }) => ({
     ...row,
+    // 未指定(NULL)は「元の明細の名義に従う」。キーごと落として既定を復元する
+    ...(owner ? { owner } : {}),
     ...(memo ? { memo } : {}),
     ...(createdAt ? { createdAt } : {}),
     ...(updatedAt ? { updatedAt } : {}),
@@ -1569,6 +1578,7 @@ export function splitReplacementQueries(
       row.memo ?? null,
       row.createdAt ?? now,
       now,
+      row.owner ?? null,
     ]),
   );
   return [
@@ -1585,7 +1595,8 @@ export function splitReplacementQueries(
         json_extract(value, '$[6]'),
         json_extract(value, '$[7]'),
         json_extract(value, '$[8]'),
-        json_extract(value, '$[9]')
+        json_extract(value, '$[9]'),
+        json_extract(value, '$[10]')
       FROM json_each(${payload})
     `),
   ];

@@ -32,6 +32,8 @@ const row = (rowKind: TxRow['rowKind'], id: string, description: string): TxRow 
   description,
   amount: -1000,
   institution: rowKind === 'cash' ? '現金' : '架空銀行',
+  instSrc: '取込値',
+  csvInstitution: rowKind === 'cash' ? '現金' : '架空銀行',
   paymentMethod: rowKind === 'cash' ? 'cash' : 'account',
   csvBig: '食費',
   csvMid: '食料品',
@@ -78,6 +80,7 @@ const response = (transactions: TxRow[]): TransactionsResponse => ({
   },
   transactions,
   candidates: { biz: [], per: [] } as unknown as TransactionsResponse['candidates'],
+  institutions: ['架空銀行'],
 });
 
 function renderPage(transactions: TxRow[]) {

@@ -51,8 +51,9 @@ export function transactionExportRows(data: Dataset): TransactionExportRow[] {
       t.m,
       t.d,
       t.c,
-      t.inst ?? '',
-      PAYMENT_METHOD_LABEL[paymentMethodOf(t)],
+      // 口座は振替後の値を出す。支払手段も同じ口座から導かないと、書き出しの中で食い違う
+      r.inst ?? '',
+      PAYMENT_METHOD_LABEL[paymentMethodOf({ id: t.id, inst: r.inst })],
       r.big,
       r.mid,
       r.catSrc,
