@@ -7,10 +7,8 @@ import { afterEach, expect, it, vi } from 'vitest';
 import type { MatrixData } from './api.js';
 import { MatrixPage } from './pages/analysis/Matrix.js';
 
-vi.mock('react-chartjs-2', () => ({
-  Chart: ({ 'aria-label': ariaLabel }: { 'aria-label'?: string }) => (
-    <div role="img" aria-label={ariaLabel} />
-  ),
+vi.mock('react-chartjs-2', async () => ({
+  Chart: (await import('./test-support/chart-test-doubles.js')).AccessibleChart,
 }));
 
 const data: MatrixData = {

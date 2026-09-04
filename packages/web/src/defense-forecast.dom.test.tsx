@@ -14,6 +14,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { DefenseForecast, SummaryResponse } from './api.js';
 import { OverviewPage } from './pages/Overview.js';
 
+// jsdom には canvas が無く、Chart.js は描画のたびに context を取れず例外を投げる。
+// 例外はテストを落とさない代わりにスタックだけをログへ積み、CIで本当の失敗を
+// 覆い隠す。ここで検証したいのは警告の文言と根拠なので、グラフは差し替える
+// (trends-scope.dom.test.tsx と同じ扱い)
+vi.mock('react-chartjs-2', async () => ({
+  Chart: (await import('./test-support/chart-test-doubles.js')).SilentChart,
+}));
+
 const forecast = (over: Partial<DefenseForecast> = {}): DefenseForecast => ({
   line: 500000,
   history: [

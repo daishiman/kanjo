@@ -16,7 +16,9 @@ import { TrendsPage } from './pages/analysis/Trends.js';
 
 // jsdom には canvas が無く、再描画のたびに Chart.js が実サイズを測ろうとして落ちる。
 // この画面で検証したいのは表と操作なので、グラフは差し替える
-vi.mock('react-chartjs-2', () => ({ Chart: () => null }));
+vi.mock('react-chartjs-2', async () => ({
+  Chart: (await import('./test-support/chart-test-doubles.js')).SilentChart,
+}));
 
 const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'];
 

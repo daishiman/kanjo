@@ -66,13 +66,60 @@ SQLiteで列の型や制約を変える定型手順（新テーブル作成 → 
 - 権限: `contents: read`のみ
 - `concurrency`で重複実行を制御
 - 依存監査のhigh以上はログへ警告するが、上流修正待ちで全開発を止めない
+- ルート`package.json`の`--workspace-concurrency=1`はパッケージを直列に回す。apiのMiniflare(workerd)とwebのheadless Chrome + Viteが同居すると、ポートとCPUの奪い合いで所要が振れ、偽の失敗を生むため。CIではapiが別ジョブなのでこの同居は起きず、効いているのは手元の`pnpm test`と`test-core-web`ジョブのcore・web間だけ。ここを並列にするなら`packages/api/vitest.config.ts`の並列度を測り直すこと
 - Node.js 22・pnpm・依存関係installは`.github/actions/setup-pnpm/action.yml`へ一元化し、3ワークフローから同じ部品を呼ぶ
 
-CIの品質ゲートは4つのジョブ（`static-checks` / `test-core-web` / `test-api` / `build`）に分かれて並列に走ります。以前は1ジョブに詰めていましたが、apiのテストだけで8分前後かかるため10分の枠に余白がほとんど無く、依存導入が少し詰まっただけで打ち切られていました。打ち切りは何が壊れているかを1つも教えてくれないため、最も高くつく落ち方です。
+CIの品質ゲートは4つのジョブ（`static-checks` / `test-core-web` / `test-api` / `build`）に分かれて並列に走ります。以前は1ジョブに詰めていましたが、apiのテストだけで数分かかるため10分の枠に余白がほとんど無く、依存導入が少し詰まっただけで打ち切られていました。打ち切りは何が壊れているかを1つも教えてくれないため、最も高くつく落ち方です。
 
 `verify`はその4つを束ねる集約ジョブであり、`main`の必須ステータスチェック名でもあります。必須チェックが`verify`ただ1つなので、実体のジョブを素直に並べただけでは、必須でないジョブが落ちてもmergeできてしまいます。`verify`は`needs`の結果に`success`以外が1つでもあれば失敗します（`failure`だけでなく`skipped`・`cancelled`も落とす）。
 
 CIジョブを増やすときは`verify`の`needs`にも足してください。足し忘れると、そのジョブは走るのにmergeを止めません。
+
+### 2.1 CIテストの測定記録
+
+並列度を決めた比較は、2026-09-03時点のローカル10コア環境、API38ファイル・485件で
+測りました。
+
+| APIの条件 | 結果 |
+|---|---|
+| `maxWorkers=1` | 417秒、全件成功 |
+| `maxWorkers=2` | 240秒、全件成功 |
+| `maxWorkers=4` | 236秒、全件成功 |
+| `maxWorkers=10` | 39秒、146件失敗（`EADDRNOTAVAIL`） |
+
+採用した`maxWorkers=2`のその後の実測は、2026-09-04・API39ファイル・493件で186秒
+（`test-api`ジョブと同じ`pnpm --filter @kanjo/api test`）。同じ環境で
+`test-core-web`ジョブのコマンドは66ファイル・408件が53秒、
+`pnpm lint && pnpm typecheck && pnpm build && pnpm test`を通しで回すと約4.5分でした。
+
+GitHub Actionsのrunnerは手元より遅く、同じ変更で`test-api`は6分7秒
+（`test-core-web`は4分15秒、`static-checks`は6分32秒）。`test-api`の20分枠は
+この実測に対する余白です。手元の秒数だけを見てタイムアウトを詰めないでください。
+
+同じ条件で再測定するコマンド（`N`を1、2、4、10へ置き換える）:
+
+```bash
+pnpm --filter @kanjo/api exec vitest run --fileParallelism --maxWorkers=N
+```
+
+この比較から、速度差が小さい4ではなく、socket枯渇までの余裕が大きい2を採用しています。
+`beforeEach`の全テーブル`DELETE`を`d1.batch()`へまとめる案は、当時の
+`import-lifecycle`単体で64秒から85秒へ悪化しました。当時の実行コマンドは残っていないため、
+この値は再現可能な基準には使わず、再検討時は変更前後を同じコマンドで測り直します。
+
+なお`maxWorkers`はテストファイルを並列に走らせる数であり、その内側で
+Miniflareがファイルごとにworkerdプロセスとproxy socketを開きます。
+上限を外すと落ちるのはデータの混線ではなくsocketの枯渇なので、
+テストの独立性を疑う前にこの節を読んでください。
+
+次の場合はこの節を再測定し、`packages/api/vitest.config.ts`の並列度と
+`test-api`ジョブのタイムアウトを一緒に見直します。
+
+- APIテストファイル数または統合テスト件数が大きく変わった
+- GitHub Actionsのrunner、Vitest、Miniflareまたはworkerdの版を変更した
+- ルートの`--workspace-concurrency=1`を変更した
+- `EADDRNOTAVAIL`などsocket・port関連の失敗が再発した
+- `test-api`が20分へ近づく、または打ち切られた
 
 ## 3. GitHubの設定
 

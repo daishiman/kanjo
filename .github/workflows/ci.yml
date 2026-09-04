@@ -52,8 +52,11 @@ jobs:
       - uses: ./.github/actions/setup-pnpm
       - run: pnpm -r --workspace-concurrency=1 --filter '!@kanjo/api' test
 
-  # apiはMiniflare上のD1を1ファイルずつ直列で叩くため、他より一桁遅い。
+  # apiは全件がMiniflare上のD1を叩く統合テストで、他より一桁遅い。
   # 単独ジョブにして、他の検査を道連れにしないようにする。
+  # 並列度はworkerdのproxy socketが枯渇しない範囲に抑えてあり、
+  # 測定値と再測定条件は packages/api/vitest.config.ts と
+  # docs/ci-cd-operations.md の「CIテストの測定記録」にある。
   test-api:
     name: テスト (api)
     runs-on: ubuntu-latest
