@@ -86,11 +86,16 @@ jobs:
     steps:
       # skipped と cancelled も success ではない。success 以外が1つでもあれば落とす。
       # 「failure だけ見る」書き方だと、打ち切られたジョブが素通りする。
+      #
+      # 式の文字列はシングルクォートしか使えない(ダブルクォートはワークフロー全体が
+      # 構文エラーになり、ジョブが1つも作られないまま落ちる)。
+      # 結果は run へ直接展開せず env 経由で渡す。
       - name: すべての検査が通ったことを確認
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
         run: |
-          results='${{ join(needs.*.result, " ") }}'
-          echo "各ジョブの結果: $results"
-          for r in $results; do
+          echo "各ジョブの結果: $RESULTS"
+          for r in $RESULTS; do
             [ "$r" = "success" ] || { echo "::error::success でない検査があります: $r"; exit 1; }
           done
 
