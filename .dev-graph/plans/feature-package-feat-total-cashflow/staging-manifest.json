@@ -1,0 +1,36 @@
+{
+  "canonical_digest": "sha256:919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+  "feature_package_id": "feature-package/feat-total-cashflow",
+  "files": {
+    "feature-package.json": "a9049783262ca5f96dc8928ad769eb24dbdcf094b62ea97da3325c3b21df8184",
+    "system-build-handoff.json": "d93db0d8ef0ec2450f0bff9099cbaa2a562caf875afb436145389a799f980958",
+    "task-graph.json": "1e18282eb421a8891af7ae09b7bf1e98597824517535c657c9bb685d3ba25f32",
+    "task-specs/phase-01-requirements.md": "3f82577c66c1f2f9a0eed8cb2e39858a65f5e2600c49c99e9ee0d892f37a8acb",
+    "task-specs/phase-02-architecture.md": "75a30b53c75a796524bf00001b7482f435bf8b182c3598f55c21bd12d46b7267",
+    "task-specs/phase-03-design-review.md": "0ea5b1156f76a29803981931c0cbf5245c68584e624b63b310e965e23c983429",
+    "task-specs/phase-04-test-design.md": "51ff0654cd1705afc1ecdde6970f619937fc29e438b7e26ce5c9567d872be581",
+    "task-specs/phase-05-implementation.md": "4c44e15f8abd5041b0295be41301de8874135681e6e43fa5df44d9644c91e623",
+    "task-specs/phase-06-test-run.md": "b4d939705d8ece892e5200866a4d56824aa7f9879500075f7d18035374f18668",
+    "task-specs/phase-07-acceptance.md": "88881d4202e428dc8b7d6cd6ea9c52f1caed55a59b8d9191d2e1831184f620c6",
+    "task-specs/phase-08-refactoring-migration.md": "57f6606d9acd7564943d5f50d0255136a7585f9bfb13145151c877399dcdc96b",
+    "task-specs/phase-09-quality-assurance.md": "3f35c135a39a575b266b9a8569edc984b8728216e01b33bc97dd04066ae2513c",
+    "task-specs/phase-10-final-review.md": "a418d054768cb1f3e851819f57e313b03658377eeaec52a77ada76555c6c6e1b",
+    "task-specs/phase-11-evidence.md": "28292a9bbc23818a3b1a1587cc8d0d1c3bbf83042483739bd6aeccb530833794",
+    "task-specs/phase-12-documentation-operations.md": "eb1093bc90356d43495eb91f3b964076238a3d022326625dd4ddd3dd2bff3bea",
+    "task-specs/phase-13-release-deploy.md": "d8b30b02b36029ddcf4d9801d83e3701a0351b800bc05ff35e02261a326cd427",
+    "workstream-inventory.json": "bf45e0f0e641551aee947390c4cbd71231410d28363dbe1143b44ec8959b6cc4"
+  },
+  "handoff_contract": {
+    "manifest_is_commit_point": true,
+    "path": "system-build-handoff.json",
+    "schema_version": "1.0.0",
+    "self_reference_policy": "handoff hash and final digest are manifest-only",
+    "sha256": "d93db0d8ef0ec2450f0bff9099cbaa2a562caf875afb436145389a799f980958",
+    "source_canonical_digest": "sha256:d7e0b4dc9f11374741505987eac0733624ddc603fcead3f239730d84bd6cc012"
+  },
+  "parent_feature": "feat-total-cashflow",
+  "repository_id": "github:daishiman/kanjo",
+  "run_id": "run-20260905T134500Z-tcf",
+  "schema_version": "1.0.0",
+  "source_feature_digest": "sha256:ce48734fd6e33e6bdc0721fb4e015f5e9977cc507956b225984e0655a90ec02c"
+}

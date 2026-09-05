@@ -1,0 +1,342 @@
+{
+  "digest_agreement": true,
+  "emitted_by": "dev-graph:run-dev-graph-requirements",
+  "feature_package_id": "feature-package/feat-total-cashflow",
+  "gates": {
+    "c02_saved_state": {
+      "confirmation_status": [
+        "confirmed"
+      ],
+      "distinct_digests": [
+        "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      ],
+      "evaluation_status": [
+        "pass"
+      ],
+      "readiness": [
+        "complete"
+      ]
+    },
+    "c11_graph_schema": {
+      "implementation_readiness": "complete",
+      "valid": true,
+      "violations": 0
+    },
+    "c12_validate_system_plan": {
+      "status": "pass",
+      "validated_digest": "sha256:919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+      "violations": 0
+    }
+  },
+  "graph_snapshot": {
+    "snapshot_digest": "sha256:df660192bfa7be5c9c45fcf7dfaac66f5321c3231b50c99568aaf492b51b3cc0",
+    "state_path": ".dev-graph/state/graph.json",
+    "subgraph_node_ids": [
+      "feat-total-cashflow",
+      "SYS-TCF-P01",
+      "SYS-TCF-P02",
+      "SYS-TCF-P03",
+      "SYS-TCF-P04",
+      "SYS-TCF-P05",
+      "SYS-TCF-P06",
+      "SYS-TCF-P07",
+      "SYS-TCF-P08",
+      "SYS-TCF-P09",
+      "SYS-TCF-P10",
+      "SYS-TCF-P11",
+      "SYS-TCF-P12",
+      "SYS-TCF-P13"
+    ]
+  },
+  "handoff_status": "released",
+  "handoff_target": "task-graph",
+  "implementation_code_files_generated": 0,
+  "package_reference": {
+    "feature_package": ".dev-graph/plans/feature-package-feat-total-cashflow/feature-package.json",
+    "phase_refs": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P06",
+      "P07",
+      "P08",
+      "P09",
+      "P10",
+      "P11",
+      "P12",
+      "P13"
+    ],
+    "plan_dir": ".dev-graph/plans/feature-package-feat-total-cashflow",
+    "source_canonical_digest": "sha256:919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+    "task_count": 13,
+    "task_graph": ".dev-graph/plans/feature-package-feat-total-cashflow/task-graph.json",
+    "workstream_inventory": ".dev-graph/plans/feature-package-feat-total-cashflow/workstream-inventory.json"
+  },
+  "parent_feature": "feat-total-cashflow",
+  "readiness_matrix": [
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p01.md",
+      "graph_node_id": "SYS-TCF-P01",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P01",
+      "remediation_owner": null,
+      "title": "トータル収支の要件と受入条件を機械可読な二値条件へ確定する",
+      "tracker_binding": "beads",
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "specs/total-cashflow-requirements.md",
+        "features/feat-total-cashflow.md"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P01"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p02.md",
+      "graph_node_id": "SYS-TCF-P02",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P02",
+      "remediation_owner": null,
+      "title": "消し込み・合算・トレンドの層分担と判定永続化のデータモデルを決める",
+      "tracker_binding": "beads",
+      "workstream_kind": "backend",
+      "write_scope": [
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P02"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p03.md",
+      "graph_node_id": "SYS-TCF-P03",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P03",
+      "remediation_owner": null,
+      "title": "設計が受入条件を実際に満たしうるかを反例探索で検証する",
+      "tracker_binding": "beads",
+      "workstream_kind": "quality",
+      "write_scope": [
+        "eval-log/tcf-design-review.md"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P03"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p04.md",
+      "graph_node_id": "SYS-TCF-P04",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P04",
+      "remediation_owner": null,
+      "title": "受入条件と 1 対 1 に対応する失敗するテストを先に書く",
+      "tracker_binding": "beads",
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/test",
+        "packages/api/test",
+        "packages/web/test"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P03",
+        "SYS-TCF-P04"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p05.md",
+      "graph_node_id": "SYS-TCF-P05",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P05",
+      "remediation_owner": null,
+      "title": "消し込み・合算・トレンド・一覧表を実装して赤いテストを緑にする",
+      "tracker_binding": "beads",
+      "workstream_kind": "backend",
+      "write_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P05"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p06.md",
+      "graph_node_id": "SYS-TCF-P06",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P06",
+      "remediation_owner": null,
+      "title": "テストを実行して受入条件との対応が全て緑であることを実測する",
+      "tracker_binding": "beads",
+      "workstream_kind": "quality",
+      "write_scope": [
+        "eval-log/tcf-test-run.md"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P05",
+        "SYS-TCF-P06"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p07.md",
+      "graph_node_id": "SYS-TCF-P07",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P07",
+      "remediation_owner": null,
+      "title": "実データで受入条件を利用者視点から確認する",
+      "tracker_binding": "beads",
+      "workstream_kind": "quality",
+      "write_scope": [
+        "eval-log/tcf-acceptance.md"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P07"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p08.md",
+      "graph_node_id": "SYS-TCF-P08",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P08",
+      "remediation_owner": null,
+      "title": "判定永続化スキーマの移行と既存集計コードの重複整理を行う",
+      "tracker_binding": "beads",
+      "workstream_kind": "data",
+      "write_scope": [
+        "migrations",
+        "packages/core/src"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P06",
+        "SYS-TCF-P08"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p09.md",
+      "graph_node_id": "SYS-TCF-P09",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P09",
+      "remediation_owner": null,
+      "title": "静的検査とセキュリティ確認を通し品質ゲートを満たす",
+      "tracker_binding": "beads",
+      "workstream_kind": "quality",
+      "write_scope": [
+        "eval-log/tcf-qa.md"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P07",
+        "SYS-TCF-P09"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p10.md",
+      "graph_node_id": "SYS-TCF-P10",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P10",
+      "remediation_owner": null,
+      "title": "当初の困りごとが解けたかを最終確認する",
+      "tracker_binding": "beads",
+      "workstream_kind": "quality",
+      "write_scope": [
+        "eval-log/tcf-final-review.md"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P09",
+        "SYS-TCF-P10"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p11.md",
+      "graph_node_id": "SYS-TCF-P11",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P11",
+      "remediation_owner": null,
+      "title": "判断の根拠となった実測値を 1 箇所へ集約する",
+      "tracker_binding": "beads",
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "eval-log/tcf-evidence-index.md"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P11"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p12.md",
+      "graph_node_id": "SYS-TCF-P12",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P12",
+      "remediation_owner": null,
+      "title": "利用者向けの使い方と運用手順を書く",
+      "tracker_binding": "beads",
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs"
+      ]
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TCF-P12"
+      ],
+      "evaluation_status": "pass",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p13.md",
+      "graph_node_id": "SYS-TCF-P13",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P13",
+      "remediation_owner": null,
+      "title": "kanjo-console へ配備し集計値が本番で成立することを確認する",
+      "tracker_binding": "beads",
+      "workstream_kind": "operations",
+      "write_scope": [
+        "packages/api/wrangler.jsonc",
+        "eval-log/tcf-release.md"
+      ]
+    }
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0"
+}

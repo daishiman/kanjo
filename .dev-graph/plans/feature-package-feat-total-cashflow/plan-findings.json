@@ -1,0 +1,171 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/run-20260905T134500Z-tcf",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "5回目の再評価 (promotion 失敗を受けた staging 更新後): feature-package.json / workstream-inventory.json / task-graph.json / system-build-handoff.json / 13 task spec の feature_package_id・parent_feature・task id・phase_ref・depends_on を再突き合わせし不一致0件。今回は13 task spec 全て・workstream-inventory.json・system-build-handoff.json が変更された (graph_node_id の大文字化と、それに伴う PR body contract 文言の追従)。各 task spec 本文の PR body contract 行 (『dev-graph graph_node_id <ID> を本文に記し...』) を正規表現で全13件抽出し、graph_node_registration.graph_node_id (大文字 task id) と一致することを確認 (不一致0件)。id/phase_ref/depends_on の記述に矛盾は無い。",
+      "evidence": [
+        "feature-package.json",
+        "workstream-inventory.json",
+        "task-graph.json",
+        "system-build-handoff.json",
+        "task-specs/phase-01-requirements.md"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "再評価: P01..P13 が各ファイルで各1件ちょうどで重複・14件目は無い。13 task spec 全てに14節が存在し空節は無い。変更された13 task-specs 全文と JSON 系5ファイルに grep -rniE 'TODO|TBD|<[a-zA-Z_]+>|XXX|placeholder' を再実行し0件。",
+      "evidence": [
+        "workstream-inventory.json",
+        "task-graph.json",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-13-release-deploy.md"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "再評価: 今回の変更点である graph_node_registration.graph_node_id を全13件で再確認し、id小文字ではなく task id と完全一致 (大文字, 例: SYS-TCF-P01) することを確認 (不一致0件、python3で再突合)。file_path は従来通り tasks/feat-total-cashflow/<id小文字>.md のままで変更なし (不一致0件)。write_scope はrepo相対・'..'/絶対パス無し (不一致0件)。source_feature_digest は features/feat-total-cashflow.context.json を shasum -a 256 で再実測した値と一致 (このファイルは今回も未変更)。repo_context.repo_identity は .dev-graph/config.json の repository_id と一致。dev-graph の graph-node.schema.json (plugins/dev-graph/schemas/graph-node.schema.json) を独立に読み、graph_node_id は minLength:1 のみでcaseに関するpatternが無いことを確認し、大文字化がdev-graph側のschema違反にならないという判断の根拠を自分でも検証した。staging-manifest.json の files 17件を shasum -a 256 で再実測し、6件 (system-build-handoff.json と task-specs 全13件のうち今回変更された13件全て、workstream-inventory.json) の新しい sha256 を含め manifest 記載値と全件一致。staging-manifest.json 自体の sha256 (d44ca5170981cffda0fe49eabcda89f779b00a8662096cde82ad40415f036072) も再実測済み。system-build-handoff.json の source_inputs 15件も再実測値と全件一致。",
+      "evidence": [
+        "staging-manifest.json",
+        "workstream-inventory.json",
+        "feature-package.json",
+        "system-build-handoff.json",
+        "task-specs/phase-01-requirements.md"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "再評価: depends_on は全て同一 feature_package_id 内で完結し、全 edge が低い phase から高い phase への向き (逆行0件)。トポロジカルソートで13ノード全件を訪問でき循環なし。P01からの到達可能集合が13ノード全件と一致し孤立ノードなし。workstream-inventory.json と task-graph.json の depends_on は13ノード全件で完全一致。今回の変更は graph_node_id の大文字化とそれに伴う PR body contract 文言の追従のみで、depends_on 自体・task-graph.json は無変更 (ハッシュ不変) であることを確認済み。deterministic-validation ゲートを自分で再実行し validated_digest=sha256:919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb、violations 0件、exit_code 0 を得た (staging-manifest.json の canonical_digest およびteam-lead提示値を鵜呑みにせず、この独立ゲートの算出値と突き合わせて一致を確認)。",
+      "evidence": [
+        "workstream-inventory.json",
+        "task-graph.json",
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "/Users/dm/dev/dev/個人開発/harness/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "--repo-root",
+        ".",
+        "--staging",
+        ".dev-graph/staging/run-20260905T134500Z-tcf"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb\",\n  \"feature_package_id\": \"feature-package/feat-total-cashflow\",\n  \"parent_feature\": \"feat-total-cashflow\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "staging-manifest.json",
+      "sha256": "d44ca5170981cffda0fe49eabcda89f779b00a8662096cde82ad40415f036072"
+    },
+    {
+      "path": "feature-package.json",
+      "sha256": "a9049783262ca5f96dc8928ad769eb24dbdcf094b62ea97da3325c3b21df8184"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "d93db0d8ef0ec2450f0bff9099cbaa2a562caf875afb436145389a799f980958"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "1e18282eb421a8891af7ae09b7bf1e98597824517535c657c9bb685d3ba25f32"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "bf45e0f0e641551aee947390c4cbd71231410d28363dbe1143b44ec8959b6cc4"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "3f82577c66c1f2f9a0eed8cb2e39858a65f5e2600c49c99e9ee0d892f37a8acb"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "75a30b53c75a796524bf00001b7482f435bf8b182c3598f55c21bd12d46b7267"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "0ea5b1156f76a29803981931c0cbf5245c68584e624b63b310e965e23c983429"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "51ff0654cd1705afc1ecdde6970f619937fc29e438b7e26ce5c9567d872be581"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "4c44e15f8abd5041b0295be41301de8874135681e6e43fa5df44d9644c91e623"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "b4d939705d8ece892e5200866a4d56824aa7f9879500075f7d18035374f18668"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "88881d4202e428dc8b7d6cd6ea9c52f1caed55a59b8d9191d2e1831184f620c6"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "57f6606d9acd7564943d5f50d0255136a7585f9bfb13145151c877399dcdc96b"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "3f35c135a39a575b266b9a8569edc984b8728216e01b33bc97dd04066ae2513c"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "a418d054768cb1f3e851819f57e313b03658377eeaec52a77ada76555c6c6e1b"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "28292a9bbc23818a3b1a1587cc8d0d1c3bbf83042483739bd6aeccb530833794"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "eb1093bc90356d43495eb91f3b964076238a3d022326625dd4ddd3dd2bff3bea"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "d8b30b02b36029ddcf4d9801d83e3701a0351b800bc05ff35e02261a326cd427"
+    }
+  ],
+  "staleness_rule": "evaluated_inputs のいずれかの sha256 が変わるか、evaluated_digest (staging-manifest.json#canonical_digest) が変われば本評価は無効とする。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "regression-check",
+      "observation": "graph_node_id を全13件で大文字化 (task id と完全一致) する機械的な置換を行った後も、過去4ラウンドで解消済みの指摘は壊れていないことを再確認した。(1) P11: 下限件数検査 `wc -l の出力が5以上であること` は verification 配列に残存し、文言・順序とも変更なし。(2) P01: `qa-table-columns-001`/`qa-anomaly-notice-001` の rg -c '1以上' チェックは残存。(3) P05: `pnpm test -- -t qa-table-columns-001`/`qa-anomaly-notice-001` の '1件以上実行しexit code 0' チェックは残存。depends_on・task-graph.json はハッシュ不変で無影響。dev-graph の graph-node.schema.json を独立に確認し、graph_node_id が minLength:1 のみでcase制約が無いことを検証した。promotion を止めていた `graph_node_registration.graph_node_id` と task id の大文字小文字不一致は解消されている。",
+      "evidence": [
+        "task-specs/phase-11-evidence.md",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-05-implementation.md",
+        "workstream-inventory.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  ]
+}

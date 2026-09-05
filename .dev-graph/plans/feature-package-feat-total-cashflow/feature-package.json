@@ -1,0 +1,52 @@
+{
+  "feature_package_id": "feature-package/feat-total-cashflow",
+  "parent_feature": "feat-total-cashflow",
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "schema_version": "1.0.0",
+  "source_feature_digest": "sha256:ce48734fd6e33e6bdc0721fb4e015f5e9977cc507956b225984e0655a90ec02c",
+  "task_count": 13,
+  "task_node_ids": [
+    "SYS-TCF-P01",
+    "SYS-TCF-P02",
+    "SYS-TCF-P03",
+    "SYS-TCF-P04",
+    "SYS-TCF-P05",
+    "SYS-TCF-P06",
+    "SYS-TCF-P07",
+    "SYS-TCF-P08",
+    "SYS-TCF-P09",
+    "SYS-TCF-P10",
+    "SYS-TCF-P11",
+    "SYS-TCF-P12",
+    "SYS-TCF-P13"
+  ],
+  "task_spec_paths": [
+    "task-specs/phase-01-requirements.md",
+    "task-specs/phase-02-architecture.md",
+    "task-specs/phase-03-design-review.md",
+    "task-specs/phase-04-test-design.md",
+    "task-specs/phase-05-implementation.md",
+    "task-specs/phase-06-test-run.md",
+    "task-specs/phase-07-acceptance.md",
+    "task-specs/phase-08-refactoring-migration.md",
+    "task-specs/phase-09-quality-assurance.md",
+    "task-specs/phase-10-final-review.md",
+    "task-specs/phase-11-evidence.md",
+    "task-specs/phase-12-documentation-operations.md",
+    "task-specs/phase-13-release-deploy.md"
+  ]
+}

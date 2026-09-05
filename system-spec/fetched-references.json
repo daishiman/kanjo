@@ -1,76 +1,67 @@
 {
-  "references": [
-    {
-      "target_id": "cloudflare-d1-limits",
-      "retrieved_at": "2026-08-30T00:00:00Z",
-      "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-04-21",
-      "latest_checked_at": "2026-08-30T00:00:00Z",
-      "summary": "D1 の上限。Free プランでは 1データベースあたり最大 500 MB、アカウント総ストレージ 5 GB、データベース数 1〜10、Time Travel (時点復旧) の保持は 7 日。Worker 1回の呼び出しあたりのクエリ本数は Free で 50、Paid で 1000。1テーブルあたりの列数は 100、行数は無制限 (ストレージ上限まで)。1行または文字列/BLOB の最大は 2,000,000 バイト、SQL 文の最大長は 100,000 バイト、1クエリのバインドパラメータ上限は 100、SQL の最大実行時間は 30 秒。batch 内の個々の文にも同じ上限が適用される。本件では (a) undo 退避テーブルを D1 に置く場合、単一データベース 500 MB (Free) が実質の容量上限になること、(b) 既存実装の D1_FREE_QUERY_LIMIT=50 が Free の 'Queries per Worker invocation 50' に由来する制約であり、削除・退避・3点比較の各処理を分割実行しなければ超過すること、(c) Time Travel が Free で 7 日しか遡れないため、undo をプラットフォーム機能に依存せず自前の退避テーブルで持つ必要があること、を裏付ける。"
-    },
-    {
-      "target_id": "cloudflare-d1-pricing",
-      "retrieved_at": "2026-08-30T00:00:00Z",
-      "source_url": "https://developers.cloudflare.com/d1/platform/pricing/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-04-21",
-      "latest_checked_at": "2026-08-30T00:00:00Z",
-      "summary": "D1 の課金は使用量 (rows read / rows written)、スケールトゥゼロ (クエリを流さない間は計算資源の課金なし)、ストレージ (プラン込み分を超えた分のみ) の3軸。Workers Free では rows read 500万/日、rows written 10万/日、ストレージ 5 GB (総量) が含まれる。Workers Paid では rows read 月250億まで込みで超過分 $0.001/百万行、rows written 月5000万まで込みで超過分 $1.00/百万行、ストレージ 5 GB 込みで超過分 $0.75/GB-月。rows read は行のサイズによらず走査した行数を数えるため、索引の効かない絞り込みは返す行数より多くの読取を計上する。rows written は INSERT / UPDATE / DELETE すべてが対象になる。本件では、削除時に退避行を書き込む設計が rows written を二重に消費すること (削除 1 行 + 退避 1 行)、および Free の 10万 rows written/日 が大量削除+退避で到達しうることを裏付ける。"
-    },
-    {
-      "target_id": "cloudflare-r2-pricing",
-      "retrieved_at": "2026-08-30T00:00:00Z",
-      "source_url": "https://developers.cloudflare.com/r2/pricing/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-08-07",
-      "latest_checked_at": "2026-08-30T00:00:00Z",
-      "summary": "R2 の課金はストレージ量と2種の操作クラス。Standard ストレージは $0.015/GB-月、Class A 操作 (状態を変えるもの) $4.50/百万リクエスト、Class B 操作 (既存状態を読むもの) $0.36/百万リクエスト、インターネットへの下り転送は無料。無料枠は月あたりストレージ 10 GB-月、Class A 100万リクエスト、Class B 1000万リクエスト。課金単位は切り上げで、100万1操作は200万操作として計上される。本件では、undo スナップショットを R2 に置く案について、退避のたびに Class A 操作が発生し切り上げ課金の対象になること、および下り無料のため復元時の読み出しは転送費がかからないことを裏付ける。"
-    },
-    {
-      "target_id": "cloudflare-r2-limits",
-      "retrieved_at": "2026-08-30T00:00:00Z",
-      "source_url": "https://developers.cloudflare.com/r2/platform/limits/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-06-08",
-      "latest_checked_at": "2026-08-30T00:00:00Z",
-      "summary": "R2 の上限。バケットあたりのデータ量とオブジェクト数は無制限、アカウントあたりのバケット数は100万。オブジェクトキー長は1,024バイト、メタデータは8,192バイト、1オブジェクトは最大 5 TiB、単発アップロードは 5 GiB (マルチパートで 4.995 TiB)、アップロードのパート数は最大 10,000。同一キーへの同時書込は毎秒1回まで。本件では、undo スナップショットを R2 に置く場合に容量面の制約は事実上ないが、同一キーへの秒1回の書込制限があるため、退避オブジェクトのキー設計で削除操作ごとに一意なキーを振る必要があることを裏付ける。"
-    },
-    {
-      "target_id": "git-merge-three-way",
-      "retrieved_at": "2026-08-30T00:00:00Z",
-      "source_url": "https://git-scm.com/docs/git-merge",
-      "official_publisher": "Git",
-      "official_host": "git-scm.com",
-      "last_updated": "2026-06-29",
-      "latest_checked_at": "2026-09-02T00:00:00Z",
-      "freshness_note": "2026-09-02 に現行リリースを再確認し、Git 2.55.0 (リリースノート日付 2026-06-29) が最新であることを確かめた。last_updated は当該リリース日付を採る。本文の逐語再取得は本環境で外部ページ本文の取得手段が使えないため未実施であり、突き合わせたのは版数と発行日までである。3方向マージの基本挙動そのものは 2.54.0 から 2.55.0 で変更されていない。",
-      "summary": "git-merge の公式マニュアル (Git 2.55.0 時点)。3方向マージは共通祖先 (merge base)・自分側の変更・相手側の変更の3点を突き合わせ、片側だけが変更した箇所は自動的にその変更を採り、双方が同じ箇所を変更した場合だけを衝突として作業ツリーへ残し、利用者の判断を求める。衝突は自動的にどちらかを選ばず、両者を並べて提示する。本件の『先月と今月で内容が食い違うとき、どちらが正しいかを判定する』要件は構造的にこれと同型であり、前回取込時の原本値 (base) を共通祖先、利用者の手当てを自分側の変更、新しい取込元の値を相手側の変更とみなせば、片側しか変わっていない箇所は機械的に決まり、双方が変わった箇所だけを提示すればよいという設計指針を裏付ける。"
-    },
-    {
-      "target_id": "sqlite-upsert",
-      "retrieved_at": "2026-08-30T00:00:00Z",
-      "source_url": "https://www.sqlite.org/lang_upsert.html",
-      "official_publisher": "SQLite",
-      "official_host": "www.sqlite.org",
-      "last_updated": "unverified",
-      "latest_checked_at": "2026-09-02T00:00:00Z",
-      "freshness_note": "従前の last_updated=2026-08-30 は取得日をそのまま転記したもので、公式ページ本文の最終更新表記との突き合わせを経ていなかった。本環境では外部ページ本文の取得手段が使えず当該表記を読み出せないため、裏取りできない値を残すのではなく unverified を明示する。2026-09-02 時点で確認できたのは、現行ページが複数 ON CONFLICT 句を許す一般化後の記述であり、単一句のみを許す旧記述を持つ複製 (system.data.sqlite.org 等) より新しいことまでである。UPSERT 構文は SQLite 3.24.0 (2018-06-04) で追加されて以降、本件が依拠する『存在確認の SELECT を挟まず1文で更新できる』という性質は変わっていない。外部ページ本文を取得できる環境で当該表記を読み出し、この欄を実日付へ置き換えること。",
-      "summary": "SQLite の UPSERT は INSERT に ON CONFLICT 句を付け、一意制約に反する挿入を UPDATE または no-op へ振り替える構文。ON CONFLICT と DO の間に書く衝突対象 (conflict target) が、どの一意制約で発火するかを指定する。複数の ON CONFLICT 句は記述順に評価され、最後の句だけ衝突対象を省略できる。挿入が衝突対象の一意制約に反する場合、挿入は行われず対応する DO NOTHING / DO UPDATE が実行される。本件では、tx_edits (PRIMARY KEY(user_id, tx_id)) や新設する vendor_memory (PRIMARY KEY(user_id, vendor_key)) の更新を、存在確認の SELECT を挟まず1文で行えることを裏付ける。これは D1 の Free で 50 に制限されたクエリ本数を節約する上で重要である。"
-    },
-    {
-      "target_id": "cloudflare-workers-ai-pricing",
-      "retrieved_at": "2026-08-30T00:00:00Z",
-      "source_url": "https://developers.cloudflare.com/workers-ai/platform/pricing/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-08-28",
-      "latest_checked_at": "2026-08-30T00:00:00Z",
-      "summary": "Workers AI は Free / Paid いずれの Workers プランにも含まれ、$0.011 / 1,000 Neurons で課金される。無料枠は1日あたり合計 10,000 Neurons で、これを超えるには Workers Paid が必要となり、超過分は $0.011 / 1,000 Neurons で課金される。上限は毎日 00:00 UTC にリセットされ、超過した時点で以降の操作はエラーになる。本件では、明細の分類を推論モデルへ委ねる案について、(a) 1日 10,000 Neurons の無料枠は毎月数百〜数千件の明細を分類するには早期に枯渇しうること、(b) 超過時に操作がエラーになるため取込処理が推論の可用性に依存すること、(c) 費用が明細件数に比例して発生することを裏付ける。"
-    }
-  ]
+ "references": [
+  {
+   "target_id": "cloudflare-access-policies",
+   "retrieved_at": "2026-09-04T21:25:59Z",
+   "source_url": "https://developers.cloudflare.com/cloudflare-one/policies/access/",
+   "official_publisher": "Cloudflare",
+   "official_host": "developers.cloudflare.com",
+   "last_updated": "2026-09-04",
+   "latest_checked_at": "2026-09-05T00:04:12Z",
+   "summary": "Cloudflare Access のポリシー適用モデル。アクセス可否は4つの構成要素 — アクション (Allow / Block / Bypass / Service Auth)、ルールタイプ (Include / Require / Exclude)、セレクタ (メールドメイン・国・デバイス態勢など)、値 — の組合せで決まる。評価順序は公式本文の記述に従い『Bypass と Service Auth のポリシーが最初に UI 上の並び順で評価され、その後 Block と Allow のポリシーが UI 上の並び順で評価される』。加えて公式本文は『Once a user matches an Allow or Block policy, evaluation stops and no subsequent policies can override the decision.』と述べており、Allow または Block にマッチした時点で評価は停止する。本機能の認証境界を『既存 /api 認証ゲートの内側に置き、Access へ一本化しない』と決めた意思決定 (dec-auth-boundary-001) の棄却案 opt-access-only を評価するための根拠として参照する。なお ACCESS_AUD / ACCESS_TEAM_DOMAIN は本リポジトリ側の設定名であり、本出典に帰属する記述ではない。【訂正履歴】(1) 当初『評価順に実行され Allow または Block にマッチした時点で停止する』を、独立鮮度監査 (2026-09-04) の指摘を受けて公式と齟齬があると判断し削除したが、これは私の誤りだった。(2) 続く訂正で採った『まず Bypass と Service Auth、次に Block、最後に Allow』は Block と Allow の関係を誤って階層化していたため、2026-09-04T21:25:59Z の再照合で公式本文どおり『Block と Allow は同じ段で UI の並び順に評価される』へ訂正した。(3) 2026-09-05T00:04:12Z の自身による再照合で、公式本文に『Once a user matches an Allow or Block policy, evaluation stops』が実在することを確認し、(1) で誤って削除した停止の記述を復元した。同時に last_updated を、監査の報告値ではなく自身が観測した公式表記 (Last updated Sep 4, 2026) に基づき 2026-07-07 から 2026-09-04 へ訂正した。"
+  },
+  {
+   "target_id": "usgs-tm4a3-statistical-methods",
+   "retrieved_at": "2026-09-04T21:25:59Z",
+   "source_url": "https://www.usgs.gov/publications/statistical-methods-water-resources",
+   "official_publisher": "U.S. Geological Survey",
+   "official_host": "www.usgs.gov",
+   "version": "Techniques and Methods 4-A3 (2020)",
+   "last_updated": "2020-10-27",
+   "latest_checked_at": "2026-09-04T21:25:59Z",
+   "summary": "Helsel, D.R., Hirsch, R.M., Ryberg, K.R., Archfield, S.A., Gilroy, E.J., 2020, Statistical methods in water resources: U.S. Geological Survey Techniques and Methods, book 4, chap. A3, DOI 10.3133/tm4A3 の公式出版物ページ。本ページから検証できるのは (a) 本書が現行版として存在し 2020-10-27 付で公開されていること、(b) ゼロで下限が切られ強い歪みを持つ環境データを対象に統計手法の適用を扱う USGS の Techniques and Methods 巻であること、(c) トレンド章が WRTDS (Weighted Regressions on Time, Discharge, and Season) について改訂された旨の告知、(d) bootstrapping と permutation test といった計算集約的手法が t 検定・分散分析への依存を置き換えつつあるという記述、までである。【検証範囲の限界】本ページ本文には Mann-Kendall / Theil-Sen という個別手法名は登場しない (2026-09-04T21:25:59Z の再照合でも不在を確認)。従って本 target は手法名の一次典拠ではなく、ノンパラメトリック手法を中心に据える一般的位置付けの参考として引くにとどめる。本文 PDF (pubs.usgs.gov 配下) は HTTP 403 を返し取得できないため、手法名を裏づける一次資料は現時点で未取得である。本機能が Mann-Kendall + Theil-Sen を採る一次的な根拠は外部文献ではなく、本リポジトリに既存の packages/core/src/trend.ts (mannKendall / theilSen、TREND_MIN_MONTHS=6、TREND_ALPHA=0.05) と判定基準を一致させるという内部整合性の要求である (dec-trend-method-001)。"
+  },
+  {
+   "target_id": "cloudflare-d1-limits",
+   "retrieved_at": "2026-09-04T21:25:59Z",
+   "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
+   "official_publisher": "Cloudflare",
+   "official_host": "developers.cloudflare.com",
+   "last_updated": "2026-04-21",
+   "latest_checked_at": "2026-09-04T21:25:59Z",
+   "summary": "D1 の現行上限。最大DBサイズ 10GB (Workers Paid) / 500MB (Free)。SQL文の最大長 100,000 bytes (100KB)、クエリ最大実行時間 30秒、Worker 1呼出しあたりのクエリ数 1,000 (Paid) / 50 (Free)、1行/文字列/BLOB の最大 2,000,000 bytes (2MB)、1テーブルの最大カラム数 100、1クエリのバインドパラメータ最大 100。加えて各 D1 データベースは本質的に単一スレッドでクエリを1件ずつ処理するため、同時スループットは平均クエリ実行時間に律速される。トータル収支を毎回導出する読み取りモデルが、月次全期間の突合で 1呼出し 1,000クエリ・バインドパラメータ 100 の枠に収まる設計であることを裏づける根拠として参照する。"
+  },
+  {
+   "target_id": "cloudflare-d1-migrations",
+   "retrieved_at": "2026-09-04T21:25:59Z",
+   "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
+   "official_publisher": "Cloudflare",
+   "official_host": "developers.cloudflare.com",
+   "last_updated": "2026-06-08",
+   "latest_checked_at": "2026-09-04T21:25:59Z",
+   "summary": "D1 マイグレーションは wrangler d1 migrations の create / list / apply の3コマンドで管理する。適用済みは既定で d1_migrations テーブルに記録され、migrations_table 設定で変更できる。マイグレーション格納先は既定 migrations/ で migrations_dir 設定により変更できる。Drizzle のようにサブディレクトリへ入れ子にする構成には migrations_pattern グロブを設定でき、その場合は各マイグレーション名が migrations_dir からの相対パス (例: 0001_init/migration.sql) として記録される。グロブは * が単一パスセグメント、** が複数セグメントに対応する。DuplicateVerdict テーブルを既存 migrations/ の連番SQL 追記で導入し、逆適用でロールバックできるとした判断の根拠として参照する。"
+  },
+  {
+   "target_id": "sqlite-upsert",
+   "retrieved_at": "2026-09-04T21:25:59Z",
+   "source_url": "https://www.sqlite.org/lang_upsert.html",
+   "official_publisher": "SQLite Consortium",
+   "official_host": "www.sqlite.org",
+   "version": "3.35.0",
+   "last_updated": "2024-04-11",
+   "latest_checked_at": "2026-09-04T21:25:59Z",
+   "summary": "UPSERT は INSERT に付く句で、一意制約違反時に UPDATE か no-op として振る舞う。ON CONFLICT(conflict-target) DO UPDATE SET ... / DO NOTHING。conflict target を省略できるのは INSERT 文中の最後の ON CONFLICT 句だけで、それ以外の句では必須。最後の句が conflict target を省略した場合、先行する ON CONFLICT 句で捕捉されなかった任意の一意制約違反で発火する。DO UPDATE 内の列参照は INSERT 試行前の変更前の値を指し、挿入されようとした値は excluded. 接頭辞で参照する。WHERE 句で条件付き更新も書ける。INSERT ... SELECT の形では ON が JOIN の ON 句と構文上曖昧になるため SELECT に WHERE true を必ず付ける。UPSERT は 3.24.0 (2018-06-04) で追加され、3.35.0 (2021-03-12) で複数 ON CONFLICT 句と conflict target 省略が可能になった。要確認明細への『同じ/違う』判断 (DuplicateVerdict) を idStable を主キーに冪等 upsert する実装の根拠として参照する。【last_updated の典拠】記録値 2024-04-11 はページ footer の自称更新日 (This page was last updated on 2024-04-11 23:26:09Z) を採る。一度は HTTP Last-Modified ヘッダの実測値 2026-08-27 を採用したが、SQLite 公式サイトは内容変更が無くてもページを定期再生成するためヘッダ値は改訂日を意味せず、『2026年に改訂があった』という誤った印象を与える。ページ自身が更新日を公表している以上そちらが権威である。内容上の正本は version フィールド (3.35.0 / 2021-03-12) であり、UPSERT 構文は 3.35.0 以降変更されていない。"
+  },
+  {
+   "target_id": "tanstack-query-invalidation",
+   "retrieved_at": "2026-09-04T21:25:59Z",
+   "source_url": "https://tanstack.com/query/v5/docs/framework/react/guides/invalidations-from-mutations",
+   "official_publisher": "TanStack",
+   "official_host": "tanstack.com",
+   "version": "5",
+   "latest_checked_at": "2026-09-05T02:05:26Z",
+   "summary": "mutation 成功時にサーバ状態を再同期する公式パターン。useMutation の onSuccess で useQueryClient から得た queryClient.invalidateQueries({ queryKey: [...] }) を await する。複数キーは Promise.all でまとめて無効化する。onSuccess が Promise を返すと無効化完了まで mutation は pending のままとなり (公式本文: 『Returning a Promise on onSuccess makes sure the data is updated before the mutation is entirely complete (i.e., isPending is true until onSuccess is fulfilled)』)、データ更新が完了してから mutation が終わることが保証される。要確認明細への判断を送った後に月次トータル収支のクエリを無効化して再取得し、合計をクライアント側で再計算せず常にサーバ導出値を単一の真実に保つ、というフロントエンド判断の根拠として参照する。v5 系であることは公式のバージョン付きURL (/query/v5/) が示す。 【鮮度に関する注記】本出典に last_updated が無いのは取得漏れではなく、発行元 TanStack が 最終更新日を掲載していないためである (2026-09-05T02:05:26Z に公式ページを再照合し、『Last updated』相当の表記が存在しないことを確認した)。日付を推測して埋めない。鮮度はバージョン付き公式 URL (/query/v5/) が示す v5 系であることで担保する。",
+   "last_updated_absent_reason": "publisher-does-not-publish"
+  }
+ ]
 }

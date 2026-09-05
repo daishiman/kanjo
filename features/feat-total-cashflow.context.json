@@ -1,0 +1,47 @@
+{
+  "graph_node_id": "feat-total-cashflow",
+  "artifact_kind": "feature",
+  "purpose": "個人事業主として事業と家計が一体になっている実態に対し、freee (事業帳簿) と Money Forward (家計) へ分かれて記録された収入・支出が、二重計上を含んだまま別々の数字として出ているため、「今月トータルでいくらプラスマイナスなのか」「費用が増えているのか減っているのか」が判断できない。重複を明細単位で消し込んだうえで 1 つの一覧表に束ね、消し込みの根拠ごと確認できる状態を作る。",
+  "goal": "月ごとのトータル収入・トータル支出・トータル収支と、事業側/家計側の内訳、支出トレンドの判定 (増加/減少/横ばい/判定不可) を 1 つの一覧表で確認でき、合計が 事業費 (freee 正) + 家計費 (MF 残余) として利用者の手で検算でき、自動で寄せられなかった重複候補は要確認として理由付きで列挙され、一度下した「同じ/違う」の判断が次回以降の取込へ再適用される状態。",
+  "scope_in": [
+    "MF 日付 == freee 発生日 かつ 金額一致 の支出を「事業で使う費用」として freee を正に事業側へ一度だけ計上する消し込み",
+    "消し込み後の月次トータル収入・トータル支出・トータル収支の算出と、事業側/家計側の内訳保持",
+    "MF の分類が事業・副業の収入を事業収入、それ以外を家計収入として集計する収入側の合算",
+    "自動で寄せられなかった重複候補の要確認キューと、利用者の同じ/違う判定の永続化・次回取込への再適用",
+    "収入側の要確認判定で「同じ」とされた明細を家計収入から事業収入へ移す反映",
+    "既存 trend.ts と同一統計基準 (Mann-Kendall / Theil-Sen) によるトータル支出のトレンド判定",
+    "期間切替時に合算・消し込み・トレンド判定が同じ規則で再計算される一覧表 UI (web)",
+    "事業側へ寄せた金額と件数の一覧表内での明示 (利用者による検算根拠)"
+  ],
+  "scope_out": [
+    "mobile / tablet / desktop 各プラットフォーム向けの実装 (対象は web のみ)",
+    "freee / Money Forward からの新規 API 連携取込経路の追加 (既存の取込パイプラインを入力とする)",
+    "税務申告書類の生成・提出 (別 feature の責務)",
+    "明細の分割 (transaction-splits) の新規仕様変更",
+    "口座単位の残高照合や銀行 API 直接接続"
+  ],
+  "acceptance": [
+    "月次一覧表に トータル収入 / トータル支出 / トータル収支 の 3 列が表示され、総支出 == 事業費 + 家計費 および 総収入 == 事業収入 + 家計収入 が全ての表示月で成立する",
+    "MF 日付 == freee 発生日 かつ 金額一致 の支出について、freee 側 1 件だけが事業費に計上され、同一金額の MF 側明細が家計費に残らない",
+    "一覧表に 事業側へ寄せた金額と件数 が表示され、その値が消し込み対象明細の実数と一致する",
+    "金額または日付が一致しない重複候補が要確認として理由付きで列挙され、0 件のときは 0 件と明示される",
+    "要確認明細に「同じ」判定を下した後、同じ入力を再取込しても判定が保持され、集計結果が変わらない",
+    "収入側の要確認明細を「同じ」と判定すると、その明細が家計収入から事業収入へ移り、総収入は不変である",
+    "トータル支出のトレンド判定が trend.ts と同じ Mann-Kendall / Theil-Sen で計算され、同一データに対し既存の事業単独トレンドと同じ統計手続きを踏んだ結果を返す",
+    "期間を切り替えて再計算した各月の値が、別の期間指定で同じ月を含めたときの値と一致する"
+  ],
+  "architecture_refs": [
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md",
+    "specs/total-cashflow-requirements.md",
+    "architecture/total-cashflow-backend.md",
+    "architecture/total-cashflow-database.md",
+    "architecture/total-cashflow-frontend.md",
+    "architecture/total-cashflow-ui-ux.md",
+    "architecture/total-cashflow-auth.md",
+    "architecture/total-cashflow-security.md",
+    "architecture/total-cashflow-infrastructure.md",
+    "architecture/total-cashflow-maintenance-ops.md"
+  ],
+  "updated_at": "2026-09-05T13:20:00Z"
+}
