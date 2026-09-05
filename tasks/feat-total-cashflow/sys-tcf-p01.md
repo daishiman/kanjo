@@ -5,7 +5,7 @@ artifact_subtypes: []
 title: "トータル収支の要件と受入条件を機械可読な二値条件へ確定する"
 project_id: "feature-package-feat-total-cashflow"
 domain: "documentation"
-status: "active"
+status: "done"
 priority: null
 start_date: null
 target_date: null
@@ -20,7 +20,7 @@ evaluation_status: "pass"
 confirmation_evidence: {"evaluated_digest":"919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb","evaluator":"system-dev-plan-evaluator","evidence_ref":".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json"}
 source_lineage: {"imported_at":"2026-09-05T13:53:35Z","origin_kind":"system-dev-planner","source_digest":"919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb","source_path":".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-01-requirements.md","source_plugin":"system-dev-planner","source_version":"0.1.0"}
 created_at: "2026-09-05T13:53:35Z"
-updated_at: "2026-09-05T13:53:35Z"
+updated_at: "2026-09-05T21:49:49Z"
 depends_on: []
 related_nodes: ["spec-total-cashflow-requirements","arch-total-cashflow-backend","arch-total-cashflow-database"]
 resource_scope: ["specs/total-cashflow-requirements.md","features/feat-total-cashflow.md"]
@@ -43,7 +43,7 @@ issue_linkage: null
 github_project_linkages: []
 pull_request_linkages: []
 execution_contexts: []
-completion_evidence: {"completed_at":null,"evidence_refs":[],"policy":"linked_pr_merged_all","reconciled_at":null,"source":null,"status":"in_progress"}
+completion_evidence: {"completed_at":"2026-09-05T21:49:49Z","evidence_refs":["git:d3e0b0675e5e7b0c153efefeeb39b6ca095aeb61","eval-log/tcf-p01-acceptance-verification.json","specs/total-cashflow-requirements.md","features/feat-total-cashflow.md"],"policy":"manual","reconciled_at":null,"source":"manual","status":"done"}
 implementation_readiness: {"checked_at":"2026-09-05T13:13:34Z","missing_sections":[],"status":"complete"}
 ---
 
