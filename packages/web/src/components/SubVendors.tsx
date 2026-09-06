@@ -403,7 +403,7 @@ export function SubsCandidatesPanel({ hasDeals }: { hasDeals: boolean }) {
   // 取込のたびに候補が入れ替わるので、選択は候補の顔ぶれをキーにして作り直す
   const [picked, setPicked] = useState<Set<string>>(() => new Set(sureKeys));
   const [pickedFor, setPickedFor] = useState<string>('');
-  const signature = ranked.map((r) => r.c.partner).join(' ');
+  const signature = ranked.map((r) => r.c.partner).join('\u0000');
   if (signature !== pickedFor) {
     setPickedFor(signature);
     setPicked(new Set(sureKeys));
