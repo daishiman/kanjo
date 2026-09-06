@@ -5,7 +5,7 @@ artifact_subtypes: []
 title: "消し込み・合算・トレンド・一覧表を実装して赤いテストを緑にする"
 project_id: "feature-package-feat-total-cashflow"
 domain: "backend"
-status: "active"
+status: "done"
 priority: null
 start_date: null
 target_date: null
@@ -20,7 +20,7 @@ evaluation_status: "pass"
 confirmation_evidence: {"evaluated_digest":"919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb","evaluator":"system-dev-plan-evaluator","evidence_ref":".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json"}
 source_lineage: {"imported_at":"2026-09-05T13:53:35Z","origin_kind":"system-dev-planner","source_digest":"919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb","source_path":".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-05-implementation.md","source_plugin":"system-dev-planner","source_version":"0.1.0"}
 created_at: "2026-09-05T13:53:35Z"
-updated_at: "2026-09-05T13:53:35Z"
+updated_at: "2026-09-06T03:25:23Z"
 depends_on: ["SYS-TCF-P03","SYS-TCF-P04"]
 related_nodes: ["spec-total-cashflow-requirements","arch-total-cashflow-backend","arch-total-cashflow-database","arch-total-cashflow-frontend","arch-total-cashflow-ui-ux","arch-total-cashflow-security"]
 resource_scope: ["packages/core/src","packages/api/src","packages/web/src","migrations"]
@@ -43,7 +43,7 @@ issue_linkage: null
 github_project_linkages: []
 pull_request_linkages: []
 execution_contexts: []
-completion_evidence: {"completed_at":null,"evidence_refs":[],"policy":"linked_pr_merged_all","reconciled_at":null,"source":null,"status":"in_progress"}
+completion_evidence: {"completed_at":"2026-09-06T03:25:23Z","evidence_refs":["git:574fd29","eval-log/tcf-p05-acceptance.json","sha256:c839487b758e160ca58c4eedcd45945ddacccabc0faf10bd28c969629583da27","eval-log/tcf-p05-deviations.json","sha256:c5e7f8be00aad2897d67ff12371e61ee2c9afd285e3ced52f0e51028c0676c4e","eval-log/tcf-green-run.txt","sha256:4c156f412ea11c46310cf8c3ae8355719de74379a8c2a5ad68bb4a176555e6e0"],"policy":"manual","reconciled_at":null,"source":"manual","status":"done"}
 implementation_readiness: {"checked_at":"2026-09-05T13:13:34Z","missing_sections":[],"status":"complete"}
 ---
 
