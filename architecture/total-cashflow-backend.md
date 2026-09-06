@@ -13,7 +13,7 @@ start_date: null
 target_date: null
 iteration: null
 created_at: "2026-09-05T12:42:39Z"
-updated_at: "2026-09-05T12:42:39Z"
+updated_at: "2026-09-06T00:18:57Z"
 depends_on: []
 related_nodes: ["spec-total-cashflow-requirements"]
 resource_scope: ["packages/api/src", "packages/core/src"]
@@ -138,3 +138,47 @@ specification ノード `spec-total-cashflow-requirements` の「API契約」節
   迫るようなら設計を見直す。個人事業の月次数十行規模では当面到達しない。
 - 検証: 恒等式・`min(n, m)` 基数・自動付替 0 件 (±3 日照合) を契約テストで固定する。各テストは
   旧実装に対して RED になることを先に確認する。
+
+## P02 実装境界の確定 (dev-graph 所有)
+
+上の本文は取込元の章の引用である。ここから下は dev-graph が P02 (`SYS-TCF-P02`) で確定させた
+実装境界であり、引用元を書き換えずに追記している。根拠は本リポジトリの実コードの実測で、
+参照は `file:line` で示す。
+
+### 3 処理の層とファイル位置
+
+各処理の住所を 1 箇所ずつ固定する。同じ判定が二箇所に現れることを設計段階で禁じる。
+
+| 処理 | 層 | ファイル | 公開関数 |
+|---|---|---|---|
+| 消し込み (重複の帰属決定) | `packages/core` 純関数 | `packages/core/src/total-cashflow.ts` (新規) | `reconcileBizDuplicates` |
+| 合算 (月次 9 列の導出) | `packages/core` 純関数 | 同上 | `monthlyTotalCashflow` |
+| トレンド判定 | `packages/core` 既存 | `packages/core/src/trend.ts` | `mannKendall` / `theilSen` / `trendDirection` |
+
+消し込みと合算を 1 モジュールに同居させるのは、両者が同じ読み取りモデル (canonical を書き換えない)
+であり、`expense-projection.ts` と同じ置き方に揃うためである。ただし合算は消し込みの内部状態を
+参照せず、`reconcileBizDuplicates` の戻り値だけを入力に取る。要確認候補の抽出 (±3 日) は
+`reviewCandidates` として同モジュールに置くが、戻り値は帰属を含まず、合計を一切動かさない。
+この分離が「候補抽出器は自身では帰属を変えない」という仕様上の安全性を型で支える。
+
+### トレンド判定の再利用経路 (本文 line 100 との差異)
+
+本文は `trend.ts` を「変更しない」としているが、方向判定 `TrendDirection` の導出は
+`categoryTrends` の内部に直書きされており (`packages/core/src/trend.ts:218-219`)、公開関数が無い。
+このまま「そのまま呼ぶ」を字面通りに実装すると、`n < TREND_MIN_MONTHS ? '判定不可' : mk.p <
+TREND_ALPHA ? …` の三項式をトータル支出側へ複製することになり、「判定規則を 1 箇所に置く」という
+本ノードの駆動要因 (U8 制約) に正面から反する。
+
+確定: `trend.ts` に `trendDirection(series: number[]): TrendDirection` を**追加のみ**で切り出し、
+`categoryTrends` はその新関数を呼ぶ形へ置き換える。既存公開関数の署名・戻り値・閾値
+(`TREND_MIN_MONTHS=6` / `TREND_ALPHA=0.05`) は変えないため、本文 line 130 の「既存関数の戻り値定義を
+変えないため後方互換」は保たれる。line 100 の「変更しない」は、非複製の再利用と両立しない記述として
+P03 の設計レビューで引用元へ差し戻す。
+
+### 期間の受け渡し
+
+`monthlyTotalCashflow(data: Dataset)` は期間引数を取らない。呼び出し側が
+`packages/core/src/period.ts` の `resolvePeriodQuery` → `applyPeriod` (内部で `sliceDataset`) で
+切った `Dataset` を渡す。分析関数へ `from`/`to` を配る形は採らない。理由は既存設計の踏襲に加えて、
+引数経路を増やすと期間を切り替えるたびに一部の設定だけが渡し漏れる失敗が起きるためで、
+Dataset を切る方式ではその失敗モード自体が存在しない。

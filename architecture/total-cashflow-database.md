@@ -13,7 +13,7 @@ start_date: null
 target_date: null
 iteration: null
 created_at: "2026-09-05T12:42:39Z"
-updated_at: "2026-09-05T12:42:39Z"
+updated_at: "2026-09-06T00:18:57Z"
 depends_on: []
 related_nodes: ["spec-total-cashflow-requirements"]
 resource_scope: ["migrations", "packages/api/src/db"]
@@ -124,3 +124,60 @@ Non-goals: 月次トータル収入・支出・収支、事業費/家計費の�
 - リスク: 将来データ量が D1 の 1 呼出し 1,000 クエリ枠に迫った場合は毎回導出の設計を見直す必要がある。
   上限の存在を仕様に明記済み。
 - 検証: 判断が保存され再取込後も同じ明細へ再適用されることを結合テストで示す。
+
+## P02 データモデルの確定 (dev-graph 所有)
+
+上の本文は取込元の章の引用である。ここから下は dev-graph が P02 (`SYS-TCF-P02`) で確定させた
+永続化モデルであり、引用元を書き換えずに追記している。
+
+### 引用元の 2 点の事実誤り
+
+- **主キーの誤り**: 本文 line 98 は「主キーは `MfTx.idStable` (安定識別子)」とするが、
+  `MfTx.idStable` は `packages/core/src/types.ts:56-57` で `idStable?: boolean` と定義された
+  真偽値であり、「true のときだけ MF 出力の ID 列による再取込跨ぎの同一性を保証できる」という
+  **性質フラグ**である。識別子は `MfTx.id` (`types.ts:55`)。この記述のまま実装すると真偽値を
+  主キーに置くことになる。
+- **連番の誤り**: 本文 line 62 は「現行 0000〜0009」とするが、実際の `migrations/` は
+  `0035_tx_edit_institution_and_split_owner.sql` まで存在する。新規マイグレーションは 0036 以降。
+
+いずれも P03 の設計レビューで引用元へ差し戻す。以下の設計は実コードの実測に従う。
+
+### `duplicate_verdicts` の定義
+
+同一性は新規に発明せず、既存の 2 段解決 (DR-13) をそのまま使う。第一の鍵が `tx_id`、
+第二が `stable_key` で、解決関数は `packages/core/src/identity.ts` の `resolveIdentity` /
+`mfStableKey`。列の構成は `tx_edits` (`packages/api/src/db/schema.ts:96-124`) に揃える。
+
+| 列 | 型 | 役割 |
+|---|---|---|
+| `user_id` | TEXT NOT NULL | 主キー第 1 要素 |
+| `tx_id` | TEXT NOT NULL | 主キー第 2 要素。第一の鍵 |
+| `verdict` | TEXT NOT NULL | `same` / `different` の 2 値 |
+| `stable_key` | TEXT | 第二の鍵。重複しうるので UNIQUE にしない |
+| `fingerprint_version` | INTEGER | 鍵の作り方の版。版違いは照合しない |
+| `decided_at` | TEXT | 利用者が判断した時刻 |
+| `updated_at` | TEXT | 最終更新時刻 |
+
+一意キー: `PRIMARY KEY(user_id, tx_id)`。`tx_edits` (`migrations/0001_tx_edits_rules_owner.sql:18`)
+と同じ形である。
+
+### 再取込で行が増えない条件
+
+書込は `ON CONFLICT(user_id, tx_id) DO UPDATE` の upsert 一経路に限る。これにより
+同じ `tx_id` の再取込は既存行の更新になり、行は増えない。
+
+MF が ID 列を振り直して `tx_id` が変わる場合 (`idStable` が true でない明細) は、書込前に
+`resolveIdentity` を通し、`match: 'stable-key'` で返る `matchedTxId` を主キーに使って upsert する。
+新しい `tx_id` で別行を作らない。ここを素通りさせると、判断を付けた明細が「消えて新しく現れた」
+ように見え、同じ判断が版を跨いで二重に積まれる。`indexEditsByStableKey`
+(`identity.ts:55-68`) と同じく、`stable_key` が衝突した場合は結び付けず、どちらの判断の持ち主か
+決められないまま片方を選ぶことをしない。
+
+`match: 'none'` かつ `tx_id` も不安定な明細は、判断を黙って落とさず保存要求を拒否して見せる
+(本文 line 122 のリスク方針をそのまま適用する)。
+
+### 保存しないもの
+
+月次トータル収入・支出・収支、事業費/家計費の内訳、寄せた額と件数、トレンド判定は保存しない。
+すべて要求時に導出する (`dec-aggregation-strategy-001`)。保存対象は「導出できない利用者の意思」
+だけで、それが本テーブル 1 つである。
