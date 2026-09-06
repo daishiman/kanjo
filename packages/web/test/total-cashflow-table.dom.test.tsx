@@ -10,7 +10,7 @@
  * 依存させないため、ここでは列の増減をポインタ種別に紐付けた検査を書かない。
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -181,6 +181,12 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     },
   ];
 
+  /** 要確認の表の本文行 (見出し行を除く)。1 行 = 要確認 1 件 */
+  const reviewRows = (section: HTMLElement) =>
+    within(section)
+      .getAllByRole('row')
+      .filter((r) => within(r).queryAllByRole('cell').length > 0);
+
   it('候補があれば件数と理由をそれぞれ出す', async () => {
     vi.stubGlobal(
       'fetch',
@@ -192,9 +198,9 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     expect(within(section).getByRole('heading').textContent).toBe('要確認 2 件');
 
     // 理由は候補ごとに出す。まとめて 1 つにすると、どれがなぜ残ったか分からない
-    const items = within(section).getAllByRole('listitem');
-    expect(items).toHaveLength(2);
-    expect(items.map((li) => li.textContent)).toEqual(
+    const rows = reviewRows(section);
+    expect(rows).toHaveLength(2);
+    expect(rows.map((tr) => tr.textContent)).toEqual(
       expect.arrayContaining([
         expect.stringContaining('発生日が一致しません'),
         expect.stringContaining('口座不一致'),
@@ -206,8 +212,11 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     このテストは旧実装 (txId と理由だけを出していた頃) では必ず落ちる。
     件数と理由の存在だけを見ていた前のテストは、識別子しか出ていない画面を緑にしていた。
     要確認の目的は「利用者が同じ取引か判断できること」なので、判断材料そのものを固定する。
+
+    件ごとに表を作る形も落とす: MF と freee は「同じ 1 行の中」に並んでいなければ、
+    19 件では見出しが 19 回繰り返されて比較にならない。
   */
-  it('MF 側の中身と freee 側の候補を同じ列で並べ、判断できる材料を出す', async () => {
+  it('MF 側の中身と freee 側の候補を 1 行の中の同じ列へ並べる', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => json({ months: [row({ reviewCount: 2 })], review })),
@@ -215,22 +224,25 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     wrap(<TotalCashflowPage />);
 
     const section = await screen.findByRole('region', { name: '重複の要確認' });
-    const first = within(section).getAllByRole('listitem')[0]!;
+    const first = reviewRows(section)[0]!;
 
     // MF 側: 日付・内容・金額・口座・分類が読める
-    const mfRow = within(first).getByRole('row', { name: /Money Forward/ });
-    expect(mfRow.textContent).toContain('2026-01-15');
-    expect(mfRow.textContent).toContain('アマゾンウェブサービス');
-    expect(mfRow.textContent).toContain('-3,300');
-    expect(mfRow.textContent).toContain('三井住友カード');
-    expect(mfRow.textContent).toContain('通信費 / サーバー');
+    expect(first.textContent).toContain('2026-01-15');
+    expect(first.textContent).toContain('アマゾンウェブサービス');
+    expect(first.textContent).toContain('三井住友カード');
+    expect(first.textContent).toContain('通信費 / サーバー');
 
-    // freee 側: 同じ列に並び、何日ずれているかが語で分かる
-    const freeeRow = within(first).getByRole('row', { name: /freee/ });
-    expect(freeeRow.textContent).toContain('2026-01-17');
-    expect(freeeRow.textContent).toContain('Amazon Web Services');
-    expect(freeeRow.textContent).toContain('-3,300');
-    expect(freeeRow.textContent).toContain('freee が 2 日あと');
+    // freee 側: 同じ行・同じ列に並び、何日ずれているかが語で分かる
+    expect(first.textContent).toContain('2026-01-17');
+    expect(first.textContent).toContain('Amazon Web Services');
+    expect(first.textContent).toContain('freee が 2 日あと');
+
+    // 金額は両側に出す。片方だけだと「同額かどうか」を画面上で確かめられない
+    const amount = within(first).getByRole('cell', { name: /-3,300/ });
+    expect(amount.textContent).toBe('-3,300-3,300');
+
+    // 見出しは表全体で 1 回。件ごとに表を作ると件数ぶん繰り返される
+    expect(within(section).getAllByRole('table')).toHaveLength(1);
 
     // 内部識別子は判断の材料にならないので画面へ出さない
     expect(first.textContent).not.toContain('mf-near');
@@ -244,8 +256,9 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     wrap(<TotalCashflowPage />);
 
     const section = await screen.findByRole('region', { name: '重複の要確認' });
-    const second = within(section).getAllByRole('listitem')[1]!;
-    expect(second.textContent).toContain('同じ金額・同じ向きで前後 3 日以内の取引はありません');
+    expect(reviewRows(section)[1]!.textContent).toContain(
+      '同じ金額・同じ向きで前後 3 日以内の取引はありません',
+    );
   });
 
   it('候補が 0 件でも節ごと消さず、0 件であることを文字で明示する', async () => {
@@ -260,6 +273,131 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     const section = await screen.findByRole('region', { name: '重複の要確認' });
     expect(within(section).getByRole('heading').textContent).toBe('要確認 0 件');
     expect(within(section).getByText('機械では決められない重複はありません。')).toBeTruthy();
-    expect(within(section).queryAllByRole('listitem')).toHaveLength(0);
+    expect(within(section).queryAllByRole('table')).toHaveLength(0);
+  });
+});
+
+/*
+  要確認は実データで 19 件出た。1 件ずつ 2 回クリックさせる画面は、件数が増えるほど
+  破綻する。選んでまとめて判定できること、そしてそれが 1 往復で送られることを固定する。
+  1 往復であることは通信の都合ではなく、D1 のクエリ数が invocation 単位で数えられる以上、
+  選ぶ件数によって保存の成否が変わらないための条件である。
+*/
+describe('要確認は選んでまとめて判定できる', () => {
+  const item = (txId: string, dayGap: number): TotalCashflowReview => ({
+    txId,
+    reason: '口座不一致',
+    mf: {
+      date: '2026-01-01',
+      displayDate: '01/01',
+      content: `ノート ${txId}`,
+      amount: 5980,
+      io: 'expense',
+      institution: '楽天カード まりこ',
+      major: 'その他',
+      middle: '事業経費',
+      memo: '',
+    },
+    candidates: [
+      {
+        freeeIndex: 0,
+        date: '2026-01-01',
+        partner: 'note株式会社',
+        amount: 5980,
+        account: '新聞図書費',
+        settleAccount: '事業主借',
+        dayGap,
+        accountConflict: true,
+      },
+    ],
+  });
+
+  const review = [item('a', 0), item('b', 0), item('c', 2)];
+
+  /** POST された本文を順に記録する fetch */
+  const stub = () => {
+    const posts: unknown[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.method === 'POST') {
+          posts.push(JSON.parse(String(init.body)));
+          return json({ ok: true, saved: 1, rejected: [] });
+        }
+        return json({ months: [row({ reviewCount: review.length })], review });
+      }),
+    );
+    return posts;
+  };
+
+  const openSection = async () => {
+    stub();
+    wrap(<TotalCashflowPage />);
+    return await screen.findByRole('region', { name: '重複の要確認' });
+  };
+
+  it('チェックした分だけが 1 回の送信にまとまる', async () => {
+    const posts = stub();
+    wrap(<TotalCashflowPage />);
+    const section = await screen.findByRole('region', { name: '重複の要確認' });
+
+    const boxes = within(section).getAllByRole('checkbox', { name: /を選ぶ$/ });
+    expect(boxes).toHaveLength(3);
+    fireEvent.click(boxes[0]!);
+    fireEvent.click(boxes[2]!);
+    expect(within(section).getByText('2 件を選択中')).toBeTruthy();
+
+    fireEvent.click(within(section).getByRole('button', { name: '選択したものを「同じ取引」にする' }));
+
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toEqual({
+      items: [
+        { txId: 'a', verdict: 'same' },
+        { txId: 'c', verdict: 'same' },
+      ],
+    });
+  });
+
+  it('1 件も選んでいなければ一括のボタンは押せない', async () => {
+    const section = await openSection();
+    expect(
+      (within(section).getByRole('button', { name: '選択したものを「同じ取引」にする' }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(true);
+  });
+
+  /*
+    実データで残った 19 件のうち 15 件は「同じ日・同額なのに口座名の書き方が違う」組だった。
+    そこへ 1 件ずつチェックを入れさせるのは、チェックを付ける操作そのものが手間になっている。
+  */
+  it('「同じ日・同額のものを選ぶ」で日付の一致した件だけが選ばれる', async () => {
+    const section = await openSection();
+
+    fireEvent.click(within(section).getByRole('button', { name: '同じ日・同額のものを選ぶ (2)' }));
+    expect(within(section).getByText('2 件を選択中')).toBeTruthy();
+
+    const boxes = within(section).getAllByRole('checkbox', { name: /を選ぶ$/ }) as HTMLInputElement[];
+    expect(boxes.map((b) => b.checked)).toEqual([true, true, false]);
+  });
+
+  it('すべて選ぶを押すと全件が入り、もう一度押すと空になる', async () => {
+    const section = await openSection();
+    const all = within(section).getByRole('checkbox', { name: 'すべて選ぶ' });
+
+    fireEvent.click(all);
+    expect(within(section).getByText('3 件を選択中')).toBeTruthy();
+    fireEvent.click(all);
+    expect(within(section).getByText('0 件を選択中')).toBeTruthy();
+  });
+
+  it('行ごとのボタンは従来どおり単票で送る', async () => {
+    const posts = stub();
+    wrap(<TotalCashflowPage />);
+    const section = await screen.findByRole('region', { name: '重複の要確認' });
+
+    fireEvent.click(within(section).getAllByRole('button', { name: '違う取引' })[1]!);
+
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toEqual({ txId: 'b', verdict: 'different' });
   });
 });

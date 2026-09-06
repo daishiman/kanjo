@@ -154,14 +154,28 @@ export function normalizeInstitution(value: string | null | undefined): string {
 }
 
 /**
+ * freee の決済口座欄に入るが、口座を指していない勘定科目。
+ *
+ * 事業主借・事業主貸は「事業の口座ではなく事業主個人の財布で決済した」という意味の
+ * 資本勘定であって、金融機関の名前ではない。これを口座名として MF の「楽天カード まりこ」と
+ * 突き合わせると、同じ取引でも必ず食い違うと出る。しかも意味の上ではむしろ
+ * 「MF 側に出ている個人のカードで払った」と言っており、一致を否定する材料にならない。
+ *
+ * 実データ (2026-01) では要確認 19 件のうち 15 件がこの比較で残り、寄った件数が 0 になった。
+ */
+const NOT_AN_ACCOUNT = new Set(['事業主借', '事業主貸']);
+
+/**
  * 口座が明らかに対応しない組か。true のとき自動では寄せない。
  *
  * fail-open にしてある。情報が無い側があるときに「不一致」と言うと、口座列を持たない
  * 取込時期の明細が丸ごと寄らなくなり、二重計上が残る。ガードは分かるときだけ効かせる。
+ * 口座名でない勘定科目も「分からない」側に倒す (誤って分かった気になる方が高くつく)。
  */
 export function accountsConflict(mf: Pick<MfTx, 'inst'>, deal: Pick<FreeeDeal, 'settleAccount'>): boolean {
+  const settle = (deal.settleAccount ?? '').normalize('NFKC').replace(/[\s　]/g, '');
   const a = normalizeInstitution(mf.inst);
-  const b = normalizeInstitution(deal.settleAccount);
+  const b = NOT_AN_ACCOUNT.has(settle) ? '' : normalizeInstitution(settle);
   if (a === '' || b === '') return false;
   return !(a.includes(b) || b.includes(a));
 }

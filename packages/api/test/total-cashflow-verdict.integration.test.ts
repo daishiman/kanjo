@@ -171,3 +171,92 @@ describe('受入A5 重複判断の保存と再取込後の再適用', () => {
     expect(body).not.toContain('別ユーザー');
   });
 });
+
+/*
+  実データでは要確認が 19 件出た。1 件ずつ送ると、そのたびに期間解決を丸ごとやり直す
+  往復が 19 回走る。D1 のクエリ数は invocation 単位で数えられるため、往復の数が
+  そのまま保存の成否を左右しかねない。選んだ分を 1 往復で受けられることを固定する。
+
+  旧実装 (単票しか受けない) では `items` が zod で弾かれ 400 になるので、この節は必ず落ちる。
+*/
+describe('選択した要確認をまとめて判定する', () => {
+  const postBulk = (items: Array<{ txId: string; verdict: 'same' | 'different' }>) =>
+    request('/total-cashflow/verdicts', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ items }),
+    });
+
+  const bulkRows = [
+    { txId: 'bulk-1', date: '2026-08-11', description: '架空A', amount: -1000 },
+    { txId: 'bulk-2', date: '2026-08-12', description: '架空B', amount: -2000 },
+    { txId: 'bulk-3', date: '2026-08-13', description: '架空C', amount: -3000 },
+  ];
+
+  beforeAll(async () => {
+    // 発生日を 2 日ずらし、自動では寄らない要確認 3 件を作る
+    await database
+      .prepare(
+        `INSERT INTO freee_deals (user_id,month,date,io,partner,account_raw,account_norm,amount) VALUES
+          ('default','2026-08','2026-08-13','expense','架空A','通信費','サブスク・通信',1000),
+          ('default','2026-08','2026-08-14','expense','架空B','通信費','サブスク・通信',2000),
+          ('default','2026-08','2026-08-15','expense','架空C','通信費','サブスク・通信',3000)`,
+      )
+      .run();
+    await reimportMf(bulkRows);
+  });
+
+  it('3 件を 1 回の要求で保存し、一覧表の帰属がまとめて動く', async () => {
+    const before = (await (await request('/total-cashflow?from=2026-08&to=2026-08')).json()) as CashflowBody;
+    expect(before.review.map((r) => r.txId).sort()).toEqual(['bulk-1', 'bulk-2', 'bulk-3']);
+    expect(before.months[0]).toMatchObject({ shiftedCount: 0, householdExpense: 6000 });
+    const rowsBefore = await verdictRowCount();
+
+    const response = await postBulk(bulkRows.map((row) => ({ txId: row.txId, verdict: 'same' as const })));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true, saved: 3, rejected: [] });
+    expect(await verdictRowCount()).toBe(rowsBefore + 3);
+
+    const after = (await (await request('/total-cashflow?from=2026-08&to=2026-08')).json()) as CashflowBody;
+    expect(after.months[0]).toMatchObject({ shiftedCount: 3, householdExpense: 0 });
+    expect(after.review).toHaveLength(0);
+  });
+
+  it('同じ組をもう一度まとめて送っても行は増えず、上書きされる', async () => {
+    const rowsBefore = await verdictRowCount();
+    expect(
+      (await postBulk(bulkRows.map((row) => ({ txId: row.txId, verdict: 'different' as const })))).status,
+    ).toBe(200);
+    expect(await verdictRowCount()).toBe(rowsBefore);
+
+    const after = (await (await request('/total-cashflow?from=2026-08&to=2026-08')).json()) as CashflowBody;
+    // 「違う」に倒したので事業費へは寄らず、要確認からも外れる
+    expect(after.months[0]).toMatchObject({ shiftedCount: 0, householdExpense: 6000 });
+    expect(after.review).toHaveLength(0);
+  });
+
+  /*
+    まとめて送ると「1 件でも駄目なら全部落とす」に倒れやすい。19 件のうち 1 件が
+    保存できないだけで残り 18 件の判断が消えると、利用者は何度も選び直す羽目になる。
+  */
+  it('保存できない 1 件があっても残りは保存し、落ちた件だけを理由付きで返す', async () => {
+    const response = await postBulk([
+      { txId: 'bulk-1', verdict: 'same' },
+      { txId: '存在しない明細', verdict: 'same' },
+    ]);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      ok: true,
+      saved: 1,
+      rejected: [{ txId: '存在しない明細', reason: '対象の明細が見つかりません' }],
+    });
+
+    const after = (await (await request('/total-cashflow?from=2026-08&to=2026-08')).json()) as CashflowBody;
+    expect(after.months[0]).toMatchObject({ shiftedCount: 1, householdExpense: 5000 });
+  });
+
+  it('単票の要求は従来どおり 404 を返す', async () => {
+    // まとめ送りを足したせいで、1 件のときの「その場で言う」応答が失われないこと
+    expect((await postVerdict('存在しない明細', 'same')).status).toBe(404);
+  });
+});

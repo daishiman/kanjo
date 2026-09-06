@@ -207,6 +207,33 @@ describe('受入A3 (金額, 発生日) ごとに min(n, m) 件が寄る', () => 
     ]);
     expect(result.matched).toHaveLength(1);
   });
+
+  /*
+    実データ (2026-01) では freee の決済口座がほぼ全件「事業主借」で、MF 側は
+    「楽天カード まりこ」だった。これを口座名どうしとして比べたため 19 件中 15 件が
+    口座不一致で残り、寄った件数が 0 になった。事業主借は勘定科目であって口座名ではない。
+    旧実装はこの 2 件のうち上を落とす。
+  */
+  it('事業主借・事業主貸は口座名ではないので、口座名との食い違いを理由に止めない', () => {
+    for (const settleAccount of ['事業主借', '事業主貸', '事業主借 ']) {
+      const result = reconcileBizDuplicates(dataset([mf({ id: 'mf-owner', inst: '楽天カード まりこ' })]), [
+        deal({ settleAccount }),
+      ]);
+      expect({ settleAccount, matched: result.matched.length, review: result.review.length }).toEqual({
+        settleAccount,
+        matched: 1,
+        review: 0,
+      });
+    }
+  });
+
+  it('口座名どうしの食い違いは今までどおり止める (ガードを外したのではない)', () => {
+    const result = reconcileBizDuplicates(dataset([mf({ id: 'mf-inst2', inst: '楽天カード まりこ' })]), [
+      deal({ settleAccount: '三井住友銀行' }),
+    ]);
+    expect(result.matched).toHaveLength(0);
+    expect(result.review[0]).toMatchObject({ reason: '口座不一致' });
+  });
 });
 
 /*

@@ -4619,3 +4619,59 @@ label.check {
     grid-column: auto;
   }
 }
+
+/* ── トータル収支の要確認 ────────────────────────────────
+   1 件を「MF 1 行 + freee 候補 n 行」に畳んで 1 枚の表に載せる。件ごとに表を作ると
+   見出しが件数ぶん繰り返され、19 件で見出しが 19 回出る。列は共通にして、行の中の
+   積み重ねを列ごとに揃える(高さがずれると、同じ金額かを目で追えなくなる)。 */
+.tcf-review-table td {
+  vertical-align: top;
+}
+.tcf-line {
+  line-height: 1.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 24ch;
+}
+.tcf-line + .tcf-line {
+  border-top: 1px dashed var(--line);
+}
+/* freee 側の行だけ地色を敷く。出所列を読まなくても、どちらの明細かが横一列で分かる */
+.tcf-line-freee {
+  background: var(--biz-soft);
+  color: var(--biz-strong);
+}
+.tcf-review-table tbody tr.tcf-picked {
+  background: var(--biz-soft);
+}
+.tcf-pick {
+  width: 32px;
+  text-align: center;
+}
+.tcf-verdict {
+  white-space: nowrap;
+}
+.tcf-verdict button + button {
+  margin-left: 6px;
+}
+
+/* 選択と一括操作。表の上に置き、押す前に「いま何件を選んでいるか」を同じ行で見せる */
+.tcf-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+.tcf-bulk-count {
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+  margin-right: auto;
+}
+.tcf-pick-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+}
