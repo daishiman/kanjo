@@ -35,6 +35,7 @@ import type {
   TaxReadinessLevel,
   TaxReturnStatement,
   TaxYear,
+  TotalCashflowMonth,
   TradeoffCandidate,
   TradeoffReviewRow,
   UnsettledDeal,
@@ -180,6 +181,15 @@ export interface TrendRow {
   action: PriorityAction;
   score: number;
   reason: string;
+}
+
+/**
+ * 事業と家計を合わせたトータル収支。行の値はサーバ側の導出値をそのまま写す
+ * (画面で計算し直すと、どちらが正しいかを利用者が判断できなくなる)。
+ */
+export interface TotalCashflowResponse {
+  months: TotalCashflowMonth[];
+  review: { txId: string; reason: string }[];
 }
 
 export interface TrendsResponse {
@@ -384,6 +394,7 @@ export interface TxRow {
  * 出どころ(source)が増えたときに画面だけ古い型のままになるのを避けるため、core の型をそのまま使う。
  */
 export type { CandidateMajor, CandidateSource, Candidates } from '@kanjo/core';
+export type { DuplicateVerdictValue, TotalCashflowMonth } from '@kanjo/core';
 export interface CategoryOptionRow {
   scope: Cls;
   major: string;

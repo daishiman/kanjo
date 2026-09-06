@@ -12,6 +12,7 @@ import {
   type ImportHistoryRow,
   type ImportUnitResult,
   type SubsCandidate,
+  type TotalCashflowResponse,
   api,
   apiUpload,
 } from '../api.js';
@@ -541,6 +542,7 @@ export function ImportPage() {
                 setPending(files);
               }}
             />
+            <DuplicateReviewNotice />
             <SubsHandoff results={results} />
           </section>
         )}
@@ -685,6 +687,32 @@ export function ImportPage() {
  * ここで件数だけ見せて、確認はサブスク画面に任せる(判断は1箇所にまとめる)。
  * freee を取り込んでいないときは候補が増えないので出さない。
  */
+/**
+ * 取込直後に、機械では決められなかった重複が残っていることを知らせる。
+ *
+ * 異常への気付きはこの画面警告 1 経路しかない。メール・push・外部監視は無いので、
+ * ここが出ないと二重計上が誰にも見えないまま集計へ残る。
+ * 件数はサーバの導出値(月次行の要確認件数)を合算するだけで、画面では判定しない。
+ */
+function DuplicateReviewNotice() {
+  const q = useQuery({
+    queryKey: ['total-cashflow', 'import-notice'],
+    queryFn: () => api<TotalCashflowResponse>('/total-cashflow'),
+  });
+  const count = (q.data?.months ?? []).reduce((sum, month) => sum + month.reviewCount, 0);
+  // 0 件のときに「0 件です」と出すと、警告が常時出ている状態になり気付きの合図として働かない
+  if (count === 0) return null;
+  return (
+    <div className="notice warn lines" role="alert" aria-label="重複の要確認">
+      freee と Money Forward で重複しているかもしれない支払が {count}件 残っています(要確認)。
+      <br />
+      日付か金額が揃わないため機械では決められません。同じ取引かどうかを選ぶと集計へ反映されます。
+      <br />
+      <Link to="/analysis/total-cashflow">トータル収支で確認する</Link>
+    </div>
+  );
+}
+
 function SubsHandoff({ results }: { results: ImportUnitResult[] }) {
   const gotFreee = results.some((r) => r.status !== 'failed' && r.kind === 'freee');
   const q = useQuery({

@@ -14,6 +14,7 @@ export * from './dataset.js';
 export * from './subs.js';
 export * from './analysis.js';
 export * from './expense-projection.js';
+export * from './total-cashflow.js';
 export * from './categories.js';
 export * from './tax-accounts.js';
 export * from './household-categories.js';

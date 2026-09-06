@@ -261,13 +261,18 @@ describe('受入A6 トレンド判定は既存の閾値を共有する', () => {
     const series = [1_000, 2_000, 3_000, 4_000, 5_000, 6_000];
     expect(trendDirection(series)).toBe('増加');
 
-    // 既存の科目別トレンドと、切り出した trendDirection が同じ答えを出すこと
+    // 既存の科目別トレンドと、切り出した trendDirection が同じ答えを出すこと。
+    // categoryTrends の家計側は mfTx ではなく集計済みの data.personal を読むため、
+    // 同じ系列をそちらへも置く (置かないと 0 行になり、比較が成立しない)。
     const data = dataset(
       months(6).map((m, i) =>
         mf({ id: `mf-${i}`, m, d: `${String(i + 1).padStart(2, '0')}/10`, a: -series[i]!, big: '通信費' }),
       ),
       months(6),
     );
+    for (const [i, month] of months(6).entries()) {
+      data.personal[month] = { income: {}, expense: { 通信費: series[i]! } };
+    }
     const rows = categoryTrends(data, 'personal');
     expect(rows).toHaveLength(1);
     expect(rows[0]!.direction).toBe(trendDirection(rows[0]!.series));

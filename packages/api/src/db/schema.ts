@@ -123,6 +123,21 @@ export const txEdits = sqliteTable('tx_edits', {
   institution: text('institution'),
 });
 
+/**
+ * 0036: 重複の「同じ / 違う」判断。導出できない唯一の値なので、これだけを保存する。
+ * 月次の合計・件数は要求のたびに core で導出し、ここへは入れない。
+ */
+export const duplicateVerdicts = sqliteTable('duplicate_verdicts', {
+  userId: text('user_id').notNull(),
+  txId: text('tx_id').notNull(),
+  verdict: text('verdict', { enum: ['same', 'different'] }).notNull(),
+  /** tx_id が振り直されたときに引き直すための第二の鍵(DR-13)。重複しうるので UNIQUE にしない */
+  stableKey: text('stable_key'),
+  fingerprintVersion: integer('fingerprint_version'),
+  decidedAt: text('decided_at'),
+  updatedAt: text('updated_at'),
+});
+
 /** 保有金融機関 → 名義 */
 export const institutionOwners = sqliteTable('institution_owners', {
   userId: text('user_id').notNull(),

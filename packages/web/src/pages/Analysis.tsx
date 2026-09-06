@@ -22,6 +22,9 @@ const PANELS: Record<AnalysisTabId, ComponentType> = {
   reconciliation: lazy(() =>
     import('./analysis/Reconciliation.js').then((module) => ({ default: module.ReconciliationPage })),
   ),
+  'total-cashflow': lazy(() =>
+    import('./analysis/TotalCashflow.js').then((module) => ({ default: module.TotalCashflowPage })),
+  ),
   matrix: lazy(() => import('./analysis/Matrix.js').then((module) => ({ default: module.MatrixPage }))),
   trends: lazy(() => import('./analysis/Trends.js').then((module) => ({ default: module.TrendsPage }))),
   diagnosis: lazy(() =>

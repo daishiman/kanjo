@@ -194,6 +194,16 @@ export const ANALYSIS_TABS = [
     navGroup: null,
   },
   {
+    id: 'total-cashflow',
+    path: '/analysis/total-cashflow',
+    label: 'トータル収支',
+    task: '事業と家計を合わせて、月ごとの収支を確認します。',
+    taskDetail:
+      '同じ口座を通る事業と家計を1本の表にする。freeeとMoney Forwardに重複して載る支払は、日付と金額が一致するものだけを事業費として1度だけ数えて二重計上を避け、残りを家計費として並べる。機械で決められない組は要確認として残す。',
+    icon: 'sigma',
+    navGroup: null,
+  },
+  {
     id: 'matrix',
     path: '/analysis/matrix',
     label: '増減マトリクス',
@@ -242,11 +252,17 @@ export function analysisTab(id: string | undefined): (typeof ANALYSIS_TABS)[numb
 /**
  * 旧URLからの読み替え表。/matrix 等はブックマークされている可能性があるので、
  * 404 にせずタブ付きの新URLへ置き換える(履歴には残さない)。
+ *
+ * ここは ANALYSIS_TABS から導出しない。載るのは「かつて単独の画面として存在したURL」だけで、
+ * それは過去の履歴であってタブ一覧の写像ではない。導出にすると、統合後に増やしたタブ
+ * (トータル収支など、単独URLを持ったことがない画面) にも転送元が生えてしまう。
  */
-export const LEGACY_ROUTE_REDIRECTS: readonly { from: string; to: string }[] = ANALYSIS_TABS.map((tab) => ({
-  from: `/${tab.id}`,
-  to: tab.path,
-}));
+export const LEGACY_ROUTE_REDIRECTS: readonly { from: string; to: string }[] = [
+  { from: '/reconciliation', to: '/analysis/reconciliation' },
+  { from: '/matrix', to: '/analysis/matrix' },
+  { from: '/trends', to: '/analysis/trends' },
+  { from: '/diagnosis', to: '/analysis/diagnosis' },
+];
 
 /**
  * Cmd+K の検索対象。

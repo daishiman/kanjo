@@ -158,6 +158,20 @@ export const TREND_MIN_MONTHS = 6;
 /** 両側p値がこれ未満なら、偶然の揺れでは説明しにくいとみなす */
 export const TREND_ALPHA = 0.05;
 
+/**
+ * 月次系列から「増えているか減っているか」を1語で言う。
+ *
+ * 科目別トレンドとトータル収支の一覧表は、同じ画面に並んで同じ語(増加/減少/横ばい/判定不可)を出す。
+ * 判定式を2箇所に書くと、閾値だけを片方で直したときに同じ月の同じ数字が違う語で出る。
+ * そうならないよう、判定はこの関数1箇所に持たせ、`categoryTrends` もここを通す。
+ */
+export function trendDirection(values: readonly number[]): TrendDirection {
+  if (values.length < TREND_MIN_MONTHS) return '判定不可';
+  const mk = mannKendall([...values]);
+  if (mk.p >= TREND_ALPHA) return '横ばい';
+  return mk.s > 0 ? '増加' : '減少';
+}
+
 export interface CategoryTrend {
   account: string;
   /** 事業の勘定科目か、家計の大項目か */
@@ -215,8 +229,7 @@ export function categoryTrends(data: Dataset, scope: ExpenseScope = 'all'): Cate
     const prior = series.slice(0, -3);
     const type = cv < 0.6 ? '固定費' : cv < 1.5 ? '準変動' : 'スポット';
     const present = series.filter((v) => v !== 0).length;
-    const direction: TrendDirection =
-      n < TREND_MIN_MONTHS ? '判定不可' : mk.p < TREND_ALPHA ? (mk.s > 0 ? '増加' : '減少') : '横ばい';
+    const direction: TrendDirection = trendDirection(series);
 
     return {
       account,
