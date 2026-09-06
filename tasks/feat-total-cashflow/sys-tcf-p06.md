@@ -5,7 +5,7 @@ artifact_subtypes: []
 title: "テストを実行して受入条件との対応が全て緑であることを実測する"
 project_id: "feature-package-feat-total-cashflow"
 domain: "quality"
-status: "active"
+status: "done"
 priority: null
 start_date: null
 target_date: null
@@ -43,7 +43,7 @@ issue_linkage: null
 github_project_linkages: []
 pull_request_linkages: []
 execution_contexts: []
-completion_evidence: {"completed_at":null,"evidence_refs":[],"policy":"linked_pr_merged_all","reconciled_at":null,"source":null,"status":"in_progress"}
+completion_evidence: {"completed_at":"2026-09-06T12:12:38Z","evidence_refs":["git:d2871bd","eval-log/tcf-test-run.md","sha256:0bc75fe33facbb112c709c6df6f56413133dde47055529df604b6b25304dfed9","eval-log/tcf-test-run-after-remediation.log","sha256:20f88192bd24c5ff6672a76d997ef2bc71d1a9c65195cf87e72f8be3053135c6"],"policy":"manual","reconciled_at":null,"source":"manual","status":"done"}
 implementation_readiness: {"checked_at":"2026-09-05T13:13:34Z","missing_sections":[],"status":"complete"}
 ---
 

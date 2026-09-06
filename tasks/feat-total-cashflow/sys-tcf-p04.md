@@ -28,7 +28,7 @@ purpose: "受入 10 件それぞれに対応するテストが存在し、実装
 goal: "受入条件と 1 対 1 に対応する失敗するテストを先に書く"
 scope_in: ["packages/core/test","packages/api/test","packages/web/test"]
 scope_out: ["実装コードの変更 (P05 の責務)"]
-acceptance: ["受入 10 件それぞれに対応するテストが 1 件以上存在し、対応表が記録されている","追加したテストを実装前のコードに対して実行すると全て失敗する (赤であることを実測した記録がある)","件数を固定した検査を含み、検査対象が 0 件でも緑になるテストが 0 件である","一覧表の列数を 9 に固定した検査 (月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた分・要確認件数・トレンド) と、取込完了時に要確認が残っていれば警告が出ることの検査が含まれている"]
+acceptance: ["受入 10 件それぞれに対応するテストが 1 件以上存在し、対応表が記録されている","追加したテストを実装前のコードに対して実行すると全て失敗する (赤であることを実測した記録がある)","件数を固定した検査を含み、検査対象が 0 件でも緑になるテストが 0 件である","一覧表の列数を 9 に固定した検査 (月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた件数・要確認件数・トレンド) と、取込完了時に要確認が残っていれば警告が出ることの検査が含まれている"]
 architecture_refs: ["arch-total-cashflow-backend","arch-total-cashflow-database","arch-total-cashflow-frontend"]
 parent_feature: "feat-total-cashflow"
 feature_package_id: "feature-package/feat-total-cashflow"

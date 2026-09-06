@@ -18,7 +18,7 @@
  * | F3 | 寄せた金額と件数が消し込み対象明細の実数と一致する | 本ファイル `受入F3` |
  * | F4 | 重複候補が理由付きで列挙され、0 件のときは 0 件と明示される | 本ファイル `受入F3` (理由) / `packages/web/test/total-cashflow-table.dom.test.tsx` (0 件明示) |
  * | F5 | 判断が保存され再取込後も同じ明細へ再適用される (結合) | `packages/api/test/total-cashflow-verdict.integration.test.ts` |
- * | F6 | 収入側の「同じ」判定で家計収入から事業収入へ移る | 本ファイル `受入F6` |
+ * | F6 | 収入側の「同じ」判定で家計収入から外れ freee 側だけが残る | 本ファイル `受入F6` |
  * | F7 | `TREND_MIN_MONTHS` 未満は「判定不可」、有意判定は `TREND_ALPHA` を既存と共有 | 本ファイル `受入A6` |
  * | F8 | 期間を切り替えても同じ月の値が一致する | 本ファイル `受入F8` |
  * | F9 | 一覧表の 9 列すべてが常時表示される | `packages/web/test/total-cashflow-table.dom.test.tsx` |
@@ -422,7 +422,7 @@ describe('受入F8 期間を切り替えても同じ月の値が一致する', (
   });
 });
 
-describe('受入F6 収入側の「同じ」判定で家計収入から事業収入へ移る', () => {
+describe('受入F6 収入側の「同じ」判定で家計収入から外れ freee 側だけが残る', () => {
   /** freee 売上と同額だが入金日が 1 日ずれた MF 入金。自動では寄らず要確認に残る */
   const incomeCase = () => {
     const data = dataset([

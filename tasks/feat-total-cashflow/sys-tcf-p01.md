@@ -28,7 +28,7 @@ purpose: "「トータルでいくらプラスマイナスか」を判断でき�
 goal: "トータル収支の要件と受入条件を機械可読な二値条件へ確定する"
 scope_in: ["specs/total-cashflow-requirements.md","features/feat-total-cashflow.md"]
 scope_out: ["重複判定の実装 (P05 の責務)","freee / Money Forward への新規 API 連携の追加"]
-acceptance: ["受入条件が全て「観測して真偽が決まる」文になっており、主観語 (適切・十分・使いやすい) を含む条件が 0 件である","重複判定規則が「MF 日付 == freee 発生日 かつ 金額一致」の 1 定義だけで書かれ、これと矛盾する記述が仕様内に 0 件である","収入側の分類規則 (MF の事業・副業 は事業収入、それ以外は家計収入) が明記され、要確認判定が「同じ」になったとき家計収入から事業収入へ移ることが書かれている","総支出と総収入の 2 恒等式が受入条件として列挙されている","specs の O1-O6 が定める受入基準が features/feat-total-cashflow.md 側にも漏れなく写されている。とくに 9 列 (月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた件数・要確認件数・トレンド) の常時表示と、取込完了時に要確認が残っていれば画面へ警告を出すこと (qa-anomaly-notice-001) が両方に存在する"]
+acceptance: ["受入条件が全て「観測して真偽が決まる」文になっており、主観語 (適切・十分・使いやすい) を含む条件が 0 件である","重複判定規則が「MF 日付 == freee 発生日 かつ 金額一致」の 1 定義だけで書かれ、これと矛盾する記述が仕様内に 0 件である","収入側の分類規則 (MF の事業・副業 は事業収入、それ以外は家計収入) が明記され、要確認判定が「同じ」になったとき当該明細が家計収入から外れて freee 側 1 件だけが事業収入に残る (総収入は二重計上分だけ減る) ことが書かれている","総支出と総収入の 2 恒等式が受入条件として列挙されている","specs の O1-O6 が定める受入基準が features/feat-total-cashflow.md 側にも漏れなく写されている。とくに 9 列 (月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた件数・要確認件数・トレンド) の常時表示と、取込完了時に要確認が残っていれば画面へ警告を出すこと (qa-anomaly-notice-001) が両方に存在する"]
 architecture_refs: ["arch-total-cashflow-backend","arch-total-cashflow-database"]
 parent_feature: "feat-total-cashflow"
 feature_package_id: "feature-package/feat-total-cashflow"

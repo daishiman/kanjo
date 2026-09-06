@@ -25,7 +25,9 @@ const COLUMNS = [
   '総収支',
   '事業費',
   '家計費',
-  '事業費へ寄せた分',
+  // 列名は system-spec/ui-ux.md の利用者承認 (appr-foundation-total-cashflow-005) が正本。
+  // セルには金額も併記するが、承認済みの見出しを実装都合で改名しない
+  '事業費へ寄せた件数',
   '要確認件数',
   'トレンド',
 ] as const;
