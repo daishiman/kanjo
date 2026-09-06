@@ -98,7 +98,7 @@ implementation_readiness: {"checked_at":"2026-09-05T13:13:34Z","missing_sections
 
 ## 成果物
 
-- Produced artifacts: specs/total-cashflow-requirements.md (受入節)、features/feat-total-cashflow.md (受入 8 件)
+- Produced artifacts: specs/total-cashflow-requirements.md (受入節)、features/feat-total-cashflow.md (受入 10 件)
 - Consumed artifacts: system-spec/00-requirements-definition.md、system-spec/index.md
 - Write scope/touches: specs/total-cashflow-requirements.md, features/feat-total-cashflow.md
 

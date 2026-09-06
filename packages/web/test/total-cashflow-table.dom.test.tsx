@@ -24,7 +24,7 @@ const COLUMNS = [
   '総収支',
   '事業費',
   '家計費',
-  '事業費へ寄せた件数',
+  '事業費へ寄せた分',
   '要確認件数',
   'トレンド',
 ];
@@ -39,6 +39,7 @@ const row = (over: Record<string, unknown> = {}) => ({
   bizIncome: 200_000,
   householdIncome: 50_000,
   shiftedCount: 1,
+  shiftedAmount: 3_300,
   reviewCount: 0,
   trend: '判定不可' as const,
   ...over,
@@ -116,5 +117,68 @@ describe('受入A7 一覧表の 9 列が常時表示される', () => {
 
     expect(await screen.findByText('999')).toBeTruthy();
     expect(screen.queryByText('241,700')).toBeNull();
+  });
+});
+
+describe('受入F3 寄せた件数と金額を同じセルに併記する', () => {
+  it('件数だけでなく金額も出す', () => {
+    render(<TotalCashflowTable rows={[row({ shiftedCount: 3, shiftedAmount: 300_000 })]} />);
+    // 件数だけの実装だと「3」で通ってしまうので、金額まで含めた文字列で固定する
+    expect(screen.getAllByRole('cell')[6]!.textContent).toBe('3 件 / 300,000');
+  });
+
+  it('金額を併記しても列は 9 のままである', () => {
+    render(<TotalCashflowTable rows={[row({ shiftedCount: 3, shiftedAmount: 300_000 })]} />);
+    expect(screen.getAllByRole('columnheader')).toHaveLength(9);
+    expect(screen.getAllByRole('cell')).toHaveLength(9);
+  });
+
+  it('寄せが 0 件の月は 0 件 / 0 と書き、空欄にしない', () => {
+    // 空欄だと「寄らなかった」と「まだ照合していない」が同じ見た目になる
+    render(<TotalCashflowTable rows={[row({ shiftedCount: 0, shiftedAmount: 0 })]} />);
+    expect(screen.getAllByRole('cell')[6]!.textContent).toBe('0 件 / 0');
+  });
+});
+
+describe('受入F4 重複候補は理由付きで列挙され、0 件のときは 0 件と明示される', () => {
+  const review = [
+    { txId: 'mf-near', reason: '発生日が一致しません' },
+    { txId: 'mf-inst', reason: '口座不一致' },
+  ];
+
+  it('候補があれば件数と理由をそれぞれ出す', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => json({ months: [row({ reviewCount: 2 })], review })),
+    );
+    wrap(<TotalCashflowPage />);
+
+    const section = await screen.findByRole('region', { name: '重複の要確認' });
+    expect(within(section).getByRole('heading').textContent).toBe('要確認 2 件');
+
+    // 理由は候補ごとに出す。まとめて 1 つにすると、どれがなぜ残ったか分からない
+    const items = within(section).getAllByRole('listitem');
+    expect(items).toHaveLength(2);
+    expect(items.map((li) => li.textContent)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('発生日が一致しません'),
+        expect.stringContaining('口座不一致'),
+      ]),
+    );
+  });
+
+  it('候補が 0 件でも節ごと消さず、0 件であることを文字で明示する', async () => {
+    // 節ごと消すと「0 件だった」と「まだ数えていない」が画面上で同じ見た目になる。
+    // 空欄ではなく語で断ることが受入の要求。
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => json({ months: [row({ reviewCount: 0 })], review: [] })),
+    );
+    wrap(<TotalCashflowPage />);
+
+    const section = await screen.findByRole('region', { name: '重複の要確認' });
+    expect(within(section).getByRole('heading').textContent).toBe('要確認 0 件');
+    expect(within(section).getByText('機械では決められない重複はありません。')).toBeTruthy();
+    expect(within(section).queryAllByRole('listitem')).toHaveLength(0);
   });
 });

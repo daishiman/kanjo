@@ -25,7 +25,7 @@ const COLUMNS = [
   '総収支',
   '事業費',
   '家計費',
-  '事業費へ寄せた件数',
+  '事業費へ寄せた分',
   '要確認件数',
   'トレンド',
 ] as const;
@@ -66,7 +66,11 @@ export function TotalCashflowTable({ rows }: { rows: readonly TotalCashflowMonth
               <td>{num(row.totalBalance)}</td>
               <td>{num(row.bizExpense)}</td>
               <td>{num(row.householdExpense)}</td>
-              <td>{num(row.shiftedCount)}</td>
+              {/*
+                件数と金額を同じセルに並べる。列を 10 本目に増やすと F9 の「9 列」が崩れ、
+                件数だけ出すと「3 件寄った」が 300 円なのか 30 万円なのか読めない。
+              */}
+              <td>{`${num(row.shiftedCount)} 件 / ${num(row.shiftedAmount)}`}</td>
               <td>{num(row.reviewCount)}</td>
               <td>
                 <span className={TREND_CLS[row.trend]}>{row.trend}</span>

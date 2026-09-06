@@ -70,6 +70,14 @@ export interface TotalCashflowMonth {
   householdIncome: number;
   /** その月に事業費/事業収入へ寄せた MF 明細の件数 */
   shiftedCount: number;
+  /**
+   * その月に寄せた MF 明細の実額合計 (符号を落とした絶対値)。
+   *
+   * 件数だけでは「3 件寄った」が 300 円なのか 30 万円なのかが分からず、消し込みが効いているかを
+   * 判断できない。freee 側の金額ではなく MF 側の実額を足すのは、この値が「家計費から外れた額」
+   * を意味するためである (freee 側は元から事業費として数えており、寄せても増減しない)。
+   */
+  shiftedAmount: number;
   reviewCount: number;
   trend: TrendDirection;
 }
@@ -282,6 +290,11 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
       .filter((deal) => deal.io === 'income')
       .reduce((sum, deal) => sum + deal.amount, 0);
 
+    // 件数と金額は同じ集合から出す。別々に数えると片方だけが実数とずれても気づけない
+    const shiftedInMonth = result.matched
+      .map((m) => txById.get(m.mfTxId))
+      .filter((tx): tx is MfTx => tx != null && tx.m === month);
+
     const leftover = counted.filter((tx) => tx.m === month && !shiftedMf.has(tx.id));
     // 寄らなかった支出は全て家計費。事業費は freee を正とするため MF からは積み増さない
     const householdExpense = leftover.filter((tx) => tx.a < 0).reduce((sum, tx) => sum + Math.abs(tx.a), 0);
@@ -305,7 +318,8 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
       householdExpense,
       bizIncome,
       householdIncome,
-      shiftedCount: result.matched.filter((m) => monthOf(m.mfTxId) === month).length,
+      shiftedCount: shiftedInMonth.length,
+      shiftedAmount: shiftedInMonth.reduce((sum, tx) => sum + Math.abs(tx.a), 0),
       reviewCount: result.review.filter((r) => monthOf(r.mfTxId) === month).length,
       trend: '判定不可' as TrendDirection,
     };

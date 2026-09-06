@@ -29,6 +29,7 @@ const month = (reviewCount: number) => ({
   bizIncome: 0,
   householdIncome: 0,
   shiftedCount: 1,
+  shiftedAmount: 3_300,
   reviewCount,
   trend: '判定不可' as const,
 });

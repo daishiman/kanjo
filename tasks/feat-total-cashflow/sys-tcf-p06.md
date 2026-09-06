@@ -24,11 +24,11 @@ updated_at: "2026-09-05T13:53:35Z"
 depends_on: ["SYS-TCF-P05"]
 related_nodes: ["spec-total-cashflow-requirements","arch-total-cashflow-backend","arch-total-cashflow-maintenance-ops"]
 resource_scope: ["eval-log/tcf-test-run.md"]
-purpose: "受入 8 件に紐づくテストが実際に実行され、緑であることが記録として残った状態。"
+purpose: "受入 10 件に紐づくテストが実際に実行され、緑であることが記録として残った状態。"
 goal: "テストを実行して受入条件との対応が全て緑であることを実測する"
 scope_in: ["eval-log/tcf-test-run.md"]
 scope_out: ["テストを緑にするための実装変更 (P05 へ差し戻す)"]
-acceptance: ["実行したテスト件数と成功件数が記録され、両者が一致している","受入 8 件それぞれに対応するテストが実行対象に含まれていることが対応表で確認できる","CI とローカルの結果が一致している、または差分の原因が記録されている"]
+acceptance: ["実行したテスト件数と成功件数が記録され、両者が一致している","受入 10 件それぞれに対応するテストが実行対象に含まれていることが対応表で確認できる","CI とローカルの結果が一致している、または差分の原因が記録されている"]
 architecture_refs: ["arch-total-cashflow-backend","arch-total-cashflow-maintenance-ops"]
 parent_feature: "feat-total-cashflow"
 feature_package_id: "feature-package/feat-total-cashflow"
@@ -64,7 +64,7 @@ implementation_readiness: {"checked_at":"2026-09-05T13:13:34Z","missing_sections
 
 ## 目的
 
-受入 8 件に紐づくテストが実際に実行され、緑であることが記録として残った状態。
+受入 10 件に紐づくテストが実際に実行され、緑であることが記録として残った状態。
 
 ## 背景
 

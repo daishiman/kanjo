@@ -24,11 +24,11 @@ updated_at: "2026-09-06T01:46:30Z"
 depends_on: ["SYS-TCF-P03"]
 related_nodes: ["spec-total-cashflow-requirements","arch-total-cashflow-backend","arch-total-cashflow-database","arch-total-cashflow-frontend"]
 resource_scope: ["packages/core/test","packages/api/test","packages/web/test"]
-purpose: "受入 8 件それぞれに対応するテストが存在し、実装前の現行コードに対して確かに落ちる状態。「0 件の違反」と「0 件しか調べていない」を区別できるよう、件数を固定した検査にする。"
+purpose: "受入 10 件それぞれに対応するテストが存在し、実装前の現行コードに対して確かに落ちる状態。「0 件の違反」と「0 件しか調べていない」を区別できるよう、件数を固定した検査にする。"
 goal: "受入条件と 1 対 1 に対応する失敗するテストを先に書く"
 scope_in: ["packages/core/test","packages/api/test","packages/web/test"]
 scope_out: ["実装コードの変更 (P05 の責務)"]
-acceptance: ["受入 8 件それぞれに対応するテストが 1 件以上存在し、対応表が記録されている","追加したテストを実装前のコードに対して実行すると全て失敗する (赤であることを実測した記録がある)","件数を固定した検査を含み、検査対象が 0 件でも緑になるテストが 0 件である","一覧表の列数を 9 に固定した検査 (月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた件数・要確認件数・トレンド) と、取込完了時に要確認が残っていれば警告が出ることの検査が含まれている"]
+acceptance: ["受入 10 件それぞれに対応するテストが 1 件以上存在し、対応表が記録されている","追加したテストを実装前のコードに対して実行すると全て失敗する (赤であることを実測した記録がある)","件数を固定した検査を含み、検査対象が 0 件でも緑になるテストが 0 件である","一覧表の列数を 9 に固定した検査 (月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた分・要確認件数・トレンド) と、取込完了時に要確認が残っていれば警告が出ることの検査が含まれている"]
 architecture_refs: ["arch-total-cashflow-backend","arch-total-cashflow-database","arch-total-cashflow-frontend"]
 parent_feature: "feat-total-cashflow"
 feature_package_id: "feature-package/feat-total-cashflow"
@@ -64,7 +64,7 @@ implementation_readiness: {"checked_at":"2026-09-05T13:13:34Z","missing_sections
 
 ## 目的
 
-受入 8 件それぞれに対応するテストが存在し、実装前の現行コードに対して確かに落ちる状態。「0 件の違反」と「0 件しか調べていない」を区別できるよう、件数を固定した検査にする。
+受入 10 件それぞれに対応するテストが存在し、実装前の現行コードに対して確かに落ちる状態。「0 件の違反」と「0 件しか調べていない」を区別できるよう、件数を固定した検査にする。
 
 ## 背景
 
@@ -86,7 +86,7 @@ implementation_readiness: {"checked_at":"2026-09-05T13:13:34Z","missing_sections
 - Data: applicable: 判定の再取込冪等性を検証するテストを設計する
 - Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない
 - Security: N/A: この phase は認証・認可の制御点を変更しない
-- Quality: applicable: 受入 8 件に対応するテストを追加し、実装前に全て失敗することを記録する
+- Quality: applicable: 受入 10 件に対応するテストを追加し、実装前に全て失敗することを記録する
 - Documentation: N/A: この phase は利用者向け文書を更新しない
 - Operations: N/A: この phase は運用手順と監視を変更しない
 

@@ -28,7 +28,7 @@ purpose: "利用者が実際の freee / Money Forward データで一覧表を�
 goal: "実データで受入条件を利用者視点から確認する"
 scope_in: ["eval-log/tcf-acceptance.md"]
 scope_out: ["不成立時の実装修正 (P05 へ差し戻す)"]
-acceptance: ["受入 8 件それぞれに確認結果 (成立 または 不成立と理由) が記録されている","事業側へ寄せた金額と件数を利用者が手で検算した結果が一致している","期間を切り替えて同じ月を含めたとき、その月の値が一致することを実データで確認済みである","9 列が常時表示されることと、要確認が残る CSV を取り込んだときに画面へ警告が出ることを、実データで確認済みである"]
+acceptance: ["受入 10 件それぞれに確認結果 (成立 または 不成立と理由) が記録されている","事業側へ寄せた金額と件数を利用者が手で検算した結果が一致している","期間を切り替えて同じ月を含めたとき、その月の値が一致することを実データで確認済みである","9 列が常時表示されることと、要確認が残る CSV を取り込んだときに画面へ警告が出ることを、実データで確認済みである"]
 architecture_refs: ["arch-total-cashflow-frontend","arch-total-cashflow-ui-ux"]
 parent_feature: "feat-total-cashflow"
 feature_package_id: "feature-package/feat-total-cashflow"
@@ -126,7 +126,7 @@ implementation_readiness: {"checked_at":"2026-09-05T13:13:34Z","missing_sections
 
 - Automated commands:
   - rg -n '成立|不成立' eval-log/tcf-acceptance.md
-  - rg -c '^- 受入' eval-log/tcf-acceptance.md の出力が 10 であること (受入 8 件 + 9 列 + 警告)
+  - rg -c '^- 受入' eval-log/tcf-acceptance.md の出力が 10 であること (受入 F1..F10。9 列は F9、警告は F10 として既に数に入っている)
   - rg -n '9 列|警告' eval-log/tcf-acceptance.md
 - Required evidence:
   - eval-log/tcf-acceptance.md
