@@ -28,6 +28,14 @@ export const BIZ_INCOME_MAJOR = '事業・副業';
 /** 候補抽出器が近接とみなす日数。自動付替には使わない (要確認一覧の生成にだけ用いる) */
 export const REVIEW_NEAR_DAYS = 3;
 
+/**
+ * 1 件の要確認明細に並べる freee 候補の上限。
+ *
+ * 全件返すと同額の定額支払 (家賃・サブスク) で候補が膨れ、かえって比べられない。
+ * 日付の近い順に絞る。
+ */
+export const REVIEW_MAX_CANDIDATES = 3;
+
 export type DuplicateVerdictValue = 'same' | 'different';
 
 /** 利用者が「同じ取引か」を判断した結果。導出できない唯一の値であり、これだけを保存する */
@@ -49,9 +57,54 @@ export interface ReconcileMatch {
   by: 'auto' | 'user';
 }
 
+/**
+ * 要確認一覧に出す MF 側の中身。
+ *
+ * 識別子と理由語だけでは「同じ取引か」を人が判断できない。判断に要るのは
+ * 日付・内容・金額・口座であり、それは全て `MfTx` に既にある。
+ */
+export interface ReconcileReviewMf {
+  /** 照合に使った発生日 (`YYYY-MM-DD`)。表示日そのものではなく取込月へ載せた後の値 */
+  date: string;
+  /** MF の表示日 (`MM/DD`)。`date` と食い違う場合に月ずれを目で確認できる */
+  displayDate: string;
+  content: string;
+  /** 符号を落とした実額。向きは `io` で持つ */
+  amount: number;
+  io: FreeeDeal['io'];
+  institution: string;
+  major: string;
+  middle: string;
+  memo: string;
+}
+
+/**
+ * 要確認明細に対する freee 側の候補。
+ *
+ * 消し込みの肯定条件 (同額かつ同日) を満たさなかった理由を人が見極められるよう、
+ * 同額・同じ向きで近い日付の取引を近い順に返す。候補が0件なら「freee 側に相手がいない」
+ * ことがそれ自体の答えになる。
+ */
+export interface ReconcileReviewCandidate {
+  /** `deals` 内での位置。同じ取引を指していることを呼び出し側が確認できる */
+  freeeIndex: number;
+  date: string;
+  partner: string;
+  amount: number;
+  account: string;
+  settleAccount: string;
+  /** freee 発生日 − MF 発生日 の日数差。0 なら日付は一致している */
+  dayGap: number;
+  /** この候補と MF 明細の口座が明らかに食い違うか (`accountsConflict` と同じ判定) */
+  accountConflict: boolean;
+}
+
 export interface ReconcileReview {
   mfTxId: string;
   reason: ReconcileReviewReason;
+  mf: ReconcileReviewMf;
+  /** 近い順に最大 `REVIEW_MAX_CANDIDATES` 件。0 件もありうる */
+  candidates: ReconcileReviewCandidate[];
 }
 
 export interface ReconcileResult {
@@ -139,6 +192,53 @@ function reconcilableMf(data: Dataset): MfTx[] {
     });
 }
 
+/** 要確認一覧へ出す MF 側の中身。`MfTx` から表示に要る分だけを写す */
+function reviewMf(tx: MfTx): ReconcileReviewMf {
+  return {
+    date: mfMatchDate(tx),
+    displayDate: tx.d,
+    content: tx.c,
+    amount: Math.abs(tx.a),
+    io: mfIo(tx),
+    institution: tx.inst ?? '',
+    major: tx.big,
+    middle: tx.mid,
+    memo: tx.memo ?? '',
+  };
+}
+
+/**
+ * 同額・同じ向きで発生日が ±`REVIEW_NEAR_DAYS` 日以内の freee 取引を、日付の近い順に返す。
+ *
+ * 帰属は動かさない。ここで返すのは「人が見比べる材料」であって照合結果ではない。
+ * 同着は `deals` の並び順で決める (安定させるため)。
+ */
+function nearCandidates(tx: MfTx, deals: readonly FreeeDeal[]): ReconcileReviewCandidate[] {
+  const mfDay = dayNumber(mfMatchDate(tx));
+  const amount = Math.abs(tx.a);
+  const io = mfIo(tx);
+  return deals
+    .map((deal, freeeIndex) => ({ deal, freeeIndex }))
+    .filter(
+      ({ deal }) =>
+        deal.amount === amount &&
+        deal.io === io &&
+        Math.abs(dayNumber(deal.date) - mfDay) <= REVIEW_NEAR_DAYS,
+    )
+    .map(({ deal, freeeIndex }) => ({
+      freeeIndex,
+      date: deal.date,
+      partner: deal.partner,
+      amount: deal.amount,
+      account: deal.accountRaw,
+      settleAccount: deal.settleAccount ?? '',
+      dayGap: dayNumber(deal.date) - mfDay,
+      accountConflict: accountsConflict(tx, deal),
+    }))
+    .sort((a, b) => Math.abs(a.dayGap) - Math.abs(b.dayGap) || a.freeeIndex - b.freeeIndex)
+    .slice(0, REVIEW_MAX_CANDIDATES);
+}
+
 /**
  * freee と MF の二重計上を消し込む。
  *
@@ -216,23 +316,23 @@ export function reconcileBizDuplicates(
     if (usedMf.has(tx.id)) continue;
     // 「違う」と判断済みの組は、同じ問いを何度も出さない (仕様: 要確認として再提示しない)
     if (verdictByTxId.get(tx.id) === 'different') continue;
+    // 候補抽出器 (金額一致かつ ±3 日以内) は帰属を動かさず、要確認一覧の生成にだけ使う。
+    // 理由の別なく先に引くのは、どの理由であっても「freee 側の何と比べているのか」を
+    // 見せないと人が判断できないためである。
+    const candidates = nearCandidates(tx, deals);
+    const push = (reason: ReconcileReviewReason): void => {
+      review.push({ mfTxId: tx.id, reason, mf: reviewMf(tx), candidates });
+    };
     if (monthMismatched(tx)) {
-      review.push({ mfTxId: tx.id, reason: '取込月と表示日の月が一致しません' });
+      push('取込月と表示日の月が一致しません');
       continue;
     }
     const held = blocked.get(tx.id);
     if (held) {
-      review.push({ mfTxId: tx.id, reason: held });
+      push(held);
       continue;
     }
-    // 候補抽出器 (金額一致かつ ±3 日以内) は帰属を動かさず、要確認一覧の生成にだけ使う
-    const near = deals.some(
-      (deal) =>
-        deal.amount === Math.abs(tx.a) &&
-        deal.io === mfIo(tx) &&
-        Math.abs(dayNumber(mfMatchDate(tx)) - dayNumber(deal.date)) <= REVIEW_NEAR_DAYS,
-    );
-    if (near) review.push({ mfTxId: tx.id, reason: '発生日が一致しません' });
+    if (candidates.length > 0) push('発生日が一致しません');
   }
 
   return { matched, review };

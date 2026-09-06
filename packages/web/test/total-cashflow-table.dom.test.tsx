@@ -14,6 +14,7 @@ import { cleanup, render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { TotalCashflowReview } from '../src/api.js';
 import { TotalCashflowPage, TotalCashflowTable } from '../src/pages/analysis/TotalCashflow.js';
 
 /** 一覧表の列見出し。9 列で確定しており、小画面でも落とさない */
@@ -141,9 +142,43 @@ describe('受入F3 寄せた件数と金額を同じセルに併記する', () =
 });
 
 describe('受入F4 重複候補は理由付きで列挙され、0 件のときは 0 件と明示される', () => {
-  const review = [
-    { txId: 'mf-near', reason: '発生日が一致しません' },
-    { txId: 'mf-inst', reason: '口座不一致' },
+  const mf = (over: Partial<TotalCashflowReview['mf']> = {}): TotalCashflowReview['mf'] => ({
+    date: '2026-01-15',
+    displayDate: '01/15',
+    content: 'アマゾンウェブサービス',
+    amount: 3300,
+    io: 'expense',
+    institution: '三井住友カード',
+    major: '通信費',
+    middle: 'サーバー',
+    memo: '',
+    ...over,
+  });
+
+  const review: TotalCashflowReview[] = [
+    {
+      txId: 'mf-near',
+      reason: '発生日が一致しません',
+      mf: mf(),
+      candidates: [
+        {
+          freeeIndex: 4,
+          date: '2026-01-17',
+          partner: 'Amazon Web Services',
+          amount: 3300,
+          account: '通信費',
+          settleAccount: '三井住友',
+          dayGap: 2,
+          accountConflict: false,
+        },
+      ],
+    },
+    {
+      txId: 'mf-inst',
+      reason: '口座不一致',
+      mf: mf({ content: 'ドメイン更新', amount: 1500, institution: '楽天カード' }),
+      candidates: [],
+    },
   ];
 
   it('候補があれば件数と理由をそれぞれ出す', async () => {
@@ -165,6 +200,52 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
         expect.stringContaining('口座不一致'),
       ]),
     );
+  });
+
+  /*
+    このテストは旧実装 (txId と理由だけを出していた頃) では必ず落ちる。
+    件数と理由の存在だけを見ていた前のテストは、識別子しか出ていない画面を緑にしていた。
+    要確認の目的は「利用者が同じ取引か判断できること」なので、判断材料そのものを固定する。
+  */
+  it('MF 側の中身と freee 側の候補を同じ列で並べ、判断できる材料を出す', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => json({ months: [row({ reviewCount: 2 })], review })),
+    );
+    wrap(<TotalCashflowPage />);
+
+    const section = await screen.findByRole('region', { name: '重複の要確認' });
+    const first = within(section).getAllByRole('listitem')[0]!;
+
+    // MF 側: 日付・内容・金額・口座・分類が読める
+    const mfRow = within(first).getByRole('row', { name: /Money Forward/ });
+    expect(mfRow.textContent).toContain('2026-01-15');
+    expect(mfRow.textContent).toContain('アマゾンウェブサービス');
+    expect(mfRow.textContent).toContain('-3,300');
+    expect(mfRow.textContent).toContain('三井住友カード');
+    expect(mfRow.textContent).toContain('通信費 / サーバー');
+
+    // freee 側: 同じ列に並び、何日ずれているかが語で分かる
+    const freeeRow = within(first).getByRole('row', { name: /freee/ });
+    expect(freeeRow.textContent).toContain('2026-01-17');
+    expect(freeeRow.textContent).toContain('Amazon Web Services');
+    expect(freeeRow.textContent).toContain('-3,300');
+    expect(freeeRow.textContent).toContain('freee が 2 日あと');
+
+    // 内部識別子は判断の材料にならないので画面へ出さない
+    expect(first.textContent).not.toContain('mf-near');
+  });
+
+  it('freee 側に候補が無いときは、空欄ではなく「相手がいない」と書く', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => json({ months: [row({ reviewCount: 2 })], review })),
+    );
+    wrap(<TotalCashflowPage />);
+
+    const section = await screen.findByRole('region', { name: '重複の要確認' });
+    const second = within(section).getAllByRole('listitem')[1]!;
+    expect(second.textContent).toContain('同じ金額・同じ向きで前後 3 日以内の取引はありません');
   });
 
   it('候補が 0 件でも節ごと消さず、0 件であることを文字で明示する', async () => {

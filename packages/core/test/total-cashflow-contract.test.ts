@@ -16,7 +16,7 @@
  * | F1 | 恒等式 `総支出 = 事業費 + 家計費` / `総収入 = 事業収入 + 家計収入` が全月で成立 | 本ファイル `受入A1` `受入A2` |
  * | F2 | 日付・金額一致の支出は freee 1 件だけ計上し MF は家計費に残らない | 本ファイル `受入A3` |
  * | F3 | 寄せた金額と件数が消し込み対象明細の実数と一致する | 本ファイル `受入F3` |
- * | F4 | 重複候補が理由付きで列挙され、0 件のときは 0 件と明示される | 本ファイル `受入F3` (理由) / `packages/web/test/total-cashflow-table.dom.test.tsx` (0 件明示) |
+ * | F4 | 重複候補が判断できる材料つきで列挙され、0 件のときは 0 件と明示される | 本ファイル `受入F4` (MF の中身と freee 候補) / `packages/web/test/total-cashflow-table.dom.test.tsx` (対比表示と 0 件明示) |
  * | F5 | 判断が保存され再取込後も同じ明細へ再適用される (結合) | `packages/api/test/total-cashflow-verdict.integration.test.ts` |
  * | F6 | 収入側の「同じ」判定で家計収入から外れ freee 側だけが残る | 本ファイル `受入F6` |
  * | F7 | `TREND_MIN_MONTHS` 未満は「判定不可」、有意判定は `TREND_ALPHA` を既存と共有 | 本ファイル `受入A6` |
@@ -206,6 +206,72 @@ describe('受入A3 (金額, 発生日) ごとに min(n, m) 件が寄る', () => 
       deal({ settleAccount: 'ゆうちょ銀行' }),
     ]);
     expect(result.matched).toHaveLength(1);
+  });
+});
+
+/*
+  要確認は「理由を告げる」ためではなく「利用者が同じ取引か判断する」ために出す。
+  実データで理由だけを出したところ、どの明細のことか分からず判断できなかった (P07 F4 不成立)。
+  旧実装は `{mfTxId, reason}` しか返しておらず、下の 3 件はいずれもそこで落ちる。
+*/
+describe('受入F4 要確認は MF の中身と freee 候補を判断材料として持つ', () => {
+  it('MF 側の日付・内容・金額・口座・分類を、識別子ではなく値で持つ', () => {
+    const result = reconcileBizDuplicates(dataset([mf({ id: 'mf-near', d: '08/07' })]), [
+      deal({ date: '2026-08-05' }),
+    ]);
+    expect(result.review[0]!.mf).toEqual({
+      date: '2026-08-07',
+      displayDate: '08/07',
+      content: '架空クラウド',
+      amount: 3_300,
+      io: 'expense',
+      institution: '三井住友銀行 普通',
+      major: '通信費',
+      middle: 'サブスク',
+      memo: '',
+    });
+  });
+
+  it('freee 側の候補を日数差つきで返す。捨てずに渡すのが要点', () => {
+    const result = reconcileBizDuplicates(dataset([mf({ id: 'mf-near', d: '08/07' })]), [
+      deal({ date: '2026-08-05', partner: 'freee 側の名前', settleAccount: '三井住友' }),
+    ]);
+    expect(result.review[0]!.candidates).toEqual([
+      {
+        freeeIndex: 0,
+        date: '2026-08-05',
+        partner: 'freee 側の名前',
+        amount: 3_300,
+        account: '通信費',
+        settleAccount: '三井住友',
+        dayGap: -2,
+        accountConflict: false,
+      },
+    ]);
+  });
+
+  it('口座不一致でも候補を出す。何と食い違ったのかが見えないと判断できない', () => {
+    const result = reconcileBizDuplicates(dataset([mf({ id: 'mf-inst', inst: '三井住友銀行 普通' })]), [
+      deal({ settleAccount: 'ゆうちょ銀行' }),
+    ]);
+    expect(result.review[0]!.reason).toBe('口座不一致');
+    expect(result.review[0]!.candidates).toHaveLength(1);
+    expect(result.review[0]!.candidates[0]).toMatchObject({
+      settleAccount: 'ゆうちょ銀行',
+      dayGap: 0,
+      accountConflict: true,
+    });
+  });
+
+  it('同額の候補が多くても 3 件までに絞り、日付の近い順に並べる', () => {
+    // 家賃やサブスクは同額が並ぶ。全件返すとかえって比べられない
+    const result = reconcileBizDuplicates(dataset([mf({ id: 'mf-many', d: '08/07' })]), [
+      deal({ date: '2026-08-04' }),
+      deal({ date: '2026-08-10' }),
+      deal({ date: '2026-08-08' }),
+      deal({ date: '2026-08-06' }),
+    ]);
+    expect(result.review[0]!.candidates.map((c) => c.dayGap)).toEqual([1, -1, -3]);
   });
 });
 

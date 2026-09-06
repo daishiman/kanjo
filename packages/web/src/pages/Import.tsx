@@ -240,22 +240,63 @@ export function ImportPage() {
 
   const upload = useMutation({
     mutationFn: async (files: File[]) => {
-      const form = new FormData();
-      for (const f of files) form.append('file', f);
-      if (force) form.append('force', '1');
-      if (keepOnShrink) form.append('keepOnShrink', '1');
-      if (previewFingerprint) {
-        form.append('resolutionPlan', JSON.stringify({ fingerprint: previewFingerprint, decisions }));
+      /*
+        1回のPOSTに載せられるファイル数は Cloudflare Workers Free の「1 invocation あたり
+        50 D1 queries」で頭打ちになる (D1_FREE_QUERY_LIMIT)。固定費が約20 queries、
+        ファイル1本あたり約16 queries なので、2本まとめた時点で上限に触れる。上限は
+        プラットフォーム側の値で上げられないため、まとめずに1ファイルずつ送る。
+
+        分けて送っても取りこぼさない。取込の置換は種別×月ごと (freeeはapplyFreeeDeals、
+        MFはapplyMfTxs) に閉じており、後から送ったファイルが先のファイルの結果を
+        消すことはない。
+
+        例外は差分プレビューを取ったとき。あの fingerprint は「選択したMFファイル全体」を
+        1つの解決範囲として計算しているので、分割すると範囲が変わり
+        resolution_scope_changed になる。判断を捨てるほうが害が大きいので、
+        プレビュー済みのときだけ従来どおり1回で送る。
+      */
+      const batches = previewFingerprint ? [files] : files.map((file) => [file]);
+      const results: ImportUnitResult[] = [];
+      let resolution: { reset: number; remembered: number } | null = null;
+
+      for (const batch of batches) {
+        const form = new FormData();
+        for (const f of batch) form.append('file', f);
+        if (force) form.append('force', '1');
+        if (keepOnShrink) form.append('keepOnShrink', '1');
+        if (previewFingerprint) {
+          form.append('resolutionPlan', JSON.stringify({ fingerprint: previewFingerprint, decisions }));
+        }
+        try {
+          const body = await apiUpload<{
+            results?: ImportUnitResult[];
+            resolution?: { reset: number; remembered: number };
+          }>('/imports', form, {
+            // 複数ファイルの一部成功はHTTPエラーでも結果表を保つ。
+            acceptErrorBody: (candidate) =>
+              !!candidate &&
+              typeof candidate === 'object' &&
+              Array.isArray(Reflect.get(candidate, 'results')),
+          });
+          results.push(...(body.results ?? []));
+          if (body.resolution) resolution = body.resolution;
+        } catch (error) {
+          // 1本が落ちても残りは送る。ここで throw すると、既に成功した分の結果表まで消える。
+          // 落ちた分は failed 行として残し、既存の「失敗したN件を再取込」で拾えるようにする。
+          for (const f of batch) {
+            results.push({
+              filename: f.name,
+              kind: '不明',
+              months: [],
+              rows: 0,
+              skipped: 0,
+              status: 'failed',
+              reason: describeError(error),
+            });
+          }
+        }
       }
-      const body = await apiUpload<{
-        results?: ImportUnitResult[];
-        resolution?: { reset: number; remembered: number };
-      }>('/imports', form, {
-        // 複数ファイルの一部成功はHTTPエラーでも結果表を保つ。
-        acceptErrorBody: (candidate) =>
-          !!candidate && typeof candidate === 'object' && Array.isArray(Reflect.get(candidate, 'results')),
-      });
-      return { results: body.results ?? [], resolution: body.resolution ?? null };
+      return { results, resolution };
     },
     onSuccess: ({ results: r, resolution }, files) => {
       setResults(r);

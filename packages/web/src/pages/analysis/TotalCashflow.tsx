@@ -12,6 +12,7 @@ import {
   type DuplicateVerdictValue,
   type TotalCashflowMonth,
   type TotalCashflowResponse,
+  type TotalCashflowReview,
   api,
 } from '../../api.js';
 import { PageState } from '../../components/Page.js';
@@ -85,6 +86,77 @@ export function TotalCashflowTable({ rows }: { rows: readonly TotalCashflowMonth
   );
 }
 
+/** 日付の差を人が読める形に。0 は「同じ日」と言い切る (「0 日ずれ」は読み手が一拍止まる) */
+const gapLabel = (dayGap: number): string =>
+  dayGap === 0 ? '同じ日' : dayGap > 0 ? `freee が ${dayGap} 日あと` : `freee が ${-dayGap} 日まえ`;
+
+/**
+ * 要確認 1 件を MF と freee の対比で見せる。
+ *
+ * 判断に要るのは識別子ではなく中身なので、同じ列 (発生日・内容・金額・口座・分類) に
+ * 両者を並べる。行の並びを揃えないと、金額が一致しているかを目で追えない。
+ * freee 候補が 0 件なら「相手がいない」ことをそのまま書く。これも判断材料である。
+ */
+function ReviewCompare({ item }: { item: TotalCashflowReview }) {
+  return (
+    <div data-review-compare style={{ overflowX: 'auto' }}>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">出所</th>
+            <th scope="col">発生日</th>
+            <th scope="col">内容 / 取引先</th>
+            <th scope="col">金額</th>
+            <th scope="col">口座</th>
+            <th scope="col">分類</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Money Forward</th>
+            <td>
+              {item.mf.date}
+              {/* 取込月と表示日が食い違う明細では、どちらの日付で照合したかが理由そのものになる */}
+              {item.mf.date.slice(5).replace('-', '/') === item.mf.displayDate ? null : (
+                <> (表示 {item.mf.displayDate})</>
+              )}
+            </td>
+            <td>
+              {item.mf.content}
+              {item.mf.memo ? <> / {item.mf.memo}</> : null}
+            </td>
+            <td>{`${item.mf.io === 'income' ? '+' : '-'}${num(item.mf.amount)}`}</td>
+            <td>{item.mf.institution || '(記載なし)'}</td>
+            <td>{[item.mf.major, item.mf.middle].filter(Boolean).join(' / ') || '(未分類)'}</td>
+          </tr>
+          {item.candidates.length === 0 ? (
+            <tr>
+              <th scope="row">freee</th>
+              <td colSpan={5}>同じ金額・同じ向きで前後 3 日以内の取引はありません</td>
+            </tr>
+          ) : (
+            item.candidates.map((cand) => (
+              <tr key={cand.freeeIndex}>
+                <th scope="row">freee</th>
+                <td>
+                  {cand.date} ({gapLabel(cand.dayGap)})
+                </td>
+                <td>{cand.partner || '(取引先なし)'}</td>
+                <td>{`${item.mf.io === 'income' ? '+' : '-'}${num(cand.amount)}`}</td>
+                <td>
+                  {cand.settleAccount || '(記載なし)'}
+                  {cand.accountConflict ? <> ⚠ 口座が食い違う</> : null}
+                </td>
+                <td>{cand.account}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function TotalCashflowPage() {
   const { key, withPeriod } = usePeriod();
   const client = useQueryClient();
@@ -116,8 +188,8 @@ export function TotalCashflowPage() {
           <ul>
             {q.data.review.map((item) => (
               <li key={item.txId}>
-                <span>{item.txId}</span>
-                <span>{item.reason}</span>
+                <p>{item.reason}</p>
+                <ReviewCompare item={item} />
                 {/* 「同じ」だけを置くと、違うと分かった組が要確認に残り続ける。
                     どちらの答えも同じ重さで置き、判断は片方向に誘導しない */}
                 <button

@@ -70,7 +70,14 @@ totalCashflowRoute.get('/total-cashflow', async (c) => {
   const report = totalCashflowReport(data, deals, bindVerdicts(verdictRows, data.mfTx));
   return c.json({
     months: report.months,
-    review: report.review.map((item) => ({ txId: item.mfTxId, reason: item.reason })),
+    // mf と candidates をそのまま渡す。要確認は「理由を告げる」ためではなく
+    // 「利用者が同じ取引か判断する」ために出しており、判断材料は画面まで届かないと意味がない。
+    review: report.review.map((item) => ({
+      txId: item.mfTxId,
+      reason: item.reason,
+      mf: item.mf,
+      candidates: item.candidates,
+    })),
     period,
   });
 });

@@ -189,7 +189,35 @@ export interface TrendRow {
  */
 export interface TotalCashflowResponse {
   months: TotalCashflowMonth[];
-  review: { txId: string; reason: string }[];
+  review: TotalCashflowReview[];
+}
+
+/** 要確認 1 件。MF 側の中身と freee 側の候補を並べて見比べるための材料 */
+export interface TotalCashflowReview {
+  txId: string;
+  reason: string;
+  mf: {
+    date: string;
+    displayDate: string;
+    content: string;
+    amount: number;
+    io: 'income' | 'expense';
+    institution: string;
+    major: string;
+    middle: string;
+    memo: string;
+  };
+  candidates: {
+    freeeIndex: number;
+    date: string;
+    partner: string;
+    amount: number;
+    account: string;
+    settleAccount: string;
+    /** freee 発生日 − MF 発生日 の日数差。0 なら日付は一致している */
+    dayGap: number;
+    accountConflict: boolean;
+  }[];
 }
 
 export interface TrendsResponse {
