@@ -5,7 +5,7 @@ artifact_subtypes: []
 title: "受入条件と 1 対 1 に対応する失敗するテストを先に書く"
 project_id: "feature-package-feat-total-cashflow"
 domain: "quality"
-status: "active"
+status: "done"
 priority: null
 start_date: null
 target_date: null
@@ -20,7 +20,7 @@ evaluation_status: "pass"
 confirmation_evidence: {"evaluated_digest":"919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb","evaluator":"system-dev-plan-evaluator","evidence_ref":".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json"}
 source_lineage: {"imported_at":"2026-09-05T13:53:35Z","origin_kind":"system-dev-planner","source_digest":"919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb","source_path":".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-04-test-design.md","source_plugin":"system-dev-planner","source_version":"0.1.0"}
 created_at: "2026-09-05T13:53:35Z"
-updated_at: "2026-09-05T13:53:35Z"
+updated_at: "2026-09-06T01:46:30Z"
 depends_on: ["SYS-TCF-P03"]
 related_nodes: ["spec-total-cashflow-requirements","arch-total-cashflow-backend","arch-total-cashflow-database","arch-total-cashflow-frontend"]
 resource_scope: ["packages/core/test","packages/api/test","packages/web/test"]
@@ -43,7 +43,7 @@ issue_linkage: null
 github_project_linkages: []
 pull_request_linkages: []
 execution_contexts: []
-completion_evidence: {"completed_at":null,"evidence_refs":[],"policy":"linked_pr_merged_all","reconciled_at":null,"source":null,"status":"in_progress"}
+completion_evidence: {"completed_at":"2026-09-06T01:46:30Z","evidence_refs":["eval-log/tcf-red-run.txt","sha256:151aada55a51795cbffad2491cce9308105ada73991886cbdaa0b66ca5f4c975","eval-log/tcf-p04-acceptance.json","packages/core/test/total-cashflow-contract.test.ts","packages/api/test/total-cashflow-verdict.integration.test.ts","packages/web/test/total-cashflow-table.dom.test.tsx","packages/web/test/import-review-notice.dom.test.tsx"],"policy":"manual","reconciled_at":null,"source":"manual","status":"done"}
 implementation_readiness: {"checked_at":"2026-09-05T13:13:34Z","missing_sections":[],"status":"complete"}
 ---
 
