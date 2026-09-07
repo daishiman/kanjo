@@ -17,6 +17,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
+import { D1_MAX_BOUND_PARAMS } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { dealFromRow, getDb } from '../store.js';
 import { loadScoped } from './analytics.js';
@@ -217,10 +218,34 @@ totalCashflowRoute.post('/total-cashflow/verdicts', zValidator('json', verdictSc
  * ここに置いた鍵だけが事業費・事業収入から落ちる。理由を必須にするのは、後から金額の差を
  * 追うときに「なぜ外したか」が読めないと元へ戻す判断ができないため。
  */
-const exclusionSchema = z.object({
-  freeeKey: z.string().trim().min(1).max(2_000),
-  reason: z.string().trim().min(1).max(200),
-});
+const freeeKeyField = z.string().trim().min(1).max(2_000);
+
+/** 1 リクエストで外せる件数の上限。一致した組が数百件でも 1 往復で送れる幅を取る */
+const MAX_EXCLUSION_ITEMS = 200;
+
+/** 除外行の列数 (user_id / freee_key / reason / created_at / updated_at) */
+const EXCLUSION_COLUMNS = 5;
+
+/**
+ * 1 文の多重 VALUES に載せられる行数。D1 は 1 文あたりのバインドを 100 に制限するので、
+ * 列数で割った数を超えたら文を分ける。件数が増えた日にだけ落ちる書き方にしない。
+ */
+const EXCLUSION_ROWS_PER_STATEMENT = Math.floor(D1_MAX_BOUND_PARAMS / EXCLUSION_COLUMNS);
+
+/**
+ * 1 件だけの除外と、選択したぶんをまとめた除外の両方を受ける。
+ *
+ * まとめて送れるようにするのは画面の都合ではない。一致した組は 1 か月で十数件あり、
+ * 1 件ずつ送るとそのたびに往復する。理由は選んだ全件で同じことが多い (「日付と金額が
+ * 一致するので二重登録」) ので、理由は 1 つだけ受け取り、鍵の配列に同じ理由を書く。
+ */
+const exclusionSchema = z.union([
+  z.object({ freeeKey: freeeKeyField, reason: z.string().trim().min(1).max(200) }),
+  z.object({
+    freeeKeys: z.array(freeeKeyField).min(1).max(MAX_EXCLUSION_ITEMS),
+    reason: z.string().trim().min(1).max(200),
+  }),
+]);
 
 totalCashflowRoute.post(
   '/total-cashflow/freee-exclusions',
@@ -228,17 +253,31 @@ totalCashflowRoute.post(
   async (c) => {
     const userId = c.get('userId');
     const db = getDb(c.env.DB);
-    const { freeeKey, reason } = c.req.valid('json');
+    const payload = c.req.valid('json');
+    const bulk = 'freeeKeys' in payload;
+    // 同じ鍵が 2 回来ても 1 文の中で同じ行を二度更新することはできない (SQLite が拒む)。
+    // 受け取った時点で畳んでおき、選び方によって保存の成否が変わらないようにする。
+    const keys = [...new Set(bulk ? payload.freeeKeys : [payload.freeeKey])];
     const now = new Date().toISOString();
-    await db
-      .insert(s.freeeDealExclusions)
-      .values({ userId, freeeKey, reason, createdAt: now, updatedAt: now })
-      .onConflictDoUpdate({
-        target: [s.freeeDealExclusions.userId, s.freeeDealExclusions.freeeKey],
-        // createdAt は最初の値を保つ。理由の書き直しで「いつ外したか」を失わない
-        set: { reason: sql`excluded.reason`, updatedAt: sql`excluded.updated_at` },
-      });
-    return c.json({ ok: true });
+    const rows = keys.map((freeeKey) => ({
+      userId,
+      freeeKey,
+      reason: payload.reason,
+      createdAt: now,
+      updatedAt: now,
+    }));
+
+    for (let at = 0; at < rows.length; at += EXCLUSION_ROWS_PER_STATEMENT) {
+      await db
+        .insert(s.freeeDealExclusions)
+        .values(rows.slice(at, at + EXCLUSION_ROWS_PER_STATEMENT))
+        .onConflictDoUpdate({
+          target: [s.freeeDealExclusions.userId, s.freeeDealExclusions.freeeKey],
+          // createdAt は最初の値を保つ。理由の書き直しで「いつ外したか」を失わない
+          set: { reason: sql`excluded.reason`, updatedAt: sql`excluded.updated_at` },
+        });
+    }
+    return bulk ? c.json({ ok: true, saved: rows.length }) : c.json({ ok: true });
   },
 );
 

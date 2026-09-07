@@ -337,6 +337,37 @@ describe('freee 全件の行き先と二重登録の除外', () => {
     expect(restored.months[0]!.bizExpense).toBe(bizBefore);
   });
 
+  /*
+    一致した組は 1 か月で十数件ある。1 件ずつ外させると同じ理由を何度も打つことになり、
+    そのたびに往復する。旧実装は freeeKey 単数しか受けないので、この検査は 400 で落ちる。
+  */
+  it('選んだぶんを 1 往復でまとめて外し、同じ鍵が重なっても落ちない', async () => {
+    const before = await load();
+    const targets = [...before.freeeOnly, ...before.matched].map((d) => d.freeeKey).slice(0, 2);
+    expect(targets).toHaveLength(2);
+
+    const response = await request('/total-cashflow/freee-exclusions', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      // 同じ鍵を混ぜる。1 文の中で同じ行を二度更新しようとすると SQLite が拒むので、
+      // 受け取った側で畳めていなければここで 500 になる
+      body: JSON.stringify({ freeeKeys: [...targets, targets[0]], reason: '日付と金額が一致' }),
+    });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ ok: true, saved: 2 });
+
+    const after = await load();
+    expect(after.excluded.map((d) => d.freeeKey).sort()).toEqual([...targets].sort());
+    // 理由は選んだ全件に同じものが付く。1 件だけ空になると、後から戻す判断ができない
+    expect(after.excluded.every((d) => d.reason === '日付と金額が一致')).toBe(true);
+    expect(after.coverage.matched + after.coverage.freeeOnly + after.coverage.excluded).toBe(
+      after.coverage.freeeTotal,
+    );
+
+    for (const key of targets) expect((await restore(key)).status).toBe(200);
+    expect((await load()).excluded).toHaveLength(0);
+  });
+
   it('理由の無い除外は受け付けない', async () => {
     const response = await request('/total-cashflow/freee-exclusions', {
       method: 'POST',

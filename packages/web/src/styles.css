@@ -4704,6 +4704,11 @@ label.check {
   gap: 6px;
   font-size: var(--fs-xs);
 }
+/* 一括で外すときの理由欄。行ごとの理由欄と同じ幅にして、同じ入力だと見た目で分かるようにする */
+.tcf-bulk input[type="text"] {
+  min-width: 10em;
+  max-width: 18em;
+}
 
 /* 候補が複数あるときの「どちらと組むか」。出所の語とラジオを 1 行に収める */
 .tcf-pick-freee {

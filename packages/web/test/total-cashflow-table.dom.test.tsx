@@ -578,21 +578,78 @@ describe('freee 全件の行き先を件数と中身で示す', () => {
     expect(posts[0]).toEqual({ method: 'DELETE', body: { freeeKey: 'v1:freee:three' } });
   });
 
-  it('二重登録として外すときは理由の記入を必ず挟む', async () => {
+  it('決め手の無い行では理由の記入を必ず挟む', async () => {
     const posts: unknown[] = [];
     const section = await openSection(posts);
 
-    fireEvent.click(within(section).getAllByRole('button', { name: '二重登録として外す' })[0]!);
+    // 相手のいない freee には決め手が無い。既定を置けないので空欄のまま出す
+    fireEvent.click(within(section).getAllByRole('button', { name: '二重登録として外す' })[1]!);
+    const field = within(section).getByLabelText('2026-08-05 架空アプリ を外す理由') as HTMLInputElement;
+    expect(field.value).toBe('');
     const submit = within(section).getByRole('button', { name: '外す' }) as HTMLButtonElement;
     // 理由が空のままでは押せない。理由の読めない除外を残さない
     expect(submit.disabled).toBe(true);
 
-    fireEvent.change(within(section).getByRole('textbox'), { target: { value: '二重登録' } });
+    fireEvent.change(field, { target: { value: '二重登録' } });
     fireEvent.click(submit);
     await waitFor(() => expect(posts).toHaveLength(1));
     expect(posts[0]).toEqual({
       method: 'POST',
-      body: { freeeKey: 'v1:freee:one', reason: '二重登録' },
+      body: { freeeKey: 'v1:freee:two', reason: '二重登録' },
+    });
+  });
+
+  /*
+    「決め手が日付と金額の一致なら、外す理由もそれが既定で入っていてほしい」への答え。
+    決め手はすでに画面に出ている。同じ言葉を毎回打たせる空欄には意味が無く、
+    打つのが面倒だから理由を省く方向へ働く。
+  */
+  it('一致した組の理由欄には決め手が既定で入り、書き換えたぶんが送られる', async () => {
+    const posts: unknown[] = [];
+    const section = await openSection(posts);
+
+    fireEvent.click(within(section).getAllByRole('button', { name: '二重登録として外す' })[0]!);
+    const field = within(section).getByLabelText('2026-08-05 架空クラウド を外す理由') as HTMLInputElement;
+    expect(field.value).toBe('日付と金額が一致');
+    const submit = within(section).getByRole('button', { name: '外す' }) as HTMLButtonElement;
+    // 既定が入っているので、そのまま押せる
+    expect(submit.disabled).toBe(false);
+
+    fireEvent.change(field, { target: { value: '日付と金額が一致 (領収書で確認)' } });
+    fireEvent.click(submit);
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toEqual({
+      method: 'POST',
+      body: { freeeKey: 'v1:freee:one', reason: '日付と金額が一致 (領収書で確認)' },
+    });
+  });
+
+  /*
+    「チェックをつけたものは、外す理由と外すを一括で変更できるようにしてほしい」への答え。
+    一致した組は同じ理由で並んで出るので、件数ぶん同じ操作を繰り返させない。
+    送るのは 1 往復。選ぶ件数によって保存の成否が変わらないようにする。
+  */
+  it('選んだ一致の組を、理由を 1 度書くだけでまとめて外せる', async () => {
+    const posts: unknown[] = [];
+    const section = await openSection(posts);
+    const bulkReason = within(section).getByLabelText('選択したものを外す理由') as HTMLInputElement;
+    expect(bulkReason.value).toBe('日付と金額が一致');
+
+    const run = within(section).getByRole('button', {
+      name: '選択したものを二重登録として外す',
+    }) as HTMLButtonElement;
+    // 何も選んでいないうちは押せない。空振りの往復を送らない
+    expect(run.disabled).toBe(true);
+
+    fireEvent.click(within(section).getByLabelText('すべて選ぶ'));
+    expect(within(section).getByText('1 件を選択中')).toBeTruthy();
+    fireEvent.change(bulkReason, { target: { value: 'freee を正として MF を外した' } });
+    fireEvent.click(run);
+
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toEqual({
+      method: 'POST',
+      body: { freeeKeys: ['v1:freee:one'], reason: 'freee を正として MF を外した' },
     });
   });
 });

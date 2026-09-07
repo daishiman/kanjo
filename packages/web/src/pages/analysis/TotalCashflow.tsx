@@ -241,10 +241,22 @@ const signed = (io: 'income' | 'expense', amount: number): string =>
  * ここで外したものだけが総額から落ちる。理由の記入を挟むのは、後から金額の差を追うときに
  * 「なぜ外したか」が読めないと元へ戻す判断ができないため。
  */
-function ExcludeControl({ freeeKey, label }: { freeeKey: string; label: string }) {
+function ExcludeControl({
+  freeeKey,
+  label,
+  defaultReason = '',
+}: {
+  freeeKey: string;
+  label: string;
+  /**
+   * 理由欄の初期値。決め手が画面に出ている行 (一致した組) では、その決め手をそのまま入れる。
+   * 同じ言葉を毎回打たせるための空欄には意味がなく、打つのが面倒だから理由を省く方向へ働く。
+   */
+  defaultReason?: string;
+}) {
   const client = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState(defaultReason);
   const run = useMutation({
     mutationFn: () =>
       api('/total-cashflow/freee-exclusions', {
@@ -253,7 +265,7 @@ function ExcludeControl({ freeeKey, label }: { freeeKey: string; label: string }
       }),
     onSuccess: () => {
       setOpen(false);
-      setReason('');
+      setReason(defaultReason);
       return client.invalidateQueries({ queryKey: ['total-cashflow'] });
     },
   });
@@ -307,6 +319,7 @@ function RestoreButton({ freeeKey }: { freeeKey: string }) {
 }
 
 const MATCHED_COLUMNS = [
+  { label: '選択', sortable: false },
   '発生日',
   'MF の内容',
   'freee の取引先',
@@ -328,6 +341,150 @@ const FREEE_ONLY_COLUMNS = [
 ];
 
 const EXCLUDED_COLUMNS = ['発生日', '取引先', '金額', '外した理由', { label: '操作', sortable: false }];
+
+/**
+ * 一致した組を外すときの既定の理由。決め手がそのまま理由になるので、同じ言葉を打たせない。
+ * 「自動」は決め方の呼び名であって理由ではないため、理由の文からは落とす。
+ */
+const AUTO_MATCH_REASON = '日付と金額が一致';
+const MANUAL_MATCH_REASON = 'あなたの判断で同じ取引とした';
+const matchReason = (by: ReconcileMatch['by']) => (by === 'auto' ? AUTO_MATCH_REASON : MANUAL_MATCH_REASON);
+
+/**
+ * 1 リクエストで外せる件数。API 側の MAX_EXCLUSION_ITEMS と同じ値で、超える分だけ文を分ける。
+ * 「すべて選ぶ」が数百件になる月でも、選んだ件数で成否が変わらないようにする。
+ */
+const MAX_EXCLUDE_PER_REQUEST = 200;
+
+/**
+ * 一致した組の表。決め手が画面に出ているので、外す理由の既定値もその決め手にする。
+ *
+ * まとめて外せる口を表の上に置くのは、freee 側の二重登録が「同じ理由で並んで出る」ためである。
+ * 一件ずつ開いて同じ言葉を打つ手順しか無いと、理由を書くこと自体が省かれる方へ働く。
+ */
+function MatchedTable({ matched }: { matched: readonly ReconcileMatch[] }) {
+  const client = useQueryClient();
+  const [picked, setPicked] = useState<ReadonlySet<string>>(new Set());
+  const [reason, setReason] = useState(AUTO_MATCH_REASON);
+
+  const keys = new Set(matched.map((m) => m.freeeKey));
+  // 外した組はこの表から消える。選択だけが残ると、いま何を選んでいるか画面と食い違う
+  const selected = [...picked].filter((k) => keys.has(k));
+  const allPicked = matched.length > 0 && selected.length === matched.length;
+
+  const excludeMany = useMutation({
+    mutationFn: async (input: { freeeKeys: readonly string[]; reason: string }) => {
+      for (let at = 0; at < input.freeeKeys.length; at += MAX_EXCLUDE_PER_REQUEST) {
+        await api('/total-cashflow/freee-exclusions', {
+          method: 'POST',
+          body: JSON.stringify({
+            freeeKeys: input.freeeKeys.slice(at, at + MAX_EXCLUDE_PER_REQUEST),
+            reason: input.reason,
+          }),
+        });
+      }
+    },
+    onSuccess: () => {
+      setPicked(new Set());
+      setReason(AUTO_MATCH_REASON);
+      return client.invalidateQueries({ queryKey: ['total-cashflow'] });
+    },
+  });
+
+  const toggle = (freeeKey: string) =>
+    setPicked((cur) => {
+      const next = new Set(cur);
+      if (!next.delete(freeeKey)) next.add(freeeKey);
+      return next;
+    });
+
+  return (
+    <>
+      <h3>一致した組 {matched.length} 件</h3>
+      {matched.length === 0 ? (
+        <p className="sub">日付と金額が一致した組はありません。</p>
+      ) : (
+        <>
+          <div className="tcf-bulk">
+            <label className="tcf-pick-all">
+              <input
+                type="checkbox"
+                checked={allPicked}
+                onChange={() => setPicked(allPicked ? new Set() : new Set(matched.map((m) => m.freeeKey)))}
+              />
+              すべて選ぶ
+            </label>
+            <span className="tcf-bulk-count">{selected.length} 件を選択中</span>
+            <input
+              type="text"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="外す理由"
+              aria-label="選択したものを外す理由"
+            />
+            <button
+              type="button"
+              className="btn primary"
+              disabled={excludeMany.isPending || selected.length === 0 || reason.trim().length === 0}
+              onClick={() => excludeMany.mutate({ freeeKeys: selected, reason: reason.trim() })}
+            >
+              選択したものを二重登録として外す
+            </button>
+            <button
+              type="button"
+              className="btn"
+              disabled={selected.length === 0}
+              onClick={() => setPicked(new Set())}
+            >
+              選択を解除
+            </button>
+          </div>
+          <DataTable className="data stack-sm" columns={MATCHED_COLUMNS}>
+            {matched.map((m) => {
+              const checked = picked.has(m.freeeKey);
+              return (
+                <tr key={m.freeeKey} className={checked ? 'tcf-picked' : undefined}>
+                  <td data-label="選択" className="tcf-pick">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggle(m.freeeKey)}
+                      aria-label={`${m.freee.date} ${m.freee.partner} を選ぶ`}
+                    />
+                  </td>
+                  <td data-label="発生日">
+                    {m.mf.date}
+                    {m.mf.date === m.freee.date ? null : <> / freee {m.freee.date}</>}
+                  </td>
+                  <td data-label="MF の内容">{m.mf.content}</td>
+                  <td data-label="freee の取引先">{m.freee.partner || '(取引先なし)'}</td>
+                  <td data-label="金額" className="num">
+                    {signed(m.freee.io, m.freee.amount)}
+                  </td>
+                  <td data-label="口座 (MF / freee)">
+                    {`${m.mf.institution || '(記載なし)'} / ${m.freee.settleAccount || '(記載なし)'}`}
+                  </td>
+                  <td data-label="分類 / 勘定科目">
+                    {`${[m.mf.major, m.mf.middle].filter(Boolean).join(' / ') || '(未分類)'} / ${m.freee.account}`}
+                  </td>
+                  {/* 自動と判断を見分けられるようにする。数が合わないとき、どちらを疑うかが変わる */}
+                  <td data-label="決め方">{m.by === 'auto' ? '自動 (日付と金額が一致)' : 'あなたの判断'}</td>
+                  <td data-label="操作">
+                    <ExcludeControl
+                      freeeKey={m.freeeKey}
+                      label={`${m.freee.date} ${m.freee.partner}`}
+                      defaultReason={matchReason(m.by)}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </DataTable>
+        </>
+      )}
+    </>
+  );
+}
 
 /**
  * freee 全件がどこへ行ったかを、件数の内訳と中身で示す節。
@@ -356,37 +513,7 @@ function FreeeCoverageSection({
         側の要確認 {coverage.mfReview} 件は MF 明細ごとに立つので、この和には入りません）。
       </p>
 
-      <h3>一致した組 {matched.length} 件</h3>
-      {matched.length === 0 ? (
-        <p className="sub">日付と金額が一致した組はありません。</p>
-      ) : (
-        <DataTable className="data stack-sm" columns={MATCHED_COLUMNS}>
-          {matched.map((m) => (
-            <tr key={m.freeeKey}>
-              <td data-label="発生日">
-                {m.mf.date}
-                {m.mf.date === m.freee.date ? null : <> / freee {m.freee.date}</>}
-              </td>
-              <td data-label="MF の内容">{m.mf.content}</td>
-              <td data-label="freee の取引先">{m.freee.partner || '(取引先なし)'}</td>
-              <td data-label="金額" className="num">
-                {signed(m.freee.io, m.freee.amount)}
-              </td>
-              <td data-label="口座 (MF / freee)">
-                {`${m.mf.institution || '(記載なし)'} / ${m.freee.settleAccount || '(記載なし)'}`}
-              </td>
-              <td data-label="分類 / 勘定科目">
-                {`${[m.mf.major, m.mf.middle].filter(Boolean).join(' / ') || '(未分類)'} / ${m.freee.account}`}
-              </td>
-              {/* 自動と判断を見分けられるようにする。数が合わないとき、どちらを疑うかが変わる */}
-              <td data-label="決め方">{m.by === 'auto' ? '自動 (日付と金額が一致)' : 'あなたの判断'}</td>
-              <td data-label="操作">
-                <ExcludeControl freeeKey={m.freeeKey} label={`${m.freee.date} ${m.freee.partner}`} />
-              </td>
-            </tr>
-          ))}
-        </DataTable>
-      )}
+      <MatchedTable matched={matched} />
 
       <h3>MF に相手がいない freee {freeeOnly.length} 件</h3>
       {freeeOnly.length === 0 ? (
