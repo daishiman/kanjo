@@ -260,3 +260,148 @@ describe('選択した要確認をまとめて判定する', () => {
     expect((await postVerdict('存在しない明細', 'same')).status).toBe(404);
   });
 });
+
+/*
+  「取り込んだ内容に抜け漏れはないでしょうか」への答えは、freee 全件が必ず
+  一致 / MF に相手なし / 除外 のどれか 1 つに入る分割で示す。旧実装は months と review しか
+  返しておらず、freee 側の行き先は画面から一切見えなかったので、この節は必ず落ちる。
+*/
+describe('freee 全件の行き先と二重登録の除外', () => {
+  type Split = {
+    matched: Array<{ freeeKey: string; by: string; mf: { content: string }; freee: { partner: string } }>;
+    freeeOnly: Array<{ freeeKey: string; partner: string; amount: number }>;
+    excluded: Array<{ freeeKey: string; partner: string; reason: string }>;
+    coverage: { freeeTotal: number; matched: number; freeeOnly: number; excluded: number; mfReview: number };
+    months: Array<{ bizExpense: number }>;
+  };
+
+  const load = async (): Promise<Split> =>
+    (await (await request('/total-cashflow?from=2026-08&to=2026-08')).json()) as Split;
+
+  const exclude = (freeeKey: string, reason: string) =>
+    request('/total-cashflow/freee-exclusions', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ freeeKey, reason }),
+    });
+
+  const restore = (freeeKey: string) =>
+    request('/total-cashflow/freee-exclusions', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ freeeKey }),
+    });
+
+  it('3 つの内訳を足すと freee の総数になる', async () => {
+    const body = await load();
+    expect(body.coverage.freeeTotal).toBeGreaterThan(0);
+    expect(body.coverage.matched + body.coverage.freeeOnly + body.coverage.excluded).toBe(
+      body.coverage.freeeTotal,
+    );
+    // 件数と実際の配列の長さが食い違わないこと (件数だけを別に数えていないか)
+    expect(body.matched).toHaveLength(body.coverage.matched);
+    expect(body.freeeOnly).toHaveLength(body.coverage.freeeOnly);
+    expect(body.excluded).toHaveLength(body.coverage.excluded);
+  });
+
+  it('一致した組は MF と freee の中身を持って返る', async () => {
+    // bulk-1 は直前の節で「同じ」に倒してある。名前と中身の両方が届くこと
+    const body = await load();
+    const hit = body.matched.find((m) => m.mf.content === '架空A');
+    expect(hit).toMatchObject({ by: 'user', freee: { partner: '架空A' } });
+    expect(hit?.freeeKey).toMatch(/^v1:freee:/);
+  });
+
+  it('二重登録として外すと事業費から落ち、外した一覧に理由つきで残る', async () => {
+    const before = await load();
+    const target = before.freeeOnly[0];
+    expect(target).toBeTruthy();
+    const bizBefore = before.months[0]!.bizExpense;
+
+    expect((await exclude(target!.freeeKey, '同じ支払を 2 回登録していた')).status).toBe(200);
+
+    const after = await load();
+    expect(after.months[0]!.bizExpense).toBe(bizBefore - target!.amount);
+    expect(after.excluded).toEqual([
+      expect.objectContaining({ freeeKey: target!.freeeKey, reason: '同じ支払を 2 回登録していた' }),
+    ]);
+    // 外した取引は「相手なし」からも消える。両方に出ると分割の和が壊れる
+    expect(after.freeeOnly.map((d) => d.freeeKey)).not.toContain(target!.freeeKey);
+    expect(after.coverage.matched + after.coverage.freeeOnly + after.coverage.excluded).toBe(
+      after.coverage.freeeTotal,
+    );
+
+    expect((await restore(target!.freeeKey)).status).toBe(200);
+    const restored = await load();
+    expect(restored.excluded).toHaveLength(0);
+    expect(restored.months[0]!.bizExpense).toBe(bizBefore);
+  });
+
+  it('理由の無い除外は受け付けない', async () => {
+    const response = await request('/total-cashflow/freee-exclusions', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ freeeKey: 'v1:freee:whatever', reason: '   ' }),
+    });
+    expect(response.status).toBe(400);
+  });
+});
+
+/*
+  同日同額の freee が 2 件あるとき、「同じ」だけでは機械はどちらとも読める。
+  利用者が名指しした相手が保存され、次に開いたときも同じ組に寄ることを固定する。
+*/
+describe('どの freee 取引と組むかの名指し', () => {
+  type Body = {
+    review: Array<{ txId: string; candidates: Array<{ freeeKey: string; partner: string }> }>;
+    matched: Array<{ mfTxId: string; freeeKey: string; freee: { partner: string } }>;
+  };
+  const load = async (): Promise<Body> =>
+    (await (await request('/total-cashflow?from=2026-09&to=2026-09')).json()) as Body;
+
+  beforeAll(async () => {
+    await database
+      .prepare(
+        `INSERT INTO freee_deals (user_id,month,date,io,partner,account_raw,account_norm,amount) VALUES
+          ('default','2026-09','2026-09-03','expense','架空アプリ A','通信費','サブスク・通信',2900),
+          ('default','2026-09','2026-09-03','expense','架空アプリ B','通信費','サブスク・通信',2900)`,
+      )
+      .run();
+    await database
+      .prepare(
+        `INSERT INTO mf_transactions
+          (user_id,tx_id,month,date,description,amount,category_major,category_mid,is_target,is_transfer,identity_stable)
+         VALUES ('default','pick-1','2026-09','2026-09-05','架空アプリ',-2900,'事業経費','通信費',1,0,1)`,
+      )
+      .run();
+  });
+
+  it('名指しした候補へ寄り、名指ししなかった方は相手なしとして残る', async () => {
+    const before = await load();
+    const target = before.review.find((r) => r.txId === 'pick-1');
+    expect(target?.candidates).toHaveLength(2);
+    const bKey = target!.candidates.find((c) => c.partner === '架空アプリ B')!.freeeKey;
+
+    const response = await request('/total-cashflow/verdicts', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ txId: 'pick-1', verdict: 'same', freeeKey: bKey }),
+    });
+    expect(response.status).toBe(200);
+
+    const after = await load();
+    expect(after.matched.find((m) => m.mfTxId === 'pick-1')).toMatchObject({
+      freeeKey: bKey,
+      freee: { partner: '架空アプリ B' },
+    });
+  });
+
+  it('名指しは保存され、要求をやり直しても同じ相手へ寄る', async () => {
+    const again = await load();
+    expect(again.matched.find((m) => m.mfTxId === 'pick-1')?.freee.partner).toBe('架空アプリ B');
+    const saved = await database
+      .prepare(`SELECT freee_key FROM duplicate_verdicts WHERE user_id='default' AND tx_id='pick-1'`)
+      .first<{ freee_key: string | null }>();
+    expect(saved?.freee_key).toMatch(/^v1:freee:/);
+  });
+});

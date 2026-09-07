@@ -136,6 +136,23 @@ export const duplicateVerdicts = sqliteTable('duplicate_verdicts', {
   fingerprintVersion: integer('fingerprint_version'),
   decidedAt: text('decided_at'),
   updatedAt: text('updated_at'),
+  /**
+   * 0037: 「同じ」と言ったときに、どの freee 取引と同じかの名指し。
+   * 候補が1件しかない判断では NULL のまま (名指しを必須にしない)。
+   */
+  freeeKey: text('freee_key'),
+});
+
+/**
+ * 0037: freee 側に同じ支払が二重登録されているときだけ、理由を付けて総額から外す。
+ * MF との突合 (どちらを正とするか) とは別の問題なので、別の表に持つ。
+ */
+export const freeeDealExclusions = sqliteTable('freee_deal_exclusions', {
+  userId: text('user_id').notNull(),
+  freeeKey: text('freee_key').notNull(),
+  reason: text('reason').notNull(),
+  createdAt: text('created_at'),
+  updatedAt: text('updated_at'),
 });
 
 /** 保有金融機関 → 名義 */

@@ -7,12 +7,13 @@ import { zValidator } from '@hono/zod-validator';
  */
 import {
   type DuplicateVerdict,
+  type FreeeExclusion,
   type MfTx,
   STABLE_KEY_VERSION,
   mfStableKey,
   totalCashflowReport,
 } from '@kanjo/core';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
@@ -44,7 +45,8 @@ function bindVerdicts(rows: readonly VerdictRow[], mfTx: readonly MfTx[]): Dupli
   const out: DuplicateVerdict[] = [];
   for (const tx of mfTx) {
     const hit = byTxId.get(tx.id) ?? byStableKey.get(mfStableKey(tx)) ?? null;
-    if (hit) out.push({ txId: tx.id, verdict: hit.verdict });
+    // freeeKey は「どの freee 取引と同じか」の名指し。無い判断 (候補が1件だった) は null のまま渡す
+    if (hit) out.push({ txId: tx.id, verdict: hit.verdict, freeeKey: hit.freeeKey });
   }
   return out;
 }
@@ -61,13 +63,18 @@ totalCashflowRoute.get('/total-cashflow', async (c) => {
   const { data, period } = await loadScoped(c);
   const months = new Set(data.months);
 
-  const [dealRows, verdictRows] = await Promise.all([
+  const [dealRows, verdictRows, exclusionRows] = await Promise.all([
     db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
     db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
+    db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),
   ]);
   const deals = dealRows.map(dealFromRow).filter((deal) => months.has(deal.month));
+  const exclusions: FreeeExclusion[] = exclusionRows.map((row) => ({
+    freeeKey: row.freeeKey,
+    reason: row.reason,
+  }));
 
-  const report = totalCashflowReport(data, deals, bindVerdicts(verdictRows, data.mfTx));
+  const report = totalCashflowReport(data, deals, bindVerdicts(verdictRows, data.mfTx), exclusions);
   return c.json({
     months: report.months,
     // mf と candidates をそのまま渡す。要確認は「理由を告げる」ためではなく
@@ -78,6 +85,12 @@ totalCashflowRoute.get('/total-cashflow', async (c) => {
       mf: item.mf,
       candidates: item.candidates,
     })),
+    // 一致した組・相手のいない freee・外した freee の三つを全部返す。
+    // 「抜け漏れはないか」に答えられるのは、freee 全件がこの三つのどれかに必ず入る形だけである。
+    matched: report.matched,
+    freeeOnly: report.freeeOnly,
+    excluded: report.excluded,
+    coverage: report.coverage,
     period,
   });
 });
@@ -85,6 +98,11 @@ totalCashflowRoute.get('/total-cashflow', async (c) => {
 const verdictItemSchema = z.object({
   txId: z.string().trim().min(1).max(120),
   verdict: z.enum(['same', 'different']),
+  /**
+   * どの freee 取引と同じかの名指し。候補が1件しかないときは省ける。
+   * 上限を長めに取るのは、鍵の材料に支払先名や勘定科目名がそのまま入るため。
+   */
+  freeeKey: z.string().trim().min(1).max(2_000).optional(),
 });
 
 /**
@@ -130,7 +148,7 @@ totalCashflowRoute.post('/total-cashflow/verdicts', zValidator('json', verdictSc
   const rows: (typeof s.duplicateVerdicts.$inferInsert)[] = [];
   const claimed = new Set<string>();
 
-  for (const { txId, verdict } of items) {
+  for (const { txId, verdict, freeeKey } of items) {
     const tx = all.mfTx.find((row) => row.id === txId);
     if (!tx) {
       rejected.push({ txId, reason: '対象の明細が見つかりません' });
@@ -162,6 +180,8 @@ totalCashflowRoute.post('/total-cashflow/verdicts', zValidator('json', verdictSc
       verdict,
       stableKey,
       fingerprintVersion: STABLE_KEY_VERSION,
+      // 「違う」の名指しは意味を持たない。持たせると、後で「同じ」に変えたとき古い相手が復活する
+      freeeKey: verdict === 'same' ? (freeeKey ?? null) : null,
       decidedAt: now,
       updatedAt: now,
     });
@@ -182,9 +202,60 @@ totalCashflowRoute.post('/total-cashflow/verdicts', zValidator('json', verdictSc
           verdict: sql`excluded.verdict`,
           stableKey: sql`excluded.stable_key`,
           fingerprintVersion: sql`excluded.fingerprint_version`,
+          freeeKey: sql`excluded.freee_key`,
           updatedAt: sql`excluded.updated_at`,
         },
       });
   }
   return bulk ? c.json({ ok: true, saved: rows.length, rejected }) : c.json({ ok: true });
 });
+
+/**
+ * freee 側の二重登録を、理由を付けて総額から外す / 戻す。
+ *
+ * 突合 (MF と freee のどちらを正とするか) とは別の入口にしてある。既定はあくまで freee が正で、
+ * ここに置いた鍵だけが事業費・事業収入から落ちる。理由を必須にするのは、後から金額の差を
+ * 追うときに「なぜ外したか」が読めないと元へ戻す判断ができないため。
+ */
+const exclusionSchema = z.object({
+  freeeKey: z.string().trim().min(1).max(2_000),
+  reason: z.string().trim().min(1).max(200),
+});
+
+totalCashflowRoute.post(
+  '/total-cashflow/freee-exclusions',
+  zValidator('json', exclusionSchema),
+  async (c) => {
+    const userId = c.get('userId');
+    const db = getDb(c.env.DB);
+    const { freeeKey, reason } = c.req.valid('json');
+    const now = new Date().toISOString();
+    await db
+      .insert(s.freeeDealExclusions)
+      .values({ userId, freeeKey, reason, createdAt: now, updatedAt: now })
+      .onConflictDoUpdate({
+        target: [s.freeeDealExclusions.userId, s.freeeDealExclusions.freeeKey],
+        // createdAt は最初の値を保つ。理由の書き直しで「いつ外したか」を失わない
+        set: { reason: sql`excluded.reason`, updatedAt: sql`excluded.updated_at` },
+      });
+    return c.json({ ok: true });
+  },
+);
+
+totalCashflowRoute.delete(
+  '/total-cashflow/freee-exclusions',
+  zValidator('json', z.object({ freeeKey: z.string().trim().min(1).max(2_000) })),
+  async (c) => {
+    const userId = c.get('userId');
+    const db = getDb(c.env.DB);
+    await db
+      .delete(s.freeeDealExclusions)
+      .where(
+        and(
+          eq(s.freeeDealExclusions.userId, userId),
+          eq(s.freeeDealExclusions.freeeKey, c.req.valid('json').freeeKey),
+        ),
+      );
+    return c.json({ ok: true });
+  },
+);

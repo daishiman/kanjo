@@ -19,6 +19,7 @@ import {
 import {
   DeletedNotice,
   DeletionPanel,
+  ImportDiscardBulkButton,
   ImportDiscardButton,
   ImportReplacementButton,
   ImportUndoButton,
@@ -378,9 +379,15 @@ export function ImportPage() {
   const historyPriority = (row: ImportHistoryRow) => {
     if (row.status !== 'committed' && row.status !== 'ok' && row.status !== 'duplicate') return 0;
     if (row.generationState === 'active' || row.generationState === 'partial') return 1;
-    return 2;
+    // 削除済みは片づける対象。置き換わっただけの履歴より手前に出す
+    if (row.generationState === 'deleted') return 2;
+    return 3;
   };
   const orderedHistoryRows = [...historyRows].sort((a, b) => historyPriority(a) - historyPriority(b));
+  /** データを消し終えて、取り消しの控えも残っていない履歴。まとめて片づけられる */
+  const tidyableHistoryIds = historyRows
+    .filter((row) => row.generationState === 'deleted' && row.discardable === true)
+    .map((row) => row.id);
   const failedHistoryCount = historyRows.filter(
     (row) =>
       row.status !== 'committed' &&
@@ -595,9 +602,12 @@ export function ImportPage() {
               <h2 id="import-history-title">取込履歴</h2>
             </div>
             {!history.isLoading && !history.isError && historyRows.length > 0 && (
-              <span className={`pill ${failedHistoryCount ? 'alert' : 'calm'}`}>
-                {failedHistoryCount ? `失敗 ${failedHistoryCount}件` : '要対応なし'}
-              </span>
+              <div className="import-history-summary">
+                <span className={`pill ${failedHistoryCount ? 'alert' : 'calm'}`}>
+                  {failedHistoryCount ? `失敗 ${failedHistoryCount}件` : '要対応なし'}
+                </span>
+                <ImportDiscardBulkButton importIds={tidyableHistoryIds} disabled={upload.isPending} />
+              </div>
             )}
           </div>
 
@@ -630,13 +640,24 @@ export function ImportPage() {
                     <div className="import-record-state">
                       {isComplete ? (
                         <>
-                          <span className="pill calm">
-                            {row.status === 'ok' ? '完了（旧履歴）' : '取込完了'}
-                          </span>
-                          {row.generationState === 'active' && <span className="pill calm">現在有効</span>}
-                          {row.generationState === 'partial' && <span className="pill warn">一部が有効</span>}
-                          {row.generationState === 'superseded' && (
-                            <span className="pill neutral">更新済み</span>
+                          {/* 削除済みは「取込完了」と重ねない。消したのに完了と出るのが誤解の元 */}
+                          {row.generationState === 'deleted' ? (
+                            <span className="pill neutral">データ削除済み</span>
+                          ) : (
+                            <>
+                              <span className="pill calm">
+                                {row.status === 'ok' ? '完了（旧履歴）' : '取込完了'}
+                              </span>
+                              {row.generationState === 'active' && (
+                                <span className="pill calm">現在有効</span>
+                              )}
+                              {row.generationState === 'partial' && (
+                                <span className="pill warn">一部が有効</span>
+                              )}
+                              {row.generationState === 'superseded' && (
+                                <span className="pill neutral">更新済み</span>
+                              )}
+                            </>
                           )}
                         </>
                       ) : row.status === 'duplicate' ? (
@@ -683,6 +704,12 @@ export function ImportPage() {
                           disabled={upload.isPending}
                           onDiscarded={reimportedFrom === row.id ? cancelPendingImport : undefined}
                         />
+                      )}
+                      {/* 削除済みなのに片づけられない理由は1つ。取り消しの控えがまだ生きている */}
+                      {row.generationState === 'deleted' && row.discardable !== true && (
+                        <span className="sub" title="削除を取り消せる間は、この履歴を残します">
+                          取り消し可能
+                        </span>
                       )}
                     </div>
 

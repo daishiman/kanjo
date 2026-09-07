@@ -11,6 +11,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
 import {
   type DuplicateVerdictValue,
+  type FreeeCoverage,
+  type ReconcileExcluded,
+  type ReconcileFreee,
+  type ReconcileMatch,
   type TotalCashflowMonth,
   type TotalCashflowResponse,
   type TotalCashflowReview,
@@ -108,6 +112,8 @@ const gapLabel = (dayGap: number): string =>
 interface CompareLine {
   key: string;
   source: 'MF' | 'freee';
+  /** freee 候補の行だけが持つ鍵。どの候補と組むかを名指しするために使う */
+  freeeKey?: string;
   date: ReactNode;
   content: string;
   amount: string;
@@ -160,6 +166,7 @@ function compareLines(item: TotalCashflowReview): CompareLine[] {
     ...item.candidates.map((cand) => ({
       key: `f${cand.freeeIndex}`,
       source: 'freee' as const,
+      freeeKey: cand.freeeKey,
       date: cand.date,
       content: cand.partner || '(取引先なし)',
       amount: `${sign}${num(cand.amount)}`,
@@ -185,6 +192,214 @@ function Stack({ lines, render }: { lines: CompareLine[]; render: (line: Compare
   );
 }
 
+/** 向きを語で書く。符号だけだと、収入の freee 取引が支出に見える */
+const ioLabel = (io: 'income' | 'expense'): string => (io === 'income' ? '収入' : '支出');
+
+/** 金額に向きの符号を付ける。実額だけを並べると、収入と支出が同じ見た目になる */
+const signed = (io: 'income' | 'expense', amount: number): string =>
+  `${io === 'income' ? '+' : '-'}${num(amount)}`;
+
+/**
+ * freee 取引を「二重登録として外す / 戻す」入口。
+ *
+ * 突合 (MF と freee のどちらを正とするか) とは別の操作として置く。既定はあくまで freee が正で、
+ * ここで外したものだけが総額から落ちる。理由の記入を挟むのは、後から金額の差を追うときに
+ * 「なぜ外したか」が読めないと元へ戻す判断ができないため。
+ */
+function ExcludeControl({ freeeKey, label }: { freeeKey: string; label: string }) {
+  const client = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState('');
+  const run = useMutation({
+    mutationFn: () =>
+      api('/total-cashflow/freee-exclusions', {
+        method: 'POST',
+        body: JSON.stringify({ freeeKey, reason: reason.trim() }),
+      }),
+    onSuccess: () => {
+      setOpen(false);
+      setReason('');
+      return client.invalidateQueries({ queryKey: ['total-cashflow'] });
+    },
+  });
+
+  if (!open)
+    return (
+      <button type="button" className="mini" onClick={() => setOpen(true)}>
+        二重登録として外す
+      </button>
+    );
+  return (
+    <span className="tcf-exclude-form">
+      <input
+        type="text"
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        placeholder="外す理由"
+        aria-label={`${label} を外す理由`}
+      />
+      <button
+        type="button"
+        className="mini"
+        disabled={run.isPending || reason.trim().length === 0}
+        onClick={() => run.mutate()}
+      >
+        外す
+      </button>
+      <button type="button" className="mini" onClick={() => setOpen(false)}>
+        やめる
+      </button>
+    </span>
+  );
+}
+
+/** 外した freee 取引を総額へ戻す */
+function RestoreButton({ freeeKey }: { freeeKey: string }) {
+  const client = useQueryClient();
+  const run = useMutation({
+    mutationFn: () =>
+      api('/total-cashflow/freee-exclusions', {
+        method: 'DELETE',
+        body: JSON.stringify({ freeeKey }),
+      }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ['total-cashflow'] }),
+  });
+  return (
+    <button type="button" className="mini" disabled={run.isPending} onClick={() => run.mutate()}>
+      総額へ戻す
+    </button>
+  );
+}
+
+const MATCHED_COLUMNS = [
+  '発生日',
+  'MF の内容',
+  'freee の取引先',
+  '金額',
+  '口座 (MF / freee)',
+  '分類 / 勘定科目',
+  '決め方',
+  { label: '操作', sortable: false },
+];
+
+const FREEE_ONLY_COLUMNS = [
+  '発生日',
+  '取引先',
+  '向き',
+  '金額',
+  '決済口座',
+  '勘定科目',
+  { label: '操作', sortable: false },
+];
+
+const EXCLUDED_COLUMNS = ['発生日', '取引先', '金額', '外した理由', { label: '操作', sortable: false }];
+
+/**
+ * freee 全件がどこへ行ったかを、件数の内訳と中身で示す節。
+ *
+ * 「取り込んだ内容に抜け漏れはないか」に答えられるのは、freee の総数が
+ * 一致 + 相手なし + 除外 に必ず割れる形だけである。一致した組を画面に出さないと、
+ * 寄った件数が正しいかを利用者が確かめる手立てが無い。
+ */
+function FreeeCoverageSection({
+  coverage,
+  matched,
+  freeeOnly,
+  excluded,
+}: {
+  coverage: FreeeCoverage;
+  matched: readonly ReconcileMatch[];
+  freeeOnly: readonly ReconcileFreee[];
+  excluded: readonly ReconcileExcluded[];
+}) {
+  return (
+    <section className="card scroll-x" aria-label="freee 取引の行き先">
+      <h2>取り込んだ freee {coverage.freeeTotal} 件の行き先</h2>
+      <p className="sub">
+        一致 {coverage.matched} 件 ＋ MF に相手なし {coverage.freeeOnly} 件 ＋ 二重登録として外した{' '}
+        {coverage.excluded} 件 ＝ {coverage.freeeTotal} 件。この 3 つで freee の全件が説明されます（MF
+        側の要確認 {coverage.mfReview} 件は MF 明細ごとに立つので、この和には入りません）。
+      </p>
+
+      <h3>一致した組 {matched.length} 件</h3>
+      {matched.length === 0 ? (
+        <p className="sub">日付と金額が一致した組はありません。</p>
+      ) : (
+        <DataTable className="data stack-sm" columns={MATCHED_COLUMNS}>
+          {matched.map((m) => (
+            <tr key={m.freeeKey}>
+              <td data-label="発生日">
+                {m.mf.date}
+                {m.mf.date === m.freee.date ? null : <> / freee {m.freee.date}</>}
+              </td>
+              <td data-label="MF の内容">{m.mf.content}</td>
+              <td data-label="freee の取引先">{m.freee.partner || '(取引先なし)'}</td>
+              <td data-label="金額" className="num">
+                {signed(m.freee.io, m.freee.amount)}
+              </td>
+              <td data-label="口座 (MF / freee)">
+                {`${m.mf.institution || '(記載なし)'} / ${m.freee.settleAccount || '(記載なし)'}`}
+              </td>
+              <td data-label="分類 / 勘定科目">
+                {`${[m.mf.major, m.mf.middle].filter(Boolean).join(' / ') || '(未分類)'} / ${m.freee.account}`}
+              </td>
+              {/* 自動と判断を見分けられるようにする。数が合わないとき、どちらを疑うかが変わる */}
+              <td data-label="決め方">{m.by === 'auto' ? '自動 (日付と金額が一致)' : 'あなたの判断'}</td>
+              <td data-label="操作">
+                <ExcludeControl freeeKey={m.freeeKey} label={`${m.freee.date} ${m.freee.partner}`} />
+              </td>
+            </tr>
+          ))}
+        </DataTable>
+      )}
+
+      <h3>MF に相手がいない freee {freeeOnly.length} 件</h3>
+      {freeeOnly.length === 0 ? (
+        <p className="sub">MF に相手のいない freee 取引はありません。</p>
+      ) : (
+        <DataTable className="data stack-sm" columns={FREEE_ONLY_COLUMNS}>
+          {freeeOnly.map((d) => (
+            <tr key={d.freeeKey}>
+              <td data-label="発生日">{d.date}</td>
+              <td data-label="取引先">{d.partner || '(取引先なし)'}</td>
+              <td data-label="向き">{ioLabel(d.io)}</td>
+              <td data-label="金額" className="num">
+                {signed(d.io, d.amount)}
+              </td>
+              <td data-label="決済口座">{d.settleAccount || '(記載なし)'}</td>
+              <td data-label="勘定科目">{d.account}</td>
+              <td data-label="操作">
+                <ExcludeControl freeeKey={d.freeeKey} label={`${d.date} ${d.partner}`} />
+              </td>
+            </tr>
+          ))}
+        </DataTable>
+      )}
+
+      <h3>二重登録として外した {excluded.length} 件</h3>
+      {excluded.length === 0 ? (
+        <p className="sub">総額から外した freee 取引はありません。</p>
+      ) : (
+        <DataTable className="data stack-sm" columns={EXCLUDED_COLUMNS}>
+          {excluded.map((d) => (
+            <tr key={d.freeeKey}>
+              <td data-label="発生日">{d.date}</td>
+              <td data-label="取引先">{d.partner || '(取引先なし)'}</td>
+              <td data-label="金額" className="num">
+                {signed(d.io, d.amount)}
+              </td>
+              <td data-label="外した理由">{d.reason}</td>
+              <td data-label="操作">
+                <RestoreButton freeeKey={d.freeeKey} />
+              </td>
+            </tr>
+          ))}
+        </DataTable>
+      )}
+    </section>
+  );
+}
+
 /** 要確認の表の列。チェック欄と判定欄は並べ替えの対象にしない */
 const REVIEW_COLUMNS = [
   { label: <span className="visually-hidden">選択</span>, sortable: false, className: 'tcf-pick' },
@@ -206,19 +421,30 @@ export function TotalCashflowPage() {
     queryFn: () => api<TotalCashflowResponse>(withPeriod('/total-cashflow')),
   });
   const [picked, setPicked] = useState<ReadonlySet<string>>(new Set());
+  /**
+   * 明細ごとに「どの freee 候補と組むか」。同じ日・同じ額の候補が複数あるとき、
+   * 名指ししないと機械が近い順に片方を選ぶ。選んだ相手と実際に寄る相手をずらさないために持つ。
+   */
+  const [pickedFreee, setPickedFreee] = useState<Readonly<Record<string, string>>>({});
 
   const decide = useMutation({
-    mutationFn: (input: { txIds: readonly string[]; verdict: DuplicateVerdictValue }) =>
-      api('/total-cashflow/verdicts', {
+    mutationFn: (input: { txIds: readonly string[]; verdict: DuplicateVerdictValue }) => {
+      // 「違う」に相手の名指しは意味を持たない。付けて送ると、後で「同じ」に変えたとき古い相手が復活する
+      const keyOf = (txId: string) =>
+        input.verdict === 'same' && pickedFreee[txId] ? { freeeKey: pickedFreee[txId] } : {};
+      return api('/total-cashflow/verdicts', {
         method: 'POST',
         // 1 件のときは従来どおり単票で送る。まとめて送ると「その 1 件がなぜ保存できないか」が
         // 件ごとの理由の配列になり、その場で出すべき 404/409 の言葉が薄まる
         body: JSON.stringify(
           input.txIds.length === 1
-            ? { txId: input.txIds[0], verdict: input.verdict }
-            : { items: input.txIds.map((txId) => ({ txId, verdict: input.verdict })) },
+            ? { txId: input.txIds[0], verdict: input.verdict, ...keyOf(input.txIds[0]!) }
+            : {
+                items: input.txIds.map((txId) => ({ txId, verdict: input.verdict, ...keyOf(txId) })),
+              },
         ),
-      }),
+      });
+    },
     // 判断は帰属を動かすので、一覧表と要確認キューを両方引き直す
     onSuccess: () => {
       setPicked(new Set());
@@ -249,6 +475,13 @@ export function TotalCashflowPage() {
   return (
     <>
       <TotalCashflowTable rows={q.data.months} />
+
+      <FreeeCoverageSection
+        coverage={q.data.coverage}
+        matched={q.data.matched}
+        freeeOnly={q.data.freeeOnly}
+        excluded={q.data.excluded}
+      />
 
       {/* 節の名前は「重複の要確認」で固定する。見出しは件数を持つので、名前に使うと
           件数が変わるたびに節の呼び名まで変わってしまう */}
@@ -320,8 +553,30 @@ export function TotalCashflowPage() {
                         aria-label={`${item.mf.date} ${item.mf.content} ${num(item.mf.amount)} を選ぶ`}
                       />
                     </td>
+                    {/* 候補が複数あるときだけ選べるようにする。1 件しかない組に選択肢を出しても、
+                        押す操作が増えるだけで判断は変わらない */}
                     <td data-label="出所">
-                      <Stack lines={lines} render={(line) => line.source} />
+                      <Stack
+                        lines={lines}
+                        render={(line) =>
+                          line.freeeKey && item.candidates.length > 1 ? (
+                            <label className="tcf-pick-freee">
+                              <input
+                                type="radio"
+                                name={`freee-${item.txId}`}
+                                checked={pickedFreee[item.txId] === line.freeeKey}
+                                onChange={() =>
+                                  setPickedFreee((cur) => ({ ...cur, [item.txId]: line.freeeKey as string }))
+                                }
+                                aria-label={`${line.content} を組む相手にする`}
+                              />
+                              freee
+                            </label>
+                          ) : (
+                            line.source
+                          )
+                        }
+                      />
                     </td>
                     <td data-label="発生日">
                       <Stack lines={lines} render={(line) => line.date} />

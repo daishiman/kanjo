@@ -3544,6 +3544,14 @@ label.check {
 .import-section-heading.compact {
   align-items: center;
 }
+/* 見出し右の状態と片づけの入口。狭い幅では折り返して重ならないようにする */
+.import-history-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
 .import-section-heading h2 {
   margin: 2px 0 0;
   font-size: var(--fs-xl);
@@ -4674,4 +4682,24 @@ label.check {
   align-items: center;
   gap: 6px;
   font-size: var(--fs-xs);
+}
+
+/* 候補が複数あるときの「どちらと組むか」。出所の語とラジオを 1 行に収める */
+.tcf-pick-freee {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 二重登録として外すときの理由記入。狭い幅では折り返して表の列を押し広げない */
+.tcf-exclude-form {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.tcf-exclude-form input {
+  min-width: 8em;
+  max-width: 14em;
 }

@@ -7,8 +7,15 @@
  */
 import { canonicalEncode } from './fingerprint.js';
 
-/** 帳簿本体を変えずに履歴だけを破棄できる終端状態。legacy `ok` は含めない。 */
-export const IMPORT_HISTORY_DISCARDABLE_STATUSES = ['failed', 'duplicate'] as const;
+/**
+ * 帳簿本体を変えずに履歴だけを破棄できる終端状態。legacy `ok` は含めない。
+ *
+ * `committed` を含めるのは「取り込んだデータを消したのに履歴だけ残る」状態を残さないため。
+ * 帳簿を壊さない保証は状態名ではなく、この下の3つの参照検査 (active pointer / canonical 行 /
+ * 取り消し用の退避) が持っている。committed でもその3つが全て0なら、この履歴が指すデータは
+ * もうどこにも無く、行を消しても失われるものが無い。
+ */
+export const IMPORT_HISTORY_DISCARDABLE_STATUSES = ['failed', 'duplicate', 'committed'] as const;
 export type ImportHistoryDiscardBlock =
   | 'in_progress'
   | 'legacy'
@@ -50,6 +57,38 @@ export function importHistoryCancelable(input: {
   canonicalRowCount: number;
 }): boolean {
   return input.status === 'committed' && (input.activeTargetCount > 0 || input.canonicalRowCount > 0);
+}
+
+/** 取込履歴の世代表示。画面のバッジはこの値だけを根拠にする。 */
+export type ImportGenerationState = 'active' | 'partial' | 'superseded' | 'deleted' | 'legacy';
+
+/**
+ * 取込履歴の世代を、状態名ではなく「この取込が持ち込んだ対象を今も誰かが所有しているか」で決める。
+ *
+ * `superseded` (新しい取込に置き換わった) と `deleted` (データを消した) は
+ * どちらもこの取込が所有権を失った状態だが、利用者にとっては別物である。
+ * 分かれ目は他の取込が同じ対象を引き取ったかどうかなので、この取込の active pointer
+ * だけでなく、全取込が所有する対象キーの集合 (`ownedTargetKeys`) を材料に取る。
+ *
+ * canonicalRowCount は、所有権が誰にも無いのに行だけ残っている取り込み方
+ * (assets 等、pointer を持たない経路) を「削除済み」と言い切らないための保険。
+ */
+export function importGenerationState(input: {
+  status: string | null;
+  targetKeys: readonly string[];
+  ownTargetCount: number;
+  ownedTargetKeys: ReadonlySet<string>;
+  canonicalRowCount: number;
+}): ImportGenerationState | null {
+  if (input.status === 'ok') return 'legacy';
+  if (input.status !== 'committed') return null;
+  const targetCount = input.targetKeys.length;
+  if (targetCount > 0 && input.ownTargetCount === targetCount) return 'active';
+  if (input.ownTargetCount > 0) return 'partial';
+  if (targetCount === 0) return 'superseded';
+  const survives = input.targetKeys.some((key) => input.ownedTargetKeys.has(key));
+  if (survives) return 'superseded';
+  return input.canonicalRowCount > 0 ? 'superseded' : 'deleted';
 }
 
 /** 取込の種類。`imports.kind` と同じ語を使う。 */

@@ -55,6 +55,7 @@ const seedImport = async (input: {
   runId?: string | null;
   duplicateOf?: number | null;
   userId?: string;
+  targetKeys?: string[];
 }) => {
   const userId = input.userId ?? 'default';
   if (input.runId) {
@@ -72,9 +73,17 @@ const seedImport = async (input: {
       `INSERT INTO imports
          (id,user_id,filename,kind,months,row_count,status,r2_key,duplicate_of,run_id,target_keys,
           failure_reason,created_at)
-       VALUES (?,?,'架空履歴.csv','mf','2026-09',0,?,?,?,?, '[]','架空の失敗理由','2026-09-01T00:00:00.000Z')`,
+       VALUES (?,?,'架空履歴.csv','mf','2026-09',0,?,?,?,?,?,'架空の失敗理由','2026-09-01T00:00:00.000Z')`,
     )
-    .bind(input.id, userId, input.status, input.r2Key ?? null, input.duplicateOf ?? null, input.runId ?? null)
+    .bind(
+      input.id,
+      userId,
+      input.status,
+      input.r2Key ?? null,
+      input.duplicateOf ?? null,
+      input.runId ?? null,
+      JSON.stringify(input.targetKeys ?? []),
+    )
     .run();
 };
 
@@ -194,16 +203,37 @@ describe('取込履歴の破棄', () => {
     await expect(files.head(r2Key)).resolves.toBeNull();
   });
 
-  it.each(['processing', 'applying', 'ok', 'committed', 'unknown'])(
-    '%s は履歴だけを破棄できない',
-    async (status) => {
-      await seedImport({ id: 20, status });
-      const checked = await preflight(20);
-      expect(checked.response.status).toBe(409);
-      expect(checked.body.error?.code).toMatch(/^import_history_discard_/);
-      await expect(d1.prepare('SELECT COUNT(*) AS n FROM imports').first<number>('n')).resolves.toBe(1);
-    },
-  );
+  it.each(['processing', 'applying', 'ok', 'unknown'])('%s は履歴だけを破棄できない', async (status) => {
+    await seedImport({ id: 20, status });
+    const checked = await preflight(20);
+    expect(checked.response.status).toBe(409);
+    expect(checked.body.error?.code).toMatch(/^import_history_discard_/);
+    await expect(d1.prepare('SELECT COUNT(*) AS n FROM imports').first<number>('n')).resolves.toBe(1);
+  });
+
+  it('データを消し終えたcommitted履歴は片づけられる', async () => {
+    await seedImport({ id: 21, status: 'committed', targetKeys: ['mf:2026-09'] });
+    const checked = await preflight(21);
+    expect(checked.response.status).toBe(200);
+    await expect(
+      (await request('/imports/21/discard', { fingerprint: checked.body.fingerprint })).json(),
+    ).resolves.toEqual({ discarded: true, original: 'not_recorded' });
+    await expect(d1.prepare('SELECT COUNT(*) AS n FROM imports').first<number>('n')).resolves.toBe(0);
+  });
+
+  it('committed履歴でも取消用の退避が残っていれば片づけない', async () => {
+    await seedImport({ id: 22, status: 'committed', targetKeys: ['mf:2026-09'] });
+    await d1
+      .prepare(
+        `INSERT INTO import_deleted_targets (user_id,operation_id,import_id,target_key,content_hash,updated_at)
+         VALUES ('default','op-架空',22,'mf:2026-09','v4:架空','2026-09-01T00:00:00.000Z')`,
+      )
+      .run();
+    const checked = await preflight(22);
+    expect(checked.response.status).toBe(409);
+    expect(checked.body.error?.code).toBe('import_history_discard_has_undo_snapshot');
+    await expect(d1.prepare('SELECT COUNT(*) AS n FROM imports').first<number>('n')).resolves.toBe(1);
+  });
 
   it('active pointer・canonical行・undo退避のどれかが参照中なら拒否する', async () => {
     await seedImport({ id: 30, status: 'failed' });
@@ -334,6 +364,10 @@ describe('取込履歴の破棄', () => {
     await seedImport({ id: 81, status: 'committed' });
     await seedImport({ id: 82, status: 'committed' });
     await seedImport({ id: 83, status: 'failed' });
+    // 84 は対象を誰も持っていない=データを消した。85 は同じ対象を86が引き取った=置き換わった
+    await seedImport({ id: 84, status: 'committed', targetKeys: ['mf:2026-08'] });
+    await seedImport({ id: 85, status: 'committed', targetKeys: ['mf:2026-07'] });
+    await seedImport({ id: 86, status: 'committed', targetKeys: ['mf:2026-07'] });
     await d1.prepare("UPDATE imports SET kind='json' WHERE id=80").run();
     await d1.prepare("UPDATE imports SET kind='assets' WHERE id=82").run();
     await d1
@@ -347,6 +381,12 @@ describe('取込履歴の破棄', () => {
       .prepare(
         `INSERT INTO import_active_targets (user_id,target_key,content_hash,import_id,updated_at)
          VALUES ('default','assets:2026-09','v4:架空',82,'2026-09-01T00:00:00.000Z')`,
+      )
+      .run();
+    await d1
+      .prepare(
+        `INSERT INTO import_active_targets (user_id,target_key,content_hash,import_id,updated_at)
+         VALUES ('default','mf:2026-07','v4:架空',86,'2026-09-01T00:00:00.000Z')`,
       )
       .run();
 
@@ -367,10 +407,11 @@ describe('取込履歴の破棄', () => {
       cancelable: true,
       discardable: false,
     });
+    // 対象キーを記録していない古い履歴は、消したのか置き換わったのか言い切らない
     expect(byId.get(81)).toMatchObject({
       generationState: 'superseded',
       cancelable: false,
-      discardable: false,
+      discardable: true,
     });
     expect(byId.get(82)).toMatchObject({
       generationState: 'partial',
@@ -381,6 +422,21 @@ describe('取込履歴の破棄', () => {
       generationState: null,
       cancelable: false,
       discardable: true,
+    });
+    expect(byId.get(84)).toMatchObject({
+      generationState: 'deleted',
+      cancelable: false,
+      discardable: true,
+    });
+    expect(byId.get(85)).toMatchObject({
+      generationState: 'superseded',
+      cancelable: false,
+      discardable: true,
+    });
+    expect(byId.get(86)).toMatchObject({
+      generationState: 'active',
+      cancelable: true,
+      discardable: false,
     });
   });
 });

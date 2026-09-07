@@ -49,6 +49,21 @@ const row = (over: Record<string, unknown> = {}) => ({
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
+/**
+ * `/total-cashflow` の応答一式。matched / freeeOnly / excluded / coverage は
+ * 「freee 全件がどこへ行ったか」を答えるために常に返る。省略できる形にすると、
+ * 画面が欠けた応答でも動いてしまい、抜け漏れの検査にならない。
+ */
+const payload = (over: Record<string, unknown> = {}) => ({
+  months: [row()],
+  review: [],
+  matched: [],
+  freeeOnly: [],
+  excluded: [],
+  coverage: { freeeTotal: 0, matched: 0, freeeOnly: 0, excluded: 0, mfReview: 0 },
+  ...over,
+});
+
 function wrap(node: ReactNode) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
@@ -112,7 +127,7 @@ describe('受入A7 一覧表の 9 列が常時表示される', () => {
     // ここが再計算されると、どちらが正しいかを利用者が判断できなくなる。
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => json({ months: [row({ totalBalance: 999 })], review: [] })),
+      vi.fn(async () => json(payload({ months: [row({ totalBalance: 999 })] }))),
     );
     wrap(<TotalCashflowPage />);
 
@@ -163,6 +178,7 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
       candidates: [
         {
           freeeIndex: 4,
+          freeeKey: 'v1:freee:aws',
           date: '2026-01-17',
           partner: 'Amazon Web Services',
           amount: 3300,
@@ -190,7 +206,7 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
   it('候補があれば件数と理由をそれぞれ出す', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => json({ months: [row({ reviewCount: 2 })], review })),
+      vi.fn(async () => json(payload({ months: [row({ reviewCount: 2 })], review }))),
     );
     wrap(<TotalCashflowPage />);
 
@@ -219,7 +235,7 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
   it('MF 側の中身と freee 側の候補を 1 行の中の同じ列へ並べる', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => json({ months: [row({ reviewCount: 2 })], review })),
+      vi.fn(async () => json(payload({ months: [row({ reviewCount: 2 })], review }))),
     );
     wrap(<TotalCashflowPage />);
 
@@ -251,7 +267,7 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
   it('freee 側に候補が無いときは、空欄ではなく「相手がいない」と書く', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => json({ months: [row({ reviewCount: 2 })], review })),
+      vi.fn(async () => json(payload({ months: [row({ reviewCount: 2 })], review }))),
     );
     wrap(<TotalCashflowPage />);
 
@@ -266,7 +282,7 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     // 空欄ではなく語で断ることが受入の要求。
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => json({ months: [row({ reviewCount: 0 })], review: [] })),
+      vi.fn(async () => json(payload({ months: [row({ reviewCount: 0 })] }))),
     );
     wrap(<TotalCashflowPage />);
 
@@ -301,6 +317,7 @@ describe('要確認は選んでまとめて判定できる', () => {
     candidates: [
       {
         freeeIndex: 0,
+        freeeKey: `v1:freee:note#${txId}`,
         date: '2026-01-01',
         partner: 'note株式会社',
         amount: 5980,
@@ -324,7 +341,7 @@ describe('要確認は選んでまとめて判定できる', () => {
           posts.push(JSON.parse(String(init.body)));
           return json({ ok: true, saved: 1, rejected: [] });
         }
-        return json({ months: [row({ reviewCount: review.length })], review });
+        return json(payload({ months: [row({ reviewCount: review.length })], review }));
       }),
     );
     return posts;
@@ -399,5 +416,198 @@ describe('要確認は選んでまとめて判定できる', () => {
 
     await waitFor(() => expect(posts).toHaveLength(1));
     expect(posts[0]).toEqual({ txId: 'b', verdict: 'different' });
+  });
+});
+
+/*
+  「取り込んだ内容に抜け漏れはないでしょうか」「一致しているものが表示されていない」への答え。
+  一致した組を画面に出さない限り、寄った件数が正しいかを利用者が確かめる手立てが無い。
+  件数は 3 つの内訳が freee 総数へ足し合わさる形で見せる。
+*/
+describe('freee 全件の行き先を件数と中身で示す', () => {
+  const freee = (over: Record<string, unknown> = {}) => ({
+    freeeIndex: 0,
+    freeeKey: 'v1:freee:one',
+    month: '2026-08',
+    date: '2026-08-05',
+    partner: '架空クラウド',
+    amount: 3300,
+    io: 'expense' as const,
+    account: '通信費',
+    settleAccount: '三井住友',
+    ...over,
+  });
+  const mfSide = {
+    date: '2026-08-05',
+    displayDate: '08/05',
+    content: 'アマゾンウェブサービス',
+    amount: 3300,
+    io: 'expense' as const,
+    institution: '三井住友カード',
+    major: '通信費',
+    middle: 'サーバー',
+    memo: '',
+  };
+  const body = payload({
+    matched: [
+      { mfTxId: 'mf-1', freeeIndex: 0, freeeKey: 'v1:freee:one', by: 'auto', mf: mfSide, freee: freee() },
+    ],
+    freeeOnly: [freee({ freeeIndex: 1, freeeKey: 'v1:freee:two', partner: '架空アプリ', amount: 2900 })],
+    excluded: [
+      {
+        ...freee({ freeeIndex: 2, freeeKey: 'v1:freee:three', partner: '架空アプリ', amount: 2900 }),
+        reason: '同じ支払を 2 回登録していた',
+      },
+    ],
+    coverage: { freeeTotal: 3, matched: 1, freeeOnly: 1, excluded: 1, mfReview: 0 },
+  });
+
+  const openSection = async (posts: unknown[] = []) => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.method && init.method !== 'GET') {
+          posts.push({ method: init.method, body: JSON.parse(String(init.body)) });
+          return json({ ok: true });
+        }
+        return json(body);
+      }),
+    );
+    wrap(<TotalCashflowPage />);
+    return await screen.findByRole('region', { name: 'freee 取引の行き先' });
+  };
+
+  it('一致・相手なし・除外の件数が freee の総数へ足し合わさる形で出る', async () => {
+    const section = await openSection();
+    expect(within(section).getByRole('heading', { level: 2 }).textContent).toBe(
+      '取り込んだ freee 3 件の行き先',
+    );
+    // 内訳を足すと総数になることを、画面の文言そのもので固定する
+    const summary = section.textContent ?? '';
+    expect(summary).toContain('一致 1 件');
+    expect(summary).toContain('MF に相手なし 1 件');
+    expect(summary).toContain('二重登録として外した 1 件');
+    expect(summary).toContain('＝ 3 件');
+  });
+
+  it('一致した組は MF と freee の両方の中身を並べ、自動かあなたの判断かを書く', async () => {
+    const section = await openSection();
+    const table = within(section).getAllByRole('table')[0]!;
+    const cells = within(table)
+      .getAllByRole('cell')
+      .map((c) => c.textContent);
+    expect(cells).toContain('アマゾンウェブサービス');
+    expect(cells).toContain('架空クラウド');
+    expect(cells).toContain('-3,300');
+    expect(cells).toContain('自動 (日付と金額が一致)');
+  });
+
+  it('外した取引は理由つきで残り、総額へ戻せる', async () => {
+    const posts: unknown[] = [];
+    const section = await openSection(posts);
+    expect(section.textContent).toContain('同じ支払を 2 回登録していた');
+
+    fireEvent.click(within(section).getByRole('button', { name: '総額へ戻す' }));
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toEqual({ method: 'DELETE', body: { freeeKey: 'v1:freee:three' } });
+  });
+
+  it('二重登録として外すときは理由の記入を必ず挟む', async () => {
+    const posts: unknown[] = [];
+    const section = await openSection(posts);
+
+    fireEvent.click(within(section).getAllByRole('button', { name: '二重登録として外す' })[0]!);
+    const submit = within(section).getByRole('button', { name: '外す' }) as HTMLButtonElement;
+    // 理由が空のままでは押せない。理由の読めない除外を残さない
+    expect(submit.disabled).toBe(true);
+
+    fireEvent.change(within(section).getByRole('textbox'), { target: { value: '二重登録' } });
+    fireEvent.click(submit);
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toEqual({
+      method: 'POST',
+      body: { freeeKey: 'v1:freee:one', reason: '二重登録' },
+    });
+  });
+});
+
+/*
+  同じ日に同じ額の freee 取引が複数あるとき、「同じ取引」だけでは機械にはどちらとも読める。
+  利用者が選んだ相手を送れないと、見て決めた組と実際に寄る組がずれる。
+*/
+describe('候補が複数あるときは組む相手を選べる', () => {
+  const cand = (freeeIndex: number, partner: string) => ({
+    freeeIndex,
+    freeeKey: `v1:freee:${partner}`,
+    date: '2026-08-09',
+    partner,
+    amount: 2900,
+    account: '通信費',
+    settleAccount: '三井住友',
+    dayGap: 3,
+    accountConflict: false,
+  });
+  const two: TotalCashflowReview = {
+    txId: 'mf-pick',
+    reason: '発生日が一致しません',
+    mf: {
+      date: '2026-08-12',
+      displayDate: '08/12',
+      content: '架空アプリ',
+      amount: 2900,
+      io: 'expense',
+      institution: '三井住友カード',
+      major: '通信費',
+      middle: 'サブスク',
+      memo: '',
+    },
+    candidates: [cand(0, 'A社'), cand(1, 'B社')],
+  };
+  const one: TotalCashflowReview = { ...two, txId: 'mf-single', candidates: [cand(0, 'A社')] };
+
+  const open = async (review: TotalCashflowReview[]) => {
+    const posts: unknown[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.method === 'POST') {
+          posts.push(JSON.parse(String(init.body)));
+          return json({ ok: true });
+        }
+        return json(payload({ months: [row({ reviewCount: review.length })], review }));
+      }),
+    );
+    wrap(<TotalCashflowPage />);
+    return { section: await screen.findByRole('region', { name: '重複の要確認' }), posts };
+  };
+
+  it('選んだ候補が「同じ取引」と一緒に送られる', async () => {
+    const { section, posts } = await open([two]);
+    const radios = within(section).getAllByRole('radio');
+    expect(radios).toHaveLength(2);
+
+    fireEvent.click(radios[1]!);
+    fireEvent.click(within(section).getAllByRole('button', { name: '同じ取引' })[0]!);
+
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toEqual({ txId: 'mf-pick', verdict: 'same', freeeKey: 'v1:freee:B社' });
+  });
+
+  it('候補が 1 件しかない組には選択肢を出さず、名指しも付けない', async () => {
+    const { section, posts } = await open([one]);
+    expect(within(section).queryAllByRole('radio')).toHaveLength(0);
+
+    fireEvent.click(within(section).getAllByRole('button', { name: '同じ取引' })[0]!);
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toEqual({ txId: 'mf-single', verdict: 'same' });
+  });
+
+  it('「違う取引」には相手の名指しを付けない', async () => {
+    const { section, posts } = await open([two]);
+    fireEvent.click(within(section).getAllByRole('radio')[0]!);
+    fireEvent.click(within(section).getAllByRole('button', { name: '違う取引' })[0]!);
+
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toEqual({ txId: 'mf-pick', verdict: 'different' });
   });
 });

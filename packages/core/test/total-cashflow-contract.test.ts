@@ -35,8 +35,10 @@ import {
   type MfTx,
   applyPeriod,
   emptyDataset,
+  freeeDealKeys,
   monthlyTotalCashflow,
   reconcileBizDuplicates,
+  totalCashflowReport,
 } from '../src/index.js';
 import { TREND_ALPHA, TREND_MIN_MONTHS, categoryTrends, trendDirection } from '../src/trend.js';
 
@@ -260,12 +262,12 @@ describe('受入F4 要確認は MF の中身と freee 候補を判断材料と�
   });
 
   it('freee 側の候補を日数差つきで返す。捨てずに渡すのが要点', () => {
-    const result = reconcileBizDuplicates(dataset([mf({ id: 'mf-near', d: '08/07' })]), [
-      deal({ date: '2026-08-05', partner: 'freee 側の名前', settleAccount: '三井住友' }),
-    ]);
+    const near = deal({ date: '2026-08-05', partner: 'freee 側の名前', settleAccount: '三井住友' });
+    const result = reconcileBizDuplicates(dataset([mf({ id: 'mf-near', d: '08/07' })]), [near]);
     expect(result.review[0]!.candidates).toEqual([
       {
         freeeIndex: 0,
+        freeeKey: freeeDealKeys([near])[0],
         date: '2026-08-05',
         partner: 'freee 側の名前',
         amount: 3_300,
@@ -580,5 +582,110 @@ describe('受入F6 収入側の「同じ」判定で家計収入から外れ fre
       [{ txId: 'in-x', verdict: 'same' }],
     );
     expect(result.matched).toHaveLength(0);
+  });
+});
+
+describe('freee 全件の行き先を件数で示す', () => {
+  it('一致・MFに相手なし・除外の3つに必ず分かれ、合計が freee の件数になる', () => {
+    const deals = [
+      deal({ partner: '架空クラウド' }),
+      deal({ date: '2026-08-09', partner: '架空アプリ', amount: 2_900 }),
+      deal({ date: '2026-08-09', partner: '架空アプリ', amount: 2_900 }),
+    ];
+    const data = dataset([
+      mf({ id: 'mf-hit', d: '08/05', a: -3_300 }),
+      mf({ id: 'mf-far', d: '08/20', a: -7_000, c: '架空スーパー' }),
+    ]);
+    const report = totalCashflowReport(
+      data,
+      deals,
+      [],
+      [{ freeeKey: freeeDealKeys(deals)[2], reason: '同じ支払を2回登録していた' }],
+    );
+
+    expect(report.coverage).toEqual({
+      freeeTotal: 3,
+      matched: 1,
+      freeeOnly: 1,
+      excluded: 1,
+      mfReview: report.review.length,
+    });
+    expect(report.coverage.matched + report.coverage.freeeOnly + report.coverage.excluded).toBe(
+      report.coverage.freeeTotal,
+    );
+    expect(report.matched[0]).toMatchObject({
+      mfTxId: 'mf-hit',
+      by: 'auto',
+      mf: { content: '架空クラウド', amount: 3_300 },
+      freee: { partner: '架空クラウド', amount: 3_300 },
+    });
+    expect(report.freeeOnly.map((row) => row.partner)).toEqual(['架空アプリ']);
+    expect(report.excluded[0]).toMatchObject({ partner: '架空アプリ', reason: '同じ支払を2回登録していた' });
+  });
+
+  it('除外した freee 取引は事業費から落ち、候補にも出てこない', () => {
+    const deals = [deal({ amount: 2_900 }), deal({ amount: 2_900 })];
+    const data = dataset([mf({ id: 'mf-one', a: -2_900 })]);
+    const exclusions = [{ freeeKey: freeeDealKeys(deals)[1], reason: '二重登録' }];
+
+    const before = monthlyTotalCashflow(data, deals)[0];
+    const after = monthlyTotalCashflow(data, deals, [], exclusions)[0];
+    expect(before).toMatchObject({ bizExpense: 5_800 });
+    expect(after).toMatchObject({ bizExpense: 2_900, totalExpense: 2_900 });
+
+    const report = totalCashflowReport(data, deals, [], exclusions);
+    expect(report.review.flatMap((row) => row.candidates)).toHaveLength(0);
+  });
+});
+
+describe('同じ日に複数の候補がある場合、どれと組むかを選べる', () => {
+  /** 同日同額の freee が2件、MF が1件。機械には決めようがない形 */
+  const ambiguous = () => {
+    const deals = [
+      deal({ partner: '架空アプリ A', amount: 2_900, date: '2026-08-09' }),
+      deal({ partner: '架空アプリ B', amount: 2_900, date: '2026-08-09' }),
+    ];
+    const data = dataset([mf({ id: 'mf-pick', d: '08/12', a: -2_900, c: '架空アプリ' })]);
+    return { deals, data, keys: freeeDealKeys(deals) };
+  };
+
+  it('候補は鍵つきで返り、利用者が名指しした相手へ寄る', () => {
+    const { deals, data, keys } = ambiguous();
+    const review = reconcileBizDuplicates(data, deals).review;
+    expect(review[0]!.candidates.map((c) => c.freeeKey)).toEqual(keys);
+
+    const result = reconcileBizDuplicates(data, deals, [
+      { txId: 'mf-pick', verdict: 'same', freeeKey: keys[1] },
+    ]);
+    expect(result.matched).toEqual([
+      expect.objectContaining({ mfTxId: 'mf-pick', freeeKey: keys[1], by: 'user' }),
+    ]);
+    expect(result.freeeOnly.map((row) => row.partner)).toEqual(['架空アプリ A']);
+  });
+
+  it('名指し無しの「同じ」は従来どおり寄る (指定は必須にしない)', () => {
+    const { deals, data, keys } = ambiguous();
+    const result = reconcileBizDuplicates(data, deals, [{ txId: 'mf-pick', verdict: 'same' }]);
+    expect(result.matched).toHaveLength(1);
+    expect(result.matched[0]!.freeeKey).toBe(keys[0]);
+  });
+
+  it('日付も金額も一致する組でも、別の freee を名指ししていればそちらへ寄せる', () => {
+    const deals = [
+      deal({ partner: '架空アプリ A', amount: 2_900, date: '2026-08-05' }),
+      deal({ partner: '架空アプリ B', amount: 2_900, date: '2026-08-06' }),
+    ];
+    const keys = freeeDealKeys(deals);
+    const data = dataset([mf({ id: 'mf-pick', d: '08/05', a: -2_900, c: '架空アプリ' })]);
+
+    const auto = reconcileBizDuplicates(data, deals);
+    expect(auto.matched[0]!.freeeKey).toBe(keys[0]);
+
+    const picked = reconcileBizDuplicates(data, deals, [
+      { txId: 'mf-pick', verdict: 'same', freeeKey: keys[1] },
+    ]);
+    expect(picked.matched).toEqual([
+      expect.objectContaining({ mfTxId: 'mf-pick', freeeKey: keys[1], by: 'user' }),
+    ]);
   });
 });

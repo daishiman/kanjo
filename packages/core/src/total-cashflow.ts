@@ -16,7 +16,7 @@
  * (`DuplicateVerdict`) だけで、それ以外は要求のたびにここで導出する。
  */
 import { isCashTxId } from './cash.js';
-import { mfStableKey } from './identity.js';
+import { freeeDealKeys, mfStableKey } from './identity.js';
 import { normalizeMfDisplayDate } from './persisted-projection.js';
 import { type TrendDirection, trendDirection } from './trend.js';
 import type { Dataset, FreeeDeal, MfTx } from './types.js';
@@ -38,10 +38,29 @@ export const REVIEW_MAX_CANDIDATES = 3;
 
 export type DuplicateVerdictValue = 'same' | 'different';
 
-/** 利用者が「同じ取引か」を判断した結果。導出できない唯一の値であり、これだけを保存する */
+/**
+ * 利用者が「同じ取引か」を判断した結果。導出できない唯一の値であり、これだけを保存する。
+ *
+ * `freeeKey` は「同じ」と言ったときに、どの freee 取引と同じかを名指しするためにある。
+ * 同日同額の freee 取引が複数ある場合、名指しが無いと機械が勝手に片方を選ぶことになり、
+ * 利用者が見て決めた組と実際に寄る組がずれる。省略時は従来どおり近い順に選ぶ。
+ */
 export interface DuplicateVerdict {
   txId: string;
   verdict: DuplicateVerdictValue;
+  freeeKey?: string | null;
+}
+
+/**
+ * freee 側の二重登録を、理由を添えて総額から外す。
+ *
+ * 消し込み (MF との重複) とは別の問題である。消し込みは「同じ支払が2つの家計簿に出ている」
+ * ことへの対処で、freee 側は正しい1件。こちらは freee そのものに同じ支払が2件入っている場合で、
+ * 放置すると事業費が二重に膨らむ。既定では freee を正とするため、外すのは明示した分だけ。
+ */
+export interface FreeeExclusion {
+  freeeKey: string;
+  reason: string;
 }
 
 export type ReconcileReviewReason =
@@ -50,11 +69,35 @@ export type ReconcileReviewReason =
   | '取込月と表示日の月が一致しません'
   | '対応する freee 取引が他の明細へ寄せられています';
 
+/**
+ * freee 取引1件を画面へ出す形。
+ *
+ * 一致した組にも、MF に相手がいない取引にも同じ形を使う。片方だけ列が違うと、
+ * 同じ freee 取引が表によって別物に見える。
+ */
+export interface ReconcileFreee {
+  /** `deals` 内での位置 */
+  freeeIndex: number;
+  /** 再取込を跨いでこの取引を指す鍵 (`freeeDealKeys`) */
+  freeeKey: string;
+  month: string;
+  date: string;
+  partner: string;
+  amount: number;
+  io: FreeeDeal['io'];
+  account: string;
+  settleAccount: string;
+}
+
 export interface ReconcileMatch {
   mfTxId: string;
   /** 寄せ先 freee 取引の `deals` 内での位置 */
   freeeIndex: number;
+  freeeKey: string;
   by: 'auto' | 'user';
+  /** 一致した組をそのまま並べて見せるための中身。件数だけでは正しさを確かめられない */
+  mf: ReconcileReviewMf;
+  freee: ReconcileFreee;
 }
 
 /**
@@ -88,6 +131,8 @@ export interface ReconcileReviewMf {
 export interface ReconcileReviewCandidate {
   /** `deals` 内での位置。同じ取引を指していることを呼び出し側が確認できる */
   freeeIndex: number;
+  /** どの候補と組むかを利用者が名指しして保存するための鍵 */
+  freeeKey: string;
   date: string;
   partner: string;
   amount: number;
@@ -107,9 +152,39 @@ export interface ReconcileReview {
   candidates: ReconcileReviewCandidate[];
 }
 
+/**
+ * 「取り込んだ内容に抜け漏れが無いか」に件数で答えるための内訳。
+ *
+ * `matched + freeeOnly + excluded === freeeTotal` が成り立つ。`mfReview` はこの和には
+ * 入らない。要確認は MF 明細ごとに立つもので、freee 側の分割とは数える対象が違う。
+ */
+export interface FreeeCoverage {
+  freeeTotal: number;
+  matched: number;
+  freeeOnly: number;
+  excluded: number;
+  mfReview: number;
+}
+
+/** 総額から外した freee 取引と、その理由 */
+export interface ReconcileExcluded extends ReconcileFreee {
+  reason: string;
+}
+
+/**
+ * 消し込みの結果。freee 取引は必ずこの3つのどれか1つに入る。
+ *
+ * `matched.length + freeeOnly.length + excluded.length === deals.length` を保つのは、
+ * 「取り込んだ内容に抜け漏れが無いか」に件数で答えられるようにするためである。
+ * 一部だけを見せる作りだと、映っていない残りがあるのか無いのかを利用者が確かめられない。
+ */
 export interface ReconcileResult {
   matched: ReconcileMatch[];
+  /** MF 側の要確認。freee ではなく MF 明細ごとに1件 */
   review: ReconcileReview[];
+  /** MF に相手が見つからなかった freee 取引 */
+  freeeOnly: ReconcileFreee[];
+  excluded: ReconcileExcluded[];
 }
 
 export interface TotalCashflowMonth {
@@ -227,20 +302,27 @@ function reviewMf(tx: MfTx): ReconcileReviewMf {
  * 帰属は動かさない。ここで返すのは「人が見比べる材料」であって照合結果ではない。
  * 同着は `deals` の並び順で決める (安定させるため)。
  */
-function nearCandidates(tx: MfTx, deals: readonly FreeeDeal[]): ReconcileReviewCandidate[] {
+function nearCandidates(
+  tx: MfTx,
+  deals: readonly FreeeDeal[],
+  keys: readonly string[],
+  excludedKeys: ReadonlySet<string>,
+): ReconcileReviewCandidate[] {
   const mfDay = dayNumber(mfMatchDate(tx));
   const amount = Math.abs(tx.a);
   const io = mfIo(tx);
   return deals
     .map((deal, freeeIndex) => ({ deal, freeeIndex }))
     .filter(
-      ({ deal }) =>
+      ({ deal, freeeIndex }) =>
+        !excludedKeys.has(keys[freeeIndex]) &&
         deal.amount === amount &&
         deal.io === io &&
         Math.abs(dayNumber(deal.date) - mfDay) <= REVIEW_NEAR_DAYS,
     )
     .map(({ deal, freeeIndex }) => ({
       freeeIndex,
+      freeeKey: keys[freeeIndex],
       date: deal.date,
       partner: deal.partner,
       amount: deal.amount,
@@ -263,9 +345,29 @@ export function reconcileBizDuplicates(
   data: Dataset,
   deals: readonly FreeeDeal[],
   verdicts: readonly DuplicateVerdict[] = [],
+  exclusions: readonly FreeeExclusion[] = [],
 ): ReconcileResult {
   const rows = reconcilableMf(data);
+  const keys = freeeDealKeys(deals);
   const verdictByTxId = new Map(verdicts.map((v) => [v.txId, v.verdict]));
+  /** 「同じ」と言った利用者が、どの freee 取引を指したか。未指定なら null */
+  const pickedFreeeKey = new Map(verdicts.map((v) => [v.txId, v.freeeKey ?? null]));
+  const reasonByKey = new Map(exclusions.map((e) => [e.freeeKey, e.reason]));
+  const excludedKeys = new Set(reasonByKey.keys());
+  const freeeOf = (freeeIndex: number): ReconcileFreee => {
+    const deal = deals[freeeIndex];
+    return {
+      freeeIndex,
+      freeeKey: keys[freeeIndex],
+      month: deal.month,
+      date: deal.date,
+      partner: deal.partner,
+      amount: deal.amount,
+      io: deal.io,
+      account: deal.accountRaw,
+      settleAccount: deal.settleAccount ?? '',
+    };
+  };
   const matched: ReconcileMatch[] = [];
   const usedMf = new Set<string>();
 
@@ -281,7 +383,7 @@ export function reconcileBizDuplicates(
 
   // 第一段: 発生日と金額の一致だけで寄せる。支払先は見ない
   deals.forEach((deal, freeeIndex) => {
-    if (deal.amount <= 0) return;
+    if (deal.amount <= 0 || excludedKeys.has(keys[freeeIndex])) return;
     const candidates = byBucket.get(bucketKey(deal.io, deal.date, deal.amount)) ?? [];
     for (const tx of candidates) {
       if (usedMf.has(tx.id)) continue;
@@ -289,12 +391,22 @@ export function reconcileBizDuplicates(
         // 利用者が「違う」と言った組は、機械の一致条件が揃っていても寄せない
         continue;
       }
+      // 利用者が別の freee 取引を名指ししている組は、機械の都合でここに寄せない
+      const picked = pickedFreeeKey.get(tx.id);
+      if (picked && picked !== keys[freeeIndex]) continue;
       if (accountsConflict(tx, deal)) {
         blocked.set(tx.id, '口座不一致');
         continue;
       }
       usedMf.add(tx.id);
-      matched.push({ mfTxId: tx.id, freeeIndex, by: 'auto' });
+      matched.push({
+        mfTxId: tx.id,
+        freeeIndex,
+        freeeKey: keys[freeeIndex],
+        by: 'auto',
+        mf: reviewMf(tx),
+        freee: freeeOf(freeeIndex),
+      });
       return;
     }
     // 候補が全て埋まっていた場合、溢れた明細は黙って消さず要確認へ回す
@@ -308,21 +420,32 @@ export function reconcileBizDuplicates(
   // 第二段: 利用者が「同じ」と判断した組。freee 1 取引につき MF 1 件までに限る
   const usedFreee = new Set(matched.map((m) => m.freeeIndex));
   deals.forEach((deal, freeeIndex) => {
-    if (deal.amount <= 0 || usedFreee.has(freeeIndex)) return;
-    const tx = eligible.find(
-      (row) =>
-        !usedMf.has(row.id) &&
-        // 識別子の安定性は判断を「保存」できるかの話であり、寄せてよいかの条件ではない。
-        // 不安定な明細でも stable_key で判断を引き当てられる (identity.ts の 2 段解決)。
-        verdictByTxId.get(row.id) === 'same' &&
-        mfIo(row) === deal.io &&
-        Math.abs(row.a) === deal.amount &&
-        Math.abs(dayNumber(mfMatchDate(row)) - dayNumber(deal.date)) <= REVIEW_NEAR_DAYS,
-    );
+    if (deal.amount <= 0 || usedFreee.has(freeeIndex) || excludedKeys.has(keys[freeeIndex])) return;
+    const key = keys[freeeIndex];
+    const fits = (row: MfTx): boolean =>
+      !usedMf.has(row.id) &&
+      // 識別子の安定性は判断を「保存」できるかの話であり、寄せてよいかの条件ではない。
+      // 不安定な明細でも stable_key で判断を引き当てられる (identity.ts の 2 段解決)。
+      verdictByTxId.get(row.id) === 'same' &&
+      mfIo(row) === deal.io &&
+      Math.abs(row.a) === deal.amount &&
+      Math.abs(dayNumber(mfMatchDate(row)) - dayNumber(deal.date)) <= REVIEW_NEAR_DAYS;
+    // 名指しされた組を先に成立させる。指定なしの明細に先を越されると、
+    // 利用者が画面で選んだ相手と実際に寄る相手がずれる
+    const tx =
+      eligible.find((row) => pickedFreeeKey.get(row.id) === key && fits(row)) ??
+      eligible.find((row) => !pickedFreeeKey.get(row.id) && fits(row));
     if (!tx) return;
     usedMf.add(tx.id);
     usedFreee.add(freeeIndex);
-    matched.push({ mfTxId: tx.id, freeeIndex, by: 'user' });
+    matched.push({
+      mfTxId: tx.id,
+      freeeIndex,
+      freeeKey: key,
+      by: 'user',
+      mf: reviewMf(tx),
+      freee: freeeOf(freeeIndex),
+    });
   });
 
   const review: ReconcileReview[] = [];
@@ -333,7 +456,7 @@ export function reconcileBizDuplicates(
     // 候補抽出器 (金額一致かつ ±3 日以内) は帰属を動かさず、要確認一覧の生成にだけ使う。
     // 理由の別なく先に引くのは、どの理由であっても「freee 側の何と比べているのか」を
     // 見せないと人が判断できないためである。
-    const candidates = nearCandidates(tx, deals);
+    const candidates = nearCandidates(tx, deals, keys, excludedKeys);
     const push = (reason: ReconcileReviewReason): void => {
       review.push({ mfTxId: tx.id, reason, mf: reviewMf(tx), candidates });
     };
@@ -349,7 +472,21 @@ export function reconcileBizDuplicates(
     if (candidates.length > 0) push('発生日が一致しません');
   }
 
-  return { matched, review };
+  // freee の全件を「一致」「MF に相手なし」「除外」へ必ず振り分ける。
+  // 3つの件数を足すと取り込んだ freee の件数になり、映っていない残りが無いと言える
+  const freeeOnly: ReconcileFreee[] = [];
+  const excluded: ReconcileExcluded[] = [];
+  deals.forEach((_deal, freeeIndex) => {
+    const reason = reasonByKey.get(keys[freeeIndex]);
+    if (reason !== undefined) {
+      excluded.push({ ...freeeOf(freeeIndex), reason });
+      return;
+    }
+    if (usedFreee.has(freeeIndex)) return;
+    freeeOnly.push(freeeOf(freeeIndex));
+  });
+
+  return { matched, review, freeeOnly, excluded };
 }
 
 /**
@@ -362,8 +499,9 @@ export function monthlyTotalCashflow(
   data: Dataset,
   deals: readonly FreeeDeal[] = [],
   verdicts: readonly DuplicateVerdict[] = [],
+  exclusions: readonly FreeeExclusion[] = [],
 ): TotalCashflowMonth[] {
-  return rowsFrom(data, deals, reconcileBizDuplicates(data, deals, verdicts));
+  return rowsFrom(data, deals, reconcileBizDuplicates(data, deals, verdicts, exclusions));
 }
 
 /**
@@ -377,9 +515,30 @@ export function totalCashflowReport(
   data: Dataset,
   deals: readonly FreeeDeal[] = [],
   verdicts: readonly DuplicateVerdict[] = [],
-): { months: TotalCashflowMonth[]; review: ReconcileReview[] } {
-  const result = reconcileBizDuplicates(data, deals, verdicts);
-  return { months: rowsFrom(data, deals, result), review: result.review };
+  exclusions: readonly FreeeExclusion[] = [],
+): {
+  months: TotalCashflowMonth[];
+  review: ReconcileReview[];
+  matched: ReconcileMatch[];
+  freeeOnly: ReconcileFreee[];
+  excluded: ReconcileExcluded[];
+  coverage: FreeeCoverage;
+} {
+  const result = reconcileBizDuplicates(data, deals, verdicts, exclusions);
+  return {
+    months: rowsFrom(data, deals, result),
+    review: result.review,
+    matched: result.matched,
+    freeeOnly: result.freeeOnly,
+    excluded: result.excluded,
+    coverage: {
+      freeeTotal: deals.length,
+      matched: result.matched.length,
+      freeeOnly: result.freeeOnly.length,
+      excluded: result.excluded.length,
+      mfReview: result.review.length,
+    },
+  };
 }
 
 function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileResult): TotalCashflowMonth[] {
@@ -395,8 +554,12 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
     (tx) => !isCashTxId(tx.id) && isMfCountable(tx) && tx.splitProjection == null,
   );
 
+  // 二重登録として外した freee 取引は、事業費にも事業収入にも入れない
+  const excludedIndexes = new Set(result.excluded.map((row) => row.freeeIndex));
   const rows = months.map((month) => {
-    const monthDeals = deals.filter((deal) => deal.month === month && deal.amount > 0);
+    const monthDeals = deals.filter(
+      (deal, freeeIndex) => deal.month === month && deal.amount > 0 && !excludedIndexes.has(freeeIndex),
+    );
     const bizExpense = monthDeals
       .filter((deal) => deal.io === 'expense')
       .reduce((sum, deal) => sum + deal.amount, 0);
