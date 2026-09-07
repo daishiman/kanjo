@@ -105,6 +105,37 @@ describe('runtime schema guard', () => {
     expect(body).not.toMatch(/d1_migrations|001[0-9]|stack/i);
   });
 
+  it('止めたときは期待headと適用headをログに残す(応答本文には出さない)', async () => {
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const target = guardedApp(await databaseWithHead('0014_password_login_rate_limits.sql'));
+
+    const response = await target.request();
+    const logged = errors.mock.calls.map(([line]) => JSON.parse(String(line)));
+
+    expect(logged).toContainEqual(
+      expect.objectContaining({
+        event: 'schema_guard_blocked',
+        reason: 'behind',
+        expectedMigration: EXPECTED_D1_MIGRATION,
+        appliedMigration: '0014_password_login_rate_limits.sql',
+      }),
+    );
+    // 利用者に見える側は一文のまま。ここが漏れると内部構成が外へ出る
+    expect(await response.text()).not.toMatch(/0014|migration/i);
+  });
+
+  it('検査不能のときは適用headを名乗らない(読めていないものを読めたことにしない)', async () => {
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const database = await databaseWithHead(EXPECTED_D1_MIGRATION);
+    await database.prepare('DROP TABLE d1_migrations').run();
+
+    await guardedApp(database).request();
+
+    expect(errors.mock.calls.map(([line]) => JSON.parse(String(line)))).toContainEqual(
+      expect.objectContaining({ reason: 'inspection_error', appliedMigration: null }),
+    );
+  });
+
   it('migration適用後はTTL満了時に再検査し、Worker再公開なしで自動復帰する', async () => {
     const database = await databaseWithHead('0014_password_login_rate_limits.sql');
     let now = 1_000;
