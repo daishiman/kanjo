@@ -119,6 +119,12 @@ interface CompareLine {
   amount: string;
   account: string;
   category: string;
+  /**
+   * MF 行と食い違っている項目。候補は「同じ金額・同じ向き・前後 3 日以内」で既に絞られており、
+   * 実際に違いうるのは日付と口座だけ。どこが違うかは機械が知っているので、利用者に目で
+   * 探させず、そのセル自体へ印を出す。MF 行は比較の基準なので常に空。
+   */
+  differs: { date?: boolean; account?: boolean };
   /** その行が自動で決まらなかった事情。MF 行には理由、freee 行には日付のずれ・口座の食い違い */
   note: string;
 }
@@ -144,6 +150,7 @@ function compareLines(item: TotalCashflowReview): CompareLine[] {
     amount: `${sign}${num(item.mf.amount)}`,
     account: item.mf.institution || '(記載なし)',
     category: [item.mf.major, item.mf.middle].filter(Boolean).join(' / ') || '(未分類)',
+    differs: {},
     note: item.reason,
   };
   if (item.candidates.length === 0) {
@@ -157,6 +164,7 @@ function compareLines(item: TotalCashflowReview): CompareLine[] {
         amount: '—',
         account: '—',
         category: '—',
+        differs: {},
         note: '',
       },
     ];
@@ -167,27 +175,54 @@ function compareLines(item: TotalCashflowReview): CompareLine[] {
       key: `f${cand.freeeIndex}`,
       source: 'freee' as const,
       freeeKey: cand.freeeKey,
-      date: cand.date,
+      date: cand.dayGap === 0 ? cand.date : `${cand.date} (${gapLabel(cand.dayGap)})`,
       content: cand.partner || '(取引先なし)',
       amount: `${sign}${num(cand.amount)}`,
       account: cand.settleAccount || '(記載なし)',
       category: cand.account,
-      note: [gapLabel(cand.dayGap), cand.accountConflict ? '口座が食い違う' : '']
-        .filter(Boolean)
-        .join(' ・ '),
+      differs: { date: cand.dayGap !== 0, account: cand.accountConflict },
+      // 食い違いは各セルの印が伝える。ここは「差が無い」ことだけを引き受け、二重に書かない
+      note: cand.dayGap === 0 && !cand.accountConflict ? '日付も口座も一致' : '違うところに印があります',
     })),
   ];
 }
 
-/** 1 セル分の積み重ね。長い値でも 1 行に収め、行の高さを列ごとにずらさない */
-function Stack({ lines, render }: { lines: CompareLine[]; render: (line: CompareLine) => ReactNode }) {
+/**
+ * 1 セル分の積み重ね。長い値でも 1 行に収め、行の高さを列ごとにずらさない。
+ *
+ * field を渡した列では、その項目が MF と食い違う freee 行にだけ印を出す。一致している
+ * 側には何も足さない(全部に印を付けると、どこを見ればよいかがまた分からなくなる)。
+ */
+function Stack({
+  lines,
+  render,
+  field,
+}: {
+  lines: CompareLine[];
+  render: (line: CompareLine) => ReactNode;
+  /** 食い違いを目立たせる項目。渡さない列は素のまま並べる */
+  field?: keyof CompareLine['differs'];
+}) {
   return (
     <>
-      {lines.map((line) => (
-        <div key={line.key} className={`tcf-line tcf-line-${line.source === 'MF' ? 'mf' : 'freee'}`}>
-          {render(line)}
-        </div>
-      ))}
+      {lines.map((line) => {
+        const differs = field ? line.differs[field] === true : false;
+        return (
+          <div
+            key={line.key}
+            className={`tcf-line tcf-line-${line.source === 'MF' ? 'mf' : 'freee'}${
+              differs ? ' tcf-differs' : ''
+            }`}
+          >
+            {differs && (
+              <span className="tcf-differs-mark" aria-label="MF と違う">
+                ≠
+              </span>
+            )}
+            {render(line)}
+          </div>
+        );
+      })}
     </>
   );
 }
@@ -495,6 +530,13 @@ export function TotalCashflowPage() {
               同じ取引が MF と freee の両方にあるかを見比べます。「同じ取引」にすると freee 側 1
               件だけが事業費に残り、家計費からは外れます。
             </p>
+            {/* 候補の絞り込み条件そのものを書く。「金額は見比べなくてよい」と分かって初めて、
+                日付と口座だけに目を向けられる */}
+            <p className="sub">
+              並んでいる freee 候補は<strong>金額と向きが MF と一致するもの</strong>だけです。
+              残る違いは発生日と口座で、MF と食い違うところに <span className="tcf-differs-mark">≠</span>{' '}
+              が付きます。印が 1 つも無い候補は日付も口座も一致しています。
+            </p>
             <div className="tcf-bulk">
               <label className="tcf-pick-all">
                 <input
@@ -579,7 +621,7 @@ export function TotalCashflowPage() {
                       />
                     </td>
                     <td data-label="発生日">
-                      <Stack lines={lines} render={(line) => line.date} />
+                      <Stack lines={lines} field="date" render={(line) => line.date} />
                     </td>
                     <td data-label="内容 / 取引先">
                       <Stack
@@ -593,6 +635,7 @@ export function TotalCashflowPage() {
                     <td data-label="口座">
                       <Stack
                         lines={lines}
+                        field="account"
                         render={(line) => <span title={line.account}>{line.account}</span>}
                       />
                     </td>

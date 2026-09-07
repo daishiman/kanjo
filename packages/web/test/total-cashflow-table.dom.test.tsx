@@ -264,6 +264,72 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     expect(first.textContent).not.toContain('mf-near');
   });
 
+  /*
+    候補はサーバ側で「同じ金額・同じ向き・前後 3 日以内」に絞り込まれている。金額は必ず
+    一致していて、実際に違いうるのは発生日と口座だけ。どこが違うかは機械が既に知っているのに、
+    右端の理由欄へ文字で書くだけでは、利用者が横に長い行を目で往復して差を探すことになる。
+    食い違うセルそのものに印が出ること、そして一致しているセルには出ないことを固定する
+    (全部に印が付けば、どこを見ればよいかがまた分からなくなる)。旧実装には印自体が無いので必ず落ちる。
+  */
+  it('MF と食い違うセルにだけ印を出し、一致しているセルには出さない', async () => {
+    const cell = (tr: HTMLElement, index: number) => within(tr).getAllByRole('cell')[index]!;
+    const dateCell = (tr: HTMLElement) => cell(tr, 2);
+    const accountCell = (tr: HTMLElement) => cell(tr, 5);
+
+    const candidate = (over: Record<string, unknown>) => ({
+      freeeIndex: 7,
+      freeeKey: 'v1:freee:sakura',
+      date: '2026-01-15',
+      partner: 'さくらインターネット',
+      amount: 900,
+      account: '通信費',
+      settleAccount: '三井住友',
+      dayGap: 0,
+      accountConflict: false,
+      ...over,
+    });
+    const rows: TotalCashflowReview[] = [
+      review[0]!, // 発生日だけがずれている (dayGap 2 / 口座は一致)
+      {
+        txId: 'mf-acct',
+        reason: '口座不一致',
+        mf: mf({ content: 'さくらインターネット', amount: 900 }),
+        candidates: [candidate({ accountConflict: true, settleAccount: '楽天銀行' })],
+      },
+      {
+        txId: 'mf-exact',
+        reason: '同額の候補が複数あります',
+        mf: mf({ content: 'さくらインターネット', amount: 900 }),
+        candidates: [candidate({ freeeKey: 'v1:freee:sakura-2' })],
+      },
+    ];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => json(payload({ months: [row({ reviewCount: 3 })], review: rows }))),
+    );
+    wrap(<TotalCashflowPage />);
+
+    const section = await screen.findByRole('region', { name: '重複の要確認' });
+    const [near, acct, exact] = reviewRows(section) as [HTMLElement, HTMLElement, HTMLElement];
+
+    // 日付だけがずれている組: 印は発生日にだけ出る
+    expect(dateCell(near).textContent).toContain('≠');
+    expect(accountCell(near).textContent).not.toContain('≠');
+
+    // 口座だけが違う組: 印は口座にだけ出る。日付が同じ列に印が出れば、印が信用できなくなる
+    expect(accountCell(acct).textContent).toContain('≠');
+    expect(dateCell(acct).textContent).not.toContain('≠');
+
+    // 印は比較される freee 行に付ける。基準である MF 行に付けると、どちらが基準か読めない
+    expect(dateCell(near).querySelector('.tcf-line-mf')!.textContent).not.toContain('≠');
+    expect(dateCell(near).querySelector('.tcf-line-freee')!.textContent).toContain('≠');
+
+    // 日付も口座も一致する組には印を一切出さず、一致していることを語で断る
+    expect(dateCell(exact).textContent).not.toContain('≠');
+    expect(accountCell(exact).textContent).not.toContain('≠');
+    expect(exact.textContent).toContain('日付も口座も一致');
+  });
+
   it('freee 側に候補が無いときは、空欄ではなく「相手がいない」と書く', async () => {
     vi.stubGlobal(
       'fetch',

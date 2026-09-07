@@ -4356,6 +4356,16 @@ label.check {
   margin: 8px 0;
   line-height: 1.7;
 }
+/* 取込前の確認。「何が置き換わるか」を読ませるので、箇条書きは本文と同じ行間で並べる */
+.import-confirm-notes {
+  margin: 12px 0 0;
+  padding-left: 1.2em;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+.import-confirm-notes li + li {
+  margin-top: 4px;
+}
 .import-replacement-confirmation {
   padding-top: 16px;
 }
@@ -4649,6 +4659,17 @@ label.check {
 .tcf-line-freee {
   background: var(--biz-soft);
   color: var(--biz-strong);
+}
+/* MF と食い違うセルだけを立てる。一致している側には何も足さない(全部に印が付くと、
+   どこを見ればよいかがまた分からなくなる)。色だけに頼らず ≠ の字も出す */
+.tcf-line.tcf-differs {
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  color: var(--warn);
+  font-weight: 600;
+}
+.tcf-differs-mark {
+  margin-right: 4px;
+  font-weight: 700;
 }
 .tcf-review-table tbody tr.tcf-picked {
   background: var(--biz-soft);
