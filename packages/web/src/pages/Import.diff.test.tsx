@@ -159,12 +159,17 @@ function chooseFile() {
   fireEvent.change(input);
 }
 
-/** 差分を出したうえで、取込を確定する(確認ダイアログは常に OK) */
+/**
+ * 差分を出したうえで、取込を確定する。
+ * 確認はアプリ内の dialog を通す。window.confirm はブラウザの抑止が効くと即 false を返し、
+ * 押しても何も起きないボタンになるので、その経路をテストでも使わない。
+ */
 async function previewAndCommit() {
   fireEvent.click(screen.getByRole('button', { name: '取り込む前に差分を見る' }));
   await screen.findByText('取り込むとこうなります');
-  vi.spyOn(window, 'confirm').mockReturnValue(true);
   fireEvent.click(screen.getByRole('button', { name: '取込を実行' }));
+  const dialog = await screen.findByRole('dialog');
+  fireEvent.click(within(dialog).getByRole('button', { name: '置き換えて取り込む' }));
 }
 
 afterEach(() => {
@@ -279,8 +284,10 @@ describe('取り込んだ内容に合わせるとき', () => {
     const card = screen.getByText('架空商店 渋谷店').closest('.notice') as HTMLElement;
     fireEvent.click(within(card).getByLabelText('取り込んだ内容に合わせる'));
 
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     fireEvent.click(screen.getByRole('button', { name: '取込を実行' }));
+    fireEvent.click(
+      within(await screen.findByRole('dialog')).getByRole('button', { name: '置き換えて取り込む' }),
+    );
 
     await waitFor(() => expect(calls).toContain('POST /api/imports'));
     const plan = JSON.parse(calls.find((call) => call.startsWith('RESOLUTION '))?.slice(11) ?? '{}');
@@ -303,8 +310,10 @@ describe('取り込んだ内容に合わせるとき', () => {
     const card = screen.getByText('架空商店 渋谷店').closest('.notice') as HTMLElement;
     fireEvent.click(within(card).getByLabelText(/次からもこの取引先はこの内容にする/));
 
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     fireEvent.click(screen.getByRole('button', { name: '取込を実行' }));
+    fireEvent.click(
+      within(await screen.findByRole('dialog')).getByRole('button', { name: '置き換えて取り込む' }),
+    );
 
     await waitFor(() => expect(calls).toContain('POST /api/imports'));
     const plan = JSON.parse(calls.find((call) => call.startsWith('RESOLUTION '))?.slice(11) ?? '{}');

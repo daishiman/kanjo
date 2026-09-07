@@ -10,10 +10,10 @@
  * メール・push・外部監視は無いため、ここが出ないと二重計上が誰にも見えないまま残る。
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ImportPage } from '../src/pages/Import.js';
 
 const json = (body: unknown, status = 200) =>
@@ -80,16 +80,13 @@ async function uploadOne() {
   Object.defineProperty(input, 'files', { value: [file], configurable: true });
   fireEvent.change(input);
   fireEvent.click(await screen.findByRole('button', { name: '取込を実行' }));
+  // 確認はアプリ内 dialog。window.confirm はブラウザ抑止で無反応になるため通さない
+  fireEvent.click(
+    within(await screen.findByRole('dialog')).getByRole('button', { name: '置き換えて取り込む' }),
+  );
   // 取込が完了して結果欄が出るところまで進める。ここが出ない状態で警告の有無を語らない
   await waitFor(() => expect(screen.getByText('取込完了')).toBeTruthy());
 }
-
-beforeEach(() => {
-  vi.stubGlobal(
-    'confirm',
-    vi.fn(() => true),
-  );
-});
 
 afterEach(() => {
   cleanup();
@@ -128,10 +125,6 @@ describe('受入A8 取込完了時に要確認が残っていれば警告が出�
 
     cleanup();
     vi.unstubAllGlobals();
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => true),
-    );
     stub(2);
     renderPage();
     await uploadOne();

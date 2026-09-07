@@ -11,10 +11,10 @@
  * ここで固定するのは送り方の契約であって、上限値そのものは API 側のテストが持つ。
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ImportPage } from '../src/pages/Import.js';
 
 const json = (body: unknown, status = 200) =>
@@ -71,16 +71,13 @@ async function upload(names: string[]) {
   Object.defineProperty(input, 'files', { value: files, configurable: true });
   fireEvent.change(input);
   fireEvent.click(await screen.findByRole('button', { name: '取込を実行' }));
+  // 確認はアプリ内 dialog。window.confirm はブラウザ抑止で無反応になるため通さない
+  fireEvent.click(
+    within(await screen.findByRole('dialog')).getByRole('button', { name: '置き換えて取り込む' }),
+  );
   // 分けて送るので結果行は複数出る。単数前提で待つと、成功していても落ちる
   await waitFor(() => expect(screen.getByRole('heading', { name: '取込結果' })).toBeTruthy());
 }
-
-beforeEach(() => {
-  vi.stubGlobal(
-    'confirm',
-    vi.fn(() => true),
-  );
-});
 
 afterEach(() => {
   cleanup();
