@@ -187,6 +187,29 @@ body {
   min-width: 0;
   line-height: 1.35;
 }
+/*
+ * タブを持つ画面の子。親と同じ見た目のまま段だけ下げると、17 行のサイドバーが
+ * 22 行の平坦な列になり、どれが画面でどれが切り口かが読めなくなる。
+ * 字を一段小さく・色を弱くし、左に細い縦線を通して「この親の中身」だと形で示す。
+ */
+.nav-sub {
+  margin: 2px 0 2px 18px;
+  padding-left: 8px;
+  border-left: 1px solid var(--line);
+}
+/* 弱めるのは平常時だけ。現在地の色は .nav a[aria-current] が上書きし、親子で同じになる */
+.nav-sub a {
+  min-height: auto;
+  padding: 5px 10px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.nav-sub .route-icon {
+  width: 14px;
+  height: 14px;
+  flex-basis: 14px;
+}
 .nav a:hover {
   background: var(--bg);
 }
@@ -3544,6 +3567,14 @@ label.check {
 .import-section-heading.compact {
   align-items: center;
 }
+/* 見出し右の状態と片づけの入口。狭い幅では折り返して重ならないようにする */
+.import-history-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
 .import-section-heading h2 {
   margin: 2px 0 0;
   font-size: var(--fs-xl);
@@ -4337,16 +4368,35 @@ label.check {
 .deletion-confirm-dialog .deletion-preflight {
   border-bottom: 0;
 }
+/* 確認ダイアログの中身。取込の確認 (.import-discard-confirmation) と同じ組みで揃える */
+.confirm-dialog-body,
 .import-discard-confirmation {
   padding-top: 16px;
 }
+.confirm-dialog-body h3,
 .import-discard-confirmation h3 {
   margin: 0 0 12px;
   font-size: var(--fs-lg);
 }
+.confirm-dialog-body p,
 .import-discard-confirmation p {
   margin: 8px 0;
   line-height: 1.7;
+}
+/* 見出しは初期フォーカス先。tabIndex={-1} なので、押せる物のような輪郭は出さない */
+.confirm-dialog-body h3:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: 4px;
+}
+/* 取込前の確認。「何が置き換わるか」を読ませるので、箇条書きは本文と同じ行間で並べる */
+.import-confirm-notes {
+  margin: 12px 0 0;
+  padding-left: 1.2em;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+.import-confirm-notes li + li {
+  margin-top: 4px;
 }
 .import-replacement-confirmation {
   padding-top: 16px;
@@ -4618,4 +4668,96 @@ label.check {
   .deletion-history-action {
     grid-column: auto;
   }
+}
+
+/* ── トータル収支の要確認 ────────────────────────────────
+   1 件を「MF 1 行 + freee 候補 n 行」に畳んで 1 枚の表に載せる。件ごとに表を作ると
+   見出しが件数ぶん繰り返され、19 件で見出しが 19 回出る。列は共通にして、行の中の
+   積み重ねを列ごとに揃える(高さがずれると、同じ金額かを目で追えなくなる)。 */
+.tcf-review-table td {
+  vertical-align: top;
+}
+.tcf-line {
+  line-height: 1.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 24ch;
+}
+.tcf-line + .tcf-line {
+  border-top: 1px dashed var(--line);
+}
+/* freee 側の行だけ地色を敷く。出所列を読まなくても、どちらの明細かが横一列で分かる */
+.tcf-line-freee {
+  background: var(--biz-soft);
+  color: var(--biz-strong);
+}
+/* MF と食い違うセルだけを立てる。一致している側には何も足さない(全部に印が付くと、
+   どこを見ればよいかがまた分からなくなる)。色だけに頼らず ≠ の字も出す */
+.tcf-line.tcf-differs {
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  color: var(--warn);
+  font-weight: 600;
+}
+.tcf-differs-mark {
+  margin-right: 4px;
+  font-weight: 700;
+}
+.tcf-review-table tbody tr.tcf-picked {
+  background: var(--biz-soft);
+}
+.tcf-pick {
+  width: 32px;
+  text-align: center;
+}
+.tcf-verdict {
+  white-space: nowrap;
+}
+.tcf-verdict button + button {
+  margin-left: 6px;
+}
+
+/* 選択と一括操作。表の上に置き、押す前に「いま何件を選んでいるか」を同じ行で見せる */
+.tcf-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+.tcf-bulk-count {
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+  margin-right: auto;
+}
+.tcf-pick-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+}
+/* 一括で外すときの理由欄。行ごとの理由欄と同じ幅にして、同じ入力だと見た目で分かるようにする */
+.tcf-bulk input[type="text"] {
+  min-width: 10em;
+  max-width: 18em;
+}
+
+/* 候補が複数あるときの「どちらと組むか」。出所の語とラジオを 1 行に収める */
+.tcf-pick-freee {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 二重登録として外すときの理由記入。狭い幅では折り返して表の列を押し広げない */
+.tcf-exclude-form {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.tcf-exclude-form input {
+  min-width: 8em;
+  max-width: 14em;
 }

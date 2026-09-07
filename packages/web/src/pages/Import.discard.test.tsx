@@ -233,3 +233,70 @@ describe('履歴状態ごとの操作', () => {
     expect(within(record).queryByRole('button', { name: 'この取込履歴を削除' })).toBeNull();
   });
 });
+
+describe('データを消した取込の履歴', () => {
+  const deletedRow = (over: Partial<ImportHistoryRow> = {}) =>
+    row({
+      status: 'committed',
+      generationState: 'deleted',
+      failureReason: null,
+      cancelable: false,
+      discardable: true,
+      ...over,
+    });
+
+  it('消したデータの履歴を「取込完了」と表示しない', async () => {
+    stubFetch([deletedRow({ id: 11, filename: 'deleted.csv' })]);
+    renderPage();
+
+    const record = await screen.findByRole('listitem', { name: 'deleted.csvの取込履歴' });
+    expect(within(record).getByText('データ削除済み')).toBeTruthy();
+    expect(within(record).queryByText('取込完了')).toBeNull();
+  });
+
+  it('取り消しの控えが残る間は片づけず、その旨を出す', async () => {
+    stubFetch([deletedRow({ id: 12, filename: 'undoable.csv', discardable: false })]);
+    renderPage();
+
+    const record = await screen.findByRole('listitem', { name: 'undoable.csvの取込履歴' });
+    expect(within(record).getByText('取り消し可能')).toBeTruthy();
+    expect(within(record).queryByRole('button', { name: 'この取込履歴を削除' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'データ削除済みの取込履歴をまとめて片づける' })).toBeNull();
+  });
+
+  it('片づけられる削除済みだけを数え、1件ずつ破棄して一覧から消す', async () => {
+    const calls = stubFetch([
+      deletedRow({ id: 13, filename: 'deleted-a.csv' }),
+      deletedRow({ id: 14, filename: 'deleted-b.csv' }),
+      deletedRow({ id: 15, filename: 'undoable.csv', discardable: false }),
+      row({
+        id: 16,
+        filename: 'active.csv',
+        status: 'committed',
+        generationState: 'active',
+        discardable: false,
+      }),
+    ]);
+    renderPage();
+
+    const bulk = await screen.findByRole('button', {
+      name: 'データ削除済みの取込履歴をまとめて片づける',
+    });
+    expect(bulk.textContent).toContain('2件');
+    fireEvent.click(bulk);
+
+    const dialog = await screen.findByRole('dialog', { name: '削除済みの履歴 2 件を片づけますか？' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'まとめて片づける' }));
+
+    expect(await screen.findByRole('heading', { name: '片づけが終わりました' })).toBeTruthy();
+    expect(calls.filter(({ path }) => path.endsWith('/discard')).map(({ path }) => path)).toEqual([
+      '/api/imports/13/discard',
+      '/api/imports/14/discard',
+    ]);
+
+    fireEvent.click(screen.getByRole('button', { name: '閉じる' }));
+    await waitFor(() => expect(screen.queryByText('deleted-a.csv')).toBeNull());
+    expect(screen.queryByText('deleted-b.csv')).toBeNull();
+    expect(screen.getByText('undoable.csv')).toBeTruthy();
+  });
+});

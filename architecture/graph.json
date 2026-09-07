@@ -261,8 +261,8 @@
         "source_plugin": null,
         "source_path": "specs/ui-navigation-cognitive-load.md",
         "source_version": "1.0",
-        "source_digest": "56f0d52ea1c84ee48450acbee2c10397b809a1858f2c83fcef21bb4ae972a264",
-        "imported_at": "2026-08-29T15:30:44Z"
+        "source_digest": "deec69e2d47211ba9db8380470e8190879f116b7b5d6f5b557bfd4ff22ab9a8f",
+        "imported_at": "2026-09-07T13:55:37Z"
       },
       "referenced_by": [
         "feat-ui-navigation-cognitive-load"
@@ -284,11 +284,195 @@
         "source_plugin": null,
         "source_path": "specs/ui-navigation-cognitive-load.md",
         "source_version": "1.0",
-        "source_digest": "56f0d52ea1c84ee48450acbee2c10397b809a1858f2c83fcef21bb4ae972a264",
-        "imported_at": "2026-08-29T15:30:44Z"
+        "source_digest": "deec69e2d47211ba9db8380470e8190879f116b7b5d6f5b557bfd4ff22ab9a8f",
+        "imported_at": "2026-09-07T13:55:37Z"
       },
       "referenced_by": [
         "feat-ui-navigation-cognitive-load"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "トータル収支 — バックエンド構成",
+      "file_path": "architecture/total-cashflow-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.11",
+        "source_digest": "778e674fc0686dad4f026f0a3ecbeb663952ab43718e8594f91067dab5445a86",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "トータル収支 — データ永続化構成",
+      "file_path": "architecture/total-cashflow-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.11",
+        "source_digest": "313d15d861b25509ad473928d72bd45c3f5686ec5afb8aa6472f5a1f01228d67",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "トータル収支 — フロントエンド構成",
+      "file_path": "architecture/total-cashflow-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.11",
+        "source_digest": "6d9a3099e81f6ccae5e93105dd5b41d485bcc4a57a9c478239b8f6e694ddacb2",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "トータル収支 — UI/UX 構成",
+      "file_path": "architecture/total-cashflow-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.11",
+        "source_digest": "0ae53d13baeaefe134054d1bca4ca872f9bc0904ec65ff2356bddcd526c14368",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "トータル収支 — 認証境界",
+      "file_path": "architecture/total-cashflow-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/auth.md",
+        "source_version": "0.1.11",
+        "source_digest": "a87513e0ed417ea678374665baa176e4a2272dcd5aaa730aa658e2e339e2a635",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "トータル収支 — 脅威モデルと対策",
+      "file_path": "architecture/total-cashflow-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/security.md",
+        "source_version": "0.1.11",
+        "source_digest": "b2c10d6b0ea7473d6d33e4a062f35af35d3aa8cdafff6c38a18f66be03bf2764",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "トータル収支 — インフラ構成と算出戦略",
+      "file_path": "architecture/total-cashflow-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.11",
+        "source_digest": "2e0294fec0e238866bfe2ecffee52e662bbdc1638f3d143e86eee7149b1bdbcf",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "トータル収支 — 運用と異常への気付き方",
+      "file_path": "architecture/total-cashflow-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_version": "0.1.11",
+        "source_digest": "7f916ede6073bf90e8501649a140e54c570fcce61d09d6da14315aaf0fd7f529",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
       ]
     }
   ]

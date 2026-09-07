@@ -718,6 +718,156 @@ export function ImportDiscardButton({
 }
 
 /**
+ * データを消し終えて残っている履歴を、まとめて片づける。
+ *
+ * 一括用のAPIは作らない。1件ずつ preflight → discard を順に呼び、サーバ側の
+ * fail-closed 判定を1件ごとに通す。途中で1件弾かれても残りは片づけ、
+ * 何件片づいて何件残ったかを理由付きで返す(まとめて失敗にしない)。
+ */
+export function ImportDiscardBulkButton({
+  importIds,
+  disabled,
+}: {
+  importIds: readonly number[];
+  disabled?: boolean;
+}) {
+  const qc = useQueryClient();
+  const [asked, setAsked] = useState(false);
+  const [done, setDone] = useState<{ ok: number; failures: string[] } | null>(null);
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const triggerButtonRef = useRef<HTMLButtonElement | null>(null);
+  const dialogTitleId = useId();
+
+  const run = useMutation({
+    mutationFn: async () => {
+      let ok = 0;
+      const failures: string[] = [];
+      for (const id of importIds) {
+        try {
+          const preflight = await api<ImportHistoryDiscardPreflight>(`/imports/${id}/discard/preflight`, {
+            method: 'POST',
+          });
+          await api<ImportHistoryDiscardResult>(`/imports/${id}/discard`, {
+            method: 'POST',
+            body: JSON.stringify({ fingerprint: preflight.fingerprint }),
+          });
+          ok += 1;
+        } catch (error) {
+          failures.push(`#${id}: ${describeError(error)}`);
+        }
+      }
+      return { ok, failures };
+    },
+    onSuccess: setDone,
+  });
+
+  useEffect(() => {
+    if (done) closeButtonRef.current?.focus();
+    else if (asked) cancelButtonRef.current?.focus();
+  }, [asked, done]);
+
+  const openDialog = (node: HTMLDialogElement | null) => {
+    dialogRef.current = node;
+    if (!node || node.open) return;
+    if (typeof node.showModal === 'function') node.showModal();
+    else node.setAttribute('open', '');
+  };
+
+  const closeDialog = () => {
+    const dialog = dialogRef.current;
+    if (dialog?.open && typeof dialog.close === 'function') dialog.close();
+    else dialog?.removeAttribute('open');
+    setAsked(false);
+    if (done) void qc.invalidateQueries();
+    setDone(null);
+    run.reset();
+    triggerButtonRef.current?.focus();
+  };
+
+  if (importIds.length === 0) return null;
+
+  return (
+    <div className="import-inline-action">
+      <button
+        ref={triggerButtonRef}
+        type="button"
+        aria-label="データ削除済みの取込履歴をまとめて片づける"
+        disabled={disabled || run.isPending}
+        onClick={() => setAsked(true)}
+      >
+        削除済みの履歴を片づける（{importIds.length}件）
+      </button>
+      {(asked || done) && (
+        <dialog
+          ref={openDialog}
+          className="deletion-confirm-dialog import-discard-dialog"
+          aria-labelledby={dialogTitleId}
+          onClose={closeDialog}
+          onCancel={(event) => {
+            event.preventDefault();
+            if (run.isPending) return;
+            closeDialog();
+          }}
+        >
+          {done ? (
+            <div className="import-discard-confirmation" aria-live="polite">
+              <h3 id={dialogTitleId}>片づけが終わりました</h3>
+              <p>
+                <span className="num">{done.ok}</span> 件の履歴を削除しました。帳簿データは変更していません。
+              </p>
+              {done.failures.length > 0 && (
+                <>
+                  <p role="alert">
+                    <span className="num">{done.failures.length}</span> 件は削除できませんでした。
+                  </p>
+                  <ul className="sub">
+                    {done.failures.map((message) => (
+                      <li key={message}>{message}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              <button ref={closeButtonRef} type="button" className="primary" onClick={closeDialog}>
+                閉じる
+              </button>
+            </div>
+          ) : (
+            <div className="import-discard-confirmation">
+              <h3 id={dialogTitleId}>削除済みの履歴 {importIds.length} 件を片づけますか？</h3>
+              <p className="import-safe-note">帳簿データは変わりません。</p>
+              <p>取り消し用の控えが残っている履歴は、ここでは片づけません（引き続き取り消せます）。</p>
+              <p>
+                <strong>削除した履歴と対象の保存原本は元に戻せません。</strong>
+              </p>
+              <div className="deletion-run-actions">
+                <button
+                  type="button"
+                  className="danger-btn"
+                  disabled={run.isPending}
+                  onClick={() => run.mutate()}
+                >
+                  {run.isPending ? '片づけ中…' : 'まとめて片づける'}
+                </button>
+                <button ref={cancelButtonRef} type="button" onClick={closeDialog} disabled={run.isPending}>
+                  やめる
+                </button>
+              </div>
+              {run.isError && (
+                <div className="sub" role="alert">
+                  片づけられませんでした: {describeError(run.error)}
+                </div>
+              )}
+            </div>
+          )}
+        </dialog>
+      )}
+    </div>
+  );
+}
+
+/**
  * 期間を限定したメンテナンス削除。
  * 全件の入れ替えは上部の ImportReplacementButton に一本化し、同じ概念の二重入口を作らない。
  */

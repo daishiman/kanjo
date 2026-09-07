@@ -37,6 +37,7 @@ import { improvementAgentRoute, improvementRoute, runImprovementRetention } from
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
 import { taxRoute } from './routes/tax.js';
+import { totalCashflowRoute } from './routes/total-cashflow.js';
 import { vendorMemoryRoute } from './routes/vendor-memory.js';
 import {
   SCHEDULED_ATTACHMENT_JOB_LIMIT,
@@ -147,6 +148,7 @@ app.route('/api', subsRoute);
 app.route('/api', attachmentsRoute);
 app.route('/api', balancesRoute);
 app.route('/api', taxRoute);
+app.route('/api', totalCashflowRoute);
 app.route('/api', improvementRoute);
 
 app.notFound((c) => {

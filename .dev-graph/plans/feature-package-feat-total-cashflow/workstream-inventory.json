@@ -1,0 +1,1311 @@
+{
+  "feature_package_id": "feature-package/feat-total-cashflow",
+  "parent_feature": "feat-total-cashflow",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "explicit-cli"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/index.md",
+      "system-spec/00-requirements-definition.md",
+      "specs/total-cashflow-requirements.md",
+      "architecture/total-cashflow-backend.md",
+      "architecture/total-cashflow-database.md",
+      "architecture/total-cashflow-frontend.md",
+      "architecture/total-cashflow-ui-ux.md",
+      "architecture/total-cashflow-auth.md",
+      "architecture/total-cashflow-security.md",
+      "architecture/total-cashflow-infrastructure.md",
+      "architecture/total-cashflow-maintenance-ops.md"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "受入条件が全て「観測して真偽が決まる」文になっており、主観語 (適切・十分・使いやすい) を含む条件が 0 件である",
+        "重複判定規則が「MF 日付 == freee 発生日 かつ 金額一致」の 1 定義だけで書かれ、これと矛盾する記述が仕様内に 0 件である",
+        "収入側の分類規則 (MF の事業・副業 は事業収入、それ以外は家計収入) が明記され、要確認判定が「同じ」になったとき家計収入から事業収入へ移ることが書かれている",
+        "総支出と総収入の 2 恒等式が受入条件として列挙されている",
+        "specs の O1-O6 が定める受入基準が features/feat-total-cashflow.md 側にも漏れなく写されている。とくに 9 列 (月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた件数・要確認件数・トレンド) の常時表示と、取込完了時に要確認が残っていれば画面へ警告を出すこと (qa-anomaly-notice-001) が両方に存在する"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p01.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P01 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-01-requirements に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [],
+      "deploy_unit": "N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "documentation"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p01.md",
+        "graph_node_id": "SYS-TCF-P01",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-TCF-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-database"
+      ],
+      "rollback": "specs/total-cashflow-requirements.md と features/feat-total-cashflow.md を直前 commit の内容へ戻す",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p01"
+      ],
+      "title": "トータル収支の要件と受入条件を機械可読な二値条件へ確定する",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "rg -n 'MF 日付 == freee 発生日' specs/total-cashflow-requirements.md",
+        "rg -n '総支出 == 事業費 \\+ 家計費' specs/total-cashflow-requirements.md features/feat-total-cashflow.md",
+        "rg -c '適切|十分|使いやすい' specs/total-cashflow-requirements.md の出力が 0 であること",
+        "rg -c 'qa-table-columns-001' features/feat-total-cashflow.md の出力が 1 以上であること",
+        "rg -c 'qa-anomaly-notice-001' features/feat-total-cashflow.md の出力が 1 以上であること"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "specs/total-cashflow-requirements.md",
+        "features/feat-total-cashflow.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "消し込み・合算・トレンド判定の 3 処理それぞれについて、担当する層とファイル位置が 1 箇所ずつ定まっている",
+        "判定永続化テーブルの一意キーが定義され、同じ入力を再取込しても行が増えないことが設計として述べられている",
+        "トレンド判定が既存 trend.ts の Mann-Kendall / Theil-Sen をそのまま呼ぶ経路として設計されている",
+        "期間切替が Dataset を切る既存方式で行われ、分析関数へ期間引数を追加しない方針が明記されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p02.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P02 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-02-architecture に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P01"
+      ],
+      "deploy_unit": "N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "backend"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p02.md",
+        "graph_node_id": "SYS-TCF-P02",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-TCF-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-database",
+        "arch-total-cashflow-frontend",
+        "arch-total-cashflow-ui-ux"
+      ],
+      "rollback": "architecture/total-cashflow-*.md を直前 commit へ戻す",
+      "secondary_workstreams": [
+        "data",
+        "frontend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p02"
+      ],
+      "title": "消し込み・合算・トレンドの層分担と判定永続化のデータモデルを決める",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "rg -n 'Mann-Kendall|Theil-Sen' architecture/total-cashflow-backend.md packages/core/src/trend.ts",
+        "rg -n '一意キー|UNIQUE' architecture/total-cashflow-database.md",
+        "rg -n 'Dataset' architecture/total-cashflow-backend.md packages/core/src/dataset.ts"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "同額同日が 3 件以上並ぶ入力に対して、消し込み後の件数が決定的に定まる規則が設計に存在することを確認済みである",
+        "重複しない 2 口座の明細が誤って消し込まれない根拠が記録されている",
+        "反例のうち設計が答えられないものは未解決として列挙され、握りつぶされていない"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p03.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P03 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-03-design-review に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P02"
+      ],
+      "deploy_unit": "N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p03.md",
+        "graph_node_id": "SYS-TCF-P03",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-TCF-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-database",
+        "arch-total-cashflow-security"
+      ],
+      "rollback": "eval-log/tcf-design-review.md を削除し P02 へ戻す",
+      "secondary_workstreams": [
+        "backend",
+        "data"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p03"
+      ],
+      "title": "設計が受入条件を実際に満たしうるかを反例探索で検証する",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "rg -n '反例' eval-log/tcf-design-review.md",
+        "rg -n '未解決' eval-log/tcf-design-review.md"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "eval-log/tcf-design-review.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入 8 件それぞれに対応するテストが 1 件以上存在し、対応表が記録されている",
+        "追加したテストを実装前のコードに対して実行すると全て失敗する (赤であることを実測した記録がある)",
+        "件数を固定した検査を含み、検査対象が 0 件でも緑になるテストが 0 件である",
+        "一覧表の列数を 9 に固定した検査 (月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた件数・要確認件数・トレンド) と、取込完了時に要確認が残っていれば警告が出ることの検査が含まれている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p04.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P04 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-04-test-design に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P03"
+      ],
+      "deploy_unit": "N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p04.md",
+        "graph_node_id": "SYS-TCF-P04",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-TCF-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-database",
+        "arch-total-cashflow-frontend"
+      ],
+      "rollback": "追加したテストファイルを削除する",
+      "secondary_workstreams": [
+        "backend",
+        "data"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p04"
+      ],
+      "title": "受入条件と 1 対 1 に対応する失敗するテストを先に書く",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test --filter @kanjo/core を実装前に実行し、追加テストが失敗することを記録する",
+        "rg -n '受入' packages/core/test で受入条件との対応表があることを確認する",
+        "rg -n '9|警告' packages/web/test で 9 列固定と警告表示の検査が存在することを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/test",
+        "packages/api/test",
+        "packages/web/test"
+      ]
+    },
+    {
+      "acceptance": [
+        "月次一覧表に トータル収入 / トータル支出 / トータル収支 の 3 列が表示され、全表示月で 2 恒等式が成立する",
+        "MF 日付 == freee 発生日 かつ 金額一致 の支出は freee 側 1 件だけが事業費に計上され、同額の MF 明細が家計費に残らない",
+        "事業側へ寄せた金額と件数が一覧表に表示され、消し込み対象明細の実数と一致する",
+        "自動で寄せられなかった重複候補が理由付きで列挙され、0 件のときは 0 件と明示される",
+        "一覧表が 9 列 (月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた件数・要確認件数・トレンド) を 常時表示し、小画面でも列が落ちない (qa-table-columns-001)",
+        "CSV 取込完了時に要確認が残っていれば、その場で画面に警告が出る (qa-anomaly-notice-001)。メール・push・外部監視は追加しない",
+        "P04 で追加した全テストが緑である"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p05.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P05 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-05-implementation に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P03",
+        "SYS-TCF-P04"
+      ],
+      "deploy_unit": "kanjo-console (Cloudflare Workers) + D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "backend"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p05.md",
+        "graph_node_id": "SYS-TCF-P05",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-TCF-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-database",
+        "arch-total-cashflow-frontend",
+        "arch-total-cashflow-ui-ux",
+        "arch-total-cashflow-security"
+      ],
+      "rollback": "追加 migration を down 方向へ戻し、コードを直前タグへ戻す。既存テーブルへの破壊的変更を行っていないため取込済みデータは影響を受けない",
+      "secondary_workstreams": [
+        "frontend",
+        "api",
+        "data"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p05"
+      ],
+      "title": "消し込み・合算・トレンド・一覧表を実装して赤いテストを緑にする",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test の exit code が 0 であること",
+        "pnpm test -- -t qa-table-columns-001 が 1 件以上を実行し exit code 0 であること",
+        "pnpm test -- -t qa-anomaly-notice-001 が 1 件以上を実行し exit code 0 であること",
+        "pnpm -w typecheck",
+        "pnpm -w lint"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ]
+    },
+    {
+      "acceptance": [
+        "実行したテスト件数と成功件数が記録され、両者が一致している",
+        "受入 8 件それぞれに対応するテストが実行対象に含まれていることが対応表で確認できる",
+        "CI とローカルの結果が一致している、または差分の原因が記録されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p06.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P06 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-06-test-run に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P05"
+      ],
+      "deploy_unit": "N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p06.md",
+        "graph_node_id": "SYS-TCF-P06",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-TCF-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-maintenance-ops"
+      ],
+      "rollback": "eval-log/tcf-test-run.md を削除して再実行する",
+      "secondary_workstreams": [
+        "backend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p06"
+      ],
+      "title": "テストを実行して受入条件との対応が全て緑であることを実測する",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test 2>&1 | tee eval-log/tcf-test-run.md",
+        "rg -n 'passed|failed' eval-log/tcf-test-run.md"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "eval-log/tcf-test-run.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入 8 件それぞれに確認結果 (成立 または 不成立と理由) が記録されている",
+        "事業側へ寄せた金額と件数を利用者が手で検算した結果が一致している",
+        "期間を切り替えて同じ月を含めたとき、その月の値が一致することを実データで確認済みである",
+        "9 列が常時表示されることと、要確認が残る CSV を取り込んだときに画面へ警告が出ることを、実データで確認済みである"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p07.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P07 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-07-acceptance に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P05",
+        "SYS-TCF-P06"
+      ],
+      "deploy_unit": "N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p07.md",
+        "graph_node_id": "SYS-TCF-P07",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-TCF-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-frontend",
+        "arch-total-cashflow-ui-ux"
+      ],
+      "rollback": "eval-log/tcf-acceptance.md を削除して再確認する",
+      "secondary_workstreams": [
+        "frontend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p07"
+      ],
+      "title": "実データで受入条件を利用者視点から確認する",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "rg -n '成立|不成立' eval-log/tcf-acceptance.md",
+        "rg -c '^- 受入' eval-log/tcf-acceptance.md の出力が 10 であること (受入 8 件 + 9 列 + 警告)",
+        "rg -n '9 列|警告' eval-log/tcf-acceptance.md"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "eval-log/tcf-acceptance.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "判定永続化テーブルが本番へ適用され、適用前後の既存テーブル行数が変化していない",
+        "同じ月のトータル支出を返す経路が 1 本だけであり、重複経路が 0 件である",
+        "整理後も P04 のテストが全て緑である"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p08.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P08 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-08-refactoring-migration に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P07"
+      ],
+      "deploy_unit": "kanjo-console (Cloudflare Workers) + D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "data"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p08.md",
+        "graph_node_id": "SYS-TCF-P08",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-TCF-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-total-cashflow-database",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-maintenance-ops"
+      ],
+      "rollback": "追加テーブルを削除して直前タグへ戻す。既存テーブルは変更していないため取込済みデータは影響を受けない",
+      "secondary_workstreams": [
+        "backend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p08"
+      ],
+      "title": "判定永続化スキーマの移行と既存集計コードの重複整理を行う",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/api exec wrangler d1 migrations list kanjo-db",
+        "pnpm test",
+        "rg -n 'totalExpense|トータル支出' packages/core/src で集計経路が 1 本であることを確認する"
+      ],
+      "workstream_kind": "data",
+      "write_scope": [
+        "migrations",
+        "packages/core/src"
+      ]
+    },
+    {
+      "acceptance": [
+        "typecheck / lint / build の各ゲートについて、成功・失敗・打ち切りのいずれかが明示的に記録されている",
+        "判定登録エンドポイントへの未認証リクエストが拒否されることを実測済みである",
+        "判定登録が audit-log に記録されることを実測済みである"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p09.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P09 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-09-quality-assurance に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P06",
+        "SYS-TCF-P08"
+      ],
+      "deploy_unit": "N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p09.md",
+        "graph_node_id": "SYS-TCF-P09",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-TCF-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-total-cashflow-security",
+        "arch-total-cashflow-auth",
+        "arch-total-cashflow-maintenance-ops"
+      ],
+      "rollback": "eval-log/tcf-qa.md を削除して再実行する",
+      "secondary_workstreams": [
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p09"
+      ],
+      "title": "静的検査とセキュリティ確認を通し品質ゲートを満たす",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm -w typecheck",
+        "pnpm -w lint",
+        "pnpm -w build"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "eval-log/tcf-qa.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "当初の困りごと (トータルの推移が読めない・重複が二重計上される) それぞれに対し、どの成果物が答えるかが記録されている",
+        "解けていない部分は残課題として明示され、解けた扱いにされていない",
+        "残課題は本 feature へ追加せず follow-up feature 候補として記録されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p10.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P10 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-10-final-review に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P07",
+        "SYS-TCF-P09"
+      ],
+      "deploy_unit": "N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p10.md",
+        "graph_node_id": "SYS-TCF-P10",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-TCF-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-ui-ux"
+      ],
+      "rollback": "eval-log/tcf-final-review.md を削除して再確認する",
+      "secondary_workstreams": [
+        "documentation"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p10"
+      ],
+      "title": "当初の困りごとが解けたかを最終確認する",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "rg -n '残課題' eval-log/tcf-final-review.md",
+        "rg -n 'follow-up' eval-log/tcf-final-review.md"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "eval-log/tcf-final-review.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "各判断に対応する実測記録のパスが記載され、参照先が全て実在する",
+        "実測でない記述には推定である旨が明示されている",
+        "記録の時刻が実行時に測った値であり、後から書き足した推定値が 0 件である"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p11.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P11 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-11-evidence に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P09",
+        "SYS-TCF-P10"
+      ],
+      "deploy_unit": "N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "documentation"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p11.md",
+        "graph_node_id": "SYS-TCF-P11",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-TCF-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-maintenance-ops"
+      ],
+      "rollback": "eval-log/tcf-evidence-index.md を削除する",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p11"
+      ],
+      "title": "判断の根拠となった実測値を 1 箇所へ集約する",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "rg -o 'eval-log/[A-Za-z0-9._/-]+' eval-log/tcf-evidence-index.md | sort -u | wc -l の出力が 5 以上であること (P03 設計レビュー / P06 テスト実行 / P07 受入 / P09 品質 / P10 最終確認 の各記録を最低 1 件ずつ指すため)",
+        "rg -o 'eval-log/[A-Za-z0-9._/-]+' eval-log/tcf-evidence-index.md | sort -u | xargs -I{} test -f {} の exit code が 0 であること",
+        "rg -c '推定' eval-log/tcf-evidence-index.md の出力が 0 であること"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "eval-log/tcf-evidence-index.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "一覧表の 3 列と内訳の意味が、会計用語を知らなくても読める言葉で説明されている",
+        "要確認キューで 同じ / 違う を判定する手順と、判定が次回取込へ再適用されることが書かれている",
+        "判定を間違えたときの取り消し手順が書かれ、実際に手順どおり操作できることを確認済みである"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p12.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P12 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-12-documentation-operations に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P11"
+      ],
+      "deploy_unit": "N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "documentation"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p12.md",
+        "graph_node_id": "SYS-TCF-P12",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-TCF-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-total-cashflow-ui-ux",
+        "arch-total-cashflow-maintenance-ops"
+      ],
+      "rollback": "追加した docs 配下のファイルを削除する",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p12"
+      ],
+      "title": "利用者向けの使い方と運用手順を書く",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "rg -n '要確認' docs",
+        "rg -n '取り消し' docs"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs"
+      ]
+    },
+    {
+      "acceptance": [
+        "本番で月次一覧表が表示され、全表示月で 2 恒等式が成立している",
+        "migration 適用とコード配備の順序が記録どおりであり、逆順になっていない",
+        "配備後に本番の判定登録エンドポイントが未認証で拒否されることを実測済みである"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p13.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "P13 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-13-release-deploy に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。"
+      },
+      "depends_on": [
+        "SYS-TCF-P12"
+      ],
+      "deploy_unit": "kanjo-console (Cloudflare Workers) + D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "operations"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-total-cashflow",
+        "file_path": "tasks/feat-total-cashflow/sys-tcf-p13.md",
+        "graph_node_id": "SYS-TCF-P13",
+        "parent_feature": "feat-total-cashflow",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-TCF-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-total-cashflow-infrastructure",
+        "arch-total-cashflow-maintenance-ops",
+        "arch-total-cashflow-security"
+      ],
+      "rollback": "直前タグへコードを戻し、追加テーブルは残す (読み取りのみのため副作用がない)",
+      "secondary_workstreams": [
+        "infrastructure"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/total-cashflow-requirements.md",
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md",
+        "architecture/total-cashflow-ui-ux.md",
+        "architecture/total-cashflow-auth.md",
+        "architecture/total-cashflow-security.md",
+        "architecture/total-cashflow-infrastructure.md",
+        "architecture/total-cashflow-maintenance-ops.md"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p13"
+      ],
+      "title": "kanjo-console へ配備し集計値が本番で成立することを確認する",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/api exec wrangler deploy",
+        "pnpm --filter @kanjo/api exec wrangler d1 migrations list kanjo-db",
+        "本番 URL の一覧表を開き、各月の総支出と内訳合計の一致を確認する"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        "packages/api/wrangler.jsonc",
+        "eval-log/tcf-release.md"
+      ]
+    }
+  ]
+}

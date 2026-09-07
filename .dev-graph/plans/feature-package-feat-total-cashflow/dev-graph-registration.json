@@ -1,0 +1,1253 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-total-cashflow/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-total-cashflow",
+  "parent_feature": "feat-total-cashflow",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-TCF-P01": "beads",
+    "SYS-TCF-P02": "beads",
+    "SYS-TCF-P03": "beads",
+    "SYS-TCF-P04": "beads",
+    "SYS-TCF-P05": "beads",
+    "SYS-TCF-P06": "beads",
+    "SYS-TCF-P07": "beads",
+    "SYS-TCF-P08": "beads",
+    "SYS-TCF-P09": "beads",
+    "SYS-TCF-P10": "beads",
+    "SYS-TCF-P11": "beads",
+    "SYS-TCF-P12": "beads",
+    "SYS-TCF-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-TCF-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "トータル収支の要件と受入条件を機械可読な二値条件へ確定する",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p01"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [],
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-database"
+      ],
+      "resource_scope": [
+        "specs/total-cashflow-requirements.md",
+        "features/feat-total-cashflow.md"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P01 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-01-requirements に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p01.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "documentation"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "消し込み・合算・トレンドの層分担と判定永続化のデータモデルを決める",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p02"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P01"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-database",
+        "arch-total-cashflow-frontend",
+        "arch-total-cashflow-ui-ux"
+      ],
+      "resource_scope": [
+        "architecture/total-cashflow-backend.md",
+        "architecture/total-cashflow-database.md",
+        "architecture/total-cashflow-frontend.md"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P02 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-02-architecture に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p02.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "backend"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "設計が受入条件を実際に満たしうるかを反例探索で検証する",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p03"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P02"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-database",
+        "arch-total-cashflow-security"
+      ],
+      "resource_scope": [
+        "eval-log/tcf-design-review.md"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P03 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-03-design-review に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p03.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入条件と 1 対 1 に対応する失敗するテストを先に書く",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p04"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P03"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-database",
+        "arch-total-cashflow-frontend"
+      ],
+      "resource_scope": [
+        "packages/core/test",
+        "packages/api/test",
+        "packages/web/test"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P04 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-04-test-design に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p04.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "消し込み・合算・トレンド・一覧表を実装して赤いテストを緑にする",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p05"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P03",
+        "SYS-TCF-P04"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-database",
+        "arch-total-cashflow-frontend",
+        "arch-total-cashflow-ui-ux",
+        "arch-total-cashflow-security"
+      ],
+      "resource_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P05 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-05-implementation に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p05.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "backend"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "テストを実行して受入条件との対応が全て緑であることを実測する",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p06"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P05"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-maintenance-ops"
+      ],
+      "resource_scope": [
+        "eval-log/tcf-test-run.md"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P06 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-06-test-run に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p06.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "実データで受入条件を利用者視点から確認する",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p07"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P05",
+        "SYS-TCF-P06"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-frontend",
+        "arch-total-cashflow-ui-ux"
+      ],
+      "resource_scope": [
+        "eval-log/tcf-acceptance.md"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P07 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-07-acceptance に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p07.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "判定永続化スキーマの移行と既存集計コードの重複整理を行う",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "data",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p08"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P07"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-database",
+        "arch-total-cashflow-backend",
+        "arch-total-cashflow-maintenance-ops"
+      ],
+      "resource_scope": [
+        "migrations",
+        "packages/core/src"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P08 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-08-refactoring-migration に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p08.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "data"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "静的検査とセキュリティ確認を通し品質ゲートを満たす",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p09"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P06",
+        "SYS-TCF-P08"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-security",
+        "arch-total-cashflow-auth",
+        "arch-total-cashflow-maintenance-ops"
+      ],
+      "resource_scope": [
+        "eval-log/tcf-qa.md"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P09 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-09-quality-assurance に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p09.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "当初の困りごとが解けたかを最終確認する",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p10"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P07",
+        "SYS-TCF-P09"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-ui-ux"
+      ],
+      "resource_scope": [
+        "eval-log/tcf-final-review.md"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P10 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-10-final-review に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p10.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "quality"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "判断の根拠となった実測値を 1 箇所へ集約する",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p11"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P09",
+        "SYS-TCF-P10"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-requirements",
+        "arch-total-cashflow-maintenance-ops"
+      ],
+      "resource_scope": [
+        "eval-log/tcf-evidence-index.md"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P11 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-11-evidence に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p11.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "documentation"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "利用者向けの使い方と運用手順を書く",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p12"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P11"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-ui-ux",
+        "arch-total-cashflow-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P12 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-12-documentation-operations に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p12.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "documentation"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TCF-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "kanjo-console へ配備し集計値が本番で成立することを確認する",
+      "project_id": "feature-package-feat-total-cashflow",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow",
+        "web",
+        "p13"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-05T13:53:35Z",
+      "updated_at": "2026-09-05T13:53:35Z",
+      "depends_on": [
+        "SYS-TCF-P12"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-infrastructure",
+        "arch-total-cashflow-maintenance-ops",
+        "arch-total-cashflow-security"
+      ],
+      "resource_scope": [
+        "packages/api/wrangler.jsonc",
+        "eval-log/tcf-release.md"
+      ],
+      "parent_feature": "feat-total-cashflow",
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-total-cashflow/sys-tcf-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-total-cashflow/plan-findings.json",
+        "evaluated_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-total-cashflow/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "919f834485f45d4c971b90cfcf330e82dfb4d7875aa8a70c1f4d7b5e7d42e6bb",
+        "imported_at": "2026-09-05T13:53:35Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "P13 は feature feat-total-cashflow の 13 phase 固定スロットのうち phase-13-release-deploy に対応する実行タスクであり、成果物は tasks/ 配下の task 文書として登録する。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-total-cashflow/sys-tcf-p13.md",
+          "confidence": 1.0
+        }
+      ],
+      "github_publication": {
+        "labels": [
+          "total-cashflow",
+          "operations"
+        ],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-05T13:13:34Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

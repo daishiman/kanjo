@@ -55,14 +55,26 @@ for (const node of nodes) {
 
 // --- 2) 孤児検出 ---
 const ids = new Set(nodes.map((n) => n.id));
+/**
+ * 章の身元は frontmatter の graph_node_id であって、ファイル名ではない。
+ * 手で起こした章はたまたま両者が一致しているが、dev-graph が起こした章は
+ * id に `arch-` が付く一方でファイル名には付かない。ファイル名から id を
+ * 推測すると、正しく登録済みの章を「登録漏れ」と言ってしまう。
+ * 宣言が無い章だけ、従来どおりファイル名を id とみなす。
+ */
 const chapters = readdirSync(join(root, 'architecture'))
   .filter((name) => name.endsWith('.md'))
-  .map((name) => name.replace(/\.md$/, ''));
+  .map((name) => {
+    const declared = readFileSync(join(root, 'architecture', name), 'utf8').match(
+      /^graph_node_id:\s*"?([^"\n]+)"?\s*$/m,
+    );
+    return { file: `architecture/${name}`, id: declared?.[1]?.trim() ?? name.replace(/\.md$/, '') };
+  });
 
 for (const chapter of chapters)
-  if (!ids.has(chapter))
+  if (!ids.has(chapter.id))
     errors.push(
-      `architecture/${chapter}.md が graph.json のどのノードにも登録されていません(id「${chapter}」のノードを足してください)。`,
+      `${chapter.file} が graph.json のどのノードにも登録されていません(id「${chapter.id}」のノードを足してください)。`,
     );
 for (const node of nodes) {
   if (!node.file_path) {

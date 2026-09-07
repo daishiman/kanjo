@@ -11,6 +11,7 @@ import { resolveTx } from './classify.js';
 import { ensureMonth, subVendorDefs } from './dataset.js';
 import { normalizeMfDisplayDate } from './persisted-projection.js';
 import { matchSubVendor } from './subs.js';
+import { reconcileBizDuplicates } from './total-cashflow.js';
 import type { Dataset, FreeeDeal, MfTx } from './types.js';
 import { isMfCountable } from './types.js';
 
@@ -169,13 +170,19 @@ export function buildExpenseProjection(data: Dataset, deals: readonly FreeeDeal[
     mfByKey.set(key, [...(mfByKey.get(key) ?? []), fact]);
   }
 
+  // 二重計上の判定器は `reconcileBizDuplicates` 1 本に寄せる (U4)。ここで別の鍵を持つと、
+  // 同じ入力に対して支出照合画面とトータル収支一覧が違う件数を出す。
+  const mfById = new Map(mf.map((fact) => [fact.sourceId, fact]));
+  const freeeByIndex = new Map(freee.map((fact) => [fact.sourceId, fact]));
   const matched: ExpenseProjection['matched'] = [];
   const matchedMfIds = new Set<string>();
-  for (const [key, mfRows] of mfByKey) {
-    const freeeRows = freeeByKey.get(key) ?? [];
-    if (mfRows.length !== 1 || freeeRows.length !== 1) continue;
-    matched.push({ freee: freeeRows[0]!, mf: mfRows[0]! });
-    matchedMfIds.add(mfRows[0]!.sourceId);
+  for (const pair of reconcileBizDuplicates(data, deals).matched) {
+    const mfFact = mfById.get(pair.mfTxId);
+    const freeeFact = freeeByIndex.get(`freee:${pair.freeeIndex}`);
+    // 収入側の消し込みはこの支出投影の関心外。両側が支出として現れた組だけを採る
+    if (!mfFact || !freeeFact) continue;
+    matched.push({ freee: freeeFact, mf: mfFact });
+    matchedMfIds.add(mfFact.sourceId);
   }
 
   const unmatchedMf = mf.filter((fact) => !matchedMfIds.has(fact.sourceId));

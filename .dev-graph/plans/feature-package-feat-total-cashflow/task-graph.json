@@ -1,0 +1,140 @@
+{
+  "feature_package_id": "feature-package/feat-total-cashflow",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P01",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P01",
+      "task_spec_path": "task-specs/phase-01-requirements.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P01"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P02",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P02",
+      "task_spec_path": "task-specs/phase-02-architecture.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P02"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P03",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P03",
+      "task_spec_path": "task-specs/phase-03-design-review.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P03"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P04",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P04",
+      "task_spec_path": "task-specs/phase-04-test-design.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P03",
+        "SYS-TCF-P04"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P05",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P05",
+      "task_spec_path": "task-specs/phase-05-implementation.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P05"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P06",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P06",
+      "task_spec_path": "task-specs/phase-06-test-run.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P05",
+        "SYS-TCF-P06"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P07",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P07",
+      "task_spec_path": "task-specs/phase-07-acceptance.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P07"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P08",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P08",
+      "task_spec_path": "task-specs/phase-08-refactoring-migration.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P06",
+        "SYS-TCF-P08"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P09",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P09",
+      "task_spec_path": "task-specs/phase-09-quality-assurance.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P07",
+        "SYS-TCF-P09"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P10",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P10",
+      "task_spec_path": "task-specs/phase-10-final-review.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P09",
+        "SYS-TCF-P10"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P11",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P11",
+      "task_spec_path": "task-specs/phase-11-evidence.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P11"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P12",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P12",
+      "task_spec_path": "task-specs/phase-12-documentation-operations.md"
+    },
+    {
+      "depends_on": [
+        "SYS-TCF-P12"
+      ],
+      "feature_package_id": "feature-package/feat-total-cashflow",
+      "id": "SYS-TCF-P13",
+      "parent_feature": "feat-total-cashflow",
+      "phase_ref": "P13",
+      "task_spec_path": "task-specs/phase-13-release-deploy.md"
+    }
+  ],
+  "parent_feature": "feat-total-cashflow",
+  "schema_version": "1.0.0"
+}

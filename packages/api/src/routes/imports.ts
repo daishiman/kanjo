@@ -20,6 +20,7 @@ import {
   cashBizDeals,
   cashTxId,
   emptyDataset,
+  importGenerationState,
   importHistoryCancelable,
   importHistoryDiscardBlock,
   importJSON,
@@ -1685,6 +1686,16 @@ importsRoute.post('/imports', async (c) => {
   );
 });
 
+/** imports.target_keys は JSON 文字列。壊れていても履歴一覧を落とさず、対象キー不明として扱う */
+function parseTargetKeys(raw: string | null): string[] {
+  try {
+    const parsed = JSON.parse(raw ?? '[]');
+    return Array.isArray(parsed) ? parsed.filter((key): key is string => typeof key === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
 importsRoute.get('/imports', async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
@@ -1695,11 +1706,17 @@ importsRoute.get('/imports', async (c) => {
     .orderBy(desc(s.imports.id))
     .limit(100);
   const activeRows = await db
-    .select({ importId: s.importActiveTargets.importId })
+    .select({ importId: s.importActiveTargets.importId, targetKey: s.importActiveTargets.targetKey })
     .from(s.importActiveTargets)
     .where(eq(s.importActiveTargets.userId, userId));
   const activeCounts = new Map<number, number>();
-  for (const row of activeRows) activeCounts.set(row.importId, (activeCounts.get(row.importId) ?? 0) + 1);
+  // 「置き換わった」と「消した」を分けるには、この取込の所有数だけでなく
+  // 誰かが所有している対象キーの全体集合が要る
+  const ownedTargetKeys = new Set<string>();
+  for (const row of activeRows) {
+    activeCounts.set(row.importId, (activeCounts.get(row.importId) ?? 0) + 1);
+    ownedTargetKeys.add(row.targetKey);
+  }
   const protectedReferences = await c.env.DB.prepare(
     `SELECT import_id,SUM(canonical_rows) AS canonical_rows,SUM(undo_snapshots) AS undo_snapshots
        FROM (
@@ -1733,21 +1750,13 @@ importsRoute.get('/imports', async (c) => {
       status: r.status,
       failureReason: r.failureReason ?? null,
       duplicateOf: r.duplicateOf ?? null,
-      generationState: (() => {
-        if (r.status === 'ok') return 'legacy';
-        if (r.status !== 'committed') return null;
-        let targetCount = 0;
-        try {
-          const parsed = JSON.parse(r.targetKeys ?? '[]');
-          targetCount = Array.isArray(parsed) ? parsed.length : 0;
-        } catch {
-          targetCount = 0;
-        }
-        const activeCount = activeCounts.get(r.id) ?? 0;
-        if (targetCount > 0 && activeCount === targetCount) return 'active';
-        if (activeCount > 0) return 'partial';
-        return 'superseded';
-      })(),
+      generationState: importGenerationState({
+        status: r.status,
+        targetKeys: parseTargetKeys(r.targetKeys),
+        ownTargetCount: activeCounts.get(r.id) ?? 0,
+        ownedTargetKeys,
+        canonicalRowCount: Number(protectedCounts.get(r.id)?.canonical_rows ?? 0),
+      }),
       createdAt: r.createdAt,
       committedAt: r.committedAt ?? null,
       // 投入した原本をR2へ保存できた取込だけ、やり直し(再取込)の入口を出せる。

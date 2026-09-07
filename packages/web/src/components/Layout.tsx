@@ -12,7 +12,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { type SummaryResponse, api } from '../api.js';
 import { monthLabel, yen } from '../format.js';
 import { PeriodPicker, usePeriod } from '../period.js';
-import { APP_ROUTES, MOBILE_ROUTES, TABBED_ROUTE_IDS } from '../routeMetadata.js';
+import { ANALYSIS_TABS, APP_ROUTES, MOBILE_ROUTES, TABBED_ROUTE_IDS } from '../routeMetadata.js';
 import { TaxYearPicker, useTaxYear } from '../tax-year.js';
 import { CommandPalette } from './CommandPalette.js';
 import { ExportMenu } from './ExportMenu.js';
@@ -115,18 +115,42 @@ export function Layout({ children }: { children: ReactNode }) {
           <small>freee × マネーフォワード</small>
         </Link>
         <nav className="nav" aria-label="メインナビゲーション">
-          {APP_ROUTES.map((route) => (
-            <div key={route.id}>
-              {route.navGroup && <div className="nav-group">{route.navGroup}</div>}
-              <NavItem
-                to={route.path}
-                icon={route.icon}
-                label={route.label}
-                variant="sidebar"
-                end={!TABBED_ROUTE_IDS.has(route.id)}
-              />
-            </div>
-          ))}
+          {APP_ROUTES.map((route) => {
+            const subTabs = route.id === 'analysis' ? ANALYSIS_TABS : null;
+            return (
+              <div key={route.id}>
+                {route.navGroup && <div className="nav-group">{route.navGroup}</div>}
+                {/*
+                タブを持つ画面は、サイドバーでも子まで開いておく。閉じておくと
+                「トータル収支」はサイドバーのどの語とも一致せず、先に支出照合へ降りて
+                タブを押し直す道しか残らない。畳んで出す案 (/analysis にいるときだけ開く) は、
+                その画面へ行けていない人には最初から見えないので、探せない状態が変わらない。
+                親を end にしたのは、子が現在地のときに aria-current="page" が
+                親子で 2 つ立つのを避けるため。いま開いている頁は子ただ 1 つ。
+              */}
+                <NavItem
+                  to={route.path}
+                  icon={route.icon}
+                  label={route.label}
+                  variant="sidebar"
+                  end={!TABBED_ROUTE_IDS.has(route.id) || subTabs !== null}
+                />
+                {subTabs && (
+                  <div className="nav-sub">
+                    {subTabs.map((tab) => (
+                      <NavItem
+                        key={tab.id}
+                        to={tab.path}
+                        icon={tab.icon}
+                        label={tab.label}
+                        variant="sidebar"
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
           {/* 改善要望は routeMetadata の業務画面ではなく、アプリ自身への窓口。
               タブバーの最頻5画面を押し出さないよう、サイドバーにだけ出す */}
           <div>

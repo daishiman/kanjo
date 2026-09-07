@@ -10,21 +10,21 @@ kind: index
 ## 要件定義書 (上位概念・憲法)
 
 - [要件定義書](./00-requirements-definition.md) — 上位概念 U1-U9 の正本 (確定マーカー: `confirmed`)。各技術章は serves_goals でここのゴールへトレース (anchor) する。
-- **本質的目的 (U1)**: freee・マネーフォワード側で元データが後から書き換えられても、利用者が『今ある取込データを、どう消して・どう上書きして・どう入れ直すか』を自分で選んで実行でき、かつ一度自分で直した科目・項目・公私区分といった手当てが取込のたびに失われず継続的に再適用されることで、毎回の入力の手間を極限まで下げながら、帳簿を正しい最新状態へ収束させられる状態を保つ。
-- **ゴール (U3)**: G1=取込済みデータを、取込単位・期間単位・データ種別単位・全件のいずれの粒度でも、利用者が意図して削除できる状態にする, G2=同じ対象を取り込み直すとき、既存と新規が食い違う箇所を実行前に可視化し、上書き・保持・個別選択を利用者が決められる状態にする, G3=削除と上書きのどちらの経路でも、手動で入れた記録(公私仕分け・分割・現金の記帳・証憑)が意図せず失われず、失う場合は事前に件数で示される状態にする, G4=削除・上書きは不可逆操作であることを踏まえ、実行前の確認・実行後の取り消し・監査可能な記録を備え、誤操作から回復できる状態にする, G5=削除・上書き後も、月次集計・現行指紋(import_active_targets)・取込履歴・残高などの派生状態が実データと矛盾しない状態へ必ず収束する, G6=利用者が一度直した科目・項目・公私区分などの手当てを、同じ取引先・同じ性質の明細へ継続的に再適用し、取込のたびに入力し直す手間をなくす, G7=取込元の変更と利用者の手当てが衝突したとき、前回取込時の原本値を基準に『利用者が変えたのか取込元が変わったのか』を機械的に区別し、既定でどちらを採るかを自動判定する。判定できない箇所だけ利用者へ問う
+- **本質的目的 (U1)**: 個人事業主として事業と家計が一体になっている実態に対し、freee(事業帳簿)とMoney Forward(家計)へ分かれて記録された収入・支出を、二重計上を明細単位で消し込んだうえで1つの一覧表へ束ね、月ごとの『トータルの収入・支出・収支(プラスマイナス)』と費用の推移を、消し込んだ根拠ごと確認できる状態を保つ。
+- **ゴール (U3)**: G1=月ごとのトータル収入・トータル支出・トータル収支(プラスマイナス)を、事業と家計を合算した1つの一覧表として確認できる状態にする, G2=Money Forward の日付と freee の発生日が一致し金額も一致する支出は『事業で使う費用』として freee を正に事業側へ一度だけ計上し、それ以外の支出は家計側へ計上して、二重計上のない支出合計を出す状態にする, G3=事業側へ寄せた金額と件数を一覧表の中に明示し、合計が『事業費(freee正) + 家計費(MF残余)』として利用者の手で検算できる状態にする, G4=金額または発生日が一致せず自動で事業費へ寄せられなかった重複候補を『要確認』として理由付きで列挙し、利用者が一度『同じ/違う』を判断すれば、次回以降の取込でその判断が再適用される状態にする, G5=トータル支出の推移(増加/減少/横ばい/判定不可)を、既存の trend.ts と同じ統計基準(Mann-Kendall / Theil-Sen)で判定し、費用が増えているのか減っているのかを示す状態にする, G6=合算後も事業側・家計側の内訳を保持し、トータルの増減がどちらの側のどの科目で起きているかまで辿れる状態にする, G7=期間を切り替えても、合算・消し込み・トレンド判定が同じ規則で再計算され、期間ごとに矛盾した数字が出ない状態にする
 
 ## 章一覧と集約状態
 
 | カテゴリ | 章 | 集約状態 | 確定マーカー | 資するゴール | 対応セル |
 |---|---|---|---|---|---|
-| データベース (database) | [database.md](./database.md) | 確定 | `confirmed` | G1 G2 G3 G4 G5 G6 G7 | database.web database.mobile database.tablet database.desktop-windows database.desktop-linux database.desktop-macos |
-| 認証(ログイン) (auth) | [auth.md](./auth.md) | 確定 | `confirmed` | G4 | auth.web auth.mobile auth.tablet auth.desktop-windows auth.desktop-linux auth.desktop-macos |
-| UI-UX (ui-ux) | [ui-ux.md](./ui-ux.md) | 確定 | `confirmed` | G1 G2 G3 G4 G6 G7 | ui-ux.web ui-ux.mobile ui-ux.tablet ui-ux.desktop-windows ui-ux.desktop-linux ui-ux.desktop-macos |
-| セキュリティ (security) | [security.md](./security.md) | 確定 | `confirmed` | G3 G4 | security.web security.mobile security.tablet security.desktop-windows security.desktop-linux security.desktop-macos |
-| インフラ (infrastructure) | [infrastructure.md](./infrastructure.md) | 確定 | `confirmed` | G4 G5 | infrastructure.web infrastructure.mobile infrastructure.tablet infrastructure.desktop-windows infrastructure.desktop-linux infrastructure.desktop-macos |
-| バックエンド (backend) | [backend.md](./backend.md) | 確定 | `confirmed` | G1 G2 G3 G4 G5 G6 G7 | backend.web backend.mobile backend.tablet backend.desktop-windows backend.desktop-linux backend.desktop-macos |
-| フロントエンド (frontend) | [frontend.md](./frontend.md) | 確定 | `confirmed` | G1 G2 G3 G4 G6 G7 | frontend.web frontend.mobile frontend.tablet frontend.desktop-windows frontend.desktop-linux frontend.desktop-macos |
-| 保守運用管理 (maintenance-ops) | [maintenance-ops.md](./maintenance-ops.md) | 確定 | `confirmed` | G1 G4 G5 G6 G7 | maintenance-ops.web maintenance-ops.mobile maintenance-ops.tablet maintenance-ops.desktop-windows maintenance-ops.desktop-linux maintenance-ops.desktop-macos |
+| データベース (database) | [database.md](./database.md) | 確定 | `confirmed` | G2 G4 G7 | database.web database.mobile database.tablet database.desktop-windows database.desktop-linux database.desktop-macos |
+| 認証(ログイン) (auth) | [auth.md](./auth.md) | 確定 | `confirmed` | G1 G7 | auth.web auth.mobile auth.tablet auth.desktop-windows auth.desktop-linux auth.desktop-macos |
+| UI-UX (ui-ux) | [ui-ux.md](./ui-ux.md) | 確定 | `confirmed` | G1 G3 G4 G6 G7 | ui-ux.web ui-ux.mobile ui-ux.tablet ui-ux.desktop-windows ui-ux.desktop-linux ui-ux.desktop-macos |
+| セキュリティ (security) | [security.md](./security.md) | 確定 | `confirmed` | G2 G3 G4 | security.web security.mobile security.tablet security.desktop-windows security.desktop-linux security.desktop-macos |
+| インフラ (infrastructure) | [infrastructure.md](./infrastructure.md) | 確定 | `confirmed` | G1 G7 | infrastructure.web infrastructure.mobile infrastructure.tablet infrastructure.desktop-windows infrastructure.desktop-linux infrastructure.desktop-macos |
+| バックエンド (backend) | [backend.md](./backend.md) | 確定 | `confirmed` | G1 G2 G3 G5 G6 | backend.web backend.mobile backend.tablet backend.desktop-windows backend.desktop-linux backend.desktop-macos |
+| フロントエンド (frontend) | [frontend.md](./frontend.md) | 確定 | `confirmed` | G1 G4 G5 G6 G7 | frontend.web frontend.mobile frontend.tablet frontend.desktop-windows frontend.desktop-linux frontend.desktop-macos |
+| 保守運用管理 (maintenance-ops) | [maintenance-ops.md](./maintenance-ops.md) | 確定 | `confirmed` | G4 G7 | maintenance-ops.web maintenance-ops.mobile maintenance-ops.tablet maintenance-ops.desktop-windows maintenance-ops.desktop-linux maintenance-ops.desktop-macos |
 
 ## 集約状態サマリ
 

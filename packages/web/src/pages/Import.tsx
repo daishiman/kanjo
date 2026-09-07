@@ -12,12 +12,14 @@ import {
   type ImportHistoryRow,
   type ImportUnitResult,
   type SubsCandidate,
+  type TotalCashflowResponse,
   api,
   apiUpload,
 } from '../api.js';
 import {
   DeletedNotice,
   DeletionPanel,
+  ImportDiscardBulkButton,
   ImportDiscardButton,
   ImportReplacementButton,
   ImportUndoButton,
@@ -25,6 +27,7 @@ import {
 import { type ConflictDecision, DiffPreview } from '../components/ImportDiff.js';
 import { PageHeader, PageState, describeError } from '../components/Page.js';
 import { Term } from '../components/Term.js';
+import { useConfirmDialog } from '../components/use-confirm-dialog.js';
 import { dateTime } from '../format.js';
 import { fileForUnit, retryableFiles, rootFileName } from '../import-retry.js';
 
@@ -50,6 +53,99 @@ const monthSummary = (months: readonly string[]): string => {
   const gapNote = continuous ? '' : '・一部月を除く';
   return `${sorted[0]} 〜 ${sorted[sorted.length - 1]}（${sorted.length}ヶ月${gapNote}）`;
 };
+
+/**
+ * 取込前の確認。window.confirm と違い、ブラウザのダイアログ抑止で無反応にならない。
+ * 実行中は Esc も「やめる」も塞ぎ(busy)、閉じる経路を1つに保つ。
+ */
+function ImportConfirmDialog({
+  dialog,
+  files,
+  force,
+  keepOnShrink,
+  onConfirm,
+}: {
+  dialog: ReturnType<typeof useConfirmDialog>;
+  files: File[];
+  force: boolean;
+  keepOnShrink: boolean;
+  onConfirm: () => void;
+}) {
+  const notes = importEffectNotes({ force, keepOnShrink });
+  return (
+    <dialog
+      ref={dialog.bind}
+      className="deletion-confirm-dialog import-confirm-dialog"
+      aria-labelledby={dialog.titleId}
+      onClose={dialog.close}
+      onCancel={(event) => {
+        event.preventDefault();
+        dialog.close();
+      }}
+    >
+      <div className="import-discard-confirmation">
+        <h3 ref={dialog.titleRef} id={dialog.titleId} tabIndex={-1}>
+          {files.length}件のファイルを取り込みますか？
+        </h3>
+        <p>
+          ファイルに含まれる月の既存データは、削除してこのファイルの内容へ置き換えます（月単位の洗い替え）。
+        </p>
+        <ul className="import-selected-files" aria-label="取り込むファイル">
+          {files.map((file) => (
+            <li key={`${file.name}-${file.size}`}>
+              <strong>{file.name}</strong>
+            </li>
+          ))}
+        </ul>
+        {notes.length > 0 && (
+          <ul className="import-confirm-notes" aria-label="取込時の扱い">
+            {notes.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
+        )}
+        <div className="deletion-run-actions">
+          <button type="button" className="primary" disabled={dialog.busy} onClick={onConfirm}>
+            {/* 押した先で実際に起きること(置き換え)を語にする。トリガーと同じ「取込を実行」に
+                すると、確認の前後で同じ語が2つ並び、どちらが後戻りできない側か読めない */}
+            {dialog.busy ? '取込中…' : '置き換えて取り込む'}
+          </button>
+          <button type="button" disabled={dialog.busy} onClick={dialog.close}>
+            やめる
+          </button>
+        </div>
+      </div>
+    </dialog>
+  );
+}
+
+/**
+ * 取込を実行する前に見せる注意書き。取込は月単位の洗い替えで取り返しがつかないので、
+ * 「何が置き換わり、何が残るか」を実行前に読める形にする。
+ *
+ * 返した文字列が確認ダイアログに箇条書きで並ぶ。空配列を返すと箇条書きの節ごと出ない。
+ */
+export function importEffectNotes({
+  force,
+  keepOnShrink,
+}: {
+  /** 「同じ内容でも再適用する」が入っているか */
+  force: boolean;
+  /** 「件数が減る月は前回の内容を残す」が入っているか */
+  keepOnShrink: boolean;
+}): string[] {
+  // 既定の挙動(月単位の洗い替え)は見出しのすぐ下で説明済み。ここは「詳細設定で既定から
+  // ずらした分」だけを、設定名ではなく起きることの語で書く。全項目を毎回並べると、
+  // 既定のままの人にも読む量だけが増えて、変えた 1 行が埋もれる。
+  const notes: string[] = [];
+  if (force) {
+    notes.push('前回と同じ内容のファイルでも、対象月をもう一度置き換えます。');
+  }
+  if (keepOnShrink) {
+    notes.push('取り込む件数が前回より減る月は置き換えず、前回の内容を残します。');
+  }
+  return notes;
+}
 
 /**
  * 取込結果の数量・状態を同じ語彙で表示する再利用単位。
@@ -239,22 +335,63 @@ export function ImportPage() {
 
   const upload = useMutation({
     mutationFn: async (files: File[]) => {
-      const form = new FormData();
-      for (const f of files) form.append('file', f);
-      if (force) form.append('force', '1');
-      if (keepOnShrink) form.append('keepOnShrink', '1');
-      if (previewFingerprint) {
-        form.append('resolutionPlan', JSON.stringify({ fingerprint: previewFingerprint, decisions }));
+      /*
+        1回のPOSTに載せられるファイル数は Cloudflare Workers Free の「1 invocation あたり
+        50 D1 queries」で頭打ちになる (D1_FREE_QUERY_LIMIT)。固定費が約20 queries、
+        ファイル1本あたり約16 queries なので、2本まとめた時点で上限に触れる。上限は
+        プラットフォーム側の値で上げられないため、まとめずに1ファイルずつ送る。
+
+        分けて送っても取りこぼさない。取込の置換は種別×月ごと (freeeはapplyFreeeDeals、
+        MFはapplyMfTxs) に閉じており、後から送ったファイルが先のファイルの結果を
+        消すことはない。
+
+        例外は差分プレビューを取ったとき。あの fingerprint は「選択したMFファイル全体」を
+        1つの解決範囲として計算しているので、分割すると範囲が変わり
+        resolution_scope_changed になる。判断を捨てるほうが害が大きいので、
+        プレビュー済みのときだけ従来どおり1回で送る。
+      */
+      const batches = previewFingerprint ? [files] : files.map((file) => [file]);
+      const results: ImportUnitResult[] = [];
+      let resolution: { reset: number; remembered: number } | null = null;
+
+      for (const batch of batches) {
+        const form = new FormData();
+        for (const f of batch) form.append('file', f);
+        if (force) form.append('force', '1');
+        if (keepOnShrink) form.append('keepOnShrink', '1');
+        if (previewFingerprint) {
+          form.append('resolutionPlan', JSON.stringify({ fingerprint: previewFingerprint, decisions }));
+        }
+        try {
+          const body = await apiUpload<{
+            results?: ImportUnitResult[];
+            resolution?: { reset: number; remembered: number };
+          }>('/imports', form, {
+            // 複数ファイルの一部成功はHTTPエラーでも結果表を保つ。
+            acceptErrorBody: (candidate) =>
+              !!candidate &&
+              typeof candidate === 'object' &&
+              Array.isArray(Reflect.get(candidate, 'results')),
+          });
+          results.push(...(body.results ?? []));
+          if (body.resolution) resolution = body.resolution;
+        } catch (error) {
+          // 1本が落ちても残りは送る。ここで throw すると、既に成功した分の結果表まで消える。
+          // 落ちた分は failed 行として残し、既存の「失敗したN件を再取込」で拾えるようにする。
+          for (const f of batch) {
+            results.push({
+              filename: f.name,
+              kind: '不明',
+              months: [],
+              rows: 0,
+              skipped: 0,
+              status: 'failed',
+              reason: describeError(error),
+            });
+          }
+        }
       }
-      const body = await apiUpload<{
-        results?: ImportUnitResult[];
-        resolution?: { reset: number; remembered: number };
-      }>('/imports', form, {
-        // 複数ファイルの一部成功はHTTPエラーでも結果表を保つ。
-        acceptErrorBody: (candidate) =>
-          !!candidate && typeof candidate === 'object' && Array.isArray(Reflect.get(candidate, 'results')),
-      });
-      return { results: body.results ?? [], resolution: body.resolution ?? null };
+      return { results, resolution };
     },
     onSuccess: ({ results: r, resolution }, files) => {
       setResults(r);
@@ -315,18 +452,16 @@ export function ImportPage() {
     },
   });
 
-  const confirmAndUpload = () => {
-    // 月単位洗い替えの明示(spec §10.3)
-    const ok = window.confirm(
-      `ファイルに含まれる月の既存データは削除して置き換えます(月単位の洗い替え)。手動判定は明細IDが一致する限り維持され、現金の記帳も残ります。${
-        force
-          ? '現在有効な内容と同じでも、新しい取込として再適用します。'
-          : '現在有効な内容と同じファイルだけスキップします。'
-      }${
-        keepOnShrink ? '件数が減る月がある場合は、そのファイルを取り込まずに前回の内容を残します。' : ''
-      }取込を実行しますか?`,
-    );
-    if (ok) upload.mutate(pending);
+  /*
+    月単位洗い替えの明示(spec §10.3)。以前は window.confirm を使っていたが、ブラウザの
+    「このページでこれ以上ダイアログを表示しない」抑止が効くと即 false が返り、取込ボタンが
+    押しても無反応になる。抑止されたことを画面側は知れないため原因も表に出ない。
+    取り返しのつかない操作の確認をブラウザへ預けず、アプリ内の <dialog> で行う。
+  */
+  const confirmDialog = useConfirmDialog({ busy: upload.isPending });
+  const runUpload = () => {
+    confirmDialog.setOpen(false);
+    upload.mutate(pending);
   };
 
   /** 失敗行に対応する元ファイル。手元に無ければ null(その行にはボタンを出さない) */
@@ -336,9 +471,15 @@ export function ImportPage() {
   const historyPriority = (row: ImportHistoryRow) => {
     if (row.status !== 'committed' && row.status !== 'ok' && row.status !== 'duplicate') return 0;
     if (row.generationState === 'active' || row.generationState === 'partial') return 1;
-    return 2;
+    // 削除済みは片づける対象。置き換わっただけの履歴より手前に出す
+    if (row.generationState === 'deleted') return 2;
+    return 3;
   };
   const orderedHistoryRows = [...historyRows].sort((a, b) => historyPriority(a) - historyPriority(b));
+  /** データを消し終えて、取り消しの控えも残っていない履歴。まとめて片づけられる */
+  const tidyableHistoryIds = historyRows
+    .filter((row) => row.generationState === 'deleted' && row.discardable === true)
+    .map((row) => row.id);
   const failedHistoryCount = historyRows.filter(
     (row) =>
       row.status !== 'committed' &&
@@ -500,15 +641,25 @@ export function ImportPage() {
             <div className="import-primary-actions">
               <span>対象月の既存データは、確認後にこのファイルの内容へ置き換わります。</span>
               <button
+                ref={confirmDialog.triggerRef}
                 type="button"
                 className="primary"
                 aria-label="取込を実行"
-                onClick={confirmAndUpload}
+                onClick={() => confirmDialog.setOpen(true)}
                 disabled={upload.isPending}
               >
                 {upload.isPending ? '取込中…' : `${pending.length}件を取り込む`}
               </button>
             </div>
+            {confirmDialog.open && (
+              <ImportConfirmDialog
+                dialog={confirmDialog}
+                files={pending}
+                force={force}
+                keepOnShrink={keepOnShrink}
+                onConfirm={runUpload}
+              />
+            )}
           </section>
         )}
 
@@ -541,6 +692,7 @@ export function ImportPage() {
                 setPending(files);
               }}
             />
+            <DuplicateReviewNotice />
             <SubsHandoff results={results} />
           </section>
         )}
@@ -552,9 +704,12 @@ export function ImportPage() {
               <h2 id="import-history-title">取込履歴</h2>
             </div>
             {!history.isLoading && !history.isError && historyRows.length > 0 && (
-              <span className={`pill ${failedHistoryCount ? 'alert' : 'calm'}`}>
-                {failedHistoryCount ? `失敗 ${failedHistoryCount}件` : '要対応なし'}
-              </span>
+              <div className="import-history-summary">
+                <span className={`pill ${failedHistoryCount ? 'alert' : 'calm'}`}>
+                  {failedHistoryCount ? `失敗 ${failedHistoryCount}件` : '要対応なし'}
+                </span>
+                <ImportDiscardBulkButton importIds={tidyableHistoryIds} disabled={upload.isPending} />
+              </div>
             )}
           </div>
 
@@ -587,13 +742,24 @@ export function ImportPage() {
                     <div className="import-record-state">
                       {isComplete ? (
                         <>
-                          <span className="pill calm">
-                            {row.status === 'ok' ? '完了（旧履歴）' : '取込完了'}
-                          </span>
-                          {row.generationState === 'active' && <span className="pill calm">現在有効</span>}
-                          {row.generationState === 'partial' && <span className="pill warn">一部が有効</span>}
-                          {row.generationState === 'superseded' && (
-                            <span className="pill neutral">更新済み</span>
+                          {/* 削除済みは「取込完了」と重ねない。消したのに完了と出るのが誤解の元 */}
+                          {row.generationState === 'deleted' ? (
+                            <span className="pill neutral">データ削除済み</span>
+                          ) : (
+                            <>
+                              <span className="pill calm">
+                                {row.status === 'ok' ? '完了（旧履歴）' : '取込完了'}
+                              </span>
+                              {row.generationState === 'active' && (
+                                <span className="pill calm">現在有効</span>
+                              )}
+                              {row.generationState === 'partial' && (
+                                <span className="pill warn">一部が有効</span>
+                              )}
+                              {row.generationState === 'superseded' && (
+                                <span className="pill neutral">更新済み</span>
+                              )}
+                            </>
                           )}
                         </>
                       ) : row.status === 'duplicate' ? (
@@ -641,6 +807,12 @@ export function ImportPage() {
                           onDiscarded={reimportedFrom === row.id ? cancelPendingImport : undefined}
                         />
                       )}
+                      {/* 削除済みなのに片づけられない理由は1つ。取り消しの控えがまだ生きている */}
+                      {row.generationState === 'deleted' && row.discardable !== true && (
+                        <span className="sub" title="削除を取り消せる間は、この履歴を残します">
+                          取り消し可能
+                        </span>
+                      )}
                     </div>
 
                     {(isFailed ||
@@ -685,6 +857,32 @@ export function ImportPage() {
  * ここで件数だけ見せて、確認はサブスク画面に任せる(判断は1箇所にまとめる)。
  * freee を取り込んでいないときは候補が増えないので出さない。
  */
+/**
+ * 取込直後に、機械では決められなかった重複が残っていることを知らせる。
+ *
+ * 異常への気付きはこの画面警告 1 経路しかない。メール・push・外部監視は無いので、
+ * ここが出ないと二重計上が誰にも見えないまま集計へ残る。
+ * 件数はサーバの導出値(月次行の要確認件数)を合算するだけで、画面では判定しない。
+ */
+function DuplicateReviewNotice() {
+  const q = useQuery({
+    queryKey: ['total-cashflow', 'import-notice'],
+    queryFn: () => api<TotalCashflowResponse>('/total-cashflow'),
+  });
+  const count = (q.data?.months ?? []).reduce((sum, month) => sum + month.reviewCount, 0);
+  // 0 件のときに「0 件です」と出すと、警告が常時出ている状態になり気付きの合図として働かない
+  if (count === 0) return null;
+  return (
+    <div className="notice warn lines" role="alert" aria-label="重複の要確認">
+      freee と Money Forward で重複しているかもしれない支払が {count}件 残っています(要確認)。
+      <br />
+      日付か金額が揃わないため機械では決められません。同じ取引かどうかを選ぶと集計へ反映されます。
+      <br />
+      <Link to="/analysis/total-cashflow">トータル収支で確認する</Link>
+    </div>
+  );
+}
+
 function SubsHandoff({ results }: { results: ImportUnitResult[] }) {
   const gotFreee = results.some((r) => r.status !== 'failed' && r.kind === 'freee');
   const q = useQuery({

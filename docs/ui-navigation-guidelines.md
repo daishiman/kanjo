@@ -8,7 +8,7 @@ route、表示順、label、icon keyは`APP_ROUTES`、公式Lucide geometryとic
 2. 可視labelは必ず残す。アイコンだけ、頭文字、絵文字で画面を表さない。
 3. current pageは完全一致を基本とし、同時に`aria-current="page"`になるリンクを1件以下に保つ。親sectionと子pageを両方currentにしない。
 4. desktop sidebarとmobile navigationは同じmetadataを使う。mobileは`mobileLabel`を持つ5 routeと、全15 routeを開くメニューで構成する。
-5. `navigation-ux.dom.test.tsx`で全15 routeのcurrent一意、icon、可視label、ARIAを固定する。実寸、折返し、overflow、focusは実ブラウザで確認する。
+5. `navigation-ux.dom.test.tsx`で全20単位(15 route+支出分析5タブ)のcurrent一意、icon、可視label、ARIAを固定する。実寸、折返し、overflow、focusは実ブラウザで確認する。
 6. `taskDetail`(段階表示の説明文)を必ず書く。`route-task-detail.test.tsx`が用語リンクゼロの単位を許さない。
 7. 画面検索(`Cmd+K`)は`SEARCH_ROUTES`を通じて`APP_ROUTES`と`ANALYSIS_TABS`をそのまま引く。検索側に画面一覧を書き足さない(二重管理を作らない)。
 
@@ -21,6 +21,8 @@ route、表示順、label、icon keyは`APP_ROUTES`、公式Lucide geometryとic
 - 表示中のタブだけを描画し、APIも1本だけ呼ぶ。
 - 旧URLは削除せず`LEGACY_ROUTE_REDIRECTS`でタブへ`replace`リダイレクトする。
 - 束ねられた側の`taskDetail`を捨てず、タブごとの説明として移す。
+- **タブをサイドバーへ子行として出す**。束ねると、行き先の名前が親(「支出分析」)にしか出なくなり、タブの存在自体が画面に入るまで分からない。実際これで利用者が到達できなかった。畳んだ状態を既定にすると同じ問題が残るので、常時展開する。
+- 子行がいるときは、親routeを`end`にして`aria-current`を親に立てない。立てると現在地が親子で2件になる(項番3と同じ理由)。
 
 ## 見た目と読みやすさ
 
@@ -41,14 +43,19 @@ route、表示順、label、icon keyは`APP_ROUTES`、公式Lucide geometryとic
 - 未保存状態、保存中、保存完了、失敗が分かる。
 - 未保存のまま行・filter・pageを移ると確認が出る。
 - 削除、復元、書き出しなど影響の大きい操作は対象と結果を明示する。
+- **確認は`window.confirm`で出さない**。ブラウザの「このページでこれ以上ダイアログを表示しない」が効くと即座に`false`が返り、呼び出し側には抑止なのか利用者が拒んだのか区別できない。押しても何も起きないボタンになり、理由も画面に出ない。`components/ConfirmDialog.tsx`の`ConfirmDialog`と`usePendingConfirm`を使う。
+- 確認の中には、何が失われるか(対象名と範囲)を書く。トリガーと確定ボタンで語を変える(「削除」→「削除」だと、確認が出たことに気づかず同じ語を押してしまう)。
+- テストは「`confirm`が呼ばれない」だけでは足りない。確認せず素通りする実装も通ってしまうので、`findByRole('dialog')`・本文・確定ボタン名の三点と組で固定する。
 
 これらを既に満たす画面は構造を変えない。説明やoverlayを増やすより、現在の文脈と可逆性を維持する。
 
 ## リリース前チェック
 
 - `/tax`と`/tax/receipts`でcurrentがそれぞれ1件。
-- 15 routeと支出分析の4タブすべてに可視labelとiconがある。アイコンは図形の署名で一意(キー一致では見た目の重複を見逃す)。
-- `Cmd+K` / `Ctrl+K`で画面検索が開き、19単位すべてを名前と群名で引ける。Escape・背景クリックで閉じ、矢印キーで候補を移動できる。
+- 15 routeと支出分析の5タブすべてに可視labelとiconがある。アイコンは図形の署名で一意(キー一致では見た目の重複を見逃す)。
+- サイドバーに支出分析の5タブが子行として並び、`/analysis/:tab`ではその子1件だけがcurrentになる。
+- `Cmd+K` / `Ctrl+K`で画面検索が開き、20単位すべてを名前と群名で引ける。Escape・背景クリックで閉じ、矢印キーで候補を移動できる。
+- 破壊的操作を押すと画面内に確認が出る。`window.confirm`は使っていない。
 - 旧URL `/matrix` `/trends` `/diagnosis` が対応するタブへリダイレクトされる。
 - 375 / 768 / 1280 / 1600px、200%相当、keyboard、`prefers-reduced-motion`で操作できる。
 - DOM testのPASSは構造契約、実ブラウザ4幅のPASSは視覚・操作契約として分け、片方で代替しない。

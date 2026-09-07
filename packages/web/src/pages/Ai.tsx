@@ -26,6 +26,7 @@ import {
   type SummaryResponse,
   api,
 } from '../api.js';
+import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { PageHeader, PageState, describeError } from '../components/Page.js';
 import { ReportChartView } from '../components/ReportChart.js';
@@ -134,6 +135,9 @@ export function AiPage() {
     },
     onError: (e) => setReportMsg(e instanceof ApiError ? e.message : describeError(e)),
   });
+  // 一覧の行ごとの確認。どのレポートへの確認かを持たないと、押した行と消える行がずれる。
+  // 読み込み前の早期 return より手前に置く (hook の呼び出し順を分岐させない)
+  const confirmRemove = usePendingConfirm<AiReportRow>({ busy: remove.isPending });
 
   if (sq.isLoading || tq.isLoading || rq.isLoading)
     return (
@@ -173,14 +177,7 @@ export function AiPage() {
         type="button"
         className="mini danger"
         disabled={remove.isPending}
-        onClick={() => {
-          if (
-            window.confirm(
-              `「${r.title}」(${periodText(r.period)} 第${r.version}版)を削除します。\n本文も図も消え、元に戻せません。よろしいですか?`,
-            )
-          )
-            remove.mutate(r.id);
-        }}
+        onClick={() => confirmRemove.ask(r)}
       >
         削除
       </button>
@@ -313,6 +310,27 @@ export function AiPage() {
         )}
       </section>
       {openId && <ReportDetail id={openId} onOpen={setOpenId} onReanalyze={startReanalyze} />}
+      {confirmRemove.target && (
+        <ConfirmDialog
+          dialog={confirmRemove.dialog}
+          title="このレポートを削除しますか？"
+          // トリガーは「削除」。アーカイブとの違い (本文が残らない) を確定側で言い切る
+          confirmLabel="本文ごと消す"
+          busyLabel="削除中…"
+          onConfirm={() =>
+            remove.mutate(confirmRemove.target?.id as string, { onSuccess: confirmRemove.dismiss })
+          }
+          onDismiss={confirmRemove.dismiss}
+        >
+          <p>
+            「{confirmRemove.target.title}」({periodText(confirmRemove.target.period)} 第
+            {confirmRemove.target.version}版)
+          </p>
+          <p className="sub">
+            本文も図も消え、元に戻せません。一覧から外すだけなら「アーカイブ」を使えます。
+          </p>
+        </ConfirmDialog>
+      )}
     </>
   );
 }
@@ -607,17 +625,12 @@ export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: 
     onError: (e) => setPasteMsg(e instanceof ApiError ? e.message : describeError(e)),
   });
 
-  const confirmCancel = (t: AiTaskView) => {
-    // 取り消すと発行済みトークンが無効になり、実行中のAIは結果を送れなくなる
-    if (
-      !window.confirm(
-        `${t.label} の依頼(${dateTime(t.createdAt)})を取り消します。\n実行中のAIがあれば結果を送れなくなります。よろしいですか?`,
-      )
-    )
-      return;
+  // 取り消すと発行済みトークンが無効になり、実行中のAIは結果を送れなくなる
+  const confirmCancel = usePendingConfirm<AiTaskView>({ busy: cancel.isPending });
+  const runCancel = (t: AiTaskView) => {
     setPasteMsg(null);
     if (pasteFor === t.id) setPasteFor(null);
-    cancel.mutate(t.id);
+    cancel.mutate(t.id, { onSuccess: confirmCancel.dismiss });
   };
 
   const rows = (list: AiTaskView[]) => (
@@ -669,7 +682,7 @@ export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: 
                     type="button"
                     className="mini danger"
                     disabled={cancel.isPending}
-                    onClick={() => confirmCancel(t)}
+                    onClick={() => confirmCancel.ask(t)}
                   >
                     取り消す
                   </button>
@@ -755,6 +768,22 @@ export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: 
         </div>
       )}
       {!pasteFor && pasteMsg && <p className="notice info">{pasteMsg}</p>}
+      {confirmCancel.target && (
+        <ConfirmDialog
+          dialog={confirmCancel.dialog}
+          title="この依頼を取り消しますか？"
+          // トリガーは「取り消す」。実行中のAIを締め出す側だと読めるように確定側で言い換える
+          confirmLabel="受け取りを打ち切る"
+          busyLabel="取り消し中…"
+          onConfirm={() => runCancel(confirmCancel.target as AiTaskView)}
+          onDismiss={confirmCancel.dismiss}
+        >
+          <p>
+            {confirmCancel.target.label} の依頼({dateTime(confirmCancel.target.createdAt)})
+          </p>
+          <p className="sub">実行中のAIがあれば、その結果を送れなくなります。</p>
+        </ConfirmDialog>
+      )}
     </section>
   );
 }

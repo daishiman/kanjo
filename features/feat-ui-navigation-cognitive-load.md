@@ -13,15 +13,15 @@ start_date: null
 target_date: null
 iteration: null
 created_at: "2026-08-29T15:34:00Z"
-updated_at: "2026-08-29T15:34:00Z"
+updated_at: "2026-09-07T13:55:37Z"
 depends_on: []
 related_nodes: ["spec-ui-navigation-cognitive-load", "arch-ui-navigation-experience", "arch-ui-navigation-frontend"]
 resource_scope: ["packages/web/src"]
 purpose: "長い文字中心のサイドバー、親子routeの二重選択、常時表示情報の過多により、利用者が現在地・次の操作・安全な編集方法を判断しづらい状態を解消する。"
-goal: "全画面(15route + 3タブ = 18単位)で現在地が一意かつアイコンとラベルで識別でき、重要情報と主操作を先に理解し、必要時だけ詳細や編集UIへ進める。"
+goal: "全画面(15route + 5タブ = 20単位)で現在地が一意かつアイコンとラベルで識別でき、すべての行き先がサイドバーから直接押せ、重要情報と主操作を先に理解し、必要時だけ詳細や編集UIへ進める。"
 scope_in: ["/taxと/tax/receiptsのcurrent一意化", "全routeの型付きアイコン", "sidebarのicon-label-group spacing", "情報優先度と段階表示の共通パターン", "編集対象・保存・取消・危険性の明示", "desktop/mobile/zoom/keyboardの回帰確認", "見る群3画面の/analysis/:tabへの統合", "画面検索(Cmd+K)"]
 scope_out: ["会計計算変更", "API変更", "データモデル変更", "認証変更", "インフラ変更", "専用ネイティブアプリ", "通常遷移をmodal化", "本番deployとPR作成"]
-acceptance: ["/tax/receiptsでcurrent navが領収書の残り1件だけになる", "全route(15route + 3タブ = 18単位)に意味の異なるiconと可視labelがある", "icon-label間隔とnav行高・group間隔が共通tokenで整う", "currentがaria-current=pageと色以外の手掛かりを持つ", "全18単位で目的・重要状態・主操作が初期表示から失われない", "補足情報は文脈を保つ段階表示になり通常遷移をmodalが遮らない", "編集surfaceで対象・保存・取消・危険性・処理結果を識別できる", "unit・DOM・build・UI contract・主要viewport visual確認がPASSする"]
+acceptance: ["/tax/receiptsでcurrent navが領収書の残り1件だけになる", "全route(15route + 5タブ = 20単位)に意味の異なるiconと可視labelがある", "サイドバーから20単位すべてへ直接移動でき、タブ配下ではその子1件だけがcurrentになる", "消すと戻せない操作は画面内のdialogで確認し、window.confirmを使わない", "icon-label間隔とnav行高・group間隔が共通tokenで整う", "currentがaria-current=pageと色以外の手掛かりを持つ", "全20単位で目的・重要状態・主操作が初期表示から失われない", "補足情報は文脈を保つ段階表示になり通常遷移をmodalが遮らない", "編集surfaceで対象・保存・取消・危険性・処理結果を識別できる", "unit・DOM・build・UI contract・主要viewport visual確認がPASSする"]
 architecture_refs: ["arch-ui-navigation-experience", "arch-ui-navigation-frontend"]
 parent_feature: null
 feature_package_id: null
@@ -53,7 +53,7 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 
 ## 到達状態
 
-全画面(15route + 3タブ = 18単位)のroute metadata、共通Layout、アイコン、spacing、段階表示、編集surfaceが一貫し、税務画面の二重activeがなく、主要情報と主操作が常に先に理解できる。
+全画面(15route + 5タブ = 20単位)のroute metadata、共通Layout、アイコン、spacing、段階表示、編集surfaceが一貫し、税務画面の二重activeがなく、主要情報と主操作が常に先に理解できる。すべての行き先がサイドバーから直接押せ、消すと戻せない操作は画面内の確認を経る。
 
 ## スコープ
 
@@ -64,7 +64,11 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 
 状態の凡例: **充足**=証跡で確認済み / **部分**=構造は検証したが実描画での確認が未実施 / **実装不要と判定**=現行実装が既に条件を満たすと判断し、理由を証跡に記録済み。チェック済み(`[x]`)は充足と実装不要と判定のみ。
 
-**画面数の更新(2026-08-30)**: 「見る」群の3画面(増減マトリクス/支出トレンド/統計診断)を `/analysis/:tab` へ統合したため、**17route → 15route + 3タブ**。受入条件の文言中の「17route」「全17ページ」は、統合後は「15route + 3タブ = 18単位」として読む。統合の判断は `docs/ui-decisions.md` の「決定の更新(2026-08-30)」に記録。
+**画面数の更新(2026-08-30)**: 「見る」群の3画面(増減マトリクス/支出トレンド/統計診断)を `/analysis/:tab` へ統合したため、**17route → 15route + 3タブ**。統合の判断は `docs/ui-decisions.md` の「決定の更新(2026-08-30)」に記録。
+
+**画面数の更新(2026-09-07)**: その後 `/analysis/:tab` に「支出照合」(2026-09-03)と「トータル収支」が加わり、**15route + 5タブ = 20単位**。以下の表で「18単位」「18icon」と書かれた根拠欄は、当時の実測値をそのまま残してある(後から数字だけ書き換えると、いつ何件を測ったのか分からなくなるため)。現在の本数の正本は `routeMetadata.ts` で、仕様側の写しは `specs/ui-navigation-cognitive-load.md` にある。
+
+**追補(2026-09-07)**: 5タブをサイドバーの子行として常時展開し、破壊的操作の確認を `window.confirm` からアプリ内 `<dialog>` へ移した。判断は `docs/ui-decisions.md` の「決定の更新(2026-09-07)」と ADR-UI-005〜007、作業記録は `tasks/ui-navigation-followup-tasks.md`。
 
 | 受入条件 | 対応FR/AC | 状態 | 根拠・残作業 |
 |---|---|---|---|
@@ -76,6 +80,8 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 | 補足は段階表示し通常遷移をmodalで遮らない | FR-006 / AC-004 | 実装不要と判定 | 現行の遷移にmodalは挟まっておらず変更不要。判断は`evidence/phase-01-ui-audit.md`・`phase-03-design-review.md`と`docs/ui-navigation-guidelines.md`に記録 |
 | 編集対象・保存・取消・危険性・処理結果を明示 | FR-007 / AC-005 | 実装不要と判定 | 既存のinline editorが対象名・保存・取消・未保存guard・処理結果を満たすため無変更。判断は`evidence/phase-05-implementation.md`ほかに記録 |
 | unit/DOM/build/UI contract/主要viewport visual確認がPASS | AC-006 | 充足 | unit/DOM/build/UI contract: 52ファイル/296テストPASS。viewport visual: 実Chrome(CDP)による実描画検査3本が全合格 |
+| サイドバーから支出分析の各タブへ直接行ける | FR-011,012 / AC-010,011 | 充足(2026-09-07) | `navigation-ux.dom.test.tsx`が各タブのhrefと、`/analysis/total-cashflow`での`[aria-current="page"]`1件を固定 |
+| 消すと戻せない操作は画面内の確認を経る | FR-013 / AC-012 | 充足(2026-09-07) | `window.confirm`の11箇所を`ConfirmDialog`へ移行。`confirm`未呼出・dialog本文・確定ボタン名の三点で固定し、確認を外した実装で落ちることを実測 |
 
 - [x] `/tax/receipts`のcurrentは「領収書の残り」1件だけ
 - [x] 全routeに意味の異なるiconと可視label
@@ -85,6 +91,8 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 - [x] 補足は段階表示し通常遷移をmodalで遮らない — 実装不要と判定
 - [x] 編集対象・保存・取消・危険性・処理結果を明示 — 実装不要と判定
 - [x] unit/DOM/build/UI contract/主要viewport visual確認がPASS
+- [x] サイドバーから支出分析の各タブへ直接行ける(2026-09-07 追補)
+- [x] 消すと戻せない操作は画面内の確認を経る(2026-09-07 追補)
 
 ### 「visual確認」の解釈について(2026-08-30)
 

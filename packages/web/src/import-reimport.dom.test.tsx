@@ -5,7 +5,7 @@
  * 押しただけでは何も書き換わらず、月単位の洗い替えは通常の取込と同じ確認を経てから起きること。
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -110,7 +110,19 @@ describe('取込履歴のやり直し', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'この取込をやり直す' }));
     fireEvent.click(await screen.findByRole('button', { name: '取込を実行' }));
 
-    expect(confirm).toHaveBeenCalledWith(expect.stringContaining('月単位の洗い替え'));
+    /*
+      確認は画面の中に出す。window.confirm はブラウザの「このページでこれ以上ダイアログを
+      表示しない」抑止が効くと即 false を返し、押しても何も起きないボタンになる。
+      呼び出し側は抑止を知る手立てが無く、原因も画面に出ない。
+      window.confirm を残した実装をここで落とすため、呼ばれていないことまで固定する。
+    */
+    expect(confirm).not.toHaveBeenCalled();
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog.textContent).toContain('月単位の洗い替え');
+    // 確認を出した時点ではまだ何も書き換わっていない
+    expect(calls.filter((call) => call.startsWith('POST'))).toEqual([]);
+
+    fireEvent.click(within(dialog).getByRole('button', { name: '置き換えて取り込む' }));
     await waitFor(() => expect(calls).toContain('POST /api/imports'));
   });
 

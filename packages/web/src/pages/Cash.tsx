@@ -31,6 +31,7 @@ import {
   useAttachmentDisclosure,
 } from '../components/Attachments.js';
 import { CategoryPicker } from '../components/CategoryPicker.js';
+import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { PageHeader, PageState } from '../components/Page.js';
@@ -504,6 +505,8 @@ export function CashPage() {
     mutationFn: (id: number) => api(`/cash-entries/${id}`, { method: 'DELETE' }),
     onSuccess: refreshAll,
   });
+  // 行ごとの確認。どの記帳への確認かを持たないと、押した行と消える行がずれる
+  const confirmDelete = usePendingConfirm<CashEntry>({ busy: del.isPending });
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -700,14 +703,7 @@ export function CashPage() {
                         type="button"
                         className="mini"
                         disabled={del.isPending}
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              `${e.date} の「${e.description}」(${yen(e.amount)})を削除しますか?`,
-                            )
-                          )
-                            del.mutate(e.id);
-                        }}
+                        onClick={() => confirmDelete.ask(e)}
                       >
                         削除
                       </button>
@@ -734,6 +730,25 @@ export function CashPage() {
           </DataTable>
         </div>
       </div>
+      {confirmDelete.target && (
+        <ConfirmDialog
+          dialog={confirmDelete.dialog}
+          title="この記帳を削除しますか？"
+          // トリガーは「削除」。現金の記帳は取込で作り直せない一点物なので、確定側でそれを言う
+          confirmLabel="この記帳を消す"
+          busyLabel="削除中…"
+          onConfirm={() =>
+            del.mutate(confirmDelete.target?.id as number, { onSuccess: confirmDelete.dismiss })
+          }
+          onDismiss={confirmDelete.dismiss}
+        >
+          <p>
+            {confirmDelete.target.date} 「{confirmDelete.target.description}」(
+            {yen(confirmDelete.target.amount)})
+          </p>
+          <p className="sub">取込では作り直せません。集計からも外れます。</p>
+        </ConfirmDialog>
+      )}
     </>
   );
 }

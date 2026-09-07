@@ -5,9 +5,9 @@
  * 第二が要るのは、MFが再出力のたびにID列を振り直すことがあるためで、
  * そのとき `tx_id` だけを見ていると、手当てを付けた明細が「消えて新しく現れた」ように見える。
  */
-import { STABLE_KEY_VERSION, type StableKeyParts, stableKeyOf } from './fingerprint.js';
+import { STABLE_KEY_VERSION, type StableKeyParts, canonicalEncode, stableKeyOf } from './fingerprint.js';
 import { normalizeMfDisplayDate } from './persisted-projection.js';
-import type { MfTx, TxEdit } from './types.js';
+import type { FreeeDeal, MfTx, TxEdit } from './types.js';
 
 /** 明細から stable_key を作る。日付の正規化は保存経路と同じ関数を通す(複製しない)。 */
 export const mfStableKey = (tx: Pick<MfTx, 'm' | 'd' | 'c' | 'a' | 'inst'>): string =>
@@ -18,6 +18,51 @@ export const mfStableKey = (tx: Pick<MfTx, 'm' | 'd' | 'c' | 'a' | 'inst'>): str
     a: tx.a,
     inst: tx.inst ?? null,
   } satisfies StableKeyParts);
+
+/**
+ * freee 取引の第二の鍵の版。MF の `STABLE_KEY_VERSION` とは別に持つ。
+ * 作り方を変えてよい時期も理由も別なので、同じ数字に相乗りさせない。
+ */
+export const FREEE_DEAL_KEY_VERSION = 1;
+
+/**
+ * freee 取引の鍵に載せる値。
+ *
+ * 採るのは「取引そのものに紐づき、再取込で動かない」値だけ。
+ *   - date / io / amount … いつ・どちら向きに・いくら。
+ *   - partner / accountRaw … 何の取引か。原本のまま使う。
+ *   - settleAccount … どの財布で払ったか。同日同額が複数ある場合に分かれる。
+ *
+ * 外したのは `month` (date から決まる) と決済日・決済額 (未決済の取引が後から埋まり、
+ * 同じ取引の鍵が途中で変わる)。
+ */
+const freeeDealKeyFields = (deal: FreeeDeal): readonly unknown[] => [
+  deal.date,
+  deal.io,
+  deal.partner,
+  deal.accountRaw,
+  deal.amount,
+  deal.settleAccount ?? null,
+];
+
+/**
+ * freee 取引を配列の位置ではなく内容で指す鍵。並びの位置は再取込で動くため使えない。
+ *
+ * 材料が完全に同じ行が複数あるときは出現順に `#0`, `#1` と番号を振る。
+ * 内容が同一な行どうしは交換可能なので、どちらにどの番号が付いても意味は変わらず、
+ * 「同じ内容の行が2つある」という事実だけが鍵に残る。
+ *
+ * 返すのは `deals` と同じ長さ・同じ順の配列。呼び出し側は位置で引ける。
+ */
+export function freeeDealKeys(deals: readonly FreeeDeal[]): string[] {
+  const seen = new Map<string, number>();
+  return deals.map((deal) => {
+    const base = canonicalEncode(freeeDealKeyFields(deal));
+    const ordinal = seen.get(base) ?? 0;
+    seen.set(base, ordinal + 1);
+    return `v${FREEE_DEAL_KEY_VERSION}:freee:${base}#${ordinal}`;
+  });
+}
 
 /** どちらの鍵で結び付いたか。移行や不具合調査でここを見る。 */
 export type IdentityMatch = 'tx-id' | 'stable-key' | 'none';

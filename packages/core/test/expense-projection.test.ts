@@ -67,25 +67,28 @@ describe('入力元に依存しない支出照合', () => {
     expect(result.unbooked[0]).toMatchObject({ source: 'mf', purpose: 'business', amount: 8_800 });
   });
 
-  it('支払先が異なる同日同額は自動統合せず要確認に残す', () => {
+  // 以下 3 件は U4 (既存照合を新しい規則へ寄せる) で期待値が変わったもの。
+  // 判定器は `reconcileBizDuplicates` 1 本になり、肯定条件は「発生日 + 金額」だけになった。
+  it('支払先が異なっても同日同額なら統合する (支払先は寄せる根拠にしない)', () => {
     const data = dataset([mfExpense({ c: '架空店A' })], ['mf-1']);
     const result = buildExpenseProjection(data, [freeeExpense({ partner: '架空店B' })]);
 
-    expect(result.summary).toMatchObject({ booked: 3_300, unbooked: 3_300, effective: 6_600 });
-    expect(result.summary.reviewCount).toBe(1);
-    expect(result.review[0]?.reason).toBe('支払先が一致しません');
+    expect(result.summary).toMatchObject({ booked: 3_300, unbooked: 0, effective: 3_300 });
+    expect(result.summary.matchedCount).toBe(1);
+    expect(result.summary.reviewCount).toBe(0);
   });
 
-  it('同じ照合キーが複数ある場合は自動統合しない', () => {
+  it('同じ照合キーが複数あるとき freee の件数までしか統合しない', () => {
     const data = dataset([mfExpense({ id: 'mf-a' }), mfExpense({ id: 'mf-b' })], ['mf-a', 'mf-b']);
     const result = buildExpenseProjection(data, [freeeExpense()]);
 
-    expect(result.summary.matchedCount).toBe(0);
-    expect(result.summary.reviewCount).toBe(2);
-    expect(result.summary.effective).toBe(9_900);
+    // MF 2 件 freee 1 件なら min(2, 1) = 1 件だけ寄り、溢れた 1 件は要確認に残る
+    expect(result.summary.matchedCount).toBe(1);
+    expect(result.summary.reviewCount).toBe(1);
+    expect(result.summary.effective).toBe(6_600);
   });
 
-  it('不安定IDと分割明細は厳密一致しても自動統合しない', () => {
+  it('分割明細は同日同額でも統合せず、不安定IDは統合する', () => {
     const data = dataset(
       [
         mfExpense({ id: 'unstable', idStable: false }),
@@ -105,8 +108,12 @@ describe('入力元に依存しない支出照合', () => {
     );
     const result = buildExpenseProjection(data, [freeeExpense()]);
 
-    expect(result.summary.matchedCount).toBe(0);
-    expect(result.summary.reviewCount).toBe(2);
+    // 帰属は要求のたびに導出し直すため、識別子が不安定でも二重計上は消せる。
+    // 保存が要るのは利用者の判断だけで、そちらは idStable に限る。
+    // 分割明細は親子どちらの帰属かが決まらないため寄せない。
+    expect(result.summary.matchedCount).toBe(1);
+    expect(result.summary.reviewCount).toBe(1);
+    expect(result.review[0]?.reason).toBe('分割明細のため自動照合できません');
   });
 
   it('freeeの事業主貸を個人支出とし、経費に混ぜない', () => {

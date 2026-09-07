@@ -9,6 +9,7 @@ import {
   api,
 } from '../api.js';
 import { monthLabel, yen } from '../format.js';
+import { ConfirmDialog, usePendingConfirm } from './ConfirmDialog.js';
 import { HowTo } from './HowTo.js';
 
 const SUBS_KEYS = [['subscriptions'], ['sub-vendors'], ['sub-candidates'], ['summary']];
@@ -71,6 +72,8 @@ export function SubVendorsPanel() {
     const name = newName.trim();
     if (name) add.mutate(name);
   };
+  // 行ごとの確認。どの支払先への確認かを持たないと、押した行と外れる行がずれる
+  const confirmRemove = usePendingConfirm<SubVendorRow>({ busy: remove.isPending });
 
   return (
     <div className="card scroll-x">
@@ -111,18 +114,29 @@ export function SubVendorsPanel() {
                 review={review.get(v.id)}
                 accountOptions={accountOptions}
                 onError={setError}
-                onDelete={() => {
-                  if (
-                    window.confirm(
-                      `「${v.name}」をサブスクの登録から外します。過去の集計は再計算され、この支払先は勘定科目がサブスク・通信のときだけ「その他」に含まれます。よろしいですか?`,
-                    )
-                  )
-                    remove.mutate(v.id);
-                }}
+                onDelete={() => confirmRemove.ask(v)}
               />
             ))}
           </tbody>
         </table>
+      )}
+      {confirmRemove.target && (
+        <ConfirmDialog
+          dialog={confirmRemove.dialog}
+          title="サブスクの登録から外しますか？"
+          // トリガーは「削除」。集計が動くことが本体なので、確定側はそれを名前にする
+          confirmLabel="外して集計をやり直す"
+          busyLabel="削除中…"
+          onConfirm={() =>
+            remove.mutate(confirmRemove.target?.id as number, { onSuccess: confirmRemove.dismiss })
+          }
+          onDismiss={confirmRemove.dismiss}
+        >
+          <p>{confirmRemove.target.name}</p>
+          <p className="sub">
+            過去の集計は再計算されます。この支払先は、勘定科目がサブスク・通信のときだけ「その他」に含まれます。
+          </p>
+        </ConfirmDialog>
       )}
       <div className="toolbar" style={{ marginTop: 8, gap: 8, flexWrap: 'wrap' }}>
         <input
@@ -403,7 +417,7 @@ export function SubsCandidatesPanel({ hasDeals }: { hasDeals: boolean }) {
   // 取込のたびに候補が入れ替わるので、選択は候補の顔ぶれをキーにして作り直す
   const [picked, setPicked] = useState<Set<string>>(() => new Set(sureKeys));
   const [pickedFor, setPickedFor] = useState<string>('');
-  const signature = ranked.map((r) => r.c.partner).join(' ');
+  const signature = ranked.map((r) => r.c.partner).join('\u0000');
   if (signature !== pickedFor) {
     setPickedFor(signature);
     setPicked(new Set(sureKeys));

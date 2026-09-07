@@ -257,7 +257,7 @@ export function highlightDiagnostics(
    */
   const groups = new Map<string, { entry: DiagnosticEntry; count: number; lastIndex: number }>();
   entries.forEach((entry, index) => {
-    const key = `${entry.kind} ${entry.message}`;
+    const key = `${entry.kind}\u0000${entry.message}`;
     const found = groups.get(key);
     if (found) {
       found.count += 1;

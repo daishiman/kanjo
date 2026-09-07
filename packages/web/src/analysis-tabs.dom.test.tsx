@@ -109,6 +109,9 @@ describe('支出分析のタブ', () => {
       '/trends',
       '/diagnosis',
     ]);
-    expect(LEGACY_ROUTE_REDIRECTS.map((r) => r.to)).toEqual(ANALYSIS_TABS.map((tab) => tab.path));
+    // 転送先は実在するタブに限る。統合後に増えたタブ(単独URLを持ったことがない画面)は
+    // 転送元を持たないので、旧URLとタブの数は一致しない
+    const paths = new Set<string>(ANALYSIS_TABS.map((tab) => tab.path));
+    expect(LEGACY_ROUTE_REDIRECTS.filter((r) => !paths.has(r.to))).toEqual([]);
   });
 });

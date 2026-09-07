@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { importHistoryCancelable, importHistoryDiscardBlock } from '../src/deletion.js';
+import {
+  importGenerationState,
+  importHistoryCancelable,
+  importHistoryDiscardBlock,
+} from '../src/deletion.js';
 
 const block = (status: string | null, activeTargetCount = 0, canonicalRowCount = 0, undoSnapshotCount = 0) =>
   importHistoryDiscardBlock({ status, activeTargetCount, canonicalRowCount, undoSnapshotCount });
@@ -9,19 +13,29 @@ describe('取込履歴だけを破棄できる状態', () => {
     expect(block(status)).toBeNull();
   });
 
+  it('データを消し終えたcommitted履歴は片づけを許可する', () => {
+    expect(block('committed', 0, 0, 0)).toBeNull();
+  });
+
   it.each([
     ['processing', 'in_progress'],
     ['applying', 'in_progress'],
     ['ok', 'legacy'],
-    ['committed', 'unsupported_state'],
     [null, 'unsupported_state'],
   ] as const)('%s は履歴だけの破棄を許可しない', (status, reason) => {
     expect(block(status)).toBe(reason);
   });
 
-  it('状態表示が更新済みでもactive pointerが残れば拒否する', () => {
-    expect(block('committed', 1)).toBe('active');
-  });
+  it.each([
+    [1, 0, 0, 'active'],
+    [0, 1, 0, 'has_canonical_data'],
+    [0, 0, 1, 'has_undo_snapshot'],
+  ] as const)(
+    'committed履歴は参照が1つでも残る限り片づけない (active=%i canonical=%i undo=%i)',
+    (active, canonical, undo, reason) => {
+      expect(block('committed', active, canonical, undo)).toBe(reason);
+    },
+  );
 
   it('active pointerが無くてもcanonical行が参照していれば拒否する', () => {
     expect(block('failed', 0, 1)).toBe('has_canonical_data');
@@ -29,6 +43,59 @@ describe('取込履歴だけを破棄できる状態', () => {
 
   it('30日undoの退避が参照していれば拒否する', () => {
     expect(block('failed', 0, 0, 1)).toBe('has_undo_snapshot');
+  });
+});
+
+describe('取込履歴の世代表示', () => {
+  const state = (
+    over: Partial<Parameters<typeof importGenerationState>[0]> & { owned?: readonly string[] } = {},
+  ) => {
+    const { owned, ...rest } = over;
+    return importGenerationState({
+      status: 'committed',
+      targetKeys: ['2026-01|mf', '2026-02|mf'],
+      ownTargetCount: 0,
+      ownedTargetKeys: new Set(owned ?? []),
+      canonicalRowCount: 0,
+      ...rest,
+    });
+  };
+
+  it('全ての対象を自分で所有していれば現在有効', () => {
+    expect(state({ ownTargetCount: 2, owned: ['2026-01|mf', '2026-02|mf'] })).toBe('active');
+  });
+
+  it('一部だけ所有していれば一部が有効', () => {
+    expect(state({ ownTargetCount: 1, owned: ['2026-01|mf', '2026-02|mf'] })).toBe('partial');
+  });
+
+  it('対象を別の取込が引き取っていれば更新済み', () => {
+    expect(state({ owned: ['2026-01|mf', '2026-02|mf'] })).toBe('superseded');
+  });
+
+  it('対象を一つでも誰かが持っていれば更新済み扱いにする', () => {
+    expect(state({ owned: ['2026-02|mf'] })).toBe('superseded');
+  });
+
+  it('対象を誰も所有していなければ削除済み', () => {
+    expect(state()).toBe('deleted');
+  });
+
+  it('所有者不在でも行が残っていれば削除済みと言い切らない', () => {
+    expect(state({ canonicalRowCount: 5 })).toBe('superseded');
+  });
+
+  it('対象キーが記録されていない古い履歴は削除済みにしない', () => {
+    expect(state({ targetKeys: [] })).toBe('superseded');
+  });
+
+  it.each([
+    ['ok', 'legacy'],
+    ['failed', null],
+    ['duplicate', null],
+    ['processing', null],
+  ] as const)('%s は世代表示を持たない (期待値 %s)', (status, expected) => {
+    expect(state({ status })).toBe(expected);
   });
 });
 

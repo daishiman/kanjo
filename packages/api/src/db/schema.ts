@@ -123,6 +123,38 @@ export const txEdits = sqliteTable('tx_edits', {
   institution: text('institution'),
 });
 
+/**
+ * 0036: 重複の「同じ / 違う」判断。導出できない唯一の値なので、これだけを保存する。
+ * 月次の合計・件数は要求のたびに core で導出し、ここへは入れない。
+ */
+export const duplicateVerdicts = sqliteTable('duplicate_verdicts', {
+  userId: text('user_id').notNull(),
+  txId: text('tx_id').notNull(),
+  verdict: text('verdict', { enum: ['same', 'different'] }).notNull(),
+  /** tx_id が振り直されたときに引き直すための第二の鍵(DR-13)。重複しうるので UNIQUE にしない */
+  stableKey: text('stable_key'),
+  fingerprintVersion: integer('fingerprint_version'),
+  decidedAt: text('decided_at'),
+  updatedAt: text('updated_at'),
+  /**
+   * 0037: 「同じ」と言ったときに、どの freee 取引と同じかの名指し。
+   * 候補が1件しかない判断では NULL のまま (名指しを必須にしない)。
+   */
+  freeeKey: text('freee_key'),
+});
+
+/**
+ * 0037: freee 側に同じ支払が二重登録されているときだけ、理由を付けて総額から外す。
+ * MF との突合 (どちらを正とするか) とは別の問題なので、別の表に持つ。
+ */
+export const freeeDealExclusions = sqliteTable('freee_deal_exclusions', {
+  userId: text('user_id').notNull(),
+  freeeKey: text('freee_key').notNull(),
+  reason: text('reason').notNull(),
+  createdAt: text('created_at'),
+  updatedAt: text('updated_at'),
+});
+
 /** 保有金融機関 → 名義 */
 export const institutionOwners = sqliteTable('institution_owners', {
   userId: text('user_id').notNull(),

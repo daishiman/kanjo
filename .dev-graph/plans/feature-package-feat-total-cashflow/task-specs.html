@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>feature-package-feat-total-cashflow · タスク仕様書ブラウザ</title>
+<style>
+:root{--ink:#242330;--muted:#666477;--paper:#f6f3ec;--panel:#fffdf7;--line:#ded8cb;--navy:#26334a;--blue:#376b8c;--green:#27745c;--shadow:0 10px 30px rgba(45,42,50,.08)}
+*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,"Noto Sans JP","Hiragino Sans",system-ui,sans-serif;font-size:16px;line-height:1.8}
+a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline} code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.88em;background:#efeadf;padding:.05em .35em;border-radius:5px;overflow-wrap:anywhere}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:0;min-height:100vh}
+.spec-nav{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;background:var(--navy);color:#eef2f5;padding:20px 14px}
+.spec-nav a{display:block;color:#d7dde3;padding:5px 10px;border-radius:8px;font-size:.9rem;overflow-wrap:anywhere} .spec-nav a:hover{background:rgba(255,255,255,.08);text-decoration:none} .spec-nav a.active{background:var(--blue);color:#fff}
+.nav-home{font-weight:800;margin-bottom:10px} .nav-ext{color:#bfe3d3!important;font-weight:700} .nav-group{margin:14px 0} .nav-grp{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#9fb0bd;padding:0 10px;margin-bottom:4px}
+main{padding:34px clamp(18px,4vw,56px);width:min(920px,100%);margin:auto}
+.spec-page[hidden]{display:none} .spec-page:target{display:block}
+.spec-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px} .back{font-weight:700} .grp{font-size:.78rem;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px}
+h1{font-size:clamp(1.5rem,3.4vw,2.3rem);line-height:1.25;margin:.2em 0 .1em} .spec-src{color:var(--muted);font-size:.85rem;margin:.2em 0 1.2em} .lead{color:var(--muted);max-width:60ch}
+.spec-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 20px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:0 0 24px} .meta-pair{display:flex;gap:8px;font-size:.85rem;border-bottom:1px dotted var(--line);padding-bottom:5px} .meta-pair dt{color:var(--muted);font-weight:700;min-width:110px;margin:0} .meta-pair dd{margin:0;overflow-wrap:anywhere}
+.spec-body h2{font-size:1.4rem;margin:1.6em 0 .5em;padding-bottom:.25em;border-bottom:2px solid var(--line)} .spec-body h3{font-size:1.15rem;margin:1.3em 0 .4em;color:var(--navy)} .spec-body h4{margin:1.1em 0 .3em}
+.spec-body ul,.spec-body ol{padding-left:1.4rem} .spec-body li{margin:.3em 0} .spec-body pre{background:#2a2735;color:#f3f1ea;padding:16px;border-radius:12px;overflow:auto;font-size:.82rem} .spec-body pre code{background:none;color:inherit;padding:0}
+.spec-body blockquote{border-left:4px solid var(--green);margin:1em 0;padding:.4em 1em;background:#eef4f1;color:#33463f;border-radius:0 10px 10px 0} .tbl{overflow:auto;margin:1em 0} .spec-body table{width:100%;border-collapse:collapse;font-size:.9rem} .spec-body th,.spec-body td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top} .spec-body th{background:var(--panel)} .spec-body hr{border:none;border-top:1px solid var(--line);margin:1.6em 0}
+.pn-row{display:flex;justify-content:space-between;margin-top:40px;padding-top:18px;border-top:1px solid var(--line)} .pn{font-weight:700}
+.idx-group{margin:1.4em 0} .idx-group h2{font-size:1.1rem;border-bottom:2px solid var(--line);padding-bottom:.25em} .idx-group ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px} .idx-group li a{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.spec-nav{position:static;height:auto;max-height:220px}}
+@media print{.spec-nav{display:none}.spec-page[hidden]{display:block!important}.pn-row,.spec-top .back{display:none}body{background:#fff}}
+</style></head>
+<body>
+<div class="layout">
+<nav class="spec-nav"><a class="nav-home" href="#index">🏠 一覧トップ</a><div class="nav-group"><span class="nav-grp">関連レポート</span><a class="nav-ext" href="plan-structure-report.html">📊 構造・依存レポート</a></div><div class="nav-group"><span class="nav-grp">タスク別仕様書</span><a href="#task-phase-01-requirements">phase-01-requirements</a><a href="#task-phase-02-architecture">phase-02-architecture</a><a href="#task-phase-03-design-review">phase-03-design-review</a><a href="#task-phase-04-test-design">phase-04-test-design</a><a href="#task-phase-05-implementation">phase-05-implementation</a><a href="#task-phase-06-test-run">phase-06-test-run</a><a href="#task-phase-07-acceptance">phase-07-acceptance</a><a href="#task-phase-08-refactoring-migration">phase-08-refactoring-migration</a><a href="#task-phase-09-quality-assurance">phase-09-quality-assurance</a><a href="#task-phase-10-final-review">phase-10-final-review</a><a href="#task-phase-11-evidence">phase-11-evidence</a><a href="#task-phase-12-documentation-operations">phase-12-documentation-operations</a><a href="#task-phase-13-release-deploy">phase-13-release-deploy</a></div></nav>
+<main><section class="spec-page spec-index" id="index" hidden><h1>feature-package-feat-total-cashflow · タスク仕様書ブラウザ</h1><p class="lead">各仕様書のタイトルをクリックすると本文へ移動します。ブラウザの「戻る」でこの一覧へ戻れます。左のサイドバーからも直接ジャンプできます。</p><div class="idx-group"><h2>タスク別仕様書</h2><ul><li><a href="#task-phase-01-requirements">phase-01-requirements</a></li><li><a href="#task-phase-02-architecture">phase-02-architecture</a></li><li><a href="#task-phase-03-design-review">phase-03-design-review</a></li><li><a href="#task-phase-04-test-design">phase-04-test-design</a></li><li><a href="#task-phase-05-implementation">phase-05-implementation</a></li><li><a href="#task-phase-06-test-run">phase-06-test-run</a></li><li><a href="#task-phase-07-acceptance">phase-07-acceptance</a></li><li><a href="#task-phase-08-refactoring-migration">phase-08-refactoring-migration</a></li><li><a href="#task-phase-09-quality-assurance">phase-09-quality-assurance</a></li><li><a href="#task-phase-10-final-review">phase-10-final-review</a></li><li><a href="#task-phase-11-evidence">phase-11-evidence</a></li><li><a href="#task-phase-12-documentation-operations">phase-12-documentation-operations</a></li><li><a href="#task-phase-13-release-deploy">phase-13-release-deploy</a></li></ul></div></section><section class="spec-page" id="task-phase-01-requirements" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-01-requirements</h1><p class="spec-src">出典: <code>phase-01-requirements.md</code></p><div class="spec-body"><h2>System task overlay: トータル収支の要件と受入条件を機械可読な二値条件へ確定する</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p01 / related_nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-database</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P01</li><li>classification: confidence 1.0 / reason: P01 は 13 phase 固定スロットの phase-01-requirements に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p01.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, documentation / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>「トータルでいくらプラスマイナスか」を判断できない現状に対し、何が成立すれば解決なのかを 観測可能な二値条件として確定した状態。総支出 == 事業費 + 家計費、総収入 == 事業収入 + 家計収入 の 2 恒等式と、重複消し込みの唯一の判定規則が、後続 phase が参照できる 1 箇所に固定される。</p>
+<h3>背景</h3>
+<p>事業は freee、家計は Money Forward に分かれて記録されており、三井住友銀行のカード明細が 両者へ重複して入る。利用者は割合は把握できているが総額の推移が読めない。要件段階で 「同じ費用とは何か」を一意に決めないと、後続の集計実装が二重計上を静かに温存する。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-database</li><li>Entry gate: system-spec/completeness-findings.json の総合判定が PASS であり、features/feat-total-cashflow.context.json の sha256 が feature-package.json の source_feature_digest と一致する</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: なし (本 feature の起点 phase)</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: N/A: この phase は web の描画実装を触らない</li><li>Backend: N/A: この phase は Workers 実行コードを触らない</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: applicable: 判定永続化に必要な項目 (突合キー・判定値・判定時刻) を要件側で列挙する</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: N/A: この phase は認証・認可の制御点を変更しない</li><li>Quality: applicable: 各受入条件に対応する検証コマンドを 1 対 1 で割り当てる</li><li>Documentation: applicable: specs/total-cashflow-requirements.md の受入節を二値条件へ書き下す</li><li>Operations: N/A: この phase は運用手順と監視を変更しない</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: spec-total-cashflow-requirements / arch-total-cashflow-backend / arch-total-cashflow-database</li><li>Deploy unit/environment: N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する</li><li>Compatibility/migration/backfill: N/A: 要件文書の更新のみで、既存データとの互換境界は P08 が扱う</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: specs/total-cashflow-requirements.md (受入節)、features/feat-total-cashflow.md (受入 8 件)</li><li>Consumed artifacts: system-spec/00-requirements-definition.md、system-spec/index.md</li><li>Write scope/touches: specs/total-cashflow-requirements.md, features/feat-total-cashflow.md</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, documentation / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P01 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p01 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P01 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (なし (本 feature の起点 phase)) が完了済みで、write_scope (specs/total-cashflow-requirements.md, features/feat-total-cashflow.md) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>重複判定の実装 (P05 の責務)</li><li>freee / Money Forward への新規 API 連携の追加</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>rg -n &#x27;MF 日付 == freee 発生日&#x27; specs/total-cashflow-requirements.md</li><li>rg -n &#x27;総支出 == 事業費 \+ 家計費&#x27; specs/total-cashflow-requirements.md features/feat-total-cashflow.md</li><li>rg -c &#x27;適切|十分|使いやすい&#x27; specs/total-cashflow-requirements.md の出力が 0 であること</li><li>rg -c &#x27;qa-table-columns-001&#x27; features/feat-total-cashflow.md の出力が 1 以上であること</li><li>rg -c &#x27;qa-anomaly-notice-001&#x27; features/feat-total-cashflow.md の出力が 1 以上であること</li><li>Required evidence:</li><li>specs/total-cashflow-requirements.md</li><li>eval-log/c02-import-report.md</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 文書更新のみ。反映は commit で完了する</li><li>Rollback trigger and steps: 後続 phase が受入条件の矛盾を検出した場合に当該節を戻し、P01 を再実行する — specs/total-cashflow-requirements.md と features/feat-total-cashflow.md を直前 commit の内容へ戻す</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: spec-total-cashflow-requirements / arch-total-cashflow-backend / arch-total-cashflow-database</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P01 (phase-01-requirements)</li><li>Dependencies: なし (本 feature の起点 phase)</li></ul></div><div class="pn-row"><a class="pn" href="#index">← 前の仕様書</a><a class="pn" href="#task-phase-02-architecture">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-02-architecture" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-02-architecture</h1><p class="spec-src">出典: <code>phase-02-architecture.md</code></p><div class="spec-body"><h2>System task overlay: 消し込み・合算・トレンドの層分担と判定永続化のデータモデルを決める</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p02 / related_nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-database, arch-total-cashflow-frontend, arch-total-cashflow-ui-ux</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P02</li><li>classification: confidence 1.0 / reason: P02 は 13 phase 固定スロットの phase-02-architecture に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p02.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, backend / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>どの層が何を担うかが一意に決まった状態。消し込みと合算は packages/core の純関数、利用者判定の永続化は D1、表示と期間切替は packages/web、という境界と、判定テーブルの列・一意キー・冪等条件が確定する。</p>
+<h3>背景</h3>
+<p>既存の packages/core には analysis.ts / trend.ts / expense-projection.ts / period.ts / dataset.ts が あり、期間の切り出しは Dataset を切る方針が既に採られている。新機能をこの分担へ載せないと、分析関数に引数を配る設計へ退行し、期間絞り込みのたびに設定が落ちる。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-database, arch-total-cashflow-frontend, arch-total-cashflow-ui-ux</li><li>Entry gate: P01 の受入条件が specs へ反映済みで、architecture ノード 8 件が graph 上で confirmed である</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P01</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: applicable: 一覧表が受け取る集計結果の形と、期間切替時の再計算経路を定義する</li><li>Backend: applicable: 消し込みと合算を副作用のない関数として packages/core に置く境界を定義する</li><li>API: applicable: 一覧表と判定登録の HTTP 契約の形を決める。実装は P05</li><li>Data: applicable: 判定永続化テーブルの列・一意キー・冪等 upsert 条件を定義する</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: applicable: 判定登録が既存の canonical-mutation-fence の内側に入ることを明記する</li><li>Quality: N/A: この phase は自動テストとゲートを追加しない</li><li>Documentation: N/A: この phase は利用者向け文書を更新しない</li><li>Operations: N/A: この phase は運用手順と監視を変更しない</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-backend / arch-total-cashflow-database / arch-total-cashflow-frontend / arch-total-cashflow-ui-ux</li><li>Deploy unit/environment: N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する</li><li>Compatibility/migration/backfill: 既存 Dataset と period.ts の期間切り出しを入力として受け、新しい期間引数を分析関数へ配らない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: architecture/total-cashflow-backend.md、architecture/total-cashflow-database.md、architecture/total-cashflow-frontend.md の設計判断節</li><li>Consumed artifacts: specs/total-cashflow-requirements.md、packages/core/src/dataset.ts、packages/core/src/period.ts</li><li>Write scope/touches: architecture/total-cashflow-backend.md, architecture/total-cashflow-database.md, architecture/total-cashflow-frontend.md</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, backend / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P02 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p02 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P02 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P01) が完了済みで、write_scope (architecture/total-cashflow-backend.md, architecture/total-cashflow-database.md, architecture/total-cashflow-frontend.md) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>実装コードの記述 (P05 の責務)</li><li>明細分割 (transaction-splits) の仕様変更</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>rg -n &#x27;Mann-Kendall|Theil-Sen&#x27; architecture/total-cashflow-backend.md packages/core/src/trend.ts</li><li>rg -n &#x27;一意キー|UNIQUE&#x27; architecture/total-cashflow-database.md</li><li>rg -n &#x27;Dataset&#x27; architecture/total-cashflow-backend.md packages/core/src/dataset.ts</li><li>Required evidence:</li><li>architecture/total-cashflow-backend.md</li><li>architecture/total-cashflow-database.md</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 設計文書の更新のみ</li><li>Rollback trigger and steps: P03 の設計レビューが層分担の矛盾を指摘した場合 — architecture/total-cashflow-*.md を直前 commit へ戻す</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-backend / arch-total-cashflow-database / arch-total-cashflow-frontend / arch-total-cashflow-ui-ux</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P02 (phase-02-architecture)</li><li>Dependencies: SYS-TCF-P01</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-01-requirements">← 前の仕様書</a><a class="pn" href="#task-phase-03-design-review">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-03-design-review" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-03-design-review</h1><p class="spec-src">出典: <code>phase-03-design-review.md</code></p><div class="spec-body"><h2>System task overlay: 設計が受入条件を実際に満たしうるかを反例探索で検証する</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p03 / related_nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-database, arch-total-cashflow-security</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P03</li><li>classification: confidence 1.0 / reason: P03 は 13 phase 固定スロットの phase-03-design-review に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p03.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>P02 の設計に対し、受入条件を破る入力を先に列挙し、設計が破綻しないことを確認した状態。同額同日が 3 件以上並ぶ場合や、口座 3 つのうち 1 つだけが重複する場合の扱いが決まる。</p>
+<h3>背景</h3>
+<p>三井住友銀行の口座は 3 つあり、重複するのはそのうち 1 つ。MF 側だけを見るとどの口座か判別できない。同額同日が複数並ぶと 1 対 1 対応が一意に決まらず、消し込みが多すぎたり少なすぎたりする。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-database, arch-total-cashflow-security</li><li>Entry gate: P02 の architecture 文書が更新済みで、層分担と一意キーが読み取れる</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P02</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: N/A: この phase は web の描画実装を触らない</li><li>Backend: applicable: 多対多になる同額同日の突合を、決定的な順序で 1 対 1 へ落とす規則を確認する</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: applicable: 一意キーが反例入力で衝突しないことを確認する</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: applicable: 判定登録が認証済み経路の内側にあることを確認する</li><li>Quality: applicable: 受入条件ごとに反例候補を作り、設計が拒否できるかを机上で追跡する</li><li>Documentation: N/A: この phase は利用者向け文書を更新しない</li><li>Operations: N/A: この phase は運用手順と監視を変更しない</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-backend / arch-total-cashflow-database / arch-total-cashflow-security</li><li>Deploy unit/environment: N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する</li><li>Compatibility/migration/backfill: N/A: レビューのみでコードとスキーマを変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: eval-log/tcf-design-review.md (反例一覧と設計側の応答)</li><li>Consumed artifacts: architecture/total-cashflow-*.md、specs/total-cashflow-requirements.md</li><li>Write scope/touches: eval-log/tcf-design-review.md</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P03 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p03 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P03 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P02) が完了済みで、write_scope (eval-log/tcf-design-review.md) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>テストコードの作成 (P04 の責務)</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>rg -n &#x27;反例&#x27; eval-log/tcf-design-review.md</li><li>rg -n &#x27;未解決&#x27; eval-log/tcf-design-review.md</li><li>Required evidence:</li><li>eval-log/tcf-design-review.md</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: レビュー記録の追加のみ</li><li>Rollback trigger and steps: 設計に未解決の反例が残り、P05 へ進めないと判断した場合 — eval-log/tcf-design-review.md を削除し P02 へ戻す</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-backend / arch-total-cashflow-database / arch-total-cashflow-security</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P03 (phase-03-design-review)</li><li>Dependencies: SYS-TCF-P02</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-02-architecture">← 前の仕様書</a><a class="pn" href="#task-phase-04-test-design">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-04-test-design" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-04-test-design</h1><p class="spec-src">出典: <code>phase-04-test-design.md</code></p><div class="spec-body"><h2>System task overlay: 受入条件と 1 対 1 に対応する失敗するテストを先に書く</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p04 / related_nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-database, arch-total-cashflow-frontend</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P04</li><li>classification: confidence 1.0 / reason: P04 は 13 phase 固定スロットの phase-04-test-design に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p04.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>受入 8 件それぞれに対応するテストが存在し、実装前の現行コードに対して確かに落ちる状態。「0 件の違反」と「0 件しか調べていない」を区別できるよう、件数を固定した検査にする。</p>
+<h3>背景</h3>
+<p>実装後に書いたテストは、実装の写しになりやすく、旧実装を落とせないことがある。先に書いて赤を確認しておけば、緑になったことが仕様の充足を意味する。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-database, arch-total-cashflow-frontend</li><li>Entry gate: P03 のレビュー記録が存在し、未解決の反例が 0 件である</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P03</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: applicable: 一覧表の列と合計表示を検証するテストを設計する</li><li>Backend: applicable: 消し込みと合算の純関数に対する単体テストを設計する</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: applicable: 判定の再取込冪等性を検証するテストを設計する</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: N/A: この phase は認証・認可の制御点を変更しない</li><li>Quality: applicable: 受入 8 件に対応するテストを追加し、実装前に全て失敗することを記録する</li><li>Documentation: N/A: この phase は利用者向け文書を更新しない</li><li>Operations: N/A: この phase は運用手順と監視を変更しない</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-backend / arch-total-cashflow-database / arch-total-cashflow-frontend</li><li>Deploy unit/environment: N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する</li><li>Compatibility/migration/backfill: N/A: テスト追加のみで本体コードを変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: packages/core/test 配下の消し込み・合算・トレンドテスト、packages/api/test の判定登録テスト、packages/web/test の一覧表テスト</li><li>Consumed artifacts: specs/total-cashflow-requirements.md の受入節</li><li>Write scope/touches: packages/core/test, packages/api/test, packages/web/test</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P04 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p04 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P04 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P03) が完了済みで、write_scope (packages/core/test, packages/api/test, packages/web/test) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>実装コードの変更 (P05 の責務)</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>pnpm test --filter @kanjo/core を実装前に実行し、追加テストが失敗することを記録する</li><li>rg -n &#x27;受入&#x27; packages/core/test で受入条件との対応表があることを確認する</li><li>rg -n &#x27;9|警告&#x27; packages/web/test で 9 列固定と警告表示の検査が存在することを確認する</li><li>Required evidence:</li><li>eval-log/tcf-red-run.txt</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: テスト追加のみ</li><li>Rollback trigger and steps: 受入条件が P01 で変更され、テストの対応が崩れた場合 — 追加したテストファイルを削除する</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-backend / arch-total-cashflow-database / arch-total-cashflow-frontend</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P04 (phase-04-test-design)</li><li>Dependencies: SYS-TCF-P03</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-03-design-review">← 前の仕様書</a><a class="pn" href="#task-phase-05-implementation">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-05-implementation" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-05-implementation</h1><p class="spec-src">出典: <code>phase-05-implementation.md</code></p><div class="spec-body"><h2>System task overlay: 消し込み・合算・トレンド・一覧表を実装して赤いテストを緑にする</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p05 / related_nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-database, arch-total-cashflow-frontend, arch-total-cashflow-ui-ux, arch-total-cashflow-security</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P05</li><li>classification: confidence 1.0 / reason: P05 は 13 phase 固定スロットの phase-05-implementation に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p05.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, backend / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>P04 で赤にしたテストが全て緑になった状態。月次のトータル収入・トータル支出・トータル収支と 事業側/家計側の内訳、事業へ寄せた金額と件数、要確認キューが web の一覧表に出る。</p>
+<h3>背景</h3>
+<p>既存の取込パイプライン (packages/api/src/import-pipeline.ts) が入力元であり、新規の外部連携は増やさない。消し込みは取込済みデータに対する解析として実装する。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-database, arch-total-cashflow-frontend, arch-total-cashflow-ui-ux, arch-total-cashflow-security</li><li>Entry gate: P04 のテストが存在し、実装前に赤であることが eval-log に記録されている</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P03, SYS-TCF-P04</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: applicable: packages/web に月次一覧表と要確認キューの画面を追加する</li><li>Backend: applicable: packages/core に消し込みと合算の純関数を追加し、trend.ts をトータル支出へ適用する</li><li>API: applicable: 集計取得と判定登録のエンドポイントを packages/api/src/routes に追加する</li><li>Data: applicable: 判定永続化テーブルの migration を migrations 配下へ追加する</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: applicable: 判定登録を既存の認証と canonical-mutation-fence の内側に置く</li><li>Quality: applicable: P04 のテストを緑にする</li><li>Documentation: N/A: この phase は利用者向け文書を更新しない</li><li>Operations: N/A: この phase は運用手順と監視を変更しない</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-backend / arch-total-cashflow-database / arch-total-cashflow-frontend / arch-total-cashflow-ui-ux / arch-total-cashflow-security</li><li>Deploy unit/environment: kanjo-console (Cloudflare Workers) + D1 kanjo-db</li><li>Compatibility/migration/backfill: 既存の取込済みデータをそのまま入力とし、再取込を必須にしない。新テーブルは追加のみで既存テーブルの列を変更しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: packages/core/src の消し込み・合算モジュール、packages/api/src/routes の集計と判定登録、packages/web/src の一覧表、migrations の新規マイグレーション</li><li>Consumed artifacts: packages/core/src/trend.ts、packages/core/src/dataset.ts、packages/core/src/period.ts、packages/api/src/import-pipeline.ts</li><li>Write scope/touches: packages/core/src, packages/api/src, packages/web/src, migrations</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, backend / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P05 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p05 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P05 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P03, SYS-TCF-P04) が完了済みで、write_scope (packages/core/src, packages/api/src, packages/web/src, migrations) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>mobile / tablet / desktop 向け実装 (対象は web のみ)</li><li>freee / Money Forward への新規 API 連携取込経路の追加</li><li>税務申告書類の生成</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>pnpm test の exit code が 0 であること</li><li>pnpm test -- -t qa-table-columns-001 が 1 件以上を実行し exit code 0 であること</li><li>pnpm test -- -t qa-anomaly-notice-001 が 1 件以上を実行し exit code 0 であること</li><li>pnpm -w typecheck</li><li>pnpm -w lint</li><li>Required evidence:</li><li>eval-log/tcf-green-run.txt</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: migration 適用後にコードを配備する。集計は既存データに対する読み取りで、取込結果を書き換えない</li><li>Rollback trigger and steps: P06 のテスト実行で恒等式が崩れた場合、または本番で集計値が内訳合計と一致しない場合 — 追加 migration を down 方向へ戻し、コードを直前タグへ戻す。既存テーブルへの破壊的変更を行っていないため取込済みデータは影響を受けない</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-backend / arch-total-cashflow-database / arch-total-cashflow-frontend / arch-total-cashflow-ui-ux / arch-total-cashflow-security</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P05 (phase-05-implementation)</li><li>Dependencies: SYS-TCF-P03, SYS-TCF-P04</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-04-test-design">← 前の仕様書</a><a class="pn" href="#task-phase-06-test-run">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-06-test-run" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-06-test-run</h1><p class="spec-src">出典: <code>phase-06-test-run.md</code></p><div class="spec-body"><h2>System task overlay: テストを実行して受入条件との対応が全て緑であることを実測する</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p06 / related_nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-maintenance-ops</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P06</li><li>classification: confidence 1.0 / reason: P06 は 13 phase 固定スロットの phase-06-test-run に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p06.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>受入 8 件に紐づくテストが実際に実行され、緑であることが記録として残った状態。</p>
+<h3>背景</h3>
+<p>CI の headless Chrome は pointer:none であり、pointer:fine 前提の描画テストはローカル緑・CI 赤になる。実行環境の差で結果が変わる箇所を実測で潰す。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: spec-total-cashflow-requirements, arch-total-cashflow-backend, arch-total-cashflow-maintenance-ops</li><li>Entry gate: P05 の実装が commit 済みで、pnpm install が成功する</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P05</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: N/A: この phase は web の描画実装を触らない</li><li>Backend: applicable: 失敗したテストの原因を実装側へ差し戻す</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: N/A: この phase は D1 スキーマとマイグレーションを触らない</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: N/A: この phase は認証・認可の制御点を変更しない</li><li>Quality: applicable: 単体・結合・web の各テストを実行し出力を保存する</li><li>Documentation: N/A: この phase は利用者向け文書を更新しない</li><li>Operations: applicable: CI での実行結果とローカル結果の差分を確認する</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-backend / arch-total-cashflow-maintenance-ops</li><li>Deploy unit/environment: N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する</li><li>Compatibility/migration/backfill: N/A: 実行と記録のみ</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: eval-log/tcf-test-run.md (実行コマンド・件数・結果)</li><li>Consumed artifacts: packages/core/test、packages/api/test、packages/web/test</li><li>Write scope/touches: eval-log/tcf-test-run.md</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P06 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p06 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P06 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P05) が完了済みで、write_scope (eval-log/tcf-test-run.md) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>テストを緑にするための実装変更 (P05 へ差し戻す)</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>pnpm test 2&gt;&amp;1 | tee eval-log/tcf-test-run.md</li><li>rg -n &#x27;passed|failed&#x27; eval-log/tcf-test-run.md</li><li>Required evidence:</li><li>eval-log/tcf-test-run.md</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 実行記録の追加のみ</li><li>Rollback trigger and steps: 記録が実行結果と一致しない場合 — eval-log/tcf-test-run.md を削除して再実行する</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-backend / arch-total-cashflow-maintenance-ops</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P06 (phase-06-test-run)</li><li>Dependencies: SYS-TCF-P05</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-05-implementation">← 前の仕様書</a><a class="pn" href="#task-phase-07-acceptance">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-07-acceptance" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-07-acceptance</h1><p class="spec-src">出典: <code>phase-07-acceptance.md</code></p><div class="spec-body"><h2>System task overlay: 実データで受入条件を利用者視点から確認する</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p07 / related_nodes: spec-total-cashflow-requirements, arch-total-cashflow-frontend, arch-total-cashflow-ui-ux</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P07</li><li>classification: confidence 1.0 / reason: P07 は 13 phase 固定スロットの phase-07-acceptance に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p07.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>利用者が実際の freee / Money Forward データで一覧表を開き、総額の推移が読めること、消し込み結果を手で検算できることを確認した状態。</p>
+<h3>背景</h3>
+<p>受入条件は機械的に検査できても、「トータルでどれぐらいプラスマイナスか分かる」という当初の困りごとが 解けたかは実データで見ないと分からない。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: spec-total-cashflow-requirements, arch-total-cashflow-frontend, arch-total-cashflow-ui-ux</li><li>Entry gate: P06 のテスト実行記録が存在し、失敗 0 件である</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P05, SYS-TCF-P06</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: applicable: 一覧表の表示が期間切替で崩れないことを確認する</li><li>Backend: N/A: この phase は Workers 実行コードを触らない</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: N/A: この phase は D1 スキーマとマイグレーションを触らない</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: N/A: この phase は認証・認可の制御点を変更しない</li><li>Quality: applicable: 受入条件を実データで 1 件ずつ確認する</li><li>Documentation: N/A: この phase は利用者向け文書を更新しない</li><li>Operations: N/A: この phase は運用手順と監視を変更しない</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-frontend / arch-total-cashflow-ui-ux</li><li>Deploy unit/environment: N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する</li><li>Compatibility/migration/backfill: N/A: 確認のみ</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: eval-log/tcf-acceptance.md (受入条件ごとの確認結果)</li><li>Consumed artifacts: 稼働中の kanjo-console と取込済みデータ</li><li>Write scope/touches: eval-log/tcf-acceptance.md</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P07 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p07 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P07 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P05, SYS-TCF-P06) が完了済みで、write_scope (eval-log/tcf-acceptance.md) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>不成立時の実装修正 (P05 へ差し戻す)</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>rg -n &#x27;成立|不成立&#x27; eval-log/tcf-acceptance.md</li><li>rg -c &#x27;^- 受入&#x27; eval-log/tcf-acceptance.md の出力が 10 であること (受入 8 件 + 9 列 + 警告)</li><li>rg -n &#x27;9 列|警告&#x27; eval-log/tcf-acceptance.md</li><li>Required evidence:</li><li>eval-log/tcf-acceptance.md</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 確認記録の追加のみ</li><li>Rollback trigger and steps: 受入条件のいずれかが不成立の場合 — eval-log/tcf-acceptance.md を削除して再確認する</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-frontend / arch-total-cashflow-ui-ux</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P07 (phase-07-acceptance)</li><li>Dependencies: SYS-TCF-P05, SYS-TCF-P06</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-06-test-run">← 前の仕様書</a><a class="pn" href="#task-phase-08-refactoring-migration">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-08-refactoring-migration" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-08-refactoring-migration</h1><p class="spec-src">出典: <code>phase-08-refactoring-migration.md</code></p><div class="spec-body"><h2>System task overlay: 判定永続化スキーマの移行と既存集計コードの重複整理を行う</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p08 / related_nodes: arch-total-cashflow-database, arch-total-cashflow-backend, arch-total-cashflow-maintenance-ops</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P08</li><li>classification: confidence 1.0 / reason: P08 は 13 phase 固定スロットの phase-08-refactoring-migration に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p08.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, data / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>判定永続化テーブルが本番へ適用され、P05 で追加した集計コードと既存 analysis.ts / expense-projection.ts の重複した集計経路が 1 本に整理された状態。</p>
+<h3>背景</h3>
+<p>既存の analysis.ts と expense-projection.ts にも集計処理があり、新規の合算処理と並置したままだと 同じ数字を別経路で出す状態が残る。数字が食い違ったときに原因が特定できなくなる。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: arch-total-cashflow-database, arch-total-cashflow-backend, arch-total-cashflow-maintenance-ops</li><li>Entry gate: P07 の受入確認で全条件が成立している</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P07</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: N/A: この phase は web の描画実装を触らない</li><li>Backend: applicable: 集計経路の重複を 1 本へ寄せる</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: applicable: 判定永続化テーブルの migration を本番へ適用し、適用後の行数を記録する</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: N/A: この phase は認証・認可の制御点を変更しない</li><li>Quality: applicable: 整理後も P04 のテストが緑であることを確認する</li><li>Documentation: N/A: この phase は利用者向け文書を更新しない</li><li>Operations: N/A: この phase は運用手順と監視を変更しない</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-database / arch-total-cashflow-backend</li><li>Deploy unit/environment: kanjo-console (Cloudflare Workers) + D1 kanjo-db</li><li>Compatibility/migration/backfill: 既存テーブルの列を変更せず追加のみとする。バックフィルは不要で、判定未登録の明細は要確認として扱われる</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: migrations の適用済みマイグレーション、packages/core/src の整理後の集計モジュール</li><li>Consumed artifacts: packages/core/src/analysis.ts、packages/core/src/expense-projection.ts</li><li>Write scope/touches: migrations, packages/core/src</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, data / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P08 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p08 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P08 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P07) が完了済みで、write_scope (migrations, packages/core/src) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>新機能の追加 (本 phase は移行と整理に限る)</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>pnpm --filter @kanjo/api exec wrangler d1 migrations list kanjo-db</li><li>pnpm test</li><li>rg -n &#x27;totalExpense|トータル支出&#x27; packages/core/src で集計経路が 1 本であることを確認する</li><li>Required evidence:</li><li>eval-log/tcf-migration.md</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: migration を適用してからコードを配備する</li><li>Rollback trigger and steps: migration 適用後に既存テーブルの行数が変化した場合 — 追加テーブルを削除して直前タグへ戻す。既存テーブルは変更していないため取込済みデータは影響を受けない</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-database / arch-total-cashflow-backend</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P08 (phase-08-refactoring-migration)</li><li>Dependencies: SYS-TCF-P07</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-07-acceptance">← 前の仕様書</a><a class="pn" href="#task-phase-09-quality-assurance">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-09-quality-assurance" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-09-quality-assurance</h1><p class="spec-src">出典: <code>phase-09-quality-assurance.md</code></p><div class="spec-body"><h2>System task overlay: 静的検査とセキュリティ確認を通し品質ゲートを満たす</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p09 / related_nodes: arch-total-cashflow-security, arch-total-cashflow-auth, arch-total-cashflow-maintenance-ops</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P09</li><li>classification: confidence 1.0 / reason: P09 は 13 phase 固定スロットの phase-09-quality-assurance に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p09.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>型検査・lint・依存監査・認証境界の確認が通り、配備を止める品質上の理由が残っていない状態。</p>
+<h3>背景</h3>
+<p>静的検査が時間切れで打ち切られると、失敗ではないのに通ってもいない状態がログから読めなくなる。打ち切りと失敗を区別できる形で記録する。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: arch-total-cashflow-security, arch-total-cashflow-auth, arch-total-cashflow-maintenance-ops</li><li>Entry gate: P08 の移行が完了し、P06 のテストが緑である</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P06, SYS-TCF-P08</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: N/A: この phase は web の描画実装を触らない</li><li>Backend: N/A: この phase は Workers 実行コードを触らない</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: N/A: この phase は D1 スキーマとマイグレーションを触らない</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: applicable: 判定登録エンドポイントが未認証で叩けないことを確認する</li><li>Quality: applicable: typecheck / lint / build を実行し、打ち切りと失敗を区別して記録する</li><li>Documentation: N/A: この phase は利用者向け文書を更新しない</li><li>Operations: applicable: 監査ログに判定登録が残ることを確認する</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-security / arch-total-cashflow-auth</li><li>Deploy unit/environment: N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する</li><li>Compatibility/migration/backfill: N/A: 検査のみ</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: eval-log/tcf-qa.md (各ゲートの実行結果)</li><li>Consumed artifacts: packages/api/src/auth.ts、packages/api/src/canonical-mutation-fence.ts、packages/api/src/audit-log.ts</li><li>Write scope/touches: eval-log/tcf-qa.md</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P09 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p09 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P09 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P06, SYS-TCF-P08) が完了済みで、write_scope (eval-log/tcf-qa.md) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>ゲートを通すための実装修正 (P05 または P08 へ差し戻す)</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>pnpm -w typecheck</li><li>pnpm -w lint</li><li>pnpm -w build</li><li>Required evidence:</li><li>eval-log/tcf-qa.md</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 検査記録の追加のみ</li><li>Rollback trigger and steps: いずれかのゲートが失敗または打ち切りの場合 — eval-log/tcf-qa.md を削除して再実行する</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-security / arch-total-cashflow-auth</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P09 (phase-09-quality-assurance)</li><li>Dependencies: SYS-TCF-P06, SYS-TCF-P08</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-08-refactoring-migration">← 前の仕様書</a><a class="pn" href="#task-phase-10-final-review">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-10-final-review" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-10-final-review</h1><p class="spec-src">出典: <code>phase-10-final-review.md</code></p><div class="spec-body"><h2>System task overlay: 当初の困りごとが解けたかを最終確認する</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p10 / related_nodes: spec-total-cashflow-requirements, arch-total-cashflow-ui-ux</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P10</li><li>classification: confidence 1.0 / reason: P10 は 13 phase 固定スロットの phase-10-final-review に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p10.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>「事業と家計が一緒くたで、トータルでどれぐらいプラスマイナスか分からない」という当初の困りごとに対し、作ったものが答えになっているかを、ゲートの緑とは別に判断した状態。</p>
+<h3>背景</h3>
+<p>ゲートが全て緑でも中身が正しいとは限らない。緑は仕様と矛盾しないことを示すだけで、仕様が困りごとを捉え損ねていた場合はそのまま通る。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: spec-total-cashflow-requirements, arch-total-cashflow-ui-ux</li><li>Entry gate: P07 の受入確認と P09 の品質ゲートがいずれも完了している</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P07, SYS-TCF-P09</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: N/A: この phase は web の描画実装を触らない</li><li>Backend: N/A: この phase は Workers 実行コードを触らない</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: N/A: この phase は D1 スキーマとマイグレーションを触らない</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: N/A: この phase は認証・認可の制御点を変更しない</li><li>Quality: applicable: 困りごとと成果物の対応を 1 件ずつ突き合わせる</li><li>Documentation: applicable: 残課題を follow-up 候補として記録する</li><li>Operations: N/A: この phase は運用手順と監視を変更しない</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: spec-total-cashflow-requirements / arch-total-cashflow-ui-ux</li><li>Deploy unit/environment: N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する</li><li>Compatibility/migration/backfill: N/A: 確認のみ</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: eval-log/tcf-final-review.md (困りごとと成果物の対応・残課題)</li><li>Consumed artifacts: eval-log/tcf-acceptance.md、eval-log/tcf-qa.md</li><li>Write scope/touches: eval-log/tcf-final-review.md</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, quality / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P10 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p10 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P10 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P07, SYS-TCF-P09) が完了済みで、write_scope (eval-log/tcf-final-review.md) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>残課題の実装 (別 feature の責務)</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>rg -n &#x27;残課題&#x27; eval-log/tcf-final-review.md</li><li>rg -n &#x27;follow-up&#x27; eval-log/tcf-final-review.md</li><li>Required evidence:</li><li>eval-log/tcf-final-review.md</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 確認記録の追加のみ</li><li>Rollback trigger and steps: 困りごとに対応しない成果物が見つかった場合 — eval-log/tcf-final-review.md を削除して再確認する</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: spec-total-cashflow-requirements / arch-total-cashflow-ui-ux</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P10 (phase-10-final-review)</li><li>Dependencies: SYS-TCF-P07, SYS-TCF-P09</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-09-quality-assurance">← 前の仕様書</a><a class="pn" href="#task-phase-11-evidence">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-11-evidence" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-11-evidence</h1><p class="spec-src">出典: <code>phase-11-evidence.md</code></p><div class="spec-body"><h2>System task overlay: 判断の根拠となった実測値を 1 箇所へ集約する</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p11 / related_nodes: spec-total-cashflow-requirements, arch-total-cashflow-maintenance-ops</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P11</li><li>classification: confidence 1.0 / reason: P11 は 13 phase 固定スロットの phase-11-evidence に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p11.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, documentation / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>どの判断がどの実測値に基づくかを後から辿れる索引ができた状態。</p>
+<h3>背景</h3>
+<p>仕様の時刻や件数を推定で書くと、書式が正しいまま実測と食い違ってもゲートは素通りする。根拠が実測なのか推定なのかを明示する。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: spec-total-cashflow-requirements, arch-total-cashflow-maintenance-ops</li><li>Entry gate: P09 と P10 の記録が存在する</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P09, SYS-TCF-P10</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: N/A: この phase は web の描画実装を触らない</li><li>Backend: N/A: この phase は Workers 実行コードを触らない</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: N/A: この phase は D1 スキーマとマイグレーションを触らない</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: N/A: この phase は認証・認可の制御点を変更しない</li><li>Quality: applicable: 各記録が実測か推定かを区別して記す</li><li>Documentation: applicable: 実測記録へのポインタと、それが支える判断を対応づける</li><li>Operations: N/A: この phase は運用手順と監視を変更しない</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-maintenance-ops</li><li>Deploy unit/environment: N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する</li><li>Compatibility/migration/backfill: N/A: 記録の集約のみ</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: eval-log/tcf-evidence-index.md</li><li>Consumed artifacts: eval-log/tcf-red-run.txt、eval-log/tcf-test-run.md、eval-log/tcf-acceptance.md、eval-log/tcf-qa.md</li><li>Write scope/touches: eval-log/tcf-evidence-index.md</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, documentation / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P11 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p11 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P11 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P09, SYS-TCF-P10) が完了済みで、write_scope (eval-log/tcf-evidence-index.md) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>新しい検証の実施 (P06 / P09 の責務)</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>rg -o &#x27;eval-log/[A-Za-z0-9._/-]+&#x27; eval-log/tcf-evidence-index.md | sort -u | wc -l の出力が 5 以上であること (P03 設計レビュー / P06 テスト実行 / P07 受入 / P09 品質 / P10 最終確認 の各記録を最低 1 件ずつ指すため)</li><li>rg -o &#x27;eval-log/[A-Za-z0-9._/-]+&#x27; eval-log/tcf-evidence-index.md | sort -u | xargs -I{} test -f {} の exit code が 0 であること</li><li>rg -c &#x27;推定&#x27; eval-log/tcf-evidence-index.md の出力が 0 であること</li><li>Required evidence:</li><li>eval-log/tcf-evidence-index.md</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 索引の追加のみ</li><li>Rollback trigger and steps: 参照先が実在しない場合 — eval-log/tcf-evidence-index.md を削除する</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-maintenance-ops</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P11 (phase-11-evidence)</li><li>Dependencies: SYS-TCF-P09, SYS-TCF-P10</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-10-final-review">← 前の仕様書</a><a class="pn" href="#task-phase-12-documentation-operations">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-12-documentation-operations" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-12-documentation-operations</h1><p class="spec-src">出典: <code>phase-12-documentation-operations.md</code></p><div class="spec-body"><h2>System task overlay: 利用者向けの使い方と運用手順を書く</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p12 / related_nodes: arch-total-cashflow-ui-ux, arch-total-cashflow-maintenance-ops</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P12</li><li>classification: confidence 1.0 / reason: P12 は 13 phase 固定スロットの phase-12-documentation-operations に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p12.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, documentation / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>一覧表の読み方、要確認キューでの判定のしかた、判定を間違えたときの直し方が文書として存在する状態。</p>
+<h3>背景</h3>
+<p>消し込みは利用者の判定を蓄積して精度が上がる仕組みであり、判定の意味と取り消し方が分からないと使われない。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: arch-total-cashflow-ui-ux, arch-total-cashflow-maintenance-ops</li><li>Entry gate: P11 の索引が存在する</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P11</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: N/A: この phase は web の描画実装を触らない</li><li>Backend: N/A: この phase は Workers 実行コードを触らない</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: N/A: この phase は D1 スキーマとマイグレーションを触らない</li><li>Infrastructure: N/A: この phase は wrangler 設定とバインディングを変更しない</li><li>Security: N/A: この phase は認証・認可の制御点を変更しない</li><li>Quality: N/A: この phase は自動テストとゲートを追加しない</li><li>Documentation: applicable: 一覧表の読み方と要確認キューの操作手順を書く</li><li>Operations: applicable: 判定の取り消しと再集計の手順を書く</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-ui-ux / arch-total-cashflow-maintenance-ops</li><li>Deploy unit/environment: N/A: 配備単位を持たない。リポジトリ内文書と検証記録だけを生成する</li><li>Compatibility/migration/backfill: N/A: 文書のみ</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: docs 配下の利用手順と運用手順</li><li>Consumed artifacts: eval-log/tcf-acceptance.md、architecture/total-cashflow-ui-ux.md</li><li>Write scope/touches: docs</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, documentation / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P12 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p12 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P12 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P11) が完了済みで、write_scope (docs) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>機能の追加・変更</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>rg -n &#x27;要確認&#x27; docs</li><li>rg -n &#x27;取り消し&#x27; docs</li><li>Required evidence:</li><li>docs</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: 文書の追加のみ</li><li>Rollback trigger and steps: 手順どおりに操作できない場合 — 追加した docs 配下のファイルを削除する</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-ui-ux / arch-total-cashflow-maintenance-ops</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P12 (phase-12-documentation-operations)</li><li>Dependencies: SYS-TCF-P11</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-11-evidence">← 前の仕様書</a><a class="pn" href="#task-phase-13-release-deploy">次の仕様書 →</a></div></section><section class="spec-page" id="task-phase-13-release-deploy" hidden><div class="spec-top"><a class="back" href="#index">☰ 一覧へ戻る</a><span class="grp">タスク別仕様書</span></div><h1>phase-13-release-deploy</h1><p class="spec-src">出典: <code>phase-13-release-deploy.md</code></p><div class="spec-body"><h2>System task overlay: kanjo-console へ配備し集計値が本番で成立することを確認する</h2>
+<h3>Machine-readable registration fields</h3>
+<ul><li>feature_package_id: feature-package/feat-total-cashflow</li><li>owners: daishiman / tags: total-cashflow, web, p13 / related_nodes: arch-total-cashflow-infrastructure, arch-total-cashflow-maintenance-ops, arch-total-cashflow-security</li><li>parent_feature: feat-total-cashflow</li><li>phase_ref: P13</li><li>classification: confidence 1.0 / reason: P13 は 13 phase 固定スロットの phase-13-release-deploy に対応する / candidate: tasks/feat-total-cashflow/sys-tcf-p13.md</li><li>tracker_binding_intent: beads</li><li>github_publication: mode local_only / project_aliases なし / labels total-cashflow, operations / milestone なし</li><li>pr_completion_policy: linked_pr_merged_all</li><li>branch_policy: one-task-one-branch / worktree lease 必須 / default-branch-reconciliation / assignment_owner dev-graph-scheduler</li></ul>
+<h3>目的</h3>
+<p>本番の kanjo-console で一覧表が表示され、2 恒等式が本番データでも成立していることを確認した状態。</p>
+<h3>背景</h3>
+<p>配備先は Cloudflare Workers の kanjo-console、データは D1 の kanjo-db。migration の適用とコード配備の順序を誤ると、集計が存在しないテーブルを読む。</p>
+<h3>前提条件</h3>
+<ul><li>Required spec/architecture nodes: arch-total-cashflow-infrastructure, arch-total-cashflow-maintenance-ops, arch-total-cashflow-security</li><li>Entry gate: P12 の文書が存在し、P09 の品質ゲートが全て成功で記録されている</li><li>Source pin: system-spec-harness v0.1.0 / run-system-spec-compile / assign-system-spec-completeness-evaluator</li><li>Repository context: repo_identity github:daishiman/kanjo / root_resolution_source explicit-cli / .dev-graph/config.json (絶対パスを保存しない)</li><li>Dependencies: SYS-TCF-P12</li></ul>
+<h3>Workstream applicability</h3>
+<ul><li>Frontend: N/A: この phase は web の描画実装を触らない</li><li>Backend: N/A: この phase は Workers 実行コードを触らない</li><li>API: N/A: この phase は HTTP 契約を変更しない</li><li>Data: N/A: この phase は D1 スキーマとマイグレーションを触らない</li><li>Infrastructure: applicable: wrangler 設定とバインディングが新テーブルを参照できることを確認する</li><li>Security: applicable: 本番でも判定登録が未認証で叩けないことを確認する</li><li>Quality: applicable: 本番データで 2 恒等式が成立することを確認する</li><li>Documentation: N/A: この phase は利用者向け文書を更新しない</li><li>Operations: applicable: 配備手順を実行し、結果を記録する</li></ul>
+<h3>Architecture and deploy unit</h3>
+<ul><li>Architecture decisions: arch-total-cashflow-infrastructure / arch-total-cashflow-maintenance-ops / arch-total-cashflow-security</li><li>Deploy unit/environment: kanjo-console (Cloudflare Workers) + D1 kanjo-db</li><li>Compatibility/migration/backfill: migration を先に適用してからコードを配備する。逆順は集計が存在しないテーブルを読むため許可しない</li></ul>
+<h3>成果物</h3>
+<ul><li>Produced artifacts: 配備済み kanjo-console、eval-log/tcf-release.md</li><li>Consumed artifacts: packages/api/wrangler.jsonc、migrations</li><li>Write scope/touches: packages/api/wrangler.jsonc, eval-log/tcf-release.md</li></ul>
+<h3>Tracker publication and completion</h3>
+<ul><li>Tracker binding intent: beads</li><li>Publication mode: local_only</li><li>Project aliases / labels / milestone: project_aliases なし / labels total-cashflow, operations / milestone なし</li><li>PR completion policy: linked_pr_merged_all</li><li>PR body contract: dev-graph graph_node_id SYS-TCF-P13 を本文に記し、default branch を対象にする。Beads issue 番号は dev-graph の sync が採番したものを追記する</li><li>Ownership boundary: system-dev-planner は intent を宣言するだけで、永続 binding の解決・起票・完了収束は dev-graph が所有する</li></ul>
+<h3>Branch and worktree execution</h3>
+<ul><li>Branch: dev-graph 登録後に C15 が devgraph/sys-tcf-p13 を割り当てる。system-dev-planner は事前割当しない</li><li>Worktree lease: 実装着手前に graph_node_id SYS-TCF-P13 を claim し、作業中は heartbeat、終了時に release する</li><li>Parallel safety: depends_on (SYS-TCF-P12) が完了済みで、write_scope (packages/api/wrangler.jsonc, eval-log/tcf-release.md) が他の active lease と重ならないこと</li><li>Completion projection: feature branch では pending event だけを記録し、default branch がクリーンになった時点で done を永続化する</li></ul>
+<h3>スコープ外</h3>
+<ul><li>mobile / tablet / desktop 向けの配備 (対象は web のみ)</li></ul>
+<h3>Verification and evidence</h3>
+<ul><li>Automated commands:</li><li>pnpm --filter @kanjo/api exec wrangler deploy</li><li>pnpm --filter @kanjo/api exec wrangler d1 migrations list kanjo-db</li><li>本番 URL の一覧表を開き、各月の総支出と内訳合計の一致を確認する</li><li>Required evidence:</li><li>eval-log/tcf-release.md</li></ul>
+<h3>Rollout and rollback</h3>
+<ul><li>Rollout: migration 適用 → コード配備 → 本番確認の順に行う</li><li>Rollback trigger and steps: 本番で恒等式が崩れた場合、または一覧表が表示されない場合 — 直前タグへコードを戻し、追加テーブルは残す (読み取りのみのため副作用がない)</li></ul>
+<h3>Handoff</h3>
+<ul><li>Executor: dev-graph の task-graph 経路 (build_target_kind: application-code)</li><li>Ready when: 引用元が confirmed かつ evaluation pass、C08 readiness complete、promotion 済み digest が staging と一致し、dev-graph への task 登録が完了していること</li></ul>
+<h3>参照情報</h3>
+<ul><li>System specification: spec-total-cashflow-requirements (system-spec/00-requirements-definition.md 由来)</li><li>Architecture: arch-total-cashflow-infrastructure / arch-total-cashflow-maintenance-ops / arch-total-cashflow-security</li><li>Feature: feat-total-cashflow</li><li>Phase doc: P13 (phase-13-release-deploy)</li><li>Dependencies: SYS-TCF-P12</li></ul></div><div class="pn-row"><a class="pn" href="#task-phase-12-documentation-operations">← 前の仕様書</a><span></span></div></section></main>
+</div>
+<script>
+(function(){
+  function ids(){return Array.prototype.map.call(document.querySelectorAll('.spec-page'),function(s){return s.id;});}
+  function show(){
+    var h=(location.hash||'#index').slice(1); if(!document.getElementById(h)){h='index';}
+    document.querySelectorAll('.spec-page').forEach(function(s){s.hidden=(s.id!==h);});
+    document.querySelectorAll('.spec-nav a, .idx-group a').forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href')==='#'+h);});
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange', show);
+  document.addEventListener('DOMContentLoaded', show); show();
+})();
+</script>
+</body></html>

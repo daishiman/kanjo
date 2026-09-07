@@ -22,6 +22,7 @@ import {
 } from '../api.js';
 import { dateTime, yenS } from '../format.js';
 import { AddCategoryInline, CategoryPicker } from './CategoryPicker.js';
+import { ConfirmDialog, usePendingConfirm } from './ConfirmDialog.js';
 import { DataTable, termColumn } from './DataTable.js';
 import { Term } from './Term.js';
 import { useInvalidateClassification } from './classification-invalidate.js';
@@ -208,6 +209,8 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
     if (draft.keyword.trim() && hasAttr(draft)) add.mutate();
   };
   const rules = q.data?.rules ?? [];
+  // 行ごとの確認。どのルールへの確認かを持たないと、押した行と消える行がずれる
+  const confirmDelete = usePendingConfirm<RuleRow>({ busy: del.isPending });
   const reorder = (i: number, dir: -1 | 1) => {
     const order = rules.map((r) => r.id);
     const j = i + dir;
@@ -310,13 +313,7 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
                   >
                     変更
                   </button>{' '}
-                  <button
-                    type="button"
-                    className="mini danger-btn"
-                    onClick={() => {
-                      if (window.confirm(`ルール「${r.keyword}」を削除しますか?`)) del.mutate(r.id);
-                    }}
-                  >
+                  <button type="button" className="mini danger-btn" onClick={() => confirmDelete.ask(r)}>
                     削除
                   </button>
                 </td>
@@ -332,6 +329,24 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
           )}
         </DataTable>
       </div>
+      {confirmDelete.target && (
+        <ConfirmDialog
+          dialog={confirmDelete.dialog}
+          title="この仕分けルールを削除しますか？"
+          // トリガーは「削除」。確定側では、消えたあと何が起きるかの側から名前を付ける
+          confirmLabel="ルールを消して自動判定を止める"
+          busyLabel="削除中…"
+          onConfirm={() =>
+            del.mutate(confirmDelete.target?.id as number, { onSuccess: confirmDelete.dismiss })
+          }
+          onDismiss={confirmDelete.dismiss}
+        >
+          <p>キーワード「{confirmDelete.target.keyword}」</p>
+          <p className="sub">
+            これまでにこのルールで付いた分類は残ります。これから取り込む明細に自動で付かなくなります。
+          </p>
+        </ConfirmDialog>
+      )}
     </div>
   );
 }
@@ -375,17 +390,11 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
   const useCount = (o: CategoryOptionRow) => Object.values(o.uses).reduce((sum, count) => sum + count, 0);
   const useSummary = (o: CategoryOptionRow) =>
     `編集 ${o.uses.edits} 件・ルール ${o.uses.rules} 件・現金明細 ${o.uses.cashEntries} 件`;
+  // 使われていない候補は消しても失うものが無い。確認を挟むのは使用中のものだけ
+  const confirmForce = usePendingConfirm<CategoryOptionRow>({ busy: del.isPending });
   const removeOption = (o: CategoryOptionRow) => {
-    const inUse = useCount(o);
-    if (inUse) {
-      if (
-        !window.confirm(
-          `「${o.major}${o.mid ? ` / ${o.mid}` : ''}」は${useSummary(o)}で使われています。\n削除しても使用中の値は残りますが候補から外れ、新しく選べなくなります。削除しますか?`,
-        )
-      )
-        return;
-      del.mutate({ o, force: true });
-    } else del.mutate({ o, force: false });
+    if (useCount(o)) confirmForce.ask(o);
+    else del.mutate({ o, force: false });
   };
   const key = (o: CategoryOptionRow) => `${o.scope}\t${o.major}\t${o.mid}`;
   const count = (c: Cls) => data.candidates[c].length;
@@ -514,6 +523,29 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
           </tr>
         )}
       </DataTable>
+      {confirmForce.target && (
+        <ConfirmDialog
+          dialog={confirmForce.dialog}
+          title="使用中の科目を候補から外しますか？"
+          // トリガーは「削除」。実際に消えるのは候補だけなので、確定側でその範囲を言い切る
+          confirmLabel="候補から外す"
+          busyLabel="削除中…"
+          onConfirm={() =>
+            del.mutate(
+              { o: confirmForce.target as CategoryOptionRow, force: true },
+              { onSuccess: confirmForce.dismiss },
+            )
+          }
+          onDismiss={confirmForce.dismiss}
+        >
+          <p>
+            「{confirmForce.target.major}
+            {confirmForce.target.mid ? ` / ${confirmForce.target.mid}` : ''}」は
+            {useSummary(confirmForce.target)}で使われています。
+          </p>
+          <p className="sub">使用中の値は残りますが、これから新しく選べなくなります。</p>
+        </ConfirmDialog>
+      )}
     </div>
   );
 }

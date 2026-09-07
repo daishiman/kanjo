@@ -17,6 +17,7 @@ import type {
   DefenseLine,
   DiagnosisData,
   DiagnosticPayload,
+  FreeeCoverage,
   HouseholdData,
   MatrixData,
   OverviewData,
@@ -25,6 +26,9 @@ import type {
   ReceiptGapSummary,
   ReceiptGapUrgency,
   ReceiptSourceResolution,
+  ReconcileExcluded,
+  ReconcileFreee,
+  ReconcileMatch,
   ResolvedTaxAccountSetting,
   StatementSource,
   SubVendor,
@@ -35,6 +39,7 @@ import type {
   TaxReadinessLevel,
   TaxReturnStatement,
   TaxYear,
+  TotalCashflowMonth,
   TradeoffCandidate,
   TradeoffReviewRow,
   UnsettledDeal,
@@ -180,6 +185,52 @@ export interface TrendRow {
   action: PriorityAction;
   score: number;
   reason: string;
+}
+
+/**
+ * 事業と家計を合わせたトータル収支。行の値はサーバ側の導出値をそのまま写す
+ * (画面で計算し直すと、どちらが正しいかを利用者が判断できなくなる)。
+ */
+export interface TotalCashflowResponse {
+  months: TotalCashflowMonth[];
+  review: TotalCashflowReview[];
+  /** 日付・金額が一致して寄せ終えた組。件数だけでなく中身を出さないと正しさを確かめられない */
+  matched: ReconcileMatch[];
+  /** MF 側に相手が見つからなかった freee 取引 */
+  freeeOnly: ReconcileFreee[];
+  /** 二重登録として総額から外した freee 取引 */
+  excluded: ReconcileExcluded[];
+  coverage: FreeeCoverage;
+}
+
+/** 要確認 1 件。MF 側の中身と freee 側の候補を並べて見比べるための材料 */
+export interface TotalCashflowReview {
+  txId: string;
+  reason: string;
+  mf: {
+    date: string;
+    displayDate: string;
+    content: string;
+    amount: number;
+    io: 'income' | 'expense';
+    institution: string;
+    major: string;
+    middle: string;
+    memo: string;
+  };
+  candidates: {
+    freeeIndex: number;
+    /** どの候補と組むかを名指しして保存するための鍵 */
+    freeeKey: string;
+    date: string;
+    partner: string;
+    amount: number;
+    account: string;
+    settleAccount: string;
+    /** freee 発生日 − MF 発生日 の日数差。0 なら日付は一致している */
+    dayGap: number;
+    accountConflict: boolean;
+  }[];
 }
 
 export interface TrendsResponse {
@@ -384,6 +435,14 @@ export interface TxRow {
  * 出どころ(source)が増えたときに画面だけ古い型のままになるのを避けるため、core の型をそのまま使う。
  */
 export type { CandidateMajor, CandidateSource, Candidates } from '@kanjo/core';
+export type { DuplicateVerdictValue, TotalCashflowMonth } from '@kanjo/core';
+/** 突合の結果を画面でも同じ形で扱う。片方だけ型を作り直すと、列の意味が画面とサーバでずれる */
+export type {
+  FreeeCoverage,
+  ReconcileExcluded,
+  ReconcileFreee,
+  ReconcileMatch,
+} from '@kanjo/core';
 export interface CategoryOptionRow {
   scope: Cls;
   major: string;
@@ -525,7 +584,7 @@ export interface ImportHistoryRow {
   status: string | null;
   duplicateOf: number | null;
   failureReason: string | null;
-  generationState: 'active' | 'partial' | 'superseded' | 'legacy' | null;
+  generationState: 'active' | 'partial' | 'superseded' | 'deleted' | 'legacy' | null;
   committedAt: string | null;
   createdAt: string | null;
   /** 投入原本をR2に保存済み=やり直し(再取込)の入口を出せる。旧APIからの段階更新中はundefined */

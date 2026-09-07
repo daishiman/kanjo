@@ -4,14 +4,19 @@ import { useRef, useState } from 'react';
 import { type BackupItem, type LegacyRestoreResponse, type SettingsResponse, api } from '../api.js';
 import { AttachmentArchiveRecovery } from '../components/Attachments.js';
 import { ClassificationSettings } from '../components/ClassificationSettings.js';
+import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { VendorMemorySettings } from '../components/VendorMemory.js';
 import { readFileText } from '../file-text.js';
 
+/**
+ * 確認ダイアログの本文。「続けますか?」は付けない。問いは見出しが持っており、
+ * 本文まで問いにすると、読む側は同じ問いを 2 回読んでから答えることになる。
+ */
 export const LEGACY_RESTORE_CONFIRMATION =
-  '集計・分類・設定データを初期移行します。現金明細、証憑の原本と管理情報は対象外です。続けますか?';
+  '集計・分類・設定データを初期移行します。現金明細、証憑の原本と管理情報は対象外です。';
 
 export function LegacyRestoreNotice({ result }: { result: LegacyRestoreResponse }) {
   if (result.duplicate)
@@ -55,6 +60,8 @@ export function SettingsPage() {
     },
     onSuccess: () => void qc.invalidateQueries(),
   });
+  // 確認の間もファイルを持っておく。input の value はここで捨てるので、確認後に読む先が要る
+  const confirmLegacy = usePendingConfirm<File>({ busy: restore.isPending });
 
   if (q.isLoading)
     return (
@@ -315,11 +322,28 @@ export function SettingsPage() {
             style={{ display: 'none' }}
             onChange={(e) => {
               const f = e.target.files?.[0];
-              if (f && window.confirm(LEGACY_RESTORE_CONFIRMATION)) restore.mutate(f);
+              if (f) confirmLegacy.ask(f);
+              // 同じファイルを選び直しても change が起きるように、値はここで捨てる。
+              // 確認を挟む間もファイルは confirmLegacy が保持しているので、取り違えは起きない
               e.target.value = '';
             }}
           />
         </div>
+        {confirmLegacy.target && (
+          <ConfirmDialog
+            dialog={confirmLegacy.dialog}
+            title="集計・分類・設定データを初期移行しますか？"
+            confirmLabel="上書きして移行する"
+            busyLabel="移行中…"
+            onConfirm={() =>
+              restore.mutate(confirmLegacy.target as File, { onSuccess: confirmLegacy.dismiss })
+            }
+            onDismiss={confirmLegacy.dismiss}
+          >
+            <p>{LEGACY_RESTORE_CONFIRMATION}</p>
+            <p className="sub">読み込むファイル: {confirmLegacy.target.name}</p>
+          </ConfirmDialog>
+        )}
         {restore.isSuccess && <LegacyRestoreNotice result={restore.data} />}
         {restore.isError && (
           <div className="notice">
@@ -333,8 +357,9 @@ export function SettingsPage() {
   );
 }
 
+/** 問いは見出しが持つので、ここは起きることだけを書く (LEGACY_RESTORE_CONFIRMATION と同じ理由) */
 export const BACKUP_RESTORE_CONFIRMATION =
-  'この日の夜間バックアップで集計・分類・設定データを上書きします。現金明細、証憑の原本と管理情報は対象外です。続けますか?';
+  'この日の夜間バックアップで集計・分類・設定データを上書きします。現金明細、証憑の原本と管理情報は対象外です。';
 
 /**
  * 夜間バックアップ(R2 に30日保持)からの復元導線。
@@ -355,6 +380,8 @@ export function NightlyBackups() {
     },
     onSuccess: () => void qc.invalidateQueries(),
   });
+  // 行ごとに確認を出すので、どの日を戻すのかを持たせる。日付を取り違えると別の日で上書きされる
+  const confirmRestore = usePendingConfirm<string>({ busy: restore.isPending });
 
   if (q.isError) return <p className="sub">夜間バックアップの一覧を取得できませんでした。</p>;
   const backups = q.data?.backups ?? [];
@@ -378,19 +405,28 @@ export function NightlyBackups() {
                 {Math.max(1, Math.round(b.size / 1024)).toLocaleString('ja-JP')} KB
               </td>
               <td data-label="操作">
-                <button
-                  type="button"
-                  disabled={restore.isPending}
-                  onClick={() => {
-                    if (window.confirm(BACKUP_RESTORE_CONFIRMATION)) restore.mutate(b.date);
-                  }}
-                >
+                <button type="button" disabled={restore.isPending} onClick={() => confirmRestore.ask(b.date)}>
                   この日に戻す
                 </button>
               </td>
             </tr>
           ))}
         </DataTable>
+      )}
+      {confirmRestore.target && (
+        <ConfirmDialog
+          dialog={confirmRestore.dialog}
+          title={`${confirmRestore.target} のバックアップで上書きしますか？`}
+          // トリガーは「この日に戻す」。同じ語を確認にも置くと、どちらが後戻りできない側か読めない
+          confirmLabel="上書きして戻す"
+          busyLabel="復元中…"
+          onConfirm={() =>
+            restore.mutate(confirmRestore.target as string, { onSuccess: confirmRestore.dismiss })
+          }
+          onDismiss={confirmRestore.dismiss}
+        >
+          <p>{BACKUP_RESTORE_CONFIRMATION}</p>
+        </ConfirmDialog>
       )}
       {restore.isSuccess && <LegacyRestoreNotice result={restore.data} />}
       {restore.isError && (

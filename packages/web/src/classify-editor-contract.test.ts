@@ -1,9 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import {
-  applyClassificationViewChange,
-  canLeaveClassificationEditor,
   canUseClassificationShortcuts,
+  classificationLeaveDecision,
   shouldGuardClassificationLinkClick,
 } from './pages/Classify.js';
 
@@ -50,22 +49,17 @@ describe('公私仕分け編集パネルの表示契約', () => {
   });
 
   it('未保存のまま同じ行を閉じる場合と別行へ移る場合だけ確認する', () => {
-    const cancel = vi.fn(() => false);
-    expect(canLeaveClassificationEditor('tx-1', null, true, cancel)).toBe(false);
-    expect(cancel).toHaveBeenCalledOnce();
+    expect(classificationLeaveDecision('tx-1', null, true, false)).toBe('ask');
+    expect(classificationLeaveDecision('tx-1', 'tx-2', true, false)).toBe('ask');
 
-    cancel.mockClear();
-    expect(canLeaveClassificationEditor('tx-1', 'tx-2', true, cancel)).toBe(false);
-    expect(cancel).toHaveBeenCalledOnce();
+    // 同じ行を開き直すだけ / 変更が無い / そもそも開いていない、では失うものが無い
+    expect(classificationLeaveDecision('tx-1', 'tx-1', true, false)).toBe('go');
+    expect(classificationLeaveDecision('tx-1', null, false, false)).toBe('go');
+    expect(classificationLeaveDecision(null, 'tx-2', true, false)).toBe('go');
 
-    cancel.mockClear();
-    expect(canLeaveClassificationEditor('tx-1', null, false, cancel)).toBe(true);
-    expect(canLeaveClassificationEditor('tx-1', 'tx-1', true, cancel)).toBe(true);
-    expect(cancel).not.toHaveBeenCalled();
-
-    const discard = vi.fn(() => true);
-    expect(canLeaveClassificationEditor('tx-1', null, true, discard)).toBe(true);
-    expect(discard).toHaveBeenCalledOnce();
+    // 保存中は確認すら出さない。答えても結果が変わらない問いを出さない
+    expect(classificationLeaveDecision('tx-1', null, true, true)).toBe('blocked');
+    expect(classificationLeaveDecision('tx-1', null, false, true)).toBe('blocked');
     expect(PAGE_SOURCE).toContain('disabled={busy}');
   });
 
@@ -78,24 +72,9 @@ describe('公私仕分け編集パネルの表示契約', () => {
     );
   });
 
-  it('未保存を破棄する画面変更は確認後にだけ適用する', () => {
-    const applyChange = vi.fn();
-    const cancel = vi.fn(() => false);
-    expect(applyClassificationViewChange('tx-1', true, false, applyChange, cancel)).toBe(false);
-    expect(cancel).toHaveBeenCalledOnce();
-    expect(applyChange).not.toHaveBeenCalled();
-
-    const discard = vi.fn(() => true);
-    expect(applyClassificationViewChange('tx-1', true, false, applyChange, discard)).toBe(true);
-    expect(discard).toHaveBeenCalledOnce();
-    expect(applyChange).toHaveBeenCalledOnce();
-
-    applyChange.mockClear();
-    discard.mockClear();
-    expect(applyClassificationViewChange('tx-1', true, true, applyChange, discard)).toBe(false);
-    expect(discard).not.toHaveBeenCalled();
-    expect(applyChange).not.toHaveBeenCalled();
-  });
+  // 破棄の確認そのもの(画面内 dialog を通ること・やめると絞り込みが動かないこと・
+  // 破棄すると押した操作が実行されること)は classify-discard-guard.dom.test.tsx が
+  // 実 DOM で固定する。ここに文字列一致で書くと、宣言があることしか言えない。
 
   it('フィルター・設定遷移・再読み込みを共通の未保存ガードで守る', () => {
     expect(PAGE_SOURCE).toContain('requestViewChange(() => setMonth(next))');
