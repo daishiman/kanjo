@@ -13,7 +13,7 @@ start_date: null
 target_date: null
 iteration: null
 created_at: "2026-08-29T15:30:44Z"
-updated_at: "2026-08-29T15:30:44Z"
+updated_at: "2026-09-07T13:55:37Z"
 depends_on: []
 related_nodes: ["spec-ui-navigation-cognitive-load", "arch-ui-navigation-experience"]
 resource_scope: ["packages/web/src"]
@@ -72,8 +72,9 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 
 | Container/Component | Responsibility | Interface | Data owner | Deployment unit |
 |---|---|---|---|---|
-| routeMetadata.ts | 15 routeと支出分析4タブのiconを含む正本 | AppRouteId/APP_ROUTES/ANALYSIS_TABS/SEARCH_ROUTES | frontend | web |
-| pages/Analysis.tsx | 増減マトリクス・支出トレンド・統計診断をURL付きタブで束ねる画面 | AnalysisPage | frontend | web |
+| routeMetadata.ts | 15 routeと支出分析5タブのiconを含む正本。画面数・タブ本数はここが唯一の正本で、文書側は写しにすぎない | AppRouteId/APP_ROUTES/ANALYSIS_TABS/SEARCH_ROUTES | frontend | web |
+| pages/Analysis.tsx | 増減マトリクス・支出トレンド・統計診断・支出照合・トータル収支をURL付きタブで束ねる画面 | AnalysisPage | frontend | web |
+| components/ConfirmDialog.tsx | 破壊的操作の確認`<dialog>`と、確認の間だけ続きの操作を預かる`usePendingConfirm` | ConfirmDialog / usePendingConfirm | frontend | web |
 | RouteIcon.tsx | 装飾SVG描画 | RouteIconName | frontend | web |
 | Layout.tsx | desktop/mobile/current | location+metadata | frontend | web |
 | NavItem.tsx | nav1項目のicon+label(sidebar/tab共有) | NavItemProps | frontend | web |
@@ -100,10 +101,13 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 | 参照ADR | この境界での実装帰結 | 回帰を止める場所 |
 |---|---|---|
 | ADR-UI-001 (`end`によるcurrent一意化) | `NavItem.tsx`が全nav項目に`end`を適用し、currentは`aria-current="page"`だけで表す(`className`を関数で渡し`.active`の二重表現を作らない)。CSSで選択表示を隠す回避はしない | DOM testで`/tax`・`/tax/receipts`のcurrent数を固定 |
-| ADR-UI-002 (型付きinline SVG) | `routeMetadata.ts`のicon keyを必須とし`RouteIcon.tsx`が網羅する。外部icon runtimeを追加しない | 型のexhaustive checkと19 icon(15 route+4タブ)のtest |
+| ADR-UI-002 (型付きinline SVG) | `routeMetadata.ts`のicon keyを必須とし`RouteIcon.tsx`が網羅する。外部icon runtimeを追加しない | 型のexhaustive checkと20 icon(15 route+5タブ)のtest |
 | ADR-UI-003 (見る群の統合) | 同じ判断のための切り口だった `/matrix` `/trends` `/diagnosis` を `/analysis/:tab` の1画面へ束ね、旧URLはredirectで残す | `display-contract.test.tsx`(route=15)、`route-task-detail.test.tsx`(タブの説明文を含む用語リンク総数)、`check-mobile-layout.mjs`(サイドバー総高) |
 | ADR-UI-003 (inline disclosure既定) | `details`等の既存要素で段階表示し、遷移経路へmodalを挟まない | DOM testと実ブラウザ確認 |
 | ADR-UI-004 (shared primitive優先) | `PageHeader`/`PageState`/`styles.css` tokenへ寄せ、画面ごとの独自実装を増やさない | lint/typecheckと差分review |
+| ADR-UI-005 (タブの常時展開) | `Layout.tsx`が`route.id === 'analysis'`のとき`ANALYSIS_TABS`を`.nav-sub`の子`NavItem`として描く。子行のスタイル(インデント・左罫・小さい字)は`styles.css`の`.nav-sub`が持ち、`NavItem`側は変えない | `navigation-ux.dom.test.tsx`「支出分析のタブがサイドバーから直接押せる」が各タブのhrefを固定 |
+| ADR-UI-006 (子だけがcurrent) | 親`NavItem`の`end`を`!TABBED_ROUTE_IDS.has(route.id) || subTabs !== null`で決める。子行を描いているときは親を厳密一致にして`aria-current`を立てない | 同test「タブを開いているときは、その子だけが現在地になる」が`[aria-current="page"]`の件数を1に固定 |
+| ADR-UI-007 (window.confirm不使用) | 確認を要する操作は`ConfirmDialog`+`usePendingConfirm`へ寄せる。`window.confirm`の新規呼出を増やさない | `classify-discard-guard.dom.test.tsx`ほかが`expect(confirm).not.toHaveBeenCalled()`と`findByRole('dialog')`を組で検査。片方だけでは、確認せず素通りする実装も通ってしまう |
 
 ## Delivery, migration and rollback
 
@@ -114,5 +118,5 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 ## Risks and verification
 
 - Risk: APP_ROUTES型推論がmobile filterへ波及。既存contractで固定。
-- Fitness test: 15 route/19 icon、unique id/path、tax exact match、/analysis は前方一致でcurrent、external dependencyなし。
+- Fitness test: 15 route/20 icon、unique id/path、tax exact match、`/analysis/:tab`では子行1件だけがcurrent、破壊的操作での`window.confirm`呼出0、external dependencyなし。
 - Validation: web unit/DOM/build、headless mobile、visual、secret scan。

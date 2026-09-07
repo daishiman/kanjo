@@ -187,6 +187,29 @@ body {
   min-width: 0;
   line-height: 1.35;
 }
+/*
+ * タブを持つ画面の子。親と同じ見た目のまま段だけ下げると、17 行のサイドバーが
+ * 22 行の平坦な列になり、どれが画面でどれが切り口かが読めなくなる。
+ * 字を一段小さく・色を弱くし、左に細い縦線を通して「この親の中身」だと形で示す。
+ */
+.nav-sub {
+  margin: 2px 0 2px 18px;
+  padding-left: 8px;
+  border-left: 1px solid var(--line);
+}
+/* 弱めるのは平常時だけ。現在地の色は .nav a[aria-current] が上書きし、親子で同じになる */
+.nav-sub a {
+  min-height: auto;
+  padding: 5px 10px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.nav-sub .route-icon {
+  width: 14px;
+  height: 14px;
+  flex-basis: 14px;
+}
 .nav a:hover {
   background: var(--bg);
 }
@@ -4345,16 +4368,25 @@ label.check {
 .deletion-confirm-dialog .deletion-preflight {
   border-bottom: 0;
 }
+/* 確認ダイアログの中身。取込の確認 (.import-discard-confirmation) と同じ組みで揃える */
+.confirm-dialog-body,
 .import-discard-confirmation {
   padding-top: 16px;
 }
+.confirm-dialog-body h3,
 .import-discard-confirmation h3 {
   margin: 0 0 12px;
   font-size: var(--fs-lg);
 }
+.confirm-dialog-body p,
 .import-discard-confirmation p {
   margin: 8px 0;
   line-height: 1.7;
+}
+/* 見出しは初期フォーカス先。tabIndex={-1} なので、押せる物のような輪郭は出さない */
+.confirm-dialog-body h3:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: 4px;
 }
 /* 取込前の確認。「何が置き換わるか」を読ませるので、箇条書きは本文と同じ行間で並べる */
 .import-confirm-notes {

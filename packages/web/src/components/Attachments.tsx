@@ -28,6 +28,7 @@ import {
 } from '../api.js';
 import { readFileText } from '../file-text.js';
 import { shrinkImageFile } from '../shrink-image.js';
+import { ConfirmDialog, usePendingConfirm } from './ConfirmDialog.js';
 
 /** input[accept] は MIME をそのまま並べる(HEIC は拡張子も添えないと iOS 以外で弾かれる) */
 const ACCEPT = `${Object.keys(ATTACHMENT_TYPES).join(',')},.heic,.heif`;
@@ -154,6 +155,8 @@ function AttachmentList({
   onDelete: (id: number) => void;
 }) {
   const [copyNotice, setCopyNotice] = useState<{ id: number; ok: boolean } | null>(null);
+  // 一覧なので「開いているか」だけでは足りない。どの証憑への確認かを取り違えると、押した行と消える行がずれる
+  const confirmDelete = usePendingConfirm<Attachment>({ busy });
 
   const copyOriginalLink = async (attachment: Attachment) => {
     const path = `/api/attachments/${attachment.id}/content`;
@@ -167,57 +170,78 @@ function AttachmentList({
   };
 
   return (
-    <ul className="attach-list">
-      {attachments.map((attachment) => {
-        const presentation = cleanupPresentation(attachment);
-        const canRetry = presentation.retry && attachment.retryable;
-        const canOpen = originalAvailable(attachment);
-        return (
-          <li key={attachment.id}>
-            <AttachmentThumbnail attachment={attachment} />
-            {canOpen ? (
-              <>
-                <a href={`/api/attachments/${attachment.id}/content`} target="_blank" rel="noreferrer">
-                  {attachment.filename}
-                </a>
-                <button
-                  type="button"
-                  className="mini"
-                  aria-label={`${attachment.filename}のリンクをコピー`}
-                  disabled={busy}
-                  onClick={() => void copyOriginalLink(attachment)}
-                >
-                  リンクをコピー
-                </button>
-              </>
-            ) : (
-              <span className="attachment-filename">{attachment.filename}</span>
-            )}
-            <span className="sub">{formatAttachmentSize(attachment.size)}</span>
-            {attachment.orphaned && <span className="pill warn">親明細なし</span>}
-            {presentation.badge && (
-              <span className={`pill ${presentation.badgeClass}`}>{presentation.badge}</span>
-            )}
-            <button
-              type="button"
-              className="mini"
-              disabled={busy || (presentation.retry && !canRetry)}
-              onClick={() => {
-                if (presentation.retry || window.confirm(`「${attachment.filename}」を削除しますか?`))
-                  onDelete(attachment.id);
-              }}
-            >
-              {presentation.action}
-            </button>
-            {copyNotice?.id === attachment.id && (
-              <span className="sub" role={copyNotice.ok ? 'status' : 'alert'}>
-                {copyNotice.ok ? 'リンクをコピーしました' : 'リンクをコピーできませんでした'}
-              </span>
-            )}
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      <ul className="attach-list">
+        {attachments.map((attachment) => {
+          const presentation = cleanupPresentation(attachment);
+          const canRetry = presentation.retry && attachment.retryable;
+          const canOpen = originalAvailable(attachment);
+          return (
+            <li key={attachment.id}>
+              <AttachmentThumbnail attachment={attachment} />
+              {canOpen ? (
+                <>
+                  <a href={`/api/attachments/${attachment.id}/content`} target="_blank" rel="noreferrer">
+                    {attachment.filename}
+                  </a>
+                  <button
+                    type="button"
+                    className="mini"
+                    aria-label={`${attachment.filename}のリンクをコピー`}
+                    disabled={busy}
+                    onClick={() => void copyOriginalLink(attachment)}
+                  >
+                    リンクをコピー
+                  </button>
+                </>
+              ) : (
+                <span className="attachment-filename">{attachment.filename}</span>
+              )}
+              <span className="sub">{formatAttachmentSize(attachment.size)}</span>
+              {attachment.orphaned && <span className="pill warn">親明細なし</span>}
+              {presentation.badge && (
+                <span className={`pill ${presentation.badgeClass}`}>{presentation.badge}</span>
+              )}
+              <button
+                type="button"
+                className="mini"
+                disabled={busy || (presentation.retry && !canRetry)}
+                onClick={() => {
+                  // 片づけの再試行は消す操作ではないので確認を挟まない。削除だけが後戻りできない
+                  if (presentation.retry) onDelete(attachment.id);
+                  else confirmDelete.ask(attachment);
+                }}
+              >
+                {presentation.action}
+              </button>
+              {copyNotice?.id === attachment.id && (
+                <span className="sub" role={copyNotice.ok ? 'status' : 'alert'}>
+                  {copyNotice.ok ? 'リンクをコピーしました' : 'リンクをコピーできませんでした'}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      {confirmDelete.target && (
+        <ConfirmDialog
+          dialog={confirmDelete.dialog}
+          title="この証憑を削除しますか？"
+          // トリガーは「削除」。確定側は原本まで消えることを名指しして、後戻りできない側を読めるようにする
+          confirmLabel="原本ごと削除する"
+          busyLabel="削除中…"
+          onConfirm={() => {
+            const id = confirmDelete.target?.id;
+            confirmDelete.dismiss();
+            if (id !== undefined) onDelete(id);
+          }}
+          onDismiss={confirmDelete.dismiss}
+        >
+          <p>{confirmDelete.target.filename}</p>
+          <p className="sub">原本と管理情報の両方を消します。元に戻せません。</p>
+        </ConfirmDialog>
+      )}
+    </>
   );
 }
 
@@ -810,6 +834,13 @@ function ArchiveRecoveryOutcome({ result }: { result: AttachmentArchiveRecoverRe
  * エクスポートJSONの在庫と現在のD1/R2を照合し、原本が同じR2に残るmetadataだけを復旧する。
  * 原本のバックアップ/復元とは表示しない。
  */
+/**
+ * 復旧の確認本文。問いは見出しが持つので「続けますか?」は付けず、
+ * 何が戻り何が戻らないかだけを書く。原本の復元と取り違えられると被害が大きい。
+ */
+export const ARCHIVE_RECOVERY_CONFIRMATION =
+  '同じ保管場所に原本が残っている証憑の管理情報だけを復元します。原本ファイルの復元ではありません。';
+
 export function AttachmentArchiveRecovery() {
   const qc = useQueryClient();
   const [inventory, setInventory] = useState<AttachmentArchiveInventory | null>(null);
@@ -831,6 +862,7 @@ export function AttachmentArchiveRecovery() {
   });
   const report = reconcile.data?.response.report;
   const canRecover = !!inventory && !!report && report.metadataMissing > 0;
+  const confirmRecover = usePendingConfirm<AttachmentArchiveInventory>({ busy: recover.isPending });
 
   return (
     <section className="attachment-archive-recovery" aria-label="証憑の照合と管理情報の復旧">
@@ -869,17 +901,28 @@ export function AttachmentArchiveRecovery() {
           className="mini"
           disabled={recover.isPending}
           onClick={() => {
-            if (
-              inventory &&
-              window.confirm(
-                '同じ保管場所に原本が残っている証憑の管理情報だけを復元します。原本ファイルの復元ではありません。続けますか?',
-              )
-            )
-              recover.mutate(inventory);
+            if (inventory) confirmRecover.ask(inventory);
           }}
         >
           {recover.isPending ? '管理情報を復旧中…' : '証憑の管理情報を復旧する'}
         </button>
+      )}
+      {confirmRecover.target && (
+        <ConfirmDialog
+          dialog={confirmRecover.dialog}
+          title="証憑の管理情報を復旧しますか？"
+          // トリガーは「復旧する」。何を書き戻すのかを確定側で名指しし、原本の復元と取り違えさせない
+          confirmLabel="管理情報だけ書き戻す"
+          busyLabel="管理情報を復旧中…"
+          onConfirm={() =>
+            recover.mutate(confirmRecover.target as AttachmentArchiveInventory, {
+              onSuccess: confirmRecover.dismiss,
+            })
+          }
+          onDismiss={confirmRecover.dismiss}
+        >
+          <p>{ARCHIVE_RECOVERY_CONFIRMATION}</p>
+        </ConfirmDialog>
       )}
       {report && !canRecover && report.metadataMissing === 0 && (
         <p className="sub">復旧が必要な管理情報はありません。</p>

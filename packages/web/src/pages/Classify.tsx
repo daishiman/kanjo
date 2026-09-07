@@ -5,7 +5,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type MouseEvent as ReactMouseEvent, useCallback, useEffect, useId, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   type Candidates,
   type Cls,
@@ -28,6 +28,7 @@ import {
 } from '../components/Attachments.js';
 import { CategoryPicker } from '../components/CategoryPicker.js';
 import { OwnerSelect, useInvalidateClassification } from '../components/ClassificationSettings.js';
+import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { DeletedNotice, TransactionDeletionButton } from '../components/ImportDeletion.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
@@ -36,30 +37,29 @@ import { Term } from '../components/Term.js';
 import { VendorMemoryBadge } from '../components/VendorMemory.js';
 import { monthLabel, yen, yenS } from '../format.js';
 
-const DISCARD_CLASSIFICATION_DRAFT_MESSAGE = '未保存の変更があります。変更を破棄して編集を閉じますか?';
+/** 確認の本文。問いは見出しが持つので、ここは失うものだけを書く */
+export const DISCARD_CLASSIFICATION_DRAFT_MESSAGE = 'この行の編集内容は保存されずに消えます。';
 
-/** 同じ行を閉じる場合と別行へ移る場合の未保存ガードを1箇所で共有する。 */
-export function canLeaveClassificationEditor(
+/**
+ * 編集中に別の場所へ移ろうとしたときの判定。
+ *
+ * 判定と確認を分けているのは、確認がアプリ内の <dialog> になり同期的に答えを返せなくなったため。
+ * window.confirm のままにできないのは、ブラウザの「このページでこれ以上ダイアログを表示しない」
+ * が効くと即 false が返り、閉じるボタンが無反応になったまま理由も画面に出ないから。
+ * ここは「そのまま進める / 確認を出す / 保存中なので動かさない」を返すだけにする。
+ */
+export type ClassificationLeave = 'go' | 'ask' | 'blocked';
+
+export function classificationLeaveDecision(
   currentId: string | null,
   nextId: string | null,
   dirty: boolean,
-  confirmDiscard: (message: string) => boolean = (message) => window.confirm(message),
-): boolean {
-  if (!currentId || currentId === nextId || !dirty) return true;
-  return confirmDiscard(DISCARD_CLASSIFICATION_DRAFT_MESSAGE);
-}
-
-/** フィルターや画面遷移は、未保存の確認後にだけ適用する。 */
-export function applyClassificationViewChange(
-  currentId: string | null,
-  dirty: boolean,
   busy: boolean,
-  applyChange: () => void,
-  confirmDiscard?: (message: string) => boolean,
-): boolean {
-  if (busy || !canLeaveClassificationEditor(currentId, null, dirty, confirmDiscard)) return false;
-  applyChange();
-  return true;
+): ClassificationLeave {
+  if (busy) return 'blocked';
+  // 同じ行を開き直すだけなら失うものが無い。確認は「閉じる」か「別行へ移る」ときだけ
+  if (!currentId || currentId === nextId || !dirty) return 'go';
+  return 'ask';
 }
 
 export function canUseClassificationShortcuts(editingId: string | null, busyEditingId: string | null) {
@@ -195,36 +195,67 @@ export function ClassifyPage() {
   const [busyEditingId, setBusyEditingId] = useState<string | null>(null);
   const [recentDeletion, setRecentDeletion] = useState<DeletionResult | null>(null);
   const attachments = useAttachmentDisclosure();
+  const navigate = useNavigate();
+
+  // 破棄の確認。答えが返るまで待てないので、続きの操作をここに預けて確認の後に実行する
+  const pendingLeave = usePendingConfirm<{ resume: () => void }>();
+
+  /** 編集を閉じてから続きを実行する。確認を通った場合も通らなかった場合も同じ経路を使う */
+  const closeEditorAnd = useCallback((resume: () => void) => {
+    setDirtyEditingId(null);
+    setBusyEditingId(null);
+    setEditingId(null);
+    setEditingRowKey(null);
+    resume();
+  }, []);
 
   const requestEditingId = useCallback(
     (nextId: string | null, nextRowKey: string | null = null) => {
-      if (busyEditingId) return;
-      if (!canLeaveClassificationEditor(editingId, nextId, dirtyEditingId === editingId)) return;
-      setDirtyEditingId(null);
-      setBusyEditingId(null);
-      setEditingId(nextId);
-      setEditingRowKey(nextRowKey);
+      const decision = classificationLeaveDecision(
+        editingId,
+        nextId,
+        dirtyEditingId === editingId,
+        busyEditingId !== null,
+      );
+      if (decision === 'blocked') return;
+      const open = () => {
+        setEditingId(nextId);
+        setEditingRowKey(nextRowKey);
+      };
+      if (decision === 'ask') pendingLeave.ask({ resume: () => closeEditorAnd(open) });
+      else closeEditorAnd(open);
     },
-    [busyEditingId, dirtyEditingId, editingId],
+    [busyEditingId, closeEditorAnd, dirtyEditingId, editingId, pendingLeave.ask],
   );
 
+  /** 戻り値は「いま進んだか」。確認へ回した場合は false で、押した先は確認の後に実行される */
   const requestViewChange = useCallback(
-    (applyChange: () => void) =>
-      applyClassificationViewChange(editingId, dirtyEditingId === editingId, busyEditingId !== null, () => {
-        setDirtyEditingId(null);
-        setBusyEditingId(null);
-        setEditingId(null);
-        setEditingRowKey(null);
-        applyChange();
-      }),
-    [busyEditingId, dirtyEditingId, editingId],
+    (applyChange: () => void): boolean => {
+      const decision = classificationLeaveDecision(
+        editingId,
+        null,
+        dirtyEditingId === editingId,
+        busyEditingId !== null,
+      );
+      if (decision === 'blocked') return false;
+      if (decision === 'ask') {
+        pendingLeave.ask({ resume: () => closeEditorAnd(applyChange) });
+        return false;
+      }
+      closeEditorAnd(applyChange);
+      return true;
+    },
+    [busyEditingId, closeEditorAnd, dirtyEditingId, editingId, pendingLeave.ask],
   );
 
   const onSettingsNavigation = useCallback(
     (event: ReactMouseEvent<HTMLAnchorElement>) => {
-      if (!requestViewChange(() => {})) event.preventDefault();
+      const href = event.currentTarget.getAttribute('href') ?? '/settings';
+      // 確認を挟む間は既定の遷移を止め、遷移そのものを預ける。答えが出てから同じ先へ進む
+      event.preventDefault();
+      requestViewChange(() => navigate(href));
     },
-    [requestViewChange],
+    [navigate, requestViewChange],
   );
 
   const finishEditing = useCallback(() => {
@@ -339,14 +370,14 @@ export function ClassifyPage() {
         })
       )
         return;
-      if (!requestViewChange(() => {})) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
+      // 遷移そのものを預ける。確認に答えるまで待てないので、既定の遷移は常に止めて自分で進む
+      event.preventDefault();
+      event.stopPropagation();
+      requestViewChange(() => navigate(`${url.pathname}${url.search}${url.hash}`));
     };
     document.addEventListener('click', guardShellNavigation, true);
     return () => document.removeEventListener('click', guardShellNavigation, true);
-  }, [editingId, requestViewChange]);
+  }, [editingId, navigate, requestViewChange]);
 
   if (q.isLoading)
     return (
@@ -589,6 +620,24 @@ export function ClassifyPage() {
           )}
         </DataTable>
       </div>
+      {pendingLeave.target && (
+        <ConfirmDialog
+          dialog={pendingLeave.dialog}
+          title="編集中の内容を破棄しますか？"
+          // トリガーは「閉じる」「別の行を開く」など様々。確定側は失うものの側から名前を付ける
+          confirmLabel="破棄して移る"
+          busyLabel="移動中…"
+          onConfirm={() => {
+            const resume = pendingLeave.target?.resume;
+            pendingLeave.dismiss();
+            resume?.();
+          }}
+          onDismiss={pendingLeave.dismiss}
+        >
+          <p>{DISCARD_CLASSIFICATION_DRAFT_MESSAGE}</p>
+          <p className="sub">「やめる」を押すと編集に戻ります。</p>
+        </ConfirmDialog>
+      )}
     </>
   );
 }

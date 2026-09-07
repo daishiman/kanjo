@@ -7,7 +7,7 @@
  * 架空の依頼だけを使い、実データには触れない。
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { AiTaskView } from './api.js';
 import { RunCard } from './pages/Ai.js';
@@ -77,24 +77,31 @@ describe('依頼一覧の畳み方', () => {
 });
 
 describe('結果待ちの取り消し', () => {
-  it('確認でキャンセルしたら何も送らない', () => {
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => false),
-    );
+  /**
+   * 確認はアプリ内の <dialog> で出す。window.confirm はブラウザの「このページでこれ以上
+   * ダイアログを表示しない」が効くと即 false を返し、押しても無反応なボタンになったまま
+   * 理由も画面に出ない。呼ばれていないことまで固定して、戻した実装をここで落とす。
+   */
+  it('やめるを押したら何も送らず、window.confirm も通さない', async () => {
+    const confirm = vi.fn(() => false);
+    vi.stubGlobal('confirm', confirm);
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
     mount([task('t3', 'waiting', '2026-02-01T02:00:00.000Z')]);
     fireEvent.click(screen.getByText('取り消す'));
-    expect(window.confirm).toHaveBeenCalled();
+
+    expect(confirm).not.toHaveBeenCalled();
+    const dialog = await screen.findByRole('dialog');
+    // 何が起きるのかが確認の中で読める
+    expect(dialog.textContent).toContain('結果を送れなくなります');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'やめる' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('確認でOKなら DELETE を送り、一覧の読み直しを促す', async () => {
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => true),
-    );
+  it('受け取りを打ち切るを押すと DELETE を送り、一覧の読み直しを促す', async () => {
+    const confirm = vi.fn(() => true);
+    vi.stubGlobal('confirm', confirm);
     const fetchMock = vi.fn(
       async () =>
         new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json' } }),
@@ -102,9 +109,15 @@ describe('結果待ちの取り消し', () => {
     vi.stubGlobal('fetch', fetchMock);
     const { onChanged } = mount([task('t3', 'waiting', '2026-02-01T02:00:00.000Z')]);
     fireEvent.click(screen.getByText('取り消す'));
+
+    const dialog = await screen.findByRole('dialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: '受け取りを打ち切る' }));
     await waitFor(() => expect(onChanged).toHaveBeenCalled());
+    expect(confirm).not.toHaveBeenCalled();
     const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toContain('/ai/tasks/t3');
     expect(init.method).toBe('DELETE');
+    // 送り終えたら確認は閉じる。開いたままだと二重に送れてしまう
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
   });
 });

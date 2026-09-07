@@ -5,6 +5,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  ARCHIVE_RECOVERY_CONFIRMATION,
   AttachmentArchiveRecovery,
   AttachmentDisclosureCell,
   AttachmentPanel,
@@ -28,6 +29,13 @@ function withQueryClient(ui: ReactNode) {
 }
 
 const image = (name: string) => new File(['jpeg'], name, { type: 'image/jpeg' });
+
+/** 画面内の確認を通す。window.confirm は抑止されると無反応になるので使わない */
+async function confirmInDialog(name: string) {
+  const dialog = await screen.findByRole('dialog');
+  fireEvent.click(within(dialog).getByRole('button', { name }));
+  return dialog;
+}
 
 function emptyList() {
   return { attachments: [], limit: 10, usage };
@@ -399,14 +407,14 @@ describe('AttachmentPanel DOM contract', () => {
     expect(within(items[3]).getByRole('img', { name: 'iphone.heic(写真)' }).textContent).toBe('写真');
   });
 
-  it('ready行の通常deleteはconfirm後にDELETEし、一覧と親badgeをinvalidateして空一覧を再取得する', async () => {
+  it('ready行の通常deleteは画面内の確認後にDELETEし、一覧と親badgeをinvalidateして空一覧を再取得する', async () => {
     const onChanged = vi.fn();
     let listRequests = 0;
     const requests: Array<{ path: string; method: string }> = [];
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => true),
-    );
+    // window.confirm はブラウザの抑止が効くと即 false を返し、削除ボタンが無反応になる。
+    // 呼ばれていないことまで固定して、戻した実装をここで落とす
+    const confirmSpy = vi.fn(() => true);
+    vi.stubGlobal('confirm', confirmSpy);
     vi.stubGlobal(
       'fetch',
       vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -441,7 +449,12 @@ describe('AttachmentPanel DOM contract', () => {
     expect(await screen.findByRole('link', { name: 'delete-ready.pdf' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: '削除する' }));
 
-    expect(confirm).toHaveBeenCalledWith('「delete-ready.pdf」を削除しますか?');
+    expect(confirmSpy).not.toHaveBeenCalled();
+    const dialog = await screen.findByRole('dialog');
+    // どのファイルを、どこまで消すのかが確認の中で読める
+    expect(dialog.textContent).toContain('delete-ready.pdf');
+    expect(dialog.textContent).toContain('原本と管理情報の両方');
+    fireEvent.click(within(dialog).getByRole('button', { name: '原本ごと削除する' }));
     await waitFor(() => expect(requests).toContainEqual({ path: '/api/attachments/7', method: 'DELETE' }));
     expect(await screen.findByText('まだ証憑は添付されていません。')).toBeTruthy();
     expect(listRequests).toBeGreaterThanOrEqual(2);
@@ -637,10 +650,8 @@ describe('attachment archive recovery DOM contract', () => {
         });
       }),
     );
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => true),
-    );
+    const confirmSpy = vi.fn(() => true);
+    vi.stubGlobal('confirm', confirmSpy);
 
     withQueryClient(<AttachmentArchiveRecovery />);
     const inventory = {
@@ -662,10 +673,11 @@ describe('attachment archive recovery DOM contract', () => {
     expect(requests).toHaveLength(2);
     fireEvent.click(screen.getByRole('button', { name: '証憑の管理情報を復旧する' }));
 
+    // 原本の復元と取り違えられると被害が大きいので、確認の中でその境目を読ませる
+    expect((await screen.findByRole('dialog')).textContent).toContain(ARCHIVE_RECOVERY_CONFIRMATION);
+    await confirmInDialog('管理情報だけ書き戻す');
     await waitFor(() => expect(requests).toHaveLength(4));
-    expect(confirm).toHaveBeenCalledWith(
-      '同じ保管場所に原本が残っている証憑の管理情報だけを復元します。原本ファイルの復元ではありません。続けますか?',
-    );
+    expect(confirmSpy).not.toHaveBeenCalled();
     expect(
       requests.map(
         ({ body }) => (body.attachmentArchive as { records: Array<Record<string, unknown>> }).records.length,
@@ -719,10 +731,6 @@ describe('attachment archive recovery DOM contract', () => {
         );
       }),
     );
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => true),
-    );
     withQueryClient(<AttachmentArchiveRecovery />);
     const file = new File(
       [
@@ -747,6 +755,7 @@ describe('attachment archive recovery DOM contract', () => {
       expect.stringContaining('原本の欠損・不一致・対象外は復旧せず、成功件数に含めません。'),
     );
     fireEvent.click(screen.getByRole('button', { name: '証憑の管理情報を復旧する' }));
+    await confirmInDialog('管理情報だけ書き戻す');
 
     expect(
       await screen.findByText(

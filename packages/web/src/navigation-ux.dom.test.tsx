@@ -6,7 +6,15 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Layout } from './components/Layout.js';
 import { PeriodProvider } from './period.js';
-import { APP_ROUTES, MOBILE_ROUTES } from './routeMetadata.js';
+import { ANALYSIS_TABS, APP_ROUTES, MOBILE_ROUTES, type SearchRoute } from './routeMetadata.js';
+
+/**
+ * サイドバーに出る順。支出分析の直後に、その 5 つのタブが子として続く。
+ * 「サイドバーからトータル収支へ行けない」への答えなので、順序ごと固定する。
+ */
+const SIDEBAR_LINKS: readonly SearchRoute[] = APP_ROUTES.flatMap((route): SearchRoute[] =>
+  route.id === 'analysis' ? [route, ...ANALYSIS_TABS] : [route],
+);
 
 beforeEach(() => {
   vi.stubGlobal(
@@ -54,6 +62,28 @@ describe('現在地の一意性', () => {
     },
   );
 
+  /*
+    「トータル収支を確認する画面へは、どう行けばいいですか。サイドバーから行けないのですが」
+    への答え。タブの名前がサイドバーのどこにも無いと、支出分析へ降りてタブを押し直す道しか
+    残らず、その道は画面に着くまで見えない。
+  */
+  it('支出分析のタブがサイドバーから直接押せる', () => {
+    renderLayout('/');
+    const sidebar = screen.getByRole('navigation', { name: 'メインナビゲーション' });
+    for (const tab of ANALYSIS_TABS) {
+      expect(within(sidebar).getByRole('link', { name: tab.label }).getAttribute('href')).toBe(tab.path);
+    }
+  });
+
+  it('タブを開いているときは、その子だけが現在地になる', () => {
+    // 親子で aria-current="page" が 2 つ立つと「いま開いている頁」が 2 つあることになる
+    renderLayout('/analysis/total-cashflow');
+    const sidebar = screen.getByRole('navigation', { name: 'メインナビゲーション' });
+    const current = sidebar.querySelectorAll('[aria-current="page"]');
+    expect(current).toHaveLength(1);
+    expect(current[0]?.textContent).toContain('トータル収支');
+  });
+
   it('現在地の表現はaria-currentだけで、既定の.activeを重ねない', () => {
     // NavLink は className を文字列で渡すと .active も足す。下部タブでは .active が
     // 「ドロワーが開いている」の表現でもあるため、同じclassが2つの意味を持ってしまう
@@ -83,15 +113,15 @@ describe('routeのiconとlabel', () => {
     const navigation = screen.getByRole('navigation', { name: 'メインナビゲーション' });
     const routeLinks = within(navigation).getAllByRole('link');
 
-    // 業務ルートが先頭に並び、その後ろに「その他」として改善要望が1件だけ続く
-    expect(routeLinks).toHaveLength(APP_ROUTES.length + 1);
-    for (const [index, link] of routeLinks.slice(0, APP_ROUTES.length).entries()) {
-      expect(link.textContent).toContain(APP_ROUTES[index]?.label);
+    // 業務ルート(支出分析の子タブを含む)が先頭に並び、その後ろに「その他」として改善要望が1件だけ続く
+    expect(routeLinks).toHaveLength(SIDEBAR_LINKS.length + 1);
+    for (const [index, link] of routeLinks.slice(0, SIDEBAR_LINKS.length).entries()) {
+      expect(link.textContent).toContain(SIDEBAR_LINKS[index]?.label);
       const icon = link.querySelector('svg.route-icon');
       expect(icon?.getAttribute('aria-hidden')).toBe('true');
       expect(icon?.getAttribute('focusable')).toBe('false');
     }
-    const extra = routeLinks[APP_ROUTES.length];
+    const extra = routeLinks[SIDEBAR_LINKS.length];
     expect(extra.textContent).toContain('改善要望');
     expect(extra.querySelector('svg.route-icon')?.getAttribute('aria-hidden')).toBe('true');
   });

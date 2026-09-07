@@ -13,7 +13,7 @@ start_date: null
 target_date: null
 iteration: null
 created_at: "2026-08-29T15:30:44Z"
-updated_at: "2026-08-29T15:30:44Z"
+updated_at: "2026-09-07T13:55:37Z"
 depends_on: []
 related_nodes: ["spec-ui-navigation-cognitive-load", "arch-ui-navigation-frontend"]
 resource_scope: ["packages/web/src"]
@@ -53,7 +53,7 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 
 ## Context and drivers
 
-- Business/technical context: 15 routeと支出分析4タブの文字ナビで現在地が弱く、親子routeが同時activeになる。
+- Business/technical context: 15 routeと支出分析5タブの文字ナビで現在地が弱く、親子routeが同時activeになる。加えて、タブはサイドバーに出ておらず、利用者が行き先を見つけられなかった(2026-09-07)。
 - Quality priorities: learnability、accessibility、predictability、bundle size、route互換。
 - Constraints: labelを残す、税務警告を隠さない、通常遷移へmodalを挟まない、外部icon runtimeを追加しない。
 
@@ -77,6 +77,7 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 | Layout | 厳密current、ARIA、spacing | pathname+metadata | Web client | web bundle | 実装済 |
 | NavItem | 1 nav項目のicon+label+current表現 | `{ to, icon, label, variant }`(`variant`は`'sidebar' \| 'tab'`) | Web client | web bundle | 実装済(`packages/web/src/components/NavItem.tsx`)。currentは`aria-current="page"`だけで表し、`end`はNavItemが一律に適用する |
 | disclosure/edit surface | 段階表示と安全状態 | details/drawer/dialog | Web client | web bundle | 実装済 |
+| ConfirmDialog / usePendingConfirm | 破壊的操作の確認の正本(`<dialog>`・focus・busy中の閉じ抑止・続きの操作の保持) | `{ dialog, title, confirmLabel, busyLabel, onConfirm, onDismiss }` / `usePendingConfirm<T>()` | Web client | web bundle | 実装済(`packages/web/src/components/ConfirmDialog.tsx`)。`window.confirm`は使わない(ADR-UI-007) |
 
 ## Cross-cutting contracts
 
@@ -101,6 +102,9 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 | ADR-UI-002 | 型付きinline SVGをmetadataのicon keyから必須で描く | icon package、emoji、labelからの推測 | 外部依存と字体差を回避し、欠落をtype/testで検出できる | icon registryとmetadata差分の保守が必要 |
 | ADR-UI-003 | inline disclosureを既定にする | 全詳細をmodalで出す | 文脈を保ち通常遷移を遮らない | surfaceの適否reviewが必要 |
 | ADR-UI-004 | 既存のshared primitiveへ寄せて段階的に追補する | 全画面rewrite | 変更範囲と利用者の再学習コストを抑える | 画面ごとの追補が残る |
+| ADR-UI-005 (2026-09-07) | 支出分析の5タブをサイドバーへ**常時展開**した子行として出す | (a) 親クリックで開閉するdisclosure、(b) タブを親から辿らせる現状維持、(c) 5タブを最上位routeへ昇格 | (b)は行き先の存在自体が画面外にあり、実際に利用者が到達できなかった。(a)は畳んだ状態が既定になると同じ問題が残り、状態の永続先という新たな判断も生む。(c)は最上位の選択肢を15→20に戻し、ADR-UI-003が減らした認知負荷を打ち消す。常時展開は高さを増やすが、行き先が見えることを優先した | サイドバーが約140px高くなる。将来ANALYSIS_TABSが増えるとさらに伸びるため、群の折りたたみが次の検討事項になる |
+| ADR-UI-006 (2026-09-07) | `/analysis/:tab`のcurrentは子行だけに立て、親「支出分析」には立てない | 親子ともにcurrent、親だけcurrent | ADR-UI-001と同じ原則。親子が同時にcurrentだと現在地が2件になり、「currentは1件以下」というfitness testも破れる | 親routeは`end`を子の有無で切り替える。nested tabを持つrouteを追加するときは同じ扱いが要る |
+| ADR-UI-007 (2026-09-07) | 破壊的操作の確認をアプリ内`<dialog>`で行い`window.confirm`を使わない | window.confirm継続、確認なしでundoを用意 | `window.confirm`はブラウザの抑止(「このページでこれ以上ダイアログを表示しない」)が効くと即`false`を返し、呼び出し側は抑止と拒否を区別できない。押しても無反応なボタンになり理由も画面に出ない。undo方式は削除済みデータの保持が要り、データ境界を変える | 確認文言がテスト契約の一部になる。共有部品`ConfirmDialog`/`usePendingConfirm`が正本で、確認を要する新操作はここへ寄せる |
 
 ## Delivery, migration and rollback
 
@@ -111,5 +115,5 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 ## Risks and verification
 
 - Risk: 似たiconで識別性が下がる。route固有glyphとlabel併記をreview。
-- Architecture fitness test: route=15(+支出分析の4タブ)、icon exhaustive、current≤1、external icon dependency=0。
+- Architecture fitness test: route=15(+支出分析の5タブ)、icon exhaustive、current≤1(タブ配下では子1件)、external icon dependency=0、破壊的操作での`window.confirm`呼出=0。
 - Validation: bundle差分、200% zoom、mobile drawer、keyboard/focus、reduced motion。

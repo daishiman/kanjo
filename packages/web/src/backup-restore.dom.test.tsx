@@ -8,7 +8,7 @@
  * POST /api/restore に合流することを固定する。
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { BACKUP_RESTORE_CONFIRMATION, NightlyBackups } from './pages/Settings.js';
 
@@ -55,22 +55,31 @@ describe('夜間バックアップからの復元', () => {
     expect(screen.getByText('4 KB')).toBeTruthy();
   });
 
-  it('確認をキャンセルすると何も送らない(上書き操作なので)', async () => {
+  it('確認をやめると何も送らない(上書き操作なので)', async () => {
     const { calls } = renderWith([{ date: '2026-08-20', size: 2048, uploaded: null }]);
+    // 確認はアプリ内 dialog。window.confirm はブラウザの抑止で無反応になるため通さない
     const confirm = vi.fn(() => false);
     vi.stubGlobal('confirm', confirm);
+
     fireEvent.click(await screen.findByRole('button', { name: 'この日に戻す' }));
-    expect(confirm).toHaveBeenCalledWith(BACKUP_RESTORE_CONFIRMATION);
+    expect(confirm).not.toHaveBeenCalled();
+    const dialog = await screen.findByRole('dialog');
+    // どの日を上書きするのかと、何が対象外かを確認の中で読める
+    expect(dialog.textContent).toContain('2026-08-20');
+    expect(dialog.textContent).toContain(BACKUP_RESTORE_CONFIRMATION);
+    expect(calls.some((c) => c.method === 'POST')).toBe(false);
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'やめる' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(calls.some((c) => c.method === 'POST')).toBe(false);
   });
 
   it('確認したら、その日の中身を取り出して初期移行と同じ /restore へ流す', async () => {
     const { calls } = renderWith([{ date: '2026-08-20', size: 2048, uploaded: null }]);
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => true),
-    );
     fireEvent.click(await screen.findByRole('button', { name: 'この日に戻す' }));
+    fireEvent.click(
+      within(await screen.findByRole('dialog')).getByRole('button', { name: '上書きして戻す' }),
+    );
     await waitFor(() => expect(calls.some((c) => c.url.endsWith('/api/restore'))).toBe(true));
     expect(calls.some((c) => c.url.endsWith('/api/backups/2026-08-20'))).toBe(true);
     expect(calls.find((c) => c.url.endsWith('/api/restore'))?.method).toBe('POST');
