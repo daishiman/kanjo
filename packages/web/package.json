@@ -8,8 +8,8 @@
     "dev": "vite",
     "build": "pnpm run build:bundle && pnpm run check:js-budget && pnpm run strip:manifest",
     "build:artifact": "pnpm run build:bundle && pnpm run strip:manifest",
-    "build:bundle": "tsc --noEmit && vite build",
-    "typecheck": "tsc --noEmit",
+    "build:bundle": "pnpm run typecheck && vite build",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json --noEmit",
     "test": "vitest run",
     "check:js-budget": "node scripts/check-initial-js-budget.mjs",
     "strip:manifest": "node scripts/strip-vite-manifest.mjs",
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.0",
+    "@types/node": "^22.10.2",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
