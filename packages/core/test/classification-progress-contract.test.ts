@@ -23,7 +23,7 @@ describe('仕分けの進み具合', () => {
     ];
     const p = classificationProgress(resolved);
     expect(p.total).toBe(3);
-    expect(p.bySource.ルール + p.bySource.手動 + p.bySource.既定).toBe(p.total);
+    expect(p.bySource.ルール + p.bySource.手動 + p.bySource.中項目 + p.bySource.既定).toBe(p.total);
     expect(p.bizCount + p.personalCount).toBe(p.total);
   });
 
@@ -56,7 +56,7 @@ describe('仕分けの進み具合', () => {
       total: 0,
       bizCount: 0,
       personalCount: 0,
-      bySource: { 手動: 0, ルール: 0, 既定: 0 },
+      bySource: { 手動: 0, ルール: 0, 中項目: 0, 既定: 0 },
       reviewPending: 0,
     });
   });

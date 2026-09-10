@@ -8,7 +8,9 @@
  *   - 消し込みの肯定条件は「発生日が一致」かつ「金額が一致」の2つだけ。支払先は使わない
  *     (表記ゆれで別取引を同じと言い切る根拠にするには弱い)。
  *   - 一致した組は freee を正とし、事業費として1度だけ数える。MF 側は家計費から外す。
- *   - それ以外の支出は家計費。収入は MF の大項目「事業・副業」と freee 収入が事業収入、残りが家計収入。
+ *   - それ以外は公私仕分けの判定 (`resolveTx`) に従って事業/家計へ振り分ける。判定式は 1 本だけで、
+ *     ここに中項目を読む分岐は置かない。
+ *   - freee と突合できず要確認になった MF 明細は、4 つの束のいずれにも入れない。
  *   - 口座情報は候補を絞る否定条件にだけ使う (`accountsConflict`)。片側に情報が無ければガードしない。
  *   - ±3 日の近接は自動では寄せず、要確認として見せるだけに留める。
  *
@@ -16,14 +18,12 @@
  * (`DuplicateVerdict`) だけで、それ以外は要求のたびにここで導出する。
  */
 import { isCashTxId } from './cash.js';
+import { type ResolvedTx, resolveTx } from './classify.js';
 import { freeeDealKeys, mfStableKey } from './identity.js';
 import { normalizeMfDisplayDate } from './persisted-projection.js';
 import { type TrendDirection, trendDirection } from './trend.js';
 import type { Dataset, FreeeDeal, MfTx } from './types.js';
 import { isMfCountable } from './types.js';
-
-/** MF の大項目がこれなら事業収入。それ以外の入金は家計収入になる */
-export const BIZ_INCOME_MAJOR = '事業・副業';
 
 /** 候補抽出器が近接とみなす日数。自動付替には使わない (要確認一覧の生成にだけ用いる) */
 export const REVIEW_NEAR_DAYS = 3;
@@ -119,6 +119,9 @@ export interface ReconcileReviewMf {
   major: string;
   middle: string;
   memo: string;
+  /** 公私仕分けと同じ resolver が出した判定と根拠。 */
+  cls: ResolvedTx['cls'];
+  clsSrc: ResolvedTx['clsSrc'];
 }
 
 /**
@@ -207,6 +210,12 @@ export interface TotalCashflowMonth {
    */
   shiftedAmount: number;
   reviewCount: number;
+  /**
+   * 要確認の MF 明細の実額合計 (符号を落とした絶対値)。
+   * `reviewCount` とまったく同じ集合から出す。件数と金額を別の集合から出すと、
+   * どちらかがずれても気づけない。
+   */
+  reviewAmount: number;
   trend: TrendDirection;
 }
 
@@ -282,7 +291,7 @@ function reconcilableMf(data: Dataset): MfTx[] {
 }
 
 /** 要確認一覧へ出す MF 側の中身。`MfTx` から表示に要る分だけを写す */
-function reviewMf(tx: MfTx): ReconcileReviewMf {
+function reviewMf(tx: MfTx, resolved: Pick<ResolvedTx, 'cls' | 'clsSrc'>): ReconcileReviewMf {
   return {
     date: mfMatchDate(tx),
     displayDate: tx.d,
@@ -293,6 +302,8 @@ function reviewMf(tx: MfTx): ReconcileReviewMf {
     major: tx.big,
     middle: tx.mid,
     memo: tx.memo ?? '',
+    cls: resolved.cls,
+    clsSrc: resolved.clsSrc,
   };
 }
 
@@ -348,6 +359,11 @@ export function reconcileBizDuplicates(
   exclusions: readonly FreeeExclusion[] = [],
 ): ReconcileResult {
   const rows = reconcilableMf(data);
+  // 一覧と照合行で別の判定式を持たず、同じ resolveTx の結果を使い回す。
+  const resolvedById = new Map(
+    rows.map((tx) => [tx.id, resolveTx(tx, data.rules, data.edits, data.institutionOwners)]),
+  );
+  const reviewOf = (tx: MfTx): ReconcileReviewMf => reviewMf(tx, resolvedById.get(tx.id)!);
   const keys = freeeDealKeys(deals);
   const verdictByTxId = new Map(verdicts.map((v) => [v.txId, v.verdict]));
   /** 「同じ」と言った利用者が、どの freee 取引を指したか。未指定なら null */
@@ -404,7 +420,7 @@ export function reconcileBizDuplicates(
         freeeIndex,
         freeeKey: keys[freeeIndex],
         by: 'auto',
-        mf: reviewMf(tx),
+        mf: reviewOf(tx),
         freee: freeeOf(freeeIndex),
       });
       return;
@@ -443,7 +459,7 @@ export function reconcileBizDuplicates(
       freeeIndex,
       freeeKey: key,
       by: 'user',
-      mf: reviewMf(tx),
+      mf: reviewOf(tx),
       freee: freeeOf(freeeIndex),
     });
   });
@@ -458,7 +474,7 @@ export function reconcileBizDuplicates(
     // 見せないと人が判断できないためである。
     const candidates = nearCandidates(tx, deals, keys, excludedKeys);
     const push = (reason: ReconcileReviewReason): void => {
-      review.push({ mfTxId: tx.id, reason, mf: reviewMf(tx), candidates });
+      review.push({ mfTxId: tx.id, reason, mf: reviewOf(tx), candidates });
     };
     if (monthMismatched(tx)) {
       push('取込月と表示日の月が一致しません');
@@ -545,7 +561,6 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
   const shiftedMf = new Set(result.matched.map((m) => m.mfTxId));
   const txById = new Map(data.mfTx.map((tx) => [tx.id, tx]));
 
-  const monthOf = (txId: string): string => txById.get(txId)?.m ?? '';
   const months = [
     ...new Set([...data.months, ...deals.map((deal) => deal.month), ...data.mfTx.map((tx) => tx.m)]),
   ].sort();
@@ -554,13 +569,21 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
     (tx) => !isCashTxId(tx.id) && isMfCountable(tx) && tx.splitProjection == null,
   );
 
+  // 事業か家計かは公私仕分けと同じ resolveTx に聞く。月ループの内側で解くと
+  // 明細数 x 月数になるため、ここで一度だけ畳む。
+  const bizById = new Map(
+    counted.map((tx) => [tx.id, resolveTx(tx, data.rules, data.edits, data.institutionOwners).cls === 'biz']),
+  );
+  // 要確認は判断が付いていない。事業にも家計にも、収入にも支出にも入れない
+  const reviewMf = new Set(result.review.map((r) => r.mfTxId));
+
   // 二重登録として外した freee 取引は、事業費にも事業収入にも入れない
   const excludedIndexes = new Set(result.excluded.map((row) => row.freeeIndex));
   const rows = months.map((month) => {
     const monthDeals = deals.filter(
       (deal, freeeIndex) => deal.month === month && deal.amount > 0 && !excludedIndexes.has(freeeIndex),
     );
-    const bizExpense = monthDeals
+    const freeeBizExpense = monthDeals
       .filter((deal) => deal.io === 'expense')
       .reduce((sum, deal) => sum + deal.amount, 0);
     const freeeIncome = monthDeals
@@ -572,18 +595,22 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
       .map((m) => txById.get(m.mfTxId))
       .filter((tx): tx is MfTx => tx != null && tx.m === month);
 
-    const leftover = counted.filter((tx) => tx.m === month && !shiftedMf.has(tx.id));
-    // 寄らなかった支出は全て家計費。事業費は freee を正とするため MF からは積み増さない
-    const householdExpense = leftover.filter((tx) => tx.a < 0).reduce((sum, tx) => sum + Math.abs(tx.a), 0);
-    const mfBizIncome = leftover
-      .filter((tx) => tx.a > 0 && tx.big === BIZ_INCOME_MAJOR)
-      .reduce((sum, tx) => sum + tx.a, 0);
-    const householdIncome = leftover
-      .filter((tx) => tx.a > 0 && tx.big !== BIZ_INCOME_MAJOR)
-      .reduce((sum, tx) => sum + tx.a, 0);
+    // 件数と金額を同じ集合から出すため、要確認の明細をここで一度だけ確定させる
+    const reviewInMonth = result.review
+      .map((r) => txById.get(r.mfTxId))
+      .filter((tx): tx is MfTx => tx != null && tx.m === month);
+
+    const leftover = counted.filter((tx) => tx.m === month && !shiftedMf.has(tx.id) && !reviewMf.has(tx.id));
+    const sumAbs = (rows: MfTx[]) => rows.reduce((sum, tx) => sum + Math.abs(tx.a), 0);
+    const isBiz = (tx: MfTx) => bizById.get(tx.id) === true;
+    // freee と突合済みの分は freee を正として数えているので、MF 側から積み増さない
+    const mfBizExpense = sumAbs(leftover.filter((tx) => tx.a < 0 && isBiz(tx)));
+    const householdExpense = sumAbs(leftover.filter((tx) => tx.a < 0 && !isBiz(tx)));
+    const mfBizIncome = sumAbs(leftover.filter((tx) => tx.a > 0 && isBiz(tx)));
+    const householdIncome = sumAbs(leftover.filter((tx) => tx.a > 0 && !isBiz(tx)));
 
     const bizIncome = freeeIncome + mfBizIncome;
-    const totalExpense = bizExpense + householdExpense;
+    const totalExpense = freeeBizExpense + mfBizExpense + householdExpense;
     const totalIncome = bizIncome + householdIncome;
 
     return {
@@ -591,13 +618,14 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
       totalIncome,
       totalExpense,
       totalBalance: totalIncome - totalExpense,
-      bizExpense,
+      bizExpense: freeeBizExpense + mfBizExpense,
       householdExpense,
       bizIncome,
       householdIncome,
       shiftedCount: shiftedInMonth.length,
       shiftedAmount: shiftedInMonth.reduce((sum, tx) => sum + Math.abs(tx.a), 0),
-      reviewCount: result.review.filter((r) => monthOf(r.mfTxId) === month).length,
+      reviewCount: reviewInMonth.length,
+      reviewAmount: sumAbs(reviewInMonth),
       trend: '判定不可' as TrendDirection,
     };
   });

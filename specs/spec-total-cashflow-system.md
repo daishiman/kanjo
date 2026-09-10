@@ -19,19 +19,19 @@ confirmation_status: confirmed
 evaluation_status: pass
 confirmation_evidence:
   evaluator: system-spec-harness:assign-system-spec-completeness-evaluator
-  evidence_ref: system-spec/completeness-findings.json
-  evaluated_digest: c2f74fde67952fa7a0a0e96317d79198d176db7e4a94eb73f33716848258c1f8
+  evidence_ref: system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/completeness-findings.json
+  evaluated_digest: 69a9cb667945e7769df55e373d35de54a2a2f7f094d38454c9c008971fb6ce94
 source_lineage:
   origin_kind: system-spec-harness
   source_plugin: system-spec-harness
-  source_path: system-spec/index.md
+  source_path: system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/index.md
   source_version: 0.1.12
-  source_digest: c2f74fde67952fa7a0a0e96317d79198d176db7e4a94eb73f33716848258c1f8
+  source_digest: 69a9cb667945e7769df55e373d35de54a2a2f7f094d38454c9c008971fb6ce94
   imported_at: 2026-09-08T07:32:48Z
 created_at: 2026-09-08T07:32:48Z
 updated_at: 2026-09-08T07:32:48Z
 depends_on: []
-related_nodes: []
+related_nodes: [spec-mf-business-classification, feat-total-cashflow, feat-mf-business-classification]
 resource_scope:
   - system-spec/00-requirements-definition.md
   - system-spec/ui-ux.md
@@ -101,7 +101,7 @@ implementation_readiness:
 
 1. 利用者が期間を選び、月ごとのトータル収入・トータル支出・トータル収支と、事業費・家計費の内訳を1つの一覧表で読む。
 2. 自動で事業費へ寄せられなかった重複候補 (金額一致・発生日ズレ) を要確認一覧で読み、理由を確認する。
-3. 利用者が要確認明細へ「同じ」または「違う」を判断する。「同じ」は当該 MF 明細を家計側から外して事業側へ寄せ、合計を動かす。
+3. 利用者が要確認明細へ「同じ」または「違う」を判断する。「同じ」は freee 正本だけを維持して総額を変えず、「違う」は独立した残余 MF として `resolveTx` の区分へ加算する。
 4. 次回以降の取込で同じ明細に同じ判断が再適用され、利用者は同じ判断を繰り返さない。
 5. 利用者がトータル支出の推移 (増加 / 減少 / 横ばい / 判定不可) を読み、費用が増えているのかを確認する。
 
@@ -111,7 +111,7 @@ implementation_readiness:
 
 - `FR-001` (O1): 月次のトータル収支行を導出する読み取りモデルを core に持ち、全月で 総支出 = 事業費 + 家計費 および 総収入 = 事業収入 + 家計収入 が成立する。
 - `FR-002` (O2): 支出帰属規則を単一実装として持つ。同じ (金額, 発生日) に MF が n 件・freee が m 件あるとき MF から min(n,m) 件を事業費へ寄せる。支払先は判定に用いない。
-- `FR-003` (O3): 収入は MF の事業・副業区分で帰属を決め、freee 売上と同額・同発生日で重なる分を総収入へ二度加算しない。
+- `FR-003` (O3): MF の公私帰属は `specs/spec-mf-business-classification.md` の `resolveTx` で決め、freee 売上と同額・同発生日で重なる分を総収入へ二度加算しない。
 - `FR-004` (O4): 要確認明細への判断を永続化し、再取込後も同じ明細へ再適用する。
 - `FR-005` (O5): トータル支出のトレンド判定を既存 `packages/core/src/trend.ts` と同じ基準 (Mann-Kendall 検定 + Theil-Sen 傾き推定) で行う。
 - `FR-006` (O6): 一覧表を web 画面へ出し、判断の入口を既存の取込明細編集画面に置く。9列すべてを常時表示する。
@@ -127,15 +127,16 @@ implementation_readiness:
 ## UI・状態遷移
 
 - 画面状態: 一覧表は 読込中 / 表示 / 空 (対象期間に明細なし) / エラー の4状態を取る。要確認一覧は 候補あり / 候補なし の2状態を取る。
-- 遷移条件: 期間切替は再導出を起こし、同じ導出関数を通すため期間ごとに矛盾した数字を出さない (G7)。要確認への「同じ」判断は一覧表の数字を更新する遷移を伴い、「違う」判断は帰属を変えず当該組を次回以降の要確認から外す。
+- 遷移条件: 期間切替は同じ導出関数で再計算する。未判断候補は4区分外に隔離し、「同じ」は freee 正本維持で総額不変、「違う」は残余 MF の加算を伴う。どちらも当該組を次回以降の要確認から外す。
 - Loading/Empty/Error: 読込中は合計行を含む部分的な数字を表示しない。空は0件であることを明示し、合計0と区別可能にする。詳細は `system-spec/ui-ux.md`。
 
 ## ビジネスルールと検証
 
 - `BR-001`: 支出の自動帰属判定は完全一致 (金額一致 かつ MF 日付 = freee 発生日) の1本のみとする。日付近傍 (発生日 ±3日) の照合は要確認候補の抽出にのみ用い、自動付替を1件も行わない。
-- `BR-002`: 帰属を動かす権限を持つのは自動判定と利用者判断のみ。利用者の「同じ」判断は自動規則を上書きするが、freee 側1取引に対し MF は1件までしか寄せない (1対1 保存)。
-- `BR-003`: 収入側も支出と対称に扱う。「同じ」判断は家計収入から外して事業収入へ寄せ、判断の前後いずれでも 総収入 = 事業収入 + 家計収入 が成立する。
+- `BR-002`: 利用者判断は1対1で保存する。「同じ」は freee 正本を維持して MF 候補を加算せず総額不変。「違う」は MF 候補を独立残余として `resolveTx` の区分へ加算する。
+- `BR-003`: 収入・支出を対称に扱い、未判断候補は4区分から除外する。判断後も 総収入 = 事業収入 + 家計収入、総支出 = 事業費 + 家計費 を保つ。
 - `BR-004`: 既知の限界として、支払先を判定に用いないため偶然に同額・同発生日となった無関係な支出も事業費として扱われうる。利用者はこれを承知のうえで規則の単純さと予測可能性を優先すると判断した (`qa-duplicate-rule-001`)。
+- `BR-005`: 未判断の要確認集合は4区分合計から除外し、`reviewCount` と `reviewAmount` を同じ集合から別管理する。この意味は `specs/spec-mf-business-classification.md` が本書の旧要確認記述を改訂し、競合時に優先する。
 
 ## API契約
 
@@ -144,7 +145,7 @@ implementation_readiness:
 ## データモデル
 
 - Entity/Value: 集約ルートは既存の Dataset。本機能が追加する読み取りモデルは TotalCashflowMonth、永続化するのは DuplicateVerdict のみ。
-- Fields/Types/Nullability: TotalCashflowMonth は month / totalIncome / totalExpense / totalBalance / bizExpense / householdExpense / reassignedCount / reassignedAmount / reviewCount を持つ。DuplicateVerdict は MF 明細の安定識別子 / verdict (同じ または 違う) / 根拠 / 判断日時を持つ。
+- Fields/Types/Nullability: TotalCashflowMonth は month / totalIncome / totalExpense / totalBalance / bizExpense / householdExpense / reassignedCount / reassignedAmount / reviewCount / reviewAmount を持つ。DuplicateVerdict は MF 明細の安定識別子 / verdict (同じ または 違う) / 根拠 / 判断日時を持つ。
 - Relations/Constraints/Indexes: MfTx と FreeeDeal を (金額, MF 日付 = FreeeDeal.date) の完全一致で突合する。DuplicateVerdict は MF 明細の安定識別子で一意。
 - Ownership/Retention/Migration: TotalCashflowMonth はテーブルを持たず毎回導出するため保持もマイグレーションも発生しない。DuplicateVerdict のスキーマ変更は `migrations/` の連番 SQL への追記方式に従う (`system-spec/database.md`)。
 
@@ -180,7 +181,7 @@ N/A: 本機能は要求時導出の読み取りと利用者判断の upsert の�
 - [ ] `AC-001`: 任意の月次データにおいて、総支出 = 事業費 + 家計費 および 総収入 = 事業収入 + 家計収入 が全月で成立する (契約テスト)。
 - [ ] `AC-002`: 同じ (金額, 発生日) に MF が n 件・freee が m 件あるとき、事業費へ寄る MF が min(n,m) 件であり、freee 件数を超える付替が0件である (契約テスト)。
 - [ ] `AC-003`: 発生日 ±3日 の近傍照合が要確認候補の抽出にのみ使われ、自動付替を1件も行わない (契約テスト)。
-- [ ] `AC-004`: 利用者の判断が保存され、再取込後も同じ明細へ再適用される (結合テスト)。
+- [ ] `AC-004`: 判断が保存・再適用され、未判断は4区分外、「同じ」はfreee正本維持で総額不変、「違う」は独立残余MFとして加算される (結合テスト)。
 - [ ] `AC-005`: TREND_MIN_MONTHS 未満の期間で判定不可を返し、既存 categoryTrends と同じ TREND_ALPHA で有意判定する (契約テスト)。
 - [ ] `AC-006`: 9列すべてが常時表示され、取込完了時に要確認が残っている場合に画面へ警告が出る (DOM テスト)。
 - Contract/integration/e2e/security/performance: 恒等式と帰属規則は D1 を立てない契約テストで固定する。判断の再適用は結合テストで確認する。認証境界は既存ゲートの経路テストが担う。

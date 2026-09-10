@@ -326,6 +326,29 @@ describe('決め事の当て直し', () => {
       .bind('default', 'tx-a')
       .first<{ cls: string }>();
     expect(kept?.cls).toBe('per');
+
+    // 決め事は取引へ当て直した時点でprovenance付きtx_editになる。
+    // そのため有効値の解決層は「手動」だが、由来はoriginで決め事と分かる。
+    const transactionsResponse = await jsonRequest('/transactions?month=2026-06');
+    expect(transactionsResponse.status).toBe(200);
+    const transactionsBody = (await transactionsResponse.json()) as {
+      transactions: Array<{
+        id: string;
+        cls: string;
+        src: string;
+        origin: string | null;
+        originKey: string | null;
+      }>;
+      summary: { progress: { bySource: Record<string, number> } };
+    };
+    expect(transactionsBody.transactions.find((row) => row.id === 'tx-b')).toMatchObject({
+      cls: 'biz',
+      src: '手動',
+      origin: 'vendor_memory',
+      originKey: '架空商店',
+    });
+    expect(transactionsBody.summary.progress.bySource).toMatchObject({ 手動: 3, 既定: 1 });
+    expect(transactionsBody.summary.progress.bySource.vendor_memory).toBeUndefined();
   });
 
   it('候補どまりの決め事は1件も当てない', async () => {

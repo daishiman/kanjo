@@ -156,6 +156,7 @@ classifyRoute.get('/transactions', async (c) => {
         mid: r.mid,
         catSrc: r.catSrc,
         cls: r.cls,
+        /** materialize済みの決め事もtx_edit層なので手動。自動適用由来はoriginで運ぶ。 */
         src: r.clsSrc,
         owner: r.owner,
         ownerSrc: r.ownerSrc,

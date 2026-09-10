@@ -31,7 +31,7 @@ template_id: "feature"
 template_version: "1.0.1"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator":"dev-graph-integrity-auditor","evidence_ref":".dev-graph/receipts/decompose-feat-mobile-financial-visualization.json","evaluated_digest":"d4a40ee66b91ee3cfe97510b0ff6790cfc3467266e9b8fdd6a27ec2317999ea3"}
+confirmation_evidence: {"evaluator":"dev-graph-integrity-auditor","evidence_ref":".dev-graph/plans/feature-package-feat-mobile-financial-visualization/dev-graph-registration-receipt.json","evaluated_digest":"d4a40ee66b91ee3cfe97510b0ff6790cfc3467266e9b8fdd6a27ec2317999ea3"}
 source_lineage: {"origin_kind":"generated","source_plugin":"dev-graph","source_path":"specs/mobile-financial-visualization.md","source_version":"0.1.9","source_digest":"4cb4c416c4656537ece66fa7d3c115b26f1137ef77740b51cc78f5c3a284b9a7","imported_at":"2026-08-30T09:35:15Z"}
 classification_confidence: 1.0
 classification_reason: "C14 decomposeが確定specを、既存ナビゲーション改善と重複しない単一のモバイル財務可視化featureへ分解したため分類は一意。"

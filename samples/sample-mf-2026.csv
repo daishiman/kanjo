@@ -1,265 +1,289 @@
 計算対象,日付,内容,金額（円）,保有金融機関,大項目,中項目,メモ,振替,ID
-1,2026/01/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,1bf57ux194rw4d10u420s1pufvbixmdqs81qk4rxf6g
-1,2026/01/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,7sqjvniv6ml8153siq6gapggg1cplsuvv5e92t1vuo5
-1,2026/01/15,テストクライアント 入金,305259,テスト銀行 本人普通,収入,事業収入,,0,lewjex1qbvqqjsmdklk12isstfm2id5ylsqwh1nu5yh
-1,2026/01/22,テストスーパー,-60657,テストカード 配偶者名義,食費,食料品,,0,1v7mj66xq5t8o1l2480qnogn5d18nmrt5173pn8l137
-1,2026/01/03,テスト食堂,-17816,テストカード 配偶者名義,食費,外食,,0,smm5zr1njh8ykf22gfy1a1mf5z1iev4961eexdar1s5
-1,2026/01/04,テストドラッグ,-7805,テストカード 配偶者名義,日用品,日用品,,0,1m8iccj1ei2c5e1nipdmr1ds5qt21m6qfccsf7z84st
-1,2026/01/05,テスト電力,-12973,テスト銀行 本人普通,水道・光熱費,電気代,,0,10gamfn15g60821izwh4p4pvard9r41pm1wl875f10p
-1,2026/01/06,テストガス,-7970,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,d0h92f1yayxzq1ghrjf21cgy1cm13wybwb1yk4fj1u1
-1,2026/01/07,テストモバイル,-8572,テストカード 配偶者名義,通信費,携帯電話,,0,h16md0ozts5a1skyhun1bw1w2b17uobrq1ss3fvu1jn
-1,2026/01/08,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,1dzp9r4fqkdtoffxhrj1kjan6611hkdab1xu6vtm10s
-1,2026/01/09,テスト書店,-4696,テストカード 配偶者名義,趣味・娯楽,書籍,,0,1iq8h6g7bj1zca5k5fofky45sfaeq71y84h4hj23lk6
-1,2026/01/10,テスト交通 IC チャージ,-5503,テストカード 配偶者名義,交通費,電車,,0,65ffgtk9mhzcaqug2dtsks4lw76ag31wugxv71worqg
-1,2026/01/11,テスト石油,-8617,テストカード 配偶者名義,自動車,ガソリン,,0,1tfsbvp1tigs2zvdq7c7jpq2ap1srh3md1l1rpzs1da
-1,2026/01/12,テスト薬局,-2482,テストカード 配偶者名義,健康・医療,医療費,,0,xfb9s112o6e3ywe9fv3eg6ykmky9p3bba998ynlevfa
-1,2026/01/13,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,2hh7wx1cq8pemjfpeag1mtllrbbzigoulg4nrs1nwm8
-1,2026/01/14,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,p2lbzm1n2fwcj184xc7e1m0eb9f1fm18xu1nkkz4r1h
-1,2026/01/15,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,1n5eyoq1ppz4c1giu1m2h71hsm69icdbrwi15ju7b6e
-1,2026/01/16,テスト衣料,-8541,テストカード 配偶者名義,衣服・美容,衣服,,0,15va5iaj6bx817yigvfpjpujmfg7inp1nrpbi91u9t0
-1,2026/01/17,テスト贈答,-6976,テストカード 配偶者名義,交際費,交際費,,0,1dr9ah21ku9a971aiapk4tl5q5xdnhp2n1gmt33r11f
-1,2026/01/18,テスト家電,-21956,テストモール(ポイント),特別な支出,特別な支出,,0,1c88lzc1482rsk10v6s7vk6981t1tko6y3ifmsczizp
-1,2026/01/19,テスト引き出し,-31329,テスト第二銀行 本人,その他,使途不明金,,0,8qaoyy1ydsabj1f8p3zd2t5v217sakqm1uk1tou1t6s
-1,2026/01/20,テスト未分類決済,-5447,テストカード 配偶者名義,未分類,未分類,,0,1hjdl6gmx5g6tai7gez10u8regi6xca8qvmkv311ml5
-1,2026/01/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,vg96amhps6b62yftsx1wnq8m0100p52o188iz47k0ou
-1,2026/01/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,1sbhfur3qte7w1t8bdtc1vnbqs7a10dhh1c5jfr7gd7
-1,2026/01/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,nnahl5qr04otx34cv614tegmn1w9srl490goetnberg
-1,2026/01/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,17d4qg31psln7c87yhyghli6e61gt9vxxl8ho6puoyp
-0,2026/01/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,d95hg51drca4evc6b0ml6m6ayu0tu281qvgksd18zca
-0,2026/01/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,g60r9m1aotfl46v8p542prgdofmykxu1fovb1ggn16x
-0,2026/01/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,12i10oo1j4tuqqshglvak7wu6x1fncc0baygl85155l
-0,2026/01/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,ohkvcas95nb41wacpcetlvaj81jox6q7f1t8wg1wri4
-0,2026/01/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,758dej32yslywl39wune1waw1jjtzgyxirf7911np6j
-0,2026/01/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,tmejyldw7344q1u8vpb1kntf12qnal8rlg3ja1ydpnh
-0,2026/01/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,1yttnpbop42im1w93h018sjujnpqlg5eb9y2qbnxwnl
-1,2026/02/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,3tn4x91xcnihg1elemig1943okzpnedxntry84jwyce
-1,2026/02/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,1r47tj61c39iaz1qmb41o48od5k4tea7pumekuz1ib8
-1,2026/02/15,テストクライアント 入金,245022,テスト銀行 本人普通,収入,事業収入,,0,o2yuolfsswx9cnpjj133dxtpeusy48ybzyhy1mbktj2
-1,2026/02/15,テストスーパー,-57085,テストカード 配偶者名義,食費,食料品,,0,dgjpp8t70h9eluhkv1arji2i1hvjo6kl9romwwzoft7
-1,2026/02/16,テスト食堂,-21065,テストカード 配偶者名義,食費,外食,,0,1dw15v9xmjer1qqk5kz1kdsjixqw7rfy1ayfgab1mej
-1,2026/02/17,テストドラッグ,-10467,テストカード 配偶者名義,日用品,日用品,,0,18lj2ce1pobhdm1n7bl05gehx2310buu3wqexf91faj
-1,2026/02/18,テスト電力,-8943,テスト銀行 本人普通,水道・光熱費,電気代,,0,8f0cim1aian4hu0id8n1rn1fs9z3bw2djmimo8cs722
-1,2026/02/19,テストガス,-7674,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,itlpse10s4a6hw2w4li1aj849pr5v69b1na5pyz1lx4
-1,2026/02/20,テストモバイル,-8673,テストカード 配偶者名義,通信費,携帯電話,,0,1vtn17y1rq6cs8icwcvhfli3u1wb73771abd3etdf1t
-1,2026/02/21,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,s0altrkxh2rs17d1qwbrdjwvyf3nv9k16o8p9q8v3bx
-1,2026/02/22,テスト書店,-5578,テストカード 配偶者名義,趣味・娯楽,書籍,,0,1k5efx313tpex15q4fyx1cg2mxg1wyirbk1uvzpsp1e
-1,2026/02/03,テスト交通 IC チャージ,-5367,テストカード 配偶者名義,交通費,電車,,0,16n20cf8w1e0qsrlm981la2lzo1oufecx14zzvkj68d
-1,2026/02/04,テスト石油,-7283,テストカード 配偶者名義,自動車,ガソリン,,0,bauv9ji3wi92diasz51oke61h1x3nfrk10116641d4v
-1,2026/02/05,テスト薬局,-3003,テストカード 配偶者名義,健康・医療,医療費,,0,ggq4f41rwbeth1e9x9wc1x46vo01k84ayp1eeyno81i
-1,2026/02/06,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,129jd3c144zmu418n0xt91t3wb5q7aiziy59wiqjw1e
-1,2026/02/07,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,1nsduds1h0tpy417fnnq11j5xz8x1vyaite3s2u4t1x
-1,2026/02/08,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,s05maw1oqm89o1jud62l1a6zjczfatk5t1awns2exro
-1,2026/02/09,テスト衣料,-7597,テストカード 配偶者名義,衣服・美容,衣服,,0,1tuyaapv333c5umd4ej1qyps71l7mls451gd75pw398
-1,2026/02/10,テスト贈答,-5490,テストカード 配偶者名義,交際費,交際費,,0,zfb57a1s2pl5tbl4a68qrdubdd961jv11c1moskzxoe
-1,2026/02/11,テスト家電,-21332,テストモール(ポイント),特別な支出,特別な支出,,0,1vbllb41e1ys5vxtjeg11z0tfdp1v6cnww10v0k1o1f
-1,2026/02/12,テスト引き出し,-31084,テスト第二銀行 本人,その他,使途不明金,,0,qtgfw114xq2lx1c694salg9n0yi45jzrcocet17nwdb
-1,2026/02/13,テスト未分類決済,-3305,テストカード 配偶者名義,未分類,未分類,,0,1nwdbtv1xkvuipne2quf1xs8jaf1jhbvbxtyqopu1ea
-1,2026/02/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,ntcxhkhhc9r1mjld0gft6925mlhihxkie7mb1ht4auc
-1,2026/02/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,1dn86rnatqzsx1gbzonjbbk6w91035zvl10vqdg73zj
-1,2026/02/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,1cq5yjs19wdpg4e4wwe156a9bwhd10c5sqbbxv1tqha
-1,2026/02/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,88dc8yt7gn375c9svw1rdt5501tw1dko1xjq563s726
-0,2026/02/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,1k8yr6c1yly4o915fztl2n2w3yp11upixz8s7ugj5zm
-0,2026/02/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,wwker614m585e1eyum3e149dzh31njuutj1he7nwf1j
-0,2026/02/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1xcccin1ase9zj13s5mm717dn638y12zt21kll7p4uj
-0,2026/02/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,ky0det1ivapl11mkvyxh1pazkks12jsbrvrugud11qc
-0,2026/02/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,183k48rvp7xwbwom7cu6yu43412xyvbx1m845ip1w20
-0,2026/02/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,cn68398o48a21wx0zx71f95h1j18dbjoz1c2udw0ore
-0,2026/02/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,gk7mbaebxb391qavajk1b2vyevtfgjcvvxagzc149mk
-1,2026/03/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,10tn1okms900b14e9im8x0xlhf15vbrsgvqtd1gmon7
-1,2026/03/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,o0wt5n101i549e0rmelarkmdn10vey49p3at4quvrby
-1,2026/03/15,テストクライアント 入金,480000,テスト銀行 本人普通,収入,事業収入,,0,1r587yjt4p8hh1jstfi01cy91u69gram812dg61ybur
-1,2026/03/08,テストスーパー,-61675,テストカード 配偶者名義,食費,食料品,,0,v7nhn01lpi2uql88fqrvzz8pzphc351cmhi3ylpqc3z
-1,2026/03/09,テスト食堂,-16735,テストカード 配偶者名義,食費,外食,,0,1hfew848nxid5mlzd6v1yixc41ihhsri1gq15gcdqfq
-1,2026/03/10,テストドラッグ,-8430,テストカード 配偶者名義,日用品,日用品,,0,w2ny3cti2xdd5w6b5b1ck1i7j19g6ydl703i8n11a64
-1,2026/03/11,テスト電力,-10054,テスト銀行 本人普通,水道・光熱費,電気代,,0,1rorngh1htjxx91tx7gs6gelkbqf0tmic18gsaad1ti
-1,2026/03/12,テストガス,-8025,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,ngc88l19ntptp12ii5qyohfc041s6eeqqji2pdytqf0
-1,2026/03/13,テストモバイル,-8933,テストカード 配偶者名義,通信費,携帯電話,,0,193tut10pz9op16du4rt1b4ejwjf301nx1a91v0511s
-1,2026/03/14,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,1gkz9uh1ph4ytt1mx4d4s15ao8bacie6591l5v7a7nu
-1,2026/03/15,テスト書店,-5223,テストカード 配偶者名義,趣味・娯楽,書籍,,0,1coyw8mxzxyb6vb3ct51ed5rob8r782k1o2h1gir79q
-1,2026/03/16,テスト交通 IC チャージ,-6737,テストカード 配偶者名義,交通費,電車,,0,6sq7sq7k5yzp1uxaj98zka8dm2jt8qabb0j711ib2xo
-1,2026/03/17,テスト石油,-6739,テストカード 配偶者名義,自動車,ガソリン,,0,keb5pmfo068h1qpmkk3vq3pvc1axeip416dyo226rq5
-1,2026/03/18,テスト薬局,-3500,テストカード 配偶者名義,健康・医療,医療費,,0,1s8m126mkro1d16vw0u117jw4eax4dc6l14xg20c1k5
-1,2026/03/19,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,xzs2of1yqq1o5kdcytccvcn75kynu7r1u9w0yi16k1p
-1,2026/03/20,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,1krqcs3187tn6l2m8dnu1tf8i4v1csa5nq1pdnu7xg3
-1,2026/03/21,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,189k1kb1g7wwkxfm9dqsybi618v25koklg8or71fxct
-1,2026/03/22,テスト衣料,-6088,テストカード 配偶者名義,衣服・美容,衣服,,0,cm6mhobvs94lql8u731xozpzccbjrej1ogmnin1l5eq
-1,2026/03/03,テスト贈答,-6370,テストカード 配偶者名義,交際費,交際費,,0,e0szx1aqm3gsgsvm8x5g1il9eyc7u1hnqay0jexs0ks
-1,2026/03/04,テスト家電,-29254,テストモール(ポイント),特別な支出,特別な支出,,0,11mj2bz1r9u93e1egixyf1jb5j9oage49n1vzrnodjp
-1,2026/03/05,テスト引き出し,-28482,テスト第二銀行 本人,その他,使途不明金,,0,1m6oropis67zlvibqk6zp5gte18tdl7kqvy7s9cf227
-1,2026/03/06,テスト未分類決済,-6280,テストカード 配偶者名義,未分類,未分類,,0,re0r9b1epsknv15ktzsm1mpf2kci0577xazl88wwwpe
-1,2026/03/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,13k5ezg1r8tsro1us0p0yyocz4fhl6q9qilpo1k1i71
-1,2026/03/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,yuaabyigkdjei8i4wmuoilnj8osblj5dsb2c1hxt2yf
-1,2026/03/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,1vu76a0bbnunj1nn1pjq16mjz2e11kjx0y128tlaxjy
-1,2026/03/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,sgkrvlhpod6y1qjtn5p7584gt5taacku4dns3104ujz
-0,2026/03/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,1odc4pfq78yqs142uod91jbvd611sdjoffuhvp27ijs
-0,2026/03/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,391ij51ymzihnhuz1x015ry1x816ig3vrusvpd211r8
-0,2026/03/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1f8j67j151l5g93rrzte1wlbgqwks3c3e1mppagn1cs
-0,2026/03/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1cfz5uo1aqn9sqa0t74l1hvwztbygy6oh1xct2neffq
-0,2026/03/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,7r0oq21irzhjz1h71hdv1djmfpn1f7lk5f15db07j1g
-0,2026/03/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1n8hrg0xy6ntp589egh4agrt61nfgd7hbobi6v18jrr
-0,2026/03/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,rzr4ni6e568bpyov7mhfjl9nnzy5as163cm1a460xzg
-1,2026/04/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,1vlq5giixswlezhddkil0mxil1dri2yo1vun5c51g6l
-1,2026/04/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,i7sjg21b2p8di10exnw8fzea5xqtbvl31tczz3j1v6e
-1,2026/04/15,テストクライアント 入金,264570,テスト銀行 本人普通,収入,事業収入,,0,144n94y11f97jm146fwnpjyeztv1hgpl171jgrzns93
-1,2026/04/21,テストスーパー,-62617,テストカード 配偶者名義,食費,食料品,,0,91yxqqswe81yuk1dnawyk5rndof8gl1fklqbeuqy1oy
-1,2026/04/22,テスト食堂,-13560,テストカード 配偶者名義,食費,外食,,0,dus4031nqcs0wdhig19ne4eiy1019t2dw9xs9855u22
-1,2026/04/03,テストドラッグ,-10021,テストカード 配偶者名義,日用品,日用品,,0,11be923hgxee81st3m5l1cydgpqjkzxjo1klykrb7az
-1,2026/04/04,テスト電力,-9806,テスト銀行 本人普通,水道・光熱費,電気代,,0,nk6zxf86wnmo1o9iiwp13z77lfehf0veqgaikh16o0h
-1,2026/04/05,テストガス,-8306,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,1p4z3l71lddvuxyln9oz1trwac4hb7bdy1gyxl3m1c5
-1,2026/04/06,テストモバイル,-8776,テストカード 配偶者名義,通信費,携帯電話,,0,13vlk1015ka6v66cns4w17gkdb51pxaj1y5wwori1sq
-1,2026/04/07,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,1xjtqpo1d1q0pqgh6ml1jqgtk2fv2eyfio921d1qgoj
-1,2026/04/08,テスト書店,-4908,テストカード 配偶者名義,趣味・娯楽,書籍,,0,t8hc381npkh651dzsruisz9br6p5m846s9enwb1dhp8
-1,2026/04/09,テスト交通 IC チャージ,-5509,テストカード 配偶者名義,交通費,電車,,0,165mmwsvsz9kcqulxla1ikiq6wngnp7j18x31kd9lat
-1,2026/04/10,テスト石油,-6604,テストカード 配偶者名義,自動車,ガソリン,,0,oth6dhz21c4lg1tr56h4ua21jk8ifpedr1rz184bcqm
-1,2026/04/11,テスト薬局,-3372,テストカード 配偶者名義,健康・医療,医療費,,0,301ymd94ganp80eb2y1w0yyvgya57t61hzmef4qjcvo
-1,2026/04/12,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,1h39z5hi5oyh9uva3alw1wttb1p68k431hwf9bm17dv
-1,2026/04/13,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,1c70aza1rx6rhi1xvgbbgvldtpe1ktkn2e1vzx1e61o
-1,2026/04/14,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,qz61lur7dpxqqmb6i1gejgxgzpy2lu7ppsf1uyxf8hq
-1,2026/04/15,テスト衣料,-4922,テストカード 配偶者名義,衣服・美容,衣服,,0,nyngdb1kosm2gapigokcszuuf1vu0p221gjnzhm1630
-1,2026/04/16,テスト贈答,-5849,テストカード 配偶者名義,交際費,交際費,,0,1qnik5hcmfvi21wk83p21k2bh699wuc193dxd9z1612
-1,2026/04/17,テスト家電,-22378,テストモール(ポイント),特別な支出,特別な支出,,0,v7k4kuq5lk11jky2q012biddx1qez4fw13z6246776i
-1,2026/04/18,テスト引き出し,-33934,テスト第二銀行 本人,その他,使途不明金,,0,1ldjnog1xpkx8ei6194z1zkljqldgz9upirey775df8
-1,2026/04/19,テスト未分類決済,-6433,テストカード 配偶者名義,未分類,未分類,,0,17wyf6epi7lwg1idi2cc1nvthv91gv2o6v2a82qyr74
-1,2026/04/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,9xaeo41gupb7efkr17vnuygwk14d8lnu3kzcnyg0bj7
-1,2026/04/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,enfa2917mjb581x4e9439m9xpyx2p7cc1yfn0jk1jqv
-1,2026/04/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,1106mufk8yuze89v2k2976dy91nv7zy81apojcd1pe9
-1,2026/04/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,c52i1l6r9n90lprz6e1kt511l7db64u1so8imdc8p55
-0,2026/04/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,ormekrdgunf2wtmka34f55ng1oom4cmvpfoh01itg6z
-0,2026/04/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,11y7x14qlf2foub2suh2iaf4ckfvg0ph2ydjlcvydk8
-0,2026/04/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,y7aini1u3jl6a1l27ns1bwdw0gktif9wum0sfx8aw07
-0,2026/04/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1rvpzvk13axgz7urjt4zjs1sknsgp3fx1pcrbjx1pya
-0,2026/04/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,15a6ytm19p1fgy1en1gwj1sbugcf1vz74u85po16z1w
-0,2026/04/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1ih819v1iie6o8155xdz1rblhlo67cfhu15fisbf1nn
-0,2026/04/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,3tp1bo56wywf1paex2619cuz4y1cibt3c9bghc2132f
-1,2026/05/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,1gum9z01ytuqfyi6t6zd10g63hzcot42ypy7rxlzmfv
-1,2026/05/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,1d2ftaxllfu2b1lq2uwm132ph247srgf1y5ls431vfn
-1,2026/05/15,テストクライアント 入金,311667,テスト銀行 本人普通,収入,事業収入,,0,3bg9518oze6bcu4wwx1cteqft18lhres1htnhtl1gca
-1,2026/05/14,テストスーパー,-62966,テストカード 配偶者名義,食費,食料品,,0,1npizbh15on7tc1t0jla01o3rltj26cpgb1ctwvetun
-1,2026/05/15,テスト食堂,-19698,テストカード 配偶者名義,食費,外食,,0,r8sr6lyazgp84v84uhkqhu50dmqtz874cc5s92yv9pp
-1,2026/05/16,テストドラッグ,-9637,テストカード 配偶者名義,日用品,日用品,,0,1yabmou1lti9in11tvjicrzx24717v7mkb1d48wvsxl
-1,2026/05/17,テスト電力,-9136,テスト銀行 本人普通,水道・光熱費,電気代,,0,m6m332gxy3yuegrgcnse24dqcu9vv11p8mtau6j845s
-1,2026/05/18,テストガス,-6474,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,17otbmqcqxeqi6keakvj0o4zudaafujunc6m91inz66
-1,2026/05/19,テストモバイル,-8853,テストカード 配偶者名義,通信費,携帯電話,,0,bvxkiq1ina7h71cfzeon18z7wuy1x0gg1y1itg3ny1t
-1,2026/05/20,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,fb1xf3txtbbw13a7zh25c7phl1n055eig7vmow1gzv3
-1,2026/05/21,テスト書店,-4562,テストカード 配偶者名義,趣味・娯楽,書籍,,0,1f440jb1fezg9cuzh8li1yy5na4xe279311sdtm71by
-1,2026/05/22,テスト交通 IC チャージ,-5686,テストカード 配偶者名義,交通費,電車,,0,bzcrez1lmrsi83a5jay13otklb1t8s54dyvtc8hooyo
-1,2026/05/03,テスト石油,-6916,テストカード 配偶者名義,自動車,ガソリン,,0,1pp5qubrfe0jznffwxjpf5yuw13cafdo1dqka2l1wj4
-1,2026/05/04,テスト薬局,-3517,テストカード 配偶者名義,健康・医療,医療費,,0,13db77w2oo9lm1gkt99htjkkrcd9y1v82d7fef1yuaf
-1,2026/05/05,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,1vt8xgca8ueqy1181w7210s43ndwufpe1stycalnc85
-1,2026/05/06,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,sjulhv1dtgryt9eamii1rp2saa1jd13zl9epwn9fzei
-1,2026/05/07,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,15nkptt16kyk59177fhyeryhcxz1nrtx6xgr8fo1t1t
-1,2026/05/08,テスト衣料,-5843,テストカード 配偶者名義,衣服・美容,衣服,,0,imkfmaz2gpwj3jnznk1vc4b9z138a1t1cfp6ll134l1
-1,2026/05/09,テスト贈答,-4066,テストカード 配偶者名義,交際費,交際費,,0,ddb7s41q0xiap1c8h0cqmkgom9zq5txc1pf1egd135b
-1,2026/05/10,テスト家電,-32172,テストモール(ポイント),特別な支出,特別な支出,,0,18pawyyenlssi2v2otmgrvw2818u2dp7wuyga51kb3a
-1,2026/05/11,テスト引き出し,-31808,テスト第二銀行 本人,その他,使途不明金,,0,1dwwztz5hnwcjczz0fj833eyl14sslq01q6af3myp04
-1,2026/05/12,テスト未分類決済,-4918,テストカード 配偶者名義,未分類,未分類,,0,1hzmd11vjzvih1pomfz51onn773oerbgzrprzfm89gs
-1,2026/05/10,Anthropic Claude 月額,-36000,テストカード 配偶者名義,通信費,サブスク,,0,nbzshnm8mvoo1ggw31h1xwsx3yaq0nnwzyo45e8j0w9
-1,2026/05/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,1t912kd1227iqz6kzed3a306sc1k1l482omugnaizlr
-1,2026/05/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,z10zeu1a48wnxu2fv5f1n34e161c0s8eb1wakxw21ce
-1,2026/05/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,1lheg7wi19fc31fxahde1jasez8zbzc73145l63n12e
-0,2026/05/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,1672d9u1sb41u8q7azqf18zjud21jksb4gwx7sar13p
-0,2026/05/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,bmz2c458nzz9xjdn62zwv9dpomuyqhvbkgtkgl3y6j1
-0,2026/05/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,jjla1xlvf6mn1njq1hdzfye3j1n7lzzg450wt5s66fh
-0,2026/05/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1fwm8uf1ueto8a1b541ehlks9ob1ju1gfa1c3gyj1pi
-0,2026/05/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,c80tx5115bp8o1hd31y91b5466qlv4svo1rjvf01144
-0,2026/05/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,qf9v3i1p851iy1t6za0xg3lwg21tupc89gvl000kp8i
-0,2026/05/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,1032lt3gk8xmn88t3hg1j1wu6p100oawp12f3fgiudf
-1,2026/06/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,vdsk677g5u2b3izy201necu8x18wlrkaofktsd12xtq
-1,2026/06/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,1q5t93b1w98cp31vjceer1rljqzsdnrzsljgnvmv1qi
-1,2026/06/15,テストクライアント 入金,480000,テスト銀行 本人普通,収入,事業収入,,0,148mp9zkupujnkg7n091iasctc18trup3kfvaiafu7j
-1,2026/06/07,テストスーパー,-59082,テストカード 配偶者名義,食費,食料品,,0,1huvlwo1ap5dvzt129q814q53mrr3x5yy6wc0t011sw
-1,2026/06/08,テスト食堂,-17377,テストカード 配偶者名義,食費,外食,,0,d20dlc155qworsdosm7z0kmva88dkpfsty6efodc9vx
-1,2026/06/09,テストドラッグ,-9332,テストカード 配偶者名義,日用品,日用品,,0,1g8b2fsy5qtg61ox4vgxcxxyir17o73chc20t1kph6y
-1,2026/06/10,テスト電力,-12867,テスト銀行 本人普通,水道・光熱費,電気代,,0,1kbrj941s9vi7faeeatykill7yxtjtcs1wdkrxn1t1f
-1,2026/06/11,テストガス,-6122,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,1ny1yh3nmmtb196ec2e1xn6psm1w33a931btfnv0rnf
-1,2026/06/12,テストモバイル,-8940,テストカード 配偶者名義,通信費,携帯電話,,0,1o7uwt59gfkib1h1czy8s9vbhv1fgmmof192lj0713s
-1,2026/06/13,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,sv14211li0x93i0wlrg15yaz051x8enavl9ty5e98px
-1,2026/06/14,テスト書店,-3985,テストカード 配偶者名義,趣味・娯楽,書籍,,0,1ys7xf6yep0xfdk1pct1dolnoam6c4q41q4wl5g1v61
-1,2026/06/15,テスト交通 IC チャージ,-6418,テストカード 配偶者名義,交通費,電車,,0,lnp99m14qb6fj1ucndni18ggdky17ljvbm18xe2sn1p
-1,2026/06/16,テスト石油,-7896,テストカード 配偶者名義,自動車,ガソリン,,0,172hlxe1dc6562167p7zs4j2i6pxlxp8hn8lx41xbsd
-1,2026/06/17,テスト薬局,-3720,テストカード 配偶者名義,健康・医療,医療費,,0,5k8djerpf5nrg5gku41y1wri81ix7hrs1umt3u3bx16
-1,2026/06/18,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,1ios2q41uqat8s1xdvatg1lgyqdw1s2aicl14bgkaqy
-1,2026/06/19,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,1dxmm16nd67f518190ej76crdx1dplv7511fufk6zbc
-1,2026/06/20,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,9a6c601dremk3klq177ye4j8qjx66t1msubfnomi2v7
-1,2026/06/21,テスト衣料,-6673,テストカード 配偶者名義,衣服・美容,衣服,,0,1lqd3yy15r1d9i1d8lcyk1i8o6j1hl6zne19wzg3o9u
-1,2026/06/22,テスト贈答,-3792,テストカード 配偶者名義,交際費,交際費,,0,10d4io3uez9sc128u8ivnl4jdy4l2zc51km3ejk11t7
-1,2026/06/03,テスト家電,-32950,テストモール(ポイント),特別な支出,特別な支出,,0,1wb6ai51jmwhdbludjn7v73edg113yvrvswv4g11udn
-1,2026/06/04,テスト引き出し,-26220,テスト第二銀行 本人,その他,使途不明金,,0,sljysvcbv07s1ofuqluiaqf9n61pqgeu5kwah1bg4df
-1,2026/06/05,テスト未分類決済,-5498,テストカード 配偶者名義,未分類,未分類,,0,1534qvx1euidy1q86th0n1t9odety6br19kt95x9rhy
-1,2026/06/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,q2hyya1kexjtn16iu7nf1chs8k8zfcfim1ju2r68kvk
-1,2026/06/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,cvmekstg6ycd6vjigp8shcdq1y94fw71aqy4p5c4l0u
-1,2026/06/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,1fwvzqe123gni8c30m9y12u0fukgfaffpxdecg61at7
-1,2026/06/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,k117f018vb4t3vor4st1xj0mdjkfbedl1qpx5zjroah
-0,2026/06/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,6g06j5nvysylnylnowayglfy1541swo667pmv1w2c74
-0,2026/06/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,p0g1tb1vpa7u71srbyqljl3nx216grck06dzro31o2f
-0,2026/06/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1tvdisd5u8wrf168fx6ov8c2vb186p34os5qeg61x79
-0,2026/06/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,zhe5img2pva11iinjxjmnnnn7pwxqkg16b7tofnjuwe
-0,2026/06/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1kzjwtd1bwa65qirwfaz4mal9l1cgau7t1gsz6n2i3x
-0,2026/06/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,rfo6ltylfcx218pub3n1u8o165rog9vxpnz2vhmrgqi
-0,2026/06/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,6fjehx1nbih1c13ivbp51pdan3jsr2ytbso9jpw17sj
-1,2026/07/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,hso036e4pqmc12kxvnmbr63sczz4ha014l5mjft0b50
-1,2026/07/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,1dpg1omkt30s1bg91qmfpte1o143xqu3i81pzh1wyzb
-1,2026/07/15,テストクライアント 入金,300516,テスト銀行 本人普通,収入,事業収入,,0,cvhaly1qmo8bu1wy47pwjhoikr1br8v7oqwuzjv1fml
-1,2026/07/20,テストスーパー,-61837,テストカード 配偶者名義,食費,食料品,,0,q2njpmk22eumvhkkcw1wmw5ofh7ogqj2fcsf81mepnd
-1,2026/07/21,テスト食堂,-14531,テストカード 配偶者名義,食費,外食,,0,10qm2ab1ahjopi1huhvxa1vlwetn1e9mzku1n3b6jm1
-1,2026/07/22,テストドラッグ,-9301,テストカード 配偶者名義,日用品,日用品,,0,wfcszb1easn4j19dkel21vjmzxq1vwn4tsixk6ctdld
-1,2026/07/03,テスト電力,-10480,テスト銀行 本人普通,水道・光熱費,電気代,,0,1rv72jjp2nr1s189j0c414yueufjm677i39wg0o1gqf
-1,2026/07/04,テストガス,-7556,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,12mfgkj1u937b42qlwz31u4upz61fy6jkv1u0f8ff1k
-1,2026/07/05,テストモバイル,-8820,テストカード 配偶者名義,通信費,携帯電話,,0,1o5xuv43nd0yb1nxqtjll9n7lu16eclr9leryk0290b
-1,2026/07/06,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,bgoh84fnz4lr1xll8pw3af895tixzngbifpc216g6d8
-1,2026/07/07,テスト書店,-5198,テストカード 配偶者名義,趣味・娯楽,書籍,,0,1g5dzn81nk1l9isgu4kqk75fws1k2ktdyway29c1n6u
-1,2026/07/08,テスト交通 IC チャージ,-5385,テストカード 配偶者名義,交通費,電車,,0,1iqt5covwyi1n1932twl5v1x11fb8moy1hx2ksr1doe
-1,2026/07/09,テスト石油,-8858,テストカード 配偶者名義,自動車,ガソリン,,0,5sdfpd16dxnz770uqyz5wxb4zefmizl16qxig91fibs
-1,2026/07/10,テスト薬局,-4234,テストカード 配偶者名義,健康・医療,医療費,,0,1r2gmvalmpoos1ywu5111dehek392map6yewc6h13sv
-1,2026/07/11,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,ul1dsc9qp2tdpjfg5g9o6dwplom8l6104rtgm1ca9q7
-1,2026/07/12,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,1ypjyy125iybsp5oqot9joxm1cd0ju710sse9r16e28
-1,2026/07/13,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,v5lahjnoxsrqber78p1lp4hw0101aj4w11ppbiu2o3a
-1,2026/07/14,テスト衣料,-8693,テストカード 配偶者名義,衣服・美容,衣服,,0,1qp7yl519380bd13wkzn41laj49ainc0d01v8dc6r7s
-1,2026/07/15,テスト贈答,-6190,テストカード 配偶者名義,交際費,交際費,,0,66qynn13vd8oa1mgsui9btj77h5kyjaq1q3xhi61m8j
-1,2026/07/16,テスト家電,-15176,テストモール(ポイント),特別な支出,特別な支出,,0,1i2gd0oua13egrrh56n12o7mq7145m1lf1gu1k121nr
-1,2026/07/17,テスト引き出し,-31593,テスト第二銀行 本人,その他,使途不明金,,0,1g8j1g61hevmmu1sgch9v15mjb75cj7g10mfhwun1f3
-1,2026/07/18,テスト未分類決済,-5336,テストカード 配偶者名義,未分類,未分類,,0,d41b2g6j2tn03y2sggaxqyatl69c021eyslatlz6qmn
-1,2026/07/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,1opb1tmg4anzqdpg3lx1qg0rluc24bqx1tekwit1hru
-1,2026/07/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,123257v1m4mmvob6vo1q10mb6o31o1qc3a107dua02a
-1,2026/07/10,Adobe CC 月額,-25920,テストカード 配偶者名義,通信費,サブスク,,0,1wt1vydw0bkiz1rhapxr1m09tmv1nc1vaj1hcv5alwp
-1,2026/07/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,xnpuyz16obgmkpr7rlxc7mm4kkjxgnhfpp1p8yukzkg
-0,2026/07/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,12ixyk11cwhzqmjdqmkj3fp0xekaa4jg1hjcc1x1e8p
-0,2026/07/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,qfqxm2o7ekvo1v7lrft11rnwvaqa7lh763bvr51dwxe
-0,2026/07/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,comjc41wrq5c91dlxbl81o76vtj48hx6d10mm81g1mj
-0,2026/07/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1e6clcru3dau91pm6y3t1rp7owzw9j7bbuqviy7up89
-0,2026/07/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,jihpmz1ioln5tsb1o5f1jcbl89sfav40aaab9lrs8pl
-0,2026/07/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,4zpoa41bd9ils1bjfv8bqnfc9p1hn7jp26oo03e6w4n
-0,2026/07/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,qq0hwk12t00uh1x2obao18hhue2e53rs11kgj3rw1fo
-1,2026/08/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,1utfexo1ys73kh13ppjy91dx3hdhzjs9tmv1suviurk
-1,2026/08/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,gwqppbqx15i1wk090cyq5c7jzqal4ckaw1yxeiq11v1
-1,2026/08/15,テストクライアント 入金,263760,テスト銀行 本人普通,収入,事業収入,,0,1vmffwt39az6a1j88ftgm56iur151qj2j12jvskz1ev
-1,2026/08/13,テストスーパー,-60522,テストカード 配偶者名義,食費,食料品,,0,rz5d7x1qeww9h1pu1tmg1fd0r7aesbfo3r9qmgnzcv8
-1,2026/08/14,テスト食堂,-22274,テストカード 配偶者名義,食費,外食,,0,5xyc0dxqzst8aszobo39ws8y1ekzm782eiru8arcmj7
-1,2026/08/15,テストドラッグ,-10648,テストカード 配偶者名義,日用品,日用品,,0,l33kuu16235i47d0c0v1rvrjk1t3qks31rge2ne1bcx
-1,2026/08/16,テスト電力,-12126,テスト銀行 本人普通,水道・光熱費,電気代,,0,1ffznji1erjij82s6b9z1rwrc1poium4s6m0eatt61g
-1,2026/08/17,テストガス,-6900,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,bc4c4mptuwh91e8dkrs1qs92yz7jikf01lp8g86st0q
-1,2026/08/18,テストモバイル,-8542,テストカード 配偶者名義,通信費,携帯電話,,0,pfg7se1rdhxei1u07auj109nd9skgzzmcjgvs3l88cc
-1,2026/08/19,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,126uytb3hmr5iwkxw741mrbjxexdt8cqplgz3enquzc
-1,2026/08/20,テスト書店,-4559,テストカード 配偶者名義,趣味・娯楽,書籍,,0,sh74njdd5bveov8scqpzvakywbhylr59fg9g1jv0p1a
-1,2026/08/21,テスト交通 IC チャージ,-6541,テストカード 配偶者名義,交通費,電車,,0,1vt1ofz1pxxppc1jo8fdqgzaje19m2zhkgymr3s251z
-1,2026/08/22,テスト石油,-8454,テストカード 配偶者名義,自動車,ガソリン,,0,13d62r4106u2brjczick16s7zct1p5hxfzrqesfp1rw
-1,2026/08/03,テスト薬局,-2949,テストカード 配偶者名義,健康・医療,医療費,,0,1ppbhmp1qfizk11my1vw91sg54eyhgw99c10j54xg1e
-1,2026/08/04,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,9lzu7nlf7i211t1qx3l1s93mc818ek9uk13a4rh11o5
-1,2026/08/05,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,1dafdc19ilwmf1ewxm071ea0if193vk9ginhwp4wfg9
-1,2026/08/06,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,1je9fvb8v6eel16trjgh191cz1l1577adz46p5981jn
-1,2026/08/07,テスト衣料,-4702,テストカード 配偶者名義,衣服・美容,衣服,,0,55up4owfwgcu1w7kp44is5iwsr67taj1eet5ukjm8qr
-1,2026/08/08,テスト贈答,-4375,テストカード 配偶者名義,交際費,交際費,,0,17ocl5e1cbqivb1q0wptu1h82zor1p64iz48cg2e217
-1,2026/08/09,テスト家電,-23614,テストモール(ポイント),特別な支出,特別な支出,,0,m7141411eesp91s94h6s1gctqhp1y0nvxt1jcf7beeh
-1,2026/08/10,テスト引き出し,-28913,テスト第二銀行 本人,その他,使途不明金,,0,1ybf16mn8cfvn3e79k1q2yjdjco9ao1zwhj3n9cxx66
-1,2026/08/11,テスト未分類決済,-3492,テストカード 配偶者名義,未分類,未分類,,0,tklo1f1wtm3na1awvmnwbtlf75pgd9f31t8lmkf1snz
-1,2026/08/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,1sakcz58hz8pt9ja09b16bgdcd6m304n1c9s32zzsy2
-1,2026/08/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,74mm6bg8pfuv64qyyzb2nfjzfndxzg1o1w3uj1mqsuj
-1,2026/08/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,1jnd4ec1jz9e1w1mu2steng2aleorne681o8cl56njd
-1,2026/08/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,1gvf58au2wvf2m9wpbemlcr6k1yau6nncyp20fechmt
-0,2026/08/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,crdec012ogv37s3sjbac0h9bys171vy3m2dc1erjz7f
-0,2026/08/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,1ij8uxm1h71zra1aghzi61c85laxnrs72n1kriweds4
-0,2026/08/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,15862u2axvsrx1ypztwc17f9o4c11i5r611rivru81c
-0,2026/08/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1rqk8ey1o3p9413csvw3ur8kynjrhev66aeyfrlq8ph
-0,2026/08/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,w21b92s7nrvl1c890y01tbuh0x10ggv0jaw9jfl1352
-0,2026/08/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,zokvzi1kthrwteisdra1xs9rhj19hgr68ug46z21rli
-0,2026/08/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,mcohsj1dei8et6kl7sy1s82cu14y9dato4exsjf4xnj
+1,2026/01/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,dgjpp8t70h9eluhkv1arji2i1hvjo6kl9romwwzoft7
+1,2026/01/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,1dw15v9xmjer1qqk5kz1kdsjixqw7rfy1ayfgab1mej
+1,2026/01/15,テストクライアント 入金,305259,テスト銀行 本人普通,収入,事業収入,,0,18lj2ce1pobhdm1n7bl05gehx2310buu3wqexf91faj
+1,2026/01/18,テスト受託先 制作費,120000,テスト銀行 本人普通,収入,事業・受託,,0,8f0cim1aian4hu0id8n1rn1fs9z3bw2djmimo8cs722
+1,2026/01/18,テストデータセンター 利用料,-4800,テストカード 配偶者名義,通信費,事業・情報サービス,,0,itlpse10s4a6hw2w4li1aj849pr5v69b1na5pyz1lx4
+1,2026/01/18,テスト協力会社 外注,-32000,テスト銀行 本人普通,その他,事業・外注費,,0,1vtn17y1rq6cs8icwcvhfli3u1wb73771abd3etdf1t
+1,2026/01/21,テストスーパー,-60657,テストカード 配偶者名義,食費,食料品,,0,s0altrkxh2rs17d1qwbrdjwvyf3nv9k16o8p9q8v3bx
+1,2026/01/22,テスト食堂,-17816,テストカード 配偶者名義,食費,外食,,0,1k5efx313tpex15q4fyx1cg2mxg1wyirbk1uvzpsp1e
+1,2026/01/03,テストドラッグ,-7805,テストカード 配偶者名義,日用品,日用品,,0,16n20cf8w1e0qsrlm981la2lzo1oufecx14zzvkj68d
+1,2026/01/04,テスト電力,-12973,テスト銀行 本人普通,水道・光熱費,電気代,,0,bauv9ji3wi92diasz51oke61h1x3nfrk10116641d4v
+1,2026/01/05,テストガス,-7970,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,ggq4f41rwbeth1e9x9wc1x46vo01k84ayp1eeyno81i
+1,2026/01/06,テストモバイル,-8572,テストカード 配偶者名義,通信費,携帯電話,,0,129jd3c144zmu418n0xt91t3wb5q7aiziy59wiqjw1e
+1,2026/01/07,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,1nsduds1h0tpy417fnnq11j5xz8x1vyaite3s2u4t1x
+1,2026/01/08,テスト書店,-4696,テストカード 配偶者名義,趣味・娯楽,書籍,,0,s05maw1oqm89o1jud62l1a6zjczfatk5t1awns2exro
+1,2026/01/09,テスト交通 IC チャージ,-5503,テストカード 配偶者名義,交通費,電車,,0,1tuyaapv333c5umd4ej1qyps71l7mls451gd75pw398
+1,2026/01/10,テスト石油,-8617,テストカード 配偶者名義,自動車,ガソリン,,0,zfb57a1s2pl5tbl4a68qrdubdd961jv11c1moskzxoe
+1,2026/01/11,テスト薬局,-2482,テストカード 配偶者名義,健康・医療,医療費,,0,1vbllb41e1ys5vxtjeg11z0tfdp1v6cnww10v0k1o1f
+1,2026/01/12,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,qtgfw114xq2lx1c694salg9n0yi45jzrcocet17nwdb
+1,2026/01/13,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,1nwdbtv1xkvuipne2quf1xs8jaf1jhbvbxtyqopu1ea
+1,2026/01/14,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,ntcxhkhhc9r1mjld0gft6925mlhihxkie7mb1ht4auc
+1,2026/01/15,テスト衣料,-8541,テストカード 配偶者名義,衣服・美容,衣服,,0,1dn86rnatqzsx1gbzonjbbk6w91035zvl10vqdg73zj
+1,2026/01/16,テスト贈答,-6976,テストカード 配偶者名義,交際費,交際費,,0,1cq5yjs19wdpg4e4wwe156a9bwhd10c5sqbbxv1tqha
+1,2026/01/17,テスト家電,-21956,テストモール(ポイント),特別な支出,特別な支出,,0,88dc8yt7gn375c9svw1rdt5501tw1dko1xjq563s726
+1,2026/01/18,テスト引き出し,-31329,テスト第二銀行 本人,その他,使途不明金,,0,1k8yr6c1yly4o915fztl2n2w3yp11upixz8s7ugj5zm
+1,2026/01/19,テスト未分類決済,-5447,テストカード 配偶者名義,未分類,未分類,,0,wwker614m585e1eyum3e149dzh31njuutj1he7nwf1j
+1,2026/01/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,1xcccin1ase9zj13s5mm717dn638y12zt21kll7p4uj
+1,2026/01/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,ky0det1ivapl11mkvyxh1pazkks12jsbrvrugud11qc
+1,2026/01/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,183k48rvp7xwbwom7cu6yu43412xyvbx1m845ip1w20
+1,2026/01/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,cn68398o48a21wx0zx71f95h1j18dbjoz1c2udw0ore
+0,2026/01/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,gk7mbaebxb391qavajk1b2vyevtfgjcvvxagzc149mk
+0,2026/01/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,10tn1okms900b14e9im8x0xlhf15vbrsgvqtd1gmon7
+0,2026/01/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,o0wt5n101i549e0rmelarkmdn10vey49p3at4quvrby
+0,2026/01/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1r587yjt4p8hh1jstfi01cy91u69gram812dg61ybur
+0,2026/01/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,v7nhn01lpi2uql88fqrvzz8pzphc351cmhi3ylpqc3z
+0,2026/01/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1hfew848nxid5mlzd6v1yixc41ihhsri1gq15gcdqfq
+0,2026/01/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,w2ny3cti2xdd5w6b5b1ck1i7j19g6ydl703i8n11a64
+1,2026/02/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,1rorngh1htjxx91tx7gs6gelkbqf0tmic18gsaad1ti
+1,2026/02/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,ngc88l19ntptp12ii5qyohfc041s6eeqqji2pdytqf0
+1,2026/02/15,テストクライアント 入金,245022,テスト銀行 本人普通,収入,事業収入,,0,193tut10pz9op16du4rt1b4ejwjf301nx1a91v0511s
+1,2026/02/18,テスト受託先 制作費,120000,テスト銀行 本人普通,収入,事業・受託,,0,1gkz9uh1ph4ytt1mx4d4s15ao8bacie6591l5v7a7nu
+1,2026/02/18,テストデータセンター 利用料,-4800,テストカード 配偶者名義,通信費,事業・情報サービス,,0,1coyw8mxzxyb6vb3ct51ed5rob8r782k1o2h1gir79q
+1,2026/02/18,テスト協力会社 外注,-32000,テスト銀行 本人普通,その他,事業・外注費,,0,6sq7sq7k5yzp1uxaj98zka8dm2jt8qabb0j711ib2xo
+1,2026/02/17,テストスーパー,-57085,テストカード 配偶者名義,食費,食料品,,0,keb5pmfo068h1qpmkk3vq3pvc1axeip416dyo226rq5
+1,2026/02/18,テスト食堂,-21065,テストカード 配偶者名義,食費,外食,,0,1s8m126mkro1d16vw0u117jw4eax4dc6l14xg20c1k5
+1,2026/02/19,テストドラッグ,-10467,テストカード 配偶者名義,日用品,日用品,,0,xzs2of1yqq1o5kdcytccvcn75kynu7r1u9w0yi16k1p
+1,2026/02/20,テスト電力,-8943,テスト銀行 本人普通,水道・光熱費,電気代,,0,1krqcs3187tn6l2m8dnu1tf8i4v1csa5nq1pdnu7xg3
+1,2026/02/21,テストガス,-7674,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,189k1kb1g7wwkxfm9dqsybi618v25koklg8or71fxct
+1,2026/02/22,テストモバイル,-8673,テストカード 配偶者名義,通信費,携帯電話,,0,cm6mhobvs94lql8u731xozpzccbjrej1ogmnin1l5eq
+1,2026/02/03,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,e0szx1aqm3gsgsvm8x5g1il9eyc7u1hnqay0jexs0ks
+1,2026/02/04,テスト書店,-5578,テストカード 配偶者名義,趣味・娯楽,書籍,,0,11mj2bz1r9u93e1egixyf1jb5j9oage49n1vzrnodjp
+1,2026/02/05,テスト交通 IC チャージ,-5367,テストカード 配偶者名義,交通費,電車,,0,1m6oropis67zlvibqk6zp5gte18tdl7kqvy7s9cf227
+1,2026/02/06,テスト石油,-7283,テストカード 配偶者名義,自動車,ガソリン,,0,re0r9b1epsknv15ktzsm1mpf2kci0577xazl88wwwpe
+1,2026/02/07,テスト薬局,-3003,テストカード 配偶者名義,健康・医療,医療費,,0,13k5ezg1r8tsro1us0p0yyocz4fhl6q9qilpo1k1i71
+1,2026/02/08,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,yuaabyigkdjei8i4wmuoilnj8osblj5dsb2c1hxt2yf
+1,2026/02/09,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,1vu76a0bbnunj1nn1pjq16mjz2e11kjx0y128tlaxjy
+1,2026/02/10,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,sgkrvlhpod6y1qjtn5p7584gt5taacku4dns3104ujz
+1,2026/02/11,テスト衣料,-7597,テストカード 配偶者名義,衣服・美容,衣服,,0,1odc4pfq78yqs142uod91jbvd611sdjoffuhvp27ijs
+1,2026/02/12,テスト贈答,-5490,テストカード 配偶者名義,交際費,交際費,,0,391ij51ymzihnhuz1x015ry1x816ig3vrusvpd211r8
+1,2026/02/13,テスト家電,-21332,テストモール(ポイント),特別な支出,特別な支出,,0,1f8j67j151l5g93rrzte1wlbgqwks3c3e1mppagn1cs
+1,2026/02/14,テスト引き出し,-31084,テスト第二銀行 本人,その他,使途不明金,,0,1cfz5uo1aqn9sqa0t74l1hvwztbygy6oh1xct2neffq
+1,2026/02/15,テスト未分類決済,-3305,テストカード 配偶者名義,未分類,未分類,,0,7r0oq21irzhjz1h71hdv1djmfpn1f7lk5f15db07j1g
+1,2026/02/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,1n8hrg0xy6ntp589egh4agrt61nfgd7hbobi6v18jrr
+1,2026/02/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,rzr4ni6e568bpyov7mhfjl9nnzy5as163cm1a460xzg
+1,2026/02/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,1vlq5giixswlezhddkil0mxil1dri2yo1vun5c51g6l
+1,2026/02/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,i7sjg21b2p8di10exnw8fzea5xqtbvl31tczz3j1v6e
+0,2026/02/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,144n94y11f97jm146fwnpjyeztv1hgpl171jgrzns93
+0,2026/02/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,91yxqqswe81yuk1dnawyk5rndof8gl1fklqbeuqy1oy
+0,2026/02/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,dus4031nqcs0wdhig19ne4eiy1019t2dw9xs9855u22
+0,2026/02/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,11be923hgxee81st3m5l1cydgpqjkzxjo1klykrb7az
+0,2026/02/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,nk6zxf86wnmo1o9iiwp13z77lfehf0veqgaikh16o0h
+0,2026/02/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1p4z3l71lddvuxyln9oz1trwac4hb7bdy1gyxl3m1c5
+0,2026/02/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,13vlk1015ka6v66cns4w17gkdb51pxaj1y5wwori1sq
+1,2026/03/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,1xjtqpo1d1q0pqgh6ml1jqgtk2fv2eyfio921d1qgoj
+1,2026/03/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,t8hc381npkh651dzsruisz9br6p5m846s9enwb1dhp8
+1,2026/03/15,テストクライアント 入金,480000,テスト銀行 本人普通,収入,事業収入,,0,165mmwsvsz9kcqulxla1ikiq6wngnp7j18x31kd9lat
+1,2026/03/18,テスト受託先 制作費,120000,テスト銀行 本人普通,収入,事業・受託,,0,oth6dhz21c4lg1tr56h4ua21jk8ifpedr1rz184bcqm
+1,2026/03/18,テストデータセンター 利用料,-4800,テストカード 配偶者名義,通信費,事業・情報サービス,,0,301ymd94ganp80eb2y1w0yyvgya57t61hzmef4qjcvo
+1,2026/03/18,テスト協力会社 外注,-32000,テスト銀行 本人普通,その他,事業・外注費,,0,1h39z5hi5oyh9uva3alw1wttb1p68k431hwf9bm17dv
+1,2026/03/13,テストスーパー,-61675,テストカード 配偶者名義,食費,食料品,,0,1c70aza1rx6rhi1xvgbbgvldtpe1ktkn2e1vzx1e61o
+1,2026/03/14,テスト食堂,-16735,テストカード 配偶者名義,食費,外食,,0,qz61lur7dpxqqmb6i1gejgxgzpy2lu7ppsf1uyxf8hq
+1,2026/03/15,テストドラッグ,-8430,テストカード 配偶者名義,日用品,日用品,,0,nyngdb1kosm2gapigokcszuuf1vu0p221gjnzhm1630
+1,2026/03/16,テスト電力,-10054,テスト銀行 本人普通,水道・光熱費,電気代,,0,1qnik5hcmfvi21wk83p21k2bh699wuc193dxd9z1612
+1,2026/03/17,テストガス,-8025,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,v7k4kuq5lk11jky2q012biddx1qez4fw13z6246776i
+1,2026/03/18,テストモバイル,-8933,テストカード 配偶者名義,通信費,携帯電話,,0,1ldjnog1xpkx8ei6194z1zkljqldgz9upirey775df8
+1,2026/03/19,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,17wyf6epi7lwg1idi2cc1nvthv91gv2o6v2a82qyr74
+1,2026/03/20,テスト書店,-5223,テストカード 配偶者名義,趣味・娯楽,書籍,,0,9xaeo41gupb7efkr17vnuygwk14d8lnu3kzcnyg0bj7
+1,2026/03/21,テスト交通 IC チャージ,-6737,テストカード 配偶者名義,交通費,電車,,0,enfa2917mjb581x4e9439m9xpyx2p7cc1yfn0jk1jqv
+1,2026/03/22,テスト石油,-6739,テストカード 配偶者名義,自動車,ガソリン,,0,1106mufk8yuze89v2k2976dy91nv7zy81apojcd1pe9
+1,2026/03/03,テスト薬局,-3500,テストカード 配偶者名義,健康・医療,医療費,,0,c52i1l6r9n90lprz6e1kt511l7db64u1so8imdc8p55
+1,2026/03/04,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,ormekrdgunf2wtmka34f55ng1oom4cmvpfoh01itg6z
+1,2026/03/05,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,11y7x14qlf2foub2suh2iaf4ckfvg0ph2ydjlcvydk8
+1,2026/03/06,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,y7aini1u3jl6a1l27ns1bwdw0gktif9wum0sfx8aw07
+1,2026/03/07,テスト衣料,-6088,テストカード 配偶者名義,衣服・美容,衣服,,0,1rvpzvk13axgz7urjt4zjs1sknsgp3fx1pcrbjx1pya
+1,2026/03/08,テスト贈答,-6370,テストカード 配偶者名義,交際費,交際費,,0,15a6ytm19p1fgy1en1gwj1sbugcf1vz74u85po16z1w
+1,2026/03/09,テスト家電,-29254,テストモール(ポイント),特別な支出,特別な支出,,0,1ih819v1iie6o8155xdz1rblhlo67cfhu15fisbf1nn
+1,2026/03/10,テスト引き出し,-28482,テスト第二銀行 本人,その他,使途不明金,,0,3tp1bo56wywf1paex2619cuz4y1cibt3c9bghc2132f
+1,2026/03/11,テスト未分類決済,-6280,テストカード 配偶者名義,未分類,未分類,,0,1gum9z01ytuqfyi6t6zd10g63hzcot42ypy7rxlzmfv
+1,2026/03/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,1d2ftaxllfu2b1lq2uwm132ph247srgf1y5ls431vfn
+1,2026/03/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,3bg9518oze6bcu4wwx1cteqft18lhres1htnhtl1gca
+1,2026/03/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,1npizbh15on7tc1t0jla01o3rltj26cpgb1ctwvetun
+1,2026/03/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,r8sr6lyazgp84v84uhkqhu50dmqtz874cc5s92yv9pp
+0,2026/03/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,1yabmou1lti9in11tvjicrzx24717v7mkb1d48wvsxl
+0,2026/03/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,m6m332gxy3yuegrgcnse24dqcu9vv11p8mtau6j845s
+0,2026/03/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,17otbmqcqxeqi6keakvj0o4zudaafujunc6m91inz66
+0,2026/03/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,bvxkiq1ina7h71cfzeon18z7wuy1x0gg1y1itg3ny1t
+0,2026/03/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,fb1xf3txtbbw13a7zh25c7phl1n055eig7vmow1gzv3
+0,2026/03/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1f440jb1fezg9cuzh8li1yy5na4xe279311sdtm71by
+0,2026/03/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,bzcrez1lmrsi83a5jay13otklb1t8s54dyvtc8hooyo
+1,2026/04/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,1pp5qubrfe0jznffwxjpf5yuw13cafdo1dqka2l1wj4
+1,2026/04/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,13db77w2oo9lm1gkt99htjkkrcd9y1v82d7fef1yuaf
+1,2026/04/15,テストクライアント 入金,264570,テスト銀行 本人普通,収入,事業収入,,0,1vt8xgca8ueqy1181w7210s43ndwufpe1stycalnc85
+1,2026/04/18,テスト受託先 制作費,120000,テスト銀行 本人普通,収入,事業・受託,,0,sjulhv1dtgryt9eamii1rp2saa1jd13zl9epwn9fzei
+1,2026/04/18,テストデータセンター 利用料,-4800,テストカード 配偶者名義,通信費,事業・情報サービス,,0,15nkptt16kyk59177fhyeryhcxz1nrtx6xgr8fo1t1t
+1,2026/04/18,テスト協力会社 外注,-32000,テスト銀行 本人普通,その他,事業・外注費,,0,imkfmaz2gpwj3jnznk1vc4b9z138a1t1cfp6ll134l1
+1,2026/04/09,テストスーパー,-62617,テストカード 配偶者名義,食費,食料品,,0,ddb7s41q0xiap1c8h0cqmkgom9zq5txc1pf1egd135b
+1,2026/04/10,テスト食堂,-13560,テストカード 配偶者名義,食費,外食,,0,18pawyyenlssi2v2otmgrvw2818u2dp7wuyga51kb3a
+1,2026/04/11,テストドラッグ,-10021,テストカード 配偶者名義,日用品,日用品,,0,1dwwztz5hnwcjczz0fj833eyl14sslq01q6af3myp04
+1,2026/04/12,テスト電力,-9806,テスト銀行 本人普通,水道・光熱費,電気代,,0,1hzmd11vjzvih1pomfz51onn773oerbgzrprzfm89gs
+1,2026/04/13,テストガス,-8306,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,nbzshnm8mvoo1ggw31h1xwsx3yaq0nnwzyo45e8j0w9
+1,2026/04/14,テストモバイル,-8776,テストカード 配偶者名義,通信費,携帯電話,,0,1t912kd1227iqz6kzed3a306sc1k1l482omugnaizlr
+1,2026/04/15,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,z10zeu1a48wnxu2fv5f1n34e161c0s8eb1wakxw21ce
+1,2026/04/16,テスト書店,-4908,テストカード 配偶者名義,趣味・娯楽,書籍,,0,1lheg7wi19fc31fxahde1jasez8zbzc73145l63n12e
+1,2026/04/17,テスト交通 IC チャージ,-5509,テストカード 配偶者名義,交通費,電車,,0,1672d9u1sb41u8q7azqf18zjud21jksb4gwx7sar13p
+1,2026/04/18,テスト石油,-6604,テストカード 配偶者名義,自動車,ガソリン,,0,bmz2c458nzz9xjdn62zwv9dpomuyqhvbkgtkgl3y6j1
+1,2026/04/19,テスト薬局,-3372,テストカード 配偶者名義,健康・医療,医療費,,0,jjla1xlvf6mn1njq1hdzfye3j1n7lzzg450wt5s66fh
+1,2026/04/20,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,1fwm8uf1ueto8a1b541ehlks9ob1ju1gfa1c3gyj1pi
+1,2026/04/21,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,c80tx5115bp8o1hd31y91b5466qlv4svo1rjvf01144
+1,2026/04/22,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,qf9v3i1p851iy1t6za0xg3lwg21tupc89gvl000kp8i
+1,2026/04/03,テスト衣料,-4922,テストカード 配偶者名義,衣服・美容,衣服,,0,1032lt3gk8xmn88t3hg1j1wu6p100oawp12f3fgiudf
+1,2026/04/04,テスト贈答,-5849,テストカード 配偶者名義,交際費,交際費,,0,vdsk677g5u2b3izy201necu8x18wlrkaofktsd12xtq
+1,2026/04/05,テスト家電,-22378,テストモール(ポイント),特別な支出,特別な支出,,0,1q5t93b1w98cp31vjceer1rljqzsdnrzsljgnvmv1qi
+1,2026/04/06,テスト引き出し,-33934,テスト第二銀行 本人,その他,使途不明金,,0,148mp9zkupujnkg7n091iasctc18trup3kfvaiafu7j
+1,2026/04/07,テスト未分類決済,-6433,テストカード 配偶者名義,未分類,未分類,,0,1huvlwo1ap5dvzt129q814q53mrr3x5yy6wc0t011sw
+1,2026/04/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,d20dlc155qworsdosm7z0kmva88dkpfsty6efodc9vx
+1,2026/04/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,1g8b2fsy5qtg61ox4vgxcxxyir17o73chc20t1kph6y
+1,2026/04/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,1kbrj941s9vi7faeeatykill7yxtjtcs1wdkrxn1t1f
+1,2026/04/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,1ny1yh3nmmtb196ec2e1xn6psm1w33a931btfnv0rnf
+0,2026/04/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,1o7uwt59gfkib1h1czy8s9vbhv1fgmmof192lj0713s
+0,2026/04/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,sv14211li0x93i0wlrg15yaz051x8enavl9ty5e98px
+0,2026/04/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1ys7xf6yep0xfdk1pct1dolnoam6c4q41q4wl5g1v61
+0,2026/04/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,lnp99m14qb6fj1ucndni18ggdky17ljvbm18xe2sn1p
+0,2026/04/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,172hlxe1dc6562167p7zs4j2i6pxlxp8hn8lx41xbsd
+0,2026/04/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,5k8djerpf5nrg5gku41y1wri81ix7hrs1umt3u3bx16
+0,2026/04/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,1ios2q41uqat8s1xdvatg1lgyqdw1s2aicl14bgkaqy
+1,2026/05/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,1dxmm16nd67f518190ej76crdx1dplv7511fufk6zbc
+1,2026/05/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,9a6c601dremk3klq177ye4j8qjx66t1msubfnomi2v7
+1,2026/05/15,テストクライアント 入金,311667,テスト銀行 本人普通,収入,事業収入,,0,1lqd3yy15r1d9i1d8lcyk1i8o6j1hl6zne19wzg3o9u
+1,2026/05/18,テスト受託先 制作費,120000,テスト銀行 本人普通,収入,事業・受託,,0,10d4io3uez9sc128u8ivnl4jdy4l2zc51km3ejk11t7
+1,2026/05/18,テストデータセンター 利用料,-4800,テストカード 配偶者名義,通信費,事業・情報サービス,,0,1wb6ai51jmwhdbludjn7v73edg113yvrvswv4g11udn
+1,2026/05/18,テスト協力会社 外注,-32000,テスト銀行 本人普通,その他,事業・外注費,,0,sljysvcbv07s1ofuqluiaqf9n61pqgeu5kwah1bg4df
+1,2026/05/05,テストスーパー,-62966,テストカード 配偶者名義,食費,食料品,,0,1534qvx1euidy1q86th0n1t9odety6br19kt95x9rhy
+1,2026/05/06,テスト食堂,-19698,テストカード 配偶者名義,食費,外食,,0,q2hyya1kexjtn16iu7nf1chs8k8zfcfim1ju2r68kvk
+1,2026/05/07,テストドラッグ,-9637,テストカード 配偶者名義,日用品,日用品,,0,cvmekstg6ycd6vjigp8shcdq1y94fw71aqy4p5c4l0u
+1,2026/05/08,テスト電力,-9136,テスト銀行 本人普通,水道・光熱費,電気代,,0,1fwvzqe123gni8c30m9y12u0fukgfaffpxdecg61at7
+1,2026/05/09,テストガス,-6474,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,k117f018vb4t3vor4st1xj0mdjkfbedl1qpx5zjroah
+1,2026/05/10,テストモバイル,-8853,テストカード 配偶者名義,通信費,携帯電話,,0,6g06j5nvysylnylnowayglfy1541swo667pmv1w2c74
+1,2026/05/11,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,p0g1tb1vpa7u71srbyqljl3nx216grck06dzro31o2f
+1,2026/05/12,テスト書店,-4562,テストカード 配偶者名義,趣味・娯楽,書籍,,0,1tvdisd5u8wrf168fx6ov8c2vb186p34os5qeg61x79
+1,2026/05/13,テスト交通 IC チャージ,-5686,テストカード 配偶者名義,交通費,電車,,0,zhe5img2pva11iinjxjmnnnn7pwxqkg16b7tofnjuwe
+1,2026/05/14,テスト石油,-6916,テストカード 配偶者名義,自動車,ガソリン,,0,1kzjwtd1bwa65qirwfaz4mal9l1cgau7t1gsz6n2i3x
+1,2026/05/15,テスト薬局,-3517,テストカード 配偶者名義,健康・医療,医療費,,0,rfo6ltylfcx218pub3n1u8o165rog9vxpnz2vhmrgqi
+1,2026/05/16,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,6fjehx1nbih1c13ivbp51pdan3jsr2ytbso9jpw17sj
+1,2026/05/17,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,hso036e4pqmc12kxvnmbr63sczz4ha014l5mjft0b50
+1,2026/05/18,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,1dpg1omkt30s1bg91qmfpte1o143xqu3i81pzh1wyzb
+1,2026/05/19,テスト衣料,-5843,テストカード 配偶者名義,衣服・美容,衣服,,0,cvhaly1qmo8bu1wy47pwjhoikr1br8v7oqwuzjv1fml
+1,2026/05/20,テスト贈答,-4066,テストカード 配偶者名義,交際費,交際費,,0,q2njpmk22eumvhkkcw1wmw5ofh7ogqj2fcsf81mepnd
+1,2026/05/21,テスト家電,-32172,テストモール(ポイント),特別な支出,特別な支出,,0,10qm2ab1ahjopi1huhvxa1vlwetn1e9mzku1n3b6jm1
+1,2026/05/22,テスト引き出し,-31808,テスト第二銀行 本人,その他,使途不明金,,0,wfcszb1easn4j19dkel21vjmzxq1vwn4tsixk6ctdld
+1,2026/05/03,テスト未分類決済,-4918,テストカード 配偶者名義,未分類,未分類,,0,1rv72jjp2nr1s189j0c414yueufjm677i39wg0o1gqf
+1,2026/05/10,Anthropic Claude 月額,-36000,テストカード 配偶者名義,通信費,サブスク,,0,12mfgkj1u937b42qlwz31u4upz61fy6jkv1u0f8ff1k
+1,2026/05/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,1o5xuv43nd0yb1nxqtjll9n7lu16eclr9leryk0290b
+1,2026/05/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,bgoh84fnz4lr1xll8pw3af895tixzngbifpc216g6d8
+1,2026/05/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,1g5dzn81nk1l9isgu4kqk75fws1k2ktdyway29c1n6u
+0,2026/05/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,1iqt5covwyi1n1932twl5v1x11fb8moy1hx2ksr1doe
+0,2026/05/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,5sdfpd16dxnz770uqyz5wxb4zefmizl16qxig91fibs
+0,2026/05/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1r2gmvalmpoos1ywu5111dehek392map6yewc6h13sv
+0,2026/05/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,ul1dsc9qp2tdpjfg5g9o6dwplom8l6104rtgm1ca9q7
+0,2026/05/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1ypjyy125iybsp5oqot9joxm1cd0ju710sse9r16e28
+0,2026/05/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,v5lahjnoxsrqber78p1lp4hw0101aj4w11ppbiu2o3a
+0,2026/05/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,1qp7yl519380bd13wkzn41laj49ainc0d01v8dc6r7s
+1,2026/06/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,66qynn13vd8oa1mgsui9btj77h5kyjaq1q3xhi61m8j
+1,2026/06/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,1i2gd0oua13egrrh56n12o7mq7145m1lf1gu1k121nr
+1,2026/06/15,テストクライアント 入金,480000,テスト銀行 本人普通,収入,事業収入,,0,1g8j1g61hevmmu1sgch9v15mjb75cj7g10mfhwun1f3
+1,2026/06/18,テスト受託先 制作費,120000,テスト銀行 本人普通,収入,事業・受託,,0,d41b2g6j2tn03y2sggaxqyatl69c021eyslatlz6qmn
+1,2026/06/18,テストデータセンター 利用料,-4800,テストカード 配偶者名義,通信費,事業・情報サービス,,0,1opb1tmg4anzqdpg3lx1qg0rluc24bqx1tekwit1hru
+1,2026/06/18,テスト協力会社 外注,-32000,テスト銀行 本人普通,その他,事業・外注費,,0,123257v1m4mmvob6vo1q10mb6o31o1qc3a107dua02a
+1,2026/06/21,テストスーパー,-59082,テストカード 配偶者名義,食費,食料品,,0,1wt1vydw0bkiz1rhapxr1m09tmv1nc1vaj1hcv5alwp
+1,2026/06/22,テスト食堂,-17377,テストカード 配偶者名義,食費,外食,,0,xnpuyz16obgmkpr7rlxc7mm4kkjxgnhfpp1p8yukzkg
+1,2026/06/03,テストドラッグ,-9332,テストカード 配偶者名義,日用品,日用品,,0,12ixyk11cwhzqmjdqmkj3fp0xekaa4jg1hjcc1x1e8p
+1,2026/06/04,テスト電力,-12867,テスト銀行 本人普通,水道・光熱費,電気代,,0,qfqxm2o7ekvo1v7lrft11rnwvaqa7lh763bvr51dwxe
+1,2026/06/05,テストガス,-6122,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,comjc41wrq5c91dlxbl81o76vtj48hx6d10mm81g1mj
+1,2026/06/06,テストモバイル,-8940,テストカード 配偶者名義,通信費,携帯電話,,0,1e6clcru3dau91pm6y3t1rp7owzw9j7bbuqviy7up89
+1,2026/06/07,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,jihpmz1ioln5tsb1o5f1jcbl89sfav40aaab9lrs8pl
+1,2026/06/08,テスト書店,-3985,テストカード 配偶者名義,趣味・娯楽,書籍,,0,4zpoa41bd9ils1bjfv8bqnfc9p1hn7jp26oo03e6w4n
+1,2026/06/09,テスト交通 IC チャージ,-6418,テストカード 配偶者名義,交通費,電車,,0,qq0hwk12t00uh1x2obao18hhue2e53rs11kgj3rw1fo
+1,2026/06/10,テスト石油,-7896,テストカード 配偶者名義,自動車,ガソリン,,0,1utfexo1ys73kh13ppjy91dx3hdhzjs9tmv1suviurk
+1,2026/06/11,テスト薬局,-3720,テストカード 配偶者名義,健康・医療,医療費,,0,gwqppbqx15i1wk090cyq5c7jzqal4ckaw1yxeiq11v1
+1,2026/06/12,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,1vmffwt39az6a1j88ftgm56iur151qj2j12jvskz1ev
+1,2026/06/13,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,rz5d7x1qeww9h1pu1tmg1fd0r7aesbfo3r9qmgnzcv8
+1,2026/06/14,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,5xyc0dxqzst8aszobo39ws8y1ekzm782eiru8arcmj7
+1,2026/06/15,テスト衣料,-6673,テストカード 配偶者名義,衣服・美容,衣服,,0,l33kuu16235i47d0c0v1rvrjk1t3qks31rge2ne1bcx
+1,2026/06/16,テスト贈答,-3792,テストカード 配偶者名義,交際費,交際費,,0,1ffznji1erjij82s6b9z1rwrc1poium4s6m0eatt61g
+1,2026/06/17,テスト家電,-32950,テストモール(ポイント),特別な支出,特別な支出,,0,bc4c4mptuwh91e8dkrs1qs92yz7jikf01lp8g86st0q
+1,2026/06/18,テスト引き出し,-26220,テスト第二銀行 本人,その他,使途不明金,,0,pfg7se1rdhxei1u07auj109nd9skgzzmcjgvs3l88cc
+1,2026/06/19,テスト未分類決済,-5498,テストカード 配偶者名義,未分類,未分類,,0,126uytb3hmr5iwkxw741mrbjxexdt8cqplgz3enquzc
+1,2026/06/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,sh74njdd5bveov8scqpzvakywbhylr59fg9g1jv0p1a
+1,2026/06/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,1vt1ofz1pxxppc1jo8fdqgzaje19m2zhkgymr3s251z
+1,2026/06/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,13d62r4106u2brjczick16s7zct1p5hxfzrqesfp1rw
+1,2026/06/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,1ppbhmp1qfizk11my1vw91sg54eyhgw99c10j54xg1e
+0,2026/06/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,9lzu7nlf7i211t1qx3l1s93mc818ek9uk13a4rh11o5
+0,2026/06/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,1dafdc19ilwmf1ewxm071ea0if193vk9ginhwp4wfg9
+0,2026/06/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1je9fvb8v6eel16trjgh191cz1l1577adz46p5981jn
+0,2026/06/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,55up4owfwgcu1w7kp44is5iwsr67taj1eet5ukjm8qr
+0,2026/06/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,17ocl5e1cbqivb1q0wptu1h82zor1p64iz48cg2e217
+0,2026/06/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,m7141411eesp91s94h6s1gctqhp1y0nvxt1jcf7beeh
+0,2026/06/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,1ybf16mn8cfvn3e79k1q2yjdjco9ao1zwhj3n9cxx66
+1,2026/07/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,tklo1f1wtm3na1awvmnwbtlf75pgd9f31t8lmkf1snz
+1,2026/07/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,1sakcz58hz8pt9ja09b16bgdcd6m304n1c9s32zzsy2
+1,2026/07/15,テストクライアント 入金,300516,テスト銀行 本人普通,収入,事業収入,,0,74mm6bg8pfuv64qyyzb2nfjzfndxzg1o1w3uj1mqsuj
+1,2026/07/18,テスト受託先 制作費,120000,テスト銀行 本人普通,収入,事業・受託,,0,1jnd4ec1jz9e1w1mu2steng2aleorne681o8cl56njd
+1,2026/07/18,テストデータセンター 利用料,-4800,テストカード 配偶者名義,通信費,事業・情報サービス,,0,1gvf58au2wvf2m9wpbemlcr6k1yau6nncyp20fechmt
+1,2026/07/18,テスト協力会社 外注,-32000,テスト銀行 本人普通,その他,事業・外注費,,0,crdec012ogv37s3sjbac0h9bys171vy3m2dc1erjz7f
+1,2026/07/17,テストスーパー,-61837,テストカード 配偶者名義,食費,食料品,,0,1ij8uxm1h71zra1aghzi61c85laxnrs72n1kriweds4
+1,2026/07/18,テスト食堂,-14531,テストカード 配偶者名義,食費,外食,,0,15862u2axvsrx1ypztwc17f9o4c11i5r611rivru81c
+1,2026/07/19,テストドラッグ,-9301,テストカード 配偶者名義,日用品,日用品,,0,1rqk8ey1o3p9413csvw3ur8kynjrhev66aeyfrlq8ph
+1,2026/07/20,テスト電力,-10480,テスト銀行 本人普通,水道・光熱費,電気代,,0,w21b92s7nrvl1c890y01tbuh0x10ggv0jaw9jfl1352
+1,2026/07/21,テストガス,-7556,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,zokvzi1kthrwteisdra1xs9rhj19hgr68ug46z21rli
+1,2026/07/22,テストモバイル,-8820,テストカード 配偶者名義,通信費,携帯電話,,0,mcohsj1dei8et6kl7sy1s82cu14y9dato4exsjf4xnj
+1,2026/07/03,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,9zhwxn14sg2uy1j5sc2kx4yht71dbavsm1lu8swcry7
+1,2026/07/04,テスト書店,-5198,テストカード 配偶者名義,趣味・娯楽,書籍,,0,1en0zxz1umetx5s601mg52h7oa10t1z61vnabm61ahe
+1,2026/07/05,テスト交通 IC チャージ,-5385,テストカード 配偶者名義,交通費,電車,,0,j09h5zoxwcet1pcpopm23dj41e94kwe35sarg13b49m
+1,2026/07/06,テスト石油,-8858,テストカード 配偶者名義,自動車,ガソリン,,0,c2jc9kh0vzatk2ielb1u00mnkg8oelwcw3c9b1shqme
+1,2026/07/07,テスト薬局,-4234,テストカード 配偶者名義,健康・医療,医療費,,0,17pbhfs1mr8e091d1fyyeymfg7mux8cizdxx01g1hd0
+1,2026/07/08,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,1lbtv04xhy0rt6ykxr61pd5chj17hwutx2gvuqu1jkn
+1,2026/07/09,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,xg8k8c148gnvx1hq1cmabeldbjktqdrc14f26t91qq8
+1,2026/07/10,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,1sx58v51a5spousr2wu9167tv4itfyy8s1nitf336ic
+1,2026/07/11,テスト衣料,-8693,テストカード 配偶者名義,衣服・美容,衣服,,0,o0cv61juvlz5x03ek9j55z4615tq4bdnquw0j1ws88d
+1,2026/07/12,テスト贈答,-6190,テストカード 配偶者名義,交際費,交際費,,0,7dmik51tnbneh1hdiady1a2r881677ihfu9xvj11mhd
+1,2026/07/13,テスト家電,-15176,テストモール(ポイント),特別な支出,特別な支出,,0,lke9ma39899o10wkep81dx7fdmh9rlad1ny6r9eb11e
+1,2026/07/14,テスト引き出し,-31593,テスト第二銀行 本人,その他,使途不明金,,0,1h59yed1ollemualc1tsziro76ct8qqc12jhovbwvse
+1,2026/07/15,テスト未分類決済,-5336,テストカード 配偶者名義,未分類,未分類,,0,e1jzfj1aw2jj4ivzgixcexnhy1qxwpju1xiydjn110x
+1,2026/07/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,igsoxx1041ufqq9nhts1q3gk4mn47g3yikzk1euxph1
+1,2026/07/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,165tdfu1spnxlj1d7rnfr1grlqpdaooj00xdbwgi1qf
+1,2026/07/10,Adobe CC 月額,-25920,テストカード 配偶者名義,通信費,サブスク,,0,qslyr0pnhziu1n6zkcd2j738t9db9vz1h28j0x65wv9
+1,2026/07/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,1vb4hgeebkz2o127b0avy4waf814jkz4br8eqc81f4b
+0,2026/07/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,13vfwgs64nrbr1yph94tjezngg418o1xj5yhjg8k7vv
+0,2026/07/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,1pi9okhwgf3rxqbsii41eusdj1u8bwqm16650u88tme
+0,2026/07/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,a5rk9z1qg6yni1enj6p5mvubv86kbjuotzoow6jp4p8
+0,2026/07/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1ew2b1p13naucf376aqk1v8v9wywd0vqbgy6ey01xro
+0,2026/07/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,g360zbnee7h91qcwl4ycv5jcd1t0y5mo15c5j0d1r08
+0,2026/07/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,c1j1c81usgiqb188kbp1gfaie5176lsuk1hmrai11aj
+0,2026/07/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,16cpxa61kxmxzqwwkyg18bkiiu2i2l3811i7yz64ug7
+1,2026/08/25,テスト商事 給与,285000,テスト銀行 本人普通,収入,給与,,0,kfjgp8bwof95y554fz1jv8xea12qd6fy129c27j1xne
+1,2026/08/25,テスト工業 給与,182000,テスト銀行 配偶者普通,収入,給与,,0,1xth57i1lgd8uv13rj7wf1799l58y3xrnf1bsxf6n17
+1,2026/08/15,テストクライアント 入金,263760,テスト銀行 本人普通,収入,事業収入,,0,rzmetru4gn9jq4jx77wl61625yovdh1p2xyvblahl09
+1,2026/08/18,テスト受託先 制作費,120000,テスト銀行 本人普通,収入,事業・受託,,0,1mxephc1wwd8rs1p0fyhmnudcj11ep8lww1t2j7w2xb
+1,2026/08/18,テストデータセンター 利用料,-4800,テストカード 配偶者名義,通信費,事業・情報サービス,,0,12t500o9es6gjl1tgi1vg99ta1hq8aikjpc7nhexoif
+1,2026/08/18,テスト協力会社 外注,-32000,テスト銀行 本人普通,その他,事業・外注費,,0,1l9q80xetas9ckb49vsvm4mwgukl23r1esnlv21x6xh
+1,2026/08/13,テストスーパー,-60522,テストカード 配偶者名義,食費,食料品,,0,18kn79t2p1zre1rbv13pdb0xpr1dlj9ov16er2qr11j
+1,2026/08/14,テスト食堂,-22274,テストカード 配偶者名義,食費,外食,,0,ecp5exz6o8um141rpwlm50c8w6ngwlm4n06tmagyhq1
+1,2026/08/15,テストドラッグ,-10648,テストカード 配偶者名義,日用品,日用品,,0,1hqekfl1mvr1ey2h3qn3ylsslfvxygk3x627x2fmtrj
+1,2026/08/16,テスト電力,-12126,テスト銀行 本人普通,水道・光熱費,電気代,,0,15usiii1fwgda5wkt9jdk2noh1nu9jyr1o7swr45oml
+1,2026/08/17,テストガス,-6900,テスト銀行 本人普通,水道・光熱費,ガス・水道,,0,1r3n9de16x1js49n5qtg2cz4n8dyao9s7o567m1dxh5
+1,2026/08/18,テストモバイル,-8542,テストカード 配偶者名義,通信費,携帯電話,,0,yy6nr61hkczlwxtl7sm1njcqnz1bvjdmh8z7b10kojq
+1,2026/08/19,テスト不動産 家賃,-128000,テスト銀行 本人普通,住宅,家賃,,0,13rsfnmterwzh100dftl15l7h601tn7x0jgf03g6ria
+1,2026/08/20,テスト書店,-4559,テストカード 配偶者名義,趣味・娯楽,書籍,,0,p77boz452wlh15onmhn5fdizg1xncq1qu192v51149r
+1,2026/08/21,テスト交通 IC チャージ,-6541,テストカード 配偶者名義,交通費,電車,,0,bkeumrdaar1esnw1j918u2exaxo1eat17ud8dg1rgkp
+1,2026/08/22,テスト石油,-8454,テストカード 配偶者名義,自動車,ガソリン,,0,11tkfdnsmvfwh1qrt6jju9p0ic16fjqg2ele48e5g7y
+1,2026/08/03,テスト薬局,-2949,テストカード 配偶者名義,健康・医療,医療費,,0,gbzlxf12d5rz5hc1ntp3s6l1okpjrz1ftoa1lgzb1hc
+1,2026/08/04,テストスクール,-12000,テストネット銀行 本人,教養・教育,習い事,,0,bs2g6c1a9c1tk1cv9dtjlkcu7ft2hsax1s5gw7niieu
+1,2026/08/05,テスト生命,-14500,テスト銀行 本人普通,保険,生命保険,,0,18dtpf8m3o3z4ktmena1kco6y21q2vp4kurmj5x2l5r
+1,2026/08/06,テスト市 住民税,-21000,テスト信用金庫 本人,税・社会保障,税金,,0,1kp310r5mq5ziqxme6fbr2bu2zfqmr5112t4kh1dx9c
+1,2026/08/07,テスト衣料,-4702,テストカード 配偶者名義,衣服・美容,衣服,,0,vuiyhhwpu31c9bia7f1wspyvm10bnfl21f0keh44vlb
+1,2026/08/08,テスト贈答,-4375,テストカード 配偶者名義,交際費,交際費,,0,1san01q1meuym555hat1b0e4gy1imytlj19gymcn14q
+1,2026/08/09,テスト家電,-23614,テストモール(ポイント),特別な支出,特別な支出,,0,mk6kxg1fn7kh012jp8nm9l75ud1hhjwvrxzqk527lz7
+1,2026/08/10,テスト引き出し,-28913,テスト第二銀行 本人,その他,使途不明金,,0,8l3oqzwby3e18m2xq71r3ppjdn0xeyf1hwdyom10azc
+1,2026/08/11,テスト未分類決済,-3492,テストカード 配偶者名義,未分類,未分類,,0,1cmmyz81uyekak1uoq2on3z5u7x1bx1ffo1urgmjvec
+1,2026/08/10,Anthropic Claude 月額,-3000,テストカード 配偶者名義,通信費,サブスク,,0,1gnmy9xq38gli1brkzdhlaukjb1y6by0y184mzd31y8
+1,2026/08/10,GitHub 月額,-1800,テストカード 配偶者名義,通信費,サブスク,,0,e7x7hze6y1lw1tlsdjx1c8v6gd14p2fcr4nrbryzetw
+1,2026/08/10,Adobe CC 月額,-6480,テストカード 配偶者名義,通信費,サブスク,,0,j2urs9crqa7e1qqtu7v11rvzft1u8709cak8da1q9g2
+1,2026/08/10,Notion 月額,-1200,テストカード 配偶者名義,通信費,サブスク,,0,15erbzajdfiq72ls472xnb2qk1wivt2f1pmiuqtkmch
+0,2026/08/26,カード引落,-150000,テスト銀行 本人普通,現金・カード,カード引き落とし,,1,thrte41sejssinj2mec1rmlhl81k7oc8w1oh9lvg1j8
+0,2026/08/27,ATM引き出し,-30000,テスト銀行 本人普通,現金・カード,ATM引き出し,,1,1x1sbau11ldgncba9y3i1a1tbfpp8hfmkeivt68bkod
+0,2026/08/06,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,11tc6y01g2mqri9z385ji71972gmgta3xwe4od1lshj
+0,2026/08/13,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,1ozc5eh1o6fmeg1dgq497w4hazs16l1dud1okp0u51h
+0,2026/08/20,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,nykeo3tg6yip3kq9s1uenkq2ng2okqicf3z81wzhol0
+0,2026/08/27,電子マネーチャージ,-3000,テストカード 配偶者名義,現金・カード,電子マネー,,1,10uixyxbimh88ra87te1lm6xc1aqf28m1jzrkkwvoqm
+0,2026/08/26,集計対象外テスト行,-9999,テスト銀行 本人普通,その他,未分類,,0,ehro3y1h2kg3025qhe0482broavw77tpvveb01x9snv

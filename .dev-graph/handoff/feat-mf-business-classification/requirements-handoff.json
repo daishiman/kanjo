@@ -1,0 +1,232 @@
+{
+  "schema_version": "1.0.0",
+  "handoff_target": "task-graph",
+  "emitted_by": "dev-graph:run-dev-graph-requirements",
+  "emitted_at": "2026-09-10T06:51:34Z",
+  "repository_id": "github:daishiman/kanjo",
+  "feature_id": "feat-mf-business-classification",
+  "snapshot_digest": "sha256:ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7",
+  "package_reference": {
+    "feature_package_id": "feature-package/feat-mf-business-classification",
+    "plan_dir": ".dev-graph/plans/feature-package-feat-mf-business-classification",
+    "promotion_receipt": ".dev-graph/plans/feature-package-feat-mf-business-classification/atomic-promotion-receipt.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-graph.json",
+    "registration_receipt": ".dev-graph/cache/run-20260910-mfbiz/registration-receipt.json"
+  },
+  "readiness": {
+    "status": "complete",
+    "missing_sections": [],
+    "checked_at": "2026-09-10T06:51:34Z"
+  },
+  "gates": [
+    {
+      "gate": "exact-13 external validator (validate-system-plan.py)",
+      "status": "pass",
+      "exit_code": 0,
+      "digest": "sha256:ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7",
+      "violations": 0
+    },
+    {
+      "gate": "graph schema + artifact parity (validate-graph-schema.py)",
+      "status": "pass",
+      "exit_code": 0,
+      "violations": 0,
+      "missing_sections": []
+    },
+    {
+      "gate": "C02 saved state (registration receipt + task nodes)",
+      "status": "pass",
+      "digest": "sha256:ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7",
+      "detail": "expected 13 = applied 13"
+    },
+    {
+      "gate": "C11 promotion + C05 evaluation digest",
+      "status": "pass",
+      "digest": "sha256:ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+    }
+  ],
+  "tasks": [
+    {
+      "graph_node_id": "SYS-MFBIZ-P01",
+      "phase_ref": "P01",
+      "title": "匿名 fixture による要件ベースライン確定",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p01.md",
+      "depends_on": [],
+      "resource_scope": [
+        "docs/mf-business-classification/requirements-baseline.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P02",
+      "phase_ref": "P02",
+      "title": "判定境界のアーキテクチャ決定",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p02.md",
+      "depends_on": [
+        "SYS-MFBIZ-P01"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/architecture-decision.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P03",
+      "phase_ref": "P03",
+      "title": "設計レビュー",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p03.md",
+      "depends_on": [
+        "SYS-MFBIZ-P02"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/design-review.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P04",
+      "phase_ref": "P04",
+      "title": "契約テスト先行",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p04.md",
+      "depends_on": [
+        "SYS-MFBIZ-P03"
+      ],
+      "resource_scope": [
+        "packages/core/test/mf-business-classification.test.ts",
+        "packages/core/test/total-cashflow-business.test.ts",
+        "packages/web/test/classify-mid-source.dom.test.tsx"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P05",
+      "phase_ref": "P05",
+      "title": "最小実装",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p05.md",
+      "depends_on": [
+        "SYS-MFBIZ-P04"
+      ],
+      "resource_scope": [
+        "packages/core/src/classify.ts",
+        "packages/core/src/total-cashflow.ts",
+        "packages/core/src/types.ts",
+        "packages/api/src/routes/total-cashflow.ts",
+        "packages/web/src/pages/Classify.tsx",
+        "packages/web/src/pages/analysis/TotalCashflow.tsx"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P06",
+      "phase_ref": "P06",
+      "title": "テスト実行記録",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p06.md",
+      "depends_on": [
+        "SYS-MFBIZ-P05"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/test-run.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P07",
+      "phase_ref": "P07",
+      "title": "匿名 fixture による受入検証",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p07.md",
+      "depends_on": [
+        "SYS-MFBIZ-P06"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/acceptance.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P08",
+      "phase_ref": "P08",
+      "title": "重複判定のリファクタリング",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p08.md",
+      "depends_on": [
+        "SYS-MFBIZ-P07"
+      ],
+      "resource_scope": [
+        "packages/core/src/total-cashflow.ts",
+        "docs/mf-business-classification/refactoring.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P09",
+      "phase_ref": "P09",
+      "title": "品質保証レビュー",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p09.md",
+      "depends_on": [
+        "SYS-MFBIZ-P08"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/assurance.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P10",
+      "phase_ref": "P10",
+      "title": "最終レビュー",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p10.md",
+      "depends_on": [
+        "SYS-MFBIZ-P09"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/final-review.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P11",
+      "phase_ref": "P11",
+      "title": "証跡索引",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p11.md",
+      "depends_on": [
+        "SYS-MFBIZ-P10"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/evidence.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P12",
+      "phase_ref": "P12",
+      "title": "利用者・運用文書同期",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p12.md",
+      "depends_on": [
+        "SYS-MFBIZ-P11"
+      ],
+      "resource_scope": [
+        "docs/spec-v1.1.md",
+        "docs/data-schema.md",
+        "docs/mf-business-classification/runbook.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P13",
+      "phase_ref": "P13",
+      "title": "クローズアウト",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p13.md",
+      "depends_on": [
+        "SYS-MFBIZ-P12"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/close-out.md"
+      ],
+      "tracker_binding": "beads"
+    }
+  ],
+  "implementation_boundary": {
+    "owner": "capability-build / task-graph build",
+    "note": "requirements verb は実装 code を生成しない。生成物は本 handoff と要件文書のみ",
+    "code_files_generated": 0
+  }
+}

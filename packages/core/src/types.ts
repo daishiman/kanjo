@@ -93,6 +93,23 @@ export function isMfCountable(t: Pick<MfTx, 'isTarget' | 'isTransfer'>): boolean
   return t.isTarget !== false && t.isTransfer !== true;
 }
 
+/**
+ * MF の中項目が事業用途を表す接頭辞。
+ * 前方一致にしているのは「事業経費 / 事業・情報サービス / 事業・携帯電話」のように
+ * 利用者が中項目を増やしても、コードを直さずに事業へ寄せるため。
+ * 家計側に「事業」で始まる中項目を作らない運用約束と対になっている(C10)。
+ */
+export const MF_BIZ_MID_PREFIX = '事業';
+
+/**
+ * 中項目だけで事業と判定できるか。事業判定式の正本はこの 1 箇所だけに置く。
+ * 原文は保ち、比較時だけ前後の空白を落とす。
+ * 収入・支出のどちらにも同じ式を当てるため、金額の符号は見ない。
+ */
+export function isMfBizByMid(t: { mid?: string | null }): boolean {
+  return (t.mid ?? '').trim().startsWith(MF_BIZ_MID_PREFIX);
+}
+
 /** canonical名義。unsetは永続値ではなく、解決できない場合だけ導出する。 */
 export const OWNER_VALUES = ['business', 'spouse', 'family'] as const;
 export type Owner = (typeof OWNER_VALUES)[number];
@@ -204,12 +221,6 @@ export interface FreeeDeal {
   settledAmount?: number | null;
 }
 
-/** 判定結果 */
-export interface Classification {
-  cls: Cls;
-  src: '手動' | 'ルール' | '既定';
-}
-
 export interface PersonalMonth {
   income: Record<string, number>;
   expense: Record<string, number>;
@@ -294,10 +305,12 @@ export function emptyDataset(): Dataset {
   };
 }
 
-/** HTML版の初期ルール（新規ユーザーの既定値） */
+/**
+ * HTML版の初期ルール（新規ユーザーの既定値）。
+ * 「事業経費」「事業・副業」は中項目の前方一致(isMfBizByMid)が同じ明細を拾うため持たない。
+ * 判定式を 2 箇所に分けないための除外である。
+ */
 export const DEFAULT_RULES: Rule[] = [
-  '事業経費',
-  '事業・副業',
   'ANTHROPIC',
   'OPENAI',
   'OPEN AI',

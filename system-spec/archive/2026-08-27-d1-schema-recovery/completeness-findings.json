@@ -4,7 +4,7 @@
     "version": "0.1.0",
     "context": "fork"
   },
-  "spec_dir": "/Users/dm/orca/workspaces/kanjo/サーバーエラー対策/system-spec",
+  "spec_dir": "${LOCAL_HOME}/orca/workspaces/kanjo/サーバーエラー対策/system-spec",
   "verdict": "FAIL",
   "aspects": {
     "foundation_trace": {
@@ -97,56 +97,110 @@
     {
       "id": "G-matrix",
       "name": "validate-coverage-matrix (--require-complete)",
-      "conditions": ["matrix_coverage"],
-      "command": ["python3", "scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json", "--require-complete"],
+      "conditions": [
+        "matrix_coverage"
+      ],
+      "command": [
+        "python3",
+        "scripts/validate-coverage-matrix.py",
+        "--matrix",
+        "system-spec/spec-state.json",
+        "--require-complete"
+      ],
       "exit_code": 0,
       "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)) を満たす"
     },
     {
       "id": "G-matrix-loop",
       "name": "validate-coverage-matrix (loop)",
-      "conditions": ["matrix_coverage"],
-      "command": ["python3", "scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json"],
+      "conditions": [
+        "matrix_coverage"
+      ],
+      "command": [
+        "python3",
+        "scripts/validate-coverage-matrix.py",
+        "--matrix",
+        "system-spec/spec-state.json"
+      ],
       "exit_code": 0,
       "stdout": "OK: 収集マトリクス網羅性 (loop) を満たす"
     },
     {
       "id": "G-foundation",
       "name": "validate-coverage-matrix (--require-foundation)",
-      "conditions": ["foundation_trace", "decision_guidance"],
-      "command": ["python3", "scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json", "--require-foundation"],
+      "conditions": [
+        "foundation_trace",
+        "decision_guidance"
+      ],
+      "command": [
+        "python3",
+        "scripts/validate-coverage-matrix.py",
+        "--matrix",
+        "system-spec/spec-state.json",
+        "--require-foundation"
+      ],
       "exit_code": 0,
       "stdout": "OK: 収集マトリクス網羅性 (loop+foundation(上位概念トレース)) を満たす"
     },
     {
       "id": "G-knowledge-graph",
       "name": "validate-knowledge-graph (knowledge/doctrine/required-info/cross)",
-      "conditions": ["design_knowledge_reflection", "matrix_coverage"],
-      "command": ["python3", "skills/assign-system-spec-completeness-evaluator/scripts/aggregate-completeness.py", "--knowledge-graph"],
+      "conditions": [
+        "design_knowledge_reflection",
+        "matrix_coverage"
+      ],
+      "command": [
+        "python3",
+        "skills/assign-system-spec-completeness-evaluator/scripts/aggregate-completeness.py",
+        "--knowledge-graph"
+      ],
       "exit_code": 0,
       "stdout": "4 subgates all exit_code 0 (C13/C14/C15/C16 機械層)"
     },
     {
       "id": "G-citation",
       "name": "validate-source-citation",
-      "conditions": ["doc_freshness"],
-      "command": ["python3", "scripts/validate-source-citation.py", "--targets", "system-spec/spec-state.json", "--references", "system-spec/fetched-references.json"],
+      "conditions": [
+        "doc_freshness"
+      ],
+      "command": [
+        "python3",
+        "scripts/validate-source-citation.py",
+        "--targets",
+        "system-spec/spec-state.json",
+        "--references",
+        "system-spec/fetched-references.json"
+      ],
       "exit_code": 0,
       "stdout": "形式層 OK (C08 が実行)。内容鮮度層は別途 FAIL"
     },
     {
       "id": "G-prompt-validate",
       "name": "validate-prompt (prompt-creator)",
-      "conditions": ["prompt_quality"],
-      "command": ["python3", "run-prompt-creator-7layer/scripts/validate-prompt.py", "--input", "<each of 18 prompts>"],
+      "conditions": [
+        "prompt_quality"
+      ],
+      "command": [
+        "python3",
+        "run-prompt-creator-7layer/scripts/validate-prompt.py",
+        "--input",
+        "<each of 18 prompts>"
+      ],
       "exit_code": 0,
       "stdout": "TOTAL_NG=0"
     },
     {
       "id": "G-prompt-completeness",
       "name": "verify-completeness (prompt-creator l5-contract v2.0.0)",
-      "conditions": ["prompt_quality"],
-      "command": ["python3", "run-prompt-creator-7layer/scripts/verify-completeness.py", "--input", "<each of 18 prompts>"],
+      "conditions": [
+        "prompt_quality"
+      ],
+      "command": [
+        "python3",
+        "run-prompt-creator-7layer/scripts/verify-completeness.py",
+        "--input",
+        "<each of 18 prompts>"
+      ],
       "exit_code": 0,
       "stdout": "TOTAL_NG=0"
     }
@@ -168,7 +222,10 @@
       "bucket": "design_knowledge_reflection",
       "observation": "infrastructure.md は設計知識ポインタを持たず『resource-map 未定義。関連cardを選定・深化してから確定する』と自ら未確定であることを本文に明記しながら、frontmatter が status: confirmed かつ category_aggregate が『確定』になっている。未確定宣言と確定マーカーが同一ファイル内で矛盾している。",
       "suggested_fix": "C03 の render_design_refs が resource-map から解決できなかったカテゴリを confirmed にしない (fail-closed)。infrastructure カテゴリの設計知識 (reliability/operations concern → Google SRE) を resource-map へ登録するか、解決不能を明示的な blocking として elicit へ差し戻す。",
-      "evidence": ["infrastructure.md L1-7 frontmatter status: confirmed", "infrastructure.md L27 'resource-map 未定義。関連cardを選定・深化してから確定する'"]
+      "evidence": [
+        "infrastructure.md L1-7 frontmatter status: confirmed",
+        "infrastructure.md L27 'resource-map 未定義。関連cardを選定・深化してから確定する'"
+      ]
     },
     {
       "severity": "high",
@@ -185,53 +242,79 @@
       "bucket": "matrix_coverage",
       "observation": "独立 context で fork した C07 (system-spec-matrix-auditor) と C06 (system-spec-hearing-auditor) が約 30 分経過後も verdict を返さず、matrix_coverage の意味層根拠 (対象外理由の具体性 / qa_ref が確定内容を裏付けるか / ヒアリング 4 軸) を回収できなかった。機械層は両モード exit0 だが、fail-closed 方針に従い INDETERMINATE とした。評価者が意味層を代行判定すると proposer≠approver の分離を壊すため代行していない。",
       "suggested_fix": "仕様書修正ではなく監査の再実行。C07 と C06 を再度 fork し verdict を回収したうえで matrix_coverage を再採点する。",
-      "evidence": ["C07 未応答", "C06 未応答", "validate-coverage-matrix.py 両モード exit0"]
+      "evidence": [
+        "C07 未応答",
+        "C06 未応答",
+        "validate-coverage-matrix.py 両モード exit0"
+      ]
     },
     {
       "severity": "medium",
       "bucket": "decision_guidance",
       "observation": "G4 (データ喪失ゼロ) と G3 (説明可能なエラー応答) に直結する不可逆性の高い分岐が decisions[] に昇格せず、qa_log の回答文だけで確定している。具体的には (a) 適用前バックアップ方式 (既存夜間 cron D1→R2 30日保持 / 適用直前の明示取得 / D1 Time Travel) — O5 の測定基準そのもの、(b) 実行時スキーマ版数ガードの検知点 (書込経路の入口 / Worker 起動時 / 定期監視) — I5、(c) スキーマ不一致時の利用者向けエラー表現方針 — I6。いずれも選択肢・費用・トレードオフの提示がないまま confirmed になっている。",
       "suggested_fix": "C01 (run-system-spec-elicit) の R5-decision-guide へ差し戻し、上記 3 分岐を needs_guidance として decisions[] へ昇格させ、2〜3 案 + 無料/低コスト案 + goal fit / TCO / security / operations / lock-in / 公式証拠 + AI 推奨理由と注意点を付けたうえでユーザー決定を取り直す。",
-      "evidence": ["decisions[] は D1-migration-gate 1 件のみ", "concrete_intents は I1-I7 の 7 件", "qa-005 (d) でバックアップ方式が選択肢比較なく確定"]
+      "evidence": [
+        "decisions[] は D1-migration-gate 1 件のみ",
+        "concrete_intents は I1-I7 の 7 件",
+        "qa-005 (d) でバックアップ方式が選択肢比較なく確定"
+      ]
     },
     {
       "severity": "medium",
       "bucket": "decision_guidance",
       "observation": "user_decision.confirmed_at (2026-08-27T02:45:59Z) が AI 推奨の checked 時刻および fetched-references の全 retrieved_at / latest_checked_at と秒単位で完全一致しており、承認が AI 推奨とは別ラウンドで人間から得られた証跡として機能していない (単一書込みの疑い)。approval_log の appr-001 / appr-002 も timestamp フィールドを持たず note 内の日付文字列のみで、AI 推奨のみで confirmed にしていないことを記録から検証できない。",
       "suggested_fix": "C01 の承認記録に、AI 推奨の提示時刻と人間の応答時刻を別フィールドで記録させる (recommended_at と confirmed_at を分離)。approval_log にも構造化 timestamp を持たせる。",
-      "evidence": ["user_decision.confirmed_at == recommendation.checked == fetched-references[*].retrieved_at == 2026-08-27T02:45:59Z", "approval_log の appr-001/appr-002 に timestamp フィールドなし"]
+      "evidence": [
+        "user_decision.confirmed_at == recommendation.checked == fetched-references[*].retrieved_at == 2026-08-27T02:45:59Z",
+        "approval_log の appr-001/appr-002 に timestamp フィールドなし"
+      ]
     },
     {
       "severity": "medium",
       "bucket": "design_knowledge_reflection",
       "observation": "C15 doctrine anchor の意味層が不成立。doctrine-anchor-registry では reliability / operations concern の authority が Google SRE (SLO・エラーバジェット・監視の上流指針) だが、その指針は infrastructure.md にも maintenance-ops.md にも反映されていない (maintenance-ops.md に割当てられたカードは Clean Code のみ、infrastructure.md はカードなし)。G3 が『乖離を即座に特定できる検知』を要求しているにもかかわらず、監視・アラートの上流原則が章へ接地していない。同様に database.md は DDD カードのみで、当章の実質論点 (migration 連番の逐次適用・部分適用禁止・行数保全) と対応していない。",
       "suggested_fix": "C03 の category→concern→authority 写像を章生成へ実際に反映させる。infrastructure / maintenance-ops へ Google SRE 由来の監視・SLO 指針を、database へ移行順序と不変条件に対応する知識カードを割当て直す。",
-      "evidence": ["doctrine-anchor-registry concerns[reliability].authority = 'Google SRE'", "maintenance-ops.md の適用カード = Clean Code のみ", "infrastructure.md 設計知識ポインタなし", "database.md 適用カード = DDD のみ"]
+      "evidence": [
+        "doctrine-anchor-registry concerns[reliability].authority = 'Google SRE'",
+        "maintenance-ops.md の適用カード = Clean Code のみ",
+        "infrastructure.md 設計知識ポインタなし",
+        "database.md 適用カード = DDD のみ"
+      ]
     },
     {
       "severity": "low",
       "bucket": "foundation_trace",
       "observation": "00-requirements-definition.md の U6 stakeholders が Python の dict repr のまま出力されている ('{\\'id\\': \\'S1\\', \\'role\\': ...}')。上位概念の正本章としての可読性を損ない、compile のレンダリング層に構造化データ→Markdown 変換の欠落がある。",
       "suggested_fix": "C03 (run-system-spec-compile) の R2-render で stakeholders を表または箇条書きへ整形して描画する。",
-      "evidence": ["00-requirements-definition.md L52-54"]
+      "evidence": [
+        "00-requirements-definition.md L52-54"
+      ]
     },
     {
       "severity": "info",
       "bucket": "prompt_quality",
       "observation": "system-spec-harness 配下の prompts/*.md 18 本すべてで prompt-creator の validate-prompt.py と verify-completeness.py (l5-contract v2.0.0) が exit0。意味層でも L1-L7 の役割分離、L5 の成果状態と原子的停止条件、動的実行方式、L7→L1 の一貫性を確認した。本観点は PASS。",
-      "evidence": ["validate-prompt.py TOTAL_NG=0 (18 本)", "verify-completeness.py TOTAL_NG=0 (18 本)"]
+      "evidence": [
+        "validate-prompt.py TOTAL_NG=0 (18 本)",
+        "verify-completeness.py TOTAL_NG=0 (18 本)"
+      ]
     },
     {
       "severity": "info",
       "bucket": "foundation_trace",
       "observation": "上位概念の内容そのものは高品質である。U2 背景が障害の直接原因 (d1_migrations が 0005 止まり・0006〜0014 未適用・import_writer_claims / import_active_targets 不在による 500) を具体的に特定し、原因を『アプリのロジック不具合ではなくデプロイ運用にスキーマ適用工程が組み込まれていないこと』という構造要因へ正しく引き上げている。O1-O5 も全て検証可能な測定基準を持つ。本観点は PASS。",
-      "evidence": ["00-requirements-definition.md U2 / U4 / U5", "validate-coverage-matrix.py --require-foundation exit0"]
+      "evidence": [
+        "00-requirements-definition.md U2 / U4 / U5",
+        "validate-coverage-matrix.py --require-foundation exit0"
+      ]
     },
     {
       "severity": "info",
       "bucket": "design_knowledge_reflection",
       "observation": "C13/C14/C15/C16 の機械層ゲートは 4 profile すべて exit0 (knowledge-catalog の typed 辺グラフ健全性・doctrine anchor の concern 一意性と category 写像全射・required-info の domain 被覆・cross 整合)。ただしこれらが保証するのはカタログ側の well-formedness のみで、生成物側の意味反映は保証しない。本評価で FAIL としたのは生成物側の意味層である。",
-      "evidence": ["aggregate-completeness.py --knowledge-graph exit0 (4 subgates)"]
+      "evidence": [
+        "aggregate-completeness.py --knowledge-graph exit0 (4 subgates)"
+      ]
     }
   ],
   "gaps": [
