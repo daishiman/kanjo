@@ -5,7 +5,7 @@ artifact_subtypes: []
 title: "確定申告の準備と証憑の取得先"
 project_id: "kanjo"
 domain: "accounting-records"
-status: "draft"
+status: "retired"
 owners: []
 tags: ["tax", "receipts", "r2"]
 priority: "high"
@@ -46,6 +46,11 @@ scope_out: ["申告書・e-Tax送信データの生成", "税務上の適法性�
 acceptance: ["分析用の全期間・任意期間・年跨ぎが申告APIで400になり、画面の年表示とデータ範囲が一致する", "科目方針が行の不在だけで未確認となり、全額事業でも100%が明示保存される", "按分100%未満で根拠が空なら保存できない", "割り当てのない科目が雑費へ寄らず準備チェックの先頭に金額つきで出る", "収入科目・事業主貸が経費計に入らず、専従者給与が経費計と分かれる", "D1 metadataがあってもR2原本が無い明細は添付済みにならない", "要対応が残る年ではCSV・ZIPが完成物として返らない", "400件超の年でも全partが出て、各partの索引と実ファイルが同一集合になる", "非HTTP(S)・認証情報付きURLが拒否され、他利用者のprofileを参照・更新できない", "backup/restoreで年別方針・取得先profile・明細overrideが復元され、秘密値の列が増えていない"]
 architecture_refs: ["arch-tax-preparation-boundary"]
 ---
+
+> **廃止済み（2026-09-08）**: 本ノードは実装当時の判断履歴として保持する。
+> 現行機能・依存先ではなく、廃止の正本は
+> `features/feature-retire-tax-receipt-and-clarify-freee-only.md` と現行Release Aのmigration `0038`。
+> 物理テーブルを削除する`0039`は将来の別変更（Release B）でのみ追加する。
 
 # 目的
 

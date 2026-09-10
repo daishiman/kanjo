@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py (派生ビュー・手書き編集しない・再生成で上書き)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-RTR-P01",
+      "title": "廃止範囲と保持範囲の要件確定",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P02",
+      "title": "削除後の依存グラフと層境界の設計",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P03",
+      "title": "独立設計レビュー",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P04",
+      "title": "退避テストと受入テストの設計",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P05",
+      "title": "証憑機能の削除と freeeOnly 行の操作除去",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P06",
+      "title": "テスト実行",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P07",
+      "title": "受入判定",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P08",
+      "title": "残存参照の整理とデータ移行",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P09",
+      "title": "型検査と静的検査と運用予算の整合",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P10",
+      "title": "独立最終レビュー",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P11",
+      "title": "再現可能な証跡の収集",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P12",
+      "title": "文書と運用手順の更新",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-RTR-P13",
+      "title": "反映と反映後の確認",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

@@ -84,9 +84,6 @@ readonly tables=(
   cash_overrides
   cash_entries
   category_options
-  attachment_cleanup_jobs
-  attachment_object_tombstones
-  attachments
   freee_deals
   import_active_targets
   import_runs

@@ -4,7 +4,7 @@ artifact_kind: "task"
 title: "レシート添付と交通費の記帳 — タスク分解"
 project_id: "kanjo"
 domain: "accounting-records"
-status: "complete"
+status: "retired"
 file_path: "tasks/attachments-and-transit-tasks.md"
 parent_feature: "spec-attachments-transit"
 template_id: "task"
@@ -12,6 +12,10 @@ template_version: "1.0.1"
 ---
 
 # タスク分解
+
+> **廃止・置換済み（2026-09-08）**: 添付に関するtaskは実行対象ではなく、以下は完了時点の履歴である。
+> 廃止とRelease Aの正本は`features/feature-retire-tax-receipt-and-clarify-freee-only.md`、
+> 継続する交通費記帳の永続形状は`docs/data-schema.md`を参照する。
 
 `specs/attachments-and-transit.md` を実装単位に割ったもの。上から順に依存する。
 

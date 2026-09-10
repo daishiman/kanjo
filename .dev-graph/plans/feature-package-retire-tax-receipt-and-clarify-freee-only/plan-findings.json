@@ -1,0 +1,187 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/elegant-review-repromotion-20260909T151332Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "1.0.0-independent-zero-base-20260910",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "Release Aは0038だけを含み、0039と旧専用6テーブルの物理削除は別follow-upである。P05のactive runtime実装、P08の0038準備、P13のRelease A反映は重複せず、active文書とhistorical/retired資料も区別されている。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md#Workstream applicability",
+        "task-specs/phase-08-refactoring-migration.md#スコープ外",
+        "task-specs/phase-12-documentation-operations.md#受入条件",
+        "task-specs/phase-13-release-deploy.md#目的",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "source featureの受入11件をP01・P07・P11が同数で追跡する。保持能力8項目はP01/P03/P10で明示され、P06の7個別回帰とP08の取込原本guard検証により、FILES・改善画像・夜間backup・取込原本・現金・交通費・matched除外・excludedの保持に判定手段がある。",
+      "evidence": [
+        "task-specs/phase-01-requirements.md#受入条件",
+        "task-specs/phase-03-design-review.md#受入条件",
+        "task-specs/phase-06-test-run.md#受入条件",
+        "task-specs/phase-07-acceptance.md#受入条件",
+        "task-specs/phase-08-refactoring-migration.md#受入条件",
+        "task-specs/phase-10-final-review.md#受入条件",
+        "task-specs/phase-11-evidence.md#受入条件"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "manifestの17入力は現バイト列のSHA-256と全件一致し、manifest自身を加えたevaluated_inputsはexact 18件である。source feature digest、exact-13のid/phase/path、inventory、task graph、handoffも一致する。",
+      "evidence": [
+        "feature-package.json#source_feature_digest",
+        "system-build-handoff.json#source_inputs",
+        "task-graph.json#nodes",
+        "workstream-inventory.json#tasks",
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "P01からP13は各直前phaseだけを参照する非循環の線形DAGで、P05はactive runtime、P08は0038作成・検証、P13は0038 Release A反映とfollow-up引渡しを一意に所有する。",
+      "evidence": [
+        "task-graph.json#nodes[].depends_on",
+        "workstream-inventory.json#tasks[].depends_on",
+        "system-build-handoff.json#execution_tasks[].depends_on",
+        "task-specs/phase-05-implementation.md#Workstream applicability",
+        "task-specs/phase-08-refactoring-migration.md#Rollout and rollback",
+        "task-specs/phase-13-release-deploy.md#Rollout and rollback",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "/Users/dm/.codex/plugins/cache/harness-dev/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "/Users/dm/orca/workspaces/kanjo/確定申告不要",
+        "--staging",
+        ".dev-graph/staging/elegant-review-repromotion-20260909T151332Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810\",\n  \"feature_package_id\": \"feature-package/retire-tax-receipt-and-clarify-freee-only\",\n  \"parent_feature\": \"feature-retire-tax-receipt-and-clarify-freee-only\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "2e0e572e6bd8440a2271eafd6cfa56924f19edef70c36ea169ac8032f4b5d572"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "f101c8c5dde259fa2bc5302920c82808f898a032e52ef67093512ec0d0ff2888"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "c506716a01f4f85ddfdc4d4a42be78127794a51ec3395279c3007e6615bc987f"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "233fa6811c5814c3e5295ef304a1ab4b894adcb9885d4b7979513e876b762e6a"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "39503ddfed19468e61dd06fb539dbaab2b91e37371123f3baa5026a0637d7157"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "9ad9b62f58492011be21a3ea1e58c5a4fa658a12c412a9945d3c66056aaccac6"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "57ee9d7240c81d1ffa1662228ea44e3bd75c6d69ca6ef78ca33559ab7c695de5"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "c21a9d4f0c252ac92f46f7ebf1f8988c27eeff4132480960f7d2c442d3529778"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "1db472a04bf93d80e9e75085ba08feb2ada22aedf5bc67dbcdf1dd0962303ff0"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "0e5bdaec9a0abb868d2ace26d04150fb3eb290aa120dea91ba2572057183482c"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "68ce6ee8a445e9e3b9eb3d89a14d4ea96b32db04ee970b0ced4b3b4f8046d000"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "9c0d8e9484c8a56b99dc646e6a361d89de714ae9bc2814d9bb5b88431222a71a"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "00b20024aa1327c54c1c07b617d241646027f750e6342e4c68966c0f40dc0616"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "ed43a36de861da7a8ed076d3d40a636e6161e8a68192c8b31bfda6aca64cea96"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "dd0461145f782db59e2ba47e01b1eee1ec2c5f098e02fe49f2bceee5480c0b8f"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "794ef63b7b4943a302cf34ad3eef439d8e78e0ea43c6c11f908e833c306fd9bb"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "4f4b11d90ab66ad581ac795e75c935bfb89719074c1f853e4723f277dcc373ef"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "023c1224d4bbc69e95e981b4e68de517a191136b0e02b1729ccfb2903932b99c"
+    }
+  ],
+  "staleness_rule": "本評価はevaluated_inputsのexact-set 18件の現バイト列とevaluated_digestに束縛される。いずれか1バイト、manifest files集合、source feature digest、またはcanonical_digestが変われば無効であり、再評価なしにpromotionへ使用してはならない。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "preservation-coverage",
+      "observation": "保持能力8項目とsource featureの受入11件は、P01/P03/P06/P07/P08/P10/P11に正方向の受入・具体的テストコマンド・最終消し込みとして配置され、保持範囲の未割当はない。",
+      "evidence": [
+        "task-specs/phase-01-requirements.md#受入条件",
+        "task-specs/phase-06-test-run.md#Verification and evidence",
+        "task-specs/phase-08-refactoring-migration.md#Verification and evidence",
+        "task-specs/phase-10-final-review.md#受入条件"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "release-boundary",
+      "observation": "0038の作成・検証はP08、Release A反映はP13、active runtimeからの退役はP05に分離され、0039/旧6表物理削除は同packageに含めず別follow-upへ引き渡す。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md#Workstream applicability",
+        "task-specs/phase-08-refactoring-migration.md#スコープ外",
+        "task-specs/phase-13-release-deploy.md#スコープ外"
+      ]
+    }
+  ]
+}

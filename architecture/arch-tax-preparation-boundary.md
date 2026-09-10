@@ -5,7 +5,7 @@ artifact_subtypes: ["backend", "frontend", "data", "security"]
 title: "確定申告準備の対象年境界と証憑完全性の契約"
 project_id: "kanjo"
 domain: "backend"
-status: "draft"
+status: "retired"
 owners: []
 tags: ["tax", "receipts", "r2"]
 priority: "high"
@@ -44,6 +44,9 @@ goal: "対象年の解釈が1箇所に閉じ、書き出しの完成物はサー
 scope_in: ["対象年の型と拒否境界", "Datasetの単一入口", "R2原本を正とする完全性判定", "分割ZIPの集合同一性", "秘密値を持たない取得先境界"]
 scope_out: ["申告書の生成", "税務判断", "freee側証憑の複製", "分析用期間セレクタの変更"]
 ---
+
+> **廃止済み（2026-09-08）**: 本ノードは旧構成の判断履歴であり、現行アーキテクチャではない。
+> 廃止判断は`features/feature-retire-tax-receipt-and-clarify-freee-only.md`を参照する。
 
 # 解く問題
 

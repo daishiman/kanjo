@@ -4,7 +4,7 @@ artifact_kind: "task"
 title: "確定申告の準備と証憑の取得先 — タスク分解"
 project_id: "kanjo"
 domain: "accounting-records"
-status: "complete"
+status: "retired"
 file_path: "tasks/tax-preparation-tasks.md"
 parent_feature: "spec-tax-preparation"
 template_id: "task"
@@ -12,6 +12,9 @@ template_version: "1.0.1"
 ---
 
 # タスク分解
+
+> **廃止済み（2026-09-08）**: 本taskは実行対象ではなく、以下は完了時点の履歴である。
+> 廃止とRelease Aの正本は`features/feature-retire-tax-receipt-and-clarify-freee-only.md`を参照する。
 
 `specs/tax-preparation.md` を実装単位に割ったもの。上から順に依存する。
 Slice区分は `docs/product/elegant-review-tax-preparation/T3-feature-map.md` に対応する。

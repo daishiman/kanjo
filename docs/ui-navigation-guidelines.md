@@ -7,8 +7,8 @@ route、表示順、label、icon keyは`APP_ROUTES`、公式Lucide geometryとic
 1. `routeMetadata.ts`へ一意の`id`、完全な`path`、短い`label`、目的を1文で示す`task`、意味の異なる`icon`を追加する。
 2. 可視labelは必ず残す。アイコンだけ、頭文字、絵文字で画面を表さない。
 3. current pageは完全一致を基本とし、同時に`aria-current="page"`になるリンクを1件以下に保つ。親sectionと子pageを両方currentにしない。
-4. desktop sidebarとmobile navigationは同じmetadataを使う。mobileは`mobileLabel`を持つ5 routeと、全15 routeを開くメニューで構成する。
-5. `navigation-ux.dom.test.tsx`で全20単位(15 route+支出分析5タブ)のcurrent一意、icon、可視label、ARIAを固定する。実寸、折返し、overflow、focusは実ブラウザで確認する。
+4. desktop sidebarとmobile navigationは同じmetadataを使う。mobileは`mobileLabel`を持つrouteと、`APP_ROUTES`全体を開くメニューで構成する。本数を文書へ複製しない。
+5. `navigation-ux.dom.test.tsx`で`APP_ROUTES + ANALYSIS_TABS`全単位のcurrent一意、icon、可視label、ARIAを固定する。実寸、折返し、overflow、focusは実ブラウザで確認する。
 6. `taskDetail`(段階表示の説明文)を必ず書く。`route-task-detail.test.tsx`が用語リンクゼロの単位を許さない。
 7. 画面検索(`Cmd+K`)は`SEARCH_ROUTES`を通じて`APP_ROUTES`と`ANALYSIS_TABS`をそのまま引く。検索側に画面一覧を書き足さない(二重管理を作らない)。
 
@@ -51,10 +51,10 @@ route、表示順、label、icon keyは`APP_ROUTES`、公式Lucide geometryとic
 
 ## リリース前チェック
 
-- `/tax`と`/tax/receipts`でcurrentがそれぞれ1件。
-- 15 routeと支出分析の5タブすべてに可視labelとiconがある。アイコンは図形の署名で一意(キー一致では見た目の重複を見逃す)。
+- `APP_ROUTES`と`ANALYSIS_TABS`の全単位でcurrentが1件以下。
+- 全routeと支出分析の全タブに可視labelとiconがある。アイコンは図形の署名で一意(キー一致では見た目の重複を見逃す)。
 - サイドバーに支出分析の5タブが子行として並び、`/analysis/:tab`ではその子1件だけがcurrentになる。
-- `Cmd+K` / `Ctrl+K`で画面検索が開き、20単位すべてを名前と群名で引ける。Escape・背景クリックで閉じ、矢印キーで候補を移動できる。
+- `Cmd+K` / `Ctrl+K`で画面検索が開き、`SEARCH_ROUTES`の全単位を名前と群名で引ける。Escape・背景クリックで閉じ、矢印キーで候補を移動できる。
 - 破壊的操作を押すと画面内に確認が出る。`window.confirm`は使っていない。
 - 旧URL `/matrix` `/trends` `/diagnosis` が対応するタブへリダイレクトされる。
 - 375 / 768 / 1280 / 1600px、200%相当、keyboard、`prefers-reduced-motion`で操作できる。

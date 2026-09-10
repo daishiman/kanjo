@@ -8,7 +8,7 @@ status: "confirmed"
 file_path: "specs/import-deletion-and-override-reapply.md"
 template_id: "specification"
 template_version: "1.0.1"
-depends_on: ["spec-transaction-splits", "spec-attachments-transit"]
+depends_on: ["spec-transaction-splits"]
 tags: ["import", "deletion", "undo", "audit", "three-way-merge", "vendor-memory"]
 ---
 
@@ -20,7 +20,6 @@ tags: ["import", "deletion", "undo", "audit", "three-way-merge", "vendor-memory"
 - 本書: 削除の4粒度・上書き・undo・監査・3点比較による手当ての継続再適用の lifecycle、画面、API、受入を持つ。
 - `docs/data-schema.md`: migrationごとの永続形状とデータ不変条件を持つ。
 - `specs/transaction-splits.md`: 分割記帳そのものの不変条件と投影を持つ。本書は「削除・再取込で分割が孤立しないこと」だけを扱い、複製しない。
-- `specs/attachments-and-transit.md`: 証憑原本のlifecycle(登録・quota・cleanup・孤児)を持つ。本書は複製せず参照する。
 - `architecture/arch-import-deletion-undo-boundary.md` / `architecture/arch-override-reapply-three-way-merge.md`: 削除・undoの境界と3点比較の実装配置を持つ。本書は「何を守るか」だけを持ち、「どこにどう置くか」は持たない。
 
 同じ契約は複製せず、上記の所有者へ参照する。
@@ -127,9 +126,9 @@ undo が成立しない。D1 と R2 をまたぐと原子性が取れないた�
 
 ## DR-6 手動記録は削除の巻き添えにしない
 
-`tx_edits` / `rules` / `cash_entries` / `attachments` / `tx_splits` は取込明細とは別のテーブルであり、
+`tx_edits` / `rules` / `cash_entries` / `tx_splits` は取込明細とは別のテーブルであり、
 明細の削除で連鎖削除しない。**失われるものがある場合は実行前に件数で示し、示した件数以外は失わない。**
-理由: 現金の記帳と証憑は取込元に存在しない情報で、消えると復元手段が無い。
+理由: 現金の記帳と手動の仕分け・分割は取込元に存在しない情報で、消えると復元手段が無い。
 明細が消えても手当てが孤立しないよう、参照は DR-13 の二段構えで持つ。
 `cash_entries` は取込削除の対象種別にせず、preflight では「手で記帳した現金 0件
 (取込の削除では消えません)」と常に表示する。
@@ -241,7 +240,12 @@ JSON 復元後に canonical 行が残る場合があるため、取消可否も�
 
 同じ upload / ZIP の logical unit は `imports.r2_key` を共有するため、履歴1行の破棄で共有原本を
 消さない。最後の非有効参照を破棄するときだけ cleanup outbox へ原本削除を登録し、R2失敗は
-再試行へ引き継ぐ。`duplicate_of` は破棄するIDへの参照を同じD1 batchで外し、空になった
+再試行へ引き継ぐ。自動保持は、共有keyの全rowが30日超の`failed`/`duplicate`/非active `committed`に
+なった場合だけkey単位で1jobを登録する。`purpose`は起点・観測ラベルだけに使い、全jobがR2 DELETE直前に
+同じ共有key契約を再評価する。enqueue後にactive、30日以内、不正時刻、`processing`/`partial`/`applying`/
+旧statusの参照が現れたら、R2原本と全`imports.r2_key`を保持し、退役済み`attachments` metadataと
+新旧cleanup intentだけを同じD1 batchで取り消す。削除可能ならpurposeにかかわらず、R2成功後の同じbatchで
+全`imports.r2_key`をNULLにして退役metadata・全intentも閉じる。`duplicate_of` は破棄するIDへの参照を同じD1 batchで外し、空になった
 `import_runs` も同じbatchで消す。実行前後で件数以外の内容を応答・監査・ログへ出さない。
 
 理由: 履歴の整理を現行データ削除と混同すると、見た目を整えるための操作で帳簿本体を失う。
@@ -263,8 +267,8 @@ JSON 復元後に canonical 行が残る場合があるため、取消可否も�
 
 - 対象件数(種別ごとの内訳)
 - 対象期間
-- **巻き添えになる手動記録の有無と件数** — 公私仕分け(`tx_edits`)・分割(`tx_splits`)・
-  証憑(`attachments`)。`cash_entries` は対象外のため巻き添え 0 件として表示する
+- **巻き添えになる手動記録の有無と件数** — 公私仕分け(`tx_edits`)・分割(`tx_splits`)。
+  `cash_entries` は対象外のため巻き添え 0 件として表示する
 - 取り消せるかどうかと、取り消せる期限
 
 全件削除のように影響が最大のものは、対象の要約を読ませたうえで**「入れ替える」の明示入力**を求め、
@@ -335,7 +339,6 @@ JSON 復元後に canonical 行が残る場合があるため、取消可否も�
 | `tx_splits` | 削除の巻き添えにしない(DR-6)。`identity_stable=0` の明細に対する既存契約は `specs/transaction-splits.md` が持つ |
 | `monthly_agg` | 削除・undo 後に正本から再生成する(DR-5) |
 | `restored_monthly_agg` | 復元 baseline の正本。全件初期化では他の正本行と同じ batch で退避・削除し、undo で復元する |
-| `attachments` | 削除の巻き添えにしない。原本 lifecycle は `specs/attachments-and-transit.md` が持つ |
 
 スキーマ追加はすべて `migrations/` へ連番で append-only に足し、既存テーブルの破壊的再定義を避ける。
 本件は既存 `0029_improvement_requests.sql` に続く
@@ -357,7 +360,7 @@ JSON 復元後に canonical 行が残る場合があるため、取消可否も�
 | 制約 | 本件への影響 |
 |---|---|
 | Worker 1回の呼び出しあたりクエリ 50 本(既存 `D1_FREE_QUERY_LIMIT`、受理上限は 49) | 削除も件数に応じて分割実行する。3点比較は明細ごとに個別クエリを発行せず**取込単位でまとめ読み**し、書戻しは SQLite の UPSERT(`INSERT ... ON CONFLICT DO UPDATE`)で存在確認の SELECT を省いて1文にまとめる。既存の `planMultipartImportQueries` / `planRestoreImportQueries` と同じ考え方で計画し、commit 直前に `actual <= planned` を fail-closed で保証する |
-| 夜間 scheduled 全体の同一 invocation 上限 | `scheduled-maintenance-budget.ts` を7 jobの単一予算表とし、backup 1 + attachment 20 + password throttle 1 + improvement 3 + undo retention 12 + audit header 3 + audit detail 6 = **46 queries** を上界とする。backupを先に確定し、残る6 jobは `Promise.allSettled` で独立観測する。batchは呼出し1回でなく内包statement数で数える |
+| 夜間 scheduled 全体の同一 invocation 上限 | `scheduled-maintenance-budget.ts` を7 jobの単一予算表とし、backup 1 + R2 cleanup 20 + password throttle 1 + improvement 3 + undo retention 12 + audit header 3 + audit detail 6 = **46 queries** を上界とする。R2 cleanupは旧2表のlate write回収と30日超の共有key適格性判定後、全purpose共通の削除直前guardと全DB参照の同時cleanupを含めて最大3件を処理する。backupを先に確定し、残る6 jobは `Promise.allSettled` で独立観測する。batchは呼出し1回でなく内包statement数で数える |
 | rows written 10万/日 | 削除1行につき退避1行の書込が加わり **rows written を二重に消費する**。1日あたりの削除規模の見積りを実装時に確認する |
 | 1データベース 500 MB | 退避行の保持期間を長く取ると本体を圧迫する。DR-8 の有限保持と掃除が必須 |
 | Time Travel 7日・データベース単位 | undo の代替にならない。自前の退避テーブルが要る |
@@ -427,7 +430,7 @@ preflight の2本は書き込みが1件も無いため lease を取らない(DR-
 - [ ] MF明細・MF資産残高・freee仕訳の単独/混在とJSON復元後のいずれでも、全件削除後に別データを新規取込できる
 - [ ] 入れ替えの削除後に新規ファイル選択を1操作で開け、削除の30日undoも同じ場所から実行できる
 - [ ] 削除の確認画面に対象件数・対象期間・巻き添えになる手動記録の件数が出る
-- [ ] 示された件数以外の手動記録(`tx_edits` / `tx_splits` / `cash_entries` / `attachments`)が失われない
+- [ ] 示された件数以外の手動記録(`tx_edits` / `tx_splits` / `cash_entries`)が失われない
 - [ ] 確認指紋が一致しない実行が409で拒否され、状態が動かない
 - [ ] 実行直後の取り消しで、各テーブルの行数と内容が実行前と完全に一致する
 - [ ] 保持期間を過ぎた undo が410で拒否され、退避行が掃除されている

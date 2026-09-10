@@ -4,13 +4,17 @@ artifact_kind: "specification"
 title: "確定申告の準備と証憑の取得先"
 project_id: "kanjo"
 domain: "accounting-records"
-status: "confirmed"
+status: "retired"
 file_path: "specs/tax-preparation.md"
 template_id: "specification"
 template_version: "1.0.1"
 depends_on: ["spec-attachments-transit"]
 tags: ["tax", "receipts", "r2", "zip", "csv"]
 ---
+
+> **廃止済み（2026-09-08）**: 本書は旧仕様の履歴であり、現行製品の規範ではない。
+> 現行範囲は`docs/spec-v1.1.md`、廃止判断は
+> `features/feature-retire-tax-receipt-and-clarify-freee-only.md`を参照する。
 
 # 文書所有権
 

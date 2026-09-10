@@ -24,6 +24,11 @@ common=(
 before="$temporary/before.json"
 after="$temporary/after.json"
 
+if grep -Eq '^[[:space:]]+(attachment_cleanup_jobs|attachment_object_tombstones|attachments)$' "$target"; then
+  printf '%s\n' "retired tables must not be part of the retained row-count baseline" >&2
+  exit 1
+fi
+
 run_target subset_before --phase capture "${common[@]}" --output "$before" >/dev/null
 jq -e '
   .status == "baseline_captured" and

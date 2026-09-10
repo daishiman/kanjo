@@ -15,7 +15,7 @@ iteration: null
 created_at: "2026-08-31T00:00:00Z"
 updated_at: "2026-09-03T00:00:00Z"
 depends_on: []
-related_nodes: ["arch-import-deletion-undo-boundary", "arch-override-reapply-three-way-merge", "spec-import-deletion-override-reapply", "tasks-import-deletion-override-reapply", "spec-transaction-splits", "spec-attachments-transit"]
+related_nodes: ["arch-import-deletion-undo-boundary", "arch-override-reapply-three-way-merge", "spec-import-deletion-override-reapply", "tasks-import-deletion-override-reapply", "spec-transaction-splits"]
 resource_scope: ["packages/core/src", "packages/api/src", "packages/web/src", "migrations"]
 parent_feature: null
 feature_package_id: null
@@ -42,7 +42,7 @@ implementation_readiness: {"status": "blocked", "missing_sections": ["受入証�
 purpose: "取り込んだあとに取込元が動く以上、帳簿を最新へ収束させる手段が要る。消す・選ぶ・戻すを利用者の手に渡し、一度した手当てを二度させない。"
 goal: "明細単位・取込単位・期間単位・全件の4粒度で消せ、実行前に巻き添えを見せ、実行後に戻せる。種別は期間・全件の絞り込みにだけ使う。取込のたびの3点比較で手当てが自動的に維持され、真の衝突だけが行として提示され、取引先単位の決め事が蓄積して問われる件数が逓減する。"
 scope_in: ["明細単位/取込単位/期間単位/全件の4粒度削除（種別は期間・全件の絞り込み）", "失敗・重複した取込履歴と保存原本の明示破棄", "実行前 preflight と確認指紋", "D1退避テーブルによる undo と有限保持", "削除・上書きの監査記録", "取込実行前の差分プレビュー", "base/current/incoming の3点比較による手当ての継続再適用", "tx_edits への base_cls / base_owner / stable_key 追加", "core/classify.ts の conflict を属性単位の3分岐へ作り替え", "取引先単位の決め事(vendor_memory)と確信度", "決め事の一覧・取消・pin・再判定"]
-scope_out: ["freee・マネーフォワード側のデータ変更", "Time Travel を undo の代替とすること", "overrides テーブルの復活", "既存の月単位洗い替え・POST /restore の挙動変更", "分割記帳そのものの不変条件", "証憑原本の lifecycle"]
+scope_out: ["freee・マネーフォワード側のデータ変更", "Time Travel を undo の代替とすること", "overrides テーブルの復活", "既存の月単位洗い替え・POST /restore の挙動変更", "分割記帳そのものの不変条件"]
 acceptance: ["取込履歴から任意の取込を取り消せ、その import_id を参照する行が0件になり、他の取込由来の明細が1件も減らない", "failed/duplicate の履歴だけを明示削除でき、canonical・active・undo参照がある履歴と共有中の原本は失われない", "明細・取込・期間・全件の4粒度で削除でき、種別は期間・全件の絞り込みとしてだけ働き、指定範囲外のデータが1件も変化しない", "削除の確認画面に対象件数・対象期間・巻き添えになる手動記録の件数が出る", "確認指紋が一致しない実行が409で拒否され、状態が動かない", "実行直後の取り消しで各テーブルの行数と内容が実行前と完全に一致する", "保持期間を過ぎた undo が410で拒否され、退避行が掃除されている", "削除後に import_active_targets の指紋が巻き戻り、同じファイルを duplicate にならず入れ直せる", "操作監査に操作種別・範囲・件数・日時・結果が残り、明細本体・金額がログとエラー応答に含まれない", "base == incoming の属性で手当てが維持され、双方が変わった属性だけが衝突として提示される", "MF側で tx_id が振り直されても stable_key で手当てが追随する", "適用の優先順位が tx_edits > rules > vendor_memory > 取込原本値 の順で解決される", "確信度が閾値未満の決め事は自動適用されず候補提示に留まり、取り消すと再判定で戻せる", "通常幅5,000行の取込に対する3点比較と書戻しが 49 D1 queries 以内に収まる", "削除・上書きが freee・マネーフォワード側へ一切波及しない"]
 architecture_refs: ["arch-import-deletion-undo-boundary", "arch-override-reapply-three-way-merge"]
 ---
@@ -102,8 +102,8 @@ frontmatter の `acceptance` は機能レベルの要約。詳細な全受入は
 
 # 機能間依存
 
-- `depends_on`: (なし)。既存の `spec-transaction-splits` / `spec-attachments-transit` は
-  完了を待つ関係ではなく、**巻き添えにしない対象**として参照する関係にある。
+- `depends_on`: (なし)。既存の `spec-transaction-splits` は完了を待つ関係ではなく、
+  **巻き添えにしない対象**として参照する関係にある。
 
 # 実装 readiness
 

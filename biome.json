@@ -14,6 +14,7 @@
       ".artifact-delivery",
       "eval-log",
       ".dev-graph",
+      "features/*.context.json",
       "architecture",
       "system-spec",
       "packages/api/worker-configuration.d.ts",

@@ -1,0 +1,1057 @@
+{
+  "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+  "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "explicit-cli"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/index.md",
+      "system-spec/00-requirements-definition.md"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "廃止対象の能力が 9 項目すべて列挙され、各項目に判定コマンドが対応している",
+        "保持能力として FILES バインディング、改善リクエスト、夜間バックアップ、取込原本、現金記帳、交通費記帳、matched 行の除外、excluded 機能の 8 項目が明記されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P01.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P01 は 13 phase の requirements slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P01.md",
+        "graph_node_id": "SYS-RTR-P01",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-RTR-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "要件表を前世代へ戻し、後続 phase の着手を止める。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "requirements"
+      ],
+      "title": "廃止範囲と保持範囲の要件確定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md の scope_in と scope_out を対照表と突合する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ]
+    },
+    {
+      "acceptance": [
+        "添付親の収束処理を呼ぶ箇所がすべて特定され、削除後の代替挙動が決まっている",
+        "core の re-export から証憑シンボルを外した際に壊れる利用側が列挙されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P02.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P02 は 13 phase の architecture slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P01"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P02.md",
+        "graph_node_id": "SYS-RTR-P02",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-RTR-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "設計を前世代へ戻し、実装 phase を着手前状態に保つ。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "architecture"
+      ],
+      "title": "削除後の依存グラフと層境界の設計",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "設計文書の切断点一覧と、リポジトリ内の実際の呼び出し箇所の件数が一致することを確認する"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src"
+      ]
+    },
+    {
+      "acceptance": [
+        "P01 で定義した保持能力 8 項目それぞれについて、削除設計が触れないことの根拠が示されている",
+        "削除対象ファイル内に存在する無関係な保証が列挙され、退避先が決まっている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P03.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P03 は 13 phase の design-review slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P02"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P03.md",
+        "graph_node_id": "SYS-RTR-P03",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-RTR-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "レビュー所見を破棄し、設計 phase へ差し戻す。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "design-review"
+      ],
+      "title": "独立設計レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "削除対象ファイル一覧を走査し、証憑以外のアサーションを含むファイルが漏れなく退避対象に入っていることを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ]
+    },
+    {
+      "acceptance": [
+        "削除着手前のパッケージ別テスト件数が記録され、後続 phase が突合できる形で保存されている",
+        "夜間バックアップの R2 書き込みを検証する独立テストの配置先と内容が決まっている",
+        "予算表の再宣言後に合計が上限と一致することを検証する手順が決まっている",
+        "各受入テストについて、旧実装のままなら落ちることが説明されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P04.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P04 は 13 phase の test-design slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P03"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P04.md",
+        "graph_node_id": "SYS-RTR-P04",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-RTR-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "テスト設計を前世代へ戻す。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "test-design"
+      ],
+      "title": "退避テストと受入テストの設計",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "設計した受入テストを削除前のコードに対して実行し、赤になることを確認する",
+        "パッケージごとのテストを実行し、件数を記録する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/api/test",
+        "packages/core/test",
+        "packages/web/test",
+        ".dev-graph/eval-log"
+      ]
+    },
+    {
+      "acceptance": [
+        "active runtime surface（route登録・API route登録・現行DB schema・navigation・scheduled job・public export）に、確定申告と証憑の画面、経路、および専用スキーマ定義が残っていない (実データベースへの適用は後続 phase が担う)",
+        "一致にも除外にも入らない freee の残余行に二重登録として外す操作が出ない",
+        "その一覧の見出しと説明が、取り込んだ freee 取引の全分割における残余であることを述べる表現になっている",
+        "退避先の独立テストが追加され、単体で緑になる"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P05.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P05 は 13 phase の implementation slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P04"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P05.md",
+        "graph_node_id": "SYS-RTR-P05",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-RTR-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "受入条件が未達となった時点で着手を停止し、P05の変更だけを取り消す。移行はP08より前には適用しない。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "implementation"
+      ],
+      "title": "証憑機能の削除と freeeOnly 行の操作除去",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "`APP_ROUTES` / `ROUTE_COMPONENTS`、API route登録、`db/schema.ts`、navigation、scheduled job、public exportを検索し、廃止機能の入口・専用定義が無いことを確認する。歴史migration・archive・retired/superseded文書、交通費互換の`receiptWaived`、改善要望の画像添付、共通`r2_cleanup`の`retired_attachment` purposeは不存在検査の対象外とする",
+        "追加した独立テストを単体で実行する",
+        "一覧の見出しと説明を描画する画面テストを実行し、是正後の表現が出力に含まれることを確認する"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src"
+      ]
+    },
+    {
+      "acceptance": [
+        "取り込んだ freee 取引の分割が過不足なく成り立つことを見る契約テストが実行され緑である",
+        "matched 行の除外操作と excluded 機能の回帰テストが実行され緑である",
+        "取込原本の active・recent・processing 保護と期限超過 inactive 削除の回帰テストが実行され緑である",
+        "現金記帳のライフサイクル回帰テストが実行され緑である",
+        "交通費記帳のライフサイクル回帰テストが実行され緑である",
+        "退避した夜間バックアップのテストが実行され緑である",
+        "予算表の合計一致テストが実行され緑である"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P06.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P06 は 13 phase の test-run slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P05"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P06.md",
+        "graph_node_id": "SYS-RTR-P06",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-RTR-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "失敗したテストの対象コミットを取り消す。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "test-run"
+      ],
+      "title": "テスト実行",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "`pnpm --filter @kanjo/core exec vitest run test/total-cashflow-contract.test.ts`、`pnpm --filter @kanjo/api exec vitest run src/r2-cleanup.test.ts src/cash-lifecycle.test.ts src/transit-lifecycle.test.ts src/nightly-backup.test.ts src/scheduled-maintenance-budget.test.ts`、`pnpm --filter @kanjo/web exec vitest run test/total-cashflow-table.dom.test.tsx` を実行し、上記 7 能力のテスト名と成功結果をログで確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/test",
+        "packages/api/test",
+        "packages/web/test"
+      ]
+    },
+    {
+      "acceptance": [
+        "この時点で判定可能な受入条件がすべて判定され、未達が 0 件である",
+        "判定を後続 phase へ引き渡す条件について、引き渡し先の phase が条件ごとに明記されている",
+        "受入条件 11 件のいずれもが、判定済みか引き渡し済みのどちらかに分類されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P07.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P07 は 13 phase の acceptance slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P06"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P07.md",
+        "graph_node_id": "SYS-RTR-P07",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-RTR-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "未達条件を実装 phase へ差し戻す。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "acceptance"
+      ],
+      "title": "受入判定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "判定結果表の各行について、記載されたコマンドを再実行し同じ出力になることを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core",
+        "packages/api",
+        "packages/web",
+        "migrations"
+      ]
+    },
+    {
+      "acceptance": [
+        "バックアップの取得対象宣言から証憑テーブルが外れている",
+        "書き換え可能な資源の防御宣言と監査記録の対象宣言から証憑由来の項目が外れている",
+        "証憑用に置かれたオブジェクトの利用が終了しており、FILES バインディング自体は残っている",
+        "0038で全旧添付keyと旧取込原本削除intentが共通`r2_cleanup_jobs`へ退避され、旧Workerの遅延writeも再処理できる",
+        "取込原本は active・30日以内・processing/partial のいずれかなら共通guardで保護され、期限超過した inactive 原本だけが削除対象になる",
+        "現行migration headが0038で、0039と旧専用6テーブルの物理削除がこのfeature packageに含まれていない"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P08.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P08 は 13 phase の refactoring-migration slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P07"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P08.md",
+        "graph_node_id": "SYS-RTR-P08",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-RTR-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "0038未適用なら当該変更を取り消す。0038適用後は追加済みの共通台帳を残し、同schema互換世代へ戻すかforward-fixする。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "refactoring-migration"
+      ],
+      "title": "残存参照の整理とデータ移行",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "0038適用後に旧R2削除intentが共通`r2_cleanup_jobs`へ退避され、旧Workerの遅延writeがretryへ再活性化されることを検査する",
+        "`pnpm --filter @kanjo/api exec vitest run src/r2-cleanup.test.ts` でactive・recent・processing/partial原本の保持と期限超過inactive原本の削除を正方向に確認する",
+        "migration一覧・schema guard・local previewの適用上限が0038で、0039が配布物に無いことを確認する",
+        "active runtimeの防御宣言と監査対象宣言に旧専用項目が無いことを確認する。歴史migration・archive・retired文書、`receiptWaived`、改善要望の画像添付、共通cleanupの`retired_attachment`は対象外とする"
+      ],
+      "workstream_kind": "data",
+      "write_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ]
+    },
+    {
+      "acceptance": [
+        "型検査と静的検査がいずれも成功で終了する",
+        "参照できない識別子が 0 件である",
+        "予算表の合計が宣言された上限と一致する",
+        "全パッケージのテストが緑で終了する",
+        "削除前後のテスト件数の差分が、削除した証憑のテストと退避した独立テストの内訳で説明されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P09.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P09 は 13 phase の quality-assurance slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P08"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P09.md",
+        "graph_node_id": "SYS-RTR-P09",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-RTR-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "検査を通らない変更を取り消す。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "quality-assurance"
+      ],
+      "title": "型検査と静的検査と運用予算の整合",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "型検査と静的検査を実行し、終了コードが成功であることを確認する",
+        "全パッケージのテストを実行し、削除前に記録した件数と突き合わせる"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core",
+        "packages/api",
+        "packages/web"
+      ]
+    },
+    {
+      "acceptance": [
+        "P01 で定義した保持能力 8 項目が動作していることの根拠が示されている",
+        "廃止対象への到達経路が 0 件であることの根拠が示されている",
+        "P07 が後続 phase へ引き渡した受入条件がすべて判定済みであり、未判定が 0 件である"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P10.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P10 は 13 phase の final-review slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P09"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P10.md",
+        "graph_node_id": "SYS-RTR-P10",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-RTR-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "所見を差し戻し、該当 phase を再実行する。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "final-review"
+      ],
+      "title": "独立最終レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "レビュー所見の各根拠について、参照されたコマンドと出力の対応を確認する",
+        "P07 の引き渡し一覧と、各後続 phase の判定結果を 1 対 1 で突き合わせる"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core",
+        "packages/api",
+        "packages/web",
+        "migrations"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入条件 11 件それぞれについてコマンドと出力が保存されている",
+        "保存された各コマンドが再実行可能な形で記録されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P11.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P11 は 13 phase の evidence slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P10"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P11.md",
+        "graph_node_id": "SYS-RTR-P11",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-RTR-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "証跡ファイルを前世代へ戻す。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "evidence"
+      ],
+      "title": "再現可能な証跡の収集",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "保存済み証跡から任意の 3 件を再実行し、同じ出力になることを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/eval-log"
+      ]
+    },
+    {
+      "acceptance": [
+        "現行機能として廃止した機能を案内する記述が残っていない。歴史migration・archive・retired/superseded文書、交通費互換の`receiptWaived`、改善要望の画像添付、共通R2 cleanupの記述は対象外である",
+        "定期ジョブ一覧が実際に登録されているジョブと一致する"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P12.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P12 は 13 phase の documentation-operations slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P11"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P12.md",
+        "graph_node_id": "SYS-RTR-P12",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-RTR-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "文書を前世代へ戻す。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "documentation-operations"
+      ],
+      "title": "文書と運用手順の更新",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "現行README・schema・navigation・operations文書を検索し、廃止機能を利用可能として案内する記述が無いことを確認する。検索結果に残る歴史migration・archive・retired/superseded文書、`receiptWaived`、改善要望の画像添付、共通R2 cleanupは理由を分類して記録する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs",
+        "README.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "反映後に改善リクエストのスクリーンショットが保存できる",
+        "反映後に夜間バックアップが所定の場所へ書ける",
+        "反映後に確定申告と証憑の経路へ到達できない",
+        "反映済みmigration headが0038であり、0039と旧専用6テーブルの物理削除を含まない",
+        "Release Bが、共通`r2_cleanup_jobs`と旧cleanup台帳の残件0・D1復元点・互換アプリ世代を開始条件とする別follow-up featureとして記録されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P13.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "P13 は 13 phase の release-deploy slot に対応し、成果物は task 1 件である"
+      },
+      "depends_on": [
+        "SYS-RTR-P12"
+      ],
+      "deploy_unit": "cloudflare-workers-single-generation",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+        "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P13.md",
+        "graph_node_id": "SYS-RTR-P13",
+        "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-RTR-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "rollback": "0038は追加型で旧専用6テーブルを保持するため、同schema互換世代へ戻すかforward-fixする。共通台帳を逆DDLで削除しない。",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "features/feature-retire-tax-receipt-and-clarify-freee-only.md"
+      ],
+      "tags": [
+        "retire-tax-receipt",
+        "release-deploy"
+      ],
+      "title": "反映と反映後の確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "Release A後に改善リクエストの画像保存、夜間バックアップ、廃止経路不在の3件を確認する",
+        "migration履歴・schema guard・local previewから現行headが0038で0039が未配布であることを確認する",
+        "共通`r2_cleanup_jobs`のprocessorが動作し、将来のRelease B開始条件が別follow-up featureに記録されていることを確認する"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        "migrations",
+        "packages/api",
+        "packages/web",
+        ".dev-graph/eval-log"
+      ]
+    }
+  ]
+}
