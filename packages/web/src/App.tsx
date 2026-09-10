@@ -55,16 +55,26 @@ export function App() {
   }, []);
 
   if (me.isLoading) {
-    return <div className="login-wrap">読み込み中…</div>;
+    return (
+      <PeriodProvider>
+        <Layout locked>
+          <div className="login-wrap">ログイン状態を確認中…</div>
+        </Layout>
+      </PeriodProvider>
+    );
   }
   if (loggedOut || me.isError) {
     return (
-      <LoginPage
-        onSuccess={() => {
-          setLoggedOut(false);
-          void qc.invalidateQueries();
-        }}
-      />
+      <PeriodProvider>
+        <Layout locked>
+          <LoginPage
+            onSuccess={() => {
+              setLoggedOut(false);
+              void qc.invalidateQueries();
+            }}
+          />
+        </Layout>
+      </PeriodProvider>
     );
   }
 

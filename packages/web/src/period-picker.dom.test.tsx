@@ -8,7 +8,7 @@
  */
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { PeriodProvider, parseSelection, selectionToQuery, usePeriod } from './period.js';
+import { PeriodPicker, PeriodProvider, parseSelection, selectionToQuery, usePeriod } from './period.js';
 
 afterEach(() => {
   cleanup();
@@ -35,6 +35,11 @@ describe('期間の選択をクエリにする', () => {
     expect(selectionToQuery({ mode: 'custom', from: '2025-04', to: '2026-03' })).toBe(
       'from=2025-04&to=2026-03',
     );
+  });
+
+  it('任意期間の入力途中や逆転した範囲はAPIへ送らない', () => {
+    expect(selectionToQuery({ mode: 'custom', from: '', to: '2026-03' })).toBe('');
+    expect(selectionToQuery({ mode: 'custom', from: '2026-04', to: '2026-03' })).toBe('');
   });
 });
 
@@ -80,6 +85,48 @@ describe('選択の共有', () => {
     // Provider を足し忘れた画面が白くなるより、全期間で出るほうが害が小さい
     render(<Probe />);
     expect(screen.getByRole('status').textContent).toContain('/summary |');
+  });
+});
+
+describe('全画面共通の期間操作', () => {
+  const meta = {
+    applied: { from: '2025-09', to: '2026-08' },
+    label: '2025年9月 〜 2026年8月',
+    full: { from: '2023-01', to: '2026-08' },
+    years: ['2026', '2025', '2024', '2023'],
+    monthCount: 44,
+  };
+
+  it('1年・2年・3年を一手で切り替え、同じ選択を保持する', () => {
+    render(
+      <PeriodProvider>
+        <PeriodPicker meta={meta} />
+        <Probe />
+      </PeriodProvider>,
+    );
+
+    for (const label of ['1年', '2年', '3年']) {
+      expect(screen.getByRole('button', { name: `${label}で表示` })).toBeTruthy();
+    }
+    fireEvent.click(screen.getByRole('button', { name: '3年で表示' }));
+    expect(screen.getByRole('status').textContent).toContain('/summary?span=3');
+    expect(screen.getByRole('button', { name: '3年で表示' }).getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('任意期間に全期間・年指定・開始終了月をまとめる', () => {
+    render(
+      <PeriodProvider>
+        <PeriodPicker meta={meta} />
+      </PeriodProvider>,
+    );
+
+    fireEvent.click(screen.getByText('任意'));
+    const select = screen.getByLabelText('任意期間の種類');
+    expect(select.textContent).toContain('全期間');
+    expect(select.textContent).toContain('2026年');
+    fireEvent.change(select, { target: { value: 'custom' } });
+    expect(screen.getByLabelText('開始月')).toBeTruthy();
+    expect(screen.getByLabelText('終了月')).toBeTruthy();
   });
 });
 

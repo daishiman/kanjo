@@ -15,6 +15,8 @@ import { searchRoutes, withResolvedGroups } from '../route-search.js';
 import { SEARCH_ROUTES } from '../routeMetadata.js';
 import { RouteIcon } from './RouteIcon.js';
 
+export const OPEN_COMMAND_PALETTE_EVENT = 'kanjo:open-command-palette';
+
 export function CommandPalette() {
   const [query, setQuery] = useState('');
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -23,6 +25,12 @@ export function CommandPalette() {
 
   // Cmd+K(mac) / Ctrl+K(win) で開く。入力欄にいても開けるよう window で受ける
   useEffect(() => {
+    const open = () => {
+      const dialog = dialogRef.current;
+      if (!dialog || dialog.open) return;
+      setQuery('');
+      dialog.showModal();
+    };
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
@@ -31,13 +39,17 @@ export function CommandPalette() {
         if (dialog.open) dialog.close();
         // 前回の絞り込みが残っていると開いた直後が一覧に見えないので捨てる
         else {
-          setQuery('');
-          dialog.showModal();
+          open();
         }
       }
     };
+    const onOpen = () => open();
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener(OPEN_COMMAND_PALETTE_EVENT, onOpen);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener(OPEN_COMMAND_PALETTE_EVENT, onOpen);
+    };
   }, []);
 
   // 群名(「見る」など)でもその群の画面をまとめて引けるようにしてから絞り込む

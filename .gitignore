@@ -80,3 +80,9 @@ __pycache__/
 
 # ハーネスが生成するセッションログ(成果物ではない)
 .claude/logs/
+
+# UIデザインの正式画像と検討成果物(PNG 200枚超・約300MB)。publicリポジトリを肥大化させないため
+# 実体は /Users/dm/dev/dev/個人開発/kanjo-design に置き、各worktreeからsymlinkで参照する。
+# 新しいworktreeを作ったら次を1度だけ実行する:
+#   ln -s "/Users/dm/dev/dev/個人開発/kanjo-design" design
+/design
