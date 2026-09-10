@@ -30,6 +30,13 @@ const MIN_STROKE = 2;
 const MIN_SIZE = 0.005;
 
 /**
+ * 画像の読み込みを待つ上限(ミリ秒)。
+ * 手元の画像を読むだけなので通常は一瞬で終わる。10 秒はそれに対して十分に長く、
+ * 送信ボタンを押した人が「壊れた」と感じる前には諦められる長さとして選んだ。
+ */
+export const LOAD_TIMEOUT_MS = 10_000;
+
+/**
  * 2点から注釈を作る。どちらの方向へドラッグしても左上起点へ正規化する。
  * 小さすぎるものは null を返し、呼び出し側は捨てる。
  */
@@ -86,11 +93,21 @@ function loadFile(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
+    // load も error も来ないまま黙る環境がある(object URL を取りに行かない実装など)。
+    // 待ちに上限を置くのは、この関数が「焼き込みに失敗しても送信は止めない」を
+    // 守ると宣言しているから。上限が無いと、その宣言を破る唯一の経路が残る。
+    // 打ち切られた場合の結果は失敗と同じ(注釈なしの元画像を送る)で、送信は進む。
+    const timer = setTimeout(() => {
+      URL.revokeObjectURL(url);
+      reject(new Error('annotate_load_timeout'));
+    }, LOAD_TIMEOUT_MS);
     img.onload = () => {
+      clearTimeout(timer);
       URL.revokeObjectURL(url);
       resolve(img);
     };
     img.onerror = () => {
+      clearTimeout(timer);
       URL.revokeObjectURL(url);
       reject(new Error('annotate_load_failed'));
     };

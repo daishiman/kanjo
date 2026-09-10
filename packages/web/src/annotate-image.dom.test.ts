@@ -7,9 +7,10 @@
  * 代わりに座標の作り方(比率・正規化・クランプ)と、描画呼び出しの並びを見る。
  * プレビューと焼き込みが同じ drawAnnotations を通る限り、両者はずれない。
  */
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   type Annotation,
+  LOAD_TIMEOUT_MS,
   annotationFromDrag,
   burnAnnotations,
   drawAnnotations,
@@ -88,6 +89,32 @@ describe('枠を描く', () => {
 describe('焼き込み', () => {
   const jpeg = () => new File([new Uint8Array([0xff, 0xd8, 0xff])], 'shot.jpg', { type: 'image/jpeg' });
 
+  /**
+   * <img> の振る舞いを指定して差し替える。
+   *
+   * jsdom は object URL を実際には取りに行かないため、素の Image が load と error の
+   * どちらを出すかは実行環境まかせになる。ここで固定しないと、通したい失敗経路を
+   * 通らないまま緑になる(実際 vitest 3 ではそうなっていた)。
+   */
+  function stubImage(behaviour: 'error' | 'silent') {
+    class FakeImage {
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      naturalWidth = 0;
+      naturalHeight = 0;
+      set src(_url: string) {
+        if (behaviour === 'error') queueMicrotask(() => this.onerror?.());
+        // 'silent' は何も発火しない = 読み込みが返ってこない端末の再現
+      }
+    }
+    vi.stubGlobal('Image', FakeImage);
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
   it('書き込みが無ければ元の画像をそのまま返す', async () => {
     const file = jpeg();
     // 再エンコードで画質だけ落とさないための取り決め。同一参照であることまで見る
@@ -95,8 +122,18 @@ describe('焼き込み', () => {
   });
 
   it('画像を読めなくても送信を止めず、元の画像を返す', async () => {
+    stubImage('error');
     const file = jpeg();
     const out = await burnAnnotations(file, [{ x: 0.1, y: 0.1, w: 0.2, h: 0.2 }]);
     expect(out).toBe(file);
+  });
+
+  it('読み込みが返ってこなくても、待ち上限で諦めて元の画像を返す', async () => {
+    stubImage('silent');
+    vi.useFakeTimers();
+    const file = jpeg();
+    const pending = burnAnnotations(file, [{ x: 0.1, y: 0.1, w: 0.2, h: 0.2 }]);
+    await vi.advanceTimersByTimeAsync(LOAD_TIMEOUT_MS);
+    expect(await pending).toBe(file);
   });
 });

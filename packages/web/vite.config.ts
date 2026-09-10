@@ -43,9 +43,10 @@ export default defineConfig({
           // groupOrder が大きい project は他が終わってから走る。
           sequence: { groupOrder: 1 },
           // 実描画同士も重ねない。fileParallelism は project 単位では効かないため
-          // (実測: 2件が同時に走った)、単一 fork に閉じ込めて直列化する。
+          // (実測: 2件が同時に走った)、worker を1つに絞って直列化する。
+          // vitest 4 で poolOptions は廃止され、top-level の maxWorkers が後継。
           pool: 'forks',
-          poolOptions: { forks: { singleFork: true } },
+          maxWorkers: 1,
         },
       },
     ],

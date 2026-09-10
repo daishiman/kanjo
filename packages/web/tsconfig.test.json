@@ -1,0 +1,15 @@
+{
+  // テストと、テストだけが使う補助モジュールのための設定。
+  // ここだけ node の型を足す。実描画テストは子プロセスで Chrome を起こし、
+  // 生成物をファイルから読むため、node:fs / node:child_process / process を使う。
+  //
+  // include を src 全体にしてあるのは、テストが取り込むアプリ側のモジュールも
+  // 同じ設定で解決させるため。アプリ側は tsconfig.json の厳しい側でも検査されるので、
+  // node の型が緩く見えるのはこちらの通過分だけになる。
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src"],
+  "exclude": []
+}
