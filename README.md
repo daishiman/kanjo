@@ -112,7 +112,7 @@ kanjo/
 
 正式デザイン画像（PNG 200枚超・約300MB）はpublicリポジトリを肥大化させるためコミットしない。実体はリポジトリ外の1箇所に置き、各worktreeからは `design/` のsymlinkで参照する（実体の場所は `KANJO_DESIGN_STORE` で上書き可）。
 
-clone直後に一度だけ `bash scripts/setup-git-hooks.sh` を実行すれば、以降は `git worktree add` や `git switch` のたびに `scripts/link-design.sh` がsymlinkを張り直す。`.git/hooks` は全worktreeで共有されるため、設置は1回でよい。実体が無い環境（CI・他の人のclone）では何もしない。
+clone直後に一度だけ `bash scripts/setup-git-hooks.sh` を実行すれば、以降は `git worktree add` / `git switch`（post-checkout）と `git pull`（post-merge）のたびに `scripts/link-design.sh` がsymlinkを張り直す。`.git/hooks` は全worktreeで共有されるため、設置は1回でよい。実体が無い環境（CI・他の人のclone）では何もしない。
 
 `aidd-agent-kit/` 以下が編集原本で、`.claude` `.agents` `.codex` はそこから生成される実行時配置。エージェント向けの詳細は [`AGENTS.md`](AGENTS.md) を参照。
 
