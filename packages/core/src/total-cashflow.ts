@@ -72,7 +72,7 @@ export type ReconcileReviewReason =
 /**
  * freee 取引1件を画面へ出す形。
  *
- * 一致した組にも、MF に相手がいない取引にも同じ形を使う。片方だけ列が違うと、
+ * matched と freeeOnly に同じ形を使う。片方だけ列が違うと、
  * 同じ freee 取引が表によって別物に見える。
  */
 export interface ReconcileFreee {
@@ -182,7 +182,7 @@ export interface ReconcileResult {
   matched: ReconcileMatch[];
   /** MF 側の要確認。freee ではなく MF 明細ごとに1件 */
   review: ReconcileReview[];
-  /** MF に相手が見つからなかった freee 取引 */
+  /** matched にも excluded にも入らない freee 側の残余 */
   freeeOnly: ReconcileFreee[];
   excluded: ReconcileExcluded[];
 }
@@ -472,7 +472,7 @@ export function reconcileBizDuplicates(
     if (candidates.length > 0) push('発生日が一致しません');
   }
 
-  // freee の全件を「一致」「MF に相手なし」「除外」へ必ず振り分ける。
+  // freee 全件を matched / freeeOnly / excluded に分ける。freeeOnly は matched にも excluded にも入らない freee 側の残余。
   // 3つの件数を足すと取り込んだ freee の件数になり、映っていない残りが無いと言える
   const freeeOnly: ReconcileFreee[] = [];
   const excluded: ReconcileExcluded[] = [];

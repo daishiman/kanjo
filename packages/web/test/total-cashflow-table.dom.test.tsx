@@ -543,7 +543,7 @@ describe('freee 全件の行き先を件数と中身で示す', () => {
     return await screen.findByRole('region', { name: 'freee 取引の行き先' });
   };
 
-  it('一致・相手なし・除外の件数が freee の総数へ足し合わさる形で出る', async () => {
+  it('一致・一致にも除外にも入らない残り・除外の件数が総数になる', async () => {
     const section = await openSection();
     expect(within(section).getByRole('heading', { level: 2 }).textContent).toBe(
       '取り込んだ freee 3 件の行き先',
@@ -551,7 +551,7 @@ describe('freee 全件の行き先を件数と中身で示す', () => {
     // 内訳を足すと総数になることを、画面の文言そのもので固定する
     const summary = section.textContent ?? '';
     expect(summary).toContain('一致 1 件');
-    expect(summary).toContain('MF に相手なし 1 件');
+    expect(summary).toContain('一致にも除外にも入らない残り 1 件');
     expect(summary).toContain('二重登録として外した 1 件');
     expect(summary).toContain('＝ 3 件');
   });
@@ -578,25 +578,30 @@ describe('freee 全件の行き先を件数と中身で示す', () => {
     expect(posts[0]).toEqual({ method: 'DELETE', body: { freeeKey: 'v1:freee:three' } });
   });
 
-  it('決め手の無い行では理由の記入を必ず挟む', async () => {
-    const posts: unknown[] = [];
-    const section = await openSection(posts);
+  /*
+    freeeOnly は「MF に相手がいない」と判定された集合ではない。全 freee 取引から
+    matched と excluded を除いた残りである。行ごとに「外す」を置くと重複だと読ませるため、
+    操作は一致した表だけに残す(受入基準3・4)。
+  */
+  it('一致にも除外にも入らない表は操作列を持たない', async () => {
+    const section = await openSection();
+    const tables = within(section).getAllByRole('table');
+    const freeeOnly = tables[1]!;
+    // 見出しだけで表を取り違えないよう、残余の表であることを列で確かめる
+    const headers = within(freeeOnly)
+      .getAllByRole('columnheader')
+      .map((c) => c.textContent);
+    expect(headers).toEqual(['発生日', '取引先', '向き', '金額', '決済口座', '勘定科目']);
+    expect(headers).not.toContain('操作');
+    expect(within(freeeOnly).queryAllByRole('button', { name: '二重登録として外す' })).toHaveLength(0);
 
-    // 相手のいない freee には決め手が無い。既定を置けないので空欄のまま出す
-    fireEvent.click(within(section).getAllByRole('button', { name: '二重登録として外す' })[1]!);
-    const field = within(section).getByLabelText('2026-08-05 架空アプリ を外す理由') as HTMLInputElement;
-    expect(field.value).toBe('');
-    const submit = within(section).getByRole('button', { name: '外す' }) as HTMLButtonElement;
-    // 理由が空のままでは押せない。理由の読めない除外を残さない
-    expect(submit.disabled).toBe(true);
+    // 一致した1行ぶんだけが残る。ここまで消えると重複を外す手段が無くなる
+    expect(within(section).getAllByRole('button', { name: '二重登録として外す' })).toHaveLength(1);
+    expect(within(tables[0]!).getAllByRole('button', { name: '二重登録として外す' })).toHaveLength(1);
 
-    fireEvent.change(field, { target: { value: '二重登録' } });
-    fireEvent.click(submit);
-    await waitFor(() => expect(posts).toHaveLength(1));
-    expect(posts[0]).toEqual({
-      method: 'POST',
-      body: { freeeKey: 'v1:freee:two', reason: '二重登録' },
-    });
+    // core の集合定義を短い語でそのまま読める。例示だけで意味を狭めない
+    expect(section.textContent).toContain('一致でも二重登録として除外でもない、残りの取引です');
+    expect(section.textContent).toContain('重複候補ではなく、総額に含まれます');
   });
 
   /*

@@ -586,7 +586,7 @@ describe('受入F6 収入側の「同じ」判定で家計収入から外れ fre
 });
 
 describe('freee 全件の行き先を件数で示す', () => {
-  it('一致・MFに相手なし・除外の3つに必ず分かれ、合計が freee の件数になる', () => {
+  it('一致・除外・そのどちらにも入らない freee 側の残余に必ず分かれ、合計が freee の件数になる', () => {
     const deals = [
       deal({ partner: '架空クラウド' }),
       deal({ date: '2026-08-09', partner: '架空アプリ', amount: 2_900 }),
