@@ -46,7 +46,7 @@ export interface NavItemProps {
 export function NavItem({ to, icon, label, variant, end = true }: NavItemProps) {
   const { linkClass, labelClass } = VARIANT[variant];
   return (
-    <NavLink to={to} end={end} className={() => linkClass}>
+    <NavLink to={to} end={end} className={() => linkClass} title={variant === 'sidebar' ? label : undefined}>
       <RouteIcon name={icon} />
       <span className={labelClass}>{label}</span>
     </NavLink>

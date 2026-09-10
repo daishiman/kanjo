@@ -53,7 +53,9 @@ export function parseSelection(raw: string | null): PeriodSelection {
 export function selectionToQuery(sel: PeriodSelection): string {
   if (sel.mode === 'year') return `year=${sel.year}`;
   if (sel.mode === 'span') return `span=${sel.span}`;
-  if (sel.mode === 'custom') return `from=${sel.from}&to=${sel.to}`;
+  if (sel.mode === 'custom' && MONTH_RE.test(sel.from) && MONTH_RE.test(sel.to) && sel.from <= sel.to) {
+    return `from=${sel.from}&to=${sel.to}`;
+  }
   return '';
 }
 
@@ -120,24 +122,23 @@ export const usePeriod = (): PeriodContextValue => useContext(PeriodContext) ?? 
  * 絞り込み前の年一覧から作る(絞り込み後から作ると、2025年を選んだ瞬間に
  * 2026年が選択肢から消えて戻れなくなる)。
  */
-export function PeriodPicker({ meta }: { meta?: PeriodMeta }) {
+export function PeriodPicker({ meta, disabled = false }: { meta?: PeriodMeta; disabled?: boolean }) {
   const { selection, setSelection } = usePeriod();
   const years = meta?.years ?? [];
   const full = meta?.full ?? null;
 
-  const value =
+  const detailValue =
     selection.mode === 'year'
       ? `year:${selection.year}`
-      : selection.mode === 'span'
-        ? `span:${selection.span}`
-        : selection.mode === 'custom'
-          ? 'custom'
-          : 'all';
+      : selection.mode === 'custom'
+        ? 'custom'
+        : selection.mode === 'all'
+          ? 'all'
+          : '';
 
   const onSelect = (v: string) => {
     if (v === 'all') return setSelection({ mode: 'all' });
     if (v.startsWith('year:')) return setSelection({ mode: 'year', year: v.slice(5) });
-    if (v.startsWith('span:')) return setSelection({ mode: 'span', span: Number(v.slice(5)) as SpanYears });
     // 任意期間は、いまの全体期間を初期値にしておく。空欄から始めると必ず1回は無効になる
     setSelection({ mode: 'custom', from: full?.from ?? '', to: full?.to ?? '' });
   };
@@ -145,57 +146,94 @@ export function PeriodPicker({ meta }: { meta?: PeriodMeta }) {
   const setCustom = (patch: Partial<{ from: string; to: string }>) => {
     if (selection.mode !== 'custom') return;
     const next: PeriodSelection = { ...selection, ...patch };
-    // from > to の瞬間はサーバが全期間に倒すので、入力途中でも画面は壊れない
+    // 入力途中の空値や from > to は selectionToQuery が送信対象から外す。
     setSelection(next);
   };
 
+  if (disabled) {
+    return (
+      <fieldset className="period-picker is-locked" disabled>
+        <legend className="visually-hidden">全体期間</legend>
+        <span>1年</span>
+        <span>2年</span>
+        <span>3年</span>
+        <span>任意</span>
+        <span className="visually-hidden">ログイン後に選択できます</span>
+      </fieldset>
+    );
+  }
+
   return (
-    <span className="period-picker">
-      <label className="visually-hidden" htmlFor="period-select">
-        対象期間
-      </label>
-      <select
-        id="period-select"
-        className="period-select"
-        value={value}
-        onChange={(e) => onSelect(e.target.value)}
-      >
-        <option value="all">全期間</option>
+    <fieldset className="period-picker" aria-label="全体期間">
+      <legend className="visually-hidden">全体期間</legend>
+      <div className="period-presets">
         {([1, 2, 3] as SpanYears[]).map((n) => (
-          <option key={n} value={`span:${n}`}>
-            {SPAN_LABEL[n]}
-          </option>
+          <button
+            key={n}
+            type="button"
+            aria-label={`${n}年で表示`}
+            aria-pressed={selection.mode === 'span' && selection.span === n}
+            onClick={() => setSelection({ mode: 'span', span: n })}
+          >
+            {n}年
+          </button>
         ))}
-        {years.map((y) => (
-          <option key={y} value={`year:${y}`}>
-            {y}年
-          </option>
-        ))}
-        <option value="custom">期間を指定…</option>
-      </select>
-      {selection.mode === 'custom' && (
-        <>
-          <input
-            type="month"
-            className="period-month"
-            aria-label="開始月"
-            min={full?.from}
-            max={full?.to}
-            value={selection.from}
-            onChange={(e) => setCustom({ from: e.target.value })}
-          />
-          <span aria-hidden="true">〜</span>
-          <input
-            type="month"
-            className="period-month"
-            aria-label="終了月"
-            min={full?.from}
-            max={full?.to}
-            value={selection.to}
-            onChange={(e) => setCustom({ to: e.target.value })}
-          />
-        </>
-      )}
-    </span>
+        <details className={`period-detail${detailValue ? ' current' : ''}`}>
+          <summary aria-label={`任意期間を選ぶ${detailValue ? `(現在: ${meta?.label ?? '任意'})` : ''}`}>
+            任意
+          </summary>
+          <div className="period-popover">
+            <label htmlFor="period-select">表示範囲</label>
+            <select
+              id="period-select"
+              className="period-select"
+              aria-label="任意期間の種類"
+              value={detailValue}
+              onChange={(e) => onSelect(e.target.value)}
+            >
+              <option value="" disabled>
+                期間を選ぶ
+              </option>
+              <option value="all">全期間</option>
+              {years.map((y) => (
+                <option key={y} value={`year:${y}`}>
+                  {y}年
+                </option>
+              ))}
+              <option value="custom">開始月と終了月を指定</option>
+            </select>
+            {selection.mode === 'custom' && (
+              <div className="period-months">
+                <label>
+                  <span>開始月</span>
+                  <input
+                    type="month"
+                    className="period-month"
+                    aria-label="開始月"
+                    min={full?.from}
+                    max={full?.to}
+                    value={selection.from}
+                    onChange={(e) => setCustom({ from: e.target.value })}
+                  />
+                </label>
+                <span aria-hidden="true">〜</span>
+                <label>
+                  <span>終了月</span>
+                  <input
+                    type="month"
+                    className="period-month"
+                    aria-label="終了月"
+                    min={full?.from}
+                    max={full?.to}
+                    value={selection.to}
+                    onChange={(e) => setCustom({ to: e.target.value })}
+                  />
+                </label>
+              </div>
+            )}
+          </div>
+        </details>
+      </div>
+    </fieldset>
   );
 }

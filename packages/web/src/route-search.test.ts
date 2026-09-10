@@ -38,9 +38,9 @@ describe('画面検索の絞り込み', () => {
 
   it('ナビのグループ名で、その群の画面をまとめて引ける', () => {
     // navGroup は群の先頭にしか入っていないので、継承しないと1件しか引けない
-    const group = SEARCH_ROUTES.filter((route) => ROUTES.find((r) => r.id === route.id)?.navGroup === '見る');
+    const group = SEARCH_ROUTES.filter((route) => ROUTES.find((r) => r.id === route.id)?.navGroup === '計画');
     expect(group.length).toBeGreaterThan(1);
-    for (const route of group) expect(idsOf('見る')).toContain(route.id);
+    for (const route of group) expect(idsOf('計画')).toContain(route.id);
   });
 
   it('当てはまらない語では空を返す', () => {
@@ -55,9 +55,9 @@ describe('画面検索の絞り込み', () => {
 
   it('同じ順位のときは業務順序を保つ', () => {
     // 群名での一致は全件が同じ順位になるので、並びはサイドバーの順序そのものになる
-    const hits = idsOf('見る');
+    const hits = idsOf('計画');
     const order = (id: string) => SEARCH_ROUTES.findIndex((route) => route.id === id);
-    const inGroup = hits.filter((id) => ROUTES.find((route) => route.id === id)?.navGroup === '見る');
+    const inGroup = hits.filter((id) => ROUTES.find((route) => route.id === id)?.navGroup === '計画');
     expect(inGroup.map(order)).toEqual([...inGroup.map(order)].sort((a, b) => a - b));
   });
 });

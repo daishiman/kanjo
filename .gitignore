@@ -80,3 +80,8 @@ __pycache__/
 
 # ハーネスが生成するセッションログ(成果物ではない)
 .claude/logs/
+
+# UIデザインの正式画像と検討成果物(PNG 200枚超・約300MB)。publicリポジトリを肥大化させないため
+# 実体はリポジトリ外に置き、各worktreeからsymlinkで参照する(scripts/link-design.sh)。
+# symlinkはpost-checkoutフックが自動で張る。clone直後に scripts/setup-git-hooks.sh を1度だけ実行する。
+/design
