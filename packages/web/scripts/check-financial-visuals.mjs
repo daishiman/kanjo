@@ -573,6 +573,7 @@ const responseFor = (url) => {
   const path = new URL(url).pathname;
   if (path === '/api/auth/me') return { authenticated: true };
   if (path === '/api/summary') return summary;
+  if (path === '/api/imports') return { imports: [] };
   if (path === '/api/matrix') return matrix;
   if (path === '/api/trends') return trends;
   if (path === '/api/subscriptions') return subscriptions;

@@ -14,19 +14,41 @@ export const APP_ROUTES = [
     task: '収支の現状と推移を確認します。',
     taskDetail: '今月の収支だけでなく、全期間の推移・売上高経費率・防衛ラインまで1画面で俯瞰する。',
     icon: 'gauge',
-    navGroup: '見る',
+    navGroup: '取込',
     mobileLabel: '概況',
   },
   {
-    id: 'analysis',
-    path: '/analysis',
-    label: '支出分析',
-    task: '帳簿と実際の支出を照合し、次に手を打つ場所を決めます。',
+    id: 'import',
+    path: '/import',
+    label: 'データ取込',
+    task: '収支ファイルを取り込み、結果と履歴を確認します。',
     taskDetail:
-      'freeeの帳簿確定、Money Forwardの未記帳、重複を除いた実質支出を切り分ける。その後、月別の増減・手を打つ順番・統計判定へ進む。',
-    icon: 'chart-pie',
+      'MF明細・freee仕訳・MF資産推移CSVを取り込み、結果と履歴を残す。資産推移CSVは決算書の貸借対照表(BS)に反映される。',
+    icon: 'file-up',
     navGroup: null,
-    mobileLabel: '分析',
+    mobileLabel: '取込',
+  },
+  {
+    id: 'cash',
+    path: '/cash',
+    label: '現金の記帳',
+    task: '口座明細に出ない現金の収支を記帳します。',
+    taskDetail:
+      '口座やカードの明細に出ない現金の受け渡し(会議費など)を仕訳する。再取込しても消えない。二重計上の検知もここで働く。',
+    icon: 'badge-japanese-yen',
+    navGroup: null,
+    mobileLabel: null,
+  },
+  {
+    id: 'classify',
+    path: '/classify',
+    label: '公私仕分け',
+    task: '明細の事業・個人、科目、名義を確定します。',
+    taskDetail:
+      'ここで確定した公私区分・勘定科目・名義は、同じファイルを再取込しても上書きされず残る。事業立替の扱いもここで決める。',
+    icon: 'list-checks',
+    navGroup: '整える',
+    mobileLabel: '仕分け',
   },
   {
     id: 'subscriptions',
@@ -48,6 +70,17 @@ export const APP_ROUTES = [
     icon: 'house',
     navGroup: null,
     mobileLabel: null,
+  },
+  {
+    id: 'analysis',
+    path: '/analysis',
+    label: '支出分析',
+    task: '帳簿と実際の支出を照合し、次に手を打つ場所を決めます。',
+    taskDetail:
+      'freeeの帳簿確定、Money Forwardの未記帳、重複を除いた実質支出を切り分ける。その後、月別の増減・手を打つ順番・統計判定へ進む。',
+    icon: 'chart-pie',
+    navGroup: '確認',
+    mobileLabel: '分析',
   },
   {
     id: 'statements',
@@ -72,17 +105,6 @@ export const APP_ROUTES = [
     mobileLabel: null,
   },
   {
-    id: 'classify',
-    path: '/classify',
-    label: '公私仕分け',
-    task: '明細の事業・個人、科目、名義を確定します。',
-    taskDetail:
-      'ここで確定した公私区分・勘定科目・名義は、同じファイルを再取込しても上書きされず残る。事業立替の扱いもここで決める。',
-    icon: 'list-checks',
-    navGroup: '整える',
-    mobileLabel: '仕分け',
-  },
-  {
     id: 'budget',
     path: '/budget',
     label: '予算管理',
@@ -90,7 +112,7 @@ export const APP_ROUTES = [
     taskDetail:
       '直近3ヶ月平均が予算の±10%の外かどうかで予算差異を判定する。着地見込み(実績累計+直近3ヶ月平均×残り月数)も並べて見る。',
     icon: 'calendar-range',
-    navGroup: null,
+    navGroup: '計画',
     mobileLabel: null,
   },
   {
@@ -105,28 +127,6 @@ export const APP_ROUTES = [
     mobileLabel: null,
   },
   {
-    id: 'import',
-    path: '/import',
-    label: 'データ取込',
-    task: '収支ファイルを取り込み、結果と履歴を確認します。',
-    taskDetail:
-      'MF明細・freee仕訳・MF資産推移CSVを取り込み、結果と履歴を残す。資産推移CSVは決算書の貸借対照表(BS)に反映される。',
-    icon: 'file-up',
-    navGroup: '運用',
-    mobileLabel: '取込',
-  },
-  {
-    id: 'cash',
-    path: '/cash',
-    label: '現金の記帳',
-    task: '口座明細に出ない現金の収支を記帳します。',
-    taskDetail:
-      '口座やカードの明細に出ない現金の受け渡し(会議費など)を仕訳する。再取込しても消えない。二重計上の検知もここで働く。',
-    icon: 'badge-japanese-yen',
-    navGroup: null,
-    mobileLabel: null,
-  },
-  {
     id: 'settings',
     path: '/settings',
     label: '設定',
@@ -134,7 +134,7 @@ export const APP_ROUTES = [
     taskDetail:
       '分類ルール、口座の名義、勘定科目の正規化、未記帳月、夜間バックアップからの復元をここで管理する。',
     icon: 'sliders-horizontal',
-    navGroup: null,
+    navGroup: '管理',
     mobileLabel: null,
   },
   {
@@ -253,7 +253,12 @@ export const SEARCH_ROUTES: readonly SearchRoute[] = APP_ROUTES.flatMap((route):
   route.id === 'analysis' ? [route, ...ANALYSIS_TABS] : [route],
 );
 
-export const MOBILE_ROUTES = APP_ROUTES.filter((route) => route.mobileLabel !== null);
+// サイドバーは月次フロー順、モバイルは従来の最頻導線順。
+// APP_ROUTES の並べ替えでタブの手の位置まで変わらないよう、意図を別に固定する。
+const MOBILE_ROUTE_ORDER: readonly AppRouteId[] = ['overview', 'analysis', 'classify', 'import'];
+export const MOBILE_ROUTES = APP_ROUTES.filter((route) => route.mobileLabel !== null).sort(
+  (a, b) => MOBILE_ROUTE_ORDER.indexOf(a.id) - MOBILE_ROUTE_ORDER.indexOf(b.id),
+);
 
 export function routeMetadata(id: AppRouteId): (typeof APP_ROUTES)[number] {
   const route = APP_ROUTES.find((candidate) => candidate.id === id);

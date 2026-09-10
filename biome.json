@@ -12,6 +12,7 @@
       ".codex",
       ".agents",
       ".artifact-delivery",
+      "design",
       "eval-log",
       ".dev-graph",
       "features/*.context.json",

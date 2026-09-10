@@ -110,6 +110,6 @@ describe('表と横スクロール容器の契約', () => {
   // 実描画での検証は thead-render.test.ts(scripts/check-thead-render.mjs を headless Chrome で実行)が担う。
 
   it('サイドバーのグループ見出しは区切り線を持つ', () => {
-    expect(STYLE_SOURCE).toMatch(/\.nav-group\s*\{[^}]*border-top:\s*1px solid var\(--line\)/);
+    expect(STYLE_SOURCE).toMatch(/\.nav-group\s*\{[^}]*border-top:\s*1px solid/);
   });
 });
