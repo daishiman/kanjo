@@ -31,7 +31,7 @@ template_id: "architecture"
 template_version: "1.0.1"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "eval-log/completeness-findings-r7.json", "evaluated_digest": "313d15d861b25509ad473928d72bd45c3f5686ec5afb8aa6472f5a1f01228d67"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/completeness-findings.json", "evaluated_digest": "313d15d861b25509ad473928d72bd45c3f5686ec5afb8aa6472f5a1f01228d67"}
 source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/database.md", "source_version": "0.1.11", "source_digest": "313d15d861b25509ad473928d72bd45c3f5686ec5afb8aa6472f5a1f01228d67", "imported_at": "2026-09-05T12:42:39Z"}
 classification_confidence: 1.0
 classification_reason: "system-spec-harness が確定させた章 system-spec/database.md の取込である。artifact_kind は章の性質から決まり (要件定義書=specification、技術章=architecture)、分類の余地が無いため確信度 1.0。serves_goals=G2,G4,G7 を通じて上位概念のゴールへ接地する。"

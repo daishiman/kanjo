@@ -1,0 +1,46 @@
+{
+  "purpose": "MF公私判定を単一契約へ収束し、全画面・全集計で同じ導出結果を使う。",
+  "background": "旧文書の重複と実入力依存を除き、匿名合成入力で再現できる契約と依存グラフへ同期する。",
+  "goal": "比較時trim、優先順位、same/different/未判断、wire契約が正本・実装・検証で一致する。",
+  "checklist": [
+    {
+      "item": "比較時だけtrimして事業開始を判定する"
+    },
+    {
+      "item": "manual > rule > vendor_memory > mf_mid > default を守る"
+    },
+    {
+      "item": "公私仕分けとtotal-cashflowがresolveTxを共有する"
+    },
+    {
+      "item": "未判断は4区分外へ隔離しreviewCount/reviewAmountで管理する"
+    },
+    {
+      "item": "sameはfreee正本維持で総額不変、differentは独立残余MFとして加算する"
+    },
+    {
+      "item": "/api/transactions の src と bySource を維持する"
+    },
+    {
+      "item": "匿名fixtureだけで受入を再現する"
+    },
+    {
+      "item": "13 nodes・12 edges・1 rootの依存投影を維持する"
+    }
+  ],
+  "constraints": [
+    {
+      "constraint": "実データ、個別値、個人パス、秘密を公開成果物へ含めない"
+    },
+    {
+      "constraint": "既存routeとDB schemaを増やさない"
+    },
+    {
+      "constraint": "通常手動編集を再評価しない"
+    },
+    {
+      "constraint": "正式な版巻き戻しと部分無効化を区別する"
+    }
+  ],
+  "source": "specs/spec-mf-business-classification.md"
+}

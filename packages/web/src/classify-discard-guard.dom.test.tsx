@@ -67,7 +67,7 @@ const response = (): TransactionsResponse => ({
       total: 1,
       bizCount: 0,
       personalCount: 1,
-      bySource: { 手動: 0, ルール: 0, 既定: 1 },
+      bySource: { 手動: 0, ルール: 0, 中項目: 0, 既定: 1 },
       reviewPending: 1,
     },
     editedCount: 0,

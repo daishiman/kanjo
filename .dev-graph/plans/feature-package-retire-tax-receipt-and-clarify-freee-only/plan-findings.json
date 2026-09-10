@@ -69,9 +69,9 @@
       "name": "validate-system-plan",
       "command": [
         "python3",
-        "/Users/dm/.codex/plugins/cache/harness-dev/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "${LOCAL_HOME}/.codex/plugins/cache/harness-dev/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
         "--repo-root",
-        "/Users/dm/orca/workspaces/kanjo/確定申告不要",
+        "${LOCAL_HOME}/orca/workspaces/kanjo/確定申告不要",
         "--staging",
         ".dev-graph/staging/elegant-review-repromotion-20260909T151332Z"
       ],

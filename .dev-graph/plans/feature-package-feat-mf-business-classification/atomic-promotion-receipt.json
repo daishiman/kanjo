@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "promoted",
+  "promoted_at": "2026-09-10T06:39:55Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7",
+  "evaluated_digest": "sha256:ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7",
+  "published_digest": "sha256:ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7",
+  "implementation_readiness": "complete",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS"
+  },
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-mf-business-classification/dev-graph-registration.json"
+}

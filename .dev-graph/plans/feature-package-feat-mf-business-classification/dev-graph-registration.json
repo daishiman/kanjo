@@ -1,0 +1,1191 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-mf-business-classification/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-mf-business-classification",
+  "parent_feature": "feat-mf-business-classification",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-MFBIZ-P01": "beads",
+    "SYS-MFBIZ-P02": "beads",
+    "SYS-MFBIZ-P03": "beads",
+    "SYS-MFBIZ-P04": "beads",
+    "SYS-MFBIZ-P05": "beads",
+    "SYS-MFBIZ-P06": "beads",
+    "SYS-MFBIZ-P07": "beads",
+    "SYS-MFBIZ-P08": "beads",
+    "SYS-MFBIZ-P09": "beads",
+    "SYS-MFBIZ-P10": "beads",
+    "SYS-MFBIZ-P11": "beads",
+    "SYS-MFBIZ-P12": "beads",
+    "SYS-MFBIZ-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-MFBIZ-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "匿名 fixture による要件ベースライン確定",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p01"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/requirements-baseline.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "80a89323f5870b6cab90cd4480a164bbb6c1970a0fb97218aa31a37546713127",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "判定境界のアーキテクチャ決定",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p02"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P01"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-backend",
+        "arch-mf-business-database"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/architecture-decision.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "a4d14a804524b0e32b8ddfa90d21348e8f453c015f306a512535d70afc0fddeb",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "設計レビュー",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p03"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P02"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-backend",
+        "arch-mf-business-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/design-review.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "35bd61a897bfcc6792593301672f00505994e9f922ed29b88ca293eba01f0a78",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "契約テスト先行",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p04"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P03"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-backend",
+        "arch-mf-business-frontend"
+      ],
+      "resource_scope": [
+        "packages/core/test/mf-business-classification.test.ts",
+        "packages/core/test/total-cashflow-business.test.ts",
+        "packages/web/test/classify-mid-source.dom.test.tsx"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "52f2baf7d33719034f4ccb40dca1e3b65377cf65c9f06c775ad945d32ed7c3c1",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "最小実装",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p05"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P04"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-backend",
+        "arch-mf-business-frontend",
+        "arch-mf-business-ui-ux"
+      ],
+      "resource_scope": [
+        "packages/core/src/classify.ts",
+        "packages/core/src/total-cashflow.ts",
+        "packages/core/src/types.ts",
+        "packages/api/src/routes/total-cashflow.ts",
+        "packages/web/src/pages/Classify.tsx",
+        "packages/web/src/pages/analysis/TotalCashflow.tsx"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "f3c2282339fb320acd86bf2c26948e31342216215b4b75c98d83b0a17151a21a",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "テスト実行記録",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p06"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P05"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-backend",
+        "arch-mf-business-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/test-run.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "4507ede5d42da3ab87c482019d1db916c73abdaa2d6c507811a6dc7fa27e900a",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "匿名 fixture による受入検証",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p07"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P06"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-backend",
+        "arch-mf-business-ui-ux"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/acceptance.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "15291597314cd913eddd518b4a3dff6961b78c25a98216f2e666cb0ebd71376a",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "重複判定のリファクタリング",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p08"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P07"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-backend"
+      ],
+      "resource_scope": [
+        "packages/core/src/total-cashflow.ts",
+        "docs/mf-business-classification/refactoring.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "eb49df56a5969cce61320f180273544ec7fda12cd1059a25cb95309c25948d7d",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "品質保証レビュー",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "security",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p09"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P08"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-auth",
+        "arch-mf-business-security",
+        "arch-mf-business-infrastructure"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/assurance.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "503901fe3f1aeba805bf22de5e900639727fd5e65b30987481a9e22dffe9f5ce",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "最終レビュー",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p10"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P09"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-backend",
+        "arch-mf-business-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/final-review.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "1ab2fa7a607724d081666e3b5c5fc3e332d56c8676975f760e2940ed9093120c",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "証跡索引",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p11"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P10"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/evidence.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "34d2bab2d50da0a55db76c4494095d7f467decdcd0015f03b00c0d3b8a275d8a",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "利用者・運用文書同期",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p12"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P11"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-maintenance-ops",
+        "arch-mf-business-ui-ux"
+      ],
+      "resource_scope": [
+        "docs/spec-v1.1.md",
+        "docs/data-schema.md",
+        "docs/mf-business-classification/runbook.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "25d49b7b6f4f504efec6d81e94bd9ef37a00db9895625edf30405f1902b14ae8",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MFBIZ-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "クローズアウト",
+      "project_id": "feature-package-feat-mf-business-classification",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "mf-business-classification",
+        "p13"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-10T06:39:55Z",
+      "updated_at": "2026-09-10T06:39:55Z",
+      "depends_on": [
+        "SYS-MFBIZ-P12"
+      ],
+      "related_nodes": [
+        "spec-mf-business-classification",
+        "arch-mf-business-infrastructure",
+        "arch-mf-business-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/mf-business-classification/close-out.md"
+      ],
+      "parent_feature": "feat-mf-business-classification",
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-mf-business-classification/sys-mfbiz-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-mf-business-classification/plan-findings.json",
+        "evaluated_digest": "ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-mf-business-classification/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "ee93ff75ccf861aeebc218af46e416f641bd2700dbf9b3c062864c832d0f5c8e",
+        "imported_at": "2026-09-10T06:39:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-mf-business-classification/sys-mfbiz-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-10T06:35:11Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

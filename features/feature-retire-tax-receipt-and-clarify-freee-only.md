@@ -19,7 +19,7 @@ confirmation_status: confirmed
 evaluation_status: pass
 confirmation_evidence:
   evaluator: dev-graph:dev-graph-integrity-auditor+repository-fact-reconciliation
-  evidence_ref: .dev-graph/eval-log/run-dev-graph-decompose-progress.json
+  evidence_ref: .dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/atomic-promotion-receipt.json
   evaluated_digest: 09edb52e70a7db3e1f44d5691b79e8562b48ab84d387f69f30310e79c76ed551
 source_lineage:
   origin_kind: manual

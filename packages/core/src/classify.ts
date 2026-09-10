@@ -1,6 +1,6 @@
 /**
  * 公私仕分けと属性の解決。
- * 優先順位（属性ごと）: 手動編集 > ルール > materialize済みvendor memory > 既定。
+ * 公私の優先順位: 手動編集 > ルール > materialize済みvendor memory > MF中項目 > 既定。
  * vendor memory由来のeditだけは、後から効いたルールに譲る。
  *   - cls  の既定: 'per'
  *   - big/mid の既定: 取込値（MFの大項目/中項目）
@@ -15,7 +15,6 @@ import {
 } from './three-way.js';
 import type {
   BizPersonalMonth,
-  Classification,
   Cls,
   MfTx,
   Owner,
@@ -25,6 +24,7 @@ import type {
   Rule,
   TxEdit,
 } from './types.js';
+import { isMfBizByMid } from './types.js';
 import {
   type VendorMemoryDisposition,
   type VendorMemoryRecord,
@@ -33,11 +33,17 @@ import {
 } from './vendor-memory.js';
 
 export type AttrSrc = '手動' | 'ルール' | '口座' | '取込値' | '既定';
+/**
+ * 現在の分類値がどの解決層から来たか。
+ * `手動` は人の操作だけでなく、tx_editへmaterialize済みのvendor memoryも含む。
+ * その由来は TxEdit.origin / originKey で区別する。
+ */
+export type ClassificationSource = '手動' | 'ルール' | '中項目' | '既定';
 
 /** 明細1件の解決結果（表示・集計の共通入力） */
 export interface ResolvedTx {
   cls: Cls;
-  clsSrc: '手動' | 'ルール' | '既定';
+  clsSrc: ClassificationSource;
   big: string;
   mid: string;
   catSrc: '手動' | 'ルール' | '取込値';
@@ -62,14 +68,15 @@ const hayOf = (t: MfTx): string => `${t.c || ''}|${t.big || ''}|${t.mid || ''}`.
 
 export const ruleMatches = (t: MfTx, r: Rule): boolean => !!r.k && hayOf(t).includes(r.k.toUpperCase());
 
-export type IncomingValueSource = 'rules' | 'vendor_memory' | 'import';
+export type IncomingValueSource = 'rules' | 'vendor_memory' | 'mf_mid' | 'import';
 
 /**
  * tx_edit を除いた「今回入ってくる有効値」。
  *
  * MF原本は cls / owner を直接運ばない。その2属性を空欄扱いにせず、ルール、適用可能な
  * 取引先の決め事、取込/既定の順で解く。手動編集時のbaseと再取込のincomingは必ずこの
- * 関数を通し、同じ明細を経路ごとに別の基準で比較しない。
+ * 関数を通し、公私はそこにMF中項目の前方一致を挟んで既定へ落とす。
+ * 同じ明細を経路ごとに別の基準で比較しない。
  */
 export interface IncomingResolvedTx {
   cls: Cls;
@@ -110,8 +117,17 @@ export function resolveIncomingTx(
   const eligibleMemory = vendorDisposition === 'auto-apply' ? vendorMemory : null;
 
   const ruleCls = firstRule('cls');
-  const cls = ruleCls ?? eligibleMemory?.cls ?? 'per';
-  const clsSource: IncomingValueSource = ruleCls ? 'rules' : eligibleMemory?.cls ? 'vendor_memory' : 'import';
+  // 中項目の前方一致はルール・取引先の決め事の次、既定 'per' の手前に入る(C7)。
+  // 収入・支出のどちらも同じ式で寄せるため符号は見ない。
+  const midBiz = isMfBizByMid(t);
+  const cls = ruleCls ?? eligibleMemory?.cls ?? (midBiz ? 'biz' : 'per');
+  const clsSource: IncomingValueSource = ruleCls
+    ? 'rules'
+    : eligibleMemory?.cls
+      ? 'vendor_memory'
+      : midBiz
+        ? 'mf_mid'
+        : 'import';
 
   let big = t.big || '';
   let mid = t.mid || '';
@@ -160,15 +176,6 @@ export function resolveIncomingTx(
   };
 }
 
-/** HTML版互換の公私判定（overrides = 手動のclsだけを抜き出した写像） */
-export function classifyTx(t: MfTx, rules: Rule[], overrides: Record<string, Cls>): Classification {
-  if (overrides[t.id]) return { cls: overrides[t.id], src: '手動' };
-  for (const r of rules) {
-    if (r.cls && ruleMatches(t, r)) return { cls: r.cls, src: 'ルール' };
-  }
-  return { cls: 'per', src: '既定' };
-}
-
 /**
  * 名義の既定(institutionOwners)を引くときに、どちらの口座を根拠にするか。
  *
@@ -200,13 +207,15 @@ export function resolveTx(
   const inst = editedInst ?? t.inst ?? null;
   const instSrc: ResolvedTx['instSrc'] = editedInst ? '手動' : '取込値';
   // vendor_memoryは取込確定時にprovenance付きtx_editへmaterializeする。
-  // 表示だけ動的適用する第二経路を作らない。
+  // 表示だけ動的適用する第二経路を作らない。有効値の解決層は「手動」、
+  // 自動適用の由来は edit.origin=vendor_memory として直交する軸で運ぶ。
   const ownerBasis = ownerBasisTx(t, inst);
   const incoming = resolveIncomingTx(ownerBasis, rules, institutionOwners);
   const vendorEdit = e?.origin === 'vendor_memory';
 
   let cls: Cls = incoming.cls;
-  let clsSrc: ResolvedTx['clsSrc'] = incoming.sources.cls === 'rules' ? 'ルール' : '既定';
+  let clsSrc: ResolvedTx['clsSrc'] =
+    incoming.sources.cls === 'rules' ? 'ルール' : incoming.sources.cls === 'mf_mid' ? '中項目' : '既定';
   if (e?.cls && (!vendorEdit || incoming.sources.cls !== 'rules')) {
     cls = e.cls;
     clsSrc = '手動';
@@ -299,7 +308,7 @@ export function overridesFromEdits(edits: Record<string, TxEdit>): Record<string
   return out;
 }
 
-/** 仕分けの進み具合（1ヶ月分）。金額ではなく「何件を人が見たか」を表す。 */
+/** 仕分けの進み具合（1ヶ月分）。金額ではなく「何件が既定以外の判断を持つか」を表す。 */
 export interface ClassificationProgress {
   /** 対象件数 */
   total: number;
@@ -307,10 +316,13 @@ export interface ClassificationProgress {
   bizCount: number;
   /** 個人と判定された件数 */
   personalCount: number;
-  /** 判定の出どころ別の件数。合計は total に一致する */
-  bySource: { 手動: number; ルール: number; 既定: number };
   /**
-   * まだ人もルールも触っていない件数（clsSrc === '既定'）。
+   * 有効値の解決層別の件数。合計は total に一致する。
+   * `手動` にはmaterialize済みのvendor memoryも含まれ、由来はorigin側で識別する。
+   */
+  bySource: Record<ClassificationSource, number>;
+  /**
+   * まだ人もルールも中項目も触っていない件数（clsSrc === '既定'）。
    * cls の既定は 'per' なので「個人」に見えるが判断されたわけではない。ここが 0 なら当月の仕分けは一巡している。
    */
   reviewPending: number;
@@ -323,7 +335,7 @@ export interface ClassificationProgress {
 export function classificationProgress(
   resolved: Pick<ResolvedTx, 'cls' | 'clsSrc'>[],
 ): ClassificationProgress {
-  const bySource: ClassificationProgress['bySource'] = { 手動: 0, ルール: 0, 既定: 0 };
+  const bySource: ClassificationProgress['bySource'] = { 手動: 0, ルール: 0, 中項目: 0, 既定: 0 };
   let bizCount = 0;
   let personalCount = 0;
   for (const r of resolved) {

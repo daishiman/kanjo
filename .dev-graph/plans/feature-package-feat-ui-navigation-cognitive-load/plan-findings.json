@@ -80,9 +80,9 @@
       "name": "validate-system-plan",
       "command": [
         "python3",
-        "/Users/dm/orca/workspaces/harness/system-spec-prompt-fix/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "${LOCAL_HOME}/orca/workspaces/harness/system-spec-prompt-fix/plugins/system-dev-planner/scripts/validate-system-plan.py",
         "--repo-root",
-        "/Users/dm/orca/workspaces/kanjo/uiux改善",
+        "${LOCAL_HOME}/orca/workspaces/kanjo/uiux改善",
         "--staging",
         ".dev-graph/staging/feat-ui-navigation-cognitive-load/run-plan-uiux-01"
       ],

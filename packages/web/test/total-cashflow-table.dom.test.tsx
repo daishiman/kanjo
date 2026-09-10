@@ -42,6 +42,7 @@ const row = (over: Record<string, unknown> = {}) => ({
   shiftedCount: 1,
   shiftedAmount: 3_300,
   reviewCount: 0,
+  reviewAmount: 0,
   trend: '判定不可' as const,
   ...over,
 });
@@ -156,6 +157,13 @@ describe('受入F3 寄せた件数と金額を同じセルに併記する', () =
   });
 });
 
+describe('要確認の件数と金額を同じセルに併記する', () => {
+  it('保留中の金額を DOM 上で読める', () => {
+    render(<TotalCashflowTable rows={[row({ reviewCount: 2, reviewAmount: 203_300 })]} />);
+    expect(screen.getAllByRole('cell')[7]!.textContent).toBe('2 件 / 203,300');
+  });
+});
+
 describe('受入F4 重複候補は理由付きで列挙され、0 件のときは 0 件と明示される', () => {
   const mf = (over: Partial<TotalCashflowReview['mf']> = {}): TotalCashflowReview['mf'] => ({
     date: '2026-01-15',
@@ -167,6 +175,8 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     major: '通信費',
     middle: 'サーバー',
     memo: '',
+    cls: 'biz',
+    clsSrc: '中項目',
     ...over,
   });
 
@@ -230,7 +240,7 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     要確認の目的は「利用者が同じ取引か判断できること」なので、判断材料そのものを固定する。
 
     件ごとに表を作る形も落とす: MF と freee は「同じ 1 行の中」に並んでいなければ、
-    19 件では見出しが 19 回繰り返されて比較にならない。
+    件数が増えると見出しが繰り返されて比較にならない。
   */
   it('MF 側の中身と freee 側の候補を 1 行の中の同じ列へ並べる', async () => {
     vi.stubGlobal(
@@ -247,6 +257,7 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
     expect(first.textContent).toContain('アマゾンウェブサービス');
     expect(first.textContent).toContain('三井住友カード');
     expect(first.textContent).toContain('通信費 / サーバー');
+    expect(first.textContent).toContain('事業（中項目）');
 
     // freee 側: 同じ行・同じ列に並び、何日ずれているかが語で分かる
     expect(first.textContent).toContain('2026-01-17');
@@ -360,7 +371,7 @@ describe('受入F4 重複候補は理由付きで列挙され、0 件のとき�
 });
 
 /*
-  要確認は実データで 19 件出た。1 件ずつ 2 回クリックさせる画面は、件数が増えるほど
+  要確認が複数件出ると、1 件ずつ 2 回クリックさせる画面は、件数が増えるほど
   破綻する。選んでまとめて判定できること、そしてそれが 1 往復で送られることを固定する。
   1 往復であることは通信の都合ではなく、D1 のクエリ数が invocation 単位で数えられる以上、
   選ぶ件数によって保存の成否が変わらないための条件である。
@@ -375,10 +386,12 @@ describe('要確認は選んでまとめて判定できる', () => {
       content: `ノート ${txId}`,
       amount: 5980,
       io: 'expense',
-      institution: '楽天カード まりこ',
+      institution: '架空カード 個人用',
       major: 'その他',
       middle: '事業経費',
       memo: '',
+      cls: 'biz',
+      clsSrc: '中項目',
     },
     candidates: [
       {
@@ -450,8 +463,8 @@ describe('要確認は選んでまとめて判定できる', () => {
   });
 
   /*
-    実データで残った 19 件のうち 15 件は「同じ日・同額なのに口座名の書き方が違う」組だった。
-    そこへ 1 件ずつチェックを入れさせるのは、チェックを付ける操作そのものが手間になっている。
+    「同じ日・同額なのに口座名の書き方が違う」組へ 1 件ずつチェックを
+    入れさせると、チェックを付ける操作そのものが手間になる。
   */
   it('「同じ日・同額のものを選ぶ」で日付の一致した件だけが選ばれる', async () => {
     const section = await openSection();
@@ -513,6 +526,8 @@ describe('freee 全件の行き先を件数と中身で示す', () => {
     major: '通信費',
     middle: 'サーバー',
     memo: '',
+    cls: 'biz',
+    clsSrc: '中項目' as const,
   };
   const body = payload({
     matched: [

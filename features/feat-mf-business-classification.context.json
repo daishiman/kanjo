@@ -1,0 +1,44 @@
+{
+  "graph_node_id": "feat-mf-business-classification",
+  "artifact_kind": "feature",
+  "purpose": "Money Forward に取り込まれた明細のうち、利用者が MF 側で既に『事業』と分類しているもの (中項目が『事業』で始まるもの) が、収入・支出のどちらであっても家計側へ落ちてしまう。freee を唯一の事業帳簿とみなす現在の前提を崩さないまま、事業と家計の境界を利用者の意図どおりに一致させる。",
+  "goal": "事業判定が packages/core の単一述語に一本化され、月次トータル収支と公私仕分け画面が同じ境界を示し、freee 突合済みの明細が二重計上されず、MF 側で中項目を新設しても実装変更なしに追従し、判定根拠が明細ごとに追える状態。",
+  "scope_in": [
+    "packages/core の事業判定述語の新設と、classify.ts / total-cashflow.ts からの参照",
+    "total-cashflow.ts の BIZ_INCOME_MAJOR 廃止と収入側判定の置換",
+    "支出側・収入側とも freee 突合を先に適用し残余だけを加算する構造の確立",
+    "要確認明細をどの合計にも算入しない扱いと reviewAmount のサーバ側導出",
+    "clsSrc への MF 中項目由来の値の追加と、公私仕分け画面での『中項目』表示",
+    "docs/spec-v1.1.md と docs/data-schema.md の更新"
+  ],
+  "scope_out": [
+    "mobile / tablet / desktop-windows / desktop-linux / desktop-macos 向けの対応",
+    "データベーススキーマの移行と月次集計の永続化",
+    "新規 API エンドポイントの追加と API バージョニング",
+    "既存 tx_edits の遡及再評価",
+    "事業判定の除外リストを設定として持つ機能",
+    "認証方式の変更"
+  ],
+  "acceptance": [
+    "中項目が『事業』で始まる入金が事業収入として集計され、家計収入に含まれない",
+    "中項目が『事業』で始まる支出が、freee と日付+金額が一致したものと要確認となったものを除き事業費として集計される",
+    "公私仕分け画面が biz と示す MF 明細の集合と、トータル収支が事業側へ算入する集合が一致する",
+    "トータル収入・トータル支出が freee 側の事業経費・事業収入をそれぞれ一度だけ含む",
+    "実装に存在しない中項目名『事業・広告費』を持つ明細がコード変更なしに事業と判定される",
+    "事業と判定された明細の API 応答に判定根拠を示す clsSrc が含まれる",
+    "要確認の金額が 4 束のいずれにも現れず、reviewAmount が reviewCount と同じ集合から算出される",
+    "上記の各条件が置換前の実装では赤になることを確認済みである"
+  ],
+  "architecture_refs": [
+    "architecture/mf-business-backend.md",
+    "architecture/mf-business-database.md",
+    "architecture/mf-business-frontend.md",
+    "architecture/mf-business-ui-ux.md",
+    "architecture/mf-business-auth.md",
+    "architecture/mf-business-security.md",
+    "architecture/mf-business-infrastructure.md",
+    "architecture/mf-business-maintenance-ops.md",
+    "specs/spec-mf-business-classification.md"
+  ],
+  "updated_at": "2026-09-10T06:06:49Z"
+}

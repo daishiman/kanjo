@@ -86,8 +86,9 @@ export function TotalCashflowTable({ rows }: { rows: readonly TotalCashflowMonth
             <td data-label="事業費へ寄せた件数" className="num">
               {`${num(row.shiftedCount)} 件 / ${num(row.shiftedAmount)}`}
             </td>
+            {/* 要確認はどの合計にも入っていない。金額を並べないと「保留中の額」が画面から消える */}
             <td data-label="要確認件数" className="num">
-              {num(row.reviewCount)}
+              {`${num(row.reviewCount)} 件 / ${num(row.reviewAmount)}`}
             </td>
             <td data-label="トレンド">
               <span className={TREND_CLS[row.trend]}>{row.trend}</span>
@@ -132,6 +133,13 @@ interface CompareLine {
 /** freee 側に候補が無いことも判断材料なので、行を消さず語で書く */
 const NO_CANDIDATE = '同じ金額・同じ向きで前後 3 日以内の取引はありません';
 
+/** 判定値と根拠は resolver が出した組のまま表示する。 */
+const mfClassificationLabel = (mf: TotalCashflowReview['mf']): string =>
+  `${mf.cls === 'biz' ? '事業' : '個人'}（${mf.clsSrc}）`;
+
+const mfCategoryLabel = (mf: TotalCashflowReview['mf']): string =>
+  `${mfClassificationLabel(mf)} / ${[mf.major, mf.middle].filter(Boolean).join(' / ') || '(未分類)'}`;
+
 function compareLines(item: TotalCashflowReview): CompareLine[] {
   const sign = item.mf.io === 'income' ? '+' : '-';
   const mfLine: CompareLine = {
@@ -149,7 +157,7 @@ function compareLines(item: TotalCashflowReview): CompareLine[] {
     content: item.mf.memo ? `${item.mf.content} / ${item.mf.memo}` : item.mf.content,
     amount: `${sign}${num(item.mf.amount)}`,
     account: item.mf.institution || '(記載なし)',
-    category: [item.mf.major, item.mf.middle].filter(Boolean).join(' / ') || '(未分類)',
+    category: mfCategoryLabel(item.mf),
     differs: {},
     note: item.reason,
   };
@@ -461,9 +469,7 @@ function MatchedTable({ matched }: { matched: readonly ReconcileMatch[] }) {
                   <td data-label="口座 (MF / freee)">
                     {`${m.mf.institution || '(記載なし)'} / ${m.freee.settleAccount || '(記載なし)'}`}
                   </td>
-                  <td data-label="分類 / 勘定科目">
-                    {`${[m.mf.major, m.mf.middle].filter(Boolean).join(' / ') || '(未分類)'} / ${m.freee.account}`}
-                  </td>
+                  <td data-label="分類 / 勘定科目">{`${mfCategoryLabel(m.mf)} / ${m.freee.account}`}</td>
                   {/* 自動と判断を見分けられるようにする。数が合わないとき、どちらを疑うかが変わる */}
                   <td data-label="決め方">{m.by === 'auto' ? '自動 (日付と金額が一致)' : 'あなたの判断'}</td>
                   <td data-label="操作">

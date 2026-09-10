@@ -1,0 +1,166 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/feat-mf-business-classification/run-20260910-mfbiz",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "13 spec間の受入・スコープ外・write_scopeを再度突き合わせた。P08のwrite_scopeからclassify.tsが外れ、スコープ外に『classify.tsの書き換えはP05で完了済みのため本taskでは行わない。分岐が1箇所に集約されていることをgrepで確認するだけに留める』が明記されたことで、P05(実装)とP08(整理)の責務境界が本文レベルでも一致した。残るtotal-cashflow.tsのwrite_scope重複はtask-graph.json上直列(P05→P06→P07→P08)のため衝突しない。他のscope_out(既存tx_editsの遡及再評価をしない/認証方式を変更しない/除外リスト機能を持たない)との矛盾も見られない。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md#スコープ外",
+        "task-specs/phase-08-refactoring-migration.md#スコープ外",
+        "task-specs/phase-09-quality-assurance.md#スコープ外",
+        "task-graph.json#nodes",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "feature文書の受入8件 (${LOCAL_AGGREGATE}円の事業収入/支出34件/公私仕分け画面とトータル収支の集合一致/freee事業経費収入を一度だけ算入/実装に無い中項目名での判定/API応答のclsSrc/要確認金額を4束に含めない/置換前赤の確認) は、P08のwrite_scope変更の影響を受けない(P08はいずれの受入も新規に満たす側ではなく、P05/P07で満たされた状態を壊さないことをgrepとpnpm testで確認する側)。前回確認したP04・P05・P07への対応関係は今回の修正で変化しておらず、満たすtaskが存在しない受入は無い。",
+      "evidence": [
+        "workstream-inventory.json#tasks[3].acceptance",
+        "workstream-inventory.json#tasks[4].acceptance",
+        "workstream-inventory.json#tasks[6].acceptance",
+        "workstream-inventory.json#tasks[7].acceptance"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "13 task全件についてtask spec本文のWrite scope/touches・Verification and evidence・成果物・スコープ外と、workstream-inventory.jsonのworkstream_kind/secondary_workstreams/write_scope/acceptance/verification/deploy_unitを再度突き合わせた。P08は spec本文のWrite scope/touches (total-cashflow.ts, refactoring.md の2件) とinventoryのwrite_scope (同じ2件) が完全一致し、前回指摘したclassify.tsを含む3件との不一致(spec内部の齟齬)も解消された。他12taskはハッシュ不変であり前回評価の一致状態を保っている。",
+      "evidence": [
+        "task-specs/phase-08-refactoring-migration.md#Write scope/touches",
+        "workstream-inventory.json#tasks[7].write_scope",
+        "task-specs/phase-08-refactoring-migration.md#成果物",
+        "task-specs/phase-08-refactoring-migration.md#Verification and evidence"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.jsonは前回から無変更(sha256同一)で、SYS-MFBIZ-P01からP13までdepends_onがP(n-1)を1件だけ指す前向き線形DAGを維持しており、循環・後ろ向き辺・feature_package_id外参照は無い。workstream-inventory.jsonの各taskのdepends_onもtask-graph.jsonと1件ずつ完全一致する(P08のdepends_on=[SYS-MFBIZ-P07]も不変)。コード実体との接地(total-cashflow.ts:${LOCAL_AGGREGATE}のBIZ_INCOME_MAJOR、classify.ts:40のclsSrc 3値)も前回確認済みでP08の修正により変化していない。",
+      "evidence": [
+        "task-graph.json#nodes",
+        "workstream-inventory.json#tasks"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "${LOCAL_HOME}/orca/workspaces/kanjo/mf-の事業部分",
+        "--staging",
+        ".dev-graph/staging/feat-mf-business-classification/run-20260910-mfbiz"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:ef652163d41be684af57c868d8e8ac2f2aa25803eec7569d8d97ed5916d3dbd7\",\n  \"feature_package_id\": \"feature-package/feat-mf-business-classification\",\n  \"parent_feature\": \"feat-mf-business-classification\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n"
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "79a4ebd326ce361b41b4e6898417f59b54da2d1342010717146611a39034a177"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "07e3bdc46e9f67633cec3d3cddac986a294af7de4f0411073e16ee3d2854c58d"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "83d643cf728169231c664c14c92c5b21296416fd60d8dd36c5d9e43b7966f6b1"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "6ba2b75c337c601d99144bc5f4e00d48631af5bd011054a0913671fc329a5545"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "fa85281d884767eb22346d7b5b42a828213f85bc5408c33f504ddb9458b97a7d"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "d584065b65b2d90bb63a17e01b9ca95678fcd73c2576215210069047eebf2218"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "8546f63482643f8b0ed912893e9abde6cd962c21f7b964fbcff1b2f2614b1ea1"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "806473a126b45e78a42a260627ffa53e5e2e30169a16d8bc6f5ab60a2d4c27a8"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "f9afe90187d9cd435f7afff41deb73ad99bf654eef7a2bedd2707541bad41133"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "2a3b091a9ff20316b9b521ae1d27386810634933abaa608671e00b68f18ba59e"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "a4aff2ae5eb8c5db963d35dd2fdef781943438b0488e073f68ac8bea2f141eea"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "8675ad16e5e98913666fedc447c1e40bb772eaa97fa662c6fabe273f456e5dac"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "85ac41f4290540c43828399062d2f3dd3712fd2dd6247fce656a6c2be6597628"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "40c6b981629ad160268c9f92179aaf6b4b66b4b7be97290d9250085670830bc1"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "51c4ad3e852fcb631de876cb023ecb911489ff6ecba534e045866e86dd10f29e"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "3fb559940df05c530e755f00e32634288d141e45bfeab9b68a2aa813c7d29223"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "24181f22da8c1558cdb173532cd5b0710961dca9652ddca0250994cc416fbfa6"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "eb7286a4879508c6837837032aa72f734bb70cc2ce93534c9ba92f981cf6ad6e"
+    }
+  ],
+  "staleness_rule": "staging配下18ファイルのいずれかのsha256がevaluated_inputsと一致しなくなった場合、またはcanonical digest (staging-manifest.json#canonical_digest) がevaluated_digestと異なるrunへ差し替わった場合、本findingsは無効。再評価が必要。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "write-scope-overlap",
+      "observation": "修正後もP05とP08はpackages/core/src/total-cashflow.tsのwrite_scopeが重複するが、task-graph.json上P05→P06→P07→P08は直列でありworktree lease衝突は起きない。P08は「置換後に残った旧判定の痕跡を整理する」という後続クリーンアップであり意図的な重複と判断できる。classify.tsはP08のwrite_scope・スコープ外・成果物・検証コマンドの全てから一貫して除外されており、前回指摘した記述と作業範囲の不一致(classify.tsをwrite_scopeに含めながら本文がtotal-cashflow.tsしか説明しない齟齬)は解消されている。",
+      "evidence": [
+        "task-graph.json#nodes",
+        "workstream-inventory.json#tasks[4].write_scope",
+        "task-specs/phase-08-refactoring-migration.md#Write scope/touches",
+        "task-specs/phase-08-refactoring-migration.md#スコープ外"
+      ]
+    }
+  ]
+}

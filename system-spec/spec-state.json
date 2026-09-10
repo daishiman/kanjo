@@ -46,834 +46,656 @@
     "database": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-database-web-001",
+        "qa_ref": "qa-database-web-mf-001",
         "serves_goals": [
-          "G2",
-          "G4",
-          "G7"
+          "G3",
+          "G5"
         ],
         "qa_refs": [
-          "qa-foundation-scope-001",
-          "qa-duplicate-rule-001",
-          "qa-decision-aggregation-002",
-          "qa-verify-candidate-extraction-001",
-          "qa-verify-verdict-effect-001",
-          "qa-income-verdict-effect-001"
+          "qa-near-match-mf-decision-003",
+          "qa-existing-edits-mf-decision-003",
+          "qa-income-reconcile-mf-observed-004",
+          "qa-review-bucket-mf-decision-004"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 永続化は D1 の単一正本のみとし端末側に複製を持たない。集計は要求時に canonical から毎回導出する (dec-aggregation-strategy-001)。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を D1 正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 永続化は D1 の単一正本のみとし端末側に複製を持たない。集計は要求時に canonical から毎回導出する (dec-aggregation-strategy-001)。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を D1 正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 永続化は D1 の単一正本のみとし端末側に複製を持たない。集計は要求時に canonical から毎回導出する (dec-aggregation-strategy-001)。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を D1 正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 永続化は D1 の単一正本のみとし端末側に複製を持たない。集計は要求時に canonical から毎回導出する (dec-aggregation-strategy-001)。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を D1 正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 永続化は D1 の単一正本のみとし端末側に複製を持たない。集計は要求時に canonical から毎回導出する (dec-aggregation-strategy-001)。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を D1 正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       }
     },
     "auth": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-decision-auth-boundary-002",
+        "qa_ref": "qa-auth-web-mf-corrected-006",
         "serves_goals": [
-          "G1",
-          "G7"
+          "G2"
         ],
         "qa_refs": [
-          "qa-auth-web-001",
-          "qa-auth-alternatives-001"
+          "qa-auth-web-mf-observed-002",
+          "qa-auth-web-mf-causal-003"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるか、OAuth の redirect をカスタム URL スキームで受けるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 認証の関心事は web セルに閉じ、資格情報の保持はブラウザのセッションに限定される。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるか、OAuth の redirect をカスタム URL スキームで受けるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 認証の関心事は web セルに閉じ、資格情報の保持はブラウザのセッションに限定される。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるか、OAuth の redirect をカスタム URL スキームで受けるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 認証の関心事は web セルに閉じ、資格情報の保持はブラウザのセッションに限定される。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるか、OAuth の redirect をカスタム URL スキームで受けるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 認証の関心事は web セルに閉じ、資格情報の保持はブラウザのセッションに限定される。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるか、OAuth の redirect をカスタム URL スキームで受けるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 認証の関心事は web セルに閉じ、資格情報の保持はブラウザのセッションに限定される。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       }
     },
     "ui-ux": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-table-columns-001",
+        "qa_ref": "qa-ui-ux-web-mf-corrected-007",
         "serves_goals": [
-          "G1",
-          "G3",
-          "G4",
-          "G6",
-          "G7"
+          "G2",
+          "G5"
         ],
         "qa_refs": [
-          "qa-ui-ux-web-001",
-          "qa-foundation-scope-001",
-          "qa-verdict-ui-placement-001",
-          "qa-income-verdict-effect-001"
+          "qa-ui-ux-web-mf-decision-002",
+          "qa-priority-order-mf-decision-003",
+          "qa-review-bucket-mf-decision-004",
+          "qa-review-amount-mf-inference-005"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではそのプラットフォーム固有の操作規約 (HIG / Material Design) への適合と、画面サイズ別の一覧表レイアウトの個別設計を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 一覧表のレイアウトは web セルで一度だけ決める。9 列常時表示は利用者承認済み (qa-table-columns-001 / appr-foundation-total-cashflow-005) で、HIG の小画面向け列削減は目的適合の理由から採らないことを ui-ux 章に記録してある。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではネイティブのナビゲーション規約・タッチ操作・オフライン時の表示を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではそのプラットフォーム固有の操作規約 (HIG / Material Design) への適合と、画面サイズ別の一覧表レイアウトの個別設計を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 一覧表のレイアウトは web セルで一度だけ決める。9 列常時表示は利用者承認済み (qa-table-columns-001 / appr-foundation-total-cashflow-005) で、HIG の小画面向け列削減は目的適合の理由から採らないことを ui-ux 章に記録してある。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではネイティブのナビゲーション規約・タッチ操作・オフライン時の表示を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではそのプラットフォーム固有の操作規約 (HIG / Material Design) への適合と、画面サイズ別の一覧表レイアウトの個別設計を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 一覧表のレイアウトは web セルで一度だけ決める。9 列常時表示は利用者承認済み (qa-table-columns-001 / appr-foundation-total-cashflow-005) で、HIG の小画面向け列削減は目的適合の理由から採らないことを ui-ux 章に記録してある。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブのナビゲーション規約・タッチ操作・オフライン時の表示を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではそのプラットフォーム固有の操作規約 (HIG / Material Design) への適合と、画面サイズ別の一覧表レイアウトの個別設計を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 一覧表のレイアウトは web セルで一度だけ決める。9 列常時表示は利用者承認済み (qa-table-columns-001 / appr-foundation-total-cashflow-005) で、HIG の小画面向け列削減は目的適合の理由から採らないことを ui-ux 章に記録してある。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブのナビゲーション規約・タッチ操作・オフライン時の表示を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではそのプラットフォーム固有の操作規約 (HIG / Material Design) への適合と、画面サイズ別の一覧表レイアウトの個別設計を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 一覧表のレイアウトは web セルで一度だけ決める。9 列常時表示は利用者承認済み (qa-table-columns-001 / appr-foundation-total-cashflow-005) で、HIG の小画面向け列削減は目的適合の理由から採らないことを ui-ux 章に記録してある。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブのナビゲーション規約・タッチ操作・オフライン時の表示を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       }
     },
     "security": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-security-web-001",
+        "qa_ref": "qa-security-web-mf-001",
         "serves_goals": [
-          "G2",
-          "G3",
+          "G1",
           "G4"
-        ],
-        "qa_refs": [
-          "qa-duplicate-rule-001",
-          "qa-decision-auth-boundary-002"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末紛失時のローカルデータ保護 (端末暗号化への依存可否・リモートワイプ) と、通信への証明書ピンニングの要否を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 保護対象は転送中のデータと D1 上のデータに限られ、OWASP ASVS の適用範囲も web セルへ閉じる。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末紛失時のリモートワイプ・アプリ署名・ストア審査に伴う脅威モデルを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末紛失時のローカルデータ保護 (端末暗号化への依存可否・リモートワイプ) と、通信への証明書ピンニングの要否を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 保護対象は転送中のデータと D1 上のデータに限られ、OWASP ASVS の適用範囲も web セルへ閉じる。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末紛失時のリモートワイプ・アプリ署名・ストア審査に伴う脅威モデルを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末紛失時のローカルデータ保護 (端末暗号化への依存可否・リモートワイプ) と、通信への証明書ピンニングの要否を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 保護対象は転送中のデータと D1 上のデータに限られ、OWASP ASVS の適用範囲も web セルへ閉じる。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末紛失時のリモートワイプ・アプリ署名・ストア審査に伴う脅威モデルを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末紛失時のローカルデータ保護 (端末暗号化への依存可否・リモートワイプ) と、通信への証明書ピンニングの要否を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 保護対象は転送中のデータと D1 上のデータに限られ、OWASP ASVS の適用範囲も web セルへ閉じる。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末紛失時のリモートワイプ・アプリ署名・ストア審査に伴う脅威モデルを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末紛失時のローカルデータ保護 (端末暗号化への依存可否・リモートワイプ) と、通信への証明書ピンニングの要否を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 保護対象は転送中のデータと D1 上のデータに限られ、OWASP ASVS の適用範囲も web セルへ閉じる。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末紛失時のリモートワイプ・アプリ署名・ストア審査に伴う脅威モデルを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       }
     },
     "infrastructure": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-decision-aggregation-002",
+        "qa_ref": "qa-infrastructure-web-mf-001",
         "serves_goals": [
-          "G1",
-          "G7"
+          "G3"
         ],
         "qa_refs": [
-          "qa-infrastructure-web-001",
-          "qa-infrastructure-alternatives-001"
+          "qa-infrastructure-web-mf-causal-003"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではアプリストアまたはインストーラによる配布経路、コード署名鍵の保管と更新、強制アップデートの導線を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 配信は Cloudflare Workers への deploy 一経路に閉じ、署名鍵という長期秘密を新たに抱えない。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア配信 (App Store / Google Play) やインストーラ配布のパイプラインを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではアプリストアまたはインストーラによる配布経路、コード署名鍵の保管と更新、強制アップデートの導線を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 配信は Cloudflare Workers への deploy 一経路に閉じ、署名鍵という長期秘密を新たに抱えない。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではストア配信 (App Store / Google Play) やインストーラ配布のパイプラインを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではアプリストアまたはインストーラによる配布経路、コード署名鍵の保管と更新、強制アップデートの導線を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 配信は Cloudflare Workers への deploy 一経路に閉じ、署名鍵という長期秘密を新たに抱えない。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではストア配信 (App Store / Google Play) やインストーラ配布のパイプラインを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではアプリストアまたはインストーラによる配布経路、コード署名鍵の保管と更新、強制アップデートの導線を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 配信は Cloudflare Workers への deploy 一経路に閉じ、署名鍵という長期秘密を新たに抱えない。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではストア配信 (App Store / Google Play) やインストーラ配布のパイプラインを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではアプリストアまたはインストーラによる配布経路、コード署名鍵の保管と更新、強制アップデートの導線を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 配信は Cloudflare Workers への deploy 一経路に閉じ、署名鍵という長期秘密を新たに抱えない。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではストア配信 (App Store / Google Play) やインストーラ配布のパイプラインを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       }
     },
     "backend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-decision-trend-method-002",
+        "qa_ref": "qa-backend-web-mf-001",
         "serves_goals": [
           "G1",
           "G2",
           "G3",
-          "G5",
-          "G6"
+          "G4"
         ],
         "qa_refs": [
-          "qa-backend-web-001",
-          "qa-foundation-scope-001",
-          "qa-duplicate-rule-001",
-          "qa-trend-method-001",
-          "qa-verify-candidate-extraction-001",
-          "qa-verify-verdict-effect-001",
-          "qa-income-dedup-rule-001",
-          "qa-income-verdict-effect-001"
+          "qa-priority-order-mf-decision-003",
+          "qa-near-match-mf-decision-003",
+          "qa-income-reconcile-mf-observed-004",
+          "qa-review-bucket-mf-decision-004",
+          "qa-review-amount-mf-inference-005"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは旧版クライアントが端末に残り続ける前提での API 後方互換の維持期間と、オフライン時の書込をどう同期し衝突をどちらの勝ちにするかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 配信と同時に全利用者が新版になるため互換期間の定義自体が発生せず、API 契約は web セルの Hono ルート定義に一本化する。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではオフライン前提の同期 API と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは旧版クライアントが端末に残り続ける前提での API 後方互換の維持期間と、オフライン時の書込をどう同期し衝突をどちらの勝ちにするかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 配信と同時に全利用者が新版になるため互換期間の定義自体が発生せず、API 契約は web セルの Hono ルート定義に一本化する。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではオフライン前提の同期 API と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは旧版クライアントが端末に残り続ける前提での API 後方互換の維持期間と、オフライン時の書込をどう同期し衝突をどちらの勝ちにするかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 配信と同時に全利用者が新版になるため互換期間の定義自体が発生せず、API 契約は web セルの Hono ルート定義に一本化する。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではオフライン前提の同期 API と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは旧版クライアントが端末に残り続ける前提での API 後方互換の維持期間と、オフライン時の書込をどう同期し衝突をどちらの勝ちにするかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 配信と同時に全利用者が新版になるため互換期間の定義自体が発生せず、API 契約は web セルの Hono ルート定義に一本化する。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではオフライン前提の同期 API と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは旧版クライアントが端末に残り続ける前提での API 後方互換の維持期間と、オフライン時の書込をどう同期し衝突をどちらの勝ちにするかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 配信と同時に全利用者が新版になるため互換期間の定義自体が発生せず、API 契約は web セルの Hono ルート定義に一本化する。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではオフライン前提の同期 API と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       }
     },
     "frontend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-frontend-web-001",
+        "qa_ref": "qa-frontend-web-mf-001",
         "serves_goals": [
-          "G1",
-          "G4",
-          "G5",
-          "G6",
-          "G7"
+          "G2",
+          "G5"
         ],
         "qa_refs": [
-          "qa-decision-trend-method-002",
-          "qa-trend-method-001",
-          "qa-verdict-ui-placement-001",
-          "qa-table-columns-001",
-          "qa-anomaly-notice-001",
-          "qa-income-verdict-effect-001"
+          "qa-frontend-web-mf-observed-002",
+          "qa-priority-order-mf-decision-003",
+          "qa-review-bucket-mf-decision-004",
+          "qa-review-amount-mf-inference-005"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではネイティブ UI フレームワークの選定と、web とは別立てになるビルド・配布パイプラインの構築を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 描画層は既存の packages/web (React SPA) 一系統。小画面からの閲覧はレスポンシブ web でそのまま行う。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではネイティブまたはハイブリッドのクライアント構成とビルドを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではネイティブ UI フレームワークの選定と、web とは別立てになるビルド・配布パイプラインの構築を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 描画層は既存の packages/web (React SPA) 一系統。小画面からの閲覧はレスポンシブ web でそのまま行う。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではネイティブまたはハイブリッドのクライアント構成とビルドを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブ UI フレームワークの選定と、web とは別立てになるビルド・配布パイプラインの構築を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 描画層は既存の packages/web (React SPA) 一系統。小画面からの閲覧はレスポンシブ web でそのまま行う。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブまたはハイブリッドのクライアント構成とビルドを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブ UI フレームワークの選定と、web とは別立てになるビルド・配布パイプラインの構築を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 描画層は既存の packages/web (React SPA) 一系統。小画面からの閲覧はレスポンシブ web でそのまま行う。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブまたはハイブリッドのクライアント構成とビルドを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブ UI フレームワークの選定と、web とは別立てになるビルド・配布パイプラインの構築を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 描画層は既存の packages/web (React SPA) 一系統。小画面からの閲覧はレスポンシブ web でそのまま行う。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブまたはハイブリッドのクライアント構成とビルドを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       }
     },
     "maintenance-ops": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-anomaly-notice-001",
+        "qa_ref": "qa-maintenance-ops-web-mf-001",
         "serves_goals": [
           "G4",
-          "G7"
+          "G5"
         ],
         "qa_refs": [
-          "qa-maintenance-ops-web-001",
-          "qa-infrastructure-alternatives-001",
-          "qa-decision-aggregation-002"
+          "qa-maintenance-ops-web-mf-decision-002",
+          "qa-existing-edits-mf-decision-003"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではOS のメジャー更新への追随サイクルと、ストア審査を含むリリース列 (審査差戻し時の切戻し手順を含む)を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 運用は既存の deploy と日次 cron (0 18 * * *) のみで、第三者の審査に依存する工程を持たない。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア版の強制アップデートと旧バージョン互換の運用手順を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではOS のメジャー更新への追随サイクルと、ストア審査を含むリリース列 (審査差戻し時の切戻し手順を含む)を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 運用は既存の deploy と日次 cron (0 18 * * *) のみで、第三者の審査に依存する工程を持たない。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではストア版の強制アップデートと旧バージョン互換の運用手順を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではOS のメジャー更新への追随サイクルと、ストア審査を含むリリース列 (審査差戻し時の切戻し手順を含む)を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 運用は既存の deploy と日次 cron (0 18 * * *) のみで、第三者の審査に依存する工程を持たない。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではストア版の強制アップデートと旧バージョン互換の運用手順を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではOS のメジャー更新への追随サイクルと、ストア審査を含むリリース列 (審査差戻し時の切戻し手順を含む)を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 運用は既存の deploy と日次 cron (0 18 * * *) のみで、第三者の審査に依存する工程を持たない。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではストア版の強制アップデートと旧バージョン互換の運用手順を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではOS のメジャー更新への追随サイクルと、ストア審査を含むリリース列 (審査差戻し時の切戻し手順を含む)を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-002 / appr-target-platforms-007、2026-09-05) によりその検討は発生しない。同じ関心事は 運用は既存の deploy と日次 cron (0 18 * * *) のみで、第三者の審査に依存する工程を持たない。",
-        "approval_ref": "appr-target-platforms-007",
-        "qa_ref": "qa-target-platforms-002"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではストア版の強制アップデートと旧バージョン互換の運用手順を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
+        "qa_ref": "qa-target-platforms-mf-001"
       }
     }
   },
   "qa_log": [
     {
-      "id": "qa-target-platforms-001",
-      "question": "対象プラットフォーム (web/mobile/tablet/desktop-windows/desktop-linux/desktop-macos) はどれか。対象外は理由を述べる。",
-      "answer": "web のみを対象とする。対象プラットフォームは web のみ。本システムは Cloudflare Workers 上の SPA 1系統で配信され (wrangler assets + run_worker_first: /api/*)、利用者は単独の個人事業主が自宅PCのブラウザから CSV を取り込み一覧表を読む運用に限定される。モバイル/タブレットからはレスポンシブ web で閲覧できるが 専用アプリは提供せず、デスクトップ専用アプリ (Windows/Linux/macOS) も上位概念 U7 のスコープ外として 利用者承認済みのため、当該 platform 行は対象外とする。",
-      "provenance": "アシスタントによる既存リポジトリの読解 (wrangler.jsonc / packages/{api,core,web} / migrations) に基づく現状記述。利用者への個別確認は経ておらず、誤りがあればコードとの突合で検出される種類の回答である。",
-      "basis": "agent-inference",
+      "id": "qa-target-platforms-mf-001",
+      "question": "本サイクル (Money Forward 明細の事業振り分け) の対象プラットフォームはどれか。対象外は理由を述べる。",
+      "answer": "web のみを対象とする。解決する主要な利用者課題 (JTBD) は『MF 上で自分が事業と仕分けた収入・支出が、アプリの月次トータル収支でも事業として扱われている状態にしたい』であり、対象ユーザーは単独の個人事業主 1 名 (本システムの唯一の利用者・保守者) である。利用者は自宅 PC のブラウザから MF/freee の CSV を取り込み一覧表を読む。配信は Cloudflare Workers 上の SPA 1 系統 (wrangler assets + run_worker_first: /api/*) のみで、モバイル/タブレットからはレスポンシブ web で閲覧できるが専用アプリは提供せず、デスクトップ専用アプリも上位概念 U7 のスコープ外として対象外とする。",
+      "provenance": "対象ユーザーと JTBD は利用者の依頼文 (2026-09-10「Money Forward の方でも事業用に割り振りができるように整えてほしい」および追加指示「収入に対しても行なって」) に由来する。プラットフォーム限定は前サイクルの利用者決定 (appr-target-platforms-007, 2026-09-05) を本サイクルへ引き継ぎ、利用者承認 appr-foundation-mf-business-classification-001 で再確認した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-10T04:35:53Z",
       "required_info_items": [
+        "product-goal",
         "target-platforms"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-05T10:05:42Z",
-          "note": "この答の本文にあった『デスクトップ専用アプリ (Windows/Linux/macOS) も上位概念 U7 のスコープ外として利用者承認済み』という記述は、書かれた時点では偽であった。当時 approval_log には platform 対象範囲を承認した記録が 1 件も存在せず (001〜006 の note を全文照合済み)、利用者へ問うたこともなかった。同じ entry の provenance が『利用者への個別確認は経ておらず』と述べ、basis が agent-inference であったことと、本文の『承認済み』が正面から矛盾していた (完成度 evaluator R5 および独立マトリクス監査が検出)。この矛盾は 2026-09-05 に実際に利用者へ確認を取ることで解消した。確認の結果は同一内容 (web のみ) であったが、根拠は推測から利用者決定へ変わっており、新 entry qa-target-platforms-002 (basis=user-decision, answered_at 2026-09-05T10:05:09Z) と 承認 appr-target-platforms-007 に記録してある。対象外 40 セルの根拠も本 entry から qa-target-platforms-002 へ張り替えた。本 entry は agent-inference のまま残す — 当時の推測がどう書かれ、どこが偽であったかを消さずに残すことが append-only の目的だからである。本 entry の answer 本文を根拠に引用してはならない。"
-        }
       ]
     },
     {
-      "id": "qa-ui-ux-web-001",
-      "question": "web の一覧表について、読み手は誰で、どのタスクをどの頻度で行い、失敗したときのコストは何か。表に何を残し、何を落とし、何を加工するか。その順位の根拠は何か。",
-      "answer": "読み手(audience)は利用者本人1名のみ(個人事業主。事業と家計を一体で回しており、この表の唯一の読み手かつ判断者)。利用環境(environment)は自宅PCのデスクトップブラウザで、時間に追われず腰を据えて読む。熟練度(expertise)は会計ソフト(freee / Money Forward)の日常利用経験があり、本システムの実装者本人でもあるため用語の平易化より正確さを優先してよい。主要タスク(primary_tasks)は3つ: (T1)『その月に全体でいくらプラスかマイナスか』を読む — 頻度は月1〜数回、失敗コストは高(誤った黒字判断で資金繰りを誤る)。(T2)合計の内訳を検算する(総支出 = 事業費 + 家計費 が合うか、事業費へ寄せた件数が妥当か) — 頻度は月1、失敗コストは中(気付けば直せる)。(T3)要確認明細に『同じ/違う』を判断する — 頻度は取込直後、失敗コストは高(誤判断が次回以降の取込へ再適用され累積する)。情報優先度は次の方針を採る。残す: 月・総収入・総支出・総収支(プラスマイナス)・事業費・家計費・事業費へ寄せた件数・要確認件数・支出トレンド判定。落とす: 個別明細(表には出さず行のドリルダウンへ回す)、勘定科目レベルの細分(内訳ビューへ回す)。加工する: 事業費へ寄せた額は必ず件数と併記し『何件ぶんでこの額なのか』を一目で検算可能にする。トレンドは増加/減少/横ばい/判定不可の4語へ丸め、生の統計量は出さない。束の順位は (1)月次のトータル収支行 (2)事業費/家計費の内訳 (3)事業費へ寄せた額と件数 (4)要確認件数 (5)トレンド判定 とする。順位根拠は task 頻度×失敗コスト: T1 が最頻かつ失敗コスト最大のため総収支を最上位に置き、次に T1 の答えを裏づける内訳、その次に T2 の検算材料、最後に T3 への入口という順に並べる。期間切替は表の外側の既存 UI に従属させ、表そのものは期間に依存しない同一の読み方を保つ。",
-      "provenance": "アシスタントによる既存リポジトリの読解 (wrangler.jsonc / packages/{api,core,web} / migrations) に基づく現状記述。利用者への個別確認は経ておらず、誤りがあればコードとの突合で検出される種類の回答である。",
-      "basis": "agent-inference",
-      "required_info_items": [
-        "context-of-use",
-        "information-priority"
-      ]
-    },
-    {
-      "id": "qa-backend-web-001",
-      "question": "この機能の主要エンティティと関係は何か。API はどのスタイルでどう露出するか。",
-      "answer": "既存エンティティ: Dataset(months[], biz.revenue[], biz.expense{}, personal{}(家計の収入・支出), bizPersonal{}(MF明細のうち事業扱い), mfTx[], edits{}, institutionOwners{}) を集約ルートとする。MfTx(m 月, d 日付, c 内容, a 金額(正=収入/負=支出), big 大項目, mid 中項目, inst 保有金融機関, idStable, isTarget, isTransfer)。FreeeDeal(month, date 発生日, io 収支区分, partner 取引先, accountNorm 勘定科目, amount, dueDate 期日, settledDate 決済日)。本機能が追加する読み取りモデル: TotalCashflowMonth(month, totalIncome, totalExpense, totalBalance, bizExpense 事業費, householdExpense 家計費, reassignedCount 事業費へ寄せた件数, reassignedAmount, reviewCount 要確認件数) と DuplicateVerdict(MF明細の安定識別子, verdict '同じ'|'違う', 根拠, 判断日時)。関係: MfTx と FreeeDeal を (amount, MfTx の日付 = FreeeDeal.date) の完全一致で突合し、同一キー群に MF n 件・freee m 件あるとき MF から min(n,m) 件を家計費から外して事業費へ寄せる(freee 側を正として計上)。freee の dueDate / settledDate は突合キーに用いない。収入は MfTx の分類結果(既存 applyClassification が cls='biz' を bizPersonal.income へ集約。DEFAULT_RULES に『事業・副業』を含む)を事業収入の帰属根拠としてそのまま用い、それ以外を家計収入とする。canonical を書き換えず現在値から毎回導出する読み取りモデルとし、TotalCashflowMonth はテーブルを持たない(永続化するのは DuplicateVerdict のみ)。API は既存の Hono + @hono/zod-validator による /api 配下の REST を踏襲し、読み取り1本(月次トータル収支と要確認一覧を返す)と DuplicateVerdict の upsert 1本を追加する。レスポンス形状は zod スキーマで契約化する。",
-      "provenance": "アシスタントによる既存リポジトリの読解 (wrangler.jsonc / packages/{api,core,web} / migrations) に基づく現状記述。利用者への個別確認は経ておらず、誤りがあればコードとの突合で検出される種類の回答である。",
+      "id": "qa-backend-web-mf-001",
+      "question": "MF 明細を事業と判定する中核のドメインモデル (主要エンティティ・不変条件) と、その判定をどこに置くかをどうするか。",
+      "answer": "判定を『MF 中項目の前方一致「事業」』という 1 つの述語として packages/core に定義し、収入・支出の区別なく同じ述語を適用する。中核エンティティは既存の MfTx (取込原本・cls を持たない)、TxEdit (利用者の手当て・cls を持つ)、FreeeDeal (freee 取引・常に事業)、および導出値 ResolvedTx である。不変条件は 3 つ。(1) 同一 MfTx に対して公私仕分け画面が示す事業/家計と月次トータル収支が算入する側は常に一致する — 現在は classify.ts の resolveTx().cls と total-cashflow.ts の独自判定が別基準であり、この不変条件が破れている。(2) freee 取引と日付+金額が一致した MF 明細は事業費を二重に増やさない。消し込みを先に適用し、寄らなかった MF 明細のうち事業述語が真のものだけを事業費へ加算する。(3) 判定に既知の中項目名を列挙しない。前方一致のみに依存させ、MF 側で『事業・広告費』等を新設しても実装変更なしに追従する。優先順位は既存の resolveTx を踏襲し、手動編集 > ルール > 取引先メモリ > MF 中項目前方一致 > 口座名義 > 既定 'per' とする。中項目由来を口座名義より上に置くのは、名義が『どの財布から出たか』でしかないのに対し中項目は利用者が明細ごとに与えた分類意思であり、より強い根拠だからである。",
+      "provenance": "現行実装の観測: packages/core/src/classify.ts resolveTx (L191-277) の優先順、packages/core/src/total-cashflow.ts BIZ_INCOME_MAJOR (L26) と rowsFrom (L577-583) の判定、packages/core/src/types.ts の MfTx/TxEdit/FreeeDeal 定義を読み取った。非公開ローカル入力観測: ${LOCAL_SOURCE_FILE} (CP932, ${LOCAL_RECORD_COUNT}行) で 大項目='収入' / 中項目='事業・副業' であり tx.big との比較が一件も一致しないことを確認した。優先順位の設計判断はアシスタントの推論であり、利用者は『中項目の前方一致「事業」』という判定条件そのものを選択した (2026-09-10)。",
       "basis": "observed-fact",
+      "answered_at": "2026-09-10T04:35:53Z",
       "required_info_items": [
-        "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-auth-web-001",
-      "question": "認証方式と認可モデルはどうするか。本機能は新しい認証境界を作るか。",
-      "answer": "既存の二段構えをそのまま用い、本機能は新しい認証境界を作らない。ACCESS_AUD と ACCESS_TEAM_DOMAIN の両方が設定されていれば Cloudflare Access の JWT を検証し(第一候補)、未設定時はアプリ内セッション認証(AUTH_PASSWORD による照合 + SESSION_SECRET を鍵とする HMAC-SHA256 署名の HttpOnly Cookie 'kanjo_session'、TTL 14日)を既定で有効化する。wrangler の run_worker_first: ['/api/*'] により /api 配下は必ず Worker の認証ゲートを通り、未認証で /api のデータへ到達できる経路は存在しない。本機能が追加する読み取りAPIと DuplicateVerdict 更新APIも同じ /api 配下に置き、同一の認証ミドルウェアの内側に入れる。認可モデルは利用者が単独の個人事業主1名であるためロール分割・テナント分離を持たず、認証を通った唯一の主体が全データへアクセスできる単一主体モデルとする(将来の多主体化は上位概念 U7 のスコープ外)。パスワード認証には既存の login-rate-limit.ts によるブルートフォース対策(失敗回数窓・ロック秒数)が適用され、本機能でこれを迂回する経路を作らない。",
-      "provenance": "アシスタントによる既存リポジトリの読解 (wrangler.jsonc / packages/{api,core,web} / migrations) に基づく現状記述。利用者への個別確認は経ておらず、誤りがあればコードとの突合で検出される種類の回答である。",
+      "id": "qa-database-web-mf-001",
+      "question": "本サイクルで永続形状 (テーブル・スキーマ移行・トランザクション境界) を変更するか。",
+      "answer": "スキーマ移行は行わない。事業判定は MfTx.mid (既存の category_mid 列) から毎回導出する純粋な述語であり、保存すべき新しい事実を生まない。取込原本 mf_transactions に cls 列を持たせない既存設計を維持する — 原本に判定結果を焼き付けると、判定規則を直したときに再取込しない限り古い判定が残る。利用者の意思 (手動で事業/家計を上書きした結果) は従来どおり tx_edits に保持し、再取込で明細が作り直されても判断が生き残る。月次のトータル収入・支出・事業費/家計費の内訳は専用テーブルを持たず、要求時に canonical から毎回導出する (前サイクル確定 dec-aggregation-strategy-001 を維持)。トランザクション境界も現状のまま (取込 1 回 = 1 トランザクション) で変更しない。",
+      "provenance": "現行実装とマイグレーションの観測: migrations/0000_init.sql (mf_transactions に cls 列なし)、0001_tx_edits_rules_owner.sql (tx_edits.cls)、0022_mf_source_columns.sql (memo/is_target/is_transfer)、packages/api/src/db/schema.ts の mfTransactions/txEdits 定義を読み取った。『集計結果を保存しない』は前サイクルの確定内容 (dec-aggregation-strategy-001) の引き継ぎであり、利用者承認済み。",
       "basis": "observed-fact",
-      "required_info_items": [
-        "auth-model"
-      ]
-    },
-    {
-      "id": "qa-security-web-001",
-      "question": "この機能の脅威モデルと主要な対策は何か。",
-      "answer": "扱うのは利用者本人の事業帳簿と家計の金額データであり、機密性(第三者に見られない)と完全性(税務の正本である freee 帳簿を壊さない)を最重要とする。脅威と対策: (S1)未認証の第三者による財務データ閲覧 → run_worker_first による /api 全面の認証ゲート、Cloudflare Access JWT 検証またはHMAC署名 HttpOnly Cookie、タイミング非依存比較(SHA-256ダイジェスト同士の比較)で対処。(S2)パスワードへのブルートフォース → 既存 login-rate-limit.ts の窓・上限・ロックで対処。(S3)本機能が canonical データを破壊すること → 本機能は読み取り専用の投影として実装し canonical を書き換えない。書込面は DuplicateVerdict の upsert 1点のみに限定し、既存の canonical-mutation-fence と同じ方針で正本更新経路と分離する。(S4)不正・不整合な入力によるデータ汚染 → 追加APIの入出力を zod スキーマで検証し、明細識別子は MfTx.idStable(安定識別子)に限定して不安定な識別子での判断保存を拒否する。(S5)ログ・エラー応答からの金額や取引先の漏洩 → observability は有効だが、追加する処理でリクエストボディや明細内容をログへ出さない。(S6)誤った重複判定による金額の過小計上 → 事業費へ寄せるのは freee 側の件数を上限(min(n,m))とし、freee に存在しない分の MF 明細を消さない不変条件を契約テストで固定する。監査証跡は既存 audit-log.ts の方針に従い、DuplicateVerdict の変更を追跡可能にする。",
-      "provenance": "アシスタントによる既存リポジトリの読解 (wrangler.jsonc / packages/{api,core,web} / migrations) に基づく現状記述。利用者への個別確認は経ておらず、誤りがあればコードとの突合で検出される種類の回答である。",
-      "basis": "observed-fact",
-      "required_info_items": [
-        "security-posture"
-      ]
-    },
-    {
-      "id": "qa-database-web-001",
-      "question": "この機能の永続化方式と移行方針はどうするか。何を保存し、何を保存しないか。",
-      "answer": "既存の Cloudflare D1 (SQLite 互換、database_name: kanjo-db) を drizzle-orm 経由で使い、スキーマ変更は migrations/ の連番SQL(現行 0000〜0009)へ追記する方式を踏襲する。保存しないもの: 月次のトータル収入・支出・収支、事業費/家計費の内訳、事業費へ寄せた額と件数、トレンド判定はいずれも導出値であり、専用テーブルを持たない。canonical(取り込んだ MF 明細・freee 取引・利用者の手当て)から毎回導出する読み取りモデルとし、集計結果を二重に持つことで canonical と乖離する状態を作らない。保存するもの: 要確認明細に対する利用者の『同じ/違う』判断(DuplicateVerdict)のみ。これは利用者の意思であって導出できないため、migrations/ に新規連番SQL を1本追加して専用テーブルへ永続化する。主キーは MfTx.idStable(安定識別子)とし、識別子が不安定な明細は判断を保存しない。移行方針: 追加テーブルのみで既存テーブルのスキーマを変更しないため後方互換を保ち、ロールバックは当該マイグレーションの逆適用で足りる。既存の取込ライフサイクル(0008_import_lifecycle.sql)と同様、再取込で明細が入れ替わっても idStable が同じなら判断が再適用される。復旧手段は既存のまま — 夜間 cron による D1→R2 バックアップ(30日保持)と D1 time-travel を用い、本機能のために新しい復旧経路を作らない。",
-      "provenance": "アシスタントによる既存リポジトリの読解 (wrangler.jsonc / packages/{api,core,web} / migrations) に基づく現状記述。利用者への個別確認は経ておらず、誤りがあればコードとの突合で検出される種類の回答である。",
-      "basis": "observed-fact",
+      "answered_at": "2026-09-10T04:35:53Z",
       "required_info_items": [
         "data-persistence"
       ]
     },
     {
-      "id": "qa-frontend-web-001",
-      "question": "一覧表の状態管理とレンダリング方式はどうするか。既存画面のどこに置くか。",
-      "answer": "既存の構成を踏襲する。React + react-router-dom による SPA(クライアントサイドレンダリング)で、Vite でビルドした静的アセットを Cloudflare Workers の ASSETS バインディング経由で配信し、not_found_handling: single-page-application でルーティングを解決する(SSR は導入しない)。状態管理はサーバ状態を @tanstack/react-query に集約する既存方針に従い、月次トータル収支と要確認一覧を1つのクエリキーで取得する。要確認明細への『同じ/違う』判断は mutation として送り、成功時に当該クエリを無効化して再取得することで、判断の反映と合計の再計算をUI上で一貫させる(クライアント側で合計を再計算せず、必ずサーバ導出値を単一の真実とする)。表示は既存の分析タブ群へ新しいタブとして追加し、期間切替は既存の期間UIと core の period.ts による Dataset スライスにそのまま追随させる(分析関数へ期間引数を配らず、切った Dataset を渡す既存の設計を崩さない)。トレンドやグラフを添える場合は既存の chart.js / react-chartjs-2 を用い、新しい可視化ライブラリを追加しない。一覧表は横幅が広くなるため、表自体を横スクロール可能な領域に収め、ページ本体が横スクロールしない構造にする。",
-      "provenance": "アシスタントによる既存リポジトリの読解 (wrangler.jsonc / packages/{api,core,web} / migrations) に基づく現状記述。利用者への個別確認は経ておらず、誤りがあればコードとの突合で検出される種類の回答である。",
-      "basis": "observed-fact",
+      "id": "qa-frontend-web-mf-001",
+      "question": "クライアント構成と API contract をどうするか。新しいエンドポイントは要るか。",
+      "answer": "新規エンドポイントは追加しない。既存の GET /api/total-cashflow と GET /api/classify 系の応答形状を保ったまま、事業/家計の内訳の中身だけが正しくなる。ただし判定根拠を追えるようにするため、明細行の応答に既存の clsSrc を返す経路を MF 中項目由来の値まで含めて通す (ゴール G5)。クライアントは既存の React SPA (TanStack Query) のままで、レンダリング方式・状態管理・ビルドを変更しない。取込後にトータル収支のキャッシュを無効化する既存の invalidation を維持する。API のバージョニングは行わない — 応答形状は後方互換であり、破壊的変更を含まないため。",
+      "provenance": "現行実装の観測: packages/api/src/index.ts (L124-146 のルート定義)、packages/api/src/routes/total-cashflow.ts と classify.ts、packages/web/src/routeMetadata.ts、packages/core/src/classify.ts の ResolvedTx.clsSrc (L38-59) を読み取った。『新規エンドポイントを追加しない』はアシスタントの設計判断であり、利用者は判定規則のみを指定した。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-10T04:35:53Z",
       "required_info_items": [
+        "api-contract",
         "frontend-arch"
       ]
     },
     {
-      "id": "qa-infrastructure-web-001",
-      "question": "デプロイ先と監視方針はどうするか。本機能でインフラ構成は変わるか。",
-      "answer": "本機能でインフラ構成は変えない。デプロイ先は既存の Cloudflare Workers(worker 名 kanjo-console、compatibility_date 2026-08-24、compatibility_flags: nodejs_compat)1系統で、packages/web を Vite でビルドした静的アセットを assets バインディング(ASSETS)から配信し、run_worker_first: ['/api/*'] により API リクエストだけを Worker が処理する。データストアは D1(binding DB / kanjo-db、migrations_dir は repo 直下の migrations/)と R2(binding FILES / kanjo-files)。デプロイは pnpm run deploy(web の成果物ビルド → wrangler deploy)で、CI では wrangler deploy --dry-run により構成の妥当性を検証する。監視は wrangler の observability を有効(head_sampling_rate 1)にした既存設定をそのまま用い、本機能のために新しい監視基盤やダッシュボードを追加しない。定期実行は既存の cron トリガ(0 18 * * * UTC = JST 03:00)による夜間バックアップのみで、本機能は新しいスケジュール実行を持たない(合計値は要求時に導出するため事前計算バッチが不要)。シークレット(AUTH_PASSWORD / SESSION_SECRET)は Cloudflare の secret store にのみ置き、リポジトリには必須名だけを記述する既存方針を維持する。",
-      "provenance": "アシスタントによる既存リポジトリの読解 (wrangler.jsonc / packages/{api,core,web} / migrations) に基づく現状記述。利用者への個別確認は経ておらず、誤りがあればコードとの突合で検出される種類の回答である。",
-      "basis": "observed-fact",
-      "required_info_items": [
-        "infra-topology"
-      ]
-    },
-    {
-      "id": "qa-maintenance-ops-web-001",
-      "question": "運用手順とバックアップ方針はどうするか。本機能で増える運用作業は何か。",
-      "answer": "バックアップ方針は既存のまま — cron トリガ(JST 03:00)による D1→R2 の夜間バックアップ(30日保持)と D1 time-travel(pnpm run db:checkpoint で復旧点を確認)を復旧手段とし、本機能のために新しいバックアップ経路を作らない。マイグレーションは既存手順(db:migrate:local で検証 → db:migrate:remote で本番適用)に従い、追加する DuplicateVerdict テーブルもこの経路で適用する。本機能が増やす運用作業は次の2点に限る: (1)復旧後に DuplicateVerdict の件数が復旧前と一致するかを確認する手順を docs/runbooks/ へ1本追加する(合計の内訳が復旧で変わっていないことを検算できるようにする)。(2)取込のたびに要確認件数を確認し、放置された要確認が累積していないかを見る運用を一覧表そのものに担わせる(専用の運用ツールを作らない)。品質ゲートは既存の pnpm run lint / typecheck / test をそのまま用い、本機能の不変条件(総支出 = 事業費 + 家計費、事業費へ寄せる件数が freee 件数を超えない、期間切替で数字が矛盾しない)を契約テストとして test に載せ、リグレッションを CI で検出する。監視アラートの追加は行わず、異常は一覧表上の要確認件数と検算の不一致として利用者が気付く設計とする。",
-      "provenance": "アシスタントによる既存リポジトリの読解 (wrangler.jsonc / packages/{api,core,web} / migrations) に基づく現状記述。利用者への個別確認は経ておらず、誤りがあればコードとの突合で検出される種類の回答である。",
+      "id": "qa-ui-ux-web-mf-001",
+      "question": "人が読む主要な表現物ごとに、誰が・どの環境で・どの task を・どの頻度で行い、失敗すると何を失うか。各表現物で何を残し何を落とすか。",
+      "answer": "表現物は 3 つ。(1) 月次トータル収支の一覧表 — 単独の個人事業主が自宅 PC の web ブラウザで月 1 回、『今月は全体でいくらプラスマイナスか』『事業費はいくらか』を読む。誤ると確定申告の経費計上額を誤り、過少申告か過大申告のいずれかの実害が出る。ここでは事業収入・事業費・家計収入・家計費の 4 束を残し、個々の明細は落とし、寄せた件数と根拠へのリンクだけを加工して残す。(2) 公私仕分け画面 — 同じ利用者が取込直後に、既定 'per' のまま未レビューの明細を潰す。頻度は取込のたび (月 1-2 回)。誤ると事業費が家計へ落ちたまま固定される。ここでは明細ごとの cls と判定根拠 (clsSrc) を残し、MF 中項目由来で自動的に事業になったものは『中項目』と表示して、手動編集やルール由来と区別できるようにする。(3) 要確認 (重複候補) 一覧 — 日付+金額が近接するが一致しない MF/freee の組を利用者が判断する。頻度は月 1 回未満。誤ると二重計上か計上漏れになる。ここでは MF 側が中項目で事業と判定されているかを併記する — 『MF でも事業扱い』は freee 側と同一取引である可能性を上げる材料になるため。束の順位は task 頻度 × 失敗コストで決め、(1) 一覧表 > (2) 仕分け画面 > (3) 要確認一覧 の順とする。情報優先度マップの JSON 化と機械検証は本要件段階の成果物とせず、下流の生成工程の責務とする。",
+      "provenance": "利用者と利用文脈は前サイクルの確定内容 (単独の個人事業主が自宅 PC のブラウザから CSV を取り込み一覧表を読む) を引き継いだ。表現物 3 種と失敗コストの見立て、束の順位付けはアシスタントの推論であり、利用者に個別確認していない。誤りがあれば画面を実際に使う段階で検出される種類の判断である。",
       "basis": "agent-inference",
-      "required_info_items": [
-        "ops-runbook"
-      ]
-    },
-    {
-      "id": "qa-foundation-scope-001",
-      "question": "上位概念を固める前提として次を確認したい。(a)取込元は現状の3区分(freee事業 / MF家計 / MF内の事業扱い)のままでよいか、新しい取込元を追加するか。(b)個人カード払いの事業経費は freee にも記帳しているか(二重計上が実際に起きているか)。(c)『トータル収支』とは収入・支出をそれぞれ合算した差額でよいか。(d)前サイクルの仕様一式を archive へ退避してよいか。(e)Money Forward 側で三井住友の3口座は見分けられるか。",
-      "answer": "利用者回答: (a)現状の3区分でよい。事業用 Money Forward や家計用 freee の取込は追加しない。(b)freee にも記帳している。したがって個人カード払いの事業経費は freee と MF の双方に現れ、二重計上が実際に発生している。(c)収入・支出をそれぞれ合算する定義でよい(推奨案を採用)。(d)退避してよい。(e)3つとも同じ表記になっており、MF のデータだけではどの三井住友口座の明細かを見分けられない。この (e) の回答により、金融機関名(口座名)による口座単位の切り分けは成立しないことが確定し、『どの口座か』ではなく『その明細が freee にも存在するか』だけを問う設計へ舵を切った。3口座が同名であるため、口座単位の一括除外は freee に載らない残り2口座の支出まで消してしまう罠があり、これを避ける必要がある。この確認は上位概念 U1-U9 (essential_purpose / background / scope / constraints) の前提であり、承認記録 appr-foundation-total-cashflow-001 の項目(1)〜(5)に対応する。",
-      "provenance": "利用者の自由記述発話 (二重計上の扱い・freee を正とする指示・収入は MF の事業副業を事業収入とする指示) を根拠に、アシスタントが規則へ整理した回答。選択肢提示は無く、利用者が明示的に選んだのは規則の骨子であって整理後の文面ではない。",
-      "basis": "user-decision",
+      "answered_at": "2026-09-10T04:35:53Z",
       "required_info_items": [
         "context-of-use",
-        "product-goal"
+        "information-priority"
       ]
     },
     {
-      "id": "qa-duplicate-rule-001",
-      "question": "重複した明細をどう扱うか。照合キーは何にするか。同じキーに MF と freee で件数が食い違う場合 (n≠m、とくに freee 側が多い m>n) はどうするか。",
-      "answer": "利用者回答: 金額と日付がイコールのものについては freee を正とし、Money Forward 側を削除(集計から除外)する。日付は Money Forward の日付と freee の発生日 (FreeeDeal.date) を突き合わせる。金額と日付が一致するものは基本的に『事業で使う費用』として扱う。それ以外の費用は家計の方につける。ここから導いた基数規則: 同じ(金額, 発生日)のキーに MF が n 件・freee が m 件あるとき、MF から min(n,m) 件を家計費から外して事業費へ寄せる。(i) n>m のとき、MF に freee より多く明細がある = freee に載っていない支出が (n−m) 件あるということなので、その分は家計費に残す。三井住友の残り2口座の支出が消えないのはこの規則による。(ii) m>n のとき、freee 側に MF に現れない事業経費が (m−n) 件ある = 事業口座から直接払った経費であり、MF 側に消すべきものが無いので MF からは n 件しか外さない。いずれの向きでも『freee にない MF 明細を消さない』『MF にない freee 明細を二重に数えない』が保たれる。金額が同一のキー内では、どの MF 明細を外しても合計は変わらないため、外す対象の選び方は合計値に影響しない。既知の限界として、支払先を判定に用いないため偶然に同額・同発生日となった無関係な支出も事業費として扱われうる。利用者はこれを承知のうえで、規則の単純さと予測可能性を優先すると判断した。また freee の dueDate / settledDate は判定に用いない(カード引落日で照合する取り違えを防ぐ)。日付が一致しない重複(カード利用日と freee 発生日のズレ)は自動判定の対象外となり、要確認として可視化する。",
-      "provenance": "利用者の自由記述発話 (二重計上の扱い・freee を正とする指示・収入は MF の事業副業を事業収入とする指示) を根拠に、アシスタントが規則へ整理した回答。選択肢提示は無く、利用者が明示的に選んだのは規則の骨子であって整理後の文面ではない。",
-      "basis": "user-decision",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-trend-method-001",
-      "question": "トータル支出の推移判定にどの統計手法を使うか。新しい手法を選ぶか、既存のものに合わせるか。",
-      "answer": "既存 packages/core/src/trend.ts が採用している Mann-Kendall 検定 (単調傾向の有無) と Theil-Sen 推定 (傾きの頑健推定) に合わせ、新しい手法を導入しない。判定語も既存の TrendDirection ('増加' | '減少' | '横ばい' | '判定不可') をそのまま使う。閾値も既存定数を共有する: TREND_MIN_MONTHS = 6 (これ未満の期間は '判定不可' を返す)、TREND_ALPHA = 0.05 (有意水準)。検討した代替案は (a)最小二乗回帰による傾き、(b)前年同月比、(c)移動平均の傾き。いずれも採らない。理由: (a)は外れ値に弱く、事業経費は年に数回の大きな支出が入るため傾きが引きずられる。Theil-Sen は中央値ベースで外れ値に頑健であり、この用途に適する。(b)は月数が少ない立ち上がり期に使えず、季節性の無い個人事業では意味が薄い。(c)は平滑化の窓幅という新しい任意パラメータを増やし、既存 categoryTrends との判定基準の食い違いを生む。同一画面で『カテゴリ別トレンドは横ばいなのに、トータルだけ増加』という矛盾した表示が出ると利用者が数字を信用できなくなるため、判定基準を既存と揃えることを最優先する(上位概念 G5 および G7 の要請)。",
-      "provenance": "アシスタントの分析。代替案の棄却理由は取得済み公式ドキュメント (fetched-references) と既存コードの制約に接地しているが、案の採否そのものは別途 AskUserQuestion で利用者採択を取り直している (末尾 -002 の質疑)。",
+      "id": "qa-auth-web-mf-001",
+      "question": "本サイクルは認証・認可の境界を変えるか。変えないならその根拠は何か。",
+      "answer": "変更しない。本サイクルが加えるのは packages/core 内の純粋な判定述語と、その述語を既存の集計関数から参照する経路だけであり、新しい入口・新しい主体・新しい権限区分のいずれも生まない。認証は従来どおり Cloudflare Access を単一の信頼境界とし、境界の内側では単独の利用者 1 名だけが全データへアクセスする (ロール分割なし・セッションはブラウザに閉じる)。代替案として (a) 事業データと家計データで閲覧権限を分ける、(b) 判定規則の編集だけを別権限にする、を検討したが、利用者が 1 名でありデータの所有者と閲覧者が同一である以上、権限を割っても守る相手が存在せず、境界を増やすぶんだけ検証箇所が散る。よって現行の単一境界を維持する。",
+      "provenance": "現行構成の観測: Cloudflare Access による認証境界と、利用者が単独である前提を前サイクル確定内容から引き継いだ。代替案 (a)(b) の提示と却下理由はアシスタントの推論であり、利用者は認証面について発言していない。",
       "basis": "agent-inference",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-auth-alternatives-001",
-      "question": "本機能の認証境界について、既存の /api 認証ゲートに載せる以外にどのような選択肢があり、なぜそれを採らないのか。",
-      "answer": "検討した代替案は3つ。(a)本機能専用の読み取り専用トークンを発行し、一覧表だけを別経路で公開する: 採らない。認証境界が2つになり、片方の失効・ローテーション漏れが財務データの露出に直結する。単一利用者しかいない本システムで境界を増やす利得がない。(b)一覧表だけ認証不要の公開エンドポイントにする: 採らない。トータル収支は事業と家計の全体像そのものであり、明細より要約のほうが機微性が高い場面すらある。公開する理由が存在しない。(c)Cloudflare Access に一本化し、アプリ内セッション認証を廃止する: 採らない。Access は ACCESS_AUD / ACCESS_TEAM_DOMAIN が設定された環境でのみ機能し、ローカル開発やプレビューでは動かないため、既存の二段構え(未設定時はアプリ内セッション認証)を壊すと開発と本番で認証経路が分岐する。結論として、本機能は新しい認証境界を作らず既存 /api 認証ゲートの内側に置く。run_worker_first: ['/api/*'] により追加する読み取りAPI・DuplicateVerdict 更新APIも必ずゲートを通る。認可はロール分割を持たない単一主体モデルのままとする。",
-      "provenance": "アシスタントの分析。代替案の棄却理由は取得済み公式ドキュメント (fetched-references) と既存コードの制約に接地しているが、案の採否そのものは別途 AskUserQuestion で利用者採択を取り直している (末尾 -002 の質疑)。",
-      "basis": "agent-inference",
+      "answered_at": "2026-09-10T04:35:53Z",
       "required_info_items": [
         "auth-model"
       ]
     },
     {
-      "id": "qa-infrastructure-alternatives-001",
-      "question": "月次トータル収支の算出について、要求時に毎回導出する以外にどのような選択肢があり、なぜそれを採らないのか。インフラ構成を変える必要はあるか。",
-      "answer": "検討した代替案は3つ。(a)cron で夜間に月次合計を事前計算し D1 のテーブルへ書き出す: 採らない。導出値を canonical と二重に持つことになり、取込・取消・undo・利用者の手当てのたびに再計算漏れが起きると、画面の合計と明細が食い違う。この食い違いは利用者からは検算不能で、G3(利用者の手で検算できる)を直接損なう。(b)Durable Objects や KV に集計結果をキャッシュする: 採らない。同じ二重保持の問題に加え、無効化のタイミングという新しい失敗モードを増やす。(c)集計を D1 の SQL 側へ寄せてビュー化する: 採らない。重複判定の規則(min(n,m) の基数規則)を SQL とアプリの二箇所に持つ危険があり、制約『判定を1箇所に置いて複製しない』に反する。毎回導出が成立する根拠は取得済み公式出典 cloudflare-d1-limits にある: Worker 1呼出しあたりのクエリ数は 1,000 (Workers Paid)、SQL文の最大長 100KB、クエリ最大実行時間 30秒、バインドパラメータは1クエリあたり最大100。本機能は月次数十行規模の集計であり、対象期間の明細を数クエリで取得してアプリ側で突合する形に収まる(バインドパラメータ上限100を跨がないよう、期間指定は範囲条件で表現し個別IDの列挙を避ける)。結論としてインフラ構成は変えない。新しいスケジュール実行・新しい監視基盤・新しいデータストアをいずれも追加せず、既存の Cloudflare Workers + D1 + R2 の1系統に載せる。",
-      "provenance": "アシスタントの分析。代替案の棄却理由は取得済み公式ドキュメント (fetched-references) と既存コードの制約に接地しているが、案の採否そのものは別途 AskUserQuestion で利用者採択を取り直している (末尾 -002 の質疑)。",
-      "basis": "agent-inference",
+      "id": "qa-security-web-mf-001",
+      "question": "脅威モデル・入力検証・暗号化・シークレット管理・監査ログをどうするか。",
+      "answer": "本サイクル固有の脅威は 1 つだけで、『取込 CSV の中項目文字列がそのまま判定に効く』ことである。MF が出力する CSV は利用者自身がダウンロードした自分のデータだが、文字列を前方一致で判定に使う以上、(a) 文字コード誤判定 (CP932 を UTF-8 として読むと中項目が化けて判定が外れる)、(b) 前後空白・全角半角ゆれによる不一致、が実害のある入力起因の failure になる。対策として、判定は必ず decodeBuf (utf-8 fatal → shift_jis フォールバック) を通した後の文字列に対して行い、前方一致の比較前に trim を掛ける。中項目文字列は画面表示時に既存の React の自動エスケープに委ね、SQL へは既存の Drizzle のパラメータバインドを通す (文字列連結を新設しない)。暗号化・シークレット管理は変更しない (新しい外部サービス・API キーを導入しないため)。監査ログは既存の audit_log_details を維持し、本サイクルで新しい記録対象を増やさない — 事業判定は導出値であり、利用者の意思決定 (手動編集) は既に記録対象に含まれている。",
+      "provenance": "非公開ローカル入力観測: ${LOCAL_SOURCE_FILE} は CP932 であり、UTF-8 として読むと ${LOCAL_RECORD_COUNT}行目で UnicodeDecodeError になることを確認した。既存の decodeBuf (packages/core/src/csv.ts L6-14) が utf-8 fatal → shift_jis フォールバックを行うことを読み取った。trim の追加と『新しい記録対象を増やさない』はアシスタントの判断である。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-10T04:35:53Z",
       "required_info_items": [
-        "infra-topology"
-      ]
-    },
-    {
-      "id": "qa-decision-trend-method-002",
-      "question": "【AskUserQuestion / 2026-09-04】トータル支出の推移(増加/減少/横ばい/判定不可)を判定する統計手法をどれにするか。3案を推奨理由・注意点付きで提示した。(A) 既存の Mann-Kendall 検定 + Theil-Sen 傾き推定に合わせる〔推奨〕— 既存 packages/core/src/trend.ts の実装と定数(TREND_MIN_MONTHS=6, TREND_ALPHA=0.05)をそのまま再利用し、判定語も TrendDirection を共有するため同一画面で基準が食い違わない。ただし TREND_MIN_MONTHS 未満の期間は常に『判定不可』になる。(B) 最小二乗回帰の傾きで判定する — 実装は最も単純だが外れ値に弱く、年に数回の大きな事業支出で傾きが引きずられる。既存カテゴリ別トレンドと基準が食い違い『カテゴリ別は横ばいなのにトータルだけ増加』という矛盾表示が起きうる。(C) 統計判定をやめ前年同月比を示す — 計算は自明だが12ヶ月分揃うまで表示できず、推移の一貫性を見ないため増減判定として弱い。",
-      "answer": "利用者回答 (AskUserQuestion の選択肢から明示選択): 「既存の Mann-Kendall / Theil-Sen に合わせる (推奨)」を選択。これにより意思決定 dec-trend-method-001 の user_decision を option_id=opt-mk-ts / confirmed_at=2026-09-04T14:52:00Z として確定した。棄却案は (B) 最小二乗回帰、(C) 前年同月比。本エントリは、前サイクルで代替案を提示せず agent 判断の既定として扱っていた同論点を、独立ヒアリング監査 (2026-09-04) の指摘 (誘導質問・二重帳簿・対話証跡の不在) を受けて代替案提示のうえ取り直した記録である。構造化された比較 (options / cost_model / goal_fit / TCO / security / operations / lock_in / evidence_refs) は decisions[] の dec-trend-method-001 に保持し、本エントリはその確定根拠を matrix セルへ機械的に接続する役割を持つ。なお本決定の一次根拠は外部文献ではなく既存 packages/core/src/trend.ts との内部整合性であり、外部出典 usgs-tm4a3-statistical-methods は一般的位置付けの参考にとどまる (独立鮮度監査 2026-09-04 の指摘による訂正)。",
-      "provenance": "AskUserQuestion による利用者への直接質問。代替案を併記したうえで利用者が明示選択した。",
-      "basis": "user-decision",
-      "required_info_items": [
-        "domain-model"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-05T01:59:27Z",
-          "note": "直上の答の本文に書かれた confirmed_at 2026-09-04T14:52:00Z は誤りである。当該時刻は spec-state.json への実書込時刻 2026-09-04T14:33:18Z より後であり、その時点では発生し得ない値だった (完成度 evaluator が『時刻の捏造』として検出)。正しい値は decisions[].user_decision.confirmed_at の 2026-09-04T21:27:59Z で、これは採択時刻そのものではなく『遅くともこの時刻までに利用者採択が済んでいる』ことを示す上界である。利用者が選択肢から明示選択したという事実そのものは変わらない。答の本文は改竄防止のため凍結されており書き換えられないため、訂正をここに残す。"
-        },
-        {
-          "corrected_at": "2026-09-05T02:12:49Z",
-          "note": "この答の本文が述べる時刻には二重の誤りがあり、直前の訂正もまた誤っていた。(1) 本文の 2026-09-04T14:52:00Z は実書込時刻 14:33:18Z より後で発生し得ない値だった。(2) それを訂正した 2026-09-04T21:27:59Z は『訂正を書き込んだ時刻』を上界として充てたもので、採択時刻ではなかった。そのとき私は『選択の正確な時刻は記録していなかった』と書いたが、これも誤りである — AskUserQuestion の応答は会話トランスクリプトへ時刻付きで残っており、探せば読めた。上界で代用する必要は最初から無かった。(3) 独立ヒアリング監査 (2026-09-05) の指摘 F2 を受けてトランスクリプトを照合し、実測値を復元した — 質問提示 2026-09-04T13:59:32Z、利用者回答 2026-09-04T14:00:13Z。現在の decisions[].user_decision.confirmed_at はこの実測値である。なお本件・認証境界・集計方式の3決定は同一の AskUserQuestion 呼出しで同時に提示・回答されており、3件の confirmed_at が一致するのは書込時刻の使い回しではなく、同一の利用者ターンだったことの反映である。"
-        }
-      ]
-    },
-    {
-      "id": "qa-decision-auth-boundary-002",
-      "question": "【AskUserQuestion / 2026-09-04】本機能 (トータル収支の一覧表と要確認判断API) の認証境界をどこに置くか。3案を推奨理由・注意点付きで提示した。(A) 既存の /api 認証ゲートの内側に置く〔推奨〕— 認証境界が1つに保たれ、wrangler.jsonc の run_worker_first: ['/api/*'] により追加APIも必ずゲートを通る。実装・運用の増分ゼロ。ただし将来 税理士など第三者へ一覧表だけ見せたくなった場合は決定の見直しが要る。(B) 読み取り専用トークンを発行し一覧表だけ別経路で公開する — 第三者共有には対応しやすいが、守る認証境界が2つになり、トークンの失効・ローテーション漏れが財務データの露出へ直結する。(C) Cloudflare Access へ一本化しアプリ内セッション認証を廃止する — 本番の防御は強いが、ACCESS_AUD/ACCESS_TEAM_DOMAIN 未設定のローカル開発・プレビューでは機能せず、開発と本番で認証経路が分岐する。",
-      "answer": "利用者回答 (AskUserQuestion の選択肢から明示選択): 「既存の /api 認証ゲートの内側に置く (推奨)」を選択。これにより意思決定 dec-auth-boundary-001 の user_decision を option_id=opt-existing-gate / confirmed_at=2026-09-04T14:52:00Z として確定した。棄却案は (B) 読み取り専用トークンで別経路、(C) Cloudflare Access へ一本化。本エントリは、前サイクルの qa-auth-web-001 が『本機能は新しい認証境界を作るか』という代替案を示さない Yes/No 誘導であったという独立ヒアリング監査の指摘を受け、代替案を明示したうえで採択を取り直した記録である。認可はロール分割を持たない単一主体モデルのままとし、複数人利用が始まる場合はこの前提が崩れることを注意点として提示済み。",
-      "provenance": "AskUserQuestion による利用者への直接質問。代替案を併記したうえで利用者が明示選択した。",
-      "basis": "user-decision",
-      "required_info_items": [
-        "auth-model",
         "security-posture"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-05T01:59:27Z",
-          "note": "直上の答の本文に書かれた confirmed_at 2026-09-04T14:52:00Z は誤りである。当該時刻は spec-state.json への実書込時刻 2026-09-04T14:33:18Z より後であり、その時点では発生し得ない値だった (完成度 evaluator が『時刻の捏造』として検出)。正しい値は decisions[].user_decision.confirmed_at の 2026-09-04T21:27:59Z で、これは採択時刻そのものではなく『遅くともこの時刻までに利用者採択が済んでいる』ことを示す上界である。利用者が選択肢から明示選択したという事実そのものは変わらない。答の本文は改竄防止のため凍結されており書き換えられないため、訂正をここに残す。"
-        },
-        {
-          "corrected_at": "2026-09-05T02:12:49Z",
-          "note": "この答の本文が述べる時刻には二重の誤りがあり、直前の訂正もまた誤っていた。(1) 本文の 2026-09-04T14:52:00Z は実書込時刻 14:33:18Z より後で発生し得ない値だった。(2) それを訂正した 2026-09-04T21:27:59Z は『訂正を書き込んだ時刻』を上界として充てたもので、採択時刻ではなかった。そのとき私は『選択の正確な時刻は記録していなかった』と書いたが、これも誤りである — AskUserQuestion の応答は会話トランスクリプトへ時刻付きで残っており、探せば読めた。上界で代用する必要は最初から無かった。(3) 独立ヒアリング監査 (2026-09-05) の指摘 F2 を受けてトランスクリプトを照合し、実測値を復元した — 質問提示 2026-09-04T13:59:32Z、利用者回答 2026-09-04T14:00:13Z。現在の decisions[].user_decision.confirmed_at はこの実測値である。なお本件・認証境界・集計方式の3決定は同一の AskUserQuestion 呼出しで同時に提示・回答されており、3件の confirmed_at が一致するのは書込時刻の使い回しではなく、同一の利用者ターンだったことの反映である。"
-        }
       ]
     },
     {
-      "id": "qa-decision-aggregation-002",
-      "question": "【AskUserQuestion / 2026-09-04】月次トータル収支 (総収入・総支出・総収支・事業費・家計費・寄せた件数) をどう算出するか。3案を推奨理由・注意点付きで提示した。(A) 要求時に canonical から毎回導出する〔推奨〕— 合計と明細が定義上ずれず、利用者が『事業費 + 家計費』として手で検算できる。取込・取消・undo が即座に反映され再計算の仕込み漏れが起こりえない。ただしキャッシュを持たないため同じ月を開くたび計算する。(B) cron で夜間に月次合計を事前計算し D1 のテーブルへ書き出す — 参照は速いが導出値を canonical と二重に持ち、再計算漏れが『合計と明細の不一致』として静かに起き、利用者にはどちらが正しいか判断できない。(C) 集計を D1 の SQL 側へ寄せてビュー化する — 重複判定の min(n,m) 基数規則が SQL とアプリの二箇所に複製され、上位概念の制約『判定を1箇所に置いて複製しない』に反する。",
-      "answer": "利用者回答 (AskUserQuestion の選択肢から明示選択): 「要求時に毎回導出する (推奨)」を選択。これにより意思決定 dec-aggregation-strategy-001 の user_decision を option_id=opt-derive-on-request / confirmed_at=2026-09-04T14:52:00Z として確定した。棄却案は (B) cron で夜間に事前計算し D1 へ保存、(C) D1 の SQL ビュー化。本エントリは、前サイクルの qa-infrastructure-web-001 が『本機能でインフラ構成は変わるか』という代替案を示さない Yes/No 誘導であったという独立ヒアリング監査の指摘を受け、代替案を明示したうえで採択を取り直した記録である。毎回導出が成立することは公式出典 cloudflare-d1-limits (1呼出し1,000クエリ、SQL文100KB、実行時間30秒、バインドパラメータ100) と本機能の実データ量 (月次数十行規模) を突き合わせて確認済み。期間指定は範囲条件で表現し個別IDの列挙を避けることを注意点として提示済み。",
-      "provenance": "AskUserQuestion による利用者への直接質問。代替案を併記したうえで利用者が明示選択した。",
-      "basis": "user-decision",
+      "id": "qa-infrastructure-web-mf-001",
+      "question": "実行環境・デプロイ・スケーリング・監視・CI/CD をどうするか。",
+      "answer": "変更しない。Cloudflare Workers 上の単一 Worker + D1 + wrangler assets という現行構成のまま、本サイクルの変更は packages/core と packages/api のコード差分だけで完結する。新しいバインディング・新しい環境変数・新しい外部サービスを導入しない。マイグレーションを伴わないため、デプロイは既存の CI/CD (pnpm test → wrangler deploy) をそのまま通せばよく、デプロイ順序の制約 (先にマイグレーション、後にコード) も発生しない。スケーリングは利用者 1 名・月 1 回の取込という負荷特性から現行の無料枠内に収まり、監視も追加しない。",
+      "provenance": "現行構成の観測: wrangler.jsonc、packages/api のバインディング、README のアーキテクチャ節、CI 設定を読み取った。『マイグレーション不要ゆえデプロイ順序の制約が出ない』は database セルの確定内容 (スキーマ移行なし) からの帰結である。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-10T04:35:53Z",
       "required_info_items": [
-        "data-persistence",
         "infra-topology"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-05T01:59:27Z",
-          "note": "直上の答の本文に書かれた confirmed_at 2026-09-04T14:52:00Z は誤りである。当該時刻は spec-state.json への実書込時刻 2026-09-04T14:33:18Z より後であり、その時点では発生し得ない値だった (完成度 evaluator が『時刻の捏造』として検出)。正しい値は decisions[].user_decision.confirmed_at の 2026-09-04T21:27:59Z で、これは採択時刻そのものではなく『遅くともこの時刻までに利用者採択が済んでいる』ことを示す上界である。利用者が選択肢から明示選択したという事実そのものは変わらない。答の本文は改竄防止のため凍結されており書き換えられないため、訂正をここに残す。"
-        },
-        {
-          "corrected_at": "2026-09-05T02:12:49Z",
-          "note": "この答の本文が述べる時刻には二重の誤りがあり、直前の訂正もまた誤っていた。(1) 本文の 2026-09-04T14:52:00Z は実書込時刻 14:33:18Z より後で発生し得ない値だった。(2) それを訂正した 2026-09-04T21:27:59Z は『訂正を書き込んだ時刻』を上界として充てたもので、採択時刻ではなかった。そのとき私は『選択の正確な時刻は記録していなかった』と書いたが、これも誤りである — AskUserQuestion の応答は会話トランスクリプトへ時刻付きで残っており、探せば読めた。上界で代用する必要は最初から無かった。(3) 独立ヒアリング監査 (2026-09-05) の指摘 F2 を受けてトランスクリプトを照合し、実測値を復元した — 質問提示 2026-09-04T13:59:32Z、利用者回答 2026-09-04T14:00:13Z。現在の decisions[].user_decision.confirmed_at はこの実測値である。なお本件・認証境界・集計方式の3決定は同一の AskUserQuestion 呼出しで同時に提示・回答されており、3件の confirmed_at が一致するのは書込時刻の使い回しではなく、同一の利用者ターンだったことの反映である。"
-        }
       ]
     },
     {
-      "id": "qa-verify-candidate-extraction-001",
-      "question": "【AskUserQuestion / 2026-09-04T21:20Z 実測 / 出所=利用者への直接質問・選択肢提示あり】要確認の候補はどうやって見つけるか。完全一致は自動で事業費へ寄せるとして、その手前の抽出条件を問うた。背景: 上位概念の制約は『判定規則は完全一致の1本のみ・近傍照合器を同居させない』としているのに、I5/G4 は『日付不一致などで確定できない明細を要確認として列挙する』としており、候補の見つけ方が定義されないまま正面衝突していた (完成度 evaluator の high 所見『聞き漏れ』および独立ヒアリング監査 第3巡 H-1)。提示した3案: (A) 金額一致・日付ズレを候補に出す — 金額が同じで発生日が数日ズレる MF/freee の組を列挙する。合計は動かさず一覧に出すだけなので、帰属判定の規則は完全一致の1本のままに保てる。日付許容幅は既存 expense-projection.ts と同じ ±3日を流用する。(B) 金額一致だけを候補に出す — 同月内で金額一致の組を日付を問わず候補にする。新しいパラメータを増やさずに済むが、金額が偶然一致しただけの無関係な組も混ざり件数が増える。(C) 要確認一覧を作らない — 完全一致だけを扱い、それ以外は黙って家計費に計上する。仕様は最も単純だが G4・I5・I6・O4 を範囲外へ落とすことになる。",
-      "answer": "利用者回答 (選択肢からの明示選択): 「金額一致・日付ズレを候補に出す」を選択。これにより上位概念の制約を『帰属を自動で決める判定器は完全一致の1本だけ』と『合計を一切動かさない候補抽出器は金額一致かつ発生日±3日』の2階建てへ改訂し、両者は役割が異なるため同居を許すが帰属を動かす権限を持つのは前者と利用者判断だけである、と明記した (approval_ref: appr-foundation-total-cashflow-004)。棄却案は (B) 金額一致のみ、(C) 要確認一覧を作らない。日付許容幅 ±3日 は既存 packages/core の expense-projection.ts の照合器と同じ値を流用する。",
-      "provenance": "AskUserQuestion による利用者への直接質問。代替案を併記したうえで利用者が明示選択した。",
-      "basis": "user-decision",
+      "id": "qa-maintenance-ops-web-mf-001",
+      "question": "運用手順・障害対応・バックアップ・バージョン管理・ドキュメントをどうするか。",
+      "answer": "運用手順は 1 点だけ増える。MF 側で『事業』で始まる中項目を新設したとき、利用者はアプリ側で何もしなくてよい — これが本サイクルの狙い (ゴール G4) であり、逆に言えば『事業』で始まる家計用の中項目を MF 側で作ってはいけない、という運用上の約束が対価として生じる。この約束を docs/spec-v1.1.md の MF 取込節へ明記する。障害対応は、判定が期待と違ったときに clsSrc を見て『中項目由来か / ルール由来か / 手動編集か』を切り分ける手順を残す。バックアップは既存の D1 の運用を変更しない。バージョン管理も現行の solo git flow を維持し、本サイクルは 1 feature = 13 task として dev-graph 上で管理する。ドキュメントは docs/spec-v1.1.md (正本) と docs/data-schema.md を更新対象とし、data-schema.md については永続形状が変わらないため『事業判定は導出であり保存しない』ことの明記に留める。",
+      "provenance": "運用上の約束 (『事業』で始まる家計用中項目を作らない) は、利用者が選んだ前方一致判定から論理的に導かれる帰結であり、アシスタントが明示化したものである。利用者はこのトレードオフを選択肢の説明として提示されたうえで前方一致を選んでいる (2026-09-10)。docs の更新対象は既存リポジトリの規範ドキュメント構成の観測に基づく。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-10T04:35:53Z",
       "required_info_items": [
-        "domain-model"
+        "ops-runbook"
       ]
     },
     {
-      "id": "qa-verify-verdict-effect-001",
-      "question": "【AskUserQuestion / 2026-09-04T21:20Z 実測 / 出所=利用者への直接質問・選択肢提示あり】要確認の明細に『同じ(=二重計上)』と判断したとき、合計はどう動くか。背景: O4/G4 は判断の永続化と再適用だけを述べ、その判断が min(n,m) の自動規則および総支出の内訳へどう反映されるかが未定義だった (独立ヒアリング監査 第3巡 H-2)。提示した2案: (A) 合計を動かす (事業費へ寄せる) — 『同じ』と判断された MF 明細を家計費から外し、自動判定と同じ扱いで事業費側へ寄せる。利用者の判断が min(n,m) の自動規則を上書きする。二重計上は実際に消えるが、合計が利用者判断で変わる。(B) 合計は動かさず記録だけ — 判断は保存して再取込後も保持するが、金額の帰属は変えず表示上の注記にとどめる。合計は常に自動規則だけで決まり再現性が高いが、拾った二重計上が数字に反映されない。",
-      "answer": "利用者回答 (選択肢からの明示選択): 「合計を動かす (事業費へ寄せる)」を選択。これにより上位概念の制約へ『要確認明細に利用者が「同じ」と判断した場合、その判断は自動規則を上書きし、当該 MF 明細を家計費から外して事業費へ寄せる(合計が動く)。上書きも1対1を保ち、freee 側の1取引に対し MF は1件までしか寄せない。「違う」判断は帰属を変えず、次回以降その組を要確認として再提示しない』を追加し、O4 の測り方へ『判断の前後いずれでも 総支出 = 事業費 + 家計費 の恒等式が成立することを契約テストで固定する』を追加した (approval_ref: appr-foundation-total-cashflow-004)。棄却案は (B) 記録のみで合計を動かさない。",
-      "provenance": "AskUserQuestion による利用者への直接質問。代替案を併記したうえで利用者が明示選択した。",
+      "id": "qa-ui-ux-web-mf-decision-002",
+      "question": "公私仕分け画面で、MF 中項目由来で自動的に事業になった明細をどう扱うか。判定根拠を表示するか、未レビュー件数に数えるか。代替案を示して選ぶこと。",
+      "answer": "利用者は『根拠を「中項目」と表示し、レビュー済み扱いとする』を選択した。提示した代替案は 3 つ。(a) 根拠を「中項目」と表示しレビュー済扱い — 手動編集・ルール由来と区別できるラベルを出しつつ、classificationProgress の未レビュー件数には数えない。MF 上で既に利用者自身が仕分けた明細を再確認させないため。(b) 表示はするが未レビューにも数える — 安全側だが、毎月 30 件前後の確認作業が残り続ける。(c) 既存の「ルール」由来と同じ表示に寄せる — clsSrc に値を増やさず実装は最小になるが、なぜ事業になったかの切り分けができなくなる。利用者は (a) を選んだ。したがって clsSrc に MF 中項目由来を表す値を 1 つ追加し、未レビュー判定 (現行は clsSrc==='既定' を未レビューとする) には含めない。",
+      "provenance": "2026-09-10、アシスタントが (a)(b)(c) の 3 案を利得と対価つきで提示し、利用者が (a) を選択した。表示ラベルの文言と未レビュー判定の実装位置 (classificationProgress) はアシスタントが既存コードの観測から補った。",
       "basis": "user-decision",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-income-dedup-rule-001",
-      "question": "【AskUserQuestion / 2026-09-04T21:20Z 実測 / 出所=利用者への直接質問・選択肢提示あり】収入側について、freee の売上と Money Forward の事業・副業入金の突合はするか。背景: 利用者の当初回答は『MFの事業・副業が事業収入、それ以外は家計収入』という分類のみだったが、I4/O3 には freee 売上との消し込み条項が入っており、当初回答より広い規則が仕様側に先行して書かれていた (独立ヒアリング監査 第3巡 H-3)。提示した2案: (A) 分類のみ (突合しない) — 当初回答どおり分類だけを行い freee 売上とは突き合わせない。I4・O3 から消し込み条項を削る。入金と売上計上が別タイミングなら二重計上は起きにくい。(B) 支出と同じ規則で消し込む — MF事業・副業入金と freee 売上が同額・同発生日なら freee を正として一度だけ計上する。支出と対称な扱いになるが、freee 売上は発生主義の発生日・MF入金は入金日のため日付が一致せず、実際にはほとんど消し込めない可能性が高い。",
-      "answer": "利用者回答 (選択肢からの明示選択): 「支出と同じ規則で消し込む」を選択。これにより I4/O3 の既存記述が利用者の意図と一致することを確認し、加えて上位概念の制約へ『収入側も支出と同じ規則(同額・同発生日)で freee を正として消し込む。ただし freee 売上は発生主義の発生日、MF 入金は入金日であるため日付が一致しない組が多く、実際に消し込まれる件数は少ない見込みである。一致しない組は支出と同様に要確認として可視化する』を既知の限界として明記した。O3 の測り方へも『日付が一致せず消し込めない組が要確認として出ることを固定する』を追加した (approval_ref: appr-foundation-total-cashflow-004)。棄却案は (A) 分類のみで突合しない。",
-      "provenance": "AskUserQuestion による利用者への直接質問。代替案を併記したうえで利用者が明示選択した。",
-      "basis": "user-decision",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-verdict-ui-placement-001",
-      "question": "【AskUserQuestion / 2026-09-04T21:20Z 実測 / 出所=利用者への直接質問・選択肢提示あり】要確認の『同じ/違う』判断はどの画面で行うか。背景: I5/I6/O6 は要確認一覧と判断の保存を述べるが、判断の入口となる画面が未決で、ui-ux/web の確定内容も表示側 (一覧表) しか扱っていなかった (独立ヒアリング監査 第3巡 H-4)。提示した3案: (A) トータル収支の一覧表の中 — 新しいトータル収支タブ内に要確認セクションを置く。件数と合計への影響が同じ画面で見えるが、タブが縦に長くなる。(B) 既存の明細編集画面に組み込む — 直近で追加した『取り込んだ明細を1件ずつ直せる』画面に判断列を足す。明細を触る操作が1箇所にまとまるが、トータル収支を見ている最中に画面を移る必要がある。(C) 独立した要確認タブ — 専用タブを設ける。溜まった件数が一目で分かるが、タブが1つ増えトータル収支との往復が発生する。",
-      "answer": "利用者回答 (選択肢からの明示選択): 「既存の明細編集画面に組み込む」を選択。これにより上位概念の制約へ『要確認の「同じ/違う」判断は、既存の取込明細編集画面(取り込んだ明細を1件ずつ直せる画面)に組み込む。判断専用の画面やタブを新設しない』を追加し、O6 を『一覧表を画面へ出し、判断の入口を既存の明細編集画面に置く』へ改訂して測り方に『判断後に一覧表の数字が更新されることを示す』を加えた (approval_ref: appr-foundation-total-cashflow-004)。棄却案は (A) トータル収支タブ内、(C) 独立した要確認タブ。既存画面は commit 4b80ef7 『取り込んだ明細を1件ずつ直せるようにする』で追加されたものを指す。",
-      "provenance": "AskUserQuestion による利用者への直接質問。代替案を併記したうえで利用者が明示選択した。",
-      "basis": "user-decision",
-      "required_info_items": [
-        "context-of-use"
-      ]
-    },
-    {
-      "id": "qa-table-columns-001",
-      "question": "【AskUserQuestion / 出所=利用者への直接質問・選択肢提示あり】トータル収支の一覧表に、常時どこまで出すか。背景: 列構成はそれまでアシスタントが利用者確認を経ずに決めており、ui-ux/web の確定内容がその推定の上に載っていた。",
-      "answer": "利用者回答 (選択肢からの明示選択): 「9列すべて常時表示」を選択。月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた件数・要確認件数・トレンド の9列を常時表示し、小画面でも列を落とさない。個別明細と勘定科目別の内訳は表に常置せず、行からのドリルダウンで見せる。これにより上位概念の制約へ当該列構成を追加し、O6 の測り方に『9列すべてが常時表示されること』を加えた (approval_ref: appr-foundation-total-cashflow-005)。",
-      "provenance": "AskUserQuestion による利用者への直接質問。代替案を併記したうえで利用者が明示選択した。",
-      "basis": "user-decision",
+      "answered_at": "2026-09-10T04:39:33Z",
       "required_info_items": [
         "context-of-use",
         "information-priority"
       ]
     },
     {
-      "id": "qa-anomaly-notice-001",
-      "question": "【AskUserQuestion / 出所=利用者への直接質問・選択肢提示あり】要確認明細の放置や、集計の異常にどう気付きたいか。背景: maintenance-ops/web の確定内容は『監視アラートの追加は行わない』とアシスタントが利用者確認を経ずに書いていた。",
-      "answer": "利用者回答 (選択肢からの明示選択): 「取込直後に画面で警告」を選択。CSV取込が完了した時点で要確認が残っていれば、その場で画面に警告を出す。メール・push・外部監視といった通知基盤は追加しない。これは、アシスタントが書いていた『監視アラートの追加は行わない』という記述の訂正にあたる (通知基盤を増やさない点は一致するが、取込完了時点の画面警告は行う)。上位概念の制約へ当該方針を追加し、O6 の測り方に『取込完了時に要確認が残っている場合に画面へ警告が出ること』を加えた (approval_ref: appr-foundation-total-cashflow-005)。",
-      "provenance": "AskUserQuestion による利用者への直接質問。代替案を併記したうえで利用者が明示選択した。",
+      "id": "qa-maintenance-ops-web-mf-decision-002",
+      "question": "中項目の前方一致で事業判定する対価として『MF 側で「事業」で始まる家計用の中項目を作らない』という運用上の約束が生じる。これを受け入れるか、設定で除外できるようにするか。",
+      "answer": "利用者は『約束を受け入れて docs に明記する』を選択した。提示した代替案は 2 つ。(a) 約束を受け入れ、docs/spec-v1.1.md の MF 取込節に『中項目の「事業」前方一致が事業判定であること』と『家計用にこの接頭辞を使わないこと』を明記する — 実装はシンプルなまま保たれるが、MF 側の命名に制約が残る。(b) 除外リストを設定で持てるようにする — 運用の縛りは消えるが、設定画面と API が 1 つ増え、判定の正本が『コード + 利用者設定』の 2 箇所に分かれる。利用者は (a) を選んだ。したがって本サイクルでは除外リストを実装せず、docs への明記と、判定が期待と違ったときに clsSrc で切り分ける手順の記載を運用側の成果物とする。",
+      "provenance": "2026-09-10、アシスタントが (a)(b) を対価つきで提示し、利用者が (a) を選択した。docs の更新対象ファイル (docs/spec-v1.1.md / docs/data-schema.md) は既存リポジトリの規範ドキュメント構成の観測に基づく。",
       "basis": "user-decision",
+      "answered_at": "2026-09-10T04:39:33Z",
       "required_info_items": [
         "ops-runbook"
       ]
     },
     {
-      "id": "qa-income-verdict-effect-001",
-      "question": "【AskUserQuestion / 出所=利用者への直接質問・選択肢提示あり】収入側の「要確認」明細を「同じ (= freee と同一の入金)」と判断したとき、合計をどう動かすか。背景: 支出側は qa-verify-verdict-effect-001 で『同じ→家計費から外して事業費へ寄せる』と確定済みだが、収入側は qa-income-dedup-rule-001 で消し込み規則と要確認の可視化まで決めたきり、判断後に総収入・事業収入・家計収入がどう動くかが一度も問われていなかった(独立ヒアリング監査が支出側の H-1〜H-4 と同型の欠落として検出)。",
-      "answer": "利用者回答 (選択肢からの明示選択): 「支出と同じ考え方に揃える」を選択。収入側で『同じ』と判断した MF 入金は、家計収入から外して事業収入へ寄せる。freee を正とするため総収入には二重計上分が加算されず、内訳が事業側へ寄る。これにより恒等式が両側で揃う — 総支出 = 事業費 + 家計費、総収入 = 事業収入 + 家計収入。棄却案: (B) MF 側を総収入から落とすだけで内訳の付け替えはしない (支出側と規則が食い違う)、(C) 収入側は判断しても合計を動かさず可視化にとどめる (収入の二重計上が数字に残る)。",
-      "provenance": "AskUserQuestion による利用者への直接質問。代替案を併記したうえで利用者が明示選択した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-05T00:26:23Z",
+      "id": "qa-auth-web-mf-observed-002",
+      "question": "本サイクルの変更が認証・認可の境界に触れないことを、実装上どう確認したか。",
+      "answer": "packages/api/src/index.ts のルート定義 (L124-146) を読み、本サイクルで新規エンドポイントを追加しないこと、既存の /api/total-cashflow と /api/classify 系がいずれも同一の認証境界の内側にあることを確認した。変更が入るのは packages/core/src/classify.ts と packages/core/src/total-cashflow.ts の純関数、および packages/api/src/routes/ の応答組み立てであり、いずれも認証ミドルウェアの外側に新しい入口を作らない。packages/core は依存ゼロの純関数という既存の規約 (README アーキテクチャ節) により、判定関数が認証状態を参照する経路が構造的に存在しない。ロール区分を持つコードは現行リポジトリに存在せず、権限判定の分岐点も追加されない。",
+      "provenance": "現行リポジトリの観測: packages/api/src/index.ts のルート定義、packages/core の依存関係 (package.json に runtime dependencies なし)、認証ミドルウェアの適用範囲を読み取った。検証可能な出典はリポジトリのコードそのものである。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-10T04:39:33Z",
       "required_info_items": [
-        "domain-model",
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-mf-observed-002",
+      "question": "既存のクライアント構成と API 応答形状を変えずに判定根拠 (clsSrc) を画面へ通せることを、実装上どう確認したか。",
+      "answer": "packages/core/src/classify.ts の ResolvedTx 型 (L38-59) が既に cls と並んで clsSrc を持ち、resolveTx が決定元 ('手動編集' / 'ルール' / '取引先メモリ' / '口座' / '既定') を返していることを確認した。したがって clsSrc に MF 中項目由来の値を 1 つ足すのは型の拡張であり、応答形状の破壊的変更ではない。packages/web/src/components/ClassificationSettings.tsx と公私仕分け画面が既に clsSrc を表示に用いているため、新しい表示経路を作らずにラベルを 1 つ増やすだけで済む。TanStack Query の invalidation は取込後にトータル収支と仕分けの双方を無効化する既存経路をそのまま使える。",
+      "provenance": "現行リポジトリの観測: packages/core/src/classify.ts の ResolvedTx 定義と resolveTx の clsSrc 代入箇所、packages/web/src/components/ClassificationSettings.tsx、packages/web/src/routeMetadata.ts を読み取った。検証可能な出典はリポジトリのコードそのものである。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-10T04:39:33Z",
+      "required_info_items": [
+        "api-contract",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-priority-order-mf-decision-003",
+      "question": "中項目の前方一致「事業」を、既存の 手動編集 / ルール / 取引先メモリ に対してどの位置へ置くか。過去に手で「家計」へ直した明細の中項目が『事業〜』だった場合、どちらを優先するか。",
+      "answer": "利用者は『手動編集を優先する』を選択した。提示した代替案は 3 つ。(a) 手動編集を優先 — resolveTx の既存優先順 (手動編集 > ルール > 取引先メモリ > 中項目前方一致 > 口座 > 既定'per') をそのまま踏襲する。利用者が個別に下した判断は後から入る自動ルールに上書きされない。対価として、過去に事業→家計へ直した明細は新ルール導入後も家計のまま残る。(b) 中項目を最優先 — MF 側の分類が常に正になり G1 がコード上も破れないが、画面上で個別に家計へ直しても次の判定でまた事業へ戻るため、利用者が明細ごとに手当てする手段が失われる。(c) 手動編集を優先しつつ矛盾を画面で警告 — 判断は残しつつ見落としも防げるが、表示と件数の実装が 1 つ増える。利用者は (a) を選んだ。したがって判定優先順は 手動編集 > ルール > 取引先メモリ > 中項目「事業」前方一致 > 口座名義 > 既定'per' で確定する。中項目由来を口座名義より上に置くのは、名義が『どの財布から出たか』でしかないのに対し、中項目は利用者が明細ごとに与えた分類意思であり、より強い根拠だからである。この確定により、G1『中項目が事業で始まるものを事業として扱う』は『手当てされていない明細について』という限定つきで成立する。手動編集で明示的に家計とされた明細はその限定の外側にあり、これは不具合ではなく利用者の判断を尊重した設計上の帰結である。",
+      "provenance": "2026-09-10、アシスタントが (a)(b)(c) を利得と対価つきで提示し、利用者が (a) を選択した。選択肢の内容は現行実装 packages/core/src/classify.ts resolveTx (L191-277) の優先順の観測に基づく。この論点は C06 ヒアリング監査 (system-spec-hearing-auditor) が F1 として『優先順位が利用者未確認のままbackend セルの確定根拠に混入している』と指摘したことを受けて、利用者へ差し戻して確定させたものである。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-10T04:59:30Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-near-match-mf-decision-003",
+      "question": "freee との突合で日付が近接するが一致せず『要確認』となっている MF 明細を、事業費の加算対象に含めるか除外するか。",
+      "answer": "利用者は『足さない (加算対象から除外する)』を選択した。提示した代替案は 3 つ。(a) 足さない — 要確認状態の明細は消し込み待ちとみなし事業費へ加算しない。二重計上が構造的に起きない安全側。対価として、確認を放置している間その経費はどこにも計上されず、事業費が実態より小さく出る。(b) 足す — 経費が漏れないが、実際に freee と同一の経費だった場合、確認して消し込むまで二重に計上される。(c) 足さずに要確認の合計額を画面へ併記 — 数字は安全側のまま漏れの存在が可視化されるが、表示項目が 1 つ増える。利用者は (a) を選んだ。したがって事業費の加算対象は『freee と日付+金額が完全一致せず、かつ要確認 (近接不一致) にも該当しない』MF 明細のうち事業述語が真のものに限る。要確認の判定に用いる日付近接の幅は既存の REVIEW_NEAR_DAYS=3 を変更せずそのまま用いる。",
+      "provenance": "2026-09-10、アシスタントが (a)(b)(c) を利得と対価つきで提示し、利用者が (a) を選択した。要確認という状態と REVIEW_NEAR_DAYS=3 の存在は現行実装 packages/core/src/total-cashflow.ts (L27, reconcileBizDuplicates L344-490) の観測に基づく。この論点は C06 ヒアリング監査が F3 として『近接消し込みと MF 事業費加算の相互作用が未定義』と指摘したことを受けて、利用者へ差し戻して確定させたものである。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-10T04:59:30Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-existing-edits-mf-decision-003",
+      "question": "既に tx_edits に保存されている手動編集を、本サイクルで遡って見直すか。",
+      "answer": "利用者は『見直さない』を選択した。提示した代替案は 3 つ。(a) 見直さない — tx_edits はそのまま残し、新しい判定は今後の表示から適用する。移行作業が発生しない。対価として、過去の編集内容によっては古い判断が残り続ける。(b) 該当分を一覧で出す — 『中項目が事業〜なのに手動で家計になっている』既存明細を一覧化し、利用者が目で見て消すか残すか決められるようにする。棚卸しの手間はかかるが過去の判断を明示的に清算できる。(c) 該当する手動編集を一括削除する — 確実に揃うが、意図して家計にしていた明細も戻るため取り消しがきかない。利用者は (a) を選んだ。したがって本サイクルはデータ移行スクリプトを作らず、既存 tx_edits に対する遡及処理を行わない。これは qa-priority-order-mf-decision-003 の『手動編集を優先』と整合する。",
+      "provenance": "2026-09-10、アシスタントが (a)(b)(c) を利得と対価つきで提示し、利用者が (a) を選択した。tx_edits が利用者の意思を保持し再取込で消えないという設計は packages/core/src/types.ts TxEdit (L151-183) と 既存スキーマの観測に基づく。この論点は C06 ヒアリング監査が F4 として『既存 tx_edits の遡及再評価の要否が未確認』と指摘したことを受けて、利用者へ差し戻して確定させたものである。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-10T04:59:30Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-auth-web-mf-causal-003",
+      "question": "本サイクルで認証境界を変更しないことが、なぜ G2 (画面間で事業/家計の境界を一致させる) に資するのか。",
+      "answer": "認証境界に手を入れないことは G2 の前提条件として効く。G2 が求めるのは『同一の明細が公私仕分け画面とトータル収支で別の側に現れない』ことであり、これは両画面が同一のデータと同一の判定関数を見ていることで成立する。もし認可の分岐 (誰が見るかで返す明細が変わる) が入れば、同じ判定関数を使っていても画面ごとに入力集合が変わりうるため、境界の一致は判定ロジックだけでは保証できなくなる。本システムは単独の個人事業主が使う単一利用者システムであり、ロール区分を持つコードは存在せず、本サイクルでも認可の分岐点を追加しない。したがって両画面の入力集合は常に一致し、境界の一致は判定関数の単一化 (O1) だけで担保できる。これが『変更しない』という確定が G2 に資する経路である。",
+      "provenance": "現行リポジトリの観測: packages/api/src/index.ts のルート定義に認可分岐が存在しないこと、packages/core が依存ゼロで認証状態を参照できないことを読み取った。因果の説明そのものはアシスタントの推論であり、利用者への個別確認は経ていない。この記述は C07 マトリクス監査が『auth.web の serves_goals=[G2] が qa 本文から因果的に導出できない』と指摘したことを受けて追加したものである。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-10T04:59:30Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-infrastructure-web-mf-causal-003",
+      "question": "本サイクルでインフラ構成を変更しないことが、なぜ G3 (二重計上を起こさない) に資するのか。",
+      "answer": "インフラを変更しないことは G3 の前提条件として効く。G3 が求めるのは『freee と MF の同一経費を一度だけ数える』ことであり、これは消し込みが単一のデータ正本に対して一度だけ実行されることで成立する。本システムは D1 の単一正本のみを永続化とし、月次集計値を保存せず要求時に毎回導出する (制約 C5)。もしキャッシュ層やレプリカを導入すれば、消し込み前の集計と消し込み後の集計が同時に存在しうる時間窓が生まれ、画面が古い側を読めば二重計上が観測される。本サイクルはこの構成に一切触れず、導出に徹する既存設計を維持することを確定内容としている。したがって二重計上が残留する時間窓は構造的に存在しない。これが『変更しない』という確定が G3 に資する経路である。",
+      "provenance": "現行リポジトリの観測: packages/api/wrangler.jsonc の構成 (Workers + D1、キャッシュ層なし)、月次集計を保存しない既存決定 (前サイクル dec-aggregation-strategy-001) を読み取った。因果の説明そのものはアシスタントの推論であり、利用者への個別確認は経ていない。この記述は C07 マトリクス監査が『infrastructure.web の serves_goals=[G3] が qa 本文から因果的に導出できない』と指摘したことを受けて追加したものである。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-10T04:59:30Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-income-reconcile-mf-observed-004",
+      "question": "事業収入について、freee に記帳された同一の入金との二重計上をどう防ぐか。支出側 (O3) と同じ『突合を先に、寄らなかった残余だけ加算』が収入側にも成り立っているか。",
+      "answer": "既に成り立っている。本サイクルで新たに設計する必要は無く、仕様として明文化するのが不足であった。根拠は 3 点。(1) 突合キーが向きを含む。reconcileBizDuplicates は bucketKey(io, date, amount) を鍵に用い、io は mfIo(tx) = (tx.a < 0 ? 'expense' : 'income') で MF 側の符号から導かれる。したがって収入は収入とだけ、支出は支出とだけ突合され、向きを跨いだ誤消し込みも起きない。(2) 突合対象が符号で絞られていない。reconcilableMf は tx.a !== 0 の全明細を返し、入金も対象に含む。(3) 加算元が残余に限られている。bizIncome = freeeIncome + mfBizIncome であり、freeeIncome は excludedIndexes を除いた freee の income 取引の合計、mfBizIncome は leftover (= counted のうち shiftedMf に含まれないもの) からのみ算出される。すなわち freee と寄った MF 入金は leftover から外れており、二度数えられない。本サイクルが収入側で変更するのは判定条件だけである。すなわち leftover の絞り込みを tx.big === BIZ_INCOME_MAJOR (大項目一致) から O1 の中項目前方一致述語へ置き換える。突合と残余加算の構造自体には手を入れない。この構造は支出側 O3 と同型であり、G3 は収入・支出の双方で同じ仕組みによって担保される。",
+      "provenance": "現行実装の観測 (packages/core/src/total-cashflow.ts): mfIo (L267)、bucketKey (L269-270)、reconcilableMf (L273-282)、bizIncome の算出 (L557-585)。いずれも 2026-09-10 に読み取った。この記述は C06 ヒアリング再監査が F8 として『事業収入と freee の二重計上検討が丸ごと欠落しており G3 が収入側で未担保』と指摘したことを受けて、実装を検算した結果である。指摘は『設計の欠落』としていたが、検算の結果それは誤りで、実体は『既存の対称な実装が仕様書に記述されていない』という文書側の欠落であった。設計変更は要さない。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-10T05:09:35Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-review-bucket-mf-decision-004",
+      "question": "freee と突合できず『要確認』となった事業明細 (中項目が『事業』で始まる) を、月次トータル収支の事業側・家計側のどちらに数えるか。",
+      "answer": "利用者は『どちらにも数えない』を選択した。提示した代替案は 3 つ。(a) どちらにも数えない — 事業にも家計にも足さず、要確認の合計としてのみ表示する。公私仕分け画面が『事業』と示すものを家計に数える矛盾 (G2 違反) が起きず、freee 側に既に計上済みだった場合も二重にならない。対価として、確認するまでその金額はトータル収入・支出のどちらにも現れず、合計が実態より小さく出る。(b) 事業側に数える — 金額がどこからも消えず合計が実態に合うが、freee にも同じ取引が記帳されていた場合、確認して消し込むまで事業側が二重計上になる (G3 違反)。(c) 要確認の理由で分ける — 『発生日が一致しません』(freee 側に候補があり計上済みの疑い) はどちらにも数えず、『取込月と表示日の月が一致しません』(freee 側に候補が無いことがある) は事業側に数える。最も実態に近いが、理由ごとに分岐する実装とその説明が画面に要る。利用者は (a) を選んだ。したがって確定内容は次のとおり。要確認となった MF 明細は、収入・支出のいずれであっても、また事業述語の真偽にかかわらず、bizExpense / householdExpense / bizIncome / householdIncome のどこにも算入しない。これは現行実装からの変更点である — 現在 householdExpense は leftover のうち tx.a < 0 を無条件に集計しており、要確認の明細も家計費へ落ちている。本サイクルではこの無条件のフォールバックを改め、要確認を保留として totals から外す。外した金額は要確認の件数・合計として画面に示し、利用者が消し込みか『違う』の判断を下せば通常の経路へ戻る。",
+      "provenance": "2026-09-10、アシスタントが (a)(b)(c) を利得と対価つきで提示し、利用者が (a) を選択した。選択肢の内容は現行実装の観測に基づく: householdExpense / householdIncome の算出 (packages/core/src/total-cashflow.ts L575-583)、要確認の 3 つの reason (『取込月と表示日の月が一致しません』『発生日が一致しません』および保留理由、同 L451-473)、要確認は shiftedMf に入らないため leftover に残ること (同 L575)。この論点は C06 ヒアリング再監査の F3' (F3 の是正が支出側に限定されている) を検討する過程で、アシスタントが『要確認を事業費に足さないと決めた結果、それが家計側へ落ちて G2 が破れる』という未定義箇所を発見し、利用者へ差し戻して確定させたものである。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-10T05:09:35Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-review-amount-mf-inference-005",
+      "question": "要確認として totals から外した金額を、どこで合計し、どの経路で画面へ渡すか。",
+      "answer": "TotalCashflowMonth に reviewAmount (符号を落とした絶対値の合計) を加え、reviewCount と同じ集合から算出してサーバ側の導出値として返す。画面はそれをそのまま写す。この形にする根拠は既存の先例である。同じ型は shiftedCount と shiftedAmount を対で持ち、その doc コメントは『件数だけでは「3 件寄った」が ${LOCAL_AGGREGATE}円なのか 30 万円なのかが分からず、消し込みが効いているかを判断できない』と述べている。要確認はこれと全く同じ性質を持つ — むしろ O7 により totals から金額が抜けるぶん、件数だけでは『いくら見えなくなっているか』が分からず、利用者が確認の緊急度を判断できない。画面側で合計を組み直さないのは、TotalCashflow.tsx の冒頭が『表の数値はサーバの導出値をそのまま写す。画面側で合計を組み直さない』と定めているためであり、この規約を破ると同じ数字の出所が 2 つになって食い違いうる。あわせて FreeeCoverage の mfReview (件数) にも同様の金額の対を設けるかは、coverage が freee 側の被覆を示す指標であり金額の合算に意味を持たないため、設けない。件数と金額は TotalCashflowMonth 側に一本化する。reviewAmount は reviewCount と必ず同じ集合から算出する。別々に数えると片方だけが実数とずれても気づけないためであり、これも shiftedCount/shiftedAmount の既存コメントが『件数と金額は同じ集合から出す』として明記している方針に従う。",
+      "provenance": "現行実装の観測 (2026-09-10): packages/core/src/total-cashflow.ts の TotalCashflowMonth (L190-211、shiftedCount/shiftedAmount の対とその doc コメント、および reviewCount に対が無いこと)、FreeeCoverage (L161-167、mfReview は件数のみ)、rows の算出で件数と金額を同じ集合から出す方針 (L570-573)、packages/web/src/pages/analysis/TotalCashflow.tsx の冒頭規約 (L7-8) と要確認件数の表示 (L89, L508)。実装先の選択そのものはアシスタントの推論であり、利用者への個別確認は経ていない。ただし『要確認の合計を画面に示す』という約束は qa-review-bucket-mf-decision-004 で利用者が (a) を選ぶ際の対価の裏付けとして提示済みであり、本エントリはその約束に実装先を与えるものである。この論点は C06 ヒアリング 3 回目監査が F11 として『同意の前提が実装計画に反映されていない』と指摘したことを受けて確定させた。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-10T05:15:07Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-auth-web-mf-corrected-006",
+      "question": "本サイクルは認証・認可の境界に変更を加えるか。加えないとすれば、その判断が立つ現行の認証方式は何か。",
+      "answer": "変更しない。本サイクルが加えるのは packages/core 内の純粋な判定述語と、その述語を既存の集計関数から参照する経路だけであり、新しい入口・新しい主体・新しい権限区分のいずれも生まない。前提となる現行の認証方式は Cloudflare Access への一本化ではなく二段構えである。packages/api/src/auth.ts の冒頭が定めるとおり、ACCESS_AUD と ACCESS_TEAM_DOMAIN が両方設定されているときだけ Cloudflare Access の JWT を検証し、未設定時はアプリ内セッション認証 (パスワード + HMAC 署名の HttpOnly Cookie kanjo_session、TTL 14 日) を既定で有効化する。packages/api/wrangler.jsonc では両 var が空文字で、secrets.required が AUTH_PASSWORD と SESSION_SECRET を求めているため、現に稼働している形態はアプリ内セッション認証である。この形は前サイクルの dec-auth-boundary-001 で利用者が『(c) Cloudflare Access へ一本化』を棄却して選んだものであり、本サイクルはその確定を維持する。認証方式を正しく押さえることが本章の確定の前提になるのは、『変更が既存の認証境界の内側に閉じる』と言うためにはその境界がどこにあるかが定まっていなければならないためである。境界はアプリ内セッション認証のミドルウェアであり、Cloudflare Access のエッジではない。",
+      "provenance": "現行実装の観測 (2026-09-10): packages/api/src/auth.ts L1-40 (二段構えの doc コメント、COOKIE = 'kanjo_session'、SESSION_TTL_MS = 14 日、AuthEnv の ACCESS_AUD / ACCESS_TEAM_DOMAIN / AUTH_PASSWORD / SESSION_SECRET)、packages/api/wrangler.jsonc L30-50 (secrets.required = AUTH_PASSWORD, SESSION_SECRET / vars.ACCESS_AUD = '' / vars.ACCESS_TEAM_DOMAIN = '')、前サイクルの確定 system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/auth.md L88, L120 の dec-auth-boundary-001。『本サイクルは境界に触れない』という結論そのものはアシスタントの推論だが、現行方式の記述は上記のローカル不変条件検証に接地している。本エントリは design_knowledge_reflection 監査 (knowledge-audit-1) が H1 として『ASVS anchor の適用が現行の認証方式を誤って述べた確定内容の上に立っている』と指摘したことを受けた R4-reopen 後の差し替えである。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-10T05:37:16Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-mf-corrected-007",
+      "question": "人が読む主要な表現物ごとに、誰が・どの環境で・どの task を・どの頻度で行い、失敗すると何を失うか。各表現物で何を残し何を落とすか。",
+      "answer": "表現物は 3 つ。(1) 月次トータル収支の一覧表 — 単独の個人事業主が自宅 PC の web ブラウザで月 1 回、『今月は全体でいくらプラスマイナスか』『事業費はいくらか』を読む。誤ると確定申告の経費計上額を誤り、過少申告か過大申告のいずれかの実害が出る。ここで残す束は 5 つである — 事業収入・事業費・家計収入・家計費の 4 束と、そのいずれにも算入しない要確認の束 (件数 reviewCount と金額 reviewAmount の対)。5 束目を置くのは、要確認を 4 束から外す決定 (qa-review-bucket-mf-decision-004) が金額を画面から消すためであり、消えた分の所在を示さないと合計が合わない理由が利用者に見えなくなるためである。これは『漏れ』ではなく理由のある削減であり、その理由を要確認の束として明示的に残す。視覚上の階層では 5 束目を 4 束より下位に置く — 常時 0 件でありうる補助的な束であり、4 束と同じ重みを与えると『いくらプラスマイナスか』という主たる task の読み取りを妨げる。個々の明細は落とし、寄せた件数と根拠へのリンクだけを加工して残す。(2) 公私仕分け画面 — 同じ利用者が取込直後に、既定 'per' のまま未レビューの明細を潰す。頻度は取込のたび (月 1-2 回)。誤ると事業費が家計へ落ちたまま固定される。ここでは明細ごとの cls と判定根拠 (clsSrc) を残し、MF 中項目由来で自動的に事業になったものは『中項目』と表示して、手動編集やルール由来と区別できるようにする。(3) 要確認 (重複候補) 一覧 — 日付+金額が近接するが一致しない MF/freee の組を利用者が判断する。頻度は月 1 回未満。誤ると二重計上か計上漏れになる。ここでは MF 側が中項目で事業と判定されているかを併記する — 『MF でも事業扱い』は freee 側と同一取引である可能性を上げる材料になるため。束の順位は task 頻度 × 失敗コストで決め、(1) 一覧表 > (2) 仕分け画面 > (3) 要確認一覧 の順とする。情報優先度マップの JSON 化と機械検証は本要件段階の成果物とせず、下流の生成工程の責務とする。",
+      "provenance": "利用者と利用文脈は前サイクルの確定内容 (単独の個人事業主が自宅 PC のブラウザから CSV を取り込み一覧表を読む) を引き継いだ。表現物 3 種と失敗コストの見立て、束の順位付けはアシスタントの推論であり、利用者に個別確認していない。ただし 5 束目 (要確認) の存在そのものは推論ではなく、qa-review-bucket-mf-decision-004 における利用者の (a)『どちらにも数えない』の選択と、その対価として提示した『要確認の合計を画面に示す』という約束に由来する。本エントリは design_knowledge_reflection 監査 (knowledge-audit-2) が F1 として『確定本文が「4 束」と言い切り、同章の後発確定と矛盾している』と指摘したことを受けた R4-reopen 後の差し替えであり、変更点は表現物 (1) の束の構成と視覚階層に限る。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-10T05:44:57Z",
+      "required_info_items": [
         "information-priority"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-05T02:12:49Z",
-          "note": "この答の問い (question) に、実際に利用者へ提示した選択肢の本文が転記されていなかった(独立ヒアリング監査 2026-09-05 の指摘 F1: 他の同種 entry と記法が非対称で、誘導質問でないことを記録だけからは立証できない)。提示した AskUserQuestion の逐語は次のとおり。問い『収入側の「要確認」明細を「同じ（＝freeeと同一の入金）」と判断したとき、合計をどう動かしますか。支出側は既に『同じ→家計費から外して事業費へ寄せる』と決まっていますが、収入側は判断後の反映が未定義のまま残っています。』/ 選択肢A『支出と同じ考え方に揃える (推奨)』(preview: 支出: 同じ → 家計費から外す → 事業費へ寄せる / 収入: 同じ → 家計収入から外す → 事業収入へ寄せる。恒等式が両側で揃う: 総支出 = 事業費 + 家計費、総収入 = 事業収入 + 家計収入) / 選択肢B・C は答の本文に棄却案として記したとおり。利用者は A を選択した。あわせて時刻を訂正する。本 entry の answered_at 2026-09-05T01:54:36Z は書込直前に測った値であり、利用者が実際に回答した時刻ではない。トランスクリプトの実測値は 2026-09-05T00:26:23Z (質問提示は 2026-09-05T00:25:48Z)。answered_at は append-only のため書き換えず、正しい値をここに記す。"
-        },
-        {
-          "corrected_at": "2026-09-05T12:42:39Z",
-          "note": "answered_at を書込時刻から実際の回答時刻へ訂正する。記録値 2026-09-05T01:54:36Z は書込直前に測った値であり、利用者が回答した時刻ではない。トランスクリプトの実測は 2026-09-05T00:26:23Z (質問提示は 00:25:48Z) で、記録値はそれより約 1 時間 28 分後である。独立ヒアリング監査 (2026-09-05) が検出し、既に散文の訂正として本 entry へ記録していたが、フィールド自体は誤値のままであった。書込時刻を答の時刻へ流用しないという規律を、説明ではなく値で守る。",
-          "corrected_field": "answered_at",
-          "previous_value": "2026-09-05T01:54:36Z",
-          "corrected_value": "2026-09-05T00:26:23Z"
-        }
-      ]
-    },
-    {
-      "id": "qa-target-platforms-002",
-      "question": "本機能 (家計＋事業のトータル収支一覧) を提供する対象プラットフォームを、web のみに限定してよいですか。現状のリポジトリは packages/{api,core,web} の3つで Cloudflare Workers 上の SPA 一系統のみですが、『今後もモバイル/タブレット/デスクトップ専用アプリを作らない』という判断は観測では決められず、これまで一度も確認を取っていませんでした。 / 選択肢A『web のみ (推奨)』(説明: 専用アプリは作らない。モバイル/タブレットのブラウザからは既存のレスポンシブ web でそのまま閲覧できる想定。収集マトリクスの非web 40セルは『対象外』で確定し、根拠を利用者決定として記録します。preview: 対象=web (Cloudflare Workers + SPA) / 対象外=mobile, tablet, desktop-windows, desktop-linux, desktop-macos → 専用アプリを提供しない、という利用者決定として記録 → モバイル閲覧はレスポンシブ web で可 (別途の設計制約は課さない)) / 選択肢B『モバイル/タブレットも一級で対象』(専用アプリではなく web だが、スマホ・タブレットでの閲覧を明示的な設計対象へ格上げする。9列の一覧表を狭い画面でどう見せるかが新たな要件になり、該当セルのヒアリングをやり直す) / 選択肢C『今は決めない』(利用者決定としては記録せず、既存リポジトリの観測に基づく暫定判断であり未確認であることを正直に記録して先へ進む)",
-      "answer": "選択肢A『web のみ』を選択。対象プラットフォームは web のみとする。モバイル/タブレット/デスクトップ (Windows/Linux/macOS) 向けの専用アプリは提供しない。モバイル・タブレットからの閲覧は既存のレスポンシブ web で行える想定だが、狭い画面向けの表示要件を本サイクルの設計対象へ格上げすることはしない (選択肢B を明示的に棄却)。したがって収集マトリクスの mobile / tablet / desktop-windows / desktop-linux / desktop-macos の各行は全カテゴリで対象外とする。この決定は AskUserQuestion で代替案 B・C を併記した上で利用者が A を選んだものであり、アシスタントの推測ではない。",
-      "provenance": "AskUserQuestion による利用者の明示選択。質問提示 2026-09-05T02:19:57Z、利用者回答 2026-09-05T10:05:09Z (いずれも会話トランスクリプトの実測値)。代替案 B (モバイル/タブレットを一級の設計対象へ格上げ) と C (利用者決定として記録せず暫定扱いのまま進む) を同時に提示した上での選択であり、単一案の追認ではない。なお『既存リポジトリが packages/{api,core,web} の3つで Cloudflare Workers + SPA 一系統』は観測事実であるが、『今後も専用アプリを作らない』は観測では決まらない利用者の意思であり、両者を分けて扱う必要があったことが本 entry を新設した理由である。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-05T10:05:09Z",
-      "required_info_items": [
-        "target-platforms"
-      ]
-    },
-    {
-      "id": "qa-foundation-integrated-approval-001",
-      "question": "上位概念 U1-U9 の全文 (U1 本質的目的 / U2 背景 / U3 ゴール G1-G7 / U4 目標 O1-O6 (各々 measure 付き) / U5 成功基準 6 件 / U6 ステークホルダー 2 者 / U7 スコープ (対象内 5 件・対象外 5 件) / U8 制約 15 件 / U9 具体的やりたいこと I1-I9) を会話上へ逐語で提示した上で、『これで確定として承認いただけますか』と問うた。既存の承認記録 001〜006 はいずれも個別論点の差分承認であり、この全体を覆うものが1 件も無いことを併せて説明した。 / 選択肢A『全文を承認する』(統合承認 appr-foundation-total-cashflow-008 を記録し、requirements_foundation.approval_ref をそこへ向け直したうえで完成度評価へ進む) / 選択肢B『直したい箇所がある』(承認せず、修正したい U 番号や制約を指定する。書き直したうえで再度全文を提示して承認を取り直す) / 選択肢C『承認は保留する』(統合承認を取らずに進める。承認範囲は差分承認の集合に留まり、『全文を確認した上での確定』ではないことを spec-state へ正直に記録して残す)",
-      "answer": "選択肢A『全文を承認する』を選択。提示された U1-U9 の全文をこの内容で確定として承認する。選択肢B (修正箇所の指定) および C (保留) を明示的に棄却した。したがって requirements_foundation の confirmed=true は、差分承認の積み重ねではなく、全文を提示した上での利用者の統合承認に接地する。",
-      "provenance": "AskUserQuestion による利用者の明示選択。承認 2026-09-05T12:11:14Z (会話トランスクリプトの実測 UTC)。提示した本文は spec-state.json の requirements_foundation を機械的に読み出して整形したものであり、要約や言い換えではなく確定値そのものを見せている。代替案 B・C を併記した上での選択であり、単一案の追認ではない。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-05T12:11:10.021Z",
-      "corrections": [
-        {
-          "corrected_at": "2026-09-05T12:17:10Z",
-          "note": "【時刻の訂正】本 entry の answered_at は 2026-09-05T12:11:14Z と記録しているが、これは承認を受け取った後に date -u で測った書込時刻であり、利用者が選択した瞬間ではない。会話トランスクリプト上の AskUserQuestion の tool_result 時刻は 2026-09-05T12:11:10.021Z で、記録値はそれより約 4 秒後である。差は小さく承認の成否も内容も変えないが、answered_at は『いつ答えたか』を表すキーであって『いつ書いたか』ではないため、意味の違う値が入ったままにはしない。正確な回答時刻は上記 tool_result 時刻である。answered_at 自体は append-only (不在時のみ設定可) で上書きできず、これは正しい設計である — 後から時刻を書き換えられるなら記録が証跡でなくなる。よって原記録を残したままここへ正確な値を追記する。検出は独立ヒアリング監査 (2026-09-05) による。同種の混同は reopen_log の欠測時刻を回復した際にも起きており、そのときは復元値を reopened_at ではなく observed_reopened_at という別名に置いて区別した。書込時刻を答の時刻へ流用しないという同じ規律を、ここでも適用する。"
-        },
-        {
-          "corrected_at": "2026-09-05T12:42:39Z",
-          "note": "answered_at を書込時刻から実際の回答時刻へ訂正する。記録値 2026-09-05T12:11:14Z は承認を受け取った後に date -u で測った書込時刻であり、利用者が選択した瞬間ではない。会話トランスクリプト上の AskUserQuestion の tool_result 時刻 2026-09-05T12:11:10.021Z が実際の回答時刻である。本 entry には既に同趣旨の訂正が散文で記録されていたが、日本語の説明だけでは answered_at キーを読む機械は誤値を読み続ける (完成度 evaluator r7 の low 所見)。そのため値そのものを正し、旧値 (previous_value) と理由をこの corrections へ残す。差は約 4 秒で承認の成否も内容も変えない。",
-          "corrected_field": "answered_at",
-          "previous_value": "2026-09-05T12:11:14Z",
-          "corrected_value": "2026-09-05T12:11:10.021Z"
-        }
       ]
     }
   ],
   "approval_log": [
     {
-      "id": "appr-foundation-total-cashflow-001",
-      "note": "2026-09-04、利用者へ上位概念 U1-U9 の要約を提示して承認を得た。承認に先立ち、次の5点を利用者回答で確定している: (1) 取込元は現状の3区分(freee事業 / MF家計 / MF内の事業扱い)のままとし新規取込元を追加しない、(2) 個人カード払いの事業経費は freee にも記帳されているため二重計上であり消し込みが必要、(3) トータル収支は収入・支出をそれぞれ合算する定義とする、(4) 前サイクル仕様の archive 退避を承認、(5) Money Forward 側で三井住友の3口座は同一表記であるため口座名による口座単位の切り分けには依存しない、(6) 重複判定は MF明細の日付と freee取引の発生日(FreeeDeal.date)が一致し金額も一致することを条件とし、freee の dueDate / settledDate は用いない、(7) 重複した支出は『事業で使う費用』として freee を正に事業費へ一度だけ計上し、それ以外の支出は家計費として計上する、(8) 収入は Money Forward 側で事業・副業に分類される入金を事業収入として扱い、それ以外を家計収入とする。"
-    },
-    {
-      "id": "appr-foundation-total-cashflow-002",
-      "note": "2026-09-04、利用者へ上位概念 U1-U9 の要約を提示し『承認』の明示回答を得た。本記録は appr-foundation-total-cashflow-001 を訂正して置き換えるものである。訂正理由: 001 は本文冒頭で『次の5点を利用者回答で確定している』と述べながら実際には8項目を列挙しており、件数表記が実態と食い違っていた (完成度 evaluator のヒアリング監査が検出)。正しくは次の8点である。(1) 取込元は現状の3区分(freee事業 / MF家計 / MF内の事業扱い)のままとし新規取込元を追加しない。(2) 個人カード払いの事業経費は freee にも記帳されているため二重計上であり消し込みが必要。(3) トータル収支は収入・支出をそれぞれ合算する定義とする。(4) 前サイクル仕様の archive 退避を承認。(5) Money Forward 側で三井住友の3口座は同一表記であるため口座名による口座単位の切り分けには依存しない。(6) 重複判定は MF明細の日付と freee取引の発生日(FreeeDeal.date)が一致し金額も一致することを条件とし、freee の dueDate / settledDate は用いない。(7) 重複した支出は『事業で使う費用』として freee を正に事業費へ一度だけ計上し、それ以外の支出は家計費として計上する。(8) 収入は Money Forward 側で事業・副業に分類される入金を事業収入として扱い、それ以外を家計収入とする。上記(1)〜(5)は qa_log の qa-foundation-scope-001 に、(6)〜(8)は qa-duplicate-rule-001 および qa-backend-web-001 に質疑として記録済みであり、承認記録から質疑へ遡れる状態にしてある。"
-    },
-    {
-      "id": "appr-decisions-003",
-      "note": "2026-09-04、利用者へ次の3件の意思決定をそれぞれ2〜3案・推奨理由・注意点付きで提示し、AskUserQuestion で明示選択を得た。(1) dec-trend-method-001 トータル支出の推移判定手法 → opt-mk-ts『既存の Mann-Kendall 検定 + Theil-Sen 傾き推定に合わせる』を採択 (棄却: 最小二乗回帰 / 前年同月比)。(2) dec-auth-boundary-001 本機能の認証境界 → opt-existing-gate『既存の /api 認証ゲートの内側に置く』を採択 (棄却: 読み取り専用トークンで別経路 / Cloudflare Access へ一本化)。(3) dec-aggregation-strategy-001 月次トータル収支の算出方式 → opt-derive-on-request『要求時に canonical から毎回導出する』を採択 (棄却: cron で夜間に事前計算し D1 へ保存 / D1 の SQL ビュー化)。本記録は完成度 evaluator の指摘への是正である。前サイクルでは、これら3件をいずれも代替案の提示なしに私 (agent) の判断で既定として扱い、その内容を qa_log へ利用者回答と区別のつかない形で書き込んでいた (evaluator 指摘: decision_guidance の二重帳簿・process_integrity の proposer ≠ approver 違反)。今回は decisions[] へ options / cost_model / goal_fit / TCO / security / operations / lock_in / 公式出典 evidence_refs を伴う構造化記録として登録し、user_decision に利用者の実選択と選択時刻を記録した。writer は user_decision の無い status=confirmed を拒否するため、この3件は agent 単独では confirmed にできない。根拠とした公式出典は doc-fetch の正規経路で targets → records → fetched-references へ登録済みであり (cloudflare-access-policies / usgs-tm4a3-statistical-methods / cloudflare-d1-limits)、鮮度監査の対象に含まれる。"
-    },
-    {
-      "id": "appr-foundation-total-cashflow-004",
-      "note": "2026-09-04T21:22:50Z (実測 UTC)、利用者へ上位概念 U1-U9 の改訂案 (制約4点の追加・改訂、O2/O3/O4/O6 の測り方の改訂、I4/I5/I6 の改訂) を差分の形で提示し、AskUserQuestion で『承認する』の明示選択を得た。本記録は appr-foundation-total-cashflow-002 を訂正して置き換えるものである。訂正理由: 完成度 evaluator (2026-09-04) の high 所見『聞き漏れ 3 件』および独立ヒアリング監査 第3巡の H-1/H-2/H-3/H-4 により、次の4点が上位概念に欠落または矛盾していたことが判明したため。(1) 要確認候補の抽出条件が未定義で、かつ『判定規則は1本』という制約と正面から衝突していた → 利用者選択により、帰属を動かす自動判定器 (完全一致1本) と、合計を動かさない候補抽出器 (金額一致かつ発生日±3日) を役割で分離し、後者は要確認一覧の生成にのみ用いると定めた。(2) 利用者の『同じ』判断が集計へどう反映されるかが未定義だった → 利用者選択により、判断は自動規則を上書きして当該 MF 明細を事業費へ寄せ、合計を動かすと定めた。上書きも1対1を保つ。(3) 収入側の消し込み規則が、利用者の当初回答 (分類のみ) と I4/O3 の記述 (消し込みあり) で食い違っていた → 利用者選択により、支出と同じ規則で消し込むと確定し、発生日と入金日の相違により実際の消し込み件数は少ない見込みであることを既知の限界として制約へ明記した。(4) 要確認の判断 UI が未決だった → 利用者選択により、既存の取込明細編集画面へ組み込み、専用画面・専用タブを新設しないと定めた。U1-U3 (本質的目的・背景・ゴール) の内容は 002 から変更していない。"
-    },
-    {
-      "id": "appr-foundation-total-cashflow-005",
-      "note": "AskUserQuestion (2026-09-04) による利用者の明示回答2件を上位概念へ反映した。(1) 一覧表の常時表示は9列すべて、個別明細と勘定科目はドリルダウン。(2) 異常への気付き方は取込完了時点の画面警告とし、通知基盤は増やさない。(2) は、アシスタントが利用者確認を経ずに「監視アラートの追加は行わない」と記述していた内容の訂正である。"
-    },
-    {
-      "id": "appr-foundation-total-cashflow-006",
-      "note": "収入側の判断効果に関する利用者決定 (qa-income-verdict-effect-001) を U1-U9 へ反映した差分の承認。承認の実体は AskUserQuestion で利用者が「支出と同じ考え方に揃える」を明示選択したこと(代替案 B/C を併記した上での選択)。反映箇所は O1 の measure (収入側の恒等式を追加)、O3 の measure (判断後の付替と恒等式を追加)、I6 (収入側の付替先を明記)、success_criteria への収入側の二重計上不発生の1項追加の4点。注記: 利用者が明示選択したのは上記の規則そのものであり、改訂後の U1-U9 全文を提示して逐語で承認を得たわけではない。承認範囲はこの4点の差分に限る。"
-    },
-    {
-      "id": "appr-target-platforms-007",
-      "note": "2026-09-05T10:05:09Z (実測 UTC)、対象プラットフォームの範囲について利用者の明示承認を得た。承認内容: 本機能の対象プラットフォームは web のみとし、モバイル・タブレット・デスクトップ (Windows/Linux/macOS) 向けの専用アプリは提供しない。これにより収集マトリクスの mobile / tablet / desktop-windows / desktop-linux / desktop-macos の5 platform × 全 8 カテゴリ = 40 セルを『対象外』として確定する。本承認を新設した理由: 従前この 40 セルは appr-foundation-total-cashflow-005 を approval_ref としていたが、-005 の note が承認しているのは『一覧表の9列常時表示』と『取込完了時点の画面警告』の2点のみで、platform 対象範囲には一切触れていなかった。approval_log の当時の全 6 件 (001/002/003/004/005/006) を全文照合しても platform 除外を承認した記録は存在せず、40 セルは承認していない承認記録を根拠にしていた (完成度 evaluator R5 の high 所見、および独立マトリクス監査が自ら PASS を撤回して到達した同一結論)。参照先の付け替えでは解けない欠陥であり、実際に利用者へ問うことでのみ閉じられるものであったため、AskUserQuestion で代替案 B・C を併記して確認を取った。質疑の実体は qa-target-platforms-002 (basis=user-decision) に逐語で記録してある。本承認の範囲はこの platform 対象範囲の1点に限り、U1-U9 全文の承認ではない。"
-    },
-    {
-      "id": "appr-foundation-total-cashflow-008",
-      "note": "2026-09-05T12:11:14Z (実測 UTC)、上位概念 U1-U9 の全文について利用者の統合承認を得た。承認範囲: U1 本質的目的、U2 背景、U3 ゴール G1-G7、U4 目標 O1-O6 (各 measure を含む)、U5 成功基準 6 件、U6 ステークホルダー 2 者、U7 スコープ (対象内 5 件・対象外 5 件)、U8 制約 15 件、U9 具体的やりたいこと I1-I9 — すなわち requirements_foundation の確定値の全体である。本承認を新設した理由: 従前 requirements_foundation.approval_ref は appr-foundation-total-cashflow-006 を指していたが、-006 の note 自身が『改訂後の U1-U9 全文を提示して逐語で承認を得たわけではない。承認範囲はこの 4 点の差分に限る』と述べており、001〜006 のいずれも個別論点の差分承認であった。差分承認をいくつ積んでも、利用者が一度も目を通していない箇所まで承認されたことにはならない (完成度 evaluator の差し戻し所見)。全文を逐語で提示することでしか閉じられないものであったため、代替案 B (修正箇所の指定)・C (保留のまま進める) を併記して確認を取った。質疑の実体は qa-foundation-integrated-approval-001 (basis=user-decision) に記録してある。本承認は既存の差分承認 001〜006 を取り消さない — それぞれの論点がどの時点でどう決まったかの経緯は、統合承認とは別に残す価値があるためである。"
+      "id": "appr-foundation-mf-business-classification-001",
+      "note": "2026-09-10、利用者へ上位概念 U1-U9 の要約 (本質的目的 / 背景 / ゴール G1-G5 / 成功基準 S1-S6 / スコープ外) を提示して承認を得た。承認に先立ち次の点を利用者回答で確定している: (1) 前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の system-spec を archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only へ退避し、本件を新サイクルとして立ち上げる、(2) MF 明細の事業判定は中項目の前方一致『事業』とし、既知の 4 種 (事業経費 / 事業・情報サービス / 事業・携帯電話 / 事業・副業) を実装へ列挙しない、(3) freee に記帳済みの同一経費との二重計上は既存の日付+金額の消し込みを優先し、寄らなかった MF 明細だけを事業費へ加算する、(4) 事業判定は支出だけでなく収入に対しても行う (利用者の追加指示、2026-09-10)、(5) その結果として total-cashflow.ts の収入側事業判定が tx.big (大項目) と '事業・副業' を比較しており非公開ローカル入力で一件も一致していない不具合を、本サイクルの範囲内で是正する。"
     }
   ],
   "reopen_log": [
     {
+      "category": "database",
+      "platform": "web",
+      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
+      "from": "確定",
+      "reopened_at": "2026-09-10T04:47:56Z"
+    },
+    {
       "category": "auth",
       "platform": "web",
-      "reason": "独立ヒアリング監査 (2026-09-04, 書込権限なしの分離 context) の指摘2 による再オープン。本セルの主根拠 (qa_ref 単数) が qa-auth-web-001 であり、その question 後半『本機能は新しい認証境界を作るか』は代替案を示さない Yes/No 誘導であった。誘導質問が確定の主根拠として残る限り、代替案を提示して取り直した利用者選択 (qa-decision-auth-boundary-002 / dec-auth-boundary-001) は補助参照にとどまり、確定根拠グラフが誘導質問側と分裂する。主根拠を実際の利用者選択へ差し替えるため再オープンする。確定内容そのものを覆す再オープンではなく、同一結論の根拠を誘導質問から代替案提示済みの利用者選択へ移す訂正である。",
+      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
       "from": "確定",
-      "corrections": [
-        {
-          "recovered_at": "2026-09-05T10:05:42Z",
-          "note": "【欠測時刻の回復】本 entry は reopened_at を必須化する前に書かれたため時刻を持たない。当初この欠落は『遡って埋めない』と決めており、その理由づけは 2 段階で誤っていた。1 回目は『時刻が実測できないから』としたが、reopen の適用は会話トランスクリプトへ時刻付きで残っており、端的に偽だった。2 回目は『既存 entry を書き換える op を writer に置かないため』と書き直したが、これは禁じるべき対象の取り違えだった — 守りたいのは既存フィールドの改変であって、新しいフィールドの追記ではない。qa_log が question/answer を凍結したまま corrections[] への追記だけを許すのと同じ設計をここへ当てはめれば、確定を壊した事実を後から消せる経路は作らずに欠測時刻を回復できる (独立ヒアリング監査 2026-09-05 の指摘。append-only の下では『訂正=既存事実の修正』と『補記=新しい事実の追加』は別物である)。復元した値の限定: observed_reopened_at は writer への適用が完了し state へ反映された時刻であって、reopen を決めた瞬間そのものではない。手続きの精度は時刻を持つ唯一の entry (frontend/web, reopened_at=2026-09-05T02:03:58Z) で検算しており、同じ手続きが返す反映時刻は 02:04:18Z で差は約 20 秒だった。よって本値は数十秒の範囲で上界寄りの近似であり、既存キー reopened_at と同じ意味の値ではない。両者を混同させないため reopened_at へは書かず、別名で補記側にのみ置く。復元手続き: reopen_log entry 固有の reason 文字列でトランスクリプトを突き合わせ、その reason が現れた行より後で最初に完了した apply-spec-transition の適用時刻を取った。",
-          "observed_reopened_at": "2026-09-04T14:22:25Z"
-        }
-      ]
-    },
-    {
-      "category": "infrastructure",
-      "platform": "web",
-      "reason": "独立ヒアリング監査 (2026-09-04, 書込権限なしの分離 context) の指摘2 による再オープン。本セルの主根拠 (qa_ref 単数) が qa-infrastructure-web-001 であり、その question 後半『本機能でインフラ構成は変わるか』は代替案を示さない Yes/No 誘導であった。集計方式は毎回導出 / cron 事前計算 / SQL ビュー化という実質的な三択であり、Yes/No で問える論点ではない。代替案を提示して取り直した利用者選択 (qa-decision-aggregation-002 / dec-aggregation-strategy-001) を主根拠へ差し替えるため再オープンする。確定内容そのものを覆す再オープンではなく、同一結論の根拠を誘導質問から代替案提示済みの利用者選択へ移す訂正である。",
-      "from": "確定",
-      "corrections": [
-        {
-          "recovered_at": "2026-09-05T10:05:42Z",
-          "note": "【欠測時刻の回復】本 entry は reopened_at を必須化する前に書かれたため時刻を持たない。当初この欠落は『遡って埋めない』と決めており、その理由づけは 2 段階で誤っていた。1 回目は『時刻が実測できないから』としたが、reopen の適用は会話トランスクリプトへ時刻付きで残っており、端的に偽だった。2 回目は『既存 entry を書き換える op を writer に置かないため』と書き直したが、これは禁じるべき対象の取り違えだった — 守りたいのは既存フィールドの改変であって、新しいフィールドの追記ではない。qa_log が question/answer を凍結したまま corrections[] への追記だけを許すのと同じ設計をここへ当てはめれば、確定を壊した事実を後から消せる経路は作らずに欠測時刻を回復できる (独立ヒアリング監査 2026-09-05 の指摘。append-only の下では『訂正=既存事実の修正』と『補記=新しい事実の追加』は別物である)。復元した値の限定: observed_reopened_at は writer への適用が完了し state へ反映された時刻であって、reopen を決めた瞬間そのものではない。手続きの精度は時刻を持つ唯一の entry (frontend/web, reopened_at=2026-09-05T02:03:58Z) で検算しており、同じ手続きが返す反映時刻は 02:04:18Z で差は約 20 秒だった。よって本値は数十秒の範囲で上界寄りの近似であり、既存キー reopened_at と同じ意味の値ではない。両者を混同させないため reopened_at へは書かず、別名で補記側にのみ置く。復元手続き: reopen_log entry 固有の reason 文字列でトランスクリプトを突き合わせ、その reason が現れた行より後で最初に完了した apply-spec-transition の適用時刻を取った。",
-          "observed_reopened_at": "2026-09-04T14:22:25Z"
-        }
-      ]
-    },
-    {
-      "category": "backend",
-      "platform": "web",
-      "reason": "独立ヒアリング監査 第3巡 (2026-09-04, 書込権限なしの分離 context) の指摘 G-1 による再オープン。auth/web と infrastructure/web には『誘導的な二択質問を主根拠 (qa_ref 単数) から外し、代替案を提示して取り直した利用者選択へ差し替える』訂正を適用済みだが、同じ構造を持つ qa-trend-method-001 (『新しい手法を選ぶか、既存のものに合わせるか』) が主根拠として残る backend/web には適用されておらず、扱いが非対称であった。同一基準を当てるため、主根拠を代替案3案 (Mann-Kendall+Theil-Sen / 最小二乗回帰 / 前年同月比) を提示して得た利用者選択 qa-decision-trend-method-002 (dec-trend-method-001) へ差し替える。確定内容そのものを覆す再オープンではなく、同一結論の根拠を誘導質問から代替案提示済みの利用者選択へ移す訂正である。",
-      "from": "確定",
-      "corrections": [
-        {
-          "recovered_at": "2026-09-05T10:05:42Z",
-          "note": "【欠測時刻の回復】本 entry は reopened_at を必須化する前に書かれたため時刻を持たない。当初この欠落は『遡って埋めない』と決めており、その理由づけは 2 段階で誤っていた。1 回目は『時刻が実測できないから』としたが、reopen の適用は会話トランスクリプトへ時刻付きで残っており、端的に偽だった。2 回目は『既存 entry を書き換える op を writer に置かないため』と書き直したが、これは禁じるべき対象の取り違えだった — 守りたいのは既存フィールドの改変であって、新しいフィールドの追記ではない。qa_log が question/answer を凍結したまま corrections[] への追記だけを許すのと同じ設計をここへ当てはめれば、確定を壊した事実を後から消せる経路は作らずに欠測時刻を回復できる (独立ヒアリング監査 2026-09-05 の指摘。append-only の下では『訂正=既存事実の修正』と『補記=新しい事実の追加』は別物である)。復元した値の限定: observed_reopened_at は writer への適用が完了し state へ反映された時刻であって、reopen を決めた瞬間そのものではない。手続きの精度は時刻を持つ唯一の entry (frontend/web, reopened_at=2026-09-05T02:03:58Z) で検算しており、同じ手続きが返す反映時刻は 02:04:18Z で差は約 20 秒だった。よって本値は数十秒の範囲で上界寄りの近似であり、既存キー reopened_at と同じ意味の値ではない。両者を混同させないため reopened_at へは書かず、別名で補記側にのみ置く。復元手続き: reopen_log entry 固有の reason 文字列でトランスクリプトを突き合わせ、その reason が現れた行より後で最初に完了した apply-spec-transition の適用時刻を取った。",
-          "observed_reopened_at": "2026-09-04T14:33:18Z"
-        }
-      ]
-    },
-    {
-      "category": "frontend",
-      "platform": "web",
-      "reason": "独立ヒアリング監査 第3巡 (2026-09-04, 書込権限なしの分離 context) の指摘 G-1 による再オープン。本セルの主根拠 qa-frontend-web-001 は既存タブ構成を前提として置いたうえでの確認であり、かつ表示する推移判定の基準は qa-trend-method-001 の二択誘導に依存していた。backend/web と同一基準で、主根拠を代替案3案を提示して得た利用者選択 qa-decision-trend-method-002 (dec-trend-method-001) へ差し替える。確定内容そのものを覆す再オープンではなく、同一結論の根拠を誘導質問から代替案提示済みの利用者選択へ移す訂正である。",
-      "from": "確定",
-      "corrections": [
-        {
-          "recovered_at": "2026-09-05T10:05:42Z",
-          "note": "【欠測時刻の回復】本 entry は reopened_at を必須化する前に書かれたため時刻を持たない。当初この欠落は『遡って埋めない』と決めており、その理由づけは 2 段階で誤っていた。1 回目は『時刻が実測できないから』としたが、reopen の適用は会話トランスクリプトへ時刻付きで残っており、端的に偽だった。2 回目は『既存 entry を書き換える op を writer に置かないため』と書き直したが、これは禁じるべき対象の取り違えだった — 守りたいのは既存フィールドの改変であって、新しいフィールドの追記ではない。qa_log が question/answer を凍結したまま corrections[] への追記だけを許すのと同じ設計をここへ当てはめれば、確定を壊した事実を後から消せる経路は作らずに欠測時刻を回復できる (独立ヒアリング監査 2026-09-05 の指摘。append-only の下では『訂正=既存事実の修正』と『補記=新しい事実の追加』は別物である)。復元した値の限定: observed_reopened_at は writer への適用が完了し state へ反映された時刻であって、reopen を決めた瞬間そのものではない。手続きの精度は時刻を持つ唯一の entry (frontend/web, reopened_at=2026-09-05T02:03:58Z) で検算しており、同じ手続きが返す反映時刻は 02:04:18Z で差は約 20 秒だった。よって本値は数十秒の範囲で上界寄りの近似であり、既存キー reopened_at と同じ意味の値ではない。両者を混同させないため reopened_at へは書かず、別名で補記側にのみ置く。復元手続き: reopen_log entry 固有の reason 文字列でトランスクリプトを突き合わせ、その reason が現れた行より後で最初に完了した apply-spec-transition の適用時刻を取った。",
-          "observed_reopened_at": "2026-09-04T14:33:18Z"
-        }
-      ]
+      "reopened_at": "2026-09-10T04:47:56Z"
     },
     {
       "category": "ui-ux",
       "platform": "web",
-      "reason": "確定の第一根拠が qa-ui-ux-web-001 (basis=agent-inference) であり、一覧表の列構成という設計判断を利用者確認なしに含んでいた。利用者から明示回答 (qa-table-columns-001) を得たため、第一根拠を利用者決定へ差し替える。",
+      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
       "from": "確定",
-      "corrections": [
-        {
-          "recovered_at": "2026-09-05T10:05:42Z",
-          "note": "【欠測時刻の回復】本 entry は reopened_at を必須化する前に書かれたため時刻を持たない。当初この欠落は『遡って埋めない』と決めており、その理由づけは 2 段階で誤っていた。1 回目は『時刻が実測できないから』としたが、reopen の適用は会話トランスクリプトへ時刻付きで残っており、端的に偽だった。2 回目は『既存 entry を書き換える op を writer に置かないため』と書き直したが、これは禁じるべき対象の取り違えだった — 守りたいのは既存フィールドの改変であって、新しいフィールドの追記ではない。qa_log が question/answer を凍結したまま corrections[] への追記だけを許すのと同じ設計をここへ当てはめれば、確定を壊した事実を後から消せる経路は作らずに欠測時刻を回復できる (独立ヒアリング監査 2026-09-05 の指摘。append-only の下では『訂正=既存事実の修正』と『補記=新しい事実の追加』は別物である)。復元した値の限定: observed_reopened_at は writer への適用が完了し state へ反映された時刻であって、reopen を決めた瞬間そのものではない。手続きの精度は時刻を持つ唯一の entry (frontend/web, reopened_at=2026-09-05T02:03:58Z) で検算しており、同じ手続きが返す反映時刻は 02:04:18Z で差は約 20 秒だった。よって本値は数十秒の範囲で上界寄りの近似であり、既存キー reopened_at と同じ意味の値ではない。両者を混同させないため reopened_at へは書かず、別名で補記側にのみ置く。復元手続き: reopen_log entry 固有の reason 文字列でトランスクリプトを突き合わせ、その reason が現れた行より後で最初に完了した apply-spec-transition の適用時刻を取った。",
-          "observed_reopened_at": "2026-09-05T00:10:46Z"
-        }
-      ]
+      "reopened_at": "2026-09-10T04:47:56Z"
     },
     {
-      "category": "maintenance-ops",
+      "category": "security",
       "platform": "web",
-      "reason": "確定の第一根拠が qa-maintenance-ops-web-001 (basis=agent-inference) であり、異常への気付き方という運用判断を利用者確認なしに含んでいた。しかも利用者の実際の回答は当該記述と異なっていたため、第一根拠を利用者決定 (qa-anomaly-notice-001) へ差し替える。",
+      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
       "from": "確定",
-      "corrections": [
-        {
-          "recovered_at": "2026-09-05T10:05:42Z",
-          "note": "【欠測時刻の回復】本 entry は reopened_at を必須化する前に書かれたため時刻を持たない。当初この欠落は『遡って埋めない』と決めており、その理由づけは 2 段階で誤っていた。1 回目は『時刻が実測できないから』としたが、reopen の適用は会話トランスクリプトへ時刻付きで残っており、端的に偽だった。2 回目は『既存 entry を書き換える op を writer に置かないため』と書き直したが、これは禁じるべき対象の取り違えだった — 守りたいのは既存フィールドの改変であって、新しいフィールドの追記ではない。qa_log が question/answer を凍結したまま corrections[] への追記だけを許すのと同じ設計をここへ当てはめれば、確定を壊した事実を後から消せる経路は作らずに欠測時刻を回復できる (独立ヒアリング監査 2026-09-05 の指摘。append-only の下では『訂正=既存事実の修正』と『補記=新しい事実の追加』は別物である)。復元した値の限定: observed_reopened_at は writer への適用が完了し state へ反映された時刻であって、reopen を決めた瞬間そのものではない。手続きの精度は時刻を持つ唯一の entry (frontend/web, reopened_at=2026-09-05T02:03:58Z) で検算しており、同じ手続きが返す反映時刻は 02:04:18Z で差は約 20 秒だった。よって本値は数十秒の範囲で上界寄りの近似であり、既存キー reopened_at と同じ意味の値ではない。両者を混同させないため reopened_at へは書かず、別名で補記側にのみ置く。復元手続き: reopen_log entry 固有の reason 文字列でトランスクリプトを突き合わせ、その reason が現れた行より後で最初に完了した apply-spec-transition の適用時刻を取った。",
-          "observed_reopened_at": "2026-09-05T00:10:46Z"
-        }
-      ]
+      "reopened_at": "2026-09-10T04:47:56Z"
+    },
+    {
+      "category": "infrastructure",
+      "platform": "web",
+      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
+      "from": "確定",
+      "reopened_at": "2026-09-10T04:47:56Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
+      "from": "確定",
+      "reopened_at": "2026-09-10T04:47:56Z"
     },
     {
       "category": "frontend",
       "platform": "web",
-      "reason": "主たる接地根拠 (qa_ref) が qa-decision-trend-method-002 — backend のトレンド判定方式の決定 — を指しており、本セルが答えた問い (一覧表の状態管理とレンダリング方式・配置) に答えた qa-frontend-web-001 は補助参照側にしか無かった。章だけを読む利用者には、frontend の確定が backend の決定を根拠に立っているように見え、実際の根拠に辿り着けない。qa_ref を差し替えるには確定を正規経路で巻き戻す必要があるため reopen する。差し替え先の qa-frontend-web-001 は本 reopen より前に取得済みの既存回答であり、内容の再取得は行わない (回答内容自体には誤りが無く、参照の張り先だけが誤っていた)。",
+      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
       "from": "確定",
-      "reopened_at": "2026-09-05T02:03:58Z"
+      "reopened_at": "2026-09-10T04:47:56Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
+      "from": "確定",
+      "reopened_at": "2026-09-10T04:47:56Z"
+    },
+    {
+      "category": "auth",
+      "platform": "web",
+      "reason": "確定本文 (qa-auth-web-mf-001) が現行の認証方式を誤って述べている。『認証は従来どおり Cloudflare Access を単一の信頼境界とし』と書いているが、packages/api/wrangler.jsonc は ACCESS_AUD / ACCESS_TEAM_DOMAIN を空のまま置き AUTH_PASSWORD / SESSION_SECRET を required secret としており、packages/api/src/auth.ts の既定経路はアプリ内セッション認証 (パスワード + HMAC 署名 HttpOnly Cookie kanjo_session) である。さらに前サイクルの dec-auth-boundary-001 で『Cloudflare Access へ一本化』は利用者が明示的に棄却済みであり、本文はその確定を反転させている。この誤りの上に authentication concern (ASVS) の反映記述が立っているため、追記では是正できず本文の差し替えが要る。",
+      "from": "確定",
+      "reopened_at": "2026-09-10T05:37:16Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "確定本文 (qa-ui-ux-web-mf-001) が同じ章の後発の確定と矛盾している。表現物 (1) 月次トータル収支の一覧表について『事業収入・事業費・家計収入・家計費の 4 束を残し』と言い切っているが、その後 qa-review-bucket-mf-decision-004 (利用者決定) が要確認の明細を 4 束のいずれにも算入しないことを、qa-review-amount-mf-inference-005 がその金額を reviewAmount として同じ一覧表へ出すことを確定させた。つまり表現物 (1) が残す束は 5 つになっている。束の構成は Information Design で言う『何を残し何を落とすか』そのものであり、この章の中核の確定であるため、追記では矛盾が消えない。",
+      "from": "確定",
+      "reopened_at": "2026-09-10T05:44:57Z"
     }
   ],
   "category_aggregate": {
@@ -888,751 +710,344 @@
   },
   "targets": [
     {
-      "target_id": "cloudflare-d1-limits",
-      "category": "database"
+      "target_id": "cloudflare-workers-encoding-api",
+      "category": "backend"
     },
     {
-      "target_id": "cloudflare-d1-migrations",
-      "category": "database"
+      "target_id": "cloudflare-workers-web-standards",
+      "category": "infrastructure"
     },
     {
-      "target_id": "sqlite-upsert",
-      "category": "database"
-    },
-    {
-      "target_id": "tanstack-query-invalidation",
-      "category": "frontend"
-    },
-    {
-      "target_id": "cloudflare-access-policies",
-      "category": "auth"
-    },
-    {
-      "target_id": "usgs-tm4a3-statistical-methods",
+      "target_id": "workerd-legacy-encoding-streaming",
       "category": "backend"
     }
   ],
   "requirements_foundation": {
-    "essential_purpose": "個人事業主として事業と家計が一体になっている実態に対し、freee(事業帳簿)とMoney Forward(家計)へ分かれて記録された収入・支出を、二重計上を明細単位で消し込んだうえで1つの一覧表へ束ね、月ごとの『トータルの収入・支出・収支(プラスマイナス)』と費用の推移を、消し込んだ根拠ごと確認できる状態を保つ。",
-    "background": "現状 analysis.ts の balanceMonth() は Money Forward 側の収支だけを balance とし、freee の revenue / bizExpense は隣に並ぶ参照列に留まっている。comparison() は事業と家計を左右に並べる割合ビューであり、合算は行わない。このため『家計と事業の割合』は読めるが『全部でいくらプラスマイナスなのか』『費用が全体としてどれだけ推移しているか』が読めない。さらに単純合算はできない: 個人カード・口座から払った事業経費(bizAdvance)は freee にも経費として記帳されており、事業口座から個人口座への振替(bizIncome)は freee 売上の再登場であるため、収入・支出の双方で二重計上が発生する。重複源のひとつである三井住友銀行のカードは Money Forward 側で3口座が同一表記になっており、口座名だけでは重複範囲を口座単位に切り分けられない。一方でコミット b6c0059 で追加された expense-projection.ts が、金額・日付(±3日)・支払先による freee↔MF の明細照合と、確定できない明細の理由付き列挙(ExpenseReview)を既に備えている。ただしこの照合器はいま『未記帳の事業経費の洗い出し』にしか使われておらず、また1対1に限定した保守的な照合であるため、トータル収支の消し込み規則としてはそのまま流用しない。本機能の重複除外は利用者判断により次の単一規則を採る: Money Forward 明細の日付と freee 取引の発生日(FreeeDeal.date。dueDate / settledDate は用いない)が一致し、かつ金額が一致する支出は『事業で使う費用』とみなし、freee 側を正として事業経費に一度だけ計上し、Money Forward 側は家計の生活費から外す。支払先を見ないため同額・同日の無関係な支出も同じ扱いになりうるが、規則の単純さと予測可能性を優先する。日付が一致しない重複(カード利用日と freee 発生日のズレなど)は自動判定の対象外となり、要確認として可視化する。支出の帰属は『重複したものは事業費、それ以外は家計費』とし、収入は Money Forward 側で事業・副業に分類される入金を事業収入として扱う。この収入側の区分は既に実装されている: DEFAULT_RULES に `事業・副業` が cls='biz' として含まれ、applyClassification() が biz 判定の入金を bizPersonal.income へ集約している。本機能はこの既存分類を収入の帰属根拠としてそのまま用いる。",
+    "essential_purpose": "Money Forward に取り込まれた明細のうち、利用者が MF 側で既に『事業』と分類しているもの (中項目が『事業』で始まるもの) を、収入・支出のどちらであっても事業として扱い、freee を唯一の事業帳簿とみなす現在の前提を崩さないまま、事業と家計の境界を利用者の意図どおりに一致させる。",
+    "background": "本システムは freee を事業帳簿、Money Forward を家計として取り込み、二重計上を日付+金額で消し込んだうえで月次のトータル収支を出す。しかし MF 側の事業判定が 2 系統に割れている。(1) packages/core/src/classify.ts の resolveTx().cls は 手動編集 > ルール > 取引先メモリ > 口座名義 > 既定'per' の優先順で biz/per を決め、公私仕分け画面・事業立替の算出に使われる。(2) packages/core/src/total-cashflow.ts は月次トータル収支を出す際、cls を一切見ず、収入側は BIZ_INCOME_MAJOR ('事業・副業') を tx.big (大項目) と比較し、支出側は freee との突合結果だけで事業/家計を決めている。非公開ローカル入力 ${LOCAL_SOURCE_FILE}, CP932) では 大項目='収入' / 中項目='事業・副業' であるため (2) の収入判定は一件も一致せず、2025年10月の事業収入 ${LOCAL_AGGREGATE} 円と ${LOCAL_AGGREGATE} 円がいずれも家計収入に計上されている。また支出側では 中項目='事業経費'(${LOCAL_RECORD_COUNT}件) / '事業・情報サービス'(${LOCAL_RECORD_COUNT}件) / '事業・携帯電話'(${LOCAL_RECORD_COUNT}件) が MF 上で明示的に事業と分類されているにもかかわらず、freee と日付+金額が一致しなかったものは全て家計費へ落ちている。利用者は MF 上で既に事業/家計を仕分けており、その意思がトータル収支に反映されない状態になっている。",
     "goals": [
       {
         "id": "G1",
-        "text": "月ごとのトータル収入・トータル支出・トータル収支(プラスマイナス)を、事業と家計を合算した1つの一覧表として確認できる状態にする"
+        "text": "MF 明細の中項目が『事業』で始まるものを、収入・支出のどちらであっても事業として扱う単一の判定規則を置く。"
       },
       {
         "id": "G2",
-        "text": "Money Forward の日付と freee の発生日が一致し金額も一致する支出は『事業で使う費用』として freee を正に事業側へ一度だけ計上し、それ以外の支出は家計側へ計上して、二重計上のない支出合計を出す状態にする"
+        "text": "月次トータル収支 (total-cashflow) の事業/家計の境界を、公私仕分け画面が示す境界と一致させ、同じ明細が画面ごとに別の側へ現れない状態にする。"
       },
       {
         "id": "G3",
-        "text": "事業側へ寄せた金額と件数を一覧表の中に明示し、合計が『事業費(freee正) + 家計費(MF残余)』として利用者の手で検算できる状態にする"
+        "text": "freee に既に記帳された事業経費との二重計上を、既存の日付+金額の消し込みを正として維持したまま、MF 由来の事業費を加算しても総額が二重に膨らまない状態にする。"
       },
       {
         "id": "G4",
-        "text": "金額または発生日が一致せず自動で事業費へ寄せられなかった重複候補を『要確認』として理由付きで列挙し、利用者が一度『同じ/違う』を判断すれば、次回以降の取込でその判断が再適用される状態にする"
+        "text": "MF 側で中項目を新設 (例: 『事業・広告費』) しても、実装変更なしに事業として扱われる状態にする。"
       },
       {
         "id": "G5",
-        "text": "トータル支出の推移(増加/減少/横ばい/判定不可)を、既存の trend.ts と同じ統計基準(Mann-Kendall / Theil-Sen)で判定し、費用が増えているのか減っているのかを示す状態にする"
-      },
-      {
-        "id": "G6",
-        "text": "合算後も事業側・家計側の内訳を保持し、トータルの増減がどちらの側のどの科目で起きているかまで辿れる状態にする"
-      },
-      {
-        "id": "G7",
-        "text": "期間を切り替えても、合算・消し込み・トレンド判定が同じ規則で再計算され、期間ごとに矛盾した数字が出ない状態にする"
+        "text": "事業として扱った根拠 (中項目前方一致か / ルールか / 手動編集か) を明細ごとに追える状態にする。"
       }
     ],
     "objectives": [
       {
         "id": "O1",
-        "text": "月次のトータル収支行を導出する読み取りモデルを core に追加する",
-        "measure": "months の各月について 総収入・総支出・総収支・事業費・家計費・事業費へ寄せた件数 を返す関数が存在し、契約テストで恒等式 総支出 = 事業費 + 家計費 と 総収入 = 事業収入 + 家計収入 がいずれも全月で成立する",
-        "serves": [
-          "G1",
-          "G3"
-        ]
-      },
-      {
-        "id": "O2",
-        "text": "『MF日付 = freee発生日 かつ 金額一致なら事業費、それ以外は家計費』という支出帰属規則を単一の実装として持つ",
-        "measure": "(金額,発生日)ごとに MF n 件・freee m 件のとき MF から min(n,m) 件が事業費側へ寄ることを契約テストで固定し、freee 件数を超える付替が0件、支払先を用いた判定が0件、日付近傍(±3日)の照合が要確認候補の抽出にのみ使われ自動付替を1件も行わないこと、および利用者の『同じ』判断による付替が freee 側1取引につき MF 1件までであることを示す",
-        "serves": [
-          "G2",
-          "G3"
-        ]
-      },
-      {
-        "id": "O3",
-        "text": "収入の帰属を MF の事業・副業区分で決め、freee 売上との二重計上を避ける",
-        "measure": "MF の事業・副業入金が事業収入へ、それ以外が家計収入へ計上されることを契約テストで固定し、freee 売上と同額・同発生日で重なる分が総収入へ二度加算されないことを示す。加えて、日付が一致せず消し込めない組が要確認として出ること、および利用者が『同じ』と判断した入金が家計収入から外れて事業収入へ寄り、判断の前後いずれでも総収入 = 事業収入 + 家計収入 の恒等式が成立することを固定する",
+        "text": "MF 事業判定を『中項目の前方一致「事業」』として packages/core に単一関数で定義し、classify.ts と total-cashflow.ts の双方がそれを参照する。",
         "serves": [
           "G1",
           "G2"
-        ]
+        ],
+        "serves_goals": [
+          "G1",
+          "G2"
+        ],
+        "measure": "packages/core 内で中項目を事業判定に用いる箇所を grep したとき、判定式の定義が 1 箇所だけであり、classify.ts と total-cashflow.ts はいずれもその関数を import して使っている。判定式を直接書いた重複実装が 0 件である。"
+      },
+      {
+        "id": "O2",
+        "text": "total-cashflow.ts の BIZ_INCOME_MAJOR (大項目一致) を廃し、収入側の事業判定を O1 の関数へ置き換える。",
+        "serves": [
+          "G1",
+          "G2"
+        ],
+        "serves_goals": [
+          "G1",
+          "G2"
+        ],
+        "measure": "BIZ_INCOME_MAJOR の識別子が packages/ 配下から消え、2025年10月の実 CSV を入力したとき事業収入が ${LOCAL_AGGREGATE} 円 (${LOCAL_AGGREGATE} + ${LOCAL_AGGREGATE}) となる単体テストが緑になる。置換前の実装では同テストが赤になることを確認する。"
+      },
+      {
+        "id": "O3",
+        "text": "支出側は既存の freee 突合 (日付+金額) を先に適用し、寄らなかった MF 明細のうち O1 が事業と判定したものだけを事業費へ加算する。",
+        "serves": [
+          "G3"
+        ],
+        "serves_goals": [
+          "G3"
+        ],
+        "measure": "freee 取引と日付+金額が一致する MF 事業明細を含むデータセットで、事業費合計が freee 側の金額を一度だけ含み、MF 側の同額分が加算されない。突合に寄らなかった MF 事業明細だけが加算されることを件数と金額の両方で検証する。"
       },
       {
         "id": "O4",
-        "text": "要確認明細の判断を永続化し、集計へ反映したうえで再適用する",
-        "measure": "利用者が下した『同じ/違う』の判断が保存され、再取込後も同じ明細へ再適用されることを結合テストで示す。加えて『同じ』判断が付いた明細が事業費側へ寄り、判断の前後いずれでも 総支出 = 事業費 + 家計費 の恒等式が成立することを契約テストで固定する",
+        "text": "判定は中項目文字列の前方一致のみに依存させ、既知の中項目名を実装へ列挙しない。",
         "serves": [
           "G4"
-        ]
+        ],
+        "serves_goals": [
+          "G4"
+        ],
+        "measure": "実装に存在しない中項目名『事業・広告費』を持つ明細を投入する契約テストがコード変更なしに事業と判定して緑になる。あわせて packages/ 配下に『事業経費』『事業・情報サービス』『事業・携帯電話』『事業・副業』の文字列リテラルが判定目的で 0 件であることを検査する。"
       },
       {
         "id": "O5",
-        "text": "トータル支出のトレンド判定を既存基準で提供する",
-        "measure": "TREND_MIN_MONTHS 未満は『判定不可』を返し、既存 categoryTrends と同じ TREND_ALPHA で有意判定することをテストで固定する",
+        "text": "cls の決定元 (clsSrc) に MF 中項目由来であることを表す値を加え、画面と API で根拠を返す。",
         "serves": [
           "G5"
-        ]
+        ],
+        "serves_goals": [
+          "G5"
+        ],
+        "measure": "中項目由来で事業になった明細の API 応答に clsSrc が中項目由来を示す値で含まれ、公私仕分け画面がその根拠を『中項目』と表示する。かつ classificationProgress の未レビュー件数に当該明細が数えられない。"
       },
       {
         "id": "O6",
-        "text": "一覧表を画面へ出し、判断の入口を既存の明細編集画面に置く",
-        "measure": "月次行・合計行・消し込み列・要確認件数を含む表が web 画面に表示され期間切替に追随すること、および要確認の『同じ/違う』判断が既存の取込明細編集画面から行えて判断後に一覧表の数字が更新されることを示す。加えて9列すべてが常時表示されること、および取込完了時に要確認が残っている場合に画面へ警告が出ることを示す",
+        "text": "収入側でも支出側と同型に、freee 突合を先に適用し寄らなかった残余だけを事業収入へ加算する構造を維持する。突合キーが向き (io) を含む既存の対称性は変更しない。",
         "serves": [
-          "G1",
-          "G6",
-          "G7"
-        ]
+          "G3"
+        ],
+        "serves_goals": [
+          "G3"
+        ],
+        "measure": "freee の income 取引と日付+金額が一致する MF 入金を含むデータセットで、事業収入がその金額を一度だけ含む。bucketKey が io を含むこと、および bizIncome の MF 由来項が leftover のみから算出されることを、収入側の二重計上テストで固定する。判定条件を中項目前方一致へ置き換えた後も同テストが緑のままであることを確認する。"
+      },
+      {
+        "id": "O7",
+        "text": "要確認となった MF 明細を、収入・支出および事業・家計のいずれの合計にも算入せず保留として扱う。現行の『寄らなかった支出は無条件に家計費、寄らなかった収入は大項目一致でなければ無条件に家計収入』という両側のフォールバックを改める。",
+        "serves": [
+          "G2",
+          "G3"
+        ],
+        "serves_goals": [
+          "G2",
+          "G3"
+        ],
+        "measure": "要確認となった MF 明細を含むデータセットで、その金額が bizExpense / householdExpense / bizIncome / householdIncome のいずれにも現れない。検証データには事業述語が真の明細と偽の明細、および入金と出金の 4 通りを含め、事業述語の真偽で扱いが変わらないことを確認する。現行実装では事業述語の偽な要確認出金が householdExpense に含まれ、このテストが赤になることを確認する。"
+      },
+      {
+        "id": "O8",
+        "text": "要確認として totals から外した金額を TotalCashflowMonth.reviewAmount としてサーバ側で導出し、reviewCount と対で画面へ渡す。画面側で合計を組み直さない。",
+        "serves": [
+          "G2",
+          "G3"
+        ],
+        "serves_goals": [
+          "G2",
+          "G3"
+        ],
+        "measure": "要確認の明細を含むデータセットで、API 応答の reviewAmount が当該明細の絶対値合計と一致し、reviewCount と同じ集合から算出されている (件数を 1 件増やすと金額も対応分だけ増える)。集合には事業述語が偽の要確認明細も含める。画面が reviewAmount をそのまま表示し、独自に合算していないことを確認する。現行実装では TotalCashflowMonth に reviewAmount が存在せず、このテストが型検査の段階で赤になる。"
       }
     ],
     "success_criteria": [
-      "利用者が一覧表の1行を見るだけで、その月に全体でいくらプラスかマイナスかを言える",
-      "合計値について『なぜこの額なのか』を、事業費/家計費の内訳列と要確認件数から利用者自身が説明できる",
-      "同じ支出が freee と MF の双方に載っていても、トータル支出に二度加算されず、事業費として一度だけ現れる",
-      "同じ入金が freee と MF の双方に載っていても、総収入に二度加算されず、事業収入として一度だけ現れる",
-      "日付が一致せず自動判定できなかった明細が、黙って家計費へ紛れ込まず、必ず要確認として件数に現れる",
-      "期間を切り替えたとき、合計・消し込み・トレンドの数字が互いに矛盾しない"
+      "S1 (G1, G2): 2025年10月の実 CSV を取り込んだとき、事業収入が ${LOCAL_AGGREGATE} 円 (${LOCAL_AGGREGATE} + ${LOCAL_AGGREGATE}) として集計され、家計収入に含まれない。",
+      "S2 (G1, G3): 中項目が『事業』で始まる支出 34 件が、freee と日付+金額が一致したもの、および要確認となったものを除き、事業費として集計される。",
+      "S3 (G2): 同一データセットに対し、公私仕分け画面が biz と示す MF 明細の集合と、トータル収支が事業側へ算入する MF 明細の集合が一致する。ただし手動編集で明示的に家計とされた明細は両画面とも家計側に、要確認の明細は両画面とも保留として現れる。",
+      "S4 (G3): トータル収入・トータル支出が、消し込み前の単純合算より二重計上分だけ小さく、freee 側の事業経費・事業収入をそれぞれ一度だけ含む。",
+      "S5 (G4): 実装に存在しない中項目名 (例: 『事業・広告費』) を持つ明細を投入すると、コード変更なしに事業と判定される契約テストが緑になる。",
+      "S6 (G5): 事業と判定された明細の API 応答に、判定根拠を示す clsSrc が含まれ、公私仕分け画面がそれを『中項目』として表示する。",
+      "S7 (G2, G3): 要確認となった MF 明細の金額が、事業述語の真偽および収入・支出の別を問わず、bizExpense / householdExpense / bizIncome / householdIncome のいずれの合計にも現れず、要確認の件数 (reviewCount) と合計 (reviewAmount) の対として画面に現れる。利用者が『違う』と判断すれば要確認から外れ、通常の事業/家計の集計へ戻る。"
     ],
     "stakeholders": [
-      "利用者本人(個人事業主。事業と家計を一体で回しており、この表の唯一の読み手かつ判断者)",
-      "税務申告の受け手(freee 側の帳簿が正本であり続けることを前提とする。本機能は帳簿を書き換えない)"
+      "SH1 利用者 (単独の個人事業主): MF 上で自分が仕分けた事業/家計の意図が、そのままトータル収支に反映されること。個別に手で直した明細は自動ルールに上書きされないこと。",
+      "SH2 保守者 (同一人物): MF 側で中項目を増やしても実装を触らずに済むこと。事業判定が 1 箇所に集約されていること。"
     ],
     "scope": {
       "in": [
-        "freee 取引CSV と Money Forward 家計簿CSV の既存取込データからのトータル収支の導出",
-        "freee↔MF 間の重複支出・重複収入の明細単位の照合と消し込み",
-        "自動照合できない明細の要確認一覧と、利用者判断の永続化・再適用",
-        "トータル支出のトレンド判定と、事業/家計の内訳保持",
-        "月次一覧表の web 画面表示と期間切替への追随"
+        "MF 明細の事業判定規則 (中項目前方一致『事業』) の定義と、収入・支出双方への適用",
+        "total-cashflow.ts の収入側事業判定 (大項目比較) の是正",
+        "total-cashflow.ts の支出側への MF 由来事業費の加算 (freee 突合後の残余のみ)",
+        "cls 決定元 (clsSrc) への MF 中項目由来の追加と、API/画面での根拠表示",
+        "既存の手動編集・ルール・取引先メモリとの優先順位の確定"
       ],
       "out": [
-        "新しい取込元の追加(事業用Money Forward・家計用freee の取込は行わない。利用者確認により現状の3区分で足りる)",
-        "freee 帳簿そのものの書き換え(税務の正本は freee のまま。本機能は読み取り専用の投影)",
-        "Money Forward 内部の重複(利用明細と引落の二重計上。既存の isTransfer 判定で除外済み)",
-        "予算・目標設定機能の変更",
-        "モバイル/タブレット/デスクトップ専用アプリの提供"
+        "freee 側の取込・判定ロジックの変更 (freee 取引は従来どおり全て事業)",
+        "新規の取込元の追加",
+        "MF 資産推移 (残高) CSV の扱いの変更",
+        "重複判定条件そのものの変更 (日付+金額一致・freee を正 の既存決定を維持)",
+        "Web 以外のプラットフォーム向けクライアントの提供"
       ]
     },
     "constraints": [
-      "canonical データを書き換えず、現在値から毎回導出する読み取りモデルとして実装する(既存 expense-projection.ts と同じ方針)",
-      "金額の帰属を自動で決める判定器は『MF明細の日付 = freee取引の発生日(FreeeDeal.date) かつ 金額一致』の1本だけとし、判定を1箇所に置いて複製しない。freee 側の dueDate / settledDate は判定に用いない。これとは別に、合計を一切動かさない候補抽出器として『金額一致 かつ 発生日が±3日以内』の照合を置き、要確認一覧の生成にのみ用いる(日付許容幅は既存 expense-projection.ts と同じ値を流用する)。候補抽出器は自身では帰属を変えず、利用者の明示判断を経た場合にだけ帰属へ反映される。両者は役割が異なるため同居を許すが、帰属を動かす権限を持つのは前者と利用者判断だけである",
-      "判定規則は支払先を用いない。同額・同発生日の無関係な支出も事業費として扱われうることを既知の限界として仕様に明記する(利用者判断により単純さと予測可能性を優先)",
-      "支出の帰属は『重複したものは事業費、それ以外は家計費』の二分とし、どちらにも入らない支出を作らない(総支出 = 事業費 + 家計費 を恒等式として保つ)。利用者判断による付替の後もこの恒等式を保つ",
-      "Money Forward 側で三井住友の3口座が同一表記であるため、口座名による口座単位の切り分けに依存しない設計とする",
-      "除外は freee 側の件数を上限とし、freee に存在しない分の MF 明細を消さない(過小計上の防止)",
-      "金額または日付が一致しない重複候補を推測で除外しない。除外できない分は必ず要確認として可視化する",
-      "要確認明細に利用者が『同じ』と判断した場合、その判断は自動規則を上書きし、当該 MF 明細を家計費から外して事業費へ寄せる(合計が動く)。上書きも1対1を保ち、freee 側の1取引に対し MF は1件までしか寄せない。『違う』判断は帰属を変えず、次回以降その組を要確認として再提示しない",
-      "収入側も支出と同じ規則(同額・同発生日)で freee を正として消し込む。ただし freee 売上は発生主義の発生日、MF 入金は入金日であるため日付が一致しない組が多く、実際に消し込まれる件数は少ない見込みである。一致しない組は支出と同様に要確認として可視化する",
-      "要確認の『同じ/違う』判断は、既存の取込明細編集画面(取り込んだ明細を1件ずつ直せる画面)に組み込む。判断専用の画面やタブを新設しない",
-      "既存の trend.ts / analysis.ts の公開関数の意味を変えない(追加はするが既存の戻り値の定義を書き換えない)",
-      "一覧表は 月・総収入・総支出・総収支・事業費・家計費・事業費へ寄せた件数・要確認件数・トレンド の9列すべてを常時表示する。小画面でも列を落とさない。個別明細と勘定科目別の内訳は表に常置せず、行からのドリルダウンで見せる。",
-      "要確認明細の放置と集計の異常には、CSV取込の完了時点で気付かせる。取込完了時に要確認が残っていればその場で画面に警告を出す。メール・push・外部監視といった通知基盤は追加しない。"
+      "C1: packages/core は依存ゼロの純関数に保つ (README アーキテクチャ節)。判定関数は core に置き、api/web から参照する。",
+      "C2: MF CSV は CP932 で配布されることがあるため、既存の decodeBuf (utf-8 fatal → shift_jis フォールバック) を前提とし、判定は decode 後の文字列に対して行う。TextDecoder.encoding で分岐しない (workerd #5663 でラベル正規化の差異が報告されているため)。",
+      "C3: 取込原本 mf_transactions に cls 列を持たせない既存設計を維持し、利用者の意思は tx_edits 側に保持する (再取込で判断が消えない)。",
+      "C4: 重複消し込みは日付 (MfTx.d と FreeeDeal.date) と金額の一致のみを条件とし、freee の dueDate/settledDate は用いない (前サイクル確定 appr-foundation-total-cashflow-001)。突合キーは向き (io) を含み、収入と支出を跨いで寄ることはない。",
+      "C5: 永続化は D1 の単一正本のみ。月次集計値は保存せず、要求時に canonical から毎回導出する (前サイクル確定 dec-aggregation-strategy-001)。",
+      "C6: 対象プラットフォームは web のみ。Cloudflare Workers 上の SPA 1 系統で配信する。",
+      "C7: 判定の優先順は 手動編集 > ルール > 取引先メモリ > MF 中項目「事業」前方一致 > 口座名義 > 既定'per' とし、手動編集を自動ルールで上書きしない (利用者決定 qa-priority-order-mf-decision-003)。",
+      "C8: 要確認となった MF 明細は、収入・支出および事業・家計のいずれの合計にも算入せず保留として扱う (利用者決定 qa-near-match-mf-decision-003 および qa-review-bucket-mf-decision-004)。要確認の判定に用いる REVIEW_NEAR_DAYS=3 と 3 つの要確認理由は変更しない。",
+      "C9: 既存の tx_edits に対する遡及的な再評価・移行スクリプトを本サイクルで行わない (利用者決定 qa-existing-edits-mf-decision-003)。",
+      "C10: 家計側の中項目に『事業』で始まる名称を作らないという運用上の約束を前提とする (利用者承認済み。docs へ明記する)。"
     ],
     "concrete_intents": [
       {
         "id": "I1",
-        "text": "月ごとに『総収入・総支出・総収支』が並ぶ一覧表を出す",
+        "text": "${LOCAL_SOURCE_FILE} を取り込むと、事業・副業の ${LOCAL_RECORD_COUNT}件の入金が事業収入として、事業経費/事業・情報サービス/事業・携帯電話の支出が事業費として現れる。",
         "serves": [
-          "G1"
-        ]
-      },
-      {
-        "id": "I2",
-        "text": "一覧表に『事業費へ寄せた額』『その件数』の列を置き、支出合計の内訳(事業費/家計費)を見せる",
-        "serves": [
-          "G2",
-          "G3"
-        ]
-      },
-      {
-        "id": "I3",
-        "text": "MF 明細の日付と freee 取引の発生日が一致し金額も一致する支出は事業で使う費用とみなし、freee を正として事業費に一度だけ計上し MF 側を家計費から外す。同じ(金額,発生日)に MF が n 件・freee が m 件あるときは MF から min(n,m) 件を家計費から外す(金額が同一のため、どれを外しても合計は変わらない)",
-        "serves": [
+          "G1",
           "G2"
         ]
       },
       {
+        "id": "I2",
+        "text": "『事業』で始まる中項目を MF 側で新しく作っても、そのまま事業として扱われる。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "freee にも記帳済みの事業経費が、MF 側の事業判定によって二重に計上されない。",
+        "serves": [
+          "G3"
+        ]
+      },
+      {
         "id": "I4",
-        "text": "MF 側で事業・副業に分類される入金を事業収入として扱い、それ以外の入金を家計収入とする。freee 売上と同額・同発生日で重なる分は支出と同じ規則で freee を正とし二重計上を避ける。日付が一致せず消し込めない組は要確認として出す",
-        "serves": [
-          "G2",
-          "G6"
-        ]
-      },
-      {
-        "id": "I5",
-        "text": "自動で確定できなかった重複候補を、理由付きの要確認一覧として出す。候補は『金額一致 かつ 発生日が±3日以内』で抽出し、この抽出自体は合計を変えない",
-        "serves": [
-          "G4"
-        ]
-      },
-      {
-        "id": "I6",
-        "text": "要確認明細への『同じ/違う』判断を既存の取込明細編集画面から行えるようにし、判断を保存して次の取込でも再適用する。『同じ』判断は合計へ反映する — 支出は当該 MF 明細を家計費から外して事業費へ寄せ、収入は当該 MF 入金を家計収入から外して事業収入へ寄せる (支出と収入で同一の規則)",
-        "serves": [
-          "G4"
-        ]
-      },
-      {
-        "id": "I7",
-        "text": "トータル支出が増加傾向か減少傾向かを、既存のトレンド判定基準で表示する",
+        "text": "ある明細がなぜ事業になったのかを画面で確認できる。",
         "serves": [
           "G5"
-        ]
-      },
-      {
-        "id": "I8",
-        "text": "一覧表の各行から事業側・家計側の内訳へ辿れるようにする",
-        "serves": [
-          "G6"
-        ]
-      },
-      {
-        "id": "I9",
-        "text": "期間切替に一覧表・消し込み・トレンドを追随させる",
-        "serves": [
-          "G7"
         ]
       }
     ],
     "confirmed": true,
-    "approval_ref": "appr-foundation-total-cashflow-008"
+    "approval_ref": "appr-foundation-mf-business-classification-001"
   },
-  "decisions": [
-    {
-      "id": "dec-trend-method-001",
-      "question": "トータル支出の推移(増加/減少/横ばい/判定不可)を判定する統計手法をどれにするか。既存 packages/core/src/trend.ts の基準に合わせるか、別手法を導入するか。",
-      "status": "confirmed",
-      "serves_goals": [
-        "G5",
-        "G7"
-      ],
-      "category": "backend",
-      "options": [
-        {
-          "id": "opt-mk-ts",
-          "label": "既存の Mann-Kendall 検定 + Theil-Sen 傾き推定に合わせる",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "monthly",
-            "tco": "金銭コスト 0 円/月。既存 packages/core/src/trend.ts の関数と定数をそのまま呼ぶため、実装コストは呼出し追加のみ、テストコストは既存の契約テスト枠内に収まる。新規依存パッケージ・新規サービス契約・追加の実行時間コストがいずれも発生しない。判定基準が既存と単一であるため、将来の基準変更時も修正箇所は1つで済む。"
-          },
-          "free_tier_limits": "追加費用ゼロ。既存 packages/core/src/trend.ts の実装と定数 (TREND_MIN_MONTHS=6, TREND_ALPHA=0.05) をそのまま再利用するため、新規依存パッケージ・新規サービス契約・追加の実行コストがいずれも発生しない。",
-          "goal_fit": "G5 を直接満たす。判定語も既存の TrendDirection ('増加'|'減少'|'横ばい'|'判定不可') を共有するため、同一画面でカテゴリ別トレンドとトータルトレンドが異なる基準で判定されることがなく G7 (期間を切り替えても矛盾した数字が出ない) にも資する。",
-          "security_fit": "統計計算は取り込み済みデータの読み取りのみで完結し、新しいデータ流出経路・新しい外部通信・新しい権限をいずれも生まない。",
-          "pros": [
-            "中央値ベースの Theil-Sen は外れ値に頑健で、年に数回の大きな事業支出に傾きが引きずられない",
-            "Mann-Kendall はノンパラメトリックで正規分布を仮定せず、月次の少数標本でも前提を壊さない",
-            "既存 categoryTrends と判定基準・閾値・判定語がすべて一致し、利用者が見る数字の間に矛盾が生じない",
-            "実装済みコードの再利用のため新しいテスト基盤も新しい定数も要らない"
-          ],
-          "cons": [
-            "単調トレンドしか検出せず、増えてから減るような非単調な推移は '横ばい' 側へ寄る",
-            "TREND_MIN_MONTHS=6 未満の期間は常に '判定不可' となり、立ち上がり期には何も言えない"
-          ],
-          "risks": [
-            "月次データに強い自己相関があると偽陽性が増える (ノンパラメトリック検定はデータの独立性を前提とする)。月次粒度への集約自体がこの緩和策として働くが、限界として仕様に残す"
-          ],
-          "lock_in": "なし。自前実装のため特定ベンダー・特定ライブラリへの依存を作らない。",
-          "ops_burden": "増分ゼロ。既存 pnpm run test の契約テストに載せるだけで、新しい監視・新しい運用手順を必要としない。",
-          "evidence_refs": [
-            "https://www.usgs.gov/publications/statistical-methods-water-resources"
-          ]
-        },
-        {
-          "id": "opt-ols",
-          "label": "最小二乗回帰の傾きで判定する",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "monthly",
-            "tco": "金銭コスト 0 円/月。ただし既存 trend.ts とは別実装となるため新規の実装・テストコストが発生し、以後は判定基準を二系統で保守し続ける継続コストを負う。片方だけ閾値を変更したときの不整合を人手で防ぐ必要があり、時間経過とともに保守負債が増える。"
-          },
-          "free_tier_limits": "追加費用ゼロ。ただし既存 trend.ts とは別実装になるため、実装・テストの新規コストが発生する。",
-          "goal_fit": "G5 の『増えているか減っているか』は一応示せるが、既存 categoryTrends と判定基準が食い違うため G7 を損なう。",
-          "security_fit": "opt-mk-ts と同じく読み取りのみで完結し、セキュリティ上の差は無い。",
-          "pros": [
-            "実装が最も単純で、傾きの解釈が直感的",
-            "有意性検定と傾き推定が同じ枠組みで得られる"
-          ],
-          "cons": [
-            "外れ値に弱い。事業経費は年に数回の大きな支出が入るため、その1件で傾きが引きずられる",
-            "既存 categoryTrends と判定基準が異なり、同一画面で『カテゴリ別は横ばいなのにトータルだけ増加』という矛盾表示が起きうる",
-            "誤差の正規性・等分散性という分布仮定を置くが、月次支出データはこれを満たさない"
-          ],
-          "risks": [
-            "利用者が画面上の矛盾を見て数字全体を信用しなくなる。これは本機能の存在意義 (トータルを把握したい) を直接損なう"
-          ],
-          "lock_in": "なし。",
-          "ops_burden": "既存 trend.ts と二系統の判定基準を並行保守することになり、片方だけ変更したときの不整合を人手で防ぐ必要が生じる。",
-          "evidence_refs": [
-            "https://www.usgs.gov/publications/statistical-methods-water-resources"
-          ]
-        },
-        {
-          "id": "opt-yoy",
-          "label": "統計判定をやめ前年同月比を示す",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "monthly",
-            "tco": "金銭コスト 0 円/月。実装は最も軽いが、12ヶ月分のデータが揃うまで表示できない期間が生じるため、その間の代替表示をもう一系統用意する必要があり、結果として画面と説明の保守コストが増える。"
-          },
-          "free_tier_limits": "追加費用ゼロ。",
-          "goal_fit": "G5 を満たさない。単月同士の比較であって推移 (トレンド) の判定ではなく、増減の向きを1点比較で代表させてしまう。",
-          "security_fit": "opt-mk-ts と同じく読み取りのみで完結し、セキュリティ上の差は無い。",
-          "pros": [
-            "計算が自明で、利用者に説明する必要がほぼ無い",
-            "季節性のある事業では意味を持ちうる"
-          ],
-          "cons": [
-            "12ヶ月分のデータが揃うまで一切表示できず、立ち上がり期に使えない",
-            "季節性の無い単独個人事業では、たまたま前年同月が大きかっただけで '減少' と読めてしまう",
-            "推移の一貫性 (単調性) を一切見ないため、増減の判定として弱い"
-          ],
-          "risks": [
-            "単月の偶発的な大口支出が前年同月比を大きく振らせ、利用者に誤った経営判断を促す"
-          ],
-          "lock_in": "なし。",
-          "ops_burden": "増分は小さいが、既存 categoryTrends とは別の見せ方になるため画面上の説明責任が増える。",
-          "evidence_refs": [
-            "https://www.usgs.gov/publications/statistical-methods-water-resources"
-          ]
-        }
-      ],
-      "recommendation": {
-        "option_id": "opt-mk-ts",
-        "rationale": "本決定の一次的な根拠は外部文献ではなく、本リポジトリの内部整合性の要求である。すなわち同一画面に既存のカテゴリ別トレンド (packages/core/src/trend.ts の mannKendall / theilSen、TREND_MIN_MONTHS=6、TREND_ALPHA=0.05、TrendDirection) が並ぶため、判定基準・閾値・判定語をそれと揃えることが、表示の矛盾による信頼喪失を防ぐうえで最優先となる。加えて本機能の要点は『費用がどれぐらい推移しているか』を利用者が信じられる形で示すことにあり、事業経費は年に数回の大きな支出を含むため外れ値耐性が判定品質を直接左右する。追加コストも運用増分もゼロである。なお evidence_refs が指す USGS TM 4-A3 の公式出版物ページは、ノンパラメトリック手法を中心に据える一般的位置付けの参考であって、Mann-Kendall / Theil-Sen という手法名を裏づける一次典拠ではない (本文 PDF は 2026-09-04 時点で取得不可)。手法名の帰属は既存実装との一致という内部事実に依拠する。",
-        "caveats": [
-          "TREND_MIN_MONTHS=6 未満の期間は '判定不可' となる。期間を短く切ったときに何も表示されない挙動を UI 側で明示する必要がある",
-          "単調トレンドのみを検出するため、増加してから減少に転じた推移は '横ばい' 寄りに判定されうる",
-          "月次データの自己相関が強い場合は偽陽性が増えうる。月次粒度への集約が緩和として働くが完全ではなく、既知の限界として仕様に残す",
-          "外部出典の検証範囲の限界 — 独立鮮度監査 (2026-09-04) の指摘による訂正。usgs-tm4a3-statistical-methods は手法名の一次典拠として扱わない。手法の統計的性質 (Theil-Sen の外れ値頑健性、Mann-Kendall の分布非依存性) を外部権威で裏づけ直す必要が生じた場合は、pubs.usgs.gov への到達手段を確保して本文を取得し直すこと"
-        ],
-        "confidence": "high",
-        "latest_checked_at": "2026-09-04T21:27:59Z",
-        "comparison_basis": {
-          "goal_fit": "opt-mk-ts は G5 を直接満たし判定語の共有により G7 にも資する。opt-ols は判定はできるが既存基準と食い違い G7 を損なう。opt-yoy は推移判定でないため G5 を満たさない。",
-          "tco": "3案とも追加の金銭コストはゼロ。ただし opt-mk-ts のみ既存実装の再利用で実装・テストコストが増分ゼロであり、他の2案は新規実装と二系統保守のコストを生む。",
-          "security": "3案に差は無い。いずれも取り込み済みデータの読み取りのみで完結し、新しい外部通信・権限・保存データを生まない。",
-          "operations": "opt-mk-ts は運用増分ゼロ。opt-ols は判定基準が二系統になり片側変更時の不整合を人手で防ぐ必要が生じる。opt-yoy は既存と異なる見せ方の説明責任が増える。",
-          "lock_in": "3案ともベンダー・ライブラリへのロックインは無い。ただし opt-ols / opt-yoy は既存 trend.ts と異なる基準を新たに固定するため、後から既存へ寄せ直す際の移行コストという内部的なロックインを生む。"
-        }
-      },
-      "user_decision": {
-        "option_id": "opt-mk-ts",
-        "confirmed_at": "2026-09-04T14:00:13Z",
-        "note": "利用者へ3案 (既存 Mann-Kendall/Theil-Sen 踏襲 / 最小二乗回帰 / 前年同月比) を推奨理由・注意点付きで提示し、AskUserQuestion で『既存の Mann-Kendall / Theil-Sen に合わせる』の明示選択を得た。前サイクルではこの選択肢提示を行わないまま既存踏襲を既定として扱っており、完成度 evaluator の decision_guidance 指摘 (意思決定の二重帳簿) を受けて改めて正式に採択を取り直したものである。 【時刻の再訂正 — 実測値の復元】confirmed_at をトランスクリプトの実測値 2026-09-04T14:00:13Z へ訂正した。経緯は2段階ある。(1) 当初の 2026-09-04T14:52:00Z は spec-state.json への実書込時刻 14:33:18Z より後の未来日付であり、その時点では発生し得ない値だった (完成度 evaluator が『時刻の捏造』として検出)。(2) その訂正として置いた 2026-09-04T21:27:59Z は『訂正を書き込んだ実測 UTC』を上界として充てたもので、採択時刻そのものではなかった。そのとき私は『選択の正確な時刻は記録していなかった』と書いたが、これは誤りである — AskUserQuestion の応答は会話トランスクリプトへ時刻付きで残っており、探せば読めた。上界で代用する必要は最初から無かった。(3) 独立ヒアリング監査 (2026-09-05) の指摘 F2 を受けてトランスクリプトを実際に照合し、質問提示 2026-09-04T13:59:32Z・利用者回答 2026-09-04T14:00:13Z を観測した。なお本件と dec-auth-boundary-001 / dec-aggregation-strategy-001 の3件は同一の AskUserQuestion 呼出しで同時に提示・回答されており、confirmed_at が3件とも一致するのは書込時刻の使い回しではなく、実際に同一の利用者ターンだったことの反映である。"
-      },
-      "qa_ref": "qa-decision-trend-method-002"
-    },
-    {
-      "id": "dec-auth-boundary-001",
-      "question": "本機能 (トータル収支の一覧表と要確認判断API) の認証境界をどこに置くか。既存 /api 認証ゲートの内側に置くか、別経路を設けるか、Cloudflare Access へ一本化するか。",
-      "status": "confirmed",
-      "serves_goals": [
-        "G1",
-        "G7"
-      ],
-      "category": "auth",
-      "options": [
-        {
-          "id": "opt-existing-gate",
-          "label": "既存の /api 認証ゲートの内側に置く",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "monthly",
-            "tco": "金銭コスト 0 円/月。既存の二段構え認証 (ACCESS_AUD/ACCESS_TEAM_DOMAIN 設定時は Cloudflare Access JWT、未設定時はアプリ内セッション認証) をそのまま使うため、実装は新規エンドポイントを既存ゲートの内側へ置くだけで済む。運用上のシークレットも既存の AUTH_PASSWORD / SESSION_SECRET のままで増えない。"
-          },
-          "free_tier_limits": "既存構成の範囲内。追加のシークレット・追加のトークン発行基盤・追加の失効管理をいずれも必要としない。",
-          "goal_fit": "G1 (一覧表を確認できる) と G7 (期間切替でも一貫) を満たすうえで認証は前提条件であり、既存ゲートに載せることで本機能だけ到達性が異なる状態を作らない。wrangler.jsonc の run_worker_first: ['/api/*'] により、追加する読み取りAPI・DuplicateVerdict 更新API も必ずゲートを通る。",
-          "security_fit": "認証境界が1つのままなので、失効・ローテーション漏れによる財務データ露出の経路が増えない。単独利用者・ロール分割なしという実態に対して最小の攻撃面を保つ。",
-          "pros": [
-            "認証境界が1つに保たれ、守るべき箇所が増えない",
-            "ローカル開発・プレビュー・本番で同じ認証経路を通る (Access 未設定環境でもアプリ内セッション認証が働く)",
-            "run_worker_first により /api/* が確実に Worker を通るため、ゲートの迂回経路が構造的に存在しない",
-            "実装・運用の増分がゼロ"
-          ],
-          "cons": [
-            "読み取り専用の共有 (例: 税理士へ一覧表だけ見せる) を将来行いたくなった場合、認証を分ける仕組みを後から足す必要がある"
-          ],
-          "risks": [
-            "SESSION_SECRET が漏れた場合、本機能を含む全 API が同時に影響を受ける。ただしこれは既存システム全体の既知のリスクであり、本機能が新たに導入するものではない"
-          ],
-          "lock_in": "低い。アプリ内セッション認証は自前実装であり、Cloudflare Access も設定有無で切替わる二段構えのため、いずれか一方へ縛られない。",
-          "ops_burden": "増分ゼロ。新しいトークンの発行・配布・失効・ローテーションという運用作業が発生しない。",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/cloudflare-one/policies/access/"
-          ]
-        },
-        {
-          "id": "opt-readonly-token",
-          "label": "読み取り専用トークンを発行し一覧表だけ別経路で公開する",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "monthly",
-            "tco": "金銭コスト 0 円/月。ただしトークンの発行・保管・失効・ローテーションの仕組みを新規に実装し、以後も保守し続ける継続コストが発生する。"
-          },
-          "free_tier_limits": "追加サービス契約は不要だが、トークン管理の実装と運用が新たに必要になる。",
-          "goal_fit": "G1 は満たせるが、本機能のためだけに到達経路が2本になり、期間切替や判断更新の扱いが経路ごとに分岐しうるため G7 の一貫性を保ちにくい。",
-          "security_fit": "認証境界が2つになる。トータル収支は事業と家計の全体像そのもので、明細より要約のほうが機微性が高い場面すらあるため、境界を増やす代償が大きい。",
-          "pros": [
-            "第三者へ一覧表だけを見せる用途に将来対応しやすい",
-            "本体の認証情報を渡さずに共有できる"
-          ],
-          "cons": [
-            "守るべき認証境界が2つになる",
-            "トークンの失効・ローテーション漏れが財務データの露出へ直結する",
-            "単独利用者しかいない現状で境界を増やす利得が無い"
-          ],
-          "risks": [
-            "発行したトークンの失効忘れが、気付かれないまま長期の情報露出になる。単独運用のため第三者による発見も期待できない"
-          ],
-          "lock_in": "低いが、一度発行した運用を止めるには利用側の切替調整が要る。",
-          "ops_burden": "トークンの発行・配布・失効・定期ローテーションという新しい定常作業が発生する。",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/cloudflare-one/policies/access/"
-          ]
-        },
-        {
-          "id": "opt-access-only",
-          "label": "Cloudflare Access へ一本化しアプリ内セッション認証を廃止する",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "monthly",
-            "tco": "Cloudflare Zero Trust の無料枠内では金銭コスト 0 円/月で運用しうるが、ローカル開発・プレビュー環境で認証が働かなくなるため、開発時のみ認証を迂回する別経路を用意する保守コストが恒常的に発生する。"
-          },
-          "free_tier_limits": "Cloudflare Zero Trust の無料枠に依存する。ACCESS_AUD / ACCESS_TEAM_DOMAIN が設定された環境でのみ機能する。",
-          "goal_fit": "本番では G1 を満たすが、開発・プレビューで認証経路が分岐するため、本番でしか再現しない認証起因の不具合を生みやすく G7 の一貫性検証を難しくする。",
-          "security_fit": "本番の防御自体は強い。ポリシーはアクション (Allow/Block/Bypass/Service Auth)・ルールタイプ (Include/Require/Exclude)・セレクタ・値の組合せで構成され、評価は公式本文どおり、まず Bypass と Service Auth のポリシーが UI 上の並び順で評価され、その後 Block と Allow のポリシーが UI 上の並び順で評価される。ただし開発時の迂回経路が別途必要になり、そこが新しい弱点になりうる。なお当初この記述を『Allow または Block にマッチした時点で評価が停止する』としていたのは公式と齟齬があり独立鮮度監査 (2026-09-04) の指摘で訂正し、続く『次に Block、最後に Allow』も Block と Allow を誤って階層化していたため 2026-09-04T21:25:59Z の公式再照合で再訂正した。",
-          "pros": [
-            "ID プロバイダ連携やデバイス態勢などのセレクタで、アプリ側を変えずに条件を強化できる",
-            "認証をアプリ実装から切り離せる"
-          ],
-          "cons": [
-            "ACCESS_AUD / ACCESS_TEAM_DOMAIN 未設定のローカル開発・プレビューでは機能せず、開発と本番で認証経路が分岐する",
-            "既存の二段構えを壊すため、現に動いているアプリ内セッション認証の削除という後戻りしにくい変更を伴う",
-            "単独利用者に対してポリシー機構が過剰"
-          ],
-          "risks": [
-            "開発用の迂回経路を本番へ持ち込む事故が起きた場合、認証が完全に外れる。二段構えを保つ案ではこの事故形態が起こらない"
-          ],
-          "lock_in": "高い。認証を Cloudflare Zero Trust に全面依存させるため、移行時はアプリ内認証を作り直す必要がある。",
-          "ops_burden": "ポリシー・IDプロバイダ設定の管理という新しい運用面が増え、開発環境向けの例外運用も恒常化する。",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/cloudflare-one/policies/access/"
-          ]
-        }
-      ],
-      "recommendation": {
-        "option_id": "opt-existing-gate",
-        "rationale": "本システムの利用者は単独の個人事業主でロール分割が存在せず、守る対象は事業と家計を合算した財務データそのものである。この条件下で認証境界を増やす行為は、得られる利得 (共有の容易さ) に対して失う安全性 (失効漏れ・ローテーション漏れの経路増加) が明らかに大きい。また既存は Access 設定時は Access JWT・未設定時はアプリ内セッション認証という二段構えであり、これを壊すと開発と本番で認証経路が分岐して本番でしか再現しない不具合を招く。run_worker_first: ['/api/*'] により追加APIも必ずゲートを通るため、既存ゲートの内側に置くだけで到達性の穴が構造的に生じない。",
-        "caveats": [
-          "将来、税理士など第三者へ一覧表だけを見せたくなった場合は、この決定を見直す必要がある (その時点で改めて意思決定として扱う)",
-          "SESSION_SECRET の漏洩は本機能を含む全 API に同時に影響する。これは既存システム全体の既知リスクであり、本機能が新たに増やすものではないが、ローテーション手順の存在は前提となる",
-          "認可はロール分割を持たない単一主体モデルのままとする。複数人で使い始める場合はこの前提が崩れる"
-        ],
-        "confidence": "high",
-        "latest_checked_at": "2026-09-04T21:27:59Z",
-        "comparison_basis": {
-          "goal_fit": "opt-existing-gate は本機能だけ到達性が異なる状態を作らず G1/G7 に整合する。opt-readonly-token は経路が2本になり G7 の一貫性を保ちにくい。opt-access-only は本番では満たすが開発・プレビューで経路が分岐する。",
-          "tco": "3案とも金銭コストは 0 円/月。差は継続コストにあり、opt-existing-gate のみ増分ゼロ。opt-readonly-token はトークン管理の実装と運用を、opt-access-only は開発環境向け迂回経路の保守を恒常的に負う。",
-          "security": "opt-existing-gate は境界1つを維持し攻撃面を増やさない。opt-readonly-token は境界が2つになり失効漏れが露出へ直結する。opt-access-only は本番の防御は強いが開発時の迂回経路が新しい弱点になる。",
-          "operations": "opt-existing-gate は運用増分ゼロ。opt-readonly-token はトークンの発行・配布・失効・ローテーションが定常作業として増える。opt-access-only はポリシー/IDプロバイダ管理と開発向け例外運用が増える。",
-          "lock_in": "opt-existing-gate は自前実装と設定切替の二段構えでロックインが低い。opt-readonly-token は中程度。opt-access-only は Cloudflare Zero Trust への全面依存となり最も高い。"
-        }
-      },
-      "user_decision": {
-        "option_id": "opt-existing-gate",
-        "confirmed_at": "2026-09-04T14:00:13Z",
-        "note": "利用者へ3案 (既存 /api 認証ゲートの内側 / 読み取り専用トークンで別経路 / Cloudflare Access へ一本化) を推奨理由・注意点付きで提示し、AskUserQuestion で『既存の /api 認証ゲートの内側に置く』の明示選択を得た。前サイクルの qa-auth-web-001 は代替案を示さない Yes/No の誘導質問であり、完成度 evaluator の decision_guidance 指摘を受けて代替案を明示したうえで採択を取り直したものである。 【時刻の再訂正 — 実測値の復元】confirmed_at をトランスクリプトの実測値 2026-09-04T14:00:13Z へ訂正した。経緯は2段階ある。(1) 当初の 2026-09-04T14:52:00Z は spec-state.json への実書込時刻 14:33:18Z より後の未来日付であり、その時点では発生し得ない値だった (完成度 evaluator が『時刻の捏造』として検出)。(2) その訂正として置いた 2026-09-04T21:27:59Z は『訂正を書き込んだ実測 UTC』を上界として充てたもので、採択時刻そのものではなかった。そのとき私は『選択の正確な時刻は記録していなかった』と書いたが、これは誤りである — AskUserQuestion の応答は会話トランスクリプトへ時刻付きで残っており、探せば読めた。上界で代用する必要は最初から無かった。(3) 独立ヒアリング監査 (2026-09-05) の指摘 F2 を受けてトランスクリプトを実際に照合し、質問提示 2026-09-04T13:59:32Z・利用者回答 2026-09-04T14:00:13Z を観測した。なお本件と dec-auth-boundary-001 / dec-aggregation-strategy-001 の3件は同一の AskUserQuestion 呼出しで同時に提示・回答されており、confirmed_at が3件とも一致するのは書込時刻の使い回しではなく、実際に同一の利用者ターンだったことの反映である。"
-      },
-      "qa_ref": "qa-decision-auth-boundary-002"
-    },
-    {
-      "id": "dec-aggregation-strategy-001",
-      "question": "月次トータル収支 (総収入・総支出・総収支・事業費・家計費・寄せた件数) をどう算出するか。要求時に毎回導出するか、事前計算して保存するか、SQL 側へ寄せるか。",
-      "status": "confirmed",
-      "serves_goals": [
-        "G1",
-        "G3",
-        "G7"
-      ],
-      "category": "infrastructure",
-      "options": [
-        {
-          "id": "opt-derive-on-request",
-          "label": "要求時に canonical から毎回導出する",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "monthly",
-            "tco": "金銭コスト 0 円/月。既存の Cloudflare Workers + D1 の1系統に載り、新しいスケジュール実行・新しいデータストア・新しい監視をいずれも追加しない。集計テーブルを持たないため、取込・取消・undo のたびに再計算を仕込む保守コストも発生しない。"
-          },
-          "free_tier_limits": "D1 の現行上限の内側に収まる: Worker 1呼出しあたりのクエリ数 1,000 (Workers Paid)、SQL文の最大長 100KB、クエリ最大実行時間 30秒、1クエリのバインドパラメータ最大 100。本機能は月次数十行規模の集計であり、対象期間の明細を数クエリで取得してアプリ側で突合する形に収まる。バインドパラメータ上限 100 を跨がないよう、期間指定は範囲条件で表現し個別IDの列挙を避ける。",
-          "goal_fit": "G3 (合計が『事業費 + 家計費』として利用者の手で検算できる) を最も直接に満たす。canonical が唯一の真実であり、画面の合計と明細が定義上ずれない。G7 (期間切替でも矛盾しない) も、期間ごとに同じ導出関数を通すだけで満たされる。",
-          "security_fit": "保存する導出値が無いため、集計結果という新しい機微データの置き場所が増えない。新しい外部通信・新しいバインディングも生じない。",
-          "pros": [
-            "canonical と導出値が二重に存在しないため、両者が食い違う状態が原理的に発生しない",
-            "取込・取消・undo・利用者の手当てが即座に合計へ反映される (再計算の仕込み漏れが起こりえない)",
-            "無効化タイミングという失敗モードを持たない",
-            "インフラ構成を一切変えない"
-          ],
-          "cons": [
-            "対象期間が極端に長くなると1リクエストあたりの計算量が増える",
-            "同じ月を何度開いても毎回計算する (キャッシュしない)"
-          ],
-          "risks": [
-            "将来データ量が D1 の1呼出し1,000クエリ枠に迫った場合は設計を見直す必要がある。個人事業の月次数十行規模では当面到達しないが、上限の存在は仕様に明記する"
-          ],
-          "lock_in": "低い。導出ロジックは core の純関数に置き、D1 にも Workers にも依存しない。",
-          "ops_burden": "増分ゼロ。新しいバッチ・新しい監視・新しいアラートを追加しない。",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/d1/platform/limits/"
-          ]
-        },
-        {
-          "id": "opt-cron-precompute",
-          "label": "cron で夜間に月次合計を事前計算し D1 のテーブルへ書き出す",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "monthly",
-            "tco": "金銭コスト 0 円/月 (既存 cron トリガ枠内)。ただし集計テーブルのマイグレーション、再計算トリガの実装、取込・取消・undo それぞれへの再計算呼出しの追加、そして再計算漏れを検出する手段の整備という実装・保守コストが継続的に発生する。"
-          },
-          "free_tier_limits": "既存の cron トリガ (0 18 * * * UTC = JST 03:00) に相乗りできる範囲。",
-          "goal_fit": "G1 の表示自体は満たすが、G3 を損なう。画面の合計が最後のバッチ時点の値であるため、利用者が明細を足し合わせても一致しない瞬間が生じ、その不一致は利用者側から検算できない。",
-          "security_fit": "集計結果という機微データの保存先が新たに増える。バックアップ・復旧の対象も増える。",
-          "pros": [
-            "参照時の計算量が一定になる",
-            "長期間の集計でも表示が速い"
-          ],
-          "cons": [
-            "導出値を canonical と二重に持つ",
-            "取込・取消・undo・利用者の手当てのたびに再計算が要り、仕込み漏れが直ちに数字の食い違いになる",
-            "食い違いが利用者から検算不能で、しかも静かに起きる"
-          ],
-          "risks": [
-            "再計算漏れによる合計と明細の不一致。利用者は『どちらが正しいか』を判断できず、システム全体への信頼を失う。これは本機能の存在意義を直接損なう"
-          ],
-          "lock_in": "中程度。集計テーブルに依存した画面・API を作ると、後から毎回導出へ戻す際に移行が要る。",
-          "ops_burden": "バッチの失敗検知・再実行手順・再計算漏れの監視という新しい運用面が増える。",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/d1/platform/limits/"
-          ]
-        },
-        {
-          "id": "opt-sql-view",
-          "label": "集計を D1 の SQL 側へ寄せてビュー化する",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "monthly",
-            "tco": "金銭コスト 0 円/月。ただし重複判定の min(n,m) 基数規則を SQL で表現し直す実装コストと、アプリ側の同じ規則と二箇所で整合を保ち続ける継続コストが発生する。"
-          },
-          "free_tier_limits": "D1 の SQL文最大長 100KB・クエリ最大実行時間 30秒の内側に収める必要がある。",
-          "goal_fit": "G1 は満たしうるが、判定規則が二箇所に存在することで G2 (二重計上のない支出合計) の正しさを1箇所で保証できなくなる。",
-          "security_fit": "opt-derive-on-request と大きな差は無いが、規則が二重化することで片方だけ修正された状態が生まれ、誤った金額を正として表示する経路ができる。",
-          "pros": [
-            "集計処理をデータベース側に寄せられる",
-            "アプリ側の転送量を減らせる"
-          ],
-          "cons": [
-            "重複判定の min(n,m) 基数規則が SQL とアプリの二箇所に複製される",
-            "上位概念の制約『判定を1箇所に置いて複製しない』に正面から反する",
-            "SQL 側の規則を単体テストで固定しにくい"
-          ],
-          "risks": [
-            "SQL 側とアプリ側の規則がずれ、画面の合計が誤った基準で計算される。しかも両方とも『動いている』ため検出が遅れる"
-          ],
-          "lock_in": "高い。集計ロジックが D1 (SQLite 方言) に固着し、core の純関数として持ち出せなくなる。",
-          "ops_burden": "ビュー定義のマイグレーション管理が増え、規則変更のたびに SQL とアプリの両方を同期する必要がある。",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/d1/platform/limits/"
-          ]
-        }
-      ],
-      "recommendation": {
-        "option_id": "opt-derive-on-request",
-        "rationale": "本機能の価値は『トータルでどれぐらいプラスマイナスがあるか』を利用者が信じられる形で示すことにあり、上位概念 G3 は合計を利用者の手で検算できる状態を明示的に要求している。導出値を保存する案はこの検算可能性を構造的に壊す — 合計と明細が食い違ったとき、利用者にはどちらが正しいか判断する手段が無い。SQL ビュー案は重複判定規則を二箇所へ複製し、制約『判定を1箇所に置いて複製しない』に反する。毎回導出が成立することは D1 の公式上限 (1呼出し1,000クエリ、SQL文100KB、実行時間30秒、バインドパラメータ100) に対して月次数十行規模という本機能の実データ量を突き合わせて確認済みであり、性能上の必要性が無いまま正しさを犠牲にする理由が存在しない。",
-        "caveats": [
-          "期間指定は範囲条件で表現し、個別IDの列挙を避ける (1クエリのバインドパラメータ上限 100 を跨がないため)",
-          "対象期間を極端に長く取った場合の計算量は将来の観察対象とする。D1 の1呼出し1,000クエリ枠に迫るようなら設計を見直す",
-          "キャッシュを持たないため、同じ月を繰り返し開くと毎回計算する。個人利用の頻度では問題にならないが、前提として記録しておく"
-        ],
-        "confidence": "high",
-        "latest_checked_at": "2026-09-04T21:27:59Z",
-        "comparison_basis": {
-          "goal_fit": "opt-derive-on-request のみ G3 (利用者の手で検算できる) を満たす。opt-cron-precompute は画面の合計が明細と食い違う瞬間を作り G3 を損なう。opt-sql-view は判定規則の複製により G2 の正しさを1箇所で保証できない。",
-          "tco": "3案とも金銭コストは 0 円/月。差は保守コストにあり、opt-derive-on-request のみ増分ゼロ。opt-cron-precompute は再計算の仕込みと漏れ検出を、opt-sql-view は規則の二重保守を恒常的に負う。",
-          "security": "opt-derive-on-request は保存する機微データを増やさない。opt-cron-precompute は集計結果の保存先とバックアップ対象が増える。opt-sql-view は規則の片側修正により誤った金額を正として表示する経路を作る。",
-          "operations": "opt-derive-on-request は新しいバッチ・監視・アラートを追加しない。opt-cron-precompute はバッチ失敗検知と再実行手順が増える。opt-sql-view はビュー定義のマイグレーション管理と規則同期が増える。",
-          "lock_in": "opt-derive-on-request は導出ロジックを core の純関数に保ちロックインが最も低い。opt-cron-precompute は集計テーブル依存で中程度。opt-sql-view は SQLite 方言へ固着し最も高い。"
-        }
-      },
-      "user_decision": {
-        "option_id": "opt-derive-on-request",
-        "confirmed_at": "2026-09-04T14:00:13Z",
-        "note": "利用者へ3案 (要求時に毎回導出 / cron で夜間に事前計算し D1 へ保存 / D1 の SQL ビュー化) を推奨理由・注意点付きで提示し、AskUserQuestion で『要求時に毎回導出する』の明示選択を得た。前サイクルの qa-infrastructure-web-001 は代替案を示さない Yes/No の誘導質問であり、完成度 evaluator の decision_guidance 指摘を受けて代替案を明示したうえで採択を取り直したものである。 【時刻の再訂正 — 実測値の復元】confirmed_at をトランスクリプトの実測値 2026-09-04T14:00:13Z へ訂正した。経緯は2段階ある。(1) 当初の 2026-09-04T14:52:00Z は spec-state.json への実書込時刻 14:33:18Z より後の未来日付であり、その時点では発生し得ない値だった (完成度 evaluator が『時刻の捏造』として検出)。(2) その訂正として置いた 2026-09-04T21:27:59Z は『訂正を書き込んだ実測 UTC』を上界として充てたもので、採択時刻そのものではなかった。そのとき私は『選択の正確な時刻は記録していなかった』と書いたが、これは誤りである — AskUserQuestion の応答は会話トランスクリプトへ時刻付きで残っており、探せば読めた。上界で代用する必要は最初から無かった。(3) 独立ヒアリング監査 (2026-09-05) の指摘 F2 を受けてトランスクリプトを実際に照合し、質問提示 2026-09-04T13:59:32Z・利用者回答 2026-09-04T14:00:13Z を観測した。なお本件と dec-auth-boundary-001 / dec-aggregation-strategy-001 の3件は同一の AskUserQuestion 呼出しで同時に提示・回答されており、confirmed_at が3件とも一致するのは書込時刻の使い回しではなく、実際に同一の利用者ターンだったことの反映である。"
-      },
-      "qa_ref": "qa-decision-aggregation-002"
-    }
-  ],
+  "decisions": [],
   "knowledge_candidates": [],
+  "design_applications": {
+    "backend": {
+      "text": "Clean Architecture / DDD / API Design Patterns の 3 card のうち、本章の確定に実際に効いたのは 『業務ルールをどこに置くか』の一点である。本サイクルが解く問題は技術選定ではなく、『何が事業か』という業務ルールが classify.ts と total-cashflow.ts に二重に実装され、しかも基準が違う ことにある。DDD の言う ubiquitous language に照らせば、事業/家計という語がコード上で 2 通りに定義されて いる状態であり、これは用語のずれが変更時の再解釈を強いる典型である。よって本章は判定を 1 つの述語へ集約し、MfTx を取込原本、TxEdit を利用者の意思、ResolvedTx を導出値として役割を分けた。API Design Patterns については、本サイクルが新規エンドポイントを追加せず既存応答に clsSrc を additive に足すだけであるため、破壊的変更の回避という一点のみを採り、versioning や idempotency は 適用条件 (複数 client の独立 release) を満たさないため採らない。",
+      "recorded_at": "2026-09-10T04:53:24Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "DDD card のうち本章に効いたのは aggregate の境界と invariant の所有者に関する部分である。本章の確定は『mf_transactions に cls 列を追加しない』であり、これは取込原本 (MF が何と言ったか) と 利用者の意思 (tx_edits) を別の所有者に持たせる判断にあたる。両者を 1 テーブルに混ぜると、再取込のたびに利用者の判断が上書きされるか、上書きを避けるための例外分岐が原本テーブルに溜まる。card が「解決する問題」として挙げる『invariant と transaction owner が不明で、どこからでも data を変更できる』そのものである。一方 card が挙げる bounded context の分割は、単一利用者・単一業務の本システムでは適用条件を満たさないため採らない。",
+      "recorded_at": "2026-09-10T05:45:57Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design card は本章に適用する。card の適用条件が『金銭を扱う全 system』を含む以上、家計と事業の金額を扱う本システムは非適用にできない。本章の確定に効いたのは card の非適用条件が定める逃げ方 — 『asset/threat が極小なら control を軽量化できるが、根拠付き risk acceptance が要る』— の方である。本システムは単一利用者・ロール区分なし・外部公開なしであり、多層防御や最小権限を形だけ導入しても認知負荷が増えるだけなので control を軽量化する。その代わり受け入れる risk を明示する: 認証は単一要素 (パスワード + HMAC 署名 Cookie) で、パスワード漏洩がそのまま全データへの到達を意味する。これを受容できる根拠は、扱うのが利用者自身の家計簿データのみで第三者の個人情報を持たないこと、および Secure defaults の観点で login rate limit が既定で効いていることである。本サイクルはこの受容の前提を一切動かさない — 新規エンドポイント 0 件、新しい主体 0 件、新しい機微データ 0 件であり、risk acceptance の再評価を要さない。",
+      "recorded_at": "2026-09-10T05:37:16Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "Secure by Design card から本章に効いたのは 2 点である。第一に適用条件の『外部入力を扱う全 system』— 中項目は利用者自身が MF 上で付けた分類だが、CSV というファイル境界を越えて入ってくる以上、本章では外部入力として扱う。第二に Secure defaults — 本章の確定はいずれも『既定で安全な形にしておき、利用者の注意に頼らない』という形をとっている。具体的には (1) 判定は必ず decodeBuf (utf-8 fatal → shift_jis フォールバック) を通した後の文字列に対して行い、生バイト列や誤った文字コードで読んだ文字列に前方一致を掛けない、(2) 前方一致の比較前に trim を掛け、前後空白のゆれで判定が外れる既定を潰す、(3) 中項目文字列の表示は React の自動エスケープに、SQL は Drizzle のパラメータバインドに委ね、文字列連結を新設しない — の 3 つである。いずれも control を新設せず既存の安全な既定を経路として保つ形であり、card が戒める security theater (control 数だけ増やして owner も evidence も持たない) を避ける。残る対価 — 利用者が意図せず事業で始まる家計用の中項目を作った場合の誤分類 — をコード (除外リスト) で防がず運用の約束として受け止めるのは、本章ではなく maintenance-ops 章の確定 (qa-maintenance-ops-web-mf-decision-002) である。本章はその確定を所与として、誤分類が起きたとき clsSrc で切り分けられることを受容の条件として確認するに留まる。card の Data lifecycle (暗号化・保持・削除) の節は、本サイクルが新しい機微データも新しい書込経路も導入せず、監査ログの記録対象も増やさないため適用しない。",
+      "recorded_at": "2026-09-10T05:45:57Z",
+      "basis": "agent-inference"
+    },
+    "ui-ux": {
+      "text": "Information Design card のうち本章に効いたのは『何を残し何を落とすか』の判断軸である。中項目由来で事業になった明細について、残すのは『事業になった』という結果と『中項目』という根拠ラベルの 2 つ、落とすのは未レビュー件数への計上である。この取捨の根拠は task 頻度 × 失敗コストで、月 30 件前後を毎月確認させる頻度の高さに対し、MF 上で既に仕分け済みの明細を見落とす失敗コストは低い。同じ判断軸が表現物 (1) の 5 束目にも効いた。card は削減について『削減の停止条件は「ラベルなしで受け手が識別できるか」』と定める。要確認を 4 束から外すのは削減だが、そこで止めると合計が合わない理由が識別できなくなるため、要確認という束のラベルを残す点が停止条件にあたる。reviewAmount という絶対値合計は card の言う加工であり、『加工の各件に「どの task を助けるか」を書けないなら加工しない』という要求に対しては、『確認を今すぐ見るべきか後回しでよいかの緊急度判断』という task を挙げられる。なお card が要求する information-priority-map.json の生成は下流工程の責務であり、本章は方針 (何を残し何を落とすか、その根拠) の確定までを担う。",
+      "recorded_at": "2026-09-10T05:44:57Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "Clean Architecture card と Information Design card の交点が本章に効いた。clsSrc という 1 つの値を core が決め web が表示へ写像するだけにする、という構造の選択は Dependency Rule の適用であると同時に、画面が持つ情報を『判定結果 + その根拠』の 2 つに絞る情報設計の判断でもある。web 側で中項目文字列を再解釈しないことが、この 2 つを同時に満たす。O8 (要確認の金額を reviewAmount としてサーバ側で導出する) には card の『加工 ⇄ 検証コスト』が直接効いた。符号を落とした絶対値の合計はまさに加工であり、card は『加工の各件に「どの task を助けるか」を書けないなら加工しない』と課す。本件が助ける task は『要確認を今すぐ見るべきか後回しでよいかの判断』であり、件数だけではこれが決まらない。加工を web ではなくサーバへ置くのは、card が言う加工の自由度が『表示が中核ルールから隔離されている』ことを前提とするためで、画面側で合算すると同じ数字の正本が 2 つになりその前提が崩れる。reviewCount と reviewAmount を同じ集合から出す制約は card の『削減の停止条件』の裏返しで、件数だけまで削ると受け手が規模を識別できなくなる — そこが削減を止める点である。",
+      "recorded_at": "2026-09-10T05:37:16Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "本章に適用する deep knowledge card は無い。理由は本章の内容ではなく索引の側にある — C04 resource-map.yaml の read_when は各 card の適用対象カテゴリを列挙しており、infrastructure を挙げる card は 1 件も無い。C03 の compile-spec-doc.py::category_design_refs() はこの read_when だけから章への card を導出するため、本章に自動で引かれる card は構造的に 0 件になる。内容の側から補って引くべき card があるかも確かめたが、本サイクルの確定は『既存の Workers / D1 / SPA 配信をそのまま使い、新しい障害点を持ち込まない』ことに尽き、構成を選び直す判断が無いため card の適用余地が実際に無い。上流指針は doctrine 側 (reliability / operations) で引いている。",
+      "recorded_at": "2026-09-10T05:37:16Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "Clean Code card から本章に効いたのは 3 つの節である。第一に『重複した rule が別々に更新され、仕様の SSOT が崩れる』(解決する問題) — これが本サイクルの主題そのもので、『何が事業か』が classify.ts と total-cashflow.ts に別々の基準で実装されている現状を、なぜ直さねばならないかの根拠になる。第二に『Appropriate abstraction / DRY: 見た目の重複でなく同じ knowledge を統合する』 — 統合の対象を『似たコード』ではなく『同じ業務ルール』と定めるこの区別が、判定述語を 1 つに集約する範囲を決めた。BIZ_INCOME_MAJOR による大項目一致と中項目の前方一致は見た目は似ているが同じ knowledge (何が事業か) なので統合し、たまたま似ているだけの集計コードは統合しない。第三に『Executable examples: behavior と invariant を test で表し、内部構造でなくobservable outcome を守る』 — 各目標の measure を『旧実装では赤になる』受入条件の形で書いたのはこの節の適用であり、内部の関数分割ではなく『どの合計にどの金額が現れるか』という観測可能な結果で守る。『Intention-revealing names』も併せて効いており、判定述語と clsSrc の値という2 つの新しい名前が『中項目の前方一致で事業と判定した』という意図を伝えられるかが、将来の追跡可能性を決める。既知の中項目名を列挙しない (制約 O4) ことも、名前に規則を語らせて列挙に語らせないという同じ原則の帰結である。一方 card の『Continuous refactoring』は、本サイクルが単一の変更で完結し段階的な設計改善の計画を持たないため採らない。",
+      "recorded_at": "2026-09-10T05:37:16Z",
+      "basis": "agent-inference"
+    }
+  },
   "hearing_progress": {
     "loop_count": 1,
     "next_question": null,
     "complete": true
   },
-  "design_applications": {
-    "database": {
-      "text": "DDD の『同一性は識別子ではなく値の意味で決める』を、二重計上の判定に適用した。本章が確定させた保持形は、MF 明細と freee 取引を別テーブルのまま D1 に置き、両者を結び付ける外部キーを持たない。両システムは互いの ID を知らないため、参照で結ぼうとすると存在しない対応関係を捏造することになるからである。代わりに (金額, 発生日) の組を照合の値オブジェクトとみなし、同じ組に MF n 件・freee m 件があるとき min(n,m) 件が対応すると解する。この判断は『どの MF 行がどの freee 行か』を特定できないことを認めたうえで、合計だけは正しくなる範囲に主張を限定している (金額が同一なのでどれを外しても合計は変わらない)。要確認の判断結果は明細そのものではなく判断という別の事実として永続化し、再取込で明細が作り直されても判断が生き残るようにした — 判断を明細の属性にすると、明細の再生成が利用者の意思決定を消してしまう。",
-      "recorded_at": "2026-09-05T02:02:16Z",
-      "basis": "agent-inference"
-    },
-    "auth": {
-      "text": "secure-by-design の『信頼境界は一箇所に集約し、境界の外側に検証を配らない』を、認証面の形に適用した。本章は認証を web の /api 認証ゲート 1 本に集約し、専用アプリ向けの別資格情報を作らないことを確定させた。これは対象 platform が web だけであることの帰結であると同時に、境界が増えるほど『どこかに認証を通さない入口が残っていないか』を人手で確認し続ける必要が生じるためでもある。今回追加する一覧表とトレンドの読取 API は既存の /api 配下に置き、集計専用の公開エンドポイントを新設しない。集計結果は明細より要約されているぶん漏洩時の実害が小さく見えるが、事業と家計を合算した月次収支は本人の全所得を一行で示すため、明細と同じ扱いにする。",
-      "recorded_at": "2026-09-05T02:02:16Z",
-      "basis": "agent-inference"
-    },
-    "ui-ux": {
-      "text": "information-design の『何を残し・落とし・加工するかを先に決める』を、一覧表の列構成に適用した。ただし本章の結論は原理からの導出ではなく利用者の明示選択である — 原理に従えば読み手の主タスク (その月に全体でいくらプラスかマイナスか) に直結しない列は畳むのが定石であり、当初はそう提案した。利用者は 9 列すべての常時表示を選んだ。理由は本件の読み手が単独の個人事業主 1 名で、合計値を見た直後に必ず『なぜこの額か』へ降りるため、畳んだ列を開く操作がそのまま毎回の摩擦になるからである。原理の側を曲げたのではなく、原理が参照する『主タスクの頻度』の実測が提案時の想定と違っていた。要確認の存在は取込完了の時点で画面に警告として出す (これも利用者選択) — 要確認を一覧表の中の件数列だけで示すと、数字が合わない理由に気付くのが読み手の疑問より後になる。",
-      "recorded_at": "2026-09-05T02:02:16Z",
-      "basis": "user-decision"
-    },
-    "security": {
-      "text": "secure-by-design の『攻撃面は列挙できる大きさに保つ』を、本機能が増やす入口の評価に適用した。本章が確定させた攻撃面は /api と CSV 取込経路の 2 つだけで、今回の追加はどちらの数も増やさない — 一覧表は既存 /api 配下の読取、二重計上の判定は取込済みデータに対する内部処理である。むしろ本機能で増えるのは入口ではなく『判断の永続化』という新しい状態であり、ここが security 上の実質的な新規面である。利用者の『同じ/違う』判断は集計の値を動かすため、判断の書込は明細の書込と同じ認証ゲートを通し、取込由来のデータが判断を上書きできないようにする。CSV は外部サービスの出力であって信頼済み入力ではないため、金額・日付は取込時に検証済みの型へ落としたものだけを照合に用いる。",
-      "recorded_at": "2026-09-05T02:02:16Z",
-      "basis": "agent-inference"
-    },
-    "infrastructure": {
-      "text": "本章に適用できる設計知識 card は registry に存在しない (resource-map.yaml の read_when が infrastructure へ引く card は 0 件で、references/ 配下にも配信・実行基盤を主題とする card が無い)。これは収集漏れではなく、現在の知識ベースがアプリケーション設計の原理 (DDD / clean architecture / secure by design / information design / clean code) に限られていることの帰結である。したがって本章の確定内容 — Cloudflare Workers 単一 Worker、D1、R2、cron による日次実行 — は card ではなく既存リポジトリの実配置 (wrangler 設定と現行 worker) の観測に接地しており、その出典は本章の qa_ref 側に記録されている。card が無いことをここに明記するのは、空の節を『適用すべき知識が無かった』のか『引き忘れた』のかが読み手に区別できないためである。",
-      "recorded_at": "2026-09-05T02:02:16Z",
-      "basis": "observed-fact"
-    },
-    "backend": {
-      "text": "clean-architecture の依存方向と DDD の集約、api-design-patterns の表現分離を、集計ロジックの置き場所に適用した。本章は、トータル収支の導出を packages/core の純粋関数として置き、Hono の route は入出力の変換だけを担うと確定させた。理由は既存の trend.ts が同じ形で置かれており、判定基準 (TREND_ALPHA / TREND_MIN_MONTHS) を新機能側で作り直すと、同じ『増加傾向』という語が画面の場所によって別の基準を指すようになるからである。core は D1 も Workers も知らないため、恒等式 (総支出 = 事業費 + 家計費、総収入 = 事業収入 + 家計収入) を DB を立てずに契約テストで固定できる。API は月次行の配列と合計行を 1 応答で返し、事業側・家計側の内訳を別呼び出しに分けない — 分けると呼び出し間で期間がずれたときに、内訳の和が合計に一致しない画面が作れてしまう。",
-      "recorded_at": "2026-09-05T02:02:16Z",
-      "basis": "agent-inference"
-    },
-    "frontend": {
-      "text": "clean-architecture の『UI は業務規則を持たない』と information-design の優先順位付けを、画面側の責務境界に適用した。本章は SPA 1 系統を確定させたうえで、二重計上の判定・付替・恒等式の維持を一切クライアントで行わないと決めた。同じ判定を画面側にも書くと、core 側の規則を直したときに画面が古い規則のまま数字を出し、どちらが正しいかを利用者が判別できなくなる。画面が持つのは受け取った行の表示と期間切替だけで、期間が変われば再取得する (クライアント側で月を足し合わせて別期間を作らない — 消し込み後の値は月をまたいで単純加算できるとは限らない)。判断の入口は新しい画面を作らず既存の取込明細編集画面に置いた。要確認は明細の性質であって一覧表の性質ではないため、明細を見ている文脈で判断できるほうが確認の手数が少ない。",
-      "recorded_at": "2026-09-05T02:02:16Z",
-      "basis": "agent-inference"
-    },
-    "maintenance-ops": {
-      "text": "clean-code の『規則は一箇所に書き、名前で意図を示す』を、運用時に効く形へ適用した。本章の運用対象は Worker と D1 の 1 系統のみで、監視や配布の対象が増えないことを確定させた。本機能が運用へ持ち込む主な負債は入口ではなく規則の重複であり、二重計上の判定条件 (MF 日付 = freee 発生日 かつ 金額一致) が core と画面と取込処理に別々に書かれると、片方だけ直したときに数字が静かに食い違う。したがって判定は単一の実装に閉じ、テストが恒等式を全月で検査する。要確認件数は運用上の指標でもあり、これが増え続ける場合は照合規則が実データに合っていない兆候として読む — 0 件であることを正常とはみなさない (0 件は照合が効いている場合と、候補抽出が動いていない場合の両方で起きる)。",
-      "recorded_at": "2026-09-05T02:02:16Z",
-      "basis": "agent-inference"
-    }
-  },
   "doctrine_applications": {
+    "backend": {
+      "application-architecture": {
+        "text": "依存方向を内向きに保つという Dependency Rule を、本章の確定 (判定述語を packages/core に 1 つ置き classify.ts と total-cashflow.ts の双方が参照する) の根拠にした。現状は total-cashflow.ts が BIZ_INCOME_MAJOR という自前の判定を持ち、同じ業務ルール (何が事業か) が 2 箇所に実装されている。これは業務ルールが集計という外側の関心へ染み出した状態であり、片方だけ直すと画面間で境界がずれる。本章はこれを『判定は内側 (core の純関数) に 1 つ、集計と表示は外側からそれを呼ぶだけ』へ是正することを 確定内容とした。packages/core が依存ゼロである既存規約 (制約 C1) は、この内向き依存を構造的に強制する。",
+        "recorded_at": "2026-09-10T04:53:24Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "永続化を境界の外へ追い出し adapter で隔離するという指針を、本章の確定 (取込原本 mf_transactions に cls 列を持たせず、判定は毎回 core の純関数で導出する) の根拠にした。判定結果を列として永続化すると 判定規則の変更が過去データのマイグレーションを要求し、規則が DB スキーマに固着する。本章は判定を導出値に留め、利用者の意思だけを tx_edits に永続化する既存設計 (制約 C3) を維持することを 確定内容とした。これにより中項目の新設 (G4) がスキーマ変更なしに追従する。",
+        "recorded_at": "2026-09-10T04:53:24Z",
+        "basis": "agent-inference"
+      }
+    },
     "database": {
       "data-access": {
-        "text": "本章は『集計結果を保存しない』を確定内容の中心に置いた。月次のトータル収入・支出・収支、事業費/家計費の内訳、寄せた件数、トレンド判定はいずれも専用テーブルを持たず、canonical (取り込んだ MF 明細・freee 取引・利用者の手当て) から毎回導出する読み取りモデルとする。これは『永続化を境界の外側へ追い出す』という上流指針を、スキーマ設計の側で具体化したものである — 導出値に表を与えると、その表が第二の真実になり、canonical との乖離を検知する仕組みが別途要る。逆に保存すると決めたのは DuplicateVerdict (利用者の『同じ/違う』判断) 1 種だけで、これは導出できない意思であり境界の外側へ追い出せないという理由で例外にしている。主キーを MfTx.idStable に限定したのも、永続化層が上位の識別子概念に依存する向き (内向き) を保つためである。",
-        "recorded_at": "2026-09-05T10:24:20Z",
+        "text": "data-access anchor の『永続化を境界の外へ追い出し adapter で隔離する』という指針を、本章では『本サイクルで DB スキーマを変更しない』という確定の根拠にした。中項目は既に mf_transactions に取り込まれており、事業判定に必要な入力は全て永続化済みである。判定という業務ルールを列として固定しないことで、永続層は『MF が何と言ったか』の記録に徹し、『それを事業とみなすか』の解釈は core 側に残る。前方一致という規則の変更が DB 移行を伴わない。同じ anchor を backend 章でも引いているが、あちらが決めたのは判定を毎回導出することで、本章が決めたのはスキーマを動かさないことである。",
+        "recorded_at": "2026-09-10T05:37:16Z",
         "basis": "agent-inference"
       },
       "reliability": {
-        "text": "本章では SLO もエラーバジェットも定義していない。単独の個人事業主が自分の PC から CSV を取り込んで一覧表を読む運用であり、可用性の目標値を置いて予算を消費管理する対象になっていないためである。上流指針の名を掲げながら定義しない以上、代わりに何で信頼性を担保しているかを述べる: (1) 追加するのは DuplicateVerdict テーブル 1 本のみで既存テーブルのスキーマを変更しないため、後方互換が保たれロールバックは当該マイグレーションの取り消しで完結する。(2) 集計を保存しないので、集計の破損という障害モード自体が存在しない — 導出が失敗すれば画面が出ないだけで、canonical は無傷。冗長性・スケーリングの観点は D1 の運用上 Cloudflare 側の責務であり本章では扱わない。",
-        "recorded_at": "2026-09-05T10:24:20Z",
+        "text": "reliability anchor から本章に効いたのは、SLO を満たすための冗長化やキャッシュを『いつ導入しないか』を判断する部分である。月次集計値を保存せず要求時に canonical から毎回導出する既存決定 (制約 C5) を維持できるのは、単一利用者・月次数百行という規模では毎回導出の計算コストが可用性目標を脅かさず、エラーバジェットを消費しないためである。この規模判断が anchor に接地する部分であり、ここだけを根拠として引く。なお導出に徹する設計が『判定規則を直した瞬間に画面ごとに違う数字が出る』事態を防ぐことも確定の理由だが、これは可用性ではなく正確性・鮮度の論点であり、reliability anchor ではなく本章の確定セル (qa-database-web-mf-001) と G3 (画面間で数字が食い違わない) に直接接地する。両者を混ぜて anchor の権威で正確性の議論を裏付けない。",
+        "recorded_at": "2026-09-10T05:37:16Z",
         "basis": "agent-inference"
       }
     },
     "auth": {
       "authentication": {
-        "text": "本章の確定内容は『既存の /api 認証ゲートの内側に置く』(利用者決定 dec-auth-boundary-001)。上流指針の効き方は、新しい認証経路を作らないという結論そのものにある — 棄却した (B) 読み取り専用トークンで別経路 は、資格情報の種類と失効経路を 1 つ増やすことを意味し、シークレット管理の面は増やさないほど良いという上流の方針と逆行する。採択案では本機能が独自の資格情報を一切持たない。一方、認可はロール分割を持たない単一主体モデルのままとした。これは上流指針が推奨する最小権限とは合致しないが、利用者が 1 名でありロールを分ける対象が存在しないためであり、複数人利用が始まればこの前提が崩れることを注意点として決定記録に残してある。",
-        "recorded_at": "2026-09-05T10:24:20Z",
+        "text": "ASVS の認証境界の考え方を、本章では『本サイクルで新しい入口を作らない』ことの検証手順に落とした。境界の所在をまず確定させた — packages/api/src/auth.ts の二段構え (ACCESS_AUD と ACCESS_TEAM_DOMAIN が揃うときだけ Access JWT 検証、未設定時はアプリ内セッション認証) と wrangler.jsonc で両 var が空であることから、現に効いている境界はアプリ内セッションのミドルウェアであってエッジではない。そのうえで packages/api/src/index.ts のルート定義を読み、追加する API エンドポイントが 0 件であること、変更対象 (packages/core の純関数と既存 route の応答組み立て) がいずれもそのミドルウェアの内側に留まることを確認して確定した。判定関数が core (依存ゼロ) に置かれることは、認証状態を参照する経路が構造的に生じないことを意味する。",
+        "recorded_at": "2026-09-10T05:37:16Z",
         "basis": "agent-inference"
       },
       "security": {
-        "text": "認証境界の選択が本機能の脅威面に与える影響を、本章では『増やさない』側で確定した。既存ゲートの内側に置くことで、本機能は新しい未認証エンドポイントを 1 つも生まない。棄却した (C) Cloudflare Access へ一本化 は、上流指針の観点では妥当だが既存のパスワード経路との二重化を伴い、移行期間中はどちらの経路も生きるため攻撃面が一時的に広がる。本章では攻撃面を広げない選択を優先した。個別の脅威と対策 (S1〜S4) の列挙は security 章が担い、本章は境界の位置だけを確定している。",
-        "recorded_at": "2026-09-05T10:24:20Z",
-        "basis": "agent-inference"
-      }
-    },
-    "ui-ux": {
-      "presentation": {
-        "text": "本章の確定内容は『9 列すべて常時表示、個別明細と勘定科目はドリルダウン』(利用者決定 qa-table-columns-001)。上流指針は情報階層を優先度で刈り込むことを求めるが、本章の結論はそれに素直に従っていない — 小画面でも列を落とさないと決めた。この乖離は意図的なものである。利用者の目的は『トータルでどれぐらいプラスマイナスがあるか』を一目で把握することであり、事業費/家計費の内訳や要確認件数が畳まれると 合計の妥当性をその場で検算できなくなる。刈り込む代わりに、階層を 2 段に分けて1 段目 (9 列) を固定し、2 段目 (個別明細・勘定科目) をドリルダウンへ落とした。つまり上流指針の『階層化』は採り、『小画面での列削減』は目的適合を理由に採らなかった。",
-        "recorded_at": "2026-09-05T10:24:20Z",
+        "text": "脅威モデルの観点を、本章では『判定根拠 (clsSrc) を応答に足すことが情報の露出面を広げないか』の検査に用いた。clsSrc が示すのは『なぜ事業になったか』という自分自身のデータの分類理由であり、他利用者のデータや 資格情報を含まない。既存の ResolvedTx が既に clsSrc を返しているため、露出面は本サイクルで増えない。",
+        "recorded_at": "2026-09-10T04:53:24Z",
         "basis": "agent-inference"
       }
     },
     "security": {
       "security": {
-        "text": "本章は脅威を 4 つ (S1 未認証閲覧 / S2 ブルートフォース / S3 canonical 破壊 / S4 不正入力によるデータ汚染) に特定し、それぞれへ対策を確定した。上流指針が効いているのは特に S3 と S4 である。S3 に対し本機能を『読み取り専用の投影』と定義し、書込面を DuplicateVerdict の upsert 1 点に限定したのは、完全性 (税務の正本である freee 帳簿を壊さない) を機密性と並ぶ最重要属性に置いた結果で、既存の canonical-mutation-fence と同じ分離方針へ揃えている。S4 に対する zod スキーマ検証と明細識別子の MfTx.idStable への限定は、入力検証を境界で行うという上流の要求の具体化。暗号化については、保存する新規データが利用者自身の判断フラグのみで新たな秘匿情報を増やさないため、追加の暗号化要件は設けていない。",
-        "recorded_at": "2026-09-05T10:24:20Z",
+        "text": "ASVS の入力検証の指針を、本章では『中項目という利用者由来の文字列を判定に使う』ことの妥当性検査に用いた。前方一致は文字列比較のみで、正規表現の動的構築も eval もコード分岐の生成も伴わないため、中項目に何が入っていても実行経路は変わらない。最悪ケースは『意図しない明細が事業に分類される』ことであり、これは利用者自身の分類結果に閉じる。この最悪ケースを受容できる根拠として、『MF 側で事業で始まる家計用の中項目を作らない』という運用上の約束を利用者から得ている。CP932 の decode 失敗が文字化けを介して判定を狂わせる経路については、まず一次資料である Cloudflare 公式ドキュメント (Encoding API / Web Standards、いずれも 2026-04-23 更新) を確認したが、両ページとも TextDecoder を UTF-8 デコーダとしか記さず legacy charset の可否を明記していないため、これだけでは可否を決められない。そこで実装正本である cloudflare/workerd の issue #6193 を二次の根拠として参照し、shift_jis の streaming decode が問題として立っていること自体から実装の存在を確認した。公式ドキュメントを一次、issue を補完という序列で引く。そのうえで既存 decodeBuf が stream 分割せず全バッファを一度に decode することを確認し、この issue の影響範囲から外れることを確かめて排除した。",
+        "recorded_at": "2026-09-10T05:37:16Z",
         "basis": "agent-inference"
       }
     },
-    "infrastructure": {
-      "reliability": {
-        "text": "本章の確定内容は『要求時に canonical から毎回導出する』(利用者決定 dec-aggregation-strategy-001)。SLO とエラーバジェットは定義していない — 単独利用者が自分の PC から使う道具であり、可用性目標を数値で置いて予算消費を管理する運用体制が存在しないためである。名を掲げて定義しないままにするより、定義しないと書くほうが誠実なのでここに明記する。代わりに上流指針から採ったのは容量の見積りで、毎回導出が成立することを公式出典 cloudflare-d1-limits (1 呼出し 1,000 クエリ / SQL 文 100KB / 実行時間 30 秒 / バインドパラメータ 100) と実データ量 (月次数十行規模) の突き合わせで確認済みである。期間指定を範囲条件で表現し個別 ID の列挙を避けるという注意点は、バインドパラメータ上限に対する予防で、これが事実上の容量計画にあたる。",
-        "recorded_at": "2026-09-05T10:24:20Z",
-        "basis": "agent-inference"
-      },
-      "operations": {
-        "text": "運用面で本章が確定したのは『増やさないこと』である。棄却した (B) cron で夜間に事前計算し D1 へ保存 は、成功していれば速いが、失敗したときに『いつの集計が古いのか』を人が判断する必要が生じ、再実行手順と鮮度の監視という運用作業を新設する。毎回導出ならその作業自体が存在しない。上流指針のトイル削減を、仕組みを足して自動化する方向ではなく、仕組みを足さないことで達成した形になる。障害対応・ポストモーテムの手順は本サイクルでは定義しておらず、これは単独利用の規模に対して過剰であるという判断による (定義していないことをここに残す)。",
-        "recorded_at": "2026-09-05T10:24:20Z",
-        "basis": "agent-inference"
-      }
-    },
-    "backend": {
-      "application-architecture": {
-        "text": "本章の確定内容は推移判定に既存の Mann-Kendall 検定 + Theil-Sen 傾き推定を使うこと (利用者決定 dec-trend-method-001)。上流指針が効いているのは、この判定をpackages/core の純関数側に置き、Workers のハンドラや D1 アクセスから独立させる点である。統計手法はユースケースの中心にある業務規則であり、配信基盤や永続化の都合で変わってはならない。既存の trend.ts が同じ位置にあるため、本機能は新しい層を作らず既存の内側の層へ関数を足す形になる。棄却した (B) 最小二乗回帰 / (C) 前年同月比 も同じ位置に置けるため、この選択は層の配置には影響していない — 影響したのは目的適合の側であり、それは decisions[] の構造化比較に記録してある。",
-        "recorded_at": "2026-09-05T10:24:20Z",
-        "basis": "agent-inference"
-      },
-      "data-access": {
-        "text": "本章が扱うのは導出の入口である。トータル収支もトレンドも D1 への問い合わせ結果を受け取った後の純粋な計算として組み立て、SQL 側に集計ロジックを置かない。棄却案 (C) D1 の SQL ビュー化 を採らなかったのはこの理由による — ビューへ集計を移すと、業務規則 (何を事業費に寄せるか、どの明細を要確認とするか) が永続化層の方言で表現され、境界の外側にあるべき技術詳細の中へ内側の規則が漏れる。問い合わせは範囲条件による素直な取得に留め、寄せ・照合・合算は core 側で行う。database 章が『何を保存しないか』を決めているのに対し、本章は『保存しない値をどこで組み立てるか』を決めている。",
-        "recorded_at": "2026-09-05T10:24:20Z",
+    "ui-ux": {
+      "presentation": {
+        "text": "情報階層の原則を、本章では『判定根拠をどこまで見せるか』の確定に用いた。利用者は 3 案 ((a) 根拠を「中項目」と表示しレビュー済扱い / (b) 表示しつつ未レビューにも数える / (c) 既存の「ルール」由来と同じ表示に寄せる) から (a) を選んだ。(b) は安全側だが毎月 30 件前後の確認作業を恒久化し、(c) は表示を減らす代わりに『なぜ事業になったか』の切り分けを不可能にする。(a) は『MF 上で既に利用者自身が仕分けた』という事実を作業量ゼロで尊重しつつ、根拠ラベルという最小の情報だけを階層の下位に置く。同じ原則を、表現物 (1) の要確認の束にも適用した。要確認は常時 0 件でありうる補助的な束であり、事業収入・事業費・家計収入・家計費の 4 束と同じ視覚重みを与えると、『今月は全体でいくらプラスマイナスか』という主たる読み取りを妨げる。よって階層の下位に置き、4 束の合計と並べない。アクセシビリティ上、根拠は色ではなくラベル文字列で示す。",
+        "recorded_at": "2026-09-10T05:44:57Z",
         "basis": "agent-inference"
       }
     },
     "frontend": {
       "presentation": {
-        "text": "本章は表示の器を確定した — 既存の分析タブ群へ新しいタブとして追加し、専用画面を新設しない。要確認明細の『同じ/違う』判断も既存の取込明細編集画面へ組み込む(利用者決定)。上流指針のうち本章が採ったのは、利用者が既に持っている操作の型を壊さないという点である。新しい画面を作れば、期間切替・タブ移動・明細編集という既存の動線とは別の動線を覚えることになる。ui-ux 章が『何を出すか』(9 列とドリルダウン) を決めているのに対し、本章は『それをどこに置くか』を決めており、アクセシビリティと操作フローの詳細な検討は本サイクルでは行っていない。",
-        "recorded_at": "2026-09-05T10:24:20Z",
+        "text": "Apple HIG の情報階層の原則を、本章では『応答形状を壊さずに根拠を通す』という確定の根拠にした。ResolvedTx が既に clsSrc を持ち画面もそれを表示に使っているため、新しい表示経路を作らずラベルを 1 つ増やすだけで根拠が届く。表示の追加を最小に留めることが、既存の情報階層を乱さない。同じ原則が O8 の表示経路にも効いた。reviewAmount は TotalCashflowMonth の既存フィールドと同じ経路で web へ届き、画面は shiftedAmount と同様にそれを写すだけである。階層上は既存 4 束の下位に置き、合計と同じ視覚重みを与えない — 要確認は合計の一部ではなく合計から外した残余だからであり、同じ重みで並べると利用者がどれを足せば全体になるのかを読み違える。",
+        "recorded_at": "2026-09-10T05:44:57Z",
         "basis": "agent-inference"
       },
       "application-architecture": {
-        "text": "本章の確定内容で上流指針が最も強く効いているのは『クライアント側で合計を再計算しない』という規則である。サーバ導出値を単一の真実とし、判断の mutation が成功したら当該クエリを無効化して再取得する。これは依存の向きを内向きに保つ要求の、UI 側での現れ方である — 合計の算出規則 (事業費へ何を寄せるか) は業務規則であり、それを表示層が持つと同じ規則が 2 か所に存在して必ず食い違う。@tanstack/react-query へのサーバ状態の集約と、月次トータル収支・要確認一覧を 1 つのクエリキーで取る設計は、その規則を守るための具体的な手段にあたる。期間切替も分析関数へ期間引数を配らず、切った Dataset を渡す既存の設計を崩さない。",
-        "recorded_at": "2026-09-05T10:24:20Z",
+        "text": "Dependency Rule を、本章では『判定ロジックを web 側に持たない』ことの根拠にした。clsSrc の値の意味づけ (どの値が中項目由来か) は core が決め、web はそれを表示ラベルへ写像するだけに留める。web 側で中項目の文字列を見て事業かどうかを再判定すると、判定の正本が 3 箇所目として増え、本サイクルが解こうとしている 2 系統分裂そのものを再生産する。",
+        "recorded_at": "2026-09-10T04:53:24Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "reliability": {
+        "text": "SRE の可用性の考え方を、本章では『インフラ構成を本サイクルで変更しない』ことの確定根拠にした。変更は packages/core の純関数と既存 route の応答組み立てに閉じ、Workers / D1 / SPA 配信の構成に触れない。新しい障害点を持ち込まないことが、この規模のシステムにおける最も確実な可用性の担保である。",
+        "recorded_at": "2026-09-10T04:53:24Z",
+        "basis": "agent-inference"
+      },
+      "operations": {
+        "text": "運用手順の指針を、本章では『デプロイ手順を変えない』ことの根拠にした。スキーマ変更もマイグレーションも伴わないため、既存の wrangler deploy 手順がそのまま使え、切り戻しは 1 つ前の worker version へ戻すだけで完了する。判定結果を永続化しない設計 (制約 C3/C5) が、切り戻し時にデータの巻き戻しを不要にしている。",
+        "recorded_at": "2026-09-10T04:53:24Z",
         "basis": "agent-inference"
       }
     },
     "maintenance-ops": {
       "operations": {
-        "text": "本章の確定内容は『取込完了時点で要確認が残っていれば、その場で画面に警告を出す。メール・push・外部監視は追加しない』(利用者決定 qa-anomaly-notice-001)。上流指針の観点では、これは監視を外部に持たず、作業が発生した文脈のその場で人へ返す設計である。通知基盤を足せば、その基盤自体の死活・宛先・沈黙の管理という運用作業が新たに発生し、単独利用の規模ではその作業のほうが本体より重くなる。トイル削減を、検知を自動化する方向ではなく、検知を作業の直後に置いて見逃しの余地を減らす方向で達成している。なお本方針は、アシスタントが利用者確認を経ずに書いていた『監視アラートの追加は行わない』の訂正でもある — 通知基盤を増やさない点は一致するが、画面警告は行う。",
-        "recorded_at": "2026-09-05T10:24:20Z",
+        "text": "トイル削減とポストモーテムの指針を、本章では『前方一致の対価を運用の約束と手順で受け止める』確定に用いた。利用者は 2 案 ((a) 約束を受け入れて docs に明記 / (b) 除外リストを設定で持つ) から (a) を選んだ。(b) は運用の縛りを消す代わりに設定画面と API を増やし、判定の正本を『コード + 利用者設定』の 2 箇所へ分ける。本サイクルの主題が正本の分裂の解消である以上、(b) は目的と矛盾する。代わりに docs/spec-v1.1.md へ『中項目の「事業」前方一致が事業判定であること』と 『家計用にこの接頭辞を使わないこと』を明記し、判定が期待と違ったときに clsSrc で切り分ける手順を残す。これが将来の『なぜこれが事業になったのか』という問い合わせに対するポストモーテムの入口になる。",
+        "recorded_at": "2026-09-10T04:53:24Z",
         "basis": "agent-inference"
       }
     }

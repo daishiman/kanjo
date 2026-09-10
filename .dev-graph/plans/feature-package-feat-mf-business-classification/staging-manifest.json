@@ -1,0 +1,36 @@
+{
+  "canonical_digest": "sha256:5c66d593603f788af45d2202108a796c258693068d91b79f8c32b97eb9731ffa",
+  "feature_package_id": "feature-package/feat-mf-business-classification",
+  "files": {
+    "feature-package.json": "79a4ebd326ce361b41b4e6898417f59b54da2d1342010717146611a39034a177",
+    "workstream-inventory.json": "1a84e5d3bab49cd0f266c9a18e3dbbceff2bb8afd1df874ad57bc51a9090e1a5",
+    "task-graph.json": "d99557fae83457bfb1ad4b25fa7cd58c6760f70d134dcb2ca9749d37c8ff7074",
+    "task-specs/phase-01-requirements.md": "80a89323f5870b6cab90cd4480a164bbb6c1970a0fb97218aa31a37546713127",
+    "task-specs/phase-02-architecture.md": "a4d14a804524b0e32b8ddfa90d21348e8f453c015f306a512535d70afc0fddeb",
+    "task-specs/phase-03-design-review.md": "35bd61a897bfcc6792593301672f00505994e9f922ed29b88ca293eba01f0a78",
+    "task-specs/phase-04-test-design.md": "52f2baf7d33719034f4ccb40dca1e3b65377cf65c9f06c775ad945d32ed7c3c1",
+    "task-specs/phase-05-implementation.md": "f3c2282339fb320acd86bf2c26948e31342216215b4b75c98d83b0a17151a21a",
+    "task-specs/phase-06-test-run.md": "4507ede5d42da3ab87c482019d1db916c73abdaa2d6c507811a6dc7fa27e900a",
+    "task-specs/phase-07-acceptance.md": "15291597314cd913eddd518b4a3dff6961b78c25a98216f2e666cb0ebd71376a",
+    "task-specs/phase-08-refactoring-migration.md": "eb49df56a5969cce61320f180273544ec7fda12cd1059a25cb95309c25948d7d",
+    "task-specs/phase-09-quality-assurance.md": "503901fe3f1aeba805bf22de5e900639727fd5e65b30987481a9e22dffe9f5ce",
+    "task-specs/phase-10-final-review.md": "1ab2fa7a607724d081666e3b5c5fc3e332d56c8676975f760e2940ed9093120c",
+    "task-specs/phase-11-evidence.md": "34d2bab2d50da0a55db76c4494095d7f467decdcd0015f03b00c0d3b8a275d8a",
+    "task-specs/phase-12-documentation-operations.md": "25d49b7b6f4f504efec6d81e94bd9ef37a00db9895625edf30405f1902b14ae8",
+    "task-specs/phase-13-release-deploy.md": "ee93ff75ccf861aeebc218af46e416f641bd2700dbf9b3c062864c832d0f5c8e",
+    "system-build-handoff.json": "8ebf834262d83ad62611b0a00b939f4b9c3e3b225f1c640c43b850f3607d088a"
+  },
+  "generated_at": "2026-09-10T06:35:11Z",
+  "handoff_contract": {
+    "schema_version": "1.0.0",
+    "path": "system-build-handoff.json",
+    "sha256": "8ebf834262d83ad62611b0a00b939f4b9c3e3b225f1c640c43b850f3607d088a",
+    "source_canonical_digest": "sha256:76b96638bc02176b92a727496724fc9ef7b981e0b641aa6e9926411cf7e57d53",
+    "manifest_is_commit_point": true,
+    "self_reference_policy": "handoff hash and final digest are manifest-only"
+  },
+  "parent_feature": "feat-mf-business-classification",
+  "repository_id": "github:daishiman/kanjo",
+  "run_id": "run-20260910-mfbiz",
+  "schema_version": "1.0.0"
+}

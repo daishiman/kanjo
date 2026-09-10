@@ -119,9 +119,9 @@ describe('受入A1 恒等式 総支出 = 事業費 + 家計費', () => {
 });
 
 describe('受入A2 恒等式 総収入 = 事業収入 + 家計収入', () => {
-  it('MF の大項目「事業・副業」だけが事業収入で、残りは家計収入になる', () => {
+  it('MF の中項目が「事業」で始まる入金だけが事業収入で、残りは家計収入になる', () => {
     const data = dataset([
-      mf({ id: 'in-biz', a: 200_000, big: '事業・副業', mid: '売上', c: '架空商事' }),
+      mf({ id: 'in-biz', a: 200_000, big: '収入', mid: '事業・副業', c: '架空商事' }),
       mf({ id: 'in-home', a: 50_000, big: 'その他入金', mid: '雑収入', c: '還付金' }),
     ]);
     const rows = monthlyTotalCashflow(data, []);
@@ -136,7 +136,7 @@ describe('受入A2 恒等式 総収入 = 事業収入 + 家計収入', () => {
   });
 
   it('freee 売上と日付・金額が一致する MF 入金は freee を正として一度だけ数える', () => {
-    const data = dataset([mf({ id: 'in-dup', a: 200_000, big: '事業・副業', c: '架空商事' })]);
+    const data = dataset([mf({ id: 'in-dup', a: 200_000, big: '収入', mid: '事業・副業', c: '架空商事' })]);
     const rows = monthlyTotalCashflow(data, [
       deal({ io: 'income', amount: 200_000, partner: '架空商事', accountRaw: '売上高' }),
     ]);
@@ -240,7 +240,7 @@ describe('受入A3 (金額, 発生日) ごとに min(n, m) 件が寄る', () => 
 
 /*
   要確認は「理由を告げる」ためではなく「利用者が同じ取引か判断する」ために出す。
-  実データで理由だけを出したところ、どの明細のことか分からず判断できなかった (P07 F4 不成立)。
+  理由だけではどの明細のことか分からず判断できない (P07 F4 不成立)。
   旧実装は `{mfTxId, reason}` しか返しておらず、下の 3 件はいずれもそこで落ちる。
 */
 describe('受入F4 要確認は MF の中身と freee 候補を判断材料として持つ', () => {
@@ -258,6 +258,8 @@ describe('受入F4 要確認は MF の中身と freee 候補を判断材料と�
       major: '通信費',
       middle: 'サブスク',
       memo: '',
+      cls: 'per',
+      clsSrc: '既定',
     });
   });
 
@@ -326,14 +328,15 @@ describe('受入A4 利用者の「同じ」判断は freee 1 取引につき MF 
     expect(result.review.filter((r) => r.mfTxId === 'mf-b')).toHaveLength(1);
   });
 
-  it('「違う」判断は帰属を動かさず、合計も動かさない', () => {
+  it('「違う」判断はfreeeへの寄せを解除し、MFを独立した残余として加算する', () => {
     const data = dataset([mf({ id: 'mf-diff' })]);
     const withoutVerdict = monthlyTotalCashflow(data, [deal()]);
     const withVerdict = monthlyTotalCashflow(data, [deal()], [{ txId: 'mf-diff', verdict: 'different' }]);
 
     expect(withoutVerdict[0]).toMatchObject({ shiftedCount: 1, householdExpense: 0 });
     expect(withVerdict[0]).toMatchObject({ shiftedCount: 0, householdExpense: 3_300 });
-    // 帰属は動くが総額は動かない
+    expect(withoutVerdict[0]!.totalExpense).toBe(3_300);
+    // freeeとは別の支出だと判断したため、MF残余分だけ総額が増える。
     expect(withVerdict[0]!.totalExpense).toBe(6_600);
     expect(identityViolations(withVerdict)).toHaveLength(0);
   });
@@ -529,7 +532,7 @@ describe('受入F6 収入側の「同じ」判定で家計収入から外れ fre
     return { data, deals };
   };
 
-  it('判定前は要確認に残り、freee と MF が二重に数えられている', () => {
+  it('判定前は要確認に残り、MF 側はどの合計にも入らない', () => {
     const { data, deals } = incomeCase();
     const result = reconcileBizDuplicates(data, deals);
     const rows = monthlyTotalCashflow(data, deals);
@@ -538,30 +541,34 @@ describe('受入F6 収入側の「同じ」判定で家計収入から外れ fre
     expect(result.review).toHaveLength(1);
     expect(result.review[0]).toMatchObject({ mfTxId: 'in-home', reason: '発生日が一致しません' });
 
-    // 同じ入金が freee 側と MF 側の両方で数えられている状態
+    // 判断が付くまで MF 側は保留する。freee 側だけが残るので二重計上にならない (O7)
     expect(rows[0]).toMatchObject({
-      totalIncome: 200_000,
+      totalIncome: 100_000,
       bizIncome: 100_000,
-      householdIncome: 100_000,
+      householdIncome: 0,
       shiftedCount: 0,
       shiftedAmount: 0,
+      reviewCount: 1,
+      reviewAmount: 100_000,
     });
   });
 
   it('「同じ」と判定すると家計収入から外れ、freee を正として一度だけ数える', () => {
     const { data, deals } = incomeCase();
+    const before = monthlyTotalCashflow(data, deals);
     const rows = monthlyTotalCashflow(data, deals, [{ txId: 'in-home', verdict: 'same' }]);
 
     expect(rows).toHaveLength(1);
     expect(identityViolations(rows)).toHaveLength(0);
     expect(rows[0]).toMatchObject({
-      // 支出側 (F2) と同じ扱い。二重計上が解けるので総収入は 200,000 から減る
       totalIncome: 100_000,
       bizIncome: 100_000,
       householdIncome: 0,
       shiftedCount: 1,
       shiftedAmount: 100_000,
     });
+    // 未判断時点からMF候補は4区分の外。sameはfreee正本を確定するだけで総額を変えない。
+    expect(rows[0]!.totalIncome).toBe(before[0]!.totalIncome);
   });
 
   it('「違う」と判定した収入は寄せず、要確認にも二度と出さない', () => {
