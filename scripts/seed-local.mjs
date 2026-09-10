@@ -112,6 +112,18 @@ const SUBS = [
   ['Notion', 'テスト業務', 'サブスク・通信', 1200],
 ];
 
+/*
+ * 中項目が「事業」で始まる明細。収入・支出の両方を事業へ寄せる判定を画面で確認するために置く。
+ * 内容はどの仕分けルールのキーワードにも当たらない語にしてある。ルールが先に当たると
+ * 根拠が「ルール」になり、中項目由来で判定されたのかが画面から読めなくなるため。
+ * [大項目, 中項目, 内容, 金額(符号つき), 口座]
+ */
+const MF_BIZ_MID = [
+  ['収入', '事業・受託', 'テスト受託先 制作費', 120000, INST.self],
+  ['通信費', '事業・情報サービス', 'テストデータセンター 利用料', -4800, INST.card],
+  ['その他', '事業・外注費', 'テスト協力会社 外注', -32000, INST.self],
+];
+
 function mfRows() {
   const rand = rng(20260827);
   const rows = [MF_HEADER];
@@ -159,6 +171,11 @@ function mfRows() {
       '0',
       id(),
     ]);
+
+    // --- 中項目が「事業」で始まる明細(収入・支出の両方) ---
+    for (const [big, mid, name, amount, inst] of MF_BIZ_MID) {
+      push(['1', day(y, m, 18), name, String(amount), inst, big, mid, '', '0', id()]);
+    }
 
     // --- 生活費 ---
     for (const [big, mid, name, basis, jitter, inst] of LIVING) {

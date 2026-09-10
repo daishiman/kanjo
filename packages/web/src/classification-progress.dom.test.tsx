@@ -19,7 +19,7 @@ const summary = (over: Partial<TransactionsResponse['summary']> = {}): Transacti
     total: 10,
     bizCount: 3,
     personalCount: 7,
-    bySource: { 手動: 2, ルール: 4, 既定: 4 },
+    bySource: { 手動: 2, ルール: 4, 中項目: 0, 既定: 4 },
     reviewPending: 4,
   },
   editedCount: 2,
@@ -57,7 +57,7 @@ describe('月別の仕分けサマリー', () => {
   it('確認済みは総数から未確認を引いた件数で、出どころの内訳を添える', () => {
     render(<ClassificationProgressPanel summary={summary()} month="2026-07" />);
     expect(within(kpi('確認済み')).getByText('6件')).toBeTruthy();
-    expect(within(kpi('確認済み')).getByText('手動 2件 / ルール 4件')).toBeTruthy();
+    expect(within(kpi('確認済み')).getByText('手動 2件 / ルール 4件 / 中項目 0件')).toBeTruthy();
   });
 
   it('未確認が残っていれば既定で個人に入っている旨を注意書きする', () => {
@@ -74,7 +74,7 @@ describe('月別の仕分けサマリー', () => {
             total: 10,
             bizCount: 3,
             personalCount: 7,
-            bySource: { 手動: 6, ルール: 4, 既定: 0 },
+            bySource: { 手動: 6, ルール: 4, 中項目: 0, 既定: 0 },
             reviewPending: 0,
           },
         })}

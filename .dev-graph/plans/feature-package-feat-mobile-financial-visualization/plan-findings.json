@@ -77,9 +77,9 @@
       "name": "validate-system-plan",
       "command": [
         "python3",
-        "/Users/dm/dev/dev/個人開発/harness/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "${LOCAL_HOME}/dev/dev/個人開発/harness/plugins/system-dev-planner/scripts/validate-system-plan.py",
         "--repo-root",
-        "/Users/dm/orca/workspaces/kanjo/モバイル対応",
+        "${LOCAL_HOME}/orca/workspaces/kanjo/モバイル対応",
         "--staging",
         ".dev-graph/staging/sdp-feat-mobile-financial-visualization-20260830t0944z"
       ],

@@ -9,6 +9,8 @@ import type {
   BudgetRow,
   Candidates,
   CashFlow,
+  ClassificationProgress,
+  ClassificationSource,
   SubscriptionsData as CoreSubscriptionsData,
   DefenseForecast,
   DefenseLine,
@@ -22,6 +24,7 @@ import type {
   ReconcileExcluded,
   ReconcileFreee,
   ReconcileMatch,
+  ReconcileReview,
   StatementSource,
   SubVendor,
   SubsCandidate,
@@ -191,34 +194,7 @@ export interface TotalCashflowResponse {
 }
 
 /** 要確認 1 件。MF 側の中身と freee 側の候補を並べて見比べるための材料 */
-export interface TotalCashflowReview {
-  txId: string;
-  reason: string;
-  mf: {
-    date: string;
-    displayDate: string;
-    content: string;
-    amount: number;
-    io: 'income' | 'expense';
-    institution: string;
-    major: string;
-    middle: string;
-    memo: string;
-  };
-  candidates: {
-    freeeIndex: number;
-    /** どの候補と組むかを名指しして保存するための鍵 */
-    freeeKey: string;
-    date: string;
-    partner: string;
-    amount: number;
-    account: string;
-    settleAccount: string;
-    /** freee 発生日 − MF 発生日 の日数差。0 なら日付は一致している */
-    dayGap: number;
-    accountConflict: boolean;
-  }[];
-}
+export type TotalCashflowReview = Omit<ReconcileReview, 'mfTxId'> & { txId: string };
 
 export interface TrendsResponse {
   months: string[];
@@ -399,13 +375,14 @@ export interface TxRow {
   mid: string;
   catSrc: '手動' | 'ルール' | '取込値';
   cls: Cls;
-  src: '手動' | 'ルール' | '既定';
+  /** 有効値の解決層。materialize済みの決め事は「手動」となり、originで由来を区別する。 */
+  src: ClassificationSource;
   owner: Owner | null;
   ownerSrc: '手動' | 'ルール' | '口座' | '既定';
   edited: boolean;
   /** 編集後に取込値が変わった */
   conflict: boolean;
-  /** 保存された由来。値一致から推測しない。 */
+  /** 保存された由来。値一致から推測せず、srcとは独立した軸で運ぶ。 */
   origin: 'manual' | 'vendor_memory' | null;
   originKey: string | null;
   /** 手動の科目が現在の公私の系統(事業=freee科目 / 個人=MF内訳)に無い */
@@ -451,14 +428,8 @@ export interface TransactionsResponse {
     bizExpense: number;
     personalExpense: number;
     incomeByOwner: { business: number; spouse: number; family: number; unset: number };
-    /** 当月の仕分けの進み具合(件数)。reviewPending は人もルールも触っていない残り件数 */
-    progress: {
-      total: number;
-      bizCount: number;
-      personalCount: number;
-      bySource: { 手動: number; ルール: number; 既定: number };
-      reviewPending: number;
-    };
+    /** 当月の仕分けの進み具合(件数)。reviewPending は人・ルール・中項目の判断が無い残り件数 */
+    progress: ClassificationProgress;
     editedCount: number;
     conflictCount: number;
     noInstitutionCount: number;

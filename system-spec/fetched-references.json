@@ -1,67 +1,37 @@
 {
- "references": [
-  {
-   "target_id": "cloudflare-access-policies",
-   "retrieved_at": "2026-09-04T21:25:59Z",
-   "source_url": "https://developers.cloudflare.com/cloudflare-one/policies/access/",
-   "official_publisher": "Cloudflare",
-   "official_host": "developers.cloudflare.com",
-   "last_updated": "2026-09-04",
-   "latest_checked_at": "2026-09-05T00:04:12Z",
-   "summary": "Cloudflare Access のポリシー適用モデル。アクセス可否は4つの構成要素 — アクション (Allow / Block / Bypass / Service Auth)、ルールタイプ (Include / Require / Exclude)、セレクタ (メールドメイン・国・デバイス態勢など)、値 — の組合せで決まる。評価順序は公式本文の記述に従い『Bypass と Service Auth のポリシーが最初に UI 上の並び順で評価され、その後 Block と Allow のポリシーが UI 上の並び順で評価される』。加えて公式本文は『Once a user matches an Allow or Block policy, evaluation stops and no subsequent policies can override the decision.』と述べており、Allow または Block にマッチした時点で評価は停止する。本機能の認証境界を『既存 /api 認証ゲートの内側に置き、Access へ一本化しない』と決めた意思決定 (dec-auth-boundary-001) の棄却案 opt-access-only を評価するための根拠として参照する。なお ACCESS_AUD / ACCESS_TEAM_DOMAIN は本リポジトリ側の設定名であり、本出典に帰属する記述ではない。【訂正履歴】(1) 当初『評価順に実行され Allow または Block にマッチした時点で停止する』を、独立鮮度監査 (2026-09-04) の指摘を受けて公式と齟齬があると判断し削除したが、これは私の誤りだった。(2) 続く訂正で採った『まず Bypass と Service Auth、次に Block、最後に Allow』は Block と Allow の関係を誤って階層化していたため、2026-09-04T21:25:59Z の再照合で公式本文どおり『Block と Allow は同じ段で UI の並び順に評価される』へ訂正した。(3) 2026-09-05T00:04:12Z の自身による再照合で、公式本文に『Once a user matches an Allow or Block policy, evaluation stops』が実在することを確認し、(1) で誤って削除した停止の記述を復元した。同時に last_updated を、監査の報告値ではなく自身が観測した公式表記 (Last updated Sep 4, 2026) に基づき 2026-07-07 から 2026-09-04 へ訂正した。"
-  },
-  {
-   "target_id": "usgs-tm4a3-statistical-methods",
-   "retrieved_at": "2026-09-04T21:25:59Z",
-   "source_url": "https://www.usgs.gov/publications/statistical-methods-water-resources",
-   "official_publisher": "U.S. Geological Survey",
-   "official_host": "www.usgs.gov",
-   "version": "Techniques and Methods 4-A3 (2020)",
-   "last_updated": "2020-10-27",
-   "latest_checked_at": "2026-09-04T21:25:59Z",
-   "summary": "Helsel, D.R., Hirsch, R.M., Ryberg, K.R., Archfield, S.A., Gilroy, E.J., 2020, Statistical methods in water resources: U.S. Geological Survey Techniques and Methods, book 4, chap. A3, DOI 10.3133/tm4A3 の公式出版物ページ。本ページから検証できるのは (a) 本書が現行版として存在し 2020-10-27 付で公開されていること、(b) ゼロで下限が切られ強い歪みを持つ環境データを対象に統計手法の適用を扱う USGS の Techniques and Methods 巻であること、(c) トレンド章が WRTDS (Weighted Regressions on Time, Discharge, and Season) について改訂された旨の告知、(d) bootstrapping と permutation test といった計算集約的手法が t 検定・分散分析への依存を置き換えつつあるという記述、までである。【検証範囲の限界】本ページ本文には Mann-Kendall / Theil-Sen という個別手法名は登場しない (2026-09-04T21:25:59Z の再照合でも不在を確認)。従って本 target は手法名の一次典拠ではなく、ノンパラメトリック手法を中心に据える一般的位置付けの参考として引くにとどめる。本文 PDF (pubs.usgs.gov 配下) は HTTP 403 を返し取得できないため、手法名を裏づける一次資料は現時点で未取得である。本機能が Mann-Kendall + Theil-Sen を採る一次的な根拠は外部文献ではなく、本リポジトリに既存の packages/core/src/trend.ts (mannKendall / theilSen、TREND_MIN_MONTHS=6、TREND_ALPHA=0.05) と判定基準を一致させるという内部整合性の要求である (dec-trend-method-001)。"
-  },
-  {
-   "target_id": "cloudflare-d1-limits",
-   "retrieved_at": "2026-09-04T21:25:59Z",
-   "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
-   "official_publisher": "Cloudflare",
-   "official_host": "developers.cloudflare.com",
-   "last_updated": "2026-04-21",
-   "latest_checked_at": "2026-09-04T21:25:59Z",
-   "summary": "D1 の現行上限。最大DBサイズ 10GB (Workers Paid) / 500MB (Free)。SQL文の最大長 100,000 bytes (100KB)、クエリ最大実行時間 30秒、Worker 1呼出しあたりのクエリ数 1,000 (Paid) / 50 (Free)、1行/文字列/BLOB の最大 2,000,000 bytes (2MB)、1テーブルの最大カラム数 100、1クエリのバインドパラメータ最大 100。加えて各 D1 データベースは本質的に単一スレッドでクエリを1件ずつ処理するため、同時スループットは平均クエリ実行時間に律速される。トータル収支を毎回導出する読み取りモデルが、月次全期間の突合で 1呼出し 1,000クエリ・バインドパラメータ 100 の枠に収まる設計であることを裏づける根拠として参照する。"
-  },
-  {
-   "target_id": "cloudflare-d1-migrations",
-   "retrieved_at": "2026-09-04T21:25:59Z",
-   "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
-   "official_publisher": "Cloudflare",
-   "official_host": "developers.cloudflare.com",
-   "last_updated": "2026-06-08",
-   "latest_checked_at": "2026-09-04T21:25:59Z",
-   "summary": "D1 マイグレーションは wrangler d1 migrations の create / list / apply の3コマンドで管理する。適用済みは既定で d1_migrations テーブルに記録され、migrations_table 設定で変更できる。マイグレーション格納先は既定 migrations/ で migrations_dir 設定により変更できる。Drizzle のようにサブディレクトリへ入れ子にする構成には migrations_pattern グロブを設定でき、その場合は各マイグレーション名が migrations_dir からの相対パス (例: 0001_init/migration.sql) として記録される。グロブは * が単一パスセグメント、** が複数セグメントに対応する。DuplicateVerdict テーブルを既存 migrations/ の連番SQL 追記で導入し、逆適用でロールバックできるとした判断の根拠として参照する。"
-  },
-  {
-   "target_id": "sqlite-upsert",
-   "retrieved_at": "2026-09-04T21:25:59Z",
-   "source_url": "https://www.sqlite.org/lang_upsert.html",
-   "official_publisher": "SQLite Consortium",
-   "official_host": "www.sqlite.org",
-   "version": "3.35.0",
-   "last_updated": "2024-04-11",
-   "latest_checked_at": "2026-09-04T21:25:59Z",
-   "summary": "UPSERT は INSERT に付く句で、一意制約違反時に UPDATE か no-op として振る舞う。ON CONFLICT(conflict-target) DO UPDATE SET ... / DO NOTHING。conflict target を省略できるのは INSERT 文中の最後の ON CONFLICT 句だけで、それ以外の句では必須。最後の句が conflict target を省略した場合、先行する ON CONFLICT 句で捕捉されなかった任意の一意制約違反で発火する。DO UPDATE 内の列参照は INSERT 試行前の変更前の値を指し、挿入されようとした値は excluded. 接頭辞で参照する。WHERE 句で条件付き更新も書ける。INSERT ... SELECT の形では ON が JOIN の ON 句と構文上曖昧になるため SELECT に WHERE true を必ず付ける。UPSERT は 3.24.0 (2018-06-04) で追加され、3.35.0 (2021-03-12) で複数 ON CONFLICT 句と conflict target 省略が可能になった。要確認明細への『同じ/違う』判断 (DuplicateVerdict) を idStable を主キーに冪等 upsert する実装の根拠として参照する。【last_updated の典拠】記録値 2024-04-11 はページ footer の自称更新日 (This page was last updated on 2024-04-11 23:26:09Z) を採る。一度は HTTP Last-Modified ヘッダの実測値 2026-08-27 を採用したが、SQLite 公式サイトは内容変更が無くてもページを定期再生成するためヘッダ値は改訂日を意味せず、『2026年に改訂があった』という誤った印象を与える。ページ自身が更新日を公表している以上そちらが権威である。内容上の正本は version フィールド (3.35.0 / 2021-03-12) であり、UPSERT 構文は 3.35.0 以降変更されていない。"
-  },
-  {
-   "target_id": "tanstack-query-invalidation",
-   "retrieved_at": "2026-09-04T21:25:59Z",
-   "source_url": "https://tanstack.com/query/v5/docs/framework/react/guides/invalidations-from-mutations",
-   "official_publisher": "TanStack",
-   "official_host": "tanstack.com",
-   "version": "5",
-   "latest_checked_at": "2026-09-05T02:05:26Z",
-   "summary": "mutation 成功時にサーバ状態を再同期する公式パターン。useMutation の onSuccess で useQueryClient から得た queryClient.invalidateQueries({ queryKey: [...] }) を await する。複数キーは Promise.all でまとめて無効化する。onSuccess が Promise を返すと無効化完了まで mutation は pending のままとなり (公式本文: 『Returning a Promise on onSuccess makes sure the data is updated before the mutation is entirely complete (i.e., isPending is true until onSuccess is fulfilled)』)、データ更新が完了してから mutation が終わることが保証される。要確認明細への判断を送った後に月次トータル収支のクエリを無効化して再取得し、合計をクライアント側で再計算せず常にサーバ導出値を単一の真実に保つ、というフロントエンド判断の根拠として参照する。v5 系であることは公式のバージョン付きURL (/query/v5/) が示す。 【鮮度に関する注記】本出典に last_updated が無いのは取得漏れではなく、発行元 TanStack が 最終更新日を掲載していないためである (2026-09-05T02:05:26Z に公式ページを再照合し、『Last updated』相当の表記が存在しないことを確認した)。日付を推測して埋めない。鮮度はバージョン付き公式 URL (/query/v5/) が示す v5 系であることで担保する。",
-   "last_updated_absent_reason": "publisher-does-not-publish"
-  }
- ]
+  "references": [
+    {
+      "target_id": "cloudflare-workers-encoding-api",
+      "retrieved_at": "2026-09-10T04:44:10Z",
+      "source_url": "https://developers.cloudflare.com/workers/runtime-apis/encoding/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "version": null,
+      "last_updated": "2026-04-23",
+      "latest_checked_at": "2026-09-10T04:44:58Z",
+      "summary": "公式 Encoding API ページは 2026-04-23 更新時点で「TextDecoder represents a UTF-8 decoder」とだけ記し、legacy charset (shift_jis 等) の可否を明記していない。すなわち本ページ単体では C2 制約 (CP932 の MF CSV を decodeBuf の shift_jis フォールバックで読む) の成立を肯定も否定もできない。この空白を埋めるため target workerd-legacy-encoding-streaming で実装側 (workerd) を確認した。仕様書ではこのページを『公式ドキュメントは UTF-8 のみを明記しており記述が実装に追随していない』という限定つきの根拠として引用し、shift_jis 可否の根拠には用いない。"
+    },
+    {
+      "target_id": "cloudflare-workers-web-standards",
+      "retrieved_at": "2026-09-10T04:44:58Z",
+      "source_url": "https://developers.cloudflare.com/workers/runtime-apis/web-standards/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "version": null,
+      "last_updated": "2026-04-23",
+      "latest_checked_at": "2026-09-10T04:44:58Z",
+      "summary": "Workers runtime がサポートする Web 標準 API の公式一覧。2026-04-23 更新時点で TextEncoder / TextDecoder および TextEncoderStream / TextDecoderStream が利用可能であることを明記する。ただし『Both TextEncoder and TextDecoder support UTF-8 encoding/decoding』とあり、legacy charset への言及はない。TextDecoder が runtime に存在することの根拠としては十分だが、shift_jis の可否の根拠としては不十分である。詳細は MDN の Encoding API を参照するよう案内している。"
+    },
+    {
+      "target_id": "workerd-legacy-encoding-streaming",
+      "retrieved_at": "2026-09-10T04:44:58Z",
+      "source_url": "https://github.com/cloudflare/workerd/issues/6193",
+      "official_publisher": "Cloudflare",
+      "official_host": "github.com",
+      "version": null,
+      "last_updated": "2026-02-26",
+      "latest_checked_at": "2026-09-10T04:44:58Z",
+      "summary": "Workers runtime の実装正本である cloudflare/workerd の issue #6193 『legacy multi-byte encodings in TextDecoder are wrong in streaming』(2026-02-26 起票、確認時点で Closed)。この issue が存在すること自体が、workerd が big5 / shift_jis / euc-kr / iso-2022-jp を実装していることを示す (未実装なら streaming の正しさは問題にならない)。したがって公式ドキュメントの『UTF-8 デコーダ』記述は実装に追随していない。報告内容は『Streaming is wrong. Which means that the result of decoding a stream depends on the shape of the stream, not just bytes of the stream.』であり、影響は stream 分割での decode に限られ、単発 decode には及ばない。本リポジトリの packages/core/src/csv.ts decodeBuf は Uint8Array 全体を一度に decode し {stream:true} を用いないため、修正前後いずれの runtime でも影響を受けない。加えて本リポジトリの packages/api/wrangler.jsonc の compatibility_date は 2026-08-24 であり、この issue の起票日 (2026-02-26) より後である。関連 issue #5663 (2025-12-09 起票、Closed) は new TextDecoder('shift-jis').encoding が WHATWG 正準ラベル shift_jis ではなく shift-jis を返すというラベル正規化の指摘であり、decode 結果そのものには影響しない。実装では encoding プロパティ値に依存した分岐を書かないこと。"
+    }
+  ]
 }

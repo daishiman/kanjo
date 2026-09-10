@@ -4,7 +4,7 @@
     "version": "0.1.0",
     "context": "fork"
   },
-  "spec_dir": "/Users/dm/orca/workspaces/kanjo/取り込みの削除/system-spec",
+  "spec_dir": "${LOCAL_HOME}/orca/workspaces/kanjo/取り込みの削除/system-spec",
   "verdict": "FAIL",
   "aspects": {
     "foundation_trace": {

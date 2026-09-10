@@ -15,7 +15,7 @@ iteration: null
 created_at: "2026-09-05T12:42:39Z"
 updated_at: "2026-09-05T12:42:39Z"
 depends_on: []
-related_nodes: []
+related_nodes: ["spec-mf-business-classification", "feat-total-cashflow", "feat-mf-business-classification"]
 resource_scope: ["packages/core/src", "packages/api/src", "packages/web/src"]
 purpose: null
 goal: null
@@ -31,8 +31,8 @@ template_id: "specification"
 template_version: "1.0.1"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "eval-log/completeness-findings-r7.json", "evaluated_digest": "5c09c96c9e8beec154d8ec3b7b595130486284cc31e670fff3074e7119422527"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/00-requirements-definition.md", "source_version": "0.1.11", "source_digest": "5c09c96c9e8beec154d8ec3b7b595130486284cc31e670fff3074e7119422527", "imported_at": "2026-09-05T12:42:39Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/completeness-findings.json", "evaluated_digest": "5c09c96c9e8beec154d8ec3b7b595130486284cc31e670fff3074e7119422527"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/00-requirements-definition.md", "source_version": "0.1.11", "source_digest": "5c09c96c9e8beec154d8ec3b7b595130486284cc31e670fff3074e7119422527", "imported_at": "2026-09-05T12:42:39Z"}
 classification_confidence: 1.0
 classification_reason: "system-spec-harness が確定させた章 system-spec/00-requirements-definition.md の取込である。artifact_kind は章の性質から決まり (要件定義書=specification、技術章=architecture)、分類の余地が無いため確信度 1.0。serves_goals=G1,G2,G3,G4,G5,G6,G7 を通じて上位概念のゴールへ接地する。"
 classification_candidates: [{"artifact_kind": "specification", "confidence": 1.0, "candidate_path": "specs/total-cashflow-requirements.md"}]
@@ -52,8 +52,8 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5", "G6", "G7"]
 
 freee (事業) と Money Forward (家計) に分かれた収入・支出を、二重計上を明細単位で消し込んだうえで 1 つの月次一覧表へ束ねる機能の要件仕様。上位概念 U1-U9 の確定内容は正本を参照する。
 
-> 本文の正本は `system-spec/00-requirements-definition.md` (system-spec-harness 所有)。本ノードは複製ではなく、
-> 正本への lineage 参照と、dev-graph 上の実装境界・確定根拠を保持する。
+> 生成時の正本は frontmatter の archive lineage に保存する。MF 公私判定と要確認集計の現行契約は
+> `specs/spec-mf-business-classification.md` が本書を改訂し、当該項目では本書より優先する。
 > 資するゴール: G1, G2, G3, G4, G5, G6, G7
 
 ## 目的と成功状態
@@ -109,12 +109,13 @@ U9 の I1-I9 が機能要件の確定集合である (正本の当該表を参�
 - I3 MF 明細の日付と freee 取引の発生日 (`FreeeDeal.date`) が一致し金額も一致する支出は事業で使う
   費用とみなし、freee を正として事業費に一度だけ計上し MF 側を家計費から外す。同じ (金額, 発生日) に
   MF が n 件・freee が m 件あるときは MF から `min(n, m)` 件を外す。
-- I4 MF 側で事業・副業に分類される入金を事業収入とし、それ以外を家計収入とする。freee 売上と
+- I4 MF 明細の事業/家計帰属は `specs/spec-mf-business-classification.md` の `resolveTx` 契約を使う。freee 売上と
   同額・同発生日で重なる分は支出と同じ規則で freee を正とする。
-- I5 自動確定できなかった候補を、理由付きの要確認一覧として出す。抽出は合計を変えない。
-- I6 「同じ/違う」判断を既存の取込明細編集画面から行い、保存して次の取込でも再適用する。「同じ」は
-  合計へ反映し、支出は当該 MF 明細を家計費から外して事業費へ、収入は当該 MF 入金を家計収入から外して
-  事業収入へ寄せる (支出と収入で同一の規則)。いずれの向きでも総額は変わらず内訳だけが移る。
+- I5 自動確定できなかった候補を理由付きの要確認一覧として出し、判断が付くまで4区分合計から除外する。
+  `reviewCount` と `reviewAmount` は同じ要確認集合から導出して別管理する。
+- I6 「同じ/違う」判断を既存の取込明細編集画面から行い、保存して次の取込でも再適用する。未判断では
+  MF 候補を4区分から除外する。「同じ」は freee 正本だけを維持するため総額を変えない。「違う」は
+  独立した残余 MF として `resolveTx` の区分へ加算する。
 - I7 トータル支出の増減を既存のトレンド判定基準で表示する。
 
 ## 非機能要件
@@ -145,9 +146,9 @@ U9 の I1-I9 が機能要件の確定集合である (正本の当該表を参�
 1. **自動判定器**: 「MF 明細の日付 = freee 取引の発生日 かつ 金額一致」の 1 本のみ。判定を 1 箇所に置き
    複製しない。freee 側の `dueDate` / `settledDate` は用いない。支払先を用いない (同額・同日の無関係な
    支出も事業費として扱われうることを既知の限界として明記する — 単純さと予測可能性を優先した利用者判断)。
-2. **利用者の明示判断**: 「同じ」は自動規則を上書きし、当該明細を家計側から外して事業側へ寄せる。
-   上書きも 1 対 1 を保ち、freee 側 1 取引に対し MF は 1 件まで。「違う」は帰属を変えず、次回以降
-   その組を要確認として再提示しない。
+2. **利用者の明示判断**: 未判断は MF 候補を4区分から隔離する。「同じ」は freee 正本を維持して
+   MF 候補を加算せず、総額を変えない。「違う」は独立した残余 MF として `resolveTx` の区分へ加算し、
+   次回以降その組を要確認として再提示しない。判断は 1 対 1 の対応で保存する。
 
 候補抽出器 (金額一致かつ発生日 ±3 日以内) は自身では帰属を変えず、要確認一覧の生成にのみ用いる。
 除外は freee 側の件数を上限とし、freee に存在しない分の MF 明細を消さない (過小計上の防止)。
@@ -231,13 +232,13 @@ O1-O6 の測り方がそのまま受入条件である。件数の正本は
 | F3 | 月ごとの「寄せた件数」と「寄せた金額」が消し込み対象明細の実数と一致し、画面の同一セルに併記される | 契約 + 画面 |
 | F4 | 重複候補が理由付きで列挙され、0 件のときは 0 件と画面に明示される (空欄にしない) | 画面 |
 | F5 | 判断が保存され再取込後も同じ明細へ再適用される | 結合 |
-| F6 | 収入側の「同じ」判定でも支出側と同じ消し込みが働き、MF 側が家計収入から外れて総収入が減り、恒等式が保たれる | 契約 |
+| F6 | 未判断は4区分から除外され、「同じ」はfreee正本を維持して総額不変、「違う」は独立残余MFとして解決済み区分へ加算される | 契約 |
 | F7 | `TREND_MIN_MONTHS` 未満は「判定不可」、有意判定は `TREND_ALPHA` を既存と共有する | 契約 |
 | F8 | 期間を切り替えても、両方に含まれる月の値が一致する | 契約 |
 | F9 | 9 列すべてが常時表示される | 画面 |
 | F10 | 取込完了時に要確認が残っていれば画面へ警告が出る | 画面 |
 
-利用者の「同じ」判断による付替が freee 側 1 取引につき MF 1 件までであることは、
+利用者判断の対応が freee 側 1 取引につき MF 1 件までであることは、
 F2 / F6 が壊れる経路を塞ぐ補助検査として別に固定する (受入 10 件そのものではない)。
 
 以前この節は 6 行の箇条書きで、F3 / F4 / F6 / F8 を落としていた。落ちた 4 件は

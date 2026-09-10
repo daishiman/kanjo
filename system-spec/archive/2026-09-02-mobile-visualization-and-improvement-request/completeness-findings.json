@@ -4,7 +4,7 @@
     "version": "0.1.0",
     "context": "fork"
   },
-  "spec_dir": "/Users/dm/orca/workspaces/kanjo/改善要望対応/system-spec",
+  "spec_dir": "${LOCAL_HOME}/orca/workspaces/kanjo/改善要望対応/system-spec",
   "verdict": "PASS",
   "aspects": {
     "foundation_trace": {
@@ -124,7 +124,7 @@
       ],
       "command": [
         "python3",
-        "/Users/dm/dev/dev/個人開発/harness/plugins/system-spec-harness/scripts/validate-coverage-matrix.py",
+        "${LOCAL_HOME}/dev/dev/個人開発/harness/plugins/system-spec-harness/scripts/validate-coverage-matrix.py",
         "--matrix",
         "system-spec/spec-state.json",
         "--require-complete"
@@ -142,7 +142,7 @@
       ],
       "command": [
         "python3",
-        "/Users/dm/dev/dev/個人開発/harness/plugins/system-spec-harness/scripts/validate-coverage-matrix.py",
+        "${LOCAL_HOME}/dev/dev/個人開発/harness/plugins/system-spec-harness/scripts/validate-coverage-matrix.py",
         "--matrix",
         "system-spec/spec-state.json",
         "--require-foundation"
@@ -160,7 +160,7 @@
       ],
       "command": [
         "python3",
-        "/Users/dm/dev/dev/個人開発/harness/plugins/system-spec-harness/skills/assign-system-spec-completeness-evaluator/scripts/aggregate-completeness.py",
+        "${LOCAL_HOME}/dev/dev/個人開発/harness/plugins/system-spec-harness/skills/assign-system-spec-completeness-evaluator/scripts/aggregate-completeness.py",
         "--knowledge-graph"
       ],
       "exit_code": 0,
@@ -175,7 +175,7 @@
       ],
       "command": [
         "python3",
-        "/Users/dm/dev/dev/個人開発/harness/plugins/system-spec-harness/scripts/validate-source-citation.py",
+        "${LOCAL_HOME}/dev/dev/個人開発/harness/plugins/system-spec-harness/scripts/validate-source-citation.py",
         "--targets",
         "<spec-state.json targets 抽出>",
         "--references",
@@ -195,7 +195,7 @@
       ],
       "command": [
         "python3",
-        "/Users/dm/dev/dev/個人開発/harness/plugins/prompt-creator/skills/run-prompt-creator-7layer/scripts/verify-completeness.py",
+        "${LOCAL_HOME}/dev/dev/個人開発/harness/plugins/prompt-creator/skills/run-prompt-creator-7layer/scripts/verify-completeness.py",
         "--input",
         "<system-spec-harness 配下 prompts/*.md 18 件>"
       ],
@@ -211,7 +211,7 @@
       ],
       "command": [
         "python3",
-        "/Users/dm/dev/dev/個人開発/harness/plugins/prompt-creator/skills/run-prompt-creator-7layer/scripts/validate-prompt.py",
+        "${LOCAL_HOME}/dev/dev/個人開発/harness/plugins/prompt-creator/skills/run-prompt-creator-7layer/scripts/validate-prompt.py",
         "--input",
         "<system-spec-harness 配下 prompts/*.md 18 件>"
       ],
@@ -398,7 +398,7 @@
       "bucket": "read_only_compliance",
       "observation": "評価者による書き込みは system-spec/completeness-findings.json の 1 件のみ。system-spec/*.md / spec-state.json / fetched-references.json / eval-log/ への書き込みは 0 件。git の add / commit / push / PR 作成はいずれも実行していない。一時ファイルはスクラッチパッド配下のみ。",
       "evidence": [
-        "書込ファイル: /Users/dm/orca/workspaces/kanjo/改善要望対応/system-spec/completeness-findings.json のみ"
+        "書込ファイル: ${LOCAL_HOME}/orca/workspaces/kanjo/改善要望対応/system-spec/completeness-findings.json のみ"
       ]
     },
     {

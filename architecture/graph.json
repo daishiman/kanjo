@@ -213,7 +213,7 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": "5190997153bb2d59b4b69541d6e075b3229986622cdb45f6a01ae66d978169bb",
+        "source_digest": "6db8b40267bfb73cb1816b6d053a2bfba83996c845a392748838591603cfeec6",
         "imported_at": "2026-08-29T00:00:00Z"
       },
       "referenced_by": [
@@ -309,7 +309,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/index.md",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/index.md",
         "source_version": "0.1.12",
         "source_digest": "69a9cb667945e7769df55e373d35de54a2a2f7f094d38454c9c008971fb6ce94",
         "imported_at": "2026-09-08T07:32:48Z"
@@ -332,7 +332,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/backend.md",
         "source_version": "0.1.11",
         "source_digest": "778e674fc0686dad4f026f0a3ecbeb663952ab43718e8594f91067dab5445a86",
         "imported_at": "2026-09-05T12:42:39Z"
@@ -355,7 +355,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/database.md",
         "source_version": "0.1.11",
         "source_digest": "313d15d861b25509ad473928d72bd45c3f5686ec5afb8aa6472f5a1f01228d67",
         "imported_at": "2026-09-05T12:42:39Z"
@@ -378,7 +378,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/frontend.md",
         "source_version": "0.1.11",
         "source_digest": "6d9a3099e81f6ccae5e93105dd5b41d485bcc4a57a9c478239b8f6e694ddacb2",
         "imported_at": "2026-09-05T12:42:39Z"
@@ -401,7 +401,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ui-ux.md",
         "source_version": "0.1.11",
         "source_digest": "0ae53d13baeaefe134054d1bca4ca872f9bc0904ec65ff2356bddcd526c14368",
         "imported_at": "2026-09-05T12:42:39Z"
@@ -424,7 +424,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/auth.md",
         "source_version": "0.1.11",
         "source_digest": "a87513e0ed417ea678374665baa176e4a2272dcd5aaa730aa658e2e339e2a635",
         "imported_at": "2026-09-05T12:42:39Z"
@@ -447,7 +447,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/security.md",
         "source_version": "0.1.11",
         "source_digest": "b2c10d6b0ea7473d6d33e4a062f35af35d3aa8cdafff6c38a18f66be03bf2764",
         "imported_at": "2026-09-05T12:42:39Z"
@@ -470,7 +470,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/infrastructure.md",
         "source_version": "0.1.11",
         "source_digest": "2e0294fec0e238866bfe2ecffee52e662bbdc1638f3d143e86eee7149b1bdbcf",
         "imported_at": "2026-09-05T12:42:39Z"
@@ -493,13 +493,197 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/maintenance-ops.md",
         "source_version": "0.1.11",
         "source_digest": "7f916ede6073bf90e8501649a140e54c570fcce61d09d6da14315aaf0fd7f529",
         "imported_at": "2026-09-05T12:42:39Z"
       },
       "referenced_by": [
         "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-mf-business-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "MF 事業判定 — バックエンド境界",
+      "file_path": "architecture/mf-business-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8ef2dbf6dd24ac4e3884e328fcddb7bc711b21f9e4c54d0b6f760284746baf44",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "MF 事業判定 — データ境界",
+      "file_path": "architecture/mf-business-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2fe5bbedace90f133275f839664b0b31ff7394e29f0ef4495cbed932e6816c0e",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "MF 事業判定 — フロントエンド境界",
+      "file_path": "architecture/mf-business-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c0e51ae2eff4d0c53e4008887db4a39f6a508fa74c3422c32bf0fda0fd3cd31b",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "MF 事業判定 — 表現物と情報階層",
+      "file_path": "architecture/mf-business-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "d835852b1d3cadf91f2679d08b8472b369775907805c49f3ad381f025ea9fcd3",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "MF 事業判定 — 認証境界",
+      "file_path": "architecture/mf-business-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "af72f5ae696d778cf43742b746026376215565ba28a46de52e7b930b480f4567",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "MF 事業判定 — 入力検証と脅威",
+      "file_path": "architecture/mf-business-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "96053444178396c297587b1bc18328344cf9f5301945414f38f30c87751f5f99",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "MF 事業判定 — 実行環境と配信",
+      "file_path": "architecture/mf-business-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "d13ad4a5a60401079275bbaccb6a9ef671f0118ae7db6f7f44f42c248e5854d7",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "MF 事業判定 — 運用と文書",
+      "file_path": "architecture/mf-business-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "696083a21c3ae1034c1eeff2c8db92cb2c3e7c7f499f57ee1f89360da74df3a2",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
       ]
     }
   ]
