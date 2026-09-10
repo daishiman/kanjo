@@ -78,7 +78,14 @@ const verdictRowCount = async (): Promise<number> => {
 };
 
 type CashflowBody = {
-  months: Array<{ month: string; shiftedCount: number; reviewCount: number; householdExpense: number }>;
+  months: Array<{
+    month: string;
+    shiftedCount: number;
+    reviewCount: number;
+    reviewAmount: number;
+    totalExpense: number;
+    householdExpense: number;
+  }>;
   review: Array<{ txId: string; reason: string }>;
 };
 
@@ -126,14 +133,23 @@ describe('受入A5 重複判断の保存と再取込後の再適用', () => {
   it('「同じ」判断が保存され、一覧表の帰属が動く', async () => {
     const before = (await (await request('/total-cashflow?from=2026-08&to=2026-08')).json()) as CashflowBody;
     expect(before.months).toHaveLength(1);
-    expect(before.months[0]).toMatchObject({ shiftedCount: 0, householdExpense: 3300 });
+    // 要確認は 4 束のどれにも入れない (O7)。判断がつくまで家計費にも数えない
+    expect(before.months[0]).toMatchObject({
+      shiftedCount: 0,
+      totalExpense: 3300,
+      householdExpense: 0,
+      reviewCount: 1,
+      reviewAmount: 3300,
+    });
     expect(before.review).toHaveLength(1);
 
     expect((await postVerdict('2026-08_1_-3300', 'same')).status).toBe(200);
     expect(await verdictRowCount()).toBe(1);
 
     const after = (await (await request('/total-cashflow?from=2026-08&to=2026-08')).json()) as CashflowBody;
-    expect(after.months[0]).toMatchObject({ shiftedCount: 1, householdExpense: 0 });
+    // pending時点でMF候補は4区分から隔離済み。sameはfreee正本を確定しても総額を動かさない。
+    expect(after.months[0]).toMatchObject({ shiftedCount: 1, totalExpense: 3300, householdExpense: 0 });
+    expect(after.months[0]!.totalExpense).toBe(before.months[0]!.totalExpense);
     expect(after.review).toHaveLength(0);
   });
 
@@ -173,8 +189,8 @@ describe('受入A5 重複判断の保存と再取込後の再適用', () => {
 });
 
 /*
-  実データでは要確認が 19 件出た。1 件ずつ送ると、そのたびに期間解決を丸ごとやり直す
-  往復が 19 回走る。D1 のクエリ数は invocation 単位で数えられるため、往復の数が
+  複数件を1件ずつ送ると、そのたびに期間解決を丸ごとやり直す。
+  D1 のクエリ数は invocation 単位で数えられるため、往復の数が
   そのまま保存の成否を左右しかねない。選んだ分を 1 往復で受けられることを固定する。
 
   旧実装 (単票しか受けない) では `items` が zod で弾かれ 400 になるので、この節は必ず落ちる。
@@ -209,7 +225,8 @@ describe('選択した要確認をまとめて判定する', () => {
   it('3 件を 1 回の要求で保存し、一覧表の帰属がまとめて動く', async () => {
     const before = (await (await request('/total-cashflow?from=2026-08&to=2026-08')).json()) as CashflowBody;
     expect(before.review.map((r) => r.txId).sort()).toEqual(['bulk-1', 'bulk-2', 'bulk-3']);
-    expect(before.months[0]).toMatchObject({ shiftedCount: 0, householdExpense: 6000 });
+    // 3 件とも要確認なので、判断がつくまでどの束にも入らない (O7)
+    expect(before.months[0]).toMatchObject({ shiftedCount: 0, householdExpense: 0 });
     const rowsBefore = await verdictRowCount();
 
     const response = await postBulk(bulkRows.map((row) => ({ txId: row.txId, verdict: 'same' as const })));
@@ -236,7 +253,7 @@ describe('選択した要確認をまとめて判定する', () => {
   });
 
   /*
-    まとめて送ると「1 件でも駄目なら全部落とす」に倒れやすい。19 件のうち 1 件が
+    まとめて送ると「1 件でも駄目なら全部落とす」に倒れやすい。複数件のうち 1 件が
     保存できないだけで残り 18 件の判断が消えると、利用者は何度も選び直す羽目になる。
   */
   it('保存できない 1 件があっても残りは保存し、落ちた件だけを理由付きで返す', async () => {
@@ -434,5 +451,48 @@ describe('どの freee 取引と組むかの名指し', () => {
       .prepare(`SELECT freee_key FROM duplicate_verdicts WHERE user_id='default' AND tx_id='pick-1'`)
       .first<{ freee_key: string | null }>();
     expect(saved?.freee_key).toMatch(/^v1:freee:/);
+  });
+});
+
+describe('MF 事業判定の公開 wire 契約', () => {
+  it('GET /api/transactions が src と bySource を実応答で返す', async () => {
+    await database.prepare(`DELETE FROM mf_transactions WHERE user_id='default' AND month='2026-10'`).run();
+    await database
+      .prepare(
+        `INSERT INTO mf_transactions
+          (user_id,tx_id,month,date,description,amount,category_major,category_mid,is_target,is_transfer,identity_stable)
+         VALUES ('default','api-wire-mid','2026-10','2026-10-01','架空サービス',-1200,'通信費','  事業・情報サービス  ',1,0,1)`,
+      )
+      .run();
+    await database.prepare(`DELETE FROM freee_deals WHERE user_id='default' AND month='2026-10'`).run();
+    await database
+      .prepare(
+        `INSERT INTO freee_deals (user_id,month,date,io,partner,account_raw,account_norm,amount)
+         VALUES ('default','2026-10','2026-10-02','expense','架空サービス','通信費','通信費',1200)`,
+      )
+      .run();
+
+    const response = await request('/transactions?month=2026-10');
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as {
+      transactions: Array<Record<string, unknown> & { id: string; cls: string; src: string }>;
+      summary: { progress: { bySource: Record<string, number> } };
+    };
+    const row = body.transactions.find((item) => item.id === 'api-wire-mid');
+    expect(row).toMatchObject({ cls: 'biz', src: '中項目' });
+    expect(row).not.toHaveProperty('clsSrc');
+    expect(body.summary.progress.bySource['中項目']).toBe(1);
+
+    const cashflowResponse = await request('/total-cashflow?from=2026-10&to=2026-10');
+    expect(cashflowResponse.status).toBe(200);
+    const cashflow = (await cashflowResponse.json()) as {
+      months: Array<{ reviewCount: number; reviewAmount: number }>;
+      review: Array<{ txId: string; mf: { cls: string; clsSrc: string } }>;
+    };
+    expect(cashflow.months[0]).toMatchObject({ reviewCount: 1, reviewAmount: 1200 });
+    expect(cashflow.review.find((item) => item.txId === 'api-wire-mid')?.mf).toMatchObject({
+      cls: 'biz',
+      clsSrc: '中項目',
+    });
   });
 });

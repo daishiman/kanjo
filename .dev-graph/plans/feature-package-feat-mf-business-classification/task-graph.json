@@ -1,0 +1,135 @@
+{
+  "feature_package_id": "feature-package/feat-mf-business-classification",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P01",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P01",
+      "title": "匿名 fixture による要件ベースライン確定"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P01"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P02",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P02",
+      "title": "判定境界のアーキテクチャ決定"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P02"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P03",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P03",
+      "title": "設計レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P03"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P04",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P04",
+      "title": "契約テスト先行"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P04"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P05",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P05",
+      "title": "最小実装"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P05"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P06",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P06",
+      "title": "テスト実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P06"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P07",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P07",
+      "title": "匿名 fixture による受入検証"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P07"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P08",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P08",
+      "title": "重複判定のリファクタリング"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P08"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P09",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P09",
+      "title": "品質保証レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P09"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P10",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P10",
+      "title": "最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P10"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P11",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P11",
+      "title": "証跡索引"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P11"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P12",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P12",
+      "title": "利用者・運用文書同期"
+    },
+    {
+      "depends_on": [
+        "SYS-MFBIZ-P12"
+      ],
+      "feature_package_id": "feature-package/feat-mf-business-classification",
+      "id": "SYS-MFBIZ-P13",
+      "parent_feature": "feat-mf-business-classification",
+      "phase_ref": "P13",
+      "title": "クローズアウト"
+    }
+  ],
+  "parent_feature": "feat-mf-business-classification",
+  "schema_version": "1.0.0"
+}

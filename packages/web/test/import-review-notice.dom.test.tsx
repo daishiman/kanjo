@@ -31,6 +31,7 @@ const month = (reviewCount: number) => ({
   shiftedCount: 1,
   shiftedAmount: 3_300,
   reviewCount,
+  reviewAmount: reviewCount * 1_000,
   trend: '判定不可' as const,
 });
 

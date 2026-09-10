@@ -127,13 +127,13 @@ export function ClassificationProgressPanel({
           compact
           label="確認済み"
           value={`${done}件`}
-          note={`手動 ${p.bySource.手動}件 / ルール ${p.bySource.ルール}件`}
+          note={`手動 ${p.bySource.手動}件 / ルール ${p.bySource.ルール}件 / 中項目 ${p.bySource.中項目}件`}
         />
         <KpiCard
           compact
           label="未確認"
           value={`${p.reviewPending}件`}
-          note={p.reviewPending ? 'まだ人もルールも触っていない明細' : '当月は一巡しました'}
+          note={p.reviewPending ? '人・ルール・中項目の判断が無い明細' : '当月は一巡しました'}
         />
       </div>
       {p.reviewPending > 0 && (
@@ -158,7 +158,15 @@ export function ClassificationProgressPanel({
           </li>
           <li>同じ支払先が毎月出てくるなら、設定画面でルールに登録すると次の取込から自動で判定されます。</li>
           <li>
+            MF の中項目が「事業」で始まる明細は自動で事業になります。
+            実際の用途と違うときは、行の「個人」または「事業」で上書きできます。
+          </li>
+          <li>
             ここでの編集は取込値(MF の大項目/中項目)とは別枠に保存されるため、取り込み直しても消えません。
+          </li>
+          <li>
+            「手動」の件数には、取引先の決め事を保存値へ自動適用した明細も含みます。
+            行の「決め事」表示で、人の編集と区別できます。
           </li>
         </ul>
       </details>
@@ -280,14 +288,12 @@ export function ClassifyPage() {
     onMutate: async ({ txId, next }) => {
       await qc.cancelQueries({ queryKey: key });
       const prev = qc.getQueryData<TransactionsResponse>(key);
-      if (prev) {
+      // 解除後の自動判定はサーバだけが持つ優先順位全体で解く。
+      // 解除中は直前の整合した cls/src を保ち、再取得後に組で置き換える。
+      if (prev && next) {
         qc.setQueryData<TransactionsResponse>(key, {
           ...prev,
-          transactions: prev.transactions.map((t) =>
-            t.id === txId
-              ? { ...t, cls: next ?? t.cls, src: next ? ('手動' as const) : ('既定' as const) }
-              : t,
-          ),
+          transactions: prev.transactions.map((t) => (t.id === txId ? { ...t, cls: next, src: '手動' } : t)),
         });
       }
       return { prev };

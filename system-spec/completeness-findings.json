@@ -1,312 +1,217 @@
 {
- "evaluator": {
-  "name": "assign-system-spec-completeness-evaluator",
-  "version": "0.1.0",
-  "context": "fork"
- },
- "spec_dir": "/Users/dm/orca/workspaces/kanjo/確定申告不要/system-spec",
- "verdict": "PASS",
- "aspects": {
-  "foundation_trace": {
-   "verdict": "PASS",
-   "score": 95,
-   "auditor": "assign-system-spec-completeness-evaluator",
-   "component": "C05",
-   "summary": "U1-U9 が全項目値ありで確定 (confirmed=true / approval_ref=appr-foundation-total-cashflow-008 = U1-U9 全文の統合承認) し、goal→objective→intent→cell→chapter のトレースに dangling 0 件。G1-G7 は全て I1-I9 のいずれかに被覆され、O1-O6 の serves も全て実在 goal を指す。決定論ゲート --require-foundation exit0 と spec-doc-sync exit0 が章側への投影も裏づける。",
-   "evidence": [
-    "validate-coverage-matrix.py --require-foundation exit0: 'OK: 収集マトリクス網羅性 (loop+foundation(上位概念トレース)) を満たす'",
-    "validate-coverage-matrix.py --require-basis exit0 (確定セルの basis 宣言充足)",
-    "validate-spec-doc-sync.py exit0: '正本 spec-state.json の goal・根拠・出典が章へ投影されている'",
-    "requirements_foundation.confirmed=true / approval_ref=appr-foundation-total-cashflow-008 (2026-09-05T12:11:14Z 実測 UTC の全文統合承認)",
-    "独立再導出: goals 7 / objectives 6 / concrete_intents 9、objective.serves の dangling 0 件、goal 被覆漏れ 0 件"
-   ]
+  "evaluator": {
+    "name": "assign-system-spec-completeness-evaluator",
+    "version": "0.1.12",
+    "context": "fork"
   },
-  "decision_guidance": {
-   "verdict": "PASS",
-   "score": 93,
-   "auditor": "assign-system-spec-completeness-evaluator",
-   "component": "C05",
-   "summary": "decisions[] 3 件 (dec-trend-method-001 / dec-auth-boundary-001 / dec-aggregation-strategy-001) がいずれも 3 案を持ち、全案が cost_model(free)・free_tier_limits・goal_fit・security_fit・pros・cons・risks・lock_in・ops_burden・evidence_refs を欠落なく備える。recommendation は rationale・caveats・confidence・latest_checked_at 付きで、3 件とも user_decision + qa_ref を持ち appr-decisions-003 (AskUserQuestion による明示選択) に接地している = AI 推奨のみでの confirmed が 0 件。",
-   "evidence": [
-    "3 decisions × 3 options = 9 案すべてで必須 9 フィールドの欠落 0 件 (独立再導出)",
-    "全 3 件が status=confirmed かつ user_decision/qa_ref を保持 (approval_log: appr-decisions-003)",
-    "reopen_log 7 件が、誘導的二択を主根拠にしていた確定を 3 案併記の利用者選択へ差し替えた履歴を保持",
-    "recommendation.latest_checked_at=2026-09-04T21:27:59Z / confidence=high (3 件とも)"
-   ]
+  "spec_dir": "system-spec",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "score": 92,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "U1-U9 が値または明示 N/A で埋まり、approval_ref appr-foundation-mf-business-classification-001 で承認済み。目標 O1-O8 / 成功基準 S1-S7 / 制約 C1-C10 が全て文字列で、確定セル 8 件すべてが serves_goals で G1-G5 のいずれかへ接地する。5 回のヒアリング監査で毎回異なる実在の欠陥 (根拠未批准の優先順位、収入側突合の未記載、同意の対価に実装先が無い、S7 の範囲が決定文より狭い、O7 が片側だけを名指し) を検出し、いずれも是正して 5 回目で PASS。",
+      "evidence": [
+        "validate-coverage-matrix.py --require-foundation --require-basis exit 0",
+        "spec-state.json requirements_foundation.confirmed = true",
+        "qa_log 22 件、basis は user-decision / observed-fact / agent-inference の 3 値が実在",
+        "判定を委譲した独立監査 context: system-spec-hearing-auditor (5 回目)"
+      ]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "score": 90,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "利用者が決めきれない論点は 2-3 案を対価つきで提示し、選択だけを確定とした。本サイクルの分岐点は 4 件 (事業判定の方法 / 既存編集との優先順位 / 要確認の帰属先 / 除外リストの要否) で、いずれも利用者の選択を basis=user-decision の qa entry として記録している。アシスタントの推論に留まるものは basis=agent-inference と明示し、利用者決定と混同できない形にした。required-info の blocking_items は空 (missing_effect=block の 6 item が全て確定に接地)。",
+      "evidence": [
+        "validate-knowledge-graph.py --profile required-info: coverage_certificate.blocking_items = []",
+        "qa-review-bucket-mf-decision-004 (要確認の帰属先を利用者が選択)",
+        "qa-maintenance-ops-web-mf-decision-002 (除外リストではなく運用の約束)",
+        "判定を委譲した独立監査 context: main context (R5 収集ゲート) + system-spec-hearing-auditor"
+      ]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "score": 95,
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "未収集 0。web 8 セルが全て確定 (qa_ref 付き)、web 以外の 40 セルは『対象を web のみとする』利用者決定を根拠に対象外。対象外の理由はカテゴリごとに『専用アプリがあったら何を決める必要があったか』を書き分けており、定型文の使い回しではない。2 回目の監査で --require-basis (確定セルが根拠の性質を宣言しているか) の存在を指摘され、これを恒久のゲートに加えた。",
+      "evidence": [
+        "validate-coverage-matrix.py --require-complete --require-foundation --require-basis exit 0",
+        "matrix.*.web 8 セルの state = 確定",
+        "判定を委譲した独立監査 context: system-spec-matrix-auditor (2 回目)"
+      ]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "score": 88,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "1 回目の監査が high 1 件 (H1: auth 章の確定本文が現行の認証方式を誤って述べ、前サイクルの dec-auth-boundary-001 を反転させていた) と medium 4 / low 4 を検出。H1 は本文そのものの誤りであり追記では消せないため auth/web を R4-reopen し、実装 (packages/api/src/auth.ts, wrangler.jsonc) に接地した本文へ差し替えた。2 回目の監査は high 0 で PASS。ただし medium 1 (ui-ux 章の確定本文が『4 束を残し』と言い切り、後発の確定が足した 5 束目=要確認と章内で矛盾) と low 3 を検出したため、ui-ux/web も R4-reopen して是正し、残る low (先行詞なしの参照・章固有の確定への未言及・引用節名のずれ) も全て修正した。resource-map.yaml の read_when 由来の card 取りこぼしは 0 件、doctrine の category×concern 13 組は全件埋まっている。",
+      "evidence": [
+        "validate-knowledge-graph.py --profile doctrine / --profile cross exit 0",
+        "reopen_log に auth/web と ui-ux/web の 2 件 (いずれも reason と reopened_at 付き)",
+        "qa-auth-web-mf-corrected-006 / qa-ui-ux-web-mf-corrected-007",
+        "判定を委譲した独立監査 context: knowledge-audit-2"
+      ]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "score": 85,
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "取得済み出典 3 件は全て Cloudflare 公式 (developers.cloudflare.com 2 件、実装正本の cloudflare/workerd issue 1 件) で、retrieved_at / last_updated / latest_checked_at が全件に付いている。本サイクルで外部情報が必要だった論点は『Workers の TextDecoder が shift_jis を扱えるか』の 1 点のみで、公式ドキュメントが UTF-8 しか明記しない空白を実装正本で埋め、その序列を security 章の反映記述に明示した。監査後に出典ファイルは変更していない。",
+      "evidence": [
+        "validate-source-citation.py --targets spec-state.json --references fetched-references.json exit 0",
+        "fetched-references.json 3 件、official_host は developers.cloudflare.com / github.com"
+      ]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "score": 90,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "質問が誘導形 (賛否を先に含む形) になっていないか、回答を待たずに次へ進んでいないかを 5 回の監査で検査した。利用者へ投げた選択肢は毎回 2-3 案を対価つきで並べ、推奨を示す場合も推奨でない案の利点を落とさなかった。hearing_progress.complete = true、next_question = null で、未収集セルを残したまま完了扱いにしていない。",
+      "evidence": [
+        "spec-state.json hearing_progress = {loop_count: 5, next_question: null, complete: true}",
+        "1 回目監査の high 指摘 (根拠未批准の推論を確定の根拠に混ぜていた) を是正済み",
+        "判定を委譲した独立監査 context: system-spec-hearing-auditor (1-5 回目)"
+      ]
+    }
   },
-  "matrix_coverage": {
-   "verdict": "PASS",
-   "score": 95,
-   "auditor": "system-spec-matrix-auditor",
-   "component": "C07",
-   "summary": "C07 独立監査 (fork) が PASS。48 セル (8 カテゴリ × 6 platform) が確定 8 / 対象外 40 で終端し未収集 0。対象外 40 件の reason は全て 251-379 字のカテゴリ固有記述で placeholder・使い回し 0 件、qa_ref/approval_ref の dangling 0 件、category_aggregate 8 件が真理値表と一致、canonical platform (web) 行は 8 カテゴリ全存在。sub-input の C06 ヒアリング監査も 4 軸 (聞き漏れ/誘導質問/早期停止/トレーサビリティ) 全て PASS。C16 追加次元も ungrounded_blocking_items=[] で接地済み。",
-   "evidence": [
-    "C07: validate-coverage-matrix.py 無印/--require-complete/--require-foundation すべて exit0",
-    "C07: validate-knowledge-graph.py --profile required-info --state spec-state.json exit0 / ungrounded_blocking_items=[] (blocking_items 6 件すべて確定セル→qa_ref へ接地)",
-    "C07 意味層: 未収集 0 / 対象外理由の placeholder 0 / dangling 0 / 集約 mismatch 0 / 違反セル ID なし",
-    "C06 sub-input: 聞き漏れ PASS (H-1〜H-4 + 収入側対称項目を検出済み・全て AskUserQuestion で解消)、誘導質問 PASS (Yes/No 誘導 5 件を reopen_log で主根拠から差し替え済み)、早期停止 PASS (U1-U9 全文の統合承認まで打ち切っていない)、トレーサビリティ PASS (frontend/web の誤配線を reopen_log で検出・修正済み)",
-    "C05 再実行: 同 3 モードの exit0 を独立に確認 (evaluator 側でも回収)"
-   ]
-  },
-  "design_knowledge_reflection": {
-   "verdict": "PASS",
-   "score": 88,
-   "auditor": "assign-system-spec-completeness-evaluator",
-   "component": "C05",
-   "summary": "機械層 (ポインタ存在) だけでなく意味層 (原則の確定セル要件への具体適用) を 8 章すべてで照合した。各章の『上流指針 (doctrine anchors)』表と『適用された設計知識』節が、汎用索引ではなく本サイクルの確定内容へ結び付いた記述を持つ (例: database=DDD の値による同一性を (金額,発生日) の min(n,m) 消し込みへ適用 / backend=Clean Architecture 依存方向を core 純関数配置へ適用 / ui-ux=Apple HIG の階層化は採り小画面での列削減は目的適合を理由に採らないと明示)。上流指針を『採らなかった』ケース (SLO 未定義・最小権限非適用・列削減非採用) も理由付きで明記され、形骸化した肯定になっていない。C13/C14/C15 の機械層はすべて exit0。",
-   "evidence": [
-    "aggregate-completeness.py --knowledge-graph: knowledge / doctrine / required-info / cross の 4 profile すべて exit_code 0",
-    "--profile knowledge --order topo_order = [clean-code, ddd, design-patterns, clean-architecture, api-design-patterns, information-design, secure-by-design] (C14 の位相順が決定的に取得可能)",
-    "8 章すべてに '## 上流指針 (doctrine anchors)' 節が存在し、concern ごとに適用記述本文を保持 (database/auth/ui-ux/security/infrastructure/backend/frontend/maintenance-ops)",
-    "design_applications 8 件 / doctrine_applications 8 カテゴリすべてに basis (user-decision / agent-inference / observed-fact) 宣言あり",
-    "Goodhart 防止の観点: ポインタ存在ではなく、確定セル要件 (min(n,m) 消し込み・DuplicateVerdict の永続化・/api ゲート内配置・毎回導出) への具体適用文を根拠に採点"
-   ]
-  },
-  "doc_freshness": {
-   "verdict": "PASS",
-   "score": 92,
-   "auditor": "system-spec-doc-freshness-auditor",
-   "component": "C08",
-   "audited_at": "2026-09-08T06:06:29Z",
-   "summary": "形式層・内容鮮度層の二層とも充足。前回 INDETERMINATE の原因だった C08 未返却は単独再実行で解消し、6 target すべてを WebFetch で公式サイトへ再照合して 到達・整合を確認した (保留 0 件)。spec-state.json の targets[] 6 件と fetched-references.json 6 件は 1 対 1 で完全一致し欠落・過不足なし。非公式 host・世代落ち version・latest_checked_at の形骸化はいずれも検出されず。過去の訂正履歴 (cloudflare-access-policies の 3 回訂正、sqlite-upsert の last_updated 典拠切替、tanstack-query-invalidation の last_updated 不在理由) は履歴の存在では PASS 扱いにせず、独立に公式サイトへ再照合して現時点でも整合することを確認した。",
-   "evidence": [
-    "形式層 validate-source-citation.py exit0: '出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす' (--targets/--references/--state 併用)。F3 drift 該当なし",
-    "cloudflare-access-policies: 評価順序 (Bypass/Service Auth 先行 → Block/Allow 同段) と 'Once a user matches an Allow or Block policy, evaluation stops' の実在、last_updated=2026-09-04 をいずれも公式本文で確認",
-    "usgs-tm4a3-statistical-methods: 公開日 2020-10-27・DOI 一致。本文に Mann-Kendall/Theil-Sen 名が不在であることも再確認し、summary の限界記述と整合",
-    "cloudflare-d1-limits: DB サイズ・SQL 長・実行時間・クエリ数・行サイズの数値すべて一致、last_updated=2026-04-21 一致",
-    "cloudflare-d1-migrations: create/list/apply、migrations_table/migrations_dir/migrations_pattern、last_updated=2026-06-08 すべて一致",
-    "sqlite-upsert: 3.24.0 導入 / 3.35.0 拡張の版数一致、footer 自称更新日 2024-04-11 が現在も同一",
-    "tanstack-query-invalidation: URL が v5 系であること・onSuccess の Promise 文言が完全一致・last_updated 不在 (publisher-does-not-publish) の記録が妥当であることを確認",
-    "再照合できなかった target: 0 件。read-only 実行でファイル書込なし"
-   ]
-  },
-  "prompt_quality": {
-   "verdict": "PASS",
-   "score": 95,
-   "auditor": "assign-system-spec-completeness-evaluator",
-   "component": "C05",
-   "summary": "system-spec-harness 配下の prompts/*.md 18 件すべてに対し prompt-creator の機械 validator 2 種 (verify-completeness.py = 7 層網羅 + L5 ゴールシーク契約 v2.0.0 / validate-prompt.py) を実行し、NG 0 件。意味層でも R1-score / R2-delegate の L5 が成果状態 (5.2 ゴール定義)・原子的停止条件 (5.3 チェックリスト)・動的実行方式 (5.4 固定手順を持たない) を備え、L7→L1 の一貫性と再現性宣言を確認した。independent design findings に high なし。",
-   "evidence": [
-    "18 prompts × (verify-completeness.py, validate-prompt.py) = 36 実行、TOTAL_NG=0",
-    "対象: assign-system-spec-completeness-evaluator(2) / ref-system-design-knowledge(1) / run-system-spec-compile(3) / run-system-spec-doc-fetch(4) / run-system-spec-elicit(8)",
-    "validator 実体: plugins/prompt-creator/skills/run-prompt-creator-7layer/scripts/ (依存 plugin が解決可能なため skip 条項は不適用)"
-   ]
-  }
- },
- "gate_results": [
-  {
-   "id": "G-matrix",
-   "name": "validate-coverage-matrix (--require-complete)",
-   "command": [
-    "python3",
-    "scripts/validate-coverage-matrix.py",
-    "--matrix",
-    "system-spec/spec-state.json",
-    "--require-complete"
-   ],
-   "exit_code": 0,
-   "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)) を満たす"
-  },
-  {
-   "id": "G-matrix-loop",
-   "name": "validate-coverage-matrix (loop)",
-   "command": [
-    "python3",
-    "scripts/validate-coverage-matrix.py",
-    "--matrix",
-    "system-spec/spec-state.json"
-   ],
-   "exit_code": 0,
-   "stdout": "OK: 収集マトリクス網羅性 (loop) を満たす"
-  },
-  {
-   "id": "G-foundation",
-   "name": "validate-coverage-matrix (--require-foundation)",
-   "command": [
-    "python3",
-    "scripts/validate-coverage-matrix.py",
-    "--matrix",
-    "system-spec/spec-state.json",
-    "--require-foundation"
-   ],
-   "exit_code": 0,
-   "stdout": "OK: 収集マトリクス網羅性 (loop+foundation(上位概念トレース)) を満たす"
-  },
-  {
-   "id": "G-basis",
-   "name": "validate-coverage-matrix (--require-basis)",
-   "command": [
-    "python3",
-    "scripts/validate-coverage-matrix.py",
-    "--matrix",
-    "system-spec/spec-state.json",
-    "--require-basis"
-   ],
-   "exit_code": 0,
-   "stdout": "OK: 収集マトリクス網羅性 (loop+basis(根拠の性質宣言)) を満たす"
-  },
-  {
-   "id": "G-doc-sync",
-   "name": "validate-spec-doc-sync",
-   "command": [
-    "python3",
-    "scripts/validate-spec-doc-sync.py",
-    "--matrix",
-    "system-spec/spec-state.json",
-    "--references",
-    "system-spec/fetched-references.json",
-    "--spec-root",
-    "system-spec"
-   ],
-   "exit_code": 0,
-   "stdout": "OK: 正本 spec-state.json の goal・根拠・出典が章へ投影されている"
-  },
-  {
-   "id": "G-citation",
-   "name": "validate-source-citation (形式層)",
-   "command": [
-    "python3",
-    "scripts/validate-source-citation.py",
-    "--targets",
-    "system-spec/spec-state.json",
-    "--references",
-    "system-spec/fetched-references.json",
-    "--state",
-    "system-spec/spec-state.json"
-   ],
-   "exit_code": 0,
-   "stdout": "OK: 出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす"
-  },
-  {
-   "id": "G-knowledge-graph",
-   "name": "aggregate-completeness --knowledge-graph (C13-C16 4 profile)",
-   "command": [
-    "python3",
-    "skills/assign-system-spec-completeness-evaluator/scripts/aggregate-completeness.py",
-    "--knowledge-graph"
-   ],
-   "exit_code": 0,
-   "conditions": [
-    "knowledge exit0",
-    "doctrine exit0",
-    "required-info exit0",
-    "cross exit0"
-   ]
-  },
-  {
-   "id": "G-required-info-state",
-   "name": "validate-knowledge-graph --profile required-info --state (C16 接地)",
-   "command": [
-    "python3",
-    "scripts/validate-knowledge-graph.py",
-    "--profile",
-    "required-info",
-    "--input",
-    "required-info-catalog.json",
-    "--state",
-    "system-spec/spec-state.json"
-   ],
-   "exit_code": 0,
-   "stdout": "status=ok / blocking_items 6 件すべて grounded / ungrounded_blocking_items=[]"
-  },
-  {
-   "id": "G-prompt",
-   "name": "verify-completeness.py + validate-prompt.py (18 prompts)",
-   "command": [
-    "python3",
-    "verify-completeness.py --input <prompt>",
-    "python3",
-    "validate-prompt.py --input <prompt>"
-   ],
-   "exit_code": 0,
-   "stdout": "TOTAL_NG=0 (18 prompts × 2 validator = 36 実行すべて exit0)"
-  }
- ],
- "findings": [
-  {
-   "severity": "low",
-   "bucket": "decision_guidance",
-   "observation": "dec-trend-method-001 の evidence_refs (USGS TM 4-A3 公式出版物ページ) は Mann-Kendall / Theil-Sen という手法名を裏づける一次典拠ではなく、本文 PDF は HTTP 403 で未取得である。この限界は recommendation.rationale と fetched-references.json の summary の双方に自己開示されており、手法名の帰属は既存 packages/core/src/trend.ts との一致という内部事実に依拠すると明記されている。隠蔽ではないが、外部一次典拠は依然として未確保のままである。",
-   "suggested_fix": "C02 (doc-fetch) 再実行時に、Mann-Kendall / Theil-Sen を名指しする取得可能な公式・学術一次資料を target へ追加するか、あるいは『本決定の根拠は内部整合性であり外部典拠を要しない』ことを decision 側で明示的に確定させる。",
-   "evidence": [
-    "fetched-references.json: usgs-tm4a3-statistical-methods の【検証範囲の限界】節",
-    "dec-trend-method-001.recommendation.rationale"
-   ]
-  },
-  {
-   "severity": "low",
-   "bucket": "design_knowledge_reflection",
-   "observation": "infrastructure 章は resource-map.yaml が引く設計知識 card が 0 件であり、章側もその事実と理由 (現在の知識ベースがアプリケーション設計原理に限られ、配信・実行基盤を主題とする card が存在しない) を明記している。空節を『引き忘れ』と区別できる形で書いてある点は適切だが、知識ベース側の被覆欠落そのものは未解消である。doctrine_applications の reliability / operations が代替の接地になっている。",
-   "suggested_fix": "ref-system-design-knowledge の references/ に配信・実行基盤 (デプロイ境界・環境分離・容量計画) を主題とする card を追加し resource-map.yaml の read_when へ infrastructure を紐付ける。本 spec-set への差し戻しではなく harness 側の改善項目。",
-   "evidence": [
-    "infrastructure.md L135 / L139",
-    "design_applications.infrastructure (basis=observed-fact)"
-   ]
-  },
-  {
-   "severity": "info",
-   "bucket": "matrix_coverage",
-   "observation": "C07 独立監査と C06 ヒアリング監査がともに PASS。48 セルが確定 8 / 対象外 40 で終端し未収集 0、対象外 40 件の reason はすべてカテゴリ固有の具体記述で使い回し 0 件、qa_ref/approval_ref の dangling 0 件。reopen_log 7 件が過去サイクルの誘導質問・誤配線・偽の承認記載を append-only で是正した履歴を保持しており、監査ループが実際に機能している。",
-   "evidence": [
-    "C07 報告: 違反セル ID なし",
-    "C06 報告: 4 軸すべて PASS"
-   ]
-  },
-  {
-   "severity": "info",
-   "bucket": "foundation_trace / decision_guidance",
-   "observation": "上位概念は差分承認の積み上げに留めず U1-U9 全文の統合承認 (appr-foundation-total-cashflow-008) で閉じられ、意思決定 3 件はすべて 3 案・無料枠案・棄却理由・注意点付きで利用者の明示選択に接地している。AI 推奨のみで confirmed になった決定は 0 件。",
-   "evidence": [
-    "approval_log 8 件",
-    "decisions[] 3 件すべてに user_decision + qa_ref"
-   ]
-  },
-  {
-   "severity": "info",
-   "bucket": "prompt_quality",
-   "observation": "system-spec-harness 配下 prompts/*.md 18 件に対し verify-completeness.py と validate-prompt.py を全件実行し NG 0 件。L5 の成果状態・原子的停止条件・動的実行方式も R1/R2 で意味層確認済み。",
-   "evidence": [
-    "TOTAL_NG=0 (36 実行)"
-   ]
-  },
-  {
-   "severity": "medium",
-   "bucket": "doc_freshness",
-   "observation": "doc_freshness の内容鮮度層が本評価パスで確定していない。C08 (system-spec-doc-freshness-auditor) を独立 context で fork したが評価時間枠内に verdict を返さず、fetched-references.json の 6 target について公式現行版との突合 (version 世代落ち / last_updated / latest_checked_at の実効性) が未取得のまま残った。形式層 (validate-source-citation.py) は exit0 だが、形式 PASS は内容鮮度の代替根拠にならない。",
-   "suggested_fix": "C08 doc-freshness-auditor を単独で再実行し、6 target (cloudflare-d1-limits / cloudflare-d1-migrations / sqlite-upsert / tanstack-query-invalidation / cloudflare-access-policies / usgs-tm4a3-statistical-methods) の公式再照合結果を得てから doc_freshness を再採点する。C02 (doc-fetch) 取込を行うなら、取込後の fetched-references.json に対して再監査する。",
-   "evidence": [
-    "validate-source-citation.py exit0 (形式層のみ)",
-    "C08 fork 済み・verdict 未返却 (評価枠内)",
-    "latest_checked_at 2026-09-04T21:25:59Z〜2026-09-05T00:04:12Z / 評価日 2026-09-08"
-   ],
-   "resolution": "resolved",
-   "resolved_by": "C08 doc-freshness-auditor 単独再実行 (2026-09-08T06:06:29Z, 6/6 target 再照合完了)"
-  }
- ],
- "gaps": [
-  "doc_freshness (C08) の内容鮮度層が未確定 (INDETERMINATE)。差し戻し先は仕様書ではなく監査の再実行: system-spec-doc-freshness-auditor を独立 context で再起動し、fetched-references.json の 6 target を公式サイトへ再照合させたうえで doc_freshness を再採点する。この 1 観点のみが総合 FAIL の原因であり、他 5 観点は PASS。",
-  "C02 (doc-fetch) を取り込む場合は、取込後の fetched-references.json に対して C08 監査を再実行し、本レポートの doc_freshness を差し替える。",
-  "(low・本 spec-set への差し戻し不要) dec-trend-method-001 の手法名を裏づける外部一次典拠が未確保。C02 再実行時に target 追加を検討する。",
-  "(low・harness 側改善) infrastructure カテゴリへ引ける設計知識 card が ref-system-design-knowledge に 0 件。card 追加と resource-map.yaml の read_when 紐付けを検討する。"
- ],
- "reevaluation": {
-  "reason": "dev-graph spec verb の C02 取込前再評価。spec-state.json は差分ヒアリングで無変更",
-  "doc_freshness_rerun": true
- },
- "pinned_digests": {
-  "spec-total-cashflow-system": "c2f74fde67952fa7a0a0e96317d79198d176db7e4a94eb73f33716848258c1f8",
-  "arch-total-cashflow-system": "42a7120d73e79534d15acc3ebafc3b4bcdca94554b5c04934aedb488044baa28"
- },
- "pinned_note": "本レポートを confirmation_evidence とする dev-graph ノードと、その evaluated_digest。digest は各ノードの source 章群の内容から算出しており、章が変われば digest がずれて stale PASS の流用が成立しなくなる。",
- "supersedes": {
-  "previous_verdict": "PASS",
-  "previous_aspect_verdicts": {
-   "foundation_trace": "PASS",
-   "decision_guidance": "PASS",
-   "matrix_coverage": "PASS",
-   "design_knowledge_reflection": "PASS",
-   "doc_freshness": "PASS",
-   "prompt_quality": "PASS"
-  }
- }
+  "gate_results": [
+    {
+      "id": "G-coverage",
+      "name": "収集マトリクス網羅性 (未収集0 + basis + foundation)",
+      "command": [
+        "python3",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/scripts/validate-coverage-matrix.py",
+        "--matrix",
+        "${LOCAL_HOME}/orca/workspaces/kanjo/mf-の事業部分/system-spec/spec-state.json",
+        "--require-complete",
+        "--require-foundation",
+        "--require-basis"
+      ],
+      "exit_code": 0,
+      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす",
+      "stderr": ""
+    },
+    {
+      "id": "G-citation",
+      "name": "出典記録の全件対応・必須フィールド・公式 host 一致",
+      "command": [
+        "python3",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/scripts/validate-source-citation.py",
+        "--targets",
+        "${LOCAL_HOME}/orca/workspaces/kanjo/mf-の事業部分/system-spec/spec-state.json",
+        "--references",
+        "${LOCAL_HOME}/orca/workspaces/kanjo/mf-の事業部分/system-spec/fetched-references.json",
+        "--state",
+        "${LOCAL_HOME}/orca/workspaces/kanjo/mf-の事業部分/system-spec/spec-state.json"
+      ],
+      "exit_code": 0,
+      "stdout": "OK: 出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす",
+      "stderr": ""
+    },
+    {
+      "id": "G-required-info",
+      "name": "必須情報カタログの被覆と確定セルへの接地",
+      "command": [
+        "python3",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/scripts/validate-knowledge-graph.py",
+        "--profile",
+        "required-info",
+        "--input",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/skills/run-system-spec-elicit/references/required-info-catalog.json",
+        "--state",
+        "${LOCAL_HOME}/orca/workspaces/kanjo/mf-の事業部分/system-spec/spec-state.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"ok\",\n  \"collection_order\": [\n    \"product-goal\",\n    \"context-of-use\",\n    \"domain-model\",\n    \"api-contract\",\n    \"auth-model\",\n    \"data-persistence\",\n    \"information-priority\",\n    \"infra-topology\",\n    \"ops-runbook\",\n    \"security-posture\",\n    \"target-platforms\",\n    \"frontend-arch\"\n  ],\n  \"coverage_certificate\": {\n    \"in_scope_domains\": [\n      \"api\",\n      \"auth\",\n      \"backend\",\n      \"database\",\n      \"frontend\",\n      \"infrastructure\",\n      \"maintenance-ops\",\n      \"security\",\n      \"ui-ux\"\n    ],\n    \"domains_covered_by_item\": [\n      \"api\",\n      \"auth\",\n      \"backend\",\n      \"database\",\n      \"frontend\",\n      \"infrastructure\",\n      \"maintenance-ops\",\n      \"security\",\n      \"ui-ux\"\n    ],\n    \"na_approved_domains\": [],\n    \"total_items\": 12,\n    \"blocking_items\": [\n      \"auth-model\",\n      \"context-of-use\",\n      \"domain-model\",\n      \"product-goal\",\n      \"security-posture\",\n      \"target-platforms\"\n    ],\n    \"grounded_blocking_items\": [\n      \"auth-model\",\n      \"context-of-use\",\n      \"domain-model\",\n      \"product-goal\",\n      \"security-posture\",\n      \"target-platforms\"\n    ],\n    \"ungrounded_blocking_items\": []\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "id": "G-knowledge",
+      "name": "知識カタログの形状と位相順",
+      "command": [
+        "python3",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/scripts/validate-knowledge-graph.py",
+        "--profile",
+        "knowledge",
+        "--input",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/skills/ref-system-design-knowledge/references/knowledge-catalog.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"ok\",\n  \"topo_order\": [\n    \"clean-code\",\n    \"ddd\",\n    \"design-patterns\",\n    \"clean-architecture\",\n    \"api-design-patterns\",\n    \"information-design\",\n    \"secure-by-design\"\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "id": "G-doctrine",
+      "name": "doctrine registry の形状",
+      "command": [
+        "python3",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/scripts/validate-knowledge-graph.py",
+        "--profile",
+        "doctrine",
+        "--input",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/skills/ref-system-design-knowledge/references/doctrine-anchor-registry.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"ok\",\n  \"category_concern_mapping\": {\n    \"auth\": [\n      \"authentication\",\n      \"security\"\n    ],\n    \"backend\": [\n      \"application-architecture\",\n      \"data-access\"\n    ],\n    \"database\": [\n      \"data-access\",\n      \"reliability\"\n    ],\n    \"frontend\": [\n      \"presentation\",\n      \"application-architecture\"\n    ],\n    \"infrastructure\": [\n      \"reliability\",\n      \"operations\"\n    ],\n    \"maintenance-ops\": [\n      \"operations\"\n    ],\n    \"security\": [\n      \"security\"\n    ],\n    \"ui-ux\": [\n      \"presentation\"\n    ]\n  },\n  \"concern_authorities\": {\n    \"application-architecture\": \"Robert C. Martin — Clean Architecture\",\n    \"authentication\": \"OWASP ASVS + Secrets Management Cheat Sheet\",\n    \"data-access\": \"Robert C. Martin — Clean Architecture\",\n    \"operations\": \"Google SRE\",\n    \"presentation\": \"Apple Human Interface Guidelines\",\n    \"reliability\": \"Google SRE\",\n    \"security\": \"OWASP ASVS + Secrets Management Cheat Sheet\"\n  },\n  \"pending_exceptions\": []\n}",
+      "stderr": ""
+    },
+    {
+      "id": "G-cross",
+      "name": "taxonomy / doctrine / required-info の相互整合",
+      "command": [
+        "python3",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/scripts/validate-knowledge-graph.py",
+        "--profile",
+        "cross",
+        "--taxonomy",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/skills/ref-system-design-knowledge/references/system-category-taxonomy.json",
+        "--doctrine",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/skills/ref-system-design-knowledge/references/doctrine-anchor-registry.json",
+        "--required-info",
+        "${LOCAL_HOME}/.claude/plugins/cache/harness-local/system-spec-harness/0.1.12/skills/run-system-spec-elicit/references/required-info-catalog.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"ok\",\n  \"shared_categories\": [\n    \"auth\",\n    \"backend\",\n    \"database\",\n    \"frontend\",\n    \"infrastructure\",\n    \"maintenance-ops\",\n    \"security\",\n    \"ui-ux\"\n  ],\n  \"extra_domains\": [\n    \"api\"\n  ]\n}",
+      "stderr": ""
+    }
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection",
+      "observation": "design_applications / doctrine_applications の反映記述は全 21 件が basis=agent-inference である。card / anchor の適用判断について利用者の確認を経たものは 1 件も無い。",
+      "suggested_fix": "設計知識の適用は本来アシスタントの職能であり利用者確認を要さないが、『control を軽量化して risk を受容する』(auth) のように利用者の許容度に依存する判断が混じる箇所は、実装着手前に一度確認を取る。",
+      "evidence": [
+        "spec-state.json design_applications.*.basis / doctrine_applications.*.*.basis"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "doc_freshness",
+      "observation": "doctrine anchor の権威 (OWASP ASVS / Apple HIG / Clean Architecture / SRE) は doctrine-anchor-registry.json の last_checked 2026-07-12 に依拠しており、本サイクルで再取得していない。fetched-references.json の 3 件はいずれも文字コードの論点に限られる。",
+      "suggested_fix": "本サイクルの確定はどれも anchor の最新改訂に依存する性質を持たない (認証方式を選び直さない、暗号化方式を決めない) ため再取得は不要と判断した。認証や暗号化の方式そのものを変える サイクルでは再取得を必須にする。",
+      "evidence": [
+        "doctrine-anchor-registry.json last_checked = 2026-07-12"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "matrix_coverage",
+      "observation": "required-info の information-priority item (missing_effect=degrade) について、本サイクルは方針 (何を残し何を落とすか、その根拠) の確定までを行い、information-priority-map.json の生成と validate-information-priority.py による機械検証は行っていない。",
+      "suggested_fix": "skill の責務境界どおり下流の生成工程に委ねる。ui-ux 章の確定本文が表現物 3 種と束の順位を明示しているため、下流はそこから map を組める。",
+      "evidence": [
+        "ui-ux.md 表現物 (1)(2)(3) と束の順位",
+        "run-system-spec-elicit SKILL.md 情報優先度の責務境界"
+      ]
+    }
+  ],
+  "gaps": []
 }

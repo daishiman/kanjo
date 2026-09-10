@@ -62,7 +62,7 @@
       "name": "validate-system-plan",
       "command": [
         "python3",
-        "/Users/dm/dev/dev/個人開発/harness/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "${LOCAL_HOME}/dev/dev/個人開発/harness/plugins/system-dev-planner/scripts/validate-system-plan.py",
         "--repo-root",
         ".",
         "--staging",

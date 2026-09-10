@@ -31,7 +31,7 @@ template_id: "feature"
 template_version: "1.0.1"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator":"dev-graph-integrity-auditor","evidence_ref":".dev-graph/receipts/decompose.json","evaluated_digest":"9fff22c22336a1058e11df49bd411fc2b3bf35e90dba62e3978b025f327af4f2"}
+confirmation_evidence: {"evaluator":"dev-graph-integrity-auditor","evidence_ref":".dev-graph/plans/feature-package-feat-ui-navigation-cognitive-load/atomic-promotion-receipt.json","evaluated_digest":"9fff22c22336a1058e11df49bd411fc2b3bf35e90dba62e3978b025f327af4f2"}
 source_lineage: {"origin_kind":"generated","source_plugin":"dev-graph","source_path":"specs/ui-navigation-cognitive-load.md","source_version":"0.1.9","source_digest":"9fff22c22336a1058e11df49bd411fc2b3bf35e90dba62e3978b025f327af4f2","imported_at":"2026-08-29T15:34:00Z"}
 classification_confidence: 1.0
 classification_reason: "C14 decomposeが承認済みwantを単一のマクロfeatureへ分解したため分類は一意。"

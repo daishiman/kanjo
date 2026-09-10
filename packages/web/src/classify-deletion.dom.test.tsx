@@ -67,7 +67,7 @@ const response = (transactions: TxRow[]): TransactionsResponse => ({
       total: transactions.length,
       bizCount: 0,
       personalCount: transactions.length,
-      bySource: { 手動: 0, ルール: 0, 既定: transactions.length },
+      bySource: { 手動: 0, ルール: 0, 中項目: 0, 既定: transactions.length },
       reviewPending: transactions.length,
     },
     editedCount: 0,

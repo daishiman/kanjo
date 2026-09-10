@@ -4,7 +4,7 @@
     "version": "0.1.0",
     "context": "fork"
   },
-  "spec_dir": "/Users/dm/orca/workspaces/kanjo/取り込み削除/system-spec",
+  "spec_dir": "${LOCAL_HOME}/orca/workspaces/kanjo/取り込み削除/system-spec",
   "verdict": "FAIL",
   "aspects": {
     "foundation_trace": {
@@ -83,39 +83,53 @@
     {
       "id": "G-matrix",
       "name": "validate-coverage-matrix",
-      "conditions": ["matrix_coverage"],
+      "conditions": [
+        "matrix_coverage"
+      ],
       "exit_code": 0,
       "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+foundation(上位概念トレース)) を満たす"
     },
     {
       "id": "G-foundation",
       "name": "validate-coverage-matrix --require-foundation",
-      "conditions": ["foundation_trace", "decision_guidance"],
+      "conditions": [
+        "foundation_trace",
+        "decision_guidance"
+      ],
       "exit_code": 0
     },
     {
       "id": "G-knowledge-graph",
       "name": "validate-knowledge-graph (knowledge/doctrine/required-info/cross)",
-      "conditions": ["design_knowledge_reflection", "matrix_coverage"],
+      "conditions": [
+        "design_knowledge_reflection",
+        "matrix_coverage"
+      ],
       "exit_code": 0
     },
     {
       "id": "G-source-citation",
       "name": "validate-source-citation",
-      "conditions": ["doc_freshness"],
+      "conditions": [
+        "doc_freshness"
+      ],
       "exit_code": 0,
       "stdout": "OK: 出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす"
     },
     {
       "id": "G-prompt-completeness",
       "name": "verify-completeness (18 prompts)",
-      "conditions": ["prompt_quality"],
+      "conditions": [
+        "prompt_quality"
+      ],
       "exit_code": 0
     },
     {
       "id": "G-prompt-validate",
       "name": "validate-prompt (18 prompts)",
-      "conditions": ["prompt_quality"],
+      "conditions": [
+        "prompt_quality"
+      ],
       "exit_code": 0
     }
   ],
@@ -196,14 +210,18 @@
       "bucket": "foundation_trace",
       "observation": "00-requirements-definition.md の U6 ステークホルダーが Python の dict repr ({'id': 'S1', 'role': ..., 'need': ...}) のまま出力されている。内容は失われていないが、上位概念の正本ドキュメントに未テンプレート化の描画経路が残っていることを示す。他の U 節 (U3/U4/U9) は表として正しく描画されている。",
       "suggested_fix": "C03 (compile) の render 経路で U6 を表または箇条書きへ整形する。内容の再ヒアリングは不要。",
-      "evidence": ["00-requirements-definition.md L69-71"]
+      "evidence": [
+        "00-requirements-definition.md L69-71"
+      ]
     },
     {
       "severity": "low",
       "bucket": "design_knowledge_reflection",
       "observation": "『適用された設計知識』節に注入される deep knowledge card が resource-map の逐語全文 (目的 / 解決する問題 / 適用条件 / 非適用条件 / トレードオフ・失敗モード / goalへの寄与) であり、当該章に関係のない項目まで含めて全文転記されている。ui-ux.md では 2 枚のカードで約 100 行を占め、章の確定要件 (1065 字) を量的に圧倒する。カード全文が非規範の参考資料であることは冒頭の注記で明示されているため誤読の危険は低いが、『本章での適用』が実内容で埋まった後は、当該章に効く項目へ抜粋する余地がある。",
       "suggested_fix": "C03 (compile) の render_design_refs で、design_applications が参照した項目のみを抜粋描画する方式を検討する (high 2 件の解消後に着手)。",
-      "evidence": ["ui-ux.md L53-146 (カード逐語 94 行) vs 確定要件 1065 字"]
+      "evidence": [
+        "ui-ux.md L53-146 (カード逐語 94 行) vs 確定要件 1065 字"
+      ]
     },
     {
       "severity": "info",

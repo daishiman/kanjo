@@ -14,10 +14,50 @@
     "source_digest": "sha256:f5a4eaa21fa6d9e0968499800984ccdb9b5fe9213342d0a2181899128203ecff"
   },
   "probes": {
-    "system_spec_index": {"path":"system-spec/index.md","exists":true,"non_empty":true,"placeholder_free":true,"heading_count":5,"verified":true,"detail":""},
-    "requirements_definition": {"path":"system-spec/00-requirements-definition.md","exists":true,"non_empty":true,"placeholder_free":true,"heading_count":11,"verified":true,"detail":""},
-    "architecture_graph": {"path":"architecture/graph.json","exists":true,"non_empty":true,"placeholder_free":true,"heading_count":0,"verified":true,"detail":""},
-    "completeness_evaluation": {"path":"system-spec/completeness-findings.json","exists":true,"non_empty":true,"placeholder_free":true,"heading_count":0,"verified":true,"detail":"OK: レポート形状と総合判定整合を満たす (verdict=PASS)"},
-    "source_plugin_manifest": {"path":"/Users/dm/dev/dev/個人開発/harness/plugins/system-spec-harness/references/package-contract.json","exists":true,"non_empty":true,"placeholder_free":true,"heading_count":0,"verified":true,"detail":"pinned producer manifest+sidecar matched"}
+    "system_spec_index": {
+      "path": "system-spec/index.md",
+      "exists": true,
+      "non_empty": true,
+      "placeholder_free": true,
+      "heading_count": 5,
+      "verified": true,
+      "detail": ""
+    },
+    "requirements_definition": {
+      "path": "system-spec/00-requirements-definition.md",
+      "exists": true,
+      "non_empty": true,
+      "placeholder_free": true,
+      "heading_count": 11,
+      "verified": true,
+      "detail": ""
+    },
+    "architecture_graph": {
+      "path": "architecture/graph.json",
+      "exists": true,
+      "non_empty": true,
+      "placeholder_free": true,
+      "heading_count": 0,
+      "verified": true,
+      "detail": ""
+    },
+    "completeness_evaluation": {
+      "path": "system-spec/completeness-findings.json",
+      "exists": true,
+      "non_empty": true,
+      "placeholder_free": true,
+      "heading_count": 0,
+      "verified": true,
+      "detail": "OK: レポート形状と総合判定整合を満たす (verdict=PASS)"
+    },
+    "source_plugin_manifest": {
+      "path": "${LOCAL_HOME}/dev/dev/個人開発/harness/plugins/system-spec-harness/references/package-contract.json",
+      "exists": true,
+      "non_empty": true,
+      "placeholder_free": true,
+      "heading_count": 0,
+      "verified": true,
+      "detail": "pinned producer manifest+sidecar matched"
+    }
   }
 }
