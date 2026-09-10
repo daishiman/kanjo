@@ -51,11 +51,6 @@ const manual: ManualRecords = {
   txEdits: [{ txId: 'a' }, { txId: 'c' }, { txId: 'zzz' }],
   txSplits: [{ txId: 'b' }],
   cashEntries: [{ month: '2026-06' }, { month: '2026-07' }],
-  attachments: [
-    { txId: 'a', month: null },
-    { txId: null, month: '2026-07' },
-    { txId: null, month: '2030-01' },
-  ],
 };
 
 describe('削除の対象特定 — 4粒度', () => {
@@ -151,21 +146,16 @@ describe('手入力の巻き添えを防ぐ(DR-6 / 0026 の source 列)', () => 
 });
 
 describe('巻き添え件数', () => {
-  it('対象明細を参照する手当て・分割・添付を数える', () => {
+  it('対象明細を参照する手当て・分割を数える', () => {
     const t = deletionScope(scope({ granularity: 'transaction', txIds: ['a', 'b'] }));
     const c = collateralCounts(t, manual);
     expect(c.txEdits).toBe(1); // 'a' のみ('c' は対象外、'zzz' は無関係)
     expect(c.txSplits).toBe(1); // 'b'
   });
 
-  it('対象月に紐づく添付も数える', () => {
-    const t = deletionScope(scope({ granularity: 'transaction', txIds: ['c'] }));
-    expect(collateralCounts(t, manual).attachments).toBe(1); // month=2026-07 の添付
-  });
-
   it('対象が空なら巻き添えも0', () => {
     const t = deletionScope(scope({ granularity: 'transaction', txIds: [] }));
-    expect(collateralCounts(t, manual)).toEqual({ txEdits: 0, txSplits: 0, attachments: 0, cashEntries: 0 });
+    expect(collateralCounts(t, manual)).toEqual({ txEdits: 0, txSplits: 0, cashEntries: 0 });
   });
 });
 

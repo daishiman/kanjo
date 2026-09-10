@@ -248,7 +248,8 @@ describe('D1 statement budget', () => {
     }).length;
     const mfCount = mfCommitStatements({ ...common, txs, targetKeys: ['mf:2026-07'] }).length;
     expect(freeeCount).toBe(19);
-    expect(mfCount).toBe(20);
+    // 証憑の親付け替え(reconcileMfAttachmentParents)が無くなり、MFもfreeeと同じ19本
+    expect(mfCount).toBe(19);
     expect(
       planMultipartImportQueries({
         fileCount: 1,
@@ -266,7 +267,7 @@ describe('D1 statement budget', () => {
         jsonUnitCount: 0,
         commitStatementCounts: [mfCount],
       }),
-    ).toMatchObject({ total: 48, accepted: true });
+    ).toMatchObject({ total: 47, accepted: true });
 
     const writeSet = prepareRestoreWriteSet({ userId: common.userId, data, restored: emptyDataset() });
     writeSet.editRows = Array.from({ length: 6 }, (_, index) => [
@@ -290,44 +291,6 @@ describe('D1 statement budget', () => {
       targetKeys: ['json:global'],
     }).length;
     expect(planRestoreImportQueries(restoreCount)).toMatchObject({ total: 48, accepted: true });
-  });
-
-  it('年別の確定申告判定をrestoreしてもFree枠の49 queriesに収める', () => {
-    const data = emptyDataset();
-    const writeSet = prepareRestoreWriteSet({
-      userId: 'synthetic-user',
-      data,
-      restored: emptyDataset(),
-      taxAccountSettings: [
-        {
-          taxYear: 2026,
-          account: '架空通信費',
-          taxAccount: '通信費',
-          businessPercent: 100,
-          basis: null,
-        },
-      ],
-      existingTaxAccountSettings: [],
-    });
-    const statementsFor = (candidate: typeof writeSet) =>
-      restoreCommitStatements({
-        database: fakeDb,
-        userId: 'synthetic-user',
-        runId: 'synthetic-run',
-        writeSet: candidate,
-        importId: 1,
-        contentHash: 'v2:synthetic',
-        targetKeys: ['json:global'],
-      }).length;
-    const withoutTax = prepareRestoreWriteSet({
-      userId: 'synthetic-user',
-      data,
-      restored: emptyDataset(),
-    });
-    const plan = planRestoreImportQueries(statementsFor(writeSet));
-    expect(plan).toMatchObject({ accepted: true });
-    expect(plan.total).toBeLessThan(D1_FREE_QUERY_LIMIT);
-    expect(statementsFor(writeSet)).toBe(statementsFor(withoutTax) + 1);
   });
 
   it('各JSON payloadをUTF-8 80KiB以下に分け、1行超過は拒否する', () => {
@@ -527,92 +490,6 @@ describe('JSON restore persisted projection', () => {
       restoreWriteSetFingerprint(prepareRestoreWriteSet({ userId: 'synthetic-user', data, restored }));
     expect(await hash(a)).toBe(await hash(b));
   });
-
-  it('確定申告判定の内容は指紋に含め、宛先との差分有無は含めない', async () => {
-    const setting = {
-      taxYear: 2026,
-      account: '架空通信費',
-      taxAccount: '通信費',
-      businessPercent: 100,
-      basis: null,
-    } as const;
-    const make = (businessPercent: number, existing: (typeof setting)[] = []) =>
-      prepareRestoreWriteSet({
-        userId: 'synthetic-user',
-        data: emptyDataset(),
-        restored: emptyDataset(),
-        taxAccountSettings: [{ ...setting, businessPercent }],
-        existingTaxAccountSettings: existing,
-      });
-
-    expect(await restoreWriteSetFingerprint(make(100))).not.toBe(await restoreWriteSetFingerprint(make(80)));
-    expect(await restoreWriteSetFingerprint(make(100))).toBe(
-      await restoreWriteSetFingerprint(make(100, [setting])),
-    );
-  });
-
-  it('証憑取得先と明細例外を指紋とrestore予算の両方に含める', async () => {
-    const profile = {
-      profileKey: '架空saas::架空クラウド',
-      merchantKey: '架空saas',
-      serviceName: '架空クラウド',
-      sourceUrl: 'https://example.invalid/receipts',
-      loginAccount: null,
-      memo: null,
-    };
-    const override = {
-      targetKind: 'mf' as const,
-      targetKey: 'synthetic-mf-1',
-      merchantKey: '架空店',
-      profileKey: profile.profileKey,
-      serviceName: null,
-      sourceUrl: null,
-      loginAccount: null,
-      memo: null,
-    };
-    const make = (sourceUrl: string, existing = false) =>
-      prepareRestoreWriteSet({
-        userId: 'synthetic-user',
-        data: emptyDataset(),
-        restored: emptyDataset(),
-        receiptSourceProfiles: [{ ...profile, sourceUrl }],
-        existingReceiptSourceProfiles: existing ? [{ ...profile, sourceUrl }] : [],
-        receiptSourceOverrides: [override],
-        existingReceiptSourceOverrides: existing ? [override] : [],
-      });
-
-    expect(await restoreWriteSetFingerprint(make(profile.sourceUrl))).not.toBe(
-      await restoreWriteSetFingerprint(make('https://changed.invalid/receipts')),
-    );
-    expect(await restoreWriteSetFingerprint(make(profile.sourceUrl))).toBe(
-      await restoreWriteSetFingerprint(make(profile.sourceUrl, true)),
-    );
-
-    const withReceipt = restoreCommitStatements({
-      database: fakeDb,
-      userId: 'synthetic-user',
-      runId: 'synthetic-run',
-      writeSet: make(profile.sourceUrl),
-      importId: 1,
-      contentHash: 'v2:synthetic',
-      targetKeys: ['json:global'],
-    }).length;
-    const withoutReceipt = restoreCommitStatements({
-      database: fakeDb,
-      userId: 'synthetic-user',
-      runId: 'synthetic-run',
-      writeSet: prepareRestoreWriteSet({
-        userId: 'synthetic-user',
-        data: emptyDataset(),
-        restored: emptyDataset(),
-      }),
-      importId: 1,
-      contentHash: 'v2:synthetic',
-      targetKeys: ['json:global'],
-    }).length;
-    expect(withReceipt).toBe(withoutReceipt + 2);
-    expect(planRestoreImportQueries(withReceipt)).toMatchObject({ accepted: true });
-  });
 });
 
 describe('JSON pointer invalidation consumers', () => {
@@ -630,9 +507,6 @@ describe('JSON pointer invalidation consumers', () => {
       'sub_vendors',
       'sub_vendor_exclusions',
       'analysis_settings',
-      'tax_account_settings',
-      'receipt_source_profiles',
-      'receipt_source_overrides',
       'freee_deals',
       'mf_transactions',
       'restored_monthly_agg',
@@ -647,9 +521,6 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/cash-entries'],
       ['PUT', '/api/cash-entries/1'],
       ['DELETE', '/api/cash-entries/1'],
-      ['POST', '/api/attachments'],
-      ['POST', '/api/attachments/archive/recover'],
-      ['DELETE', '/api/attachments/1'],
       ['PUT', '/api/transactions/tx-1/class'],
       ['PUT', '/api/transactions/tx-1/edit'],
       ['PUT', '/api/transactions/tx-1/splits'],
@@ -667,8 +538,6 @@ describe('canonical mutation lease predicate', () => {
       ['PATCH', '/api/rules'],
       ['PUT', '/api/budgets'],
       ['PUT', '/api/settings'],
-      ['PUT', '/api/tax/accounts'],
-      ['PUT', '/api/tax/receipt-sources'],
       ['POST', '/api/category-options'],
       ['PUT', '/api/category-options'],
       ['DELETE', '/api/category-options'],
@@ -699,7 +568,6 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/ai/tasks/1/copied'],
       // suggestionは読み取りのみでbudgetを書かない。
       ['POST', '/api/budgets/suggest'],
-      ['POST', '/api/attachments/archive/reconcile'],
       // preflight は「何がどうなるか」を数えて返すだけで、1件も書き換えない(DR-1)。
       ['POST', '/api/data/deletions/preflight'],
       ['POST', '/api/imports/1/undo/preflight'],
@@ -723,7 +591,6 @@ describe('canonical mutation lease predicate', () => {
       'index.ts',
       'routes/ai.ts',
       'routes/analytics.ts',
-      'routes/attachments.ts',
       'routes/cash.ts',
       'routes/classify.ts',
       'routes/deletions.ts',
@@ -731,7 +598,6 @@ describe('canonical mutation lease predicate', () => {
       'routes/imports.ts',
       'routes/settings.ts',
       'routes/subs.ts',
-      'routes/tax.ts',
       'routes/vendor-memory.ts',
     ];
     const discovered = routeSources.flatMap((filename) => {
@@ -745,10 +611,6 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/cash-entries',
       'PUT /api/cash-entries/:id',
       'DELETE /api/cash-entries/:id',
-      'POST /api/attachments',
-      'POST /api/attachments/archive/reconcile',
-      'POST /api/attachments/archive/recover',
-      'DELETE /api/attachments/:id',
       'PUT /api/transactions/:txId/class',
       'PUT /api/transactions/:txId/edit',
       'PUT /api/transactions/:txId/splits',
@@ -759,8 +621,6 @@ describe('canonical mutation lease predicate', () => {
       'PUT /api/budgets',
       'POST /api/budgets/suggest',
       'PUT /api/settings',
-      'PUT /api/tax/accounts',
-      'PUT /api/tax/receipt-sources',
       'POST /api/category-options',
       'PUT /api/category-options',
       'DELETE /api/category-options',

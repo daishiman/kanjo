@@ -126,9 +126,9 @@ scope_out: []
   列挙対象へ**追加しない**。これは禁止事項であり、テストで固定する。
   追加すると、30日削除が複製側で最大30日ぶん骨抜きになる。
 - 詳細取得時にも期限判定を行い、削除ジョブが失敗していた場合の縮退経路とする。
-- R2 オブジェクトだけが残る孤児化に備え、既存 `runAttachmentMaintenance` と同様の突合を行う。
+- R2 オブジェクトだけが残る孤児化に備え、改善要望独自のorphan sweepを行う。旧証憑用`runAttachmentMaintenance`は廃止済みで、現行の共通`runR2Cleanup`とは責務を混ぜない。
 
-# 既知の前提 (実装が踏んではいけない地雷)
+# 実装当時の既知の前提（解消済みの履歴）
 
 本番 D1 の `d1_migrations` は事故観測時点で `0005_sub_vendors.sql` までしか記録しておらず、
 `BACKUP_SNAPSHOT_SQL` が参照する `restored_monthly_agg` (0007) / `tax_account_settings` (0027) /

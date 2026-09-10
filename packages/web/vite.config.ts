@@ -22,6 +22,11 @@ export default defineConfig({
     // render-script-test-helper.ts の 90秒タイムアウトに触れて偽の失敗になる。
     // かといって全体を --maxWorkers=1 で直列化すると全テストが10倍遅くなるため、
     // 「ユニットは並列のまま、実描画だけ後から単独で走らせる」形に切り分ける。
+    // DOM suiteをCPU数いっぱいに展開すると、単独では通るwaitForが既定5秒を超える。
+    // 2 workerへ抑え、実際の非同期UI契約には十分な上限を明示して標準testを再現可能にする。
+    maxWorkers: 2,
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
     projects: [
       {
         extends: true,

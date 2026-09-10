@@ -128,8 +128,8 @@ export const FIGURE_GUIDES = {
   /** Cash: 現金の記帳一覧 */
   cashLedger: {
     shows: 'freeeに載らない現金払いを、自分で足した記録の一覧です。',
-    read: '証憑の列が空の行は、あとで根拠を出せない支出になります。',
-    act: '証憑の無い行から先に、レシートを撮って添付していきます。',
+    read: '二重計上の疑いが付いた行は、freeeの仕訳と同じ支払いを二度数えている可能性があります。',
+    act: '疑いの付いた行から先に、どちらが正しい記録かを確かめて片方を消します。',
   },
 } as const satisfies Record<string, FigureGuide>;
 

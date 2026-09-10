@@ -3,15 +3,12 @@
  * 型は @kanjo/core の分析出力型をそのまま利用する(サーバと完全一致)。
  */
 import type {
-  AttachmentQuotaUsage,
   BalanceSheet,
   Benchmark,
   BudgetOutlook,
   BudgetRow,
   Candidates,
   CashFlow,
-  Attachment as CoreAttachment,
-  AttachmentCleanupStage as CoreAttachmentCleanupStage,
   SubscriptionsData as CoreSubscriptionsData,
   DefenseForecast,
   DefenseLine,
@@ -22,23 +19,13 @@ import type {
   MatrixData,
   OverviewData,
   ProfitAndLoss,
-  ReceiptGapRow,
-  ReceiptGapSummary,
-  ReceiptGapUrgency,
-  ReceiptSourceResolution,
   ReconcileExcluded,
   ReconcileFreee,
   ReconcileMatch,
-  ResolvedTaxAccountSetting,
   StatementSource,
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
-  TaxAccountSetting,
-  TaxReadinessCheck,
-  TaxReadinessLevel,
-  TaxReturnStatement,
-  TaxYear,
   TotalCashflowMonth,
   TradeoffCandidate,
   TradeoffReviewRow,
@@ -103,7 +90,7 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 /**
- * 添付のアップロード。multipart のため Content-Type をブラウザに決めさせる
+ * multipart APIリクエスト。境界付きContent-Typeはブラウザに決めさせる
  * (境界文字列を自分で書けないため、api() の JSON ヘッダをそのまま使えない)。
  */
 export async function apiUpload<T>(
@@ -196,7 +183,7 @@ export interface TotalCashflowResponse {
   review: TotalCashflowReview[];
   /** 日付・金額が一致して寄せ終えた組。件数だけでなく中身を出さないと正しさを確かめられない */
   matched: ReconcileMatch[];
-  /** MF 側に相手が見つからなかった freee 取引 */
+  /** matched にも excluded にも入らない freee 側の残余 */
   freeeOnly: ReconcileFreee[];
   /** 二重登録として総額から外した freee 取引 */
   excluded: ReconcileExcluded[];
@@ -391,9 +378,7 @@ export interface TxRow {
   splitSeq: number | null;
   splitLineCount: number | null;
   splitState: 'amount_conflict' | 'identity_unstable' | null;
-  capabilities: { quickClass: boolean; edit: boolean; split: boolean; attach: boolean };
-  /** split childは親MFへ正規化済み */
-  attachmentTargetId: string | null;
+  capabilities: { quickClass: boolean; edit: boolean; split: boolean };
   /** MF出力のID列由来で、再取込後も同一明細と判定できる */
   idStable: boolean;
   date: string;
@@ -425,8 +410,6 @@ export interface TxRow {
   originKey: string | null;
   /** 手動の科目が現在の公私の系統(事業=freee科目 / 個人=MF内訳)に無い */
   scopeMismatch: boolean;
-  /** 添付されている証憑の件数(0 = 未添付) */
-  attachmentCount: number;
   edit: TxEditView | null;
 }
 
@@ -619,7 +602,6 @@ export interface DeletionCounts {
 export interface DeletionCollateral {
   txEdits: number;
   txSplits: number;
-  attachments: number;
   cashEntries: number;
 }
 
@@ -744,78 +726,7 @@ export interface VendorMemoryReapply {
   withdrawn: number;
 }
 
-/* -------- 添付(レシート・領収書) -------- */
-
-export interface AttachmentsResponse {
-  attachments: Attachment[];
-  limit: number;
-  /** 旧APIからの段階更新中も一覧を壊さないようoptionalで受ける */
-  usage?: AttachmentQuotaUsage;
-}
-
-/** backend wireはcore反映までの移行中もoriginal_missingを正しく受信する */
-export type AttachmentCleanupStage = CoreAttachmentCleanupStage | 'original_missing';
-
-export interface Attachment extends Omit<CoreAttachment, 'cleanupStage'> {
-  cleanupStage: AttachmentCleanupStage;
-}
-
-export interface AttachmentOrphansResponse {
-  attachments: Attachment[];
-  usage?: AttachmentQuotaUsage;
-}
-
-export interface AttachmentArchiveRecord {
-  r2Key: string;
-  target: { kind: 'cash' | 'mf'; key: string };
-  filename: string;
-  contentType: string;
-  size: number;
-  contentHash: string;
-  createdAt: string;
-}
-
-export interface AttachmentArchiveInventory {
-  version: 1;
-  basis: 'inventory-only';
-  restoreCapable: false;
-  metadataRecoveryCapable: true;
-  /** データ由来URLは使わず、UIは固定した同一オリジンAPIだけを呼ぶ */
-  recoveryEndpoint: string;
-  records: AttachmentArchiveRecord[];
-}
-
-export type AttachmentArchiveRecordStatus =
-  | 'matched'
-  | 'metadata_missing'
-  | 'target_missing'
-  | 'missing'
-  | 'mismatch'
-  | 'skipped';
-
-export interface AttachmentArchiveReport {
-  matched: number;
-  metadataMissing: number;
-  targetMissing: number;
-  missing: number;
-  mismatch: number;
-  skipped: number;
-  records: { r2Key: string; status: AttachmentArchiveRecordStatus }[];
-}
-
-export interface AttachmentArchiveReconcileResponse {
-  ok: true;
-  report: AttachmentArchiveReport;
-}
-
-export interface AttachmentArchiveRecoverResponse {
-  /** 409でも検証一致分は復旧済みのpartial-safe responseを返す */
-  ok: boolean;
-  recovered: number;
-  alreadyPresent: number;
-  skipped: number;
-  report: AttachmentArchiveReport;
-}
+/* -------- 旧世代バックアップの復元 -------- */
 
 export interface LegacyRestoreResponse {
   ok: true;
@@ -823,9 +734,10 @@ export interface LegacyRestoreResponse {
   months: string[];
   mfTxCount: number;
   rules: number;
+  cashEntries: number;
+  cashKept: number;
+  cashSkipped: number;
 }
-
-export type { AttachmentQuotaUsage };
 
 /* -------- 現金の記帳 -------- */
 
@@ -848,8 +760,6 @@ export interface CashEntry {
   transitRound: boolean;
   /** 領収書が構造上出ない支出(電車代など) */
   receiptWaived: boolean;
-  /** 添付されている証憑の件数 */
-  attachmentCount: number;
 }
 
 export interface CashEntryBody {
@@ -944,17 +854,10 @@ export type {
   MatrixData,
   OverviewData,
   ProfitAndLoss,
-  ReceiptGapRow,
-  ReceiptGapSummary,
-  ReceiptGapUrgency,
   StatementSource,
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
-  TaxAccountSetting,
-  TaxReadinessCheck,
-  TaxReadinessLevel,
-  TaxReturnStatement,
   TradeoffCandidate,
   TradeoffReviewRow,
 };
@@ -1122,37 +1025,6 @@ export interface AiReportDetailResponse {
   report: AiReportRow & { body: AiReportBody };
   previous: AiReportRow | null;
   versions: AiReportRow[];
-}
-
-/* -------- 確定申告(転記シート・家事按分・証憑) -------- */
-
-/**
- * 申告画面1枚ぶん。判定・転記シート・科目設定を1回で受け取る。
- * 分けて取ると、按分を保存した直後に判定だけ古い、という画面が出る。
- */
-export interface TaxOverviewResponse {
-  period: PeriodMeta;
-  year: TaxYear;
-  statement: TaxReturnStatement;
-  checks: TaxReadinessCheck[];
-  verdict: TaxReadinessLevel;
-  receipts: ReceiptGapSummary;
-  /** 帳簿の全科目に保存済み設定を重ねたもの。未保存行は候補値つきの未確認statusで並ぶ */
-  settings: ResolvedTaxAccountSetting[];
-  taxAccountOptions: { printed: string[]; additional: string[]; separate: string[] };
-  receiptArchive: { fileCount: number; maxFilesPerPart: number; parts: number };
-  externalReceiptSources: readonly [{ source: 'freee'; responsibility: 'external-confirmation' }];
-}
-
-export interface TaxReceiptGapsResponse {
-  period: PeriodMeta;
-  year: TaxYear;
-  summary: ReceiptGapSummary;
-  rows: (ReceiptGapRow & { urgency: ReceiptGapUrgency; receiptSource: ReceiptSourceResolution })[];
-  checks: TaxReadinessCheck[];
-  verdict: TaxReadinessLevel;
-  receiptArchive: { fileCount: number; maxFilesPerPart: number; parts: number };
-  externalReceiptSources: readonly [{ source: 'freee'; responsibility: 'external-confirmation' }];
 }
 
 /* -------- 改善要望(system-spec D5〜D9) -------- */

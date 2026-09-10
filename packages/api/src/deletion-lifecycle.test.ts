@@ -170,7 +170,6 @@ describe('明細削除のクエリ予算', () => {
       fullResetReads: 0,
       fullResetDeletes: 0,
       targetChunks: 0,
-      derivedConvergenceStatements: 1,
       auditStatements: 1,
       recomputeStatements,
     });
@@ -348,13 +347,13 @@ describe('削除前の確認(preflight)', () => {
   });
 
   /**
-   * 内訳と添付も巻き添えとして数える(DR-6)。
+   * 内訳も巻き添えとして数える(DR-6)。
    *
    * 数え方そのものは core に試験がある。ここで見たいのは D1 側の読み出しで、
    * 表や列の名前がずれていても「0件」に見えてしまい、消える前の警告が
    * 静かに消える。0 でない値を1度は通しておかないと、その取り違えは出ない。
    */
-  it('内訳と添付のある明細は巻き添え件数に出る', async () => {
+  it('内訳のある明細は巻き添え件数に出る', async () => {
     expect((await importMf(JUNE_JULY, 'mf-a.csv')).status).toBe(200);
     await d1
       .prepare(
@@ -362,21 +361,16 @@ describe('削除前の確認(preflight)', () => {
          VALUES ('default','tx-jun-a','line-架空-1',1,1000,600,'biz','架空費','2026-06-01T00:00:00.000Z','2026-06-01T00:00:00.000Z')`,
       )
       .run();
-    await d1
-      .prepare(
-        `INSERT INTO attachments (user_id, target_kind, target_key, r2_key, filename, content_type, size, content_hash, created_at)
-         VALUES ('default','mf','tx-jun-a','架空/key-1','架空.pdf','application/pdf',1,'架空ハッシュ','2026-06-01T00:00:00.000Z')`,
-      )
-      .run();
-
     const response = await jsonRequest('/data/deletions/preflight', 'POST', {
       granularity: 'period',
       period: { from: '2026-06', to: '2026-06' },
     });
-    const body = (await response.json()) as { collateral: { txSplits: number; attachments: number } };
+    const body = (await response.json()) as { collateral: Record<string, number> };
     expect(response.status).toBe(200);
     expect(body.collateral.txSplits).toBe(1);
-    expect(body.collateral.attachments).toBe(1);
+    // 証憑の廃止で巻き添えの数え上げから添付が消えたこと。残骸の列が残ると
+    // 常に0を返す枠が画面に出続けるため、キー自体が無いことを見る
+    expect(Object.keys(body.collateral)).not.toContain('attachments');
   });
 
   it('現金記録は巻き添え0として示す(DR-6)', async () => {
@@ -1001,45 +995,6 @@ describe('取込単位の取り消し', () => {
     const targetKeysAfterDelete = await activeTargetKeys();
     expect(targetKeysAfterDelete).not.toContain('assets:2026-06');
     expect(targetKeysAfterDelete).not.toContain('assets:2026-07');
-  });
-});
-
-describe('削除後の派生状態の収束', () => {
-  it('MF明細の添付は削除で孤立し、undoで親へ戻る', async () => {
-    expect((await importMf(JUNE_JULY, 'mf-a.csv')).status).toBe(200);
-    await d1
-      .prepare(
-        `INSERT INTO attachments
-           (user_id,target_kind,target_key,r2_key,filename,content_type,size,content_hash,created_at)
-         VALUES ('default','mf','tx-jun-a','架空/key-parent','架空.pdf','application/pdf',1,'架空-hash','2026-06-01T00:00:00.000Z')`,
-      )
-      .run();
-
-    const preflight = (await (
-      await jsonRequest('/data/deletions/preflight', 'POST', {
-        granularity: 'transaction',
-        txIds: ['tx-jun-a'],
-      })
-    ).json()) as { fingerprint: string };
-    const deleted = await jsonRequest('/data/deletions', 'POST', {
-      granularity: 'transaction',
-      txIds: ['tx-jun-a'],
-      fingerprint: preflight.fingerprint,
-    });
-    expect(deleted.status).toBe(200);
-    const { operationId } = (await deleted.json()) as { operationId: string };
-    await expect(
-      d1
-        .prepare("SELECT parent_missing_at FROM attachments WHERE target_key='tx-jun-a'")
-        .first<string>('parent_missing_at'),
-    ).resolves.toBeTruthy();
-
-    expect((await jsonRequest(`/data/undo/${operationId}`, 'POST')).status).toBe(200);
-    await expect(
-      d1
-        .prepare("SELECT parent_missing_at FROM attachments WHERE target_key='tx-jun-a'")
-        .first<string | null>('parent_missing_at'),
-    ).resolves.toBeNull();
   });
 });
 

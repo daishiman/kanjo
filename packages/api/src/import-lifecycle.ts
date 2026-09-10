@@ -26,16 +26,9 @@ import {
   opaqueAuditSourceKey,
   opaqueAuditTransactionKey,
 } from './audit-log.js';
-import { reconcileMfAttachmentParentsStatement } from './canonical-parent-convergence.js';
 import { JSON_ACTIVE_TARGET, invalidateJsonSnapshotStatement } from './import-active.js';
 import { type ParsedUnit, fingerprintCanonical } from './import-pipeline.js';
-import {
-  LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
-  type ReceiptSourceOverrideSnapshot,
-  type ReceiptSourceProfileSnapshot,
-  type TaxAccountSettingSnapshot,
-  aggRowsFromDataset,
-} from './store.js';
+import { LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT, aggRowsFromDataset } from './store.js';
 import { txEditRestoreRow } from './tx-edit-codec.js';
 
 export type ImportOutcome = 'processing' | 'applying' | 'committed' | 'failed' | 'duplicate';
@@ -928,7 +921,6 @@ export function mfCommitStatements(args: {
     ),
     ...resolution,
     removeOrphanSplits,
-    reconcileMfAttachmentParentsStatement(database, userId, now),
     ...replaceAggStatements(database, userId, data),
     ...finalizeStatements(database, userId, runId, importId, contentHash, targetKeys, 'mf', now),
     ...(args.audit?.statements ?? []),
@@ -950,15 +942,9 @@ export interface RestoreWriteSet {
   vendorRows: unknown[][];
   analysisSettingsRow: [number];
   subVendorExclusionRows: unknown[][];
-  taxAccountSettingRows: unknown[][];
-  receiptSourceProfileRows: unknown[][];
-  receiptSourceOverrideRows: unknown[][];
   /** commitの差分計画。fingerprintは最終行だけを使い、この実行手順は含めない。 */
   analysisSettingsChanged: boolean;
   subVendorExclusionsChanged: boolean;
-  taxAccountSettingsChanged: boolean;
-  receiptSourceProfilesChanged: boolean;
-  receiptSourceOverridesChanged: boolean;
   ruleRows: unknown[][];
   editRows: unknown[][];
   ownerRows: unknown[][];
@@ -971,7 +957,7 @@ export interface RestoreWriteSet {
   splitRows: unknown[][];
   /**
    * 復元する現金の記帳。移行先に1件も記帳が無いときだけ入る(空なら現金は一切触らない)。
-   * `cash:<id>` は手動判定・証憑の宛先なので、idはバックアップの値をそのまま使う。
+   * `cash:<id>` は手動判定の宛先なので、idはバックアップの値をそのまま使う。
    */
   cashEntryRows: unknown[][];
 }
@@ -985,52 +971,12 @@ export function prepareRestoreWriteSet(args: {
   subVendorExclusions?: ReadonlyArray<{ partner: string; vendorKey: string }>;
   existingStatMinMonths?: number;
   existingSubVendorExclusions?: ReadonlyArray<{ partner: string; vendorKey: string }>;
-  taxAccountSettings?: ReadonlyArray<TaxAccountSettingSnapshot>;
-  existingTaxAccountSettings?: ReadonlyArray<TaxAccountSettingSnapshot>;
-  receiptSourceProfiles?: ReadonlyArray<ReceiptSourceProfileSnapshot>;
-  existingReceiptSourceProfiles?: ReadonlyArray<ReceiptSourceProfileSnapshot>;
-  receiptSourceOverrides?: ReadonlyArray<ReceiptSourceOverrideSnapshot>;
-  existingReceiptSourceOverrides?: ReadonlyArray<ReceiptSourceOverrideSnapshot>;
   /** 復元する現金の記帳。移行先に既存の記帳があるときは渡さない */
   restoredCashEntries?: ReadonlyArray<CashEntry>;
   /** raw canonical dataから明示的に作った集計・表示用projection */
   accountingData?: Dataset;
 }): RestoreWriteSet {
   const rawTxs = canonicalMfTransactions(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)));
-  const taxRows = (settings: ReadonlyArray<TaxAccountSettingSnapshot>): unknown[][] =>
-    [...settings]
-      .sort((a, b) => a.taxYear - b.taxYear || a.account.localeCompare(b.account, 'ja'))
-      .map((entry) => [entry.taxYear, entry.account, entry.taxAccount, entry.businessPercent, entry.basis]);
-  const taxAccountSettingRows = taxRows(args.taxAccountSettings ?? []);
-  const existingTaxAccountSettingRows = taxRows(args.existingTaxAccountSettings ?? []);
-  const receiptProfileRows = (profiles: ReadonlyArray<ReceiptSourceProfileSnapshot>): unknown[][] =>
-    [...profiles]
-      .sort((a, b) => a.profileKey.localeCompare(b.profileKey))
-      .map((profile) => [
-        profile.profileKey,
-        profile.merchantKey,
-        profile.serviceName,
-        profile.sourceUrl,
-        profile.loginAccount,
-        profile.memo,
-      ]);
-  const receiptOverrideRows = (overrides: ReadonlyArray<ReceiptSourceOverrideSnapshot>): unknown[][] =>
-    [...overrides]
-      .sort((a, b) => a.targetKind.localeCompare(b.targetKind) || a.targetKey.localeCompare(b.targetKey))
-      .map((override) => [
-        override.targetKind,
-        override.targetKey,
-        override.merchantKey,
-        override.profileKey,
-        override.serviceName,
-        override.sourceUrl,
-        override.loginAccount,
-        override.memo,
-      ]);
-  const receiptSourceProfileRows = receiptProfileRows(args.receiptSourceProfiles ?? []);
-  const existingReceiptSourceProfileRows = receiptProfileRows(args.existingReceiptSourceProfiles ?? []);
-  const receiptSourceOverrideRows = receiptOverrideRows(args.receiptSourceOverrides ?? []);
-  const existingReceiptSourceOverrideRows = receiptOverrideRows(args.existingReceiptSourceOverrides ?? []);
   return {
     // MF/editsはDBでは集合として永続化される。JSON配列/object挿入順を指紋へ混ぜない。
     mfRows: rawTxs
@@ -1046,9 +992,6 @@ export function prepareRestoreWriteSet(args: {
     subVendorExclusionRows: [...(args.subVendorExclusions ?? [])]
       .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey))
       .map((entry) => [entry.partner, entry.vendorKey]),
-    taxAccountSettingRows,
-    receiptSourceProfileRows,
-    receiptSourceOverrideRows,
     analysisSettingsChanged: (args.statMinMonths ?? 6) !== args.existingStatMinMonths,
     subVendorExclusionsChanged:
       canonicalEncode(
@@ -1061,12 +1004,6 @@ export function prepareRestoreWriteSet(args: {
           .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey))
           .map((entry) => [entry.partner, entry.vendorKey]),
       ),
-    taxAccountSettingsChanged:
-      canonicalEncode(taxAccountSettingRows) !== canonicalEncode(existingTaxAccountSettingRows),
-    receiptSourceProfilesChanged:
-      canonicalEncode(receiptSourceProfileRows) !== canonicalEncode(existingReceiptSourceProfileRows),
-    receiptSourceOverridesChanged:
-      canonicalEncode(receiptSourceOverrideRows) !== canonicalEncode(existingReceiptSourceOverrideRows),
     ruleRows: args.data.rules.map((rule, index) => [
       rule.k,
       rule.cls ?? null,
@@ -1130,9 +1067,6 @@ export async function restoreWriteSetFingerprint(writeSet: RestoreWriteSet): Pro
   const {
     analysisSettingsChanged: _analysisChanged,
     subVendorExclusionsChanged: _exclusionsChanged,
-    taxAccountSettingsChanged: _taxAccountSettingsChanged,
-    receiptSourceProfilesChanged: _receiptSourceProfilesChanged,
-    receiptSourceOverridesChanged: _receiptSourceOverridesChanged,
     ...rows
   } = writeSet;
   return fingerprintCanonical(`v${FINGERPRINT_VERSION}:json-write-set:${canonicalEncode(rows)}`);
@@ -1219,82 +1153,6 @@ export function restoreCommitStatements(args: {
             .bind(userId, now, payload),
         )
       : []),
-    ...(writeSet.taxAccountSettingsChanged && writeSet.taxAccountSettingRows.length
-      ? chunkJsonRowsByBytes(writeSet.taxAccountSettingRows).map((payload) =>
-          database
-            .prepare(
-              `INSERT INTO tax_account_settings
-                 (user_id,tax_year,account,tax_account,business_percent,basis,updated_at)
-               SELECT ?,
-                      CAST(json_extract(item.value,'$[0]') AS INTEGER),
-                      CAST(json_extract(item.value,'$[1]') AS TEXT),
-                      CAST(json_extract(item.value,'$[2]') AS TEXT),
-                      CAST(json_extract(item.value,'$[3]') AS INTEGER),
-                      CAST(json_extract(item.value,'$[4]') AS TEXT), ?
-               FROM json_each(?) AS item WHERE 1
-               ON CONFLICT(user_id,tax_year,account) DO UPDATE SET
-                 tax_account=excluded.tax_account,
-                 business_percent=excluded.business_percent,
-                 basis=excluded.basis,
-                 updated_at=excluded.updated_at`,
-            )
-            .bind(userId, now, payload),
-        )
-      : []),
-    ...(writeSet.receiptSourceProfilesChanged && writeSet.receiptSourceProfileRows.length
-      ? chunkJsonRowsByBytes(writeSet.receiptSourceProfileRows).map((payload) =>
-          database
-            .prepare(
-              `INSERT INTO receipt_source_profiles
-                 (user_id,profile_key,merchant_key,service_name,source_url,login_account,memo,updated_at)
-               SELECT ?,
-                      CAST(json_extract(item.value,'$[0]') AS TEXT),
-                      CAST(json_extract(item.value,'$[1]') AS TEXT),
-                      CAST(json_extract(item.value,'$[2]') AS TEXT),
-                      CAST(json_extract(item.value,'$[3]') AS TEXT),
-                      CAST(json_extract(item.value,'$[4]') AS TEXT),
-                      CAST(json_extract(item.value,'$[5]') AS TEXT), ?
-               FROM json_each(?) AS item WHERE 1
-               ON CONFLICT(user_id,profile_key) DO UPDATE SET
-                 merchant_key=excluded.merchant_key,
-                 service_name=excluded.service_name,
-                 source_url=excluded.source_url,
-                 login_account=excluded.login_account,
-                 memo=excluded.memo,
-                 updated_at=excluded.updated_at`,
-            )
-            .bind(userId, now, payload),
-        )
-      : []),
-    ...(writeSet.receiptSourceOverridesChanged && writeSet.receiptSourceOverrideRows.length
-      ? chunkJsonRowsByBytes(writeSet.receiptSourceOverrideRows).map((payload) =>
-          database
-            .prepare(
-              `INSERT INTO receipt_source_overrides
-                 (user_id,target_kind,target_key,merchant_key,profile_key,
-                  service_name,source_url,login_account,memo,updated_at)
-               SELECT ?,
-                      CAST(json_extract(item.value,'$[0]') AS TEXT),
-                      CAST(json_extract(item.value,'$[1]') AS TEXT),
-                      CAST(json_extract(item.value,'$[2]') AS TEXT),
-                      CAST(json_extract(item.value,'$[3]') AS TEXT),
-                      CAST(json_extract(item.value,'$[4]') AS TEXT),
-                      CAST(json_extract(item.value,'$[5]') AS TEXT),
-                      CAST(json_extract(item.value,'$[6]') AS TEXT),
-                      CAST(json_extract(item.value,'$[7]') AS TEXT), ?
-               FROM json_each(?) AS item WHERE 1
-               ON CONFLICT(user_id,target_kind,target_key) DO UPDATE SET
-                 merchant_key=excluded.merchant_key,
-                 profile_key=excluded.profile_key,
-                 service_name=excluded.service_name,
-                 source_url=excluded.source_url,
-                 login_account=excluded.login_account,
-                 memo=excluded.memo,
-                 updated_at=excluded.updated_at`,
-            )
-            .bind(userId, now, payload),
-        )
-      : []),
     database.prepare('DELETE FROM rules WHERE user_id=?').bind(userId),
     ...insertJsonRows(
       database,
@@ -1371,12 +1229,8 @@ export function restoreCommitStatements(args: {
  * 現金の記帳を復元する。移行先に記帳が1件も無いときだけ呼ばれるので DELETE はしない
  * (既存の記帳を消すのは復元ではなく破壊であり、この経路の役目ではない)。
  *
- * id はバックアップの値をそのまま入れる。`cash:<id>` が手動判定と証憑の宛先だからで、
- * 採番し直すと復元済みの証憑メタデータが宛先を失う。
- *
- * 証憑の `parent_missing_at` はここで消さない。49 query予算に1 queryも積めないうえ、
- * 親の生死判定は証憑のsafe recovery(`/api/attachments/archive/recover`)側の役目で、
- * 復元後にそちらを回せば同じ結果になる。
+ * id はバックアップの値をそのまま入れる。`cash:<id>` が手動判定(tx_edits)の宛先だからで、
+ * 採番し直すと復元済みの手動編集が宛先を失う。
  */
 function restoreCashEntryStatements(
   database: D1Database,
@@ -1435,6 +1289,5 @@ function mfReplaceOnlyStatements(
       { column: 'user_id', value: userId },
       { column: 'import_id', value: importId },
     ]),
-    reconcileMfAttachmentParentsStatement(database, userId, now),
   ];
 }

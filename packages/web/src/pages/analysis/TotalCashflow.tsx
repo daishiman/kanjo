@@ -330,15 +330,12 @@ const MATCHED_COLUMNS = [
   { label: '操作', sortable: false },
 ];
 
-const FREEE_ONLY_COLUMNS = [
-  '発生日',
-  '取引先',
-  '向き',
-  '金額',
-  '決済口座',
-  '勘定科目',
-  { label: '操作', sortable: false },
-];
+/**
+ * 操作列を持たない。この一覧は「一致でも除外でもない残り」を全部映す枠であって、
+ * 二重登録の疑いを集めた枠ではない。行ごとに外す操作を置くと、
+ * 「ここに並ぶ＝重複かもしれない」と読ませてしまう。
+ */
+const FREEE_ONLY_COLUMNS = ['発生日', '取引先', '向き', '金額', '決済口座', '勘定科目'];
 
 const EXCLUDED_COLUMNS = ['発生日', '取引先', '金額', '外した理由', { label: '操作', sortable: false }];
 
@@ -490,7 +487,7 @@ function MatchedTable({ matched }: { matched: readonly ReconcileMatch[] }) {
  * freee 全件がどこへ行ったかを、件数の内訳と中身で示す節。
  *
  * 「取り込んだ内容に抜け漏れはないか」に答えられるのは、freee の総数が
- * 一致 + 相手なし + 除外 に必ず割れる形だけである。一致した組を画面に出さないと、
+ * 一致 + 一致にも除外にも入らない残り + 除外 に必ず割れる形だけである。一致した組を画面に出さないと、
  * 寄った件数が正しいかを利用者が確かめる手立てが無い。
  */
 function FreeeCoverageSection({
@@ -508,16 +505,22 @@ function FreeeCoverageSection({
     <section className="card scroll-x" aria-label="freee 取引の行き先">
       <h2>取り込んだ freee {coverage.freeeTotal} 件の行き先</h2>
       <p className="sub">
-        一致 {coverage.matched} 件 ＋ MF に相手なし {coverage.freeeOnly} 件 ＋ 二重登録として外した{' '}
-        {coverage.excluded} 件 ＝ {coverage.freeeTotal} 件。この 3 つで freee の全件が説明されます（MF
-        側の要確認 {coverage.mfReview} 件は MF 明細ごとに立つので、この和には入りません）。
+        一致 {coverage.matched} 件 ＋ 一致にも除外にも入らない残り {coverage.freeeOnly} 件 ＋
+        二重登録として外した {coverage.excluded} 件 ＝ {coverage.freeeTotal} 件。この 3 つで freee
+        の全件が説明されます（MF 側の要確認 {coverage.mfReview} 件は MF
+        明細ごとに立つので、この和には入りません）。
       </p>
 
       <MatchedTable matched={matched} />
 
-      <h3>MF に相手がいない freee {freeeOnly.length} 件</h3>
+      <h3>一致にも除外にも入らない freee {freeeOnly.length} 件</h3>
+      <p className="sub">
+        一致でも二重登録として除外でもない、残りの取引です。
+        <br />
+        重複候補ではなく、総額に含まれます。
+      </p>
       {freeeOnly.length === 0 ? (
-        <p className="sub">MF に相手のいない freee 取引はありません。</p>
+        <p className="sub">一致にも除外にも入らない freee 取引はありません。</p>
       ) : (
         <DataTable className="data stack-sm" columns={FREEE_ONLY_COLUMNS}>
           {freeeOnly.map((d) => (
@@ -530,9 +533,6 @@ function FreeeCoverageSection({
               </td>
               <td data-label="決済口座">{d.settleAccount || '(記載なし)'}</td>
               <td data-label="勘定科目">{d.account}</td>
-              <td data-label="操作">
-                <ExcludeControl freeeKey={d.freeeKey} label={`${d.date} ${d.partner}`} />
-              </td>
             </tr>
           ))}
         </DataTable>

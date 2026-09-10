@@ -27,7 +27,7 @@ const headerTermCount = (route: (typeof DESCRIBED)[number]): number =>
   termCount(route.task) + termCount(route.taskDetail);
 
 describe('ページヘッダーの情報量', () => {
-  it('全15ルートと支出分析の3タブが task と taskDetail を持ち、taskDetail は task より詳しい', () => {
+  it('全業務ルートと支出分析タブが task と taskDetail を持ち、taskDetail は task より詳しい', () => {
     for (const route of DESCRIBED) {
       expect(route.taskDetail, route.id).toBeTruthy();
       expect(route.taskDetail.length, route.id).toBeGreaterThan(route.task.length);
@@ -55,9 +55,6 @@ describe('ページヘッダーの情報量', () => {
     expect(detail('matrix')).toContain('増=赤');
     expect(detail('matrix')).toContain('減=緑');
     expect(detail('budget')).toContain('±10%');
-    // 責任範囲の記述(BR-002 税務警告を隠さない)
-    expect(detail('tax')).toContain('適法性の保証はしない');
-    expect(detail('tax')).toMatch(/e-Tax/);
     // 編集を信頼してよい根拠
     expect(detail('classify')).toContain('残る');
     expect(detail('cash')).toContain('消えない');

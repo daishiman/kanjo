@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # name: test_validate_report
-# version: 3.0.0
+# version: 3.1.0
 # purpose: validate-report.py(第3版)の機能テスト(unittest・実データ非使用)
 # inputs:
 #   - なし(python3 -B -m unittest discover -s <scripts dir> -p 'test_*.py' で起動)
@@ -37,8 +37,24 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(MOD)
 
 SECTIONS = ("spend", "change", "reduction", "split", "subscriptions")
-BODY = "本文の説明です。この節では対象期間の経費の内訳と、前月・前年からの変化を数値の根拠つきで述べます。" * 2
-SUMMARY = "対象期間の経費は前月比で増加しました。図2が示すとおり外注費の比率が最も大きく、次いで家賃です。詳細は各節を参照してください。"
+# 本文の見本は「リード文 + 『- 』の箇条書き」。references/report-schema.md「本文の書き方」の形。
+BODY = (
+    "この節では対象期間の経費の内訳と、前月・前年からの変化を数値の根拠つきで述べます。\n"
+    "- 外注費が 2,040,000円 で事業経費の 41.0% を占めています\n"
+    "- 地代家賃は 1,440,000円 で 28.9%、上位2科目で7割に達します\n"
+    "- 通信費は 312,000円 で 6.3%、前月からの動きはほぼありません"
+)
+SUMMARY = (
+    "対象期間の経費は前月比で増加しました。増加分の大半は外注費で説明できます。\n"
+    "- 図2のとおり外注費の比率が最も大きく、次いで家賃です\n"
+    "- 外注費は3ヶ月連続で増え、直近月は 240,000円 です\n"
+    "- サブスクは月 38,000円 前後で横ばいです"
+)
+FOLLOW_UP_BODY = (
+    "前回(第1版)の指摘のうち、1件が解消し1件が未着手です。\n"
+    "- Adobe の重複契約は解約済みで、7月以降は1件になりました\n"
+    "- 外注費の月次上限の設定は未実施です"
+)
 
 
 def finding(**over: object) -> dict:
@@ -79,7 +95,7 @@ def good_report() -> dict:
             "notes": {"improvements": "", "wasted": "", "quickWins": ""},
         },
         "charts": [{"catalogId": "composition", "caption": "外注費が全体の4割を占め、家賃と合わせて7割に達しています"}],
-        "followUp": {"body": "前回指摘は解消。", "items": [{"label": "解消済み", "amount": None}]},
+        "followUp": {"body": FOLLOW_UP_BODY, "items": [{"label": "解消済み", "amount": None}]},
         "needs": [{"gap": "家賃が未仕分け", "action": "公私仕分けで家賃を個人にする", "screen": "classify"}],
         "dataGaps": ["前年同月のデータが未取込"],
     }
@@ -158,6 +174,46 @@ class ValidateTest(unittest.TestCase):
         self.assertTrue(any("HTMLタグ" in i for i in issues), issues)
         self.assertEqual(sum("Markdown" in i for i in issues), 2, issues)
         self.assertTrue(any("制御文字" in i for i in issues), issues)
+
+    def test_bullet_notation_must_be_hyphen(self) -> None:
+        """「・」「*」「1.」は画面が箇条書きとして描かないので、記法を「- 」へ寄せさせる"""
+        r = good_report()
+        lead = "この節では対象期間の経費の内訳と、前月・前年からの変化を数値の根拠つきで述べます。"
+        r["sections"][0]["body"] = f"{lead}\n・外注費が 2,040,000円 で 41.0% を占めています\n・地代家賃は 1,440,000円 です"
+        r["sections"][1]["body"] = f"{lead}\n1. 外注費が 2,040,000円 で 41.0% を占めています\n2. 地代家賃は 1,440,000円 です"
+        r["sections"][2]["body"] = f"{lead}\n* 外注費が 2,040,000円 で 41.0% を占めています\n* 地代家賃は 1,440,000円 です"
+        issues = MOD.validate(r)
+        for i in range(3):
+            self.assertTrue(
+                any(f"sections[{i}].body" in m and "行頭「- 」に統一" in m for m in issues), issues
+            )
+
+    def test_bullet_minimum_per_text(self) -> None:
+        """地の文だけの本文を拒否する(summary は3行・body と followUp.body は2行)"""
+        r = good_report()
+        r["summary"] = "図2のとおり外注費の比率が最も大きく、次いで家賃です。" * 3
+        r["sections"][0]["body"] = "地の文だけで書かれた本文です。要点が拾えません。" * 4
+        r["followUp"]["body"] = "前回指摘はすべて解消しました。とくに追記することはありません。"
+        issues = MOD.validate(r)
+        self.assertTrue(any("summary" in i and "3行以上" in i for i in issues), issues)
+        self.assertTrue(any("sections[0].body" in i and "2行以上" in i for i in issues), issues)
+        self.assertTrue(any("followUp.body" in i and "2行以上" in i for i in issues), issues)
+
+    def test_bullet_line_must_be_short(self) -> None:
+        """1行が長い箇条書きは段落と変わらないので落とす"""
+        r = good_report()
+        r["sections"][0]["body"] = "この節の要点です。\n- " + "あ" * 121 + "\n- 家賃は横ばいです"
+        issues = MOD.validate(r)
+        self.assertTrue(
+            any("sections[0].body" in i and f"{MOD.BULLET_MAX}字以内" in i for i in issues), issues
+        )
+
+    def test_bullet_only_body_needs_lead(self) -> None:
+        """箇条書きだけの本文は文脈が落ちるので、結論のリード文を求める"""
+        r = good_report()
+        r["sections"][0]["body"] = "- 外注費が 2,040,000円 で 41.0% を占めています\n- 地代家賃は 1,440,000円 で 28.9% です\n- 通信費は 312,000円 で 6.3% です"
+        issues = MOD.validate(r)
+        self.assertTrue(any("sections[0].body" in i and "リード文" in i for i in issues), issues)
 
     def test_length_and_count_limits(self) -> None:
         r = good_report()

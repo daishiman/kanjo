@@ -217,15 +217,13 @@ describe('明細の分割記帳', () => {
         big: string;
         rowKind: string;
         parentTxId: string | null;
-        attachmentTargetId: string | null;
-        capabilities: { quickClass: boolean; edit: boolean; split: boolean; attach: boolean };
+        capabilities: { quickClass: boolean; edit: boolean; split: boolean };
       }>;
     };
     // 元の1行は消え、外部IDのsuffix解析ではなく構造化metadataを持つ内訳だけが並ぶ
     expect(body.transactions.map((t) => t.id)).toHaveLength(2);
     expect(body.transactions.map((t) => t.rowKind)).toEqual(['split', 'split']);
     expect(body.transactions.map((t) => t.parentTxId)).toEqual(['T1', 'T1']);
-    expect(body.transactions.map((t) => t.attachmentTargetId)).toEqual(['T1', 'T1']);
     expect(body.transactions.every((t) => !t.capabilities.quickClass && !t.capabilities.edit)).toBe(true);
     // 支出の符号は元の明細から引き継ぐ。内訳側は正の数しか持っていない
     expect(body.transactions.map((t) => t.amount)).toEqual([-70000, -30000]);

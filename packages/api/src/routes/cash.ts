@@ -6,7 +6,6 @@ import { zValidator } from '@hono/zod-validator';
  * 変更のたびに集計キャッシュを作り直す(spec §7.3)。ログ・レスポンスに不要な内容を出さない。
  */
 import {
-  ATTACHMENT_MAX_PER_TARGET,
   type CashEntry,
   cashTxId,
   categoryAllowed,
@@ -35,12 +34,6 @@ import {
   recomputeFromDeals,
   recomputePlanQueries,
 } from '../store.js';
-import {
-  deleteAttachmentMetadataForTargetQuery,
-  loadAttachmentCounts,
-  prepareAttachmentOriginalsForParentDelete,
-  recordAttachmentTombstonesForTarget,
-} from './attachments.js';
 import { loadCandidates } from './classify.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
@@ -54,52 +47,36 @@ export const CASH_PARENT_DELETE_QUERY_LEDGER = {
   cashSnapshot: 1,
   // norm/freee/baseline/MF + loadDataset(cash snapshot + 分割の内訳)
   recomputePlan: 4 + LOAD_DATASET_QUERY_COUNT_WITH_SPLITS,
-  attachmentTargetRead: 1,
-  attachmentPendingPerRow: 1,
-  attachmentFailurePerRow: 1,
-  attachmentTombstoneBulk: 1,
-  // cash + tx_edit + receipt source override + attachment metadata + JSON pointer
-  finalMutationBase: 5,
+  // cash + tx_edit + JSON pointer
+  finalMutationBase: 3,
   normalizedDealsBulk: 1,
   aggregateReplacement: 2,
 } as const;
 
-/** 成功経路と全R2削除失敗経路の大きい方を、Free上限未満か判定する。 */
-export function planCashParentDeleteQueries(
-  attachmentCount: number,
-  normalizedDealUpdateCount: number,
-): { total: number; success: number; attachmentFailure: number; limit: number; accepted: boolean } {
-  if (
-    !Number.isSafeInteger(attachmentCount) ||
-    attachmentCount < 0 ||
-    attachmentCount > ATTACHMENT_MAX_PER_TARGET ||
-    !Number.isSafeInteger(normalizedDealUpdateCount) ||
-    normalizedDealUpdateCount < 0
-  ) {
+/**
+ * cash親DELETEの最悪経路がFree上限未満か判定する。
+ *
+ * 証憑を廃止した今、行数に比例して増えるqueryは正規化差分のbulk UPDATE 1本だけになった。
+ * それでも予算表を残すのは、上限に対する余白を宣言として固定し、
+ * 新しいqueryを足したときにtypecheckではなくこの数で気づけるようにするため。
+ */
+export function planCashParentDeleteQueries(normalizedDealUpdateCount: number): {
+  total: number;
+  limit: number;
+  accepted: boolean;
+} {
+  if (!Number.isSafeInteger(normalizedDealUpdateCount) || normalizedDealUpdateCount < 0) {
     throw new Error('invalid_cash_parent_delete_query_plan');
   }
-  const shared =
+  const total =
     CASH_PARENT_DELETE_QUERY_LEDGER.writerLeaseWorstCase +
     CASH_PARENT_DELETE_QUERY_LEDGER.cashSnapshot +
     CASH_PARENT_DELETE_QUERY_LEDGER.recomputePlan +
-    CASH_PARENT_DELETE_QUERY_LEDGER.attachmentTargetRead;
-  const success =
-    shared +
-    CASH_PARENT_DELETE_QUERY_LEDGER.attachmentPendingPerRow * attachmentCount +
-    CASH_PARENT_DELETE_QUERY_LEDGER.attachmentTombstoneBulk +
     CASH_PARENT_DELETE_QUERY_LEDGER.finalMutationBase +
     (normalizedDealUpdateCount > 0 ? CASH_PARENT_DELETE_QUERY_LEDGER.normalizedDealsBulk : 0) +
     CASH_PARENT_DELETE_QUERY_LEDGER.aggregateReplacement;
-  const attachmentFailure =
-    shared +
-    (CASH_PARENT_DELETE_QUERY_LEDGER.attachmentPendingPerRow +
-      CASH_PARENT_DELETE_QUERY_LEDGER.attachmentFailurePerRow) *
-      attachmentCount;
-  const total = Math.max(success, attachmentFailure);
   return {
     total,
-    success,
-    attachmentFailure,
     limit: D1_FREE_QUERY_LIMIT,
     accepted: total < D1_FREE_QUERY_LIMIT,
   };
@@ -215,15 +192,7 @@ cashRoute.get('/cash-entries', async (c) => {
       .where(eq(s.freeeDeals.userId, userId)),
   ]);
   const duplicates = findCashDealDuplicates(entries, dealRows.map(dealFromRow), normMap);
-  // 証憑バッジ用。添付は集計に関与しないため、明細本体とは別に件数だけを添える。
-  const counts = await loadAttachmentCounts(
-    db,
-    c.env.FILES,
-    userId,
-    entries.map((e) => cashTxId(e.id)),
-  );
-  const withCounts = entries.map((e) => ({ ...e, attachmentCount: counts[cashTxId(e.id)] ?? 0 }));
-  return c.json({ entries: withCounts, candidates, months: data.months, duplicates });
+  return c.json({ entries, candidates, months: data.months, duplicates });
 });
 
 cashRoute.post('/cash-entries', validBody, async (c) => {
@@ -292,51 +261,15 @@ cashRoute.delete('/cash-entries/:id', zValidator('param', idParam), async (c) =>
     [cur],
     cashEntries.filter((entry) => entry.id !== id),
   );
-  if (
-    !planCashParentDeleteQueries(ATTACHMENT_MAX_PER_TARGET, recomputePlan.normalizedDealUpdates.length)
-      .accepted
-  ) {
+  if (!planCashParentDeleteQueries(recomputePlan.normalizedDealUpdates.length).accepted) {
     throw new Error('cash_parent_delete_query_budget_exceeded');
   }
   const recomputeQueries = recomputePlanQueries(db, userId, recomputePlan);
-  // route全体はcanonical mutation lease内。そのためこの中で新しい添付が増えたり、
-  // MF洗替えが割り込んだりしない。R2を先に冪等削除し、metadataはpendingで保持する。
-  const attachmentCleanup = await prepareAttachmentOriginalsForParentDelete(
-    db,
-    c.env.FILES,
-    userId,
-    cashTxId(id),
-  );
-  if (attachmentCleanup.failed > 0) {
-    return c.json(
-      {
-        error: {
-          code: 'attachment_delete_failed',
-          message:
-            '証憑原本を削除できなかったため、記帳は削除していません。時間をおいてもう一度お試しください',
-          retryable: true,
-        },
-      },
-      503,
-    );
-  }
-  await recordAttachmentTombstonesForTarget(db, userId, cashTxId(id));
-  // 親・手動編集・添付metadata・JSON pointer・再計算済み集計を一つのD1 transactionで確定する。
-  // batch失敗時は親/pending metadata/旧集計がすべて残り、R2削除済みでも同じDELETEを再開できる。
+  // 親・手動編集・JSON pointer・再計算済み集計を一つのD1 transactionで確定する。
   await db.batch([
     db.delete(s.cashEntries).where(and(eq(s.cashEntries.userId, userId), eq(s.cashEntries.id, id))),
     db.delete(s.txEdits).where(and(eq(s.txEdits.userId, userId), eq(s.txEdits.txId, cashTxId(id)))),
-    db
-      .delete(s.receiptSourceOverrides)
-      .where(
-        and(
-          eq(s.receiptSourceOverrides.userId, userId),
-          eq(s.receiptSourceOverrides.targetKind, 'cash'),
-          eq(s.receiptSourceOverrides.targetKey, String(id)),
-        ),
-      ),
-    deleteAttachmentMetadataForTargetQuery(db, userId, cashTxId(id)),
-    invalidateJsonSnapshotQuery(db, userId, 'cash_entries', 'receipt_source_overrides'),
+    invalidateJsonSnapshotQuery(db, userId, 'cash_entries'),
     ...recomputeQueries,
   ]);
   return c.json({ ok: true });

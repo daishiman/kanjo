@@ -166,9 +166,10 @@ pnpm --filter @kanjo/web build
 node packages/web/scripts/check-mobile-financial-layout.mjs
 ```
 
-`preview:smoke` は一時D1/R2、一時的な架空パスワードとセッション、架空現金明細と
-1px PNGだけを使い、migration、SPA、未認証ガード、ログイン、登録、添付、取得、
-削除を確認して自動停止します。一時的な認証値は表示も保存もしません。
+`preview:smoke` は一時D1/R2、一時的な架空パスワードとセッション、架空現金明細だけを
+使います。migration、SPA、未認証ガード、ログイン、現金明細の作成→一覧→削除→空一覧と、
+廃止済み添付・税申告APIがJSON 404を返すことを確認して自動停止します。証憑の登録・取得・削除は
+行いません。一時的な認証値は表示せず、完了時に一時保管先ごと削除します。
 
 ## 10. トラブルシュート
 

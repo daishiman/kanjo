@@ -4,6 +4,13 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import {
+  R2_CLEANUP_REMEDIATION,
+  assertR2CleanupReleaseBoundary,
+  requiresR2CleanupReleaseGate,
+  runR2CleanupStatus,
+  verifyR2CleanupIsDrained,
+} from './verify-r2-cleanup-release-gate.mjs';
+import {
   MIGRATION_NAME,
   parseWranglerMigrationListResult,
   runWranglerMigrationList,
@@ -89,6 +96,7 @@ export function verifyApprovedManifest({ manifest, repositoryHead, snapshot, pen
   ) {
     throw new Error('remote-migration-boundary-mismatch');
   }
+  assertR2CleanupReleaseBoundary(pendingFilenames);
 
   const approved = manifest.approved_pending_entries;
   if (!Array.isArray(approved) || approved.length === 0 || approved.length !== pendingFilenames.length) {
@@ -127,11 +135,16 @@ export function verifyForWorkflow({
   repositoryHead,
   migrationsDir,
   runRemoteList = runWranglerMigrationList,
+  runCleanupStatus = runR2CleanupStatus,
 }) {
   const manifest = JSON.parse(manifestJson);
   const snapshot = migrationSnapshot(migrationsDir);
   const pendingFilenames = pendingMigrationsFromWrangler(runRemoteList());
-  return verifyApprovedManifest({ manifest, repositoryHead, snapshot, pendingFilenames });
+  const approved = verifyApprovedManifest({ manifest, repositoryHead, snapshot, pendingFilenames });
+  if (requiresR2CleanupReleaseGate(pendingFilenames)) {
+    verifyR2CleanupIsDrained(runCleanupStatus());
+  }
+  return approved;
 }
 
 function isMainModule() {
@@ -147,8 +160,12 @@ if (isMainModule()) {
       migrationsDir: resolve(repositoryRoot, 'migrations'),
     });
     console.log('✅ 承認manifestと現在のpending migrationが一致しました。');
-  } catch {
-    console.error(`::error::${MANIFEST_REMEDIATION}`);
+  } catch (error) {
+    const remediation =
+      error instanceof Error && error.message.startsWith('r2-cleanup-')
+        ? R2_CLEANUP_REMEDIATION
+        : MANIFEST_REMEDIATION;
+    console.error(`::error::${remediation}`);
     process.exitCode = 1;
   }
 }

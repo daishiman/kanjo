@@ -8,14 +8,11 @@ import {
   TRANSIT_SAME_ACCOUNT_NOTE,
   type TransitInput,
   buildTransitEntry,
-  cashTxId,
-  missingReceiptSeverity,
-  receiptStatus,
   shouldSwitchToTransit,
   transitInputError,
 } from '@kanjo/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type FormEvent, Fragment, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import {
   type CashDealDuplicate,
   type CashEntriesResponse,
@@ -25,11 +22,6 @@ import {
   SCOPE_SHORT,
   api,
 } from '../api.js';
-import {
-  AttachmentDisclosureCell,
-  AttachmentDisclosureRow,
-  useAttachmentDisclosure,
-} from '../components/Attachments.js';
 import { CategoryPicker } from '../components/CategoryPicker.js';
 import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
@@ -479,7 +471,6 @@ export function CashPage() {
   } | null>(null);
   const [month, setMonth] = useState<string>('');
   const [mode, setMode] = useState<CashEntryMode>('normal');
-  const attachments = useAttachmentDisclosure();
 
   // 集計は全ページに波及するため、変更後はすべて読み直す
   const refreshAll = () => void qc.invalidateQueries();
@@ -609,14 +600,13 @@ export function CashPage() {
               '科目',
               '金額',
               'メモ',
-              termColumn('voucher'),
               { label: '操作', sortable: false },
             ]}
           >
             {shown.map((e) =>
               editing?.id === e.id ? (
                 <tr key={e.id} className="editor">
-                  <td colSpan={8}>
+                  <td colSpan={7}>
                     <div className="editor-form">
                       <CashEntryInputs
                         mode={editing.mode}
@@ -651,76 +641,57 @@ export function CashPage() {
                   </td>
                 </tr>
               ) : (
-                <Fragment key={e.id}>
-                  <tr>
-                    <td className="num">{e.date}</td>
-                    <td>
-                      <span className={`pill ${e.side === 'biz' ? 'biz' : 'per'}`}>
-                        {SCOPE_SHORT[e.side]}
-                      </span>
-                    </td>
-                    <td>
-                      {e.description}
-                      {duplicateIds.has(e.id) && (
-                        <>
-                          {' '}
-                          <span
-                            className="pill warn"
-                            title="同じ支払いが freee の仕訳にもある疑いがあります。上の知らせを確認してください"
-                          >
-                            二重計上の疑い
-                          </span>
-                        </>
-                      )}
-                    </td>
-                    <td>{e.categoryMid ? `${e.categoryMajor} / ${e.categoryMid}` : e.categoryMajor}</td>
-                    <td className="num">
-                      {e.io === 'income' ? '+' : '-'}
-                      {yen(e.amount)}
-                    </td>
-                    <td>{e.memo ?? ''}</td>
-                    <td>
-                      <AttachmentDisclosureCell
-                        targetId={cashTxId(e.id)}
-                        status={receiptStatus(e, e.attachmentCount)}
-                        count={e.attachmentCount}
-                        severity={missingReceiptSeverity(e)}
-                        disclosure={attachments}
-                      />
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="mini"
-                        onClick={() => {
-                          const body = toBody(e);
-                          setEditing({ id: e.id, body, mode: cashEntryMode(body) });
-                        }}
-                      >
-                        編集
-                      </button>{' '}
-                      <button
-                        type="button"
-                        className="mini"
-                        disabled={del.isPending}
-                        onClick={() => confirmDelete.ask(e)}
-                      >
-                        削除
-                      </button>
-                    </td>
-                  </tr>
-                  <AttachmentDisclosureRow
-                    targetId={cashTxId(e.id)}
-                    colSpan={8}
-                    disclosure={attachments}
-                    onChanged={() => void qc.invalidateQueries({ queryKey: ['cash-entries'] })}
-                  />
-                </Fragment>
+                <tr key={e.id}>
+                  <td className="num">{e.date}</td>
+                  <td>
+                    <span className={`pill ${e.side === 'biz' ? 'biz' : 'per'}`}>{SCOPE_SHORT[e.side]}</span>
+                  </td>
+                  <td>
+                    {e.description}
+                    {duplicateIds.has(e.id) && (
+                      <>
+                        {' '}
+                        <span
+                          className="pill warn"
+                          title="同じ支払いが freee の仕訳にもある疑いがあります。上の知らせを確認してください"
+                        >
+                          二重計上の疑い
+                        </span>
+                      </>
+                    )}
+                  </td>
+                  <td>{e.categoryMid ? `${e.categoryMajor} / ${e.categoryMid}` : e.categoryMajor}</td>
+                  <td className="num">
+                    {e.io === 'income' ? '+' : '-'}
+                    {yen(e.amount)}
+                  </td>
+                  <td>{e.memo ?? ''}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="mini"
+                      onClick={() => {
+                        const body = toBody(e);
+                        setEditing({ id: e.id, body, mode: cashEntryMode(body) });
+                      }}
+                    >
+                      編集
+                    </button>{' '}
+                    <button
+                      type="button"
+                      className="mini"
+                      disabled={del.isPending}
+                      onClick={() => confirmDelete.ask(e)}
+                    >
+                      削除
+                    </button>
+                  </td>
+                </tr>
               ),
             )}
             {!shown.length && (
               <tr>
-                <td colSpan={8} className="empty">
+                <td colSpan={7} className="empty">
                   {entries.length
                     ? 'この月の現金の記帳はありません。上の「すべての月」に戻すか、別の月を選んでください。'
                     : '現金の記帳はまだありません。口座やカードの明細に出ない現金の支払い(商工会議所の会議費など)を、上のフォームから追加してください。'}

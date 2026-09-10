@@ -99,7 +99,6 @@ function PreflightSummary({
         <ul>
           <li>公私・科目の手当て {collateral.txEdits}件</li>
           <li>明細の分割 {collateral.txSplits}件</li>
-          <li>添付した書類 {collateral.attachments}件</li>
           <li>
             手で記帳した現金 {collateral.cashEntries}件
             {collateral.cashEntries === 0 ? '(取込の削除では消えません)' : ''}

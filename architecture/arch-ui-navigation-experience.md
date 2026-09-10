@@ -53,9 +53,9 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 
 ## Context and drivers
 
-- Business/technical context: 15 routeと支出分析5タブの文字ナビで現在地が弱く、親子routeが同時activeになる。加えて、タブはサイドバーに出ておらず、利用者が行き先を見つけられなかった(2026-09-07)。
+- Business/technical context: metadataに登録されたrouteと支出分析5タブの文字ナビで現在地が弱く、親子routeが同時activeになる。加えて、タブはサイドバーに出ておらず、利用者が行き先を見つけられなかった(2026-09-07)。
 - Quality priorities: learnability、accessibility、predictability、bundle size、route互換。
-- Constraints: labelを残す、税務警告を隠さない、通常遷移へmodalを挟まない、外部icon runtimeを追加しない。
+- Constraints: labelを残す、重要な会計警告を隠さない、通常遷移へmodalを挟まない、外部icon runtimeを追加しない。
 
 ## Goals and non-goals
 
@@ -98,7 +98,7 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 
 | ADR | Decision | Alternatives | Trade-off rationale | Consequences |
 |---|---|---|---|---|
-| ADR-UI-001 | `/tax`へ`end`を適用しcurrentを1件以下にする | prefix一致、CSSで親の選択表示を隠す | Router標準ARIAと一貫し、DOM/ARIAの実状態を正す | nested追加時はmetadataとLayoutを更新 |
+| ADR-UI-001 | 全nav項目を厳密一致にしcurrentを1件以下にする | prefix一致、CSSで親の選択表示を隠す | Router標準ARIAと一貫し、DOM/ARIAの実状態を正す | nested追加時はmetadataとLayoutを更新 |
 | ADR-UI-002 | 型付きinline SVGをmetadataのicon keyから必須で描く | icon package、emoji、labelからの推測 | 外部依存と字体差を回避し、欠落をtype/testで検出できる | icon registryとmetadata差分の保守が必要 |
 | ADR-UI-003 | inline disclosureを既定にする | 全詳細をmodalで出す | 文脈を保ち通常遷移を遮らない | surfaceの適否reviewが必要 |
 | ADR-UI-004 | 既存のshared primitiveへ寄せて段階的に追補する | 全画面rewrite | 変更範囲と利用者の再学習コストを抑える | 画面ごとの追補が残る |
@@ -115,5 +115,5 @@ implementation_readiness: {"status":"complete","missing_sections":[],"checked_at
 ## Risks and verification
 
 - Risk: 似たiconで識別性が下がる。route固有glyphとlabel併記をreview。
-- Architecture fitness test: route=15(+支出分析の5タブ)、icon exhaustive、current≤1(タブ配下では子1件)、external icon dependency=0、破壊的操作での`window.confirm`呼出=0。
+- Architecture fitness test: route/icon集合は`routeMetadata.ts`と一致、current≤1(タブ配下では子1件)、external icon dependency=0、破壊的操作での`window.confirm`呼出=0。
 - Validation: bundle差分、200% zoom、mobile drawer、keyboard/focus、reduced motion。

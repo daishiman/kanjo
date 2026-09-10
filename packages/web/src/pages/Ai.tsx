@@ -4,7 +4,7 @@
  *            足りない情報を補って再分析する。
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import {
@@ -859,14 +859,16 @@ function ReportDetail({
 
       {compare && previous && <CompareView current={report} previous={previous} onOpen={onOpen} />}
 
-      <section className="report-section">
+      <ReportToc sections={b.sections.map((s) => ({ id: s.id, title: s.title || AI_SECTION_LABEL[s.id] }))} />
+
+      <section className="report-section" id="rs-summary">
         <h3>総評</h3>
         <ReportText text={b.summary} />
       </section>
 
-      <section className="report-section">
+      <section className="report-section" id="rs-findings">
         <h3>要点サマリー</h3>
-        <p className="sub">
+        <p className="sub lede">
           各項目は「事実(数値と計算根拠)→ 解釈 → 次のアクション(期待効果)」の順に固定しています。
         </p>
         <div className="findings">
@@ -881,9 +883,9 @@ function ReportDetail({
         </div>
       </section>
 
-      <section className="report-section">
+      <section className="report-section" id="rs-charts">
         <h3>図表(毎回同じ10枚)</h3>
-        <p className="sub">
+        <p className="sub lede">
           図の数値はすべてアプリが計算し、AIは読み解きの文だけを書きます。出せない図も枠を残し、
           あと何ヶ月分のデータで出せるかを示します。用語: <Term id="contribution" /> / <Term id="sigmaBand" />{' '}
           / <Term id="movingAvg" /> / <Term id="pareto" />
@@ -902,7 +904,7 @@ function ReportDetail({
       </section>
 
       {b.followUp && (
-        <section className="report-section">
+        <section className="report-section" id="rs-followup">
           <h3>前回の指摘はどうなったか</h3>
           <ReportText text={b.followUp.body} />
           <ItemTable items={b.followUp.items} />
@@ -910,7 +912,7 @@ function ReportDetail({
       )}
 
       {b.sections.map((sec) => (
-        <section key={sec.id} className="report-section">
+        <section key={sec.id} className="report-section" id={`rs-${sec.id}`}>
           <h3>{sec.title || AI_SECTION_LABEL[sec.id]}</h3>
           <ReportText text={sec.body} />
           {sec.gap && <p className="notice">この節は行数が足りていません: {linkTerms(sec.gap)}</p>}
@@ -918,7 +920,7 @@ function ReportDetail({
         </section>
       ))}
 
-      <section className="report-section">
+      <section className="report-section" id="rs-needs">
         <h3>精度を上げるために必要な情報</h3>
         {b.needs.length === 0 ? (
           <p className="sub">なし(今のデータで判断できています)</p>
@@ -951,12 +953,12 @@ function ReportDetail({
         </p>
       </section>
 
-      <section className="report-section">
+      <section className="report-section" id="rs-gaps">
         <h3>データ不足(判断に使えなかったもの)</h3>
         {b.dataGaps.length === 0 ? (
           <p className="sub">なし</p>
         ) : (
-          <ul>
+          <ul className="lede">
             {b.dataGaps.map((g) => (
               <li key={g}>{linkTerms(g)}</li>
             ))}
@@ -1040,44 +1042,123 @@ function CompareView({
   );
 }
 
-function FindingList({ title, items, note }: { title: string; items: AiReportFinding[]; note: string }) {
+/** レポート冒頭の節ジャンプ。長いレポートで現在地を見失わないための唯一の入口にする */
+function ReportToc({ sections }: { sections: { id: string; title: string }[] }) {
+  const links: { href: string; label: string }[] = [
+    { href: '#rs-summary', label: '総評' },
+    { href: '#rs-findings', label: '要点' },
+    { href: '#rs-charts', label: '図表' },
+    ...sections.map((s) => ({ href: `#rs-${s.id}`, label: s.title })),
+    { href: '#rs-needs', label: '必要な情報' },
+    { href: '#rs-gaps', label: 'データ不足' },
+  ];
+  return (
+    <nav className="report-toc" aria-label="レポートの節">
+      {links.map((l) => (
+        <a key={l.href} href={l.href}>
+          {l.label}
+        </a>
+      ))}
+    </nav>
+  );
+}
+
+/**
+ * 要点カードで最初から見せる部分と、<details>「根拠と詳しい説明」へ畳む部分の境界を決める。
+ * true = 常時表示、false = 畳む。
+ *
+ * 認知負荷はここでほぼ決まる。6件すべてが 事実+根拠+解釈+次の一手 を全展開すると、
+ * 「まず何をすればいいか」が本文の量に埋もれる。逆に畳みすぎると、
+ * AIの主張を数字で確かめられなくなり、レポートへの信頼が下がる。
+ */
+function findingDisclosure(it: AiReportFinding): {
+  fact: boolean;
+  basis: boolean;
+  interpretation: boolean;
+  action: boolean;
+} {
+  // 段階開示。1件あたり4段落を常に出すと、10件で40段落を一度に読むことになる。
+  // 読み手が次の行動を決めるのに要るのは「何が起きたか(fact)」と「どうするか(action)」で、
+  // 「どのキーから計算したか(basis)」は検算のときだけ要るので既定で畳む。
+  // interpretation はその中間なので、優先度 high の要点だけ最初から見せる。
+  return {
+    fact: true,
+    basis: false,
+    interpretation: it.priority === 'high',
+    action: true,
+  };
+}
+
+export function FindingList({
+  title,
+  items,
+  note,
+}: { title: string; items: AiReportFinding[]; note: string }) {
   return (
     <div className="finding">
       <h4>{title}</h4>
       {items.length === 0 ? (
         <p className="sub">なし{note ? `: ${note}` : ''}</p>
       ) : (
-        <ol>
-          {items.map((it, i) => (
-            <li key={`${i}-${it.label}`}>
-              <div>
-                <span className="finding-label">{it.label}</span>
-                {it.amount != null && <span className="num finding-amount">{yen(it.amount)}</span>}
-                {it.priority && (
-                  <span className={PRIORITY[it.priority].cls}>{PRIORITY[it.priority].label}</span>
-                )}
-              </div>
-              <dl className="finding-steps">
-                <dt>事実</dt>
-                <dd>
-                  {linkFigures(it.fact)}
-                  <span className="sub"> ({linkTerms(it.basis)})</span>
-                </dd>
-                <dt>解釈</dt>
-                <dd>{linkFigures(it.interpretation)}</dd>
-                <dt>次の一手</dt>
-                <dd>
-                  {linkFigures(it.action)}
-                  {it.expectedEffect != null && (
-                    <span className="sub">
-                      {' '}
-                      期待効果 <span className="num">{yen(it.expectedEffect)}</span>
-                    </span>
+        <ol className="finding-cards">
+          {items.map((it, i) => {
+            const show = findingDisclosure(it);
+            const folded: { term: string; node: ReactNode }[] = [];
+            if (!show.fact) folded.push({ term: '事実', node: <Prose text={it.fact} /> });
+            if (!show.basis) folded.push({ term: '根拠', node: linkTerms(it.basis) });
+            if (!show.interpretation) folded.push({ term: '解釈', node: <Prose text={it.interpretation} /> });
+            if (!show.action) folded.push({ term: '次の一手', node: linkFigures(it.action) });
+            if (!show.action && it.expectedEffect != null)
+              folded.push({ term: '期待効果', node: <span className="num">{yen(it.expectedEffect)}</span> });
+            return (
+              <li key={`${i}-${it.label}`} className="finding-card">
+                <div className="finding-head">
+                  <span className="finding-label">{it.label}</span>
+                  {it.priority && (
+                    <span className={PRIORITY[it.priority].cls}>{PRIORITY[it.priority].label}</span>
                   )}
-                </dd>
-              </dl>
-            </li>
-          ))}
+                  {it.amount != null && <span className="num finding-amount">{yen(it.amount)}</span>}
+                </div>
+                {show.fact && (
+                  <div className="finding-part">
+                    <span className="finding-tag">事実</span>
+                    <Prose text={it.fact} className="finding-fact" />
+                  </div>
+                )}
+                {show.basis && <p className="finding-basis">{linkTerms(it.basis)}</p>}
+                {show.interpretation && (
+                  <div className="finding-part">
+                    <span className="finding-tag">解釈</span>
+                    <Prose text={it.interpretation} className="finding-interp" />
+                  </div>
+                )}
+                {show.action && (
+                  <p className="finding-action">
+                    <span className="finding-action__tag">次の一手</span>
+                    {linkFigures(it.action)}
+                    {it.expectedEffect != null && (
+                      <span className="finding-effect">
+                        期待効果 <span className="num">{yen(it.expectedEffect)}</span>
+                      </span>
+                    )}
+                  </p>
+                )}
+                {folded.length > 0 && (
+                  <details className="finding-more">
+                    <summary>根拠と詳しい説明</summary>
+                    <dl className="finding-steps">
+                      {folded.map((f) => (
+                        <Fragment key={f.term}>
+                          <dt>{f.term}</dt>
+                          <dd>{f.node}</dd>
+                        </Fragment>
+                      ))}
+                    </dl>
+                  </details>
+                )}
+              </li>
+            );
+          })}
         </ol>
       )}
     </div>
@@ -1089,7 +1170,7 @@ function ItemTable({ items }: { items: AiReportItem[] }) {
   return (
     <div className="scroll-x">
       <DataTable
-        className="data ai-table"
+        className="data ai-table report-item-table"
         columns={['項目', { label: '金額(円)', className: 'num' }, '優先度', '補足']}
       >
         {items.map((it, i) => (
@@ -1127,7 +1208,45 @@ function linkFigures(text: string): ReactNode[] {
 }
 
 /** プレーンテキストを段落と「- 」箇条書きに整えて表示する(HTMLとしては解釈しない) */
-function ReportText({ text }: { text: string }) {
+// 日本語の分析文は「。」ごとに1論点で書かれていることが多い。段落のまま流すとその
+// 区切りが消えて「文章の羅列」になるので、文へ割って1行ずつ並べる。
+// 「(58.2%)。」のような閉じ括弧は前の文に残す(次の行の頭へ飛ばさない)。
+const SENTENCE_SPLIT = /(?<=。)(?![)）」』】])/;
+// 2文までは段落のほうが素直に読める。3文以上から構造化する
+const SENTENCE_MIN = 3;
+
+function splitSentences(text: string): string[] {
+  return text
+    .split(SENTENCE_SPLIT)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/**
+ * 地の文を1文1行へ割って並べる。2文以下なら段落のまま返す。
+ * レポート側が箇条書き(行頭「- 」)で書いていればそちらが優先で、ここは通らない。
+ */
+function Prose({
+  text,
+  className,
+  render = linkFigures,
+}: {
+  text: string;
+  className?: string;
+  render?: (s: string) => ReactNode;
+}) {
+  const parts = splitSentences(text);
+  if (parts.length < SENTENCE_MIN) return <p className={className}>{render(text)}</p>;
+  return (
+    <ul className={className ? `prose-lines ${className}` : 'prose-lines'}>
+      {parts.map((s, i) => (
+        <li key={`${i}-${s}`}>{render(s)}</li>
+      ))}
+    </ul>
+  );
+}
+
+export function ReportText({ text }: { text: string }) {
   const blocks: { kind: 'p' | 'ul'; lines: string[] }[] = [];
   for (const raw of text.split('\n')) {
     const line = raw.trimEnd();
@@ -1143,6 +1262,9 @@ function ReportText({ text }: { text: string }) {
     } else if (last && last.kind === 'p') last.lines.push(line);
     else blocks.push({ kind: 'p', lines: [line] });
   }
+  // 箇条書きを持つ本文の段落はリード文なので割らない。持たない本文(箇条書き規約より
+  // 前に作られたレポート)だけを文へ割って、地の文の塊にならないようにする。
+  const hasBullets = blocks.some((bl) => bl.kind === 'ul' && bl.lines.length);
   return (
     <div className="report-text">
       {blocks
@@ -1154,8 +1276,10 @@ function ReportText({ text }: { text: string }) {
                 <li key={`${j}-${l}`}>{linkFigures(l)}</li>
               ))}
             </ul>
-          ) : (
+          ) : hasBullets ? (
             <p key={`p-${i}-${bl.lines[0]}`}>{linkFigures(bl.lines.join('\n'))}</p>
+          ) : (
+            <Prose key={`p-${i}-${bl.lines[0]}`} text={bl.lines.join('\n')} />
           ),
         )}
     </div>

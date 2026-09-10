@@ -213,7 +213,7 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": "6e8368059a6c18928e2c69467610965a79b63c897fce7593d2f63c1364c8bbc0",
+        "source_digest": "5190997153bb2d59b4b69541d6e075b3229986622cdb45f6a01ae66d978169bb",
         "imported_at": "2026-08-29T00:00:00Z"
       },
       "referenced_by": [
@@ -238,7 +238,7 @@
         "source_plugin": null,
         "source_path": "specs/transaction-splits.md",
         "source_version": "1.1",
-        "source_digest": "99a3fb633780af09065b263bff8b2858f85bf4f4bec63634c9db441bbde530a2",
+        "source_digest": "db733029b4a27dd011a59e77e244908872de7a5b7c0553b5a5d7183f2e5e4d83",
         "imported_at": "2026-08-30T00:00:00Z"
       },
       "referenced_by": [
@@ -261,7 +261,7 @@
         "source_plugin": null,
         "source_path": "specs/ui-navigation-cognitive-load.md",
         "source_version": "1.0",
-        "source_digest": "deec69e2d47211ba9db8380470e8190879f116b7b5d6f5b557bfd4ff22ab9a8f",
+        "source_digest": "8aba234893fd72683db1f5e8e21f3bcb60297aca83ca3c792e8f50e45811a434",
         "imported_at": "2026-09-07T13:55:37Z"
       },
       "referenced_by": [
@@ -284,11 +284,38 @@
         "source_plugin": null,
         "source_path": "specs/ui-navigation-cognitive-load.md",
         "source_version": "1.0",
-        "source_digest": "deec69e2d47211ba9db8380470e8190879f116b7b5d6f5b557bfd4ff22ab9a8f",
+        "source_digest": "8aba234893fd72683db1f5e8e21f3bcb60297aca83ca3c792e8f50e45811a434",
         "imported_at": "2026-09-07T13:55:37Z"
       },
       "referenced_by": [
         "feat-ui-navigation-cognitive-load"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-system",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend",
+        "backend",
+        "infrastructure",
+        "data",
+        "security"
+      ],
+      "title": "事業・家計トータル収支システム アーキテクチャ",
+      "file_path": "architecture/arch-total-cashflow-system.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/index.md",
+        "source_version": "0.1.12",
+        "source_digest": "69a9cb667945e7769df55e373d35de54a2a2f7f094d38454c9c008971fb6ce94",
+        "imported_at": "2026-09-08T07:32:48Z"
+      },
+      "referenced_by": [
+        "feature-retire-tax-receipt-and-clarify-freee-only"
       ]
     },
     {

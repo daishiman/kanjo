@@ -1,0 +1,52 @@
+{
+  "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+  "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "schema_version": "1.0.0",
+  "source_feature_digest": "sha256:691ce012422589ceca63ba89fdbe45493adcf0acf81b1001a4dea6e044a9213c",
+  "task_count": 13,
+  "task_node_ids": [
+    "SYS-RTR-P01",
+    "SYS-RTR-P02",
+    "SYS-RTR-P03",
+    "SYS-RTR-P04",
+    "SYS-RTR-P05",
+    "SYS-RTR-P06",
+    "SYS-RTR-P07",
+    "SYS-RTR-P08",
+    "SYS-RTR-P09",
+    "SYS-RTR-P10",
+    "SYS-RTR-P11",
+    "SYS-RTR-P12",
+    "SYS-RTR-P13"
+  ],
+  "task_spec_paths": [
+    "task-specs/phase-01-requirements.md",
+    "task-specs/phase-02-architecture.md",
+    "task-specs/phase-03-design-review.md",
+    "task-specs/phase-04-test-design.md",
+    "task-specs/phase-05-implementation.md",
+    "task-specs/phase-06-test-run.md",
+    "task-specs/phase-07-acceptance.md",
+    "task-specs/phase-08-refactoring-migration.md",
+    "task-specs/phase-09-quality-assurance.md",
+    "task-specs/phase-10-final-review.md",
+    "task-specs/phase-11-evidence.md",
+    "task-specs/phase-12-documentation-operations.md",
+    "task-specs/phase-13-release-deploy.md"
+  ]
+}

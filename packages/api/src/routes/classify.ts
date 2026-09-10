@@ -24,14 +24,11 @@ import {
   countableMfTxs,
   isCashTxId,
   mfStableKey,
-  parseAttachmentTarget,
-  parseMfAttachmentTarget,
   paymentMethodOf,
   projectAccountingDataset,
   resolveIncomingTx,
   resolveTx,
   ruleMatches,
-  serializeAttachmentTarget,
   sum,
   validateSplits,
   vendorMemoryEditContributes,
@@ -56,7 +53,6 @@ import {
   upsertEdit,
 } from '../store.js';
 import { applyManualEditWithBase, materializeManualFallback } from '../tx-edit-codec.js';
-import { loadAttachmentCounts } from './attachments.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
@@ -115,18 +111,7 @@ classifyRoute.get('/transactions', async (c) => {
   const txs = countable.filter((t) => t.m === m);
   /** 同月に取り込まれたが集計対象外だった件数(振替・計算対象=0)。取込漏れとの取り違えを防ぐため件数だけ返す */
   const nonCountableCount = data.mfTx.filter((t) => t.m === m).length - txs.length;
-  const attachmentTargetFor = (t: (typeof txs)[number]) => {
-    if (t.splitProjection?.kind === 'split') return parseMfAttachmentTarget(t.splitProjection.parentTxId);
-    return parseAttachmentTarget(t.id);
-  };
-  const attachmentTargets = txs
-    .map(attachmentTargetFor)
-    .filter((target): target is NonNullable<typeof target> => target !== null);
-  const [candidates, attachmentCounts] = await Promise.all([
-    loadCandidates(db, userId, data.mfTx),
-    // 証憑バッジ用。表示中の月の明細だけを引く
-    loadAttachmentCounts(db, c.env.FILES, userId, attachmentTargets),
-  ]);
+  const candidates = await loadCandidates(db, userId, data.mfTx);
   const resolved = txs.map((t) => ({
     t,
     r: resolveTx(t, data.rules, data.edits, data.institutionOwners),
@@ -139,8 +124,6 @@ classifyRoute.get('/transactions', async (c) => {
       const parentTxId = split?.parentTxId ?? splitParent?.parentTxId ?? null;
       const e = split ? data.edits[split.parentTxId] : data.edits[t.id];
       const memoryContributes = vendorMemoryEditContributes(t, data.rules, e);
-      const attachmentTarget = attachmentTargetFor(t);
-      const attachmentTargetId = attachmentTarget ? serializeAttachmentTarget(attachmentTarget) : null;
       return {
         id: t.id,
         rowKey: split ? `split:${split.lineId}` : `${rowKind}:${t.id}`,
@@ -154,9 +137,7 @@ classifyRoute.get('/transactions', async (c) => {
           quickClass: rowKind !== 'split',
           edit: rowKind !== 'split',
           split: rowKind !== 'cash' && t.idStable === true,
-          attach: attachmentTarget !== null && (attachmentTarget.kind === 'cash' || t.idStable === true),
         },
-        attachmentTargetId,
         idStable: t.idStable === true,
         date: t.d,
         description: t.c,
@@ -185,8 +166,6 @@ classifyRoute.get('/transactions', async (c) => {
         originKey: memoryContributes ? (e?.originKey ?? null) : null,
         /** 手動の科目が現在の公私の系統に無い(公私を後から変えた等) */
         scopeMismatch: r.catSrc === '手動' && !categoryAllowed(candidates, r.cls, r.big, r.mid),
-        /** 添付されている証憑の件数(0 = 未添付) */
-        attachmentCount: attachmentTargetId ? (attachmentCounts[attachmentTargetId] ?? 0) : 0,
         edit: e
           ? {
               cls: e.cls ?? null,

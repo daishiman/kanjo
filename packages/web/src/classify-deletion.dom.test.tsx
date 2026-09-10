@@ -24,9 +24,7 @@ const row = (rowKind: TxRow['rowKind'], id: string, description: string): TxRow 
     quickClass: rowKind !== 'split',
     edit: rowKind !== 'split',
     split: rowKind === 'mf',
-    attach: rowKind !== 'split',
   },
-  attachmentTargetId: null,
   idStable: rowKind === 'mf',
   date: '07/01',
   description,
@@ -49,7 +47,6 @@ const row = (rowKind: TxRow['rowKind'], id: string, description: string): TxRow 
   origin: null,
   originKey: null,
   scopeMismatch: false,
-  attachmentCount: 0,
   edit: null,
 });
 
@@ -95,12 +92,11 @@ function renderPage(transactions: TxRow[]) {
       const path = String(input);
       calls.push({ path, init });
       if (path.startsWith('/api/transactions?')) return json(response(visibleTransactions));
-      if (path === '/api/attachments/orphans') return json({ attachments: [] });
       if (path === '/api/vendor-memory') return json({ memories: [] });
       if (path === '/api/data/deletions/preflight')
         return json({
           counts: { mfTx: 1, freeeDeals: 0, balanceEntries: 0, months: 1 },
-          collateral: { txEdits: 0, txSplits: 0, attachments: 0, cashEntries: 0 },
+          collateral: { txEdits: 0, txSplits: 0, cashEntries: 0 },
           months: ['2026-07'],
           fingerprint: 'fp-one',
           undoable: true,

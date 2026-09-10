@@ -1,0 +1,135 @@
+{
+  "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P01",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P01",
+      "title": "廃止範囲と保持範囲の要件確定"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P01"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P02",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P02",
+      "title": "削除後の依存グラフと層境界の設計"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P02"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P03",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P03",
+      "title": "独立設計レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P03"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P04",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P04",
+      "title": "退避テストと受入テストの設計"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P04"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P05",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P05",
+      "title": "証憑機能の削除と freeeOnly 行の操作除去"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P05"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P06",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P06",
+      "title": "テスト実行"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P06"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P07",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P07",
+      "title": "受入判定"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P07"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P08",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P08",
+      "title": "残存参照の整理とデータ移行"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P08"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P09",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P09",
+      "title": "型検査と静的検査と運用予算の整合"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P09"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P10",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P10"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P11",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡の収集"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P11"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P12",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P12",
+      "title": "文書と運用手順の更新"
+    },
+    {
+      "depends_on": [
+        "SYS-RTR-P12"
+      ],
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "id": "SYS-RTR-P13",
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P13",
+      "title": "反映と反映後の確認"
+    }
+  ],
+  "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+  "schema_version": "1.0.0"
+}

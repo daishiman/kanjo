@@ -7,10 +7,10 @@ allowed-tools: Read, Bash(curl *), Bash(python3 *)
 kind: run
 prefix: run
 effect: external-mutation
-version: 3.0.0
+version: 3.1.0
 owner: daishiman
 since: 2026-08-25
-last-audited: 2026-08-25
+last-audited: 2026-09-10
 audit-trigger: on-change
 source: packages/api/src/ai/contract.ts
 source-tier: internal
@@ -31,7 +31,7 @@ feedback_contract:
   criteria:
     - id: IN1
       loop_scope: inner
-      text: 送信JSONが scripts/validate-report.py --data <取得JSON> で exit 0(5節の最低行数・要点の4欄・図表カタログ参照と「図N」の照合・上限下限・プレーンテキスト)になっている
+      text: 送信JSONが scripts/validate-report.py --data <取得JSON> で exit 0(5節の最低行数・要点の4欄・図表カタログ参照と「図N」の照合・上限下限・プレーンテキスト・本文の箇条書き規約)になっている
       verify_by: script
       derived_from: [CL-3, CL-4]
     - id: IN2
@@ -104,8 +104,8 @@ rubric_hash: sha256:6e1843e5204accb8c76c96bf0d8189dafff6d51f2d182096424fcb6c6bfd
 
 1. **数字は取得したデータにある値だけ**。推測で金額・科目・ベンダーを作らない。
 2. **無いものは「データ不足」と書く**(例: 前年同月の個人支出が無い)。埋めない・ぼかさない。`dataGaps` にも1件1行で列挙する。
-3. **5節を毎回すべて出し、節ごとの最低行数(`items`: spend 3 / change 1 / reduction 2 / split 2 / subscriptions 1)を満たす**。満たせないときは `gap` に「何があれば出せるか」を10字以上で書く。`summary` は 60〜1,200字で、出せた図を「図N」で参照する。
-4. 本文は**プレーンテキスト**(改行と「- 」の箇条書きだけ)。HTML・Markdownの表・見出し記号は使わない。
+3. **5節を毎回すべて出し、節ごとの最低行数を満たす**(行数と節の役割は「局面: 組立」の表)。満たせないときは `gap` に「何があれば出せるか」を書く。`summary` は出せた図を「図N」で参照する。
+4. **本文(`summary` / `sections[].body` / `followUp.body`)は「リード文 + 『- 』の箇条書き」で書く**。地の文だけの長い段落にしない。記法・最低行数・1行の長さは `references/report-schema.md`「本文の書き方」が正本で、`validate-report.py` が落とす。HTML・Markdownの表・見出し記号は使わない。
 5. **送信前に必ず `python3 "$SKILL_DIR/scripts/validate-report.py" <送信JSON> --data <取得JSON>` を通し、exit 0 になってから POST する**(fail-closed。`--data` で図の available と「図N」参照まで照合する)。
 6. `401` は期限切れか使用済み。**自分で推測して続けず、利用者に指示文の再発行を依頼する**。
 7. **統計・PL・BS はできることだけ書く**。`stats.available` が false の手法は「この手法には N ヶ月以上必要(あと M ヶ月分で分析可能)」と書く。`bs.available` が false の間は資産・負債・残高の数字を一切書かず `bs.reason` の1行だけ書く(`analysis-guide.md` §4)。
@@ -134,7 +134,7 @@ frontmatter `feedback_contract.criteria` が評価基準の正本。inner(IN1〜
 
 - [ ] 指示文から 対象期間と型 / GET URL / POST URL / トークン / 有効期限(+ 再分析の前回ID・補足情報)を読み取った <!-- CL-1 -->
 - [ ] 本文・keyFindings・charts の金額・科目・ベンダーが取得JSON(または計算式を示せる派生値)に由来し、無いものは「データ不足」と本文・`dataGaps` に書き、解消操作を `needs` に書いた。`stats.available=false` の手法・BS の数字を書いていない <!-- CL-2 -->
-- [ ] `summary`(図N参照つき) + `keyFindings`(3区分・各件 fact/basis/interpretation/action・0件は notes) + `charts`(available=true の全図に catalogId+caption) + 5節(最低行数か gap) + `needs`(+ 前回があれば `followUp`)を含む送信JSONを組み立てた <!-- CL-3 -->
+- [ ] `summary`(図N参照つき) + `keyFindings`(3区分・各件 fact/basis/interpretation/action・0件は notes) + `charts`(available=true の全図に catalogId+caption) + 5節(最低行数か gap) + `needs`(+ 前回があれば `followUp`)を含む送信JSONを組み立てた。本文は「リード文 + 『- 』の箇条書き」で書いた <!-- CL-3 -->
 - [ ] `validate-report.py --data <取得JSON>` が exit 0 を返した <!-- CL-4 -->
 - [ ] POST が `201` を返し `reportId` を利用者へ示した(送信不能環境ではJSONを提示し貼り付け先を案内した) <!-- CL-5 -->
 - [ ] 一時ファイルを削除し、トークンをファイル・ログ・要約に残していない <!-- CL-6 -->
@@ -169,7 +169,17 @@ curl -sS -H "Authorization: Bearer <token>" "<データ取得URL>" -o "${TMPDIR:
 
 ### 局面: 組立
 
-`references/report-schema.md` の形で送信JSONを `${TMPDIR:-/tmp}/kanjo-ai-report.json` に書く。節の役割と必ず含めるもの:
+`references/report-schema.md` の形で送信JSONを `${TMPDIR:-/tmp}/kanjo-ai-report.json` に書く。
+
+`summary` / 各 `body` / `followUp.body` は毎回この型で書く(規則の正本は `report-schema.md`「本文の書き方」):
+
+```
+<結論を述べるリード文。数字を1つ入れる>
+- <事実。金額・比率・増減のどれかを含め、1行1論点>
+- <事実>
+```
+
+節の役割と必ず含めるもの:
 
 | id | 節の役割 | 必ず含めるもの |
 |---|---|---|
@@ -221,7 +231,7 @@ curl -sS -X POST -H "Authorization: Bearer <token>" -H "Content-Type: applicatio
 
 - `sections` の順序は問わない(保存時に固定順へ並ぶ)が、**id の綴りは固定**。`subscription`(単数)などは `400` になる。
 - `amount` は円の整数。小数・文字列・`true` は検査で落ちる。不明なら `null`。
-- 検査スクリプトはローカルの写しで、アプリ側の上限・下限(`summary` 60〜1,200字 / `body` 80〜6,000字 / `caption` 15〜400字 / `items` 60件 / `dataGaps` 40件)を先取りして落とす。API側で `400` が出たら `error.message` を優先して直す。
+- 検査スクリプトはローカルの写しで、アプリ側の上限・下限を先取りして落とす。**数値の一覧は `references/report-schema.md` の表だけに置く**(ここに写すと2箇所がずれる)。API側で `400` が出たら `error.message` を優先して直す。
 - `401` を「もう一度 GET すれば直る」と誤解しない。トークンは使い捨てで、再発行は利用者の画面操作でしかできない。
 - 未記帳の月(取込が無い月)を「支出が減った」と読まない。`change` では未記帳を先に切り分ける。
 - 期間が取込済みデータより広い(例: 過去5年を指定したが2年分しか無い)ときは、無い年を推測で埋めず `dataRange` を冒頭に書く。

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "promoted",
+  "promoted_at": "2026-09-09T16:14:10Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+  "evaluated_digest": "sha256:439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+  "published_digest": "sha256:439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+  "implementation_readiness": "complete",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS"
+  },
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/dev-graph-registration.json"
+}

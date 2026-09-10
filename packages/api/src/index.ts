@@ -9,8 +9,6 @@ import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { z } from 'zod';
-import { ATTACHMENT_AVAILABILITY_ERROR, AttachmentAvailabilityError } from './attachment-availability.js';
-import { runAttachmentMaintenance } from './attachment-recovery.js';
 import { runAuditDetailRetention, runAuditHeaderRetention } from './audit-log.js';
 import { type AuthEnv, authGuard, clearSession, issueSession, verifyPassword } from './auth.js';
 import { canonicalMutationFence } from './canonical-mutation-fence.js';
@@ -24,9 +22,9 @@ import {
   passwordLoginRetryAfterSeconds,
   recordPasswordLoginFailure,
 } from './login-rate-limit.js';
+import { runR2Cleanup } from './r2-cleanup.js';
 import { aiAgentRoute, aiRoute } from './routes/ai.js';
 import { analyticsRoute } from './routes/analytics.js';
-import { attachmentsRoute } from './routes/attachments.js';
 import { balancesRoute } from './routes/balances.js';
 import { cashRoute } from './routes/cash.js';
 import { classifyRoute } from './routes/classify.js';
@@ -36,11 +34,9 @@ import { importsRoute } from './routes/imports.js';
 import { improvementAgentRoute, improvementRoute, runImprovementRetention } from './routes/improvement.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
-import { taxRoute } from './routes/tax.js';
 import { totalCashflowRoute } from './routes/total-cashflow.js';
 import { vendorMemoryRoute } from './routes/vendor-memory.js';
 import {
-  SCHEDULED_ATTACHMENT_JOB_LIMIT,
   SCHEDULED_MAINTENANCE_D1_PLAN,
   type ScheduledMaintenanceJobName,
 } from './scheduled-maintenance-budget.js';
@@ -70,8 +66,8 @@ app.use(
       styleSrc: ["'self'", "'unsafe-inline'"],
     },
     permissionsPolicy: {
-      // 証憑撮影は同一originのfile inputから使う。埋め込み先へは許可しない。
-      camera: ['self'],
+      // カメラを使う機能は無い。証憑撮影の廃止に伴い許可も外す。
+      camera: [],
       geolocation: [],
       microphone: [],
       payment: [],
@@ -145,9 +141,7 @@ app.route('/api', classifyRoute);
 app.route('/api', vendorMemoryRoute);
 app.route('/api', settingsRoute);
 app.route('/api', subsRoute);
-app.route('/api', attachmentsRoute);
 app.route('/api', balancesRoute);
-app.route('/api', taxRoute);
 app.route('/api', totalCashflowRoute);
 app.route('/api', improvementRoute);
 
@@ -178,8 +172,6 @@ app.onError((err, c) => {
         .slice(0, 4),
     }),
   );
-  if (err instanceof AttachmentAvailabilityError)
-    return c.json({ error: ATTACHMENT_AVAILABILITY_ERROR }, 503);
   return c.json({ error: { code: 'internal', message: 'サーバーエラーが発生しました' } }, 500);
 });
 
@@ -218,9 +210,7 @@ export async function scheduledMaintenance(
   type ConcurrentJobName = Exclude<ScheduledMaintenanceJobName, 'nightly_backup'>;
   // Recordで予算表と実行jobを型結合する。jobの追加・宣言漏れはtypecheckで止まる。
   const concurrentJobs = {
-    attachment_maintenance: runAttachmentMaintenance(env, new Date(), {
-      maxJobs: SCHEDULED_ATTACHMENT_JOB_LIMIT,
-    }),
+    r2_cleanup: runR2Cleanup(env),
     password_login_rate_limit_cleanup: cleanupStalePasswordLoginRateLimits(env),
     improvement_retention: runImprovementRetention(env),
     deletion_undo_retention: runDeletionRetention(env),
@@ -228,14 +218,14 @@ export async function scheduledMaintenance(
     audit_detail_retention: runAuditDetailRetention(env),
   } satisfies Record<ConcurrentJobName, Promise<unknown>>;
   const [
-    cleanup,
+    r2Cleanup,
     loginRateLimit,
     improvement,
     deletionRetention,
     auditHeaderRetention,
     auditDetailRetention,
   ] = await Promise.allSettled([
-    concurrentJobs.attachment_maintenance,
+    concurrentJobs.r2_cleanup,
     concurrentJobs.password_login_rate_limit_cleanup,
     concurrentJobs.improvement_retention,
     concurrentJobs.deletion_undo_retention,
@@ -262,22 +252,20 @@ export async function scheduledMaintenance(
   } else {
     console.error(JSON.stringify({ level: 'error', job: 'nightly_backup', name: errorName(backup.reason) }));
   }
-  if (cleanup.status === 'fulfilled') {
+  if (r2Cleanup.status === 'fulfilled') {
     console.log(
       JSON.stringify({
         level: 'info',
-        job: 'attachment_maintenance',
-        selected: cleanup.value.selected,
-        completed: cleanup.value.completed,
-        retried: cleanup.value.retried,
-        dead: cleanup.value.dead,
-        importJobsEnqueued: cleanup.value.importJobsEnqueued,
+        job: 'r2_cleanup',
+        selected: r2Cleanup.value.selected,
+        completed: r2Cleanup.value.completed,
+        retried: r2Cleanup.value.retried,
+        dead: r2Cleanup.value.dead,
+        importJobsEnqueued: r2Cleanup.value.importJobsEnqueued,
       }),
     );
   } else {
-    console.error(
-      JSON.stringify({ level: 'error', job: 'attachment_maintenance', name: errorName(cleanup.reason) }),
-    );
+    console.error(JSON.stringify({ level: 'error', job: 'r2_cleanup', name: errorName(r2Cleanup.reason) }));
   }
   if (loginRateLimit.status === 'fulfilled') {
     console.log(
@@ -388,7 +376,7 @@ export async function scheduledMaintenance(
   if (
     [
       backup,
-      cleanup,
+      r2Cleanup,
       loginRateLimit,
       improvement,
       deletionRetention,

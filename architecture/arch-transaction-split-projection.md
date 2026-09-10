@@ -15,7 +15,7 @@ iteration: null
 created_at: "2026-08-30T00:00:00Z"
 updated_at: "2026-08-30T00:00:00Z"
 depends_on: []
-related_nodes: ["feat-transaction-split-readability", "arch-tax-preparation-boundary"]
+related_nodes: ["feat-transaction-split-readability"]
 resource_scope: ["architecture/arch-transaction-split-projection.md"]
 parent_feature: null
 feature_package_id: null
@@ -28,7 +28,7 @@ evaluation_status: "pending"
 confirmation_evidence: {"evaluator": "manual-review", "evidence_ref": "tasks/transaction-split-readability-tasks.md", "evaluated_digest": null}
 source_lineage: {"origin_kind": "manual", "source_plugin": null, "source_path": "specs/transaction-splits.md", "source_version": "1.1", "source_digest": null, "imported_at": "2026-08-30T00:00:00Z"}
 classification_confidence: 1.0
-classification_reason: "1明細をN行へ置き換える操作が、集計・証憑・申告・取込の4経路をまたぐ横断契約であるためアーキテクチャ層。"
+classification_reason: "1明細をN行へ置き換える操作が、集計・仕分け・取込の複数経路をまたぐ横断契約であるためアーキテクチャ層。"
 classification_candidates: []
 github_publication: {"mode": "local_only", "project_aliases": [], "labels": [], "milestone": null}
 issue_linkage: null
@@ -40,9 +40,9 @@ execution_contexts: []
 completion_evidence: {"policy": "manual", "status": "open", "source": null, "completed_at": null, "reconciled_at": null, "evidence_refs": ["tasks/transaction-split-readability-tasks.md"]}
 implementation_readiness: {"status": "ready", "missing_sections": [], "checked_at": "2026-08-30T00:00:00Z"}
 purpose: "1件の明細を内訳N行へ分ける操作を、保存済みデータの書き換えではなく読み出し時の投影として閉じる。"
-goal: "分割の有無が集計・証憑・申告・取込のどこにどう届くかが1箇所で決まり、内訳が壊れているときは銀行の記録側へ倒れる。"
-scope_in: ["tx_splitsの永続境界", "projectAccountingDatasetによる投影点", "fail-closedの判定条件", "証憑の添付先", "分割エディタの表示境界"]
-scope_out: ["freee帳簿への書き戻し", "内訳ごとの証憑添付", "identity_stable=0の明細の分割"]
+goal: "分割の有無が集計・仕分け・取込のどこにどう届くかが1箇所で決まり、内訳が壊れているときは銀行の記録側へ倒れる。"
+scope_in: ["tx_splitsの永続境界", "projectAccountingDatasetによる投影点", "fail-closedの判定条件", "分割エディタの表示境界"]
+scope_out: ["freee帳簿への書き戻し", "identity_stable=0の明細の分割"]
 ---
 
 # 解く問題
@@ -88,24 +88,15 @@ API側は `loadDataset({ withSplits })` の既定を `true` にし、raw canonic
 - 却下案: 不整合な内訳を黙って隠す
   → 直せない不整合が画面から見えなくなる。倒すことと隠すことは違う。
 
-## D4. 証憑は親取引に1件だけ
+## D4. 事業科目別へは合流させない
 
-領収書は物理的に1枚なので、添付先も1つにする。`receipts.ts` は
-`splitProjection.kind === 'split'` の子行を `parentTxId` へ畳み、棚卸しの
-`accounts` には内訳の科目をすべて並べる。
-
-- 却下案: 内訳ごとに添付できるようにする
-  → 領収書1枚に対して添付先がN個できる。どれが正かが決まらない。
-
-## D5. 事業科目別へは合流させない
-
-確定申告書の科目別金額は freee 帳簿(`data.biz.categories`)が正本である。
+事業の科目別金額は freee 帳簿(`data.biz.categories`)が正本である。
 MF側の分割は **事業立替の合計**までを持ち、事業の科目別内訳へは流さない。
 
 - 理由: 同じ支出が freee と MF の両方から科目別へ入ると二重計上になる。
-  正本を2つ持たない、という `arch-tax-preparation-boundary` の D3 と同じ立場。
+  正本を2つ持たない。
 
-## D6. 分割エディタでは科目パネルを浮かせない
+## D5. 分割エディタでは科目パネルを浮かせない
 
 `CategoryPicker` の `.cat-panel` は全画面共通で `position: absolute` だが、
 **浮かせた要素は最も近いスクロール祖先で切られる**。分割の表は明細一覧の

@@ -1,0 +1,1173 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+  "promotion_receipt": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+  "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-RTR-P01": "beads",
+    "SYS-RTR-P02": "beads",
+    "SYS-RTR-P03": "beads",
+    "SYS-RTR-P04": "beads",
+    "SYS-RTR-P05": "beads",
+    "SYS-RTR-P06": "beads",
+    "SYS-RTR-P07": "beads",
+    "SYS-RTR-P08": "beads",
+    "SYS-RTR-P09": "beads",
+    "SYS-RTR-P10": "beads",
+    "SYS-RTR-P11": "beads",
+    "SYS-RTR-P12": "beads",
+    "SYS-RTR-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-RTR-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "廃止範囲と保持範囲の要件確定",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "requirements"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P01",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P01 は 13 phase の requirements slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "削除後の依存グラフと層境界の設計",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "backend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "architecture"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P01"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P02",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P02 は 13 phase の architecture slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立設計レビュー",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P02"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P03",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P03 は 13 phase の design-review slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "退避テストと受入テストの設計",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P03"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "packages/api/test",
+        "packages/core/test",
+        "packages/web/test",
+        ".dev-graph/eval-log"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P04",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P04 は 13 phase の test-design slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "証憑機能の削除と freeeOnly 行の操作除去",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "backend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "implementation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P04"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P05",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P05 は 13 phase の implementation slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "テスト実行",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P05"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "packages/core/test",
+        "packages/api/test",
+        "packages/web/test"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P06",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P06 は 13 phase の test-run slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入判定",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P06"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "packages/core",
+        "packages/api",
+        "packages/web",
+        "migrations"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P07",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P07 は 13 phase の acceptance slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "残存参照の整理とデータ移行",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "data",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "refactoring-migration"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P07"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P08",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P08 は 13 phase の refactoring-migration slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "型検査と静的検査と運用予算の整合",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P08"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "packages/core",
+        "packages/api",
+        "packages/web"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P09",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P09 は 13 phase の quality-assurance slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "final-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P09"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "packages/core",
+        "packages/api",
+        "packages/web",
+        "migrations"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P10",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P10 は 13 phase の final-review slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡の収集",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P10"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        ".dev-graph/eval-log"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P11",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P11 は 13 phase の evidence slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "文書と運用手順の更新",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "documentation-operations"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P11"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "docs",
+        "README.md"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P12",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P12 は 13 phase の documentation-operations slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-RTR-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "反映と反映後の確認",
+      "project_id": "feature-package-retire-tax-receipt-and-clarify-freee-only",
+      "domain": "operations",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "retire-tax-receipt",
+        "release-deploy"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-09T16:14:10Z",
+      "updated_at": "2026-09-09T16:14:10Z",
+      "depends_on": [
+        "SYS-RTR-P12"
+      ],
+      "related_nodes": [
+        "spec-total-cashflow-system",
+        "arch-total-cashflow-system"
+      ],
+      "resource_scope": [
+        "migrations",
+        "packages/api",
+        "packages/web",
+        ".dev-graph/eval-log"
+      ],
+      "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+      "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+      "phase_ref": "P13",
+      "file_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/plan-findings.json",
+        "evaluated_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+        "imported_at": "2026-09-09T16:14:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "P13 は 13 phase の release-deploy slot に対応し、成果物は task 1 件である",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feature-retire-tax-receipt-and-clarify-freee-only/SYS-RTR-P13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-08T08:23:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

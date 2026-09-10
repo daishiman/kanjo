@@ -143,8 +143,6 @@ export interface ManualRecords {
   txSplits: readonly { txId: string }[];
   /** 現金記録。取込由来でないので対象集合に入れない(DR-6)。 */
   cashEntries: readonly { month: string }[];
-  /** 添付。 */
-  attachments: readonly { txId: string | null; month: string | null }[];
 }
 
 export interface DeletionScopeInput {
@@ -179,7 +177,6 @@ export interface DeletionTargets {
 export interface CollateralCounts {
   txEdits: number;
   txSplits: number;
-  attachments: number;
   /** 常に0。現金記録は対象集合に入らない(DR-6)。0 であることを見せるために持つ。 */
   cashEntries: number;
 }
@@ -335,13 +332,9 @@ export function deletionScope(input: DeletionScopeInput): DeletionTargets {
 /** 対象集合を参照している手動記録を数える。数えるだけで、対象集合には足さない。 */
 export function collateralCounts(targets: DeletionTargets, manual: ManualRecords): CollateralCounts {
   const txIds = new Set(targets.mfTxIds);
-  const months = new Set(targets.months);
   return {
     txEdits: manual.txEdits.filter((r) => txIds.has(r.txId)).length,
     txSplits: manual.txSplits.filter((r) => txIds.has(r.txId)).length,
-    attachments: manual.attachments.filter(
-      (r) => (r.txId !== null && txIds.has(r.txId)) || (r.month !== null && months.has(r.month)),
-    ).length,
     cashEntries: 0,
   };
 }
@@ -363,7 +356,6 @@ export function deletionFingerprint(
   context: DeletionFingerprintContext = {},
 ): string {
   const txIds = new Set(targets.mfTxIds);
-  const months = new Set(targets.months);
   return `v1:del:${canonicalEncode({
     mfTxIds: [...targets.mfTxIds].sort(),
     freeeDealIds: [...targets.freeeDealIds].sort((a, b) => a - b),
@@ -381,13 +373,6 @@ export function deletionFingerprint(
         .filter((row) => txIds.has(row.txId))
         .map((row) => row.txId)
         .sort(),
-      attachments: manual.attachments
-        .filter(
-          (row) =>
-            (row.txId !== null && txIds.has(row.txId)) || (row.month !== null && months.has(row.month)),
-        )
-        .map((row) => [row.txId, row.month])
-        .sort((a, b) => canonicalEncode(a).localeCompare(canonicalEncode(b))),
     },
     fullResetRows: [...(context.fullResetRows ?? [])]
       .map((row) => [row.table, row.rowId, row.month])

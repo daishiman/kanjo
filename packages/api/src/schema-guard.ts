@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from 'hono';
 
 /** Workerが前提とするD1 schema head。migration追加時はテストが更新漏れを検知する。 */
-export const EXPECTED_D1_MIGRATION = '0037_freee_pairing_and_exclusions.sql';
+export const EXPECTED_D1_MIGRATION = '0038_prepare_r2_cleanup.sql';
 
 export const SCHEMA_UNAVAILABLE_ERROR = {
   code: 'schema_unavailable',

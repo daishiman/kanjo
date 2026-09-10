@@ -39,7 +39,6 @@ const row = (): TxRow => ({
   origin: null,
   originKey: null,
   scopeMismatch: false,
-  attachmentCount: 0,
   edit: null,
   rowKey: 'mf:A1',
   rowKind: 'mf',
@@ -48,8 +47,7 @@ const row = (): TxRow => ({
   splitSeq: null,
   splitLineCount: null,
   splitState: null,
-  capabilities: { quickClass: true, edit: true, split: true, attach: true },
-  attachmentTargetId: 'A1',
+  capabilities: { quickClass: true, edit: true, split: true },
 });
 
 const response = (): TransactionsResponse => ({
@@ -90,8 +88,7 @@ function renderPage() {
     vi.fn(async (input: RequestInfo | URL) => {
       const path = String(input);
       requestedPaths.push(path);
-      const body = path.startsWith('/api/attachments') ? { attachments: [] } : response();
-      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify(response()), { headers: { 'Content-Type': 'application/json' } });
     }),
   );
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });

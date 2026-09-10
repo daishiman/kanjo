@@ -16,12 +16,7 @@ export type CanonicalMutationClass = 'canonical-mutation' | 'self-managed-import
  * JsonSnapshotMutationConsumer ではないが、資産推移CSVの取込と同じ表を書く。
  * 取込の洗い替えと手入力が重なると、消した直後の行だけが残りうるのでleaseは要る。
  */
-type CanonicalConsumer =
-  | JsonSnapshotMutationConsumer
-  | 'attachments'
-  | 'category_options'
-  | 'balance_entries'
-  | 'overrides';
+type CanonicalConsumer = JsonSnapshotMutationConsumer | 'category_options' | 'balance_entries' | 'overrides';
 
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -33,13 +28,8 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   {
     method: 'DELETE',
     path: /^\/api\/cash-entries\/[^/]+$/,
-    consumers: ['cash_entries', 'tx_edits', 'receipt_source_overrides', 'attachments'],
+    consumers: ['cash_entries', 'tx_edits'],
   },
-  // 親明細の削除/MF洗替えと添付登録を同じleaseで直列化する。
-  // 同じ明細への並行POSTも件数上限を越えてcommitできない。
-  { method: 'POST', path: /^\/api\/attachments$/, consumers: ['attachments'] },
-  { method: 'POST', path: /^\/api\/attachments\/archive\/recover$/, consumers: ['attachments'] },
-  { method: 'DELETE', path: /^\/api\/attachments\/[^/]+$/, consumers: ['attachments'] },
   { method: 'PUT', path: /^\/api\/transactions\/[^/]+\/(?:class|edit)$/, consumers: ['tx_edits'] },
   // 分割は明細そのものを内訳N行に差し替える。取込の洗替えと重なると、
   // 元の明細が消えた後の内訳だけが残りうるので同じleaseで直列化する
@@ -84,12 +74,6 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
     method: 'PUT',
     path: /^\/api\/settings$/,
     consumers: ['account_norm_map', 'unrecorded_months', 'cash_overrides', 'analysis_settings'],
-  },
-  { method: 'PUT', path: /^\/api\/tax\/accounts$/, consumers: ['tax_account_settings'] },
-  {
-    method: 'PUT',
-    path: /^\/api\/tax\/receipt-sources$/,
-    consumers: ['receipt_source_profiles', 'receipt_source_overrides'],
   },
   { method: 'POST', path: /^\/api\/category-options$/, consumers: ['category_options'] },
   {

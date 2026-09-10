@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # name: validate-report
-# version: 3.0.0
+# version: 3.1.0
 # purpose: kanjo 会計分析レポートJSON(第3版)を送信前に検査する(5節の最低行数・3段の要点・図表カタログ参照・上限・プレーンテキスト)
 # inputs:
 #   - argv[1]: 検査するレポートJSONのパス
@@ -82,8 +82,52 @@ HTML_TAG_RE = re.compile(r"<\s*/?[a-zA-Z][^>]*>")
 MARKDOWN_LINE_RE = re.compile(r"^\s*(#{1,6}\s|\|.*\||```)")
 CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 
+# 本文の書き方(正本は references/report-schema.md「本文の書き方」)。
+# 画面(ReportText)は「- 」で始まる行だけを箇条書きとして描く。「・」「*」「1.」を
+# 混ぜるとレポートごとに体裁がぶれ、同じ指示から同じ見た目が再現できないので、
+# 記法を1つに固定し、ここで機械的に落とす。
+BULLET_RE = re.compile(r"^-\s+\S")
+BAD_BULLET_RE = re.compile(r"^\s*(?:[・*•‧]|[0-9０-９]+\s*[.)、]|[(（][0-9０-９]+[)）])\s*\S")
+BULLET_MAX = 120  # 箇条書き1行の上限字数。これを超えるなら段落で書く
+# 本文ごとの最低箇条書き行数(0 = 箇条書き不要)。要点(keyFindings)の4欄は1文で完結
+# させる欄なので対象外。
+BULLET_MIN = {"summary": 3, "body": 2, "followUp_body": 2}
 
-def _text_issues(where: str, value: object, limit: int, *, required: bool, minimum: int = 0) -> list[str]:
+
+def _bullet_issues(where: str, value: str, need: int) -> list[str]:
+    """本文の箇条書き規約を検査する。
+
+    毎回同じ見た目を再現するための3点だけを見る:
+      1. 記法は「- 」だけ(「・」「*」「1.」は画面が箇条書きとして描かない)
+      2. 箇条書きを `need` 行以上入れる(長い地の文だけにしない)
+      3. 箇条書き1行は BULLET_MAX 字以内(長い1行は箇条書きの利点を消す)
+    さらに、箇条書きだけで地の文が無い本文は文脈が落ちるので、リード文を1行求める。
+    """
+    issues: list[str] = []
+    lines = [ln.strip() for ln in value.splitlines() if ln.strip()]
+    bullets = [ln for ln in lines if BULLET_RE.match(ln)]
+    for ln in lines:
+        if not BULLET_RE.match(ln) and BAD_BULLET_RE.match(ln):
+            issues.append(f"{where}: 箇条書きは行頭「- 」に統一してください(「・」「*」「1.」は不可): {ln[:30]!r}")
+            break
+    if need and len(bullets) < need:
+        issues.append(
+            f"{where}: 箇条書き(行頭「- 」)が{len(bullets)}行です。{need}行以上に分けてください"
+            "(地の文だけの長い段落は読み手が要点を拾えません)"
+        )
+    for ln in bullets:
+        body = ln[1:].strip()
+        if len(body) > BULLET_MAX:
+            issues.append(f"{where}: 箇条書き1行が{len(body)}字です。{BULLET_MAX}字以内に切るか段落へ移してください: {body[:30]!r}")
+            break
+    if need and bullets and len(bullets) == len(lines):
+        issues.append(f"{where}: 箇条書きだけです。先頭に結論を述べるリード文を1〜2文入れてください")
+    return issues
+
+
+def _text_issues(
+    where: str, value: object, limit: int, *, required: bool, minimum: int = 0, bullets: int = 0
+) -> list[str]:
     issues: list[str] = []
     if value is None:
         if required:
@@ -106,6 +150,8 @@ def _text_issues(where: str, value: object, limit: int, *, required: bool, minim
         if MARKDOWN_LINE_RE.match(line):
             issues.append(f"{where}: Markdown の見出し・表・コードフェンスは使えません: {line.strip()[:30]!r}")
             break
+    if value.strip():
+        issues += _bullet_issues(where, value, bullets)
     return issues
 
 
@@ -203,7 +249,9 @@ def _follow_up_issues(fu: object) -> list[str]:
         return []
     if not isinstance(fu, dict):
         return ["followUp: オブジェクトか null にしてください"]
-    issues = _text_issues("followUp.body", fu.get("body"), LIMITS["followUp_body"], required=True)
+    issues = _text_issues(
+        "followUp.body", fu.get("body"), LIMITS["followUp_body"], required=True, bullets=BULLET_MIN["followUp_body"]
+    )
     issues += _items_issues("followUp.items", fu.get("items"), LIMITS["followUp_items"])
     return issues
 
@@ -346,7 +394,14 @@ def validate(report: object, catalog: dict | None = None, data: dict | None = No
     issues = _text_issues("generatedBy", report.get("generatedBy"), LIMITS["generatedBy"], required=True)
     issues += _text_issues("model", report.get("model"), LIMITS["model"], required=False)
     issues += _text_issues("title", report.get("title"), LIMITS["title"], required=False)
-    issues += _text_issues("summary", report.get("summary"), LIMITS["summary"], required=True, minimum=TEXT_MIN["summary"])
+    issues += _text_issues(
+        "summary",
+        report.get("summary"),
+        LIMITS["summary"],
+        required=True,
+        minimum=TEXT_MIN["summary"],
+        bullets=BULLET_MIN["summary"],
+    )
     issues += _key_findings_issues(report.get("keyFindings"), catalog_ids)
     issues += _follow_up_issues(report.get("followUp"))
     issues += _needs_issues(report.get("needs"))
@@ -369,7 +424,12 @@ def validate(report: object, catalog: dict | None = None, data: dict | None = No
             seen.append(sid)
         issues += _text_issues(f"{where}.title", section.get("title"), LIMITS["section_title"], required=False)
         issues += _text_issues(
-            f"{where}.body", section.get("body"), LIMITS["body"], required=True, minimum=TEXT_MIN["body"]
+            f"{where}.body",
+            section.get("body"),
+            LIMITS["body"],
+            required=True,
+            minimum=TEXT_MIN["body"],
+            bullets=BULLET_MIN["body"],
         )
         issues += _text_issues(f"{where}.gap", section.get("gap"), LIMITS["gap"], required=False)
         items = section.get("items")

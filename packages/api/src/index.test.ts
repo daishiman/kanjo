@@ -25,7 +25,7 @@ const requiredStaticHeaders = new Map([
     'content-security-policy',
     "default-src 'self'; base-uri 'none'; connect-src 'self'; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'",
   ],
-  ['permissions-policy', 'camera=(self), geolocation=(), microphone=(), payment=(), usb=()'],
+  ['permissions-policy', 'camera=(), geolocation=(), microphone=(), payment=(), usb=()'],
   ['referrer-policy', 'strict-origin-when-cross-origin'],
   ['x-content-type-options', 'nosniff'],
   ['x-frame-options', 'DENY'],
@@ -85,6 +85,30 @@ describe('API公開境界', () => {
     const cookie = await signedSessionCookieForTest(env.SESSION_SECRET);
 
     const response = await app.request('/api/not-found', { headers: { cookie } }, env);
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get('content-type')).toContain('application/json');
+    await expect(response.json()).resolves.toEqual({
+      error: { code: 'not_found', message: 'エンドポイントがありません' },
+    });
+  });
+
+  it.each([
+    '/api/attachments',
+    '/api/attachments/quota',
+    '/api/tax/overview?year=2026',
+    '/api/tax/receipt-gaps?year=2026',
+    '/api/export/tax/statement.csv?year=2026',
+  ])('廃止したAPI %s を認証済みでも404に固定する', async (path) => {
+    const env = {
+      ACCESS_AUD: '',
+      ACCESS_TEAM_DOMAIN: '',
+      SESSION_SECRET: 'synthetic-test-secret',
+      DB: schemaReadyDatabase,
+    };
+    const cookie = await signedSessionCookieForTest(env.SESSION_SECRET);
+
+    const response = await app.request(path, { headers: { cookie } }, env);
 
     expect(response.status).toBe(404);
     expect(response.headers.get('content-type')).toContain('application/json');

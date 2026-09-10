@@ -258,7 +258,7 @@ body {
  * 総高が上限を超えて落ちた。緩和したいのは「タップ主体でないこと」なので、否定形の方が意図に近い。
  * `not (pointer: coarse)` 一発でも書けるが Media Queries 4 の記法なので、2段で書いて対応幅を広く取る。
  *
- * 15画面 + 4つのグループ見出し + ブランドは、行高をいくら詰めてもノートPCの実効高
+ * APP_ROUTESの全画面 + グループ見出し + ブランドは、行高をいくら詰めてもノートPCの実効高
  * (600〜700px)には収まらない。.sidebar は overflow-y: auto なので下端は元からスクロールする。
  * ここでやっているのは「iconとグループ見出しを足した分の退行を戻す」ことで、
  * 総高の上限は scripts/check-mobile-layout.mjs が実描画で固定している。
@@ -1340,8 +1340,8 @@ table.data th.stmt-account {
   container-type: inline-size;
 }
 .classify-table {
-  /* 証憑列を足したぶん広げる(狭めると内容列が潰れて読めなくなる) */
-  min-width: 1160px;
+  /* 列数ぶんの最小幅(狭めると内容列が潰れて読めなくなる) */
+  min-width: 1060px;
 }
 /*
  * 操作列を箱の右端に貼り付ける。
@@ -1350,7 +1350,7 @@ table.data th.stmt-account {
  * 画面が狭いと既定の表示位置では枠の外に出ていた。「編集する」「分割する」があること自体に
  * 気づけず、公私や名義を直す道が無いように見えていた。列を固定して、横位置に関係なく届かせる。
  *
- * 対象は明細行の最後のセルだけ。編集・分割・証憑の展開行は colspan で1セルしか無く、
+ * 対象は明細行の最後のセルだけ。編集・分割の展開行は colspan で1セルしか無く、
  * そこに :last-child が当たると展開パネルごと右端へ貼り付いてしまうため外す。
  */
 .classify-table tr:not(.editor):not(.editing-open) > :is(th, td):last-child {
@@ -2395,26 +2395,114 @@ table.data tr.selected td {
   outline: 2px solid var(--biz);
   outline-offset: 1px;
 }
+/*
+ * レポート本文の読み幅。1行が長いほど折り返しで行を見失う(次の行頭を探し直す)ので、
+ * 40〜48全角=80〜96文字ぶんで頭打ちにする。図と表は数値の比較が主なので全幅のまま。
+ */
+.report {
+  --report-measure: 46em;
+}
 .report-section {
-  margin-top: 20px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.report-section:first-of-type {
+  border-top: 0;
+  padding-top: 0;
 }
 .report-section h3 {
-  font-size: var(--fs-md);
-  margin: 0 0 6px;
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  margin: 0 0 10px;
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
+/* 節の導入文。本文と同じ読み幅に収め、色を落として見出しの直後で止まらないようにする */
+.report-section > .sub.lede {
+  max-inline-size: var(--report-measure);
+  margin: 0 0 12px;
+  line-height: 1.7;
 }
 .report-text p {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+  max-inline-size: var(--report-measure);
   font-size: var(--fs-md);
-  line-height: 1.7;
+  line-height: 1.8;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+/* 地の文を1文1行へ割った並び。「- 」の箇条書きと見た目を分けたいので、行頭は
+   小さい点だけにして、文の切れ目が分かる程度に留める */
+.prose-lines {
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+  max-inline-size: var(--report-measure);
+  font-size: var(--fs-md);
+  line-height: 1.8;
+}
+.prose-lines > li {
+  position: relative;
+  padding-left: 14px;
+  overflow-wrap: anywhere;
+}
+.prose-lines > li + li {
+  margin-top: 4px;
+}
+.prose-lines > li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.75em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--line);
+}
 .report-text ul,
+.report-section ul.lede {
+  margin: 0 0 10px;
+  padding-left: 1.4em;
+  max-inline-size: var(--report-measure);
+  font-size: var(--fs-md);
+  line-height: 1.8;
+}
 .report-section ul {
   margin: 0 0 8px;
   padding-left: 1.4em;
   font-size: var(--fs-md);
   line-height: 1.7;
+}
+.report-text li + li,
+.report-section ul.lede li + li {
+  margin-top: 4px;
+}
+
+/* 節ジャンプ。レポートが長いので、現在地に戻れる入口を先頭に1つだけ置く */
+.report-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.report-toc a {
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.report-toc a:hover,
+.report-toc a:focus-visible {
+  border-color: var(--biz);
+  color: var(--biz);
 }
 
 /* AI分析の一覧: 日付・期間・状態は短い語なので折り返さず、狭幅では横スクロール(.scroll-x)に任せる */
@@ -2426,45 +2514,152 @@ table.ai-table td.wrap {
   white-space: normal;
   min-width: 12em;
 }
+/*
+ * 節の項目表(項目/金額/優先度/補足)。既定の等分割だと広い画面で
+ * 「項目」と「補足」が両端に離れ、対応づけに視線を大きく振ることになる。
+ * 補足に余りを吸わせ、他の3列を内容ぶんに詰める。
+ */
+table.report-item-table th:nth-child(1),
+table.report-item-table td:nth-child(1) {
+  width: 22%;
+}
+table.report-item-table th:nth-child(2),
+table.report-item-table td:nth-child(2),
+table.report-item-table th:nth-child(3),
+table.report-item-table td:nth-child(3) {
+  width: 1%;
+}
+table.report-item-table th:nth-child(4),
+table.report-item-table td:nth-child(4) {
+  width: auto;
+}
 
-/* AI分析レポート: 要点サマリー(3群)と図表 */
+/*
+ * AI分析レポート: 要点サマリー(3群)と図表。
+ * どちらも「1列あたりを広く、列数を少なく」に倒す。細い列に長文を流すと
+ * 1行あたりの語数が減り、同じ文章でも読む回数(視線の往復)が増える。
+ */
 .findings {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: 20px;
 }
-.finding h4,
-.report-chart h4 {
+/* 要点3群の見出し(改善余地/ムダ/すぐ効く)。カード群のラベルなので小さく添える。
+   図の見出しは .financial-figure__caption h4 の太字サイズを活かすため、ここでは巻き込まない */
+.finding h4 {
   font-size: var(--fs-sm);
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   color: var(--ink-soft);
 }
-.finding ol {
+.finding-cards {
   margin: 0;
-  padding-left: 1.4em;
-  font-size: var(--fs-md);
-  line-height: 1.6;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
 }
-.finding li + li {
-  margin-top: 6px;
+.finding-card {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--biz-soft-line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: var(--fs-md);
+  line-height: 1.7;
+}
+/* 見出し行: 何の話か → どれくらい急ぐか → いくらか、を1行で受け取れるようにする */
+.finding-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 .finding-label {
   font-weight: 700;
-  margin-right: 6px;
+  font-size: var(--fs-base);
+  overflow-wrap: anywhere;
 }
 .finding-amount {
+  margin-left: auto;
+  font-size: var(--fs-base);
+  font-weight: 700;
+}
+.finding-fact,
+.finding-interp {
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+/* 要点カードの中身は「事実」「解釈」「次の一手」の3つ。どれを読んでいるかが
+   分かるよう小さいラベルを付け、本文の余白はこの枠側で持つ */
+.finding-part {
+  margin: 0 0 8px;
+}
+.finding-part > .finding-fact,
+.finding-part > .finding-interp {
+  margin: 0;
+}
+.finding-tag {
+  display: inline-block;
+  margin-bottom: 3px;
+  padding: 1px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+/* 根拠(計算式)は確かめたい人だけが読む。本文と同じ濃さで並べない */
+.finding-basis {
+  margin: -2px 0 6px;
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+/* 次の一手だけは塗って、カード内で最後に目が止まる場所を固定する */
+.finding-action {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--biz-soft);
+  color: var(--biz-strong);
+  overflow-wrap: anywhere;
+}
+.finding-action__tag {
+  display: inline-block;
   margin-right: 6px;
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.finding-effect {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--fs-sm);
+}
+.finding-more {
+  margin-top: 8px;
+}
+.finding-more > summary {
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
 }
 .finding-note {
   display: block;
 }
 .report-charts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  gap: 20px;
 }
 .report-chart {
   min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
 }
 details.prompt-box > summary {
   cursor: pointer;
@@ -2527,6 +2722,11 @@ details.prompt-box > summary {
 .finding-steps dd {
   margin: 0;
   overflow-wrap: anywhere;
+}
+/* 折り畳みの中では行間の余白を親(dl)の gap に任せる */
+.finding-steps dd > .prose-lines,
+.finding-steps dd > p {
+  margin: 0;
 }
 
 /* 図表カタログ: 図番号・読み方・出せない図の枠 */
@@ -2647,113 +2847,8 @@ table.heatmap td.heat {
   margin-bottom: 2px;
 }
 
-/* 証憑の添付(components/Attachments.tsx) */
-.attach {
-  border: 1px dashed var(--line);
-  border-radius: 8px;
-  padding: 10px 12px;
-  background: var(--bg);
-}
-.attach:focus-visible {
-  outline: 2px solid var(--biz);
-  outline-offset: 2px;
-}
-.attach.dragging {
-  border-color: var(--biz);
-  background: #f1f6f9;
-}
-.attach-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-.attach .sub {
-  margin: 6px 0 0;
-}
-.attach-hint {
-  margin: 0 !important;
-}
-.attach-list {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.attach-list li {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-.attach-list .sub {
-  margin: 0;
-}
-.attachment-filename {
-  overflow-wrap: anywhere;
-}
-/* サムネイルは原本をCSSで縮めて出す(別サイズを保管しない)。枠を固定して一覧の行が揺れないようにする */
-.attach-thumb {
-  flex: none;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: var(--bg);
-  object-fit: cover;
-}
-.attach-thumb.placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--fs-2xs);
-  line-height: 1;
-  color: var(--ink-soft);
-}
-.attachment-usage {
-  font-variant-numeric: tabular-nums;
-}
-.attachment-recovery .attach-list {
-  margin-top: 12px;
-}
-.attachment-archive-recovery {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-}
-.attachment-archive-recovery h3 {
-  margin: 0 0 6px;
-  font-size: var(--fs-base);
-}
-.attachment-archive-file {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  margin-top: 10px;
-  font-size: var(--fs-sm);
-  font-weight: 600;
-}
-.attachment-archive-file input {
-  min-height: 44px;
-  max-width: 100%;
-}
-.attachment-archive-report {
-  margin-top: 8px;
-}
-.attach button.mini,
-button.mini.attachment-toggle,
 .editor-form .segment button {
   min-height: 44px;
-}
-/* スマホでは撮影が主経路。ドロップ・貼り付けの案内は場所を取るだけなので隠す */
-@media (max-width: 640px) {
-  .attach-hint {
-    display: none;
-  }
 }
 
 /* toolbar 内のチェックボックス(交通費の往復・証憑不要) */
@@ -2909,7 +3004,7 @@ label.check {
     min-height: 44px;
   }
   /* 展開フォームの行はカードの装飾を持たせず、中身に任せる。
-     編集・分割・証憑で同じ「全列を使う行」の契約を共有する。 */
+     編集・分割で同じ「全列を使う行」の契約を共有する。 */
   table.data.classify-table.stack-sm tr:is(.editor, .editing-open:has(> td[colspan])) {
     padding: 0;
     border: none;
@@ -2945,191 +3040,6 @@ label.check {
   .reasons-narrow {
     display: block;
     font-weight: 400;
-  }
-}
-
-/*
- * 確定申告の準備チェック。
- * 「要対応 → 確認 → 完了」を左の色帯だけで区別する。
- * 全部を同じ見た目で並べると、警告に慣れて全部読み飛ばされる。
- */
-.tax-checks {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 8px;
-}
-.tax-check {
-  border-left: 4px solid var(--line);
-  background: var(--surface-soft, #fafafa);
-  border-radius: 6px;
-  padding: 10px 14px;
-}
-.tax-check.blocked {
-  border-left-color: var(--danger);
-  background: #fdf0ef;
-}
-.tax-check.warn {
-  border-left-color: var(--warn);
-  background: #fdf9ef;
-}
-.tax-check.ok {
-  border-left-color: var(--good);
-}
-.tax-check-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.tax-check-detail,
-.tax-check-action {
-  margin: 4px 0 0;
-  font-size: var(--fs-sm);
-}
-.tax-check-action {
-  color: var(--ink-soft);
-}
-.tax-check.ok .tax-check-detail {
-  color: var(--ink-soft);
-}
-/* 転記シートの合計行。決算書へ書き写す位置を目で追えるよう罫線で区切る */
-.tax-total td {
-  font-weight: 800;
-  border-top: 2px solid var(--line);
-}
-.tax-unassigned td {
-  background: #fdf0ef;
-}
-.tax-sources {
-  color: var(--ink-soft);
-  font-size: var(--fs-sm);
-}
-.tax-save-status {
-  min-height: 1.5rem;
-  margin: 8px 0;
-  color: var(--good);
-  font-size: var(--fs-sm);
-}
-.tax-work-nav {
-  display: flex;
-  margin-bottom: 12px;
-}
-.tax-year-picker select,
-.tax-policy-table select,
-.tax-policy-table input,
-.tax-check-action a,
-.tax-work-nav .btn,
-.tax-save-action,
-.tax-empty-action,
-.tax-export-actions .btn {
-  min-height: 44px;
-}
-.tax-check-action a,
-.tax-work-nav .btn,
-.tax-empty-action,
-.tax-export-actions .btn {
-  display: inline-flex;
-  align-items: center;
-}
-.tax-policy-table select,
-.tax-policy-table input {
-  min-width: 10rem;
-}
-.receipt-source {
-  min-width: 18rem;
-  flex: 1 1 auto;
-}
-.receipt-source-head,
-.receipt-source-candidates {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
-.receipt-source-head .btn,
-.receipt-source-candidates .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-}
-.receipt-source-summary {
-  display: grid;
-  gap: 4px;
-  margin: 8px 0 0;
-  font-size: var(--fs-xs);
-}
-.receipt-source-summary > div {
-  display: grid;
-  grid-template-columns: minmax(5rem, auto) 1fr;
-  gap: 8px;
-}
-.receipt-source-summary dt {
-  color: var(--ink-soft);
-}
-.receipt-source-summary dd {
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-.receipt-source-form {
-  display: grid;
-  gap: 6px;
-  margin-top: 10px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface-soft, #fafafa);
-}
-.receipt-source-form input,
-.receipt-source-form textarea {
-  width: 100%;
-  min-height: 44px;
-}
-.receipt-source-form textarea {
-  min-height: 5rem;
-  resize: vertical;
-}
-.receipt-source-inherit {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  min-height: 44px;
-}
-.receipt-source-inherit input {
-  width: auto;
-  margin-top: 4px;
-}
-.receipt-source-status {
-  min-height: 1.25rem;
-  margin: 4px 0 0;
-  color: var(--good);
-  font-size: var(--fs-xs);
-}
-.receipt-source-status.error {
-  color: var(--danger);
-}
-.tax-receipt-table td[data-label="取得先"] {
-  align-items: flex-start;
-}
-@media (max-width: 640px) {
-  .tax-work-nav .btn {
-    width: 100%;
-  }
-  .tax-policy-table select,
-  .tax-policy-table input {
-    width: 100%;
-    min-width: 0;
-  }
-  .tax-receipt-table .tx-description {
-    font-weight: 700;
-  }
-  .receipt-source {
-    min-width: 0;
-  }
-  .receipt-source-head .btn,
-  .receipt-source-candidates .btn {
-    flex: 1 1 10rem;
   }
 }
 

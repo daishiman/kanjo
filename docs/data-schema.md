@@ -99,9 +99,6 @@ freeeが複合行を出力すると、2行目以降の`発生日`が空欄にな
     "rows": [{ "month": "2026-07", "scope": "per_exp:食費", "amount": 500 }]
   },
   "analysisSettings": { "statMinMonths": 6 }, // durableな分析意図
-  "taxAccountSettings": [{ "taxYear": 2025, "account": "通信費", "taxAccount": "通信費", "businessPercent": 100, "basis": null }], // 年別の申告方針。100%も確認済みの明示値
-  "receiptSourceProfiles": [{ "profileKey": "架空クラウド::請求ポータル", "merchantKey": "架空クラウド", "serviceName": "請求ポータル", "sourceUrl": "https://billing.example.test/receipts", "loginAccount": "account@example.test", "memo": "利用明細から取得" }], // password/tokenは持たない
-  "receiptSourceOverrides": [{ "targetKind": "cash", "targetKey": "1", "merchantKey": "架空クラウド", "profileKey": "架空クラウド::請求ポータル", "serviceName": null, "sourceUrl": null, "loginAccount": null, "memo": null }], // 明細だけの疎な例外
   "subVendorExclusions": [{ "partner": "架空家賃" }], // 復元可能な候補除外
   "budgets":   { "サブスク・通信": 80000 },
   "unrecordedExpMonths": ["2026-07"],
@@ -141,7 +138,7 @@ freeeが複合行を出力すると、2行目以降の`発生日`が空欄にな
 | canonical原本 | freee/MF、cash、rules、edits、budgets、owners、norm map、sub vendors | 対象（freee原本はCSV再取込） | 実効write-set | `monthly_agg`を無効化しwriter lease下で永続保持 |
 | durable intent | `analysis_settings`、`sub_vendor_exclusions` | 対象・移行先と非破壊merge | 対象 | JSON pointerを同batchで無効化し永続保持 |
 | derived cache | `monthly_agg`、JSON active pointer | 原本から再生成 | 対象外 | mutationで無効化、再計算可能 |
-| 外部原本/棚卸し | R2添付、`attachmentArchive` | 汎用restore対象外。hash/size一致時だけ明示回復 | 対象外 | lifecycle/retentionをR2契約で管理 |
+| 外部原本 | 取込原本、夜間バックアップ、改善要望の画像 | 取込・復旧・改善要望それぞれの経路で管理 | 取込原本以外は対象外 | R2で用途別prefixと保持期間を管理 |
 | disposable UI | filter、開閉、未保存draft | 対象外 | 対象外 | 画面/セッション内のみ |
 
 ## 手動編集(オーバーライド)の設計
@@ -166,11 +163,6 @@ MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_
 | `analysis_settings` | AI分析の統計指標の基準月数(0019)。利用者ごとに1行だけ持ち、`stat_min_months`(3〜24、既定6)を保存する。記帳の正本には触れないため、変更しても集計スナップショットの作り直しは要らない |
 | `overrides` | 旧テーブル。`tx_edits` へ移行済み(読み取りは `tx_edits` のみ) |
 | `cash_entries` | 現金の記帳(0006、ID非再利用は0007、交通費は0010/0011)。口座・カード明細に出ない現金の受け渡しを明細として持つ。`id` は `AUTOINCREMENT` で削除後も再利用しない。`transit_from/to`は支出で対にし、`receipt_waived`は区間がある場合のみ許可する。取込値とは別テーブルなので再取込で消えない |
-| `attachments` | 証憑メタデータ(0010、identity/lifecycleは0011、原本・親の単調factは0012)。添付先を`target_kind`(`cash`/`mf`)+`target_key`で型付き保存する。原本バイトはR2のみ |
-| `tax_account_settings` | 年別の確定申告準備方針(0027)。主キーは`user_id + tax_year + account`。行なしだけを未確認とし、全額事業でも`business_percent=100`を明示保存する。`tax_year`は2000〜2099、`tax_account`はAPIで経費用許可科目だけを受理する |
-| `receipt_source_profiles` | 証憑取得先の正本(0028)。`profile_key=merchant_key::service_key`を利用者内の参照キーとし、同じ取引先に複数サービスを持てる。`source_url`はhttp/https必須、`login_account`は識別子だけでpassword/tokenは保存しない。月別行は作らない |
-| `receipt_source_overrides` | 安定した`target_kind`+`target_key`ごとの証憑取得先例外(0028)。同一利用者の`profile_key`参照、または必須の明示`service_name`+`source_url`のどちらか一方だけを持つ |
-| `attachment_cleanup_jobs` | R2/D1非transaction境界の耐久cleanup ledger(0012)。R2操作前のintent、対象key、理由、再試行時刻・回数・定型errorを持ち、既存nightly scheduledと手動DELETEが同じprocessorを使う |
 | `password_login_rate_limits` | Access未設定時のpassword login throttle(0014)。`scope_hash`には`CF-Connecting-IP`のnamespace付きSHA-256だけを持ち、raw IP/password/headerは保存しない。`window_started_at` / `failure_count` / `locked_until` / `updated_at`をatomic UPSERTし、成功時は対象scopeだけDELETEする |
 | `restored_monthly_agg` | JSON復元由来で原本明細から再導出できない月次集計のbaseline(0007)。`monthly_agg`(現在値の派生キャッシュ)と分離し、同月の現金明細の増減で失わない |
 | `import_runs` / `imports` | 0008以降、前者はmultipart request/session、後者はそのlogical unit/attempt。状態は`processing`→`applying`→`committed`、または`failed`/`duplicate`で、理由は`failure_reason`へ分離する。全unitを最初に作成し、unitのterminal更新と同じbatchでrunをunit状態から再計算する。旧履歴の`ok`/`error: ...`は表示互換のため残すが、新規処理は生成しない |
@@ -181,51 +173,30 @@ MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_
 | `import_deleted_rows` | 消した行そのものの退避(0030)。消す**前**に必ず書く(DR-2)。`payload_json` に全列を持ち、undoはこれをINSERTし直すだけで済む。`month` は集計を作り直す対象月(DR-5)。undo専用で、画面・ログ・エラー応答のどれからも中身を出さない。`(operation_id, table_name, row_id)` がUNIQUEで、undoの二重INSERTをDB側で止める |
 | `import_deleted_targets` | 削除で巻き戻す取込指紋の退避(0030、DR-4)。`import_active_targets` は現行の指紋しか持たず履歴が無いため、削除前の`content_hash`/`import_id`/`updated_at` をここへ写す。粒度が明細ではなく対象キーなので `import_deleted_rows` と分ける(同居させると5,000行の削除で同じ指紋を5,000回複製する) |
 | `vendor_memory` | 取引先ごとの「いつもの手当て」(0030)。`vendor_key` は core の `normalizeVendorKey` で表記ゆれを寄せた照合キー、`vendor_label` は表示専用。確信度は1つの数で持たず `hit_count` / `disagree_count` を別々に持つ(「1件中1件」と「40件中40件」を区別するため)。`pinned` は件数によらず当てる、`revoked` は以後当てない・候補にも出さない。`(user_id, vendor_key)` がUNIQUE |
+| `r2_cleanup_jobs` | R2のexact keyを有界に削除する共通outbox(0038)。`purpose`は`import_original`または`retired_attachment`という起点・観測ラベルであり、安全境界には使わない。夜間`r2_cleanup`は最大3件ずつ処理し、Release A中は旧2表のlate writeも先に冪等回収する。同じkeyのneutral jobが`dead`になった後のlate writeだけは`retry`へ戻し、既存`pending/retry`の試行回数とbackoffは保持する。共有keyの全`imports`参照が30日超かつfailed/duplicate/完全supersededで、same-key active pointerが無い場合だけ1jobを自動enqueueする。全jobがR2 DELETE直前に同じ共有key契約を再評価し、active・30日以内・不正時刻・processing/partial/applying/旧statusが1rowでもあればR2と全`imports.r2_key`を保持し、退役metadataとcleanup intentだけを同じD1 batchで閉じる。削除可能ならR2成功後の同じD1 batchで全`imports.r2_key`をNULLにし、退役metadata・全intentも閉じる。bucket scanは行わない |
 
-### 証憑原本・親・cleanupの永続fact
+現在はRelease Aであり、migration head、schema guard、local previewの適用上限はいずれも
+`0038_prepare_r2_cleanup.sql`である。0038は共通outboxを追加し、旧`attachments.r2_key`と
+`attachment_cleanup_jobs`の削除intentを`r2_cleanup_jobs`へ退避するexpand migrationである。
+旧台帳の`dead`も`retry`へ戻して共通processorの再処理対象にする。旧機能専用の6テーブル
+（`attachments`、`attachment_cleanup_jobs`、`attachment_object_tombstones`、
+`receipt_source_profiles`、`receipt_source_overrides`、`tax_account_settings`）は物理D1に互換データとして
+残り得るが、runtime/API/Drizzleの現行定義からは退役済みであり、このactive schema一覧には載せない。
 
-`attachments.state`は操作の互換状態であり、原本の所在そのものではない。D1の永続factは削除進捗と
-再試行を表す。wireの表示・件数・原本linkは応答生成時のexact-key R2 HEAD結果と組み合わせて導出し、
-診断errorや過去のD1観測だけで現在の物理存在を断定しない。
-
-| 永続値 | 意味・不変条件 |
-|---|---|
-| `attachments.object_deleted_at` | NULLはWorkerによるR2 DELETE成功をまだ記録していないこと、非NULLはR2 DELETE成功済みであることを示す単調なD1 fact。NULLは帯域外欠損を否定せず、物理存在の保証ではない。いったん記録した時刻はNULLへ戻さない |
-| `attachments.parent_missing_at` | MFのstable `tx_id`が月洗替え後の親集合から消えた時刻。同IDが再出現した場合だけNULLへ戻す。親なしでもmetadataと原本は保持し、孤児管理画面から閲覧・削除できる |
-| `attachments.cleanup_dead_letter_at` | 共通cleanup processorが最大試行回数以上かつgrace経過後に停止した時刻。原本の所在とは独立し、運用者が件数だけを観測する |
-| `attachment_cleanup_jobs.action` | `delete_object` / `delete_metadata`。R2 DELETE成功後はmetadata整理へ単調に進む |
-| `attachment_cleanup_jobs.reason` | `upload_intent` / `attachment_delete` / `import_retention`。POST補償、明示削除、期限切れ取込原本を同じprocessorへ集約する |
-| `attachment_cleanup_jobs.state` | `pending` / `retry` / `dead`。`not_before`、`attempts`、`last_error`を持ち、全bucket scanなしの有界batchで処理する |
-| `attachment_object_tombstones` | 明示的な`attachment_delete`完了後だけ残す単調fact。古いarchiveによる削除済みmetadataの復活を防ぐ。upload補償・import retentionには作らず、不要な永久行を増やさない |
-
-POSTはR2 PUT前に`upload_intent`を永続化し、添付metadata確定時にintentを閉じる。D1 insertと
-補償R2 DELETEが両方失敗してもkeyはledgerに残る。DELETEは先に同じledgerへintentを置き、
-R2成功を`object_deleted_at`へ記録してからmetadataを整理するため、R2 DELETEの冪等再試行で収束する。
+物理削除は将来の別変更であるRelease Bが担う。Release Bはcleanupの`pending` / `retry` / `dead`と
+旧`attachments` / `attachment_cleanup_jobs`の残件がすべて0であることを機械ゲートで確認した後にだけ0039を新規追加する。現行repositoryに0039は含めない。
+`0010`〜`0028`は適用履歴なので書き換えない。`cash_entries.receipt_waived`は交通費入力の
+互換フィールドとして残り、領収書・証憑の保管機能が存在することを意味しない。
+Release A/Bの適用順序・復旧契約は
+[`CI/CD・本番運用ガイド`](ci-cd-operations.md#63-列を削除する場合contract)を唯一の正本とする。
 
 password login throttleの既定は15分window / 5回目から15分lock / 7日後stale cleanupで、
 1 requestは成功・失敗とも最大2 D1 queries。nightly scheduledは`updated_at`のindexから
 最大100件を1 queryで消去する。夜間7 jobの同一invocation予算は中央SSOTで46 queries
-（backup 1 + attachment 20 + password throttle 1 + improvement 3 + undo 12 + audit header 3 + audit detail 6）
+（backup 1 + R2 cleanup 20 + password throttle 1 + improvement 3 + undo 12 + audit header 3 + audit detail 6）
 に固定し、backupを先に確定して残る6 jobを並列実行する。全jobを記録後、1件でもjob-level rejectなら
 内容を含まないgeneric errorをCronへ返す。
 validation、安全なfallback、非secret override名は`packages/api/src/login-rate-limit.ts`を正本とする。
-
-保持の正本値は`packages/core/src/attachments.ts`、安全なruntime overrideの読取りは
-`packages/api/src/attachment-recovery.ts`に一元化する。`ready`と親なし`ready`の証憑は明示削除まで
-保持し、cleanup intentは7日graceとする。失敗・重複・完全にsupersededの取込R2 uploadだけを30日後に回収し、
-partialなrunのcommitted unitやactive/shared keyは保持する。
-既定quotaは利用者ごとに100MiB、通常reconcileは1回10件を維持し、夜間scheduledだけplannerから3件へ絞る。
-最大5回でdead-letterとする。quota判定は
-利用者別writer lease内かつR2 PUT前に行い、未完の`delete_object` jobのbytesも使用中として数える。
-
-API wireの`originalAvailable`は永続列ではない。通常一覧・親なし一覧・現金/MFの`attachmentCount`を
-返す直前に対象metadataのexact-key R2 HEADを最大4並列・900 unique候補まで実行し、実在するkeyだけをtrue/
-件数へ含める。HEAD障害・候補超過は503、欠損は`cleanupStage=original_missing`とし、古い可用性を
-返さない。これは応答生成時の観測であり、HEAD後に外部主体が削除する不可避race後の永続保証ではない。
-900はWorkers FreeのCloudflare内部service subrequest上限1,000から認証/D1等の100を予約した上限である。
-`object_deleted_at!=NULL`はこの枠にもHEADにも含めず、同keyが外部再出現しても削除進捗を優先してfalseとする。
-POSTの201 wireもmetadata確定後に同じexact-key HEAD結果から生成する。HEAD障害時はD1/R2 commit済みを
-structured errorで区別し、`originalAvailable=true`を推測で返さない。
 
 ### 名義schema v2
 
@@ -270,8 +241,7 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 - 原本freee/MFが無い復元月は `restored_monthly_agg` をbaselineとし、`baseline + 現在のcash_entries` を `monthly_agg` へ再生成する。同月に原本がある場合は原本を正とし、baselineは加算しない。
 - 適用済みmigrationは不変とする。0006は現金明細/指紋だけを追加し、0007が`restored_monthly_agg`とAUTOINCREMENT再構築を追加する。旧`monthly_agg`の自動baseline移行は、事業scopeでは同月`side='biz'`現金とfreee原本、個人/bizPersonal scopeでは同月`side='per'`現金とMF原本が無い場合だけ行う。反対domainの現金だけなら安全なbaselineを移行し、同domainのprovenance不明値は二重固定しない。
 - API exportと夜間バックアップは、`monthly_agg`を使わず、baseline・freee/MF原本・rules・edits・owners・sub vendors・norm map・cash・budgets/override等を単一D1 read statementで取得する。同じcanonical snapshotから集計と、監査用raw `cashEntries`、source側で解決済みの `cashProjection` v1 (`basis='post-resolution'`) を一度だけ生成する。行はcanonical `month/scope`ごとに集約・決定順とし、export集計を超えるdeltaなら出力を失敗させる。
-- 同じcanonical snapshotは`taxAccountSettings`、`receiptSourceProfiles`、`receiptSourceOverrides`も含む。restoreは利用者内キーでmergeし、年別方針・取引先profile・明細overrideを復元する。証憑のR2原本と添付metadataは従来どおり汎用restore対象外であり、取得先profileにpassword/token等の秘密値を追加してはならない。
-- restore/JSON取込は、有効な`cashProjection`の確定deltaを集計から厳密に差し引く。そのうえで移行先に`cash_entries`が1件も無い初期移行のときだけ、backupの`cashEntries`をidごと復元して同じdeltaを戻す(idは`cash:<id>` editと添付の宛先のため採番し直さない)。49 query予算に載らない場合は記帳だけ見送り、応答の`cashSkipped`で件数を返す。移行先に記帳があるときは復元せず`cashKept`で件数を返す。destination側の設定では再投影しない。未知version/basis/scope、重複行、欠落、非正整数、集計を超えるdeltaは書込み前に400とし、0へのclampで隠さない。有効な空rowsは正常。`cashProjection`なしで`cashEntries`が非空ならsource semantics不明として拒否し、両方なし（または空cashEntries）のpre-cash legacyだけ互換受理する。
+- restore/JSON取込は、有効な`cashProjection`の確定deltaを集計から厳密に差し引く。そのうえで移行先に`cash_entries`が1件も無い初期移行のときだけ、backupの`cashEntries`をidごと復元して同じdeltaを戻す(`cash:<id>` editの宛先を維持するため採番し直さない)。49 query予算に載らない場合は記帳だけ見送り、応答の`cashSkipped`で件数を返す。移行先に記帳があるときは復元せず`cashKept`で件数を返す。destination側の設定では再投影しない。未知version/basis/scope、重複行、欠落、非正整数、集計を超えるdeltaは書込み前に400とし、0へのclampで隠さない。有効な空rowsは正常。`cashProjection`なしで`cashEntries`が非空ならsource semantics不明として拒否し、両方なし（または空cashEntries）のpre-cash legacyだけ互換受理する。
 - restoreではJSON source内の `cash:*` edit/overridesを破棄する。同一DBに既存cashがある場合は、その現存IDに対応するdestination側の既存editだけをcandidateへ戻し、永続化行・集計・指紋をすべてそのcandidateから生成する。これにより、新DBで後から同じIDが採番されてもbackup由来editが誤付着しない。
 
 ## 明細の分割記帳(tx_splits)の投影先
@@ -281,14 +251,13 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 一意制約は `(user_id, tx_id, seq)` と `(user_id, line_id)`。
 
 - **合計＝親金額はDB制約ではなくアプリで検証する。** SQLiteに行間合計の制約を置くと、1行ずつのUPDATEが必ず途中で不整合になる。保存はPUTで全行入れ替えの1トランザクションとし、検証は `validateSplits` 1箇所に集約する。
-- `line_id` はUUIDv4。子行の同一性は採番順(`seq`)から独立して維持する。並べ替えても添付先・編集の宛先が動かない。
+- `line_id` はUUIDv4。子行の同一性は採番順(`seq`)から独立して維持する。並べ替えても編集の宛先が動かない。
 - `parent_amount` は保存時点の親金額の写し。再取込で親金額が変わったことを、内訳を見るだけで検知するために持つ。
 
 | 区分 | 合流先 | 仕組み |
 |---|---|---|
 | 集計(家計・名義別・事業立替) | `personal[月].expense[科目]` / `personalByOwner` / `bizPersonal` | `projectAccountingDataset` が `applySplits` で親1行を内訳N行へ置き換え、`recomputeClassification` を投影後に走らせる。子行は `projectedEdit` に `cls`/`big`/`mid` を持ち、`resolveTx` が `t.projectedEdit ?? edits[t.id]` の順で先に読む(仕分けの経路を増やさない) |
-| 証憑の棚卸し | 親取引1件 | `receiptInventory` が子行を `splitProjection.parentTxId` へ畳み、`accounts` に内訳の科目を全部並べる。領収書は1枚しかないため、添付先も親だけ |
-| 確定申告書の科目別金額 | **合流しない** | 科目別の正本はfreee帳簿(`data.biz.categories`)。MF側の分割は「事業立替の合計」までを持つ。ここを合流させると同じ支出をfreeeと二重計上する |
+| freeeの科目別金額 | **合流しない** | 科目別の正本はfreee帳簿(`data.biz.categories`)。MF側の分割は「事業立替の合計」までを持つ。ここを合流させると同じ支出をfreeeと二重計上する |
 | 取込計画(下見) | 合流しない | `withSplits:false` のraw canonical Datasetを使う(`classify.ts` の候補算出、`imports.ts` の取込計画)。親と派生子を混ぜたまま洗い替え判定をしない |
 
 - 合計不一致・`parent_amount` 不一致・`line_id` 重複・`identity_stable=0` のいずれかで、内訳は集計へ出さず親の金額のまま数える(fail-closed)。無かったことにはせず `splitProjection.state` を `amount_conflict` / `identity_unstable` として画面へ返す。
@@ -302,7 +271,7 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 ## 取込の重複検知(content_hash)
 
 - v4指紋はtype+length prefixの衝突しないcanonical encodingを使う。freeeは保存行の`月/日付/収支/取引先/原本科目/正規化科目/金額`、MFは共通の完全射影`ID/月/正規化したYYYY-MM-DD/内容/金額/大項目/中項目/口座/メモ原文/計算対象/振替/ID安定性`を、parser・指紋・commit builder・JSON復元が共有する。JSONはraw payloadではなく、partial/default/merge後の実効的な保存行をhashする。`exportedAt`等のmetadata、非永続subs aliases、監査用`cashEntries`は除外するが、実際に永続化・集計に使うdestination `cash:*` editは含める。旧指紋とは互換比較せず、移行後の最初の1回だけ通常取込になる。
-- MFのID列が無い旧exportは復元用IDが行index依存である。`mf_transactions.identity_stable=0`として添付を拒否し、行順を変えたファイルは別内容として扱う。MFのID列から読み込んだ行だけを1とする。
+- MFのID列が無い旧exportは復元用IDが行index依存である。`mf_transactions.identity_stable=0`とし、行順を変えたファイルは別内容として扱う。MFのID列から読み込んだ行だけを1とする。
 - 過去ever-seenではなく現在有効なtargetだけを比較する。同月A→B→AはforceなしでAを再適用し、A→Aだけを`duplicate`にする。`force=1`は現在有効なcommitted世代を意図的にもう一度適用するときだけ使う。
 - 別途、月ごとの取込前後の件数(`replaced`)を返し、減っていれば画面で「月の途中までのファイルではないか」を知らせる(既存どおり月単位で洗い替えるため)。
 - 明細を消すときは `import_active_targets` の現行指紋の巻き戻しと必ず対で行う。指紋が残ったまま明細だけ消えると同じファイルが `duplicate` で弾かれ、消したものを戻せなくなる。削除の粒度・退避・監査は `specs/import-deletion-and-override-reapply.md`。
@@ -314,7 +283,7 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 - unit内部はD1 `batch()`でcanonical原本、復元baseline、`monthly_agg`、active target、unit terminal marker、run reconcileを一括確定する。応答喪失やcommit直後crashでもunitからrunを再計算でき、`committed` unit + 未完runを正規状態にしない。unit間はpartial successを許し、完了済unitは残し、失敗unitだけ再試行可能にする。
 - CSVの大量行はJSON1 `json_each` のUTF-8 80KiB payloadへ分割し、1行1 DELETE/INSERTを行わない。`import_id`・`user_id`・確定時刻等の実行時値は行JSONへ埋め込まずscalar bindへ分離するため、受理前sentinelと実attempt IDの桁数でchunk数は変わらない。routeは実commit builderが作るpayload/cache/active/finalizationのstatement数と、read/claim/attempt/heartbeat/reconcile/release・duplicate/失敗/commit応答喪失回復のworst-caseを合算し、49 queriesまでだけ受理する。受理後は実attempt IDでR2保存前にbuilderを再構成し、各commit直前にも`actual statements <= planned statements`を検査する。通常幅の5,000行freee/MFは50未満だが、同じ5,000行でも長大な列や大量のcache scope、複数unitで予算を超える場合は、R2/run/canonical書込み前に413で拒否する。各queryは100KB未満で、行payloadは1つのJSON bindへ集約する。
 
-- `import_runs`/`imports`は取込監査の正本として**自動では**削除しない。利用者が明示した「履歴を削除」だけは、`failed`/`duplicate` であり、active target・canonical行・undo退避の参照がすべて0件のattemptに限って履歴を削除する。最後の参照ならR2原本を共通cleanup ledgerへ登録し、共有中なら原本を保持する。操作事実は明細・ファイル名・R2 keyを含まない`import_discard`監査ヘッダとして400日保持する。自動保持では、`import_active_targets.import_id`または`imports.duplicate_of`から参照中のattempt metadataを保持し、`failed`/`superseded`のR2原本は既定30日後にexact keyだけを削除して`imports.r2_key=NULL`へする。期限付きclaimへ永続履歴と同じFK/保持規則を適用しない。
+- `import_runs`/`imports`は取込監査の正本として**自動では**削除しない。利用者が明示した「履歴を削除」だけは、`failed`/`duplicate` であり、active target・canonical行・undo退避の参照がすべて0件のattemptに限って履歴を削除する。最後の参照ならR2原本を共通cleanup ledgerへ登録し、共有中なら原本を保持する。操作事実は明細・ファイル名・R2 keyを含まない`import_discard`監査ヘッダとして400日保持する。自動保持では、共有R2 keyを参照する全rowが30日超の`failed`/`duplicate`/完全supersededになった後だけexact keyを削除し、同keyの全`imports.r2_key`をNULLにする。期限付きclaimへ永続履歴と同じFK/保持規則を適用しない。
 - JSONのactive pointerは、`cash_entries`/`rules`/`tx_edits`/`institution_owners`/`budgets`/`account_norm_map`/`unrecorded_months`/`cash_overrides`/`sub_vendors`/freee・MF原本/復元baselineの変更と同じD1 batchで無効化する。JSON restore自身は新pointerをcommit batchで設定するため、設定変更後の同じJSONは再適用、無変更の連続取込だけが`duplicate`になる。
 - multipart JSONと`POST /restore`は同じrestore commit builderと状態遷移を使う。JSONはMF原本の含有月を洗い替え、rules/edits/institution owners/budgets/cash override/復元baseline/未記帳月を置換し、sub vendor名は追加する。freee原本と現存現金用editは保持する。現金明細は移行先が空かつ予算内のときだけ復元する。`POST /restore`は直接JSON bodyを受けるためR2原本を作らない。
 
@@ -324,7 +293,7 @@ structured errorで区別し、`originalAvailable=true`を推測で返さない�
 
 ### 消す対象は「取り込んだ複製」だけ
 
-- 削除は `mf_transactions` / freee原本 / `import_active_targets` と、それに紐づく手当て(`tx_edits` / `tx_splits` / `attachments`)にだけ及ぶ。freee・マネーフォワード側のデータは書き換えない。
+- 削除は `mf_transactions` / freee原本 / `import_active_targets` と、それに紐づく手当て(`tx_edits` / `tx_splits`)にだけ及ぶ。freee・マネーフォワード側のデータは書き換えない。
 - **`balance_entries` / `cash_entries` は `import_id` を持たない。持たせない。** どちらも取込ではなく利用者が手で入れた記帳だからで、外部キーを1本足した瞬間に「取込を消したら手入力の残高・現金も消える」経路ができる。この2つは削除の巻き添えにならないことを、preflightの確認画面へ `手で記帳した現金 0件(取込の削除では消えません)` と0件で明示する(DR-6)。0件を出さずに黙って除外すると、消えないことを利用者が確認できない。
 - 退避の書込は削除より**前**に置く(DR-2)。逆順にすると、退避の途中で落ちたときに「消えたが戻せない」行が残る。
 

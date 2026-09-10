@@ -37,7 +37,6 @@ const row = (over: Partial<TxRow>): TxRow => {
     origin: null,
     originKey: null,
     scopeMismatch: false,
-    attachmentCount: 0,
     edit: null,
     ...over,
     rowKey: over.rowKey ?? `${rowKind}:${over.id ?? 'A1'}`,
@@ -50,9 +49,8 @@ const row = (over: Partial<TxRow>): TxRow => {
     capabilities:
       over.capabilities ??
       (rowKind === 'cash'
-        ? { quickClass: true, edit: true, split: false, attach: true }
-        : { quickClass: true, edit: true, split: true, attach: true }),
-    attachmentTargetId: over.attachmentTargetId ?? over.id ?? 'A1',
+        ? { quickClass: true, edit: true, split: false }
+        : { quickClass: true, edit: true, split: true }),
   };
 };
 
@@ -92,12 +90,7 @@ function mockFetch(transactions: TxRow[]) {
   vi.stubGlobal(
     'fetch',
     vi.fn(async (input: RequestInfo | URL) => {
-      const path = typeof input === 'string' ? input : String(input);
-      requestedPaths.push(path);
-      if (path.startsWith('/api/attachments'))
-        return new Response(JSON.stringify({ attachments: [] }), {
-          headers: { 'Content-Type': 'application/json' },
-        });
+      requestedPaths.push(typeof input === 'string' ? input : String(input));
       return new Response(JSON.stringify(response(transactions)), {
         headers: { 'Content-Type': 'application/json' },
       });
@@ -160,9 +153,13 @@ describe('支払手段の見え方と絞り込み', () => {
     fireEvent.click(within(toolbar).getByRole('button', { name: 'カード' }));
     await waitFor(() => expect(requestedPaths.some((path) => path.includes('method=card'))).toBe(true));
     requestedPaths.length = 0;
-    fireEvent.click(within(toolbar).getByRole('button', { name: '支払: すべて' }));
-    await waitFor(() => expect(requestedPaths.length).toBeGreaterThan(0));
-    expect(requestedPaths.every((path) => !path.includes('method='))).toBe(true);
+    const all = within(toolbar).getByRole('button', { name: '支払: すべて' });
+    fireEvent.click(all);
+    // 解除は取り直しを伴わないこともある(既に取得済みの全件はキャッシュから出る)。
+    // 「リクエストが来ること」ではなく選択状態が戻ったことを待ち、その上で
+    // method= を積んだ取得が1本も出ていないことを見る
+    await waitFor(() => expect(all.getAttribute('aria-pressed')).toBe('true'));
+    expect(requestedPaths.filter((path) => path.includes('method='))).toEqual([]);
   });
 
   it('選択中の支払手段を aria-pressed で示す', async () => {

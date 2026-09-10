@@ -4,13 +4,17 @@ artifact_kind: "specification"
 title: "レシート添付と交通費の記帳"
 project_id: "kanjo"
 domain: "accounting-records"
-status: "confirmed"
+status: "superseded"
 file_path: "specs/attachments-and-transit.md"
 template_id: "specification"
 template_version: "1.0.1"
 depends_on: []
 tags: ["attachments", "r2", "transit", "mobile"]
 ---
+
+> **一部廃止・置換済み（2026-09-08）**: 証憑添付・保管の記述は旧仕様の履歴であり、
+> 現行製品の規範ではない。交通費入力だけが継続し、その現行データ契約は
+> `docs/data-schema.md`の`cash_entries`を正本とする。
 
 # 文書所有権
 
@@ -121,7 +125,7 @@ tags: ["attachments", "r2", "transit", "mobile"]
 | MF親消失 | stable IDの原本あり | `parent_missing_at`を設定 | 変更なし | 孤児管理に表示し閲覧・削除可 | import commit |
 | 同MF ID再出現 | `parent_missing_at!=NULL` | NULLへ戻す | 変更なし | 通常明細の添付へ自動復帰 | import commit |
 | archive照合 | 同一ownerのrecord | bounded recordだけ照合し、一致分だけmetadataを再結合 | exact keyをGETしsize/hashを検証 | recovered/alreadyPresent/missing/mismatch/skipped件数 | user request |
-| 取込原本の保持期限 | failed/重複/完全supersededかつ期限超過 | `import_retention` intentを有界に作る | active/shared keyは保持しexact keyだけ削除 | 利用者データの復元成功とは表示しない | scheduled |
+| 取込原本の保持期限 | 共有keyの全rowが30日超・terminal・非active | keyごとにcleanup intentを1件だけ作る | active・30日以内・不正時刻・non-terminal参照が1件でもあれば保持 | 利用者データの復元成功とは表示しない | scheduled |
 
 # quota・retention・形式安全
 
@@ -134,7 +138,7 @@ tags: ["attachments", "r2", "transit", "mobile"]
 | ready証憑 | 期限なし | 利用者の明示DELETE |
 | MF親なしready証憑 | 期限なし | 同ID再出現または利用者の明示DELETE |
 | attachment cleanup intent | 最低7日graceを設定可能 | 成功、または5回以上試行かつgrace経過後にdead-letter |
-| failed/重複/完全superseded取込のR2 upload | 30日を設定可能 | scheduledがexact keyを回収。partial/shared-active原本とrun/unitの監査metadataは保持 |
+| failed/重複/完全superseded取込のR2 upload | 30日 | 共有keyの全rowが期限超過かつterminal・非activeの場合だけscheduledがexact keyを回収。partial/shared-active/30日以内の原本とrun/unitの監査metadataは保持 |
 | archive record | backupの保持規則 | 原本のcopyではなくinventoryとして扱う |
 
 1ファイル8MiB、1明細10件、既定100MiB/利用者とする。許可形式はJPEG/PNG/WebP/PDF/
@@ -253,8 +257,9 @@ cross-service raceは残るが、次の一覧HEADで`original_missing`となり�
   DB制約で同時requestにも適用し、競合結果を日本語409へ正規化する。
 - 削除: routeとscheduledが共通processorを使い、R2成功を`object_deleted_at`へ記録してから
   metadataを整理する。R2失敗、R2成功後のD1失敗、route応答喪失のいずれも同じintentから冪等に再開する。
-- 自動処理: 通常reconcilerの最大10件は維持し、既存nightly scheduledからはplannerが最大3件を渡す。
-  夜間分は固定2 queries + 1件あたり最大6 queriesの20 queries、7 job合計は46 queriesとする。
+- 自動処理: 現行の共通`r2_cleanup`は旧表のlate writeと、共有keyの全rowが適格な30日超取込原本を回収する。
+  `purpose`は起点ラベルに留め、全jobで共有keyの取込参照を削除直前に保護する。保護時も退役metadataとintentは閉じ、
+  削除時は全`imports.r2_key`も同じbatchでNULLにする。最大3件、夜間分は最大20 queries、7 job合計は46 queriesとする。
   backupを先に確定してから残る6 jobを並列で全完走し、全結果の記録後に1件でもjob-level rejectがあれば
   内容を含まないgeneric errorをCronへ返す。指数backoffし、
   5回以上の試行と7日graceの両方を満たしたjobだけdead-letterへ移す。全bucket scanはしない。

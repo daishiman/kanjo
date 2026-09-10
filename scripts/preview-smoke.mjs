@@ -107,6 +107,14 @@ async function checkedRequest(cookie, label, path, init = {}, expectedStatus = 2
   return response;
 }
 
+async function checkedNotFound(cookie, label, path) {
+  const response = await checkedRequest(cookie, label, path, {}, 404);
+  const body = await response.json();
+  if (body?.error?.code !== 'not_found') {
+    throw new Error(`${label} failed: expected the retired endpoint JSON contract`);
+  }
+}
+
 const jsonBody = (value) => ({
   method: 'POST',
   headers: { 'content-type': 'application/json' },
@@ -203,65 +211,31 @@ try {
   );
   const cash = await cashCreated.json();
   if (!Number.isInteger(cash?.entry?.id)) throw new Error('cash create contract failed');
-  const target = `cash:${cash.entry.id}`;
-
-  const png = Uint8Array.from(
-    atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='),
-    (byte) => byte.charCodeAt(0),
-  );
-  const upload = new FormData();
-  upload.append('target', target);
-  upload.append('file', new File([png], 'preview-smoke.png', { type: 'image/png' }));
-  const attachmentCreated = await checkedRequest(
-    cookie,
-    'attachment upload',
-    '/attachments',
-    { method: 'POST', body: upload },
-    201,
-  );
-  const created = await attachmentCreated.json();
-  if (!Number.isInteger(created?.attachment?.id)) throw new Error('attachment upload contract failed');
-
-  const listed = await checkedRequest(
-    cookie,
-    'attachment list',
-    `/attachments?target=${encodeURIComponent(target)}`,
-  );
-  const listBody = await listed.json();
-  if (
-    listBody?.attachments?.length !== 1 ||
-    listBody.attachments[0]?.originalAvailable !== true ||
-    listBody.attachments[0]?.cleanupStage !== 'none'
-  )
-    throw new Error('attachment list availability contract failed');
-
-  const cashList = await checkedRequest(cookie, 'cash attachment count', '/cash-entries');
+  const cashList = await checkedRequest(cookie, 'cash list', '/cash-entries');
   const cashListBody = await cashList.json();
   const parent = cashListBody?.entries?.find((entry) => entry.id === cash.entry.id);
-  if (parent?.attachmentCount !== 1) throw new Error('cash attachment count contract failed');
+  if (parent?.date !== '2026-01-15' || parent?.amount !== 100 || parent?.description !== '架空プレビュー支出')
+    throw new Error('cash list contract failed');
 
-  const content = await checkedRequest(
-    cookie,
-    'attachment content',
-    `/attachments/${created.attachment.id}/content`,
-  );
-  const contentBytes = new Uint8Array(await content.arrayBuffer());
-  if (content.headers.get('content-type') !== 'image/png' || contentBytes.length !== png.length)
-    throw new Error('attachment content contract failed');
+  // 廃止した route が SPA や別 API に吸い込まれず、JSON 404 のままであることを本番相当で固定する。
+  await checkedNotFound(cookie, 'retired attachments API', `/attachments?target=cash:${cash.entry.id}`);
+  await checkedNotFound(cookie, 'retired tax API', '/tax/overview?year=2026');
+  await checkedNotFound(cookie, 'retired tax export API', '/export/tax/statement.csv?year=2026');
 
-  await checkedRequest(cookie, 'attachment delete', `/attachments/${created.attachment.id}`, {
+  const cashDeleted = await checkedRequest(cookie, 'cash delete', `/cash-entries/${cash.entry.id}`, {
     method: 'DELETE',
   });
-  const afterDelete = await checkedRequest(
-    cookie,
-    'attachment empty list',
-    `/attachments?target=${encodeURIComponent(target)}`,
-  );
-  if ((await afterDelete.json())?.attachments?.length !== 0)
-    throw new Error('attachment delete convergence contract failed');
+  const cashDeletedBody = await cashDeleted.json();
+  if (cashDeletedBody?.ok !== true) throw new Error('cash delete contract failed');
+
+  const emptyCashList = await checkedRequest(cookie, 'empty cash list', '/cash-entries');
+  const emptyCashListBody = await emptyCashList.json();
+  if (!Array.isArray(emptyCashListBody?.entries) || emptyCashListBody.entries.length !== 0) {
+    throw new Error('empty cash list contract failed');
+  }
 
   console.log(
-    'local preview smoke passed: migrations, SPA, auth, cash, attachment upload/list/count/content/delete',
+    'local preview smoke passed: migrations, SPA, auth, cash create/list/delete/empty list, retired API 404',
   );
 } catch (error) {
   if (server && server.exitCode !== null) {

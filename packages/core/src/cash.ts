@@ -167,46 +167,6 @@ export function transitInputError(input: TransitInput): string | null {
   return null;
 }
 
-export type ReceiptStatus = 'attached' | 'waived' | 'missing';
-
-/**
- * 明細の証憑状態。「添付あり」「証憑不要」「未添付」の3つに分ける。
- * 未添付は不備ではなく「まだ貼っていない」ことを示すだけで、集計には一切影響しない。
- */
-export function receiptStatus(entry: { receiptWaived: boolean }, attachmentCount: number): ReceiptStatus {
-  if (attachmentCount > 0) return 'attached';
-  return entry.receiptWaived ? 'waived' : 'missing';
-}
-
-/** 事業支出でレシート未添付を警告色にする下限(円)。これ未満は薄く出すだけ */
-export const RECEIPT_WARN_THRESHOLD = 1_000;
-
-/**
- * 未添付をどのくらい強く出すか。
- * 'warn' は黄色のバッジで目を引かせ、'quiet' は薄い灰色で「まだ貼っていない」とだけ伝える。
- * 現金の記帳は1件ずつ手で入れるため件数は少ないが、全件が黄色だと画面が警告だらけになり
- * 本当に貼るべき1件が埋もれる。どこで線を引くかは運用の判断。
- */
-export function missingReceiptSeverity(entry: {
-  io: 'income' | 'expense';
-  side: 'biz' | 'per';
-  amount: number;
-}): 'warn' | 'quiet' {
-  // 収入は証憑を求める性質の取引ではない。
-  if (entry.io === 'income') return 'quiet';
-  // 家計は自分用の記録で、税務上の裏付けを求められない。
-  if (entry.side === 'per') return 'quiet';
-  // 事業の支出でも少額は経費の裏付けとして問われにくい。
-  // ここを 0 にすれば全件が黄色に戻る(運用で調整する前提の唯一のつまみ)。
-  return entry.amount >= RECEIPT_WARN_THRESHOLD ? 'warn' : 'quiet';
-}
-
-export const RECEIPT_STATUS_LABEL: Record<ReceiptStatus, string> = {
-  attached: '添付あり',
-  waived: '証憑不要',
-  missing: '未添付',
-};
-
 /* -------- 二重計上の検知 -------- */
 
 /** 突合の強さ。日付が一致するかどうかだけが違う */

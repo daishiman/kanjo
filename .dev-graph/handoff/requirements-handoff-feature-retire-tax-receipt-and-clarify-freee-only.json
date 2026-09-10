@@ -1,0 +1,143 @@
+{
+ "schema_version": "1.0.0",
+ "handoff_target": "task-graph",
+ "generated_at": "2026-09-09T16:29:21Z",
+ "repository_id": "github:daishiman/kanjo",
+ "parent_feature": "feature-retire-tax-receipt-and-clarify-freee-only",
+ "feature_package_id": "feature-package/retire-tax-receipt-and-clarify-freee-only",
+ "source_feature_digest": "sha256:691ce012422589ceca63ba89fdbe45493adcf0acf81b1001a4dea6e044a9213c",
+ "package_canonical_digest": "sha256:439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+ "published_digest": "sha256:439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+ "graph_snapshot_digest": "sha256:ddcff4153360a42e21edec52560c5d08469e4c387354ddffaf1564bda10fd24a",
+ "graph_snapshot_scope": [
+  "SYS-RTR-P01",
+  "SYS-RTR-P02",
+  "SYS-RTR-P03",
+  "SYS-RTR-P04",
+  "SYS-RTR-P05",
+  "SYS-RTR-P06",
+  "SYS-RTR-P07",
+  "SYS-RTR-P08",
+  "SYS-RTR-P09",
+  "SYS-RTR-P10",
+  "SYS-RTR-P11",
+  "SYS-RTR-P12",
+  "SYS-RTR-P13",
+  "arch-total-cashflow-system",
+  "feature-retire-tax-receipt-and-clarify-freee-only",
+  "spec-total-cashflow-system"
+ ],
+ "package_reference": {
+  "plan_dir": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only",
+  "task_graph": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/task-graph.json",
+  "registration_manifest": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/dev-graph-registration.json",
+  "promotion_receipt": ".dev-graph/plans/feature-package-retire-tax-receipt-and-clarify-freee-only/atomic-promotion-receipt.json"
+ },
+ "gates": {
+  "c11_graph_schema": {
+   "valid": true,
+   "implementation_readiness": "complete",
+   "violations": 0
+  },
+  "c02_saved_state": {
+   "registered_source_digest": "sha256:439c9ab04b9d7fa966af0bd72ee253f033cece7cff06028fa4060bb153805810",
+   "nodes": 16
+  },
+  "validate_system_plan": "pass"
+ },
+ "readiness_matrix": [
+  {
+   "task": "SYS-RTR-P01",
+   "phase_ref": "P01",
+   "title": "廃止範囲と保持範囲の要件確定",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P02",
+   "phase_ref": "P02",
+   "title": "削除後の依存グラフと層境界の設計",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P03",
+   "phase_ref": "P03",
+   "title": "独立設計レビュー",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P04",
+   "phase_ref": "P04",
+   "title": "退避テストと受入テストの設計",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P05",
+   "phase_ref": "P05",
+   "title": "証憑機能の削除と freeeOnly 行の操作除去",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P06",
+   "phase_ref": "P06",
+   "title": "テスト実行",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P07",
+   "phase_ref": "P07",
+   "title": "受入判定",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P08",
+   "phase_ref": "P08",
+   "title": "残存参照の整理とデータ移行",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P09",
+   "phase_ref": "P09",
+   "title": "型検査と静的検査と運用予算の整合",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P10",
+   "phase_ref": "P10",
+   "title": "独立最終レビュー",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P11",
+   "phase_ref": "P11",
+   "title": "再現可能な証跡の収集",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P12",
+   "phase_ref": "P12",
+   "title": "文書と運用手順の更新",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  },
+  {
+   "task": "SYS-RTR-P13",
+   "phase_ref": "P13",
+   "title": "反映と反映後の確認",
+   "implementation_readiness": "complete",
+   "missing_sections": []
+  }
+ ],
+ "blocked": false,
+ "implementation_code_files_generated": 0
+}

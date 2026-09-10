@@ -263,7 +263,7 @@ describe('選択した要確認をまとめて判定する', () => {
 
 /*
   「取り込んだ内容に抜け漏れはないでしょうか」への答えは、freee 全件が必ず
-  一致 / MF に相手なし / 除外 のどれか 1 つに入る分割で示す。旧実装は months と review しか
+  一致 / 除外 / そのどちらにも入らない freee 側の残余のどれか 1 つに入る分割で示す。旧実装は months と review しか
   返しておらず、freee 側の行き先は画面から一切見えなかったので、この節は必ず落ちる。
 */
 describe('freee 全件の行き先と二重登録の除外', () => {
@@ -325,7 +325,7 @@ describe('freee 全件の行き先と二重登録の除外', () => {
     expect(after.excluded).toEqual([
       expect.objectContaining({ freeeKey: target!.freeeKey, reason: '同じ支払を 2 回登録していた' }),
     ]);
-    // 外した取引は「相手なし」からも消える。両方に出ると分割の和が壊れる
+    // 外した取引は freee 側の残余からも消える。両方に出ると分割の和が壊れる
     expect(after.freeeOnly.map((d) => d.freeeKey)).not.toContain(target!.freeeKey);
     expect(after.coverage.matched + after.coverage.freeeOnly + after.coverage.excluded).toBe(
       after.coverage.freeeTotal,
@@ -407,7 +407,7 @@ describe('どの freee 取引と組むかの名指し', () => {
       .run();
   });
 
-  it('名指しした候補へ寄り、名指ししなかった方は相手なしとして残る', async () => {
+  it('名指しした候補へ寄り、名指ししなかった方は matched にも excluded にも入らない freee 側の残余として残る', async () => {
     const before = await load();
     const target = before.review.find((r) => r.txId === 'pick-1');
     expect(target?.candidates).toHaveLength(2);

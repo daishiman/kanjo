@@ -13,12 +13,9 @@ export const SCHEDULED_D1_QUERY_ACCEPTED_MAX = SCHEDULED_D1_QUERY_LIMIT - 1;
 /** 現行 job 群の安全側上限。新規 job は既存枠を再配分しない限り追加できない。 */
 export const SCHEDULED_D1_QUERY_PLAN_MAX = 46;
 
-/** attachment reconciler は通常上限10件を保ち、夜間経路だけ3件へ絞る。 */
-export const SCHEDULED_ATTACHMENT_JOB_LIMIT = 3;
-
 export const SCHEDULED_MAINTENANCE_JOB_NAMES = [
   'nightly_backup',
-  'attachment_maintenance',
+  'r2_cleanup',
   'password_login_rate_limit_cleanup',
   'improvement_retention',
   'deletion_undo_retention',
@@ -80,8 +77,9 @@ export function planScheduledMaintenanceD1Queries(
 export const SCHEDULED_MAINTENANCE_D1_PLAN = planScheduledMaintenanceD1Queries({
   // loadBackupPayload は全canonical tableを1 statement snapshotで読む。
   nightly_backup: 1,
-  // retention enqueue(1) + due scan(1) + 3 job × worst 6 statements。
-  attachment_maintenance: 2 + 6 * SCHEDULED_ATTACHMENT_JOB_LIMIT,
+  // 旧表検出(1) + late write回収(2) + 期限原本enqueue(1) + due scan(1)
+  // + 最大3件の共有key保護guard(3)・全参照とjobの同時更新(12)。
+  r2_cleanup: 20,
   password_login_rate_limit_cleanup: 1,
   // due scan(1) + R2成功IDの集合更新(1) + orphan照合(1)。
   improvement_retention: 3,
