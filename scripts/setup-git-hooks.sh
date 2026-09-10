@@ -8,17 +8,31 @@ set -eu
 hooks_dir="$(git rev-parse --git-common-dir)/hooks"
 mkdir -p "$hooks_dir"
 
-# post-checkout は checkout / switch / clone / worktree add の直後に、
-# 対象worktreeの中で実行される。デザイン画像のsymlinkはここで張る。
-cat > "$hooks_dir/post-checkout" <<'HOOK'
+# このマーカーを持つフックだけを上書きする。
+# 手で書いたフックや他のツールが置いたフックを黙って壊さないため。
+MARKER='# 自動生成: scripts/setup-git-hooks.sh'
+
+# post-checkout: checkout / switch / clone / worktree add の直後。worktreeを作る場面。
+# post-merge:    pull(merge)の直後。既存worktreeを更新する場面。
+#                pullはcheckoutではないのでpost-checkoutは走らず、こちらが要る。
+for hook in post-checkout post-merge; do
+  target="$hooks_dir/$hook"
+
+  if [ -e "$target" ] && ! grep -qF "$MARKER" "$target"; then
+    echo "setup-git-hooks: $target は自動生成物ではないので触りません" >&2
+    continue
+  fi
+
+  cat > "$target" <<HOOK
 #!/usr/bin/env bash
-# 自動生成: scripts/setup-git-hooks.sh
+$MARKER
 # 直接編集せず、scripts/link-design.sh の側を直すこと。
 set -eu
-root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
-[ -x "$root/scripts/link-design.sh" ] || exit 0
-"$root/scripts/link-design.sh" || true
+root=\$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+[ -x "\$root/scripts/link-design.sh" ] || exit 0
+"\$root/scripts/link-design.sh" || true
 HOOK
 
-chmod +x "$hooks_dir/post-checkout"
-echo "setup-git-hooks: $hooks_dir/post-checkout を設置しました" >&2
+  chmod +x "$target"
+  echo "setup-git-hooks: $target を設置しました" >&2
+done
