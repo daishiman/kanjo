@@ -1,10 +1,15 @@
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 
 import {
   MANIFEST_REMEDIATION,
+  migrationSnapshot,
   pendingMigrationsFromWrangler,
   verifyApprovedManifest,
+  verifyForWorkflow,
 } from './verify-approved-migration-manifest.mjs';
 
 const repositoryHead = '0123456789abcdef0123456789abcdef01234567';
@@ -115,6 +120,99 @@ test('未承認またはfreshness未確認のmanifestを拒否する', () => {
   assert.throws(() =>
     verifyApprovedManifest({ manifest: stale, repositoryHead, snapshot, pendingFilenames }),
   );
+});
+
+test('承認manifestはR2 cleanupのRelease世代境界も検証する', () => {
+  const releaseSnapshot = {
+    head: '0039_drop_tax_and_receipt_tables.sql',
+    orderedMigrationsDigestSha256: 'd'.repeat(64),
+    entries: [
+      { order: 1, filename: '0037_unrelated.sql', sha256: '7'.repeat(64) },
+      { order: 2, filename: '0038_prepare_r2_cleanup.sql', sha256: '8'.repeat(64) },
+      { order: 3, filename: '0039_drop_tax_and_receipt_tables.sql', sha256: '9'.repeat(64) },
+    ],
+  };
+  const manifest = approvedManifest();
+  manifest.repository.migration_head = releaseSnapshot.head;
+  manifest.repository.ordered_migrations_digest_sha256 = releaseSnapshot.orderedMigrationsDigestSha256;
+  manifest.remote_inspection.applied_head = '0037_unrelated.sql';
+  manifest.approved_pending_entries = releaseSnapshot.entries.slice(1).map((entry, index) => ({
+    ...entry,
+    order: index + 1,
+  }));
+  assert.throws(
+    () =>
+      verifyApprovedManifest({
+        manifest,
+        repositoryHead,
+        snapshot: releaseSnapshot,
+        pendingFilenames: ['0038_prepare_r2_cleanup.sql', '0039_drop_tax_and_receipt_tables.sql'],
+      }),
+    /r2-cleanup-release-boundary-invalid/,
+  );
+});
+
+test('Migrate経路はRelease Bのみremote cleanup残件を検証する', () => {
+  const migrationsDir = mkdtempSync(join(tmpdir(), 'kanjo-migrations-'));
+  try {
+    for (const filename of [
+      '0037_unrelated.sql',
+      '0038_prepare_r2_cleanup.sql',
+      '0039_drop_tax_and_receipt_tables.sql',
+    ]) {
+      writeFileSync(join(migrationsDir, filename), `-- ${filename}\nSELECT 1;\n`);
+    }
+    const releaseSnapshot = migrationSnapshot(migrationsDir);
+    const manifest = {
+      ...approvedManifest(),
+      repository: {
+        head: repositoryHead,
+        migration_head: releaseSnapshot.head,
+        ordered_migrations_digest_sha256: releaseSnapshot.orderedMigrationsDigestSha256,
+      },
+      remote_inspection: {
+        ...approvedManifest().remote_inspection,
+        applied_head: '0038_prepare_r2_cleanup.sql',
+        pending_count: 1,
+      },
+      approved_pending_entries: [{ ...releaseSnapshot.entries[2], order: 1 }],
+    };
+    const runRemoteList = () => ({
+      exitCode: 0,
+      stdout:
+        'Migrations to be applied:\n' +
+        '┌──────┐\n' +
+        '│ Name │\n' +
+        '├──────┤\n' +
+        '│ 0039_drop_tax_and_receipt_tables.sql │\n' +
+        '└──────┘',
+      stderr: '',
+    });
+    let cleanupInspections = 0;
+    const runCleanupStatus = () => {
+      cleanupInspections += 1;
+      return {
+        exitCode: 0,
+        stdout:
+          '[{"success":true,"results":[{"pending":0,"retry":0,"dead":0,"attachments":0,"attachment_cleanup_jobs":0}]}]',
+        stderr: '',
+      };
+    };
+
+    assert.deepEqual(
+      verifyForWorkflow({
+        manifestJson: JSON.stringify(manifest),
+        repositoryHead,
+        migrationsDir,
+        runRemoteList,
+        runCleanupStatus,
+      }),
+      ['0039_drop_tax_and_receipt_tables.sql'],
+    );
+    assert.equal(cleanupInspections, 1);
+  } finally {
+    rmSync(migrationsDir, { recursive: true, force: true });
+  }
 });
 
 test('装飾付きWrangler pending一覧を順序どおり抽出する', () => {

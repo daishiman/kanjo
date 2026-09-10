@@ -42,7 +42,7 @@ export type MfPersistedRow = readonly [
   isTransfer: 0 | 1,
 ];
 
-/** 添付の同一性判定を含むD1保存行。指紋とcommitで共有する。 */
+/** 同一性判定を含むD1保存行。指紋とcommitで共有する。 */
 export type MfPersistedIdentityRow = readonly [...MfPersistedRow, identityStable: 0 | 1];
 
 /** MfPersistedRowと必ず同じ順序で使うD1列。 */

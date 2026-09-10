@@ -276,27 +276,10 @@ describe('現金記帳の月次集計ライフサイクル', () => {
       )
       .bind('default', `cash:${entry.id}`)
       .run();
-    await d1
-      .prepare(
-        `INSERT INTO receipt_source_overrides
-          (user_id,target_kind,target_key,merchant_key,service_name,source_url,updated_at)
-         VALUES ('default','cash',?,'架空商工会議所','架空ポータル','https://billing.example.test','2026-08-02T00:00:00.000Z')`,
-      )
-      .bind(String(entry.id))
-      .run();
-
     const deleted = await jsonRequest(`/cash-entries/${entry.id}`, 'DELETE');
     expect(deleted.status).toBe(200);
     expect(await aggregate('2026-07', 'biz_exp:架空会議費')).toBe(777);
     expect(await cashEditExists(entry.id)).toBe(false);
-    expect(
-      await d1
-        .prepare(
-          "SELECT 1 FROM receipt_source_overrides WHERE user_id='default' AND target_kind='cash' AND target_key=?",
-        )
-        .bind(String(entry.id))
-        .first(),
-    ).toBeNull();
 
     const personal = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-07-20',
@@ -356,7 +339,7 @@ describe('現金記帳の月次集計ライフサイクル', () => {
 });
 
 describe('現金投影を含むexport/restoreのprovenance', () => {
-  it('baselineから現金を除き、同一DBでは現在現金を1回だけ合成し、新DBでは現金とcash editを復元しない', async () => {
+  it('baselineから現金を除き、同一DBでは現在現金を1回だけ合成し、新DBでは記帳とcash editを対で復元する', async () => {
     await addOption('biz', '架空会議費');
     await addOption('per', '架空食費', '架空外食');
     const initial = await jsonRequest('/restore', 'POST', {
@@ -468,18 +451,17 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
         .first<{ amount: number }>(),
     ).toEqual({ amount: 400 });
 
-    // backup内のcash:* editは、新DBで後から採番されるcash id=1へ付着させない。
-    exported.edits = { ...exported.edits, 'cash:1': { owner: 'spouse' } };
+    // backup内に相手のいないcash editを混ぜる。復元後のどの記帳にも付いてはいけない
+    exported.edits = { ...exported.edits, 'cash:999999': { owner: 'spouse' } };
     const fresh = await freshFixture('cash-export-restore-fresh');
     try {
       const restored = await fresh.request('/restore', 'POST', exported);
       expect(restored.status, await restored.clone().text()).toBe(200);
-      // この規模の集計では記帳4件を足すと49 query予算を超えるため、記帳だけ見送る。
-      // 見送りは黙って0件にせず cashSkipped で返す
       await expect(restored.clone().json()).resolves.toMatchObject({
-        cashEntries: 0,
-        cashSkipped: 4,
+        cashEntries: 4,
+        cashSkipped: 0,
       });
+      // baseline 100 に復元した記帳10が合成される(baselineは現金を含まないので二重計上にならない)
       expect(
         await fresh.db
           .prepare(
@@ -487,17 +469,12 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
              WHERE user_id = 'default' AND month = '2026-11' AND scope = 'biz_exp:架空会議費'`,
           )
           .first<{ amount: number }>(),
-      ).toEqual({ amount: 100 });
+      ).toEqual({ amount: 110 });
       expect(
         await fresh.db
           .prepare("SELECT COUNT(*) AS n FROM cash_entries WHERE user_id = 'default'")
           .first<{ n: number }>(),
-      ).toEqual({ n: 0 });
-      expect(
-        await fresh.db
-          .prepare("SELECT COUNT(*) AS n FROM tx_edits WHERE tx_id LIKE 'cash:%'")
-          .first<{ n: number }>(),
-      ).toEqual({ n: 0 });
+      ).toEqual({ n: 4 });
 
       expect(
         (
@@ -519,12 +496,29 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
         memo: null,
       });
       expect(created.status).toBe(201);
-      await expect(created.json()).resolves.toMatchObject({ entry: { id: 1 } });
+      // 新規は復元済み4件の後ろへ採番され、既存idを踏まない(踏むと他人のeditを拾う)。
+      // 実idは同一プロセス内のAUTOINCREMENT連番に依存するため、値ではなく大小で見る
+      const { entry: newEntry } = (await created.json()) as { entry: { id: number } };
+      expect(newEntry.id).toBeGreaterThan(4);
       expect(
         await fresh.db
-          .prepare("SELECT COUNT(*) AS n FROM tx_edits WHERE tx_id = 'cash:1'")
+          .prepare('SELECT COUNT(*) AS n FROM tx_edits WHERE tx_id = ?')
+          .bind(`cash:${newEntry.id}`)
           .first<{ n: number }>(),
       ).toEqual({ n: 0 });
+      // 記帳とcash editは対で戻る。editが指す相手が元と同じ記帳であること、
+      // 相手のいないeditがどの記帳にも付かないことを、実idではなく対応で見る
+      await expect(
+        fresh.db
+          .prepare(
+            `SELECT e.tx_id AS txId, e.owner, c.description
+               FROM tx_edits e JOIN cash_entries c ON c.id = CAST(SUBSTR(e.tx_id, 6) AS INTEGER)
+              WHERE e.tx_id LIKE 'cash:%' ORDER BY c.id`,
+          )
+          .all(),
+      ).resolves.toMatchObject({
+        results: [{ txId: `cash:${personal.id}`, owner: 'business', description: '架空現金per11' }],
+      });
       expect(
         await fresh.db
           .prepare(
@@ -532,7 +526,8 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
              WHERE user_id = 'default' AND month = '2026-11' AND scope = 'per_exp:架空食費'`,
           )
           .first<{ amount: number }>(),
-      ).toEqual({ amount: 250 });
+        // baseline 200 + 復元した記帳20 + 新規50。現金がbaselineに混ざっていれば合わない
+      ).toEqual({ amount: 270 });
     } finally {
       await fresh.mf.dispose();
     }
@@ -953,54 +948,6 @@ describe('append-only migrationのprovenanceとID契約', () => {
 });
 
 describe('候補科目と現金記帳の参照整合', () => {
-  it('事業科目のrenameは全年の確定申告判定を追従させ、移行先の判定を優先する', async () => {
-    await addOption('biz', '架空旧科目');
-    await d1
-      .prepare(
-        `INSERT INTO tax_account_settings
-           (user_id,tax_year,account,tax_account,business_percent,basis)
-         VALUES
-           ('default',2025,'架空旧科目','通信費',80,'古い根拠'),
-           ('default',2026,'架空旧科目','通信費',70,'移行元'),
-           ('default',2026,'架空新科目','地代家賃',60,'移行先を優先')`,
-      )
-      .run();
-
-    const renamed = await jsonRequest('/category-options', 'PUT', {
-      from: { scope: 'biz', major: '架空旧科目', mid: '' },
-      to: { major: '架空新科目', mid: '' },
-    });
-    expect(renamed.status, await renamed.clone().text()).toBe(200);
-
-    await expect(
-      d1
-        .prepare(
-          `SELECT tax_year AS taxYear, account, tax_account AS taxAccount,
-                  business_percent AS businessPercent, basis
-             FROM tax_account_settings WHERE user_id='default'
-            ORDER BY tax_year, account`,
-        )
-        .all(),
-    ).resolves.toMatchObject({
-      results: [
-        {
-          taxYear: 2025,
-          account: '架空新科目',
-          taxAccount: '通信費',
-          businessPercent: 80,
-          basis: '古い根拠',
-        },
-        {
-          taxYear: 2026,
-          account: '架空新科目',
-          taxAccount: '地代家賃',
-          businessPercent: 60,
-          basis: '移行先を優先',
-        },
-      ],
-    });
-  });
-
   it('使用数・rename・delete guardが現金明細を同じconsumerとして扱う', async () => {
     await addOption('per', '架空食費', '架空外食');
     const created = await jsonRequest('/cash-entries', 'POST', {
@@ -1315,19 +1262,13 @@ describe('仕分けルールのcanonical total order', () => {
 });
 
 describe('cash親削除のD1 query budget', () => {
-  it('添付10件+正規化差分多数でもquery数が行数非依存で49以下に収まる', () => {
-    const oneDifference = planCashParentDeleteQueries(10, 1);
-    const manyDifferences = planCashParentDeleteQueries(10, 100_000);
-    expect(manyDifferences).toEqual({
-      total: 42,
-      success: 41,
-      attachmentFailure: 42,
-      limit: 50,
-      accepted: true,
-    });
-    expect(manyDifferences.success).toBe(oneDifference.success);
+  it('正規化差分が何件でもquery数は行数非依存で49以下に収まる', () => {
+    const oneDifference = planCashParentDeleteQueries(1);
+    const manyDifferences = planCashParentDeleteQueries(100_000);
+    expect(manyDifferences).toEqual({ total: 27, limit: 50, accepted: true });
+    expect(manyDifferences.total).toBe(oneDifference.total);
     expect(manyDifferences.total).toBeLessThanOrEqual(49);
-    expect(() => planCashParentDeleteQueries(11, 0)).toThrow('invalid_cash_parent_delete_query_plan');
+    expect(() => planCashParentDeleteQueries(-1)).toThrow('invalid_cash_parent_delete_query_plan');
   });
 
   it('正規化差分100件を1つのjson_each UPDATEで更新し、空・重複・不正入力を安全に扱う', async () => {

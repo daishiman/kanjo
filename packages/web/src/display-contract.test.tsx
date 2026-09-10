@@ -14,7 +14,7 @@ const STYLE_SOURCE = readFileSync(new URL('./styles.css', import.meta.url), 'utf
 const APP_SOURCE = readFileSync(new URL('./App.tsx', import.meta.url), 'utf8');
 // Login と Improvement は routeMetadata の業務ルートではない。前者は認証前、
 // 後者は「アプリの不具合を伝える」ための画面で、どちらも PageHeader が要求する
-// route id を持たない。15ルートの表示契約はこの2枚を除いた集合に掛ける
+// route id を持たない。業務ルートの表示契約はこの2枚を除いた集合に掛ける
 const ROUTED_PAGE_SOURCES = Object.entries(PAGE_SOURCES)
   .filter(
     ([path]) =>
@@ -22,35 +22,34 @@ const ROUTED_PAGE_SOURCES = Object.entries(PAGE_SOURCES)
   )
   .map(([, source]) => source);
 
-describe('15ルート契約', () => {
+describe('業務ルート契約', () => {
   it('パスとIDが一意で全件がナビに含まれる', () => {
-    expect(APP_ROUTES).toHaveLength(15);
-    expect(new Set(APP_ROUTES.map((route) => route.id)).size).toBe(15);
-    expect(new Set(APP_ROUTES.map((route) => route.path)).size).toBe(15);
+    expect(new Set(APP_ROUTES.map((route) => route.id)).size).toBe(APP_ROUTES.length);
+    expect(new Set(APP_ROUTES.map((route) => route.path)).size).toBe(APP_ROUTES.length);
     expect(APP_ROUTES.every((route) => route.label && route.task && route.taskDetail)).toBe(true);
   });
 
   it('モバイルタブは正本ルートの部分集合', () => {
     const routeIds = new Set(APP_ROUTES.map((route) => route.id));
-    expect(MOBILE_ROUTES).toHaveLength(5);
+    // 領収書の廃止で5枚目が無くなり4枚。他の画面をタブへ繰り上げてはいない
+    expect(MOBILE_ROUTES.map((route) => route.id)).toEqual(['overview', 'analysis', 'classify', 'import']);
     expect(MOBILE_ROUTES.every((route) => routeIds.has(route.id))).toBe(true);
   });
 
-  it('全15ページが共通ヘッダーを使用する', () => {
-    expect(ROUTED_PAGE_SOURCES).toHaveLength(15);
+  it('全業務ページが共通ヘッダーを使用する', () => {
+    expect(ROUTED_PAGE_SOURCES).toHaveLength(APP_ROUTES.length);
     expect(ROUTED_PAGE_SOURCES.every((source) => source.includes('<PageHeader route='))).toBe(true);
     expect(ROUTED_PAGE_SOURCES.some((source) => source.includes('<h1 className="page-title"'))).toBe(false);
   });
 
-  it('申告画面だけをcold-load短縮のためeagerにし、残りはルート単位で遅延読み込みする', () => {
-    // 業務ルート15枚のうち申告だけが eager、残り14枚 + routeMetadata 外の改善要望1枚が lazy
-    expect(APP_SOURCE.match(/lazy\(\(\) =>\s*import\('\.\/pages\//g)).toHaveLength(APP_ROUTES.length);
+  it('業務ルートは全てルート単位の遅延読み込みで、eagerな同期importはLoginだけに限る', () => {
+    // 業務ルートは正本の件数、routeMetadata 外の改善要望は1枚が lazy。
+    // 認証前に必ず出る Login だけが同期 import で、以降の画面は1枚も初回バンドルに載せない
+    expect(APP_SOURCE.match(/lazy\(\(\) =>\s*import\('\.\/pages\//g)).toHaveLength(APP_ROUTES.length + 1);
     expect(APP_SOURCE).toMatch(/<Suspense\s+fallback=/);
     expect(APP_SOURCE.match(/import \{ \w+Page \} from '\.\/pages\//g)).toEqual([
       "import { LoginPage } from './pages/",
-      "import { TaxReturnPage } from './pages/",
     ]);
-    expect(APP_SOURCE).toMatch(/tax:\s*TaxReturnPage,/);
   });
 });
 

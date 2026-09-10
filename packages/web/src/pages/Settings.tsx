@@ -2,7 +2,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { type BackupItem, type LegacyRestoreResponse, type SettingsResponse, api } from '../api.js';
-import { AttachmentArchiveRecovery } from '../components/Attachments.js';
 import { ClassificationSettings } from '../components/ClassificationSettings.js';
 import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
@@ -15,16 +14,26 @@ import { readFileText } from '../file-text.js';
  * 確認ダイアログの本文。「続けますか?」は付けない。問いは見出しが持っており、
  * 本文まで問いにすると、読む側は同じ問いを 2 回読んでから答えることになる。
  */
-export const LEGACY_RESTORE_CONFIRMATION =
-  '集計・分類・設定データを初期移行します。現金明細、証憑の原本と管理情報は対象外です。';
+const RESTORE_CASH_IMPACT =
+  '現金明細は、移行先の現金明細が空で処理上限内の場合に復元します。既存の現金明細は保持し、取込元から追加しません。処理上限を超えた明細は復元しません。';
+
+function restoreConfirmation(subject: string): string {
+  return `${subject}。${RESTORE_CASH_IMPACT}`;
+}
+
+function formatRestoreCashResult(result: LegacyRestoreResponse): string {
+  return `現金明細: 復元 ${result.cashEntries}件 / 既存を保持 ${result.cashKept}件 / 処理上限で未復元 ${result.cashSkipped}件`;
+}
+
+export const LEGACY_RESTORE_CONFIRMATION = restoreConfirmation('集計・分類・設定データを初期移行します');
 
 export function LegacyRestoreNotice({ result }: { result: LegacyRestoreResponse }) {
   if (result.duplicate)
-    return <p className="sub">同じ集計データは取り込み済みです。現金明細と証憑は変更していません。</p>;
+    return <p className="sub">同じ集計データは取り込み済みです。{formatRestoreCashResult(result)}</p>;
   return (
     <p className="sub">
       集計データを取り込みました(対象月 {result.months.length}件 / MF明細 {result.mfTxCount}件 / 分類ルール{' '}
-      {result.rules}件)。現金明細、証憑の原本と管理情報はこの操作の対象外です。
+      {result.rules}件)。{formatRestoreCashResult(result)}
     </p>
   );
 }
@@ -351,15 +360,15 @@ export function SettingsPage() {
           </div>
         )}
         <NightlyBackups />
-        <AttachmentArchiveRecovery />
       </div>
     </>
   );
 }
 
 /** 問いは見出しが持つので、ここは起きることだけを書く (LEGACY_RESTORE_CONFIRMATION と同じ理由) */
-export const BACKUP_RESTORE_CONFIRMATION =
-  'この日の夜間バックアップで集計・分類・設定データを上書きします。現金明細、証憑の原本と管理情報は対象外です。';
+export const BACKUP_RESTORE_CONFIRMATION = restoreConfirmation(
+  'この日の夜間バックアップで集計・分類・設定データを上書きします',
+);
 
 /**
  * 夜間バックアップ(R2 に30日保持)からの復元導線。
@@ -391,7 +400,7 @@ export function NightlyBackups() {
       <h3>夜間バックアップから戻す</h3>
       <p className="sub">
         毎晩の自動バックアップ(30日保持)です。選んだ日の集計・分類・設定データで上書きします。
-        現金明細と証憑は対象外なので、そのまま残ります。
+        {RESTORE_CASH_IMPACT}
       </p>
       {!backups.length && !q.isLoading && (
         <p className="sub">まだバックアップがありません(初回の夜間実行後に出ます)。</p>

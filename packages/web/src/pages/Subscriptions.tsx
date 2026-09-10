@@ -1,6 +1,5 @@
 /** P4 サブスク分析: いま何にいくら払っているか(月額・年換算)と、推移・重複・急増を確認する */
 import { useQuery } from '@tanstack/react-query';
-import { Fragment } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type SubscriptionsData, api } from '../api.js';
@@ -183,10 +182,7 @@ export function SubscriptionsPage() {
             '平均月額',
             '支払月数',
             '直近12ヶ月合計',
-            <Fragment key="annualized">
-              <Term id="annualized" />
-              (直近月額×12)
-            </Fragment>,
+            termColumn('annualized', { label: '年換算(直近月額×12)' }),
           ]}
           foot={
             <tr className="total">

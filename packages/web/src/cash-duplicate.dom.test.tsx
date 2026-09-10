@@ -24,7 +24,6 @@ const entry = (over: Partial<CashEntry> = {}): CashEntry => ({
   transitTo: null,
   transitRound: false,
   receiptWaived: false,
-  attachmentCount: 0,
   ...over,
 });
 

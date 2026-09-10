@@ -3,8 +3,9 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { app } from './index.js';
+import { runR2Cleanup } from './r2-cleanup.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
@@ -299,7 +300,7 @@ describe('取込履歴の破棄', () => {
     ).resolves.toEqual({ status: 'committed' });
   });
 
-  it('最後の参照はoutboxへ載せ、R2障害でも履歴だけ安全に消して再試行状態を残す', async () => {
+  it('R2障害でも履歴と同時に削除intentを残し、Cron再試行で完了する', async () => {
     const r2Key = 'uploads/2026-09-01/架空-retry.csv';
     await files.put(r2Key, '架空原本');
     await seedImport({ id: 60, status: 'failed', r2Key });
@@ -312,17 +313,46 @@ describe('取込履歴の破棄', () => {
       },
     }) as R2Bucket;
 
-    const response = await request(
-      '/imports/60/discard',
-      { fingerprint: checked.body.fingerprint },
-      failingBucket,
-    );
+    // mockRestore は mock.calls も消すため、復元後に履歴を読むと必ず空になる。
+    // 実装側の呼び出しをその場で自前の配列へ写し取る
+    const errorLines: string[] = [];
+    const errorLog = vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
+      errorLines.push(args.map(String).join(' '));
+    });
+    let response: Response;
+    try {
+      response = await request(
+        '/imports/60/discard',
+        { fingerprint: checked.body.fingerprint },
+        failingBucket,
+      );
+    } finally {
+      errorLog.mockRestore();
+    }
     await expect(response.json()).resolves.toEqual({ discarded: true, original: 'deletion_pending' });
     await expect(d1.prepare('SELECT COUNT(*) AS n FROM imports').first<number>('n')).resolves.toBe(0);
-    await expect(
-      d1.prepare('SELECT state,reason,last_error FROM attachment_cleanup_jobs').first(),
-    ).resolves.toEqual({ state: 'retry', reason: 'import_retention', last_error: 'r2_delete_failed' });
+    await expect(d1.prepare('SELECT state,attempts,purpose FROM r2_cleanup_jobs').first()).resolves.toEqual({
+      state: 'retry',
+      attempts: 1,
+      purpose: 'import_original',
+    });
+    // 運用ログは状態と件数用IDだけ。R2 keyや例外messageは載せない。
+    const logged = errorLines.filter((line) => line.includes('r2_cleanup'));
+    expect(logged).toHaveLength(1);
+    expect(JSON.parse(logged[0] as string)).toEqual({
+      level: 'error',
+      job: 'r2_cleanup',
+      importId: 60,
+      result: 'retry',
+    });
+    expect(logged[0]).not.toContain(r2Key);
     await expect(files.head(r2Key)).resolves.not.toBeNull();
+
+    await expect(
+      runR2Cleanup({ DB: d1, FILES: files }, new Date(Date.now() + 3 * 60_000)),
+    ).resolves.toMatchObject({ selected: 1, completed: 1 });
+    await expect(d1.prepare('SELECT id FROM r2_cleanup_jobs').first()).resolves.toBeNull();
+    await expect(files.head(r2Key)).resolves.toBeNull();
   });
 
   it('確認後に状態が変わった場合と他利用者の履歴をfail closedする', async () => {

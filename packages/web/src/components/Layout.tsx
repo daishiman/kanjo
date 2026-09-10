@@ -13,7 +13,6 @@ import { type SummaryResponse, api } from '../api.js';
 import { monthLabel, yen } from '../format.js';
 import { PeriodPicker, usePeriod } from '../period.js';
 import { ANALYSIS_TABS, APP_ROUTES, MOBILE_ROUTES, TABBED_ROUTE_IDS } from '../routeMetadata.js';
-import { TaxYearPicker, useTaxYear } from '../tax-year.js';
 import { CommandPalette } from './CommandPalette.js';
 import { ExportMenu } from './ExportMenu.js';
 import { NavItem } from './NavItem.js';
@@ -52,8 +51,6 @@ const STATUS_LABEL: Record<string, string> = {
 export function Layout({ children }: { children: ReactNode }) {
   const [drawer, setDrawer] = useState(false);
   const loc = useLocation();
-  const taxYear = useTaxYear();
-  const isTaxRoute = loc.pathname === '/tax' || loc.pathname.startsWith('/tax/');
 
   // ドロワーは Escape とルート遷移で閉じる
   useEffect(() => {
@@ -174,12 +171,8 @@ export function Layout({ children }: { children: ReactNode }) {
         <Link to="/" className="header-brand">
           収支統合管理
         </Link>
-        <span className="period">{isTaxRoute ? `${taxYear.year}年 1月〜12月` : period}</span>
-        {isTaxRoute ? (
-          <TaxYearPicker years={summary.data?.period.years ?? []} />
-        ) : (
-          <PeriodPicker meta={summary.data?.period} />
-        )}
+        <span className="period">{period}</span>
+        <PeriodPicker meta={summary.data?.period} />
         <span className="spacer" />
         {d && d.status !== 'nodata' ? (
           <span className={`badge header-defense ${d.status}`}>

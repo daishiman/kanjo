@@ -19,13 +19,6 @@ import {
   ownerLabel,
   paymentMethodLabel,
 } from '../api.js';
-import {
-  type AttachmentDisclosure,
-  AttachmentDisclosureCell,
-  AttachmentDisclosureRow,
-  OrphanedAttachmentRecovery,
-  useAttachmentDisclosure,
-} from '../components/Attachments.js';
 import { CategoryPicker } from '../components/CategoryPicker.js';
 import { OwnerSelect, useInvalidateClassification } from '../components/ClassificationSettings.js';
 import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
@@ -194,7 +187,6 @@ export function ClassifyPage() {
   const [dirtyEditingId, setDirtyEditingId] = useState<string | null>(null);
   const [busyEditingId, setBusyEditingId] = useState<string | null>(null);
   const [recentDeletion, setRecentDeletion] = useState<DeletionResult | null>(null);
-  const attachments = useAttachmentDisclosure();
   const navigate = useNavigate();
 
   // 破棄の確認。答えが返るまで待てないので、続きの操作をここに預けて確認の後に実行する
@@ -430,8 +422,6 @@ export function ClassifyPage() {
         </div>
       )}
 
-      <OrphanedAttachmentRecovery />
-
       {recentDeletion && <DeletedNotice result={recentDeletion} onUndone={() => setRecentDeletion(null)} />}
 
       <div className="kpis">
@@ -573,7 +563,6 @@ export function ClassifyPage() {
             // ここの「判定」は統計の判定ではなく公私の判定。見出し文は変えずホバーだけ辞書に繋ぐ
             termColumn('publicPrivate', { label: '判定' }),
             termColumn('holderName'),
-            termColumn('voucher'),
             // 操作列はボタンだけなので並べ替えの手がかりが無い
             { label: '操作', sortable: false },
           ]}
@@ -606,14 +595,13 @@ export function ClassifyPage() {
                   setBusyEditingId(busy ? (splitting ? splitSession : editSession) : null)
                 }
                 onSaved={finishEditing}
-                attachments={attachments}
                 onDeleted={setRecentDeletion}
               />
             );
           })}
           {!rows.length && (
             <tr key="empty">
-              <td colSpan={9} className="empty">
+              <td colSpan={8} className="empty">
                 該当する明細がありません
               </td>
             </tr>
@@ -657,7 +645,6 @@ function TxLine({
   onDirtyChange,
   onBusyChange,
   onSaved,
-  attachments,
   onDeleted,
 }: {
   t: TxRow;
@@ -675,7 +662,6 @@ function TxLine({
   onDirtyChange: (dirty: boolean) => void;
   onBusyChange: (busy: boolean) => void;
   onSaved: () => void;
-  attachments: AttachmentDisclosure;
   onDeleted: (result: import('../api.js').DeletionResult) => void;
 }) {
   const catEdited = t.catSrc === '手動';
@@ -773,24 +759,6 @@ function TxLine({
           {t.owner ? ownerLabel(t.owner) : <span className="pill neutral">未設定</span>}
           {t.owner && <span className="orig owner-source">{t.ownerSrc}</span>}
         </td>
-        <td data-label="証憑">
-          {t.attachmentTargetId ? (
-            <AttachmentDisclosureCell
-              targetId={t.attachmentTargetId}
-              status={t.attachmentCount > 0 ? 'attached' : undefined}
-              count={t.attachmentCount}
-              disclosure={attachments}
-              buttonClassName="classify-quick"
-              disabledReason={
-                t.capabilities.attach
-                  ? undefined
-                  : 'MFのID列がない明細は、再取込後の同一性を保証できないため添付できません'
-              }
-            />
-          ) : (
-            <span className="sub">対象外</span>
-          )}
-        </td>
         <td data-label="操作">
           <div className="classify-quick-actions" aria-label={`${t.description}の簡易操作`}>
             {t.capabilities.quickClass && (
@@ -850,7 +818,7 @@ function TxLine({
       </tr>
       {splitting && (
         <tr className="editing-open" id={splitId}>
-          <td colSpan={9}>
+          <td colSpan={8}>
             <SplitEditor
               txId={splitTarget}
               candidates={candidates}
@@ -874,15 +842,6 @@ function TxLine({
           onDirtyChange={onDirtyChange}
           onBusyChange={onBusyChange}
           onSaved={onSaved}
-        />
-      )}
-      {t.attachmentTargetId && (
-        <AttachmentDisclosureRow
-          targetId={t.attachmentTargetId}
-          colSpan={9}
-          disclosure={attachments}
-          rowClassName="editing-open"
-          onChanged={() => void qc.invalidateQueries({ queryKey: ['transactions'] })}
         />
       )}
     </>
@@ -987,7 +946,7 @@ function EditorRow({
 
   return (
     <tr className="editor">
-      <td colSpan={9}>
+      <td colSpan={8}>
         <section id={id} className="classification-editor" aria-labelledby={`${id}-title`}>
           <header className="classification-editor-summary">
             <div>

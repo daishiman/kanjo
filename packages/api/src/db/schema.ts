@@ -37,7 +37,7 @@ export const mfTransactions = sqliteTable(
     isTarget: integer('is_target').notNull().default(1),
     /** MFの「振替」列。1 = 口座間振替であり収支集計に含めない行 */
     isTransfer: integer('is_transfer').notNull().default(0),
-    /** 1 = MFのID列由来。0/旧データは添付不可とする */
+    /** 1 = MFのID列由来。0/旧データは安定IDが必要な明細分割を不可とする */
     identityStable: integer('identity_stable').notNull().default(0),
     importId: integer('import_id'),
   },
@@ -387,132 +387,6 @@ export const balanceEntries = sqliteTable(
   ],
 );
 
-/**
- * 0010/0011: レシート・領収書の添付。原本は R2、この表はメタデータと
- * R2削除の再試行状態を持つ。添付先は接頭辞付き文字列ではなく種別+安定keyで表す。
- */
-export const attachments = sqliteTable(
-  'attachments',
-  {
-    id: integer('id').primaryKey({ autoIncrement: true }),
-    userId: text('user_id').notNull(),
-    targetKind: text('target_kind', { enum: ['cash', 'mf'] }).notNull(),
-    targetKey: text('target_key').notNull(),
-    r2Key: text('r2_key').notNull(),
-    filename: text('filename').notNull(),
-    contentType: text('content_type').notNull(),
-    size: integer('size').notNull(),
-    contentHash: text('content_hash').notNull(),
-    state: text('state', { enum: ['ready', 'delete_pending', 'delete_failed'] })
-      .notNull()
-      .default('ready'),
-    deleteAttempts: integer('delete_attempts').notNull().default(0),
-    deleteRequestedAt: text('delete_requested_at'),
-    lastDeleteError: text('last_delete_error'),
-    /** 0012: NULLなら原本が存在し得る。非NULLはR2 DELETE成功済みの単調fact */
-    objectDeletedAt: text('object_deleted_at'),
-    /** 0012: MF洗替えで親が不在になった時刻。再出現時はNULLへ戻す */
-    parentMissingAt: text('parent_missing_at'),
-    cleanupDeadLetterAt: text('cleanup_dead_letter_at'),
-    createdAt: text('created_at').notNull().$defaultFn(nowIso),
-  },
-  (t) => [
-    index('idx_attachments_target').on(t.userId, t.targetKind, t.targetKey, t.state),
-    uniqueIndex('uq_attachments_r2key').on(t.r2Key),
-    uniqueIndex('uq_attachments_dup').on(t.userId, t.targetKind, t.targetKey, t.contentHash),
-  ],
-);
-
-/** 0028: 取引先ごとの証憑取得先。ログイン識別子のみで秘密値は持たない */
-export const receiptSourceProfiles = sqliteTable(
-  'receipt_source_profiles',
-  {
-    userId: text('user_id').notNull(),
-    profileKey: text('profile_key').notNull(),
-    merchantKey: text('merchant_key').notNull(),
-    serviceName: text('service_name').notNull(),
-    sourceUrl: text('source_url').notNull(),
-    loginAccount: text('login_account'),
-    memo: text('memo'),
-    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
-  },
-  (t) => [
-    primaryKey({ columns: [t.userId, t.profileKey] }),
-    index('idx_receipt_source_profiles_merchant').on(t.userId, t.merchantKey),
-  ],
-);
-
-/** 0028: 安定targetごとの取得先例外。profile参照か明示値の一方を持つ */
-export const receiptSourceOverrides = sqliteTable(
-  'receipt_source_overrides',
-  {
-    userId: text('user_id').notNull(),
-    targetKind: text('target_kind', { enum: ['cash', 'mf'] }).notNull(),
-    targetKey: text('target_key').notNull(),
-    /** 明細側の正規化した取引先キー */
-    merchantKey: text('merchant_key').notNull(),
-    /** 別の取引先profileを使う場合の参照先。明示例外ではNULL */
-    profileKey: text('profile_key'),
-    serviceName: text('service_name'),
-    sourceUrl: text('source_url'),
-    loginAccount: text('login_account'),
-    memo: text('memo'),
-    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
-  },
-  (t) => [
-    primaryKey({ columns: [t.userId, t.targetKind, t.targetKey] }),
-    foreignKey({
-      columns: [t.userId, t.profileKey],
-      foreignColumns: [receiptSourceProfiles.userId, receiptSourceProfiles.profileKey],
-    })
-      .onUpdate('cascade')
-      .onDelete('restrict'),
-    index('idx_receipt_source_overrides_profile').on(t.userId, t.profileKey),
-  ],
-);
-
-/** 0012: R2/D1境界をscheduled処理へ引き継ぐdurable outbox。 */
-export const attachmentCleanupJobs = sqliteTable(
-  'attachment_cleanup_jobs',
-  {
-    id: integer('id').primaryKey({ autoIncrement: true }),
-    userId: text('user_id').notNull(),
-    attachmentId: integer('attachment_id'),
-    importId: integer('import_id'),
-    r2Key: text('r2_key').notNull(),
-    size: integer('size').notNull().default(0),
-    action: text('action', { enum: ['delete_object', 'delete_metadata'] }).notNull(),
-    reason: text('reason', { enum: ['upload_intent', 'attachment_delete', 'import_retention'] }).notNull(),
-    state: text('state', { enum: ['pending', 'retry', 'dead'] })
-      .notNull()
-      .default('pending'),
-    attempts: integer('attempts').notNull().default(0),
-    notBefore: text('not_before').notNull(),
-    lastError: text('last_error'),
-    createdAt: text('created_at').notNull().$defaultFn(nowIso),
-    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
-  },
-  (t) => [
-    uniqueIndex('uq_attachment_cleanup_r2key').on(t.userId, t.r2Key),
-    index('idx_attachment_cleanup_due').on(t.state, t.notBefore, t.id),
-    index('idx_attachment_cleanup_attachment').on(t.userId, t.attachmentId),
-  ],
-);
-
-/** 0013: cleanup job/metadata消去後も明示削除済みkeyをarchiveから復活させない単調fact。 */
-export const attachmentObjectTombstones = sqliteTable(
-  'attachment_object_tombstones',
-  {
-    userId: text('user_id').notNull(),
-    r2Key: text('r2_key').notNull(),
-    deletedAt: text('deleted_at').notNull(),
-  },
-  (table) => [
-    primaryKey({ columns: [table.userId, table.r2Key] }),
-    index('idx_attachment_object_tombstones_deleted').on(table.deletedAt),
-  ],
-);
-
 /** 0014: password loginの接続元scope別rate limit。raw IP/passwordは保存しない。 */
 export const passwordLoginRateLimits = sqliteTable(
   'password_login_rate_limits',
@@ -617,29 +491,6 @@ export const aiReports = sqliteTable(
     index('idx_ai_reports_type').on(t.userId, t.reportType, t.periodFrom, t.periodTo),
     index('idx_ai_reports_archived').on(t.userId, t.archivedAt, t.createdAt),
   ],
-);
-
-/**
- * 0027: 確定申告での科目の扱い。申告年ごとに決算書への割り当てと家事按分を1行で持つ。
- * 行が無い科目は未確認。全額事業でも100%を明示保存した行だけを確認済みとして扱う。
- */
-export const taxAccountSettings = sqliteTable(
-  'tax_account_settings',
-  {
-    userId: text('user_id').notNull(),
-    /** 対象の申告年(2000..2099) */
-    taxYear: integer('tax_year').notNull(),
-    /** 帳簿上の科目名(正規化後) */
-    account: text('account').notNull(),
-    /** 転記先の決算書科目。NULL は未割当 */
-    taxAccount: text('tax_account'),
-    /** 家事按分の事業割合(0..100)。100は按分なし */
-    businessPercent: integer('business_percent').notNull().default(100),
-    /** 按分率の根拠。税務調査で聞かれるのはここ */
-    basis: text('basis'),
-    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
-  },
-  (t) => [primaryKey({ columns: [t.userId, t.taxYear, t.account] })],
 );
 
 /** AI分析の統計設定(利用者ごと)。行が無ければ既定値として扱う */
@@ -811,5 +662,28 @@ export const auditLogDetails = sqliteTable(
     uniqueIndex('uq_audit_log_detail_decision').on(t.auditId, t.txKey, t.attribute),
     index('idx_audit_log_detail_user_occurred').on(t.userId, t.occurredAt),
     index('idx_audit_log_detail_retention').on(t.occurredAt, t.id),
+  ],
+);
+
+/** 0038: R2/D1の非原子境界を用途から切り離したdurable cleanup outbox。 */
+export const r2CleanupJobs = sqliteTable(
+  'r2_cleanup_jobs',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: text('user_id').notNull(),
+    r2Key: text('r2_key').notNull(),
+    purpose: text('purpose', { enum: ['import_original', 'retired_attachment'] }).notNull(),
+    state: text('state', { enum: ['pending', 'retry', 'dead'] })
+      .notNull()
+      .default('pending'),
+    attempts: integer('attempts').notNull().default(0),
+    notBefore: text('not_before').notNull(),
+    lastError: text('last_error'),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [
+    uniqueIndex('uq_r2_cleanup_key').on(t.userId, t.r2Key),
+    index('idx_r2_cleanup_due').on(t.state, t.notBefore, t.id),
   ],
 );

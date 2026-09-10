@@ -1,5 +1,5 @@
 /**
- * 15画面のルート・ナビ・ページヘッダーの正本。
+ * ルート・ナビ・ページヘッダーの正本。
  * 表示順はサイドバーの業務順序と一致させる。
  *
  * 増減マトリクス・支出トレンド・統計診断は、いずれも「どの勘定科目に手を打つか」という
@@ -105,28 +105,6 @@ export const APP_ROUTES = [
     mobileLabel: null,
   },
   {
-    id: 'tax',
-    path: '/tax',
-    label: '確定申告の準備',
-    task: '不足を確認し、申告に使う準備シートを作ります。',
-    taskDetail:
-      '不足している証憑や未記帳月を確認し、freee・e-Taxへ転記するための準備シートを作る。申告書そのものの生成や、内容の適法性の保証はしない。',
-    icon: 'clipboard-check',
-    navGroup: '申告',
-    mobileLabel: null,
-  },
-  {
-    id: 'taxReceipts',
-    path: '/tax/receipts',
-    label: '領収書の残り',
-    task: '事業支出に不足している証憑を順番に添付します。',
-    taskDetail:
-      'このアプリで管理する事業支出のうち、証憑が未添付のものを優先順に解消する。freeeで入力した仕訳の証憑は、freee側で確認する。',
-    icon: 'receipt-text',
-    navGroup: null,
-    mobileLabel: '領収書',
-  },
-  {
     id: 'import',
     path: '/import',
     label: 'データ取込',
@@ -143,7 +121,7 @@ export const APP_ROUTES = [
     label: '現金の記帳',
     task: '口座明細に出ない現金の収支を記帳します。',
     taskDetail:
-      '口座やカードの明細に出ない現金の受け渡し(会議費など)を仕訳する。証憑も一緒に残せて、再取込しても消えない。二重計上の検知もここで働く。',
+      '口座やカードの明細に出ない現金の受け渡し(会議費など)を仕訳する。再取込しても消えない。二重計上の検知もここで働く。',
     icon: 'badge-japanese-yen',
     navGroup: null,
     mobileLabel: null,
@@ -239,7 +217,6 @@ export type AnalysisTabId = (typeof ANALYSIS_TABS)[number]['id'];
 /**
  * 子パスを持つ画面。ナビの現在地判定を前方一致にする対象。
  * /analysis/matrix にいても開いている画面は「支出分析」なので、サイドバーはそこを現在地にする。
- * (/tax と /tax/receipts は別の画面なので、ここには入らない)
  */
 export const TABBED_ROUTE_IDS: ReadonlySet<string> = new Set(['analysis']);
 

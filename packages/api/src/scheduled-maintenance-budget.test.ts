@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { AuthEnv } from './auth.js';
 import worker, { scheduledMaintenance } from './index.js';
+import { R2_CLEANUP_JOB_LIMIT } from './r2-cleanup.js';
 import { IMPROVEMENT_ORPHAN_CHECKPOINT_KEY } from './routes/improvement.js';
 import {
-  SCHEDULED_ATTACHMENT_JOB_LIMIT,
   SCHEDULED_D1_QUERY_ACCEPTED_MAX,
   SCHEDULED_D1_QUERY_LIMIT,
   SCHEDULED_D1_QUERY_PLAN_MAX,
@@ -44,18 +44,8 @@ function worstPathDatabase(
 
   const allRows = (sql: string): unknown[] => {
     const query = normalize(sql);
-    if (query.includes('from attachment_cleanup_jobs') && query.includes("state in ('pending','retry')"))
-      return Array.from({ length: SCHEDULED_ATTACHMENT_JOB_LIMIT }, (_, index) => ({
-        id: index + 1,
-        user_id: 'synthetic-user',
-        attachment_id: index + 1,
-        import_id: null,
-        r2_key: `attachments/synthetic/${index + 1}`,
-        action: 'delete_object',
-        reason: 'attachment_delete',
-        attempts: 0,
-        created_at: '2026-09-03T00:00:00.000Z',
-      }));
+    if (query.includes('from sqlite_master'))
+      return [{ name: 'attachments' }, { name: 'attachment_cleanup_jobs' }];
     if (query.includes('select id,screenshot_key from improvement_requests'))
       return Array.from({ length: 500 }, (_, index) => ({
         id: `improvement-${index + 1}`,
@@ -63,6 +53,15 @@ function worstPathDatabase(
       }));
     if (query.includes('select screenshot_key from improvement_requests'))
       return [{ screenshot_key: 'improvements/synthetic/live.jpg' }];
+    if (query.includes('from r2_cleanup_jobs'))
+      return Array.from({ length: R2_CLEANUP_JOB_LIMIT }, (_, index) => ({
+        id: index + 1,
+        user_id: 'synthetic-user',
+        r2_key: `uploads/synthetic/${index + 1}.csv`,
+        purpose: 'import_original',
+        attempts: 0,
+        created_at: '2026-09-08T00:00:00.000Z',
+      }));
     if (query.includes('from import_deletion_operations o') && query.includes('expires_at <='))
       return [{ id: 'expired-operation' }];
     if (query.includes('from import_deletion_operations o') && query.includes('expires_at >'))
@@ -72,8 +71,9 @@ function worstPathDatabase(
     return [];
   };
 
-  const firstRow = (sql: string): Record<string, number> => {
+  const firstRow = (sql: string): Record<string, number> | null => {
     const query = normalize(sql);
+    if (query.includes('as is_protected') && query.includes('from cleanup_key')) return { is_protected: 0 };
     if (query.includes('sum(length(payload_json))')) return { n: 600 * 1024 * 1024 };
     if (query.includes('from audit_log_detail')) return { rows: 1, bytes: 300 * 1024 * 1024 };
     if (query.includes('from audit_log')) return { rows: 1, bytes: 1024 };
@@ -97,7 +97,7 @@ function worstPathDatabase(
       first: async (column?: string) => {
         execute();
         const row = firstRow(sql);
-        return column ? (row[column] ?? null) : row;
+        return column ? (row?.[column] ?? null) : row;
       },
       run: async () => {
         execute();
@@ -118,9 +118,6 @@ function worstPathDatabase(
     batch: async (statements: D1PreparedStatement[]) => {
       actual += statements.length;
       events.push(...statements.map(() => 'd1:maintenance'));
-      const sql = statements.map((statement) => normalize(sqlByStatement.get(statement) ?? ''));
-      if (sql.some((query) => query.includes('insert into attachment_object_tombstones')))
-        throw new Error('synthetic attachment metadata batch failure');
       return statements.map((statement) => {
         const query = normalize(sqlByStatement.get(statement) ?? '');
         return result(1, query.startsWith('select count(*) as n') ? [{ n: 1 }] : []);
@@ -176,7 +173,7 @@ describe('scheduled maintenance D1 plan', () => {
     expect(Object.keys(SCHEDULED_MAINTENANCE_D1_PLAN.jobs)).toEqual([...SCHEDULED_MAINTENANCE_JOB_NAMES]);
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.jobs).toEqual({
       nightly_backup: 1,
-      attachment_maintenance: 20,
+      r2_cleanup: 20,
       password_login_rate_limit_cleanup: 1,
       improvement_retention: 3,
       deletion_undo_retention: 12,
@@ -195,12 +192,12 @@ describe('scheduled maintenance D1 plan', () => {
     expect(() => planScheduledMaintenanceD1Queries({ ...complete, unknown_job: 1 })).toThrow(
       ScheduledMaintenanceBudgetError,
     );
-    expect(() => planScheduledMaintenanceD1Queries({ ...complete, attachment_maintenance: 24 })).toThrow(
+    expect(() => planScheduledMaintenanceD1Queries({ ...complete, deletion_undo_retention: 30 })).toThrow(
       ScheduledMaintenanceBudgetError,
     );
   });
 
-  it('backupを先に確定後、500件・attachment batch失敗・両undo sweep・audit容量経路でもactual=planned=46', async () => {
+  it('backupを先に確定後、R2期限enqueue・最大3件・共有key guard・全参照cleanup・両undo sweepでもactual=planned=46', async () => {
     const chronology: string[] = [];
     const database = worstPathDatabase(chronology);
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
@@ -218,11 +215,18 @@ describe('scheduled maintenance D1 plan', () => {
       plannedQueries: 46,
       limit: 50,
     });
-    expect(JSON.stringify(records)).not.toContain('attachments/synthetic');
+    expect(records.find((entry) => entry.job === 'r2_cleanup')).toEqual({
+      level: 'info',
+      job: 'r2_cleanup',
+      selected: R2_CLEANUP_JOB_LIMIT,
+      completed: R2_CLEANUP_JOB_LIMIT,
+      retried: 0,
+      dead: 0,
+      importJobsEnqueued: 1,
+    });
     expect(JSON.stringify(records)).not.toContain('improvements/synthetic');
     expect(JSON.stringify(records)).not.toContain('synthetic-private-cursor');
     expect(JSON.stringify(records)).not.toContain(IMPROVEMENT_ORPHAN_CHECKPOINT_KEY);
-    expect(JSON.stringify(records)).not.toContain('synthetic-user');
   });
 
   it('非主要jobのrejectも全job記録後にctx.waitUntilへgeneric failureとして伝播する', async () => {
@@ -258,6 +262,5 @@ describe('scheduled maintenance D1 plan', () => {
     expect(JSON.stringify(records)).not.toContain('synthetic-private-cursor');
     expect(JSON.stringify(records)).not.toContain(IMPROVEMENT_ORPHAN_CHECKPOINT_KEY);
     expect(JSON.stringify(records)).not.toContain('improvements/synthetic');
-    expect(JSON.stringify(records)).not.toContain('synthetic-user');
   });
 });

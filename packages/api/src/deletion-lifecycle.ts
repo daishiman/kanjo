@@ -22,7 +22,6 @@ import {
   deletionScope,
 } from '@kanjo/core';
 import { type AuditScope, buildAuditStatements } from './audit-log.js';
-import { reconcileMfAttachmentParentsStatement } from './canonical-parent-convergence.js';
 import {
   type FullResetTable,
   type FullResetTombstoneRow,
@@ -115,7 +114,6 @@ export function planDeletionQueries(args: {
   fullResetReads: number;
   fullResetDeletes: number;
   targetChunks: number;
-  derivedConvergenceStatements: number;
   auditStatements: number;
   recomputeStatements: number;
 }): DeletionQueryPlan {
@@ -133,7 +131,6 @@ export function planDeletionQueries(args: {
       args.targetChunks +
       args.deleteChunks +
       args.fullResetDeletes +
-      args.derivedConvergenceStatements +
       1 +
       1 +
       args.auditStatements,
@@ -219,20 +216,15 @@ export async function loadDeletionScope(
 
 /** 巻き添え件数の材料。件数を数えるためだけに読む。消しはしない(DR-6)。 */
 export async function loadManualRecords(database: D1Database, userId: string): Promise<ManualRecords> {
-  const [edits, splits, attachments] = await Promise.all([
+  const [edits, splits] = await Promise.all([
     database.prepare('SELECT tx_id FROM tx_edits WHERE user_id=?').bind(userId).all<{ tx_id: string }>(),
     database.prepare('SELECT tx_id FROM tx_splits WHERE user_id=?').bind(userId).all<{ tx_id: string }>(),
-    database
-      .prepare("SELECT target_key FROM attachments WHERE user_id=? AND target_kind='mf'")
-      .bind(userId)
-      .all<{ target_key: string }>(),
   ]);
   return {
     txEdits: edits.results.map((row) => ({ txId: row.tx_id })),
     txSplits: splits.results.map((row) => ({ txId: row.tx_id })),
     // 現金記録は対象集合に入らない。0 を見せるために空で渡す(DR-6)
     cashEntries: [],
-    attachments: attachments.results.map((row) => ({ txId: row.target_key, month: null })),
   };
 }
 
@@ -434,7 +426,6 @@ export interface DeletionCommitPlan {
   targetChunks: number;
   deleteChunks: number;
   fullResetDeletes: number;
-  derivedConvergenceStatements: number;
 }
 
 /**
@@ -538,9 +529,6 @@ export function deletionCommitStatements(args: {
   const invalidateJson = database
     .prepare("DELETE FROM import_active_targets WHERE user_id=? AND target_key='json:global'")
     .bind(userId);
-  const derivedConvergence = targets.mfTxIds.length
-    ? [reconcileMfAttachmentParentsStatement(database, userId, args.nowIso)]
-    : [];
 
   return {
     statements: [
@@ -549,7 +537,6 @@ export function deletionCommitStatements(args: {
       ...targetStatements,
       ...deleteStatements,
       ...resetStatements,
-      ...derivedConvergence,
       ...clearTargets,
       invalidateJson,
     ],
@@ -557,7 +544,6 @@ export function deletionCommitStatements(args: {
     targetChunks: targetStatements.length + clearTargets.length,
     deleteChunks: deleteStatements.length,
     fullResetDeletes: resetStatements.length,
-    derivedConvergenceStatements: derivedConvergence.length,
   };
 }
 
@@ -749,7 +735,6 @@ export async function executeDeletion(args: {
     fullResetReads: isFullReset(request) ? 2 : 0,
     fullResetDeletes: commit.fullResetDeletes,
     targetChunks: commit.targetChunks,
-    derivedConvergenceStatements: commit.derivedConvergenceStatements,
     auditStatements: audit.queryCount,
     recomputeStatements: Math.max(
       args.recomputeStatements ?? 0,
@@ -913,9 +898,6 @@ export async function executeUndo(args: {
           .bind(userId, row.target_key, row.content_hash, row.import_id, row.updated_at),
       ),
     );
-
-  if (restored.mf_transactions > 0)
-    statements.push(reconcileMfAttachmentParentsStatement(database, userId, now.toISOString()));
 
   statements.push(
     // 二重取り消しを DB 側で止める。undone_by が既に入っていれば0行更新になる

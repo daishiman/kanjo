@@ -41,7 +41,7 @@ jobs:
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::productionのCLOUDFLARE_API_TOKENが未登録です"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::productionのCLOUDFLARE_ACCOUNT_IDが未登録です"; exit 1; }
-      - name: 承認manifestと現在のpendingを再照合
+      - name: 承認manifest・pending・Release前提を再照合
         env:
           APPROVED_MIGRATION_MANIFEST_JSON: ${{ inputs.approved_manifest }}
         run: node .github/scripts/verify-approved-migration-manifest.mjs

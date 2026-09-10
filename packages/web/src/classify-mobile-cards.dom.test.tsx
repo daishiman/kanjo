@@ -39,7 +39,6 @@ const row = (over: Partial<TxRow> = {}): TxRow => ({
   origin: null,
   originKey: null,
   scopeMismatch: false,
-  attachmentCount: 0,
   edit: null,
   ...over,
   rowKey: over.rowKey ?? `mf:${over.id ?? 'A1'}`,
@@ -49,8 +48,7 @@ const row = (over: Partial<TxRow> = {}): TxRow => ({
   splitSeq: over.splitSeq ?? null,
   splitLineCount: over.splitLineCount ?? null,
   splitState: over.splitState ?? null,
-  capabilities: over.capabilities ?? { quickClass: true, edit: true, split: true, attach: true },
-  attachmentTargetId: over.attachmentTargetId ?? over.id ?? 'A1',
+  capabilities: over.capabilities ?? { quickClass: true, edit: true, split: true },
 });
 
 const response = (transactions: TxRow[]): TransactionsResponse => ({
@@ -86,12 +84,7 @@ const response = (transactions: TxRow[]): TransactionsResponse => ({
 function mockFetch(transactions: TxRow[]) {
   vi.stubGlobal(
     'fetch',
-    vi.fn(async (input: RequestInfo | URL) => {
-      const path = typeof input === 'string' ? input : String(input);
-      if (path.startsWith('/api/attachments'))
-        return new Response(JSON.stringify({ attachments: [] }), {
-          headers: { 'Content-Type': 'application/json' },
-        });
+    vi.fn(async () => {
       return new Response(JSON.stringify(response(transactions)), {
         headers: { 'Content-Type': 'application/json' },
       });
@@ -116,7 +109,7 @@ afterEach(() => {
 });
 
 /** 見出しの並び。data-label はこの見出しと一致していなければカード化で意味が変わる */
-const HEADERS = ['日付', '内容', '口座', '大項目/中項目', '金額', '判定', '名義', '証憑', '操作'];
+const HEADERS = ['日付', '内容', '口座', '大項目/中項目', '金額', '判定', '名義', '操作'];
 
 describe('仕分け表のスマホカード化', () => {
   it('支出照合から指定された月と公私を最初の取得へ反映する', async () => {
@@ -167,7 +160,7 @@ describe('仕分け表のスマホカード化', () => {
     expect(cells[0]?.getAttribute('data-label')).toBe('日付');
   });
 
-  it('編集フォームの行は9列ぶんを1セルで占め、カード化しても操作を欠かさない', async () => {
+  it('編集フォームの行は8列ぶんを1セルで占め、カード化しても操作を欠かさない', async () => {
     mockFetch([row()]);
     const { container } = renderPage();
     const trigger = await screen.findByRole('button', { name: '編集する' });

@@ -102,7 +102,7 @@ export const GUIDE_CURRENT = {
   transfer: location('公私仕分けページで集計対象外として表示'),
   journalize: notApplicable,
   account: notApplicable,
-  voucher: location('現金記帳ページの証憑列で表示'),
+  voucher: location('現金記帳ページの交通費入力で「証憑不要」として表示'),
   houseworkSplit: notApplicable,
   closingAdjust: notApplicable,
   doubleCount: location('現金記帳ページで疑いがあれば件数を表示'),

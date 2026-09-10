@@ -31,7 +31,6 @@ export type AuditSourceType = (typeof AUDIT_SOURCE_TYPES)[number];
 export const AUDIT_COUNT_KEYS = [
   'affected',
   'added',
-  'attachments',
   'autoApplied',
   'balanceEntries',
   'candidates',

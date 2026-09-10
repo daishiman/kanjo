@@ -6,10 +6,8 @@ import { AUTH_EVENT, api } from './api.js';
 import { Layout } from './components/Layout.js';
 import { installDiagnostics } from './diagnostics-buffer.js';
 import { LoginPage } from './pages/Login.js';
-import { TaxReturnPage } from './pages/TaxReturn.js';
 import { PeriodProvider } from './period.js';
 import { APP_ROUTES, type AppRouteId, LEGACY_ROUTE_REDIRECTS } from './routeMetadata.js';
-import { TaxYearProvider } from './tax-year.js';
 
 // 収集は最初の描画より前に始める。エラーは改善要望ボタンを押す「前」に起きているため、
 // useEffect まで待つと肝心の1件目を取り逃がす。二重 install は buffer 側が弾く
@@ -38,12 +36,6 @@ export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
   cash: lazy(() => import('./pages/Cash.js').then((module) => ({ default: module.CashPage }))),
   settings: lazy(() => import('./pages/Settings.js').then((module) => ({ default: module.SettingsPage }))),
   guide: lazy(() => import('./pages/Guide.js').then((module) => ({ default: module.GuidePage }))),
-  // 申告画面は年1回のcold-loadが主経路。4KB gzip程度をmainへ含め、
-  // main取得後にTaxReturn chunkを発見する直列requestを1段減らす。
-  tax: TaxReturnPage,
-  taxReceipts: lazy(() =>
-    import('./pages/TaxReceipts.js').then((module) => ({ default: module.TaxReceiptsPage })),
-  ),
 };
 
 export function App() {
@@ -78,36 +70,34 @@ export function App() {
 
   return (
     <PeriodProvider>
-      <TaxYearProvider>
-        <Layout>
-          <Suspense
-            fallback={
-              <output className="page-state loading" aria-busy="true" aria-live="polite">
-                画面を読み込み中…
-              </output>
-            }
-          >
-            <Routes>
-              {APP_ROUTES.map((route) => {
-                const Component = ROUTE_COMPONENTS[route.id];
-                return <Route key={route.id} path={route.path} element={<Component />} />;
-              })}
-              {/* 支出分析は切り口をURLに持つ。/analysis 単体は AnalysisPage が既定タブへ寄せる */}
-              <Route path="/analysis/:tab" element={<ROUTE_COMPONENTS.analysis />} />
-              <Route path="/improvement" element={<ImprovementPage />} />
-              {/* 統合前の /matrix などは外に出ている可能性がある。トップへ落とさず該当タブへ送る */}
-              {LEGACY_ROUTE_REDIRECTS.map((redirect) => (
-                <Route
-                  key={redirect.from}
-                  path={redirect.from}
-                  element={<Navigate to={redirect.to} replace />}
-                />
-              ))}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Suspense>
-        </Layout>
-      </TaxYearProvider>
+      <Layout>
+        <Suspense
+          fallback={
+            <output className="page-state loading" aria-busy="true" aria-live="polite">
+              画面を読み込み中…
+            </output>
+          }
+        >
+          <Routes>
+            {APP_ROUTES.map((route) => {
+              const Component = ROUTE_COMPONENTS[route.id];
+              return <Route key={route.id} path={route.path} element={<Component />} />;
+            })}
+            {/* 支出分析は切り口をURLに持つ。/analysis 単体は AnalysisPage が既定タブへ寄せる */}
+            <Route path="/analysis/:tab" element={<ROUTE_COMPONENTS.analysis />} />
+            <Route path="/improvement" element={<ImprovementPage />} />
+            {/* 統合前の /matrix などは外に出ている可能性がある。トップへ落とさず該当タブへ送る */}
+            {LEGACY_ROUTE_REDIRECTS.map((redirect) => (
+              <Route
+                key={redirect.from}
+                path={redirect.from}
+                element={<Navigate to={redirect.to} replace />}
+              />
+            ))}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </Layout>
     </PeriodProvider>
   );
 }

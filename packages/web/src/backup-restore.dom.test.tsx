@@ -10,12 +10,31 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { LegacyRestoreResponse } from './api.js';
 import { BACKUP_RESTORE_CONFIRMATION, NightlyBackups } from './pages/Settings.js';
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
 
-function renderWith(backups: { date: string; size: number; uploaded: string | null }[]) {
+const restoreResult = (
+  cash: Partial<Pick<LegacyRestoreResponse, 'cashEntries' | 'cashKept' | 'cashSkipped'>> = {},
+) =>
+  ({
+    ok: true,
+    duplicate: false,
+    months: ['2026-01'],
+    mfTxCount: 2,
+    rules: 1,
+    cashEntries: 0,
+    cashKept: 0,
+    cashSkipped: 0,
+    ...cash,
+  }) satisfies LegacyRestoreResponse;
+
+function renderWith(
+  backups: { date: string; size: number; uploaded: string | null }[],
+  restored: LegacyRestoreResponse = restoreResult(),
+) {
   const calls: { url: string; method: string }[] = [];
   vi.stubGlobal(
     'fetch',
@@ -24,7 +43,7 @@ function renderWith(backups: { date: string; size: number; uploaded: string | nu
       calls.push({ url, method: init?.method ?? 'GET' });
       if (url.endsWith('/api/backups')) return json({ backups });
       if (url.includes('/api/backups/')) return json({ months: ['2026-01'], biz: {} });
-      if (url.endsWith('/api/restore')) return json({ duplicate: false, months: 1 });
+      if (url.endsWith('/api/restore')) return json(restored);
       return json({});
     }),
   );
@@ -83,6 +102,19 @@ describe('夜間バックアップからの復元', () => {
     await waitFor(() => expect(calls.some((c) => c.url.endsWith('/api/restore'))).toBe(true));
     expect(calls.some((c) => c.url.endsWith('/api/backups/2026-08-20'))).toBe(true);
     expect(calls.find((c) => c.url.endsWith('/api/restore'))?.method).toBe('POST');
+  });
+
+  it.each([
+    [restoreResult({ cashEntries: 2 }), '復元 2件'],
+    [restoreResult({ cashKept: 3 }), '既存を保持 3件'],
+    [restoreResult({ cashSkipped: 4 }), '処理上限で未復元 4件'],
+  ])('復元後に現金明細の実結果を表示する: %s', async (restored, expected) => {
+    renderWith([{ date: '2026-08-20', size: 2048, uploaded: null }], restored);
+    fireEvent.click(await screen.findByRole('button', { name: 'この日に戻す' }));
+    fireEvent.click(
+      within(await screen.findByRole('dialog')).getByRole('button', { name: '上書きして戻す' }),
+    );
+    expect(await screen.findByText(new RegExp(expected))).toBeTruthy();
   });
 
   it('まだ1件も無いときは、初回の夜間実行待ちだと伝える', async () => {

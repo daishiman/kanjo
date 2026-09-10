@@ -41,7 +41,7 @@ const TAB_ICON_SIZE = 18;
  *
  * 実測値そのものではなく上限で持つ(実測値を書くと、詰めた/緩めた両方向で落ちてしまい、
  * 「今の値」を写経するだけの検査になる)。880px の根拠:
- *   - 一般的なノートPCのブラウザ実効高は 600〜700px。15画面ある以上どの行高でも収まらないので、
+ *   - 一般的なノートPCのブラウザ実効高は 600〜700px。APP_ROUTES全体はどの行高でも収まらないので、
  *     「収まる」ではなく「増え続けない」を守る値にする。
  *   - icon とグループ見出しを足す前の総高が約870px。ここへ戻し、+40px の余地だけ残す。
  *     画面を1つ足すと超えるので、そのとき行高ではなく情報設計を見直す合図になる。
@@ -82,7 +82,10 @@ const TABBAR = `
     `<a class="tab" href="#${route.id}"${isCurrent(route)}>${routeIcon()}<span>${route.mobileLabel}</span></a>`,
 ).join('')}<button type="button" class="tab" aria-expanded="false">メニュー</button></nav>`;
 
-/** Classify.tsx の1行と同じ構造・同じ data-label で組む(列を増やしたらここも足す) */
+/** Classify.tsx の現行8列。見出しと colspan の数値を1か所から導出する */
+const CLASSIFY_COLUMNS = ['日付', '内容', '口座', '大項目/中項目', '金額', '判定', '名義', '操作'];
+
+/** Classify.tsx の1行と同じ構造・同じ data-label で組む */
 const classifyRow = (i) => `
 <tr>
   <td class="num" data-label="日付">08/${String(i + 1).padStart(2, '0')}</td>
@@ -92,7 +95,6 @@ const classifyRow = (i) => `
   <td class="num" data-label="金額">-12,345</td>
   <td data-label="判定"><span class="pill per">個人</span> <span class="pill neutral">既定</span></td>
   <td data-label="名義"><span class="pill neutral">未設定</span></td>
-  <td data-label="証憑"><button type="button" class="mini classify-quick">添付</button></td>
   <td data-label="操作"><div class="classify-quick-actions">
     <button type="button" class="mini classify-quick">個人</button>
     <button type="button" class="mini classify-quick">事業</button>
@@ -104,7 +106,7 @@ const classifyRow = (i) => `
 /** SplitEditor と開いた CategoryPicker の実DOMに合わせた最小フィクスチャ */
 const OPEN_SPLIT_EDITOR = `
 <tr class="editing-open" data-pattern="split-editor">
-  <td colspan="9">
+  <td colspan="${CLASSIFY_COLUMNS.length}">
     <div class="split-editor">
       <p class="sub lines">架空カード引き落としの 50,000円 を、用途ごとに分けます。</p>
       <fieldset class="split-mode"><legend class="visually-hidden">入力の仕方</legend><button type="button" class="mini" aria-pressed="true">✓ 金額で入れる</button><button type="button" class="mini" aria-pressed="false">割合で入れる</button></fieldset>
@@ -138,7 +140,7 @@ const OPEN_SPLIT_EDITOR = `
 const CLASSIFY_TABLE = `
 <div class="card scroll-x classify-table-card" data-pattern="classify">
   <table class="data classify-table stack-sm">
-    <thead><tr><th>日付</th><th>内容</th><th>口座</th><th>大項目/中項目</th><th>金額</th><th>判定</th><th>名義</th><th>証憑</th><th>操作</th></tr></thead>
+    <thead><tr>${CLASSIFY_COLUMNS.map((label) => `<th>${label}</th>`).join('')}</tr></thead>
     <tbody>${[0, 1, 2].map(classifyRow).join('')}${OPEN_SPLIT_EDITOR}</tbody>
   </table>
 </div>`;
@@ -235,7 +237,7 @@ const MEASURE = `(async () => {
     .map((td) => ({ label: td.dataset.label, scrollWidth: td.scrollWidth, clientWidth: td.clientWidth }));
 
   // 5) タップ領域
-  const taps = [...document.querySelectorAll('.classify-quick-actions button, .tabbar .tab, td[data-label="証憑"] button, .header .popover-host > button, .header .popover .btn')]
+  const taps = [...document.querySelectorAll('.classify-quick-actions button, .tabbar .tab, .header .popover-host > button, .header .popover .btn')]
     .map((el) => ({ text: el.textContent.trim(), h: el.getBoundingClientRect().height, w: el.getBoundingClientRect().width }));
 
   // 6) 200%相当でもnavラベルは1行。横幅不足はページ本体でなくnav自身が受け持つ。
@@ -251,7 +253,11 @@ const MEASURE = `(async () => {
       whiteSpace: getComputedStyle(labelNode).whiteSpace,
     };
   });
-  const tabScroll = { scrollWidth: tabbar.scrollWidth, clientWidth: tabbar.clientWidth };
+  const tabScroll = {
+    scrollWidth: tabbar.scrollWidth,
+    clientWidth: tabbar.clientWidth,
+    overflowX: getComputedStyle(tabbar).overflowX,
+  };
 
   // 7) 書き出しaction sheetと文字がvisual viewport内に収まるか
   const exportSheet = document.querySelector('.header .popover');
@@ -453,7 +459,7 @@ try {
         `${width}px ページ本体が横スクロールする(内容 ${m.overflow.scrollWidth}px > 画面 ${m.overflow.viewport}px): header=${m.headerChildren.map((child) => `${child.name}[${child.left}-${child.right}/${child.width};min=${child.minWidth};max=${child.maxWidth};basis=${child.flexBasis}]`).join(', ')}; boxes=${m.pageBoxes.map((box) => `${box.name}[${box.left}-${box.right}/${box.width};scroll=${box.scrollWidth}/${box.clientWidth}]`).join(', ')}`,
       );
     // 200%相当ではnavの不変条件だけを追加検査する。仕分けfixtureのセル幅は実ページの
-    // tax contentではなく、zoom 1の既存mobile contractで引き続き固定する。
+    // 表の内容ではなく、zoom 1の既存mobile contractで引き続き固定する。
     if (zoom === 1) {
       if (!m.theadHidden) failures.push(`${width}px カード化した表の見出し行が視覚的に残っている`);
       // order で並べ替えるので上下どちらが先かは問わない。「同じ行に並んでいない」ことだけを見る
@@ -541,9 +547,14 @@ try {
         failures.push(
           `${width}px/zoom${zoom} nav「${label.text}」が${label.lines}行・white-space=${label.whiteSpace}で分断される`,
         );
-    if (m.tabScroll.scrollWidth <= m.tabScroll.clientWidth)
+    // 収まっているなら合格。はみ出したときだけ、切り落とさずnav自身のscrollで受けることを課す
+    if (
+      m.tabScroll.scrollWidth > m.tabScroll.clientWidth + 0.5 &&
+      m.tabScroll.overflowX !== 'auto' &&
+      m.tabScroll.overflowX !== 'scroll'
+    )
       failures.push(
-        `${width}px/zoom${zoom} navが横幅不足を自身のscrollで受けていない(${m.tabScroll.scrollWidth}/${m.tabScroll.clientWidth})`,
+        `${width}px/zoom${zoom} navが横幅不足を自身のscrollで受けていない(${m.tabScroll.scrollWidth}/${m.tabScroll.clientWidth}, overflow-x=${m.tabScroll.overflowX})`,
       );
     if (m.exportSheetLayout.left < -0.5 || m.exportSheetLayout.right > m.exportSheetLayout.viewport + 0.5)
       failures.push(

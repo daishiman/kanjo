@@ -158,7 +158,8 @@ describe('password login D1 rate limit', () => {
   it('stale cleanupは100件を1 queryにboundedし、scheduled全体予算へ1本だけ計上する', async () => {
     expect(PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.cleanupBatchSize).toBe(100);
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.jobs.password_login_rate_limit_cleanup).toBe(1);
-    expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBe(46);
+    // 夜間job全体の正確な合計はscheduled-maintenance-budget.test.tsが所有する。
+    // ここではrate-limit cleanupが1本のまま、全体上限を破らないことだけを見る。
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBeLessThan(50);
     const now = Date.now();
     const stale = now - (PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.staleAfterSeconds + 1) * 1_000;

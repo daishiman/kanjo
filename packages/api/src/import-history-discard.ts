@@ -3,10 +3,10 @@
  * canonical data の取消は deletion-lifecycle が所有し、この経路では1行も触らない(DR-17)。
  */
 import { canonicalEncode, importHistoryDiscardBlock } from '@kanjo/core';
-import { processAttachmentCleanupNow } from './attachment-recovery.js';
 import { buildAuditStatements } from './audit-log.js';
 import type { AuthEnv } from './auth.js';
 import { reconcileImportRunStatement } from './import-lifecycle.js';
+import { processR2CleanupJobNow, r2CleanupEnqueueStatement } from './r2-cleanup.js';
 
 export type ImportOriginalDisposition = 'delete' | 'keep_shared' | 'none';
 
@@ -173,18 +173,14 @@ export async function executeImportHistoryDiscard(args: {
   let cleanupStatementIndex = -1;
   if (plan.originalDisposition === 'delete' && plan.r2Key) {
     cleanupStatementIndex = statements.length;
+    // R2操作より先にintentを履歴削除と同じD1 transactionへ入れ、keyを失わない。
     statements.push(
-      args.env.DB.prepare(
-        `INSERT INTO attachment_cleanup_jobs
-         (user_id,attachment_id,import_id,r2_key,size,action,reason,state,attempts,not_before,
-          last_error,created_at,updated_at)
-         VALUES (?,NULL,?,?,0,'delete_object','import_retention','pending',0,?,NULL,?,?)
-         ON CONFLICT(user_id,r2_key) DO UPDATE SET
-           import_id=excluded.import_id, action='delete_object', reason='import_retention',
-           state='pending', attempts=0, last_error=NULL,
-           not_before=excluded.not_before, updated_at=excluded.updated_at
-         RETURNING id`,
-      ).bind(args.userId, args.importId, plan.r2Key, nowIso, nowIso, nowIso),
+      r2CleanupEnqueueStatement(args.env.DB, {
+        userId: args.userId,
+        r2Key: plan.r2Key,
+        purpose: 'import_original',
+        now: nowIso,
+      }),
     );
   }
   statements.push(
@@ -206,6 +202,7 @@ export async function executeImportHistoryDiscard(args: {
   statements.push(...audit.statements);
 
   const results = await args.env.DB.batch(statements);
+
   if (cleanupStatementIndex < 0) {
     return {
       discarded: true,
@@ -214,11 +211,32 @@ export async function executeImportHistoryDiscard(args: {
   }
 
   const cleanupRow = (results[cleanupStatementIndex]?.results?.[0] ?? null) as { id?: number } | null;
-  const cleanupResult = cleanupRow?.id
-    ? await processAttachmentCleanupNow(args.env, cleanupRow.id, now)
-    : 'not_found';
-  return {
-    discarded: true,
-    original: cleanupResult === 'completed' ? 'deleted' : 'deletion_pending',
-  };
+  let pendingResult: 'retry' | 'dead' | 'not_found' = 'not_found';
+  try {
+    const cleanupResult = cleanupRow?.id
+      ? await processR2CleanupJobNow(args.env, cleanupRow.id, now)
+      : 'not_found';
+    if (cleanupResult === 'completed') return { discarded: true, original: 'deleted' };
+    pendingResult = cleanupResult;
+  } catch (error) {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        job: 'r2_cleanup',
+        importId: args.importId,
+        name: error instanceof Error ? error.name : 'UnknownError',
+      }),
+    );
+    return { discarded: true, original: 'deletion_pending' };
+  }
+  console.error(
+    JSON.stringify({
+      level: 'error',
+      job: 'r2_cleanup',
+      importId: args.importId,
+      result: pendingResult,
+    }),
+  );
+  // 履歴削除は確定済みだが、intentはD1に残る。次回Cronが同じR2 DELETEを再試行する。
+  return { discarded: true, original: 'deletion_pending' };
 }

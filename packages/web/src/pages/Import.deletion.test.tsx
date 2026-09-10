@@ -39,7 +39,7 @@ const historyRow = (over: Partial<ImportHistoryRow> = {}): ImportHistoryRow => (
 
 const PREFLIGHT = {
   counts: { mfTx: 12, freeeDeals: 0, balanceEntries: 0, months: 1 },
-  collateral: { txEdits: 3, txSplits: 1, attachments: 2, cashEntries: 0 },
+  collateral: { txEdits: 3, txSplits: 1, cashEntries: 0 },
   months: ['2026-06'],
   fullRange: { from: '2026-06', to: '2026-06' },
   fingerprint: 'fp-架空',
@@ -153,7 +153,6 @@ describe('期間で消す', () => {
 
     expect(await screen.findByText('公私・科目の手当て 3件')).toBeTruthy();
     expect(screen.getByText('明細の分割 1件')).toBeTruthy();
-    expect(screen.getByText('添付した書類 2件')).toBeTruthy();
     // 現金が巻き添えにならないことを、0件として見せる(DR-6)
     expect(screen.getByText('手で記帳した現金 0件(取込の削除では消えません)')).toBeTruthy();
     expect(screen.getByText(/削除後30日間は取り消せます/)).toBeTruthy();

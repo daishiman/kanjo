@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { JSON_SNAPSHOT_MUTATION_CONSUMERS } from './import-active.js';
+import { runR2Cleanup } from './r2-cleanup.js';
 import { EXPECTED_D1_MIGRATION } from './schema-guard.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
@@ -55,15 +56,206 @@ afterAll(async () => {
   await mf?.dispose();
 });
 
-describe('0030 の適用', () => {
+describe('現行migrationの適用', () => {
   it('連番の先頭が実行時ガードの期待headと一致する', () => {
     const latest = readdirSync(migrationsDir)
       .filter((filename) => filename.endsWith('.sql'))
       .sort()
       .at(-1);
     expect(latest).toBe(EXPECTED_D1_MIGRATION);
-    expect(EXPECTED_D1_MIGRATION).toBe('0037_freee_pairing_and_exclusions.sql');
+    expect(EXPECTED_D1_MIGRATION).toBe('0038_prepare_r2_cleanup.sql');
   });
+
+  it('Release Aは共有R2 cleanupを追加し、退役表を互換性のため残す', async () => {
+    const rows = await d1
+      .prepare("SELECT name FROM sqlite_master WHERE type='table'")
+      .all<{ name: string }>();
+    const names = rows.results.map((row) => row.name);
+    for (const compatibilityTable of [
+      'attachment_cleanup_jobs',
+      'attachment_object_tombstones',
+      'attachments',
+      'receipt_source_overrides',
+      'receipt_source_profiles',
+      'tax_account_settings',
+    ])
+      expect(names).toContain(compatibilityTable);
+    for (const retained of ['imports', 'cash_entries', 'improvement_requests', 'r2_cleanup_jobs'])
+      expect(names).toContain(retained);
+  });
+
+  it('0038は全R2 keyを共通台帳へ退避し、旧dead intentを再試行可能にする', async () => {
+    const staged = new Miniflare(
+      convertV4MiniflareOptions({
+        name: 'r2-cleanup-migration-stage',
+        modules: true,
+        script: 'export default { fetch() { return new Response("test") } }',
+        d1Databases: ['DB'],
+        r2Buckets: ['FILES'],
+      }),
+    );
+    try {
+      const database = (await staged.getD1Database('DB')) as D1Database;
+      const files = (await staged.getR2Bucket('FILES')) as unknown as R2Bucket;
+      const filenames = readdirSync(migrationsDir)
+        .filter((filename) => filename.endsWith('.sql'))
+        .sort();
+      const applyFile = async (filename: string) => {
+        const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
+          .replace(/^\s*--.*$/gm, '')
+          .split(';')
+          .map((sql) => sql.trim())
+          .filter(Boolean);
+        for (const sql of statements) await database.prepare(sql).run();
+      };
+      for (const filename of filenames.filter((name) => name < '0038_')) await applyFile(filename);
+      await database
+        .prepare(
+          `INSERT INTO attachments
+           (user_id,target_kind,target_key,r2_key,filename,content_type,size,content_hash,created_at)
+           VALUES
+             ('default','cash','1','attachments/synthetic.jpg','synthetic.jpg','image/jpeg',10,
+              'synthetic-hash','2026-09-01T00:00:00.000Z'),
+             ('default','cash','2','attachments/untracked.jpg','untracked.jpg','image/jpeg',11,
+              'untracked-hash','2026-09-02T00:00:00.000Z')`,
+        )
+        .run();
+      await Promise.all([
+        files.put('attachments/synthetic.jpg', 'synthetic'),
+        files.put('attachments/untracked.jpg', 'untracked'),
+        files.put('uploads/synthetic.csv', 'import'),
+      ]);
+      await database
+        .prepare(
+          `INSERT INTO attachment_cleanup_jobs
+           (user_id,attachment_id,import_id,r2_key,size,action,reason,state,attempts,not_before,
+            last_error,created_at,updated_at)
+           VALUES
+             ('default',1,NULL,'attachments/synthetic.jpg',10,'delete_object','attachment_delete',
+              'dead',5,'2026-09-08T00:00:00.000Z','r2_delete_failed',
+              '2026-09-01T00:00:00.000Z','2026-09-08T00:00:00.000Z'),
+             ('default',NULL,7,'uploads/synthetic.csv',0,'delete_object','import_retention',
+              'dead',5,'2026-09-08T00:00:00.000Z','r2_delete_failed',
+              '2026-09-01T00:00:00.000Z','2026-09-08T00:00:00.000Z')`,
+        )
+        .run();
+
+      await applyFile('0038_prepare_r2_cleanup.sql');
+      await expect(
+        database
+          .prepare('SELECT r2_key,purpose,state,attempts,last_error FROM r2_cleanup_jobs ORDER BY r2_key')
+          .all(),
+      ).resolves.toMatchObject({
+        results: [
+          {
+            r2_key: 'attachments/synthetic.jpg',
+            purpose: 'retired_attachment',
+            state: 'retry',
+            attempts: 0,
+            last_error: null,
+          },
+          {
+            r2_key: 'attachments/untracked.jpg',
+            purpose: 'retired_attachment',
+            state: 'pending',
+            attempts: 0,
+            last_error: null,
+          },
+          {
+            r2_key: 'uploads/synthetic.csv',
+            purpose: 'import_original',
+            state: 'retry',
+            attempts: 0,
+            last_error: null,
+          },
+        ],
+      });
+      await expect(
+        database.prepare('SELECT COUNT(*) AS n FROM r2_cleanup_jobs').first<number>('n'),
+      ).resolves.toBe(3);
+
+      // 0038適用後も旧Worker isolateは短時間生存し得る。両方のlate writeを即時に共通台帳へ移す。
+      await Promise.all([
+        files.put('attachments/late.jpg', 'late-attachment'),
+        files.put('uploads/late.csv', 'late-import'),
+      ]);
+      await database
+        .prepare(
+          `INSERT INTO attachments
+           (user_id,target_kind,target_key,r2_key,filename,content_type,size,content_hash,created_at)
+           VALUES ('default','cash','3','attachments/late.jpg','late.jpg','image/jpeg',12,
+                   'late-hash','2026-09-08T00:00:00.000Z')`,
+        )
+        .run();
+      await database
+        .prepare(
+          `INSERT INTO attachment_cleanup_jobs
+           (user_id,attachment_id,import_id,r2_key,size,action,reason,state,attempts,not_before,
+            last_error,created_at,updated_at)
+           VALUES ('default',NULL,8,'uploads/late.csv',0,'delete_object','import_retention',
+                   'pending',0,'2026-09-08T00:00:00.000Z',NULL,
+                   '2026-09-08T00:00:00.000Z','2026-09-08T00:00:00.000Z')`,
+        )
+        .run();
+      await expect(
+        database
+          .prepare(
+            `SELECT COUNT(*) AS n FROM r2_cleanup_jobs
+              WHERE r2_key IN ('attachments/late.jpg','uploads/late.csv')`,
+          )
+          .first<number>('n'),
+      ).resolves.toBe(0);
+      await expect(runR2Cleanup({ DB: database, FILES: files }, new Date('1970-01-01'))).resolves.toEqual({
+        selected: 0,
+        completed: 0,
+        retried: 0,
+        dead: 0,
+        importJobsEnqueued: 0,
+      });
+      await expect(
+        database
+          .prepare(
+            `SELECT r2_key,purpose,state FROM r2_cleanup_jobs
+              WHERE r2_key IN ('attachments/late.jpg','uploads/late.csv') ORDER BY r2_key`,
+          )
+          .all(),
+      ).resolves.toMatchObject({
+        results: [
+          { r2_key: 'attachments/late.jpg', purpose: 'retired_attachment', state: 'pending' },
+          { r2_key: 'uploads/late.csv', purpose: 'import_original', state: 'pending' },
+        ],
+      });
+      await expect(
+        database.prepare('SELECT COUNT(*) AS n FROM attachments').first<number>('n'),
+      ).resolves.toBe(3);
+      await expect(runR2Cleanup({ DB: database, FILES: files }, new Date('2999-01-01'))).resolves.toEqual({
+        selected: 3,
+        completed: 3,
+        retried: 0,
+        dead: 0,
+        importJobsEnqueued: 0,
+      });
+      await expect(runR2Cleanup({ DB: database, FILES: files }, new Date('2999-01-01'))).resolves.toEqual({
+        selected: 2,
+        completed: 2,
+        retried: 0,
+        dead: 0,
+        importJobsEnqueued: 0,
+      });
+      await expect(
+        database.prepare('SELECT COUNT(*) AS n FROM r2_cleanup_jobs').first<number>('n'),
+      ).resolves.toBe(0);
+      await expect(
+        database.prepare('SELECT COUNT(*) AS n FROM attachments').first<number>('n'),
+      ).resolves.toBe(0);
+      await expect(
+        database.prepare('SELECT COUNT(*) AS n FROM attachment_cleanup_jobs').first<number>('n'),
+      ).resolves.toBe(0);
+      await expect(files.list()).resolves.toMatchObject({ objects: [] });
+    } finally {
+      await staged.dispose();
+    }
+  }, 30_000);
 
   it('削除・決め事・二層監査のテーブルが揃う', async () => {
     const rows = await d1

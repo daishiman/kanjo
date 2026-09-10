@@ -66,8 +66,7 @@ const TX = (id: string, description: string) => ({
   splitSeq: null,
   splitLineCount: null,
   splitState: null,
-  capabilities: { quickClass: true, edit: true, split: true, attach: true },
-  attachmentTargetId: null,
+  capabilities: { quickClass: true, edit: true, split: true },
   idStable: true,
   date: '2026-06-10',
   description,
@@ -86,7 +85,6 @@ const TX = (id: string, description: string) => ({
   edited: true,
   conflict: true,
   scopeMismatch: false,
-  attachmentCount: 0,
   edit: null,
 });
 
