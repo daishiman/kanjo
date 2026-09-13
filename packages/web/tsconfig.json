@@ -5,5 +5,10 @@
     "jsx": "react-jsx",
     "types": ["vite/client"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  // ブラウザへ配るコードだけをこの設定で見る。`types` に node を足せば1行で済むが、
+  // それをすると画面のコードで `process.env` と書いても型検査が通ってしまう。
+  // ブラウザには process が無いので、通った先で実行時に落ちる。
+  // 検査で捕まえられるものを実行時まで落とさないため、テストは tsconfig.test.json で別に見る。
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/render-script-test-helper.ts"]
 }

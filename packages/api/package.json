@@ -25,7 +25,7 @@
     "drizzle-kit": "^0.31.10",
     "miniflare": "5.20260820.0-alpha",
     "typescript": "^5.6.3",
-    "vitest": "^3.2.6",
+    "vitest": "^4.1.11",
     "wrangler": "^4.33.0"
   }
 }

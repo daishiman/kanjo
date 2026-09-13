@@ -11,7 +11,7 @@
  * install より前に差し替えておく(あとから spy すると包みの外側になり、記録経路を通らない)。
  */
 import { DIAGNOSTIC_MAX_ENTRIES } from '@kanjo/core';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { type Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   diagnosticsSnapshot,
   installDiagnostics,
@@ -20,9 +20,11 @@ import {
 } from './diagnostics-buffer.js';
 
 let uninstall: () => void = () => undefined;
-let baseError: ReturnType<typeof vi.fn>;
-let baseWarn: ReturnType<typeof vi.fn>;
-let baseFetch: ReturnType<typeof vi.fn>;
+// 呼び出しの形を書いておく。素の `vi.fn()` の型は「関数としても new としても呼べる」
+// 広い型で、console.error のような具体的な形へは代入できない。
+let baseError: Mock<(...args: unknown[]) => void>;
+let baseWarn: Mock<(...args: unknown[]) => void>;
+let baseFetch: Mock<() => Promise<Response>>;
 let realFetch: typeof window.fetch;
 
 beforeEach(() => {
