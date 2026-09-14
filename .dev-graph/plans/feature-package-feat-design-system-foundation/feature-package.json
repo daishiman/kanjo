@@ -1,0 +1,52 @@
+{
+  "feature_package_id": "feature-package/feat-design-system-foundation",
+  "parent_feature": "feat-design-system-foundation",
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "schema_version": "1.0.0",
+  "source_feature_digest": "sha256:f34b066aa730083a72d41b32404ab37bd08e74587c8765c03d37d7f79eaf911c",
+  "task_count": 13,
+  "task_node_ids": [
+    "SYS-DSFOUND-P01",
+    "SYS-DSFOUND-P02",
+    "SYS-DSFOUND-P03",
+    "SYS-DSFOUND-P04",
+    "SYS-DSFOUND-P05",
+    "SYS-DSFOUND-P06",
+    "SYS-DSFOUND-P07",
+    "SYS-DSFOUND-P08",
+    "SYS-DSFOUND-P09",
+    "SYS-DSFOUND-P10",
+    "SYS-DSFOUND-P11",
+    "SYS-DSFOUND-P12",
+    "SYS-DSFOUND-P13"
+  ],
+  "task_spec_paths": [
+    "task-specs/phase-01-requirements.md",
+    "task-specs/phase-02-architecture.md",
+    "task-specs/phase-03-design-review.md",
+    "task-specs/phase-04-test-design.md",
+    "task-specs/phase-05-implementation.md",
+    "task-specs/phase-06-test-run.md",
+    "task-specs/phase-07-acceptance.md",
+    "task-specs/phase-08-refactoring-migration.md",
+    "task-specs/phase-09-quality-assurance.md",
+    "task-specs/phase-10-final-review.md",
+    "task-specs/phase-11-evidence.md",
+    "task-specs/phase-12-documentation-operations.md",
+    "task-specs/phase-13-release-deploy.md"
+  ]
+}

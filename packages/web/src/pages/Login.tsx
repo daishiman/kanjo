@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import { ApiError, api } from '../api.js';
+import { Button } from '../components/Button.js';
 
 export function LoginPage({ onSuccess }: { onSuccess: () => void }) {
   const [password, setPassword] = useState('');
@@ -40,9 +41,9 @@ export function LoginPage({ onSuccess }: { onSuccess: () => void }) {
             autoComplete="current-password"
           />
           {error && <div className="login-error">{error}</div>}
-          <button type="submit" className="primary" disabled={busy || !password}>
+          <Button type="submit" variant="primary" disabled={busy || !password}>
             {busy ? '確認中…' : 'ログイン'}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

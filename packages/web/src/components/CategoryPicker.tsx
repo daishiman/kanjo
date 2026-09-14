@@ -27,6 +27,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useId, useRef, useState } from 'react';
 import { type CandidateMajor, type Candidates, type Cls, SCOPE_SHORT, api } from '../api.js';
+import { Button } from './Button.js';
 import { useInvalidateClassification } from './classification-invalidate.js';
 
 interface Tab {
@@ -204,6 +205,7 @@ export function CategoryPicker({
   return (
     <span className="cat-picker" ref={box}>
       <button
+        data-native-control="disclosure"
         type="button"
         className={major ? 'cat-current on' : 'cat-current'}
         aria-expanded={open}
@@ -233,37 +235,38 @@ export function CategoryPicker({
             <div className="cat-suggest">
               <span className="cat-guide-head">入力内容から</span>
               {suggested.map((a) => (
-                <button
+                <Button
                   key={a.name}
-                  type="button"
                   className="cat-chip suggest"
                   onMouseEnter={() => setTouched(a.name)}
                   onFocus={() => setTouched(a.name)}
                   onClick={() => pick(a.name)}
                 >
                   {a.name}
-                </button>
+                </Button>
               ))}
             </div>
           )}
 
           {clearLabel && (
-            <button
+            <Button
               type="button"
-              className="mini linklike"
+              variant="text"
+              size="mini"
               onClick={() => {
                 onChange({ big: '', mid: '' });
                 setOpen(false);
               }}
             >
               {clearLabel}
-            </button>
+            </Button>
           )}
 
           <div className="cat-tabs" role="tablist" aria-label="科目の分類">
             {tabs.map((t) => (
               <button
                 key={t.id}
+                data-native-control="tab"
                 type="button"
                 role="tab"
                 aria-selected={tab?.id === t.id}
@@ -282,9 +285,8 @@ export function CategoryPicker({
             {(tab?.names ?? []).map((name) => {
               const src = list.find((m) => m.name === name)?.source;
               return (
-                <button
+                <Button
                   key={name}
-                  type="button"
                   className={name === big ? 'cat-chip on' : 'cat-chip'}
                   title={src ? SOURCE_NOTE[src] : undefined}
                   onMouseEnter={() => setTouched(name)}
@@ -292,7 +294,7 @@ export function CategoryPicker({
                   onClick={() => pick(name)}
                 >
                   {name}
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -329,9 +331,9 @@ export function CategoryPicker({
                 }}
               />
             ) : (
-              <button type="button" className="mini linklike" onClick={() => setAdding(true)}>
+              <Button type="button" variant="text" size="mini" onClick={() => setAdding(true)}>
                 候補にない科目を追加
-              </button>
+              </Button>
             ))}
         </div>
       )}
@@ -382,17 +384,17 @@ export function AddCategoryInline({
           style={{ width: 120 }}
         />
       )}
-      <button
+      <Button
         type="button"
-        className="primary"
+        variant="primary"
         disabled={!major.trim() || add.isPending}
         onClick={() => add.mutate()}
       >
         追加して選ぶ
-      </button>
-      <button type="button" onClick={() => onDone(null)}>
+      </Button>
+      <Button type="button" variant="secondary" onClick={() => onDone(null)}>
         やめる
-      </button>
+      </Button>
       {add.isError && (
         <span className="notice" style={{ margin: 0 }}>
           {(add.error as Error).message}

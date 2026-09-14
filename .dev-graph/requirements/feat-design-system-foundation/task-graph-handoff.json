@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "handoff_target": "task-graph",
+  "feature_id": "feat-design-system-foundation",
+  "parent_feature": "feat-design-system-foundation",
+  "feature_package_id": "feature-package/feat-design-system-foundation",
+  "snapshot_digest": "sha256:7bfb3f2c725825141b26ab254b61ca8a7ce0ec28fb006d61a62f15f3f0b21e1b",
+  "validated_plan_digest": "sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+  "kind": "requirements-handoff",
+  "status": "ready",
+  "requirements_document": ".dev-graph/requirements/feat-design-system-foundation/requirements.md",
+  "readiness_matrix": ".dev-graph/requirements/feat-design-system-foundation/readiness-matrix.json",
+  "trace_plan": ".dev-graph/requirements/feat-design-system-foundation/trace-plan.json",
+  "task_graph": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-graph.json",
+  "system_build_handoff": ".dev-graph/plans/feature-package-feat-design-system-foundation/system-build-handoff.json",
+  "task_spec_source_root": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs",
+  "task_projection_target_root": "tasks/feat-design-system-foundation",
+  "requirement_count": 6,
+  "task_count": 13,
+  "missing_sections": [],
+  "self_generated_code_files": [],
+  "preconditions": [
+    "SYS-DSFOUND-P05 着手前に docs/design-system/architecture-decision.md へ利用者が選択した dec-chart-series-contrast を記録する"
+  ],
+  "consumer_action": "dev-graph next で ready batch を算出し、worktree claim 後に SYS-DSFOUND-P01 から task-graph build を開始する。"
+}

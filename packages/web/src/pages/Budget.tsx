@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type BudgetOutlook, type BudgetRow, api } from '../api.js';
+import { Button } from '../components/Button.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
@@ -90,11 +91,10 @@ export function BudgetPage() {
       <PageHeader route="budget" />
 
       <div className="toolbar">
-        <button type="button" onClick={() => suggest.mutate()} disabled={suggest.isPending}>
+        <Button onClick={() => suggest.mutate()} disabled={suggest.isPending}>
           推奨値をセット(固定費=直近3ヶ月平均×95% / その他=全期間平均)
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           onClick={() => {
             const next: Record<string, string> = {};
             for (const r of rows) next[r.account] = '';
@@ -103,10 +103,10 @@ export function BudgetPage() {
           }}
         >
           全クリア
-        </button>
-        <button type="button" className="primary" onClick={submit} disabled={!dirty || save.isPending}>
+        </Button>
+        <Button variant="primary" onClick={submit} disabled={!dirty || save.isPending}>
           {save.isPending ? '保存中…' : '保存'}
-        </button>
+        </Button>
       </div>
 
       {dirty && (

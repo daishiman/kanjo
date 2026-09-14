@@ -1,0 +1,234 @@
+{
+  "schema_version": "1.0.0",
+  "handoff_target": "task-graph",
+  "feature_id": "feat-design-system-foundation",
+  "parent_feature": "feat-design-system-foundation",
+  "feature_package_id": "feature-package/feat-design-system-foundation",
+  "snapshot_digest": "sha256:7bfb3f2c725825141b26ab254b61ca8a7ce0ec28fb006d61a62f15f3f0b21e1b",
+  "validated_plan_digest": "sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+  "emitted_by": "dev-graph:run-dev-graph-requirements",
+  "emitted_at": "2026-09-13T08:57:33Z",
+  "repository_id": "github:daishiman/kanjo",
+  "package_reference": {
+    "plan_dir": ".dev-graph/plans/feature-package-feat-design-system-foundation",
+    "promotion_receipt": ".dev-graph/plans/feature-package-feat-design-system-foundation/atomic-promotion-receipt.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-graph.json",
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-design-system-foundation/dev-graph-registration-receipt.json"
+  },
+  "readiness": {
+    "status": "complete",
+    "missing_sections": [],
+    "checked_at": "2026-09-13T08:57:33Z"
+  },
+  "gates": [
+    {
+      "gate": "exact-13 external validator (validate-system-plan.py)",
+      "status": "pass",
+      "exit_code": 0,
+      "digest": "sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+      "violations": 0
+    },
+    {
+      "gate": "graph schema + artifact parity (validate-graph-schema.py)",
+      "status": "pass",
+      "exit_code": 0,
+      "violations": 0,
+      "missing_sections": []
+    },
+    {
+      "gate": "C02 saved state (registration receipt + task nodes)",
+      "status": "pass",
+      "digest": "sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+      "detail": "expected 13 = applied 13"
+    },
+    {
+      "gate": "C11 promotion + C05 evaluation digest",
+      "status": "pass",
+      "digest": "sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+    }
+  ],
+  "tasks": [
+    {
+      "graph_node_id": "SYS-DSFOUND-P01",
+      "phase_ref": "P01",
+      "title": "FINAL-UI 抽出値による要件ベースライン確定",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p01.md",
+      "depends_on": [],
+      "resource_scope": [
+        "docs/design-system/requirements-baseline.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P02",
+      "phase_ref": "P02",
+      "title": "トークン正本配置とワークストリーム設計の決定記録",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p02.md",
+      "depends_on": [
+        "SYS-DSFOUND-P01"
+      ],
+      "resource_scope": [
+        "docs/design-system/architecture-decision.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P03",
+      "phase_ref": "P03",
+      "title": "トークン設計の独立レビュー",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p03.md",
+      "depends_on": [
+        "SYS-DSFOUND-P02"
+      ],
+      "resource_scope": [
+        "docs/design-system/design-review.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P04",
+      "phase_ref": "P04",
+      "title": "トークン値・コントラスト・共通シェルの失敗テスト先行作成",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p04.md",
+      "depends_on": [
+        "SYS-DSFOUND-P03"
+      ],
+      "resource_scope": [
+        "packages/core/test/design-tokens.test.ts",
+        "packages/web/src/design-tokens-contrast.test.ts",
+        "packages/web/src/common-shell-routes.dom.test.tsx",
+        "scripts/check-design-tokens.mjs"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P05",
+      "phase_ref": "P05",
+      "title": "design-tokens.ts 正本の実装と styles.css / charts.ts / 共通部品への反映",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p05.md",
+      "depends_on": [
+        "SYS-DSFOUND-P04"
+      ],
+      "resource_scope": [
+        "packages/core/src/design-tokens.ts",
+        "packages/web/src/styles.css",
+        "packages/web/src/components/charts.ts",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/components/Button.tsx",
+        "scripts/check-design-tokens.mjs",
+        "package.json"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P06",
+      "phase_ref": "P06",
+      "title": "全テスト・型検査・lint の実行記録",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p06.md",
+      "depends_on": [
+        "SYS-DSFOUND-P05"
+      ],
+      "resource_scope": [
+        "docs/design-system/test-run.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P07",
+      "phase_ref": "P07",
+      "title": "S1-S6 受入検証",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p07.md",
+      "depends_on": [
+        "SYS-DSFOUND-P06"
+      ],
+      "resource_scope": [
+        "docs/design-system/acceptance.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P08",
+      "phase_ref": "P08",
+      "title": "COLOR_FALLBACKS と重複トークン値の除去",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p08.md",
+      "depends_on": [
+        "SYS-DSFOUND-P07"
+      ],
+      "resource_scope": [
+        "packages/web/src/components/charts.ts",
+        "packages/web/src/styles.css",
+        "docs/design-system/refactoring.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P09",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・セキュリティ・パフォーマンスの保証確認",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p09.md",
+      "depends_on": [
+        "SYS-DSFOUND-P08"
+      ],
+      "resource_scope": [
+        "docs/design-system/assurance.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P10",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p10.md",
+      "depends_on": [
+        "SYS-DSFOUND-P09"
+      ],
+      "resource_scope": [
+        "docs/design-system/final-review.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P11",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p11.md",
+      "depends_on": [
+        "SYS-DSFOUND-P10"
+      ],
+      "resource_scope": [
+        "docs/design-system/evidence.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P12",
+      "phase_ref": "P12",
+      "title": "デザインシステム規約文書と README / AGENTS.md 参照の同期",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p12.md",
+      "depends_on": [
+        "SYS-DSFOUND-P11"
+      ],
+      "resource_scope": [
+        "docs/design-system.md",
+        "README.md",
+        "AGENTS.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P13",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信とクローズアウト",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p13.md",
+      "depends_on": [
+        "SYS-DSFOUND-P12"
+      ],
+      "resource_scope": [
+        "docs/design-system/close-out.md"
+      ],
+      "tracker_binding": "beads"
+    }
+  ],
+  "requirements_ref": ".dev-graph/requirements/feat-design-system-foundation/trace-plan.json",
+  "self_generated_code_files": []
+}

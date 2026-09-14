@@ -16,6 +16,7 @@ import { type Annotation, burnAnnotations } from '../annotate-image.js';
 import { createImprovement, markImprovementCopied } from '../api.js';
 import { captureScreen } from '../capture-screen.js';
 import { diagnosticsSnapshot } from '../diagnostics-buffer.js';
+import { Button } from './Button.js';
 import { ScreenshotAnnotator } from './ScreenshotAnnotator.js';
 
 type Phase = 'idle' | 'capturing' | 'form' | 'sending' | 'done';
@@ -166,8 +167,7 @@ export function ImprovementRequestButton({
 
   return (
     <>
-      <button
-        type="button"
+      <Button
         className="improve-trigger"
         aria-label={phase === 'capturing' ? '画面を撮影中…' : '改善要望'}
         // 右下に固定した結果、このボタン自身が撮影対象の右下を必ず覆う。自分だけ除く
@@ -177,7 +177,7 @@ export function ImprovementRequestButton({
         aria-busy={phase === 'capturing'}
       >
         {phase === 'capturing' ? '画面を撮影中…' : '改善を送る'}
-      </button>
+      </Button>
       {phase === 'capturing' && (
         <output className="improve-capturing" aria-live="polite">
           モーダルを開く前に画面を撮影しています…
@@ -209,12 +209,8 @@ export function ImprovementRequestButton({
                 </p>
                 <textarea className="improve-prompt" readOnly value={prompt ?? ''} rows={12} />
                 <div className="improve-actions">
-                  <button type="button" onClick={() => void copyPrompt('claude_code')}>
-                    Claude Code 用にコピー
-                  </button>
-                  <button type="button" onClick={() => void copyPrompt('codex')}>
-                    Codex 用にコピー
-                  </button>
+                  <Button onClick={() => void copyPrompt('claude_code')}>Claude Code 用にコピー</Button>
+                  <Button onClick={() => void copyPrompt('codex')}>Codex 用にコピー</Button>
                   {copied && <span className="improve-copied">コピーしました</span>}
                 </div>
                 <p className="improve-note">
@@ -225,9 +221,7 @@ export function ImprovementRequestButton({
                   <Link to="/improvement" onClick={close}>
                     改善要望の一覧を見る
                   </Link>
-                  <button type="button" onClick={close}>
-                    閉じる
-                  </button>
+                  <Button onClick={close}>閉じる</Button>
                 </div>
               </div>
             ) : (
@@ -363,12 +357,10 @@ export function ImprovementRequestButton({
                   </p>
                 )}
                 <div className="improve-actions">
-                  <button type="button" onClick={() => void submit()} disabled={phase === 'sending'}>
+                  <Button variant="primary" onClick={() => void submit()} disabled={phase === 'sending'}>
                     {phase === 'sending' ? '送信中…' : '送信する'}
-                  </button>
-                  <button type="button" onClick={close}>
-                    やめる
-                  </button>
+                  </Button>
+                  <Button onClick={close}>やめる</Button>
                 </div>
               </>
             )}

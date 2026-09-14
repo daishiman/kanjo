@@ -1,37 +1,46 @@
 {
   "references": [
     {
-      "target_id": "cloudflare-workers-encoding-api",
-      "retrieved_at": "2026-09-10T04:44:10Z",
-      "source_url": "https://developers.cloudflare.com/workers/runtime-apis/encoding/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "version": null,
-      "last_updated": "2026-04-23",
-      "latest_checked_at": "2026-09-10T04:44:58Z",
-      "summary": "公式 Encoding API ページは 2026-04-23 更新時点で「TextDecoder represents a UTF-8 decoder」とだけ記し、legacy charset (shift_jis 等) の可否を明記していない。すなわち本ページ単体では C2 制約 (CP932 の MF CSV を decodeBuf の shift_jis フォールバックで読む) の成立を肯定も否定もできない。この空白を埋めるため target workerd-legacy-encoding-streaming で実装側 (workerd) を確認した。仕様書ではこのページを『公式ドキュメントは UTF-8 のみを明記しており記述が実装に追随していない』という限定つきの根拠として引用し、shift_jis 可否の根拠には用いない。"
+      "target_id": "wcag22-contrast-minimum",
+      "retrieved_at": "2026-09-13T05:06:15Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html",
+      "official_publisher": "W3C WAI",
+      "official_host": "www.w3.org",
+      "version": "WCAG 2.2",
+      "last_updated": "2026-06-01",
+      "latest_checked_at": "2026-09-13T05:06:15Z",
+      "summary": "達成基準 1.4.3 (AA) は通常文字に 4.5:1 以上、大きな文字 (18pt 以上、太字 14pt 以上、または CJK で同等の大きさ) に 3:1 以上のコントラスト比を求める (2026-06-01 更新)。本仕様の文字用トークンは本文 14〜16px が大きな文字に当たらないため 4.5:1 を基準とする。FINAL-UI の注意色 #B97000 は白い面で 3.90:1 で通常文字の基準を満たさないため、文字には暗い派生色を使う役割分離 (qa-ui-ux-web-ds-decision-002) の根拠とする。"
     },
     {
-      "target_id": "cloudflare-workers-web-standards",
-      "retrieved_at": "2026-09-10T04:44:58Z",
-      "source_url": "https://developers.cloudflare.com/workers/runtime-apis/web-standards/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "version": null,
-      "last_updated": "2026-04-23",
-      "latest_checked_at": "2026-09-10T04:44:58Z",
-      "summary": "Workers runtime がサポートする Web 標準 API の公式一覧。2026-04-23 更新時点で TextEncoder / TextDecoder および TextEncoderStream / TextDecoderStream が利用可能であることを明記する。ただし『Both TextEncoder and TextDecoder support UTF-8 encoding/decoding』とあり、legacy charset への言及はない。TextDecoder が runtime に存在することの根拠としては十分だが、shift_jis の可否の根拠としては不十分である。詳細は MDN の Encoding API を参照するよう案内している。"
+      "target_id": "wcag22-non-text-contrast",
+      "retrieved_at": "2026-09-13T05:06:15Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html",
+      "official_publisher": "W3C WAI",
+      "official_host": "www.w3.org",
+      "version": "WCAG 2.2",
+      "last_updated": "2026-06-15",
+      "latest_checked_at": "2026-09-13T05:06:15Z",
+      "summary": "達成基準 1.4.11 (AA) は、UI 部品の識別と状態に必要な視覚情報、および内容理解に必要なグラフィックの部分 (チャートの棒や線を含む) に、隣接色に対して 3:1 以上を求める。計算値は丸めずに比較する (2.999:1 は不合格)。画像実測の収入棒 #599AE9 (2.91:1) と支出棒 #EB9099 (2.34:1) はこれを満たさないため、系列色を色相を保って 3:1 以上へ調整する推論 (qa-ui-ux-web-ds-inference-003) と、コントラスト検証テストで丸めずに比較する実装方針の根拠とする。"
     },
     {
-      "target_id": "workerd-legacy-encoding-streaming",
-      "retrieved_at": "2026-09-10T04:44:58Z",
-      "source_url": "https://github.com/cloudflare/workerd/issues/6193",
+      "target_id": "chartjs-colors",
+      "retrieved_at": "2026-09-13T05:06:15Z",
+      "source_url": "https://www.chartjs.org/docs/latest/general/colors.html",
+      "official_publisher": "Chart.js",
+      "official_host": "www.chartjs.org",
+      "last_updated": "2025-10-13",
+      "latest_checked_at": "2026-09-13T05:06:15Z",
+      "summary": "Chart.js は Chart.defaults の backgroundColor / borderColor / color を全体既定値とし、dataset ごとに backgroundColor / borderColor を指定する。色は hex・RGB(A)・HSL(A) と CanvasPattern / CanvasGradient を受け付け、CSS 変数を色として直接受け取る方法は記載されていない (2025-10-13 更新)。このため charts.ts は CSS 変数を参照できず、色値を JS 側で持つ必要がある。トークン正本 (packages/core/src/design-tokens.ts) から JS の色値を直接渡す設計 (qa-frontend-web-ds-decision-002) の根拠とする。docs は latest 版で数値の版表記を持たないため更新日で記録する。"
+    },
+    {
+      "target_id": "cloudflare-workers-static-assets-headers",
+      "retrieved_at": "2026-09-13T05:06:15Z",
+      "source_url": "https://developers.cloudflare.com/workers/static-assets/headers/",
       "official_publisher": "Cloudflare",
-      "official_host": "github.com",
-      "version": null,
-      "last_updated": "2026-02-26",
-      "latest_checked_at": "2026-09-10T04:44:58Z",
-      "summary": "Workers runtime の実装正本である cloudflare/workerd の issue #6193 『legacy multi-byte encodings in TextDecoder are wrong in streaming』(2026-02-26 起票、確認時点で Closed)。この issue が存在すること自体が、workerd が big5 / shift_jis / euc-kr / iso-2022-jp を実装していることを示す (未実装なら streaming の正しさは問題にならない)。したがって公式ドキュメントの『UTF-8 デコーダ』記述は実装に追随していない。報告内容は『Streaming is wrong. Which means that the result of decoding a stream depends on the shape of the stream, not just bytes of the stream.』であり、影響は stream 分割での decode に限られ、単発 decode には及ばない。本リポジトリの packages/core/src/csv.ts decodeBuf は Uint8Array 全体を一度に decode し {stream:true} を用いないため、修正前後いずれの runtime でも影響を受けない。加えて本リポジトリの packages/api/wrangler.jsonc の compatibility_date は 2026-08-24 であり、この issue の起票日 (2026-02-26) より後である。関連 issue #5663 (2025-12-09 起票、Closed) は new TextDecoder('shift-jis').encoding が WHATWG 正準ラベル shift_jis ではなく shift-jis を返すというラベル正規化の指摘であり、decode 結果そのものには影響しない。実装では encoding プロパティ値に依存した分岐を書かないこと。"
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-08-25",
+      "latest_checked_at": "2026-09-13T05:06:15Z",
+      "summary": "Workers の静的アセットでは assets ディレクトリの _headers ファイルで URL パターンごとにヘッダーを付ける (最大 100 ルール)。_headers は Worker コードが生成した応答には適用されず、run_worker_first の対象も同様である (2026-08-25 更新)。kanjo は run_worker_first を /api/* に限っているため、SPA の HTML・CSS・JS には packages/web/public/_headers の CSP (font-src 'self' data: 等) が効く。Web フォントを外部から読まずトークンをビルド時に同梱する方針がこの CSP の範囲で完結する根拠とする (qa-security-web-ds-observed-001)。"
     }
   ]
 }

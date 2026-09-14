@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><title>Design-system task graph</title></head>
+<body>
+<main>
+<section aria-labelledby="rel-title"><h2 id="rel-title">relationships</h2>
+<table><thead><tr><th>id</th><th>title</th><th>role</th><th>depends_on</th></tr></thead><tbody>
+<tr><td><code>SYS-DSFOUND-P01</code></td><td>FINAL-UI 抽出値による要件ベースライン確定</td><td>preparation</td><td><span>root</span></td></tr>
+<tr><td><code>SYS-DSFOUND-P02</code></td><td>トークン正本配置とワークストリーム設計の決定記録</td><td>preparation</td><td><code>SYS-DSFOUND-P01</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P03</code></td><td>トークン設計の独立レビュー</td><td>design-review</td><td><code>SYS-DSFOUND-P02</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P04</code></td><td>トークン値・コントラスト・共通シェルの失敗テスト先行作成</td><td>test-design</td><td><code>SYS-DSFOUND-P03</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P05</code></td><td>design-tokens.ts 正本の実装と styles.css / charts.ts / 共通部品への反映</td><td>mutation</td><td><code>SYS-DSFOUND-P04</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P06</code></td><td>全テスト・型検査・lint の実行記録</td><td>final-verification</td><td><code>SYS-DSFOUND-P12</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P07</code></td><td>S1-S6 受入検証</td><td>acceptance</td><td><code>SYS-DSFOUND-P09</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P08</code></td><td>COLOR_FALLBACKS と重複トークン値の除去</td><td>mutation</td><td><code>SYS-DSFOUND-P05</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P09</code></td><td>アクセシビリティ・セキュリティ・パフォーマンスの保証確認</td><td>quality-assurance</td><td><code>SYS-DSFOUND-P06</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P10</code></td><td>独立最終レビュー</td><td>independent-review</td><td><code>SYS-DSFOUND-P07</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P11</code></td><td>再現可能な証跡索引の作成</td><td>evidence</td><td><code>SYS-DSFOUND-P10</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P12</code></td><td>デザインシステム規約文書と README / AGENTS.md 参照の同期</td><td>documentation-sync</td><td><code>SYS-DSFOUND-P08</code></td></tr>
+<tr><td><code>SYS-DSFOUND-P13</code></td><td>単一 PR での配信とクローズアウト</td><td>release</td><td><code>SYS-DSFOUND-P11</code></td></tr>
+</tbody></table></section>
+<section aria-labelledby="sources-title"><h2 id="sources-title">sources</h2>
+<a href="task-graph.json"><strong>task-graph.json</strong></a>
+</section>
+</main>
+</body></html>

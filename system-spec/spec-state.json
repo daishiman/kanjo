@@ -46,127 +46,157 @@
     "database": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-database-web-mf-001",
+        "qa_ref": "qa-database-web-ds-observed-001",
         "serves_goals": [
-          "G3",
-          "G5"
-        ],
-        "qa_refs": [
-          "qa-near-match-mf-decision-003",
-          "qa-existing-edits-mf-decision-003",
-          "qa-income-reconcile-mf-observed-004",
-          "qa-review-bucket-mf-decision-004"
+          "G1"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を D1 正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末内に表示設定 (テーマ・期間選択の保持) を保存するローカルストアを持つか、D1 と同期するかを決める必要があった。本サイクルでは D1 のスキーマ・マイグレーションに変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を D1 正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末内に表示設定 (テーマ・期間選択の保持) を保存するローカルストアを持つか、D1 と同期するかを決める必要があった。本サイクルでは D1 のスキーマ・マイグレーションに変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を D1 正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内に表示設定 (テーマ・期間選択の保持) を保存するローカルストアを持つか、D1 と同期するかを決める必要があった。本サイクルでは D1 のスキーマ・マイグレーションに変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を D1 正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内に表示設定 (テーマ・期間選択の保持) を保存するローカルストアを持つか、D1 と同期するかを決める必要があった。本サイクルでは D1 のスキーマ・マイグレーションに変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内ローカル DB (SQLite 等) を D1 正本の複製として置くか、置く場合のレプリケーション方式と衝突解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内に表示設定 (テーマ・期間選択の保持) を保存するローカルストアを持つか、D1 と同期するかを決める必要があった。本サイクルでは D1 のスキーマ・マイグレーションに変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       }
     },
     "auth": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-auth-web-mf-corrected-006",
+        "qa_ref": "qa-auth-web-ds-observed-001",
         "serves_goals": [
           "G2"
-        ],
-        "qa_refs": [
-          "qa-auth-web-mf-observed-002",
-          "qa-auth-web-mf-causal-003"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではログイン画面の共通シェルを OS の認証 UI (生体認証・キーチェーン連携) とどう組み合わせるかを決める必要があった。本サイクルは既存 web のログイン画面をサイドバー・ヘッダーと同じ骨格に揃えるだけで、認証方式を変えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではログイン画面の共通シェルを OS の認証 UI (生体認証・キーチェーン連携) とどう組み合わせるかを決める必要があった。本サイクルは既存 web のログイン画面をサイドバー・ヘッダーと同じ骨格に揃えるだけで、認証方式を変えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではログイン画面の共通シェルを OS の認証 UI (生体認証・キーチェーン連携) とどう組み合わせるかを決める必要があった。本サイクルは既存 web のログイン画面をサイドバー・ヘッダーと同じ骨格に揃えるだけで、認証方式を変えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではログイン画面の共通シェルを OS の認証 UI (生体認証・キーチェーン連携) とどう組み合わせるかを決める必要があった。本サイクルは既存 web のログイン画面をサイドバー・ヘッダーと同じ骨格に揃えるだけで、認証方式を変えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは資格情報を OS のセキュアストレージ (Keychain / Keystore) へどう保持するか、生体認証を認証要素に含めるかを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではログイン画面の共通シェルを OS の認証 UI (生体認証・キーチェーン連携) とどう組み合わせるかを決める必要があった。本サイクルは既存 web のログイン画面をサイドバー・ヘッダーと同じ骨格に揃えるだけで、認証方式を変えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       }
     },
     "ui-ux": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-ui-ux-web-mf-corrected-007",
+        "qa_ref": "qa-ui-ux-web-ds-observed-008",
         "serves_goals": [
           "G2",
+          "G3",
           "G5"
         ],
         "qa_refs": [
-          "qa-ui-ux-web-mf-decision-002",
-          "qa-priority-order-mf-decision-003",
-          "qa-review-bucket-mf-decision-004",
-          "qa-review-amount-mf-inference-005"
+          "qa-ui-ux-web-ds-observed-001",
+          "qa-ui-ux-web-ds-decision-004",
+          "qa-ui-ux-web-ds-decision-005",
+          "qa-ui-ux-web-ds-decision-006",
+          "qa-ui-ux-web-ds-decision-007",
+          "qa-ui-ux-web-ds-inference-003"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではネイティブのナビゲーション規約・タッチ操作・オフライン時の表示を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは FINAL-UI の PC 縦長画像を正本とする視覚規約を、OS ごとのヒューマンインターフェースガイドライン (標準ナビゲーション部品・システム色・ダイナミックタイプ) とどう折り合わせるかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブ (tabbar) のレスポンシブ表示で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではネイティブのナビゲーション規約・タッチ操作・オフライン時の表示を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは FINAL-UI の PC 縦長画像を正本とする視覚規約を、OS ごとのヒューマンインターフェースガイドライン (標準ナビゲーション部品・システム色・ダイナミックタイプ) とどう折り合わせるかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブ (tabbar) のレスポンシブ表示で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブのナビゲーション規約・タッチ操作・オフライン時の表示を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは FINAL-UI の PC 縦長画像を正本とする視覚規約を、OS ごとのヒューマンインターフェースガイドライン (標準ナビゲーション部品・システム色・ダイナミックタイプ) とどう折り合わせるかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブ (tabbar) のレスポンシブ表示で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブのナビゲーション規約・タッチ操作・オフライン時の表示を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは FINAL-UI の PC 縦長画像を正本とする視覚規約を、OS ごとのヒューマンインターフェースガイドライン (標準ナビゲーション部品・システム色・ダイナミックタイプ) とどう折り合わせるかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブ (tabbar) のレスポンシブ表示で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブのナビゲーション規約・タッチ操作・オフライン時の表示を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは FINAL-UI の PC 縦長画像を正本とする視覚規約を、OS ごとのヒューマンインターフェースガイドライン (標準ナビゲーション部品・システム色・ダイナミックタイプ) とどう折り合わせるかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブ (tabbar) のレスポンシブ表示で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       }
     },
     "security": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-security-web-mf-001",
+        "qa_ref": "qa-security-web-ds-observed-001",
+        "serves_goals": [
+          "G1",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-ui-ux-web-ds-decision-005"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではアプリ内に同梱するフォント・画像資産の署名とストア審査上の扱い、および WebView を使う場合の CSP 相当の制限を決める必要があった。本サイクルは既存 web の CSP (_headers) の範囲で完結し、外部フォントを読み込まない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではアプリ内に同梱するフォント・画像資産の署名とストア審査上の扱い、および WebView を使う場合の CSP 相当の制限を決める必要があった。本サイクルは既存 web の CSP (_headers) の範囲で完結し、外部フォントを読み込まない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではアプリ内に同梱するフォント・画像資産の署名とストア審査上の扱い、および WebView を使う場合の CSP 相当の制限を決める必要があった。本サイクルは既存 web の CSP (_headers) の範囲で完結し、外部フォントを読み込まない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではアプリ内に同梱するフォント・画像資産の署名とストア審査上の扱い、および WebView を使う場合の CSP 相当の制限を決める必要があった。本サイクルは既存 web の CSP (_headers) の範囲で完結し、外部フォントを読み込まない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではアプリ内に同梱するフォント・画像資産の署名とストア審査上の扱い、および WebView を使う場合の CSP 相当の制限を決める必要があった。本サイクルは既存 web の CSP (_headers) の範囲で完結し、外部フォントを読み込まない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-infrastructure-web-ds-observed-001",
         "serves_goals": [
           "G1",
           "G4"
@@ -174,71 +204,68 @@
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末紛失時のリモートワイプ・アプリ署名・ストア審査に伴う脅威モデルを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア配布とアプリ更新の経路、およびトークン変更をアプリの版として配る手順を設計する必要があった。本サイクルの配信は Cloudflare Workers の静的アセット 1 系統のままである。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末紛失時のリモートワイプ・アプリ署名・ストア審査に伴う脅威モデルを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではストア配布とアプリ更新の経路、およびトークン変更をアプリの版として配る手順を設計する必要があった。本サイクルの配信は Cloudflare Workers の静的アセット 1 系統のままである。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末紛失時のリモートワイプ・アプリ署名・ストア審査に伴う脅威モデルを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではストア配布とアプリ更新の経路、およびトークン変更をアプリの版として配る手順を設計する必要があった。本サイクルの配信は Cloudflare Workers の静的アセット 1 系統のままである。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末紛失時のリモートワイプ・アプリ署名・ストア審査に伴う脅威モデルを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではストア配布とアプリ更新の経路、およびトークン変更をアプリの版として配る手順を設計する必要があった。本サイクルの配信は Cloudflare Workers の静的アセット 1 系統のままである。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末紛失時のリモートワイプ・アプリ署名・ストア審査に伴う脅威モデルを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
-      }
-    },
-    "infrastructure": {
-      "web": {
-        "state": "確定",
-        "qa_ref": "qa-infrastructure-web-mf-001",
-        "serves_goals": [
-          "G3"
-        ],
-        "qa_refs": [
-          "qa-infrastructure-web-mf-causal-003"
-        ]
-      },
-      "mobile": {
-        "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア配信 (App Store / Google Play) やインストーラ配布のパイプラインを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
-      },
-      "tablet": {
-        "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではストア配信 (App Store / Google Play) やインストーラ配布のパイプラインを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
-      },
-      "desktop-windows": {
-        "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではストア配信 (App Store / Google Play) やインストーラ配布のパイプラインを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
-      },
-      "desktop-linux": {
-        "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではストア配信 (App Store / Google Play) やインストーラ配布のパイプラインを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
-      },
-      "desktop-macos": {
-        "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではストア配信 (App Store / Google Play) やインストーラ配布のパイプラインを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではストア配布とアプリ更新の経路、およびトークン変更をアプリの版として配る手順を設計する必要があった。本サイクルの配信は Cloudflare Workers の静的アセット 1 系統のままである。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       }
     },
     "backend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-backend-web-mf-001",
+        "qa_ref": "qa-backend-web-ds-observed-001",
+        "serves_goals": [
+          "G1"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-frontend-web-ds-observed-005",
         "serves_goals": [
           "G1",
           "G2",
@@ -246,456 +273,396 @@
           "G4"
         ],
         "qa_refs": [
-          "qa-priority-order-mf-decision-003",
-          "qa-near-match-mf-decision-003",
-          "qa-income-reconcile-mf-observed-004",
-          "qa-review-bucket-mf-decision-004",
-          "qa-review-amount-mf-inference-005"
+          "qa-frontend-web-ds-decision-004"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではオフライン前提の同期 API と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではオフライン前提の同期 API と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではオフライン前提の同期 API と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではオフライン前提の同期 API と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではオフライン前提の同期 API と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
-      }
-    },
-    "frontend": {
-      "web": {
-        "state": "確定",
-        "qa_ref": "qa-frontend-web-mf-001",
-        "serves_goals": [
-          "G2",
-          "G5"
-        ],
-        "qa_refs": [
-          "qa-frontend-web-mf-observed-002",
-          "qa-priority-order-mf-decision-003",
-          "qa-review-bucket-mf-decision-004",
-          "qa-review-amount-mf-inference-005"
-        ]
-      },
-      "mobile": {
-        "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではネイティブまたはハイブリッドのクライアント構成とビルドを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
-      },
-      "tablet": {
-        "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではネイティブまたはハイブリッドのクライアント構成とビルドを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
-      },
-      "desktop-windows": {
-        "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブまたはハイブリッドのクライアント構成とビルドを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
-      },
-      "desktop-linux": {
-        "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブまたはハイブリッドのクライアント構成とビルドを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
-      },
-      "desktop-macos": {
-        "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブまたはハイブリッドのクライアント構成とビルドを決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       }
     },
     "maintenance-ops": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-maintenance-ops-web-mf-001",
+        "qa_ref": "qa-maintenance-ops-web-ds-observed-004",
         "serves_goals": [
-          "G4",
-          "G5"
+          "G4"
         ],
         "qa_refs": [
-          "qa-maintenance-ops-web-mf-decision-002",
-          "qa-existing-edits-mf-decision-003"
+          "qa-maintenance-ops-web-ds-decision-002",
+          "qa-maintenance-ops-web-ds-decision-003"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア版の強制アップデートと旧バージョン互換の運用手順を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは OS ごとのスクリーンショット回帰 (端末サイズ×OS 版) と、トークン変更時にネイティブ側の写しを追従させる運用手順を持つ必要があった。本サイクルの保守は pnpm lint のずれ検出と web の check 系スクリプトに閉じる。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではストア版の強制アップデートと旧バージョン互換の運用手順を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは OS ごとのスクリーンショット回帰 (端末サイズ×OS 版) と、トークン変更時にネイティブ側の写しを追従させる運用手順を持つ必要があった。本サイクルの保守は pnpm lint のずれ検出と web の check 系スクリプトに閉じる。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではストア版の強制アップデートと旧バージョン互換の運用手順を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは OS ごとのスクリーンショット回帰 (端末サイズ×OS 版) と、トークン変更時にネイティブ側の写しを追従させる運用手順を持つ必要があった。本サイクルの保守は pnpm lint のずれ検出と web の check 系スクリプトに閉じる。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではストア版の強制アップデートと旧バージョン互換の運用手順を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは OS ごとのスクリーンショット回帰 (端末サイズ×OS 版) と、トークン変更時にネイティブ側の写しを追従させる運用手順を持つ必要があった。本サイクルの保守は pnpm lint のずれ検出と web の check 系スクリプトに閉じる。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではストア版の強制アップデートと旧バージョン互換の運用手順を決める必要があった。対象を web のみとする利用者決定 (qa-target-platforms-mf-001 / appr-foundation-mf-business-classification-001、2026-09-10) によりその検討は発生しない。本サイクルの変更は packages/core の判定関数と集計関数、および既存 web SPA の表示に閉じる。",
-        "qa_ref": "qa-target-platforms-mf-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは OS ごとのスクリーンショット回帰 (端末サイズ×OS 版) と、トークン変更時にネイティブ側の写しを追従させる運用手順を持つ必要があった。本サイクルの保守は pnpm lint のずれ検出と web の check 系スクリプトに閉じる。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ds-001"
       }
     }
   },
   "qa_log": [
     {
-      "id": "qa-target-platforms-mf-001",
-      "question": "本サイクル (Money Forward 明細の事業振り分け) の対象プラットフォームはどれか。対象外は理由を述べる。",
-      "answer": "web のみを対象とする。解決する主要な利用者課題 (JTBD) は『MF 上で自分が事業と仕分けた収入・支出が、アプリの月次トータル収支でも事業として扱われている状態にしたい』であり、対象ユーザーは単独の個人事業主 1 名 (本システムの唯一の利用者・保守者) である。利用者は自宅 PC のブラウザから MF/freee の CSV を取り込み一覧表を読む。配信は Cloudflare Workers 上の SPA 1 系統 (wrangler assets + run_worker_first: /api/*) のみで、モバイル/タブレットからはレスポンシブ web で閲覧できるが専用アプリは提供せず、デスクトップ専用アプリも上位概念 U7 のスコープ外として対象外とする。",
-      "provenance": "対象ユーザーと JTBD は利用者の依頼文 (2026-09-10「Money Forward の方でも事業用に割り振りができるように整えてほしい」および追加指示「収入に対しても行なって」) に由来する。プラットフォーム限定は前サイクルの利用者決定 (appr-target-platforms-007, 2026-09-05) を本サイクルへ引き継ぎ、利用者承認 appr-foundation-mf-business-classification-001 で再確認した。",
+      "id": "qa-target-platforms-ds-001",
+      "question": "本サイクル (FINAL-UI を正本とするデザインシステム共通化) の対象プラットフォームはどれか。対象外は理由を述べる。",
+      "answer": "web のみを対象とする。解決する課題 (JTBD) は『どの画面・図を開いても FINAL-UI (Focus Ledger) と同じ色・文字・部品・骨格で表示され、今後つくるものも共通定義を参照するだけで揃う状態にしたい』である。対象ユーザーは単独の個人事業主 1 名 (唯一の利用者・保守者) と、その保守を手伝うコーディングエージェントである。配信は Cloudflare Workers 上の React SPA 1 系統で、狭幅は既存のレスポンシブ (68px アイコンレール・下部タブ) を維持する。スマートフォン・タブレット・デスクトップの専用アプリは上位概念 U7 のスコープ外として対象外とする。",
+      "provenance": "対象ユーザーと JTBD は利用者の依頼文 (2026-09-13『このUI画像を元に…ボタン、サイドバー、ヘッダー、各図、文字のフォント、構成といった要素をすべて共通化し、今後すべての作成物において反映される』) に由来する。platform を web に限る点は上位概念の承認 appr-foundation-design-system-001 で利用者が承認した。利用者が 2026-09-13 に AskUserQuestion で推奨案を選択した。answered_at は選択直後に正規 writer で記録した reopened_at (2026-09-13T04:55:23Z) であり、実際の選択時刻の上限値である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-10T04:35:53Z",
+      "answered_at": "2026-09-13T04:54:53Z",
       "required_info_items": [
         "product-goal",
         "target-platforms"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-13T07:52:23Z",
+          "note": "answered_at を、reopened_at を根拠にした上限値 2026-09-13T04:55:23Z から、会話記録に残る AskUserQuestion 回答の返却時刻 2026-09-13T04:54:53Z (上位概念 U1-U9 の承認。platform=web のみを含む) へ訂正した。旧値の根拠とした reopen 記録は旧テーマの退避で archive 側 (system-spec/archive/2026-09-13-mf-business-classification/spec-state.json の reopen_log) へ移り、現行 state 内に実在しなかった。",
+          "corrected_field": "answered_at",
+          "previous_value": "2026-09-13T04:55:23Z",
+          "corrected_value": "2026-09-13T04:54:53Z"
+        }
       ]
     },
     {
-      "id": "qa-backend-web-mf-001",
-      "question": "MF 明細を事業と判定する中核のドメインモデル (主要エンティティ・不変条件) と、その判定をどこに置くかをどうするか。",
-      "answer": "判定を『MF 中項目の前方一致「事業」』という 1 つの述語として packages/core に定義し、収入・支出の区別なく同じ述語を適用する。中核エンティティは既存の MfTx (取込原本・cls を持たない)、TxEdit (利用者の手当て・cls を持つ)、FreeeDeal (freee 取引・常に事業)、および導出値 ResolvedTx である。不変条件は 3 つ。(1) 同一 MfTx に対して公私仕分け画面が示す事業/家計と月次トータル収支が算入する側は常に一致する — 現在は classify.ts の resolveTx().cls と total-cashflow.ts の独自判定が別基準であり、この不変条件が破れている。(2) freee 取引と日付+金額が一致した MF 明細は事業費を二重に増やさない。消し込みを先に適用し、寄らなかった MF 明細のうち事業述語が真のものだけを事業費へ加算する。(3) 判定に既知の中項目名を列挙しない。前方一致のみに依存させ、MF 側で『事業・広告費』等を新設しても実装変更なしに追従する。優先順位は既存の resolveTx を踏襲し、手動編集 > ルール > 取引先メモリ > MF 中項目前方一致 > 口座名義 > 既定 'per' とする。中項目由来を口座名義より上に置くのは、名義が『どの財布から出たか』でしかないのに対し中項目は利用者が明細ごとに与えた分類意思であり、より強い根拠だからである。",
-      "provenance": "現行実装の観測: packages/core/src/classify.ts resolveTx (L191-277) の優先順、packages/core/src/total-cashflow.ts BIZ_INCOME_MAJOR (L26) と rowsFrom (L577-583) の判定、packages/core/src/types.ts の MfTx/TxEdit/FreeeDeal 定義を読み取った。非公開ローカル入力観測: ${LOCAL_SOURCE_FILE} (CP932, ${LOCAL_RECORD_COUNT}行) で 大項目='収入' / 中項目='事業・副業' であり tx.big との比較が一件も一致しないことを確認した。優先順位の設計判断はアシスタントの推論であり、利用者は『中項目の前方一致「事業」』という判定条件そのものを選択した (2026-09-10)。",
+      "id": "qa-ui-ux-web-ds-observed-001",
+      "question": "FINAL-UI が規定する見た目 (色・文字・寸法・シェル構成) は何か。画像の実際の色は規定と一致し、文字と図形のコントラスト基準を満たすか。利用者はどの環境でどの作業に使うか。",
+      "answer": "design/FINAL-UI/spec/DESIGN-SYSTEM.md の規定値: 背景 #F6F8F9・面 #FFFFFF・境界 #D7E0E2・文字 #15262B・補助 #617177・主色ネイビー #14353D・ティール #087F78・注意 #B97000・危険 #B33A3A・成功 #247A52。日本語本文 14〜16px・最小 12px・行高 1.6、金額は右寄せ・桁区切り・等幅数字で正負は符号と色の両方、角丸 8px、操作対象 44px 以上。共通シェルは固定ヘッダー 64px (パンくず・全体期間 1年/2年/3年/任意・防衛ライン・未記録月・最終更新・⌘K・エクスポート・ヘルプ・利用者メニュー)、固定サイドバー 220px (取込/整える/確認/計画/管理の 5 群、選択項目と親群を同時強調、進捗と未処理件数のバッジ)、本文最大幅 1180px・12 カラム・32px 余白、右パネル 320px、固定アクションバー、共通フッター。レスポンシブはタブレット 68px アイコンレール、モバイル下部タブ。利用文脈は同文書の最頻シナリオ『最新データを取り込み、未整理を直し、照合して、収支を確認し、予算を更新する』で、manifest.json は PC 縦長の画像を正本とする。02-overview.png の画素実測では、サイドバー #0C3343、主ボタン #018081、ページ背景 #F3F8F9、収入棒 #599AE9、支出棒 #EB9099。白い面に対するコントラスト比は、#14353D 13.07、#087F78 4.86、#617177 5.08、#B33A3A 5.86、#247A52 5.28、#B97000 3.90 (文字の 4.5 に未達)、収入棒 #599AE9 2.91・支出棒 #EB9099 2.34 (図形の 3.0 に未達)。",
+      "provenance": "design/FINAL-UI/spec/DESIGN-SYSTEM.md と manifest.json を読み、images/02-overview.png の画素をアシスタントが採取して WCAG 2.x の相対輝度式でコントラスト比を計算した。いずれも再計測で検証できる観測事実である。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-10T04:35:53Z",
+      "answered_at": "2026-09-13T05:03:11Z",
+      "required_info_items": [
+        "context-of-use"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-ds-decision-002",
+      "question": "FINAL-UI の値のうちコントラスト基準に届かないもの (注意色 #B97000 の文字など) をどう扱うか。フォントは何を使うか。今回どこまでを共通化するか。",
+      "answer": "(1) 色は役割で分ける: 塗り・アイコン・バッジ面には画像どおりの値 (#B97000 等) を使い、文字にはその色相を保ったまま 4.5:1 以上を満たす暗い派生色を使う。(2) フォントは現行を維持して規約化する: 和文は system-ui 系ゴシック、金額は tabular-nums と既存の IBM Plex Mono による等幅数字。Web フォントは追加しない。(3) 今回の範囲は『基盤+共通シェル』: トークン (色・文字・余白・角丸・影・動き・寸法)、ボタン、サイドバー、ヘッダー、フッター、固定アクションバー、ページ骨格、チャート配色を共通化し、既存 20 画面がそれを参照する。各画面の中身を画像どおりに作り直すのは次サイクルとする。",
+      "provenance": "利用者が 2026-09-13 に AskUserQuestion で推奨案を選択した。answered_at は選択直後に正規 writer で記録した reopened_at (2026-09-13T04:55:23Z) であり、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T04:36:20Z",
+      "required_info_items": [
+        "information-priority"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-13T07:52:23Z",
+          "note": "answered_at を、reopened_at を根拠にした上限値 2026-09-13T04:55:23Z から、会話記録に残る AskUserQuestion 回答の返却時刻 2026-09-13T04:36:20Z (色の役割・範囲・フォントの 3 問) へ訂正した。旧値の根拠とした reopen 記録は旧テーマの退避で archive 側 (system-spec/archive/2026-09-13-mf-business-classification/spec-state.json の reopen_log) へ移り、現行 state 内に実在しなかった。",
+          "corrected_field": "answered_at",
+          "previous_value": "2026-09-13T04:55:23Z",
+          "corrected_value": "2026-09-13T04:36:20Z"
+        },
+        {
+          "corrected_at": "2026-09-13T07:52:23Z",
+          "note": "本 entry は、利用者に別々の質問として尋ねた 3 論点 (コントラスト未達色の扱い / フォント / 共通化の範囲) を 1 件に束ねて記録していた。論点ごとの記録を qa-ui-ux-web-ds-decision-004 (色の役割) / -005 (フォント) / -006 (範囲) に分け、提示した選択肢も残した。ui-ux.web の根拠参照は分割後の entry へ差し替えた。"
+        }
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-ds-inference-003",
+      "question": "チャート系列色は画像の値 (収入 #599AE9・支出 #EB9099) のままでよいか。共通シェルの各領域で何を常時残し、何を段階的に開示するか。",
+      "answer": "チャート系列色は色相を画像に合わせたまま明度を下げ、白い面と背景 #F6F8F9 の双方に対して 3:1 以上にする。意味色は収入=青系の棒、支出=赤系の棒、純収支=ティール (#087F78) の線とし、凡例と tooltip の文字は文字用トークンを使う。系列の区別は色だけに頼らず、線と棒の形状と凡例ラベルで補う。シェルの優先度は DESIGN-SYSTEM.md の UX 原則に従う: ヘッダーには全ページで常に要る現在地・全体期間・データ鮮度だけを残す。サイドバーは月次フローの順序と未処理件数を残す。右パネルと詳細操作は段階的に開示する。同じ情報を複数のカードへ重複させない。束の順位は task 頻度×失敗コストで決め、期間の誤解 (最も失敗コストが高い) を防ぐ全体期間表示を最上位に置く。",
+      "provenance": "系列色の調整幅、形状による冗長化、シェル内の優先順位付けはアシスタントの推論であり、利用者に個別確認していない。前提となる基準値 (3:1 / 4.5:1) と画素実測は qa-ui-ux-web-ds-observed-001、役割分離の方針は利用者決定 qa-ui-ux-web-ds-decision-002 に由来する。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-13T05:03:11Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-ds-observed-001",
+      "question": "現行 web の見た目の定義はどこに何系統あり、どこでずれているか。共通シェルとチャートは現状どう組まれているか。",
+      "answer": "色の定義は 3 系統ある。(1) packages/web/src/styles.css の :root (--bg #f6f8f9 / --ink #15262b / --primary #14353d / --accent #087f78 / --warn #805a12 / --danger #b23a3a / --good #2e7d5b / --radius 8px / --header-h 64px / --sidebar-w 220px / --tap-target-min 44px 等)。同ファイルには 6 桁 hex が 54 箇所ある。(2) packages/web/src/components/charts.ts の COLORS (biz #2f5da8 / ink #1d2a2c / inkSoft #51625f / line #dde3e1 等)。Chart.js は canvas に描画するため CSS 変数を参照できず、Chart.defaults.color / borderColor / font に直書き値を渡している。VENDOR_EXTRA_COLORS と pages/Subscriptions.tsx (#c4ccc9) にも直書きがある。styles.css 以外の .ts/.tsx の 6 桁 hex は 14 箇所で、annotate-image.ts・capture-screen.ts・テスト 1 件を含む。(3) skills/report-design-system/assets/report.css を packages/core/src/report-css.ts へ写し、scripts/check-report-css.mjs が pnpm lint で一致を検査している (正本→写しのずれ検出の前例)。シェルは components/Layout.tsx が aside.sidebar・header.header・footer.footer・nav.tabbar を全ルート共通で描画し、ROUTE_GROUP で 5 群にまとめている。Page.tsx・NavItem.tsx・DataTable.tsx・FinancialCharts.tsx が共通部品として存在する。web は React 18 + Vite の SPA で、API 契約 (packages/api の /api/*) は本サイクルで変えない。",
+      "provenance": "リポジトリのソースをアシスタントが grep / jq で読んで数えた観測事実 (2026-09-13 時点の origin/main 35fffe4 を取り込んだ作業ブランチ)。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-13T05:03:11Z",
+      "required_info_items": [
+        "api-contract",
+        "frontend-arch"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-13T07:52:23Z",
+          "note": "本 entry の『Chart.js は canvas に描画するため CSS 変数を参照できず、Chart.defaults.color / borderColor / font に直書き値を渡している』は観測の誤りである。charts.ts は themeColor() が getComputedStyle(document.documentElement) で styles.css の :root の変数を読み、コメントで『図の色の正本は styles.css の :root』と明言している。直書きは CSS を読めない環境向けの COLOR_FALLBACKS だけで、ずれているのはその予備値 (biz #2f5da8 対 --biz #087f78、ink #1d2a2c 対 --ink #15262b、inkSoft #51625f 対 --ink-soft #617177、line #dde3e1 対 --line #d7e0e2) と、CSS 変数を持たない neutral・VENDOR_EXTRA_COLORS である。訂正後の観測は qa-frontend-web-ds-observed-005 に記録し、frontend.web の主根拠を差し替えた。"
+        }
+      ]
+    },
+    {
+      "id": "qa-frontend-web-ds-decision-002",
+      "question": "トークンの正本をどこに置き、CSS 変数とチャート色をどう導出し、写しのずれをどう検出するか。",
+      "answer": "トークンの正本は packages/core に依存ゼロの design-tokens.ts として置く。CSS 変数 (styles.css の :root) とチャート色 (charts.ts) はそこから作る写しとし、写しのずれは report-css と同じ型の lint スクリプトで検出して pnpm lint に組み込む。会計レポート用の report-design-system (report.css / report-css.ts) は今回は対象外とし、配色の移行は次サイクルとして記録する。",
+      "provenance": "利用者が 2026-09-13 に AskUserQuestion で推奨案を選択した。answered_at は選択直後に正規 writer で記録した reopened_at (2026-09-13T04:55:23Z) であり、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T04:54:53Z",
+      "required_info_items": [
+        "domain-model",
+        "frontend-arch"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-13T07:52:23Z",
+          "note": "answered_at を、reopened_at を根拠にした上限値 2026-09-13T04:55:23Z から、会話記録に残る AskUserQuestion 回答の返却時刻 2026-09-13T04:54:53Z (トークン正本の置き場所) へ訂正した。旧値の根拠とした reopen 記録は旧テーマの退避で archive 側 (system-spec/archive/2026-09-13-mf-business-classification/spec-state.json の reopen_log) へ移り、現行 state 内に実在しなかった。",
+          "corrected_field": "answered_at",
+          "previous_value": "2026-09-13T04:55:23Z",
+          "corrected_value": "2026-09-13T04:54:53Z"
+        },
+        {
+          "corrected_at": "2026-09-13T07:52:23Z",
+          "note": "本 entry は、トークン正本の置き場所 (利用者決定) と report-design-system の扱い (別の質問への利用者決定) を 1 件に束ねていた。導出方法とずれ検出は、選ばれた選択肢の説明文 (CSS 変数とチャート色はそこから作り、写しのずれは report-css と同じ型の lint で検出) に含まれていたものである。論点ごとに qa-frontend-web-ds-decision-004 (置き場所) と qa-maintenance-ops-web-ds-decision-002 (report-design-system) へ分け、提示した 2 案を decisions[] の dec-design-token-source に起票した。"
+        }
+      ]
+    },
+    {
+      "id": "qa-backend-web-ds-observed-001",
+      "question": "本サイクルで扱う中心概念 (ドメインモデル) は何で、どの層に置くか。Worker 側の処理は変わるか。",
+      "answer": "中心概念はデザイントークンで、役割名 (面・文字・境界・主色・状態色・チャート系列・文字サイズ・余白・角丸・影・動き・シェル寸法) から値への対応である。状態色は『塗り用』と『文字用』の 2 つの役割を持つ (利用者決定 qa-ui-ux-web-ds-decision-002)。これは入出力を持たない純データなので、packages/core (README のアーキテクチャ節で依存ゼロの純関数と定める層) に置き、web がビルド時に取り込む。packages/api (Hono on Workers) の処理・ルート・入出力は変えない。core は既に report-css.ts のような表示用の純データを持っており、同じ置き方である。",
+      "provenance": "README のアーキテクチャ節、packages/core/src/report-css.ts、packages/api/src/index.ts をアシスタントが読んだ観測事実。トークンを core に置く方針自体は利用者決定 qa-frontend-web-ds-decision-002 に由来する。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-13T05:03:11Z",
       "required_info_items": [
         "domain-model"
       ]
     },
     {
-      "id": "qa-database-web-mf-001",
-      "question": "本サイクルで永続形状 (テーブル・スキーマ移行・トランザクション境界) を変更するか。",
-      "answer": "スキーマ移行は行わない。事業判定は MfTx.mid (既存の category_mid 列) から毎回導出する純粋な述語であり、保存すべき新しい事実を生まない。取込原本 mf_transactions に cls 列を持たせない既存設計を維持する — 原本に判定結果を焼き付けると、判定規則を直したときに再取込しない限り古い判定が残る。利用者の意思 (手動で事業/家計を上書きした結果) は従来どおり tx_edits に保持し、再取込で明細が作り直されても判断が生き残る。月次のトータル収入・支出・事業費/家計費の内訳は専用テーブルを持たず、要求時に canonical から毎回導出する (前サイクル確定 dec-aggregation-strategy-001 を維持)。トランザクション境界も現状のまま (取込 1 回 = 1 トランザクション) で変更しない。",
-      "provenance": "現行実装とマイグレーションの観測: migrations/0000_init.sql (mf_transactions に cls 列なし)、0001_tx_edits_rules_owner.sql (tx_edits.cls)、0022_mf_source_columns.sql (memo/is_target/is_transfer)、packages/api/src/db/schema.ts の mfTransactions/txEdits 定義を読み取った。『集計結果を保存しない』は前サイクルの確定内容 (dec-aggregation-strategy-001) の引き継ぎであり、利用者承認済み。",
+      "id": "qa-database-web-ds-observed-001",
+      "question": "本サイクルで永続化の変更は発生するか。全体期間の選択など、表示に関わる保持はどこにあるか。",
+      "answer": "発生しない。トークンはビルド時の TypeScript 定数で、D1 (kanjo-db) のスキーマ・migrations・R2 (kanjo-files) には手を入れない。全体期間 (1年/2年/3年/任意) の全ページ保持は PR #45 で実装済みの既存の仕組みをそのまま使い、本サイクルでは見た目だけを共通部品へ寄せる。",
+      "provenance": "packages/api/wrangler.jsonc の d1_databases / r2_buckets と migrations/、git log の PR #45 をアシスタントが確認した観測事実。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-10T04:35:53Z",
+      "answered_at": "2026-09-13T05:03:11Z",
       "required_info_items": [
         "data-persistence"
       ]
     },
     {
-      "id": "qa-frontend-web-mf-001",
-      "question": "クライアント構成と API contract をどうするか。新しいエンドポイントは要るか。",
-      "answer": "新規エンドポイントは追加しない。既存の GET /api/total-cashflow と GET /api/classify 系の応答形状を保ったまま、事業/家計の内訳の中身だけが正しくなる。ただし判定根拠を追えるようにするため、明細行の応答に既存の clsSrc を返す経路を MF 中項目由来の値まで含めて通す (ゴール G5)。クライアントは既存の React SPA (TanStack Query) のままで、レンダリング方式・状態管理・ビルドを変更しない。取込後にトータル収支のキャッシュを無効化する既存の invalidation を維持する。API のバージョニングは行わない — 応答形状は後方互換であり、破壊的変更を含まないため。",
-      "provenance": "現行実装の観測: packages/api/src/index.ts (L124-146 のルート定義)、packages/api/src/routes/total-cashflow.ts と classify.ts、packages/web/src/routeMetadata.ts、packages/core/src/classify.ts の ResolvedTx.clsSrc (L38-59) を読み取った。『新規エンドポイントを追加しない』はアシスタントの設計判断であり、利用者は判定規則のみを指定した。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-10T04:35:53Z",
-      "required_info_items": [
-        "api-contract",
-        "frontend-arch"
-      ]
-    },
-    {
-      "id": "qa-ui-ux-web-mf-001",
-      "question": "人が読む主要な表現物ごとに、誰が・どの環境で・どの task を・どの頻度で行い、失敗すると何を失うか。各表現物で何を残し何を落とすか。",
-      "answer": "表現物は 3 つ。(1) 月次トータル収支の一覧表 — 単独の個人事業主が自宅 PC の web ブラウザで月 1 回、『今月は全体でいくらプラスマイナスか』『事業費はいくらか』を読む。誤ると確定申告の経費計上額を誤り、過少申告か過大申告のいずれかの実害が出る。ここでは事業収入・事業費・家計収入・家計費の 4 束を残し、個々の明細は落とし、寄せた件数と根拠へのリンクだけを加工して残す。(2) 公私仕分け画面 — 同じ利用者が取込直後に、既定 'per' のまま未レビューの明細を潰す。頻度は取込のたび (月 1-2 回)。誤ると事業費が家計へ落ちたまま固定される。ここでは明細ごとの cls と判定根拠 (clsSrc) を残し、MF 中項目由来で自動的に事業になったものは『中項目』と表示して、手動編集やルール由来と区別できるようにする。(3) 要確認 (重複候補) 一覧 — 日付+金額が近接するが一致しない MF/freee の組を利用者が判断する。頻度は月 1 回未満。誤ると二重計上か計上漏れになる。ここでは MF 側が中項目で事業と判定されているかを併記する — 『MF でも事業扱い』は freee 側と同一取引である可能性を上げる材料になるため。束の順位は task 頻度 × 失敗コストで決め、(1) 一覧表 > (2) 仕分け画面 > (3) 要確認一覧 の順とする。情報優先度マップの JSON 化と機械検証は本要件段階の成果物とせず、下流の生成工程の責務とする。",
-      "provenance": "利用者と利用文脈は前サイクルの確定内容 (単独の個人事業主が自宅 PC のブラウザから CSV を取り込み一覧表を読む) を引き継いだ。表現物 3 種と失敗コストの見立て、束の順位付けはアシスタントの推論であり、利用者に個別確認していない。誤りがあれば画面を実際に使う段階で検出される種類の判断である。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-10T04:35:53Z",
-      "required_info_items": [
-        "context-of-use",
-        "information-priority"
-      ]
-    },
-    {
-      "id": "qa-auth-web-mf-001",
-      "question": "本サイクルは認証・認可の境界を変えるか。変えないならその根拠は何か。",
-      "answer": "変更しない。本サイクルが加えるのは packages/core 内の純粋な判定述語と、その述語を既存の集計関数から参照する経路だけであり、新しい入口・新しい主体・新しい権限区分のいずれも生まない。認証は従来どおり Cloudflare Access を単一の信頼境界とし、境界の内側では単独の利用者 1 名だけが全データへアクセスする (ロール分割なし・セッションはブラウザに閉じる)。代替案として (a) 事業データと家計データで閲覧権限を分ける、(b) 判定規則の編集だけを別権限にする、を検討したが、利用者が 1 名でありデータの所有者と閲覧者が同一である以上、権限を割っても守る相手が存在せず、境界を増やすぶんだけ検証箇所が散る。よって現行の単一境界を維持する。",
-      "provenance": "現行構成の観測: Cloudflare Access による認証境界と、利用者が単独である前提を前サイクル確定内容から引き継いだ。代替案 (a)(b) の提示と却下理由はアシスタントの推論であり、利用者は認証面について発言していない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-10T04:35:53Z",
+      "id": "qa-auth-web-ds-observed-001",
+      "question": "認証の方式と、共通シェルとの関係はどうなっているか。本サイクルで変わるか。",
+      "answer": "認証は packages/api/src/index.ts の authGuard が /api/* を保護し、/api/auth/login でアプリ内セッションを発行する (Cloudflare Access 併用時は Access を使う)。wrangler の run_worker_first: /api/* により API は必ず Worker を通る。本サイクルで認証方式は変えない。DESIGN-SYSTEM.md はログイン画面にも同じ幅・配置のサイドバーを出し、未認証時は業務メニューをロック表示してヘルプ・プライバシー・ログインだけを使えるようにすると定める。共通シェル部品はこの未認証表示を持つ必要がある。",
+      "provenance": "packages/api/src/index.ts・packages/api/wrangler.jsonc・design/FINAL-UI/spec/DESIGN-SYSTEM.md をアシスタントが読んだ観測事実。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-13T05:03:11Z",
       "required_info_items": [
         "auth-model"
       ]
     },
     {
-      "id": "qa-security-web-mf-001",
-      "question": "脅威モデル・入力検証・暗号化・シークレット管理・監査ログをどうするか。",
-      "answer": "本サイクル固有の脅威は 1 つだけで、『取込 CSV の中項目文字列がそのまま判定に効く』ことである。MF が出力する CSV は利用者自身がダウンロードした自分のデータだが、文字列を前方一致で判定に使う以上、(a) 文字コード誤判定 (CP932 を UTF-8 として読むと中項目が化けて判定が外れる)、(b) 前後空白・全角半角ゆれによる不一致、が実害のある入力起因の failure になる。対策として、判定は必ず decodeBuf (utf-8 fatal → shift_jis フォールバック) を通した後の文字列に対して行い、前方一致の比較前に trim を掛ける。中項目文字列は画面表示時に既存の React の自動エスケープに委ね、SQL へは既存の Drizzle のパラメータバインドを通す (文字列連結を新設しない)。暗号化・シークレット管理は変更しない (新しい外部サービス・API キーを導入しないため)。監査ログは既存の audit_log_details を維持し、本サイクルで新しい記録対象を増やさない — 事業判定は導出値であり、利用者の意思決定 (手動編集) は既に記録対象に含まれている。",
-      "provenance": "非公開ローカル入力観測: ${LOCAL_SOURCE_FILE} は CP932 であり、UTF-8 として読むと ${LOCAL_RECORD_COUNT}行目で UnicodeDecodeError になることを確認した。既存の decodeBuf (packages/core/src/csv.ts L6-14) が utf-8 fatal → shift_jis フォールバックを行うことを読み取った。trim の追加と『新しい記録対象を増やさない』はアシスタントの判断である。",
+      "id": "qa-security-web-ds-observed-001",
+      "question": "見た目の共通化は既存のセキュリティ方針 (CSP・外部資源・実データの扱い) と衝突しないか。",
+      "answer": "衝突しない。packages/web/public/_headers の CSP は default-src 'self'・script-src 'self'・style-src 'self' 'unsafe-inline'・font-src 'self' data: で、外部フォントや CDN を許していない。Web フォントを追加しない利用者決定 (qa-ui-ux-web-ds-decision-002) とトークンのビルド時同梱はこの CSP の範囲で完結し、実行時に外部から色やフォントを取得しない。チャートの色は canvas への描画値で、CSS 注入経路を増やさない。画面例やテストの表示値には匿名・架空のサンプルだけを使い、pnpm lint の security:content (guard-real-data) が公開文書の実データ混入を検査する。",
+      "provenance": "packages/web/public/_headers と package.json の lint / security:content をアシスタントが読んだ観測事実。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-10T04:35:53Z",
+      "answered_at": "2026-09-13T05:03:11Z",
       "required_info_items": [
         "security-posture"
       ]
     },
     {
-      "id": "qa-infrastructure-web-mf-001",
-      "question": "実行環境・デプロイ・スケーリング・監視・CI/CD をどうするか。",
-      "answer": "変更しない。Cloudflare Workers 上の単一 Worker + D1 + wrangler assets という現行構成のまま、本サイクルの変更は packages/core と packages/api のコード差分だけで完結する。新しいバインディング・新しい環境変数・新しい外部サービスを導入しない。マイグレーションを伴わないため、デプロイは既存の CI/CD (pnpm test → wrangler deploy) をそのまま通せばよく、デプロイ順序の制約 (先にマイグレーション、後にコード) も発生しない。スケーリングは利用者 1 名・月 1 回の取込という負荷特性から現行の無料枠内に収まり、監視も追加しない。",
-      "provenance": "現行構成の観測: wrangler.jsonc、packages/api のバインディング、README のアーキテクチャ節、CI 設定を読み取った。『マイグレーション不要ゆえデプロイ順序の制約が出ない』は database セルの確定内容 (スキーマ移行なし) からの帰結である。",
+      "id": "qa-infrastructure-web-ds-observed-001",
+      "question": "配信と build の構成は何で、トークン導入が制約に触れるか。",
+      "answer": "配信は Cloudflare Workers (kanjo-console) の静的アセット (../web/dist、not_found_handling: single-page-application) と /api/* の Worker 1 系統である。web の build は typecheck → vite build → check:js-budget (check-initial-js-budget.mjs による初期 JS 予算) → strip:manifest の順で、トークンの追加でこの予算を超えてはならない。トークンは依存ゼロの定数なので外部ライブラリを増やさない。CI では headless Chrome を使う check 系 (thead / mobile-layout / financial-figure / financial-routes) が画面の崩れを検査する。",
+      "provenance": "packages/api/wrangler.jsonc と packages/web/package.json の scripts をアシスタントが読んだ観測事実。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-10T04:35:53Z",
+      "answered_at": "2026-09-13T05:03:11Z",
       "required_info_items": [
         "infra-topology"
       ]
     },
     {
-      "id": "qa-maintenance-ops-web-mf-001",
-      "question": "運用手順・障害対応・バックアップ・バージョン管理・ドキュメントをどうするか。",
-      "answer": "運用手順は 1 点だけ増える。MF 側で『事業』で始まる中項目を新設したとき、利用者はアプリ側で何もしなくてよい — これが本サイクルの狙い (ゴール G4) であり、逆に言えば『事業』で始まる家計用の中項目を MF 側で作ってはいけない、という運用上の約束が対価として生じる。この約束を docs/spec-v1.1.md の MF 取込節へ明記する。障害対応は、判定が期待と違ったときに clsSrc を見て『中項目由来か / ルール由来か / 手動編集か』を切り分ける手順を残す。バックアップは既存の D1 の運用を変更しない。バージョン管理も現行の solo git flow を維持し、本サイクルは 1 feature = 13 task として dev-graph 上で管理する。ドキュメントは docs/spec-v1.1.md (正本) と docs/data-schema.md を更新対象とし、data-schema.md については永続形状が変わらないため『事業判定は導出であり保存しない』ことの明記に留める。",
-      "provenance": "運用上の約束 (『事業』で始まる家計用中項目を作らない) は、利用者が選んだ前方一致判定から論理的に導かれる帰結であり、アシスタントが明示化したものである。利用者はこのトレードオフを選択肢の説明として提示されたうえで前方一致を選んでいる (2026-09-10)。docs の更新対象は既存リポジトリの規範ドキュメント構成の観測に基づく。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-10T04:35:53Z",
+      "id": "qa-maintenance-ops-web-ds-decision-001",
+      "question": "今後の作成物が規約に従い続けるよう、どう保守するか。範囲外にしたものはどう扱うか。",
+      "answer": "トークン正本と写しのずれ、およびトークン定義以外での色の直書きを lint で機械検出し、pnpm lint に組み込む (利用者決定: report-css と同じ型の lint)。使い方は規約文書として docs 配下に置き、新しい画面・図をつくるときの参照先を 1 つにする。report-design-system の配色移行は今回対象外として記録し、次サイクルで扱う。各画面の中身の作り直しも次サイクルとする。",
+      "provenance": "利用者が 2026-09-13 に AskUserQuestion で推奨案を選択した。answered_at は選択直後に正規 writer で記録した reopened_at (2026-09-13T04:55:23Z) であり、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T04:54:53Z",
       "required_info_items": [
         "ops-runbook"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-13T07:52:23Z",
+          "note": "answered_at を、reopened_at を根拠にした上限値 2026-09-13T04:55:23Z から、会話記録に残る AskUserQuestion 回答の返却時刻 2026-09-13T04:54:53Z (report-design-system の扱いと上位概念 G4 の承認) へ訂正した。旧値の根拠とした reopen 記録は旧テーマの退避で archive 側 (system-spec/archive/2026-09-13-mf-business-classification/spec-state.json の reopen_log) へ移り、現行 state 内に実在しなかった。",
+          "corrected_field": "answered_at",
+          "previous_value": "2026-09-13T04:55:23Z",
+          "corrected_value": "2026-09-13T04:54:53Z"
+        },
+        {
+          "corrected_at": "2026-09-13T07:52:23Z",
+          "note": "本 entry は、保守の仕組み (上位概念 G4 として承認) と範囲外の扱い (report-design-system の質問への回答) を 1 件に束ねていた。qa-maintenance-ops-web-ds-decision-002 (report-design-system) と -003 (保守の仕組み) に分け、maintenance-ops.web の根拠参照を差し替えた。"
+        }
       ]
     },
     {
-      "id": "qa-ui-ux-web-mf-decision-002",
-      "question": "公私仕分け画面で、MF 中項目由来で自動的に事業になった明細をどう扱うか。判定根拠を表示するか、未レビュー件数に数えるか。代替案を示して選ぶこと。",
-      "answer": "利用者は『根拠を「中項目」と表示し、レビュー済み扱いとする』を選択した。提示した代替案は 3 つ。(a) 根拠を「中項目」と表示しレビュー済扱い — 手動編集・ルール由来と区別できるラベルを出しつつ、classificationProgress の未レビュー件数には数えない。MF 上で既に利用者自身が仕分けた明細を再確認させないため。(b) 表示はするが未レビューにも数える — 安全側だが、毎月 30 件前後の確認作業が残り続ける。(c) 既存の「ルール」由来と同じ表示に寄せる — clsSrc に値を増やさず実装は最小になるが、なぜ事業になったかの切り分けができなくなる。利用者は (a) を選んだ。したがって clsSrc に MF 中項目由来を表す値を 1 つ追加し、未レビュー判定 (現行は clsSrc==='既定' を未レビューとする) には含めない。",
-      "provenance": "2026-09-10、アシスタントが (a)(b)(c) の 3 案を利得と対価つきで提示し、利用者が (a) を選択した。表示ラベルの文言と未レビュー判定の実装位置 (classificationProgress) はアシスタントが既存コードの観測から補った。",
+      "id": "qa-ui-ux-web-ds-decision-004",
+      "question": "FINAL-UI の注意色 #B97000 は白い面でのコントラストが 3.90:1 で、文字に使うと WCAG AA(4.5:1) を満たしません。色の扱いをどうしますか？",
+      "answer": "『役割で分ける (Recommended)』を選択。塗り・アイコン・バッジ面は画像どおり #B97000、文字色には AA を満たす暗い派生色を使う。 提示した選択肢: 『役割で分ける (Recommended)』(塗り・アイコン・バッジ面は画像どおり、文字色には AA を満たす暗い派生色) / 『画像の値を厳密に採用』(全用途で画像の値を使い AA 未達を許容) / 『AA優先で値を調整』(AA 未達の色は画像より暗く調整し画像との色差を許容)。",
+      "provenance": "利用者が AskUserQuestion の選択肢から明示選択した。answered_at は会話記録に残る回答の返却時刻 2026-09-13T04:36:20Z である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-10T04:39:33Z",
+      "answered_at": "2026-09-13T04:36:20Z"
+    },
+    {
+      "id": "qa-ui-ux-web-ds-decision-005",
+      "question": "文字フォントはどうしますか？画像は日本語ゴシック体に見えます。現行は system-ui（端末標準）＋金額用の IBM Plex Mono（等幅）です。",
+      "answer": "『現行を維持し規約化 (Recommended)』を選択。和文は system-ui 系ゴシック、金額は自己配信する既存の IBM Plex Mono Latin 400/600。新規の外部Webフォントや CDN は追加せず、未読込時は ui-monospace / monospace へ落ちる。 提示した選択肢: 『現行を維持し規約化 (Recommended)』(system-ui 系和文ゴシック+既存の自己配信等幅数字。外部追加読込なし) / 『Noto Sans JP を同梱』(端末差なく画像に近いが、フォント読込で初回表示が重くなる)。",
+      "provenance": "利用者が AskUserQuestion の選択肢から明示選択した。回答後の全非 test source と dependencies の実装確認で packages/web/src/main.tsx の @fontsource/ibm-plex-mono/latin-400.css / latin-600.css と package dependency を確認したため、誤っていた過去の観測だけを訂正した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T04:36:20Z"
+    },
+    {
+      "id": "qa-ui-ux-web-ds-decision-006",
+      "question": "今回の「まずは大まかな全体像」の範囲はどこまでにしますか？",
+      "answer": "『基盤＋共通シェル (Recommended)』を選択。トークン、ボタン、サイドバー、ヘッダー、フッター、チャート配色、ページ骨格を共通化し、既存 20 画面がそれを参照する。各画面の中身の作り直しは次サイクル。 提示した選択肢: 『基盤＋共通シェル (Recommended)』(トークン+共通部品+ページ骨格。画面の中身は次サイクル) / 『基盤トークンのみ』(トークンと規約文書だけ。部品の共通化は次サイクル) / 『20画面すべて画像どおりに』(共通化に加えて 20 画面のレイアウトを作り直す。規模大)。",
+      "provenance": "利用者が AskUserQuestion の選択肢から明示選択した。answered_at は会話記録に残る回答の返却時刻 2026-09-13T04:36:20Z である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T04:36:20Z",
       "required_info_items": [
-        "context-of-use",
         "information-priority"
       ]
     },
     {
-      "id": "qa-maintenance-ops-web-mf-decision-002",
-      "question": "中項目の前方一致で事業判定する対価として『MF 側で「事業」で始まる家計用の中項目を作らない』という運用上の約束が生じる。これを受け入れるか、設定で除外できるようにするか。",
-      "answer": "利用者は『約束を受け入れて docs に明記する』を選択した。提示した代替案は 2 つ。(a) 約束を受け入れ、docs/spec-v1.1.md の MF 取込節に『中項目の「事業」前方一致が事業判定であること』と『家計用にこの接頭辞を使わないこと』を明記する — 実装はシンプルなまま保たれるが、MF 側の命名に制約が残る。(b) 除外リストを設定で持てるようにする — 運用の縛りは消えるが、設定画面と API が 1 つ増え、判定の正本が『コード + 利用者設定』の 2 箇所に分かれる。利用者は (a) を選んだ。したがって本サイクルでは除外リストを実装せず、docs への明記と、判定が期待と違ったときに clsSrc で切り分ける手順の記載を運用側の成果物とする。",
-      "provenance": "2026-09-10、アシスタントが (a)(b) を対価つきで提示し、利用者が (a) を選択した。docs の更新対象ファイル (docs/spec-v1.1.md / docs/data-schema.md) は既存リポジトリの規範ドキュメント構成の観測に基づく。",
+      "id": "qa-ui-ux-web-ds-decision-007",
+      "question": "FINAL-UI の境界色 #D7E0E2 は、白い面に対して 1.34:1 です。入力欄やチェックボックスの枠のように「部品の形を見分けるための線」には、WCAG 2.2 の 1.4.11 が 3:1 以上を求めます。境界色をどう扱いますか？",
+      "answer": "『役割で2つに分ける (Recommended)』を選択。カード区切りや表の罫線などの装飾罫線は画像どおり #D7E0E2 (1.4.11 の対象外)。入力欄・チェックボックスなど部品を見分ける枠には同じ色相で 3:1 を満たす派生色 (例 #7F9095、白に 3.32:1・背景 #F6F8F9 に 3.12:1) を使う。 提示した選択肢: 『役割で2つに分ける (Recommended)』(装飾罫線は #D7E0E2、部品の枠は 3:1 の派生色) / 『すべての境界を 3:1 に』(罫線も含め全境界を 3:1 以上。画面全体の線が画像より濃くなる) / 『すべて画像どおり』(全境界 #D7E0E2。部品の枠の 1.4.11 未達を許容し G5 の境界 3:1 を外す)。",
+      "provenance": "利用者が 2026-09-13 に AskUserQuestion の選択肢から明示選択した。完成度評価が O1/S3 と O4/S4 の矛盾を指摘したことを受けて尋ねた。answered_at は回答の直後に date -u で測った値で、実際の選択時刻の上限値である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-10T04:39:33Z",
+      "answered_at": "2026-09-13T07:48:43Z"
+    },
+    {
+      "id": "qa-frontend-web-ds-decision-004",
+      "question": "デザイントークンの「正本」をどこに置きますか？現在は styles.css と charts.ts(Chart.js用) に色が二重に書かれ、値もずれています。",
+      "answer": "『coreのTSを正本に (Recommended)』を選択。packages/core に依存ゼロの design-tokens.ts を置き、CSS 変数とチャート色はそこから作り、写しのずれは lint で検出する。 提示した選択肢: 『coreのTSを正本に (Recommended)』(packages/core の design-tokens.ts から CSS 変数とチャート色を作り、写しのずれは lint で検出。web/レポート/将来の成果物が同じ値を import できる) / 『styles.cssを正本に』(:root の CSS 変数だけを正本にし、チャートは実行時に getComputedStyle で読む。変更は少ないが、CSS を持たない成果物やテストでは値を取りにくい)。",
+      "provenance": "利用者が AskUserQuestion の選択肢から明示選択した。answered_at は会話記録に残る回答の返却時刻 2026-09-13T04:54:53Z である。 質問文の『二重に書かれ値もずれている』は、charts.ts の COLOR_FALLBACKS (CSS を読めない環境向けの予備値) が styles.css とずれている事実を指す。当時の観測記録 qa-frontend-web-ds-observed-001 は Chart.js が CSS 変数を読めないと誤記していたが、選択肢 2 の説明は getComputedStyle で読む現行実装どおりで、利用者は実装に即した 2 案を比べて選んでいる。比較の記録は decisions[] の dec-design-token-source。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T04:54:53Z",
+      "required_info_items": [
+        "domain-model",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-maintenance-ops-web-ds-decision-002",
+      "question": "会計レポート用の report-design-system(青ブランド #1d63be) も今回 Focus Ledger の配色へ揃えますか？",
+      "answer": "『今回は対象外で記録 (Recommended)』を選択。今回はアプリ画面の共通化に集中し、report.css / report-css.ts の配色移行は次サイクルとして明記する。今回は、トークン正本を依存ゼロの packages/core に置くことで、次サイクルでレポート側から同じ値を import できる前提だけを用意する (report 側のファイルは変更しない)。 提示した選択肢: 『今回は対象外で記録 (Recommended)』(アプリ画面に集中し、配色移行は次サイクル) / 『今回含めて揃える』(report.css と report-css.ts も同じトークンへ移行。会計レポートの出力見た目も変わる)。",
+      "provenance": "利用者が AskUserQuestion の選択肢から明示選択した。answered_at は会話記録に残る回答の返却時刻 2026-09-13T04:54:53Z である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T04:54:53Z"
+    },
+    {
+      "id": "qa-maintenance-ops-web-ds-decision-003",
+      "question": "今後の作成物が規約に従い続けるよう、どう保守するか。",
+      "answer": "上位概念 G4 (色の直書きを機械検出し、規約文書を置いて今後の成果物に強制する) として利用者が承認した。トークン正本と写し (CSS 変数・チャート色の予備値) のずれ、およびトークン定義以外での 6 桁 hex の直書きを lint で検出して pnpm lint に組み込み、使い方を docs 配下の規約文書 1 つにまとめる。",
+      "provenance": "上位概念 U1-U9 の承認質問 (選択肢『この内容で承認』/『修正して承認』) で利用者が『この内容で承認』を選んだ。G4 はその要約に明記されていた。answered_at は会話記録に残る回答の返却時刻である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T04:54:53Z",
       "required_info_items": [
         "ops-runbook"
       ]
     },
     {
-      "id": "qa-auth-web-mf-observed-002",
-      "question": "本サイクルの変更が認証・認可の境界に触れないことを、実装上どう確認したか。",
-      "answer": "packages/api/src/index.ts のルート定義 (L124-146) を読み、本サイクルで新規エンドポイントを追加しないこと、既存の /api/total-cashflow と /api/classify 系がいずれも同一の認証境界の内側にあることを確認した。変更が入るのは packages/core/src/classify.ts と packages/core/src/total-cashflow.ts の純関数、および packages/api/src/routes/ の応答組み立てであり、いずれも認証ミドルウェアの外側に新しい入口を作らない。packages/core は依存ゼロの純関数という既存の規約 (README アーキテクチャ節) により、判定関数が認証状態を参照する経路が構造的に存在しない。ロール区分を持つコードは現行リポジトリに存在せず、権限判定の分岐点も追加されない。",
-      "provenance": "現行リポジトリの観測: packages/api/src/index.ts のルート定義、packages/core の依存関係 (package.json に runtime dependencies なし)、認証ミドルウェアの適用範囲を読み取った。検証可能な出典はリポジトリのコードそのものである。",
+      "id": "qa-ui-ux-web-ds-observed-008",
+      "question": "FINAL-UI の規定色と画像のチャート系列色は、背景 #F6F8F9 と面 #FFFFFF に対してどれだけのコントラストを持つか。境界色を含めて測る。",
+      "answer": "WCAG の相対輝度で計算した (白 / 背景): 文字 #15262B 15.62 / 14.67、補助 #617177 5.08 / 4.77、ネイビー #14353D 13.07 / 12.27、ティール #087F78 4.86 / 4.57、注意 #B97000 3.90 / 3.66、危険 #B33A3A 5.86 / 5.50、成功 #247A52 5.28 / 4.95、境界 #D7E0E2 1.34 / 1.26、部品の枠の派生色候補 #7F9095 3.32 / 3.12、画像から実測した収入系列 #599AE9 2.91 / 2.73、支出系列 #EB9099 2.34 / 2.19。文字 4.5:1 を満たさないのは注意色だけで、図形・部品 3:1 を満たさないのは境界色と 2 つの系列色である。1.4.11 は部品を識別するのに必要な視覚情報に適用され、装飾だけの罫線は対象外である (W3C Understanding SC 1.4.11)。",
+      "provenance": "design/FINAL-UI/spec/DESIGN-SYSTEM.md の規定値と、先に画像から実測した系列色を、アシスタントが相対輝度の式で計算した観測事実 (R4-reopen の後に取り直した)。answered_at は計算直後の記録時刻で上限値。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-10T04:39:33Z",
+      "answered_at": "2026-09-13T07:54:32Z",
       "required_info_items": [
-        "auth-model"
+        "context-of-use"
       ]
     },
     {
-      "id": "qa-frontend-web-mf-observed-002",
-      "question": "既存のクライアント構成と API 応答形状を変えずに判定根拠 (clsSrc) を画面へ通せることを、実装上どう確認したか。",
-      "answer": "packages/core/src/classify.ts の ResolvedTx 型 (L38-59) が既に cls と並んで clsSrc を持ち、resolveTx が決定元 ('手動編集' / 'ルール' / '取引先メモリ' / '口座' / '既定') を返していることを確認した。したがって clsSrc に MF 中項目由来の値を 1 つ足すのは型の拡張であり、応答形状の破壊的変更ではない。packages/web/src/components/ClassificationSettings.tsx と公私仕分け画面が既に clsSrc を表示に用いているため、新しい表示経路を作らずにラベルを 1 つ増やすだけで済む。TanStack Query の invalidation は取込後にトータル収支と仕分けの双方を無効化する既存経路をそのまま使える。",
-      "provenance": "現行リポジトリの観測: packages/core/src/classify.ts の ResolvedTx 定義と resolveTx の clsSrc 代入箇所、packages/web/src/components/ClassificationSettings.tsx、packages/web/src/routeMetadata.ts を読み取った。検証可能な出典はリポジトリのコードそのものである。",
+      "id": "qa-frontend-web-ds-observed-005",
+      "question": "現行 web で、色の定義はどこにあり、図はどう色を得ていて、どこでずれているか。",
+      "answer": "(1) 画面の色の正本は packages/web/src/styles.css の :root (--bg #f6f8f9 / --ink #15262b / --ink-soft #617177 / --line #d7e0e2 / --primary #14353d / --accent #087f78 / --biz #087f78 / --warn #805a12 / --danger #b23a3a / --good #2e7d5b 等)。(2) packages/web/src/components/charts.ts は themeColor() が getComputedStyle(document.documentElement) でその CSS 変数を読み、コメントで『図の色の正本は styles.css の :root』と明言している。直書きは CSS を読めない環境 (SSR・jsdom・CSS 適用前) 向けの COLOR_FALLBACKS で、コメントは『styles.css と同じ値にしてある』とするが実際はずれている (biz #2f5da8 対 #087f78、ink #1d2a2c 対 #15262b、inkSoft #51625f 対 #617177、line #dde3e1 対 #d7e0e2)。CSS 変数を持たない neutral #7b8784 と VENDOR_EXTRA_COLORS 5 色は直書きのみ。(3) 前例として skills/report-design-system/assets/report.css を正本、packages/core/src/report-css.ts を写しとし、scripts/check-report-css.mjs が pnpm lint で一致を検査している。シェルは components/Layout.tsx が aside.sidebar・header.header・footer.footer・nav.tabbar を全ルート共通で描画する。web は React 18 + Vite の SPA で、API 契約 (packages/api の /api/*) は本サイクルで変えない。",
+      "provenance": "charts.ts 30-130 行、styles.css :root、package.json の lint、scripts/check-report-css.mjs をアシスタントが R4-reopen の後に読み直した観測事実。qa-frontend-web-ds-observed-001 の誤記を訂正する。answered_at は読み直し直後の記録時刻で上限値。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-10T04:39:33Z",
+      "answered_at": "2026-09-13T07:54:32Z",
       "required_info_items": [
         "api-contract",
         "frontend-arch"
       ]
     },
     {
-      "id": "qa-priority-order-mf-decision-003",
-      "question": "中項目の前方一致「事業」を、既存の 手動編集 / ルール / 取引先メモリ に対してどの位置へ置くか。過去に手で「家計」へ直した明細の中項目が『事業〜』だった場合、どちらを優先するか。",
-      "answer": "利用者は『手動編集を優先する』を選択した。提示した代替案は 3 つ。(a) 手動編集を優先 — resolveTx の既存優先順 (手動編集 > ルール > 取引先メモリ > 中項目前方一致 > 口座 > 既定'per') をそのまま踏襲する。利用者が個別に下した判断は後から入る自動ルールに上書きされない。対価として、過去に事業→家計へ直した明細は新ルール導入後も家計のまま残る。(b) 中項目を最優先 — MF 側の分類が常に正になり G1 がコード上も破れないが、画面上で個別に家計へ直しても次の判定でまた事業へ戻るため、利用者が明細ごとに手当てする手段が失われる。(c) 手動編集を優先しつつ矛盾を画面で警告 — 判断は残しつつ見落としも防げるが、表示と件数の実装が 1 つ増える。利用者は (a) を選んだ。したがって判定優先順は 手動編集 > ルール > 取引先メモリ > 中項目「事業」前方一致 > 口座名義 > 既定'per' で確定する。中項目由来を口座名義より上に置くのは、名義が『どの財布から出たか』でしかないのに対し、中項目は利用者が明細ごとに与えた分類意思であり、より強い根拠だからである。この確定により、G1『中項目が事業で始まるものを事業として扱う』は『手当てされていない明細について』という限定つきで成立する。手動編集で明示的に家計とされた明細はその限定の外側にあり、これは不具合ではなく利用者の判断を尊重した設計上の帰結である。",
-      "provenance": "2026-09-10、アシスタントが (a)(b)(c) を利得と対価つきで提示し、利用者が (a) を選択した。選択肢の内容は現行実装 packages/core/src/classify.ts resolveTx (L191-277) の優先順の観測に基づく。この論点は C06 ヒアリング監査 (system-spec-hearing-auditor) が F1 として『優先順位が利用者未確認のままbackend セルの確定根拠に混入している』と指摘したことを受けて、利用者へ差し戻して確定させたものである。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-10T04:59:30Z",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-near-match-mf-decision-003",
-      "question": "freee との突合で日付が近接するが一致せず『要確認』となっている MF 明細を、事業費の加算対象に含めるか除外するか。",
-      "answer": "利用者は『足さない (加算対象から除外する)』を選択した。提示した代替案は 3 つ。(a) 足さない — 要確認状態の明細は消し込み待ちとみなし事業費へ加算しない。二重計上が構造的に起きない安全側。対価として、確認を放置している間その経費はどこにも計上されず、事業費が実態より小さく出る。(b) 足す — 経費が漏れないが、実際に freee と同一の経費だった場合、確認して消し込むまで二重に計上される。(c) 足さずに要確認の合計額を画面へ併記 — 数字は安全側のまま漏れの存在が可視化されるが、表示項目が 1 つ増える。利用者は (a) を選んだ。したがって事業費の加算対象は『freee と日付+金額が完全一致せず、かつ要確認 (近接不一致) にも該当しない』MF 明細のうち事業述語が真のものに限る。要確認の判定に用いる日付近接の幅は既存の REVIEW_NEAR_DAYS=3 を変更せずそのまま用いる。",
-      "provenance": "2026-09-10、アシスタントが (a)(b)(c) を利得と対価つきで提示し、利用者が (a) を選択した。要確認という状態と REVIEW_NEAR_DAYS=3 の存在は現行実装 packages/core/src/total-cashflow.ts (L27, reconcileBizDuplicates L344-490) の観測に基づく。この論点は C06 ヒアリング監査が F3 として『近接消し込みと MF 事業費加算の相互作用が未定義』と指摘したことを受けて、利用者へ差し戻して確定させたものである。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-10T04:59:30Z",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-existing-edits-mf-decision-003",
-      "question": "既に tx_edits に保存されている手動編集を、本サイクルで遡って見直すか。",
-      "answer": "利用者は『見直さない』を選択した。提示した代替案は 3 つ。(a) 見直さない — tx_edits はそのまま残し、新しい判定は今後の表示から適用する。移行作業が発生しない。対価として、過去の編集内容によっては古い判断が残り続ける。(b) 該当分を一覧で出す — 『中項目が事業〜なのに手動で家計になっている』既存明細を一覧化し、利用者が目で見て消すか残すか決められるようにする。棚卸しの手間はかかるが過去の判断を明示的に清算できる。(c) 該当する手動編集を一括削除する — 確実に揃うが、意図して家計にしていた明細も戻るため取り消しがきかない。利用者は (a) を選んだ。したがって本サイクルはデータ移行スクリプトを作らず、既存 tx_edits に対する遡及処理を行わない。これは qa-priority-order-mf-decision-003 の『手動編集を優先』と整合する。",
-      "provenance": "2026-09-10、アシスタントが (a)(b)(c) を利得と対価つきで提示し、利用者が (a) を選択した。tx_edits が利用者の意思を保持し再取込で消えないという設計は packages/core/src/types.ts TxEdit (L151-183) と 既存スキーマの観測に基づく。この論点は C06 ヒアリング監査が F4 として『既存 tx_edits の遡及再評価の要否が未確認』と指摘したことを受けて、利用者へ差し戻して確定させたものである。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-10T04:59:30Z",
-      "required_info_items": [
-        "data-persistence"
-      ]
-    },
-    {
-      "id": "qa-auth-web-mf-causal-003",
-      "question": "本サイクルで認証境界を変更しないことが、なぜ G2 (画面間で事業/家計の境界を一致させる) に資するのか。",
-      "answer": "認証境界に手を入れないことは G2 の前提条件として効く。G2 が求めるのは『同一の明細が公私仕分け画面とトータル収支で別の側に現れない』ことであり、これは両画面が同一のデータと同一の判定関数を見ていることで成立する。もし認可の分岐 (誰が見るかで返す明細が変わる) が入れば、同じ判定関数を使っていても画面ごとに入力集合が変わりうるため、境界の一致は判定ロジックだけでは保証できなくなる。本システムは単独の個人事業主が使う単一利用者システムであり、ロール区分を持つコードは存在せず、本サイクルでも認可の分岐点を追加しない。したがって両画面の入力集合は常に一致し、境界の一致は判定関数の単一化 (O1) だけで担保できる。これが『変更しない』という確定が G2 に資する経路である。",
-      "provenance": "現行リポジトリの観測: packages/api/src/index.ts のルート定義に認可分岐が存在しないこと、packages/core が依存ゼロで認証状態を参照できないことを読み取った。因果の説明そのものはアシスタントの推論であり、利用者への個別確認は経ていない。この記述は C07 マトリクス監査が『auth.web の serves_goals=[G2] が qa 本文から因果的に導出できない』と指摘したことを受けて追加したものである。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-10T04:59:30Z",
-      "required_info_items": [
-        "auth-model"
-      ]
-    },
-    {
-      "id": "qa-infrastructure-web-mf-causal-003",
-      "question": "本サイクルでインフラ構成を変更しないことが、なぜ G3 (二重計上を起こさない) に資するのか。",
-      "answer": "インフラを変更しないことは G3 の前提条件として効く。G3 が求めるのは『freee と MF の同一経費を一度だけ数える』ことであり、これは消し込みが単一のデータ正本に対して一度だけ実行されることで成立する。本システムは D1 の単一正本のみを永続化とし、月次集計値を保存せず要求時に毎回導出する (制約 C5)。もしキャッシュ層やレプリカを導入すれば、消し込み前の集計と消し込み後の集計が同時に存在しうる時間窓が生まれ、画面が古い側を読めば二重計上が観測される。本サイクルはこの構成に一切触れず、導出に徹する既存設計を維持することを確定内容としている。したがって二重計上が残留する時間窓は構造的に存在しない。これが『変更しない』という確定が G3 に資する経路である。",
-      "provenance": "現行リポジトリの観測: packages/api/wrangler.jsonc の構成 (Workers + D1、キャッシュ層なし)、月次集計を保存しない既存決定 (前サイクル dec-aggregation-strategy-001) を読み取った。因果の説明そのものはアシスタントの推論であり、利用者への個別確認は経ていない。この記述は C07 マトリクス監査が『infrastructure.web の serves_goals=[G3] が qa 本文から因果的に導出できない』と指摘したことを受けて追加したものである。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-10T04:59:30Z",
-      "required_info_items": [
-        "infra-topology"
-      ]
-    },
-    {
-      "id": "qa-income-reconcile-mf-observed-004",
-      "question": "事業収入について、freee に記帳された同一の入金との二重計上をどう防ぐか。支出側 (O3) と同じ『突合を先に、寄らなかった残余だけ加算』が収入側にも成り立っているか。",
-      "answer": "既に成り立っている。本サイクルで新たに設計する必要は無く、仕様として明文化するのが不足であった。根拠は 3 点。(1) 突合キーが向きを含む。reconcileBizDuplicates は bucketKey(io, date, amount) を鍵に用い、io は mfIo(tx) = (tx.a < 0 ? 'expense' : 'income') で MF 側の符号から導かれる。したがって収入は収入とだけ、支出は支出とだけ突合され、向きを跨いだ誤消し込みも起きない。(2) 突合対象が符号で絞られていない。reconcilableMf は tx.a !== 0 の全明細を返し、入金も対象に含む。(3) 加算元が残余に限られている。bizIncome = freeeIncome + mfBizIncome であり、freeeIncome は excludedIndexes を除いた freee の income 取引の合計、mfBizIncome は leftover (= counted のうち shiftedMf に含まれないもの) からのみ算出される。すなわち freee と寄った MF 入金は leftover から外れており、二度数えられない。本サイクルが収入側で変更するのは判定条件だけである。すなわち leftover の絞り込みを tx.big === BIZ_INCOME_MAJOR (大項目一致) から O1 の中項目前方一致述語へ置き換える。突合と残余加算の構造自体には手を入れない。この構造は支出側 O3 と同型であり、G3 は収入・支出の双方で同じ仕組みによって担保される。",
-      "provenance": "現行実装の観測 (packages/core/src/total-cashflow.ts): mfIo (L267)、bucketKey (L269-270)、reconcilableMf (L273-282)、bizIncome の算出 (L557-585)。いずれも 2026-09-10 に読み取った。この記述は C06 ヒアリング再監査が F8 として『事業収入と freee の二重計上検討が丸ごと欠落しており G3 が収入側で未担保』と指摘したことを受けて、実装を検算した結果である。指摘は『設計の欠落』としていたが、検算の結果それは誤りで、実体は『既存の対称な実装が仕様書に記述されていない』という文書側の欠落であった。設計変更は要さない。",
+      "id": "qa-maintenance-ops-web-ds-observed-004",
+      "question": "規約のずれを機械で止める仕組みは、現行の保守の流れのどこに差し込めるか。",
+      "answer": "pnpm lint は biome check → sync-project-skills --check → check-glossary → check-report-css → check-graph-lineage → security:content を直列に実行する。check-report-css.mjs は『正本 report.css と写し report-css.ts がズレたら落とす』検査で、正本→写しのずれ検出を lint へ組み込む前例がすでにある。トークンの写しずれ検出と直書き検出は、この列に同じ型の node スクリプトとして足せる。",
+      "provenance": "package.json の scripts.lint と scripts/check-report-css.mjs の冒頭をアシスタントが R4-reopen の後に読んだ観測事実。answered_at は読んだ直後の記録時刻で上限値。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-10T05:09:35Z",
+      "answered_at": "2026-09-13T07:54:32Z",
       "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-review-bucket-mf-decision-004",
-      "question": "freee と突合できず『要確認』となった事業明細 (中項目が『事業』で始まる) を、月次トータル収支の事業側・家計側のどちらに数えるか。",
-      "answer": "利用者は『どちらにも数えない』を選択した。提示した代替案は 3 つ。(a) どちらにも数えない — 事業にも家計にも足さず、要確認の合計としてのみ表示する。公私仕分け画面が『事業』と示すものを家計に数える矛盾 (G2 違反) が起きず、freee 側に既に計上済みだった場合も二重にならない。対価として、確認するまでその金額はトータル収入・支出のどちらにも現れず、合計が実態より小さく出る。(b) 事業側に数える — 金額がどこからも消えず合計が実態に合うが、freee にも同じ取引が記帳されていた場合、確認して消し込むまで事業側が二重計上になる (G3 違反)。(c) 要確認の理由で分ける — 『発生日が一致しません』(freee 側に候補があり計上済みの疑い) はどちらにも数えず、『取込月と表示日の月が一致しません』(freee 側に候補が無いことがある) は事業側に数える。最も実態に近いが、理由ごとに分岐する実装とその説明が画面に要る。利用者は (a) を選んだ。したがって確定内容は次のとおり。要確認となった MF 明細は、収入・支出のいずれであっても、また事業述語の真偽にかかわらず、bizExpense / householdExpense / bizIncome / householdIncome のどこにも算入しない。これは現行実装からの変更点である — 現在 householdExpense は leftover のうち tx.a < 0 を無条件に集計しており、要確認の明細も家計費へ落ちている。本サイクルではこの無条件のフォールバックを改め、要確認を保留として totals から外す。外した金額は要確認の件数・合計として画面に示し、利用者が消し込みか『違う』の判断を下せば通常の経路へ戻る。",
-      "provenance": "2026-09-10、アシスタントが (a)(b)(c) を利得と対価つきで提示し、利用者が (a) を選択した。選択肢の内容は現行実装の観測に基づく: householdExpense / householdIncome の算出 (packages/core/src/total-cashflow.ts L575-583)、要確認の 3 つの reason (『取込月と表示日の月が一致しません』『発生日が一致しません』および保留理由、同 L451-473)、要確認は shiftedMf に入らないため leftover に残ること (同 L575)。この論点は C06 ヒアリング再監査の F3' (F3 の是正が支出側に限定されている) を検討する過程で、アシスタントが『要確認を事業費に足さないと決めた結果、それが家計側へ落ちて G2 が破れる』という未定義箇所を発見し、利用者へ差し戻して確定させたものである。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-10T05:09:35Z",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-review-amount-mf-inference-005",
-      "question": "要確認として totals から外した金額を、どこで合計し、どの経路で画面へ渡すか。",
-      "answer": "TotalCashflowMonth に reviewAmount (符号を落とした絶対値の合計) を加え、reviewCount と同じ集合から算出してサーバ側の導出値として返す。画面はそれをそのまま写す。この形にする根拠は既存の先例である。同じ型は shiftedCount と shiftedAmount を対で持ち、その doc コメントは『件数だけでは「3 件寄った」が ${LOCAL_AGGREGATE}円なのか 30 万円なのかが分からず、消し込みが効いているかを判断できない』と述べている。要確認はこれと全く同じ性質を持つ — むしろ O7 により totals から金額が抜けるぶん、件数だけでは『いくら見えなくなっているか』が分からず、利用者が確認の緊急度を判断できない。画面側で合計を組み直さないのは、TotalCashflow.tsx の冒頭が『表の数値はサーバの導出値をそのまま写す。画面側で合計を組み直さない』と定めているためであり、この規約を破ると同じ数字の出所が 2 つになって食い違いうる。あわせて FreeeCoverage の mfReview (件数) にも同様の金額の対を設けるかは、coverage が freee 側の被覆を示す指標であり金額の合算に意味を持たないため、設けない。件数と金額は TotalCashflowMonth 側に一本化する。reviewAmount は reviewCount と必ず同じ集合から算出する。別々に数えると片方だけが実数とずれても気づけないためであり、これも shiftedCount/shiftedAmount の既存コメントが『件数と金額は同じ集合から出す』として明記している方針に従う。",
-      "provenance": "現行実装の観測 (2026-09-10): packages/core/src/total-cashflow.ts の TotalCashflowMonth (L190-211、shiftedCount/shiftedAmount の対とその doc コメント、および reviewCount に対が無いこと)、FreeeCoverage (L161-167、mfReview は件数のみ)、rows の算出で件数と金額を同じ集合から出す方針 (L570-573)、packages/web/src/pages/analysis/TotalCashflow.tsx の冒頭規約 (L7-8) と要確認件数の表示 (L89, L508)。実装先の選択そのものはアシスタントの推論であり、利用者への個別確認は経ていない。ただし『要確認の合計を画面に示す』という約束は qa-review-bucket-mf-decision-004 で利用者が (a) を選ぶ際の対価の裏付けとして提示済みであり、本エントリはその約束に実装先を与えるものである。この論点は C06 ヒアリング 3 回目監査が F11 として『同意の前提が実装計画に反映されていない』と指摘したことを受けて確定させた。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-10T05:15:07Z",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-auth-web-mf-corrected-006",
-      "question": "本サイクルは認証・認可の境界に変更を加えるか。加えないとすれば、その判断が立つ現行の認証方式は何か。",
-      "answer": "変更しない。本サイクルが加えるのは packages/core 内の純粋な判定述語と、その述語を既存の集計関数から参照する経路だけであり、新しい入口・新しい主体・新しい権限区分のいずれも生まない。前提となる現行の認証方式は Cloudflare Access への一本化ではなく二段構えである。packages/api/src/auth.ts の冒頭が定めるとおり、ACCESS_AUD と ACCESS_TEAM_DOMAIN が両方設定されているときだけ Cloudflare Access の JWT を検証し、未設定時はアプリ内セッション認証 (パスワード + HMAC 署名の HttpOnly Cookie kanjo_session、TTL 14 日) を既定で有効化する。packages/api/wrangler.jsonc では両 var が空文字で、secrets.required が AUTH_PASSWORD と SESSION_SECRET を求めているため、現に稼働している形態はアプリ内セッション認証である。この形は前サイクルの dec-auth-boundary-001 で利用者が『(c) Cloudflare Access へ一本化』を棄却して選んだものであり、本サイクルはその確定を維持する。認証方式を正しく押さえることが本章の確定の前提になるのは、『変更が既存の認証境界の内側に閉じる』と言うためにはその境界がどこにあるかが定まっていなければならないためである。境界はアプリ内セッション認証のミドルウェアであり、Cloudflare Access のエッジではない。",
-      "provenance": "現行実装の観測 (2026-09-10): packages/api/src/auth.ts L1-40 (二段構えの doc コメント、COOKIE = 'kanjo_session'、SESSION_TTL_MS = 14 日、AuthEnv の ACCESS_AUD / ACCESS_TEAM_DOMAIN / AUTH_PASSWORD / SESSION_SECRET)、packages/api/wrangler.jsonc L30-50 (secrets.required = AUTH_PASSWORD, SESSION_SECRET / vars.ACCESS_AUD = '' / vars.ACCESS_TEAM_DOMAIN = '')、前サイクルの確定 system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/auth.md L88, L120 の dec-auth-boundary-001。『本サイクルは境界に触れない』という結論そのものはアシスタントの推論だが、現行方式の記述は上記のローカル不変条件検証に接地している。本エントリは design_knowledge_reflection 監査 (knowledge-audit-1) が H1 として『ASVS anchor の適用が現行の認証方式を誤って述べた確定内容の上に立っている』と指摘したことを受けた R4-reopen 後の差し替えである。",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-10T05:37:16Z",
-      "required_info_items": [
-        "auth-model"
-      ]
-    },
-    {
-      "id": "qa-ui-ux-web-mf-corrected-007",
-      "question": "人が読む主要な表現物ごとに、誰が・どの環境で・どの task を・どの頻度で行い、失敗すると何を失うか。各表現物で何を残し何を落とすか。",
-      "answer": "表現物は 3 つ。(1) 月次トータル収支の一覧表 — 単独の個人事業主が自宅 PC の web ブラウザで月 1 回、『今月は全体でいくらプラスマイナスか』『事業費はいくらか』を読む。誤ると確定申告の経費計上額を誤り、過少申告か過大申告のいずれかの実害が出る。ここで残す束は 5 つである — 事業収入・事業費・家計収入・家計費の 4 束と、そのいずれにも算入しない要確認の束 (件数 reviewCount と金額 reviewAmount の対)。5 束目を置くのは、要確認を 4 束から外す決定 (qa-review-bucket-mf-decision-004) が金額を画面から消すためであり、消えた分の所在を示さないと合計が合わない理由が利用者に見えなくなるためである。これは『漏れ』ではなく理由のある削減であり、その理由を要確認の束として明示的に残す。視覚上の階層では 5 束目を 4 束より下位に置く — 常時 0 件でありうる補助的な束であり、4 束と同じ重みを与えると『いくらプラスマイナスか』という主たる task の読み取りを妨げる。個々の明細は落とし、寄せた件数と根拠へのリンクだけを加工して残す。(2) 公私仕分け画面 — 同じ利用者が取込直後に、既定 'per' のまま未レビューの明細を潰す。頻度は取込のたび (月 1-2 回)。誤ると事業費が家計へ落ちたまま固定される。ここでは明細ごとの cls と判定根拠 (clsSrc) を残し、MF 中項目由来で自動的に事業になったものは『中項目』と表示して、手動編集やルール由来と区別できるようにする。(3) 要確認 (重複候補) 一覧 — 日付+金額が近接するが一致しない MF/freee の組を利用者が判断する。頻度は月 1 回未満。誤ると二重計上か計上漏れになる。ここでは MF 側が中項目で事業と判定されているかを併記する — 『MF でも事業扱い』は freee 側と同一取引である可能性を上げる材料になるため。束の順位は task 頻度 × 失敗コストで決め、(1) 一覧表 > (2) 仕分け画面 > (3) 要確認一覧 の順とする。情報優先度マップの JSON 化と機械検証は本要件段階の成果物とせず、下流の生成工程の責務とする。",
-      "provenance": "利用者と利用文脈は前サイクルの確定内容 (単独の個人事業主が自宅 PC のブラウザから CSV を取り込み一覧表を読む) を引き継いだ。表現物 3 種と失敗コストの見立て、束の順位付けはアシスタントの推論であり、利用者に個別確認していない。ただし 5 束目 (要確認) の存在そのものは推論ではなく、qa-review-bucket-mf-decision-004 における利用者の (a)『どちらにも数えない』の選択と、その対価として提示した『要確認の合計を画面に示す』という約束に由来する。本エントリは design_knowledge_reflection 監査 (knowledge-audit-2) が F1 として『確定本文が「4 束」と言い切り、同章の後発確定と矛盾している』と指摘したことを受けた R4-reopen 後の差し替えであり、変更点は表現物 (1) の束の構成と視覚階層に限る。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-10T05:44:57Z",
-      "required_info_items": [
-        "information-priority"
+        "ops-runbook"
       ]
     }
   ],
   "approval_log": [
     {
-      "id": "appr-foundation-mf-business-classification-001",
-      "note": "2026-09-10、利用者へ上位概念 U1-U9 の要約 (本質的目的 / 背景 / ゴール G1-G5 / 成功基準 S1-S6 / スコープ外) を提示して承認を得た。承認に先立ち次の点を利用者回答で確定している: (1) 前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の system-spec を archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only へ退避し、本件を新サイクルとして立ち上げる、(2) MF 明細の事業判定は中項目の前方一致『事業』とし、既知の 4 種 (事業経費 / 事業・情報サービス / 事業・携帯電話 / 事業・副業) を実装へ列挙しない、(3) freee に記帳済みの同一経費との二重計上は既存の日付+金額の消し込みを優先し、寄らなかった MF 明細だけを事業費へ加算する、(4) 事業判定は支出だけでなく収入に対しても行う (利用者の追加指示、2026-09-10)、(5) その結果として total-cashflow.ts の収入側事業判定が tx.big (大項目) と '事業・副業' を比較しており非公開ローカル入力で一件も一致していない不具合を、本サイクルの範囲内で是正する。"
+      "id": "appr-foundation-design-system-001",
+      "note": "利用者が 2026-09-13 に AskUserQuestion で、上位概念 U1-U9 の要約 (本質的目的=FINAL-UI を正本に見た目を単一の共通定義へ集約 / ゴール G1 トークン正本化・G2 共通シェルと部品・G3 チャート規約統一・G4 直書き色の機械検出と規約文書・G5 文字 AA 維持の役割分離 / 範囲=基盤+共通シェル、各画面の中身の作り直しは次サイクル / platform=web のみ) に対し『この内容で承認』を選択した。同セッションで次も利用者が選択した: 旧 MF 事業判定テーマの退避と作り直し、色の役割分離、範囲=基盤+共通シェル、フォントは現行維持で規約化、トークン正本は packages/core の TS、report-design-system は今回対象外。承認時刻は選択直後に記録した reopened_at 2026-09-13T04:55:23Z より前で、本記録時刻 2026-09-13T05:01:02Z はその上限値である。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-design-system-002",
+      "note": "上位概念の改訂承認。基底は appr-foundation-design-system-001 で、利用者は上位概念 U1-U9 の要約に『この内容で承認』を選んだ (会話記録上の回答返却時刻 2026-09-13T04:54:53Z。001 の note が根拠にした reopened_at は現行 state に実在せず、この実測時刻へ付け替える)。本改訂の変更点は 3 つで、いずれも利用者の意図を変えない: (1) 利用者決定 qa-ui-ux-web-ds-decision-007 (2026-09-13、境界を『役割で2つに分ける』を選択) を G5 / O1 / O4 / S3 / S4 / C4 / I5 と scope.in に反映し、完成度評価が指摘した O1/S3 (境界 #D7E0E2 に一致) と O4/S4 (境界 3:1) の矛盾を解いた。(2) U2 背景の charts.ts の記述を、アシスタントの観測誤り (CSS 変数を読めない) から実装どおり (getComputedStyle で読み、予備値だけが直書きでずれている) へ訂正した (qa-frontend-web-ds-observed-005)。(3) C3 の『現行フォントを維持する』決定を、全非 test source と dependencies の再調査で確定した実装事実に合わせ、和文は system-ui、金額・数値は既存の IBM Plex Mono Latin 400/600 だけを自己配信すると明記した。scope.out の report-design-system の扱いも章間で揺れない 1 文へ揃えた。個別の選択は 1 つの note に束ねず、論点ごとの qa (decision-004 色の役割 / -005 フォント / -006 範囲 / -007 境界 / frontend decision-004 トークン正本 / maintenance-ops decision-002 report-design-system) に提示選択肢付きで記録してある。改訂の要約全体を改めて承認質問にかけてはいない。basis=user-decision (変更 1) と observed-fact (変更 2・3)。記録時刻 2026-09-13T07:58:19Z。2026-09-14 に変更点 (3) の観測事実だけを訂正。"
     }
   ],
   "reopen_log": [
     {
-      "category": "database",
-      "platform": "web",
-      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
-      "from": "確定",
-      "reopened_at": "2026-09-10T04:47:56Z"
-    },
-    {
-      "category": "auth",
-      "platform": "web",
-      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
-      "from": "確定",
-      "reopened_at": "2026-09-10T04:47:56Z"
-    },
-    {
       "category": "ui-ux",
       "platform": "web",
-      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
+      "reason": "完成度評価 (2026-09-13) の指摘に基づく再オープン: 境界色 #D7E0E2 (白に 1.34:1) の役割が未決で O1/S3 と O4/S4 が矛盾していた。利用者が境界を役割で 2 つに分けると決めたため、確定内容と根拠参照 (束ねた qa-ui-ux-web-ds-decision-002 を論点別へ) を差し替える。",
       "from": "確定",
-      "reopened_at": "2026-09-10T04:47:56Z"
-    },
-    {
-      "category": "security",
-      "platform": "web",
-      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
-      "from": "確定",
-      "reopened_at": "2026-09-10T04:47:56Z"
-    },
-    {
-      "category": "infrastructure",
-      "platform": "web",
-      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
-      "from": "確定",
-      "reopened_at": "2026-09-10T04:47:56Z"
-    },
-    {
-      "category": "backend",
-      "platform": "web",
-      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
-      "from": "確定",
-      "reopened_at": "2026-09-10T04:47:56Z"
+      "reopened_at": "2026-09-13T07:52:23Z"
     },
     {
       "category": "frontend",
       "platform": "web",
-      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
+      "reason": "完成度評価 (2026-09-13) の指摘に基づく再オープン: 主根拠 qa-frontend-web-ds-observed-001 が charts.ts の色取得方式を誤観測していた (実装は getComputedStyle で CSS 変数を読む)。訂正した観測へ主根拠を差し替え、束ねた決定を論点別の qa へ分ける。",
       "from": "確定",
-      "reopened_at": "2026-09-10T04:47:56Z"
+      "reopened_at": "2026-09-13T07:52:23Z"
     },
     {
       "category": "maintenance-ops",
       "platform": "web",
-      "reason": "前サイクル (確定申告機能の全廃と freeeOnly 一覧の是正) の確定章が正本位置に残っており、新サイクル (MF 中項目の事業振り分け) の章生成が『再生成で既存章の見出しが失われる』として拒否されるため。前サイクルの成果物は archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ へ退避済み。本 reopen は収集内容の見直しではなく章 Markdown 差し替えのための正規経路であり、同じ qa_ref と serves_goals で直後に再 confirm する。",
+      "reason": "完成度評価 (2026-09-13) の指摘に基づく再オープン: 主根拠 qa-maintenance-ops-web-ds-decision-001 が保守の仕組みと範囲外の扱いを 1 件に束ねていた。論点別の qa へ根拠を差し替える。",
       "from": "確定",
-      "reopened_at": "2026-09-10T04:47:56Z"
-    },
-    {
-      "category": "auth",
-      "platform": "web",
-      "reason": "確定本文 (qa-auth-web-mf-001) が現行の認証方式を誤って述べている。『認証は従来どおり Cloudflare Access を単一の信頼境界とし』と書いているが、packages/api/wrangler.jsonc は ACCESS_AUD / ACCESS_TEAM_DOMAIN を空のまま置き AUTH_PASSWORD / SESSION_SECRET を required secret としており、packages/api/src/auth.ts の既定経路はアプリ内セッション認証 (パスワード + HMAC 署名 HttpOnly Cookie kanjo_session) である。さらに前サイクルの dec-auth-boundary-001 で『Cloudflare Access へ一本化』は利用者が明示的に棄却済みであり、本文はその確定を反転させている。この誤りの上に authentication concern (ASVS) の反映記述が立っているため、追記では是正できず本文の差し替えが要る。",
-      "from": "確定",
-      "reopened_at": "2026-09-10T05:37:16Z"
-    },
-    {
-      "category": "ui-ux",
-      "platform": "web",
-      "reason": "確定本文 (qa-ui-ux-web-mf-001) が同じ章の後発の確定と矛盾している。表現物 (1) 月次トータル収支の一覧表について『事業収入・事業費・家計収入・家計費の 4 束を残し』と言い切っているが、その後 qa-review-bucket-mf-decision-004 (利用者決定) が要確認の明細を 4 束のいずれにも算入しないことを、qa-review-amount-mf-inference-005 がその金額を reviewAmount として同じ一覧表へ出すことを確定させた。つまり表現物 (1) が残す束は 5 つになっている。束の構成は Information Design で言う『何を残し何を落とすか』そのものであり、この章の中核の確定であるため、追記では矛盾が消えない。",
-      "from": "確定",
-      "reopened_at": "2026-09-10T05:44:57Z"
+      "reopened_at": "2026-09-13T07:52:23Z"
     }
   ],
   "category_aggregate": {
@@ -710,344 +677,538 @@
   },
   "targets": [
     {
-      "target_id": "cloudflare-workers-encoding-api",
-      "category": "backend"
+      "target_id": "wcag22-contrast-minimum",
+      "category": "ui-ux"
     },
     {
-      "target_id": "cloudflare-workers-web-standards",
-      "category": "infrastructure"
+      "target_id": "wcag22-non-text-contrast",
+      "category": "ui-ux"
     },
     {
-      "target_id": "workerd-legacy-encoding-streaming",
-      "category": "backend"
+      "target_id": "chartjs-colors",
+      "category": "frontend"
+    },
+    {
+      "target_id": "cloudflare-workers-static-assets-headers",
+      "category": "security"
     }
   ],
   "requirements_foundation": {
-    "essential_purpose": "Money Forward に取り込まれた明細のうち、利用者が MF 側で既に『事業』と分類しているもの (中項目が『事業』で始まるもの) を、収入・支出のどちらであっても事業として扱い、freee を唯一の事業帳簿とみなす現在の前提を崩さないまま、事業と家計の境界を利用者の意図どおりに一致させる。",
-    "background": "本システムは freee を事業帳簿、Money Forward を家計として取り込み、二重計上を日付+金額で消し込んだうえで月次のトータル収支を出す。しかし MF 側の事業判定が 2 系統に割れている。(1) packages/core/src/classify.ts の resolveTx().cls は 手動編集 > ルール > 取引先メモリ > 口座名義 > 既定'per' の優先順で biz/per を決め、公私仕分け画面・事業立替の算出に使われる。(2) packages/core/src/total-cashflow.ts は月次トータル収支を出す際、cls を一切見ず、収入側は BIZ_INCOME_MAJOR ('事業・副業') を tx.big (大項目) と比較し、支出側は freee との突合結果だけで事業/家計を決めている。非公開ローカル入力 ${LOCAL_SOURCE_FILE}, CP932) では 大項目='収入' / 中項目='事業・副業' であるため (2) の収入判定は一件も一致せず、2025年10月の事業収入 ${LOCAL_AGGREGATE} 円と ${LOCAL_AGGREGATE} 円がいずれも家計収入に計上されている。また支出側では 中項目='事業経費'(${LOCAL_RECORD_COUNT}件) / '事業・情報サービス'(${LOCAL_RECORD_COUNT}件) / '事業・携帯電話'(${LOCAL_RECORD_COUNT}件) が MF 上で明示的に事業と分類されているにもかかわらず、freee と日付+金額が一致しなかったものは全て家計費へ落ちている。利用者は MF 上で既に事業/家計を仕分けており、その意思がトータル収支に反映されない状態になっている。",
+    "essential_purpose": "正式採用された FINAL-UI (Focus Ledger, design/FINAL-UI の 20 画面) を見た目の正本とし、色・文字・余白・角丸・影・動き・部品・共通シェル・図の見た目を単一の共通定義へ集約する。今後つくる画面・図・成果物が個別に色や寸法を決めなくても、共通定義を参照するだけで自動的に同じ見た目になり、ずれた値を持ち込めば機械的に検出される状態にする。",
+    "background": "kanjo の web SPA (packages/web) は FINAL-UI 以前の HTML 版トークンを移植した styles.css の :root を持つが、同じ色の値を持つ場所が 3 つあり、一部がずれている。(1) packages/web/src/styles.css の :root (--primary #14353d, --warn #805a12, --good #2e7d5b 等) が画面の色の正本である。(2) packages/web/src/components/charts.ts は getComputedStyle でその CSS 変数を読むが、CSS を読めない環境向けの予備値 COLOR_FALLBACKS を直書きしており、その値が CSS とずれている (ink #1d2a2c 対 #15262b、biz #2f5da8 対 #087f78、line #dde3e1 対 #d7e0e2 等)。CSS 変数を持たない neutral と VENDOR_EXTRA_COLORS は直書きのみ。(3) skills/report-design-system/assets/report.css (会計レポート用、brand #1d63be の青系) は別の配色を持つ。2026-09-10 に FINAL-UI 20 画面と共通デザインシステム仕様 (design/FINAL-UI/spec/DESIGN-SYSTEM.md: 背景 #F6F8F9 / 面 #FFFFFF / 境界 #D7E0E2 / 文字 #15262B / 補助 #617177 / ネイビー #14353D / ティール #087F78 / 注意 #B97000 / 危険 #B33A3A / 成功 #247A52、サイドバー 220px、ヘッダー 64px、本文最大幅 1180px、角丸 8px、操作対象 44px 以上) が正式採用された。利用者は 2026-09-13 に、これを元に全体の構成と色を抽出し、ボタン・サイドバー・ヘッダー・各図・文字フォント・構成をすべて共通化して今後のすべての作成物に反映される形に整えること、まずは大まかな全体像をつくることを依頼した。",
     "goals": [
       {
         "id": "G1",
-        "text": "MF 明細の中項目が『事業』で始まるものを、収入・支出のどちらであっても事業として扱う単一の判定規則を置く。"
+        "text": "色・文字サイズ・行高・余白・角丸・影・動き・寸法 (シェル幅/高さ/タップ領域) のデザイントークンを、packages/core に置く依存ゼロの TypeScript 定義 1 か所へ集約し、CSS 変数とチャート色はそこから導出する。和文は OS の system-ui、金額・数値は自己配信する IBM Plex Mono Latin 400/600 だけを使い、全非 test source・dependencies・外部フォントURLの検査でこの配信契約を固定する。"
       },
       {
         "id": "G2",
-        "text": "月次トータル収支 (total-cashflow) の事業/家計の境界を、公私仕分け画面が示す境界と一致させ、同じ明細が画面ごとに別の側へ現れない状態にする。"
+        "text": "共通シェル (サイドバー 220px・ヘッダー 64px・共通フッター・固定アクションバー・ページ骨格) とボタン等の基本部品を共通部品として揃え、既存 20 画面すべてが同じ部品とトークンを参照する。"
       },
       {
         "id": "G3",
-        "text": "freee に既に記帳された事業経費との二重計上を、既存の日付+金額の消し込みを正として維持したまま、MF 由来の事業費を加算しても総額が二重に膨らまない状態にする。"
+        "text": "チャート (棒・線・内訳バー・凡例・軸・グリッド・ツールチップ) の配色と描画規約を 1 つにし、全ての図が共通トークンから色を得る。系列の意味色は FINAL-UI に合わせ、収入=青系、支出=赤系、純収支=ティールの線とする。"
       },
       {
         "id": "G4",
-        "text": "MF 側で中項目を新設 (例: 『事業・広告費』) しても、実装変更なしに事業として扱われる状態にする。"
+        "text": "今後の作成物が自動的に規約へ従うよう、トークン定義以外での色の直書きと、正本と写し (CSS 変数・チャート色) のずれを lint で機械検出し、使い方を規約文書として置く。"
       },
       {
         "id": "G5",
-        "text": "事業として扱った根拠 (中項目前方一致か / ルールか / 手動編集か) を明細ごとに追える状態にする。"
+        "text": "文字と部品は WCAG 2.2 AA のコントラスト (文字 4.5:1、部品を見分ける境界・図形 3:1) を維持する。FINAL-UI の値がこれを満たさない場合は役割を分けて両立させる: 塗り・アイコン・バッジ面には画像どおりの値、文字にはその色相で 4.5:1 を満たす派生色を使う。境界は、カード区切りや表の罫線などの装飾罫線には画像どおり #D7E0E2 (1.4.11 の対象外)、入力欄・チェックボックスなど部品を見分ける枠には同じ色相で 3:1 を満たす派生色を使う。"
       }
     ],
     "objectives": [
       {
         "id": "O1",
-        "text": "MF 事業判定を『中項目の前方一致「事業」』として packages/core に単一関数で定義し、classify.ts と total-cashflow.ts の双方がそれを参照する。",
+        "text": "packages/core/src/design-tokens.ts に色・文字・余白・角丸・影・動き・寸法のトークンを定義し、値の唯一の実装正本とする。",
         "serves": [
-          "G1",
-          "G2"
+          "G1"
         ],
         "serves_goals": [
-          "G1",
-          "G2"
+          "G1"
         ],
-        "measure": "packages/core 内で中項目を事業判定に用いる箇所を grep したとき、判定式の定義が 1 箇所だけであり、classify.ts と total-cashflow.ts はいずれもその関数を import して使っている。判定式を直接書いた重複実装が 0 件である。"
+        "measure": "単体テストは schema・役割集合・alias・コントラストに必要な関係不変条件を値の転記なしで検査する。表示に影響する全トークン値は、版・承認参照・由来ファイルを持つ docs/design-system/token-approval.json の SHA-256 fingerprint と lint で照合し、未承認の値変更を拒否する。"
       },
       {
         "id": "O2",
-        "text": "total-cashflow.ts の BIZ_INCOME_MAJOR (大項目一致) を廃し、収入側の事業判定を O1 の関数へ置き換える。",
+        "text": "styles.css の :root トークンと charts.ts の COLORS を design-tokens.ts から導出した写しに置き換え、写しのずれを検出する lint を lint スクリプトへ組み込む。",
         "serves": [
           "G1",
-          "G2"
+          "G3",
+          "G4"
         ],
         "serves_goals": [
           "G1",
-          "G2"
+          "G3",
+          "G4"
         ],
-        "measure": "BIZ_INCOME_MAJOR の識別子が packages/ 配下から消え、2025年10月の実 CSV を入力したとき事業収入が ${LOCAL_AGGREGATE} 円 (${LOCAL_AGGREGATE} + ${LOCAL_AGGREGATE}) となる単体テストが緑になる。置換前の実装では同テストが赤になることを確認する。"
+        "measure": "pnpm lint が写しの不一致で exit 非 0 になり、一致時に exit 0 になる。charts.ts から 6 桁 hex の直書きが 0 件になる。"
       },
       {
         "id": "O3",
-        "text": "支出側は既存の freee 突合 (日付+金額) を先に適用し、寄らなかった MF 明細のうち O1 が事業と判定したものだけを事業費へ加算する。",
+        "text": "Layout (サイドバー・ヘッダー・フッター)・固定アクションバー・ページ骨格・ボタン (主/副/危険/テキスト) を共通部品として定義し、20 ルートすべてがそれを経由して描画される。",
         "serves": [
-          "G3"
+          "G2"
         ],
         "serves_goals": [
-          "G3"
+          "G2"
         ],
-        "measure": "freee 取引と日付+金額が一致する MF 事業明細を含むデータセットで、事業費合計が freee 側の金額を一度だけ含み、MF 側の同額分が加算されない。突合に寄らなかった MF 事業明細だけが加算されることを件数と金額の両方で検証する。"
+        "measure": "20 ルートを描画する DOM テストで、全ルートに共通のサイドバー・ヘッダー・フッターのランドマークが 1 つずつ存在し、主操作ボタンが共通ボタン部品のクラスを持つ。"
       },
       {
         "id": "O4",
-        "text": "判定は中項目文字列の前方一致のみに依存させ、既知の中項目名を実装へ列挙しない。",
+        "text": "文字・部品の枠・チャート系列に使う全トークンの、背景/面に対するコントラストを計算するテストを置く。",
         "serves": [
-          "G4"
+          "G5"
         ],
         "serves_goals": [
-          "G4"
+          "G5"
         ],
-        "measure": "実装に存在しない中項目名『事業・広告費』を持つ明細を投入する契約テストがコード変更なしに事業と判定して緑になる。あわせて packages/ 配下に『事業経費』『事業・情報サービス』『事業・携帯電話』『事業・副業』の文字列リテラルが判定目的で 0 件であることを検査する。"
+        "measure": "文字用トークンは背景 #F6F8F9 と面 #FFFFFF の双方に対し 4.5:1 以上、部品を見分ける枠のトークンとチャート系列色は 3:1 以上であることをテストが検証し、基準未満の値を入れると落ちる。装飾罫線トークン (#D7E0E2) は 1.4.11 の対象外として検査から外し、入力欄・チェックボックスの枠が装飾罫線トークンを参照していないことを同じテストで確かめる。"
       },
       {
         "id": "O5",
-        "text": "cls の決定元 (clsSrc) に MF 中項目由来であることを表す値を加え、画面と API で根拠を返す。",
+        "text": "トークンと共通部品の使い方を規約文書 (docs 配下) にまとめ、新しい画面・図をつくるときの参照先を 1 つにする。",
         "serves": [
-          "G5"
+          "G4"
         ],
         "serves_goals": [
-          "G5"
+          "G4"
         ],
-        "measure": "中項目由来で事業になった明細の API 応答に clsSrc が中項目由来を示す値で含まれ、公私仕分け画面がその根拠を『中項目』と表示する。かつ classificationProgress の未レビュー件数に当該明細が数えられない。"
-      },
-      {
-        "id": "O6",
-        "text": "収入側でも支出側と同型に、freee 突合を先に適用し寄らなかった残余だけを事業収入へ加算する構造を維持する。突合キーが向き (io) を含む既存の対称性は変更しない。",
-        "serves": [
-          "G3"
-        ],
-        "serves_goals": [
-          "G3"
-        ],
-        "measure": "freee の income 取引と日付+金額が一致する MF 入金を含むデータセットで、事業収入がその金額を一度だけ含む。bucketKey が io を含むこと、および bizIncome の MF 由来項が leftover のみから算出されることを、収入側の二重計上テストで固定する。判定条件を中項目前方一致へ置き換えた後も同テストが緑のままであることを確認する。"
-      },
-      {
-        "id": "O7",
-        "text": "要確認となった MF 明細を、収入・支出および事業・家計のいずれの合計にも算入せず保留として扱う。現行の『寄らなかった支出は無条件に家計費、寄らなかった収入は大項目一致でなければ無条件に家計収入』という両側のフォールバックを改める。",
-        "serves": [
-          "G2",
-          "G3"
-        ],
-        "serves_goals": [
-          "G2",
-          "G3"
-        ],
-        "measure": "要確認となった MF 明細を含むデータセットで、その金額が bizExpense / householdExpense / bizIncome / householdIncome のいずれにも現れない。検証データには事業述語が真の明細と偽の明細、および入金と出金の 4 通りを含め、事業述語の真偽で扱いが変わらないことを確認する。現行実装では事業述語の偽な要確認出金が householdExpense に含まれ、このテストが赤になることを確認する。"
-      },
-      {
-        "id": "O8",
-        "text": "要確認として totals から外した金額を TotalCashflowMonth.reviewAmount としてサーバ側で導出し、reviewCount と対で画面へ渡す。画面側で合計を組み直さない。",
-        "serves": [
-          "G2",
-          "G3"
-        ],
-        "serves_goals": [
-          "G2",
-          "G3"
-        ],
-        "measure": "要確認の明細を含むデータセットで、API 応答の reviewAmount が当該明細の絶対値合計と一致し、reviewCount と同じ集合から算出されている (件数を 1 件増やすと金額も対応分だけ増える)。集合には事業述語が偽の要確認明細も含める。画面が reviewAmount をそのまま表示し、独自に合算していないことを確認する。現行実装では TotalCashflowMonth に reviewAmount が存在せず、このテストが型検査の段階で赤になる。"
+        "measure": "規約文書が色の役割 (塗り/文字の分離)・タイポグラフィ・余白・シェル・ボタン・チャートの各節を持ち、README または AGENTS.md から参照されている。"
       }
     ],
     "success_criteria": [
-      "S1 (G1, G2): 2025年10月の実 CSV を取り込んだとき、事業収入が ${LOCAL_AGGREGATE} 円 (${LOCAL_AGGREGATE} + ${LOCAL_AGGREGATE}) として集計され、家計収入に含まれない。",
-      "S2 (G1, G3): 中項目が『事業』で始まる支出 34 件が、freee と日付+金額が一致したもの、および要確認となったものを除き、事業費として集計される。",
-      "S3 (G2): 同一データセットに対し、公私仕分け画面が biz と示す MF 明細の集合と、トータル収支が事業側へ算入する MF 明細の集合が一致する。ただし手動編集で明示的に家計とされた明細は両画面とも家計側に、要確認の明細は両画面とも保留として現れる。",
-      "S4 (G3): トータル収入・トータル支出が、消し込み前の単純合算より二重計上分だけ小さく、freee 側の事業経費・事業収入をそれぞれ一度だけ含む。",
-      "S5 (G4): 実装に存在しない中項目名 (例: 『事業・広告費』) を持つ明細を投入すると、コード変更なしに事業と判定される契約テストが緑になる。",
-      "S6 (G5): 事業と判定された明細の API 応答に、判定根拠を示す clsSrc が含まれ、公私仕分け画面がそれを『中項目』として表示する。",
-      "S7 (G2, G3): 要確認となった MF 明細の金額が、事業述語の真偽および収入・支出の別を問わず、bizExpense / householdExpense / bizIncome / householdIncome のいずれの合計にも現れず、要確認の件数 (reviewCount) と合計 (reviewAmount) の対として画面に現れる。利用者が『違う』と判断すれば要確認から外れ、通常の事業/家計の集計へ戻る。"
+      "S1 (G1, G4): packages/web/src の .ts/.tsx/.css において、トークン定義とその生成物以外での 6 桁 hex 色の直書きが 0 件であり、lint がこれを検査する。",
+      "S2 (G3): charts.ts と FinancialCharts の系列色・軸・グリッド・文字色が全て design-tokens.ts 由来で、収入=青系・支出=赤系・純収支=ティール線になっている。",
+      "S3 (G1): design-tokens.ts を唯一の実装正本とし、schema・関係不変条件を単体テスト、承認済み値の fingerprint と CSS/charts consumer の一致を lint が検査する。",
+      "S4 (G5): 文字用トークンのコントラストが背景と面の双方に対し 4.5:1 以上、部品を見分ける枠のトークンとチャート系列色が 3:1 以上である。装飾罫線 (#D7E0E2) は 1.4.11 の対象外で、部品の枠には使われていない。",
+      "S5 (G2): 20 ルートすべてが共通シェル (サイドバー 220px・ヘッダー 64px・フッター) の下で描画される。",
+      "S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプト (thead / mobile-layout / financial-figure / financial-routes) が全て緑のままである。"
     ],
     "stakeholders": [
-      "SH1 利用者 (単独の個人事業主): MF 上で自分が仕分けた事業/家計の意図が、そのままトータル収支に反映されること。個別に手で直した明細は自動ルールに上書きされないこと。",
-      "SH2 保守者 (同一人物): MF 側で中項目を増やしても実装を触らずに済むこと。事業判定が 1 箇所に集約されていること。"
+      "SH1 利用者 (単独の個人事業主): 画面ごとに色・ボタン・図の見た目が揃い、FINAL-UI の画像どおりの落ち着いた見た目で月次クローズを進められること。文字が読みにくくならないこと。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 新しい画面や図をつくるとき、色や寸法を自分で決めずに共通定義を参照するだけで済み、ずれた値を持ち込めば lint が教えてくれること。"
     ],
     "scope": {
       "in": [
-        "MF 明細の事業判定規則 (中項目前方一致『事業』) の定義と、収入・支出双方への適用",
-        "total-cashflow.ts の収入側事業判定 (大項目比較) の是正",
-        "total-cashflow.ts の支出側への MF 由来事業費の加算 (freee 突合後の残余のみ)",
-        "cls 決定元 (clsSrc) への MF 中項目由来の追加と、API/画面での根拠表示",
-        "既存の手動編集・ルール・取引先メモリとの優先順位の確定"
+        "design/FINAL-UI の画像と DESIGN-SYSTEM.md からの色・構成・タイポグラフィ・寸法の抽出",
+        "packages/core へのデザイントークン正本 (依存ゼロの TypeScript) の新設",
+        "styles.css の :root トークンと charts.ts の COLORS をトークン正本から導出する形への置換と、写しのずれ検出 lint",
+        "サイドバー・ヘッダー・共通フッター・固定アクションバー・ページ骨格・ボタンの共通部品化と、既存 20 画面からの参照",
+        "チャート配色と描画規約の統一",
+        "色の直書き検出と、文字・部品の枠・チャート系列のコントラスト検証のテスト",
+        "トークンと共通部品の使い方を示す規約文書"
       ],
       "out": [
-        "freee 側の取込・判定ロジックの変更 (freee 取引は従来どおり全て事業)",
-        "新規の取込元の追加",
-        "MF 資産推移 (残高) CSV の扱いの変更",
-        "重複判定条件そのものの変更 (日付+金額一致・freee を正 の既存決定を維持)",
-        "Web 以外のプラットフォーム向けクライアントの提供"
+        "各画面の中身 (表・カード・フォームの配置) を FINAL-UI の画像どおりに作り直すこと (次サイクル)",
+        "新機能の追加",
+        "API・データベースの変更",
+        "ネイティブアプリ (スマートフォン・タブレット・デスクトップ)",
+        "ダークテーマ",
+        "Web フォントの追加 (system-ui 系の和文ゴシックと既存の IBM Plex Mono を維持し規約化する)",
+        "会計レポート用 report-design-system (report.css / report-css.ts) の配色移行と、その 2 ファイルの変更 (次サイクル。今回はトークン正本を依存ゼロの packages/core に置くことで、レポート側から同じ値を import できる前提だけを用意する)"
       ]
     },
     "constraints": [
-      "C1: packages/core は依存ゼロの純関数に保つ (README アーキテクチャ節)。判定関数は core に置き、api/web から参照する。",
-      "C2: MF CSV は CP932 で配布されることがあるため、既存の decodeBuf (utf-8 fatal → shift_jis フォールバック) を前提とし、判定は decode 後の文字列に対して行う。TextDecoder.encoding で分岐しない (workerd #5663 でラベル正規化の差異が報告されているため)。",
-      "C3: 取込原本 mf_transactions に cls 列を持たせない既存設計を維持し、利用者の意思は tx_edits 側に保持する (再取込で判断が消えない)。",
-      "C4: 重複消し込みは日付 (MfTx.d と FreeeDeal.date) と金額の一致のみを条件とし、freee の dueDate/settledDate は用いない (前サイクル確定 appr-foundation-total-cashflow-001)。突合キーは向き (io) を含み、収入と支出を跨いで寄ることはない。",
-      "C5: 永続化は D1 の単一正本のみ。月次集計値は保存せず、要求時に canonical から毎回導出する (前サイクル確定 dec-aggregation-strategy-001)。",
-      "C6: 対象プラットフォームは web のみ。Cloudflare Workers 上の SPA 1 系統で配信する。",
-      "C7: 判定の優先順は 手動編集 > ルール > 取引先メモリ > MF 中項目「事業」前方一致 > 口座名義 > 既定'per' とし、手動編集を自動ルールで上書きしない (利用者決定 qa-priority-order-mf-decision-003)。",
-      "C8: 要確認となった MF 明細は、収入・支出および事業・家計のいずれの合計にも算入せず保留として扱う (利用者決定 qa-near-match-mf-decision-003 および qa-review-bucket-mf-decision-004)。要確認の判定に用いる REVIEW_NEAR_DAYS=3 と 3 つの要確認理由は変更しない。",
-      "C9: 既存の tx_edits に対する遡及的な再評価・移行スクリプトを本サイクルで行わない (利用者決定 qa-existing-edits-mf-decision-003)。",
-      "C10: 家計側の中項目に『事業』で始まる名称を作らないという運用上の約束を前提とする (利用者承認済み。docs へ明記する)。"
+      "C1: packages/core は依存ゼロの純関数・純データに保つ (README アーキテクチャ節)。トークン正本はランタイム依存を持たない TypeScript の定数として置く。",
+      "C2: 初期 JS 予算 (packages/web の check:js-budget) を超えない。トークン導入で追加の外部ライブラリを入れない。",
+      "C3: 新しいWebフォントと外部フォントURLを追加しない。和文は system-ui 系ゴシック、金額・数値は既存の IBM Plex Mono Latin 400/600 だけを @fontsource/ibm-plex-mono から自己配信する。それ以外の subset / weight はビルドに含めず、font-family: var(--font-mono) を使う rule は 400 または 600 を明示する。",
+      "C4: WCAG 2.2 AA を下回らない。文字 4.5:1、図形・UI 部品 3:1。FINAL-UI の注意色 #B97000 は白い面で 3.90:1 のため文字には派生色を使う (利用者決定 2026-09-13『役割で分ける』)。画像から実測したチャート系列色 (収入 #599AE9 は 2.91:1、支出 #EB9099 は 2.34:1) は色相を保ったまま明度を 3:1 以上へ調整する。 境界色 #D7E0E2 は白い面で 1.34:1 のため、装飾罫線にだけ使い、部品を見分ける枠には同じ色相で 3:1 を満たす派生色を使う (利用者決定 2026-09-13『役割で2つに分ける』)。",
+      "C5: 既存の prefers-contrast: more の上書きと、狭幅のドロワー・下部タブ (tabbar) の挙動を壊さない。",
+      "C6: CI の headless Chrome は pointer:none として振る舞うため、ポインタ種別に依存する見た目の分岐を新設するときは否定形の 2 段で書く。",
+      "C7: 表示値は匿名・架空のサンプルに限り、実データを成果物・テスト・画像に含めない (guard-real-data)。"
     ],
     "concrete_intents": [
       {
         "id": "I1",
-        "text": "${LOCAL_SOURCE_FILE} を取り込むと、事業・副業の ${LOCAL_RECORD_COUNT}件の入金が事業収入として、事業経費/事業・情報サービス/事業・携帯電話の支出が事業費として現れる。",
+        "text": "新しい画面をつくるとき、色・余白・角丸・文字サイズを design-tokens から選ぶだけで FINAL-UI と同じ見た目になる。",
         "serves": [
           "G1",
-          "G2"
-        ]
-      },
-      {
-        "id": "I2",
-        "text": "『事業』で始まる中項目を MF 側で新しく作っても、そのまま事業として扱われる。",
-        "serves": [
           "G4"
         ]
       },
       {
+        "id": "I2",
+        "text": "どの画面を開いても、左に同じネイビーのサイドバー (220px)、上に同じヘッダー (64px・期間 1年/2年/3年/任意)、下に同じフッターが出る。",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
         "id": "I3",
-        "text": "freee にも記帳済みの事業経費が、MF 側の事業判定によって二重に計上されない。",
+        "text": "月次の収入・支出・純収支の図は、どの画面でも収入が青い棒、支出が赤系の棒、純収支がティールの線で描かれる。",
         "serves": [
           "G3"
         ]
       },
       {
         "id": "I4",
-        "text": "ある明細がなぜ事業になったのかを画面で確認できる。",
+        "text": "誰かが画面のコードに #xxxxxx の色を直書きしたら、pnpm lint が落ちて共通トークンを使うよう促す。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "注意 (アンバー) の表示は、バッジやアイコンの塗りは画像どおりの色で、文字は読みやすい濃さで出る。表の罫線は画像どおり淡く、入力欄の枠は見分けられる濃さで出る。",
         "serves": [
           "G5"
         ]
       }
     ],
     "confirmed": true,
-    "approval_ref": "appr-foundation-mf-business-classification-001"
+    "approval_ref": "appr-foundation-design-system-002"
   },
-  "decisions": [],
+  "decisions": [
+    {
+      "id": "dec-design-token-source",
+      "question": "デザイントークンの正本をどこに置くか",
+      "status": "confirmed",
+      "serves_goals": [
+        "G1",
+        "G3",
+        "G4"
+      ],
+      "options": [
+        {
+          "id": "core-ts",
+          "label": "packages/core の design-tokens.ts を正本にし、CSS 変数とチャートの予備値を生成する",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "notes": "OSS と既存ツールチェーンだけで実装でき、追加の費用は発生しない",
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "追加費用 0。保守は既存 CI (pnpm lint / vitest) の実行時間内に収まる"
+          },
+          "free_tier_limits": "該当なし (ライブラリ・サービスを追加しない)",
+          "goal_fit": "G1 の『依存ゼロの TypeScript 1 か所』に直接合う。テスト (O1・O4) が CSS を解析せず値を import でき、次サイクルでレポート側からも同じ値を import できる",
+          "security_fit": "ビルド時定数で、CSP・外部資源を増やさない",
+          "pros": [
+            "テストとレポートが型付きで同じ値を読める",
+            "charts.ts の予備値の直書きを 0 件にできる"
+          ],
+          "cons": [
+            "CSS 変数を生成する工程か、写しの一致を検査する lint が要る",
+            "既存の report-css は CSS→TS の向きで、正本の向きが逆になる"
+          ],
+          "risks": [
+            "生成物を手で編集されると正本と写しがずれる (lint で検出する前提)"
+          ],
+          "lock_in": "低い。値は平文の定数で、生成方向を後から逆にできる",
+          "ops_burden": "lint スクリプト 1 本の保守",
+          "evidence_refs": [
+            "https://www.chartjs.org/docs/latest/general/colors.html",
+            "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html"
+          ]
+        },
+        {
+          "id": "css-root",
+          "label": "styles.css の :root を正本に維持し、予備値のずれを lint で塞ぐ",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "notes": "OSS と既存ツールチェーンだけで実装でき、追加の費用は発生しない",
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "追加費用 0。保守は既存 CI (pnpm lint / vitest) の実行時間内に収まる"
+          },
+          "free_tier_limits": "該当なし (ライブラリ・サービスを追加しない)",
+          "goal_fit": "現行の charts.ts の設計 (getComputedStyle で CSS 変数を読む) をそのまま使え、変更が最小。ただし G1 の『TypeScript 1 か所』とは合わず、テストは CSS を解析して値を得る",
+          "security_fit": "ビルド時同梱で、CSP・外部資源を増やさない",
+          "pros": [
+            "変更が最も少ない",
+            "report-css と同じ CSS→TS の向きで揃う"
+          ],
+          "cons": [
+            "CSS を持たない成果物やテスト (jsdom) では値を取りにくい",
+            "予備値は結局 TS に残るため、lint で一致を見続ける必要がある"
+          ],
+          "risks": [
+            "CSS 解析に頼るテストは記法の変更で壊れやすい"
+          ],
+          "lock_in": "低い",
+          "ops_burden": "lint スクリプト 1 本の保守",
+          "evidence_refs": [
+            "https://www.chartjs.org/docs/latest/general/colors.html"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "core-ts",
+        "rationale": "G1 と O1・O4 の検証を CSS の解析なしで書け、次サイクルのレポート配色移行でも同じ値を import できる。実行時の図の色の読み方 (getComputedStyle) は変えず、ずれている予備値だけを正本から取るので、現行実装の利点を保ったまま直書きを 0 件にできる。",
+        "caveats": [
+          "既存 report-css の検査は CSS→TS の向きで、正本の向きが逆になる。規約文書で向きを明記する",
+          "推奨を提示した時点 (2026-09-13T04:39Z) では、判断材料のコード観測記録に Chart.js が CSS 変数を読めないという誤記があった。選択肢 2 の説明文は実装どおりだった"
+        ],
+        "confidence": "medium",
+        "latest_checked_at": "2026-09-13T05:06:15Z",
+        "comparison_basis": {
+          "goal_fit": "core-ts は G1 に直接合う。css-root は変更最小だが G1 の TypeScript 正本と合わない",
+          "tco": "どちらも追加費用 0。core-ts は生成または一致検査の lint、css-root は予備値の一致検査の lint が要り、保守量は同程度",
+          "security": "差なし。どちらもビルド時同梱で CSP を変えない",
+          "operations": "core-ts はテスト・レポートから値を型付きで読める。css-root はテストで CSS を解析する",
+          "lock_in": "どちらも平文の定数で、向きを後から逆にできる"
+        }
+      },
+      "user_decision": {
+        "option_id": "core-ts",
+        "confirmed_at": "2026-09-13T04:54:53Z",
+        "qa_ref": "qa-frontend-web-ds-decision-004"
+      }
+    },
+    {
+      "id": "dec-border-color-roles",
+      "question": "境界色 #D7E0E2 (白に 1.34:1) を、WCAG 2.2 の 1.4.11 とどう両立させるか",
+      "status": "confirmed",
+      "serves_goals": [
+        "G5",
+        "G1"
+      ],
+      "options": [
+        {
+          "id": "split-roles",
+          "label": "装飾罫線は #D7E0E2、部品を見分ける枠は 3:1 の派生色",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "notes": "OSS と既存ツールチェーンだけで実装でき、追加の費用は発生しない",
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "追加費用 0。保守は既存 CI (pnpm lint / vitest) の実行時間内に収まる"
+          },
+          "free_tier_limits": "該当なし",
+          "goal_fit": "G5 の役割分離を境界へ広げ、画像の淡い罫線と部品の枠の 1.4.11 を両立する",
+          "security_fit": "影響なし",
+          "pros": [
+            "表やカードの見た目が画像どおり",
+            "入力欄・チェックボックスの枠が 3:1 を満たす"
+          ],
+          "cons": [
+            "境界トークンが 2 つになり、使い分けの規約が要る"
+          ],
+          "risks": [
+            "部品の枠に装飾罫線トークンを使う誤用 (O4 のテストで検出する)"
+          ],
+          "lock_in": "低い",
+          "ops_burden": "トークン 1 つとテスト 1 項目の追加",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html"
+          ]
+        },
+        {
+          "id": "all-3to1",
+          "label": "すべての境界を 3:1 以上にする",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "notes": "OSS と既存ツールチェーンだけで実装でき、追加の費用は発生しない",
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "追加費用 0。保守は既存 CI (pnpm lint / vitest) の実行時間内に収まる"
+          },
+          "free_tier_limits": "該当なし",
+          "goal_fit": "G5 は単純に満たすが、FINAL-UI の落ち着いた見た目 (正本) から離れる",
+          "security_fit": "影響なし",
+          "pros": [
+            "規約が 1 つで単純"
+          ],
+          "cons": [
+            "画面全体の線が画像より濃くなり、数字と線が競合する"
+          ],
+          "risks": [
+            "FINAL-UI を正本とする U1 と食い違う"
+          ],
+          "lock_in": "低い",
+          "ops_burden": "最小",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html"
+          ]
+        },
+        {
+          "id": "all-image",
+          "label": "すべて画像どおり #D7E0E2",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "notes": "OSS と既存ツールチェーンだけで実装でき、追加の費用は発生しない",
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "追加費用 0。保守は既存 CI (pnpm lint / vitest) の実行時間内に収まる"
+          },
+          "free_tier_limits": "該当なし",
+          "goal_fit": "見た目は画像に一致するが、G5 の部品 3:1 を外すことになる",
+          "security_fit": "影響なし",
+          "pros": [
+            "見た目が完全に画像どおり"
+          ],
+          "cons": [
+            "入力欄などの枠が 1.4.11 を満たさない"
+          ],
+          "risks": [
+            "低視力の利用時に入力欄の範囲が見分けにくい"
+          ],
+          "lock_in": "低い",
+          "ops_burden": "最小",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html",
+            "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "split-roles",
+        "rationale": "1.4.11 は部品を識別するのに必要な視覚情報に適用され、装飾だけの罫線は対象外である。そのため罫線は画像どおりに残し、部品の枠だけを加工すれば、U1 (FINAL-UI を正本) と G5 (AA 維持) を同時に満たせる。",
+        "caveats": [
+          "派生色 #7F9095 は背景 #F6F8F9 で 3.12:1 と余裕が小さい。背景色を変えるときは再計算する",
+          "入力欄が塗りなど別の手段で識別できる場合の扱いは規約文書で明記する"
+        ],
+        "confidence": "high",
+        "latest_checked_at": "2026-09-13T05:06:15Z",
+        "comparison_basis": {
+          "goal_fit": "split-roles だけが U1 と G5 を両立する",
+          "tco": "3 案とも追加費用 0。split-roles はトークン 1 つとテスト 1 項目が増える",
+          "security": "差なし",
+          "operations": "split-roles は使い分けの規約とテストが要る。他 2 案は規約が単純",
+          "lock_in": "3 案とも値の変更で切り替えられる"
+        }
+      },
+      "user_decision": {
+        "option_id": "split-roles",
+        "confirmed_at": "2026-09-13T07:48:43Z",
+        "qa_ref": "qa-ui-ux-web-ds-decision-007"
+      }
+    }
+  ],
   "knowledge_candidates": [],
   "design_applications": {
-    "backend": {
-      "text": "Clean Architecture / DDD / API Design Patterns の 3 card のうち、本章の確定に実際に効いたのは 『業務ルールをどこに置くか』の一点である。本サイクルが解く問題は技術選定ではなく、『何が事業か』という業務ルールが classify.ts と total-cashflow.ts に二重に実装され、しかも基準が違う ことにある。DDD の言う ubiquitous language に照らせば、事業/家計という語がコード上で 2 通りに定義されて いる状態であり、これは用語のずれが変更時の再解釈を強いる典型である。よって本章は判定を 1 つの述語へ集約し、MfTx を取込原本、TxEdit を利用者の意思、ResolvedTx を導出値として役割を分けた。API Design Patterns については、本サイクルが新規エンドポイントを追加せず既存応答に clsSrc を additive に足すだけであるため、破壊的変更の回避という一点のみを採り、versioning や idempotency は 適用条件 (複数 client の独立 release) を満たさないため採らない。",
-      "recorded_at": "2026-09-10T04:53:24Z",
-      "basis": "agent-inference"
-    },
-    "database": {
-      "text": "DDD card のうち本章に効いたのは aggregate の境界と invariant の所有者に関する部分である。本章の確定は『mf_transactions に cls 列を追加しない』であり、これは取込原本 (MF が何と言ったか) と 利用者の意思 (tx_edits) を別の所有者に持たせる判断にあたる。両者を 1 テーブルに混ぜると、再取込のたびに利用者の判断が上書きされるか、上書きを避けるための例外分岐が原本テーブルに溜まる。card が「解決する問題」として挙げる『invariant と transaction owner が不明で、どこからでも data を変更できる』そのものである。一方 card が挙げる bounded context の分割は、単一利用者・単一業務の本システムでは適用条件を満たさないため採らない。",
-      "recorded_at": "2026-09-10T05:45:57Z",
-      "basis": "agent-inference"
-    },
-    "auth": {
-      "text": "Secure by Design card は本章に適用する。card の適用条件が『金銭を扱う全 system』を含む以上、家計と事業の金額を扱う本システムは非適用にできない。本章の確定に効いたのは card の非適用条件が定める逃げ方 — 『asset/threat が極小なら control を軽量化できるが、根拠付き risk acceptance が要る』— の方である。本システムは単一利用者・ロール区分なし・外部公開なしであり、多層防御や最小権限を形だけ導入しても認知負荷が増えるだけなので control を軽量化する。その代わり受け入れる risk を明示する: 認証は単一要素 (パスワード + HMAC 署名 Cookie) で、パスワード漏洩がそのまま全データへの到達を意味する。これを受容できる根拠は、扱うのが利用者自身の家計簿データのみで第三者の個人情報を持たないこと、および Secure defaults の観点で login rate limit が既定で効いていることである。本サイクルはこの受容の前提を一切動かさない — 新規エンドポイント 0 件、新しい主体 0 件、新しい機微データ 0 件であり、risk acceptance の再評価を要さない。",
-      "recorded_at": "2026-09-10T05:37:16Z",
-      "basis": "agent-inference"
-    },
-    "security": {
-      "text": "Secure by Design card から本章に効いたのは 2 点である。第一に適用条件の『外部入力を扱う全 system』— 中項目は利用者自身が MF 上で付けた分類だが、CSV というファイル境界を越えて入ってくる以上、本章では外部入力として扱う。第二に Secure defaults — 本章の確定はいずれも『既定で安全な形にしておき、利用者の注意に頼らない』という形をとっている。具体的には (1) 判定は必ず decodeBuf (utf-8 fatal → shift_jis フォールバック) を通した後の文字列に対して行い、生バイト列や誤った文字コードで読んだ文字列に前方一致を掛けない、(2) 前方一致の比較前に trim を掛け、前後空白のゆれで判定が外れる既定を潰す、(3) 中項目文字列の表示は React の自動エスケープに、SQL は Drizzle のパラメータバインドに委ね、文字列連結を新設しない — の 3 つである。いずれも control を新設せず既存の安全な既定を経路として保つ形であり、card が戒める security theater (control 数だけ増やして owner も evidence も持たない) を避ける。残る対価 — 利用者が意図せず事業で始まる家計用の中項目を作った場合の誤分類 — をコード (除外リスト) で防がず運用の約束として受け止めるのは、本章ではなく maintenance-ops 章の確定 (qa-maintenance-ops-web-mf-decision-002) である。本章はその確定を所与として、誤分類が起きたとき clsSrc で切り分けられることを受容の条件として確認するに留まる。card の Data lifecycle (暗号化・保持・削除) の節は、本サイクルが新しい機微データも新しい書込経路も導入せず、監査ログの記録対象も増やさないため適用しない。",
-      "recorded_at": "2026-09-10T05:45:57Z",
-      "basis": "agent-inference"
-    },
     "ui-ux": {
-      "text": "Information Design card のうち本章に効いたのは『何を残し何を落とすか』の判断軸である。中項目由来で事業になった明細について、残すのは『事業になった』という結果と『中項目』という根拠ラベルの 2 つ、落とすのは未レビュー件数への計上である。この取捨の根拠は task 頻度 × 失敗コストで、月 30 件前後を毎月確認させる頻度の高さに対し、MF 上で既に仕分け済みの明細を見落とす失敗コストは低い。同じ判断軸が表現物 (1) の 5 束目にも効いた。card は削減について『削減の停止条件は「ラベルなしで受け手が識別できるか」』と定める。要確認を 4 束から外すのは削減だが、そこで止めると合計が合わない理由が識別できなくなるため、要確認という束のラベルを残す点が停止条件にあたる。reviewAmount という絶対値合計は card の言う加工であり、『加工の各件に「どの task を助けるか」を書けないなら加工しない』という要求に対しては、『確認を今すぐ見るべきか後回しでよいかの緊急度判断』という task を挙げられる。なお card が要求する information-priority-map.json の生成は下流工程の責務であり、本章は方針 (何を残し何を落とすか、その根拠) の確定までを担う。",
-      "recorded_at": "2026-09-10T05:44:57Z",
+      "text": "Information Design card の『残す・落とす・加工する』を共通シェルの領域配分に適用した。ヘッダーには全ページで常に要る現在地・全体期間・データ鮮度だけを残し、ページ固有の期間は『計画期間』など別名にして全体期間と混同させない — 期間の誤解が最も失敗コストの高い事故だからである (DESIGN-SYSTEM.md の避けるべき事故)。色は card の『加工には検証コストが伴う』を受けて、状態を表すときだけ使い、ページ全体を淡色で塗らない。加工は task に理由を書ける場合に限る: チャート系列色 (2.34:1・2.91:1) は識別という task のために色相を保って 3:1 へ暗くし、境界は『装飾罫線』と『部品を見分ける枠』に役割を分けて、前者は画像どおり #D7E0E2 を残し、後者だけを 3:1 の派生色へ加工する (利用者決定 qa-ui-ux-web-ds-decision-007)。罫線まで濃くすると、読む必要のない線が読むべき数字と競合するためである。",
+      "recorded_at": "2026-09-13T07:54:32Z",
       "basis": "agent-inference"
     },
     "frontend": {
-      "text": "Clean Architecture card と Information Design card の交点が本章に効いた。clsSrc という 1 つの値を core が決め web が表示へ写像するだけにする、という構造の選択は Dependency Rule の適用であると同時に、画面が持つ情報を『判定結果 + その根拠』の 2 つに絞る情報設計の判断でもある。web 側で中項目文字列を再解釈しないことが、この 2 つを同時に満たす。O8 (要確認の金額を reviewAmount としてサーバ側で導出する) には card の『加工 ⇄ 検証コスト』が直接効いた。符号を落とした絶対値の合計はまさに加工であり、card は『加工の各件に「どの task を助けるか」を書けないなら加工しない』と課す。本件が助ける task は『要確認を今すぐ見るべきか後回しでよいかの判断』であり、件数だけではこれが決まらない。加工を web ではなくサーバへ置くのは、card が言う加工の自由度が『表示が中核ルールから隔離されている』ことを前提とするためで、画面側で合算すると同じ数字の正本が 2 つになりその前提が崩れる。reviewCount と reviewAmount を同じ集合から出す制約は card の『削減の停止条件』の裏返しで、件数だけまで削ると受け手が規模を識別できなくなる — そこが削減を止める点である。",
-      "recorded_at": "2026-09-10T05:37:16Z",
+      "text": "Clean Architecture card の Dependency Rule をトークンの配置に適用した。トークン (役割名→値) は表示技術に依存しない最内側の方針なので packages/core に置き、CSS 変数 (styles.css の :root) はその外側の写しとして生成する。charts.ts は現行どおり getComputedStyle で CSS 変数を読む経路を残し、CSS を読めない環境向けの予備値 (COLOR_FALLBACKS) だけを core の値から取る — 現状ずれているのはこの予備値であり (qa-frontend-web-ds-observed-005)、正本を CSS から TS へ移しても実行時の読み方は変えずに済む。Information Design card は、同じ値を手で写す箇所が増えるほど利用者が見る色がずれることを示しており、ずれ検出 lint はその停止条件を機械化したものである。",
+      "recorded_at": "2026-09-13T07:54:32Z",
+      "basis": "agent-inference"
+    },
+    "backend": {
+      "text": "3 枚の card のうち本章に効いたのは Clean Architecture の境界の判断だけで、API 設計と DDD の集約は本サイクルで適用対象が無い。デザイントークンは入出力も業務ルールも持たない純データであり、Worker の API 契約・ルート・集約を増やさないことが、表示の関心をサーバ側へ漏らさないという境界の適用になる。API design patterns と DDD card は、トークンをリモート設定として配信する案を採らない理由 (ビルド時同梱で足りる) の確認に使っただけで、確定内容を変えていない。",
+      "recorded_at": "2026-09-13T05:07:52Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、本章で永続化の変更をしない判断に適用した。トークンはビルド時の定数で、利用者ごとに変わる状態ではないため D1 に置かない。全体期間の選択は既存の保持の仕組み (PR #45) が利用者の状態として既に扱っており、見た目の共通化はその保持場所を変える理由にならない。",
+      "recorded_at": "2026-09-13T05:07:52Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design card の『既定で安全・失敗時は閉じる』を、ログイン画面の共通シェルに適用した。DESIGN-SYSTEM.md はログイン画面にも同じサイドバーを出すと定めるが、未認証時の業務メニューはロック表示にし、実際の保護は authGuard が /api/* で担う。見た目の部品がリンクを表示しても、認可の判断を部品側へ移さない — 表示のロックは案内であって防御ではない、という区別を本章の確定内容にした。",
+      "recorded_at": "2026-09-13T05:07:52Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "Secure by Design card の『攻撃面を増やさない』を、新規の外部Webフォント/CDNを追加しない利用者決定 (qa-ui-ux-web-ds-decision-005) と CSP の維持に結び付けた。和文は system-ui 系ゴシック、金額は既存の IBM Plex Mono Latin 400/600 をアプリ資産として自己配信するため、外部通信や CSP 拡張は発生しない。トークンもビルド時に同梱し、実行時に色や寸法を外部から取得しない。",
+      "recorded_at": "2026-09-13T07:54:32Z",
       "basis": "agent-inference"
     },
     "infrastructure": {
-      "text": "本章に適用する deep knowledge card は無い。理由は本章の内容ではなく索引の側にある — C04 resource-map.yaml の read_when は各 card の適用対象カテゴリを列挙しており、infrastructure を挙げる card は 1 件も無い。C03 の compile-spec-doc.py::category_design_refs() はこの read_when だけから章への card を導出するため、本章に自動で引かれる card は構造的に 0 件になる。内容の側から補って引くべき card があるかも確かめたが、本サイクルの確定は『既存の Workers / D1 / SPA 配信をそのまま使い、新しい障害点を持ち込まない』ことに尽き、構成を選び直す判断が無いため card の適用余地が実際に無い。上流指針は doctrine 側 (reliability / operations) で引いている。",
-      "recorded_at": "2026-09-10T05:37:16Z",
+      "text": "本章へ引く card は 0 件である。未着手ではなく、配信構成 (Workers の静的アセット + /api/* の Worker) を変えないサイクルで、infrastructure 固有に適用すべき設計知識が無いことを確認した上での確定である。本章に効く制約は初期 JS 予算 (check:js-budget) で、トークンを依存ゼロの定数にする判断はこの予算を守るための選択として記録する。",
+      "recorded_at": "2026-09-13T05:07:52Z",
       "basis": "agent-inference"
     },
     "maintenance-ops": {
-      "text": "Clean Code card から本章に効いたのは 3 つの節である。第一に『重複した rule が別々に更新され、仕様の SSOT が崩れる』(解決する問題) — これが本サイクルの主題そのもので、『何が事業か』が classify.ts と total-cashflow.ts に別々の基準で実装されている現状を、なぜ直さねばならないかの根拠になる。第二に『Appropriate abstraction / DRY: 見た目の重複でなく同じ knowledge を統合する』 — 統合の対象を『似たコード』ではなく『同じ業務ルール』と定めるこの区別が、判定述語を 1 つに集約する範囲を決めた。BIZ_INCOME_MAJOR による大項目一致と中項目の前方一致は見た目は似ているが同じ knowledge (何が事業か) なので統合し、たまたま似ているだけの集計コードは統合しない。第三に『Executable examples: behavior と invariant を test で表し、内部構造でなくobservable outcome を守る』 — 各目標の measure を『旧実装では赤になる』受入条件の形で書いたのはこの節の適用であり、内部の関数分割ではなく『どの合計にどの金額が現れるか』という観測可能な結果で守る。『Intention-revealing names』も併せて効いており、判定述語と clsSrc の値という2 つの新しい名前が『中項目の前方一致で事業と判定した』という意図を伝えられるかが、将来の追跡可能性を決める。既知の中項目名を列挙しない (制約 O4) ことも、名前に規則を語らせて列挙に語らせないという同じ原則の帰結である。一方 card の『Continuous refactoring』は、本サイクルが単一の変更で完結し段階的な設計改善の計画を持たないため採らない。",
-      "recorded_at": "2026-09-10T05:37:16Z",
+      "text": "Clean Code card の『同じ知識を 1 か所に置く (DRY)』と『意図を名前で示す』を保守の仕組みに適用した。色の値を役割名で呼ぶ (例: 注意の塗りと注意の文字を別名にする) ことで、直書きの hex がコードに現れた時点で規約違反と判別できる。これを lint で機械検出するのは、人やエージェントのレビューに頼ると規約が今後の作成物へ届かないためである。",
+      "recorded_at": "2026-09-13T05:07:52Z",
       "basis": "agent-inference"
     }
   },
   "hearing_progress": {
-    "loop_count": 1,
+    "loop_count": 2,
     "next_question": null,
     "complete": true
   },
   "doctrine_applications": {
+    "ui-ux": {
+      "presentation": {
+        "text": "Apple HIG の一貫性と情報階層の原則を、全 20 画面が同じシェル (サイドバー 220px・ヘッダー 64px・フッター) と同じボタン階層 (主/副/危険/テキスト) を持つという確定内容に反映した。操作対象 44px 以上は HIG のタップ領域の考え方と DESIGN-SYSTEM.md の規定が一致する。",
+        "recorded_at": "2026-09-13T05:07:52Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "presentation": {
+        "text": "Apple HIG の一貫性の原則を、見た目の値を画面ごとに持たせず共通部品とトークンだけから描くという実装上の制約に反映した。ボタンやチャートの色を画面側で上書きしないことが、画面間で同じ操作が同じ見た目になることを保証する。",
+        "recorded_at": "2026-09-13T05:07:52Z",
+        "basis": "agent-inference"
+      },
+      "application-architecture": {
+        "text": "Clean Architecture の依存方向を、core (トークン正本) ← web (CSS 変数・charts.ts・部品) の一方向に反映した。core は web を知らず、写しのずれは lint が外側で検出する。",
+        "recorded_at": "2026-09-13T05:07:52Z",
+        "basis": "agent-inference"
+      }
+    },
     "backend": {
       "application-architecture": {
-        "text": "依存方向を内向きに保つという Dependency Rule を、本章の確定 (判定述語を packages/core に 1 つ置き classify.ts と total-cashflow.ts の双方が参照する) の根拠にした。現状は total-cashflow.ts が BIZ_INCOME_MAJOR という自前の判定を持ち、同じ業務ルール (何が事業か) が 2 箇所に実装されている。これは業務ルールが集計という外側の関心へ染み出した状態であり、片方だけ直すと画面間で境界がずれる。本章はこれを『判定は内側 (core の純関数) に 1 つ、集計と表示は外側からそれを呼ぶだけ』へ是正することを 確定内容とした。packages/core が依存ゼロである既存規約 (制約 C1) は、この内向き依存を構造的に強制する。",
-        "recorded_at": "2026-09-10T04:53:24Z",
+        "text": "Clean Architecture の境界を、表示の関心 (トークン) を Worker の API に入れないという確定内容に反映した。packages/api のルートと入出力は変えない。",
+        "recorded_at": "2026-09-13T05:07:52Z",
         "basis": "agent-inference"
       },
       "data-access": {
-        "text": "永続化を境界の外へ追い出し adapter で隔離するという指針を、本章の確定 (取込原本 mf_transactions に cls 列を持たせず、判定は毎回 core の純関数で導出する) の根拠にした。判定結果を列として永続化すると 判定規則の変更が過去データのマイグレーションを要求し、規則が DB スキーマに固着する。本章は判定を導出値に留め、利用者の意思だけを tx_edits に永続化する既存設計 (制約 C3) を維持することを 確定内容とした。これにより中項目の新設 (G4) がスキーマ変更なしに追従する。",
-        "recorded_at": "2026-09-10T04:53:24Z",
+        "text": "データアクセス層には本サイクルの変更が無い。トークンはデータアクセスを経由しない定数であり、既存のリポジトリ層の責務を広げないことを反映として記録する。",
+        "recorded_at": "2026-09-13T05:07:52Z",
         "basis": "agent-inference"
       }
     },
     "database": {
       "data-access": {
-        "text": "data-access anchor の『永続化を境界の外へ追い出し adapter で隔離する』という指針を、本章では『本サイクルで DB スキーマを変更しない』という確定の根拠にした。中項目は既に mf_transactions に取り込まれており、事業判定に必要な入力は全て永続化済みである。判定という業務ルールを列として固定しないことで、永続層は『MF が何と言ったか』の記録に徹し、『それを事業とみなすか』の解釈は core 側に残る。前方一致という規則の変更が DB 移行を伴わない。同じ anchor を backend 章でも引いているが、あちらが決めたのは判定を毎回導出することで、本章が決めたのはスキーマを動かさないことである。",
-        "recorded_at": "2026-09-10T05:37:16Z",
+        "text": "データアクセスの責務をドメイン状態の永続化に限る原則を、トークンを D1 に置かないという確定内容に反映した。",
+        "recorded_at": "2026-09-13T05:07:52Z",
         "basis": "agent-inference"
       },
       "reliability": {
-        "text": "reliability anchor から本章に効いたのは、SLO を満たすための冗長化やキャッシュを『いつ導入しないか』を判断する部分である。月次集計値を保存せず要求時に canonical から毎回導出する既存決定 (制約 C5) を維持できるのは、単一利用者・月次数百行という規模では毎回導出の計算コストが可用性目標を脅かさず、エラーバジェットを消費しないためである。この規模判断が anchor に接地する部分であり、ここだけを根拠として引く。なお導出に徹する設計が『判定規則を直した瞬間に画面ごとに違う数字が出る』事態を防ぐことも確定の理由だが、これは可用性ではなく正確性・鮮度の論点であり、reliability anchor ではなく本章の確定セル (qa-database-web-mf-001) と G3 (画面間で数字が食い違わない) に直接接地する。両者を混ぜて anchor の権威で正確性の議論を裏付けない。",
-        "recorded_at": "2026-09-10T05:37:16Z",
+        "text": "Google SRE の変更リスク最小化を、スキーマ・マイグレーションを伴わないサイクルにする判断に反映した。見た目の変更で夜間バックアップ (D1→R2) と復元手順に影響を出さない。",
+        "recorded_at": "2026-09-13T05:07:52Z",
         "basis": "agent-inference"
       }
     },
     "auth": {
       "authentication": {
-        "text": "ASVS の認証境界の考え方を、本章では『本サイクルで新しい入口を作らない』ことの検証手順に落とした。境界の所在をまず確定させた — packages/api/src/auth.ts の二段構え (ACCESS_AUD と ACCESS_TEAM_DOMAIN が揃うときだけ Access JWT 検証、未設定時はアプリ内セッション認証) と wrangler.jsonc で両 var が空であることから、現に効いている境界はアプリ内セッションのミドルウェアであってエッジではない。そのうえで packages/api/src/index.ts のルート定義を読み、追加する API エンドポイントが 0 件であること、変更対象 (packages/core の純関数と既存 route の応答組み立て) がいずれもそのミドルウェアの内側に留まることを確認して確定した。判定関数が core (依存ゼロ) に置かれることは、認証状態を参照する経路が構造的に生じないことを意味する。",
-        "recorded_at": "2026-09-10T05:37:16Z",
+        "text": "OWASP ASVS の認証要件を、既存の authGuard とセッション発行を変えないという確定内容に反映した。共通シェル化はログイン画面の見た目だけを揃える。",
+        "recorded_at": "2026-09-13T05:07:52Z",
         "basis": "agent-inference"
       },
       "security": {
-        "text": "脅威モデルの観点を、本章では『判定根拠 (clsSrc) を応答に足すことが情報の露出面を広げないか』の検査に用いた。clsSrc が示すのは『なぜ事業になったか』という自分自身のデータの分類理由であり、他利用者のデータや 資格情報を含まない。既存の ResolvedTx が既に clsSrc を返しているため、露出面は本サイクルで増えない。",
-        "recorded_at": "2026-09-10T04:53:24Z",
+        "text": "OWASP ASVS のアクセス制御の原則 (サーバ側で強制する) を、未認証時のメニューのロック表示を案内に留め、保護は /api/* の authGuard が担うという区別に反映した。",
+        "recorded_at": "2026-09-13T05:07:52Z",
         "basis": "agent-inference"
       }
     },
     "security": {
       "security": {
-        "text": "ASVS の入力検証の指針を、本章では『中項目という利用者由来の文字列を判定に使う』ことの妥当性検査に用いた。前方一致は文字列比較のみで、正規表現の動的構築も eval もコード分岐の生成も伴わないため、中項目に何が入っていても実行経路は変わらない。最悪ケースは『意図しない明細が事業に分類される』ことであり、これは利用者自身の分類結果に閉じる。この最悪ケースを受容できる根拠として、『MF 側で事業で始まる家計用の中項目を作らない』という運用上の約束を利用者から得ている。CP932 の decode 失敗が文字化けを介して判定を狂わせる経路については、まず一次資料である Cloudflare 公式ドキュメント (Encoding API / Web Standards、いずれも 2026-04-23 更新) を確認したが、両ページとも TextDecoder を UTF-8 デコーダとしか記さず legacy charset の可否を明記していないため、これだけでは可否を決められない。そこで実装正本である cloudflare/workerd の issue #6193 を二次の根拠として参照し、shift_jis の streaming decode が問題として立っていること自体から実装の存在を確認した。公式ドキュメントを一次、issue を補完という序列で引く。そのうえで既存 decodeBuf が stream 分割せず全バッファを一度に decode することを確認し、この issue の影響範囲から外れることを確かめて排除した。",
-        "recorded_at": "2026-09-10T05:37:16Z",
-        "basis": "agent-inference"
-      }
-    },
-    "ui-ux": {
-      "presentation": {
-        "text": "情報階層の原則を、本章では『判定根拠をどこまで見せるか』の確定に用いた。利用者は 3 案 ((a) 根拠を「中項目」と表示しレビュー済扱い / (b) 表示しつつ未レビューにも数える / (c) 既存の「ルール」由来と同じ表示に寄せる) から (a) を選んだ。(b) は安全側だが毎月 30 件前後の確認作業を恒久化し、(c) は表示を減らす代わりに『なぜ事業になったか』の切り分けを不可能にする。(a) は『MF 上で既に利用者自身が仕分けた』という事実を作業量ゼロで尊重しつつ、根拠ラベルという最小の情報だけを階層の下位に置く。同じ原則を、表現物 (1) の要確認の束にも適用した。要確認は常時 0 件でありうる補助的な束であり、事業収入・事業費・家計収入・家計費の 4 束と同じ視覚重みを与えると、『今月は全体でいくらプラスマイナスか』という主たる読み取りを妨げる。よって階層の下位に置き、4 束の合計と並べない。アクセシビリティ上、根拠は色ではなくラベル文字列で示す。",
-        "recorded_at": "2026-09-10T05:44:57Z",
-        "basis": "agent-inference"
-      }
-    },
-    "frontend": {
-      "presentation": {
-        "text": "Apple HIG の情報階層の原則を、本章では『応答形状を壊さずに根拠を通す』という確定の根拠にした。ResolvedTx が既に clsSrc を持ち画面もそれを表示に使っているため、新しい表示経路を作らずラベルを 1 つ増やすだけで根拠が届く。表示の追加を最小に留めることが、既存の情報階層を乱さない。同じ原則が O8 の表示経路にも効いた。reviewAmount は TotalCashflowMonth の既存フィールドと同じ経路で web へ届き、画面は shiftedAmount と同様にそれを写すだけである。階層上は既存 4 束の下位に置き、合計と同じ視覚重みを与えない — 要確認は合計の一部ではなく合計から外した残余だからであり、同じ重みで並べると利用者がどれを足せば全体になるのかを読み違える。",
-        "recorded_at": "2026-09-10T05:44:57Z",
-        "basis": "agent-inference"
-      },
-      "application-architecture": {
-        "text": "Dependency Rule を、本章では『判定ロジックを web 側に持たない』ことの根拠にした。clsSrc の値の意味づけ (どの値が中項目由来か) は core が決め、web はそれを表示ラベルへ写像するだけに留める。web 側で中項目の文字列を見て事業かどうかを再判定すると、判定の正本が 3 箇所目として増え、本サイクルが解こうとしている 2 系統分裂そのものを再生産する。",
-        "recorded_at": "2026-09-10T04:53:24Z",
+        "text": "OWASP ASVS の構成要件 (CSP など安全なヘッダー) を、_headers の CSP を広げずに済む範囲で共通化するという確定内容に反映した。外部フォント・CDN を追加しない。",
+        "recorded_at": "2026-09-13T05:07:52Z",
         "basis": "agent-inference"
       }
     },
     "infrastructure": {
       "reliability": {
-        "text": "SRE の可用性の考え方を、本章では『インフラ構成を本サイクルで変更しない』ことの確定根拠にした。変更は packages/core の純関数と既存 route の応答組み立てに閉じ、Workers / D1 / SPA 配信の構成に触れない。新しい障害点を持ち込まないことが、この規模のシステムにおける最も確実な可用性の担保である。",
-        "recorded_at": "2026-09-10T04:53:24Z",
+        "text": "Google SRE の変更リスク最小化を、配信構成を変えずビルド成果物だけを差し替えるサイクルにする判断に反映した。初期 JS 予算の検査をリリース前の防壁として維持する。",
+        "recorded_at": "2026-09-13T05:07:52Z",
         "basis": "agent-inference"
       },
       "operations": {
-        "text": "運用手順の指針を、本章では『デプロイ手順を変えない』ことの根拠にした。スキーマ変更もマイグレーションも伴わないため、既存の wrangler deploy 手順がそのまま使え、切り戻しは 1 つ前の worker version へ戻すだけで完了する。判定結果を永続化しない設計 (制約 C3/C5) が、切り戻し時にデータの巻き戻しを不要にしている。",
-        "recorded_at": "2026-09-10T04:53:24Z",
+        "text": "Google SRE の自動化の原則を、headless Chrome の check 系 (thead / mobile-layout / financial-figure / financial-routes) を見た目の共通化後も CI で回し続けることに反映した。",
+        "recorded_at": "2026-09-13T05:07:52Z",
         "basis": "agent-inference"
       }
     },
     "maintenance-ops": {
       "operations": {
-        "text": "トイル削減とポストモーテムの指針を、本章では『前方一致の対価を運用の約束と手順で受け止める』確定に用いた。利用者は 2 案 ((a) 約束を受け入れて docs に明記 / (b) 除外リストを設定で持つ) から (a) を選んだ。(b) は運用の縛りを消す代わりに設定画面と API を増やし、判定の正本を『コード + 利用者設定』の 2 箇所へ分ける。本サイクルの主題が正本の分裂の解消である以上、(b) は目的と矛盾する。代わりに docs/spec-v1.1.md へ『中項目の「事業」前方一致が事業判定であること』と 『家計用にこの接頭辞を使わないこと』を明記し、判定が期待と違ったときに clsSrc で切り分ける手順を残す。これが将来の『なぜこれが事業になったのか』という問い合わせに対するポストモーテムの入口になる。",
-        "recorded_at": "2026-09-10T04:53:24Z",
+        "text": "Google SRE の手作業 (toil) 削減を、規約の遵守を目視レビューではなく pnpm lint のずれ検出と直書き検出で自動化するという確定内容に反映した。",
+        "recorded_at": "2026-09-13T05:07:52Z",
         "basis": "agent-inference"
       }
     }

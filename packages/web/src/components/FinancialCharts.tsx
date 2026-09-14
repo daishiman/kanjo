@@ -4,7 +4,7 @@ import type { BalanceSheet, CashFlow, MatrixData, ProfitAndLoss } from '../api.j
 import { gainCls, monthShort, yen, yenS } from '../format.js';
 import { FinancialFigure } from './FinancialFigure.js';
 import { tooltipOptions } from './chart-tooltip.js';
-import { COLORS, baseChartOptions, yenTick } from './charts.js';
+import { COLORS, baseChartOptions, chartDecorativeFill, chartSeriesColor, yenTick } from './charts.js';
 import {
   createFinancialFigureModel,
   figureLabels,
@@ -96,7 +96,7 @@ export function MatrixMoversChart({ data }: { data: MatrixData }) {
               label: model.series[0]?.label,
               data: seriesData(model, 0),
               backgroundColor: seriesData(model, 0).map((value) =>
-                (value ?? 0) > 0 ? `${COLORS.danger}d9` : `${COLORS.good}d9`,
+                (value ?? 0) > 0 ? chartSeriesColor('danger') : chartSeriesColor('good'),
               ),
               borderRadius: 3,
             },
@@ -145,15 +145,15 @@ export function ProfitAndLossCharts({ pl }: { pl: ProfitAndLoss }) {
     period: financialPeriod(labels),
     labels,
     series: [
-      { key: 'revenue', label: '売上', values: pl.revenue.monthly, unit: 'yen', color: COLORS.biz },
-      { key: 'expense', label: '経費', values: pl.expense.monthly, unit: 'yen', color: COLORS.neutral },
+      { key: 'revenue', label: '売上', values: pl.revenue.monthly, unit: 'yen', color: COLORS.income },
+      { key: 'expense', label: '経費', values: pl.expense.monthly, unit: 'yen', color: COLORS.expense },
       {
         key: 'profit',
         label: '利益',
         values: pl.profit.monthly,
         unit: 'yen',
         signed: true,
-        color: COLORS.ink,
+        color: COLORS.net,
       },
     ],
     action: '赤字の月について、科目別の経費で原因になった科目を絞り込みます。',
@@ -176,21 +176,21 @@ export function ProfitAndLossCharts({ pl }: { pl: ProfitAndLoss }) {
               {
                 label: model.series[0]?.label,
                 data: seriesData(model, 0),
-                backgroundColor: `${COLORS.biz}d9`,
+                backgroundColor: COLORS.income,
                 borderRadius: 3,
               },
               {
                 label: model.series[1]?.label,
                 data: seriesData(model, 1),
-                backgroundColor: `${COLORS.neutral}b8`,
+                backgroundColor: COLORS.expense,
                 borderRadius: 3,
               },
               {
                 type: 'line' as const,
                 label: model.series[2]?.label,
                 data: seriesData(model, 2),
-                borderColor: COLORS.ink,
-                backgroundColor: COLORS.ink,
+                borderColor: COLORS.net,
+                backgroundColor: COLORS.net,
                 pointBackgroundColor: seriesData(model, 2).map((value) =>
                   (value ?? 0) >= 0 ? COLORS.good : COLORS.danger,
                 ),
@@ -268,14 +268,14 @@ export function CashFlowCharts({ cf }: { cf: CashFlow }) {
               {
                 label: comparisonModel.series[0]?.label,
                 data: seriesData(comparisonModel, 0),
-                backgroundColor: `${COLORS.neutral}8f`,
+                backgroundColor: chartSeriesColor('neutral'),
                 borderRadius: 3,
               },
               {
                 label: comparisonModel.series[1]?.label,
                 data: seriesData(comparisonModel, 1),
                 backgroundColor: seriesData(comparisonModel, 1).map((value) =>
-                  (value ?? 0) >= 0 ? `${COLORS.good}d9` : `${COLORS.danger}d9`,
+                  (value ?? 0) >= 0 ? chartSeriesColor('good') : chartSeriesColor('danger'),
                 ),
                 borderRadius: 3,
               },
@@ -301,7 +301,7 @@ export function CashFlowCharts({ cf }: { cf: CashFlow }) {
                 label: cumulativeModel.series[0]?.label,
                 data: seriesData(cumulativeModel, 0),
                 borderColor: COLORS.ink,
-                backgroundColor: `${COLORS.good}24`,
+                backgroundColor: chartDecorativeFill(COLORS.good, 0.14),
                 pointBackgroundColor: seriesData(cumulativeModel, 0).map((value) =>
                   (value ?? 0) >= 0 ? COLORS.good : COLORS.danger,
                 ),
@@ -368,7 +368,7 @@ export function BalanceSheetChart({ bs }: { bs: BalanceSheet }) {
                 {
                   label: model.series[0]?.label,
                   data: seriesData(model, 0).slice(0, 2),
-                  backgroundColor: [`${COLORS.biz}d9`, `${COLORS.danger}d9`],
+                  backgroundColor: [chartSeriesColor('biz'), chartSeriesColor('danger')],
                 },
               ],
             }}
@@ -396,17 +396,17 @@ export function BalanceSheetChart({ bs }: { bs: BalanceSheet }) {
               {
                 label: '資産',
                 data: [seriesData(model, 0)[0], null],
-                backgroundColor: `${COLORS.biz}d9`,
+                backgroundColor: chartSeriesColor('biz'),
               },
               {
                 label: '負債',
                 data: [null, seriesData(model, 0)[1]],
-                backgroundColor: `${COLORS.neutral}cc`,
+                backgroundColor: chartSeriesColor('neutral'),
               },
               {
                 label: '純資産',
                 data: [null, seriesData(model, 0)[2]],
-                backgroundColor: `${COLORS.good}d9`,
+                backgroundColor: chartSeriesColor('good'),
               },
             ],
           }}

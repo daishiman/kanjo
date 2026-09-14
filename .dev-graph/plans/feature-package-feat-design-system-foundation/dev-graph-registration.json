@@ -1,0 +1,1209 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-design-system-foundation/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-design-system-foundation",
+  "parent_feature": "feat-design-system-foundation",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-DSFOUND-P01": "beads",
+    "SYS-DSFOUND-P02": "beads",
+    "SYS-DSFOUND-P03": "beads",
+    "SYS-DSFOUND-P04": "beads",
+    "SYS-DSFOUND-P05": "beads",
+    "SYS-DSFOUND-P06": "beads",
+    "SYS-DSFOUND-P07": "beads",
+    "SYS-DSFOUND-P08": "beads",
+    "SYS-DSFOUND-P09": "beads",
+    "SYS-DSFOUND-P10": "beads",
+    "SYS-DSFOUND-P11": "beads",
+    "SYS-DSFOUND-P12": "beads",
+    "SYS-DSFOUND-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-DSFOUND-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "FINAL-UI 抽出値による要件ベースライン確定",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p01",
+        "requirements"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-ui-ux",
+        "arch-design-system-frontend"
+      ],
+      "resource_scope": [
+        "docs/design-system/requirements-baseline.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "トークン正本配置とワークストリーム設計の決定記録",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p02",
+        "architecture"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P01"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-backend",
+        "arch-design-system-frontend",
+        "arch-design-system-database"
+      ],
+      "resource_scope": [
+        "docs/design-system/architecture-decision.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "トークン設計の独立レビュー",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P02"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-frontend",
+        "arch-design-system-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/design-system/design-review.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "トークン値・コントラスト・共通シェルの失敗テスト先行作成",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P03"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-frontend",
+        "arch-design-system-backend"
+      ],
+      "resource_scope": [
+        "packages/core/test/design-tokens.test.ts",
+        "packages/web/src/design-tokens-contrast.test.ts",
+        "packages/web/src/common-shell-routes.dom.test.tsx",
+        "scripts/check-design-tokens.mjs"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "design-tokens.ts 正本の実装と styles.css / charts.ts / 共通部品への反映",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p05",
+        "implementation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P04"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-backend",
+        "arch-design-system-frontend",
+        "arch-design-system-ui-ux"
+      ],
+      "resource_scope": [
+        "packages/core/src/design-tokens.ts",
+        "packages/web/src/styles.css",
+        "packages/web/src/components/charts.ts",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/components/Button.tsx",
+        "scripts/check-design-tokens.mjs",
+        "package.json"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テスト・型検査・lint の実行記録",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P05"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/design-system/test-run.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "S1-S6 受入検証",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P06"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-ui-ux",
+        "arch-design-system-frontend"
+      ],
+      "resource_scope": [
+        "docs/design-system/acceptance.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "COLOR_FALLBACKS と重複トークン値の除去",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p08",
+        "refactoring"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P07"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-frontend"
+      ],
+      "resource_scope": [
+        "packages/web/src/components/charts.ts",
+        "packages/web/src/styles.css",
+        "docs/design-system/refactoring.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・セキュリティ・パフォーマンスの保証確認",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "security",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P08"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-security",
+        "arch-design-system-infrastructure",
+        "arch-design-system-auth"
+      ],
+      "resource_scope": [
+        "docs/design-system/assurance.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p10",
+        "final-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P09"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-ui-ux",
+        "arch-design-system-frontend",
+        "arch-design-system-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/design-system/final-review.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P10"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/design-system/evidence.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "デザインシステム規約文書と README / AGENTS.md 参照の同期",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p12",
+        "documentation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P11"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-maintenance-ops",
+        "arch-design-system-ui-ux"
+      ],
+      "resource_scope": [
+        "docs/design-system.md",
+        "README.md",
+        "AGENTS.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-DSFOUND-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信とクローズアウト",
+      "project_id": "feature-package-feat-design-system-foundation",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T08:47:51Z",
+      "updated_at": "2026-09-13T08:47:51Z",
+      "depends_on": [
+        "SYS-DSFOUND-P12"
+      ],
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-infrastructure",
+        "arch-design-system-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/design-system/close-out.md"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-design-system-foundation/plan-findings.json",
+        "evaluated_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-design-system-foundation/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+        "imported_at": "2026-09-13T08:47:51Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

@@ -1,9 +1,26 @@
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { ApiError } from '../api.js';
 import { deltaCls, pct, yen } from '../format.js';
 import { type AppRouteId, routeMetadata } from '../routeMetadata.js';
+import { Button } from './Button.js';
 import { DataTable } from './DataTable.js';
 import { linkTerms } from './Term.js';
+
+/** 全 route が共有する本文 landmark。幅の違いは用途を明示した variant だけで表す。 */
+export function PageShell({
+  width,
+  className,
+  ...props
+}: HTMLAttributes<HTMLElement> & { width: 'reading' | 'data' }) {
+  const classes = ['main', 'page-shell', `page-shell--${width}`, className].filter(Boolean).join(' ');
+  return <main className={classes} {...props} />;
+}
+
+/** 長い編集画面の完了・取消操作を、画面ごとの独自 sticky 実装から切り離す。 */
+export function PageActions({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  const classes = ['page-actions', className].filter(Boolean).join(' ');
+  return <div className={classes} {...props} />;
+}
 
 export function PageHeader({ route }: { route: AppRouteId }) {
   const metadata = routeMetadata(route);
@@ -84,9 +101,7 @@ export function PageState({
       <p>{text}</p>
       {action ??
         (status === 'error' ? (
-          <button type="button" onClick={() => window.location.reload()}>
-            再読み込みする
-          </button>
+          <Button onClick={() => window.location.reload()}>再読み込みする</Button>
         ) : null)}
     </div>
   );

@@ -1,0 +1,148 @@
+{
+  "feature_package_id": "feature-package/feat-design-system-foundation",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P01",
+      "title": "FINAL-UI 抽出値による要件ベースライン確定"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P01"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P02",
+      "title": "トークン正本配置とワークストリーム設計の決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P02"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P03",
+      "title": "トークン設計の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P03"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P04",
+      "title": "トークン値・コントラスト・共通シェルの失敗テスト先行作成"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P04"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P05",
+      "title": "design-tokens.ts 正本の実装と styles.css / charts.ts / 共通部品への反映"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P12"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P06",
+      "lifecycle_role": "final-verification",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P06",
+      "title": "全テスト・型検査・lint の実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P09"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P07",
+      "title": "S1-S6 受入検証"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P05"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P08",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P08",
+      "title": "COLOR_FALLBACKS と重複トークン値の除去"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P06"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・セキュリティ・パフォーマンスの保証確認"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P07"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P10"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P08"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P12",
+      "title": "デザインシステム規約文書と README / AGENTS.md 参照の同期"
+    },
+    {
+      "depends_on": [
+        "SYS-DSFOUND-P11"
+      ],
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "id": "SYS-DSFOUND-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信とクローズアウト"
+    }
+  ],
+  "parent_feature": "feat-design-system-foundation",
+  "schema_version": "1.0.0"
+}

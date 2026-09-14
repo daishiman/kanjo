@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-design-system-foundation",
+  "parent_feature": "feat-design-system-foundation",
+  "feature_package_id": "feature-package/feat-design-system-foundation",
+  "handoff_target": "task-graph",
+  "selected_nodes": [
+    "spec-design-system-foundation",
+    "arch-design-system-ui-ux",
+    "arch-design-system-frontend",
+    "arch-design-system-backend",
+    "arch-design-system-database",
+    "arch-design-system-auth",
+    "arch-design-system-security",
+    "arch-design-system-infrastructure",
+    "arch-design-system-maintenance-ops",
+    "feat-design-system-foundation",
+    "SYS-DSFOUND-P01",
+    "SYS-DSFOUND-P02",
+    "SYS-DSFOUND-P03",
+    "SYS-DSFOUND-P04",
+    "SYS-DSFOUND-P05",
+    "SYS-DSFOUND-P06",
+    "SYS-DSFOUND-P07",
+    "SYS-DSFOUND-P08",
+    "SYS-DSFOUND-P09",
+    "SYS-DSFOUND-P10",
+    "SYS-DSFOUND-P11",
+    "SYS-DSFOUND-P12",
+    "SYS-DSFOUND-P13"
+  ],
+  "artifact_kinds": [
+    "specification",
+    "architecture",
+    "feature",
+    "task"
+  ],
+  "closure_status": "complete",
+  "missing_nodes": [],
+  "snapshot_digest": "sha256:7bfb3f2c725825141b26ab254b61ca8a7ce0ec28fb006d61a62f15f3f0b21e1b"
+}

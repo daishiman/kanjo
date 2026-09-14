@@ -26,6 +26,7 @@ import {
   type SummaryResponse,
   api,
 } from '../api.js';
+import { Button } from '../components/Button.js';
 import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { PageHeader, PageState, describeError } from '../components/Page.js';
@@ -165,22 +166,16 @@ export function AiPage() {
   /** 1件分の操作(アーカイブ/削除)。削除は元に戻せないので必ず確認を挟む */
   const reportActions = (r: AiReportRow) => (
     <>
-      <button
-        type="button"
-        className="mini"
+      <Button
+        size="mini"
         disabled={archive.isPending}
         onClick={() => archive.mutate({ id: r.id, archived: !r.archivedAt })}
       >
         {r.archivedAt ? 'アーカイブから戻す' : 'アーカイブ'}
-      </button>{' '}
-      <button
-        type="button"
-        className="mini danger"
-        disabled={remove.isPending}
-        onClick={() => confirmRemove.ask(r)}
-      >
+      </Button>{' '}
+      <Button variant="danger" size="mini" disabled={remove.isPending} onClick={() => confirmRemove.ask(r)}>
         削除
-      </button>
+      </Button>
     </>
   );
 
@@ -255,13 +250,13 @@ export function AiPage() {
                       <div className="wrap">{firstLine(latest.summary)}</div>
                     </div>
                     <div className="report-latest-actions">
-                      <button
-                        type="button"
-                        className={latest.id === openId ? 'mini' : 'primary'}
+                      <Button
+                        variant={latest.id === openId ? 'secondary' : 'primary'}
+                        size={latest.id === openId ? 'mini' : undefined}
                         onClick={() => setOpenId(latest.id === openId ? null : latest.id)}
                       >
                         {latest.id === openId ? '閉じる' : '読む'}
-                      </button>{' '}
+                      </Button>{' '}
                       {reportActions(latest)}
                     </div>
                   </div>
@@ -288,13 +283,9 @@ export function AiPage() {
                               <td className="num">第{r.version}版</td>
                               <td className="wrap">{firstLine(r.summary)}</td>
                               <td>
-                                <button
-                                  type="button"
-                                  className="mini"
-                                  onClick={() => setOpenId(r.id === openId ? null : r.id)}
-                                >
+                                <Button size="mini" onClick={() => setOpenId(r.id === openId ? null : r.id)}>
                                   {r.id === openId ? '閉じる' : '読む'}
-                                </button>{' '}
+                                </Button>{' '}
                                 {reportActions(r)}
                               </td>
                             </tr>
@@ -447,9 +438,9 @@ function PromptCard({
           {reanalyze.mode === 'revise'
             ? '改訂版(次の版)を作ります。同じ期間・同じ図表で作り直し、前回の指摘の追跡が入ります。必要なら下の「補足情報」に、実行した対策や変わった事情を書いてください。'
             : '再分析します。下の「補足情報」に、前回のレポートで足りないとされた情報や、実行した対策を書いてください。'}{' '}
-          <button type="button" className="mini" onClick={onCancelReanalyze}>
+          <Button size="mini" onClick={onCancelReanalyze}>
             再分析をやめる
-          </button>
+          </Button>
         </p>
       )}
       <div className="toolbar">
@@ -457,8 +448,10 @@ function PromptCard({
           {presets.map((p) => (
             <button
               key={p.id}
+              data-native-control="toggle"
               type="button"
               className={choice === p.id ? 'on' : ''}
+              aria-pressed={choice === p.id}
               disabled={!p.enabled || !!reanalyze}
               title={p.enabled ? p.note : `取込済みの月が足りません(${p.have}ヶ月分)`}
               onClick={() => setChoice(p.id)}
@@ -467,17 +460,18 @@ function PromptCard({
             </button>
           ))}
           <button
+            data-native-control="toggle"
             type="button"
             className={choice === 'custom' ? 'on' : ''}
+            aria-pressed={choice === 'custom'}
             disabled={!!reanalyze}
             onClick={() => setChoice('custom')}
           >
             任意範囲
           </button>
         </span>
-        <button
-          type="button"
-          className="primary"
+        <Button
+          variant="primary"
           disabled={!period || inRange.length === 0 || create.isPending}
           onClick={() =>
             period &&
@@ -489,7 +483,7 @@ function PromptCard({
           }
         >
           {create.isPending ? '作成中…' : reanalyze ? '再分析の指示文を作る' : '指示文を作る'}
-        </button>
+        </Button>
       </div>
       {choice === 'custom' && (
         <div className="toolbar">
@@ -548,12 +542,10 @@ function PromptCard({
             <span className="badge">
               対象 {result.task.label} / 有効期限 {dateTime(result.task.expiresAt)} / 結果の受付は1回
             </span>
-            <button type="button" className="primary" onClick={() => void copy('claude_code')}>
+            <Button variant="primary" onClick={() => void copy('claude_code')}>
               コピー(Claude Code へ)
-            </button>
-            <button type="button" onClick={() => void copy('codex')}>
-              コピー(Codex へ)
-            </button>
+            </Button>
+            <Button onClick={() => void copy('codex')}>コピー(Codex へ)</Button>
             {copied && <span className="sub">{copied}</span>}
           </div>
           <textarea
@@ -665,27 +657,26 @@ export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: 
                 <span className="sub">—</span>
               ) : (
                 <>
-                  <button type="button" className="mini" onClick={() => void showData(t.id)}>
+                  <Button size="mini" onClick={() => void showData(t.id)}>
                     データを表示
-                  </button>{' '}
-                  <button
-                    type="button"
-                    className="mini"
+                  </Button>{' '}
+                  <Button
+                    size="mini"
                     onClick={() => {
                       setPasteFor(pasteFor === t.id ? null : t.id);
                       setPasteMsg(null);
                     }}
                   >
                     結果を貼り付ける
-                  </button>{' '}
-                  <button
-                    type="button"
-                    className="mini danger"
+                  </Button>{' '}
+                  <Button
+                    variant="danger"
+                    size="mini"
                     disabled={cancel.isPending}
                     onClick={() => confirmCancel.ask(t)}
                   >
                     取り消す
-                  </button>
+                  </Button>
                 </>
               )}
             </td>
@@ -707,9 +698,9 @@ export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: 
         <li>AIがデータを読み、分析結果をこのアプリへ送る(1〜数分)。送れたら「受け付けID」が表示される。</li>
         <li>
           この画面を開き直す(または{' '}
-          <button type="button" className="mini" onClick={onChanged}>
+          <Button size="mini" onClick={onChanged}>
             更新
-          </button>
+          </Button>
           )と「3. 届いたレポート」に並ぶ。
         </li>
       </ol>
@@ -729,9 +720,9 @@ export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: 
             <span className="sub">
               AIに渡す集計データ(明細は含みません)。ネットで取れないときは、これをAIに貼り付けます。
             </span>
-            <button type="button" className="mini" onClick={() => setDataFor(null)}>
+            <Button size="mini" onClick={() => setDataFor(null)}>
               閉じる
-            </button>
+            </Button>
           </div>
           <textarea
             readOnly
@@ -755,14 +746,13 @@ export function RunCard({ tasks, onChanged }: { tasks: AiTaskView[]; onChanged: 
             placeholder='{"generatedBy": "codex", "summary": "...", "sections": [...] }'
           />
           <div className="toolbar">
-            <button
-              type="button"
-              className="primary"
+            <Button
+              variant="primary"
               disabled={!pasteText.trim() || paste.isPending}
               onClick={() => submitPaste(pasteFor)}
             >
               保存する
-            </button>
+            </Button>
             {pasteMsg && <span className="sub">{pasteMsg}</span>}
           </div>
         </div>
@@ -827,31 +817,31 @@ function ReportDetail({
       </p>
       <div className="toolbar report-actions">
         {previous ? (
-          <button type="button" className={compare ? 'mini on' : 'mini'} onClick={() => setCompare(!compare)}>
+          <button
+            data-native-control="toggle"
+            type="button"
+            className={compare ? 'mini on' : 'mini'}
+            aria-pressed={compare}
+            onClick={() => setCompare(!compare)}
+          >
             {compare ? '比較を閉じる' : '前回と比べる'}
           </button>
         ) : (
           <span className="sub">前回のレポートはありません(比較は2件目から)</span>
         )}
-        <button type="button" className="mini" onClick={() => onReanalyze(reanalyzeArg('revise'))}>
+        <Button size="mini" onClick={() => onReanalyze(reanalyzeArg('revise'))}>
           改訂版を作る(第{report.version + 1}版)
-        </button>
-        <button type="button" className="mini" onClick={() => onReanalyze(reanalyzeArg('supplement'))}>
+        </Button>
+        <Button size="mini" onClick={() => onReanalyze(reanalyzeArg('supplement'))}>
           この点を補って再分析
-        </button>
+        </Button>
         {versions.length > 1 && (
           <span className="sub">
             同じ期間の版:{' '}
             {versions.map((v) => (
-              <button
-                key={v.id}
-                type="button"
-                className="mini"
-                disabled={v.id === report.id}
-                onClick={() => onOpen(v.id)}
-              >
+              <Button key={v.id} size="mini" disabled={v.id === report.id} onClick={() => onOpen(v.id)}>
                 第{v.version}版
-              </button>
+              </Button>
             ))}
           </span>
         )}
@@ -947,9 +937,9 @@ function ReportDetail({
         )}
         <p className="sub">
           情報を補ったら、同じ期間で再分析できます(第{report.version + 1}版として保存されます)。{' '}
-          <button type="button" className="mini" onClick={() => onReanalyze(reanalyzeArg('supplement'))}>
+          <Button size="mini" onClick={() => onReanalyze(reanalyzeArg('supplement'))}>
             この点を補って再分析する
-          </button>
+          </Button>
         </p>
       </section>
 
@@ -998,9 +988,9 @@ function CompareView({
       <h3>前回と比べる</h3>
       <p className="sub">
         左が前回、右が今回。要点は「事実」だけを並べています(解釈と対策は各レポート本文で)。{' '}
-        <button type="button" className="mini" onClick={() => onOpen(prev.id)}>
+        <Button size="mini" onClick={() => onOpen(prev.id)}>
           前回を開く
-        </button>
+        </Button>
       </p>
       <div className="compare-grid">
         {cols.map(({ head, r }) => (

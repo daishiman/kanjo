@@ -9,7 +9,7 @@ import { HowTo } from '../components/HowTo.js';
 import { AnnualComparisonTable, KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { SubVendorsPanel, SubsCandidatesPanel } from '../components/SubVendors.js';
 import { Term } from '../components/Term.js';
-import { baseChartOptions, stackTotalLabels, vendorPalette, yenTick } from '../components/charts.js';
+import { COLORS, baseChartOptions, stackTotalLabels, vendorPalette, yenTick } from '../components/charts.js';
 import {
   createFinancialFigureModel,
   figureLabels,
@@ -87,7 +87,7 @@ export function SubscriptionsPage() {
   /* 図の色と凡例チップの色を1箇所で決める(別々に選ぶと凡例が図の色と対応しなくなる) */
   const palette = vendorPalette();
   const chartSeriesColor = (key: string, index: number) =>
-    key === 'other' || key === 'collapsed' ? '#c4ccc9' : (palette[index % palette.length] as string);
+    key === 'other' || key === 'collapsed' ? COLORS.neutral : (palette[index % palette.length] as string);
   const vendorModel = createFinancialFigureModel({
     id: 'subscriptions-vendor-monthly',
     title: '支払いの内訳推移',

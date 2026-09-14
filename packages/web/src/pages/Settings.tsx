@@ -2,6 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { type BackupItem, type LegacyRestoreResponse, type SettingsResponse, api } from '../api.js';
+import { Button } from '../components/Button.js';
 import { ClassificationSettings } from '../components/ClassificationSettings.js';
 import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
@@ -147,29 +148,26 @@ export function SettingsPage() {
                 />
               </td>
               <td>
-                <button
-                  type="button"
-                  className="mini danger-btn"
+                <Button
+                  variant="danger"
+                  size="mini"
                   onClick={() => setNormDraft(norm.filter((_, j) => j !== i))}
                 >
                   削除
-                </button>
+                </Button>
               </td>
             </tr>
           ))}
         </DataTable>
         <div className="toolbar" style={{ marginTop: 8 }}>
-          <button type="button" onClick={() => setNormDraft([...norm, ['', '']])}>
-            行を追加
-          </button>
-          <button
-            type="button"
-            className="primary"
+          <Button onClick={() => setNormDraft([...norm, ['', '']])}>行を追加</Button>
+          <Button
+            variant="primary"
             disabled={!normDraft || save.isPending}
             onClick={() => save.mutate({ normMap: Object.fromEntries(norm.filter(([a, b]) => a && b)) })}
           >
             正規化マップを保存
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -186,9 +184,8 @@ export function SettingsPage() {
             value={unrec}
             onChange={(e) => setUnrecDraft(e.target.value)}
           />
-          <button
-            type="button"
-            className="primary"
+          <Button
+            variant="primary"
             disabled={unrecDraft === null || save.isPending}
             onClick={() =>
               save.mutate({
@@ -200,7 +197,7 @@ export function SettingsPage() {
             }
           >
             保存
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -227,14 +224,13 @@ export function SettingsPage() {
             onChange={(e) => setStatDraft(e.target.value)}
           />
           <span>ヶ月以上で統計を使う</span>
-          <button
-            type="button"
-            className="primary"
+          <Button
+            variant="primary"
             disabled={statDraft === null || !statValid || save.isPending}
             onClick={() => save.mutate({ statMinMonths: statValue })}
           >
             保存
-          </button>
+          </Button>
           {statDraft !== null && !statValid && (
             <span className="sub">
               {statRange.min}〜{statRange.max} の整数で入力してください。
@@ -276,9 +272,8 @@ export function SettingsPage() {
             value={cashDraft.expense}
             onChange={(e) => setCashDraft({ ...cashDraft, expense: e.target.value })}
           />
-          <button
-            type="button"
-            className="primary"
+          <Button
+            variant="primary"
             disabled={!/^\d{4}-\d{2}$/.test(cashDraft.month) || save.isPending}
             onClick={() =>
               save.mutate({
@@ -292,14 +287,14 @@ export function SettingsPage() {
             }
           >
             登録
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="danger"
             disabled={!/^\d{4}-\d{2}$/.test(cashDraft.month) || save.isPending}
             onClick={() => save.mutate({ cashOverrides: { [cashDraft.month]: null } })}
           >
             指定月を削除
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -320,9 +315,9 @@ export function SettingsPage() {
           <a className="btn" href="/api/export/report.html">
             会計レポートHTML(単一ファイル)
           </a>
-          <button type="button" onClick={() => restoreInput.current?.click()} disabled={restore.isPending}>
+          <Button onClick={() => restoreInput.current?.click()} disabled={restore.isPending}>
             {restore.isPending ? '復元中…' : 'HTML版JSONから復元(初期移行)'}
-          </button>
+          </Button>
           <input
             ref={restoreInput}
             type="file"
@@ -414,9 +409,9 @@ export function NightlyBackups() {
                 {Math.max(1, Math.round(b.size / 1024)).toLocaleString('ja-JP')} KB
               </td>
               <td data-label="操作">
-                <button type="button" disabled={restore.isPending} onClick={() => confirmRestore.ask(b.date)}>
+                <Button disabled={restore.isPending} onClick={() => confirmRestore.ask(b.date)}>
                   この日に戻す
-                </button>
+                </Button>
               </td>
             </tr>
           ))}

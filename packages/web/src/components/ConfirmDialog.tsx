@@ -11,6 +11,7 @@
  */
 import type { ReactNode } from 'react';
 import { useState } from 'react';
+import { Button } from './Button.js';
 import { useConfirmDialog } from './use-confirm-dialog.js';
 
 /**
@@ -83,12 +84,12 @@ export function ConfirmDialog({
         </h3>
         {children}
         <div className="deletion-run-actions">
-          <button type="button" className="primary" disabled={dialog.busy} onClick={onConfirm}>
+          <Button type="button" variant="primary" disabled={dialog.busy} onClick={onConfirm}>
             {dialog.busy ? busyLabel : confirmLabel}
-          </button>
-          <button type="button" disabled={dialog.busy} onClick={onDismiss}>
+          </Button>
+          <Button type="button" variant="secondary" disabled={dialog.busy} onClick={onDismiss}>
             やめる
-          </button>
+          </Button>
         </div>
       </div>
     </dialog>

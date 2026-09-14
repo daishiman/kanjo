@@ -1,3 +1,4 @@
+import { MOTION, COLOR as TOKEN_COLOR, TYPOGRAPHY, VENDOR_EXTRA_COLORS } from '@kanjo/core';
 /** Chart.js の登録とテーマ共通設定(1箇所に集約) */
 import {
   BarController,
@@ -27,105 +28,122 @@ Chart.register(
   Filler,
 );
 
-Chart.defaults.font.family =
-  'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif';
-Chart.defaults.font.size = 11;
+Chart.defaults.font.family = TYPOGRAPHY.fontHead;
+Chart.defaults.font.size = TYPOGRAPHY.chartFontSize;
 
 /*
- * 図の色の正本は styles.css の :root カスタムプロパティ。
- * ここに同じ16進を並べると、CSSバッジと図の系列で「警告色が2種類ある」状態(実際に --warn で発生した)
- * を止められない。フォールバックは styles.css と同じ値にしてあり、CSS が読めない環境
- * (SSR・jsdom・CSS適用前のモジュール初期化)でも見た目は変わらない。
+ * 図の色は実行時に styles.css の :root カスタムプロパティを読む(高コントラスト設定の上書きに追随するため)。
+ * 読めない環境(SSR・jsdom・CSS適用前のモジュール初期化)の予備値は、:root と同じ正本
+ * packages/core/src/design-tokens.ts から取る。ここに16進を並べると CSS と図で色が2種類になる。
  */
-const COLOR_FALLBACKS = {
-  biz: '#2f5da8',
-  per: '#9c4257',
-  neutral: '#7b8784',
-  warn: '#805a12',
-  danger: '#b23a3a',
-  good: '#2e7d5b',
-  ink: '#1d2a2c',
-  inkSoft: '#51625f',
-  line: '#dde3e1',
-} as const;
+const COLOR_NAMES = [
+  'biz',
+  'per',
+  'neutral',
+  'warn',
+  'warnFill',
+  'danger',
+  'good',
+  'ink',
+  'inkSoft',
+  'line',
+  'income',
+  'expense',
+  'accent',
+] as const;
 
-type ColorName = keyof typeof COLOR_FALLBACKS;
+export type ChartColorName = (typeof COLOR_NAMES)[number] | 'net';
 
-/** styles.css に対応する変数を持たない、図の中でしか使わない中間色。 */
-const WITHOUT_CSS_VARIABLE: ReadonlySet<ColorName> = new Set<ColorName>(['neutral']);
-
-/** CSS変数名。名前が `--<キー>` と一致しないものだけ明示する。 */
-const CSS_VARIABLE: Partial<Record<ColorName, string>> = { inkSoft: '--ink-soft' };
-
-const resolved = new Map<ColorName, string>();
+const cssVariable = (name: Exclude<ChartColorName, 'net'>) =>
+  `--${name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`;
 
 /**
- * CSS変数を1度だけ読んで覚える。
- * 読めなかった(空文字が返った)ときは覚えない ─ CSS適用前に一度触られただけで
- * フォールバックが焼き付いてしまうのを避けるため。
+ * CSS 変数は参照ごとに読む。prefers-contrast の変更やテスト中の theme 差し替えを
+ * module 初期化時の値へ固定しないため、意図的に cache しない。
  */
-function themeColor(name: ColorName): string {
-  const cached = resolved.get(name);
-  if (cached) return cached;
-  if (WITHOUT_CSS_VARIABLE.has(name)) return COLOR_FALLBACKS[name];
+function themeColor(name: Exclude<ChartColorName, 'net'>): string {
   let value = '';
   try {
     if (typeof document !== 'undefined' && typeof getComputedStyle === 'function') {
-      value = getComputedStyle(document.documentElement)
-        .getPropertyValue(CSS_VARIABLE[name] ?? `--${name}`)
-        .trim();
+      value = getComputedStyle(document.documentElement).getPropertyValue(cssVariable(name)).trim();
     }
   } catch {
     value = '';
   }
-  if (!value) return COLOR_FALLBACKS[name];
-  resolved.set(name, value);
+  if (!value) return TOKEN_COLOR[name];
   return value;
 }
 
-/** 図の系列色。参照のたびに CSS 変数を引く(初回だけ実読み)。 */
-export const COLORS: Record<ColorName, string> = {
-  get biz() {
-    return themeColor('biz');
-  },
-  get per() {
-    return themeColor('per');
-  },
-  get neutral() {
-    return themeColor('neutral');
-  },
-  get warn() {
-    return themeColor('warn');
-  },
-  get danger() {
-    return themeColor('danger');
-  },
-  get good() {
-    return themeColor('good');
-  },
-  get ink() {
-    return themeColor('ink');
-  },
-  get inkSoft() {
-    return themeColor('inkSoft');
-  },
-  get line() {
-    return themeColor('line');
-  },
+/**
+ * 図の系列色。参照のたびに CSS 変数を引く(初回だけ実読み)。
+ * 月次の収支図は income(青い棒)/ expense(赤系の棒)/ net(ティールの線)を使う。
+ */
+export const COLORS = Object.defineProperties(
+  {} as Record<ChartColorName, string>,
+  Object.fromEntries([
+    ...COLOR_NAMES.map((name) => [name, { enumerable: true, get: () => themeColor(name) }]),
+    ['net', { enumerable: true, get: () => themeColor('accent') }],
+  ]),
+);
+
+/** 判別に使うデータ系列は不透明色だけを返す。 */
+export function chartSeriesColor(name: ChartColorName): string {
+  return name === 'net' ? themeColor('accent') : themeColor(name);
+}
+
+/**
+ * 面・帯・heatmap など、値や不透明な輪郭を別に持つ装飾レイヤー専用。
+ * 呼び出し側で16進 suffix を組み立てず、透明度の意図をこの境界に閉じる。
+ */
+export function chartDecorativeFill(color: string, opacity: number): string {
+  if (!/^#[0-9a-f]{6}$/i.test(color)) return color;
+  const alpha = Math.round(Math.min(1, Math.max(0, opacity)) * 255)
+    .toString(16)
+    .padStart(2, '0');
+  return `${color}${alpha}`;
+}
+
+type ChartThemeSyncOptions = {
+  matchMedia?: (query: string) => {
+    addEventListener?: (type: 'change', listener: () => void) => void;
+    removeEventListener?: (type: 'change', listener: () => void) => void;
+  };
+  readColor?: (name: 'inkSoft' | 'line') => string;
 };
 
-Chart.defaults.color = COLORS.inkSoft;
-Chart.defaults.borderColor = COLORS.line;
+/**
+ * OS の contrast/theme 変更時に global defaults と描画済み instance を同時更新する。
+ * 初期化時だけ値を写すと CSS custom property の変更後に canvas だけ古くなるため、change ごとに再読込する。
+ */
+export function installChartThemeSync(options: ChartThemeSyncOptions = {}) {
+  const media =
+    options.matchMedia ?? (typeof window === 'undefined' ? undefined : window.matchMedia?.bind(window));
+  const readColor = options.readColor ?? ((name: 'inkSoft' | 'line') => themeColor(name));
+  const query = media?.('(prefers-contrast: more)');
+  const current = () => ({ color: readColor('inkSoft'), borderColor: readColor('line') });
+  const sync = () => {
+    const next = current();
+    Chart.defaults.color = next.color;
+    Chart.defaults.borderColor = next.borderColor;
+    for (const instance of Object.values(Chart.instances)) instance.update('none');
+  };
+  sync();
+  query?.addEventListener?.('change', sync);
+  return {
+    current,
+    dispose: () => query?.removeEventListener?.('change', sync),
+  };
+}
 
-/** ベンダー積み上げ用の追加色(テーマ色で足りない5色目以降)。 */
-const VENDOR_EXTRA_COLORS = ['#5b4f9c', '#3a8ea8', '#b06a3a', '#6a7f3a', '#8a8a8a'];
+installChartThemeSync();
 
 /**
  * ベンダー積み上げ・レポート図のパレット(HTML版の系統色)。
  * 先頭4色はテーマ色そのものなので、COLORS 経由で CSS 変数に追随させる。
+ * 注意系列は棒の塗りなので、文字用の warn ではなく塗り用の warnFill を使う。
  */
 export function vendorPalette(): string[] {
-  return [COLORS.biz, COLORS.per, COLORS.warn, COLORS.good, ...VENDOR_EXTRA_COLORS];
+  return [COLORS.biz, COLORS.per, COLORS.warnFill, COLORS.good, ...VENDOR_EXTRA_COLORS];
 }
 
 /**
@@ -135,7 +153,7 @@ export function vendorPalette(): string[] {
 export const chartAnimation = (): false | { duration: number } =>
   typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     ? false
-    : { duration: 220 };
+    : { duration: MOTION.chart };
 
 /**
  * 全図に共通の骨格。高さは CSS(.financial-figure__chart)が決めるので

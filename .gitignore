@@ -81,6 +81,9 @@ __pycache__/
 # ハーネスが生成するセッションログ(成果物ではない)
 .claude/logs/
 
+# 旧Phase3 runnerが一時生成した非共有ログ。共有する再現snapshotは .txt を設定で明示する。
+docs/design-system/evidence/*.log
+
 # UIデザインの正式画像と検討成果物(PNG 200枚超・約300MB)。publicリポジトリを肥大化させないため
 # 実体はリポジトリ外に置き、各worktreeからsymlinkで参照する(scripts/link-design.sh)。
 # symlinkはpost-checkout/post-mergeフックが自動で張る。clone直後に scripts/setup-git-hooks.sh を1度だけ実行する。

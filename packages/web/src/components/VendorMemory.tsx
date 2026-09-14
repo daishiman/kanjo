@@ -24,6 +24,7 @@ import {
   ownerLabel,
 } from '../api.js';
 import { dateTime } from '../format.js';
+import { Button } from './Button.js';
 import { DataTable } from './DataTable.js';
 import { describeError } from './Page.js';
 
@@ -94,22 +95,28 @@ function MemoryActions({ row }: { row: VendorMemoryRow }) {
 
   return (
     <>
-      <button
+      <Button
         type="button"
+        variant="secondary"
         disabled={patch.isPending}
         onClick={() => patch.mutate({ revoked: !row.revoked })}
       >
         {row.revoked ? '取り消しをやめる' : '取り消す'}
-      </button>{' '}
-      <button type="button" disabled={patch.isPending} onClick={() => patch.mutate({ pinned: !row.pinned })}>
+      </Button>{' '}
+      <Button
+        type="button"
+        variant="secondary"
+        disabled={patch.isPending}
+        onClick={() => patch.mutate({ pinned: !row.pinned })}
+      >
         {row.pinned ? '留めるのをやめる' : '件数によらず当てる'}
-      </button>{' '}
-      <button type="button" onClick={() => setEditing((prev) => !prev)}>
+      </Button>{' '}
+      <Button type="button" variant="secondary" onClick={() => setEditing((prev) => !prev)}>
         {editing ? '直すのをやめる' : '内容を直す'}
-      </button>{' '}
-      <button type="button" disabled={reapply.isPending} onClick={() => reapply.mutate()}>
+      </Button>{' '}
+      <Button type="button" variant="secondary" disabled={reapply.isPending} onClick={() => reapply.mutate()}>
         {reapply.isPending ? '当て直しています…' : '過去の明細へ当て直す'}
-      </button>
+      </Button>
       {editing && (
         <div style={{ marginTop: 6 }}>
           <label>
@@ -128,16 +135,16 @@ function MemoryActions({ row }: { row: VendorMemoryRow }) {
               aria-label={`${row.vendorLabel}の中項目`}
             />
           </label>{' '}
-          <button
+          <Button
             type="button"
-            className="primary"
+            variant="primary"
             disabled={patch.isPending}
             onClick={() =>
               patch.mutate({ big: big || null, mid: mid || null }, { onSuccess: () => setEditing(false) })
             }
           >
             保存
-          </button>
+          </Button>
         </div>
       )}
       {patch.isError && (

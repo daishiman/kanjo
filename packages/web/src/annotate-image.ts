@@ -10,6 +10,8 @@
  * 「1つ戻す」も「全部消す」も配列操作で済み、画像を再生成しなくてよい。
  */
 
+import { COLOR, EFFECT_COLOR } from '@kanjo/core';
+
 /** 注釈1つ。値はすべて元画像に対する比率(0..1)。負の幅は持たない(正規化して格納する) */
 export interface Annotation {
   x: number;
@@ -19,8 +21,8 @@ export interface Annotation {
 }
 
 /** 枠の色。背景が白でも濃色でも見えるよう、彩度の高い赤に白の縁取りを重ねる */
-const STROKE = '#e11d48';
-const HALO = 'rgba(255,255,255,0.9)';
+const STROKE = COLOR.annotateStroke;
+const HALO = EFFECT_COLOR.annotateHalo;
 
 /** 線の太さ(元画像の長辺に対する比率)。画像の大きさが変わっても見た目の太さを保つ */
 const STROKE_RATIO = 0.004;

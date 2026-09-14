@@ -21,6 +21,8 @@
  * 失敗したら null を返す。撮影の失敗は投稿の失敗ではない。
  */
 
+import { COLOR } from '@kanjo/core';
+
 /** 長辺の上限(px)。画面の判読に必要な下限として 1600 を採る */
 const MAX_EDGE = 1600;
 const QUALITY = 0.8;
@@ -179,7 +181,7 @@ export async function captureScreen(doc: Document = document): Promise<File | nu
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
     // 背景を白で塗る。JPEG は透過を持てず、塗らないと透明部分が黒くなる
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = COLOR.surface;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 

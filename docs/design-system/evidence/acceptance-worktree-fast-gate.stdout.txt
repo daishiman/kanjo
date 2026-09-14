@@ -1,0 +1,179 @@
+
+> kanjo@1.0.0 design-system:fast /Users/dm/orca/workspaces/kanjo/ダッシュボードの改善
+> pnpm --filter @kanjo/core exec vitest run test/design-tokens.test.ts && pnpm --filter @kanjo/web exec vitest run src/font-loading-contract.test.ts src/chart-series-contract.test.ts src/common-shell-routes.dom.test.tsx --maxWorkers=1 && pnpm run delivery:test && pnpm run delivery:check:worktree
+
+
+ RUN  v4.1.11 /Users/dm/orca/workspaces/kanjo/ダッシュボードの改善/packages/core
+
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  12:27:13
+   Duration  1.22s (transform 334ms, setup 0ms, import 367ms, tests 47ms, environment 0ms)
+
+
+ RUN  v4.1.11 /Users/dm/orca/workspaces/kanjo/ダッシュボードの改善/packages/web
+
+
+ Test Files  3 passed (3)
+      Tests  51 passed (51)
+   Start at  12:27:17
+   Duration  6.22s (transform 1.43s, setup 0ms, import 3.39s, tests 2.58s, environment 1.37s)
+
+
+> kanjo@1.0.0 delivery:test /Users/dm/orca/workspaces/kanjo/ダッシュボードの改善
+> node --test scripts/changed-path-manifest.test.mjs scripts/check-design-system-delivery.test.mjs scripts/check-design-system-run-references.test.mjs scripts/design-system-delivery-core.test.mjs scripts/check-design-tokens.test.mjs scripts/plugin-tool-resolver.test.mjs
+
+TAP version 13
+# Subtest: verification index bindings are normalized to avoid an aggregate-digest cycle
+ok 1 - verification index bindings are normalized to avoid an aggregate-digest cycle
+  ---
+  duration_ms: 11.888083
+  type: 'test'
+  ...
+# Subtest: run command writes a deterministic manifest that already satisfies the repository formatter
+ok 2 - run command writes a deterministic manifest that already satisfies the repository formatter
+  ---
+  duration_ms: 6794.588875
+  type: 'test'
+  ...
+# Subtest: changed path manifest is exact, deterministic, and never hashes protected paths
+ok 3 - changed path manifest is exact, deterministic, and never hashes protected paths
+  ---
+  duration_ms: 1832.433416
+  type: 'test'
+  ...
+# Subtest: manual status bindings are rejected instead of being accepted as execution evidence
+ok 4 - manual status bindings are rejected instead of being accepted as execution evidence
+  ---
+  duration_ms: 986.1475
+  type: 'test'
+  ...
+# Subtest: checker reports fresh only for the exact snapshot and machine-captured receipts
+ok 5 - checker reports fresh only for the exact snapshot and machine-captured receipts
+  ---
+  duration_ms: 5402.739333
+  type: 'test'
+  ...
+# Subtest: shared gate has a clean-checkout input set with no ignored/local provenance dependency
+ok 6 - shared gate has a clean-checkout input set with no ignored/local provenance dependency
+  ---
+  duration_ms: 4.867042
+  type: 'test'
+  ...
+# Subtest: repository tracking is queried from git and never fabricated by a caller array
+ok 7 - repository tracking is queried from git and never fabricated by a caller array
+  ---
+  duration_ms: 3166.175833
+  type: 'test'
+  ...
+# Subtest: projection comparison uses exact semantic node/dependency sets
+ok 8 - projection comparison uses exact semantic node/dependency sets
+  ---
+  duration_ms: 2.373417
+  type: 'test'
+  ...
+# Subtest: staging manifest rejects missing, extra, and stale hashes
+ok 9 - staging manifest rejects missing, extra, and stale hashes
+  ---
+  duration_ms: 5.734167
+  type: 'test'
+  ...
+# Subtest: plan report comparison reads exact semantic edges and its live canonical source
+ok 10 - plan report comparison reads exact semantic edges and its live canonical source
+  ---
+  duration_ms: 6.387
+  type: 'test'
+  ...
+# Subtest: all lifecycle documents derive the run from one reference
+ok 11 - all lifecycle documents derive the run from one reference
+  ---
+  duration_ms: 11.4345
+  type: 'test'
+  ...
+# Subtest: stale embedded run ids and command drift are rejected
+ok 12 - stale embedded run ids and command drift are rejected
+  ---
+  duration_ms: 33.558917
+  type: 'test'
+  ...
+# Subtest: integrity boundary includes token values, export surface, projection policy, and tracked provenance content
+ok 13 - integrity boundary includes token values, export surface, projection policy, and tracked provenance content
+  ---
+  duration_ms: 54.861916
+  type: 'test'
+  ...
+# Subtest: external provenance is an explicit maintainer reference, not a shared-gate file dependency
+ok 14 - external provenance is an explicit maintainer reference, not a shared-gate file dependency
+  ---
+  duration_ms: 1.362583
+  type: 'test'
+  ...
+# Subtest: self-asserted human approval is rejected by the machine integrity manifest
+ok 15 - self-asserted human approval is rejected by the machine integrity manifest
+  ---
+  duration_ms: 0.42575
+  type: 'test'
+  ...
+# Subtest: provenance order and new display exports outside the registry are rejected
+ok 16 - provenance order and new display exports outside the registry are rejected
+  ---
+  duration_ms: 3.285833
+  type: 'test'
+  ...
+# Subtest: repository integration owns the token/CSS/provenance checker process
+ok 17 - repository integration owns the token/CSS/provenance checker process
+  ---
+  duration_ms: 1250.90225
+  type: 'test'
+  ...
+# Subtest: canonical graph rejects dangling, self, cycle, and semantic order violations
+ok 18 - canonical graph rejects dangling, self, cycle, and semantic order violations
+  ---
+  duration_ms: 42.71925
+  type: 'test'
+  ...
+# Subtest: goal spec semantic fields are derived deterministically from the feature source
+ok 19 - goal spec semantic fields are derived deterministically from the feature source
+  ---
+  duration_ms: 23.622042
+  type: 'test'
+  ...
+# Subtest: shared input verification does not require ignored provenance or local graph state
+ok 20 - shared input verification does not require ignored provenance or local graph state
+  ---
+  duration_ms: 0.511167
+  type: 'test'
+  ...
+# Subtest: plugin tool resolver is path-portable and resolves newest compatible capability
+ok 21 - plugin tool resolver is path-portable and resolves newest compatible capability
+  ---
+  duration_ms: 48.513917
+  type: 'test'
+  ...
+# Subtest: cache discovery is version-independent and selects the newest compatible install
+ok 22 - cache discovery is version-independent and selects the newest compatible install
+  ---
+  duration_ms: 50.561708
+  type: 'test'
+  ...
+# Subtest: newer compatible install without the capability falls back to an older capable install
+ok 23 - newer compatible install without the capability falls back to an older capable install
+  ---
+  duration_ms: 57.32225
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15741.71325
+
+> kanjo@1.0.0 delivery:check:worktree /Users/dm/orca/workspaces/kanjo/ダッシュボードの改善
+> node scripts/check-design-system-delivery.mjs --worktree-content
+
+check-design-system-delivery: 13 canonical nodes, graph render, goal spec, and 18 staging hashes match; repository tracking=pending-untracked.

@@ -20,6 +20,7 @@ import {
   type TotalCashflowReview,
   api,
 } from '../../api.js';
+import { Button } from '../../components/Button.js';
 import { DataTable } from '../../components/DataTable.js';
 import { PageState } from '../../components/Page.js';
 import { usePeriod } from '../../period.js';
@@ -280,9 +281,9 @@ function ExcludeControl({
 
   if (!open)
     return (
-      <button type="button" className="mini" onClick={() => setOpen(true)}>
+      <Button size="mini" onClick={() => setOpen(true)}>
         二重登録として外す
-      </button>
+      </Button>
     );
   return (
     <span className="tcf-exclude-form">
@@ -293,17 +294,12 @@ function ExcludeControl({
         placeholder="外す理由"
         aria-label={`${label} を外す理由`}
       />
-      <button
-        type="button"
-        className="mini"
-        disabled={run.isPending || reason.trim().length === 0}
-        onClick={() => run.mutate()}
-      >
+      <Button size="mini" disabled={run.isPending || reason.trim().length === 0} onClick={() => run.mutate()}>
         外す
-      </button>
-      <button type="button" className="mini" onClick={() => setOpen(false)}>
+      </Button>
+      <Button size="mini" onClick={() => setOpen(false)}>
         やめる
-      </button>
+      </Button>
     </span>
   );
 }
@@ -320,9 +316,9 @@ function RestoreButton({ freeeKey }: { freeeKey: string }) {
     onSuccess: () => client.invalidateQueries({ queryKey: ['total-cashflow'] }),
   });
   return (
-    <button type="button" className="mini" disabled={run.isPending} onClick={() => run.mutate()}>
+    <Button size="mini" disabled={run.isPending} onClick={() => run.mutate()}>
       総額へ戻す
-    </button>
+    </Button>
   );
 }
 
@@ -427,22 +423,16 @@ function MatchedTable({ matched }: { matched: readonly ReconcileMatch[] }) {
               placeholder="外す理由"
               aria-label="選択したものを外す理由"
             />
-            <button
-              type="button"
-              className="btn primary"
+            <Button
+              variant="primary"
               disabled={excludeMany.isPending || selected.length === 0 || reason.trim().length === 0}
               onClick={() => excludeMany.mutate({ freeeKeys: selected, reason: reason.trim() })}
             >
               選択したものを二重登録として外す
-            </button>
-            <button
-              type="button"
-              className="btn"
-              disabled={selected.length === 0}
-              onClick={() => setPicked(new Set())}
-            >
+            </Button>
+            <Button disabled={selected.length === 0} onClick={() => setPicked(new Set())}>
               選択を解除
-            </button>
+            </Button>
           </div>
           <DataTable className="data stack-sm" columns={MATCHED_COLUMNS}>
             {matched.map((m) => {
@@ -680,39 +670,29 @@ export function TotalCashflowPage() {
                 すべて選ぶ
               </label>
               <span className="tcf-bulk-count">{selected.length} 件を選択中</span>
-              <button
-                type="button"
-                className="btn primary"
+              <Button
+                variant="primary"
                 disabled={decide.isPending || selected.length === 0}
                 onClick={() => decide.mutate({ txIds: selected, verdict: 'same' })}
               >
                 選択したものを「同じ取引」にする
-              </button>
-              <button
-                type="button"
-                className="btn"
+              </Button>
+              <Button
                 disabled={decide.isPending || selected.length === 0}
                 onClick={() => decide.mutate({ txIds: selected, verdict: 'different' })}
               >
                 選択したものを「違う取引」にする
-              </button>
+              </Button>
               {/* 残る大半は「同じ日・同額なのに口座名の書き方が違う」組。一件ずつ押させない */}
-              <button
-                type="button"
-                className="btn"
+              <Button
                 disabled={sameDay.length === 0}
                 onClick={() => setPicked(new Set(sameDay.map((item) => item.txId)))}
               >
                 同じ日・同額のものを選ぶ ({sameDay.length})
-              </button>
-              <button
-                type="button"
-                className="btn"
-                disabled={selected.length === 0}
-                onClick={() => setPicked(new Set())}
-              >
+              </Button>
+              <Button disabled={selected.length === 0} onClick={() => setPicked(new Set())}>
                 選択を解除
-              </button>
+              </Button>
             </div>
             <DataTable className="data tcf-review-table" columns={REVIEW_COLUMNS}>
               {review.map((item) => {
@@ -784,22 +764,20 @@ export function TotalCashflowPage() {
                     {/* 「同じ」だけを置くと、違うと分かった組が要確認に残り続ける。
                         どちらの答えも同じ重さで置き、判断は片方向に誘導しない */}
                     <td data-label="判定" className="tcf-verdict">
-                      <button
-                        type="button"
-                        className="mini"
+                      <Button
+                        size="mini"
                         disabled={decide.isPending}
                         onClick={() => decide.mutate({ txIds: [item.txId], verdict: 'same' })}
                       >
                         同じ取引
-                      </button>
-                      <button
-                        type="button"
-                        className="mini"
+                      </Button>
+                      <Button
+                        size="mini"
                         disabled={decide.isPending}
                         onClick={() => decide.mutate({ txIds: [item.txId], verdict: 'different' })}
                       >
                         違う取引
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 );

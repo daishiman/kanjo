@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchRoutes, withResolvedGroups } from '../route-search.js';
 import { SEARCH_ROUTES } from '../routeMetadata.js';
+import { Button } from './Button.js';
 import { RouteIcon } from './RouteIcon.js';
 
 export const OPEN_COMMAND_PALETTE_EVENT = 'kanjo:open-command-palette';
@@ -98,8 +99,7 @@ export function CommandPalette() {
       <ul className="palette-list" ref={listRef}>
         {hits.map((route, i) => (
           <li key={route.id}>
-            <button
-              type="button"
+            <Button
               className="palette-opt"
               onClick={() => go(route.path)}
               onKeyDown={(e) => {
@@ -115,7 +115,7 @@ export function CommandPalette() {
               <RouteIcon name={route.icon} />
               <span className="palette-label">{route.label}</span>
               <span className="palette-task sub">{route.task}</span>
-            </button>
+            </Button>
           </li>
         ))}
       </ul>

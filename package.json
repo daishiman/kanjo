@@ -5,7 +5,7 @@
   "description": "収支統合管理システム — 事業(freee) × 家計(マネーフォワード) を1画面で統合管理する",
   "packageManager": "pnpm@10.9.0",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.18.0"
   },
   "pnpm": {
     "overrides": {
@@ -18,9 +18,9 @@
     "preview": "node scripts/preview-local.mjs",
     "preview:smoke": "node --test scripts/preview-smoke.test.mjs",
     "test": "pnpm -r --workspace-concurrency=1 test && pnpm run test:aux",
-    "test:aux": "pnpm run runbooks:test && pnpm run guard-real-data:test && pnpm run github-scripts:test && pnpm run skills:test",
+    "test:aux": "pnpm run runbooks:test && pnpm run guard-real-data:test && pnpm run github-scripts:test && pnpm run skills:test && pnpm run delivery:test",
     "typecheck": "pnpm -r typecheck",
-    "lint": "biome check . && node scripts/sync-project-skills.mjs --check && node scripts/check-glossary.mjs && node scripts/check-report-css.mjs && node scripts/check-graph-lineage.mjs && pnpm run security:content",
+    "lint": "biome check . && node scripts/sync-project-skills.mjs --check && node scripts/check-glossary.mjs && node scripts/check-report-css.mjs && node scripts/check-graph-lineage.mjs && node scripts/check-design-tokens.mjs && node scripts/check-design-system-document-contract.mjs && node scripts/check-design-system-delivery.mjs --worktree-content && node scripts/check-design-system-run-references.mjs && pnpm run security:content",
     "lint:fix": "biome check --write .",
     "deploy": "pnpm --filter @kanjo/web build:artifact && pnpm --filter @kanjo/api run deploy",
     "db:migrate:local": "pnpm --filter @kanjo/api exec wrangler d1 migrations apply kanjo-db --local",
@@ -34,6 +34,21 @@
     "skills:check": "node scripts/sync-project-skills.mjs --check",
     "skills:test": "python3 -B -m unittest discover -s skills/run-kanjo-accounting-report/scripts -p 'test_*.py'",
     "github-scripts:test": "node --test .github/scripts/*.test.mjs",
+    "test:design-fast": "pnpm run design-system:fast",
+    "design-system:fast": "pnpm --filter @kanjo/core exec vitest run test/design-tokens.test.ts && pnpm --filter @kanjo/web exec vitest run src/font-loading-contract.test.ts src/chart-series-contract.test.ts src/common-shell-routes.dom.test.tsx --maxWorkers=1 && pnpm run delivery:test && node scripts/check-design-system-document-contract.mjs && pnpm run delivery:check:worktree",
+    "verify:full": "pnpm test && pnpm typecheck && pnpm lint && pnpm build && pnpm --filter @kanjo/web run check:thead && pnpm --filter @kanjo/web run check:mobile-layout && pnpm --filter @kanjo/web run check:financial-figure && pnpm --filter @kanjo/web run check:financial-routes && pnpm run preview:smoke",
+    "delivery:test": "node --test scripts/changed-path-manifest.test.mjs scripts/check-design-system-delivery.test.mjs scripts/check-design-system-document-contract.test.mjs scripts/check-design-system-run-references.test.mjs scripts/check-design-tokens.test.mjs scripts/design-system-delivery-core.test.mjs scripts/design-system-status.test.mjs scripts/plugin-tool-resolver.test.mjs",
+    "delivery:check": "node scripts/check-design-system-delivery.mjs",
+    "delivery:check:worktree": "node scripts/check-design-system-delivery.mjs --worktree-content",
+    "delivery:check:maintainer": "node scripts/check-design-system-delivery.mjs --maintainer",
+    "delivery:regenerate:dry-run": "node scripts/regenerate-design-system-delivery.mjs --dry-run",
+    "delivery:regenerate:apply": "node scripts/regenerate-design-system-delivery.mjs --apply",
+    "delivery:recover:dry-run": "node scripts/recover-design-system-delivery.mjs --dry-run",
+    "delivery:validate:system-plan": "node scripts/validate-design-system-plan.mjs",
+    "evidence:capture": "node scripts/changed-path-manifest.mjs run --out docs/design-system/changed-path-manifest.json --commands scripts/design-system-validation-commands.json",
+    "evidence:acceptance": "pnpm run evidence:capture && pnpm run evidence:check",
+    "evidence:check": "node scripts/changed-path-manifest.mjs check --manifest docs/design-system/changed-path-manifest.json --commands scripts/design-system-validation-commands.json",
+    "design-system:status": "node scripts/design-system-status.mjs",
     "catalog:export": "vite-node scripts/export-chart-catalog.mts"
   },
   "devDependencies": {

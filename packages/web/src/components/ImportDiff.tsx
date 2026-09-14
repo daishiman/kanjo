@@ -33,6 +33,7 @@ import {
   apiUpload,
   ownerLabel,
 } from '../api.js';
+import { Button } from './Button.js';
 import { describeError } from './Page.js';
 
 /** 手当ての3属性の呼び名。画面に出す語はここだけで決める */
@@ -270,9 +271,9 @@ function SuggestList({ candidates }: { candidates: readonly ImportVendorCandidat
                 {candidates.filter((candidate) => candidate.vendorKey === row.vendorKey).length}件
               </small>
             </span>
-            <button type="button" disabled={pin.isPending} onClick={() => pin.mutate(row.vendorKey)}>
+            <Button disabled={pin.isPending} onClick={() => pin.mutate(row.vendorKey)}>
               これで自動にする
-            </button>
+            </Button>
           </li>
         ))}
       </ul>
@@ -336,14 +337,13 @@ export function DiffPreview({
 
   return (
     <div className="import-diff">
-      <button
-        type="button"
+      <Button
         aria-label="取り込む前に差分を見る"
         onClick={() => check.mutate()}
         disabled={check.isPending || !files.length}
       >
         {check.isPending ? '確認中…' : '取込前の変更を確認'}
-      </button>
+      </Button>
       {check.isError && (
         <div className="notice" role="alert">
           差分を確認できませんでした: {describeError(check.error)}

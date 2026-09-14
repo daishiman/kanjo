@@ -170,6 +170,7 @@ export function PeriodPicker({ meta, disabled = false }: { meta?: PeriodMeta; di
         {([1, 2, 3] as SpanYears[]).map((n) => (
           <button
             key={n}
+            data-native-control="toggle"
             type="button"
             aria-label={`${n}年で表示`}
             aria-pressed={selection.mode === 'span' && selection.span === n}

@@ -11,10 +11,13 @@ import {
   type AppRouteId,
   MOBILE_ROUTES,
   TABBED_ROUTE_IDS,
+  routeContentWidth,
 } from '../routeMetadata.js';
+import { Button } from './Button.js';
 import { CommandPalette, OPEN_COMMAND_PALETTE_EVENT } from './CommandPalette.js';
 import { ExportMenu } from './ExportMenu.js';
 import { NavItem } from './NavItem.js';
+import { PageShell } from './Page.js';
 import { RouteIcon } from './RouteIcon.js';
 import { Term } from './Term.js';
 
@@ -120,6 +123,7 @@ function UserMenu() {
   return (
     <span className="popover-host user-menu" ref={ref}>
       <button
+        data-native-control="menu-trigger"
         type="button"
         aria-label="利用者メニュー"
         aria-expanded={open}
@@ -131,9 +135,9 @@ function UserMenu() {
       {open && (
         <span className="popover" role="menu">
           <span className="popover-copy">ログイン中</span>
-          <button type="button" className="btn" role="menuitem" onClick={() => void logout()}>
+          <Button role="menuitem" onClick={() => void logout()}>
             ログアウトする
-          </button>
+          </Button>
           {error && <span role="alert">{error}</span>}
         </span>
       )}
@@ -309,11 +313,13 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
         </nav>
       </aside>
       {drawer && (
-        <div
+        <button
+          type="button"
+          data-native-control="disclosure"
+          aria-expanded={drawer}
+          aria-label="ナビゲーションを閉じる"
           className="backdrop"
           onClick={() => setDrawer(false)}
-          onKeyDown={(e) => e.key === 'Escape' && setDrawer(false)}
-          role="presentation"
         />
       )}
 
@@ -366,19 +372,18 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
           </span>
         </span>
         <span className="header-actions" aria-label="共通操作">
-          <button
-            type="button"
+          <Button
             className="header-action search-action"
             aria-label="画面を検索"
             disabled={locked}
             onClick={() => window.dispatchEvent(new Event(OPEN_COMMAND_PALETTE_EVENT))}
           >
             検索 <kbd>⌘K</kbd>
-          </button>
+          </Button>
           {locked ? (
-            <button type="button" className="header-action" disabled>
+            <Button className="header-action" disabled>
               書き出し
-            </button>
+            </Button>
           ) : (
             <ExportMenu />
           )}
@@ -395,9 +400,9 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
         </span>
       </header>
 
-      <main className="main" id="main-content" key={loc.pathname}>
+      <PageShell width={routeContentWidth(loc.pathname)} id="main-content" key={loc.pathname}>
         {children}
-      </main>
+      </PageShell>
 
       <footer className="footer">
         <div className="footer-trust">
@@ -439,6 +444,7 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
             />
           ))}
         <button
+          data-native-control="disclosure"
           type="button"
           className={`tab${drawer ? ' active' : ''}`}
           aria-expanded={drawer}

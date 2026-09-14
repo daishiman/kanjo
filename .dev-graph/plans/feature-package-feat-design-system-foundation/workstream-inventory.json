@@ -1,0 +1,1160 @@
+{
+  "feature_package_id": "feature-package/feat-design-system-foundation",
+  "parent_feature": "feat-design-system-foundation",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "explicit-cli"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/index.md",
+      "system-spec/00-requirements-definition.md",
+      "specs/spec-design-system-foundation.md",
+      "features/feat-design-system-foundation.md"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "S1-S6 の各成功状態が FR-001..FR-005 のどれに対応するかを requirements-baseline.md に一覧化している。",
+        "DESIGN-SYSTEM.md の 10 色 (背景・面・装飾罫線・文字・補助・ネイビー・ティール・注意・危険・成功) と寸法値 (サイドバー 220px・ヘッダー 64px・本文最大幅 1180px・角丸 8px・タップ領域 44px) を requirements-baseline.md に転記し、出典行を明記している。",
+        "scope_out (各画面の中身の作り直し、新機能追加、API/DB変更、ネイティブアプリ、ダークテーマ、Webフォント追加、report-design-system の変更) を requirements-baseline.md に明記している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p01.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p01.md",
+        "graph_node_id": "SYS-DSFOUND-P01",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-DSFOUND-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-ui-ux",
+        "arch-design-system-frontend"
+      ],
+      "rollback": "requirements-baseline.md の追加コミットを revert する。後続 phase は未着手のため影響範囲は docs のみ。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p01",
+        "requirements"
+      ],
+      "title": "FINAL-UI 抽出値による要件ベースライン確定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint (既存 check-glossary.mjs 等の文書検査が緑のままであることを確認する)",
+        "DESIGN-SYSTEM.md の値と requirements-baseline.md の転記表を目視突合し差分 0 件を確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/design-system/requirements-baseline.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "packages/core/src/design-tokens.ts を正本とし、core から web への一方向依存にする決定 (dec-design-token-source) とその根拠を architecture-decision.md に記録している。",
+        "装飾罫線 (#D7E0E2) と部品を見分ける枠を別ロールにする決定 (dec-border-color-roles) を FR-004 の判定基準と対応付けて記録している。",
+        "P01 の requirements-baseline.md の値と矛盾しないことを architecture-decision.md 内で確認している。",
+        "チャート系列色 (収入 #599AE9 / 支出 #EB9099) を 3:1 へ調整するか否かの決定 (dec-chart-series-contrast) を、利用者の選択と選択日時付きで architecture-decision.md に記録し、推定のまま confirmed と書いていない。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p02.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P01"
+      ],
+      "deploy_unit": "N/A: 決定記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p02.md",
+        "graph_node_id": "SYS-DSFOUND-P02",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-DSFOUND-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-backend",
+        "arch-design-system-frontend",
+        "arch-design-system-database"
+      ],
+      "rollback": "architecture-decision.md の追加コミットを revert する。決定は P01 のベースラインへの追記のみで実装済みコードに影響しない。",
+      "secondary_workstreams": [
+        "frontend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p02",
+        "architecture"
+      ],
+      "title": "トークン正本配置とワークストリーム設計の決定記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm typecheck (既存構成に影響がないことを確認する)",
+        "architecture-decision.md の記載が architecture/design-system-frontend.md および architecture/design-system-backend.md と矛盾しないことをレビューで確認する"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "docs/design-system/architecture-decision.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "P02 の決定記録を P01/P02 の起草者と異なる観点でレビューし、FR-001..FR-005 各項目の判定基準に対する指摘の有無を design-review.md に記録している。",
+        "指摘が0件、または指摘への対応方針を P04 着手前に確定し design-review.md に記録している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p03.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P02"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p03.md",
+        "graph_node_id": "SYS-DSFOUND-P03",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-DSFOUND-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-frontend",
+        "arch-design-system-maintenance-ops"
+      ],
+      "rollback": "design-review.md の追加コミットを revert する。指摘対応が他ファイルへ反映済みの場合は当該コミットも合わせて revert する。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p03",
+        "design-review"
+      ],
+      "title": "トークン設計の独立レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint",
+        "design-review.md に是正未了の指摘が残っていないことを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/design-system/design-review.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "design-tokens.ts が未実装の状態で packages/core/test/design-tokens.test.ts が FR-001 の 10 色・寸法値照合に失敗する (red)。",
+        "packages/web/src/design-tokens-contrast.test.ts が FR-004 の基準 (文字用トークンは背景 #F6F8F9 と面 #FFFFFF の双方に 4.5:1 以上、部品の枠とチャート系列色は 3:1 以上、装飾罫線 #D7E0E2 は対象外) で検証し、未実装状態で失敗する (red)。",
+        "packages/web/src/common-shell-routes.dom.test.tsx が FR-003 の基準 (20 ルート全てで共通サイドバー・ヘッダー・フッターのランドマークが1つずつ存在) で検証し、未実装状態で失敗する (red)。",
+        "scripts/check-design-tokens.mjs が styles.css の :root と charts.ts の COLOR_FALLBACKS の写しずれを検出する仕様で書かれ、design-tokens.ts 未実装の状態で非 0 exit になる (FR-002)。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p04.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P03"
+      ],
+      "deploy_unit": "N/A: テストコードのみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p04.md",
+        "graph_node_id": "SYS-DSFOUND-P04",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-DSFOUND-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-frontend",
+        "arch-design-system-backend"
+      ],
+      "rollback": "追加した失敗テストと check-design-tokens.mjs の初期実装を revert する。P05 未着手であればリポジトリは変更前の状態に戻る。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p04",
+        "test-design"
+      ],
+      "title": "トークン値・コントラスト・共通シェルの失敗テスト先行作成",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test (新規テストが red であることを確認する)",
+        "pnpm --filter @kanjo/web test (新規テストが red であることを確認する)",
+        "node scripts/check-design-tokens.mjs (非 0 exit であることを確認する)"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/test/design-tokens.test.ts",
+        "packages/web/src/design-tokens-contrast.test.ts",
+        "packages/web/src/common-shell-routes.dom.test.tsx",
+        "scripts/check-design-tokens.mjs"
+      ]
+    },
+    {
+      "acceptance": [
+        "P04 で追加した packages/core/test/design-tokens.test.ts・packages/web/src/design-tokens-contrast.test.ts・packages/web/src/common-shell-routes.dom.test.tsx が green になる (FR-001, FR-003, FR-004)。",
+        "styles.css の :root と charts.ts の COLOR_FALLBACKS が design-tokens.ts 由来の値と一致し、packages/web/src 配下の .ts/.tsx/.css でトークン定義とその生成物以外の 6 桁 hex 直書きが 0 件になる (FR-002, S1)。",
+        "pnpm lint の実行対象に scripts/check-design-tokens.mjs が組み込まれ、写しずれがあれば非 0 exit になる (FR-002)。",
+        "Layout.tsx (サイドバー220px・ヘッダー64px・フッター) と Button.tsx (主/副/危険/テキスト) が共通部品として定義され、20 ルート全てがそれを経由して描画される (FR-003, S5)。",
+        "着手前に docs/design-system/architecture-decision.md に dec-chart-series-contrast が利用者の選択として記録されていることを確認している (未記録の場合は着手しない)。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p05.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P04"
+      ],
+      "deploy_unit": "N/A: 既存の Cloudflare Workers 配信構成のまま追加の配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p05.md",
+        "graph_node_id": "SYS-DSFOUND-P05",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-DSFOUND-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-backend",
+        "arch-design-system-frontend",
+        "arch-design-system-ui-ux"
+      ],
+      "rollback": "design-tokens.ts・styles.css・charts.ts・Layout.tsx・Button.tsx・scripts/check-design-tokens.mjs・package.json への変更コミットを revert し、直前のビルドへ戻す。単一 PR のため1回の revert で完全に戻せる。",
+      "secondary_workstreams": [
+        "backend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p05",
+        "implementation"
+      ],
+      "title": "design-tokens.ts 正本の実装と styles.css / charts.ts / 共通部品への反映",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/web test",
+        "pnpm --filter @kanjo/web run typecheck",
+        "pnpm lint",
+        "pnpm --filter @kanjo/web run check:thead",
+        "pnpm --filter @kanjo/web run check:mobile-layout",
+        "pnpm --filter @kanjo/web run check:financial-figure",
+        "pnpm --filter @kanjo/web run check:financial-routes"
+      ],
+      "workstream_kind": "frontend",
+      "write_scope": [
+        "packages/core/src/design-tokens.ts",
+        "packages/web/src/styles.css",
+        "packages/web/src/components/charts.ts",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/components/Button.tsx",
+        "scripts/check-design-tokens.mjs",
+        "package.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "pnpm test / pnpm typecheck / pnpm lint の実行結果 (exit code・実行日時・コミットハッシュ) を test-run.md に記録している (S6)。",
+        "packages/web の check:thead / check:mobile-layout / check:financial-figure / check:financial-routes の実行結果を test-run.md に記録している (S6)。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p06.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P12"
+      ],
+      "deploy_unit": "N/A: 実行記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p06.md",
+        "graph_node_id": "SYS-DSFOUND-P06",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-DSFOUND-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-maintenance-ops"
+      ],
+      "rollback": "test-run.md の記録のみを revert する。テスト自体への影響はない。",
+      "secondary_workstreams": [],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p06",
+        "test-run"
+      ],
+      "title": "全テスト・型検査・lint の実行記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/design-system/test-run.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "S1: packages/web/src 配下の .ts/.tsx/.css でトークン定義とその生成物以外の6桁hex直書きが0件であることを lint で確認し acceptance.md に記録している。",
+        "S2: charts.ts と FinancialCharts の系列色・軸・グリッド・文字色が全て design-tokens.ts 由来で、収入=青系・支出=赤系・純収支=ティール線であることを確認している。",
+        "S3: design-tokens.ts の値 (装飾罫線 #D7E0E2 を含む10色と寸法) が DESIGN-SYSTEM.md の規定値と一致することを単体テストで確認している。",
+        "S4: 文字用トークンのコントラストが背景・面の双方に4.5:1以上、部品の枠とチャート系列色が3:1以上であり、装飾罫線が部品の枠に使われていないことを確認している。",
+        "S5: 20 ルート全てが共通シェル (サイドバー220px・ヘッダー64px・フッター) の下で描画されることを DOM テストで確認している。",
+        "S6: pnpm test / typecheck / lint と packages/web の check 系4スクリプトが全て緑であることを P06 の記録から確認している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p07.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P09"
+      ],
+      "deploy_unit": "N/A: 受入記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p07.md",
+        "graph_node_id": "SYS-DSFOUND-P07",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-DSFOUND-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-ui-ux",
+        "arch-design-system-frontend"
+      ],
+      "rollback": "acceptance.md の記録のみを revert する。判定結果に不一致がある場合は P05 へ差し戻し、実装コミットを revert する。",
+      "secondary_workstreams": [
+        "frontend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p07",
+        "acceptance"
+      ],
+      "title": "S1-S6 受入検証",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint",
+        "pnpm --filter @kanjo/web run check:thead",
+        "pnpm --filter @kanjo/web run check:mobile-layout",
+        "pnpm --filter @kanjo/web run check:financial-figure",
+        "pnpm --filter @kanjo/web run check:financial-routes"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/design-system/acceptance.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "charts.ts の neutral (#7b8784) と VENDOR_EXTRA_COLORS 5色の直書きを design-tokens.ts 参照へ置き換え、biz/ink/inkSoft/line のずれ値 (#2f5da8, #1d2a2c, #51625f, #dde3e1) を除去している。",
+        "置換後も P04 で追加したテストと P05 で組み込んだ check 系スクリプトが green/成功のままである。",
+        "skills/report-design-system/assets/report.css と packages/core/src/report-css.ts は変更していない (scope_out)。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p08.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P05"
+      ],
+      "deploy_unit": "N/A: 既存の Cloudflare Workers 配信構成のまま追加の配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p08.md",
+        "graph_node_id": "SYS-DSFOUND-P08",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-DSFOUND-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-frontend"
+      ],
+      "rollback": "charts.ts・styles.css のリファクタリングコミットを revert し、P07 完了時点の状態へ戻す。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p08",
+        "refactoring"
+      ],
+      "title": "COLOR_FALLBACKS と重複トークン値の除去",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/web test",
+        "pnpm lint",
+        "pnpm --filter @kanjo/web run check:financial-figure"
+      ],
+      "workstream_kind": "frontend",
+      "write_scope": [
+        "packages/web/src/components/charts.ts",
+        "packages/web/src/styles.css",
+        "docs/design-system/refactoring.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "WCAG 2.2 AA の文字4.5:1・部品の枠3:1が FR-004 のテストで維持されていることを assurance.md に記録している。",
+        "packages/web/public/_headers の CSP を変更していないこと、Web フォントを追加していないこと (scope_out) を確認している。",
+        "check:js-budget が初期 JS 予算内であることを確認している (Cloudflare Workers 配信構成は変更しない)。",
+        "security:content (guard-real-data.sh --scan-public-docs) が新規表示値を実データとして検出しないことを確認している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p09.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P06"
+      ],
+      "deploy_unit": "N/A: 既存の Cloudflare Workers 配信構成のまま追加の配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p09.md",
+        "graph_node_id": "SYS-DSFOUND-P09",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-DSFOUND-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-security",
+        "arch-design-system-infrastructure",
+        "arch-design-system-auth"
+      ],
+      "rollback": "assurance.md の記録のみを revert する。CSP や JS 予算に逸脱が見つかった場合は P05/P08 の実装コミットへ差し戻す。",
+      "secondary_workstreams": [
+        "quality",
+        "operations"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p09",
+        "quality-assurance"
+      ],
+      "title": "アクセシビリティ・セキュリティ・パフォーマンスの保証確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/web run check:js-budget",
+        "pnpm run security:content",
+        "git diff --stat packages/web/public/_headers (差分なしを確認する)"
+      ],
+      "workstream_kind": "security",
+      "write_scope": [
+        "docs/design-system/assurance.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "P05/P08 の実装者と異なるレビュー観点で FR-001..FR-005 と S1-S6 の全項目を再確認し、指摘0件、または是正済みであることを final-review.md に記録している。",
+        "architecture/design-system-*.md (8件) との矛盾がないことを確認している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p10.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P07"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p10.md",
+        "graph_node_id": "SYS-DSFOUND-P10",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-DSFOUND-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-ui-ux",
+        "arch-design-system-frontend",
+        "arch-design-system-maintenance-ops"
+      ],
+      "rollback": "final-review.md の記録のみを revert する。是正が必要な指摘が残る場合は P05/P08 へ差し戻す。",
+      "secondary_workstreams": [
+        "frontend"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p10",
+        "final-review"
+      ],
+      "title": "独立最終レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/design-system/final-review.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "pnpm test / pnpm typecheck / pnpm lint および check 系4スクリプトの実行ログへの参照 (実行日時・コミットハッシュ) を evidence.md に索引化している。",
+        "S1-S6 それぞれについて、P06 の test-run.md・P07 の acceptance.md・P09 の assurance.md のどの記録が根拠かを evidence.md で紐付けている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p11.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P10"
+      ],
+      "deploy_unit": "N/A: 索引文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p11.md",
+        "graph_node_id": "SYS-DSFOUND-P11",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-DSFOUND-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-maintenance-ops"
+      ],
+      "rollback": "evidence.md の記録のみを revert する。索引先の記録自体には影響しない。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p11",
+        "evidence"
+      ],
+      "title": "再現可能な証跡索引の作成",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/design-system/evidence.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "docs/design-system.md が色の役割 (塗り/文字の分離)・タイポグラフィ・余白・シェル・ボタン・チャートの各節を持つ (FR-005)。",
+        "README.md または AGENTS.md から docs/design-system.md への参照が追加されている (FR-005)。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p12.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P08"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p12.md",
+        "graph_node_id": "SYS-DSFOUND-P12",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-DSFOUND-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-maintenance-ops",
+        "arch-design-system-ui-ux"
+      ],
+      "rollback": "docs/design-system.md・README.md・AGENTS.md への変更コミットを revert する。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p12",
+        "documentation"
+      ],
+      "title": "デザインシステム規約文書と README / AGENTS.md 参照の同期",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint (check-glossary.mjs 等の文書検査が緑のままであることを確認する)"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/design-system.md",
+        "README.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "実デプロイは既存の Cloudflare Workers 配信構成 (静的アセットと /api/*) を変えないため対象外であり、その理由を close-out.md に N/A として記録している。",
+        "単一 PR での配信方針と、問題発生時に直前のビルドへ戻すロールバック手順を close-out.md に記録している。",
+        "feature の acceptance (S1-S6) が P07 の acceptance.md と P10 の final-review.md から全て満たされ、feature を完了できる状態であることを close-out.md に記録している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-design-system-foundation/sys-dsfound-p13.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-DSFOUND-P11"
+      ],
+      "deploy_unit": "N/A: 既存の Cloudflare Workers 配信構成 (静的アセットと /api/*) を変更しない",
+      "feature_package_id": "feature-package/feat-design-system-foundation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-design-system-foundation",
+        "file_path": "tasks/feat-design-system-foundation/sys-dsfound-p13.md",
+        "graph_node_id": "SYS-DSFOUND-P13",
+        "parent_feature": "feat-design-system-foundation",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-DSFOUND-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T08:30:17Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-design-system-foundation",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-design-system-foundation",
+        "arch-design-system-infrastructure",
+        "arch-design-system-maintenance-ops"
+      ],
+      "rollback": "単一 PR の配信を revert し直前のビルドへ戻す。close-out.md にロールバック実施記録を追記する。",
+      "secondary_workstreams": [
+        "infrastructure",
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "tags": [
+        "design-system-foundation",
+        "p13",
+        "release"
+      ],
+      "title": "単一 PR での配信とクローズアウト",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/web run build:artifact (配信可能な成果物が生成されることを確認する)"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        "docs/design-system/close-out.md"
+      ]
+    }
+  ]
+}

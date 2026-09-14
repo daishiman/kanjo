@@ -18,6 +18,7 @@ import {
   type UndoResult,
   api,
 } from '../api.js';
+import { Button } from './Button.js';
 import { describeError } from './Page.js';
 
 /** 消す対象の指定。サーバへそのまま送る形 */
@@ -212,18 +213,18 @@ export function DeletedNotice({
       </div>
       <div className="deleted-notice-actions">
         {nextAction && (
-          <button type="button" className="primary" onClick={nextAction.onClick}>
+          <Button type="button" variant="primary" onClick={nextAction.onClick}>
             {nextAction.label}
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type="button"
-          className={nextAction ? undefined : 'primary'}
+          variant={nextAction ? 'secondary' : 'primary'}
           onClick={() => undo.mutate()}
           disabled={undo.isPending}
         >
           {undo.isPending ? '戻しています…' : 'いま取り消す'}
-        </button>
+        </Button>
       </div>
       {undo.isError && (
         <div className="sub deleted-notice-error" role="alert">
@@ -296,15 +297,16 @@ export function ImportReplacementButton({
 
   return (
     <div className="import-replacement-entry">
-      <button
+      <Button
         ref={triggerButtonRef}
         type="button"
+        variant="secondary"
         className="import-replace-trigger"
         disabled={disabled || flow.check.isPending || flow.run.isPending}
         onClick={start}
       >
         データを入れ替える
-      </button>
+      </Button>
       {open && (
         <dialog
           ref={openDialog}
@@ -352,31 +354,32 @@ export function ImportReplacementButton({
                       />
                     </label>
                     <div className="deletion-run-actions">
-                      <button
+                      <Button
                         type="button"
-                        className="danger-btn"
+                        variant="danger"
                         disabled={confirmation !== REPLACEMENT_CONFIRMATION || flow.run.isPending}
                         onClick={() => flow.run.mutate()}
                       >
                         {flow.run.isPending ? '削除中…' : '全データを削除して次へ'}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         ref={cancelButtonRef}
                         type="button"
+                        variant="secondary"
                         onClick={closeDialog}
                         disabled={flow.run.isPending}
                       >
                         やめる
-                      </button>
+                      </Button>
                     </div>
                   </>
                 ) : (
                   <>
                     <p className="notice">入れ替えで削除する取込データはありません。</p>
                     <div className="deletion-run-actions">
-                      <button ref={cancelButtonRef} type="button" onClick={closeDialog}>
+                      <Button ref={cancelButtonRef} type="button" variant="secondary" onClick={closeDialog}>
                         閉じる
-                      </button>
+                      </Button>
                     </div>
                   </>
                 )}
@@ -390,9 +393,9 @@ export function ImportReplacementButton({
 
             {!flow.preflight && (
               <div className="deletion-run-actions">
-                <button ref={cancelButtonRef} type="button" onClick={closeDialog}>
+                <Button ref={cancelButtonRef} type="button" variant="secondary" onClick={closeDialog}>
                   やめる
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -423,14 +426,16 @@ export function TransactionDeletionButton({
 
   return (
     <div>
-      <button
+      <Button
         type="button"
-        className="mini classify-quick"
+        variant="secondary"
+        size="mini"
+        className="classify-quick"
         disabled={disabled || flow.check.isPending || flow.run.isPending}
         onClick={() => flow.check.mutate({ granularity: 'transaction', txIds: [txId] })}
       >
         {flow.check.isPending ? '確認中…' : 'この明細を削除'}
-      </button>
+      </Button>
       {flow.check.isError && (
         <div className="sub" role="alert">
           確認できませんでした: {describeError(flow.check.error)}
@@ -439,22 +444,26 @@ export function TransactionDeletionButton({
       {flow.preflight && (
         <div>
           <PreflightSummary preflight={flow.preflight} />
-          <button
+          <Button
             type="button"
-            className="primary mini classify-quick"
+            variant="primary"
+            size="mini"
+            className="classify-quick"
             disabled={flow.run.isPending}
             onClick={() => flow.run.mutate()}
           >
             {flow.run.isPending ? '消しています…' : 'この明細1件を消す'}
-          </button>{' '}
-          <button
+          </Button>{' '}
+          <Button
             type="button"
-            className="mini classify-quick"
+            variant="secondary"
+            size="mini"
+            className="classify-quick"
             onClick={flow.cancel}
             disabled={flow.run.isPending}
           >
             やめる
-          </button>
+          </Button>
           {flow.run.isError && (
             <div className="sub" role="alert">
               消せませんでした: {describeError(flow.run.error)}
@@ -504,15 +513,16 @@ export function ImportUndoButton({ importId, disabled }: { importId: number; dis
 
   return (
     <div className="import-inline-action">
-      <button
+      <Button
         ref={triggerButtonRef}
         type="button"
+        variant="secondary"
         aria-label="この取込を取り消す"
         disabled={disabled || flow.check.isPending}
         onClick={() => flow.check.mutate({ granularity: 'import', importId })}
       >
         {flow.check.isPending ? '確認中…' : '取り消す'}
-      </button>
+      </Button>
       {flow.check.isError && (
         <div className="sub" role="alert">
           確認できませんでした: {describeError(flow.check.error)}
@@ -535,22 +545,23 @@ export function ImportUndoButton({ importId, disabled }: { importId: number; dis
             <>
               <PreflightSummary preflight={flow.preflight} headingId={dialogTitleId} />
               <div className="deletion-run-actions">
-                <button
+                <Button
                   type="button"
-                  className="danger-btn"
+                  variant="danger"
                   disabled={flow.run.isPending}
                   onClick={() => flow.run.mutate()}
                 >
                   {flow.run.isPending ? '削除中…' : 'この内容で消す'}
-                </button>
-                <button
+                </Button>
+                <Button
                   ref={cancelButtonRef}
                   type="button"
+                  variant="secondary"
                   onClick={closeDialog}
                   disabled={flow.run.isPending}
                 >
                   やめる
-                </button>
+                </Button>
               </div>
               {flow.run.isError && (
                 <div className="sub" role="alert">
@@ -639,15 +650,16 @@ export function ImportDiscardButton({
 
   return (
     <div className="import-inline-action">
-      <button
+      <Button
         ref={triggerButtonRef}
         type="button"
+        variant="secondary"
         aria-label="この取込履歴を削除"
         disabled={disabled || check.isPending}
         onClick={() => check.mutate()}
       >
         {check.isPending ? '確認中…' : '履歴を削除'}
-      </button>
+      </Button>
       {check.isError && (
         <div className="sub" role="alert">
           確認できませんでした: {describeError(check.error)}
@@ -678,9 +690,9 @@ export function ImportDiscardButton({
                       ? '共有中の保存原本は残しました。'
                       : '削除する保存原本はありませんでした。'}
               </p>
-              <button ref={closeButtonRef} type="button" className="primary" onClick={closeDialog}>
+              <Button ref={closeButtonRef} type="button" variant="primary" onClick={closeDialog}>
                 閉じる
-              </button>
+              </Button>
             </div>
           ) : preflight ? (
             <div className="import-discard-confirmation">
@@ -691,17 +703,18 @@ export function ImportDiscardButton({
                 <strong>削除した履歴と対象の保存原本は元に戻せません。</strong>
               </p>
               <div className="deletion-run-actions">
-                <button
-                  type="button"
-                  className="danger-btn"
-                  disabled={run.isPending}
-                  onClick={() => run.mutate()}
-                >
+                <Button type="button" variant="danger" disabled={run.isPending} onClick={() => run.mutate()}>
                   {run.isPending ? '削除中…' : '履歴を削除する'}
-                </button>
-                <button ref={cancelButtonRef} type="button" onClick={closeDialog} disabled={run.isPending}>
+                </Button>
+                <Button
+                  ref={cancelButtonRef}
+                  type="button"
+                  variant="secondary"
+                  onClick={closeDialog}
+                  disabled={run.isPending}
+                >
                   やめる
-                </button>
+                </Button>
               </div>
               {run.isError && (
                 <div className="sub" role="alert">
@@ -789,15 +802,16 @@ export function ImportDiscardBulkButton({
 
   return (
     <div className="import-inline-action">
-      <button
+      <Button
         ref={triggerButtonRef}
         type="button"
+        variant="secondary"
         aria-label="データ削除済みの取込履歴をまとめて片づける"
         disabled={disabled || run.isPending}
         onClick={() => setAsked(true)}
       >
         削除済みの履歴を片づける（{importIds.length}件）
-      </button>
+      </Button>
       {(asked || done) && (
         <dialog
           ref={openDialog}
@@ -828,9 +842,9 @@ export function ImportDiscardBulkButton({
                   </ul>
                 </>
               )}
-              <button ref={closeButtonRef} type="button" className="primary" onClick={closeDialog}>
+              <Button ref={closeButtonRef} type="button" variant="primary" onClick={closeDialog}>
                 閉じる
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="import-discard-confirmation">
@@ -841,17 +855,18 @@ export function ImportDiscardBulkButton({
                 <strong>削除した履歴と対象の保存原本は元に戻せません。</strong>
               </p>
               <div className="deletion-run-actions">
-                <button
-                  type="button"
-                  className="danger-btn"
-                  disabled={run.isPending}
-                  onClick={() => run.mutate()}
-                >
+                <Button type="button" variant="danger" disabled={run.isPending} onClick={() => run.mutate()}>
                   {run.isPending ? '片づけ中…' : 'まとめて片づける'}
-                </button>
-                <button ref={cancelButtonRef} type="button" onClick={closeDialog} disabled={run.isPending}>
+                </Button>
+                <Button
+                  ref={cancelButtonRef}
+                  type="button"
+                  variant="secondary"
+                  onClick={closeDialog}
+                  disabled={run.isPending}
+                >
                   やめる
-                </button>
+                </Button>
               </div>
               {run.isError && (
                 <div className="sub" role="alert">
@@ -972,9 +987,14 @@ export function DeletionPanel() {
           </fieldset>
 
           <div className="deletion-check-action">
-            <button type="button" onClick={submit} disabled={!ready || flow.check.isPending}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={submit}
+              disabled={!ready || flow.check.isPending}
+            >
               {flow.check.isPending ? '確認中…' : '消える内容を確認'}
-            </button>
+            </Button>
             {!ready && <span>開始月と終了月を選んでください</span>}
           </div>
           {flow.check.isError && (
@@ -996,17 +1016,17 @@ export function DeletionPanel() {
                 </div>
               </div>
               <div className="deletion-run-actions">
-                <button
+                <Button
                   type="button"
-                  className="danger-btn"
+                  variant="danger"
                   disabled={flow.run.isPending}
                   onClick={() => flow.run.mutate()}
                 >
                   {flow.run.isPending ? '削除中…' : 'この内容で消す'}
-                </button>
-                <button type="button" onClick={flow.cancel} disabled={flow.run.isPending}>
+                </Button>
+                <Button type="button" variant="secondary" onClick={flow.cancel} disabled={flow.run.isPending}>
                   やめる
-                </button>
+                </Button>
               </div>
               {flow.run.isError && (
                 <div className="notice" role="alert">
@@ -1083,9 +1103,14 @@ export function DeletionHistory() {
                       戻せません(保管量の上限)
                     </span>
                   ) : (
-                    <button type="button" disabled={undo.isPending} onClick={() => undo.mutate(row.id)}>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={undo.isPending}
+                      onClick={() => undo.mutate(row.id)}
+                    >
                       取り消す(あと{left}日)
-                    </button>
+                    </Button>
                   )}
                 </div>
               </li>

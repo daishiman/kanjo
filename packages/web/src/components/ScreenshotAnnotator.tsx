@@ -10,6 +10,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { type Annotation, annotationFromDrag, drawAnnotations } from '../annotate-image.js';
+import { Button } from './Button.js';
 
 export interface ScreenshotAnnotatorProps {
   /** 表示する画像の URL(Object URL) */
@@ -94,16 +95,16 @@ export function ScreenshotAnnotator({ src, annotations, onChange }: ScreenshotAn
         <span className="improve-note">
           画像の上をドラッグすると赤い枠を書き込めます(書き込み {annotations.length} 個)
         </span>
-        <button
-          type="button"
+        <Button
+          size="mini"
           onClick={() => onChange(annotations.slice(0, -1))}
           disabled={annotations.length === 0}
         >
           1つ戻す
-        </button>
-        <button type="button" onClick={() => onChange([])} disabled={annotations.length === 0}>
+        </Button>
+        <Button size="mini" onClick={() => onChange([])} disabled={annotations.length === 0}>
           全部消す
-        </button>
+        </Button>
       </div>
     </div>
   );
