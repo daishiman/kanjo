@@ -1,0 +1,129 @@
+{
+  "graph_node_id": "SYS-ACCTLOGIN-P09",
+  "phase_ref": "P09",
+  "title": "セキュリティ観点の総点検",
+  "checked_at": "2026-09-13T21:10:00Z",
+  "method": "P03 の脅威一覧の各行を、実行済みの自動テストと実機 preview で確認した。手で目視しただけの行は残していない。",
+  "threats": [
+    {
+      "threat": "総当たりによるパスワード推測",
+      "control": "(接続元, 対象メールアドレス) 別の D1 rate limit。既定 15 分間に 5 回失敗で 15 分ロック。",
+      "verified_by": [
+        "packages/api/src/login-rate-limit.test.ts::同一scopeの5回目の失敗を429にしRetry-Afterを返す",
+        "packages/api/src/login-rate-limit.test.ts::並行失敗もatomicに上限へ収束し、raw IP/passwordをDBとログへ露出しない",
+        "packages/api/src/login-rate-limit.test.ts::windowとlockの期限後は同じscopeで再試行できる"
+      ],
+      "result": "pass"
+    },
+    {
+      "threat": "アカウント存否の推測 (列挙)",
+      "control": "不在時も PBKDF2 を 1 回回す equalizeAbsentAccountTiming。不在・停止・相違を同一 401 へ畳む。",
+      "verified_by": [
+        "packages/api/src/account-login.test.ts::不在・停止・パスワード相違を1種類の応答に畳む",
+        "packages/web/src/account-login.dom.test.tsx::不在・停止・相違を同じ文面に畳む"
+      ],
+      "result": "pass"
+    },
+    {
+      "threat": "保存データ流出時のパスワード復元",
+      "control": "PBKDF2-HMAC-SHA256 210,000 回のハッシュのみ保存。平文も復号可能な形も持たない。",
+      "verified_by": [
+        "packages/api/src/account-login.test.ts::平文を保存せず、PBKDF2 の反復が仕様値を下回らない",
+        "migrations/0039_account_login.sql の password_hash prefix CHECK"
+      ],
+      "result": "pass"
+    },
+    {
+      "threat": "セッション Cookie の窃取・再利用",
+      "control": "HMAC-SHA256 署名 + httpOnly/secure/SameSite=Strict。session_generation でログアウト・変更・停止時に一斉失効。",
+      "verified_by": [
+        "packages/api/src/account-login.test.ts::Cookie を JavaScript から読めない形で配る",
+        "packages/api/src/account-login.test.ts::署名が合っていても世代が古ければ通さない",
+        "packages/api/src/account-login.test.ts::ログアウトで他端末のセッションも同時に切れる",
+        "packages/api/src/account-login.test.ts::停止した利用者のセッションは即座に切れる"
+      ],
+      "result": "pass"
+    },
+    {
+      "threat": "旧 (共有パスワード期) の 2 要素 Cookie の持ち込み",
+      "control": "4 分割でない Cookie を構造の時点で拒否する。",
+      "verified_by": ["packages/api/src/account-login.test.ts::旧形式(2要素)の Cookie を構造で拒否する"],
+      "result": "pass"
+    },
+    {
+      "threat": "一般利用者による管理操作",
+      "control": "adminGuard。/api/admin/* の全経路で 403。",
+      "verified_by": [
+        "packages/api/src/account-login.test.ts::member は管理APIを1本も通せない",
+        "packages/web/src/account-login.dom.test.tsx::一般利用者には描画せず管理APIも照会しない"
+      ],
+      "result": "pass"
+    },
+    {
+      "threat": "一時パスワードの居座り・再表示",
+      "control": "発行直後の応答に 1 度だけ現れ、保存しない。72 時間で失効し、次回ログインで変更を強制。",
+      "verified_by": [
+        "packages/api/src/account-login.test.ts::admin は利用者を追加でき、一時パスワードは応答に1度だけ現れる",
+        "packages/api/src/account-login.test.ts::再発行した一時パスワードで入ると変更を求められる",
+        "packages/web/src/account-login.dom.test.tsx::一時パスワードは1度だけ表示し閉じると復元できない"
+      ],
+      "result": "pass"
+    },
+    {
+      "threat": "最後の管理者を失う操作",
+      "control": "降格・停止をサーバ側が 409 で拒否する。",
+      "verified_by": ["packages/api/src/account-login.test.ts::最後の管理者を降格・停止できない"],
+      "result": "pass"
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "P09-A1",
+      "text": "総当たり抑止が実際に働き、規定回数を超えた試行が拒否される",
+      "status": "satisfied",
+      "evidence": [
+        "packages/api/src/login-rate-limit.test.ts (8 tests, PASS)",
+        "5 回目の失敗で 429 + Retry-After。window/lock 経過後は再試行可。"
+      ]
+    },
+    {
+      "id": "P09-A2",
+      "text": "ログ・エラー応答・監査記録のいずれにもパスワードとセッション値が含まれない",
+      "status": "satisfied",
+      "evidence": [
+        "ログ: packages/api/src/routes/{auth,admin-users}.ts, users.ts, login-rate-limit.ts に console/logger 呼び出しが 0 件",
+        "応答: packages/api/src/account-login.test.ts::どの応答にも password_hash を出さない",
+        "監査: packages/api/src/account-login.test.ts::監査の本文へパスワードとセッション値を残さない",
+        "rate limit: packages/api/src/login-rate-limit.test.ts::raw IP/password を DB とログへ露出しない"
+      ]
+    },
+    {
+      "id": "P09-A3",
+      "text": "audit_log に認証操作が actor_user_id 付きで記録される",
+      "status": "satisfied",
+      "evidence": [
+        "packages/api/src/account-login.test.ts::ログイン・失敗・ログアウト・変更を操作者つきで積む",
+        "packages/api/src/account-login.test.ts::テナントと操作者を別の欄に分けて持つ",
+        "action/actor_user_id/result の三点を exact list で固定しており、どれか 1 つでも欠けると落ちる。"
+      ]
+    }
+  ],
+  "accepted_risks": [
+    {
+      "item": "同時ログインセッション数に上限を設けない",
+      "decision": "受容 (利用者確認済み)。運用規模が単一世帯・少人数であり、上限管理の複雑さに見合わない。",
+      "compensating_control": "session_generation による一斉失効があるため、疑わしいときは全端末を一手で切れる。"
+    },
+    {
+      "item": "パスワード再利用の拒否は「現行と同一値のみ」",
+      "decision": "受容 (利用者確認済み)。履歴の保存はハッシュの蓄積を増やし、流出時の攻撃面を広げる。",
+      "compensating_control": "PASSWORD_MIN_LENGTH=12 と OBVIOUS_WEAK の拒否。"
+    },
+    {
+      "item": "audit_log の actor_user_id が NULL の既存行",
+      "decision": "受容。共有パスワード期は操作者を記録していないため、遡って埋めない。",
+      "compensating_control": "docs/runbooks/account-login-operations.md §5 に「欠測ではない」と明記。"
+    }
+  ],
+  "status": "pass"
+}

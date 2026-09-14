@@ -10,7 +10,8 @@
     "deploy": "wrangler deploy",
     "types": "wrangler types",
     "typecheck": "pnpm run types && tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage:account-login": "vitest run src/account-login.test.ts src/login-rate-limit.test.ts src/index.test.ts src/scheduled-maintenance-budget.test.ts --coverage.enabled --coverage.provider=v8 --coverage.reporter=text --coverage.include=src/auth.ts --coverage.include=src/users.ts --coverage.include=src/login-rate-limit.ts --coverage.include=src/routes/auth.ts --coverage.include=src/routes/admin-users.ts --coverage.include=src/index.ts --coverage.include=src/scheduled-maintenance-budget.ts --coverage.thresholds.statements=80 --coverage.thresholds.functions=80 --coverage.thresholds.lines=80"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.4.2",
@@ -23,7 +24,7 @@
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.10",
-    "miniflare": "5.20260820.0-alpha",
+    "miniflare": "5.20260911.0-alpha",
     "typescript": "^5.6.3",
     "vitest": "^4.1.11",
     "wrangler": "^4.33.0"

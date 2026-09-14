@@ -12,6 +12,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
 
@@ -19,7 +20,6 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  AUTH_PASSWORD: 'synthetic-test-password',
   SESSION_SECRET: 'synthetic-test-secret',
 };
 
@@ -120,17 +120,7 @@ beforeEach(async () => {
     .all<{ name: string }>();
   for (const { name } of tables.results.filter(({ name }) => isApplicationTableForTestReset(name)))
     await d1.prepare(`DELETE FROM "${name}"`).run();
-  const login = await app.request(
-    '/api/auth/login',
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
-    },
-    { ...auth, DB: d1 },
-  );
-  cookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
-  expect(login.status).toBe(200);
+  cookie = await loginForTest(app, { ...auth, DB: d1 });
   await seedTx();
 });
 

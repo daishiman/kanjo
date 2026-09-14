@@ -1,0 +1,77 @@
+{
+  "feature_id": "feat-account-login",
+  "gates": {
+    "C02_saved_state": {
+      "feature": {
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete"
+      },
+      "status": "PASS",
+      "tasks": {
+        "confirmation_status": "confirmed",
+        "count": 13,
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete",
+        "missing_sections": [],
+        "tracker_binding": [
+          "beads"
+        ]
+      }
+    },
+    "C08_implementation_readiness": {
+      "checked_at": "2026-09-13T06:00:24Z",
+      "source_pin": {
+        "plugin": "system-spec-harness",
+        "version": "0.1.14"
+      },
+      "status": "PASS"
+    },
+    "C11_snapshot_validation": {
+      "source_inputs": [
+        {
+          "path": ".dev-graph/plans/feature-package-feat-account-login/atomic-promotion-receipt.json",
+          "sha256": "98ef7a2514db361f4045f7c472c4cbcad3e6c372be17c5f92b323073b0fc7644"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-account-login/dev-graph-registration-receipt.json",
+          "sha256": "e672c288a2adb0c60eb2a879876ad093c74d50d2fada40e87718ef44ca5af63f"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-account-login/dev-graph-registration.json",
+          "sha256": "8ef06625bb92be09d22fc2dc75f6029898b5f105e1443c6d348da73fa988ad97"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-account-login/staging-manifest.json",
+          "sha256": "a99b09e8b863b66a0d2f652e647a7de5791170ef26fb839a90bead81a05da860"
+        },
+        {
+          "path": ".dev-graph/state/graph.json",
+          "sha256": "193d97b7473f364c40a32fb65853d3e5b780cf9e16cab9719234264a14abc716"
+        },
+        {
+          "path": "features/feat-account-login.context.json",
+          "sha256": "3e0bcaca7301e03df55651dce7ac9bd13fe3c8afa4d7044654eefa27e4a54d19"
+        }
+      ],
+      "status": "PASS"
+    },
+    "system_plan_validation": {
+      "node_count": 13,
+      "phase_count": 13,
+      "status": "PASS",
+      "validated_digest": "sha256:407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+      "validator": "system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+      "violations": []
+    }
+  },
+  "known_limitations": [
+    "feature の macro 監査 (eval-log/feat-account-login-macro-audit.json) に independent-audit-unavailable の INFO finding が残る。"
+  ],
+  "missing_sections": [],
+  "remediation_owners": {},
+  "schema_version": "1.0.0",
+  "snapshot_digest": "sha256:98d05e3c0c15ea60d3543e3ff7877c19b44a4119e98e38fc4121a1281c4ea6b9",
+  "staleness_rule": "source input、feature context、graph、promotion receipt、registration manifest のいずれかの sha256 が変化した場合は handoff を stale とし、requirements を再生成するまで task-graph build を開始しない。",
+  "status": "ready"
+}

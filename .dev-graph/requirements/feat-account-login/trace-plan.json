@@ -1,0 +1,191 @@
+{
+  "feature_id": "feat-account-login",
+  "plan_digest": "sha256:407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+  "plan_package": ".dev-graph/plans/feature-package-feat-account-login",
+  "requirements": [
+    {
+      "feature_acceptance_ref": "未認証で保護画面へアクセスするとログイン画面へ遷移し、正しいメールアドレスとパスワードで認証が成功する",
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ],
+      "requirement_id": "REQ-AUTH-001",
+      "source_refs": [
+        "features/feat-account-login.md",
+        "specs/spec-account-login.md"
+      ],
+      "statement": "未認証で保護画面へアクセスするとログイン画面へ遷移し、メールアドレスとパスワードで本人として認証が成功する。共有 secret ではなく利用者行が認証主体になる。",
+      "system_tasks": [
+        "SYS-ACCTLOGIN-P01",
+        "SYS-ACCTLOGIN-P02",
+        "SYS-ACCTLOGIN-P05",
+        "SYS-ACCTLOGIN-P06",
+        "SYS-ACCTLOGIN-P07"
+      ],
+      "title": "個人アカウントによる認証の成立"
+    },
+    {
+      "feature_acceptance_ref": "パスワードが復元不能な形 (PBKDF2-HMAC-SHA256 / 210,000 回以上) で保存され、平文がどこにも残らない",
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ],
+      "requirement_id": "REQ-SEC-002",
+      "source_refs": [
+        "features/feat-account-login.md",
+        "specs/spec-account-login.md"
+      ],
+      "statement": "パスワードは PBKDF2-HMAC-SHA256 / 210,000 回以上で保存し、平文・可逆暗号・ログ出力のいずれにも残さない。",
+      "system_tasks": [
+        "SYS-ACCTLOGIN-P02",
+        "SYS-ACCTLOGIN-P03",
+        "SYS-ACCTLOGIN-P05",
+        "SYS-ACCTLOGIN-P09"
+      ],
+      "title": "復元不能なパスワード保存"
+    },
+    {
+      "feature_acceptance_ref": "管理者が設定画面から利用者の追加・停止・一時パスワード再発行を完結でき、一時パスワードは発行直後の1度だけ表示される",
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ],
+      "requirement_id": "REQ-ADMIN-003",
+      "source_refs": [
+        "features/feat-account-login.md",
+        "specs/spec-account-login.md"
+      ],
+      "statement": "管理者は設定画面から利用者の追加・停止・一時パスワード再発行を完結でき、一時パスワードは発行直後の1度だけ表示される。自己サインアップは持たない。",
+      "system_tasks": [
+        "SYS-ACCTLOGIN-P02",
+        "SYS-ACCTLOGIN-P05",
+        "SYS-ACCTLOGIN-P07",
+        "SYS-ACCTLOGIN-P12"
+      ],
+      "title": "管理者による利用者ライフサイクル管理"
+    },
+    {
+      "feature_acceptance_ref": "保持 ON で30日・OFF で12時間のセッション期限となり、既定の帰結がチェックボックス脇に明示されている",
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ],
+      "requirement_id": "REQ-SESSION-004",
+      "source_refs": [
+        "features/feat-account-login.md",
+        "specs/spec-account-login.md"
+      ],
+      "statement": "保持 ON で30日・OFF で12時間のセッション期限とし、既定 (ON) の帰結をチェックボックス脇に明示する。セッションは利用者単位で失効できる。",
+      "system_tasks": [
+        "SYS-ACCTLOGIN-P02",
+        "SYS-ACCTLOGIN-P05",
+        "SYS-ACCTLOGIN-P07"
+      ],
+      "title": "ログイン状態保持の明示的な帰結"
+    },
+    {
+      "feature_acceptance_ref": "ログイン画面の DOM に header/footer/サイドバーのナビゲーション要素が0件で、アイコンが常にテキストラベルと併記されている",
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ],
+      "requirement_id": "REQ-UI-005",
+      "source_refs": [
+        "features/feat-account-login.md",
+        "specs/spec-account-login.md"
+      ],
+      "statement": "ログイン画面の DOM に header/footer/サイドバーのナビゲーション要素を0件とし、アイコンは常にテキストラベルと併記する。構成は 01-login.png を正とする。",
+      "system_tasks": [
+        "SYS-ACCTLOGIN-P03",
+        "SYS-ACCTLOGIN-P05",
+        "SYS-ACCTLOGIN-P07"
+      ],
+      "title": "参照画像を正とするログイン画面"
+    },
+    {
+      "feature_acceptance_ref": "member が /api/admin/* の全エンドポイントに対して 403 を受け取る",
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ],
+      "requirement_id": "REQ-AUTHZ-006",
+      "source_refs": [
+        "features/feat-account-login.md",
+        "specs/spec-account-login.md"
+      ],
+      "statement": "role=member は /api/admin/* の全エンドポイントに対して 403 を受け取る。画面側の非表示だけに依存しない。",
+      "system_tasks": [
+        "SYS-ACCTLOGIN-P02",
+        "SYS-ACCTLOGIN-P04",
+        "SYS-ACCTLOGIN-P05",
+        "SYS-ACCTLOGIN-P06",
+        "SYS-ACCTLOGIN-P09"
+      ],
+      "title": "role による管理面の遮断"
+    },
+    {
+      "feature_acceptance_ref": "既存20画面の呼出しが 401/503 応答契約の変更なしに動作する",
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ],
+      "requirement_id": "REQ-COMPAT-007",
+      "source_refs": [
+        "features/feat-account-login.md",
+        "specs/spec-account-login.md"
+      ],
+      "statement": "既存20画面の呼出しが 401/503 の応答契約を変更せずに動作する。認証主体の変更を既存画面側の改修に波及させない。",
+      "system_tasks": [
+        "SYS-ACCTLOGIN-P04",
+        "SYS-ACCTLOGIN-P06",
+        "SYS-ACCTLOGIN-P07",
+        "SYS-ACCTLOGIN-P10"
+      ],
+      "title": "既存20画面の契約非破壊"
+    },
+    {
+      "feature_acceptance_ref": "active runtimeと必須設定に共有パスワード認証分岐が0件である",
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ],
+      "requirement_id": "REQ-MIGRATE-008",
+      "source_refs": [
+        "features/feat-account-login.md",
+        "specs/spec-account-login.md"
+      ],
+      "statement": "active runtimeと必須設定に共有パスワード認証分岐が0件であり、SESSION_SECRET ローテーションを含む切替手順が本番へ適用されている。",
+      "system_tasks": [
+        "SYS-ACCTLOGIN-P08",
+        "SYS-ACCTLOGIN-P09",
+        "SYS-ACCTLOGIN-P13"
+      ],
+      "title": "共有パスワードの廃止と切替"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "snapshot_digest": "sha256:98d05e3c0c15ea60d3543e3ff7877c19b44a4119e98e38fc4121a1281c4ea6b9",
+  "source_lineage": [
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md",
+    "specs/spec-account-login.md",
+    "architecture/account-login-auth.md",
+    "architecture/account-login-security.md",
+    "architecture/account-login-database.md",
+    "architecture/account-login-backend.md",
+    "architecture/account-login-frontend.md",
+    "architecture/account-login-ui-ux.md",
+    "architecture/account-login-infrastructure.md",
+    "architecture/account-login-maintenance-ops.md",
+    "features/feat-account-login.md",
+    "features/feat-account-login.context.json"
+  ]
+}

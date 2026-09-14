@@ -15,7 +15,9 @@ import { mkdir, writeFile } from 'node:fs/promises';
 
 const outDir = new URL('../samples/', import.meta.url);
 const base = process.env.KANJO_BASE_URL ?? 'http://localhost:8787';
-const password = process.env.AUTH_PASSWORD ?? 'kanjo-local-test';
+/** 共有パスワードは廃止された。scripts/seed-admin.mjs が作る seed 管理者で入る。 */
+const email = process.env.KANJO_SEED_EMAIL ?? 'admin@kanjo.local';
+const password = process.env.KANJO_SEED_PASSWORD ?? 'LocalAdmin-2026-Kanjo';
 const generateOnly = process.argv.includes('--generate-only');
 /** 'healthy'(既定) か 'tight'。tight は直近の事業入金を落として事前警告を発火させる */
 const scenario = process.env.KANJO_SEED_SCENARIO === 'tight' ? 'tight' : 'healthy';
@@ -474,7 +476,7 @@ async function main() {
   const login = await fetch(`${base}/api/auth/login`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ password }),
+    body: JSON.stringify({ email, password, remember: true }),
   });
   if (!login.ok) {
     throw new Error(`ログイン失敗 ${login.status}: ${await login.text()}`);

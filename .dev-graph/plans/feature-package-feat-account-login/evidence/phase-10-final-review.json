@@ -1,0 +1,125 @@
+{
+  "graph_node_id": "SYS-ACCTLOGIN-P10",
+  "phase_ref": "P10",
+  "title": "最終レビューと残課題の確定",
+  "reviewed_at": "2026-09-13T21:12:00Z",
+  "acceptance_to_phase_map": [
+    {
+      "id": "A1",
+      "text": "未認証は必ずログイン画面へ遷移し、正しい資格情報でのみ業務画面へ入れる",
+      "phases": ["P02", "P05"],
+      "evidence": [
+        "packages/api/src/account-login.test.ts::正しい組み合わせだけを通す",
+        "packages/api/src/account-login.test.ts::メールアドレスの表記ゆれを吸収する",
+        "packages/web/src/account-login.dom.test.tsx::保持は既定ONで保持期間を併記して送信",
+        "preview:smoke: 未認証 /api/* が 401、ログイン後 /api/auth/me が 200"
+      ]
+    },
+    {
+      "id": "A2",
+      "text": "パスワードは PBKDF2-HMAC-SHA256 210,000 回以上で保存され、平文が残らない",
+      "phases": ["P02", "P05"],
+      "evidence": [
+        "packages/api/src/account-login.test.ts::平文を保存せず、PBKDF2 の反復が仕様値を下回らない",
+        "packages/api/src/account-login.test.ts::どの応答にも password_hash を出さない",
+        "migrations/0039_account_login.sql の password_hash prefix CHECK"
+      ]
+    },
+    {
+      "id": "A3",
+      "text": "管理者が設定画面で追加・停止・一時パスワード再発行を完結でき、一時パスワードは 1 度だけ表示される",
+      "phases": ["P05", "P12"],
+      "evidence": [
+        "packages/api/src/account-login.test.ts::admin は利用者を追加でき、一時パスワードは応答に1度だけ現れる",
+        "packages/api/src/account-login.test.ts::再発行した一時パスワードで入ると変更を求められる",
+        "packages/web/src/account-login.dom.test.tsx::管理者には一覧と一時パスワードの状態",
+        "packages/web/src/account-login.dom.test.tsx::一時パスワードは1度だけ表示し閉じると復元できない",
+        "docs/runbooks/account-login-operations.md §2"
+      ]
+    },
+    {
+      "id": "A4",
+      "text": "保持 ON で 30 日、OFF で 12 時間。既定の帰結がチェックボックス脇に明示される",
+      "phases": ["P05"],
+      "evidence": [
+        "packages/api/src/account-login.test.ts::保持の有無で有効期限が2段になる",
+        "packages/api/src/account-login.test.ts::保持の指定が無いときは保持する",
+        "packages/web/src/account-login.dom.test.tsx::保持は既定ONで保持期間を併記して送信",
+        "packages/web/src/account-login.dom.test.tsx::保持を外すと remember:false"
+      ]
+    },
+    {
+      "id": "A5",
+      "text": "ログイン画面の DOM に header/footer/サイドバーが 0 件で、アイコンは常にテキストと併記される",
+      "phases": ["P03", "P05"],
+      "evidence": [
+        "packages/web/src/account-login.dom.test.tsx::ヘッダー・フッター・サイドバーを1つも描かない",
+        "packages/web/src/account-login.dom.test.tsx::すべてのアイコンが装飾扱いで、必ずテキストと併記される",
+        "packages/web/src/account-login.dom.test.tsx::Cloudflare Access など別経路のログイン導線を持たない"
+      ]
+    },
+    {
+      "id": "A6",
+      "text": "member は /api/admin/* の全経路で 403 になる",
+      "phases": ["P05", "P09"],
+      "evidence": [
+        "packages/api/src/account-login.test.ts::member は管理APIを1本も通せない",
+        "packages/web/src/account-login.dom.test.tsx::一般利用者には描画せず管理APIも照会しない"
+      ]
+    },
+    {
+      "id": "A7",
+      "text": "既存 20 画面が 401/503 契約を変えずに動作する",
+      "phases": ["P05", "P06"],
+      "evidence": [
+        "packages/api 39 files / 511 tests PASS (既存 20 画面の契約テストを含む)",
+        "packages/web 69 files / 457 tests PASS",
+        "preview:smoke: 現金記帳の作成・一覧・削除・空一覧、廃止 API の JSON 404 まで通過"
+      ]
+    },
+    {
+      "id": "A8",
+      "text": "コードベースに AUTH_PASSWORD 参照が 0 件",
+      "phases": ["P08"],
+      "evidence": [
+        "grep AUTH_PASSWORD packages/*/src packages/*/test scripts/ migrations/ *.jsonc *.json → 0 件",
+        "scripts/preview-smoke.mjs を実アカウント経路へ移行 (最後の参照を除去)",
+        "docs/ci-cd-operations.md §4.2 と §11 チェックリストを訂正"
+      ]
+    }
+  ],
+  "open_items": [
+    {
+      "item": "P13 本番反映と切替の実施 (本番 D1 への migration 0039 適用、SESSION_SECRET 登録、初期管理者の投入)",
+      "disposition": "release_blocking",
+      "owner": "リポジトリ所有者",
+      "note": "外部への変更であり、本セッションの権限外。P05 の rollout 方針どおり migration は未適用で保持している。実施手順は docs/runbooks/account-login-operations.md §1 と docs/ci-cd-operations.md。"
+    },
+    {
+      "item": "arch-mf-business-* 8 ノードの source_digest 不一致 (check-graph-lineage)",
+      "disposition": "closed",
+      "closed_at": "2026-09-14T02:20:00Z",
+      "owner": "-",
+      "note": "解消済み。mf-business サイクル (commit 05ed74a) の章を system-spec の archive へ退避し、architecture/graph.json の 8 ノードの source_lineage をその archive 側へ張り替えて digest を打ち直した。`node scripts/check-graph-lineage.mjs` は exit 0 で「37 ノードすべてが正本と一致し、architecture/*.md 37 件に孤児はありません」。P11 の run-gates は打ち直し前の実行であり、その記述は本項で上書きする。"
+    },
+    {
+      "item": "userId をテナント識別子 ('default') のまま据え置き、操作者は actor / audit_log.actor_user_id で表す",
+      "disposition": "deferred",
+      "owner": "リポジトリ所有者",
+      "note": "設計上の意図的な逸脱。userId を人に付け替えると既存 20 画面の全データ所有境界が動くため、本 feature の範囲を超える。後続 feature の候補。"
+    },
+    {
+      "item": "ログイン参照画像 design/FINAL-UI/images/01-login.png との差分 (画像にはサイドバー・ヘッダー・フッターと Cloudflare Access ボタンがある)",
+      "disposition": "closed",
+      "owner": "-",
+      "note": "利用者の明示指示および architecture/account-login-ui-ux.md により、章が正本で画像は参考と確定済み。実装は章に従う。"
+    }
+  ],
+  "release_decision": {
+    "verdict": "conditional_go",
+    "condition": "P13 (本番 D1 migration + SESSION_SECRET 登録 + 初期管理者投入) の完了をもって go。それまでは本番未反映。",
+    "rationale": "受入 8 件すべてに自動テストまたは実機 preview の根拠が付き、品質ゲートは check-graph-lineage の既存債務 8 件を除いて全て green。残る release_blocking は外部変更 1 件のみ。",
+    "decided_at": "2026-09-13T21:12:00Z"
+  },
+  "status": "pass"
+}

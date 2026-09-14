@@ -387,11 +387,37 @@ export const balanceEntries = sqliteTable(
   ],
 );
 
-/** 0014: password loginの接続元scope別rate limit。raw IP/passwordは保存しない。 */
+/** 0039: 認証主体。業務データの共有tenantとは分離し、利用者と一時資格情報だけを持つ。 */
+export const users = sqliteTable(
+  'users',
+  {
+    id: text('id').primaryKey(),
+    email: text('email').notNull(),
+    passwordHash: text('password_hash').notNull(),
+    role: text('role', { enum: ['admin', 'member'] }).notNull(),
+    status: text('status', { enum: ['active', 'suspended'] }).notNull(),
+    sessionGeneration: integer('session_generation').notNull().default(1),
+    mustChangePassword: integer('must_change_password').notNull().default(0),
+    temporaryPasswordExpiresAt: text('temporary_password_expires_at'),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+    lastLoginAt: text('last_login_at'),
+  },
+  (table) => [
+    uniqueIndex('uq_users_email').on(table.email),
+    index('idx_users_status_role').on(table.status, table.role),
+    index('idx_users_temporary_password_expiry').on(table.temporaryPasswordExpiresAt),
+  ],
+);
+
+/** 0014/0039: password loginの送信元・account独立scope。raw IP/email/passwordは保存しない。 */
 export const passwordLoginRateLimits = sqliteTable(
   'password_login_rate_limits',
   {
     scopeHash: text('scope_hash').primaryKey(),
+    scopeKind: text('scope_kind', { enum: ['ip', 'account'] })
+      .notNull()
+      .default('ip'),
     windowStartedAt: integer('window_started_at').notNull(),
     failureCount: integer('failure_count').notNull(),
     lockedUntil: integer('locked_until'),
@@ -612,9 +638,23 @@ export const auditLogs = sqliteTable(
   {
     id: text('id').primaryKey(),
     userId: text('user_id').notNull(),
+    actorUserId: text('actor_user_id'),
     operationId: text('operation_id').notNull(),
     action: text('action', {
-      enum: ['delete', 'undo', 'import_resolution', 'import_discard'],
+      enum: [
+        'delete',
+        'undo',
+        'import_resolution',
+        'import_discard',
+        'auth_login',
+        'auth_login_failed',
+        'auth_logout',
+        'auth_password_change',
+        'admin_user_invite',
+        'admin_user_update',
+        'admin_user_suspend',
+        'admin_user_password_reset',
+      ],
     }).notNull(),
     /** 粒度と安全な期間/取込IDだけ。transactionの明細IDは含めない。 */
     scope: text('scope').notNull(),
@@ -628,6 +668,7 @@ export const auditLogs = sqliteTable(
     uniqueIndex('uq_audit_log_tenant_ref').on(t.id, t.userId),
     index('idx_audit_log_user_occurred').on(t.userId, t.occurredAt),
     index('idx_audit_log_retention').on(t.occurredAt, t.id),
+    index('idx_audit_log_actor').on(t.actorUserId, t.occurredAt),
   ],
 );
 

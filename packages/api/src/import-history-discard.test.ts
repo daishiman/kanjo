@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { NON_AUTH_AUDIT, loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
 import { runR2Cleanup } from './r2-cleanup.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
@@ -12,7 +13,6 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  AUTH_PASSWORD: 'synthetic-test-password',
   SESSION_SECRET: 'synthetic-test-secret',
 };
 
@@ -125,17 +125,7 @@ beforeEach(async () => {
   for (const { name } of resetTables) await d1.prepare(`DELETE FROM "${name}"`).run();
   const listed = await files.list();
   for (const object of listed.objects) await files.delete(object.key);
-  const login = await app.request(
-    '/api/auth/login',
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
-    },
-    { ...auth, DB: d1 },
-  );
-  cookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
-  expect(login.status).toBe(200);
+  cookie = await loginForTest(app, { ...auth, DB: d1 });
 }, 30_000);
 
 afterAll(async () => {
@@ -161,7 +151,9 @@ describe('取込履歴の破棄', () => {
     await expect(d1.prepare('SELECT COUNT(*) AS n FROM imports').first<number>('n')).resolves.toBe(0);
     await expect(d1.prepare('SELECT COUNT(*) AS n FROM import_runs').first<number>('n')).resolves.toBe(0);
     await expect(files.head(r2Key)).resolves.toBeNull();
-    await expect(d1.prepare('SELECT action,scope,counts_json FROM audit_log').first()).resolves.toEqual({
+    await expect(
+      d1.prepare(`SELECT action,scope,counts_json FROM audit_log WHERE ${NON_AUTH_AUDIT}`).first(),
+    ).resolves.toEqual({
       action: 'import_discard',
       scope: 'import:1',
       counts_json: '{"imports":1}',

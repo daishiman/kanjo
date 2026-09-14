@@ -7,7 +7,21 @@
  * import-resolution の正本書込みと同じ D1 batch へそのまま追加できる。
  */
 
-export const AUDIT_ACTIONS = ['delete', 'undo', 'import_resolution', 'import_discard'] as const;
+export const AUDIT_ACTIONS = [
+  'delete',
+  'undo',
+  'import_resolution',
+  'import_discard',
+  // 認証・利用者管理。明細を1件も触らないが、誰が入って誰を変えたかは長期保持の対象。
+  'auth_login',
+  'auth_login_failed',
+  'auth_logout',
+  'auth_password_change',
+  'admin_user_invite',
+  'admin_user_update',
+  'admin_user_suspend',
+  'admin_user_password_reset',
+] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 
 export const AUDIT_RESULTS = ['succeeded', 'failed', 'rejected'] as const;
@@ -43,6 +57,8 @@ export const AUDIT_COUNT_KEYS = [
   'incoming',
   'inserted',
   'kept',
+  'lockRejected',
+  'lockStarted',
   'mfTx',
   'months',
   'operations',
@@ -62,7 +78,9 @@ export type AuditScope =
   | { kind: 'transaction' }
   | { kind: 'import'; importId?: number }
   | { kind: 'period'; from: string; to: string }
-  | { kind: 'all' };
+  | { kind: 'all' }
+  // 認証操作の対象。userId は「誰に対して」で、操作した側は actorUserId。
+  | { kind: 'account'; userId?: string };
 
 export interface AuditDetailInput {
   /** `opaqueAuditTransactionKey` で作った値だけを受ける。 */
@@ -83,12 +101,19 @@ export interface AuditWriteInput {
   userId: string;
   /** delete/undoのoperation ID、またはimport-resolutionのrun ID。 */
   operationId: string;
+  /**
+   * 操作した利用者。省略と null は「操作者を識別できなかった」を意味する値であり、
+   * 欠測の埋め合わせではない。共有パスワード時代の行を遡って埋めないのと同じ扱い。
+   */
+  actorUserId?: string | null;
   action: AuditAction;
   scope: AuditScope;
   counts: Partial<Record<AuditCountKey, number>>;
   occurredAt: string;
   result: AuditResult;
   details?: readonly AuditDetailInput[];
+  /** 同じbatch内の直前更新が0件なら監査も書かない。条件付き管理更新だけが使う。 */
+  onlyIfPreviousStatementChanged?: boolean;
 }
 
 export interface AuditStatementPlan {
@@ -113,6 +138,7 @@ const AUDIT_ID = /^[A-Za-z0-9][A-Za-z0-9:_-]{0,99}$/;
 const MONTH = /^\d{4}-(?:0[1-9]|1[0-2])$/;
 const OPAQUE_TX_KEY = /^v1:[0-9a-f]{64}$/;
 const REASON_CODE = /^[a-z][a-z0-9_]{0,63}$/;
+const ACCOUNT_SCOPE_ID = /^[0-9a-zA-Z_-]{1,64}$/;
 const MAX_DETAIL_VALUE_LENGTH = 120;
 const DETAIL_JSON_CHUNK_BYTES = 80 * 1024;
 const MAX_AUDIT_QUERY_COUNT = 48;
@@ -154,6 +180,10 @@ const scopeText = (scope: AuditScope): string => {
       return `period:${scope.from}..${scope.to}`;
     case 'all':
       return 'all';
+    case 'account':
+      if (scope.userId === undefined) return 'account';
+      if (!ACCOUNT_SCOPE_ID.test(scope.userId)) throw new AuditValidationError('scope_account');
+      return `account:${scope.userId}`;
   }
 };
 
@@ -219,6 +249,9 @@ export function buildAuditStatements(input: AuditWriteInput): AuditStatementPlan
   validateId(input.auditId, 'audit_id');
   validateTenantId(input.userId);
   validateId(input.operationId, 'operation_id');
+  const actorUserId = input.actorUserId ?? null;
+  if (actorUserId !== null && !ACCOUNT_SCOPE_ID.test(actorUserId))
+    throw new AuditValidationError('actor_user_id');
   if (!(AUDIT_ACTIONS as readonly string[]).includes(input.action)) throw new AuditValidationError('action');
   if (!(AUDIT_RESULTS as readonly string[]).includes(input.result)) throw new AuditValidationError('result');
   validateIso(input.occurredAt);
@@ -244,18 +277,21 @@ export function buildAuditStatements(input: AuditWriteInput): AuditStatementPlan
   const header = input.database
     .prepare(
       `INSERT INTO audit_log
-         (id,user_id,operation_id,action,scope,counts_json,occurred_at,result)
-       VALUES (?,?,?,?,?,?,?,?)`,
+         (id,user_id,actor_user_id,operation_id,action,scope,counts_json,occurred_at,result)
+       SELECT ?,?,?,?,?,?,?,?,?
+        WHERE ?=0 OR changes()>0`,
     )
     .bind(
       input.auditId,
       input.userId,
+      actorUserId,
       input.operationId,
       input.action,
       scope,
       counts,
       input.occurredAt,
       input.result,
+      input.onlyIfPreviousStatementChanged ? 1 : 0,
     );
   const detailStatements = detailChunks.map((payload) =>
     input.database

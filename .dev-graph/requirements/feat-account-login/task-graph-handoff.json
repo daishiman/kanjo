@@ -1,0 +1,23 @@
+{
+  "consumer_action": "tasks/feat-account-login/SYS-ACCTLOGIN-P01..P13.md は登録済み。task-graph build は SYS-ACCTLOGIN-P01 から depends_on 順に着手する。",
+  "feature_id": "feat-account-login",
+  "feature_package_id": "feature-package/feat-account-login",
+  "handoff_target": "task-graph",
+  "kind": "requirements-handoff",
+  "missing_sections": [],
+  "parent_feature": "feat-account-login",
+  "readiness_matrix": ".dev-graph/requirements/feat-account-login/readiness-matrix.json",
+  "requirement_count": 8,
+  "requirements_document": ".dev-graph/requirements/feat-account-login/requirements.md",
+  "schema_version": "1.0.0",
+  "self_generated_code_files": [],
+  "snapshot_digest": "sha256:98d05e3c0c15ea60d3543e3ff7877c19b44a4119e98e38fc4121a1281c4ea6b9",
+  "status": "ready",
+  "system_build_handoff": ".dev-graph/plans/feature-package-feat-account-login/system-build-handoff.json",
+  "task_count": 13,
+  "task_graph": ".dev-graph/plans/feature-package-feat-account-login/task-graph.json",
+  "task_projection_target_root": "tasks/feat-account-login",
+  "task_spec_source_root": ".dev-graph/plans/feature-package-feat-account-login/task-specs",
+  "trace_plan": ".dev-graph/requirements/feat-account-login/trace-plan.json",
+  "validated_plan_digest": "sha256:407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+}

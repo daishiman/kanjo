@@ -26,18 +26,17 @@ const port = await new Promise((resolve, reject) => {
   });
 });
 const origin = `http://127.0.0.1:${port}`;
+// 共有パスワードは廃止。smoke も実際のアカウントで入る。
+const previewEmail = 'preview-smoke@example.test';
 const previewPassword = 'preview-smoke-password';
+const seedSqlPath = join(workDir, 'seed-admin.sql');
 
 mkdirSync(stateDir);
 writeFileSync(
   envFile,
-  [
-    `AUTH_PASSWORD=${previewPassword}`,
-    'SESSION_SECRET=preview-smoke-session-secret-32bytes',
-    'ACCESS_AUD=',
-    'ACCESS_TEAM_DOMAIN=',
-    '',
-  ].join('\n'),
+  ['SESSION_SECRET=preview-smoke-session-secret-32bytes', 'ACCESS_AUD=', 'ACCESS_TEAM_DOMAIN=', ''].join(
+    '\n',
+  ),
   { mode: 0o600 },
 );
 
@@ -136,6 +135,37 @@ try {
     '--persist-to',
     stateDir,
   ]);
+  // 認証主体はアカウントなので、migration 直後に1件 seed しないとログイン経路を通せない。
+  // ハッシュ生成は seed-admin.mjs の一箇所に持たせ、ここは生成された SQL を流すだけにする。
+  const seedSql = spawnSync(
+    'node',
+    [
+      join(projectRoot, 'scripts', 'seed-admin.mjs'),
+      '--print-sql',
+      '--mode',
+      'bootstrap',
+      '--email',
+      previewEmail,
+      '--password-stdin',
+    ],
+    { cwd: projectRoot, encoding: 'utf8', input: `${previewPassword}\n` },
+  );
+  if (seedSql.status !== 0) throw new Error(`seed-admin --print-sql failed (${seedSql.status})`);
+  writeFileSync(seedSqlPath, seedSql.stdout, { mode: 0o600 });
+  run('pnpm', [
+    '--filter',
+    '@kanjo/api',
+    'exec',
+    'wrangler',
+    'd1',
+    'execute',
+    'kanjo-db',
+    '--local',
+    '--persist-to',
+    stateDir,
+    '--file',
+    seedSqlPath,
+  ]);
   run('pnpm', ['--filter', '@kanjo/web', 'build']);
 
   server = spawn(
@@ -173,12 +203,24 @@ try {
   const login = await fetch(`${origin}/api/auth/login`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ password: previewPassword }),
+    body: JSON.stringify({ email: previewEmail, password: previewPassword, remember: true }),
     signal: AbortSignal.timeout(5_000),
   });
   if (!login.ok) throw new Error(`login smoke failed: ${login.status}`);
-  const cookie = login.headers.get('set-cookie');
+  let cookie = login.headers.get('set-cookie');
   if (!cookie) throw new Error('login smoke did not issue a session cookie');
+
+  // 本番bootstrapと同じ一時資格情報なので、最初に本人パスワードへ変更してから業務APIへ進む。
+  const changedPassword = 'fresh-smoke-credential-2026';
+  const changed = await fetch(`${origin}/api/auth/password`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', cookie },
+    body: JSON.stringify({ currentPassword: previewPassword, newPassword: changedPassword }),
+    signal: AbortSignal.timeout(5_000),
+  });
+  if (!changed.ok) throw new Error(`password change smoke failed: ${changed.status}`);
+  cookie = changed.headers.get('set-cookie');
+  if (!cookie) throw new Error('password change smoke did not refresh the session cookie');
 
   const me = await fetch(`${origin}/api/auth/me`, {
     headers: { cookie },

@@ -124,12 +124,12 @@ test('未承認またはfreshness未確認のmanifestを拒否する', () => {
 
 test('承認manifestはR2 cleanupのRelease世代境界も検証する', () => {
   const releaseSnapshot = {
-    head: '0039_drop_tax_and_receipt_tables.sql',
+    head: '0040_drop_tax_and_receipt_tables.sql',
     orderedMigrationsDigestSha256: 'd'.repeat(64),
     entries: [
       { order: 1, filename: '0037_unrelated.sql', sha256: '7'.repeat(64) },
       { order: 2, filename: '0038_prepare_r2_cleanup.sql', sha256: '8'.repeat(64) },
-      { order: 3, filename: '0039_drop_tax_and_receipt_tables.sql', sha256: '9'.repeat(64) },
+      { order: 3, filename: '0040_drop_tax_and_receipt_tables.sql', sha256: '9'.repeat(64) },
     ],
   };
   const manifest = approvedManifest();
@@ -146,7 +146,7 @@ test('承認manifestはR2 cleanupのRelease世代境界も検証する', () => {
         manifest,
         repositoryHead,
         snapshot: releaseSnapshot,
-        pendingFilenames: ['0038_prepare_r2_cleanup.sql', '0039_drop_tax_and_receipt_tables.sql'],
+        pendingFilenames: ['0038_prepare_r2_cleanup.sql', '0040_drop_tax_and_receipt_tables.sql'],
       }),
     /r2-cleanup-release-boundary-invalid/,
   );
@@ -158,7 +158,7 @@ test('Migrate経路はRelease Bのみremote cleanup残件を検証する', () =>
     for (const filename of [
       '0037_unrelated.sql',
       '0038_prepare_r2_cleanup.sql',
-      '0039_drop_tax_and_receipt_tables.sql',
+      '0040_drop_tax_and_receipt_tables.sql',
     ]) {
       writeFileSync(join(migrationsDir, filename), `-- ${filename}\nSELECT 1;\n`);
     }
@@ -184,7 +184,7 @@ test('Migrate経路はRelease Bのみremote cleanup残件を検証する', () =>
         '┌──────┐\n' +
         '│ Name │\n' +
         '├──────┤\n' +
-        '│ 0039_drop_tax_and_receipt_tables.sql │\n' +
+        '│ 0040_drop_tax_and_receipt_tables.sql │\n' +
         '└──────┘',
       stderr: '',
     });
@@ -207,7 +207,7 @@ test('Migrate経路はRelease Bのみremote cleanup残件を検証する', () =>
         runRemoteList,
         runCleanupStatus,
       }),
-      ['0039_drop_tax_and_receipt_tables.sql'],
+      ['0040_drop_tax_and_receipt_tables.sql'],
     );
     assert.equal(cleanupInspections, 1);
   } finally {

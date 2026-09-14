@@ -1,0 +1,183 @@
+{
+  "conditions": {
+    "C1": {
+      "evidence": [
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-03-design-review.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md",
+        "gate:deterministic-validation"
+      ],
+      "id": "C1",
+      "status": "PASS",
+      "summary": "13 task spec は上位正本 (features/feat-account-login.md、specs/spec-account-login.md、architecture 8章) の決定と矛盾しない。Cloudflare Access 導線を作らない・自己サインアップを持たない (管理者招待のみ)・ログイン画面にヘッダー/フッター/サイドバーを描画しない・PBKDF2-HMAC-SHA256 を 210,000 回以上反復する・保持 ON は30日で OFF は12時間、の5点すべてが否定形または除外記述として一貫して現れる。"
+    },
+    "C2": {
+      "evidence": [
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-06-test-run.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-12-documentation-operations.md"
+      ],
+      "id": "C2",
+      "status": "PASS",
+      "summary": "feature の scope_out 6件は13 spec のスコープ外節で全件が明示的に被覆されている。受入8件は P01 の全件写し取り宣言から P04 のテスト設計、P06 の実行、P07 の判定へ至る全件宣言チェーンで手続き的に被覆され、被覆されない受入は0件である。"
+    },
+    "C3": {
+      "evidence": [
+        "staging-manifest.json",
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ],
+      "id": "C3",
+      "status": "PASS",
+      "summary": "feature-package.json / task-graph.json / workstream-inventory.json / system-build-handoff.json の4者で id・phase_ref・task_spec_path・depends_on・build_target_kind が13件全一致する。staging-manifest.json 記載の17ファイルの sha256 は実ファイルと全件一致し、source_feature_digest は features/feat-account-login.context.json の実測 sha256 と一致する。"
+    },
+    "C4": {
+      "evidence": [
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ],
+      "id": "C4",
+      "status": "PASS",
+      "summary": "depends_on は P01 から P13 への単純な直線鎖で、循環も逆流も無い。write_scope は実コードへ触れる P05 / P08 / P13 で一部重複するが、これらは逐次依存の関係にあるため同時実行による衝突が生じない。implementation_readiness は13 task すべてが complete である。"
+    }
+  },
+  "evaluated_digest": "sha256:407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "13517490d1b2fef72eb923d7f26d0ef772b408f77894263ec8e3c3f297c7afec"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "a99b09e8b863b66a0d2f652e647a7de5791170ef26fb839a90bead81a05da860"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "6f2b6f35dd6d58bf4eb9c8fc5a3808652df0126c1a4ef217a68b456b3b2ff1b5"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "b82c260c543a528d279fb43069b6d62320698fd3d0a34e08c42b4bffe505d725"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "dff81f7e63eb4ac99e7f590ea0333daaafd715d953007744a4c6e3332ca967c0"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "8adac6b5a9f734cb649b361a11dd747b9a75a23cc7836224f134fb66fe3b9340"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "e3088a84e9590b16a52c16889c19c75c1d13c1159b12e93e82322ce6c1c8d355"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "43b28f56f4a45843fdbfff229769e51061a387eeefb84f0b93fc3880fbd93515"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "66156a21923089169ae5d5345f98feb5cda35a172d7d69fcd5d06d39b1d3465b"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "662585170ce284993bc5ef6f5216ea2ff178cbe10e8ba96b97fc02ef41e484ed"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "0a9c76de69b3b5125fd729fd391ee7c68f1ccffa99383b2cd67c359475c06409"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "b4a74db0acc59c3e584cc1a6dc4c8cad79659ea8e355302920714b6bdf445da6"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "139ab27c07aafa59eb2bdbbd3eaa9cc27b4b09105b50a6d0856e414e68a535f4"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "8364f0b9a90cef7ca2921e88a248ff81edbcb641c9b062d3edf70f911e098635"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "4839ce0a7e8114d7e719140c9829639867b120fd5beb4b2bd5beaae9516fc289"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "38782e4d6b044dbc44e7fdf47b73faf55c74bed34b83696d83f55295d4abd376"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "243ff5ae74b67a211c3ce9aa308ace8d4758cf5c66fcbc93b90918d08f200a9a"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "e5e009cfc98264f0574305941074d424dc1d5d6940759538cf5c33c9d6a878d9"
+    }
+  ],
+  "evaluator": {
+    "context": "fork",
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11"
+  },
+  "findings": [
+    {
+      "bucket": "C2",
+      "evidence": [
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md"
+      ],
+      "observation": "受入1件目の『未認証で保護画面へアクセスするとログイン画面へ遷移する』のうちリダイレクト挙動そのものが、どの phase の受入条件にも文言として現れない。認証成功側は phase-05 の受入条件で覆われている。P01 の全8件写し取り宣言に依存するが、そのベースライン成果物は staging には未生成のため静的には検証できない。P07 の受入8件判定で実機確認される設計であり、実害は限定的と判断して low とした。",
+      "severity": "low"
+    },
+    {
+      "bucket": "evaluator-delivery",
+      "evidence": [
+        "staging-manifest.json"
+      ],
+      "observation": "本 findings の C1..C4 判定と evidence は、独立 context で fork した system-dev-planner:system-dev-plan-evaluator が実際に生成したものである。ただし本 session では subagent の結果配送が機能せず (3体連続で最終レポートが親へ届かなかった)、評価結果は当該 subagent の transcript から最終メッセージを抽出して回収した。proposer と approver の context 分離は保たれているが、配送経路は正規のものではない。",
+      "severity": "info"
+    }
+  ],
+  "gate_results": [
+    {
+      "command": [
+        "python3",
+        "<HOME>/.claude/plugins/cache/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<REPO_ROOT>",
+        "--staging",
+        ".dev-graph/staging/feature-package-feat-account-login/run-feat-account-login-20260913T053756Z"
+      ],
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "exit_code": 0,
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "stderr": "",
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52\",\n  \"feature_package_id\": \"feature-package/feat-account-login\",\n  \"parent_feature\": \"feat-account-login\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n"
+    }
+  ],
+  "plan_dir": ".dev-graph/staging/feature-package-feat-account-login/run-feat-account-login-20260913T053756Z",
+  "schema_version": "1.0.0",
+  "staleness_rule": "この findings は evaluated_digest (sha256:407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52) に対してのみ有効である。staging 配下のいずれかのファイルが変更され validate-system-plan.py の validated_digest がこの値と一致しなくなった時点で本 findings は stale となり、C11 promotion の根拠として使用してはならない。その場合は staging を再評価して findings を作り直すこと。",
+  "verdict": "PASS"
+}

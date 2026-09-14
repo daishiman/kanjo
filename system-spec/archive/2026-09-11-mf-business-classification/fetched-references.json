@@ -1,0 +1,37 @@
+{
+  "references": [
+    {
+      "target_id": "cloudflare-workers-encoding-api",
+      "retrieved_at": "2026-09-10T04:44:10Z",
+      "source_url": "https://developers.cloudflare.com/workers/runtime-apis/encoding/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "version": null,
+      "last_updated": "2026-04-23",
+      "latest_checked_at": "2026-09-10T04:44:58Z",
+      "summary": "公式 Encoding API ページは 2026-04-23 更新時点で「TextDecoder represents a UTF-8 decoder」とだけ記し、legacy charset (shift_jis 等) の可否を明記していない。すなわち本ページ単体では C2 制約 (CP932 の MF CSV を decodeBuf の shift_jis フォールバックで読む) の成立を肯定も否定もできない。この空白を埋めるため target workerd-legacy-encoding-streaming で実装側 (workerd) を確認した。仕様書ではこのページを『公式ドキュメントは UTF-8 のみを明記しており記述が実装に追随していない』という限定つきの根拠として引用し、shift_jis 可否の根拠には用いない。"
+    },
+    {
+      "target_id": "cloudflare-workers-web-standards",
+      "retrieved_at": "2026-09-10T04:44:58Z",
+      "source_url": "https://developers.cloudflare.com/workers/runtime-apis/web-standards/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "version": null,
+      "last_updated": "2026-04-23",
+      "latest_checked_at": "2026-09-10T04:44:58Z",
+      "summary": "Workers runtime がサポートする Web 標準 API の公式一覧。2026-04-23 更新時点で TextEncoder / TextDecoder および TextEncoderStream / TextDecoderStream が利用可能であることを明記する。ただし『Both TextEncoder and TextDecoder support UTF-8 encoding/decoding』とあり、legacy charset への言及はない。TextDecoder が runtime に存在することの根拠としては十分だが、shift_jis の可否の根拠としては不十分である。詳細は MDN の Encoding API を参照するよう案内している。"
+    },
+    {
+      "target_id": "workerd-legacy-encoding-streaming",
+      "retrieved_at": "2026-09-10T04:44:58Z",
+      "source_url": "https://github.com/cloudflare/workerd/issues/6193",
+      "official_publisher": "Cloudflare",
+      "official_host": "github.com",
+      "version": null,
+      "last_updated": "2026-02-26",
+      "latest_checked_at": "2026-09-10T04:44:58Z",
+      "summary": "Workers runtime の実装正本である cloudflare/workerd の issue #6193 『legacy multi-byte encodings in TextDecoder are wrong in streaming』(2026-02-26 起票、確認時点で Closed)。この issue が存在すること自体が、workerd が big5 / shift_jis / euc-kr / iso-2022-jp を実装していることを示す (未実装なら streaming の正しさは問題にならない)。したがって公式ドキュメントの『UTF-8 デコーダ』記述は実装に追随していない。報告内容は『Streaming is wrong. Which means that the result of decoding a stream depends on the shape of the stream, not just bytes of the stream.』であり、影響は stream 分割での decode に限られ、単発 decode には及ばない。本リポジトリの packages/core/src/csv.ts decodeBuf は Uint8Array 全体を一度に decode し {stream:true} を用いないため、修正前後いずれの runtime でも影響を受けない。加えて本リポジトリの packages/api/wrangler.jsonc の compatibility_date は 2026-08-24 であり、この issue の起票日 (2026-02-26) より後である。関連 issue #5663 (2025-12-09 起票、Closed) は new TextDecoder('shift-jis').encoding が WHATWG 正準ラベル shift_jis ではなく shift-jis を返すというラベル正規化の指摘であり、decode 結果そのものには影響しない。実装では encoding プロパティ値に依存した分岐を書かないこと。"
+    }
+  ]
+}

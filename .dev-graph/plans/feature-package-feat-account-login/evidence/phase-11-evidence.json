@@ -1,0 +1,149 @@
+{
+  "graph_node_id": "SYS-ACCTLOGIN-P11",
+  "phase_ref": "P11",
+  "title": "証跡の収集と feature 完了根拠の確定",
+  "collected_at": "2026-09-13T21:14:00Z",
+  "digest_algorithm": "sha256",
+  "digest_basis": "リポジトリ root からの相対パスに対する、収集時点のファイル内容。再確認は `shasum -a 256 <path>` で行う。",
+  "test_runs": [
+    {
+      "id": "run-api",
+      "command": "pnpm --filter @kanjo/api test",
+      "result": "39 files / 511 tests passed",
+      "duration_seconds": 462.56,
+      "ran_at": "2026-09-13T21:10:00Z",
+      "note": "P09 受入 3 を固定する監査テスト 3 件を account-login.test.ts へ追加した後の再実行。追加前は 508 tests。"
+    },
+    {
+      "id": "run-web",
+      "command": "pnpm --filter @kanjo/web test",
+      "result": "69 files / 457 tests passed",
+      "duration_seconds": 76.48,
+      "ran_at": "2026-09-13T20:55:50Z"
+    },
+    {
+      "id": "run-aux",
+      "command": "pnpm run test:aux",
+      "result": "41 node tests + 31 python tests passed",
+      "ran_at": "2026-09-13T19:40:00Z"
+    },
+    {
+      "id": "run-smoke",
+      "command": "pnpm run preview:smoke",
+      "result": "exit 0 — migrations, SPA, auth, cash create/list/delete/empty list, retired API 404",
+      "duration_seconds": 39.03,
+      "ran_at": "2026-09-13T20:10:00Z"
+    },
+    {
+      "id": "run-gates",
+      "command": "pnpm run lint / typecheck / security:content",
+      "result": "biome・skills・glossary・report-CSS・security:content は OK。typecheck は両パッケージ Done。check-graph-lineage のみ既存債務 8 件 (arch-mf-business-*) で失敗。",
+      "ran_at": "2026-09-13T21:02:00Z",
+      "superseded_by": "run-gates-final"
+    },
+    {
+      "id": "run-gates-final",
+      "command": "pnpm run lint / typecheck / test:aux / vitest (account-login)",
+      "result": "全て pass。check-graph-lineage は 37 ノードすべてが正本と一致し孤児 0 件 (arch-mf-business-* の 8 件は archive 退避と graph 張り替えで解消)。api 2 files/44 tests、web 2 files/35 tests、aux node 41 + python 31。",
+      "ran_at": "2026-09-14T02:10:00Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "packages/api/src/account-login.test.ts",
+      "digest": "130c5b877418d7afbb4c4d98c29e11a089207c081e707a18e3cde8a77c57934d",
+      "role": "サーバ側の受入固定 (26 tests)"
+    },
+    {
+      "path": "packages/web/src/account-login.dom.test.tsx",
+      "digest": "2282a37e0fd83d1af085c74e7d1555d0b0b7a93bee7be104dc75e57e2cc49299",
+      "role": "画面側の受入固定 (19 tests)"
+    },
+    {
+      "path": "packages/api/src/login-rate-limit.test.ts",
+      "digest": "c0d2a22da9cf6ab6e64bc46069e8015dc1284f55b4e4e70546edb5df3e9497a0",
+      "role": "総当たり抑止の固定 (8 tests)"
+    },
+    {
+      "path": "packages/api/src/users.ts",
+      "digest": "8d6ab65dca90bebd70cce499a3f8f77661da42b81bbfeea840ca1b1b8227b3e4",
+      "role": "PBKDF2 ハッシュと利用者ドメインの実装"
+    },
+    {
+      "path": "packages/api/src/routes/auth.ts",
+      "digest": "c038bb58e22b8a50eca064add26062adfdcd68cb8d7d4abece817349ecb2ffcf",
+      "role": "ログイン・ログアウト・パスワード変更の経路"
+    },
+    {
+      "path": "packages/api/src/routes/admin-users.ts",
+      "digest": "5faf920b0786044e86a439dc03469d8e0c54c413ebd642c325b546cdb8e46415",
+      "role": "管理者による利用者管理の経路"
+    },
+    {
+      "path": "packages/web/src/pages/Login.tsx",
+      "digest": "3723842dc71c7461f41f91682aa3173a8a786085d0466d3b81ad83565b163a97",
+      "role": "ログイン画面"
+    },
+    {
+      "path": "packages/web/src/pages/PasswordChange.tsx",
+      "digest": "0c03e71cacd48e93dbedb232b0e4f303c3c12dcd52dcc4a6a7eb71c82ee197a9",
+      "role": "パスワード変更画面 (強制・任意)"
+    },
+    {
+      "path": "packages/web/src/components/UserAdmin.tsx",
+      "digest": "01327a66d97063bc3d6b306c5d9cd169c8a6717fddbfdb6a048a4052d25f1050",
+      "role": "設定画面の利用者管理"
+    },
+    {
+      "path": "migrations/0039_account_login.sql",
+      "digest": "b971ca8825898d5a46e7730c10a92651d933a1928aab79c34dae3c5728b6c2f1",
+      "role": "users / user_password_resets / audit_log 拡張"
+    },
+    {
+      "path": "docs/runbooks/account-login-operations.md",
+      "digest": "409cba21800da4b8918718f4ffee8371bd4a9c0c59cc7b572d83b91562637bb6",
+      "role": "運用手順 (P08・P12)"
+    },
+    {
+      "path": "scripts/seed-admin.mjs",
+      "digest": "f314f153e1fb360a3e9a2472c39a61db8a4d06ad3bb7e25099f2446f06f37f5d",
+      "role": "初期管理者 seed (ローカル実行 / --print-sql)"
+    },
+    {
+      "path": "scripts/preview-smoke.mjs",
+      "digest": "2b315d53855dbe55dbe20e28c334f277bcbb3af9f23099d50ea7b45976c178af",
+      "role": "本番相当の通し確認 (AUTH_PASSWORD 最後の参照を除去)"
+    },
+    {
+      "path": ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-09-quality-assurance.json",
+      "digest": "b1d902ee06cf412dbff213a54058f9cdc8cee08f4f28255fa8c8f6dd959d9ea3",
+      "role": "P09 セキュリティ総点検の結果"
+    },
+    {
+      "path": ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-10-final-review.json",
+      "digest": "4e2c5d2470fe06027e49226085a8b4cf0c8a0d6948509783aaa5488b1e595f27",
+      "role": "P10 受入 8 件の対応表・残課題・リリース可否 (lineage 残課題の close 反映後)"
+    },
+    {
+      "path": ".dev-graph/plans/feature-package-feat-account-login/evidence/spec-reflection-receipt.json",
+      "digest": "b0a972a85dc94598c9654a1895b5bf7006aed52cccd836fad193baa73085e096",
+      "role": "仕様・設計への反映の受領書 (正規フローと反映先の記録)"
+    }
+  ],
+  "acceptance_index": [
+    { "id": "A1", "primary": "packages/api/src/account-login.test.ts", "run": "run-api", "secondary": ["run-smoke"] },
+    { "id": "A2", "primary": "packages/api/src/account-login.test.ts", "run": "run-api", "secondary": ["migrations/0039_account_login.sql"] },
+    { "id": "A3", "primary": "packages/api/src/account-login.test.ts", "run": "run-api", "secondary": ["packages/web/src/account-login.dom.test.tsx", "docs/runbooks/account-login-operations.md"] },
+    { "id": "A4", "primary": "packages/api/src/account-login.test.ts", "run": "run-api", "secondary": ["packages/web/src/account-login.dom.test.tsx"] },
+    { "id": "A5", "primary": "packages/web/src/account-login.dom.test.tsx", "run": "run-web", "secondary": [] },
+    { "id": "A6", "primary": "packages/api/src/account-login.test.ts", "run": "run-api", "secondary": ["packages/web/src/account-login.dom.test.tsx"] },
+    { "id": "A7", "primary": "run-api", "run": "run-api", "secondary": ["run-web", "run-smoke"] },
+    { "id": "A8", "primary": "scripts/preview-smoke.mjs", "run": "run-gates", "secondary": ["docs/ci-cd-operations.md"] }
+  ],
+  "completion_basis": {
+    "satisfied": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10", "P11", "P12"],
+    "not_executed": ["P13"],
+    "not_executed_reason": "本番 D1・Worker secret への外部変更であり、実施には所有者の承認が要る。migration は未適用のまま保持している。"
+  },
+  "status": "pass"
+}

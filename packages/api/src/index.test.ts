@@ -1,12 +1,16 @@
 import { readFileSync } from 'node:fs';
 import { URL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { signedSessionCookieForTest } from './auth.test-support.js';
+import { TEST_ADMIN_ROW, isUserLookupQuery, signedSessionCookieForTest } from './auth.test-support.js';
 import { app } from './index.js';
 import { EXPECTED_D1_MIGRATION } from './schema-guard.js';
 
+// authGuard は署名検証の後に users を1件引く。schema照合と同じダミーD1で両方に答える。
 const schemaReadyDatabase = {
-  prepare: () => ({ first: async () => EXPECTED_D1_MIGRATION }),
+  prepare: (sql: string) =>
+    isUserLookupQuery(sql)
+      ? { bind: () => ({ first: async () => TEST_ADMIN_ROW }) }
+      : { first: async () => EXPECTED_D1_MIGRATION },
 };
 
 const staticHeaders = new Map(
@@ -32,6 +36,47 @@ const requiredStaticHeaders = new Map([
 ]);
 
 describe('API公開境界', () => {
+  it('応答へ追跡可能なrequest IDを付ける', async () => {
+    const response = await app.request('/api/summary', undefined, {
+      ACCESS_AUD: '',
+      ACCESS_TEAM_DOMAIN: '',
+    });
+
+    expect(response.headers.get('x-request-id')).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
+  it('公開認証endpointの過大bodyをDB処理前に拒否する', async () => {
+    const response = await app.request(
+      '/api/auth/login',
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: 'user@example.test', password: 'x'.repeat(17 * 1024) }),
+      },
+      { ACCESS_AUD: '', ACCESS_TEAM_DOMAIN: '' },
+    );
+
+    expect(response.status).toBe(413);
+    await expect(response.json()).resolves.toEqual({
+      error: { code: 'payload_too_large', message: 'リクエストが大きすぎます' },
+    });
+  });
+
+  it('未捕捉例外をrequest ID付きの汎用応答へ畳む', async () => {
+    const response = await app.request('/explode', undefined, {
+      ACCESS_AUD: '',
+      ACCESS_TEAM_DOMAIN: '',
+      ASSETS: { fetch: async () => Promise.reject(new Error('sensitive detail')) },
+    });
+    const requestId = response.headers.get('x-request-id');
+
+    expect(response.status).toBe(500);
+    expect(requestId).toMatch(/^[0-9a-f-]{36}$/);
+    await expect(response.json()).resolves.toEqual({
+      error: { code: 'internal', message: 'サーバーエラーが発生しました', requestId },
+    });
+  });
+
   it('未認証エラーにも共通セキュリティヘッダーを付ける', async () => {
     const response = await app.request('/api/summary', undefined, {
       ACCESS_AUD: '',
@@ -78,7 +123,6 @@ describe('API公開境界', () => {
     const env = {
       ACCESS_AUD: '',
       ACCESS_TEAM_DOMAIN: '',
-      AUTH_PASSWORD: 'synthetic-test-password',
       SESSION_SECRET: 'synthetic-test-secret',
       DB: schemaReadyDatabase,
     };
