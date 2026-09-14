@@ -21,8 +21,8 @@ pnpm db:migrate:local && node scripts/seed-local.mjs
 pnpm --filter @kanjo/api exec wrangler dev --local
 ```
 
-ログインのパスワードは `packages/api/.dev.vars` の `AUTH_PASSWORD`。同ファイルは
-gitignore 対象であり、値を文書や issue へ書かない。
+ログインは `scripts/seed-admin.mjs` が作るローカルfixtureの
+`admin@kanjo.local` とパスワードを使う。実資格情報を文書やissueへ書かない。
 
 公私仕分け画面の根拠内訳に `中項目` が3件現れ、トータル収支画面で当月の事業収入に
 その入金が含まれ、家計収入には含まれないことを確認する。

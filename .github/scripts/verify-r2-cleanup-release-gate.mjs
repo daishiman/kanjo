@@ -1,9 +1,11 @@
 import { spawnSync } from 'node:child_process';
 
 export const R2_CLEANUP_PREPARE_MIGRATION = '0038_prepare_r2_cleanup.sql';
-export const R2_CLEANUP_DROP_MIGRATION = '0039_drop_tax_and_receipt_tables.sql';
+export const ACCOUNT_LOGIN_MIGRATION = '0039_account_login.sql';
+// 0039 は account login が使用済み。cleanup の破壊的変更は別 Release の 0040 に固定する。
+export const R2_CLEANUP_DROP_MIGRATION = '0040_drop_tax_and_receipt_tables.sql';
 export const R2_CLEANUP_REMEDIATION =
-  '0038だけを先に適用し、r2_cleanup_jobsと旧attachments metadataの残件を0件にしてから、別Releaseで0039を承認してください。';
+  '0038だけを先に適用し、r2_cleanup_jobsと旧attachments metadataの残件を0件にしてから、別Releaseで0040を承認してください。';
 
 const COUNT_FIELDS = ['pending', 'retry', 'dead', 'attachments', 'attachment_cleanup_jobs'];
 
@@ -13,7 +15,8 @@ export function requiresR2CleanupReleaseGate(pendingFilenames) {
 
 export function assertR2CleanupReleaseBoundary(pendingFilenames) {
   if (
-    pendingFilenames.includes(R2_CLEANUP_PREPARE_MIGRATION) &&
+    (pendingFilenames.includes(R2_CLEANUP_PREPARE_MIGRATION) ||
+      pendingFilenames.includes(ACCOUNT_LOGIN_MIGRATION)) &&
     pendingFilenames.includes(R2_CLEANUP_DROP_MIGRATION)
   ) {
     throw new Error('r2-cleanup-release-boundary-invalid');

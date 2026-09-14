@@ -8,6 +8,7 @@ import { STABLE_KEY_VERSION, emptyDataset } from '@kanjo/core';
 import { zipSync } from 'fflate';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { loginForTest } from './auth.test-support.js';
 import {
   IMPORT_CLAIM_TTL_MS,
   acquireImportWriter,
@@ -34,7 +35,6 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  AUTH_PASSWORD: 'synthetic-test-password',
   SESSION_SECRET: 'synthetic-test-secret',
 };
 
@@ -300,17 +300,7 @@ beforeEach(async () => {
   for (const { name } of resetTables) await d1.prepare(`DELETE FROM "${name}"`).run();
   const listed = await files.list();
   for (const object of listed.objects) await files.delete(object.key);
-  const login = await app.request(
-    '/api/auth/login',
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
-    },
-    { ...auth, DB: d1 },
-  );
-  cookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
-  expect(login.status).toBe(200);
+  cookie = await loginForTest(app, { ...auth, DB: d1 });
   expect(cookie).not.toBe('');
 }, 30_000);
 

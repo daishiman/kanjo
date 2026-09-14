@@ -44,79 +44,27 @@ import {
   PAYMENT_METHOD_VALUES,
   type PaymentMethod,
 } from '@kanjo/core';
-
-export class ApiError extends Error {
-  status: number;
-  code: string;
-  /** 409 partial-safe responseなど、UIが失敗内訳を正直に表示するための検証済み候補body */
-  body: unknown;
-  constructor(status: number, code: string, message: string, body?: unknown) {
-    super(message);
-    this.status = status;
-    this.code = code;
-    this.body = body;
-  }
-}
-
-export const AUTH_EVENT = 'kanjo:unauthorized';
-
-async function apiErrorFromResponse(res: Response): Promise<ApiError> {
-  let body: unknown;
-  try {
-    body = await res.json();
-  } catch {
-    // JSONでないエラーは状態コードだけを使う
-  }
-  return apiErrorFromBody(res.status, body);
-}
-
-function apiErrorFromBody(status: number, body: unknown): ApiError {
-  let code = 'error';
-  let message = `エラー(${status})`;
-  const error = (body as { error?: { code?: string; message?: string } } | undefined)?.error;
-  if (error?.code) code = error.code;
-  if (error?.message) message = error.message;
-  return new ApiError(status, code, message, body);
-}
-
-export async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`/api${path}`, {
-    ...init,
-    headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
-  });
-  if (res.status === 401) {
-    window.dispatchEvent(new Event(AUTH_EVENT));
-    throw new ApiError(401, 'unauthorized', '認証が必要です');
-  }
-  if (!res.ok) throw await apiErrorFromResponse(res);
-  return (await res.json()) as T;
-}
+import { api, apiUpload } from './api-client.js';
+export { AUTH_EVENT, ApiError, type ApiRequestPolicy, api, apiUpload } from './api-client.js';
 
 /**
- * multipart APIリクエスト。境界付きContent-Typeはブラウザに決めさせる
- * (境界文字列を自分で書けないため、api() の JSON ヘッダをそのまま使えない)。
+ * GET /api/auth/me の応答。認証まわりの画面はすべて同じ queryKey ['auth'] でこれを読む。
+ * 型をここに1つ置くのは、同じ endpoint を別の形で名乗る画面が出ると cache が食い違うため。
  */
-export async function apiUpload<T>(
-  path: string,
-  form: FormData,
-  options: { acceptErrorBody?: (body: unknown) => boolean } = {},
-): Promise<T> {
-  const res = await fetch(`/api${path}`, { method: 'POST', body: form });
-  if (res.status === 401) {
-    window.dispatchEvent(new Event(AUTH_EVENT));
-    throw new ApiError(401, 'unauthorized', '認証が必要です');
-  }
-  if (!res.ok) {
-    let body: unknown;
-    try {
-      body = await res.json();
-    } catch {
-      throw apiErrorFromBody(res.status, undefined);
-    }
-    if (options.acceptErrorBody?.(body)) return body as T;
-    throw apiErrorFromBody(res.status, body);
-  }
-  return (await res.json()) as T;
+/** /auth/me と /admin/users が共有する、外部公開用の唯一の利用者DTO。 */
+export interface AccountUser {
+  id: string;
+  email: string;
+  role: 'admin' | 'member';
+  status: 'active' | 'suspended';
+  mustChangePassword: boolean;
+  createdAt: string;
+  lastLoginAt: string | null;
+}
+
+export interface AuthState {
+  authenticated: boolean;
+  user: AccountUser | null;
 }
 
 /* -------- エンドポイント別の型 -------- */

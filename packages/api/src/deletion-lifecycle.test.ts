@@ -14,6 +14,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { NON_AUTH_AUDIT, loginForTest } from './auth.test-support.js';
 import { planDeletionQueries, planUndoQueries } from './deletion-lifecycle.js';
 import { app } from './index.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
@@ -22,7 +23,6 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  AUTH_PASSWORD: 'synthetic-test-password',
   SESSION_SECRET: 'synthetic-test-secret',
 };
 
@@ -301,17 +301,7 @@ beforeEach(async () => {
     .all<{ name: string }>();
   for (const { name } of tables.results.filter(({ name }) => isApplicationTableForTestReset(name)))
     await d1.prepare(`DELETE FROM "${name}"`).run();
-  const login = await app.request(
-    '/api/auth/login',
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
-    },
-    env(),
-  );
-  cookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
-  expect(login.status).toBe(200);
+  cookie = await loginForTest(app, env());
 });
 
 afterAll(async () => {
@@ -481,7 +471,9 @@ describe('削除の実行', () => {
         .prepare("SELECT COUNT(*) AS n FROM import_deletion_operations WHERE id!='forced-existing'")
         .first<number>('n'),
     ).toBe(0);
-    await expect(d1.prepare('SELECT COUNT(*) AS n FROM audit_log').first<number>('n')).resolves.toBe(0);
+    await expect(
+      d1.prepare(`SELECT COUNT(*) AS n FROM audit_log WHERE ${NON_AUTH_AUDIT}`).first<number>('n'),
+    ).resolves.toBe(0);
     expect(observed.statements().some((sql) => /DELETE FROM mf_transactions/i.test(sql))).toBe(true);
     expect(observed.statements().some((sql) => /DELETE FROM "monthly_agg"/i.test(sql))).toBe(true);
     expect(observed.statements().some((sql) => /INSERT INTO audit_log\s/i.test(sql))).toBe(true);

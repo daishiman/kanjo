@@ -222,11 +222,14 @@ Cloudflare APIトークンは対象アカウント1つに限定し、必要な�
 ### 4.2 Workerが実行時に使う秘密値
 
 次の値はGitHub Actions用の認証情報とは別物です。Cloudflare Workerのsecretとして登録します。
+共有パスワード(旧`AUTH_PASSWORD`)は廃止したため、登録するsecretはセッション署名鍵の1本だけです。
 
 ```bash
-pnpm --filter @kanjo/api exec wrangler secret put AUTH_PASSWORD
 pnpm --filter @kanjo/api exec wrangler secret put SESSION_SECRET
 ```
+
+アカウントの作成・停止・一時パスワード再発行と、`SESSION_SECRET`入れ替え時の影響は
+[`アカウントログイン運用`](runbooks/account-login-operations.md)が正本です。
 
 ローカル開発では`packages/api/.dev.vars`を使います。このファイルをgit操作に含めたり、`.gitignore`を強制追加で回避したりしてはいけません。
 
@@ -310,15 +313,15 @@ manifestはGit管理対象へ追加せず、incident evidenceとして非公開�
 
 廃止した証憑機能のR2 object keyを失わずに専用テーブルを落とす変更は、二つの独立した変更へ分けます。
 現在のrepository、schema guard、local previewのmigration headはRelease Aの
-`0038_prepare_r2_cleanup.sql`です。Release Bのmigrationは現行配布物へ置きません。
+`0039_account_login.sql`です。Release Bのmigrationは現行配布物へ置きません。
 
 1. **Release A**: `0038_prepare_r2_cleanup.sql`、共通`r2_cleanup` processor、旧添付write停止、廃止routeを同じ互換アプリ世代として反映する。
 2. 夜間processorを必要回数動かす。processorは旧Worker isolateによるlate writeを旧2表から共通台帳へ冪等回収してから処理する。旧専用6テーブルは物理D1に残り得るが、新WorkerのAPI/Drizzleからは参照・更新しない。
 3. 将来のRelease B変更では`.github/scripts/verify-r2-cleanup-release-gate.mjs`をMigrateのmanifest検証から実行し、`r2_cleanup_jobs`の`pending` / `retry` / `dead`と旧`attachments`・`attachment_cleanup_jobs`の残件がすべて0件であることを検査する。手動目視や一部stateだけの確認で代用せず、R2 keyは証跡へ出さない。
-4. `0039`適用直前のD1 Time Travel bookmarkとRelease Aのdeployment versionを対で記録し、復旧単位を確定する。
-5. **Release B**: 上記ゲートを通った将来の別変更で初めて`0039_drop_tax_and_receipt_tables.sql`を追加し、明示承認で適用して`EXPECTED_D1_MIGRATION`を0039へ進める。
+4. 将来のdrop migration適用直前のD1 Time Travel bookmarkと直前deployment versionを対で記録し、復旧単位を確定する。
+5. **Release B**: 上記ゲートを通った将来の別変更で、次の未使用番号 (`0040` 以降) にdrop migrationを追加し、明示承認で適用する。
 
-Release Aを実行するrepository stateでは0039のmigrationファイル自体を含めません。Migrateは承認manifestにあるpendingを順番に適用するため、0038と0039を同じPR・同じpending集合へ置いて単一の`migrations apply`で連続適用することを禁止します。現在のlocal previewも0038までを適用し、本番操作は別途承認された運用でだけ行います。
+account-loginの0039と、将来のdrop migrationを同じ変更・同じpending集合へ置くことを禁止します。drop migrationは別の明示承認でだけ適用します。
 
 ## 7. スモークテスト
 
@@ -404,9 +407,9 @@ pnpm --filter @kanjo/api exec wrangler d1 time-travel restore kanjo-db --bookmar
 
 本番D1のrestore、手動`UPDATE` / `DELETE`、リソース削除は通常運用に含めず、実行前に必ず対象と影響を確認します。
 
-### 10.3 将来のRelease B（0039）適用後の復旧
+### 10.3 将来のRelease B（0040以降）適用後の復旧
 
-`0039_drop_tax_and_receipt_tables.sql`にはreverse migrationを用意しません。0039適用後に旧Workerだけをrollbackすると、旧Workerが既に無いテーブルを参照するため禁止します。
+将来のdrop migrationにはreverse migrationを用意しません。適用後に旧Workerだけをrollbackすると、旧Workerが既に無いテーブルを参照するため禁止します。
 
 復旧が必要な場合は、0039適用直前に記録したD1 Time Travel bookmarkとRelease Aの互換アプリ世代を一体で使います。復元可能期間外などでその組を利用できない場合は、逆DDLや旧Worker単体復帰を行わずforward-fixします。
 
@@ -428,12 +431,13 @@ pnpm --filter @kanjo/api exec wrangler d1 time-travel restore kanjo-db --bookmar
 - [ ] `production` Environmentが`main`だけを許可している
 - [ ] Cloudflare APIトークンを最小権限・単一アカウントに限定した
 - [ ] GitHub secretsと`APP_URL`をリポジトリ所有者本人が登録した
-- [ ] Worker secretsの`AUTH_PASSWORD` / `SESSION_SECRET`を登録した
+- [ ] Worker secretの`SESSION_SECRET`を登録した(共有パスワードは廃止済みで登録対象ではない)
+- [ ] 初期管理者を1件作成し、資格情報を運用者へ引き渡した
 - [ ] Cloudflare Workers BuildsのGit連携を無効にした
 - [ ] `Deploy`が破壊的migrationと判定不能を配信前に停止し、追加だけを自動適用する
 - [ ] 自動適用がTime Travelの復元地点を記録してから行われ、後条件のD1検査で未適用ゼロを確認する
 - [ ] D1 migrationがコードデプロイより先に適用され、逆順が起こりえない
-- [ ] 現行Release Aのrepository head・schema guard・preview適用上限が0038で、0039を配布物に含めていない
+- [ ] Release Aでは0038だけを先に適用済みで、現行headは`0039_account_login.sql`、破壊的なRelease Bの`0040_drop_tax_and_receipt_tables.sql`を配布物に含めていない
 - [ ] 将来のRelease Bでは機械ゲートがcleanupのpending/retry/deadと旧`attachments`・`attachment_cleanup_jobs`の残件0を確認し、適用前復元点を記録している
 - [ ] `Deploy`と`Migrate`が同じconcurrency群に属し、本番D1への書き換えが重ならない
 - [ ] `Migrate`がrepository head・ordered migrations digest・remote pendingを適用直前に再照合する

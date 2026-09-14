@@ -9,18 +9,26 @@ import {
 } from './verify-r2-cleanup-release-gate.mjs';
 
 const PREPARE = '0038_prepare_r2_cleanup.sql';
-const DROP = '0039_drop_tax_and_receipt_tables.sql';
+const ACCOUNT_LOGIN = '0039_account_login.sql';
+const DROP = '0040_drop_tax_and_receipt_tables.sql';
 
 test('Release AではR2 cleanupゲートを開動しない', () => {
   assert.equal(requiresR2CleanupReleaseGate([PREPARE]), false);
   assert.doesNotThrow(() => assertR2CleanupReleaseBoundary([PREPARE]));
 });
 
-test('0038と0039の初回連続適用を拒否する', () => {
+test('0038と0040の初回連続適用を拒否する', () => {
   assert.throws(() => assertR2CleanupReleaseBoundary([PREPARE, DROP]), /r2-cleanup-release-boundary-invalid/);
 });
 
-test('Release Bは0039だけがpendingならcleanup残件ゲートを開動する', () => {
+test('0039 account-loginと0040 cleanupを同じpending集合で適用させない', () => {
+  assert.throws(
+    () => assertR2CleanupReleaseBoundary([ACCOUNT_LOGIN, DROP]),
+    /r2-cleanup-release-boundary-invalid/,
+  );
+});
+
+test('Release Bは0040だけがpendingならcleanup残件ゲートを開動する', () => {
   assert.equal(requiresR2CleanupReleaseGate([DROP]), true);
   assert.doesNotThrow(() => assertR2CleanupReleaseBoundary([DROP]));
 });

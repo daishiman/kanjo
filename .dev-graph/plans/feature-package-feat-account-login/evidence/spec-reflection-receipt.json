@@ -1,0 +1,51 @@
+{
+  "graph_node_id": "SYS-ACCTLOGIN-P12",
+  "title": "仕様・設計への反映の受領書",
+  "recorded_at": "2026-09-14T02:20:00Z",
+  "verdict": "impact_present_and_reflected",
+  "judgement": "本変更は認証主体 (users) とセッション表現を新設するため、仕様・設計に影響がある。よって正規フロー (system-spec-harness → dev-graph register-package) で system-spec/・specs/・architecture/ へ反映済みであり、本受領書はその結果を記録する。",
+  "flow": [
+    {
+      "step": 1,
+      "channel": "system-spec-harness",
+      "skills": ["run-system-spec-elicit", "run-system-spec-compile", "assign-system-spec-completeness-evaluator"],
+      "result": "auth / security / database / backend / frontend / ui-ux / infrastructure / maintenance-ops の各章を確定。旧サイクル (mf-business) の章は system-spec/archive/2026-09-11-mf-business-classification/ へ退避。"
+    },
+    {
+      "step": 2,
+      "channel": "dev-graph run-dev-graph-system-spec",
+      "result": "確定章を specification / architecture node として C02 へ取込。source_lineage (origin_kind=system-spec-harness, source_plugin=system-spec-harness, source_version=0.1.14, source_digest, imported_at) を全 node に付与。"
+    },
+    {
+      "step": 3,
+      "channel": "dev-graph run-dev-graph-decompose → run-system-dev-plan → register-package",
+      "result": "macro feature feat-account-login と exact-13 package SYS-ACCTLOGIN-P01..P13 を all-or-none 登録 (applied_count=13)。"
+    }
+  ],
+  "reflected_artifacts": [
+    { "path": "specs/spec-account-login.md", "kind": "specification", "change": "added", "digest": "d2a80ba53dfa77f333d59baba10e51de83f3d3733824327a6fbebf182043a4bb" },
+    { "path": "architecture/account-login-auth.md", "kind": "architecture", "change": "added", "digest": "891ea15141270b38e7c15bba585cef722b5412a7323cd21c4b365f6e2a953e6a" },
+    { "path": "architecture/account-login-security.md", "kind": "architecture", "change": "added", "digest": "863b95d3afdc310d75ede996af3fc6c9ae9cf678dd3273c9720d52ec47e2ea29" },
+    { "path": "architecture/account-login-database.md", "kind": "architecture", "change": "added", "digest": "7e990d8c5335efa667e0ea0d713cc2f0e59e4f6632ae724b93cabb890d6209c6" },
+    { "path": "architecture/account-login-backend.md", "kind": "architecture", "change": "added", "digest": "421be259b51a1b73a35c66f50a9059534e28ab5219ea58e8280a672ae94d4687" },
+    { "path": "architecture/account-login-frontend.md", "kind": "architecture", "change": "added", "digest": "b21d09eb4a59a89eeebe8dbc5d091acb0b16456f08655da44c2216fed8fd138d" },
+    { "path": "architecture/account-login-ui-ux.md", "kind": "architecture", "change": "added", "digest": "a50ed1bcee905a4ea4e45d5baba57638ad611256586abcadacf19e29927f12f5" },
+    { "path": "architecture/account-login-infrastructure.md", "kind": "architecture", "change": "added", "digest": "f2e11ec3e6f06ca7ea1b99ec8fd5f5f624c11272d11c969fa6990113cbdf32e1" },
+    { "path": "architecture/account-login-maintenance-ops.md", "kind": "architecture", "change": "added", "digest": "3bb69964bd5b0873abea0356a5010763966f283ee0b49f9534d6da875cc04e0a" },
+    { "path": "features/feat-account-login.md", "kind": "feature", "change": "added", "digest": "f194aa20be41da036b20edc0115b0600144eaa280cdb935f3cc2bb22f10a41d3" },
+    { "path": "architecture/graph.json", "kind": "projection", "change": "modified", "digest": "1f11c5500a8ce977f5d2789f44e95a7193b59854d8930a3858d576c21d890c05", "note": ".dev-graph/state/graph.json からの投影。arch-account-login-* の追加に加え、arch-mf-business-* 8 件の source_path を system-spec/archive/2026-09-11-mf-business-classification/ へ張り替えた。" },
+    { "path": "architecture/total-cashflow-auth.md", "kind": "architecture", "change": "modified", "note": "共有パスワード前提の記述を、有効な利用者アカウント間で業務データを共有する前提へ更新。AUTH_PASSWORD/SESSION_SECRET の secret 対の記述を削除。" },
+    { "path": "docs/data-schema.md", "kind": "document", "change": "modified", "note": "repository head の migration を 0039_account_login.sql と明記し、証憑退役の物理削除を 0040 へ送った旨を追記。" },
+    { "path": "docs/runbooks/account-login-operations.md", "kind": "document", "change": "added" },
+    { "path": "tasks/feat-account-login/", "kind": "task", "change": "added", "note": "SYS-ACCTLOGIN-P01..P13 の 13 仕様書。" },
+    { "path": "migrations/0039_account_login.sql", "kind": "migration", "change": "added", "digest": "722cb71783edd851e1b8227acaf50dd1946b9cdb383d47961a8ab74108465a12" }
+  ],
+  "gates": [
+    { "gate": "pnpm run lint (biome / skills sync / glossary / report-CSS / check-graph-lineage / security:content)", "result": "pass", "note": "check-graph-lineage は 37 ノードすべてが正本と一致し、architecture/*.md 37 件に孤児なし。P11 収集時点で残っていた arch-mf-business-* 8 件の digest 不一致は archive 退避と graph 張り替えで解消済み。" },
+    { "gate": "pnpm run typecheck", "result": "pass" },
+    { "gate": "pnpm --filter @kanjo/api exec vitest run src/account-login.test.ts src/login-rate-limit.test.ts", "result": "pass", "note": "2 files / 44 tests" },
+    { "gate": "pnpm --filter @kanjo/web exec vitest run src/account-login.dom.test.tsx src/api.test.ts", "result": "pass", "note": "2 files / 35 tests" },
+    { "gate": "pnpm run test:aux", "result": "pass", "note": "node 41 + python 31" }
+  ],
+  "status": "pass"
+}

@@ -12,14 +12,14 @@ const PAGE_SOURCES = import.meta.glob('./pages/*.tsx', {
 }) as Record<string, string>;
 const STYLE_SOURCE = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
 const APP_SOURCE = readFileSync(new URL('./App.tsx', import.meta.url), 'utf8');
-// Login と Improvement は routeMetadata の業務ルートではない。前者は認証前、
-// 後者は「アプリの不具合を伝える」ための画面で、どちらも PageHeader が要求する
-// route id を持たない。業務ルートの表示契約はこの2枚を除いた集合に掛ける
+const AUTHENTICATED_APP_SOURCE = readFileSync(new URL('./AuthenticatedApp.tsx', import.meta.url), 'utf8');
+// Login・PasswordChange・Improvement は routeMetadata の業務ルートではない。
+// 前2枚は認証の「門」(未認証と一時パスワード)、最後は「アプリの不具合を伝える」ための
+// 画面で、いずれも PageHeader が要求する route id を持たない。
+// 業務ルートの表示契約はこの3枚を除いた集合に掛ける
+const NON_ROUTED_PAGES = ['/Login.tsx', '/PasswordChange.tsx', '/Improvement.tsx'];
 const ROUTED_PAGE_SOURCES = Object.entries(PAGE_SOURCES)
-  .filter(
-    ([path]) =>
-      !path.endsWith('/Login.tsx') && !path.endsWith('/Improvement.tsx') && !path.includes('.test.'),
-  )
+  .filter(([path]) => !NON_ROUTED_PAGES.some((name) => path.endsWith(name)) && !path.includes('.test.'))
   .map(([, source]) => source);
 
 describe('業務ルート契約', () => {
@@ -42,13 +42,21 @@ describe('業務ルート契約', () => {
     expect(ROUTED_PAGE_SOURCES.some((source) => source.includes('<h1 className="page-title"'))).toBe(false);
   });
 
-  it('業務ルートは全てルート単位の遅延読み込みで、eagerな同期importはLoginだけに限る', () => {
+  it('業務ルートは全てルート単位の遅延読み込みで、eagerな同期importは認証2画面だけに限る', () => {
     // 業務ルートは正本の件数、routeMetadata 外の改善要望は1枚が lazy。
-    // 認証前に必ず出る Login だけが同期 import で、以降の画面は1枚も初回バンドルに載せない
-    expect(APP_SOURCE.match(/lazy\(\(\) =>\s*import\('\.\/pages\//g)).toHaveLength(APP_ROUTES.length + 1);
-    expect(APP_SOURCE).toMatch(/<Suspense\s+fallback=/);
+    // 同期 import を許すのは業務画面へ入る「門」だけ: 未認証の Login と、
+    // 一時パスワードのままの利用者を止める PasswordChange。門で「読み込み中…」を挟むと
+    // 締め出されたのか読み込み中なのかが利用者に判別できない。
+    // 件数ではなく名前の完全一致で固定する。3枚目が黙って増えたらここで落ちる。
+    expect(AUTHENTICATED_APP_SOURCE.match(/lazy\(\(\) =>\s*import\('\.\/pages\//g)).toHaveLength(
+      APP_ROUTES.length + 1,
+    );
+    expect(AUTHENTICATED_APP_SOURCE).toMatch(/<Suspense\s+fallback=/);
+    expect(APP_SOURCE).toContain("import { AuthenticatedApp } from './AuthenticatedApp.js'");
+    expect(APP_SOURCE).not.toMatch(/lazy\(\(\) =>\s*import\('\.\/pages\//);
     expect(APP_SOURCE.match(/import \{ \w+Page \} from '\.\/pages\//g)).toEqual([
       "import { LoginPage } from './pages/",
+      "import { PasswordChangePage } from './pages/",
     ]);
   });
 });

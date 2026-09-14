@@ -175,16 +175,16 @@ MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_
 | `vendor_memory` | 取引先ごとの「いつもの手当て」(0030)。`vendor_key` は core の `normalizeVendorKey` で表記ゆれを寄せた照合キー、`vendor_label` は表示専用。確信度は1つの数で持たず `hit_count` / `disagree_count` を別々に持つ(「1件中1件」と「40件中40件」を区別するため)。`pinned` は件数によらず当てる、`revoked` は以後当てない・候補にも出さない。`(user_id, vendor_key)` がUNIQUE |
 | `r2_cleanup_jobs` | R2のexact keyを有界に削除する共通outbox(0038)。`purpose`は`import_original`または`retired_attachment`という起点・観測ラベルであり、安全境界には使わない。夜間`r2_cleanup`は最大3件ずつ処理し、Release A中は旧2表のlate writeも先に冪等回収する。同じkeyのneutral jobが`dead`になった後のlate writeだけは`retry`へ戻し、既存`pending/retry`の試行回数とbackoffは保持する。共有keyの全`imports`参照が30日超かつfailed/duplicate/完全supersededで、same-key active pointerが無い場合だけ1jobを自動enqueueする。全jobがR2 DELETE直前に同じ共有key契約を再評価し、active・30日以内・不正時刻・processing/partial/applying/旧statusが1rowでもあればR2と全`imports.r2_key`を保持し、退役metadataとcleanup intentだけを同じD1 batchで閉じる。削除可能ならR2成功後の同じD1 batchで全`imports.r2_key`をNULLにし、退役metadata・全intentも閉じる。bucket scanは行わない |
 
-現在はRelease Aであり、migration head、schema guard、local previewの適用上限はいずれも
-`0038_prepare_r2_cleanup.sql`である。0038は共通outboxを追加し、旧`attachments.r2_key`と
+証懑退役のRelease Aは`0038_prepare_r2_cleanup.sql`であり、0038は共通outboxを追加し、旧`attachments.r2_key`と
 `attachment_cleanup_jobs`の削除intentを`r2_cleanup_jobs`へ退避するexpand migrationである。
 旧台帳の`dead`も`retry`へ戻して共通processorの再処理対象にする。旧機能専用の6テーブル
 （`attachments`、`attachment_cleanup_jobs`、`attachment_object_tombstones`、
 `receipt_source_profiles`、`receipt_source_overrides`、`tax_account_settings`）は物理D1に互換データとして
 残り得るが、runtime/API/Drizzleの現行定義からは退役済みであり、このactive schema一覧には載せない。
 
-物理削除は将来の別変更であるRelease Bが担う。Release Bはcleanupの`pending` / `retry` / `dead`と
-旧`attachments` / `attachment_cleanup_jobs`の残件がすべて0であることを機械ゲートで確認した後にだけ0039を新規追加する。現行repositoryに0039は含めない。
+現行のrepository headは認証基盤の`0039_account_login.sql`である。証懑退役の物理削除は将来の別変更である
+Release Bの`0040_drop_tax_and_receipt_tables.sql`が担う。Release Bはcleanupの`pending` / `retry` / `dead`と
+旧`attachments` / `attachment_cleanup_jobs`の残件がすべて0であることを機械ゲートで確認した後にだけ別pending集合で適用する。
 `0010`〜`0028`は適用履歴なので書き換えない。`cash_entries.receipt_waived`は交通費入力の
 互換フィールドとして残り、領収書・証憑の保管機能が存在することを意味しない。
 Release A/Bの適用順序・復旧契約は

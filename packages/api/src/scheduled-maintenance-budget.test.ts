@@ -169,12 +169,12 @@ function fakeFiles(events: string[]): R2Bucket {
 afterEach(() => vi.restoreAllMocks());
 
 describe('scheduled maintenance D1 plan', () => {
-  it('7 jobを一度ずつ合成し、Free上限50に4本の余白を残す', () => {
+  it('7 jobを一度ずつ合成し、Free上限50に3本の余白を残す', () => {
     expect(Object.keys(SCHEDULED_MAINTENANCE_D1_PLAN.jobs)).toEqual([...SCHEDULED_MAINTENANCE_JOB_NAMES]);
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.jobs).toEqual({
       nightly_backup: 1,
       r2_cleanup: 20,
-      password_login_rate_limit_cleanup: 1,
+      password_login_rate_limit_cleanup: 2,
       improvement_retention: 3,
       deletion_undo_retention: 12,
       audit_header_retention: 3,
@@ -197,7 +197,7 @@ describe('scheduled maintenance D1 plan', () => {
     );
   });
 
-  it('backupを先に確定後、R2期限enqueue・最大3件・共有key guard・全参照cleanup・両undo sweepでもactual=planned=46', async () => {
+  it('backupを先に確定後、R2期限enqueue・資格情報cleanup・両undo sweepでもactual=planned=47', async () => {
     const chronology: string[] = [];
     const database = worstPathDatabase(chronology);
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
@@ -212,7 +212,7 @@ describe('scheduled maintenance D1 plan', () => {
     expect(records.find((entry) => entry.job === 'scheduled_maintenance_budget')).toEqual({
       level: 'info',
       job: 'scheduled_maintenance_budget',
-      plannedQueries: 46,
+      plannedQueries: 47,
       limit: 50,
     });
     expect(records.find((entry) => entry.job === 'r2_cleanup')).toEqual({

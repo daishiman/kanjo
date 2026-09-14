@@ -50,7 +50,7 @@ pnpm run preview:smoke # 一時D1/R2+架空認証で起動確認し、自動停�
 
 ```bash
 cd packages/api
-cp .dev.vars.example .dev.vars   # AUTH_PASSWORD / SESSION_SECRET を設定
+cp .dev.vars.example .dev.vars   # SESSION_SECRET を設定 (openssl rand -hex 32)
 ```
 
 `pnpm run preview`は起動前に未適用のlocal migrationを自動適用する。CIや有限の動作確認は
@@ -59,7 +59,7 @@ SPA・未認証ガード・ログインに加え、架空現金明細の作成�
 自動停止する。人が画面を確認するときは必ず
 `pnpm run preview`(8787、Workersランタイム)を使う。`pnpm dev`(3000、Vite)は画面開発の補助。
 
-現在のmigration headとpreview適用上限はRelease Aの`0038_prepare_r2_cleanup.sql`。旧証憑用テーブルを
+現在のmigration headとpreview適用上限はRelease Aの`0039_account_login.sql`。旧証憑用テーブルを
 物理削除するRelease Bは将来の別変更であり、現行配布物には含めない。段階適用のゲートは
 [`CI/CD・本番運用ガイド`](docs/ci-cd-operations.md#63-列を削除する場合contract)を正本とする。
 
@@ -75,8 +75,12 @@ GitHub Environment `production` に `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT
 
 GitHub・Cloudflareの初回設定、通常リリース、D1 migration、障害調査、rollbackの詳細は [`docs/ci-cd-operations.md`](docs/ci-cd-operations.md) を参照。
 
-本番シークレット: `wrangler secret put AUTH_PASSWORD` / `wrangler secret put SESSION_SECRET`。Cloudflare Access に切り替える場合は wrangler.jsonc の `ACCESS_AUD` / `ACCESS_TEAM_DOMAIN` を設定する（設定するとパスワード認証は無効化される）。
-パスワード認証はD1の接続元scope別rate limitで保護され、既定は15分間に5回失敗で15分lock。
+本番シークレットは `wrangler secret put SESSION_SECRET` の1本だけ。共有パスワード(旧 `AUTH_PASSWORD`)は廃止し、
+ログインは利用者ごとのメールアドレスとパスワードで行う。パスワードはD1に PBKDF2-HMAC-SHA256 210,000回の
+ハッシュだけを保存し、平文も復号可能な形も持たない。`SESSION_SECRET` を差し替えると発行済みのログイン状態は
+すべて無効になる（緊急時の全端末ログアウト手段）。Cloudflare Access に切り替える場合は wrangler.jsonc の
+`ACCESS_AUD` / `ACCESS_TEAM_DOMAIN` を設定する（設定するとパスワード認証は無効化される）。
+パスワード認証はD1の接続元単位と対象メールアドレス単位の独立2軸rate limitで保護され、既定は15分間に5回失敗で15分lock。
 変更が必要な場合だけ、非secretの`PASSWORD_LOGIN_WINDOW_SECONDS` / `PASSWORD_LOGIN_MAX_FAILURES` /
 `PASSWORD_LOGIN_LOCK_SECONDS` / `PASSWORD_LOGIN_STALE_AFTER_SECONDS`をWorker varsでoverrideする。不正値は安全な既定値へ戻る。
 

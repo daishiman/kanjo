@@ -1,4 +1,3 @@
-import { zValidator } from '@hono/zod-validator';
 /**
  * kanjo-console Worker エントリ。
  * - /api/auth/*: ログイン(アプリ内セッション)。Access併用時は不要だが常設(冪等)
@@ -7,24 +6,19 @@ import { zValidator } from '@hono/zod-validator';
  * - scheduled: 夜間バックアップ(統合JSON→R2 backups/、30日保持)
  */
 import { Hono } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
+import { type RequestIdVariables, requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
-import { z } from 'zod';
 import { runAuditDetailRetention, runAuditHeaderRetention } from './audit-log.js';
-import { type AuthEnv, authGuard, clearSession, issueSession, verifyPassword } from './auth.js';
+import { type AuthEnv, type AuthVariables, authGuard, mustChangePasswordFence } from './auth.js';
 import { canonicalMutationFence } from './canonical-mutation-fence.js';
 import { runDeletionRetention } from './deletion-retention.js';
-import {
-  PASSWORD_LOGIN_RATE_LIMIT_ERROR,
-  cleanupStalePasswordLoginRateLimits,
-  clearPasswordLoginRateLimit,
-  inspectPasswordLoginRateLimit,
-  passwordLoginRateLimitConfig,
-  passwordLoginRetryAfterSeconds,
-  recordPasswordLoginFailure,
-} from './login-rate-limit.js';
+import { cleanupStalePasswordLoginRateLimits } from './login-rate-limit.js';
 import { runR2Cleanup } from './r2-cleanup.js';
+import { adminUsersRoute } from './routes/admin-users.js';
 import { aiAgentRoute, aiRoute } from './routes/ai.js';
 import { analyticsRoute } from './routes/analytics.js';
+import { authRoute } from './routes/auth.js';
 import { balancesRoute } from './routes/balances.js';
 import { cashRoute } from './routes/cash.js';
 import { classifyRoute } from './routes/classify.js';
@@ -42,10 +36,15 @@ import {
 } from './scheduled-maintenance-budget.js';
 import { runtimeSchemaGuard } from './schema-guard.js';
 import { getDb, loadBackupPayload } from './store.js';
+import { cleanupExpiredTemporaryPasswords } from './users.js';
 
-type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
+type Ctx = { Bindings: AuthEnv; Variables: AuthVariables & RequestIdVariables };
 
 export const app = new Hono<Ctx>();
+
+// 外から渡されたIDは短い安全文字だけを受理し、それ以外はUUIDへ置き換える。
+// 失敗応答とログを同じIDで結び、内部値をクライアントへ出さずに調査可能にする。
+app.use('*', requestId({ limitLength: 64 }));
 
 // APIレスポンスの防御境界。静的アセット側は packages/web/public/_headers に同じ値を置き、
 // index.test.ts の契約テストで差分を止める。
@@ -80,45 +79,16 @@ app.use(
 
 /* -------- 認証エンドポイント(未認証で到達可能なのはここだけ) -------- */
 
-const loginSchema = z.object({ password: z.string().min(1).max(500) });
-
-app.post('/api/auth/login', zValidator('json', loginSchema), async (c) => {
-  const env = c.env;
-  if (env.ACCESS_AUD && env.ACCESS_TEAM_DOMAIN) {
-    return c.json({ error: { code: 'access_mode', message: 'Cloudflare Access認証を使用しています' } }, 400);
-  }
-  if (!env.AUTH_PASSWORD || !env.SESSION_SECRET) {
-    return c.json({ error: { code: 'auth_not_configured', message: '認証が未設定です' } }, 503);
-  }
-  const config = passwordLoginRateLimitConfig(env);
-  const rateLimit = await inspectPasswordLoginRateLimit(env.DB, c.req.raw);
-  if (rateLimit.lockedUntil) {
-    const retryAfterSeconds = passwordLoginRetryAfterSeconds(rateLimit.lockedUntil);
-    c.header('Retry-After', String(retryAfterSeconds));
-    return c.json({ error: PASSWORD_LOGIN_RATE_LIMIT_ERROR, retryAfterSeconds }, 429);
-  }
-  const { password } = c.req.valid('json');
-  if (!(await verifyPassword(password, env.AUTH_PASSWORD))) {
-    const failure = await recordPasswordLoginFailure(env.DB, rateLimit, config);
-    if (failure.lockedUntil) {
-      const retryAfterSeconds = passwordLoginRetryAfterSeconds(failure.lockedUntil);
-      c.header('Retry-After', String(retryAfterSeconds));
-      return c.json({ error: PASSWORD_LOGIN_RATE_LIMIT_ERROR, retryAfterSeconds }, 429);
-    }
-    return c.json({ error: { code: 'invalid_credentials', message: 'パスワードが違います' } }, 401);
-  }
-  await clearPasswordLoginRateLimit(env.DB, rateLimit);
-  await issueSession(c, env.SESSION_SECRET);
-  return c.json({ ok: true });
-});
-
-app.post('/api/auth/logout', (c) => {
-  clearSession(c);
-  return c.json({ ok: true });
-});
-
-// 認証状態の確認(ガードを通れば200)
-app.get('/api/auth/me', authGuard(), (c) => c.json({ authenticated: true }));
+// 公開JSON endpointを巨大bodyの読み込み前に止める。CSV/画像uploadは別routeの上限を使う。
+app.use(
+  '/api/auth/*',
+  bodyLimit({
+    maxSize: 16 * 1024,
+    onError: (c) =>
+      c.json({ error: { code: 'payload_too_large', message: 'リクエストが大きすぎます' } }, 413),
+  }),
+);
+app.route('/api', authRoute);
 
 // AIエージェント用(依頼ごとの使い捨てトークンで認証。セッション不要)
 app.route('/api', aiAgentRoute);
@@ -128,8 +98,11 @@ app.route('/api', improvementAgentRoute);
 /* -------- 保護されたAPI -------- */
 
 app.use('/api/*', authGuard());
+// 一時パスワードのまま業務データへ触らせない。画面側の分岐はURL直打ちで越えられる。
+app.use('/api/*', mustChangePasswordFence());
 app.use('/api/*', runtimeSchemaGuard);
 app.use('/api/*', canonicalMutationFence());
+app.route('/api', adminUsersRoute);
 app.route('/api', aiRoute);
 // 差分は importsRoute より先に載せる。/imports/:id 形のルートに /imports/diff を拾わせない
 app.route('/api', importDiffRoute);
@@ -161,6 +134,7 @@ app.onError((err, c) => {
   console.error(
     JSON.stringify({
       level: 'error',
+      requestId: c.get('requestId'),
       path: c.req.path,
       name: err.name,
       // message は複数行のことがあり(drizzle は失敗したSQLの実パラメータを並べる)、
@@ -172,7 +146,16 @@ app.onError((err, c) => {
         .slice(0, 4),
     }),
   );
-  return c.json({ error: { code: 'internal', message: 'サーバーエラーが発生しました' } }, 500);
+  return c.json(
+    {
+      error: {
+        code: 'internal',
+        message: 'サーバーエラーが発生しました',
+        requestId: c.get('requestId'),
+      },
+    },
+    500,
+  );
 });
 
 /* -------- 夜間バックアップ(cron) -------- */
@@ -211,7 +194,10 @@ export async function scheduledMaintenance(
   // Recordで予算表と実行jobを型結合する。jobの追加・宣言漏れはtypecheckで止まる。
   const concurrentJobs = {
     r2_cleanup: runR2Cleanup(env),
-    password_login_rate_limit_cleanup: cleanupStalePasswordLoginRateLimits(env),
+    password_login_rate_limit_cleanup: Promise.all([
+      cleanupStalePasswordLoginRateLimits(env),
+      cleanupExpiredTemporaryPasswords(env.DB),
+    ]),
     improvement_retention: runImprovementRetention(env),
     deletion_undo_retention: runDeletionRetention(env),
     audit_header_retention: runAuditHeaderRetention(env),
@@ -272,7 +258,8 @@ export async function scheduledMaintenance(
       JSON.stringify({
         level: 'info',
         job: 'password_login_rate_limit_cleanup',
-        deleted: loginRateLimit.value,
+        deleted: loginRateLimit.value[0],
+        expiredTemporaryPasswords: loginRateLimit.value[1],
       }),
     );
   } else {

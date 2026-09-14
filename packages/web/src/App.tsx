@@ -1,42 +1,14 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Suspense, lazy, useEffect, useState } from 'react';
-import type { ComponentType } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import { AUTH_EVENT, api } from './api.js';
-import { Layout } from './components/Layout.js';
+import { useEffect, useState } from 'react';
+import { AuthenticatedApp } from './AuthenticatedApp.js';
+import { AUTH_EVENT, type AuthState, api } from './api.js';
 import { installDiagnostics } from './diagnostics-buffer.js';
 import { LoginPage } from './pages/Login.js';
-import { PeriodProvider } from './period.js';
-import { APP_ROUTES, type AppRouteId, LEGACY_ROUTE_REDIRECTS } from './routeMetadata.js';
+import { PasswordChangePage } from './pages/PasswordChange.js';
 
 // 収集は最初の描画より前に始める。エラーは改善要望ボタンを押す「前」に起きているため、
 // useEffect まで待つと肝心の1件目を取り逃がす。二重 install は buffer 側が弾く
 installDiagnostics();
-
-/** 改善要望は業務画面ではないため routeMetadata に載せず、ここで明示的に登録する */
-const ImprovementPage = lazy(() =>
-  import('./pages/Improvement.js').then((module) => ({ default: module.ImprovementPage })),
-);
-
-export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
-  overview: lazy(() => import('./pages/Overview.js').then((module) => ({ default: module.OverviewPage }))),
-  analysis: lazy(() => import('./pages/Analysis.js').then((module) => ({ default: module.AnalysisPage }))),
-  subscriptions: lazy(() =>
-    import('./pages/Subscriptions.js').then((module) => ({ default: module.SubscriptionsPage })),
-  ),
-  household: lazy(() => import('./pages/Household.js').then((module) => ({ default: module.HouseholdPage }))),
-  statements: lazy(() =>
-    import('./pages/Statements.js').then((module) => ({ default: module.StatementsPage })),
-  ),
-  ai: lazy(() => import('./pages/Ai.js').then((module) => ({ default: module.AiPage }))),
-  classify: lazy(() => import('./pages/Classify.js').then((module) => ({ default: module.ClassifyPage }))),
-  budget: lazy(() => import('./pages/Budget.js').then((module) => ({ default: module.BudgetPage }))),
-  tradeoff: lazy(() => import('./pages/Tradeoff.js').then((module) => ({ default: module.TradeoffPage }))),
-  import: lazy(() => import('./pages/Import.js').then((module) => ({ default: module.ImportPage }))),
-  cash: lazy(() => import('./pages/Cash.js').then((module) => ({ default: module.CashPage }))),
-  settings: lazy(() => import('./pages/Settings.js').then((module) => ({ default: module.SettingsPage }))),
-  guide: lazy(() => import('./pages/Guide.js').then((module) => ({ default: module.GuidePage }))),
-};
 
 export function App() {
   const qc = useQueryClient();
@@ -44,7 +16,7 @@ export function App() {
 
   const me = useQuery({
     queryKey: ['auth'],
-    queryFn: () => api<{ authenticated: boolean }>('/auth/me'),
+    queryFn: () => api<AuthState>('/auth/me'),
     retry: false,
   });
 
@@ -55,59 +27,28 @@ export function App() {
   }, []);
 
   if (me.isLoading) {
-    return (
-      <PeriodProvider>
-        <Layout locked>
-          <div className="login-wrap">ログイン状態を確認中…</div>
-        </Layout>
-      </PeriodProvider>
-    );
+    return <div className="login-wrap">ログイン状態を確認中…</div>;
   }
+  // 認証前の画面はアプリ枠の外に出す。枠の中に置くと、未認証のままヘッダーや
+  // サイドバーが業務APIを叩きにいく経路が残ってしまう。
   if (loggedOut || me.isError) {
     return (
-      <PeriodProvider>
-        <Layout locked>
-          <LoginPage
-            onSuccess={() => {
-              setLoggedOut(false);
-              void qc.invalidateQueries();
-            }}
-          />
-        </Layout>
-      </PeriodProvider>
+      <LoginPage
+        onSuccess={() => {
+          setLoggedOut(false);
+          void qc.invalidateQueries();
+        }}
+      />
     );
   }
+  /*
+   * 一時パスワードのままの利用者は、変更するまでどの業務画面にも入れない。
+   * ルータを持たない構成なので、遷移の抑止は URL ではなくこの分岐で表す。
+   * 抑止の正本はサーバ側の must_change_password fence であり、これはその写し。
+   */
+  if (me.data?.user?.mustChangePassword) {
+    return <PasswordChangePage forced onDone={() => void qc.invalidateQueries()} />;
+  }
 
-  return (
-    <PeriodProvider>
-      <Layout>
-        <Suspense
-          fallback={
-            <output className="page-state loading" aria-busy="true" aria-live="polite">
-              画面を読み込み中…
-            </output>
-          }
-        >
-          <Routes>
-            {APP_ROUTES.map((route) => {
-              const Component = ROUTE_COMPONENTS[route.id];
-              return <Route key={route.id} path={route.path} element={<Component />} />;
-            })}
-            {/* 支出分析は切り口をURLに持つ。/analysis 単体は AnalysisPage が既定タブへ寄せる */}
-            <Route path="/analysis/:tab" element={<ROUTE_COMPONENTS.analysis />} />
-            <Route path="/improvement" element={<ImprovementPage />} />
-            {/* 統合前の /matrix などは外に出ている可能性がある。トップへ落とさず該当タブへ送る */}
-            {LEGACY_ROUTE_REDIRECTS.map((redirect) => (
-              <Route
-                key={redirect.from}
-                path={redirect.from}
-                element={<Navigate to={redirect.to} replace />}
-              />
-            ))}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
-      </Layout>
-    </PeriodProvider>
-  );
+  return <AuthenticatedApp />;
 }

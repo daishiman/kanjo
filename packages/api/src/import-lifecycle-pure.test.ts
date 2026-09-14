@@ -555,6 +555,8 @@ describe('canonical mutation lease predicate', () => {
     const nonCanonicalMutations = [
       ['POST', '/api/auth/login'],
       ['POST', '/api/auth/logout'],
+      // 自分のパスワード変更。users 1行と監査だけを触り、明細のlease層には一切入らない。
+      ['POST', '/api/auth/password'],
       ['POST', '/api/ai/tasks'],
       ['POST', '/api/ai/tasks/1/paste'],
       ['POST', '/api/ai/tasks/1/report'],
@@ -590,6 +592,7 @@ describe('canonical mutation lease predicate', () => {
     const routeSources = [
       'index.ts',
       'routes/ai.ts',
+      'routes/auth.ts',
       'routes/analytics.ts',
       'routes/cash.ts',
       'routes/classify.ts',
@@ -653,6 +656,7 @@ describe('canonical mutation lease predicate', () => {
       'DELETE /api/ai/tasks/:id',
       'POST /api/auth/login',
       'POST /api/auth/logout',
+      'POST /api/auth/password',
     ].sort();
     expect(discovered.sort()).toEqual(expected);
   });

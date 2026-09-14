@@ -13,9 +13,8 @@
 
 ## 2. ローカル専用identityの用意
 
-このアプリのローカル認証にユーザー名はありません。テスト用identityは
-`default`というlocalhost専用セッションで、ログイン画面に入力するのは手元で
-作ったパスワードだけです。
+このアプリのローカル認証はメールアドレスとパスワードです。業務データの
+`default`は共有tenantキーであり、ログイン主体ではありません。
 
 1. 初回はignore対象の設定を作る。
 
@@ -23,8 +22,7 @@
    test -f packages/api/.dev.vars || cp packages/api/.dev.vars.example packages/api/.dev.vars
    ```
 
-2. `packages/api/.dev.vars` の `AUTH_PASSWORD` にパスワードマネージャーで作った
-   localhost専用の値、`SESSION_SECRET` に次で作った値を入れる。
+2. `packages/api/.dev.vars` の `SESSION_SECRET` に次で作った値を入れる。
 
    ```sh
    openssl rand -hex 32
@@ -38,9 +36,8 @@
 | 項目 | ローカルテスト値 |
 |---|---|
 | URL | `http://localhost:8787/` |
-| ユーザー名 | なし |
-| identity | `default` (localhost専用、画面入力不要) |
-| パスワード | 手元の `packages/api/.dev.vars` に設定した `AUTH_PASSWORD` |
+| メールアドレス | `admin@kanjo.local` |
+| パスワード | `scripts/seed-admin.mjs` が作るローカルfixture値 |
 
 `packages/api/.dev.vars` はGitのignore対象です。読み上げや画面共有をせず、
 このマシンだけで使います。
@@ -76,7 +73,7 @@ set -a
 source packages/api/.dev.vars
 set +a
 node scripts/seed-local.mjs
-unset AUTH_PASSWORD SESSION_SECRET
+unset SESSION_SECRET
 ```
 
 値をcommand lineに埋め込まず、ignore済み設定から現在のshellへだけ読みます。
@@ -92,9 +89,8 @@ export KANJO_BASE_URL=http://localhost:<terminalに表示されたport>
 
 ## 5. ログイン
 
-Chromeでlocalhost URLを開き、「収支統合管理」のログイン画面に
-`packages/api/.dev.vars` の `AUTH_PASSWORD` を入力します。ユーザー名は入力
-しません。ログイン後、ホームに架空の金額が表示されれば準備完了です。
+Chromeでlocalhost URLを開き、`admin@kanjo.local` とローカルfixtureのパスワードで
+ログインします。ログイン後、ホームに架空の金額が表示されれば準備完了です。
 
 ## 6. モバイル画面の確認
 
@@ -176,7 +172,7 @@ node packages/web/scripts/check-mobile-financial-layout.mjs
 | 症状 | 確認すること |
 |---|---|
 | `auth_not_configured` | `packages/api/.dev.vars` に `SESSION_SECRET` があるか確認し、previewを再起動する |
-| パスワードが違う | 入力値と手元の `AUTH_PASSWORD` が同じか確認する。失敗を繰り返さない |
+| パスワードが違う | ローカルfixtureを再seedし、失敗を繰り返さない |
 | seedが401 | `source packages/api/.dev.vars` 後に実行したか、`KANJO_BASE_URL` のportが正しいか確認する |
 | 金額が空 | seed commandの「取込」がすべて成功したか確認し、ページをreloadする |
 | グラフが白い | hard reload後も続く場合はrender testを実行し、canvasの大きさとbitmapのFAILを確認する |

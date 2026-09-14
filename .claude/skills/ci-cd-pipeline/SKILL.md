@@ -201,7 +201,6 @@ node <skill>/scripts/generate-cloudflare-credentials-guide.mjs \
   --account-mode team \
   --wrangler-command-json '["pnpm","--filter","<package>","exec","wrangler"]' \
   --install-command-json '["pnpm","install","--force","--frozen-lockfile"]' \
-  --auth-password-secret AUTH_PASSWORD \
   --session-secret SESSION_SECRET
 ```
 
@@ -238,7 +237,7 @@ gh secret list --env production --repo "$GITHUB_REPOSITORY"
 
 `deploy.yml`と`migrate.yml`のjobには`environment: production`が必要。これがないとEnvironment secretを読めない。
 
-Worker secretは先に`wrangler secret list`で名前を確認する。存在する`AUTH_PASSWORD`や`SESSION_SECRET`を通常セットアップで上書きしない。更新はローテーションであり、ログイン不能・全セッション失効の影響を説明してから所有者が明示実行する。
+Worker secretは先に`wrangler secret list`で名前を確認する。存在する`SESSION_SECRET`を通常セットアップで上書きしない。更新はローテーションであり、全セッション失効の影響を説明してから所有者が明示実行する。利用者のパスワードはWorker secretではなくD1の`users.password_hash`が持つため、secret操作では戻せない。
 
 ### やってはいけないこと
 

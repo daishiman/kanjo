@@ -36,7 +36,8 @@
   },
   // 値はCloudflareのsecret storeだけに置き、ここでは必須名だけを機械検証する。
   "secrets": {
-    "required": ["AUTH_PASSWORD", "SESSION_SECRET"]
+    // 共有パスワード(AUTH_PASSWORD)は撤去済み。秘密はセッション署名鍵の1本だけ。
+    "required": ["SESSION_SECRET"]
   },
   "vars": {
     // Cloudflare Access を使う場合のみ設定(両方設定でAccess JWT検証へ切替)
