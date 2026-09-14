@@ -102,6 +102,9 @@ describe('ログイン画面の枠', () => {
     expect(document.querySelectorAll('header')).toHaveLength(0);
     expect(document.querySelectorAll('footer')).toHaveLength(0);
     expect(document.querySelectorAll('nav')).toHaveLength(0);
+    // aside も禁じる。タグ名だけを塞いだ前版では、脇に置いた <aside> が
+    // 380px の列として描かれ、実機ではサイドバーに見えていた
+    expect(document.querySelectorAll('aside')).toHaveLength(0);
     expect(document.querySelectorAll('.sidebar, .app-shell, .page-header')).toHaveLength(0);
     // 認証前に業務APIへ出ていく経路が1本も無いこと
     expect(calls).toHaveLength(0);
@@ -131,15 +134,11 @@ describe('ログイン画面の枠', () => {
     }
   });
 
-  it('月次4ステップと安心3項目を確定コピーどおりに常設する', () => {
+  it('安心3項目を確定コピーどおりにカードの中へ常設する', () => {
     stubFetch({});
     const { container } = render(<LoginPage onSuccess={() => {}} />);
-    expect([...container.querySelectorAll('.login-step-label')].map((node) => node.textContent)).toEqual([
-      '取込',
-      '整える',
-      '確認',
-      '計画',
-    ]);
+    // 脇のパネルを畳んだ後も、この3項目はカードの中に残っていること
+    expect(container.querySelectorAll('.login-card .login-assurances')).toHaveLength(1);
     const labels = [...container.querySelectorAll('.login-assurances .login-assure-label')].map(
       (node) => node.textContent,
     );

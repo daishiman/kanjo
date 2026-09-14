@@ -32,27 +32,6 @@ const Icon = ({ children, className }: { children: ReactNode; className?: string
 );
 
 const ICONS = {
-  upload: (
-    <>
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <path d="M17 8l-5-5-5 5" />
-      <path d="M12 3v12" />
-    </>
-  ),
-  split: (
-    <>
-      <path d="M16 3h5v5" />
-      <path d="M8 3H3v5" />
-      <path d="M21 3l-7.5 7.5" />
-      <path d="M3 3l7.5 7.5" />
-      <path d="M12 12v9" />
-    </>
-  ),
-  check: (
-    <>
-      <path d="M20 6 9 17l-5-5" />
-    </>
-  ),
   lock: (
     <>
       <rect width="18" height="11" x="3" y="11" rx="2" />
@@ -91,14 +70,6 @@ const ICONS = {
     </>
   ),
 } as const;
-
-/** 左パネルの「月次の流れ」。番号バッジ + アイコン + 一言。 */
-const MONTHLY_STEPS = [
-  { icon: ICONS.upload, label: '取込', note: 'freeeとMFのCSVを取り込む' },
-  { icon: ICONS.split, label: '整える', note: '事業と家計の境目を整える' },
-  { icon: ICONS.check, label: '確認', note: '増減と残高の食い違いを確認する' },
-  { icon: ICONS.lock, label: '計画', note: '確定した数字で次月を計画する' },
-] as const;
 
 /**
  * 安心3項目。装飾ではなく規範。「セキュリティを整えていることをUIで確認できる」という
@@ -189,8 +160,9 @@ export function LoginPage({ onSuccess }: { onSuccess: (result: LoginSuccess) => 
 
   return (
     <div className="login-page">
-      <main className="login-main">
-        {/* 狭幅では order でこのカードを先頭へ回す (規範: 資格情報の入力が最優先) */}
+      {/* 認証前はカード1枚だけ。脇に説明パネルを置くとサイドバーに見え、
+          ブランド見出しはヘッダーに見える。この画面に枠は一切持たせない */}
+      <main className="login-main login-main-single">
         <section className="login-card" aria-labelledby="login-heading">
           <h1 id="login-heading">ログイン</h1>
           <p>登録済みのメールアドレスとパスワードでご利用いただけます。</p>
@@ -260,41 +232,9 @@ export function LoginPage({ onSuccess }: { onSuccess: (result: LoginSuccess) => 
             </p>
           </form>
           <hr className="login-divider" />
-          <div className="login-help">
-            <button type="button" className="link" onClick={() => setForgotOpen(true)}>
-              パスワードをお忘れの方
-            </button>
-            <a href="mailto:support@example.invalid">サポートに問い合わせる</a>
-          </div>
-        </section>
-
-        <aside className="login-intro" aria-label="このシステムについて">
-          <p className="login-brand">FOCUS LEDGER</p>
-          <h2 className="login-lede">
-            収支を、
-            <br />
-            迷わず締める。
-          </h2>
-          <p className="login-sub">
-            事業(freee)と家計(マネーフォワード)を1つの画面に束ね、増えた科目と削れる科目を毎月同じ手順で確かめます。
-          </p>
-
-          <ol className="login-steps">
-            {MONTHLY_STEPS.map((step, index) => (
-              <li key={step.label}>
-                <span className="login-step-no" aria-hidden="true">
-                  {index + 1}
-                </span>
-                <Icon>{step.icon}</Icon>
-                <span className="login-step-label">{step.label}</span>
-                <span className="login-step-note">{step.note}</span>
-              </li>
-            ))}
-          </ol>
-
-          <hr className="login-divider" />
-
-          <h3 className="login-assure-title">安心してご利用いただくために</h3>
+          {/* 脇のパネルではなくカードの中。ここが「セキュリティを整えていることを
+              画面で確かめられる」という要件の実体なので、枠を外しても残す */}
+          <h2 className="login-assure-title">安心してご利用いただくために</h2>
           <ul className="login-assurances">
             {ASSURANCES.map((item) => (
               <li key={item.label}>
@@ -304,7 +244,13 @@ export function LoginPage({ onSuccess }: { onSuccess: (result: LoginSuccess) => 
               </li>
             ))}
           </ul>
-        </aside>
+          <div className="login-help">
+            <button type="button" className="link" onClick={() => setForgotOpen(true)}>
+              パスワードをお忘れの方
+            </button>
+            <a href="mailto:support@example.invalid">サポートに問い合わせる</a>
+          </div>
+        </section>
       </main>
 
       {forgotOpen && (

@@ -71,7 +71,7 @@ API 呼出しは既存の `api()` ラッパを使い、401 応答時にログイ
 
 ## Container and component view
 
-- `pages/Login.tsx`: 2カラムの情報パネル + ログインカード
+- `pages/Login.tsx`: 中央に置くログインカード1枚のみ (安心3項目もカード内)
 - パスワード変更画面: `must_change_password` が真のとき他画面への遷移を許さない
 - 設定画面配下の「利用者管理」: 一覧・招待・role 変更・停止・一時パスワード再発行
 
@@ -95,4 +95,4 @@ admin 以外にはメニュー自体を出さない。ただし権限判定の�
 ## Risks and verification
 
 - リスク: 強制変更の回避 (直接 URL 操作) → サーバ側でも `must_change_password` の状態で本人操作以外を拒否する。
-- 検証: 新規依存が0件であること、DOM に header/footer/サイドバーが存在しないことを検査する。
+- 検証: 新規依存が0件であること、DOM に header/footer/nav/aside が存在しないことを検査する (タグ名の一部だけを塞ぐと、脇に置いた `aside` が列として残り枠に見える)。

@@ -56,7 +56,7 @@
     },
     {
       "path": "packages/web/src/account-login.dom.test.tsx",
-      "digest": "2282a37e0fd83d1af085c74e7d1555d0b0b7a93bee7be104dc75e57e2cc49299",
+      "digest": "3bae767c8315b4be6da6b0600fdc6df456fbf1bf29089f482d8324c60610f165",
       "role": "画面側の受入固定 (19 tests)"
     },
     {
@@ -81,7 +81,7 @@
     },
     {
       "path": "packages/web/src/pages/Login.tsx",
-      "digest": "3723842dc71c7461f41f91682aa3173a8a786085d0466d3b81ad83565b163a97",
+      "digest": "50b14b509e0051f2f86e0bcb5606e10bb334d5b018752572490aaf385626ce8c",
       "role": "ログイン画面"
     },
     {
@@ -131,18 +131,89 @@
     }
   ],
   "acceptance_index": [
-    { "id": "A1", "primary": "packages/api/src/account-login.test.ts", "run": "run-api", "secondary": ["run-smoke"] },
-    { "id": "A2", "primary": "packages/api/src/account-login.test.ts", "run": "run-api", "secondary": ["migrations/0039_account_login.sql"] },
-    { "id": "A3", "primary": "packages/api/src/account-login.test.ts", "run": "run-api", "secondary": ["packages/web/src/account-login.dom.test.tsx", "docs/runbooks/account-login-operations.md"] },
-    { "id": "A4", "primary": "packages/api/src/account-login.test.ts", "run": "run-api", "secondary": ["packages/web/src/account-login.dom.test.tsx"] },
-    { "id": "A5", "primary": "packages/web/src/account-login.dom.test.tsx", "run": "run-web", "secondary": [] },
-    { "id": "A6", "primary": "packages/api/src/account-login.test.ts", "run": "run-api", "secondary": ["packages/web/src/account-login.dom.test.tsx"] },
-    { "id": "A7", "primary": "run-api", "run": "run-api", "secondary": ["run-web", "run-smoke"] },
-    { "id": "A8", "primary": "scripts/preview-smoke.mjs", "run": "run-gates", "secondary": ["docs/ci-cd-operations.md"] }
+    {
+      "id": "A1",
+      "primary": "packages/api/src/account-login.test.ts",
+      "run": "run-api",
+      "secondary": [
+        "run-smoke"
+      ]
+    },
+    {
+      "id": "A2",
+      "primary": "packages/api/src/account-login.test.ts",
+      "run": "run-api",
+      "secondary": [
+        "migrations/0039_account_login.sql"
+      ]
+    },
+    {
+      "id": "A3",
+      "primary": "packages/api/src/account-login.test.ts",
+      "run": "run-api",
+      "secondary": [
+        "packages/web/src/account-login.dom.test.tsx",
+        "docs/runbooks/account-login-operations.md"
+      ]
+    },
+    {
+      "id": "A4",
+      "primary": "packages/api/src/account-login.test.ts",
+      "run": "run-api",
+      "secondary": [
+        "packages/web/src/account-login.dom.test.tsx"
+      ]
+    },
+    {
+      "id": "A5",
+      "primary": "packages/web/src/account-login.dom.test.tsx",
+      "run": "run-web",
+      "secondary": []
+    },
+    {
+      "id": "A6",
+      "primary": "packages/api/src/account-login.test.ts",
+      "run": "run-api",
+      "secondary": [
+        "packages/web/src/account-login.dom.test.tsx"
+      ]
+    },
+    {
+      "id": "A7",
+      "primary": "run-api",
+      "run": "run-api",
+      "secondary": [
+        "run-web",
+        "run-smoke"
+      ]
+    },
+    {
+      "id": "A8",
+      "primary": "scripts/preview-smoke.mjs",
+      "run": "run-gates",
+      "secondary": [
+        "docs/ci-cd-operations.md"
+      ]
+    }
   ],
   "completion_basis": {
-    "satisfied": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10", "P11", "P12"],
-    "not_executed": ["P13"],
+    "satisfied": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P06",
+      "P07",
+      "P08",
+      "P09",
+      "P10",
+      "P11",
+      "P12"
+    ],
+    "not_executed": [
+      "P13"
+    ],
     "not_executed_reason": "本番 D1・Worker secret への外部変更であり、実施には所有者の承認が要る。migration は未適用のまま保持している。"
   },
   "status": "pass"

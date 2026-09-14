@@ -859,9 +859,9 @@
       "confirmation_status": "confirmed",
       "evaluation_status": "pass",
       "source_lineage": {
-        "imported_at": "2026-09-13T05:02:52Z",
+        "imported_at": "2026-09-14T04:15:00Z",
         "origin_kind": "system-spec-harness",
-        "source_digest": "b18de64994cb64bb724a4b69f66879135e14cc8aa695b51d23942e71ba52365c",
+        "source_digest": "b35d162fb978ca17427996dbc7843e0668cd393ed95d95ae4eafc47743bcf688",
         "source_path": "system-spec/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
