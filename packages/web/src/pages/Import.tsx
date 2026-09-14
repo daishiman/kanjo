@@ -16,6 +16,7 @@ import {
   api,
   apiUpload,
 } from '../api.js';
+import { Button } from '../components/Button.js';
 import {
   DeletedNotice,
   DeletionPanel,
@@ -105,14 +106,14 @@ function ImportConfirmDialog({
           </ul>
         )}
         <div className="deletion-run-actions">
-          <button type="button" className="primary" disabled={dialog.busy} onClick={onConfirm}>
+          <Button variant="primary" disabled={dialog.busy} onClick={onConfirm}>
             {/* 押した先で実際に起きること(置き換え)を語にする。トリガーと同じ「取込を実行」に
                 すると、確認の前後で同じ語が2つ並び、どちらが後戻りできない側か読めない */}
             {dialog.busy ? '取込中…' : '置き換えて取り込む'}
-          </button>
-          <button type="button" disabled={dialog.busy} onClick={dialog.close}>
+          </Button>
+          <Button disabled={dialog.busy} onClick={dialog.close}>
             やめる
-          </button>
+          </Button>
         </div>
       </div>
     </dialog>
@@ -169,13 +170,12 @@ export function ImportResultTable({
     const f = retryFile?.(unit) ?? null;
     if (!f || !onRetry) return null;
     return (
-      <button
-        type="button"
-        className={unit.status === 'failed' ? 'primary' : undefined}
+      <Button
+        variant={unit.status === 'failed' ? 'primary' : 'secondary'}
         onClick={() => onRetry([f], { releaseKeep })}
       >
         {label}
-      </button>
+      </Button>
     );
   };
 
@@ -294,13 +294,9 @@ export function ImportResultTable({
         <li className="import-list-footer" aria-live="polite">
           <span>失敗したファイルは反映されていません。</span>
           {onRetry && (retryAll?.length ?? 0) > 1 && (
-            <button
-              type="button"
-              className="primary"
-              onClick={() => onRetry(retryAll ?? [], { releaseKeep: false })}
-            >
+            <Button variant="primary" onClick={() => onRetry(retryAll ?? [], { releaseKeep: false })}>
               失敗した{retryAll?.length}件を再取込
-            </button>
+            </Button>
           )}
         </li>
       )}
@@ -538,9 +534,9 @@ export function ImportPage() {
           >
             <strong>ファイルをここにドロップ</strong>
             <span>マネーフォワード・freeeのファイルをまとめて選べます</span>
-            <button type="button" className="primary" onClick={() => fileInput.current?.click()}>
+            <Button variant="primary" onClick={() => fileInput.current?.click()}>
               ファイルを選ぶ
-            </button>
+            </Button>
           </div>
           <input
             id="import-files"
@@ -587,9 +583,9 @@ export function ImportPage() {
                 <span className="import-eyebrow">取込前</span>
                 <h2 id="import-pending-title">{pending.length}件のファイルを選択中</h2>
               </div>
-              <button type="button" onClick={cancelPendingImport}>
+              <Button onClick={cancelPendingImport}>
                 {reimportedFrom === null ? '選択を解除' : 'やり直しをやめる'}
-              </button>
+              </Button>
             </div>
             <ul className="import-selected-files" aria-label="選択したファイル">
               {pending.map((file) => (
@@ -640,16 +636,15 @@ export function ImportPage() {
 
             <div className="import-primary-actions">
               <span>対象月の既存データは、確認後にこのファイルの内容へ置き換わります。</span>
-              <button
+              <Button
                 ref={confirmDialog.triggerRef}
-                type="button"
-                className="primary"
+                variant="primary"
                 aria-label="取込を実行"
                 onClick={() => confirmDialog.setOpen(true)}
                 disabled={upload.isPending}
               >
                 {upload.isPending ? '取込中…' : `${pending.length}件を取り込む`}
-              </button>
+              </Button>
             </div>
             {confirmDialog.open && (
               <ImportConfirmDialog
@@ -777,13 +772,10 @@ export function ImportPage() {
                     </div>
                     <div className="import-history-actions">
                       {reimportedFrom === row.id ? (
-                        <button type="button" onClick={cancelPendingImport}>
-                          やり直しをやめる
-                        </button>
+                        <Button onClick={cancelPendingImport}>やり直しをやめる</Button>
                       ) : row.originalRecorded === true ? (
-                        <button
-                          type="button"
-                          className={isFailed ? 'primary' : undefined}
+                        <Button
+                          variant={isFailed ? 'primary' : 'secondary'}
                           aria-label="この取込をやり直す"
                           disabled={reimport.isPending || upload.isPending}
                           onClick={() => reimport.mutate(row)}
@@ -791,7 +783,7 @@ export function ImportPage() {
                           {reimport.isPending && reimport.variables?.id === row.id
                             ? '原本を取得中…'
                             : 'やり直す'}
-                        </button>
+                        </Button>
                       ) : (
                         <span className="sub" title="この取込は投入した原本を保存していません">
                           原本なし

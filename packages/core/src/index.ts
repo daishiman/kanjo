@@ -32,3 +32,4 @@ export * from './exports.js';
 export * from './improvement.js';
 export * from './report-css.js';
 export * from './report-html.js';
+export * from './design-tokens.js';

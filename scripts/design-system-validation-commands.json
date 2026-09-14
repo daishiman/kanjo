@@ -1,0 +1,9 @@
+[
+  {
+    "id": "acceptance-worktree-full-s6-gate",
+    "executable": "pnpm",
+    "args": ["run", "verify:full"],
+    "stdout_log": "docs/design-system/evidence/acceptance-worktree-full-s6-gate.stdout.txt",
+    "stderr_log": "docs/design-system/evidence/acceptance-worktree-full-s6-gate.stderr.txt"
+  }
+]

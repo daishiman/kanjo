@@ -31,20 +31,21 @@ export function ExportMenu() {
 
   return (
     <span className="popover-host" ref={ref}>
-      <button type="button" aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((v) => !v)}>
+      <button
+        data-native-control="menu-trigger"
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="menu"
+        onClick={() => setOpen((v) => !v)}
+      >
         書き出し ▾
       </button>
       {open && (
         <span className="popover" role="menu">
-          <a className="btn" role="menuitem" href="/api/export/json" onClick={() => setOpen(false)}>
+          <a className="btn" role="menuitem" href="/api/export/json">
             統合データJSON
           </a>
-          <a
-            className="btn"
-            role="menuitem"
-            href={withPeriod('/api/export/matrix.csv')}
-            onClick={() => setOpen(false)}
-          >
+          <a className="btn" role="menuitem" href={withPeriod('/api/export/matrix.csv')}>
             マトリクスCSV
           </a>
         </span>

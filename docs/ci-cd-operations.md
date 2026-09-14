@@ -77,8 +77,7 @@ CIジョブを増やすときは`verify`の`needs`にも足してください。
 
 ### 2.1 CIテストの測定記録
 
-並列度を決めた比較は、2026-09-03時点のローカル10コア環境、API38ファイル・485件で
-測りました。
+以下は2026-09-03時点のローカル10コア環境、API38ファイル・485件で行った**過去の比較記録**であり、現在の設定値の正本ではありません。
 
 | APIの条件 | 結果 |
 |---|---|
@@ -87,7 +86,7 @@ CIジョブを増やすときは`verify`の`needs`にも足してください。
 | `maxWorkers=4` | 236秒、全件成功 |
 | `maxWorkers=10` | 39秒、146件失敗（`EADDRNOTAVAIL`） |
 
-採用した`maxWorkers=2`のその後の実測は、2026-09-04・API39ファイル・493件で186秒
+当時採用した`maxWorkers=2`のその後の実測は、2026-09-04・API39ファイル・493件で186秒
 （`test-api`ジョブと同じ`pnpm --filter @kanjo/api test`）。同じ環境で
 `test-core-web`ジョブのコマンドは66ファイル・408件が53秒、
 `pnpm lint && pnpm typecheck && pnpm build && pnpm test`を通しで回すと約4.5分でした。
@@ -98,7 +97,9 @@ CIジョブを増やすときは`verify`の`needs`にも足してください。
 pnpm --filter @kanjo/api exec vitest run --fileParallelism --maxWorkers=N
 ```
 
-この比較から、速度差が小さい4ではなく、socket枯渇までの余裕が大きい2を採用しています。
+現在の正本 `packages/api/vitest.config.ts` は `fileParallelism=false` / `maxWorkers=1`。APIのMiniflare/workerdを直列化し、rootのpackage実行も`--workspace-concurrency=1`に固定する。設定値を変更するときは本表の古い結論を根拠にせず、同一revision・同一コマンドで再測定する。
+
+2026-09-14の切り分けでは、並列負荷下のcommon-shell routeが1回だけ1秒timeoutした一方、直列再実行は26/26ファイル・53/53テストともPASSした。再現性のない単発timeoutは実装assertionの決定的失敗ではなくcapacity競合として扱い、待ち時間だけを増やすのではなく、影響gateを`maxWorkers=1`、package間を直列にした。最終full gateはこの安定経路で1回だけmachine receiptへ記録する。
 `beforeEach`の全テーブル`DELETE`を`d1.batch()`へまとめる案は、当時の
 `import-lifecycle`単体で64秒から85秒へ悪化しました。当時の実行コマンドは残っていないため、
 この値は再現可能な基準には使わず、再検討時は変更前後を同じコマンドで測り直します。

@@ -167,7 +167,12 @@ export function DataTable({
                 {sortable ? (
                   // 矢印は styles.css が th の aria-sort を読んで描く。
                   // ここで文字として出すと、見出しの文言そのものが「金額▲」になってしまう
-                  <button type="button" className="th-sort" onClick={() => toggle(i)}>
+                  <button
+                    data-native-control="sort"
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggle(i)}
+                  >
                     {label}
                   </button>
                 ) : (

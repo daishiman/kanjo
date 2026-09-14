@@ -3,7 +3,7 @@ status: confirmed
 category: infrastructure
 aggregate: 確定
 spec_cells: [infrastructure.web, infrastructure.mobile, infrastructure.tablet, infrastructure.desktop-windows, infrastructure.desktop-linux, infrastructure.desktop-macos]
-serves_goals: [G5, G2]
+serves_goals: [G1, G4]
 ---
 
 # インフラ (infrastructure)
@@ -15,12 +15,12 @@ serves_goals: [G5, G2]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-infra-web-001。資するゴール: G5, G2 |
-| モバイル (mobile) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。配信は Cloudflare Workers の static assets 一系統のみで、App Store / Google Play / インストーラ配布のチャネルと署名鍵の管理を持たない。 |
-| タブレット (tablet) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。配信は Cloudflare Workers の static assets 一系統のみで、App Store / Google Play / インストーラ配布のチャネルと署名鍵の管理を持たない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。配信は Cloudflare Workers の static assets 一系統のみで、App Store / Google Play / インストーラ配布のチャネルと署名鍵の管理を持たない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。配信は Cloudflare Workers の static assets 一系統のみで、App Store / Google Play / インストーラ配布のチャネルと署名鍵の管理を持たない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。配信は Cloudflare Workers の static assets 一系統のみで、App Store / Google Play / インストーラ配布のチャネルと署名鍵の管理を持たない。 |
+| Web (web) | 確定 | 確定質疑: qa-infrastructure-web-ds-observed-001。資するゴール: G1, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア配布とアプリ更新の経路、およびトークン変更をアプリの版として配る手順を設計する必要があった。本サイクルの配信は Cloudflare Workers の静的アセット 1 系統のままである。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、本カテゴリではストア配布とアプリ更新の経路、およびトークン変更をアプリの版として配る手順を設計する必要があった。本サイクルの配信は Cloudflare Workers の静的アセット 1 系統のままである。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、本カテゴリではストア配布とアプリ更新の経路、およびトークン変更をアプリの版として配る手順を設計する必要があった。本サイクルの配信は Cloudflare Workers の静的アセット 1 系統のままである。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、本カテゴリではストア配布とアプリ更新の経路、およびトークン変更をアプリの版として配る手順を設計する必要があった。本サイクルの配信は Cloudflare Workers の静的アセット 1 系統のままである。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、本カテゴリではストア配布とアプリ更新の経路、およびトークン変更をアプリの版として配る手順を設計する必要があった。本サイクルの配信は Cloudflare Workers の静的アセット 1 系統のままである。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,10 +28,8 @@ serves_goals: [G5, G2]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | Google SRE の『変更点を増やさない』に従い、新しい binding・cron・外部依存を増やさず、掃除処理を既存 cron (0 18 * * *) へ相乗りさせると本章で確定した。 |
-| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | Google SRE の運用観点から、SESSION_SECRET のローテーションが全セッション失効を意味することを構成上の帰結として明示し、手順化の対象とした。 |
-
-> **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | Google SRE の変更リスク最小化を、配信構成を変えずビルド成果物だけを差し替えるサイクルにする判断に反映した。初期 JS 予算の検査をリリース前の防壁として維持する。 |
+| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | Google SRE の自動化の原則を、headless Chrome の check 系 (thead / mobile-layout / financial-figure / financial-routes) を見た目の共通化後も CI で回し続けることに反映した。 |
 
 ## 確定内容 (質疑録)
 
@@ -39,19 +37,19 @@ serves_goals: [G5, G2]
 
 ### Web (web)
 
-- 資するゴール: G5, G2
+- 資するゴール: G1, G4
 
-#### 主たる接地根拠: `qa-infra-web-001`
+#### 主たる接地根拠: `qa-infrastructure-web-ds-observed-001`
 
 **問**
 
-インフラ構成 (web) を確定してください。新しい binding や secret は要りますか。
+配信と build の構成は何で、トークン導入が制約に触れるか。
 
 **答**
 
-配信構成は現行のまま維持する: Cloudflare Workers (kanjo-console) + D1 (DB) + R2 (FILES) + static assets で、assets の run_worker_first は /api/* のまま。新しい binding は追加しない (メール送信基盤を導入しないため Email binding も外部 API キーも増やさない)。secret は SESSION_SECRET を必須のまま維持し、AUTH_PASSWORD を required から外して廃止する。SESSION_SECRET のローテーションは全セッションの失効を意味するため、運用手順として明示する。既存の cron (0 18 * * *) に相乗りして、期限切れの一時パスワードと レート制限行の掃除を行う (新しい cron を増やさない)。
+配信は Cloudflare Workers (kanjo-console) の静的アセット (../web/dist、not_found_handling: single-page-application) と /api/* の Worker 1 系統である。web の build は typecheck → vite build → check:js-budget (check-initial-js-budget.mjs による初期 JS 予算) → strip:manifest の順で、トークンの追加でこの予算を超えてはならない。トークンは依存ゼロの定数なので外部ライブラリを増やさない。CI では headless Chrome を使う check 系 (thead / mobile-layout / financial-figure / financial-routes) が画面の崩れを検査する。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: packages/api/wrangler.jsonc の観測 (binding・secrets.required・triggers.crons) と、メール送信を使わないという利用者決定 / 回答時刻: 2026-09-13T01:49:08Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: packages/api/wrangler.jsonc と packages/web/package.json の scripts をアシスタントが読んだ観測事実。 / 回答時刻: 2026-09-13T05:03:11Z)
 
 ## To-Be / Delta
 
@@ -59,32 +57,30 @@ serves_goals: [G5, G2]
 
 ### 到達すべき状態 (To-Be)
 
-- **G5**: 既存20画面と /api/* 認証ガードの契約を壊さずに認証主体を差し替える
-- **G2**: 認証情報が漏洩しても即座に全データが露出しない。パスワードは復元不能な形で保存し、セッションは利用者単位で失効できる
+- **G1**: 色・文字サイズ・行高・余白・角丸・影・動き・寸法 (シェル幅/高さ/タップ領域) のデザイントークンを、packages/core に置く依存ゼロの TypeScript 定義 1 か所へ集約し、CSS 変数とチャート色はそこから導出する。和文は OS の system-ui、金額・数値は自己配信する IBM Plex Mono Latin 400/600 だけを使い、全非 test source・dependencies・外部フォントURLの検査でこの配信契約を固定する。
+- **G4**: 今後の作成物が自動的に規約へ従うよう、トークン定義以外での色の直書きと、正本と写し (CSS 変数・チャート色) のずれを lint で機械検出し、使い方を規約文書として置く。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | users テーブルを新設し、パスワードを鍵導出関数 (WebCrypto PBKDF2) で保存する | migration 適用後の schema に password_hash と salt と反復回数が存在し、平文パスワードを保持するカラムが0件 |
-| O2 | セッション cookie に利用者識別子を含め、識別子を署名対象に含める | 利用者識別子を改ざんした cookie が /api/* で401になる契約テストが緑 |
-| O3 | 「次回からもログイン状態を保持する」の選択でセッション有効期間を2段階に切り替える | 未選択時と選択時で Set-Cookie の maxAge が異なることを検査するテストが緑 |
-| O6 | 認証失敗時の応答が、メールアドレスの存在有無を区別しない | 未登録メールと誤パスワードで応答本文・ステータスが同一で、パスワード検証を常に実行して所要時間差を作らない |
-| O7 | 既存のログイン rate limit をメールアドレス単位へ拡張する | 同一メールへの連続失敗で当該メールがロックされ、他メールのログインは阻害されないテストが緑 |
-| O8 | migration適用後のbootstrap seedで初回管理者を1件作成し、共有パスワード認証経路を撤去する | active runtimeと必須設定に共有パスワード認証分岐が0件で、旧secretを外しても全機能が動作する |
+| O1 | packages/core/src/design-tokens.ts に色・文字・余白・角丸・影・動き・寸法のトークンを定義し、値の唯一の実装正本とする。 | 単体テストは schema・役割集合・alias・コントラストに必要な関係不変条件を値の転記なしで検査する。表示に影響する全トークン値は、版・承認参照・由来ファイルを持つ `docs/design-system/token-approval.json` の SHA-256 fingerprint と lint で照合し、未承認の値変更を拒否する。 |
+| O2 | styles.css の :root トークンと charts.ts の COLORS を design-tokens.ts から導出した写しに置き換え、写しのずれを検出する lint を lint スクリプトへ組み込む。 | pnpm lint が写しの不一致で exit 非 0 になり、一致時に exit 0 になる。charts.ts から 6 桁 hex の直書きが 0 件になる。 |
+| O5 | トークンと共通部品の使い方を規約文書 (docs 配下) にまとめ、新しい画面・図をつくるときの参照先を 1 つにする。 | 規約文書が色の役割 (塗り/文字の分離)・タイポグラフィ・余白・シェル・ボタン・チャートの各節を持ち、README または AGENTS.md から参照されている。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I5**: 認証失敗時は「メールアドレスまたはパスワードが正しくありません。」の単一文言をフィールド直下に出す
-- **I9**: users テーブルと、利用者ごとの salt を伴う鍵導出によるパスワード保存
-- **I10**: セッションへの利用者識別子の埋め込みと、利用者単位でのセッション失効
-- **I12**: ログイン rate limit をメールアドレス単位へ拡張する
-- **I13**: migration適用後のbootstrap seedで初回管理者を作成し、共有パスワード認証経路を撤去する
-- **I14**: 既存 /api/* 認証ガードの mount 順序と契約を維持したまま主体を差し替える
+- **I1**: 新しい画面をつくるとき、色・余白・角丸・文字サイズを design-tokens から選ぶだけで FINAL-UI と同じ見た目になる。
+- **I4**: 誰かが画面のコードに #xxxxxx の色を直書きしたら、pnpm lint が落ちて共通トークンを使うよう促す。
 
 ### 本章に効く確定意思決定
 
-- (本章ゴールに効く確定 decision なし)
+- **dec-design-token-source**: デザイントークンの正本をどこに置くか
+  - 採択: packages/core の design-tokens.ts を正本にし、CSS 変数とチャートの予備値を生成する (`core-ts`)
+  - 目的適合: G1 の『依存ゼロの TypeScript 1 か所』に直接合う。テスト (O1・O4) が CSS を解析せず値を import でき、次サイクルでレポート側からも同じ値を import できる
+- **dec-border-color-roles**: 境界色 #D7E0E2 (白に 1.34:1) を、WCAG 2.2 の 1.4.11 とどう両立させるか
+  - 採択: 装飾罫線は #D7E0E2、部品を見分ける枠は 3:1 の派生色 (`split-roles`)
+  - 目的適合: G5 の役割分離を境界へ広げ、画像の淡い罫線と部品の枠の 1.4.11 を両立する
 
 ## 適用された設計知識
 
@@ -92,14 +88,12 @@ serves_goals: [G5, G2]
 
 ### 本章での適用
 
-secure-by-design の『攻撃面と秘密を増やさない』を構成判断に適用した: メール送信を採らない決定の帰結として 新しい binding も外部 API キーも増やさず、secret は SESSION_SECRET のみに絞り AUTH_PASSWORD を撤去する、と本章で確定した。掃除処理を既存 cron へ相乗りさせ新規トリガを増やさない判断も、運用面の増設を避ける同じ原則から来ている。
+本章へ引く card は 0 件である。未着手ではなく、配信構成 (Workers の静的アセット + /api/* の Worker) を変えないサイクルで、infrastructure 固有に適用すべき設計知識が無いことを確認した上での確定である。本章に効く制約は初期 JS 予算 (check:js-budget) で、トークンを依存ゼロの定数にする判断はこの予算を守るための選択として記録する。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T02:20:00Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T05:07:52Z)
 
 - `ref-system-design-knowledge/references/resource-map.yaml` (本章へ引く card は 0 件。未着手ではなく、上の適用記述で0 件である理由を述べた上での確定である)
 
 ## 最新ドキュメント出典
 
-| 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
-|---|---|---|---|---|---|
-| cloudflare-workers | 2026-04-23 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/workers/runtime-apis/web-crypto/ | 2026-09-13T01:55:58Z | 2026-09-13T01:55:58Z |
+- (このカテゴリに割り当てた取得済みドキュメントなし。全体出典は index.md 参照)

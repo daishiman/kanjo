@@ -1,0 +1,170 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/run-20260913-dsfound",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "13 task spec本文 (目的・前提条件・成果物・Write scope/touches・スコープ外・Verification and evidence) を再度突き合わせた。P02 に dec-chart-series-contrast (チャート系列色を3:1へ調整するか否かの利用者選択) が追加され、P05 の Entry gate に『docs/design-system/architecture-decision.md に利用者が選択した dec-chart-series-contrast が記録されていること (未記録なら着手しない)』が明記されたことで、目的・前提条件・Verification and evidence (dec-chart-series-contrastの根拠が利用者の選択であることをレビュー確認) の3箇所が一貫して同じ決定を指しており矛盾は無い。P05/P08 の write_scope 重複や scope_out の記述も前回確認から変化しておらず矛盾は無い。",
+      "evidence": [
+        "task-specs/phase-02-architecture.md#目的",
+        "task-specs/phase-02-architecture.md#Verification and evidence",
+        "task-specs/phase-05-implementation.md#前提条件",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "S1-S6 (AC-001..AC-006) と FR-001..FR-005 の被覆は前回確認した対応関係 (P01→P04→P05→P07 など) から変化しておらず、満たすtaskが存在しない受入・FRは無い。FR-004/S4 (チャート系列色 3:1) についても、P02 (決定記録)→P03 (独立レビュー)→P04 (テスト)→P05 (実装、決定記録済みを前提)→P09 (保証確認) の連鎖が明確になり、以前は『判定基準は網羅するが決定プロセスが欠落』していた漏れが解消された。",
+      "evidence": [
+        "workstream-inventory.json#tasks[1].acceptance",
+        "workstream-inventory.json#tasks[4].acceptance",
+        "workstream-inventory.json#tasks[6].acceptance",
+        "workstream-inventory.json#tasks[8].acceptance"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "task-graph.jsonのSYS-DSFOUND-P01..P13は前回から無変更 (sha256同一) でP(n-1)を1件だけ指す線形DAGを維持し、workstream-inventory.json/system-build-handoff.jsonのdepends_onと1件ずつ完全一致する。P02のWrite scope/touches (docs/design-system/architecture-decision.mdのみ) は変わらず、dec-chart-series-contrastの追加はP02の責務範囲内 (決定記録) に収まっている。P05のEntry gateにP02成果物への参照が追加された点もphase間の責務境界 (P02=決定、P05=実装) を壊さない。write_scope重複は前回確認した意図的な直列重複のみ。",
+      "evidence": [
+        "task-graph.json#nodes",
+        "workstream-inventory.json#tasks",
+        "task-specs/phase-02-architecture.md#成果物",
+        "task-specs/phase-05-implementation.md#前提条件"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "feature-package.json/task-graph.json/workstream-inventory.json/system-build-handoff.jsonのtask_node_ids・depends_on・feature_package_id・parent_featureは前回確認した内容から不変で、循環・後ろ向き辺・feature_package_id外参照は無い。repo_context.repo_identity (github:daishiman/kanjo) は.dev-graph/config.jsonのrepository_idと一致し、参照architecture/specファイルは全てrepo内に実在する。",
+      "evidence": [
+        "feature-package.json#task_node_ids",
+        "task-graph.json#nodes",
+        "system-build-handoff.json#identity",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<plugin-cache>/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<repo-root>",
+        "--config",
+        ".dev-graph/config.json",
+        "--staging",
+        ".dev-graph/staging/run-20260913-dsfound"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887\",\n  \"feature_package_id\": \"feature-package/feat-design-system-foundation\",\n  \"parent_feature\": \"feat-design-system-foundation\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "8a5bc864f4c46f5cfbf95dddb9e4c7239ca819b083ff519afcb9e6d29a9f06f2"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "d6817f3cef0348cda43b740a800da86096d96f2327cbf99af1594188b2d06913"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "764eac5296fdddfcbc8ca5643e2e6890c4b7d13c46bfc779e785cccdaf7029f3"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "6e9205c9a9895dd4ca671d66cd5910af4d5b77e70cb74096b45cf74ac718810a"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "5e73fbd248b0058a9ccdf510be5bf34a5e4cbf3b4c0a056ca7691b5f20178ad6"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "061fac640ba9f082a6dce2da473b226c5abf5a8b3b0d21e7528e7fd710f1b743"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "b7cfcf4ba130f1b4b7b858f93867ee0340512784500aeef85d86d5a4511017c9"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "b869e18676c35a565e0600d46bf6b5184939f3de189d3be785f422cf8d1da05e"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "12b2673389cdd7f064bbf02aee6a9bb0a41e8ceed71ec001c754d18551650152"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "3959b6669a6efe6cca8237a7527e512ccffb572d3ecd7f3fec3ae22d0ece9408"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "9f5b302275955cf16d053b04e28c6ba21242595198b685113886e2837ff1d8bf"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "7d1eb38aaa2c82e0b18a3596b3352752d56766ecec8686ff8e3decd0a822a282"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "472ef5346a9e55e6affce9aa1189d84169310720b7a9f393fef4410a48d650fb"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "ed80bf89846b345a00f69a5f4ce6c66c185dcb1a51cccc7ead77aa8e43ad8ffd"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "68d66ed6ef2ea1616a983bf33e102690eb8201c5abcc2496a5d13b631d256270"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "5b002ed7ff959c95efcdf9defad3dff71997b82426c33453afe7936fc2fa2818"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "973506b53bd7181d4387fab4ffb6b78b89995b5d297ab68f1d5709ec1075ef15"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "15b89ccf2a569371cbecc8e99ffc246f08dac00ae0518f7fdc9f34b7732ad40d"
+    }
+  ],
+  "staleness_rule": "staging配下18ファイル (staging-manifest.json記載の17ファイル + staging-manifest.json自身) のいずれかのsha256がevaluated_inputsと一致しなくなった場合、またはcanonical digest (staging-manifest.json#canonical_digest) がevaluated_digest (sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887) と異なるrunへ差し替わった場合、本findingsは無効であり再評価が必要。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "spec-open-item-resolved",
+      "observation": "前回指摘したmedium (spec-open-item-not-covered: チャート系列色を3:1へ暗くする判断が計画内で未着手前決定として記録されていない) は解消された。P02に dec-chart-series-contrast (利用者の選択と選択日時付きでarchitecture-decision.mdへ記録し、推定のままconfirmedと書かない) が追加され、P05のEntry gateに『未記録なら着手しない』というブロッキング条件が明記された。P03 (独立レビュー) の対象にもP02の決定記録全体が含まれるため、dec-chart-series-contrastもレビュー対象に含まれる。是正手段が具体的かつ検証可能 (Verification and evidenceでレビュー確認) であるため、severityをinfoへ格下げしresolvedとして記録する。",
+      "evidence": [
+        "task-specs/phase-02-architecture.md#目的",
+        "task-specs/phase-02-architecture.md#Verification and evidence",
+        "task-specs/phase-05-implementation.md#前提条件",
+        "workstream-inventory.json#tasks[1].acceptance"
+      ]
+    }
+  ]
+}

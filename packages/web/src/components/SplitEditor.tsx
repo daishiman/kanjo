@@ -27,8 +27,10 @@ import {
   ownerLabel,
 } from '../api.js';
 import { yen } from '../format.js';
+import { Button } from './Button.js';
 import { CategoryPicker } from './CategoryPicker.js';
 import { DataTable } from './DataTable.js';
+import { PageActions } from './Page.js';
 import { useInvalidateClassification } from './classification-invalidate.js';
 
 /** 画面で編集している最中の1行。金額と割合の両方を持つ(入力欄の状態そのもの) */
@@ -209,6 +211,7 @@ export function SplitEditor({
       <fieldset className="split-mode">
         <legend className="visually-hidden">入力の仕方</legend>
         <button
+          data-native-control="toggle"
           type="button"
           className="mini"
           aria-pressed={mode === 'amount'}
@@ -217,6 +220,7 @@ export function SplitEditor({
           {mode === 'amount' && <span aria-hidden="true">✓ </span>}金額で入れる
         </button>
         <button
+          data-native-control="toggle"
           type="button"
           className="mini"
           aria-pressed={mode === 'ratio'}
@@ -321,18 +325,17 @@ export function SplitEditor({
               </td>
               <td data-label="操作">
                 {mode === 'amount' && (
-                  <button type="button" className="mini" onClick={() => fillRest(l.lineId)}>
+                  <Button size="mini" onClick={() => fillRest(l.lineId)}>
                     残りを入れる
-                  </button>
+                  </Button>
                 )}{' '}
-                <button
-                  type="button"
-                  className="mini"
+                <Button
+                  size="mini"
                   disabled={lines.length <= q.data.constraints.minLines}
                   onClick={() => setLines((prev) => prev.filter((o) => o.lineId !== l.lineId))}
                 >
                   この行を消す
-                </button>
+                </Button>
               </td>
             </tr>
           ))}
@@ -349,17 +352,15 @@ export function SplitEditor({
             : `${yen(-rest)} はみ出しています。`}
       </p>
 
-      <div className="split-actions">
-        <button
-          type="button"
+      <PageActions className="split-actions">
+        <Button
           disabled={lines.length >= q.data.constraints.maxLines}
           onClick={() => setLines((prev) => [...prev, newLine(defaultCls)])}
         >
           行を足す（{lines.length}/{q.data.constraints.maxLines}）
-        </button>
-        <button
-          type="button"
-          className="primary"
+        </Button>
+        <Button
+          variant="primary"
           disabled={issues.length > 0 || save.isPending}
           onClick={() =>
             save.mutate({
@@ -377,21 +378,19 @@ export function SplitEditor({
           }
         >
           分割を保存
-        </button>
+        </Button>
         {q.data.lines.length > 0 && (
-          <button
-            type="button"
+          <Button
+            variant="danger"
             disabled={save.isPending}
             onClick={() => save.mutate({ lines: [] })}
             title="内訳を消して、元の1行に戻します"
           >
             分割をやめる
-          </button>
+          </Button>
         )}
-        <button type="button" onClick={onClose}>
-          閉じる
-        </button>
-      </div>
+        <Button onClick={onClose}>閉じる</Button>
+      </PageActions>
 
       {issues.length > 0 && lines.some((l) => l.big) && (
         <p className="sub lines">

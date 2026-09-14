@@ -1,0 +1,46 @@
+{
+  "schema_version": 3,
+  "run_id": "design-system-foundation-elegant-review-20260914T123525+0900",
+  "scope": "exact-changed-path-local-verification",
+  "evidence_model": "reproducibility-snapshot-with-retained-output; no authenticity claim",
+  "changed_path_manifest": "docs/design-system/changed-path-manifest.json",
+  "changed_path_aggregate_digest": "9c598ddcdc352e97001344f0a7befa675192225da6c1f56b62907a57710ca8a8",
+  "command_receipt_ids": ["acceptance-worktree-full-s6-gate"],
+  "current_full_gate_snapshot": {
+    "status_source": "docs/design-system/changed-path-manifest.json command receipt",
+    "receipt_id": "acceptance-worktree-full-s6-gate",
+    "command": "pnpm run verify:full",
+    "limitation": "Freshness and pass/fail are derived at read time; this document does not duplicate mutable receipt status."
+  },
+  "red_green": {
+    "red": [
+      "active spec left the chart-series decision unresolved after the ADR had confirmed it",
+      "acceptance evidence was configured to the iteration-only fast gate",
+      "same-status mutation under an excluded protected path was not rejected",
+      "FR-005 headings, canonical links, decision state, and release readiness had no semantic aggregate contract"
+    ],
+    "green": [
+      "semantic document contract enforces all six FR-005 headings, canonical entry links, and one confirmed chart decision",
+      "acceptance executes the current full S6 gate under an unambiguous receipt id while fast stays iteration-only",
+      "metadata-only sentinels reject validation-time mutation under data, secret, and sample exclusions without reading file content",
+      "read-only fail-closed status aggregates evidence freshness, token integrity, external approval, strict tracking, maintainer state, and deployment binding"
+    ]
+  },
+  "external_state_changes": [],
+  "maintainer_only_state": {
+    "token_human_approval": "pending-external",
+    "approval_subject_digest": "2ca1a3b9da3074e157fd504198f85f13447c593fdcc92afcb0f6aee30d41c707",
+    "repository_tracking": "pending-untracked",
+    "ignored_local_and_external_tracker_parity": "pending-outside-authority",
+    "contributes_to_shared_pass": false
+  },
+  "browser_evidence": {
+    "kind": "repository-owned rendered checks",
+    "real_interactive_browser_session": false
+  },
+  "production_deployment": {
+    "performed": false,
+    "url": null
+  },
+  "result_source": "Acceptance reruns the configured command and retains stdout/stderr so their digests can be recomputed. Local files provide reproducibility, not trusted authenticity or human approval."
+}

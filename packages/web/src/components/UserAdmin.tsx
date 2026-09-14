@@ -10,6 +10,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { type AccountUser, ApiError, type AuthState, api } from '../api.js';
+import { Button } from './Button.js';
 
 interface IssuedPassword {
   email: string;
@@ -107,9 +108,9 @@ export function UserAdmin() {
             別の手段で本人へ渡してください。本人は最初のログイン時に必ず変更します。
           </p>
           <code className="user-admin-temp">{issued.password}</code>
-          <button type="button" className="primary" onClick={() => setIssued(null)}>
+          <Button variant="primary" onClick={() => setIssued(null)}>
             控えたので閉じる
-          </button>
+          </Button>
         </div>
       )}
 
@@ -142,9 +143,9 @@ export function UserAdmin() {
             <option value="admin">管理者</option>
           </select>
         </label>
-        <button type="submit" className="primary" disabled={invite.isPending || !email}>
+        <Button type="submit" variant="primary" disabled={invite.isPending || !email}>
           {invite.isPending ? '追加中…' : '利用者を追加'}
-        </button>
+        </Button>
       </form>
 
       {users.isLoading && <p className="sub">読み込み中…</p>}
@@ -181,8 +182,8 @@ export function UserAdmin() {
                 <td>{STATUS_LABEL[user.status]}</td>
                 <td>{formatMoment(user.lastLoginAt)}</td>
                 <td className="user-admin-actions">
-                  <button
-                    type="button"
+                  <Button
+                    size="mini"
                     onClick={() =>
                       update.mutate({
                         id: user.id,
@@ -191,10 +192,10 @@ export function UserAdmin() {
                     }
                   >
                     {user.status === 'active' ? '停止する' : '再開する'}
-                  </button>
-                  <button type="button" onClick={() => resetPassword.mutate(user)}>
+                  </Button>
+                  <Button size="mini" onClick={() => resetPassword.mutate(user)}>
                     一時パスワード再発行
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}

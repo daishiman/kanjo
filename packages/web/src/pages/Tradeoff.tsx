@@ -5,6 +5,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
 import { type TradeoffResponse, type TradeoffReviewRow, api } from '../api.js';
+import { Button } from '../components/Button.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { PageHeader, PageState } from '../components/Page.js';
@@ -87,10 +88,22 @@ export function TradeoffPage() {
             onChange={(e) => setAmount(e.target.value)}
           />
           <span className="segment">
-            <button type="button" className={recurring ? '' : 'on'} onClick={() => setRecurring(false)}>
+            <button
+              data-native-control="toggle"
+              type="button"
+              className={recurring ? '' : 'on'}
+              aria-pressed={!recurring}
+              onClick={() => setRecurring(false)}
+            >
               単発
             </button>
-            <button type="button" className={recurring ? 'on' : ''} onClick={() => setRecurring(true)}>
+            <button
+              data-native-control="toggle"
+              type="button"
+              className={recurring ? 'on' : ''}
+              aria-pressed={recurring}
+              onClick={() => setRecurring(true)}
+            >
               毎月発生
             </button>
           </span>
@@ -147,9 +160,8 @@ export function TradeoffPage() {
           <strong className={`num ${covered - amt >= 0 ? 'neg' : 'pos'}`}>{yen(covered - amt)}</strong>{' '}
           {verdict === 'covered' ? '→ 捻出できます' : '→ 不足しています(候補を追加するか金額を見直し)'}
           <span style={{ marginLeft: 12 }}>
-            <button
-              type="button"
-              className="primary"
+            <Button
+              variant="primary"
               disabled={save.isPending || !selected.length}
               onClick={() =>
                 save.mutate({
@@ -163,7 +175,7 @@ export function TradeoffPage() {
               }
             >
               この試算を保存
-            </button>
+            </Button>
           </span>
         </div>
       )}

@@ -3,7 +3,7 @@ status: confirmed
 category: backend
 aggregate: 確定
 spec_cells: [backend.web, backend.mobile, backend.tablet, backend.desktop-windows, backend.desktop-linux, backend.desktop-macos]
-serves_goals: [G1, G3, G5]
+serves_goals: [G1]
 ---
 
 # バックエンド (backend)
@@ -15,12 +15,12 @@ serves_goals: [G1, G3, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-backend-web-001。裏付け質疑 (`qa_refs`): `qa-backend-web-002`, `qa-basis-correction-001`, `qa-c8-owner-linkage-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G3, G5 |
-| モバイル (mobile) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。API は Hono の単一 Worker が全 platform 共通で提供する契約であり、platform 別のバックエンド分岐や専用エンドポイントを設けない。 |
-| タブレット (tablet) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。API は Hono の単一 Worker が全 platform 共通で提供する契約であり、platform 別のバックエンド分岐や専用エンドポイントを設けない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。API は Hono の単一 Worker が全 platform 共通で提供する契約であり、platform 別のバックエンド分岐や専用エンドポイントを設けない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。API は Hono の単一 Worker が全 platform 共通で提供する契約であり、platform 別のバックエンド分岐や専用エンドポイントを設けない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。API は Hono の単一 Worker が全 platform 共通で提供する契約であり、platform 別のバックエンド分岐や専用エンドポイントを設けない。 |
+| Web (web) | 確定 | 確定質疑: qa-backend-web-ds-observed-001。資するゴール: G1 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,10 +28,8 @@ serves_goals: [G1, G3, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の『業務規則を入出力から独立させる』に従い、認証と監査の主体としての利用者と、明細データの所有関係を意図的に分離した。API の追加は境界の外側 (入出力) に限る。 |
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 認証系の現在状態を users に閉じ、既存の業務テーブルへ認証都合の列を足さない。 |
-
-> **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の境界を、表示の関心 (トークン) を Worker の API に入れないという確定内容に反映した。packages/api のルートと入出力は変えない。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセス層には本サイクルの変更が無い。トークンはデータアクセスを経由しない定数であり、既存のリポジトリ層の責務を広げないことを反映として記録する。 |
 
 ## 確定内容 (質疑録)
 
@@ -39,55 +37,19 @@ serves_goals: [G1, G3, G5]
 
 ### Web (web)
 
-- 資するゴール: G1, G3, G5
+- 資するゴール: G1
 
-#### 主たる接地根拠: `qa-backend-web-001`
-
-**問**
-
-ドメインモデルと API 契約 (web) を確定してください。どの実体を追加し、どのエンドポイントが要りますか。
-
-**答**
-
-ドメインに『利用者 (user)』を新設する。属性は id / email / password_hash / role / status / session_generation / must_change_password / temporary_password_expires_at / created_at / updated_at / last_login_at。既存の全業務データは共有テナントのまま変更せず、利用者は認証と監査のactorとして導入する。API は POST /api/auth/login・logout・password、GET /api/auth/me、およびadmin限定の GET|POST /api/admin/users、PATCH /api/admin/users/:id、POST /api/admin/users/:id/password-reset を持つ。退出運用は停止・再開へ一本化し、監査主体を失う物理DELETEは提供しない。入力はzod、エラー形状は { error: { code, message } } を踏襲し、未捕捉500だけ任意のrequestIdを加える。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: packages/api/src/index.ts の現行ルーティング (L83-L130) と auth.ts の AuthEnv 観測、および利用者指示 (管理者からアカウント管理を行う) / 回答時刻: 2026-09-13T01:49:08Z)
-
-#### 裏付け質疑: `qa-backend-web-002`
+#### 主たる接地根拠: `qa-backend-web-ds-observed-001`
 
 **問**
 
-U7 scope.in の『既存データの所有者紐付け』と、qa-backend-web-001 の『明細データへの所有者列追加は本サイクルのスコープ外』は矛盾しているように読める。どちらが本サイクルの規範か。
+本サイクルで扱う中心概念 (ドメインモデル) は何で、どの層に置くか。Worker 側の処理は変わるか。
 
 **答**
 
-矛盾ではなく、U7 の語の指す範囲を狭く読む。U7 scope.in の『既存データの所有者紐付け』が指すのは、業務データ本体 (明細・取引・カテゴリ等) へ所有者列を追加することではなく、audit_log へ actor_user_id を追加して『既存データに対してどの操作を誰が行ったか』を辿れるようにすることである。業務データ本体は単一テナントの共有資産のまま変更せず、行単位の所有者による参照制御は導入しない。これは U7 scope.out の『細粒度の権限ロール設計 (画面別・操作別の権限行列) を本サイクルでは扱わない』という利用者決定と同じ境界であり、本回答は新しい範囲判断を加えていない。したがって本サイクルで追加される所有者性は監査上の actor のみであり、qa-backend-web-001 の記述が規範として有効である。
+中心概念はデザイントークンで、役割名 (面・文字・境界・主色・状態色・チャート系列・文字サイズ・余白・角丸・影・動き・シェル寸法) から値への対応である。状態色は『塗り用』と『文字用』の 2 つの役割を持つ (利用者決定 qa-ui-ux-web-ds-decision-002)。これは入出力を持たない純データなので、packages/core (README のアーキテクチャ節で依存ゼロの純関数と定める層) に置き、web がビルド時に取り込む。packages/api (Hono on Workers) の処理・ルート・入出力は変えない。core は既に report-css.ts のような表示用の純データを持っており、同じ置き方である。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: requirements_foundation U7 scope.in / scope.out の逐語と、qa-backend-web-001・qa-database-web-001 の確定内容の突合 / 回答時刻: 2026-09-13T02:07:56Z)
-
-#### 裏付け質疑: `qa-basis-correction-001`
-
-**問**
-
-design_applications 8件 / doctrine_applications 13件 の basis を 'user-decision' として記録したが、これらの適用記述はエージェントが確定セルを読んで合成した文章であり、利用者が個々の文を選択・承認したものではない。basis の申告を実態に合わせて訂正せよ。
-
-**答**
-
-訂正する。21件の適用記述 (design 8 / doctrine 13) の basis を 'agent-inference' へ改める。記述内容そのものは変更しない — 確定セルの内容を読んで『その上流指針が本章のどこへ効いたか』を書いたという事実は変わらず、変わるのは『誰がそう判断したか』の申告である。利用者から得ているのは上位概念 (U1-U9, appr-foundation-account-login-001) と各カテゴリの確定回答であって、適用記述の一文一文ではない。併せて、同じ回で記録した qa-backend-web-002 / qa-database-web-002 の basis 'observed-fact' も実態と異なる: これらの答えの実体は既存コードの観測ではなく『U7 scope.in の語をどこまで狭く読むか』というエージェントの解釈判断であり、agent-inference が正しい区分である。qa-uiux-web-002 の basis 'user-decision' も、レイアウト・文言・ヘッダー等の不在は利用者の明示指示だが、『パスワードをお忘れの方』押下でダイアログを開くという UI 実装形式は利用者指示から演繹した推論であり、この部分に限り agent-inference である。qa_log の basis は fill-once で上書きできないため、これらの訂正は本 entry を裏付け質疑として当該セルへ添えることで記録に残す (誤った申告を消さずに残すことが、訂正そのものの監査可能性を保つ)。残る軽微な不正確として、qa-uiux-web-002 の required_info_items に無関係な 'target-platforms' が含まれ、qa-design-doctrine-application-001 には required_info_items が欠落している。いずれも接地判定 (target-platforms は qa-platform-scope-001 で接地済み) に影響しないため訂正質疑を重ねず、本 entry に記録して残す。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 独立監査 (system-spec-hearing-auditor 再監査 2026-09-13) の指摘1・2・4・5 と、spec-state.json の design_applications / doctrine_applications / qa_log の逐語突合 / 回答時刻: 2026-09-13T02:20:00Z)
-
-#### 裏付け質疑: `qa-c8-owner-linkage-001`
-
-**問**
-
-承認済み制約 C8「既存データには所有者列が無く userId は 'default' 固定であるため、初回管理者への紐付けを移行で決める必要がある」について、移行での扱いを確定してください。選択肢は (a) 業務データに所有者列を追加せず audit_log の actor_user_id 記録のみとする、(b) owner_user_id 列を追加し既存の全行を初回管理者の所有として埋める、(c) owner_user_id 列を追加するが既存行は NULL のまま埋めない、の3案です。
-
-**答**
-
-(a) を採る。明細等の業務データに所有者列を追加せず、既存データは登録済み利用者全員が参照できる共有資産のままとする。C8 が要求する『初回管理者への紐付けを移行で決める』ことへの答えは『紐付けない』であり、決めていないのではなく、紐付けないことを決めた。理由は3点: (1) C6 のとおり実質的に単独運用であり、行単位の所有者を持っても分ける相手がいない。(2) U7 scope.out で細粒度の権限ロール設計を本サイクルの対象外としており、所有者列を入れても参照制御に使えず、使わない列だけが残る。(3) (b) は既存行に『初回管理者が入力した』という観測していない事実を書き込むことになり、監査ログの信頼性を下げる。今回追加する所有者性は audit_log.actor_user_id による『今後どの操作を誰が行ったか』だけであり、既存行の actor は NULL (= 共有パスワード時代の操作で識別不能) のまま保持する。将来『誰の明細か』を分ける必要が生じた時点で、別サイクルとして所有者モデルを設計する。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が3案の比較 (移行の重さ・将来の分割可能性・観測していない事実の書き込みリスク) を見たうえで (a) を明示選択 (2026-09-13)。独立監査 (system-spec-hearing-auditor 再監査) の指摘3『C8 の文言が qa-backend-web-002 の解釈で上書きされたまま再承認されていない』を受けて確認した / 回答時刻: 2026-09-13T04:36:37Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: README のアーキテクチャ節、packages/core/src/report-css.ts、packages/api/src/index.ts をアシスタントが読んだ観測事実。トークンを core に置く方針自体は利用者決定 qa-frontend-web-ds-decision-002 に由来する。 / 回答時刻: 2026-09-13T05:03:11Z)
 
 ## To-Be / Delta
 
@@ -95,34 +57,27 @@ design_applications 8件 / doctrine_applications 13件 の basis を 'user-decis
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: 利用者がメールアドレスとパスワードで本人として認証でき、セッションが誰のものかシステム側で特定できる
-- **G3**: 管理者が設定画面から利用者の追加・停止・パスワード再発行を完結でき、共有パスワードの配り直しが不要になる
-- **G5**: 既存20画面と /api/* 認証ガードの契約を壊さずに認証主体を差し替える
+- **G1**: 色・文字サイズ・行高・余白・角丸・影・動き・寸法 (シェル幅/高さ/タップ領域) のデザイントークンを、packages/core に置く依存ゼロの TypeScript 定義 1 か所へ集約し、CSS 変数とチャート色はそこから導出する。和文は OS の system-ui、金額・数値は自己配信する IBM Plex Mono Latin 400/600 だけを使い、全非 test source・dependencies・外部フォントURLの検査でこの配信契約を固定する。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | users テーブルを新設し、パスワードを鍵導出関数 (WebCrypto PBKDF2) で保存する | migration 適用後の schema に password_hash と salt と反復回数が存在し、平文パスワードを保持するカラムが0件 |
-| O2 | セッション cookie に利用者識別子を含め、識別子を署名対象に含める | 利用者識別子を改ざんした cookie が /api/* で401になる契約テストが緑 |
-| O3 | 「次回からもログイン状態を保持する」の選択でセッション有効期間を2段階に切り替える | 未選択時と選択時で Set-Cookie の maxAge が異なることを検査するテストが緑 |
-| O4 | 管理者が設定画面から利用者の作成・停止・一時パスワード発行を行える | 3操作それぞれに API と画面操作が存在し、非管理者からの呼出しが403になる |
-| O8 | migration適用後のbootstrap seedで初回管理者を1件作成し、共有パスワード認証経路を撤去する | active runtimeと必須設定に共有パスワード認証分岐が0件で、旧secretを外しても全機能が動作する |
+| O1 | packages/core/src/design-tokens.ts に色・文字・余白・角丸・影・動き・寸法のトークンを定義し、値の唯一の実装正本とする。 | 単体テストは schema・役割集合・alias・コントラストに必要な関係不変条件を値の転記なしで検査する。表示に影響する全トークン値は、版・承認参照・由来ファイルを持つ `docs/design-system/token-approval.json` の SHA-256 fingerprint と lint で照合し、未承認の値変更を拒否する。 |
+| O2 | styles.css の :root トークンと charts.ts の COLORS を design-tokens.ts から導出した写しに置き換え、写しのずれを検出する lint を lint スクリプトへ組み込む。 | pnpm lint が写しの不一致で exit 非 0 になり、一致時に exit 0 になる。charts.ts から 6 桁 hex の直書きが 0 件になる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: メールアドレスとパスワードの2入力によるログインフォーム
-- **I3**: 「次回からもログイン状態を保持する」チェックボックス
-- **I8**: 「パスワードをお忘れの方」を管理者への問い合わせ導線として置く (メール送信は行わない)
-- **I10**: セッションへの利用者識別子の埋め込みと、利用者単位でのセッション失効
-- **I11**: 設定画面の管理者セクションで、利用者一覧の閲覧・追加・停止・一時パスワード発行を行う
-- **I13**: migration適用後のbootstrap seedで初回管理者を作成し、共有パスワード認証経路を撤去する
-- **I14**: 既存 /api/* 認証ガードの mount 順序と契約を維持したまま主体を差し替える
-- **I15**: 管理者が最後の管理者を停止・降格できないようにする
+- **I1**: 新しい画面をつくるとき、色・余白・角丸・文字サイズを design-tokens から選ぶだけで FINAL-UI と同じ見た目になる。
 
 ### 本章に効く確定意思決定
 
-- (本章ゴールに効く確定 decision なし)
+- **dec-design-token-source**: デザイントークンの正本をどこに置くか
+  - 採択: packages/core の design-tokens.ts を正本にし、CSS 変数とチャートの予備値を生成する (`core-ts`)
+  - 目的適合: G1 の『依存ゼロの TypeScript 1 か所』に直接合う。テスト (O1・O4) が CSS を解析せず値を import でき、次サイクルでレポート側からも同じ値を import できる
+- **dec-border-color-roles**: 境界色 #D7E0E2 (白に 1.34:1) を、WCAG 2.2 の 1.4.11 とどう両立させるか
+  - 採択: 装飾罫線は #D7E0E2、部品を見分ける枠は 3:1 の派生色 (`split-roles`)
+  - 目的適合: G5 の役割分離を境界へ広げ、画像の淡い罫線と部品の枠の 1.4.11 を両立する
 
 ## 適用された設計知識
 
@@ -130,9 +85,9 @@ design_applications 8件 / doctrine_applications 13件 の basis を 'user-decis
 
 ### 本章での適用
 
-clean-architecture の『業務規則を入出力から独立させる』を、本章の API 契約へ適用した: 利用者という実体を 認証と監査の主体としてのみ導入し、明細データへ所有者列を伝播させない境界を引いた。エラー形状 { error: { code, message } } を既存のまま保つ決定も、境界の安定を優先した同じ原則の帰結である。
+3 枚の card のうち本章に効いたのは Clean Architecture の境界の判断だけで、API 設計と DDD の集約は本サイクルで適用対象が無い。デザイントークンは入出力も業務ルールも持たない純データであり、Worker の API 契約・ルート・集約を増やさないことが、表示の関心をサーバ側へ漏らさないという境界の適用になる。API design patterns と DDD card は、トークンをリモート設定として配信する案を採らない理由 (ビルド時同梱で足りる) の確認に使っただけで、確定内容を変えていない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T02:20:00Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T05:07:52Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -261,7 +216,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 ## 最新ドキュメント出典
 
-| 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
-|---|---|---|---|---|---|
-| hono | 4.13.7 | Hono (honojs) (github.com) | https://github.com/honojs/hono/releases | 2026-09-13T01:55:58Z | 2026-09-13T01:55:58Z |
-| zod | 4.6 | Zod (zod.dev) | https://zod.dev/ | 2026-09-13T01:55:58Z | 2026-09-13T01:55:58Z |
+- (このカテゴリに割り当てた取得済みドキュメントなし。全体出典は index.md 参照)

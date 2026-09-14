@@ -41,6 +41,13 @@ Codex のカスタムエージェントは TOML の `name` で識別されるた
 委譲先として指定するときは `app_orchestrator` (アンダースコア) を使う。
 Skill として明示するときは `$app-orchestrator` (ハイフン)。
 
+## 画面・図をつくるとき
+
+色・文字・余白・シェル・ボタン・チャートは [`docs/design-system.md`](docs/design-system.md) に従う。
+この相対リンクをデザインシステム規約の正規入口とする。
+値の正本は `packages/core/src/design-tokens.ts` で、`packages/web/src` に色の hex を直書きしない
+(`pnpm lint` が検査する)。
+
 ## 反映と検証
 
 ```bash

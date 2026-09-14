@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-design-system-foundation",
+  "snapshot_digest": "sha256:7bfb3f2c725825141b26ab254b61ca8a7ce0ec28fb006d61a62f15f3f0b21e1b",
+  "snapshot_digest_method": "sha256 over sorted(rel + NUL + bytes + NUL) of gates.C11_snapshot_validation.source_inputs",
+  "status": "ready",
+  "checked_at": "2026-09-13T08:57:33Z",
+  "missing_sections": [],
+  "remediation_owners": {},
+  "gates": {
+    "C11_snapshot_validation": {
+      "status": "PASS",
+      "validator": "validate-graph-schema.py",
+      "exit_code": 0,
+      "valid": true,
+      "violations": 0,
+      "source_inputs": [
+        {
+          "path": ".dev-graph/plans/feature-package-feat-design-system-foundation/atomic-promotion-receipt.json",
+          "sha256": "c887cccf62fdecc538661bd2171cc328ae7cdc4b8067d8c575190afbfc7b3648"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-design-system-foundation/dev-graph-registration-receipt.json",
+          "sha256": "5a4afa11730883b0a9f87e097258830eae550ad2697b4b4896c9b6f81f8b76e8"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-design-system-foundation/staging-manifest.json",
+          "sha256": "15b89ccf2a569371cbecc8e99ffc246f08dac00ae0518f7fdc9f34b7732ad40d"
+        },
+        {
+          "path": ".dev-graph/state/graph.json",
+          "sha256": "d58081118da49e3016bf61743cdde164268ba477afabdfba32068a1d3587d86c"
+        },
+        {
+          "path": "features/feat-design-system-foundation.context.json",
+          "sha256": "f34b066aa730083a72d41b32404ab37bd08e74587c8765c03d37d7f79eaf911c"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p01.md",
+          "sha256": "44d2e3acfab981c53cf9bc1ba670d5fba3a55d1ca1dfa2012e2ca85f74abeae1"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p02.md",
+          "sha256": "ad6e03d710790d446a48c4100aeab136cae99dd5eb4baeee2d2d2f0c3c81fbef"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p03.md",
+          "sha256": "e486764e434014166ed9e0cc5009d5ac139f4c0c56b3ee694eb09defe6bcddc1"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p04.md",
+          "sha256": "fa7c6b7d3cbe3f931590b48d491e9aecd8e51baf62e478009d387697b357329a"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p05.md",
+          "sha256": "81fd3980c85a2806ff6bed59f970e8f70a30c267bb24bccd11a781e6ac570827"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p06.md",
+          "sha256": "916cebb0a51e9d7bc74624423c31e4dd7a421982e6e70e5afd5094aab531879a"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p07.md",
+          "sha256": "e176daa631f9de099b28a7b2372ee1a5967487434f02cf2ae85d190090d52715"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p08.md",
+          "sha256": "7b536a4327b96908d715a2688df01fe72035fbca4e6053944f6abfb2813ec771"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p09.md",
+          "sha256": "987605300fefecb589e13f01df34e7f53465a0ee482b18ad586c461a73d74b80"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p10.md",
+          "sha256": "07679d71ad58dd7ec6061be7e6ae11ed1d3fc50cbbbef7a7eeffd653422975a9"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p11.md",
+          "sha256": "19c9562b707eb1b51942621cc4512b5b0ff4ea0fe1cb3e6d23f56f386b888418"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p12.md",
+          "sha256": "e830370939a652d8ca3d9b6a2fce42e3ae780d0bbbae53d451eee68501784451"
+        },
+        {
+          "path": "tasks/feat-design-system-foundation/sys-dsfound-p13.md",
+          "sha256": "858505d71d568c6ba53bdb68f67b95ecc9befcd8fdf6d711ca1aac9aafa35e35"
+        }
+      ]
+    },
+    "C02_saved_state": {
+      "status": "PASS",
+      "feature": {
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete"
+      },
+      "tasks": {
+        "count": 13,
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete",
+        "missing_sections": []
+      },
+      "registration_receipt": {
+        "path": ".dev-graph/plans/feature-package-feat-design-system-foundation/dev-graph-registration-receipt.json",
+        "expected_count": 13,
+        "applied_count": 13
+      }
+    },
+    "system_plan_validation": {
+      "status": "PASS",
+      "validator": "validate-system-plan.py",
+      "exit_code": 0,
+      "validated_digest": "sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+      "phase_count": 13,
+      "node_count": 13,
+      "violations": []
+    }
+  },
+  "remediation_history": [
+    {
+      "loop": 1,
+      "verdict": "blocked",
+      "missing": "tasks/feat-design-system-foundation/sys-dsfound-p01..p13.md (artifact_missing 13)",
+      "owner": "C02/run-dev-graph-node",
+      "resolved_by": "node --dry-run → apply (13 created, 0 overwritten)"
+    }
+  ],
+  "staleness_rule": "source_inputs のいずれかの sha256、または promoted manifest の canonical_digest が変化した場合は handoff を無効化して再生成する。"
+}

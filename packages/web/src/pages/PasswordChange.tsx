@@ -8,6 +8,7 @@
  */
 import { type FormEvent, useId, useState } from 'react';
 import { ApiError, api } from '../api.js';
+import { Button } from '../components/Button.js';
 
 /** サーバの passwordPolicyError と同じ下限。画面は事前に伝えるだけで、判定の正本はサーバ。 */
 export const PASSWORD_MIN_LENGTH = 12;
@@ -114,14 +115,14 @@ export function PasswordChangeForm({ forced, onDone, onCancel }: PasswordChangeP
             {error}
           </p>
         )}
-        <button type="submit" className="primary login-submit" disabled={busy || !ready}>
+        <Button type="submit" variant="primary" className="login-submit" disabled={busy || !ready}>
           {busy ? '変更中…' : 'パスワードを変更'}
-        </button>
+        </Button>
         {/* 強制変更では「あとで」を作らない。抜け道があると強制の意味が消える */}
         {!forced && onCancel && (
-          <button type="button" className="link" onClick={onCancel}>
+          <Button variant="text" className="link" onClick={onCancel}>
             変更せずに戻る
-          </button>
+          </Button>
         )}
       </form>
       <p className="login-shortcut">

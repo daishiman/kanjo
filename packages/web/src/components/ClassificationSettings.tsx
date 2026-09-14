@@ -21,6 +21,7 @@ import {
   ownerLabel,
 } from '../api.js';
 import { dateTime, yenS } from '../format.js';
+import { Button } from './Button.js';
 import { AddCategoryInline, CategoryPicker } from './CategoryPicker.js';
 import { ConfirmDialog, usePendingConfirm } from './ConfirmDialog.js';
 import { DataTable, termColumn } from './DataTable.js';
@@ -233,13 +234,13 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
         <label style={{ fontSize: 12 }}>
           <input type="checkbox" checked={top} onChange={(e) => setTop(e.target.checked)} /> 最優先に追加
         </label>
-        <button
+        <Button
           type="submit"
-          className="primary"
+          variant="primary"
           disabled={!draft.keyword.trim() || !hasAttr(draft) || add.isPending}
         >
           追加
-        </button>
+        </Button>
       </form>
       {add.isError && <div className="notice">{(add.error as Error).message}</div>}
       <div className="scroll-x">
@@ -268,17 +269,18 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
                   </div>
                 </td>
                 <td style={{ whiteSpace: 'nowrap' }}>
-                  <button
+                  <Button
                     type="button"
-                    className="mini primary"
+                    variant="primary"
+                    size="mini"
                     disabled={!editing.body.keyword.trim() || !hasAttr(editing.body) || update.isPending}
                     onClick={() => update.mutate(editing)}
                   >
                     保存
-                  </button>{' '}
-                  <button type="button" className="mini" onClick={() => setEditing(null)}>
+                  </Button>{' '}
+                  <Button type="button" variant="secondary" size="mini" onClick={() => setEditing(null)}>
                     取消
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ) : (
@@ -290,20 +292,16 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
                 <td>{r.owner ? ownerLabel(r.owner) : '—'}</td>
                 <td className="num">{r.hits}件</td>
                 <td style={{ whiteSpace: 'nowrap' }}>
-                  <button type="button" className="mini" onClick={() => reorder(i, -1)} disabled={i === 0}>
+                  <Button size="mini" onClick={() => reorder(i, -1)} disabled={i === 0}>
                     ↑
-                  </button>{' '}
-                  <button
-                    type="button"
-                    className="mini"
-                    onClick={() => reorder(i, 1)}
-                    disabled={i === rules.length - 1}
-                  >
+                  </Button>{' '}
+                  <Button size="mini" onClick={() => reorder(i, 1)} disabled={i === rules.length - 1}>
                     ↓
-                  </button>{' '}
-                  <button
+                  </Button>{' '}
+                  <Button
                     type="button"
-                    className="mini"
+                    variant="secondary"
+                    size="mini"
                     onClick={() =>
                       setEditing({
                         id: r.id,
@@ -312,10 +310,10 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
                     }
                   >
                     変更
-                  </button>{' '}
-                  <button type="button" className="mini danger-btn" onClick={() => confirmDelete.ask(r)}>
+                  </Button>{' '}
+                  <Button type="button" variant="danger" size="mini" onClick={() => confirmDelete.ask(r)}>
                     削除
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ),
@@ -409,7 +407,14 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
       <div className="toolbar">
         <span className="segment">
           {(['per', 'biz'] as const).map((c) => (
-            <button key={c} type="button" className={scope === c ? 'on' : ''} onClick={() => setScope(c)}>
+            <button
+              key={c}
+              data-native-control="toggle"
+              type="button"
+              className={scope === c ? 'on' : ''}
+              aria-pressed={scope === c}
+              onClick={() => setScope(c)}
+            >
               {SCOPE_SHORT[c]}の科目
             </button>
           ))}
@@ -417,9 +422,9 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
         {adding ? (
           <AddCategoryInline scope={scope} defaultMajor="" onDone={() => setAdding(false)} />
         ) : (
-          <button type="button" className="primary" onClick={() => setAdding(true)}>
+          <Button type="button" variant="primary" onClick={() => setAdding(true)}>
             {SCOPE_SHORT[scope]}の科目を追加
-          </button>
+          </Button>
         )}
       </div>
       {err && <div className="notice">{err}</div>}
@@ -462,9 +467,9 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
                           使用中の{useSummary(o)}も新しい名前に変わります
                         </span>
                       )}
-                      <button
+                      <Button
                         type="button"
-                        className="primary"
+                        variant="primary"
                         disabled={!editing.major.trim() || rename.isPending}
                         onClick={() =>
                           rename.mutate({
@@ -474,10 +479,10 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
                         }
                       >
                         保存
-                      </button>
-                      <button type="button" onClick={() => setEditing(null)}>
+                      </Button>
+                      <Button type="button" variant="secondary" onClick={() => setEditing(null)}>
                         やめる
-                      </button>
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -496,21 +501,23 @@ export function CategoryOptionsCard({ data }: { data: ClassificationResponse }) 
                   )}
                 </td>
                 <td style={{ whiteSpace: 'nowrap' }}>
-                  <button
+                  <Button
                     type="button"
-                    className="mini"
+                    variant="secondary"
+                    size="mini"
                     onClick={() => setEditing({ key: k, major: o.major, mid: o.mid })}
                   >
                     変更
-                  </button>{' '}
-                  <button
+                  </Button>{' '}
+                  <Button
                     type="button"
-                    className="mini danger-btn"
+                    variant="danger"
+                    size="mini"
                     disabled={del.isPending}
                     onClick={() => removeOption(o)}
                   >
                     削除
-                  </button>
+                  </Button>
                 </td>
               </tr>
             );
@@ -631,14 +638,15 @@ export function EditsCard({ data }: { data: ClassificationResponse }) {
                   <td>{parts.join(' ・ ')}</td>
                   <td className="num">{dateTime(e.updatedAt)}</td>
                   <td>
-                    <button
+                    <Button
                       type="button"
-                      className="mini"
+                      variant="secondary"
+                      size="mini"
                       disabled={reset.isPending}
                       onClick={() => reset.mutate([e.txId])}
                     >
                       取込値に戻す
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               );

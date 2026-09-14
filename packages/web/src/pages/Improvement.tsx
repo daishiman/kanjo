@@ -21,6 +21,7 @@ import {
   reissueImprovementPrompt,
   setImprovementStatus,
 } from '../api.js';
+import { Button } from '../components/Button.js';
 
 const TOKEN_LABEL: Record<ImprovementRequestView['token']['status'], string> = {
   none: '未発行',
@@ -143,8 +144,7 @@ export function ImprovementPage() {
                 <td>{dateTime(row.createdAt)}</td>
                 <td>{row.attachmentExpiresAt ? dateTime(row.attachmentExpiresAt) : '対応完了後30日'}</td>
                 <td>
-                  <button
-                    type="button"
+                  <Button
                     onClick={() => {
                       setSelected(row.id);
                       setPrompt(null);
@@ -152,7 +152,7 @@ export function ImprovementPage() {
                     }}
                   >
                     詳細
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -240,12 +240,8 @@ export function ImprovementPage() {
             <>
               <textarea className="improve-prompt" readOnly value={prompt} rows={12} />
               <div className="improve-actions">
-                <button type="button" onClick={() => void copy(current.id, 'claude_code')}>
-                  Claude Code 用にコピー
-                </button>
-                <button type="button" onClick={() => void copy(current.id, 'codex')}>
-                  Codex 用にコピー
-                </button>
+                <Button onClick={() => void copy(current.id, 'claude_code')}>Claude Code 用にコピー</Button>
+                <Button onClick={() => void copy(current.id, 'codex')}>Codex 用にコピー</Button>
               </div>
             </>
           ) : (
@@ -254,13 +250,12 @@ export function ImprovementPage() {
             </p>
           )}
           <div className="improve-actions">
-            <button
-              type="button"
+            <Button
               onClick={() => reissue.mutate(current.id)}
               disabled={reissue.isPending || current.purgedAt !== null}
             >
               {reissue.isPending ? '作成中…' : '指示文を作り直す'}
-            </button>
+            </Button>
           </div>
           {notice && <output className="improve-note">{notice}</output>}
         </section>

@@ -99,7 +99,14 @@ export function MatrixPage() {
               ['yoy', '前年同月比'],
             ] as [Mode, string][]
           ).map(([k, label]) => (
-            <button key={k} type="button" className={mode === k ? 'on' : ''} onClick={() => setMode(k)}>
+            <button
+              key={k}
+              data-native-control="toggle"
+              type="button"
+              className={mode === k ? 'on' : ''}
+              aria-pressed={mode === k}
+              onClick={() => setMode(k)}
+            >
               {label}
             </button>
           ))}

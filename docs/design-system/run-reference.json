@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "run_id": "design-system-foundation-elegant-review-20260914T123525+0900",
+  "verification_run": "docs/design-system/verification-run.json",
+  "evidence_index": "docs/design-system/evidence.md",
+  "changed_path_manifest": "docs/design-system/changed-path-manifest.json",
+  "validation_commands": "scripts/design-system-validation-commands.json",
+  "approval_subject_digest": "2ca1a3b9da3074e157fd504198f85f13447c593fdcc92afcb0f6aee30d41c707",
+  "human_approval": "pending-external",
+  "repository_tracking": "pending-untracked"
+}

@@ -9,6 +9,7 @@ import { Fragment, useState } from 'react';
 import { Chart } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 import { type ExpenseScope, type TrendRow, type TrendsResponse, api } from '../../api.js';
+import { Button } from '../../components/Button.js';
 import { DataTable, termColumn } from '../../components/DataTable.js';
 import { FinancialFigure } from '../../components/FinancialFigure.js';
 import { HowTo } from '../../components/HowTo.js';
@@ -286,14 +287,13 @@ export function TrendsPage() {
                 <Fragment key={r.key}>
                   <tr>
                     <td data-label="科目">
-                      <button
-                        type="button"
-                        className="linklike"
+                      <Button
+                        variant="text"
                         aria-expanded={openKey === r.key}
                         onClick={() => setOpenKey(openKey === r.key ? null : r.key)}
                       >
                         {r.account}
-                      </button>{' '}
+                      </Button>{' '}
                       <span className={`pill ${r.side === 'biz' ? 'biz' : 'per'}`}>
                         {r.side === 'biz' ? '事業' : '家計'}
                       </span>{' '}
@@ -488,6 +488,7 @@ function ScopeTabs({ scope, onChange }: { scope: ExpenseScope; onChange: (s: Exp
         {SCOPES.map((s) => (
           <button
             key={s.id}
+            data-native-control="tab"
             type="button"
             role="tab"
             aria-selected={scope === s.id}

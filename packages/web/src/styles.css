@@ -1,60 +1,124 @@
-/* デザイントークン(spec §10.2, HTML版を継承) */
+/*
+ * デザイントークン。値の正本は packages/core/src/design-tokens.ts(DESIGN-SYSTEM.md の写し)。
+ * 下の begin〜end は `node scripts/check-design-tokens.mjs --write` が生成する。手で書き換えると pnpm lint が落ちる。
+ * 色は必ずここの役割トークンを var() で参照する(生の hex は lint で拒否される)。
+ * 事業色の淡い面(--biz-soft / --biz-soft-line / --biz-strong)を使えば prefers-contrast: more の上書きにも乗る。
+ */
+/* design-tokens:begin — packages/core/src/design-tokens.ts から生成。手編集しない */
 :root {
   --bg: #f6f8f9;
   --surface: #ffffff;
+  --line: #d7e0e2;
   --ink: #15262b;
   --ink-soft: #617177;
-  --line: #d7e0e2;
   --primary: #14353d;
-  --primary-hover: #1d4852;
   --accent: #087f78;
+  --warn-fill: #b97000;
+  --danger: #b33a3a;
+  --good: #247a52;
+  --line-strong: #c6cecb;
+  --primary-hover: #1d4852;
+  --on-primary: #ffffff;
   --biz: #087f78;
+  --biz-soft: #edf7f6;
+  --biz-soft-line: #9fcac6;
+  --biz-strong: #075f5a;
   --per: #9c4257;
-  --warn: #805a12;
-  --danger: #b23a3a; /* 増加=赤 */
-  --good: #2e7d5b; /* 減少=緑 */
-  /* 事業色(--biz)の淡い面。現在地・選択・情報など「青で塗る」箇所はすべてここを見る。
-     生値を各所に置くと prefers-contrast: more の上書きから漏れるので、必ずこの3つを使う。 */
-  --biz-soft: #edf7f6; /* 塗り */
-  --biz-soft-line: #9fcac6; /* 塗りに添える枠 */
-  --biz-strong: #075f5a; /* 塗りの上の文字 */
+  --per-soft: #f9eff2;
+  --warn: #9a5d00;
+  --warn-soft: #fdf9ef;
+  --danger-soft: #fdf3f3;
+  --danger-soft-strong: #fdf0ef;
+  --danger-tint: #fffafa;
+  --good-soft: #f1f7f4;
+  --surface-alt: #f6f6f4;
+  --income: #428ce6;
+  --expense: #e2606d;
+  --neutral: #7b8784;
+  --control-border: #7f9095;
+  --control-border-hover: #6e8086;
+  --sidebar-line: #0d2b32;
+  --sidebar-accent: #72ddd3;
+  --sidebar-indicator: #4ed0c5;
+  --on-sidebar-accent: #062f2c;
+  --row-stripe: #f6f8f8;
+  --row-hover: #eef3f6;
+  --row-total: #eff3f1;
+  --row-group: #f2f5f7;
+  --row-detail: #f7faf9;
+  --row-total-stacked: #fafbfa;
+  --annotate-stroke: #e11d48;
+  --sidebar-text-muted: rgb(255 255 255 / 68%);
+  --sidebar-text-subtle: rgb(255 255 255 / 62%);
+  --sidebar-divider: rgb(255 255 255 / 14%);
+  --sidebar-text: rgb(255 255 255 / 86%);
+  --sidebar-rail-divider: rgb(255 255 255 / 18%);
+  --sidebar-hover: rgb(255 255 255 / 8%);
+  --sidebar-control-border: rgb(255 255 255 / 30%);
+  --sidebar-control-text: rgb(255 255 255 / 76%);
+  --dark-scrim: rgb(0 0 0 / 30%);
+  --floating-panel-scrim: rgb(29 42 44 / 32%);
+  --annotate-halo: rgb(255 255 255 / 90%);
   --radius: 8px;
   --font-head: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI",
     "Yu Gothic", Meiryo, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-  /*
-   * 文字サイズは全ページここだけで決める(px の直書きはしない)。
-   * 数字の桁を追う画面なので、本文 15px を基準に一段ずつ。
-   * 変えるときはこの7つだけを動かせば全ページが揃う。
-   */
-  --fs-2xs: 11px; /* 補足の中でもさらに小さい注記 */
-  --fs-xs: 13px; /* ラベル・表の見出し */
-  --fs-sm: 14px; /* 補足文(.sub)・ピル */
-  --fs-md: 15px; /* 表の本文 */
-  --fs-base: 16px; /* 画面の本文・カード見出し */
-  --fs-lg: 17px; /* ヘッダーのブランド */
-  --fs-xl: 19px; /* 見出し */
-  --fs-2xl: 21px; /* 大きい見出し */
-  --fs-3xl: 24px; /* KPI の数値・ページ見出し */
-  /* モーション(因果の説明のみに使う) */
+  --line-height-body: 1.6;
+  --fs-2xs: 12px;
+  --fs-xs: 13px;
+  --fs-sm: 14px;
+  --fs-md: 15px;
+  --fs-base: 16px;
+  --fs-lg: 17px;
+  --fs-xl: 19px;
+  --fs-2xl: 21px;
+  --fs-3xl: 24px;
   --motion-instant: 90ms;
   --motion-fast: 140ms;
   --motion-base: 200ms;
+  --motion-chart: 220ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  /* 固定要素の高さ(スクロール退避・sticky計算の基準) */
-  --header-h: 64px; /* PC正本。折返し時は Layout が実高さで上書きする */
+  --shadow-popover: 0 8px 24px rgb(21 38 43 / 14%);
+  --shadow-overlay: 0 12px 32px rgb(21 38 43 / 25%);
+  --shadow-category-panel: 0 8px 24px rgb(0 0 0 / 12%);
+  --shadow-drawer: 4px 0 20px rgb(0 0 0 / 12%);
+  --shadow-compact-popover: 0 4px 16px rgb(0 0 0 / 12%);
+  --shadow-floating-action: 0 6px 20px rgb(29 42 44 / 28%);
+  --shadow-floating-action-compact: 0 2px 8px rgb(29 42 44 / 20%);
+  --scrim: rgb(21 38 43 / 45%);
+  --header-h: 64px;
   --tabbar-h: 56px;
   --sidebar-w: 220px;
-  /* 狭幅のドロワーは常設sidebarより一段広い(重ねて開くので本文幅を削らない) */
   --drawer-w: 240px;
+  --content-max-w: 1180px;
+  --content-data-max-w: 1800px;
+  --aside-panel-w: 320px;
+  --icon-rail-w: 68px;
+  --page-gutter: 32px;
+  --page-gutter-compact: 20px;
   --financial-chart-height: 300px;
-  /* WCAG 2.5.5 Target Size (Enhanced, AAA) のタップ領域。緩和しない基準値 */
   --tap-target-min: 44px;
-  --nav-row-min: var(--tap-target-min);
   --nav-icon-size: 20px;
   --tab-icon-size: 18px;
   --nav-icon-label-gap: 10px;
   --nav-group-gap: 14px;
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --line: #9aa5a2;
+    --ink-soft: var(--ink);
+    --control-border: var(--ink);
+    --control-border-hover: var(--ink);
+    --biz-soft: #d3ebe8;
+    --biz-soft-line: var(--biz);
+    --biz-strong: #04403c;
+  }
+}
+/* design-tokens:end */
+
+/* トークンを組み合わせた派生値(生成ブロックの外で手書きする) */
+:root {
   /* 表の入れ物(.scroll-x)の高さの上限。
      行が多い表はこの中で縦スクロールさせ、見出し行を箱の上端に留める。
      画面の高さから固定ヘッダーと余白を引いた分。短い表はこの値に達しないので影響しない。 */
@@ -76,11 +140,12 @@ body {
   color: var(--ink);
   font-family: var(--font-head);
   font-size: var(--fs-base);
-  line-height: 1.6;
+  line-height: var(--line-height-body);
 }
 
 .num {
   font-family: var(--font-mono);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -97,6 +162,16 @@ body {
   outline-offset: 2px;
 }
 
+/* 実在する操作要素の共通 hit-area 契約。inline link は寸法が効く表示形式にする。 */
+:where(a[href], button, input:not([type="hidden"]), textarea, select, summary) {
+  min-width: var(--tap-target-min);
+  min-height: var(--tap-target-min);
+}
+a[href] {
+  display: inline-flex;
+  align-items: center;
+}
+
 .skip-link {
   position: absolute;
   left: 8px;
@@ -105,7 +180,7 @@ body {
   background: var(--surface);
   color: var(--ink);
   border: 1px solid var(--biz);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 8px 14px;
   font-weight: 700;
   text-decoration: none;
@@ -126,8 +201,8 @@ body {
 .sidebar {
   grid-area: side;
   background: var(--primary);
-  color: #fff;
-  border-right: 1px solid #0d2b32;
+  color: var(--on-primary);
+  border-right: 1px solid var(--sidebar-line);
   padding: 14px 10px;
   position: sticky;
   top: 0;
@@ -140,9 +215,9 @@ body {
   font-size: var(--fs-xl);
   letter-spacing: 0.04em;
   padding: 6px 10px 10px;
-  color: #fff;
+  color: var(--on-primary);
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 .brand-name {
   display: block;
@@ -151,21 +226,22 @@ body {
 .brand small {
   display: block;
   font-weight: 400;
-  color: rgb(255 255 255 / 68%);
+  color: var(--sidebar-text-muted);
   font-size: var(--fs-xs);
   /* ブランドの副題は1行固定なので、本文用の 1.6 を継ぐと行箱だけが伸びる */
   line-height: 1.4;
 }
 .nav-group {
   font-size: var(--fs-xs);
-  color: rgb(255 255 255 / 62%);
+  line-height: 1.2;
+  color: var(--sidebar-text-subtle);
   margin: calc(var(--nav-group-gap) / 2) 10px 4px;
   padding-top: calc(var(--nav-group-gap) / 2);
-  border-top: 1px solid rgb(255 255 255 / 14%);
+  border-top: 1px solid var(--sidebar-divider);
   letter-spacing: 0.08em;
 }
 .nav-group.current {
-  color: #72ddd3;
+  color: var(--sidebar-accent);
   font-weight: 800;
 }
 .nav > div:first-child .nav-group {
@@ -178,12 +254,12 @@ body {
   display: flex;
   align-items: center;
   gap: var(--nav-icon-label-gap);
-  min-height: var(--nav-row-min);
+  min-height: var(--tap-target-min);
   padding: 7px 10px;
   position: relative;
   border: 1px solid transparent;
-  border-radius: 8px;
-  color: rgb(255 255 255 / 86%);
+  border-radius: var(--radius);
+  color: var(--sidebar-text);
   text-decoration: none;
   font-weight: 650;
   font-size: var(--fs-md);
@@ -212,16 +288,15 @@ body {
 .nav-sub {
   margin: 2px 0 2px 18px;
   padding-left: 8px;
-  border-left: 1px solid rgb(255 255 255 / 18%);
+  border-left: 1px solid var(--sidebar-rail-divider);
 }
 /* 弱めるのは平常時だけ。現在地の色は .nav a[aria-current] が上書きし、親子で同じになる */
 .nav-sub a,
 .nav-sub .nav-locked {
-  min-height: auto;
   padding: 5px 10px;
   font-size: var(--fs-sm);
   font-weight: 600;
-  color: rgb(255 255 255 / 68%);
+  color: var(--sidebar-text-muted);
 }
 .nav-sub .route-icon {
   width: 14px;
@@ -229,8 +304,8 @@ body {
   flex-basis: 14px;
 }
 .nav a:hover {
-  background: rgb(255 255 255 / 8%);
-  color: #fff;
+  background: var(--sidebar-hover);
+  color: var(--on-primary);
 }
 /*
  * 現在地の強調は「帯」と「色」の2つだけ。以前は 塗り・枠・文字色・太字・帯・icon別色 の
@@ -249,7 +324,7 @@ body {
  * border は透明のまま残す。現在地でだけ枠が現れると 1px 分の行のズレが起きるため。
  */
 .nav a[aria-current="page"] {
-  color: #fff;
+  color: var(--on-primary);
 }
 .nav a[aria-current="page"]::before {
   content: "";
@@ -258,7 +333,7 @@ body {
   left: -1px;
   width: 3px;
   border-radius: 999px;
-  background: #4ed0c5;
+  background: var(--sidebar-indicator);
 }
 .nav a[aria-current="page"] .route-icon {
   color: inherit;
@@ -267,9 +342,9 @@ body {
 .workflow-progress {
   margin: 4px 4px 12px;
   padding: 10px;
-  border: 1px solid rgb(255 255 255 / 14%);
+  border: 1px solid var(--sidebar-divider);
   border-radius: var(--radius);
-  color: rgb(255 255 255 / 76%);
+  color: var(--sidebar-control-text);
   font-size: var(--fs-xs);
 }
 .workflow-progress-head {
@@ -279,7 +354,7 @@ body {
   margin-bottom: 8px;
 }
 .workflow-progress-head strong {
-  color: #fff;
+  color: var(--on-primary);
   font-size: var(--fs-2xs);
 }
 .workflow-progress ol {
@@ -303,52 +378,33 @@ body {
   place-items: center;
   width: 22px;
   height: 22px;
-  border: 1px solid rgb(255 255 255 / 30%);
+  border: 1px solid var(--sidebar-control-border);
   border-radius: 999px;
   font-family: var(--font-mono);
+  font-weight: 600;
 }
 .workflow-progress li.current {
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 800;
 }
 .workflow-progress li.current .step-number {
-  color: #062f2c;
-  background: #72ddd3;
-  border-color: #72ddd3;
+  color: var(--on-sidebar-accent);
+  background: var(--sidebar-accent);
+  border-color: var(--sidebar-accent);
 }
 .workflow-progress p {
   margin: 8px 0 0;
   text-align: center;
-  color: rgb(255 255 255 / 68%);
+  color: var(--sidebar-text-muted);
 }
-/*
- * ポインタ環境の常設サイドバーだけ行を詰める。
- *
- * --nav-row-min: 44px は WCAG 2.5.5 Target Size (Enhanced, AAA) の値で、この達成基準は
- * 「ポインタ入力」に対する要件。ノートPCのマウス/トラックパッドで操作する常設サイドバーに
- * 掛かるのは SC 2.5.8 Target Size (Minimum, AA) の 24px で、36px はこれを大きく上回る。
- * タップ環境(pointer: coarse)と、640px以下でドロワーになるときは 44px のまま。
- *
- * 条件を `and (pointer: fine)` と書かず「常設幅で詰めて、タップ環境だけ戻す」の2段にしてある。
- * pointer には fine / coarse のほかに none(ポインタデバイスなし)があり、`pointer: fine` だと
- * none の環境が緩和から漏れて 44px のまま残る。実際 CI の Linux headless Chrome は none を返し、
- * 総高が上限を超えて落ちた。緩和したいのは「タップ主体でないこと」なので、否定形の方が意図に近い。
- * `not (pointer: coarse)` 一発でも書けるが Media Queries 4 の記法なので、2段で書いて対応幅を広く取る。
- *
- * APP_ROUTESの全画面 + グループ見出し + ブランドは、行高をいくら詰めてもノートPCの実効高
- * (600〜700px)には収まらない。.sidebar は overflow-y: auto なので下端は元からスクロールする。
- * ここでやっているのは「iconとグループ見出しを足した分の退行を戻す」ことで、
- * 総高の上限は scripts/check-mobile-layout.mjs が実描画で固定している。
- */
+/* 常設幅はグループ間隔だけ詰め、実要素の44px契約は緩和しない。 */
 @media (min-width: 641px) {
   :root {
-    --nav-row-min: 36px;
-    --nav-group-gap: 10px;
+    --nav-group-gap: 8px;
   }
 }
 @media (min-width: 641px) and (pointer: coarse) {
   :root {
-    --nav-row-min: var(--tap-target-min);
     --nav-group-gap: 14px;
   }
 }
@@ -360,7 +416,9 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 64px;
+  min-height: var(--header-h);
+  /* グリッドの列を中身の最小幅で押し広げない。溢れる分は現在地の省略表示が吸収する */
+  min-width: 0;
   padding: 8px 16px;
   flex-wrap: nowrap;
   position: sticky;
@@ -442,7 +500,7 @@ body {
 .badge.danger {
   border-color: var(--danger);
   color: var(--danger);
-  background: #fdf3f3;
+  background: var(--danger-soft);
 }
 .badge.warn {
   border-color: var(--warn);
@@ -514,7 +572,7 @@ body {
   grid-template-columns: repeat(4, minmax(42px, 1fr));
   align-items: center;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
 }
 .period-presets > button,
@@ -522,8 +580,8 @@ body {
 .period-picker.is-locked > span:not(.visually-hidden) {
   display: grid;
   place-items: center;
-  min-width: 42px;
-  min-height: 40px;
+  min-width: var(--tap-target-min);
+  min-height: var(--tap-target-min);
   margin: 0;
   padding: 0 9px;
   border: 0;
@@ -538,7 +596,7 @@ body {
 }
 .period-presets > button[aria-pressed="true"] {
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
 }
 .period-detail {
   position: relative;
@@ -567,9 +625,9 @@ body {
   width: 310px;
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: 0 8px 24px rgb(21 38 43 / 14%);
+  box-shadow: var(--shadow-popover);
   animation: popover-in var(--motion-fast) var(--ease-standard) both;
 }
 .period-popover > label,
@@ -624,7 +682,7 @@ body {
 }
 .status-fact.warn {
   color: var(--warn);
-  border-color: color-mix(in srgb, var(--warn) 48%, var(--line));
+  border-color: var(--warn-fill);
 }
 .header-actions button,
 .header-action,
@@ -633,10 +691,10 @@ body {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  min-height: 40px;
+  min-height: var(--tap-target-min);
   padding: 6px 9px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   color: var(--ink);
   font-size: var(--fs-xs);
@@ -670,17 +728,16 @@ body {
 
 .main {
   grid-area: main;
-  padding: 20px;
-  /*
-   * 月×科目の表は横に長い。1200px で頭打ちにすると、広い画面でも表だけが
-   * 内側でスクロールし、左右に使われない余白が残る。画面幅に追従させ、
-   * 文章が1行で長くなりすぎないよう上限だけ広めに置く。
-   */
-  max-width: 1800px;
+  padding: var(--page-gutter);
+  max-width: var(--content-max-w);
   width: 100%;
   /* grid の子は min-content 幅まで広がるため、横スクロール表(.scroll-x)を含んでもページを押し広げない */
   min-width: 0;
   animation: page-in var(--motion-base) var(--ease-standard) both;
+}
+.main.page-shell--data {
+  /* 月×科目の表など、横長データを判断する画面だけ標準本文幅から広げる。 */
+  max-width: var(--content-data-max-w);
 }
 @keyframes page-in {
   from {
@@ -747,7 +804,7 @@ body {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: 0 8px 24px rgb(21 38 43 / 14%);
+  box-shadow: var(--shadow-popover);
   color: var(--ink);
   line-height: 1.6;
 }
@@ -895,7 +952,7 @@ body {
   margin: 0 0 12px;
   padding: 8px 0 8px 12px;
   border-left: 3px solid var(--line);
-  background: var(--surface-alt, #f6f6f4);
+  background: var(--surface-alt);
   border-radius: 0 6px 6px 0;
   font-size: var(--fs-sm);
   line-height: 1.7;
@@ -946,7 +1003,7 @@ body {
 }
 .kpi .value {
   font-size: var(--fs-3xl);
-  font-weight: 700;
+  font-weight: 600;
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
@@ -979,7 +1036,7 @@ body {
   border-bottom: 1px solid var(--line);
 }
 .reconciliation-next.needs-action {
-  border-bottom-color: color-mix(in srgb, var(--warn) 45%, var(--line));
+  border-bottom-color: var(--warn-fill);
 }
 .reconciliation-next h2,
 .reconciliation-next p {
@@ -1120,6 +1177,7 @@ body {
 }
 .financial-figure__meta dd {
   font-family: var(--font-mono);
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
@@ -1221,7 +1279,7 @@ body {
   padding: 8px 10px;
   margin-left: -10px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--radius);
   color: var(--biz);
   font-size: var(--fs-sm);
   font-weight: 700;
@@ -1247,7 +1305,7 @@ body {
   max-width: 100%;
   margin-top: 4px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 .financial-figure__table-scroll {
@@ -1343,6 +1401,7 @@ body {
   flex: none;
   color: var(--ink-soft);
   font-family: var(--font-mono);
+  font-weight: 400;
   font-size: var(--fs-xs);
   white-space: nowrap;
 }
@@ -1432,7 +1491,7 @@ table.data thead th:has(> .th-sort) {
   cursor: pointer;
 }
 .th-sort:hover {
-  background: var(--surface-2, rgba(0, 0, 0, 0.04));
+  background: var(--surface-alt);
 }
 /*
  * 用語ヘルプ(?)の付く見出し。ヘルプは並べ替えボタンの外に置くので(ボタンの中にボタンは置けない)、
@@ -1465,13 +1524,13 @@ table.data thead th.num .th-sort {
  */
 .th-sort::after {
   content: "▲";
-  font-size: 9px;
+  font-size: var(--fs-2xs);
   line-height: 1;
   opacity: 0.25;
 }
 th[aria-sort] .th-sort::after {
   opacity: 1;
-  color: var(--accent, #2f5da8);
+  color: var(--accent);
 }
 th[aria-sort="descending"] .th-sort::after {
   content: "▼";
@@ -1485,10 +1544,10 @@ table.data tbody tr {
   --row-bg: var(--surface);
 }
 table.data tbody tr:nth-child(even) {
-  --row-bg: #f6f8f8;
+  --row-bg: var(--row-stripe);
 }
 table.data tbody tr:hover {
-  --row-bg: #eef3f6; /* 今どの行を見ているかを、横スクロール中も見失わせない */
+  --row-bg: var(--row-hover); /* 今どの行を見ているかを、横スクロール中も見失わせない */
 }
 table.data tbody td {
   background: var(--row-bg);
@@ -1512,7 +1571,7 @@ table.data td.left {
 }
 /* 特別な行は縞より優先する。塗りは --row-bg に入れて、固定した先頭列とも色を合わせる */
 table.data tbody tr.total {
-  --row-bg: #eff3f1;
+  --row-bg: var(--row-total);
 }
 table.data tr.total th,
 table.data tr.total td {
@@ -1524,7 +1583,7 @@ table.data tr.total td {
  * 3段(合計 > グループ > 科目)の濃さの差で、開いたときの入れ子が字下げ無しでも分かる。
  */
 table.data tbody tr.stmt-group {
-  --row-bg: #f2f5f7;
+  --row-bg: var(--row-group);
 }
 table.data tr.stmt-group td {
   font-weight: 600;
@@ -1628,17 +1687,17 @@ table.data th.stmt-account {
   border: 1px solid var(--line);
 }
 .pill.alert {
-  background: #fdf3f3;
+  background: var(--danger-soft);
   color: var(--danger);
   border-color: var(--danger);
 }
 .pill.warn {
-  background: #fdf9ef;
+  background: var(--warn-soft);
   color: var(--warn);
   border-color: var(--warn);
 }
 .pill.calm {
-  background: #f1f7f4;
+  background: var(--good-soft);
   color: var(--good);
   border-color: var(--good);
 }
@@ -1646,7 +1705,7 @@ table.data th.stmt-account {
   color: var(--ink-soft);
 }
 .pill.edited {
-  background: #fdf9ef;
+  background: var(--warn-soft);
   color: var(--warn);
   border-color: var(--warn);
 }
@@ -1712,7 +1771,7 @@ button.mini.classify-quick {
 button.classify-quick[aria-pressed="true"] {
   border-color: var(--biz);
   background: var(--biz-soft);
-  color: var(--biz);
+  color: var(--biz-strong);
   font-weight: 900;
 }
 button.edit-trigger[aria-expanded="true"] {
@@ -1725,10 +1784,10 @@ tr.editing-open td {
   font-weight: 700;
 }
 table.data tbody tr.editor {
-  --row-bg: var(--surface-alt, #f6f6f4);
+  --row-bg: var(--surface-alt);
 }
 tr.editor td {
-  background: var(--surface-alt, #f6f6f4);
+  background: var(--surface-alt);
   padding: 8px;
   text-align: left;
 }
@@ -1895,14 +1954,14 @@ tr.editor td {
 }
 /* 未決済。損益に既に載っている分の再掲なので、収支のカードと色で区別する */
 .unsettled {
-  border-left: 3px solid var(--accent, #2563eb);
+  border-left: 3px solid var(--accent);
 }
 .unsettled > .kpis {
   margin: 12px 0;
 }
 /* 二重計上の疑い。集計は変えないため警告色は見出しの帯だけに留める */
 .cash-duplicates {
-  border-left: 3px solid var(--warn, #d97706);
+  border-left: 3px solid var(--warn-fill);
 }
 .cash-duplicates ul {
   margin: 8px 0 0;
@@ -1942,7 +2001,7 @@ tr.editor td {
   gap: 8px;
   margin-top: 18px;
 }
-.classification-editor-actions button {
+.page-actions :is(button, .btn) {
   min-height: 44px;
   white-space: nowrap;
 }
@@ -2015,12 +2074,8 @@ tr.editor td {
   gap: 8px;
   margin-top: 14px;
 }
-.split-actions button {
-  min-height: 44px;
-  white-space: nowrap;
-}
 @container (max-width: 700px) {
-  .split-actions button {
+  .split-actions :is(button, .btn) {
     width: 100%;
   }
 }
@@ -2029,7 +2084,7 @@ tr.editor td {
   padding: 8px 10px;
   border: 1px solid var(--danger);
   border-radius: 6px;
-  background: #fdf3f3;
+  background: var(--danger-soft);
   color: var(--danger);
   font-size: var(--fs-sm);
   font-weight: 700;
@@ -2051,7 +2106,7 @@ tr.editor td {
   .classification-field-help {
     min-height: 0;
   }
-  .classification-editor-actions button,
+  .classification-editor-actions :is(button, .btn),
   .classification-rule-form button {
     width: 100%;
   }
@@ -2085,7 +2140,7 @@ button.cat-current.on {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+  box-shadow: var(--shadow-category-panel);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -2108,25 +2163,25 @@ button.cat-current.on {
 .cat-tabs button.mini.on {
   background: var(--biz);
   border-color: var(--biz);
-  color: #fff;
+  color: var(--on-primary);
 }
 button.cat-chip {
   padding: 4px 10px;
   font-size: var(--fs-sm);
-  min-height: 28px;
+  min-height: var(--tap-target-min);
   border-radius: 999px;
 }
 button.cat-chip.on {
   background: var(--biz);
   border-color: var(--biz);
-  color: #fff;
+  color: var(--on-primary);
 }
 /* 触れた科目の説明。高さを固定しないと、狙った科目が動いて押せなくなる */
 .cat-detail {
   min-height: 72px;
   padding: 6px 8px;
   background: var(--bg);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: var(--fs-xs);
   color: var(--ink-soft);
 }
@@ -2165,18 +2220,8 @@ button.cat-chip.suggest {
   }
 }
 
-/* 行を開くための、見た目はリンク・実体はボタン。開閉はページ遷移ではないので button にする */
-.linklike {
-  background: none;
-  border: 0;
-  padding: 0;
-  font: inherit;
-  color: var(--biz);
-  text-decoration: underline;
-  cursor: pointer;
-}
 table.data tbody tr.detail-row {
-  --row-bg: #f7faf9;
+  --row-bg: var(--row-detail);
 }
 table.data tr.detail-row td {
   color: var(--ink-soft);
@@ -2194,11 +2239,11 @@ table.data tr.detail-row p {
 
 .pill.biz {
   background: var(--biz-soft);
-  color: var(--biz);
+  color: var(--biz-strong);
   border-color: var(--biz);
 }
 .pill.per {
-  background: #f9eff2;
+  background: var(--per-soft);
   color: var(--per);
   border-color: var(--per);
 }
@@ -2211,15 +2256,19 @@ button,
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--ink);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 6px 14px;
-  min-height: 32px;
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
   transition-property: background-color, border-color, color, transform;
   transition-duration: var(--motion-fast), var(--motion-fast), var(--motion-fast), var(--motion-instant);
   transition-timing-function: var(--ease-standard);
+}
+.btn {
+  border-color: var(--control-border);
+  /* component contractは、実要素taxonomyと独立にButtonの境界にも明示する */
+  min-height: var(--tap-target-min);
 }
 button:active:not(:disabled),
 .btn:active {
@@ -2229,7 +2278,7 @@ button.primary,
 .btn.primary {
   background: var(--biz);
   border-color: var(--biz);
-  color: #fff;
+  color: var(--on-primary);
 }
 button.danger-btn {
   color: var(--danger);
@@ -2238,32 +2287,35 @@ button.danger-btn {
 button.mini {
   padding: 2px 8px;
   font-size: var(--fs-xs);
-  min-height: 24px;
   border-radius: 6px;
 }
 button.mini.on-biz {
   background: var(--biz);
   border-color: var(--biz);
-  color: #fff;
+  color: var(--on-primary);
 }
 button.mini.on-per {
   background: var(--per);
   border-color: var(--per);
-  color: #fff;
+  color: var(--on-primary);
 }
 button:disabled {
   opacity: 0.5;
   cursor: default;
 }
 @media (hover: hover) and (pointer: fine) {
-  button:hover:not(:disabled),
-  .btn:hover {
+  button:hover:not(:disabled) {
     background: var(--bg);
-    border-color: #c6cecb;
+    border-color: var(--line-strong);
+  }
+  .btn:hover:not(:disabled) {
+    background: var(--bg);
+    border-color: var(--control-border-hover);
   }
   button.primary:hover:not(:disabled),
-  .btn.primary:hover {
+  .btn.primary:hover:not(:disabled) {
     background: var(--biz);
+    border-color: var(--biz);
     opacity: 0.92;
   }
   button.mini.on-biz:hover:not(:disabled) {
@@ -2275,6 +2327,25 @@ button:disabled {
     opacity: 0.9;
   }
 }
+/*
+ * 行を開く「リンクに見える操作」。基本ボタンより後に置き、面・枠・paddingの
+ * cascade を実効規則で戻す。min-height は戻さず44pxの hit area を保つ。
+ */
+.btn.linklike {
+  background: none;
+  border: 0;
+  padding-inline: 0;
+  font: inherit;
+  color: var(--biz);
+  text-decoration: underline;
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn.linklike:hover:not(:disabled) {
+    background: none;
+    border-color: transparent;
+  }
+}
 
 input[type="text"],
 input[type="password"],
@@ -2284,10 +2355,9 @@ textarea,
 select {
   font-family: var(--font-head);
   font-size: var(--fs-md);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
   padding: 6px 10px;
-  min-height: 32px;
   background: var(--surface);
   color: var(--ink);
   transition: border-color var(--motion-fast) var(--ease-standard);
@@ -2295,7 +2365,7 @@ select {
 input:hover,
 textarea:hover,
 select:hover {
-  border-color: #c6cecb;
+  border-color: var(--control-border-hover);
 }
 input:focus,
 textarea:focus,
@@ -2305,6 +2375,7 @@ select:focus {
 }
 input.num-input {
   font-family: var(--font-mono);
+  font-weight: 400;
   text-align: right;
   width: 110px;
 }
@@ -2313,21 +2384,21 @@ input.num-input {
   display: inline-flex;
   max-width: 100%;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow-x: auto; /* 狭い幅では群ごと横スクロール。ラベルを語の途中で折り返さない */
   overflow-y: hidden;
 }
 .segment button {
   border: none;
   border-radius: 0;
-  min-height: 30px;
+  min-height: var(--tap-target-min);
   padding: 5px 14px;
   white-space: nowrap;
   flex: 0 0 auto;
 }
 .segment button.on {
   background: var(--biz);
-  color: #fff;
+  color: var(--on-primary);
 }
 
 .toolbar {
@@ -2356,13 +2427,13 @@ input.num-input {
   top: calc(100% + 4px);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 8px;
   display: grid;
   gap: 6px;
   z-index: 30;
   width: 200px;
-  box-shadow: 0 8px 24px rgba(29, 42, 44, 0.12);
+  box-shadow: var(--shadow-popover);
   transform-origin: top right;
   animation: popover-in var(--motion-fast) var(--ease-standard) both;
 }
@@ -2390,14 +2461,14 @@ input.num-input {
 }
 .dropzone.drag {
   border-color: var(--biz);
-  color: var(--biz);
+  color: var(--biz-strong);
   background: var(--biz-soft);
 }
 
 .notice {
   display: block;
   border-left: 4px solid var(--warn);
-  background: #fdf9ef;
+  background: var(--warn-soft);
   padding: 10px 14px;
   border-radius: 6px;
   font-size: var(--fs-sm);
@@ -2410,7 +2481,7 @@ input.num-input {
 /* 手を打つ猶予がもう無い警告。注意(既定の warn 色)より一段強く出す */
 .notice.danger {
   border-color: var(--danger);
-  background: #fdf0ef;
+  background: var(--danger-soft-strong);
 }
 .empty {
   text-align: center;
@@ -2471,6 +2542,7 @@ tr.kbd-focus td {
 }
 kbd {
   font-family: var(--font-mono);
+  font-weight: 400;
   border: 1px solid var(--line);
   border-bottom-width: 2px;
   border-radius: 4px;
@@ -2658,7 +2730,7 @@ kbd {
 .login-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgb(0 0 0 / 45%);
+  background: var(--scrim);
   display: grid;
   place-items: center;
   padding: 16px;
@@ -2773,7 +2845,7 @@ kbd {
     z-index: 50;
     transform: translateX(-100%);
     transition: transform 0.18s var(--ease-standard);
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--shadow-drawer);
   }
   .sidebar.open {
     transform: none;
@@ -2781,7 +2853,7 @@ kbd {
   .backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--dark-scrim);
     z-index: 40;
   }
   .header {
@@ -2833,7 +2905,7 @@ kbd {
     display: none;
   }
   .main {
-    padding: 16px;
+    padding: var(--page-gutter-compact);
     /* 下部タブバーに本文・フッターが隠れないよう退避量を確保 */
     padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 24px);
   }
@@ -2912,14 +2984,7 @@ kbd {
   }
 }
 @media (prefers-contrast: more) {
-  :root {
-    --line: #9aa5a2;
-    --ink-soft: var(--ink);
-    /* 青の面は「薄い塗り」だと現在地が地と紛れる。塗りを一段濃く、枠を事業色そのものにして輪郭を立てる */
-    --biz-soft: #dbe6f8;
-    --biz-soft-line: var(--biz);
-    --biz-strong: #10294f;
-  }
+  /* 色の上書きは先頭の生成ブロック(renderHighContrastCss)にある */
   /*
    * ナビの現在地は既定では帯と文字色の2つに絞っている(上の .nav a[aria-current] 参照)。
    * 強調を「要求されたときだけ」足す場所がここ。帯を太くして輪郭を、太字で色以外の手掛かりを
@@ -2956,10 +3021,11 @@ table.data tr.selected td {
   width: 100%;
   box-sizing: border-box;
   font-family: var(--font-mono);
+  font-weight: 400;
   font-size: var(--fs-sm);
   line-height: 1.5;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
   padding: 8px 10px;
   background: var(--surface);
   color: var(--ink);
@@ -3195,7 +3261,7 @@ table.report-item-table td:nth-child(4) {
 .finding-action {
   margin: 8px 0 0;
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--biz-soft);
   color: var(--biz-strong);
   overflow-wrap: anywhere;
@@ -3254,7 +3320,7 @@ details.prompt-box > summary {
   gap: 16px;
   padding: 14px 16px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
 }
 .report-latest.selected {
@@ -3324,7 +3390,7 @@ details.prompt-box > summary {
   text-align: center;
   padding: 12px;
   border: 1px dashed var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: var(--fs-md);
 }
 .chart-placeholder p {
@@ -3368,7 +3434,7 @@ table.heatmap td.heat {
   min-width: 0;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 .compare-col h4 {
   font-size: var(--fs-sm);
@@ -3407,7 +3473,7 @@ table.heatmap td.heat {
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 6px;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
+  box-shadow: var(--shadow-compact-popover);
   font-size: var(--fs-sm);
   line-height: 1.55;
   font-weight: 400;
@@ -3468,7 +3534,7 @@ label.check {
     background: var(--surface);
   }
   table.data.stack-sm tr.total {
-    background: #fafbfa;
+    background: var(--row-total-stacked);
   }
   table.data.stack-sm td {
     border-bottom: none;
@@ -3625,10 +3691,10 @@ label.check {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: 0 8px 24px rgba(29, 42, 44, 0.12);
+  box-shadow: var(--shadow-popover);
 }
 .palette::backdrop {
-  background: rgba(29, 42, 44, 0.32);
+  background: var(--floating-panel-scrim);
 }
 .palette[open] {
   animation: popover-in var(--motion-fast) var(--ease-standard) both;
@@ -3637,8 +3703,8 @@ label.check {
   width: 100%;
   padding: 10px 12px;
   font-size: var(--fs-base);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
 }
 .palette-list {
   list-style: none;
@@ -3653,11 +3719,11 @@ label.check {
   gap: var(--nav-icon-label-gap);
   width: 100%;
   /* サイドバーの行と揃える。ここはタップ環境も通るので 44px を緩めない */
-  min-height: var(--nav-row-min);
+  min-height: var(--tap-target-min);
   padding: 6px 10px;
   background: none;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius);
   text-align: left;
   cursor: pointer;
 }
@@ -3701,11 +3767,11 @@ label.check {
   border: 1px solid var(--biz);
   border-radius: 999px;
   background: var(--biz);
-  color: #fff;
+  color: var(--on-primary);
   font-size: var(--fs-sm);
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgb(29 42 44 / 28%);
+  box-shadow: var(--shadow-floating-action);
 }
 .improve-trigger:hover {
   filter: brightness(1.08);
@@ -3734,7 +3800,7 @@ label.check {
 /* 動きを減らす設定では影の強調を控える(浮き上がりの表現だけを弱める) */
 @media (prefers-reduced-motion: reduce) {
   .improve-trigger {
-    box-shadow: 0 2px 8px rgb(29 42 44 / 20%);
+    box-shadow: var(--shadow-floating-action-compact);
   }
 }
 /* 撮影中の告知は読み上げ用。視覚的には trigger のラベル変化で足りる */
@@ -3756,10 +3822,10 @@ label.check {
   background: var(--surface);
   color: var(--ink);
   overflow-y: auto;
-  box-shadow: 0 12px 32px rgb(29 42 44 / 25%);
+  box-shadow: var(--shadow-overlay);
 }
 .improve-modal::backdrop {
-  background: rgb(29 42 44 / 45%);
+  background: var(--scrim);
 }
 .improve-modal-body {
   display: flex;
@@ -3779,14 +3845,14 @@ label.check {
 .improve-modal textarea {
   width: 100%;
   padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
   font: inherit;
 }
 .improve-attach {
   padding: 10px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--bg);
 }
 .improve-attach h3 {
@@ -3807,7 +3873,7 @@ label.check {
   max-height: 320px;
   margin-bottom: 8px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   object-fit: contain;
 }
 .improvement-shot {
@@ -3817,9 +3883,10 @@ label.check {
   width: 100%;
   padding: 8px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--bg);
   font-family: var(--font-mono);
+  font-weight: 400;
   font-size: var(--fs-xs);
 }
 .improve-actions {
@@ -3832,7 +3899,7 @@ label.check {
 .improve-actions button {
   padding: 8px 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   font: inherit;
   cursor: pointer;
@@ -3866,7 +3933,7 @@ label.check {
   width: 100%;
   height: auto;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 .improve-annotate-canvas canvas {
   position: absolute;
@@ -3890,7 +3957,7 @@ label.check {
 .improve-annotate-actions button {
   padding: 4px 10px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   color: var(--ink);
   font-size: var(--fs-xs);
@@ -3931,6 +3998,7 @@ label.check {
 }
 .improve-ua {
   font-family: var(--font-mono);
+  font-weight: 400;
 }
 /* 先に読ませたい数件。折りたたみの中ではなく、開いた状態で目に入る位置に置く */
 .improve-highlights {
@@ -3994,6 +4062,7 @@ label.check {
 }
 .improve-diagmsg {
   font-family: var(--font-mono);
+  font-weight: 400;
   overflow-wrap: anywhere;
 }
 .improve-error {
@@ -4074,6 +4143,7 @@ label.check {
 .import-file-types {
   color: var(--ink-soft);
   font-family: var(--font-mono);
+  font-weight: 400;
   font-size: var(--fs-xs);
   white-space: nowrap;
 }
@@ -4211,7 +4281,7 @@ label.check {
   color: var(--ink);
   background: var(--biz-soft);
   border: 1px solid var(--biz-soft-line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: var(--fs-sm);
 }
 .import-options {
@@ -4286,7 +4356,7 @@ label.check {
   border-bottom: 0;
 }
 .import-record.needs-action {
-  background: #fffafa;
+  background: var(--danger-tint);
 }
 .import-record-main {
   grid-area: main;
@@ -4387,7 +4457,7 @@ label.check {
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 .import-count-grid > div {
@@ -4411,7 +4481,7 @@ label.check {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background: #fffafa;
+  background: var(--danger-tint);
   border-top: 1px solid var(--line);
   font-size: var(--fs-sm);
 }
@@ -4494,13 +4564,13 @@ label.check {
   padding: 10px 12px;
   display: grid;
   gap: 2px;
-  background: #fdf9ef;
+  background: var(--warn-soft);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: var(--fs-sm);
 }
 .import-diff-message.calm {
-  background: #f1f7f4;
+  background: var(--good-soft);
 }
 .import-conflict {
   margin-top: 10px;
@@ -4508,7 +4578,7 @@ label.check {
   background: var(--surface);
   border: 1px solid var(--line);
   border-left-width: 1px;
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 .import-conflict-heading {
   display: flex;
@@ -4552,7 +4622,7 @@ label.check {
   gap: 8px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: var(--fs-sm);
 }
 .import-conflict-options label:has(input:checked) {
@@ -4650,7 +4720,7 @@ label.check {
   color: var(--ink);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: 0;
   font-weight: 700;
 }
@@ -4663,7 +4733,7 @@ label.check {
 }
 .import-deletion-summary:hover .import-disclosure-label {
   background: var(--bg);
-  border-color: #c6cecb;
+  border-color: var(--line-strong);
 }
 .import-deletion-body {
   padding: 0 18px 18px;
@@ -4703,7 +4773,7 @@ label.check {
   border-radius: 50%;
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 600;
 }
 .deletion-scope-options {
   margin: 16px 0;
@@ -4719,7 +4789,7 @@ label.check {
   gap: 10px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 .deletion-scope-options label:has(input:checked) {
   background: var(--biz-soft);
@@ -4753,8 +4823,8 @@ label.check {
   padding: 7px 10px;
   color: var(--ink);
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
   font: inherit;
 }
 .deletion-range-confirmation {
@@ -4844,10 +4914,10 @@ label.check {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow-y: auto;
-  box-shadow: 0 12px 32px rgb(29 42 44 / 25%);
+  box-shadow: var(--shadow-overlay);
 }
 .deletion-confirm-dialog::backdrop {
-  background: rgb(29 42 44 / 45%);
+  background: var(--scrim);
 }
 .deletion-confirm-dialog .deletion-preflight {
   border-bottom: 0;
@@ -4911,8 +4981,8 @@ label.check {
   padding: 8px 10px;
   color: var(--ink);
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
   font: inherit;
 }
 .deletion-run-actions {
@@ -4931,9 +5001,9 @@ label.check {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 16px;
-  background: #f1f7f4;
+  background: var(--good-soft);
   border: 1px solid var(--good);
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 .deleted-notice > div:first-child {
   display: grid;
@@ -5179,7 +5249,7 @@ label.check {
 /* MF と食い違うセルだけを立てる。一致している側には何も足さない(全部に印が付くと、
    どこを見ればよいかがまた分からなくなる)。色だけに頼らず ≠ の字も出す */
 .tcf-line.tcf-differs {
-  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  background: var(--warn-soft);
   color: var(--warn);
   font-weight: 600;
 }
@@ -5284,6 +5354,7 @@ label.check {
   .sidebar .brand-name::before {
     content: "FL";
     font-family: var(--font-mono);
+    font-weight: 600;
     font-size: var(--fs-md);
     letter-spacing: 0;
   }
@@ -5319,7 +5390,7 @@ label.check {
   .nav-sub a,
   .nav-sub .nav-locked {
     justify-content: center;
-    min-height: 40px;
+    min-height: var(--tap-target-min);
     padding: 7px;
   }
   .nav-label {

@@ -19,12 +19,13 @@ import {
   ownerLabel,
   paymentMethodLabel,
 } from '../api.js';
+import { Button } from '../components/Button.js';
 import { CategoryPicker } from '../components/CategoryPicker.js';
 import { OwnerSelect, useInvalidateClassification } from '../components/ClassificationSettings.js';
 import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { DeletedNotice, TransactionDeletionButton } from '../components/ImportDeletion.js';
-import { KpiCard, PageHeader, PageState } from '../components/Page.js';
+import { KpiCard, PageActions, PageHeader, PageState } from '../components/Page.js';
 import { SplitEditor } from '../components/SplitEditor.js';
 import { Term } from '../components/Term.js';
 import { VendorMemoryBadge } from '../components/VendorMemory.js';
@@ -480,6 +481,7 @@ export function ClassifyPage() {
           ).map(([k, label]) => (
             <button
               key={k}
+              data-native-control="toggle"
               type="button"
               className={cls === k ? 'on' : ''}
               aria-pressed={cls === k}
@@ -501,6 +503,7 @@ export function ClassifyPage() {
           ).map(([k, label]) => (
             <button
               key={k}
+              data-native-control="toggle"
               type="button"
               className={owner === k ? 'on' : ''}
               aria-pressed={owner === k}
@@ -521,6 +524,7 @@ export function ClassifyPage() {
           ).map(([k, label]) => (
             <button
               key={k}
+              data-native-control="toggle"
               type="button"
               className={method === k ? 'on' : ''}
               aria-pressed={method === k}
@@ -532,6 +536,7 @@ export function ClassifyPage() {
         </span>
         <span className="segment">
           <button
+            data-native-control="toggle"
             type="button"
             className={manualOnly ? 'on' : ''}
             aria-pressed={manualOnly}
@@ -781,18 +786,19 @@ function TxLine({
                   disabled={editBusy}
                   onClick={() => onSet('biz')}
                 />
-                <button
-                  type="button"
-                  className="mini classify-quick"
+                <Button
+                  size="mini"
+                  className="classify-quick"
                   disabled={editBusy || t.src !== '手動'}
                   onClick={() => onSet(null)}
                 >
                   {t.origin === 'vendor_memory' ? '決め事を外す' : '自動に戻す'}
-                </button>
+                </Button>
               </>
             )}
             {t.capabilities.edit && (
               <button
+                data-native-control="disclosure"
                 type="button"
                 className="mini classify-quick edit-trigger"
                 aria-expanded={editing}
@@ -805,6 +811,7 @@ function TxLine({
             )}
             {t.capabilities.split && (
               <button
+                data-native-control="disclosure"
                 type="button"
                 className="mini classify-quick"
                 aria-expanded={splitting}
@@ -867,6 +874,7 @@ function QuickClassButton({
 }) {
   return (
     <button
+      data-native-control="toggle"
       type="button"
       className="mini classify-quick"
       aria-pressed={selected}
@@ -1048,13 +1056,12 @@ function EditorRow({
                   <span>キーワード</span>
                   <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
                 </label>
-                <button
-                  type="button"
+                <Button
                   disabled={!keyword.trim() || !ruleAttr || rule.isPending || ruleDone}
                   onClick={() => rule.mutate()}
                 >
                   {ruleDone ? 'ルールを追加しました' : '最優先ルールを追加'}
-                </button>
+                </Button>
               </div>
               {rule.isError && (
                 <p className="classification-editor-error" role="alert">
@@ -1064,29 +1071,27 @@ function EditorRow({
             </details>
           </fieldset>
 
-          <div className="classification-editor-actions">
-            <button
-              type="button"
+          <PageActions className="classification-editor-actions">
+            <Button
               className="tertiary-button"
               disabled={!t.edited || busy}
               onClick={() => save.mutate({ reset: true })}
             >
               {t.origin === 'vendor_memory' ? '決め事を外す' : '取込値に戻す'}
-            </button>
-            <button type="button" disabled={busy} onClick={onClose}>
+            </Button>
+            <Button disabled={busy} onClick={onClose}>
               編集を閉じる
-            </button>
-            <button
-              type="button"
-              className="primary"
+            </Button>
+            <Button
+              variant="primary"
               disabled={!editDirty || busy}
               onClick={() =>
                 save.mutate({ big: big || null, mid: mid || null, owner: own, cls: c, inst: inst || null })
               }
             >
               変更を保存
-            </button>
-          </div>
+            </Button>
+          </PageActions>
           {save.isError && (
             <p className="classification-editor-error" role="alert">
               {(save.error as Error).message}

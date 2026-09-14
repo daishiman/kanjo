@@ -7,6 +7,7 @@
  * 代わりに座標の作り方(比率・正規化・クランプ)と、描画呼び出しの並びを見る。
  * プレビューと焼き込みが同じ drawAnnotations を通る限り、両者はずれない。
  */
+import { EFFECT_COLOR } from '@kanjo/core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   type Annotation,
@@ -74,7 +75,7 @@ describe('枠を描く', () => {
     expect(calls[0].rect).toEqual([100, 50, 200, 100]);
     expect(calls[1].rect).toEqual([100, 50, 200, 100]);
     // 白が先、赤があと。順序が逆だと縁取りが赤を覆う
-    expect(calls[0].color).toContain('255,255,255');
+    expect(calls[0].color).toBe(EFFECT_COLOR.annotateHalo);
     expect(calls[1].color).toBe('#e11d48');
     expect(calls[0].width).toBeGreaterThan(calls[1].width);
   });

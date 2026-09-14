@@ -16,6 +16,7 @@ export const APP_ROUTES = [
     icon: 'gauge',
     navGroup: '取込',
     mobileLabel: '概況',
+    contentWidth: 'reading',
   },
   {
     id: 'import',
@@ -27,6 +28,7 @@ export const APP_ROUTES = [
     icon: 'file-up',
     navGroup: null,
     mobileLabel: '取込',
+    contentWidth: 'data',
   },
   {
     id: 'cash',
@@ -38,6 +40,7 @@ export const APP_ROUTES = [
     icon: 'badge-japanese-yen',
     navGroup: null,
     mobileLabel: null,
+    contentWidth: 'data',
   },
   {
     id: 'classify',
@@ -49,6 +52,7 @@ export const APP_ROUTES = [
     icon: 'list-checks',
     navGroup: '整える',
     mobileLabel: '仕分け',
+    contentWidth: 'data',
   },
   {
     id: 'subscriptions',
@@ -59,6 +63,7 @@ export const APP_ROUTES = [
     icon: 'repeat-2',
     navGroup: null,
     mobileLabel: null,
+    contentWidth: 'data',
   },
   {
     id: 'household',
@@ -70,6 +75,7 @@ export const APP_ROUTES = [
     icon: 'house',
     navGroup: null,
     mobileLabel: null,
+    contentWidth: 'data',
   },
   {
     id: 'analysis',
@@ -81,6 +87,7 @@ export const APP_ROUTES = [
     icon: 'chart-pie',
     navGroup: '確認',
     mobileLabel: '分析',
+    contentWidth: 'data',
   },
   {
     id: 'statements',
@@ -92,6 +99,7 @@ export const APP_ROUTES = [
     icon: 'landmark',
     navGroup: null,
     mobileLabel: null,
+    contentWidth: 'data',
   },
   {
     id: 'ai',
@@ -103,6 +111,7 @@ export const APP_ROUTES = [
     icon: 'sparkles',
     navGroup: null,
     mobileLabel: null,
+    contentWidth: 'reading',
   },
   {
     id: 'budget',
@@ -114,6 +123,7 @@ export const APP_ROUTES = [
     icon: 'calendar-range',
     navGroup: '計画',
     mobileLabel: null,
+    contentWidth: 'data',
   },
   {
     id: 'tradeoff',
@@ -125,6 +135,7 @@ export const APP_ROUTES = [
     icon: 'scale',
     navGroup: null,
     mobileLabel: null,
+    contentWidth: 'reading',
   },
   {
     id: 'settings',
@@ -136,6 +147,7 @@ export const APP_ROUTES = [
     icon: 'sliders-horizontal',
     navGroup: '管理',
     mobileLabel: null,
+    contentWidth: 'data',
   },
   {
     id: 'guide',
@@ -147,6 +159,7 @@ export const APP_ROUTES = [
     icon: 'book-open',
     navGroup: null,
     mobileLabel: null,
+    contentWidth: 'reading',
   },
 ] as const;
 
@@ -264,4 +277,15 @@ export function routeMetadata(id: AppRouteId): (typeof APP_ROUTES)[number] {
   const route = APP_ROUTES.find((candidate) => candidate.id === id);
   if (!route) throw new Error(`Unknown route metadata: ${id}`);
   return route;
+}
+
+/** path から本文幅を決める唯一の境界。analysis の子タブは親 route の用途を継承する。 */
+export function routeContentWidth(pathname: string): 'reading' | 'data' {
+  if (pathname === '/improvement' || pathname === '/login') return 'reading';
+  const route = APP_ROUTES.find((candidate) =>
+    candidate.path === '/'
+      ? pathname === '/'
+      : pathname === candidate.path || pathname.startsWith(`${candidate.path}/`),
+  );
+  return route?.contentWidth ?? 'reading';
 }

@@ -687,6 +687,190 @@
       ]
     },
     {
+      "id": "arch-design-system-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "デザインシステム共通化 — 未認証時の共通シェル",
+      "file_path": "architecture/design-system-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T08:15:21Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c43d364880309fe1dc22bde3bf61a5cfb7eb4e996e2f3f9193b968df3aef3c59",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "デザインシステム共通化 — サーバ境界の不変条件",
+      "file_path": "architecture/design-system-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "58c252551b1ba2c531913f4d13d7b959a11fb20a5fced89658cde126787dfd90",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "デザインシステム共通化 — 永続化を変えない判断",
+      "file_path": "architecture/design-system-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "3498ef5a73233e6a933baaa19d2cbd5bb02dd79baa462ec9cc1bbe55f831ebb2",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "デザインシステム共通化 — トークン正本と写しの導出",
+      "file_path": "architecture/design-system-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "26fcc96ee685950911cfd893979243d5685559547fe037de554254f8ea57e008",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "デザインシステム共通化 — 配信構成と JS 予算",
+      "file_path": "architecture/design-system-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "d26a9eb5fda7ca0d9e4c407106b69b2b84de2bff328260b18a78dd6f5abcf9df",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "デザインシステム共通化 — 規約の機械検出と規約文書",
+      "file_path": "architecture/design-system-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T08:15:21Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "d81c4f38a04af0e0932f7a05c2f55cf87885aa55eeae8cd66f7cf442fb2b67ff",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "デザインシステム共通化 — CSP と実データ混入の防止",
+      "file_path": "architecture/design-system-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "87e8c5a76765563551fc0cd2e989c5876c4f64e05e391a6b32accb387bb7be5d",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "デザインシステム共通化 — 表現規約と色の役割",
+      "file_path": "architecture/design-system-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "90861d884f6550debe818e41909cbc5334ad7f75ef03e3172ef0f6373f19ee70",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
       "id": "arch-account-login-auth",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -701,7 +885,7 @@
         "imported_at": "2026-09-13T05:02:52Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "43035607c89c41af2dfa49dbfe617dba686597e7bc4b7331c46ab3b5b003c0b7",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-14-account-login/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -724,7 +908,7 @@
         "imported_at": "2026-09-13T05:02:52Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "a2b45a3f2b11521fedccf7f55a17247310aa093040f39cbf7ac3780b943e93bc",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-14-account-login/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -747,7 +931,7 @@
         "imported_at": "2026-09-13T05:02:52Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "8b5a6ca7ceb1209e2dede267354cc274c54bdca70dc6daa616e0d5e8836e6d6b",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-14-account-login/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -770,7 +954,7 @@
         "imported_at": "2026-09-13T05:02:52Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "61aea1297840c38f276b9eb26b4320fe2f512bd28e1208666d53c1afeb15b026",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-14-account-login/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -793,7 +977,7 @@
         "imported_at": "2026-09-13T05:02:52Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "23f70c2c85cd7bdc7b57862201134c1098d11907a38033b417b59a59daa96dd3",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-14-account-login/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -816,7 +1000,7 @@
         "imported_at": "2026-09-13T05:02:52Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "d52741d350e0801e4dac1a37283954761dc198d75cb95a6b85683fd1336f8373",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-14-account-login/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -839,7 +1023,7 @@
         "imported_at": "2026-09-13T05:02:52Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "87a4c141bbe1788454f85970f6b8c1756203b93c4d853a1a25bc23a1dd7a1299",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-14-account-login/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -862,7 +1046,7 @@
         "imported_at": "2026-09-14T04:15:00Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "b35d162fb978ca17427996dbc7843e0668cd393ed95d95ae4eafc47743bcf688",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-14-account-login/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },

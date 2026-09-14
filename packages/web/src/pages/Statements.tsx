@@ -12,6 +12,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type BalanceSheet as BalanceSheetData, type StatementsResponse, api } from '../api.js';
+import { Button } from '../components/Button.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { BalanceSheetChart, CashFlowCharts, ProfitAndLossCharts } from '../components/FinancialCharts.js';
 import { HowTo } from '../components/HowTo.js';
@@ -158,7 +159,13 @@ export function StatementsPage() {
                 return [
                   <tr key={g.group} className="stmt-group">
                     <th scope="row">
-                      <button type="button" className="mini" onClick={() => toggle(g.group)}>
+                      <button
+                        data-native-control="disclosure"
+                        type="button"
+                        className="mini"
+                        aria-expanded={open}
+                        onClick={() => toggle(g.group)}
+                      >
                         {open ? '▾' : '▸'} {g.group}
                       </button>
                     </th>
@@ -564,14 +571,9 @@ function LiabilityForm({ months, options }: { months: string[]; options: string[
         </label>
       ))}
       {invalid ? <p className="notice warn">金額は0以上の整数で入れてください。</p> : null}
-      <button
-        type="button"
-        className="btn primary"
-        disabled={!month || invalid || save.isPending}
-        onClick={() => save.mutate()}
-      >
+      <Button variant="primary" disabled={!month || invalid || save.isPending} onClick={() => save.mutate()}>
         {save.isPending ? '保存中…' : 'この月の負債を保存'}
-      </button>
+      </Button>
       {saved ? <p className="notice info">保存しました。</p> : null}
       {save.isError ? (
         <p className="notice warn">保存できませんでした。時間をおいて再試行してください。</p>

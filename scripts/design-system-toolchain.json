@@ -1,0 +1,10 @@
+{
+  "systemPlanValidator": {
+    "publisher": "harness-dev",
+    "name": "system-dev-planner",
+    "versionRange": ">=0.1.0 <0.2.0",
+    "capabilities": {
+      "validate": ["scripts/validate-system-plan.py"]
+    }
+  }
+}

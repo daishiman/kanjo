@@ -9,6 +9,7 @@ import {
   api,
 } from '../api.js';
 import { monthLabel, yen } from '../format.js';
+import { Button } from './Button.js';
 import { ConfirmDialog, usePendingConfirm } from './ConfirmDialog.js';
 import { HowTo } from './HowTo.js';
 
@@ -150,9 +151,14 @@ export function SubVendorsPanel() {
             if (e.key === 'Enter' && !e.nativeEvent.isComposing) submitNew();
           }}
         />
-        <button type="button" disabled={!newName.trim() || add.isPending} onClick={submitNew}>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={!newName.trim() || add.isPending}
+          onClick={submitNew}
+        >
           支払先を追加
-        </button>
+        </Button>
       </div>
       {error && (
         <p className="sub" role="alert" style={{ color: 'var(--danger)' }}>
@@ -222,17 +228,17 @@ function VendorRow({
             onChange={setAccountDraft}
           />
           {dirty && (
-            <button type="button" className="mini" disabled={save.isPending} onClick={commit}>
+            <Button type="button" variant="secondary" size="mini" disabled={save.isPending} onClick={commit}>
               保存
-            </button>
+            </Button>
           )}
         </span>
       </td>
       <ReviewCell vendor={vendor} review={review} onError={onError} />
       <td data-label="登録">
-        <button type="button" className="mini danger-btn" onClick={onDelete}>
+        <Button type="button" variant="danger" size="mini" onClick={onDelete}>
           登録を外す
-        </button>
+        </Button>
       </td>
     </tr>
   );
@@ -272,15 +278,16 @@ function ReviewCell({
   return (
     <td data-label="見直し">
       <span className={due ? 'pill warn' : 'pill calm'}>{label}</span>{' '}
-      <button
+      <Button
         type="button"
-        className="mini"
+        variant="secondary"
+        size="mini"
         disabled={mark.isPending}
         aria-label={`${vendor.name}を見直した`}
         onClick={() => mark.mutate()}
       >
         見直した
-      </button>
+      </Button>
     </td>
   );
 }
@@ -306,14 +313,15 @@ function MultiAccountField({
       {value.map((account) => (
         <span key={account} className="pill neutral">
           {account}{' '}
-          <button
+          <Button
             type="button"
-            className="mini"
+            variant="secondary"
+            size="mini"
             aria-label={`${account}を対象から外す`}
             onClick={() => onChange(value.filter((item) => item !== account))}
           >
             ×
-          </button>
+          </Button>
         </span>
       ))}
       <select
@@ -482,24 +490,25 @@ export function SubsCandidatesPanel({ hasDeals }: { hasDeals: boolean }) {
       )}
       {candidates.length > 0 && (
         <div className="toolbar" style={{ gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-          <button
+          <Button
             type="button"
-            className="primary"
+            variant="primary"
             disabled={picked.size === 0 || bulk.isPending}
             onClick={() => bulk.mutate([...picked])}
           >
             選んだ{picked.size}件をまとめて登録
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="mini"
+            variant="secondary"
+            size="mini"
             onClick={() => setPicked(new Set(ranked.map((r) => r.c.partner)))}
           >
             すべて選ぶ
-          </button>
-          <button type="button" className="mini" onClick={() => setPicked(new Set())}>
+          </Button>
+          <Button type="button" variant="secondary" size="mini" onClick={() => setPicked(new Set())}>
             選択を外す
-          </button>
+          </Button>
         </div>
       )}
       {candidates.length > 0 && (
@@ -549,22 +558,24 @@ export function SubsCandidatesPanel({ hasDeals }: { hasDeals: boolean }) {
                 </td>
                 <td data-label="判定">
                   <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
-                    <button
+                    <Button
                       type="button"
-                      className="mini"
+                      variant="secondary"
+                      size="mini"
                       disabled={add.isPending}
                       onClick={() => add.mutate(c.partner)}
                     >
                       これはサブスク
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
-                      className="mini"
+                      variant="secondary"
+                      size="mini"
                       disabled={exclude.isPending}
                       onClick={() => exclude.mutate(c.partner)}
                     >
                       サブスクではない
-                    </button>
+                    </Button>
                   </span>
                 </td>
               </tr>
@@ -582,14 +593,15 @@ export function SubsCandidatesPanel({ hasDeals }: { hasDeals: boolean }) {
             {excluded.map((e) => (
               <li key={e.id} style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                 <span>{e.partner}</span>
-                <button
+                <Button
                   type="button"
-                  className="mini"
+                  variant="secondary"
+                  size="mini"
                   disabled={unexclude.isPending}
                   onClick={() => unexclude.mutate(e.id)}
                 >
                   候補に戻す
-                </button>
+                </Button>
               </li>
             ))}
           </ul>

@@ -69,6 +69,7 @@ export function Term({ id, children }: { id: TermId; children?: ReactNode }) {
   return (
     <>
       <button
+        data-native-control="disclosure"
         ref={ref}
         type="button"
         className="term"

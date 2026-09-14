@@ -1,0 +1,152 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-design-system-foundation",
+  "snapshot_digest": "sha256:7bfb3f2c725825141b26ab254b61ca8a7ce0ec28fb006d61a62f15f3f0b21e1b",
+  "source_lineage": [
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md",
+    "specs/spec-design-system-foundation.md",
+    "architecture/design-system-ui-ux.md",
+    "architecture/design-system-frontend.md",
+    "architecture/design-system-backend.md",
+    "architecture/design-system-database.md",
+    "architecture/design-system-auth.md",
+    "architecture/design-system-security.md",
+    "architecture/design-system-infrastructure.md",
+    "architecture/design-system-maintenance-ops.md",
+    "features/feat-design-system-foundation.md"
+  ],
+  "plan_package": ".dev-graph/plans/feature-package-feat-design-system-foundation",
+  "plan_digest": "sha256:d9e77bf715718b82970a4664a1fce41d7ce136543f789e442bf0010338dc3887",
+  "requirements": [
+    {
+      "requirement_id": "REQ-DS-001",
+      "title": "トークン正本の値一致",
+      "source_refs": [
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "spec_anchor": "FR-001 / S3 / AC-003",
+      "statement": "packages/core/src/design-tokens.ts に色・文字・余白・角丸・影・動き・寸法を定義し、DESIGN-SYSTEM.md の規定値 (10 色、サイドバー 220px、ヘッダー 64px、本文最大幅 1180px、角丸 8px、タップ領域 44px) と単体テストで全件一致させる。",
+      "system_tasks": [
+        "SYS-DSFOUND-P01",
+        "SYS-DSFOUND-P02",
+        "SYS-DSFOUND-P04",
+        "SYS-DSFOUND-P05",
+        "SYS-DSFOUND-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-DS-002",
+      "title": "写しの導出と直書き色の検出",
+      "source_refs": [
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "spec_anchor": "FR-002 / S1 / S2 / AC-001 / AC-002",
+      "statement": "styles.css の :root と charts.ts の COLORS を design-tokens.ts から導出した写しにし、写しのずれと packages/web/src の 6 桁 hex 直書きを pnpm lint が exit 非 0 で検出する。チャートは収入=青系・支出=赤系・純収支=ティール線。",
+      "system_tasks": [
+        "SYS-DSFOUND-P04",
+        "SYS-DSFOUND-P05",
+        "SYS-DSFOUND-P07",
+        "SYS-DSFOUND-P08"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-DS-003",
+      "title": "共通シェルと共通ボタン",
+      "source_refs": [
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "spec_anchor": "FR-003 / S5 / AC-005",
+      "statement": "Layout (サイドバー・ヘッダー・フッター)・固定アクションバー・ページ骨格・ボタン (主/副/危険/テキスト) を共通部品にし、20 ルートすべてが共通シェルの下で描画されることを DOM テストで確認する。",
+      "system_tasks": [
+        "SYS-DSFOUND-P02",
+        "SYS-DSFOUND-P04",
+        "SYS-DSFOUND-P05",
+        "SYS-DSFOUND-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-DS-004",
+      "title": "コントラストと境界色の役割分離",
+      "source_refs": [
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "spec_anchor": "FR-004 / S4 / AC-004 / dec-border-color-roles",
+      "statement": "文字用トークンは背景・面の双方に 4.5:1 以上、部品の枠とチャート系列色は 3:1 以上をテストで検証する。装飾罫線 #D7E0E2 は対象外とし、入力欄・チェックボックスの枠が装飾罫線を参照しないことも同じテストで確かめる。チャート系列色を調整するか (dec-chart-series-contrast) は P02 で利用者の選択を記録し、未記録なら P05 に着手しない。",
+      "system_tasks": [
+        "SYS-DSFOUND-P02",
+        "SYS-DSFOUND-P04",
+        "SYS-DSFOUND-P05",
+        "SYS-DSFOUND-P09"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-DS-005",
+      "title": "規約文書の単一参照先",
+      "source_refs": [
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "spec_anchor": "FR-005 / G4",
+      "statement": "色の役割 (塗り/文字)・タイポグラフィ・余白・シェル・ボタン・チャートの各節を持つ規約文書を docs 配下に 1 つ置き、README または AGENTS.md から参照する。",
+      "system_tasks": [
+        "SYS-DSFOUND-P01",
+        "SYS-DSFOUND-P10",
+        "SYS-DSFOUND-P12"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-DS-006",
+      "title": "既存品質の非退行と非機能制約",
+      "source_refs": [
+        "specs/spec-design-system-foundation.md",
+        "features/feat-design-system-foundation.md"
+      ],
+      "spec_anchor": "S6 / AC-006 / 非機能要件",
+      "statement": "pnpm test / typecheck / lint と packages/web の check 系 (thead / mobile-layout / financial-figure / financial-routes / js-budget) を緑のまま保ち、外部ライブラリ・Web フォントを追加せず CSP を広げず、配信構成を変えない。",
+      "system_tasks": [
+        "SYS-DSFOUND-P06",
+        "SYS-DSFOUND-P09",
+        "SYS-DSFOUND-P11",
+        "SYS-DSFOUND-P13"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    }
+  ],
+  "cross_cutting_tasks": {
+    "SYS-DSFOUND-P03": "全要件の設計を横断する独立レビュー"
+  }
+}

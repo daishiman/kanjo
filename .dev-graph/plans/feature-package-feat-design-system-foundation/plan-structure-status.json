@@ -1,0 +1,165 @@
+{
+  "_generated": "regenerate-design-system-delivery.mjs (task-graph.json projection)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-DSFOUND-P01",
+      "title": "FINAL-UI 抽出値による要件ベースライン確定",
+      "phase_ref": "P01",
+      "lifecycle_role": "preparation",
+      "depends_on": [],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P02",
+      "title": "トークン正本配置とワークストリーム設計の決定記録",
+      "phase_ref": "P02",
+      "lifecycle_role": "preparation",
+      "depends_on": [
+        "SYS-DSFOUND-P01"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P03",
+      "title": "トークン設計の独立レビュー",
+      "phase_ref": "P03",
+      "lifecycle_role": "design-review",
+      "depends_on": [
+        "SYS-DSFOUND-P02"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P04",
+      "title": "トークン値・コントラスト・共通シェルの失敗テスト先行作成",
+      "phase_ref": "P04",
+      "lifecycle_role": "test-design",
+      "depends_on": [
+        "SYS-DSFOUND-P03"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P05",
+      "title": "design-tokens.ts 正本の実装と styles.css / charts.ts / 共通部品への反映",
+      "phase_ref": "P05",
+      "lifecycle_role": "mutation",
+      "depends_on": [
+        "SYS-DSFOUND-P04"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P06",
+      "title": "全テスト・型検査・lint の実行記録",
+      "phase_ref": "P06",
+      "lifecycle_role": "final-verification",
+      "depends_on": [
+        "SYS-DSFOUND-P12"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P07",
+      "title": "S1-S6 受入検証",
+      "phase_ref": "P07",
+      "lifecycle_role": "acceptance",
+      "depends_on": [
+        "SYS-DSFOUND-P09"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P08",
+      "title": "COLOR_FALLBACKS と重複トークン値の除去",
+      "phase_ref": "P08",
+      "lifecycle_role": "mutation",
+      "depends_on": [
+        "SYS-DSFOUND-P05"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P09",
+      "title": "アクセシビリティ・セキュリティ・パフォーマンスの保証確認",
+      "phase_ref": "P09",
+      "lifecycle_role": "quality-assurance",
+      "depends_on": [
+        "SYS-DSFOUND-P06"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P10",
+      "title": "独立最終レビュー",
+      "phase_ref": "P10",
+      "lifecycle_role": "independent-review",
+      "depends_on": [
+        "SYS-DSFOUND-P07"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P11",
+      "title": "再現可能な証跡索引の作成",
+      "phase_ref": "P11",
+      "lifecycle_role": "evidence",
+      "depends_on": [
+        "SYS-DSFOUND-P10"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P12",
+      "title": "デザインシステム規約文書と README / AGENTS.md 参照の同期",
+      "phase_ref": "P12",
+      "lifecycle_role": "documentation-sync",
+      "depends_on": [
+        "SYS-DSFOUND-P08"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DSFOUND-P13",
+      "title": "単一 PR での配信とクローズアウト",
+      "phase_ref": "P13",
+      "lifecycle_role": "release",
+      "depends_on": [
+        "SYS-DSFOUND-P11"
+      ],
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

@@ -10,7 +10,14 @@ import { Chart } from 'react-chartjs-2';
 import type { AiChartSeries, AiReportChart } from '../api.js';
 import { FinancialFigure } from './FinancialFigure.js';
 import { tooltipOptions, tooltipTitle, tooltipValue } from './chart-tooltip.js';
-import { COLORS, baseChartOptions, vendorPalette, yenTick } from './charts.js';
+import {
+  COLORS,
+  baseChartOptions,
+  chartDecorativeFill,
+  chartSeriesColor,
+  vendorPalette,
+  yenTick,
+} from './charts.js';
 import { createFinancialFigureModel, financialPeriod } from './figure-view-model.js';
 
 const pctTick = (v: number | string) => `${Math.round(Number(v) * 100)}%`;
@@ -37,7 +44,7 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
     type: 'bar' as const,
     label: sr.label,
     data: sr.data,
-    backgroundColor: `${palette[i % palette.length]}cc`,
+    backgroundColor: palette[i % palette.length],
     borderWidth: 0,
   });
   const line = (sr: AiChartSeries, i: number, extra: Record<string, unknown> = {}) => ({
@@ -45,7 +52,7 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
     label: sr.label,
     data: sr.data,
     borderColor: palette[i % palette.length],
-    backgroundColor: `${palette[i % palette.length]}33`,
+    backgroundColor: chartDecorativeFill(palette[i % palette.length] ?? COLORS.neutral, 0.2),
     borderWidth: 2,
     pointRadius: 2,
     tension: 0.2,
@@ -75,10 +82,10 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
           datasets: d.series.map((sr, i) => {
             if (sr.role === 'band')
               return line(sr, 3, {
-                borderColor: `${COLORS.good}66`,
+                borderColor: chartSeriesColor('good'),
                 borderWidth: 1,
                 pointRadius: 0,
-                backgroundColor: `${COLORS.good}22`,
+                backgroundColor: chartDecorativeFill(COLORS.good, 0.13),
                 fill: i === idxUp ? '+1' : false,
               });
             if (sr.role === 'line') return line(sr, 1, { borderDash: [6, 3], pointRadius: 0 });
@@ -98,12 +105,12 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
       d.labels.forEach((_, i) => {
         if (total[i] != null) {
           floats.push([0, total[i] as number]);
-          colors.push(`${COLORS.biz}cc`);
+          colors.push(chartSeriesColor('biz'));
           return;
         }
         const v = delta[i] ?? 0;
         floats.push(v >= 0 ? [running, running + v] : [running + v, running]);
-        colors.push(v >= 0 ? `${COLORS.danger}cc` : `${COLORS.good}cc`);
+        colors.push(v >= 0 ? chartSeriesColor('danger') : chartSeriesColor('good'));
         running += v;
       });
       return {
@@ -223,7 +230,7 @@ function HeatmapTable({ chart }: { chart: AiReportChart }) {
                     style={
                       v == null || max <= 0
                         ? undefined
-                        : { backgroundColor: `${COLORS.biz}${shade(v / max)}` }
+                        : { backgroundColor: chartDecorativeFill(COLORS.biz, shade(v / max)) }
                     }
                     title={`${sr.label} ${tooltipTitle(d.labels[i] ?? '')}: ${tooltipValue(v, chart.unit)}`}
                   >
@@ -239,10 +246,9 @@ function HeatmapTable({ chart }: { chart: AiReportChart }) {
   );
 }
 
-/** 0〜1 の割合を16進の不透明度(薄い 0x0d 〜 濃い 0xe6)にする */
-function shade(ratio: number): string {
-  const a = Math.round(13 + Math.min(1, Math.max(0, ratio)) * (230 - 13));
-  return a.toString(16).padStart(2, '0');
+/** 値を文字でも併記する heatmap の装飾濃度(5%〜90%)。 */
+function shade(ratio: number): number {
+  return (13 + Math.min(1, Math.max(0, ratio)) * (230 - 13)) / 255;
 }
 
 const STATUS_TEXT: Record<AiReportChart['status'], string> = {

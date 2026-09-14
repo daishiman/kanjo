@@ -22,6 +22,7 @@ import {
   SCOPE_SHORT,
   api,
 } from '../api.js';
+import { Button } from '../components/Button.js';
 import { CategoryPicker } from '../components/CategoryPicker.js';
 import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
@@ -224,9 +225,9 @@ function EntryFields({
           {TRANSIT_SAME_ACCOUNT_NOTE}
           <br />
           区間と片道運賃から金額を組み立てるなら、
-          <button type="button" className="mini linklike" onClick={() => onModeChange('transit')}>
+          <Button variant="text" size="mini" onClick={() => onModeChange('transit')}>
             交通費(電車代)の入力に切り替える
-          </button>
+          </Button>
         </span>
       )}
       <input
@@ -349,6 +350,7 @@ function EntryModeTabs({
   return (
     <span className="segment" role="tablist" aria-label="記帳の種類">
       <button
+        data-native-control="tab"
         type="button"
         role="tab"
         aria-selected={mode === 'normal'}
@@ -360,6 +362,7 @@ function EntryModeTabs({
         通常の記帳
       </button>
       <button
+        data-native-control="tab"
         type="button"
         role="tab"
         aria-selected={mode === 'transit'}
@@ -552,9 +555,9 @@ export function CashPage() {
             }}
             candidates={candidates}
           />
-          <button type="submit" className="primary" disabled={!canSubmit(draft, mode) || add.isPending}>
+          <Button type="submit" variant="primary" disabled={!canSubmit(draft, mode) || add.isPending}>
             {add.isPending ? '記帳中…' : '記帳する'}
-          </button>
+          </Button>
         </form>
         {add.isError && (
           <div className="notice" role="alert">
@@ -621,9 +624,8 @@ export function CashPage() {
                         }
                         candidates={candidates}
                       />
-                      <button
-                        type="button"
-                        className="primary"
+                      <Button
+                        variant="primary"
                         disabled={!canSubmit(editing.body, editing.mode) || update.isPending}
                         onClick={() =>
                           update.mutate({
@@ -633,10 +635,8 @@ export function CashPage() {
                         }
                       >
                         保存
-                      </button>
-                      <button type="button" onClick={() => setEditing(null)}>
-                        取消
-                      </button>
+                      </Button>
+                      <Button onClick={() => setEditing(null)}>取消</Button>
                     </div>
                   </td>
                 </tr>
@@ -667,24 +667,23 @@ export function CashPage() {
                   </td>
                   <td>{e.memo ?? ''}</td>
                   <td>
-                    <button
-                      type="button"
-                      className="mini"
+                    <Button
+                      size="mini"
                       onClick={() => {
                         const body = toBody(e);
                         setEditing({ id: e.id, body, mode: cashEntryMode(body) });
                       }}
                     >
                       編集
-                    </button>{' '}
-                    <button
-                      type="button"
-                      className="mini"
+                    </Button>{' '}
+                    <Button
+                      variant="danger"
+                      size="mini"
                       disabled={del.isPending}
                       onClick={() => confirmDelete.ask(e)}
                     >
                       削除
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ),

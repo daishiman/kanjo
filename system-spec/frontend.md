@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G4, G5, G3]
+serves_goals: [G1, G2, G3, G4]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G4, G5, G3]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-frontend-web-001。資するゴール: G4, G5, G3 |
-| モバイル (mobile) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。追加・改修する画面はすべて packages/web の React SPA 内に閉じ、ネイティブシェルや別ビルドターゲットを持たないため、web 以外のフロントエンド構成は存在しない。 |
-| タブレット (tablet) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。追加・改修する画面はすべて packages/web の React SPA 内に閉じ、ネイティブシェルや別ビルドターゲットを持たないため、web 以外のフロントエンド構成は存在しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。追加・改修する画面はすべて packages/web の React SPA 内に閉じ、ネイティブシェルや別ビルドターゲットを持たないため、web 以外のフロントエンド構成は存在しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。追加・改修する画面はすべて packages/web の React SPA 内に閉じ、ネイティブシェルや別ビルドターゲットを持たないため、web 以外のフロントエンド構成は存在しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: 配布物として web 以外の platform を提供しない (U7 scope out / C4)。追加・改修する画面はすべて packages/web の React SPA 内に閉じ、ネイティブシェルや別ビルドターゲットを持たないため、web 以外のフロントエンド構成は存在しない。 |
+| Web (web) | 確定 | 確定質疑: qa-frontend-web-ds-observed-005。裏付け質疑 (`qa_refs`): `qa-frontend-web-ds-decision-004` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G3, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,10 +28,8 @@ serves_goals: [G4, G5, G3]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | Apple HIG の情報階層の原則を、追加画面の並びへ適用した: パスワード変更の強制を他画面への遷移より先に置き、管理者向けの利用者管理は設定画面の下位に収めて主タスクの階層を乱さない、と本章で確定した。 |
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の依存規則から、権限判定の正本をサーバ側に置き画面側を表示の都合に留める境界を引いた。画面が業務規則を持たないため、role の定義が変わっても画面の書き換えが不要になる。 |
-
-> **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
+| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | Apple HIG の一貫性の原則を、見た目の値を画面ごとに持たせず共通部品とトークンだけから描くという実装上の制約に反映した。ボタンやチャートの色を画面側で上書きしないことが、画面間で同じ操作が同じ見た目になることを保証する。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の依存方向を、core (トークン正本) ← web (CSS 変数・charts.ts・部品) の一方向に反映した。core は web を知らず、写しのずれは lint が外側で検出する。 |
 
 ## 確定内容 (質疑録)
 
@@ -39,19 +37,31 @@ serves_goals: [G4, G5, G3]
 
 ### Web (web)
 
-- 資するゴール: G4, G5, G3
+- 資するゴール: G1, G2, G3, G4
 
-#### 主たる接地根拠: `qa-frontend-web-001`
+#### 主たる接地根拠: `qa-frontend-web-ds-observed-005`
 
 **問**
 
-フロントエンド構成 (web) を確定してください。どの画面を追加/改修し、既存 20 画面とどう共存しますか。
+現行 web で、色の定義はどこにあり、図はどう色を得ていて、どこでずれているか。
 
 **答**
 
-既存の React + Vite SPA (packages/web) 内で完結させ、ルータや状態管理ライブラリを新規導入しない。(1) packages/web/src/pages/Login.tsx を参照画像の構成へ全面改修する (メール + パスワード + 保持チェック + 再発行案内。Cloudflare Access の文言と分岐を UI から除去する)。(2) パスワード変更画面を追加し、must_change_password が真のときは他の画面へ遷移させず強制する。(3) 設定画面配下に管理者向けの『利用者管理』を追加し、一覧・招待・role 変更・停止・一時パスワード再発行を行う (admin 以外にはメニュー自体を出さない。ただし権限判定の正本はサーバ側の 403 とする)。(4) 既存 20 画面のレイアウト・ナビゲーションは変更しない。API 呼出しは既存の api() ラッパを使い、401 応答時にログイン画面へ復帰する共通処理を維持する。アイコンは既存の資産の流儀に合わせたインライン SVG とし、実行時に外部 CDN を参照しない。
+(1) 画面の色の正本は packages/web/src/styles.css の :root (--bg #f6f8f9 / --ink #15262b / --ink-soft #617177 / --line #d7e0e2 / --primary #14353d / --accent #087f78 / --biz #087f78 / --warn #805a12 / --danger #b23a3a / --good #2e7d5b 等)。(2) packages/web/src/components/charts.ts は themeColor() が getComputedStyle(document.documentElement) でその CSS 変数を読み、コメントで『図の色の正本は styles.css の :root』と明言している。直書きは CSS を読めない環境 (SSR・jsdom・CSS 適用前) 向けの COLOR_FALLBACKS で、コメントは『styles.css と同じ値にしてある』とするが実際はずれている (biz #2f5da8 対 #087f78、ink #1d2a2c 対 #15262b、inkSoft #51625f 対 #617177、line #dde3e1 対 #d7e0e2)。CSS 変数を持たない neutral #7b8784 と VENDOR_EXTRA_COLORS 5 色は直書きのみ。(3) 前例として skills/report-design-system/assets/report.css を正本、packages/core/src/report-css.ts を写しとし、scripts/check-report-css.mjs が pnpm lint で一致を検査している。シェルは components/Layout.tsx が aside.sidebar・header.header・footer.footer・nav.tabbar を全ルート共通で描画する。web は React 18 + Vite の SPA で、API 契約 (packages/api の /api/*) は本サイクルで変えない。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: packages/web/src/pages/Login.tsx の現行実装と packages/web の構成観測、および利用者指示 (設定画面の管理者から新規作成・再発行を行う) / 回答時刻: 2026-09-13T01:49:08Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: charts.ts 30-130 行、styles.css :root、package.json の lint、scripts/check-report-css.mjs をアシスタントが R4-reopen の後に読み直した観測事実。qa-frontend-web-ds-observed-001 の誤記を訂正する。answered_at は読み直し直後の記録時刻で上限値。 / 回答時刻: 2026-09-13T07:54:32Z)
+
+#### 裏付け質疑: `qa-frontend-web-ds-decision-004`
+
+**問**
+
+デザイントークンの「正本」をどこに置きますか？現在は styles.css と charts.ts(Chart.js用) に色が二重に書かれ、値もずれています。
+
+**答**
+
+『coreのTSを正本に (Recommended)』を選択。packages/core に依存ゼロの design-tokens.ts を置き、CSS 変数とチャート色はそこから作り、写しのずれは lint で検出する。 提示した選択肢: 『coreのTSを正本に (Recommended)』(packages/core の design-tokens.ts から CSS 変数とチャート色を作り、写しのずれは lint で検出。web/レポート/将来の成果物が同じ値を import できる) / 『styles.cssを正本に』(:root の CSS 変数だけを正本にし、チャートは実行時に getComputedStyle で読む。変更は少ないが、CSS を持たない成果物やテストでは値を取りにくい)。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion の選択肢から明示選択した。answered_at は会話記録に残る回答の返却時刻 2026-09-13T04:54:53Z である。 質問文の『二重に書かれ値もずれている』は、charts.ts の COLOR_FALLBACKS (CSS を読めない環境向けの予備値) が styles.css とずれている事実を指す。当時の観測記録 qa-frontend-web-ds-observed-001 は Chart.js が CSS 変数を読めないと誤記していたが、選択肢 2 の説明は getComputedStyle で読む現行実装どおりで、利用者は実装に即した 2 案を比べて選んでいる。比較の記録は decisions[] の dec-design-token-source。 / 回答時刻: 2026-09-13T04:54:53Z)
 
 ## To-Be / Delta
 
@@ -59,37 +69,35 @@ serves_goals: [G4, G5, G3]
 
 ### 到達すべき状態 (To-Be)
 
-- **G4**: ログイン画面が、扱うデータの性質と保護方針を利用者へ明示し、初見でも何をする場所か・何が守られるかが分かる
-- **G5**: 既存20画面と /api/* 認証ガードの契約を壊さずに認証主体を差し替える
-- **G3**: 管理者が設定画面から利用者の追加・停止・パスワード再発行を完結でき、共有パスワードの配り直しが不要になる
+- **G1**: 色・文字サイズ・行高・余白・角丸・影・動き・寸法 (シェル幅/高さ/タップ領域) のデザイントークンを、packages/core に置く依存ゼロの TypeScript 定義 1 か所へ集約し、CSS 変数とチャート色はそこから導出する。和文は OS の system-ui、金額・数値は自己配信する IBM Plex Mono Latin 400/600 だけを使い、全非 test source・dependencies・外部フォントURLの検査でこの配信契約を固定する。
+- **G2**: route registry由来の20ルートを共通Layout/PageShellで描画する。標準操作はButtonを通し、固定アクション群を持つ画面はPageActionsを使う。ARIA固有controlはnative buttonの明示例外とする。
+- **G3**: チャート (棒・線・内訳バー・凡例・軸・グリッド・ツールチップ) の配色と描画規約を 1 つにし、全ての図が共通トークンから色を得る。系列の意味色は FINAL-UI に合わせ、収入=青系、支出=赤系、純収支=ティールの線とする。
+- **G4**: 今後の作成物が自動的に規約へ従うよう、トークン定義以外での色の直書きと、正本と写し (CSS 変数・チャート色) のずれを lint で機械検出し、使い方を規約文書として置く。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | セッション cookie に利用者識別子を含め、識別子を署名対象に含める | 利用者識別子を改ざんした cookie が /api/* で401になる契約テストが緑 |
-| O4 | 管理者が設定画面から利用者の作成・停止・一時パスワード発行を行える | 3操作それぞれに API と画面操作が存在し、非管理者からの呼出しが403になる |
-| O5 | ログイン画面を参照UIの構成 (左: ブランド見出し・月次の流れ4ステップ・安心3項目、右: ログインカード) にし、ヘッダー・フッター・サイドバーを持たせない | ログイン画面の DOM に header/footer/サイドバーのナビゲーション要素が0件 |
-| O8 | migration適用後のbootstrap seedで初回管理者を1件作成し、共有パスワード認証経路を撤去する | active runtimeと必須設定に共有パスワード認証分岐が0件で、旧secretを外しても全機能が動作する |
+| O1 | packages/core/src/design-tokens.ts に色・文字・余白・角丸・影・動き・寸法のトークンを定義し、値の唯一の実装正本とする。 | 単体テストは schema・役割集合・alias・コントラストに必要な関係不変条件を値の転記なしで検査する。表示に影響する全トークン値は、版・承認参照・由来ファイルを持つ `docs/design-system/token-approval.json` の SHA-256 fingerprint と lint で照合し、未承認の値変更を拒否する。 |
+| O2 | styles.css の :root トークンと charts.ts の COLORS を design-tokens.ts から導出した写しに置き換え、写しのずれと色構文の直書きを検出する lint を組み込む。 | pnpm lint が写しの不一致またはhex/rgb/hsl/CSS Color構文の未許可リテラルで exit 非0になり、一致時に exit 0 になる。 |
+| O3 | Layout・PageShell・PageActions・Buttonを共通部品として定義する。route registry由来の20ルートは共通シェルとPageShellを経由し、標準操作はButtonを使う。ARIA固有controlはnative buttonの例外とする。 | route registry由来のDOMテストが全ルートのランドマークとPageShellを検査し、静的検査が標準variant/submitを直接所有するnative buttonを拒否する。 |
+| O5 | トークンと共通部品の使い方を規約文書 (docs 配下) にまとめ、新しい画面・図をつくるときの参照先を 1 つにする。 | 規約文書が色の役割 (塗り/文字の分離)・タイポグラフィ・余白・シェル・ボタン・チャートの各節を持ち、README または AGENTS.md から参照されている。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: メールアドレスとパスワードの2入力によるログインフォーム
-- **I2**: パスワードの表示切替 (目のアイコンと「表示」ラベル)
-- **I3**: 「次回からもログイン状態を保持する」チェックボックス
-- **I4**: Ctrl + Enter でログインを実行するショートカットと、その旨の明示
-- **I5**: 認証失敗時は「メールアドレスまたはパスワードが正しくありません。」の単一文言をフィールド直下に出す
-- **I6**: 左カラムにブランド見出し・月次の流れ4ステップ (取込/整える/確認/計画)・安心3項目 (セキュリティ/プライバシー/お客様のデータ) を置く
-- **I7**: ログイン画面をヘッダー・フッター・サイドバーを持たない専用レイアウトにする
-- **I8**: 「パスワードをお忘れの方」を管理者への問い合わせ導線として置く (メール送信は行わない)
-- **I11**: 設定画面の管理者セクションで、利用者一覧の閲覧・追加・停止・一時パスワード発行を行う
-- **I13**: migration適用後のbootstrap seedで初回管理者を作成し、共有パスワード認証経路を撤去する
-- **I14**: 既存 /api/* 認証ガードの mount 順序と契約を維持したまま主体を差し替える
-- **I15**: 管理者が最後の管理者を停止・降格できないようにする
+- **I1**: 新しい画面をつくるとき、色・余白・角丸・文字サイズを design-tokens から選ぶだけで FINAL-UI と同じ見た目になる。
+- **I2**: どの画面を開いても、左に同じネイビーのサイドバー (220px)、上に同じヘッダー (64px・期間 1年/2年/3年/任意)、下に同じフッターが出る。
+- **I3**: 月次の収入・支出・純収支の図は、どの画面でも収入が青い棒、支出が赤系の棒、純収支がティールの線で描かれる。
+- **I4**: 誰かが画面のコードに #xxxxxx の色を直書きしたら、pnpm lint が落ちて共通トークンを使うよう促す。
 
 ### 本章に効く確定意思決定
 
-- (本章ゴールに効く確定 decision なし)
+- **dec-design-token-source**: デザイントークンの正本をどこに置くか
+  - 採択: packages/core の design-tokens.ts を正本にし、CSS 変数とチャートの予備値を生成する (`core-ts`)
+  - 目的適合: G1 の『依存ゼロの TypeScript 1 か所』に直接合う。テスト (O1・O4) が CSS を解析せず値を import でき、次サイクルでレポート側からも同じ値を import できる
+- **dec-border-color-roles**: 境界色 #D7E0E2 (白に 1.34:1) を、WCAG 2.2 の 1.4.11 とどう両立させるか
+  - 採択: 装飾罫線は #D7E0E2、部品を見分ける枠は 3:1 の派生色 (`split-roles`)
+  - 目的適合: G5 の役割分離を境界へ広げ、画像の淡い罫線と部品の枠の 1.4.11 を両立する
 
 ## 適用された設計知識
 
@@ -97,9 +105,9 @@ serves_goals: [G4, G5, G3]
 
 ### 本章での適用
 
-clean-architecture の依存方向を画面追加の判断に使った: 権限判定 (admin か否か) の正本をサーバの 403 に置き、画面側の出し分けは表示の都合に留める、と本章で確定した。これにより UI の分岐がドメイン規則の複製にならない。また画面追加を既存 SPA の内側に閉じ、ルータや状態管理を増やさないことで、既存 20 画面との境界を変えずに済ませた。
+Clean Architecture card の Dependency Rule をトークンの配置に適用した。トークン (役割名→値) は表示技術に依存しない最内側の方針なので packages/core に置き、CSS 変数 (styles.css の :root) はその外側の写しとして生成する。charts.ts は現行どおり getComputedStyle で CSS 変数を読む経路を残し、CSS を読めない環境向けの予備値 (COLOR_FALLBACKS) だけを core の値から取る — 現状ずれているのはこの予備値であり (qa-frontend-web-ds-observed-005)、正本を CSS から TS へ移しても実行時の読み方は変えずに済む。Information Design card は、同じ値を手で写す箇所が増えるほど利用者が見る色がずれることを示しており、ずれ検出 lint はその停止条件を機械化したものである。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T02:20:00Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T07:54:32Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -193,5 +201,4 @@ clean-architecture の依存方向を画面追加の判断に使った: 権限�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| react | 19.3 | Meta (react.dev) | https://react.dev/versions | 2026-09-13T01:55:58Z | 2026-09-13T01:55:58Z |
-| vite | 8.3.0 | Vite (vite.dev) | https://vite.dev/guide/ | 2026-09-13T01:55:58Z | 2026-09-13T01:55:58Z |
+| chartjs-colors | 2025-10-13 | Chart.js (www.chartjs.org) | https://www.chartjs.org/docs/latest/general/colors.html | 2026-09-13T05:06:15Z | 2026-09-13T05:06:15Z |

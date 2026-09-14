@@ -8,6 +8,7 @@
  */
 import { type FormEvent, type KeyboardEvent, type ReactNode, useId, useState } from 'react';
 import { ApiError, api } from '../api.js';
+import { Button } from '../components/Button.js';
 
 /**
  * Lucide stroke icon の geometry を必要な分だけ写したもの (lucide-static v1.37.0 / ISC)。
@@ -186,19 +187,32 @@ export function LoginPage({ onSuccess }: { onSuccess: (result: LoginSuccess) => 
             <div className="login-field">
               <label htmlFor={passwordId}>パスワード</label>
               <div className="login-password">
-                <input
-                  id={passwordId}
-                  type={revealed ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  aria-invalid={error ? true : undefined}
-                />
+                {/* type を式にすると submit へ化けうる入力として UI 契約検査が拒否する。リテラル2択に分ける */}
+                {revealed ? (
+                  <input
+                    id={passwordId}
+                    type="text"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    aria-invalid={error ? true : undefined}
+                  />
+                ) : (
+                  <input
+                    id={passwordId}
+                    type="password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    aria-invalid={error ? true : undefined}
+                  />
+                )}
                 <button
                   type="button"
+                  data-native-control="toggle"
+                  aria-pressed={revealed}
                   className="login-reveal"
                   onClick={() => setRevealed((shown) => !shown)}
-                  aria-pressed={revealed}
                 >
                   <Icon>{revealed ? ICONS.eyeOff : ICONS.eye}</Icon>
                   <span>{revealed ? '隠す' : '表示'}</span>
@@ -224,9 +238,14 @@ export function LoginPage({ onSuccess }: { onSuccess: (result: LoginSuccess) => 
                 <small>保持する場合は30日間、しない場合は12時間でログイン状態が切れます</small>
               </label>
             </div>
-            <button type="submit" className="primary login-submit" disabled={busy || !email || !password}>
+            <Button
+              type="submit"
+              variant="primary"
+              className="login-submit"
+              disabled={busy || !email || !password}
+            >
               {busy ? '確認中…' : 'ログイン'}
-            </button>
+            </Button>
             <p className="login-shortcut">
               <kbd>Ctrl</kbd> + <kbd>Enter</kbd> でも送信できます
             </p>
@@ -245,9 +264,9 @@ export function LoginPage({ onSuccess }: { onSuccess: (result: LoginSuccess) => 
             ))}
           </ul>
           <div className="login-help">
-            <button type="button" className="link" onClick={() => setForgotOpen(true)}>
+            <Button variant="text" className="link" onClick={() => setForgotOpen(true)}>
               パスワードをお忘れの方
-            </button>
+            </Button>
             <a href="mailto:support@example.invalid">サポートに問い合わせる</a>
           </div>
         </section>
@@ -266,9 +285,9 @@ export function LoginPage({ onSuccess }: { onSuccess: (result: LoginSuccess) => 
               管理者は「設定 → 利用者管理」から再発行できます。一時パスワードは発行直後に1度だけ表示され、
               最初のログイン時に必ず変更します。
             </p>
-            <button type="button" className="primary" onClick={() => setForgotOpen(false)}>
+            <Button variant="primary" onClick={() => setForgotOpen(false)}>
               閉じる
-            </button>
+            </Button>
           </dialog>
         </div>
       )}

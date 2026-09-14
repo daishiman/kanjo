@@ -1,0 +1,59 @@
+{
+  "graph_node_id": "SYS-DSFOUND-P12",
+  "feature_id": "feat-design-system-foundation",
+  "title": "仕様・設計への反映の受領書",
+  "recorded_at": "2026-09-14T08:23:19Z",
+  "verdict": "impact_present_and_reflected",
+  "judgement": "デザインシステム基盤 (トークン正本・共通Button・チャート系列色・共通シェル) は system-spec-harness → dev-graph register-package の正規フローで system-spec/・specs/・architecture/ へ反映済み。main (PR #47/#48) の取込で『ログイン画面は共通シェルの外の単一カラム』という利用者判断が新しい正本となり、本サイクルの S5/FR-003 (ログインもシェル内) と矛盾したため、下流の specs/architecture/docs/features と契約テストを追従させた。API・DB・認証方式は変更しない。",
+  "flow": [
+    {
+      "step": 1,
+      "channel": "system-spec-harness → dev-graph run-dev-graph-system-spec → run-system-dev-plan → register-package (前段で実施済み)",
+      "result": "デザインシステム版の確定章を system-spec/ 直下へ置き、specification/architecture node と exact-13 package SYS-DSFOUND-P01..P13 を登録。"
+    },
+    {
+      "step": 2,
+      "channel": "git merge origin/main (c029a8a)",
+      "result": "account-login サイクルの確定章 13 ファイルを system-spec/archive/2026-09-14-account-login/ へ退避し、graph.json の arch-account-login-* 8 node の source_path を張替。check-graph-lineage で 45 node 一致。"
+    },
+    {
+      "step": 3,
+      "channel": "PR #48 への追従 (下流文書と契約テスト)",
+      "result": "S5/FR-003/AC-005 の母数を『認証後19ルート + ログインはシェルを持たない反例』へ改訂し、DOM テストで固定。main 由来の Login/PasswordChange/UserAdmin の標準操作を共通 Button へ移行。"
+    }
+  ],
+  "reflected_artifacts": [
+    { "path": "specs/spec-design-system-foundation.md", "kind": "specification", "change": "modified", "digest": "2b8f5a73e55da19e4a1edc81ab7b25a8d896a03481b20b006afb6ae791cfed7c" },
+    { "path": "architecture/design-system-auth.md", "kind": "architecture", "change": "modified", "digest": "b8e6623770d867a7983801e89c3d642493130c1af201896d8871c4d19764282c" },
+    { "path": "architecture/design-system-frontend.md", "kind": "architecture", "change": "modified", "digest": "a4b2542d0371714187e1ebc25b569ae290dcc2eb7022c7d07f916631e7c87eb4" },
+    { "path": "architecture/design-system-ui-ux.md", "kind": "architecture", "change": "modified", "digest": "7c954489feed2dd1eda7149f61eb72b0d544a83fe5195c8d442506d4361d434c" },
+    { "path": "architecture/graph.json", "kind": "architecture", "change": "merged", "digest": "a9f68978e724163d3bd7461fe18b731d9295606faf6eb2d57ed98bad61f57b7c" },
+    { "path": "docs/design-system.md", "kind": "document", "change": "modified", "digest": "0f6e4aef2204cbd125a38b241d46021147093ef921741f5e8904faf87e2cc3a9" },
+    { "path": "docs/design-system/requirements-baseline.md", "kind": "document", "change": "modified", "digest": "c680076161f6c1724bd3137b54686d5b94e1ecb96f3c25a38d5b1bdc92b0ccca" },
+    { "path": "docs/design-system/design-review.md", "kind": "document", "change": "modified", "digest": "088114608f0eec8e2d7b24710c21ffdff5fe2ce92b943a997f782309a09ef855" },
+    { "path": "docs/design-system/acceptance.md", "kind": "document", "change": "modified", "digest": "ad5b991ef4ccd50015cf8b6255fc27917aea72ea2a6be020cfdded5a4bdf1dac" },
+    { "path": "features/feat-design-system-foundation.md", "kind": "feature", "change": "modified (本文の S5 注記のみ。frontmatter は digest 保全のため不変)", "digest": "fdcd9cad6c03f589d36a5a1a892c4d7646f16025e0da68ec96576a5cbe458b3b" },
+    { "path": "system-spec/archive/2026-09-14-account-login/README.md", "kind": "specification-archive", "change": "added", "digest": "518da10f826ee5ac49a8228801e20a8308efab4aa190bcd42e57905d1db78a33" },
+    { "path": "packages/web/src/common-shell-routes.dom.test.tsx", "kind": "contract-test", "change": "modified", "digest": "ae62835bcc9c5862e2c0fd70199b31823cd2c41eecb4e7bb32079646c781d99d" }
+  ],
+  "not_reflected": [
+    {
+      "path": "system-spec/ 直下の確定章 (00-requirements-definition / auth / ui-ux / frontend / index)",
+      "reason": "status: confirmed の確定章で、変更は C01/C03 単一 writer の R4-reopen 経由に限られる。reopen は lineage と配信ハッシュの再生成を伴うため MVP 範囲外とした。上位ゴール G2『共通シェルで描画』は認証後画面について有効で、ログイン除外は下流の specs/architecture で明示した。",
+      "follow_up": "ui-ux / auth / frontend セルを R4-reopen し、ログイン除外を確定章へ反映する"
+    },
+    {
+      "path": "tasks/feat-design-system-foundation/*.md",
+      "reason": "ログインとシェルに関する記述が無く影響なし。task は evaluated_digest を持つ graph 正本で、C02 writer 以外の直接編集は guard-graph-schema に遮断される。"
+    }
+  ],
+  "verification": {
+    "web_test": "73 files / 540 tests passed",
+    "typecheck": "pass",
+    "lint": "pass (graph-lineage 45 node 一致、design-tokens 直書き 0 件、document contract、delivery 13 node / 18 hash 一致、security:content OK)",
+    "design_system_fast": "pass",
+    "js_budget": "106.61KiB / 110KiB"
+  },
+  "beads_ids": ["kanjo-5kq", "kanjo-5kq.1", "kanjo-5kq.2", "kanjo-5kq.3", "kanjo-5kq.4", "kanjo-5kq.5", "kanjo-5kq.6", "kanjo-5kq.7", "kanjo-5kq.8", "kanjo-5kq.9", "kanjo-5kq.10", "kanjo-5kq.11", "kanjo-5kq.12", "kanjo-5kq.13"],
+  "dev_graph_node_ids": ["feat-design-system-foundation", "SYS-DSFOUND-P01", "SYS-DSFOUND-P02", "SYS-DSFOUND-P03", "SYS-DSFOUND-P04", "SYS-DSFOUND-P05", "SYS-DSFOUND-P06", "SYS-DSFOUND-P07", "SYS-DSFOUND-P08", "SYS-DSFOUND-P09", "SYS-DSFOUND-P10", "SYS-DSFOUND-P11", "SYS-DSFOUND-P12", "SYS-DSFOUND-P13"]
+}

@@ -1,86 +1,46 @@
 {
   "references": [
     {
-      "target_id": "cloudflare-workers",
-      "retrieved_at": "2026-09-13T01:55:58Z",
-      "source_url": "https://developers.cloudflare.com/workers/runtime-apis/web-crypto/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-04-23",
-      "latest_checked_at": "2026-09-13T01:55:58Z",
-      "summary": "Workers ランタイムの Web Crypto 対応表。PBKDF2 が deriveBits()/deriveKey() で、HMAC が sign()/verify() で対応済みであることを確認した。加えて非標準拡張 crypto.subtle.timingSafeEqual が提供されており、タイミング攻撃耐性のあるバッファ比較を自前のダイジェスト比較に頼らず実装できる。"
-    },
-    {
-      "target_id": "cloudflare-d1",
-      "retrieved_at": "2026-09-13T01:55:58Z",
-      "source_url": "https://developers.cloudflare.com/d1/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-04-30",
-      "latest_checked_at": "2026-09-13T01:55:58Z",
-      "summary": "D1 は Free/Paid 双方で提供される SQLite 互換のサーバーレス DB で GA。30 日以内の Time Travel (point-in-time recovery) とグローバル読み取りレプリカを備える。本サイクルで追加する users / user_password_resets の永続化先として前提が変わらないことを確認した。"
-    },
-    {
-      "target_id": "hono",
-      "retrieved_at": "2026-09-13T01:55:58Z",
-      "source_url": "https://github.com/honojs/hono/releases",
-      "official_publisher": "Hono (honojs)",
-      "official_host": "github.com",
-      "version": "4.13.7",
-      "latest_checked_at": "2026-09-13T01:55:58Z",
-      "summary": "公式リポジトリのリリース一覧で最新が v4.13.7。直近リリースは hono/jsx の boundary component で未エスケープ文字列が描画される XSS 修正を含む。本リポジトリは 4.13.5 のため、認証系の実装に入る前に 4.13.7 へ追随する必要がある。"
-    },
-    {
-      "target_id": "react",
-      "retrieved_at": "2026-09-13T01:55:58Z",
-      "source_url": "https://react.dev/versions",
-      "official_publisher": "Meta",
-      "official_host": "react.dev",
-      "version": "19.3",
-      "latest_checked_at": "2026-09-13T01:55:58Z",
-      "summary": "React の最新安定版は 19.3。ログイン画面・パスワード変更画面・利用者管理画面はいずれも既存の関数コンポーネント + hooks の範囲で実装でき、新しい API を必要としないことを確認した。"
-    },
-    {
-      "target_id": "vite",
-      "retrieved_at": "2026-09-13T01:55:58Z",
-      "source_url": "https://vite.dev/guide/",
-      "official_publisher": "Vite",
-      "official_host": "vite.dev",
-      "version": "8.3.0",
-      "latest_checked_at": "2026-09-13T01:55:58Z",
-      "summary": "Vite の現行は v8.3.0 で、Node.js 20.19+ / 22.12+ を要求する。本番ビルドの既定ターゲットは 2023 年中頃時点の Baseline Widely Available であり、Cookie ベース認証に必要な API は全て射程内。"
-    },
-    {
-      "target_id": "zod",
-      "retrieved_at": "2026-09-13T01:55:58Z",
-      "source_url": "https://zod.dev/",
-      "official_publisher": "Zod",
-      "official_host": "zod.dev",
-      "version": "4.6",
-      "latest_checked_at": "2026-09-13T01:55:58Z",
-      "summary": "Zod は v4 が安定版 (最新 4.6)、外部依存なしで core 2kb gzipped。ログイン・招待・パスワード変更の入力検証を既存の zValidator 経由で継続できる。メールアドレス検証の具体 API は別途リリースノートの確認が要る。"
-    },
-    {
-      "target_id": "web-crypto-api",
-      "retrieved_at": "2026-09-13T01:55:58Z",
-      "source_url": "https://www.w3.org/TR/WebCryptoAPI/",
-      "official_publisher": "W3C",
+      "target_id": "wcag22-contrast-minimum",
+      "retrieved_at": "2026-09-13T05:06:15Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html",
+      "official_publisher": "W3C WAI",
       "official_host": "www.w3.org",
-      "version": "Level 2 First Public Working Draft",
-      "last_updated": "2025-04-22",
-      "latest_checked_at": "2026-09-13T01:55:58Z",
-      "summary": "Web Cryptography Level 2 は 2025-04-22 公開の First Public Working Draft。PBKDF2 は Pbkdf2Params で反復回数とハッシュを指定して deriveBits を行い、HMAC は sign/verify を定義する。実装側の対応可否は Workers の対応表 (cloudflare-workers) と併読する。"
+      "version": "WCAG 2.2",
+      "last_updated": "2026-06-01",
+      "latest_checked_at": "2026-09-13T05:06:15Z",
+      "summary": "達成基準 1.4.3 (AA) は通常文字に 4.5:1 以上、大きな文字 (18pt 以上、太字 14pt 以上、または CJK で同等の大きさ) に 3:1 以上のコントラスト比を求める (2026-06-01 更新)。本仕様の文字用トークンは本文 14〜16px が大きな文字に当たらないため 4.5:1 を基準とする。FINAL-UI の注意色 #B97000 は白い面で 3.90:1 で通常文字の基準を満たさないため、文字には暗い派生色を使う役割分離 (qa-ui-ux-web-ds-decision-002) の根拠とする。"
     },
     {
-      "target_id": "owasp-asvs",
-      "retrieved_at": "2026-09-13T01:55:58Z",
-      "source_url": "https://owasp.github.io/www-project-application-security-verification-standard",
-      "official_publisher": "OWASP Foundation",
-      "official_host": "owasp.github.io",
-      "version": "5.0.0",
-      "last_updated": "2025-05-30",
-      "latest_checked_at": "2026-09-13T01:55:58Z",
-      "summary": "ASVS の現行は 5.0.0 (2025-05-30 リリース)。要件参照は v5.0.0-1.2.5 形式。パスワード保存・認証・セッション管理の検証要件を参照する上流指針 (doctrine anchor の authentication/security authority) として採用する。章別の具体要件は v5.0.0 ブランチの本文を別途参照する。"
+      "target_id": "wcag22-non-text-contrast",
+      "retrieved_at": "2026-09-13T05:06:15Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html",
+      "official_publisher": "W3C WAI",
+      "official_host": "www.w3.org",
+      "version": "WCAG 2.2",
+      "last_updated": "2026-06-15",
+      "latest_checked_at": "2026-09-13T05:06:15Z",
+      "summary": "達成基準 1.4.11 (AA) は、UI 部品の識別と状態に必要な視覚情報、および内容理解に必要なグラフィックの部分 (チャートの棒や線を含む) に、隣接色に対して 3:1 以上を求める。計算値は丸めずに比較する (2.999:1 は不合格)。画像実測の収入棒 #599AE9 (2.91:1) と支出棒 #EB9099 (2.34:1) はこれを満たさないため、系列色を色相を保って 3:1 以上へ調整する推論 (qa-ui-ux-web-ds-inference-003) と、コントラスト検証テストで丸めずに比較する実装方針の根拠とする。"
+    },
+    {
+      "target_id": "chartjs-colors",
+      "retrieved_at": "2026-09-13T05:06:15Z",
+      "source_url": "https://www.chartjs.org/docs/latest/general/colors.html",
+      "official_publisher": "Chart.js",
+      "official_host": "www.chartjs.org",
+      "last_updated": "2025-10-13",
+      "latest_checked_at": "2026-09-13T05:06:15Z",
+      "summary": "Chart.js は Chart.defaults の backgroundColor / borderColor / color を全体既定値とし、dataset ごとに backgroundColor / borderColor を指定する。色は hex・RGB(A)・HSL(A) と CanvasPattern / CanvasGradient を受け付け、CSS 変数を色として直接受け取る方法は記載されていない (2025-10-13 更新)。このため charts.ts は CSS 変数を参照できず、色値を JS 側で持つ必要がある。トークン正本 (packages/core/src/design-tokens.ts) から JS の色値を直接渡す設計 (qa-frontend-web-ds-decision-002) の根拠とする。docs は latest 版で数値の版表記を持たないため更新日で記録する。"
+    },
+    {
+      "target_id": "cloudflare-workers-static-assets-headers",
+      "retrieved_at": "2026-09-13T05:06:15Z",
+      "source_url": "https://developers.cloudflare.com/workers/static-assets/headers/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-08-25",
+      "latest_checked_at": "2026-09-13T05:06:15Z",
+      "summary": "Workers の静的アセットでは assets ディレクトリの _headers ファイルで URL パターンごとにヘッダーを付ける (最大 100 ルール)。_headers は Worker コードが生成した応答には適用されず、run_worker_first の対象も同様である (2026-08-25 更新)。kanjo は run_worker_first を /api/* に限っているため、SPA の HTML・CSS・JS には packages/web/public/_headers の CSP (font-src 'self' data: 等) が効く。Web フォントを外部から読まずトークンをビルド時に同梱する方針がこの CSP の範囲で完結する根拠とする (qa-security-web-ds-observed-001)。"
     }
   ]
 }
