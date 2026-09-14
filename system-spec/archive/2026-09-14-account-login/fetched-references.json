@@ -1,0 +1,86 @@
+{
+  "references": [
+    {
+      "target_id": "cloudflare-workers",
+      "retrieved_at": "2026-09-13T01:55:58Z",
+      "source_url": "https://developers.cloudflare.com/workers/runtime-apis/web-crypto/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-23",
+      "latest_checked_at": "2026-09-13T01:55:58Z",
+      "summary": "Workers ランタイムの Web Crypto 対応表。PBKDF2 が deriveBits()/deriveKey() で、HMAC が sign()/verify() で対応済みであることを確認した。加えて非標準拡張 crypto.subtle.timingSafeEqual が提供されており、タイミング攻撃耐性のあるバッファ比較を自前のダイジェスト比較に頼らず実装できる。"
+    },
+    {
+      "target_id": "cloudflare-d1",
+      "retrieved_at": "2026-09-13T01:55:58Z",
+      "source_url": "https://developers.cloudflare.com/d1/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-30",
+      "latest_checked_at": "2026-09-13T01:55:58Z",
+      "summary": "D1 は Free/Paid 双方で提供される SQLite 互換のサーバーレス DB で GA。30 日以内の Time Travel (point-in-time recovery) とグローバル読み取りレプリカを備える。本サイクルで追加する users / user_password_resets の永続化先として前提が変わらないことを確認した。"
+    },
+    {
+      "target_id": "hono",
+      "retrieved_at": "2026-09-13T01:55:58Z",
+      "source_url": "https://github.com/honojs/hono/releases",
+      "official_publisher": "Hono (honojs)",
+      "official_host": "github.com",
+      "version": "4.13.7",
+      "latest_checked_at": "2026-09-13T01:55:58Z",
+      "summary": "公式リポジトリのリリース一覧で最新が v4.13.7。直近リリースは hono/jsx の boundary component で未エスケープ文字列が描画される XSS 修正を含む。本リポジトリは 4.13.5 のため、認証系の実装に入る前に 4.13.7 へ追随する必要がある。"
+    },
+    {
+      "target_id": "react",
+      "retrieved_at": "2026-09-13T01:55:58Z",
+      "source_url": "https://react.dev/versions",
+      "official_publisher": "Meta",
+      "official_host": "react.dev",
+      "version": "19.3",
+      "latest_checked_at": "2026-09-13T01:55:58Z",
+      "summary": "React の最新安定版は 19.3。ログイン画面・パスワード変更画面・利用者管理画面はいずれも既存の関数コンポーネント + hooks の範囲で実装でき、新しい API を必要としないことを確認した。"
+    },
+    {
+      "target_id": "vite",
+      "retrieved_at": "2026-09-13T01:55:58Z",
+      "source_url": "https://vite.dev/guide/",
+      "official_publisher": "Vite",
+      "official_host": "vite.dev",
+      "version": "8.3.0",
+      "latest_checked_at": "2026-09-13T01:55:58Z",
+      "summary": "Vite の現行は v8.3.0 で、Node.js 20.19+ / 22.12+ を要求する。本番ビルドの既定ターゲットは 2023 年中頃時点の Baseline Widely Available であり、Cookie ベース認証に必要な API は全て射程内。"
+    },
+    {
+      "target_id": "zod",
+      "retrieved_at": "2026-09-13T01:55:58Z",
+      "source_url": "https://zod.dev/",
+      "official_publisher": "Zod",
+      "official_host": "zod.dev",
+      "version": "4.6",
+      "latest_checked_at": "2026-09-13T01:55:58Z",
+      "summary": "Zod は v4 が安定版 (最新 4.6)、外部依存なしで core 2kb gzipped。ログイン・招待・パスワード変更の入力検証を既存の zValidator 経由で継続できる。メールアドレス検証の具体 API は別途リリースノートの確認が要る。"
+    },
+    {
+      "target_id": "web-crypto-api",
+      "retrieved_at": "2026-09-13T01:55:58Z",
+      "source_url": "https://www.w3.org/TR/WebCryptoAPI/",
+      "official_publisher": "W3C",
+      "official_host": "www.w3.org",
+      "version": "Level 2 First Public Working Draft",
+      "last_updated": "2025-04-22",
+      "latest_checked_at": "2026-09-13T01:55:58Z",
+      "summary": "Web Cryptography Level 2 は 2025-04-22 公開の First Public Working Draft。PBKDF2 は Pbkdf2Params で反復回数とハッシュを指定して deriveBits を行い、HMAC は sign/verify を定義する。実装側の対応可否は Workers の対応表 (cloudflare-workers) と併読する。"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-13T01:55:58Z",
+      "source_url": "https://owasp.github.io/www-project-application-security-verification-standard",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "owasp.github.io",
+      "version": "5.0.0",
+      "last_updated": "2025-05-30",
+      "latest_checked_at": "2026-09-13T01:55:58Z",
+      "summary": "ASVS の現行は 5.0.0 (2025-05-30 リリース)。要件参照は v5.0.0-1.2.5 形式。パスワード保存・認証・セッション管理の検証要件を参照する上流指針 (doctrine anchor の authentication/security authority) として採用する。章別の具体要件は v5.0.0 ブランチの本文を別途参照する。"
+    }
+  ]
+}

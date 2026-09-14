@@ -11,6 +11,7 @@
     "build:bundle": "pnpm run typecheck && vite build",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json --noEmit",
     "test": "vitest run",
+    "test:coverage:account-login": "vitest run src/account-login.dom.test.tsx src/api.test.ts --coverage.enabled --coverage.provider=v8 --coverage.reporter=text --coverage.include=src/App.tsx --coverage.include=src/api-client.ts --coverage.include=src/pages/Login.tsx --coverage.include=src/pages/PasswordChange.tsx --coverage.include=src/components/UserAdmin.tsx --coverage.thresholds.statements=80 --coverage.thresholds.branches=80 --coverage.thresholds.functions=80 --coverage.thresholds.lines=80",
     "check:js-budget": "node scripts/check-initial-js-budget.mjs",
     "strip:manifest": "node scripts/strip-vite-manifest.mjs",
     "check:thead": "node scripts/check-thead-render.mjs",

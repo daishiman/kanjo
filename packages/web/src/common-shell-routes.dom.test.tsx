@@ -125,12 +125,14 @@ describe('20ルートの共通シェル (FR-003)', () => {
     expectOneShell(container);
   });
 
-  it('ログイン(未認証で LoginPage を Layout locked に描画)も同じシェルを1つずつ持つ', async () => {
+  // PR #48 の利用者判断: ログイン画面は認証前の単一カラムで、アプリの枠(サイドバー・ヘッダー・フッター)を出さない。
+  // 共通シェルの母数は認証後19 route。ログインは「シェルを持たない」ことを反例として固定する。
+  it('ログイン(未認証)は共通シェルの外に描画し、サイドバー・ヘッダー・フッターを持たない', async () => {
     stubFetch(false);
     const { container } = renderApp('/');
     expect(await screen.findByRole('button', { name: /ログイン/ })).toBeTruthy();
-    expect(container.querySelector('.shell-locked')).not.toBeNull();
-    expectOneShell(container);
+    expect(container.querySelectorAll('aside.sidebar, .shell-locked')).toHaveLength(0);
+    expect(screen.queryAllByRole('banner')).toHaveLength(0);
   });
 });
 

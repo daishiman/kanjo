@@ -10,7 +10,7 @@ Run reference: `docs/design-system/run-reference.json`
 | AC-002 / S2 | 全実描画chart consumerが意味系列・装飾fill helperを使用 | review待ち | chart contractとbrowser checks |
 | AC-003 / S3 | coreを唯一の値正本とし、schema・関係不変条件・consumer一致を検査 | review待ち | core testとtoken check |
 | AC-004 / S4 | 文字、Button/入力境界、意味系列のコントラスト | review待ち | contrast contract |
-| AC-005 / S5 | route registry由来の20ルートがLayout/PageShellを使用 | review待ち | common-shell contract |
+| AC-005 / S5 | route registry由来の認証後19ルートがLayout/PageShellを使用し、ログインはシェルの外(PR #48) | review待ち | common-shell contract |
 | AC-006 / S6 | 型・lint・package test・browser check・bundle予算 | review待ち | verification run |
 
 標準の主・副・危険・text・submit操作は共通Buttonを通す。menu/tab/sort/toggle/category pickerなどARIA固有状態と一体のcontrolだけをnative buttonの例外とする。本文のreading/data幅、page gutter、body行高、Button 44px、chart motionは意味トークンのconsumerへ接続済み。

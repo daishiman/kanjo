@@ -517,7 +517,7 @@
         "imported_at": "2026-09-10T06:03:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "8ef2dbf6dd24ac4e3884e328fcddb7bc711b21f9e4c54d0b6f760284746baf44",
-        "source_path": "system-spec/archive/2026-09-13-mf-business-classification/backend.md",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -540,7 +540,7 @@
         "imported_at": "2026-09-10T06:03:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "2fe5bbedace90f133275f839664b0b31ff7394e29f0ef4495cbed932e6816c0e",
-        "source_path": "system-spec/archive/2026-09-13-mf-business-classification/database.md",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -563,7 +563,7 @@
         "imported_at": "2026-09-10T06:03:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "c0e51ae2eff4d0c53e4008887db4a39f6a508fa74c3422c32bf0fda0fd3cd31b",
-        "source_path": "system-spec/archive/2026-09-13-mf-business-classification/frontend.md",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -586,7 +586,7 @@
         "imported_at": "2026-09-10T06:03:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "d835852b1d3cadf91f2679d08b8472b369775907805c49f3ad381f025ea9fcd3",
-        "source_path": "system-spec/archive/2026-09-13-mf-business-classification/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -609,7 +609,7 @@
         "imported_at": "2026-09-10T06:03:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "af72f5ae696d778cf43742b746026376215565ba28a46de52e7b930b480f4567",
-        "source_path": "system-spec/archive/2026-09-13-mf-business-classification/auth.md",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -632,7 +632,7 @@
         "imported_at": "2026-09-10T06:03:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "96053444178396c297587b1bc18328344cf9f5301945414f38f30c87751f5f99",
-        "source_path": "system-spec/archive/2026-09-13-mf-business-classification/security.md",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -655,7 +655,7 @@
         "imported_at": "2026-09-10T06:03:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "d13ad4a5a60401079275bbaccb6a9ef671f0118ae7db6f7f44f42c248e5854d7",
-        "source_path": "system-spec/archive/2026-09-13-mf-business-classification/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -678,7 +678,7 @@
         "imported_at": "2026-09-10T06:03:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "696083a21c3ae1034c1eeff2c8db92cb2c3e7c7f499f57ee1f89360da74df3a2",
-        "source_path": "system-spec/archive/2026-09-13-mf-business-classification/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -868,6 +868,190 @@
       },
       "referenced_by": [
         "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-account-login-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "アカウントログイン — 認証機構",
+      "file_path": "architecture/account-login-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T05:02:52Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "43035607c89c41af2dfa49dbfe617dba686597e7bc4b7331c46ab3b5b003c0b7",
+        "source_path": "system-spec/archive/2026-09-14-account-login/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-account-login"
+      ]
+    },
+    {
+      "id": "arch-account-login-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "アカウントログイン — API とドメイン",
+      "file_path": "architecture/account-login-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T05:02:52Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "a2b45a3f2b11521fedccf7f55a17247310aa093040f39cbf7ac3780b943e93bc",
+        "source_path": "system-spec/archive/2026-09-14-account-login/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-account-login"
+      ]
+    },
+    {
+      "id": "arch-account-login-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "アカウントログイン — データモデルと移行",
+      "file_path": "architecture/account-login-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T05:02:52Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8b5a6ca7ceb1209e2dede267354cc274c54bdca70dc6daa616e0d5e8836e6d6b",
+        "source_path": "system-spec/archive/2026-09-14-account-login/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-account-login"
+      ]
+    },
+    {
+      "id": "arch-account-login-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "アカウントログイン — フロントエンド構成",
+      "file_path": "architecture/account-login-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T05:02:52Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "61aea1297840c38f276b9eb26b4320fe2f512bd28e1208666d53c1afeb15b026",
+        "source_path": "system-spec/archive/2026-09-14-account-login/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-account-login"
+      ]
+    },
+    {
+      "id": "arch-account-login-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "アカウントログイン — 配信構成と secret",
+      "file_path": "architecture/account-login-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T05:02:52Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "23f70c2c85cd7bdc7b57862201134c1098d11907a38033b417b59a59daa96dd3",
+        "source_path": "system-spec/archive/2026-09-14-account-login/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-account-login"
+      ]
+    },
+    {
+      "id": "arch-account-login-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "アカウントログイン — 運用と復旧",
+      "file_path": "architecture/account-login-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T05:02:52Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "d52741d350e0801e4dac1a37283954761dc198d75cb95a6b85683fd1336f8373",
+        "source_path": "system-spec/archive/2026-09-14-account-login/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-account-login"
+      ]
+    },
+    {
+      "id": "arch-account-login-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "アカウントログイン — セキュリティ方針",
+      "file_path": "architecture/account-login-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T05:02:52Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "87a4c141bbe1788454f85970f6b8c1756203b93c4d853a1a25bc23a1dd7a1299",
+        "source_path": "system-spec/archive/2026-09-14-account-login/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-account-login"
+      ]
+    },
+    {
+      "id": "arch-account-login-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "アカウントログイン — 画面構成と情報優先度",
+      "file_path": "architecture/account-login-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T04:15:00Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "b35d162fb978ca17427996dbc7843e0668cd393ed95d95ae4eafc47743bcf688",
+        "source_path": "system-spec/archive/2026-09-14-account-login/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-account-login"
       ]
     }
   ]

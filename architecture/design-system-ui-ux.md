@@ -108,7 +108,7 @@ React 18 + Vite の SPA。見た目の値は CSS 変数と canvas 描画値と�
 
 #### Routes, screens and navigation
 
-既存 20 ルートを共通シェルの下に置く。ヘッダーは現在地・全体期間・データ鮮度だけを持ち、ページ固有の期間は別名で表示する。
+既存の認証後19ルートを共通シェルの下に置く (ログインは PR #48 によりシェルの外)。ヘッダーは現在地・全体期間・データ鮮度だけを持ち、ページ固有の期間は別名で表示する。
 
 #### Component and design-system boundaries
 

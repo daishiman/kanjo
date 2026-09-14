@@ -19,6 +19,7 @@ import {
 } from '@kanjo/core';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
 import { recordTestMigrationHead } from './schema-guard.test-support.js';
 
@@ -26,7 +27,6 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  AUTH_PASSWORD: 'synthetic-test-password',
   SESSION_SECRET: 'synthetic-test-secret',
 };
 
@@ -115,16 +115,7 @@ beforeAll(async () => {
   d1 = (await mf.getD1Database('DB')) as D1Database;
   files = (await mf.getR2Bucket('FILES')) as unknown as R2Bucket;
   await applyMigrations(d1);
-  const login = await app.request(
-    '/api/auth/login',
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
-    },
-    env(),
-  );
-  cookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
+  cookie = await loginForTest(app, env());
   expect(cookie).not.toBe('');
 });
 

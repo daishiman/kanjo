@@ -84,6 +84,7 @@ design-tokens.ts を唯一の正本として styles.css と charts.ts の値が�
 - [ ] S3 (G1): design-tokens.ts を唯一の実装正本とし、schema/関係不変条件と CSS/charts consumer の一致を自動検査する。
 - [ ] S4 (G5): 文字用トークンのコントラストが背景と面の双方に対し 4.5:1 以上、部品を見分ける枠のトークンとチャート系列色が 3:1 以上である。装飾罫線 (#D7E0E2) は 1.4.11 の対象外で、部品の枠には使われていない。
 - [ ] S5 (G2): route registry由来の20ルートすべてが共通PageShell (サイドバー 220px・ヘッダー 64px・フッター) の下で描画される。
+  - 改訂 (2026-09-14): PR #48 (2026-09-14) でログイン画面は共通シェルの外の単一カラムへ変わったため、共通シェルの母数は認証後の19ルートとし、ログインは「シェルを持たない」ことを反例として検査する。
 - [ ] S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプト (thead / mobile-layout / financial-figure / financial-routes) が全て緑のままである。
 
 ## アーキテクチャ参照

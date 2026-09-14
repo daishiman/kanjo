@@ -1,0 +1,1125 @@
+{
+  "feature_package_id": "feature-package/feat-account-login",
+  "parent_feature": "feat-account-login",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "explicit-cli"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/index.md",
+      "system-spec/00-requirements-definition.md",
+      "specs/spec-account-login.md",
+      "features/feat-account-login.md",
+      "features/feat-account-login.context.json"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "features/feat-account-login.md の受入8件が漏れなくベースラインへ写され、各件に観測可能な判定条件が付いている",
+        "利用者ドメイン・認証API・ログイン画面・管理画面の4面それぞれについて、変更してよい既存資産の境界が列挙されている",
+        "Cloudflare Access 経路・自己サインアップ・メール送信によるリセットを実装しないことが、スコープ外として明記されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P01.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P01.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P01",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-ACCTLOGIN-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-auth",
+        "arch-account-login-security"
+      ],
+      "rollback": "記録だけを行い既存コードへ触れないため、生成した証跡 JSON を削除すれば元の状態に戻る。",
+      "secondary_workstreams": [
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "認証要件ベースラインの確定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "受入8件それぞれに、実行時に真偽が判定できる観測点が1件以上ひも付いていることを確認する",
+        "ベースラインが参照した確定文書の digest が、現行ファイルの digest と一致することを確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-01-requirements-baseline.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "users / audit_log のスキーマが、パスワードを PBKDF2-HMAC-SHA256 で 210,000 回以上反復した派生値としてのみ保持する形になっている",
+        "session_generation の増加だけで、その利用者の既存セッションを全て失効させられることが設計上示されている",
+        "既存20画面が依拠する 401 と 503 の応答契約に変更が無いことが設計上示されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P02.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P01"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P02.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P02",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-ACCTLOGIN-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-database",
+        "arch-account-login-backend",
+        "arch-account-login-auth"
+      ],
+      "rollback": "設計文書のみを生成するため、文書を破棄すれば元に戻る。migration は本フェーズでは適用しない。",
+      "secondary_workstreams": [
+        "data",
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "利用者ドメインとセッション境界の設計",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "設計した全ての列が、P01 ベースラインのいずれかの受入条件に紐付くことを確認する",
+        "既存の業務系ハンドラの入出力シグネチャが設計前後で変化しないことを、対象ファイルの一覧突合で確認する"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-02-architecture-design.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "ログイン画面にヘッダー・フッター・サイドバーを描画しない方針が、レビュー結果として確認されている",
+        "Cloudflare Access からのログインを促す表示が画面設計に存在しないことが確認されている",
+        "ログイン失敗時の応答が、登録済みメールアドレスか否かを区別できない形になっていることが確認されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P03.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P02"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P03.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P03",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-ACCTLOGIN-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-security",
+        "arch-account-login-ui-ux",
+        "arch-account-login-frontend"
+      ],
+      "rollback": "レビュー記録のみを生成するため、記録を破棄すれば元に戻る。",
+      "secondary_workstreams": [
+        "frontend",
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "セキュリティと画面設計のレビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "脅威一覧の各行に防御が対応し、対応の無い行が0件であることを確認する",
+        "参照画像との差分表に、判断記録の無い未解消行が0件であることを確認する"
+      ],
+      "workstream_kind": "security",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-03-design-review.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "member が /api/admin/* の全エンドポイントに対して 403 を受け取ることを確かめるケースが設計されている",
+        "保持を有効にした場合は30日、無効にした場合は12時間という期限差を確かめるケースが設計されている",
+        "ログイン画面の DOM にナビゲーション要素が0件であることを確かめるケースが設計されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P04.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P03"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P04.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P04",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-ACCTLOGIN-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-auth",
+        "arch-account-login-security",
+        "arch-account-login-ui-ux"
+      ],
+      "rollback": "設計記録のみを生成するため、記録を破棄すれば元に戻る。",
+      "secondary_workstreams": [
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "受入8件に対するテスト設計",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "受入8件の全てに対応テストが存在し、対応の無い受入が0件であることを確認する",
+        "各テストについて、現行実装で落ちる理由が1行で説明されていることを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-04-test-design.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "正しいメールアドレスとパスワードで認証が成功し、誤った資格情報では成功しない",
+        "パスワードが PBKDF2-HMAC-SHA256 で 210,000 回以上反復した派生値として保存され、平文がどこにも残らない",
+        "管理者が設定画面から利用者の追加・停止・一時パスワード再発行を完結でき、一時パスワードは発行直後の1度だけ表示される",
+        "ログイン画面がヘッダー・フッター・サイドバーを描画せず、アイコンが常にテキストラベルと併記されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P05.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P04"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P05.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P05",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-ACCTLOGIN-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-database",
+        "arch-account-login-backend",
+        "arch-account-login-frontend",
+        "arch-account-login-ui-ux"
+      ],
+      "rollback": "実装は専用ブランチで行うため、ブランチを破棄すれば既存の動作へ戻る。migration は未適用の状態で保持し、本番配信は P13 まで行わない。",
+      "secondary_workstreams": [
+        "frontend",
+        "data",
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "利用者認証と管理画面の実装",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "P04 で設計した全テストが実装され、実行して緑になることを確認する",
+        "パスワードの平文がログ・レスポンス・データベースのいずれにも残らないことを、該当コード経路の確認で検証する"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ]
+    },
+    {
+      "acceptance": [
+        "P04 で設計した全テストが実行され、失敗が0件である",
+        "旧実装に対する実行で、受入に対応するテストが落ちたことが記録されている",
+        "失敗経路のケースが期待どおりの応答を返すことが記録されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P06.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P05"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P06.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P06",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-ACCTLOGIN-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-security",
+        "arch-account-login-auth"
+      ],
+      "rollback": "実行と記録だけを行うため、記録を破棄すれば元に戻る。",
+      "secondary_workstreams": [
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "テスト実行と失敗経路の確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "テスト件数が P04 の設計件数と一致し、失敗が0件であることを確認する",
+        "旧実装に対して、受入に対応する各テストが落ちたことを実行記録で確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-06-test-run.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入8件が全て充足と判定され、未充足が0件である",
+        "保持を有効にした場合の30日という帰結が、チェックボックスの脇で読み取れることが確認されている",
+        "既存20画面の呼び出しが 401 と 503 の応答契約の変更なしに動作することが確認されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P07.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P06"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P07.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P07",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-ACCTLOGIN-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-auth",
+        "arch-account-login-ui-ux",
+        "arch-account-login-security"
+      ],
+      "rollback": "判定記録だけを生成するため、記録を破棄すれば元に戻る。",
+      "secondary_workstreams": [
+        "frontend",
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "受入8件の充足確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "受入8件の全てに判定と根拠が記録され、判定の無い行が0件であることを確認する",
+        "ログイン画面の DOM にナビゲーション要素が0件であることを、実描画に対して確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-07-acceptance.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "active runtimeと必須設定に共有パスワード認証分岐が0件である",
+        "SESSION_SECRET の入れ替え手順が、実行者が読んで再現できる粒度で記述されている",
+        "初期管理者アカウントが存在しない状態から運用を開始できる手順が用意されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P08.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P07"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P08.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P08",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-ACCTLOGIN-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-infrastructure",
+        "arch-account-login-maintenance-ops",
+        "arch-account-login-auth"
+      ],
+      "rollback": "旧経路の除去は専用ブランチで行うため、ブランチを戻せば旧経路が復活する。SESSION_SECRET は入れ替え前の値を保持しない方針とし、戻す場合は全利用者の再ログインを前提とする。",
+      "secondary_workstreams": [
+        "backend",
+        "infrastructure"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "AUTH_PASSWORD 廃止と切替手順の適用",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "active runtimeと必須設定を検索し、共有パスワード認証分岐が0件であることを確認する",
+        "SESSION_SECRET を入れ替えた状態で既存セッションが全て無効になることを、検証環境で確認する"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        "packages/api/src",
+        "wrangler.toml"
+      ]
+    },
+    {
+      "acceptance": [
+        "総当たり抑止が実際に働き、規定回数を超えた試行が拒否されることが確認されている",
+        "ログ・エラー応答・監査記録のいずれにもパスワードとセッション値が含まれないことが確認されている",
+        "audit_log に認証操作が actor_user_id 付きで記録されることが確認されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P09.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P08"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P09.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P09",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-ACCTLOGIN-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-security",
+        "arch-account-login-auth",
+        "arch-account-login-infrastructure"
+      ],
+      "rollback": "点検記録だけを生成するため、記録を破棄すれば元に戻る。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "セキュリティ観点の総点検",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "P03 の脅威一覧の各行について、実機での確認結果が記録されていることを確認する",
+        "認証関連のログ出力を実際に採取し、パスワードとセッション値が含まれないことを確認する"
+      ],
+      "workstream_kind": "security",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-09-quality-assurance.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入8件の全てについて、充足の根拠となるフェーズ成果が特定されている",
+        "残課題が全て、リリース前に閉じるか後続へ送るかのいずれかに分類されている",
+        "リリース可否が明示的に判定されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P10.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P09"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P10.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P10",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-ACCTLOGIN-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-security",
+        "arch-account-login-maintenance-ops"
+      ],
+      "rollback": "判定記録だけを生成するため、記録を破棄すれば元に戻る。",
+      "secondary_workstreams": [
+        "documentation"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "最終レビューと残課題の確定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "受入8件の全てに、それを満たしたフェーズと根拠がひも付くことを確認する",
+        "残課題の各行に、閉じるか後続へ送るかの判断が記録されていることを確認する"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-10-final-review.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入8件の全てに再確認可能な証跡がひも付いている",
+        "証跡の参照先が全て実在し、digest が一致している",
+        "feature の完了判定に必要な根拠が索引から一意にたどれる"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P11.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P10"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P11.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P11",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-ACCTLOGIN-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-maintenance-ops",
+        "arch-account-login-security"
+      ],
+      "rollback": "証跡索引だけを生成するため、索引を破棄すれば元に戻る。参照先の実行記録は変更しない。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "証跡の収集と feature 完了根拠の確定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "受入8件の全てに証跡が対応し、対応の無い受入が0件であることを確認する",
+        "各証跡が参照する実行記録が実在し、digest が一致することを確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-11-evidence.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "管理者が手順書だけを見て、利用者の追加・停止・一時パスワード再発行を完了できる",
+        "パスワードを忘れた利用者が案内に従って管理者へ到達できる流れが記述されている",
+        "ログイン失敗率とロックアウトの監視手順が、確認すべき閾値とともに記述されている"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "script",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P12.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P11"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P12.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P12",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-ACCTLOGIN-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-maintenance-ops",
+        "arch-account-login-infrastructure",
+        "arch-account-login-ui-ux"
+      ],
+      "rollback": "文書のみを追加するため、文書を削除すれば元に戻る。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "運用手順と利用者向け案内の整備",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "手順書の各操作について、実際に検証環境で実行して記述どおりに完了できることを確認する",
+        "利用者向け案内の記述が、画面上の案内ダイアログの文言と矛盾しないことを確認する"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs"
+      ]
+    },
+    {
+      "acceptance": [
+        "本番 D1 に users と audit_log が作成され、スキーマ版数が記録されている",
+        "AUTH_PASSWORD が本番環境から削除され、旧経路でのログインが成立しない",
+        "作成した管理者アカウントでログインでき、設定画面から利用者を追加できる"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P13.md",
+            "confidence": 1
+          }
+        ],
+        "confidence": 1,
+        "reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。"
+      },
+      "depends_on": [
+        "SYS-ACCTLOGIN-P12"
+      ],
+      "deploy_unit": "packages/web の React SPA と packages/api の Cloudflare Workers、および Cloudflare D1 kanjo-db",
+      "feature_package_id": "feature-package/feat-account-login",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-account-login",
+        "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P13.md",
+        "graph_node_id": "SYS-ACCTLOGIN-P13",
+        "parent_feature": "feat-account-login",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-ACCTLOGIN-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [],
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-account-login-infrastructure",
+        "arch-account-login-maintenance-ops",
+        "arch-account-login-database"
+      ],
+      "rollback": "0039はpassword_login_rate_limitsとaudit_logを変更・再構築するため、reverse migrationや旧Worker単体のrollbackは行わない。障害時は適用前のD1 Time Travel復元点と互換アプリ世代を一体で戻す。その組を使えない場合は、旧AUTH_PASSWORD経路を復活させずforward-fixする。",
+      "secondary_workstreams": [
+        "operations",
+        "security"
+      ],
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-account-login.md",
+        "features/feat-account-login.md",
+        "features/feat-account-login.context.json"
+      ],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "title": "本番反映と切替の実施",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "反映後に、作成した管理者アカウントで実際にログインできることを確認する",
+        "既存20画面が反映後も 401 と 503 の応答契約どおりに動作することを確認する"
+      ],
+      "workstream_kind": "infrastructure",
+      "write_scope": [
+        "wrangler.toml",
+        "migrations"
+      ]
+    }
+  ]
+}

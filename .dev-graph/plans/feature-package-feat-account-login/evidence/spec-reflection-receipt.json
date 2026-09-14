@@ -1,0 +1,274 @@
+{
+  "graph_node_id": "SYS-ACCTLOGIN-P12",
+  "title": "仕様・設計への反映の受領書",
+  "recorded_at": "2026-09-14T02:20:00Z",
+  "verdict": "impact_present_and_reflected",
+  "judgement": "本変更は認証主体 (users) とセッション表現を新設するため、仕様・設計に影響がある。よって正規フロー (system-spec-harness → dev-graph register-package) で system-spec/・specs/・architecture/ へ反映済みであり、本受領書はその結果を記録する。",
+  "flow": [
+    {
+      "step": 1,
+      "channel": "system-spec-harness",
+      "skills": [
+        "run-system-spec-elicit",
+        "run-system-spec-compile",
+        "assign-system-spec-completeness-evaluator"
+      ],
+      "result": "auth / security / database / backend / frontend / ui-ux / infrastructure / maintenance-ops の各章を確定。旧サイクル (mf-business) の章は system-spec/archive/2026-09-11-mf-business-classification/ へ退避。"
+    },
+    {
+      "step": 2,
+      "channel": "dev-graph run-dev-graph-system-spec",
+      "result": "確定章を specification / architecture node として C02 へ取込。source_lineage (origin_kind=system-spec-harness, source_plugin=system-spec-harness, source_version=0.1.14, source_digest, imported_at) を全 node に付与。"
+    },
+    {
+      "step": 3,
+      "channel": "dev-graph run-dev-graph-decompose → run-system-dev-plan → register-package",
+      "result": "macro feature feat-account-login と exact-13 package SYS-ACCTLOGIN-P01..P13 を all-or-none 登録 (applied_count=13)。"
+    }
+  ],
+  "reflected_artifacts": [
+    {
+      "path": "specs/spec-account-login.md",
+      "kind": "specification",
+      "change": "added",
+      "digest": "d2a80ba53dfa77f333d59baba10e51de83f3d3733824327a6fbebf182043a4bb"
+    },
+    {
+      "path": "architecture/account-login-auth.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "891ea15141270b38e7c15bba585cef722b5412a7323cd21c4b365f6e2a953e6a"
+    },
+    {
+      "path": "architecture/account-login-security.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "863b95d3afdc310d75ede996af3fc6c9ae9cf678dd3273c9720d52ec47e2ea29"
+    },
+    {
+      "path": "architecture/account-login-database.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "7e990d8c5335efa667e0ea0d713cc2f0e59e4f6632ae724b93cabb890d6209c6"
+    },
+    {
+      "path": "architecture/account-login-backend.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "421be259b51a1b73a35c66f50a9059534e28ab5219ea58e8280a672ae94d4687"
+    },
+    {
+      "path": "architecture/account-login-frontend.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "b21d09eb4a59a89eeebe8dbc5d091acb0b16456f08655da44c2216fed8fd138d"
+    },
+    {
+      "path": "architecture/account-login-ui-ux.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "a50ed1bcee905a4ea4e45d5baba57638ad611256586abcadacf19e29927f12f5"
+    },
+    {
+      "path": "architecture/account-login-infrastructure.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "f2e11ec3e6f06ca7ea1b99ec8fd5f5f624c11272d11c969fa6990113cbdf32e1"
+    },
+    {
+      "path": "architecture/account-login-maintenance-ops.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "3bb69964bd5b0873abea0356a5010763966f283ee0b49f9534d6da875cc04e0a"
+    },
+    {
+      "path": "features/feat-account-login.md",
+      "kind": "feature",
+      "change": "added",
+      "digest": "f194aa20be41da036b20edc0115b0600144eaa280cdb935f3cc2bb22f10a41d3"
+    },
+    {
+      "path": "architecture/graph.json",
+      "kind": "projection",
+      "change": "modified",
+      "digest": "1f11c5500a8ce977f5d2789f44e95a7193b59854d8930a3858d576c21d890c05",
+      "note": ".dev-graph/state/graph.json からの投影。arch-account-login-* の追加に加え、arch-mf-business-* 8 件の source_path を system-spec/archive/2026-09-11-mf-business-classification/ へ張り替えた。"
+    },
+    {
+      "path": "architecture/total-cashflow-auth.md",
+      "kind": "architecture",
+      "change": "modified",
+      "note": "共有パスワード前提の記述を、有効な利用者アカウント間で業務データを共有する前提へ更新。AUTH_PASSWORD/SESSION_SECRET の secret 対の記述を削除。"
+    },
+    {
+      "path": "docs/data-schema.md",
+      "kind": "document",
+      "change": "modified",
+      "note": "repository head の migration を 0039_account_login.sql と明記し、証憑退役の物理削除を 0040 へ送った旨を追記。"
+    },
+    {
+      "path": "docs/runbooks/account-login-operations.md",
+      "kind": "document",
+      "change": "added"
+    },
+    {
+      "path": "tasks/feat-account-login/",
+      "kind": "task",
+      "change": "added",
+      "note": "SYS-ACCTLOGIN-P01..P13 の 13 仕様書。"
+    },
+    {
+      "path": "migrations/0039_account_login.sql",
+      "kind": "migration",
+      "change": "added",
+      "digest": "722cb71783edd851e1b8227acaf50dd1946b9cdb383d47961a8ab74108465a12"
+    }
+  ],
+  "gates": [
+    {
+      "gate": "pnpm run lint (biome / skills sync / glossary / report-CSS / check-graph-lineage / security:content)",
+      "result": "pass",
+      "note": "check-graph-lineage は 37 ノードすべてが正本と一致し、architecture/*.md 37 件に孤児なし。P11 収集時点で残っていた arch-mf-business-* 8 件の digest 不一致は archive 退避と graph 張り替えで解消済み。"
+    },
+    {
+      "gate": "pnpm run typecheck",
+      "result": "pass"
+    },
+    {
+      "gate": "pnpm --filter @kanjo/api exec vitest run src/account-login.test.ts src/login-rate-limit.test.ts",
+      "result": "pass",
+      "note": "2 files / 44 tests"
+    },
+    {
+      "gate": "pnpm --filter @kanjo/web exec vitest run src/account-login.dom.test.tsx src/api.test.ts",
+      "result": "pass",
+      "note": "2 files / 35 tests"
+    },
+    {
+      "gate": "pnpm run test:aux",
+      "result": "pass",
+      "note": "node 41 + python 31"
+    }
+  ],
+  "status": "pass",
+  "follow_up_reflections": [
+    {
+      "recorded_at": "2026-09-14T04:20:00Z",
+      "trigger": "2026-09-14 利用者報告「ログイン画面にサイドバー、ヘッダー、フッターが表示されています。」",
+      "verdict": "impact_present_and_reflected",
+      "judgement": "実装は当時の仕様どおりだった。仕様側 (qa-uiux-web-002) が『左に情報パネルを置く2カラム』を正としており、その左パネルが実機でサイドバー、ブランド見出しがヘッダーとして知覚されていた。よって本件は不具合修正ではなく仕様変更であり、正本から順に直した。",
+      "flow": [
+        {
+          "step": 1,
+          "channel": "apply-spec-transition.py (R4-reopen)",
+          "result": "ui-ux/web を reopen (reopened_at 2026-09-14T04:13:00Z) し、qa-uiux-web-004 (basis=user-decision) を主根拠として再確定。qa-uiux-web-003 と qa-basis-correction-001 を裏付け qa_refs として保持。"
+        },
+        {
+          "step": 2,
+          "channel": "compile-spec-doc.py",
+          "result": "system-spec/ui-ux.md を再生成。他章は本件と無関係のため HEAD のまま据え置いた。"
+        },
+        {
+          "step": 3,
+          "channel": "architecture/graph.json 再打刻",
+          "result": "arch-account-login-ui-ux.source_digest を b18de649… から b35d162f… へ更新し、check-graph-lineage の照合を回復。"
+        },
+        {
+          "step": 4,
+          "channel": "下流文書の追従",
+          "result": "architecture / specs / features / tasks の 2カラム前提と受入条件 (header/footer/サイドバー → header/footer/nav/aside) を更新。"
+        }
+      ],
+      "reflected_artifacts": [
+        {
+          "path": "system-spec/spec-state.json",
+          "kind": "spec-state",
+          "change": "modified",
+          "note": "reopen_log 2件と qa-uiux-web-003 / qa-uiux-web-004 を追加。"
+        },
+        {
+          "path": "system-spec/ui-ux.md",
+          "kind": "specification",
+          "change": "modified",
+          "digest": "b35d162fb978ca17427996dbc7843e0668cd393ed95d95ae4eafc47743bcf688"
+        },
+        {
+          "path": "architecture/graph.json",
+          "kind": "projection",
+          "change": "modified",
+          "note": "arch-account-login-ui-ux の source_digest / imported_at を再打刻。"
+        },
+        {
+          "path": "architecture/account-login-ui-ux.md",
+          "kind": "architecture",
+          "change": "modified",
+          "digest": "8a173a796c536c8520e68a425f93f4fe98c295a725ce2926567d4ba79dd5b633"
+        },
+        {
+          "path": "architecture/account-login-frontend.md",
+          "kind": "architecture",
+          "change": "modified",
+          "digest": "85c5f0132d07613dfff1fa01413161eeec983e32c3a743b6aa8861123762b406"
+        },
+        {
+          "path": "specs/spec-account-login.md",
+          "kind": "specification",
+          "change": "modified",
+          "digest": "13d559087112922abb7392fd673ae91abd5b3581c6fd39541463b9170bcf8202"
+        },
+        {
+          "path": "features/feat-account-login.md",
+          "kind": "feature",
+          "change": "modified",
+          "digest": "8359452b0beb5d93849b2bad8d69c7db40515dc3b1d20f98e458f4de7deee339"
+        },
+        {
+          "path": "features/feat-account-login.context.json",
+          "kind": "feature-context",
+          "change": "modified"
+        },
+        {
+          "path": "tasks/feat-account-login/SYS-ACCTLOGIN-P03.md",
+          "kind": "task",
+          "change": "modified"
+        },
+        {
+          "path": "tasks/feat-account-login/SYS-ACCTLOGIN-P05.md",
+          "kind": "task",
+          "change": "modified"
+        },
+        {
+          "path": "packages/web/src/pages/Login.tsx",
+          "kind": "implementation",
+          "change": "modified",
+          "digest": "50b14b509e0051f2f86e0bcb5606e10bb334d5b018752572490aaf385626ce8c"
+        },
+        {
+          "path": "packages/web/src/styles.css",
+          "kind": "implementation",
+          "change": "modified",
+          "digest": "e51699ab540fb1b1fe5cac37a4efa0a7db75ef01343cfa9a12a6953052cb09a4"
+        },
+        {
+          "path": "packages/web/src/account-login.dom.test.tsx",
+          "kind": "test",
+          "change": "modified",
+          "digest": "3bae767c8315b4be6da6b0600fdc6df456fbf1bf29089f482d8324c60610f165"
+        }
+      ],
+      "gates": [
+        {
+          "gate": "pnpm --filter @kanjo/web exec vitest run src/account-login.dom.test.tsx",
+          "result": "pass",
+          "note": "31 tests"
+        },
+        {
+          "gate": "node scripts/check-graph-lineage.mjs",
+          "result": "pass (本件分)",
+          "note": "arch-account-login-ui-ux は一致。残る arch-tax-preparation-boundary / docs/spec-v1.1.md の不一致は total-cashflow 側の未コミット差分に由来し本 PR の範囲外。"
+        }
+      ],
+      "status": "pass"
+    }
+  ]
+}

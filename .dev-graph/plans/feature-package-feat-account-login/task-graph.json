@@ -1,0 +1,134 @@
+{
+  "feature_package_id": "feature-package/feat-account-login",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P01",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P01",
+      "title": "認証要件ベースラインの確定"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P01"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P02",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P02",
+      "title": "利用者ドメインとセッション境界の設計"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P02"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P03",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P03",
+      "title": "セキュリティと画面設計のレビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P03"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P04",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P04",
+      "title": "受入8件に対するテスト設計"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P04"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P05",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P05",
+      "title": "利用者認証と管理画面の実装"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P05"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P06",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P06",
+      "title": "テスト実行と失敗経路の確認"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P06"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P07",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P07",
+      "title": "受入8件の充足確認"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P07"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P08",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P08",
+      "title": "AUTH_PASSWORD 廃止と切替手順の適用"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P08"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P09",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P09",
+      "title": "セキュリティ観点の総点検"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P09"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P10",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P10",
+      "title": "最終レビューと残課題の確定"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P10"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P11",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P11",
+      "title": "証跡の収集と feature 完了根拠の確定"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P11"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P12",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P12",
+      "title": "運用手順と利用者向け案内の整備"
+    },
+    {
+      "depends_on": [
+        "SYS-ACCTLOGIN-P12"
+      ],
+      "feature_package_id": "feature-package/feat-account-login",
+      "id": "SYS-ACCTLOGIN-P13",
+      "parent_feature": "feat-account-login",
+      "phase_ref": "P13",
+      "title": "本番反映と切替の実施"
+    }
+  ],
+  "parent_feature": "feat-account-login"
+}

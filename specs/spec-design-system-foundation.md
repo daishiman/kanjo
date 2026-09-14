@@ -61,7 +61,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
 - S2 (G3): charts.ts と全ての実描画consumerの系列色・軸・グリッド・文字色が全て design-tokens.ts 由来で、収入=青系・支出=赤系・純収支=ティール線になっている。
 - S3 (G1): design-tokens.ts を唯一の実装正本とし、10色・寸法のschema/関係不変条件と、CSS/charts consumerへの生成・参照一致を自動検査する。DESIGN-SYSTEM.md は由来・意図の参照資料とする。
 - S4 (G5): 文字用トークンのコントラストが背景と面の双方に対し 4.5:1 以上、部品を見分ける枠のトークンとチャート系列色が 3:1 以上である。装飾罫線 (#D7E0E2) は 1.4.11 の対象外で、部品の枠には使われていない。
-- S5 (G2): route registry由来の20ルートすべてが共通PageShell (サイドバー 220px・ヘッダー 64px・フッター) の下で描画される。
+- S5 (G2): route registry由来の認証後19ルートすべてが共通PageShell (サイドバー 220px・ヘッダー 64px・フッター) の下で描画され、ログイン画面はシェルの外に描画される (PR #48 で改訂)。
 - S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプト (thead / mobile-layout / financial-figure / financial-routes) が全て緑のままである。
 
 ## スコープ
@@ -107,7 +107,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
 
 - `FR-001` (O1): packages/core/src/design-tokens.ts に色・文字・余白・角丸・影・動き・寸法のトークンを定義し、唯一の実装正本とする。 判定: schema、役割集合、互換CSS変数、reading/data幅、44px操作領域などの関係不変条件が単体テストで通り、CSS生成物とのずれは lint が検出する。
 - `FR-002` (O2): styles.css の :root トークンと charts.ts の COLORS を design-tokens.ts から導出した写しに置き換え、写しのずれと色構文の直書きを検出する lint を組み込む。 判定: pnpm lint が写しの不一致またはhex/rgb/hsl/CSS Color構文の未許可リテラルで exit 非0になり、一致時に exit 0 になる。
-- `FR-003` (O3): Layout (サイドバー・ヘッダー・フッター)・PageShell・PageActions・Button (主/副/危険/テキスト) を共通部品として定義する。route registry 由来の20ルートは共通シェルと PageShell を経由し、標準の主・副・危険・submit操作は Button を使う。menu/tab/sort/toggleなど ARIA 固有状態と一体の低レベル control は native button の明示例外とする。 判定: route registry から導出する DOM テストが全ルートのランドマークと PageShell を検査し、静的検査が標準variant/submitを直接所有する native button を拒否する。
+- `FR-003` (O3): Layout (サイドバー・ヘッダー・フッター)・PageShell・PageActions・Button (主/副/危険/テキスト) を共通部品として定義する。route registry 由来の認証後19ルートは共通シェルと PageShell を経由し (ログインは PR #48 によりシェルの外)、標準の主・副・危険・submit操作は Button を使う。menu/tab/sort/toggleなど ARIA 固有状態と一体の低レベル control は native button の明示例外とする。 判定: route registry から導出する DOM テストが全ルートのランドマークと PageShell を検査し、静的検査が標準variant/submitを直接所有する native button を拒否する。
 - `FR-004` (O4): 文字・部品の枠・チャート系列に使う全トークンの、背景/面に対するコントラストを計算するテストを置く。 判定: 文字用トークンは背景 #F6F8F9 と面 #FFFFFF の双方に対し 4.5:1 以上、部品を見分ける枠のトークンとチャート系列色は 3:1 以上であることをテストが検証し、基準未満の値を入れると落ちる。装飾罫線トークン (#D7E0E2) は 1.4.11 の対象外として検査から外し、入力欄・チェックボックスの枠が装飾罫線トークンを参照していないことを同じテストで確かめる。
 - `FR-005` (O5): トークンと共通部品の使い方を規約文書 (docs 配下) にまとめ、新しい画面・図をつくるときの参照先を 1 つにする。 判定: 規約文書が色の役割 (塗り/文字の分離)・タイポグラフィ・余白と寸法・シェル・ボタン・チャートの6つのH2節を各1つ持ち、README と AGENTS.md の双方から `docs/design-system.md` への正規相対リンクがある。`check-design-system-document-contract.mjs` が見出し・導線・意思決定状態を機械検査する。
 
@@ -121,7 +121,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
 
 ## UI・状態遷移
 
-- 画面/CLI/API状態: route registry由来の20ルートが共通Layout/PageShell (サイドバー 220px・ヘッダー 64px・フッター) の下で描画される。未認証時は業務メニューをロック表示する。
+- 画面/CLI/API状態: route registry由来の認証後19ルートが共通Layout/PageShell (サイドバー 220px・ヘッダー 64px・フッター) の下で描画される。未認証時はシェルを出さず、単一カラムのログイン画面だけを描画する (PR #48)。
 - 遷移条件: 既存のルーティングと全体期間の保持 (PR #45) を変えない。
 - Loading/Empty/Error: 既存の表示を維持し、色と部品だけを共通トークンへ寄せる。
 
@@ -177,9 +177,9 @@ N/A: API を公開・変更しない (scope.out『API・データベースの変
 - [ ] `AC-002`: S2 (G3): charts.ts と全ての実描画consumerの系列色・軸・グリッド・文字色が全て design-tokens.ts 由来で、収入=青系・支出=赤系・純収支=ティール線になっている。
 - [ ] `AC-003`: S3 (G1): design-tokens.ts が唯一の実装正本であり、schema/関係不変条件と CSS/charts consumer の一致を自動検査する。
 - [ ] `AC-004`: S4 (G5): 文字用トークンのコントラストが背景と面の双方に対し 4.5:1 以上、部品を見分ける枠のトークンとチャート系列色が 3:1 以上である。装飾罫線 (#D7E0E2) は 1.4.11 の対象外で、部品の枠には使われていない。
-- [ ] `AC-005`: S5 (G2): route registry由来の20ルートすべてが共通PageShell (サイドバー 220px・ヘッダー 64px・フッター) の下で描画される。
+- [ ] `AC-005`: S5 (G2): route registry由来の認証後19ルートすべてが共通PageShell (サイドバー 220px・ヘッダー 64px・フッター) の下で描画され、ログインはシェルを持たない。
 - [ ] `AC-006`: S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプト (thead / mobile-layout / financial-figure / financial-routes) が全て緑のままである。
-- Contract/integration/e2e/security/performance: トークン値照合 (O1)、写しずれ lint (O2)、20 ルートの DOM テスト (O3)、コントラスト計算 (O4)、FR-005文書契約 (O5)、既存 check 系と check:js-budget。
+- Contract/integration/e2e/security/performance: トークン値照合 (O1)、写しずれ lint (O2)、認証後19ルート + ログインのシェル非描画の DOM テスト (O3)、コントラスト計算 (O4)、FR-005文書契約 (O5)、既存 check 系と check:js-budget。
 
 ## 未決事項
 

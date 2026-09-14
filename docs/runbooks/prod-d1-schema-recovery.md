@@ -23,7 +23,7 @@
 利用者が承認したmanifestだけです。
 
 現在の配布対象はRelease Aの`0038_prepare_r2_cleanup.sql`までです。旧専用6テーブルは物理D1に残り得ますが、
-runtime/API/Drizzleからは退役済みです。旧テーブルを物理削除する0039は現行配布物に含めず、将来の
+runtime/API/Drizzleからは退役済みです。旧テーブルを物理削除する0040は現行配布物に含めず、将来の
 Release B変更でのみ追加します。その変更では共通`r2_cleanup_jobs`のpending/retry/deadと、旧`attachments`・`attachment_cleanup_jobs`の残件がすべて0であることを機械ゲートで
 確認します（実体は`.github/scripts/verify-r2-cleanup-release-gate.mjs`）。その後、0039適用直前の
 Time Travel bookmarkとRelease Aのdeployment versionを対で記録します。
@@ -36,8 +36,8 @@ Time Travel bookmarkとRelease Aのdeployment versionを対で記録します。
 - [ ] incident baselineにrepository head、ordered migrations digest、remote applied head、remote inspection証跡、ordered pending entriesを記録した
 - [ ] 適用直前の全件exportを取得し、保管場所と取得時刻を復旧証跡へ記録した
 - [ ] [`reconcile-row-counts.sh`](scripts/reconcile-row-counts.sh) の`capture`結果を適用前baselineとして記録した
-- [ ] 現行Release Aのmanifestは0038をheadとし、将来の0039を含んでいない
-- [ ] 将来の0039を含む場合、機械ゲートが`r2_cleanup_jobs`の`pending` / `retry` / `dead`と旧`attachments`・`attachment_cleanup_jobs`の残件0を、R2 keyを出さずに記録した
+- [ ] Release Aでは0038だけを先に適用済みで、現行manifestのheadは`0039_account_login.sql`、将来の0040を含んでいない
+- [ ] 将来の0040を含む場合、機械ゲートが`r2_cleanup_jobs`の`pending` / `retry` / `dead`と旧`attachments`・`attachment_cleanup_jobs`の残件0を、R2 keyを出さずに記録した
 - [ ] 0039を含む場合、適用直前のTime Travel bookmarkとRelease Aの互換deployment versionを対で記録した
 - [ ] manifestのrepository head / ordered migrations digest / remote inspectionを適用直前に再取得し、差分がないことを確認した
 - [ ] 承認者と承認時刻が記録され、manifest statusが`approved`になっている

@@ -38,7 +38,7 @@
 | R-12 | low | 互換性で維持する変数名を「ほか」で省略 | 既存変数名の全件をテストに固定し、1件でも消えると落とす(core の design-tokens.test.ts) | design-tokens.test.ts(P04) | 是正済み |
 | R-13 | low | `COLORS.biz` の予備値が青からティールに変わる、`vendorPalette` の warn の役割が未定 | 予備値は CSS 変数が読めない環境だけで使われ、ブラウザでは既に `--biz: #087f78` が効いているため見た目は変わらない。`vendorPalette` の注意系列は塗りなので `warnFill` を使う | architecture-decision.md / charts.ts(P05) | 是正済み(§3) |
 | R-14 | low | FR-005 が目視確認だけ | 節見出しと README / AGENTS.md からの参照を grep で確認し、P12 の証跡に残す | P12 | 是正済み(§3) |
-| R-15 | low | ログインの数え方 | 未認証時に `LoginPage` を `Layout locked` で描画した状態を1ルートと数える(読込中の表示は数えない) | requirements-baseline.md §4 | 是正済み |
+| R-15 | low | ログインの数え方 | 未認証時に `LoginPage` を `Layout locked` で描画した状態を1ルートと数える(読込中の表示は数えない)。2026-09-14 改訂: PR #48 でログインはシェルの外になり、シェルの母数は認証後19ルート、ログインは「シェルを持たない」反例として検査する | requirements-baseline.md §4 | 是正済み(#48 で改訂) |
 
 ### 起草側が追加で見つけた指摘
 

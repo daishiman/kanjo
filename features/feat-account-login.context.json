@@ -1,0 +1,48 @@
+{
+  "graph_node_id": "feat-account-login",
+  "artifact_kind": "feature",
+  "purpose": "金融明細を扱う権限を共有された1つの秘密から個人に帰属するアカウントへ移し、失効・追跡・権限限定を利用者単位で効かせられるようにする。",
+  "goal": "利用者がメールアドレスとパスワードで本人として認証でき、管理者が設定画面から招待・停止・パスワード再発行を完結でき、既存20画面と /api/* 認証ガードの契約が壊れていない状態。",
+  "scope_in": [
+    "利用者 (user) ドメインの新設 (email / password_hash / role / status / session_generation / must_change_password)",
+    "メールアドレス + パスワードによるログインと、利用者単位で失効できるセッション",
+    "『次回からもログイン状態を保持する』(既定 ON / ON=30日・OFF=12時間)",
+    "管理者による招待・停止・一時パスワード再発行 (設定画面)",
+    "パスワードをお忘れの方の導線 (管理者へ連絡する案内ダイアログ)",
+    "参照画像 01-login.png を正とするログイン画面 (単一カラムのカード1枚・安心3項目はカード内・アイコン+ラベル併記)",
+    "audit_log による認証操作の追跡と、ログイン失敗率・ロックアウトの監視",
+    "AUTH_PASSWORD の廃止と SESSION_SECRET ローテーションを含む切替手順"
+  ],
+  "scope_out": [
+    "Cloudflare Access 経由のログイン導線",
+    "自己サインアップ (利用者自身による新規登録)",
+    "メール送信基盤による自動パスワードリセット",
+    "ログイン画面のヘッダー・フッター・サイドバーの描画と、脇の情報パネル・ブランド見出し・『月次の流れ』の説明",
+    "業務データへの所有者列の追加 (監査は audit_log.actor_user_id のみ)",
+    "外部 IdP / SSO / MFA"
+  ],
+  "acceptance": [
+    "未認証で保護画面へアクセスするとログイン画面へ遷移し、正しいメールアドレスとパスワードで認証が成功する",
+    "パスワードが復元不能な形 (PBKDF2-HMAC-SHA256 / 210,000 回以上) で保存され、平文がどこにも残らない",
+    "管理者が設定画面から利用者の追加・停止・一時パスワード再発行を完結でき、一時パスワードは発行直後の1度だけ表示される",
+    "保持 ON で30日・OFF で12時間のセッション期限となり、既定の帰結がチェックボックス脇に明示されている",
+    "ログイン画面の DOM に header/footer/nav/aside が0件でログインカードが1枚だけ置かれ、アイコンが常にテキストラベルと併記されている",
+    "member が /api/admin/* の全エンドポイントに対して 403 を受け取る",
+    "既存20画面の呼出しが 401/503 応答契約の変更なしに動作する",
+    "active runtimeと必須設定に共有パスワード認証分岐が0件である"
+  ],
+  "architecture_refs": [
+    "specs/spec-account-login.md",
+    "architecture/account-login-auth.md",
+    "architecture/account-login-security.md",
+    "architecture/account-login-database.md",
+    "architecture/account-login-backend.md",
+    "architecture/account-login-frontend.md",
+    "architecture/account-login-ui-ux.md",
+    "architecture/account-login-infrastructure.md",
+    "architecture/account-login-maintenance-ops.md",
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md"
+  ],
+  "updated_at": "2026-09-13T05:36:43Z"
+}

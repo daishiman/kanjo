@@ -18,7 +18,8 @@
     "preview": "node scripts/preview-local.mjs",
     "preview:smoke": "node --test scripts/preview-smoke.test.mjs",
     "test": "pnpm -r --workspace-concurrency=1 test && pnpm run test:aux",
-    "test:aux": "pnpm run runbooks:test && pnpm run guard-real-data:test && pnpm run github-scripts:test && pnpm run skills:test && pnpm run delivery:test",
+    "test:coverage:account-login": "pnpm --filter @kanjo/api run test:coverage:account-login && pnpm --filter @kanjo/web run test:coverage:account-login",
+    "test:aux": "pnpm run runbooks:test && pnpm run guard-real-data:test && pnpm run github-scripts:test && pnpm run seed-admin:test && pnpm run skills:test && pnpm run delivery:test",
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check . && node scripts/sync-project-skills.mjs --check && node scripts/check-glossary.mjs && node scripts/check-report-css.mjs && node scripts/check-graph-lineage.mjs && node scripts/check-design-tokens.mjs && node scripts/check-design-system-document-contract.mjs && node scripts/check-design-system-delivery.mjs --worktree-content && node scripts/check-design-system-run-references.mjs && pnpm run security:content",
     "lint:fix": "biome check --write .",
@@ -49,10 +50,12 @@
     "evidence:acceptance": "pnpm run evidence:capture && pnpm run evidence:check",
     "evidence:check": "node scripts/changed-path-manifest.mjs check --manifest docs/design-system/changed-path-manifest.json --commands scripts/design-system-validation-commands.json",
     "design-system:status": "node scripts/design-system-status.mjs",
+    "seed-admin:test": "node --test scripts/seed-admin.test.mjs",
     "catalog:export": "vite-node scripts/export-chart-catalog.mts"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@vitest/coverage-v8": "4.1.11",
     "typescript": "^5.6.3"
   }
 }

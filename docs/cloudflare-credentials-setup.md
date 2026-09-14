@@ -61,7 +61,6 @@ Cloudflareでは1人が複数Accountへ所属できます。共有Accountでは�
 | `CLOUDFLARE_API_TOKEN` | 対象AccountのAccount API Tokens | GitHub `production` Environment secret | 秘密 |
 | `CLOUDFLARE_ACCOUNT_ID` | 対象Account Home | GitHub `production` Environment secret | secretとして管理 |
 | `APP_URL` | WorkerのDomains | GitHub Repository variable | 公開情報 |
-| `AUTH_PASSWORD` | 安全にランダム生成 | Cloudflare Worker secret | 秘密 |
 | `SESSION_SECRET` | ローカルで安全に生成 | Cloudflare Worker secret | 秘密 |
 
 取得・登録しないもの:
@@ -298,21 +297,10 @@ pnpm --dir packages/api exec wrangler secret list
 ```
 
 
-### 7.1 `AUTH_PASSWORD`
-
-helperはsecretがない場合だけ24バイト（192bit）の乱数から48文字のパスワードを生成し、画面へ出さずクリップボードへ入れます。
-
-1. パスワードマネージャーに`Kanjo production AUTH_PASSWORD`として保存。
-2. helperへ戻りEnter。
-3. helperがWorkerへ登録し、クリップボードを消去。
-
-既存値がある場合は停止せず保持します。変更する場合だけ`--rotate-auth-password`を明示します。変更すると以前のログインパスワードは使えません。
-
-
-
-### 7.2 `SESSION_SECRET`
+### 7.1 `SESSION_SECRET`
 
 helperは不足時だけ32バイトの乱数を生成して登録します。値は表示しません。既存値は保持します。変更すると既存セッションが無効になります。
+共有パスワードの`AUTH_PASSWORD`はhelperの生成・登録対象ではありません。切替と旧secret削除の順序は[`account-login-operations.md`](runbooks/account-login-operations.md#3-本番を共有パスワードから切り替える)を正本とします。
 
 
 コードをrollbackしてもWorker secretは戻りません。変更前の値が必要なsecretはパスワードマネージャーで管理します。
@@ -389,7 +377,7 @@ secret値をActionsログへ出しません。
 |---|---|
 | Workerコード | `wrangler deployments list`後、所有者判断で`wrangler rollback` |
 | API Token | 新Token確認前なら旧Tokenを残す。漏えい時は即失効 |
-| ログインパスワード | パスワードマネージャーの旧値を再登録。コードrollbackでは戻らない |
+| 利用者パスワード | 旧値をsecretへ再登録せず、管理者による一時パスワード再発行またはbreak-glass resetで復旧 |
 | セッション署名 | 旧値を再登録。なければ新規発行し全員再ログイン |
 | D1 | コードrollbackでは戻らない。事前に確認したTime Travel/バックアップから所有者判断で復旧 |
 | R2公開設定 | 公開を直ちに無効化し、アクセス履歴を確認 |
@@ -407,7 +395,6 @@ secret値をActionsログへ出しません。
 - [ ] 不要なKV・全Zone・全Account権限なし
 - [ ] GitHub Environment secrets 2件とRepository variable 1件を確認
 - [ ] `production`は`main`だけを許可
-- [ ] `AUTH_PASSWORD`をパスワードマネージャーへ保存しWorkerへ登録
 - [ ] `SESSION_SECRET`をWorkerへ登録
 - [ ] CI成功commitとDeploy対象commitが一致
 - [ ] 30秒後・90秒後のsmokeが両方成功

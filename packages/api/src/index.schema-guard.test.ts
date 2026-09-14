@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { signedSessionCookieForTest } from './auth.test-support.js';
+import { TEST_ADMIN_ROW, isUserLookupQuery, signedSessionCookieForTest } from './auth.test-support.js';
 import { app } from './index.js';
 import { SCHEMA_UNAVAILABLE_ERROR } from './schema-guard.js';
 
@@ -8,12 +8,19 @@ describe('実appの取込schema境界', () => {
     const secret = 'synthetic-schema-integration-secret';
     const cookie = await signedSessionCookieForTest(secret);
     let schemaQueries = 0;
+    let authQueries = 0;
     let businessQueries = 0;
     const database = {
       prepare: (sql: string) => {
         if (sql === 'SELECT name FROM d1_migrations ORDER BY id DESC LIMIT 1') {
           schemaQueries += 1;
           return { first: async () => '0014_password_login_rate_limits.sql' };
+        }
+        // 認証の照会は業務D1ではない。ここを一緒に数えると、schema guardが
+        // 「誰であるか」の確認まで止めている、という誤った保証になる。
+        if (isUserLookupQuery(sql)) {
+          authQueries += 1;
+          return { bind: () => ({ first: async () => TEST_ADMIN_ROW }) };
         }
         businessQueries += 1;
         throw new Error('business D1 must not run behind the schema guard');
@@ -40,6 +47,8 @@ describe('実appの取込schema境界', () => {
       await expect(response.json()).resolves.toEqual({ error: SCHEMA_UNAVAILABLE_ERROR });
     }
     expect(schemaQueries).toBe(1);
+    // 3リクエストとも認証は通り、その先のschema境界で止まっている。
+    expect(authQueries).toBe(3);
     expect(businessQueries).toBe(0);
     expect(errorLog).toHaveBeenCalledTimes(3);
   });

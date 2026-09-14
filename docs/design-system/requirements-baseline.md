@@ -66,7 +66,7 @@ DESIGN-SYSTEM.md「3. 視覚ルール」「2. 共通シェル」「5. レスポ�
 |---|---|---|---|---|
 | FR-001 | 正本の10色・寸法が schema と関係不変条件を満たし、consumer が同じ正本を参照する | S3 | `packages/core/test/design-tokens.test.ts`、`scripts/check-design-tokens.mjs` | P04(red)→P05 |
 | FR-002 | `:root` と charts.ts 予備値が正本の写し。ずれで `pnpm lint` が非0。charts.ts の hex 直書き0件 | S1, S2 | `scripts/check-design-tokens.mjs`(lint 組込み) | P04→P05→P08 |
-| FR-003 | route registry 由来の20ルートすべてが `PageShell` と共通シェルを通る。標準の主・副・危険・submit操作は共通 `Button` を使う | S5 | `packages/web/src/common-shell-routes.dom.test.tsx`、`components/Button.dom.test.tsx` | P04→P05 |
+| FR-003 | route registry 由来の認証後19ルートすべてが `PageShell` と共通シェルを通り、ログインはシェルの外に置く(PR #48)。標準の主・副・危険・submit操作は共通 `Button` を使う | S5 | `packages/web/src/common-shell-routes.dom.test.tsx`、`components/Button.dom.test.tsx` | P04→P05 |
 | FR-004 | 文字用(§3.1 の一覧)は背景・面に 4.5:1 以上、部品の枠と系列色は 3:1 以上。装飾罫線は対象外で、入力欄の枠が参照しない | S4 | `packages/web/src/design-tokens-contrast.test.ts` | P04→P05 |
 | FR-005 | 規約文書が色の役割・タイポグラフィ・余白と寸法・シェル・ボタン・チャートの6つのH2節を各1つ持ち、README と AGENTS.md の双方から正規相対リンクで参照 | — | `scripts/check-design-system-document-contract.mjs`(見出し・導線・意思決定状態・外部承認境界を検査) | P12 |
 | (横断) | 既存 test / typecheck / lint / check 系4本が緑 | S6 | `pnpm test` ほか | P06, P07 |
@@ -88,11 +88,13 @@ DESIGN-SYSTEM.md「3. 視覚ルール」「2. 共通シェル」「5. レスポ�
 
 ## 4. 20ルートの内訳(S5 の母数)
 
+> 改訂 (2026-09-14): PR #48 (2026-09-14) でログイン画面は共通シェルの外の単一カラムへ変わったため、共通シェルの母数は認証後の19ルートとし、ログインは「シェルを持たない」ことを反例として検査する。下表の20は FINAL-UI の画面数としては有効で、共通シェルの母数はログインを除く19。
+
 | 区分 | 件数 | パス |
 |---|---|---|
 | 主ルート | 13 | `/`、`/import`、`/cash`、`/classify`、`/subscriptions`、`/household`、`/analysis`、`/statements`、`/ai`、`/budget`、`/tradeoff`、`/settings`、`/guide` |
 | 支出分析タブ | 5 | `/analysis/reconciliation`、`/analysis/total-cashflow`、`/analysis/matrix`、`/analysis/trends`、`/analysis/diagnosis` |
-| その他 | 2 | `/improvement`、ログイン(未認証時に `LoginPage` を `Layout locked` で描画した状態。読込中の表示は数えない) |
+| その他 | 2 | `/improvement`、ログイン(未認証時の `LoginPage`。PR #48 以降は共通シェルの外の単一カラムで描画し、シェルの母数には含めない) |
 | 合計 | 20 | `design/FINAL-UI/manifest.json` の pageCount 20 と一致 |
 
 ## 5. 対象外(本ベースラインで判定しない)

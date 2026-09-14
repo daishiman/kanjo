@@ -110,7 +110,7 @@ React 18 + Vite の SPA。図は Chart.js が canvas に描き、色は themeCol
 
 #### Routes, screens and navigation
 
-components/Layout.tsx が aside.sidebar・header.header・footer.footer・nav.tabbar を全ルート共通で描画する構造を維持し、20 ルートすべてがこれを経由する。
+components/Layout.tsx が aside.sidebar・header.header・footer.footer・nav.tabbar を全ルート共通で描画する構造を維持し、認証後の19ルートすべてがこれを経由する。ログイン画面は PR #48 によりシェルの外の専用レイアウト (architecture/account-login-frontend.md) とする。
 
 #### Component and design-system boundaries
 

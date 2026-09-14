@@ -54,7 +54,7 @@ serves_goals: ["G2"]
 
 ## Context and drivers
 
-- Business/technical context: 認証は packages/api/src/index.ts の authGuard が /api/* を保護し、/api/auth/login でアプリ内セッションを発行する (Cloudflare Access 併用時は Access を使う)。wrangler の run_worker_first: /api/* により API は必ず Worker を通る。本サイクルで認証方式は変えない。DESIGN-SYSTEM.md はログイン画面にも同じ幅・配置のサイドバーを出し、未認証時は業務メニューをロック表示してヘルプ・プライバシー・ログインだけを使えるようにすると定める。共通シェル部品はこの未認証表示を持つ必要がある。
+- Business/technical context: 認証は packages/api/src/index.ts の authGuard が /api/* を保護し、/api/auth/login でアプリ内セッションを発行する (Cloudflare Access 併用時は Access を使う)。wrangler の run_worker_first: /api/* により API は必ず Worker を通る。本サイクルで認証方式は変えない。DESIGN-SYSTEM.md はログイン画面にも同じ幅・配置のサイドバーを出し、未認証時は業務メニューをロック表示してヘルプ・プライバシー・ログインだけを使えるようにすると定める。共通シェル部品はこの未認証表示を持つ必要がある。改訂 (2026-09-14): PR #48 の利用者判断により、ログイン画面はシェルを出さない単一カラムのカードへ変わった。未認証時は共通シェルを描画せず、下表の「共通シェルの未認証表示」は現行実装では使わない。認可の正本が authGuard である点は変わらない。
 - Quality attribute priorities: G2 に資する。Secure by Design card の『既定で安全・失敗時は閉じる』を、ログイン画面の共通シェルに適用した。DESIGN-SYSTEM.md はログイン画面にも同じサイドバーを出すと定めるが、未認証時の業務メニューはロック表示にし、実際の保護は authGuard が /api/* で担う。見た目の部品がリンクを表示しても、認可の判断を部品側へ移さない — 表示のロックは案内であって防御ではない、という区別を本章の確定内容にした。
 - Constraints: C1: packages/core は依存ゼロの純関数・純データに保つ (README アーキテクチャ節)。トークン正本はランタイム依存を持たない TypeScript の定数として置く。 C2: 初期 JS 予算 (packages/web の check:js-budget) を超えない。トークン導入で追加の外部ライブラリを入れない。
 
@@ -121,7 +121,7 @@ N/A: 検知・対応の仕組みを変えない。
 
 #### Security verification
 
-未認証でログイン画面を描画したとき、業務メニューがロック表示でリンクを持たないことを DOM テストで確かめる。
+未認証でログイン画面を描画したとき、サイドバー・ヘッダー・フッター・ロック表示のいずれも描画されないことを DOM テストで確かめる (PR #48 で改訂)。
 
 ## Architecture decisions
 

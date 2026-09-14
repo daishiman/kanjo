@@ -11,7 +11,7 @@ export const SCHEDULED_D1_QUERY_LIMIT = 50;
 export const SCHEDULED_D1_QUERY_ACCEPTED_MAX = SCHEDULED_D1_QUERY_LIMIT - 1;
 
 /** 現行 job 群の安全側上限。新規 job は既存枠を再配分しない限り追加できない。 */
-export const SCHEDULED_D1_QUERY_PLAN_MAX = 46;
+export const SCHEDULED_D1_QUERY_PLAN_MAX = 47;
 
 export const SCHEDULED_MAINTENANCE_JOB_NAMES = [
   'nightly_backup',
@@ -80,7 +80,8 @@ export const SCHEDULED_MAINTENANCE_D1_PLAN = planScheduledMaintenanceD1Queries({
   // 旧表検出(1) + late write回収(2) + 期限原本enqueue(1) + due scan(1)
   // + 最大3件の共有key保護guard(3)・全参照とjobの同時更新(12)。
   r2_cleanup: 20,
-  password_login_rate_limit_cleanup: 1,
+  // stale rate-limit削除(1) + 期限切れ一時資格情報の明示失効(1)。
+  password_login_rate_limit_cleanup: 2,
   // due scan(1) + R2成功IDの集合更新(1) + orphan照合(1)。
   improvement_retention: 3,
   // expired sweep(6) + bytes(1) + capacity候補(1) + early sweep(4)。

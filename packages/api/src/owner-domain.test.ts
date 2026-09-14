@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterEach, describe, expect, it } from 'vitest';
+import { loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
 import { recordTestMigrationHead } from './schema-guard.test-support.js';
 
@@ -197,22 +198,12 @@ describe('owner API / restore compatibility', () => {
   const auth = {
     ACCESS_AUD: '',
     ACCESS_TEAM_DOMAIN: '',
-    AUTH_PASSWORD: 'synthetic-test-password',
     SESSION_SECRET: 'synthetic-test-secret',
   };
 
   it('旧self復元をcanonical exportへ変換し、family全経路とunknown 400を守る', async () => {
     const { db, bucket } = await fixture('owner-api');
-    const login = await app.request(
-      '/api/auth/login',
-      {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
-      },
-      { ...auth, DB: db },
-    );
-    const cookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
+    const cookie = await loginForTest(app, { ...auth, DB: db });
     const request = (path: string, method = 'GET', body?: unknown) =>
       app.request(
         `/api${path}`,

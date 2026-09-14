@@ -7,6 +7,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
 import { planCashParentDeleteQueries } from './routes/cash.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
@@ -24,7 +25,6 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  AUTH_PASSWORD: 'synthetic-test-password',
   SESSION_SECRET: 'synthetic-test-secret',
 };
 
@@ -111,17 +111,7 @@ async function freshFixture(name: string): Promise<{
   );
   const db = (await freshMf.getD1Database('DB')) as D1Database;
   await applyMigrations(db);
-  const login = await app.request(
-    '/api/auth/login',
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
-    },
-    { ...auth, DB: db },
-  );
-  const freshCookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
-  expect(login.status).toBe(200);
+  const freshCookie = await loginForTest(app, { ...auth, DB: db });
   expect(freshCookie).not.toBe('');
   return {
     mf: freshMf,
@@ -165,17 +155,7 @@ beforeEach(async () => {
     .all<{ name: string }>();
   for (const { name } of tables.results.filter(({ name }) => isApplicationTableForTestReset(name)))
     await d1.prepare(`DELETE FROM "${name}"`).run();
-  const login = await app.request(
-    '/api/auth/login',
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
-    },
-    { ...auth, DB: d1 },
-  );
-  expect(login.status).toBe(200);
-  cookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
+  cookie = await loginForTest(app, { ...auth, DB: d1 });
   expect(cookie).not.toBe('');
 }, 30_000);
 

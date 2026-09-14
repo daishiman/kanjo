@@ -11,10 +11,8 @@ const ACCOUNT_NAME = 'Worker「kanjo-console」を所有する既存Account';
 const ACCOUNT_MODE = 'existing';
 const APP_URL = 'https://kanjo-console.daishimanju.workers.dev';
 const WRANGLER_COMMAND = ['pnpm', '--dir', 'packages/api', 'exec', 'wrangler'];
-const AUTH_PASSWORD = 'AUTH_PASSWORD';
 const SESSION_SECRET = 'SESSION_SECRET';
 const DRY_RUN = process.argv.includes('--dry-run');
-const ROTATE_AUTH_PASSWORD = process.argv.includes('--rotate-auth-password');
 const ROTATE_SESSION_SECRET = process.argv.includes('--rotate-session-secret');
 
 function executable(command) {
@@ -204,22 +202,6 @@ function listWorkerSecrets() {
 
 async function configureWorkerSecrets() {
   const current = listWorkerSecrets();
-  if (AUTH_PASSWORD) {
-    if (current.includes(AUTH_PASSWORD) && !ROTATE_AUTH_PASSWORD) {
-      console.log(`✓ ${AUTH_PASSWORD}: 登録済みのため変更しません`);
-    } else {
-      const password = randomBytes(24).toString('hex');
-      clipboard(password);
-      const rl = createInterface({ input, output });
-      await rl.question(
-        `パスワードマネージャーへ「${ACCOUNT_NAME} ${AUTH_PASSWORD}」として貼り付けて保存し、Enter: `,
-      );
-      rl.close();
-      await putWorkerSecret(AUTH_PASSWORD, password);
-      clipboard('');
-      console.log(`✓ ${AUTH_PASSWORD}: 値を表示せず登録し、クリップボードを消去しました`);
-    }
-  }
   if (SESSION_SECRET) {
     if (current.includes(SESSION_SECRET) && !ROTATE_SESSION_SECRET) {
       console.log(`✓ ${SESSION_SECRET}: 登録済みのため変更しません`);

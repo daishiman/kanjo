@@ -1,0 +1,1039 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "database",
+      "label": "データベース"
+    },
+    {
+      "id": "auth",
+      "label": "認証(ログイン)"
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI-UX"
+    },
+    {
+      "id": "security",
+      "label": "セキュリティ"
+    },
+    {
+      "id": "infrastructure",
+      "label": "インフラ"
+    },
+    {
+      "id": "backend",
+      "label": "バックエンド"
+    },
+    {
+      "id": "frontend",
+      "label": "フロントエンド"
+    },
+    {
+      "id": "maintenance-ops",
+      "label": "保守運用管理"
+    }
+  ],
+  "platforms": [
+    "web",
+    "mobile",
+    "tablet",
+    "desktop-windows",
+    "desktop-linux",
+    "desktop-macos"
+  ],
+  "matrix": {
+    "database": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-database-web-001",
+        "serves_goals": [
+          "G1",
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-database-web-002",
+          "qa-basis-correction-001",
+          "qa-c8-owner-linkage-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。永続化は D1 に集約し、端末内 DB やオフライン同期 (SQLite/IndexedDB の複製) を持たない。したがって platform 別のスキーマ・移行手順は発生しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。永続化は D1 に集約し、端末内 DB やオフライン同期 (SQLite/IndexedDB の複製) を持たない。したがって platform 別のスキーマ・移行手順は発生しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。永続化は D1 に集約し、端末内 DB やオフライン同期 (SQLite/IndexedDB の複製) を持たない。したがって platform 別のスキーマ・移行手順は発生しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。永続化は D1 に集約し、端末内 DB やオフライン同期 (SQLite/IndexedDB の複製) を持たない。したがって platform 別のスキーマ・移行手順は発生しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。永続化は D1 に集約し、端末内 DB やオフライン同期 (SQLite/IndexedDB の複製) を持たない。したがって platform 別のスキーマ・移行手順は発生しない。",
+        "qa_ref": "qa-platform-scope-001"
+      }
+    },
+    "auth": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-auth-web-001",
+        "serves_goals": [
+          "G1",
+          "G2"
+        ],
+        "qa_refs": [
+          "qa-auth-web-002",
+          "qa-security-web-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。セッションは HttpOnly Cookie に載せるブラウザ前提の方式のみを採り、ネイティブの secure storage・生体認証・OS キーチェーン連携は本サイクルで設計しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。セッションは HttpOnly Cookie に載せるブラウザ前提の方式のみを採り、ネイティブの secure storage・生体認証・OS キーチェーン連携は本サイクルで設計しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。セッションは HttpOnly Cookie に載せるブラウザ前提の方式のみを採り、ネイティブの secure storage・生体認証・OS キーチェーン連携は本サイクルで設計しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。セッションは HttpOnly Cookie に載せるブラウザ前提の方式のみを採り、ネイティブの secure storage・生体認証・OS キーチェーン連携は本サイクルで設計しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。セッションは HttpOnly Cookie に載せるブラウザ前提の方式のみを採り、ネイティブの secure storage・生体認証・OS キーチェーン連携は本サイクルで設計しない。",
+        "qa_ref": "qa-platform-scope-001"
+      }
+    },
+    "ui-ux": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-uiux-web-004",
+        "serves_goals": [
+          "G4",
+          "G1",
+          "G2"
+        ],
+        "qa_refs": [
+          "qa-basis-correction-001",
+          "qa-uiux-web-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。ログイン画面のレイアウト正本は参照画像 01-login.png の web 版 1 枚だけであり、ネイティブの HIG/Material 準拠レイアウトやタッチ前提の操作系を本サイクルでは定義しない。狭幅表示の要件は ui-ux/web のレスポンシブ要件として web セル側に含める。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。ログイン画面のレイアウト正本は参照画像 01-login.png の web 版 1 枚だけであり、ネイティブの HIG/Material 準拠レイアウトやタッチ前提の操作系を本サイクルでは定義しない。狭幅表示の要件は ui-ux/web のレスポンシブ要件として web セル側に含める。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。ログイン画面のレイアウト正本は参照画像 01-login.png の web 版 1 枚だけであり、ネイティブの HIG/Material 準拠レイアウトやタッチ前提の操作系を本サイクルでは定義しない。狭幅表示の要件は ui-ux/web のレスポンシブ要件として web セル側に含める。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。ログイン画面のレイアウト正本は参照画像 01-login.png の web 版 1 枚だけであり、ネイティブの HIG/Material 準拠レイアウトやタッチ前提の操作系を本サイクルでは定義しない。狭幅表示の要件は ui-ux/web のレスポンシブ要件として web セル側に含める。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。ログイン画面のレイアウト正本は参照画像 01-login.png の web 版 1 枚だけであり、ネイティブの HIG/Material 準拠レイアウトやタッチ前提の操作系を本サイクルでは定義しない。狭幅表示の要件は ui-ux/web のレスポンシブ要件として web セル側に含める。",
+        "qa_ref": "qa-platform-scope-001"
+      }
+    },
+    "security": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-security-web-001",
+        "serves_goals": [
+          "G2",
+          "G1",
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-security-web-002",
+          "qa-security-web-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。保護対象の攻撃面はブラウザ経由の HTTP のみであり、アプリ署名・改竄検知・端末紛失時のリモートワイプといった配布アプリ固有の脅威モデルを扱わない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。保護対象の攻撃面はブラウザ経由の HTTP のみであり、アプリ署名・改竄検知・端末紛失時のリモートワイプといった配布アプリ固有の脅威モデルを扱わない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。保護対象の攻撃面はブラウザ経由の HTTP のみであり、アプリ署名・改竄検知・端末紛失時のリモートワイプといった配布アプリ固有の脅威モデルを扱わない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。保護対象の攻撃面はブラウザ経由の HTTP のみであり、アプリ署名・改竄検知・端末紛失時のリモートワイプといった配布アプリ固有の脅威モデルを扱わない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。保護対象の攻撃面はブラウザ経由の HTTP のみであり、アプリ署名・改竄検知・端末紛失時のリモートワイプといった配布アプリ固有の脅威モデルを扱わない。",
+        "qa_ref": "qa-platform-scope-001"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-infra-web-001",
+        "serves_goals": [
+          "G5",
+          "G2"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。配信は Cloudflare Workers の static assets 一系統のみで、App Store / Google Play / インストーラ配布のチャネルと署名鍵の管理を持たない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。配信は Cloudflare Workers の static assets 一系統のみで、App Store / Google Play / インストーラ配布のチャネルと署名鍵の管理を持たない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。配信は Cloudflare Workers の static assets 一系統のみで、App Store / Google Play / インストーラ配布のチャネルと署名鍵の管理を持たない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。配信は Cloudflare Workers の static assets 一系統のみで、App Store / Google Play / インストーラ配布のチャネルと署名鍵の管理を持たない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。配信は Cloudflare Workers の static assets 一系統のみで、App Store / Google Play / インストーラ配布のチャネルと署名鍵の管理を持たない。",
+        "qa_ref": "qa-platform-scope-001"
+      }
+    },
+    "backend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-backend-web-001",
+        "serves_goals": [
+          "G1",
+          "G3",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-backend-web-002",
+          "qa-basis-correction-001",
+          "qa-c8-owner-linkage-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。API は Hono の単一 Worker が全 platform 共通で提供する契約であり、platform 別のバックエンド分岐や専用エンドポイントを設けない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。API は Hono の単一 Worker が全 platform 共通で提供する契約であり、platform 別のバックエンド分岐や専用エンドポイントを設けない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。API は Hono の単一 Worker が全 platform 共通で提供する契約であり、platform 別のバックエンド分岐や専用エンドポイントを設けない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。API は Hono の単一 Worker が全 platform 共通で提供する契約であり、platform 別のバックエンド分岐や専用エンドポイントを設けない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。API は Hono の単一 Worker が全 platform 共通で提供する契約であり、platform 別のバックエンド分岐や専用エンドポイントを設けない。",
+        "qa_ref": "qa-platform-scope-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-frontend-web-001",
+        "serves_goals": [
+          "G4",
+          "G5",
+          "G3"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。追加・改修する画面はすべて packages/web の React SPA 内に閉じ、ネイティブシェルや別ビルドターゲットを持たないため、web 以外のフロントエンド構成は存在しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。追加・改修する画面はすべて packages/web の React SPA 内に閉じ、ネイティブシェルや別ビルドターゲットを持たないため、web 以外のフロントエンド構成は存在しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。追加・改修する画面はすべて packages/web の React SPA 内に閉じ、ネイティブシェルや別ビルドターゲットを持たないため、web 以外のフロントエンド構成は存在しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。追加・改修する画面はすべて packages/web の React SPA 内に閉じ、ネイティブシェルや別ビルドターゲットを持たないため、web 以外のフロントエンド構成は存在しない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。追加・改修する画面はすべて packages/web の React SPA 内に閉じ、ネイティブシェルや別ビルドターゲットを持たないため、web 以外のフロントエンド構成は存在しない。",
+        "qa_ref": "qa-platform-scope-001"
+      }
+    },
+    "maintenance-ops": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ops-web-001",
+        "serves_goals": [
+          "G3",
+          "G2"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。運用手順はデプロイ 1 系統に対してのみ定義し、platform 別のリリース審査・強制アップデート・旧バージョン併存の運用を設けない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。運用手順はデプロイ 1 系統に対してのみ定義し、platform 別のリリース審査・強制アップデート・旧バージョン併存の運用を設けない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。運用手順はデプロイ 1 系統に対してのみ定義し、platform 別のリリース審査・強制アップデート・旧バージョン併存の運用を設けない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。運用手順はデプロイ 1 系統に対してのみ定義し、platform 別のリリース審査・強制アップデート・旧バージョン併存の運用を設けない。",
+        "qa_ref": "qa-platform-scope-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "配布物として web 以外の platform を提供しない (U7 scope out / C4)。運用手順はデプロイ 1 系統に対してのみ定義し、platform 別のリリース審査・強制アップデート・旧バージョン併存の運用を設けない。",
+        "qa_ref": "qa-platform-scope-001"
+      }
+    }
+  },
+  "qa_log": [
+    {
+      "id": "qa-platform-scope-001",
+      "question": "本サイクルの対象プラットフォームはどれですか。web 以外 (mobile / tablet / desktop-windows / desktop-linux / desktop-macos) を配布対象に含めますか。",
+      "answer": "対象は web のみ。本システムは Cloudflare Workers の static assets として配信される単一 SPA (packages/web) であり、専用アプリの配布物は現在存在せず、本サイクルでも新設しない。mobile / tablet はブラウザ幅としては到達しうるが、配布形態としての platform は提供しないため 対象外とする (狭幅レイアウトの要件は ui-ux/web 側で確定する)。よって 8 カテゴリ x 非web 5 platform = 40 セルを対象外とし、web 列の 8 セルだけを確定対象とする。",
+      "provenance": "利用者の新機能指示 (Web のログイン画面のみを対象) と U7 scope out / C4 制約",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T01:49:08Z",
+      "required_info_items": [
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-auth-web-001",
+      "question": "認証モデル (web) を確定してください。誰が主体で、資格情報は何で、セッションはどう保持し、どう失効しますか。",
+      "answer": "認証主体を共有パスワードから利用者アカウントへ移す。資格情報は正規化済みメールアドレスとPBKDF2-HMAC-SHA256でハッシュ化したパスワードとする。セッションCookieは利用者ID・絶対期限・session_generationをHMAC-SHA256の署名対象にし、HttpOnly + Secure + SameSite=Strictとする。有効期限は保持しない=12時間、保持する=30日。authGuardは共有業務tenantのuserId=defaultを維持し、検証済み実利用者をactorとして別contextへ設定する。ログアウト・パスワード変更/再発行・停止で世代を進め、利用者単位で即時失効する。自己登録は設けず、管理者招待制とする。Cloudflare Access経路はサーバ側だけ残す。",
+      "provenance": "利用者の明示指示 (メール+パスワードのみ / 招待制 / メール送信を使わない / 保持 / Access は UI から消しサーバは残す) と、packages/api/src/auth.ts の現行実装 (userId='default'・平文比較・exp のみ署名) の観測",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T01:49:08Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-security-web-001",
+      "question": "セキュリティ姿勢 (web) を確定してください。総当たり・列挙・権限昇格・監査に対して何を課しますか。",
+      "answer": "(1) 列挙防止: アカウント存否でログイン失敗の本文・status・検証手順を分岐しない。(2) 総当たり対策: login rate limitをaccount全体と送信元全体の独立2軸で課す。(3) パスワードは12文字以上で明白な弱値を拒否する。(4) 管理APIはadmin以外へ403を返し、最後の有効adminを停止・降格する操作を単一UPDATEで原子的に拒否する。退出は停止へ一本化し、物理DELETEは提供しない。(5) 一時パスワードはハッシュ保存・72時間有効・初回変更必須とする。(6) 認証と管理操作をactor付きaudit_logへ記録し、平文資格情報は記録しない。(7) CookieはHttpOnly + Secure + SameSite=Strictとする。 (8) 公開認証endpointのJSON bodyは16KiBで制限し、全応答へrequest IDを付け、未捕捉例外は秘密を含まない汎用500へ畳む。",
+      "provenance": "利用者の『セキュリティ関係をしっかり整えているかを UI/UX 確認時に示す』指示、および migrations/0014_password_login_rate_limits.sql と 0033_audit_log.sql の既存実装の観測",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T01:49:08Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-backend-web-001",
+      "question": "ドメインモデルと API 契約 (web) を確定してください。どの実体を追加し、どのエンドポイントが要りますか。",
+      "answer": "利用者は認証と監査のactorとして導入し、既存業務データは共有tenantのまま維持する。APIはPOST /api/auth/login・logout・password、GET /api/auth/me、およびadmin限定のGET|POST /api/admin/users、PATCH /api/admin/users/:id、POST /api/admin/users/:id/password-resetを持つ。退出運用は停止・再開へ一本化し、監査主体を失う物理DELETEは提供しない。入力はzod、エラー形状は { error: { code, message } } を踏襲し、未捕捉500だけ任意のrequestIdを加える。",
+      "provenance": "packages/api/src/index.ts の現行ルーティング (L83-L130) と auth.ts の AuthEnv 観測、および利用者指示 (管理者からアカウント管理を行う)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-13T01:49:08Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-database-web-001",
+      "question": "データ永続化 (web) を確定してください。どのテーブルを追加し、既存 migration とどう整合させますか。",
+      "answer": "D1に0039_account_login.sqlを追加する。usersは現在の一時資格情報期限をpassword_hashと同じ行に持ち、password_login_rate_limitsは送信元とaccountの独立2軸へ拡張し、audit_logにはNULL許容のactor_user_idを追加する。適用後は単一のbootstrap seedで初期管理者1件だけを作る。パスワードハッシュはD1だけに置き、重複する履歴表やR2/KVへ複製しない。",
+      "provenance": "migrations/ 配下の連番 (0038 が最新)・0014/0033 の既存スキーマ観測と、上記 auth/security の確定内容",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-13T01:49:08Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-001",
+      "question": "フロントエンド構成 (web) を確定してください。どの画面を追加/改修し、既存 20 画面とどう共存しますか。",
+      "answer": "既存の React + Vite SPA (packages/web) 内で完結させ、ルータや状態管理ライブラリを新規導入しない。(1) packages/web/src/pages/Login.tsx を参照画像の構成へ全面改修する (メール + パスワード + 保持チェック + 再発行案内。Cloudflare Access の文言と分岐を UI から除去する)。(2) パスワード変更画面を追加し、must_change_password が真のときは他の画面へ遷移させず強制する。(3) 設定画面配下に管理者向けの『利用者管理』を追加し、一覧・招待・role 変更・停止・一時パスワード再発行を行う (admin 以外にはメニュー自体を出さない。ただし権限判定の正本はサーバ側の 403 とする)。(4) 既存 20 画面のレイアウト・ナビゲーションは変更しない。API 呼出しは既存の api() ラッパを使い、401 応答時にログイン画面へ復帰する共通処理を維持する。アイコンは既存の資産の流儀に合わせたインライン SVG とし、実行時に外部 CDN を参照しない。",
+      "provenance": "packages/web/src/pages/Login.tsx の現行実装と packages/web の構成観測、および利用者指示 (設定画面の管理者から新規作成・再発行を行う)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-13T01:49:08Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-infra-web-001",
+      "question": "インフラ構成 (web) を確定してください。新しい binding や secret は要りますか。",
+      "answer": "配信構成は現行のまま維持する: Cloudflare Workers (kanjo-console) + D1 (DB) + R2 (FILES) + static assets で、assets の run_worker_first は /api/* のまま。新しい binding は追加しない (メール送信基盤を導入しないため Email binding も外部 API キーも増やさない)。secret は SESSION_SECRET を必須のまま維持し、AUTH_PASSWORD を required から外して廃止する。SESSION_SECRET のローテーションは全セッションの失効を意味するため、運用手順として明示する。既存の cron (0 18 * * *) に相乗りして、期限切れの一時パスワードと レート制限行の掃除を行う (新しい cron を増やさない)。",
+      "provenance": "packages/api/wrangler.jsonc の観測 (binding・secrets.required・triggers.crons) と、メール送信を使わないという利用者決定",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-13T01:49:08Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-ops-web-001",
+      "question": "運用手順 (web) を確定してください。初期管理者の作成、締め出し時の復旧、移行はどう行いますか。",
+      "answer": "(1) migration適用後、共有パスワードを撤去する前に単一bootstrap seedで初期管理者1件を作り、資格情報を引き渡す。これらを1回の切替作業として連続実行する。(2) 最後のadminを失う操作はサーバ側で拒否し、全adminがログイン不能な場合だけD1直接更新をrunbookの最終手段とする。(3) 招待・停止・一時パスワード再発行は管理画面へ一本化する。(4) ログイン失敗率とlock件数はaudit_logで監視する。(5) 一時パスワードは発行直後の1度だけ表示する。",
+      "provenance": "利用者決定 (初回管理者を 1 件作り共有パスワードは廃止する) と、上記 security/database の確定内容",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T01:49:08Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-uiux-web-002",
+      "question": "参照画像 01-login.png を実見した上で、ログイン画面 (web) の画面構成・情報優先度・遷移を確定してください。",
+      "answer": "参照画像 01-login.png を正とする。画面は 2 カラムで、左に情報パネル、右にログインカードを置く。参照画像に写り込んでいるサイドバー・ヘッダー・フッターは認証後のアプリ枠であり、ログイン画面では一切描画しない (利用者指示)。【左: 情報パネル】(1) 小さなブランド表記『FOCUS LEDGER』、(2) 2 行の見出し『収支を、/ 迷わず締める。』、(3) 3 行程度のリード文、(4) 見出し『月次の流れ』と 4 ステップ (1 取込 / 2 整える / 3 確認 / 4 計画) を 番号バッジ + アイコン + 一言説明で横並びに置き、シェブロンで連結する、(5) 区切り線の下に見出し『安心してご利用いただくために』と 3 項目 (セキュリティについて = 全通信の暗号化と業界標準に基づく保護 / プライバシーについて = ログイン情報は認証と保護の用途に限ること / お客様のデータについて = 通常は外部送信せず、AI分析時だけ明細を含まない集計データを24時間の使い捨て経路で渡すこと) を、盾・錠・書類のアイコン付きで縦に並べる。この 3 項目が『セキュリティを整えていることを UI で確認できる』要件の実体であり、装飾ではなく規範として置く。【右: ログインカード】上から (1) 見出し『ログイン』、(2) 1 行のリード文、(3) ラベル付きメールアドレス入力 (type=email / autoComplete=username / placeholder は example@internal 形式)、(4) ラベル付きパスワード入力 (type=password / autoComplete=current-password / 右端に目アイコン + 『表示』のテキストトグル。エラー時は枠線を赤へ)、(5) エラーメッセージ『メールアドレスまたはパスワードが正しくありません。』を 警告アイコン付きで入力直下に role=alert で出す、(6) チェックボックス『次回からもログイン状態を保持する』、(7) 全幅の主ボタン『ログイン』、(8) その下に薄い注記『ショートカットキー: Ctrl + Enter でログインできます』、(9) 区切り線の下に『パスワードをお忘れの方』と『サポートに問い合わせる』の 2 リンクを横並びに置く。参照画像の『別の方法でログインする / Cloudflare Access でログイン』ブロックは利用者指示により削除する (サーバ側の Access 実装は残すが UI からは露出しない)。『パスワードをお忘れの方』はメール送信基盤を持たないため、自動再発行ではなく『管理者へ連絡して一時パスワードの発行を受ける』手順を示すダイアログを開く。自己新規登録の導線は招待制ゆえ置かない。『次回からもログイン状態を保持する』は参照画像に倣い既定 ON とし、ON が 30 日・OFF が 12 時間であることをチェックボックス脇のマイクロコピーで明示する (既定の帰結を隠さない)。情報優先度は 頻度 x 失敗コスト で決め、第 1 が右カードの資格情報入力と送信、第 2 が失敗時の復帰導線 (エラー文言と『パスワードをお忘れの方』)、第 3 が左の安心 3 項目、第 4 が月次の流れ 4 ステップ、最下位がブランド見出しである。落とすのは 外部 IdP ボタン・自己登録リンク・利用規約リンク・フッターの版数表記。アイコンは常にテキストラベルと併記し、単独で意味を担わせない。初期フォーカスはメールアドレス入力。キーボードのみで全操作が完結し、Ctrl + Enter で送信できる。狭幅 (~400px) では 1 カラムへ畳み、右のログインカードを先頭へ、左の情報パネルをその下へ回す (ログインが主目的であり、説明を先に読ませない)。左右の余白は最低 16px を保つ。利用文脈は『個人が自分の金融明細を確認するため、PC ブラウザから 1 日 1 回程度ログインする』である。",
+      "provenance": "参照画像 design/FINAL-UI/images/01-login.png の実見と、利用者指示 (ヘッダー/フッター/サイドバー不要・Cloudflare Access の案内は不要・セキュリティを整えている旨を UI/UX で示す)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T02:01:00Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-design-doctrine-application-001",
+      "question": "各章の設計知識 card と上流指針 (doctrine anchor) を、本サイクルの確定内容へどう適用したかを章ごとに記述してください。",
+      "answer": "8 章それぞれについて、card 本文の要約ではなく『本章の確定セルへどう効いたか』を記述し、doctrine anchor は category_concern_map の 14 組それぞれへ反映内容を記述した (下記 ops が実体)。",
+      "provenance": "本サイクルの確定セル内容と、doctrine-anchor-registry.json の category_concern_map",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T02:01:00Z"
+    },
+    {
+      "id": "qa-backend-web-002",
+      "question": "U7 scope.in の『既存データの所有者紐付け』と、qa-backend-web-001 の『明細データへの所有者列追加は本サイクルのスコープ外』は矛盾しているように読める。どちらが本サイクルの規範か。",
+      "answer": "矛盾ではなく、U7 の語の指す範囲を狭く読む。U7 scope.in の『既存データの所有者紐付け』が指すのは、業務データ本体 (明細・取引・カテゴリ等) へ所有者列を追加することではなく、audit_log へ actor_user_id を追加して『既存データに対してどの操作を誰が行ったか』を辿れるようにすることである。業務データ本体は単一テナントの共有資産のまま変更せず、行単位の所有者による参照制御は導入しない。これは U7 scope.out の『細粒度の権限ロール設計 (画面別・操作別の権限行列) を本サイクルでは扱わない』という利用者決定と同じ境界であり、本回答は新しい範囲判断を加えていない。したがって本サイクルで追加される所有者性は監査上の actor のみであり、qa-backend-web-001 の記述が規範として有効である。",
+      "provenance": "requirements_foundation U7 scope.in / scope.out の逐語と、qa-backend-web-001・qa-database-web-001 の確定内容の突合",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-13T02:07:56Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-database-web-002",
+      "question": "audit_log.actor_user_id を追加したとき、共有パスワード時代に記録された既存行の actor をどう扱うか。",
+      "answer": "既存行の actor_user_id は NULL のまま保持し、遡って埋めない。共有パスワード経路では操作者を識別する情報をそもそも記録していないため、誰であったかは観測されていない。観測されていない事実を移行で書き込むと、監査ログが『特定できた』と誤って主張することになる。よって NULL は欠測ではなく『識別不能な時代の操作である』という意味を持つ値として扱い、カラムは NOT NULL 制約を付けずに追加する。併せて、明細系テーブルへ owner 列を追加する migration は本サイクルで作らない (qa-backend-web-002 と同じ境界)。",
+      "provenance": "migrations/0033_audit_log.sql の既存スキーマ観測と、packages/api/src/auth.ts の authGuard が userId='default' 固定である観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-13T02:07:56Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-auth-web-002",
+      "question": "切替時点で既に配布済みの旧形式セッション Cookie (exp のみを署名した payload) をどう扱うか。",
+      "answer": "旧形式 Cookie は移行後、無条件に不正として扱い、全利用者へ再ログインを求める。二段で担保する: (a) 署名 payload を『利用者 ID . 有効期限 . 世代』の3要素へ変更し、要素数・形式が一致しない Cookie は署名検証に進む前に拒否する。(b) デプロイ時に SESSION_SECRET をローテーションし、旧 secret で作られた署名を全て無効化する。(a) だけでは実装の分岐ミスで旧形式を受理する余地が残り、(b) だけでは payload 形式の混在が続くため、両方を課す。切替直後に全利用者が再ログインになるのは意図した挙動であり、共有パスワードで発行された『誰のものか特定できないセッション』が利用者単位の新体系へ持ち越されないことを保証する。",
+      "provenance": "packages/api/src/auth.ts の verifySessionCookie (L82-92) が exp のみを署名対象とし利用者を識別しない実装であることの観測と、qa-auth-web-001 が確定した新 payload 形式との差分",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-13T02:07:56Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-security-web-002",
+      "question": "パスワードの再利用禁止と、同時セッション数の上限を課すか。",
+      "answer": "(8) パスワード再利用: パスワード変更・一時パスワードからの変更時に、現行パスワードと同一の値を拒否する。過去世代のパスワード履歴は保存しない。履歴を持つこと自体が漏洩時の資産になり、利用者の他サービスでの資格情報を推測させる材料になるため、履歴照合ではなく『12文字以上 + 明白な弱パスワードの拒否 + 世代失効』で代替する。(9) 同時セッション数: 上限を設けない。同一利用者が複数端末で並行して利用するのは正当な利用形態であり、上限を課すと正規利用者が締め出される一方、攻撃者は先に張ったセッションを維持できるため防御として非対称に弱い。異常時の封じ込めは session_generation による一括失効 (ログアウト・パスワード変更・管理者による停止) で行う。",
+      "provenance": "qa-security-web-001 が確定した弱パスワード拒否・session_generation による一括失効を前提に、履歴保持の資産化リスクと上限の非対称性から導いた設計推論。利用者へ提示した選択肢に基づく決定ではない",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-13T02:07:56Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-basis-correction-001",
+      "question": "design_applications 8件 / doctrine_applications 13件 の basis を 'user-decision' として記録したが、これらの適用記述はエージェントが確定セルを読んで合成した文章であり、利用者が個々の文を選択・承認したものではない。basis の申告を実態に合わせて訂正せよ。",
+      "answer": "訂正する。21件の適用記述 (design 8 / doctrine 13) の basis を 'agent-inference' へ改める。記述内容そのものは変更しない — 確定セルの内容を読んで『その上流指針が本章のどこへ効いたか』を書いたという事実は変わらず、変わるのは『誰がそう判断したか』の申告である。利用者から得ているのは上位概念 (U1-U9, appr-foundation-account-login-001) と各カテゴリの確定回答であって、適用記述の一文一文ではない。併せて、同じ回で記録した qa-backend-web-002 / qa-database-web-002 の basis 'observed-fact' も実態と異なる: これらの答えの実体は既存コードの観測ではなく『U7 scope.in の語をどこまで狭く読むか』というエージェントの解釈判断であり、agent-inference が正しい区分である。qa-uiux-web-002 の basis 'user-decision' も、レイアウト・文言・ヘッダー等の不在は利用者の明示指示だが、『パスワードをお忘れの方』押下でダイアログを開くという UI 実装形式は利用者指示から演繹した推論であり、この部分に限り agent-inference である。qa_log の basis は fill-once で上書きできないため、これらの訂正は本 entry を裏付け質疑として当該セルへ添えることで記録に残す (誤った申告を消さずに残すことが、訂正そのものの監査可能性を保つ)。残る軽微な不正確として、qa-uiux-web-002 の required_info_items に無関係な 'target-platforms' が含まれ、qa-design-doctrine-application-001 には required_info_items が欠落している。いずれも接地判定 (target-platforms は qa-platform-scope-001 で接地済み) に影響しないため訂正質疑を重ねず、本 entry に記録して残す。",
+      "provenance": "独立監査 (system-spec-hearing-auditor 再監査 2026-09-13) の指摘1・2・4・5 と、spec-state.json の design_applications / doctrine_applications / qa_log の逐語突合",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-13T02:20:00Z"
+    },
+    {
+      "id": "qa-c8-owner-linkage-001",
+      "question": "承認済み制約 C8「既存データには所有者列が無く userId は 'default' 固定であるため、初回管理者への紐付けを移行で決める必要がある」について、移行での扱いを確定してください。選択肢は (a) 業務データに所有者列を追加せず audit_log の actor_user_id 記録のみとする、(b) owner_user_id 列を追加し既存の全行を初回管理者の所有として埋める、(c) owner_user_id 列を追加するが既存行は NULL のまま埋めない、の3案です。",
+      "answer": "(a) を採る。明細等の業務データに所有者列を追加せず、既存データは登録済み利用者全員が参照できる共有資産のままとする。C8 が要求する『初回管理者への紐付けを移行で決める』ことへの答えは『紐付けない』であり、決めていないのではなく、紐付けないことを決めた。理由は3点: (1) C6 のとおり実質的に単独運用であり、行単位の所有者を持っても分ける相手がいない。(2) U7 scope.out で細粒度の権限ロール設計を本サイクルの対象外としており、所有者列を入れても参照制御に使えず、使わない列だけが残る。(3) (b) は既存行に『初回管理者が入力した』という観測していない事実を書き込むことになり、監査ログの信頼性を下げる。今回追加する所有者性は audit_log.actor_user_id による『今後どの操作を誰が行ったか』だけであり、既存行の actor は NULL (= 共有パスワード時代の操作で識別不能) のまま保持する。将来『誰の明細か』を分ける必要が生じた時点で、別サイクルとして所有者モデルを設計する。",
+      "provenance": "利用者が3案の比較 (移行の重さ・将来の分割可能性・観測していない事実の書き込みリスク) を見たうえで (a) を明示選択 (2026-09-13)。独立監査 (system-spec-hearing-auditor 再監査) の指摘3『C8 の文言が qa-backend-web-002 の解釈で上書きされたまま再承認されていない』を受けて確認した",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T04:36:37Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-security-web-003",
+      "question": "qa-security-web-002 で agent-inference として記録した2点 — (8) パスワード再利用の扱い、(9) 同時セッション数の上限 — を、利用者確認のうえ確定してください。再利用は『現行と同一値のみ拒否・履歴は保持しない』か『過去N世代も拒否』か。同時セッションは『上限なし』か『1利用者1セッション』か。",
+      "answer": "利用者が両案の比較を見たうえで次を選択した。(8) パスワード再利用: 変更・再発行時に現行パスワードと同一の値のみを拒否し、過去世代のパスワード履歴は保存しない。履歴を持つこと自体が漏洩時の資産になり、利用者の他サービスでの資格情報を推測させる材料になるため、履歴照合ではなく『12文字以上 + 明白な弱パスワードの拒否 + session_generation による失効』で代替する。(9) 同時セッション数: 上限を設けない。同一利用者が複数端末・複数ブラウザで並行利用するのは正当な利用形態であり、上限を課すと正規利用者が締め出される一方、攻撃者は先に張ったセッションを維持できるため防御として非対称に弱い。異常時の封じ込めは session_generation による一括失効 (ログアウト・パスワード変更・管理者による停止) で行う。本 entry は qa-security-web-002 の内容を利用者確認により追認するものであり、方針そのものは変わらない。変わるのは根拠の性質 (推論 → 利用者決定) である。",
+      "provenance": "利用者が2論点それぞれについて2案 (再利用: 同一値のみ拒否 / 過去N世代も拒否、同時セッション: 上限なし / 1利用者1セッション) の帰結を見たうえで明示選択 (2026-09-13)。独立監査 (system-spec-matrix-auditor 再監査) の LOW-2『セキュリティポリシー上重要な2点が利用者未提示のまま確定セルへ追加されている』を受けて確認した",
+      "basis": "user-decision",
+      "answered_at": "2026-09-13T04:55:11Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-uiux-web-003",
+      "question": "ログイン画面の情報配置は、左に情報パネルを置く2カラム構成のままでよいですか。実機ではその左パネルがサイドバー、ブランド見出しがヘッダーに見えるという指摘が出ています。",
+      "answer": "2カラムをやめ、認証前はログインカード1枚だけを中央に置く。ログイン画面にサイドバー・ヘッダー・フッターに見える枠を一切持たせない。セキュリティを画面で確認できることは要件として残すため、安心3項目(セキュリティ/プライバシー/お客様のデータ)は脇のパネルではなくカードの中に常設する。月次の流れ4ステップの説明は認証前には出さない。参照画像 design/FINAL-UI/images/01-login.png を正とする。",
+      "provenance": "2026-09-14 利用者報告「ログイン画面にサイドバー、ヘッダー、フッターが表示されています。」および先行指示「フッターに関しても不要です。ヘッダーに関しても現状は不要です。」「既存の仕組みの中でUI/UXがこのようになっていない場合は、このイメージの方を正としてこのような形になるようにしてください。」",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T04:12:00Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-uiux-web-004",
+      "question": "ログイン画面 (web) の画面構成・情報優先度・遷移を、認証前に枠を一切持たせない前提で確定し直してください。qa-uiux-web-003 は方針だけを述べており、カード内の確定仕様を落としていました。",
+      "answer": "参照画像 design/FINAL-UI/images/01-login.png を正とする。認証前はログインカード1枚だけを中央に置く単一カラムとし、2カラムの情報パネルは設けない。ログイン画面にサイドバー・ヘッダー・フッターは描画せず、それらに見える要素 (脇の説明パネル、ブランド見出し、版数表記) も置かない。参照画像に写り込んでいる枠は認証後のアプリ枠である。【ログインカード】上から (1) 見出し『ログイン』、(2) 1 行のリード文、(3) ラベル付きメールアドレス入力 (type=email / autoComplete=username / placeholder は example@internal 形式)、(4) ラベル付きパスワード入力 (type=password / autoComplete=current-password / 右端に目アイコン + 『表示』のテキストトグル。エラー時は枠線を赤へ)、(5) エラーメッセージ『メールアドレスまたはパスワードが正しくありません。』を警告アイコン付きで入力直下に role=alert で出す、(6) チェックボックス『次回からもログイン状態を保持する』、(7) 全幅の主ボタン『ログイン』、(8) その下に薄い注記『Ctrl + Enter でも送信できます』、(9) 区切り線の下に見出し『安心してご利用いただくために』と 3 項目 (セキュリティについて = 全通信の暗号化と業界標準に基づく保護 / プライバシーについて = ログイン情報は認証と保護の用途に限ること / お客様のデータについて = 通常は外部送信せず、AI分析時だけ明細を含まない集計データを24時間の使い捨て経路で渡すこと) を、盾・錠・書類のアイコン付きで縦に並べる。この 3 項目が『セキュリティを整えていることを UI で確認できる』要件の実体であり、装飾ではなく規範として、脇のパネルではなくカードの中に常設する、(10) 最後に『パスワードをお忘れの方』と『サポートに問い合わせる』の 2 リンクを横並びに置く。参照画像の『別の方法でログインする / Cloudflare Access でログイン』ブロックは利用者指示により削除する (サーバ側の Access 実装は残すが UI からは露出しない)。『パスワードをお忘れの方』はメール送信基盤を持たないため、自動再発行ではなく『管理者へ連絡して一時パスワードの発行を受ける』手順を示すダイアログを開く。自己新規登録の導線は招待制ゆえ置かない。『次回からもログイン状態を保持する』は既定 ON とし、ON が 30 日・OFF が 12 時間であることをチェックボックス脇のマイクロコピーで明示する (既定の帰結を隠さない)。情報優先度は 頻度 x 失敗コスト で決め、第 1 が資格情報の入力と送信、第 2 が失敗時の復帰導線 (エラー文言と『パスワードをお忘れの方』)、第 3 が安心 3 項目である。落とすのは 外部 IdP ボタン・自己登録リンク・利用規約リンク・フッターの版数表記・ブランド見出し・『月次の流れ』4 ステップの説明 (認証前に業務の説明を読ませない)。アイコンは常にテキストラベルと併記し、単独で意味を担わせない。初期フォーカスはメールアドレス入力。キーボードのみで全操作が完結し、Ctrl + Enter で送信できる。カードは最大幅 460px 程度で中央に置き、狭幅 (~400px) でも同じ単一カラムのまま左右の余白を最低 16px 保ち、横スクロールを生じさせない。利用文脈は『個人が自分の金融明細を確認するため、PC ブラウザから 1 日 1 回程度ログインする』である。",
+      "provenance": "2026-09-14 利用者報告「ログイン画面にサイドバー、ヘッダー、フッターが表示されています。」および先行指示「フッターに関しても不要です。ヘッダーに関しても現状は不要です。」「既存の仕組みの中でUI/UXがこのようになっていない場合は、このイメージの方を正としてこのような形になるようにしてください。」。カード内の確定仕様は qa-uiux-web-002 から枠関連の記述だけを除いて引き継いだ。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T04:12:30Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    }
+  ],
+  "approval_log": [
+    {
+      "id": "appr-foundation-account-login-001",
+      "note": "U1-U9 要約 (本質的目的・背景・ゴールG1-G5・目標O1-O8・成功基準S1-S9・ステークホルダー5区分・スコープ in/out・制約C1-C10・具体的意図I1-I15) を提示し、利用者が「この内容で確定する」を選択して承認した。推定で加えた S9/I15 (最後の管理者を停止・降格できない) を含めた上での承認である。"
+    }
+  ],
+  "reopen_log": [
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "参照画像を実見した結果、確定済みの記述 (ビューポート中央の単一カード 1 カラム) が画像と食い違っていた。画像は左に情報パネル (ブランド見出し・月次の流れ 4 ステップ・安心 3 項目)、右にログインカードを置く 2 カラムであり、承認済み上位概念 U4-O5 の記述とも一致する。画像を正とする利用者指示に反する確定を残せないため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-13T02:01:00Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "確定済みの qa-uiux-web-002 は「左に情報パネルを置く2カラム」を正としていたが、実機でその左パネルがサイドバー、ブランド見出しがヘッダーとして知覚され、認証前画面に枠を持たせないという上位の指示と矛盾していたため。",
+      "from": "確定",
+      "reopened_at": "2026-09-14T04:10:00Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "qa-uiux-web-003 は 2 カラム廃止の方針だけを述べ、ログインカード内の確定仕様 (入力欄・エラー文言・保持チェック・リンク・情報優先度) を落としていたため、完全な画面仕様として記述し直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-14T04:13:00Z"
+    }
+  ],
+  "category_aggregate": {
+    "database": "確定",
+    "auth": "確定",
+    "ui-ux": "確定",
+    "security": "確定",
+    "infrastructure": "確定",
+    "backend": "確定",
+    "frontend": "確定",
+    "maintenance-ops": "確定"
+  },
+  "targets": [
+    {
+      "target_id": "cloudflare-workers",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "cloudflare-d1",
+      "category": "database"
+    },
+    {
+      "target_id": "hono",
+      "category": "backend"
+    },
+    {
+      "target_id": "react",
+      "category": "frontend"
+    },
+    {
+      "target_id": "vite",
+      "category": "frontend"
+    },
+    {
+      "target_id": "zod",
+      "category": "backend"
+    },
+    {
+      "target_id": "web-crypto-api",
+      "category": "auth"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "category": "security"
+    }
+  ],
+  "requirements_foundation": {
+    "essential_purpose": "金融明細を扱う権限を「共有された1つの秘密」から「個人に帰属するアカウント」へ移し、失効・追跡・権限限定を利用者単位で効かせられる状態にする。5 Whys の帰結: (1)なぜログイン画面を変えるか→現状はパスワード1本で誰がログインしたか分からない (2)なぜ主体を識別したいか→事業と家計の金融明細を扱うのに認証主体が共有パスワード1本で、漏れれば全データが即座に露出し、誰の操作かも追えない (3)なぜ今か→20画面まで育ち audit_log や改善リクエストなど「誰が」を前提にした機能が既に入っている中で、認証だけが主体を持たないまま取り残されている (4)なぜ主体が要るか→責任の所在を切り分け、1人の退出で全員のパスワードを変える運用から抜けるため (5)本質→金融データを預かる責任を共有の秘密ではなく個人へ帰属させ、停止・追跡・限定を個別に効かせられるようにする。ログイン画面の刷新は、その主体変更を利用者が最初に触れる場所として「安心して預けられる」と伝わる形に整えることであり、見た目の改善そのものが目的ではない。",
+    "background": "現在の認証は二段構えで、ACCESS_AUD と ACCESS_TEAM_DOMAIN が設定されていれば Cloudflare Access の JWT を検証し、未設定ならアプリ内セッション認証 (AUTH_PASSWORD 1本 + HMAC 署名 HttpOnly Cookie) を使う。しかし認証成功後に authGuard が設定するのは c.set('userId', 'default') という固定値であり、利用者という概念がシステムに存在しない。パスワードは verifyPassword が timingSafeEq で平文比較しており、鍵導出関数を通していない。ログイン画面はパスワード入力1つだけで、扱うデータの性質も保護方針も伝えていない。一方でリポジトリには 0033_audit_log.sql や改善リクエストなど「誰が」を前提とする機能が既に入っており、認証だけが主体を持たない非対称が残っている。共有パスワードは1人に渡すと全員に渡り、1人を外すと全員のパスワードを変える必要がある。20画面規模になり月次業務の順序で束ねられた今、この運用コストと事故時の切り分け不能が表面化した。参照UI (design/FINAL-UI/images/01-login.png) は、この主体変更に見合う入口として提示されたもので、既存UIがこれと異なる場合は参照UIを正とする。",
+    "goals": [
+      {
+        "id": "G1",
+        "text": "利用者がメールアドレスとパスワードで本人として認証でき、セッションが誰のものかシステム側で特定できる"
+      },
+      {
+        "id": "G2",
+        "text": "認証情報が漏洩しても即座に全データが露出しない。パスワードは復元不能な形で保存し、セッションは利用者単位で失効できる"
+      },
+      {
+        "id": "G3",
+        "text": "管理者が設定画面から利用者の追加・停止・パスワード再発行を完結でき、共有パスワードの配り直しが不要になる"
+      },
+      {
+        "id": "G4",
+        "text": "ログイン画面が、扱うデータの性質と保護方針を利用者へ明示し、初見でも何をする場所か・何が守られるかが分かる"
+      },
+      {
+        "id": "G5",
+        "text": "既存20画面と /api/* 認証ガードの契約を壊さずに認証主体を差し替える"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "O1",
+        "text": "users テーブルを新設し、パスワードを鍵導出関数 (WebCrypto PBKDF2) で保存する",
+        "measure": "migration 適用後の schema に password_hash と salt と反復回数が存在し、平文パスワードを保持するカラムが0件",
+        "serves": [
+          "G1",
+          "G2"
+        ]
+      },
+      {
+        "id": "O2",
+        "text": "セッション cookie に利用者識別子を含め、識別子を署名対象に含める",
+        "measure": "利用者識別子を改ざんした cookie が /api/* で401になる契約テストが緑",
+        "serves": [
+          "G1",
+          "G2",
+          "G5"
+        ]
+      },
+      {
+        "id": "O3",
+        "text": "「次回からもログイン状態を保持する」の選択でセッション有効期間を2段階に切り替える",
+        "measure": "未選択時と選択時で Set-Cookie の maxAge が異なることを検査するテストが緑",
+        "serves": [
+          "G1",
+          "G2"
+        ]
+      },
+      {
+        "id": "O4",
+        "text": "管理者が設定画面から利用者の作成・停止・一時パスワード発行を行える",
+        "measure": "3操作それぞれに API と画面操作が存在し、非管理者からの呼出しが403になる",
+        "serves": [
+          "G3"
+        ]
+      },
+      {
+        "id": "O5",
+        "text": "ログイン画面を参照UIの構成 (左: ブランド見出し・月次の流れ4ステップ・安心3項目、右: ログインカード) にし、ヘッダー・フッター・サイドバーを持たせない",
+        "measure": "ログイン画面の DOM に header/footer/サイドバーのナビゲーション要素が0件",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "O6",
+        "text": "認証失敗時の応答が、メールアドレスの存在有無を区別しない",
+        "measure": "未登録メールと誤パスワードで応答本文・ステータスが同一で、パスワード検証を常に実行して所要時間差を作らない",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "O7",
+        "text": "既存のログイン rate limit をメールアドレス単位へ拡張する",
+        "measure": "同一メールへの連続失敗で当該メールがロックされ、他メールのログインは阻害されないテストが緑",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "O8",
+        "text": "migration適用後のbootstrap seedで初回管理者を1件作成し、共有パスワード認証経路を撤去する",
+        "measure": "active runtimeと必須設定に共有パスワード認証分岐が0件で、旧secretを外しても全機能が動作する",
+        "serves": [
+          "G3",
+          "G5"
+        ]
+      }
+    ],
+    "success_criteria": [
+      "S1: 管理者が作成した利用者が自分のメールアドレスとパスワードでログインでき、発行された cookie に自分の識別子が含まれる",
+      "S2: D1 上でパスワードが平文検索できず、同じパスワードの2利用者でも保存値が一致しない (salt が利用者ごとに異なる)",
+      "S3: 管理者が停止した利用者は、停止前に発行済みのセッションを持っていても /api/* が401を返す",
+      "S4: 「次回からもログイン状態を保持する」の有無で cookie の有効期間が変わり、未選択時はブラウザセッション相当の短い期間になる",
+      "S5: ログイン画面に Cloudflare Access の導線・ヘッダー・フッター・サイドバーが存在しない",
+      "S6: 未登録メールアドレスと誤パスワードの応答が、本文・ステータスコードのいずれでも区別できない",
+      "S7: 既存20画面の認証ガードが変更前と同じ mount 順序・同じ経路で動作し、既存の契約テストが緑のまま",
+      "S8: AUTH_PASSWORD secret を設定から外した状態で、ログインを含む全機能が動作する",
+      "S9: 管理者が最後の有効な管理者を停止・降格して誰も管理できなくなる状態を、システムが拒否する"
+    ],
+    "stakeholders": [
+      "利用者本人 (事業と家計を1人で見ている運営者): 月次を締めようとする状況で、まず迷いなくログインし、自分の作業として記録を残したい。共有パスワードでは自分の操作という感覚が持てない",
+      "管理者 (現状は利用者本人が兼ねる): 家族や委託先に一部の作業を任せたい状況で、個別に発行し、任せ終わったら個別に止めたい。全員のパスワードを変える運用を避けたい",
+      "将来の共同利用者 (招待される側): 招待を受けた状況で、自分だけが知るパスワードを自分で決めたい。他人と秘密を共有したくない",
+      "事後の調査主体 (事故や誤操作の後に運営者自身が担う): 何がいつ誰の操作で起きたかを調べる状況で、操作を主体に結びつけたい",
+      "システムを新しく開く人 (初見の利用者): 金融データを預ける前に、何を扱う場所で何が守られるのかを知りたい"
+    ],
+    "scope": {
+      "in": [
+        "users テーブルの新設と、鍵導出関数によるパスワード保存",
+        "メールアドレス+パスワードによるログインと、セッションへの利用者識別子の埋め込み",
+        "ログイン状態保持 (セッション有効期間の2段階切替)",
+        "管理者による利用者の作成・停止・一時パスワード発行 (設定画面)",
+        "参照UI (design/FINAL-UI/images/01-login.png) に沿ったログイン画面の刷新",
+        "ログイン画面専用レイアウト (ヘッダー・フッター・サイドバーを持たない)",
+        "ログイン rate limit のメールアドレス単位化",
+        "migration適用後のbootstrap seedによる初回管理者作成と、既存データを共有tenantのまま保持して今後の操作だけをactorへ紐付ける移行",
+        "AUTH_PASSWORD による共有パスワード経路の撤去",
+        "ログイン画面からの Cloudflare Access 導線の撤去"
+      ],
+      "out": [
+        "メール送信基盤 (招待メール・パスワードリセットメール): 利用者決定 2026-09-11 により送信手段を持たない。管理者が一時パスワードを発行し別経路で伝える",
+        "利用者による自己登録 (サインアップ): 利用者決定 2026-09-11 により管理者招待制のみとする。金融明細を扱うため第三者の自己登録を塞ぐ",
+        "SSO・ソーシャルログイン: メールアドレスとパスワードのみとする利用者決定による",
+        "多要素認証 (TOTP/WebAuthn): 本サイクルでは扱わない。将来の追加余地は残すが要件に含めない",
+        "サーバー側 Cloudflare Access 検証経路の削除: 利用者決定 2026-09-11 により残置する。撤去するのはUI導線のみ",
+        "細粒度の権限ロール設計 (画面別・操作別の権限行列): 本サイクルは管理者と一般利用者の2区分に留める",
+        "web 以外のプラットフォーム (mobile / tablet / desktop-windows / desktop-linux / desktop-macos): 専用アプリを提供しておらず、対象を web のみとする"
+      ]
+    },
+    "constraints": [
+      "C1: Cloudflare Workers + D1 + R2 の既存構成上で動くこと。パスワード鍵導出は WebCrypto (PBKDF2) で行い、Node 固有 API への依存を増やさない",
+      "C2: メール送信基盤を持たない (利用者決定 2026-09-11)。招待とパスワード再発行は管理者による一時パスワード発行と別経路での伝達で成立させる",
+      "C3: サーバー側 Cloudflare Access 検証経路 (ACCESS_AUD / ACCESS_TEAM_DOMAIN) は残置する (利用者決定 2026-09-11)。撤去はUI導線に限る",
+      "C4: 対象プラットフォームは web のみ。専用アプリを提供していない",
+      "C5: 既存 /api/* 認証ガードの mount 順序と既存契約テストを壊さない",
+      "C6: 実質的に単独運用のため、運用者が1人でも回る手順にする。管理者が自分自身を締め出して復旧不能になる状態を作らない",
+      "C7: 金融明細を扱うため、認証失敗の応答から利用者の存在有無を推測できてはならない",
+      "C8: 既存データには所有者列が無く userId は 'default' 固定であるため、既存データを特定利用者へ遡及紐付けせず、今後の操作主体だけをactorとして記録する",
+      "C9: パスワードは復元不能な形で保存し、管理者を含む誰も他人のパスワードを閲覧できない",
+      "C10: 参照UI (design/FINAL-UI/images/01-login.png) を正とする。既存UIがこれと異なる場合は参照UIへ寄せる"
+    ],
+    "concrete_intents": [
+      {
+        "id": "I1",
+        "text": "メールアドレスとパスワードの2入力によるログインフォーム",
+        "serves": [
+          "G1",
+          "G4"
+        ]
+      },
+      {
+        "id": "I2",
+        "text": "パスワードの表示切替 (目のアイコンと「表示」ラベル)",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "「次回からもログイン状態を保持する」チェックボックス",
+        "serves": [
+          "G1",
+          "G4"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "Ctrl + Enter でログインを実行するショートカットと、その旨の明示",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "認証失敗時は「メールアドレスまたはパスワードが正しくありません。」の単一文言をフィールド直下に出す",
+        "serves": [
+          "G2",
+          "G4"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "左カラムにブランド見出し・月次の流れ4ステップ (取込/整える/確認/計画)・安心3項目 (セキュリティ/プライバシー/お客様のデータ) を置く",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "ログイン画面をヘッダー・フッター・サイドバーを持たない専用レイアウトにする",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I8",
+        "text": "「パスワードをお忘れの方」を管理者への問い合わせ導線として置く (メール送信は行わない)",
+        "serves": [
+          "G3",
+          "G4"
+        ]
+      },
+      {
+        "id": "I9",
+        "text": "users テーブルと、利用者ごとの salt を伴う鍵導出によるパスワード保存",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I10",
+        "text": "セッションへの利用者識別子の埋め込みと、利用者単位でのセッション失効",
+        "serves": [
+          "G1",
+          "G2"
+        ]
+      },
+      {
+        "id": "I11",
+        "text": "設定画面の管理者セクションで、利用者一覧の閲覧・追加・停止・一時パスワード発行を行う",
+        "serves": [
+          "G3"
+        ]
+      },
+      {
+        "id": "I12",
+        "text": "ログイン rate limit をメールアドレス単位へ拡張する",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I13",
+        "text": "migration適用後のbootstrap seedで初回管理者を作成し、共有パスワード認証経路を撤去する",
+        "serves": [
+          "G5",
+          "G2"
+        ]
+      },
+      {
+        "id": "I14",
+        "text": "既存 /api/* 認証ガードの mount 順序と契約を維持したまま主体を差し替える",
+        "serves": [
+          "G5"
+        ]
+      },
+      {
+        "id": "I15",
+        "text": "管理者が最後の管理者を停止・降格できないようにする",
+        "serves": [
+          "G3"
+        ]
+      }
+    ],
+    "confirmed": true,
+    "approval_ref": "appr-foundation-account-login-001"
+  },
+  "decisions": [],
+  "knowledge_candidates": [],
+  "design_applications": {
+    "ui-ux": {
+      "text": "information-design の『何を残し・落とし・加工するか』を、本章の確定セルで実際に切った: 残すのは 資格情報入力 / 失敗時の復帰導線 / 安心 3 項目、落とすのは 外部 IdP ボタン・自己登録リンク・利用規約・版数表記、加工するのは『パスワードをお忘れの方』(自動再発行ではなく管理者連絡の案内へ意味を変える)。束の順位は task 頻度 x 失敗コストで、日次で起きるログイン成功経路を第 1、失敗からの復帰を第 2 に置いた。狭幅で情報パネルを後ろへ回す判断も同じ順位から導いた。",
+      "recorded_at": "2026-09-13T02:20:00Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "clean-architecture の依存方向を画面追加の判断に使った: 権限判定 (admin か否か) の正本をサーバの 403 に置き、画面側の出し分けは表示の都合に留める、と本章で確定した。これにより UI の分岐がドメイン規則の複製にならない。また画面追加を既存 SPA の内側に閉じ、ルータや状態管理を増やさないことで、既存 20 画面との境界を変えずに済ませた。",
+      "recorded_at": "2026-09-13T02:20:00Z",
+      "basis": "agent-inference"
+    },
+    "backend": {
+      "text": "clean-architecture の『業務規則を入出力から独立させる』を、本章の API 契約へ適用した: 利用者という実体を 認証と監査の主体としてのみ導入し、明細データへ所有者列を伝播させない境界を引いた。エラー形状 { error: { code, message } } を既存のまま保つ決定も、境界の安定を優先した同じ原則の帰結である。",
+      "recorded_at": "2026-09-13T02:20:00Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "clean-architecture の data-access 境界を、永続化の配置判断に適用した: パスワードハッシュと一時パスワードハッシュを D1 の users / user_password_resets に閉じ、R2 や KV へ複製しないと本章で確定した。migration を前方のみに限り既存行を壊さない方針も、既存データを新しい認証主体の都合で書き換えないための境界設定である。",
+      "recorded_at": "2026-09-13T02:20:00Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "secure-by-design の『既定を安全にし、利用者の設定に安全性を依存させない』を本章の確定内容へ適用した: パスワードは PBKDF2-HMAC-SHA256 で保存し平文経路を残さない、セッションは利用者単位の世代番号で即時失効できる、共有パスワード経路は併存させず撤去する、の 3 点はいずれも『運用で気を付ける』に委ねない既定側の設計である。",
+      "recorded_at": "2026-09-13T02:20:00Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "secure-by-design の多層防御と『control は導入済みではなく効果で測る』を適用した: 列挙防止 (応答の無差別化)、総当たり対策 (メール単位 + 送信元単位の rate limit)、最後の admin を失わせないサーバ側拒否、監査ログへの actor 記録 を、それぞれ阻止 / 検知 / 復旧のどれを担うかを明示して本章で確定した。監査ログに平文パスワードと一時パスワードを載せない禁止も、証跡が新たな漏洩面にならないための条件である。",
+      "recorded_at": "2026-09-13T02:20:00Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "secure-by-design の『攻撃面と秘密を増やさない』を構成判断に適用した: メール送信を採らない決定の帰結として 新しい binding も外部 API キーも増やさず、secret は SESSION_SECRET のみに絞り AUTH_PASSWORD を撤去する、と本章で確定した。掃除処理を既存 cron へ相乗りさせ新規トリガを増やさない判断も、運用面の増設を避ける同じ原則から来ている。",
+      "recorded_at": "2026-09-13T02:20:00Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "secure-by-design の『fail closed を無差別適用せず break-glass を監査付きで用意する』を本章へ適用した: 最後の admin を失う操作はサーバが拒否する一方で、全 admin が失われた場合の直接復旧手順を runbook として明文化した。一時パスワードを発行直後の 1 度だけ表示し再表示しない運用も、短命の資格情報という原則の具体化である。",
+      "recorded_at": "2026-09-13T02:20:00Z",
+      "basis": "agent-inference"
+    }
+  },
+  "hearing_progress": {
+    "loop_count": 1,
+    "next_question": null,
+    "complete": true
+  },
+  "doctrine_applications": {
+    "ui-ux": {
+      "presentation": {
+        "text": "Apple HIG の『明快さ・一貫性・利用者の主導権』を本章の確定へ落とした: アイコンを単独で意味を担わせずラベルと必ず併記する、初期フォーカスを主タスクの入力へ置く、既定 ON のログイン保持がもたらす帰結 (30 日 / 12 時間) をマイクロコピーで開示する、狭幅で主タスクを先頭へ回す、の 4 点である。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "presentation": {
+        "text": "Apple HIG の情報階層の原則を、追加画面の並びへ適用した: パスワード変更の強制を他画面への遷移より先に置き、管理者向けの利用者管理は設定画面の下位に収めて主タスクの階層を乱さない、と本章で確定した。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      },
+      "application-architecture": {
+        "text": "Clean Architecture の依存規則から、権限判定の正本をサーバ側に置き画面側を表示の都合に留める境界を引いた。画面が業務規則を持たないため、role の定義が変わっても画面の書き換えが不要になる。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      }
+    },
+    "backend": {
+      "application-architecture": {
+        "text": "Clean Architecture の『業務規則を入出力から独立させる』に従い、認証と監査の主体としての利用者と、明細データの所有関係を意図的に分離した。API の追加は境界の外側 (入出力) に限る。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "Clean Architecture の data-access 境界に従い、認証系の読み書きを users / user_password_resets に閉じ、既存の業務テーブルへ認証都合の列を足さないと本章で確定した。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      }
+    },
+    "database": {
+      "data-access": {
+        "text": "Clean Architecture の data-access 境界を永続化の形へ落とした: 秘密は D1 の 2 テーブルに閉じ、R2 / KV へ複製しない。migration は前方のみで既存行を壊さない。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "Google SRE の『変更は巻き戻せる形で入れる』に従い、audit_log への actor_user_id 追加を NULL 許容として既存行と後方互換にし、D1 の Time Travel (30 日) を復旧手段として前提に置いた。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      }
+    },
+    "auth": {
+      "authentication": {
+        "text": "OWASP ASVS 5.0.0 の認証・セッション管理要件を本章の確定へ適用した: 資格情報は鍵導出関数で保存し (PBKDF2-HMAC-SHA256 / 反復 210,000 以上 / 16 byte 以上の salt)、セッションは利用者単位で即時失効でき (session_generation)、Cookie は HttpOnly + Secure + SameSite=Strict とする。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      },
+      "security": {
+        "text": "OWASP Secrets Management の原則から、共有パスワード (AUTH_PASSWORD) という長期・共有の秘密を撤去し、秘密を SESSION_SECRET に一本化した。一時パスワードは短命 (72 時間) かつハッシュ保存で、使用後に変更を強制する。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      }
+    },
+    "security": {
+      "security": {
+        "text": "OWASP ASVS 5.0.0 の検証要件に沿って、列挙防止・総当たり対策・権限昇格防止・監査の 4 点を本章の確定セルへ個別に書き下した。特に『UI で隠すだけの権限制御を認めず 403 を正本とする』と『監査ログに平文パスワードとセッション署名を載せない』は、control を増やすだけで効果を測らない security theater を避けるための条件である。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "reliability": {
+        "text": "Google SRE の『変更点を増やさない』に従い、新しい binding・cron・外部依存を増やさず、掃除処理を既存 cron (0 18 * * *) へ相乗りさせると本章で確定した。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      },
+      "operations": {
+        "text": "Google SRE の運用観点から、SESSION_SECRET のローテーションが全セッション失効を意味することを構成上の帰結として明示し、手順化の対象とした。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      }
+    },
+    "maintenance-ops": {
+      "operations": {
+        "text": "Google SRE の runbook と break-glass の考え方を適用した: 通常運用 (招待・停止・一時パスワード再発行) は管理画面に閉じ、全 admin 喪失という例外時のみ wrangler d1 execute による直接復旧を最終手段として文書化する。ログイン失敗率とロックアウト件数を audit_log から確認できる状態にすることを監視の最小線とした。",
+        "recorded_at": "2026-09-13T02:20:00Z",
+        "basis": "agent-inference"
+      }
+    }
+  }
+}

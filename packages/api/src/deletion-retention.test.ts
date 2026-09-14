@@ -14,6 +14,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { NON_AUTH_AUDIT, loginForTest } from './auth.test-support.js';
 import { DELETION_TOMBSTONE_BUDGET_BYTES, runDeletionRetention } from './deletion-retention.js';
 import { app } from './index.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
@@ -22,7 +23,6 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  AUTH_PASSWORD: 'synthetic-test-password',
   SESSION_SECRET: 'synthetic-test-secret',
 };
 
@@ -92,8 +92,11 @@ async function deletePeriod(month: string): Promise<string> {
   return ((await executed.json()) as { operationId: string }).operationId;
 }
 
-const countOf = async (table: string): Promise<number> =>
-  ((await d1.prepare(`SELECT count(*) AS n FROM ${table}`).first<number>('n')) ?? 0) as number;
+/** audit_log だけは認証の監査を外して数える。掃除の対象は業務操作の記録だけ。 */
+const countOf = async (table: string): Promise<number> => {
+  const where = table === 'audit_log' ? ` WHERE ${NON_AUTH_AUDIT}` : '';
+  return ((await d1.prepare(`SELECT count(*) AS n FROM ${table}${where}`).first<number>('n')) ?? 0) as number;
+};
 
 /** 期限を過去に倒す。30日待たずに「期限切れ」の状態を作る */
 const expire = async (operationId: string, at = '2000-01-01T00:00:00.000Z'): Promise<void> => {
@@ -126,17 +129,7 @@ beforeEach(async () => {
     .all<{ name: string }>();
   for (const { name } of tables.results.filter(({ name }) => isApplicationTableForTestReset(name)))
     await d1.prepare(`DELETE FROM "${name}"`).run();
-  const login = await app.request(
-    '/api/auth/login',
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: auth.AUTH_PASSWORD }),
-    },
-    env(),
-  );
-  cookie = login.headers.get('set-cookie')?.split(';', 1)[0] ?? '';
-  expect(login.status).toBe(200);
+  cookie = await loginForTest(app, env());
 });
 
 afterAll(async () => {

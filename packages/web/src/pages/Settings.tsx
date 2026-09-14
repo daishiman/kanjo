@@ -8,8 +8,10 @@ import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
+import { UserAdmin } from '../components/UserAdmin.js';
 import { VendorMemorySettings } from '../components/VendorMemory.js';
 import { readFileText } from '../file-text.js';
+import { PasswordChangeForm } from './PasswordChange.js';
 
 /**
  * 確認ダイアログの本文。「続けますか?」は付けない。問いは見出しが持っており、
@@ -50,6 +52,7 @@ export function SettingsPage() {
     expense: '',
   });
   const [statDraft, setStatDraft] = useState<string | null>(null);
+  const [passwordChanged, setPasswordChanged] = useState(false);
   const restoreInput = useRef<HTMLInputElement>(null);
 
   const save = useMutation({
@@ -98,6 +101,17 @@ export function SettingsPage() {
   return (
     <>
       <PageHeader route="settings" />
+
+      <section className="card" id="account-password" aria-labelledby="account-password-heading">
+        <h2 id="account-password-heading">パスワードの変更</h2>
+        {passwordChanged && (
+          <output className="notice">パスワードを変更しました。この端末はそのまま利用できます。</output>
+        )}
+        <PasswordChangeForm forced={false} onDone={() => setPasswordChanged(true)} />
+      </section>
+
+      {/* 利用者管理は admin にだけ描画される。誰が入れるかの管理は設定の先頭に置く */}
+      <UserAdmin />
 
       <ClassificationSettings />
 

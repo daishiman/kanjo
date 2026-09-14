@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { TEST_ADMIN, seedTestUser } from './auth.test-support.js';
 import { app } from './index.js';
 import {
   PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS,
@@ -14,7 +15,6 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  AUTH_PASSWORD: 'synthetic-test-password',
   SESSION_SECRET: 'synthetic-test-secret',
 };
 
@@ -34,18 +34,22 @@ async function applyMigrations(database: D1Database): Promise<void> {
   }
 }
 
+/**
+ * ロック鍵は送信元全体と対象メール全体の独立2軸。片方を変えても、もう片方の集約は残る。
+ */
 const login = (
   password: string,
   ip: string,
   extraEnv: Record<string, string> = {},
   database: D1Database = d1,
+  email: string = TEST_ADMIN.email,
 ) =>
   app.request(
     '/api/auth/login',
     {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'CF-Connecting-IP': ip },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ email, password }),
     },
     { ...auth, ...extraEnv, DB: database },
   );
@@ -70,6 +74,7 @@ beforeEach(async () => {
     )
     .all<{ name: string }>();
   for (const { name } of tables.results) await d1.prepare(`DELETE FROM "${name}"`).run();
+  await seedTestUser(d1);
   vi.restoreAllMocks();
 });
 
@@ -84,7 +89,7 @@ describe('password login D1 rate limit', () => {
       statuses.push((await login('wrong-password', '203.0.113.10')).status);
 
     expect(statuses).toEqual([401, 401, 401, 401, 429]);
-    const locked = await login(auth.AUTH_PASSWORD, '203.0.113.10');
+    const locked = await login(TEST_ADMIN.password, '203.0.113.10');
     expect(locked.status).toBe(429);
     expect(locked.headers.get('Retry-After')).toBe(String(PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.lockSeconds));
     expect(await locked.json()).toEqual({
@@ -100,9 +105,23 @@ describe('password login D1 rate limit', () => {
     for (let attempt = 0; attempt < 4; attempt++)
       expect((await login('wrong-password', '203.0.113.20')).status).toBe(401);
 
-    expect((await login(auth.AUTH_PASSWORD, '203.0.113.21')).status).toBe(200);
-    expect((await login(auth.AUTH_PASSWORD, '203.0.113.20')).status).toBe(200);
+    expect((await login(TEST_ADMIN.password, '203.0.113.21')).status).toBe(200);
+    expect((await login(TEST_ADMIN.password, '203.0.113.20')).status).toBe(200);
     expect((await login('wrong-password', '203.0.113.20')).status).toBe(401);
+  });
+
+  it('同じアカウントへの失敗を複数IPへ分散してもaccount軸で止める', async () => {
+    for (let attempt = 0; attempt < 4; attempt++)
+      expect((await login('wrong-password', `203.0.113.${70 + attempt}`)).status).toBe(401);
+    expect((await login('wrong-password', '203.0.113.74')).status).toBe(429);
+  });
+
+  it('同じIPから対象メールを分散してもsource軸で止める', async () => {
+    for (let attempt = 0; attempt < 4; attempt++)
+      expect(
+        (await login('wrong-password', '203.0.113.80', {}, d1, `absent-${attempt}@example.test`)).status,
+      ).toBe(401);
+    expect((await login('wrong-password', '203.0.113.80', {}, d1, 'absent-4@example.test')).status).toBe(429);
   });
 
   it('windowとlockの期限後は同じscopeで再試行できる', async () => {
@@ -125,11 +144,15 @@ describe('password login D1 rate limit', () => {
     const rows = await d1
       .prepare('SELECT scope_hash AS scopeHash,failure_count AS failureCount FROM password_login_rate_limits')
       .all<{ scopeHash: string; failureCount: number }>();
-    expect(rows.results).toHaveLength(1);
-    expect(rows.results[0]).toMatchObject({
-      scopeHash: expect.stringMatching(/^[0-9a-f]{64}$/),
-      failureCount: 5,
-    });
+    expect(rows.results).toHaveLength(2);
+    expect(rows.results).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          scopeHash: expect.stringMatching(/^[0-9a-f]{64}$/),
+          failureCount: 5,
+        }),
+      ]),
+    );
     expect(JSON.stringify(rows.results)).not.toContain(ip);
     expect(JSON.stringify(rows.results)).not.toContain(password);
     expect(error.mock.calls.flat().join(' ')).not.toContain(ip);
@@ -144,7 +167,7 @@ describe('password login D1 rate limit', () => {
       {
         method: 'POST',
         headers: { 'content-type': 'application/json', 'CF-Connecting-IP': '203.0.113.50' },
-        body: JSON.stringify({ password: 'wrong-password' }),
+        body: JSON.stringify({ email: TEST_ADMIN.email, password: 'wrong-password' }),
       },
       { ACCESS_AUD: 'synthetic-aud', ACCESS_TEAM_DOMAIN: 'access.example.invalid' },
     );
@@ -157,9 +180,9 @@ describe('password login D1 rate limit', () => {
 
   it('stale cleanupは100件を1 queryにboundedし、scheduled全体予算へ1本だけ計上する', async () => {
     expect(PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.cleanupBatchSize).toBe(100);
-    expect(SCHEDULED_MAINTENANCE_D1_PLAN.jobs.password_login_rate_limit_cleanup).toBe(1);
+    expect(SCHEDULED_MAINTENANCE_D1_PLAN.jobs.password_login_rate_limit_cleanup).toBe(2);
     // 夜間job全体の正確な合計はscheduled-maintenance-budget.test.tsが所有する。
-    // ここではrate-limit cleanupが1本のまま、全体上限を破らないことだけを見る。
+    // rate-limitと一時資格情報cleanupの2本を合成しても、全体上限を破らないことを見る。
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBeLessThan(50);
     const now = Date.now();
     const stale = now - (PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.staleAfterSeconds + 1) * 1_000;
@@ -204,8 +227,8 @@ describe('password login D1 rate limit', () => {
     ).toBe(1);
   });
 
-  it('password loginは成功・失敗とも1 request最大2 D1 queryに収める', async () => {
-    expect(PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.routeMaxD1Queries).toBe(2);
+  it('password loginは成功・失敗とも1 requestの D1 query上限に収める', async () => {
+    expect(PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.routeMaxD1Queries).toBe(5);
     let prepared = 0;
     const countedDb = new Proxy(d1, {
       get(database, property, receiver) {
@@ -220,9 +243,12 @@ describe('password login D1 rate limit', () => {
     }) as D1Database;
 
     expect((await login('wrong-password', '203.0.113.60', {}, countedDb)).status).toBe(401);
-    expect(prepared).toBe(2);
+    const failureQueries = prepared;
     prepared = 0;
-    expect((await login(auth.AUTH_PASSWORD, '203.0.113.60', {}, countedDb)).status).toBe(200);
-    expect(prepared).toBe(2);
+    expect((await login(TEST_ADMIN.password, '203.0.113.60', {}, countedDb)).status).toBe(200);
+    const successQueries = prepared;
+    // 本数そのものを固定する。上限以内でも、黙って1本増えたことに気づけるようにする。
+    expect({ failureQueries, successQueries }).toEqual({ failureQueries: 4, successQueries: 5 });
+    expect(successQueries).toBeLessThanOrEqual(PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS.routeMaxD1Queries);
   });
 });

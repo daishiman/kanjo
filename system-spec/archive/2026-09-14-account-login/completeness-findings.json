@@ -1,0 +1,153 @@
+{
+  "evaluator": {
+    "name": "assign-system-spec-completeness-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "spec_dir": "system-spec",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "score": 95,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "U1-U9 が値で確定し (N/A 使用0件)、利用者承認 approval_ref=appr-foundation-account-login-001 を伴う。goal(G1-G5) → objective(O1-O8, serves 付与) → concrete_intent(I1-I15, serves 付与) → 確定セル(serves_goals) → 章 frontmatter の trace に dangling 0。G1-G5 全てが最低1つの確定セルから到達可能で drift 候補なし。",
+      "evidence": [
+        "validate-coverage-matrix.py --require-foundation exit 0",
+        "system-spec/00-requirements-definition.md に U1-U9 全節が生成され、U4 表に O1-O8 と測定基準が並ぶ",
+        "各技術章 frontmatter の serves_goals が G1-G5 の部分集合",
+        "独立監査 (system-spec-matrix-auditor 再監査): serves_goals トレース dangling 0 を確認"
+      ]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "score": 85,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "decisions[] は空だが、これは契約上の正しい状態である。spec-state-contract.md の登録基準は『R5 が公式一次情報に接地した2-3案とコスト構造・5軸比較を組み立てた論点』に限り、候補の組み立てを伴わない利用者の明示選択は qa_log entry の basis: user-decision に記録すると定めている。本サイクルの論点 (認証方式・スコープ境界・C8 所有者紐付け・セキュリティ方針) はいずれも既存構成 (Cloudflare Workers + D1) 上での業務規則・範囲の決定であり、技術選定の比較ではない。qa_log 18 件中 basis=user-decision は 9 件で、AI 推奨のみで confirmed にした decision は0件。",
+      "evidence": [
+        "spec-state.json decisions = [] / needs_guidance 状態の decision 0件",
+        "references/spec-state-contract.md L169-178: decisions[] と basis:user-decision の件数不一致は設計上の非対称と明記",
+        "qa-c8-owner-linkage-001 / qa-security-web-003 は3案・2案を提示のうえ利用者が明示選択し basis:user-decision で記録"
+      ]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "score": 95,
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "48セル (8カテゴリ×6 canonical platform) が確定8 / 対象外40 で未収集0。対象外理由は8カテゴリそれぞれ固有で placeholder なし。category_aggregate は全カテゴリ『確定』で真理値表と一致。確定セルの qa_ref/qa_refs に dangling 0。sub-input の C06 ヒアリング監査も3回目で PASS (聞き漏れ・誘導質問・早期停止なし)。C16 必須情報は blocking 6 item 全てが確定に接地し ungrounded_blocking_items=[]。",
+      "evidence": [
+        "validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit 0",
+        "validate-knowledge-graph.py --profile required-info: ungrounded_blocking_items=[]",
+        "C07 再監査: 総合 PASS (前回 MEDIUM 2件・LOW 2件は全て解消確認、新規は LOW 4件のみ)",
+        "C06 3回目監査: PASS (前回 FAIL の High 1件・Medium 2件・Low 2件を全て閉)"
+      ]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "score": 85,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "機械層: compile の render_design_refs が resource-map.yaml 由来の設計知識ポインタを全章へ注入済み。意味層: design_applications 8件 (章単位) と doctrine_applications 13件 (category_concern_map の全ペア) が、card/authority の要約ではなく『本章の確定セルのどこへ効いたか』を章固有の語で記述している。writer の _doctrine_reuse_conflict が、同じ concern を引く他章と実質同一の記述を拒否するため、要約の使い回しは機械的に排除されている。Goodhart 防止条項に照らし、ポインタの存在だけを根拠にした PASS ではない。",
+      "evidence": [
+        "validate-knowledge-graph.py --profile knowledge / doctrine / cross 全て exit 0",
+        "system-spec/auth.md・ui-ux.md の doctrine 表『本章の確定セルへの反映』列が具体記述で埋まる (未記入0)",
+        "各章『本章での適用』節が章固有記述で埋まる (未記入0)",
+        "design/doctrine 適用21件の basis は agent-inference と正直に申告 (当初 user-decision と誤申告し、C06 指摘を受け訂正)"
+      ]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "score": 95,
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "確定セルから抽出した8 target (cloudflare-workers / cloudflare-d1 / hono / react / vite / zod / web-crypto-api / owasp-asvs) を WebFetch で実取得し、全件が公式 host・現行版・未来日付なしで記録されている。C08 独立監査も PASS。",
+      "evidence": [
+        "validate-source-citation.py exit 0",
+        "C08 監査: 8 target を WebSearch/WebFetch で再照合し全件一致、非公式ミラー0件",
+        "system-spec/fetched-references.json の retrieved_at/latest_checked_at は実測値"
+      ]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "score": 90,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "system-spec-harness 同梱の全 prompt (18件) に対し外部 prompt-creator の機械ゲート2種を実行し、失敗0。独立 design findings に high なし。",
+      "evidence": [
+        "verify-completeness.py: 18 prompt 全て exit 0 (7層網羅 + l5-contract v2.0.0)",
+        "validate-prompt.py: 18 prompt 全て exit 0"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "G-matrix",
+      "name": "validate-coverage-matrix (--require-complete --require-basis --require-foundation)",
+      "conditions": ["matrix_coverage", "foundation_trace", "decision_guidance"],
+      "exit_code": 0,
+      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす"
+    },
+    {
+      "id": "G-knowledge-graph",
+      "name": "validate-knowledge-graph (knowledge / doctrine / required-info / cross)",
+      "conditions": ["design_knowledge_reflection", "matrix_coverage"],
+      "exit_code": 0,
+      "stdout": "4 profile 全て exit 0 / ungrounded_blocking_items=[]"
+    },
+    {
+      "id": "G-spec-doc-sync",
+      "name": "validate-spec-doc-sync",
+      "conditions": ["foundation_trace", "matrix_coverage"],
+      "exit_code": 0,
+      "stdout": "OK: 正本 spec-state.json の goal・根拠・出典が章へ投影されている"
+    },
+    {
+      "id": "G-source-citation",
+      "name": "validate-source-citation",
+      "conditions": ["doc_freshness"],
+      "exit_code": 0,
+      "stdout": "OK: 出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす"
+    },
+    {
+      "id": "G-prompt-quality",
+      "name": "verify-completeness.py + validate-prompt.py (prompt-creator 2.1.7)",
+      "conditions": ["prompt_quality"],
+      "exit_code": 0,
+      "stdout": "18 prompt × 2 validator、失敗0"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "traceability",
+      "observation": "qa_log の basis は fill-once のため、当初 observed-fact / user-decision と誤申告した3 entry (qa-backend-web-002 / qa-database-web-002 / qa-uiux-web-002) は旧申告のまま残置されている。訂正は qa-basis-correction-001 として別 entry で記録し、該当セルの qa_refs に紐付けた。qa_log を単独走査する監査者は、訂正 entry を突き合わせない限り basis を誤認しうる。",
+      "suggested_fix": "誤りを消さず残す設計は意図的であり本サイクルでは是正しない。将来、qa_log とは別の correction_log を設けて訂正関係を機械可読にする余地がある。",
+      "evidence": ["spec-state.json qa_log: qa-basis-correction-001", "C06 3回目監査・C07 再監査 LOW-3"]
+    },
+    {
+      "severity": "low",
+      "bucket": "document-quality",
+      "observation": "qa-basis-correction-001 は監査への応答メモであり利用者への質疑ではないが、qa_refs に添えた結果、ui-ux.md / backend.md / database.md の『確定内容 (質疑録)』節に全文が章本文として描画されている。add-qa-ref に取り消し操作が無いため除去できない。",
+      "suggested_fix": "仕様の正しさには影響しないが可読性を下げる。訂正記録を章へ投影しない専用チャネルの導入を harness 側の follow-up とする。",
+      "evidence": ["system-spec/ui-ux.md 確定内容節", "C06 3回目監査の残存所見"]
+    },
+    {
+      "severity": "info",
+      "bucket": "machine-verification-gap",
+      "observation": "design_applications / doctrine_applications は validate-coverage-matrix.py の走査対象外であり、その内容 (章固有性・basis 申告の正しさ) は意味層の監査でしか検証されない。本サイクルでは私が basis を誤申告し、C06 の独立監査が検出した。",
+      "suggested_fix": "決定論ゲートへ適用記述の basis / 章固有性チェックを組み込むことを harness 側の follow-up とする。",
+      "evidence": ["C07 再監査 LOW-4", "C06 2回目監査 指摘1 (High)"]
+    },
+    {
+      "severity": "info",
+      "bucket": "hearing-progress",
+      "observation": "hearing_progress.loop_count が 1 のまま、qa_log のタイムスタンプは 01:49 → 02:01 → 02:07 → 02:20 → 04:36 → 04:55 と複数往復にまたがっている。未収集0のため早期停止判定には影響しないが、loop_count の計上基準がずれている。",
+      "suggested_fix": "harness 側で chunk 実行ごとの loop_count 加算基準を明確化する。",
+      "evidence": ["C06 3回目監査の残存所見"]
+    }
+  ],
+  "gaps": []
+}

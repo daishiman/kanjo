@@ -86,7 +86,7 @@ IBM Plex Mono は `@fontsource/ibm-plex-mono` をビルドに含める自己配�
 
 ## シェル
 
-すべての画面(20ルート)は `packages/web/src/components/Layout.tsx` の共通シェルの下に置く。画面側でサイドバーやヘッダーを自作しない。
+認証後のすべての画面(19ルート)は `packages/web/src/components/Layout.tsx` の共通シェルの下に置く。ログイン画面だけは認証前の単一カラムで、サイドバー・ヘッダー・フッターを持たない(PR #48)。画面側でサイドバーやヘッダーを自作しない。
 
 | 部位 | クラス | 寸法トークン |
 |---|---|---|

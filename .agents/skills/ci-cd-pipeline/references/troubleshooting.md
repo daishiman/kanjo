@@ -168,9 +168,9 @@ npx wrangler d1 execute hr-evaluation-db --remote --file=backup.sql
 
 ### 4.4 secretはコードrollbackで戻らない
 
-`AUTH_PASSWORD`等を更新すると旧パスワードは使えず、`SESSION_SECRET`等を更新すると既存セッションが無効になる。通常セットアップでは`wrangler secret list`を先に確認し、同名があれば上書きしない。
+`SESSION_SECRET`等を更新すると既存セッションが全端末で無効になる。通常セットアップでは`wrangler secret list`を先に確認し、同名があれば上書きしない。
 
-戻す必要がある場合は、パスワードマネージャー等に保存した旧値を所有者が再登録する。値がなければ新しく発行し、全利用者の再ログイン等の影響を受け入れる。Workerコードのrollbackでは解決しない。
+戻す必要がある場合は、パスワードマネージャー等に保存した旧値を所有者が再登録する。値がなければ新しく発行し、全利用者の再ログイン等の影響を受け入れる。Workerコードのrollbackでは解決しない。利用者アカウントのパスワードはD1が正本であり、secretのrollback対象ではない。
 
 ### 4.5 API Tokenを紛失・漏えいした
 

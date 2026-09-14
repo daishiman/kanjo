@@ -1,0 +1,41 @@
+{
+  "artifact_kinds": [
+    "architecture",
+    "feature",
+    "specification",
+    "task"
+  ],
+  "closure_status": "complete",
+  "feature_id": "feat-account-login",
+  "feature_package_id": "feature-package/feat-account-login",
+  "handoff_target": "task-graph",
+  "missing_nodes": [],
+  "parent_feature": "feat-account-login",
+  "schema_version": "1.0.0",
+  "selected_nodes": [
+    "SYS-ACCTLOGIN-P01",
+    "SYS-ACCTLOGIN-P02",
+    "SYS-ACCTLOGIN-P03",
+    "SYS-ACCTLOGIN-P04",
+    "SYS-ACCTLOGIN-P05",
+    "SYS-ACCTLOGIN-P06",
+    "SYS-ACCTLOGIN-P07",
+    "SYS-ACCTLOGIN-P08",
+    "SYS-ACCTLOGIN-P09",
+    "SYS-ACCTLOGIN-P10",
+    "SYS-ACCTLOGIN-P11",
+    "SYS-ACCTLOGIN-P12",
+    "SYS-ACCTLOGIN-P13",
+    "arch-account-login-auth",
+    "arch-account-login-backend",
+    "arch-account-login-database",
+    "arch-account-login-frontend",
+    "arch-account-login-infrastructure",
+    "arch-account-login-maintenance-ops",
+    "arch-account-login-security",
+    "arch-account-login-ui-ux",
+    "feat-account-login",
+    "spec-account-login"
+  ],
+  "snapshot_digest": "sha256:98d05e3c0c15ea60d3543e3ff7877c19b44a4119e98e38fc4121a1281c4ea6b9"
+}

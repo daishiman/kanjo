@@ -1,0 +1,1170 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-account-login/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-account-login",
+  "parent_feature": "feat-account-login",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-ACCTLOGIN-P01": "beads",
+    "SYS-ACCTLOGIN-P02": "beads",
+    "SYS-ACCTLOGIN-P03": "beads",
+    "SYS-ACCTLOGIN-P04": "beads",
+    "SYS-ACCTLOGIN-P05": "beads",
+    "SYS-ACCTLOGIN-P06": "beads",
+    "SYS-ACCTLOGIN-P07": "beads",
+    "SYS-ACCTLOGIN-P08": "beads",
+    "SYS-ACCTLOGIN-P09": "beads",
+    "SYS-ACCTLOGIN-P10": "beads",
+    "SYS-ACCTLOGIN-P11": "beads",
+    "SYS-ACCTLOGIN-P12": "beads",
+    "SYS-ACCTLOGIN-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "認証要件ベースラインの確定",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-account-login-auth",
+        "arch-account-login-security"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-01-requirements-baseline.json"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P01.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "利用者ドメインとセッション境界の設計",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "backend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P01"
+      ],
+      "related_nodes": [
+        "arch-account-login-database",
+        "arch-account-login-backend",
+        "arch-account-login-auth"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-02-architecture-design.json"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P02.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "セキュリティと画面設計のレビュー",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "security",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P02"
+      ],
+      "related_nodes": [
+        "arch-account-login-security",
+        "arch-account-login-ui-ux",
+        "arch-account-login-frontend"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-03-design-review.json"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P03.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入8件に対するテスト設計",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P03"
+      ],
+      "related_nodes": [
+        "arch-account-login-auth",
+        "arch-account-login-security",
+        "arch-account-login-ui-ux"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-04-test-design.json"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P04.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "利用者認証と管理画面の実装",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "backend",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P04"
+      ],
+      "related_nodes": [
+        "arch-account-login-database",
+        "arch-account-login-backend",
+        "arch-account-login-frontend",
+        "arch-account-login-ui-ux"
+      ],
+      "resource_scope": [
+        "packages/api/src",
+        "packages/web/src",
+        "migrations"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P05.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "テスト実行と失敗経路の確認",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P05"
+      ],
+      "related_nodes": [
+        "arch-account-login-security",
+        "arch-account-login-auth"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-06-test-run.json"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P06.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入8件の充足確認",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P06"
+      ],
+      "related_nodes": [
+        "arch-account-login-auth",
+        "arch-account-login-ui-ux",
+        "arch-account-login-security"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-07-acceptance.json"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P07.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "AUTH_PASSWORD 廃止と切替手順の適用",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "operations",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P07"
+      ],
+      "related_nodes": [
+        "arch-account-login-infrastructure",
+        "arch-account-login-maintenance-ops",
+        "arch-account-login-auth"
+      ],
+      "resource_scope": [
+        "packages/api/src",
+        "wrangler.toml"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P08.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "セキュリティ観点の総点検",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "security",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P08"
+      ],
+      "related_nodes": [
+        "arch-account-login-security",
+        "arch-account-login-auth",
+        "arch-account-login-infrastructure"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-09-quality-assurance.json"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P09.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "最終レビューと残課題の確定",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "quality",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P09"
+      ],
+      "related_nodes": [
+        "arch-account-login-security",
+        "arch-account-login-maintenance-ops"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-10-final-review.json"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P10.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "証跡の収集と feature 完了根拠の確定",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P10"
+      ],
+      "related_nodes": [
+        "arch-account-login-maintenance-ops",
+        "arch-account-login-security"
+      ],
+      "resource_scope": [
+        ".dev-graph/plans/feature-package-feat-account-login/evidence/phase-11-evidence.json"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P11.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "運用手順と利用者向け案内の整備",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P11"
+      ],
+      "related_nodes": [
+        "arch-account-login-maintenance-ops",
+        "arch-account-login-infrastructure",
+        "arch-account-login-ui-ux"
+      ],
+      "resource_scope": [
+        "docs"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P12.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ACCTLOGIN-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "本番反映と切替の実施",
+      "project_id": "feature-package-feat-account-login",
+      "domain": "infrastructure",
+      "status": "active",
+      "owners": [],
+      "tags": [
+        "account-login",
+        "auth",
+        "security"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-13T05:56:09Z",
+      "updated_at": "2026-09-13T05:56:09Z",
+      "depends_on": [
+        "SYS-ACCTLOGIN-P12"
+      ],
+      "related_nodes": [
+        "arch-account-login-infrastructure",
+        "arch-account-login-maintenance-ops",
+        "arch-account-login-database"
+      ],
+      "resource_scope": [
+        "wrangler.toml",
+        "migrations"
+      ],
+      "parent_feature": "feat-account-login",
+      "feature_package_id": "feature-package/feat-account-login",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-account-login/plan-findings.json",
+        "evaluated_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-account-login/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "407646ac620bfedde6dd5de03b3d9aa5816c761d2cb2da85d9bc3c59743fcd52",
+        "imported_at": "2026-09-13T05:56:09Z"
+      },
+      "classification_confidence": 1,
+      "classification_reason": "確定 feature を exact-13 の単一 phase 実行単位へ写像した task。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-account-login/SYS-ACCTLOGIN-P13.md",
+          "confidence": 1
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-13T05:45:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}
