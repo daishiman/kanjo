@@ -7,7 +7,10 @@
     {
       "id": "A1",
       "text": "未認証は必ずログイン画面へ遷移し、正しい資格情報でのみ業務画面へ入れる",
-      "phases": ["P02", "P05"],
+      "phases": [
+        "P02",
+        "P05"
+      ],
       "evidence": [
         "packages/api/src/account-login.test.ts::正しい組み合わせだけを通す",
         "packages/api/src/account-login.test.ts::メールアドレスの表記ゆれを吸収する",
@@ -18,7 +21,10 @@
     {
       "id": "A2",
       "text": "パスワードは PBKDF2-HMAC-SHA256 210,000 回以上で保存され、平文が残らない",
-      "phases": ["P02", "P05"],
+      "phases": [
+        "P02",
+        "P05"
+      ],
       "evidence": [
         "packages/api/src/account-login.test.ts::平文を保存せず、PBKDF2 の反復が仕様値を下回らない",
         "packages/api/src/account-login.test.ts::どの応答にも password_hash を出さない",
@@ -28,7 +34,10 @@
     {
       "id": "A3",
       "text": "管理者が設定画面で追加・停止・一時パスワード再発行を完結でき、一時パスワードは 1 度だけ表示される",
-      "phases": ["P05", "P12"],
+      "phases": [
+        "P05",
+        "P12"
+      ],
       "evidence": [
         "packages/api/src/account-login.test.ts::admin は利用者を追加でき、一時パスワードは応答に1度だけ現れる",
         "packages/api/src/account-login.test.ts::再発行した一時パスワードで入ると変更を求められる",
@@ -40,7 +49,9 @@
     {
       "id": "A4",
       "text": "保持 ON で 30 日、OFF で 12 時間。既定の帰結がチェックボックス脇に明示される",
-      "phases": ["P05"],
+      "phases": [
+        "P05"
+      ],
       "evidence": [
         "packages/api/src/account-login.test.ts::保持の有無で有効期限が2段になる",
         "packages/api/src/account-login.test.ts::保持の指定が無いときは保持する",
@@ -51,7 +62,10 @@
     {
       "id": "A5",
       "text": "ログイン画面の DOM に header/footer/サイドバーが 0 件で、アイコンは常にテキストと併記される",
-      "phases": ["P03", "P05"],
+      "phases": [
+        "P03",
+        "P05"
+      ],
       "evidence": [
         "packages/web/src/account-login.dom.test.tsx::ヘッダー・フッター・サイドバーを1つも描かない",
         "packages/web/src/account-login.dom.test.tsx::すべてのアイコンが装飾扱いで、必ずテキストと併記される",
@@ -61,7 +75,10 @@
     {
       "id": "A6",
       "text": "member は /api/admin/* の全経路で 403 になる",
-      "phases": ["P05", "P09"],
+      "phases": [
+        "P05",
+        "P09"
+      ],
       "evidence": [
         "packages/api/src/account-login.test.ts::member は管理APIを1本も通せない",
         "packages/web/src/account-login.dom.test.tsx::一般利用者には描画せず管理APIも照会しない"
@@ -70,7 +87,10 @@
     {
       "id": "A7",
       "text": "既存 20 画面が 401/503 契約を変えずに動作する",
-      "phases": ["P05", "P06"],
+      "phases": [
+        "P05",
+        "P06"
+      ],
       "evidence": [
         "packages/api 39 files / 511 tests PASS (既存 20 画面の契約テストを含む)",
         "packages/web 69 files / 457 tests PASS",
@@ -80,7 +100,9 @@
     {
       "id": "A8",
       "text": "コードベースに AUTH_PASSWORD 参照が 0 件",
-      "phases": ["P08"],
+      "phases": [
+        "P08"
+      ],
       "evidence": [
         "grep AUTH_PASSWORD packages/*/src packages/*/test scripts/ migrations/ *.jsonc *.json → 0 件",
         "scripts/preview-smoke.mjs を実アカウント経路へ移行 (最後の参照を除去)",
@@ -112,7 +134,8 @@
       "item": "ログイン参照画像 design/FINAL-UI/images/01-login.png との差分 (画像にはサイドバー・ヘッダー・フッターと Cloudflare Access ボタンがある)",
       "disposition": "closed",
       "owner": "-",
-      "note": "利用者の明示指示および architecture/account-login-ui-ux.md により、章が正本で画像は参考と確定済み。実装は章に従う。"
+      "note": "章が正本で画像は参考、という当初の整理は 2026-09-14 に更新した。利用者から『ログイン画面にサイドバー、ヘッダー、フッターが表示されています』との指摘を受け、章側 (qa-uiux-web-002) の『左に情報パネルを置く2カラム』が実機で枠として知覚されていたことが判明した。R4-reopen で qa-uiux-web-004 を主根拠に再確定し、章・architecture・specs・features・tasks・実装を単一カラムのカード1枚へ揃えた。画像との差分 (Cloudflare Access ボタン) は引き続き利用者指示により削除のまま。",
+      "closed_at": "2026-09-14T04:20:00Z"
     }
   ],
   "release_decision": {
