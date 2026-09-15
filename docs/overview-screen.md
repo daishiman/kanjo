@@ -67,3 +67,4 @@ migration `0040_review_snoozes_and_monthly_close_reviews.sql` が 2 表を追加
 - 件数が 3 か所で合わない、仕分け画面と数字が違う: [`runbooks/overview-review-queue-mismatch.md`](runbooks/overview-review-queue-mismatch.md)
 - 受入と証跡: [`overview-screen/acceptance.md`](overview-screen/acceptance.md)、[`overview-screen/evidence.md`](overview-screen/evidence.md)
 - リリースと巻き戻し: [`overview-screen/close-out.md`](overview-screen/close-out.md)
+- main 取り込み時の仕様反映の判断: [`overview-screen/spec-reflection-receipt.md`](overview-screen/spec-reflection-receipt.md)

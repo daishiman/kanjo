@@ -26,13 +26,15 @@
 | コマンド | 結果 |
 |---|---|
 | `pnpm --filter @kanjo/web run build:artifact` | 成功 (`dist/` 生成、manifest 除去) |
-| `pnpm --filter @kanjo/web run build:bundle && pnpm --filter @kanjo/web run check:js-budget` | 109.63 KiB / 110 KiB |
+| `pnpm --filter @kanjo/web run build:bundle && pnpm --filter @kanjo/web run check:js-budget` | 109.29 KiB / 110 KiB (main 取り込み後) |
 | `pnpm run github-scripts:test` | 42 / 42 pass (`plan-auto-migration.test.mjs` を含む) |
 | `pnpm typecheck` | exit 0 |
+| `pnpm lint` / `pnpm run test:aux` | exit 0 (main 取り込み後) |
 | AC-001..AC-007 | [`acceptance.md`](acceptance.md) のとおり |
 
-`pnpm test` / `pnpm lint` の既存失敗 3 件 ([`test-run.md`](test-run.md) §2) により AC-007 は未達です。
-原因の帰属にかかわらずリリース前ゲートは止め、その是正と AC-005 の再検証を完了してから本 PR を出します。
+取り込み前に AC-007 を未達にしていた既存失敗 3 件 ([`test-run.md`](test-run.md) §2) は、main 取り込み後の再実行 (同 §5) で解消しました。
+画面の実描画検査 (`check-financial-visuals`) も取り込み後に再実行して合格しました。draft PR の CI が緑になってから Ready for review にし、Beads (kanjo-8c2) は main へのマージ後に閉じます。
+仕様への影響の判断は [`spec-reflection-receipt.md`](spec-reflection-receipt.md) に記録しています。
 
 ## 4. 巻き戻し
 
