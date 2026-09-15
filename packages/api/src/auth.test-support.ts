@@ -16,7 +16,7 @@ export const TEST_ADMIN = Object.freeze({
 });
 
 /**
- * PBKDF2 は 210,000 回反復するので、1ファイル1回だけ計算して使い回す。
+ * PBKDF2 は 100,000 回反復するので、1ファイル1回だけ計算して使い回す。
  * salt はランダムなまま、同じハッシュを毎回の beforeEach へ配る。
  */
 let cachedHash: Promise<string> | undefined;

@@ -54,7 +54,7 @@ serves_goals: [G1, G2]
 
 ## Architecture overview
 
-資格情報はメールアドレス (前後空白除去 + 小文字化 + 一意制約) とパスワードの組。パスワードは PBKDF2-HMAC-SHA256 (WebCrypto、反復 210,000 以上、16 byte 以上のランダム salt) を、アルゴリズム・反復・salt を含む自己記述フォーマットで保存する。セッションは Cookie の署名 payload に「利用者 ID . 有効期限 . 世代」の3要素を載せ HMAC-SHA256 で署名する。
+資格情報はメールアドレス (前後空白除去 + 小文字化 + 一意制約) とパスワードの組。パスワードは PBKDF2-HMAC-SHA256 (WebCrypto、反復 100,000 (本番 Workers の WebCrypto が受け付ける上限)、16 byte 以上のランダム salt) を、アルゴリズム・反復・salt を含む自己記述フォーマットで保存する。セッションは Cookie の署名 payload に「利用者 ID . 有効期限 . 世代」の3要素を載せ HMAC-SHA256 で署名する。
 
 ## Context and drivers
 
@@ -82,7 +82,7 @@ Cookie 属性は HttpOnly + Secure + SameSite=Strict を必須とし、JavaScrip
 
 ## Subtype architecture
 
-**security**: 認証情報の保護が本章の主責務。鍵導出のコスト係数 (反復 210,000 以上) は Cloudflare Workers の CPU 時間内で成立する範囲に置く。ハッシュ形式を自己記述にすることで、将来のパラメータ更新をログイン時の段階的再ハッシュで吸収できる。
+**security**: 認証情報の保護が本章の主責務。鍵導出のコスト係数 (反復 100,000) は、本番 Workers の WebCrypto が PBKDF2 に課す上限 (100,000 超は NotSupportedError) に合わせる。ハッシュ形式を自己記述にすることで、将来のパラメータ更新をログイン時の段階的再ハッシュで吸収できる。
 
 ## Architecture decisions
 

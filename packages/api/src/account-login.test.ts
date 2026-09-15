@@ -182,7 +182,7 @@ describe('パスワードの保存', () => {
     const [algorithm, iterations, salt, digest] = stored.split('$');
     expect(algorithm).toBe('pbkdf2-sha256');
     // 自己記述型なので、反復回数を上げても既存の保存値を読み続けられる
-    expect(Number(iterations)).toBeGreaterThanOrEqual(210_000);
+    expect(Number(iterations)).toBeGreaterThanOrEqual(100_000);
     expect(Number(iterations)).toBe(TEST_PBKDF2_ITERATIONS);
     expect(salt.length).toBeGreaterThan(0);
     expect(digest.length).toBeGreaterThan(0);

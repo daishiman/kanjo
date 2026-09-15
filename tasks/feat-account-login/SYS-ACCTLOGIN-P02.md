@@ -43,7 +43,7 @@ purpose: "利用者テーブル・セッション表現・監査ログの3つの
 goal: "users / audit_log の列定義とセッション失効の設計が確定し、既存の業務ロジックに読み書き経路の変更を持ち込まないことが示された状態。"
 scope_in: ["users テーブルの列定義 (email / password_hash / role / status / session_generation / must_change_password)", "セッション cookie の構造と失効判定の設計 (session_generation による一括失効を含む)", "audit_log の列定義と、認証操作が残す記録の一覧", "既存の業務ロジック側に一切の読み書き経路変更を持ち込まないことを示す境界図"]
 scope_out: ["業務データテーブルへの所有者列の追加。監査は audit_log.actor_user_id だけで行う。"]
-acceptance: ["users / audit_log のスキーマが、パスワードを PBKDF2-HMAC-SHA256 で 210,000 回以上反復した派生値としてのみ保持する形になっている", "session_generation の増加だけで、その利用者の既存セッションを全て失効させられることが設計上示されている", "既存20画面が依拠する 401 と 503 の応答契約に変更が無いことが設計上示されている"]
+acceptance: ["users / audit_log のスキーマが、パスワードを PBKDF2-HMAC-SHA256 で 100,000 回反復した派生値としてのみ保持する形になっている", "session_generation の増加だけで、その利用者の既存セッションを全て失効させられることが設計上示されている", "既存20画面が依拠する 401 と 503 の応答契約に変更が無いことが設計上示されている"]
 architecture_refs: ["arch-account-login-database", "arch-account-login-backend", "arch-account-login-auth"]
 ---
 
@@ -117,7 +117,7 @@ P01 のベースラインが確定し、D1 の現行スキーマ版数と既存 
 
 ### 受入条件
 
-- users / audit_log のスキーマが、パスワードを PBKDF2-HMAC-SHA256 で 210,000 回以上反復した派生値としてのみ保持する形になっている
+- users / audit_log のスキーマが、パスワードを PBKDF2-HMAC-SHA256 で 100,000 回反復した派生値としてのみ保持する形になっている
 - session_generation の増加だけで、その利用者の既存セッションを全て失効させられることが設計上示されている
 - 既存20画面が依拠する 401 と 503 の応答契約に変更が無いことが設計上示されている
 

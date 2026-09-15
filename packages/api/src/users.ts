@@ -5,8 +5,11 @@
  * パスワードは復元不能な形でのみ保存し、平文はどの経路にも残さない。
  */
 
-/** WebCrypto PBKDF2 の反復。Workers の CPU 時間内で成立する範囲の下限として 210,000 を採る。 */
-export const PBKDF2_ITERATIONS = 210_000;
+/**
+ * WebCrypto PBKDF2 の反復。本番 Workers は 100,000 を超えると deriveBits が NotSupportedError になるため、
+ * 実行環境が受け付ける上限の 100,000 を採る (password-hash-workerd.test.ts で固定)。
+ */
+export const PBKDF2_ITERATIONS = 100_000;
 const SALT_BYTES = 16;
 const DERIVED_BITS = 256;
 const HASH_PREFIX = 'pbkdf2-sha256';

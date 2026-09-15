@@ -23,7 +23,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /** packages/api/src/users.ts と同じ値。ずれるとログイン時に黙って再ハッシュが走る。 */
-const PBKDF2_ITERATIONS = 210_000;
+const PBKDF2_ITERATIONS = 100_000;
 const SALT_BYTES = 16;
 const DERIVED_BYTES = 32;
 const HASH_PREFIX = 'pbkdf2-sha256';

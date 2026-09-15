@@ -76,7 +76,7 @@ GitHub Environment `production` に `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT
 GitHub・Cloudflareの初回設定、通常リリース、D1 migration、障害調査、rollbackの詳細は [`docs/ci-cd-operations.md`](docs/ci-cd-operations.md) を参照。
 
 本番シークレットは `wrangler secret put SESSION_SECRET` の1本だけ。共有パスワード(旧 `AUTH_PASSWORD`)は廃止し、
-ログインは利用者ごとのメールアドレスとパスワードで行う。パスワードはD1に PBKDF2-HMAC-SHA256 210,000回の
+ログインは利用者ごとのメールアドレスとパスワードで行う。パスワードはD1に PBKDF2-HMAC-SHA256 100,000回(本番 Workers の上限)の
 ハッシュだけを保存し、平文も復号可能な形も持たない。`SESSION_SECRET` を差し替えると発行済みのログイン状態は
 すべて無効になる（緊急時の全端末ログアウト手段）。Cloudflare Access に切り替える場合は wrangler.jsonc の
 `ACCESS_AUD` / `ACCESS_TEAM_DOMAIN` を設定する（設定するとパスワード認証は無効化される）。
