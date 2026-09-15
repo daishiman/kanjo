@@ -1,0 +1,201 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-overview-screen",
+  "snapshot_digest": "sha256:f9c0fa42e0992ddaedbe86b248a60b7614c024263089ac04dc8ced4daf7c0c86",
+  "source_lineage": [
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md",
+    "specs/spec-overview-screen.md",
+    "architecture/overview-screen-ui-ux.md",
+    "architecture/overview-screen-frontend.md",
+    "architecture/overview-screen-backend.md",
+    "architecture/overview-screen-database.md",
+    "architecture/overview-screen-auth.md",
+    "architecture/overview-screen-security.md",
+    "architecture/overview-screen-infrastructure.md",
+    "architecture/overview-screen-maintenance-ops.md",
+    "features/feat-overview-screen.md"
+  ],
+  "plan_package": ".dev-graph/plans/feature-package-feat-overview-screen",
+  "plan_digest": "sha256:ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+  "requirements": [
+    {
+      "requirement_id": "REQ-OV-001",
+      "title": "概況集計の単一定義と検算一致",
+      "source_refs": [
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "spec_anchor": "FR-001 / O1 / AC-001 / dec-overview-aggregation-scope",
+      "statement": "core の純関数で選択範囲 (総合/事業/家計、既定は総合) の月別系列から KPI (総収入・総支出・純収支と前 12 か月比)・推移・年次比較・支出内訳 (上位 5 + その他) を作る。総合は totalCashflowReport、事業は freee、家計は MF 家計側を使い、同一 fixture で 4 要素の総額差 0 を core 単体テストで確かめる。",
+      "system_tasks": [
+        "SYS-OVERVIEW-P02",
+        "SYS-OVERVIEW-P04",
+        "SYS-OVERVIEW-P05",
+        "SYS-OVERVIEW-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-OV-002",
+      "title": "全期間の未処理キュー集約",
+      "source_refs": [
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "spec_anchor": "FR-002 / O2 / AC-002",
+      "statement": "仕分け確認 (reviewPending、clsSrc=既定)・照合確認 (totalCashflowReport の review)・取込確認 (import_runs.status=failed) を全期間で数えて 1 つのキューへ集約し、照合→仕分け→取込、同種別内は金額絶対値の降順、同額は日付の新しい順に並べる。バッジ・カード・アクションバーの件数一致と期間 1年→3年での不変を DOM テストで確かめる。",
+      "system_tasks": [
+        "SYS-OVERVIEW-P02",
+        "SYS-OVERVIEW-P03",
+        "SYS-OVERVIEW-P04",
+        "SYS-OVERVIEW-P05",
+        "SYS-OVERVIEW-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-OV-003",
+      "title": "「後で確認」の内容指紋付き保留",
+      "source_refs": [
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "spec_anchor": "FR-003 / O2 / O3 / AC-002 / AC-003 / dec-review-state-storage",
+      "statement": "保留を内容指紋 (金額・日付・内容) と共に D1 review_snoozes に保存して件数から除き、指紋不一致または利用者の解除で無効にする。月境界では自動解除しない。指紋変更時の再計上を core 単体テスト、保留操作で 3 か所の件数が同時に減ることを DOM テストで確かめる。",
+      "system_tasks": [
+        "SYS-OVERVIEW-P02",
+        "SYS-OVERVIEW-P04",
+        "SYS-OVERVIEW-P05",
+        "SYS-OVERVIEW-P07",
+        "SYS-OVERVIEW-P08"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-OV-004",
+      "title": "月次クローズ 4 ステップと月次レビューの保存",
+      "source_refs": [
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "spec_anchor": "FR-004 / O3 / AC-004",
+      "statement": "データ取込・仕分け 0・照合 0・月次レビュー行ありの 4 ステップをデータから判定し (保留中の明細はステップ判定では未完了)、月次レビューを D1 monthly_close_reviews に保存する。判定表を core 単体テスト、バックアップ→全消去→復元の往復で保留と月次レビューが残ることを API テストで確かめる。",
+      "system_tasks": [
+        "SYS-OVERVIEW-P02",
+        "SYS-OVERVIEW-P04",
+        "SYS-OVERVIEW-P05",
+        "SYS-OVERVIEW-P07",
+        "SYS-OVERVIEW-P08"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-OV-005",
+      "title": "推奨科目の決定論的な信頼度",
+      "source_refs": [
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "spec_anchor": "FR-005 / O5 / AC-006 / dec-recommendation-confidence-source",
+      "statement": "vendor_memory 一致率 (百分率と「過去 N 件中 M 件」) → ルール一致 → MF中項目「事業」始まりの事業区分 → 推奨なし の 4 段で信頼度を決め、乱数・時刻・外部送信を使わない。同一入力で同一出力、根拠なしは推奨なしを core 単体テストで確かめる。",
+      "system_tasks": [
+        "SYS-OVERVIEW-P02",
+        "SYS-OVERVIEW-P04",
+        "SYS-OVERVIEW-P05",
+        "SYS-OVERVIEW-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-OV-006",
+      "title": "02 レイアウトの共通シェル描画と段階的開示",
+      "source_refs": [
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "spec_anchor": "FR-006 / O4 / AC-005 / dec-overview-legacy-elements",
+      "statement": "02 のレイアウトを共通シェル・design-tokens・共通部品で描画する。防衛予測は caution/warn のときだけ KPI の上に role=alert、移動平均は推移の切替、パレートは支出内訳の構成比、未決済と科目別年比較は初期は閉じた「詳しく見る」(details) に置く。check-financial-visuals.mjs の Overview を VIEWPORT_CASES 8 幅で exit 0 にする。",
+      "system_tasks": [
+        "SYS-OVERVIEW-P02",
+        "SYS-OVERVIEW-P04",
+        "SYS-OVERVIEW-P05",
+        "SYS-OVERVIEW-P07",
+        "SYS-OVERVIEW-P09"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-OV-007",
+      "title": "サイドバー未処理バッジと共通部品",
+      "source_refs": [
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "spec_anchor": "FR-007 / O2 / AC-002",
+      "statement": "サイドバーの概況項目に未処理件数バッジを付け、バッジ・右パネル・固定アクションバーを components/ の共通部品にする。バッジが未処理キュー API と同じ件数を示し、ロック中は取得しないことを DOM テストで確かめる。",
+      "system_tasks": [
+        "SYS-OVERVIEW-P02",
+        "SYS-OVERVIEW-P04",
+        "SYS-OVERVIEW-P05",
+        "SYS-OVERVIEW-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-OV-008",
+      "title": "非機能制約・非退行・運用文書と配信",
+      "source_refs": [
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "spec_anchor": "非機能要件 / AC-007 / S1",
+      "statement": "初期 JS 110KiB 予算、CSP connect-src 'self' の維持、WCAG 2.2 AA (role=status / role=alert / 320px Reflow)、EXPECTED_D1_MIGRATION の同時更新による 503 回避を守り、pnpm test / typecheck / lint・check-initial-js-budget・index.test の CSP 差分検査を CI で緑に保つ。件数ずれの切り分け手順を docs/runbooks に残し、要件ベースラインから単一 PR の配信までを証跡で辿れるようにする。",
+      "system_tasks": [
+        "SYS-OVERVIEW-P01",
+        "SYS-OVERVIEW-P06",
+        "SYS-OVERVIEW-P08",
+        "SYS-OVERVIEW-P09",
+        "SYS-OVERVIEW-P11",
+        "SYS-OVERVIEW-P12",
+        "SYS-OVERVIEW-P13"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    }
+  ],
+  "cross_cutting_tasks": {
+    "SYS-OVERVIEW-P10": "独立最終レビュー (全要件横断)"
+  }
+}

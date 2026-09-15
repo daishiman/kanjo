@@ -34,7 +34,7 @@ type VerdictRow = typeof s.duplicateVerdicts.$inferSelect;
  * `tx_id` を先に見て、無いときだけ `stable_key` へ落ちる (identity.ts の2段解決と同じ順序)。
  * 逆順にすると弱い鍵が強い鍵を上書きしうる。版が違う鍵とは突き合わせない。
  */
-function bindVerdicts(rows: readonly VerdictRow[], mfTx: readonly MfTx[]): DuplicateVerdict[] {
+export function bindVerdicts(rows: readonly VerdictRow[], mfTx: readonly MfTx[]): DuplicateVerdict[] {
   const byTxId = new Map(rows.map((row) => [row.txId, row]));
   const byStableKey = new Map<string, VerdictRow | null>();
   for (const row of rows) {

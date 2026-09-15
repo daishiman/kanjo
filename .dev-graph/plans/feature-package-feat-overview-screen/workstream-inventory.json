@@ -1,0 +1,1217 @@
+{
+  "schema_version": "1.0.0",
+  "feature_package_id": "feature-package/feat-overview-screen",
+  "parent_feature": "feat-overview-screen",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "git"
+  },
+  "source_lineage": {
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0",
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "source_paths": [
+      "system-spec/00-requirements-definition.md",
+      "system-spec/completeness-findings.json",
+      "specs/spec-overview-screen.md",
+      "features/feat-overview-screen.md",
+      "features/feat-overview-screen.context.json"
+    ],
+    "confirmed": true
+  },
+  "tasks": [
+    {
+      "id": "SYS-OVERVIEW-P01",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "要件ベースライン確定と未決事項の着手時確認",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p01",
+        "requirements"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "documentation",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P01",
+      "depends_on": [],
+      "write_scope": [
+        "docs/overview-screen/requirements-baseline.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p01.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "specs/spec-overview-screen.md の FR-001..FR-007・AC-001..AC-007・dec-overview-aggregation-scope / dec-overview-legacy-elements / dec-recommendation-confidence-source / dec-review-state-storage の4決定を requirements-baseline.md へ転記し、原文との差分が0件である。",
+        "低優先度未決事項 low-u4-measure-numbering (U4のmeasureとC/SH番号の具体化) について、着手時点での確認結果 (利用者確認の要否判断とその理由) を記録している。",
+        "低優先度未決事項 low-reference-recheck (w3c-csp3 / whatwg-web-storage の再照合) について、参照日時点の改訂有無を記録している。"
+      ],
+      "verification": [
+        "pnpm lint (既存の check-glossary.mjs 等の文書検査が緑のままであることを確認する)"
+      ],
+      "rollback": "docs/overview-screen/requirements-baseline.md の追加コミットを revert する。他ファイルへの書込みがないため単独で戻せる。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P01",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p01.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P01"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P02",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "概況 API・core 集計・D1 テーブルのワークストリーム設計決定記録",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p02",
+        "architecture"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "backend",
+      "secondary_workstreams": [
+        "frontend",
+        "api",
+        "data"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P02",
+      "depends_on": [
+        "SYS-OVERVIEW-P01"
+      ],
+      "write_scope": [
+        "docs/overview-screen/architecture-decision.md"
+      ],
+      "deploy_unit": "N/A: 決定記録のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p02.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "GET /api/overview (クエリscope=total/business/household、既定total)・GET /api/review-queue・PUT/DELETE /api/review-queue/snoozes/:kind/:itemKey・PUT/DELETE /api/monthly-close/:month/review の4エンドポイントのリクエスト/レスポンス形がarchitecture-decision.mdに確定記載されている。",
+        "review_snoozes (user_id, item_kind, item_key, 内容指紋, snoozed_at) と monthly_close_reviews (user_id, month, reviewed_at, reviewed_by_user_id) の列定義・主キー・CHECK制約がarchitecture/overview-screen-database.mdと矛盾しないことを記載している。",
+        "dec-overview-aggregation-scope・dec-overview-legacy-elements・dec-recommendation-confidence-source・dec-review-state-storageの4決定を引用し、本featureの実装がその決定に従うことを明記している。"
+      ],
+      "verification": [
+        "pnpm typecheck (既存構成に影響がないことを確認する)"
+      ],
+      "rollback": "docs/overview-screen/architecture-decision.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P02",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p02.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P02"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P03",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "API契約・データモデル設計の独立レビュー",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p03",
+        "design-review"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "api"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P03",
+      "depends_on": [
+        "SYS-OVERVIEW-P02"
+      ],
+      "write_scope": [
+        "docs/overview-screen/design-review.md"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p03.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "P02のarchitecture-decision.mdに対する独立レビューで是正指摘が0件、または全指摘が是正済みとしてdesign-review.mdに記録されている。",
+        "review_snoozes/monthly_close_reviewsの主キー (user_id, item_kind, item_key) / (user_id, month) とCHECK制約がBR-007の入力検証要求 (kind, itemKey, month) と整合することを確認している。",
+        "kind=classification/reconciliation/import、scope=total/business/householdの3値挙動がBR-001..BR-003と矛盾しないことを確認している。"
+      ],
+      "verification": [
+        "pnpm lint"
+      ],
+      "rollback": "docs/overview-screen/design-review.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P03",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p03.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P03"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P04",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "core/API/DOM の失敗テスト先行作成 (O1-O5)",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p04",
+        "test-design"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "api",
+        "data"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P04",
+      "depends_on": [
+        "SYS-OVERVIEW-P03"
+      ],
+      "write_scope": [
+        "packages/core/test/overview-close-status.test.ts",
+        "packages/api/src/overview.test.ts",
+        "packages/web/src/overview-review-queue.dom.test.tsx"
+      ],
+      "deploy_unit": "N/A: テストコードのみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p04.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "packages/core/test/overview-close-status.test.ts が同一fixtureでKPI・推移・年次比較・支出内訳の総額差0 (AC-001) と月次クローズ4ステップ判定表 (AC-004) をredの状態で追加している。",
+        "packages/api/src/overview.test.ts がバックアップ→全消去→復元の往復でreview_snoozesとmonthly_close_reviewsが残ること (AC-004) と入力検証400・PUT冪等・401をredの状態で追加している。",
+        "packages/web/src/overview-review-queue.dom.test.tsx がバッジ・カード・アクションバーの件数一致と「後で確認」操作時の3か所同時減少 (AC-002) をredの状態で追加している。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/core exec vitest run test/overview-close-status.test.ts (新規テストがredであることを確認する)",
+        "pnpm --filter @kanjo/api exec vitest run src/overview.test.ts (新規テストがredであることを確認する)",
+        "pnpm --filter @kanjo/web exec vitest run src/overview-review-queue.dom.test.tsx (新規テストがredであることを確認する)"
+      ],
+      "rollback": "packages/core/test/overview-close-status.test.ts・packages/api/src/overview.test.ts・packages/web/src/overview-review-queue.dom.test.tsx の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P04",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p04.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P04"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P05",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "概況集計・未処理キューAPI・D1 migration・Overview.tsx の実装",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p05",
+        "implementation"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "backend",
+      "secondary_workstreams": [
+        "frontend",
+        "api",
+        "data"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P05",
+      "depends_on": [
+        "SYS-OVERVIEW-P04"
+      ],
+      "write_scope": [
+        "packages/core/src/analysis.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "migrations/0040_review_snoozes_and_monthly_close_reviews.sql",
+        "packages/web/src/pages/Overview.tsx",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/api.ts"
+      ],
+      "deploy_unit": "Cloudflare Workers kanjo-console (packages/api) と D1 kanjo-db (migrations/0040) への追加。既存配信構成のまま新規エンドポイントとテーブルを追加する。",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p05.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "P04で追加したoverview-close-status.test.ts・overview.test.ts・overview-review-queue.dom.test.tsxがgreenになる。",
+        "GET /api/overview・GET /api/review-queue・PUT/DELETE /api/review-queue/snoozes/:kind/:itemKey・PUT/DELETE /api/monthly-close/:month/reviewがauthGuard→mustChangePasswordFence→runtimeSchemaGuard→canonicalMutationFenceの順を通る。",
+        "migrations/0040がCREATE TABLE/INDEXのみで前進のみであり、EXPECTED_D1_MIGRATIONが0040_review_snoozes_and_monthly_close_reviews.sqlに更新されている。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test",
+        "pnpm --filter @kanjo/web run typecheck",
+        "pnpm lint"
+      ],
+      "rollback": "analysis.ts・routes/analytics.ts・db/schema.ts・store.ts・schema-guard.ts・canonical-mutation-fence.ts・migrations/0040・Overview.tsx・Layout.tsx・api.tsへの変更コミットをrevertする。D1側はmigrationがCREATEのみのため取り消し不要で、新テーブルは無害に残置してよい。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P05",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p05.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P05"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P06",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "全テスト・型検査・lint の実行記録",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p06",
+        "test-run"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [],
+      "build_target_kind": "application-code",
+      "phase_ref": "P06",
+      "depends_on": [
+        "SYS-OVERVIEW-P05"
+      ],
+      "write_scope": [
+        "docs/overview-screen/test-run.md"
+      ],
+      "deploy_unit": "N/A: 実行記録のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p06.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "pnpm test / pnpm typecheck / pnpm lint の実行結果 (すべてexit code 0) がtest-run.mdに記録されている。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "rollback": "docs/overview-screen/test-run.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P06",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p06.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P06"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P07",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "AC-001..AC-007 受入検証",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p07",
+        "acceptance"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "api"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P07",
+      "depends_on": [
+        "SYS-OVERVIEW-P06"
+      ],
+      "write_scope": [
+        "docs/overview-screen/acceptance.md"
+      ],
+      "deploy_unit": "N/A: 受入記録のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p07.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "AC-001..AC-007それぞれについて、対応する検証コマンド名と実行結果 (exit 0) がacceptance.mdに1件ずつ記録されている。",
+        "AC-002のDOMテストで、バッジ・カード・アクションバーの件数一致と期間1年→3年での不変が確認された記録がある。",
+        "AC-005のcheck-financial-visuals.mjsによるOverview 8幅描画exit 0の記録がある。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm --filter @kanjo/web run check:financial-routes"
+      ],
+      "rollback": "docs/overview-screen/acceptance.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P07",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p07.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P07"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P08",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "migration 0040 の前進のみ整合とバックアップ/復元対象の整理",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p08",
+        "refactoring-migration"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "data",
+      "secondary_workstreams": [
+        "backend"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P08",
+      "depends_on": [
+        "SYS-OVERVIEW-P07"
+      ],
+      "write_scope": [
+        "packages/api/src/store.ts",
+        "docs/overview-screen/refactoring.md"
+      ],
+      "deploy_unit": "N/A: 既存のCloudflare Workers/D1配信構成のまま追加の配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p08.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "BACKUP_SNAPSHOT_SQLのUNION ALLブロックとloadBackupSourceSnapshotのparams数がreview_snoozes/monthly_close_reviews追加後も一致し、pnpm --filter @kanjo/api testのバックアップ関連テストがgreenである。",
+        "migrations/0040がCREATE TABLE/INDEXのみでDROP/RENAMEを含まないことをrefactoring.mdに記録している (対象外の場合はN/Aと理由をrefactoring.mdへ明記する運用)。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/api test",
+        "pnpm run github-scripts:test"
+      ],
+      "rollback": "packages/api/src/store.tsへの変更コミットをrevertする。docs/overview-screen/refactoring.mdの追加コミットをrevertする。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P08",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p08.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P08"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P09",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "アクセシビリティ・CSP・初期JS予算・可観測性の保証確認",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "security",
+      "secondary_workstreams": [
+        "quality",
+        "operations"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P09",
+      "depends_on": [
+        "SYS-OVERVIEW-P08"
+      ],
+      "write_scope": [
+        "docs/overview-screen/assurance.md"
+      ],
+      "deploy_unit": "N/A: 既存のCloudflare Workers/D1配信構成のまま追加の配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p09.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "check-financial-visuals.mjsのVIEWPORT_CASES 8幅でOverview (path '/') がexit 0になる (AC-005)。",
+        "pnpm --filter @kanjo/web run check:js-budgetが110KiB gzip予算内でexit 0になる。",
+        "packages/api/src/index.test.tsのCSP差分検査 (requiredStaticHeadersとweb/public/_headersの突合) がgreenである。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/web run check:financial-routes",
+        "pnpm --filter @kanjo/web run check:js-budget",
+        "pnpm --filter @kanjo/api exec vitest run src/index.test.ts",
+        "pnpm run security:content"
+      ],
+      "rollback": "docs/overview-screen/assurance.md の追加コミットを revert する。保証確認のみのためコード側の巻き戻しは不要。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P09",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p09.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P09"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P10",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "独立最終レビュー",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p10",
+        "final-review"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [
+        "backend",
+        "frontend"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P10",
+      "depends_on": [
+        "SYS-OVERVIEW-P09"
+      ],
+      "write_scope": [
+        "docs/overview-screen/final-review.md"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p10.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "P01..P09の成果物に対する独立最終レビューで是正未了の指摘が0件、または全指摘が是正済みとしてfinal-review.mdに記録されている。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm lint"
+      ],
+      "rollback": "docs/overview-screen/final-review.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P10",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p10.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P10"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P11",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "再現可能な証跡索引の作成",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p11",
+        "evidence"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P11",
+      "depends_on": [
+        "SYS-OVERVIEW-P10"
+      ],
+      "write_scope": [
+        "docs/overview-screen/evidence.md"
+      ],
+      "deploy_unit": "N/A: 索引文書のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p11.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "AC-001..AC-007それぞれについて、再実行可能な検証コマンドと期待結果 (exit 0) がevidence.mdに1件ずつ索引化されている。",
+        "索引化したコマンドを第三者が再実行した場合に同じ結果 (exit 0) が得られることをevidence.md自身に明記している。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm lint"
+      ],
+      "rollback": "docs/overview-screen/evidence.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P11",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p11.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P11"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P12",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "docs/runbooks への切り分け手順とAPI文書の同期",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p12",
+        "documentation-operations"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "documentation",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P12",
+      "depends_on": [
+        "SYS-OVERVIEW-P11"
+      ],
+      "write_scope": [
+        "docs/overview-screen.md",
+        "docs/runbooks/overview-review-queue-mismatch.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md",
+        "docs/runbooks/account-login-operations.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p12.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/overview-screen.mdに概況機能の概要・4エンドポイント・4集計範囲・未処理キューの仕様要約が記載されている。",
+        "docs/runbooks/overview-review-queue-mismatch.mdに、バッジ・カード・アクションバーの件数がずれた場合のcore/DOM/API/描画4系統での切り分け手順が記載されている。"
+      ],
+      "verification": [
+        "pnpm lint (check-glossary.mjs 等の文書検査が緑のままであることを確認する)"
+      ],
+      "rollback": "docs/overview-screen.mdとdocs/runbooks/overview-review-queue-mismatch.mdの追加コミットをrevertする。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P12",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p12.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P12"
+      }
+    },
+    {
+      "id": "SYS-OVERVIEW-P13",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "title": "単一 PR での配信とクローズアウト",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p13",
+        "release-deploy"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "workstream_kind": "operations",
+      "secondary_workstreams": [
+        "infrastructure",
+        "quality"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P13",
+      "depends_on": [
+        "SYS-OVERVIEW-P12"
+      ],
+      "write_scope": [
+        "docs/overview-screen/close-out.md"
+      ],
+      "deploy_unit": "Cloudflare Workers kanjo-console (packages/api build:artifact) + D1 kanjo-db migration 0040 の deploy.yml 自動適用経路",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-overview-screen.md",
+        "features/feat-overview-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-overview-screen/sys-overview-p13.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "pnpm --filter @kanjo/web run build:artifactが配信可能な成果物を生成しexit 0になる。",
+        "pnpm run github-scripts:test (.github/scripts/plan-auto-migration.test.mjsを含む) が、migrations/0040相当のCREATE ONLY migrationを自動適用可能と判定するケースを含めてgreenである。",
+        "close-out.mdにrollback手順 (Workerを直前ビルドへ戻す、D1のreview_snoozes/monthly_close_reviewsは無害に残置する) を記録している。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/web run build:artifact",
+        "pnpm run github-scripts:test"
+      ],
+      "rollback": "Workerを直前のビルドへ戻す。D1にrollbackは無いため、review_snoozesとmonthly_close_reviewsは無害なまま残置する。単一PRのため1回のWorker切り戻しで完全に戻せる。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-OVERVIEW-P13",
+        "file_path": "tasks/feat-overview-screen/sys-overview-p13.md",
+        "parent_feature": "feat-overview-screen",
+        "feature_package_id": "feature-package/feat-overview-screen",
+        "phase_ref": "P13"
+      }
+    }
+  ]
+}

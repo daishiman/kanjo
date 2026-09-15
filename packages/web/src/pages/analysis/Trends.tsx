@@ -270,73 +270,75 @@ export function TrendsPage() {
         {top.length === 0 ? (
           <p className="sub">いま対応が要る科目はありません。今の水準を保てています。</p>
         ) : (
-          <table className="data stack-sm">
-            <thead>
-              <tr>
-                <th>科目</th>
-                <th>次の行動</th>
-                <th>増減</th>
-                <th className="num">月あたり</th>
-                <th className="num">構成比</th>
-                <th className="num">1年続いた場合</th>
-                <th>推移</th>
-              </tr>
-            </thead>
-            <tbody>
-              {top.map((r) => (
-                <Fragment key={r.key}>
-                  <tr>
-                    <td data-label="科目">
-                      <Button
-                        variant="text"
-                        aria-expanded={openKey === r.key}
-                        onClick={() => setOpenKey(openKey === r.key ? null : r.key)}
-                      >
-                        {r.account}
-                      </Button>{' '}
-                      <span className={`pill ${r.side === 'biz' ? 'biz' : 'per'}`}>
-                        {r.side === 'biz' ? '事業' : '家計'}
-                      </span>{' '}
-                      <span className="pill neutral">{r.type}</span>
-                    </td>
-                    <td data-label="次の行動">
-                      <span className={ACTION_CLS[r.action]}>{r.action}</span>
-                    </td>
-                    <td data-label="増減">
-                      <span className={DIRECTION_CLS[r.direction]}>{r.direction}</span>
-                    </td>
-                    <td data-label="月あたり" className="num">
-                      {yen(r.monthlyAvg)}
-                    </td>
-                    <td data-label="構成比" className="num">
-                      {pct(r.share)}
-                    </td>
-                    <td data-label="1年続いた場合" className={`num ${deltaCls(r.annualImpact)}`}>
-                      {r.direction === '増加' || r.direction === '減少' ? yenS(r.annualImpact) : '—'}
-                    </td>
-                    <td data-label="推移">
-                      <Spark series={r.series} />
-                    </td>
-                  </tr>
-                  {openKey === r.key && (
-                    <tr className="detail-row">
-                      <td colSpan={7}>
-                        <p>{r.reason}</p>
-                        <p className="sub">
-                          傾き {yenS(Math.round(r.slopePerMonth))}/月 ・ <Term id="pValue" />=
-                          {r.mk.p.toFixed(3)} ・<Term id="cv">変動係数</Term> {r.cv.toFixed(2)} ・ 直近平均{' '}
-                          {yen(r.recentAvg)} / それ以前 {yen(r.priorAvg)}
-                          {r.gapMonths.length > 0 && (
-                            <> ・ 金額が立っていない月: {r.gapMonths.map(monthShort).join('・')}</>
-                          )}
-                        </p>
+          <div className="scroll-x">
+            <table className="data stack-sm">
+              <thead>
+                <tr>
+                  <th>科目</th>
+                  <th>次の行動</th>
+                  <th>増減</th>
+                  <th className="num">月あたり</th>
+                  <th className="num">構成比</th>
+                  <th className="num">1年続いた場合</th>
+                  <th>推移</th>
+                </tr>
+              </thead>
+              <tbody>
+                {top.map((r) => (
+                  <Fragment key={r.key}>
+                    <tr>
+                      <td data-label="科目">
+                        <Button
+                          variant="text"
+                          aria-expanded={openKey === r.key}
+                          onClick={() => setOpenKey(openKey === r.key ? null : r.key)}
+                        >
+                          {r.account}
+                        </Button>{' '}
+                        <span className={`pill ${r.side === 'biz' ? 'biz' : 'per'}`}>
+                          {r.side === 'biz' ? '事業' : '家計'}
+                        </span>{' '}
+                        <span className="pill neutral">{r.type}</span>
+                      </td>
+                      <td data-label="次の行動">
+                        <span className={ACTION_CLS[r.action]}>{r.action}</span>
+                      </td>
+                      <td data-label="増減">
+                        <span className={DIRECTION_CLS[r.direction]}>{r.direction}</span>
+                      </td>
+                      <td data-label="月あたり" className="num">
+                        {yen(r.monthlyAvg)}
+                      </td>
+                      <td data-label="構成比" className="num">
+                        {pct(r.share)}
+                      </td>
+                      <td data-label="1年続いた場合" className={`num ${deltaCls(r.annualImpact)}`}>
+                        {r.direction === '増加' || r.direction === '減少' ? yenS(r.annualImpact) : '—'}
+                      </td>
+                      <td data-label="推移">
+                        <Spark series={r.series} />
                       </td>
                     </tr>
-                  )}
-                </Fragment>
-              ))}
-            </tbody>
-          </table>
+                    {openKey === r.key && (
+                      <tr className="detail-row">
+                        <td colSpan={7}>
+                          <p>{r.reason}</p>
+                          <p className="sub">
+                            傾き {yenS(Math.round(r.slopePerMonth))}/月 ・ <Term id="pValue" />=
+                            {r.mk.p.toFixed(3)} ・<Term id="cv">変動係数</Term> {r.cv.toFixed(2)} ・ 直近平均{' '}
+                            {yen(r.recentAvg)} / それ以前 {yen(r.priorAvg)}
+                            {r.gapMonths.length > 0 && (
+                              <> ・ 金額が立っていない月: {r.gapMonths.map(monthShort).join('・')}</>
+                            )}
+                          </p>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         <p className="sub">
           並び順は金額ではなく管理優先度。順位は「記録の欠けている科目 &gt; 有意に増えている大きい科目 &gt;

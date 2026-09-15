@@ -1,0 +1,111 @@
+{
+  "evaluator": {"name": "assign-system-spec-completeness-evaluator", "version": "0.1.0", "context": "fork"},
+  "spec_dir": "system-spec",
+  "evaluated_at": "2026-09-14T13:02:19Z",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "requirements_foundation は前回から変わっていない。O2 の measure (期間切替で3か所の件数が変わらない DOM テスト、指紋変更で再び未処理になる core 単体テスト) は qa-o2-measure-ov-decision-001 と appr-foundation-overview-002 に接地したままで、--require-foundation も exit0。持ち越しの low (appr-001 の承認後に具体化した U4 measure・C/SH 番号) は残る。",
+      "evidence": ["validate-coverage-matrix.py --require-foundation exit0", "requirements_foundation.approval_ref=appr-foundation-overview-002", "qa-o2-measure-ov-decision-001"]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "前回の high は解消した。dec-overview-legacy-elements.user_decision は {option_id: fold-and-keep, confirmed_at: 2026-09-14T12:42:56Z, qa_ref: qa-defense-forecast-placement-ov-decision-001} になり、参照先の answered_at と一致する。回答内容 (警告時だけ上部、詳しく見るは未決済と科目別年比較だけ) も採択案ラベル・notes・pros/cons と食い違わない。00-requirements-definition.md の決定表のユーザー決定列も『fold-and-keep @ 2026-09-14T12:42:56Z』に更新されている。caveats には、最初の選択 (11:33:34Z)、clarify-001 による未確認の具体化、聞き直し、(推奨) を付けて提示したことが残っており、推奨の影響も開示されている。C07 F1 と C06 T-1 はどちらも解消を確認した。4件の決定はすべて user_decision.qa_ref が実在する user-decision の qa を指している。",
+      "evidence": ["decisions[dec-overview-legacy-elements].user_decision", "qa_log[qa-defense-forecast-placement-ov-decision-001].answered_at=2026-09-14T12:42:56Z", "00-requirements-definition.md:170 (ユーザー決定列)", "C07 F1 解消 / C06 T-1 解消"]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "C07 の判定は loop_pass と final_ready がともに PASS。4モードの決定論ゲートはすべて exit0 で、VIOLATION は0件。セルは48 (確定8・対象外40・未収集0)。対象外理由の要改善は0件、qa_ref の dangling も0件で、category_aggregate も一致した。前回の F2 (reopen_log の欠落) は解消した。ui-ux.web と frontend.web の reopen_log (from=確定、reopened_at=12:54:50Z) があり、置換の根拠 qa (12:42:56Z) より後なので時系列も単調。未来時刻も無い (実測 12:56:45Z)。C06 sub-input の軸別判定は、聞き漏れ・早期停止・トレーサビリティ (前回 FAIL の T-1/T-2 解消) が PASS。誘導質問の軸は、C06 が medium 1件で FAIL とした。指摘は、4件の qa の question に『(推奨)』付きの選択肢文が記録されていること。これを SSOT (run-system-spec-elicit/prompts/R6-audit-hearing.md:27) の判定観点と照合した。(a) 断定・前提の埋め込み、(b) 望ましい答えを暗示する片側 Yes/No、(c) 複数論点の束ね、のいずれにも当たらない。4件とも複数の選択肢それぞれに定義を示しており、推奨は暗示ではなく明示のラベルで、provenance と caveats に開示されている。さらに、これらの質問文は前回から変わっておらず、前回の C06 は同じ質問を誘導質問 PASS (low の観察) としていた。逐語記録は前回までの差し戻しで求めた対処でもある。C06 は SSOT 本文を参照できなかったと自ら表明している。以上から、C05 はこの medium を low に下げ、観点は PASS とする。C16 の required-info --state は exit0 (ungrounded_blocking_items=[])。",
+      "evidence": ["C07 監査: loop_pass=PASS / final_ready=PASS (F1/F2 解消)", "C06 監査: 聞き漏れ PASS / 早期停止 PASS / トレーサビリティ PASS / 誘導質問 FAIL(medium1, low2) → C05 が SSOT 照合で low へ", "validate-coverage-matrix.py --require-complete --require-basis exit0", "validate-knowledge-graph.py --profile required-info --state exit0", "reopen_log[2..3] (ui-ux/web, frontend/web, 2026-09-14T12:54:50Z)", "run-system-spec-elicit/prompts/R6-audit-hearing.md:27"]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "前回の low (置き換えられた記録が、置換済みの印の無いまま章の質疑録に載っている) は、描画範囲の章についてはおおむね解消した。frontend.md:79/:108、ui-ux.md:66/:83、backend.md:79 では、qa の直後に【置換済み】/【一部置換】の corrections が引用ブロックで描画され、置換先の qa と時刻を指している。上流指針表 (Apple HIG の割り込み原則) と Information Design の優先度原則が確定内容へ具体的に当てはめられている点は、前回から変わらない。knowledge/doctrine/required-info/cross の4 profile と spec-doc-sync は exit0。残りは 00-requirements-definition.md の承認節 (:124 qa-ui-ux-web-ov-decision-001、:160 qa-frontend-web-ov-decision-001) の1件で、旧記述 (防衛予測は詳しく見る、defense-forecast.dom.test.tsx は開いた状態で通す) が印の無いまま載っている。compile-spec-doc.py の _render_corrections は章の質疑節 (:723) からしか呼ばれていないので、harness 側の描画範囲の問題として low にする。",
+      "evidence": ["frontend.md:74,79 / :103,108", "ui-ux.md:61,66 / :78,83", "backend.md:79", "00-requirements-definition.md:124,160 (印なし)", "run-system-spec-compile/scripts/compile-spec-doc.py:674,723", "aggregate-completeness.py --knowledge-graph exit0", "validate-spec-doc-sync.py exit0"]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "C08 の判定は PASS。形式層の validate-source-citation.py (installPath 0.1.14 版、配布元と差分なし) は exit0 で、targets 9件と references 9件が一対一で対応する。内容鮮度層では WebFetch で9 URL をすべて再照合し、全件が現行版と一致した。非公式 host・古い版・確認時刻の欠落は0件で、decisions の evidence_refs 7種はすべて fetched-references の部分集合である。fetched-references.json は前回から変わっていない。",
+      "evidence": ["C08 監査 verdict=PASS", "validate-source-citation.py exit0 (9/9)", "WebFetch 9 URL 照合表 (全件一致)"]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "system-spec-harness の prompts/*.md 18件に、prompt-creator の verify-completeness.py --input と validate-prompt.py --input をかけ、18/18 で exit0 だった。持ち越しの low (compile R2-render に上流指針表の basis を描画する規則が無い) は変わらない。今回見つかった corrections の描画範囲の不足 (承認節に描画されない) は compile の script 側の問題で、design_knowledge_reflection の low として記録する。",
+      "evidence": ["verify-completeness.py 18/18 exit0", "validate-prompt.py 18/18 exit0"]
+    }
+  },
+  "gate_results": [
+    {"id": "G-foundation", "name": "validate-coverage-matrix --require-foundation", "conditions": ["foundation_trace", "decision_guidance"], "exit_code": 0, "stdout": "OK: 収集マトリクス網羅性 (loop+foundation(上位概念トレース)) を満たす"},
+    {"id": "G-matrix", "name": "validate-coverage-matrix --require-complete --require-basis", "conditions": ["matrix_coverage"], "exit_code": 0, "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)) を満たす"},
+    {"id": "G-knowledge-graph", "name": "validate-knowledge-graph (knowledge/doctrine/required-info/cross)", "conditions": ["design_knowledge_reflection", "matrix_coverage"], "exit_code": 0},
+    {"id": "G-required-info-state", "name": "validate-knowledge-graph --profile required-info --state", "conditions": ["matrix_coverage"], "exit_code": 0, "stdout": "ungrounded_blocking_items=[]"},
+    {"id": "G-spec-doc-sync", "name": "validate-spec-doc-sync", "conditions": ["foundation_trace", "design_knowledge_reflection"], "exit_code": 0, "stdout": "OK: 正本 spec-state.json の goal・根拠・出典が章へ投影されている"},
+    {"id": "G-source-citation", "name": "validate-source-citation (C08 実行)", "conditions": ["doc_freshness"], "exit_code": 0, "stdout": "OK: 出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす"},
+    {"id": "G-prompt", "name": "verify-completeness + validate-prompt (18 prompts)", "conditions": ["prompt_quality"], "exit_code": 0}
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection/superseded-record-in-approval-section",
+      "observation": "00-requirements-definition.md の承認節『この承認を名指ししている質疑』では、qa-ui-ux-web-ov-decision-001 (:124、第4層に防衛予測を含む) と qa-frontend-web-ov-decision-001 (:160、防衛予測は詳しく見る・defense-forecast.dom.test.tsx は開いた状態で通す) が、corrections の印の無いまま載っている。章 (frontend.md / ui-ux.md / backend.md) の質疑節には【置換済み】/【一部置換】が描画されているので、00 だけを上から読む plan 生成が古いテスト方針を拾うおそれが残る。compile-spec-doc.py の _render_corrections は章の質疑節 (:723) からしか呼ばれない。spec-state 側の対処は済んでいる。",
+      "suggested_fix": "[harness / compile] compile-spec-doc.py の承認節の描画でも _render_corrections を呼び、corrections を描画する。spec 側の差し戻しは不要。",
+      "evidence": ["00-requirements-definition.md:124,160", "run-system-spec-compile/scripts/compile-spec-doc.py:674,723"]
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage/hearing-neutrality",
+      "observation": "C06 は、4件の qa (review-queue-scope / snooze-fingerprint / defense-forecast-placement / o2-measure) の question に『(推奨)』付きの選択肢文が記録され、4件とも推奨案が選ばれたことを誘導質問 medium とした。SSOT R6-audit-hearing.md:27 の (a)(b)(c) と照合すると、どれも各選択肢に定義を示した複数択で、推奨は明示ラベルとして provenance/caveats に開示されており、判定観点には当たらない。質問文は前回から変わっておらず、前回の C06 は同じ質問を誘導 PASS (low) としていた。C06 は SSOT を参照できなかったと表明している。このため low に下げた。ほかに C06 の low として、推奨案の説明・pros が対立案より厚いことと、qa-frontend-web-ov-decision-001 の質問文『どう残すか』が残す前提の言い回しであること (実際には削除案・常時表示案も提示) がある。",
+      "suggested_fix": "[harness 任意] 推奨を付ける場合は、選択肢の説明の粒度をそろえ、推奨の提示順を固定しない運用を elicit の R 系 prompt に明記する。本 spec の差し戻しは不要。",
+      "evidence": ["C06 誘導質問 medium 1件 / low 2件", "run-system-spec-elicit/prompts/R6-audit-hearing.md:27", "decisions[*].recommendation.caveats"]
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace/approval-scope",
+      "observation": "前回から持ち越し。appr-foundation-overview-001 は、U4 の measure と C番号・SH番号を承認後に具体化したと自ら記録している。appr-foundation-overview-002 は O2 だけを対象にしたので、この範囲外の具体化は利用者に確認されていない。",
+      "suggested_fix": "[elicit 任意] plan 着手前の確認で、U4 measure と C/SH 番号の具体化を利用者に一括で見せる。",
+      "evidence": ["approval_log[appr-foundation-overview-001]", "approval_log[appr-foundation-overview-002]"]
+    },
+    {
+      "severity": "low",
+      "bucket": "doc_freshness/living-standard-same-day",
+      "observation": "前回から持ち越し。w3c-csp3 (WD 2026-09-14) と whatwg-web-storage (Last Updated 2026-09-14) は継続改訂の文書で、今回の再照合でも最終更新日が取得当日と同じだった。plan 着手時点で再確認が必要になりやすい。",
+      "suggested_fix": "[plan 着手時] 2件だけ再照合する。",
+      "evidence": ["C08 照合表 w3c-csp3 / whatwg-web-storage"]
+    },
+    {
+      "severity": "low",
+      "bucket": "prompt_quality/compile-render",
+      "observation": "前回から持ち越し。上流指針表に basis の列が無い (R2-render に規則が無い)。doctrine_applications は推定の行を含まないため害は出ていない。doctrine authority の URL の鮮度が章から見えない点も、harness 側の観察として残る。",
+      "suggested_fix": "[harness 任意] R2-render に上流指針表の basis 描画規則を足す。",
+      "evidence": ["run-system-spec-compile/prompts/R2-render.md"]
+    },
+    {
+      "severity": "info",
+      "bucket": "matrix_coverage/timeline-notes",
+      "observation": "C07 の参考情報。(1) qa-backend-web-ov-decision-001 の correction (12:54:50Z) は、実際の置換 (12:14:38Z / reopen 12:20:03Z) より後にまとめて追記されたが、内容・時系列とも矛盾は無い。(2) design_applications の ui-ux / frontend 右パネル関連の recorded_at (12:45:53Z) は reopen_log (12:54:50Z) より早いが、内容は新しい qa と一致し、マトリクス監査の対象外。(3) qa-o2-measure-ov-decision-001 と qa-defense-forecast-placement-ov-decision-001 は同じ answered_at (12:42:56Z) で、同じ AskUserQuestion の回答返却時刻として整合する。",
+      "suggested_fix": "対処不要。今後の reopen では、reopen_log を design_applications の更新より先に書く順序をそろえると追跡しやすい。",
+      "evidence": ["qa_log[qa-backend-web-ov-decision-001].corrections", "design_applications recorded_at=2026-09-14T12:45:53Z", "reopen_log reopened_at=2026-09-14T12:54:50Z"]
+    },
+    {
+      "severity": "info",
+      "bucket": "checked-aspects",
+      "observation": "4回目の評価。決定論ゲート7種 (foundation / complete+basis / knowledge-graph 4 profile / required-info --state / spec-doc-sync / source-citation / prompt 18件) はすべて exit0 だった。C07/C06/C08 の3監査は独立 context で実行した。前回の high 1件 (user_decision の古い qa_ref) と medium 1件 (reopen_log の欠落) は、C07 と C06 がそれぞれ独立に解消を確認した。前回の low (置換済みの印が無い) は章の質疑節では解消し、00 の承認節だけが harness の描画範囲の問題として残る。C06 の新しい medium (推奨ラベル) は SSOT と照合して low に下げた。high は0件、全観点 PASS のため、総合 PASS とする。",
+      "suggested_fix": "なし。残る low は harness 側の改善か、plan 着手時の確認で扱う。",
+      "evidence": ["gate_results 7件 exit0", "C07 PASS / C06 FAIL→SSOT照合で観点PASS / C08 PASS"]
+    }
+  ],
+  "gaps": []
+}

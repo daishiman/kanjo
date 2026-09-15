@@ -511,6 +511,8 @@ describe('JSON pointer invalidation consumers', () => {
       'mf_transactions',
       'restored_monthly_agg',
       'vendor_memory',
+      'review_snoozes',
+      'monthly_close_reviews',
     ]);
   });
 });
@@ -532,6 +534,11 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/data/undo/op-1'],
       ['PATCH', '/api/vendor-memory/abc'],
       ['POST', '/api/vendor-memory/abc/reapply'],
+      // 概況の保留と月次レビューは復元の write-set に入る
+      ['PUT', '/api/review-queue/snoozes/classification/mf-1'],
+      ['DELETE', '/api/review-queue/snoozes/classification/mf-1'],
+      ['PUT', '/api/monthly-close/2026-09/review'],
+      ['DELETE', '/api/monthly-close/2026-09/review'],
       ['POST', '/api/rules'],
       ['PUT', '/api/rules/1'],
       ['DELETE', '/api/rules/1'],
@@ -645,6 +652,10 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/data/undo/:operationId',
       'PATCH /api/vendor-memory/:vendorKey',
       'POST /api/vendor-memory/:vendorKey/reapply',
+      'PUT /api/review-queue/snoozes/:kind/:itemKey',
+      'DELETE /api/review-queue/snoozes/:kind/:itemKey',
+      'PUT /api/monthly-close/:month/review',
+      'DELETE /api/monthly-close/:month/review',
       'POST /api/restore',
       'POST /api/tradeoff',
       'POST /api/ai/tasks',

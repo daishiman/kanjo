@@ -1,0 +1,185 @@
+{
+  "run_id": "sdp-feat-overview-screen-20260914T1336Z",
+  "feature_id": "feat-overview-screen",
+  "repository_id": "github:daishiman/kanjo",
+  "artifact_kind": "feature",
+  "purpose": "概況を「数字を眺める分析画面」から月次クローズの作業起点に変える。開いた瞬間に直近 12 か月の収支の結論と「次に直すこと」が分かり、未処理 0 まで概況から迷わず進める状態にする。現行の概況は GET /api/summary から core の overview() を呼び、事業だけを表示している。",
+  "goal": "総合/事業/家計の KPI・推移・年次比較・支出内訳が単一の定義で検算一致し、仕分け・照合・取込の確認が全期間で 1 つの未処理キューに集約されてバッジ・カード・アクションバーの件数が一致し、「後で確認」と月次レビューが D1 に保存されてバックアップと復元でも保たれ、02 のレイアウトが共通シェル・トークン・部品で 8 幅すべてで描画される状態。",
+  "scope_in": [
+    "packages/web/src/pages/Overview.tsx の作り替え",
+    "概況用 API (概況集計と未処理キュー、保留と月次レビューの書込)",
+    "core 集計 (直近 12 か月 vs 前 12 か月、支出内訳の上位 5 + その他、未処理キュー、推奨の信頼度、月次クローズ判定)",
+    "D1 migration (保留 review_snoozes と月次レビュー monthly_close_reviews)",
+    "サイドバーの未処理バッジ",
+    "新テーブルのバックアップ・復元対象への追加"
+  ],
+  "scope_out": [
+    "専用アプリ (スマートフォン・タブレット・デスクトップ)",
+    "AI/LLM による推定",
+    "分類アルゴリズムの変更",
+    "概況以外の 19 画面の作り替え"
+  ],
+  "acceptance": [
+    "AC-001 O1 (G1): 同一 fixture で KPI・推移・年次比較・支出内訳の総額差が 0 である (core 単体テスト、FR-001)。",
+    "AC-002 O2 (G2): バッジ・カード・アクションバーの件数が一致し、「後で確認」で同時に減り、期間 1年→3年で不変である (DOM テスト、FR-002、FR-007)。",
+    "AC-003 O2 (G2): 内容指紋が変わった明細が再び未処理に数えられる (core 単体テスト、FR-003)。",
+    "AC-004 O3 (G3): 保留と月次レビューがバックアップ→全消去→復元の往復で保たれ、月次クローズ 4 ステップが判定表どおりになる (API テストと core 単体テスト、FR-004)。",
+    "AC-005 O4 (G4, G5): check-financial-visuals.mjs の Overview を 8 幅で描画して exit 0 になる (FR-006)。",
+    "AC-006 O5 (G2): 同じ入力から同じ信頼度が出て、根拠が無い明細は推奨なしになる (core 単体テスト、FR-005)。",
+    "AC-007 S1 (G1-G5): 上記の検査と既存の pnpm test / typecheck / lint、check-initial-js-budget、index.test の CSP 差分検査が CI で緑である。"
+  ],
+  "architecture_refs": [
+    "architecture/overview-screen-ui-ux.md",
+    "architecture/overview-screen-frontend.md",
+    "architecture/overview-screen-backend.md",
+    "architecture/overview-screen-database.md",
+    "architecture/overview-screen-auth.md",
+    "architecture/overview-screen-security.md",
+    "architecture/overview-screen-infrastructure.md",
+    "architecture/overview-screen-maintenance-ops.md",
+    "specs/spec-overview-screen.md"
+  ],
+  "source_lineage": [
+    {
+      "source_kind": "feature_context",
+      "source_path": "features/feat-overview-screen.context.json",
+      "source_digest": "sha256:0d31353e17bf93d3a34a0b23808213abbb13b19f0287903a307e47b2316c8252",
+      "digest_provenance": "measured_sha256",
+      "graph_node_id": "feat-overview-screen",
+      "feature_id_match": true,
+      "updated_at": "2026-09-14T13:29:47Z"
+    },
+    {
+      "source_kind": "feature_document",
+      "source_path": "features/feat-overview-screen.md",
+      "source_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence_ref": "system-spec/completeness-findings.json",
+      "evaluated_digest": "sha256:b59f1176e7a0d23474e8d9f4ea1b067eaf9c94d6eaaf0906c48de0de5fc33181",
+      "source_digest": "sha256:995b9d4d49943ef4eb4068cc71e1bc628f1aa43e7b9500c0d49a827f873f5a73",
+      "digest_provenance": "measured_sha256",
+      "evaluated_digest_refers_to": "system-spec/00-requirements-definition.md"
+    },
+    {
+      "source_kind": "specification",
+      "source_path": "specs/spec-overview-screen.md",
+      "source_plugin": "dev-graph",
+      "source_version": "0.1.11",
+      "source_digest": "sha256:11b3406e9debf54cb98c97364eabfb08a1f30ff586e33680f74760b6d66c912f",
+      "imported_at": "2026-09-14T13:28:17Z",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "system_spec_requirements",
+      "source_path": "system-spec/00-requirements-definition.md",
+      "source_plugin": "system-spec-harness",
+      "source_version": "0.1.14",
+      "source_digest": "sha256:b59f1176e7a0d23474e8d9f4ea1b067eaf9c94d6eaaf0906c48de0de5fc33181",
+      "evidence_ref": "system-spec/completeness-findings.json",
+      "evaluation_verdict": "PASS",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "completeness_evaluation",
+      "source_path": "system-spec/completeness-findings.json",
+      "evaluator": "assign-system-spec-completeness-evaluator",
+      "source_plugin": "system-spec-harness",
+      "source_version": "0.1.14",
+      "evaluated_at": "2026-09-14T13:02:19Z",
+      "verdict": "PASS",
+      "source_digest": "sha256:078274d3a0871bc164f0fd334aa5c51b4463abd9dd69dc61e67b9c039c8db1bf",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/overview-screen-ui-ux.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:cdf0493ba40bec73c8fe75ca238675b775c90cacef6cb8556c73b8cfbe92530a",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/overview-screen-frontend.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:3f163990d2549ae20a74c96964da7f1876ccbbc402f1bb31087c69eb8a965b23",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/overview-screen-backend.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:d0718717003dfc8fb6da51c2c2ff6e3db0c4924c590b78c264a537c70e367782",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/overview-screen-database.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:758b6334b21d0a3a68ddbbff6e8a0ac1c6d46fc1133c59720e3aee0a2dfeb2c7",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/overview-screen-auth.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:1f0364dc157664844a693af47509f4f9d69975264b8ccb72a6e79ffef6086de8",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/overview-screen-security.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:a3898d015c0bbe4205c0a57f99c8be04504fbbd79c3d3f76802f7000122f3a50",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/overview-screen-infrastructure.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:6a0b234d78cec33712911c5982e68243e2a2d7546e81681e41e9e4c629f69fe2",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/overview-screen-maintenance-ops.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:816de6970743a2930387bec16d548536699d4774abda4c814f2c652197daadf4",
+      "digest_provenance": "measured_sha256"
+    }
+  ],
+  "identity_check": {
+    "graph_node_id": "feat-overview-screen",
+    "requested_feature_id": "feat-overview-screen",
+    "match": true
+  },
+  "readiness_pin": {
+    "component": "C08",
+    "status": "complete",
+    "checked_at": "2026-09-14T13:35:57Z",
+    "source_pin": "system-spec-harness",
+    "source_pin_version": "0.1.14",
+    "source_pin_digest": "sha256:2a860e29d7c79dd711b18eb49186f0721e7e0c6332d1566c055a2a7c8cee9f68"
+  },
+  "open_items": [
+    {
+      "id": "low-u4-measure-numbering",
+      "severity": "low",
+      "description": "U4 の measure と C/SH 番号の具体化が利用者確認を経ていない (spec の foundation_trace/approval-scope 持ち越し low)。",
+      "source_ref": "specs/spec-overview-screen.md",
+      "disposition": "P01 で plan 着手時の確認として扱う"
+    },
+    {
+      "id": "low-reference-recheck",
+      "severity": "low",
+      "description": "w3c-csp3 と whatwg-web-storage は継続改訂文書のため plan 着手時に再照合する (spec の doc_freshness/living-standard-same-day 持ち越し low)。",
+      "source_ref": "specs/spec-overview-screen.md",
+      "disposition": "P01 で plan 着手時の確認として扱う"
+    }
+  ],
+  "generated_at": "2026-09-14T13:35:57Z",
+  "notes": [
+    "feature 分割・workstream 分解・P01..P13 task 生成は行っていない。feature-context の sha256 は run 起動ディレクティブから受領した値をそのまま lineage へ記録し、本 agent 側での独立再計算 (ハッシュツール未提供) は行っていない。",
+    "source_lineage の各 source_digest は orchestrator が実体から sha256 を再計算して記録した (elicitor fork は hash 計算不可のため)。readiness 全体 pin は readiness_pin に保持する。"
+  ]
+}

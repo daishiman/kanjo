@@ -7,44 +7,69 @@ import {
   BALANCE_SHEET_SOURCES,
   type Dataset,
   type ExpenseScope,
+  type FreeeExclusion,
   LIABILITY_CATEGORIES,
   type PeriodRange,
   TRANSACTION_EXPORT_HEADER,
   applyPeriod,
+  applyReviewSnoozes,
   availableYears,
   benchmarks,
   budgetTable,
   buildBalanceSheet,
   buildExpenseProjection,
   buildReportHtml,
+  buildReviewQueue,
   cashFlow,
   defenseForecast,
   defenseLine,
   diagnosis,
   fullRange,
   household,
+  isCloseMonth,
+  isOverviewScope,
+  isReviewItemKey,
+  isReviewItemKind,
   matrix,
+  monthlyCloseStatus,
   overview,
+  overviewAggregate,
+  overviewScopeMonths,
   periodLabel,
   profitAndLoss,
   resolvePeriodQuery,
+  reviewItemFingerprint,
+  reviewQueueCounts,
   sourceNeutralSubscriptions,
   toCsv,
+  totalCashflowReport,
   tradeoffCandidates,
   tradeoffReview,
   transactionExportRows,
   trendsReport,
   unsettledReport,
 } from '@kanjo/core';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import type { Context } from 'hono';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import type { AuthEnv } from '../auth.js';
+import type { AuthEnv, AuthVariables } from '../auth.js';
 import * as s from '../db/schema.js';
-import { dealFromRow, getDb, loadBackupPayload, loadDataset } from '../store.js';
+import { invalidateJsonSnapshotQuery } from '../import-active.js';
+import { dealFromRow, getDb, loadBackupPayload, loadDataset, loadVendorMemories } from '../store.js';
+import { bindVerdicts } from './total-cashflow.js';
 
-type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
+// 月次レビューの記録者 (actor) を読むため、ルートは認証ミドルウェアが載せる変数の型をそのまま使う
+type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
+/**
+ * 集計の補助関数はテナントの鍵だけを読む。Hono の Context は変数の型について不変なので、
+ * userId を持つ任意の Context (total-cashflow のルートを含む) を受けられるよう総称にしておく
+ */
+type DataCtx<V extends { userId: string }> = { Bindings: AuthEnv; Variables: V };
+/** 期間の解決に要る部分だけ。analytics と total-cashflow の Context がどちらもそのまま渡せる */
+type ScopedContext = Pick<Context<DataCtx<{ userId: string }>>, 'env' | 'req'> & {
+  get(key: 'userId'): string;
+};
 
 export const analyticsRoute = new Hono<Ctx>();
 
@@ -61,7 +86,7 @@ export const analyticsRoute = new Hono<Ctx>();
  * 2025年を選んだ瞬間に選択肢から2026年が消えて戻れなくなる。
  */
 export async function loadScoped(
-  c: Context<Ctx>,
+  c: ScopedContext,
 ): Promise<{ data: Dataset; all: Dataset; period: PeriodMeta }> {
   const all = await loadDataset(getDb(c.env.DB), c.get('userId'));
   const range = resolvePeriodQuery(all, {
@@ -103,6 +128,224 @@ analyticsRoute.get('/summary', async (c) => {
     benchmarks: benchmarks(data),
     period,
   });
+});
+
+/* -------- 概況 (GET /overview・未処理キュー・保留・月次レビュー) -------- */
+
+const apiError = (code: string, message: string) => ({ error: { code, message } });
+
+/**
+ * 未処理キュー (保留を除く前) と、総合 scope の月別系列の元になるトータル収支を全期間で作る。
+ *
+ * 件数は期間に左右されない (BR-002) ので、ここは必ず絞り込み前の `all` から作る。
+ * 概況の総合 KPI と照合キューは同じ totalCashflowReport を共有し、二度計算しない。
+ */
+async function loadReviewSources<V extends { userId: string }>(c: Context<DataCtx<V>>, all: Dataset) {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const [dealRows, verdictRows, exclusionRows, failedRuns, vendorMemories] = await Promise.all([
+    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
+    db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
+    db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),
+    db
+      .select({
+        id: s.importRuns.id,
+        createdAt: s.importRuns.createdAt,
+        failureReason: s.importRuns.failureReason,
+      })
+      .from(s.importRuns)
+      .where(and(eq(s.importRuns.userId, userId), eq(s.importRuns.status, 'failed'))),
+    loadVendorMemories(db, userId),
+  ]);
+  const exclusions: FreeeExclusion[] = exclusionRows.map((row) => ({
+    freeeKey: row.freeeKey,
+    reason: row.reason,
+  }));
+  const report = totalCashflowReport(
+    all,
+    dealRows.map(dealFromRow),
+    bindVerdicts(verdictRows, all.mfTx),
+    exclusions,
+  );
+  const items = buildReviewQueue({
+    data: all,
+    review: report.review,
+    failedImports: failedRuns,
+    vendorMemories,
+  });
+  return { report, items };
+}
+
+async function loadSnoozes<V extends { userId: string }>(c: Context<DataCtx<V>>) {
+  const rows = await getDb(c.env.DB)
+    .select()
+    .from(s.reviewSnoozes)
+    .where(eq(s.reviewSnoozes.userId, c.get('userId')));
+  return rows.map((row) => ({ kind: row.itemKind, itemKey: row.itemKey, fingerprint: row.fingerprint }));
+}
+
+/**
+ * 概況の 4 要素 (KPI・推移・前年比・内訳) とクローズ状況。
+ * 4 要素だけが scope と期間で変わり、クローズ状況はどちらにも依存しない (BR-003)。
+ */
+analyticsRoute.get('/overview', async (c) => {
+  const rawScope = c.req.query('scope') ?? 'total';
+  if (!isOverviewScope(rawScope)) {
+    return c.json(apiError('invalid_scope', 'scope は total / business / household のいずれかです'), 400);
+  }
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const { data, all, period } = await loadScoped(c);
+  const [{ report, items }, reviewRows, [updated]] = await Promise.all([
+    loadReviewSources(c, all),
+    db
+      .select({ month: s.monthlyCloseReviews.month, reviewedAt: s.monthlyCloseReviews.reviewedAt })
+      .from(s.monthlyCloseReviews)
+      .where(eq(s.monthlyCloseReviews.userId, userId)),
+    db
+      .select({ at: sql<string | null>`max(${s.imports.committedAt})` })
+      .from(s.imports)
+      .where(and(eq(s.imports.userId, userId), eq(s.imports.status, 'committed'))),
+  ]);
+  // 系列は全期間から作り、期間は「表示する月の集合」として渡す。前年の比較窓を欠かさないため
+  const series = overviewScopeMonths(rawScope, { data: all, totalMonths: report.months });
+  const aggregate = overviewAggregate(series, period.applied);
+  const forecast = defenseForecast(data);
+  return c.json({
+    scope: rawScope,
+    ...aggregate,
+    closeStatus: monthlyCloseStatus({
+      data: all,
+      items,
+      reviews: reviewRows,
+      hasCommittedImport: updated?.at != null,
+    }),
+    dataUpdatedAt: updated?.at ?? null,
+    // 画面の語彙は caution。core の 'watch' は他画面が使うので型は変えず、境界でだけ写す
+    defenseForecast: { ...forecast, level: forecast.level === 'watch' ? 'caution' : forecast.level },
+    period,
+  });
+});
+
+/** 全期間の未処理キュー。クエリを受け取らない (BR-002) */
+analyticsRoute.get('/review-queue', async (c) => {
+  // 読み込みは loadScoped に一本化する。件数は期間に依存させないので all だけを使う
+  const { all } = await loadScoped(c);
+  const [{ items: queued }, snoozes] = await Promise.all([loadReviewSources(c, all), loadSnoozes(c)]);
+  const { items, snoozed, snoozedCount } = await applyReviewSnoozes(queued, snoozes);
+  return c.json({
+    total: items.length,
+    counts: reviewQueueCounts(items),
+    snoozedCount,
+    items,
+    snoozedItems: snoozed,
+  });
+});
+
+/** kind / itemKey をパスから取り出して検証する。違反は 400 のレスポンスを返す */
+function snoozeTarget<V extends { userId: string }>(c: Context<DataCtx<V>>) {
+  const kind = c.req.param('kind');
+  const itemKey = c.req.param('itemKey');
+  if (!isReviewItemKind(kind)) {
+    return {
+      error: c.json(
+        apiError('invalid_kind', 'kind は reconciliation / classification / import のいずれかです'),
+        400,
+      ),
+    };
+  }
+  if (!isReviewItemKey(itemKey)) {
+    return { error: c.json(apiError('invalid_item_key', 'itemKey は 1〜200 文字です'), 400) };
+  }
+  return { kind, itemKey };
+}
+
+/**
+ * 後で確認 (保留)。指紋はサーバが今の明細から計算する。
+ * クライアントに指紋を渡させると、中身が変わった明細を古い指紋で黙らせられるため。
+ */
+analyticsRoute.put('/review-queue/snoozes/:kind/:itemKey', async (c) => {
+  const target = snoozeTarget(c);
+  if ('error' in target) return target.error;
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  // 保留の対象判定も全期間。?span= 付きで呼ばれても期間外の明細を 404 にしない
+  const { all } = await loadScoped(c);
+  const { items } = await loadReviewSources(c, all);
+  const item = items.find((x) => x.kind === target.kind && x.itemKey === target.itemKey);
+  if (!item) {
+    return c.json(apiError('review_item_not_found', '対象の明細が未処理キューにありません'), 404);
+  }
+  const fingerprint = await reviewItemFingerprint(item);
+  const snoozedAt = new Date().toISOString();
+  await db.batch([
+    db
+      .insert(s.reviewSnoozes)
+      .values({ userId, itemKind: target.kind, itemKey: target.itemKey, fingerprint, snoozedAt })
+      .onConflictDoUpdate({
+        target: [s.reviewSnoozes.userId, s.reviewSnoozes.itemKind, s.reviewSnoozes.itemKey],
+        set: { fingerprint, snoozedAt },
+      }),
+    // 保留は復元の write-set に入る。保留だけ違うバックアップを重複扱いで飛ばさないよう指紋を落とす
+    invalidateJsonSnapshotQuery(db, userId, 'review_snoozes'),
+  ]);
+  return c.json({ kind: target.kind, itemKey: target.itemKey, snoozedAt });
+});
+
+analyticsRoute.delete('/review-queue/snoozes/:kind/:itemKey', async (c) => {
+  const target = snoozeTarget(c);
+  if ('error' in target) return target.error;
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  await db.batch([
+    db
+      .delete(s.reviewSnoozes)
+      .where(
+        and(
+          eq(s.reviewSnoozes.userId, userId),
+          eq(s.reviewSnoozes.itemKind, target.kind),
+          eq(s.reviewSnoozes.itemKey, target.itemKey),
+        ),
+      ),
+    invalidateJsonSnapshotQuery(db, userId, 'review_snoozes'),
+  ]);
+  return c.body(null, 204);
+});
+
+/** 月次レビュー済みの記録。重ねて押しても初回の時刻を保つ (冪等) */
+analyticsRoute.put('/monthly-close/:month/review', async (c) => {
+  const month = c.req.param('month');
+  if (!isCloseMonth(month)) return c.json(apiError('invalid_month', 'month は YYYY-MM 形式です'), 400);
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  // user_id はテナントの鍵 ('default')。誰がレビューしたかはログイン中の利用者 (actor) で残す
+  const reviewedByUserId = c.get('actor').id;
+  await db.batch([
+    db
+      .insert(s.monthlyCloseReviews)
+      .values({ userId, month, reviewedAt: new Date().toISOString(), reviewedByUserId })
+      .onConflictDoNothing(),
+    invalidateJsonSnapshotQuery(db, userId, 'monthly_close_reviews'),
+  ]);
+  const [row] = await db
+    .select({ reviewedAt: s.monthlyCloseReviews.reviewedAt })
+    .from(s.monthlyCloseReviews)
+    .where(and(eq(s.monthlyCloseReviews.userId, userId), eq(s.monthlyCloseReviews.month, month)));
+  return c.json({ month, reviewedAt: row.reviewedAt });
+});
+
+analyticsRoute.delete('/monthly-close/:month/review', async (c) => {
+  const month = c.req.param('month');
+  if (!isCloseMonth(month)) return c.json(apiError('invalid_month', 'month は YYYY-MM 形式です'), 400);
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  await db.batch([
+    db
+      .delete(s.monthlyCloseReviews)
+      .where(and(eq(s.monthlyCloseReviews.userId, userId), eq(s.monthlyCloseReviews.month, month))),
+    invalidateJsonSnapshotQuery(db, userId, 'monthly_close_reviews'),
+  ]);
+  return c.body(null, 204);
 });
 
 analyticsRoute.get('/matrix', async (c) => {

@@ -65,6 +65,11 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
     path: /^\/api\/vendor-memory\/[^/]+\/reapply$/,
     consumers: ['vendor_memory', 'tx_edits'],
   },
+  // 概況の保留と月次レビュー。復元の write-set に入るので、復元と重ねない
+  { method: 'PUT', path: /^\/api\/review-queue\/snoozes\/[^/]+\/[^/]+$/, consumers: ['review_snoozes'] },
+  { method: 'DELETE', path: /^\/api\/review-queue\/snoozes\/[^/]+\/[^/]+$/, consumers: ['review_snoozes'] },
+  { method: 'PUT', path: /^\/api\/monthly-close\/[^/]+\/review$/, consumers: ['monthly_close_reviews'] },
+  { method: 'DELETE', path: /^\/api\/monthly-close\/[^/]+\/review$/, consumers: ['monthly_close_reviews'] },
   { method: 'POST', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PATCH', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PUT', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },

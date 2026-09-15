@@ -1,0 +1,124 @@
+{
+  "schema_version": "1.0.0",
+  "feature_package_id": "feature-package/feat-overview-screen",
+  "parent_feature": "feat-overview-screen",
+  "nodes": [
+    {
+      "id": "SYS-OVERVIEW-P01",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P01",
+      "lifecycle_role": "preparation",
+      "title": "要件ベースライン確定と未決事項の着手時確認",
+      "depends_on": []
+    },
+    {
+      "id": "SYS-OVERVIEW-P02",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P02",
+      "lifecycle_role": "preparation",
+      "title": "概況 API・core 集計・D1 テーブルのワークストリーム設計決定記録",
+      "depends_on": ["SYS-OVERVIEW-P01"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P03",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P03",
+      "lifecycle_role": "design-review",
+      "title": "API契約・データモデル設計の独立レビュー",
+      "depends_on": ["SYS-OVERVIEW-P02"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P04",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P04",
+      "lifecycle_role": "test-design",
+      "title": "core/API/DOM の失敗テスト先行作成 (O1-O5)",
+      "depends_on": ["SYS-OVERVIEW-P03"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P05",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P05",
+      "lifecycle_role": "mutation",
+      "title": "概況集計・未処理キューAPI・D1 migration・Overview.tsx の実装",
+      "depends_on": ["SYS-OVERVIEW-P04"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P06",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P06",
+      "lifecycle_role": "test-run",
+      "title": "全テスト・型検査・lint の実行記録",
+      "depends_on": ["SYS-OVERVIEW-P05"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P07",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P07",
+      "lifecycle_role": "acceptance",
+      "title": "AC-001..AC-007 受入検証",
+      "depends_on": ["SYS-OVERVIEW-P06"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P08",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P08",
+      "lifecycle_role": "mutation",
+      "title": "migration 0040 の前進のみ整合とバックアップ/復元対象の整理",
+      "depends_on": ["SYS-OVERVIEW-P07"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P09",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P09",
+      "lifecycle_role": "quality-assurance",
+      "title": "アクセシビリティ・CSP・初期JS予算・可観測性の保証確認",
+      "depends_on": ["SYS-OVERVIEW-P08"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P10",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P10",
+      "lifecycle_role": "independent-review",
+      "title": "独立最終レビュー",
+      "depends_on": ["SYS-OVERVIEW-P09"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P11",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P11",
+      "lifecycle_role": "evidence",
+      "title": "再現可能な証跡索引の作成",
+      "depends_on": ["SYS-OVERVIEW-P10"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P12",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P12",
+      "lifecycle_role": "documentation-sync",
+      "title": "docs/runbooks への切り分け手順とAPI文書の同期",
+      "depends_on": ["SYS-OVERVIEW-P11"]
+    },
+    {
+      "id": "SYS-OVERVIEW-P13",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "parent_feature": "feat-overview-screen",
+      "phase_ref": "P13",
+      "lifecycle_role": "release",
+      "title": "単一 PR での配信とクローズアウト",
+      "depends_on": ["SYS-OVERVIEW-P12"]
+    }
+  ]
+}

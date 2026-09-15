@@ -1,0 +1,1510 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "database",
+      "label": "データベース"
+    },
+    {
+      "id": "auth",
+      "label": "認証(ログイン)"
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI-UX"
+    },
+    {
+      "id": "security",
+      "label": "セキュリティ"
+    },
+    {
+      "id": "infrastructure",
+      "label": "インフラ"
+    },
+    {
+      "id": "backend",
+      "label": "バックエンド"
+    },
+    {
+      "id": "frontend",
+      "label": "フロントエンド"
+    },
+    {
+      "id": "maintenance-ops",
+      "label": "保守運用管理"
+    }
+  ],
+  "platforms": [
+    "web",
+    "mobile",
+    "tablet",
+    "desktop-windows",
+    "desktop-linux",
+    "desktop-macos"
+  ],
+  "matrix": {
+    "database": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-database-web-ov-observed-001",
+        "serves_goals": [
+          "G2",
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-database-web-ov-decision-001",
+          "qa-snooze-fingerprint-ov-decision-001",
+          "qa-design-rules-ov-decision-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末内に未処理の保留 (後で確認) と月次レビュー完了を保存するローカルストアを持つか、D1 と同期して二重の保存をどう解消するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末内に未処理の保留 (後で確認) と月次レビュー完了を保存するローカルストアを持つか、D1 と同期して二重の保存をどう解消するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内に未処理の保留 (後で確認) と月次レビュー完了を保存するローカルストアを持つか、D1 と同期して二重の保存をどう解消するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内に未処理の保留 (後で確認) と月次レビュー完了を保存するローカルストアを持つか、D1 と同期して二重の保存をどう解消するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内に未処理の保留 (後で確認) と月次レビュー完了を保存するローカルストアを持つか、D1 と同期して二重の保存をどう解消するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      }
+    },
+    "auth": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-auth-web-ov-observed-001",
+        "serves_goals": [
+          "G5"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末にセッションをどう保管し、OS の資格情報ストアや生体認証と連携するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末にセッションをどう保管し、OS の資格情報ストアや生体認証と連携するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末にセッションをどう保管し、OS の資格情報ストアや生体認証と連携するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末にセッションをどう保管し、OS の資格情報ストアや生体認証と連携するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末にセッションをどう保管し、OS の資格情報ストアや生体認証と連携するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      }
+    },
+    "ui-ux": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ui-ux-web-ov-observed-001",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-ui-ux-web-ov-decision-001",
+          "qa-defense-forecast-placement-ov-clarify-001",
+          "qa-defense-forecast-placement-ov-decision-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは未処理キューと右パネル (選択中の明細) を、その端末の画面遷移 (ナビゲーションスタック・分割表示・ウィンドウ) でどう構成するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは未処理キューと右パネル (選択中の明細) を、その端末の画面遷移 (ナビゲーションスタック・分割表示・ウィンドウ) でどう構成するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは未処理キューと右パネル (選択中の明細) を、その端末の画面遷移 (ナビゲーションスタック・分割表示・ウィンドウ) でどう構成するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは未処理キューと右パネル (選択中の明細) を、その端末の画面遷移 (ナビゲーションスタック・分割表示・ウィンドウ) でどう構成するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは未処理キューと右パネル (選択中の明細) を、その端末の画面遷移 (ナビゲーションスタック・分割表示・ウィンドウ) でどう構成するかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      }
+    },
+    "security": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-security-web-ov-observed-001",
+        "serves_goals": [
+          "G2",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-design-rules-ov-decision-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末内に取引明細・推奨仕訳を保持する場合の保存時暗号化と、端末紛失時の無効化を決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末内に取引明細・推奨仕訳を保持する場合の保存時暗号化と、端末紛失時の無効化を決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内に取引明細・推奨仕訳を保持する場合の保存時暗号化と、端末紛失時の無効化を決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内に取引明細・推奨仕訳を保持する場合の保存時暗号化と、端末紛失時の無効化を決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末内に取引明細・推奨仕訳を保持する場合の保存時暗号化と、端末紛失時の無効化を決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-infrastructure-web-ov-observed-001",
+        "serves_goals": [
+          "G3",
+          "G5"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア配布・自動更新の経路と、概況 API との版互換をどう保つかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではストア配布・自動更新の経路と、概況 API との版互換をどう保つかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではストア配布・自動更新の経路と、概況 API との版互換をどう保つかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではストア配布・自動更新の経路と、概況 API との版互換をどう保つかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではストア配布・自動更新の経路と、概況 API との版互換をどう保つかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      }
+    },
+    "backend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-review-queue-scope-ov-decision-001",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-backend-web-ov-observed-001",
+          "qa-backend-web-ov-decision-001",
+          "qa-snooze-fingerprint-ov-decision-001",
+          "qa-design-rules-ov-decision-001",
+          "qa-o2-measure-ov-decision-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末からのオフライン操作 (後で確認・月次レビュー完了) をサーバでどう取り込み、未処理件数の再計算と整合させるかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末からのオフライン操作 (後で確認・月次レビュー完了) をサーバでどう取り込み、未処理件数の再計算と整合させるかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末からのオフライン操作 (後で確認・月次レビュー完了) をサーバでどう取り込み、未処理件数の再計算と整合させるかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末からのオフライン操作 (後で確認・月次レビュー完了) をサーバでどう取り込み、未処理件数の再計算と整合させるかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末からのオフライン操作 (後で確認・月次レビュー完了) をサーバでどう取り込み、未処理件数の再計算と整合させるかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-review-queue-scope-ov-decision-001",
+        "serves_goals": [
+          "G2",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-frontend-web-ov-observed-001",
+          "qa-frontend-web-ov-decision-001",
+          "qa-design-rules-ov-decision-001",
+          "qa-defense-forecast-placement-ov-clarify-001",
+          "qa-defense-forecast-placement-ov-decision-001",
+          "qa-o2-measure-ov-decision-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではネイティブ UI 部品の選定と、サイドバーの未処理バッジを OS のアイコンバッジや通知へ写すかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリではネイティブ UI 部品の選定と、サイドバーの未処理バッジを OS のアイコンバッジや通知へ写すかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブ UI 部品の選定と、サイドバーの未処理バッジを OS のアイコンバッジや通知へ写すかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブ UI 部品の選定と、サイドバーの未処理バッジを OS のアイコンバッジや通知へ写すかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリではネイティブ UI 部品の選定と、サイドバーの未処理バッジを OS のアイコンバッジや通知へ写すかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      }
+    },
+    "maintenance-ops": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-maintenance-ops-web-ov-observed-001",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G3",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-design-rules-ov-decision-001",
+          "qa-o2-measure-ov-decision-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末・OS 版ごとの描画検査とクラッシュ収集をどう回すかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、本カテゴリでは端末・OS 版ごとの描画検査とクラッシュ収集をどう回すかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末・OS 版ごとの描画検査とクラッシュ収集をどう回すかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末・OS 版ごとの描画検査とクラッシュ収集をどう回すかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末・OS 版ごとの描画検査とクラッシュ収集をどう回すかを決める必要があった。概況は web のレスポンシブ (狭幅で右パネルをドロワー化) で提供し、対象を web のみとする利用者決定 (qa-target-platforms-ov-001 / appr-foundation-overview-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ov-001"
+      }
+    }
+  },
+  "qa_log": [
+    {
+      "id": "qa-target-platforms-ov-001",
+      "question": "本サイクル (FINAL-UI 02 の概況を月次クローズの作業起点へ作り替える) の対象プラットフォームはどれか。対象外は理由を述べる。",
+      "answer": "web のみを対象とする。JTBD は『月初に取り込んだ後、概況を開いた瞬間に直近12か月でいくら残ったかと、何が未処理かを掴み、未処理を0まで迷わず進めたい』で、利用者は単独の個人事業主1名 (利用者兼保守者) と、実装を担うコーディングエージェントである。配信は Cloudflare Workers 上の React SPA 1系統のままとし、狭幅は既存のレスポンシブを維持して、右パネルはドロワーにする。スマートフォン・タブレット・デスクトップの専用アプリは上位概念 U7 の scope.out で対象外とする。",
+      "provenance": "対象ユーザーと JTBD は利用者の依頼文 (2026-09-14『design/FINAL-UI/images/02-overview.png を作るためのタスク仕様書。UI/UX とそれに伴うバックエンド等の改善をすべて反映』) に由来する。platform を web に限り専用アプリを scope.out とする点は、利用者が U1-U9 を『承認する』と回答した appr-foundation-overview-001 (会話記録上の回答返却時刻 2026-09-14T11:38:48Z) で確定した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:38:48Z",
+      "required_info_items": [
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-ov-observed-001",
+      "question": "FINAL-UI 02 の概況は、誰がどの場面でどの task に使う画面で、何をどの順で置いているか。現行の概況との差と、守るべきアクセシビリティ基準は何か。",
+      "answer": "利用場面 (context of use): 利用者1名が月初にデータを取り込んだ直後、デスクトップ幅 (1280px 以上) で概況を開き、(1) 直近12か月の収支の結論を読み、(2) 未処理を上から片付ける。頻度は月1回の集中作業と随時の確認で、失敗コストが最も高いのは『未処理が残っているのに締めたと誤認する』ことと『総額の定義が画面内でずれて検算が合わない』ことである。02-overview.png の構成は上から: ヘッダー (期間 1年/2年/3年/任意、防衛ライン、未記録0か月、最終更新)、見出し『今月の収支と、次に直すことは?』と『月次クローズ 3/4』、KPI 3枚 (総収入・総支出・純収支、前12か月比) と『純収支とは?』説明カード、月次棒グラフ+純収支線の推移 (1/2/3年切替)、未処理7件のカード3種 (仕分けの確認4・照合の確認2・取込の確認1)、優先明細表 (状態・日付・内容・金額・推奨・信頼度)、右パネル『選択中の明細』(未処理の理由・取引元・過去の類似取引・推奨の仕訳・信頼度92%・仕分けを開く・後で確認)、年次比較表 (項目・期間・前12か月・増減・増減率)、支出の内訳 (上位5項目+その他、金額/構成比切替)、固定アクションバー『未処理7件 … 次の7件を確認』、サイドバーの月次クローズ進捗 (データ取込/仕分け/照合/月次レビュー) とバッジ (データ取込3・明細仕分け12・サブスク2・照合5)、フッター (外部送信しません・税務上の正本は freee・毎晩バックアップ)。現行の概況 (packages/web/src/pages/Overview.tsx、301行) は GET /api/summary の overview() を読み、事業 (freee) の KPI・移動平均つき推移・パレート表・未決済パネル・防衛予測パネルを並べるだけで、事業+家計の総収入、横断の未処理件数、右パネル、固定アクションバー、月次クローズ状態が無い。適用する基準は WCAG 2.2 AA で、件数の変化 (後で確認で1件減る等) はフォーカスを移さず支援技術へ伝える 4.1.3 Status Messages (role=status)、320 CSS px 幅で2次元スクロールを要さない 1.4.10 Reflow (データ表とグラフ本体は例外だが見出し等は対象) を満たす。",
+      "provenance": "画像は design/FINAL-UI/images/02-overview.png を Read で確認した。現行実装は Explore サブエージェントが 2026-09-14 に packages/api・packages/core・packages/web・migrations・.github を読み、file:line を付けて報告した観測事実。報告受領後に date -u で実測した時刻を answered_at (上限値) とした。 WCAG の要件は fetched-references の wcag22-status-messages / wcag22-reflow (取得 2026-09-14T11:49:44Z) による。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:54:38Z",
+      "required_info_items": [
+        "context-of-use"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-ov-decision-001",
+      "question": "概況の KPI の集計範囲はどうするか。02 の画像に無い既存要素 (防衛予測・移動平均・パレート・未決済・科目別年比較) はどう扱うか。",
+      "answer": "集計範囲は『総合 (事業+家計、重複除外) を既定にし、事業/家計へ切り替えられる』(代替: 総合のみ / 事業のみ)。既存要素は『畳んで残す』(代替: 画像どおりに削る / すべて表示したまま)。情報優先度の方針は次の順位で確定する: 第1層 = KPI 3枚・説明カード・月次クローズ n/4 (毎回読む・誤読の損失が大きい)、第2層 = 未処理カード3種・優先明細表・右パネル・固定アクションバー (未処理0が月次の完了条件)、第3層 = 推移・年次比較・支出内訳 (結論の検算と原因探し)、第4層 = 防衛予測・移動平均 (推移の切替で表示)・パレート (内訳の構成比表示で表示)・未決済・科目別年比較 (『詳しく見る』の開閉で表示、初期は閉じる)。集計範囲の切替は KPI・推移・年次比較・内訳の4要素へ同時に効き、未処理キューには効かない (未処理は範囲によらず全件が月次クローズの対象のため)。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion の4問 (集計範囲・既存要素・状態の保存・信頼度) に回答した (会話記録上の回答返却時刻 2026-09-14T11:33:34Z)。回答は上位概念の承認 appr-foundation-overview-001 (11:38:48Z) にも反映済み。 第1〜4層の順位付けと、切替が未処理キューに効かない点は、選択を実装粒度へ具体化したもの (U1-U9 の G1/G2/G4 と同一内容で承認済み)。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:33:34Z",
+      "required_info_items": [
+        "information-priority"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-14T12:54:50Z",
+          "note": "【一部置換】第4層に含めた防衛予測は、qa-defense-forecast-placement-ov-decision-001 (2026-09-14T12:42:56Z) により注意・警告の見込みがあるときだけ第1層の上に出す。平常時は表示しない。第1〜3層と、第4層の他の要素の扱いは変わらない。"
+        },
+        {
+          "corrected_at": "2026-09-14T23:43:59Z",
+          "note": "【解釈明確化】第1〜4層は情報の重要度分類であり、DOM の物理順ではない。表示順は design/FINAL-UI/images/02-overview.png と system-spec/ui-ux.md の『表示順の正本』に従う。"
+        }
+      ]
+    },
+    {
+      "id": "qa-backend-web-ov-observed-001",
+      "question": "概況が必要とする集計 (事業+家計の総額・前12か月比・未処理件数・月次クローズ) は、現行の API とドメイン関数のどこにあり、どこが欠けているか。",
+      "answer": "GET /api/summary (packages/api/src/routes/analytics.ts:98-106) は overview(data) (packages/core/src/analysis.ts:96) と防衛ライン・benchmarks・period を返し、中身は事業の月別売上・経費・利益・3か月移動平均・unrecordedExpMonths・kpi・yearTable・pareto で、未処理件数を含まない。期間は loadScoped (analytics.ts:63-84) が ?from&to → ?year → ?span=1|2|3 の順に解釈し (packages/core/src/period.ts:151-165)、applyPeriod/sliceDataset (period.ts:76,122) が Dataset を切る。事業+家計の重複除外は /api/total-cashflow (packages/api/src/routes/total-cashflow.ts:61-97) の totalCashflowReport (packages/core/src/total-cashflow.ts:530) が担い、reconcileBizDuplicates (:355) と保存済み判断の bindVerdicts (routes/total-cashflow.ts:37-53) で MF 明細と freee 取引を突き合わせ、coverage.mfReview と月別 reviewCount が照合の要確認件数である。仕分けの未処理は classificationProgress().reviewPending (clsSrc=既定、packages/core/src/classify.ts:312-347) で、GET /api/transactions の summary.progress (packages/api/src/routes/classify.ts:230) にだけ出て、対象は ?month か最新1か月に限られる (:108-109)。取込は GET /api/imports (packages/api/src/routes/imports.ts:1546) が import_runs の status (processing/applying/committed/failed/duplicate、packages/api/src/db/schema.ts:255-271) を返す。/api/unsettled (analytics.ts:209-217) は loadScoped を通らない。分類の解決順は rules → vendor_memory (auto-apply のみ) → MF中項目 → 既定 (resolveIncomingTx、classify.ts:91)、vendor_memory の確信度は一致回数/(一致+不一致) で自動適用は3件以上かつ0.8以上 (packages/core/src/vendor-memory.ts:16-17,30,70)、科目候補は suggestTaxAccounts (packages/core/src/tax-accounts.ts:432) のキーワード照合で、MF中項目から勘定科目を推定する専用関数は無い。欠けているのは (1) 仕分け・照合・取込を横断する未処理キュー、(2) 総合/事業/家計を同じ定義で出す直近12か月 vs 前12か月、(3) 上位5+その他の内訳、(4) 月次クローズ4ステップの判定、(5) 保留と月次レビュー完了の書込 API である。",
+      "provenance": "Explore サブエージェントが 2026-09-14 に packages/api・packages/core・packages/web・migrations・.github を読み、file:line を付けて報告した観測事実。報告受領後に date -u で実測した時刻を answered_at (上限値) とした。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:54:38Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-backend-web-ov-decision-001",
+      "question": "推奨の仕訳の信頼度をどう出すか。未処理キューの優先順位と、月次クローズ4ステップの判定をどう定義するか。",
+      "answer": "信頼度は『既存の判定根拠を統合』(代替: 取引先の決め事だけ / AIで推定) — vendor_memory の一致率 → ルール → MF中項目 の順に根拠を探す。具体化: (1) vendor_memory が1件に一致すれば一致回数/(一致+不一致) を百分率 (四捨五入の整数) で出し『過去 N 件中 M 件で同じ手当て』を併記する、(2) それが無く大/中項目ルールが一致すれば根拠種別『ルール』を出し百分率は作らない、(3) それも無く MF中項目が『事業』で始まれば根拠種別『MF中項目』で事業区分だけを推奨する、(4) どれにも該当しなければ『推奨なし』を返す。同じ入力には同じ結果を返し、乱数・時刻・外部送信を使わない (O5)。未処理キューは 照合の確認 (事業と家計の二重計上の恐れ = 総額を歪める) → 仕分けの確認 → 取込の確認 の順に並べ、同じ種別の中は金額の絶対値の降順、同額は日付の新しい順とする。仕分けの確認は期間内の clsSrc=既定 の明細、照合の確認は totalCashflowReport の review、取込の確認は期間内の status=failed の取込である。月次クローズは対象月ごとに データ取込 (その月の取込が committed かつ未記録月でない)・仕分け (その月の仕分けの確認が0)・照合 (その月の照合の確認が0)・月次レビュー (monthly_close_reviews に行がある) の4つを判定し、保留中の明細は件数表示からは除くが仕分け・照合のステップ判定では未完了として数える (『後で確認』で締めたことにしない)。総合の総額は totalCashflowReport の月別値、事業は freee 側、家計は MF の家計側を使い、KPI・推移・年次比較・内訳は同じ月別系列から作る。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion の4問 (集計範囲・既存要素・状態の保存・信頼度) に回答した (会話記録上の回答返却時刻 2026-09-14T11:33:34Z)。回答は上位概念の承認 appr-foundation-overview-001 (11:38:48Z) にも反映済み。 信頼度の4段の出し方、優先順位、ステップ判定、保留の数え方は、利用者の選択 (既存根拠の統合・総合+切替) と承認済み O2/O5・G3 を実装粒度へ具体化したもの。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:33:34Z",
+      "required_info_items": [
+        "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-14T12:54:50Z",
+          "note": "【一部置換】仕分けの確認と取込の確認を『期間内』で数える件数定義は、qa-review-queue-scope-ov-decision-001 (2026-09-14T12:14:38Z) で全期間に置き換えた (reopen_log の backend/web、2026-09-14T12:20:03Z)。並び順・信頼度・月次クローズの判定は変わらない。"
+        }
+      ]
+    },
+    {
+      "id": "qa-database-web-ov-observed-001",
+      "question": "保留と月次レビュー完了を D1 に置くとき、既存の migration・schema-guard・バックアップ/復元のどこを変える必要があるか。",
+      "answer": "テーブル定義は packages/api/src/db/schema.ts (730行、drizzle) にあり、migration はリポジトリ直下の migrations/ (packages/api/wrangler.jsonc:20) に NNNN_snake.sql で置かれ、最新は 0039_account_login.sql である。packages/api/src/schema-guard.ts:4 の EXPECTED_D1_MIGRATION が d1_migrations の最新 head と比べて古ければ /api/* を 503 にし (:24-85)、schema-guard.test.ts:63-67 が migrations の最新ファイルと定数の一致を検査する。夜間バックアップと export は loadBackupPayload (packages/api/src/store.ts:1065) が BACKUP_SNAPSHOT_SQL (store.ts:628) に明示列挙した15テーブルだけを読み、duplicate_verdicts・freee_deal_exclusions・vendor_memory などは入っていない。復元は POST /api/restore (packages/api/src/routes/imports.ts:1675) が JSON を取込パイプラインへ通す。バックアップの書込対象になるテーブルの更新は canonicalMutationFence (packages/api/src/canonical-mutation-fence.ts:119) の CANONICAL_MUTATION_ROUTES に登録して取込と同じ lease で直列化する規約がある。業務テーブルの user_id は常に 'default' (packages/api/src/auth.ts:31-36) である。したがって新しい2テーブルは、migration 0040・EXPECTED_D1_MIGRATION・schema.ts の3点、BACKUP_SNAPSHOT_SQL と payload の組立、restore 側の書戻し、CANONICAL_MUTATION_ROUTES への書込ルート登録を同じ変更で揃える必要がある。Cloudflare D1 の migration は連番 .sql を d1_migrations テーブルで適用記録し、create/list/apply だけで rollback の手段を持たない。",
+      "provenance": "Explore サブエージェントが 2026-09-14 に packages/api・packages/core・packages/web・migrations・.github を読み、file:line を付けて報告した観測事実。報告受領後に date -u で実測した時刻を answered_at (上限値) とした。 D1 migration の仕様は fetched-references の cloudflare-d1-migrations (取得 2026-09-14T11:49:44Z) による。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:54:38Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-database-web-ov-decision-001",
+      "question": "『後で確認』(保留) と『月次レビュー完了』の状態をどこに保存するか。",
+      "answer": "『D1に保存』(代替: ブラウザ保存 / 保存しない)。保留と月次レビュー完了は D1 の新しい2テーブル (review_snoozes・monthly_close_reviews) に保存し、夜間バックアップ (R2 の backups/YYYY-MM-DD.json) と JSON export の対象へ加え、POST /api/restore で書き戻す。バックアップ→全消去→復元の往復で行が一致することを API テストで保証する (O3)。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion の4問 (集計範囲・既存要素・状態の保存・信頼度) に回答した (会話記録上の回答返却時刻 2026-09-14T11:33:34Z)。回答は上位概念の承認 appr-foundation-overview-001 (11:38:48Z) にも反映済み。 テーブル名とバックアップ経路は承認済み U8 scope.in (D1 migration・バックアップ対象への追加) の具体化。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:33:34Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-auth-web-ov-observed-001",
+      "question": "認証の方式と、新しい概況 API・書込 API への適用はどうなっているか。本サイクルで変わるか。",
+      "answer": "authGuard (packages/api/src/auth.ts:243-283) が packages/api/src/index.ts:100 で /api/* 全体に掛かり、未認証で届くのは authRoute・aiAgentRoute・improvementAgentRoute だけ (index.ts:91-96)、続けて mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence が掛かる (:102-104)。Worker は run_worker_first: [\"/api/*\"] (packages/api/wrangler.jsonc:13) で静的アセットより先に API を処理する。利用者アカウントはメールアドレスとパスワード (PR #47、users テーブル schema.ts:391) で、業務データは TENANT_ID='default' を全ユーザーで共有し (auth.ts:31-36)、誰が操作したかは actor として記録する。新しい GET /api/overview・GET /api/review-queue・保留と月次レビューの PUT/DELETE は /api/* 配下に置くだけで既存の authGuard とフェンスが掛かり、認証方式・ログイン画面・セッションは変えない。monthly_close_reviews.reviewed_by_user_id には認証済みの actor の user id を入れ、業務データの user_id は既存どおり 'default' にする。",
+      "provenance": "Explore サブエージェントが 2026-09-14 に packages/api・packages/core・packages/web・migrations・.github を読み、file:line を付けて報告した観測事実。報告受領後に date -u で実測した時刻を answered_at (上限値) とした。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:54:38Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-security-web-ov-observed-001",
+      "question": "概況の作り替えは既存のセキュリティ方針 (CSP・外部送信なし・実データの扱い・書込の直列化) と衝突しないか。",
+      "answer": "衝突しない。CSP は packages/api/src/index.ts:52-81 の secureHeaders で connect/script/default とも 'self' に限られ、静的アセットは packages/web/public/_headers に同じ値があり index.test.ts が差分を検査する。信頼度は vendor_memory・ルール・MF中項目の既存データだけから決定論で計算し、AI/LLM や外部 API へ明細を送らない (U8 scope.out、C2)。フッターの『外部送信しません』はこの事実を表示するもので、connect-src 'self' が実装上の担保である。pnpm lint の security:content (bash scripts/hooks/guard-real-data.sh --scan-public-docs、ルート package.json:33) は公開文書とテスト fixture への実データ混入を検査するので、概況の fixture・画面例は匿名・架空の値だけを使う。保留・月次レビューの書込ルートはバックアップ対象テーブルを書くため CANONICAL_MUTATION_ROUTES に登録し、取込や復元と同時に走ったときは 409 canonical_write_busy で止める (canonical-mutation-fence.ts:119-140)。明細の内容・取引元は React のテキストとして描画し、HTML として挿入しない。",
+      "provenance": "Explore サブエージェントが 2026-09-14 に packages/api・packages/core・packages/web・migrations・.github を読み、file:line を付けて報告した観測事実。報告受領後に date -u で実測した時刻を answered_at (上限値) とした。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:54:38Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-infrastructure-web-ov-observed-001",
+      "question": "配信・デプロイ・migration 適用・夜間バックアップの構成は何で、概況の作り替えがどの制約に触れるか。",
+      "answer": "Worker kanjo-console が静的アセット (../web/dist、SPA) と /api/* を配信し、D1 は DB=kanjo-db、R2 は FILES=kanjo-files、cron は 0 18 * * * (JST 03:00) の1本 (packages/api/wrangler.jsonc:29-31) で nightlyBackup (packages/api/src/index.ts:168-186) が R2 に backups/YYYY-MM-DD.json を30日保持で書く。deploy.yml は CI 成功の push でだけ動き、plan-auto-migration.mjs が pending migration を判定して DROP TABLE / DROP COLUMN / RENAME を含むと blocked にし (.github/scripts/plan-auto-migration.mjs:45-52,72-91)、apply なら checkpoint → db:migrate:remote → check-d1-migrations.mjs → wrangler deploy → smoke 2回の順で進む (deploy.yml:70-86)。migrate.yml は confirm=APPLY と承認 manifest を照合する手動経路である。web の build は初期 JS (entry と static import) の gzip 合計を 110KiB 以下に制限する check-initial-js-budget.mjs (:7) を含む。概況の作り替えは Worker・cron・R2 の構成を変えず、migration 0040 は CREATE TABLE だけなので自動適用の apply 経路に乗る。触れる制約は (1) EXPECTED_D1_MIGRATION を migration と同じ変更で更新しないと deploy 後に /api/* が 503 になること、(2) Layout が全ページで読む未処理件数の取得コードが初期 JS に入るため 110KiB 予算を超えないこと、の2つである。",
+      "provenance": "Explore サブエージェントが 2026-09-14 に packages/api・packages/core・packages/web・migrations・.github を読み、file:line を付けて報告した観測事実。報告受領後に date -u で実測した時刻を answered_at (上限値) とした。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:54:38Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-ov-observed-001",
+      "question": "02 の部品 (サイドバーのバッジ・月次クローズ進捗・右パネル・固定アクションバー・推移と内訳の図) を、現行の共通シェルと部品のどこに載せられるか。何が欠けているか。",
+      "answer": "共通シェルは packages/web/src/components/Layout.tsx で、サイドバーは APP_ROUTES を回して NavItem (packages/web/src/components/NavItem.tsx) を描くが、NavItem は to/icon/label/variant/end だけでバッジの props を持たない (Layout.tsx:264-305)。月次進捗は MONTHLY_STEPS=['取込','整える','確認','計画'] (Layout.tsx:57) を並べるだけで、表示する件数は『未記録 Nヶ月』(:201,256) だけである。Layout は ['summary', key] と ['imports'] を useQuery している (:182-192)。概況のルートは routeMetadata.ts:10-20 で path '/'・label『概況』・contentWidth 'reading'。部品は Page.tsx の PageShell/PageActions/PageHeader/PageState/KpiCard/AnnualComparisonTable (:10-141)、DataTable (components/DataTable.tsx:74)、FinancialFigure (components/FinancialFigure.tsx:39) がある。右パネルやドロワーの専用部品は無く、モーダルはネイティブ <dialog> (ConfirmDialog 等)、ドロワーはモバイルナビの drawer state (Layout.tsx:149) だけで、CSS 変数 --aside-panel-w: 320px (packages/web/src/styles.css:95) は定義だけで未使用である。Overview は react-chartjs-2 を直接使う (Overview.tsx:3-4,13)。データ取得は TanStack React Query (main.tsx:11-13 で retry 1・staleTime 30s) と api<T>() (api-client.ts:42)、期間は usePeriod().withPeriod (period.tsx) で付ける。欠けているのは NavItem のバッジ、データ判定の月次クローズ進捗、右パネル/ドロワー部品、固定アクションバー、金額/構成比切替つき内訳である。WAI-ARIA APG のモーダルダイアログは、開いたら内部へフォーカスを移し、Tab/Shift+Tab を内部で循環させ、Escape で閉じ、閉じたら起点へフォーカスを戻し、role=dialog・aria-modal=true・aria-labelledby を持つ。",
+      "provenance": "Explore サブエージェントが 2026-09-14 に packages/api・packages/core・packages/web・migrations・.github を読み、file:line を付けて報告した観測事実。報告受領後に date -u で実測した時刻を answered_at (上限値) とした。 ダイアログの要件は fetched-references の wai-aria-apg-dialog-modal (取得 2026-09-14T11:49:44Z) による。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:54:38Z",
+      "required_info_items": [
+        "api-contract",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-ov-decision-001",
+      "question": "02 に無い既存の概況要素を画面上でどう残すか。",
+      "answer": "『畳んで残す』(代替: 画像どおりに削る / すべて表示したまま)。移動平均は推移グラフの表示切替 (初期は非表示)、パレートは支出内訳の『構成比』表示の中に置き、防衛予測・未決済・科目別年比較は本文末の『詳しく見る』(ネイティブ <details>、初期は閉じる) に入れる。既存の DefenseForecastPanel・UnsettledPanel は中身を変えずに移し、defense-forecast.dom.test.tsx の描画検査は開いた状態で通るようにする。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion の4問 (集計範囲・既存要素・状態の保存・信頼度) に回答した (会話記録上の回答返却時刻 2026-09-14T11:33:34Z)。回答は上位概念の承認 appr-foundation-overview-001 (11:38:48Z) にも反映済み。 各要素の置き場所は承認済み G4・I2・I7 の文言 (移動平均は切替で残す、パレートは構成比表示で残す) の具体化。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:33:34Z",
+      "required_info_items": [
+        "frontend-arch"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-14T12:54:50Z",
+          "note": "【置換済み】防衛予測を本文末の『詳しく見る』に入れる部分と『defense-forecast.dom.test.tsx の描画検査は開いた状態で通るようにする』部分は、qa-defense-forecast-placement-ov-decision-001 (2026-09-14T12:42:56Z、利用者決定) で置き換えた。防衛予測は注意・警告の見込みがあるときだけ KPI の上に出し、既存の描画検査は <details> を開かずに通る。移動平均・パレート・未決済・科目別年比較の置き場所は変わらない。"
+        }
+      ]
+    },
+    {
+      "id": "qa-maintenance-ops-web-ov-observed-001",
+      "question": "概況の作り替えを、どの検査に差し込めば回帰を機械で止められるか。現行の検査で足りないところはどこか。",
+      "answer": "ci.yml は static-checks (lint/typecheck/test:aux)・test-core-web・test-api・build を並行で回し集約する (:33-112)。描画検査 packages/web/scripts/check-financial-visuals.mjs は Overview を { name: 'Overview', path: '/', expectedFigures: 1 } (:820) で登録し、FinancialFigure 内の canvas がちょうど1つかを [360, 375, 390, 1280] の4幅 (:826) でしか見ていない。一方、画面条件の唯一の定義 viewports.mjs の VIEWPORT_CASES は 320/360/375/390/768/1280/1600/zoom200 の8ケースで、承認済み O4『8幅』を満たすには Overview をこの8ケースへ移し、expectedFigures を新しい図の数 (推移と内訳) に合わせる必要がある。schema-guard.test.ts:63-67 は migration と EXPECTED_D1_MIGRATION の一致を検査するので、migration だけ足して定数を忘れると落ちる。improvement-backup-exclusion.test.ts:34-44 は BACKUP_SNAPSHOT_SQL が明示列挙で sqlite_master を総なめしないことだけを検査し、新テーブルをバックアップへ入れ忘れても落ちない — そのため O3 の往復テストがこの更新漏れを止める唯一の検査になる。Overview を実際に描画する DOM テストは defense-forecast.dom.test.tsx だけで、common-shell-routes.dom.test.tsx は Overview をスタブにしている。追加する検査は、core 単体 (O1 同一 fixture で4要素の総額差0、O5 信頼度の決定論と推奨なし)、DOM (O2 バッジ・カード・アクションバーの件数一致と後で確認での同時減少)、API (O3 保留・月次レビューのバックアップ→全消去→復元の往復)、描画 (O4 check-financial-visuals の Overview 8ケース) の4系統である。",
+      "provenance": "Explore サブエージェントが 2026-09-14 に packages/api・packages/core・packages/web・migrations・.github を読み、file:line を付けて報告した観測事実。報告受領後に date -u で実測した時刻を answered_at (上限値) とした。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:54:38Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-review-queue-scope-ov-decision-001",
+      "question": "未処理キュー(サイドバーのバッジ・未処理カード・固定アクションバー)の件数は、どの範囲で数えますか? 選択肢: 全期間で数える (推奨) / 選択中の期間で数える / 両方を表示する",
+      "answer": "『全期間で数える』。ヘッダーの期間 (1年/2年/3年/任意) に関係なく、残っている未処理 (仕分けの確認 = clsSrc=既定 の明細、照合の確認 = totalCashflowReport の review、取込の確認 = status=failed の取込) をすべて数える。サイドバーのバッジ・未処理カード・固定アクションバーの3か所は同じ全期間の件数を表示し (O2)、古い月の未処理が0件表示に隠れない。期間で絞り込めるのは優先明細表の表示だけで、件数には効かない。これにより qa-backend-web-ov-decision-001 の『期間内』の件数定義を置き換える。集計範囲 (総合/事業/家計) の切替が未処理キューに効かない点 (qa-ui-ux-web-ov-decision-001) は変わらない。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で回答した (会話記録上の回答返却時刻 2026-09-14T12:14:38Z)。完成度 evaluator の差し戻し (medium) を受けてアシスタントが質問を起こし、推奨案に (推奨) を付けて提示した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T12:14:38Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-snooze-fingerprint-ov-decision-001",
+      "question": "『後で確認』にした明細を、あとで金額・日付・内容が変わった(取込の洗替えなど)ときにどう扱いますか? 選択肢: 内容が変われば再表示 (推奨) / 利用者が解除するまで保留 / 月が変わったら自動で解除",
+      "answer": "『内容が変われば再表示』。保留 (review_snoozes) を書くときに明細の内容指紋 (金額・日付・内容から作る) を保存し、キューを組み立てるときに現在の明細の指紋と比べて、異なる明細は保留を無効として未処理に戻す。同じ item_key のまま中身が変わった明細を、別の取引を保留したつもりで見落とさないためである。保留は利用者が解除したときにも消える。月の境目では自動で解除しない。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で回答した (会話記録上の回答返却時刻 2026-09-14T12:14:38Z)。完成度 evaluator の差し戻し (medium) を受けてアシスタントが質問を起こし、推奨案に (推奨) を付けて提示した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T12:14:38Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-design-rules-ov-decision-001",
+      "question": "仕様書の上流指針に『推定』として書いた設計規則のうち、仕様として確定させるものを選んでください (複数選択、選ばなかったものは『実装時の提案』と明記して残す)。選択肢: 入力検証とDB制約の二重化 / 計算は core の純関数に置く / 新部品を共通化・PUTは冪等 / 件数ずれの切り分け手順を文書化",
+      "answer": "4件すべてを確定する。(1) 入力検証とDB制約の二重化: 保留と月次レビューの書込 API は kind (classification|reconciliation|import の3値)・itemKey (長さ上限つき文字列)・month (YYYY-MM) を境界で検証して 400 を返し、DB 側でも CHECK 制約と主キーで守る。migration 0040 は CREATE TABLE と CREATE INDEX だけで既存テーブルを変えず、件数などの集計列は保存しない。(2) 計算は core の純関数に置く: 未処理キュー・信頼度・月次クローズ判定・直近12か月比較は packages/core の純関数にし、packages/api のルートは D1 から読んだ行を渡して JSON にするだけにする。web は応答型 OverviewResponse・ReviewQueueResponse だけを知り、優先順位や信頼度を画面側で再計算しない。(3) 新部品を共通化・PUT は冪等: サイドバーのバッジ・右パネル・固定アクションバーは packages/web/src/components/ の共通部品にし、他の画面でも使える形にする。保留と月次レビューの PUT は同じ値を再送しても結果が変わらない。(4) 件数ずれの切り分け手順を文書化: 件数が3か所でずれたときは API 応答 → React Query のキー共有 → 保留の内容指紋 の順に確認する手順と、描画検査が失敗したときに screenshot から幅を特定する方法を docs に残す。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で回答した (会話記録上の回答返却時刻 2026-09-14T12:14:38Z)。完成度 evaluator の差し戻し (medium) を受けてアシスタントが質問を起こし、推奨案に (推奨) を付けて提示した。 4件の文言は完成度 evaluator が『確定質疑に無い』と指摘した doctrine 記述をそのまま選択肢にしたもの。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T12:14:38Z",
+      "required_info_items": [
+        "api-contract",
+        "data-persistence",
+        "domain-model",
+        "frontend-arch",
+        "ops-runbook",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-defense-forecast-placement-ov-clarify-001",
+      "question": "qa-ui-ux-web-ov-decision-001 の第4層『防衛予測・移動平均 (推移の切替で表示)』と qa-frontend-web-ov-decision-001 の『防衛予測は詳しく見る』は、防衛予測の置き場所について食い違っているか。",
+      "answer": "食い違っていない。qa-ui-ux-web-ov-decision-001 の括弧『(推移の切替で表示)』は直前の『移動平均』だけに係り、防衛予測には係らない。両記録を合わせた置き場所は、移動平均 = 推移グラフの表示切替 (初期は非表示)、パレート = 支出内訳の構成比表示、防衛予測・未決済・科目別年比較 = 本文末の『詳しく見る』(ネイティブ <details>、初期は閉じる) である。利用者が選んだ『畳んで残す』の選択肢説明 (2026-09-14T11:18:42Z 提示) にあった『防衛予測は警告時だけ上部に出す』は、qa-frontend-web-ov-decision-001 の具体化で採らず、初期表示に出す要素は増やしていない。",
+      "provenance": "完成度 evaluator の medium 指摘を受け、アシスタントが spec-state.json の2つの qa_log 本文と会話記録の選択肢文を読み比べて確認した記録上の事実。書込直前に date -u で実測した時刻を answered_at とする。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T12:20:03Z",
+      "required_info_items": [
+        "frontend-arch",
+        "information-priority"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-14T12:54:50Z",
+          "note": "【置換済み】結論のうち『防衛予測 = 詳しく見る』と『警告時だけ上部に出す案は採らない』は、利用者の確認を経ていなかったため qa-defense-forecast-placement-ov-decision-001 (2026-09-14T12:42:56Z) で置き換えた。qa-ui-ux-web-ov-decision-001 の括弧が移動平均だけに係るという読みは変わらない。"
+        }
+      ]
+    },
+    {
+      "id": "qa-design-application-rebasis-ov-001",
+      "question": "上流指針 (doctrine) と設計知識 (design) の反映記述のうち、確定した質疑に根拠を持つ部分と、アシスタントの推定による提案を、どう分けて記録し直すか。",
+      "answer": "完成度 evaluator の high 指摘 (推定を『確定内容に反映した』と書いていた) に対し、各記述を根拠の質疑 id つきで書き直す。利用者決定だけで成り立つ記述は basis=user-decision、観測だけで成り立つ記述は basis=observed-fact とし、確定質疑に無い具体 (API のクエリ・応答フィールド名、書込 API のパス、テーブルの列、1280px の出し分け、React Query のキー名) は『実装方針の提案 (推定・未確定。plan の task で確定する)』と明記して basis=agent-inference に残す。",
+      "provenance": "アシスタントが completeness-findings.json の指摘と spec-state.json の qa_log 本文を突き合わせて分類した結果。書込直前に date -u で実測した時刻を answered_at とする。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T12:20:03Z"
+    },
+    {
+      "id": "qa-defense-forecast-placement-ov-decision-001",
+      "question": "防衛予測(防衛ライン割れの事前警告)を新しい概況のどこに出しますか? 選択肢: 警告時だけ上部 (推奨) = 注意・警告の見込みがあるときだけ KPI の上に出す(現行と同じ条件)、平常時は何も出さない / 詳しく見るに畳む = 常に初期状態で閉じた『詳しく見る』の中に入れる",
+      "answer": "『警告時だけ上部』。防衛予測は defenseForecast の level が注意 (caution) か警告 (warn) のときだけ KPI 3枚の上に出し、none / nodata のときは何も描かない。現行の DefenseForecastPanel の表示条件・内訳・『やりくり試算で捻出元を探す』導線・警告時の role=alert をそのまま保つ。『詳しく見る』(ネイティブ <details>、初期は閉じる) に入れるのは未決済と科目別年比較だけで、移動平均は推移グラフの切替、パレートは支出内訳の構成比表示に置く (qa-frontend-web-ov-decision-001 のうち防衛予測以外は変わらない)。これは 2026-09-14T11:18:42Z に提示した『畳んで残す』の選択肢説明と一致し、防衛予測を『詳しく見る』に入れるとした qa-frontend-web-ov-decision-001 の該当部分と qa-defense-forecast-placement-ov-clarify-001 の結論を置き換える。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で回答した (回答返却の直後に実測した時刻 2026-09-14T12:42:56Z)。完成度 evaluator の再評価 (completeness-findings-r2.json) の差し戻しを受けてアシスタントが質問を起こし、推奨案に (推奨) を付けて提示した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T12:42:56Z",
+      "required_info_items": [
+        "frontend-arch",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-o2-measure-ov-decision-001",
+      "question": "成功目標 O2(未処理件数の3か所一致)の検査方法に、今回決まった2つの振る舞いを加えますか? 選択肢: 加える (推奨) = (1) 期間を切り替えても未処理件数が変わらない (2) 保留にした明細の内容指紋が変わると再び未処理に数えられる、を足す / 加えない = 2つの振る舞いは各章のテスト方針にだけ書く",
+      "answer": "『加える』。O2 の measure に、(1) DOM テストで期間を 1年 から 3年 に切り替えても3か所の件数が変わらないこと (qa-review-queue-scope-ov-decision-001 の全期間で数える)、(2) core の単体テストで、保留した明細の内容指紋 (金額・日付・内容) を変えるとその明細が再び未処理に数えられ3か所の件数へ戻ること (qa-snooze-fingerprint-ov-decision-001) を足す。上位概念の変更として appr-foundation-overview-002 で承認を記録する。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で回答した (回答返却の直後に実測した時刻 2026-09-14T12:42:56Z)。完成度 evaluator の再評価 (completeness-findings-r2.json) の差し戻しを受けてアシスタントが質問を起こし、推奨案に (推奨) を付けて提示した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T12:42:56Z",
+      "required_info_items": [
+        "product-goal"
+      ]
+    }
+  ],
+  "approval_log": [
+    {
+      "id": "appr-foundation-overview-001",
+      "note": "利用者が 2026-09-14 に AskUserQuestion『提示した上位概念 U1-U9 の案を、この内容で承認しますか?』で『承認する』を選択した (会話記録上の回答返却時刻 2026-09-14T11:38:48Z)。提示内容は直前のアシスタント発話 (2026-09-14T11:35:34Z) の U1-U9 表で、同日 11:33:34Z に利用者が選んだ4件 (集計範囲=総合+事業/家計の切替、既存要素=畳んで残す、状態の保存=D1に保存、信頼度=既存の判定根拠を統合) を反映していた。U4 の measure と C 番号・SH 番号は、承認された文言を検査方法の粒度へ具体化したもの。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-overview-002",
+      "note": "利用者が 2026-09-14 に AskUserQuestion『成功目標 O2 の検査方法に、今回決まった2つの振る舞いを加えますか?』で『加える (推奨)』を選択した (回答返却の直後に実測した時刻 2026-09-14T12:42:56Z)。O2 の measure だけを変更し、U1-U9 の他の項目は appr-foundation-overview-001 の承認内容のまま。basis=user-decision。"
+    }
+  ],
+  "reopen_log": [
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "qa-backend-web-ov-decision-001 は仕分けの確認と取込の確認を『期間内』で数えるとしていたが、利用者が qa-review-queue-scope-ov-decision-001 で未処理キューを全期間で数えると決めたため、件数定義を差し替える。",
+      "from": "確定",
+      "reopened_at": "2026-09-14T12:20:03Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "frontend の件数取得を期間つきのキーで共有する前提が、qa-review-queue-scope-ov-decision-001 (全期間で数える) と食い違うため取り直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-14T12:20:03Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "qa-ui-ux-web-ov-decision-001 の第4層に含めていた防衛予測を、利用者が qa-defense-forecast-placement-ov-decision-001 で『注意・警告時だけ KPI の上に出す』と決め直したため、情報優先度の確定内容を取り直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-14T12:54:50Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "qa-frontend-web-ov-decision-001 と qa-defense-forecast-placement-ov-clarify-001 は防衛予測を『詳しく見る』に入れるとしていたが、利用者の確認を経ていなかったため聞き直し、qa-defense-forecast-placement-ov-decision-001 で『警告時だけ上部』に決まったので、置き場所と描画検査の方針を取り直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-14T12:54:50Z"
+    }
+  ],
+  "category_aggregate": {
+    "database": "確定",
+    "auth": "確定",
+    "ui-ux": "確定",
+    "security": "確定",
+    "infrastructure": "確定",
+    "backend": "確定",
+    "frontend": "確定",
+    "maintenance-ops": "確定"
+  },
+  "targets": [
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "category": "database"
+    },
+    {
+      "target_id": "wai-aria-apg-dialog-modal",
+      "category": "frontend"
+    },
+    {
+      "target_id": "wcag22-status-messages",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "wcag22-reflow",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "wai-aria-apg-disclosure",
+      "category": "frontend"
+    },
+    {
+      "target_id": "wai-aria-apg-radio",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "cloudflare-workers-ai-pricing",
+      "category": "backend"
+    },
+    {
+      "target_id": "w3c-csp3",
+      "category": "security"
+    },
+    {
+      "target_id": "whatwg-web-storage",
+      "category": "database"
+    }
+  ],
+  "requirements_foundation": {
+    "essential_purpose": "概況を「数字を眺める分析画面」から月次クローズの作業起点に変える。開いた瞬間に直近12か月の収支の結論と「次に直すこと」が分かり、未処理0まで概況から迷わず進める。",
+    "background": "FINAL-UI 02 (design/FINAL-UI/images/02-overview.png) が概況の正本として採用され、デザインシステム基盤 (#49) でトークンと共通シェルが揃った。一方、現行の概況 (packages/web/src/pages/Overview.tsx、GET /api/summary → core overview()) は事業 (freee) の KPI と暦年の年換算だけで、事業+家計の総収入が無い。未処理は仕分け・照合・取込の各画面に散っていて横断の件数が無く、サイドバーのバッジ、保留 (snooze)、月次クローズの状態も無い。",
+    "goals": [
+      {
+        "id": "G1",
+        "text": "総合 (事業+家計、重複除外) / 事業 / 家計 の総収入・総支出・純収支と前12か月比を最上位に出す。KPI・推移・年次比較・内訳は単一の定義で互いに検算が一致する。"
+      },
+      {
+        "id": "G2",
+        "text": "仕分け確認・照合確認・取込確認を1つの未処理キューに集約する。件数 (バッジ・カード・アクションバー) の一致、優先順位、根拠種別付きの推奨科目と信頼度、右パネル、該当画面への1操作遷移を持つ。"
+      },
+      {
+        "id": "G3",
+        "text": "月次クローズ4ステップをデータから判定する。「月次レビュー完了」と「後で確認」は D1 に保存し、バックアップと復元でも保つ。"
+      },
+      {
+        "id": "G4",
+        "text": "02 のレイアウトを共通シェル・トークン・部品で実装する。既存の防衛予測・移動平均・パレート・未決済・科目別年比較は段階的開示で残す。"
+      },
+      {
+        "id": "G5",
+        "text": "読込・空・エラー状態、WCAG 2.2 AA、レスポンシブ (右パネルのドロワー化)、外部送信なし・認証必須を維持する。"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "O1",
+        "text": "同一 fixture で KPI・推移・年次比較・内訳の4要素の総額差が0である。",
+        "measure": "core の単体テストが同一 fixture から4要素を計算し、総収入・総支出・純収支の差が 0 円であることを assert する。",
+        "serves": [
+          "G1"
+        ]
+      },
+      {
+        "id": "O2",
+        "text": "未処理件数がサイドバーのバッジ・未処理カード・固定アクションバーの3か所で一致する。",
+        "measure": "DOM テストが3か所の件数表示を取得して一致を assert し、1件を後で確認にしたとき3か所が同時に減ること、ヘッダーの期間を 1年 から 3年 に切り替えても3か所の件数が変わらないことも検査する。core の単体テストが、保留した明細の内容指紋 (金額・日付・内容) を変えるとその明細が再び未処理に数えられることを assert する。",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "O3",
+        "text": "snooze と月次レビュー完了がバックアップ→復元の往復で保たれる。",
+        "measure": "API テストが snooze と月次レビューを書き、バックアップを取り、全消去後に復元して行が一致することを assert する。",
+        "serves": [
+          "G3"
+        ]
+      },
+      {
+        "id": "O4",
+        "text": "画像正本の表示順と広幅レイアウトを保ち、概況の描画検査が8幅で通る。",
+        "measure": "system-spec/ui-ux.md の『表示順の正本』の順序、広幅の Review 3列・比較/内訳2列、横はみ出しなしを scripts/check-financial-visuals.mjs が観測し、Overview エントリを8幅で描画して exit 0 になる。",
+        "serves": [
+          "G4",
+          "G5"
+        ]
+      },
+      {
+        "id": "O5",
+        "text": "推奨科目の信頼度が決定論で、根拠が無ければ推奨なしを返す。",
+        "measure": "core の単体テストが同じ入力で同じ信頼度を返すこと、vendor_memory・ルール・MF中項目のいずれも該当しない明細で推奨なしを返すことを assert する。",
+        "serves": [
+          "G2"
+        ]
+      }
+    ],
+    "success_criteria": [
+      "S1 (G1-G5): O1-O5 のテストと検査がすべて CI で緑である。",
+      "S2 (G4): 02-overview.png の全要素 (KPI3+説明カード、推移、未処理カード3種、優先明細表、右パネル、年次比較表、内訳、固定アクションバー、データ最終更新と出典) が実データで描画される。"
+    ],
+    "stakeholders": [
+      "SH1 利用者 (単独の個人事業主1名、利用者兼保守者): 月初に取り込んだ後、概況で「いくら残ったか・何が未処理か」を掴み、未処理を0にしたい。",
+      "SH2 実装を担うコーディングエージェント: 仕様とタスクから、共通シェル・トークン・部品と既存集計を再利用して実装する。"
+    ],
+    "scope": {
+      "in": [
+        "概況ページ (packages/web/src/pages/Overview.tsx) の 02 レイアウトへの作り替え",
+        "概況用 API",
+        "core の集計: 直近12か月 vs 前12か月、上位5+その他、未処理キュー、信頼度、月次クローズ判定",
+        "D1 migration: snooze と月次レビュー完了",
+        "共通シェルのサイドバー未処理バッジ",
+        "バックアップ対象への snooze・月次レビューの追加"
+      ],
+      "out": [
+        "スマートフォン・タブレット・デスクトップの専用アプリ (web のレスポンシブで対応する)",
+        "AI/LLM による科目推定 (外部送信なしの約束と衝突する)",
+        "分類アルゴリズム自体の変更 (既存の判定根拠を統合するだけ)",
+        "概況以外の19画面の作り直し"
+      ]
+    },
+    "constraints": [
+      "C1: Cloudflare Workers + D1 + React SPA の既存構成で実装する。",
+      "C2: 取引データを外部へ送信しない。",
+      "C3: 期間は分析関数へ引数を配らず Dataset を切る方式で絞る (core/src/period.ts)。",
+      "C4: 色は packages/core/src/design-tokens.ts から取り、直書きは lint (check-design-tokens) で検出する。",
+      "C5: D1 migration は前進のみで、デプロイゲート (migrate.yml) を通す。",
+      "C6: CI の headless Chrome は pointer:none として扱い、@media (pointer: fine) に依存しない。"
+    ],
+    "concrete_intents": [
+      {
+        "id": "I1",
+        "text": "KPI 3枚 (総収入・総支出・純収支、前12か月比つき) と説明カード",
+        "serves": [
+          "G1",
+          "G4"
+        ]
+      },
+      {
+        "id": "I2",
+        "text": "推移グラフの1年・2年・3年切替 (移動平均は切替で残す)",
+        "serves": [
+          "G1",
+          "G4"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "未処理カード3種 (仕分け確認・照合確認・取込確認)",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "優先度順の未処理明細表",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "右パネル (理由・取引元・類似取引・推奨仕訳と信頼度・仕分けを開く・後で確認)",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "年次比較表 (増減額・増減率)",
+        "serves": [
+          "G1"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "支出内訳の金額・構成比切替 (上位5+その他、パレートは構成比表示で残す)",
+        "serves": [
+          "G1",
+          "G4"
+        ]
+      },
+      {
+        "id": "I8",
+        "text": "固定アクションバー (未処理件数と次の操作)",
+        "serves": [
+          "G2",
+          "G4"
+        ]
+      },
+      {
+        "id": "I9",
+        "text": "本文のデータ最終更新と出典リンク",
+        "serves": [
+          "G4",
+          "G5"
+        ]
+      }
+    ],
+    "confirmed": true,
+    "approval_ref": "appr-foundation-overview-002"
+  },
+  "decisions": [
+    {
+      "id": "dec-review-state-storage",
+      "question": "『後で確認』(保留) と『月次レビュー完了』の状態をどこに保存するか",
+      "status": "confirmed",
+      "serves_goals": [
+        "G2",
+        "G3"
+      ],
+      "options": [
+        {
+          "id": "d1",
+          "label": "D1 に2テーブル (review_snoozes・monthly_close_reviews) を追加し、夜間バックアップと復元の対象にする",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "既存の D1 データベース kanjo-db に行を足すだけで、新しい有償サービスを契約しない",
+            "tco": "追加費用 0。保守は migration 1本、BACKUP_SNAPSHOT_SQL と restore の追従、O3 の往復テスト"
+          },
+          "free_tier_limits": "既存の D1 利用枠内。行数は明細数と月数に比例し、利用者1名では小さい",
+          "goal_fit": "G3 の『D1 に保存し、バックアップと復元でも保つ』に直接合う。端末やブラウザを替えても未処理件数と月次クローズの判定が変わらない",
+          "security_fit": "既存の authGuard と canonicalMutationFence の内側に置け、明細本文は保存しない",
+          "pros": [
+            "端末・ブラウザを替えても状態が同じ",
+            "夜間バックアップと復元で判断が失われない",
+            "サイドバー・カード・アクションバーの件数をサーバの同じ計算で揃えられる"
+          ],
+          "cons": [
+            "migration・schema-guard 定数・schema.ts・バックアップ・restore の5か所を同じ変更で揃える必要がある"
+          ],
+          "risks": [
+            "D1 migration に rollback が無く、誤った定義は前進の修正 migration で直すしかない"
+          ],
+          "lock_in": "低い。Cloudflare D1 は SQLite 互換で、2テーブルは平易な主キー付きの表",
+          "ops_burden": "deploy.yml の自動 migration 判定に乗る CREATE TABLE のみで、手順は増えない",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/reference/migrations/"
+          ]
+        },
+        {
+          "id": "browser",
+          "label": "ブラウザの localStorage に保存する",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "サーバ側の変更が無い",
+            "tco": "追加費用 0。保守はクライアントのキー設計だけ"
+          },
+          "free_tier_limits": "ブラウザごとの保存容量の範囲",
+          "goal_fit": "G2 の件数一致は1つのブラウザ内なら満たせるが、G3 の『バックアップと復元でも保つ』を満たせない",
+          "security_fit": "サーバの攻撃面は増えないが、共有端末では状態が残る",
+          "pros": [
+            "migration もバックアップの変更も要らない"
+          ],
+          "cons": [
+            "別の端末・ブラウザでは保留と月次レビュー完了が見えない",
+            "夜間バックアップと復元の対象外になる"
+          ],
+          "risks": [
+            "サイト データの消去で月次クローズの記録が失われる"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "なし",
+          "evidence_refs": [
+            "https://html.spec.whatwg.org/multipage/webstorage.html"
+          ]
+        },
+        {
+          "id": "none",
+          "label": "保存しない (その場の表示だけ)",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "何も追加しない",
+            "tco": "追加費用 0"
+          },
+          "free_tier_limits": "該当なし",
+          "goal_fit": "G3 の月次レビュー完了を記録できず、月次クローズ4/4 に到達できない",
+          "security_fit": "変化なし",
+          "pros": [
+            "実装が最小"
+          ],
+          "cons": [
+            "再読込で『後で確認』が戻り、件数が3か所で一致しても次に開くと増える",
+            "月次レビューの完了を判定できない"
+          ],
+          "risks": [
+            "未処理0 を締めの条件にできず、U1 の本質的目的を満たさない"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "なし",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/reference/migrations/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "d1",
+        "rationale": "G3 がバックアップと復元での保持を要求し、ブラウザ保存と保存しない案はそれを満たせない。D1 案は既存の migration 自動適用・夜間バックアップ・認証の内側に収まり、追加費用も運用手順も増えない。",
+        "caveats": [
+          "D1 migration には rollback が無い (公式 migrations ページに create/list/apply の記述だけ)。定義の誤りは前進の修正 migration で直す",
+          "BACKUP_SNAPSHOT_SQL は明示列挙で、テーブルを足しても自動ではバックアップに入らない。O3 の往復テストで漏れを止める",
+          "本記録は利用者の選択後に正規 writer で残したもの。比較の根拠 (D1 公式ページ) の確認時刻は選択より後の 2026-09-14T11:49:44Z である",
+          "2026-09-14T11:18:42Z の AskUserQuestion で本推奨に (Recommended) を付けて先に提示しており、推奨が選択に影響した可能性を否定しない。"
+        ],
+        "confidence": "high",
+        "latest_checked_at": "2026-09-14T11:49:44Z",
+        "comparison_basis": {
+          "goal_fit": "d1 だけが G3 の『バックアップと復元でも保つ』を満たす",
+          "tco": "3案とも追加費用 0。d1 は migration 1本と往復テストの保守が増える",
+          "security": "d1 は authGuard と書込の直列化の内側。browser は共有端末に状態が残る。none は変化なし",
+          "operations": "d1 は既存の deploy.yml 自動 migration と nightlyBackup に乗る。browser と none は運用変更なし",
+          "lock_in": "いずれも低い。d1 の2テーブルは SQLite 互換の平易な表"
+        }
+      },
+      "user_decision": {
+        "option_id": "d1",
+        "confirmed_at": "2026-09-14T11:33:34Z",
+        "qa_ref": "qa-database-web-ov-decision-001"
+      }
+    },
+    {
+      "id": "dec-overview-aggregation-scope",
+      "question": "概況の総収入・総支出・純収支、推移、年次比較、支出の内訳を、どの範囲で集計するか",
+      "status": "confirmed",
+      "serves_goals": [
+        "G1"
+      ],
+      "options": [
+        {
+          "id": "total-with-toggle",
+          "label": "総合 (事業+家計、重複除外) を既定にし、事業/家計へ切り替えられる",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "既存の totalCashflowReport と freee・MF 家計側の集計を使い、有償サービスを足さない",
+            "tco": "追加費用 0。保守は切替の状態と4要素への同時反映"
+          },
+          "free_tier_limits": "該当なし (外部サービスを使わない)",
+          "goal_fit": "G1 の『総合/事業/家計の総収入・総支出・純収支と前12か月比』をそのまま満たす",
+          "security_fit": "外部送信は増えない。切替は画面内の状態で、API は既存の認証の内側",
+          "pros": [
+            "02 の注記『銀行・カード・その他サービスの取込データに基づく集計』と一致する",
+            "事業だけ・家計だけの確認も同じ画面で行える"
+          ],
+          "cons": [
+            "切替の状態を KPI・推移・年次比較・内訳の4要素へ同時に効かせる実装が要る"
+          ],
+          "risks": [
+            "範囲の切替が未処理キューにも効くと誤解される (qa-ui-ux-web-ov-decision-001 で効かないと確定)"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "切替 UI 1つ。APG の radio group (矢印キーで選択) で作れる",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/ARIA/apg/patterns/radio/"
+          ]
+        },
+        {
+          "id": "total-only",
+          "label": "総合だけを表示し、切替を付けない",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "同上",
+            "tco": "追加費用 0。切替の実装が無いぶん最小"
+          },
+          "free_tier_limits": "該当なし",
+          "goal_fit": "G1 の事業/家計別の表示を満たせない",
+          "security_fit": "変化なし",
+          "pros": [
+            "UI が最も単純"
+          ],
+          "cons": [
+            "内訳が事業科目と家計大項目の混在になり、原因探しがしにくい"
+          ],
+          "risks": [
+            "事業だけの利益を見たいときに別画面へ移る必要がある"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "なし",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/ARIA/apg/patterns/radio/"
+          ]
+        },
+        {
+          "id": "business-only",
+          "label": "今の概況と同じく freee の事業だけを集計する",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "現行のまま",
+            "tco": "追加費用 0"
+          },
+          "free_tier_limits": "該当なし",
+          "goal_fit": "G1 の総合 (事業+家計) を満たせず、U2 の背景『事業+家計の総収入が無い』が残る",
+          "security_fit": "変化なし",
+          "pros": [
+            "現行の GET /api/summary をほぼ流用できる"
+          ],
+          "cons": [
+            "家計の支出が概況に現れない"
+          ],
+          "risks": [
+            "家計側の未処理と総額が月次クローズの判断から漏れる"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "なし",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/ARIA/apg/patterns/radio/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "total-with-toggle",
+        "rationale": "G1 が総合・事業・家計の3範囲を最上位に出すことを求め、切替なしの2案はどちらかを欠く。追加費用はどの案も 0 で、差は切替 UI 1つの実装だけである。",
+        "caveats": [
+          "2026-09-14T11:18:42Z の AskUserQuestion で本推奨に (Recommended) を付けて先に提示しており、推奨が選択に影響した可能性を否定しない。",
+          "比較根拠の公式ページの確認時刻 (2026-09-14T12:16:39Z) は利用者の選択 (2026-09-14T11:33:34Z) より後で、選択時点の比較は同じ内容を出典なしで述べたものだった。",
+          "切替は KPI・推移・年次比較・内訳の4要素に同時に効き、未処理キューには効かない (qa-ui-ux-web-ov-decision-001)。"
+        ],
+        "confidence": "high",
+        "latest_checked_at": "2026-09-14T12:16:39Z",
+        "comparison_basis": {
+          "goal_fit": "total-with-toggle だけが G1 の3範囲を満たす",
+          "tco": "3案とも追加費用 0。total-with-toggle は切替 UI の保守が増える",
+          "security": "3案とも外部送信と認証の境界を変えない",
+          "operations": "運用手順の差は無い",
+          "lock_in": "3案ともなし"
+        }
+      },
+      "user_decision": {
+        "option_id": "total-with-toggle",
+        "confirmed_at": "2026-09-14T11:33:34Z",
+        "qa_ref": "qa-ui-ux-web-ov-decision-001"
+      }
+    },
+    {
+      "id": "dec-overview-legacy-elements",
+      "question": "02 の画像に無い既存要素 (防衛予測・移動平均・パレート・未決済・科目別年比較) を概況でどう扱うか",
+      "status": "confirmed",
+      "serves_goals": [
+        "G4"
+      ],
+      "options": [
+        {
+          "id": "fold-and-keep",
+          "label": "畳んで残す (防衛予測は注意・警告の見込みがあるときだけ KPI の上に出し、移動平均は推移の切替、パレートは構成比表示、未決済・科目別年比較は <details>『詳しく見る』)",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "既存の DefenseForecastPanel は表示条件ごと KPI の上へ、UnsettledPanel は『詳しく見る』へ、中身を変えずに移す",
+            "tco": "追加費用 0。保守は開閉つきの描画検査"
+          },
+          "free_tier_limits": "該当なし",
+          "goal_fit": "G4 の『02 のレイアウトで実装し、既存要素は段階的開示で残す』をそのまま満たす",
+          "security_fit": "変化なし",
+          "pros": [
+            "FUNCTION-MATRIX が 02 の必須機能に挙げる防衛予測・移動平均・Pareto を落とさない",
+            "平常時の初期表示は画像どおりの構成になり、防衛ライン割れの事前警告は開かずに見える"
+          ],
+          "cons": [
+            "注意・警告時は画像に無い通知が KPI の上に1つ増える"
+          ],
+          "risks": [
+            "閉じた中身は見落とされやすい (APG disclosure の aria-expanded で状態を伝える)"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "開閉1つ。ネイティブ <details> は disclosure パターンの状態を自前で持たずに済む",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/"
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "画像どおりに削り、他画面への導線だけ残す",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "削除のみ",
+            "tco": "追加費用 0"
+          },
+          "free_tier_limits": "該当なし",
+          "goal_fit": "G4 の段階的開示に反し、FUNCTION-MATRIX の必須機能を概況から失う",
+          "security_fit": "変化なし",
+          "pros": [
+            "画面が最も短い"
+          ],
+          "cons": [
+            "防衛ラインの事前警告を概況で見られなくなる"
+          ],
+          "risks": [
+            "既存の DOM テストと利用者の確認経路が失われる"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "なし",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/"
+          ]
+        },
+        {
+          "id": "show-all",
+          "label": "画像の要素を足し、既存要素も常時表示する",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "追加のみ",
+            "tco": "追加費用 0"
+          },
+          "free_tier_limits": "該当なし",
+          "goal_fit": "G4 の機能は保つが、U1 の『開いた瞬間に結論と次に直すこと』が縦に長い画面に埋もれる",
+          "security_fit": "変化なし",
+          "pros": [
+            "操作なしですべて見える"
+          ],
+          "cons": [
+            "狭幅で縦に非常に長くなる"
+          ],
+          "risks": [
+            "320px 幅で表と図が並び、WCAG 1.4.10 の2方向スクロールを避けにくい"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "なし",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/WCAG22/Understanding/reflow.html"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "fold-and-keep",
+        "rationale": "U1 の結論先行と G4 の既存機能の維持を両立するのは段階的開示だけで、削る案は必須機能を、常時表示は結論の見つけやすさと狭幅の読みやすさを失う。",
+        "caveats": [
+          "2026-09-14T11:18:42Z の AskUserQuestion で本推奨に (Recommended) を付けて先に提示しており、推奨が選択に影響した可能性を否定しない。",
+          "比較根拠の公式ページの確認 (2026-09-14T12:16:39Z) は、利用者が最初に『畳んで残す』を選んだ時刻 (2026-09-14T11:33:34Z, qa-frontend-web-ov-decision-001) より後で、防衛予測の置き場所を確定した時刻 (2026-09-14T12:42:56Z) より前である。",
+          "2026-09-14T12:42:56Z の聞き直しでも『警告時だけ上部』に (推奨) を付けて先に提示した。",
+          "一度は具体化の段階で防衛予測を『詳しく見る』に入れる記録にしたが (qa-defense-forecast-placement-ov-clarify-001)、利用者の確認を経ていなかったため聞き直し、選択肢説明どおり警告時だけ上部に出すと確定した (qa-defense-forecast-placement-ov-decision-001)。"
+        ],
+        "confidence": "high",
+        "latest_checked_at": "2026-09-14T12:16:39Z",
+        "comparison_basis": {
+          "goal_fit": "fold-and-keep だけが U1 と G4 を両立する",
+          "tco": "3案とも追加費用 0。fold-and-keep は開閉つき検査の保守が増える",
+          "security": "3案とも変化なし",
+          "operations": "運用手順の差は無い",
+          "lock_in": "3案ともなし"
+        }
+      },
+      "user_decision": {
+        "option_id": "fold-and-keep",
+        "confirmed_at": "2026-09-14T12:42:56Z",
+        "qa_ref": "qa-defense-forecast-placement-ov-decision-001"
+      }
+    },
+    {
+      "id": "dec-recommendation-confidence-source",
+      "question": "右パネルの推奨科目と信頼度を何を根拠に出すか",
+      "status": "confirmed",
+      "serves_goals": [
+        "G2"
+      ],
+      "options": [
+        {
+          "id": "integrate-existing",
+          "label": "既存の判定根拠を統合 (vendor_memory の一致率 → ルール → MF中項目、どれも無ければ推奨なし)",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "既存データと packages/core の純関数だけで計算する",
+            "tco": "追加費用 0。保守は根拠種別ごとの単体テスト (O5)"
+          },
+          "free_tier_limits": "該当なし (外部サービスを使わない)",
+          "goal_fit": "G2 の『根拠種別付きの推奨科目と信頼度』を満たし、O5 の決定論を検査できる",
+          "security_fit": "CSP の connect-src 'self' のまま外部へ明細を送らない (C2)",
+          "pros": [
+            "同じ入力に同じ結果を返す",
+            "根拠の種類を画面に示せる",
+            "外部送信なしの約束と矛盾しない"
+          ],
+          "cons": [
+            "ルールと MF中項目では百分率を作れず、根拠種別だけの表示になる"
+          ],
+          "risks": [
+            "vendor_memory の件数が少ない取引先では一致率が不安定 (件数を併記して読み違いを防ぐ)"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "なし",
+          "evidence_refs": [
+            "https://www.w3.org/TR/CSP3/"
+          ]
+        },
+        {
+          "id": "vendor-memory-only",
+          "label": "取引先の決め事 (vendor_memory) がある明細だけ推奨と信頼度を出す",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "notes": "同上",
+            "tco": "追加費用 0。最小の実装"
+          },
+          "free_tier_limits": "該当なし",
+          "goal_fit": "G2 の推奨は出せるが、vendor_memory の無い明細は常に推奨なしになり、既存のルールと MF中項目の根拠を捨てる",
+          "security_fit": "外部送信なし",
+          "pros": [
+            "実装が最も単純"
+          ],
+          "cons": [
+            "推奨が出る明細が少ない"
+          ],
+          "risks": [
+            "利用者が根拠のあるルール一致の明細まで手で判断することになる"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "なし",
+          "evidence_refs": [
+            "https://www.w3.org/TR/CSP3/"
+          ]
+        },
+        {
+          "id": "ai-estimate",
+          "label": "Cloudflare Workers AI の LLM に明細を渡して科目と確度を推定する",
+          "cost_model": {
+            "category": "low-cost",
+            "amount": 0.011,
+            "currency": "USD",
+            "billing_period": "per-1000-neurons (無料枠超過分)",
+            "notes": "Workers AI は 1日 10,000 Neurons まで無料、超過分は 1,000 Neurons あたり $0.011 (Workers 有料プランが前提)",
+            "tco": "少量なら無料枠内だが、Workers 有料プランの月額と、モデル更新に伴う結果の変化を検証する保守が加わる"
+          },
+          "free_tier_limits": "1日 10,000 Neurons",
+          "goal_fit": "G2 の推奨は出せるが、同じ入力で同じ結果を保証できず O5 の決定論を満たせない",
+          "security_fit": "明細を推論基盤へ送るため、U8 scope.out (AI/LLM による科目推定) とフッター『外部送信しません』に反する",
+          "pros": [
+            "ルールや履歴の無い明細にも候補を出せる"
+          ],
+          "cons": [
+            "決定論でなく、根拠を説明しにくい"
+          ],
+          "risks": [
+            "取引データの外部送信の約束と衝突する"
+          ],
+          "lock_in": "中 (Workers AI のモデルと API に依存)",
+          "ops_burden": "モデル更新時の回帰確認が要る",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/workers-ai/platform/pricing/",
+            "https://www.w3.org/TR/CSP3/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "integrate-existing",
+        "rationale": "O5 の決定論と C2 の外部送信なしを満たすのは既存根拠を使う2案だけで、そのうち integrate-existing は既存のルールと MF中項目も根拠に使うので推奨が出る明細が多い。",
+        "caveats": [
+          "2026-09-14T11:18:42Z の AskUserQuestion で本推奨に (Recommended) を付けて先に提示しており、推奨が選択に影響した可能性を否定しない。",
+          "比較根拠の公式ページの確認時刻 (2026-09-14T12:16:39Z) は利用者の選択 (2026-09-14T11:33:34Z) より後で、選択時点の比較は同じ内容を出典なしで述べたものだった。",
+          "ai-estimate は U8 scope.out で本サイクルの対象外であり、費用の比較は参考として示した。利用者に提示した選択肢は『AIで推定 (LLM に明細を渡す)』で基盤を指定しておらず、既存構成 (C1) に最も近い Workers AI を代表として費用を記した。"
+        ],
+        "confidence": "high",
+        "latest_checked_at": "2026-09-14T12:16:39Z",
+        "comparison_basis": {
+          "goal_fit": "integrate-existing が G2 の根拠種別と O5 の決定論を両立し、推奨の出る範囲が最も広い",
+          "tco": "既存根拠の2案は追加費用 0。ai-estimate は無料枠を超えると従量課金で、Workers 有料プランも前提",
+          "security": "ai-estimate だけが明細を外部の推論基盤へ送る",
+          "operations": "ai-estimate はモデル更新の回帰確認が増える",
+          "lock_in": "ai-estimate だけが Workers AI に依存する"
+        }
+      },
+      "user_decision": {
+        "option_id": "integrate-existing",
+        "confirmed_at": "2026-09-14T11:33:34Z",
+        "qa_ref": "qa-backend-web-ov-decision-001"
+      }
+    }
+  ],
+  "knowledge_candidates": [],
+  "design_applications": {
+    "ui-ux": {
+      "text": "Information Design card の『文脈先行』と『優先順位の明示化 (task 頻度 × 失敗コスト)』を、利用者が確定した情報優先度 (qa-ui-ux-web-ov-decision-001) に適用した。最上位は月1回必ず読む結論 (KPI 3枚と月次クローズ n/4)、次に失敗コストが最も高い『未処理の見落とし』を防ぐ未処理カード・優先明細表・右パネル、第3層は結論の検算と原因探しに使う年次比較と内訳である。頻度の低い移動平均・パレート・未決済・科目別年比較は削らず段階的開示で畳む (利用者決定『畳んで残す』)。防衛予測は頻度こそ低いが失敗コストが高いので、注意・警告時だけ KPI の上に出す (qa-defense-forecast-placement-ov-decision-001)。件数は色だけでなく数字と語で示し (02 の『仕分けの確認 4』、qa-ui-ux-web-ov-observed-001)、件数の変化は WCAG 4.1.3 に沿って支援技術へ伝える。",
+      "recorded_at": "2026-09-14T12:45:53Z",
+      "basis": "user-decision"
+    },
+    "backend": {
+      "text": "API design patterns card の Contract first を、概況の4要素 (KPI・推移・年次比較・内訳) を同じ月別系列から作る確定 (qa-backend-web-ov-decision-001) に適用した。4要素を別々の定義で組み立てると O1 の検算が崩れるためである。新しい API が GET /api/overview・GET /api/review-queue と保留・月次レビューの PUT/DELETE であることは qa-auth-web-ov-observed-001 に、計算を core に置き PUT を冪等にすることは qa-design-rules-ov-decision-001 に、件数を全期間で数えることは qa-review-queue-scope-ov-decision-001 にある。【実装方針の提案 (推定・未確定。plan の task で確定する)】 GET /api/overview は ?scope=total|business|household と既存の期間指定を受け、kpi・trend・yearComparison・breakdown・closeStatus・dataUpdatedAt を1応答で返す。書込の経路は PUT/DELETE /api/review-queue/snoozes/:kind/:itemKey と PUT/DELETE /api/monthly-close/:month/review、エラーは既存の {error:{code,message}} 形。コード上の語は DDD card の Ubiquitous Language に沿って review item・snooze・monthly close に揃える。",
+      "recorded_at": "2026-09-14T12:20:03Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "DDD card の Entity / Value Object の区別を2つのテーブルに適用した。確定しているのは、D1 に保存してバックアップと復元の対象にすること (qa-database-web-ov-decision-001)、内容指紋が変わった明細の保留を無効にすること (qa-snooze-fingerprint-ov-decision-001)、CHECK 制約・主キー・CREATE TABLE/INDEX のみ・集計列を持たないこと (qa-design-rules-ov-decision-001)、同じ変更で揃える6か所 (qa-database-web-ov-observed-001) である。【実装方針の提案 (推定・未確定。plan の task で確定する)】 review_snoozes は主キー (user_id, item_kind, item_key)、item_kind は classification|reconciliation|import、item_key は仕分けなら tx_id、照合なら bindVerdicts と同じ stable_key、取込なら import id とし、snoozed_at と内容指紋 (金額・日付・内容の連結ハッシュ) を持つ。monthly_close_reviews は主キー (user_id, month 'YYYY-MM') で reviewed_at と reviewed_by_user_id を持つ。",
+      "recorded_at": "2026-09-14T12:20:03Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design card の『deny by default』を、新しいルートを authGuard の外 (index.ts:91-96 の未認証ルート群) に置かないという確定 (qa-auth-web-ov-observed-001) に適用した。サイドバーのバッジは Layout が全ページで読むが、既存の summary と imports の取得に enabled: !locked (Layout.tsx:182-192、qa-frontend-web-ov-observed-001) が付いているのと同じ形にし、未認証時は API を呼ばない。",
+      "recorded_at": "2026-09-14T12:20:03Z",
+      "basis": "observed-fact"
+    },
+    "security": {
+      "text": "Secure by Design card の Data lifecycle (収集最小化・バックアップまで設計) を保留と月次レビューに適用した。保存するのは明細キー・内容指紋・時刻・操作者だけで (qa-snooze-fingerprint-ov-decision-001、qa-auth-web-ov-observed-001)、明細本文の写しを新テーブルに持たない。バックアップへ入れるので復元でも判断が失われない (qa-database-web-ov-decision-001)。信頼度は既存データだけから決定論で計算し外部へ送らない (qa-security-web-ov-observed-001) ので、外部送信の経路は増えない。",
+      "recorded_at": "2026-09-14T12:20:03Z",
+      "basis": "user-decision"
+    },
+    "infrastructure": {
+      "text": "本章に直接効く card は Clean Code の『Explicit effects』だけで、migration の適用・バックアップ・配信という副作用を既存のパイプライン (deploy.yml の自動 migration 判定、cron 1本の nightlyBackup) の外へ増やさないことに適用した (qa-infrastructure-web-ov-observed-001)。新しい cron・R2 バケット・Worker は作らない。触れる制約は EXPECTED_D1_MIGRATION の同時更新 (怠ると 503) と初期 JS 110KiB 予算の2つである。",
+      "recorded_at": "2026-09-14T12:20:03Z",
+      "basis": "observed-fact"
+    },
+    "frontend": {
+      "text": "Information Design card の『形式の比較選定』を右パネルに適用した。確定しているのは、右パネルとドロワー部品が現状無いこと・--aside-panel-w: 320px が未使用であること・モーダルはネイティブ <dialog> を使っていること (qa-frontend-web-ov-observed-001)、狭幅で右パネルをドロワーにすること (U5 G5)、新部品を共通部品にし応答型だけを知ること (qa-design-rules-ov-decision-001)、件数を全期間で数えること (qa-review-queue-scope-ov-decision-001)、未決済と科目別年比較を <details> に入れること (qa-frontend-web-ov-decision-001)、防衛予測を注意・警告時だけ KPI の上に出すこと (qa-defense-forecast-placement-ov-decision-001) である。【実装方針の提案 (推定・未確定。plan の task で確定する)】 1280px 以上は --aside-panel-w の常設パネル、それ未満は <dialog> のドロワーにし、APG のモーダルダイアログ要件 (フォーカス移動・循環・Escape・起点へ戻す) を満たす。件数は useReviewQueue フック1つ (React Query キー ['review-queue']、期間を含めない) に集約し、後で確認の mutation 成功時にキーを invalidate して3か所を同時に減らし (O2)、変化は role=status で伝える。推移と内訳の図は FinancialFigure に載せ、トークン由来の系列色 (charts.ts) を使う。",
+      "recorded_at": "2026-09-14T12:45:53Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "Clean Code card の Executable examples を O1-O5 の検査配置に適用した。検査は内部構造でなく観測できる結果 (総額差0、3か所の件数一致、往復後の行一致、8ケースの描画) を守る。migration 定数の漏れは既存の schema-guard.test が落とし、バックアップ対象の漏れを落とす既存検査は無いので O3 の往復テストが唯一の検査になる (qa-maintenance-ops-web-ov-observed-001)。件数ずれの切り分け手順を docs に残すことは qa-design-rules-ov-decision-001 の (4) で確定した。",
+      "recorded_at": "2026-09-14T12:20:03Z",
+      "basis": "user-decision"
+    }
+  },
+  "hearing_progress": {
+    "loop_count": 5,
+    "next_question": null,
+    "complete": true
+  },
+  "doctrine_applications": {
+    "ui-ux": {
+      "presentation": {
+        "text": "Apple HIG の情報階層を、qa-ui-ux-web-ov-decision-001 で利用者が確定した重要度へ反映した。層番号は重要度の分類で、物理的な表示順は system-spec/ui-ux.md の『表示順の正本』と design/FINAL-UI/images/02-overview.png に従う。防衛予測だけは、注意・警告の見込みがあるときに限って KPI の上へ割り込ませ、平常時は出さない。見落としたときの損失 (防衛ライン割れ) が最も大きく、しかも手を打てる時期が限られるためである (qa-defense-forecast-placement-ov-decision-001)。未決済・科目別年比較は初期表示で閉じる (qa-frontend-web-ov-decision-001)。",
+        "recorded_at": "2026-09-14T12:45:53Z",
+        "basis": "user-decision"
+      }
+    },
+    "backend": {
+      "application-architecture": {
+        "text": "Clean Architecture の依存規則を、未処理キュー・信頼度・月次クローズ判定・直近12か月比較を packages/core の純関数に置き、packages/api のルートは D1 の行を渡して JSON にするだけにする規則 (qa-design-rules-ov-decision-001 の (2)) に反映した。O1・O5 を core の単体テストで検証できるのはこの配置による。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "user-decision"
+      },
+      "data-access": {
+        "text": "データアクセスの一方向性を、ルートが review_snoozes と monthly_close_reviews を読んで core に値として渡し、core が保留中の除外と内容指紋の不一致による保留の無効化 (qa-snooze-fingerprint-ov-decision-001) を判定する形に反映した。件数は全期間で数え (qa-review-queue-scope-ov-decision-001)、保留中でも月次クローズのステップ判定では未完了に数える (qa-backend-web-ov-decision-001)。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "user-decision"
+      }
+    },
+    "database": {
+      "data-access": {
+        "text": "データアクセスの責務を利用者の判断だけの保存に絞る考え方を、review_snoozes と monthly_close_reviews に件数などの集計列を持たせない規則 (qa-design-rules-ov-decision-001 の (1)) に反映した。保存するのは保留の時刻と内容指紋 (qa-snooze-fingerprint-ov-decision-001) と月次レビューの時刻・操作者で、件数とステップ判定は毎回明細から求める。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "user-decision"
+      },
+      "reliability": {
+        "text": "Google SRE の変更リスク最小化を、migration 0040 を CREATE TABLE と CREATE INDEX だけにして既存テーブルを変えない規則 (qa-design-rules-ov-decision-001 の (1)) に反映した。D1 migration に rollback が無いこと (qa-database-web-ov-observed-001) から、誤りは前進の修正 migration で直す。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "user-decision"
+      }
+    },
+    "auth": {
+      "authentication": {
+        "text": "OWASP ASVS の認証要件を、新しい API を /api/* 配下に置くだけで既存の authGuard・mustChangePasswordFence が掛かり、認証方式・ログイン画面・セッションを変えないという観測 (qa-auth-web-ov-observed-001、auth.ts:243-283、index.ts:100-104) に照らして確認した。本サイクルで独自の認証経路は作らない。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "observed-fact"
+      },
+      "security": {
+        "text": "OWASP の説明責任 (誰が操作したかを追えること) を、業務データの user_id は既存どおり 'default' のまま、monthly_close_reviews.reviewed_by_user_id に認証済みの actor の user id を入れるという記録 (qa-auth-web-ov-observed-001) に反映した。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "observed-fact"
+      }
+    },
+    "security": {
+      "security": {
+        "text": "OWASP ASVS の入力検証と多層防御を、書込 API が kind (3値)・itemKey (長さ上限)・month (YYYY-MM) を境界で検証して 400 を返し、DB 側でも CHECK 制約と主キーで守る規則 (qa-design-rules-ov-decision-001 の (1)) に反映した。書込ルートを CANONICAL_MUTATION_ROUTES に登録して取込・復元と同時に走れば 409 で止めること、明細をテキストとして描画することは qa-security-web-ov-observed-001 の観測である。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "user-decision"
+      }
+    },
+    "infrastructure": {
+      "reliability": {
+        "text": "Google SRE の『変更は小さく、検証してから広げる』を、migration 0040 が CREATE TABLE だけなので deploy.yml の自動判定で apply に分類され、checkpoint → db:migrate:remote → check-d1-migrations.mjs → wrangler deploy → smoke 2回 の既存順序に乗るという観測 (qa-infrastructure-web-ov-observed-001) に照らして確認した。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "observed-fact"
+      },
+      "operations": {
+        "text": "SRE のトイル削減を、Worker・cron (0 18 * * * の1本)・R2 の30日保持を変えず、保留と月次レビューのバックアップ追加を BACKUP_SNAPSHOT_SQL の変更だけで済ませるという観測 (qa-infrastructure-web-ov-observed-001、qa-database-web-ov-observed-001) に照らして確認した。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "observed-fact"
+      }
+    },
+    "frontend": {
+      "presentation": {
+        "text": "Apple HIG の一貫性を、バッジ・右パネル・固定アクションバーを概況専用にせず packages/web/src/components/ の共通部品として置く規則 (qa-design-rules-ov-decision-001 の (3)) に反映した。部品が無いこと、NavItem にバッジの props が無いことは qa-frontend-web-ov-observed-001 の観測である。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "user-decision"
+      },
+      "application-architecture": {
+        "text": "Clean Architecture の境界データを、web が応答型 OverviewResponse・ReviewQueueResponse だけを知り優先順位や信頼度を画面で再計算しない規則 (qa-design-rules-ov-decision-001 の (2)) に反映した。未処理件数は全期間で数える (qa-review-queue-scope-ov-decision-001) ため、3か所が読む件数は期間に依存しない1つの値になる。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "user-decision"
+      }
+    },
+    "maintenance-ops": {
+      "operations": {
+        "text": "SRE の運用手順の明文化を、件数が3か所でずれたときに API 応答 → React Query のキー共有 → 保留の内容指紋 の順に確認する手順と、描画検査の失敗時に screenshot から幅を特定する方法を docs に残す規則 (qa-design-rules-ov-decision-001 の (4)) に反映した。",
+        "recorded_at": "2026-09-14T12:20:03Z",
+        "basis": "user-decision"
+      }
+    }
+  }
+}

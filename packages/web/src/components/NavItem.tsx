@@ -8,6 +8,7 @@
  *   aria-current="page" = 現在のルート / .active = ドロワーが開いている
  * と1つの状態に1つの機構が対応する。
  */
+import type { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 import { RouteIcon, type RouteIconName } from './RouteIcon.js';
 
@@ -41,14 +42,17 @@ export interface NavItemProps {
    * タブをURLに持つ画面(/analysis/matrix)だけ false にする。
    */
   end?: boolean;
+  /** ラベルの後ろに置く件数など。リンクの名前に含まれ、読み上げでも項目と一緒に伝わる */
+  badge?: ReactNode;
 }
 
-export function NavItem({ to, icon, label, variant, end = true }: NavItemProps) {
+export function NavItem({ to, icon, label, variant, end = true, badge }: NavItemProps) {
   const { linkClass, labelClass } = VARIANT[variant];
   return (
     <NavLink to={to} end={end} className={() => linkClass} title={variant === 'sidebar' ? label : undefined}>
       <RouteIcon name={icon} />
       <span className={labelClass}>{label}</span>
+      {badge}
     </NavLink>
   );
 }

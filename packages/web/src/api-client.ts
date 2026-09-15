@@ -52,6 +52,8 @@ export async function api<T>(path: string, init?: RequestInit, policy: ApiReques
     throw error;
   }
   if (!res.ok) throw await apiErrorFromResponse(res);
+  // 冪等な DELETE は本文なしの 204 を返す。json() に通すと成功を例外として扱ってしまう
+  if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }
 

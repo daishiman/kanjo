@@ -24,6 +24,9 @@ import {
   importHistoryDiscardBlock,
   importJSON,
   isCashTxId,
+  isCloseMonth,
+  isReviewItemKey,
+  isReviewItemKind,
   normalizeBaseKnown,
   normalizeVendorKey,
   projectAccountingDataset,
@@ -41,6 +44,8 @@ import { computeImportDiff, diffBaselineFromDataset, importResolutionFingerprint
 import {
   type MfResolutionAuditDecision,
   type MfResolutionPlan,
+  type RestoreMonthlyCloseReview,
+  type RestoreReviewSnooze,
   acquireImportWriter,
   activeDuplicateOf,
   assetsCommitStatements,
@@ -110,6 +115,33 @@ const analysisSettingsBackupSchema = z.object({ statMinMonths: z.number().int().
 const subVendorExclusionsBackupSchema = z
   .array(z.object({ partner: z.string().trim().min(1).max(120) }).strict())
   .max(5_000);
+// 0040: 保留と月次レビュー。kind/itemKey/month はルートと同じ core の検証器で受け、D1 の CHECK 違反を commit まで持ち込まない
+const isoTimestamp = z.string().min(1).max(40);
+const reviewSnoozesBackupSchema = z
+  .array(
+    z
+      .object({
+        kind: z.string().refine(isReviewItemKind),
+        itemKey: z.string().refine(isReviewItemKey),
+        fingerprint: z.string().regex(/^[0-9a-f]{64}$/),
+        snoozedAt: isoTimestamp,
+      })
+      .strict(),
+  )
+  .max(5_000)
+  .refine((rows) => new Set(rows.map((row) => `${row.kind}\0${row.itemKey}`)).size === rows.length);
+const monthlyCloseReviewsBackupSchema = z
+  .array(
+    z
+      .object({
+        month: z.string().refine(isCloseMonth),
+        reviewedAt: isoTimestamp,
+        reviewedByUserId: z.string().min(1).max(64),
+      })
+      .strict(),
+  )
+  .max(1_200)
+  .refine((rows) => new Set(rows.map((row) => row.month)).size === rows.length);
 const resolutionDecisionSchema = z
   .object({
     txIds: z.array(z.string().min(1)).min(1).max(200),
@@ -179,6 +211,32 @@ const resolveRestoreSettings = (
     txSplits: destination.txSplits,
     // JSON復元は現在の取引先の決め事を置き換えない。通常取込の解決入力として保持する。
     vendorMemories: destination.vendorMemories,
+    reviewStateCounts: destination.reviewStateCounts,
+  };
+};
+
+/**
+ * 0040: バックアップの保留・月次レビューを読む。key が無い旧バックアップは null を返し、既存の行を残す。
+ * key があれば(空配列でも)その集合で置き換える。レビュー者 (actor の user id) の欠けた行は
+ * テナント鍵で埋めず、復元全体を不正な設定として拒む (誰がレビューしたかを捏造しない)。
+ */
+const resolveRestoreReviewState = (
+  obj: Record<string, unknown>,
+): {
+  reviewSnoozes: RestoreReviewSnooze[] | null;
+  monthlyCloseReviews: RestoreMonthlyCloseReview[] | null;
+} => {
+  const has = (key: string) => Object.prototype.hasOwnProperty.call(obj, key);
+  const snoozes = has('reviewSnoozes') ? reviewSnoozesBackupSchema.safeParse(obj.reviewSnoozes) : null;
+  const reviews = has('monthlyCloseReviews')
+    ? monthlyCloseReviewsBackupSchema.safeParse(obj.monthlyCloseReviews)
+    : null;
+  if ((snoozes && !snoozes.success) || (reviews && !reviews.success)) {
+    throw new InvalidRestoreSettingsError();
+  }
+  return {
+    reviewSnoozes: snoozes?.success ? snoozes.data : null,
+    monthlyCloseReviews: reviews?.success ? reviews.data : null,
   };
 };
 
@@ -674,6 +732,7 @@ const prepareJsonApplication = async (args: {
   const restoringCash = args.restoredCashEntries !== undefined && args.restoredCashEntries.length > 0;
   const effectiveCash = restoringCash ? (args.restoredCashEntries ?? []) : args.cashEntries;
   const restoreSettings = resolveRestoreSettings(args.json, args.destinationSettings);
+  const reviewState = resolveRestoreReviewState(args.json);
   const destinationCashEdits = restoringCash ? {} : currentCashEdits(candidate, args.cashEntries);
   const destinationVendors = candidate.subs.vendors.map((name) => ({
     name,
@@ -725,6 +784,9 @@ const prepareJsonApplication = async (args: {
     existingStatMinMonths: args.destinationSettings.statMinMonths,
     existingSubVendorExclusions: args.destinationSettings.subVendorExclusions,
     restoredCashEntries: restoringCash ? args.restoredCashEntries : undefined,
+    reviewSnoozes: reviewState.reviewSnoozes,
+    monthlyCloseReviews: reviewState.monthlyCloseReviews,
+    existingReviewStateCounts: args.destinationSettings.reviewStateCounts,
   });
   return {
     candidate,
@@ -1210,6 +1272,7 @@ importsRoute.post('/imports', async (c) => {
     freeeDeals: [],
     txSplits: [],
     vendorMemories: [],
+    reviewStateCounts: { reviewSnoozes: 0, monthlyCloseReviews: 0 },
   };
   let cashEntries: CashEntry[] = [];
   let data = emptyDataset();
@@ -1722,6 +1785,7 @@ importsRoute.post('/restore', async (c) => {
     freeeDeals: [],
     txSplits: [],
     vendorMemories: [],
+    reviewStateCounts: { reviewSnoozes: 0, monthlyCloseReviews: 0 },
   };
   let freeeDeals: FreeeDeal[] = [];
   let restoreCommitCount = 0;
