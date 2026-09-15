@@ -1,0 +1,147 @@
+{
+  "run_id": "run-20260914-anhub",
+  "feature_id": "feat-analysis-hub",
+  "repository_id": "github:daishiman/kanjo",
+  "artifact_kind": "feature",
+  "purpose": "支出分析の入口を、5 つの分析 (照合・総収支・マトリクス・推移・診断) のどこから見ればよいかを 1 画面で判断できるハブにする。利用者が支出分析を開いた時点で、期間の収支の結論と、各分析の要確認件数・変化・改善余地と優先度を見比べ、差異を消す→全体を掴む→偏りを見る→変化を追う→行動を決める の読み順で改善行動まで迷わず進める状態にする。",
+  "goal": "/analysis が 03-analysis-hub.png の全構成要素をトークンと共通部品で描画し、?focus= で選択状態が再現され、ハブ表示中の通信は GET /api/analysis/hub の 1 本だけで、前期間比・優先度・正常判定・改善余地の規則が core の境界値テストと docs で固定され、5 タブ名が短縮形になりサイドバー子行の件数バッジが要確認件数と一致し、既存の test / typecheck / lint / check 系が緑のままの状態。",
+  "scope_in": [
+    "/analysis のハブ画面 (03-analysis-hub.png の全構成要素) の新設と、/analysis から照合タブへの転送の廃止",
+    "選択中の分析の URL 保持 (?focus=) と URL コピー",
+    "packages/core のハブ集計純関数 (期間合計・前期間比・5 視点の状態・優先度・改善余地) と、前期間計算 (previousPeriod) の api/ai/dataset.ts から core への移設",
+    "packages/api の集約エンドポイント GET /api/analysis/hub",
+    "判定規則の docs 記載と境界値テスト",
+    "5 タブ名の短縮形化とサイドバー支出分析子行の件数バッジ、それに伴う既存 DOM テストの文言更新"
+  ],
+  "scope_out": [
+    "5 タブ各詳細画面 (照合・総収支・マトリクス・推移・診断) の中身の作り直し (各画面のサイクル)",
+    "支出分析以外のサイドバー文言 (明細仕分け・累計収支など) と月次クローズ進捗 3/4 チェックリストの形",
+    "期間選択の保存先の変更 (期間は既存どおり localStorage で全画面共有し URL に載せない)",
+    "D1 スキーマ・migration の変更",
+    "スマートフォン・タブレット・デスクトップ専用アプリ (web SPA 1 系統のレスポンシブで扱う)"
+  ],
+  "acceptance": [
+    "S1 (G1): /analysis で 03-analysis-hub.png の構成要素 (問いの見出し・URL コピー・5 タブ・収支サマリー・分析ルート一覧・選択中の分析パネル・読み順・下部バー) がすべて描画され、色・余白・部品はトークンと共通 Button/PageShell 経由で、直書き色の lint が 0 件である。",
+    "S2 (G2): ?focus= の値でハブの選択状態が再現され、/analysis/:tab と旧 URL 転送の既存テストが緑である。",
+    "S3 (G3): ハブ表示中のネットワーク呼出しは GET /api/analysis/hub の 1 本で、既存 5 API の呼出しが 0 件である。",
+    "S4 (G3, G4): core テストが前期間比・優先度・正常判定・改善余地を境界値付きで検証し、規則が docs に明記されている。",
+    "S5 (G5): 5 タブ名が短縮形で表示され、サイドバー子行の件数バッジが要確認件数と一致する。",
+    "S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系 (thead / mobile-layout / financial-figure / financial-routes) が緑のままで、狭幅 (68px アイコンレール・下部タブ) でもハブが横スクロールしない。"
+  ],
+  "architecture_refs": [
+    "architecture/analysis-hub-ui-ux.md",
+    "architecture/analysis-hub-frontend.md",
+    "architecture/analysis-hub-backend.md",
+    "architecture/analysis-hub-database.md",
+    "architecture/analysis-hub-auth.md",
+    "architecture/analysis-hub-security.md",
+    "architecture/analysis-hub-infrastructure.md",
+    "architecture/analysis-hub-maintenance-ops.md",
+    "specs/spec-analysis-hub.md"
+  ],
+  "source_lineage": [
+    {
+      "source_kind": "feature_context",
+      "source_path": "features/feat-analysis-hub.context.json",
+      "source_digest": "dacba5d1016d278f40dd8d70ea86621422af0addaa4362cc639a6cb2713a711f",
+      "digest_provenance": "caller_supplied_in_run_directive",
+      "updated_at": "2026-09-14T12:45:01Z"
+    },
+    {
+      "source_kind": "feature_document",
+      "source_path": "features/feat-analysis-hub.md",
+      "source_version": "0.1.11",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence_ref": "system-spec/completeness-findings.json",
+      "evaluated_digest": "6e1542b3438e1de3e5c76782e98faadf8de20c524449a4f97173973ed4578b56",
+      "spec_document_digest": "dd3ff9c2d4332accf021195961dd8d855e4d7c687823fe1a6c124c57f0584c16",
+      "spec_document_digest_source": "features/feat-analysis-hub.md frontmatter source_lineage.source_digest (specs/spec-analysis-hub.md の写し先digest)"
+    },
+    {
+      "source_kind": "specification",
+      "source_path": "specs/spec-analysis-hub.md",
+      "source_plugin": "system-spec-harness",
+      "source_version": "0.1.14",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_digest": "6e1542b3438e1de3e5c76782e98faadf8de20c524449a4f97173973ed4578b56",
+      "digest_target": "system-spec/00-requirements-definition.md"
+    },
+    {
+      "source_kind": "system_spec_requirements",
+      "source_path": "system-spec/00-requirements-definition.md",
+      "source_plugin": "system-spec-harness",
+      "source_version": "0.1.14",
+      "source_digest": "6e1542b3438e1de3e5c76782e98faadf8de20c524449a4f97173973ed4578b56",
+      "evidence_ref": "system-spec/completeness-findings.json",
+      "evaluation_verdict": "PASS",
+      "status_frontmatter": "confirmed"
+    },
+    {
+      "source_kind": "completeness_evaluation",
+      "source_path": "system-spec/completeness-findings.json",
+      "evaluator": "assign-system-spec-completeness-evaluator",
+      "source_plugin": "system-spec-harness",
+      "source_version": "0.1.14",
+      "verdict": "PASS"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/analysis-hub-ui-ux.md",
+      "resolved_in_repo": true
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/analysis-hub-frontend.md",
+      "resolved_in_repo": true
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/analysis-hub-backend.md",
+      "resolved_in_repo": true
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/analysis-hub-database.md",
+      "resolved_in_repo": true
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/analysis-hub-auth.md",
+      "resolved_in_repo": true
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/analysis-hub-security.md",
+      "resolved_in_repo": true
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/analysis-hub-infrastructure.md",
+      "resolved_in_repo": true
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/analysis-hub-maintenance-ops.md",
+      "resolved_in_repo": true
+    }
+  ],
+  "identity_check": {
+    "graph_node_id": "feat-analysis-hub",
+    "requested_feature_id": "feat-analysis-hub",
+    "match": true
+  },
+  "readiness_pin": {
+    "component": "C08",
+    "status": "complete",
+    "checked_at": "2026-09-14T12:49:08Z",
+    "source_pin": "system-spec-harness",
+    "source_pin_version": "0.1.14",
+    "source_pin_evidence_ref": "system-spec/completeness-findings.json",
+    "source_pin_verdict": "PASS",
+    "note": "readiness_pin の digest 値は run 起動ディレクティブに含まれていないため記録していない (捏造回避)。"
+  },
+  "generated_at": "2026-09-14T12:49:08Z",
+  "notes": "feature 分割・workstream 分解・P01..P13 task 生成は行っていない。feature-context の sha256 は run 起動ディレクティブから受領した値をそのまま lineage へ記録し、本 agent は sha256 計算ツールを持たないため独立再計算はしていない (system-spec/00-requirements-definition.md・specs/spec-analysis-hub.md・system-spec/completeness-findings.json の digest は各確定成果物の frontmatter/source_lineage に既に記録されている値を引用し、evidence_ref で system-spec/completeness-findings.json の verdict=PASS へ接地した)。generated_at は本 run で独立に計測した時刻を取得する手段が無かったため、直近の実測タイムスタンプである C08 readiness の checked_at (2026-09-14T12:49:08Z) を採用した。"
+}

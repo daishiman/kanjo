@@ -9,7 +9,7 @@
  */
 
 /** これ以下の幅をモバイル扱いにする閾値。タップ領域やタブバーの検査もこの境界で切り替える。 */
-export const MOBILE_MAX_WIDTH = 390;
+export const MOBILE_MAX_WIDTH = 639;
 
 /** 指で押せる最小サイズ (WCAG 2.5.5 Target Size)。 */
 export const MIN_TAP_TARGET_PX = 44;
@@ -23,7 +23,12 @@ export const VIEWPORT_CASES = [
   { label: '360', width: 360, height: 720, zoom: 1, reducedMotion: false },
   { label: '375', width: 375, height: 812, zoom: 1, reducedMotion: false },
   { label: '390', width: 390, height: 844, zoom: 1, reducedMotion: false },
+  { label: '430', width: 430, height: 932, zoom: 1, reducedMotion: false },
   { label: '768', width: 768, height: 900, zoom: 1, reducedMotion: false },
+  { label: '820', width: 820, height: 1180, zoom: 1, reducedMotion: false },
+  // 常設サイドバーとデスクトップ表が同時に現れる境界。本文幅が最も厳しい。
+  { label: '1024', width: 1024, height: 900, zoom: 1, reducedMotion: false },
+  { label: '1180', width: 1180, height: 820, zoom: 1, reducedMotion: false },
   { label: '1280', width: 1280, height: 900, zoom: 1, reducedMotion: false },
   { label: '1600', width: 1600, height: 1000, zoom: 1, reducedMotion: false },
   // 本物の200%拡大。setPageScaleFactor を伴うのはこのケースだけ。

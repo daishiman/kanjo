@@ -5,14 +5,7 @@ import { zValidator } from '@hono/zod-validator';
  * 集計はすべて `@kanjo/core` の純関数に委譲し、ここでは読み込みと整形だけを行う。
  * 保存するのは利用者の判断1つに限る (月次の合計・件数・トレンドは要求のたびに導出する)。
  */
-import {
-  type DuplicateVerdict,
-  type FreeeExclusion,
-  type MfTx,
-  STABLE_KEY_VERSION,
-  mfStableKey,
-  totalCashflowReport,
-} from '@kanjo/core';
+import { type FreeeExclusion, STABLE_KEY_VERSION, mfStableKey, totalCashflowReport } from '@kanjo/core';
 import { and, eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -21,36 +14,11 @@ import { D1_MAX_BOUND_PARAMS } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { dealFromRow, getDb } from '../store.js';
 import { loadScoped } from './analytics.js';
+import { bindDuplicateVerdicts } from './duplicate-verdict-bindings.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
 export const totalCashflowRoute = new Hono<Ctx>();
-
-type VerdictRow = typeof s.duplicateVerdicts.$inferSelect;
-
-/**
- * 保存済みの判断を、いま画面に出ている明細へ結び付け直す。
- *
- * `tx_id` を先に見て、無いときだけ `stable_key` へ落ちる (identity.ts の2段解決と同じ順序)。
- * 逆順にすると弱い鍵が強い鍵を上書きしうる。版が違う鍵とは突き合わせない。
- */
-function bindVerdicts(rows: readonly VerdictRow[], mfTx: readonly MfTx[]): DuplicateVerdict[] {
-  const byTxId = new Map(rows.map((row) => [row.txId, row]));
-  const byStableKey = new Map<string, VerdictRow | null>();
-  for (const row of rows) {
-    if (!row.stableKey) continue;
-    if ((row.fingerprintVersion ?? STABLE_KEY_VERSION) !== STABLE_KEY_VERSION) continue;
-    // 鍵が重複したらどちらの明細の判断か決められない。黙って片方を選ぶより結び付けない
-    byStableKey.set(row.stableKey, byStableKey.has(row.stableKey) ? null : row);
-  }
-  const out: DuplicateVerdict[] = [];
-  for (const tx of mfTx) {
-    const hit = byTxId.get(tx.id) ?? byStableKey.get(mfStableKey(tx)) ?? null;
-    // freeeKey は「どの freee 取引と同じか」の名指し。無い判断 (候補が1件だった) は null のまま渡す
-    if (hit) out.push({ txId: tx.id, verdict: hit.verdict, freeeKey: hit.freeeKey });
-  }
-  return out;
-}
 
 /**
  * 月次のトータル収入・支出・収支と内訳、事業へ寄せた件数、要確認キュー。
@@ -75,7 +43,7 @@ totalCashflowRoute.get('/total-cashflow', async (c) => {
     reason: row.reason,
   }));
 
-  const report = totalCashflowReport(data, deals, bindVerdicts(verdictRows, data.mfTx), exclusions);
+  const report = totalCashflowReport(data, deals, bindDuplicateVerdicts(verdictRows, data.mfTx), exclusions);
   return c.json({
     months: report.months,
     // mf と candidates をそのまま渡す。要確認は「理由を告げる」ためではなく

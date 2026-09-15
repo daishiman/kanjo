@@ -17,7 +17,8 @@
     "check:thead": "node scripts/check-thead-render.mjs",
     "check:mobile-layout": "node scripts/check-mobile-layout.mjs",
     "check:financial-figure": "node scripts/check-mobile-financial-layout.mjs",
-    "check:financial-routes": "node scripts/check-financial-visuals.mjs"
+    "check:financial-routes": "node scripts/check-financial-visuals.mjs",
+    "check:analysis-hub": "node scripts/check-analysis-hub-visuals.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.1.0",

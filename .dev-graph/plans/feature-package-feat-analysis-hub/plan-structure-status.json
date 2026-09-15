@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py (派生ビュー・手書き編集しない・再生成で上書き)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-ANHUB-P01",
+      "title": "支出分析ハブ 要件ベースラインの確定",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P02",
+      "title": "支出分析ハブ アーキテクチャ決定記録の確定",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P03",
+      "title": "支出分析ハブ 設計レビューの実施と記録",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P04",
+      "title": "支出分析ハブ 先行失敗テストの設計と追加",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P05",
+      "title": "支出分析ハブ 実装 (core集計・previousPeriod移設・API・ハブ画面)",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P06",
+      "title": "支出分析ハブ 全テスト・型検査・lintの実行と記録",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P07",
+      "title": "支出分析ハブ AC-001..AC-006 の受入検証",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P08",
+      "title": "支出分析ハブ previousPeriod 重複実装の除去",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P09",
+      "title": "支出分析ハブ 品質保証 (アクセシビリティ・性能予算・チェック系)",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P10",
+      "title": "支出分析ハブ 最終レビューと要件突合",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P11",
+      "title": "支出分析ハブ 証跡の集約",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P12",
+      "title": "支出分析ハブ 運用ドキュメントの更新 (ui-decisions・既存テスト文言)",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-ANHUB-P13",
+      "title": "支出分析ハブ リリース判断とクローズアウト",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

@@ -1,4 +1,5 @@
 /** 全ページ共通の Focus Ledger シェル。 */
+import type { AnalysisHubReport } from '@kanjo/core';
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -6,17 +7,21 @@ import { AUTH_EVENT, type ImportHistoryRow, type SummaryResponse, api } from '..
 import { monthLabel, yen } from '../format.js';
 import { PeriodPicker, usePeriod } from '../period.js';
 import {
+  ANALYSIS_HUB_STALE_TIME_MS,
   ANALYSIS_TABS,
   APP_ROUTES,
+  type AnalysisTabId,
   type AppRouteId,
   MOBILE_ROUTES,
   TABBED_ROUTE_IDS,
+  analysisHubQueryKey,
   routeContentWidth,
 } from '../routeMetadata.js';
 import { Button } from './Button.js';
 import { CommandPalette, OPEN_COMMAND_PALETTE_EVENT } from './CommandPalette.js';
 import { ExportMenu } from './ExportMenu.js';
 import { NavItem } from './NavItem.js';
+import { NavigationEffects } from './NavigationEffects.js';
 import { PageShell } from './Page.js';
 import { RouteIcon } from './RouteIcon.js';
 import { Term } from './Term.js';
@@ -68,6 +73,27 @@ function currentLocation(pathname: string, locked: boolean) {
   );
   if (!route) return { group: '管理' as const, labels: ['ページ'] };
   return { group: ROUTE_GROUP[route.id], labels: [route.label] };
+}
+
+/**
+ * サイドバー子行の件数バッジ。要確認が 1 件以上ある視点 (照合・総収支) だけに出す。
+ * リンクの外の兄弟要素に置き、リンクの accessible name (タブ名) を変えない。
+ */
+function ReviewBadge({ id, views }: { id: AnalysisTabId; views: AnalysisHubReport['views'] | undefined }) {
+  if (id !== 'reconciliation' && id !== 'total-cashflow') return null;
+  const count = views?.[id]?.reviewCount ?? 0;
+  if (count <= 0) return null;
+  return (
+    <span
+      className="badge danger"
+      data-testid={`nav-review-badge-${id}`}
+      style={{ padding: '0 8px', fontSize: 'var(--fs-2xs)' }}
+    >
+      <span className="visually-hidden">要確認</span>
+      {count}
+      <span className="visually-hidden">件</span>
+    </span>
+  );
 }
 
 function latestImportAt(rows: ImportHistoryRow[] | undefined): string | null {
@@ -190,6 +216,13 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
     enabled: !locked,
     staleTime: 60_000,
   });
+  // ハブ画面と同じキー。支出分析を開いていてもリクエストは 1 本にまとまる
+  const hub = useQuery({
+    queryKey: analysisHubQueryKey(key),
+    queryFn: () => api<AnalysisHubReport>(withPeriod('/analysis/hub')),
+    enabled: !locked,
+    staleTime: ANALYSIS_HUB_STALE_TIME_MS,
+  });
 
   const d = summary.data?.defense;
   const ov = summary.data?.overview;
@@ -215,6 +248,7 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
   );
   return (
     <div className={`shell${locked ? ' shell-locked' : ''}`}>
+      {!locked && <NavigationEffects />}
       <a href="#main-content" className="skip-link">
         本文へスキップ
       </a>
@@ -286,13 +320,18 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
                           <span className="nav-label">{tab.label}</span>
                         </span>
                       ) : (
-                        <NavItem
+                        <span
                           key={tab.id}
-                          to={tab.path}
-                          icon={tab.icon}
-                          label={tab.label}
-                          variant="sidebar"
-                        />
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'minmax(0, 1fr) auto',
+                            alignItems: 'center',
+                            gap: 4,
+                          }}
+                        >
+                          <NavItem to={tab.path} icon={tab.icon} label={tab.label} variant="sidebar" />
+                          <ReviewBadge id={tab.id} views={hub.data?.views} />
+                        </span>
                       ),
                     )}
                   </div>

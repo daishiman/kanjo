@@ -1,0 +1,1113 @@
+{
+  "schema_version": "1.0.0",
+  "feature_package_id": "feature-package/feat-analysis-hub",
+  "parent_feature": "feat-analysis-hub",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "git"
+  },
+  "source_lineage": {
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0",
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "source_paths": [
+      "system-spec/index.md",
+      "system-spec/00-requirements-definition.md",
+      "specs/spec-analysis-hub.md",
+      "features/feat-analysis-hub.md"
+    ],
+    "confirmed": true
+  },
+  "tasks": [
+    {
+      "id": "SYS-ANHUB-P01",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ 要件ベースラインの確定",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p01"
+      ],
+      "related_nodes": [
+        "spec-analysis-hub",
+        "feat-analysis-hub"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P01",
+      "depends_on": [],
+      "write_scope": [
+        "docs/analysis-hub/requirements-baseline.md"
+      ],
+      "deploy_unit": "N/A: ドキュメント成果物のみでビルド・デプロイ単位を持たない",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p01.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/analysis-hub/requirements-baseline.md (FR-001..FR-006, BR-001..BR-005, AC-001..AC-006, 非機能要件, 未決事項, 確定意思決定の一覧) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "test -f docs/analysis-hub/requirements-baseline.md",
+        "grep -c 'FR-00' docs/analysis-hub/requirements-baseline.md"
+      ],
+      "rollback": "docs/analysis-hub/requirements-baseline.md を削除する。他 phase の成果物に依存されないため巻き戻しの副作用はない。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p01.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P01"
+      },
+      "secondary_workstreams": [
+        "quality"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P02",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ アーキテクチャ決定記録の確定",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p02"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-frontend",
+        "arch-analysis-hub-backend",
+        "arch-analysis-hub-ui-ux",
+        "arch-analysis-hub-database",
+        "arch-analysis-hub-auth",
+        "arch-analysis-hub-security",
+        "arch-analysis-hub-infrastructure",
+        "arch-analysis-hub-maintenance-ops"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P02",
+      "depends_on": [
+        "SYS-ANHUB-P01"
+      ],
+      "write_scope": [
+        "docs/analysis-hub/architecture-decision.md"
+      ],
+      "deploy_unit": "N/A: ドキュメント成果物のみでビルド・デプロイ単位を持たない",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p02.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/analysis-hub/architecture-decision.md (ADR 一覧、未決事項の明示的な Entry gate 化を含む) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "test -f docs/analysis-hub/architecture-decision.md",
+        "grep -c 'qa-' docs/analysis-hub/architecture-decision.md"
+      ],
+      "rollback": "docs/analysis-hub/architecture-decision.md を削除する。P05 はこの巻き戻し後 architecture/analysis-hub-*.md へ直接立ち返る。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p02.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P02"
+      },
+      "secondary_workstreams": [
+        "frontend",
+        "backend"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P03",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ 設計レビューの実施と記録",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p03"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-security",
+        "arch-analysis-hub-auth"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P03",
+      "depends_on": [
+        "SYS-ANHUB-P02"
+      ],
+      "write_scope": [
+        "docs/analysis-hub/design-review.md"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみでビルド・デプロイ単位を持たない",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p03.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/analysis-hub/design-review.md (レビュー結果、指摘事項の有無、再オープン要否の判定) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "test -f docs/analysis-hub/design-review.md"
+      ],
+      "rollback": "docs/analysis-hub/design-review.md を削除する。指摘が P02 の再オープンを要する場合は P02 の決定記録を直接修正する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p03.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P03"
+      },
+      "secondary_workstreams": [
+        "documentation"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P04",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ 先行失敗テストの設計と追加",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p04"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-backend",
+        "arch-analysis-hub-frontend",
+        "arch-analysis-hub-maintenance-ops"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P04",
+      "depends_on": [
+        "SYS-ANHUB-P03"
+      ],
+      "write_scope": [
+        "packages/core/src/analysis-hub.test.ts",
+        "packages/api/src/analysis-hub.test.ts",
+        "packages/web/src/analysis-hub.dom.test.tsx"
+      ],
+      "deploy_unit": "packages/core (Node ライブラリ), packages/api (Cloudflare Workers), packages/web (web ビルド) — いずれもテストコードのみでデプロイ物を追加しない",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p04.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "packages/core/src/analysis-hub.test.ts, packages/api/src/analysis-hub.test.ts, packages/web/src/analysis-hub.dom.test.tsx (いずれも実装前は失敗する) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "pnpm --filter core test -- analysis-hub 2>&1 | tail -5",
+        "pnpm --filter api test -- analysis-hub 2>&1 | tail -5",
+        "pnpm --filter web test -- analysis-hub.dom 2>&1 | tail -5"
+      ],
+      "rollback": "追加した3テストファイルを削除する。既存の analysis-tabs/navigation-ux/common-shell-routes テストは変更前の文言に戻す。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p04.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P04"
+      },
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "api"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P05",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ 実装 (core集計・previousPeriod移設・API・ハブ画面)",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p05"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-backend",
+        "arch-analysis-hub-frontend",
+        "arch-analysis-hub-ui-ux",
+        "arch-analysis-hub-auth",
+        "arch-analysis-hub-security",
+        "arch-analysis-hub-database"
+      ],
+      "workstream_kind": "frontend",
+      "build_target_kind": "application-code",
+      "phase_ref": "P05",
+      "depends_on": [
+        "SYS-ANHUB-P04"
+      ],
+      "write_scope": [
+        "packages/core/src/analysis-hub.ts",
+        "packages/api/src/routes/analysis-hub.ts",
+        "packages/api/src/index.ts",
+        "packages/web/src/pages/Analysis.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/components/Layout.tsx"
+      ],
+      "deploy_unit": "packages/core (Node ライブラリ, npm workspace), packages/api (Cloudflare Workers, Hono route追加), packages/web (Vite web ビルド)",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p05.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "packages/core/src/analysis-hub.ts, packages/api/src/routes/analysis-hub.ts, packages/web/src/pages/Analysis.tsx ほかの実装コード一式 (P04 のテストが green になる状態) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "pnpm --filter core test -- analysis-hub",
+        "pnpm --filter api test -- analysis-hub",
+        "pnpm --filter web test -- analysis-hub.dom",
+        "pnpm typecheck"
+      ],
+      "rollback": "本task で追加・変更したファイルを P04 完了時点の状態 (テスト red) へ差し戻す。api/ai/dataset.ts の previousPeriod は削除せず維持したまま (重複除去は P08) 実装のみを取り消す。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p05.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P05"
+      },
+      "secondary_workstreams": [
+        "backend",
+        "api"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P06",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ 全テスト・型検査・lintの実行と記録",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p06"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-maintenance-ops"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P06",
+      "depends_on": [
+        "SYS-ANHUB-P05"
+      ],
+      "write_scope": [
+        "docs/analysis-hub/test-run.md"
+      ],
+      "deploy_unit": "N/A: 実行記録のみでビルド・デプロイ単位を持たない",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p06.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/analysis-hub/test-run.md (pnpm test/typecheck/lint の実行結果サマリー) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "pnpm test 2>&1 | tail -20",
+        "pnpm typecheck 2>&1 | tail -20",
+        "pnpm lint 2>&1 | tail -20"
+      ],
+      "rollback": "docs/analysis-hub/test-run.md を削除する。テスト失敗が判明した場合は P05 へ差し戻す。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p06.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P06"
+      },
+      "secondary_workstreams": [
+        "documentation"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P07",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ AC-001..AC-006 の受入検証",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p07"
+      ],
+      "related_nodes": [
+        "spec-analysis-hub"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P07",
+      "depends_on": [
+        "SYS-ANHUB-P06"
+      ],
+      "write_scope": [
+        "docs/analysis-hub/acceptance.md"
+      ],
+      "deploy_unit": "N/A: 受入検証記録のみでビルド・デプロイ単位を持たない",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p07.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/analysis-hub/acceptance.md (AC-001..AC-006 各項目の受入判定と根拠) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "test -f docs/analysis-hub/acceptance.md",
+        "grep -c 'AC-00' docs/analysis-hub/acceptance.md"
+      ],
+      "rollback": "docs/analysis-hub/acceptance.md を削除する。AC 未充足が判明した場合は P05 へ差し戻す。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p07.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P07"
+      },
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "documentation"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P08",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ previousPeriod 重複実装の除去",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p08"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-backend"
+      ],
+      "workstream_kind": "backend",
+      "build_target_kind": "application-code",
+      "phase_ref": "P08",
+      "depends_on": [
+        "SYS-ANHUB-P07"
+      ],
+      "write_scope": [
+        "packages/api/src/ai/dataset.ts"
+      ],
+      "deploy_unit": "packages/api (Cloudflare Workers)",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p08.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "packages/api/src/ai/dataset.ts (previousPeriod 重複実装を除去し core 呼び出しへ置換した差分), docs/analysis-hub/refactoring.md が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "pnpm --filter api test",
+        "pnpm typecheck",
+        "grep -n 'previousPeriod' packages/api/src/ai/dataset.ts"
+      ],
+      "rollback": "packages/api/src/ai/dataset.ts を本task直前の状態 (previousPeriod 実装を保持した状態) へ差し戻す。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p08.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P08"
+      },
+      "secondary_workstreams": [
+        "quality",
+        "documentation"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P09",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ 品質保証 (アクセシビリティ・性能予算・チェック系)",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p09"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-maintenance-ops",
+        "arch-analysis-hub-security",
+        "arch-analysis-hub-infrastructure"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P09",
+      "depends_on": [
+        "SYS-ANHUB-P08"
+      ],
+      "write_scope": [
+        "docs/analysis-hub/assurance.md"
+      ],
+      "deploy_unit": "N/A: 品質保証記録のみでビルド・デプロイ単位を持たない",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p09.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/analysis-hub/assurance.md (WCAG AA・URL情報最小化・D1予算・js-budget・check:mobile-layout・check:financial-routes の確認結果) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "pnpm --filter web run check:mobile-layout",
+        "pnpm --filter web run check:financial-routes",
+        "pnpm --filter web run check:js-budget"
+      ],
+      "rollback": "docs/analysis-hub/assurance.md を削除する。品質基準未達が判明した場合は該当 phase (P05/P08) へ差し戻す。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p09.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P09"
+      },
+      "secondary_workstreams": [
+        "frontend",
+        "infrastructure",
+        "security",
+        "operations"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P10",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ 最終レビューと要件突合",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p10"
+      ],
+      "related_nodes": [
+        "feat-analysis-hub",
+        "spec-analysis-hub"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P10",
+      "depends_on": [
+        "SYS-ANHUB-P09"
+      ],
+      "write_scope": [
+        "docs/analysis-hub/final-review.md"
+      ],
+      "deploy_unit": "N/A: 最終レビュー記録のみでビルド・デプロイ単位を持たない",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p10.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/analysis-hub/final-review.md (feature 全体の整合性レビュー結果) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "test -f docs/analysis-hub/final-review.md"
+      ],
+      "rollback": "docs/analysis-hub/final-review.md を削除する。不整合が判明した場合は該当 phase へ差し戻す。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p10.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P10"
+      },
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "documentation"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P11",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ 証跡の集約",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p11"
+      ],
+      "related_nodes": [
+        "feat-analysis-hub"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P11",
+      "depends_on": [
+        "SYS-ANHUB-P10"
+      ],
+      "write_scope": [
+        "docs/analysis-hub/evidence.md"
+      ],
+      "deploy_unit": "N/A: 証跡集約のみでビルド・デプロイ単位を持たない",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p11.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/analysis-hub/evidence.md (P01..P10 の全成果物パスとテスト実行ログ参照の索引) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "test -f docs/analysis-hub/evidence.md",
+        "grep -c 'docs/analysis-hub/' docs/analysis-hub/evidence.md"
+      ],
+      "rollback": "docs/analysis-hub/evidence.md を削除する。他成果物への参照のみで実体を持たないため副作用はない。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p11.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P11"
+      },
+      "secondary_workstreams": [
+        "documentation"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P12",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ 運用ドキュメントの更新 (ui-decisions・既存テスト文言)",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p12"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-frontend",
+        "arch-analysis-hub-maintenance-ops"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P12",
+      "depends_on": [
+        "SYS-ANHUB-P11"
+      ],
+      "write_scope": [
+        "docs/ui-decisions.md",
+        "packages/web/src/analysis-tabs.dom.test.tsx",
+        "packages/web/src/navigation-ux.dom.test.tsx",
+        "packages/web/src/common-shell-routes.dom.test.tsx"
+      ],
+      "deploy_unit": "docs (リポジトリ直下ドキュメント), packages/web (既存DOMテストの文言更新)",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p12.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/ui-decisions.md (C3 例外の追記), 3件の既存 DOM テストファイル (新タブ短縮名への文言更新差分の確定) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "pnpm --filter web test -- analysis-tabs navigation-ux common-shell-routes",
+        "grep -n 'C3' docs/ui-decisions.md"
+      ],
+      "rollback": "docs/ui-decisions.md への追記を取り消し、3件のDOMテストを旧文言に戻す。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p12.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P12"
+      },
+      "secondary_workstreams": [
+        "frontend",
+        "quality"
+      ]
+    },
+    {
+      "id": "SYS-ANHUB-P13",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "parent_feature": "feat-analysis-hub",
+      "title": "支出分析ハブ リリース判断とクローズアウト",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p13"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-infrastructure",
+        "feat-analysis-hub"
+      ],
+      "workstream_kind": "operations",
+      "build_target_kind": "application-code",
+      "phase_ref": "P13",
+      "depends_on": [
+        "SYS-ANHUB-P12"
+      ],
+      "write_scope": [
+        "docs/analysis-hub/close-out.md"
+      ],
+      "deploy_unit": "packages/web + packages/api を既存 ci.yml → deploy.yml の Cloudflare Workers 配信経路でリリースする (配信構成自体の変更なし)",
+      "source_lineage": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-analysis-hub.md",
+        "features/feat-analysis-hub.md"
+      ],
+      "classification": {
+        "confidence": 1.0,
+        "reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 1.0,
+            "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p13.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/analysis-hub/close-out.md (リリース可否判断、feature クローズアウト記録、次サイクル候補の明記) が成果物として存在し、Verification and evidence 節のコマンドが成功すること。"
+      ],
+      "verification": [
+        "test -f docs/analysis-hub/close-out.md",
+        "git diff --stat .github/workflows/ci.yml .github/workflows/deploy.yml"
+      ],
+      "rollback": "docs/analysis-hub/close-out.md を削除する。リリース後に問題が判明した場合は既存の Cloudflare Workers ロールバック手順 (直前のデプロイへ戻す) に従う。migration は伴わないため巻き戻し不要。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": null,
+        "file_path": "tasks/feat-analysis-hub/sys-anhub-p13.md",
+        "parent_feature": "feat-analysis-hub",
+        "feature_package_id": "feature-package/feat-analysis-hub",
+        "phase_ref": "P13"
+      },
+      "secondary_workstreams": [
+        "infrastructure",
+        "quality",
+        "documentation"
+      ]
+    }
+  ]
+}

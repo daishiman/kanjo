@@ -9,6 +9,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
+import { invalidateAnalysisHub } from '../../analysis-query-invalidation.js';
 import {
   type DuplicateVerdictValue,
   type FreeeCoverage,
@@ -275,7 +276,10 @@ function ExcludeControl({
     onSuccess: () => {
       setOpen(false);
       setReason(defaultReason);
-      return client.invalidateQueries({ queryKey: ['total-cashflow'] });
+      return Promise.all([
+        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
+        invalidateAnalysisHub(client),
+      ]);
     },
   });
 
@@ -313,7 +317,11 @@ function RestoreButton({ freeeKey }: { freeeKey: string }) {
         method: 'DELETE',
         body: JSON.stringify({ freeeKey }),
       }),
-    onSuccess: () => client.invalidateQueries({ queryKey: ['total-cashflow'] }),
+    onSuccess: () =>
+      Promise.all([
+        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
+        invalidateAnalysisHub(client),
+      ]),
   });
   return (
     <Button size="mini" disabled={run.isPending} onClick={() => run.mutate()}>
@@ -388,7 +396,10 @@ function MatchedTable({ matched }: { matched: readonly ReconcileMatch[] }) {
     onSuccess: () => {
       setPicked(new Set());
       setReason(AUTO_MATCH_REASON);
-      return client.invalidateQueries({ queryKey: ['total-cashflow'] });
+      return Promise.all([
+        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
+        invalidateAnalysisHub(client),
+      ]);
     },
   });
 
@@ -606,7 +617,10 @@ export function TotalCashflowPage() {
     // 判断は帰属を動かすので、一覧表と要確認キューを両方引き直す
     onSuccess: () => {
       setPicked(new Set());
-      return client.invalidateQueries({ queryKey: ['total-cashflow'] });
+      return Promise.all([
+        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
+        invalidateAnalysisHub(client),
+      ]);
     },
   });
 

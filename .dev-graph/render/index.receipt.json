@@ -1,0 +1,28 @@
+{
+ "renderer": "render-graph-html.py (dev-graph 0.1.11)",
+ "rendered_at": "2026-09-14T14:27:35Z",
+ "scope": "all nodes",
+ "graph_revision": 2,
+ "input": ".dev-graph/state/graph.json",
+ "input_sha256": "d689c7e2904fb4fde30906db4cc32e960605222bb9ddcf69165e137ce497c91e",
+ "output": ".dev-graph/render/index.html",
+ "output_sha256": "4a935e572f1cf60df82994500cd300b05aa5dd450266dd00e0f5646d87540dfa",
+ "nodes": 23,
+ "edges": 21,
+ "feature_progress": {
+  "feat-analysis-hub": {
+   "done": 0,
+   "total": 13
+  }
+ },
+ "external_refs": 0,
+ "svg": 1,
+ "inline_scripts": 2,
+ "registration_receipt": {
+  "expected_count": 13,
+  "applied_count": 13,
+  "source_digest": "sha256:20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+ },
+ "live_trial": "headless Chrome screenshot: 23 nodes / 'active · feature · 0/13' 表示を確認",
+ "note": "renderer は source_digest を HTML に描画しない (total 13 = applied_count 13 のみ表示で照合)"
+}

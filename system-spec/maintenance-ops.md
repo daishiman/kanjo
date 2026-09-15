@@ -15,12 +15,12 @@ serves_goals: [G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-maintenance-ops-web-ds-observed-004。裏付け質疑 (`qa_refs`): `qa-maintenance-ops-web-ds-decision-002`, `qa-maintenance-ops-web-ds-decision-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは OS ごとのスクリーンショット回帰 (端末サイズ×OS 版) と、トークン変更時にネイティブ側の写しを追従させる運用手順を持つ必要があった。本サイクルの保守は pnpm lint のずれ検出と web の check 系スクリプトに閉じる。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、本カテゴリでは OS ごとのスクリーンショット回帰 (端末サイズ×OS 版) と、トークン変更時にネイティブ側の写しを追従させる運用手順を持つ必要があった。本サイクルの保守は pnpm lint のずれ検出と web の check 系スクリプトに閉じる。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは OS ごとのスクリーンショット回帰 (端末サイズ×OS 版) と、トークン変更時にネイティブ側の写しを追従させる運用手順を持つ必要があった。本サイクルの保守は pnpm lint のずれ検出と web の check 系スクリプトに閉じる。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは OS ごとのスクリーンショット回帰 (端末サイズ×OS 版) と、トークン変更時にネイティブ側の写しを追従させる運用手順を持つ必要があった。本サイクルの保守は pnpm lint のずれ検出と web の check 系スクリプトに閉じる。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは OS ごとのスクリーンショット回帰 (端末サイズ×OS 版) と、トークン変更時にネイティブ側の写しを追従させる運用手順を持つ必要があった。本サイクルの保守は pnpm lint のずれ検出と web の check 系スクリプトに閉じる。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-maintenance-ops-web-ah-observed-001。裏付け質疑 (`qa_refs`): `qa-analysis-hub-decision-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア審査とアプリ版ごとの回帰確認を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではストア審査とアプリ版ごとの回帰確認を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリではストア審査とアプリ版ごとの回帰確認を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリではストア審査とアプリ版ごとの回帰確認を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリではストア審査とアプリ版ごとの回帰確認を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,7 +28,9 @@ serves_goals: [G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | Google SRE の手作業 (toil) 削減を、規約の遵守を目視レビューではなく pnpm lint のずれ検出と直書き検出で自動化するという確定内容に反映した。 |
+| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | Google SRE の『手作業の確認を自動の検査へ置き換える』を、判定規則の境界値テスト、タブ label 変更に伴う DOM テスト更新、check:mobile-layout / check:financial-routes の対象へ /analysis を含めることに反映した。verify:full と CI だけでハブの回帰を検出できる状態にする。 |
+
+> **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
 ## 確定内容 (質疑録)
 
@@ -38,41 +40,29 @@ serves_goals: [G4]
 
 - 資するゴール: G4
 
-#### 主たる接地根拠: `qa-maintenance-ops-web-ds-observed-004`
+#### 主たる接地根拠: `qa-maintenance-ops-web-ah-observed-001`
 
 **問**
 
-規約のずれを機械で止める仕組みは、現行の保守の流れのどこに差し込めるか。
+ハブ導入後の検証と保守の手順 (回帰確認・規則の維持) はどうなるか。
 
 **答**
 
-pnpm lint は biome check → sync-project-skills --check → check-glossary → check-report-css → check-graph-lineage → security:content を直列に実行する。check-report-css.mjs は『正本 report.css と写し report-css.ts がズレたら落とす』検査で、正本→写しのずれ検出を lint へ組み込む前例がすでにある。トークンの写しずれ検出と直書き検出は、この列に同じ型の node スクリプトとして足せる。
+ルート package.json の verify:full (pnpm test → typecheck → lint → build → web の check:thead / check:mobile-layout / check:financial-figure / check:financial-routes → preview:smoke) と、デザイン系の高速確認 design-system:fast がある。lint は biome・check-design-tokens・check-design-system-document-contract・check-graph-lineage 等を束ねる。CI (ci.yml) が lint/typecheck/test/build を実行する。ハブでは、判定規則 (優先度・マトリクス正常判定・改善余地・前期間比の null 規則) を docs に明記し core テストの境界値で固定する (利用者決定 qa-analysis-hub-decision-003)。タブ label の変更で analysis-tabs / navigation-ux / common-shell-routes の DOM テストを新しい文言へ更新する。check:financial-routes / check:mobile-layout の対象ルートにハブ (/analysis) が含まれるかを確認し、無ければ追加して狭幅の横スクロールを検査する。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: package.json の scripts.lint と scripts/check-report-css.mjs の冒頭をアシスタントが R4-reopen の後に読んだ観測事実。answered_at は読んだ直後の記録時刻で上限値。 / 回答時刻: 2026-09-13T07:54:32Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: package.json, packages/web/package.json, .github/workflows/ci.yml。 / 回答時刻: 2026-09-14T11:38:26Z)
 
-#### 裏付け質疑: `qa-maintenance-ops-web-ds-decision-002`
+#### 裏付け質疑: `qa-analysis-hub-decision-003`
 
 **問**
 
-会計レポート用の report-design-system(青ブランド #1d63be) も今回 Focus Ledger の配色へ揃えますか？
+画像の『優先度 (高/中)』『マトリクスの正常判定』『診断の改善余地 (金額)』は現行実装に定義が無い。どう定めるか。選択肢: (A) 単純な規則で定義する: 優先度は照合・総収支が要確認 1 件以上なら高・0 件なら中、他 3 視点は中。マトリクスは未記録月 0 なら正常。改善余地は既存 tradeoffCandidates の月額合計 × 12 の年額。規則は docs に明記しテストで固定する (推奨) / (B) 状態は件数と前 12 か月比だけにし、優先度・正常判定・改善余地は出さない。
 
 **答**
 
-『今回は対象外で記録 (Recommended)』を選択。今回はアプリ画面の共通化に集中し、report.css / report-css.ts の配色移行は次サイクルとして明記する。今回は、トークン正本を依存ゼロの packages/core に置くことで、次サイクルでレポート側から同じ値を import できる前提だけを用意する (report 側のファイルは変更しない)。 提示した選択肢: 『今回は対象外で記録 (Recommended)』(アプリ画面に集中し、配色移行は次サイクル) / 『今回含めて揃える』(report.css と report-css.ts も同じトークンへ移行。会計レポートの出力見た目も変わる)。
+(A) 単純な規則で定義 を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion の選択肢から明示選択した。answered_at は会話記録に残る回答の返却時刻 2026-09-13T04:54:53Z である。 / 回答時刻: 2026-09-13T04:54:53Z)
-
-#### 裏付け質疑: `qa-maintenance-ops-web-ds-decision-003`
-
-**問**
-
-今後の作成物が規約に従い続けるよう、どう保守するか。
-
-**答**
-
-上位概念 G4 (色の直書きを機械検出し、規約文書を置いて今後の成果物に強制する) として利用者が承認した。トークン正本と写し (CSS 変数・チャート色の予備値) のずれ、およびトークン定義以外での 6 桁 hex の直書きを lint で検出して pnpm lint に組み込み、使い方を docs 配下の規約文書 1 つにまとめる。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 上位概念 U1-U9 の承認質問 (選択肢『この内容で承認』/『修正して承認』) で利用者が『この内容で承認』を選んだ。G4 はその要約に明記されていた。answered_at は会話記録に残る回答の返却時刻である。 / 回答時刻: 2026-09-13T04:54:53Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-14T11:33:07Z)
 
 ## To-Be / Delta
 
@@ -80,25 +70,22 @@ pnpm lint は biome check → sync-project-skills --check → check-glossary →
 
 ### 到達すべき状態 (To-Be)
 
-- **G4**: 今後の作成物が自動的に規約へ従うよう、トークン定義以外での色の直書きと、正本と写し (CSS 変数・チャート色) のずれを lint で機械検出し、使い方を規約文書として置く。
+- **G4**: 優先度・マトリクスの正常判定・改善余地を単純で説明可能な規則として定義し、規則を docs に明記してテストで固定する。優先度は照合と総収支が要確認 1 件以上なら高・0 件なら中、他の 3 視点は中。マトリクスは未記録月 0 なら正常。改善余地は tradeoffCandidates の月額合計 × 12 の年額。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | styles.css の :root トークンと charts.ts の COLORS を design-tokens.ts から導出した写しに置き換え、写しのずれを検出する lint を lint スクリプトへ組み込む。 | pnpm lint が写しの不一致で exit 非 0 になり、一致時に exit 0 になる。charts.ts から 6 桁 hex の直書きが 0 件になる。 |
-| O5 | トークンと共通部品の使い方を規約文書 (docs 配下) にまとめ、新しい画面・図をつくるときの参照先を 1 つにする。 | 規約文書が色の役割 (塗り/文字の分離)・タイポグラフィ・余白・シェル・ボタン・チャートの各節を持ち、README または AGENTS.md から参照されている。 |
+| O3 | core に analysisHub(dataset) 相当の純関数を置き、API に GET /analysis/hub を足す。 | core 単体テストが期間合計・前 12 か月比 (前期間データ無しは null)・5 視点の状態・優先度・改善余地を固定データで検証し、API 統合テストが認証付きで 200 と期間メタを返し、ハブ表示中の DOM テストで既存 5 API への呼出しが 0 件である。 |
+| O4 | 判定規則を docs に書き、境界値をテストで固定する。 | 要確認 0 件/1 件、未記録月 0/1、tradeoff 候補 0 件の境界でテストが規則どおりの値を返し、規則を変えるとテストが落ちる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: 新しい画面をつくるとき、色・余白・角丸・文字サイズを design-tokens から選ぶだけで FINAL-UI と同じ見た目になる。
-- **I4**: 誰かが画面のコードに #xxxxxx の色を直書きしたら、pnpm lint が落ちて共通トークンを使うよう促す。
+- **I5**: 優先度・マトリクス正常判定・改善余地の規則を docs/ui-decisions.md (または docs 配下の分析ハブ文書) に書き、境界値テストで固定する。
 
 ### 本章に効く確定意思決定
 
-- **dec-design-token-source**: デザイントークンの正本をどこに置くか
-  - 採択: packages/core の design-tokens.ts を正本にし、CSS 変数とチャートの予備値を生成する (`core-ts`)
-  - 目的適合: G1 の『依存ゼロの TypeScript 1 か所』に直接合う。テスト (O1・O4) が CSS を解析せず値を import でき、次サイクルでレポート側からも同じ値を import できる
+- (本章ゴールに効く確定 decision なし)
 
 ## 適用された設計知識
 
@@ -106,9 +93,9 @@ pnpm lint は biome check → sync-project-skills --check → check-glossary →
 
 ### 本章での適用
 
-Clean Code card の『同じ知識を 1 か所に置く (DRY)』と『意図を名前で示す』を保守の仕組みに適用した。色の値を役割名で呼ぶ (例: 注意の塗りと注意の文字を別名にする) ことで、直書きの hex がコードに現れた時点で規約違反と判別できる。これを lint で機械検出するのは、人やエージェントのレビューに頼ると規約が今後の作成物へ届かないためである。
+Clean Code card の『規則は名前と境界値テストで読めるようにする』を、ハブの判定規則の保守に適用した。優先度 (照合・総収支の要確認 1 件以上で高)・マトリクスの正常判定 (未記録月 0)・改善余地 (tradeoffCandidates の月額合計 × 12)・前期間比の null 規則を、docs に書いた文言と同じ名前の core テストで、0 件と 1 件・欠け月 0 と 1 の境界ごとに固定する。規則を変えるとテストが落ちる状態を保守の停止条件にし、タブ label 変更に伴う DOM テストの文言更新も同じ変更の中で行う。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T05:07:52Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-14T11:57:54Z)
 
 ### Clean Code — deep knowledge card
 

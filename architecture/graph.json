@@ -701,7 +701,7 @@
         "imported_at": "2026-09-13T08:15:21Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "c43d364880309fe1dc22bde3bf61a5cfb7eb4e996e2f3f9193b968df3aef3c59",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -724,7 +724,7 @@
         "imported_at": "2026-09-13T22:33:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "58c252551b1ba2c531913f4d13d7b959a11fb20a5fced89658cde126787dfd90",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -747,7 +747,7 @@
         "imported_at": "2026-09-13T22:33:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "3498ef5a73233e6a933baaa19d2cbd5bb02dd79baa462ec9cc1bbe55f831ebb2",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -770,7 +770,7 @@
         "imported_at": "2026-09-13T22:33:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "26fcc96ee685950911cfd893979243d5685559547fe037de554254f8ea57e008",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -793,7 +793,7 @@
         "imported_at": "2026-09-13T22:33:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "d26a9eb5fda7ca0d9e4c407106b69b2b84de2bff328260b18a78dd6f5abcf9df",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -816,7 +816,7 @@
         "imported_at": "2026-09-13T08:15:21Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "d81c4f38a04af0e0932f7a05c2f55cf87885aa55eeae8cd66f7cf442fb2b67ff",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -839,7 +839,7 @@
         "imported_at": "2026-09-13T22:33:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "87e8c5a76765563551fc0cd2e989c5876c4f64e05e391a6b32accb387bb7be5d",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -862,7 +862,7 @@
         "imported_at": "2026-09-13T22:33:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "90861d884f6550debe818e41909cbc5334ad7f75ef03e3172ef0f6373f19ee70",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1052,6 +1052,190 @@
       },
       "referenced_by": [
         "feat-account-login"
+      ]
+    },
+    {
+      "id": "arch-analysis-hub-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "支出分析ハブ — 認証ゲート配下のハブ API",
+      "file_path": "architecture/analysis-hub-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T12:23:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "945fd8dfa54925bd0c184efd13ef39acedf43feb00a5a4634bbc21a8e264fc20",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-analysis-hub"
+      ]
+    },
+    {
+      "id": "arch-analysis-hub-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "支出分析ハブ — core 集計関数と集約 API",
+      "file_path": "architecture/analysis-hub-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T12:23:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "04a49e39d41c790206872981560233225e7cc5e6750d62314d60c2bd3d5a653d",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-analysis-hub"
+      ]
+    },
+    {
+      "id": "arch-analysis-hub-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "支出分析ハブ — スキーマを変えない派生値",
+      "file_path": "architecture/analysis-hub-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T12:23:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "321660b14e75d908a0b4de239886de8e63a4a85a30ac53700f7daa4b90fff231",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-analysis-hub"
+      ]
+    },
+    {
+      "id": "arch-analysis-hub-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "支出分析ハブ — URL の focus 保持とクエリ共有",
+      "file_path": "architecture/analysis-hub-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T12:23:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "b9b122b5848ffd56ad081b04ac30e02cb44176b490a61cdb8d583ee226c670ef",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-analysis-hub"
+      ]
+    },
+    {
+      "id": "arch-analysis-hub-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "支出分析ハブ — 既存 Worker への GET 追加と D1 読取り量",
+      "file_path": "architecture/analysis-hub-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T12:23:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "4b1ce946c94ccd2fa3494fb4f49d4331a93aa9bab31e4fe46672baac023becb1",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-analysis-hub"
+      ]
+    },
+    {
+      "id": "arch-analysis-hub-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "支出分析ハブ — 判定規則の境界値テストと回帰検査",
+      "file_path": "architecture/analysis-hub-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T12:23:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "3b70d45717b2219eb2327b08c860cf16b240bacf2454fe230cb97a43eb6f5cea",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-analysis-hub"
+      ]
+    },
+    {
+      "id": "arch-analysis-hub-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "支出分析ハブ — focus 許可リストと URL コピーの情報保護",
+      "file_path": "architecture/analysis-hub-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T12:23:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "a9729ad559310400f5df9ec7f6ca4d5e89779a615300d7015a77b5cba5e1f506",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-analysis-hub"
+      ]
+    },
+    {
+      "id": "arch-analysis-hub-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "支出分析ハブ — 情報の優先順位とハブ画面構成",
+      "file_path": "architecture/analysis-hub-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T12:23:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "acc099afc910ebed34dafffde2fd75d5faf4747799d43e54c6368dda4a1edb45",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-analysis-hub"
       ]
     }
   ]

@@ -81,7 +81,7 @@ describe('現在地の一意性', () => {
     const sidebar = screen.getByRole('navigation', { name: 'メインナビゲーション' });
     const current = sidebar.querySelectorAll('[aria-current="page"]');
     expect(current).toHaveLength(1);
-    expect(current[0]?.textContent).toContain('トータル収支');
+    expect(current[0]?.textContent).toContain('総収支');
   });
 
   it('現在地の表現はaria-currentだけで、既定の.activeを重ねない', () => {

@@ -568,11 +568,25 @@ const aiReportDetail = {
   versions: [aiReportRow],
 };
 
+// サイドバーの要確認バッジが全画面で呼ぶ集約API。差し替えないと dev の /api 中継先へ抜け、
+// そこで別の wrangler dev が 401 を返すとログイン画面へ落ちて描画待ちがタイムアウトする。
+const analysisHub = {
+  summary: { income: 0, expense: 0, net: 0, previous: null, change: null },
+  views: {
+    reconciliation: { id: 'reconciliation', priority: '中', count: 0, reviewCount: 0 },
+    'total-cashflow': { id: 'total-cashflow', priority: '中', count: 0, reviewCount: 0 },
+    matrix: { id: 'matrix', priority: '中', count: 0, unrecordedMonths: 0, normal: true },
+    trends: { id: 'trends', priority: '中', count: 0, expenseChange: null },
+    diagnosis: { id: 'diagnosis', priority: '中', count: 0, annualSavings: 0, candidateCount: 0 },
+  },
+};
+
 const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64');
 const responseFor = (url) => {
   const path = new URL(url).pathname;
   if (path === '/api/auth/me') return { authenticated: true };
   if (path === '/api/summary') return summary;
+  if (path === '/api/analysis/hub') return analysisHub;
   if (path === '/api/imports') return { imports: [] };
   if (path === '/api/matrix') return matrix;
   if (path === '/api/trends') return trends;
