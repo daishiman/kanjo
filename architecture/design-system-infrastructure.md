@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "e3255c549ffd63a81eada5c7846c5f4ddb8a67590a930a0f652fa4d69efb74a4"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/infrastructure.md", "source_version": "0.1.14", "source_digest": "d26a9eb5fda7ca0d9e4c407106b69b2b84de2bff328260b18a78dd6f5abcf9df", "imported_at": "2026-09-13T22:33:44Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-14-design-system-foundation/completeness-findings.json", "evaluated_digest": "e3255c549ffd63a81eada5c7846c5f4ddb8a67590a930a0f652fa4d69efb74a4"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-14-design-system-foundation/infrastructure.md", "source_version": "0.1.14", "source_digest": "d26a9eb5fda7ca0d9e4c407106b69b2b84de2bff328260b18a78dd6f5abcf9df", "imported_at": "2026-09-13T22:33:44Z"}
 created_at: "2026-09-13T08:15:21Z"
 updated_at: "2026-09-13T08:15:21Z"
 depends_on: ["spec-design-system-foundation"]

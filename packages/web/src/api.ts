@@ -3,6 +3,7 @@
  * 型は @kanjo/core の分析出力型をそのまま利用する(サーバと完全一致)。
  */
 import type {
+  AnalysisHubReport,
   BalanceSheet,
   Benchmark,
   BudgetOutlook,
@@ -87,6 +88,9 @@ export interface PeriodMeta {
   years: string[];
   monthCount: number;
 }
+
+/** GET /api/analysis/hub の応答。集計本体は core、期間は全分析 API 共通形を使う。 */
+export type AnalysisHubResponse = AnalysisHubReport & { period: PeriodMeta };
 
 /** 防衛ラインの実績判定に、先行き見通し(事前警告)を足したもの */
 export interface DefenseLineWithForecast extends DefenseLine {

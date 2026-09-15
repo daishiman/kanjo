@@ -1,0 +1,1187 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-analysis-hub/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-analysis-hub",
+  "parent_feature": "feat-analysis-hub",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-ANHUB-P01": "beads",
+    "SYS-ANHUB-P02": "beads",
+    "SYS-ANHUB-P03": "beads",
+    "SYS-ANHUB-P04": "beads",
+    "SYS-ANHUB-P05": "beads",
+    "SYS-ANHUB-P06": "beads",
+    "SYS-ANHUB-P07": "beads",
+    "SYS-ANHUB-P08": "beads",
+    "SYS-ANHUB-P09": "beads",
+    "SYS-ANHUB-P10": "beads",
+    "SYS-ANHUB-P11": "beads",
+    "SYS-ANHUB-P12": "beads",
+    "SYS-ANHUB-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-ANHUB-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ 要件ベースラインの確定",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p01"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [],
+      "related_nodes": [
+        "spec-analysis-hub",
+        "feat-analysis-hub"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/requirements-baseline.md"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p01.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ アーキテクチャ決定記録の確定",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p02"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P01"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-frontend",
+        "arch-analysis-hub-backend",
+        "arch-analysis-hub-ui-ux",
+        "arch-analysis-hub-database",
+        "arch-analysis-hub-auth",
+        "arch-analysis-hub-security",
+        "arch-analysis-hub-infrastructure",
+        "arch-analysis-hub-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/architecture-decision.md"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p02.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ 設計レビューの実施と記録",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p03"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P02"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-security",
+        "arch-analysis-hub-auth"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/design-review.md"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p03.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ 先行失敗テストの設計と追加",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p04"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P03"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-backend",
+        "arch-analysis-hub-frontend",
+        "arch-analysis-hub-maintenance-ops"
+      ],
+      "resource_scope": [
+        "packages/core/src/analysis-hub.test.ts",
+        "packages/api/src/analysis-hub.test.ts",
+        "packages/web/src/analysis-hub.dom.test.tsx"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p04.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ 実装 (core集計・previousPeriod移設・API・ハブ画面)",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p05"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P04"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-backend",
+        "arch-analysis-hub-frontend",
+        "arch-analysis-hub-ui-ux",
+        "arch-analysis-hub-auth",
+        "arch-analysis-hub-security",
+        "arch-analysis-hub-database"
+      ],
+      "resource_scope": [
+        "packages/core/src/analysis-hub.ts",
+        "packages/api/src/routes/analysis-hub.ts",
+        "packages/api/src/index.ts",
+        "packages/web/src/pages/Analysis.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/components/Layout.tsx"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p05.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ 全テスト・型検査・lintの実行と記録",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p06"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P05"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/test-run.md"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p06.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ AC-001..AC-006 の受入検証",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p07"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P06"
+      ],
+      "related_nodes": [
+        "spec-analysis-hub"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/acceptance.md"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p07.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ previousPeriod 重複実装の除去",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p08"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P07"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-backend"
+      ],
+      "resource_scope": [
+        "packages/api/src/ai/dataset.ts"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p08.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ 品質保証 (アクセシビリティ・性能予算・チェック系)",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p09"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P08"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-maintenance-ops",
+        "arch-analysis-hub-security",
+        "arch-analysis-hub-infrastructure"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/assurance.md"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p09.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ 最終レビューと要件突合",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p10"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P09"
+      ],
+      "related_nodes": [
+        "feat-analysis-hub",
+        "spec-analysis-hub"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/final-review.md"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p10.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ 証跡の集約",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p11"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P10"
+      ],
+      "related_nodes": [
+        "feat-analysis-hub"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/evidence.md"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p11.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ 運用ドキュメントの更新 (ui-decisions・既存テスト文言)",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p12"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P11"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-frontend",
+        "arch-analysis-hub-maintenance-ops"
+      ],
+      "resource_scope": [
+        "docs/ui-decisions.md",
+        "packages/web/src/analysis-tabs.dom.test.tsx",
+        "packages/web/src/navigation-ux.dom.test.tsx",
+        "packages/web/src/common-shell-routes.dom.test.tsx"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p12.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "支出分析ハブ リリース判断とクローズアウト",
+      "project_id": "feature-package-feat-analysis-hub",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "analysis-hub",
+        "p13"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:39:34Z",
+      "updated_at": "2026-09-14T13:39:34Z",
+      "depends_on": [
+        "SYS-ANHUB-P12"
+      ],
+      "related_nodes": [
+        "arch-analysis-hub-infrastructure",
+        "feat-analysis-hub"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/close-out.md"
+      ],
+      "parent_feature": "feat-analysis-hub",
+      "feature_package_id": "feature-package/feat-analysis-hub",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-analysis-hub/plan-findings.json",
+        "evaluated_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+        "imported_at": "2026-09-14T13:39:34Z"
+      },
+      "classification_confidence": 1.0,
+      "classification_reason": "feature-execution-package-contract.md の P01..P13 責務表に基づき、specs/spec-analysis-hub.md と architecture/analysis-hub-*.md の該当領域から本 task の workstream を分類した。",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 1.0,
+          "candidate_path": "tasks/feat-analysis-hub/sys-anhub-p13.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:00:22Z"
+      }
+    }
+  ]
+}

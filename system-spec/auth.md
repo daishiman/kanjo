@@ -3,7 +3,7 @@ status: confirmed
 category: auth
 aggregate: 確定
 spec_cells: [auth.web, auth.mobile, auth.tablet, auth.desktop-windows, auth.desktop-linux, auth.desktop-macos]
-serves_goals: [G2]
+serves_goals: [G3]
 ---
 
 # 認証(ログイン) (auth)
@@ -15,12 +15,12 @@ serves_goals: [G2]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-auth-web-ds-observed-001。資するゴール: G2 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではログイン画面の共通シェルを OS の認証 UI (生体認証・キーチェーン連携) とどう組み合わせるかを決める必要があった。本サイクルは既存 web のログイン画面をサイドバー・ヘッダーと同じ骨格に揃えるだけで、認証方式を変えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、本カテゴリではログイン画面の共通シェルを OS の認証 UI (生体認証・キーチェーン連携) とどう組み合わせるかを決める必要があった。本サイクルは既存 web のログイン画面をサイドバー・ヘッダーと同じ骨格に揃えるだけで、認証方式を変えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、本カテゴリではログイン画面の共通シェルを OS の認証 UI (生体認証・キーチェーン連携) とどう組み合わせるかを決める必要があった。本サイクルは既存 web のログイン画面をサイドバー・ヘッダーと同じ骨格に揃えるだけで、認証方式を変えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、本カテゴリではログイン画面の共通シェルを OS の認証 UI (生体認証・キーチェーン連携) とどう組み合わせるかを決める必要があった。本サイクルは既存 web のログイン画面をサイドバー・ヘッダーと同じ骨格に揃えるだけで、認証方式を変えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、本カテゴリではログイン画面の共通シェルを OS の認証 UI (生体認証・キーチェーン連携) とどう組み合わせるかを決める必要があった。本サイクルは既存 web のログイン画面をサイドバー・ヘッダーと同じ骨格に揃えるだけで、認証方式を変えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-auth-web-ah-observed-001。資するゴール: G3 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,10 @@ serves_goals: [G2]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の認証要件を、既存の authGuard とセッション発行を変えないという確定内容に反映した。共通シェル化はログイン画面の見た目だけを揃える。 |
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS のアクセス制御の原則 (サーバ側で強制する) を、未認証時のメニューのロック表示を案内に留め、保護は /api/* の authGuard が担うという区別に反映した。 |
+| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の『全ての保護資源で認証を強制する』を、ハブ API を既存 /api/* の authGuard 配下へマウントする確定内容に反映した。新しい認証経路・トークン・セッション方式は作らず、アカウントログイン (PR #47) のセッションをそのまま使う。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS のアクセス制御 (他利用者のデータに触れない) を、ハブ API の全ての読取りを userId で絞る確定内容に反映した。共有された ?focus= 付き URL を他人が開いても、認証を通った本人のデータしか集計されない。 |
+
+> **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
 ## 確定内容 (質疑録)
 
@@ -37,19 +39,19 @@ serves_goals: [G2]
 
 ### Web (web)
 
-- 資するゴール: G2
+- 資するゴール: G3
 
-#### 主たる接地根拠: `qa-auth-web-ds-observed-001`
+#### 主たる接地根拠: `qa-auth-web-ah-observed-001`
 
 **問**
 
-認証の方式と、共通シェルとの関係はどうなっているか。本サイクルで変わるか。
+ハブ API とハブ画面の認証・認可はどうなるか。
 
 **答**
 
-認証は packages/api/src/index.ts の authGuard が /api/* を保護し、/api/auth/login でアプリ内セッションを発行する (Cloudflare Access 併用時は Access を使う)。wrangler の run_worker_first: /api/* により API は必ず Worker を通る。本サイクルで認証方式は変えない。DESIGN-SYSTEM.md はログイン画面にも同じ幅・配置のサイドバーを出し、未認証時は業務メニューをロック表示してヘルプ・プライバシー・ログインだけを使えるようにすると定める。共通シェル部品はこの未認証表示を持つ必要がある。
+利用者アカウント (メールアドレス + パスワード、PR #47) のセッションで認証する。packages/api/src/index.ts は /api/* に authGuard() と mustChangePasswordFence() を掛け、c.get('userId') で利用者を特定する。新設 GET /api/analysis/hub は analyticsRoute 等と同じくこのミドルウェアの後にマウントし、全ての読み取りを userId で絞る (他利用者のデータを返さない)。画面は AuthenticatedApp.tsx 配下で、未認証は既存どおりログインへ送られる。認証方式・セッション・レート制限の変更は無い。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: packages/api/src/index.ts・packages/api/wrangler.jsonc・design/FINAL-UI/spec/DESIGN-SYSTEM.md をアシスタントが読んだ観測事実。 / 回答時刻: 2026-09-13T05:03:11Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,auth.ts,users.ts}, packages/web/src/AuthenticatedApp.tsx。 / 回答時刻: 2026-09-14T11:38:26Z)
 
 ## To-Be / Delta
 
@@ -57,17 +59,18 @@ serves_goals: [G2]
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: route registry由来の20ルートを共通Layout/PageShellで描画する。標準操作はButtonを通し、固定アクション群を持つ画面はPageActionsを使う。ARIA固有controlはnative buttonの明示例外とする。
+- **G3**: ハブに必要な集計を packages/core の純関数と、1 回で返す集約 API (GET /analysis/hub) に置く。期間の収支サマリーと前 12 か月比、5 視点それぞれの現在の状態 (照合の要確認件数・総収支の重複候補件数・マトリクスの正常判定・推移の支出前 12 か月比・診断の改善余地) と優先度を返し、ハブ表示中に 5 タブ分の既存 API を呼ばない。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | Layout・PageShell・PageActions・Buttonを共通部品として定義する。route registry由来の20ルートは共通シェルとPageShellを経由し、標準操作はButtonを使う。ARIA固有controlはnative buttonの例外とする。 | route registry由来のDOMテストが全ルートのランドマークとPageShellを検査し、静的検査が標準variant/submitを直接所有するnative buttonを拒否する。 |
+| O3 | core に analysisHub(dataset) 相当の純関数を置き、API に GET /analysis/hub を足す。 | core 単体テストが期間合計・前 12 か月比 (前期間データ無しは null)・5 視点の状態・優先度・改善余地を固定データで検証し、API 統合テストが認証付きで 200 と期間メタを返し、ハブ表示中の DOM テストで既存 5 API への呼出しが 0 件である。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I2**: どの画面を開いても、左に同じネイビーのサイドバー (220px)、上に同じヘッダー (64px・期間 1年/2年/3年/任意)、下に同じフッターが出る。
+- **I3**: 期間の収支サマリーに総収入・総支出・純収支と前 12 か月比 (増減率と前期間の金額) を出し、純収支の説明パネルを右に置く。前期間データが無い場合は比較を『比較データなし』と表示する。
+- **I4**: core にハブ集計関数を置き、GET /analysis/hub が期間メタ・サマリー・5 視点の状態・優先度を返す。前期間の計算は core へ移し AI 側もそれを使う。
 
 ### 本章に効く確定意思決定
 
@@ -79,9 +82,9 @@ serves_goals: [G2]
 
 ### 本章での適用
 
-Secure by Design card の『既定で安全・失敗時は閉じる』を、ログイン画面の共通シェルに適用した。DESIGN-SYSTEM.md はログイン画面にも同じサイドバーを出すと定めるが、未認証時の業務メニューはロック表示にし、実際の保護は authGuard が /api/* で担う。見た目の部品がリンクを表示しても、認可の判断を部品側へ移さない — 表示のロックは案内であって防御ではない、という区別を本章の確定内容にした。
+Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、ハブ API の認可に適用した。GET /api/analysis/hub は /api/* の authGuard と mustChangePasswordFence の後にマウントし、route 内では c.get('userId') で loadDataset と freee 系 3 テーブルを絞る以外の認可判断を持たない。サイドバーのバッジが全画面でこの API を呼んでも (qa-frontend-web-ah-decision-003)、未認証の画面ではバッジ用のクエリ自体を張らず、認証の判断を表示部品へ移さない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T05:07:52Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-14T11:57:54Z)
 
 ### Secure by Design — deep knowledge card
 

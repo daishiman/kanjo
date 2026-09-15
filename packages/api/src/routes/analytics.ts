@@ -57,7 +57,7 @@ import type { AuthEnv, AuthVariables } from '../auth.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import { dealFromRow, getDb, loadBackupPayload, loadDataset, loadVendorMemories } from '../store.js';
-import { bindVerdicts } from './total-cashflow.js';
+import { bindDuplicateVerdicts } from './duplicate-verdict-bindings.js';
 
 // 月次レビューの記録者 (actor) を読むため、ルートは認証ミドルウェアが載せる変数の型をそのまま使う
 type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
@@ -164,7 +164,7 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
   const report = totalCashflowReport(
     all,
     dealRows.map(dealFromRow),
-    bindVerdicts(verdictRows, all.mfTx),
+    bindDuplicateVerdicts(verdictRows, all.mfTx),
     exclusions,
   );
   const items = buildReviewQueue({

@@ -9,176 +9,230 @@
   "aspects": {
     "foundation_trace": {
       "verdict": "PASS",
-      "score": 85,
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "前回 high だった受入条件の矛盾は解消した。G5 が境界を 2 つの役割に分けている: 装飾罫線は #D7E0E2 で 1.4.11 の対象外、部品を見分ける枠は 3:1 の派生色。O1/S3 は装飾罫線を含む 10 色の一致を、O4/S4 は部品の枠と系列色の 3:1 を検査し、同時に満たせる形になった。C4 と I5 も同じ区別で揃っている。この役割分離は利用者決定 qa-ui-ux-web-ds-decision-007 (3 案を提示し 07:48:43Z に選択) に接地し、上位概念の改訂は appr-foundation-design-system-002 に記録した。派生色 #7F9095 のコントラストを再計算すると白 3.32:1、背景 3.12:1、色相 194° (#D7E0E2 は 191°) で、記録値と一致する。U2 の charts.ts の記述を charts.ts 34-83 行と styles.css :root で照合し、実装どおりであることを確認した (getComputedStyle で読む。ずれているのは COLOR_FALLBACKS の biz / ink / inkSoft / line)。U7 の report-design-system の扱いも 1 文に揃った。--require-foundation を含むゲートは exit 0 で、approval_ref は実在し dangling は無い。残るのは記録上の軽微な不整合だけである: 訂正前の provenance 本文が残っている 4 件と、改訂後の上位概念が再承認を経ていないこと (これは note で明示している)。",
+      "summary": "[第3周] spec-state.json は前周評価 (21:11 JST) 以降変更なし (最終更新 20:59 JST)。今周は再コンパイルのみで、本観点の判定材料は前周と同一。G-foundation / G-knowledge-graph (4 profile) を再実行し exit 0。前周の判定を維持する。validate-coverage-matrix.py --require-foundation は exit 0。U1-U9 は値で埋まり、O1-O5・I1-I7 の serves は G1-G5 に接地し dangling なし。承認 appr-foundation-analysis-hub-001 は利用者選択に接地。前周 medium だった『件数バッジのためハブ API を全画面で 1 本呼ぶ』は、利用者決定 qa-frontend-web-ah-decision-003 として frontend.md と infrastructure.md の質疑録・設計知識適用・doctrine 反映欄に写った (queryKey 共有、C3 の例外範囲、invalidateQueries の対象更新、staleTime、D1 読取り量)。残りは low 2 件: U8 の C3 文言にハブ API の例外が追記されていない点と、O3/I3 の『前期間データが無い場合は null』が決定 003 の『1 か月でも欠けたら null』より狭い点。",
       "evidence": [
-        "validate-coverage-matrix.py --require-complete --require-foundation --require-basis exit 0",
-        "00-requirements-definition.md G5 / O1 / O4 / S3 / S4 / C4 / I5",
-        "WCAG 相対輝度の再計算: #7F9095 は 3.32 (白) / 3.12 (#F6F8F9)、#D7E0E2 は 1.34 / 1.26",
-        "packages/web/src/components/charts.ts 34-83 行、packages/web/src/styles.css 5-11 行",
-        "approval_log appr-foundation-design-system-002"
+        "G-foundation exit 0",
+        "requirements_foundation.constraints C3",
+        "qa-frontend-web-ah-decision-003",
+        "qa-backend-web-ah-decision-003"
       ]
     },
     "decision_guidance": {
       "verdict": "PASS",
-      "score": 78,
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "前回 high だった点は解消した。decisions[] に 2 件が起票されている。dec-design-token-source (2 案) と dec-border-color-roles (3 案) のどちらも、各案に cost_model (無料)・goal_fit・security_fit・pros/cons・risks・lock_in・ops_burden・evidence_refs があり、推奨には comparison_basis・caveats・confidence が付く。user_decision.qa_ref は実在する qa を指し、利用者が選んだ記録がある (AI の推奨だけで confirmed にしていない)。トークン正本の決定の前提となった誤観測は、qa-frontend-web-ds-observed-001 の corrections と qa-frontend-web-ds-observed-005 で訂正された。利用者に実際に示した選択肢 2 の説明文 (『チャートは実行時に getComputedStyle で読む』) は実装どおりだったため、再質問なしで決定を維持するという判断にも根拠がある。残る課題は 2 つある。(1) チャート系列色を画像の値から離して 3:1 へ暗くする判断は、境界色と同じ種類のトレードオフ (画像への忠実さ対 AA) である。それが agent-inference (qa-ui-ux-web-ds-inference-003) のままで、decisions[] にも利用者の選択にも接地していない (medium)。(2) dec-design-token-source の推奨理由と比較軸は、利用者の選択 (04:54:53Z) より後に書き起こされたものである (low。caveats に開示済み)。",
+      "summary": "[第3周] spec-state.json は前周評価 (21:11 JST) 以降変更なし (最終更新 20:59 JST)。今周は再コンパイルのみで、本観点の判定材料は前周と同一。G-foundation / G-knowledge-graph (4 profile) を再実行し exit 0。前周の判定を維持する。decisions[] は 0 件。確定根拠は user-decision (2〜3 案と推奨を示し利用者が選択) と observed-fact。前周 FAIL の 2 件の agent-inference は、利用者に聞き直した qa-backend-web-ah-decision-003 (A/B/C 三択、yearAgoPeriod 案とのトレードオフ付き) と qa-ui-ux-web-ah-decision-005 で置き換わった。どちらの answer も置換元の inference を明記し、内容も矛盾しない。G3 の『前 12 か月比』は 1 年選択時の表示例で、定義は決定 003 が正本と明記され、意味の分岐も解消した。したがって『AI 推奨のみで confirmed にしない』を満たす。残りは low: staleTime の具体値や算定方針が未定。",
       "evidence": [
-        "spec-state.json decisions[] = dec-design-token-source, dec-border-color-roles",
-        "qa-frontend-web-ds-decision-004 の提示選択肢の文言",
-        "qa-ui-ux-web-ds-inference-003 basis=agent-inference、provenance『利用者に個別確認していない』",
-        "00-requirements-definition.md C4『チャート系列色は色相を保ったまま明度を 3:1 以上へ調整する』"
+        "qa-backend-web-ah-decision-003 basis=user-decision",
+        "qa-ui-ux-web-ah-decision-005 basis=user-decision",
+        "G-foundation exit 0"
       ]
     },
     "matrix_coverage": {
       "verdict": "PASS",
-      "score": 88,
       "auditor": "system-spec-matrix-auditor",
       "component": "C07",
-      "summary": "C07 (一次根拠) は PASS を返した。loop と --require-complete は exit 0。48 セルの内訳は確定 8 / 対象外 40 / 未収集 0 である。対象外の理由は 40 件ともカテゴリ固有の帰結を書いており、要改善は 0。確定 8 セルの主根拠 qa_ref は全件実在し、意味の上でも確定を裏付けている (frontend.web は訂正後の observed-005、ui-ux.web は境界を含めて実測し直した observed-008)。category_aggregate は真理値表と一致し、canonical platform 6 行も揃っている。C16 required-info は --state 付きで ungrounded_blocking_items が空だった。sub-input の C06 は初回、誘導質問軸 (多論点束ね) で FAIL を返した。そこで評価者が SSOT の R6-audit-hearing.md の 27 行目 (回答を誘導し中立性を欠かないか) と 46 行目 (『回答の中立性を損なうか』に絞る) を実際に読んで確かめ、その 2 文を示して再照合を依頼した。C06 は corrections と provenance の一次証跡を根拠に判定を改めた。束ねの 3 件は、利用者には別々に質問していて、記録するときに束ねていただけである。もう 1 件は利用者向けの質問ではない observed-fact である。どちらも誘導軸の外の記録粒度の問題とされ、4 軸とも PASS になった。注記として、C06 は SSOT ファイルのパスを解決できず、評価者が引用した文言に依拠している。引用は評価者が原文と一致することを確認した。",
+      "summary": "[第3周] spec-state.json は前周評価 (21:11 JST) 以降変更なし (最終更新 20:59 JST)。今周は再コンパイルのみで、本観点の判定材料は前周と同一。validate-coverage-matrix.py の loop / --require-complete / --require-foundation / --require-basis と C16 required-info を再実行し、すべて exit 0。qa・セル状態が不変のため、C07/C06 は再 fork せず、前周の監査結果 (C07 PASS、medium 2 件 / C06 誘導質問 medium 1 件) を引き継ぐ。C07 は PASS。validate-coverage-matrix.py は loop / --require-complete / --require-foundation / --require-basis の全モードで exit 0。48 セルの内訳は確定 8 / 対象外 40 / 未収集 0。qa_ref の dangling は 0、category_aggregate は真理値表と一致し、canonical platform 6 行も揃っている。C16 required-info も exit 0 で、ungrounded_blocking_items は空。ただし C07 は medium 2 件を出した: backend.web と ui-ux.web の qa_refs に、置換済みの agent-inference qa が supersede の宣言なしで user-decision と並んで残っている。sub-input の C06 は、聞き漏れ・早期停止・トレーサビリティが PASS、誘導質問が FAIL (medium 1・low 1)。medium は qa-frontend-web-ah-decision-003 で、4 論点を A に束ね、B は帰結を示していない。評価者の判断: B『バッジは支出分析内だけ』は上位概念承認時にも示された具体的な代替で、全画面で呼ぶという本質の選択は承認時点で済んでいた。束ねられたのは実装パラメータで、セルの被覆とトレースは崩れていない。このため観点は PASS に留め、medium finding として次周の分割質問へ差し戻す。",
       "evidence": [
-        "C07 system-spec-matrix-auditor verdict=PASS (loop exit 0 / --require-complete exit 0, findings 0)",
-        "C06 system-spec-hearing-auditor 初回 verdict=FAIL (誘導軸 F1-F4) -> SSOT 照合後 verdict=PASS (F1-F4 は記録粒度の informational note へ)",
-        "run-system-spec-elicit/prompts/R6-audit-hearing.md 27 行 / 46 行 (評価者が grep で原文を確認)",
-        "validate-knowledge-graph.py --profile required-info --state spec-state.json exit 0, ungrounded_blocking_items=[]"
+        "G-matrix exit 0",
+        "G-basis exit 0",
+        "C16 required-info exit 0",
+        "C07 findings F1/F2 medium, F3 low",
+        "C06 誘導質問軸 FAIL (medium: qa-frontend-web-ah-decision-003 / low: qa-ui-ux-web-ah-decision-005)"
       ]
     },
     "design_knowledge_reflection": {
       "verdict": "PASS",
-      "score": 82,
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "8 章すべてに doctrine anchor 表と『本章での適用』節がある。ポインタがあるかではなく、確定セルへの具体的な当てはめを読んで判定した。frontend は Dependency Rule を『正本 core ← 写し CSS 変数』に当てている。訂正後の観測に合わせ、『getComputedStyle の経路は残し、ずれている予備値だけを core から取る』と書き直されている。ui-ux は Information Design の『加工には task の理由が要る』を 2 か所に当てている: 系列色の明度調整と、境界を装飾罫線と部品の枠に分けて部品の枠だけを加工すること。security の Secure by Design の適用は、前回 medium だった IBM Plex Mono の誤記が『名前のみ・ファイルは同梱しない』へ訂正され、CSP を変えない根拠が事実と一致した。auth / database / backend / infrastructure / maintenance-ops は前回同様、汎用ポインタ止まりではない (backend は不採用理由、infrastructure は card 0 件の理由まで書いている)。C13 knowledge / C15 doctrine / cross の機械層はいずれも exit 0。",
+      "summary": "[第3周] spec-state.json は前周評価 (21:11 JST) 以降変更なし (最終更新 20:59 JST)。今周は再コンパイルのみで、本観点の判定材料は前周と同一。G-foundation / G-knowledge-graph (4 profile) を再実行し exit 0。前周の判定を維持する。機械層では knowledge / doctrine / required-info / cross の 4 profile がすべて exit 0。意味層では、前周 high だった空欄が解消した。spec-state.json の design_applications は 8 カテゴリ、doctrine_applications は 13 件が起票され、再コンパイル後の 8 章すべてで doctrine 表の『本章の確定セルへの反映』と『本章での適用』が埋まっている (『| 未記入 |』の行は 0)。記述は汎用ポインタではなく、各章の確定セル要件への具体適用になっている。例: core 純関数と route adapter の分離および previousPeriod の core 移設 (Dependency Rule)、派生値を D1 に保存しない (DDD)、?focus= の許可リスト検証とクリップボードを明示クリック時に限る (Secure by Design / OWASP ASVS)、authGuard 配下へのマウントと userId での絞り込み、task 頻度×失敗コストによる束の順位と利用者決定 005 の接地 (Information Design)、同一 queryKey 共有で件数のずれを防ぐ、境界値テストで規則を固定 (Clean Code / SRE)。infrastructure は card 0 件だが、0 件の理由と SRE の容量計画・運用対象を増やさない反映を具体的に書いている。残りは low: 適用記述がすべて basis=agent-inference で、適用の妥当性は利用者確認を経ていない (決定本体は user-decision に接地)。",
       "evidence": [
-        "aggregate-completeness.py --knowledge-graph exit 0 (knowledge / doctrine / required-info / cross)",
-        "design_applications.frontend / ui-ux / security の recorded_at 2026-09-13T07:54:32Z (改訂分)",
-        "security.md 102 行『IBM Plex Mono もフォントファイルは同梱せず端末にあれば使うだけ』"
+        "G-knowledge-graph exit 0 (4 profile)",
+        "design_applications 8 / doctrine_applications 13",
+        "各章『本章での適用』節と doctrine 表反映列"
       ]
     },
     "doc_freshness": {
       "verdict": "PASS",
-      "score": 92,
       "auditor": "system-spec-doc-freshness-auditor",
       "component": "C08",
-      "summary": "C08 は PASS を返した。targets 4 件と references 4 件は全単射で対応する。形式層の validate-source-citation.py は exit 0。内容鮮度層では WebFetch で 4 件とも公式ページに到達し、last_updated は現行の表示と一致した: W3C 1.4.3 が 2026-06-01、1.4.11 が 2026-06-15、Chart.js colors が 2025-10-13、Cloudflare static assets headers が 2026-08-25。非公式 host・世代落ち・到達不能はいずれも 0 件。",
+      "summary": "C08 を独立 context で再実行し PASS。形式層の validate-source-citation.py は exit 0 (targets 6 と references 6 が 1:1、必須フィールド欠落 0、非公式 host 0)。前周 FAIL の原因は解消した。react-router-use-search-params の source_url は https://api.reactrouter.com/v7/interfaces/react-router.NavigateOptions.html に差し替わり、そのページに replace?: boolean『Replace the current entry in the history stack instead of pushing a new one』が実在することを、C08 と評価者の双方が WebFetch で確認した。C08 は SetURLSearchParams の型シグネチャ navigateOpts?: NavigateOptions も確認し、summary の接続主張を裏付けた。確認時刻 2026-09-14T12:12:42Z は実測の現在時刻 (12:14Z) より前で、未来日付ではない。frontend.md L224 は新 URL に追随し、旧 URL は章に残っていない (validate-spec-doc-sync.py も exit 0)。他 5 件 (tanstack 5.102.8 / MDN 2025-11-30 / Hono 4.13.7 / D1 2026-04-21 / WCAG 2025-09-16) も公式の現行値と一致した。残りは low 1 件: summary の dist-tags がどのパッケージの値か書かれていない。",
       "evidence": [
-        "validate-source-citation.py --targets spec-state.json --references fetched-references.json --state spec-state.json exit 0",
-        "C08 system-spec-doc-freshness-auditor verdict=PASS (WebFetch 4/4)"
+        "G-citation exit 0 (C08 実行)",
+        "G-doc-sync exit 0",
+        "WebFetch api.reactrouter.com/v7/interfaces/react-router.NavigateOptions.html: replace の原文あり (評価者・C08)",
+        "WebFetch registry.npmjs.org/react-router-dom: dist-tags latest=7.18.3, version-7 タグなし (評価者)",
+        "C08: registry.npmjs.org/react-router dist-tags latest=8.3.1 / version-7=7.18.3"
       ]
     },
     "prompt_quality": {
       "verdict": "PASS",
-      "score": 88,
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "system-spec-harness の全 18 prompt に、prompt-creator の verify-completeness.py --input と validate-prompt.py --input を実行し、失敗は 0 件だった。R1-score / R2-delegate は、L5 に成果状態・原子的な停止条件・固定手順を持たない実行方式を持ち、L7→L1 の対応も取れている。",
+      "summary": "[第3周] plugin installPath (0.1.14) は前周から不変のため、G-prompt の結果を引き継ぐ。system-spec-harness 0.1.14 (installPath) の全 18 prompt に prompt-creator 2.1.7 の verify-completeness.py --input と validate-prompt.py --input を実行し、失敗は 0 件。R1-score / R2-delegate の L5 は、成果状態・原子的な停止条件・固定手順を持たない実行方式を持つ。",
       "evidence": [
-        "plugins/prompt-creator/skills/run-prompt-creator-7layer/scripts/verify-completeness.py --input: 18/18 exit 0",
-        "plugins/prompt-creator/skills/run-prompt-creator-7layer/scripts/validate-prompt.py --input: 18/18 exit 0"
+        "G-prompt exit 0 (18 prompts, 0 failures)"
       ]
     }
   },
   "gate_results": [
     {
       "id": "G-matrix",
-      "name": "validate-coverage-matrix (final + foundation + basis)",
-      "command": ["python3", "<plugin-root>/scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json", "--require-complete", "--require-foundation", "--require-basis"],
+      "name": "validate-coverage-matrix --require-complete",
       "exit_code": 0,
-      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす",
-      "stderr": ""
+      "conditions": [
+        "matrix_coverage"
+      ]
     },
     {
       "id": "G-matrix-loop",
       "name": "validate-coverage-matrix (loop)",
-      "command": ["python3", "<plugin-root>/scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json"],
       "exit_code": 0,
-      "stdout": "OK: 収集マトリクス網羅性 (loop) を満たす",
-      "stderr": ""
+      "conditions": [
+        "matrix_coverage"
+      ]
     },
     {
-      "id": "G-required-info",
-      "name": "validate-knowledge-graph required-info (spec-state インスタンス接地)",
-      "command": ["python3", "<plugin-root>/scripts/validate-knowledge-graph.py", "--profile", "required-info", "--input", "<plugin-root>/skills/run-system-spec-elicit/references/required-info-catalog.json", "--state", "system-spec/spec-state.json"],
+      "id": "G-foundation",
+      "name": "validate-coverage-matrix --require-foundation",
       "exit_code": 0,
-      "stdout": "status=ok, ungrounded_blocking_items=[]",
-      "stderr": ""
+      "conditions": [
+        "foundation_trace",
+        "decision_guidance"
+      ]
+    },
+    {
+      "id": "G-basis",
+      "name": "validate-coverage-matrix --require-basis",
+      "exit_code": 0,
+      "conditions": [
+        "matrix_coverage"
+      ]
     },
     {
       "id": "G-knowledge-graph",
-      "name": "aggregate-completeness --knowledge-graph (knowledge / doctrine / required-info / cross)",
-      "command": ["python3", "<plugin-root>/skills/assign-system-spec-completeness-evaluator/scripts/aggregate-completeness.py", "--knowledge-graph"],
+      "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)",
       "exit_code": 0,
-      "stdout": "4 profile 全 exit 0",
-      "stderr": ""
+      "conditions": [
+        "design_knowledge_reflection",
+        "matrix_coverage"
+      ]
     },
     {
       "id": "G-citation",
-      "name": "validate-source-citation (C08 形式層)",
-      "command": ["python3", "<plugin-root>/scripts/validate-source-citation.py", "--targets", "system-spec/spec-state.json", "--references", "system-spec/fetched-references.json", "--state", "system-spec/spec-state.json"],
+      "name": "validate-source-citation (C08 実行)",
       "exit_code": 0,
-      "stdout": "OK: 出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす",
-      "stderr": ""
+      "conditions": [
+        "doc_freshness"
+      ]
     },
     {
       "id": "G-prompt",
-      "name": "prompt-creator verify-completeness --input + validate-prompt --input (18 prompts)",
+      "name": "verify-completeness + validate-prompt (18 prompts)",
       "exit_code": 0,
-      "stdout": "prompts=18 fails=0",
-      "stderr": ""
+      "conditions": [
+        "prompt_quality"
+      ]
+    },
+    {
+      "id": "G-doc-sync",
+      "name": "validate-spec-doc-sync (正本→章の投影)",
+      "exit_code": 0,
+      "conditions": [
+        "doc_freshness",
+        "foundation_trace"
+      ]
     }
   ],
   "findings": [
     {
       "severity": "medium",
-      "bucket": "decision_guidance",
-      "observation": "チャート系列色を画像の実測値 (収入 #599AE9、支出 #EB9099) から暗くして 3:1 にする判断が、agent-inference (qa-ui-ux-web-ds-inference-003) のまま確定内容 C4 / O4 / S4 に入っている。これは境界色と同じ『画像への忠実さ対 AA』のトレードオフで、利用者に選択肢を示して選んでもらった記録も decisions[] の起票も無い。推論の中の『線と棒の形状と凡例ラベルで補う』は、収入と支出がどちらも棒であるため 2 系列の区別には効かない。そのため形状による補完で 1.4.11 の要求を和らげる余地も、根拠が弱い。",
-      "suggested_fix": "elicit へ差し戻す (任意だが推奨)。dec-chart-series-contrast を起票する。候補は (a) 色相を保って 3:1 へ暗くする / (b) 画像の値を使い、値ラベルや表で情報を別途伝える / (c) 棒に境界線を付けて面に対する 3:1 を満たす、など。AskUserQuestion で選んでもらい、C4 と inference-003 の basis を user-decision へ接地させる。",
-      "evidence": ["qa-ui-ux-web-ds-inference-003", "00-requirements-definition.md C4 / O4 / S4", "#599AE9 2.91:1 / #EB9099 2.34:1 (白)"]
+      "bucket": "matrix_coverage",
+      "observation": "C06 誘導質問: qa-frontend-web-ah-decision-003 は、クエリ共有・C3 例外の範囲・invalidate の対象・staleTime という独立に賛否がありうる 4 論点を (A) に束ねている。(B)『バッジは支出分析内だけ』には帰結 (D1 読取り量・実装量など) が書かれておらず、選択肢間の情報量が揃っていない。実質的には (A) の実装パラメータ一式を承認するだけの質問になっている。",
+      "suggested_fix": "[elicit] 次に reopen する機会に、invalidate の対象更新の範囲と staleTime の方針 (値または算定基準) を分けて問い、代替案にも同じ粒度の帰結を付ける。本周はセル被覆・トレースを崩さないため観点 FAIL にはしていない。"
     },
     {
-      "severity": "low",
-      "bucket": "decision_guidance",
-      "observation": "dec-design-token-source の recommendation.rationale と comparison_basis は、利用者の選択 (confirmed_at 04:54:53Z) より後 (latest_checked_at 05:06:15Z 以降、caveat は 07:52 以降の訂正を含む) に書き起こされた。利用者に示されたのは選択肢のラベルと短い説明だけである。caveats に開示されており、示された説明文は実装どおりだったため、決定の有効性は損なわれていない。",
-      "suggested_fix": "対応は任意。次に user-decision を取るときは、比較軸 (goal fit / TCO / lock-in / 注意点) を先に decisions[] に起票し、それを提示してから選んでもらう。",
-      "evidence": ["decisions[0].recommendation.caveats[1]", "qa-frontend-web-ds-decision-004"]
-    },
-    {
-      "severity": "low",
-      "bucket": "foundation_trace",
-      "observation": "answered_at を訂正した 4 件 (qa-target-platforms-ds-001 / qa-ui-ux-web-ds-decision-002 / qa-frontend-web-ds-decision-002 / qa-maintenance-ops-web-ds-decision-001) では、provenance 本文が『answered_at は reopened_at 04:55:23Z であり上限値』のまま残っている。フィールド値 (訂正後) と説明文 (訂正前) が同じ entry の中で食い違う。corrections[] に経緯はあるが、provenance だけを読むと誤る。また、改訂後の上位概念 (G5 / O1 / O4 / S3 / S4 / C4 / I5) は利用者決定 decision-007 の直接の反映であるものの、要約全体の再承認は経ていない (appr-002 に明記)。",
-      "suggested_fix": "compile / elicit で扱う。provenance 本文を訂正後の根拠 (会話記録上の回答返却時刻) に揃えるか、冒頭に『answered_at は corrections[] 参照』と付記する。再承認は次に利用者と対話する機会に上位概念の差分を示して取れば足りる。",
-      "evidence": ["qa_log の上記 4 件の provenance と corrections[0]", "approval_log appr-foundation-design-system-002"]
+      "severity": "medium",
+      "bucket": "matrix_coverage",
+      "observation": "C07 F1/F2: backend.web と ui-ux.web の qa_refs に、置換済みの qa-backend-web-ah-inference-002 / qa-ui-ux-web-ah-inference-002 (basis=agent-inference) が、置換先の user-decision と supersede 宣言なしに並んでいる。ui-ux.md の質疑録にも inference の本文がそのまま載っている。そこには決定 005 が明示していない細部 (純収支説明パネルを狭幅で折りたたむ、金額の等幅数字など) も含まれ、どこまでが利用者確定かを章から読み分けられない。",
+      "suggested_fix": "[elicit/compile] C01 の transition writer で、inference qa を qa_refs から外すか superseded_by を宣言する。決定 005 で覆われない細部 (説明パネルの狭幅折りたたみ等) は、既存 docs/design-system の観測事実に接地させるか、利用者確認に回す。"
     },
     {
       "severity": "low",
       "bucket": "matrix_coverage",
-      "observation": "記録粒度の問題 (C06 が誘導軸の外として informational に残したもの)。現行の根拠の中で、分割済みで役目を終えた束ね entry を指す参照が残っている: qa-backend-web-ds-observed-001 の answer / provenance (decision-002 の 2 件)、qa-security-web-ds-observed-001 (qa-ui-ux-web-ds-decision-002)、qa-ui-ux-web-ds-inference-003 (qa-ui-ux-web-ds-decision-002)、fetched-references.json の wcag22-contrast-minimum の summary。これらは backend.md 50/52 行、security.md 49 行、ui-ux.md 123 行に写っている。qa-ui-ux-web-ds-observed-001 は 3 論点 (規定値 / 実測コントラスト / 利用環境) を 1 件にしたまま ui-ux.web の qa_refs に残っている。いずれも実在 id のため dangling ではない。",
-      "suggested_fix": "elicit / compile で扱う。参照先を分割後の id (decision-004 / -005 / frontend decision-004) へ付け替えて再 compile する。observed-001 は、境界を含めて測り直した observed-008 と重複する部分を qa_refs から外すことも検討する。",
-      "evidence": ["C06 再照合結果 F1-F4 (informational)", "backend.md 50/52, security.md 49, ui-ux.md 123"]
+      "observation": "C07 F3: infrastructure.web の qa_refs は ['qa-frontend-web-ah-decision-003'] だけで、自カテゴリの観測 qa-infrastructure-web-ah-observed-001 を含まない (qa_ref には設定済み)。",
+      "suggested_fix": "[elicit] qa_refs に qa-infrastructure-web-ah-observed-001 を含め、frontend 決定を参照する理由 (D1 読取り量) を明示する。"
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage",
+      "observation": "C06: qa-ui-ux-web-ah-decision-005 は『この順で確定してよいか』という承認型の問いで、順位と狭幅での扱いを 1 問に束ねている。ただし B/C の具体的な対抗案はある。",
+      "suggested_fix": "[elicit] 今後の順位確認は開いた問い (どの順が適切か) にし、狭幅の扱いは別問にする。"
     },
     {
       "severity": "low",
       "bucket": "foundation_trace",
-      "observation": "O2 の『charts.ts の COLORS を design-tokens.ts から導出した写しに置き換え』は、COLORS (getComputedStyle を使う getter) ごと置き換えるとも読める。これは、design_applications.frontend と dec-design-token-source の推奨理由にある『実行時の読み方は変えず、予備値 COLOR_FALLBACKS だけを正本から取る』と読み違えやすい。",
-      "suggested_fix": "O2 の対象を『COLOR_FALLBACKS・neutral・VENDOR_EXTRA_COLORS』と明記し、getComputedStyle の経路を残すことを受入条件の文言に反映する。",
-      "evidence": ["00-requirements-definition.md O2", "design_applications.frontend", "decisions[0].recommendation.rationale"]
+      "observation": "U8 の C3『表示していないタブの API は呼ばない』に、ハブ API の例外 (qa-frontend-web-ah-decision-003) が追記されていない。O3/I3 は『前期間データが無い場合は null』のままで、決定 003 の『1 か月でも欠けたら null』より狭い。どちらも決定 qa が正本と明記しているので矛盾ではないが、上位概念だけを読む実装者は誤読しうる。",
+      "suggested_fix": "[elicit] 次に foundation を reopen する際、C3 に例外範囲を、O3/I3 に部分欠落時の null を反映し、再承認を得る。"
+    },
+    {
+      "severity": "low",
+      "bucket": "doc_freshness",
+      "observation": "react-router-use-search-params の summary は『version は npm registry の dist-tags version-7 = 7.18.3、latest は 8.3.1』と書くが、どのパッケージの dist-tags かを書いていない。評価者が registry.npmjs.org/react-router-dom を WebFetch したところ、version-7 タグは無く latest=7.18.3 だった。version-7=7.18.3 / latest=8.3.1 は react-router 本体の dist-tags (C08 確認)。kanjo の依存は react-router-dom で、値 7.18.3 はどちらで見ても正しいが、読み手が react-router-dom の最新を 8.3.1 と誤読しうる。",
+      "suggested_fix": "[doc-fetch] 次に出典を更新する際、summary を『react-router の dist-tags version-7 = 7.18.3 (latest 8.3.1)。kanjo が依存する react-router-dom の latest も 7.18.3』のようにパッケージ名付きで書く。判定には影響しない。",
+      "evidence": [
+        "WebFetch registry.npmjs.org/react-router-dom (評価者)",
+        "C08 報告"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "decision_guidance",
+      "observation": "staleTime は『設ける』とだけ決まっていて、値も算定基準も無い。invalidate の出典はあるが、staleTime の既定挙動 (TanStack Query の Important Defaults) の出典は無い。",
+      "suggested_fix": "[elicit/doc-fetch] staleTime の方針 (例: 期間 key 単位で N 分、更新系の成功で invalidate) を決め、TanStack Query の Important Defaults を targets に加える。"
+    },
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection",
+      "observation": "design_applications 8 件と doctrine_applications 13 件は、すべて basis=agent-inference。適用記述は確定決定 (user-decision / observed-fact) を引いているが、原則の当てはめの妥当性は利用者確認を経ていない。",
+      "suggested_fix": "[elicit] 必須ではない。適用が設計を変える箇所 (previousPeriod の core 移設など) だけでも、利用者確認か観測事実への接地を検討する。"
     },
     {
       "severity": "info",
       "bucket": "doc_freshness",
-      "observation": "doctrine anchor (Apple HIG / OWASP ASVS / Clean Architecture / Google SRE) の最終確認は registry の 2026-07-12 のままで、本サイクルでは再照合していない (前回からの持ち越し)。本サイクルの確定内容は anchor の最新改訂に依存しない。",
-      "suggested_fix": "アクセシビリティ規約文書 (O5) を書く段階で、HIG のアクセシビリティ節と WCAG の Understanding を再照合する。"
+      "observation": "C08 の low『v7 維持の決定記録が無い』は、承認済み U8 の C1 (react-router-dom 7) に接地しているため、評価者は finding として採らない。tanstack 5.102.8 / react-router-dom 7.18.3 / Hono 4.13.7 / MDN / D1 / WCAG の版・更新日は、いずれも公式の現行値と一致した。"
     },
     {
       "severity": "info",
       "bucket": "design_knowledge_reflection",
-      "observation": "前回 FAIL の high 2 件と medium / low の対処を確認した。(1) 境界の役割分離: G5 / O1 / O4 / S3 / S4 / C4 / I5 と dec-border-color-roles を確認。(2) charts.ts の誤観測: observed-001 の corrections、observed-005、U2、dec-design-token-source を確認。(3) 束ねた qa の論点別分割: decision-004 から -007、frontend decision-004、maintenance-ops decision-002 / -003 に選択肢付きで記録されている。(4) answered_at: 会話記録上の返却時刻へ訂正され、corrections に記録されている。(5) IBM Plex Mono の記述: C3、decision-005、security の design_application を確認。(6) U7 の文言の統一。旧 MF テーマの記述の再流入は無い。hex 件数の単位 (前回 low) は、observed-001 の『14 箇所』がそのまま残っている。ただし主根拠は件数を持たない observed-005 へ移ったため、確定内容には影響しない。",
-      "suggested_fix": "対応不要。"
+      "observation": "前周 high (8 章の適用欄が空、design_applications が {}) は解消した。8 章すべてで doctrine 反映列と『本章での適用』が、確定セル要件への具体適用で埋まっている。"
+    },
+    {
+      "severity": "info",
+      "bucket": "prompt_quality",
+      "observation": "全 18 prompt で prompt-creator の 2 validator の失敗は 0 件。"
+    },
+    {
+      "severity": "info",
+      "bucket": "doc_freshness",
+      "observation": "前周 FAIL (source_url が replace の説明を含まない) は解消した。新しい source_url に原文があることを評価者と C08 の双方で確認し、確認時刻は実測の現在時刻より前、章も新 URL に追随している。"
+    },
+    {
+      "severity": "info",
+      "bucket": "matrix_coverage",
+      "observation": "前周の medium 2 件 (置換済み inference qa の qa_refs 残存 / qa-frontend-web-ah-decision-003 の論点の束ね) は、writer に qa_ref 削除 op が無いため据え置きと申告されている。spec-state.json 不変を mtime で確認した。どちらも観点 FAIL 要因ではないが、未解消の不足事項として gaps に残す。"
+    },
+    {
+      "severity": "info",
+      "bucket": "matrix_coverage",
+      "observation": "仕様ディレクトリ直下の completeness-findings.json (20:11) は前サイクルの旧レポート。本周の正本は scratchpad/completeness-findings-analysis-hub-loop3.json。"
     }
   ],
-  "gaps": []
+  "gaps": [
+    "[elicit/plugin] backend.web / ui-ux.web の qa_refs から置換済みの agent-inference qa を外すか superseded_by を宣言する (medium・据え置き。C01 writer に qa_ref 削除/supersede op を追加する follow-up が必要)",
+    "[elicit] qa-frontend-web-ah-decision-003 で束ねた論点 (invalidate の対象範囲・staleTime の方針) を、次に reopen する際に分割して確認する (medium・据え置き)",
+    "[doc-fetch] react-router-use-search-params の summary に dist-tags の対象パッケージ名 (react-router / react-router-dom) を明記する (low)"
+  ]
 }

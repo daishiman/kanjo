@@ -6,6 +6,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type MouseEvent as ReactMouseEvent, useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { invalidateAnalysisDerived } from '../analysis-query-invalidation.js';
 import {
   type Candidates,
   type Cls,
@@ -301,6 +302,9 @@ export function ClassifyPage() {
     },
     onError: (_e, _v, ctx) => {
       if (ctx?.prev) qc.setQueryData(key, ctx.prev); // 失敗時ロールバック
+    },
+    onSuccess: () => {
+      void invalidateAnalysisDerived(qc);
     },
     onSettled: () => {
       void qc.invalidateQueries({ queryKey: ['transactions'] });

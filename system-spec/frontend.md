@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G1, G2, G3, G4]
+serves_goals: [G1, G2, G5]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G1, G2, G3, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-frontend-web-ds-observed-005。裏付け質疑 (`qa_refs`): `qa-frontend-web-ds-decision-004` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G3, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、本カテゴリではデザイントークン正本 (packages/core/src/design-tokens.ts) から CSS 変数とチャート色に加えて、ネイティブ UI ツールキット向けの色・寸法リソース (Swift/Kotlin/XAML 等の定数) も生成する写しの系統を設計し、そのずれ検出も用意する必要があった。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-frontend-web-ah-observed-001。裏付け質疑 (`qa_refs`): `qa-analysis-hub-decision-001`, `qa-analysis-hub-decision-004`, `qa-frontend-web-ah-decision-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではハブ画面を OS ネイティブ UI で別実装するかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではハブ画面を OS ネイティブ UI で別実装するかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリではハブ画面を OS ネイティブ UI で別実装するかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリではハブ画面を OS ネイティブ UI で別実装するかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリではハブ画面を OS ネイティブ UI で別実装するかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,10 @@ serves_goals: [G1, G2, G3, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | Apple HIG の一貫性の原則を、見た目の値を画面ごとに持たせず共通部品とトークンだけから描くという実装上の制約に反映した。ボタンやチャートの色を画面側で上書きしないことが、画面間で同じ操作が同じ見た目になることを保証する。 |
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の依存方向を、core (トークン正本) ← web (CSS 変数・charts.ts・部品) の一方向に反映した。core は web を知らず、写しのずれは lint が外側で検出する。 |
+| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | Apple HIG の『状態を保ち、戻っても同じ場所に戻れる』を、選択中の分析を ?focus= で URL に保持し、行の選択では setSearchParams(..., { replace: true }) で履歴を積まずに置き換え、再読込・URL コピーでも同じ選択を再現する確定内容に反映した。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の境界を、web がハブの判定規則を持たず API の結果を描くだけにする確定内容に反映した。バッジとハブ画面は同じ queryKey の 1 回の取得を共有し、同じ件数を 2 か所で別々に計算しない。 |
+
+> **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
 ## 確定内容 (質疑録)
 
@@ -37,31 +39,55 @@ serves_goals: [G1, G2, G3, G4]
 
 ### Web (web)
 
-- 資するゴール: G1, G2, G3, G4
+- 資するゴール: G1, G2, G5
 
-#### 主たる接地根拠: `qa-frontend-web-ds-observed-005`
-
-**問**
-
-現行 web で、色の定義はどこにあり、図はどう色を得ていて、どこでずれているか。
-
-**答**
-
-(1) 画面の色の正本は packages/web/src/styles.css の :root (--bg #f6f8f9 / --ink #15262b / --ink-soft #617177 / --line #d7e0e2 / --primary #14353d / --accent #087f78 / --biz #087f78 / --warn #805a12 / --danger #b23a3a / --good #2e7d5b 等)。(2) packages/web/src/components/charts.ts は themeColor() が getComputedStyle(document.documentElement) でその CSS 変数を読み、コメントで『図の色の正本は styles.css の :root』と明言している。直書きは CSS を読めない環境 (SSR・jsdom・CSS 適用前) 向けの COLOR_FALLBACKS で、コメントは『styles.css と同じ値にしてある』とするが実際はずれている (biz #2f5da8 対 #087f78、ink #1d2a2c 対 #15262b、inkSoft #51625f 対 #617177、line #dde3e1 対 #d7e0e2)。CSS 変数を持たない neutral #7b8784 と VENDOR_EXTRA_COLORS 5 色は直書きのみ。(3) 前例として skills/report-design-system/assets/report.css を正本、packages/core/src/report-css.ts を写しとし、scripts/check-report-css.mjs が pnpm lint で一致を検査している。シェルは components/Layout.tsx が aside.sidebar・header.header・footer.footer・nav.tabbar を全ルート共通で描画する。web は React 18 + Vite の SPA で、API 契約 (packages/api の /api/*) は本サイクルで変えない。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: charts.ts 30-130 行、styles.css :root、package.json の lint、scripts/check-report-css.mjs をアシスタントが R4-reopen の後に読み直した観測事実。qa-frontend-web-ds-observed-001 の誤記を訂正する。answered_at は読み直し直後の記録時刻で上限値。 / 回答時刻: 2026-09-13T07:54:32Z)
-
-#### 裏付け質疑: `qa-frontend-web-ds-decision-004`
+#### 主たる接地根拠: `qa-frontend-web-ah-observed-001`
 
 **問**
 
-デザイントークンの「正本」をどこに置きますか？現在は styles.css と charts.ts(Chart.js用) に色が二重に書かれ、値もずれています。
+支出分析のフロントエンド構成 (ルーティング・データ取得・共通部品・既存テスト) は現行どうなっているか。
 
 **答**
 
-『coreのTSを正本に (Recommended)』を選択。packages/core に依存ゼロの design-tokens.ts を置き、CSS 変数とチャート色はそこから作り、写しのずれは lint で検出する。 提示した選択肢: 『coreのTSを正本に (Recommended)』(packages/core の design-tokens.ts から CSS 変数とチャート色を作り、写しのずれは lint で検出。web/レポート/将来の成果物が同じ値を import できる) / 『styles.cssを正本に』(:root の CSS 変数だけを正本にし、チャートは実行時に getComputedStyle で読む。変更は少ないが、CSS を持たない成果物やテストでは値を取りにくい)。
+React 18 + react-router-dom 7 + TanStack Query 5 + Chart.js 4 の Vite SPA (packages/web)。AuthenticatedApp.tsx が /analysis と /analysis/:tab を AnalysisPage へ割り当て、routeMetadata.ts が APP_ROUTES (analysis は navGroup 確認・contentWidth data)・ANALYSIS_TABS (id/path/label/task/taskDetail/icon)・DEFAULT_ANALYSIS_TAB・LEGACY_ROUTE_REDIRECTS (/reconciliation・/matrix・/trends・/diagnosis)・SEARCH_ROUTES を正本として持つ。各タブは pages/analysis/ の Reconciliation.tsx (/api/business-spend, queryKey ['business-spend', 期間 key])・TotalCashflow.tsx (/api/total-cashflow、判定 POST /total-cashflow/verdicts、除外 /total-cashflow/freee-exclusions)・Matrix.tsx (/api/matrix)・Trends.tsx (/api/trends?scope=)・Diagnosis.tsx (/api/diagnosis) で、表示していないタブは遅延読み込みされ API を呼ばない (analysis-tabs.dom.test.tsx が検査)。期間は period.tsx の usePeriod() が selection/key/withPeriod(path) を返しクエリへ付ける。共通部品は components/Page.tsx (PageShell/PageHeader/TaskCopy/PageState/KpiCard/PageActions)・Button.tsx (primary/secondary/danger/text、native button は data-native-control と ARIA 必須で AST テストが検査、遷移は Link className='btn primary')・DataTable.tsx・charts.ts。トークンは packages/core/src/design-tokens.ts が正本で、styles.css の生成ブロックは scripts/check-design-tokens.mjs --write で作り、packages/web/src の色直書きは lint で落ちる。--aside-panel-w 320px は定義のみで未使用。URL コピーは ImprovementRequestButton.tsx・Improvement.tsx・Ai.tsx が navigator.clipboard を使う実装を持つ。タブ label を直接比べるテストは analysis-tabs.dom.test.tsx・navigation-ux.dom.test.tsx・common-shell-routes.dom.test.tsx (認証後 19 ルート + ログイン 1)。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion の選択肢から明示選択した。answered_at は会話記録に残る回答の返却時刻 2026-09-13T04:54:53Z である。 質問文の『二重に書かれ値もずれている』は、charts.ts の COLOR_FALLBACKS (CSS を読めない環境向けの予備値) が styles.css とずれている事実を指す。当時の観測記録 qa-frontend-web-ds-observed-001 は Chart.js が CSS 変数を読めないと誤記していたが、選択肢 2 の説明は getComputedStyle で読む現行実装どおりで、利用者は実装に即した 2 案を比べて選んでいる。比較の記録は decisions[] の dec-design-token-source。 / 回答時刻: 2026-09-13T04:54:53Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/web/src/{AuthenticatedApp.tsx,routeMetadata.ts,pages/Analysis.tsx,pages/analysis/*.tsx,period.tsx,components/{Page,Button,DataTable,Layout}.tsx,components/charts.ts,styles.css}, docs/design-system.md。 / 回答時刻: 2026-09-14T11:38:26Z)
+
+#### 裏付け質疑: `qa-analysis-hub-decision-001`
+
+**問**
+
+支出分析ハブ (03-analysis-hub.png) は既存の 5 タブとどうつなげるか。現行は /analysis を開くと照合タブへ転送される。選択肢: (A) /analysis をハブにし、各行やタブの『開く』で既存 /analysis/:tab 詳細へ進み、選択中の分析を ?focus= で URL に持ち URL コピーで共有できる (推奨) / (B) 転送を残し 5 タブすべての上部にハブ要素を常時表示する。
+
+**答**
+
+(A) /analysis をハブにする を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-14T11:33:07Z)
+
+#### 裏付け質疑: `qa-analysis-hub-decision-004`
+
+**問**
+
+画像の文言は現行と違う (タブ『照合/総収支/マトリクス/推移/診断』は現行『支出照合/トータル収支/増減マトリクス/支出トレンド/統計診断』、サイドバーの『明細仕分け/累計収支』も異なる)。どこまで画像に合わせるか。選択肢: (A) 支出分析の 5 タブ名とサイドバー子行 (件数バッジを含む) だけ短縮形に揃え、他画面のサイドバー文言と月次クローズ進捗の形は各画面のサイクルで扱う (推奨) / (B) サイドバー全体と月次クローズ 3/4 チェックリストも今回合わせる / (C) 文言は現行のまま構成だけ合わせる。
+
+**答**
+
+(A) 分析まわりだけ合わせる を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-14T11:33:07Z)
+
+#### 裏付け質疑: `qa-frontend-web-ah-decision-003`
+
+**問**
+
+サイドバーの件数バッジのためにハブ API を全画面で使う。既存方針『表示していないタブの API は呼ばない』との関係と、データ更新時の扱いをどうするか。選択肢: (A) Layout とハブで同じクエリを共有。queryKey ['analysis-hub', 期間 key] を共有して 1 回の取得で両方をまかなう。『呼ばない』の対象は 5 タブ個別 API に限り、ハブ API は例外として docs に明記する。総収支の判定・除外や取込の更新後はこのキーを無効化し、staleTime で画面遷移ごとの再取得 (D1 読み取り) を抑える (推奨) / (B) バッジは支出分析内だけ。
+
+**答**
+
+(A) Layout とハブで同じクエリを共有 を選択した。サイドバー (components/Layout.tsx) とハブ画面は同一の queryKey ['analysis-hub', 期間 key] で GET /api/analysis/hub を共有し、TanStack Query のキャッシュで 1 回の取得を両方に使う。C3『表示していないタブの API は呼ばない』の対象は 5 タブ個別の API (/business-spend・/total-cashflow・/matrix・/trends・/diagnosis) に限り、ハブ API はその例外として docs/ui-decisions.md に明記する。総収支の判定 (POST /total-cashflow/verdicts)・freee 除外・取込などハブの件数を変える更新が成功したら invalidateQueries({ queryKey: ['analysis-hub'] }) で前方一致の無効化をする。staleTime を設けて、画面遷移のたびに loadDataset と freee 系 3 テーブルの D1 読み取りが走らないようにする。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の差し戻しを受けた再質問)。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-14T11:57:13Z)
 
 ## To-Be / Delta
 
@@ -69,35 +95,29 @@ serves_goals: [G1, G2, G3, G4]
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: 色・文字サイズ・行高・余白・角丸・影・動き・寸法 (シェル幅/高さ/タップ領域) のデザイントークンを、packages/core に置く依存ゼロの TypeScript 定義 1 か所へ集約し、CSS 変数とチャート色はそこから導出する。和文は OS の system-ui、金額・数値は自己配信する IBM Plex Mono Latin 400/600 だけを使い、全非 test source・dependencies・外部フォントURLの検査でこの配信契約を固定する。
-- **G2**: route registry由来の20ルートを共通Layout/PageShellで描画する。標準操作はButtonを通し、固定アクション群を持つ画面はPageActionsを使う。ARIA固有controlはnative buttonの明示例外とする。
-- **G3**: チャート (棒・線・内訳バー・凡例・軸・グリッド・ツールチップ) の配色と描画規約を 1 つにし、全ての図が共通トークンから色を得る。系列の意味色は FINAL-UI に合わせ、収入=青系、支出=赤系、純収支=ティールの線とする。
-- **G4**: 今後の作成物が自動的に規約へ従うよう、トークン定義以外での色の直書きと、正本と写し (CSS 変数・チャート色) のずれを lint で機械検出し、使い方を規約文書として置く。
+- **G1**: /analysis を 03-analysis-hub.png どおりのハブ画面にする。短い問いの見出し・URL コピー・5 タブ・期間の収支サマリー (総収入/総支出/純収支と前 12 か月比、総収支の説明パネル)・分析ルート一覧 (# / 分析の視点 / 目的 / 現在の状態 / 要確認の優先度 / 次の操作)・右の選択中の分析パネル (わかること / 主なデータソース / 対象外のデータ / 開く)・分析の読み順 5 ステップ・下部の選択中分析バーを、共通シェル・トークン・Button の上に組む。
+- **G2**: 選択中の分析を URL (?focus=<tab id>) で保持し、URL コピー・再読込・戻る操作でも同じ分析が選ばれた状態を再現する。既存の /analysis/:tab 詳細と旧 URL の転送は壊さない。
+- **G5**: 支出分析まわりの文言を画像に揃える。5 タブ名を 照合/総収支/マトリクス/推移/診断 の短縮形にし、サイドバーの支出分析の子行に要確認件数バッジを付ける。他画面のサイドバー文言と月次クローズ進捗の形は対象外とする。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | packages/core/src/design-tokens.ts に色・文字・余白・角丸・影・動き・寸法のトークンを定義し、値の唯一の実装正本とする。 | 単体テストは schema・役割集合・alias・コントラストに必要な関係不変条件を値の転記なしで検査する。表示に影響する全トークン値は、版・承認参照・由来ファイルを持つ `docs/design-system/token-approval.json` の SHA-256 fingerprint と lint で照合し、未承認の値変更を拒否する。 |
-| O2 | styles.css の :root トークンと charts.ts の COLORS を design-tokens.ts から導出した写しに置き換え、写しのずれと色構文の直書きを検出する lint を組み込む。 | pnpm lint が写しの不一致またはhex/rgb/hsl/CSS Color構文の未許可リテラルで exit 非0になり、一致時に exit 0 になる。 |
-| O3 | Layout・PageShell・PageActions・Buttonを共通部品として定義する。route registry由来の20ルートは共通シェルとPageShellを経由し、標準操作はButtonを使う。ARIA固有controlはnative buttonの例外とする。 | route registry由来のDOMテストが全ルートのランドマークとPageShellを検査し、静的検査が標準variant/submitを直接所有するnative buttonを拒否する。 |
-| O5 | トークンと共通部品の使い方を規約文書 (docs 配下) にまとめ、新しい画面・図をつくるときの参照先を 1 つにする。 | 規約文書が色の役割 (塗り/文字の分離)・タイポグラフィ・余白・シェル・ボタン・チャートの各節を持ち、README または AGENTS.md から参照されている。 |
+| O1 | /analysis がハブを描画し、/analysis/:tab と旧 URL の転送は既存どおり動く。 | DOM テストで /analysis がハブの見出し・サマリー・ルート一覧 5 行・読み順 5 ステップ・選択中の分析パネルを描画し、/analysis/reconciliation 等の既存 5 タブと旧 URL のテストが緑のままである。 |
+| O2 | ?focus=<tab id> の読み書きと URL コピーを実装する。 | DOM テストで ?focus=total-cashflow を開くと総収支行と右パネルと下部バーが選択状態になり、行を選ぶと URL が置き換わり、不正な focus 値は既定値に落ち、URL コピーが現在の URL をクリップボードへ書く。 |
+| O5 | 5 タブ名の短縮とサイドバー子行の件数バッジを入れる。 | routeMetadata の ANALYSIS_TABS label が短縮形になり、関連 DOM テスト (analysis-tabs / navigation-ux / common-shell-routes) を新しい文言で更新して緑、子行バッジは要確認 1 件以上の視点だけに件数を表示する。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: 新しい画面をつくるとき、色・余白・角丸・文字サイズを design-tokens から選ぶだけで FINAL-UI と同じ見た目になる。
-- **I2**: どの画面を開いても、左に同じネイビーのサイドバー (220px)、上に同じヘッダー (64px・期間 1年/2年/3年/任意)、下に同じフッターが出る。
-- **I3**: 月次の収入・支出・純収支の図は、どの画面でも収入が青い棒、支出が赤系の棒、純収支がティールの線で描かれる。
-- **I4**: 誰かが画面のコードに #xxxxxx の色を直書きしたら、pnpm lint が落ちて共通トークンを使うよう促す。
+- **I1**: /analysis の転送をやめ、ハブ画面 (AnalysisHub) を描画する。5 タブのリンクは既存 /analysis/:tab へ進む。
+- **I2**: 分析ルート一覧の行選択で ?focus= を置き換え、右パネルと下部バーの内容を切り替える。URL コピーは現在の URL をクリップボードへ書き、成否を知らせる。
+- **I3**: 期間の収支サマリーに総収入・総支出・純収支と前 12 か月比 (増減率と前期間の金額) を出し、純収支の説明パネルを右に置く。前期間データが無い場合は比較を『比較データなし』と表示する。
+- **I6**: ANALYSIS_TABS の label を 照合/総収支/マトリクス/推移/診断 にし、サイドバー子行に要確認件数バッジを付ける。
+- **I7**: 各視点の『わかること・主なデータソース・対象外のデータ』を routeMetadata の静的定義として構造化し、右パネルがそれを表示する。
 
 ### 本章に効く確定意思決定
 
-- **dec-design-token-source**: デザイントークンの正本をどこに置くか
-  - 採択: packages/core の design-tokens.ts を正本にし、CSS 変数とチャートの予備値を生成する (`core-ts`)
-  - 目的適合: G1 の『依存ゼロの TypeScript 1 か所』に直接合う。テスト (O1・O4) が CSS を解析せず値を import でき、次サイクルでレポート側からも同じ値を import できる
-- **dec-border-color-roles**: 境界色 #D7E0E2 (白に 1.34:1) を、WCAG 2.2 の 1.4.11 とどう両立させるか
-  - 採択: 装飾罫線は #D7E0E2、部品を見分ける枠は 3:1 の派生色 (`split-roles`)
-  - 目的適合: G5 の役割分離を境界へ広げ、画像の淡い罫線と部品の枠の 1.4.11 を両立する
+- (本章ゴールに効く確定 decision なし)
 
 ## 適用された設計知識
 
@@ -105,9 +125,9 @@ serves_goals: [G1, G2, G3, G4]
 
 ### 本章での適用
 
-Clean Architecture card の Dependency Rule をトークンの配置に適用した。トークン (役割名→値) は表示技術に依存しない最内側の方針なので packages/core に置き、CSS 変数 (styles.css の :root) はその外側の写しとして生成する。charts.ts は現行どおり getComputedStyle で CSS 変数を読む経路を残し、CSS を読めない環境向けの予備値 (COLOR_FALLBACKS) だけを core の値から取る — 現状ずれているのはこの予備値であり (qa-frontend-web-ds-observed-005)、正本を CSS から TS へ移しても実行時の読み方は変えずに済む。Information Design card は、同じ値を手で写す箇所が増えるほど利用者が見る色がずれることを示しており、ずれ検出 lint はその停止条件を機械化したものである。
+Clean Architecture card の依存方向を、web がハブの規則を持たない構成に適用した。ハブ画面とサイドバーのバッジは GET /api/analysis/hub の結果を表示するだけで、優先度や正常判定を画面側で再計算しない。各視点の『わかること・データソース・対象外』は判定ではなく静的な説明なので、routeMetadata に置く。Information Design card は、同じ件数を 2 か所 (ハブの一覧とサイドバーのバッジ) に出すときに値がずれる危険を示している。同一 queryKey の共有と、更新後の invalidateQueries (qa-frontend-web-ah-decision-003) は、この 2 か所を 1 つの取得結果から描くための適用である。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T07:54:32Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-14T11:57:54Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -201,4 +221,5 @@ Clean Architecture card の Dependency Rule をトークンの配置に適用し
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| chartjs-colors | 2025-10-13 | Chart.js (www.chartjs.org) | https://www.chartjs.org/docs/latest/general/colors.html | 2026-09-13T05:06:15Z | 2026-09-13T05:06:15Z |
+| react-router-use-search-params | 7.18.3 | Remix / Shopify (React Router) (api.reactrouter.com) | https://api.reactrouter.com/v7/interfaces/react-router.NavigateOptions.html | 2026-09-14T12:12:42Z | 2026-09-14T12:12:42Z |
+| tanstack-query-invalidation | 5.102.8 | TanStack (tanstack.com) | https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation | 2026-09-14T11:57:54Z | 2026-09-14T11:57:54Z |

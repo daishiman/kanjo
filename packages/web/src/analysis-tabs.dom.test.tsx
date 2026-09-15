@@ -1,13 +1,14 @@
 // @vitest-environment jsdom
 
 /**
- * 支出分析(増減マトリクス・支出トレンド・統計診断の統合先)の表示契約。
+ * 支出分析(照合・総収支・マトリクス・推移・診断の統合先)の表示契約。
  *
  * 3画面を1画面へ束ねたので、束ねたことで壊れやすいものだけを固定する:
  *   - 切り口がURLに出ること(戻る/進む・リロード・ブックマークが効く)
  *   - 表示していないタブのAPIを呼ばないこと(束ねた瞬間に3倍遅くなるのを防ぐ)
  *   - 各タブの説明文が残っていること(画面を消すと説明ごと消えるのが一番起きやすい退行)
  *   - 旧URLが行き先を失っていないこと
+ *   - タブ名の無い /analysis はハブ、綴りの違うタブ名は既定タブへ寄ること
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen } from '@testing-library/react';
@@ -70,7 +71,7 @@ describe('支出分析のタブ', () => {
     expect(links.map((a) => a.textContent)).toEqual(ANALYSIS_TABS.map((tab) => tab.label));
     const current = links.filter((a) => a.getAttribute('aria-current') === 'page');
     expect(current).toHaveLength(1);
-    expect(current[0]?.textContent).toBe('支出トレンド');
+    expect(current[0]?.textContent).toBe('推移');
   });
 
   it('表示していないタブのAPIは呼ばない', async () => {
@@ -88,14 +89,15 @@ describe('支出分析のタブ', () => {
     expect(await screen.findByText(/比較するデータが未取込です/)).toBeTruthy();
 
     // 統合前は route の taskDetail として出ていた文。消すと「増=赤」が誰にも伝わらない
-    const detail = screen.getByText('増減マトリクスのくわしい説明').closest('details');
+    const detail = screen.getByText('マトリクスのくわしい説明').closest('details');
     expect(detail?.textContent).toContain('増=赤');
     expect(detail?.querySelectorAll('.term').length ?? 0).toBeGreaterThan(0);
   });
 
-  it('タブ名の無いURLと綴りの違うURLは既定のタブへ寄せる', async () => {
+  it('タブ名の無いURLはハブを出し、綴りの違うURLは既定のタブへ寄せる', async () => {
+    // /analysis はどこから見るかを決めるハブ (SYS-ANHUB)。タブへは転送しない
     renderAt('/analysis');
-    expect(await screen.findByText(/照合できる支出がまだありません/)).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: '支出のどこから確認しますか？' })).toBeTruthy();
     cleanup();
 
     renderAt('/analysis/nonexistent');

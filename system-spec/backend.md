@@ -3,7 +3,7 @@ status: confirmed
 category: backend
 aggregate: 確定
 spec_cells: [backend.web, backend.mobile, backend.tablet, backend.desktop-windows, backend.desktop-linux, backend.desktop-macos]
-serves_goals: [G1]
+serves_goals: [G3, G4]
 ---
 
 # バックエンド (backend)
@@ -15,12 +15,12 @@ serves_goals: [G1]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-backend-web-ds-observed-001。資するゴール: G1 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、本カテゴリでは端末側でトークンやレイアウト設定を配信・更新する API (リモート設定) を設けるかを決める必要があった。本サイクルはトークンをビルド時の定数として web に同梱するだけで、Worker の API には変更を加えない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-backend-web-ah-observed-001。裏付け質疑 (`qa_refs`): `qa-analysis-hub-decision-002`, `qa-analysis-hub-decision-003`, `qa-backend-web-ah-inference-002`, `qa-backend-web-ah-decision-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,10 @@ serves_goals: [G1]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の境界を、表示の関心 (トークン) を Worker の API に入れないという確定内容に反映した。packages/api のルートと入出力は変えない。 |
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセス層には本サイクルの変更が無い。トークンはデータアクセスを経由しない定数であり、既存のリポジトリ層の責務を広げないことを反映として記録する。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の依存方向を、core (ハブ集計・previousPeriod) ← api (route) ← web (表示) の一方向に反映した。前期間の定義を api/ai から core へ移すことで、AI の前期間比とハブの前期間比が同じ関数を通り、定義がずれる経路を無くす。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側の loadScoped と freee 系 3 テーブルの読取りに限り、core のハブ関数は D1 を知らない Dataset と配列だけを受け取る形に反映した。ハブのために新しいリポジトリ関数や SQL を増やさず、既存 /total-cashflow と同じ読取りを再利用する。 |
+
+> **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
 ## 確定内容 (質疑録)
 
@@ -37,19 +39,67 @@ serves_goals: [G1]
 
 ### Web (web)
 
-- 資するゴール: G1
+- 資するゴール: G3, G4
 
-#### 主たる接地根拠: `qa-backend-web-ds-observed-001`
+#### 主たる接地根拠: `qa-backend-web-ah-observed-001`
 
 **問**
 
-本サイクルで扱う中心概念 (ドメインモデル) は何で、どの層に置くか。Worker 側の処理は変わるか。
+ハブの『現在の状態』と収支サマリーに使えるドメイン関数と API は現行どこまであり、何が無いか。
 
 **答**
 
-中心概念はデザイントークンで、役割名 (面・文字・境界・主色・状態色・チャート系列・文字サイズ・余白・角丸・影・動き・シェル寸法) から値への対応である。状態色は『塗り用』と『文字用』の 2 つの役割を持つ (利用者決定 qa-ui-ux-web-ds-decision-002)。これは入出力を持たない純データなので、packages/core (README のアーキテクチャ節で依存ゼロの純関数と定める層) に置き、web がビルド時に取り込む。packages/api (Hono on Workers) の処理・ルート・入出力は変えない。core は既に report-css.ts のような表示用の純データを持っており、同じ置き方である。
+API は Hono の Cloudflare Worker (packages/api/src/index.ts)。/api/* に authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence を掛けてから analyticsRoute・totalCashflowRoute 等をマウントする。analytics.ts の loadScoped(c) は loadDataset(D1, userId) の全データに core の resolvePeriodQuery (from/to/year/span) と applyPeriod を掛け、PeriodMeta (applied/label/full/years/monthCount) を返す。あるもの: 照合の要確認件数 = /business-spend の summary.reviewCount と unbooked.length (core expense-projection.ts buildExpenseProjection)。総収支の重複候補件数 = /total-cashflow の review.length と月別 reviewCount/reviewAmount (core total-cashflow.ts totalCashflowReport(data, deals, bindVerdicts(verdictRows, data.mfTx), exclusions)。route は freee_deals・duplicate_verdicts・freee_deal_exclusions を userId で読み、期間の月に含まれる deal だけを渡す)。期間の月別 totalIncome/totalExpense/totalBalance (合計を返す API は無い)。改善候補 = core analysis.ts 1292 行 tradeoffCandidates(data) (amount は月あたりの捻出期待額、GET /tradeoff で公開)。前期間計算 = packages/api/src/ai/dataset.ts の previousPeriod(p) (直前の同じ長さ)・yearAgoPeriod(p) (12 か月前) で、AI 用に api 内に閉じ core には無い。無いもの: 期間合計の総収入/総支出/純収支を返す API、前 12 か月比、優先度、マトリクスの正常判定 (matrix() に判定は無く unrecordedExpMonths だけ)、数値の改善余地 (diagnosis().autoDiagnosis[].value は『目安 ▲3〜5万円/月』の文字列)、5 視点をまとめて返す集約エンドポイント。loadScoped は期間で切ったデータしか渡さないため、前期間比には all からの前期間切り出しが要る。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: README のアーキテクチャ節、packages/core/src/report-css.ts、packages/api/src/index.ts をアシスタントが読んだ観測事実。トークンを core に置く方針自体は利用者決定 qa-frontend-web-ds-decision-002 に由来する。 / 回答時刻: 2026-09-13T05:03:11Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,routes/analytics.ts,routes/total-cashflow.ts,ai/dataset.ts,store.ts}, packages/core/src/{period.ts,total-cashflow.ts,expense-projection.ts,analysis.ts}。 / 回答時刻: 2026-09-14T11:38:26Z)
+
+#### 裏付け質疑: `qa-analysis-hub-decision-002`
+
+**問**
+
+ハブの『現在の状態』列と前 12 か月比を出すデータはどこで計算するか。選択肢: (A) core に純関数を足し GET /analysis/hub が 1 回で 5 視点の状態・収支サマリー・前 12 か月比を返す。前期間の計算は api/ai/dataset.ts から core へ移す (推奨) / (B) API は変えずハブ表示時に既存 5 本を同時に呼び、前 12 か月比と改善余地は省く。
+
+**答**
+
+(A) 集約 API を新設 を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-14T11:33:07Z)
+
+#### 裏付け質疑: `qa-analysis-hub-decision-003`
+
+**問**
+
+画像の『優先度 (高/中)』『マトリクスの正常判定』『診断の改善余地 (金額)』は現行実装に定義が無い。どう定めるか。選択肢: (A) 単純な規則で定義する: 優先度は照合・総収支が要確認 1 件以上なら高・0 件なら中、他 3 視点は中。マトリクスは未記録月 0 なら正常。改善余地は既存 tradeoffCandidates の月額合計 × 12 の年額。規則は docs に明記しテストで固定する (推奨) / (B) 状態は件数と前 12 か月比だけにし、優先度・正常判定・改善余地は出さない。
+
+**答**
+
+(A) 単純な規則で定義 を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-14T11:33:07Z)
+
+#### 裏付け質疑: `qa-backend-web-ah-inference-002`
+
+**問**
+
+期間が 1 年以外 (2 年・3 年・任意) のとき、画像の『前 12 か月比』は何と比べるか。
+
+**答**
+
+既存 previousPeriod(p) と同じく『直前の同じ長さの期間』と比べ、表示ラベルは期間の月数から『前 N か月』とする (1 年選択時は画像どおり『前12か月』)。前期間の月がデータ範囲に 1 か月も無い場合は比較値を null とし画面は『比較データなし』を出す。一部だけある場合は存在する月だけで比べず null とする (欠けた期間との比較で増減率を誇張しないため)。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: アシスタントが 2026-09-14 に、利用者決定 qa-analysis-hub-decision-002 (前期間計算を core へ移す) と観測 qa-backend-web-ah-observed-001 (previousPeriod の定義) から導いた推測。利用者の明示選択ではない。 / 回答時刻: 2026-09-14T11:38:26Z)
+
+#### 裏付け質疑: `qa-backend-web-ah-decision-003`
+
+**問**
+
+収支サマリーの『前12か月比』は、期間に 2年・3年・任意を選んだとき何と比べるか。選択肢: (A) 直前の同じ長さ。2年なら直前の2年で、ラベルは『前24か月』。既存 previousPeriod と同じ定義。前期間の月が1か月でも欠けたら『比較データなし』(推奨) / (B) 12か月前の同じ長さ (yearAgoPeriod)。季節はそろうが、2年以上では比較期間が選択期間と重なる / (C) 1年選択時だけ比較し、他は比較欄を出さない。
+
+**答**
+
+(A) 直前の同じ長さ を選択した。比較先は previousPeriod(p) (選択期間の直前にある同じ月数の期間) で、表示ラベルは『前 N か月』(N = 選択期間の月数。1年選択時は『前12か月』)。前期間の月がデータ範囲に 1 か月でも欠ける場合は比較値を null とし、画面は『比較データなし』を出す。G3 の『前 12 か月比』は 1 年選択時の表示例であり、比較先の定義はこの決定を正本とする。本決定は agent-inference だった qa-backend-web-ah-inference-002 を利用者の選択で置き換える。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の差し戻しを受けた再質問)。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-14T11:57:13Z)
 
 ## To-Be / Delta
 
@@ -57,27 +107,25 @@ serves_goals: [G1]
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: 色・文字サイズ・行高・余白・角丸・影・動き・寸法 (シェル幅/高さ/タップ領域) のデザイントークンを、packages/core に置く依存ゼロの TypeScript 定義 1 か所へ集約し、CSS 変数とチャート色はそこから導出する。和文は OS の system-ui、金額・数値は自己配信する IBM Plex Mono Latin 400/600 だけを使い、全非 test source・dependencies・外部フォントURLの検査でこの配信契約を固定する。
+- **G3**: ハブに必要な集計を packages/core の純関数と、1 回で返す集約 API (GET /analysis/hub) に置く。期間の収支サマリーと前 12 か月比、5 視点それぞれの現在の状態 (照合の要確認件数・総収支の重複候補件数・マトリクスの正常判定・推移の支出前 12 か月比・診断の改善余地) と優先度を返し、ハブ表示中に 5 タブ分の既存 API を呼ばない。
+- **G4**: 優先度・マトリクスの正常判定・改善余地を単純で説明可能な規則として定義し、規則を docs に明記してテストで固定する。優先度は照合と総収支が要確認 1 件以上なら高・0 件なら中、他の 3 視点は中。マトリクスは未記録月 0 なら正常。改善余地は tradeoffCandidates の月額合計 × 12 の年額。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | packages/core/src/design-tokens.ts に色・文字・余白・角丸・影・動き・寸法のトークンを定義し、値の唯一の実装正本とする。 | 単体テストは schema・役割集合・alias・コントラストに必要な関係不変条件を値の転記なしで検査する。表示に影響する全トークン値は、版・承認参照・由来ファイルを持つ `docs/design-system/token-approval.json` の SHA-256 fingerprint と lint で照合し、未承認の値変更を拒否する。 |
-| O2 | styles.css の :root トークンと charts.ts の COLORS を design-tokens.ts から導出した写しに置き換え、写しのずれを検出する lint を lint スクリプトへ組み込む。 | pnpm lint が写しの不一致で exit 非 0 になり、一致時に exit 0 になる。charts.ts から 6 桁 hex の直書きが 0 件になる。 |
+| O3 | core に analysisHub(dataset) 相当の純関数を置き、API に GET /analysis/hub を足す。 | core 単体テストが期間合計・前 12 か月比 (前期間データ無しは null)・5 視点の状態・優先度・改善余地を固定データで検証し、API 統合テストが認証付きで 200 と期間メタを返し、ハブ表示中の DOM テストで既存 5 API への呼出しが 0 件である。 |
+| O4 | 判定規則を docs に書き、境界値をテストで固定する。 | 要確認 0 件/1 件、未記録月 0/1、tradeoff 候補 0 件の境界でテストが規則どおりの値を返し、規則を変えるとテストが落ちる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: 新しい画面をつくるとき、色・余白・角丸・文字サイズを design-tokens から選ぶだけで FINAL-UI と同じ見た目になる。
+- **I3**: 期間の収支サマリーに総収入・総支出・純収支と前 12 か月比 (増減率と前期間の金額) を出し、純収支の説明パネルを右に置く。前期間データが無い場合は比較を『比較データなし』と表示する。
+- **I4**: core にハブ集計関数を置き、GET /analysis/hub が期間メタ・サマリー・5 視点の状態・優先度を返す。前期間の計算は core へ移し AI 側もそれを使う。
+- **I5**: 優先度・マトリクス正常判定・改善余地の規則を docs/ui-decisions.md (または docs 配下の分析ハブ文書) に書き、境界値テストで固定する。
 
 ### 本章に効く確定意思決定
 
-- **dec-design-token-source**: デザイントークンの正本をどこに置くか
-  - 採択: packages/core の design-tokens.ts を正本にし、CSS 変数とチャートの予備値を生成する (`core-ts`)
-  - 目的適合: G1 の『依存ゼロの TypeScript 1 か所』に直接合う。テスト (O1・O4) が CSS を解析せず値を import でき、次サイクルでレポート側からも同じ値を import できる
-- **dec-border-color-roles**: 境界色 #D7E0E2 (白に 1.34:1) を、WCAG 2.2 の 1.4.11 とどう両立させるか
-  - 採択: 装飾罫線は #D7E0E2、部品を見分ける枠は 3:1 の派生色 (`split-roles`)
-  - 目的適合: G5 の役割分離を境界へ広げ、画像の淡い罫線と部品の枠の 1.4.11 を両立する
+- (本章ゴールに効く確定 decision なし)
 
 ## 適用された設計知識
 
@@ -85,9 +133,9 @@ serves_goals: [G1]
 
 ### 本章での適用
 
-3 枚の card のうち本章に効いたのは Clean Architecture の境界の判断だけで、API 設計と DDD の集約は本サイクルで適用対象が無い。デザイントークンは入出力も業務ルールも持たない純データであり、Worker の API 契約・ルート・集約を増やさないことが、表示の関心をサーバ側へ漏らさないという境界の適用になる。API design patterns と DDD card は、トークンをリモート設定として配信する案を採らない理由 (ビルド時同梱で足りる) の確認に使っただけで、確定内容を変えていない。
+Clean Architecture card の Dependency Rule を、ハブ集計の置き場所に適用した。期間合計・前期間比・5 視点の状態・優先度・改善余地は入出力を持たない業務規則なので packages/core の純関数に置き、Hono の route (GET /api/analysis/hub) は loadScoped と freee 系 3 テーブルの読取りを行って core へ渡す外側の adapter に留める。AI 用として packages/api/src/ai/dataset.ts に閉じていた previousPeriod を core へ移すのも同じ規則による — 前期間の定義 (qa-backend-web-ah-decision-003) を API の内側に置くと、core のハブ関数が api に依存する逆向きの矢印になる。API Design Patterns card は、5 本の既存 API を束ねず集約エンドポイントを 1 本足す判断 (qa-analysis-hub-decision-002) に効き、応答を画面の必要量に絞ることでハブ表示中の往復を 1 回にした。DDD card の集約の考え方は、総収支の消し込み (freee 正本・未判断の重複候補を合計に入れない) を totalCashflowReport の不変条件ごと再利用し、ハブ側で件数を数え直さない判断に使った。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T05:07:52Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-14T11:57:54Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -216,4 +264,6 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 ## 最新ドキュメント出典
 
-- (このカテゴリに割り当てた取得済みドキュメントなし。全体出典は index.md 参照)
+| 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
+|---|---|---|---|---|---|
+| hono-middleware | 4.13.7 | Hono (hono.dev) | https://hono.dev/docs/guides/middleware | 2026-09-14T11:44:16Z | 2026-09-14T11:44:16Z |

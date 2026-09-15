@@ -17,6 +17,7 @@ import {
   diagnosis,
   household,
   overview,
+  previousPeriod,
   recordedExpIdx,
   statThresholds,
   subscriptions,
@@ -28,7 +29,6 @@ import {
   addMonths,
   monthIndex,
   periodLabel,
-  rangeLength,
   rangeMonths,
   reportTypeOf,
 } from './contract.js';
@@ -50,12 +50,6 @@ const round3 = (v: number): number => Math.round(v * 1000) / 1000;
 export function periodMonths(months: string[], p: Period): string[] {
   const set = new Set(rangeMonths(p));
   return months.filter((m) => set.has(m));
-}
-
-/** 直前の同じ長さの期間(前月 / 前四半期 / 前13ヶ月 …) */
-export function previousPeriod(p: Period): Period {
-  const n = rangeLength(p);
-  return { from: addMonths(p.from, -n), to: addMonths(p.to, -n) };
 }
 
 /** 12ヶ月前の同じ期間(前年同月 / 前年同期) */

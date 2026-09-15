@@ -61,7 +61,7 @@ describe('全画面共通シェル', () => {
     expect([...current.querySelectorAll('span')].map((node) => node.textContent)).toEqual([
       '確認',
       '支出分析',
-      'トータル収支',
+      '総収支',
     ]);
   });
 

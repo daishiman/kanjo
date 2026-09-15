@@ -16,7 +16,7 @@
 import { cleanup, render } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { ROUTE_ICON_NAMES, RouteIcon } from './components/RouteIcon.js';
-import { ANALYSIS_TABS, APP_ROUTES } from './routeMetadata.js';
+import { ANALYSIS_HUB_ICONS, ANALYSIS_TABS, APP_ROUTES } from './routeMetadata.js';
 
 afterEach(cleanup);
 
@@ -79,6 +79,11 @@ describe('iconの図形', () => {
   it('登録されているiconに使われていないものがない', () => {
     // 使われないiconが残ると、上の一意性検査が実画面と関係のない図形まで守り始める
     const used = new Set<string>([...APP_ROUTES, ...ANALYSIS_TABS].map((route) => route.icon));
+    used.add(ANALYSIS_HUB_ICONS.copy);
+    for (const name of Object.values(ANALYSIS_HUB_ICONS.status)) used.add(name);
+    for (const tab of ANALYSIS_TABS) {
+      for (const item of [...tab.sources, ...tab.excluded]) used.add(item.icon);
+    }
     expect(ROUTE_ICON_NAMES.filter((name) => !used.has(name))).toEqual([]);
   });
 });

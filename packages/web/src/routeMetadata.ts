@@ -169,61 +169,144 @@ export type AppRouteId = (typeof APP_ROUTES)[number]['id'];
  * 支出分析(/analysis)のタブの正本。
  *
  * 元は3つの独立した画面で、利用者は1つの判断のために3画面を行き来していた。
- * 画面を減らしても「何を説明していたか」は減らさないため、label / task / taskDetail は
+ * 画面を減らしても「何を説明していたか」は減らさないため、task / taskDetail は
  * 当時のものをそのまま持ち、タブごとの見出しとして表示する。
+ * label は支出分析ハブ導入時に 5 文字以内の短縮形へ揃えた(qa-analysis-hub-decision-004)。
+ * step / learn / sources / excluded はハブの「読み順」と「選択中の分析」パネルが使う静的定義(FR-006)。
+ * 数字を含めない。数字はサーバの集約応答だけが持つ。
  * icon は Cmd+K の検索結果とタブ見出しで使い、以前と同じ絵で辿り着けるようにしている。
  */
 export const ANALYSIS_TABS = [
   {
     id: 'reconciliation',
     path: '/analysis/reconciliation',
-    label: '支出照合',
+    label: '照合',
     task: 'freeeとMoney Forwardの支出を一度だけ数えます。',
     taskDetail:
       '税務の正本はfreee。MFで事業と仕分けた支出のうち、freeeと厳密に一致するものは二重に数えず、それ以外を未記帳として示す。曖昧な一致は自動で統合しない。',
     icon: 'git-compare-arrows',
     navGroup: null,
+    step: '差異を消す',
+    summary: 'データの整合性を確認します。',
+    purpose: '取込データに不備や重複がないかを確認します。',
+    journeyHint: '照合でデータの整合性を確認',
+    learn: 'freeeの帳簿に載っていない事業支出と、二重に数えそうな支払がどれだけあるか。',
+    sources: [
+      { label: 'freeeの取引', icon: 'file-text' },
+      { label: 'Money Forwardの明細（事業に仕分けたもの）', icon: 'credit-card' },
+    ],
+    excluded: [
+      { label: '家計に仕分けた明細', icon: 'folder-x' },
+      { label: '振替・計算対象外にした明細', icon: 'folder-x' },
+    ],
   },
   {
     id: 'total-cashflow',
     path: '/analysis/total-cashflow',
-    label: 'トータル収支',
+    label: '総収支',
     task: '事業と家計を合わせて、月ごとの収支を確認します。',
     taskDetail:
       '同じ口座を通る事業と家計を1本の表にする。freeeとMoney Forwardに重複して載る支払は、日付と金額が一致するものだけを事業費として1度だけ数えて二重計上を避け、残りを家計費として並べる。機械で決められない組は要確認として残す。',
     icon: 'sigma',
     navGroup: null,
+    step: '全体を掴む',
+    summary: '支出の全体像と収支バランスを把握します。',
+    purpose: '支出の全体像と収支バランスを確認します。',
+    journeyHint: '総収支で収支バランスを把握',
+    learn: '事業と家計を合わせた月ごとの収入・支出・純収支と、機械で決められない重複の候補。',
+    sources: [
+      { label: '銀行口座の取引', icon: 'landmark' },
+      { label: 'クレジットカード・決済サービス', icon: 'credit-card' },
+      { label: '電子マネー・Money Forward明細', icon: 'credit-card' },
+      { label: 'freee取引・保存済みの重複判断', icon: 'file-text' },
+    ],
+    excluded: [
+      { label: '振替取引（同一名義の口座間）', icon: 'folder-x' },
+      { label: '除外したfreee取引・期間外の月', icon: 'folder-x' },
+    ],
   },
   {
     id: 'matrix',
     path: '/analysis/matrix',
-    label: '増減マトリクス',
+    label: 'マトリクス',
     task: '科目ごとの増減を月別に比較します。',
     taskDetail: '色は増=赤・減=緑で、支出が増えた月ほど赤くなる。前年同月比と年換算も同じ表で読む。',
     icon: 'grid-2x2',
     navGroup: null,
+    step: '偏りを見る',
+    summary: '支出の内訳と構成のバランスを分析します。',
+    purpose: '支出の内訳を科目と月の2軸で確認します。',
+    journeyHint: 'マトリクスで支出の構成を分析',
+    learn: 'どの科目がどの月に増えたか、減ったか。前年同月との差と年換算。',
+    sources: [
+      { label: 'Money Forwardの明細', icon: 'credit-card' },
+      { label: '科目・月ごとの集計', icon: 'grid-2x2' },
+    ],
+    excluded: [
+      { label: '明細を取り込んでいない月（未記録月）', icon: 'folder-x' },
+      { label: '振替取引', icon: 'folder-x' },
+    ],
   },
   {
     id: 'trends',
     path: '/analysis/trends',
-    label: '支出トレンド',
+    label: '推移',
     task: '支出の規模と変化から、見直す科目を選びます。',
     taskDetail:
       '事業と家計を並べて比較できる。累積構成比と傾向検定で「規模が大きく、増え続けている科目」を絞り込む。',
     icon: 'trending-up',
     navGroup: null,
+    step: '変化を追う',
+    summary: '支出の増減傾向と季節変動を確認します。',
+    purpose: '支出の増減傾向や季節変動を確認します。',
+    journeyHint: '推移で増減の傾向を確認',
+    learn: '規模が大きく、増え続けている科目。前の同じ長さの期間と比べた支出の変化。',
+    sources: [
+      { label: 'Money Forwardの明細（事業・家計）', icon: 'credit-card' },
+      { label: '月次の支出集計', icon: 'trending-up' },
+    ],
+    excluded: [
+      { label: '振替取引', icon: 'folder-x' },
+      { label: '計算対象外にした明細', icon: 'folder-x' },
+    ],
   },
   {
     id: 'diagnosis',
     path: '/analysis/diagnosis',
-    label: '統計診断',
+    label: '診断',
     task: '数値の変化から、対応が必要な科目を見つけます。',
     taskDetail:
       'シグナルごとに判定基準を明示する。損益分岐点・安全余裕率・売上高経費率の現在値もここで確認する。',
     icon: 'scan-search',
     navGroup: null,
+    step: '行動を決める',
+    summary: '課題を特定し、改善の余地を見つけます。',
+    purpose: '課題を特定し、改善の余地を見つけます。',
+    journeyHint: '診断で改善の余地を特定',
+    learn: '普段からぶれた科目と、見直すと年間でいくら浮くかの目安。',
+    sources: [
+      { label: 'Money Forwardの明細の月次集計', icon: 'credit-card' },
+      { label: '損益の現在値', icon: 'file-text' },
+    ],
+    excluded: [
+      { label: '振替・計算対象外にした明細', icon: 'folder-x' },
+      { label: '比較に足る月数がない科目', icon: 'folder-x' },
+    ],
   },
 ] as const;
+
+/** ハブの補助アイコン。状態・操作の意味と図形の対応もルート定義と同じ場所で管理する。 */
+export const ANALYSIS_HUB_ICONS = {
+  copy: 'link-2',
+  status: {
+    success: 'circle-check',
+    error: 'circle-alert',
+    neutral: 'circle-minus',
+    warning: 'triangle-alert',
+    trendDown: 'arrow-down',
+    trendUp: 'trending-up',
+  },
+} as const;
 
 export type AnalysisTabId = (typeof ANALYSIS_TABS)[number]['id'];
 
@@ -234,6 +317,16 @@ export type AnalysisTabId = (typeof ANALYSIS_TABS)[number]['id'];
 export const TABBED_ROUTE_IDS: ReadonlySet<string> = new Set(['analysis']);
 
 export const DEFAULT_ANALYSIS_TAB = ANALYSIS_TABS[0];
+
+/**
+ * 支出分析ハブの集約 API (/api/analysis/hub) のクエリキー。
+ * ハブ画面とサイドバーの件数バッジが同じキーを使い、同時に表示しても 1 本しか呼ばない。
+ * Analysis.tsx は遅延読み込みなので、Layout から参照できるここに置く。
+ */
+export const ANALYSIS_HUB_QUERY_ROOT = ['analysis-hub'] as const;
+/** 月次確定後の操作中に無駄な再取得を増やさず、変更時は明示 invalidate で即時更新する。 */
+export const ANALYSIS_HUB_STALE_TIME_MS = 30_000;
+export const analysisHubQueryKey = (periodKey: string) => [...ANALYSIS_HUB_QUERY_ROOT, periodKey] as const;
 
 export function analysisTab(id: string | undefined): (typeof ANALYSIS_TABS)[number] | undefined {
   return ANALYSIS_TABS.find((tab) => tab.id === id);
@@ -282,10 +375,23 @@ export function routeMetadata(id: AppRouteId): (typeof APP_ROUTES)[number] {
 /** path から本文幅を決める唯一の境界。analysis の子タブは親 route の用途を継承する。 */
 export function routeContentWidth(pathname: string): 'reading' | 'data' {
   if (pathname === '/improvement' || pathname === '/login') return 'reading';
+  // ハブは5視点の判断に必要な情報だけへ絞る。詳細の横長分析表は従来どおり data 幅。
+  if (pathname === '/analysis') return 'reading';
   const route = APP_ROUTES.find((candidate) =>
     candidate.path === '/'
       ? pathname === '/'
       : pathname === candidate.path || pathname.startsWith(`${candidate.path}/`),
   );
   return route?.contentWidth ?? 'reading';
+}
+
+/** ブラウザのタブ名も表示中ルートの正本から導く。 */
+export function routePageTitle(pathname: string): string {
+  const tab = ANALYSIS_TABS.find((candidate) => candidate.path === pathname);
+  if (tab) return `${tab.label} | 支出分析 | Focus Ledger`;
+  if (pathname === '/improvement') return '改善要望 | Focus Ledger';
+  const route = APP_ROUTES.find((candidate) =>
+    candidate.path === '/' ? pathname === '/' : pathname === candidate.path,
+  );
+  return route ? `${route.label} | Focus Ledger` : 'Focus Ledger';
 }
