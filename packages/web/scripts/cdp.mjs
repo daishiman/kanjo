@@ -39,24 +39,30 @@ export async function openCdpSession({ port, targets, onEvent }) {
     const waiter = pending.get(message.id);
     if (!waiter) return;
     pending.delete(message.id);
-    if (message.error) waiter.reject(new Error(JSON.stringify(message.error)));
+    if (message.error) waiter.reject(new Error(`${waiter.method}: ${JSON.stringify(message.error)}`));
     else waiter.resolve(message.result ?? {});
   });
 
   const send = (method, params = {}) =>
     new Promise((resolve, reject) => {
       const id = ++nextId;
-      pending.set(id, { resolve, reject });
+      pending.set(id, { resolve, reject, method });
       socket.send(JSON.stringify({ id, method, params }));
     });
 
   /** ページ内で式を評価して値を取り出す。例外は投げ直す(黙って undefined を返さない)。 */
   const evaluate = async (expression) => {
-    const result = await send('Runtime.evaluate', {
-      expression,
-      returnByValue: true,
-      awaitPromise: true,
-    });
+    let result;
+    try {
+      result = await send('Runtime.evaluate', {
+        expression,
+        returnByValue: true,
+        awaitPromise: true,
+      });
+    } catch (error) {
+      const preview = expression.replaceAll(/\s+/g, ' ').slice(0, 160);
+      throw new Error(`${error instanceof Error ? error.message : String(error)}; expression=${preview}`);
+    }
     if (result.exceptionDetails) throw new Error(JSON.stringify(result.exceptionDetails));
     return result.result?.value;
   };

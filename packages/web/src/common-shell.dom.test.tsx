@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Layout } from './components/Layout.js';
@@ -65,6 +65,17 @@ describe('全画面共通シェル', () => {
     ]);
   });
 
+  it('概況は実データ由来の進捗に絞り、サイドバーの汎用進捗を重ねない', () => {
+    const view = renderLayout('/');
+    expect(screen.queryByRole('region', { name: '月次進捗' })).toBeNull();
+    const sidebar = screen.getByRole('complementary');
+    expect(within(sidebar).getByRole('link', { name: /Focus Ledger/ })).toBeTruthy();
+
+    view.unmount();
+    renderLayout('/analysis/total-cashflow');
+    expect(screen.getByRole('region', { name: '月次進捗' })).toBeTruthy();
+  });
+
   it('期間・状態・検索・出力・ヘルプ・利用者を共通ヘッダーに集約する', async () => {
     renderLayout('/');
     const header = screen.getByRole('banner');
@@ -74,6 +85,18 @@ describe('全画面共通シェル', () => {
     expect(within(header).getByRole('link', { name: '使い方' })).toBeTruthy();
     expect(within(header).getByRole('button', { name: '利用者メニュー' })).toBeTruthy();
     expect(await within(header).findByText(/最終更新/)).toBeTruthy();
+  });
+
+  it('ブランド・状態・共通操作・信頼情報を装飾文字ではなく一貫した図記号で示す', async () => {
+    renderLayout('/');
+    const sidebar = screen.getByRole('complementary');
+    const header = screen.getByRole('banner');
+    const footer = screen.getByRole('contentinfo');
+
+    expect(sidebar.querySelector('.brand-mark')).toBeTruthy();
+    await waitFor(() => expect(header.querySelector('.header-defense .status-icon')).toBeTruthy());
+    expect(header.querySelectorAll('.action-icon').length).toBeGreaterThanOrEqual(4);
+    expect(footer.querySelectorAll('.trust-icon')).toHaveLength(3);
   });
 
   it('信頼の前提と確認先を全画面のフッターに残す', () => {

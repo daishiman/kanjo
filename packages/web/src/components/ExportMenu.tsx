@@ -7,6 +7,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { usePeriod } from '../period.js';
+import { DeferredUiIcon as UiIcon } from './DeferredUiIcon.js';
 
 export function ExportMenu() {
   const [open, setOpen] = useState(false);
@@ -34,11 +35,13 @@ export function ExportMenu() {
       <button
         data-native-control="menu-trigger"
         type="button"
+        aria-label="書き出しメニュー"
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
       >
-        書き出し ▾
+        <UiIcon name="download" className="action-icon" />
+        <span className="header-action-label">書き出し ▾</span>
       </button>
       {open && (
         <span className="popover" role="menu">

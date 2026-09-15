@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py (派生ビュー・手書き編集しない・再生成で上書き)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-OVERVIEW-P01",
+      "title": "要件ベースライン確定と未決事項の着手時確認",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P02",
+      "title": "概況 API・core 集計・D1 テーブルのワークストリーム設計決定記録",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P03",
+      "title": "API契約・データモデル設計の独立レビュー",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P04",
+      "title": "core/API/DOM の失敗テスト先行作成 (O1-O5)",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P05",
+      "title": "概況集計・未処理キューAPI・D1 migration・Overview.tsx の実装",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P06",
+      "title": "全テスト・型検査・lint の実行記録",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P07",
+      "title": "AC-001..AC-007 受入検証",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P08",
+      "title": "migration 0040 の前進のみ整合とバックアップ/復元対象の整理",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P09",
+      "title": "アクセシビリティ・CSP・初期JS予算・可観測性の保証確認",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P10",
+      "title": "独立最終レビュー",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P11",
+      "title": "再現可能な証跡索引の作成",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P12",
+      "title": "docs/runbooks への切り分け手順とAPI文書の同期",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-OVERVIEW-P13",
+      "title": "単一 PR での配信とクローズアウト",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

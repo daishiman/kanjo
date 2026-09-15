@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-overview-screen",
+  "parent_feature": "feat-overview-screen",
+  "feature_package_id": "feature-package/feat-overview-screen",
+  "handoff_target": "task-graph",
+  "selected_nodes": [
+    "spec-overview-screen",
+    "arch-overview-ui-ux",
+    "arch-overview-frontend",
+    "arch-overview-backend",
+    "arch-overview-database",
+    "arch-overview-auth",
+    "arch-overview-security",
+    "arch-overview-infrastructure",
+    "arch-overview-maintenance-ops",
+    "feat-overview-screen",
+    "SYS-OVERVIEW-P01",
+    "SYS-OVERVIEW-P02",
+    "SYS-OVERVIEW-P03",
+    "SYS-OVERVIEW-P04",
+    "SYS-OVERVIEW-P05",
+    "SYS-OVERVIEW-P06",
+    "SYS-OVERVIEW-P07",
+    "SYS-OVERVIEW-P08",
+    "SYS-OVERVIEW-P09",
+    "SYS-OVERVIEW-P10",
+    "SYS-OVERVIEW-P11",
+    "SYS-OVERVIEW-P12",
+    "SYS-OVERVIEW-P13"
+  ],
+  "artifact_kinds": [
+    "specification",
+    "architecture",
+    "feature",
+    "task"
+  ],
+  "closure_status": "complete",
+  "missing_nodes": [],
+  "snapshot_digest": "sha256:f9c0fa42e0992ddaedbe86b248a60b7614c024263089ac04dc8ced4daf7c0c86"
+}

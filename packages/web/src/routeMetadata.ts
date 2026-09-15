@@ -16,7 +16,7 @@ export const APP_ROUTES = [
     icon: 'gauge',
     navGroup: '取込',
     mobileLabel: '概況',
-    contentWidth: 'reading',
+    contentWidth: 'data',
   },
   {
     id: 'import',

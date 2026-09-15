@@ -17,6 +17,7 @@ import { createImprovement, markImprovementCopied } from '../api.js';
 import { captureScreen } from '../capture-screen.js';
 import { diagnosticsSnapshot } from '../diagnostics-buffer.js';
 import { Button } from './Button.js';
+import { DeferredUiIcon as UiIcon } from './DeferredUiIcon.js';
 import { ScreenshotAnnotator } from './ScreenshotAnnotator.js';
 
 type Phase = 'idle' | 'capturing' | 'form' | 'sending' | 'done';
@@ -176,7 +177,10 @@ export function ImprovementRequestButton({
         disabled={phase === 'capturing'}
         aria-busy={phase === 'capturing'}
       >
-        {phase === 'capturing' ? '画面を撮影中…' : '改善を送る'}
+        <UiIcon name="message" className="action-icon" />
+        <span className="improve-trigger-label">
+          {phase === 'capturing' ? '画面を撮影中…' : '改善を送る'}
+        </span>
       </Button>
       {phase === 'capturing' && (
         <output className="improve-capturing" aria-live="polite">

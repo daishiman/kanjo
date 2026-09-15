@@ -12,7 +12,21 @@ import { viewportsByLabel } from './viewports.mjs';
 const BASE_URL = process.env.KANJO_VISUAL_BASE_URL ?? 'http://127.0.0.1:4175';
 const VISUAL_SCOPE = process.env.KANJO_VISUAL_SCOPE ?? 'all';
 // 実ルートは高さを1000で揃えて測る(縦は検査対象ではない)ため、幅とzoomだけ使う。
-const VIEWPORTS = viewportsByLabel(['320', '360', '375', '390', '768', '1280', '1600', 'zoom200']);
+const VIEWPORTS = viewportsByLabel([
+  '320',
+  '360',
+  '375',
+  '390',
+  '641',
+  '768',
+  '900',
+  '1023',
+  '1024',
+  '1280',
+  '1600',
+  'zoom200',
+  'rail-zoom200',
+]);
 const OUTPUT_DIR = process.env.KANJO_VISUAL_OUTPUT_DIR ?? join(tmpdir(), 'kanjo-financial-review');
 const months = Array.from({ length: 20 }, (_, index) => {
   const date = new Date(Date.UTC(2025, index, 1));
@@ -568,6 +582,130 @@ const aiReportDetail = {
   versions: [aiReportRow],
 };
 
+// 概況 (P1) は /api/overview の集計と /api/review-queue の未処理キューを描く。値はすべて匿名の架空データ
+const overviewTrend = months.map((month, index) => ({
+  month,
+  income: revenueSeries[index],
+  expense: expenseSeries[index],
+  balance: revenueSeries[index] - expenseSeries[index],
+}));
+const overviewIncome = sum(revenueSeries.slice(12));
+const overviewExpense = sum(expenseSeries.slice(12));
+const overviewPreviousIncome = sum(revenueSeries.slice(4, 12));
+const overviewPreviousExpense = sum(expenseSeries.slice(4, 12));
+const overviewBalance = overviewIncome - overviewExpense;
+const overviewPreviousBalance = overviewPreviousIncome - overviewPreviousExpense;
+const overviewBreakdownSource = rows
+  .map((row) => ({ label: row.label, amount: sum(row.series.slice(12)) }))
+  .sort((left, right) => right.amount - left.amount || left.label.localeCompare(right.label, 'ja'));
+const overviewBreakdownTop = overviewBreakdownSource.slice(0, 5);
+const overviewBreakdownOther = overviewBreakdownSource.slice(5).reduce((total, row) => total + row.amount, 0);
+const overviewFixture = {
+  scope: 'total',
+  kpi: {
+    income: overviewIncome,
+    expense: overviewExpense,
+    balance: overviewBalance,
+    months: 8,
+  },
+  trend: overviewTrend,
+  yearComparison: {
+    rows: [
+      {
+        key: 'income',
+        label: '総収入',
+        current: overviewIncome,
+        previous: overviewPreviousIncome,
+        delta: overviewIncome - overviewPreviousIncome,
+        deltaRate: (overviewIncome - overviewPreviousIncome) / overviewPreviousIncome,
+      },
+      {
+        key: 'expense',
+        label: '総支出',
+        current: overviewExpense,
+        previous: overviewPreviousExpense,
+        delta: overviewExpense - overviewPreviousExpense,
+        deltaRate: (overviewExpense - overviewPreviousExpense) / overviewPreviousExpense,
+      },
+      {
+        key: 'balance',
+        label: '純収支',
+        current: overviewBalance,
+        previous: overviewPreviousBalance,
+        delta: overviewBalance - overviewPreviousBalance,
+        deltaRate: (overviewBalance - overviewPreviousBalance) / overviewPreviousBalance,
+      },
+    ],
+    currentLabel: '直近8か月',
+    previousLabel: '前8か月',
+  },
+  breakdown: {
+    items: [
+      ...overviewBreakdownTop,
+      ...(overviewBreakdownOther > 0 ? [{ label: 'その他', amount: overviewBreakdownOther }] : []),
+    ].map((row) => ({ ...row, share: row.amount / overviewExpense })),
+    total: overviewExpense,
+  },
+  closeStatus: {
+    month: months.at(-1),
+    steps: [
+      { key: 'import', label: 'データ取込', done: true, count: null },
+      { key: 'classification', label: '仕分け', done: false, count: 1 },
+      { key: 'reconciliation', label: '照合', done: false, count: 1 },
+      { key: 'review', label: '月次レビュー', done: false, count: null },
+    ],
+    doneCount: 1,
+    total: 4,
+    reviewedAt: null,
+  },
+  dataUpdatedAt: '2026-08-31T09:00:00.000Z',
+  defenseForecast: { ...summary.defense.forecast, level: 'none' },
+  period: summary.period,
+};
+const reviewQueueFixture = {
+  total: 3,
+  counts: { classification: 1, reconciliation: 1, import: 1 },
+  snoozedCount: 0,
+  items: [
+    {
+      kind: 'classification',
+      itemKey: 'fixture-1',
+      amount: -12_000,
+      date: `${months.at(-1)}-15`,
+      month: months.at(-1),
+      content: '匿名の文具店',
+      recommendation: '事業 / 消耗品費',
+      basis: 'rule',
+      basisLabel: '分類ルール',
+      confidence: 80,
+    },
+    {
+      kind: 'reconciliation',
+      itemKey: 'fixture-2',
+      amount: -24_800,
+      date: `${months.at(-1)}-12`,
+      month: months.at(-1),
+      content: '匿名の資材店',
+      recommendation: null,
+      basis: 'none',
+      basisLabel: '照合待ち',
+      confidence: null,
+    },
+    {
+      kind: 'import',
+      itemKey: 'fixture-3',
+      amount: 0,
+      date: `${months.at(-1)}-10`,
+      month: months.at(-1),
+      content: '匿名ファイルの列不足',
+      recommendation: null,
+      basis: 'none',
+      basisLabel: '取込履歴',
+      confidence: null,
+    },
+  ],
+};
+
 // サイドバーの要確認バッジが全画面で呼ぶ集約API。差し替えないと dev の /api 中継先へ抜け、
 // そこで別の wrangler dev が 401 を返すとログイン画面へ落ちて描画待ちがタイムアウトする。
 const analysisHub = {
@@ -586,6 +724,8 @@ const responseFor = (url) => {
   const path = new URL(url).pathname;
   if (path === '/api/auth/me') return { authenticated: true };
   if (path === '/api/summary') return summary;
+  if (path === '/api/overview') return overviewFixture;
+  if (path === '/api/review-queue') return reviewQueueFixture;
   if (path === '/api/analysis/hub') return analysisHub;
   if (path === '/api/imports') return { imports: [] };
   if (path === '/api/matrix') return matrix;
@@ -607,6 +747,7 @@ const profileDir = mkdtempSync(join(tmpdir(), 'kanjo-financial-chrome-'));
 
 let chrome;
 let ws;
+const runtimeProblems = [];
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 try {
@@ -618,6 +759,17 @@ try {
     targets,
     // APIレスポンスを差し替えるため、id を持たない Fetch.requestPaused を自分で捌く。
     onEvent: (message) => {
+      if (message.method === 'Runtime.exceptionThrown') {
+        runtimeProblems.push(message.params.exceptionDetails?.text ?? 'Runtime exception');
+        return;
+      }
+      if (message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') {
+        runtimeProblems.push(
+          message.params.args?.map((argument) => argument.value ?? argument.description ?? '').join(' ') ||
+            'console.error',
+        );
+        return;
+      }
       if (message.method !== 'Fetch.requestPaused') return;
       const response = responseFor(message.params.request.url);
       if (response === undefined) {
@@ -643,13 +795,14 @@ try {
     throw new Error(`${label} の描画待ちがタイムアウトしました: ${body}`);
   };
   await send('Page.enable');
+  await send('Runtime.enable');
   await send('Fetch.enable', { patterns: [{ urlPattern: '*://*/api/*', requestStage: 'Request' }] });
   await send('Emulation.setEmulatedMedia', {
     features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
   });
 
   const failures = [];
-  if (VISUAL_SCOPE !== 'additional') {
+  if (VISUAL_SCOPE === 'all' || VISUAL_SCOPE === 'core') {
     for (const { label: viewportLabel, width, zoom } of VIEWPORTS) {
       await send('Emulation.setDeviceMetricsOverride', {
         width,
@@ -829,7 +982,7 @@ try {
     }
   }
 
-  if (VISUAL_SCOPE !== 'core') {
+  if (VISUAL_SCOPE === 'all' || VISUAL_SCOPE === 'additional' || VISUAL_SCOPE === 'overview') {
     const additionalRoutes = [
       { name: 'Overview', path: '/', expectedFigures: 1 },
       { name: 'Trends', path: '/analysis/trends', expectedFigures: 3 },
@@ -837,15 +990,25 @@ try {
       { name: 'Household', path: '/household', expectedFigures: 1 },
       { name: 'AI report', path: '/ai', expectedFigures: 4, openReport: true },
     ];
-    for (const width of [360, 375, 390, 1280]) {
+    // rail境界は共通shellの変更なので、代表5画面をすべて同じ幅で監査する。
+    const ADDITIONAL_WIDTHS = [360, 375, 390, 641, 768, 900, 1023, 1024, 1280];
+    for (const { label: viewportLabel, width, zoom } of VIEWPORTS) {
+      const auditAllRoutes =
+        (zoom === 1 && ADDITIONAL_WIDTHS.includes(width)) || viewportLabel === 'rail-zoom200';
+      const routes = additionalRoutes.filter(
+        (route) => route.name === 'Overview' || (VISUAL_SCOPE !== 'overview' && auditAllRoutes),
+      );
+      if (!routes.length) continue;
+      const tag = zoom === 1 ? `${width}px` : viewportLabel;
       await send('Emulation.setDeviceMetricsOverride', {
         width,
         height: 1000,
         deviceScaleFactor: 1,
         mobile: width < 640,
       });
-      await send('Emulation.setPageScaleFactor', { pageScaleFactor: 1 });
-      for (const route of additionalRoutes) {
+      await send('Emulation.setPageScaleFactor', { pageScaleFactor: zoom });
+      for (const route of routes) {
+        runtimeProblems.length = 0;
         await send('Page.navigate', { url: `${BASE_URL}${route.path}` });
         if (route.openReport) {
           await waitFor(
@@ -860,9 +1023,155 @@ try {
           `document.querySelectorAll('[data-financial-figure] .financial-figure__chart canvas').length === ${route.expectedFigures}`,
           route.name,
         );
-        const routeMetrics = await evaluate(`(() => ({
+        await waitFor(
+          "Boolean(document.querySelector('.improve-trigger'))",
+          `${route.name} improvement action`,
+        );
+        const routeMetrics = JSON.parse(
+          await evaluate(`JSON.stringify((() => ({
         pageWidth: document.documentElement.scrollWidth,
         viewportWidth: document.documentElement.clientWidth,
+        shell: (() => {
+          const box = (node) => {
+            const value = node?.getBoundingClientRect();
+            return value
+              ? { left: value.left, right: value.right, top: value.top, bottom: value.bottom, width: value.width, height: value.height }
+              : null;
+          };
+          const insideHorizontally = (inner, outer) =>
+            Boolean(inner && outer && inner.left >= outer.left - 1 && inner.right <= outer.right + 1);
+          const overlaps = (a, b) =>
+            Boolean(a && b && a.left < b.right - 1 && a.right > b.left + 1 && a.top < b.bottom - 1 && a.bottom > b.top + 1);
+          const lineCount = (node) => {
+            if (!node || getComputedStyle(node).display === 'none') return 0;
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            return new Set([...range.getClientRects()].filter((rect) => rect.width > 0).map((rect) => Math.round(rect.top))).size;
+          };
+          const textNodesSingleLine = (node) => {
+            if (!node || getComputedStyle(node).display === 'none') return true;
+            const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+            while (walker.nextNode()) {
+              if (!walker.currentNode.textContent?.trim()) continue;
+              const range = document.createRange();
+              range.selectNodeContents(walker.currentNode);
+              const tops = [...range.getClientRects()]
+                .filter((rect) => rect.width > 0)
+                .map((rect) => Math.round(rect.top));
+              if (new Set(tops).size > 1) return false;
+            }
+            return true;
+          };
+          const rail = matchMedia('(min-width: 641px) and (max-width: 1023px)').matches;
+          const sidebar = document.querySelector('.sidebar');
+          const sidebarBox = box(sidebar);
+          const sidebarContentBox = sidebarBox
+            ? { ...sidebarBox, right: sidebarBox.left + sidebar.clientWidth }
+            : null;
+          const brandMark = document.querySelector('.sidebar .brand-mark');
+          const brandCopy = document.querySelector('.sidebar .brand-copy');
+          const firstNavIcon = document.querySelector('.sidebar .nav .route-icon');
+          const improvement = document.querySelector('.improve-trigger');
+          const improvementNav = document.querySelector('.sidebar a[href="/improvement"]');
+          const close = document.querySelector('.monthly-close-card');
+          const closeButton = close?.querySelector('.btn');
+          const closeLongCopy = close
+            ? [close.querySelector('h2'), close.querySelector('ol'), close.querySelector('.monthly-close-note')].filter(Boolean)
+            : [];
+          const badges = [...document.querySelectorAll('.sidebar .nav-badge')];
+          const main = document.querySelector('main');
+          const mainBox = box(main);
+          const viewportWidth = document.documentElement.clientWidth;
+          const headerGroups = [
+            document.querySelector('.header-location'),
+            document.querySelector('.header-period'),
+            document.querySelector('.header-status'),
+            document.querySelector('.header-actions'),
+          ].map(box).filter(Boolean);
+          const headerText = [
+            ...document.querySelectorAll('.header-location span'),
+            ...document.querySelectorAll('.header-period button, .header-period summary'),
+            ...document.querySelectorAll('.header-status > *'),
+            ...document.querySelectorAll('.header-actions button, .header-actions a'),
+          ];
+          const regions = [document.querySelector('.header'), main, document.querySelector('.review-action-bar')]
+            .map(box)
+            .filter(Boolean);
+          const tableBoxesFit = [...document.querySelectorAll('main .scroll-x')].every((scroller) =>
+            insideHorizontally(box(scroller), mainBox),
+          );
+          return {
+            rail,
+            pageRegionsFit: regions.every((region) => region.left >= -1 && region.right <= viewportWidth + 1),
+            tableBoxesFit,
+            headerGroupsDoNotOverlap: headerGroups.every((group, index) =>
+              headerGroups.slice(0, index).every((previous) => !overlaps(previous, group)),
+            ),
+            headerTextSingleLine: headerText.every(textNodesSingleLine),
+            sidebarFits:
+              !rail ||
+              (Boolean(sidebar) &&
+                sidebar.scrollWidth <= sidebar.clientWidth + 1 &&
+                insideHorizontally(box(brandMark), sidebarContentBox)),
+            brandCompact:
+              !rail ||
+              (insideHorizontally(box(brandMark), sidebarContentBox) &&
+                box(brandCopy)?.width <= 1 &&
+                !overlaps(box(brandMark), box(firstNavIcon))),
+            badgeDots:
+              !rail ||
+              badges.every((badge) => {
+                const badgeBox = box(badge);
+                const iconBox = box(badge.closest('a')?.querySelector('.route-icon'));
+                return (
+                  badgeBox.width <= 9 &&
+                  badgeBox.height <= 9 &&
+                  insideHorizontally(badgeBox, sidebarContentBox) &&
+                  !overlaps(badgeBox, iconBox)
+                );
+              }),
+            closeCompact:
+              !rail ||
+              !close ||
+              (close.scrollWidth <= close.clientWidth + 1 &&
+                insideHorizontally(box(close), sidebarContentBox) &&
+                lineCount(close.querySelector('.monthly-close-count')) <= 1 &&
+                closeLongCopy.every((node) => box(node)?.width <= 1) &&
+                (!closeButton ||
+                  (box(closeButton)?.width >= 43 &&
+                    box(closeButton)?.width <= 45 &&
+                    box(closeButton)?.height >= 43 &&
+                    box(closeButton)?.height <= 45))),
+            improvementDelegated:
+              !rail ||
+              (getComputedStyle(improvement).display === 'none' &&
+                Boolean(improvementNav) &&
+                box(improvementNav)?.height >= 43),
+            noVerticalRailCopy:
+              !rail ||
+              (lineCount(close?.querySelector('.monthly-close-count')) <= 1 &&
+                [...document.querySelectorAll('.sidebar .nav-label')].every(
+                  (label) => box(label)?.width <= 1 && getComputedStyle(label).whiteSpace === 'nowrap',
+                )),
+            diagnostics: !rail
+              ? null
+              : {
+                  sidebar: { box: sidebarBox, clientWidth: sidebar?.clientWidth, scrollWidth: sidebar?.scrollWidth },
+                  badges: badges.map((badge) => ({
+                    box: box(badge),
+                    icon: box(badge.closest('a')?.querySelector('.route-icon')),
+                  })),
+                  close: {
+                    box: box(close),
+                    scrollWidth: close?.scrollWidth,
+                    clientWidth: close?.clientWidth,
+                    countLines: lineCount(close?.querySelector('.monthly-close-count')),
+                    longCopy: closeLongCopy.map(box),
+                    button: box(closeButton),
+                  },
+                },
+          };
+        })(),
         figures: [...document.querySelectorAll('[data-financial-figure]')].map((figure) => {
           const canvas = figure.querySelector('.financial-figure__chart canvas');
           const box = canvas?.getBoundingClientRect();
@@ -880,6 +1189,131 @@ try {
         subscriptionDatasetCount: Number(document.querySelector('[data-financial-dataset-count]')?.getAttribute('data-financial-dataset-count') ?? 0),
         subscriptionDatasetLabels: document.querySelector('[data-financial-dataset-labels]')?.getAttribute('data-financial-dataset-labels') ?? '',
         subscriptionSummaryLabels: [...document.querySelectorAll('[data-financial-series] li')].map((item) => item.textContent?.trim() ?? '').join('|'),
+        overview: (() => {
+          const exact = (selector, text) =>
+            [...document.querySelectorAll(selector)].find((node) => node.textContent?.trim() === text) ?? null;
+          const rect = (node) => {
+            const box = node?.getBoundingClientRect();
+            return box && box.width > 0 && box.height > 0
+              ? { left: box.left, right: box.right, top: box.top, bottom: box.bottom }
+              : null;
+          };
+          const hero = exact('h1', '今月の収支と、次に直すことは？');
+          const income = exact('main div, main dt, main span', '総収入');
+          const trend = exact('h2', '月次の収入・支出・純収支の推移');
+          const review = exact('h2', '未処理の内訳');
+          const priority = [...document.querySelectorAll('h2')].find((heading) =>
+            heading.textContent?.trim().startsWith('優先して確認する明細'),
+          );
+          const summaryBox = rect(review?.closest('section'));
+          const priorityBox = rect(priority?.closest('section'));
+          const detailBox = rect(document.querySelector('aside[aria-label="選択中の明細"]'));
+          const priorityScroll = document.querySelector('.review-priority .scroll-x');
+          const priorityTable = document.querySelector('.review-priority-table');
+          const reviewRows = [...document.querySelectorAll('.review-priority-table tbody tr')];
+          const reviewHeaders = [...document.querySelectorAll('.review-priority-table thead th')];
+          const kpiComparisons = [...document.querySelectorAll('.overview-kpi-strip .kpi-comparison')];
+          const breakdownItems = [...document.querySelectorAll('.overview-breakdown .breakdown-list li')];
+          const headerLocation = document.querySelector('.header-location');
+          const headerPeriod = document.querySelector('.header-period');
+          const headerActions = document.querySelector('.header-actions');
+          const heroBox = rect(hero);
+          const incomeBox = rect(income);
+          const trendBox = rect(trend);
+          const reviewBox = rect(review);
+          const sidebarBrandBox = rect(document.querySelector('.sidebar .brand'));
+          const headerBrandBox = rect(document.querySelector('.header-brand'));
+          // 目標画像の固定ピクセルではなく、読む順序・非重複・同じ段にあることだけを契約にする。
+          const verticalOverlap = (a, b) =>
+            a && b ? Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 0 : false;
+          const reviewScrollContract = (() => {
+            if (!priorityScroll || !priorityTable || !reviewHeaders.length || !reviewRows.length)
+              return { contained: false, allColumns: false, aligned: false, stickyHeader: false, stickyState: false };
+            const expectedHeaders = ['状態', '日付', '内容', '金額', '推奨', '信頼度'];
+            const allColumns = reviewHeaders.map((header) => header.textContent?.trim() ?? '').join('|') === expectedHeaders.join('|') &&
+              reviewHeaders.every((header) => getComputedStyle(header).display !== 'none');
+            const firstCells = [...reviewRows[0].cells];
+            const aligned = reviewHeaders.every((header, index) => {
+              const headerBox = header.getBoundingClientRect();
+              const cellBox = firstCells[index]?.getBoundingClientRect();
+              return cellBox && Math.abs(headerBox.left - cellBox.left) <= 1 && Math.abs(headerBox.width - cellBox.width) <= 1;
+            });
+            const scrollBox = priorityScroll.getBoundingClientRect();
+            const contained = Boolean(priorityBox) && priorityScroll.scrollWidth >= priorityScroll.clientWidth &&
+              scrollBox.left >= priorityBox.left - 1 && scrollBox.right <= priorityBox.right + 1;
+            const originalLeft = priorityScroll.scrollLeft;
+            const originalTop = priorityScroll.scrollTop;
+            const originalMaxHeight = priorityScroll.style.maxHeight;
+            priorityScroll.scrollLeft = priorityScroll.scrollWidth;
+            const stateHeaderBox = reviewHeaders[0].getBoundingClientRect();
+            const stateBadgeBox = reviewRows[0].querySelector('.review-row-status')?.getBoundingClientRect();
+            const stickyState = stateHeaderBox.left >= scrollBox.left - 1 &&
+              stateHeaderBox.right <= scrollBox.right + 1 &&
+              stateBadgeBox && stateBadgeBox.left >= scrollBox.left - 1 && stateBadgeBox.right <= scrollBox.right + 1;
+            priorityScroll.style.maxHeight = '120px';
+            priorityScroll.scrollTop = priorityScroll.scrollHeight;
+            const stickyHeaderBox = reviewHeaders[0].getBoundingClientRect();
+            const stickyHeader = Math.abs(stickyHeaderBox.top - priorityScroll.getBoundingClientRect().top) <= 2;
+            priorityScroll.scrollLeft = originalLeft;
+            priorityScroll.scrollTop = originalTop;
+            priorityScroll.style.maxHeight = originalMaxHeight;
+            return { contained, allColumns, aligned, stickyHeader, stickyState: Boolean(stickyState) };
+          })();
+          return {
+            desktopBrandUnique: Boolean(sidebarBrandBox) && !headerBrandBox,
+            mobileHeaderBrand: Boolean(headerBrandBox),
+            hasGenericProgress: Boolean(document.querySelector('.sidebar .workflow-progress')),
+            sectionOrder:
+              Boolean(heroBox && incomeBox && trendBox && reviewBox) &&
+              heroBox.top < incomeBox.top &&
+              incomeBox.top < trendBox.top &&
+              trendBox.top < reviewBox.top,
+            threeReviewColumns:
+              Boolean(summaryBox && priorityBox && detailBox) &&
+              summaryBox.right <= priorityBox.left + 1 &&
+              priorityBox.right <= detailBox.left + 1 &&
+              verticalOverlap(summaryBox, priorityBox) &&
+              verticalOverlap(priorityBox, detailBox),
+            reviewTableContract: reviewScrollContract,
+            kpiComparisonComplete:
+              kpiComparisons.length === 3 &&
+              kpiComparisons.every((note) => /[+−]¥[\\d,]+/.test(note.textContent ?? '') && /[+−-]?\\d+\\.\\d%/.test(note.textContent ?? '') && /前\\d+か月\\s+¥[\\d,]+/.test(note.textContent ?? '')),
+            breakdownComplete:
+              breakdownItems.length === 6 &&
+              breakdownItems.every((item) => /^.+¥[\\d,]+\\d+\\.\\d%$/.test((item.textContent ?? '').replaceAll(/\\s/g, ''))) &&
+              new Set(breakdownItems.map((item) => getComputedStyle(item.querySelector('.breakdown-bar > span')).backgroundColor)).size >= 5,
+            comparisonColumns:
+              [...(exact('h2', '前年との比較')?.closest('.card')?.querySelectorAll('thead th') ?? [])]
+                .map((header) => header.textContent?.trim() ?? '')
+                .join('|') === '項目|直近8か月|前8か月|増減|増減率',
+            reviewRowsDoNotOverlap: reviewRows.every((row) => {
+              const cells = [...row.cells].map(rect).filter(Boolean);
+              return cells.every((cell, index) => index === 0 || cells[index - 1].right <= cell.left + 1);
+            }),
+            reviewRowsCompact: reviewRows.every((row) => row.getBoundingClientRect().height <= 96),
+            distinctReviewStates:
+              document.querySelector('.review-priority-table .review-row-status.danger')?.textContent?.trim() ===
+                '不一致' &&
+              document.querySelector('.review-priority-table .review-row-status.warning')?.textContent?.trim() ===
+                '要仕分け' &&
+              Boolean(document.querySelector('.review-priority-table .review-row-status.danger svg circle')) &&
+              Boolean(document.querySelector('.review-priority-table .review-row-status.warning svg > path')),
+            headerGroupsDoNotOverlap: (() => {
+              const groups = [headerLocation, headerPeriod, headerActions].map(rect).filter(Boolean);
+              return groups.every((group, index) =>
+                groups.slice(0, index).every(
+                  (previous) =>
+                    previous.right <= group.left + 1 ||
+                    group.right <= previous.left + 1 ||
+                    previous.bottom <= group.top + 1 ||
+                    group.bottom <= previous.top + 1,
+                ),
+              );
+            })(),
+            breadcrumbFits:
+              Boolean(headerLocation) && headerLocation.scrollWidth <= headerLocation.clientWidth + 1,
+          };
+        })(),
         legend: [...document.querySelectorAll('[data-financial-figure]')].map((figure) => ({
           // アンカーを持たない図は、結論のid「model.id + useIdの値 + summary」から model.id を復元する
           key: figure.id || (figure.querySelector('[data-financial-summary]')?.id ?? '').split('-').slice(0, -2).join('-'),
@@ -888,28 +1322,96 @@ try {
             color: item.querySelector('span')?.style.getPropertyValue('--series-color') ?? '',
           })),
         })),
-      }))()`);
+      }))())`),
+        );
         if (routeMetrics.pageWidth > routeMetrics.viewportWidth + 1)
-          failures.push(`${width}px ${route.name}ページ本体が横にはみ出す`);
+          failures.push(`${tag} ${route.name}ページ本体が横にはみ出す`);
+        if (!routeMetrics.shell.pageRegionsFit)
+          failures.push(`${tag} ${route.name} のheader・main・sticky actionがviewportをはみ出す`);
+        if (!routeMetrics.shell.tableBoxesFit)
+          failures.push(`${tag} ${route.name} の表containerがmainをはみ出す`);
+        if (!routeMetrics.shell.headerGroupsDoNotOverlap)
+          failures.push(`${tag} ${route.name} のheader群が重なる`);
+        if (!routeMetrics.shell.headerTextSingleLine)
+          failures.push(`${tag} ${route.name} のheader文言が複数行に分断される`);
+        if (!routeMetrics.shell.sidebarFits)
+          failures.push(`${tag} ${route.name} のsidebar内部が横にはみ出す`);
+        if (!routeMetrics.shell.brandCompact)
+          failures.push(`${tag} ${route.name} のrail brandが欠けるかnavと重なる`);
+        if (!routeMetrics.shell.badgeDots)
+          failures.push(`${tag} ${route.name} のrail badgeがiconまたはscrollbarと重なる`);
+        if (!routeMetrics.shell.closeCompact)
+          failures.push(`${tag} ${route.name} のrail月次進捗が縮約されていない`);
+        if (!routeMetrics.shell.improvementDelegated)
+          failures.push(`${tag} ${route.name} のrail改善操作が既存navへ安全に委譲されていない`);
+        if (!routeMetrics.shell.noVerticalRailCopy)
+          failures.push(`${tag} ${route.name} のrail文言が縦1文字に分断される`);
+        if (
+          route.name === 'Overview' &&
+          routeMetrics.shell.rail &&
+          (!routeMetrics.shell.badgeDots || !routeMetrics.shell.closeCompact)
+        )
+          console.log(`${tag} rail diagnostics ${JSON.stringify(routeMetrics.shell.diagnostics)}`);
+        if (runtimeProblems.length)
+          failures.push(`${tag} ${route.name} console/runtime error: ${runtimeProblems.join(' / ')}`);
         if (
           routeMetrics.figures.length !== route.expectedFigures ||
           routeMetrics.figures.some((contract) => Object.values(contract).some((value) => !value))
         )
           failures.push(
-            `${width}px ${route.name} 見出し・結論・期間・単位・系列・次の行動・正確な表・実canvasが不足`,
+            `${tag} ${route.name} 見出し・結論・期間・単位・系列・次の行動・正確な表・実canvasが不足`,
           );
+        if (route.name === 'Overview' && zoom === 1 && width === 1280) {
+          if (!routeMetrics.overview.desktopBrandUnique)
+            failures.push('1280px Overview で Focus Ledger がサイドバーとヘッダーに重複している');
+          if (routeMetrics.overview.hasGenericProgress)
+            failures.push('1280px Overview にサイドバーの汎用月次進捗が残っている');
+          if (!routeMetrics.overview.sectionOrder)
+            failures.push('1280px Overview の主要セクションが Hero→KPI→Trend→Review の順ではない');
+          if (!routeMetrics.overview.threeReviewColumns)
+            failures.push('1280px Overview の Review workspace が要約・明細表・詳細の3列になっていない');
+        }
+        if (route.name === 'Overview') {
+          if (Object.values(routeMetrics.overview.reviewTableContract).some((value) => !value))
+            failures.push(
+              `${tag} Overview の優先明細表で6列・列対応・sticky見出し/状態・内部scroll契約が崩れている`,
+            );
+          if (!routeMetrics.overview.kpiComparisonComplete)
+            failures.push(`${tag} Overview のKPIに符号付き差額・増減率・前期値が揃っていない`);
+          if (!routeMetrics.overview.breakdownComplete)
+            failures.push(`${tag} Overview の支出内訳が上位5+その他、金額、構成比、識別色を満たさない`);
+          if (!routeMetrics.overview.comparisonColumns)
+            failures.push(`${tag} Overview の前年比較が今期を含む5列構造ではない`);
+          if (!routeMetrics.overview.reviewRowsDoNotOverlap)
+            failures.push(`${tag} Overview の優先明細表で列が重なっている`);
+          if (!routeMetrics.overview.reviewRowsCompact)
+            failures.push(`${tag} Overview の優先明細表で行高が96pxを超えている`);
+          if (!routeMetrics.overview.distinctReviewStates)
+            failures.push(`${tag} Overview のwarning/dangerが状態語と異なるicon形状で区別できない`);
+          if (!routeMetrics.overview.headerGroupsDoNotOverlap)
+            failures.push(`${tag} Overview のbreadcrumb・期間・共通操作が重なっている`);
+          if (!routeMetrics.overview.breadcrumbFits)
+            failures.push(`${tag} Overview のbreadcrumbが省略表示になっている`);
+        }
+        if (
+          route.name === 'Overview' &&
+          zoom === 1 &&
+          width === 375 &&
+          !routeMetrics.overview.mobileHeaderBrand
+        )
+          failures.push('375px Overview でサイドバー非表示時の Focus Ledger ブランドが無い');
         if (
           route.name === 'Subscriptions' &&
           (routeMetrics.subscriptionDatasetCount < 1 || routeMetrics.subscriptionDatasetCount > 7)
         )
           failures.push(
-            `${width}px Subscriptionsの実Chart.js系列が${routeMetrics.subscriptionDatasetCount}件で上位6+他Nに収まらない`,
+            `${tag} Subscriptionsの実Chart.js系列が${routeMetrics.subscriptionDatasetCount}件で上位6+他Nに収まらない`,
           );
         if (
           route.name === 'Subscriptions' &&
           routeMetrics.subscriptionDatasetLabels !== routeMetrics.subscriptionSummaryLabels
         )
-          failures.push(`${width}px Subscriptionsの実canvas凡例と非canvas系列一覧が一致しない`);
+          failures.push(`${tag} Subscriptionsの実canvas凡例と非canvas系列一覧が一致しない`);
         // 凡例チップの色は figure 側の inline --series-color でしか観測できない
         // (Chart.js の instance はモジュールスコープに閉じ、canvas には色しか残らない)。
         // 「系列名で色を引き当てられているか」の厳密な突合は
@@ -923,31 +1425,59 @@ try {
           const colored = figureLegend.chips.filter((chip) => chip.color).length;
           const distinct = new Set(figureLegend.chips.map((chip) => chip.color)).size;
           if (COLORLESS[route.name]?.includes(figureLegend.key) && colored > 0)
-            failures.push(`${width}px ${route.name} ${figureLegend.key} の凡例が図に無い色を主張している`);
+            failures.push(`${tag} ${route.name} ${figureLegend.key} の凡例が図に無い色を主張している`);
           if (!COLORED[route.name]?.includes(figureLegend.key)) continue;
           if (colored !== figureLegend.chips.length)
             failures.push(
-              `${width}px ${route.name} ${figureLegend.key} の凡例チップに色が付いていない(${colored}/${figureLegend.chips.length})`,
+              `${tag} ${route.name} ${figureLegend.key} の凡例チップに色が付いていない(${colored}/${figureLegend.chips.length})`,
             );
           if (distinct < 2)
             failures.push(
-              `${width}px ${route.name} ${figureLegend.key} の凡例チップが全て同じ色で、系列と照らし合わせられない`,
+              `${tag} ${route.name} ${figureLegend.key} の凡例チップが全て同じ色で、系列と照らし合わせられない`,
             );
         }
         for (const [name, keys] of [...Object.entries(COLORED), ...Object.entries(COLORLESS)])
           if (route.name === name)
             for (const key of keys)
               if (!routeMetrics.legend.some((figureLegend) => figureLegend.key === key))
-                failures.push(`${width}px ${route.name} に凡例色の検査対象 ${key} が無い`);
-        if (width === 375 || width === 1280) {
+                failures.push(`${tag} ${route.name} に凡例色の検査対象 ${key} が無い`);
+        if (
+          route.name === 'Overview' &&
+          ((zoom === 1 && [375, 641, 768, 900, 1023, 1024, 1280].includes(width)) || zoom === 2)
+        ) {
+          const captureLabel = zoom === 1 ? String(width) : viewportLabel;
           const routeShot = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
           writeFileSync(
-            join(OUTPUT_DIR, `${route.name.toLowerCase().replaceAll(' ', '-')}-${width}.png`),
+            join(OUTPUT_DIR, `${route.name.toLowerCase().replaceAll(' ', '-')}-${captureLabel}.png`),
             Buffer.from(routeShot.data, 'base64'),
           );
+          await evaluate("document.querySelector('.review-priority')?.scrollIntoView({ block: 'center' })");
+          await sleep(150);
+          const reviewShot = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
+          writeFileSync(
+            join(OUTPUT_DIR, `${route.name.toLowerCase().replaceAll(' ', '-')}-${captureLabel}-review.png`),
+            Buffer.from(reviewShot.data, 'base64'),
+          );
+          if (routeMetrics.shell.rail) {
+            await evaluate(
+              "document.querySelector('.sidebar')?.scrollTo({ top: document.querySelector('.sidebar').scrollHeight })",
+            );
+            await sleep(150);
+            const railBottomShot = await send('Page.captureScreenshot', {
+              format: 'png',
+              fromSurface: true,
+            });
+            writeFileSync(
+              join(
+                OUTPUT_DIR,
+                `${route.name.toLowerCase().replaceAll(' ', '-')}-${captureLabel}-rail-bottom.png`,
+              ),
+              Buffer.from(railBottomShot.data, 'base64'),
+            );
+          }
         }
         console.log(
-          `${width}px ${route.name} 図=${routeMetrics.figures.length} 本体=${routeMetrics.pageWidth}/${routeMetrics.viewportWidth}px${route.name === 'Subscriptions' ? ` Chart.js系列=${routeMetrics.subscriptionDatasetCount}` : ''}`,
+          `${tag} ${route.name} 図=${routeMetrics.figures.length} 本体=${routeMetrics.pageWidth}/${routeMetrics.viewportWidth}px${route.name === 'Subscriptions' ? ` Chart.js系列=${routeMetrics.subscriptionDatasetCount}` : ''}`,
         );
       }
     }

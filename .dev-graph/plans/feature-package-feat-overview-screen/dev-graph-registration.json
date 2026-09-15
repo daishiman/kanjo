@@ -1,0 +1,1286 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-overview-screen/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-overview-screen",
+  "parent_feature": "feat-overview-screen",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-OVERVIEW-P01": "beads",
+    "SYS-OVERVIEW-P02": "beads",
+    "SYS-OVERVIEW-P03": "beads",
+    "SYS-OVERVIEW-P04": "beads",
+    "SYS-OVERVIEW-P05": "beads",
+    "SYS-OVERVIEW-P06": "beads",
+    "SYS-OVERVIEW-P07": "beads",
+    "SYS-OVERVIEW-P08": "beads",
+    "SYS-OVERVIEW-P09": "beads",
+    "SYS-OVERVIEW-P10": "beads",
+    "SYS-OVERVIEW-P11": "beads",
+    "SYS-OVERVIEW-P12": "beads",
+    "SYS-OVERVIEW-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-OVERVIEW-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と未決事項の着手時確認",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p01",
+        "requirements"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "docs/overview-screen/requirements-baseline.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p01.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "概況 API・core 集計・D1 テーブルのワークストリーム設計決定記録",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p02",
+        "architecture"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P01"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "docs/overview-screen/architecture-decision.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p02.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "API契約・データモデル設計の独立レビュー",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P02"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "docs/overview-screen/design-review.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p03.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core/API/DOM の失敗テスト先行作成 (O1-O5)",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P03"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "packages/core/test/overview-close-status.test.ts",
+        "packages/api/src/overview.test.ts",
+        "packages/web/src/overview-review-queue.dom.test.tsx"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p04.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "概況集計・未処理キューAPI・D1 migration・Overview.tsx の実装",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p05",
+        "implementation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P04"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/analysis.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "migrations/0040_review_snoozes_and_monthly_close_reviews.sql",
+        "packages/web/src/pages/Overview.tsx",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/api.ts"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p05.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テスト・型検査・lint の実行記録",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P05"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "docs/overview-screen/test-run.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p06.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "AC-001..AC-007 受入検証",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P06"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "docs/overview-screen/acceptance.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p07.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "migration 0040 の前進のみ整合とバックアップ/復元対象の整理",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "data",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p08",
+        "refactoring-migration"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P07"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "packages/api/src/store.ts",
+        "docs/overview-screen/refactoring.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p08.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・CSP・初期JS予算・可観測性の保証確認",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "security",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P08"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "docs/overview-screen/assurance.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p09.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p10",
+        "final-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P09"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "docs/overview-screen/final-review.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p10.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P10"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "docs/overview-screen/evidence.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p11.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "docs/runbooks への切り分け手順とAPI文書の同期",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p12",
+        "documentation-operations"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P11"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "docs/overview-screen.md",
+        "docs/runbooks/overview-review-queue-mismatch.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p12.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-OVERVIEW-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信とクローズアウト",
+      "project_id": "feature-package-feat-overview-screen",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "overview-screen",
+        "p13",
+        "release-deploy"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-14T13:55:29Z",
+      "updated_at": "2026-09-14T13:55:29Z",
+      "depends_on": [
+        "SYS-OVERVIEW-P12"
+      ],
+      "related_nodes": [
+        "arch-overview-auth",
+        "arch-overview-backend",
+        "arch-overview-database",
+        "arch-overview-frontend",
+        "arch-overview-infrastructure",
+        "arch-overview-maintenance-ops",
+        "arch-overview-security",
+        "arch-overview-ui-ux",
+        "spec-overview-screen"
+      ],
+      "resource_scope": [
+        "docs/overview-screen/close-out.md"
+      ],
+      "parent_feature": "feat-overview-screen",
+      "feature_package_id": "feature-package/feat-overview-screen",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-overview-screen/sys-overview-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-overview-screen/plan-findings.json",
+        "evaluated_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+        "imported_at": "2026-09-14T13:55:29Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-overview-screen/sys-overview-p13.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-14T13:41:44Z"
+      }
+    }
+  ]
+}

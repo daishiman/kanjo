@@ -22,15 +22,27 @@ export function PageActions({ className, ...props }: HTMLAttributes<HTMLDivEleme
   return <div className={classes} {...props} />;
 }
 
-export function PageHeader({ route }: { route: AppRouteId }) {
+export function PageHeader({
+  route,
+  title,
+  showTask = true,
+}: {
+  route: AppRouteId;
+  /** ナビの短い名称と、画面で答える問いが異なる場合のみ上書きする。 */
+  title?: ReactNode;
+  /** 問い自体が十分に場面を伝える画面では、汎用説明の重複を避ける。 */
+  showTask?: boolean;
+}) {
   const metadata = routeMetadata(route);
   return (
     <header className="page-heading">
-      <h1 className="page-title">{metadata.label}</h1>
+      <h1 className="page-title">{title ?? metadata.label}</h1>
       {/* 段階表示: 見出しは1文に保ちつつ、判定基準・色の意味・免責といった
           「知らないと誤読する情報」は畳んで残す。<details> なのでJSなしで開閉でき、
           用語ホバー(linkTerms)も task と同じように効く。 */}
-      <TaskCopy task={metadata.task} detail={metadata.taskDetail} summary="この画面のくわしい説明" />
+      {showTask && (
+        <TaskCopy task={metadata.task} detail={metadata.taskDetail} summary="この画面のくわしい説明" />
+      )}
     </header>
   );
 }

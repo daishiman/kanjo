@@ -275,9 +275,9 @@ describe('標準操作は共通 Button を通る (FR-003 / requirements-baseline
 
   it('共通 PageShell が route metadata の reading/data 幅を実描画へ渡す', async () => {
     stubFetch(true);
-    const reading = renderApp('/');
+    const overview = renderApp('/');
     expect(await screen.findByRole('heading', { name: 'stub:OverviewPage' })).toBeTruthy();
-    expect(reading.container.querySelector('main.page-shell--reading')).not.toBeNull();
+    expect(overview.container.querySelector('main.page-shell--data')).not.toBeNull();
     cleanup();
 
     const data = renderApp('/analysis/matrix');

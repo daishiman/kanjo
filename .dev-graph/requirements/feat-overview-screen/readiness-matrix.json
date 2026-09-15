@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-overview-screen",
+  "snapshot_digest": "sha256:f9c0fa42e0992ddaedbe86b248a60b7614c024263089ac04dc8ced4daf7c0c86",
+  "snapshot_digest_method": "sha256 over sorted(rel + NUL + bytes + NUL) of gates.C11_snapshot_validation.source_inputs",
+  "status": "ready",
+  "checked_at": "2026-09-14T14:02:00Z",
+  "missing_sections": [],
+  "remediation_owners": {},
+  "gates": {
+    "C11_snapshot_validation": {
+      "status": "PASS",
+      "validator": "validate-graph-schema.py",
+      "exit_code": 0,
+      "valid": true,
+      "violations": 0,
+      "source_inputs": [
+        {
+          "path": ".dev-graph/plans/feature-package-feat-overview-screen/atomic-promotion-receipt.json",
+          "sha256": "337d09a33a86187f726f8cc9b4b728b007a46325991edb83c73db9481242ff89"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-overview-screen/dev-graph-registration-receipt.json",
+          "sha256": "4ecf0f2f6e60f3e661abea2791bf454e9bef40ccd2f652e2ef9796b7f82e1ad7"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-overview-screen/staging-manifest.json",
+          "sha256": "05f25d15207f4cb91f6243e90a0c82b00d065cfcaa7e61425cc8bcfb82f8212b"
+        },
+        {
+          "path": ".dev-graph/state/graph.json",
+          "sha256": "a9da485b922cd0e571b7dad448d3eb7ef3971542f5762ab9521d9828145dae50"
+        },
+        {
+          "path": "features/feat-overview-screen.context.json",
+          "sha256": "0d31353e17bf93d3a34a0b23808213abbb13b19f0287903a307e47b2316c8252"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p01.md",
+          "sha256": "6550d9233bec2764dd52a7cb9d7960ac93bbb57a6d3d74cd5f2224be6ca78c0b"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p02.md",
+          "sha256": "610f5123ddfe8fa11b5153af81280366342a85936fba2ba731f9768299817759"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p03.md",
+          "sha256": "c6e867d0c0b19de73443eec6f64982de65e9a7d3d6a8bb0b6a167ca000f96b7c"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p04.md",
+          "sha256": "143366fa59cb17782ee5bca45476be0a9fa05c33375faf4030bd4c7fed9edc8c"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p05.md",
+          "sha256": "b32cfd86b93bf6b75522ce6bafe3113485eca2d041a641407eb7722ff399db19"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p06.md",
+          "sha256": "b41c30df0642ed27fdb26a0855e61d7e60cf04da17952a1bf8957bcbc8500a16"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p07.md",
+          "sha256": "6554800c93307b5d3e08f4a4cd8a91214b369b7cc7d26180d9c44ab3705c474a"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p08.md",
+          "sha256": "098feb974ac03ea448cc03910bf85e92b69a60ac7eb825a5c244465fb6a55557"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p09.md",
+          "sha256": "5dae9a42c3e1218992e799c9c86e9e3755593df29e432cb846558af6c461da61"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p10.md",
+          "sha256": "72c2a52020f6aecc7928edfd5daa9fa9c80727ada88d6f2b81a892d7a39d3d4a"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p11.md",
+          "sha256": "2f5fe41133642da44aedb92357d6a6f53bdf32ca8ad105343eaa9b6c07040cb3"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p12.md",
+          "sha256": "2da245faf8828c1e9f6a18920d6b075a80014d7928e4ccd579cb2c2150025c49"
+        },
+        {
+          "path": "tasks/feat-overview-screen/sys-overview-p13.md",
+          "sha256": "3527fa9fe9d96a9d0cfff355ef06e85e5fb3d8ab4b69db13f6058a17c2da4d75"
+        }
+      ]
+    },
+    "C02_saved_state": {
+      "status": "PASS",
+      "feature": {
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete"
+      },
+      "tasks": {
+        "count": 13,
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete",
+        "missing_sections": []
+      },
+      "registration_receipt": {
+        "path": ".dev-graph/plans/feature-package-feat-overview-screen/dev-graph-registration-receipt.json",
+        "expected_count": 13,
+        "applied_count": 13
+      }
+    },
+    "system_plan_validation": {
+      "status": "PASS",
+      "validator": "validate-system-plan.py",
+      "exit_code": 0,
+      "validated_digest": "sha256:ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+      "phase_count": 13,
+      "node_count": 13,
+      "violations": []
+    }
+  },
+  "remediation_history": [
+    {
+      "loop": 1,
+      "verdict": "blocked",
+      "missing": "tasks/feat-overview-screen/sys-overview-p01..p13.md (artifact_missing 13)",
+      "owner": "C02/run-dev-graph-node",
+      "resolved_by": "node --dry-run (stage validate exit 0, repo write 0) → apply (13 created, 0 overwritten)"
+    }
+  ],
+  "staleness_rule": "source_inputs のいずれかの sha256、または promoted manifest の canonical_digest が変化した場合は handoff を無効化して再生成する。"
+}

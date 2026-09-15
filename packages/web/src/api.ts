@@ -45,6 +45,16 @@ import {
   PAYMENT_METHOD_VALUES,
   type PaymentMethod,
 } from '@kanjo/core';
+import type {
+  MonthlyCloseStatus,
+  OverviewBreakdownItem,
+  OverviewComparisonRow,
+  OverviewKpi,
+  OverviewScope,
+  OverviewTrendPoint,
+  ReviewItemKind,
+  ReviewQueueItem,
+} from '@kanjo/core';
 import { api, apiUpload } from './api-client.js';
 export { AUTH_EVENT, ApiError, type ApiRequestPolicy, api, apiUpload } from './api-client.js';
 
@@ -94,6 +104,53 @@ export interface SummaryResponse {
   /** 絞り込み前のデータから作った期間の情報。選択肢はここから作る */
   period: PeriodMeta;
 }
+
+/* -------- 概況 (GET /api/overview・GET /api/review-queue) -------- */
+
+export type { MonthlyCloseStatus, OverviewScope, ReviewItemKind, ReviewQueueItem };
+
+/**
+ * 概況の 4 要素 (KPI・推移・前年比・内訳) とクローズ状況。
+ * 画面はこの値をそのまま描き、再集計しない (KPI と図の合計がずれないようにするため)。
+ */
+export interface OverviewResponse {
+  scope: OverviewScope;
+  kpi: OverviewKpi;
+  trend: OverviewTrendPoint[];
+  yearComparison: { rows: OverviewComparisonRow[]; currentLabel: string; previousLabel: string | null };
+  breakdown: { items: OverviewBreakdownItem[]; total: number };
+  closeStatus: MonthlyCloseStatus;
+  /** 最後に確定した取込の時刻。取込が無ければ null */
+  dataUpdatedAt: string | null;
+  /** 画面の語彙に合わせ、core の 'watch' はサーバが 'caution' に写して返す */
+  defenseForecast: Omit<DefenseForecast, 'level'> & { level: 'none' | 'nodata' | 'caution' | 'warn' };
+  period: PeriodMeta;
+}
+
+/** 全期間の未処理キュー。件数は期間にも範囲にも依存しない */
+export interface ReviewQueueResponse {
+  total: number;
+  counts: Record<ReviewItemKind, number>;
+  snoozedCount: number;
+  items: ReviewQueueItem[];
+  /** 後で確認にした明細 (解除の対象)。rolling deploy 中の旧 Worker 応答では未定義 */
+  snoozedItems?: ReviewQueueItem[];
+}
+
+export const snoozeReviewItem = (kind: ReviewItemKind, itemKey: string) =>
+  api<{ kind: ReviewItemKind; itemKey: string; snoozedAt: string }>(
+    `/review-queue/snoozes/${kind}/${encodeURIComponent(itemKey)}`,
+    { method: 'PUT' },
+  );
+
+export const unsnoozeReviewItem = (kind: ReviewItemKind, itemKey: string) =>
+  api<void>(`/review-queue/snoozes/${kind}/${encodeURIComponent(itemKey)}`, { method: 'DELETE' });
+
+export const markMonthlyCloseReviewed = (month: string) =>
+  api<{ month: string; reviewedAt: string }>(`/monthly-close/${month}/review`, { method: 'PUT' });
+
+export const unmarkMonthlyCloseReviewed = (month: string) =>
+  api<void>(`/monthly-close/${month}/review`, { method: 'DELETE' });
 
 /* -------- 支出トレンド(規模・増減・優先度) -------- */
 

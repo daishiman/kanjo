@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "handoff_target": "task-graph",
+  "feature_id": "feat-overview-screen",
+  "parent_feature": "feat-overview-screen",
+  "feature_package_id": "feature-package/feat-overview-screen",
+  "snapshot_digest": "sha256:f9c0fa42e0992ddaedbe86b248a60b7614c024263089ac04dc8ced4daf7c0c86",
+  "validated_plan_digest": "sha256:ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+  "kind": "requirements-handoff",
+  "status": "ready",
+  "requirements_document": ".dev-graph/requirements/feat-overview-screen/requirements.md",
+  "readiness_matrix": ".dev-graph/requirements/feat-overview-screen/readiness-matrix.json",
+  "trace_plan": ".dev-graph/requirements/feat-overview-screen/trace-plan.json",
+  "task_graph": ".dev-graph/plans/feature-package-feat-overview-screen/task-graph.json",
+  "system_build_handoff": ".dev-graph/plans/feature-package-feat-overview-screen/system-build-handoff.json",
+  "task_spec_source_root": ".dev-graph/plans/feature-package-feat-overview-screen/task-specs",
+  "task_projection_target_root": "tasks/feat-overview-screen",
+  "requirement_count": 8,
+  "task_count": 13,
+  "missing_sections": [],
+  "self_generated_code_files": [],
+  "preconditions": [
+    "SYS-OVERVIEW-P01 で未決事項 low-u4-measure-numbering (U4 measure と C/SH 番号の利用者確認) と low-reference-recheck (w3c-csp3 / whatwg-web-storage の再照合) を着手時確認として docs/overview-screen/requirements-baseline.md に記録する"
+  ],
+  "consumer_action": "dev-graph next で ready batch を算出し、worktree claim 後に SYS-OVERVIEW-P01 から task-graph build を開始する。"
+}

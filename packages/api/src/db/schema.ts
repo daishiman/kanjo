@@ -201,6 +201,34 @@ export const subVendorExclusions = sqliteTable(
   (t) => [uniqueIndex('uq_sub_vendor_exclusions_user_key').on(t.userId, t.vendorKey)],
 );
 
+/**
+ * 0040: 概況の「後で確認」。明細本文の写しは持たず、金額・日付・内容の SHA-256 だけを保存する。
+ * 指紋が今の明細と一致する間だけ、未処理キューから外す。
+ */
+export const reviewSnoozes = sqliteTable(
+  'review_snoozes',
+  {
+    userId: text('user_id').notNull(),
+    itemKind: text('item_kind', { enum: ['classification', 'reconciliation', 'import'] }).notNull(),
+    itemKey: text('item_key').notNull(),
+    fingerprint: text('fingerprint').notNull(),
+    snoozedAt: text('snoozed_at').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.itemKind, t.itemKey] })],
+);
+
+/** 0040: 月次レビューを済ませた月。再実行しても初回の reviewed_at を保つ */
+export const monthlyCloseReviews = sqliteTable(
+  'monthly_close_reviews',
+  {
+    userId: text('user_id').notNull(),
+    month: text('month').notNull(),
+    reviewedAt: text('reviewed_at').notNull(),
+    reviewedByUserId: text('reviewed_by_user_id').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.month] })],
+);
+
 export const budgets = sqliteTable('budgets', {
   userId: text('user_id').notNull(),
   account: text('account').notNull(),

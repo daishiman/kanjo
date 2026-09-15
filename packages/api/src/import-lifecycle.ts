@@ -960,6 +960,33 @@ export interface RestoreWriteSet {
    * `cash:<id>` は手動判定の宛先なので、idはバックアップの値をそのまま使う。
    */
   cashEntryRows: unknown[][];
+  /**
+   * 0040: 概況の「後で確認」と月次レビュー。バックアップにkeyがあればその集合で置き換え、
+   * keyの無い旧バックアップ(null)では既存の行に触れない。指紋には null と [] の違いも含める。
+   */
+  reviewSnoozeRows: unknown[][] | null;
+  monthlyCloseReviewRows: unknown[][] | null;
+  /**
+   * 移行先に行が無い表は DELETE を省く(指紋には含めない)。件数は取込writer lease取得後の
+   * snapshotで読み、保留/レビューの書込も同じleaseで直列化されるので、読んだ後に行は増えない。
+   */
+  reviewSnoozesDestinationEmpty: boolean;
+  monthlyCloseReviewsDestinationEmpty: boolean;
+}
+
+/** 復元で置き換える「後で確認」1件。kind/itemKey/指紋は復元前に検証済みであること */
+export interface RestoreReviewSnooze {
+  kind: string;
+  itemKey: string;
+  fingerprint: string;
+  snoozedAt: string;
+}
+
+/** 復元で置き換える月次レビュー1件 */
+export interface RestoreMonthlyCloseReview {
+  month: string;
+  reviewedAt: string;
+  reviewedByUserId: string;
 }
 
 /** restoreのmerge/default適用後に、実際にpersistするtable行を一度だけ構成する。 */
@@ -975,6 +1002,11 @@ export function prepareRestoreWriteSet(args: {
   restoredCashEntries?: ReadonlyArray<CashEntry>;
   /** raw canonical dataから明示的に作った集計・表示用projection */
   accountingData?: Dataset;
+  /** 0040: null/未指定はバックアップにkeyが無い。既存の行を残す */
+  reviewSnoozes?: ReadonlyArray<RestoreReviewSnooze> | null;
+  monthlyCloseReviews?: ReadonlyArray<RestoreMonthlyCloseReview> | null;
+  /** 移行先の既存件数。未指定は「行があるかもしれない」として DELETE を残す */
+  existingReviewStateCounts?: { reviewSnoozes: number; monthlyCloseReviews: number };
 }): RestoreWriteSet {
   const rawTxs = canonicalMfTransactions(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)));
   return {
@@ -1059,6 +1091,19 @@ export function prepareRestoreWriteSet(args: {
         entry.transitRound ? 1 : 0,
         entry.receiptWaived ? 1 : 0,
       ]),
+    // DBでは (kind,itemKey) / month を主キーとする集合。配列順を指紋へ混ぜない
+    reviewSnoozeRows: args.reviewSnoozes
+      ? [...args.reviewSnoozes]
+          .sort((a, b) => a.kind.localeCompare(b.kind) || a.itemKey.localeCompare(b.itemKey))
+          .map((row) => [row.kind, row.itemKey, row.fingerprint, row.snoozedAt])
+      : null,
+    monthlyCloseReviewRows: args.monthlyCloseReviews
+      ? [...args.monthlyCloseReviews]
+          .sort((a, b) => a.month.localeCompare(b.month))
+          .map((row) => [row.month, row.reviewedAt, row.reviewedByUserId])
+      : null,
+    reviewSnoozesDestinationEmpty: args.existingReviewStateCounts?.reviewSnoozes === 0,
+    monthlyCloseReviewsDestinationEmpty: args.existingReviewStateCounts?.monthlyCloseReviews === 0,
   };
 }
 
@@ -1067,6 +1112,8 @@ export async function restoreWriteSetFingerprint(writeSet: RestoreWriteSet): Pro
   const {
     analysisSettingsChanged: _analysisChanged,
     subVendorExclusionsChanged: _exclusionsChanged,
+    reviewSnoozesDestinationEmpty: _snoozesEmpty,
+    monthlyCloseReviewsDestinationEmpty: _reviewsEmpty,
     ...rows
   } = writeSet;
   return fingerprintCanonical(`v${FINGERPRINT_VERSION}:json-write-set:${canonicalEncode(rows)}`);
@@ -1152,6 +1199,34 @@ export function restoreCommitStatements(args: {
             )
             .bind(userId, now, payload),
         )
+      : []),
+    ...(writeSet.reviewSnoozeRows
+      ? [
+          ...(writeSet.reviewSnoozesDestinationEmpty
+            ? []
+            : [database.prepare('DELETE FROM review_snoozes WHERE user_id=?').bind(userId)]),
+          ...insertJsonRows(
+            database,
+            'review_snoozes',
+            ['item_kind', 'item_key', 'fingerprint', 'snoozed_at'],
+            writeSet.reviewSnoozeRows,
+            [{ column: 'user_id', value: userId }],
+          ),
+        ]
+      : []),
+    ...(writeSet.monthlyCloseReviewRows
+      ? [
+          ...(writeSet.monthlyCloseReviewsDestinationEmpty
+            ? []
+            : [database.prepare('DELETE FROM monthly_close_reviews WHERE user_id=?').bind(userId)]),
+          ...insertJsonRows(
+            database,
+            'monthly_close_reviews',
+            ['month', 'reviewed_at', 'reviewed_by_user_id'],
+            writeSet.monthlyCloseReviewRows,
+            [{ column: 'user_id', value: userId }],
+          ),
+        ]
       : []),
     database.prepare('DELETE FROM rules WHERE user_id=?').bind(userId),
     ...insertJsonRows(

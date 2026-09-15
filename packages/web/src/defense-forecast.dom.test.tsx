@@ -11,7 +11,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { DefenseForecast, SummaryResponse } from './api.js';
+import type { OverviewResponse, ReviewQueueResponse } from './api.js';
 import { OverviewPage } from './pages/Overview.js';
 
 // jsdom には canvas が無く、Chart.js は描画のたびに context を取れず例外を投げる。
@@ -22,7 +22,9 @@ vi.mock('react-chartjs-2', async () => ({
   Chart: (await import('./test-support/chart-test-doubles.js')).SilentChart,
 }));
 
-const forecast = (over: Partial<DefenseForecast> = {}): DefenseForecast => ({
+type Forecast = OverviewResponse['defenseForecast'];
+
+const forecast = (over: Partial<Forecast> = {}): Forecast => ({
   line: 500000,
   history: [
     { month: '2026-06', income: 600000, diff: 100000, breached: false },
@@ -40,55 +42,36 @@ const forecast = (over: Partial<DefenseForecast> = {}): DefenseForecast => ({
   ...over,
 });
 
-const summary = (f: DefenseForecast): SummaryResponse =>
-  ({
-    overview: {
-      months: ['2026-06', '2026-07'],
-      revenue: [0, 0],
-      expenseTotal: [0, 0],
-      profit: [null, null],
-      expenseMovingAvg: [null, null],
-      cashOverride: {},
-      unrecordedExpMonths: [],
-      kpi: {
-        avgRevenue: 0,
-        revenueMonths: 0,
-        avgExpense: 0,
-        lastExpense: 0,
-        expenseMom: 0,
-        prevYearExpense: 0,
-        currYearAnnualized: 0,
-        prevYearRevenue: 0,
-        prevYearProfit: 0,
-        prevYearExpenseRatio: 0,
-      },
-      yearTable: [],
-      yearTotals: { prevActual: 0, currAnnualized: 0, delta: 0 },
-      pareto: [],
-      top2Share: 0,
-      years: { curr: '2026', prev: '2025' },
-    },
-    defense: {
-      line: f.line,
-      personalAvg: 0,
-      bizFixedAvg: 0,
-      month: '2026-07',
-      incomeEstimate: 450000,
-      salary: 300000,
-      bizIncome: 150000,
-      diff: -50000,
-      status: 'danger',
-      forecast: f,
-    },
-    benchmarks: [],
-  }) as unknown as SummaryResponse;
+/** 概況は /api/overview の集計をそのまま描く。警告の判定もサーバの defenseForecast が正本 */
+const overview = (f: Forecast): OverviewResponse => ({
+  scope: 'total',
+  kpi: { income: 450000, expense: 380000, balance: 70000, months: 2 },
+  trend: [
+    { month: '2026-06', income: 600000, expense: 400000, balance: 200000 },
+    { month: '2026-07', income: 450000, expense: 380000, balance: 70000 },
+  ],
+  yearComparison: { rows: [], currentLabel: '2026年', previousLabel: null },
+  breakdown: { items: [], total: 380000 },
+  closeStatus: { month: '2026-07', steps: [], doneCount: 0, total: 4, reviewedAt: null },
+  dataUpdatedAt: null,
+  defenseForecast: f,
+  period: { label: '全期間' } as OverviewResponse['period'],
+});
 
-function renderWith(f: DefenseForecast) {
+// 未処理キューは正常に返す。失敗させると role=alert が 2 つになり、警告の検証と混ざる
+const reviewQueue: ReviewQueueResponse = {
+  total: 0,
+  counts: { classification: 0, reconciliation: 0, import: 0 },
+  snoozedCount: 0,
+  items: [],
+};
+
+function renderWith(f: Forecast) {
   vi.stubGlobal(
     'fetch',
     vi.fn(
       async (input: RequestInfo | URL) =>
-        new Response(JSON.stringify(String(input).includes('/unsettled') ? { rows: [] } : summary(f)), {
+        new Response(JSON.stringify(String(input).includes('/review-queue') ? reviewQueue : overview(f)), {
           headers: { 'Content-Type': 'application/json' },
         }),
     ),
@@ -126,22 +109,22 @@ describe('防衛ライン割れの事前警告', () => {
     );
   });
 
-  it('watch は警告として割り込まず、注意として出す', async () => {
-    renderWith(forecast({ level: 'watch', nextDiff: 20000, reason: '余裕がわずかです。' }));
-    expect(await screen.findByText('余裕がわずかです。')).toBeTruthy();
-    expect(screen.queryByRole('alert')).toBeNull();
-    expect(screen.getByText(/防衛ラインの見通しに注意/)).toBeTruthy();
+  it('caution も role=alert で読み上げ、見出しで注意の段階だと伝える (spec FR-006)', async () => {
+    renderWith(forecast({ level: 'caution', nextDiff: 20000, reason: '余裕がわずかです。' }));
+    const alert = await screen.findByRole('alert');
+    expect(alert.textContent).toContain('余裕がわずかです。');
+    expect(alert.textContent).toMatch(/防衛ラインの見通しに注意/);
   });
 
   it('none と nodata では何も出さない(警告の出しすぎで無視されるのを避ける)', async () => {
     const { container } = renderWith(forecast({ level: 'none' }));
-    await screen.findByRole('heading', { name: '売上・経費トレンド' });
+    await screen.findByRole('heading', { name: '月次の収入・支出・純収支の推移' });
     expect(container.querySelector('.notice')).toBeNull();
 
     cleanup();
     vi.unstubAllGlobals();
     const second = renderWith(forecast({ level: 'nodata' }));
-    await screen.findByRole('heading', { name: '売上・経費トレンド' });
+    await screen.findByRole('heading', { name: '月次の収入・支出・純収支の推移' });
     expect(second.container.querySelector('.notice')).toBeNull();
   });
 });

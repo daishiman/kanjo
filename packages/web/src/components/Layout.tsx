@@ -3,7 +3,13 @@ import type { AnalysisHubReport } from '@kanjo/core';
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { AUTH_EVENT, type ImportHistoryRow, type SummaryResponse, api } from '../api.js';
+import {
+  AUTH_EVENT,
+  type ImportHistoryRow,
+  type OverviewResponse,
+  type SummaryResponse,
+  api,
+} from '../api.js';
 import { monthLabel, yen } from '../format.js';
 import { PeriodPicker, usePeriod } from '../period.js';
 import {
@@ -19,10 +25,12 @@ import {
 } from '../routeMetadata.js';
 import { Button } from './Button.js';
 import { CommandPalette, OPEN_COMMAND_PALETTE_EVENT } from './CommandPalette.js';
+import { DeferredUiIcon as UiIcon } from './DeferredUiIcon.js';
 import { ExportMenu } from './ExportMenu.js';
 import { NavItem } from './NavItem.js';
 import { NavigationEffects } from './NavigationEffects.js';
 import { PageShell } from './Page.js';
+import { ReviewCountBadge, useReviewQueue } from './ReviewQueue.js';
 import { RouteIcon } from './RouteIcon.js';
 import { Term } from './Term.js';
 
@@ -30,6 +38,10 @@ const ImprovementRequestButton = lazy(() =>
   import('./ImprovementRequestButton.js').then((module) => ({
     default: module.ImprovementRequestButton,
   })),
+);
+
+const MonthlyCloseProgress = lazy(() =>
+  import('./MonthlyCloseProgress.js').then((module) => ({ default: module.MonthlyCloseProgress })),
 );
 
 const IMPROVEMENT_BUTTON_FALLBACK: ReactNode = null;
@@ -156,7 +168,8 @@ function UserMenu() {
         aria-haspopup="menu"
         onClick={() => setOpen((value) => !value)}
       >
-        利用者
+        <UiIcon name="user" className="action-icon" />
+        <span className="header-action-label">利用者</span>
       </button>
       {open && (
         <span className="popover" role="menu">
@@ -216,6 +229,28 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
     enabled: !locked,
     staleTime: 60_000,
   });
+  // 概況の未処理カード・アクションバーと同じ queryKey。数え方を 1 か所に保つ (AC-002)
+  const reviewQueue = useReviewQueue({ enabled: !locked });
+  // 概況本体と同じ queryKey / queryFn。React Query が同時要求を1本へ束ね、sidebarも同じcloseStatusを読む。
+  const overview = useQuery({
+    queryKey: ['overview', 'total', key],
+    queryFn: () => api<OverviewResponse>(withPeriod('/overview?scope=total')),
+    enabled: !locked && loc.pathname === '/',
+  });
+  // 旧 Worker など形の違う応答では件数を出さない (0 件と誤読させない)
+  const overviewBadge =
+    typeof reviewQueue.data?.total === 'number' ? (
+      <ReviewCountBadge count={reviewQueue.data.total} />
+    ) : undefined;
+  const routeBadge = (routeId: AppRouteId) => {
+    if (!reviewQueue.data) return routeId === 'overview' ? overviewBadge : undefined;
+    if (routeId === 'overview') return overviewBadge;
+    const counts = reviewQueue.data.counts;
+    if (!counts) return undefined;
+    if (routeId === 'import') return <ReviewCountBadge count={counts.import} />;
+    if (routeId === 'classify') return <ReviewCountBadge count={counts.classification} />;
+    return undefined;
+  };
   // ハブ画面と同じキー。支出分析を開いていてもリクエストは 1 本にまとまる
   const hub = useQuery({
     queryKey: analysisHubQueryKey(key),
@@ -257,33 +292,41 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
       <aside className={`sidebar${drawer ? ' open' : ''}`}>
         {locked ? (
           <div className="brand" aria-label="Focus Ledger">
-            <span className="brand-name">Focus Ledger</span>
-            <small>月次クローズ</small>
+            <UiIcon name="brand-bars" className="brand-mark" />
+            <span className="brand-copy">
+              <span className="brand-name">Focus Ledger</span>
+              <small>月次クローズ</small>
+            </span>
           </div>
         ) : (
           <Link to="/" className="brand">
-            <span className="brand-name">Focus Ledger</span>
-            <small>収支統合管理</small>
+            <UiIcon name="brand-bars" className="brand-mark" />
+            <span className="brand-copy">
+              <span className="brand-name">Focus Ledger</span>
+              <small>収支統合管理</small>
+            </span>
           </Link>
         )}
 
-        <section className="workflow-progress" aria-label="月次進捗">
-          <div className="workflow-progress-head">
-            <span>月次進捗</span>
-            <strong>
-              {location.group === '管理' || location.group === 'ログイン' ? '業務外' : '現在地'}
-            </strong>
-          </div>
-          <ol>
-            {MONTHLY_STEPS.map((step, index) => (
-              <li key={step} className={location.group === step ? 'current' : undefined}>
-                <span className="step-number">{index + 1}</span>
-                <span>{step}</span>
-              </li>
-            ))}
-          </ol>
-          <p>{locked ? 'ログイン後に確認' : `未記録 ${unrec.length}ヶ月`}</p>
-        </section>
+        {loc.pathname !== '/' && (
+          <section className="workflow-progress" aria-label="月次進捗">
+            <div className="workflow-progress-head">
+              <span>月次進捗</span>
+              <strong>
+                {location.group === '管理' || location.group === 'ログイン' ? '業務外' : '現在地'}
+              </strong>
+            </div>
+            <ol>
+              {MONTHLY_STEPS.map((step, index) => (
+                <li key={step} className={location.group === step ? 'current' : undefined}>
+                  <span className="step-number">{index + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+            <p>{locked ? 'ログイン後に確認' : `未記録 ${unrec.length}ヶ月`}</p>
+          </section>
+        )}
 
         <nav className="nav" aria-label="メインナビゲーション">
           {APP_ROUTES.map((route) => {
@@ -304,6 +347,7 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
                     label={route.label}
                     variant="sidebar"
                     end={!TABBED_ROUTE_IDS.has(route.id) || subTabs !== null}
+                    badge={routeBadge(route.id)}
                   />
                 )}
                 {subTabs && (
@@ -350,6 +394,11 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
             )}
           </div>
         </nav>
+        {!locked && loc.pathname === '/' && (
+          <Suspense fallback={null}>
+            <MonthlyCloseProgress status={overview.data?.closeStatus} />
+          </Suspense>
+        )}
       </aside>
       {drawer && (
         <button
@@ -386,6 +435,7 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
             <span className="status-fact">防衛線 ログイン後</span>
           ) : d && d.status !== 'nodata' ? (
             <span className={`badge header-defense ${d.status}`}>
+              <UiIcon name="shield-check" className="status-icon" />
               <Term id="defenseLine">防衛線</Term> <span className="num">{yen(d.line)}</span>
               <span className="badge-detail">
                 {' '}
@@ -417,7 +467,9 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
             disabled={locked}
             onClick={() => window.dispatchEvent(new Event(OPEN_COMMAND_PALETTE_EVENT))}
           >
-            検索 <kbd>⌘K</kbd>
+            <UiIcon name="search" className="action-icon" />
+            <span className="header-action-label">検索</span>
+            <kbd>⌘K</kbd>
           </Button>
           {locked ? (
             <Button className="header-action" disabled>
@@ -431,8 +483,9 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
               ヘルプ
             </a>
           ) : (
-            <Link className="header-action" to="/guide">
-              使い方
+            <Link className="header-action" to="/guide" aria-label="使い方">
+              <UiIcon name="help" className="action-icon" />
+              <span className="header-action-label">使い方</span>
             </Link>
           )}
           {locked ? <span className="status-fact">未ログイン</span> : <UserMenu />}
@@ -445,9 +498,18 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
 
       <footer className="footer">
         <div className="footer-trust">
-          <span>取込データは外部送信しません</span>
-          <span>税務上の正本はfreeeです</span>
-          <span>毎晩バックアップ(30日保持)</span>
+          <span>
+            <UiIcon name="lock" className="trust-icon" />
+            取込データは外部送信しません
+          </span>
+          <span>
+            <UiIcon name="file-check" className="trust-icon" />
+            税務上の正本はfreeeです
+          </span>
+          <span>
+            <UiIcon name="cloud" className="trust-icon" />
+            毎晩バックアップ(30日保持)
+          </span>
         </div>
         <nav className="footer-links" aria-label="信頼とデータの確認先">
           {locked ? <a href="#privacy-help">データ出典</a> : <Link to="/guide">データ出典</Link>}

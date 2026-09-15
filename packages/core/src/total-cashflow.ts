@@ -199,6 +199,14 @@ export interface TotalCashflowMonth {
   householdExpense: number;
   bizIncome: number;
   householdIncome: number;
+  /**
+   * `totalExpense` と同じ取引集合を、画面で読める科目粒度へ分けた内訳。
+   *
+   * 事業と家計で同名科目があっても意味を混ぜないよう、キーは
+   * `事業 / 科目` または `家計 / 大項目` とする。古い保存済み投影やテストfixtureとの
+   * 互換のため省略可能だが、`totalCashflowReport` が作る行では必ず設定する。
+   */
+  expenseCategories?: Record<string, number>;
   /** その月に事業費/事業収入へ寄せた MF 明細の件数 */
   shiftedCount: number;
   /**
@@ -571,8 +579,8 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
 
   // 事業か家計かは公私仕分けと同じ resolveTx に聞く。月ループの内側で解くと
   // 明細数 x 月数になるため、ここで一度だけ畳む。
-  const bizById = new Map(
-    counted.map((tx) => [tx.id, resolveTx(tx, data.rules, data.edits, data.institutionOwners).cls === 'biz']),
+  const resolvedById = new Map(
+    counted.map((tx) => [tx.id, resolveTx(tx, data.rules, data.edits, data.institutionOwners)]),
   );
   // 要確認は判断が付いていない。事業にも家計にも、収入にも支出にも入れない
   const reviewMf = new Set(result.review.map((r) => r.mfTxId));
@@ -602,7 +610,7 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
 
     const leftover = counted.filter((tx) => tx.m === month && !shiftedMf.has(tx.id) && !reviewMf.has(tx.id));
     const sumAbs = (rows: MfTx[]) => rows.reduce((sum, tx) => sum + Math.abs(tx.a), 0);
-    const isBiz = (tx: MfTx) => bizById.get(tx.id) === true;
+    const isBiz = (tx: MfTx) => resolvedById.get(tx.id)?.cls === 'biz';
     // freee と突合済みの分は freee を正として数えているので、MF 側から積み増さない
     const mfBizExpense = sumAbs(leftover.filter((tx) => tx.a < 0 && isBiz(tx)));
     const householdExpense = sumAbs(leftover.filter((tx) => tx.a < 0 && !isBiz(tx)));
@@ -612,6 +620,22 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
     const bizIncome = freeeIncome + mfBizIncome;
     const totalExpense = freeeBizExpense + mfBizExpense + householdExpense;
     const totalIncome = bizIncome + householdIncome;
+    // 総支出と同じ選別済み集合から内訳を作る。元Datasetの月次カテゴリを別に足すと、
+    // 消し込み・要確認・除外が内訳だけへ反映されず、KPIと支出内訳が食い違う。
+    const expenseCategories: Record<string, number> = {};
+    const addExpenseCategory = (label: string, amount: number): void => {
+      expenseCategories[label] = (expenseCategories[label] ?? 0) + amount;
+    };
+    for (const deal of monthDeals) {
+      if (deal.io !== 'expense') continue;
+      addExpenseCategory(`事業 / ${deal.accountNorm || deal.accountRaw || 'その他'}`, deal.amount);
+    }
+    for (const tx of leftover) {
+      if (tx.a >= 0) continue;
+      const resolved = resolvedById.get(tx.id);
+      const side = resolved?.cls === 'biz' ? '事業' : '家計';
+      addExpenseCategory(`${side} / ${resolved?.big || tx.big || 'その他'}`, Math.abs(tx.a));
+    }
 
     return {
       month,
@@ -622,6 +646,7 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
       householdExpense,
       bizIncome,
       householdIncome,
+      expenseCategories,
       shiftedCount: shiftedInMonth.length,
       shiftedAmount: shiftedInMonth.reduce((sum, tx) => sum + Math.abs(tx.a), 0),
       reviewCount: reviewInMonth.length,

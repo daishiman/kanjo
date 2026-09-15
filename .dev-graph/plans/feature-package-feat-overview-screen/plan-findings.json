@@ -1,0 +1,187 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/sdp-feat-overview-screen-20260914T1336Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "goal-spec の scope_in/scope_out と task-spec 各 phase の Workstream applicability / スコープ外節の間に矛盾は検出されなかった。P08/P13 を N/A にしない判断は goal-spec の指示 (D1 migration/Cloudflare deploy が存在するため) と一致し、各 phase の Produced/Consumed/Write scope 間でも重複書込みや責務衝突はない。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-13-release-deploy.md"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "AC-001..AC-007 は P04(先行テスト)/P05(実装)/P06(テスト実行)/P07(受入検証)/P09(非機能保証)のいずれかで具体的に扱われている。goal-spec.scope_in の6項目 (Overview.tsx 作り替え、概況用API、core集計、D1 migration、サイドバーバッジ、バックアップ・復元対象追加) は P05/P08 の Produced artifacts に過不足なく現れる。open_items の low-u4-measure-numbering と low-reference-recheck はいずれも disposition どおり P01 (task-specs/phase-01-requirements.md) の目的節で著手時確認として明示的に解消される。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-09-quality-assurance.md"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "lineage digest (source_feature_digest sha256:0d31353e17bf93d3a34a0b23808213abbb13b19f0287903a307e47b2316c8252) は feature-package.json / system-build-handoff.json#identity / goal-spec.json#source_lineage[0] で共通しており、repository_id は goal-spec.json / workstream-inventory.json#repo_context / 各 task-spec の Repository context 節で github:daishiman/kanjo に統一されている。parent_feature/feature_package_id も feature-package.json・task-graph.json・workstream-inventory.json 全体で一致する。task-spec の file_path 相当 (write_scope) は packages/web, packages/api, packages/core, migrations 配下の実在パスに接地しており、grep で実コードの該当箇所 (analyticsRoute.get('/summary', ...), overview()) を確認した。ただし workstream-inventory.json の source_lineage.source_version が \"0.1.0\" で goal-spec/implementation-readiness の \"0.1.14\" と不一致であり、low finding として記録する。",
+      "evidence": [
+        "feature-package.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation",
+        "workstream-inventory.json",
+        "task-specs/phase-05-implementation.md"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の13ノードは SYS-OVERVIEW-P01→P02→...→P13 の単純な線形鎖で、各 depends_on は直前1ノードのみを指し前方参照のみで構成される。system-build-handoff.json#execution_tasks の depends_on も同一構成で一致し、循環依存は検出されなかった。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        ".",
+        "--config",
+        ".dev-graph/config.json",
+        "--staging",
+        ".dev-graph/staging/sdp-feat-overview-screen-20260914T1336Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:ad6e8d16a4a5305d14208af616047b4a1cb1b1f43cd4de3baa4cc5db30521cb6\",\n  \"feature_package_id\": \"feature-package/feat-overview-screen\",\n  \"parent_feature\": \"feat-overview-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "d89ba2349829cfe4c1aa81a834fc5689f95512682ff630beb57d879f2c3caaeb"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "05f25d15207f4cb91f6243e90a0c82b00d065cfcaa7e61425cc8bcfb82f8212b"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "d353ff65a997710be19515633c14916c2c490e78c536934ad92d27f7e51e2454"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "0993fa58605f0256110695858d7f061061d386d640a2d84b7c9a3d8c7839fe21"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "d6a8793a45b4df766b4f0b1b703e21ddb1543be796312442c61e04339b8b2661"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "3f538aeee73e761f2a87a5d4a805a23ce5e91403c8be4a7196bc2940b9a3ee40"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "09ae11d0627050d52ab291131f71d8eb3f5e9c32e3f58e9ce185e145ed119a8d"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "68fd89dcafadf610c88cf8d8294844c1dbe4454b3407d15d2349c05fd0d598fb"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "3336c5ce393004ad7290f52c3743fab6be0a48748686ce25a9823a01d3843f82"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "1d28ccfcff61eeb8c71cee5a252e49b81915aab31e97ad95af4bf58f2c500e1c"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "398d175cb04ed441f982b07bb088203ddc6931c29ead3942e2a26248c37658e0"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "74c71adcbdf5da1e76b108ddec8384f4243008c9f98a04a293d929480ebfdf19"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "0b4e121dc7ac13e71f9df46e03eee88ea9d731903571185ff90d10775954fcbb"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "77ae692954a96a7e273c43f8dffa5506157d471b4544a51e4ea5c52484a1740c"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "20dce5f5b7680d7198c9419f429b981998672a947798a38697c043b5631d03ea"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "ce6651ad71042e60d156157e994f8ec2d51b76864159e94e6c7b8d76812afb4d"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "251a20728958e9deaf14353738e9002daf214e888e10e4f13b012f96ba2d81cb"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "a2118005ba0da55d63bb4b73d6f8b24c306744ed921319a4a3574a3f0820aa45"
+    }
+  ],
+  "staleness_rule": "evaluated_inputs のいずれかの sha256 が再計算値と一致しなくなった場合、staging-manifest.json#canonical_digest が evaluated_digest と一致しなくなった場合、または feature-package.json#source_feature_digest が features/feat-overview-screen.context.json の実測 sha256 と一致しなくなった場合、本 findings は無効とし再評価が必要である。",
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "C3-integrity",
+      "observation": "workstream-inventory.json の source_lineage.source_version が \"0.1.0\" で、goal-spec.json (source_lineage[2..3].source_version, readiness_pin.source_pin_version) と implementation-readiness.json (source_pin.version) の \"0.1.14\" と食い違っている。system-spec-harness の実バージョンは 0.1.14 であり、workstream-inventory.json 側の表記が古い。dev-graph 登録前に workstream-inventory.json の source_lineage.source_version を \"0.1.14\" に修正することを推奨する。",
+      "evidence": [
+        "workstream-inventory.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "C4-dependency",
+      "observation": "task-graph.json の13ノードは SYS-OVERVIEW-P01 から P13 まで depends_on が直前ノード1件のみを指す完全な線形鎖であり、前方依存のみで循環は検出されなかった。system-build-handoff.json の execution_tasks の depends_on も同一構成で一致する。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "grounding",
+      "observation": "P05 task-spec が記述する現行実装 (packages/api/src/routes/analytics.ts の analyticsRoute.get('/summary', ...) が packages/core/src/analysis.ts の overview() を呼ぶ) は実コードと一致し、migrations/0040_review_snoozes_and_monthly_close_reviews.sql は既存 migrations の最終番号 0039 の直後として妥当である。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md"
+      ]
+    }
+  ]
+}

@@ -601,6 +601,23 @@ interface BackupSourceSnapshot {
   normMap: Record<string, string>;
   statMinMonths: number;
   subVendorExclusions: Array<{ partner: string; vendorKey: string }>;
+  /** 0040: 概況の「後で確認」。指紋だけを持ち、明細本文の写しは持たない */
+  reviewSnoozes: BackupReviewSnooze[];
+  /** 0040: 月次レビューを済ませた月 */
+  monthlyCloseReviews: BackupMonthlyCloseReview[];
+}
+
+export interface BackupReviewSnooze {
+  kind: string;
+  itemKey: string;
+  fingerprint: string;
+  snoozedAt: string;
+}
+
+export interface BackupMonthlyCloseReview {
+  month: string;
+  reviewedAt: string;
+  reviewedByUserId: string;
 }
 
 export interface ImportRestoreSettingsSnapshot {
@@ -612,6 +629,11 @@ export interface ImportRestoreSettingsSnapshot {
   txSplits: TxSplit[];
   /** 通常取込が1 statement snapshotで読む、利用者単位の決め事。 */
   vendorMemories: VendorMemoryRecord[];
+  /**
+   * 0040: 移行先の「後で確認」と月次レビューの件数。0件の表は復元時の DELETE を省き、
+   * 復元1回のD1クエリ上限(<50)に新しい2表の置き換えを収める。
+   */
+  reviewStateCounts: { reviewSnoozes: number; monthlyCloseReviews: number };
 }
 
 /*
@@ -697,11 +719,21 @@ SELECT 'sub_vendor_exclusion', id, NULL, NULL,
        partner, vendor_key, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendor_exclusions WHERE user_id = ?
 )
+UNION ALL
+SELECT * FROM (
+SELECT 'review_snooze', NULL, NULL, NULL,
+       item_kind, item_key, fingerprint, snoozed_at, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM review_snoozes WHERE user_id = ?
+UNION ALL
+SELECT 'monthly_close_review', NULL, NULL, NULL,
+       month, reviewed_at, reviewed_by_user_id, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM monthly_close_reviews WHERE user_id = ?
+)
 ORDER BY source, rank, id, v1, v2`;
 
 /** export用canonical rowsを、単一D1 read statementから型付きsnapshotへ変換する。 */
 async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupSourceSnapshot> {
-  const params = Array.from({ length: 15 }, () => userId);
+  const params = Array.from({ length: 17 }, () => userId);
   const result = await db.$client
     .prepare(BACKUP_SNAPSHOT_SQL)
     .bind(...params)
@@ -849,6 +881,17 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     partner: row.v1 ?? '',
     vendorKey: row.v2 ?? '',
   }));
+  const reviewSnoozes = bySource('review_snooze').map((row) => ({
+    kind: row.v1 ?? '',
+    itemKey: row.v2 ?? '',
+    fingerprint: row.v3 ?? '',
+    snoozedAt: row.v4 ?? '',
+  }));
+  const monthlyCloseReviews = bySource('monthly_close_review').map((row) => ({
+    month: row.v1 ?? '',
+    reviewedAt: row.v2 ?? '',
+    reviewedByUserId: row.v3 ?? '',
+  }));
 
   return {
     baselineRows,
@@ -866,6 +909,8 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     normMap,
     statMinMonths,
     subVendorExclusions,
+    reviewSnoozes,
+    monthlyCloseReviews,
   };
 }
 
@@ -917,10 +962,15 @@ export async function loadImportRestoreSettingsSnapshot(
            FROM vendor_memory WHERE user_id=?
          ))
        ), NULL, NULL
+       UNION ALL
+       SELECT 'review_counts', json_object(
+         'reviewSnoozes', (SELECT count(*) FROM review_snoozes WHERE user_id=?),
+         'monthlyCloseReviews', (SELECT count(*) FROM monthly_close_reviews WHERE user_id=?)
+       ), NULL, NULL
        )
        ORDER BY source, v1, v2`,
     )
-    .bind(userId, userId, userId, userId, userId, userId, userId)
+    .bind(userId, userId, userId, userId, userId, userId, userId, userId, userId)
     .all<{ source: string; v1: string | null; v2: string | null; amount: number | null }>();
   const normMap: Record<string, string> = {};
   for (const row of result.results.filter((row) => row.source === 'norm')) {
@@ -988,6 +1038,10 @@ export async function loadImportRestoreSettingsSnapshot(
     freeeDeals,
     txSplits,
     vendorMemories,
+    reviewStateCounts: payloads<ImportRestoreSettingsSnapshot['reviewStateCounts']>('review_counts')[0] ?? {
+      reviewSnoozes: 0,
+      monthlyCloseReviews: 0,
+    },
   };
 }
 
@@ -1080,6 +1134,9 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
     subVendorExclusions: snapshot.subVendorExclusions.map(({ partner }) => ({ partner })),
     cashEntries: snapshot.cashEntries,
     cashProjection,
+    // 0040: 保留と月次レビューは利用者の判断の記録。復元で失うと、片付けた未処理が全部戻ってくる
+    reviewSnoozes: snapshot.reviewSnoozes,
+    monthlyCloseReviews: snapshot.monthlyCloseReviews,
   };
 }
 

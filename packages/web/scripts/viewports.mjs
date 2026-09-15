@@ -24,8 +24,11 @@ export const VIEWPORT_CASES = [
   { label: '375', width: 375, height: 812, zoom: 1, reducedMotion: false },
   { label: '390', width: 390, height: 844, zoom: 1, reducedMotion: false },
   { label: '430', width: 430, height: 932, zoom: 1, reducedMotion: false },
+  { label: '641', width: 641, height: 900, zoom: 1, reducedMotion: false },
   { label: '768', width: 768, height: 900, zoom: 1, reducedMotion: false },
   { label: '820', width: 820, height: 1180, zoom: 1, reducedMotion: false },
+  { label: '900', width: 900, height: 900, zoom: 1, reducedMotion: false },
+  { label: '1023', width: 1023, height: 900, zoom: 1, reducedMotion: false },
   // 常設サイドバーとデスクトップ表が同時に現れる境界。本文幅が最も厳しい。
   { label: '1024', width: 1024, height: 900, zoom: 1, reducedMotion: false },
   { label: '1180', width: 1180, height: 820, zoom: 1, reducedMotion: false },
@@ -33,6 +36,8 @@ export const VIEWPORT_CASES = [
   { label: '1600', width: 1600, height: 1000, zoom: 1, reducedMotion: false },
   // 本物の200%拡大。setPageScaleFactor を伴うのはこのケースだけ。
   { label: 'zoom200', width: 375, height: 812, zoom: 2, reducedMotion: false },
+  // 1536px級の画面を200%表示したときに残る768px railも検査する。
+  { label: 'rail-zoom200', width: 768, height: 900, zoom: 2, reducedMotion: false },
   // 拡大ではなく「動きを減らす」設定。かつて 200pct-equivalent と誤称していたケース。
   { label: 'reduced-motion', width: 320, height: 640, zoom: 1, reducedMotion: true },
 ];

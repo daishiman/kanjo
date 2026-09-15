@@ -1237,6 +1237,190 @@
       "referenced_by": [
         "feat-analysis-hub"
       ]
+    },
+    {
+      "id": "arch-overview-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "概況画面改善 — 情報優先度と段階的開示",
+      "file_path": "architecture/overview-screen-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "imported_at": "2026-09-15T00:18:48Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c16e7904243093915bdbb78348fa5bdd042eaa945a52243250e54f29b454e1de",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-overview-screen"
+      ]
+    },
+    {
+      "id": "arch-overview-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "概況画面改善 — 共通部品と応答型境界",
+      "file_path": "architecture/overview-screen-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "imported_at": "2026-09-15T00:18:48Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "222efa30c534ea1fb7280fbca65798e6bde43946c3eedec15c6ce54bf650fe2d",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-overview-screen"
+      ]
+    },
+    {
+      "id": "arch-overview-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "概況画面改善 — core 純関数の集計と未処理キュー API",
+      "file_path": "architecture/overview-screen-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T13:09:32Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8bec9a4a4bc145efdb1e58243d8ba834e181debde3245115c448c77ea0698cfe",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-overview-screen"
+      ]
+    },
+    {
+      "id": "arch-overview-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "概況画面改善 — 保留と月次レビューの D1 テーブル",
+      "file_path": "architecture/overview-screen-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-14T13:09:32Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "bfeaf5ba39566e3161ae33ad1b4f75d997d8aa9b311c48a7822051518930f67d",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-overview-screen"
+      ]
+    },
+    {
+      "id": "arch-overview-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "概況画面改善 — 既存 authGuard への新 API の収容",
+      "file_path": "architecture/overview-screen-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "imported_at": "2026-09-15T00:18:48Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "30046c2b1e2c1624ca0896fdc06b323adb88c061ae579513c0a6a081d3f9833a",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-overview-screen"
+      ]
+    },
+    {
+      "id": "arch-overview-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "概況画面改善 — 入力検証の二重化と書込の直列化",
+      "file_path": "architecture/overview-screen-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "imported_at": "2026-09-15T00:18:48Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "d4114fbfaf233de302221927cc9ac76e37b3a395b499a9afa1c7ebbb401afca3",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-overview-screen"
+      ]
+    },
+    {
+      "id": "arch-overview-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "概況画面改善 — migration 自動適用と初期 JS 予算",
+      "file_path": "architecture/overview-screen-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "imported_at": "2026-09-15T00:18:48Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "10b1fcf93c5c63d728e36c9fc18d48f15fc8e281adaef346d49cc73d529a4677",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-overview-screen"
+      ]
+    },
+    {
+      "id": "arch-overview-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "概況画面改善 — O1-O5 の検査配置と切り分け手順",
+      "file_path": "architecture/overview-screen-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "imported_at": "2026-09-15T00:18:48Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "5814ff8f9bef10523ee781cf4b49516e1887472b3feaf30ab2693abce081228c",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-overview-screen"
+      ]
     }
   ]
 }
