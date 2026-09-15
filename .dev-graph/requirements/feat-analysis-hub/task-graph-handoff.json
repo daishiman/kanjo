@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "handoff_target": "task-graph",
+  "feature_id": "feat-analysis-hub",
+  "parent_feature": "feat-analysis-hub",
+  "feature_package_id": "feature-package/feat-analysis-hub",
+  "snapshot_digest": "sha256:cae799f4153f2ca24566a4bc9a599d979219850e1672df6bfa983c4909cde196",
+  "validated_plan_digest": "sha256:20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+  "kind": "requirements-handoff",
+  "status": "ready",
+  "requirements_document": ".dev-graph/requirements/feat-analysis-hub/requirements.md",
+  "readiness_matrix": ".dev-graph/requirements/feat-analysis-hub/readiness-matrix.json",
+  "trace_plan": ".dev-graph/requirements/feat-analysis-hub/trace-plan.json",
+  "task_graph": ".dev-graph/plans/feature-package-feat-analysis-hub/task-graph.json",
+  "system_build_handoff": ".dev-graph/plans/feature-package-feat-analysis-hub/system-build-handoff.json",
+  "task_spec_source_root": ".dev-graph/plans/feature-package-feat-analysis-hub/task-specs",
+  "task_projection_target_root": "tasks/feat-analysis-hub",
+  "requirement_count": 7,
+  "task_count": 13,
+  "missing_sections": [],
+  "self_generated_code_files": [],
+  "preconditions": [
+    "SYS-ANHUB-P05 着手前に、ハブ API クエリの staleTime の方針 (値と算定基準) を docs/analysis-hub/architecture-decision.md に記録する (spec 未決事項)。",
+    "ui-ux.md の inference 由来の細部 (純収支説明パネルの狭幅折りたたみ・金額の等幅数字など) は、既存 docs/design-system の観測事実へ接地させるか利用者確認を得てから実装する。推定のまま confirmed にしない。"
+  ],
+  "consumer_action": "dev-graph next で ready batch を算出し、worktree claim 後に SYS-ANHUB-P01 から task-graph build を開始する。"
+}

@@ -3,6 +3,7 @@ import { budgetRowsWithDraft, budgetSummary, judgeBudget, parseBudgetDraft } fro
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { invalidateAnalysisDerived } from '../analysis-query-invalidation.js';
 import { type BudgetOutlook, type BudgetRow, api } from '../api.js';
 import { Button } from '../components/Button.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
@@ -30,7 +31,7 @@ export function BudgetPage() {
       setDirty(false);
       setDraft({});
       void qc.invalidateQueries({ queryKey: ['budgets'] });
-      void qc.invalidateQueries({ queryKey: ['tradeoff'] });
+      void invalidateAnalysisDerived(qc);
     },
   });
   const suggest = useMutation({

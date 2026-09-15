@@ -6,20 +6,20 @@
     "token_values_digest": "87354534f11dfa89efa71ce17f0504dff2cb61b9c70b17835fd072e19047e4c5",
     "display_export_surface_digest": "945b72fd3e69a88b789a347586f714b1df1a1d83f528cdf7650d0d1ebea99236",
     "projection_policy_digest": "27cf03ce852e6bd165a3cac79466206e8930c8b51d6611227b95dd6a9b449220",
-    "provenance_content_digest": "e2b02fda21a1ac7c04a0e1ed23c92c4dd2926172eb2f1655c4e4666d7a9bcfdd",
-    "external_reference_digest": "0f66c38ca92a68d9546b59e515ce8ec7ed52cb0d42f95ef2034b7989051592f9",
-    "approval_subject_digest": "2ca1a3b9da3074e157fd504198f85f13447c593fdcc92afcb0f6aee30d41c707"
+    "provenance_content_digest": "3799ea4fda27ceab12339abacc73b782c1308c111361fcbdf5b0416f3ede51ee",
+    "external_reference_digest": "feb802da7e57f0b27f03fb09ed6b91879b2c6c504bf5a95287003d3b410b1c4b",
+    "approval_subject_digest": "6fb0d5f79e318d75298dcb1e5e73cdf489671c68f36329ff2f12714e1b6bdede"
   },
   "provenance": {
     "contentInputs": [
       "docs/design-system/architecture-decision.md",
-      "system-spec/00-requirements-definition.md",
-      "system-spec/spec-state.json"
+      "system-spec/archive/2026-09-14-design-system-foundation/00-requirements-definition.md",
+      "system-spec/archive/2026-09-14-design-system-foundation/spec-state.json"
     ],
     "externalReferences": [
       {
         "path": "design/FINAL-UI/spec/DESIGN-SYSTEM.md",
-        "recordPath": "system-spec/spec-state.json",
+        "recordPath": "system-spec/archive/2026-09-14-design-system-foundation/spec-state.json",
         "recordDigest": "sha256:ebb1719358de7fa802ed55bb05be0f7e058be1433f2bebf0edcfceb8fccdfc46"
       }
     ]

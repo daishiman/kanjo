@@ -4,6 +4,7 @@
  * どちらにも依存しない場所に置く。
  */
 import { useQueryClient } from '@tanstack/react-query';
+import { invalidateAnalysisDerived } from '../analysis-query-invalidation.js';
 
 export function useInvalidateClassification() {
   const qc = useQueryClient();
@@ -14,5 +15,6 @@ export function useInvalidateClassification() {
     void qc.invalidateQueries({ queryKey: ['summary'] });
     void qc.invalidateQueries({ queryKey: ['household'] });
     void qc.invalidateQueries({ queryKey: ['cash-entries'] });
+    void invalidateAnalysisDerived(qc);
   };
 }

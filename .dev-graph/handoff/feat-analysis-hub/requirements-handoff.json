@@ -1,0 +1,231 @@
+{
+  "schema_version": "1.0.0",
+  "handoff_target": "task-graph",
+  "feature_id": "feat-analysis-hub",
+  "parent_feature": "feat-analysis-hub",
+  "feature_package_id": "feature-package/feat-analysis-hub",
+  "snapshot_digest": "sha256:cae799f4153f2ca24566a4bc9a599d979219850e1672df6bfa983c4909cde196",
+  "validated_plan_digest": "sha256:20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+  "emitted_by": "dev-graph:run-dev-graph-requirements",
+  "emitted_at": "2026-09-14T13:55:11Z",
+  "repository_id": "github:daishiman/kanjo",
+  "package_reference": {
+    "plan_dir": ".dev-graph/plans/feature-package-feat-analysis-hub",
+    "promotion_receipt": ".dev-graph/plans/feature-package-feat-analysis-hub/atomic-promotion-receipt.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-analysis-hub/task-graph.json",
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-analysis-hub/dev-graph-registration-receipt.json"
+  },
+  "readiness": {
+    "status": "complete",
+    "missing_sections": [],
+    "checked_at": "2026-09-14T13:55:11Z"
+  },
+  "gates": [
+    {
+      "gate": "exact-13 external validator (validate-system-plan.py)",
+      "status": "pass",
+      "exit_code": 0,
+      "digest": "sha256:20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+      "violations": 0
+    },
+    {
+      "gate": "graph schema + artifact parity (validate-graph-schema.py)",
+      "status": "pass",
+      "exit_code": 0,
+      "violations": 0,
+      "missing_sections": []
+    },
+    {
+      "gate": "C02 saved state (registration receipt + task nodes)",
+      "status": "pass",
+      "digest": "sha256:20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c",
+      "detail": "expected 13 = applied 13"
+    },
+    {
+      "gate": "C11 promotion + C05 evaluation digest",
+      "status": "pass",
+      "digest": "sha256:20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
+    }
+  ],
+  "tasks": [
+    {
+      "graph_node_id": "SYS-ANHUB-P01",
+      "phase_ref": "P01",
+      "title": "支出分析ハブ 要件ベースラインの確定",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p01.md",
+      "depends_on": [],
+      "resource_scope": [
+        "docs/analysis-hub/requirements-baseline.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P02",
+      "phase_ref": "P02",
+      "title": "支出分析ハブ アーキテクチャ決定記録の確定",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p02.md",
+      "depends_on": [
+        "SYS-ANHUB-P01"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/architecture-decision.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P03",
+      "phase_ref": "P03",
+      "title": "支出分析ハブ 設計レビューの実施と記録",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p03.md",
+      "depends_on": [
+        "SYS-ANHUB-P02"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/design-review.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P04",
+      "phase_ref": "P04",
+      "title": "支出分析ハブ 先行失敗テストの設計と追加",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p04.md",
+      "depends_on": [
+        "SYS-ANHUB-P03"
+      ],
+      "resource_scope": [
+        "packages/core/src/analysis-hub.test.ts",
+        "packages/api/src/analysis-hub.test.ts",
+        "packages/web/src/analysis-hub.dom.test.tsx"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P05",
+      "phase_ref": "P05",
+      "title": "支出分析ハブ 実装 (core集計・previousPeriod移設・API・ハブ画面)",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p05.md",
+      "depends_on": [
+        "SYS-ANHUB-P04"
+      ],
+      "resource_scope": [
+        "packages/core/src/analysis-hub.ts",
+        "packages/api/src/routes/analysis-hub.ts",
+        "packages/api/src/index.ts",
+        "packages/web/src/pages/Analysis.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/components/Layout.tsx"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P06",
+      "phase_ref": "P06",
+      "title": "支出分析ハブ 全テスト・型検査・lintの実行と記録",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p06.md",
+      "depends_on": [
+        "SYS-ANHUB-P05"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/test-run.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P07",
+      "phase_ref": "P07",
+      "title": "支出分析ハブ AC-001..AC-006 の受入検証",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p07.md",
+      "depends_on": [
+        "SYS-ANHUB-P06"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/acceptance.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P08",
+      "phase_ref": "P08",
+      "title": "支出分析ハブ previousPeriod 重複実装の除去",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p08.md",
+      "depends_on": [
+        "SYS-ANHUB-P07"
+      ],
+      "resource_scope": [
+        "packages/api/src/ai/dataset.ts"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P09",
+      "phase_ref": "P09",
+      "title": "支出分析ハブ 品質保証 (アクセシビリティ・性能予算・チェック系)",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p09.md",
+      "depends_on": [
+        "SYS-ANHUB-P08"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/assurance.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P10",
+      "phase_ref": "P10",
+      "title": "支出分析ハブ 最終レビューと要件突合",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p10.md",
+      "depends_on": [
+        "SYS-ANHUB-P09"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/final-review.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P11",
+      "phase_ref": "P11",
+      "title": "支出分析ハブ 証跡の集約",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p11.md",
+      "depends_on": [
+        "SYS-ANHUB-P10"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/evidence.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P12",
+      "phase_ref": "P12",
+      "title": "支出分析ハブ 運用ドキュメントの更新 (ui-decisions・既存テスト文言)",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p12.md",
+      "depends_on": [
+        "SYS-ANHUB-P11"
+      ],
+      "resource_scope": [
+        "docs/ui-decisions.md",
+        "packages/web/src/analysis-tabs.dom.test.tsx",
+        "packages/web/src/navigation-ux.dom.test.tsx",
+        "packages/web/src/common-shell-routes.dom.test.tsx"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-ANHUB-P13",
+      "phase_ref": "P13",
+      "title": "支出分析ハブ リリース判断とクローズアウト",
+      "file_path": "tasks/feat-analysis-hub/sys-anhub-p13.md",
+      "depends_on": [
+        "SYS-ANHUB-P12"
+      ],
+      "resource_scope": [
+        "docs/analysis-hub/close-out.md"
+      ],
+      "tracker_binding": "beads"
+    }
+  ],
+  "requirements_ref": ".dev-graph/requirements/feat-analysis-hub/trace-plan.json",
+  "self_generated_code_files": []
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-analysis-hub",
+  "parent_feature": "feat-analysis-hub",
+  "feature_package_id": "feature-package/feat-analysis-hub",
+  "handoff_target": "task-graph",
+  "selected_nodes": [
+    "spec-analysis-hub",
+    "arch-analysis-hub-ui-ux",
+    "arch-analysis-hub-frontend",
+    "arch-analysis-hub-backend",
+    "arch-analysis-hub-database",
+    "arch-analysis-hub-auth",
+    "arch-analysis-hub-security",
+    "arch-analysis-hub-infrastructure",
+    "arch-analysis-hub-maintenance-ops",
+    "feat-analysis-hub",
+    "SYS-ANHUB-P01",
+    "SYS-ANHUB-P02",
+    "SYS-ANHUB-P03",
+    "SYS-ANHUB-P04",
+    "SYS-ANHUB-P05",
+    "SYS-ANHUB-P06",
+    "SYS-ANHUB-P07",
+    "SYS-ANHUB-P08",
+    "SYS-ANHUB-P09",
+    "SYS-ANHUB-P10",
+    "SYS-ANHUB-P11",
+    "SYS-ANHUB-P12",
+    "SYS-ANHUB-P13"
+  ],
+  "artifact_kinds": [
+    "specification",
+    "architecture",
+    "feature",
+    "task"
+  ],
+  "closure_status": "complete",
+  "missing_nodes": [],
+  "snapshot_digest": "sha256:cae799f4153f2ca24566a4bc9a599d979219850e1672df6bfa983c4909cde196"
+}

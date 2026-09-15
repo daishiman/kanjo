@@ -3,7 +3,7 @@ status: confirmed
 category: security
 aggregate: 確定
 spec_cells: [security.web, security.mobile, security.tablet, security.desktop-windows, security.desktop-linux, security.desktop-macos]
-serves_goals: [G1, G5]
+serves_goals: [G2, G3]
 ---
 
 # セキュリティ (security)
@@ -15,12 +15,12 @@ serves_goals: [G1, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-security-web-ds-observed-001。裏付け質疑 (`qa_refs`): `qa-ui-ux-web-ds-decision-005` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではアプリ内に同梱するフォント・画像資産の署名とストア審査上の扱い、および WebView を使う場合の CSP 相当の制限を決める必要があった。本サイクルは既存 web の CSP (_headers) の範囲で完結し、外部フォントを読み込まない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、本カテゴリではアプリ内に同梱するフォント・画像資産の署名とストア審査上の扱い、および WebView を使う場合の CSP 相当の制限を決める必要があった。本サイクルは既存 web の CSP (_headers) の範囲で完結し、外部フォントを読み込まない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、本カテゴリではアプリ内に同梱するフォント・画像資産の署名とストア審査上の扱い、および WebView を使う場合の CSP 相当の制限を決める必要があった。本サイクルは既存 web の CSP (_headers) の範囲で完結し、外部フォントを読み込まない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、本カテゴリではアプリ内に同梱するフォント・画像資産の署名とストア審査上の扱い、および WebView を使う場合の CSP 相当の制限を決める必要があった。本サイクルは既存 web の CSP (_headers) の範囲で完結し、外部フォントを読み込まない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、本カテゴリではアプリ内に同梱するフォント・画像資産の署名とストア審査上の扱い、および WebView を使う場合の CSP 相当の制限を決める必要があった。本サイクルは既存 web の CSP (_headers) の範囲で完結し、外部フォントを読み込まない。対象を web のみとする利用者決定 (qa-target-platforms-ds-001 / appr-foundation-design-system-001、2026-09-13) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-security-web-ah-observed-001。裏付け質疑 (`qa_refs`): `qa-analysis-hub-decision-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,7 +28,9 @@ serves_goals: [G1, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の構成要件 (CSP など安全なヘッダー) を、_headers の CSP を広げずに済む範囲で共通化するという確定内容に反映した。外部フォント・CDN を追加しない。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の入力検証とデータ保護を、?focus= の許可リスト検証、URL に財務情報を載せないこと、クリップボード書込を利用者の明示クリックに限ることに反映した。ハブ API は外部サービスへ送信せず、secureHeaders を全体に掛ける既存構成を維持する。 |
+
+> **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
 ## 確定内容 (質疑録)
 
@@ -36,31 +38,31 @@ serves_goals: [G1, G5]
 
 ### Web (web)
 
-- 資するゴール: G1, G5
+- 資するゴール: G2, G3
 
-#### 主たる接地根拠: `qa-security-web-ds-observed-001`
-
-**問**
-
-見た目の共通化は既存のセキュリティ方針 (CSP・外部資源・実データの扱い) と衝突しないか。
-
-**答**
-
-衝突しない。packages/web/public/_headers の CSP は default-src 'self'・script-src 'self'・style-src 'self' 'unsafe-inline'・font-src 'self' data: で、外部フォントや CDN を許していない。Web フォントを追加しない利用者決定 (qa-ui-ux-web-ds-decision-002) とトークンのビルド時同梱はこの CSP の範囲で完結し、実行時に外部から色やフォントを取得しない。チャートの色は canvas への描画値で、CSS 注入経路を増やさない。画面例やテストの表示値には匿名・架空のサンプルだけを使い、pnpm lint の security:content (guard-real-data) が公開文書の実データ混入を検査する。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: packages/web/public/_headers と package.json の lint / security:content をアシスタントが読んだ観測事実。 / 回答時刻: 2026-09-13T05:03:11Z)
-
-#### 裏付け質疑: `qa-ui-ux-web-ds-decision-005`
+#### 主たる接地根拠: `qa-security-web-ah-observed-001`
 
 **問**
 
-文字フォントはどうしますか？画像は日本語ゴシック体に見えます。現行は system-ui（端末標準）＋金額用の IBM Plex Mono（等幅）です。
+ハブで扱う情報のセキュリティ上の前提 (公開範囲・共有 URL・ヘッダー・外部送信) は何か。
 
 **答**
 
-『現行を維持し規約化 (Recommended)』を選択。和文は system-ui 系ゴシック、金額は自己配信する既存の IBM Plex Mono Latin 400/600。新規の外部Webフォントや CDN は追加せず、未読込時は ui-monospace / monospace へ落ちる。 提示した選択肢: 『現行を維持し規約化 (Recommended)』(system-ui 系和文ゴシック+既存の自己配信等幅数字。外部追加読込なし) / 『Noto Sans JP を同梱』(端末差なく画像に近いが、フォント読込で初回表示が重くなる)。
+index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証と runtimeSchemaGuard の後にある。ハブ API は利用者本人の集計値だけを返し、外部サービスへ送らない (画像フッター『取込データは外部送信しません』と一致)。URL コピーが書く URL は /analysis?focus=<tab id> で、金額・取引・期間などの財務情報をクエリに含めない (期間は localStorage のまま)。共有された URL を他人が開いても認証が要り、自分のデータしか見えない。focus 値は ANALYSIS_TABS の id の許可リストで検証し、不正値は既定値に落とす (任意文字列を DOM へ反映しない)。クリップボード書込は利用者の明示クリック時だけ行う。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion の選択肢から明示選択した。回答後の全非 test source と dependencies の実装確認で `main.tsx` の `@fontsource/ibm-plex-mono/latin-400.css` / `latin-600.css` と package dependency を確認したため、誤っていた過去の観測だけを訂正した。 / 回答時刻: 2026-09-13T04:36:20Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/index.ts, design/FINAL-UI/images/03-analysis-hub.png のフッター。focus を URL に持ち期間を URL に載せない点は利用者決定 qa-analysis-hub-decision-001 と承認 appr-foundation-analysis-hub-001 に基づく。 / 回答時刻: 2026-09-14T11:38:26Z)
+
+#### 裏付け質疑: `qa-analysis-hub-decision-001`
+
+**問**
+
+支出分析ハブ (03-analysis-hub.png) は既存の 5 タブとどうつなげるか。現行は /analysis を開くと照合タブへ転送される。選択肢: (A) /analysis をハブにし、各行やタブの『開く』で既存 /analysis/:tab 詳細へ進み、選択中の分析を ?focus= で URL に持ち URL コピーで共有できる (推奨) / (B) 転送を残し 5 タブすべての上部にハブ要素を常時表示する。
+
+**答**
+
+(A) /analysis をハブにする を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-14T11:33:07Z)
 
 ## To-Be / Delta
 
@@ -68,30 +70,26 @@ serves_goals: [G1, G5]
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: 色・文字サイズ・行高・余白・角丸・影・動き・寸法 (シェル幅/高さ/タップ領域) のデザイントークンを、packages/core に置く依存ゼロの TypeScript 定義 1 か所へ集約し、CSS 変数とチャート色はそこから導出する。和文は OS の system-ui、金額・数値は自己配信する IBM Plex Mono Latin 400/600 だけを使い、全非 test source・dependencies・外部フォントURLの検査でこの配信契約を固定する。
-- **G5**: 文字と部品は WCAG 2.2 AA のコントラスト (文字 4.5:1、部品を見分ける境界・図形 3:1) を維持する。FINAL-UI の値がこれを満たさない場合は役割を分けて両立させる: 塗り・アイコン・バッジ面には画像どおりの値、文字にはその色相で 4.5:1 を満たす派生色を使う。境界は、カード区切りや表の罫線などの装飾罫線には画像どおり #D7E0E2 (1.4.11 の対象外)、入力欄・チェックボックスなど部品を見分ける枠には同じ色相で 3:1 を満たす派生色を使う。
+- **G2**: 選択中の分析を URL (?focus=<tab id>) で保持し、URL コピー・再読込・戻る操作でも同じ分析が選ばれた状態を再現する。既存の /analysis/:tab 詳細と旧 URL の転送は壊さない。
+- **G3**: ハブに必要な集計を packages/core の純関数と、1 回で返す集約 API (GET /analysis/hub) に置く。期間の収支サマリーと前 12 か月比、5 視点それぞれの現在の状態 (照合の要確認件数・総収支の重複候補件数・マトリクスの正常判定・推移の支出前 12 か月比・診断の改善余地) と優先度を返し、ハブ表示中に 5 タブ分の既存 API を呼ばない。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | packages/core/src/design-tokens.ts に色・文字・余白・角丸・影・動き・寸法のトークンを定義し、値の唯一の実装正本とする。 | 単体テストは schema・役割集合・alias・コントラストに必要な関係不変条件を値の転記なしで検査する。表示に影響する全トークン値は、版・承認参照・由来ファイルを持つ `docs/design-system/token-approval.json` の SHA-256 fingerprint と lint で照合し、未承認の値変更を拒否する。 |
-| O2 | styles.css の :root トークンと charts.ts の COLORS を design-tokens.ts から導出した写しに置き換え、写しのずれを検出する lint を lint スクリプトへ組み込む。 | pnpm lint が写しの不一致で exit 非 0 になり、一致時に exit 0 になる。charts.ts から 6 桁 hex の直書きが 0 件になる。 |
-| O4 | 文字・部品の枠・チャート系列に使う全トークンの、背景/面に対するコントラストを計算するテストを置く。 | 文字用トークンは背景 #F6F8F9 と面 #FFFFFF の双方に対し 4.5:1 以上、部品を見分ける枠のトークンとチャート系列色は 3:1 以上であることをテストが検証し、基準未満の値を入れると落ちる。装飾罫線トークン (#D7E0E2) は 1.4.11 の対象外として検査から外し、入力欄・チェックボックスの枠が装飾罫線トークンを参照していないことを同じテストで確かめる。 |
+| O1 | /analysis がハブを描画し、/analysis/:tab と旧 URL の転送は既存どおり動く。 | DOM テストで /analysis がハブの見出し・サマリー・ルート一覧 5 行・読み順 5 ステップ・選択中の分析パネルを描画し、/analysis/reconciliation 等の既存 5 タブと旧 URL のテストが緑のままである。 |
+| O2 | ?focus=<tab id> の読み書きと URL コピーを実装する。 | DOM テストで ?focus=total-cashflow を開くと総収支行と右パネルと下部バーが選択状態になり、行を選ぶと URL が置き換わり、不正な focus 値は既定値に落ち、URL コピーが現在の URL をクリップボードへ書く。 |
+| O3 | core に analysisHub(dataset) 相当の純関数を置き、API に GET /analysis/hub を足す。 | core 単体テストが期間合計・前 12 か月比 (前期間データ無しは null)・5 視点の状態・優先度・改善余地を固定データで検証し、API 統合テストが認証付きで 200 と期間メタを返し、ハブ表示中の DOM テストで既存 5 API への呼出しが 0 件である。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: 新しい画面をつくるとき、色・余白・角丸・文字サイズを design-tokens から選ぶだけで FINAL-UI と同じ見た目になる。
-- **I5**: 注意 (アンバー) の表示は、バッジやアイコンの塗りは画像どおりの色で、文字は読みやすい濃さで出る。表の罫線は画像どおり淡く、入力欄の枠は見分けられる濃さで出る。
+- **I2**: 分析ルート一覧の行選択で ?focus= を置き換え、右パネルと下部バーの内容を切り替える。URL コピーは現在の URL をクリップボードへ書き、成否を知らせる。
+- **I3**: 期間の収支サマリーに総収入・総支出・純収支と前 12 か月比 (増減率と前期間の金額) を出し、純収支の説明パネルを右に置く。前期間データが無い場合は比較を『比較データなし』と表示する。
+- **I4**: core にハブ集計関数を置き、GET /analysis/hub が期間メタ・サマリー・5 視点の状態・優先度を返す。前期間の計算は core へ移し AI 側もそれを使う。
 
 ### 本章に効く確定意思決定
 
-- **dec-design-token-source**: デザイントークンの正本をどこに置くか
-  - 採択: packages/core の design-tokens.ts を正本にし、CSS 変数とチャートの予備値を生成する (`core-ts`)
-  - 目的適合: G1 の『依存ゼロの TypeScript 1 か所』に直接合う。テスト (O1・O4) が CSS を解析せず値を import でき、次サイクルでレポート側からも同じ値を import できる
-- **dec-border-color-roles**: 境界色 #D7E0E2 (白に 1.34:1) を、WCAG 2.2 の 1.4.11 とどう両立させるか
-  - 採択: 装飾罫線は #D7E0E2、部品を見分ける枠は 3:1 の派生色 (`split-roles`)
-  - 目的適合: G5 の役割分離を境界へ広げ、画像の淡い罫線と部品の枠の 1.4.11 を両立する
+- (本章ゴールに効く確定 decision なし)
 
 ## 適用された設計知識
 
@@ -99,9 +97,9 @@ serves_goals: [G1, G5]
 
 ### 本章での適用
 
-Secure by Design card の『攻撃面を増やさない』を、新規の外部Webフォント/CDNを追加しない利用者決定 (qa-ui-ux-web-ds-decision-005) と CSP の維持に結び付けた。和文は system-ui 系ゴシック、金額は既存の IBM Plex Mono Latin 400/600 をアプリ資産として自己配信するため、外部通信や CSP 拡張は発生しない。トークンもビルド時に同梱し、実行時に色や寸法を外部から取得しない。
+Secure by Design card の『入力を許可リストで検証し、既定値へ落とす』を ?focus= に適用した。focus の値は ANALYSIS_TABS の id 5 種の許可リストで照合し、不正値は既定の分析に落として任意文字列を DOM や aria 属性へ反映しない。『攻撃面を増やさない』は URL コピーに当てた。コピーする URL に期間・金額・取引を載せず (期間は localStorage のまま)、navigator.clipboard.writeText は利用者の明示クリック時だけ呼ぶ。NotAllowedError のときは成否を画面で知らせ、例外を握りつぶさない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-13T07:54:32Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-14T11:57:54Z)
 
 ### Secure by Design — deep knowledge card
 
@@ -148,4 +146,4 @@ Secure by Design card の『攻撃面を増やさない』を、新規の外部W
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-workers-static-assets-headers | 2026-08-25 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/workers/static-assets/headers/ | 2026-09-13T05:06:15Z | 2026-09-13T05:06:15Z |
+| clipboard-write-text | 2025-11-30 | Mozilla (MDN Web Docs) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/writeText | 2026-09-14T11:44:16Z | 2026-09-14T11:44:16Z |

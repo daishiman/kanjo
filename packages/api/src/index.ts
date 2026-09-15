@@ -17,6 +17,7 @@ import { cleanupStalePasswordLoginRateLimits } from './login-rate-limit.js';
 import { runR2Cleanup } from './r2-cleanup.js';
 import { adminUsersRoute } from './routes/admin-users.js';
 import { aiAgentRoute, aiRoute } from './routes/ai.js';
+import { analysisHubRoute } from './routes/analysis-hub.js';
 import { analyticsRoute } from './routes/analytics.js';
 import { authRoute } from './routes/auth.js';
 import { balancesRoute } from './routes/balances.js';
@@ -116,6 +117,7 @@ app.route('/api', settingsRoute);
 app.route('/api', subsRoute);
 app.route('/api', balancesRoute);
 app.route('/api', totalCashflowRoute);
+app.route('/api', analysisHubRoute);
 app.route('/api', improvementRoute);
 
 app.notFound((c) => {
