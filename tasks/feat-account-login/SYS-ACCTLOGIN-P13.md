@@ -129,6 +129,14 @@ P10 でリリース可と判定され、P12 の運用手順が整っているこ
 
 反映記録を feature の完了根拠へ加え、以降の運用を P12 の手順書へ引き継ぐ。
 
+## 実施記録
+
+詳細は `docs/account-login/release-record.md`。受入条件ごとの状況 (2026-09-15 時点):
+
+- users / audit_log の作成とスキーマ版数: 達成。本番 D1 の適用済み migration は 0040 まで。
+- AUTH_PASSWORD の削除: **未達**。本番 Worker の secret 一覧にまだ残っている。削除は所有者の判断で行う。
+- 管理者でのログインと利用者追加: PBKDF2 上限の修正 (#52) と break-glass reset の後、所有者による確認待ち。
+
 ## 参照情報
 
 - architecture/account-login-infrastructure.md
