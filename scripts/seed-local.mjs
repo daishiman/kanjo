@@ -106,13 +106,49 @@ const LIVING = [
   ['未分類', '未分類', 'テスト未分類決済', 4600, 3800, INST.card],
 ];
 
-/** サブスク。事業立替(事業の経費を個人カードで払う)として扱わせる */
+/**
+ * サブスク。事業立替(事業の経費を個人カードで払う)として扱わせる。
+ * 5列目は freee 側の発生日を MF 側の決済日から何日ずらすか。
+ *
+ * 立替は同じ支出が freee と MF に2回載るので、総収支ではこれを消し込む。
+ * ずれ 0 は日付も金額も一致して自動で寄る組、±1〜2 は近いだけで
+ * 人が決める要確認の組になる。全部 0 にすると要確認の表が、
+ * 全部大きくずらすと一致の表が空になり、画面を確認できない。
+ * [MF側の名前, freee側の取引先, 中項目, 月額, MF決済日からのずれ(日)]
+ */
 const SUBS = [
-  ['Anthropic Claude', 'テストAI', 'サブスク・通信', 3000],
-  ['GitHub', 'テスト開発', 'サブスク・通信', 1800],
-  ['Adobe CC', 'テスト制作', 'サブスク・通信', 6480],
-  ['Notion', 'テスト業務', 'サブスク・通信', 1200],
+  ['Anthropic Claude', 'テストAI', 'サブスク・通信', 3000, 0],
+  ['GitHub', 'テスト開発', 'サブスク・通信', 1800, 0],
+  ['Adobe CC', 'テスト制作', 'サブスク・通信', 6480, -2],
+  ['Notion', 'テスト業務', 'サブスク・通信', 1200, 1],
 ];
+
+/** MF 側でサブスクが決済される日。freee の立替はこの日を基準にずらす */
+const MF_SUBS_DAY = 10;
+
+/*
+ * 相手を1件に絞れない組 (総収支の「要確認」)。
+ *
+ * SUBS のずれは 1 対 1 なので、候補がちょうど1件の「重複候補」しか作れない。
+ * 要確認は候補が2件以上のときに出る区分なので、同額・同じ向きで
+ * 3日以内 (REVIEW_NEAR_DAYS) に並ぶ freee 取引を2件ぶつける組を1つだけ置く。
+ * ここが無いと、判定作業の3区分のうち1つを画面で一度も開けない。
+ * MF 側とは発生日をずらし、第一段の自動寄せに拾われないようにする。
+ */
+const AMBIGUOUS = {
+  ym: { y: 2026, m: 3 },
+  mfDay: 12,
+  amount: 8800,
+  mfName: 'テスト印刷 名刺作成',
+  /** 同額・近い日で並ぶ2件。どちらが本当の相手かは機械には決められない */
+  freee: [
+    { day: 13, partner: 'テスト印刷' },
+    { day: 14, partner: 'テスト印刷工房' },
+  ],
+};
+
+/** freee の取引先 → MF 決済日からのずれ。SUBS から導き、日付を二重管理しない */
+const SUBS_DATE_OFFSET = new Map(SUBS.map(([, vendor, , , offset]) => [vendor, offset]));
 
 /*
  * 中項目が「事業」で始まる明細。収入・支出の両方を事業へ寄せる判定を画面で確認するために置く。
@@ -194,7 +230,7 @@ function mfRows() {
       if (vendor === 'Adobe CC' && key === '2026-07') amt = price * 4;
       push([
         '1',
-        day(y, m, 10),
+        day(y, m, MF_SUBS_DAY),
         `${vendor} 月額`,
         String(-amt),
         INST.card,
@@ -260,6 +296,20 @@ function mfRows() {
     // --- 振替ではないが計算対象外(集計から外れることの確認用) ---
     push(['0', day(y, m, 26), '集計対象外テスト行', '-9999', INST.self, 'その他', '未分類', '', '0', id()]);
   }
+
+  // 相手を1件に絞れない組の MF 側 (1件だけ)。中項目を「事業・」始まりにして事業へ寄せる
+  push([
+    '1',
+    day(AMBIGUOUS.ym.y, AMBIGUOUS.ym.m, AMBIGUOUS.mfDay),
+    AMBIGUOUS.mfName,
+    String(-AMBIGUOUS.amount),
+    INST.card,
+    'その他',
+    '事業・消耗品',
+    '',
+    '0',
+    id(),
+  ]);
   return rows;
 }
 
@@ -393,7 +443,10 @@ function freeeRows() {
     // --- 経費 ---
     for (const [acct, vendor, basis, jitter, taxClass, item] of FREEE_EXPENSE) {
       const amt = basis + Math.round((rand() - 0.5) * jitter);
-      const date = day(y, m, 5 + (amt % 20));
+      // 立替は MF 側の決済日を基準に置く。ここを独立に決めると金額が一致していても
+      // 日付が離れて候補に入らず、消し込みの表がまるごと空になる
+      const subsOffset = SUBS_DATE_OFFSET.get(vendor);
+      const date = subsOffset === undefined ? day(y, m, 5 + (amt % 20)) : day(y, m, MF_SUBS_DAY + subsOffset);
       /*
        * 決済形態。実エクスポートでは30行すべてが「事業主借」= 個人の財布で立て替えた形で、
        * 事業口座からの直接支払は1件も無かった。立替は MF 側にも個人カードの決済として
@@ -420,6 +473,28 @@ function freeeRows() {
         }),
       );
     }
+  }
+
+  // 相手を1件に絞れない組の freee 側 (2件)。MF の 1 件に対して同額で並ぶ
+  for (const { day: d, partner } of AMBIGUOUS.freee) {
+    const date = day(AMBIGUOUS.ym.y, AMBIGUOUS.ym.m, d);
+    rows.push(
+      freeeRow({
+        収支区分: '支出',
+        発生日: date,
+        取引先: partner,
+        勘定科目: '消耗品費',
+        税区分: '課対仕入10%',
+        金額: AMBIGUOUS.amount,
+        税計算区分: '内税',
+        税額: taxAmount(AMBIGUOUS.amount, '課対仕入10%'),
+        品目: 'テスト名刺',
+        支払日: date,
+        // 立替と同じ決済形態にする。事業口座払いにすると MF 側に相手がいない建付けと矛盾する
+        支払口座: '事業主借',
+        支払金額: AMBIGUOUS.amount,
+      }),
+    );
   }
   return rows;
 }

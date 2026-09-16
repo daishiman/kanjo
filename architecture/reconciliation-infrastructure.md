@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "80ce90a07bbc669ca0a008a166b4199aa4576f5d8c235f74a592e50216f9a978"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/infrastructure.md", "source_version": "0.1.14", "source_digest": "80ce90a07bbc669ca0a008a166b4199aa4576f5d8c235f74a592e50216f9a978", "imported_at": "2026-09-15T10:39:59Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-16-reconciliation/completeness-findings.json", "evaluated_digest": "80ce90a07bbc669ca0a008a166b4199aa4576f5d8c235f74a592e50216f9a978"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-16-reconciliation/infrastructure.md", "source_version": "0.1.14", "source_digest": "80ce90a07bbc669ca0a008a166b4199aa4576f5d8c235f74a592e50216f9a978", "imported_at": "2026-09-15T10:39:59Z"}
 created_at: "2026-09-15T10:39:59Z"
 updated_at: "2026-09-15T10:39:59Z"
 depends_on: ["spec-reconciliation"]
@@ -50,7 +50,7 @@ serves_goals: ["G3"]
 
 # Architecture overview
 
-照合画面 — 既存 Worker への route 追加と操作履歴の保持。`system-spec/infrastructure.md` は承認時入力、本書は infrastructure 制約を持つ。現行の機能仕様の正本は `specs/spec-reconciliation.md`。
+照合画面 — 既存 Worker への route 追加と操作履歴の保持。`system-spec/archive/2026-09-16-reconciliation/infrastructure.md` は承認時入力、本書は infrastructure 制約を持つ。現行の機能仕様の正本は `specs/spec-reconciliation.md`。
 
 ## Context and drivers
 

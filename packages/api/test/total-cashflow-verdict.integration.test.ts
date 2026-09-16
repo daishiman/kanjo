@@ -9,6 +9,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { EXCLUSION_MEMO_MAX, EXCLUSION_REASON_CODES } from '@kanjo/core';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { loginForTest } from '../src/auth.test-support.js';
@@ -221,7 +222,14 @@ describe('選択した要確認をまとめて判定する', () => {
 
     const response = await postBulk(bulkRows.map((row) => ({ txId: row.txId, verdict: 'same' as const })));
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ ok: true, saved: 3, rejected: [] });
+    // operationId は取消 (BR-008) の宛先。値は毎回変わるので、
+    // 「返っていること」だけを固定する。省くと、付け忘れても緑のままになる
+    expect(await response.json()).toEqual({
+      ok: true,
+      saved: 3,
+      rejected: [],
+      operationId: expect.any(String),
+    });
     expect(await verdictRowCount()).toBe(rowsBefore + 3);
 
     const after = (await (await request('/total-cashflow?from=2026-08&to=2026-08')).json()) as CashflowBody;
@@ -256,6 +264,7 @@ describe('選択した要確認をまとめて判定する', () => {
       ok: true,
       saved: 1,
       rejected: [{ txId: '存在しない明細', reason: '対象の明細が見つかりません' }],
+      operationId: expect.any(String),
     });
 
     const after = (await (await request('/total-cashflow?from=2026-08&to=2026-08')).json()) as CashflowBody;
@@ -277,7 +286,13 @@ describe('freee 全件の行き先と二重登録の除外', () => {
   type Split = {
     matched: Array<{ freeeKey: string; by: string; mf: { content: string }; freee: { partner: string } }>;
     freeeOnly: Array<{ freeeKey: string; partner: string; amount: number }>;
-    excluded: Array<{ freeeKey: string; partner: string; reason: string }>;
+    excluded: Array<{
+      freeeKey: string;
+      partner: string;
+      reason: string;
+      reasonCode?: string | null;
+      memo?: string | null;
+    }>;
     coverage: { freeeTotal: number; matched: number; freeeOnly: number; excluded: number; mfReview: number };
     months: Array<{ bizExpense: number }>;
   };
@@ -373,6 +388,59 @@ describe('freee 全件の行き先と二重登録の除外', () => {
 
     for (const key of targets) expect((await restore(key)).status).toBe(200);
     expect((await load()).excluded).toHaveLength(0);
+  });
+
+  /*
+    境界そのものを固定する (SYS-TCSCREEN-P09)。
+
+    集計語・メモ長・一括件数はどれも「少しなら通る」書き方で足すと、
+    上限を超えた要求だけが本番で落ちる。上限のすぐ内と外を両方送り、
+    通る側と弾く側の境目が定数どおりの位置にあることを見る。
+  */
+  const excludeRaw = (body: unknown) =>
+    request('/total-cashflow/freee-exclusions', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+  it('集計語は許可した 5 語だけを受け、知らない語は弾く', async () => {
+    const target = (await load()).freeeOnly[0];
+    expect(target).toBeTruthy();
+    for (const reasonCode of EXCLUSION_REASON_CODES) {
+      const ok = await excludeRaw({ freeeKey: target!.freeeKey, reason: '架空の理由', reasonCode });
+      expect(ok.status, `${reasonCode} が通らない`).toBe(200);
+    }
+    // 画面が送りうる似た語を弾く。ここが素通りすると、集計の区分が知らない語で増える
+    for (const reasonCode of ['transfers', 'TRANSFER', '振替', '']) {
+      const ng = await excludeRaw({ freeeKey: target!.freeeKey, reason: '架空の理由', reasonCode });
+      expect(ng.status, `${reasonCode} が通ってしまう`).toBe(400);
+    }
+    expect((await restore(target!.freeeKey)).status).toBe(200);
+  });
+
+  it('メモは 200 字ちょうどまで受け、201 字は弾く', async () => {
+    const target = (await load()).freeeOnly[0];
+    expect(target).toBeTruthy();
+    const memo = 'あ'.repeat(EXCLUSION_MEMO_MAX);
+    const ok = await excludeRaw({ freeeKey: target!.freeeKey, reason: '架空の理由', memo });
+    expect(ok.status).toBe(200);
+    // 保存された側も切り詰められていないこと。長さの検査だけだと、
+    // 受理してから黙って切る実装でも緑になる
+    expect((await load()).excluded[0]?.memo).toHaveLength(EXCLUSION_MEMO_MAX);
+
+    const ng = await excludeRaw({ freeeKey: target!.freeeKey, reason: '架空の理由', memo: `${memo}あ` });
+    expect(ng.status).toBe(400);
+    expect((await restore(target!.freeeKey)).status).toBe(200);
+  });
+
+  it('一括は 200 件ちょうどまで受け、201 件は弾く', async () => {
+    const keys = (n: number) => Array.from({ length: n }, (_, i) => `v1:freee:synthetic#${i}`);
+    // 実在しない鍵でも保存はできる (再取込で鍵が変わっても判断を残す作り)。
+    // ここで見たいのは件数の境目だけなので、実在の明細は使わない
+    expect((await excludeRaw({ freeeKeys: keys(200), reason: '架空の理由' })).status).toBe(200);
+    expect((await excludeRaw({ freeeKeys: keys(201), reason: '架空の理由' })).status).toBe(400);
+    for (const key of keys(200)) expect((await restore(key)).status).toBe(200);
   });
 
   it('理由の無い除外は受け付けない', async () => {

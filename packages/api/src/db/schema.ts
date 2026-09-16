@@ -151,6 +151,15 @@ export const freeeDealExclusions = sqliteTable('freee_deal_exclusions', {
   userId: text('user_id').notNull(),
   freeeKey: text('freee_key').notNull(),
   reason: text('reason').notNull(),
+  /**
+   * 0041: 数えられる理由。reason は利用者の言葉なので表示に残し、集計はこちらで行う。
+   * 0037 以前の行は NULL のまま作られ、migration が 'other' を入れる。
+   */
+  reasonCode: text('reason_code', {
+    enum: ['transfer', 'internal', 'book_only', 'duplicate', 'other'],
+  }),
+  /** 0041: 定型の理由だけでは足りないときの補足。200 字まで */
+  memo: text('memo'),
   createdAt: text('created_at'),
   updatedAt: text('updated_at'),
 });
@@ -263,6 +272,27 @@ export const monthlyCloseReviews = sqliteTable(
     reviewedByUserId: text('reviewed_by_user_id').notNull(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.month] })],
+);
+
+/**
+ * 0041: 総収支画面での判断の履歴。「直前の操作を元に戻す」の土台。
+ *
+ * 集計は保存しないので、戻すべきものは判断の行だけになる。items_json は操作「前」の値を持つ。
+ * 行は消さず、取消は undone_at を埋めて kind='undo' の行を足す。
+ */
+export const totalCashflowOperations = sqliteTable(
+  'total_cashflow_operations',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    kind: text('kind', { enum: ['verdict', 'exclude', 'restore', 'undo'] }).notNull(),
+    itemsJson: text('items_json').notNull(),
+    itemCount: integer('item_count').notNull(),
+    undoesId: text('undoes_id'),
+    undoneAt: text('undone_at'),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [index('idx_total_cashflow_operations_user_created').on(t.userId, t.createdAt)],
 );
 
 export const budgets = sqliteTable('budgets', {

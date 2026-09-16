@@ -38,7 +38,7 @@ describe('業務ルート契約', () => {
 
   it('全業務ページが共通ヘッダーを使用する', () => {
     expect(ROUTED_PAGE_SOURCES).toHaveLength(APP_ROUTES.length);
-    expect(ROUTED_PAGE_SOURCES.every((source) => source.includes('<PageHeader route='))).toBe(true);
+    expect(ROUTED_PAGE_SOURCES.every((source) => /<PageHeader\s+route=/.test(source))).toBe(true);
     expect(ROUTED_PAGE_SOURCES.some((source) => source.includes('<h1 className="page-title"'))).toBe(false);
   });
 

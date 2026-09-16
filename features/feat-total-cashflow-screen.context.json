@@ -1,0 +1,43 @@
+{
+  "graph_node_id": "feat-total-cashflow-screen",
+  "artifact_kind": "feature",
+  "purpose": "家計と事業を合わせた本当の収支を、重複と除外の判断ごと 1 画面で確かめて月次クローズの『照合→総収支』を終えられるようにする。利用者が総収支を開いた時点で、期間の総収入・総支出・純収支と前期比、月ごとの推移が総合/事業/家計で読め、その数字に効いている重複候補・freee 除外・要確認を同じ画面の判定作業で片付け、誤った判断はその画面を開いてから行った操作を新しい順に遡って元に戻せる状態にする。",
+  "goal": "/analysis/total-cashflow が 05-total-cashflow.png の全構成要素をトークンと共通 Button/PageShell で描画し、総合/事業/家計の KPI・前期比・月次チャートが core の値と一致して総合=事業+家計が成り立ち、3 ペインの判定作業で単票・一括の同じ/別/除外が feat-total-cashflow の不変条件を保ったまま行え、freee 除外の理由区分とメモ・操作履歴が D1 に残って画面を開いてから行った操作を新しい順に 1 回分ずつ取り消せ、判定・除外・操作履歴の 3 表がバックアップと復元で戻り、一致度・区分・自動一致の規則が docs と境界値テストで固定され、サイドバーの支出分析 > 総収支 の現在地と照合バッジが確認され、既存の test / typecheck / lint / check 系が緑のままの状態。",
+  "scope_in": [
+    "総収支タブ (05-total-cashflow.png) の画面構成の作り直し: 見出し・セグメント・期間表示・KPI・チャート・3 ペイン判定作業・freee 除外一覧・自動一致の候補・進捗通知・下部選択バー、既存 9 列月次表の開閉化",
+    "packages/core の総収支集計の拡張 (セグメント別期間合計・前期比較・月次系列・判定作業 3 区分・一致度・自動一致の候補)",
+    "packages/api の総収支 API 拡張 (集計の返却、一括判定、除外の理由区分とメモ、操作履歴の取得と取消)",
+    "D1 migration: freee 除外の理由区分とメモ列、判定・除外の操作履歴テーブル、既存理由の移行、判定・除外・操作履歴の 3 表をバックアップと復元の対象に加えること",
+    "一致度・区分・自動一致の規則の docs 記載とテスト",
+    "共通ヘッダー/フッター文言の画像への揃え (防衛ライン・毎朝バックアップ等)",
+    "サイドバーの支出分析 > 総収支 の現在地と照合バッジの表示確認 (確認のみ)"
+  ],
+  "scope_out": [
+    "サイドバーの総収支以外の項目・並び・月次クローズ進捗の形の変更: 利用者指示により今回は確認のみ",
+    "照合・マトリクス・推移・診断の各タブの中身: それぞれの画面サイクルで扱う",
+    "日付と金額の一致による自動寄せの廃止: 利用者決定により自動寄せを維持する",
+    "freee / Money Forward の取込経路の追加と明細分割の仕様変更",
+    "期間選択の保存先の変更 (既存どおり localStorage で全画面共有)",
+    "mobile / tablet / desktop 向け専用アプリ: 対象は web のみ (狭幅は既存のレスポンシブ表示で扱う)"
+  ],
+  "acceptance": [
+    "S1 (G1): /analysis/total-cashflow で 05-total-cashflow.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button/PageShell 経由で、直書き色の lint が 0 件である。",
+    "S2 (G1, G3): 総合/事業/家計それぞれで総収入・総支出・純収支と前期比 (額・率) が core の値と一致し、総合の値が事業と家計の和に一致する。",
+    "S3 (G2): 判定作業で単票・複数選択の『同じ取引/別の取引/集計から除外』が行え、判定後の総額が feat-total-cashflow の不変条件を満たす。",
+    "S4 (G4): 画面を開いてから行った操作を元に戻すと総収入・総支出・判定件数が操作前と一致し、同じ取消を 2 回送っても 1 回分しか戻らない。再読込後は取消の導線が出ない。既存の除外理由は migration 後もメモとして読め、バックアップから復元しても判定・除外・操作履歴が戻る。",
+    "S5 (G5): 一致度・区分・自動一致の規則が docs に明記され、境界値付きテストで固定される。サイドバーの支出分析 > 総収支 が現在地になり照合の件数バッジが要確認件数と一致する。",
+    "S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプトが全て緑のままである。"
+  ],
+  "architecture_refs": [
+    "architecture/total-cashflow-screen-ui-ux.md",
+    "architecture/total-cashflow-screen-frontend.md",
+    "architecture/total-cashflow-screen-backend.md",
+    "architecture/total-cashflow-screen-database.md",
+    "architecture/total-cashflow-screen-auth.md",
+    "architecture/total-cashflow-screen-security.md",
+    "architecture/total-cashflow-screen-infrastructure.md",
+    "architecture/total-cashflow-screen-maintenance-ops.md",
+    "specs/spec-total-cashflow-screen.md"
+  ],
+  "updated_at": "2026-09-15T15:13:39Z"
+}

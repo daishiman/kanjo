@@ -55,6 +55,21 @@ export function lastMonthsRange(data: Dataset, n: number): PeriodRange | null {
   return { from, to: full.to };
 }
 
+/**
+ * 同じ期間の1年前 (BR-006)。開始月と終了月をそれぞれ12か月前へずらす。
+ *
+ * `analysis-hub.ts` の `previousPeriod` (直前の同じ長さ) とは別物である。
+ * 12か月表示なら両者は一致するが、3か月表示では「前の3か月」と「去年の同じ3か月」で
+ * 答えが変わる。同じ名前にすると呼び分けを間違えても型では気づけないため、名前を分ける。
+ */
+export const previousYearPeriod = (range: PeriodRange): PeriodRange => ({
+  from: shiftYear(range.from),
+  to: shiftYear(range.to),
+});
+
+const shiftYear = (month: string): string =>
+  `${String(Number(month.slice(0, 4)) - 1).padStart(4, '0')}-${month.slice(5, 7)}`;
+
 /** 月キーが期間に入るか(両端を含む)。文字列比較で足りるのが 'YYYY-MM' の利点 */
 const inRange = (m: string, r: PeriodRange): boolean => m >= r.from && m <= r.to;
 

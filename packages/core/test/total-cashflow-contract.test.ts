@@ -277,6 +277,8 @@ describe('受入F4 要確認は MF の中身と freee 候補を判断材料と�
         settleAccount: '三井住友',
         dayGap: -2,
         accountConflict: false,
+        // BR-001: 金額 40 + 日付 (|dayGap|=2) 10 + 口座一致 15 + 摘要不一致 0
+        score: 65,
       },
     ]);
   });

@@ -17,8 +17,8 @@ template_id: "specification"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "25823f116de8be6463b9e511362b16bee70f1882ce96cb1be996d098052d2d62"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/00-requirements-definition.md", "source_version": "0.1.14", "source_digest": "25823f116de8be6463b9e511362b16bee70f1882ce96cb1be996d098052d2d62", "imported_at": "2026-09-15T10:39:59Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-16-reconciliation/completeness-findings.json", "evaluated_digest": "25823f116de8be6463b9e511362b16bee70f1882ce96cb1be996d098052d2d62"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-16-reconciliation/00-requirements-definition.md", "source_version": "0.1.14", "source_digest": "25823f116de8be6463b9e511362b16bee70f1882ce96cb1be996d098052d2d62", "imported_at": "2026-09-15T10:39:59Z"}
 created_at: "2026-09-15T10:39:59Z"
 updated_at: "2026-09-15T10:39:59Z"
 depends_on: []
@@ -50,7 +50,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
 
 # 照合画面 仕様
 
-本書は照合機能の現行仕様の正本である。`system-spec/00-requirements-definition.md` は承認時の入力として、architecture ノードは領域別の制約として参照する。状態・対応必要件数・期間の扱い・下段プレビューの意味は本書の「状態・件数・投影の正本」だけで定義し、他の文書はここを参照する。
+本書は照合機能の現行仕様の正本である。`system-spec/archive/2026-09-16-reconciliation/00-requirements-definition.md` は承認時の入力として、architecture ノードは領域別の制約として参照する。状態・対応必要件数・期間の扱い・下段プレビューの意味は本書の「状態・件数・投影の正本」だけで定義し、他の文書はここを参照する。
 
 ## 状態・件数・投影の正本
 

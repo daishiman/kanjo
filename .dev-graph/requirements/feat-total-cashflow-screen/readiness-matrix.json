@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-total-cashflow-screen",
+  "snapshot_digest": "sha256:ccd677d72151f4883bfb1d37a4c38232cf5711f48891d0d79664e5ab4985babf",
+  "snapshot_digest_method": "sha256 over sorted(rel + NUL + bytes + NUL) of gates.C11_snapshot_validation.source_inputs",
+  "status": "ready",
+  "checked_at": "2026-09-15T15:51:09Z",
+  "missing_sections": [],
+  "remediation_owners": {},
+  "gates": {
+    "C11_snapshot_validation": {
+      "status": "PASS",
+      "validator": "validate-graph-schema.py",
+      "exit_code": 0,
+      "valid": true,
+      "violations": 0,
+      "source_inputs": [
+        {
+          "path": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/atomic-promotion-receipt.json",
+          "sha256": "c842fb098c3669222cd998ceec38a62b147c371a29a296ed836bc7642fd46def"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/dev-graph-registration-receipt.json",
+          "sha256": "6ea5cd451ce62c2b584415421333f1f418830367e158f9ca06b20adf7699d802"
+        },
+        {
+          "path": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/staging-manifest.json",
+          "sha256": "72130dbe4f20f0a7b1d7b7db6a7308445baffb90d3f426acc7576c15ecc70fd5"
+        },
+        {
+          "path": ".dev-graph/state/graph.json",
+          "sha256": "8ae4f38f08d5c28d29184b606a2857a90011b72757842659d0ab5adcc762b67e"
+        },
+        {
+          "path": "features/feat-total-cashflow-screen.context.json",
+          "sha256": "bcd9c26294f090701919863638630370f7295b3f2a5ef93a512fa2dd30208005"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p01.md",
+          "sha256": "9fa350bc05b3a6c3d09f4ab55ef0a716dd6bd6b569af8ca2800529fcf8e6d591"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p02.md",
+          "sha256": "774a7050280683b972ea802f29d6c0f60002d7d764d771b3a85ceb5847c40ed1"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p03.md",
+          "sha256": "5d08b0c925ecaf42f10077fa4fc0f464953f5457b6c58cc3f0243025b07a5c2c"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p04.md",
+          "sha256": "454279d6dfeb2ad064f43b0b94e6148787e654e03eeb844db10cc3a551ebad51"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p05.md",
+          "sha256": "1f7dab26295f4d22b71efa72c88a6e5996904ffec914fbc17107e6396b0c297b"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p06.md",
+          "sha256": "6b11acecb48e448633f2f466e3b47a593b1c93157f155371c2233f6fbab4d0d3"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p07.md",
+          "sha256": "0889f7e8ffdcb6490451c8709b24e6c50326b004b43f1be87eaca1e8a694ddb2"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p08.md",
+          "sha256": "4f4b6cb18c8c8b47c622bba6012b914c7281373a06e577a99f8e9c42b666b136"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p09.md",
+          "sha256": "82a9343f3e44a7039b431f53368d2660df2c4277db414244a40422fc30f8e4b1"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p10.md",
+          "sha256": "5130ba9d78febd27162c730c7015b86118855f8e0df42cc9724dd333140f90c4"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p11.md",
+          "sha256": "9a9481c616cdcede87fa382751d105735e837ce331a5112d68fd3a1acf0b1bdc"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p12.md",
+          "sha256": "43581c56a92162c7699ff13ad5756602d6ba3e710ba805ef2fec1b7558af6838"
+        },
+        {
+          "path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p13.md",
+          "sha256": "048898c705173a99b9210d1db775af18655b54519a3917dc28f1158bda092c19"
+        }
+      ]
+    },
+    "C02_saved_state": {
+      "status": "PASS",
+      "feature": {
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete"
+      },
+      "tasks": {
+        "count": 13,
+        "confirmation_status": "confirmed",
+        "evaluation_status": "pass",
+        "implementation_readiness": "complete",
+        "missing_sections": []
+      },
+      "registration_receipt": {
+        "path": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/dev-graph-registration-receipt.json",
+        "expected_count": 13,
+        "applied_count": 13,
+        "graph_revision_after": 2,
+        "graph_digest_after": "sha256:c303c80d485966d0268c5cdabeca14b63bc958de6eafbf5a32aa3eeef75e3c20"
+      }
+    },
+    "system_plan_validation": {
+      "status": "PASS",
+      "validator": "validate-system-plan.py",
+      "exit_code": 0,
+      "validated_digest": "sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5",
+      "phase_count": 13,
+      "node_count": 13,
+      "violations": []
+    }
+  },
+  "remediation_history": [
+    {
+      "loop": 1,
+      "verdict": "blocked",
+      "missing": "tasks/feat-total-cashflow-screen/sys-tcscreen-p01..p13.md (artifact_missing 13)",
+      "owner": "C02/run-dev-graph-node",
+      "resolved_by": "node --dry-run (一時複製 root で validate exit 0、repo write 0) → apply (13 created, 0 overwritten)、repo validate exit 0"
+    }
+  ],
+  "staleness_rule": "source_inputs のいずれかの sha256、または promoted manifest の canonical_digest が変化した場合は handoff を無効化して再生成する。"
+}

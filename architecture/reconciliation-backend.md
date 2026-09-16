@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "bfbefb61b4bb32b77bc6aab54ba11ce0b6c87dbf960052820f9a6df74cca2ed0"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/backend.md", "source_version": "0.1.14", "source_digest": "bfbefb61b4bb32b77bc6aab54ba11ce0b6c87dbf960052820f9a6df74cca2ed0", "imported_at": "2026-09-15T10:39:59Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-16-reconciliation/completeness-findings.json", "evaluated_digest": "bfbefb61b4bb32b77bc6aab54ba11ce0b6c87dbf960052820f9a6df74cca2ed0"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-16-reconciliation/backend.md", "source_version": "0.1.14", "source_digest": "bfbefb61b4bb32b77bc6aab54ba11ce0b6c87dbf960052820f9a6df74cca2ed0", "imported_at": "2026-09-15T10:39:59Z"}
 created_at: "2026-09-15T10:39:59Z"
 updated_at: "2026-09-15T10:39:59Z"
 depends_on: ["spec-reconciliation"]
@@ -50,7 +50,7 @@ serves_goals: ["G2", "G3", "G4"]
 
 # Architecture overview
 
-照合画面 — core 照合判定と照合専用 API。`system-spec/backend.md` は承認時入力、本書は backend 制約を持つ。現行の機能仕様の正本は `specs/spec-reconciliation.md`。
+照合画面 — core 照合判定と照合専用 API。`system-spec/archive/2026-09-16-reconciliation/backend.md` は承認時入力、本書は backend 制約を持つ。現行の機能仕様の正本は `specs/spec-reconciliation.md`。
 
 ## Context and drivers
 

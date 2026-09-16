@@ -1,74 +1,74 @@
 {
   "references": [
     {
-      "target_id": "tanstack-query-invalidation",
-      "retrieved_at": "2026-09-15T09:06:26Z",
-      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations",
-      "official_publisher": "TanStack",
-      "official_host": "tanstack.com",
-      "version": "5.102.8",
-      "latest_checked_at": "2026-09-15T09:06:26Z",
-      "summary": "useMutation の onSuccess で queryClient.invalidateQueries を呼び、成功した書込に関係する queryKey を無効化する。原文 \"Returning a Promise on onSuccess makes sure the data is updated before the mutation is entirely complete (i.e., isPending is true until onSuccess is fulfilled)\"。複数キーは Promise.all で待てる。照合の書込 (actions / undo) 成功後に reconciliation・analysis hub・total-cashflow・summary の 4 キーを Promise.all で invalidate し、再取得完了までボタンを isPending で無効に保つ根拠 (qa-frontend-web-rc-inference-002)。ページに更新日の表示は無く、version は registry.npmjs.org/@tanstack/react-query/latest で 2026-09-15T09:06Z に確認した 5.102.8。"
-    },
-    {
-      "target_id": "lucide-static-icons",
-      "retrieved_at": "2026-09-15T09:06:26Z",
-      "source_url": "https://lucide.dev/license",
-      "official_publisher": "Lucide Contributors",
-      "official_host": "lucide.dev",
-      "version": "1.46.0",
-      "latest_checked_at": "2026-09-15T09:06:26Z",
-      "summary": "Lucide のアイコンは ISC License で、原文 \"Permission is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.\"。Feather 由来のアイコンは MIT License (Copyright Cole Bemis) が併存する。照合画面とシェルで追加するアイコンを外部ランタイム無しで RouteIcon の lucide-static 登録表へ SVG として足す際、既存のライセンス表記を維持すれば追加の義務が無いことの根拠。version は registry.npmjs.org/lucide-static/latest で 2026-09-15T09:06Z に確認した 1.46.0 (license フィールド ISC)。"
-    },
-    {
-      "target_id": "hono-validation",
-      "retrieved_at": "2026-09-15T09:06:39Z",
+      "target_id": "hono-zod-validator",
+      "retrieved_at": "2026-09-15T12:11:33Z",
       "source_url": "https://hono.dev/docs/guides/validation",
       "official_publisher": "Hono",
       "official_host": "hono.dev",
-      "version": "4.13.8",
-      "latest_checked_at": "2026-09-15T09:06:39Z",
-      "summary": "@hono/zod-validator の zValidator('json', schema) をハンドラーの前に置くと JSON 本文を Zod schema で検証し、検証済みの値を c.req.valid('json') で受け取れる。json / form を検証するときはリクエストに一致する content-type ヘッダーが必要で、無いと空オブジェクトになる。POST /api/reconciliation/actions で action の列挙値・件数 1〜200・id 形式を許可リストで検証する根拠 (qa-security-web-rc-decision-009 と qa-backend-web-rc-decision-007)。ページは失敗時の status を明記していないため、400 の応答形は既存 route の zValidator 利用に合わせる。version は registry.npmjs.org/hono/latest で 2026-09-15T09:06Z に確認した 4.13.8。"
+      "version": "0.9.1",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "Hono 公式の Validation ガイド。@hono/zod-validator の zValidator('json' 等, zod スキーマ) を route に挟み、handler では c.req.valid(...) で検証済みの値だけを読む。総収支の除外 API の reasonCode 許可リスト・memo 長さ・items 件数上限をこの形で route の入口に置く根拠。ページは検証失敗時の既定応答や hook の詳細を記載していないため、失敗時の 400 応答は既存 route の実装に合わせる。version は 2026-09-15T12:11Z に npm registry の @hono/zod-validator latest が 0.9.1 (peer: hono>=4.11.2, zod ^3.25.0||^4.0.0) であることを確認した値。kanjo は ^0.4.2 と zod ^3.24.1 のままで、今回のサイクルでは版を上げない。"
     },
     {
       "target_id": "cloudflare-d1-batch",
-      "retrieved_at": "2026-09-15T09:06:26Z",
+      "retrieved_at": "2026-09-15T12:11:33Z",
       "source_url": "https://developers.cloudflare.com/d1/worker-api/d1-database/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-06-22",
-      "latest_checked_at": "2026-09-15T09:06:26Z",
-      "summary": "D1Database.batch() は原文 \"each statement in the list will execute and commit, sequentially, non-concurrently\" で、\"If a statement in the sequence fails, then an error is returned for that specific statement, and it aborts or rolls back the entire sequence.\"。照合の取消 (undo) を reconciliation_actions の before で判断・除外を書き戻し、履歴の取消済みフラグを立てる statement を 1 回の batch にまとめ、途中失敗で半分だけ戻る状態を作らない根拠 (qa-database-web-rc-decision-008)。一括照合の部分成功は件ごとの結果として返すため、件ごとに独立した batch 単位で扱う。ページ最終更新 2026-06-22。"
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "D1 Worker API の D1Database。batch() は原文で \"Batched statements are SQL transactions. If a statement in the sequence fails, then an error is returned for that specific statement, and it aborts or rolls back the entire sequence.\"。判定・除外の更新と操作履歴 1 行を同じ batch に入れ、片方だけ残る状態を作らない設計 (qa-database-web-tc-inference-002) の根拠。"
     },
     {
       "target_id": "cloudflare-d1-limits",
-      "retrieved_at": "2026-09-15T09:06:26Z",
+      "retrieved_at": "2026-09-15T12:11:33Z",
       "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-04-21",
-      "latest_checked_at": "2026-09-15T09:06:26Z",
-      "summary": "D1 の Worker 1 回の呼び出しあたりのクエリ数は Free 50 / Paid 1,000、SQL 文の最大長は 100,000 bytes (100 KB)、行・文字列・BLOB の最大サイズは 2,000,000 bytes (2 MB)。GET /api/reconciliation の読取り本数を /total-cashflow と同程度に保ち、一括操作を 200 件で打ち切り、reconciliation_actions の before/after を行サイズ上限より十分小さい JSON に限る容量上の根拠 (infrastructure の reliability)。ページ最終更新 2026-04-21。"
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "D1 の上限。1 クエリの bind パラメータは最大 100、SQL 文長は最大 100KB、1 Worker 呼出しのクエリ数は Paid 1000 / Free 50、1 クエリの実行時間は最大 30 秒、行・文字列・BLOB は最大 2MB。一括操作 (最大 200 件) の書込みを bind 100 以内の文に分割すること、操作履歴の items_json を 1 行 2MB 未満に収めることの根拠。"
     },
     {
-      "target_id": "owasp-authorization-cheatsheet",
-      "retrieved_at": "2026-09-15T09:06:39Z",
-      "source_url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html",
-      "official_publisher": "OWASP Foundation (Cheat Sheet Series)",
-      "official_host": "cheatsheetseries.owasp.org",
-      "last_updated": "2026-08-31",
-      "latest_checked_at": "2026-09-15T09:06:39Z",
-      "summary": "原文 \"Permission should be validated correctly on every request, regardless of whether the request was initiated by an AJAX script, server-side, or any other source.\" と \"A user should not be able to access a resource they do not have permissions simply because they are able to guess and manipulate that object's identifier.\"。deny by default を採り、特定オブジェクトに対するアクセス制御を行う。照合 API・取消 API の全読み書きを userId で絞り、他人の reconciliation_actions id を存在の有無を漏らさず 404 にする根拠 (auth の security)。ページに更新日の表示が無いため、last_updated は公式リポジトリ OWASP/CheatSheetSeries の cheatsheets/Authorization_Cheat_Sheet.md の最新コミット日 2026-08-31 (\"Fix, Idor references fix (#2383)\") を 2026-09-15T09:06Z に確認した値。"
+      "target_id": "cloudflare-d1-migrations",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-08",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "D1 migrations。各 migration は migrations フォルダの .sql ファイルで、適用済みのものはデータベースの d1_migrations テーブルに記録され、wrangler d1 migrations apply が未適用分を実行する。ページは失敗時の自動ロールバックを明記していないため、0041 は追加だけの列・テーブルと既存行の移行 UPDATE に留め、既存の feat-deploy-migration-gate で本番 Worker より先に適用する方針の根拠とする。"
     },
     {
-      "target_id": "wcag22-status-messages",
-      "retrieved_at": "2026-09-15T09:06:26Z",
-      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html",
-      "official_publisher": "W3C Web Accessibility Initiative",
+      "target_id": "tanstack-query-invalidation",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations",
+      "official_publisher": "TanStack",
+      "official_host": "tanstack.com",
+      "version": "5.102.8",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "TanStack Query の Invalidations from Mutations。mutation の onSuccess で queryClient.invalidateQueries({ queryKey }) を呼び、複数のキーは Promise.all で並べて無効化し、Promise を返すと再取得の完了まで mutation の完了を待たせられる。判定・除外・集計へ戻す・取消の成功後に ['total-cashflow'] と ['analysis-hub'] を無効化してサイドバーのバッジと概況を追随させる根拠 (qa-frontend-web-tc-inference-002)。version は 2026-09-15T12:11Z に npm registry の @tanstack/react-query latest を確認した値。"
+    },
+    {
+      "target_id": "wcag22-use-of-color",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
+      "official_publisher": "W3C WAI",
       "official_host": "www.w3.org",
-      "last_updated": "2026-05-11",
-      "latest_checked_at": "2026-09-15T09:06:26Z",
-      "summary": "WCAG 2.2 SC 4.1.3 Status Messages (Level AA) の原文 \"In content implemented using markup languages, status messages can be programmatically determined through role or properties such that they can be presented to the user by assistive technologies without receiving focus.\"。操作結果 (例 \"Your form was successfully submitted\")・待機・進捗・エラーが対象。照合・別の取引として処理・除外・元に戻すの結果、一括の成否件数、409 取込中の通知を role=status / role=alert で読み上げ、フォーカスを移さずに知らせる根拠 (ui-ux の presentation)。ページ最終更新 2026-05-11。"
+      "last_updated": "2025-09-16",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "WCAG 2.2 SC 1.4.1 Use of Color。原文 \"Color is not used as the only visual means of conveying information, indicating an action, prompting a response, or distinguishing a visual element.\"。前期比の増減を額・率・矢印でも示すこと、判定状態 (未判定/同じ/別/除外) と除外理由を文字バッジにすること、一致度を % の数値でも出すことの根拠 (qa-ui-ux-web-tc-inference-002)。"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://owasp.github.io/www-project-application-security-verification-standard",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "owasp.github.io",
+      "version": "5.0.0",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "OWASP ASVS のプロジェクトページ。最新の安定版は 5.0.0 (2025-05-30 リリース)。doctrine registry が security concern の authority とする検証標準で、総収支の書込み API で入力を許可リスト (reasonCode 5 値)・長さ (memo 200 字)・件数 (200 件) で検証し、メモと摘要を HTML として解釈させない方針の上流根拠。owasp.org のページは 2026-09-15 時点で owasp.github.io へ 307 で転送されるため、転送先を参照元とした。"
     }
   ]
 }

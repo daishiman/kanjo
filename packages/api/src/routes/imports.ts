@@ -44,8 +44,11 @@ import { computeImportDiff, diffBaselineFromDataset, importResolutionFingerprint
 import {
   type MfResolutionAuditDecision,
   type MfResolutionPlan,
+  type RestoreDuplicateVerdict,
+  type RestoreFreeeDealExclusion,
   type RestoreMonthlyCloseReview,
   type RestoreReviewSnooze,
+  type RestoreTotalCashflowOperation,
   acquireImportWriter,
   activeDuplicateOf,
   assetsCommitStatements,
@@ -142,6 +145,60 @@ const monthlyCloseReviewsBackupSchema = z
   )
   .max(1_200)
   .refine((rows) => new Set(rows.map((row) => row.month)).size === rows.length);
+// 0041: 総収支の判断3表。CHECK 違反を commit まで持ち込まないよう、enum と桁はここで落とす
+const duplicateVerdictsBackupSchema = z
+  .array(
+    z
+      .object({
+        txId: z.string().min(1).max(200),
+        verdict: z.enum(['same', 'different']),
+        // 第二の引き当て鍵(DR-13)と、その鍵を作った版。名指しの無い旧行は NULL のまま運ぶ
+        stableKey: z.string().max(200).nullable().default(null),
+        fingerprintVersion: z.number().int().nonnegative().nullable().default(null),
+        decidedAt: isoTimestamp.nullable().default(null),
+        updatedAt: isoTimestamp.nullable().default(null),
+        freeeKey: z.string().max(400).nullable().default(null),
+      })
+      .strict(),
+  )
+  .max(50_000)
+  .refine((rows) => new Set(rows.map((row) => row.txId)).size === rows.length);
+const freeeDealExclusionsBackupSchema = z
+  .array(
+    z
+      .object({
+        freeeKey: z.string().min(1).max(400),
+        reason: z.string().max(400),
+        // 0037 以前に付いた行は reason_code を持たない。'other' へ寄せると利用者の分類と混ざる
+        reasonCode: z
+          .enum(['transfer', 'internal', 'book_only', 'duplicate', 'other'])
+          .nullable()
+          .default(null),
+        memo: z.string().max(200).nullable().default(null),
+        createdAt: isoTimestamp.nullable().default(null),
+        updatedAt: isoTimestamp.nullable().default(null),
+      })
+      .strict(),
+  )
+  .max(20_000)
+  .refine((rows) => new Set(rows.map((row) => row.freeeKey)).size === rows.length);
+const totalCashflowOperationsBackupSchema = z
+  .array(
+    z
+      .object({
+        id: z.string().min(1).max(64),
+        kind: z.enum(['verdict', 'exclude', 'restore', 'undo']),
+        // 操作「前」の値。中身は解釈せず文字列のまま戻す(解釈すると版が増えたときに復元が落ちる)
+        itemsJson: z.string().max(100_000),
+        itemCount: z.number().int().nonnegative(),
+        undoesId: z.string().max(64).nullable().default(null),
+        undoneAt: isoTimestamp.nullable().default(null),
+        createdAt: isoTimestamp,
+      })
+      .strict(),
+  )
+  .max(20_000)
+  .refine((rows) => new Set(rows.map((row) => row.id)).size === rows.length);
 const resolutionDecisionSchema = z
   .object({
     txIds: z.array(z.string().min(1)).min(1).max(200),
@@ -211,7 +268,7 @@ const resolveRestoreSettings = (
     txSplits: destination.txSplits,
     // JSON復元は現在の取引先の決め事を置き換えない。通常取込の解決入力として保持する。
     vendorMemories: destination.vendorMemories,
-    reviewStateCounts: destination.reviewStateCounts,
+    destinationRowCounts: destination.destinationRowCounts,
   };
 };
 
@@ -219,24 +276,48 @@ const resolveRestoreSettings = (
  * 0040: バックアップの保留・月次レビューを読む。key が無い旧バックアップは null を返し、既存の行を残す。
  * key があれば(空配列でも)その集合で置き換える。レビュー者 (actor の user id) の欠けた行は
  * テナント鍵で埋めず、復元全体を不正な設定として拒む (誰がレビューしたかを捏造しない)。
+ *
+ * 0041: 総収支の判断3表も同じ規則で読む。1表でも検証に落ちたら復元全体を拒む。
+ * 判断だけ入って履歴が欠けると、取消ボタンが復元前の操作を指して二重に戻してしまう。
  */
 const resolveRestoreReviewState = (
   obj: Record<string, unknown>,
 ): {
   reviewSnoozes: RestoreReviewSnooze[] | null;
   monthlyCloseReviews: RestoreMonthlyCloseReview[] | null;
+  duplicateVerdicts: RestoreDuplicateVerdict[] | null;
+  freeeDealExclusions: RestoreFreeeDealExclusion[] | null;
+  totalCashflowOperations: RestoreTotalCashflowOperation[] | null;
 } => {
   const has = (key: string) => Object.prototype.hasOwnProperty.call(obj, key);
   const snoozes = has('reviewSnoozes') ? reviewSnoozesBackupSchema.safeParse(obj.reviewSnoozes) : null;
   const reviews = has('monthlyCloseReviews')
     ? monthlyCloseReviewsBackupSchema.safeParse(obj.monthlyCloseReviews)
     : null;
-  if ((snoozes && !snoozes.success) || (reviews && !reviews.success)) {
+  const verdicts = has('duplicateVerdicts')
+    ? duplicateVerdictsBackupSchema.safeParse(obj.duplicateVerdicts)
+    : null;
+  const exclusions = has('freeeDealExclusions')
+    ? freeeDealExclusionsBackupSchema.safeParse(obj.freeeDealExclusions)
+    : null;
+  const operations = has('totalCashflowOperations')
+    ? totalCashflowOperationsBackupSchema.safeParse(obj.totalCashflowOperations)
+    : null;
+  if (
+    (snoozes && !snoozes.success) ||
+    (reviews && !reviews.success) ||
+    (verdicts && !verdicts.success) ||
+    (exclusions && !exclusions.success) ||
+    (operations && !operations.success)
+  ) {
     throw new InvalidRestoreSettingsError();
   }
   return {
     reviewSnoozes: snoozes?.success ? snoozes.data : null,
     monthlyCloseReviews: reviews?.success ? reviews.data : null,
+    duplicateVerdicts: verdicts?.success ? verdicts.data : null,
+    freeeDealExclusions: exclusions?.success ? exclusions.data : null,
+    totalCashflowOperations: operations?.success ? operations.data : null,
   };
 };
 
@@ -786,7 +867,10 @@ const prepareJsonApplication = async (args: {
     restoredCashEntries: restoringCash ? args.restoredCashEntries : undefined,
     reviewSnoozes: reviewState.reviewSnoozes,
     monthlyCloseReviews: reviewState.monthlyCloseReviews,
-    existingReviewStateCounts: args.destinationSettings.reviewStateCounts,
+    duplicateVerdicts: reviewState.duplicateVerdicts,
+    freeeDealExclusions: reviewState.freeeDealExclusions,
+    totalCashflowOperations: reviewState.totalCashflowOperations,
+    existingDestinationRowCounts: args.destinationSettings.destinationRowCounts,
   });
   return {
     candidate,
@@ -1272,7 +1356,18 @@ importsRoute.post('/imports', async (c) => {
     freeeDeals: [],
     txSplits: [],
     vendorMemories: [],
-    reviewStateCounts: { reviewSnoozes: 0, monthlyCloseReviews: 0 },
+    destinationRowCounts: {
+      reviewSnoozes: 0,
+      monthlyCloseReviews: 0,
+      duplicateVerdicts: 0,
+      freeeDealExclusions: 0,
+      totalCashflowOperations: 0,
+      rules: 0,
+      txEdits: 0,
+      institutionOwners: 0,
+      budgets: 0,
+      cashOverrides: 0,
+    },
   };
   let cashEntries: CashEntry[] = [];
   let data = emptyDataset();
@@ -1785,7 +1880,18 @@ importsRoute.post('/restore', async (c) => {
     freeeDeals: [],
     txSplits: [],
     vendorMemories: [],
-    reviewStateCounts: { reviewSnoozes: 0, monthlyCloseReviews: 0 },
+    destinationRowCounts: {
+      reviewSnoozes: 0,
+      monthlyCloseReviews: 0,
+      duplicateVerdicts: 0,
+      freeeDealExclusions: 0,
+      totalCashflowOperations: 0,
+      rules: 0,
+      txEdits: 0,
+      institutionOwners: 0,
+      budgets: 0,
+      cashOverrides: 0,
+    },
   };
   let freeeDeals: FreeeDeal[] = [];
   let restoreCommitCount = 0;

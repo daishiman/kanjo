@@ -4,6 +4,7 @@
  */
 import type {
   AnalysisHubReport,
+  AutoMatch,
   BalanceSheet,
   Benchmark,
   BudgetOutlook,
@@ -26,15 +27,18 @@ import type {
   ReconcileFreee,
   ReconcileMatch,
   ReconcileReview,
+  SegmentSummary,
   StatementSource,
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
   TotalCashflowMonth,
+  TotalCashflowSeriesRow,
   TradeoffCandidate,
   TradeoffReviewRow,
   UnsettledDeal,
   UnsettledReport,
+  WorkbenchProgress,
 } from '@kanjo/core';
 import {
   type Owner as CoreOwner,
@@ -204,10 +208,54 @@ export interface TotalCashflowResponse {
   /** 二重登録として総額から外した freee 取引 */
   excluded: ReconcileExcluded[];
   coverage: FreeeCoverage;
+  /**
+   * 期間の総合・事業・家計と前年同期比 (BR-006)。
+   * 取込前で1か月も無いときだけ null。0 を並べると「0 円だった」と読めてしまう。
+   */
+  summary: { total: SegmentSummary; biz: SegmentSummary; household: SegmentSummary } | null;
+  /** 月次の収入・支出・純収支。グラフと表の両方がここ1本から描かれる */
+  series: TotalCashflowSeriesRow[];
+  /** 判定作業の3区分 (BR-002)。summary が null のときだけ null */
+  workbench: TotalCashflowWorkbenchView | null;
+  /** 日付と金額が一致して自動で寄った組。一致度つき (BR-003) */
+  autoMatches: TotalCashflowAutoMatch[];
+  /**
+   * 直前の操作 (BR-008)。表示にだけ使う。
+   * 再読込直後に取消の導線を出さないのは decision-017 による (U-005)。
+   */
+  lastOperation: TotalCashflowOperation | null;
+  /** 適用中の期間。前年同期の見出しをここから作る (BR-006) */
+  period: PeriodMeta;
 }
 
 /** 要確認 1 件。MF 側の中身と freee 側の候補を並べて見比べるための材料 */
 export type TotalCashflowReview = Omit<ReconcileReview, 'mfTxId'> & { txId: string };
+
+/** 自動一致 1 件。core の `mfTxId` は API で `txId` に揃えてある */
+export type TotalCashflowAutoMatch = Omit<AutoMatch, 'mfTxId'> & { txId: string };
+
+/**
+ * 判定作業の3区分。和は `review.length + excluded.length` に一致する。
+ * 区分を足し引きしても総数が変わらないことが「映っていない作業が無い」担保になる。
+ */
+export interface TotalCashflowWorkbenchView {
+  duplicates: TotalCashflowReview[];
+  needsReview: TotalCashflowReview[];
+  excluded: ReconcileExcluded[];
+  progress: {
+    duplicates: WorkbenchProgress;
+    needsReview: WorkbenchProgress;
+    excluded: WorkbenchProgress;
+  };
+}
+
+/** 操作履歴の要約。明細そのものは画面へ渡さない */
+export interface TotalCashflowOperation {
+  id: string;
+  kind: 'verdict' | 'exclude' | 'restore' | 'undo';
+  itemCount: number;
+  createdAt: string;
+}
 
 export interface TrendsResponse {
   months: string[];
@@ -369,6 +417,23 @@ export interface TxRow {
  */
 export type { CandidateMajor, CandidateSource, Candidates } from '@kanjo/core';
 export type { DuplicateVerdictValue, TotalCashflowMonth } from '@kanjo/core';
+/**
+ * 除外理由の正本は core にある。画面で別のラベル表を持つと、
+ * 集計で数えている区分と画面に出ている区分が静かにずれる。
+ */
+export {
+  EXCLUSION_MEMO_MAX,
+  EXCLUSION_REASON_CODES,
+  EXCLUSION_REASON_LABELS,
+} from '@kanjo/core';
+export type {
+  ExclusionReasonCode,
+  SegmentChange,
+  SegmentSummary,
+  SegmentTotals,
+  TotalCashflowSeriesRow,
+  WorkbenchProgress,
+} from '@kanjo/core';
 /** 突合の結果を画面でも同じ形で扱う。片方だけ型を作り直すと、列の意味が画面とサーバでずれる */
 export type {
   FreeeCoverage,

@@ -1,0 +1,207 @@
+{
+  "run_id": "sdp-feat-total-cashflow-screen-20260915T1523Z",
+  "feature_id": "feat-total-cashflow-screen",
+  "repository_id": "github:daishiman/kanjo",
+  "artifact_kind": "feature",
+  "purpose": "家計と事業を合わせた本当の収支を、重複と除外の判断ごと 1 画面で確かめて月次クローズの『照合→総収支』を終えられるようにする。利用者が総収支を開いた時点で、期間の総収入・総支出・純収支と前期比、月ごとの推移が総合/事業/家計で読め、その数字に効いている重複候補・freee 除外・要確認を同じ画面の判定作業で片付け、誤った判断はその画面を開いてから行った操作を新しい順に遡って元に戻せる状態にする。",
+  "goal": "/analysis/total-cashflow が 05-total-cashflow.png の全構成要素をトークンと共通 Button/PageShell で描画し、総合/事業/家計の KPI・前期比・月次チャートが core の値と一致して総合=事業+家計が成り立ち、3 ペインの判定作業で単票・一括の同じ/別/除外が feat-total-cashflow の不変条件を保ったまま行え、freee 除外の理由区分とメモ・操作履歴が D1 に残って画面を開いてから行った操作を新しい順に 1 回分ずつ取り消せ、判定・除外・操作履歴の 3 表がバックアップと復元で戻り、一致度・区分・自動一致の規則が docs と境界値テストで固定され、サイドバーの支出分析 > 総収支 の現在地と照合バッジが確認され、既存の test / typecheck / lint / check 系が緑のままの状態。",
+  "scope_in": [
+    "総収支タブ (05-total-cashflow.png) の画面構成の作り直し: 見出し・セグメント・期間表示・KPI・チャート・3 ペイン判定作業・freee 除外一覧・自動一致の候補・進捗通知・下部選択バー、既存 9 列月次表の開閉化",
+    "packages/core の総収支集計の拡張 (セグメント別期間合計・前期比較・月次系列・判定作業 3 区分・一致度・自動一致の候補)",
+    "packages/api の総収支 API 拡張 (集計の返却、一括判定、除外の理由区分とメモ、操作履歴の取得と取消)",
+    "D1 migration: freee 除外の理由区分とメモ列、判定・除外の操作履歴テーブル、既存理由の移行、判定・除外・操作履歴の 3 表をバックアップと復元の対象に加えること",
+    "一致度・区分・自動一致の規則の docs 記載とテスト",
+    "共通ヘッダー/フッター文言の画像への揃え (防衛ライン・毎朝バックアップ等)",
+    "サイドバーの支出分析 > 総収支 の現在地と照合バッジの表示確認 (確認のみ)"
+  ],
+  "scope_out": [
+    "サイドバーの総収支以外の項目・並び・月次クローズ進捗の形の変更: 利用者指示により今回は確認のみ",
+    "照合・マトリクス・推移・診断の各タブの中身: それぞれの画面サイクルで扱う",
+    "日付と金額の一致による自動寄せの廃止: 利用者決定により自動寄せを維持する",
+    "freee / Money Forward の取込経路の追加と明細分割の仕様変更",
+    "期間選択の保存先の変更 (既存どおり localStorage で全画面共有)",
+    "mobile / tablet / desktop 向け専用アプリ: 対象は web のみ (狭幅は既存のレスポンシブ表示で扱う)"
+  ],
+  "acceptance": [
+    "S1 (G1): /analysis/total-cashflow で 05-total-cashflow.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button/PageShell 経由で、直書き色の lint が 0 件である。",
+    "S2 (G1, G3): 総合/事業/家計それぞれで総収入・総支出・純収支と前期比 (額・率) が core の値と一致し、総合の値が事業と家計の和に一致する。",
+    "S3 (G2): 判定作業で単票・複数選択の『同じ取引/別の取引/集計から除外』が行え、判定後の総額が feat-total-cashflow の不変条件を満たす。",
+    "S4 (G4): 画面を開いてから行った操作を元に戻すと総収入・総支出・判定件数が操作前と一致し、同じ取消を 2 回送っても 1 回分しか戻らない。再読込後は取消の導線が出ない。既存の除外理由は migration 後もメモとして読め、バックアップから復元しても判定・除外・操作履歴が戻る。",
+    "S5 (G5): 一致度・区分・自動一致の規則が docs に明記され、境界値付きテストで固定される。サイドバーの支出分析 > 総収支 が現在地になり照合の件数バッジが要確認件数と一致する。",
+    "S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプトが全て緑のままである。"
+  ],
+  "architecture_refs": [
+    "architecture/total-cashflow-screen-ui-ux.md",
+    "architecture/total-cashflow-screen-frontend.md",
+    "architecture/total-cashflow-screen-backend.md",
+    "architecture/total-cashflow-screen-database.md",
+    "architecture/total-cashflow-screen-auth.md",
+    "architecture/total-cashflow-screen-security.md",
+    "architecture/total-cashflow-screen-infrastructure.md",
+    "architecture/total-cashflow-screen-maintenance-ops.md",
+    "specs/spec-total-cashflow-screen.md"
+  ],
+  "source_lineage": [
+    {
+      "source_kind": "feature_context",
+      "source_path": "features/feat-total-cashflow-screen.context.json",
+      "source_digest": "sha256:bcd9c26294f090701919863638630370f7295b3f2a5ef93a512fa2dd30208005",
+      "digest_provenance": "measured_sha256",
+      "graph_node_id": "feat-total-cashflow-screen",
+      "feature_id_match": true,
+      "updated_at": "2026-09-15T15:13:39Z"
+    },
+    {
+      "source_kind": "feature_document",
+      "source_path": "features/feat-total-cashflow-screen.md",
+      "source_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence_ref": "system-spec/completeness-findings.json",
+      "evaluated_digest": "sha256:fb279c1721e0f5401985f101fd3a947fce86c605e7417d1dcb5de135eddc4f36",
+      "source_digest": "sha256:371fa05b486a4d9360e6bf9fc6db220fda46c0023231e93f8eed3d4cc4ba07a8",
+      "digest_provenance": "measured_sha256",
+      "evaluated_digest_refers_to": "system-spec/00-requirements-definition.md"
+    },
+    {
+      "source_kind": "specification",
+      "source_path": "specs/spec-total-cashflow-screen.md",
+      "source_plugin": "dev-graph",
+      "source_version": "0.1.11",
+      "source_digest": "sha256:5a33622f5f473d22ed399ba2d8fbcd1920e95b2080be0016c63bebdcb09a0b37",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "system_spec_requirements",
+      "source_path": "system-spec/00-requirements-definition.md",
+      "source_plugin": "system-spec-harness",
+      "source_version": "0.1.14",
+      "source_digest": "sha256:fb279c1721e0f5401985f101fd3a947fce86c605e7417d1dcb5de135eddc4f36",
+      "evidence_ref": "system-spec/completeness-findings.json",
+      "evaluation_verdict": "PASS",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "completeness_evaluation",
+      "source_path": "system-spec/completeness-findings.json",
+      "evaluator": "assign-system-spec-completeness-evaluator",
+      "source_plugin": "system-spec-harness",
+      "source_version": "0.1.14",
+      "verdict": "PASS",
+      "source_digest": "sha256:c92d0eab5b95e8f38f27de444c250eed15c2d9949eb98d6b35e03b0e5b56bb7d",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/total-cashflow-screen-ui-ux.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:503be44c86c34d124e356725f28dfc8d159f28e40b29e0402f03e98419683ad9",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/total-cashflow-screen-frontend.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:397f75120f5957ab220323f06be58090a5af5ec187248ce93abb7e84dba9689a",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/total-cashflow-screen-backend.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:64298af22ee41b4039dd3c02113cd2d1c5a935bff2e04f7d92148e36c976608e",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/total-cashflow-screen-database.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:b3e5de310eca7bd2a6801d47fcaefce61ca880e9ed4fae2a6ecf13c0d375a91c",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/total-cashflow-screen-auth.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:8ce6e1242376d44f448ed05544499ee4387d63c8626ef860bc2d985da05a8105",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/total-cashflow-screen-security.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:1bfa2a41e74642ae70933fa673e2460dc79e67dc96865735536f06d5daca1251",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/total-cashflow-screen-infrastructure.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:2eea08fcaa974fdf2309b30c8b12d2f74d0ffa0d03b2539b9d9e649bfb681207",
+      "digest_provenance": "measured_sha256"
+    },
+    {
+      "source_kind": "architecture",
+      "source_path": "architecture/total-cashflow-screen-maintenance-ops.md",
+      "resolved_in_repo": true,
+      "source_digest": "sha256:b9230a3ce9700e4831976ede2913fc634d7f5c9a3b0ab6c7b36f79ed1c64daeb",
+      "digest_provenance": "measured_sha256"
+    }
+  ],
+  "identity_check": {
+    "graph_node_id": "feat-total-cashflow-screen",
+    "requested_feature_id": "feat-total-cashflow-screen",
+    "match": true
+  },
+  "readiness_pin": {
+    "component": "C08",
+    "status": "complete",
+    "checked_at": "2026-09-15T15:22:17Z",
+    "source_pin": "system-spec-harness",
+    "source_pin_version": "0.1.14",
+    "source_pin_digest": "sha256:4c2e08203f4eaf9d7c7d8dceefedcd1bee435df3cf9e778339c1b044b3aae115"
+  },
+  "open_items": [
+    {
+      "id": "low-undo-409-404-display",
+      "severity": "low",
+      "description": "取消の 409 canonical_write_busy (再試行で通る) と、別タブの復元後の古い id による 404 の画面の扱いが区別されていない。",
+      "source_ref": "specs/spec-total-cashflow-screen.md",
+      "disposition": "P02 で決定し P04 のテストで固定する"
+    },
+    {
+      "id": "low-change-site-omissions",
+      "severity": "low",
+      "description": "import-lifecycle-pure.test.ts の consumers と route の列挙期待値、routeSources への routes/total-cashflow.ts の追加、db/schema.ts への列と表の追加が変更箇所に挙がっていない。",
+      "source_ref": "specs/spec-total-cashflow-screen.md",
+      "disposition": "P05 の write_scope に含めて扱う"
+    },
+    {
+      "id": "low-last-operation-usage",
+      "severity": "low",
+      "description": "lastOperation の用途が未記載で、除外を考えない候補が 2 件以上ある明細の扱いが decision-015 の含意とずれる余地がある。",
+      "source_ref": "specs/spec-total-cashflow-screen.md",
+      "disposition": "P02 で決定し P03 でレビューする"
+    },
+    {
+      "id": "low-wording-and-security-note",
+      "severity": "low",
+      "description": "『前期比』と『前年同期比』の表記が混在し、security の適用文が 3 表のバックアップ保護に触れていない。",
+      "source_ref": "specs/spec-total-cashflow-screen.md",
+      "disposition": "P12 の docs で表記を揃え保護を明記する"
+    },
+    {
+      "id": "low-approval-note-refs",
+      "severity": "low",
+      "description": "承認 note が置換済みの根拠 id を指し、S4 の冪等句の提示記録が無く、decision-004 と 017 の食い違いが残る。",
+      "source_ref": "specs/spec-total-cashflow-screen.md",
+      "disposition": "P01 で着手時の確認として記録する"
+    }
+  ],
+  "generated_at": "2026-09-15T15:24:00Z",
+  "notes": [
+    "feature 分割は行わず、1 feature から P01..P13 の 13 task を生成した。",
+    "source_lineage の各 source_digest は生成時に実体から sha256 を計算して記録した。",
+    "migration 番号 0041 は生成時点の main の最新 0040 の次であり、P01 と P13 で取込み時点の main と照合する。"
+  ]
+}

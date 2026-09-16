@@ -3,10 +3,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { TotalCashflowResponse } from './api.js';
 import { TotalCashflowPage } from './pages/analysis/TotalCashflow.js';
 import { PeriodProvider } from './period.js';
 
-const totalCashflow = {
+const totalCashflow: TotalCashflowResponse = {
   months: [],
   matched: [],
   freeeOnly: [],
@@ -29,10 +30,43 @@ const totalCashflow = {
         cls: 'per',
         clsSrc: '既定',
       },
-      candidates: [],
+      candidates: [
+        {
+          freeeIndex: 0,
+          freeeKey: 'v1:freee:sample#0',
+          date: '2026-08-02',
+          partner: 'サンプル店',
+          amount: 1_000,
+          account: '食費',
+          settleAccount: 'サンプルカード',
+          dayGap: 1,
+          accountConflict: false,
+          score: 90,
+        },
+      ],
     },
   ],
+  // 判定 mutation の入口は単一のワークベンチに集約している。
+  // 本試験も実際の画面と同じ状態経路から保存操作を検証する。
+  summary: null,
+  series: [],
+  workbench: {
+    duplicates: [],
+    needsReview: [],
+    excluded: [],
+    progress: {
+      duplicates: { total: 0, decided: 0 },
+      needsReview: { total: 0, decided: 0 },
+      excluded: { total: 0, decided: 0 },
+    },
+  },
+  autoMatches: [],
+  lastOperation: null,
+  period: { applied: null, label: '全期間', full: null, years: [], monthCount: 0 },
 };
+
+totalCashflow.workbench!.duplicates = totalCashflow.review;
+totalCashflow.workbench!.progress.duplicates.total = totalCashflow.review.length;
 
 afterEach(() => {
   cleanup();
@@ -67,7 +101,8 @@ describe('総収支の成功 mutation', () => {
       </QueryClientProvider>,
     );
 
-    fireEvent.click(await screen.findByRole('button', { name: '同じ取引' }));
+    const [rowVerdictButton] = await screen.findAllByRole('button', { name: '同じ取引' });
+    fireEvent.click(rowVerdictButton!);
 
     await waitFor(() =>
       expect(calls).toContainEqual({ url: '/api/total-cashflow/verdicts', method: 'POST' }),

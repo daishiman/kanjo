@@ -65,22 +65,86 @@ const summary = {
   period,
 };
 
+/**
+ * 総収支画面の応答。ハブからの遷移先が描けることを見るための最小構成で、
+ * 期間・要約・判定作業は画面が必ず読むため null のまま省略しない。
+ */
+const segment = (income, expense) => ({
+  income,
+  expense,
+  balance: income - expense,
+  previousYear: null,
+  change: null,
+});
+const totals = (income, expense) => ({ income, expense, balance: income - expense });
+const totalCashflow = {
+  months: [
+    {
+      month: '2026-08',
+      shiftedCount: 0,
+      reviewCount: 0,
+      reviewAmount: 0,
+      totalExpense: 892_400,
+      householdExpense: 412_000,
+    },
+  ],
+  review: [],
+  matched: [],
+  freeeOnly: [],
+  excluded: [],
+  coverage: { freeeTotal: 0, matched: 0, freeeOnly: 0, excluded: 0, mfReview: 0 },
+  summary: {
+    total: segment(1_248_000, 892_400),
+    biz: segment(1_248_000, 480_400),
+    household: segment(0, 412_000),
+  },
+  series: [
+    {
+      month: '2026-08',
+      total: totals(1_248_000, 892_400),
+      biz: totals(1_248_000, 480_400),
+      household: totals(0, 412_000),
+    },
+  ],
+  workbench: {
+    duplicates: [],
+    needsReview: [],
+    excluded: [],
+    progress: {
+      duplicates: { total: 0, decided: 0 },
+      needsReview: { total: 0, decided: 0 },
+      excluded: { total: 0, decided: 0 },
+    },
+  },
+  autoMatches: [],
+  lastOperation: null,
+  period,
+};
+
 const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64');
+/**
+ * 差し替えを用意していない API の実 path。
+ * 素通りさせると結果が実行環境 (proxy 先の有無) に左右されるため、
+ * 1 件でもあれば検査を不合格にして閉じ忘れを気付けるようにする。
+ */
+const unmockedApiPaths = new Set();
 const responseFor = (url) => {
   const path = new URL(url).pathname;
   if (path === '/api/auth/me') return { authenticated: true };
   if (path === '/api/summary') return summary;
   if (path === '/api/imports') return { imports: [] };
-  if (path === '/api/analysis/hub') return hub;
-  if (path === '/api/total-cashflow')
+  // 共通シェルが全画面で読む。ここを閉じ忘れると実 API へ抜け、401 の
+  // グローバル処理で画面ごとログインへ落ちる (検査対象が描画されない)。
+  if (path === '/api/review-queue')
     return {
-      months: [],
-      review: [],
-      matched: [],
-      freeeOnly: [],
-      excluded: [],
-      coverage: { freeeTotal: 0, matched: 0, freeeOnly: 0, excluded: 0, mfReview: 0 },
+      total: 0,
+      counts: { classification: 0, reconciliation: 0, import: 0 },
+      snoozedCount: 0,
+      items: [],
+      snoozedItems: [],
     };
+  if (path === '/api/analysis/hub') return hub;
+  if (path === '/api/total-cashflow') return totalCashflow;
   return undefined;
 };
 
@@ -101,6 +165,7 @@ try {
       if (message.method !== 'Fetch.requestPaused') return;
       const response = responseFor(message.params.request.url);
       if (response === undefined) {
+        unmockedApiPaths.add(new URL(message.params.request.url).pathname);
         void send('Fetch.continueRequest', { requestId: message.params.requestId });
         return;
       }
@@ -486,6 +551,10 @@ try {
   await waitFor("location.pathname === '/analysis'", 'Back');
   await evaluate('history.forward()');
   await waitFor("location.pathname === '/analysis/total-cashflow'", 'Forward');
+
+  if (unmockedApiPaths.size) {
+    failures.push(`差し替え未定義の API を実サーバへ通した: ${[...unmockedApiPaths].sort().join(', ')}`);
+  }
 
   if (failures.length) {
     console.error(`\n支出分析ハブ実描画検査: ${failures.length}件の不合格\n- ${failures.join('\n- ')}`);

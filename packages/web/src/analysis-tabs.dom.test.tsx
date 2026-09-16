@@ -60,6 +60,27 @@ function renderAt(path: string) {
 }
 
 describe('支出分析のタブ', () => {
+  it('総収支は問いとデータの見方をタブより前に出し、共通の支出分析説明を重ねない', () => {
+    renderAt('/analysis/total-cashflow');
+
+    const heading = screen.getByRole('heading', {
+      level: 1,
+      name: '家計と事業を合わせた、本当の収支はいくらですか？',
+    });
+    const lead = screen.getByText(
+      '家計と事業の収入・支出を月次で確認し、重複や除外を調整した実質的な収支を把握しましょう。',
+    );
+    const guide = screen.getByText('データの見方').closest('details');
+    const tabs = screen.getByRole('navigation', { name: '支出分析の切り口' });
+
+    expect(guide).not.toBeNull();
+    for (const item of [heading, lead, guide!]) {
+      expect(item.compareDocumentPosition(tabs) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    }
+    expect(screen.queryByRole('heading', { level: 1, name: '支出分析' })).toBeNull();
+    expect(screen.queryByText('帳簿と実際の支出を照合し、次に手を打つ場所を決めます。')).toBeNull();
+  });
+
   it('切り口はURLに出て、現在のタブだけが現在地になる', async () => {
     renderAt('/analysis/trends');
     // パネルは遅延読み込みなので、中身が出るまで待つ

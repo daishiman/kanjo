@@ -3,7 +3,7 @@ status: confirmed
 category: auth
 aggregate: 確定
 spec_cells: [auth.web, auth.mobile, auth.tablet, auth.desktop-windows, auth.desktop-linux, auth.desktop-macos]
-serves_goals: [G3, G4]
+serves_goals: [G2, G4]
 ---
 
 # 認証(ログイン) (auth)
@@ -15,12 +15,12 @@ serves_goals: [G3, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-auth-web-rc-observed-001。裏付け質疑 (`qa_refs`): `qa-backend-web-rc-decision-007` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは照合操作 API を呼ぶ端末アプリのセッションを OS の生体認証やキーチェーンとどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは照合操作 API を呼ぶ端末アプリのセッションを OS の生体認証やキーチェーンとどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは照合操作 API を呼ぶ端末アプリのセッションを OS の生体認証やキーチェーンとどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは照合操作 API を呼ぶ端末アプリのセッションを OS の生体認証やキーチェーンとどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは照合操作 API を呼ぶ端末アプリのセッションを OS の生体認証やキーチェーンとどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-auth-web-tc-observed-001。裏付け質疑 (`qa_refs`): `qa-total-cashflow-decision-004` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に保存するセッションや生体認証で判定・取消の書込を許可する方式を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に保存するセッションや生体認証で判定・取消の書込を許可する方式を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に保存するセッションや生体認証で判定・取消の書込を許可する方式を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に保存するセッションや生体認証で判定・取消の書込を許可する方式を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に保存するセッションや生体認証で判定・取消の書込を許可する方式を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G3, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の『全ての保護資源で認証を強制する』を、照合 API と月次レビュー API を既存 /api/* の authGuard 配下へマウントする確定内容に反映した。新しい認証経路・トークンは作らず、アカウントログインのセッションと mustChangePasswordFence をそのまま通す。 |
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS のアクセス制御 (他利用者のデータに触れない) を、照合の読み書きと取消の全てを userId で絞り、他人の操作 id を 404 にする確定内容に反映した。直前の操作の表示も本人の reconciliation_actions だけから引く。 |
+| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 総収支の新しい書込み API も既存のセッション認証 (authGuard) と初回パスワード変更の柵を通す位置にマウントし、総収支専用の認証経路を作らない形に反映した。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 認可の単位を user_id に固定し、操作履歴の取消も user_id と id の組でしか引けない形に反映した。他人の操作 id を送った場合は存在の有無を返さず 404 にする。 |
 
 > **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
@@ -39,31 +39,31 @@ serves_goals: [G3, G4]
 
 ### Web (web)
 
-- 資するゴール: G3, G4
+- 資するゴール: G2, G4
 
-#### 主たる接地根拠: `qa-auth-web-rc-observed-001`
-
-**問**
-
-照合 API と月次レビュー API の認証・認可はどこで行われるか。
-
-**答**
-
-packages/api/src/index.ts は authRoute・aiAgentRoute・improvementAgentRoute を先に、その後 /api/* に authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence を掛けてから adminUsersRoute ほか業務 route (totalCashflowRoute・analysisHubRoute 等) をマウントする。各 route は c.get('userId') で全ての読み書きを絞り、route 内に別の認可判断を持たない。照合 API と月次レビュー API も同じ位置 (authGuard の後) にマウントすれば、未認証の呼出しは route に届かず、他利用者の判断・履歴に触れない。取消 (undo) は reconciliation_actions の user_id 一致を条件にし、他人の操作 id は 404 にする。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD cc0d5e3) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/index.ts, packages/api/src/auth.ts, packages/api/src/routes/total-cashflow.ts。 / 回答時刻: 2026-09-15T08:59:56Z)
-
-#### 裏付け質疑: `qa-backend-web-rc-decision-007`
+#### 主たる接地根拠: `qa-auth-web-tc-observed-001`
 
 **問**
 
-照合画面の API をどう切るか。選択肢: (A) 照合専用 API を新設: GET /api/reconciliation (KPI・キュー・候補一覧・下段 2 表・直前の操作を 1 回で返す) と POST /api/reconciliation/actions (照合/別取引/除外・最大 200 件・部分成功)、POST /api/reconciliation/actions/:id/undo。保存先は既存 duplicate_verdicts / freee 除外表を共用し bindDuplicateVerdicts で総収支と件数を揃える。既存 /business-spend と /total-cashflow は残す (推奨) / (B) 既存 total-cashflow API を拡張。
+総収支 API (読取・一括判定・除外・取消) と総収支画面の認証・認可はどうなるか。
 
 **答**
 
-(A) 照合専用 API を新設 を選択した。
+利用者アカウント (メールアドレス + パスワード、PR #47、PBKDF2 は PR #52 で 100,000 回) のセッションで認証する。packages/api/src/index.ts は /api/* に authGuard() と mustChangePasswordFence() を掛け、route は c.get('userId') で利用者を特定する。既存の総収支 route は全ての読取・書込を userId で絞る。新設・拡張する一括判定・除外理由・操作履歴の取得と取消も同じ route に置き、userId で絞る (他利用者の判定や履歴を取り消せない)。書込 (POST/DELETE) は canonicalMutationFence の対象になる。画面は AuthenticatedApp.tsx 配下で、未認証は既存どおりログインへ送られる。認証方式・セッション・レート制限の変更は無い。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,auth.ts,canonical-mutation-fence.ts,routes/total-cashflow.ts}, packages/web/src/AuthenticatedApp.tsx。 / 回答時刻: 2026-09-15T12:00:44Z)
+
+#### 裏付け質疑: `qa-total-cashflow-decision-004`
+
+**問**
+
+画像の右ペインは『直前の操作 2026/09/10 10:12 1件の判定を元に戻しました / 元に戻す』を持つ。現行は判定を取り消す API が無く、戻せるのは freee 除外の DELETE だけである。元に戻すをどう実現するか。選択肢: (A) 判定・除外・戻すを 1 件ずつ D1 の操作履歴に残し、直前の操作を取り消せる。再読込後も直前の操作が表示される (推奨) / (B) 画面のメモリ上だけで直前 1 件を保持し、再読込で消える。
+
+**答**
+
+(A) 操作履歴を D1 に残す を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T11:48:28Z)
 
 ## To-Be / Delta
 
@@ -71,21 +71,24 @@ packages/api/src/index.ts は authRoute・aiAgentRoute・improvementAgentRoute �
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: 照合操作を保存し元に戻せるようにする。既存の duplicate_verdicts と freee 除外表を再利用し、照合画面用の API (一覧・KPI・キューを返す GET と、照合 / 別取引 / 除外 / 一括照合の POST)、verdict 取消 API、MF 側除外、照合操作の履歴表 (直前の操作と元に戻すに使う) を migration 付きで追加する。一括は最大 200 件で部分成功を返す。
-- **G4**: 共通シェルを画像に揃える。サイドバーの文言 (概要/データ取込/現金入力/明細仕分け/サブスク/累計収支/支出分析/決算書/AI分析/予算/トレードオフ/設定/使い方/改善リクエスト) とグループ・件数バッジ (データ取込=要確認の取込件数・明細仕分け=未整理明細数・サブスク=判定待ち候補数・照合=要確認件数)、ページ見出し・パンくず・コマンドパレットのラベル追随、月次クローズ進捗 3/4 (データ取込/仕分け/照合は直近の締め月について自動判定、月次レビューは利用者の完了操作を月単位で D1 に保存し取消可)、ヘッダー (防衛ライン：正常 の表記・未記録 Nか月・最終更新・⌘K 検索・ダウンロード・ヘルプのアイコンボタン・アバター)、フッター (外部送信しない / 税務上の正本は freee / 毎晩バックアップ と 利用規約・プライバシー・データ出典・v1.0) と改善を送るボタン。
+- **G2**: 重複・除外の判定作業を 3 ペインにする。左に 重複候補/freee除外/要確認 の件数付きナビ、中央にソース/判定フィルタ・検索・チェック選択付きの明細表、右に選択明細の MF 明細と freee 対応候補の並列詳細・一致度・『同じ取引/別の取引/集計から除外』・直前の操作と元に戻す を置き、複数選択と下部の選択バーで一括判定できるようにする。
+- **G4**: 判定と除外の操作を D1 に記録し元に戻せるようにする。freee 除外は理由区分 (振替/内部移動/帳簿のみ/二重登録/その他) とメモに分けて一括設定でき、既存の自由記述理由は失わずに移行する。判定・除外・戻すの操作履歴を残し、画面を開いてから行った操作を新しい順に取り消すと総額が操作前と一致し、同じ取消の再送や古い表示からの取消で意図しない操作を戻さない。再読込後は取り消せない (操作履歴は残る)。判定・除外・操作履歴はバックアップに含め、復元しても戻る。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | 照合操作 API・取消・MF 除外・操作履歴を migration 付きで追加する。 | API 統合テストが認証付きで照合 / 別取引 / 除外 / 一括 (201 件で 400、部分成功の内訳) / 取消 / 直前の操作の取得を検証し、migration が既存 D1 に冪等に適用され、元に戻すと KPI とキューが操作前の値に戻る。 |
-| O4 | 共通シェルの差分を実装する。 | shell 系 DOM テストをサイドバー新文言・件数バッジ・月次クローズ 3/4 (自動 3 + レビュー手動の保存と取消)・ヘッダーのアイコンボタン・フッターリンクで更新して緑、月次レビュー API の統合テストが緑である。 |
+| O3 | 3 ペインの判定作業で単票・一括の同じ/別/除外ができる。 | DOM テストで区分切替・フィルタ・検索・選択・右詳細・一括判定が動き、API 統合テストで判定後の総額が不変条件どおりになる。 |
+| O4 | 除外理由区分とメモ、操作履歴と取消が永続化される。 | migration 適用後に既存除外の理由がメモへ保持され、取消 API の統合テストで操作前後の総額が一致し、同じ取消の再送や古い表示からの取消で意図しない操作が戻らず、再取込後も判定が再適用され、バックアップから復元すると判定・除外・操作履歴が復元時点に戻る。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I4**: 照合画面用 API と verdict 取消・MF 除外・操作履歴を migration 付きで足し、同じ取引として照合 / 別の取引として処理 / 除外 / 一括照合 / 元に戻すを web から呼ぶ。
-- **I5**: routeMetadata のラベルとグループを画像に揃え、件数バッジ・月次クローズ 3/4 (月次レビュー完了の保存と取消)・ヘッダーのアイコンボタン・フッター・改善を送るボタンを共通シェルに入れる。
-- **I7**: 一致度・キュー・ステータス・月次クローズ判定の規則を docs に書き、docs/data-schema.md の古い候補条件を直し、境界値テストで固定する。
+- **I4**: 判定作業の左ナビに 重複候補/freee除外/要確認 の件数を出し、中央表にソース/判定フィルタ・検索・チェック選択、右に MF 明細と freee 対応候補の並列詳細・一致度・同じ取引/別の取引/集計から除外 を置く。
+- **I5**: freee から除外した明細一覧に理由区分バッジ・メモ・集計へ戻す・全選択/選択クリア/一括で理由を設定 を置く。
+- **I6**: 自動一致の候補 (日付と金額の一致で自動に寄せた組) 一覧にソースフィルタ・全選択・一致度・『選択した取引を同じ取引にする』を置き、確定は same の記録だけで総額を変えない。
+- **I7**: 複数選択時に下部固定の選択バー (件数・選択をクリア・選択した取引を同じ取引にする) を出し、判定完了で『N件中M件の判定が完了しました』を通知する。
+- **I8**: core に総収支のセグメント別集計・前期比較・判定作業の区分・一致度関数を追加し、API が 1 回で返す。一括判定と取消の API を足す。
+- **I9**: D1 に freee 除外の reason_code と memo を足し既存 reason を memo と『その他』へ移し、判定・除外・戻すの操作履歴テーブルを作って画面を開いてから行った操作の取消を、同じ取消の再送や古い表示から意図しない操作を戻さない形で実装する。判定・除外・操作履歴の 3 表をバックアップと復元の対象に加える。
 
 ### 本章に効く確定意思決定
 
@@ -97,9 +100,9 @@ packages/api/src/index.ts は authRoute・aiAgentRoute・improvementAgentRoute �
 
 ### 本章での適用
 
-Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を照合 API と月次レビュー API の認可に適用した。新 route は /api/* の authGuard と mustChangePasswordFence の後にマウントし、route 内の認可は c.get('userId') で読み書きを絞ることだけに限る。取消 (undo) は操作 id を受け取るため、reconciliation_actions の user_id 一致を WHERE 条件に含め、他人の操作 id は存在の有無を漏らさず 404 に倒す。
+Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、総収支に足す書込み API の認可に適用した。除外の一括設定・集計へ戻す・判定・取消はすべて /api/* の authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence の後にマウントし、route 内では認証済み user_id だけを条件に読み書きする。取消は操作履歴を user_id と id の両方で引くので、他人の操作 id を送っても 404 になり、存在の有無も漏らさない (qa-total-cashflow-decision-004)。新しい権限区分や共有機能は作らない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T12:08:50Z)
 
 ### Secure by Design — deep knowledge card
 

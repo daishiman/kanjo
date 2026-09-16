@@ -3,7 +3,7 @@ status: confirmed
 category: security
 aggregate: 確定
 spec_cells: [security.web, security.mobile, security.tablet, security.desktop-windows, security.desktop-linux, security.desktop-macos]
-serves_goals: [G3]
+serves_goals: [G2, G4]
 ---
 
 # セキュリティ (security)
@@ -15,12 +15,12 @@ serves_goals: [G3]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-security-web-rc-observed-001。裏付け質疑 (`qa_refs`): `qa-security-web-rc-decision-009`, `qa-frontend-web-rc-inference-002` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に残る照合候補の取引内容・金額と、一括照合や元に戻すの操作履歴をどう保護するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に残る照合候補の取引内容・金額と、一括照合や元に戻すの操作履歴をどう保護するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に残る照合候補の取引内容・金額と、一括照合や元に戻すの操作履歴をどう保護するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に残る照合候補の取引内容・金額と、一括照合や元に戻すの操作履歴をどう保護するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に残る照合候補の取引内容・金額と、一括照合や元に戻すの操作履歴をどう保護するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-security-web-tc-observed-001。裏付け質疑 (`qa_refs`): `qa-total-cashflow-decision-003`, `qa-total-cashflow-decision-004` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,7 +28,7 @@ serves_goals: [G3]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の入力検証と業務ロジックの整合を、照合 actions の列挙値・件数 1〜200・id 形式の検証、書込系 API の canonicalMutationFence による取込との排他、取消済み操作の再取消拒否に反映した。照合 API は外部サービスへ送信せず、secureHeaders を全体に掛ける既存構成を維持する。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP の入力検証を reasonCode の許可リスト・memo の長さ・一括件数の上限に、出力のエスケープをメモと摘要の文字列描画に反映した。操作履歴の JSON には判定と除外の値だけを入れ、自由文は取消で前後の値を戻すのに要る memo だけを持ち、摘要などそれ以外の自由文は複製しない。 |
 
 > **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
@@ -38,43 +38,43 @@ serves_goals: [G3]
 
 ### Web (web)
 
-- 資するゴール: G3
+- 資するゴール: G2, G4
 
-#### 主たる接地根拠: `qa-security-web-rc-observed-001`
-
-**問**
-
-照合で扱う情報のセキュリティ上の前提 (入力検証・書込の排他・外部送信・表示) は何か。
-
-**答**
-
-index.ts は secureHeaders と requestId を全体に掛ける。書込系 route は zValidator で入力を検証する (総収支 verdicts は最大 200 件)。canonical-mutation-fence.ts の CANONICAL_MUTATION_ROUTES は取込 (POST /api/imports・/api/restore) と重なる書込を acquireImportWriter で排他し 409 canonical_write_busy を返すが、POST /api/total-cashflow/verdicts と freee-exclusions は対象外である。照合は利用者本人の取引内容・金額を扱い外部サービスへ送らない (画像フッター『取込データは外部送信しません』)。検索語は web の状態に留め URL・サーバーへ送らない。取引内容 (支払先名・メモ) は React のテキストとして描画し innerHTML を使わない。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD cc0d5e3) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/index.ts, packages/api/src/canonical-mutation-fence.ts, packages/api/src/routes/total-cashflow.ts, design/FINAL-UI/images/04-reconciliation.png のフッター。 / 回答時刻: 2026-09-15T08:59:56Z)
-
-#### 裏付け質疑: `qa-security-web-rc-decision-009`
+#### 主たる接地根拠: `qa-security-web-tc-observed-001`
 
 **問**
 
-照合の書込 (判断・除外・取消・月次レビュー完了) を取込中の書込と重ならないようにするか (現行の総収支 verdicts API は canonicalMutationFence の対象外)。選択肢: (A) fence 対象に追加: 照合の書込系 API を CANONICAL_MUTATION_ROUTES に足し、取込と重なると 409 canonical_write_busy を返す。画面は『取込中のため保存できませんでした』と出し再試行できる。既存の総収支 verdicts API も同じ扱いに揃える (推奨) / (B) 現行どおり排他しない。
+総収支画面で扱う情報のセキュリティ上の前提 (公開範囲・入力検証・外部送信・監査可能性) は何か。
 
 **答**
 
-(A) fence 対象に追加 を選択した。
+index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証と runtimeSchemaGuard・canonicalMutationFence の後にある。総収支 API は利用者本人の明細・freee 取引・判定だけを返し、外部サービスへ送らない (フッター『取込データは外部送信しません』)。入力は zod で検証し、判定は verdict を same|different の許可値、件数は最大 200、除外理由は 1〜200 字に制限している。D1 のバインド上限は d1-limits.ts の D1_MAX_BOUND_PARAMS で分割する。今回足す理由区分は許可リスト (振替/内部移動/帳簿のみ/二重登録/その他) で検証し、メモは長さ上限付きの文字列として React のテキストとして描画する (HTML として解釈しない)。操作履歴は利用者本人の判断記録であり、取消は本人の直前の操作だけを対象にする。検索語はクエリ文字列に載せず画面内の絞り込みに留める。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,routes/total-cashflow.ts,d1-limits.ts}, design/FINAL-UI/images/05-total-cashflow.png のフッター。 / 回答時刻: 2026-09-15T12:00:44Z)
 
-#### 裏付け質疑: `qa-frontend-web-rc-inference-002`
+#### 裏付け質疑: `qa-total-cashflow-decision-003`
 
 **問**
 
-照合画面の絞り込み・検索・ページ送り・選択状態をどこで持つか。
+画像の freee 除外一覧は『理由』列に 振替/内部移動/帳簿のみ のバッジと、別に『メモ』列を持ち、『一括で理由を設定』がある。現行 freee_deal_exclusions.reason は自由記述 1 列 (NOT NULL)。除外理由をどう持つか。選択肢: (A) 理由区分 reason_code (振替/内部移動/帳簿のみ/二重登録/その他) とメモ memo に分け、既存の自由記述は memo と『その他』へ移行する (推奨) / (B) 自由記述 1 列のまま、画面で先頭語をバッジ風に見せる。
 
 **答**
 
-GET /api/reconciliation は期間内の候補全件 (KPI・キュー件数も同じ応答) を返し、データソース・ステータス・対象年月・キュー選択・検索語・ページ (10/20/50 件) は web のコンポーネント状態で絞る。検索語と絞り込みは URL にもサーバーにも送らない (期間は既存どおり localStorage 共有、タブは URL)。選択中の行 id は候補の key (MF tx id) で持ち、絞り込みを変えても見えない選択は選択中バーの件数に含めて『選択をクリア』で外せる。書込後は ['reconciliation', period]・analysisHubQueryKey・['total-cashflow', period]・['summary', period] を invalidate し、ハブ・サイドバーのバッジ・総収支を追随させる。
+(A) 理由区分+メモに分ける を選択した。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: アシスタントが 2026-09-15 に観測事実と利用者決定から導いた推定。単独では確定の根拠にせず、観測事実 (主根拠) の補足として qa_refs に載せる。answered_at は記録直前に date -u で実測した時刻。 前提: qa-backend-web-rc-decision-007 (1 回で返す GET)、docs/ui-decisions.md のタブ URL と期間 localStorage の既存判断、Layout.tsx の analysisHubQueryKey 共有。 / 回答時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T11:48:28Z)
+
+#### 裏付け質疑: `qa-total-cashflow-decision-004`
+
+**問**
+
+画像の右ペインは『直前の操作 2026/09/10 10:12 1件の判定を元に戻しました / 元に戻す』を持つ。現行は判定を取り消す API が無く、戻せるのは freee 除外の DELETE だけである。元に戻すをどう実現するか。選択肢: (A) 判定・除外・戻すを 1 件ずつ D1 の操作履歴に残し、直前の操作を取り消せる。再読込後も直前の操作が表示される (推奨) / (B) 画面のメモリ上だけで直前 1 件を保持し、再読込で消える。
+
+**答**
+
+(A) 操作履歴を D1 に残す を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T11:48:28Z)
 
 ## To-Be / Delta
 
@@ -82,17 +82,24 @@ GET /api/reconciliation は期間内の候補全件 (KPI・キュー件数も同
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: 照合操作を保存し元に戻せるようにする。既存の duplicate_verdicts と freee 除外表を再利用し、照合画面用の API (一覧・KPI・キューを返す GET と、照合 / 別取引 / 除外 / 一括照合の POST)、verdict 取消 API、MF 側除外、照合操作の履歴表 (直前の操作と元に戻すに使う) を migration 付きで追加する。一括は最大 200 件で部分成功を返す。
+- **G2**: 重複・除外の判定作業を 3 ペインにする。左に 重複候補/freee除外/要確認 の件数付きナビ、中央にソース/判定フィルタ・検索・チェック選択付きの明細表、右に選択明細の MF 明細と freee 対応候補の並列詳細・一致度・『同じ取引/別の取引/集計から除外』・直前の操作と元に戻す を置き、複数選択と下部の選択バーで一括判定できるようにする。
+- **G4**: 判定と除外の操作を D1 に記録し元に戻せるようにする。freee 除外は理由区分 (振替/内部移動/帳簿のみ/二重登録/その他) とメモに分けて一括設定でき、既存の自由記述理由は失わずに移行する。判定・除外・戻すの操作履歴を残し、画面を開いてから行った操作を新しい順に取り消すと総額が操作前と一致し、同じ取消の再送や古い表示からの取消で意図しない操作を戻さない。再読込後は取り消せない (操作履歴は残る)。判定・除外・操作履歴はバックアップに含め、復元しても戻る。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | 照合操作 API・取消・MF 除外・操作履歴を migration 付きで追加する。 | API 統合テストが認証付きで照合 / 別取引 / 除外 / 一括 (201 件で 400、部分成功の内訳) / 取消 / 直前の操作の取得を検証し、migration が既存 D1 に冪等に適用され、元に戻すと KPI とキューが操作前の値に戻る。 |
+| O3 | 3 ペインの判定作業で単票・一括の同じ/別/除外ができる。 | DOM テストで区分切替・フィルタ・検索・選択・右詳細・一括判定が動き、API 統合テストで判定後の総額が不変条件どおりになる。 |
+| O4 | 除外理由区分とメモ、操作履歴と取消が永続化される。 | migration 適用後に既存除外の理由がメモへ保持され、取消 API の統合テストで操作前後の総額が一致し、同じ取消の再送や古い表示からの取消で意図しない操作が戻らず、再取込後も判定が再適用され、バックアップから復元すると判定・除外・操作履歴が復元時点に戻る。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I4**: 照合画面用 API と verdict 取消・MF 除外・操作履歴を migration 付きで足し、同じ取引として照合 / 別の取引として処理 / 除外 / 一括照合 / 元に戻すを web から呼ぶ。
+- **I4**: 判定作業の左ナビに 重複候補/freee除外/要確認 の件数を出し、中央表にソース/判定フィルタ・検索・チェック選択、右に MF 明細と freee 対応候補の並列詳細・一致度・同じ取引/別の取引/集計から除外 を置く。
+- **I5**: freee から除外した明細一覧に理由区分バッジ・メモ・集計へ戻す・全選択/選択クリア/一括で理由を設定 を置く。
+- **I6**: 自動一致の候補 (日付と金額の一致で自動に寄せた組) 一覧にソースフィルタ・全選択・一致度・『選択した取引を同じ取引にする』を置き、確定は same の記録だけで総額を変えない。
+- **I7**: 複数選択時に下部固定の選択バー (件数・選択をクリア・選択した取引を同じ取引にする) を出し、判定完了で『N件中M件の判定が完了しました』を通知する。
+- **I8**: core に総収支のセグメント別集計・前期比較・判定作業の区分・一致度関数を追加し、API が 1 回で返す。一括判定と取消の API を足す。
+- **I9**: D1 に freee 除外の reason_code と memo を足し既存 reason を memo と『その他』へ移し、判定・除外・戻すの操作履歴テーブルを作って画面を開いてから行った操作の取消を、同じ取消の再送や古い表示から意図しない操作を戻さない形で実装する。判定・除外・操作履歴の 3 表をバックアップと復元の対象に加える。
 
 ### 本章に効く確定意思決定
 
@@ -104,9 +111,9 @@ GET /api/reconciliation は期間内の候補全件 (KPI・キュー件数も同
 
 ### 本章での適用
 
-Secure by Design card の『入力を許可リストで検証する』を照合の書込に適用した。POST /api/reconciliation/actions は zValidator で action を same/different/exclude-mf/exclude-freee の列挙に限り、件数 1〜200・tx id と freee key の形を検証する。『書込の競合を安全側に倒す』は書込系 API を canonicalMutationFence の対象に加える利用者決定 (qa-security-web-rc-decision-009) に当て、取込と重なった書込は 409 で拒否して判断が消えかけの明細に結ばれる事態を防ぐ。検索語を URL やサーバーへ送らないことで、取引内容がアクセスログや共有 URL に残る経路を作らない。
+Secure by Design card の『入力を許可リストで検証し、上限で止める』を、判定作業の入力に適用した。reasonCode は 5 値の許可リスト (DB の CHECK と zod の enum を同じ定数から作る)、memo は 0〜200 字、一括の件数は既存どおり最大 200 件で、超過は 400 で全体を拒否する (qa-total-cashflow-decision-003)。検索語・区分・セグメントは画面内の状態で API へ送らず、攻撃面を増やさない。操作履歴の before/after には判定と除外の値だけを入れ、取引の摘要やメモ以外の自由文を複製しない。メモと摘要は React の文字列描画だけで表示し HTML として解釈しない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T12:08:50Z)
 
 ### Secure by Design — deep knowledge card
 
@@ -153,4 +160,4 @@ Secure by Design card の『入力を許可リストで検証する』を照合�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| owasp-authorization-cheatsheet | 2026-08-31 | OWASP Foundation (Cheat Sheet Series) (cheatsheetseries.owasp.org) | https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html | 2026-09-15T09:06:39Z | 2026-09-15T09:06:39Z |
+| owasp-asvs | 5.0.0 | OWASP Foundation (owasp.github.io) | https://owasp.github.io/www-project-application-security-verification-standard | 2026-09-15T12:11:33Z | 2026-09-15T12:11:33Z |

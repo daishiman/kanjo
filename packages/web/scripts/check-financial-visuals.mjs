@@ -858,10 +858,137 @@ const analysisHub = {
   },
 };
 
+/**
+ * 総収支画面の応答 (SYS-TCSCREEN-P09)。
+ *
+ * 判定作業の3区分は空にしない。0 件だとペインが見出しだけになり、狭幅で縦積みになるかも、
+ * 行が本体幅に収まるかも確かめないまま緑になる。各区分へ 1 件ずつ置いて実際に描かせる。
+ * 値はすべて架空。
+ */
+const totalCashflowSegment = (income, expense) => ({
+  income,
+  expense,
+  balance: income - expense,
+  previousYear: null,
+  change: null,
+});
+const totalCashflowTotals = (income, expense) => ({ income, expense, balance: income - expense });
+const totalCashflowFreee = {
+  freeeIndex: 0,
+  freeeKey: 'v1:freee:fixture#0',
+  month: months.at(-1),
+  date: `${months.at(-1)}-05`,
+  partner: '架空クラウド',
+  amount: 3_300,
+  io: 'expense',
+  account: '通信費',
+  settleAccount: '架空カード',
+};
+// core は `mfTxId`、API 応答は `txId`。画面が読むのは後者なので、ここも `txId` で書く。
+// core 側の名前で書くと key が undefined になり、React の key 警告として跳ね返る
+const totalCashflowReview = (txId, reason) => ({
+  txId,
+  reason,
+  mf: {
+    date: `${months.at(-1)}-07`,
+    displayDate: '08/07',
+    content: '架空クラウド 月額',
+    amount: 3_300,
+    io: 'expense',
+    institution: '架空カード',
+    major: '事業経費',
+    middle: '通信費',
+    memo: '',
+    cls: 'biz',
+    clsSrc: 'rule',
+  },
+  candidates: [{ ...totalCashflowFreee, dayGap: 2, accountConflict: false, score: 72 }],
+});
+const totalCashflowDuplicates = Array.from({ length: 24 }, (_, index) => {
+  const review = totalCashflowReview(
+    `fixture-duplicate-${index + 1}`,
+    '対応する freee 取引が他の明細へ寄せられています',
+  );
+  const day = String((index % 20) + 1).padStart(2, '0');
+  return {
+    ...review,
+    mf: {
+      ...review.mf,
+      date: `${months.at(-1)}-${day}`,
+      displayDate: `08/${day}`,
+      content: `架空クラウド 月額 ${index + 1}`,
+    },
+  };
+});
+const totalCashflow = {
+  months: months.slice(-6).map((month) => ({
+    month,
+    shiftedCount: 0,
+    reviewCount: 1,
+    reviewAmount: 3_300,
+    totalExpense: 892_400,
+    householdExpense: 412_000,
+  })),
+  review: [totalCashflowReview('fixture-tx-1', '発生日が一致しません')],
+  matched: [],
+  freeeOnly: [totalCashflowFreee],
+  excluded: [
+    {
+      ...totalCashflowFreee,
+      freeeIndex: 1,
+      freeeKey: 'v1:freee:fixture#1',
+      reason: '口座間の振替なので数えない',
+      reasonCode: 'transfer',
+      memo: null,
+    },
+  ],
+  coverage: { freeeTotal: 2, matched: 0, freeeOnly: 1, excluded: 1, mfReview: 1 },
+  summary: {
+    total: totalCashflowSegment(1_248_000, 892_400),
+    biz: totalCashflowSegment(1_248_000, 480_400),
+    household: totalCashflowSegment(0, 412_000),
+  },
+  series: months.slice(-6).map((month) => ({
+    month,
+    total: totalCashflowTotals(1_248_000, 892_400),
+    biz: totalCashflowTotals(1_248_000, 480_400),
+    household: totalCashflowTotals(0, 412_000),
+  })),
+  workbench: {
+    duplicates: totalCashflowDuplicates,
+    needsReview: [totalCashflowReview('fixture-tx-1', '発生日が一致しません')],
+    excluded: [
+      {
+        ...totalCashflowFreee,
+        freeeIndex: 1,
+        freeeKey: 'v1:freee:fixture#1',
+        reason: '口座間の振替なので数えない',
+        reasonCode: 'transfer',
+        memo: null,
+      },
+    ],
+    progress: {
+      duplicates: { total: totalCashflowDuplicates.length, decided: 0 },
+      needsReview: { total: 1, decided: 0 },
+      excluded: { total: 1, decided: 1 },
+    },
+  },
+  autoMatches: [],
+  lastOperation: null,
+  period: {
+    applied: { from: months.at(-6), to: months.at(-1) },
+    label: `${months.at(-6)} 〜 ${months.at(-1)}`,
+    full: { from: months[0], to: months.at(-1) },
+    years: [...new Set(months.map((month) => month.slice(0, 4)))],
+    monthCount: 6,
+  },
+};
+
 const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64');
 const responseFor = (url) => {
   const path = new URL(url).pathname;
   if (path === '/api/auth/me') return { authenticated: true };
+  if (path === '/api/total-cashflow') return totalCashflow;
   if (path === '/api/summary') return summary;
   if (path === '/api/overview') return overviewFixture;
   if (path === '/api/review-queue') return reviewQueueFixture;
@@ -1203,6 +1330,7 @@ try {
         readySelector: '.recon-kpis',
       },
       { name: 'Trends', path: '/analysis/trends', expectedFigures: 3 },
+      { name: 'Total cashflow', path: '/analysis/total-cashflow', expectedFigures: 1 },
       { name: 'Subscriptions', path: '/subscriptions', expectedFigures: 1 },
       { name: 'Household', path: '/household', expectedFigures: 1 },
       { name: 'AI report', path: '/ai', expectedFigures: 4, openReport: true },
@@ -1255,6 +1383,18 @@ try {
           "Boolean(document.querySelector('.improve-trigger'))",
           `${route.name} improvement action`,
         );
+        if (route.name === 'Total cashflow') {
+          await evaluate(`(() => {
+            document.querySelector('.tcf-row-open')?.click();
+            document.querySelector('.tcf-workbench-main .tcf-pick input')?.click();
+          })()`);
+          await waitFor(
+            "Boolean(document.querySelector('.tcf-detail') && document.querySelector('.tcf-selection-bar'))",
+            'Total cashflow workbench context',
+          );
+          await evaluate("document.querySelector('.tcf-workbench')?.scrollIntoView({ block: 'start' })");
+          await sleep(150);
+        }
         if (route.name === 'Reconciliation') {
           // 表内の横移動はDOM代入ではなく、利用者と同じ横ホイール入力で確かめる。
           const scrollProbe = JSON.parse(
@@ -1760,6 +1900,99 @@ try {
               Boolean(headerLocation) && headerLocation.scrollWidth <= headerLocation.clientWidth + 1,
           };
         })(),
+        totalCashflow: (() => {
+          const scroller = document.querySelector('.tcf-workbench-main');
+          const table = scroller?.querySelector('table.data');
+          const headers = [...(table?.querySelectorAll('thead th') ?? [])];
+          const rows = [...(table?.querySelectorAll('tbody tr') ?? [])];
+          const tabs = document.querySelector('.tcf-workbench-tabs');
+          const detail = document.querySelector('.tcf-detail');
+          const selection = document.querySelector('.tcf-selection-bar');
+          const body = document.querySelector('.tcf-workbench-body');
+          const box = (node) => {
+            const value = node?.getBoundingClientRect();
+            return value
+              ? { left: value.left, right: value.right, top: value.top, bottom: value.bottom, width: value.width, height: value.height }
+              : null;
+          };
+          const opaque = (value) => value !== 'transparent' && value !== 'rgba(0, 0, 0, 0)';
+          if (!scroller || !table || !headers.length || !rows.length || !tabs || !detail || !selection || !body)
+            return {
+              present: false,
+              viewport: false,
+              stickyHeader: false,
+              paneContext: false,
+              selectionContext: false,
+              responsive: false,
+            };
+
+          const compact = matchMedia('(max-width: 640px)').matches;
+          const desktop = matchMedia('(min-width: 901px)').matches;
+          const scrollerStyle = getComputedStyle(scroller);
+          const headerStyle = getComputedStyle(headers[0]);
+          const tabsStyle = getComputedStyle(tabs);
+          const detailStyle = getComputedStyle(detail);
+          const selectionStyle = getComputedStyle(selection);
+          const bodyStyle = getComputedStyle(body);
+          const scrollerBox = box(scroller);
+          const tabsBefore = box(tabs);
+          const detailBefore = box(detail);
+          const originalTop = scroller.scrollTop;
+          if (!compact) scroller.scrollTop = scroller.scrollHeight;
+          const scrolledTop = scroller.scrollTop;
+          const headerAfter = box(headers[0]);
+          const tabsAfter = box(tabs);
+          const detailAfter = box(detail);
+          scroller.scrollTop = originalTop;
+
+          const stableContext = (before, after) =>
+            Boolean(before && after && Math.abs(before.top - after.top) <= 1 && Math.abs(before.left - after.left) <= 1);
+          const cardLabels = rows.every((row) =>
+            [...row.cells].every((cell) => Boolean(cell.dataset.label?.trim())),
+          );
+          const paneOrder = (() => {
+            const tabsBox = box(tabs);
+            const mainBox = box(scroller);
+            const detailBox = box(detail);
+            if (!tabsBox || !mainBox || !detailBox) return false;
+            return desktop
+              ? tabsBox.right <= mainBox.left + 1 && mainBox.right <= detailBox.left + 1
+              : tabsBox.bottom <= mainBox.top + 1 && mainBox.bottom <= detailBox.top + 1;
+          })();
+          return {
+            present: true,
+            viewport: compact
+              ? scrollerStyle.overflow === 'visible' && cardLabels
+              : scroller.scrollHeight > scroller.clientHeight + 1 &&
+                ['auto', 'scroll'].includes(scrollerStyle.overflowY) &&
+                scrollerStyle.scrollbarGutter.startsWith('stable') &&
+                Number.parseFloat(scrollerStyle.scrollPaddingBlockStart) > 0,
+            stickyHeader: compact
+              ? getComputedStyle(table.querySelector('thead')).position === 'absolute' && cardLabels
+              : scrolledTop > 0 &&
+                Boolean(scrollerBox && headerAfter) &&
+                Math.abs(headerAfter.top - scrollerBox.top) <= 2 &&
+                headerStyle.position === 'sticky' &&
+                Number.parseInt(headerStyle.zIndex, 10) >= 3 &&
+                opaque(headerStyle.backgroundColor),
+            paneContext:
+              paneOrder &&
+              stableContext(tabsBefore, tabsAfter) &&
+              stableContext(detailBefore, detailAfter) &&
+              (desktop
+                ? tabsStyle.position === 'sticky' && detailStyle.position === 'sticky'
+                : tabsStyle.position !== 'sticky' && detailStyle.position === 'static'),
+            selectionContext:
+              selectionStyle.position === 'sticky' &&
+              Number.parseInt(selectionStyle.zIndex, 10) >= 20 &&
+              opaque(selectionStyle.backgroundColor),
+            responsive:
+              bodyStyle.display === 'grid' &&
+              (desktop
+                ? bodyStyle.gridTemplateColumns.split(' ').length === 3
+                : bodyStyle.gridTemplateColumns.split(' ').length === 1),
+          };
+        })(),
         reconciliation: (() => {
           const rect = (node) => {
             const box = node?.getBoundingClientRect();
@@ -2074,6 +2307,13 @@ try {
             failures.push(`${tag} Reconciliation のモバイル一覧が副次列を縮約していない`);
         }
         if (
+          route.name === 'Total cashflow' &&
+          Object.values(routeMetrics.totalCashflow).some((value) => !value)
+        )
+          failures.push(
+            `${tag} Total cashflow の3ペイン・内部scroll・sticky見出し・選択操作の文脈が崩れている (${JSON.stringify(routeMetrics.totalCashflow)})`,
+          );
+        if (
           route.name === 'Overview' &&
           zoom === 1 &&
           width === 375 &&
@@ -2155,6 +2395,13 @@ try {
               Buffer.from(railBottomShot.data, 'base64'),
             );
           }
+        }
+        if (route.name === 'Total cashflow' && zoom === 1 && [375, 1280].includes(width)) {
+          const routeShot = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
+          writeFileSync(
+            join(OUTPUT_DIR, `total-cashflow-${width}.png`),
+            Buffer.from(routeShot.data, 'base64'),
+          );
         }
         if (
           route.name === 'Reconciliation' &&

@@ -1,11 +1,21 @@
 import { zValidator } from '@hono/zod-validator';
 /**
- * 事業と家計を合わせたトータル収支の一覧表と、重複の「同じ / 違う」判断の保存。
+ * 事業と家計を合わせたトータル収支の画面と、重複の「同じ / 違う」判断の保存。
  *
  * 集計はすべて `@kanjo/core` の純関数に委譲し、ここでは読み込みと整形だけを行う。
- * 保存するのは利用者の判断1つに限る (月次の合計・件数・トレンドは要求のたびに導出する)。
+ * 保存するのは利用者の判断と、その判断を元に戻すための履歴だけで、
+ * 月次の合計・件数・トレンド・前年同期比は要求のたびに導出する (AD-002)。
  */
-import { type FreeeExclusion, STABLE_KEY_VERSION, mfStableKey, totalCashflowReport } from '@kanjo/core';
+import {
+  EXCLUSION_MEMO_MAX,
+  EXCLUSION_REASON_CODES,
+  type FreeeExclusion,
+  type ReconcileReview,
+  STABLE_KEY_VERSION,
+  fullRange,
+  mfStableKey,
+  totalCashflowScreen,
+} from '@kanjo/core';
 import { and, eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -15,60 +25,113 @@ import * as s from '../db/schema.js';
 import { dealFromRow, getDb } from '../store.js';
 import { loadScoped } from './analytics.js';
 import { bindDuplicateVerdicts, bindMfExclusions } from './duplicate-verdict-bindings.js';
+import {
+  type ExclusionOpItem,
+  UndoRejected,
+  type VerdictOpItem,
+  latestUndoable,
+  recordOperation,
+  undoOperation,
+} from './total-cashflow-operations.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
 export const totalCashflowRoute = new Hono<Ctx>();
 
+/** 除外行から core が要る形へ。reason は表示用、reasonCode は集計用 (0041) */
+const toExclusion = (row: typeof s.freeeDealExclusions.$inferSelect): FreeeExclusion => ({
+  freeeKey: row.freeeKey,
+  reason: row.reason,
+  reasonCode: row.reasonCode ?? undefined,
+  memo: row.memo ?? undefined,
+});
+
 /**
- * 月次のトータル収入・支出・収支と内訳、事業へ寄せた件数、要確認キュー。
+ * 要確認1件を画面の形へ。
+ *
+ * mf と candidates をそのまま渡す。要確認は「理由を告げる」ためではなく
+ * 「利用者が同じ取引か判断する」ために出しており、判断材料は画面まで届かないと意味がない。
+ */
+const toReviewView = (item: ReconcileReview) => ({
+  txId: item.mfTxId,
+  reason: item.reason,
+  mf: item.mf,
+  candidates: item.candidates,
+});
+
+/**
+ * 画面が要る値をまとめて返す。
  *
  * 期間の解決は分析APIと同じ `loadScoped` を通す。ここで別の解き方をすると、
  * 同じ ?from=&to= でも画面ごとに違う月が出る。
+ *
+ * 合計・月次系列・判定作業・自動一致は `totalCashflowScreen` の1回の呼び出しから取る (AD-001)。
+ * 画面の数値ごとに別々の関数を呼ぶと、同じ画面の中で合計と内訳が食い違いうる。
  */
 totalCashflowRoute.get('/total-cashflow', async (c) => {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const { data, period } = await loadScoped(c);
-  const months = new Set(data.months);
+  const { all, period } = await loadScoped(c);
 
-  const [dealRows, verdictRows, exclusionRows, mfExclusionRows] = await Promise.all([
+  const [dealRows, verdictRows, exclusionRows, lastOperation, mfExclusionRows] = await Promise.all([
     db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
     db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
     db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),
+    latestUndoable(db, userId),
     db.select().from(s.mfTxExclusions).where(eq(s.mfTxExclusions.userId, userId)),
   ]);
-  const deals = dealRows.map(dealFromRow).filter((deal) => months.has(deal.month));
-  const exclusions: FreeeExclusion[] = exclusionRows.map((row) => ({
-    freeeKey: row.freeeKey,
-    reason: row.reason,
-  }));
+  const deals = dealRows.map(dealFromRow);
+  const verdicts = bindDuplicateVerdicts(verdictRows, all.mfTx);
+  const exclusions = exclusionRows.map(toExclusion);
 
-  // 照合画面で外した MF 明細は要確認から外す (総額には残る)。照合・ハブ・概況と件数を揃える
-  const mfExcludedTxIds = bindMfExclusions(mfExclusionRows, data.mfTx).map((row) => row.txId);
-  const report = totalCashflowReport(
-    data,
-    deals,
-    bindDuplicateVerdicts(verdictRows, data.mfTx),
-    exclusions,
-    mfExcludedTxIds,
-  );
+  // 照合画面 (0041) で外した MF 明細は要確認から外す (総額には残る)。照合・ハブ・概況と件数を揃える
+  const mfExcludedTxIds = bindMfExclusions(mfExclusionRows, all.mfTx).map((row) => row.txId);
+
+  // 期間の指定が無ければデータ全体。取込前で1か月も無いときだけ range が null になる
+  const range = period.applied ?? fullRange(all);
+  if (!range) {
+    return c.json({
+      months: [],
+      review: [],
+      matched: [],
+      freeeOnly: [],
+      excluded: [],
+      coverage: { freeeTotal: 0, matched: 0, freeeOnly: 0, excluded: 0, mfReview: 0 },
+      summary: null,
+      series: [],
+      workbench: null,
+      autoMatches: [],
+      lastOperation: null,
+      period,
+    });
+  }
+
+  const screen = totalCashflowScreen(all, deals, verdicts, exclusions, range, mfExcludedTxIds);
+  const { report } = screen;
   return c.json({
     months: report.months,
     // mf と candidates をそのまま渡す。要確認は「理由を告げる」ためではなく
     // 「利用者が同じ取引か判断する」ために出しており、判断材料は画面まで届かないと意味がない。
-    review: report.review.map((item) => ({
-      txId: item.mfTxId,
-      reason: item.reason,
-      mf: item.mf,
-      candidates: item.candidates,
-    })),
+    review: report.review.map(toReviewView),
     // 一致した組・相手のいない freee・外した freee の三つを全部返す。
     // 「抜け漏れはないか」に答えられるのは、freee 全件がこの三つのどれかに必ず入る形だけである。
     matched: report.matched,
     freeeOnly: report.freeeOnly,
     excluded: report.excluded,
     coverage: report.coverage,
+    // 0041: 画像の構成 (期間サマリ・月次系列・判定作業・自動一致・取消) に対応する追加分
+    summary: screen.summary,
+    series: screen.series,
+    // core の `mfTxId` を API では `txId` に揃える。同じ「MF 明細の id」が
+    // 応答の中で2つの名前を持つと、画面側がどちらを送るかを毎回確かめる必要が出る
+    workbench: {
+      duplicates: screen.workbench.duplicates.map(toReviewView),
+      needsReview: screen.workbench.needsReview.map(toReviewView),
+      excluded: screen.workbench.excluded,
+      progress: screen.workbench.progress,
+    },
+    autoMatches: screen.autoMatches.map(({ mfTxId, ...rest }) => ({ txId: mfTxId, ...rest })),
+    lastOperation,
     period,
   });
 });
@@ -170,6 +233,23 @@ totalCashflowRoute.post('/total-cashflow/verdicts', zValidator('json', verdictSc
     return c.json({ error: reason }, reason.includes('見つかりません') ? 404 : 409);
   }
 
+  // 書き込む前に「今の値」を控える。書いた後に読むと、上書きした値しか残っていない
+  const before: VerdictOpItem[] = rows.map((row) => {
+    const prev = existing.find((e) => e.txId === row.txId);
+    return {
+      txId: row.txId,
+      before: prev
+        ? {
+            verdict: prev.verdict,
+            freeeKey: prev.freeeKey ?? null,
+            stableKey: prev.stableKey ?? null,
+            fingerprintVersion: prev.fingerprintVersion ?? null,
+            decidedAt: prev.decidedAt ?? null,
+          }
+        : null,
+    };
+  });
+
   if (rows.length > 0) {
     await db
       .insert(s.duplicateVerdicts)
@@ -185,7 +265,10 @@ totalCashflowRoute.post('/total-cashflow/verdicts', zValidator('json', verdictSc
         },
       });
   }
-  return bulk ? c.json({ ok: true, saved: rows.length, rejected }) : c.json({ ok: true });
+  const operationId = await recordOperation(db, userId, 'verdict', before);
+  return bulk
+    ? c.json({ ok: true, saved: rows.length, rejected, operationId })
+    : c.json({ ok: true, operationId });
 });
 
 /**
@@ -200,12 +283,15 @@ const freeeKeyField = z.string().trim().min(1).max(2_000);
 /** 1 リクエストで外せる件数の上限。一致した組が数百件でも 1 往復で送れる幅を取る */
 const MAX_EXCLUSION_ITEMS = 200;
 
-/** 除外行の列数 (user_id / freee_key / reason / created_at / updated_at) */
-const EXCLUSION_COLUMNS = 5;
+/** 除外行の列数 (user_id / freee_key / reason / reason_code / memo / created_at / updated_at) */
+const EXCLUSION_COLUMNS = 7;
 
 /**
  * 1 文の多重 VALUES に載せられる行数。D1 は 1 文あたりのバインドを 100 に制限するので、
  * 列数で割った数を超えたら文を分ける。件数が増えた日にだけ落ちる書き方にしない。
+ *
+ * 0041 で列が 5 から 7 に増えている。定数を割り算で出しているので、
+ * 列を足したときに分割数も自動で縮む (20 行 → 14 行)。
  */
 const EXCLUSION_ROWS_PER_STATEMENT = Math.floor(D1_MAX_BOUND_PARAMS / EXCLUSION_COLUMNS);
 
@@ -216,11 +302,18 @@ const EXCLUSION_ROWS_PER_STATEMENT = Math.floor(D1_MAX_BOUND_PARAMS / EXCLUSION_
  * 1 件ずつ送るとそのたびに往復する。理由は選んだ全件で同じことが多い (「日付と金額が
  * 一致するので二重登録」) ので、理由は 1 つだけ受け取り、鍵の配列に同じ理由を書く。
  */
+const reasonFields = {
+  reason: z.string().trim().min(1).max(200),
+  /** 0041: 数えられる理由。旧い画面からの要求を弾かないよう任意にする */
+  reasonCode: z.enum(EXCLUSION_REASON_CODES).optional(),
+  memo: z.string().trim().max(EXCLUSION_MEMO_MAX).optional(),
+};
+
 const exclusionSchema = z.union([
-  z.object({ freeeKey: freeeKeyField, reason: z.string().trim().min(1).max(200) }),
+  z.object({ freeeKey: freeeKeyField, ...reasonFields }),
   z.object({
     freeeKeys: z.array(freeeKeyField).min(1).max(MAX_EXCLUSION_ITEMS),
-    reason: z.string().trim().min(1).max(200),
+    ...reasonFields,
   }),
 ]);
 
@@ -236,10 +329,33 @@ totalCashflowRoute.post(
     // 受け取った時点で畳んでおき、選び方によって保存の成否が変わらないようにする。
     const keys = [...new Set(bulk ? payload.freeeKeys : [payload.freeeKey])];
     const now = new Date().toISOString();
+
+    // 上書きになる鍵の「今の理由」を先に控える。後から読むと新しい理由しか残っていない
+    const existing = await db
+      .select()
+      .from(s.freeeDealExclusions)
+      .where(eq(s.freeeDealExclusions.userId, userId));
+    const before: ExclusionOpItem[] = keys.map((freeeKey) => {
+      const prev = existing.find((row) => row.freeeKey === freeeKey);
+      return {
+        freeeKey,
+        before: prev
+          ? {
+              reason: prev.reason,
+              reasonCode: prev.reasonCode ?? null,
+              memo: prev.memo ?? null,
+              createdAt: prev.createdAt ?? null,
+            }
+          : null,
+      };
+    });
+
     const rows = keys.map((freeeKey) => ({
       userId,
       freeeKey,
       reason: payload.reason,
+      reasonCode: payload.reasonCode ?? null,
+      memo: payload.memo ?? null,
       createdAt: now,
       updatedAt: now,
     }));
@@ -251,10 +367,16 @@ totalCashflowRoute.post(
         .onConflictDoUpdate({
           target: [s.freeeDealExclusions.userId, s.freeeDealExclusions.freeeKey],
           // createdAt は最初の値を保つ。理由の書き直しで「いつ外したか」を失わない
-          set: { reason: sql`excluded.reason`, updatedAt: sql`excluded.updated_at` },
+          set: {
+            reason: sql`excluded.reason`,
+            reasonCode: sql`excluded.reason_code`,
+            memo: sql`excluded.memo`,
+            updatedAt: sql`excluded.updated_at`,
+          },
         });
     }
-    return bulk ? c.json({ ok: true, saved: rows.length }) : c.json({ ok: true });
+    const operationId = await recordOperation(db, userId, 'exclude', before);
+    return bulk ? c.json({ ok: true, saved: rows.length, operationId }) : c.json({ ok: true, operationId });
   },
 );
 
@@ -264,14 +386,60 @@ totalCashflowRoute.delete(
   async (c) => {
     const userId = c.get('userId');
     const db = getDb(c.env.DB);
-    await db
-      .delete(s.freeeDealExclusions)
-      .where(
-        and(
-          eq(s.freeeDealExclusions.userId, userId),
-          eq(s.freeeDealExclusions.freeeKey, c.req.valid('json').freeeKey),
-        ),
-      );
-    return c.json({ ok: true });
+    const { freeeKey } = c.req.valid('json');
+    const where = and(eq(s.freeeDealExclusions.userId, userId), eq(s.freeeDealExclusions.freeeKey, freeeKey));
+    // 消す前に中身を控える。消した後では「何を戻せばよいか」がどこにも残らない
+    const [prev] = await db.select().from(s.freeeDealExclusions).where(where);
+    await db.delete(s.freeeDealExclusions).where(where);
+    const operationId = prev
+      ? await recordOperation(db, userId, 'restore', [
+          {
+            freeeKey,
+            before: {
+              reason: prev.reason,
+              reasonCode: prev.reasonCode ?? null,
+              memo: prev.memo ?? null,
+              createdAt: prev.createdAt ?? null,
+            },
+          },
+        ])
+      : null;
+    return c.json({ ok: true, operationId });
   },
 );
+
+/**
+ * 直前の操作を元に戻す (BR-008)。
+ *
+ * 失敗の理由を code で返し分ける。画面は `stale_operation` のときだけ再読込を促し、
+ * それ以外は選択を保ったまま同じ操作をやり直せる。ひとまとめの 409 では
+ * 「もう一度押せばよいのか、読み直すべきか」を利用者が判断できない。
+ */
+const UNDO_STATUS: Record<string, 404 | 409> = {
+  not_found: 404,
+  already_undone: 409,
+  not_undoable: 409,
+  stale_operation: 409,
+};
+
+const UNDO_MESSAGE: Record<string, string> = {
+  not_found: 'この操作は見つかりませんでした',
+  already_undone: 'この操作はすでに元に戻されています',
+  not_undoable: '取り消しそのものは元に戻せません',
+  stale_operation: '別の更新と重なりました。もう一度お試しください',
+};
+
+totalCashflowRoute.post('/total-cashflow/operations/:id/undo', async (c) => {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  try {
+    const undone = await undoOperation(db, userId, c.req.param('id'));
+    return c.json({ ok: true, operation: undone });
+  } catch (error) {
+    if (!(error instanceof UndoRejected)) throw error;
+    return c.json(
+      { error: { code: error.code, message: UNDO_MESSAGE[error.code] } },
+      UNDO_STATUS[error.code] ?? 409,
+    );
+  }
+});

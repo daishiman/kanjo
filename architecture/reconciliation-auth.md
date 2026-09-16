@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "20f2fb1c3077c7947868fff14a3e48c2704f83ffed4ae43fea33b6794b11eb52"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/auth.md", "source_version": "0.1.14", "source_digest": "20f2fb1c3077c7947868fff14a3e48c2704f83ffed4ae43fea33b6794b11eb52", "imported_at": "2026-09-15T10:39:59Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-16-reconciliation/completeness-findings.json", "evaluated_digest": "20f2fb1c3077c7947868fff14a3e48c2704f83ffed4ae43fea33b6794b11eb52"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-16-reconciliation/auth.md", "source_version": "0.1.14", "source_digest": "20f2fb1c3077c7947868fff14a3e48c2704f83ffed4ae43fea33b6794b11eb52", "imported_at": "2026-09-15T10:39:59Z"}
 created_at: "2026-09-15T10:39:59Z"
 updated_at: "2026-09-15T10:39:59Z"
 depends_on: ["spec-reconciliation"]
@@ -50,7 +50,7 @@ serves_goals: ["G3", "G4"]
 
 # Architecture overview
 
-照合画面 — 認証ゲート配下の照合 API と操作 id の所有者確認。`system-spec/auth.md` は承認時入力、本書は認証制約を持つ。現行の機能仕様の正本は `specs/spec-reconciliation.md`。
+照合画面 — 認証ゲート配下の照合 API と操作 id の所有者確認。`system-spec/archive/2026-09-16-reconciliation/auth.md` は承認時入力、本書は認証制約を持つ。現行の機能仕様の正本は `specs/spec-reconciliation.md`。
 
 ## Context and drivers
 
