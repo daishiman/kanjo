@@ -65,7 +65,7 @@ AC と FR から証跡を引くための索引。
 | P10 | `final-review.md` | FR と差分の対応、スコープ外 0 件の確認 |
 | P11 | `evidence.md` | 本書 |
 | P12 | `../total-cashflow-screen.md`、`../runbooks/total-cashflow-undo-conflict.md` | 規則 docs と runbook |
-| P13 | `close-out.md` | 配信の記録 (**未実施**) |
+| P13 | `close-out.md` | 配信の記録 (commit `2e60d3e` / push / draft PR #55 まで実施。merge は未実施) |
 
 ## 6. 再検証のコマンド
 
@@ -103,8 +103,9 @@ pnpm test && pnpm typecheck && pnpm lint
 
 | 項目 | 状態 |
 |---|---|
-| PR の CI が緑 | **未実施** (PR を作っていない) |
-| migration 0041 の本番適用 | **未実施** |
-| 本番 `/analysis/total-cashflow` の表示確認 | **未実施** |
+| PR の CI が緑 | 確認中 (draft PR https://github.com/daishiman/kanjo/pull/55) |
+| migration 0041 の本番適用 | **未実施** (merge 後) |
+| 本番 `/analysis/total-cashflow` の表示確認 | **未実施** (merge 後) |
 
-利用者が commit / push / PR 作成を禁じているため。詳細は `close-out.md`。
+いずれも merge を待つもの。詳細は `close-out.md`。
+仕様・設計への反映判断は `spec-reflection-receipt.md` に記録している。
