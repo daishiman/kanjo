@@ -50,7 +50,13 @@ const HUB = {
     change: { income: 0.0417, expense: 0.0667, net: 0 },
   },
   views: {
-    reconciliation: { id: 'reconciliation', priority: '中', count: 0, reviewCount: 0 },
+    reconciliation: {
+      id: 'reconciliation',
+      priority: '中',
+      count: 0,
+      actionRequiredCount: 0,
+      reviewCount: 0,
+    },
     'total-cashflow': { id: 'total-cashflow', priority: '高', count: 2, reviewCount: 2 },
     matrix: { id: 'matrix', priority: '中', count: 0, unrecordedMonths: 0, normal: true },
     trends: { id: 'trends', priority: '中', count: 0, expenseChange: 0.0667 },
@@ -175,6 +181,31 @@ describe('支出分析ハブ', () => {
       expect.stringContaining('変化を追う'),
       expect.stringContaining('行動を決める'),
     ]);
+  });
+
+  it('照合の現在状態は一致候補がなく未処理だけでも actionRequiredCount を表示する', async () => {
+    const unprocessedOnly = {
+      ...HUB,
+      views: {
+        ...HUB.views,
+        reconciliation: {
+          ...HUB.views.reconciliation,
+          priority: '高',
+          count: 2,
+          actionRequiredCount: 2,
+          reviewCount: 0,
+        },
+      },
+    };
+    renderHub('/analysis', (url) => {
+      const body = url.startsWith('/api/analysis/hub') ? unprocessedOnly : EMPTY;
+      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
+    });
+
+    expect((await screen.findAllByText('要確認あり 2件')).length).toBeGreaterThan(0);
+    const row = within(screen.getByRole('table')).getByRole('row', { name: /照合/ });
+    expect(within(row).getByText('要確認あり 2件')).toBeTruthy();
+    expect(within(row).queryByText('要確認なし')).toBeNull();
   });
 
   it('選択中の分析パネルは「わかること・主なデータソース・対象外のデータ」を出す', async () => {
@@ -316,7 +347,9 @@ describe('支出分析ハブ', () => {
     fireEvent.click(within(action).getByRole('link', { name: '照合を開く' }));
 
     await waitFor(() => expect(location()).toBe('/analysis/reconciliation'));
-    expect(await screen.findByText('照合のくわしい説明')).toBeTruthy();
+    expect(
+      await screen.findByRole('heading', { name: '帳簿と口座の差異を、どこから解消しますか？' }),
+    ).toBeTruthy();
   });
 
   it('API 取得失敗時は集計中を残さず、再読み込み後に復旧する', async () => {
@@ -400,12 +433,31 @@ describe('支出分析ハブ', () => {
 });
 
 describe('サイドバーの要確認バッジ', () => {
-  function renderShell(views: Record<string, unknown>) {
+  function renderShell(views: Record<string, unknown>, closeReconciliationCount?: number) {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (input: RequestInfo | URL) => {
         const url = String(input);
-        const body = url.startsWith('/api/analysis/hub') ? { ...HUB, views } : { period: HUB.period };
+        const body = url.startsWith('/api/analysis/hub')
+          ? { ...HUB, views }
+          : url.startsWith('/api/review-queue') && closeReconciliationCount !== undefined
+            ? {
+                closeStatus: {
+                  month: '2026-08',
+                  steps: [
+                    {
+                      key: 'reconciliation',
+                      label: '照合',
+                      done: closeReconciliationCount === 0,
+                      count: closeReconciliationCount,
+                    },
+                  ],
+                  doneCount: closeReconciliationCount === 0 ? 1 : 0,
+                  total: 4,
+                  reviewedAt: null,
+                },
+              }
+            : { period: HUB.period };
         return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
       }),
     );
@@ -423,16 +475,23 @@ describe('サイドバーの要確認バッジ', () => {
     );
   }
 
-  it('照合と総収支の子行に、集約応答の要確認件数をそのまま出す', async () => {
-    renderShell({
-      ...HUB.views,
-      reconciliation: { ...HUB.views.reconciliation, reviewCount: 3 },
-      // 応答に要確認件数らしき値が混ざっても、要確認を持たない視点には出さない
-      diagnosis: { ...HUB.views.diagnosis, reviewCount: 4 },
-    });
+  it('照合は全期間 closeStatus、総収支は期間内 hub の要確認件数を出す', async () => {
+    renderShell(
+      {
+        ...HUB.views,
+        reconciliation: { ...HUB.views.reconciliation, count: 3, actionRequiredCount: 3, reviewCount: 0 },
+        // 応答に要確認件数らしき値が混ざっても、要確認を持たない視点には出さない
+        diagnosis: { ...HUB.views.diagnosis, reviewCount: 4 },
+      },
+      5,
+    );
     const nav = screen.getByRole('navigation', { name: 'メインナビゲーション' });
-    expect((await within(nav).findByTestId('nav-review-badge-reconciliation')).textContent).toBe('要確認3件');
-    expect(within(nav).getByTestId('nav-review-badge-total-cashflow').textContent).toBe('要確認2件');
+    expect(
+      (await within(nav).findByTestId('nav-review-badge-reconciliation')).getAttribute('aria-label'),
+    ).toBe('要確認5件');
+    expect(within(nav).getByTestId('nav-review-badge-total-cashflow').getAttribute('aria-label')).toBe(
+      '要確認2件',
+    );
     for (const id of ['matrix', 'trends', 'diagnosis']) {
       expect(within(nav).queryByTestId(`nav-review-badge-${id}`)).toBeNull();
     }
@@ -440,15 +499,17 @@ describe('サイドバーの要確認バッジ', () => {
     expect(within(nav).getByRole('link', { name: '照合' })).toBeTruthy();
   });
 
-  it('要確認が 0 件の視点にはバッジを出さない', async () => {
+  it('旧 Worker が closeStatus を返さない間だけ hub の actionRequiredCount へ退避する', async () => {
     renderShell({
       ...HUB.views,
-      reconciliation: { ...HUB.views.reconciliation, reviewCount: 1 },
+      reconciliation: { ...HUB.views.reconciliation, count: 1, actionRequiredCount: 1, reviewCount: 0 },
       'total-cashflow': { ...HUB.views['total-cashflow'], reviewCount: 0 },
     });
     const nav = screen.getByRole('navigation', { name: 'メインナビゲーション' });
     // 応答の到着を照合のバッジで待ってから確かめる (到着前の「まだ無い」を 0 件と取り違えない)
-    expect((await within(nav).findByTestId('nav-review-badge-reconciliation')).textContent).toBe('要確認1件');
+    expect(
+      (await within(nav).findByTestId('nav-review-badge-reconciliation')).getAttribute('aria-label'),
+    ).toBe('要確認1件');
     expect(within(nav).queryByTestId('nav-review-badge-total-cashflow')).toBeNull();
   });
 });

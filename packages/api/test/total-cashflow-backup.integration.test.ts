@@ -3,10 +3,10 @@
  *
  * | 判定条件 | 内容 | テスト |
  * |---|---|---|
- * | FR-004 | 0041 以前の自由文の理由が、表示文はそのまま・集計語は `other` として読める | `移行` |
+ * | FR-004 | 0042 以前の自由文の理由が、表示文はそのまま・集計語は `other` として読める | `移行` |
  * | FR-006 | 3表を持たない旧バックアップの復元は既存の行に触れず、持つ方はその時点へ戻す | `復元` |
  *
- * 移行は「0040 まで適用した実物の DB に旧形式の行を入れてから 0041 を当てる」形で確かめる。
+ * 移行は「0041 まで適用した実物の DB に旧形式の行を入れてから 0042 を当てる」形で確かめる。
  * 全部適用した後に列を NULL へ戻す作りだと、移行の UPDATE 自体を一度も通らずに緑になる。
  *
  * 実データを使わず、専用のインメモリ D1 と架空明細だけで検証する。
@@ -50,9 +50,9 @@ async function applyMigrationFiles(db: D1Database, only: readonly string[]): Pro
   }
 }
 
-/** 0041 が「既存行」と見なすのは、これより前だけを当てた時点で入っていた行 */
-const beforeExclusionReasonCode = migrationFilenames.filter((f) => f < '0041');
-const fromExclusionReasonCode = migrationFilenames.filter((f) => f >= '0041');
+/** 0042 が「既存行」と見なすのは、これより前だけを当てた時点で入っていた行 */
+const beforeExclusionReasonCode = migrationFilenames.filter((f) => f < '0042');
+const fromExclusionReasonCode = migrationFilenames.filter((f) => f >= '0042');
 
 const request = (path: string, init: RequestInit = {}) =>
   app.request(
@@ -100,7 +100,7 @@ async function resetDecisions(): Promise<void> {
   }
 }
 
-/** 0041 より前の書き方で入った除外。理由は自由文だけで、集計語も memo も持たない */
+/** 0042 より前の書き方で入った除外。理由は自由文だけで、集計語も memo も持たない */
 const LEGACY_REASON = '口座間の振替なので数えない';
 
 /**
@@ -135,7 +135,7 @@ beforeAll(async () => {
   d1 = (await miniflare.getD1Database('DB')) as D1Database;
   files = (await miniflare.getR2Bucket('FILES')) as unknown as R2Bucket;
 
-  // ここまでが「移行前の本番」。この時点で入った行が 0041 の対象になる
+  // ここまでが「移行前の本番」。この時点で入った行が 0042 の対象になる
   await applyMigrationFiles(d1, beforeExclusionReasonCode);
   for (const deal of deals) {
     await d1
@@ -172,7 +172,7 @@ afterAll(async () => {
   await miniflare?.dispose();
 });
 
-describe('移行 0041 より前に保存された除外 (FR-004)', () => {
+describe('移行 0042 より前に保存された除外 (FR-004)', () => {
   it('自由文の理由はそのまま表示でき、集計語は other として読める', async () => {
     const excluded = (await screen()).excluded;
     // 鍵が食い違うと 0 件成功で緑になる。件数と中身を両方固定する
@@ -214,7 +214,7 @@ describe('復元 バックアップと総収支の判断 (FR-006)', () => {
       .run();
   }
 
-  // 移行の describe が使う「0041 以前の行」もここで消える。宣言順に実行されるため、
+  // 移行の describe が使う「0042 以前の行」もここで消える。宣言順に実行されるため、
   // 移行の確認が先に済んでいる
   beforeEach(resetDecisions);
 

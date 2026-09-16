@@ -11,6 +11,7 @@ import { viewportsByLabel } from './viewports.mjs';
 
 const BASE_URL = process.env.KANJO_VISUAL_BASE_URL ?? 'http://127.0.0.1:4175';
 const VISUAL_SCOPE = process.env.KANJO_VISUAL_SCOPE ?? 'all';
+const PERFORMANCE_GATE = process.env.KANJO_PERFORMANCE_GATE === '1';
 // 実ルートは高さを1000で揃えて測る(縦は検査対象ではない)ため、幅とzoomだけ使う。
 const VIEWPORTS = viewportsByLabel([
   '320',
@@ -663,9 +664,15 @@ const overviewFixture = {
   period: summary.period,
 };
 const reviewQueueFixture = {
-  total: 3,
-  counts: { classification: 1, reconciliation: 1, import: 1 },
+  total: 41,
+  counts: { classification: 1, reconciliation: 39, import: 1 },
   snoozedCount: 0,
+  closeStatus: {
+    ...overviewFixture.closeStatus,
+    steps: overviewFixture.closeStatus.steps.map((step) =>
+      step.key === 'reconciliation' ? { ...step, count: 39 } : step,
+    ),
+  },
   items: [
     {
       kind: 'classification',
@@ -706,12 +713,144 @@ const reviewQueueFixture = {
   ],
 };
 
+// 照合画面 (/analysis/reconciliation)。KPI・3カラム・下段・選択中バーが崩れないかを実描画で確かめる。
+const reconMonth = months.at(-1);
+const reconMf = (index, amount, day) => ({
+  date: `${reconMonth}-${day}`,
+  displayDate: `${reconMonth.slice(5)}/${day}`,
+  content: `匿名の取引先${index}`,
+  amount,
+  io: 'expense',
+  institution: '匿名カード',
+  major: '通信費',
+  middle: '',
+  memo: '',
+  cls: 'biz',
+  clsSrc: 'ルール',
+});
+const reconFreee = (index, amount, day) => ({
+  freeeIndex: index,
+  freeeKey: `fixture-freee-${index}`,
+  month: reconMonth,
+  date: `${reconMonth}-${day}`,
+  partner: `匿名の取引先${index}株式会社`,
+  amount,
+  io: 'expense',
+  account: '通信費',
+  settleAccount: '普通預金',
+});
+const reconRow = (index, status, extra = {}) => ({
+  txId: `fixture-mf-${index}`,
+  status,
+  date: `${reconMonth}-${String(10 + (index % 18)).padStart(2, '0')}`,
+  month: reconMonth,
+  mf: reconMf(index, 1_000 * (index + 1), String(10 + (index % 18)).padStart(2, '0')),
+  freee: null,
+  difference: null,
+  score: null,
+  similarity: null,
+  reasons: [],
+  queues: [],
+  verdict: null,
+  matchedBy: null,
+  excludedBy: null,
+  excludedReason: null,
+  reviewReason: null,
+  candidateKeys: [],
+  ...extra,
+});
+// 最新画面と同じ122件。選択対象・対応不要・解消済みを同時に置き、各状態の操作差を実ブラウザで検証する。
+const reconAmounts = [4_800, 32_000, 1_200, 3_000, 1_800, 6_480];
+const reconReviewRows = Array.from({ length: 39 }, (_, index) => {
+  const day = String(10 + (index % 18)).padStart(2, '0');
+  const amount = reconAmounts[index % reconAmounts.length];
+  return reconRow(index, 'review', {
+    mf: reconMf(index, amount, day),
+    freee: reconFreee(index, amount, day),
+    difference: 0,
+    score: 88,
+    similarity: 0.9,
+    reasons: [
+      { kind: 'amount', ok: true, label: '金額が一致' },
+      { kind: 'date', ok: false, label: '日付が近い' },
+      { kind: 'content', ok: true, label: '内容が類似' },
+    ],
+    queues: ['review', 'nearDate'],
+    reviewReason: '発生日が一致しません',
+    candidateKeys: [`fixture-freee-${index}`],
+  });
+});
+const reconMatchedRows = Array.from({ length: 41 }, (_, offset) => {
+  const index = 39 + offset;
+  const day = String(10 + (index % 18)).padStart(2, '0');
+  const amount = reconAmounts[index % reconAmounts.length];
+  return reconRow(index, 'matched', {
+    mf: reconMf(index, amount, day),
+    freee: reconFreee(index, amount, day),
+    difference: 0,
+    score: 100,
+    similarity: 1,
+    matchedBy: 'auto',
+  });
+});
+const reconOnlyRows = Array.from({ length: 42 }, (_, offset) => {
+  const index = 80 + offset;
+  const month = months[months.length - 1 - (Math.floor(offset / reconAmounts.length) % months.length)];
+  const day = index % 2 === 0 ? '10' : '18';
+  const amount = reconAmounts[index % reconAmounts.length];
+  return reconRow(index, 'mfOnly', {
+    date: `${month}-${day}`,
+    month,
+    mf: {
+      ...reconMf(index, amount, day),
+      date: `${month}-${day}`,
+      displayDate: `${month.slice(5)}/${day}`,
+    },
+    queues: ['mfOnly'],
+  });
+});
+// 先頭ページにも3状態を混在させ、選択可能/不可の列が同居しても崩れないことを撮影・検証する。
+const reconRows = Array.from({ length: 42 }, (_, index) =>
+  [reconReviewRows[index], reconMatchedRows[index], reconOnlyRows[index]].filter(Boolean),
+).flat();
+const reconOnlyAmount = reconOnlyRows.reduce((total, row) => total + row.mf.amount, 0);
+const reconFreeeAmount = [...reconReviewRows, ...reconMatchedRows].reduce(
+  (total, row) => total + (row.freee?.amount ?? 0),
+  0,
+);
+const reconciliation = {
+  kpi: {
+    businessExpense: reconOnlyAmount + reconFreeeAmount,
+    mfOnlyCount: 42,
+    mfOnlyAmount: reconOnlyAmount,
+    actionRequiredCount: 39,
+    reviewCount: 39,
+    resolvedCount: 41,
+    resolvableCount: 80,
+    resolutionRate: 41 / 80,
+  },
+  statusCounts: { unprocessed: 0, review: 39, matched: 41, mfOnly: 42, excluded: 0 },
+  sourceCounts: { moneyforward: 122, freee: 80 },
+  queues: { review: 39, mfOnly: 42, amountMismatch: 0, nearDate: 39 },
+  rows: reconRows,
+  mfOnly: reconOnlyRows,
+  unmatchedFreee: [],
+  lastAction: null,
+  period: summary.period,
+};
+
 // サイドバーの要確認バッジが全画面で呼ぶ集約API。差し替えないと dev の /api 中継先へ抜け、
 // そこで別の wrangler dev が 401 を返すとログイン画面へ落ちて描画待ちがタイムアウトする。
 const analysisHub = {
   summary: { income: 0, expense: 0, net: 0, previous: null, change: null },
   views: {
-    reconciliation: { id: 'reconciliation', priority: '中', count: 0, reviewCount: 0 },
+    reconciliation: {
+      id: 'reconciliation',
+      priority: '高',
+      count: 39,
+      actionRequiredCount: 39,
+      reviewCount: 39,
+    },
     'total-cashflow': { id: 'total-cashflow', priority: '中', count: 0, reviewCount: 0 },
     matrix: { id: 'matrix', priority: '中', count: 0, unrecordedMonths: 0, normal: true },
     trends: { id: 'trends', priority: '中', count: 0, expenseChange: null },
@@ -855,6 +994,7 @@ const responseFor = (url) => {
   if (path === '/api/review-queue') return reviewQueueFixture;
   if (path === '/api/analysis/hub') return analysisHub;
   if (path === '/api/imports') return { imports: [] };
+  if (path === '/api/reconciliation') return reconciliation;
   if (path === '/api/matrix') return matrix;
   if (path === '/api/trends') return trends;
   if (path === '/api/subscriptions') return subscriptions;
@@ -921,14 +1061,80 @@ try {
     const body = await evaluate('document.body.innerText.slice(0, 500)');
     throw new Error(`${label} の描画待ちがタイムアウトしました: ${body}`);
   };
+  const mouseClick = async (selector, label) => {
+    const point = JSON.parse(
+      await evaluate(`JSON.stringify((() => {
+        const node = document.querySelector(${JSON.stringify(selector)});
+        if (!node) return null;
+        node.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+        const scroller = node.closest('.scroll-x');
+        if (scroller) {
+          const targetBox = node.getBoundingClientRect();
+          const scrollBox = scroller.getBoundingClientRect();
+          if (targetBox.left < scrollBox.left) scroller.scrollLeft -= scrollBox.left - targetBox.left + 8;
+          if (targetBox.right > scrollBox.right) scroller.scrollLeft += targetBox.right - scrollBox.right + 8;
+        }
+        const clickSurface = node.querySelector('.recon-control-indicator') ?? node;
+        const box = clickSurface.getBoundingClientRect();
+        return box.width > 0 && box.height > 0
+          ? { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+          : null;
+      })())`),
+    );
+    if (!point) throw new Error(`${label} の実クリック対象が見つかりません: ${selector}`);
+    await send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+    await send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      button: 'left',
+      clickCount: 1,
+      ...point,
+    });
+    await send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      button: 'left',
+      clickCount: 1,
+      ...point,
+    });
+    await sleep(100);
+  };
   await send('Page.enable');
   await send('Runtime.enable');
+  await send('Page.addScriptToEvaluateOnNewDocument', {
+    source: `
+      globalThis.__kanjoVitals = { lcp: 0, cls: 0, inp: 0 };
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) globalThis.__kanjoVitals.lcp = entry.startTime;
+      }).observe({ type: 'largest-contentful-paint', buffered: true });
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (!entry.hadRecentInput) globalThis.__kanjoVitals.cls += entry.value;
+        }
+      }).observe({ type: 'layout-shift', buffered: true });
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.interactionId) globalThis.__kanjoVitals.inp = Math.max(globalThis.__kanjoVitals.inp, entry.duration);
+        }
+      }).observe({ type: 'event', buffered: true, durationThreshold: 0 });
+    `,
+  });
   await send('Fetch.enable', { patterns: [{ urlPattern: '*://*/api/*', requestStage: 'Request' }] });
   await send('Emulation.setEmulatedMedia', {
     features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
   });
 
   const failures = [];
+  const reconciliationFixtureCounts = {};
+  for (const row of reconciliation.rows)
+    reconciliationFixtureCounts[row.status] = (reconciliationFixtureCounts[row.status] ?? 0) + 1;
+  if (
+    reconciliation.rows.length !== 122 ||
+    reconciliationFixtureCounts.mfOnly !== 42 ||
+    reconciliationFixtureCounts.review !== 39 ||
+    reconciliationFixtureCounts.matched !== 41
+  )
+    failures.push(
+      `Reconciliation 匿名fixtureが122件(MFのみ42・要確認39・照合済み41)ではない: ${JSON.stringify(reconciliationFixtureCounts)}`,
+    );
   if (VISUAL_SCOPE === 'all' || VISUAL_SCOPE === 'core') {
     for (const { label: viewportLabel, width, zoom } of VIEWPORTS) {
       await send('Emulation.setDeviceMetricsOverride', {
@@ -1109,23 +1315,39 @@ try {
     }
   }
 
-  if (VISUAL_SCOPE === 'all' || VISUAL_SCOPE === 'additional' || VISUAL_SCOPE === 'overview') {
+  if (
+    VISUAL_SCOPE === 'all' ||
+    VISUAL_SCOPE === 'additional' ||
+    VISUAL_SCOPE === 'overview' ||
+    VISUAL_SCOPE === 'reconciliation'
+  ) {
     const additionalRoutes = [
       { name: 'Overview', path: '/', expectedFigures: 1 },
+      {
+        name: 'Reconciliation',
+        path: '/analysis/reconciliation',
+        expectedFigures: 0,
+        readySelector: '.recon-kpis',
+      },
       { name: 'Trends', path: '/analysis/trends', expectedFigures: 3 },
       { name: 'Total cashflow', path: '/analysis/total-cashflow', expectedFigures: 1 },
       { name: 'Subscriptions', path: '/subscriptions', expectedFigures: 1 },
       { name: 'Household', path: '/household', expectedFigures: 1 },
       { name: 'AI report', path: '/ai', expectedFigures: 4, openReport: true },
     ];
-    // rail境界は共通shellの変更なので、代表5画面をすべて同じ幅で監査する。
-    const ADDITIONAL_WIDTHS = [360, 375, 390, 641, 768, 900, 1023, 1024, 1280];
+    // rail境界は共通shellの変更なので、代表6画面をすべて同じ幅で監査する。
+    const ADDITIONAL_WIDTHS = [360, 375, 390, 641, 768, 900, 1023, 1024, 1280, 1600];
     for (const { label: viewportLabel, width, zoom } of VIEWPORTS) {
       const auditAllRoutes =
         (zoom === 1 && ADDITIONAL_WIDTHS.includes(width)) || viewportLabel === 'rail-zoom200';
-      const routes = additionalRoutes.filter(
-        (route) => route.name === 'Overview' || (VISUAL_SCOPE !== 'overview' && auditAllRoutes),
-      );
+      const routes = additionalRoutes.filter((route) => {
+        if (VISUAL_SCOPE === 'overview') return route.name === 'Overview';
+        if (VISUAL_SCOPE === 'reconciliation')
+          return (
+            route.name === 'Reconciliation' && zoom === 1 && [375, 641, 768, 1024, 1280, 1600].includes(width)
+          );
+        return route.name === 'Overview' || auditAllRoutes;
+      });
       if (!routes.length) continue;
       const tag = zoom === 1 ? `${width}px` : viewportLabel;
       await send('Emulation.setDeviceMetricsOverride', {
@@ -1137,6 +1359,7 @@ try {
       await send('Emulation.setPageScaleFactor', { pageScaleFactor: zoom });
       for (const route of routes) {
         runtimeProblems.length = 0;
+        let reconciliationInteraction = null;
         await send('Page.navigate', { url: `${BASE_URL}${route.path}` });
         if (route.openReport) {
           await waitFor(
@@ -1147,6 +1370,11 @@ try {
             "[...document.querySelectorAll('button')].find((button) => button.textContent?.trim() === '読む')?.click()",
           );
         }
+        if (route.readySelector)
+          await waitFor(
+            `Boolean(document.querySelector(${JSON.stringify(route.readySelector)}))`,
+            route.name,
+          );
         await waitFor(
           `document.querySelectorAll('[data-financial-figure] .financial-figure__chart canvas').length === ${route.expectedFigures}`,
           route.name,
@@ -1166,6 +1394,224 @@ try {
           );
           await evaluate("document.querySelector('.tcf-workbench')?.scrollIntoView({ block: 'start' })");
           await sleep(150);
+        }
+        if (route.name === 'Reconciliation') {
+          // 表内の横移動はDOM代入ではなく、利用者と同じ横ホイール入力で確かめる。
+          const scrollProbe = JSON.parse(
+            await evaluate(`JSON.stringify((() => {
+              const scroller = document.querySelector('.recon-table-scroll');
+              if (!scroller) return null;
+              scroller.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+              scroller.scrollLeft = 0;
+              const rect = scroller.getBoundingClientRect();
+              return {
+                x: rect.left + Math.min(rect.width / 2, 120),
+                y: rect.top + Math.min(rect.height / 2, 120),
+                overflow: scroller.scrollWidth > scroller.clientWidth + 1,
+              };
+            })())`),
+          );
+          if (scrollProbe?.overflow) {
+            await send('Input.dispatchMouseEvent', {
+              type: 'mouseWheel',
+              x: scrollProbe.x,
+              y: scrollProbe.y,
+              deltaX: 240,
+              deltaY: 0,
+            });
+            await sleep(100);
+          }
+          const horizontalScrollWorked =
+            !scrollProbe?.overflow ||
+            Number(await evaluate("document.querySelector('.recon-table-scroll')?.scrollLeft ?? 0")) > 0;
+          await evaluate(
+            "document.querySelector('.recon-table-scroll')?.scrollTo({ left: 0, behavior: 'instant' })",
+          );
+
+          // 行の内容を実クリックし、active行とdetailが同じ取引へ切り替わることを確認する。
+          const detailBefore = await evaluate(
+            "document.querySelector('.recon-row-open[aria-current=\"true\"]')?.textContent?.trim() ?? ''",
+          );
+          const detailTarget = await evaluate(
+            "document.querySelector('.recon-table tbody tr:nth-child(2) .recon-row-open')?.textContent?.trim() ?? ''",
+          );
+          await mouseClick(
+            '.recon-table tbody tr:nth-child(2) .recon-row-open',
+            `${tag} Reconciliation 行詳細`,
+          );
+          await waitFor(
+            `document.querySelector('.recon-row-open[aria-current="true"]')?.textContent?.trim() === ${JSON.stringify(detailTarget)}`,
+            `${tag} Reconciliation 行詳細同期`,
+          );
+          // 狭幅ではdetailへsmooth scrollするため、次の実クリック座標を採る前に移動完了を待つ。
+          await sleep(width < 1024 ? 600 : 100);
+          const afterClick = JSON.parse(
+            await evaluate(`JSON.stringify((() => ({
+              active: document.querySelector('.recon-row-open[aria-current="true"]')?.textContent?.trim() ?? '',
+              detail: document.querySelector('.recon-detail')?.textContent ?? '',
+            }))())`),
+          );
+
+          // 1行選択 → indeterminate → 表示中を全選択 → 全解除を、すべて実マウスで通す。
+          await mouseClick(
+            '.recon-table tbody tr:first-child .recon-selection-hit',
+            `${tag} Reconciliation 行選択`,
+          );
+          await waitFor(
+            "Boolean(document.querySelector('.recon-selection')) && document.querySelector('.recon-table thead input[type=\"checkbox\"]')?.indeterminate === true",
+            `${tag} Reconciliation 1件選択`,
+          );
+          const rowSelected = JSON.parse(
+            await evaluate(`JSON.stringify((() => ({
+              rowChecked: document.querySelector('.recon-table tbody input[type="checkbox"]:checked') !== null,
+              checkedCount: document.querySelectorAll('.recon-table tbody input[type="checkbox"]:checked').length,
+              headerChecked: document.querySelector('.recon-table thead input[type="checkbox"]')?.checked === true,
+              headerIndeterminate: document.querySelector('.recon-table thead input[type="checkbox"]')?.indeterminate === true,
+              selectionCount: document.querySelector('.recon-selection-count')?.textContent?.trim() ?? '',
+            }))())`),
+          );
+          await mouseClick('.recon-table thead .recon-selection-hit', `${tag} Reconciliation 表示中を全選択`);
+          await waitFor(
+            'document.querySelector(\'.recon-table thead input[type="checkbox"]\')?.checked === true',
+            `${tag} Reconciliation 全選択`,
+          );
+          const allSelected = JSON.parse(
+            await evaluate(`JSON.stringify((() => ({
+              visibleSelectable: document.querySelectorAll('.recon-table tbody input[type="checkbox"]').length,
+              checkedCount: document.querySelectorAll('.recon-table tbody input[type="checkbox"]:checked').length,
+              headerChecked: document.querySelector('.recon-table thead input[type="checkbox"]')?.checked === true,
+              headerIndeterminate: document.querySelector('.recon-table thead input[type="checkbox"]')?.indeterminate === true,
+              selectionCount: document.querySelector('.recon-selection-count')?.textContent?.trim() ?? '',
+            }))())`),
+          );
+          await mouseClick('.recon-table thead .recon-selection-hit', `${tag} Reconciliation 表示中を全解除`);
+          await waitFor(
+            "document.querySelectorAll('.recon-table tbody input[type=\"checkbox\"]:checked').length === 0 && !document.querySelector('.recon-selection')",
+            `${tag} Reconciliation 全解除`,
+          );
+          const cleared = JSON.parse(
+            await evaluate(`JSON.stringify((() => ({
+              checkedCount: document.querySelectorAll('.recon-table tbody input[type="checkbox"]:checked').length,
+              headerChecked: document.querySelector('.recon-table thead input[type="checkbox"]')?.checked === true,
+              headerIndeterminate: document.querySelector('.recon-table thead input[type="checkbox"]')?.indeterminate === true,
+              selectionBar: Boolean(document.querySelector('.recon-selection')),
+            }))())`),
+          );
+
+          // 狭幅ではfilterが折り畳まれる。summaryも実クリックしてから候補有無を排他的に切り替える。
+          if (!(await evaluate("document.querySelector('.recon-filters details')?.open === true"))) {
+            await mouseClick('.recon-filters summary', `${tag} Reconciliation 絞り込みを開く`);
+            await waitFor(
+              "document.querySelector('.recon-filters details')?.open === true",
+              `${tag} Reconciliation 絞り込み展開`,
+            );
+          }
+          await mouseClick(
+            '.recon-radio:has(input[type="radio"][aria-label="候補なし"])',
+            `${tag} Reconciliation 候補なし`,
+          );
+          await waitFor(
+            "document.querySelector('.recon-radio input[aria-label=\"候補なし\"]')?.checked === true && document.querySelector('#recon-list-title')?.textContent?.includes('42件')",
+            `${tag} Reconciliation 候補なし42件`,
+          );
+          const withoutCandidate = JSON.parse(
+            await evaluate(`JSON.stringify((() => {
+              const rows = [...document.querySelectorAll('.recon-table tbody tr')];
+              return {
+                checked: document.querySelector('.recon-radio input[aria-label="候補なし"]')?.checked === true,
+                heading: document.querySelector('#recon-list-title')?.textContent?.replaceAll(/\\s/g, '') ?? '',
+                rowCount: rows.length,
+                selectionCellsConsistent: rows.every((row) => {
+                  const cell = row.cells[0];
+                  return Boolean(cell) &&
+                    !cell.querySelector('input[type="checkbox"]') &&
+                    cell.querySelectorAll('.recon-selection-hit--unavailable').length === 1 &&
+                    cell.querySelectorAll('.recon-selection-placeholder').length === 1;
+                }),
+              };
+            })())`),
+          );
+          await mouseClick(
+            '.recon-radio:has(input[type="radio"][aria-label="候補あり"])',
+            `${tag} Reconciliation 候補あり`,
+          );
+          await waitFor(
+            "document.querySelector('.recon-radio input[aria-label=\"候補あり\"]')?.checked === true && document.querySelector('#recon-list-title')?.textContent?.includes('80件')",
+            `${tag} Reconciliation 候補あり80件`,
+          );
+          const withCandidate = JSON.parse(
+            await evaluate(`JSON.stringify((() => {
+              const rows = [...document.querySelectorAll('.recon-table tbody tr')];
+              return {
+                checked: document.querySelector('.recon-radio input[aria-label="候補あり"]')?.checked === true,
+                heading: document.querySelector('#recon-list-title')?.textContent?.replaceAll(/\\s/g, '') ?? '',
+                rowCount: rows.length,
+                selectionCellsConsistent: rows.every((row) => {
+                  const cell = row.cells[0];
+                  const pending = row.querySelector('.recon-badge--review, .recon-badge--unprocessed') !== null;
+                  const selectable = cell?.querySelectorAll('.recon-selection-hit:not(.recon-selection-hit--unavailable) input[type="checkbox"]').length === 1;
+                  const unavailable = cell?.querySelectorAll('.recon-selection-hit--unavailable .recon-selection-placeholder').length === 1;
+                  return Boolean(cell) && (pending ? selectable && !unavailable : unavailable && !selectable);
+                }),
+              };
+            })())`),
+          );
+          // 検収画像は候補あり/なしの操作結果ではなく、全122件を俯瞰できる初期状態へ戻して撮る。
+          await mouseClick(
+            '.recon-radio:has(input[name="recon-candidate"][aria-label="すべて"])',
+            `${tag} Reconciliation 候補すべて`,
+          );
+          await waitFor(
+            "document.querySelector('.recon-radio input[name=\"recon-candidate\"][aria-label=\"すべて\"]')?.checked === true && document.querySelector('#recon-list-title')?.textContent?.includes('122件')",
+            `${tag} Reconciliation 候補すべて122件`,
+          );
+          const allCandidates = JSON.parse(
+            await evaluate(`JSON.stringify((() => ({
+              checked: document.querySelector('.recon-radio input[name="recon-candidate"][aria-label="すべて"]')?.checked === true,
+              heading: document.querySelector('#recon-list-title')?.textContent?.replaceAll(/\\s/g, '') ?? '',
+              rowCount: document.querySelectorAll('.recon-table tbody tr').length,
+            }))())`),
+          );
+
+          reconciliationInteraction = {
+            attempted: Boolean(detailTarget),
+            horizontallyScrolled: horizontalScrollWorked,
+            changed:
+              Boolean(detailTarget) &&
+              detailBefore !== detailTarget &&
+              afterClick.active === detailTarget &&
+              afterClick.detail.includes(detailTarget),
+            rowSelected,
+            allSelected,
+            cleared,
+            withoutCandidate,
+            withCandidate,
+            allCandidates,
+          };
+          const vitals = JSON.parse(
+            await evaluate(`JSON.stringify((() => {
+              const navigation = performance.getEntriesByType('navigation')[0];
+              const paints = performance.getEntriesByType('paint');
+              return {
+                lcp: Math.round(globalThis.__kanjoVitals?.lcp ?? 0),
+                cls: Number((globalThis.__kanjoVitals?.cls ?? 0).toFixed(3)),
+                inp: Math.round(globalThis.__kanjoVitals?.inp ?? 0),
+                fcp: Math.round(paints.find((entry) => entry.name === 'first-contentful-paint')?.startTime ?? 0),
+                domInteractive: Math.round(navigation?.domInteractive ?? 0),
+                nodes: document.getElementsByTagName('*').length,
+              };
+            })())`),
+          );
+          console.log(
+            `${tag} Reconciliation LCP=${vitals.lcp}ms FCP=${vitals.fcp}ms INP=${vitals.inp}ms CLS=${vitals.cls} ` +
+              `interactive=${vitals.domInteractive}ms DOM=${vitals.nodes}`,
+          );
+          if (PERFORMANCE_GATE && vitals.lcp > 2_500)
+            failures.push(`${tag} Reconciliation LCPが2.5秒を超えている`);
+          if (PERFORMANCE_GATE && vitals.inp > 200)
+            failures.push(`${tag} Reconciliation INPが200msを超えている`);
+          if (PERFORMANCE_GATE && vitals.cls > 0.1)
+            failures.push(`${tag} Reconciliation CLSが0.1を超えている`);
         }
         const routeMetrics = JSON.parse(
           await evaluate(`JSON.stringify((() => ({
@@ -1547,6 +1993,139 @@ try {
                 : bodyStyle.gridTemplateColumns.split(' ').length === 1),
           };
         })(),
+        reconciliation: (() => {
+          const rect = (node) => {
+            const box = node?.getBoundingClientRect();
+            return box && box.width > 0 && box.height > 0
+              ? { left: box.left, right: box.right, top: box.top, bottom: box.bottom, width: box.width }
+              : null;
+          };
+          const side = rect(document.querySelector('.recon-side'));
+          const list = rect(document.querySelector('.recon-list'));
+          const detail = rect(document.querySelector('.recon-detail'));
+          const active = document.querySelector('.recon-table tr.is-active');
+          const summaryRows = [...document.querySelectorAll('.recon-summary')].map(
+            (summary) => summary.querySelector('tbody')?.rows.length ?? 0,
+          );
+          const hiddenSecondaryColumns = [6, 7, 8].every((column) => {
+            const header = document.querySelector('.recon-table thead th:nth-child(' + column + ')');
+            return !header || getComputedStyle(header).display === 'none';
+          });
+          const verticalOverlap = (a, b) =>
+            Boolean(a && b && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 0);
+          const tableScroll = (() => {
+            const scroller = document.querySelector('.recon-table')?.closest('.scroll-x');
+            if (!scroller) return { exists: false, overflow: false, movable: false, contained: false };
+            const listBox = document.querySelector('.recon-list')?.getBoundingClientRect();
+            const scrollBox = scroller.getBoundingClientRect();
+            const original = scroller.scrollLeft;
+            const overflow = scroller.scrollWidth > scroller.clientWidth + 1;
+            scroller.scrollLeft = 0;
+            scroller.scrollLeft = scroller.scrollWidth;
+            const movable = !overflow || scroller.scrollLeft > 1;
+            scroller.scrollLeft = original;
+            return {
+              exists: true,
+              overflow,
+              movable,
+              contained: Boolean(
+                listBox &&
+                  scrollBox.left >= listBox.left - 1 &&
+                  scrollBox.right <= listBox.right + 1
+              ),
+            };
+          })();
+          const rowOpenTargets = [...document.querySelectorAll('.recon-row-open')];
+          const visible = (node) => {
+            const box = node?.getBoundingClientRect();
+            return Boolean(box && box.width > 0 && box.height > 0);
+          };
+          const choiceControls = [
+            ...document.querySelectorAll('.recon input[type="checkbox"], .recon input[type="radio"]'),
+          ].filter(visible);
+          const controlContract = choiceControls.map((control) => {
+            const indicator = control.nextElementSibling?.matches('.recon-control-indicator')
+              ? control.nextElementSibling
+              : null;
+            const box = indicator?.getBoundingClientRect();
+            const hitTarget = control.closest('label, .recon-radio') ?? control;
+            const hitBox = hitTarget.getBoundingClientRect();
+            return {
+              type: control.type,
+              label: control.getAttribute('aria-label') ?? '',
+              width: box?.width ?? 0,
+              height: box?.height ?? 0,
+              hitWidth: hitBox.width,
+              hitHeight: hitBox.height,
+              labeled: Boolean(control.closest('label, .recon-radio')),
+            };
+          });
+          const selectionCells = [...document.querySelectorAll('.recon-table tbody tr')].map(
+            (row) => row.cells[0],
+          );
+          const selectionCellWidths = [
+            document.querySelector('.recon-table thead th:first-child'),
+            ...selectionCells,
+          ]
+            .filter(Boolean)
+            .map((cell) => cell.getBoundingClientRect().width);
+          return {
+            hasMasterDetail: Boolean(list && detail && active),
+            candidateFiltersClear:
+              [...document.querySelectorAll('.recon-filters fieldset')].some((fieldset) =>
+                fieldset.querySelector('legend')?.textContent?.trim() === 'freee\u5019\u88dc' &&
+                Boolean(fieldset.querySelector('input[aria-label="\u5019\u88dc\u306a\u3057"]')) &&
+                Boolean(fieldset.querySelector('input[aria-label="\u5019\u88dc\u3042\u308a"]')) &&
+                !fieldset.textContent?.includes('MoneyForward\u306e\u307f')
+              ),
+            noDisabledRowSelectors:
+              document.querySelectorAll('.recon-table tbody input[type="checkbox"]:disabled').length === 0,
+            rowOpenTargetsReachable:
+              rowOpenTargets.length > 0 &&
+              rowOpenTargets.every((button) => button.getBoundingClientRect().height >= 43),
+            fixtureCountsVisible:
+              document.querySelector('.recon-radio input[aria-label="要確認 39"]') !== null &&
+              document.querySelector('.recon-radio input[aria-label="照合済み 41"]') !== null &&
+              document.querySelector('.recon-radio input[aria-label="MFのみ 42"]') !== null,
+            controlContract,
+            controlVisualSizes:
+              controlContract.length > 0 &&
+              controlContract.every(
+                (control) =>
+                  control.width >= 16 &&
+                  control.width <= 20 &&
+                  control.height >= 16 &&
+                  control.height <= 20,
+              ),
+            controlHitAreas:
+              controlContract.length > 0 &&
+              controlContract.every((control) => control.hitWidth >= 44 && control.hitHeight >= 44),
+            selectionColumnConsistent:
+              selectionCells.length > 0 &&
+              selectionCells.every(
+                (cell) => {
+                  const available = cell.querySelectorAll(
+                    '.recon-selection-hit:not(.recon-selection-hit--unavailable) input[type="checkbox"]',
+                  ).length;
+                  const unavailable = cell.querySelectorAll(
+                    '.recon-selection-hit--unavailable .recon-selection-placeholder',
+                  ).length;
+                  return available + unavailable === 1;
+                },
+              ) &&
+              Math.max(...selectionCellWidths) - Math.min(...selectionCellWidths) <= 1,
+            tableScroll,
+            previewCapped: summaryRows.length === 2 && summaryRows.every((count) => count <= 3),
+            desktopThreeColumns:
+              Boolean(side && list && detail) &&
+              side.right <= list.left + 1 &&
+              list.right <= detail.left + 1 &&
+              verticalOverlap(side, list) &&
+              verticalOverlap(list, detail),
+            stackedMasterDetail: Boolean(list && detail) && detail.top >= list.bottom - 1,
+            compactMobileColumns: hiddenSecondaryColumns,
+          };
+        })(),
         legend: [...document.querySelectorAll('[data-financial-figure]')].map((figure) => ({
           // アンカーを持たない図は、結論のid「model.id + useIdの値 + summary」から model.id を復元する
           key: figure.id || (figure.querySelector('[data-financial-summary]')?.id ?? '').split('-').slice(0, -2).join('-'),
@@ -1625,6 +2204,107 @@ try {
             failures.push(`${tag} Overview のbreadcrumb・期間・共通操作が重なっている`);
           if (!routeMetrics.overview.breadcrumbFits)
             failures.push(`${tag} Overview のbreadcrumbが省略表示になっている`);
+        }
+        if (route.name === 'Reconciliation') {
+          if (!routeMetrics.reconciliation.hasMasterDetail)
+            failures.push(`${tag} Reconciliation の一覧・active行・詳細が同時に成立していない`);
+          if (!routeMetrics.reconciliation.candidateFiltersClear)
+            failures.push(
+              `${tag} Reconciliation の候補有無絞り込みが件数と重複しない明確な名称になっていない`,
+            );
+          if (!routeMetrics.reconciliation.noDisabledRowSelectors)
+            failures.push(`${tag} Reconciliation の対応不要行に押せないチェック欄が残っている`);
+          if (!routeMetrics.reconciliation.rowOpenTargetsReachable)
+            failures.push(`${tag} Reconciliation の取引内容ボタンが44px相当の操作領域を満たさない`);
+          if (!routeMetrics.reconciliation.fixtureCountsVisible)
+            failures.push(
+              `${tag} Reconciliation の匿名fixture件数(要確認39・照合済み41・MFのみ42)が表示と一致しない`,
+            );
+          if (!routeMetrics.reconciliation.controlVisualSizes)
+            failures.push(
+              `${tag} Reconciliation のcheckbox/radio視覚部品が16〜20pxではない: ${JSON.stringify(routeMetrics.reconciliation.controlContract)}`,
+            );
+          if (!routeMetrics.reconciliation.controlHitAreas)
+            failures.push(
+              `${tag} Reconciliation のcheckbox/radio操作領域が44px未満: ${JSON.stringify(routeMetrics.reconciliation.controlContract)}`,
+            );
+          if (!routeMetrics.reconciliation.selectionColumnConsistent)
+            failures.push(`${tag} Reconciliation の各行で選択列の構造または列幅が一致しない`);
+          if (
+            !routeMetrics.reconciliation.tableScroll.exists ||
+            !routeMetrics.reconciliation.tableScroll.movable ||
+            !routeMetrics.reconciliation.tableScroll.contained
+          )
+            failures.push(`${tag} Reconciliation の候補表が表枠内で安全に横スクロールできない`);
+          if (!reconciliationInteraction?.attempted || !reconciliationInteraction.changed)
+            failures.push(`${tag} Reconciliation の別行を実クリックしても詳細が切り替わらない`);
+          if (!reconciliationInteraction?.horizontallyScrolled)
+            failures.push(`${tag} Reconciliation の候補表が実際の横ホイール操作で動かない`);
+          if (
+            !reconciliationInteraction?.rowSelected?.rowChecked ||
+            reconciliationInteraction.rowSelected.checkedCount !== 1 ||
+            reconciliationInteraction.rowSelected.headerChecked ||
+            !reconciliationInteraction.rowSelected.headerIndeterminate ||
+            reconciliationInteraction.rowSelected.selectionCount !== '1'
+          )
+            failures.push(
+              `${tag} Reconciliation の行checkbox→選択バー/indeterminateが同期しない: ${JSON.stringify(reconciliationInteraction?.rowSelected)}`,
+            );
+          if (
+            reconciliationInteraction?.allSelected?.visibleSelectable <= 0 ||
+            reconciliationInteraction?.allSelected?.checkedCount !==
+              reconciliationInteraction?.allSelected?.visibleSelectable ||
+            !reconciliationInteraction?.allSelected?.headerChecked ||
+            reconciliationInteraction?.allSelected?.headerIndeterminate ||
+            reconciliationInteraction?.allSelected?.selectionCount !==
+              String(reconciliationInteraction?.allSelected?.visibleSelectable)
+          )
+            failures.push(
+              `${tag} Reconciliation のheader全選択が表示中の選択可能件数へ反映されない: ${JSON.stringify(reconciliationInteraction?.allSelected)}`,
+            );
+          if (
+            reconciliationInteraction?.cleared?.checkedCount !== 0 ||
+            reconciliationInteraction?.cleared?.headerChecked ||
+            reconciliationInteraction?.cleared?.headerIndeterminate ||
+            reconciliationInteraction?.cleared?.selectionBar
+          )
+            failures.push(
+              `${tag} Reconciliation のheader全解除で選択状態が残る: ${JSON.stringify(reconciliationInteraction?.cleared)}`,
+            );
+          if (
+            !reconciliationInteraction?.withoutCandidate?.checked ||
+            reconciliationInteraction?.withoutCandidate?.heading !== '照合候補一覧42件' ||
+            reconciliationInteraction?.withoutCandidate?.rowCount !== 10 ||
+            !reconciliationInteraction?.withoutCandidate?.selectionCellsConsistent
+          )
+            failures.push(
+              `${tag} Reconciliation の候補なしradio/42件/選択列が同期しない: ${JSON.stringify(reconciliationInteraction?.withoutCandidate)}`,
+            );
+          if (
+            !reconciliationInteraction?.withCandidate?.checked ||
+            reconciliationInteraction?.withCandidate?.heading !== '照合候補一覧80件' ||
+            reconciliationInteraction?.withCandidate?.rowCount !== 10 ||
+            !reconciliationInteraction?.withCandidate?.selectionCellsConsistent
+          )
+            failures.push(
+              `${tag} Reconciliation の候補ありradio/80件/選択列が同期しない: ${JSON.stringify(reconciliationInteraction?.withCandidate)}`,
+            );
+          if (
+            !reconciliationInteraction?.allCandidates?.checked ||
+            reconciliationInteraction?.allCandidates?.heading !== '照合候補一覧122件' ||
+            reconciliationInteraction?.allCandidates?.rowCount !== 10
+          )
+            failures.push(
+              `${tag} Reconciliation の検収状態が全122件に復帰しない: ${JSON.stringify(reconciliationInteraction?.allCandidates)}`,
+            );
+          if (!routeMetrics.reconciliation.previewCapped)
+            failures.push(`${tag} Reconciliation の下段summaryが3件previewを超えている`);
+          if (zoom === 1 && width >= 1024 && !routeMetrics.reconciliation.desktopThreeColumns)
+            failures.push(`${tag} Reconciliation の絞り込み・一覧・詳細が3列になっていない`);
+          if (zoom === 1 && width < 1024 && !routeMetrics.reconciliation.stackedMasterDetail)
+            failures.push(`${tag} Reconciliation の狭幅master-detailが安全に縦積みされていない`);
+          if (zoom === 1 && width <= 767 && !routeMetrics.reconciliation.compactMobileColumns)
+            failures.push(`${tag} Reconciliation のモバイル一覧が副次列を縮約していない`);
         }
         if (
           route.name === 'Total cashflow' &&
@@ -1720,6 +2400,22 @@ try {
           const routeShot = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
           writeFileSync(
             join(OUTPUT_DIR, `total-cashflow-${width}.png`),
+            Buffer.from(routeShot.data, 'base64'),
+          );
+        }
+        if (
+          route.name === 'Reconciliation' &&
+          zoom === 1 &&
+          [375, 641, 768, 1024, 1280, 1600].includes(width)
+        ) {
+          await evaluate(`(() => {
+            document.querySelector('.recon-table-scroll')?.scrollTo({ left: 0, top: 0, behavior: 'instant' });
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          })()`);
+          await sleep(100);
+          const routeShot = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
+          writeFileSync(
+            join(OUTPUT_DIR, `reconciliation-${width}.png`),
             Buffer.from(routeShot.data, 'base64'),
           );
         }

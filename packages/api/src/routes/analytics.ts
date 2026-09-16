@@ -10,6 +10,7 @@ import {
   type FreeeExclusion,
   LIABILITY_CATEGORIES,
   type PeriodRange,
+  type ReviewQueueItem,
   TRANSACTION_EXPORT_HEADER,
   applyPeriod,
   applyReviewSnoozes,
@@ -37,10 +38,13 @@ import {
   overviewScopeMonths,
   periodLabel,
   profitAndLoss,
+  reconciliationReport,
   resolvePeriodQuery,
   reviewItemFingerprint,
   reviewQueueCounts,
+  sourceNeutralSubscriptionDeals,
   sourceNeutralSubscriptions,
+  subsCandidates,
   toCsv,
   totalCashflowReport,
   tradeoffCandidates,
@@ -56,8 +60,16 @@ import { z } from 'zod';
 import type { AuthEnv, AuthVariables } from '../auth.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
-import { dealFromRow, getDb, loadBackupPayload, loadDataset, loadVendorMemories } from '../store.js';
-import { bindDuplicateVerdicts } from './duplicate-verdict-bindings.js';
+import {
+  dealFromRow,
+  getDb,
+  loadBackupPayload,
+  loadDataset,
+  loadSubVendorExclusions,
+  loadSubVendors,
+  loadVendorMemories,
+} from '../store.js';
+import { bindDuplicateVerdicts, bindMfExclusions } from './duplicate-verdict-bindings.js';
 
 // 月次レビューの記録者 (actor) を読むため、ルートは認証ミドルウェアが載せる変数の型をそのまま使う
 type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
@@ -143,10 +155,20 @@ const apiError = (code: string, message: string) => ({ error: { code, message } 
 async function loadReviewSources<V extends { userId: string }>(c: Context<DataCtx<V>>, all: Dataset) {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const [dealRows, verdictRows, exclusionRows, failedRuns, vendorMemories] = await Promise.all([
+  const [
+    dealRows,
+    verdictRows,
+    exclusionRows,
+    mfExclusionRows,
+    failedRuns,
+    vendorMemories,
+    subVendors,
+    subExclusions,
+  ] = await Promise.all([
     db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
     db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
     db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),
+    db.select().from(s.mfTxExclusions).where(eq(s.mfTxExclusions.userId, userId)),
     db
       .select({
         id: s.importRuns.id,
@@ -156,16 +178,22 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
       .from(s.importRuns)
       .where(and(eq(s.importRuns.userId, userId), eq(s.importRuns.status, 'failed'))),
     loadVendorMemories(db, userId),
+    loadSubVendors(db, userId),
+    loadSubVendorExclusions(db, userId),
   ]);
   const exclusions: FreeeExclusion[] = exclusionRows.map((row) => ({
     freeeKey: row.freeeKey,
     reason: row.reason,
   }));
+  const deals = dealRows.map(dealFromRow);
+  const verdicts = bindDuplicateVerdicts(verdictRows, all.mfTx);
+  const mfExclusions = bindMfExclusions(mfExclusionRows, all.mfTx);
   const report = totalCashflowReport(
     all,
-    dealRows.map(dealFromRow),
-    bindDuplicateVerdicts(verdictRows, all.mfTx),
+    deals,
+    verdicts,
     exclusions,
+    mfExclusions.map((row) => row.txId),
   );
   const items = buildReviewQueue({
     data: all,
@@ -173,7 +201,55 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
     failedImports: failedRuns,
     vendorMemories,
   });
-  return { report, items };
+  // 照合件数の正本を一度だけ作り、月次クローズへそのまま渡す (照合画面 BR-006)
+  const actionRequiredCount = reconciliationReport({
+    data: all,
+    deals,
+    verdicts,
+    freeeExclusions: exclusions,
+    mfExclusions,
+  }).kpi.actionRequiredCount;
+  // サイドバーの「サブスク」バッジ。サブスク画面の候補一覧と同じ関数・同じ上限で数える
+  const subscriptionCandidates = subsCandidates(
+    sourceNeutralSubscriptionDeals(all, deals),
+    subVendors,
+    20,
+    subExclusions.map((row) => row.partner),
+  ).length;
+  return { report, items, actionRequiredCount, subscriptionCandidates };
+}
+
+/**
+ * 月次クローズの状況。概況の本体とサイドバーのカード (未処理キューの応答) が同じ関数で作る。
+ * 期間にも範囲にも依存しない (BR-003) ので、必ず全期間の `all` と保留前の全件 `items` を渡す。
+ */
+async function loadCloseStatus<V extends { userId: string }>(
+  c: Context<DataCtx<V>>,
+  all: Dataset,
+  sources: { items: ReviewQueueItem[]; actionRequiredCount: number },
+) {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const [reviewRows, [updated]] = await Promise.all([
+    db
+      .select({ month: s.monthlyCloseReviews.month, reviewedAt: s.monthlyCloseReviews.reviewedAt })
+      .from(s.monthlyCloseReviews)
+      .where(eq(s.monthlyCloseReviews.userId, userId)),
+    db
+      .select({ at: sql<string | null>`max(${s.imports.committedAt})` })
+      .from(s.imports)
+      .where(and(eq(s.imports.userId, userId), eq(s.imports.status, 'committed'))),
+  ]);
+  return {
+    closeStatus: monthlyCloseStatus({
+      data: all,
+      items: sources.items,
+      reviews: reviewRows,
+      hasCommittedImport: updated?.at != null,
+      actionRequiredCount: sources.actionRequiredCount,
+    }),
+    dataUpdatedAt: updated?.at ?? null,
+  };
 }
 
 async function loadSnoozes<V extends { userId: string }>(c: Context<DataCtx<V>>) {
@@ -193,20 +269,10 @@ analyticsRoute.get('/overview', async (c) => {
   if (!isOverviewScope(rawScope)) {
     return c.json(apiError('invalid_scope', 'scope は total / business / household のいずれかです'), 400);
   }
-  const userId = c.get('userId');
-  const db = getDb(c.env.DB);
   const { data, all, period } = await loadScoped(c);
-  const [{ report, items }, reviewRows, [updated]] = await Promise.all([
-    loadReviewSources(c, all),
-    db
-      .select({ month: s.monthlyCloseReviews.month, reviewedAt: s.monthlyCloseReviews.reviewedAt })
-      .from(s.monthlyCloseReviews)
-      .where(eq(s.monthlyCloseReviews.userId, userId)),
-    db
-      .select({ at: sql<string | null>`max(${s.imports.committedAt})` })
-      .from(s.imports)
-      .where(and(eq(s.imports.userId, userId), eq(s.imports.status, 'committed'))),
-  ]);
+  const sources = await loadReviewSources(c, all);
+  const { report } = sources;
+  const { closeStatus, dataUpdatedAt } = await loadCloseStatus(c, all, sources);
   // 系列は全期間から作り、期間は「表示する月の集合」として渡す。前年の比較窓を欠かさないため
   const series = overviewScopeMonths(rawScope, { data: all, totalMonths: report.months });
   const aggregate = overviewAggregate(series, period.applied);
@@ -214,13 +280,8 @@ analyticsRoute.get('/overview', async (c) => {
   return c.json({
     scope: rawScope,
     ...aggregate,
-    closeStatus: monthlyCloseStatus({
-      data: all,
-      items,
-      reviews: reviewRows,
-      hasCommittedImport: updated?.at != null,
-    }),
-    dataUpdatedAt: updated?.at ?? null,
+    closeStatus,
+    dataUpdatedAt,
     // 画面の語彙は caution。core の 'watch' は他画面が使うので型は変えず、境界でだけ写す
     defenseForecast: { ...forecast, level: forecast.level === 'watch' ? 'caution' : forecast.level },
     period,
@@ -231,14 +292,20 @@ analyticsRoute.get('/overview', async (c) => {
 analyticsRoute.get('/review-queue', async (c) => {
   // 読み込みは loadScoped に一本化する。件数は期間に依存させないので all だけを使う
   const { all } = await loadScoped(c);
-  const [{ items: queued }, snoozes] = await Promise.all([loadReviewSources(c, all), loadSnoozes(c)]);
-  const { items, snoozed, snoozedCount } = await applyReviewSnoozes(queued, snoozes);
+  const [sources, snoozes] = await Promise.all([loadReviewSources(c, all), loadSnoozes(c)]);
+  const [{ items, snoozed, snoozedCount }, { closeStatus }] = await Promise.all([
+    applyReviewSnoozes(sources.items, snoozes),
+    // サイドバーの月次クローズカードは全画面に出るので、全画面が読む未処理キューに載せる
+    loadCloseStatus(c, all, sources),
+  ]);
   return c.json({
     total: items.length,
     counts: reviewQueueCounts(items),
     snoozedCount,
     items,
     snoozedItems: snoozed,
+    closeStatus,
+    subscriptionCandidates: sources.subscriptionCandidates,
   });
 });
 

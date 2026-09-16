@@ -175,7 +175,7 @@ export interface ReconcileReviewCandidate {
   dayGap: number;
   /** この候補と MF 明細の口座が明らかに食い違うか (`accountsConflict` と同じ判定) */
   accountConflict: boolean;
-  /** 一致度 0..100 (BR-001)。`matchScore` と同じ配点 */
+  /** 一致度 0..100 (BR-001)。`duplicateMatchScore` と同じ配点 */
   score: number;
 }
 
@@ -331,8 +331,13 @@ export const MATCH_SCORE_TEXT = { same: 15, partial: 8, none: 0 } as const;
  *
  * 自動で寄った組 (同額・同じ向き・発生日一致) は最小でも
  * `40 + 30 + 8 + 0 = 78` になる。仕様が「78..100 をそのまま表示」と言うのはこの下限のこと。
+ *
+ * 名前に `duplicate` を付けているのは、照合画面 (reconciliation.ts) の `matchScore` と
+ * 別物だから。あちらは「MF の1件に対する freee の相手らしさ」を金額一致と摘要類似で測る。
+ * こちらは「二重計上らしさ」を日付・口座・摘要で測る。配点も上限の意味も違うので、
+ * 同じ名前で並べると片方の配点をもう片方の根拠に使う読み違いが起きる。
  */
-export function matchScore(input: {
+export function duplicateMatchScore(input: {
   /** freee 発生日 − MF 発生日 の日数差。符号は結果に影響しない */
   dayGap: number;
   mfAccount: string;
@@ -369,7 +374,7 @@ export function matchScore(input: {
 }
 
 /** 照合に使う MF の発生日。表示日の「日」を取込月へ載せる (`expense-projection.ts` と同じ作り) */
-const mfMatchDate = (tx: MfTx): string => `${tx.m}-${normalizeMfDisplayDate(tx.d, tx.m).slice(-2)}`;
+export const mfMatchDate = (tx: MfTx): string => `${tx.m}-${normalizeMfDisplayDate(tx.d, tx.m).slice(-2)}`;
 
 /** 取込月と表示日の月が食い違っているか。食い違うと `mfMatchDate` が別の日を指す */
 const monthMismatched = (tx: MfTx): boolean =>
@@ -383,7 +388,7 @@ const bucketKey = (io: FreeeDeal['io'], date: string, amount: number): string =>
   `${io}\u0000${date}\u0000${amount}`;
 
 /** 照合の対象になる MF 明細。現金台帳と集計対象外、分割の親行は対象にしない */
-function reconcilableMf(data: Dataset): MfTx[] {
+export function reconcilableMf(data: Dataset): MfTx[] {
   return data.mfTx
     .filter((tx) => !isCashTxId(tx.id) && isMfCountable(tx) && tx.a !== 0 && tx.splitProjection == null)
     .sort((a, b) => {
@@ -443,7 +448,7 @@ function nearCandidates(
       settleAccount: deal.settleAccount ?? '',
       dayGap: dayNumber(deal.date) - mfDay,
       accountConflict: accountsConflict(tx, deal),
-      score: matchScore({
+      score: duplicateMatchScore({
         dayGap: dayNumber(deal.date) - mfDay,
         mfAccount: tx.inst ?? '',
         freeeAccount: deal.settleAccount ?? '',
@@ -465,8 +470,12 @@ export function reconcileBizDuplicates(
   deals: readonly FreeeDeal[],
   verdicts: readonly DuplicateVerdict[] = [],
   exclusions: readonly FreeeExclusion[] = [],
+  mfExcludedTxIds: readonly string[] = [],
 ): ReconcileResult {
-  const rows = reconcilableMf(data);
+  // 照合画面で「照合から除外する」とした明細は、自動一致にも要確認にも出さない。
+  // 総額からは外さない (照合の問いから外すだけで、支出そのものは実在する)。
+  const mfExcluded = new Set(mfExcludedTxIds);
+  const rows = reconcilableMf(data).filter((tx) => !mfExcluded.has(tx.id));
   // 一覧と照合行で別の判定式を持たず、同じ resolveTx の結果を使い回す。
   const resolvedById = new Map(
     rows.map((tx) => [tx.id, resolveTx(tx, data.rules, data.edits, data.institutionOwners)]),
@@ -546,19 +555,21 @@ export function reconcileBizDuplicates(
   deals.forEach((deal, freeeIndex) => {
     if (deal.amount <= 0 || usedFreee.has(freeeIndex) || excludedKeys.has(keys[freeeIndex])) return;
     const key = keys[freeeIndex];
-    const fits = (row: MfTx): boolean =>
+    const fits = (row: MfTx, named: boolean): boolean =>
       !usedMf.has(row.id) &&
       // 識別子の安定性は判断を「保存」できるかの話であり、寄せてよいかの条件ではない。
       // 不安定な明細でも stable_key で判断を引き当てられる (identity.ts の 2 段解決)。
       verdictByTxId.get(row.id) === 'same' &&
       mfIo(row) === deal.io &&
-      Math.abs(row.a) === deal.amount &&
+      // 相手を名指しした「同じ」は金額違いでも寄せる (照合画面の「金額の差異」で利用者が同じと認めた組)。
+      // 総額には正本の freee 側の金額が残る。名指しの無い「同じ」は、どの相手かを金額で絞る
+      (named || Math.abs(row.a) === deal.amount) &&
       Math.abs(dayNumber(mfMatchDate(row)) - dayNumber(deal.date)) <= REVIEW_NEAR_DAYS;
     // 名指しされた組を先に成立させる。指定なしの明細に先を越されると、
     // 利用者が画面で選んだ相手と実際に寄る相手がずれる
     const tx =
-      eligible.find((row) => pickedFreeeKey.get(row.id) === key && fits(row)) ??
-      eligible.find((row) => !pickedFreeeKey.get(row.id) && fits(row));
+      eligible.find((row) => pickedFreeeKey.get(row.id) === key && fits(row, true)) ??
+      eligible.find((row) => !pickedFreeeKey.get(row.id) && fits(row, false));
     if (!tx) return;
     usedMf.add(tx.id);
     usedFreee.add(freeeIndex);
@@ -640,8 +651,9 @@ export function monthlyTotalCashflow(
   deals: readonly FreeeDeal[] = [],
   verdicts: readonly DuplicateVerdict[] = [],
   exclusions: readonly FreeeExclusion[] = [],
+  mfExcludedTxIds: readonly string[] = [],
 ): TotalCashflowMonth[] {
-  return rowsFrom(data, deals, reconcileBizDuplicates(data, deals, verdicts, exclusions));
+  return rowsFrom(data, deals, reconcileBizDuplicates(data, deals, verdicts, exclusions, mfExcludedTxIds));
 }
 
 /**
@@ -656,6 +668,7 @@ export function totalCashflowReport(
   deals: readonly FreeeDeal[] = [],
   verdicts: readonly DuplicateVerdict[] = [],
   exclusions: readonly FreeeExclusion[] = [],
+  mfExcludedTxIds: readonly string[] = [],
 ): {
   months: TotalCashflowMonth[];
   review: ReconcileReview[];
@@ -664,7 +677,7 @@ export function totalCashflowReport(
   excluded: ReconcileExcluded[];
   coverage: FreeeCoverage;
 } {
-  const result = reconcileBizDuplicates(data, deals, verdicts, exclusions);
+  const result = reconcileBizDuplicates(data, deals, verdicts, exclusions, mfExcludedTxIds);
   return {
     months: rowsFrom(data, deals, result),
     review: result.review,
@@ -932,6 +945,10 @@ export function totalCashflowScreen(
   verdicts: readonly DuplicateVerdict[],
   exclusions: readonly FreeeExclusion[],
   range: PeriodRange,
+  // 照合画面 (0041) で突合から外した MF 明細。要確認から外すが総額には残す。
+  // 既定値を置くのは、この引数だけが後から足されたもので、
+  // 渡さない呼び出し = 照合の除外がまだ無かった頃と同じ振る舞いになるため
+  mfExcludedTxIds: readonly string[] = [],
 ): TotalCashflowScreen {
   const reportFor = (r: PeriodRange): ReturnType<typeof totalCashflowReport> => {
     const sliced = applyPeriod(all, r);
@@ -941,6 +958,7 @@ export function totalCashflowScreen(
       allDeals.filter((d) => months.has(d.month)),
       verdicts,
       exclusions,
+      mfExcludedTxIds,
     );
   };
 
@@ -996,7 +1014,7 @@ export function totalCashflowScreen(
       .filter((m) => m.by === 'auto')
       .map((m) => ({
         ...m,
-        score: matchScore({
+        score: duplicateMatchScore({
           dayGap: dayNumber(m.freee.date) - dayNumber(m.mf.date),
           mfAccount: m.mf.institution,
           freeeAccount: m.freee.settleAccount,

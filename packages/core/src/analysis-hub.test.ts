@@ -9,7 +9,7 @@
  *
  * | 規則 | 内容 | このファイルのテスト |
  * |---|---|---|
- * | BR-001 | 照合と総収支は要確認 1 件以上で高、0 件で中。他 3 視点は中 | `BR-001` |
+ * | BR-001 | 照合は対応必要、総収支は要確認 1 件以上で高、0 件で中。他 3 視点は中 | `BR-001` |
  * | BR-002 | マトリクスは未記録月 0 で正常 | `BR-002` |
  * | BR-003 | 改善余地は月額合計 × 12 | `BR-003` |
  * | BR-004 | 前期間は直前の同じ長さ、1 か月でも欠ければ null | `BR-004` |
@@ -31,8 +31,8 @@ import {
   type FreeeDeal,
   type MfTx,
   applyPeriod,
-  buildExpenseProjection,
   emptyDataset,
+  reconciliationReport,
   totalCashflowReport,
   tradeoffCandidates,
 } from './index.js';
@@ -234,14 +234,19 @@ describe('BR-005 総収支の値と件数を再利用する', () => {
     });
   });
 
-  it('照合の件数は buildExpenseProjection の reviewCount と一致する', () => {
-    const expected = buildExpenseProjection(applyPeriod(all, range), deals).summary.reviewCount;
+  it('照合の件数は reconciliationReport の対応必要件数をそのまま再利用する', () => {
+    const expected = reconciliationReport({ data: applyPeriod(all, range), deals }).kpi;
+    // この fixture は未処理 0 件なので、対応必要と総収支の要確認が同数になる
+    expect(expected.actionRequiredCount).toBe(
+      totalCashflowReport(applyPeriod(all, range), deals).review.length,
+    );
     const hub = analysisHub({ all, range, deals });
     expect(hub.views.reconciliation).toMatchObject({
       id: 'reconciliation',
-      reviewCount: expected,
-      count: expected,
-      priority: hubPriority('reconciliation', expected),
+      actionRequiredCount: expected.actionRequiredCount,
+      reviewCount: expected.reviewCount,
+      count: expected.actionRequiredCount,
+      priority: hubPriority('reconciliation', expected.actionRequiredCount),
     });
   });
 
@@ -268,5 +273,46 @@ describe('BR-005 総収支の値と件数を再利用する', () => {
       'total-cashflow',
       'trends',
     ]);
+  });
+
+  it('照合は未処理だけでも対応必要1件として優先度を上げる', () => {
+    const data = dataset([mf({ big: '通信費', mid: '事業経費' })], ['2026-08']);
+    const mismatch = [deal({ amount: 3_000, date: '2026-08-06' })];
+    const hub = analysisHub({ all: data, range, deals: mismatch });
+
+    expect(reconciliationReport({ data, deals: mismatch }).statusCounts).toMatchObject({
+      review: 0,
+      unprocessed: 1,
+    });
+    expect(hub.views.reconciliation).toMatchObject({
+      actionRequiredCount: 1,
+      reviewCount: 0,
+      count: 1,
+      priority: '高',
+    });
+  });
+
+  it('選択月の前後3日にある freee を全期間で照合してから、選択月へ投影する', () => {
+    const months = ['2026-07', '2026-08', '2026-09'];
+    const data = dataset(
+      [
+        mf({ id: 'boundary-before', m: '2026-08', d: '08/01', c: '架空保守A', a: -1_000 }),
+        mf({ id: 'boundary-after', m: '2026-08', d: '08/31', c: '架空保守B', a: -2_000 }),
+      ],
+      months,
+    );
+    const deals = [
+      deal({ month: '2026-07', date: '2026-07-29', partner: '架空保守A', amount: 1_000 }),
+      deal({ month: '2026-09', date: '2026-09-03', partner: '架空保守B', amount: 2_000 }),
+    ];
+    const august = { from: '2026-08', to: '2026-08' };
+    const expected = reconciliationReport({ data, deals, months: ['2026-08'] });
+
+    expect(expected.statusCounts).toMatchObject({ review: 2, mfOnly: 0 });
+    expect(analysisHub({ all: data, range: august, deals }).views.reconciliation).toMatchObject({
+      actionRequiredCount: 2,
+      reviewCount: 2,
+      count: 2,
+    });
   });
 });

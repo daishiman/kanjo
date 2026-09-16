@@ -2,7 +2,7 @@
 graph_node_id: "SYS-TCSCREEN-P05"
 artifact_kind: "task"
 artifact_subtypes: []
-title: "総収支集計・判定作業 API・操作履歴・migration 0041・TotalCashflow.tsx の実装"
+title: "総収支集計・判定作業 API・操作履歴・migration 0042・TotalCashflow.tsx の実装"
 project_id: "feature-package-feat-total-cashflow-screen"
 domain: "backend"
 status: "active"
@@ -23,7 +23,7 @@ created_at: "2026-09-15T15:38:58Z"
 updated_at: "2026-09-15T15:38:58Z"
 depends_on: ["SYS-TCSCREEN-P04"]
 related_nodes: ["arch-total-cashflow-screen-auth", "arch-total-cashflow-screen-backend", "arch-total-cashflow-screen-database", "arch-total-cashflow-screen-frontend", "arch-total-cashflow-screen-infrastructure", "arch-total-cashflow-screen-maintenance-ops", "arch-total-cashflow-screen-security", "arch-total-cashflow-screen-ui-ux", "spec-total-cashflow-screen"]
-resource_scope: ["packages/core/src/total-cashflow.ts", "packages/core/src/index.ts", "packages/api/src/routes/total-cashflow.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/canonical-mutation-fence.ts", "packages/api/src/import-active.ts", "packages/api/src/routes/imports.ts", "packages/api/src/import-lifecycle-pure.test.ts", "migrations/0041_total_cashflow_operations_and_exclusion_reason.sql", "packages/web/src/pages/analysis/TotalCashflow.tsx", "packages/web/src/api.ts", "packages/web/src/analysis-query-invalidation.ts", "packages/web/src/components/Layout.tsx"]
+resource_scope: ["packages/core/src/total-cashflow.ts", "packages/core/src/index.ts", "packages/api/src/routes/total-cashflow.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/canonical-mutation-fence.ts", "packages/api/src/import-active.ts", "packages/api/src/routes/imports.ts", "packages/api/src/import-lifecycle-pure.test.ts", "migrations/0042_total_cashflow_operations_and_exclusion_reason.sql", "packages/web/src/pages/analysis/TotalCashflow.tsx", "packages/web/src/api.ts", "packages/web/src/analysis-query-invalidation.ts", "packages/web/src/components/Layout.tsx"]
 purpose: null
 goal: null
 scope_in: null
@@ -47,7 +47,7 @@ completion_evidence: {"completed_at": null, "evidence_refs": [], "policy": "link
 implementation_readiness: {"checked_at": "2026-09-15T15:22:17Z", "missing_sections": [], "status": "complete"}
 ---
 
-# 総収支集計・判定作業 API・操作履歴・migration 0041・TotalCashflow.tsx の実装
+# 総収支集計・判定作業 API・操作履歴・migration 0042・TotalCashflow.tsx の実装
 
 ## Machine-readable registration fields
 
@@ -85,7 +85,7 @@ P04 の red テストを green にする最小差分を core/api/web へ実装�
 - Frontend: applicable: TotalCashflow.tsx を画像の構成 (KPI 3 枚・チャート・3 ペイン・除外一覧・自動一致の候補・選択バー・月次表の開閉) に作り替え、Layout.tsx の共通ヘッダー/フッター文言を画像に揃える。サイドバーは現在地と照合バッジの確認だけ
 - Backend: applicable: total-cashflow.ts にセグメント別集計・previousYearPeriod・3 区分・一致度・自動一致の候補を純関数で足す
 - API: applicable: routes/total-cashflow.ts の GET 拡張・POST verdicts・POST/DELETE freee-exclusions・POST operations undo を zod 検証付きで実装する
-- Data: applicable: migrations/0041_total_cashflow_operations_and_exclusion_reason.sql で reason_code・memo と total_cashflow_operations を追加し、db/schema.ts・schema-guard.ts・import-active.ts・routes/imports.ts を 3 表のバックアップ対象に揃える
+- Data: applicable: migrations/0042_total_cashflow_operations_and_exclusion_reason.sql で reason_code・memo と total_cashflow_operations を追加し、db/schema.ts・schema-guard.ts・import-active.ts・routes/imports.ts を 3 表のバックアップ対象に揃える
 - Infrastructure: N/A: 本 phase は文書の作成だけを行い、この層のコードを変更しない
 - Security: applicable: 書込み route を canonical-mutation-fence の consumers に登録し、user_id 境界と入力上限を実装する
 - Quality: applicable: P04 の red テストを green にし、import-lifecycle-pure.test.ts の列挙期待値を更新する
@@ -95,7 +95,7 @@ P04 の red テストを green にする最小差分を core/api/web へ実装�
 ## Architecture and deploy unit
 
 - Architecture decisions: arch-total-cashflow-screen-auth, arch-total-cashflow-screen-backend, arch-total-cashflow-screen-database, arch-total-cashflow-screen-frontend, arch-total-cashflow-screen-infrastructure, arch-total-cashflow-screen-maintenance-ops, arch-total-cashflow-screen-security, arch-total-cashflow-screen-ui-ux, spec-total-cashflow-screen
-- Deploy unit/environment: Cloudflare Workers kanjo-console (packages/api) と D1 kanjo-db (migrations/0041_total_cashflow_operations_and_exclusion_reason.sql) への追加。既存配信構成のまま route の拡張・取消 route・列と表を追加する。
+- Deploy unit/environment: Cloudflare Workers kanjo-console (packages/api) と D1 kanjo-db (migrations/0042_total_cashflow_operations_and_exclusion_reason.sql) への追加。既存配信構成のまま route の拡張・取消 route・列と表を追加する。
 - Compatibility/migration/backfill: GET /api/total-cashflow の既存フィールドと旧 reason body の受理を維持し、migration は追加のみとする (spec-total-cashflow-screen.md 互換性・移行・リリース節)
 
 ## 受入基準
@@ -116,7 +116,7 @@ P04 の red テストを green にする最小差分を core/api/web へ実装�
 - packages/api/src/import-active.ts
 - packages/api/src/routes/imports.ts
 - packages/api/src/import-lifecycle-pure.test.ts
-- migrations/0041_total_cashflow_operations_and_exclusion_reason.sql
+- migrations/0042_total_cashflow_operations_and_exclusion_reason.sql
 - packages/web/src/pages/analysis/TotalCashflow.tsx
 - packages/web/src/api.ts
 - packages/web/src/analysis-query-invalidation.ts
@@ -140,7 +140,7 @@ P04 の red テストを green にする最小差分を core/api/web へ実装�
 - packages/api/src/import-active.ts
 - packages/api/src/routes/imports.ts
 - packages/api/src/import-lifecycle-pure.test.ts
-- migrations/0041_total_cashflow_operations_and_exclusion_reason.sql
+- migrations/0042_total_cashflow_operations_and_exclusion_reason.sql
 - packages/web/src/pages/analysis/TotalCashflow.tsx
 - packages/web/src/api.ts
 - packages/web/src/analysis-query-invalidation.ts
@@ -187,7 +187,7 @@ P04 の red テストを green にする最小差分を core/api/web へ実装�
 - packages/api/src/import-active.ts
 - packages/api/src/routes/imports.ts
 - packages/api/src/import-lifecycle-pure.test.ts
-- migrations/0041_total_cashflow_operations_and_exclusion_reason.sql
+- migrations/0042_total_cashflow_operations_and_exclusion_reason.sql
 - packages/web/src/pages/analysis/TotalCashflow.tsx
 - packages/web/src/api.ts
 - packages/web/src/analysis-query-invalidation.ts
@@ -196,7 +196,7 @@ P04 の red テストを green にする最小差分を core/api/web へ実装�
 ## Rollout and rollback
 
 - Rollout: 単一の PR で配信し、default branch への merge をもって反映する
-- Rollback trigger and steps: 実装コミットを revert する。migrations/0041_total_cashflow_operations_and_exclusion_reason.sql は追加のみのため D1 側の取り消しは不要で、追加列と新表は無害に残置してよい。
+- Rollback trigger and steps: 実装コミットを revert する。migrations/0042_total_cashflow_operations_and_exclusion_reason.sql は追加のみのため D1 側の取り消しは不要で、追加列と新表は無害に残置してよい。
 
 ## Handoff
 

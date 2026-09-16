@@ -22,7 +22,7 @@ AC と FR から証跡を引くための索引。
 | FR-001 画面の構成要素 | `acceptance.md` §AC-001 の表 / `final-review.md` §1 |
 | FR-002 core の集計と 1 回の取得 | `total-cashflow-screen-rules.test.ts` / `architecture-decision.md` |
 | FR-003 3 ペインの判定作業 | `assurance.md` §4 / `total-cashflow-verdict.integration.test.ts` |
-| FR-004 除外の理由区分とメモ | `refactoring.md` §2 / `total-cashflow-backup.integration.test.ts` の `移行 0041 より前に保存された除外 (FR-004)` |
+| FR-004 除外の理由区分とメモ | `refactoring.md` §2 / `total-cashflow-backup.integration.test.ts` の `移行 0042 より前に保存された除外 (FR-004)` |
 | FR-005 操作履歴と取消 | `docs/runbooks/total-cashflow-undo-conflict.md` / `total-cashflow-operations.integration.test.ts` |
 | FR-006 3 表のバックアップ保護 | `refactoring.md` §3 §4 / `total-cashflow-backup.integration.test.ts` の `復元 バックアップと総収支の判断 (FR-006)` / `import-lifecycle-pure.test.ts` の `総収支の判断3表を積んだ復元が、白紙の移行先で上限未満に収まる` |
 | FR-007 自動一致の候補一覧 | `docs/total-cashflow-screen.md` BR-003 / `total-cashflow-verdict.integration.test.ts` |
@@ -32,7 +32,7 @@ AC と FR から証跡を引くための索引。
 
 | BR | 正本 (コード) | 規則 docs | 固定しているテスト |
 |---|---|---|---|
-| BR-001 一致度 | `matchScore()` / `MATCH_SCORE_*` | `docs/total-cashflow-screen.md` BR-001 | `total-cashflow-screen-rules.test.ts` |
+| BR-001 一致度 | `duplicateMatchScore()` / `MATCH_SCORE_*` | `docs/total-cashflow-screen.md` BR-001 | `total-cashflow-screen-rules.test.ts` |
 | BR-002 判定作業 3 区分 | `totalCashflowWorkbench()` | 同 BR-002 | 同上 |
 | BR-003 自動一致の候補 | `nearCandidates()` / `REVIEW_NEAR_DAYS` / `REVIEW_MAX_CANDIDATES` | 同 BR-003 | 同上 |
 | BR-004 セグメント | `totalCashflowSummary()` / `EXCLUSION_REASON_CODES` | 同 BR-004 | 同上 + `total-cashflow-verdict.integration.test.ts` の集計語テスト |
@@ -104,7 +104,7 @@ pnpm test && pnpm typecheck && pnpm lint
 | 項目 | 状態 |
 |---|---|
 | PR の CI が緑 | 確認中 (draft PR https://github.com/daishiman/kanjo/pull/55) |
-| migration 0041 の本番適用 | **未実施** (merge 後) |
+| migration 0042 の本番適用 | **未実施** (merge 後) |
 | 本番 `/analysis/total-cashflow` の表示確認 | **未実施** (merge 後) |
 
 いずれも merge を待つもの。詳細は `close-out.md`。

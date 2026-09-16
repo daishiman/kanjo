@@ -85,7 +85,7 @@ spec の API 契約は既存 GET の応答へ加算し、書込み route の bod
 - Frontend: applicable: 3 ペインの状態 (区分・フィルタ・選択・取消の列) を画面 state に置く決定を記録する
 - Backend: applicable: 集計を packages/core/src/total-cashflow.ts の純関数に置く決定を記録する
 - API: applicable: 4 route の入出力・400/401/404/409 の条件を記録する
-- Data: applicable: migration 0041 の列・表・索引・既存 reason の移行を記録する
+- Data: applicable: migration 0042 の列・表・索引・既存 reason の移行を記録する
 - Infrastructure: N/A: 本 phase は文書の作成だけを行い、この層のコードを変更しない
 - Security: applicable: reasonCode 許可リスト・memo 200 字・一括 200 件・user_id 境界を記録する
 - Quality: N/A: 本 phase は文書の作成だけを行い、この層のコードを変更しない

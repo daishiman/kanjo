@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-14-analysis-hub/completeness-findings.json", "evaluated_digest": "4b1ce946c94ccd2fa3494fb4f49d4331a93aa9bab31e4fe46672baac023becb1"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-14-analysis-hub/infrastructure.md", "source_version": "0.1.14", "source_digest": "4b1ce946c94ccd2fa3494fb4f49d4331a93aa9bab31e4fe46672baac023becb1", "imported_at": "2026-09-14T12:23:44Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-15-analysis-hub/completeness-findings.json", "evaluated_digest": "4b1ce946c94ccd2fa3494fb4f49d4331a93aa9bab31e4fe46672baac023becb1"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-15-analysis-hub/infrastructure.md", "source_version": "0.1.14", "source_digest": "4b1ce946c94ccd2fa3494fb4f49d4331a93aa9bab31e4fe46672baac023becb1", "imported_at": "2026-09-14T12:23:44Z"}
 created_at: "2026-09-14T12:23:44Z"
 updated_at: "2026-09-14T12:23:44Z"
 depends_on: ["spec-analysis-hub"]
@@ -50,7 +50,7 @@ serves_goals: ["G3"]
 
 # Architecture overview
 
-支出分析ハブ — 既存 Worker への GET 追加と D1 読取り量。正本は `system-spec/archive/2026-09-14-analysis-hub/infrastructure.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
+支出分析ハブ — 既存 Worker への GET 追加と D1 読取り量。正本は `system-spec/infrastructure.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
 
 ## Context and drivers
 
@@ -71,7 +71,7 @@ serves_goals: ["G3"]
 
 - Users/external systems: 利用者のブラウザと Cloudflare。外部システムの追加は無い。
 - Trust/deployment/data boundaries: Worker kanjo-console 1 系統で静的アセットと /api/* を配信する。D1 DB は既存 binding を読むだけ。
-- Context diagram: `system-spec/archive/2026-09-14-analysis-hub/index.md` の章相互参照を参照する。
+- Context diagram: `system-spec/index.md` の章相互参照を参照する。
 
 ## Container and component view
 

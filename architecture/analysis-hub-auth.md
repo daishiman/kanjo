@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-14-analysis-hub/completeness-findings.json", "evaluated_digest": "945fd8dfa54925bd0c184efd13ef39acedf43feb00a5a4634bbc21a8e264fc20"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-14-analysis-hub/auth.md", "source_version": "0.1.14", "source_digest": "945fd8dfa54925bd0c184efd13ef39acedf43feb00a5a4634bbc21a8e264fc20", "imported_at": "2026-09-14T12:23:44Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-15-analysis-hub/completeness-findings.json", "evaluated_digest": "945fd8dfa54925bd0c184efd13ef39acedf43feb00a5a4634bbc21a8e264fc20"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-15-analysis-hub/auth.md", "source_version": "0.1.14", "source_digest": "945fd8dfa54925bd0c184efd13ef39acedf43feb00a5a4634bbc21a8e264fc20", "imported_at": "2026-09-14T12:23:44Z"}
 created_at: "2026-09-14T12:23:44Z"
 updated_at: "2026-09-14T12:23:44Z"
 depends_on: ["spec-analysis-hub"]
@@ -50,7 +50,7 @@ serves_goals: ["G3"]
 
 # Architecture overview
 
-支出分析ハブ — 認証ゲート配下のハブ API。正本は `system-spec/archive/2026-09-14-analysis-hub/auth.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
+支出分析ハブ — 認証ゲート配下のハブ API。正本は `system-spec/auth.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
 
 ## Context and drivers
 
@@ -72,7 +72,7 @@ serves_goals: ["G3"]
 
 - Users/external systems: 利用者 1 名 (SH1) と保守エージェント (SH2)。外部システムの追加は無い。
 - Trust/deployment/data boundaries: 信頼境界は /api/* のゲート列。ハブ API はその内側に置き、D1 の読取りはすべて c.get('userId') で絞る。共有された /analysis?focus=(タブ id) を他人が開いても、その人のセッションで本人のデータしか集計されない。
-- Context diagram: `system-spec/archive/2026-09-14-analysis-hub/index.md` の章相互参照を参照する。
+- Context diagram: `system-spec/index.md` の章相互参照を参照する。
 
 ## Container and component view
 

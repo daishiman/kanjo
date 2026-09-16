@@ -89,3 +89,35 @@ npx vitest run --root packages/core test/total-cashflow-screen-rules.test.ts
 
 `@kanjo/api` のテストは Miniflare を都度起動するため 8 分ほどかかる。
 待てないときは上の単体コマンドで対象だけ取る。
+
+## main (照合画面 PR #54) をマージしたあとの再実行
+
+PR #55 が `CONFLICTING` になったため `origin/main` を本 branch へマージし、
+31 ファイルの衝突を解消したあとに全ゲートを取り直した。
+
+| ゲート | 結果 |
+|---|---|
+| `pnpm test` | **緑** (core 670 passed / 6 skipped、api 597 passed、web 624 passed) |
+| `pnpm typecheck` | **緑** (exit 0) |
+| `pnpm lint` | **緑** (exit 0)。`check-graph-lineage` が 77 ノードの lineage 一致を確認 |
+
+件数が増えているのは、照合画面のテストが同じ run に入ったため。
+
+### 衝突マーカーに出なかった 3 件
+
+git は「同じファイルの同じ行」しか衝突として報告しない。
+次の 3 件はファイルも行も違うため無言で通り、typecheck / test ではじめて露見した。
+**マージ直後に必ず全ゲートを取り直す理由**がこれ。
+
+| 種別 | 内容 | 直し方 |
+|---|---|---|
+| migration 番号の二重取り | PR #54 が `0041_reconciliation_tables.sql` を先に取っていた | 本 branch を `0042_...` へ `git mv`。`schema-guard.ts` / `deletion-schema.test.ts` / バックアップテストの文字列比較境界 (`f < '0042'` / `f >= '0042'`) と docs / tasks を追随 |
+| 引数の欠落 | `totalCashflowScreen()` が `mfExcludedTxIds` を渡していなかった | 引数を追加 |
+| 同名関数の二重 export (TS2308) | 照合 (`reconciliation.ts`) と総収支が別ファイルに `matchScore` を作り、`index.ts` が両方 re-export | 既に main にある照合側は触らず、後から入る総収支側を `duplicateMatchScore` へ改名。配点も上限の意味も違うことを doc コメントに記録 |
+
+### api テストの MECE 検査が赤になった件
+
+「全 mutating route を 3 分類に MECE で固定する」テストが、
+`canonical` 配列の件数 (37 vs 40) で落ちた。照合と総収支が**別ブロックで同じ 3 route**
+(`/api/total-cashflow/verdicts` ほか) を追加していたため。
+重複ブロックを削除し、コメントを 1 つへ統合して解消した。

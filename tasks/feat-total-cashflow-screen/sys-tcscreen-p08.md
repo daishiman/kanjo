@@ -2,7 +2,7 @@
 graph_node_id: "SYS-TCSCREEN-P08"
 artifact_kind: "task"
 artifact_subtypes: []
-title: "規則定数の整理と migration 0041・3 表バックアップの整合確認"
+title: "規則定数の整理と migration 0042・3 表バックアップの整合確認"
 project_id: "feature-package-feat-total-cashflow-screen"
 domain: "data"
 status: "active"
@@ -47,7 +47,7 @@ completion_evidence: {"completed_at": null, "evidence_refs": [], "policy": "link
 implementation_readiness: {"checked_at": "2026-09-15T15:22:17Z", "missing_sections": [], "status": "complete"}
 ---
 
-# 規則定数の整理と migration 0041・3 表バックアップの整合確認
+# 規則定数の整理と migration 0042・3 表バックアップの整合確認
 
 ## Machine-readable registration fields
 
@@ -67,7 +67,7 @@ implementation_readiness: {"checked_at": "2026-09-15T15:22:17Z", "missing_sectio
 
 ## 目的
 
-一致度・区分の数値を名前付き定数へ寄せる振る舞い不変の整理を行い、migration 0041 の既存 reason 移行と 3 表のバックアップ・復元 (key 無しの旧バックアップを含む) の整合を記録する。
+一致度・区分の数値を名前付き定数へ寄せる振る舞い不変の整理を行い、migration 0042 の既存 reason 移行と 3 表のバックアップ・復元 (key 無しの旧バックアップを含む) の整合を記録する。
 
 ## 背景
 
@@ -85,7 +85,7 @@ spec は規則の数値を名前付き定数にし docs とテストを同じ変
 - Frontend: N/A: 本 phase は文書の作成だけを行い、この層のコードを変更しない
 - Backend: applicable: 規則の数値を名前付き定数へ寄せる (振る舞いは変えない)
 - API: N/A: 本 phase は文書の作成だけを行い、この層のコードを変更しない
-- Data: applicable: migration 0041 の移行結果と 3 表の復元往復を確認する
+- Data: applicable: migration 0042 の移行結果と 3 表の復元往復を確認する
 - Infrastructure: N/A: 本 phase は文書の作成だけを行い、この層のコードを変更しない
 - Security: N/A: 本 phase は文書の作成だけを行い、この層のコードを変更しない
 - Quality: applicable: 整理の前後で全テストが緑であることを確認する
@@ -109,7 +109,7 @@ spec は規則の数値を名前付き定数にし docs とテストを同じ変
 - packages/core/src/total-cashflow.ts
 - docs/total-cashflow-screen/refactoring.md
 - Consumed artifacts:
-- migrations/0041_total_cashflow_operations_and_exclusion_reason.sql
+- migrations/0042_total_cashflow_operations_and_exclusion_reason.sql
 - packages/api/src/import-active.ts
 - packages/api/src/routes/imports.ts
 - Write scope/touches:

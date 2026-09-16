@@ -85,7 +85,7 @@ MF 側の公私仕分けには触れないという分割で担保している�
 
 | 規則 | テスト |
 |---|---|
-| BR-001 一致度の配点 | `total-cashflow-screen-rules.test.ts` の `matchScore` 節 |
+| BR-001 一致度の配点 | `total-cashflow-screen-rules.test.ts` の `duplicateMatchScore` 節 |
 | BR-003 候補の日数差 3 日・上限 3 件 | 同 BR-003 節 |
 | BR-005 除外後の数え方 | 同 BR-005 節 (候補 1 件と 2 件で挙動が分かれる) |
 | reasonCode 5 語 | `total-cashflow-verdict.integration.test.ts` `集計語は許可した 5 語だけを受け、知らない語は弾く` |

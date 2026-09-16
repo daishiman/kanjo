@@ -26,17 +26,21 @@ export function PageHeader({
   route,
   title,
   showTask = true,
+  lead,
 }: {
   route: AppRouteId;
   /** ナビの短い名称と、画面で答える問いが異なる場合のみ上書きする。 */
   title?: ReactNode;
   /** 問い自体が十分に場面を伝える画面では、汎用説明の重複を避ける。 */
   showTask?: boolean;
+  /** 問いに添える 1 文。汎用説明の代わりに見出しの直下へ出す。 */
+  lead?: ReactNode;
 }) {
   const metadata = routeMetadata(route);
   return (
     <header className="page-heading">
       <h1 className="page-title">{title ?? metadata.label}</h1>
+      {lead && <p className="page-task">{lead}</p>}
       {/* 段階表示: 見出しは1文に保ちつつ、判定基準・色の意味・免責といった
           「知らないと誤読する情報」は畳んで残す。<details> なのでJSなしで開閉でき、
           用語ホバー(linkTerms)も task と同じように効く。 */}
@@ -57,11 +61,21 @@ export function TaskCopy({ task, detail, summary }: { task: string; detail: stri
   return (
     <>
       <p className="page-task">{linkTerms(task)}</p>
-      <details className="page-task-detail">
-        <summary>{summary}</summary>
-        <p>{linkTerms(detail)}</p>
-      </details>
+      <TaskDetail detail={detail} summary={summary} />
     </>
+  );
+}
+
+/**
+ * 畳んだ詳細だけ。問いの見出し (PageHeader の lead) が1文の役目を果たす画面で、
+ * 同じ文を二度出さずに「知らないと誤読する情報」だけを残すために使う。
+ */
+export function TaskDetail({ detail, summary }: { detail: string; summary: string }) {
+  return (
+    <details className="page-task-detail">
+      <summary>{summary}</summary>
+      <p>{linkTerms(detail)}</p>
+    </details>
   );
 }
 

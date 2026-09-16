@@ -113,7 +113,7 @@ describe('routeのiconとlabel', () => {
     const navigation = screen.getByRole('navigation', { name: 'メインナビゲーション' });
     const routeLinks = within(navigation).getAllByRole('link');
 
-    // 業務ルート(支出分析の子タブを含む)が先頭に並び、その後ろに「その他」として改善要望が1件だけ続く
+    // 業務ルート(支出分析の子タブを含む)が先頭に並び、その後ろに「その他」として改善リクエストが1件だけ続く
     expect(routeLinks).toHaveLength(SIDEBAR_LINKS.length + 1);
     for (const [index, link] of routeLinks.slice(0, SIDEBAR_LINKS.length).entries()) {
       expect(link.textContent).toContain(SIDEBAR_LINKS[index]?.label);
@@ -122,7 +122,7 @@ describe('routeのiconとlabel', () => {
       expect(icon?.getAttribute('focusable')).toBe('false');
     }
     const extra = routeLinks[SIDEBAR_LINKS.length];
-    expect(extra.textContent).toContain('改善要望');
+    expect(extra.textContent).toContain('改善リクエスト');
     expect(extra.querySelector('svg.route-icon')?.getAttribute('aria-hidden')).toBe('true');
   });
 

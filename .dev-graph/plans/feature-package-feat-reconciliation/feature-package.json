@@ -1,0 +1,52 @@
+{
+  "feature_package_id": "feature-package/feat-reconciliation",
+  "parent_feature": "feat-reconciliation",
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "schema_version": "1.0.0",
+  "source_feature_digest": "sha256:8101fcd30e1b38bf20475ba1f181fa3edc89f33c3d91a2befb891eb26704700f",
+  "task_count": 13,
+  "task_node_ids": [
+    "SYS-RECON-P01",
+    "SYS-RECON-P02",
+    "SYS-RECON-P03",
+    "SYS-RECON-P04",
+    "SYS-RECON-P05",
+    "SYS-RECON-P06",
+    "SYS-RECON-P07",
+    "SYS-RECON-P08",
+    "SYS-RECON-P09",
+    "SYS-RECON-P10",
+    "SYS-RECON-P11",
+    "SYS-RECON-P12",
+    "SYS-RECON-P13"
+  ],
+  "task_spec_paths": [
+    "task-specs/phase-01-requirements.md",
+    "task-specs/phase-02-architecture.md",
+    "task-specs/phase-03-design-review.md",
+    "task-specs/phase-04-test-design.md",
+    "task-specs/phase-05-implementation.md",
+    "task-specs/phase-06-test-run.md",
+    "task-specs/phase-07-acceptance.md",
+    "task-specs/phase-08-refactoring-migration.md",
+    "task-specs/phase-09-quality-assurance.md",
+    "task-specs/phase-10-final-review.md",
+    "task-specs/phase-11-evidence.md",
+    "task-specs/phase-12-documentation-operations.md",
+    "task-specs/phase-13-release-deploy.md"
+  ]
+}

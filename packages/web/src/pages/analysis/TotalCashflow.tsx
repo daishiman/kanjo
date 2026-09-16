@@ -7,11 +7,11 @@
  * 表の数値はサーバの導出値をそのまま写す。画面側で合計を組み直さないのは、
  * 表示と API が食い違ったときに、どちらが正しいかを利用者が判断できなくなるため。
  */
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { type QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ChartOptions } from 'chart.js';
 import { createContext, useContext, useState } from 'react';
 import { Chart } from 'react-chartjs-2';
-import { invalidateAnalysisHub } from '../../analysis-query-invalidation.js';
+import { RECONCILIATION_QUERY_ROOT, invalidateAnalysisHub } from '../../analysis-query-invalidation.js';
 import {
   ApiError,
   type DuplicateVerdictValue,
@@ -35,6 +35,7 @@ import { Button } from '../../components/Button.js';
 import { DataTable } from '../../components/DataTable.js';
 import { FinancialFigure } from '../../components/FinancialFigure.js';
 import { KpiCard, PageState } from '../../components/Page.js';
+import { REVIEW_QUEUE_KEY } from '../../components/ReviewQueue.js';
 import { UiIcon } from '../../components/UiIcon.js';
 import { tooltipOptions } from '../../components/chart-tooltip.js';
 import { COLORS, baseChartOptions, chartSeriesColor, yenTick } from '../../components/charts.js';
@@ -46,6 +47,19 @@ import {
 } from '../../components/figure-view-model.js';
 import { deltaCls, gainCls, monthShort, pct, yen, yenS } from '../../format.js';
 import { usePeriod } from '../../period.js';
+
+/**
+ * 重複の判断と freee の除外は、照合の件数と月次クローズのキューも同じ表から読む。
+ * 総収支と要約だけを引き直すと、照合画面に戻ったとき古い件数が残る
+ */
+function refreshVerdictReaders(client: QueryClient) {
+  return Promise.all([
+    client.invalidateQueries({ queryKey: ['total-cashflow'] }),
+    invalidateAnalysisHub(client),
+    client.invalidateQueries({ queryKey: RECONCILIATION_QUERY_ROOT }),
+    client.invalidateQueries({ queryKey: REVIEW_QUEUE_KEY }),
+  ]);
+}
 
 /** 一覧表の列。9 列で確定しており、画面幅で落とさない(落とすと内訳が読めなくなる) */
 const COLUMNS = [
@@ -170,10 +184,7 @@ function RestoreButton({ freeeKey }: { freeeKey: string }) {
       }),
     onSuccess: (res) => {
       sink(operationIdOf(res));
-      return Promise.all([
-        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
-        invalidateAnalysisHub(client),
-      ]);
+      return refreshVerdictReaders(client);
     },
   });
   return (
@@ -1254,10 +1265,7 @@ export function TotalCashflowPage() {
     // 判断は帰属を動かすので、一覧表と要確認キューを両方引き直す
     onSuccess: (res) => {
       setUndoableId(operationIdOf(res));
-      return Promise.all([
-        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
-        invalidateAnalysisHub(client),
-      ]);
+      return refreshVerdictReaders(client);
     },
   });
 

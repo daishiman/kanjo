@@ -10,7 +10,7 @@ branch の差分を `specs/spec-total-cashflow-screen.md` の FR・BR・スコ�
 | FR-001 画面の構成要素 | `packages/web/src/pages/analysis/TotalCashflow.tsx`、`packages/web/src/styles.css`、`packages/web/test/total-cashflow-table.dom.test.tsx` |
 | FR-002 core の集計と 1 回の取得 | `packages/core/src/total-cashflow.ts`、`packages/core/src/period.ts`、`packages/api/src/routes/total-cashflow.ts`、`packages/core/test/total-cashflow-screen-rules.test.ts` (新規) |
 | FR-003 3 ペインの判定作業 | `TotalCashflow.tsx`、`styles.css`、`packages/api/test/total-cashflow-verdict.integration.test.ts` |
-| FR-004 除外の理由区分とメモ | `migrations/0041_total_cashflow_operations_and_exclusion_reason.sql` (新規)、`packages/api/src/db/schema.ts`、`packages/core/src/total-cashflow.ts`、`packages/api/test/total-cashflow-backup.integration.test.ts` (新規) |
+| FR-004 除外の理由区分とメモ | `migrations/0042_total_cashflow_operations_and_exclusion_reason.sql` (新規)、`packages/api/src/db/schema.ts`、`packages/core/src/total-cashflow.ts`、`packages/api/test/total-cashflow-backup.integration.test.ts` (新規) |
 | FR-005 操作履歴と取消 | `packages/api/src/routes/total-cashflow-operations.ts` (新規)、`packages/api/test/total-cashflow-operations.integration.test.ts` (新規)、`packages/api/src/store.ts` |
 | FR-006 3 表のバックアップ保護 | `packages/api/src/import-lifecycle.ts`、`packages/api/src/import-active.ts`、`packages/api/src/routes/imports.ts`、`packages/api/src/canonical-mutation-fence.ts`、`packages/api/src/schema-guard.ts`、`packages/api/src/import-lifecycle-pure.test.ts` |
 | FR-007 自動一致の候補一覧 | `TotalCashflow.tsx`、`packages/web/src/api.ts`、`packages/core/src/total-cashflow.ts` (`autoMatches`) |
@@ -76,7 +76,7 @@ BR-005 は仕様の明示要件なのでスコープ内。判定は**除外前�
 |---|---|---|
 | 実装 (core / api / web) | 15 | 上表のとおり |
 | テスト | 8 | 新規 4 / 追記 4 |
-| migration | 1 | `0041` (追加のみ) |
+| migration | 1 | `0042` (追加のみ) |
 | 仕様・アーキテクチャ・task | 20 | `specs/`、`architecture/`、`features/`、`tasks/`、`system-spec/` |
 | docs | 9 | `docs/total-cashflow-screen/` 一式 |
 | check スクリプト | 3 | financial-visuals / mobile-layout / analysis-hub-visuals |

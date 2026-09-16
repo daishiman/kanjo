@@ -312,6 +312,12 @@ a[href] {
   padding-left: 8px;
   border-left: 1px solid var(--sidebar-rail-divider);
 }
+.nav-sub-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+}
 /* 弱めるのは平常時だけ。現在地の色は .nav a[aria-current] が上書きし、親子で同じになる */
 .nav-sub a,
 .nav-sub .nav-locked {
@@ -361,62 +367,10 @@ a[href] {
   color: inherit;
 }
 
-.workflow-progress {
-  margin: 4px 4px 12px;
-  padding: 10px;
-  border: 1px solid var(--sidebar-divider);
-  border-radius: var(--radius);
-  color: var(--sidebar-control-text);
-  font-size: var(--fs-xs);
-}
-.workflow-progress-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-.workflow-progress-head strong {
-  color: var(--on-primary);
-  font-size: var(--fs-2xs);
-}
-.workflow-progress ol {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 4px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.workflow-progress li {
-  display: grid;
-  justify-items: center;
-  gap: 2px;
-  min-width: 0;
-  white-space: nowrap;
-  font-size: var(--fs-2xs);
-}
-.workflow-progress .step-number {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--sidebar-control-border);
-  border-radius: 999px;
-  font-family: var(--font-mono);
-  font-weight: 600;
-}
-.workflow-progress li.current {
-  color: var(--on-primary);
-  font-weight: 800;
-}
-.workflow-progress li.current .step-number {
-  color: var(--on-sidebar-accent);
-  background: var(--sidebar-accent);
-  border-color: var(--sidebar-accent);
-}
-.workflow-progress p {
-  margin: 8px 0 0;
-  text-align: center;
+.nav-chevron {
+  inline-size: 14px;
+  block-size: 14px;
+  margin-inline-start: auto;
   color: var(--sidebar-text-muted);
 }
 .monthly-close-card {
@@ -1145,104 +1099,9 @@ a[href] {
   color: var(--ink-soft);
 }
 
-/* 支出照合: 主役は帳簿/未記帳/実質の差。照合明細は必要なときだけ開く。 */
-.reconciliation-kpis .kpi:last-child {
-  border-color: var(--biz-soft-line);
-  background: var(--biz-soft);
-}
-.reconciliation-next {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 14px 0 18px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-}
-.reconciliation-next.needs-action {
-  border-bottom-color: var(--warn-fill);
-}
-.reconciliation-next h2,
-.reconciliation-next p {
-  margin: 0;
-}
-.reconciliation-next p {
-  color: var(--ink-soft);
-}
-.reconciliation-next .btn {
-  min-height: var(--tap-target-min);
-  display: inline-flex;
-  align-items: center;
-}
-.reconciliation-effective {
-  font-weight: 800;
-}
-.reconciliation-disclosure > summary {
-  min-height: var(--tap-target-min);
-  display: flex;
-  align-items: center;
-  font-weight: 800;
-  cursor: pointer;
-}
-.reconciliation-list {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-}
-.reconciliation-list li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto max-content;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 0;
-  border-top: 1px solid var(--line);
-}
-.reconciliation-list li > div {
-  min-width: 0;
-}
-.reconciliation-list li strong,
-.reconciliation-list li span {
-  display: block;
-}
-.reconciliation-list li div > span {
-  color: var(--ink-soft);
-  font-size: var(--fs-sm);
-  overflow-wrap: anywhere;
-}
-.reconciliation-list li a {
-  min-height: var(--tap-target-min);
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-}
-.reconciliation-safe-actions,
 .subscriptions-source-note {
   margin: 0 0 16px;
   color: var(--ink-soft);
-}
-.reconciliation-safe-actions a {
-  margin: 0 3px;
-  white-space: nowrap;
-}
-@media (max-width: 639px) {
-  .reconciliation-kpis .kpi:last-child {
-    grid-column: 1 / -1;
-  }
-  .reconciliation-next {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .reconciliation-next .btn {
-    width: 100%;
-    justify-content: center;
-  }
-  .reconciliation-list li {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px 12px;
-  }
-  .reconciliation-list li a {
-    grid-column: 1 / -1;
-  }
 }
 
 /* ---------------- 分析図表 ----------------
@@ -5810,9 +5669,7 @@ label.check {
     border: 0;
   }
   .sidebar .brand small,
-  .workflow-progress-head,
-  .workflow-progress li > span:last-child,
-  .workflow-progress p,
+  .nav-chevron,
   .nav-group {
     position: absolute;
     width: 1px;
@@ -5823,18 +5680,6 @@ label.check {
     clip: rect(0 0 0 0);
     white-space: nowrap;
     border: 0;
-  }
-  .workflow-progress {
-    margin: 2px 0 8px;
-    padding: 7px;
-  }
-  .workflow-progress ol {
-    grid-template-columns: 1fr;
-    gap: 5px;
-  }
-  .workflow-progress .step-number {
-    width: 24px;
-    height: 24px;
   }
   .nav a,
   .nav-locked,
@@ -6088,6 +5933,11 @@ label.check {
   font-weight: 700;
   line-height: 1.6;
   text-align: center;
+}
+
+.nav-review-badge {
+  padding: 0 8px;
+  font-size: var(--fs-2xs);
 }
 .notice-line {
   margin: 4px 0;

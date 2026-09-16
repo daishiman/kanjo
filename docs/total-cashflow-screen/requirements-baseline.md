@@ -19,7 +19,7 @@
 
 | 規則 | 置き場所 | 名前 |
 |---|---|---|
-| BR-001 一致度 | core | `matchScore()` と `MATCH_SCORE_*` 定数 |
+| BR-001 一致度 | core | `duplicateMatchScore()` と `MATCH_SCORE_*` 定数 |
 | BR-002 判定作業3区分 | core | `totalCashflowWorkbench()` |
 | BR-003 自動一致の候補 | core | `autoMatches` (`by === 'auto'` の matched に score を添える) |
 | BR-004 セグメント | core | `totalCashflowSummary()` / 月次系列 |
@@ -46,7 +46,7 @@
 
 ## 4. 変更してよい範囲 (resource_scope)
 
-core の `total-cashflow.ts` と `index.ts` / api の総収支ルート・DB 定義・schema guard・canonical mutation fence・import 系 / `migrations/0041_*.sql` /
+core の `total-cashflow.ts` と `index.ts` / api の総収支ルート・DB 定義・schema guard・canonical mutation fence・import 系 / `migrations/0042_*.sql` /
 web の `pages/analysis/TotalCashflow.tsx`・`api.ts`・`analysis-query-invalidation.ts`・`components/Layout.tsx` / 上記に対応するテストと `docs/total-cashflow-screen/`。
 
 範囲外 (触らない): サイドバーの項目と並び (decision-011 により確認のみ)、照合/マトリクス/推移/診断タブの中身、取込経路、期間選択の保存先。

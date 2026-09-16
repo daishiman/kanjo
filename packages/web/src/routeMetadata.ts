@@ -10,12 +10,12 @@ export const APP_ROUTES = [
   {
     id: 'overview',
     path: '/',
-    label: '概況',
+    label: '概要',
     task: '収支の現状と推移を確認します。',
     taskDetail: '今月の収支だけでなく、全期間の推移・売上高経費率・防衛ラインまで1画面で俯瞰する。',
     icon: 'gauge',
     navGroup: '取込',
-    mobileLabel: '概況',
+    mobileLabel: '概要',
     contentWidth: 'data',
   },
   {
@@ -33,7 +33,7 @@ export const APP_ROUTES = [
   {
     id: 'cash',
     path: '/cash',
-    label: '現金の記帳',
+    label: '現金入力',
     task: '口座明細に出ない現金の収支を記帳します。',
     taskDetail:
       '口座やカードの明細に出ない現金の受け渡し(会議費など)を仕訳する。再取込しても消えない。二重計上の検知もここで働く。',
@@ -45,7 +45,7 @@ export const APP_ROUTES = [
   {
     id: 'classify',
     path: '/classify',
-    label: '公私仕分け',
+    label: '明細仕分け',
     task: '明細の事業・個人、科目、名義を確定します。',
     taskDetail:
       'ここで確定した公私区分・勘定科目・名義は、同じファイルを再取込しても上書きされず残る。事業立替の扱いもここで決める。',
@@ -57,7 +57,7 @@ export const APP_ROUTES = [
   {
     id: 'subscriptions',
     path: '/subscriptions',
-    label: 'サブスク分析',
+    label: 'サブスク',
     task: '定期支出の重複と急な増加を確認します。',
     taskDetail: '支払先ごとの推移を並べ、重複契約疑いとサブスクの急増を検出する。年換算した負担額も添える。',
     icon: 'repeat-2',
@@ -68,7 +68,7 @@ export const APP_ROUTES = [
   {
     id: 'household',
     path: '/household',
-    label: '家計',
+    label: '累計収支',
     task: '暮らしのお金と名義別の収支を確認します。',
     taskDetail:
       '公私仕分けを反映したうえで、事業と個人のお金を並べる。名義別の収入と口座間振替の除外もここで確認する。',
@@ -116,7 +116,7 @@ export const APP_ROUTES = [
   {
     id: 'budget',
     path: '/budget',
-    label: '予算管理',
+    label: '予算',
     task: '科目別の予算を決め、実績との差を確認します。',
     taskDetail:
       '直近3ヶ月平均が予算の±10%の外かどうかで予算差異を判定する。着地見込み(実績累計+直近3ヶ月平均×残り月数)も並べて見る。',
@@ -128,7 +128,7 @@ export const APP_ROUTES = [
   {
     id: 'tradeoff',
     path: '/tradeoff',
-    label: 'やりくり試算',
+    label: 'トレードオフ',
     task: '新しい支出をどこから捻出するか試算します。',
     taskDetail:
       '予算超過・重複契約疑い・基準レンジ超過の科目を削減候補として並べ、新しい支出を賄えるかを試算する。',
@@ -152,7 +152,7 @@ export const APP_ROUTES = [
   {
     id: 'guide',
     path: '/guide',
-    label: '指標ガイド',
+    label: '使い方',
     task: '画面に出る指標の意味と目安を確認します。',
     taskDetail:
       '損益分岐点や安全余裕率など、各画面に出る指標の意味と目安を、いまの数字と並べて参照する。未記帳月がある期間は目安の判定が偏るため、そこも合わせて示す。',
@@ -181,9 +181,9 @@ export const ANALYSIS_TABS = [
     id: 'reconciliation',
     path: '/analysis/reconciliation',
     label: '照合',
-    task: 'freeeとMoney Forwardの支出を一度だけ数えます。',
+    task: 'MoneyForwardの取引とfreeeの仕訳を照合し、差異を解消します。',
     taskDetail:
-      '税務の正本はfreee。MFで事業と仕分けた支出のうち、freeeと厳密に一致するものは二重に数えず、それ以外を未記帳として示す。曖昧な一致は自動で統合しない。',
+      '税務の正本はfreee。金額・日付・内容から一致度を出し、同じ取引として照合するか、別の取引・対象外として処理するかを利用者が決める。曖昧な一致は自動で統合しない。直前の操作は元に戻せる。',
     icon: 'git-compare-arrows',
     navGroup: null,
     step: '差異を消す',
@@ -309,6 +309,27 @@ export const ANALYSIS_HUB_ICONS = {
 } as const;
 
 export type AnalysisTabId = (typeof ANALYSIS_TABS)[number]['id'];
+
+/**
+ * 問いの見出しを持つタブ。PageHeader の「支出分析」を問いに置き換え、説明文をタブより上に置く。
+ * 照合は作業画面なので、ハブと同じく「どこから手を付けるか」を先頭で問う(spec-reconciliation UI・状態遷移)。
+ *
+ * `guideSummary` を持つタブは、畳んだ詳細だけを見出しの下に残す。総収支は判定の区分と
+ * 除外の扱いを知らないと数字を誤読するので、lead の1文では足りない。
+ */
+export const ANALYSIS_TAB_QUESTIONS: Partial<
+  Record<AnalysisTabId, { question: string; lead: string; guideSummary?: string }>
+> = {
+  reconciliation: {
+    question: '帳簿と口座の差異を、どこから解消しますか？',
+    lead: 'MoneyForwardの取引とfreeeの仕訳を照合し、未処理の差異を一つずつ確認・解消しましょう。',
+  },
+  'total-cashflow': {
+    question: '家計と事業を合わせた、本当の収支はいくらですか？',
+    lead: '家計と事業の収入・支出を月次で確認し、重複や除外を調整した実質的な収支を把握しましょう。',
+    guideSummary: 'データの見方',
+  },
+};
 
 /**
  * 子パスを持つ画面。ナビの現在地判定を前方一致にする対象。

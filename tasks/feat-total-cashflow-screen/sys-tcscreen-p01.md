@@ -102,7 +102,7 @@ specs/spec-total-cashflow-screen.md の FR-001..FR-008・BR-001..BR-009・AC-001
 
 - FR-001..FR-008・BR-001..BR-009・AC-001..AC-006・qa-total-cashflow-decision-001..018 を requirements-baseline.md へ転記し、spec 原文との差分が 0 件である。
 - spec の未決事項 8 件それぞれに、着手時点の扱い (どの phase で解消するか、または利用者確認が要るか) を記録している。
-- migration 番号 0041 が取込み時点の main の最新 +1 であることを git fetch 後に確認し、結果を記録している。
+- migration 番号 0042 が取込み時点の main の最新 +1 であることを git fetch 後に確認し、結果を記録している。
 
 ## 成果物
 

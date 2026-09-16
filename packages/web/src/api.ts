@@ -139,6 +139,10 @@ export interface ReviewQueueResponse {
   items: ReviewQueueItem[];
   /** 後で確認にした明細 (解除の対象)。rolling deploy 中の旧 Worker 応答では未定義 */
   snoozedItems?: ReviewQueueItem[];
+  /** 全画面のサイドバーに出す月次クローズ。rolling deploy 中の旧 Worker 応答では未定義 */
+  closeStatus?: MonthlyCloseStatus;
+  /** サイドバーのサブスクのバッジ (判定待ちの候補数)。旧 Worker 応答では未定義 */
+  subscriptionCandidates?: number;
 }
 
 export const snoozeReviewItem = (kind: ReviewItemKind, itemKey: string) =>
@@ -298,46 +302,6 @@ export interface TrendsResponse {
     topAccount: { account: string; total: number } | null;
   }[];
   monthlySides: { month: string; biz: number; personal: number; total: number }[];
-  period: PeriodMeta;
-}
-
-/* -------- 支出照合(freee帳簿とMF未記帳) -------- */
-
-export interface BusinessSpendResponse {
-  summary: {
-    booked: number;
-    unbooked: number;
-    effective: number;
-    matchedCount: number;
-    reviewCount: number;
-  };
-  months: Array<{ month: string; booked: number; unbooked: number; effective: number }>;
-  unbooked: Array<{
-    id: string;
-    month: string;
-    date: string;
-    amount: number;
-    party: string;
-    category: string;
-  }>;
-  review: Array<{
-    mf: {
-      id: string;
-      month: string;
-      date: string;
-      amount: number;
-      party: string;
-      purpose: 'business' | 'personal';
-    };
-    freee: {
-      date: string;
-      amount: number;
-      party: string;
-      purpose: 'business' | 'personal';
-    } | null;
-    candidateCount: number;
-    reason: string;
-  }>;
   period: PeriodMeta;
 }
 

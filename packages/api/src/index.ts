@@ -27,6 +27,7 @@ import { deletionsRoute } from './routes/deletions.js';
 import { importDiffRoute } from './routes/import-diff.js';
 import { importsRoute } from './routes/imports.js';
 import { improvementAgentRoute, improvementRoute, runImprovementRetention } from './routes/improvement.js';
+import { reconciliationRoute } from './routes/reconciliation.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
 import { totalCashflowRoute } from './routes/total-cashflow.js';
@@ -117,6 +118,7 @@ app.route('/api', settingsRoute);
 app.route('/api', subsRoute);
 app.route('/api', balancesRoute);
 app.route('/api', totalCashflowRoute);
+app.route('/api', reconciliationRoute);
 app.route('/api', analysisHubRoute);
 app.route('/api', improvementRoute);
 

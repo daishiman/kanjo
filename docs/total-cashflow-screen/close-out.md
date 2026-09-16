@@ -4,7 +4,7 @@
 
 P13 の受入基準は次の 2 つ。**どちらもまだ満たしていない。**
 
-- PR の CI が緑で default branch へ merge され、migration 0041 が本番 D1 に適用済みである
+- PR の CI が緑で default branch へ merge され、migration 0042 が本番 D1 に適用済みである
 - 本番の `/analysis/total-cashflow` で KPI 3 枚と判定作業が表示される
 
 commit / push / draft PR は実施済みだが、**merge は人の判断を待つ段階**なので
@@ -37,18 +37,18 @@ commit / push / draft PR は実施済みだが、**merge は人の判断を待�
 ```
 $ git fetch origin --prune
 $ git rev-parse origin/main
-1b1682554e4b13a86006d6b23edda715ef76e7fa
+230baaac05676d21c17727ff5c8afb975601ed8e
 ```
 
-`migrations/` の最新は `0040_review_snoozes_and_monthly_close_reviews.sql` で、
-本 branch が足す `0041_total_cashflow_operations_and_exclusion_reason.sql` と重ならない。
+`migrations/` の最新は `0041_reconciliation_tables.sql` (PR #54) で、
+本 branch が足す `0042_total_cashflow_operations_and_exclusion_reason.sql` と重ならない。
 
 > **merge の直前にもう一度 `git fetch` をやり直すこと。**
 > 上の実測は push 時点のもので、その後 main が動けば無効になる。
 
 ### 2. migration は追加のみ
 
-`0041` は `CREATE TABLE` と `ALTER TABLE ... ADD COLUMN` だけで、
+`0042` は `CREATE TABLE` と `ALTER TABLE ... ADD COLUMN` だけで、
 既存列の削除・型変更を含まない。本番の migration gate
 (`feat-deploy-migration-gate`) と runtime schema guard を通る形になっている。
 
@@ -70,6 +70,19 @@ $ git rev-parse origin/main
 
 `docs/total-cashflow-screen/spec-reflection-receipt.md`。
 **影響あり・すでに正規フローで反映済み**と判断した根拠を記録している。
+
+### 6. 照合画面 (PR #54) のマージ取り込み
+
+push 後に main が #53 / #54 で進み、PR #55 が `CONFLICTING` になった。
+`origin/main` を本 branch へマージし、31 ファイルの衝突を解消した。
+
+- `system-spec/` 直下は総収支世代を採用し、照合世代を
+  `system-spec/archive/2026-09-16-reconciliation/` へ複製して退避
+- 照合の 10 文書と `architecture/graph.json` の照合 8 ノードの lineage を archive 配下へ再指定
+  (digest は不変)
+- 衝突マーカーに出なかった 3 件 (migration 番号 / 引数欠落 / `matchScore` 二重 export) を
+  typecheck・テストで検出して解消。詳細は `test-run.md` 末尾
+- 全ゲート再実行で緑 (core 670、api 597、web 624)
 
 ## 残りの手順
 

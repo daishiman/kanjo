@@ -120,7 +120,7 @@ WCAG 2.2 AA (文字 4.5:1、部品 3:1)、判定状態の文字バッジと前�
 - packages/api/src/import-active.ts
 - packages/api/src/routes/imports.ts
 - packages/api/src/import-lifecycle-pure.test.ts
-- migrations/0041_total_cashflow_operations_and_exclusion_reason.sql
+- migrations/0042_total_cashflow_operations_and_exclusion_reason.sql
 - packages/web/src/pages/analysis/TotalCashflow.tsx
 - packages/web/src/api.ts
 - packages/web/src/analysis-query-invalidation.ts

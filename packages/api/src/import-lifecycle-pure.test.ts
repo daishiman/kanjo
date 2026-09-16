@@ -622,6 +622,14 @@ describe('canonical mutation lease predicate', () => {
       ['DELETE', '/api/review-queue/snoozes/classification/mf-1'],
       ['PUT', '/api/monthly-close/2026-09/review'],
       ['DELETE', '/api/monthly-close/2026-09/review'],
+      // 照合と総収支の判断・除外・取り消しは明細を読んでから書く。
+      // 同じ明細に二つの判断が同時に入ると、総額がどちらの結果か決まらない
+      ['POST', '/api/total-cashflow/verdicts'],
+      ['POST', '/api/total-cashflow/freee-exclusions'],
+      ['DELETE', '/api/total-cashflow/freee-exclusions'],
+      ['POST', '/api/total-cashflow/operations/op-1/undo'],
+      ['POST', '/api/reconciliation/actions'],
+      ['POST', '/api/reconciliation/actions/op-1/undo'],
       ['POST', '/api/rules'],
       ['PUT', '/api/rules/1'],
       ['DELETE', '/api/rules/1'],
@@ -637,12 +645,6 @@ describe('canonical mutation lease predicate', () => {
       ['DELETE', '/api/sub-vendors/1'],
       ['POST', '/api/sub-vendors/exclusions'],
       ['DELETE', '/api/sub-vendors/exclusions/1'],
-      // 総収支の判定・除外・復元・取消は消し込みの正本を書く (0041)。
-      // 同じ明細に二つの判断が同時に入ると、総額がどちらの結果か決まらない
-      ['POST', '/api/total-cashflow/verdicts'],
-      ['POST', '/api/total-cashflow/freee-exclusions'],
-      ['DELETE', '/api/total-cashflow/freee-exclusions'],
-      ['POST', '/api/total-cashflow/operations/op-1/undo'],
     ] as const;
     const selfManaged = [
       ['POST', '/api/imports'],
@@ -695,6 +697,7 @@ describe('canonical mutation lease predicate', () => {
       'routes/deletions.ts',
       'routes/import-diff.ts',
       'routes/imports.ts',
+      'routes/reconciliation.ts',
       'routes/settings.ts',
       'routes/subs.ts',
       'routes/total-cashflow.ts',
@@ -746,6 +749,11 @@ describe('canonical mutation lease predicate', () => {
       'DELETE /api/review-queue/snoozes/:kind/:itemKey',
       'PUT /api/monthly-close/:month/review',
       'DELETE /api/monthly-close/:month/review',
+      'POST /api/total-cashflow/verdicts',
+      'POST /api/total-cashflow/freee-exclusions',
+      'DELETE /api/total-cashflow/freee-exclusions',
+      'POST /api/reconciliation/actions',
+      'POST /api/reconciliation/actions/:id/undo',
       'POST /api/restore',
       'POST /api/tradeoff',
       'POST /api/ai/tasks',
@@ -758,9 +766,6 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/auth/login',
       'POST /api/auth/logout',
       'POST /api/auth/password',
-      'POST /api/total-cashflow/verdicts',
-      'POST /api/total-cashflow/freee-exclusions',
-      'DELETE /api/total-cashflow/freee-exclusions',
       'POST /api/total-cashflow/operations/:id/undo',
     ].sort();
     expect(discovered.sort()).toEqual(expected);

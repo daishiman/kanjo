@@ -19,7 +19,7 @@
  *
  * ## 置換前に落ちる理由
  *
- * `matchScore` / `previousYearPeriod` / `totalCashflowScreen` は置換前に存在しない。
+ * `duplicateMatchScore` / `previousYearPeriod` / `totalCashflowScreen` は置換前に存在しない。
  * BR-005 は `nearCandidates` が除外済みを先に落とすため、除外前の候補数を判定できず落ちる。
  */
 import { describe, expect, it } from 'vitest';
@@ -27,9 +27,9 @@ import {
   type Dataset,
   type FreeeDeal,
   type MfTx,
+  duplicateMatchScore,
   emptyDataset,
   freeeDealKeys,
-  matchScore,
   previousYearPeriod,
   reconcileBizDuplicates,
   totalCashflowScreen,
@@ -70,8 +70,8 @@ function dataset(txs: MfTx[], months = ['2026-08']): Dataset {
   return data;
 }
 
-const score = (over: Partial<Parameters<typeof matchScore>[0]> = {}) =>
-  matchScore({
+const score = (over: Partial<Parameters<typeof duplicateMatchScore>[0]> = {}) =>
+  duplicateMatchScore({
     dayGap: 0,
     mfAccount: '三井住友銀行 普通',
     freeeAccount: '三井住友銀行 普通',

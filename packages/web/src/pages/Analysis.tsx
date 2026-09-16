@@ -21,13 +21,14 @@ import { type ComponentType, Suspense, lazy, useState } from 'react';
 import { Link, NavLink, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { type AnalysisHubResponse, api } from '../api.js';
 import { Button } from '../components/Button.js';
-import { PageHeader, PageState, TaskCopy } from '../components/Page.js';
+import { PageHeader, PageState, TaskCopy, TaskDetail } from '../components/Page.js';
 import { RouteIcon } from '../components/RouteIcon.js';
 import { usePeriod } from '../period.js';
 import {
   ANALYSIS_HUB_ICONS,
   ANALYSIS_HUB_STALE_TIME_MS,
   ANALYSIS_TABS,
+  ANALYSIS_TAB_QUESTIONS,
   type AnalysisTabId,
   DEFAULT_ANALYSIS_TAB,
   analysisHubQueryKey,
@@ -62,26 +63,22 @@ export function AnalysisPage() {
   const tab = analysisTab(requested);
   if (!tab) return <Navigate to={DEFAULT_ANALYSIS_TAB.path} replace />;
   const Panel = PANELS[tab.id];
-  const isTotalCashflow = tab.id === 'total-cashflow';
+  const question = ANALYSIS_TAB_QUESTIONS[tab.id];
 
   return (
     <>
-      <PageHeader
-        route="analysis"
-        title={isTotalCashflow ? '家計と事業を合わせた、本当の収支はいくらですか？' : undefined}
-        showTask={!isTotalCashflow}
-      />
-      {isTotalCashflow && (
-        <TaskCopy
-          task="家計と事業の収入・支出を月次で確認し、重複や除外を調整した実質的な収支を把握しましょう。"
-          detail={tab.taskDetail}
-          summary="データの見方"
-        />
+      {question ? (
+        <>
+          <PageHeader route="analysis" title={question.question} lead={question.lead} showTask={false} />
+          {question.guideSummary && <TaskDetail detail={tab.taskDetail} summary={question.guideSummary} />}
+        </>
+      ) : (
+        <PageHeader route="analysis" />
       )}
       <AnalysisTabsNav />
 
       <section aria-label={tab.label}>
-        {!isTotalCashflow && (
+        {!question && (
           <TaskCopy task={tab.task} detail={tab.taskDetail} summary={`${tab.label}のくわしい説明`} />
         )}
         <Suspense key={tab.id} fallback={<PageState status="loading" />}>

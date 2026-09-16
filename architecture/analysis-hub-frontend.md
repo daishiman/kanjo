@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-14-analysis-hub/completeness-findings.json", "evaluated_digest": "b9b122b5848ffd56ad081b04ac30e02cb44176b490a61cdb8d583ee226c670ef"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-14-analysis-hub/frontend.md", "source_version": "0.1.14", "source_digest": "b9b122b5848ffd56ad081b04ac30e02cb44176b490a61cdb8d583ee226c670ef", "imported_at": "2026-09-14T12:23:44Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-15-analysis-hub/completeness-findings.json", "evaluated_digest": "b9b122b5848ffd56ad081b04ac30e02cb44176b490a61cdb8d583ee226c670ef"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-15-analysis-hub/frontend.md", "source_version": "0.1.14", "source_digest": "b9b122b5848ffd56ad081b04ac30e02cb44176b490a61cdb8d583ee226c670ef", "imported_at": "2026-09-14T12:23:44Z"}
 created_at: "2026-09-14T12:23:44Z"
 updated_at: "2026-09-14T12:23:44Z"
 depends_on: ["spec-analysis-hub"]
@@ -50,7 +50,7 @@ serves_goals: ["G1", "G2", "G5"]
 
 # Architecture overview
 
-支出分析ハブ — URL の focus 保持とクエリ共有。正本は `system-spec/archive/2026-09-14-analysis-hub/frontend.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
+支出分析ハブ — URL の focus 保持とクエリ共有。正本は `system-spec/frontend.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
 
 ## Context and drivers
 
@@ -74,7 +74,7 @@ serves_goals: ["G1", "G2", "G5"]
 
 - Users/external systems: 利用者 1 名。呼出し先は GET /api/analysis/hub と、詳細タブを開いたときの既存 5 API。
 - Trust/deployment/data boundaries: 静的アセットとして Worker から配信する。URL に載せるのは focus (タブ id) だけで、期間・金額は載せない。
-- Context diagram: `system-spec/archive/2026-09-14-analysis-hub/index.md` の章相互参照を参照する。
+- Context diagram: `system-spec/index.md` の章相互参照を参照する。
 
 ## Container and component view
 

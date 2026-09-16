@@ -16,7 +16,15 @@ export type CanonicalMutationClass = 'canonical-mutation' | 'self-managed-import
  * JsonSnapshotMutationConsumer ではないが、資産推移CSVの取込と同じ表を書く。
  * 取込の洗い替えと手入力が重なると、消した直後の行だけが残りうるのでleaseは要る。
  */
-type CanonicalConsumer = JsonSnapshotMutationConsumer | 'category_options' | 'balance_entries' | 'overrides';
+type CanonicalConsumer =
+  | JsonSnapshotMutationConsumer
+  | 'category_options'
+  | 'balance_entries'
+  | 'overrides'
+  | 'duplicate_verdicts'
+  | 'freee_deal_exclusions'
+  | 'mf_tx_exclusions'
+  | 'reconciliation_actions';
 
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -71,7 +79,7 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   { method: 'PUT', path: /^\/api\/monthly-close\/[^/]+\/review$/, consumers: ['monthly_close_reviews'] },
   { method: 'DELETE', path: /^\/api\/monthly-close\/[^/]+\/review$/, consumers: ['monthly_close_reviews'] },
   /*
-   * 0041: 総収支の判断・除外・取消。復元の write-set に入るので、復元と重ねない。
+   * 0042: 総収支の判断・除外・取消。復元の write-set に入るので、復元と重ねない。
    *
    * ここを外すと「除外を保存している間に復元が走り、外した鍵だけが新しいデータに残る」
    * が作れる。除外は freee 側の取引を総額から落とすので、残った鍵は
@@ -97,6 +105,23 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
     method: 'POST',
     path: /^\/api\/total-cashflow\/operations\/[^/]+\/undo$/,
     consumers: ['duplicate_verdicts', 'freee_deal_exclusions', 'total_cashflow_operations'],
+  },
+  /*
+   * 0041: 照合画面の一括判断と取消 (PR #54)。
+   *
+   * 総収支の判断表と同じ duplicate_verdicts / freee_deal_exclusions を触るので、
+   * consumer を共有させて直列化する。共有させないと、照合で除外した行を
+   * 総収支が「まだある」前提で読んだまま書き戻す窓が開く。
+   */
+  {
+    method: 'POST',
+    path: /^\/api\/reconciliation\/actions$/,
+    consumers: ['duplicate_verdicts', 'freee_deal_exclusions', 'mf_tx_exclusions', 'reconciliation_actions'],
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/reconciliation\/actions\/[^/]+\/undo$/,
+    consumers: ['duplicate_verdicts', 'freee_deal_exclusions', 'mf_tx_exclusions', 'reconciliation_actions'],
   },
   { method: 'POST', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PATCH', path: /^\/api\/rules$/, consumers: ['rules'] },

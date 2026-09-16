@@ -1,0 +1,148 @@
+{
+  "feature_package_id": "feature-package/feat-reconciliation",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と未決事項7件の着手時整理"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P01"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P02",
+      "title": "照合 API・D1 新表3件・core 判定規則のワークストリーム設計決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P02"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P03",
+      "title": "API契約・D1新表設計・一致度規則の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P03"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P04",
+      "title": "core境界値・API統合・DOMの失敗テスト先行作成 (契約テストで7件の未決事項を固定)"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P04"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P05",
+      "title": "照合core判定関数・3API・月次レビューAPI・D1 migration・Reconciliation.tsx・共通シェル・アイコンの実装"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P05"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P06",
+      "title": "全テスト・型検査・lintの実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P06"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P07",
+      "title": "AC-001..AC-006・S1..S6受入検証"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P07"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P08",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P08",
+      "title": "migration 0040の前進のみ整合とバックアップ/復元対象の整理"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P08"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・入力検証・JS予算・route-icon-distinctの保証確認"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P09"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P10"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P11"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P12",
+      "title": "docs/runbooksへの切り分け手順とdocs/data-schema.mdの最終同期"
+    },
+    {
+      "depends_on": [
+        "SYS-RECON-P12"
+      ],
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "id": "SYS-RECON-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P13",
+      "title": "単一PRでの配信とクローズアウト"
+    }
+  ],
+  "parent_feature": "feat-reconciliation",
+  "schema_version": "1.0.0"
+}

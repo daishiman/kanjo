@@ -74,7 +74,7 @@ afterEach(() => {
 });
 
 describe('総収支の成功 mutation', () => {
-  it('重複判断の保存後に分析ハブの全期間キャッシュを無効化する', async () => {
+  it('重複判断の保存後に分析ハブ・照合・月次クローズのキューを無効化する', async () => {
     const calls: { url: string; method: string }[] = [];
     vi.stubGlobal(
       'fetch',
@@ -90,6 +90,9 @@ describe('総収支の成功 mutation', () => {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     client.setQueryData(['analysis-hub', 'all'], { marker: 'all' });
     client.setQueryData(['analysis-hub', 'year=2026'], { marker: 'year' });
+    // 照合の件数とクローズのキューは同じ判断の表を読む。総収支で判断しても古い件数を残さない
+    client.setQueryData(['reconciliation', 'all'], { marker: 'reconciliation' });
+    client.setQueryData(['review-queue'], { marker: 'queue' });
     render(
       <QueryClientProvider client={client}>
         <PeriodProvider>
@@ -107,6 +110,8 @@ describe('総収支の成功 mutation', () => {
     await waitFor(() => {
       expect(client.getQueryState(['analysis-hub', 'all'])?.isInvalidated).toBe(true);
       expect(client.getQueryState(['analysis-hub', 'year=2026'])?.isInvalidated).toBe(true);
+      expect(client.getQueryState(['reconciliation', 'all'])?.isInvalidated).toBe(true);
+      expect(client.getQueryState(['review-queue'])?.isInvalidated).toBe(true);
     });
   });
 });

@@ -32,5 +32,5 @@
     "feature_label": "active · feature · 0/13",
     "dom_external_refs": 0
   },
-  "note": "render-graph-html.py は receipt を書かないため、stdout と registration receipt、実ファイル digest から再生成した。graph は read-only (前後 sha 不変)。"
+  "note": "render-graph-html.py は receipt を書かないため、stdout と registration receipt、実ファイル digest から再生成した。graph は read-only (前後 sha 不変)。 main (照合機能) との merge では render を合成しない。本 receipt の input は gitignore 対象の .dev-graph/state/graph.json で機能ごとのローカル投影のため、本ブランチの feat-total-cashflow-screen の投影を採用し、digest 不変 (再実行で同一 output_sha256) を確認した。"
 }

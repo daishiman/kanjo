@@ -164,6 +164,42 @@ export const freeeDealExclusions = sqliteTable('freee_deal_exclusions', {
   updatedAt: text('updated_at'),
 });
 
+/**
+ * 0041: 照合画面で MF 明細を突合から外す。総額からは外さず、相手探しと要確認からだけ外す。
+ * tx_id が振り直されたときは duplicate_verdicts と同じく stable_key で引き直す。
+ */
+export const mfTxExclusions = sqliteTable(
+  'mf_tx_exclusions',
+  {
+    userId: text('user_id').notNull(),
+    txId: text('tx_id').notNull(),
+    stableKey: text('stable_key'),
+    fingerprintVersion: integer('fingerprint_version'),
+    reason: text('reason').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.txId] }),
+    index('idx_mf_tx_exclusions_stable_key').on(t.userId, t.stableKey),
+  ],
+);
+
+/** 0041: 照合のまとめた判断 1 回ぶん。before_json を書き戻すと取り消せる */
+export const reconciliationActions = sqliteTable(
+  'reconciliation_actions',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    action: text('action', { enum: ['same', 'different', 'exclude-mf', 'exclude-freee'] }).notNull(),
+    targetCount: integer('target_count').notNull(),
+    beforeJson: text('before_json').notNull(),
+    afterJson: text('after_json').notNull(),
+    createdAt: text('created_at').notNull(),
+    undoneAt: text('undone_at'),
+  },
+  (t) => [index('idx_reconciliation_actions_user_created').on(t.userId, t.createdAt)],
+);
+
 /** 保有金融機関 → 名義 */
 export const institutionOwners = sqliteTable('institution_owners', {
   userId: text('user_id').notNull(),

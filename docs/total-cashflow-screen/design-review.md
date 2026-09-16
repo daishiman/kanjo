@@ -10,7 +10,7 @@ MATCH_SCORE_DATE   = [30, 20, 10, 5]   // |dayGap| 0,1,2,3 / 4以上は 0
 MATCH_SCORE_ACCOUNT = { same: 15, unknown: 8, conflict: 0 }
 MATCH_SCORE_TEXT    = { same: 15, partial: 8, none: 0 }
 
-matchScore(candidate): number                 // 0..100 の整数
+duplicateMatchScore(candidate): number                 // 0..100 の整数
 previousYearPeriod(range): PeriodRange        // 開始月・終了月をそれぞれ 12 か月前へ
 totalCashflowScreen(all, allDeals, verdicts, exclusions, range): TotalCashflowScreen
 ```

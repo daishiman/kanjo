@@ -95,12 +95,12 @@ migration は本番 Worker の配備より先に適用する既存ゲート (fea
 ## Architecture and deploy unit
 
 - Architecture decisions: arch-total-cashflow-screen-auth, arch-total-cashflow-screen-backend, arch-total-cashflow-screen-database, arch-total-cashflow-screen-frontend, arch-total-cashflow-screen-infrastructure, arch-total-cashflow-screen-maintenance-ops, arch-total-cashflow-screen-security, arch-total-cashflow-screen-ui-ux, spec-total-cashflow-screen
-- Deploy unit/environment: Cloudflare Workers kanjo-console (packages/api build:artifact) + D1 kanjo-db migrations/0041_total_cashflow_operations_and_exclusion_reason.sql の deploy.yml 自動適用経路 (migration を Worker 配備より先に適用する既存ゲート)
+- Deploy unit/environment: Cloudflare Workers kanjo-console (packages/api build:artifact) + D1 kanjo-db migrations/0042_total_cashflow_operations_and_exclusion_reason.sql の deploy.yml 自動適用経路 (migration を Worker 配備より先に適用する既存ゲート)
 - Compatibility/migration/backfill: GET /api/total-cashflow の既存フィールドと旧 reason body の受理を維持し、migration は追加のみとする (spec-total-cashflow-screen.md 互換性・移行・リリース節)
 
 ## 受入基準
 
-- PR の CI が緑で default branch へ merge され、migration 0041 が本番 D1 に適用済みである。
+- PR の CI が緑で default branch へ merge され、migration 0042 が本番 D1 に適用済みである。
 - 本番の /analysis/total-cashflow で KPI 3 枚と判定作業が表示され、close-out.md に記録されている。
 
 ## 成果物
