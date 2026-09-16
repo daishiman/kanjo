@@ -28,7 +28,7 @@
     "db:migrate:remote": "pnpm --filter @kanjo/api exec wrangler d1 migrations apply kanjo-db --remote",
     "db:checkpoint": "pnpm --filter @kanjo/api exec wrangler d1 time-travel info kanjo-db",
     "smoke": "bash .github/scripts/smoke.sh",
-    "runbooks:test": "bash docs/runbooks/scripts/reconcile-row-counts.test.sh",
+    "runbooks:test": "bash docs/runbooks/scripts/reconcile-row-counts.test.sh && bash -n docs/runbooks/scripts/admin-credential-remote.sh",
     "guard-real-data:test": "bash scripts/hooks/guard-real-data.test.sh",
     "security:content": "bash scripts/hooks/guard-real-data.sh --scan-public-docs",
     "skills:sync": "node scripts/sync-project-skills.mjs",
