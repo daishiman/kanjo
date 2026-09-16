@@ -17,9 +17,10 @@ import { resolve } from 'node:path';
  */
 import { cleanup, render } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
+import { ANALYSIS_HUB_ICONS } from './analysis-hub-icons.js';
 import { ROUTE_ICON_NAMES, RouteIcon } from './components/RouteIcon.js';
 import { UI_ICON_NAMES, UiIcon } from './components/UiIcon.js';
-import { ANALYSIS_HUB_ICONS, ANALYSIS_TABS, APP_ROUTES } from './routeMetadata.js';
+import { ANALYSIS_TABS, APP_ROUTES } from './routeMetadata.js';
 
 afterEach(cleanup);
 

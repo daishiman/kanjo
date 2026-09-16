@@ -19,16 +19,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { type ComponentType, Suspense, lazy, useState } from 'react';
 import { Link, NavLink, Navigate, useParams, useSearchParams } from 'react-router-dom';
+import { ANALYSIS_HUB_ICONS } from '../analysis-hub-icons.js';
+import { ANALYSIS_TAB_QUESTIONS } from '../analysis-tab-questions.js';
 import { type AnalysisHubResponse, api } from '../api.js';
 import { Button } from '../components/Button.js';
 import { PageHeader, PageState, TaskCopy, TaskDetail } from '../components/Page.js';
 import { RouteIcon } from '../components/RouteIcon.js';
 import { usePeriod } from '../period.js';
 import {
-  ANALYSIS_HUB_ICONS,
   ANALYSIS_HUB_STALE_TIME_MS,
   ANALYSIS_TABS,
-  ANALYSIS_TAB_QUESTIONS,
   type AnalysisTabId,
   DEFAULT_ANALYSIS_TAB,
   analysisHubQueryKey,

@@ -295,41 +295,12 @@ export const ANALYSIS_TABS = [
   },
 ] as const;
 
-/** ハブの補助アイコン。状態・操作の意味と図形の対応もルート定義と同じ場所で管理する。 */
-export const ANALYSIS_HUB_ICONS = {
-  copy: 'link-2',
-  status: {
-    success: 'circle-check',
-    error: 'circle-alert',
-    neutral: 'circle-minus',
-    warning: 'triangle-alert',
-    trendDown: 'arrow-down',
-    trendUp: 'trending-up',
-  },
-} as const;
-
 export type AnalysisTabId = (typeof ANALYSIS_TABS)[number]['id'];
 
 /**
- * 問いの見出しを持つタブ。PageHeader の「支出分析」を問いに置き換え、説明文をタブより上に置く。
- * 照合は作業画面なので、ハブと同じく「どこから手を付けるか」を先頭で問う(spec-reconciliation UI・状態遷移)。
- *
- * `guideSummary` を持つタブは、畳んだ詳細だけを見出しの下に残す。総収支は判定の区分と
- * 除外の扱いを知らないと数字を誤読するので、lead の1文では足りない。
+ * 問いの見出しの本文は `analysis-tab-questions.ts` にある。
+ * 読むのが支出分析タブ (遅延読込) だけなので、初期 JS へ載せないため分けている。
  */
-export const ANALYSIS_TAB_QUESTIONS: Partial<
-  Record<AnalysisTabId, { question: string; lead: string; guideSummary?: string }>
-> = {
-  reconciliation: {
-    question: '帳簿と口座の差異を、どこから解消しますか？',
-    lead: 'MoneyForwardの取引とfreeeの仕訳を照合し、未処理の差異を一つずつ確認・解消しましょう。',
-  },
-  'total-cashflow': {
-    question: '家計と事業を合わせた、本当の収支はいくらですか？',
-    lead: '家計と事業の収入・支出を月次で確認し、重複や除外を調整した実質的な収支を把握しましょう。',
-    guideSummary: 'データの見方',
-  },
-};
 
 /**
  * 子パスを持つ画面。ナビの現在地判定を前方一致にする対象。
