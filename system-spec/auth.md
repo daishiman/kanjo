@@ -3,7 +3,7 @@ status: confirmed
 category: auth
 aggregate: 確定
 spec_cells: [auth.web, auth.mobile, auth.tablet, auth.desktop-windows, auth.desktop-linux, auth.desktop-macos]
-serves_goals: [G3]
+serves_goals: [G3, G4]
 ---
 
 # 認証(ログイン) (auth)
@@ -15,12 +15,12 @@ serves_goals: [G3]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-auth-web-ah-observed-001。資するゴール: G3 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-auth-web-rc-observed-001。裏付け質疑 (`qa_refs`): `qa-backend-web-rc-decision-007` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは照合操作 API を呼ぶ端末アプリのセッションを OS の生体認証やキーチェーンとどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは照合操作 API を呼ぶ端末アプリのセッションを OS の生体認証やキーチェーンとどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは照合操作 API を呼ぶ端末アプリのセッションを OS の生体認証やキーチェーンとどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは照合操作 API を呼ぶ端末アプリのセッションを OS の生体認証やキーチェーンとどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは照合操作 API を呼ぶ端末アプリのセッションを OS の生体認証やキーチェーンとどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G3]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の『全ての保護資源で認証を強制する』を、ハブ API を既存 /api/* の authGuard 配下へマウントする確定内容に反映した。新しい認証経路・トークン・セッション方式は作らず、アカウントログイン (PR #47) のセッションをそのまま使う。 |
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS のアクセス制御 (他利用者のデータに触れない) を、ハブ API の全ての読取りを userId で絞る確定内容に反映した。共有された ?focus= 付き URL を他人が開いても、認証を通った本人のデータしか集計されない。 |
+| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の『全ての保護資源で認証を強制する』を、照合 API と月次レビュー API を既存 /api/* の authGuard 配下へマウントする確定内容に反映した。新しい認証経路・トークンは作らず、アカウントログインのセッションと mustChangePasswordFence をそのまま通す。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS のアクセス制御 (他利用者のデータに触れない) を、照合の読み書きと取消の全てを userId で絞り、他人の操作 id を 404 にする確定内容に反映した。直前の操作の表示も本人の reconciliation_actions だけから引く。 |
 
 > **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
@@ -39,19 +39,31 @@ serves_goals: [G3]
 
 ### Web (web)
 
-- 資するゴール: G3
+- 資するゴール: G3, G4
 
-#### 主たる接地根拠: `qa-auth-web-ah-observed-001`
+#### 主たる接地根拠: `qa-auth-web-rc-observed-001`
 
 **問**
 
-ハブ API とハブ画面の認証・認可はどうなるか。
+照合 API と月次レビュー API の認証・認可はどこで行われるか。
 
 **答**
 
-利用者アカウント (メールアドレス + パスワード、PR #47) のセッションで認証する。packages/api/src/index.ts は /api/* に authGuard() と mustChangePasswordFence() を掛け、c.get('userId') で利用者を特定する。新設 GET /api/analysis/hub は analyticsRoute 等と同じくこのミドルウェアの後にマウントし、全ての読み取りを userId で絞る (他利用者のデータを返さない)。画面は AuthenticatedApp.tsx 配下で、未認証は既存どおりログインへ送られる。認証方式・セッション・レート制限の変更は無い。
+packages/api/src/index.ts は authRoute・aiAgentRoute・improvementAgentRoute を先に、その後 /api/* に authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence を掛けてから adminUsersRoute ほか業務 route (totalCashflowRoute・analysisHubRoute 等) をマウントする。各 route は c.get('userId') で全ての読み書きを絞り、route 内に別の認可判断を持たない。照合 API と月次レビュー API も同じ位置 (authGuard の後) にマウントすれば、未認証の呼出しは route に届かず、他利用者の判断・履歴に触れない。取消 (undo) は reconciliation_actions の user_id 一致を条件にし、他人の操作 id は 404 にする。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,auth.ts,users.ts}, packages/web/src/AuthenticatedApp.tsx。 / 回答時刻: 2026-09-14T11:38:26Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD cc0d5e3) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/index.ts, packages/api/src/auth.ts, packages/api/src/routes/total-cashflow.ts。 / 回答時刻: 2026-09-15T08:59:56Z)
+
+#### 裏付け質疑: `qa-backend-web-rc-decision-007`
+
+**問**
+
+照合画面の API をどう切るか。選択肢: (A) 照合専用 API を新設: GET /api/reconciliation (KPI・キュー・候補一覧・下段 2 表・直前の操作を 1 回で返す) と POST /api/reconciliation/actions (照合/別取引/除外・最大 200 件・部分成功)、POST /api/reconciliation/actions/:id/undo。保存先は既存 duplicate_verdicts / freee 除外表を共用し bindDuplicateVerdicts で総収支と件数を揃える。既存 /business-spend と /total-cashflow は残す (推奨) / (B) 既存 total-cashflow API を拡張。
+
+**答**
+
+(A) 照合専用 API を新設 を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T08:59:56Z)
 
 ## To-Be / Delta
 
@@ -59,18 +71,21 @@ serves_goals: [G3]
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: ハブに必要な集計を packages/core の純関数と、1 回で返す集約 API (GET /analysis/hub) に置く。期間の収支サマリーと前 12 か月比、5 視点それぞれの現在の状態 (照合の要確認件数・総収支の重複候補件数・マトリクスの正常判定・推移の支出前 12 か月比・診断の改善余地) と優先度を返し、ハブ表示中に 5 タブ分の既存 API を呼ばない。
+- **G3**: 照合操作を保存し元に戻せるようにする。既存の duplicate_verdicts と freee 除外表を再利用し、照合画面用の API (一覧・KPI・キューを返す GET と、照合 / 別取引 / 除外 / 一括照合の POST)、verdict 取消 API、MF 側除外、照合操作の履歴表 (直前の操作と元に戻すに使う) を migration 付きで追加する。一括は最大 200 件で部分成功を返す。
+- **G4**: 共通シェルを画像に揃える。サイドバーの文言 (概要/データ取込/現金入力/明細仕分け/サブスク/累計収支/支出分析/決算書/AI分析/予算/トレードオフ/設定/使い方/改善リクエスト) とグループ・件数バッジ (データ取込=要確認の取込件数・明細仕分け=未整理明細数・サブスク=判定待ち候補数・照合=要確認件数)、ページ見出し・パンくず・コマンドパレットのラベル追随、月次クローズ進捗 3/4 (データ取込/仕分け/照合は直近の締め月について自動判定、月次レビューは利用者の完了操作を月単位で D1 に保存し取消可)、ヘッダー (防衛ライン：正常 の表記・未記録 Nか月・最終更新・⌘K 検索・ダウンロード・ヘルプのアイコンボタン・アバター)、フッター (外部送信しない / 税務上の正本は freee / 毎晩バックアップ と 利用規約・プライバシー・データ出典・v1.0) と改善を送るボタン。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | core に analysisHub(dataset) 相当の純関数を置き、API に GET /analysis/hub を足す。 | core 単体テストが期間合計・前 12 か月比 (前期間データ無しは null)・5 視点の状態・優先度・改善余地を固定データで検証し、API 統合テストが認証付きで 200 と期間メタを返し、ハブ表示中の DOM テストで既存 5 API への呼出しが 0 件である。 |
+| O3 | 照合操作 API・取消・MF 除外・操作履歴を migration 付きで追加する。 | API 統合テストが認証付きで照合 / 別取引 / 除外 / 一括 (201 件で 400、部分成功の内訳) / 取消 / 直前の操作の取得を検証し、migration が既存 D1 に冪等に適用され、元に戻すと KPI とキューが操作前の値に戻る。 |
+| O4 | 共通シェルの差分を実装する。 | shell 系 DOM テストをサイドバー新文言・件数バッジ・月次クローズ 3/4 (自動 3 + レビュー手動の保存と取消)・ヘッダーのアイコンボタン・フッターリンクで更新して緑、月次レビュー API の統合テストが緑である。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I3**: 期間の収支サマリーに総収入・総支出・純収支と前 12 か月比 (増減率と前期間の金額) を出し、純収支の説明パネルを右に置く。前期間データが無い場合は比較を『比較データなし』と表示する。
-- **I4**: core にハブ集計関数を置き、GET /analysis/hub が期間メタ・サマリー・5 視点の状態・優先度を返す。前期間の計算は core へ移し AI 側もそれを使う。
+- **I4**: 照合画面用 API と verdict 取消・MF 除外・操作履歴を migration 付きで足し、同じ取引として照合 / 別の取引として処理 / 除外 / 一括照合 / 元に戻すを web から呼ぶ。
+- **I5**: routeMetadata のラベルとグループを画像に揃え、件数バッジ・月次クローズ 3/4 (月次レビュー完了の保存と取消)・ヘッダーのアイコンボタン・フッター・改善を送るボタンを共通シェルに入れる。
+- **I7**: 一致度・キュー・ステータス・月次クローズ判定の規則を docs に書き、docs/data-schema.md の古い候補条件を直し、境界値テストで固定する。
 
 ### 本章に効く確定意思決定
 
@@ -82,9 +97,9 @@ serves_goals: [G3]
 
 ### 本章での適用
 
-Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、ハブ API の認可に適用した。GET /api/analysis/hub は /api/* の authGuard と mustChangePasswordFence の後にマウントし、route 内では c.get('userId') で loadDataset と freee 系 3 テーブルを絞る以外の認可判断を持たない。サイドバーのバッジが全画面でこの API を呼んでも (qa-frontend-web-ah-decision-003)、未認証の画面ではバッジ用のクエリ自体を張らず、認証の判断を表示部品へ移さない。
+Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を照合 API と月次レビュー API の認可に適用した。新 route は /api/* の authGuard と mustChangePasswordFence の後にマウントし、route 内の認可は c.get('userId') で読み書きを絞ることだけに限る。取消 (undo) は操作 id を受け取るため、reconciliation_actions の user_id 一致を WHERE 条件に含め、他人の操作 id は存在の有無を漏らさず 404 に倒す。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-14T11:57:54Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T08:59:56Z)
 
 ### Secure by Design — deep knowledge card
 

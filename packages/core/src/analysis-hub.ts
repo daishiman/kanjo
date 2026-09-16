@@ -3,14 +3,14 @@ import { tradeoffCandidates } from './analysis.js';
  * 支出分析ハブ: 5 つの分析 (照合・総収支・マトリクス・推移・診断) のどこから見るかを決める材料。
  *
  * ハブは各分析の API を 5 本呼ぶのではなく、この純関数の結果 1 つで描く。
- * 数字はすべて既存の集計関数 (totalCashflowReport / buildExpenseProjection / tradeoffCandidates)
+ * 数字はすべて既存の集計関数 (totalCashflowReport / reconciliationReport / tradeoffCandidates)
  * の出力を再利用し、ここで数え直さない。数え直すと、ハブの件数とタブの件数が食い違ったときに
  * どちらが正しいか誰にも決められなくなる。
  *
  * 判定規則の正本は docs/analysis-hub/requirements-baseline.md の BR-001..BR-005。
  */
-import { buildExpenseProjection } from './expense-projection.js';
 import { type PeriodRange, applyPeriod, fullRange, isValidPeriod, sliceDataset } from './period.js';
+import { type MfExclusion, reconciliationReport } from './reconciliation.js';
 import { type DuplicateVerdict, type FreeeExclusion, totalCashflowReport } from './total-cashflow.js';
 import type { Dataset, FreeeDeal } from './types.js';
 
@@ -45,7 +45,7 @@ export const previousPeriodLabel = (range: PeriodRange): string => `前${rangeLe
 
 /* ======================== 判定規則 (BR-001..003) ======================== */
 
-/** BR-001: 照合と総収支は要確認 1 件以上で高。ほかの 3 視点は件数に関わらず中 */
+/** BR-001: 照合と総収支は対応必要 1 件以上で高。ほかの 3 視点は件数に関わらず中 */
 export function hubPriority(id: AnalysisHubViewId, count: number): HubPriority {
   if (id === 'reconciliation' || id === 'total-cashflow') return count > 0 ? '高' : '中';
   return '中';
@@ -86,7 +86,12 @@ interface ViewBase<Id extends AnalysisHubViewId> {
 }
 
 export interface AnalysisHubViews {
-  reconciliation: ViewBase<'reconciliation'> & { reviewCount: number };
+  reconciliation: ViewBase<'reconciliation'> & {
+    /** 要確認 + 未処理。バッジと優先度はこの契約を使う */
+    actionRequiredCount: number;
+    /** 互換用。同額候補がある要確認だけの件数 */
+    reviewCount: number;
+  };
   'total-cashflow': ViewBase<'total-cashflow'> & { reviewCount: number };
   matrix: ViewBase<'matrix'> & { unrecordedMonths: number; normal: boolean };
   trends: ViewBase<'trends'> & { expenseChange: number | null };
@@ -106,6 +111,8 @@ export interface AnalysisHubInput {
   deals: readonly FreeeDeal[];
   verdicts?: readonly DuplicateVerdict[];
   exclusions?: readonly FreeeExclusion[];
+  /** 照合画面で「照合から除外する」とした明細。照合と総収支の要確認から外す */
+  mfExclusions?: readonly MfExclusion[];
 }
 
 /** その Dataset に含まれる月の freee 取引だけを残す (既存 /total-cashflow と同じ絞り方) */
@@ -119,8 +126,9 @@ function totalsOf(
   deals: readonly FreeeDeal[],
   verdicts: readonly DuplicateVerdict[],
   exclusions: readonly FreeeExclusion[],
+  mfExcludedTxIds: readonly string[],
 ) {
-  const report = totalCashflowReport(data, dealsIn(data, deals), verdicts, exclusions);
+  const report = totalCashflowReport(data, dealsIn(data, deals), verdicts, exclusions, mfExcludedTxIds);
   const totals = report.months.reduce<AnalysisHubTotals>(
     (acc, row) => ({
       income: acc.income + row.totalIncome,
@@ -140,10 +148,12 @@ export function analysisHub(input: AnalysisHubInput): AnalysisHubReport {
   const { all, deals } = input;
   const verdicts = input.verdicts ?? [];
   const exclusions = input.exclusions ?? [];
+  const mfExclusions = input.mfExclusions ?? [];
+  const mfExcludedTxIds = mfExclusions.map((row) => row.txId);
   const range = input.range && isValidPeriod(input.range) ? input.range : null;
 
   const current = applyPeriod(all, range);
-  const { report, totals } = totalsOf(current, deals, verdicts, exclusions);
+  const { report, totals } = totalsOf(current, deals, verdicts, exclusions, mfExcludedTxIds);
 
   // 全期間のときは全期間そのものを当期とみなす。直前の同じ長さは必ずデータの外なので null になる
   const basis = range ?? fullRange(all);
@@ -156,7 +166,13 @@ export function analysisHub(input: AnalysisHubInput): AnalysisHubReport {
       (m) => have.has(m),
     );
     if (complete) {
-      const prev = totalsOf(sliceDataset(all, prevRange), deals, verdicts, exclusions).totals;
+      const prev = totalsOf(
+        sliceDataset(all, prevRange),
+        deals,
+        verdicts,
+        exclusions,
+        mfExcludedTxIds,
+      ).totals;
       previous = { label: previousPeriodLabel(prevRange), range: prevRange, months: n, ...prev };
     }
   }
@@ -168,7 +184,17 @@ export function analysisHub(input: AnalysisHubInput): AnalysisHubReport {
       }
     : null;
 
-  const reconciliationCount = buildExpenseProjection(current, dealsIn(current, deals)).summary.reviewCount;
+  // 照合は必ず全期間で消し込み、一覧と件数だけを表示期間へ投影する。
+  // 先に Dataset / freee を切ると、月末と翌月初の ±3 日の候補が割れ、GET /reconciliation と件数がずれる。
+  const reconciliation = reconciliationReport({
+    data: all,
+    deals,
+    verdicts,
+    freeeExclusions: exclusions,
+    mfExclusions,
+    months: current.months,
+  });
+  const reconciliationCount = reconciliation.kpi.actionRequiredCount;
   const cashflowCount = report.review.length;
   const unrecordedMonths = current.unrecordedExpMonths.length;
   const candidates = tradeoffCandidates(current);
@@ -180,7 +206,8 @@ export function analysisHub(input: AnalysisHubInput): AnalysisHubReport {
         id: 'reconciliation',
         priority: hubPriority('reconciliation', reconciliationCount),
         count: reconciliationCount,
-        reviewCount: reconciliationCount,
+        actionRequiredCount: reconciliationCount,
+        reviewCount: reconciliation.kpi.reviewCount,
       },
       'total-cashflow': {
         id: 'total-cashflow',

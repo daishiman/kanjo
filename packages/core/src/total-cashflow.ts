@@ -273,7 +273,7 @@ export function accountsConflict(mf: Pick<MfTx, 'inst'>, deal: Pick<FreeeDeal, '
 }
 
 /** 照合に使う MF の発生日。表示日の「日」を取込月へ載せる (`expense-projection.ts` と同じ作り) */
-const mfMatchDate = (tx: MfTx): string => `${tx.m}-${normalizeMfDisplayDate(tx.d, tx.m).slice(-2)}`;
+export const mfMatchDate = (tx: MfTx): string => `${tx.m}-${normalizeMfDisplayDate(tx.d, tx.m).slice(-2)}`;
 
 /** 取込月と表示日の月が食い違っているか。食い違うと `mfMatchDate` が別の日を指す */
 const monthMismatched = (tx: MfTx): boolean =>
@@ -287,7 +287,7 @@ const bucketKey = (io: FreeeDeal['io'], date: string, amount: number): string =>
   `${io}\u0000${date}\u0000${amount}`;
 
 /** 照合の対象になる MF 明細。現金台帳と集計対象外、分割の親行は対象にしない */
-function reconcilableMf(data: Dataset): MfTx[] {
+export function reconcilableMf(data: Dataset): MfTx[] {
   return data.mfTx
     .filter((tx) => !isCashTxId(tx.id) && isMfCountable(tx) && tx.a !== 0 && tx.splitProjection == null)
     .sort((a, b) => {
@@ -365,8 +365,12 @@ export function reconcileBizDuplicates(
   deals: readonly FreeeDeal[],
   verdicts: readonly DuplicateVerdict[] = [],
   exclusions: readonly FreeeExclusion[] = [],
+  mfExcludedTxIds: readonly string[] = [],
 ): ReconcileResult {
-  const rows = reconcilableMf(data);
+  // 照合画面で「照合から除外する」とした明細は、自動一致にも要確認にも出さない。
+  // 総額からは外さない (照合の問いから外すだけで、支出そのものは実在する)。
+  const mfExcluded = new Set(mfExcludedTxIds);
+  const rows = reconcilableMf(data).filter((tx) => !mfExcluded.has(tx.id));
   // 一覧と照合行で別の判定式を持たず、同じ resolveTx の結果を使い回す。
   const resolvedById = new Map(
     rows.map((tx) => [tx.id, resolveTx(tx, data.rules, data.edits, data.institutionOwners)]),
@@ -446,19 +450,21 @@ export function reconcileBizDuplicates(
   deals.forEach((deal, freeeIndex) => {
     if (deal.amount <= 0 || usedFreee.has(freeeIndex) || excludedKeys.has(keys[freeeIndex])) return;
     const key = keys[freeeIndex];
-    const fits = (row: MfTx): boolean =>
+    const fits = (row: MfTx, named: boolean): boolean =>
       !usedMf.has(row.id) &&
       // 識別子の安定性は判断を「保存」できるかの話であり、寄せてよいかの条件ではない。
       // 不安定な明細でも stable_key で判断を引き当てられる (identity.ts の 2 段解決)。
       verdictByTxId.get(row.id) === 'same' &&
       mfIo(row) === deal.io &&
-      Math.abs(row.a) === deal.amount &&
+      // 相手を名指しした「同じ」は金額違いでも寄せる (照合画面の「金額の差異」で利用者が同じと認めた組)。
+      // 総額には正本の freee 側の金額が残る。名指しの無い「同じ」は、どの相手かを金額で絞る
+      (named || Math.abs(row.a) === deal.amount) &&
       Math.abs(dayNumber(mfMatchDate(row)) - dayNumber(deal.date)) <= REVIEW_NEAR_DAYS;
     // 名指しされた組を先に成立させる。指定なしの明細に先を越されると、
     // 利用者が画面で選んだ相手と実際に寄る相手がずれる
     const tx =
-      eligible.find((row) => pickedFreeeKey.get(row.id) === key && fits(row)) ??
-      eligible.find((row) => !pickedFreeeKey.get(row.id) && fits(row));
+      eligible.find((row) => pickedFreeeKey.get(row.id) === key && fits(row, true)) ??
+      eligible.find((row) => !pickedFreeeKey.get(row.id) && fits(row, false));
     if (!tx) return;
     usedMf.add(tx.id);
     usedFreee.add(freeeIndex);
@@ -524,8 +530,9 @@ export function monthlyTotalCashflow(
   deals: readonly FreeeDeal[] = [],
   verdicts: readonly DuplicateVerdict[] = [],
   exclusions: readonly FreeeExclusion[] = [],
+  mfExcludedTxIds: readonly string[] = [],
 ): TotalCashflowMonth[] {
-  return rowsFrom(data, deals, reconcileBizDuplicates(data, deals, verdicts, exclusions));
+  return rowsFrom(data, deals, reconcileBizDuplicates(data, deals, verdicts, exclusions, mfExcludedTxIds));
 }
 
 /**
@@ -540,6 +547,7 @@ export function totalCashflowReport(
   deals: readonly FreeeDeal[] = [],
   verdicts: readonly DuplicateVerdict[] = [],
   exclusions: readonly FreeeExclusion[] = [],
+  mfExcludedTxIds: readonly string[] = [],
 ): {
   months: TotalCashflowMonth[];
   review: ReconcileReview[];
@@ -548,7 +556,7 @@ export function totalCashflowReport(
   excluded: ReconcileExcluded[];
   coverage: FreeeCoverage;
 } {
-  const result = reconcileBizDuplicates(data, deals, verdicts, exclusions);
+  const result = reconcileBizDuplicates(data, deals, verdicts, exclusions, mfExcludedTxIds);
   return {
     months: rowsFrom(data, deals, result),
     review: result.review,

@@ -36,7 +36,13 @@ const hub = {
     change: null,
   },
   views: {
-    reconciliation: { id: 'reconciliation', priority: '中', count: 0, reviewCount: 0 },
+    reconciliation: {
+      id: 'reconciliation',
+      priority: '中',
+      count: 0,
+      actionRequiredCount: 0,
+      reviewCount: 0,
+    },
     'total-cashflow': { id: 'total-cashflow', priority: '中', count: 0, reviewCount: 0 },
     matrix: { id: 'matrix', priority: '中', count: 0, unrecordedMonths: 0, normal: true },
     trends: { id: 'trends', priority: '中', count: 0, expenseChange: null },
@@ -105,7 +111,9 @@ describe('認証後シェルの支出分析遷移', () => {
     await waitFor(() => expect(document.title).toBe('照合 | 支出分析 | Focus Ledger'));
     expect(window.scrollTo).toHaveBeenCalledTimes(1);
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, left: 0, behavior: 'auto' });
-    await waitFor(() => expect(document.activeElement?.textContent).toBe('支出分析'));
+    await waitFor(() =>
+      expect(document.activeElement?.textContent).toBe('帳簿と口座の差異を、どこから解消しますか？'),
+    );
 
     act(() => window.history.back());
     await waitFor(() => expect(window.location.pathname).toBe('/analysis'));

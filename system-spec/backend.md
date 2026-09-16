@@ -3,7 +3,7 @@ status: confirmed
 category: backend
 aggregate: 確定
 spec_cells: [backend.web, backend.mobile, backend.tablet, backend.desktop-windows, backend.desktop-linux, backend.desktop-macos]
-serves_goals: [G3, G4]
+serves_goals: [G2, G3, G4]
 ---
 
 # バックエンド (backend)
@@ -15,12 +15,12 @@ serves_goals: [G3, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-backend-web-ah-observed-001。裏付け質疑 (`qa_refs`): `qa-analysis-hub-decision-002`, `qa-analysis-hub-decision-003`, `qa-backend-web-ah-inference-002`, `qa-backend-web-ah-decision-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-backend-web-rc-observed-001。裏付け質疑 (`qa_refs`): `qa-reconciliation-decision-002`, `qa-reconciliation-decision-003`, `qa-reconciliation-decision-005`, `qa-backend-web-rc-decision-007`, `qa-backend-web-rc-inference-002`, `qa-backend-web-rc-decision-010`, `qa-backend-web-rc-decision-011`, `qa-backend-web-rc-decision-012`, `qa-backend-web-rc-decision-013` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは照合 API (GET /api/reconciliation と actions/undo) の応答形をアプリ版ごとに別版で保つかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは照合 API (GET /api/reconciliation と actions/undo) の応答形をアプリ版ごとに別版で保つかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは照合 API (GET /api/reconciliation と actions/undo) の応答形をアプリ版ごとに別版で保つかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは照合 API (GET /api/reconciliation と actions/undo) の応答形をアプリ版ごとに別版で保つかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは照合 API (GET /api/reconciliation と actions/undo) の応答形をアプリ版ごとに別版で保つかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G3, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の依存方向を、core (ハブ集計・previousPeriod) ← api (route) ← web (表示) の一方向に反映した。前期間の定義を api/ai から core へ移すことで、AI の前期間比とハブの前期間比が同じ関数を通り、定義がずれる経路を無くす。 |
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側の loadScoped と freee 系 3 テーブルの読取りに限り、core のハブ関数は D1 を知らない Dataset と配列だけを受け取る形に反映した。ハブのために新しいリポジトリ関数や SQL を増やさず、既存 /total-cashflow と同じ読取りを再利用する。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の依存方向を core (reconciliationReport・monthlyCloseStatus) ← api (reconciliation route) ← web (照合画面・サイドバー) の一方向に反映した。照合 API・ハブ API・business-spend が同じ core 関数を通るため、要確認の定義が API ごとに分かれる経路を無くす。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側に閉じ、core の照合関数は D1 を知らない Dataset・判断・除外の配列だけを受け取る形に反映した。判断の結び直しは既存 bindDuplicateVerdicts を再利用し、照合 API 用に別の結び付け SQL を増やさない。 |
 
 > **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
@@ -39,67 +39,137 @@ serves_goals: [G3, G4]
 
 ### Web (web)
 
-- 資するゴール: G3, G4
+- 資するゴール: G2, G3, G4
 
-#### 主たる接地根拠: `qa-backend-web-ah-observed-001`
-
-**問**
-
-ハブの『現在の状態』と収支サマリーに使えるドメイン関数と API は現行どこまであり、何が無いか。
-
-**答**
-
-API は Hono の Cloudflare Worker (packages/api/src/index.ts)。/api/* に authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence を掛けてから analyticsRoute・totalCashflowRoute 等をマウントする。analytics.ts の loadScoped(c) は loadDataset(D1, userId) の全データに core の resolvePeriodQuery (from/to/year/span) と applyPeriod を掛け、PeriodMeta (applied/label/full/years/monthCount) を返す。あるもの: 照合の要確認件数 = /business-spend の summary.reviewCount と unbooked.length (core expense-projection.ts buildExpenseProjection)。総収支の重複候補件数 = /total-cashflow の review.length と月別 reviewCount/reviewAmount (core total-cashflow.ts totalCashflowReport(data, deals, bindVerdicts(verdictRows, data.mfTx), exclusions)。route は freee_deals・duplicate_verdicts・freee_deal_exclusions を userId で読み、期間の月に含まれる deal だけを渡す)。期間の月別 totalIncome/totalExpense/totalBalance (合計を返す API は無い)。改善候補 = core analysis.ts 1292 行 tradeoffCandidates(data) (amount は月あたりの捻出期待額、GET /tradeoff で公開)。前期間計算 = packages/api/src/ai/dataset.ts の previousPeriod(p) (直前の同じ長さ)・yearAgoPeriod(p) (12 か月前) で、AI 用に api 内に閉じ core には無い。無いもの: 期間合計の総収入/総支出/純収支を返す API、前 12 か月比、優先度、マトリクスの正常判定 (matrix() に判定は無く unrecordedExpMonths だけ)、数値の改善余地 (diagnosis().autoDiagnosis[].value は『目安 ▲3〜5万円/月』の文字列)、5 視点をまとめて返す集約エンドポイント。loadScoped は期間で切ったデータしか渡さないため、前期間比には all からの前期間切り出しが要る。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,routes/analytics.ts,routes/total-cashflow.ts,ai/dataset.ts,store.ts}, packages/core/src/{period.ts,total-cashflow.ts,expense-projection.ts,analysis.ts}。 / 回答時刻: 2026-09-14T11:38:26Z)
-
-#### 裏付け質疑: `qa-analysis-hub-decision-002`
+#### 主たる接地根拠: `qa-backend-web-rc-observed-001`
 
 **問**
 
-ハブの『現在の状態』列と前 12 か月比を出すデータはどこで計算するか。選択肢: (A) core に純関数を足し GET /analysis/hub が 1 回で 5 視点の状態・収支サマリー・前 12 か月比を返す。前期間の計算は api/ai/dataset.ts から core へ移す (推奨) / (B) API は変えずハブ表示時に既存 5 本を同時に呼び、前 12 か月比と改善余地は省く。
+照合に関わる core とバックエンドの現行の関数・API と、欠けている機能は何か。
 
 **答**
 
-(A) 集約 API を新設 を選択した。
+core expense-projection.ts:156-241 の buildExpenseProjection(data, deals) は候補を『金額一致かつ (同日、または同じ支払先で ±3 日)』で作り、保存済みの判断と除外を入力に取らない。GET /api/business-spend (routes/analytics.ts:153) と core analysis-hub.ts:171 のハブのバッジ (reviewCount) がこの関数から出る。総収支側 core total-cashflow.ts:355-510 の reconcileBizDuplicates(data, deals, verdicts, exclusions) は自動一致・利用者判断での一致 (±3 日)・候補最大 3 件 (dayGap, accountConflict)・matched(by auto|user)/review/freeeOnly/excluded を返し、routes/duplicate-verdict-bindings.ts の bindDuplicateVerdicts が tx_id→stable_key の順で判断を明細へ結び直す。API は GET /api/total-cashflow、POST /api/total-cashflow/verdicts (zValidator、最大 200 件)、POST/DELETE /api/total-cashflow/freee-exclusions。判断を取り消す API・MF 側の除外・操作履歴・一致度・キュー分類・月次クローズ判定・月次レビュー完了 API は無い。改善要望は POST /api/improvements がある。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-14T11:33:07Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD cc0d5e3) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/core/src/{expense-projection,total-cashflow,analysis-hub}.ts, packages/api/src/routes/{analytics,total-cashflow,duplicate-verdict-bindings,analysis-hub,improvement}.ts。 / 回答時刻: 2026-09-15T08:59:56Z)
 
-#### 裏付け質疑: `qa-analysis-hub-decision-003`
+#### 裏付け質疑: `qa-reconciliation-decision-002`
 
 **問**
 
-画像の『優先度 (高/中)』『マトリクスの正常判定』『診断の改善余地 (金額)』は現行実装に定義が無い。どう定めるか。選択肢: (A) 単純な規則で定義する: 優先度は照合・総収支が要確認 1 件以上なら高・0 件なら中、他 3 視点は中。マトリクスは未記録月 0 なら正常。改善余地は既存 tradeoffCandidates の月額合計 × 12 の年額。規則は docs に明記しテストで固定する (推奨) / (B) 状態は件数と前 12 か月比だけにし、優先度・正常判定・改善余地は出さない。
+照合の操作結果 (同じ取引として照合 / 別の取引として処理 / 除外) の保存と『元に戻す』をどう実装するか。既存は総収支用の duplicate_verdicts (same/different) と freee 側除外のテーブル (migrations 0036/0037) があるが、verdict を消す API・MF 側の除外・操作履歴は無い。選択肢: (A) 既存表を再利用し拡張する。判断は duplicate_verdicts を共用して総収支と結果を一致させ、verdict 取消 API・MF 側の除外・照合操作の履歴表 (直前の操作と元に戻すに使う) を migration で足す (推奨) / (B) 照合専用の新テーブルを作り総収支の判断と独立に持つ / (C) DB 変更なしで画面内の直前 1 操作を逆操作 API で打ち消すだけにし MF 側の除外は出さない。
 
 **答**
 
-(A) 単純な規則で定義 を選択した。
+(A) 既存表を再利用+拡張 を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-14T11:33:07Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T07:41:58Z)
 
-#### 裏付け質疑: `qa-backend-web-ah-inference-002`
+#### 裏付け質疑: `qa-reconciliation-decision-003`
 
 **問**
 
-期間が 1 年以外 (2 年・3 年・任意) のとき、画像の『前 12 か月比』は何と比べるか。
+画像の『一致度 %』『金額の差異』『日付の近い取引』は現行実装に定義が無い。どう定めるか。選択肢: (A) 単純な加点規則を core の純関数に置く: 金額一致 50 点 + 日付差 (同日 30 / 1 日 20 / 2 日 10 / 3 日 5) + 内容類似 (正規化した文字列の類似度 × 20) = 100 点満点。金額の差異 = 日付 ±3 日かつ内容類似だが金額不一致。日付の近い取引 = 金額一致で日付差 1〜3 日。規則は docs とテストで固定する (推奨) / (B) 一致度は出さず一致の理由のチェック表示だけにする。
 
 **答**
 
-既存 previousPeriod(p) と同じく『直前の同じ長さの期間』と比べ、表示ラベルは期間の月数から『前 N か月』とする (1 年選択時は画像どおり『前12か月』)。前期間の月がデータ範囲に 1 か月も無い場合は比較値を null とし画面は『比較データなし』を出す。一部だけある場合は存在する月だけで比べず null とする (欠けた期間との比較で増減率を誇張しないため)。
+(A) 単純な加点規則 を選択した。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: アシスタントが 2026-09-14 に、利用者決定 qa-analysis-hub-decision-002 (前期間計算を core へ移す) と観測 qa-backend-web-ah-observed-001 (previousPeriod の定義) から導いた推測。利用者の明示選択ではない。 / 回答時刻: 2026-09-14T11:38:26Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T07:41:58Z)
 
-#### 裏付け質疑: `qa-backend-web-ah-decision-003`
+#### 裏付け質疑: `qa-reconciliation-decision-005`
 
 **問**
 
-収支サマリーの『前12か月比』は、期間に 2年・3年・任意を選んだとき何と比べるか。選択肢: (A) 直前の同じ長さ。2年なら直前の2年で、ラベルは『前24か月』。既存 previousPeriod と同じ定義。前期間の月が1か月でも欠けたら『比較データなし』(推奨) / (B) 12か月前の同じ長さ (yearAgoPeriod)。季節はそろうが、2年以上では比較期間が選択期間と重なる / (C) 1年選択時だけ比較し、他は比較欄を出さない。
+サイドバー下部の月次クローズ進捗 (データ取込/仕分け/照合/月次レビュー) の完了をどう判定するか。選択肢: (A) 3 つ自動+レビュー手動。直近の締め月について データ取込=未記録月 0、仕分け=未整理明細 0、照合=要確認+MF未計上 0 を自動判定し、月次レビューは利用者が『レビュー完了』を押して月単位で D1 に保存する (取消可) (推奨) / (B) 4 つとも自動 (レビューは前 3 つの完了で自動完了。DB 変更なし) / (C) 完了判定を持たず見た目だけ画像に寄せる。
 
 **答**
 
-(A) 直前の同じ長さ を選択した。比較先は previousPeriod(p) (選択期間の直前にある同じ月数の期間) で、表示ラベルは『前 N か月』(N = 選択期間の月数。1年選択時は『前12か月』)。前期間の月がデータ範囲に 1 か月でも欠ける場合は比較値を null とし、画面は『比較データなし』を出す。G3 の『前 12 か月比』は 1 年選択時の表示例であり、比較先の定義はこの決定を正本とする。本決定は agent-inference だった qa-backend-web-ah-inference-002 を利用者の選択で置き換える。
+(A) 3つ自動+レビュー手動 を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の差し戻しを受けた再質問)。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-14T11:57:13Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T08:11:23Z)
+
+#### 裏付け質疑: `qa-backend-web-rc-decision-007`
+
+**問**
+
+照合画面の API をどう切るか。選択肢: (A) 照合専用 API を新設: GET /api/reconciliation (KPI・キュー・候補一覧・下段 2 表・直前の操作を 1 回で返す) と POST /api/reconciliation/actions (照合/別取引/除外・最大 200 件・部分成功)、POST /api/reconciliation/actions/:id/undo。保存先は既存 duplicate_verdicts / freee 除外表を共用し bindDuplicateVerdicts で総収支と件数を揃える。既存 /business-spend と /total-cashflow は残す (推奨) / (B) 既存 total-cashflow API を拡張。
+
+**答**
+
+(A) 照合専用 API を新設 を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T08:59:56Z)
+
+#### 裏付け質疑: `qa-backend-web-rc-inference-002`
+
+**問**
+
+一致度・キュー分類・月次クローズ判定を core のどの関数に置き、既存集計とどう揃えるか。
+
+**答**
+
+core に reconciliation.ts を新設し、reconcileBizDuplicates の matched/review/freeeOnly/excluded と bindDuplicateVerdicts 済みの判断・MF 除外を入力に、各候補の matchScore (金額一致 50 + 日付差 同日30/1日20/2日10/3日5 + 内容類似×20)・matchReasons (金額/日付/内容)・status (未処理=MF未計上で判断なし / 要確認=候補ありで判断なし / 照合済み=自動一致または same / 除外=MF除外または freee 除外)・queue (review / mfOnly / amountMismatch / nearDate)・KPI (事業支出・MF未計上件数と金額・要確認件数・解消率=照合済み÷(照合済み+要確認+未処理)) を返す純関数 reconciliationReport を置く。buildExpenseProjection は判断と除外を受け取る引数を足して reviewCount を reconciliationReport と一致させ、analysis-hub.ts:171 のバッジも同じ値にする。月次クローズは monthlyCloseStatus(dataset, month) が unrecordedMonths・未整理明細数・照合の未処理+要確認件数と月次レビュー完了行から 4 ステップの完了を返す。内容類似は NFKC・空白・大小文字を正規化した文字 bigram の Dice 係数 (0〜1) とする。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: アシスタントが 2026-09-15 に観測事実と利用者決定から導いた推定。単独では確定の根拠にせず、観測事実 (主根拠) の補足として qa_refs に載せる。answered_at は記録直前に date -u で実測した時刻。 前提: qa-reconciliation-decision-003 (一致度規則)、qa-reconciliation-decision-005 (月次クローズ判定)、core/src/total-cashflow.ts:355-510 と expense-projection.ts:156-241 の観測。 / 回答時刻: 2026-09-15T08:59:56Z)
+
+#### 裏付け質疑: `qa-backend-web-rc-decision-010`
+
+**問**
+
+KPI の『解消済みの割合』(ドーナツ) の分母をどう定義し、対象月に候補が 1 件も無いときどう表示するか。選択肢: (A) 除外を分母から外す。照合済み ÷ (照合済み + 要確認 + 未処理)。除外は対応不要なので進み具合に数えない。分母 0 のときは『対象なし』と表示し、月次クローズの照合ステップは完了扱い (推奨) / (B) 除外も解消に数える。(照合済み + 除外) ÷ 全件。分母 0 は『対象なし』で完了扱い / (C) 式は (A) と同じで、分母 0 は 0% 表示・照合ステップは完了扱い。
+
+**答**
+
+(A) 除外を分母から外す を選択した。解消率 = 照合済み ÷ (照合済み + 要確認 + 未処理)。分母 0 のときは『対象なし』と表示し、月次クローズの照合ステップは完了とする。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で選択した。推定 qa-backend-web-rc-inference-002 の解消率の式を利用者決定で裏付け、分母 0 の扱いを新たに決めた。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T09:21:19Z)
+
+#### 裏付け質疑: `qa-backend-web-rc-decision-011`
+
+**問**
+
+一致度の『内容類似×20』で使う類似度 (0〜1) の計算方式をどれにするか。MF の取引内容と freee の摘要には全角半角・空白・社名の略し方の表記ゆれがある。選択肢: (A) NFKC・空白・大小文字を正規化した文字 bigram の Dice 係数。短い日本語摘要でも部分一致を拾え、依存を足さず core の純関数で書ける (推奨) / (B) 正規化後の完全一致 1・包含 0.5・それ以外 0。説明しやすいが『アマゾン』と『Amazon.co.jp』は 0 / (C) 編集距離 (1 − Levenshtein 距離 ÷ 長い方の文字数)。語順の違いに弱く長い摘要で計算量が増える。
+
+**答**
+
+(A) 文字 bigram の Dice 係数 を選択した。NFKC・空白除去・小文字化で正規化した文字 bigram の Dice 係数を内容類似 (0〜1) とする。
+
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-15T09:35:30Z` — 本質疑の選択肢は (B) の短所として『アマゾン』と『Amazon.co.jp』が 0 になる点を挙げたが、推奨の (A) 文字 bigram の Dice 係数でも共通する 2 文字の並びが無いため同じ組は 0 になる。この短所を (A) に書き漏らしていた。訂正を示したうえでの再確認は qa-backend-web-rc-decision-012 に記録した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で選択した。推定 qa-backend-web-rc-inference-002 の内容類似の方式を利用者決定で裏付けた。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T09:21:19Z)
+
+#### 裏付け質疑: `qa-backend-web-rc-decision-012`
+
+**問**
+
+内容類似の方式について訂正です。前回の選択肢では (B) の短所として「アマゾン」と「Amazon.co.jp」が 0 になると書きましたが、選ばれた (A) 文字 bigram の Dice 係数でも同じく 0 になります（共通する 2 文字の並びが無いため）。この短所を踏まえても (A) のままでよいですか？ 選択肢: ((A) Dice のまま (推奨)) カナと英字の表記違いは Dice でも 0 になりますが、配点は 20 点だけで、金額 50 点と日付 30 点で候補には残ります。この限界は docs に明記します。 / (Dice+読み替え辞書) Dice を使ったうえで、よく出る社名（アマゾン=Amazon など）の小さな読み替え表を core に置き、正規化の段階で揃えます。表の保守が必要になります。 / (完全/部分一致に変更) 正規化後に完全一致なら 1、包含なら 0.5、それ以外は 0 にします。説明はしやすいですが、表記ゆれにはさらに弱くなります。
+
+**答**
+
+((A) Dice のまま (推奨)) を選択した。NFKC・空白除去・小文字化で正規化した文字 bigram の Dice 係数を維持し、カナと英字の表記違いは類似度 0 になる限界を docs に明記する。
+
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-15T10:23:56Z` — 本質疑の推奨 (A) の説明『配点は 20 点だけで、金額 50 点と日付 30 点で候補には残ります』は、金額が一致する組にしか当てはまらない。金額も表記も違う組 (例: アマゾン / Amazon.co.jp で金額が違う) は内容類似 0 のため金額の差異キューに入らず、MF未計上と freee 側の一覧に別々に出る。この影響を選択肢に書いていなかった。訂正は qa-backend-web-rc-decision-013 の question で利用者に示した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で、qa-backend-web-rc-decision-011 の選択肢に (A) の短所を書き漏らしていた訂正を読んだうえで選択した。question は会話ログから逐語で転記。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T09:35:30Z)
+
+#### 裏付け質疑: `qa-backend-web-rc-decision-013`
+
+**問**
+
+内容類似（Dice 係数 0〜1）を「似ている」と判定するしきい値をどれにしますか？使うのは「金額の差異」キュー（±3日・内容が似ている・金額が違う）と、一致の理由の内容行のチェックの 2 か所です。一致度の 20 点は連続値のままです。あわせて前回の訂正です。「金額 50 点と日付 30 点で候補には残る」は金額が一致する組だけの話でした。金額も表記も違う組（例: アマゾン / Amazon.co.jp で金額が違う）は、どのしきい値でも金額の差異キューに入らず、MF未計上と freee 側の一覧に別々に出ます。 選択肢: (0.5 以上 (推奨)) 長所: 全角半角の違いや略称を拾う（ｽﾀｰﾊﾞｯｸｽ/スターバックスコーヒー 0.75、ヤマト運輸/…株式会社 0.67、ﾄﾞｺﾓ/NTTドコモ 0.57）。別会社は落とす（東京電力/東京ガス 0.33、楽天市場/楽天モバイル 0.25、AMAZON.CO.JP/Amazon Web Services 0.37）。短所: JR東日本/東日本旅客鉄道（0.40）のような言い換えは拾えず、金額の差異キューに出ない。 / (0.3 以上) 長所: 0.5 の例に加えて JR東日本/東日本旅客鉄道（0.40）も拾い、金額の差異キューの見落としが減る。短所: 東京電力/東京ガス（0.33）や AMAZON.CO.JP/Amazon Web Services（0.37）のような別会社も「似ている」と判定し、キューと一致の理由のチェックに誤りが混ざる。確認の手間が増える。 / (0 より大きい) 長所: 2 文字の並びが 1 つでも共通すれば拾うので、見落としは最も少ない。短所: 楽天市場/楽天モバイル（0.25）など先頭語が同じ別会社がほぼ全部入り、金額の差異キューが「同じ日付あたりで金額が違う取引」とあまり変わらなくなる。内容行のチェックは判断の根拠として役に立たなくなる。
+
+**答**
+
+(0.5 以上 (推奨)) を選択した。NFKC・空白除去・小文字化で正規化した文字 bigram の Dice 係数が 0.5 以上のとき『内容が似ている』と判定する。適用箇所は 2 つ。(1) 対応キュー『金額の差異』= MF の取引と freee の候補の日付差が ±3 日以内、かつ内容類似 0.5 以上、かつ金額不一致。(2) 一致の理由の内容行のチェック = 内容類似 0.5 以上で付く。一致度の内容点は二値化せず 内容類似×20 の連続値のままとする。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で選択した。completeness evaluator 第 3 周の指摘 (内容類似を二択で使う 2 か所のしきい値が未定義) を受けた決定。選択肢の類似度の例は Python で NFKC・空白除去・小文字化・bigram Dice を実装して試算した値。question は会話ログから逐語で転記。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T10:23:56Z)
 
 ## To-Be / Delta
 
@@ -107,21 +177,24 @@ API は Hono の Cloudflare Worker (packages/api/src/index.ts)。/api/* に auth
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: ハブに必要な集計を packages/core の純関数と、1 回で返す集約 API (GET /analysis/hub) に置く。期間の収支サマリーと前 12 か月比、5 視点それぞれの現在の状態 (照合の要確認件数・総収支の重複候補件数・マトリクスの正常判定・推移の支出前 12 か月比・診断の改善余地) と優先度を返し、ハブ表示中に 5 タブ分の既存 API を呼ばない。
-- **G4**: 優先度・マトリクスの正常判定・改善余地を単純で説明可能な規則として定義し、規則を docs に明記してテストで固定する。優先度は照合と総収支が要確認 1 件以上なら高・0 件なら中、他の 3 視点は中。マトリクスは未記録月 0 なら正常。改善余地は tradeoffCandidates の月額合計 × 12 の年額。
+- **G2**: 照合に必要な判定を packages/core の純関数に置く。一致度 (金額一致 50 + 日付差 同日30/1日20/2日10/3日5 + 内容類似×20 の 100 点満点)・一致の理由・ステータス (未処理/要確認/照合済み/除外)・対応キュー 4 分類 (要確認の候補 / MF未計上 / 金額の差異=±3日かつ内容類似で金額不一致 / 日付の近い取引=金額一致で日付差1〜3日)・KPI を 1 か所で算出し、保存済みの判断と除外を反映する。buildExpenseProjection・ハブのバッジ・総収支と件数を一致させ、規則を docs に書きテストで固定する。
+- **G3**: 照合操作を保存し元に戻せるようにする。既存の duplicate_verdicts と freee 除外表を再利用し、照合画面用の API (一覧・KPI・キューを返す GET と、照合 / 別取引 / 除外 / 一括照合の POST)、verdict 取消 API、MF 側除外、照合操作の履歴表 (直前の操作と元に戻すに使う) を migration 付きで追加する。一括は最大 200 件で部分成功を返す。
+- **G4**: 共通シェルを画像に揃える。サイドバーの文言 (概要/データ取込/現金入力/明細仕分け/サブスク/累計収支/支出分析/決算書/AI分析/予算/トレードオフ/設定/使い方/改善リクエスト) とグループ・件数バッジ (データ取込=要確認の取込件数・明細仕分け=未整理明細数・サブスク=判定待ち候補数・照合=要確認件数)、ページ見出し・パンくず・コマンドパレットのラベル追随、月次クローズ進捗 3/4 (データ取込/仕分け/照合は直近の締め月について自動判定、月次レビューは利用者の完了操作を月単位で D1 に保存し取消可)、ヘッダー (防衛ライン：正常 の表記・未記録 Nか月・最終更新・⌘K 検索・ダウンロード・ヘルプのアイコンボタン・アバター)、フッター (外部送信しない / 税務上の正本は freee / 毎晩バックアップ と 利用規約・プライバシー・データ出典・v1.0) と改善を送るボタン。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | core に analysisHub(dataset) 相当の純関数を置き、API に GET /analysis/hub を足す。 | core 単体テストが期間合計・前 12 か月比 (前期間データ無しは null)・5 視点の状態・優先度・改善余地を固定データで検証し、API 統合テストが認証付きで 200 と期間メタを返し、ハブ表示中の DOM テストで既存 5 API への呼出しが 0 件である。 |
-| O4 | 判定規則を docs に書き、境界値をテストで固定する。 | 要確認 0 件/1 件、未記録月 0/1、tradeoff 候補 0 件の境界でテストが規則どおりの値を返し、規則を変えるとテストが落ちる。 |
+| O2 | core の一致度・キュー分類・KPI 関数を実装し、既存集計と件数を揃える。 | core 単体テストが一致度の境界 (日付差 0/1/2/3/4 日・金額不一致・内容類似 0/1) とキュー 4 分類と判断反映を検証し、同じデータで照合 API・ハブのバッジ・総収支の要確認件数が一致する統合テストが緑である。 |
+| O3 | 照合操作 API・取消・MF 除外・操作履歴を migration 付きで追加する。 | API 統合テストが認証付きで照合 / 別取引 / 除外 / 一括 (201 件で 400、部分成功の内訳) / 取消 / 直前の操作の取得を検証し、migration が既存 D1 に冪等に適用され、元に戻すと KPI とキューが操作前の値に戻る。 |
+| O4 | 共通シェルの差分を実装する。 | shell 系 DOM テストをサイドバー新文言・件数バッジ・月次クローズ 3/4 (自動 3 + レビュー手動の保存と取消)・ヘッダーのアイコンボタン・フッターリンクで更新して緑、月次レビュー API の統合テストが緑である。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I3**: 期間の収支サマリーに総収入・総支出・純収支と前 12 か月比 (増減率と前期間の金額) を出し、純収支の説明パネルを右に置く。前期間データが無い場合は比較を『比較データなし』と表示する。
-- **I4**: core にハブ集計関数を置き、GET /analysis/hub が期間メタ・サマリー・5 視点の状態・優先度を返す。前期間の計算は core へ移し AI 側もそれを使う。
-- **I5**: 優先度・マトリクス正常判定・改善余地の規則を docs/ui-decisions.md (または docs 配下の分析ハブ文書) に書き、境界値テストで固定する。
+- **I3**: core に照合判定関数 (一致度・一致の理由・ステータス・キュー 4 分類・KPI) を置き、buildExpenseProjection とハブのバッジが判断と除外を反映するよう揃える。
+- **I4**: 照合画面用 API と verdict 取消・MF 除外・操作履歴を migration 付きで足し、同じ取引として照合 / 別の取引として処理 / 除外 / 一括照合 / 元に戻すを web から呼ぶ。
+- **I5**: routeMetadata のラベルとグループを画像に揃え、件数バッジ・月次クローズ 3/4 (月次レビュー完了の保存と取消)・ヘッダーのアイコンボタン・フッター・改善を送るボタンを共通シェルに入れる。
+- **I7**: 一致度・キュー・ステータス・月次クローズ判定の規則を docs に書き、docs/data-schema.md の古い候補条件を直し、境界値テストで固定する。
 
 ### 本章に効く確定意思決定
 
@@ -133,9 +206,9 @@ API は Hono の Cloudflare Worker (packages/api/src/index.ts)。/api/* に auth
 
 ### 本章での適用
 
-Clean Architecture card の Dependency Rule を、ハブ集計の置き場所に適用した。期間合計・前期間比・5 視点の状態・優先度・改善余地は入出力を持たない業務規則なので packages/core の純関数に置き、Hono の route (GET /api/analysis/hub) は loadScoped と freee 系 3 テーブルの読取りを行って core へ渡す外側の adapter に留める。AI 用として packages/api/src/ai/dataset.ts に閉じていた previousPeriod を core へ移すのも同じ規則による — 前期間の定義 (qa-backend-web-ah-decision-003) を API の内側に置くと、core のハブ関数が api に依存する逆向きの矢印になる。API Design Patterns card は、5 本の既存 API を束ねず集約エンドポイントを 1 本足す判断 (qa-analysis-hub-decision-002) に効き、応答を画面の必要量に絞ることでハブ表示中の往復を 1 回にした。DDD card の集約の考え方は、総収支の消し込み (freee 正本・未判断の重複候補を合計に入れない) を totalCashflowReport の不変条件ごと再利用し、ハブ側で件数を数え直さない判断に使った。
+Clean Architecture card の Dependency Rule を照合の判定の置き場所に適用した。一致度・一致の理由・ステータス・対応キュー 4 分類・KPI・月次クローズ判定は入出力を持たない業務規則なので core の reconciliationReport / monthlyCloseStatus に置き、GET /api/reconciliation と actions/undo の route は loadDataset・freee 系テーブル・MF 除外・操作履歴の読み書きをして core へ渡す adapter に留める。DDD card の集約の考え方は、照合判断を duplicate_verdicts に一本化して総収支と共用する判断 (qa-reconciliation-decision-002) に効いた。buildExpenseProjection に判断と除外を渡すのは、同じ『要確認』を 2 つの関数が別の定義で数えて照合・ハブ・総収支の件数がずれる現状を、集約の不変条件 1 つにまとめるためである。API Design Patterns card は照合専用の GET 1 本と actions/undo の書込 (qa-backend-web-rc-decision-007) に効き、一括は最大 200 件で結果を件ごとの成否として返す部分成功の形にした。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-14T11:57:54Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T08:59:56Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -266,4 +339,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| hono-middleware | 4.13.7 | Hono (hono.dev) | https://hono.dev/docs/guides/middleware | 2026-09-14T11:44:16Z | 2026-09-14T11:44:16Z |
+| hono-validation | 4.13.8 | Hono (hono.dev) | https://hono.dev/docs/guides/validation | 2026-09-15T09:06:39Z | 2026-09-15T09:06:39Z |

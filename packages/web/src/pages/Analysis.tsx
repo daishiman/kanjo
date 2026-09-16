@@ -28,6 +28,7 @@ import {
   ANALYSIS_HUB_ICONS,
   ANALYSIS_HUB_STALE_TIME_MS,
   ANALYSIS_TABS,
+  ANALYSIS_TAB_QUESTIONS,
   type AnalysisTabId,
   DEFAULT_ANALYSIS_TAB,
   analysisHubQueryKey,
@@ -62,14 +63,21 @@ export function AnalysisPage() {
   const tab = analysisTab(requested);
   if (!tab) return <Navigate to={DEFAULT_ANALYSIS_TAB.path} replace />;
   const Panel = PANELS[tab.id];
+  const question = ANALYSIS_TAB_QUESTIONS[tab.id];
 
   return (
     <>
-      <PageHeader route="analysis" />
+      {question ? (
+        <PageHeader route="analysis" title={question.question} lead={question.lead} showTask={false} />
+      ) : (
+        <PageHeader route="analysis" />
+      )}
       <AnalysisTabsNav />
 
       <section aria-label={tab.label}>
-        <TaskCopy task={tab.task} detail={tab.taskDetail} summary={`${tab.label}のくわしい説明`} />
+        {!question && (
+          <TaskCopy task={tab.task} detail={tab.taskDetail} summary={`${tab.label}のくわしい説明`} />
+        )}
         <Suspense key={tab.id} fallback={<PageState status="loading" />}>
           <Panel />
         </Suspense>

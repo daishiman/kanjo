@@ -14,7 +14,7 @@ import { D1_MAX_BOUND_PARAMS } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { dealFromRow, getDb } from '../store.js';
 import { loadScoped } from './analytics.js';
-import { bindDuplicateVerdicts } from './duplicate-verdict-bindings.js';
+import { bindDuplicateVerdicts, bindMfExclusions } from './duplicate-verdict-bindings.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
@@ -32,10 +32,11 @@ totalCashflowRoute.get('/total-cashflow', async (c) => {
   const { data, period } = await loadScoped(c);
   const months = new Set(data.months);
 
-  const [dealRows, verdictRows, exclusionRows] = await Promise.all([
+  const [dealRows, verdictRows, exclusionRows, mfExclusionRows] = await Promise.all([
     db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
     db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
     db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),
+    db.select().from(s.mfTxExclusions).where(eq(s.mfTxExclusions.userId, userId)),
   ]);
   const deals = dealRows.map(dealFromRow).filter((deal) => months.has(deal.month));
   const exclusions: FreeeExclusion[] = exclusionRows.map((row) => ({
@@ -43,7 +44,15 @@ totalCashflowRoute.get('/total-cashflow', async (c) => {
     reason: row.reason,
   }));
 
-  const report = totalCashflowReport(data, deals, bindDuplicateVerdicts(verdictRows, data.mfTx), exclusions);
+  // 照合画面で外した MF 明細は要確認から外す (総額には残る)。照合・ハブ・概況と件数を揃える
+  const mfExcludedTxIds = bindMfExclusions(mfExclusionRows, data.mfTx).map((row) => row.txId);
+  const report = totalCashflowReport(
+    data,
+    deals,
+    bindDuplicateVerdicts(verdictRows, data.mfTx),
+    exclusions,
+    mfExcludedTxIds,
+  );
   return c.json({
     months: report.months,
     // mf と candidates をそのまま渡す。要確認は「理由を告げる」ためではなく

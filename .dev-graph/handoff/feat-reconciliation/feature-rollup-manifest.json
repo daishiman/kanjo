@@ -1,0 +1,99 @@
+{
+  "epic_bd_issue_id": "kanjo-4hd",
+  "parent_feature": "feat-reconciliation",
+  "generated_at": "2026-09-15T15:18:33Z",
+  "source": "bd-bridge --op show (measured)",
+  "children": [
+    {
+      "bd_issue_id": "kanjo-4hd.1",
+      "graph_node_id": "SYS-RECON-P01",
+      "phase_ref": "P01",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:16:59Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.2",
+      "graph_node_id": "SYS-RECON-P02",
+      "phase_ref": "P02",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:14Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.3",
+      "graph_node_id": "SYS-RECON-P03",
+      "phase_ref": "P03",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:16Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.4",
+      "graph_node_id": "SYS-RECON-P04",
+      "phase_ref": "P04",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:18Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.5",
+      "graph_node_id": "SYS-RECON-P05",
+      "phase_ref": "P05",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:20Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.6",
+      "graph_node_id": "SYS-RECON-P06",
+      "phase_ref": "P06",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:22Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.7",
+      "graph_node_id": "SYS-RECON-P07",
+      "phase_ref": "P07",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:23Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.8",
+      "graph_node_id": "SYS-RECON-P08",
+      "phase_ref": "P08",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:25Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.9",
+      "graph_node_id": "SYS-RECON-P09",
+      "phase_ref": "P09",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:27Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.10",
+      "graph_node_id": "SYS-RECON-P10",
+      "phase_ref": "P10",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:29Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.11",
+      "graph_node_id": "SYS-RECON-P11",
+      "phase_ref": "P11",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:31Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.12",
+      "graph_node_id": "SYS-RECON-P12",
+      "phase_ref": "P12",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:33Z"
+    },
+    {
+      "bd_issue_id": "kanjo-4hd.13",
+      "graph_node_id": "SYS-RECON-P13",
+      "phase_ref": "P13",
+      "status": "closed",
+      "closed_at": "2026-09-15T15:17:34Z"
+    }
+  ]
+}

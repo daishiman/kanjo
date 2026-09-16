@@ -427,18 +427,21 @@ export interface MonthlyCloseStatus {
   reviewedAt: string | null;
 }
 
-/** 対象月はデータの最終月。仕分け・照合は保留を含む全件 (items) で数える */
+/** 対象月はデータの最終月。仕分けは保留を含む items、照合は専用集約の総数で判定する */
 export function monthlyCloseStatus({
   data,
   items,
   reviews,
   hasCommittedImport,
+  actionRequiredCount,
 }: {
   data: Dataset;
   items: readonly ReviewQueueItem[];
   reviews: readonly { month: string; reviewedAt: string }[];
   /** committed の取込が 1 件でもあるか。手入力の現金だけで月が立っても「取込済み」にしない (FR-004) */
   hasCommittedImport: boolean;
+  /** 照合画面が返す対応必要総数。要確認と未処理を consumer 側で再加算しない */
+  actionRequiredCount: number;
 }): MonthlyCloseStatus {
   const month = data.months.length > 0 ? data.months[data.months.length - 1] : null;
   const counts = reviewQueueCounts(items);
@@ -459,8 +462,8 @@ export function monthlyCloseStatus({
     {
       key: 'reconciliation',
       label: '照合',
-      done: month !== null && counts.reconciliation === 0,
-      count: counts.reconciliation,
+      done: month !== null && actionRequiredCount === 0,
+      count: actionRequiredCount,
     },
     { key: 'review', label: '月次レビュー', done: reviewedAt !== null, count: null },
   ];

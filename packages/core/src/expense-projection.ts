@@ -11,7 +11,7 @@ import { resolveTx } from './classify.js';
 import { ensureMonth, subVendorDefs } from './dataset.js';
 import { normalizeMfDisplayDate } from './persisted-projection.js';
 import { matchSubVendor } from './subs.js';
-import { reconcileBizDuplicates } from './total-cashflow.js';
+import { type DuplicateVerdict, type FreeeExclusion, reconcileBizDuplicates } from './total-cashflow.js';
 import type { Dataset, FreeeDeal, MfTx } from './types.js';
 import { isMfCountable } from './types.js';
 
@@ -153,7 +153,12 @@ function reviewReason(mf: ExpenseFact, candidates: readonly ExpenseFact[]): Expe
   return '支払先が一致しません';
 }
 
-export function buildExpenseProjection(data: Dataset, deals: readonly FreeeDeal[]): ExpenseProjection {
+export function buildExpenseProjection(
+  data: Dataset,
+  deals: readonly FreeeDeal[],
+  verdicts: readonly DuplicateVerdict[] = [],
+  exclusions: readonly FreeeExclusion[] = [],
+): ExpenseProjection {
   const freee = factsFromFreee(deals);
   const mf = factsFromMf(data);
   const freeeByKey = new Map<string, ExpenseFact[]>();
@@ -176,7 +181,7 @@ export function buildExpenseProjection(data: Dataset, deals: readonly FreeeDeal[
   const freeeByIndex = new Map(freee.map((fact) => [fact.sourceId, fact]));
   const matched: ExpenseProjection['matched'] = [];
   const matchedMfIds = new Set<string>();
-  for (const pair of reconcileBizDuplicates(data, deals).matched) {
+  for (const pair of reconcileBizDuplicates(data, deals, verdicts, exclusions).matched) {
     const mfFact = mfById.get(pair.mfTxId);
     const freeeFact = freeeByIndex.get(`freee:${pair.freeeIndex}`);
     // 収入側の消し込みはこの支出投影の関心外。両側が支出として現れた組だけを採る

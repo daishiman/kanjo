@@ -1,0 +1,242 @@
+{
+ "schema_version": "1.0.0",
+ "handoff_target": "task-graph",
+ "feature_id": "feat-reconciliation",
+ "parent_feature": "feat-reconciliation",
+ "feature_package_id": "feature-package/feat-reconciliation",
+ "snapshot_digest": "sha256:ddb836b6af870607fc2a1e3e17c596246a95aa649898efca45bcea7517413d32",
+ "validated_plan_digest": "sha256:76c705dfa24c67d6b3bf7e3e42d55f2e7b60c0a316f4df01b0343abd909431ad",
+ "emitted_by": "dev-graph:run-dev-graph-requirements",
+ "emitted_at": "2026-09-15T11:36:36Z",
+ "repository_id": "github:daishiman/kanjo",
+ "package_reference": {
+  "plan_dir": ".dev-graph/plans/feature-package-feat-reconciliation",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-reconciliation/atomic-promotion-receipt.json",
+  "task_graph": ".dev-graph/plans/feature-package-feat-reconciliation/task-graph.json",
+  "registration_receipt": ".dev-graph/plans/feature-package-feat-reconciliation/dev-graph-registration-receipt.json"
+ },
+ "readiness": {
+  "status": "complete",
+  "missing_sections": [],
+  "checked_at": "2026-09-15T11:36:36Z"
+ },
+ "gates": [
+  {
+   "gate": "exact-13 external validator (validate-system-plan.py)",
+   "status": "pass",
+   "exit_code": 0,
+   "digest": "sha256:76c705dfa24c67d6b3bf7e3e42d55f2e7b60c0a316f4df01b0343abd909431ad",
+   "violations": 0
+  },
+  {
+   "gate": "graph schema + artifact parity (validate-graph-schema.py)",
+   "status": "pass",
+   "exit_code": 0,
+   "violations": 0,
+   "missing_sections": []
+  },
+  {
+   "gate": "C02 saved state (registration receipt + task nodes)",
+   "status": "pass",
+   "digest": "sha256:76c705dfa24c67d6b3bf7e3e42d55f2e7b60c0a316f4df01b0343abd909431ad",
+   "detail": "expected 13 = applied 13"
+  },
+  {
+   "gate": "C11 promotion + C05 evaluation digest",
+   "status": "pass",
+   "digest": "sha256:76c705dfa24c67d6b3bf7e3e42d55f2e7b60c0a316f4df01b0343abd909431ad"
+  }
+ ],
+ "tasks": [
+  {
+   "graph_node_id": "SYS-RECON-P01",
+   "phase_ref": "P01",
+   "title": "要件ベースライン確定と未決事項7件の着手時整理",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p01.md",
+   "depends_on": [],
+   "resource_scope": [
+    "docs/reconciliation/requirements-baseline.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P02",
+   "phase_ref": "P02",
+   "title": "照合 API・D1 新表3件・core 判定規則のワークストリーム設計決定記録",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p02.md",
+   "depends_on": [
+    "SYS-RECON-P01"
+   ],
+   "resource_scope": [
+    "docs/reconciliation/architecture-decision.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P03",
+   "phase_ref": "P03",
+   "title": "API契約・D1新表設計・一致度規則の独立レビュー",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p03.md",
+   "depends_on": [
+    "SYS-RECON-P02"
+   ],
+   "resource_scope": [
+    "docs/reconciliation/design-review.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P04",
+   "phase_ref": "P04",
+   "title": "core境界値・API統合・DOMの失敗テスト先行作成 (契約テストで7件の未決事項を固定)",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p04.md",
+   "depends_on": [
+    "SYS-RECON-P03"
+   ],
+   "resource_scope": [
+    "packages/core/test/reconciliation.test.ts",
+    "packages/api/test/reconciliation.integration.test.ts",
+    "packages/web/src/reconciliation.dom.test.tsx",
+    "packages/web/src/route-icon-distinct.test.tsx"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P05",
+   "phase_ref": "P05",
+   "title": "照合core判定関数・3API・月次レビューAPI・D1 migration・Reconciliation.tsx・共通シェル・アイコンの実装",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p05.md",
+   "depends_on": [
+    "SYS-RECON-P04"
+   ],
+   "resource_scope": [
+    "packages/core/src/reconciliation.ts",
+    "packages/core/src/expense-projection.ts",
+    "packages/core/src/analysis-hub.ts",
+    "packages/api/src/routes/reconciliation.ts",
+    "packages/api/src/routes/total-cashflow.ts",
+    "packages/api/src/db/schema.ts",
+    "packages/api/src/store.ts",
+    "packages/api/src/canonical-mutation-fence.ts",
+    "packages/api/src/index.ts",
+    "migrations/0040_reconciliation_tables.sql",
+    "packages/web/src/pages/analysis/Reconciliation.tsx",
+    "packages/web/src/components/RouteIcon.tsx",
+    "packages/web/src/routeMetadata.ts",
+    "packages/web/src/components/Layout.tsx",
+    "packages/web/src/api.ts",
+    "docs/data-schema.md",
+    "docs/reconciliation-icons.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P06",
+   "phase_ref": "P06",
+   "title": "全テスト・型検査・lintの実行記録",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p06.md",
+   "depends_on": [
+    "SYS-RECON-P05"
+   ],
+   "resource_scope": [
+    "docs/reconciliation/test-run.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P07",
+   "phase_ref": "P07",
+   "title": "AC-001..AC-006・S1..S6受入検証",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p07.md",
+   "depends_on": [
+    "SYS-RECON-P06"
+   ],
+   "resource_scope": [
+    "docs/reconciliation/acceptance.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P08",
+   "phase_ref": "P08",
+   "title": "migration 0040の前進のみ整合とバックアップ/復元対象の整理",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p08.md",
+   "depends_on": [
+    "SYS-RECON-P07"
+   ],
+   "resource_scope": [
+    "packages/api/src/store.ts",
+    "docs/reconciliation/refactoring.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P09",
+   "phase_ref": "P09",
+   "title": "アクセシビリティ・入力検証・JS予算・route-icon-distinctの保証確認",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p09.md",
+   "depends_on": [
+    "SYS-RECON-P08"
+   ],
+   "resource_scope": [
+    "docs/reconciliation/assurance.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P10",
+   "phase_ref": "P10",
+   "title": "独立最終レビュー",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p10.md",
+   "depends_on": [
+    "SYS-RECON-P09"
+   ],
+   "resource_scope": [
+    "docs/reconciliation/final-review.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P11",
+   "phase_ref": "P11",
+   "title": "再現可能な証跡索引の作成",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p11.md",
+   "depends_on": [
+    "SYS-RECON-P10"
+   ],
+   "resource_scope": [
+    "docs/reconciliation/evidence.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P12",
+   "phase_ref": "P12",
+   "title": "docs/runbooksへの切り分け手順とdocs/data-schema.mdの最終同期",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p12.md",
+   "depends_on": [
+    "SYS-RECON-P11"
+   ],
+   "resource_scope": [
+    "docs/reconciliation.md",
+    "docs/runbooks/reconciliation-mismatch.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-RECON-P13",
+   "phase_ref": "P13",
+   "title": "単一PRでの配信とクローズアウト",
+   "file_path": "tasks/feat-reconciliation/sys-recon-p13.md",
+   "depends_on": [
+    "SYS-RECON-P12"
+   ],
+   "resource_scope": [
+    "docs/reconciliation/close-out.md"
+   ],
+   "tracker_binding": "beads"
+  }
+ ],
+ "requirements_ref": ".dev-graph/requirements/feat-reconciliation/trace-plan.json",
+ "self_generated_code_files": []
+}

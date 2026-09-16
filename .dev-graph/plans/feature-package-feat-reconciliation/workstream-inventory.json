@@ -1,0 +1,1261 @@
+{
+  "feature_package_id": "feature-package/feat-reconciliation",
+  "parent_feature": "feat-reconciliation",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "git"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/00-requirements-definition.md",
+      "system-spec/completeness-findings.json",
+      "specs/spec-reconciliation.md",
+      "features/feat-reconciliation.md",
+      "features/feat-reconciliation.context.json"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "specs/spec-reconciliation.md の FR-001..FR-007・BR-001..BR-009・3 API 契約・AC-001..AC-006・確定意思決定 (qa-*-decision-*) を docs/reconciliation/requirements-baseline.md へ転記し、原文との差分が0件である。",
+        "未決事項7件 (low-content-similarity-rounding・low-dice-bigram-multiset-counting・low-threshold-0.5-comparison-method・low-monthly-review-api-path-and-response・low-undo-re-undo-status・low-actions-success-status-code・low-status-determination-is-inference) を一覧化し、各項目の disposition が『実装 task の契約テストで確定する』であることをそのまま転記し、本 task ではいずれの値も確定・仮置きしない。",
+        "各未決事項がどの実装 task (P04 の失敗テスト・P05 の実装) で契約テストとして確定される予定かを requirements-baseline.md に記録している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p01.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p01.md",
+        "graph_node_id": "SYS-RECON-P01",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-RECON-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "docs/reconciliation/requirements-baseline.md の追加コミットを revert する。他ファイルへの書込みがないため単独で戻せる。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "specs/spec-reconciliation.md",
+        "system-spec/00-requirements-definition.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p01",
+        "requirements"
+      ],
+      "title": "要件ベースライン確定と未決事項7件の着手時整理",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint (既存の check-glossary.mjs 等の文書検査が緑のままであることを確認する)"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/reconciliation/requirements-baseline.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "GET /api/reconciliation・POST /api/reconciliation/actions・POST /api/reconciliation/actions/:id/undo の3エンドポイントのリクエスト/レスポンス形が specs/spec-reconciliation.md の API 契約と一致する形で architecture-decision.md に確定記載されている。",
+        "月次レビュー完了 API は Method/Path/応答形を本 task では確定せず、P04 の契約テストで先に赤いテストとして固定し P05 で確定する方針を明記している (low-monthly-review-api-path-and-response を仮置きしない)。",
+        "mf_tx_exclusions・reconciliation_actions (before/after・90日保持)・monthly_reviews の3新表の列・型・主キー・インデックス案を architecture-decision.md に記載し、既存 duplicate_verdicts (migration 0036)・freee_deal_exclusions (migration 0037) の形を変えないことを明記している。次の migration 番号が 0040 であることを記載している。",
+        "一致度 = 金額一致50点 + 日付差点 (同日30/1日20/2日10/3日5/それ以外0) + 内容類似×20 の加点規則、内容類似 = NFKC正規化・空白除去・小文字化した文字 bigram の Dice 係数、しきい値0.5以上を『似ている』とする規則を architecture-decision.md に確定記載している。丸め規則・bigramの多重集合か集合かの数え方・0.5ちょうどの比較方法は確定せず、P04/P05の契約テストで確定する旨を明記している。",
+        "照合の書込系 (POST /api/reconciliation/actions・POST /api/reconciliation/actions/:id/undo・月次レビュー完了API) と POST /api/total-cashflow/verdicts を canonicalMutationFence の CANONICAL_MUTATION_ROUTES に追加する決定を記載している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p02.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P01"
+      ],
+      "deploy_unit": "N/A: 決定記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p02.md",
+        "graph_node_id": "SYS-RECON-P02",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-RECON-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "docs/reconciliation/architecture-decision.md の追加コミットを revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "api",
+        "data"
+      ],
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p02",
+        "architecture"
+      ],
+      "title": "照合 API・D1 新表3件・core 判定規則のワークストリーム設計決定記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm typecheck (既存構成に影響がないことを確認する)"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "docs/reconciliation/architecture-decision.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "P02のarchitecture-decision.mdに対する独立レビューで是正指摘が0件、または全指摘が是正済みとしてdesign-review.mdに記録されている。",
+        "mf_tx_exclusions・reconciliation_actions・monthly_reviews の主キー・インデックス案がBR-001..BR-009の入力検証要求 (一括200件上限・action列挙4種) と整合することを確認している。",
+        "一致度規則 (金額50点+日付差点+内容類似×20、しきい値0.5) がAC-002の境界値 (内容類似1.0/0/0.67/0.33、日付差3日/4日) と矛盾しないことを確認している。",
+        "canonicalMutationFence対象化がPOST /api/total-cashflow/verdicts の既存挙動 (最大200件) を壊さないことを確認している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p03.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P02"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p03.md",
+        "graph_node_id": "SYS-RECON-P03",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-RECON-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "docs/reconciliation/design-review.md の追加コミットを revert する。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "api"
+      ],
+      "source_lineage": [
+        "docs/reconciliation/architecture-decision.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p03",
+        "design-review"
+      ],
+      "title": "API契約・D1新表設計・一致度規則の独立レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/reconciliation/design-review.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "packages/core/test/reconciliation.test.ts が一致度の境界値 (内容類似1.0/0/0.67/0.33、しきい値ちょうど0.5と未満、日付差3日と4日、金額一致と不一致) をredの状態で追加し、内容点の丸め規則・bigramの多重集合か集合かの数え方・0.5ちょうどの比較方法を、このテストのassertion自体で契約として固定する (low-content-similarity-rounding・low-dice-bigram-multiset-counting・low-threshold-0.5-comparison-method をここで確定する)。",
+        "packages/api/test/reconciliation.integration.test.ts が GET /api/reconciliation・POST /api/reconciliation/actions (成功/部分成功/400/409)・POST /api/reconciliation/actions/:id/undo (成功/再取消時の応答)・月次レビュー完了APIをredの状態で追加し、POST /api/reconciliation/actions の成功時status/フィールド名、再取消時のstatus/code、月次レビューAPIのMethod/Path/応答形を、このテストのassertion自体で契約として固定する (low-actions-success-status-code・low-undo-re-undo-status・low-monthly-review-api-path-and-response をここで確定する)。",
+        "上記API統合テストが未認証401・他人の操作id 404・一括201件400・取込中409 canonical_write_busyをredの状態で追加している。",
+        "packages/web/src/reconciliation.dom.test.tsx がKPI4枚・絞り込み・対応キュー4分類・照合候補一覧・取引の詳細パネル・下段2表・選択中バーの描画とサイドバー文言・件数バッジ・月次クローズ3/4をredの状態で追加している。",
+        "packages/web/src/route-icon-distinct.test.tsx に本feature追加アイコン名を対象へ加え、既存アイコンとの絵柄重複が無いことをredの状態で追加している (アイコン未登録のため現時点ではred)。",
+        "ステータス (未処理/要確認/照合済み/除外) の判定定義がアシスタントの推定 (low-status-determination-is-inference) であった点について、reconciliation.test.tsのassertionで具体的な判定条件を契約として固定している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p04.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P03"
+      ],
+      "deploy_unit": "N/A: テストコードのみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p04.md",
+        "graph_node_id": "SYS-RECON-P04",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-RECON-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "packages/core/test/reconciliation.test.ts・packages/api/test/reconciliation.integration.test.ts・packages/web/src/reconciliation.dom.test.tsx・packages/web/src/route-icon-distinct.test.tsx への追加コミットを revert する。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "api",
+        "data"
+      ],
+      "source_lineage": [
+        "docs/reconciliation/architecture-decision.md",
+        "docs/reconciliation/design-review.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p04",
+        "test-design"
+      ],
+      "title": "core境界値・API統合・DOMの失敗テスト先行作成 (契約テストで7件の未決事項を固定)",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core exec vitest run test/reconciliation.test.ts (新規テストがredであることを確認する)",
+        "pnpm --filter @kanjo/api exec vitest run test/reconciliation.integration.test.ts (新規テストがredであることを確認する)",
+        "pnpm --filter @kanjo/web exec vitest run src/reconciliation.dom.test.tsx (新規テストがredであることを確認する)"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/test/reconciliation.test.ts",
+        "packages/api/test/reconciliation.integration.test.ts",
+        "packages/web/src/reconciliation.dom.test.tsx",
+        "packages/web/src/route-icon-distinct.test.tsx"
+      ]
+    },
+    {
+      "acceptance": [
+        "P04で追加したreconciliation.test.ts・reconciliation.integration.test.ts・reconciliation.dom.test.tsx・route-icon-distinct.test.tsxがgreenになる。",
+        "GET /api/reconciliation・POST /api/reconciliation/actions・POST /api/reconciliation/actions/:id/undo・月次レビュー完了APIがauthGuard→mustChangePasswordFence→runtimeSchemaGuard→canonicalMutationFenceの順を通り、書込系がCANONICAL_MUTATION_ROUTESに含まれる。",
+        "migrations/0040がCREATE TABLE/INDEXのみ (mf_tx_exclusions・reconciliation_actions・monthly_reviews) で前進のみであり、既存のduplicate_verdicts (0036)・freee_deal_exclusions (0037) の列を変更しない。",
+        "/analysis/reconciliation が 04-reconciliation.png の全構成要素 (KPI4枚・絞り込みと対応キュー・照合候補一覧・取引の詳細パネル・下段2表・選択中バー) をトークンと共通Button/PageShell経由で描画し、直書き色のlintが0件である。",
+        "サイドバーのグループ・文言・件数バッジ、月次クローズ進捗3/4、ヘッダー、フッター、改善を送るボタンが画像どおりに共通シェルへ反映されている。",
+        "画像内で識別できる全アイコン (docs/reconciliation-icons.md の対応表、下記に転記) がRouteIconへ登録され、各表示箇所で表示され、route-icon-distinct.test.tsxが緑になる。対応表は以下の24件である。\\n\\n| # | 画像上のラベル/場所 | 意味 | RouteIcon 登録名 | 種別 |\n|---|---|---|---|---|\n| 1 | サイドバー『照合』 | ナビゲーション項目 | git-compare-arrows | 既存流用 |\n| 2 | 絞り込みパネル見出し | 絞り込み操作 | sliders-horizontal | 既存流用 |\n| 3 | KPI『事業支出』 | 対象期間の銀行・カード支出 | wallet | 新規登録 |\n| 4 | KPI『MF未計上』 | freeeにない取引の警告 | triangle-alert | 既存流用 |\n| 5 | KPI『要確認一致候補』 | 一致候補の確認を促す操作 | wand-sparkles | 新規登録 |\n| 6 | KPI『解消済み』の割合リング | 動的な進捗率描画 | N/A: 数値駆動のprogress-ring SVGでありRouteIcon登録対象外 | 対象外 |\n| 7 | 照合候補一覧の検索欄 | 取引内容・全額・メモの検索 | search | 新規登録 |\n| 8 | 対応キュー『要確認の候補』 | 内容確認を促す警告 | circle-alert | 既存流用 |\n| 9 | 対応キュー『MF未計上』 | freeeにない取引の警告 | triangle-alert | 既存流用 |\n| 10 | 対応キュー『金額の差異』 | 金額不一致の警告 | circle-alert | 既存流用 |\n| 11 | 対応キュー『日付の近い取引』 | 前後3日以内の近さ | clock | 新規登録 |\n| 12 | 取引の詳細パネルの閉じるボタン | パネルを閉じる | x | 新規登録 |\n| 13 | 一致の理由チェックリスト (金額/日付/内容) | 一致条件を満たすことの表示 | circle-check | 既存流用 |\n| 14 | 直前の操作『元に戻す』 | 直前操作の取消 | rotate-ccw | 新規登録 |\n| 15 | ヘッダーの検索 (Cmd+K) | コマンドパレット起動 | search | 新規登録 (7と共用) |\n| 16 | ヘッダーのダウンロード | エクスポート操作 | download | 新規登録 |\n| 17 | ヘッダーのヘルプ | ヘルプ表示 | circle-help | 新規登録 |\n| 18 | ヘッダーのアカウント | ユーザーメニュー | circle-user | 新規登録 |\n| 19 | 『防衛ライン: 正常』バッジ | 健全性ステータス | shield-check | 新規登録 |\n| 20 | 一覧ページング『<』『>』 | ページ送り | chevron-left / chevron-right | 新規登録 (2件) |\n| 21 | フッター『取込データは外部送信しません』 | 外部送信ポリシーの明示 | lock | 新規登録 |\n| 22 | フッター『税務の正本はfreee』 | 正本データソースの明示 | badge-check | 新規登録 |\n| 23 | フッター『毎晩バックアップ』 | 夜間バックアップの明示 | cloud | 新規登録 |\n| 24 | フッター『改善を送る』ボタン | 改善リクエスト送信導線 | message-circle | 新規登録 |",
+        "docs/data-schema.mdの古い候補条件記述 (L120-124相当) を一致度・キュー分類の新規則に合わせて修正している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p05.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P04"
+      ],
+      "deploy_unit": "Cloudflare Workers kanjo-console (packages/api) と D1 kanjo-db (migrations/0040) への追加。既存配信構成のまま新規エンドポイントと新表3件を追加する。",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p05.md",
+        "graph_node_id": "SYS-RECON-P05",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-RECON-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "reconciliation.ts・routes/reconciliation.ts・routes/total-cashflow.ts・db/schema.ts・store.ts・canonical-mutation-fence.ts・index.ts・migrations/0040・Reconciliation.tsx・RouteIcon.tsx・routeMetadata.ts・Layout.tsx・api.ts・docs/data-schema.md・docs/reconciliation-icons.md への変更コミットをrevertする。D1側はmigrationがCREATEのみのため取り消し不要で、新表は無害に残置してよい。",
+      "secondary_workstreams": [
+        "frontend",
+        "api",
+        "data"
+      ],
+      "source_lineage": [
+        "docs/reconciliation/architecture-decision.md",
+        "packages/core/test/reconciliation.test.ts",
+        "packages/api/test/reconciliation.integration.test.ts",
+        "packages/web/src/reconciliation.dom.test.tsx",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p05",
+        "implementation"
+      ],
+      "title": "照合core判定関数・3API・月次レビューAPI・D1 migration・Reconciliation.tsx・共通シェル・アイコンの実装",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test",
+        "pnpm --filter @kanjo/web run typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "packages/core/src/reconciliation.ts",
+        "packages/core/src/expense-projection.ts",
+        "packages/core/src/analysis-hub.ts",
+        "packages/api/src/routes/reconciliation.ts",
+        "packages/api/src/routes/total-cashflow.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/index.ts",
+        "migrations/0040_reconciliation_tables.sql",
+        "packages/web/src/pages/analysis/Reconciliation.tsx",
+        "packages/web/src/components/RouteIcon.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/api.ts",
+        "docs/data-schema.md",
+        "docs/reconciliation-icons.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "pnpm test / pnpm typecheck / pnpm lint の実行結果 (すべてexit code 0) がtest-run.mdに記録されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p06.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P05"
+      ],
+      "deploy_unit": "N/A: 実行記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p06.md",
+        "graph_node_id": "SYS-RECON-P06",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-RECON-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "docs/reconciliation/test-run.md の追加コミットを revert する。",
+      "secondary_workstreams": [],
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p06",
+        "test-run"
+      ],
+      "title": "全テスト・型検査・lintの実行記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/reconciliation/test-run.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "AC-001..AC-006それぞれについて、対応する検証コマンド名と実行結果 (exit 0) がacceptance.mdに1件ずつ記録されている。",
+        "goal-spec.jsonのS1..S6それぞれについて、対応する検証コマンド名と実行結果 (exit 0) がacceptance.mdに1件ずつ記録されている。",
+        "S3 (照合/別取引/除外/一括照合の結果が再読込後も保持され、元に戻すで操作前の状態に戻り、KPIとキューが操作前の値に戻る) の統合テスト結果が記録されている。",
+        "S5 (画像のアイコンが全て表示され、docsのアイコン一覧とRouteIconの登録名が一致し、route-icon-distinctが緑) の記録がある。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p07.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P06"
+      ],
+      "deploy_unit": "N/A: 受入記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p07.md",
+        "graph_node_id": "SYS-RECON-P07",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-RECON-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "docs/reconciliation/acceptance.md の追加コミットを revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "api"
+      ],
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p07",
+        "acceptance"
+      ],
+      "title": "AC-001..AC-006・S1..S6受入検証",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm --filter @kanjo/web run check:financial-routes"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/reconciliation/acceptance.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "BACKUP_SNAPSHOT_SQLのUNION ALLブロックとloadBackupSourceSnapshotのparams数がmf_tx_exclusions・reconciliation_actions・monthly_reviews追加後も一致し、pnpm --filter @kanjo/api testのバックアップ関連テストがgreenである。",
+        "migrations/0040がCREATE TABLE/INDEXのみでDROP/RENAMEを含まないことをrefactoring.mdに記録している。",
+        "reconciliation_actionsの90日超の行を夜間cronで削除する処理がexisting夜間処理 (0 18 * * *) に追加され、削除対象が90日超の行だけであることをrefactoring.mdに記録している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p08.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P07"
+      ],
+      "deploy_unit": "N/A: 既存のCloudflare Workers/D1配信構成のまま追加の配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p08.md",
+        "graph_node_id": "SYS-RECON-P08",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-RECON-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "packages/api/src/store.tsへの変更コミットをrevertする。docs/reconciliation/refactoring.mdの追加コミットをrevertする。",
+      "secondary_workstreams": [
+        "backend"
+      ],
+      "source_lineage": [
+        "docs/reconciliation/architecture-decision.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p08",
+        "refactoring-migration"
+      ],
+      "title": "migration 0040の前進のみ整合とバックアップ/復元対象の整理",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/api test",
+        "pnpm run github-scripts:test"
+      ],
+      "workstream_kind": "data",
+      "write_scope": [
+        "packages/api/src/store.ts",
+        "docs/reconciliation/refactoring.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "check-financial-visuals.mjsのVIEWPORT_CASESで/analysis/reconciliationがexit 0になり、狭幅 (アイコンレール・下部タブ) でも3カラムが縦積みになり横スクロールしないことを確認している (S6)。",
+        "pnpm --filter @kanjo/web run check:js-budgetが予算内でexit 0になる。",
+        "packages/api/test/reconciliation.integration.test.tsのzValidator検証 (action列挙4種・1〜200件・tx id/freee key形式) が400を返すことを確認している。",
+        "route-icon-distinct.test.tsxがP05で追加したアイコン名を含めて緑であることを確認している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p09.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P08"
+      ],
+      "deploy_unit": "N/A: 既存のCloudflare Workers/D1配信構成のまま追加の配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p09.md",
+        "graph_node_id": "SYS-RECON-P09",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-RECON-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "docs/reconciliation/assurance.md の追加コミットを revert する。保証確認のみのためコード側の巻き戻しは不要。",
+      "secondary_workstreams": [
+        "quality",
+        "operations"
+      ],
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p09",
+        "quality-assurance"
+      ],
+      "title": "アクセシビリティ・入力検証・JS予算・route-icon-distinctの保証確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/web run check:financial-routes",
+        "pnpm --filter @kanjo/web run check:mobile-layout",
+        "pnpm --filter @kanjo/web run check:js-budget",
+        "pnpm --filter @kanjo/api exec vitest run test/reconciliation.integration.test.ts"
+      ],
+      "workstream_kind": "security",
+      "write_scope": [
+        "docs/reconciliation/assurance.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "P01..P09の成果物に対する独立最終レビューで是正未了の指摘が0件、または全指摘が是正済みとしてfinal-review.mdに記録されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p10.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P09"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p10.md",
+        "graph_node_id": "SYS-RECON-P10",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-RECON-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "docs/reconciliation/final-review.md の追加コミットを revert する。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend"
+      ],
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p10",
+        "final-review"
+      ],
+      "title": "独立最終レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/reconciliation/final-review.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "AC-001..AC-006とS1..S6それぞれについて、再実行可能な検証コマンドと期待結果 (exit 0) がevidence.mdに1件ずつ索引化されている。",
+        "索引化したコマンドを第三者が再実行した場合に同じ結果 (exit 0) が得られることをevidence.md自身に明記している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p11.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P10"
+      ],
+      "deploy_unit": "N/A: 索引文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p11.md",
+        "graph_node_id": "SYS-RECON-P11",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-RECON-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "docs/reconciliation/evidence.md の追加コミットを revert する。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "docs/reconciliation/acceptance.md",
+        "docs/reconciliation/assurance.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p11",
+        "evidence"
+      ],
+      "title": "再現可能な証跡索引の作成",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/reconciliation/evidence.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "docs/reconciliation.mdに照合機能の概要・3API+月次レビューAPIの契約要約・一致度規則・4ステータス・4対応キュー分類・解消率の定義が記載されている。",
+        "docs/runbooks/reconciliation-mismatch.mdに、照合画面・支出分析ハブのバッジ・総収支の要確認件数がずれた場合のcore/DOM/API/データ4系統での切り分け手順が記載されている。",
+        "docs/data-schema.mdの一致度・キュー分類・ステータス・月次クローズ判定の記述が、P05で実装した規則と矛盾しないことを確認している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p12.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P11"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p12.md",
+        "graph_node_id": "SYS-RECON-P12",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-RECON-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "docs/reconciliation.mdとdocs/runbooks/reconciliation-mismatch.mdの追加コミットをrevertする。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "docs/data-schema.md",
+        "docs/reconciliation/requirements-baseline.md",
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p12",
+        "documentation-operations"
+      ],
+      "title": "docs/runbooksへの切り分け手順とdocs/data-schema.mdの最終同期",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint (check-glossary.mjs 等の文書検査が緑のままであることを確認する)"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/reconciliation.md",
+        "docs/runbooks/reconciliation-mismatch.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "pnpm --filter @kanjo/web run build:artifactが配信可能な成果物を生成しexit 0になる。",
+        "pnpm run github-scripts:test (.github/scripts/plan-auto-migration.test.mjsを含む) が、migrations/0040相当のCREATE ONLY migrationを自動適用可能と判定するケースを含めてgreenである。",
+        "close-out.mdにrollback手順 (Workerを直前ビルドへ戻す、D1のmf_tx_exclusions/reconciliation_actions/monthly_reviewsは無害に残置する) を記録している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-reconciliation/sys-recon-p13.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-RECON-P12"
+      ],
+      "deploy_unit": "Cloudflare Workers kanjo-console (packages/api build:artifact) + D1 kanjo-db migration 0040 の deploy.yml 自動適用経路",
+      "feature_package_id": "feature-package/feat-reconciliation",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-reconciliation",
+        "file_path": "tasks/feat-reconciliation/sys-recon-p13.md",
+        "graph_node_id": "SYS-RECON-P13",
+        "parent_feature": "feat-reconciliation",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-RECON-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-09-15T11:10:33Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-reconciliation",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-reconciliation-auth",
+        "arch-reconciliation-backend",
+        "arch-reconciliation-database",
+        "arch-reconciliation-frontend",
+        "arch-reconciliation-infrastructure",
+        "arch-reconciliation-maintenance-ops",
+        "arch-reconciliation-security",
+        "arch-reconciliation-ui-ux",
+        "spec-reconciliation"
+      ],
+      "rollback": "Workerを直前のビルドへ戻す。D1にrollbackは無いため、mf_tx_exclusions・reconciliation_actions・monthly_reviewsは無害なまま残置する。単一PRのため1回のWorker切り戻しで完全に戻せる。",
+      "secondary_workstreams": [
+        "infrastructure",
+        "quality"
+      ],
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-reconciliation.md",
+        "features/feat-reconciliation.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "reconciliation",
+        "p13",
+        "release-deploy"
+      ],
+      "title": "単一PRでの配信とクローズアウト",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/web run build:artifact",
+        "pnpm run github-scripts:test"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        "docs/reconciliation/close-out.md"
+      ]
+    }
+  ]
+}

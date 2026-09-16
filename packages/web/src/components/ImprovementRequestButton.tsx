@@ -177,7 +177,7 @@ export function ImprovementRequestButton({
         disabled={phase === 'capturing'}
         aria-busy={phase === 'capturing'}
       >
-        <UiIcon name="message" className="action-icon" />
+        <UiIcon name="message-circle" className="action-icon" />
         <span className="improve-trigger-label">
           {phase === 'capturing' ? '画面を撮影中…' : '改善を送る'}
         </span>

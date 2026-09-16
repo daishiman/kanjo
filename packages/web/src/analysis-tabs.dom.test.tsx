@@ -101,7 +101,7 @@ describe('支出分析のタブ', () => {
     cleanup();
 
     renderAt('/analysis/nonexistent');
-    expect(await screen.findByText(/照合できる支出がまだありません/)).toBeTruthy();
+    expect(await screen.findByText(/照合できる取引がまだありません/)).toBeTruthy();
   });
 
   it('統合前のURLは行き先を失わない', () => {
