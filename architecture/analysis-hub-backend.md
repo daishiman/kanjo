@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "04a49e39d41c790206872981560233225e7cc5e6750d62314d60c2bd3d5a653d"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/backend.md", "source_version": "0.1.14", "source_digest": "04a49e39d41c790206872981560233225e7cc5e6750d62314d60c2bd3d5a653d", "imported_at": "2026-09-14T12:23:44Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-14-analysis-hub/completeness-findings.json", "evaluated_digest": "04a49e39d41c790206872981560233225e7cc5e6750d62314d60c2bd3d5a653d"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-14-analysis-hub/backend.md", "source_version": "0.1.14", "source_digest": "04a49e39d41c790206872981560233225e7cc5e6750d62314d60c2bd3d5a653d", "imported_at": "2026-09-14T12:23:44Z"}
 created_at: "2026-09-14T12:23:44Z"
 updated_at: "2026-09-14T12:23:44Z"
 depends_on: ["spec-analysis-hub"]
@@ -50,7 +50,7 @@ serves_goals: ["G3", "G4"]
 
 # Architecture overview
 
-支出分析ハブ — core 集計関数と集約 API。正本は `system-spec/backend.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
+支出分析ハブ — core 集計関数と集約 API。正本は `system-spec/archive/2026-09-14-analysis-hub/backend.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
 
 ## Context and drivers
 
@@ -72,7 +72,7 @@ serves_goals: ["G3", "G4"]
 
 - Users/external systems: web SPA (ハブ画面とサイドバー) が唯一の呼出し元。外部システムの追加は無い。
 - Trust/deployment/data boundaries: 既存ゲート列の内側にハブ route を置き、D1 の読取りは userId で絞る。集計ロジックは packages/core に閉じ、route は読取り・期間解釈・受け渡しだけを持つ。
-- Context diagram: `system-spec/index.md` の章相互参照を参照する。
+- Context diagram: `system-spec/archive/2026-09-14-analysis-hub/index.md` の章相互参照を参照する。
 
 ## Container and component view
 

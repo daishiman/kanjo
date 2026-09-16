@@ -1,0 +1,1235 @@
+{
+  "schema_version": "1.0.0",
+  "feature_package_id": "feature-package/feat-total-cashflow-screen",
+  "parent_feature": "feat-total-cashflow-screen",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "git"
+  },
+  "source_lineage": {
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0",
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "source_paths": [
+      "system-spec/00-requirements-definition.md",
+      "system-spec/completeness-findings.json",
+      "specs/spec-total-cashflow-screen.md",
+      "features/feat-total-cashflow-screen.md",
+      "features/feat-total-cashflow-screen.context.json"
+    ],
+    "confirmed": true
+  },
+  "tasks": [
+    {
+      "id": "SYS-TCSCREEN-P01",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "要件ベースライン確定と未決事項の着手時確認",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p01",
+        "requirements"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "documentation",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P01",
+      "depends_on": [],
+      "write_scope": [
+        "docs/total-cashflow-screen/requirements-baseline.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p01.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "FR-001..FR-008・BR-001..BR-009・AC-001..AC-006・qa-total-cashflow-decision-001..018 を requirements-baseline.md へ転記し、spec 原文との差分が 0 件である。",
+        "spec の未決事項 8 件それぞれに、着手時点の扱い (どの phase で解消するか、または利用者確認が要るか) を記録している。",
+        "migration 番号 0041 が取込み時点の main の最新 +1 であることを git fetch 後に確認し、結果を記録している。"
+      ],
+      "verification": [
+        "pnpm lint (既存の文書検査が緑のままであることを確認する)"
+      ],
+      "rollback": "docs/total-cashflow-screen/requirements-baseline.md の追加コミットを revert する。他ファイルへの書込みが無いため単独で戻せる。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P01",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p01.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P01"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P02",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "総収支集計・判定作業 API・操作履歴テーブルの設計決定記録",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p02",
+        "architecture"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "backend",
+      "secondary_workstreams": [
+        "frontend",
+        "api",
+        "data"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P02",
+      "depends_on": [
+        "SYS-TCSCREEN-P01"
+      ],
+      "write_scope": [
+        "docs/total-cashflow-screen/architecture-decision.md"
+      ],
+      "deploy_unit": "N/A: 決定記録のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p02.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "BR-001 の配点、BR-002 の区分条件、BR-006 の previousYearPeriod、BR-008 の取消条件が、置き場所 (関数名またはファイル) と共に記録されている。",
+        "未決事項のうち、取消の 409 canonical_write_busy と 404 の画面での扱い、lastOperation の用途について決定と理由を記録している。",
+        "3 表のバックアップ対応箇所 (JSON_SNAPSHOT_MUTATION_CONSUMERS、復元 write-set、スナップショット SQL、fence consumers、routes/imports.ts の zod と件数、invalidateJsonSnapshotQuery、EXPECTED_D1_MIGRATION) が変更対象ファイルと対応づけて列挙されている。"
+      ],
+      "verification": [
+        "pnpm typecheck (既存構成に影響が無いことを確認する)"
+      ],
+      "rollback": "docs/total-cashflow-screen/architecture-decision.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P02",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p02.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P02"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P03",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "設計決定の独立レビュー (不変条件・バックアップ・取消の競合)",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p03",
+        "design-review"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "api"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P03",
+      "depends_on": [
+        "SYS-TCSCREEN-P02"
+      ],
+      "write_scope": [
+        "docs/total-cashflow-screen/design-review.md"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p03.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "3 観点それぞれに PASS または指摘 (重大度・対応 phase) が記録されている。",
+        "high 以上の指摘が残る場合は P04 着手前に architecture-decision.md へ反映済みである。"
+      ],
+      "verification": [
+        "pnpm lint"
+      ],
+      "rollback": "docs/total-cashflow-screen/design-review.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P03",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p03.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P03"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P04",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "境界値付きの red テスト先行 (core 規則・API 取消と復元・画面ブロック)",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p04",
+        "test-design"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "api",
+        "data"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P04",
+      "depends_on": [
+        "SYS-TCSCREEN-P03"
+      ],
+      "write_scope": [
+        "packages/core/test/total-cashflow-contract.test.ts",
+        "packages/core/test/total-cashflow-screen-rules.test.ts",
+        "packages/api/test/total-cashflow-verdict.integration.test.ts",
+        "packages/api/test/total-cashflow-operations.integration.test.ts",
+        "packages/web/test/total-cashflow-table.dom.test.tsx"
+      ],
+      "deploy_unit": "N/A: テストコードのみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p04.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "追加・拡張したテストが現行実装で失敗し、失敗理由が未実装の機能に由来する。",
+        "既存テストの期待値を緩めていない (既存 assertion の削除 0 件)。",
+        "テストの表示値はサンプルデータだけで、実データを含まない。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/core exec vitest run test/total-cashflow-screen-rules.test.ts (新規テストが red であることを確認する)",
+        "pnpm --filter @kanjo/api exec vitest run test/total-cashflow-operations.integration.test.ts (新規テストが red であることを確認する)",
+        "pnpm --filter @kanjo/web exec vitest run test/total-cashflow-table.dom.test.tsx (拡張分が red であることを確認する)"
+      ],
+      "rollback": "追加したテストファイルと拡張分のコミットを revert する。実装コードには触れていないため単独で戻せる。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P04",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p04.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P04"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P05",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "総収支集計・判定作業 API・操作履歴・migration 0041・TotalCashflow.tsx の実装",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p05",
+        "implementation"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "backend",
+      "secondary_workstreams": [
+        "frontend",
+        "api",
+        "data"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P05",
+      "depends_on": [
+        "SYS-TCSCREEN-P04"
+      ],
+      "write_scope": [
+        "packages/core/src/total-cashflow.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/routes/total-cashflow.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/import-active.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/api/src/import-lifecycle-pure.test.ts",
+        "migrations/0041_total_cashflow_operations_and_exclusion_reason.sql",
+        "packages/web/src/pages/analysis/TotalCashflow.tsx",
+        "packages/web/src/api.ts",
+        "packages/web/src/analysis-query-invalidation.ts",
+        "packages/web/src/components/Layout.tsx"
+      ],
+      "deploy_unit": "Cloudflare Workers kanjo-console (packages/api) と D1 kanjo-db (migrations/0041_total_cashflow_operations_and_exclusion_reason.sql) への追加。既存配信構成のまま route の拡張・取消 route・列と表を追加する。",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p05.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "P04 で追加・拡張したテストがすべて green である。",
+        "判定・除外の更新と操作履歴 1 行が同じ D1 batch に入っている。",
+        "GET /api/total-cashflow の既存フィールドと旧 reason body の受理が維持されている。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "rollback": "実装コミットを revert する。migrations/0041_total_cashflow_operations_and_exclusion_reason.sql は追加のみのため D1 側の取り消しは不要で、追加列と新表は無害に残置してよい。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P05",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p05.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P05"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P06",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "全テスト・型検査・lint の実行記録",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p06",
+        "test-run"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [],
+      "build_target_kind": "application-code",
+      "phase_ref": "P06",
+      "depends_on": [
+        "SYS-TCSCREEN-P05"
+      ],
+      "write_scope": [
+        "docs/total-cashflow-screen/test-run.md"
+      ],
+      "deploy_unit": "N/A: 実行記録のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p06.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "pnpm test / pnpm typecheck / pnpm lint が exit 0 で、結果が test-run.md に記録されている。",
+        "失敗があれば原因と対応 task を記録し、緑になるまで P07 へ進まない。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "rollback": "docs/total-cashflow-screen/test-run.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P06",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p06.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P06"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P07",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "受入条件 AC-001..AC-006 の検証",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p07",
+        "acceptance"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "api"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P07",
+      "depends_on": [
+        "SYS-TCSCREEN-P06"
+      ],
+      "write_scope": [
+        "docs/total-cashflow-screen/acceptance.md"
+      ],
+      "deploy_unit": "N/A: 受入記録のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p07.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "AC-001..AC-006 すべてに PASS と根拠 (テスト名またはコマンド出力) が記録されている。",
+        "サイドバーの支出分析 > 総収支 が現在地で、照合バッジが要確認件数と一致することを記録している。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm --filter @kanjo/web run check:financial-routes"
+      ],
+      "rollback": "docs/total-cashflow-screen/acceptance.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P07",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p07.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P07"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P08",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "規則定数の整理と migration 0041・3 表バックアップの整合確認",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p08",
+        "refactoring-migration"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "data",
+      "secondary_workstreams": [
+        "backend"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P08",
+      "depends_on": [
+        "SYS-TCSCREEN-P07"
+      ],
+      "write_scope": [
+        "packages/core/src/total-cashflow.ts",
+        "docs/total-cashflow-screen/refactoring.md"
+      ],
+      "deploy_unit": "N/A: 既存の Cloudflare Workers kanjo-console と D1 kanjo-db の配信構成のまま、追加の配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p08.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "整理の前後で pnpm --filter @kanjo/core test と pnpm --filter @kanjo/api test が緑である。",
+        "既存 reason が memo と reason_code=other として読めること、key 無しの旧バックアップで既存の行が残ることを refactoring.md に記録している。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test"
+      ],
+      "rollback": "整理コミットを revert する。振る舞い不変の整理のため、revert しても P05 の機能は残る。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P08",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p08.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P08"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P09",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "アクセシビリティ・CSP・JS 予算・狭幅表示・入力境界の保証",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "security",
+      "secondary_workstreams": [
+        "quality",
+        "operations"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P09",
+      "depends_on": [
+        "SYS-TCSCREEN-P08"
+      ],
+      "write_scope": [
+        "docs/total-cashflow-screen/assurance.md",
+        "packages/web/scripts/check-financial-visuals.mjs",
+        "packages/web/scripts/check-mobile-layout.mjs"
+      ],
+      "deploy_unit": "N/A: 既存の Cloudflare Workers kanjo-console と D1 kanjo-db の配信構成のまま、追加の配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p09.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "check:financial-routes と check:mobile-layout が /analysis/total-cashflow を含めて exit 0 である。",
+        "check:js-budget が build:bundle 直後の実行で exit 0 である。",
+        "security:content が exit 0 で、テストと docs に実データが無い。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/web run check:financial-routes",
+        "pnpm --filter @kanjo/web run check:mobile-layout",
+        "pnpm --filter @kanjo/web run build:bundle",
+        "pnpm --filter @kanjo/web run check:js-budget",
+        "pnpm run security:content"
+      ],
+      "rollback": "check スクリプトへの対象追加と assurance.md のコミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P09",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p09.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P09"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P10",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "最終レビュー (spec との突合と差分の確認)",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p10",
+        "final-review"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [
+        "backend",
+        "frontend"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P10",
+      "depends_on": [
+        "SYS-TCSCREEN-P09"
+      ],
+      "write_scope": [
+        "docs/total-cashflow-screen/final-review.md"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p10.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "FR-001..FR-008 それぞれに対応する差分ファイルが記録され、スコープ外への差分が 0 件である。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm lint"
+      ],
+      "rollback": "docs/total-cashflow-screen/final-review.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P10",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p10.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P10"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P11",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "証跡索引の作成",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p11",
+        "evidence"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "quality",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P11",
+      "depends_on": [
+        "SYS-TCSCREEN-P10"
+      ],
+      "write_scope": [
+        "docs/total-cashflow-screen/evidence.md"
+      ],
+      "deploy_unit": "N/A: 索引文書のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p11.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "AC-001..AC-006 と FR-001..FR-008 の全件が、少なくとも 1 つの証跡 (文書またはテスト) に対応づいている。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm lint"
+      ],
+      "rollback": "docs/total-cashflow-screen/evidence.md の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P11",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p11.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P11"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P12",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "規則の docs 化と取消競合の runbook",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p12",
+        "documentation-operations"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "documentation",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P12",
+      "depends_on": [
+        "SYS-TCSCREEN-P11"
+      ],
+      "write_scope": [
+        "docs/total-cashflow-screen.md",
+        "docs/runbooks/total-cashflow-undo-conflict.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p12.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs の規則の数値が packages/core/src/total-cashflow.ts の定数と一致する。",
+        "表記が『前年同期比』に統一され、3 表がバックアップで保護されることが明記されている。"
+      ],
+      "verification": [
+        "pnpm lint (文書検査が緑のままであることを確認する)",
+        "pnpm run runbooks:test"
+      ],
+      "rollback": "docs と runbook の追加コミットを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P12",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p12.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P12"
+      }
+    },
+    {
+      "id": "SYS-TCSCREEN-P13",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "title": "単一 PR での配信と close-out",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "total-cashflow-screen",
+        "p13",
+        "release-deploy"
+      ],
+      "related_nodes": [
+        "arch-total-cashflow-screen-auth",
+        "arch-total-cashflow-screen-backend",
+        "arch-total-cashflow-screen-database",
+        "arch-total-cashflow-screen-frontend",
+        "arch-total-cashflow-screen-infrastructure",
+        "arch-total-cashflow-screen-maintenance-ops",
+        "arch-total-cashflow-screen-security",
+        "arch-total-cashflow-screen-ui-ux",
+        "spec-total-cashflow-screen"
+      ],
+      "workstream_kind": "operations",
+      "secondary_workstreams": [
+        "infrastructure",
+        "quality"
+      ],
+      "build_target_kind": "application-code",
+      "phase_ref": "P13",
+      "depends_on": [
+        "SYS-TCSCREEN-P12"
+      ],
+      "write_scope": [
+        "docs/total-cashflow-screen/close-out.md"
+      ],
+      "deploy_unit": "Cloudflare Workers kanjo-console (packages/api build:artifact) + D1 kanjo-db migrations/0041_total_cashflow_operations_and_exclusion_reason.sql の deploy.yml 自動適用経路 (migration を Worker 配備より先に適用する既存ゲート)",
+      "source_lineage": [
+        "system-spec/00-requirements-definition.md",
+        "specs/spec-total-cashflow-screen.md",
+        "features/feat-total-cashflow-screen.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p13.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "PR の CI が緑で default branch へ merge され、migration 0041 が本番 D1 に適用済みである。",
+        "本番の /analysis/total-cashflow で KPI 3 枚と判定作業が表示され、close-out.md に記録されている。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/web run build:artifact",
+        "pnpm run github-scripts:test"
+      ],
+      "rollback": "直前のビルドへ Worker を戻す。migration は追加のみのため既存データを失わず、D1 の取り消しは不要。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-15T15:22:17Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-TCSCREEN-P13",
+        "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p13.md",
+        "parent_feature": "feat-total-cashflow-screen",
+        "feature_package_id": "feature-package/feat-total-cashflow-screen",
+        "phase_ref": "P13"
+      }
+    }
+  ]
+}

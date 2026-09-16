@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py (派生ビュー・手書き編集しない・再生成で上書き)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-TCSCREEN-P01",
+      "title": "要件ベースライン確定と未決事項の着手時確認",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P02",
+      "title": "総収支集計・判定作業 API・操作履歴テーブルの設計決定記録",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P03",
+      "title": "設計決定の独立レビュー (不変条件・バックアップ・取消の競合)",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P04",
+      "title": "境界値付きの red テスト先行 (core 規則・API 取消と復元・画面ブロック)",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P05",
+      "title": "総収支集計・判定作業 API・操作履歴・migration 0041・TotalCashflow.tsx の実装",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P06",
+      "title": "全テスト・型検査・lint の実行記録",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P07",
+      "title": "受入条件 AC-001..AC-006 の検証",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P08",
+      "title": "規則定数の整理と migration 0041・3 表バックアップの整合確認",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P09",
+      "title": "アクセシビリティ・CSP・JS 予算・狭幅表示・入力境界の保証",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P10",
+      "title": "最終レビュー (spec との突合と差分の確認)",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P11",
+      "title": "証跡索引の作成",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P12",
+      "title": "規則の docs 化と取消競合の runbook",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-TCSCREEN-P13",
+      "title": "単一 PR での配信と close-out",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

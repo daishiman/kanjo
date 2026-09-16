@@ -3,7 +3,7 @@ status: confirmed
 category: security
 aggregate: 確定
 spec_cells: [security.web, security.mobile, security.tablet, security.desktop-windows, security.desktop-linux, security.desktop-macos]
-serves_goals: [G2, G3]
+serves_goals: [G2, G4]
 ---
 
 # セキュリティ (security)
@@ -15,12 +15,12 @@ serves_goals: [G2, G3]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-security-web-ah-observed-001。裏付け質疑 (`qa_refs`): `qa-analysis-hub-decision-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-security-web-tc-observed-001。裏付け質疑 (`qa_refs`): `qa-total-cashflow-decision-003`, `qa-total-cashflow-decision-004` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,7 +28,7 @@ serves_goals: [G2, G3]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の入力検証とデータ保護を、?focus= の許可リスト検証、URL に財務情報を載せないこと、クリップボード書込を利用者の明示クリックに限ることに反映した。ハブ API は外部サービスへ送信せず、secureHeaders を全体に掛ける既存構成を維持する。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP の入力検証を reasonCode の許可リスト・memo の長さ・一括件数の上限に、出力のエスケープをメモと摘要の文字列描画に反映した。操作履歴の JSON には判定と除外の値だけを入れ、自由文は取消で前後の値を戻すのに要る memo だけを持ち、摘要などそれ以外の自由文は複製しない。 |
 
 > **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
@@ -38,31 +38,43 @@ serves_goals: [G2, G3]
 
 ### Web (web)
 
-- 資するゴール: G2, G3
+- 資するゴール: G2, G4
 
-#### 主たる接地根拠: `qa-security-web-ah-observed-001`
-
-**問**
-
-ハブで扱う情報のセキュリティ上の前提 (公開範囲・共有 URL・ヘッダー・外部送信) は何か。
-
-**答**
-
-index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証と runtimeSchemaGuard の後にある。ハブ API は利用者本人の集計値だけを返し、外部サービスへ送らない (画像フッター『取込データは外部送信しません』と一致)。URL コピーが書く URL は /analysis?focus=<tab id> で、金額・取引・期間などの財務情報をクエリに含めない (期間は localStorage のまま)。共有された URL を他人が開いても認証が要り、自分のデータしか見えない。focus 値は ANALYSIS_TABS の id の許可リストで検証し、不正値は既定値に落とす (任意文字列を DOM へ反映しない)。クリップボード書込は利用者の明示クリック時だけ行う。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/index.ts, design/FINAL-UI/images/03-analysis-hub.png のフッター。focus を URL に持ち期間を URL に載せない点は利用者決定 qa-analysis-hub-decision-001 と承認 appr-foundation-analysis-hub-001 に基づく。 / 回答時刻: 2026-09-14T11:38:26Z)
-
-#### 裏付け質疑: `qa-analysis-hub-decision-001`
+#### 主たる接地根拠: `qa-security-web-tc-observed-001`
 
 **問**
 
-支出分析ハブ (03-analysis-hub.png) は既存の 5 タブとどうつなげるか。現行は /analysis を開くと照合タブへ転送される。選択肢: (A) /analysis をハブにし、各行やタブの『開く』で既存 /analysis/:tab 詳細へ進み、選択中の分析を ?focus= で URL に持ち URL コピーで共有できる (推奨) / (B) 転送を残し 5 タブすべての上部にハブ要素を常時表示する。
+総収支画面で扱う情報のセキュリティ上の前提 (公開範囲・入力検証・外部送信・監査可能性) は何か。
 
 **答**
 
-(A) /analysis をハブにする を選択した。
+index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証と runtimeSchemaGuard・canonicalMutationFence の後にある。総収支 API は利用者本人の明細・freee 取引・判定だけを返し、外部サービスへ送らない (フッター『取込データは外部送信しません』)。入力は zod で検証し、判定は verdict を same|different の許可値、件数は最大 200、除外理由は 1〜200 字に制限している。D1 のバインド上限は d1-limits.ts の D1_MAX_BOUND_PARAMS で分割する。今回足す理由区分は許可リスト (振替/内部移動/帳簿のみ/二重登録/その他) で検証し、メモは長さ上限付きの文字列として React のテキストとして描画する (HTML として解釈しない)。操作履歴は利用者本人の判断記録であり、取消は本人の直前の操作だけを対象にする。検索語はクエリ文字列に載せず画面内の絞り込みに留める。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-14T11:33:07Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,routes/total-cashflow.ts,d1-limits.ts}, design/FINAL-UI/images/05-total-cashflow.png のフッター。 / 回答時刻: 2026-09-15T12:00:44Z)
+
+#### 裏付け質疑: `qa-total-cashflow-decision-003`
+
+**問**
+
+画像の freee 除外一覧は『理由』列に 振替/内部移動/帳簿のみ のバッジと、別に『メモ』列を持ち、『一括で理由を設定』がある。現行 freee_deal_exclusions.reason は自由記述 1 列 (NOT NULL)。除外理由をどう持つか。選択肢: (A) 理由区分 reason_code (振替/内部移動/帳簿のみ/二重登録/その他) とメモ memo に分け、既存の自由記述は memo と『その他』へ移行する (推奨) / (B) 自由記述 1 列のまま、画面で先頭語をバッジ風に見せる。
+
+**答**
+
+(A) 理由区分+メモに分ける を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T11:48:28Z)
+
+#### 裏付け質疑: `qa-total-cashflow-decision-004`
+
+**問**
+
+画像の右ペインは『直前の操作 2026/09/10 10:12 1件の判定を元に戻しました / 元に戻す』を持つ。現行は判定を取り消す API が無く、戻せるのは freee 除外の DELETE だけである。元に戻すをどう実現するか。選択肢: (A) 判定・除外・戻すを 1 件ずつ D1 の操作履歴に残し、直前の操作を取り消せる。再読込後も直前の操作が表示される (推奨) / (B) 画面のメモリ上だけで直前 1 件を保持し、再読込で消える。
+
+**答**
+
+(A) 操作履歴を D1 に残す を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T11:48:28Z)
 
 ## To-Be / Delta
 
@@ -70,22 +82,24 @@ index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証�
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 選択中の分析を URL (?focus=<tab id>) で保持し、URL コピー・再読込・戻る操作でも同じ分析が選ばれた状態を再現する。既存の /analysis/:tab 詳細と旧 URL の転送は壊さない。
-- **G3**: ハブに必要な集計を packages/core の純関数と、1 回で返す集約 API (GET /analysis/hub) に置く。期間の収支サマリーと前 12 か月比、5 視点それぞれの現在の状態 (照合の要確認件数・総収支の重複候補件数・マトリクスの正常判定・推移の支出前 12 か月比・診断の改善余地) と優先度を返し、ハブ表示中に 5 タブ分の既存 API を呼ばない。
+- **G2**: 重複・除外の判定作業を 3 ペインにする。左に 重複候補/freee除外/要確認 の件数付きナビ、中央にソース/判定フィルタ・検索・チェック選択付きの明細表、右に選択明細の MF 明細と freee 対応候補の並列詳細・一致度・『同じ取引/別の取引/集計から除外』・直前の操作と元に戻す を置き、複数選択と下部の選択バーで一括判定できるようにする。
+- **G4**: 判定と除外の操作を D1 に記録し元に戻せるようにする。freee 除外は理由区分 (振替/内部移動/帳簿のみ/二重登録/その他) とメモに分けて一括設定でき、既存の自由記述理由は失わずに移行する。判定・除外・戻すの操作履歴を残し、画面を開いてから行った操作を新しい順に取り消すと総額が操作前と一致し、同じ取消の再送や古い表示からの取消で意図しない操作を戻さない。再読込後は取り消せない (操作履歴は残る)。判定・除外・操作履歴はバックアップに含め、復元しても戻る。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | /analysis がハブを描画し、/analysis/:tab と旧 URL の転送は既存どおり動く。 | DOM テストで /analysis がハブの見出し・サマリー・ルート一覧 5 行・読み順 5 ステップ・選択中の分析パネルを描画し、/analysis/reconciliation 等の既存 5 タブと旧 URL のテストが緑のままである。 |
-| O2 | ?focus=<tab id> の読み書きと URL コピーを実装する。 | DOM テストで ?focus=total-cashflow を開くと総収支行と右パネルと下部バーが選択状態になり、行を選ぶと URL が置き換わり、不正な focus 値は既定値に落ち、URL コピーが現在の URL をクリップボードへ書く。 |
-| O3 | core に analysisHub(dataset) 相当の純関数を置き、API に GET /analysis/hub を足す。 | core 単体テストが期間合計・前 12 か月比 (前期間データ無しは null)・5 視点の状態・優先度・改善余地を固定データで検証し、API 統合テストが認証付きで 200 と期間メタを返し、ハブ表示中の DOM テストで既存 5 API への呼出しが 0 件である。 |
+| O3 | 3 ペインの判定作業で単票・一括の同じ/別/除外ができる。 | DOM テストで区分切替・フィルタ・検索・選択・右詳細・一括判定が動き、API 統合テストで判定後の総額が不変条件どおりになる。 |
+| O4 | 除外理由区分とメモ、操作履歴と取消が永続化される。 | migration 適用後に既存除外の理由がメモへ保持され、取消 API の統合テストで操作前後の総額が一致し、同じ取消の再送や古い表示からの取消で意図しない操作が戻らず、再取込後も判定が再適用され、バックアップから復元すると判定・除外・操作履歴が復元時点に戻る。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I2**: 分析ルート一覧の行選択で ?focus= を置き換え、右パネルと下部バーの内容を切り替える。URL コピーは現在の URL をクリップボードへ書き、成否を知らせる。
-- **I3**: 期間の収支サマリーに総収入・総支出・純収支と前 12 か月比 (増減率と前期間の金額) を出し、純収支の説明パネルを右に置く。前期間データが無い場合は比較を『比較データなし』と表示する。
-- **I4**: core にハブ集計関数を置き、GET /analysis/hub が期間メタ・サマリー・5 視点の状態・優先度を返す。前期間の計算は core へ移し AI 側もそれを使う。
+- **I4**: 判定作業の左ナビに 重複候補/freee除外/要確認 の件数を出し、中央表にソース/判定フィルタ・検索・チェック選択、右に MF 明細と freee 対応候補の並列詳細・一致度・同じ取引/別の取引/集計から除外 を置く。
+- **I5**: freee から除外した明細一覧に理由区分バッジ・メモ・集計へ戻す・全選択/選択クリア/一括で理由を設定 を置く。
+- **I6**: 自動一致の候補 (日付と金額の一致で自動に寄せた組) 一覧にソースフィルタ・全選択・一致度・『選択した取引を同じ取引にする』を置き、確定は same の記録だけで総額を変えない。
+- **I7**: 複数選択時に下部固定の選択バー (件数・選択をクリア・選択した取引を同じ取引にする) を出し、判定完了で『N件中M件の判定が完了しました』を通知する。
+- **I8**: core に総収支のセグメント別集計・前期比較・判定作業の区分・一致度関数を追加し、API が 1 回で返す。一括判定と取消の API を足す。
+- **I9**: D1 に freee 除外の reason_code と memo を足し既存 reason を memo と『その他』へ移し、判定・除外・戻すの操作履歴テーブルを作って画面を開いてから行った操作の取消を、同じ取消の再送や古い表示から意図しない操作を戻さない形で実装する。判定・除外・操作履歴の 3 表をバックアップと復元の対象に加える。
 
 ### 本章に効く確定意思決定
 
@@ -97,9 +111,9 @@ index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証�
 
 ### 本章での適用
 
-Secure by Design card の『入力を許可リストで検証し、既定値へ落とす』を ?focus= に適用した。focus の値は ANALYSIS_TABS の id 5 種の許可リストで照合し、不正値は既定の分析に落として任意文字列を DOM や aria 属性へ反映しない。『攻撃面を増やさない』は URL コピーに当てた。コピーする URL に期間・金額・取引を載せず (期間は localStorage のまま)、navigator.clipboard.writeText は利用者の明示クリック時だけ呼ぶ。NotAllowedError のときは成否を画面で知らせ、例外を握りつぶさない。
+Secure by Design card の『入力を許可リストで検証し、上限で止める』を、判定作業の入力に適用した。reasonCode は 5 値の許可リスト (DB の CHECK と zod の enum を同じ定数から作る)、memo は 0〜200 字、一括の件数は既存どおり最大 200 件で、超過は 400 で全体を拒否する (qa-total-cashflow-decision-003)。検索語・区分・セグメントは画面内の状態で API へ送らず、攻撃面を増やさない。操作履歴の before/after には判定と除外の値だけを入れ、取引の摘要やメモ以外の自由文を複製しない。メモと摘要は React の文字列描画だけで表示し HTML として解釈しない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-14T11:57:54Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T12:08:50Z)
 
 ### Secure by Design — deep knowledge card
 
@@ -146,4 +160,4 @@ Secure by Design card の『入力を許可リストで検証し、既定値へ�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| clipboard-write-text | 2025-11-30 | Mozilla (MDN Web Docs) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/writeText | 2026-09-14T11:44:16Z | 2026-09-14T11:44:16Z |
+| owasp-asvs | 5.0.0 | OWASP Foundation (owasp.github.io) | https://owasp.github.io/www-project-application-security-verification-standard | 2026-09-15T12:11:33Z | 2026-09-15T12:11:33Z |

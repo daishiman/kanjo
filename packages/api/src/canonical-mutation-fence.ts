@@ -70,6 +70,34 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   { method: 'DELETE', path: /^\/api\/review-queue\/snoozes\/[^/]+\/[^/]+$/, consumers: ['review_snoozes'] },
   { method: 'PUT', path: /^\/api\/monthly-close\/[^/]+\/review$/, consumers: ['monthly_close_reviews'] },
   { method: 'DELETE', path: /^\/api\/monthly-close\/[^/]+\/review$/, consumers: ['monthly_close_reviews'] },
+  /*
+   * 0041: 総収支の判断・除外・取消。復元の write-set に入るので、復元と重ねない。
+   *
+   * ここを外すと「除外を保存している間に復元が走り、外した鍵だけが新しいデータに残る」
+   * が作れる。除外は freee 側の取引を総額から落とすので、残った鍵は
+   * 誰の取引にも当たらないまま金額を減らし続ける。
+   */
+  {
+    method: 'POST',
+    path: /^\/api\/total-cashflow\/verdicts$/,
+    consumers: ['duplicate_verdicts', 'total_cashflow_operations'],
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/total-cashflow\/freee-exclusions$/,
+    consumers: ['freee_deal_exclusions', 'total_cashflow_operations'],
+  },
+  {
+    method: 'DELETE',
+    path: /^\/api\/total-cashflow\/freee-exclusions$/,
+    consumers: ['freee_deal_exclusions', 'total_cashflow_operations'],
+  },
+  // 取消は判断・除外のどちらへも書き戻しうるので、両方を consumer に挙げる
+  {
+    method: 'POST',
+    path: /^\/api\/total-cashflow\/operations\/[^/]+\/undo$/,
+    consumers: ['duplicate_verdicts', 'freee_deal_exclusions', 'total_cashflow_operations'],
+  },
   { method: 'POST', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PATCH', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PUT', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },

@@ -1,0 +1,197 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/sdp-feat-total-cashflow-screen-20260915T1523Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "goal-spec の scope_in/scope_out と各 task-spec の目的節・スコープ外記述の間に矛盾は検出されなかった。scope_out に挙げられたサイドバー他項目・照合等の他タブ・自動寄せ廃止・取込経路追加・保存先変更・非 web 対応は、どの phase の Produced/Write scope にも現れていない。P01 で decision-004/017 の食い違いと承認 note の扱いが着手時確認として処理される設計であり、他 phase の記述と衝突しない。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-02-architecture.md"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "spec の FR-001..FR-008 と AC-001..AC-006 は task-specs/phase-01-requirements.md・phase-05-implementation.md・phase-10-final-review.md・phase-11-evidence.md で範囲表記 (FR-001..FR-008 / AC-001..AC-006) により具体的な phase (P04 テスト設計, P05 実装, P06 テスト実行, P07 受入検証, P09 非機能保証) に接続されている。goal-spec.open_items の5件 (low-undo-409-404-display, low-change-site-omissions, low-last-operation-usage, low-wording-and-security-note, low-approval-note-refs) は、それぞれの disposition どおり P02(取消409/404とlastOperation用途の決定)・P04(409/404の境界値テスト)・P05(write_scopeへのimport-lifecycle-pure.test.ts/db-schema.ts/routes追加)・P12(前年同期比表記統一とバックアップ保護明記)・P01(承認noteの着手時確認)で明示的に処理されている。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-10-final-review.md",
+        "task-specs/phase-11-evidence.md",
+        "task-specs/phase-12-documentation-operations.md"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "source_feature_digest (sha256:bcd9c26294f090701919863638630370f7295b3f2a5ef93a512fa2dd30208005) は feature-package.json・system-build-handoff.json#identity・goal-spec.json#source_lineage[0] で一致し、features/feat-total-cashflow-screen.context.json の実測 sha256 とも一致することを本評価で再計算し確認した。repository_id は goal-spec.json・system-build-handoff.json#identity・workstream-inventory.json#repo_context の全てで github:daishiman/kanjo に統一されている。write_scope に挙がる既存パス (packages/core/src/total-cashflow.ts, packages/api/src/routes/total-cashflow.ts, packages/web/src/pages/analysis/TotalCashflow.tsx 等) は全て repo に実在を確認し、migrations/0041_total_cashflow_operations_and_exclusion_reason.sql のみ notes のとおり新規作成予定 (main の既存最終番号 0040 の次) として区別される。staging-manifest.json#files の17件は本評価で実バイトの sha256 を再計算し全件一致を確認し、canonical_digest (sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5) は deterministic gate (validate-system-plan.py) の再実行でも validated_digest として同一値が算出され一致した。handoff_contract (manifest_is_commit_point=true, path=system-build-handoff.json, sha256 一致, self_reference_policy による自己参照除外) は system-build-handoff.json の実バイト sha256 と一致し妥当である。system-build-handoff.json の registration_request は owner を system-dev-planner/C11 (promotion_receipt) と dev-graph/C02 (registration_receipt) に分離し、両方 produced_by_this_component=false・status=not-emitted で promotion 前の境界を侵していない。ただし workstream-inventory.json#source_lineage.source_version が \"0.1.0\" で、goal-spec.json#readiness_pin.source_pin_version の \"0.1.14\" (system-spec-harness の実インストール版と一致) と食い違っており、low finding として記録する。",
+      "evidence": [
+        "feature-package.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "gate:deterministic-validation",
+        "workstream-inventory.json",
+        "task-specs/phase-05-implementation.md"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の13ノード (SYS-TCSCREEN-P01..P13) は depends_on が直前1ノードのみを指す単純な線形鎖であり、system-build-handoff.json#execution_tasks の depends_on も同一構成で一致する。feature-package.json#phase_refs / task_node_ids とも順序が一致し、循環依存や前方参照違反は検出されなかった。staging-manifest.json#files のキー集合と phase_refs (P01..P13) は task-specs/phase-01..13 の13ファイルと1対1で対応し、依存グラフの構成物に欠落・重複はない。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "${CLAUDE_PLUGIN_CACHE}/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        ".",
+        "--staging",
+        ".dev-graph/staging/sdp-feat-total-cashflow-screen-20260915T1523Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5\",\n  \"feature_package_id\": \"feature-package/feat-total-cashflow-screen\",\n  \"parent_feature\": \"feat-total-cashflow-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "2200711f9a6dda005503f4382484018a19dba82a789d19185f3127a4c9f9ab9e"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "1e5c2dac1b21d579455abd008fb6b64451e4dff055781c476275e618f1ae2c5b"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "d59ac9e8711569957eda8f9efa6adf77fdf20b6b9a27ff996e5d0138c1c56e8b"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "55d41c8d83bec533240d0b29f3ed36090e463745c73fa699d6ceca45ea47e6d2"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "2529c4fc8c37f469946239451fb4094dc35ef7cffe9f96c550120436344ca717"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "a76d234e4643c93440881bd14d8433aac989bf77faadfd951e9fd10b7e68de9f"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "caa5c242dfde7cca759d2295f46ead7f05585cdcbde982c937815849536d3d14"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "816139e5fef0f9fcfe22ebb8cbdd5736a3e9f3b6511318d1024d0f99697d7b2a"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "cbcd0681377139d6b4af09364731006326836c5522e3340b2dff824bb2f056fa"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "e5b4a9ebc9db596d521473a8433750eec04b142580e05e154e9c5896a5744929"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "f3210489d7f944bd17e14f32ac2ed62f279d69aebe775a4d9a3b0d4fac0b9f35"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "9f26360c4f12ff84d9c82f40d260364d98d8dac9c6314d4adebaa37a0f18cf55"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "87373a4a060aad0b2f870149f4741e45f415146ff7905050e21ab00afdebb57d"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "6a7d9bf856570df96663ddcdd81370a3cba347803e84c3119a30137e6bad22ef"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "b9121a0837945c22cafdd707f888ca4cc1bf2bdd543bfda499d5c52ebb2afe7e"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "8be11d6715f31e62fe53d0f02fa114ac3d953c1176eef130b2868a31cd5c19bf"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "7b7fcecc2dc81ddace8bd55c53b157ff9dc0c0d8c5d5067b66163800f8f77f90"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "72130dbe4f20f0a7b1d7b7db6a7308445baffb90d3f426acc7576c15ecc70fd5"
+    }
+  ],
+  "staleness_rule": "evaluated_inputs のいずれかの sha256 が再計算値と一致しなくなった場合、staging-manifest.json#canonical_digest が evaluated_digest と一致しなくなった場合、または feature-package.json#source_feature_digest が features/feat-total-cashflow-screen.context.json の実測 sha256 と一致しなくなった場合、本 findings は無効とし再評価が必要である。",
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "C3-integrity",
+      "observation": "workstream-inventory.json の source_lineage.source_version が \"0.1.0\" で、goal-spec.json の readiness_pin.source_pin_version (\"0.1.14\", インストール済み system-spec-harness の実バージョンと一致) と食い違っている。dev-graph 登録前に workstream-inventory.json の source_lineage.source_version を \"0.1.14\" へ修正することを推奨する。",
+      "evidence": [
+        "workstream-inventory.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "C4-dependency",
+      "observation": "task-graph.json の13ノードは SYS-TCSCREEN-P01からP13まで depends_on が直前ノード1件のみを指す完全な線形鎖であり、循環は検出されなかった。system-build-handoff.json の execution_tasks も同一構成で一致する。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "grounding",
+      "observation": "P05 task-spec の write_scope に挙がる既存ファイル (packages/core/src/total-cashflow.ts, packages/api/src/routes/total-cashflow.ts, packages/api/src/db/schema.ts, packages/web/src/pages/analysis/TotalCashflow.tsx 等) は全て repo に実在を確認した。migrations/0041_total_cashflow_operations_and_exclusion_reason.sql は migrations/ ディレクトリの既存最終番号 0040 の直後として妥当な新規作成予定ファイルである。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "process",
+      "observation": "前回の findings は evaluated_inputs に staging-manifest.json 自身を含めておらず、promote-system-plan.py の _validate_evaluated_inputs (期待集合 = manifest#files のキー ∪ {\"staging-manifest.json\"}) により exact-set mismatch として拒否された。本評価では staging-manifest.json を評価対象17件に加えた18件を evaluated_inputs とし、各 sha256 を実バイトから再計算して一致を確認した。staging の内容自体（C1-C4 の実質判定）に変更はない。",
+      "evidence": [
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  ]
+}

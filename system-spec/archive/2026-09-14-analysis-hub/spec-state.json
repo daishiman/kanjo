@@ -1,0 +1,917 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "database",
+      "label": "データベース"
+    },
+    {
+      "id": "auth",
+      "label": "認証(ログイン)"
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI-UX"
+    },
+    {
+      "id": "security",
+      "label": "セキュリティ"
+    },
+    {
+      "id": "infrastructure",
+      "label": "インフラ"
+    },
+    {
+      "id": "backend",
+      "label": "バックエンド"
+    },
+    {
+      "id": "frontend",
+      "label": "フロントエンド"
+    },
+    {
+      "id": "maintenance-ops",
+      "label": "保守運用管理"
+    }
+  ],
+  "platforms": [
+    "web",
+    "mobile",
+    "tablet",
+    "desktop-windows",
+    "desktop-linux",
+    "desktop-macos"
+  ],
+  "matrix": {
+    "database": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-database-web-ah-observed-001",
+        "serves_goals": [
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-database-web-ah-observed-001",
+          "qa-analysis-hub-decision-002"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではハブ集計に使う取引・月次集計・freee 取引・重複判定をアプリ内に同期保持する方式 (端末内キャッシュとオフライン時の整合)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではハブ集計に使う取引・月次集計・freee 取引・重複判定をアプリ内に同期保持する方式 (端末内キャッシュとオフライン時の整合)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリではハブ集計に使う取引・月次集計・freee 取引・重複判定をアプリ内に同期保持する方式 (端末内キャッシュとオフライン時の整合)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリではハブ集計に使う取引・月次集計・freee 取引・重複判定をアプリ内に同期保持する方式 (端末内キャッシュとオフライン時の整合)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリではハブ集計に使う取引・月次集計・freee 取引・重複判定をアプリ内に同期保持する方式 (端末内キャッシュとオフライン時の整合)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      }
+    },
+    "auth": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-auth-web-ah-observed-001",
+        "serves_goals": [
+          "G3"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリではOS の生体認証やキーチェーンと利用者セッションをどう結ぶかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      }
+    },
+    "ui-ux": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ui-ux-web-ah-observed-001",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-ui-ux-web-ah-observed-001",
+          "qa-analysis-hub-decision-001",
+          "qa-analysis-hub-decision-003",
+          "qa-analysis-hub-decision-004",
+          "qa-ui-ux-web-ah-inference-002",
+          "qa-ui-ux-web-ah-decision-005"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは03-analysis-hub.png の PC 縦長レイアウト (ルート一覧表・320px 右パネル・固定アクションバー) を、OS 標準のナビゲーション部品とどう折り合わせるかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは03-analysis-hub.png の PC 縦長レイアウト (ルート一覧表・320px 右パネル・固定アクションバー) を、OS 標準のナビゲーション部品とどう折り合わせるかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリでは03-analysis-hub.png の PC 縦長レイアウト (ルート一覧表・320px 右パネル・固定アクションバー) を、OS 標準のナビゲーション部品とどう折り合わせるかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリでは03-analysis-hub.png の PC 縦長レイアウト (ルート一覧表・320px 右パネル・固定アクションバー) を、OS 標準のナビゲーション部品とどう折り合わせるかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリでは03-analysis-hub.png の PC 縦長レイアウト (ルート一覧表・320px 右パネル・固定アクションバー) を、OS 標準のナビゲーション部品とどう折り合わせるかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      }
+    },
+    "security": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-security-web-ah-observed-001",
+        "serves_goals": [
+          "G2",
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-security-web-ah-observed-001",
+          "qa-analysis-hub-decision-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-infrastructure-web-ah-observed-001",
+        "serves_goals": [
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-frontend-web-ah-decision-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア配信とアプリ更新の経路を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではストア配信とアプリ更新の経路を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリではストア配信とアプリ更新の経路を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリではストア配信とアプリ更新の経路を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリではストア配信とアプリ更新の経路を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      }
+    },
+    "backend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-backend-web-ah-observed-001",
+        "serves_goals": [
+          "G3",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-backend-web-ah-observed-001",
+          "qa-analysis-hub-decision-002",
+          "qa-analysis-hub-decision-003",
+          "qa-backend-web-ah-inference-002",
+          "qa-backend-web-ah-decision-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリではアプリ向けに GET /analysis/hub の応答形を別版で保つかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-frontend-web-ah-observed-001",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-frontend-web-ah-observed-001",
+          "qa-analysis-hub-decision-001",
+          "qa-analysis-hub-decision-004",
+          "qa-frontend-web-ah-decision-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではハブ画面を OS ネイティブ UI で別実装するかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではハブ画面を OS ネイティブ UI で別実装するかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリではハブ画面を OS ネイティブ UI で別実装するかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリではハブ画面を OS ネイティブ UI で別実装するかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリではハブ画面を OS ネイティブ UI で別実装するかどうかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      }
+    },
+    "maintenance-ops": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-maintenance-ops-web-ah-observed-001",
+        "serves_goals": [
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-maintenance-ops-web-ah-observed-001",
+          "qa-analysis-hub-decision-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア審査とアプリ版ごとの回帰確認を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではストア審査とアプリ版ごとの回帰確認を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリではストア審査とアプリ版ごとの回帰確認を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリではストア審査とアプリ版ごとの回帰確認を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリではストア審査とアプリ版ごとの回帰確認を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-ah-001"
+      }
+    }
+  },
+  "qa_log": [
+    {
+      "id": "qa-analysis-hub-decision-001",
+      "question": "支出分析ハブ (03-analysis-hub.png) は既存の 5 タブとどうつなげるか。現行は /analysis を開くと照合タブへ転送される。選択肢: (A) /analysis をハブにし、各行やタブの『開く』で既存 /analysis/:tab 詳細へ進み、選択中の分析を ?focus= で URL に持ち URL コピーで共有できる (推奨) / (B) 転送を残し 5 タブすべての上部にハブ要素を常時表示する。",
+      "answer": "(A) /analysis をハブにする を選択した。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:33:07Z",
+      "required_info_items": [
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-analysis-hub-decision-002",
+      "question": "ハブの『現在の状態』列と前 12 か月比を出すデータはどこで計算するか。選択肢: (A) core に純関数を足し GET /analysis/hub が 1 回で 5 視点の状態・収支サマリー・前 12 か月比を返す。前期間の計算は api/ai/dataset.ts から core へ移す (推奨) / (B) API は変えずハブ表示時に既存 5 本を同時に呼び、前 12 か月比と改善余地は省く。",
+      "answer": "(A) 集約 API を新設 を選択した。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:33:07Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-analysis-hub-decision-003",
+      "question": "画像の『優先度 (高/中)』『マトリクスの正常判定』『診断の改善余地 (金額)』は現行実装に定義が無い。どう定めるか。選択肢: (A) 単純な規則で定義する: 優先度は照合・総収支が要確認 1 件以上なら高・0 件なら中、他 3 視点は中。マトリクスは未記録月 0 なら正常。改善余地は既存 tradeoffCandidates の月額合計 × 12 の年額。規則は docs に明記しテストで固定する (推奨) / (B) 状態は件数と前 12 か月比だけにし、優先度・正常判定・改善余地は出さない。",
+      "answer": "(A) 単純な規則で定義 を選択した。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:33:07Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-analysis-hub-decision-004",
+      "question": "画像の文言は現行と違う (タブ『照合/総収支/マトリクス/推移/診断』は現行『支出照合/トータル収支/増減マトリクス/支出トレンド/統計診断』、サイドバーの『明細仕分け/累計収支』も異なる)。どこまで画像に合わせるか。選択肢: (A) 支出分析の 5 タブ名とサイドバー子行 (件数バッジを含む) だけ短縮形に揃え、他画面のサイドバー文言と月次クローズ進捗の形は各画面のサイクルで扱う (推奨) / (B) サイドバー全体と月次クローズ 3/4 チェックリストも今回合わせる / (C) 文言は現行のまま構成だけ合わせる。",
+      "answer": "(A) 分析まわりだけ合わせる を選択した。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:33:07Z",
+      "required_info_items": [
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-target-platforms-ah-001",
+      "question": "本サイクル (支出分析ハブ 03-analysis-hub の UI/UX 改善と必要なバックエンド改善) の対象プラットフォームはどれか。対象外は理由を述べる。",
+      "answer": "web のみを対象とする。解決する課題 (JTBD) は『月次クローズで支出分析を開いたとき、5 つの分析のどこから確認すべきかを 1 画面で判断し、読み順どおりに改善行動まで進みたい』である。対象ユーザーは単独の個人事業主 1 名 (唯一の利用者・保守者) と、その保守を手伝うコーディングエージェント。配信は Cloudflare Workers 上の React SPA 1 系統で、狭幅は既存のレスポンシブ (68px アイコンレール・下部タブ) の中でハブを縦積みにして扱う。スマートフォン・タブレット・デスクトップの専用アプリは上位概念 U7 のスコープ外として対象外とする。",
+      "provenance": "対象ユーザーと JTBD は利用者の依頼文 (2026-09-14『03-analysis-hub.png … 画面の改善を行ってほしい。これに伴って UI、UX の改善と、バックエンドも改善が必要であれば整えてほしい』) に由来する。platform を web に限る点は上位概念の承認 appr-foundation-analysis-hub-001 で利用者が承認した。answered_at は承認直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:36:12Z",
+      "required_info_items": [
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-ah-inference-002",
+      "question": "ハブの各表現物で、何を残し・落とし・加工するか。情報の束の順位とその根拠 (task 頻度 × 失敗コスト) は何か。",
+      "answer": "束の順位: (1) 分析ルート一覧の『現在の状態』と優先度 — 毎月のクローズで必ず見る (頻度 高) うえ、照合・総収支の要確認を見落とすと二重計上や未記帳のまま収支を判断する (失敗コスト 高)。ページ冒頭の問いの直後、サマリーより視線の強い主役として置く (PROMPTS.md の主役『分析ルート表』)。(2) 期間の収支サマリー — 毎回見る結論だが、要確認が残る間は数字が暫定になるため 2 位。金額は右寄せ・桁区切り・等幅数字、増減は符号と色の両方で示し、前期間データが無ければ比較を『比較データなし』に加工して 0% と誤読させない。(3) 選択中の分析パネル (わかること・データソース・対象外) — 初回や迷ったときに読む補助 (頻度 中・失敗コスト 中: 対象外のデータを知らないと振替を支出と誤解する)。狭幅では一覧の下へ落とす。(4) 分析の読み順 — 慣れると読まない案内 (頻度 低)。常時表示するが視覚的重みを最小にし、狭幅では横スクロールさせず縦積みにする。落とすもの: 各視点の詳細グラフや明細は出さず、/analysis/:tab 詳細への『開く』へ委ねる。純収支説明パネルは初見向けで、狭幅では折りたたむ。",
+      "provenance": "アシスタントが 2026-09-14 に、qa-ui-ux-web-ah-observed-001 の画像・仕様観測と、利用者決定 qa-analysis-hub-decision-001/003/004 から導いた推測。利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-14T11:38:26Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-ah-observed-001",
+      "question": "03-analysis-hub.png と FINAL-UI 仕様は支出分析ハブに何を求め、現行の支出分析画面はどうなっているか。利用者はどの環境でどの作業に使うか。",
+      "answer": "画像 (design/FINAL-UI/images/03-analysis-hub.png、1024x1536、manifest.json の期間 1年/2年/3年/任意) の構成: 共通ヘッダー (パンくず 確認/支出分析・防衛ライン・未記録・最終更新・⌘K・書き出し・ヘルプ・利用者) の下に期間ボタンと期間ラベル、見出し『支出のどこから確認しますか？』と補足文、右上に『このページの URL をコピー』、5 タブ (照合/総収支/マトリクス/推移/診断、選択中に下線)、『期間の収支サマリー』(総収入 ¥1,248,000 +8.4% 前12か月 ¥1,151,200・総支出 ¥892,400 -5.2%・純収支 +¥355,600 +58.1%、各見出しにヘルプアイコン、右に『純収支とは？』説明パネル)、『分析ルート一覧』表 (# / 分析の視点 + 副題 / 目的 (何がわかるか) / 現在の状態 (要確認件数など、アイコン付き) / 要確認 (優先度 高/中 のバッジ) / 次の操作 (『○○を開く』ボタン、選択行は主ボタン))、右の『選択中の分析』パネル (アイコン・名称・説明・この分析でわかること・主なデータソース 銀行口座/クレジットカード/電子マネー・決済/現金入力・対象外のデータ 振替取引/内部移動・『総収支を開く →』主ボタン、閉じる×)、『分析の読み順』5 ステップ (1 差異を消す 照合 → 2 全体を掴む 総収支 → 3 偏りを見る マトリクス → 4 変化を追う 推移 → 5 行動を決める 診断)、下部の固定バー (選択中の分析: 総収支 | 説明 | 『総収支を開く →』)、共通フッター。サイドバーの支出分析は展開され子行 照合 (件数 5)/総収支/マトリクス/推移/診断。FINAL-UI 仕様: AUDIT.md は 03 を『要改善。実装の5タブ構造が弱い。親ナビ＋固定タブ＋URL保持を明示』、FUNCTION-MATRIX.md は主目的『5分析を同じ文脈で移動』・必須『照合/総収支/マトリクス/推移/診断のタブ、URL保持、各タブの要約、未処理件数』、PROMPTS.md は主役『分析ルート表』、DESIGN-SYSTEM.md は右パネル 320px で選択項目の根拠を出す・固定アクションバーは左に選択状態/右に主操作・ページ冒頭は『短い問い → 結論 → 主操作』。現行: packages/web/src/pages/Analysis.tsx は tab 未指定時に DEFAULT_ANALYSIS_TAB (照合) へ Navigate replace し (39 行目)、ハブは無い。タブは routeMetadata.ts の ANALYSIS_TABS (label 支出照合/トータル収支/増減マトリクス/支出トレンド/統計診断) を nav.page-tabs の NavLink で並べ aria-current で現在地を示す。Layout.tsx はサイドバーに ANALYSIS_TABS を子行として常時展開するが件数バッジは無い。期間は period.tsx の PeriodPicker (1年/2年/3年/任意) で localStorage (kanjo:period) に保存し URL には載せない。利用文脈は DESIGN-SYSTEM.md の最頻シナリオ『最新データを取り込み、未整理を直し、照合して、収支を確認し、予算を更新する』の『照合して、収支を確認』の入口で、PC 縦長画像を正本とする。",
+      "provenance": "アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: design/FINAL-UI/images/03-analysis-hub.png, design/FINAL-UI/manifest.json, design/FINAL-UI/spec/{AUDIT,FUNCTION-MATRIX,PROMPTS,DESIGN-SYSTEM}.md, packages/web/src/{pages/Analysis.tsx,routeMetadata.ts,components/Layout.tsx,period.tsx}。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:38:26Z",
+      "required_info_items": [
+        "context-of-use"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-ah-observed-001",
+      "question": "支出分析のフロントエンド構成 (ルーティング・データ取得・共通部品・既存テスト) は現行どうなっているか。",
+      "answer": "React 18 + react-router-dom 7 + TanStack Query 5 + Chart.js 4 の Vite SPA (packages/web)。AuthenticatedApp.tsx が /analysis と /analysis/:tab を AnalysisPage へ割り当て、routeMetadata.ts が APP_ROUTES (analysis は navGroup 確認・contentWidth data)・ANALYSIS_TABS (id/path/label/task/taskDetail/icon)・DEFAULT_ANALYSIS_TAB・LEGACY_ROUTE_REDIRECTS (/reconciliation・/matrix・/trends・/diagnosis)・SEARCH_ROUTES を正本として持つ。各タブは pages/analysis/ の Reconciliation.tsx (/api/business-spend, queryKey ['business-spend', 期間 key])・TotalCashflow.tsx (/api/total-cashflow、判定 POST /total-cashflow/verdicts、除外 /total-cashflow/freee-exclusions)・Matrix.tsx (/api/matrix)・Trends.tsx (/api/trends?scope=)・Diagnosis.tsx (/api/diagnosis) で、表示していないタブは遅延読み込みされ API を呼ばない (analysis-tabs.dom.test.tsx が検査)。期間は period.tsx の usePeriod() が selection/key/withPeriod(path) を返しクエリへ付ける。共通部品は components/Page.tsx (PageShell/PageHeader/TaskCopy/PageState/KpiCard/PageActions)・Button.tsx (primary/secondary/danger/text、native button は data-native-control と ARIA 必須で AST テストが検査、遷移は Link className='btn primary')・DataTable.tsx・charts.ts。トークンは packages/core/src/design-tokens.ts が正本で、styles.css の生成ブロックは scripts/check-design-tokens.mjs --write で作り、packages/web/src の色直書きは lint で落ちる。--aside-panel-w 320px は定義のみで未使用。URL コピーは ImprovementRequestButton.tsx・Improvement.tsx・Ai.tsx が navigator.clipboard を使う実装を持つ。タブ label を直接比べるテストは analysis-tabs.dom.test.tsx・navigation-ux.dom.test.tsx・common-shell-routes.dom.test.tsx (認証後 19 ルート + ログイン 1)。",
+      "provenance": "アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/web/src/{AuthenticatedApp.tsx,routeMetadata.ts,pages/Analysis.tsx,pages/analysis/*.tsx,period.tsx,components/{Page,Button,DataTable,Layout}.tsx,components/charts.ts,styles.css}, docs/design-system.md。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:38:26Z",
+      "required_info_items": [
+        "api-contract",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-backend-web-ah-inference-002",
+      "question": "期間が 1 年以外 (2 年・3 年・任意) のとき、画像の『前 12 か月比』は何と比べるか。",
+      "answer": "既存 previousPeriod(p) と同じく『直前の同じ長さの期間』と比べ、表示ラベルは期間の月数から『前 N か月』とする (1 年選択時は画像どおり『前12か月』)。前期間の月がデータ範囲に 1 か月も無い場合は比較値を null とし画面は『比較データなし』を出す。一部だけある場合は存在する月だけで比べず null とする (欠けた期間との比較で増減率を誇張しないため)。",
+      "provenance": "アシスタントが 2026-09-14 に、利用者決定 qa-analysis-hub-decision-002 (前期間計算を core へ移す) と観測 qa-backend-web-ah-observed-001 (previousPeriod の定義) から導いた推測。利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-14T11:38:26Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-backend-web-ah-observed-001",
+      "question": "ハブの『現在の状態』と収支サマリーに使えるドメイン関数と API は現行どこまであり、何が無いか。",
+      "answer": "API は Hono の Cloudflare Worker (packages/api/src/index.ts)。/api/* に authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence を掛けてから analyticsRoute・totalCashflowRoute 等をマウントする。analytics.ts の loadScoped(c) は loadDataset(D1, userId) の全データに core の resolvePeriodQuery (from/to/year/span) と applyPeriod を掛け、PeriodMeta (applied/label/full/years/monthCount) を返す。あるもの: 照合の要確認件数 = /business-spend の summary.reviewCount と unbooked.length (core expense-projection.ts buildExpenseProjection)。総収支の重複候補件数 = /total-cashflow の review.length と月別 reviewCount/reviewAmount (core total-cashflow.ts totalCashflowReport(data, deals, bindVerdicts(verdictRows, data.mfTx), exclusions)。route は freee_deals・duplicate_verdicts・freee_deal_exclusions を userId で読み、期間の月に含まれる deal だけを渡す)。期間の月別 totalIncome/totalExpense/totalBalance (合計を返す API は無い)。改善候補 = core analysis.ts 1292 行 tradeoffCandidates(data) (amount は月あたりの捻出期待額、GET /tradeoff で公開)。前期間計算 = packages/api/src/ai/dataset.ts の previousPeriod(p) (直前の同じ長さ)・yearAgoPeriod(p) (12 か月前) で、AI 用に api 内に閉じ core には無い。無いもの: 期間合計の総収入/総支出/純収支を返す API、前 12 か月比、優先度、マトリクスの正常判定 (matrix() に判定は無く unrecordedExpMonths だけ)、数値の改善余地 (diagnosis().autoDiagnosis[].value は『目安 ▲3〜5万円/月』の文字列)、5 視点をまとめて返す集約エンドポイント。loadScoped は期間で切ったデータしか渡さないため、前期間比には all からの前期間切り出しが要る。",
+      "provenance": "アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,routes/analytics.ts,routes/total-cashflow.ts,ai/dataset.ts,store.ts}, packages/core/src/{period.ts,total-cashflow.ts,expense-projection.ts,analysis.ts}。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:38:26Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-database-web-ah-observed-001",
+      "question": "ハブの集計はどのデータを読み、D1 スキーマや migration の変更は要るか。",
+      "answer": "D1 (binding DB、drizzle-orm)。loadDataset(db, userId) は monthly_agg・restored_monthly_agg ほか取引系テーブルを userId で読み Dataset を組む (packages/api/src/store.ts)。総収支は加えて freee_deals・duplicate_verdicts・freee_deal_exclusions を userId で読む (routes/total-cashflow.ts)。ハブの 5 視点の状態・収支サマリー・前期間比はいずれもこれら既存テーブルからの集計で出せるため、新しいテーブル・列・migration は不要 (最新 migration は 0039_account_login.sql のまま)。書込は発生せず読み取りだけで、ハブ API は canonicalMutationFence の対象外 (GET)。",
+      "provenance": "アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/store.ts, packages/api/src/routes/total-cashflow.ts, migrations/。スキーマ変更をしない点は上位概念 U7 (appr-foundation-analysis-hub-001) でも利用者が承認した。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:38:26Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-auth-web-ah-observed-001",
+      "question": "ハブ API とハブ画面の認証・認可はどうなるか。",
+      "answer": "利用者アカウント (メールアドレス + パスワード、PR #47) のセッションで認証する。packages/api/src/index.ts は /api/* に authGuard() と mustChangePasswordFence() を掛け、c.get('userId') で利用者を特定する。新設 GET /api/analysis/hub は analyticsRoute 等と同じくこのミドルウェアの後にマウントし、全ての読み取りを userId で絞る (他利用者のデータを返さない)。画面は AuthenticatedApp.tsx 配下で、未認証は既存どおりログインへ送られる。認証方式・セッション・レート制限の変更は無い。",
+      "provenance": "アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,auth.ts,users.ts}, packages/web/src/AuthenticatedApp.tsx。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:38:26Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-security-web-ah-observed-001",
+      "question": "ハブで扱う情報のセキュリティ上の前提 (公開範囲・共有 URL・ヘッダー・外部送信) は何か。",
+      "answer": "index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証と runtimeSchemaGuard の後にある。ハブ API は利用者本人の集計値だけを返し、外部サービスへ送らない (画像フッター『取込データは外部送信しません』と一致)。URL コピーが書く URL は /analysis?focus=<tab id> で、金額・取引・期間などの財務情報をクエリに含めない (期間は localStorage のまま)。共有された URL を他人が開いても認証が要り、自分のデータしか見えない。focus 値は ANALYSIS_TABS の id の許可リストで検証し、不正値は既定値に落とす (任意文字列を DOM へ反映しない)。クリップボード書込は利用者の明示クリック時だけ行う。",
+      "provenance": "アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/index.ts, design/FINAL-UI/images/03-analysis-hub.png のフッター。focus を URL に持ち期間を URL に載せない点は利用者決定 qa-analysis-hub-decision-001 と承認 appr-foundation-analysis-hub-001 に基づく。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:38:26Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-infrastructure-web-ah-observed-001",
+      "question": "ハブの配信とインフラ構成は現行どうなっていて、変更は要るか。",
+      "answer": "packages/api/wrangler.jsonc の Worker kanjo-console が SPA を Workers Assets (binding ASSETS) で配信し、D1 (DB)・R2 (FILES)・cron (0 18 * * * の夜間処理) を持つ。GitHub Actions は ci.yml (lint・typecheck・test:aux・audit・web/core テスト・api テスト・build 等)・deploy.yml・migrate.yml。ハブは既存 Worker に GET ルートを 1 本足し SPA に画面を 1 つ足すだけで、binding・cron・migration・デプロイ経路の変更は無い。ハブ API は 1 リクエストで loadDataset と freee 系 3 テーブルを読むため、既存の /total-cashflow と同程度の D1 読み取りになる (d1-limits.ts の制限内)。",
+      "provenance": "アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/wrangler.jsonc, .github/workflows/{ci,deploy,migrate}.yml, packages/api/src/d1-limits.ts。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:38:26Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-maintenance-ops-web-ah-observed-001",
+      "question": "ハブ導入後の検証と保守の手順 (回帰確認・規則の維持) はどうなるか。",
+      "answer": "ルート package.json の verify:full (pnpm test → typecheck → lint → build → web の check:thead / check:mobile-layout / check:financial-figure / check:financial-routes → preview:smoke) と、デザイン系の高速確認 design-system:fast がある。lint は biome・check-design-tokens・check-design-system-document-contract・check-graph-lineage 等を束ねる。CI (ci.yml) が lint/typecheck/test/build を実行する。ハブでは、判定規則 (優先度・マトリクス正常判定・改善余地・前期間比の null 規則) を docs に明記し core テストの境界値で固定する (利用者決定 qa-analysis-hub-decision-003)。タブ label の変更で analysis-tabs / navigation-ux / common-shell-routes の DOM テストを新しい文言へ更新する。check:financial-routes / check:mobile-layout の対象ルートにハブ (/analysis) が含まれるかを確認し、無ければ追加して狭幅の横スクロールを検査する。",
+      "provenance": "アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: package.json, packages/web/package.json, .github/workflows/ci.yml。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-14T11:38:26Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-backend-web-ah-decision-003",
+      "question": "収支サマリーの『前12か月比』は、期間に 2年・3年・任意を選んだとき何と比べるか。選択肢: (A) 直前の同じ長さ。2年なら直前の2年で、ラベルは『前24か月』。既存 previousPeriod と同じ定義。前期間の月が1か月でも欠けたら『比較データなし』(推奨) / (B) 12か月前の同じ長さ (yearAgoPeriod)。季節はそろうが、2年以上では比較期間が選択期間と重なる / (C) 1年選択時だけ比較し、他は比較欄を出さない。",
+      "answer": "(A) 直前の同じ長さ を選択した。比較先は previousPeriod(p) (選択期間の直前にある同じ月数の期間) で、表示ラベルは『前 N か月』(N = 選択期間の月数。1年選択時は『前12か月』)。前期間の月がデータ範囲に 1 か月でも欠ける場合は比較値を null とし、画面は『比較データなし』を出す。G3 の『前 12 か月比』は 1 年選択時の表示例であり、比較先の定義はこの決定を正本とする。本決定は agent-inference だった qa-backend-web-ah-inference-002 を利用者の選択で置き換える。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の差し戻しを受けた再質問)。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:57:13Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-ah-decision-005",
+      "question": "ハブ画面の情報の優先順位を次の順で確定してよいか。①分析ルート一覧の状態と優先度 (主役) ②期間の収支サマリー ③選択中の分析パネル (狭い画面では一覧の下へ) ④分析の読み順 (常時表示・控えめ・狭い画面では縦積み)。選択肢: (A) この順で確定。画像の縦の並び (サマリーが上) は保ち、視覚的な強さで主役を示す (推奨) / (B) 収支サマリーを主役に / (C) 画像どおりで差を付けない。",
+      "answer": "(A) この順で確定 を選択した。束の順位は ①分析ルート一覧の『現在の状態』と優先度 ②期間の収支サマリー ③選択中の分析パネル ④分析の読み順。画像の縦の並びは変えず、主役は視覚的な強さで示す。狭幅では ③ を一覧の下へ落とし、④ を縦積みにする。本決定は agent-inference だった qa-ui-ux-web-ah-inference-002 の順位と狭幅での扱いを利用者の選択で確定する。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の差し戻しを受けた再質問)。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:57:13Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-ah-decision-003",
+      "question": "サイドバーの件数バッジのためにハブ API を全画面で使う。既存方針『表示していないタブの API は呼ばない』との関係と、データ更新時の扱いをどうするか。選択肢: (A) Layout とハブで同じクエリを共有。queryKey ['analysis-hub', 期間 key] を共有して 1 回の取得で両方をまかなう。『呼ばない』の対象は 5 タブ個別 API に限り、ハブ API は例外として docs に明記する。総収支の判定・除外や取込の更新後はこのキーを無効化し、staleTime で画面遷移ごとの再取得 (D1 読み取り) を抑える (推奨) / (B) バッジは支出分析内だけ。",
+      "answer": "(A) Layout とハブで同じクエリを共有 を選択した。サイドバー (components/Layout.tsx) とハブ画面は同一の queryKey ['analysis-hub', 期間 key] で GET /api/analysis/hub を共有し、TanStack Query のキャッシュで 1 回の取得を両方に使う。C3『表示していないタブの API は呼ばない』の対象は 5 タブ個別の API (/business-spend・/total-cashflow・/matrix・/trends・/diagnosis) に限り、ハブ API はその例外として docs/ui-decisions.md に明記する。総収支の判定 (POST /total-cashflow/verdicts)・freee 除外・取込などハブの件数を変える更新が成功したら invalidateQueries({ queryKey: ['analysis-hub'] }) で前方一致の無効化をする。staleTime を設けて、画面遷移のたびに loadDataset と freee 系 3 テーブルの D1 読み取りが走らないようにする。",
+      "provenance": "利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の差し戻しを受けた再質問)。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-14T11:57:13Z",
+      "required_info_items": [
+        "api-contract",
+        "frontend-arch"
+      ]
+    }
+  ],
+  "approval_log": [
+    {
+      "id": "appr-foundation-analysis-hub-001",
+      "note": "利用者が 2026-09-14 に AskUserQuestion で、上位概念 U1-U9 の要約 (U1=支出分析の入口を 5 分析のどこから見るか 1 画面で判断できるハブにし読み順で改善行動まで進める / G1 /analysis を画像どおりのハブに・G2 ?focus= の URL 保持と URL コピー・G3 core 純関数と GET /analysis/hub・G4 優先度/正常判定/改善余地 (tradeoff 月額合計×12) を docs とテストで固定・G5 タブ名短縮とサイドバー子行の件数バッジ / U7 対象外=5 タブ詳細の中身・他画面のサイドバー文言と月次進捗・期間保存先・D1 スキーマ変更・専用アプリ、platform=web のみ / U8=集計は core・トークンと共通部品・非表示タブの API は呼ばない・総収支の消し込み不変条件 / 注意=件数バッジのためハブ API を全画面で 1 本呼ぶ) に対し『この内容で承認』を選択した。選択肢には『バッジは支出分析内だけ』『修正が必要』もあった。承認時刻の上限は回答直後に date -u で実測した 2026-09-14T11:36:12Z。basis=user-decision。"
+    }
+  ],
+  "reopen_log": [],
+  "category_aggregate": {
+    "database": "確定",
+    "auth": "確定",
+    "ui-ux": "確定",
+    "security": "確定",
+    "infrastructure": "確定",
+    "backend": "確定",
+    "frontend": "確定",
+    "maintenance-ops": "確定"
+  },
+  "targets": [
+    {
+      "target_id": "react-router-use-search-params",
+      "category": "frontend"
+    },
+    {
+      "target_id": "tanstack-query-invalidation",
+      "category": "frontend"
+    },
+    {
+      "target_id": "clipboard-write-text",
+      "category": "security"
+    },
+    {
+      "target_id": "hono-middleware",
+      "category": "backend"
+    },
+    {
+      "target_id": "cloudflare-d1-limits",
+      "category": "database"
+    },
+    {
+      "target_id": "wcag22-use-of-color",
+      "category": "ui-ux"
+    }
+  ],
+  "requirements_foundation": {
+    "essential_purpose": "支出分析の入口を、5 つの分析 (照合・総収支・マトリクス・推移・診断) のどこから見ればよいかを 1 画面で判断できるハブにする。利用者が支出分析を開いた時点で、期間の収支の結論と、各分析の要確認件数・変化・改善余地と優先度を見比べ、課題の発見から改善行動まで決まった読み順 (差異を消す→全体を掴む→偏りを見る→変化を追う→行動を決める) で迷わず進める状態にする。",
+    "background": "kanjo の支出分析 (packages/web/src/pages/Analysis.tsx) は /analysis/:tab の 5 タブ (支出照合・トータル収支・増減マトリクス・支出トレンド・統計診断) を持つが、/analysis を開くと先頭の照合タブへ Navigate で転送され (Analysis.tsx 39 行目)、全体を見渡す入口が無い。どのタブに要確認が溜まっているか、期間の収支がどうなっているかは各タブを開いて回らないと分からない。FINAL-UI の監査 (design/FINAL-UI/spec/AUDIT.md) は 03 支出分析を『要改善。実装の5タブ構造が弱い。親ナビ＋固定タブ＋URL保持を明示』と判定し、FUNCTION-MATRIX は主目的を『5分析を同じ文脈で移動』、必須を 5 タブ・URL 保持・各タブの要約・未処理件数としている。PR #49 (2026-09-14 マージ) でデザインシステム基盤 (トークン正本・共通 Button・チャート系列色・共通シェル) が入り、各画面の中身を FINAL-UI どおりに作り直すのは次サイクルとされた。利用者は 2026-09-14 に 03-analysis-hub.png を示し、この画面の UI/UX 改善と必要なバックエンド改善を依頼した。現行 API には、期間合計の総収入・総支出・純収支、前 12 か月比、改善余地の金額、優先度、マトリクスの正常判定を返す仕組みが無く (前期間の計算は packages/api/src/ai/dataset.ts の previousPeriod/yearAgoPeriod に AI 用として閉じている)、ハブを既存 5 API の同時呼出しで作ると『表示していないタブの API は呼ばない』既存方針 (analysis-tabs.dom.test.tsx) と衝突する。",
+    "goals": [
+      {
+        "id": "G1",
+        "text": "/analysis を 03-analysis-hub.png どおりのハブ画面にする。短い問いの見出し・URL コピー・5 タブ・期間の収支サマリー (総収入/総支出/純収支と前 12 か月比、総収支の説明パネル)・分析ルート一覧 (# / 分析の視点 / 目的 / 現在の状態 / 要確認の優先度 / 次の操作)・右の選択中の分析パネル (わかること / 主なデータソース / 対象外のデータ / 開く)・分析の読み順 5 ステップ・下部の選択中分析バーを、共通シェル・トークン・Button の上に組む。"
+      },
+      {
+        "id": "G2",
+        "text": "選択中の分析を URL (?focus=<tab id>) で保持し、URL コピー・再読込・戻る操作でも同じ分析が選ばれた状態を再現する。既存の /analysis/:tab 詳細と旧 URL の転送は壊さない。"
+      },
+      {
+        "id": "G3",
+        "text": "ハブに必要な集計を packages/core の純関数と、1 回で返す集約 API (GET /analysis/hub) に置く。期間の収支サマリーと前 12 か月比、5 視点それぞれの現在の状態 (照合の要確認件数・総収支の重複候補件数・マトリクスの正常判定・推移の支出前 12 か月比・診断の改善余地) と優先度を返し、ハブ表示中に 5 タブ分の既存 API を呼ばない。"
+      },
+      {
+        "id": "G4",
+        "text": "優先度・マトリクスの正常判定・改善余地を単純で説明可能な規則として定義し、規則を docs に明記してテストで固定する。優先度は照合と総収支が要確認 1 件以上なら高・0 件なら中、他の 3 視点は中。マトリクスは未記録月 0 なら正常。改善余地は tradeoffCandidates の月額合計 × 12 の年額。"
+      },
+      {
+        "id": "G5",
+        "text": "支出分析まわりの文言を画像に揃える。5 タブ名を 照合/総収支/マトリクス/推移/診断 の短縮形にし、サイドバーの支出分析の子行に要確認件数バッジを付ける。他画面のサイドバー文言と月次クローズ進捗の形は対象外とする。"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "O1",
+        "text": "/analysis がハブを描画し、/analysis/:tab と旧 URL の転送は既存どおり動く。",
+        "serves": [
+          "G1",
+          "G2"
+        ],
+        "serves_goals": [
+          "G1",
+          "G2"
+        ],
+        "measure": "DOM テストで /analysis がハブの見出し・サマリー・ルート一覧 5 行・読み順 5 ステップ・選択中の分析パネルを描画し、/analysis/reconciliation 等の既存 5 タブと旧 URL のテストが緑のままである。"
+      },
+      {
+        "id": "O2",
+        "text": "?focus=<tab id> の読み書きと URL コピーを実装する。",
+        "serves": [
+          "G2"
+        ],
+        "serves_goals": [
+          "G2"
+        ],
+        "measure": "DOM テストで ?focus=total-cashflow を開くと総収支行と右パネルと下部バーが選択状態になり、行を選ぶと URL が置き換わり、不正な focus 値は既定値に落ち、URL コピーが現在の URL をクリップボードへ書く。"
+      },
+      {
+        "id": "O3",
+        "text": "core に analysisHub(dataset) 相当の純関数を置き、API に GET /analysis/hub を足す。",
+        "serves": [
+          "G3",
+          "G4"
+        ],
+        "serves_goals": [
+          "G3",
+          "G4"
+        ],
+        "measure": "core 単体テストが期間合計・前 12 か月比 (前期間データ無しは null)・5 視点の状態・優先度・改善余地を固定データで検証し、API 統合テストが認証付きで 200 と期間メタを返し、ハブ表示中の DOM テストで既存 5 API への呼出しが 0 件である。"
+      },
+      {
+        "id": "O4",
+        "text": "判定規則を docs に書き、境界値をテストで固定する。",
+        "serves": [
+          "G4"
+        ],
+        "serves_goals": [
+          "G4"
+        ],
+        "measure": "要確認 0 件/1 件、未記録月 0/1、tradeoff 候補 0 件の境界でテストが規則どおりの値を返し、規則を変えるとテストが落ちる。"
+      },
+      {
+        "id": "O5",
+        "text": "5 タブ名の短縮とサイドバー子行の件数バッジを入れる。",
+        "serves": [
+          "G5"
+        ],
+        "serves_goals": [
+          "G5"
+        ],
+        "measure": "routeMetadata の ANALYSIS_TABS label が短縮形になり、関連 DOM テスト (analysis-tabs / navigation-ux / common-shell-routes) を新しい文言で更新して緑、子行バッジは要確認 1 件以上の視点だけに件数を表示する。"
+      }
+    ],
+    "success_criteria": [
+      "S1 (G1): /analysis で 03-analysis-hub.png の構成要素 (問いの見出し・URL コピー・5 タブ・収支サマリー・分析ルート一覧・選択中の分析パネル・読み順・下部バー) がすべて描画され、色・余白・部品はトークンと共通 Button/PageShell 経由で、直書き色の lint が 0 件である。",
+      "S2 (G2): ?focus= の値でハブの選択状態が再現され、/analysis/:tab と旧 URL 転送の既存テストが緑である。",
+      "S3 (G3): ハブ表示中のネットワーク呼出しは GET /analysis/hub の 1 本で、既存 5 API の呼出しが 0 件である。",
+      "S4 (G3, G4): core テストが前 12 か月比・優先度・正常判定・改善余地を境界値付きで検証し、規則が docs に明記されている。",
+      "S5 (G5): 5 タブ名が短縮形で表示され、サイドバー子行の件数バッジが要確認件数と一致する。",
+      "S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプト (thead / mobile-layout / financial-figure / financial-routes) が全て緑のままで、狭幅 (68px アイコンレール・下部タブ) でもハブが横スクロールしない。"
+    ],
+    "stakeholders": [
+      "SH1 利用者 (単独の個人事業主): 月次クローズで支出分析を開いたとき、どの分析から確認すべきか (要確認が溜まっているのはどこか、収支は前年よりどうか、どこに改善余地があるか) を 1 画面で判断し、決まった読み順で改善行動までたどり着きたい。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): ハブの判定規則が docs とテストで固定され、各タブの集計を二重実装せず core の純関数から得られること。"
+    ],
+    "scope": {
+      "in": [
+        "/analysis のハブ画面 (03-analysis-hub.png の全構成要素) の新設と、/analysis から照合タブへの転送の廃止",
+        "選択中の分析の URL 保持 (?focus=) と URL コピー",
+        "packages/core のハブ集計純関数 (期間合計・前 12 か月比・5 視点の状態・優先度・改善余地) と、前期間計算の api/ai/dataset.ts から core への移設",
+        "packages/api の集約エンドポイント GET /analysis/hub",
+        "判定規則の docs 記載とテスト",
+        "5 タブ名の短縮形化とサイドバー支出分析子行の件数バッジ、それに伴う既存 DOM テストの文言更新"
+      ],
+      "out": [
+        "5 タブ各詳細画面 (照合・総収支・マトリクス・推移・診断) の中身の作り直し: それぞれの画面サイクルで扱う",
+        "支出分析以外のサイドバー文言 (明細仕分け・累計収支など) と月次クローズ進捗 3/4 チェックリストの形: 各画面のサイクルで扱う",
+        "期間選択の保存先の変更: 期間は既存どおり localStorage で全画面共有し URL に載せない (docs/ui-decisions.md の既存判断を維持)",
+        "D1 スキーマ・migration の変更: ハブは既存データからの集計だけで作る",
+        "スマートフォン・タブレット・デスクトップ専用アプリ: web SPA 1 系統のレスポンシブで扱う"
+      ]
+    },
+    "constraints": [
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1、web は React 18 + react-router-dom 7 + TanStack Query 5)。集計は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけを使い、ボタンは共通 Button (遷移は Link className=btn)、本文は PageShell、右パネルは --aside-panel-w 320px を使う。WCAG 2.2 AA (文字 4.5:1、部品 3:1) を維持する。",
+      "C3 既存方針: 表示していないタブの API は呼ばない、タブ状態は URL (リンク) で持ち role=tab を手組みしない、現在地はサイドバー子行 1 件だけ (docs/ui-decisions.md)。",
+      "C4 データ: 総収支は freee を正本とした消し込み済みの値を使い、未判断の重複候補は 4 区分の合計に入れない (feat-total-cashflow の不変条件を維持)。",
+      "C5 体制: 利用者 1 名が保守し、コーディングエージェントが実装する。予算は既存の Cloudflare 無料/現行プランの範囲。"
+    ],
+    "concrete_intents": [
+      {
+        "id": "I1",
+        "text": "/analysis の転送をやめ、ハブ画面 (AnalysisHub) を描画する。5 タブのリンクは既存 /analysis/:tab へ進む。",
+        "serves": [
+          "G1"
+        ]
+      },
+      {
+        "id": "I2",
+        "text": "分析ルート一覧の行選択で ?focus= を置き換え、右パネルと下部バーの内容を切り替える。URL コピーは現在の URL をクリップボードへ書き、成否を知らせる。",
+        "serves": [
+          "G1",
+          "G2"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "期間の収支サマリーに総収入・総支出・純収支と前 12 か月比 (増減率と前期間の金額) を出し、純収支の説明パネルを右に置く。前期間データが無い場合は比較を『比較データなし』と表示する。",
+        "serves": [
+          "G1",
+          "G3"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "core にハブ集計関数を置き、GET /analysis/hub が期間メタ・サマリー・5 視点の状態・優先度を返す。前期間の計算は core へ移し AI 側もそれを使う。",
+        "serves": [
+          "G3"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "優先度・マトリクス正常判定・改善余地の規則を docs/ui-decisions.md (または docs 配下の分析ハブ文書) に書き、境界値テストで固定する。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "ANALYSIS_TABS の label を 照合/総収支/マトリクス/推移/診断 にし、サイドバー子行に要確認件数バッジを付ける。",
+        "serves": [
+          "G5"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "各視点の『わかること・主なデータソース・対象外のデータ』を routeMetadata の静的定義として構造化し、右パネルがそれを表示する。",
+        "serves": [
+          "G1"
+        ]
+      }
+    ],
+    "confirmed": true,
+    "approval_ref": "appr-foundation-analysis-hub-001"
+  },
+  "decisions": [],
+  "knowledge_candidates": [],
+  "design_applications": {
+    "backend": {
+      "text": "Clean Architecture card の Dependency Rule を、ハブ集計の置き場所に適用した。期間合計・前期間比・5 視点の状態・優先度・改善余地は入出力を持たない業務規則なので packages/core の純関数に置き、Hono の route (GET /api/analysis/hub) は loadScoped と freee 系 3 テーブルの読取りを行って core へ渡す外側の adapter に留める。AI 用として packages/api/src/ai/dataset.ts に閉じていた previousPeriod を core へ移すのも同じ規則による — 前期間の定義 (qa-backend-web-ah-decision-003) を API の内側に置くと、core のハブ関数が api に依存する逆向きの矢印になる。API Design Patterns card は、5 本の既存 API を束ねず集約エンドポイントを 1 本足す判断 (qa-analysis-hub-decision-002) に効き、応答を画面の必要量に絞ることでハブ表示中の往復を 1 回にした。DDD card の集約の考え方は、総収支の消し込み (freee 正本・未判断の重複候補を合計に入れない) を totalCashflowReport の不変条件ごと再利用し、ハブ側で件数を数え直さない判断に使った。",
+      "recorded_at": "2026-09-14T11:57:54Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、ハブのためにテーブルや列を足さない判断に適用した。優先度・マトリクスの正常判定・改善余地は既存の取引・月次集計・freee 取引・重複判定から毎回導出できる派生値である。これを D1 に保存すると、判定規則 (qa-analysis-hub-decision-003) を変えたときに保存値と規則がずれる二重の正本になる。migration は 0039 のまま増やさない。",
+      "recorded_at": "2026-09-14T11:57:54Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、ハブ API の認可に適用した。GET /api/analysis/hub は /api/* の authGuard と mustChangePasswordFence の後にマウントし、route 内では c.get('userId') で loadDataset と freee 系 3 テーブルを絞る以外の認可判断を持たない。サイドバーのバッジが全画面でこの API を呼んでも (qa-frontend-web-ah-decision-003)、未認証の画面ではバッジ用のクエリ自体を張らず、認証の判断を表示部品へ移さない。",
+      "recorded_at": "2026-09-14T11:57:54Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "Secure by Design card の『入力を許可リストで検証し、既定値へ落とす』を ?focus= に適用した。focus の値は ANALYSIS_TABS の id 5 種の許可リストで照合し、不正値は既定の分析に落として任意文字列を DOM や aria 属性へ反映しない。『攻撃面を増やさない』は URL コピーに当てた。コピーする URL に期間・金額・取引を載せず (期間は localStorage のまま)、navigator.clipboard.writeText は利用者の明示クリック時だけ呼ぶ。NotAllowedError のときは成否を画面で知らせ、例外を握りつぶさない。",
+      "recorded_at": "2026-09-14T11:57:54Z",
+      "basis": "agent-inference"
+    },
+    "ui-ux": {
+      "text": "Information Design card の『task 頻度 × 失敗コストで束に順位を付け、残す・落とす・加工するを決める』を、ハブの表現物に適用した (順位は利用者決定 qa-ui-ux-web-ah-decision-005)。主役は分析ルート一覧の『現在の状態』と優先度で、見落とすと二重計上や未記帳のまま収支を判断する最も失敗コストの高い情報である。画像の縦の並びは保ち、視覚的な強さだけで主役を示す。加工は理由を書ける場合に限った。前期間の月が欠けるときの比較を 0% ではなく『比較データなし』にするのは、欠けた期間との比較が増減率を誇張し誤読を招くためである。落とすものは各視点のグラフや明細で、ハブには出さず /analysis/:tab への『開く』に委ねる。",
+      "recorded_at": "2026-09-14T11:57:54Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "Clean Architecture card の依存方向を、web がハブの規則を持たない構成に適用した。ハブ画面とサイドバーのバッジは GET /api/analysis/hub の結果を表示するだけで、優先度や正常判定を画面側で再計算しない。各視点の『わかること・データソース・対象外』は判定ではなく静的な説明なので、routeMetadata に置く。Information Design card は、同じ件数を 2 か所 (ハブの一覧とサイドバーのバッジ) に出すときに値がずれる危険を示している。同一 queryKey の共有と、更新後の invalidateQueries (qa-frontend-web-ah-decision-003) は、この 2 か所を 1 つの取得結果から描くための適用である。",
+      "recorded_at": "2026-09-14T11:57:54Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "本章へ引く card は 0 件である。配信構成 (Worker kanjo-console・Workers Assets・D1・R2・cron) と binding を変えないサイクルで、infrastructure 固有に適用すべき設計知識が無いことを確認した上での確定である。本章に効く制約は D1 の上限 (Free 50 / Paid 1000 クエリ/invocation、出典 cloudflare-d1-limits) だけで、ハブ API の 1 リクエストの読取り本数を既存 /total-cashflow と同程度に保つことで満たす。",
+      "recorded_at": "2026-09-14T11:57:54Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "Clean Code card の『規則は名前と境界値テストで読めるようにする』を、ハブの判定規則の保守に適用した。優先度 (照合・総収支の要確認 1 件以上で高)・マトリクスの正常判定 (未記録月 0)・改善余地 (tradeoffCandidates の月額合計 × 12)・前期間比の null 規則を、docs に書いた文言と同じ名前の core テストで、0 件と 1 件・欠け月 0 と 1 の境界ごとに固定する。規則を変えるとテストが落ちる状態を保守の停止条件にし、タブ label 変更に伴う DOM テストの文言更新も同じ変更の中で行う。",
+      "recorded_at": "2026-09-14T11:57:54Z",
+      "basis": "agent-inference"
+    }
+  },
+  "hearing_progress": {
+    "loop_count": 4,
+    "next_question": null,
+    "complete": true
+  },
+  "doctrine_applications": {
+    "backend": {
+      "application-architecture": {
+        "text": "Clean Architecture の依存方向を、core (ハブ集計・previousPeriod) ← api (route) ← web (表示) の一方向に反映した。前期間の定義を api/ai から core へ移すことで、AI の前期間比とハブの前期間比が同じ関数を通り、定義がずれる経路を無くす。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "データアクセスを route 側の loadScoped と freee 系 3 テーブルの読取りに限り、core のハブ関数は D1 を知らない Dataset と配列だけを受け取る形に反映した。ハブのために新しいリポジトリ関数や SQL を増やさず、既存 /total-cashflow と同じ読取りを再利用する。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      }
+    },
+    "database": {
+      "data-access": {
+        "text": "永続化の境界を動かさない形で反映した。ハブの派生値 (優先度・正常判定・改善余地・前期間比) はデータアクセス層を通して保存せず、既存テーブルの読取りから毎回導出する。スキーマと migration は変えない。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "Google SRE の『変更を小さく保つことが信頼性を保つ』を、スキーマ変更を 0 にする確定内容に反映した。migration を伴わないため、デプロイ順序 (migrate → deploy) の失敗やロールバック時のスキーマ不一致という障害源が本サイクルでは発生しない。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      }
+    },
+    "auth": {
+      "authentication": {
+        "text": "OWASP ASVS の『全ての保護資源で認証を強制する』を、ハブ API を既存 /api/* の authGuard 配下へマウントする確定内容に反映した。新しい認証経路・トークン・セッション方式は作らず、アカウントログイン (PR #47) のセッションをそのまま使う。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      },
+      "security": {
+        "text": "OWASP ASVS のアクセス制御 (他利用者のデータに触れない) を、ハブ API の全ての読取りを userId で絞る確定内容に反映した。共有された ?focus= 付き URL を他人が開いても、認証を通った本人のデータしか集計されない。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      }
+    },
+    "security": {
+      "security": {
+        "text": "OWASP ASVS の入力検証とデータ保護を、?focus= の許可リスト検証、URL に財務情報を載せないこと、クリップボード書込を利用者の明示クリックに限ることに反映した。ハブ API は外部サービスへ送信せず、secureHeaders を全体に掛ける既存構成を維持する。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      }
+    },
+    "ui-ux": {
+      "presentation": {
+        "text": "Apple HIG の『現在地と階層を常に分かるようにする』を、ハブの 5 タブで選択中の分析に下線と aria-current を付け、サイドバー子行の現在地を 1 件だけにする確定内容に反映した。『色だけに頼らない』(WCAG 1.4.1 と同旨) は、増減を符号と色、優先度を文字のバッジで示すことに反映した。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "presentation": {
+        "text": "Apple HIG の『状態を保ち、戻っても同じ場所に戻れる』を、選択中の分析を ?focus= で URL に保持し、行の選択では setSearchParams(..., { replace: true }) で履歴を積まずに置き換え、再読込・URL コピーでも同じ選択を再現する確定内容に反映した。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      },
+      "application-architecture": {
+        "text": "Clean Architecture の境界を、web がハブの判定規則を持たず API の結果を描くだけにする確定内容に反映した。バッジとハブ画面は同じ queryKey の 1 回の取得を共有し、同じ件数を 2 か所で別々に計算しない。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "reliability": {
+        "text": "Google SRE の容量計画を、全画面でハブ API を呼ぶ構成の D1 読取り量に反映した。1 リクエストの読取り本数を D1 の上限 (Free 50 / Paid 1000) に対し既存 /total-cashflow と同程度に保つ。TanStack Query の staleTime とクエリ共有で、画面遷移ごとの再取得を抑える。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      },
+      "operations": {
+        "text": "Google SRE の『運用対象を増やさない』を、Worker・binding・cron・デプロイ経路を変えず、既存 Worker に GET ルートを 1 本足すだけにする確定内容に反映した。新しい監視対象や運用手順は発生しない。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      }
+    },
+    "maintenance-ops": {
+      "operations": {
+        "text": "Google SRE の『手作業の確認を自動の検査へ置き換える』を、判定規則の境界値テスト、タブ label 変更に伴う DOM テスト更新、check:mobile-layout / check:financial-routes の対象へ /analysis を含めることに反映した。verify:full と CI だけでハブの回帰を検出できる状態にする。",
+        "recorded_at": "2026-09-14T11:57:54Z",
+        "basis": "agent-inference"
+      }
+    }
+  }
+}

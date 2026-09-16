@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "a9729ad559310400f5df9ec7f6ca4d5e89779a615300d7015a77b5cba5e1f506"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/security.md", "source_version": "0.1.14", "source_digest": "a9729ad559310400f5df9ec7f6ca4d5e89779a615300d7015a77b5cba5e1f506", "imported_at": "2026-09-14T12:23:44Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-14-analysis-hub/completeness-findings.json", "evaluated_digest": "a9729ad559310400f5df9ec7f6ca4d5e89779a615300d7015a77b5cba5e1f506"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-14-analysis-hub/security.md", "source_version": "0.1.14", "source_digest": "a9729ad559310400f5df9ec7f6ca4d5e89779a615300d7015a77b5cba5e1f506", "imported_at": "2026-09-14T12:23:44Z"}
 created_at: "2026-09-14T12:23:44Z"
 updated_at: "2026-09-14T12:23:44Z"
 depends_on: ["spec-analysis-hub"]
@@ -50,7 +50,7 @@ serves_goals: ["G2", "G3"]
 
 # Architecture overview
 
-支出分析ハブ — focus 許可リストと URL コピーの情報保護。正本は `system-spec/security.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
+支出分析ハブ — focus 許可リストと URL コピーの情報保護。正本は `system-spec/archive/2026-09-14-analysis-hub/security.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
 
 ## Context and drivers
 
@@ -72,7 +72,7 @@ serves_goals: ["G2", "G3"]
 
 - Users/external systems: 利用者 1 名。URL を共有された相手は自分のセッションでしか集計を見られない。外部送信先は無い。
 - Trust/deployment/data boundaries: 信頼しない入力は URL の focus と期間クエリ。focus は web で許可リスト検証、期間は api の resolvePeriodQuery で解釈する。クリップボードはブラウザの権限境界の外へ出る。
-- Context diagram: `system-spec/index.md` の章相互参照を参照する。
+- Context diagram: `system-spec/archive/2026-09-14-analysis-hub/index.md` の章相互参照を参照する。
 
 ## Container and component view
 

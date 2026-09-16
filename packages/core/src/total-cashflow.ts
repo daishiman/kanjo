@@ -20,6 +20,7 @@
 import { isCashTxId } from './cash.js';
 import { type ResolvedTx, resolveTx } from './classify.js';
 import { freeeDealKeys, mfStableKey } from './identity.js';
+import { type PeriodRange, applyPeriod, previousYearPeriod } from './period.js';
 import { normalizeMfDisplayDate } from './persisted-projection.js';
 import { type TrendDirection, trendDirection } from './trend.js';
 import type { Dataset, FreeeDeal, MfTx } from './types.js';
@@ -60,8 +61,37 @@ export interface DuplicateVerdict {
  */
 export interface FreeeExclusion {
   freeeKey: string;
+  /** 表示用の理由文。`reasonCode` から引ける語だが、旧データの自由文もここに入る */
   reason: string;
+  /** 定型の理由。旧データ (自由文だけ) は `'other'` として扱う */
+  reasonCode?: ExclusionReasonCode;
+  /** 利用者の補足。0..`EXCLUSION_MEMO_MAX` 字 */
+  memo?: string;
 }
+
+/**
+ * freee から除外する理由の定型。
+ *
+ * 自由文だけだと、同じ意味の除外が「振替」「振り替え」「口座間移動」と散らばり、
+ * 後から「振替の除外はいくつあるか」に答えられない。数えられる語を先に決めておく。
+ */
+export const EXCLUSION_REASON_CODES = ['transfer', 'internal', 'book_only', 'duplicate', 'other'] as const;
+export type ExclusionReasonCode = (typeof EXCLUSION_REASON_CODES)[number];
+
+/** 画面と API 応答で使う表示語。`reasonCode` の唯一の正本 */
+export const EXCLUSION_REASON_LABELS: Record<ExclusionReasonCode, string> = {
+  transfer: '振替',
+  internal: '内部移動',
+  book_only: '帳簿のみ',
+  duplicate: '二重登録',
+  other: 'その他',
+};
+
+/** メモの上限。列を無制限にすると一覧の1行の高さが予測できなくなる */
+export const EXCLUSION_MEMO_MAX = 200;
+
+export const isExclusionReasonCode = (v: unknown): v is ExclusionReasonCode =>
+  typeof v === 'string' && (EXCLUSION_REASON_CODES as readonly string[]).includes(v);
 
 export type ReconcileReviewReason =
   | '発生日が一致しません'
@@ -145,6 +175,8 @@ export interface ReconcileReviewCandidate {
   dayGap: number;
   /** この候補と MF 明細の口座が明らかに食い違うか (`accountsConflict` と同じ判定) */
   accountConflict: boolean;
+  /** 一致度 0..100 (BR-001)。`matchScore` と同じ配点 */
+  score: number;
 }
 
 export interface ReconcileReview {
@@ -171,7 +203,12 @@ export interface FreeeCoverage {
 
 /** 総額から外した freee 取引と、その理由 */
 export interface ReconcileExcluded extends ReconcileFreee {
+  /** 利用者が書いた理由。表示用の自由文 */
   reason: string;
+  /** 0041: 数えられる理由。0037 以前に外した行は null */
+  reasonCode: ExclusionReasonCode | null;
+  /** 0041: 定型の理由だけでは足りないときの補足 */
+  memo: string | null;
 }
 
 /**
@@ -272,6 +309,65 @@ export function accountsConflict(mf: Pick<MfTx, 'inst'>, deal: Pick<FreeeDeal, '
   return !(a.includes(b) || b.includes(a));
 }
 
+/**
+ * 一致度の配点 (BR-001)。合計は 0..100 の整数。
+ *
+ * 金額は候補に上がる条件そのもの (同額・同じ向き) なので、候補である限り必ず満点が付く。
+ * 満点を配るのではなく「候補である」ことの重みを 40 として明示している。
+ */
+export const MATCH_SCORE_AMOUNT = 40;
+/** |dayGap| が 0,1,2,3 のときの点。4 日以上は 0 (そもそも候補に入らない) */
+export const MATCH_SCORE_DATE = [30, 20, 10, 5] as const;
+/** 口座: 一致 / 片側に情報なし / 明らかに食い違い */
+export const MATCH_SCORE_ACCOUNT = { same: 15, unknown: 8, conflict: 0 } as const;
+/** 摘要: 一致 / 一方が他方を含む / それ以外 */
+export const MATCH_SCORE_TEXT = { same: 15, partial: 8, none: 0 } as const;
+
+/**
+ * 「この2件は同じ取引らしいか」を 0..100 の整数で表す (BR-001)。
+ *
+ * 保存しない。判定の助けとして毎回計算する。保存すると、口座名の正規化規則を変えたときに
+ * 古い点だけが残り、画面の数字と規則が食い違う。
+ *
+ * 自動で寄った組 (同額・同じ向き・発生日一致) は最小でも
+ * `40 + 30 + 8 + 0 = 78` になる。仕様が「78..100 をそのまま表示」と言うのはこの下限のこと。
+ */
+export function matchScore(input: {
+  /** freee 発生日 − MF 発生日 の日数差。符号は結果に影響しない */
+  dayGap: number;
+  mfAccount: string;
+  freeeAccount: string;
+  mfText: string;
+  freeeText: string;
+}): number {
+  const gap = Math.abs(Math.trunc(input.dayGap));
+  const date = MATCH_SCORE_DATE[gap] ?? 0;
+
+  const mfAcc = normalizeInstitution(input.mfAccount);
+  const rawFreeeAcc = (input.freeeAccount ?? '').normalize('NFKC').replace(/[\s　]/g, '');
+  const freeeAcc = NOT_AN_ACCOUNT.has(rawFreeeAcc) ? '' : normalizeInstitution(rawFreeeAcc);
+  const account =
+    mfAcc === '' || freeeAcc === ''
+      ? MATCH_SCORE_ACCOUNT.unknown
+      : mfAcc.includes(freeeAcc) || freeeAcc.includes(mfAcc)
+        ? MATCH_SCORE_ACCOUNT.same
+        : MATCH_SCORE_ACCOUNT.conflict;
+
+  // 空文字は何にでも含まれてしまう。「情報が無い」を「部分一致」と読み替えないよう先に落とす
+  const mfText = normalizeInstitution(input.mfText);
+  const freeeText = normalizeInstitution(input.freeeText);
+  const text =
+    mfText === '' || freeeText === ''
+      ? MATCH_SCORE_TEXT.none
+      : mfText === freeeText
+        ? MATCH_SCORE_TEXT.same
+        : mfText.includes(freeeText) || freeeText.includes(mfText)
+          ? MATCH_SCORE_TEXT.partial
+          : MATCH_SCORE_TEXT.none;
+
+  return MATCH_SCORE_AMOUNT + date + account + text;
+}
+
 /** 照合に使う MF の発生日。表示日の「日」を取込月へ載せる (`expense-projection.ts` と同じ作り) */
 const mfMatchDate = (tx: MfTx): string => `${tx.m}-${normalizeMfDisplayDate(tx.d, tx.m).slice(-2)}`;
 
@@ -325,7 +421,6 @@ function nearCandidates(
   tx: MfTx,
   deals: readonly FreeeDeal[],
   keys: readonly string[],
-  excludedKeys: ReadonlySet<string>,
 ): ReconcileReviewCandidate[] {
   const mfDay = dayNumber(mfMatchDate(tx));
   const amount = Math.abs(tx.a);
@@ -333,8 +428,7 @@ function nearCandidates(
   return deals
     .map((deal, freeeIndex) => ({ deal, freeeIndex }))
     .filter(
-      ({ deal, freeeIndex }) =>
-        !excludedKeys.has(keys[freeeIndex]) &&
+      ({ deal }) =>
         deal.amount === amount &&
         deal.io === io &&
         Math.abs(dayNumber(deal.date) - mfDay) <= REVIEW_NEAR_DAYS,
@@ -349,9 +443,15 @@ function nearCandidates(
       settleAccount: deal.settleAccount ?? '',
       dayGap: dayNumber(deal.date) - mfDay,
       accountConflict: accountsConflict(tx, deal),
+      score: matchScore({
+        dayGap: dayNumber(deal.date) - mfDay,
+        mfAccount: tx.inst ?? '',
+        freeeAccount: deal.settleAccount ?? '',
+        mfText: tx.c,
+        freeeText: deal.partner,
+      }),
     }))
-    .sort((a, b) => Math.abs(a.dayGap) - Math.abs(b.dayGap) || a.freeeIndex - b.freeeIndex)
-    .slice(0, REVIEW_MAX_CANDIDATES);
+    .sort((a, b) => Math.abs(a.dayGap) - Math.abs(b.dayGap) || a.freeeIndex - b.freeeIndex);
 }
 
 /**
@@ -376,8 +476,8 @@ export function reconcileBizDuplicates(
   const verdictByTxId = new Map(verdicts.map((v) => [v.txId, v.verdict]));
   /** 「同じ」と言った利用者が、どの freee 取引を指したか。未指定なら null */
   const pickedFreeeKey = new Map(verdicts.map((v) => [v.txId, v.freeeKey ?? null]));
-  const reasonByKey = new Map(exclusions.map((e) => [e.freeeKey, e.reason]));
-  const excludedKeys = new Set(reasonByKey.keys());
+  const exclusionByKey = new Map(exclusions.map((e) => [e.freeeKey, e]));
+  const excludedKeys = new Set(exclusionByKey.keys());
   const freeeOf = (freeeIndex: number): ReconcileFreee => {
     const deal = deals[freeeIndex];
     return {
@@ -480,7 +580,13 @@ export function reconcileBizDuplicates(
     // 候補抽出器 (金額一致かつ ±3 日以内) は帰属を動かさず、要確認一覧の生成にだけ使う。
     // 理由の別なく先に引くのは、どの理由であっても「freee 側の何と比べているのか」を
     // 見せないと人が判断できないためである。
-    const candidates = nearCandidates(tx, deals, keys, excludedKeys);
+    const raw = nearCandidates(tx, deals, keys);
+    // BR-005: 除外を考えずに引いた候補がちょうど1件で、それが除外済みなら要確認から出す。
+    // 相手が総額から消えた以上、この明細は「二重計上かもしれない」ではなく普通の支出であり、
+    // 公私仕分けで数えるのが正しい。除外を戻せばこの枝を通らなくなり自動で要確認へ戻る。
+    // 候補が2件以上あった組は、どれと同じだったかを機械が名指しできないため残す。
+    if (raw.length === 1 && excludedKeys.has(raw[0].freeeKey)) continue;
+    const candidates = raw.filter((c) => !excludedKeys.has(c.freeeKey)).slice(0, REVIEW_MAX_CANDIDATES);
     const push = (reason: ReconcileReviewReason): void => {
       review.push({ mfTxId: tx.id, reason, mf: reviewOf(tx), candidates });
     };
@@ -493,7 +599,10 @@ export function reconcileBizDuplicates(
       push(held);
       continue;
     }
-    if (candidates.length > 0) push('発生日が一致しません');
+    // 判定は除外前の候補数で行う。除外後の数で決めると、候補2件のうち両方を除外したときに
+    // 明細ごと一覧から消える。BR-005 が review から出すと言っているのは候補1件の場合だけで、
+    // 残りは候補欄が空になるだけで一覧には残さなければならない。
+    if (raw.length > 0) push('発生日が一致しません');
   }
 
   // freee 全件を matched / freeeOnly / excluded に分ける。freeeOnly は matched にも excluded にも入らない freee 側の残余。
@@ -501,9 +610,16 @@ export function reconcileBizDuplicates(
   const freeeOnly: ReconcileFreee[] = [];
   const excluded: ReconcileExcluded[] = [];
   deals.forEach((_deal, freeeIndex) => {
-    const reason = reasonByKey.get(keys[freeeIndex]);
-    if (reason !== undefined) {
-      excluded.push({ ...freeeOf(freeeIndex), reason });
+    const hit = exclusionByKey.get(keys[freeeIndex]);
+    if (hit !== undefined) {
+      // reasonCode と memo も一緒に出す。理由を数えられる形で保存しても、
+      // 読み出す側が自由文しか受け取れないなら、画面は結局その自由文を並べ直すことになる
+      excluded.push({
+        ...freeeOf(freeeIndex),
+        reason: hit.reason,
+        reasonCode: hit.reasonCode ?? null,
+        memo: hit.memo ?? null,
+      });
       return;
     }
     if (usedFreee.has(freeeIndex)) return;
@@ -661,4 +777,248 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
   for (const row of rows) row.trend = direction;
 
   return rows;
+}
+
+/** 収入・支出・収支の3点組。総合/事業/家計で同じ形を使う */
+export interface SegmentTotals {
+  income: number;
+  expense: number;
+  balance: number;
+}
+
+/** 前年同期との差。率は前年値が 0 のとき null (0 で割らない) */
+export interface SegmentChange {
+  diff: number;
+  rate: number | null;
+}
+
+export interface SegmentSummary extends SegmentTotals {
+  /** 前年同期の値。前年側の期間に1か月でも欠けがあれば null (BR-006) */
+  previousYear: SegmentTotals | null;
+  change: { income: SegmentChange; expense: SegmentChange; balance: SegmentChange } | null;
+}
+
+export interface TotalCashflowSeriesRow {
+  month: string;
+  total: SegmentTotals;
+  biz: SegmentTotals;
+  household: SegmentTotals;
+}
+
+/** 「N 件中 M 件」(BR-007)。M は verdict または除外を記録済みの件数 */
+export interface WorkbenchProgress {
+  total: number;
+  decided: number;
+}
+
+/**
+ * 判定作業の3区分 (BR-002)。
+ *
+ * 和は `review.length + excluded.length` に一致する。区分を足しても引いても総数が変わらない
+ * ことが、「映っていない作業が無い」ことの担保になる。
+ */
+export interface TotalCashflowWorkbench {
+  duplicates: ReconcileReview[];
+  needsReview: ReconcileReview[];
+  excluded: ReconcileExcluded[];
+  progress: {
+    duplicates: WorkbenchProgress;
+    needsReview: WorkbenchProgress;
+    excluded: WorkbenchProgress;
+  };
+}
+
+/** 自動で寄った組。一致度は 78..100 をそのまま出し 100 に丸めない (BR-003) */
+export interface AutoMatch extends ReconcileMatch {
+  score: number;
+  /** 利用者の判定。未判定なら null */
+  verdict: DuplicateVerdictValue | null;
+}
+
+export interface TotalCashflowScreen {
+  period: PeriodRange;
+  summary: { total: SegmentSummary; biz: SegmentSummary; household: SegmentSummary };
+  series: TotalCashflowSeriesRow[];
+  workbench: TotalCashflowWorkbench;
+  autoMatches: AutoMatch[];
+  /** 既存 API の互換フィールドの出どころ。画面の数値と同じ消し込み結果であることを型で示す */
+  report: ReturnType<typeof totalCashflowReport>;
+}
+
+/** 'YYYY-MM' の期間を月キーの配列へ開く。両端を含む */
+function monthsOf(range: PeriodRange): string[] {
+  const out: string[] = [];
+  let y = Number(range.from.slice(0, 4));
+  let m = Number(range.from.slice(5, 7));
+  while (`${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}` <= range.to) {
+    out.push(`${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}`);
+    m += 1;
+    if (m > 12) {
+      m = 1;
+      y += 1;
+    }
+  }
+  return out;
+}
+
+const zeroTotals = (): SegmentTotals => ({ income: 0, expense: 0, balance: 0 });
+
+const addTotals = (acc: SegmentTotals, income: number, expense: number): SegmentTotals => ({
+  income: acc.income + income,
+  expense: acc.expense + expense,
+  balance: acc.income + income - (acc.expense + expense),
+});
+
+function seriesOf(months: readonly TotalCashflowMonth[]): TotalCashflowSeriesRow[] {
+  return months.map((r) => ({
+    month: r.month,
+    total: { income: r.totalIncome, expense: r.totalExpense, balance: r.totalBalance },
+    biz: { income: r.bizIncome, expense: r.bizExpense, balance: r.bizIncome - r.bizExpense },
+    household: {
+      income: r.householdIncome,
+      expense: r.householdExpense,
+      balance: r.householdIncome - r.householdExpense,
+    },
+  }));
+}
+
+function sumSegment(rows: readonly SegmentTotals[]): SegmentTotals {
+  return rows.reduce((acc, r) => addTotals(acc, r.income, r.expense), zeroTotals());
+}
+
+/** 差額と率。率は前年値 0 のとき null。符号は「当期 − 前年」のまま持つ */
+const changeOf = (current: number, previous: number): SegmentChange => ({
+  diff: current - previous,
+  rate: previous === 0 ? null : (current - previous) / Math.abs(previous),
+});
+
+function summaryOf(current: SegmentTotals, previousYear: SegmentTotals | null): SegmentSummary {
+  return {
+    ...current,
+    previousYear,
+    change: previousYear
+      ? {
+          income: changeOf(current.income, previousYear.income),
+          expense: changeOf(current.expense, previousYear.expense),
+          balance: changeOf(current.balance, previousYear.balance),
+        }
+      : null,
+  };
+}
+
+/**
+ * 重複候補 (BR-002) に入る条件。
+ *
+ * 候補がちょうど1件で、かつ理由が日付のずれであること。候補が2件以上あるものは
+ * 「どちらと同じか」を人が選ぶ必要があり、1手で済む作業と混ぜると
+ * 「重複候補を片付ける」の所要時間が読めなくなる。
+ */
+const isDuplicateCandidate = (r: ReconcileReview): boolean =>
+  r.candidates.length === 1 &&
+  (r.reason === '発生日が一致しません' || r.reason === '取込月と表示日の月が一致しません');
+
+/**
+ * 画面が必要とする値を1回の消し込みからまとめて作る。
+ *
+ * 期間は引数で受ける。前年同期 (BR-006) が「当期とは別の期間で同じ計算をやり直した結果」で
+ * ある以上、期間を Dataset の切り方だけで表せないためである。ここが `applyPeriod` を
+ * 関数の内側で2回呼ぶ唯一の場所で、他の分析関数の約束 (切ってから渡す) は変えていない。
+ */
+export function totalCashflowScreen(
+  all: Dataset,
+  // 既定値を置かない。空配列を既定にすると、呼び出し側が渡し忘れたときに
+  // 「freee が 0 件の月」と区別できない結果が静かに返る
+  allDeals: readonly FreeeDeal[],
+  verdicts: readonly DuplicateVerdict[],
+  exclusions: readonly FreeeExclusion[],
+  range: PeriodRange,
+): TotalCashflowScreen {
+  const reportFor = (r: PeriodRange): ReturnType<typeof totalCashflowReport> => {
+    const sliced = applyPeriod(all, r);
+    const months = new Set(sliced.months);
+    return totalCashflowReport(
+      sliced,
+      allDeals.filter((d) => months.has(d.month)),
+      verdicts,
+      exclusions,
+    );
+  };
+
+  const report = reportFor(range);
+  const series = seriesOf(report.months);
+  const current = {
+    total: sumSegment(series.map((r) => r.total)),
+    biz: sumSegment(series.map((r) => r.biz)),
+    household: sumSegment(series.map((r) => r.household)),
+  };
+
+  // 前年同期は「全月が揃っているとき」だけ出す。欠けた月を 0 として足すと、
+  // 取込が始まる前の月まで「支出 0 だった」と読めてしまい、増減が実態と逆に出る
+  const prevRange = previousYearPeriod(range);
+  const known = new Set(all.months);
+  const prevComplete = monthsOf(prevRange).every((m) => known.has(m));
+  const prev = prevComplete ? seriesOf(reportFor(prevRange).months) : null;
+  const previous = prev
+    ? {
+        total: sumSegment(prev.map((r) => r.total)),
+        biz: sumSegment(prev.map((r) => r.biz)),
+        household: sumSegment(prev.map((r) => r.household)),
+      }
+    : null;
+
+  const verdictByTxId = new Map(verdicts.map((v) => [v.txId, v.verdict]));
+  const ordered = [...report.review].sort(compareWorkbenchRows);
+  const duplicates = ordered.filter(isDuplicateCandidate);
+  const needsReview = ordered.filter((r) => !isDuplicateCandidate(r));
+  const decidedIn = (rows: readonly ReconcileReview[]): number =>
+    rows.filter((r) => verdictByTxId.has(r.mfTxId)).length;
+
+  return {
+    period: range,
+    summary: {
+      total: summaryOf(current.total, previous?.total ?? null),
+      biz: summaryOf(current.biz, previous?.biz ?? null),
+      household: summaryOf(current.household, previous?.household ?? null),
+    },
+    series,
+    workbench: {
+      duplicates,
+      needsReview,
+      excluded: report.excluded,
+      progress: {
+        duplicates: { total: duplicates.length, decided: decidedIn(duplicates) },
+        needsReview: { total: needsReview.length, decided: decidedIn(needsReview) },
+        // 除外されている時点で記録済み。N と M は必ず一致する
+        excluded: { total: report.excluded.length, decided: report.excluded.length },
+      },
+    },
+    autoMatches: report.matched
+      .filter((m) => m.by === 'auto')
+      .map((m) => ({
+        ...m,
+        score: matchScore({
+          dayGap: dayNumber(m.freee.date) - dayNumber(m.mf.date),
+          mfAccount: m.mf.institution,
+          freeeAccount: m.freee.settleAccount,
+          mfText: m.mf.content,
+          freeeText: m.freee.partner,
+        }),
+        verdict: verdictByTxId.get(m.mfTxId) ?? null,
+      })),
+    report,
+  };
+}
+
+/**
+ * 判定作業の一覧に出す順序。
+ *
+ * 仕様は順序を決めていない。ここは「利用者がどれから片付けると気分よく進むか」という
+ * 設計判断であり、規則ではない。一致度の高い順にするのは、迷わず片付く組を先に出して
+ * 残りを「本当に迷うものだけ」へ減らすためである。同着は発生日順、最後は id で安定させる
+ * (並びが実行のたびに変わると、判定中に行が動いて誤操作になる)。
+ */
+function compareWorkbenchRows(a: ReconcileReview, b: ReconcileReview): number {
+  const best = (r: ReconcileReview): number =>
+    r.candidates.length ? Math.max(...r.candidates.map((c) => c.score)) : -1;
+  return best(b) - best(a) || a.mf.date.localeCompare(b.mf.date) || a.mfTxId.localeCompare(b.mfTxId);
 }

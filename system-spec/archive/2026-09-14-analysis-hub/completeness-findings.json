@@ -1,0 +1,238 @@
+{
+  "evaluator": {
+    "name": "assign-system-spec-completeness-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "spec_dir": "system-spec",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "[第3周] spec-state.json は前周評価 (21:11 JST) 以降変更なし (最終更新 20:59 JST)。今周は再コンパイルのみで、本観点の判定材料は前周と同一。G-foundation / G-knowledge-graph (4 profile) を再実行し exit 0。前周の判定を維持する。validate-coverage-matrix.py --require-foundation は exit 0。U1-U9 は値で埋まり、O1-O5・I1-I7 の serves は G1-G5 に接地し dangling なし。承認 appr-foundation-analysis-hub-001 は利用者選択に接地。前周 medium だった『件数バッジのためハブ API を全画面で 1 本呼ぶ』は、利用者決定 qa-frontend-web-ah-decision-003 として frontend.md と infrastructure.md の質疑録・設計知識適用・doctrine 反映欄に写った (queryKey 共有、C3 の例外範囲、invalidateQueries の対象更新、staleTime、D1 読取り量)。残りは low 2 件: U8 の C3 文言にハブ API の例外が追記されていない点と、O3/I3 の『前期間データが無い場合は null』が決定 003 の『1 か月でも欠けたら null』より狭い点。",
+      "evidence": [
+        "G-foundation exit 0",
+        "requirements_foundation.constraints C3",
+        "qa-frontend-web-ah-decision-003",
+        "qa-backend-web-ah-decision-003"
+      ]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "[第3周] spec-state.json は前周評価 (21:11 JST) 以降変更なし (最終更新 20:59 JST)。今周は再コンパイルのみで、本観点の判定材料は前周と同一。G-foundation / G-knowledge-graph (4 profile) を再実行し exit 0。前周の判定を維持する。decisions[] は 0 件。確定根拠は user-decision (2〜3 案と推奨を示し利用者が選択) と observed-fact。前周 FAIL の 2 件の agent-inference は、利用者に聞き直した qa-backend-web-ah-decision-003 (A/B/C 三択、yearAgoPeriod 案とのトレードオフ付き) と qa-ui-ux-web-ah-decision-005 で置き換わった。どちらの answer も置換元の inference を明記し、内容も矛盾しない。G3 の『前 12 か月比』は 1 年選択時の表示例で、定義は決定 003 が正本と明記され、意味の分岐も解消した。したがって『AI 推奨のみで confirmed にしない』を満たす。残りは low: staleTime の具体値や算定方針が未定。",
+      "evidence": [
+        "qa-backend-web-ah-decision-003 basis=user-decision",
+        "qa-ui-ux-web-ah-decision-005 basis=user-decision",
+        "G-foundation exit 0"
+      ]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "[第3周] spec-state.json は前周評価 (21:11 JST) 以降変更なし (最終更新 20:59 JST)。今周は再コンパイルのみで、本観点の判定材料は前周と同一。validate-coverage-matrix.py の loop / --require-complete / --require-foundation / --require-basis と C16 required-info を再実行し、すべて exit 0。qa・セル状態が不変のため、C07/C06 は再 fork せず、前周の監査結果 (C07 PASS、medium 2 件 / C06 誘導質問 medium 1 件) を引き継ぐ。C07 は PASS。validate-coverage-matrix.py は loop / --require-complete / --require-foundation / --require-basis の全モードで exit 0。48 セルの内訳は確定 8 / 対象外 40 / 未収集 0。qa_ref の dangling は 0、category_aggregate は真理値表と一致し、canonical platform 6 行も揃っている。C16 required-info も exit 0 で、ungrounded_blocking_items は空。ただし C07 は medium 2 件を出した: backend.web と ui-ux.web の qa_refs に、置換済みの agent-inference qa が supersede の宣言なしで user-decision と並んで残っている。sub-input の C06 は、聞き漏れ・早期停止・トレーサビリティが PASS、誘導質問が FAIL (medium 1・low 1)。medium は qa-frontend-web-ah-decision-003 で、4 論点を A に束ね、B は帰結を示していない。評価者の判断: B『バッジは支出分析内だけ』は上位概念承認時にも示された具体的な代替で、全画面で呼ぶという本質の選択は承認時点で済んでいた。束ねられたのは実装パラメータで、セルの被覆とトレースは崩れていない。このため観点は PASS に留め、medium finding として次周の分割質問へ差し戻す。",
+      "evidence": [
+        "G-matrix exit 0",
+        "G-basis exit 0",
+        "C16 required-info exit 0",
+        "C07 findings F1/F2 medium, F3 low",
+        "C06 誘導質問軸 FAIL (medium: qa-frontend-web-ah-decision-003 / low: qa-ui-ux-web-ah-decision-005)"
+      ]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "[第3周] spec-state.json は前周評価 (21:11 JST) 以降変更なし (最終更新 20:59 JST)。今周は再コンパイルのみで、本観点の判定材料は前周と同一。G-foundation / G-knowledge-graph (4 profile) を再実行し exit 0。前周の判定を維持する。機械層では knowledge / doctrine / required-info / cross の 4 profile がすべて exit 0。意味層では、前周 high だった空欄が解消した。spec-state.json の design_applications は 8 カテゴリ、doctrine_applications は 13 件が起票され、再コンパイル後の 8 章すべてで doctrine 表の『本章の確定セルへの反映』と『本章での適用』が埋まっている (『| 未記入 |』の行は 0)。記述は汎用ポインタではなく、各章の確定セル要件への具体適用になっている。例: core 純関数と route adapter の分離および previousPeriod の core 移設 (Dependency Rule)、派生値を D1 に保存しない (DDD)、?focus= の許可リスト検証とクリップボードを明示クリック時に限る (Secure by Design / OWASP ASVS)、authGuard 配下へのマウントと userId での絞り込み、task 頻度×失敗コストによる束の順位と利用者決定 005 の接地 (Information Design)、同一 queryKey 共有で件数のずれを防ぐ、境界値テストで規則を固定 (Clean Code / SRE)。infrastructure は card 0 件だが、0 件の理由と SRE の容量計画・運用対象を増やさない反映を具体的に書いている。残りは low: 適用記述がすべて basis=agent-inference で、適用の妥当性は利用者確認を経ていない (決定本体は user-decision に接地)。",
+      "evidence": [
+        "G-knowledge-graph exit 0 (4 profile)",
+        "design_applications 8 / doctrine_applications 13",
+        "各章『本章での適用』節と doctrine 表反映列"
+      ]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "C08 を独立 context で再実行し PASS。形式層の validate-source-citation.py は exit 0 (targets 6 と references 6 が 1:1、必須フィールド欠落 0、非公式 host 0)。前周 FAIL の原因は解消した。react-router-use-search-params の source_url は https://api.reactrouter.com/v7/interfaces/react-router.NavigateOptions.html に差し替わり、そのページに replace?: boolean『Replace the current entry in the history stack instead of pushing a new one』が実在することを、C08 と評価者の双方が WebFetch で確認した。C08 は SetURLSearchParams の型シグネチャ navigateOpts?: NavigateOptions も確認し、summary の接続主張を裏付けた。確認時刻 2026-09-14T12:12:42Z は実測の現在時刻 (12:14Z) より前で、未来日付ではない。frontend.md L224 は新 URL に追随し、旧 URL は章に残っていない (validate-spec-doc-sync.py も exit 0)。他 5 件 (tanstack 5.102.8 / MDN 2025-11-30 / Hono 4.13.7 / D1 2026-04-21 / WCAG 2025-09-16) も公式の現行値と一致した。残りは low 1 件: summary の dist-tags がどのパッケージの値か書かれていない。",
+      "evidence": [
+        "G-citation exit 0 (C08 実行)",
+        "G-doc-sync exit 0",
+        "WebFetch api.reactrouter.com/v7/interfaces/react-router.NavigateOptions.html: replace の原文あり (評価者・C08)",
+        "WebFetch registry.npmjs.org/react-router-dom: dist-tags latest=7.18.3, version-7 タグなし (評価者)",
+        "C08: registry.npmjs.org/react-router dist-tags latest=8.3.1 / version-7=7.18.3"
+      ]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "[第3周] plugin installPath (0.1.14) は前周から不変のため、G-prompt の結果を引き継ぐ。system-spec-harness 0.1.14 (installPath) の全 18 prompt に prompt-creator 2.1.7 の verify-completeness.py --input と validate-prompt.py --input を実行し、失敗は 0 件。R1-score / R2-delegate の L5 は、成果状態・原子的な停止条件・固定手順を持たない実行方式を持つ。",
+      "evidence": [
+        "G-prompt exit 0 (18 prompts, 0 failures)"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "G-matrix",
+      "name": "validate-coverage-matrix --require-complete",
+      "exit_code": 0,
+      "conditions": [
+        "matrix_coverage"
+      ]
+    },
+    {
+      "id": "G-matrix-loop",
+      "name": "validate-coverage-matrix (loop)",
+      "exit_code": 0,
+      "conditions": [
+        "matrix_coverage"
+      ]
+    },
+    {
+      "id": "G-foundation",
+      "name": "validate-coverage-matrix --require-foundation",
+      "exit_code": 0,
+      "conditions": [
+        "foundation_trace",
+        "decision_guidance"
+      ]
+    },
+    {
+      "id": "G-basis",
+      "name": "validate-coverage-matrix --require-basis",
+      "exit_code": 0,
+      "conditions": [
+        "matrix_coverage"
+      ]
+    },
+    {
+      "id": "G-knowledge-graph",
+      "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)",
+      "exit_code": 0,
+      "conditions": [
+        "design_knowledge_reflection",
+        "matrix_coverage"
+      ]
+    },
+    {
+      "id": "G-citation",
+      "name": "validate-source-citation (C08 実行)",
+      "exit_code": 0,
+      "conditions": [
+        "doc_freshness"
+      ]
+    },
+    {
+      "id": "G-prompt",
+      "name": "verify-completeness + validate-prompt (18 prompts)",
+      "exit_code": 0,
+      "conditions": [
+        "prompt_quality"
+      ]
+    },
+    {
+      "id": "G-doc-sync",
+      "name": "validate-spec-doc-sync (正本→章の投影)",
+      "exit_code": 0,
+      "conditions": [
+        "doc_freshness",
+        "foundation_trace"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "bucket": "matrix_coverage",
+      "observation": "C06 誘導質問: qa-frontend-web-ah-decision-003 は、クエリ共有・C3 例外の範囲・invalidate の対象・staleTime という独立に賛否がありうる 4 論点を (A) に束ねている。(B)『バッジは支出分析内だけ』には帰結 (D1 読取り量・実装量など) が書かれておらず、選択肢間の情報量が揃っていない。実質的には (A) の実装パラメータ一式を承認するだけの質問になっている。",
+      "suggested_fix": "[elicit] 次に reopen する機会に、invalidate の対象更新の範囲と staleTime の方針 (値または算定基準) を分けて問い、代替案にも同じ粒度の帰結を付ける。本周はセル被覆・トレースを崩さないため観点 FAIL にはしていない。"
+    },
+    {
+      "severity": "medium",
+      "bucket": "matrix_coverage",
+      "observation": "C07 F1/F2: backend.web と ui-ux.web の qa_refs に、置換済みの qa-backend-web-ah-inference-002 / qa-ui-ux-web-ah-inference-002 (basis=agent-inference) が、置換先の user-decision と supersede 宣言なしに並んでいる。ui-ux.md の質疑録にも inference の本文がそのまま載っている。そこには決定 005 が明示していない細部 (純収支説明パネルを狭幅で折りたたむ、金額の等幅数字など) も含まれ、どこまでが利用者確定かを章から読み分けられない。",
+      "suggested_fix": "[elicit/compile] C01 の transition writer で、inference qa を qa_refs から外すか superseded_by を宣言する。決定 005 で覆われない細部 (説明パネルの狭幅折りたたみ等) は、既存 docs/design-system の観測事実に接地させるか、利用者確認に回す。"
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage",
+      "observation": "C07 F3: infrastructure.web の qa_refs は ['qa-frontend-web-ah-decision-003'] だけで、自カテゴリの観測 qa-infrastructure-web-ah-observed-001 を含まない (qa_ref には設定済み)。",
+      "suggested_fix": "[elicit] qa_refs に qa-infrastructure-web-ah-observed-001 を含め、frontend 決定を参照する理由 (D1 読取り量) を明示する。"
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage",
+      "observation": "C06: qa-ui-ux-web-ah-decision-005 は『この順で確定してよいか』という承認型の問いで、順位と狭幅での扱いを 1 問に束ねている。ただし B/C の具体的な対抗案はある。",
+      "suggested_fix": "[elicit] 今後の順位確認は開いた問い (どの順が適切か) にし、狭幅の扱いは別問にする。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace",
+      "observation": "U8 の C3『表示していないタブの API は呼ばない』に、ハブ API の例外 (qa-frontend-web-ah-decision-003) が追記されていない。O3/I3 は『前期間データが無い場合は null』のままで、決定 003 の『1 か月でも欠けたら null』より狭い。どちらも決定 qa が正本と明記しているので矛盾ではないが、上位概念だけを読む実装者は誤読しうる。",
+      "suggested_fix": "[elicit] 次に foundation を reopen する際、C3 に例外範囲を、O3/I3 に部分欠落時の null を反映し、再承認を得る。"
+    },
+    {
+      "severity": "low",
+      "bucket": "doc_freshness",
+      "observation": "react-router-use-search-params の summary は『version は npm registry の dist-tags version-7 = 7.18.3、latest は 8.3.1』と書くが、どのパッケージの dist-tags かを書いていない。評価者が registry.npmjs.org/react-router-dom を WebFetch したところ、version-7 タグは無く latest=7.18.3 だった。version-7=7.18.3 / latest=8.3.1 は react-router 本体の dist-tags (C08 確認)。kanjo の依存は react-router-dom で、値 7.18.3 はどちらで見ても正しいが、読み手が react-router-dom の最新を 8.3.1 と誤読しうる。",
+      "suggested_fix": "[doc-fetch] 次に出典を更新する際、summary を『react-router の dist-tags version-7 = 7.18.3 (latest 8.3.1)。kanjo が依存する react-router-dom の latest も 7.18.3』のようにパッケージ名付きで書く。判定には影響しない。",
+      "evidence": [
+        "WebFetch registry.npmjs.org/react-router-dom (評価者)",
+        "C08 報告"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "decision_guidance",
+      "observation": "staleTime は『設ける』とだけ決まっていて、値も算定基準も無い。invalidate の出典はあるが、staleTime の既定挙動 (TanStack Query の Important Defaults) の出典は無い。",
+      "suggested_fix": "[elicit/doc-fetch] staleTime の方針 (例: 期間 key 単位で N 分、更新系の成功で invalidate) を決め、TanStack Query の Important Defaults を targets に加える。"
+    },
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection",
+      "observation": "design_applications 8 件と doctrine_applications 13 件は、すべて basis=agent-inference。適用記述は確定決定 (user-decision / observed-fact) を引いているが、原則の当てはめの妥当性は利用者確認を経ていない。",
+      "suggested_fix": "[elicit] 必須ではない。適用が設計を変える箇所 (previousPeriod の core 移設など) だけでも、利用者確認か観測事実への接地を検討する。"
+    },
+    {
+      "severity": "info",
+      "bucket": "doc_freshness",
+      "observation": "C08 の low『v7 維持の決定記録が無い』は、承認済み U8 の C1 (react-router-dom 7) に接地しているため、評価者は finding として採らない。tanstack 5.102.8 / react-router-dom 7.18.3 / Hono 4.13.7 / MDN / D1 / WCAG の版・更新日は、いずれも公式の現行値と一致した。"
+    },
+    {
+      "severity": "info",
+      "bucket": "design_knowledge_reflection",
+      "observation": "前周 high (8 章の適用欄が空、design_applications が {}) は解消した。8 章すべてで doctrine 反映列と『本章での適用』が、確定セル要件への具体適用で埋まっている。"
+    },
+    {
+      "severity": "info",
+      "bucket": "prompt_quality",
+      "observation": "全 18 prompt で prompt-creator の 2 validator の失敗は 0 件。"
+    },
+    {
+      "severity": "info",
+      "bucket": "doc_freshness",
+      "observation": "前周 FAIL (source_url が replace の説明を含まない) は解消した。新しい source_url に原文があることを評価者と C08 の双方で確認し、確認時刻は実測の現在時刻より前、章も新 URL に追随している。"
+    },
+    {
+      "severity": "info",
+      "bucket": "matrix_coverage",
+      "observation": "前周の medium 2 件 (置換済み inference qa の qa_refs 残存 / qa-frontend-web-ah-decision-003 の論点の束ね) は、writer に qa_ref 削除 op が無いため据え置きと申告されている。spec-state.json 不変を mtime で確認した。どちらも観点 FAIL 要因ではないが、未解消の不足事項として gaps に残す。"
+    },
+    {
+      "severity": "info",
+      "bucket": "matrix_coverage",
+      "observation": "仕様ディレクトリ直下の completeness-findings.json (20:11) は前サイクルの旧レポート。本周の正本は scratchpad/completeness-findings-analysis-hub-loop3.json。"
+    }
+  ],
+  "gaps": [
+    "[elicit/plugin] backend.web / ui-ux.web の qa_refs から置換済みの agent-inference qa を外すか superseded_by を宣言する (medium・据え置き。C01 writer に qa_ref 削除/supersede op を追加する follow-up が必要)",
+    "[elicit] qa-frontend-web-ah-decision-003 で束ねた論点 (invalidate の対象範囲・staleTime の方針) を、次に reopen する際に分割して確認する (medium・据え置き)",
+    "[doc-fetch] react-router-use-search-params の summary に dist-tags の対象パッケージ名 (react-router / react-router-dom) を明記する (low)"
+  ]
+}

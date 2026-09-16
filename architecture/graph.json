@@ -1069,7 +1069,7 @@
         "imported_at": "2026-09-14T12:23:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "945fd8dfa54925bd0c184efd13ef39acedf43feb00a5a4634bbc21a8e264fc20",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-14-analysis-hub/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1092,7 +1092,7 @@
         "imported_at": "2026-09-14T12:23:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "04a49e39d41c790206872981560233225e7cc5e6750d62314d60c2bd3d5a653d",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-14-analysis-hub/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1115,7 +1115,7 @@
         "imported_at": "2026-09-14T12:23:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "321660b14e75d908a0b4de239886de8e63a4a85a30ac53700f7daa4b90fff231",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-14-analysis-hub/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1138,7 +1138,7 @@
         "imported_at": "2026-09-14T12:23:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "b9b122b5848ffd56ad081b04ac30e02cb44176b490a61cdb8d583ee226c670ef",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-14-analysis-hub/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1161,7 +1161,7 @@
         "imported_at": "2026-09-14T12:23:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "4b1ce946c94ccd2fa3494fb4f49d4331a93aa9bab31e4fe46672baac023becb1",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-14-analysis-hub/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1184,7 +1184,7 @@
         "imported_at": "2026-09-14T12:23:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "3b70d45717b2219eb2327b08c860cf16b240bacf2454fe230cb97a43eb6f5cea",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-14-analysis-hub/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1207,7 +1207,7 @@
         "imported_at": "2026-09-14T12:23:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "a9729ad559310400f5df9ec7f6ca4d5e89779a615300d7015a77b5cba5e1f506",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-14-analysis-hub/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1230,7 +1230,7 @@
         "imported_at": "2026-09-14T12:23:44Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "acc099afc910ebed34dafffde2fd75d5faf4747799d43e54c6368dda4a1edb45",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-14-analysis-hub/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1420,6 +1420,190 @@
       },
       "referenced_by": [
         "feat-overview-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "総収支画面 — 情報の優先順位と 3 ペイン判定作業",
+      "file_path": "architecture/total-cashflow-screen-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0533374f8a891a9c97862dfd8e1032d7a6f3031a9c35943fe6f05df77b35c089",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "総収支画面 — API 結果の描画と操作 id の列",
+      "file_path": "architecture/total-cashflow-screen-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f6ac44f0de3cd3a14d0c91273e9de3754b1ac63771f69e874422ea1e03d8504a",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "総収支画面 — core 規則関数と総収支 API の拡張",
+      "file_path": "architecture/total-cashflow-screen-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "ade57808041002ca585aa08c609e6ba85dc2877a2fbd7e44142561cc27dd05f2",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "総収支画面 — 除外理由区分と操作履歴の D1 スキーマ",
+      "file_path": "architecture/total-cashflow-screen-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2ba109121f739e297f4606d918907edb59a493251a44ecf42584ba6042598649",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "総収支画面 — 既存セッション認証と user_id 単位の認可",
+      "file_path": "architecture/total-cashflow-screen-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "832fa24c5786fc67f6381934b8f4658931250559581dc00dc4b0acdfc89e366b",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "総収支画面 — 入力の許可リスト・上限と履歴の最小化",
+      "file_path": "architecture/total-cashflow-screen-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c4eb8060c3032682c7822530ec9b4c39ed98dc8b67743db477681a8e0f56e9b3",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "総収支画面 — 既存 Worker 構成の維持とバックアップ対象の追加",
+      "file_path": "architecture/total-cashflow-screen-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "4118eb0594d7db66724df96bb1c75d090a4f2578788d871f22bba750b0f5d399",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "総収支画面 — 規則の docs とテストによる固定と回帰検証",
+      "file_path": "architecture/total-cashflow-screen-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "5b14f0bb88713c5578abf9aea6d803f4aa8f9618d5bdfd3a3c4c71571750aef7",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
       ]
     }
   ]

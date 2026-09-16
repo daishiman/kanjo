@@ -135,6 +135,11 @@ body,
   margin: 0;
   height: 100%;
 }
+html,
+body {
+  /* 横に広い表は各 .scroll-x の内側で送り、ページ自体は横へ動かさない。 */
+  overflow-x: clip;
+}
 body {
   background: var(--bg);
   color: var(--ink);
@@ -3042,7 +3047,9 @@ kbd {
     scrollbar-width: none;
     position: fixed;
     left: 0;
-    right: 0;
+    right: auto;
+    width: 100vw;
+    max-width: 100%;
     bottom: 0;
     z-index: 30;
     background: var(--surface);
@@ -5437,6 +5444,278 @@ label.check {
 .tcf-exclude-form input {
   min-width: 8em;
   max-width: 14em;
+}
+
+/* ====== 総収支画面 0041: 期間サマリ・月次推移・判定作業・自動一致 ====== */
+
+/* 期間サマリ。区分切替と期間表示を見出しと同じ行に置き、KPI が何の期間かを離さない */
+.tcf-summary-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+}
+.tcf-summary-period {
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+
+/* 一致度。帯と数を同じ行に並べ、どちらか一方だけでは読めない場面を作らない */
+.tcf-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.tcf-score-bar {
+  inline-size: 56px;
+  block-size: 6px;
+}
+
+/* 判定作業。区分・一覧・詳細の 3 列。狭い画面では縦に積む */
+.tcf-workbench-body {
+  display: grid;
+  grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.tcf-workbench-body:has(.tcf-detail) {
+  grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) minmax(240px, 300px);
+}
+.tcf-workbench-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tcf-workbench-tab {
+  display: block;
+  width: 100%;
+  text-align: start;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.tcf-workbench-tab:hover {
+  background: var(--row-hover);
+}
+/* 選んでいる区分は面で示す。文字色だけで示すと、隣の区分との差が細字で消える */
+.tcf-workbench-tab.is-active {
+  background: var(--biz-soft);
+  border-color: var(--biz-soft-line);
+}
+.tcf-workbench-tab-label {
+  display: block;
+  font-weight: 600;
+}
+.tcf-workbench-tab .sub {
+  margin: 4px 0 0;
+  font-size: var(--fs-2xs);
+}
+.tcf-workbench-main {
+  min-width: 0;
+  max-height: var(--table-max-h);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scroll-padding-block: var(--tap-target-min);
+  isolation: isolate;
+}
+/*
+ * 長い判定一覧だけを動かし、列名と左右の判断材料を同時に残す。
+ * DataTable 共通の sticky thead を再実装せず、この viewport を固定基準にする。
+ */
+.tcf-workbench-main table.data thead th {
+  z-index: 3;
+  background: var(--surface-alt);
+}
+
+/* 進捗。帯と「N 件中 M 件」を並べ、割合だけで残件数を推測させない */
+.tcf-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+.tcf-progress progress {
+  inline-size: 140px;
+  block-size: 8px;
+}
+
+/* 行から詳細を開く入口。見た目は本文のままにして、列の数字を押しにくくしない */
+.tcf-row-open {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+.tcf-workbench-main tbody tr.is-selected {
+  outline: 2px solid var(--biz-soft-line);
+  outline-offset: -2px;
+}
+.tcf-workbench-main tbody tr.tcf-picked {
+  background: var(--biz-soft);
+}
+
+/* 詳細ペイン。MF と freee を上下に並べ、判断材料を 1 か所に集める */
+.tcf-detail {
+  position: sticky;
+  top: calc(var(--header-h) + 12px);
+  z-index: 2;
+  max-height: var(--table-max-h);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  scroll-padding-block: var(--tap-target-min);
+}
+.tcf-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tcf-detail-head h3 {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+.tcf-detail-block {
+  margin: 12px 0 0;
+}
+.tcf-detail-block dt {
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+.tcf-detail-block dd {
+  margin: 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.tcf-detail-candidates {
+  margin: 12px 0 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px;
+}
+.tcf-detail-candidates legend {
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+.tcf-detail-candidates label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+}
+.tcf-detail-score {
+  margin: 12px 0 0;
+  font-size: var(--fs-xs);
+}
+.tcf-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.tcf-detail-last {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.tcf-detail-last h4 {
+  margin: 0;
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+
+/* 取消。失敗の言葉はボタンのすぐ隣に置き、押した場所と読む場所を離さない */
+.tcf-undo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+}
+.tcf-undo-error {
+  font-size: var(--fs-2xs);
+  color: var(--danger);
+}
+
+/* 選択中の操作。表の末尾まで下りた位置で押せるよう画面下に固定する */
+.tcf-selection-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-compact-popover);
+  font-size: var(--fs-xs);
+}
+.tcf-selection-bar > * {
+  flex: 0 0 auto;
+}
+
+@media (min-width: 901px) {
+  /* 中央一覧を送っている間も、現在の区分と選択中明細を見失わせない。 */
+  .tcf-workbench-tabs {
+    position: sticky;
+    top: calc(var(--header-h) + 12px);
+    z-index: 2;
+    max-height: var(--table-max-h);
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    background: var(--surface);
+  }
+}
+
+@media (max-width: 900px) {
+  .tcf-workbench-body,
+  .tcf-workbench-body:has(.tcf-detail) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tcf-workbench-tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .tcf-workbench-tab {
+    width: auto;
+    flex: 1 1 160px;
+  }
+  .tcf-detail {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+@media (max-width: 640px) {
+  /* カード化後は各セルに data-label が出るため、入れ子スクロールにせずページを自然に送る。 */
+  .tcf-workbench-main {
+    max-height: none;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+  /* 下部タブと改善ボタンの上へ置き、選択した件数と確定操作を隠さない。 */
+  .tcf-selection-bar {
+    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + var(--tap-target-min) + 22px);
+  }
 }
 
 /* 正式シェルの段階的レスポンシブ。PCの220pxは守り、狭いPCでは表示語だけを圧縮する。 */

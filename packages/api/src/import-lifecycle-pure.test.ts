@@ -293,6 +293,86 @@ describe('D1 statement budget', () => {
     expect(planRestoreImportQueries(restoreCount)).toMatchObject({ total: 48, accepted: true });
   });
 
+  /**
+   * 0041 で総収支の判断3表が復元対象へ入り、復元1回の statement が3本増えた。
+   * 移行先が空なら DELETE を撃たない経路が効いていないと、この3本ぶんで上限に当たり、
+   * freee 明細を1件でも持つ利用者のバックアップ復元が必ず 413 になる。
+   */
+  it('総収支の判断3表を積んだ復元が、白紙の移行先で上限未満に収まる', () => {
+    const decisions = {
+      // 0040 の2表。key があれば置き換え対象なので、行が空でも DELETE の条件判定に入る
+      reviewSnoozes: [],
+      monthlyCloseReviews: [],
+      duplicateVerdicts: [
+        {
+          txId: 'synthetic-tx',
+          verdict: 'same',
+          stableKey: null,
+          fingerprintVersion: null,
+          decidedAt: null,
+          updatedAt: null,
+          freeeKey: null,
+        },
+      ],
+      freeeDealExclusions: [
+        {
+          freeeKey: 'synthetic-freee',
+          reason: '架空の理由',
+          reasonCode: 'other',
+          memo: null,
+          createdAt: null,
+          updatedAt: null,
+        },
+      ],
+      totalCashflowOperations: [
+        {
+          id: 'synthetic-op',
+          kind: 'exclude',
+          itemsJson: '[]',
+          itemCount: 0,
+          undoesId: null,
+          undoneAt: null,
+          createdAt: '2026-08-20T00:00:00.000Z',
+        },
+      ],
+    };
+    const emptyDestination = {
+      reviewSnoozes: 0,
+      monthlyCloseReviews: 0,
+      duplicateVerdicts: 0,
+      freeeDealExclusions: 0,
+      totalCashflowOperations: 0,
+      rules: 0,
+      txEdits: 0,
+      institutionOwners: 0,
+      budgets: 0,
+      cashOverrides: 0,
+    };
+    const countFor = (existingDestinationRowCounts?: typeof emptyDestination) =>
+      restoreCommitStatements({
+        database: fakeDb,
+        userId: 'synthetic-user',
+        runId: 'synthetic-run',
+        writeSet: prepareRestoreWriteSet({
+          userId: 'synthetic-user',
+          data: emptyDataset(),
+          restored: emptyDataset(),
+          ...decisions,
+          existingDestinationRowCounts,
+        }),
+        importId: 1,
+        contentHash: 'v2:synthetic',
+        targetKeys: ['json:global'],
+      }).length;
+
+    const plan = planRestoreImportQueries(countFor(emptyDestination));
+    expect(plan.accepted).toBe(true);
+    expect(plan.total).toBeLessThan(plan.limit);
+    // 件数を渡さない側は「行があるかもしれない」として置換対象10表すべてを消す。
+    // 差が 10 でなければ、条件化した DELETE のどれかが素通りしている
+    expect(countFor()).toBe(countFor(emptyDestination) + 10);
+  });
+
   it('各JSON payloadをUTF-8 80KiB以下に分け、1行超過は拒否する', () => {
     const chunks = chunkJsonRowsByBytes(Array.from({ length: 5_000 }, (_, index) => [`架空-${index}`]));
     for (const payload of chunks)
@@ -513,6 +593,9 @@ describe('JSON pointer invalidation consumers', () => {
       'vendor_memory',
       'review_snoozes',
       'monthly_close_reviews',
+      'duplicate_verdicts',
+      'freee_deal_exclusions',
+      'total_cashflow_operations',
     ]);
   });
 });
@@ -554,6 +637,12 @@ describe('canonical mutation lease predicate', () => {
       ['DELETE', '/api/sub-vendors/1'],
       ['POST', '/api/sub-vendors/exclusions'],
       ['DELETE', '/api/sub-vendors/exclusions/1'],
+      // 総収支の判定・除外・復元・取消は消し込みの正本を書く (0041)。
+      // 同じ明細に二つの判断が同時に入ると、総額がどちらの結果か決まらない
+      ['POST', '/api/total-cashflow/verdicts'],
+      ['POST', '/api/total-cashflow/freee-exclusions'],
+      ['DELETE', '/api/total-cashflow/freee-exclusions'],
+      ['POST', '/api/total-cashflow/operations/op-1/undo'],
     ] as const;
     const selfManaged = [
       ['POST', '/api/imports'],
@@ -608,6 +697,7 @@ describe('canonical mutation lease predicate', () => {
       'routes/imports.ts',
       'routes/settings.ts',
       'routes/subs.ts',
+      'routes/total-cashflow.ts',
       'routes/vendor-memory.ts',
     ];
     const discovered = routeSources.flatMap((filename) => {
@@ -668,6 +758,10 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/auth/login',
       'POST /api/auth/logout',
       'POST /api/auth/password',
+      'POST /api/total-cashflow/verdicts',
+      'POST /api/total-cashflow/freee-exclusions',
+      'DELETE /api/total-cashflow/freee-exclusions',
+      'POST /api/total-cashflow/operations/:id/undo',
     ].sort();
     expect(discovered.sort()).toEqual(expected);
   });

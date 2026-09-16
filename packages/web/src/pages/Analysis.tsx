@@ -62,14 +62,28 @@ export function AnalysisPage() {
   const tab = analysisTab(requested);
   if (!tab) return <Navigate to={DEFAULT_ANALYSIS_TAB.path} replace />;
   const Panel = PANELS[tab.id];
+  const isTotalCashflow = tab.id === 'total-cashflow';
 
   return (
     <>
-      <PageHeader route="analysis" />
+      <PageHeader
+        route="analysis"
+        title={isTotalCashflow ? '家計と事業を合わせた、本当の収支はいくらですか？' : undefined}
+        showTask={!isTotalCashflow}
+      />
+      {isTotalCashflow && (
+        <TaskCopy
+          task="家計と事業の収入・支出を月次で確認し、重複や除外を調整した実質的な収支を把握しましょう。"
+          detail={tab.taskDetail}
+          summary="データの見方"
+        />
+      )}
       <AnalysisTabsNav />
 
       <section aria-label={tab.label}>
-        <TaskCopy task={tab.task} detail={tab.taskDetail} summary={`${tab.label}のくわしい説明`} />
+        {!isTotalCashflow && (
+          <TaskCopy task={tab.task} detail={tab.taskDetail} summary={`${tab.label}のくわしい説明`} />
+        )}
         <Suspense key={tab.id} fallback={<PageState status="loading" />}>
           <Panel />
         </Suspense>

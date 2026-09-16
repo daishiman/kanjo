@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "acc099afc910ebed34dafffde2fd75d5faf4747799d43e54c6368dda4a1edb45"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/ui-ux.md", "source_version": "0.1.14", "source_digest": "acc099afc910ebed34dafffde2fd75d5faf4747799d43e54c6368dda4a1edb45", "imported_at": "2026-09-14T12:23:44Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-14-analysis-hub/completeness-findings.json", "evaluated_digest": "acc099afc910ebed34dafffde2fd75d5faf4747799d43e54c6368dda4a1edb45"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-14-analysis-hub/ui-ux.md", "source_version": "0.1.14", "source_digest": "acc099afc910ebed34dafffde2fd75d5faf4747799d43e54c6368dda4a1edb45", "imported_at": "2026-09-14T12:23:44Z"}
 created_at: "2026-09-14T12:23:44Z"
 updated_at: "2026-09-14T12:23:44Z"
 depends_on: ["spec-analysis-hub"]
@@ -50,7 +50,7 @@ serves_goals: ["G1", "G2", "G5"]
 
 # Architecture overview
 
-支出分析ハブ — 情報の優先順位とハブ画面構成。正本は `system-spec/ui-ux.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
+支出分析ハブ — 情報の優先順位とハブ画面構成。正本は `system-spec/archive/2026-09-14-analysis-hub/ui-ux.md` (system-spec-harness 0.1.14) で、本書は dev-graph から参照する領域別の制約だけを持つ。仕様の入口は `specs/spec-analysis-hub.md`。
 
 ## Context and drivers
 
@@ -73,7 +73,7 @@ serves_goals: ["G1", "G2", "G5"]
 
 - Users/external systems: 利用者 1 名。月次クローズで支出分析を開き、どこから確認するかを決める。
 - Trust/deployment/data boundaries: 画面は AuthenticatedApp の共通シェル内。表示する値はハブ API の応答と routeMetadata の静的定義だけ。
-- Context diagram: `system-spec/index.md` の章相互参照を参照する。
+- Context diagram: `system-spec/archive/2026-09-14-analysis-hub/index.md` の章相互参照を参照する。
 
 ## Container and component view
 

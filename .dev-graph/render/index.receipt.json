@@ -1,28 +1,36 @@
 {
- "renderer": "render-graph-html.py (dev-graph 0.1.11)",
- "rendered_at": "2026-09-14T14:27:35Z",
- "scope": "all nodes",
- "graph_revision": 2,
- "input": ".dev-graph/state/graph.json",
- "input_sha256": "d689c7e2904fb4fde30906db4cc32e960605222bb9ddcf69165e137ce497c91e",
- "output": ".dev-graph/render/index.html",
- "output_sha256": "4a935e572f1cf60df82994500cd300b05aa5dd450266dd00e0f5646d87540dfa",
- "nodes": 23,
- "edges": 21,
- "feature_progress": {
-  "feat-analysis-hub": {
-   "done": 0,
-   "total": 13
-  }
- },
- "external_refs": 0,
- "svg": 1,
- "inline_scripts": 2,
- "registration_receipt": {
-  "expected_count": 13,
-  "applied_count": 13,
-  "source_digest": "sha256:20c92f71e63affce7b3013c237aed7088a25db31a45c2072cc022288fba4b66c"
- },
- "live_trial": "headless Chrome screenshot: 23 nodes / 'active · feature · 0/13' 表示を確認",
- "note": "renderer は source_digest を HTML に描画しない (total 13 = applied_count 13 のみ表示で照合)"
+  "renderer": "render-graph-html.py (dev-graph 0.1.11)",
+  "rendered_at": "2026-09-15T21:56:34Z",
+  "scope": "all nodes",
+  "graph_revision": 3,
+  "input": ".dev-graph/state/graph.json",
+  "input_sha256": "de7900794f739cf7918815e359f792c8842322dc956ba01fec09be6821487d58",
+  "output": ".dev-graph/render/index.html",
+  "output_sha256": "7d252bd71ea1c8f345ad016b092bb49801a56851675c60936ee489a3c6cde08b",
+  "nodes": 23,
+  "edges": 21,
+  "feature_progress": {
+    "feat-total-cashflow-screen": {
+      "done": 0,
+      "total": 13
+    }
+  },
+  "external_refs": 0,
+  "svg": 1,
+  "inline_scripts": 2,
+  "registration_receipt": {
+    "path": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/dev-graph-registration-receipt.json",
+    "expected_count": 13,
+    "applied_count": 13,
+    "source_digest": "sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5"
+  },
+  "live_trial": {
+    "browser": "Google Chrome headless (new)",
+    "viewport": "1600x2300",
+    "svg_rendered": true,
+    "nodes_visible": 23,
+    "feature_label": "active · feature · 0/13",
+    "dom_external_refs": 0
+  },
+  "note": "render-graph-html.py は receipt を書かないため、stdout と registration receipt、実ファイル digest から再生成した。graph は read-only (前後 sha 不変)。"
 }

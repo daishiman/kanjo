@@ -8,22 +8,43 @@
  * 表示と API が食い違ったときに、どちらが正しいかを利用者が判断できなくなるため。
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type ReactNode, useState } from 'react';
+import type { ChartOptions } from 'chart.js';
+import { createContext, useContext, useState } from 'react';
+import { Chart } from 'react-chartjs-2';
 import { invalidateAnalysisHub } from '../../analysis-query-invalidation.js';
 import {
+  ApiError,
   type DuplicateVerdictValue,
+  EXCLUSION_MEMO_MAX,
+  EXCLUSION_REASON_CODES,
+  EXCLUSION_REASON_LABELS,
+  type ExclusionReasonCode,
   type FreeeCoverage,
   type ReconcileExcluded,
   type ReconcileFreee,
-  type ReconcileMatch,
+  type TotalCashflowAutoMatch,
   type TotalCashflowMonth,
+  type TotalCashflowOperation,
   type TotalCashflowResponse,
   type TotalCashflowReview,
+  type TotalCashflowSeriesRow,
+  type TotalCashflowWorkbenchView,
   api,
 } from '../../api.js';
 import { Button } from '../../components/Button.js';
 import { DataTable } from '../../components/DataTable.js';
-import { PageState } from '../../components/Page.js';
+import { FinancialFigure } from '../../components/FinancialFigure.js';
+import { KpiCard, PageState } from '../../components/Page.js';
+import { UiIcon } from '../../components/UiIcon.js';
+import { tooltipOptions } from '../../components/chart-tooltip.js';
+import { COLORS, baseChartOptions, chartSeriesColor, yenTick } from '../../components/charts.js';
+import {
+  createFinancialFigureModel,
+  figureLabels,
+  financialPeriod,
+  seriesData,
+} from '../../components/figure-view-model.js';
+import { deltaCls, gainCls, monthShort, pct, yen, yenS } from '../../format.js';
 import { usePeriod } from '../../period.js';
 
 /** 一覧表の列。9 列で確定しており、画面幅で落とさない(落とすと内訳が読めなくなる) */
@@ -102,140 +123,8 @@ export function TotalCashflowTable({ rows }: { rows: readonly TotalCashflowMonth
   );
 }
 
-/** 日付の差を人が読める形に。0 は「同じ日」と言い切る (「0 日ずれ」は読み手が一拍止まる) */
-const gapLabel = (dayGap: number): string =>
-  dayGap === 0 ? '同じ日' : dayGap > 0 ? `freee が ${dayGap} 日あと` : `freee が ${-dayGap} 日まえ`;
-
-/**
- * 要確認 1 件を、MF 1 行 + freee 候補 n 行の「行」へほどいたもの。
- *
- * 入れ子の表をやめて 1 枚の表に畳むための中間形。列 (発生日・内容・金額・口座・分類) は
- * MF と freee で共通にする。列が揃っていないと、金額が一致しているかを目で追えない。
- */
-interface CompareLine {
-  key: string;
-  source: 'MF' | 'freee';
-  /** freee 候補の行だけが持つ鍵。どの候補と組むかを名指しするために使う */
-  freeeKey?: string;
-  date: ReactNode;
-  content: string;
-  amount: string;
-  account: string;
-  category: string;
-  /**
-   * MF 行と食い違っている項目。候補は「同じ金額・同じ向き・前後 3 日以内」で既に絞られており、
-   * 実際に違いうるのは日付と口座だけ。どこが違うかは機械が知っているので、利用者に目で
-   * 探させず、そのセル自体へ印を出す。MF 行は比較の基準なので常に空。
-   */
-  differs: { date?: boolean; account?: boolean };
-  /** その行が自動で決まらなかった事情。MF 行には理由、freee 行には日付のずれ・口座の食い違い */
-  note: string;
-}
-
 /** freee 側に候補が無いことも判断材料なので、行を消さず語で書く */
 const NO_CANDIDATE = '同じ金額・同じ向きで前後 3 日以内の取引はありません';
-
-/** 判定値と根拠は resolver が出した組のまま表示する。 */
-const mfClassificationLabel = (mf: TotalCashflowReview['mf']): string =>
-  `${mf.cls === 'biz' ? '事業' : '個人'}（${mf.clsSrc}）`;
-
-const mfCategoryLabel = (mf: TotalCashflowReview['mf']): string =>
-  `${mfClassificationLabel(mf)} / ${[mf.major, mf.middle].filter(Boolean).join(' / ') || '(未分類)'}`;
-
-function compareLines(item: TotalCashflowReview): CompareLine[] {
-  const sign = item.mf.io === 'income' ? '+' : '-';
-  const mfLine: CompareLine = {
-    key: 'mf',
-    source: 'MF',
-    date: (
-      <>
-        {item.mf.date}
-        {/* 取込月と表示日が食い違う明細では、どちらの日付で照合したかが理由そのものになる */}
-        {item.mf.date.slice(5).replace('-', '/') === item.mf.displayDate ? null : (
-          <> (表示 {item.mf.displayDate})</>
-        )}
-      </>
-    ),
-    content: item.mf.memo ? `${item.mf.content} / ${item.mf.memo}` : item.mf.content,
-    amount: `${sign}${num(item.mf.amount)}`,
-    account: item.mf.institution || '(記載なし)',
-    category: mfCategoryLabel(item.mf),
-    differs: {},
-    note: item.reason,
-  };
-  if (item.candidates.length === 0) {
-    return [
-      mfLine,
-      {
-        key: 'none',
-        source: 'freee',
-        date: '—',
-        content: NO_CANDIDATE,
-        amount: '—',
-        account: '—',
-        category: '—',
-        differs: {},
-        note: '',
-      },
-    ];
-  }
-  return [
-    mfLine,
-    ...item.candidates.map((cand) => ({
-      key: `f${cand.freeeIndex}`,
-      source: 'freee' as const,
-      freeeKey: cand.freeeKey,
-      date: cand.dayGap === 0 ? cand.date : `${cand.date} (${gapLabel(cand.dayGap)})`,
-      content: cand.partner || '(取引先なし)',
-      amount: `${sign}${num(cand.amount)}`,
-      account: cand.settleAccount || '(記載なし)',
-      category: cand.account,
-      differs: { date: cand.dayGap !== 0, account: cand.accountConflict },
-      // 食い違いは各セルの印が伝える。ここは「差が無い」ことだけを引き受け、二重に書かない
-      note: cand.dayGap === 0 && !cand.accountConflict ? '日付も口座も一致' : '違うところに印があります',
-    })),
-  ];
-}
-
-/**
- * 1 セル分の積み重ね。長い値でも 1 行に収め、行の高さを列ごとにずらさない。
- *
- * field を渡した列では、その項目が MF と食い違う freee 行にだけ印を出す。一致している
- * 側には何も足さない(全部に印を付けると、どこを見ればよいかがまた分からなくなる)。
- */
-function Stack({
-  lines,
-  render,
-  field,
-}: {
-  lines: CompareLine[];
-  render: (line: CompareLine) => ReactNode;
-  /** 食い違いを目立たせる項目。渡さない列は素のまま並べる */
-  field?: keyof CompareLine['differs'];
-}) {
-  return (
-    <>
-      {lines.map((line) => {
-        const differs = field ? line.differs[field] === true : false;
-        return (
-          <div
-            key={line.key}
-            className={`tcf-line tcf-line-${line.source === 'MF' ? 'mf' : 'freee'}${
-              differs ? ' tcf-differs' : ''
-            }`}
-          >
-            {differs && (
-              <span className="tcf-differs-mark" aria-label="MF と違う">
-                ≠
-              </span>
-            )}
-            {render(line)}
-          </div>
-        );
-      })}
-    </>
-  );
-}
 
 /** 向きを語で書く。符号だけだと、収入の freee 取引が支出に見える */
 const ioLabel = (io: 'income' | 'expense'): string => (io === 'income' ? '収入' : '支出');
@@ -251,77 +140,41 @@ const signed = (io: 'income' | 'expense', amount: number): string =>
  * ここで外したものだけが総額から落ちる。理由の記入を挟むのは、後から金額の差を追うときに
  * 「なぜ外したか」が読めないと元へ戻す判断ができないため。
  */
-function ExcludeControl({
-  freeeKey,
-  label,
-  defaultReason = '',
-}: {
-  freeeKey: string;
-  label: string;
-  /**
-   * 理由欄の初期値。決め手が画面に出ている行 (一致した組) では、その決め手をそのまま入れる。
-   * 同じ言葉を毎回打たせるための空欄には意味がなく、打つのが面倒だから理由を省く方向へ働く。
-   */
-  defaultReason?: string;
-}) {
-  const client = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const [reason, setReason] = useState(defaultReason);
-  const run = useMutation({
-    mutationFn: () =>
-      api('/total-cashflow/freee-exclusions', {
-        method: 'POST',
-        body: JSON.stringify({ freeeKey, reason: reason.trim() }),
-      }),
-    onSuccess: () => {
-      setOpen(false);
-      setReason(defaultReason);
-      return Promise.all([
-        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
-        invalidateAnalysisHub(client),
-      ]);
-    },
-  });
+/**
+ * 直前に成功した操作の id を1か所へ集める口。
+ *
+ * 判定・除外・復元はこの画面の4か所から出るので、id を props で配り回すと
+ * 経路を1本増やすたびに「取消が効かない場所」が生まれる。書き込みの成功を
+ * 受け取る先を1つに固定すれば、取消の導線は常に最後の操作を指す。
+ *
+ * 既定が何もしない関数なのは、この画面の外 (テストや一覧のみの表示) で
+ * 部品を単体で使えるようにするため。
+ */
+const OperationSink = createContext<(operationId: string | null) => void>(() => {});
 
-  if (!open)
-    return (
-      <Button size="mini" onClick={() => setOpen(true)}>
-        二重登録として外す
-      </Button>
-    );
-  return (
-    <span className="tcf-exclude-form">
-      <input
-        type="text"
-        value={reason}
-        onChange={(e) => setReason(e.target.value)}
-        placeholder="外す理由"
-        aria-label={`${label} を外す理由`}
-      />
-      <Button size="mini" disabled={run.isPending || reason.trim().length === 0} onClick={() => run.mutate()}>
-        外す
-      </Button>
-      <Button size="mini" onClick={() => setOpen(false)}>
-        やめる
-      </Button>
-    </span>
-  );
-}
+/** 応答から操作 id だけを取り出す。無い応答 (0件の書き込み) は null */
+const operationIdOf = (res: unknown): string | null => {
+  const id = (res as { operationId?: unknown } | null)?.operationId;
+  return typeof id === 'string' ? id : null;
+};
 
 /** 外した freee 取引を総額へ戻す */
 function RestoreButton({ freeeKey }: { freeeKey: string }) {
   const client = useQueryClient();
+  const sink = useContext(OperationSink);
   const run = useMutation({
     mutationFn: () =>
       api('/total-cashflow/freee-exclusions', {
         method: 'DELETE',
         body: JSON.stringify({ freeeKey }),
       }),
-    onSuccess: () =>
-      Promise.all([
+    onSuccess: (res) => {
+      sink(operationIdOf(res));
+      return Promise.all([
         client.invalidateQueries({ queryKey: ['total-cashflow'] }),
         invalidateAnalysisHub(client),
-      ]),
+      ]);
+    },
   });
   return (
     <Button size="mini" disabled={run.isPending} onClick={() => run.mutate()}>
@@ -330,34 +183,12 @@ function RestoreButton({ freeeKey }: { freeeKey: string }) {
   );
 }
 
-const MATCHED_COLUMNS = [
-  { label: '選択', sortable: false },
-  '発生日',
-  'MF の内容',
-  'freee の取引先',
-  '金額',
-  '口座 (MF / freee)',
-  '分類 / 勘定科目',
-  '決め方',
-  { label: '操作', sortable: false },
-];
-
 /**
  * 操作列を持たない。この一覧は「一致でも除外でもない残り」を全部映す枠であって、
  * 二重登録の疑いを集めた枠ではない。行ごとに外す操作を置くと、
  * 「ここに並ぶ＝重複かもしれない」と読ませてしまう。
  */
 const FREEE_ONLY_COLUMNS = ['発生日', '取引先', '向き', '金額', '決済口座', '勘定科目'];
-
-const EXCLUDED_COLUMNS = ['発生日', '取引先', '金額', '外した理由', { label: '操作', sortable: false }];
-
-/**
- * 一致した組を外すときの既定の理由。決め手がそのまま理由になるので、同じ言葉を打たせない。
- * 「自動」は決め方の呼び名であって理由ではないため、理由の文からは落とす。
- */
-const AUTO_MATCH_REASON = '日付と金額が一致';
-const MANUAL_MATCH_REASON = 'あなたの判断で同じ取引とした';
-const matchReason = (by: ReconcileMatch['by']) => (by === 'auto' ? AUTO_MATCH_REASON : MANUAL_MATCH_REASON);
 
 /**
  * 1 リクエストで外せる件数。API 側の MAX_EXCLUSION_ITEMS と同じ値で、超える分だけ文を分ける。
@@ -366,42 +197,530 @@ const matchReason = (by: ReconcileMatch['by']) => (by === 'auto' ? AUTO_MATCH_RE
 const MAX_EXCLUDE_PER_REQUEST = 200;
 
 /**
- * 一致した組の表。決め手が画面に出ているので、外す理由の既定値もその決め手にする。
+ * freee 全件の保存則だけを確認する小さな検算欄。
  *
- * まとめて外せる口を表の上に置くのは、freee 側の二重登録が「同じ理由で並んで出る」ためである。
- * 一件ずつ開いて同じ言葉を打つ手順しか無いと、理由を書くこと自体が省かれる方へ働く。
+ * 自動一致と除外の明細は、それぞれ専用の作業区画にある。ここへ同じ行を再掲すると
+ * 「どちらが操作の入口か」が二重になるため、件数の恒等式と未突合の残りだけに絞る。
  */
-function MatchedTable({ matched }: { matched: readonly ReconcileMatch[] }) {
-  const client = useQueryClient();
-  const [picked, setPicked] = useState<ReadonlySet<string>>(new Set());
-  const [reason, setReason] = useState(AUTO_MATCH_REASON);
+function FreeeCoverageDetails({
+  coverage,
+  freeeOnly,
+}: {
+  coverage: FreeeCoverage;
+  freeeOnly: readonly ReconcileFreee[];
+}) {
+  return (
+    <details className="card">
+      <summary>freee取引の検算を表示</summary>
+      <p className="sub">
+        一致 {coverage.matched} 件 ＋ 残り {coverage.freeeOnly} 件 ＋ 除外 {coverage.excluded} 件 ＝ 取込{' '}
+        {coverage.freeeTotal} 件
+      </p>
+      <p className="sub">MF 側の要確認 {coverage.mfReview} 件は、この和には含みません。</p>
+      {freeeOnly.length > 0 && (
+        <>
+          <h3>一致にも除外にも入らない freee {freeeOnly.length} 件</h3>
+          <DataTable className="data stack-sm" columns={FREEE_ONLY_COLUMNS}>
+            {freeeOnly.map((item) => (
+              <tr key={item.freeeKey}>
+                <td data-label="発生日">{item.date}</td>
+                <td data-label="取引先">{item.partner || '(取引先なし)'}</td>
+                <td data-label="向き">{ioLabel(item.io)}</td>
+                <td data-label="金額" className="num">
+                  {signed(item.io, item.amount)}
+                </td>
+                <td data-label="決済口座">{item.settleAccount || '(記載なし)'}</td>
+                <td data-label="勘定科目">{item.account}</td>
+              </tr>
+            ))}
+          </DataTable>
+        </>
+      )}
+    </details>
+  );
+}
 
-  const keys = new Set(matched.map((m) => m.freeeKey));
-  // 外した組はこの表から消える。選択だけが残ると、いま何を選んでいるか画面と食い違う
-  const selected = [...picked].filter((k) => keys.has(k));
-  const allPicked = matched.length > 0 && selected.length === matched.length;
+/* ==================================================================
+ * 0041: 期間サマリ・月次推移・判定作業・自動一致・取消
+ *
+ * 画像 design/FINAL-UI/images/05-total-cashflow.png の構成を、既存の9列月次表の
+ * 「上」に足す (AD-007)。既存表を置き換えないのは、あの表が唯一「事業費 + 家計費 =
+ * 総支出」を1行の中で見せている場所だからで、上の要約はその関係を持たない。
+ * ================================================================== */
 
-  const excludeMany = useMutation({
-    mutationFn: async (input: { freeeKeys: readonly string[]; reason: string }) => {
-      for (let at = 0; at < input.freeeKeys.length; at += MAX_EXCLUDE_PER_REQUEST) {
-        await api('/total-cashflow/freee-exclusions', {
-          method: 'POST',
-          body: JSON.stringify({
-            freeeKeys: input.freeeKeys.slice(at, at + MAX_EXCLUDE_PER_REQUEST),
-            reason: input.reason,
-          }),
-        });
-      }
+/** 画面に出す区分。総合は事業と家計の和で、3つを足し引きしても総額は動かない (BR-004) */
+type Segment = 'total' | 'biz' | 'household';
+
+const SEGMENTS: readonly { key: Segment; label: string }[] = [
+  { key: 'total', label: '総合' },
+  { key: 'biz', label: '事業' },
+  { key: 'household', label: '家計' },
+];
+
+/**
+ * 表示する区分の切替。
+ *
+ * ネイティブの radio を使うのは、矢印キーでの移動を自前で書かないため。
+ * role="tab" を手で組むと、左右キー・Home/End・focus の輪をすべて自分で保つことになる。
+ */
+function SegmentSwitch({ value, onChange }: { value: Segment; onChange: (next: Segment) => void }) {
+  return (
+    <fieldset className="scope-switch">
+      <legend>表示する区分</legend>
+      {SEGMENTS.map((seg) => (
+        <label key={seg.key}>
+          <input
+            type="radio"
+            name="total-cashflow-segment"
+            value={seg.key}
+            checked={value === seg.key}
+            onChange={() => onChange(seg.key)}
+          />
+          {seg.label}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
+/**
+ * 期間の総収入・総支出・純収支と、前年同期比 (BR-006)。
+ *
+ * 比較の相手は「前期」ではなく前年同期に固定する。事業と家計はどちらも季節で動くので、
+ * 直前の期間と比べると、増えたのが商売の変化なのか毎年の波なのかを切り分けられない。
+ */
+/**
+ * 'YYYY-MM' を1年前へずらす。前年同期の見出しにだけ使う。
+ *
+ * 月をまたいだ計算をしないので日付ライブラリを入れない。年の4桁を引くだけなら、
+ * 閏日も月末も関係しない。
+ */
+const shiftYearLabel = (month: string): string =>
+  `${String(Number(month.slice(0, 4)) - 1).padStart(4, '0')}-${month.slice(5, 7)}`;
+
+function SummarySection({
+  summary,
+  segment,
+  onSegment,
+  periodLabel,
+  previousLabel,
+}: {
+  summary: NonNullable<TotalCashflowResponse['summary']>;
+  segment: Segment;
+  onSegment: (next: Segment) => void;
+  periodLabel: string;
+  previousLabel: string | null;
+}) {
+  const current = summary[segment];
+
+  const comparison = (key: 'income' | 'expense' | 'balance') => {
+    if (!current.change || !current.previousYear) {
+      return <span className="kpi-comparison is-missing">前年同期のデータがそろっていません</span>;
+    }
+    const change = current.change[key];
+    // 支出は増えると悪い、収入と純収支は増えると良い。色の向きだけを逆にする
+    const cls = key === 'expense' ? deltaCls(change.diff) : gainCls(change.diff);
+    return (
+      <span className="kpi-comparison">
+        <span className={`kpi-delta ${cls}`}>
+          <UiIcon name={change.diff >= 0 ? 'up' : 'down'} className="delta-icon" />
+          <span className="num">{yenS(change.diff)}</span>
+          {/* 前年が 0 だと率は出せない。0% と書くと「変わらなかった」と読めてしまう */}
+          <span className="num">({change.rate == null ? '率は出せません' : pct(change.rate)})</span>
+        </span>
+        <span className="kpi-previous">前年同期 {yenS(current.previousYear[key])}</span>
+      </span>
+    );
+  };
+
+  return (
+    <section className="card tcf-summary" aria-label="期間の収支">
+      <div className="tcf-summary-head">
+        <SegmentSwitch value={segment} onChange={onSegment} />
+        <p className="sub tcf-summary-period">
+          選択中の期間: {periodLabel}
+          {previousLabel ? ` / 前年同期: ${previousLabel} との比較` : ''}
+        </p>
+      </div>
+      <div className="kpis">
+        <KpiCard label="総収入" value={yen(current.income)} note={comparison('income')} />
+        <KpiCard label="総支出" value={yen(current.expense)} note={comparison('expense')} />
+        <KpiCard label="純収支" value={yenS(current.balance)} note={comparison('balance')} />
+      </div>
+    </section>
+  );
+}
+
+/** 収入・支出の棒と純収支の線を重ねる図の共通設定。金額軸は既存の財務図と同じ刻みを使う */
+const seriesChartOptions = (): ChartOptions<'bar' | 'line'> => ({
+  ...baseChartOptions(),
+  interaction: { mode: 'index', intersect: false },
+  scales: {
+    x: { grid: { display: false } },
+    y: { beginAtZero: true, ticks: { callback: yenTick } },
+  },
+  plugins: {
+    legend: {
+      position: 'bottom',
+      labels: { usePointStyle: true, pointStyle: 'rectRounded', boxWidth: 9, boxHeight: 9, padding: 16 },
     },
+    tooltip: tooltipOptions('yen'),
+  },
+});
+
+/**
+ * 月次の収入・支出・純収支の推移。
+ *
+ * 収入と支出を棒、純収支を線にする。3本とも棒にすると、純収支が収入・支出と同じ種類の量に
+ * 見えてしまう。純収支は他の2本の差であって、並べて比べる対象ではない。
+ */
+function SeriesFigure({ series, segment }: { series: readonly TotalCashflowSeriesRow[]; segment: Segment }) {
+  if (!series.length) return null;
+  const labels = series.map((row) => monthShort(row.month));
+  const rows = series.map((row) => row[segment]);
+  const last = rows[rows.length - 1];
+  const segmentLabel = SEGMENTS.find((s) => s.key === segment)?.label ?? '総合';
+
+  const model = createFinancialFigureModel({
+    id: `total-cashflow-series-${segment}`,
+    title: '月次の収入・支出・純収支の推移',
+    summary: `${segmentLabel}の${labels[labels.length - 1] ?? ''}は純収支${yenS(last?.balance)}です。`,
+    period: financialPeriod(labels),
+    labels,
+    series: [
+      { key: 'income', label: '収入', values: rows.map((r) => r.income), unit: 'yen', color: COLORS.income },
+      {
+        key: 'expense',
+        label: '支出',
+        values: rows.map((r) => r.expense),
+        unit: 'yen',
+        color: COLORS.expense,
+      },
+      {
+        key: 'balance',
+        label: '純収支',
+        values: rows.map((r) => r.balance),
+        unit: 'yen',
+        signed: true,
+        color: COLORS.ink,
+      },
+    ],
+    action: '純収支がマイナスへ振れた月を見つけ、その月の明細へ進みます。',
+  });
+
+  return (
+    <FinancialFigure
+      model={model}
+      afterChart={
+        <p className="chart-guide">
+          棒は月ごとの収入と支出、線はその差の純収支です。線が 0 を下回った月は、貯えを取り崩しています。
+        </p>
+      }
+    >
+      <Chart
+        type="bar"
+        role="img"
+        aria-label={`${segmentLabel}の月次の収入・支出・純収支を比べる図`}
+        fallbackContent={`${segmentLabel}の月次の収入・支出・純収支を比べる図`}
+        data={{
+          labels: figureLabels(model),
+          datasets: [
+            {
+              type: 'bar' as const,
+              label: '収入',
+              data: seriesData(model, 0),
+              backgroundColor: chartSeriesColor('income'),
+              borderRadius: 3,
+              order: 2,
+            },
+            {
+              type: 'bar' as const,
+              label: '支出',
+              data: seriesData(model, 1),
+              backgroundColor: chartSeriesColor('expense'),
+              borderRadius: 3,
+              order: 2,
+            },
+            {
+              type: 'line' as const,
+              label: '純収支',
+              data: seriesData(model, 2),
+              borderColor: COLORS.ink,
+              backgroundColor: COLORS.ink,
+              pointRadius: 2,
+              borderWidth: 2,
+              tension: 0.18,
+              order: 1,
+            },
+          ],
+        }}
+        options={seriesChartOptions()}
+      />
+    </FinancialFigure>
+  );
+}
+
+/**
+ * 判定・除外・取消の入口をひとまとめにして渡す。
+ *
+ * 表・詳細ペイン・下部バーの3か所から同じ操作が出るので、各所で mutation を作り直さない。
+ * 作り直すと「どこから押したか」で無効化するキャッシュが変わりうる。
+ */
+interface WorkbenchActions {
+  decide: (txIds: readonly string[], verdict: DuplicateVerdictValue, freeeKey?: string) => void;
+  exclude: (
+    freeeKeys: readonly string[],
+    reason: string,
+    reasonCode?: ExclusionReasonCode,
+    memo?: string,
+  ) => void;
+  pending: boolean;
+}
+
+/**
+ * 「直前の操作を元に戻す」(BR-008)。
+ *
+ * 出すのは、この画面でいま操作した直後だけ。再読込した後に出さないのは decision-017 による。
+ * 読み込んだだけの画面に取消が出ていると、押した人は「自分が今やったこと」が戻ると読むが、
+ * 実際に戻るのは前回いつか行った操作で、金額が動く向きが予想と食い違う。
+ */
+function UndoControl({
+  operationId,
+  onUndone,
+  onGone,
+}: {
+  operationId: string | null;
+  onUndone: () => void;
+  onGone: () => void;
+}) {
+  const [error, setError] = useState<string | null>(null);
+  const run = useMutation({
+    mutationFn: () =>
+      api(`/total-cashflow/operations/${encodeURIComponent(operationId ?? '')}/undo`, {
+        method: 'POST',
+      }),
     onSuccess: () => {
-      setPicked(new Set());
-      setReason(AUTO_MATCH_REASON);
-      return Promise.all([
-        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
-        invalidateAnalysisHub(client),
-      ]);
+      setError(null);
+      onUndone();
+    },
+    onError: (err) => {
+      /*
+       * 失敗の種類で、選択を残すかどうかを変える (U-001)。
+       *
+       * canonical_write_busy は「同じ操作をもう一度送れば通る」種類なので、取消の対象を
+       * 保ったまま再試行できるようにする。それ以外の 409 と 404 は対象そのものが
+       * もう最新でないので、対象を消して再読込へ誘導する。どちらも 409 だからと
+       * 同じ扱いにすると、直せば通る失敗の後に押す先が消える。
+       */
+      const busy = err instanceof ApiError && err.code === 'canonical_write_busy';
+      if (busy) {
+        setError('別の更新と重なりました。もう一度お試しください');
+        return;
+      }
+      setError('別の画面で新しい操作があったため取り消せません。画面を再読込してください');
+      onGone();
     },
   });
+
+  // 失敗の文言は、取消の対象が消えた後も残す。`!operationId` だけで畳むと、
+  // 対象が最新でなくなったときにボタンと一緒に理由まで消え、
+  // 利用者は「押したのに何も起きなかった」としか読めなくなる
+  if (!operationId && !error) return null;
+  return (
+    <div className="tcf-detail-last">
+      {operationId && <h4>直前の操作</h4>}
+      <p className="tcf-undo">
+        {operationId && (
+          <Button size="mini" disabled={run.isPending} onClick={() => run.mutate()}>
+            元に戻す
+          </Button>
+        )}
+        {error && <output className="tcf-undo-error">{error}</output>}
+      </p>
+    </div>
+  );
+}
+
+/** 判定作業の3区分 (BR-002)。名前と説明は画像の左ペインに合わせる */
+const WORKBENCH_TABS: readonly {
+  key: keyof TotalCashflowWorkbenchView['progress'];
+  label: string;
+  help: string;
+}[] = [
+  {
+    key: 'duplicates',
+    label: '重複候補',
+    help: '相手が1件に絞れていて、日付のずれだけが残っている組です。同じ取引かを選べば終わります。',
+  },
+  {
+    key: 'excluded',
+    label: 'freee除外',
+    help: '二重登録として総額から外した freee の取引です。戻せば総額に再び入ります。',
+  },
+  {
+    key: 'needsReview',
+    label: '要確認',
+    help: '相手が複数あるか、相手が見つからない明細です。どれと組むかを人が選ぶ必要があります。',
+  },
+];
+
+/** 判定作業の表の列。選択欄と判定欄は並べ替えの対象にしない */
+const WORKBENCH_COLUMNS = [
+  { label: <span className="visually-hidden">選択</span>, sortable: false, className: 'tcf-pick' },
+  '発生日',
+  '内容',
+  '金額',
+  '対応候補',
+  '一致度',
+  { label: '判定', sortable: false },
+];
+
+/**
+ * 一致度を数と帯の両方で出す。
+ *
+ * 帯だけだと「92% と 88% のどちらが上か」を目分量に頼ることになり、数だけだと
+ * 一覧の中で高い行を探すのに全行を読む必要がある。`<progress>` を使うのは、
+ * 読み上げと拡大が自前の div より確実に効くため。
+ */
+function ScoreBar({ score }: { score: number }) {
+  return (
+    <span className="tcf-score">
+      <progress className="tcf-score-bar" max={100} value={score} aria-hidden="true" />
+      <span className="num">{score}%</span>
+    </span>
+  );
+}
+
+/**
+ * 選択中の明細の詳細。MF 側と freee 側を上下に並べ、一致度と判定の入口を置く。
+ *
+ * 一覧の行の中に全部を詰めない。判断に要るのは日付・内容・金額・口座の4つで、
+ * それを一覧の1行に押し込むと、どの画面幅でも読めない列が出る。
+ */
+function DetailPane({
+  item,
+  actions,
+  onClose,
+  undoableId,
+  onUndone,
+  onGone,
+}: {
+  item: TotalCashflowReview;
+  actions: WorkbenchActions;
+  onClose: () => void;
+  undoableId: string | null;
+  onUndone: () => void;
+  onGone: () => void;
+}) {
+  const [pickedKey, setPickedKey] = useState<string | null>(item.candidates[0]?.freeeKey ?? null);
+  const candidate = item.candidates.find((c) => c.freeeKey === pickedKey) ?? item.candidates[0] ?? null;
+
+  return (
+    <aside className="card tcf-detail" aria-label="選択中の明細の詳細">
+      <div className="tcf-detail-head">
+        <h3>選択中の明細の詳細</h3>
+        <Button size="mini" onClick={onClose}>
+          閉じる
+        </Button>
+      </div>
+
+      <dl className="tcf-detail-block">
+        <dt>MoneyForward の明細</dt>
+        <dd>
+          <span>{item.mf.date}</span>
+          <span>{item.mf.content}</span>
+          <span className="num">{signed(item.mf.io, item.mf.amount)}</span>
+          <span>{item.mf.institution}</span>
+        </dd>
+      </dl>
+
+      {candidate ? (
+        <>
+          <dl className="tcf-detail-block">
+            <dt>freee の明細（対応候補）</dt>
+            <dd>
+              <span>{candidate.date}</span>
+              <span>{candidate.partner}</span>
+              <span className="num">{num(candidate.amount)}</span>
+              <span>{candidate.settleAccount || candidate.account}</span>
+            </dd>
+          </dl>
+          {/* 候補が複数あるときだけ選ばせる。1件しかない組に選択肢を出しても判断は変わらない */}
+          {item.candidates.length > 1 && (
+            <fieldset className="tcf-detail-candidates">
+              <legend>どの候補と組むか</legend>
+              {item.candidates.map((cand) => (
+                <label key={cand.freeeKey}>
+                  <input
+                    type="radio"
+                    name={`detail-freee-${item.txId}`}
+                    checked={pickedKey === cand.freeeKey}
+                    onChange={() => setPickedKey(cand.freeeKey)}
+                  />
+                  {cand.date} {cand.partner} <ScoreBar score={cand.score} />
+                </label>
+              ))}
+            </fieldset>
+          )}
+          <p className="tcf-detail-score">
+            一致度 <ScoreBar score={candidate.score} />
+          </p>
+        </>
+      ) : (
+        <p className="sub">対応する freee の取引は見つかりませんでした。</p>
+      )}
+
+      <div className="tcf-detail-actions">
+        <Button
+          variant="primary"
+          disabled={actions.pending || !candidate}
+          onClick={() => actions.decide([item.txId], 'same', candidate?.freeeKey)}
+        >
+          同じ取引
+        </Button>
+        <Button disabled={actions.pending} onClick={() => actions.decide([item.txId], 'different')}>
+          別の取引
+        </Button>
+        <Button
+          disabled={actions.pending || !candidate}
+          onClick={() =>
+            candidate && actions.exclude([candidate.freeeKey], '二重登録のため集計から除外', 'duplicate')
+          }
+        >
+          集計から除外
+        </Button>
+      </div>
+
+      {/* 畳むかどうかは UndoControl だけが決める。ここでも同じ条件を書くと、
+          取消に失敗して対象が消えた瞬間に外側が先に畳み、理由が読めなくなる */}
+      <UndoControl operationId={undoableId} onUndone={onUndone} onGone={onGone} />
+    </aside>
+  );
+}
+
+/** 除外理由の選択肢。core の正本をそのまま並べ、画面で語を作らない */
+const REASON_OPTIONS = EXCLUSION_REASON_CODES.map((code) => ({
+  code,
+  label: EXCLUSION_REASON_LABELS[code],
+}));
+
+/**
+ * 外した freee 明細の一覧。理由を定型のバッジで出し、まとめて付け替えられるようにする。
+ *
+ * 自由文だけだと同じ意味の除外が「振替」「振り替え」「口座間移動」と散らばり、
+ * 後から「振替の除外はいくつか」に答えられない (0041)。
+ */
+function ExcludedWorkbenchTable({
+  excluded,
+  actions,
+}: { excluded: readonly ReconcileExcluded[]; actions: WorkbenchActions }) {
+  const [picked, setPicked] = useState<ReadonlySet<string>>(new Set());
+  const [code, setCode] = useState<ExclusionReasonCode>('transfer');
+  const [memo, setMemo] = useState('');
+
+  const keys = new Set(excluded.map((row) => row.freeeKey));
+  const selected = [...picked].filter((k) => keys.has(k));
+  const allPicked = excluded.length > 0 && selected.length === excluded.length;
 
   const toggle = (freeeKey: string) =>
     setPicked((cur) => {
@@ -410,177 +729,485 @@ function MatchedTable({ matched }: { matched: readonly ReconcileMatch[] }) {
       return next;
     });
 
+  if (!excluded.length) return <p className="sub">総額から外した freee の取引はありません。</p>;
+
   return (
     <>
-      <h3>一致した組 {matched.length} 件</h3>
-      {matched.length === 0 ? (
-        <p className="sub">日付と金額が一致した組はありません。</p>
-      ) : (
-        <>
-          <div className="tcf-bulk">
-            <label className="tcf-pick-all">
+      <div className="tcf-bulk">
+        <label className="tcf-pick-all">
+          <input
+            type="checkbox"
+            checked={allPicked}
+            onChange={() => setPicked(allPicked ? new Set() : new Set(excluded.map((r) => r.freeeKey)))}
+          />
+          すべて選択
+        </label>
+        <span className="tcf-bulk-count">{selected.length} 件を選択中</span>
+        <label>
+          一括で理由を設定
+          <select value={code} onChange={(e) => setCode(e.target.value as ExclusionReasonCode)}>
+            {REASON_OPTIONS.map((opt) => (
+              <option key={opt.code} value={opt.code}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <input
+          type="text"
+          value={memo}
+          maxLength={EXCLUSION_MEMO_MAX}
+          onChange={(e) => setMemo(e.target.value)}
+          placeholder="メモ（任意）"
+          aria-label="まとめて付けるメモ"
+        />
+        <Button
+          variant="primary"
+          disabled={actions.pending || selected.length === 0}
+          onClick={() => {
+            actions.exclude(selected, EXCLUSION_REASON_LABELS[code], code, memo.trim() || undefined);
+            setPicked(new Set());
+            setMemo('');
+          }}
+        >
+          適用
+        </Button>
+        <Button disabled={selected.length === 0} onClick={() => setPicked(new Set())}>
+          選択をクリア
+        </Button>
+      </div>
+      <DataTable
+        className="data"
+        columns={[
+          { label: <span className="visually-hidden">選択</span>, sortable: false, className: 'tcf-pick' },
+          '発生日',
+          '内容',
+          '金額',
+          '理由',
+          'メモ',
+          { label: '操作', sortable: false },
+        ]}
+      >
+        {excluded.map((row) => (
+          <tr key={row.freeeKey}>
+            <td data-label="選択" className="tcf-pick">
               <input
                 type="checkbox"
-                checked={allPicked}
-                onChange={() => setPicked(allPicked ? new Set() : new Set(matched.map((m) => m.freeeKey)))}
+                checked={picked.has(row.freeeKey)}
+                onChange={() => toggle(row.freeeKey)}
+                aria-label={`${row.date} ${row.partner} を選ぶ`}
               />
-              すべて選ぶ
-            </label>
-            <span className="tcf-bulk-count">{selected.length} 件を選択中</span>
-            <input
-              type="text"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="外す理由"
-              aria-label="選択したものを外す理由"
-            />
-            <Button
-              variant="primary"
-              disabled={excludeMany.isPending || selected.length === 0 || reason.trim().length === 0}
-              onClick={() => excludeMany.mutate({ freeeKeys: selected, reason: reason.trim() })}
-            >
-              選択したものを二重登録として外す
-            </Button>
-            <Button disabled={selected.length === 0} onClick={() => setPicked(new Set())}>
-              選択を解除
-            </Button>
-          </div>
-          <DataTable className="data stack-sm" columns={MATCHED_COLUMNS}>
-            {matched.map((m) => {
-              const checked = picked.has(m.freeeKey);
-              return (
-                <tr key={m.freeeKey} className={checked ? 'tcf-picked' : undefined}>
-                  <td data-label="選択" className="tcf-pick">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggle(m.freeeKey)}
-                      aria-label={`${m.freee.date} ${m.freee.partner} を選ぶ`}
-                    />
-                  </td>
-                  <td data-label="発生日">
-                    {m.mf.date}
-                    {m.mf.date === m.freee.date ? null : <> / freee {m.freee.date}</>}
-                  </td>
-                  <td data-label="MF の内容">{m.mf.content}</td>
-                  <td data-label="freee の取引先">{m.freee.partner || '(取引先なし)'}</td>
-                  <td data-label="金額" className="num">
-                    {signed(m.freee.io, m.freee.amount)}
-                  </td>
-                  <td data-label="口座 (MF / freee)">
-                    {`${m.mf.institution || '(記載なし)'} / ${m.freee.settleAccount || '(記載なし)'}`}
-                  </td>
-                  <td data-label="分類 / 勘定科目">{`${mfCategoryLabel(m.mf)} / ${m.freee.account}`}</td>
-                  {/* 自動と判断を見分けられるようにする。数が合わないとき、どちらを疑うかが変わる */}
-                  <td data-label="決め方">{m.by === 'auto' ? '自動 (日付と金額が一致)' : 'あなたの判断'}</td>
-                  <td data-label="操作">
-                    <ExcludeControl
-                      freeeKey={m.freeeKey}
-                      label={`${m.freee.date} ${m.freee.partner}`}
-                      defaultReason={matchReason(m.by)}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
-          </DataTable>
-        </>
-      )}
+            </td>
+            <td data-label="発生日">{row.date}</td>
+            <td data-label="内容">{row.partner}</td>
+            <td data-label="金額" className="num">
+              {signed(row.io, row.amount)}
+            </td>
+            <td data-label="理由">
+              {/* 定型の理由が付いていない行 (0037 以前) はバッジを出さない。
+                  出どころの違う分類を同じ見た目にすると、数えた件数の意味が変わる */}
+              {row.reasonCode ? (
+                <span className="pill neutral">{EXCLUSION_REASON_LABELS[row.reasonCode]}</span>
+              ) : (
+                <span className="sub">未分類</span>
+              )}
+            </td>
+            <td data-label="メモ">{row.memo ?? row.reason}</td>
+            <td data-label="操作">
+              <RestoreButton freeeKey={row.freeeKey} />
+            </td>
+          </tr>
+        ))}
+      </DataTable>
     </>
   );
 }
 
 /**
- * freee 全件がどこへ行ったかを、件数の内訳と中身で示す節。
+ * 判定作業の3区分。区分ごとに件数と進捗を出す (BR-007)。
  *
- * 「取り込んだ内容に抜け漏れはないか」に答えられるのは、freee の総数が
- * 一致 + 一致にも除外にも入らない残り + 除外 に必ず割れる形だけである。一致した組を画面に出さないと、
- * 寄った件数が正しいかを利用者が確かめる手立てが無い。
+ * 進捗を区分ごとに出すのは、全体の N/M だけだと「あと何をすれば終わるか」が読めないため。
+ * 重複候補が全部済んでいても要確認が残っていれば、次に押す場所は要確認の側にある。
  */
-function FreeeCoverageSection({
-  coverage,
-  matched,
-  freeeOnly,
-  excluded,
+function WorkbenchSection({
+  workbench,
+  actions,
+  undoableId,
+  onUndone,
+  onGone,
 }: {
-  coverage: FreeeCoverage;
-  matched: readonly ReconcileMatch[];
-  freeeOnly: readonly ReconcileFreee[];
-  excluded: readonly ReconcileExcluded[];
+  workbench: TotalCashflowWorkbenchView;
+  actions: WorkbenchActions;
+  undoableId: string | null;
+  onUndone: () => void;
+  onGone: () => void;
 }) {
+  const [tab, setTab] = useState<keyof TotalCashflowWorkbenchView['progress']>('duplicates');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(true);
+  const [picked, setPicked] = useState<ReadonlySet<string>>(new Set());
+  const [query, setQuery] = useState('');
+  const [verdictFilter, setVerdictFilter] = useState<'all' | 'undecided'>('all');
+
+  const rows: readonly TotalCashflowReview[] =
+    tab === 'duplicates' ? workbench.duplicates : tab === 'needsReview' ? workbench.needsReview : [];
+  const normalizedQuery = query.trim().toLocaleLowerCase('ja-JP');
+  // この作業台に入る時点で全行が未判定。状態フィルタは将来 API が判定済みを返しても
+  // UI の契約を変えずに済むよう置き、現状は「すべて / 未判定」が同じ集合になる。
+  const visibleRows = rows.filter((item) => {
+    if (verdictFilter !== 'all' && verdictFilter !== 'undecided') return false;
+    if (!normalizedQuery) return true;
+    const searchable = [
+      item.mf.date,
+      item.mf.content,
+      item.mf.memo,
+      item.mf.institution,
+      item.mf.amount,
+      ...item.candidates.flatMap((candidate) => [
+        candidate.date,
+        candidate.partner,
+        candidate.amount,
+        candidate.settleAccount,
+        candidate.account,
+      ]),
+    ]
+      .filter((value) => value != null)
+      .join(' ')
+      .toLocaleLowerCase('ja-JP');
+    return searchable.includes(normalizedQuery);
+  });
+  const ids = new Set(visibleRows.map((r) => r.txId));
+  const selected = [...picked].filter((id) => ids.has(id));
+  const selectedRows = visibleRows.filter((row) => picked.has(row.txId));
+  const allVisiblePicked = visibleRows.length > 0 && selected.length === visibleRows.length;
+  const canExcludeSelected =
+    selectedRows.length > 0 && selectedRows.every((item) => item.candidates.length === 1);
+  const progress = workbench.progress[tab];
+  const active = detailOpen
+    ? (visibleRows.find((r) => r.txId === selectedId) ?? visibleRows[0] ?? null)
+    : null;
+
+  const toggle = (txId: string) =>
+    setPicked((cur) => {
+      const next = new Set(cur);
+      if (!next.delete(txId)) next.add(txId);
+      return next;
+    });
+
+  const countOf = (key: keyof TotalCashflowWorkbenchView['progress']) =>
+    key === 'excluded' ? workbench.excluded.length : workbench[key].length;
+
   return (
-    <section className="card scroll-x" aria-label="freee 取引の行き先">
-      <h2>取り込んだ freee {coverage.freeeTotal} 件の行き先</h2>
-      <p className="sub">
-        一致 {coverage.matched} 件 ＋ 一致にも除外にも入らない残り {coverage.freeeOnly} 件 ＋
-        二重登録として外した {coverage.excluded} 件 ＝ {coverage.freeeTotal} 件。この 3 つで freee
-        の全件が説明されます（MF 側の要確認 {coverage.mfReview} 件は MF
-        明細ごとに立つので、この和には入りません）。
-      </p>
-
-      <MatchedTable matched={matched} />
-
-      <h3>一致にも除外にも入らない freee {freeeOnly.length} 件</h3>
-      <p className="sub">
-        一致でも二重登録として除外でもない、残りの取引です。
-        <br />
-        重複候補ではなく、総額に含まれます。
-      </p>
-      {freeeOnly.length === 0 ? (
-        <p className="sub">一致にも除外にも入らない freee 取引はありません。</p>
-      ) : (
-        <DataTable className="data stack-sm" columns={FREEE_ONLY_COLUMNS}>
-          {freeeOnly.map((d) => (
-            <tr key={d.freeeKey}>
-              <td data-label="発生日">{d.date}</td>
-              <td data-label="取引先">{d.partner || '(取引先なし)'}</td>
-              <td data-label="向き">{ioLabel(d.io)}</td>
-              <td data-label="金額" className="num">
-                {signed(d.io, d.amount)}
-              </td>
-              <td data-label="決済口座">{d.settleAccount || '(記載なし)'}</td>
-              <td data-label="勘定科目">{d.account}</td>
-            </tr>
+    <section className="card tcf-workbench" aria-label="重複・除外の判定作業">
+      <h2>重複・除外の判定作業</h2>
+      <div className="tcf-workbench-body">
+        {/* 区分の切替はページ遷移ではなく同じ表の絞り込みなので tablist。
+            共通 Button ではなく native button なのは、role=tab と aria-selected が
+            「今どの区分を見ているか」を読み上げる唯一の手段だから */}
+        <nav className="tcf-workbench-tabs" role="tablist" aria-label="判定作業の区分">
+          {WORKBENCH_TABS.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              data-native-control="tab"
+              role="tab"
+              id={`tcf-tab-${item.key}`}
+              aria-controls="tcf-workbench-panel"
+              className={`tcf-workbench-tab${tab === item.key ? ' is-active' : ''}`}
+              aria-selected={tab === item.key}
+              onClick={() => {
+                setTab(item.key);
+                setSelectedId(null);
+                setDetailOpen(true);
+                setPicked(new Set());
+                setQuery('');
+                setVerdictFilter('all');
+              }}
+            >
+              <span className="tcf-workbench-tab-label">
+                {item.label} {countOf(item.key)}
+              </span>
+              <span className="sub">{item.help}</span>
+            </button>
           ))}
-        </DataTable>
-      )}
+        </nav>
 
-      <h3>二重登録として外した {excluded.length} 件</h3>
-      {excluded.length === 0 ? (
-        <p className="sub">総額から外した freee 取引はありません。</p>
-      ) : (
-        <DataTable className="data stack-sm" columns={EXCLUDED_COLUMNS}>
-          {excluded.map((d) => (
-            <tr key={d.freeeKey}>
-              <td data-label="発生日">{d.date}</td>
-              <td data-label="取引先">{d.partner || '(取引先なし)'}</td>
-              <td data-label="金額" className="num">
-                {signed(d.io, d.amount)}
-              </td>
-              <td data-label="外した理由">{d.reason}</td>
-              <td data-label="操作">
-                <RestoreButton freeeKey={d.freeeKey} />
-              </td>
-            </tr>
-          ))}
-        </DataTable>
+        <div
+          className="tcf-workbench-main"
+          role="tabpanel"
+          id="tcf-workbench-panel"
+          aria-labelledby={`tcf-tab-${tab}`}
+        >
+          {/* 進捗は「終わったか」ではなく「あと何件か」を出す。割合だけだと、
+              残り1件と残り40件が同じ 98% に見える月がある */}
+          <p className="tcf-progress">
+            <progress max={progress.total} value={progress.decided} />
+            <span>
+              {progress.total} 件中 {progress.decided} 件の判定が完了しました
+            </span>
+          </p>
+
+          {tab === 'excluded' ? (
+            <ExcludedWorkbenchTable excluded={workbench.excluded} actions={actions} />
+          ) : rows.length === 0 ? (
+            <p className="sub">この区分に残っている作業はありません。</p>
+          ) : (
+            <>
+              <div className="tcf-bulk" aria-label="判定候補の絞り込み">
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="内容・金額を検索"
+                  aria-label="取引内容・金額で検索"
+                />
+                <label>
+                  判定
+                  <select
+                    value={verdictFilter}
+                    onChange={(event) => setVerdictFilter(event.target.value as 'all' | 'undecided')}
+                    aria-label="判定状態で絞り込む"
+                  >
+                    <option value="all">すべて</option>
+                    <option value="undecided">未判定</option>
+                  </select>
+                </label>
+                <label className="tcf-pick-all">
+                  <input
+                    type="checkbox"
+                    checked={allVisiblePicked}
+                    disabled={visibleRows.length === 0}
+                    onChange={() =>
+                      setPicked(allVisiblePicked ? new Set() : new Set(visibleRows.map((item) => item.txId)))
+                    }
+                    aria-label={`表示中の${visibleRows.length}件をすべて選択`}
+                  />
+                  表示中をすべて選択
+                </label>
+              </div>
+              {visibleRows.length === 0 ? (
+                <p className="sub">検索条件に合う明細はありません。</p>
+              ) : (
+                <DataTable
+                  // 狭幅では 1行=1カードへ畳む。判定作業は行ごとに「同じ取引/別の取引」を押す作業で、
+                  // 最右の判定列が横スクロールの先にあると 1 件ごとに横へ送る操作が挟まる。
+                  className="data stack-sm"
+                  columns={WORKBENCH_COLUMNS}
+                >
+                  {visibleRows.map((item) => {
+                    const best = item.candidates[0] ?? null;
+                    return (
+                      <tr
+                        key={item.txId}
+                        className={[
+                          picked.has(item.txId) ? 'tcf-picked' : '',
+                          active?.txId === item.txId ? 'is-selected' : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                      >
+                        <td data-label="選択" className="tcf-pick">
+                          <input
+                            type="checkbox"
+                            checked={picked.has(item.txId)}
+                            onChange={() => toggle(item.txId)}
+                            aria-label={`${item.mf.date} ${item.mf.content} を選ぶ`}
+                          />
+                        </td>
+                        <td data-label="発生日">
+                          <button
+                            type="button"
+                            data-native-control="disclosure"
+                            className="tcf-row-open"
+                            aria-expanded={active?.txId === item.txId}
+                            onClick={() => {
+                              setSelectedId(item.txId);
+                              setDetailOpen(true);
+                            }}
+                          >
+                            {item.mf.date}
+                          </button>
+                        </td>
+                        <td data-label="内容">{item.mf.content}</td>
+                        <td data-label="金額" className="num">
+                          {signed(item.mf.io, item.mf.amount)}
+                        </td>
+                        <td data-label="対応候補">{best ? `${best.date} ${best.partner}` : NO_CANDIDATE}</td>
+                        <td data-label="一致度">{best ? <ScoreBar score={best.score} /> : '—'}</td>
+                        <td data-label="判定" className="tcf-verdict">
+                          <Button
+                            size="mini"
+                            disabled={actions.pending || !best}
+                            onClick={() => actions.decide([item.txId], 'same', best?.freeeKey)}
+                          >
+                            同じ取引
+                          </Button>
+                          <Button
+                            size="mini"
+                            disabled={actions.pending}
+                            onClick={() => actions.decide([item.txId], 'different')}
+                          >
+                            別の取引
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </DataTable>
+              )}
+            </>
+          )}
+        </div>
+
+        {active && (
+          <DetailPane
+            key={active.txId}
+            item={active}
+            actions={actions}
+            onClose={() => setDetailOpen(false)}
+            undoableId={undoableId}
+            onUndone={onUndone}
+            onGone={onGone}
+          />
+        )}
+      </div>
+
+      {/* 選んだ件数と、その件数に対して押せる操作を画面の下に固定する。
+          表を下までたどった位置で操作できないと、選び直しのたびに上へ戻ることになる */}
+      {selected.length > 0 && (
+        <section className="tcf-selection-bar" aria-label="選択中の操作">
+          <span>{selected.length} 件選択中</span>
+          <Button onClick={() => setPicked(new Set())}>選択をクリア</Button>
+          <Button
+            variant="primary"
+            disabled={actions.pending}
+            onClick={() => {
+              actions.decide(selected, 'same');
+              setPicked(new Set());
+            }}
+          >
+            同じ取引にする
+          </Button>
+          <Button
+            disabled={actions.pending}
+            onClick={() => {
+              actions.decide(selected, 'different');
+              setPicked(new Set());
+            }}
+          >
+            別の取引にする
+          </Button>
+          <Button
+            disabled={actions.pending || !canExcludeSelected}
+            onClick={() => {
+              if (!canExcludeSelected) return;
+              actions.exclude(
+                selectedRows.map((item) => item.candidates[0]!.freeeKey),
+                '二重登録のため集計から除外',
+                'duplicate',
+              );
+              setPicked(new Set());
+            }}
+          >
+            集計から除外
+          </Button>
+        </section>
       )}
     </section>
   );
 }
 
-/** 要確認の表の列。チェック欄と判定欄は並べ替えの対象にしない */
-const REVIEW_COLUMNS = [
-  { label: <span className="visually-hidden">選択</span>, sortable: false, className: 'tcf-pick' },
-  { label: '出所', sortable: false },
-  '発生日',
-  '内容 / 取引先',
-  '金額',
-  '口座',
-  '分類 / 勘定科目',
-  '自動で決まらなかった理由',
-  { label: '判定', sortable: false },
-];
+/**
+ * 日付と金額が一致して自動で寄った組 (BR-003)。
+ *
+ * 一致度は 78〜100 をそのまま出し、100 に丸めない。全部 100% と書くと、
+ * 口座名まで一致した組と日付だけ一致した組の差が画面から消える。
+ */
+function AutoMatchSection({
+  autoMatches,
+  actions,
+}: { autoMatches: readonly TotalCashflowAutoMatch[]; actions: WorkbenchActions }) {
+  const [picked, setPicked] = useState<ReadonlySet<string>>(new Set());
+  const [undecidedOnly, setUndecidedOnly] = useState(true);
+
+  const rows = undecidedOnly ? autoMatches.filter((m) => m.verdict == null) : autoMatches;
+  const ids = new Set(rows.map((r) => r.txId));
+  const selected = [...picked].filter((id) => ids.has(id));
+
+  if (!autoMatches.length) return null;
+
+  return (
+    <section className="card scroll-x" aria-label="自動一致の候補">
+      <h2>自動一致の候補 {autoMatches.length} 件</h2>
+      <p className="sub">
+        日付と金額が一致したため機械が組にした分です。総額にはすでに反映されており、ここでの判定は
+        「その組が正しいか」の記録になります。
+      </p>
+      <div className="tcf-bulk">
+        <label className="tcf-pick-all">
+          <input type="checkbox" checked={undecidedOnly} onChange={() => setUndecidedOnly((cur) => !cur)} />
+          未判定だけを表示
+        </label>
+        <span className="tcf-bulk-count">{selected.length} 件を選択中</span>
+        <Button
+          variant="primary"
+          disabled={actions.pending || selected.length === 0}
+          onClick={() => {
+            actions.decide(selected, 'same');
+            setPicked(new Set());
+          }}
+        >
+          選択した取引を同じ取引にする
+        </Button>
+      </div>
+      <DataTable
+        className="data"
+        columns={[
+          { label: <span className="visually-hidden">選択</span>, sortable: false, className: 'tcf-pick' },
+          '発生日',
+          '内容',
+          '金額',
+          '対応候補',
+          '一致度',
+          '判定',
+        ]}
+      >
+        {rows.map((row) => (
+          <tr key={`${row.txId}:${row.freeeKey}`}>
+            <td data-label="選択" className="tcf-pick">
+              <input
+                type="checkbox"
+                checked={picked.has(row.txId)}
+                onChange={() =>
+                  setPicked((cur) => {
+                    const next = new Set(cur);
+                    if (!next.delete(row.txId)) next.add(row.txId);
+                    return next;
+                  })
+                }
+                aria-label={`${row.mf.date} ${row.mf.content} を選ぶ`}
+              />
+            </td>
+            <td data-label="発生日">{row.mf.date}</td>
+            <td data-label="内容">{row.mf.content}</td>
+            <td data-label="金額" className="num">
+              {signed(row.mf.io, row.mf.amount)}
+            </td>
+            <td data-label="対応候補">
+              {row.freee.date} {row.freee.partner}
+            </td>
+            <td data-label="一致度">
+              <ScoreBar score={row.score} />
+            </td>
+            <td data-label="判定">
+              {row.verdict === 'same' ? '同じ取引' : row.verdict === 'different' ? '別の取引' : '未判定'}
+            </td>
+          </tr>
+        ))}
+      </DataTable>
+    </section>
+  );
+}
 
 export function TotalCashflowPage() {
   const { key, withPeriod } = usePeriod();
@@ -589,18 +1216,28 @@ export function TotalCashflowPage() {
     queryKey: ['total-cashflow', key],
     queryFn: () => api<TotalCashflowResponse>(withPeriod('/total-cashflow')),
   });
-  const [picked, setPicked] = useState<ReadonlySet<string>>(new Set());
+  /** 表示する区分 (総合 / 事業 / 家計)。保存せず画面ごとに持つ */
+  const [segment, setSegment] = useState<Segment>('total');
   /**
-   * 明細ごとに「どの freee 候補と組むか」。同じ日・同じ額の候補が複数あるとき、
-   * 名指ししないと機械が近い順に片方を選ぶ。選んだ相手と実際に寄る相手をずらさないために持つ。
+   * いま取り消せる操作の id。
+   *
+   * 応答から受け取った分だけを持ち、再読込では復元しない。サーバの `lastOperation` を
+   * そのまま入れると、画面を開いただけで前回いつかの操作に「元に戻す」が付く (U-005)。
    */
-  const [pickedFreee, setPickedFreee] = useState<Readonly<Record<string, string>>>({});
+  const [undoableId, setUndoableId] = useState<string | null>(null);
 
   const decide = useMutation({
-    mutationFn: (input: { txIds: readonly string[]; verdict: DuplicateVerdictValue }) => {
+    mutationFn: (input: {
+      txIds: readonly string[];
+      verdict: DuplicateVerdictValue;
+      freeeKey?: string;
+    }) => {
       // 「違う」に相手の名指しは意味を持たない。付けて送ると、後で「同じ」に変えたとき古い相手が復活する
-      const keyOf = (txId: string) =>
-        input.verdict === 'same' && pickedFreee[txId] ? { freeeKey: pickedFreee[txId] } : {};
+      const keyOf = (_txId: string) => {
+        if (input.verdict !== 'same') return {};
+        const freeeKey = input.freeeKey;
+        return freeeKey ? { freeeKey } : {};
+      };
       return api('/total-cashflow/verdicts', {
         method: 'POST',
         // 1 件のときは従来どおり単票で送る。まとめて送ると「その 1 件がなぜ保存できないか」が
@@ -615,8 +1252,8 @@ export function TotalCashflowPage() {
       });
     },
     // 判断は帰属を動かすので、一覧表と要確認キューを両方引き直す
-    onSuccess: () => {
-      setPicked(new Set());
+    onSuccess: (res) => {
+      setUndoableId(operationIdOf(res));
       return Promise.all([
         client.invalidateQueries({ queryKey: ['total-cashflow'] }),
         invalidateAnalysisHub(client),
@@ -624,182 +1261,102 @@ export function TotalCashflowPage() {
     },
   });
 
+  /**
+   * 判定作業から外す入口。件数の上限は API と同じ値で割る。
+   *
+   * 最後の 1 回の id だけを取消の対象にするのは、分けて送った塊が別々の操作行になるため。
+   * 途中の id を指すと、押した人が選んだ範囲の一部だけが戻る。
+   */
+  const excludeMany = useMutation({
+    mutationFn: async (input: {
+      freeeKeys: readonly string[];
+      reason: string;
+      reasonCode?: ExclusionReasonCode;
+      memo?: string;
+    }) => {
+      let last: unknown = null;
+      for (let at = 0; at < input.freeeKeys.length; at += MAX_EXCLUDE_PER_REQUEST) {
+        last = await api('/total-cashflow/freee-exclusions', {
+          method: 'POST',
+          body: JSON.stringify({
+            freeeKeys: input.freeeKeys.slice(at, at + MAX_EXCLUDE_PER_REQUEST),
+            reason: input.reason,
+            reasonCode: input.reasonCode,
+            memo: input.memo,
+          }),
+        });
+      }
+      return last;
+    },
+    onSuccess: (res) => {
+      setUndoableId(operationIdOf(res));
+      return Promise.all([
+        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
+        invalidateAnalysisHub(client),
+      ]);
+    },
+  });
+
+  const actions: WorkbenchActions = {
+    decide: (txIds, verdict, freeeKey) => decide.mutate({ txIds, verdict, freeeKey }),
+    exclude: (freeeKeys, reason, reasonCode, memo) =>
+      excludeMany.mutate({ freeeKeys, reason, reasonCode, memo }),
+    pending: decide.isPending || excludeMany.isPending,
+  };
+
   if (q.isLoading) return <PageState status="loading" />;
   if (q.error) return <PageState status="error" error={q.error} />;
   if (!q.data) return <PageState status="empty" />;
 
-  const review = q.data.review;
-  // 判定した明細はキューから消える。選択だけが残ると、いま何を選んでいるか画面と食い違う
-  const ids = new Set(review.map((item) => item.txId));
-  const selected = [...picked].filter((id) => ids.has(id));
-  const allPicked = review.length > 0 && selected.length === review.length;
-
-  const toggle = (txId: string) =>
-    setPicked((cur) => {
-      const next = new Set(cur);
-      if (!next.delete(txId)) next.add(txId);
-      return next;
-    });
-
-  /** 同じ日・同じ金額で残っている組。口座名の食い違いだけで残った分をまとめて拾う近道 */
-  const sameDay = review.filter((item) => item.candidates.some((cand) => cand.dayGap === 0));
+  /**
+   * 前年同期の見出し。適用中の期間を12か月ずらして作る (BR-006)。
+   *
+   * サーバが返した期間から作るので、画面の期間選択と表示がずれない。
+   * 別々に作ると、期間を変えた直後の1描画だけ古い年が残る。
+   */
+  const applied = q.data.period.applied;
+  const previousLabel = applied ? `${shiftYearLabel(applied.from)} 〜 ${shiftYearLabel(applied.to)}` : null;
 
   return (
-    <>
-      <TotalCashflowTable rows={q.data.months} />
+    <OperationSink.Provider value={setUndoableId}>
+      {q.data.summary && (
+        <SummarySection
+          summary={q.data.summary}
+          segment={segment}
+          onSegment={setSegment}
+          periodLabel={q.data.period.label}
+          previousLabel={previousLabel}
+        />
+      )}
 
-      <FreeeCoverageSection
-        coverage={q.data.coverage}
-        matched={q.data.matched}
-        freeeOnly={q.data.freeeOnly}
-        excluded={q.data.excluded}
-      />
+      {q.data.series.length > 0 && <SeriesFigure series={q.data.series} segment={segment} />}
 
-      {/* 節の名前は「重複の要確認」で固定する。見出しは件数を持つので、名前に使うと
-          件数が変わるたびに節の呼び名まで変わってしまう */}
-      <section className="card scroll-x" aria-label="重複の要確認">
-        <h2>要確認 {review.length} 件</h2>
-        {review.length === 0 ? (
-          <p className="sub">機械では決められない重複はありません。</p>
-        ) : (
-          <>
-            <p className="sub">
-              同じ取引が MF と freee の両方にあるかを見比べます。「同じ取引」にすると freee 側 1
-              件だけが事業費に残り、家計費からは外れます。
-            </p>
-            {/* 候補の絞り込み条件そのものを書く。「金額は見比べなくてよい」と分かって初めて、
-                日付と口座だけに目を向けられる */}
-            <p className="sub">
-              並んでいる freee 候補は<strong>金額と向きが MF と一致するもの</strong>だけです。
-              残る違いは発生日と口座で、MF と食い違うところに <span className="tcf-differs-mark">≠</span>{' '}
-              が付きます。印が 1 つも無い候補は日付も口座も一致しています。
-            </p>
-            <div className="tcf-bulk">
-              <label className="tcf-pick-all">
-                <input
-                  type="checkbox"
-                  checked={allPicked}
-                  onChange={() => setPicked(allPicked ? new Set() : new Set(review.map((item) => item.txId)))}
-                />
-                すべて選ぶ
-              </label>
-              <span className="tcf-bulk-count">{selected.length} 件を選択中</span>
-              <Button
-                variant="primary"
-                disabled={decide.isPending || selected.length === 0}
-                onClick={() => decide.mutate({ txIds: selected, verdict: 'same' })}
-              >
-                選択したものを「同じ取引」にする
-              </Button>
-              <Button
-                disabled={decide.isPending || selected.length === 0}
-                onClick={() => decide.mutate({ txIds: selected, verdict: 'different' })}
-              >
-                選択したものを「違う取引」にする
-              </Button>
-              {/* 残る大半は「同じ日・同額なのに口座名の書き方が違う」組。一件ずつ押させない */}
-              <Button
-                disabled={sameDay.length === 0}
-                onClick={() => setPicked(new Set(sameDay.map((item) => item.txId)))}
-              >
-                同じ日・同額のものを選ぶ ({sameDay.length})
-              </Button>
-              <Button disabled={selected.length === 0} onClick={() => setPicked(new Set())}>
-                選択を解除
-              </Button>
-            </div>
-            <DataTable className="data tcf-review-table" columns={REVIEW_COLUMNS}>
-              {review.map((item) => {
-                const lines = compareLines(item);
-                const checked = ids.has(item.txId) && picked.has(item.txId);
-                return (
-                  <tr key={item.txId} className={checked ? 'tcf-picked' : undefined}>
-                    <td data-label="選択" className="tcf-pick">
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggle(item.txId)}
-                        aria-label={`${item.mf.date} ${item.mf.content} ${num(item.mf.amount)} を選ぶ`}
-                      />
-                    </td>
-                    {/* 候補が複数あるときだけ選べるようにする。1 件しかない組に選択肢を出しても、
-                        押す操作が増えるだけで判断は変わらない */}
-                    <td data-label="出所">
-                      <Stack
-                        lines={lines}
-                        render={(line) =>
-                          line.freeeKey && item.candidates.length > 1 ? (
-                            <label className="tcf-pick-freee">
-                              <input
-                                type="radio"
-                                name={`freee-${item.txId}`}
-                                checked={pickedFreee[item.txId] === line.freeeKey}
-                                onChange={() =>
-                                  setPickedFreee((cur) => ({ ...cur, [item.txId]: line.freeeKey as string }))
-                                }
-                                aria-label={`${line.content} を組む相手にする`}
-                              />
-                              freee
-                            </label>
-                          ) : (
-                            line.source
-                          )
-                        }
-                      />
-                    </td>
-                    <td data-label="発生日">
-                      <Stack lines={lines} field="date" render={(line) => line.date} />
-                    </td>
-                    <td data-label="内容 / 取引先">
-                      <Stack
-                        lines={lines}
-                        render={(line) => <span title={line.content}>{line.content}</span>}
-                      />
-                    </td>
-                    <td data-label="金額" className="num">
-                      <Stack lines={lines} render={(line) => line.amount} />
-                    </td>
-                    <td data-label="口座">
-                      <Stack
-                        lines={lines}
-                        field="account"
-                        render={(line) => <span title={line.account}>{line.account}</span>}
-                      />
-                    </td>
-                    <td data-label="分類 / 勘定科目">
-                      <Stack
-                        lines={lines}
-                        render={(line) => <span title={line.category}>{line.category}</span>}
-                      />
-                    </td>
-                    <td data-label="自動で決まらなかった理由">
-                      <Stack lines={lines} render={(line) => line.note} />
-                    </td>
-                    {/* 「同じ」だけを置くと、違うと分かった組が要確認に残り続ける。
-                        どちらの答えも同じ重さで置き、判断は片方向に誘導しない */}
-                    <td data-label="判定" className="tcf-verdict">
-                      <Button
-                        size="mini"
-                        disabled={decide.isPending}
-                        onClick={() => decide.mutate({ txIds: [item.txId], verdict: 'same' })}
-                      >
-                        同じ取引
-                      </Button>
-                      <Button
-                        size="mini"
-                        disabled={decide.isPending}
-                        onClick={() => decide.mutate({ txIds: [item.txId], verdict: 'different' })}
-                      >
-                        違う取引
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </DataTable>
-          </>
-        )}
-      </section>
-    </>
+      {q.data.workbench && (
+        <WorkbenchSection
+          workbench={q.data.workbench}
+          actions={actions}
+          undoableId={undoableId}
+          onUndone={() => {
+            // 取消が通ったら対象を消す。同じ id をもう一度送っても 1 回分しか戻らないが、
+            // 押せる見た目を残すと「効かないボタン」を押させることになる
+            setUndoableId(null);
+            void Promise.all([
+              client.invalidateQueries({ queryKey: ['total-cashflow'] }),
+              invalidateAnalysisHub(client),
+            ]);
+          }}
+          onGone={() => setUndoableId(null)}
+        />
+      )}
+
+      <AutoMatchSection autoMatches={q.data.autoMatches} actions={actions} />
+
+      <details className="card">
+        <summary>月次の内訳を表示</summary>
+        <TotalCashflowTable rows={q.data.months} />
+      </details>
+
+      <FreeeCoverageDetails coverage={q.data.coverage} freeeOnly={q.data.freeeOnly} />
+    </OperationSink.Provider>
   );
 }

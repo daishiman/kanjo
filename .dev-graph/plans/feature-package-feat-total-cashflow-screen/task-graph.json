@@ -1,0 +1,148 @@
+{
+  "schema_version": "1.0.0",
+  "feature_package_id": "feature-package/feat-total-cashflow-screen",
+  "parent_feature": "feat-total-cashflow-screen",
+  "nodes": [
+    {
+      "id": "SYS-TCSCREEN-P01",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P01",
+      "lifecycle_role": "preparation",
+      "title": "要件ベースライン確定と未決事項の着手時確認",
+      "depends_on": []
+    },
+    {
+      "id": "SYS-TCSCREEN-P02",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P02",
+      "lifecycle_role": "preparation",
+      "title": "総収支集計・判定作業 API・操作履歴テーブルの設計決定記録",
+      "depends_on": [
+        "SYS-TCSCREEN-P01"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P03",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P03",
+      "lifecycle_role": "design-review",
+      "title": "設計決定の独立レビュー (不変条件・バックアップ・取消の競合)",
+      "depends_on": [
+        "SYS-TCSCREEN-P02"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P04",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P04",
+      "lifecycle_role": "test-design",
+      "title": "境界値付きの red テスト先行 (core 規則・API 取消と復元・画面ブロック)",
+      "depends_on": [
+        "SYS-TCSCREEN-P03"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P05",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P05",
+      "lifecycle_role": "mutation",
+      "title": "総収支集計・判定作業 API・操作履歴・migration 0041・TotalCashflow.tsx の実装",
+      "depends_on": [
+        "SYS-TCSCREEN-P04"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P06",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P06",
+      "lifecycle_role": "test-run",
+      "title": "全テスト・型検査・lint の実行記録",
+      "depends_on": [
+        "SYS-TCSCREEN-P05"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P07",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P07",
+      "lifecycle_role": "acceptance",
+      "title": "受入条件 AC-001..AC-006 の検証",
+      "depends_on": [
+        "SYS-TCSCREEN-P06"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P08",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P08",
+      "lifecycle_role": "mutation",
+      "title": "規則定数の整理と migration 0041・3 表バックアップの整合確認",
+      "depends_on": [
+        "SYS-TCSCREEN-P07"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P09",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P09",
+      "lifecycle_role": "quality-assurance",
+      "title": "アクセシビリティ・CSP・JS 予算・狭幅表示・入力境界の保証",
+      "depends_on": [
+        "SYS-TCSCREEN-P08"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P10",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P10",
+      "lifecycle_role": "independent-review",
+      "title": "最終レビュー (spec との突合と差分の確認)",
+      "depends_on": [
+        "SYS-TCSCREEN-P09"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P11",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P11",
+      "lifecycle_role": "evidence",
+      "title": "証跡索引の作成",
+      "depends_on": [
+        "SYS-TCSCREEN-P10"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P12",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P12",
+      "lifecycle_role": "documentation-sync",
+      "title": "規則の docs 化と取消競合の runbook",
+      "depends_on": [
+        "SYS-TCSCREEN-P11"
+      ]
+    },
+    {
+      "id": "SYS-TCSCREEN-P13",
+      "feature_package_id": "feature-package/feat-total-cashflow-screen",
+      "parent_feature": "feat-total-cashflow-screen",
+      "phase_ref": "P13",
+      "lifecycle_role": "release",
+      "title": "単一 PR での配信と close-out",
+      "depends_on": [
+        "SYS-TCSCREEN-P12"
+      ]
+    }
+  ]
+}

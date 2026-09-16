@@ -154,6 +154,64 @@ const WIDE_TABLE = `
   </table>
 </div>`;
 
+/**
+ * 総収支 (/analysis/total-cashflow) の判定作業。区分・一覧・詳細の3ペイン。
+ *
+ * 広い画面では横3列、900px 以下では縦積みになる (styles.css の `.tcf-workbench-body`)。
+ * 縦積みが効かないと、375px では 1 列が 100px 台まで潰れて表も詳細も読めなくなる。
+ * 詳細ペインを開いた状態で書くのは、3列版の grid-template-columns が
+ * `:has(.tcf-detail)` で切り替わるため。閉じた状態だけ見ても 3 列目の折り返しは試せない。
+ */
+const TCF_TABS = [
+  {
+    key: 'duplicates',
+    label: '重複候補 2',
+    help: '相手が1件に絞れていて、日付のずれだけが残っている組です。',
+  },
+  { key: 'needsReview', label: '要確認 1', help: '相手が複数あるか、相手が見つからない明細です。' },
+  { key: 'excluded', label: 'freee除外 1', help: '二重登録として総額から外した freee の取引です。' },
+];
+
+const TCF_ROW = (i) => `
+<tr${i === 0 ? ' class="is-selected"' : ''}>
+  <td data-label="選択" class="tcf-pick"><input type="checkbox" aria-label="架空クラウド を選ぶ"></td>
+  <td data-label="発生日"><button type="button" data-native-control="disclosure" class="tcf-row-open" aria-expanded="${i === 0}">2026-08-0${i + 5}</button></td>
+  <td data-label="内容">架空クラウド 月額利用料</td>
+  <td data-label="金額" class="num">-3,300</td>
+  <td data-label="対応候補">2026-08-0${i + 7} 架空クラウド</td>
+  <td data-label="一致度"><span class="tcf-score-bar"></span></td>
+  <td data-label="判定" class="tcf-verdict"><button type="button" class="btn mini">同じ取引</button><button type="button" class="btn mini">別の取引</button></td>
+</tr>`;
+
+const TOTAL_CASHFLOW_WORKBENCH = `
+<section class="card tcf-workbench" data-pattern="total-cashflow-workbench" aria-label="重複・除外の判定作業">
+  <h2>重複・除外の判定作業</h2>
+  <div class="tcf-workbench-body">
+    <nav class="tcf-workbench-tabs" role="tablist" aria-label="判定作業の区分">
+      ${TCF_TABS.map(
+        (tab, i) =>
+          `<button type="button" data-native-control="tab" role="tab" class="tcf-workbench-tab${i === 0 ? ' is-active' : ''}" aria-selected="${i === 0}"><span class="tcf-workbench-tab-label">${tab.label}</span><span class="sub">${tab.help}</span></button>`,
+      ).join('')}
+    </nav>
+    <div class="tcf-workbench-main" role="tabpanel">
+      <p class="tcf-progress"><progress max="2" value="1"></progress><span>2 件中 1 件の判定が完了しました</span></p>
+      <table class="data stack-sm">
+        <thead><tr>${['選択', '発生日', '内容', '金額', '対応候補', '一致度', '判定'].map((h) => `<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${[0, 1].map(TCF_ROW).join('')}</tbody>
+      </table>
+    </div>
+    <aside class="card tcf-detail" aria-label="選択中の明細の詳細">
+      <div class="tcf-detail-head"><h3>選択中の明細の詳細</h3><button type="button" class="btn mini">閉じる</button></div>
+      <dl class="tcf-detail-block"><dt>MF 側</dt><dd>2026-08-05 架空クラウド 月額利用料 -3,300</dd></dl>
+      <fieldset class="tcf-detail-candidates">
+        <legend>どの freee 取引と同じかを選ぶ</legend>
+        <label><input type="radio" name="tcf-candidate" checked>2026-08-07 架空クラウド ¥3,300</label>
+      </fieldset>
+      <div class="tcf-detail-actions"><button type="button" class="btn primary">同じ取引</button><button type="button" class="btn">別の取引</button></div>
+    </aside>
+  </div>
+</section>`;
+
 const fixture = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${STYLES}</style></head><body>
 <div class="shell">
   ${SIDEBAR}
@@ -162,6 +220,7 @@ const fixture = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><met
     <h1 class="page-title">公私仕分け</h1>
     ${CLASSIFY_TABLE}
     ${WIDE_TABLE}
+    ${TOTAL_CASHFLOW_WORKBENCH}
   </main>
   <footer class="footer">footer</footer>
   ${TABBAR}
@@ -366,7 +425,33 @@ const MEASURE = `(async () => {
   const tabIconRect = tabbar.querySelector('.route-icon').getBoundingClientRect();
   const tabIcon = { w: tabIconRect.width, h: tabIconRect.height };
 
-  return { overflow, headerChildren, pageBoxes, stacked, theadHidden, order, overflowingCells, taps, tabLabels, tabScroll, exportSheetLayout, exportLabels, wideScrolls, splitPanelLayout, splitCategoryTaps, splitEditorWidth, navRows, navCurrentMark, navCurrentStyle, tabCurrentMark, tabIcon };
+  // 10) 総収支の判定作業。3ペインが縦に積まれ、どれも本体幅に収まっていること。
+  //     「横に並んでいない」だけでは足りない。3列のまま幅だけ潰れた場合も top は揃うので、
+  //     left が全て同じ (= 1列) であることと、幅が親いっぱいであることの両方を見る。
+  const workbenchBody = document.querySelector('[data-pattern="total-cashflow-workbench"] .tcf-workbench-body');
+  const workbenchBodyRect = workbenchBody.getBoundingClientRect();
+  const workbenchPanes = [...workbenchBody.children].map((el) => {
+    const box = el.getBoundingClientRect();
+    return {
+      name: el.className || el.tagName.toLowerCase(),
+      top: Math.round(box.top),
+      left: Math.round(box.left),
+      width: Math.round(box.width),
+      scrollWidth: el.scrollWidth,
+      clientWidth: el.clientWidth,
+    };
+  });
+  const workbench = {
+    columns: getComputedStyle(workbenchBody).gridTemplateColumns,
+    bodyWidth: Math.round(workbenchBodyRect.width),
+    panes: workbenchPanes,
+    tabs: [...workbenchBody.querySelectorAll('.tcf-workbench-tab')].map((el) => ({
+      text: el.querySelector('.tcf-workbench-tab-label').textContent.trim(),
+      h: el.getBoundingClientRect().height,
+    })),
+  };
+
+  return { overflow, headerChildren, pageBoxes, stacked, theadHidden, order, overflowingCells, taps, tabLabels, tabScroll, exportSheetLayout, exportLabels, wideScrolls, splitPanelLayout, splitCategoryTaps, splitEditorWidth, navRows, navCurrentMark, navCurrentStyle, tabCurrentMark, tabIcon, workbench };
 })()`;
 
 /**
@@ -496,6 +581,35 @@ try {
             `${width}px 分割の科目操作「${target.text}」のタップ領域が ${Math.round(target.h)}px で ${MIN_TAP}px 未満`,
           );
 
+      // 総収支 /analysis/total-cashflow の判定作業。3ペインが1列に積まれること (SYS-TCSCREEN-P09)
+      const wb = m.workbench;
+      if (wb.panes.length !== 3)
+        failures.push(`${width}px 総収支の判定作業のペインが3つではない(${wb.panes.length}個)`);
+      const lefts = new Set(wb.panes.map((pane) => pane.left));
+      if (lefts.size !== 1)
+        failures.push(
+          `${width}px 総収支の判定作業が縦に積まれていない(左端が ${[...lefts].join('/')}px に分かれている / grid-template-columns=${wb.columns})`,
+        );
+      for (const [i, pane] of wb.panes.entries()) {
+        if (i > 0 && pane.top <= wb.panes[i - 1].top)
+          failures.push(
+            `${width}px 総収支の判定作業のペイン「${pane.name}」が直前のペインと同じ行に並んでいる(${pane.top}px)`,
+          );
+        if (pane.scrollWidth > pane.clientWidth + 1)
+          failures.push(
+            `${width}px 総収支の判定作業のペイン「${pane.name}」が横に溢れている(${pane.scrollWidth}px > ${pane.clientWidth}px)`,
+          );
+        if (Math.abs(pane.width - wb.bodyWidth) > 1)
+          failures.push(
+            `${width}px 総収支の判定作業のペイン「${pane.name}」が本体幅いっぱいに広がっていない(${pane.width}px / ${wb.bodyWidth}px)`,
+          );
+      }
+      for (const tab of wb.tabs)
+        if (tab.h < MIN_TAP - 0.5)
+          failures.push(
+            `${width}px 総収支の区分「${tab.text}」のタップ領域が ${Math.round(tab.h)}px で ${MIN_TAP}px 未満`,
+          );
+
       // ナビの視覚契約。zoom 2 では全長が2倍になるので、寸法の契約は等倍でだけ見る
       for (const row of m.navRows) {
         if (row.h < MIN_NAV_ROW - 0.5)
@@ -573,7 +687,7 @@ try {
       failures.push(`${width}px 広い表が枠内でスクロールしていない(検査用フィクスチャが横に広くない)`);
 
     console.log(
-      `${String(width).padStart(4)}px zoom${zoom} 本体幅 ${m.overflow.scrollWidth}/${m.overflow.viewport}  カード化 ${Math.abs(m.stacked.second.top - m.stacked.first.top) > 1 ? 'OK' : 'NG'}  見出し=内容 ${m.order.descTop < m.order.dateTop ? 'OK' : 'NG'}  タップ最小 ${Math.round(Math.min(...m.taps.map((t) => t.h)))}px  分割科目 ${Math.round(m.splitPanelLayout.w)}x${Math.round(m.splitPanelLayout.h)}px/操作最小${Math.round(Math.min(...m.splitCategoryTaps.map((t) => t.h)))}px  nav ${m.tabScroll.scrollWidth}/${m.tabScroll.clientWidth}  書き出し ${Math.round(m.exportSheetLayout.left)}-${Math.round(m.exportSheetLayout.right)}/${m.exportSheetLayout.viewport}  広い表 ${m.wideScrolls.scrollWidth}/${m.wideScrolls.clientWidth}  nav行最小 ${Math.round(Math.min(...m.navRows.map((r) => r.h)))}px  tab icon ${Math.round(m.tabIcon.w)}px`,
+      `${String(width).padStart(4)}px zoom${zoom} 本体幅 ${m.overflow.scrollWidth}/${m.overflow.viewport}  カード化 ${Math.abs(m.stacked.second.top - m.stacked.first.top) > 1 ? 'OK' : 'NG'}  見出し=内容 ${m.order.descTop < m.order.dateTop ? 'OK' : 'NG'}  タップ最小 ${Math.round(Math.min(...m.taps.map((t) => t.h)))}px  分割科目 ${Math.round(m.splitPanelLayout.w)}x${Math.round(m.splitPanelLayout.h)}px/操作最小${Math.round(Math.min(...m.splitCategoryTaps.map((t) => t.h)))}px  nav ${m.tabScroll.scrollWidth}/${m.tabScroll.clientWidth}  書き出し ${Math.round(m.exportSheetLayout.left)}-${Math.round(m.exportSheetLayout.right)}/${m.exportSheetLayout.viewport}  広い表 ${m.wideScrolls.scrollWidth}/${m.wideScrolls.clientWidth}  nav行最小 ${Math.round(Math.min(...m.navRows.map((r) => r.h)))}px  tab icon ${Math.round(m.tabIcon.w)}px  総収支の判定作業 ${m.workbench.panes.length}ペイン縦積み${m.workbench.panes.every((pane) => pane.left === m.workbench.panes[0].left) ? 'OK' : 'NG'}/最小タップ${Math.round(Math.min(...m.workbench.tabs.map((t) => t.h)))}px`,
     );
   }
 

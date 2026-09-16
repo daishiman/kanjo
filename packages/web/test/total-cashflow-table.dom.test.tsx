@@ -17,6 +17,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { TotalCashflowReview } from '../src/api.js';
 import { TotalCashflowPage, TotalCashflowTable } from '../src/pages/analysis/TotalCashflow.js';
 
+// jsdom には canvas が無く、Chart.js は context を取れずに例外を投げる。例外はテストを
+// 落とさずスタックだけを積むので、本当の失敗を覆い隠す。ここで見たいのは表と判定作業の
+// 中身なので、グラフは他の画面テストと同じ差し替えを使う
+vi.mock('react-chartjs-2', async () => ({
+  Chart: (await import('../src/test-support/chart-test-doubles.js')).SilentChart,
+}));
+
 /** 一覧表の列見出し。9 列で確定しており、小画面でも落とさない */
 const COLUMNS = [
   '月',
@@ -62,6 +69,14 @@ const payload = (over: Record<string, unknown> = {}) => ({
   freeeOnly: [],
   excluded: [],
   coverage: { freeeTotal: 0, matched: 0, freeeOnly: 0, excluded: 0, mfReview: 0 },
+  // 0041 で足した画面用の一式。既定は「取込前」に当たる形にしてあり、
+  // summary / workbench が null の月は新しい節ごと出ない (0 を並べると「0 円だった」と読める)
+  summary: null,
+  series: [],
+  workbench: null,
+  autoMatches: [],
+  lastOperation: null,
+  period: { applied: null, label: '全期間', full: null, years: [], monthCount: 0 },
   ...over,
 });
 
@@ -164,593 +179,463 @@ describe('要確認の件数と金額を同じセルに併記する', () => {
   });
 });
 
-describe('受入F4 重複候補は理由付きで列挙され、0 件のときは 0 件と明示される', () => {
-  const mf = (over: Partial<TotalCashflowReview['mf']> = {}): TotalCashflowReview['mf'] => ({
-    date: '2026-01-15',
-    displayDate: '01/15',
-    content: 'アマゾンウェブサービス',
-    amount: 3300,
-    io: 'expense',
-    institution: '三井住友カード',
-    major: '通信費',
-    middle: 'サーバー',
-    memo: '',
-    cls: 'biz',
-    clsSrc: '中項目',
-    ...over,
+describe('AC-001 総収支画面の構成要素', () => {
+  const totals = (income: number, expense: number) => ({
+    income,
+    expense,
+    balance: income - expense,
   });
 
-  const review: TotalCashflowReview[] = [
-    {
-      txId: 'mf-near',
-      reason: '発生日が一致しません',
-      mf: mf(),
-      candidates: [
-        {
-          freeeIndex: 4,
-          freeeKey: 'v1:freee:aws',
-          date: '2026-01-17',
-          partner: 'Amazon Web Services',
-          amount: 3300,
-          account: '通信費',
-          settleAccount: '三井住友',
-          dayGap: 2,
-          accountConflict: false,
-        },
-      ],
-    },
-    {
-      txId: 'mf-inst',
-      reason: '口座不一致',
-      mf: mf({ content: 'ドメイン更新', amount: 1500, institution: '楽天カード' }),
-      candidates: [],
-    },
-  ];
-
-  /** 要確認の表の本文行 (見出し行を除く)。1 行 = 要確認 1 件 */
-  const reviewRows = (section: HTMLElement) =>
-    within(section)
-      .getAllByRole('row')
-      .filter((r) => within(r).queryAllByRole('cell').length > 0);
-
-  it('候補があれば件数と理由をそれぞれ出す', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => json(payload({ months: [row({ reviewCount: 2 })], review }))),
-    );
-    wrap(<TotalCashflowPage />);
-
-    const section = await screen.findByRole('region', { name: '重複の要確認' });
-    expect(within(section).getByRole('heading').textContent).toBe('要確認 2 件');
-
-    // 理由は候補ごとに出す。まとめて 1 つにすると、どれがなぜ残ったか分からない
-    const rows = reviewRows(section);
-    expect(rows).toHaveLength(2);
-    expect(rows.map((tr) => tr.textContent)).toEqual(
-      expect.arrayContaining([
-        expect.stringContaining('発生日が一致しません'),
-        expect.stringContaining('口座不一致'),
-      ]),
-    );
-  });
-
-  /*
-    このテストは旧実装 (txId と理由だけを出していた頃) では必ず落ちる。
-    件数と理由の存在だけを見ていた前のテストは、識別子しか出ていない画面を緑にしていた。
-    要確認の目的は「利用者が同じ取引か判断できること」なので、判断材料そのものを固定する。
-
-    件ごとに表を作る形も落とす: MF と freee は「同じ 1 行の中」に並んでいなければ、
-    件数が増えると見出しが繰り返されて比較にならない。
-  */
-  it('MF 側の中身と freee 側の候補を 1 行の中の同じ列へ並べる', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => json(payload({ months: [row({ reviewCount: 2 })], review }))),
-    );
-    wrap(<TotalCashflowPage />);
-
-    const section = await screen.findByRole('region', { name: '重複の要確認' });
-    const first = reviewRows(section)[0]!;
-
-    // MF 側: 日付・内容・金額・口座・分類が読める
-    expect(first.textContent).toContain('2026-01-15');
-    expect(first.textContent).toContain('アマゾンウェブサービス');
-    expect(first.textContent).toContain('三井住友カード');
-    expect(first.textContent).toContain('通信費 / サーバー');
-    expect(first.textContent).toContain('事業（中項目）');
-
-    // freee 側: 同じ行・同じ列に並び、何日ずれているかが語で分かる
-    expect(first.textContent).toContain('2026-01-17');
-    expect(first.textContent).toContain('Amazon Web Services');
-    expect(first.textContent).toContain('freee が 2 日あと');
-
-    // 金額は両側に出す。片方だけだと「同額かどうか」を画面上で確かめられない
-    const amount = within(first).getByRole('cell', { name: /-3,300/ });
-    expect(amount.textContent).toBe('-3,300-3,300');
-
-    // 見出しは表全体で 1 回。件ごとに表を作ると件数ぶん繰り返される
-    expect(within(section).getAllByRole('table')).toHaveLength(1);
-
-    // 内部識別子は判断の材料にならないので画面へ出さない
-    expect(first.textContent).not.toContain('mf-near');
-  });
-
-  /*
-    候補はサーバ側で「同じ金額・同じ向き・前後 3 日以内」に絞り込まれている。金額は必ず
-    一致していて、実際に違いうるのは発生日と口座だけ。どこが違うかは機械が既に知っているのに、
-    右端の理由欄へ文字で書くだけでは、利用者が横に長い行を目で往復して差を探すことになる。
-    食い違うセルそのものに印が出ること、そして一致しているセルには出ないことを固定する
-    (全部に印が付けば、どこを見ればよいかがまた分からなくなる)。旧実装には印自体が無いので必ず落ちる。
-  */
-  it('MF と食い違うセルにだけ印を出し、一致しているセルには出さない', async () => {
-    const cell = (tr: HTMLElement, index: number) => within(tr).getAllByRole('cell')[index]!;
-    const dateCell = (tr: HTMLElement) => cell(tr, 2);
-    const accountCell = (tr: HTMLElement) => cell(tr, 5);
-
-    const candidate = (over: Record<string, unknown>) => ({
-      freeeIndex: 7,
-      freeeKey: 'v1:freee:sakura',
-      date: '2026-01-15',
-      partner: 'さくらインターネット',
-      amount: 900,
-      account: '通信費',
-      settleAccount: '三井住友',
-      dayGap: 0,
-      accountConflict: false,
-      ...over,
+  const segmentSummary = (income: number, expense: number, prevIncome: number, prevExpense: number) => {
+    const current = totals(income, expense);
+    const previousYear = totals(prevIncome, prevExpense);
+    const change = (key: 'income' | 'expense' | 'balance') => ({
+      diff: current[key] - previousYear[key],
+      rate: previousYear[key] === 0 ? null : (current[key] - previousYear[key]) / previousYear[key],
     });
-    const rows: TotalCashflowReview[] = [
-      review[0]!, // 発生日だけがずれている (dayGap 2 / 口座は一致)
-      {
-        txId: 'mf-acct',
-        reason: '口座不一致',
-        mf: mf({ content: 'さくらインターネット', amount: 900 }),
-        candidates: [candidate({ accountConflict: true, settleAccount: '楽天銀行' })],
-      },
-      {
-        txId: 'mf-exact',
-        reason: '同額の候補が複数あります',
-        mf: mf({ content: 'さくらインターネット', amount: 900 }),
-        candidates: [candidate({ freeeKey: 'v1:freee:sakura-2' })],
-      },
-    ];
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => json(payload({ months: [row({ reviewCount: 3 })], review: rows }))),
-    );
-    wrap(<TotalCashflowPage />);
-
-    const section = await screen.findByRole('region', { name: '重複の要確認' });
-    const [near, acct, exact] = reviewRows(section) as [HTMLElement, HTMLElement, HTMLElement];
-
-    // 日付だけがずれている組: 印は発生日にだけ出る
-    expect(dateCell(near).textContent).toContain('≠');
-    expect(accountCell(near).textContent).not.toContain('≠');
-
-    // 口座だけが違う組: 印は口座にだけ出る。日付が同じ列に印が出れば、印が信用できなくなる
-    expect(accountCell(acct).textContent).toContain('≠');
-    expect(dateCell(acct).textContent).not.toContain('≠');
-
-    // 印は比較される freee 行に付ける。基準である MF 行に付けると、どちらが基準か読めない
-    expect(dateCell(near).querySelector('.tcf-line-mf')!.textContent).not.toContain('≠');
-    expect(dateCell(near).querySelector('.tcf-line-freee')!.textContent).toContain('≠');
-
-    // 日付も口座も一致する組には印を一切出さず、一致していることを語で断る
-    expect(dateCell(exact).textContent).not.toContain('≠');
-    expect(accountCell(exact).textContent).not.toContain('≠');
-    expect(exact.textContent).toContain('日付も口座も一致');
-  });
-
-  it('freee 側に候補が無いときは、空欄ではなく「相手がいない」と書く', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => json(payload({ months: [row({ reviewCount: 2 })], review }))),
-    );
-    wrap(<TotalCashflowPage />);
-
-    const section = await screen.findByRole('region', { name: '重複の要確認' });
-    expect(reviewRows(section)[1]!.textContent).toContain(
-      '同じ金額・同じ向きで前後 3 日以内の取引はありません',
-    );
-  });
-
-  it('候補が 0 件でも節ごと消さず、0 件であることを文字で明示する', async () => {
-    // 節ごと消すと「0 件だった」と「まだ数えていない」が画面上で同じ見た目になる。
-    // 空欄ではなく語で断ることが受入の要求。
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => json(payload({ months: [row({ reviewCount: 0 })] }))),
-    );
-    wrap(<TotalCashflowPage />);
-
-    const section = await screen.findByRole('region', { name: '重複の要確認' });
-    expect(within(section).getByRole('heading').textContent).toBe('要確認 0 件');
-    expect(within(section).getByText('機械では決められない重複はありません。')).toBeTruthy();
-    expect(within(section).queryAllByRole('table')).toHaveLength(0);
-  });
-});
-
-/*
-  要確認が複数件出ると、1 件ずつ 2 回クリックさせる画面は、件数が増えるほど
-  破綻する。選んでまとめて判定できること、そしてそれが 1 往復で送られることを固定する。
-  1 往復であることは通信の都合ではなく、D1 のクエリ数が invocation 単位で数えられる以上、
-  選ぶ件数によって保存の成否が変わらないための条件である。
-*/
-describe('要確認は選んでまとめて判定できる', () => {
-  const item = (txId: string, dayGap: number): TotalCashflowReview => ({
-    txId,
-    reason: '口座不一致',
-    mf: {
-      date: '2026-01-01',
-      displayDate: '01/01',
-      content: `ノート ${txId}`,
-      amount: 5980,
-      io: 'expense',
-      institution: '架空カード 個人用',
-      major: 'その他',
-      middle: '事業経費',
-      memo: '',
-      cls: 'biz',
-      clsSrc: '中項目',
-    },
-    candidates: [
-      {
-        freeeIndex: 0,
-        freeeKey: `v1:freee:note#${txId}`,
-        date: '2026-01-01',
-        partner: 'note株式会社',
-        amount: 5980,
-        account: '新聞図書費',
-        settleAccount: '事業主借',
-        dayGap,
-        accountConflict: true,
-      },
-    ],
-  });
-
-  const review = [item('a', 0), item('b', 0), item('c', 2)];
-
-  /** POST された本文を順に記録する fetch */
-  const stub = () => {
-    const posts: unknown[] = [];
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-        if (init?.method === 'POST') {
-          posts.push(JSON.parse(String(init.body)));
-          return json({ ok: true, saved: 1, rejected: [] });
-        }
-        return json(payload({ months: [row({ reviewCount: review.length })], review }));
-      }),
-    );
-    return posts;
+    return {
+      ...current,
+      previousYear,
+      change: { income: change('income'), expense: change('expense'), balance: change('balance') },
+    };
   };
 
-  const openSection = async () => {
-    stub();
-    wrap(<TotalCashflowPage />);
-    return await screen.findByRole('region', { name: '重複の要確認' });
-  };
-
-  it('チェックした分だけが 1 回の送信にまとまる', async () => {
-    const posts = stub();
-    wrap(<TotalCashflowPage />);
-    const section = await screen.findByRole('region', { name: '重複の要確認' });
-
-    const boxes = within(section).getAllByRole('checkbox', { name: /を選ぶ$/ });
-    expect(boxes).toHaveLength(3);
-    fireEvent.click(boxes[0]!);
-    fireEvent.click(boxes[2]!);
-    expect(within(section).getByText('2 件を選択中')).toBeTruthy();
-
-    fireEvent.click(within(section).getByRole('button', { name: '選択したものを「同じ取引」にする' }));
-
-    await waitFor(() => expect(posts).toHaveLength(1));
-    expect(posts[0]).toEqual({
-      items: [
-        { txId: 'a', verdict: 'same' },
-        { txId: 'c', verdict: 'same' },
-      ],
-    });
-  });
-
-  it('1 件も選んでいなければ一括のボタンは押せない', async () => {
-    const section = await openSection();
-    expect(
-      (within(section).getByRole('button', { name: '選択したものを「同じ取引」にする' }) as HTMLButtonElement)
-        .disabled,
-    ).toBe(true);
-  });
-
-  /*
-    「同じ日・同額なのに口座名の書き方が違う」組へ 1 件ずつチェックを
-    入れさせると、チェックを付ける操作そのものが手間になる。
-  */
-  it('「同じ日・同額のものを選ぶ」で日付の一致した件だけが選ばれる', async () => {
-    const section = await openSection();
-
-    fireEvent.click(within(section).getByRole('button', { name: '同じ日・同額のものを選ぶ (2)' }));
-    expect(within(section).getByText('2 件を選択中')).toBeTruthy();
-
-    const boxes = within(section).getAllByRole('checkbox', { name: /を選ぶ$/ }) as HTMLInputElement[];
-    expect(boxes.map((b) => b.checked)).toEqual([true, true, false]);
-  });
-
-  it('すべて選ぶを押すと全件が入り、もう一度押すと空になる', async () => {
-    const section = await openSection();
-    const all = within(section).getByRole('checkbox', { name: 'すべて選ぶ' });
-
-    fireEvent.click(all);
-    expect(within(section).getByText('3 件を選択中')).toBeTruthy();
-    fireEvent.click(all);
-    expect(within(section).getByText('0 件を選択中')).toBeTruthy();
-  });
-
-  it('行ごとのボタンは従来どおり単票で送る', async () => {
-    const posts = stub();
-    wrap(<TotalCashflowPage />);
-    const section = await screen.findByRole('region', { name: '重複の要確認' });
-
-    fireEvent.click(within(section).getAllByRole('button', { name: '違う取引' })[1]!);
-
-    await waitFor(() => expect(posts).toHaveLength(1));
-    expect(posts[0]).toEqual({ txId: 'b', verdict: 'different' });
-  });
-});
-
-/*
-  「取り込んだ内容に抜け漏れはないでしょうか」「一致しているものが表示されていない」への答え。
-  一致した組を画面に出さない限り、寄った件数が正しいかを利用者が確かめる手立てが無い。
-  件数は 3 つの内訳が freee 総数へ足し合わさる形で見せる。
-*/
-describe('freee 全件の行き先を件数と中身で示す', () => {
-  const freee = (over: Record<string, unknown> = {}) => ({
+  const candidate = (over: Record<string, unknown> = {}) => ({
     freeeIndex: 0,
-    freeeKey: 'v1:freee:one',
-    month: '2026-08',
-    date: '2026-08-05',
-    partner: '架空クラウド',
+    freeeKey: 'v1:freee:aws#0',
+    date: '2026-01-17',
+    partner: 'Amazon Web Services',
     amount: 3300,
-    io: 'expense' as const,
     account: '通信費',
     settleAccount: '三井住友',
+    dayGap: 2,
+    accountConflict: false,
+    score: 82,
     ...over,
   });
-  const mfSide = {
-    date: '2026-08-05',
-    displayDate: '08/05',
-    content: 'アマゾンウェブサービス',
-    amount: 3300,
-    io: 'expense' as const,
-    institution: '三井住友カード',
-    major: '通信費',
-    middle: 'サーバー',
-    memo: '',
-    cls: 'biz',
-    clsSrc: '中項目' as const,
-  };
-  const body = payload({
-    matched: [
-      { mfTxId: 'mf-1', freeeIndex: 0, freeeKey: 'v1:freee:one', by: 'auto', mf: mfSide, freee: freee() },
-    ],
-    freeeOnly: [freee({ freeeIndex: 1, freeeKey: 'v1:freee:two', partner: '架空アプリ', amount: 2900 })],
-    excluded: [
-      {
-        ...freee({ freeeIndex: 2, freeeKey: 'v1:freee:three', partner: '架空アプリ', amount: 2900 }),
-        reason: '同じ支払を 2 回登録していた',
-      },
-    ],
-    coverage: { freeeTotal: 3, matched: 1, freeeOnly: 1, excluded: 1, mfReview: 0 },
+
+  const reviewItem = (
+    txId: string,
+    candidates: unknown[] = [candidate()],
+    mfOver: Record<string, unknown> = {},
+  ) => ({
+    txId,
+    reason: '発生日が一致しません',
+    mf: {
+      date: '2026-01-15',
+      displayDate: '01/15',
+      content: 'アマゾンウェブサービス',
+      amount: 3300,
+      io: 'expense' as const,
+      institution: '三井住友カード',
+      major: '通信費',
+      middle: 'サーバー',
+      memo: '',
+      cls: 'biz' as const,
+      clsSrc: '中項目',
+      ...mfOver,
+    },
+    candidates,
   });
 
-  const openSection = async (posts: unknown[] = []) => {
+  const full = (over: Record<string, unknown> = {}) =>
+    payload({
+      summary: {
+        total: segmentSummary(250_000, 8_300, 200_000, 10_000),
+        biz: segmentSummary(200_000, 3_300, 160_000, 4_000),
+        household: segmentSummary(50_000, 5_000, 40_000, 6_000),
+      },
+      series: [
+        {
+          month: '2026-07',
+          total: totals(240_000, 8_000),
+          biz: totals(190_000, 3_000),
+          household: totals(50_000, 5_000),
+        },
+        {
+          month: '2026-08',
+          total: totals(250_000, 8_300),
+          biz: totals(200_000, 3_300),
+          household: totals(50_000, 5_000),
+        },
+      ],
+      workbench: {
+        duplicates: [reviewItem('mf-dup')],
+        needsReview: [reviewItem('mf-rev', []), reviewItem('mf-rev2', [])],
+        excluded: [],
+        progress: {
+          duplicates: { total: 4, decided: 3 },
+          needsReview: { total: 2, decided: 0 },
+          excluded: { total: 0, decided: 0 },
+        },
+      },
+      autoMatches: [],
+      period: {
+        applied: { from: '2026-07', to: '2026-08' },
+        label: '2026年',
+        full: null,
+        years: [],
+        monthCount: 2,
+      },
+      ...over,
+    });
+
+  const renderPage = async (body: unknown) => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => json(body)),
+    );
+    const view = wrap(<TotalCashflowPage />);
+    await screen.findByRole('region', { name: '期間の収支' });
+    return view;
+  };
+
+  it('期間の収支・推移グラフ・判定作業が同時に出る', async () => {
+    await renderPage(full());
+
+    for (const label of ['期間の収支', '重複・除外の判定作業']) {
+      expect(screen.getByRole('region', { name: label })).toBeTruthy();
+    }
+    // KPI は 3 枚。減ると「純収支だけ出ている」状態を緑にしてしまう。
+    // 「総収入」は一覧表の列見出しにも出るので、期間の収支の中だけを見る
+    const kpis = within(screen.getByRole('region', { name: '期間の収支' }));
+    for (const label of ['総収入', '総支出', '純収支']) {
+      expect(kpis.getByText(label)).toBeTruthy();
+    }
+    expect(screen.getByRole('tablist', { name: '判定作業の区分' })).toBeTruthy();
+    expect(screen.getAllByRole('tab')).toHaveLength(3);
+  });
+
+  it('判定の入口をワークベンチ1つに集約し、左ナビを作業順に並べる', async () => {
+    await renderPage(full());
+
+    expect(screen.getAllByRole('region', { name: '重複・除外の判定作業' })).toHaveLength(1);
+    expect(screen.queryByRole('region', { name: '重複の要確認' })).toBeNull();
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs).toHaveLength(3);
+    expect(tabs[0]?.textContent).toMatch(/^重複候補 1/);
+    expect(tabs[1]?.textContent).toMatch(/^freee除外 0/);
+    expect(tabs[2]?.textContent).toMatch(/^要確認 2/);
+  });
+
+  it('先頭明細の詳細を初期表示する', async () => {
+    await renderPage(full());
+
+    const detail = screen.getByRole('complementary', { name: '選択中の明細の詳細' });
+    expect(within(detail).getByText('MoneyForward の明細')).toBeTruthy();
+    expect(within(detail).getByText('アマゾンウェブサービス')).toBeTruthy();
+  });
+
+  it('表示中の明細を検索・判定状態で絞り、全選択できる', async () => {
+    const duplicates = [
+      reviewItem('mf-aws', [candidate()], { content: 'AWS 利用料', amount: 3300 }),
+      reviewItem('mf-notion', [candidate({ freeeKey: 'v1:freee:notion#0', partner: 'Notion Labs' })], {
+        content: 'Notion 月額',
+        amount: 1200,
+      }),
+    ];
+    await renderPage(
+      full({
+        workbench: {
+          duplicates,
+          needsReview: [],
+          excluded: [],
+          progress: {
+            duplicates: { total: 2, decided: 0 },
+            needsReview: { total: 0, decided: 0 },
+            excluded: { total: 0, decided: 0 },
+          },
+        },
+      }),
+    );
+
+    const workbench = within(screen.getByRole('region', { name: '重複・除外の判定作業' }));
+    fireEvent.change(workbench.getByRole('searchbox', { name: '取引内容・金額で検索' }), {
+      target: { value: 'Notion' },
+    });
+    fireEvent.change(workbench.getByRole('combobox', { name: '判定状態で絞り込む' }), {
+      target: { value: 'undecided' },
+    });
+
+    expect(workbench.queryByText('AWS 利用料')).toBeNull();
+    expect(workbench.getAllByText('Notion 月額')).toHaveLength(2);
+    const all = workbench.getByRole('checkbox', { name: '表示中の1件をすべて選択' });
+    fireEvent.click(all);
+    expect(workbench.getByText('1 件選択中')).toBeTruthy();
+  });
+
+  it('下部選択バーから同じ・別・安全な除外を実行できる', async () => {
+    const posts: unknown[] = [];
+    const body = full();
     vi.stubGlobal(
       'fetch',
       vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
-        if (init?.method && init.method !== 'GET') {
-          posts.push({ method: init.method, body: JSON.parse(String(init.body)) });
-          return json({ ok: true });
+        if (init?.method === 'POST') {
+          posts.push(JSON.parse(String(init.body)));
+          return json({ ok: true, saved: 1, operationId: 'op-1' });
         }
         return json(body);
       }),
     );
     wrap(<TotalCashflowPage />);
-    return await screen.findByRole('region', { name: 'freee 取引の行き先' });
-  };
 
-  it('一致・一致にも除外にも入らない残り・除外の件数が総数になる', async () => {
-    const section = await openSection();
-    expect(within(section).getByRole('heading', { level: 2 }).textContent).toBe(
-      '取り込んだ freee 3 件の行き先',
-    );
-    // 内訳を足すと総数になることを、画面の文言そのもので固定する
-    const summary = section.textContent ?? '';
-    expect(summary).toContain('一致 1 件');
-    expect(summary).toContain('一致にも除外にも入らない残り 1 件');
-    expect(summary).toContain('二重登録として外した 1 件');
-    expect(summary).toContain('＝ 3 件');
-  });
+    const workbench = within(await screen.findByRole('region', { name: '重複・除外の判定作業' }));
+    fireEvent.click(workbench.getByRole('checkbox', { name: /mf-dup|2026-01-15.*選ぶ/ }));
+    const bar = within(workbench.getByRole('region', { name: '選択中の操作' }));
+    expect(bar.getByRole('button', { name: '同じ取引にする' })).toBeTruthy();
+    expect(bar.getByRole('button', { name: '別の取引にする' })).toBeTruthy();
+    expect((bar.getByRole('button', { name: '集計から除外' }) as HTMLButtonElement).disabled).toBe(false);
 
-  it('一致した組は MF と freee の両方の中身を並べ、自動かあなたの判断かを書く', async () => {
-    const section = await openSection();
-    const table = within(section).getAllByRole('table')[0]!;
-    const cells = within(table)
-      .getAllByRole('cell')
-      .map((c) => c.textContent);
-    expect(cells).toContain('アマゾンウェブサービス');
-    expect(cells).toContain('架空クラウド');
-    expect(cells).toContain('-3,300');
-    expect(cells).toContain('自動 (日付と金額が一致)');
-  });
-
-  it('外した取引は理由つきで残り、総額へ戻せる', async () => {
-    const posts: unknown[] = [];
-    const section = await openSection(posts);
-    expect(section.textContent).toContain('同じ支払を 2 回登録していた');
-
-    fireEvent.click(within(section).getByRole('button', { name: '総額へ戻す' }));
+    fireEvent.click(bar.getByRole('button', { name: '別の取引にする' }));
     await waitFor(() => expect(posts).toHaveLength(1));
-    expect(posts[0]).toEqual({ method: 'DELETE', body: { freeeKey: 'v1:freee:three' } });
+    expect(posts[0]).toEqual({ txId: 'mf-dup', verdict: 'different' });
   });
 
-  /*
-    freeeOnly は「MF に相手がいない」と判定された集合ではない。全 freee 取引から
-    matched と excluded を除いた残りである。行ごとに「外す」を置くと重複だと読ませるため、
-    操作は一致した表だけに残す(受入基準3・4)。
-  */
-  it('一致にも除外にも入らない表は操作列を持たない', async () => {
-    const section = await openSection();
-    const tables = within(section).getAllByRole('table');
-    const freeeOnly = tables[1]!;
-    // 見出しだけで表を取り違えないよう、残余の表であることを列で確かめる
-    const headers = within(freeeOnly)
-      .getAllByRole('columnheader')
-      .map((c) => c.textContent);
-    expect(headers).toEqual(['発生日', '取引先', '向き', '金額', '決済口座', '勘定科目']);
-    expect(headers).not.toContain('操作');
-    expect(within(freeeOnly).queryAllByRole('button', { name: '二重登録として外す' })).toHaveLength(0);
-
-    // 一致した1行ぶんだけが残る。ここまで消えると重複を外す手段が無くなる
-    expect(within(section).getAllByRole('button', { name: '二重登録として外す' })).toHaveLength(1);
-    expect(within(tables[0]!).getAllByRole('button', { name: '二重登録として外す' })).toHaveLength(1);
-
-    // core の集合定義を短い語でそのまま読める。例示だけで意味を狭めない
-    expect(section.textContent).toContain('一致でも二重登録として除外でもない、残りの取引です');
-    expect(section.textContent).toContain('重複候補ではなく、総額に含まれます');
-  });
-
-  /*
-    「決め手が日付と金額の一致なら、外す理由もそれが既定で入っていてほしい」への答え。
-    決め手はすでに画面に出ている。同じ言葉を毎回打たせる空欄には意味が無く、
-    打つのが面倒だから理由を省く方向へ働く。
-  */
-  it('一致した組の理由欄には決め手が既定で入り、書き換えたぶんが送られる', async () => {
-    const posts: unknown[] = [];
-    const section = await openSection(posts);
-
-    fireEvent.click(within(section).getAllByRole('button', { name: '二重登録として外す' })[0]!);
-    const field = within(section).getByLabelText('2026-08-05 架空クラウド を外す理由') as HTMLInputElement;
-    expect(field.value).toBe('日付と金額が一致');
-    const submit = within(section).getByRole('button', { name: '外す' }) as HTMLButtonElement;
-    // 既定が入っているので、そのまま押せる
-    expect(submit.disabled).toBe(false);
-
-    fireEvent.change(field, { target: { value: '日付と金額が一致 (領収書で確認)' } });
-    fireEvent.click(submit);
-    await waitFor(() => expect(posts).toHaveLength(1));
-    expect(posts[0]).toEqual({
-      method: 'POST',
-      body: { freeeKey: 'v1:freee:one', reason: '日付と金額が一致 (領収書で確認)' },
-    });
-  });
-
-  /*
-    「チェックをつけたものは、外す理由と外すを一括で変更できるようにしてほしい」への答え。
-    一致した組は同じ理由で並んで出るので、件数ぶん同じ操作を繰り返させない。
-    送るのは 1 往復。選ぶ件数によって保存の成否が変わらないようにする。
-  */
-  it('選んだ一致の組を、理由を 1 度書くだけでまとめて外せる', async () => {
-    const posts: unknown[] = [];
-    const section = await openSection(posts);
-    const bulkReason = within(section).getByLabelText('選択したものを外す理由') as HTMLInputElement;
-    expect(bulkReason.value).toBe('日付と金額が一致');
-
-    const run = within(section).getByRole('button', {
-      name: '選択したものを二重登録として外す',
+  it('対応候補が無い選択では一括除外を無効にする', async () => {
+    await renderPage(full());
+    const workbench = within(screen.getByRole('region', { name: '重複・除外の判定作業' }));
+    fireEvent.click(workbench.getByRole('tab', { name: /^要確認/ }));
+    fireEvent.click(workbench.getByRole('checkbox', { name: '表示中の2件をすべて選択' }));
+    const bar = within(workbench.getByRole('region', { name: '選択中の操作' }));
+    const exclude = bar.getByRole('button', {
+      name: '集計から除外',
     }) as HTMLButtonElement;
-    // 何も選んでいないうちは押せない。空振りの往復を送らない
-    expect(run.disabled).toBe(true);
+    expect(exclude.disabled).toBe(true);
+  });
 
-    fireEvent.click(within(section).getByLabelText('すべて選ぶ'));
-    expect(within(section).getByText('1 件を選択中')).toBeTruthy();
-    fireEvent.change(bulkReason, { target: { value: 'freee を正として MF を外した' } });
-    fireEvent.click(run);
+  it('自動一致の候補を新しい名称で表示し、1取引を1行7セルに収める', async () => {
+    await renderPage(
+      full({
+        autoMatches: [
+          {
+            txId: 'mf-auto',
+            freeeIndex: 0,
+            freeeKey: 'v1:freee:auto#0',
+            by: 'auto',
+            score: 92,
+            verdict: null,
+            mf: reviewItem('mf-auto').mf,
+            freee: {
+              freeeIndex: 0,
+              freeeKey: 'v1:freee:auto#0',
+              month: '2026-01',
+              date: '2026-01-15',
+              partner: 'Amazon Web Services',
+              amount: 3300,
+              io: 'expense',
+              account: '通信費',
+              settleAccount: '三井住友',
+            },
+          },
+        ],
+      }),
+    );
 
-    await waitFor(() => expect(posts).toHaveLength(1));
-    expect(posts[0]).toEqual({
-      method: 'POST',
-      body: { freeeKeys: ['v1:freee:one'], reason: 'freee を正として MF を外した' },
-    });
+    expect(screen.queryByRole('region', { name: '完全一致候補' })).toBeNull();
+    const section = within(screen.getByRole('region', { name: '自動一致の候補' }));
+    const dataRows = section
+      .getAllByRole('row')
+      .filter((item) => within(item).queryAllByRole('cell').length > 0);
+    expect(dataRows).toHaveLength(1);
+    expect(within(dataRows[0]!).getAllByRole('cell')).toHaveLength(7);
+  });
+
+  it('9列の月次表を「月次の内訳を表示」の中で既定閉じにする', async () => {
+    await renderPage(full());
+
+    const summary = screen.getByText('月次の内訳を表示');
+    const details = summary.closest('details');
+    expect(details).not.toBeNull();
+    expect(details?.hasAttribute('open')).toBe(false);
+    expect(within(details as HTMLElement).getByRole('table')).toBeTruthy();
+  });
+
+  it('freeeの検算情報は小さな詳細に縮約し、除外と自動一致を再掲しない', async () => {
+    await renderPage(
+      full({
+        coverage: { freeeTotal: 3, matched: 1, freeeOnly: 1, excluded: 1, mfReview: 0 },
+        matched: [],
+        freeeOnly: [],
+        excluded: [],
+      }),
+    );
+
+    const summary = screen.getByText('freee取引の検算を表示');
+    const details = summary.closest('details');
+    expect(details).not.toBeNull();
+    expect(details?.hasAttribute('open')).toBe(false);
+    expect(details?.textContent).toContain('一致 1 件');
+    expect(details?.textContent).toContain('残り 1 件');
+    expect(details?.textContent).toContain('除外 1 件');
+    expect(within(details as HTMLElement).queryAllByRole('table')).toHaveLength(0);
+    expect(within(details as HTMLElement).queryByRole('button', { name: '総額へ戻す' })).toBeNull();
+  });
+
+  it('区分の切替は総合・事業・家計の 3 つで、選んだ区分の金額へ入れ替わる', async () => {
+    await renderPage(full());
+
+    const radios = screen.getAllByRole('radio', { name: /総合|事業|家計/ });
+    expect(radios.map((r) => (r as HTMLInputElement).value)).toEqual(['total', 'biz', 'household']);
+
+    // 総合の総収入 250,000 から、事業の 200,000 へ入れ替わること。
+    // 「切替が押せる」だけの検査だと、値が動かない実装でも緑になる。
+    // 同じ金額は一覧表にも出るので、期間の収支の中だけを見る
+    const kpis = () => within(screen.getByRole('region', { name: '期間の収支' }));
+    expect(kpis().getByText('¥250,000')).toBeTruthy();
+    fireEvent.click(radios[1]!);
+    expect(kpis().getByText('¥200,000')).toBeTruthy();
+    expect(kpis().queryByText('¥250,000')).toBeNull();
+  });
+
+  it('前年同期がそろっていれば差額と率を、欠けていればその旨を出す', async () => {
+    const { unmount } = await renderPage(full());
+    expect(screen.getByText('前年同期 ¥200,000')).toBeTruthy();
+    unmount();
+    cleanup();
+
+    const missing = segmentSummary(250_000, 8_300, 0, 0);
+    await renderPage(
+      full({
+        summary: {
+          total: { ...missing, previousYear: null, change: null },
+          biz: { ...missing, previousYear: null, change: null },
+          household: { ...missing, previousYear: null, change: null },
+        },
+      }),
+    );
+    // 0 円と書くと「前年は 0 円だった」と読める。そろっていないことを文字で言う
+    expect(screen.getAllByText('前年同期のデータがそろっていません').length).toBeGreaterThan(0);
+  });
+
+  it('色は CSS 変数だけで渡し、描画の宣言へ直書きしない', async () => {
+    const { container } = await renderPage(full());
+    const declarations = [...container.querySelectorAll('[style]')].flatMap((el) =>
+      (el.getAttribute('style') ?? '')
+        .split(';')
+        .map((part) => part.trim())
+        .filter(Boolean),
+    );
+    // `--series-color: #...` はトークンの受け渡しなので許す。禁じたいのは
+    // color / background などの描画宣言に 16 進が直接入ること (chartSeriesColor を迂回した印)
+    const offenders = declarations.filter((decl) => !decl.startsWith('--') && /#[0-9a-f]{3,8}\b/i.test(decl));
+    expect(offenders).toEqual([]);
   });
 });
 
-/*
-  同じ日に同じ額の freee 取引が複数あるとき、「同じ取引」だけでは機械にはどちらとも読める。
-  利用者が選んだ相手を送れないと、見て決めた組と実際に寄る組がずれる。
-*/
-describe('候補が複数あるときは組む相手を選べる', () => {
-  const cand = (freeeIndex: number, partner: string) => ({
-    freeeIndex,
-    freeeKey: `v1:freee:${partner}`,
-    date: '2026-08-09',
-    partner,
-    amount: 2900,
-    account: '通信費',
-    settleAccount: '三井住友',
-    dayGap: 3,
-    accountConflict: false,
-  });
-  const two: TotalCashflowReview = {
-    txId: 'mf-pick',
-    reason: '発生日が一致しません',
-    mf: {
-      date: '2026-08-12',
-      displayDate: '08/12',
-      content: '架空アプリ',
-      amount: 2900,
-      io: 'expense',
-      institution: '三井住友カード',
-      major: '通信費',
-      middle: 'サブスク',
-      memo: '',
-    },
-    candidates: [cand(0, 'A社'), cand(1, 'B社')],
-  };
-  const one: TotalCashflowReview = { ...two, txId: 'mf-single', candidates: [cand(0, 'A社')] };
-
-  const open = async (review: TotalCashflowReview[]) => {
-    const posts: unknown[] = [];
+describe('BR-007 判定の進捗は区分ごとに出す', () => {
+  it('選んだ区分の「N 件中 M 件」を出し、区分を変えると数も変わる', async () => {
+    const body = {
+      ...payload(),
+      summary: null,
+      workbench: {
+        duplicates: [],
+        needsReview: [],
+        excluded: [],
+        progress: {
+          duplicates: { total: 4, decided: 3 },
+          needsReview: { total: 7, decided: 1 },
+          excluded: { total: 2, decided: 2 },
+        },
+      },
+    };
     vi.stubGlobal(
       'fetch',
-      vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
-        if (init?.method === 'POST') {
-          posts.push(JSON.parse(String(init.body)));
-          return json({ ok: true });
-        }
-        return json(payload({ months: [row({ reviewCount: review.length })], review }));
+      vi.fn(async () => json(body)),
+    );
+    wrap(<TotalCashflowPage />);
+
+    await screen.findByText('4 件中 3 件の判定が完了しました');
+    fireEvent.click(screen.getByRole('tab', { name: /要確認/ }));
+    // 全体の合計だけを出すと、残り 1 件と残り 6 件が同じ進捗に見える
+    expect(screen.getByText('7 件中 1 件の判定が完了しました')).toBeTruthy();
+  });
+});
+
+describe('U-001 取消の失敗は種類で言い分ける', () => {
+  const pane = (over: Record<string, unknown> = {}) => ({
+    txId: 'mf-undo',
+    reason: '発生日が一致しません',
+    mf: {
+      date: '2026-01-15',
+      displayDate: '01/15',
+      content: 'アマゾンウェブサービス',
+      amount: 3300,
+      io: 'expense' as const,
+      institution: '三井住友カード',
+      major: '通信費',
+      middle: 'サーバー',
+      memo: '',
+      cls: 'biz' as const,
+      clsSrc: '中項目',
+    },
+    candidates: [
+      {
+        freeeIndex: 0,
+        freeeKey: 'v1:freee:aws#0',
+        date: '2026-01-17',
+        partner: 'Amazon Web Services',
+        amount: 3300,
+        account: '通信費',
+        settleAccount: '三井住友',
+        dayGap: 2,
+        accountConflict: false,
+        score: 82,
+      },
+    ],
+    ...over,
+  });
+
+  /**
+   * 判定を 1 件保存して「元に戻す」を出し、その取消が `status` で失敗する場面を作る。
+   *
+   * 取消の導線は詳細ペインの中にしかない。一覧の行から押しただけでは出ないので、
+   * 日付を押して詳細を開くところまでが前提条件になる。
+   */
+  const undoFailingWith = async (status: number, code: string) => {
+    const body = payload({
+      workbench: {
+        duplicates: [pane()],
+        needsReview: [],
+        excluded: [],
+        progress: {
+          duplicates: { total: 1, decided: 0 },
+          needsReview: { total: 0, decided: 0 },
+          excluded: { total: 0, decided: 0 },
+        },
+      },
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes('/undo')) return json({ error: { code, message: 'x' } }, status);
+        if ((init?.method ?? 'GET') === 'POST') return json({ ok: true, saved: 1, operationId: 'op-1' });
+        return json(body);
       }),
     );
     wrap(<TotalCashflowPage />);
-    return { section: await screen.findByRole('region', { name: '重複の要確認' }), posts };
+
+    const workbench = within(await screen.findByRole('region', { name: '重複・除外の判定作業' }));
+    fireEvent.click(workbench.getByRole('button', { name: '2026-01-15' }));
+    const detail = within(await screen.findByRole('complementary', { name: '選択中の明細の詳細' }));
+    fireEvent.click(detail.getByRole('button', { name: '別の取引' }));
+    fireEvent.click(await screen.findByRole('button', { name: '元に戻す' }));
   };
 
-  it('選んだ候補が「同じ取引」と一緒に送られる', async () => {
-    const { section, posts } = await open([two]);
-    const radios = within(section).getAllByRole('radio');
-    expect(radios).toHaveLength(2);
+  it('書き込みが混み合っただけなら、やり直せると伝えて導線を残す', async () => {
+    await undoFailingWith(409, 'canonical_write_busy');
 
-    fireEvent.click(radios[1]!);
-    fireEvent.click(within(section).getAllByRole('button', { name: '同じ取引' })[0]!);
-
-    await waitFor(() => expect(posts).toHaveLength(1));
-    expect(posts[0]).toEqual({ txId: 'mf-pick', verdict: 'same', freeeKey: 'v1:freee:B社' });
+    expect(await screen.findByText('別の更新と重なりました。もう一度お試しください')).toBeTruthy();
+    // 直せば通る失敗なので、押す先を消さない
+    expect(screen.getByRole('button', { name: '元に戻す' })).toBeTruthy();
   });
 
-  it('候補が 1 件しかない組には選択肢を出さず、名指しも付けない', async () => {
-    const { section, posts } = await open([one]);
-    expect(within(section).queryAllByRole('radio')).toHaveLength(0);
+  it('対象が最新でなくなっていたら、再読込を促して導線を消す', async () => {
+    await undoFailingWith(409, 'stale_operation');
 
-    fireEvent.click(within(section).getAllByRole('button', { name: '同じ取引' })[0]!);
-    await waitFor(() => expect(posts).toHaveLength(1));
-    expect(posts[0]).toEqual({ txId: 'mf-single', verdict: 'same' });
-  });
-
-  it('「違う取引」には相手の名指しを付けない', async () => {
-    const { section, posts } = await open([two]);
-    fireEvent.click(within(section).getAllByRole('radio')[0]!);
-    fireEvent.click(within(section).getAllByRole('button', { name: '違う取引' })[0]!);
-
-    await waitFor(() => expect(posts).toHaveLength(1));
-    expect(posts[0]).toEqual({ txId: 'mf-pick', verdict: 'different' });
+    expect(
+      await screen.findByText('別の画面で新しい操作があったため取り消せません。画面を再読込してください'),
+    ).toBeTruthy();
+    expect(screen.queryByRole('button', { name: '元に戻す' })).toBeNull();
   });
 });

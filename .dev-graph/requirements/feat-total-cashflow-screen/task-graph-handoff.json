@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "handoff_target": "task-graph",
+  "feature_id": "feat-total-cashflow-screen",
+  "parent_feature": "feat-total-cashflow-screen",
+  "feature_package_id": "feature-package/feat-total-cashflow-screen",
+  "snapshot_digest": "sha256:ccd677d72151f4883bfb1d37a4c38232cf5711f48891d0d79664e5ab4985babf",
+  "validated_plan_digest": "sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5",
+  "kind": "requirements-handoff",
+  "status": "ready",
+  "requirements_document": ".dev-graph/requirements/feat-total-cashflow-screen/requirements.md",
+  "readiness_matrix": ".dev-graph/requirements/feat-total-cashflow-screen/readiness-matrix.json",
+  "trace_plan": ".dev-graph/requirements/feat-total-cashflow-screen/trace-plan.json",
+  "task_graph": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/task-graph.json",
+  "system_build_handoff": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/system-build-handoff.json",
+  "task_spec_source_root": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/task-specs",
+  "task_projection_target_root": "tasks/feat-total-cashflow-screen",
+  "requirement_count": 9,
+  "task_count": 13,
+  "missing_sections": [],
+  "self_generated_code_files": [],
+  "preconditions": [
+    "SYS-TCSCREEN-P01 の着手時に spec の未決事項 8 件 (取消の 409 canonical_write_busy と 404 の画面での扱い、変更箇所の数え漏れ、承認 note の参照先、S4 の文言提示、除外済み候補が複数の明細と lastOperation の用途、前期比/前年同期比の表記、decision-004 と 017 の食い違い、未記入注記と出典メモ) の扱いを docs/total-cashflow-screen/requirements-baseline.md に記録する。推定のまま confirmed にしない。",
+    "確定意思決定 qa-total-cashflow-decision-001..018 (005 を除く 17 件) は変更せず、各要件の根拠として引用する。"
+  ],
+  "consumer_action": "dev-graph next で ready batch を算出し、worktree claim 後に SYS-TCSCREEN-P01 から task-graph build を開始する。"
+}

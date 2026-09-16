@@ -17,8 +17,8 @@ template_id: "specification"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "6e1542b3438e1de3e5c76782e98faadf8de20c524449a4f97173973ed4578b56"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/00-requirements-definition.md", "source_version": "0.1.14", "source_digest": "6e1542b3438e1de3e5c76782e98faadf8de20c524449a4f97173973ed4578b56", "imported_at": "2026-09-14T12:23:44Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-14-analysis-hub/completeness-findings.json", "evaluated_digest": "6e1542b3438e1de3e5c76782e98faadf8de20c524449a4f97173973ed4578b56"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-14-analysis-hub/00-requirements-definition.md", "source_version": "0.1.14", "source_digest": "6e1542b3438e1de3e5c76782e98faadf8de20c524449a4f97173973ed4578b56", "imported_at": "2026-09-14T12:23:44Z"}
 created_at: "2026-09-14T12:23:44Z"
 updated_at: "2026-09-14T12:23:44Z"
 depends_on: []
@@ -50,7 +50,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
 
 # 支出分析ハブ 仕様
 
-本書は `system-spec/00-requirements-definition.md` (承認 `appr-foundation-analysis-hub-001`) を dev-graph の specification として参照する入口である。規範本文は system-spec 側が正本で、ここでは実装計画が必要とする節だけを要約し、領域別の制約は architecture ノード (arch-analysis-hub-ui-ux, arch-analysis-hub-frontend, arch-analysis-hub-backend, arch-analysis-hub-database, arch-analysis-hub-auth, arch-analysis-hub-security, arch-analysis-hub-infrastructure, arch-analysis-hub-maintenance-ops) に分ける。完成度評価は `system-spec/completeness-findings.json` (verdict PASS)。
+本書は `system-spec/archive/2026-09-14-analysis-hub/00-requirements-definition.md` (承認 `appr-foundation-analysis-hub-001`) を dev-graph の specification として参照する入口である。規範本文は system-spec 側が正本で、ここでは実装計画が必要とする節だけを要約し、領域別の制約は architecture ノード (arch-analysis-hub-ui-ux, arch-analysis-hub-frontend, arch-analysis-hub-backend, arch-analysis-hub-database, arch-analysis-hub-auth, arch-analysis-hub-security, arch-analysis-hub-infrastructure, arch-analysis-hub-maintenance-ops) に分ける。完成度評価は `system-spec/archive/2026-09-14-analysis-hub/completeness-findings.json` (verdict PASS)。
 
 ## 目的と成功状態
 

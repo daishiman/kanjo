@@ -967,11 +967,28 @@ export interface RestoreWriteSet {
   reviewSnoozeRows: unknown[][] | null;
   monthlyCloseReviewRows: unknown[][] | null;
   /**
+   * 0041: 総収支の判断3表。保留/レビューと同じく、keyがあればその集合で置き換え、
+   * keyの無い旧バックアップ(null)では既存の行に触れない。
+   * 判断(verdict/exclusion)と履歴(operations)は必ず同じ集合へ揃える。片方だけ戻すと、
+   * 取消ボタンが復元前の操作を指して二重に戻す。
+   */
+  duplicateVerdictRows: unknown[][] | null;
+  freeeDealExclusionRows: unknown[][] | null;
+  totalCashflowOperationRows: unknown[][] | null;
+  /**
    * 移行先に行が無い表は DELETE を省く(指紋には含めない)。件数は取込writer lease取得後の
    * snapshotで読み、保留/レビューの書込も同じleaseで直列化されるので、読んだ後に行は増えない。
    */
   reviewSnoozesDestinationEmpty: boolean;
   monthlyCloseReviewsDestinationEmpty: boolean;
+  duplicateVerdictsDestinationEmpty: boolean;
+  freeeDealExclusionsDestinationEmpty: boolean;
+  totalCashflowOperationsDestinationEmpty: boolean;
+  rulesDestinationEmpty: boolean;
+  txEditsDestinationEmpty: boolean;
+  institutionOwnersDestinationEmpty: boolean;
+  budgetsDestinationEmpty: boolean;
+  cashOverridesDestinationEmpty: boolean;
 }
 
 /** 復元で置き換える「後で確認」1件。kind/itemKey/指紋は復元前に検証済みであること */
@@ -987,6 +1004,38 @@ export interface RestoreMonthlyCloseReview {
   month: string;
   reviewedAt: string;
   reviewedByUserId: string;
+}
+
+/** 0041: 復元で置き換える重複の判断1件。tx_id は復元する明細と同じ鍵であること */
+export interface RestoreDuplicateVerdict {
+  txId: string;
+  verdict: string;
+  stableKey: string | null;
+  fingerprintVersion: number | null;
+  decidedAt: string | null;
+  updatedAt: string | null;
+  freeeKey: string | null;
+}
+
+/** 0041: 復元で置き換える freee 除外1件 */
+export interface RestoreFreeeDealExclusion {
+  freeeKey: string;
+  reason: string;
+  reasonCode: string | null;
+  memo: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+/** 0041: 復元で置き換える操作履歴1件。items_json は解釈せず、文字列のまま入れ替える */
+export interface RestoreTotalCashflowOperation {
+  id: string;
+  kind: string;
+  itemsJson: string;
+  itemCount: number;
+  undoesId: string | null;
+  undoneAt: string | null;
+  createdAt: string;
 }
 
 /** restoreのmerge/default適用後に、実際にpersistするtable行を一度だけ構成する。 */
@@ -1005,8 +1054,23 @@ export function prepareRestoreWriteSet(args: {
   /** 0040: null/未指定はバックアップにkeyが無い。既存の行を残す */
   reviewSnoozes?: ReadonlyArray<RestoreReviewSnooze> | null;
   monthlyCloseReviews?: ReadonlyArray<RestoreMonthlyCloseReview> | null;
+  /** 0041: null/未指定はバックアップにkeyが無い。既存の行を残す */
+  duplicateVerdicts?: ReadonlyArray<RestoreDuplicateVerdict> | null;
+  freeeDealExclusions?: ReadonlyArray<RestoreFreeeDealExclusion> | null;
+  totalCashflowOperations?: ReadonlyArray<RestoreTotalCashflowOperation> | null;
   /** 移行先の既存件数。未指定は「行があるかもしれない」として DELETE を残す */
-  existingReviewStateCounts?: { reviewSnoozes: number; monthlyCloseReviews: number };
+  existingDestinationRowCounts?: {
+    reviewSnoozes: number;
+    monthlyCloseReviews: number;
+    duplicateVerdicts: number;
+    freeeDealExclusions: number;
+    totalCashflowOperations: number;
+    rules: number;
+    txEdits: number;
+    institutionOwners: number;
+    budgets: number;
+    cashOverrides: number;
+  };
 }): RestoreWriteSet {
   const rawTxs = canonicalMfTransactions(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)));
   return {
@@ -1102,8 +1166,48 @@ export function prepareRestoreWriteSet(args: {
           .sort((a, b) => a.month.localeCompare(b.month))
           .map((row) => [row.month, row.reviewedAt, row.reviewedByUserId])
       : null,
-    reviewSnoozesDestinationEmpty: args.existingReviewStateCounts?.reviewSnoozes === 0,
-    monthlyCloseReviewsDestinationEmpty: args.existingReviewStateCounts?.monthlyCloseReviews === 0,
+    // DBでは tx_id / freee_key / id を主キーとする集合。配列順を指紋へ混ぜない
+    duplicateVerdictRows: args.duplicateVerdicts
+      ? [...args.duplicateVerdicts]
+          .sort((a, b) => a.txId.localeCompare(b.txId))
+          .map((row) => [
+            row.txId,
+            row.verdict,
+            row.stableKey,
+            row.fingerprintVersion,
+            row.decidedAt,
+            row.updatedAt,
+            row.freeeKey,
+          ])
+      : null,
+    freeeDealExclusionRows: args.freeeDealExclusions
+      ? [...args.freeeDealExclusions]
+          .sort((a, b) => a.freeeKey.localeCompare(b.freeeKey))
+          .map((row) => [row.freeeKey, row.reason, row.reasonCode, row.memo, row.createdAt, row.updatedAt])
+      : null,
+    totalCashflowOperationRows: args.totalCashflowOperations
+      ? [...args.totalCashflowOperations]
+          .sort((a, b) => a.id.localeCompare(b.id))
+          .map((row) => [
+            row.id,
+            row.kind,
+            row.itemsJson,
+            row.itemCount,
+            row.undoesId,
+            row.undoneAt,
+            row.createdAt,
+          ])
+      : null,
+    reviewSnoozesDestinationEmpty: args.existingDestinationRowCounts?.reviewSnoozes === 0,
+    monthlyCloseReviewsDestinationEmpty: args.existingDestinationRowCounts?.monthlyCloseReviews === 0,
+    duplicateVerdictsDestinationEmpty: args.existingDestinationRowCounts?.duplicateVerdicts === 0,
+    freeeDealExclusionsDestinationEmpty: args.existingDestinationRowCounts?.freeeDealExclusions === 0,
+    totalCashflowOperationsDestinationEmpty: args.existingDestinationRowCounts?.totalCashflowOperations === 0,
+    rulesDestinationEmpty: args.existingDestinationRowCounts?.rules === 0,
+    txEditsDestinationEmpty: args.existingDestinationRowCounts?.txEdits === 0,
+    institutionOwnersDestinationEmpty: args.existingDestinationRowCounts?.institutionOwners === 0,
+    budgetsDestinationEmpty: args.existingDestinationRowCounts?.budgets === 0,
+    cashOverridesDestinationEmpty: args.existingDestinationRowCounts?.cashOverrides === 0,
   };
 }
 
@@ -1114,6 +1218,14 @@ export async function restoreWriteSetFingerprint(writeSet: RestoreWriteSet): Pro
     subVendorExclusionsChanged: _exclusionsChanged,
     reviewSnoozesDestinationEmpty: _snoozesEmpty,
     monthlyCloseReviewsDestinationEmpty: _reviewsEmpty,
+    duplicateVerdictsDestinationEmpty: _verdictsEmpty,
+    freeeDealExclusionsDestinationEmpty: _exclusionRowsEmpty,
+    totalCashflowOperationsDestinationEmpty: _operationsEmpty,
+    rulesDestinationEmpty: _rulesEmpty,
+    txEditsDestinationEmpty: _editsEmpty,
+    institutionOwnersDestinationEmpty: _ownersEmpty,
+    budgetsDestinationEmpty: _budgetsEmpty,
+    cashOverridesDestinationEmpty: _overridesEmpty,
     ...rows
   } = writeSet;
   return fingerprintCanonical(`v${FINGERPRINT_VERSION}:json-write-set:${canonicalEncode(rows)}`);
@@ -1228,7 +1340,59 @@ export function restoreCommitStatements(args: {
           ),
         ]
       : []),
-    database.prepare('DELETE FROM rules WHERE user_id=?').bind(userId),
+    ...(writeSet.duplicateVerdictRows
+      ? [
+          ...(writeSet.duplicateVerdictsDestinationEmpty
+            ? []
+            : [database.prepare('DELETE FROM duplicate_verdicts WHERE user_id=?').bind(userId)]),
+          ...insertJsonRows(
+            database,
+            'duplicate_verdicts',
+            [
+              'tx_id',
+              'verdict',
+              'stable_key',
+              'fingerprint_version',
+              'decided_at',
+              'updated_at',
+              'freee_key',
+            ],
+            writeSet.duplicateVerdictRows,
+            [{ column: 'user_id', value: userId }],
+          ),
+        ]
+      : []),
+    ...(writeSet.freeeDealExclusionRows
+      ? [
+          ...(writeSet.freeeDealExclusionsDestinationEmpty
+            ? []
+            : [database.prepare('DELETE FROM freee_deal_exclusions WHERE user_id=?').bind(userId)]),
+          ...insertJsonRows(
+            database,
+            'freee_deal_exclusions',
+            ['freee_key', 'reason', 'reason_code', 'memo', 'created_at', 'updated_at'],
+            writeSet.freeeDealExclusionRows,
+            [{ column: 'user_id', value: userId }],
+          ),
+        ]
+      : []),
+    ...(writeSet.totalCashflowOperationRows
+      ? [
+          ...(writeSet.totalCashflowOperationsDestinationEmpty
+            ? []
+            : [database.prepare('DELETE FROM total_cashflow_operations WHERE user_id=?').bind(userId)]),
+          ...insertJsonRows(
+            database,
+            'total_cashflow_operations',
+            ['id', 'kind', 'items_json', 'item_count', 'undoes_id', 'undone_at', 'created_at'],
+            writeSet.totalCashflowOperationRows,
+            [{ column: 'user_id', value: userId }],
+          ),
+        ]
+      : []),
+    ...(writeSet.rulesDestinationEmpty
+      ? []
+      : [database.prepare('DELETE FROM rules WHERE user_id=?').bind(userId)]),
     ...insertJsonRows(
       database,
       'rules',
@@ -1239,7 +1403,9 @@ export function restoreCommitStatements(args: {
         { column: 'created_at', value: now },
       ],
     ),
-    database.prepare('DELETE FROM tx_edits WHERE user_id=?').bind(userId),
+    ...(writeSet.txEditsDestinationEmpty
+      ? []
+      : [database.prepare('DELETE FROM tx_edits WHERE user_id=?').bind(userId)]),
     ...insertJsonRows(
       database,
       'tx_edits',
@@ -1266,15 +1432,21 @@ export function restoreCommitStatements(args: {
       writeSet.editRows,
       [{ column: 'user_id', value: userId }],
     ),
-    database.prepare('DELETE FROM institution_owners WHERE user_id=?').bind(userId),
+    ...(writeSet.institutionOwnersDestinationEmpty
+      ? []
+      : [database.prepare('DELETE FROM institution_owners WHERE user_id=?').bind(userId)]),
     ...insertJsonRows(database, 'institution_owners', ['institution', 'owner'], writeSet.ownerRows, [
       { column: 'user_id', value: userId },
     ]),
-    database.prepare('DELETE FROM budgets WHERE user_id=?').bind(userId),
+    ...(writeSet.budgetsDestinationEmpty
+      ? []
+      : [database.prepare('DELETE FROM budgets WHERE user_id=?').bind(userId)]),
     ...insertJsonRows(database, 'budgets', ['account', 'monthly_amount'], writeSet.budgetRows, [
       { column: 'user_id', value: userId },
     ]),
-    database.prepare('DELETE FROM cash_overrides WHERE user_id=?').bind(userId),
+    ...(writeSet.cashOverridesDestinationEmpty
+      ? []
+      : [database.prepare('DELETE FROM cash_overrides WHERE user_id=?').bind(userId)]),
     ...insertJsonRows(
       database,
       'cash_overrides',
