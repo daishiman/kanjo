@@ -106,6 +106,12 @@ implementation_readiness: {"status": "complete", "missing_sections": [], "checke
 - `architecture_refs`: `arch-account-login-auth` (認証方式とセッション) / `arch-account-login-security` (脅威と防御) / `arch-account-login-database` (スキーマと移行) / `arch-account-login-backend` (API 契約とドメイン) / `arch-account-login-frontend` (画面実装と状態) / `arch-account-login-ui-ux` (画面構成と情報優先度) / `arch-account-login-infrastructure` (配信構成と secret) / `arch-account-login-maintenance-ops` (運用と復旧)
 - 規範となる仕様書: `specs/spec-account-login.md` (内容は複製せず lineage 参照のみ)
 
+## 本番反映の状況
+
+- 2026-09-15: 本番で PBKDF2 210,000 回がログイン 500 を起こしたため 100,000 回へ下げた (#52)。既存 admin は break-glass reset で 100,000 回のハッシュへ入れ替え済み。
+- 本番へ資格情報を入れる経路は `docs/runbooks/scripts/admin-credential-remote.sh` に一本化した。
+- 未完了: `AUTH_PASSWORD` の削除と、所有者によるログイン・利用者追加の確認 (SYS-ACCTLOGIN-P13)。記録は `docs/account-login/release-record.md`。
+
 ## 機能間依存
 
 - `depends_on`: (なし)

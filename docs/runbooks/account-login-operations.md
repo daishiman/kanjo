@@ -31,17 +31,20 @@ node scripts/seed-admin.mjs
 「設定 → 利用者管理」から追加し、初期投入経路を二重化しません。
 `--force-change` を付けると初回ログイン時にパスワード変更を要求する状態で作れます。
 
-**本番:** 同じ SQL を生成して、内容を目視してから流します。実行は手作業に限ります。
+**本番:** 専用スクリプトで流します。実行は運用者の端末での手作業に限ります。
 
 ```bash
-read -rs 'KANJO_SEED_PASSWORD?初期パスワード: '; print
-print -r -- "$KANJO_SEED_PASSWORD" | \
-  node scripts/seed-admin.mjs --print-sql --mode bootstrap --email owner@example.com --password-stdin > /tmp/seed-admin.sql
-unset KANJO_SEED_PASSWORD
-# 中身を確認する (平文パスワードは含まれず、ハッシュだけが入っていること)
-pnpm --filter @kanjo/api exec wrangler d1 execute kanjo-db --remote --file /tmp/seed-admin.sql
-rm /tmp/seed-admin.sql
+bash docs/runbooks/scripts/admin-credential-remote.sh bootstrap --email owner@example.com
 ```
+
+スクリプトは次の順で進み、途中で失敗すれば書き込まずに止まります。
+
+1. パスワードを聞く前に、本番 D1 へ読み取り (`SELECT 1`) で届くかを確かめる。
+2. パスワードを2回、画面に出さずに受け取り、stdin だけで `seed-admin.mjs --print-sql` へ渡す。
+3. SQL が `INSERT INTO users` で始まり、DELETE/DROP を含まないことを確かめてから流す。
+4. 作成した行を、ハッシュの先頭21文字 (`pbkdf2-sha256$100000$`) だけ表示して確認する。
+
+手作業の `--file` や `pnpm exec` を使わない理由は §5 末尾の表にあります。
 
 このSQLは`users`が0件のときだけINSERTし、既存行をDELETE・上書きしません。identityと過去の監査actor参照を保ちます。
 作成後、資格情報を運用者へ引き渡し、**引き渡しの完了を確認してから**次の作業へ進みます。
@@ -102,23 +105,30 @@ pnpm --filter @kanjo/api exec wrangler secret put SESSION_SECRET
 
 ```bash
 # 1. 復旧させたい利用者の id を確認する
-pnpm --filter @kanjo/api exec wrangler d1 execute kanjo-db --remote \
+node node_modules/wrangler/bin/wrangler.js d1 execute kanjo-db --remote \
   --command "SELECT id, email, role, status FROM users ORDER BY created_at"
 
-# 2. 新しいハッシュと、世代を1つ進める UPDATE 文を作る
-read -rs 'KANJO_SEED_PASSWORD?復旧用パスワード: '; print
-print -r -- "$KANJO_SEED_PASSWORD" | \
-  node scripts/seed-admin.mjs --print-sql --mode reset-admin --user-id <復旧対象のid> --password-stdin > /tmp/recover.sql
-unset KANJO_SEED_PASSWORD
-
-# 3. 指定adminへのUPDATEだけで、DELETE/INSERTを含まないことを確認してから流す
-pnpm --filter @kanjo/api exec wrangler d1 execute kanjo-db --remote --file /tmp/recover.sql
-rm /tmp/recover.sql
+# 2. 新しいハッシュを作り、その admin への UPDATE だけを流して確認する
+bash docs/runbooks/scripts/admin-credential-remote.sh reset-admin --user-id <復旧対象のid>
 ```
 
 `reset-admin`はemail/role/id/created_atを変えず、指定idが既存adminに一致するときだけハッシュ・停止状態・一時期限・セッション世代を更新します。
+成功すると確認表が `must_change_password=1`、1つ進んだ `session_generation`、`hash_head=pbkdf2-sha256$100000$` になり、
+次回ログインでパスワード変更 (12文字以上) を求められます。
 
 作業後は `audit_log` に記録が残らない経路であるため、実施日時と対象を運用記録へ手で残します。
+
+### 手作業で流さない理由 (2026-09-15 の実施で踏んだ失敗)
+
+| 以前の手順 | 起きたこと | スクリプトでの扱い |
+|---|---|---|
+| `wrangler d1 execute --file` | 本番で `/import` の認証エラー (code 10000) になり、流れない | `--command` で流す |
+| `pnpm --filter @kanjo/api exec wrangler` | 7403 で失敗したとき、pnpm がハッシュ入りの SQL を丸ごと表示した | wrangler を直接呼び、出力のハッシュを伏せ字にする。7403 は1回だけ再試行する |
+| SQL を `/tmp` へ書き出す | ハッシュがディスクに残る | SQL はシェル変数にだけ置き、書き込み後に消す |
+| 反復 210,000 回のハッシュ | 本番 Workers の WebCrypto が 100,000 回を超える PBKDF2 を拒否し、ログインが 500 になった (#52) | `seed-admin.mjs` が 100,000 回で作る |
+
+出力にハッシュが表示されてしまったら、そのパスワードは使わずに作り直します。
+複数の Cloudflare アカウントにログインしている wrangler では、`CLOUDFLARE_ACCOUNT_ID` を環境変数で渡します。
 
 ## 6. 監査と監視
 
