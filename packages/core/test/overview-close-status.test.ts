@@ -450,7 +450,13 @@ describe('AC-004 月次クローズ 4 ステップの判定表', () => {
         ...Array.from({ length: row.rec }, (_, i) => item('reconciliation', i)),
       ];
       const reviews = row.reviewed ? [{ month: '2026-09', reviewedAt: '2026-09-15T00:00:00.000Z' }] : [];
-      const status = monthlyCloseStatus({ data, items, reviews, hasCommittedImport: row.committed ?? true });
+      const status = monthlyCloseStatus({
+        data,
+        items,
+        reviews,
+        hasCommittedImport: row.committed ?? true,
+        actionRequiredCount: row.rec,
+      });
       expect(status.month).toBe('2026-09');
       expect(status.steps.map((s) => s.key)).toEqual([
         'import',
@@ -486,8 +492,27 @@ describe('AC-004 月次クローズ 4 ステップの判定表', () => {
       items: queue,
       reviews: [],
       hasCommittedImport: true,
+      actionRequiredCount: 1,
     });
     expect(status.steps[1]).toMatchObject({ key: 'classification', done: false, count: 4 });
+  });
+
+  it('照合ステップは actionRequiredCount をそのまま使い、要確認を再加算しない (照合画面 BR-006)', () => {
+    const input = queueFixture();
+    const items = buildReviewQueue(input);
+    const base = { data: input.data, items, reviews: [], hasCommittedImport: true };
+    // items には要確認が 1 件ある。照合 API の単一契約を consumer が再加算しないことを固定する。
+    expect(items.filter((item) => item.kind === 'reconciliation')).toHaveLength(1);
+    expect(monthlyCloseStatus({ ...base, actionRequiredCount: 0 }).steps[2]).toMatchObject({
+      key: 'reconciliation',
+      done: true,
+      count: 0,
+    });
+    expect(monthlyCloseStatus({ ...base, actionRequiredCount: 2 }).steps[2]).toMatchObject({
+      key: 'reconciliation',
+      done: false,
+      count: 2,
+    });
   });
 
   it('データが無ければ対象月は null で全ステップ未完了', () => {
@@ -496,6 +521,7 @@ describe('AC-004 月次クローズ 4 ステップの判定表', () => {
       items: [],
       reviews: [],
       hasCommittedImport: false,
+      actionRequiredCount: 0,
     });
     expect(status.month).toBeNull();
     expect(status.steps[0].done).toBe(false);

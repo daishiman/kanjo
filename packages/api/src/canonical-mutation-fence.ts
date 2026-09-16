@@ -16,7 +16,15 @@ export type CanonicalMutationClass = 'canonical-mutation' | 'self-managed-import
  * JsonSnapshotMutationConsumer ではないが、資産推移CSVの取込と同じ表を書く。
  * 取込の洗い替えと手入力が重なると、消した直後の行だけが残りうるのでleaseは要る。
  */
-type CanonicalConsumer = JsonSnapshotMutationConsumer | 'category_options' | 'balance_entries' | 'overrides';
+type CanonicalConsumer =
+  | JsonSnapshotMutationConsumer
+  | 'category_options'
+  | 'balance_entries'
+  | 'overrides'
+  | 'duplicate_verdicts'
+  | 'freee_deal_exclusions'
+  | 'mf_tx_exclusions'
+  | 'reconciliation_actions';
 
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -70,6 +78,25 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   { method: 'DELETE', path: /^\/api\/review-queue\/snoozes\/[^/]+\/[^/]+$/, consumers: ['review_snoozes'] },
   { method: 'PUT', path: /^\/api\/monthly-close\/[^/]+\/review$/, consumers: ['monthly_close_reviews'] },
   { method: 'DELETE', path: /^\/api\/monthly-close\/[^/]+\/review$/, consumers: ['monthly_close_reviews'] },
+  // 照合と総収支の判断・除外。明細を読んでから判断を書くので、取込の洗替えと重なると
+  // 消えかけの tx_id へ判断を結び付けうる。取り消しは直前の行を書き戻すので同じleaseで直列化する
+  { method: 'POST', path: /^\/api\/total-cashflow\/verdicts$/, consumers: ['duplicate_verdicts'] },
+  { method: 'POST', path: /^\/api\/total-cashflow\/freee-exclusions$/, consumers: ['freee_deal_exclusions'] },
+  {
+    method: 'DELETE',
+    path: /^\/api\/total-cashflow\/freee-exclusions$/,
+    consumers: ['freee_deal_exclusions'],
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/reconciliation\/actions$/,
+    consumers: ['duplicate_verdicts', 'freee_deal_exclusions', 'mf_tx_exclusions', 'reconciliation_actions'],
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/reconciliation\/actions\/[^/]+\/undo$/,
+    consumers: ['duplicate_verdicts', 'freee_deal_exclusions', 'mf_tx_exclusions', 'reconciliation_actions'],
+  },
   { method: 'POST', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PATCH', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PUT', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },

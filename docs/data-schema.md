@@ -119,11 +119,42 @@ freeeが複合行を出力すると、2行目以降の`発生日`が空欄にな
 `freee_deals`と`mf_transactions`は入力元のcanonicalとして分けたまま保持し、画面向けの支出照合とサブスクは現在有効な行から都度導出する。`data.mfTx`へ投影された手入力現金(`cash:*`)はMF未記帳と呼ばず、この投影から除外して既存の現金台帳へ任せる。永続行や取込指紋を書き換えないため、取込取消・期間/種別削除・全件入れ替え・30日undoの結果へ自動追従する。
 
 - `帳簿確定`: freeeの支出から`事業主貸`を除いた事業経費。税務の正本。
-- `未記帳`: MFで実効公私判定が`biz`かつ、freeeと自動照合されていない支出。
+- `未記帳`: MFで実効公私判定が`biz`かつ、freeeと照合されておらず、`mf_tx_exclusions` で除外されていない支出。照合画面では、freee に相手の候補も無いものを「MFのみ」と呼ぶ。MFのみは実質支出に MF の金額で入っているので、照合の対応は要らない。
 - `実質支出`: 帳簿確定 + 未記帳。入力元を無条件には足さない。
-- 自動照合: MF安定IDがあり、非分割で、用途・日付・絶対金額・支払先の厳格キーが一致する1対1だけ。厳格キーはNFKC・大小文字・空白だけを吸収し、法人格や記号は落とさない。
-- 要確認: 複数候補、日付/支払先/用途の不一致、分割、不安定IDは統合しない。過少計上を避け、確認中のMF支出も実質支出へ含める。
+- 自動照合: core `reconcileBizDuplicates` が唯一の判定器。第一段は発生日・絶対金額・向きが一致する1対1だけを寄せ、支払先は見ない。口座が食い違う組は寄せずに要確認へ回す。利用者が「違う」と判断した組は、条件が揃っても寄せない。第二段は利用者が「同じ」と判断した±3日の組を寄せる (freee 1件につき MF 1件)。
+- 要確認: 同額・同じ向きで日付差が±3日以内 (`REVIEW_NEAR_DAYS`) の freee が最大3件 (`REVIEW_MAX_CANDIDATES`) ある MF 支出。理由は「発生日が一致しません」「口座不一致」「取込月と表示日の月が一致しません」「対応する freee 取引が他の明細へ寄せられています」のいずれか。過少計上を避けるため、確認中の MF 支出も実質支出へ含める。
+- 判断と除外: `duplicate_verdicts` (同じ/違う)、`freee_deal_exclusions` (freee 側の除外)、`mf_tx_exclusions` (MF 側の除外) を照合・総収支・支出分析ハブ・概況の4経路へ同じ値で渡す。MF 側の除外は照合の相手探しから外すだけで、総額からは外さない。
+- 照合画面の一致度・キュー・状態・解消率は下の「照合の規則」節に従う。
 - サブスク: 登録支払先の集計と未登録候補の採点を、照合後の実質支出から行う。対象科目はfreeeの`account_raw`、MFの大項目・中項目・`大項目/中項目`のいずれも指定できる。
+
+## 照合の規則
+
+照合画面 (`/analysis/reconciliation`) の値は core `reconciliationReport` が導出し、表には持たない。境界値は `packages/core/test/reconciliation.test.ts` が固定する。
+
+- 内容の類似度: 支払先・内容を NFKC → 空白除去 → 小文字化し、文字 bigram の Dice 係数 `2c/(na+nb)` を取る。bigram は多重集合で数える。正規化後2文字未満は完全一致で1、それ以外は0。
+- 類似の判定: `CONTENT_SIMILARITY_THRESHOLD = 0.5` 以上。浮動小数の誤差を避けるため、整数比較 `4c >= na+nb` で判定し、0.5ちょうどを含める。
+- 限界: カナと英字 (例: 「アマゾン」と「Amazon」) のように表記の違う同じ店は、類似度が0になる。金額と日付の点数だけで候補に上がり、利用者が判断する。
+- 一致度: 金額一致50 + 日付 (同日30 / 1日20 / 2日10 / 3日5 / 4日以上0) + 類似度×20 を `Math.round` で整数にする。
+- 状態 (5語):
+  - `照合済み`: 自動照合、利用者の「同じ」、または利用者の「違う」(別取引と確定した)。
+  - `除外`: MF 側の除外、または±3日・同額の相手 freee が除外済み。
+  - `要確認`: 上の要確認に当たるもの。
+  - `未処理`: 事業の MF 支出で、±3日・同じ向き・内容が類似・金額が違う freee が相手として割り当たったもの。金額の違いを利用者が判断する必要がある。相手の freee は1件につき1明細だけに割り当て、家計の明細には割り当てない。
+  - `MFのみ`: それ以外の事業の MF 支出 (freee に相手が無い)。実質支出と照合画面の事業支出には MF の金額で入っているため、判断は要らない。
+- 対応キュー:
+  - `要確認の候補`: 状態が要確認。
+  - `MFのみの支出`: 状態が MFのみ。「確認のみ」の区画に出し、対応の件数には数えない。確認が済んだ行は除外して一覧から外せる (金額は変わらない)。
+  - `金額の差異`: 状態が未処理 (±3日・同じ向き・内容が類似・金額が違う freee が割り当たった)。
+  - `日付の近い取引`: 要確認で、最良候補との日付差が1〜3日。同日は含めない。
+- KPI:
+  - 事業支出 = freee 支出 (事業主貸と除外を除く) + freee と組んでいない MF の事業支出額 (MFのみ・未処理・除外)。除外は照合の問いから外すだけで総収支の金額を動かさないため、除外してもこの値は変わらない。
+  - 解消率 = 照合済み ÷ (照合済み + 要確認 + 未処理)。MFのみと除外は判断が要らないので分母に入れず、分母0は `null` (「対象なし」)。
+- 月次クローズ: 照合ステップは「要確認 + 未処理 = 0」で完了とする。MFのみは数えない。
+- 操作と取り消し:
+  - `POST /api/reconciliation/actions` は1回に1〜200件を受け付け、件ごとの成否を返す。
+  - 「同じ」は保存の前に、保存後の判断で判定器を試算する。判定器が名指しの freee と組まない件 (freee が除外済み、別の明細と照合済み、同じ回の別の選択と取り合い) は保存せず、件ごとに `freee_excluded` / `freee_already_matched` / `not_matchable` を返す。「同じ」と保存したのに照合済みにならない判断を残さないため。
+  - 判断・除外・操作記録は1回の D1 batch で書く。
+  - 取り消しは、最新かつ未取消の操作1件だけを `before_json` から書き戻す。
 
 ## サブスク支払先の対象科目と候補除外
 
@@ -173,6 +204,8 @@ MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_
 | `import_deleted_rows` | 消した行そのものの退避(0030)。消す**前**に必ず書く(DR-2)。`payload_json` に全列を持ち、undoはこれをINSERTし直すだけで済む。`month` は集計を作り直す対象月(DR-5)。undo専用で、画面・ログ・エラー応答のどれからも中身を出さない。`(operation_id, table_name, row_id)` がUNIQUEで、undoの二重INSERTをDB側で止める |
 | `import_deleted_targets` | 削除で巻き戻す取込指紋の退避(0030、DR-4)。`import_active_targets` は現行の指紋しか持たず履歴が無いため、削除前の`content_hash`/`import_id`/`updated_at` をここへ写す。粒度が明細ではなく対象キーなので `import_deleted_rows` と分ける(同居させると5,000行の削除で同じ指紋を5,000回複製する) |
 | `vendor_memory` | 取引先ごとの「いつもの手当て」(0030)。`vendor_key` は core の `normalizeVendorKey` で表記ゆれを寄せた照合キー、`vendor_label` は表示専用。確信度は1つの数で持たず `hit_count` / `disagree_count` を別々に持つ(「1件中1件」と「40件中40件」を区別するため)。`pinned` は件数によらず当てる、`revoked` は以後当てない・候補にも出さない。`(user_id, vendor_key)` がUNIQUE |
+| `mf_tx_exclusions` | 照合画面で「突合から外す」とした MF 明細(0041)。PK `(user_id, tx_id)`。`tx_id` が振り直されたときは現行版の `stable_key` で引き直し、同じ鍵に複数明細が当たるときは結び付けない。総額からは外さない。明細本文は持たず、`reason` は1〜200文字。JSON バックアップの対象外で、復元でも消さない |
+| `reconciliation_actions` | 照合の一括操作1回ぶんの記録(0041)。`action` は `same`/`different`/`exclude-mf`/`exclude-freee`、`target_count` は1〜200。`before_json` に操作前の判断・除外の行を持ち、取り消しはそれを書き戻して `undone_at` を埋める。90日より古い行は次の操作の batch 内で消す (夜間 cron は使わない)。バックアップの対象外 |
 | `r2_cleanup_jobs` | R2のexact keyを有界に削除する共通outbox(0038)。`purpose`は`import_original`または`retired_attachment`という起点・観測ラベルであり、安全境界には使わない。夜間`r2_cleanup`は最大3件ずつ処理し、Release A中は旧2表のlate writeも先に冪等回収する。同じkeyのneutral jobが`dead`になった後のlate writeだけは`retry`へ戻し、既存`pending/retry`の試行回数とbackoffは保持する。共有keyの全`imports`参照が30日超かつfailed/duplicate/完全supersededで、same-key active pointerが無い場合だけ1jobを自動enqueueする。全jobがR2 DELETE直前に同じ共有key契約を再評価し、active・30日以内・不正時刻・processing/partial/applying/旧statusが1rowでもあればR2と全`imports.r2_key`を保持し、退役metadataとcleanup intentだけを同じD1 batchで閉じる。削除可能ならR2成功後の同じD1 batchで全`imports.r2_key`をNULLにし、退役metadata・全intentも閉じる。bucket scanは行わない |
 
 証懑退役のRelease Aは`0038_prepare_r2_cleanup.sql`であり、0038は共通outboxを追加し、旧`attachments.r2_key`と

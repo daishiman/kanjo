@@ -1,0 +1,42 @@
+{
+  "graph_node_id": "feat-reconciliation",
+  "artifact_kind": "feature",
+  "purpose": "照合画面を、帳簿 (freee の仕訳) と口座 (MoneyForward の取引) の差異を『どこから解消するか』判断し、一件ずつ確認・照合・別取引として処理・除外・元に戻すまでを 1 画面で完結できる作業場にする。月次クローズで利用者が差異の総量を掴み、対応キューから優先度の高い差異を選び、判定根拠 (一致度と一致の理由) を見て迷わず決め、誤操作をすぐ戻せ、照合の完了が月次クローズ進捗に反映される状態にする。",
+  "goal": "/analysis/reconciliation が 04-reconciliation.png の全構成要素 (KPI 4 枚・絞り込みと対応キュー・照合候補一覧・取引の詳細パネル・下段 2 表・選択中バー) をトークンと共通部品で描画し、一致度・一致の理由・ステータス・対応キュー・KPI の規則が core の境界値テストと docs で固定されて照合画面・ハブのバッジ・総収支の要確認件数が一致し、照合 / 別取引 / 除外 / 一括 / 元に戻すが照合専用 API と追加 migration で永続化され、共通シェル (サイドバー文言と件数バッジ・月次クローズ 3/4・ヘッダー・フッター・改善を送る) と画像の全アイコンが揃い、既存の test / typecheck / lint / check 系が緑のままの状態。",
+  "scope_in": [
+    "照合画面 (04-reconciliation.png の全構成要素と読込・空・失敗・部分成功・確認の各状態) の作り直し。支出分析ハブで改善した問いの見出し・トークン・共通 Button/PageShell・狭幅の縦積みを踏襲する",
+    "packages/core の照合判定純関数 (一致度・文字 bigram の Dice 係数による内容類似と 0.5 しきい値・一致の理由・ステータス・対応キュー 4 分類・KPI・解消率・月次クローズ判定) と、buildExpenseProjection・ハブのバッジへの判断と除外の反映",
+    "packages/api の照合専用 API (GET /api/reconciliation、POST /api/reconciliation/actions、POST /api/reconciliation/actions/:id/undo) と月次レビュー完了 API、書込系の canonicalMutationFence 対象化",
+    "D1 の追加 migration (MF 側除外表・照合操作の履歴表・月次レビュー完了表) と、履歴の 90 日削除を既存の夜間 cron へ追加",
+    "共通シェル: サイドバーのグループと文言・件数バッジ・ページ見出しとコマンドパレットのラベル追随、月次クローズ進捗 3/4、ヘッダーのアイコンボタン、フッター、改善を送るボタン",
+    "画像で使われるアイコンの一覧の docs 記載と、RouteIcon への lucide-static 由来 SVG の追加登録と各表示箇所での表示",
+    "判定規則の docs 記載 (docs/data-schema.md の古い候補条件の修正を含む) と境界値テスト・API 統合テスト・DOM テスト・check 系の対象追加"
+  ],
+  "scope_out": [
+    "総収支・マトリクス・推移・診断の各タブ画面の中身の作り直し (ラベルと共通シェルの変更は追随させる)",
+    "データ取込・明細仕分け・サブスクなど他画面の中身の作り直し (件数バッジの算出と導線リンクだけを扱う)",
+    "freee / MoneyForward への書き戻し (仕訳の作成・取引の修正)。取込データを外部送信しない方針を維持する",
+    "利用規約・プライバシー・データ出典の本文の新規作成 (既存の内容へのリンク配置だけを扱う)",
+    "スマートフォン・タブレット・デスクトップ専用アプリ (web SPA 1 系統のレスポンシブで扱う)"
+  ],
+  "acceptance": [
+    "S1 (G1): /analysis/reconciliation で 04-reconciliation.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button/PageShell 経由で直書き色の lint が 0 件である。",
+    "S2 (G2): 一致度・キュー分類・ステータスの規則が docs に明記され境界値テスト (内容類似 1.0 / 0 / 0.67 / 0.33、ちょうど 0.5 と未満、日付差 3 日と 4 日、金額一致と不一致) で固定され、照合画面・ハブのバッジ・総収支の要確認件数が同じデータで一致する。",
+    "S3 (G3): 照合 / 別取引 / 除外 / 一括照合 (最大 200 件・部分成功) の結果が再読込後も保持され、元に戻すで操作前の状態に戻り、KPI とキューが操作前の値に戻る。",
+    "S4 (G4): サイドバー文言と件数バッジ、月次クローズ 3/4、ヘッダーとフッターが画像どおりで、既存ルートと旧 URL のテストが緑である。",
+    "S5 (G5): 画像のアイコンが全て表示され、docs のアイコン一覧と RouteIcon の登録名が一致し、絵柄の重複検査 (route-icon-distinct) が緑である。",
+    "S6 (G1-G5): pnpm test / typecheck / lint と packages/web の check 系 (thead / mobile-layout / financial-figure / financial-routes) が全て緑で、狭幅 (アイコンレール・下部タブ) でも 3 カラムが縦積みになり横スクロールしない。"
+  ],
+  "architecture_refs": [
+    "architecture/reconciliation-ui-ux.md",
+    "architecture/reconciliation-frontend.md",
+    "architecture/reconciliation-backend.md",
+    "architecture/reconciliation-database.md",
+    "architecture/reconciliation-auth.md",
+    "architecture/reconciliation-security.md",
+    "architecture/reconciliation-infrastructure.md",
+    "architecture/reconciliation-maintenance-ops.md",
+    "specs/spec-reconciliation.md"
+  ],
+  "updated_at": "2026-09-15T10:56:57Z"
+}

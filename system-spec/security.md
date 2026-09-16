@@ -3,7 +3,7 @@ status: confirmed
 category: security
 aggregate: 確定
 spec_cells: [security.web, security.mobile, security.tablet, security.desktop-windows, security.desktop-linux, security.desktop-macos]
-serves_goals: [G2, G3]
+serves_goals: [G3]
 ---
 
 # セキュリティ (security)
@@ -15,12 +15,12 @@ serves_goals: [G2, G3]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-security-web-ah-observed-001。裏付け質疑 (`qa_refs`): `qa-analysis-hub-decision-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に残る集計データとクリップボードへ書く共有 URL の保護を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-ah-001 / appr-foundation-analysis-hub-001、2026-09-14) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-security-web-rc-observed-001。裏付け質疑 (`qa_refs`): `qa-security-web-rc-decision-009`, `qa-frontend-web-rc-inference-002` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に残る照合候補の取引内容・金額と、一括照合や元に戻すの操作履歴をどう保護するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に残る照合候補の取引内容・金額と、一括照合や元に戻すの操作履歴をどう保護するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に残る照合候補の取引内容・金額と、一括照合や元に戻すの操作履歴をどう保護するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に残る照合候補の取引内容・金額と、一括照合や元に戻すの操作履歴をどう保護するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に残る照合候補の取引内容・金額と、一括照合や元に戻すの操作履歴をどう保護するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,7 +28,7 @@ serves_goals: [G2, G3]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の入力検証とデータ保護を、?focus= の許可リスト検証、URL に財務情報を載せないこと、クリップボード書込を利用者の明示クリックに限ることに反映した。ハブ API は外部サービスへ送信せず、secureHeaders を全体に掛ける既存構成を維持する。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS の入力検証と業務ロジックの整合を、照合 actions の列挙値・件数 1〜200・id 形式の検証、書込系 API の canonicalMutationFence による取込との排他、取消済み操作の再取消拒否に反映した。照合 API は外部サービスへ送信せず、secureHeaders を全体に掛ける既存構成を維持する。 |
 
 > **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
@@ -38,31 +38,43 @@ serves_goals: [G2, G3]
 
 ### Web (web)
 
-- 資するゴール: G2, G3
+- 資するゴール: G3
 
-#### 主たる接地根拠: `qa-security-web-ah-observed-001`
-
-**問**
-
-ハブで扱う情報のセキュリティ上の前提 (公開範囲・共有 URL・ヘッダー・外部送信) は何か。
-
-**答**
-
-index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証と runtimeSchemaGuard の後にある。ハブ API は利用者本人の集計値だけを返し、外部サービスへ送らない (画像フッター『取込データは外部送信しません』と一致)。URL コピーが書く URL は /analysis?focus=<tab id> で、金額・取引・期間などの財務情報をクエリに含めない (期間は localStorage のまま)。共有された URL を他人が開いても認証が要り、自分のデータしか見えない。focus 値は ANALYSIS_TABS の id の許可リストで検証し、不正値は既定値に落とす (任意文字列を DOM へ反映しない)。クリップボード書込は利用者の明示クリック時だけ行う。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-14 にリポジトリ (HEAD 2162fd2) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/index.ts, design/FINAL-UI/images/03-analysis-hub.png のフッター。focus を URL に持ち期間を URL に載せない点は利用者決定 qa-analysis-hub-decision-001 と承認 appr-foundation-analysis-hub-001 に基づく。 / 回答時刻: 2026-09-14T11:38:26Z)
-
-#### 裏付け質疑: `qa-analysis-hub-decision-001`
+#### 主たる接地根拠: `qa-security-web-rc-observed-001`
 
 **問**
 
-支出分析ハブ (03-analysis-hub.png) は既存の 5 タブとどうつなげるか。現行は /analysis を開くと照合タブへ転送される。選択肢: (A) /analysis をハブにし、各行やタブの『開く』で既存 /analysis/:tab 詳細へ進み、選択中の分析を ?focus= で URL に持ち URL コピーで共有できる (推奨) / (B) 転送を残し 5 タブすべての上部にハブ要素を常時表示する。
+照合で扱う情報のセキュリティ上の前提 (入力検証・書込の排他・外部送信・表示) は何か。
 
 **答**
 
-(A) /analysis をハブにする を選択した。
+index.ts は secureHeaders と requestId を全体に掛ける。書込系 route は zValidator で入力を検証する (総収支 verdicts は最大 200 件)。canonical-mutation-fence.ts の CANONICAL_MUTATION_ROUTES は取込 (POST /api/imports・/api/restore) と重なる書込を acquireImportWriter で排他し 409 canonical_write_busy を返すが、POST /api/total-cashflow/verdicts と freee-exclusions は対象外である。照合は利用者本人の取引内容・金額を扱い外部サービスへ送らない (画像フッター『取込データは外部送信しません』)。検索語は web の状態に留め URL・サーバーへ送らない。取引内容 (支払先名・メモ) は React のテキストとして描画し innerHTML を使わない。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-14 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-14T11:33:07Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD cc0d5e3) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/index.ts, packages/api/src/canonical-mutation-fence.ts, packages/api/src/routes/total-cashflow.ts, design/FINAL-UI/images/04-reconciliation.png のフッター。 / 回答時刻: 2026-09-15T08:59:56Z)
+
+#### 裏付け質疑: `qa-security-web-rc-decision-009`
+
+**問**
+
+照合の書込 (判断・除外・取消・月次レビュー完了) を取込中の書込と重ならないようにするか (現行の総収支 verdicts API は canonicalMutationFence の対象外)。選択肢: (A) fence 対象に追加: 照合の書込系 API を CANONICAL_MUTATION_ROUTES に足し、取込と重なると 409 canonical_write_busy を返す。画面は『取込中のため保存できませんでした』と出し再試行できる。既存の総収支 verdicts API も同じ扱いに揃える (推奨) / (B) 現行どおり排他しない。
+
+**答**
+
+(A) fence 対象に追加 を選択した。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T08:59:56Z)
+
+#### 裏付け質疑: `qa-frontend-web-rc-inference-002`
+
+**問**
+
+照合画面の絞り込み・検索・ページ送り・選択状態をどこで持つか。
+
+**答**
+
+GET /api/reconciliation は期間内の候補全件 (KPI・キュー件数も同じ応答) を返し、データソース・ステータス・対象年月・キュー選択・検索語・ページ (10/20/50 件) は web のコンポーネント状態で絞る。検索語と絞り込みは URL にもサーバーにも送らない (期間は既存どおり localStorage 共有、タブは URL)。選択中の行 id は候補の key (MF tx id) で持ち、絞り込みを変えても見えない選択は選択中バーの件数に含めて『選択をクリア』で外せる。書込後は ['reconciliation', period]・analysisHubQueryKey・['total-cashflow', period]・['summary', period] を invalidate し、ハブ・サイドバーのバッジ・総収支を追随させる。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: アシスタントが 2026-09-15 に観測事実と利用者決定から導いた推定。単独では確定の根拠にせず、観測事実 (主根拠) の補足として qa_refs に載せる。answered_at は記録直前に date -u で実測した時刻。 前提: qa-backend-web-rc-decision-007 (1 回で返す GET)、docs/ui-decisions.md のタブ URL と期間 localStorage の既存判断、Layout.tsx の analysisHubQueryKey 共有。 / 回答時刻: 2026-09-15T08:59:56Z)
 
 ## To-Be / Delta
 
@@ -70,22 +82,17 @@ index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証�
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 選択中の分析を URL (?focus=<tab id>) で保持し、URL コピー・再読込・戻る操作でも同じ分析が選ばれた状態を再現する。既存の /analysis/:tab 詳細と旧 URL の転送は壊さない。
-- **G3**: ハブに必要な集計を packages/core の純関数と、1 回で返す集約 API (GET /analysis/hub) に置く。期間の収支サマリーと前 12 か月比、5 視点それぞれの現在の状態 (照合の要確認件数・総収支の重複候補件数・マトリクスの正常判定・推移の支出前 12 か月比・診断の改善余地) と優先度を返し、ハブ表示中に 5 タブ分の既存 API を呼ばない。
+- **G3**: 照合操作を保存し元に戻せるようにする。既存の duplicate_verdicts と freee 除外表を再利用し、照合画面用の API (一覧・KPI・キューを返す GET と、照合 / 別取引 / 除外 / 一括照合の POST)、verdict 取消 API、MF 側除外、照合操作の履歴表 (直前の操作と元に戻すに使う) を migration 付きで追加する。一括は最大 200 件で部分成功を返す。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | /analysis がハブを描画し、/analysis/:tab と旧 URL の転送は既存どおり動く。 | DOM テストで /analysis がハブの見出し・サマリー・ルート一覧 5 行・読み順 5 ステップ・選択中の分析パネルを描画し、/analysis/reconciliation 等の既存 5 タブと旧 URL のテストが緑のままである。 |
-| O2 | ?focus=<tab id> の読み書きと URL コピーを実装する。 | DOM テストで ?focus=total-cashflow を開くと総収支行と右パネルと下部バーが選択状態になり、行を選ぶと URL が置き換わり、不正な focus 値は既定値に落ち、URL コピーが現在の URL をクリップボードへ書く。 |
-| O3 | core に analysisHub(dataset) 相当の純関数を置き、API に GET /analysis/hub を足す。 | core 単体テストが期間合計・前 12 か月比 (前期間データ無しは null)・5 視点の状態・優先度・改善余地を固定データで検証し、API 統合テストが認証付きで 200 と期間メタを返し、ハブ表示中の DOM テストで既存 5 API への呼出しが 0 件である。 |
+| O3 | 照合操作 API・取消・MF 除外・操作履歴を migration 付きで追加する。 | API 統合テストが認証付きで照合 / 別取引 / 除外 / 一括 (201 件で 400、部分成功の内訳) / 取消 / 直前の操作の取得を検証し、migration が既存 D1 に冪等に適用され、元に戻すと KPI とキューが操作前の値に戻る。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I2**: 分析ルート一覧の行選択で ?focus= を置き換え、右パネルと下部バーの内容を切り替える。URL コピーは現在の URL をクリップボードへ書き、成否を知らせる。
-- **I3**: 期間の収支サマリーに総収入・総支出・純収支と前 12 か月比 (増減率と前期間の金額) を出し、純収支の説明パネルを右に置く。前期間データが無い場合は比較を『比較データなし』と表示する。
-- **I4**: core にハブ集計関数を置き、GET /analysis/hub が期間メタ・サマリー・5 視点の状態・優先度を返す。前期間の計算は core へ移し AI 側もそれを使う。
+- **I4**: 照合画面用 API と verdict 取消・MF 除外・操作履歴を migration 付きで足し、同じ取引として照合 / 別の取引として処理 / 除外 / 一括照合 / 元に戻すを web から呼ぶ。
 
 ### 本章に効く確定意思決定
 
@@ -97,9 +104,9 @@ index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証�
 
 ### 本章での適用
 
-Secure by Design card の『入力を許可リストで検証し、既定値へ落とす』を ?focus= に適用した。focus の値は ANALYSIS_TABS の id 5 種の許可リストで照合し、不正値は既定の分析に落として任意文字列を DOM や aria 属性へ反映しない。『攻撃面を増やさない』は URL コピーに当てた。コピーする URL に期間・金額・取引を載せず (期間は localStorage のまま)、navigator.clipboard.writeText は利用者の明示クリック時だけ呼ぶ。NotAllowedError のときは成否を画面で知らせ、例外を握りつぶさない。
+Secure by Design card の『入力を許可リストで検証する』を照合の書込に適用した。POST /api/reconciliation/actions は zValidator で action を same/different/exclude-mf/exclude-freee の列挙に限り、件数 1〜200・tx id と freee key の形を検証する。『書込の競合を安全側に倒す』は書込系 API を canonicalMutationFence の対象に加える利用者決定 (qa-security-web-rc-decision-009) に当て、取込と重なった書込は 409 で拒否して判断が消えかけの明細に結ばれる事態を防ぐ。検索語を URL やサーバーへ送らないことで、取引内容がアクセスログや共有 URL に残る経路を作らない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-14T11:57:54Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T08:59:56Z)
 
 ### Secure by Design — deep knowledge card
 
@@ -146,4 +153,4 @@ Secure by Design card の『入力を許可リストで検証し、既定値へ�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| clipboard-write-text | 2025-11-30 | Mozilla (MDN Web Docs) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/writeText | 2026-09-14T11:44:16Z | 2026-09-14T11:44:16Z |
+| owasp-authorization-cheatsheet | 2026-08-31 | OWASP Foundation (Cheat Sheet Series) (cheatsheetseries.owasp.org) | https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html | 2026-09-15T09:06:39Z | 2026-09-15T09:06:39Z |

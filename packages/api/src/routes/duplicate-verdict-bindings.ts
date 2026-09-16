@@ -1,4 +1,10 @@
-import { type DuplicateVerdict, type MfTx, STABLE_KEY_VERSION, mfStableKey } from '@kanjo/core';
+import {
+  type DuplicateVerdict,
+  type MfExclusion,
+  type MfTx,
+  STABLE_KEY_VERSION,
+  mfStableKey,
+} from '@kanjo/core';
 import type * as s from '../db/schema.js';
 
 type VerdictRow = typeof s.duplicateVerdicts.$inferSelect;
@@ -27,4 +33,28 @@ export function bindDuplicateVerdicts(
     if (hit) verdicts.push({ txId: tx.id, verdict: hit.verdict, freeeKey: hit.freeeKey });
   }
   return verdicts;
+}
+
+type MfExclusionRow = typeof s.mfTxExclusions.$inferSelect;
+
+/**
+ * 保存済みの MF 除外を現在の明細へ結び付け直す。規則は判断と同じ
+ * (tx_id 優先、無ければ現行版 stable_key、弱い鍵が重複したら結び付けない)。
+ * 照合・総収支・ハブ・概況が同じ関数を通すことで、除外後の件数が画面ごとにずれない。
+ */
+export function bindMfExclusions(rows: readonly MfExclusionRow[], mfTx: readonly MfTx[]): MfExclusion[] {
+  const byTxId = new Map(rows.map((row) => [row.txId, row]));
+  const byStableKey = new Map<string, MfExclusionRow | null>();
+  for (const row of rows) {
+    if (!row.stableKey) continue;
+    if ((row.fingerprintVersion ?? STABLE_KEY_VERSION) !== STABLE_KEY_VERSION) continue;
+    byStableKey.set(row.stableKey, byStableKey.has(row.stableKey) ? null : row);
+  }
+
+  const exclusions: MfExclusion[] = [];
+  for (const tx of mfTx) {
+    const hit = byTxId.get(tx.id) ?? byStableKey.get(mfStableKey(tx)) ?? null;
+    if (hit) exclusions.push({ txId: tx.id, reason: hit.reason });
+  }
+  return exclusions;
 }

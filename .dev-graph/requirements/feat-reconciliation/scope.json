@@ -1,0 +1,41 @@
+{
+ "schema_version": "1.0.0",
+ "feature_id": "feat-reconciliation",
+ "parent_feature": "feat-reconciliation",
+ "feature_package_id": "feature-package/feat-reconciliation",
+ "handoff_target": "task-graph",
+ "selected_nodes": [
+  "spec-reconciliation",
+  "arch-reconciliation-auth",
+  "arch-reconciliation-backend",
+  "arch-reconciliation-database",
+  "arch-reconciliation-frontend",
+  "arch-reconciliation-infrastructure",
+  "arch-reconciliation-maintenance-ops",
+  "arch-reconciliation-security",
+  "arch-reconciliation-ui-ux",
+  "feat-reconciliation",
+  "SYS-RECON-P01",
+  "SYS-RECON-P02",
+  "SYS-RECON-P03",
+  "SYS-RECON-P04",
+  "SYS-RECON-P05",
+  "SYS-RECON-P06",
+  "SYS-RECON-P07",
+  "SYS-RECON-P08",
+  "SYS-RECON-P09",
+  "SYS-RECON-P10",
+  "SYS-RECON-P11",
+  "SYS-RECON-P12",
+  "SYS-RECON-P13"
+ ],
+ "artifact_kinds": [
+  "specification",
+  "architecture",
+  "feature",
+  "task"
+ ],
+ "closure_status": "complete",
+ "missing_nodes": [],
+ "snapshot_digest": "sha256:ddb836b6af870607fc2a1e3e17c596246a95aa649898efca45bcea7517413d32"
+}

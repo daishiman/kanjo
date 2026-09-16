@@ -7,9 +7,9 @@
  * 表の数値はサーバの導出値をそのまま写す。画面側で合計を組み直さないのは、
  * 表示と API が食い違ったときに、どちらが正しいかを利用者が判断できなくなるため。
  */
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { type QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
-import { invalidateAnalysisHub } from '../../analysis-query-invalidation.js';
+import { RECONCILIATION_QUERY_ROOT, invalidateAnalysisHub } from '../../analysis-query-invalidation.js';
 import {
   type DuplicateVerdictValue,
   type FreeeCoverage,
@@ -24,7 +24,21 @@ import {
 import { Button } from '../../components/Button.js';
 import { DataTable } from '../../components/DataTable.js';
 import { PageState } from '../../components/Page.js';
+import { REVIEW_QUEUE_KEY } from '../../components/ReviewQueue.js';
 import { usePeriod } from '../../period.js';
+
+/**
+ * 重複の判断と freee の除外は、照合の件数と月次クローズのキューも同じ表から読む。
+ * 総収支と要約だけを引き直すと、照合画面に戻ったとき古い件数が残る
+ */
+function refreshVerdictReaders(client: QueryClient) {
+  return Promise.all([
+    client.invalidateQueries({ queryKey: ['total-cashflow'] }),
+    invalidateAnalysisHub(client),
+    client.invalidateQueries({ queryKey: RECONCILIATION_QUERY_ROOT }),
+    client.invalidateQueries({ queryKey: REVIEW_QUEUE_KEY }),
+  ]);
+}
 
 /** 一覧表の列。9 列で確定しており、画面幅で落とさない(落とすと内訳が読めなくなる) */
 const COLUMNS = [
@@ -276,10 +290,7 @@ function ExcludeControl({
     onSuccess: () => {
       setOpen(false);
       setReason(defaultReason);
-      return Promise.all([
-        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
-        invalidateAnalysisHub(client),
-      ]);
+      return refreshVerdictReaders(client);
     },
   });
 
@@ -317,11 +328,7 @@ function RestoreButton({ freeeKey }: { freeeKey: string }) {
         method: 'DELETE',
         body: JSON.stringify({ freeeKey }),
       }),
-    onSuccess: () =>
-      Promise.all([
-        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
-        invalidateAnalysisHub(client),
-      ]),
+    onSuccess: () => refreshVerdictReaders(client),
   });
   return (
     <Button size="mini" disabled={run.isPending} onClick={() => run.mutate()}>
@@ -396,10 +403,7 @@ function MatchedTable({ matched }: { matched: readonly ReconcileMatch[] }) {
     onSuccess: () => {
       setPicked(new Set());
       setReason(AUTO_MATCH_REASON);
-      return Promise.all([
-        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
-        invalidateAnalysisHub(client),
-      ]);
+      return refreshVerdictReaders(client);
     },
   });
 
@@ -617,10 +621,7 @@ export function TotalCashflowPage() {
     // 判断は帰属を動かすので、一覧表と要確認キューを両方引き直す
     onSuccess: () => {
       setPicked(new Set());
-      return Promise.all([
-        client.invalidateQueries({ queryKey: ['total-cashflow'] }),
-        invalidateAnalysisHub(client),
-      ]);
+      return refreshVerdictReaders(client);
     },
   });
 

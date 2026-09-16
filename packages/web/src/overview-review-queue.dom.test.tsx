@@ -273,7 +273,7 @@ const countIn = (text: string | null | undefined): number | null => {
 /** 3 か所それぞれの表示件数を読む */
 function counts() {
   const nav = screen.getByRole('navigation', { name: 'メインナビゲーション' });
-  const link = within(nav).getByRole('link', { name: /概況/ });
+  const link = within(nav).getByRole('link', { name: /概要/ });
   const card = screen.getByRole('region', { name: '未処理の内訳' });
   const bar = screen.getByRole('region', { name: '未処理の確認' });
   return {

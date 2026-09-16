@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "acc099afc910ebed34dafffde2fd75d5faf4747799d43e54c6368dda4a1edb45"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/ui-ux.md", "source_version": "0.1.14", "source_digest": "acc099afc910ebed34dafffde2fd75d5faf4747799d43e54c6368dda4a1edb45", "imported_at": "2026-09-14T12:23:44Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-15-analysis-hub/completeness-findings.json", "evaluated_digest": "acc099afc910ebed34dafffde2fd75d5faf4747799d43e54c6368dda4a1edb45"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-15-analysis-hub/ui-ux.md", "source_version": "0.1.14", "source_digest": "acc099afc910ebed34dafffde2fd75d5faf4747799d43e54c6368dda4a1edb45", "imported_at": "2026-09-14T12:23:44Z"}
 created_at: "2026-09-14T12:23:44Z"
 updated_at: "2026-09-14T12:23:44Z"
 depends_on: ["spec-analysis-hub"]

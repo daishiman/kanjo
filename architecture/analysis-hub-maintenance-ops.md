@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "3b70d45717b2219eb2327b08c860cf16b240bacf2454fe230cb97a43eb6f5cea"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/maintenance-ops.md", "source_version": "0.1.14", "source_digest": "3b70d45717b2219eb2327b08c860cf16b240bacf2454fe230cb97a43eb6f5cea", "imported_at": "2026-09-14T12:23:44Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-15-analysis-hub/completeness-findings.json", "evaluated_digest": "3b70d45717b2219eb2327b08c860cf16b240bacf2454fe230cb97a43eb6f5cea"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-15-analysis-hub/maintenance-ops.md", "source_version": "0.1.14", "source_digest": "3b70d45717b2219eb2327b08c860cf16b240bacf2454fe230cb97a43eb6f5cea", "imported_at": "2026-09-14T12:23:44Z"}
 created_at: "2026-09-14T12:23:44Z"
 updated_at: "2026-09-14T12:23:44Z"
 depends_on: ["spec-analysis-hub"]

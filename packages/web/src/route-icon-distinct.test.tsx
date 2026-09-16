@@ -1,5 +1,7 @@
 // @vitest-environment jsdom
 
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 /**
  * iconが「別のキー」ではなく「別の絵」であることを、実際に描いた図形で確かめる。
  *
@@ -16,6 +18,7 @@
 import { cleanup, render } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { ROUTE_ICON_NAMES, RouteIcon } from './components/RouteIcon.js';
+import { UI_ICON_NAMES, UiIcon } from './components/UiIcon.js';
 import { ANALYSIS_HUB_ICONS, ANALYSIS_TABS, APP_ROUTES } from './routeMetadata.js';
 
 afterEach(cleanup);
@@ -85,5 +88,49 @@ describe('iconの図形', () => {
       for (const item of [...tab.sources, ...tab.excluded]) used.add(item.icon);
     }
     expect(ROUTE_ICON_NAMES.filter((name) => !used.has(name))).toEqual([]);
+  });
+});
+
+/** docs の表のうち、見出しの直後にある表から「登録名」列の `name` を抜き出す */
+function docsTableNames(heading: string, column: number): string[] {
+  const doc = readFileSync(resolve(process.cwd(), '../../docs/reconciliation-icons.md'), 'utf8');
+  const section = doc.split(/^## /m).find((part) => part.startsWith(heading));
+  if (!section) throw new Error(`docs/reconciliation-icons.md に「${heading}」の節がない`);
+  return section
+    .split('\n')
+    .filter((line) => line.startsWith('|') && !/^\|[-| ]+\|$/.test(line))
+    .slice(1)
+    .flatMap((line) =>
+      [...(line.split('|')[column] ?? '').matchAll(/`([a-z-]+)`/g)].map((match) => match[1] ?? ''),
+    );
+}
+
+describe('UiIconの図形と対応表', () => {
+  function uiIconShapes(name: (typeof UI_ICON_NAMES)[number]): string[] {
+    const { container } = render(<UiIcon name={name} />);
+    const svg = container.querySelector('svg');
+    if (!svg) throw new Error(`${name} が svg を描いていない`);
+    return [...svg.children].map(shapeSignature);
+  }
+
+  it('2つのUiIconが同一の図形集合になっていない', () => {
+    // UiIcon は状態の丸 (circle) と丸を含む check / info を併用するので、包含は許し完全一致だけを落とす
+    const byGeometry = new Map<string, string[]>();
+    for (const name of UI_ICON_NAMES) {
+      const shapes = uiIconShapes(name);
+      expect(shapes.length, `${name} に図形がない`).toBeGreaterThan(0);
+      const key = [...shapes].sort().join('|');
+      byGeometry.set(key, [...(byGeometry.get(key) ?? []), name]);
+    }
+    const duplicated = [...byGeometry.values()].filter((names) => names.length > 1);
+    expect(duplicated, `同じ絵に別のキーが付いている: ${JSON.stringify(duplicated)}`).toEqual([]);
+  });
+
+  it('docs の登録名一覧が UiIcon の登録と一致し、場所の表の名前はすべて登録済み', () => {
+    expect([...docsTableNames('UiIcon の登録名一覧', 1)].sort()).toEqual([...UI_ICON_NAMES].sort());
+    const placed = docsTableNames('画面上の場所との対応', 5);
+    expect(placed.length).toBeGreaterThan(20);
+    const registry = new Set<string>([...UI_ICON_NAMES, ...ROUTE_ICON_NAMES]);
+    expect(placed.filter((name) => !registry.has(name))).toEqual([]);
   });
 });

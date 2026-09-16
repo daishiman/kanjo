@@ -46,13 +46,6 @@ const MonthlyCloseProgress = lazy(() =>
 
 const IMPROVEMENT_BUTTON_FALLBACK: ReactNode = null;
 
-const STATUS_LABEL: Record<string, string> = {
-  ok: '余裕あり',
-  tight: 'ぎりぎり',
-  danger: '要注意',
-  nodata: 'データなし',
-};
-
 type WorkflowGroup = '取込' | '整える' | '確認' | '計画' | '管理';
 
 const ROUTE_GROUP: Record<AppRouteId, WorkflowGroup> = {
@@ -71,11 +64,9 @@ const ROUTE_GROUP: Record<AppRouteId, WorkflowGroup> = {
   guide: '管理',
 };
 
-const MONTHLY_STEPS: readonly Exclude<WorkflowGroup, '管理'>[] = ['取込', '整える', '確認', '計画'];
-
 function currentLocation(pathname: string, locked: boolean) {
   if (locked) return { group: 'ログイン', labels: ['ログイン'] };
-  if (pathname === '/improvement') return { group: '管理' as const, labels: ['改善要望'] };
+  if (pathname === '/improvement') return { group: '管理' as const, labels: ['改善リクエスト'] };
 
   const analysis = ANALYSIS_TABS.find((tab) => pathname === tab.path);
   if (analysis) return { group: '確認' as const, labels: ['支出分析', analysis.label] };
@@ -87,23 +78,23 @@ function currentLocation(pathname: string, locked: boolean) {
   return { group: ROUTE_GROUP[route.id], labels: [route.label] };
 }
 
-/**
- * サイドバー子行の件数バッジ。要確認が 1 件以上ある視点 (照合・総収支) だけに出す。
- * リンクの外の兄弟要素に置き、リンクの accessible name (タブ名) を変えない。
- */
-function ReviewBadge({ id, views }: { id: AnalysisTabId; views: AnalysisHubReport['views'] | undefined }) {
+/** サイドバー子行の件数。照合だけは期間非依存の月次クローズを正本にする。 */
+function ReviewBadge({
+  id,
+  count,
+}: {
+  id: AnalysisTabId;
+  count: number | null | undefined;
+}) {
   if (id !== 'reconciliation' && id !== 'total-cashflow') return null;
-  const count = views?.[id]?.reviewCount ?? 0;
-  if (count <= 0) return null;
+  if (!count) return null;
   return (
     <span
-      className="badge danger"
+      className="badge danger nav-review-badge"
       data-testid={`nav-review-badge-${id}`}
-      style={{ padding: '0 8px', fontSize: 'var(--fs-2xs)' }}
+      aria-label={`要確認${count}件`}
     >
-      <span className="visually-hidden">要確認</span>
       {count}
-      <span className="visually-hidden">件</span>
     </span>
   );
 }
@@ -168,8 +159,8 @@ function UserMenu() {
         aria-haspopup="menu"
         onClick={() => setOpen((value) => !value)}
       >
-        <UiIcon name="user" className="action-icon" />
-        <span className="header-action-label">利用者</span>
+        <UiIcon name="circle-user" className="action-icon" />
+        <span className="visually-hidden">利用者</span>
       </button>
       {open && (
         <span className="popover" role="menu">
@@ -237,6 +228,9 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
     queryFn: () => api<OverviewResponse>(withPeriod('/overview?scope=total')),
     enabled: !locked && loc.pathname === '/',
   });
+  // 月次クローズは全画面で出す。概況以外は件数と同じ /review-queue の closeStatus を読む
+  const closeStatus = reviewQueue.data?.closeStatus ?? overview.data?.closeStatus;
+  const reconciliationCount = closeStatus?.steps.find((step) => step.key === 'reconciliation')?.count;
   // 旧 Worker など形の違う応答では件数を出さない (0 件と誤読させない)
   const overviewBadge =
     typeof reviewQueue.data?.total === 'number' ? (
@@ -249,6 +243,8 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
     if (!counts) return undefined;
     if (routeId === 'import') return <ReviewCountBadge count={counts.import} />;
     if (routeId === 'classify') return <ReviewCountBadge count={counts.classification} />;
+    if (routeId === 'subscriptions' && reviewQueue.data.subscriptionCandidates)
+      return <ReviewCountBadge count={reviewQueue.data.subscriptionCandidates} />;
     return undefined;
   };
   // ハブ画面と同じキー。支出分析を開いていてもリクエストは 1 本にまとまる
@@ -308,26 +304,6 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
           </Link>
         )}
 
-        {loc.pathname !== '/' && (
-          <section className="workflow-progress" aria-label="月次進捗">
-            <div className="workflow-progress-head">
-              <span>月次進捗</span>
-              <strong>
-                {location.group === '管理' || location.group === 'ログイン' ? '業務外' : '現在地'}
-              </strong>
-            </div>
-            <ol>
-              {MONTHLY_STEPS.map((step, index) => (
-                <li key={step} className={location.group === step ? 'current' : undefined}>
-                  <span className="step-number">{index + 1}</span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ol>
-            <p>{locked ? 'ログイン後に確認' : `未記録 ${unrec.length}ヶ月`}</p>
-          </section>
-        )}
-
         <nav className="nav" aria-label="メインナビゲーション">
           {APP_ROUTES.map((route) => {
             const subTabs = route.id === 'analysis' ? ANALYSIS_TABS : null;
@@ -347,7 +323,16 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
                     label={route.label}
                     variant="sidebar"
                     end={!TABBED_ROUTE_IDS.has(route.id) || subTabs !== null}
-                    badge={routeBadge(route.id)}
+                    badge={
+                      route.id === 'analysis' || route.id === 'statements' ? (
+                        <>
+                          {routeBadge(route.id)}
+                          <UiIcon name="chevron-right" className="nav-chevron" />
+                        </>
+                      ) : (
+                        routeBadge(route.id)
+                      )
+                    }
                   />
                 )}
                 {subTabs && (
@@ -364,17 +349,18 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
                           <span className="nav-label">{tab.label}</span>
                         </span>
                       ) : (
-                        <span
-                          key={tab.id}
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'minmax(0, 1fr) auto',
-                            alignItems: 'center',
-                            gap: 4,
-                          }}
-                        >
+                        <span key={tab.id} className="nav-sub-row">
                           <NavItem to={tab.path} icon={tab.icon} label={tab.label} variant="sidebar" />
-                          <ReviewBadge id={tab.id} views={hub.data?.views} />
+                          <ReviewBadge
+                            id={tab.id}
+                            count={
+                              tab.id === 'reconciliation'
+                                ? // closeStatus が無い rolling deploy 中だけ hub 件数へ退避する。
+                                  (reconciliationCount ??
+                                  hub.data?.views?.reconciliation?.actionRequiredCount)
+                                : hub.data?.views?.['total-cashflow']?.reviewCount
+                            }
+                          />
                         </span>
                       ),
                     )}
@@ -385,18 +371,18 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
           })}
           <div>
             {locked ? (
-              <span className="nav-locked" aria-disabled="true" title="改善要望(ログイン後に利用)">
+              <span className="nav-locked" aria-disabled="true" title="改善リクエスト(ログイン後に利用)">
                 <RouteIcon name="scan-search" />
-                <span className="nav-label">改善要望</span>
+                <span className="nav-label">改善リクエスト</span>
               </span>
             ) : (
-              <NavItem to="/improvement" icon="scan-search" label="改善要望" variant="sidebar" end />
+              <NavItem to="/improvement" icon="scan-search" label="改善リクエスト" variant="sidebar" end />
             )}
           </div>
         </nav>
-        {!locked && loc.pathname === '/' && (
+        {!locked && (
           <Suspense fallback={null}>
-            <MonthlyCloseProgress status={overview.data?.closeStatus} />
+            <MonthlyCloseProgress status={closeStatus} />
           </Suspense>
         )}
       </aside>
@@ -432,29 +418,29 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
         <span className="spacer" />
         <span className="header-status" aria-label="データ状態">
           {locked ? (
-            <span className="status-fact">防衛線 ログイン後</span>
+            <span className="status-fact">防衛ライン ログイン後</span>
           ) : d && d.status !== 'nodata' ? (
             <span className={`badge header-defense ${d.status}`}>
               <UiIcon name="shield-check" className="status-icon" />
-              <Term id="defenseLine">防衛線</Term> <span className="num">{yen(d.line)}</span>
+              <Term id="defenseLine">防衛ライン</Term>：
+              {d.status === 'ok' ? '正常' : d.status === 'tight' ? '注意' : '要対応'}
               <span className="badge-detail">
                 {' '}
-                / 見込 <span className="num">{yen(d.incomeEstimate)}</span>
-              </span>{' '}
-              {STATUS_LABEL[d.status]}
+                <span className="num">{yen(d.line)}</span> / 見込{' '}
+                <span className="num">{yen(d.incomeEstimate)}</span>
+              </span>
             </span>
           ) : (
             <span className="badge header-defense header-defense-placeholder" aria-hidden="true">
-              防衛線 <span className="num">¥000,000</span>
+              防衛ライン：要対応
               <span className="badge-detail">
                 {' '}
-                / 見込 <span className="num">¥000,000</span>
-              </span>{' '}
-              要注意
+                <span className="num">¥000,000</span> / 見込 <span className="num">¥000,000</span>
+              </span>
             </span>
           )}
           <span className={`status-fact${unrec.length > 0 ? ' warn' : ''}`}>
-            <Term id="unrecordedMonth">未記録</Term> {locked ? '—' : `${unrec.length}ヶ月`}
+            <Term id="unrecordedMonth">未記録</Term> {locked ? '—' : `${unrec.length}か月`}
           </span>
           <span className="status-fact" title={latestAt ?? undefined}>
             最終更新 {freshness}
@@ -468,7 +454,7 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
             onClick={() => window.dispatchEvent(new Event(OPEN_COMMAND_PALETTE_EVENT))}
           >
             <UiIcon name="search" className="action-icon" />
-            <span className="header-action-label">検索</span>
+            <span className="visually-hidden">検索</span>
             <kbd>⌘K</kbd>
           </Button>
           {locked ? (
@@ -485,7 +471,7 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
           ) : (
             <Link className="header-action" to="/guide" aria-label="使い方">
               <UiIcon name="help" className="action-icon" />
-              <span className="header-action-label">使い方</span>
+              <span className="visually-hidden">使い方</span>
             </Link>
           )}
           {locked ? <span className="status-fact">未ログイン</span> : <UserMenu />}
@@ -503,7 +489,7 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
             取込データは外部送信しません
           </span>
           <span>
-            <UiIcon name="file-check" className="trust-icon" />
+            <UiIcon name="badge-check" className="trust-icon" />
             税務上の正本はfreeeです
           </span>
           <span>
@@ -512,17 +498,16 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
           </span>
         </div>
         <nav className="footer-links" aria-label="信頼とデータの確認先">
-          {locked ? <a href="#privacy-help">データ出典</a> : <Link to="/guide">データ出典</Link>}
-          {locked ? <span>復元設定はログイン後</span> : <Link to="/settings">復元設定</Link>}
-          <details id="privacy-help">
-            <summary>プライバシー</summary>
-            <p>取り込んだ明細は収支管理と復元のためにだけ使用します。</p>
-          </details>
           <details>
             <summary>利用規約</summary>
             <p>本ツールの集計結果は参考情報です。申告前にfreeeの帳簿と照合してください。</p>
           </details>
-          <span>Focus Ledger v1</span>
+          <details id="privacy-help">
+            <summary>プライバシー</summary>
+            <p>取り込んだ明細は収支管理と復元のためにだけ使用します。</p>
+          </details>
+          {locked ? <a href="#privacy-help">データ出典</a> : <Link to="/guide">データ出典</Link>}
+          <span>v1.0</span>
         </nav>
       </footer>
 

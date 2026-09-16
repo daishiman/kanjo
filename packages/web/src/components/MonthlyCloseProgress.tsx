@@ -1,4 +1,4 @@
-/** 概況のサイドバーに置く、実データ由来の月次クローズ進捗。 */
+/** 全画面のサイドバーに置く、実データ由来の月次クローズ進捗。 */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { type MonthlyCloseStatus, markMonthlyCloseReviewed, unmarkMonthlyCloseReviewed } from '../api.js';
 import { Button } from './Button.js';
@@ -54,7 +54,7 @@ export function MonthlyCloseProgress({ status }: { status: MonthlyCloseStatus | 
       <ol>
         {status.steps.map((step) => (
           <li key={step.key} className={step.done ? 'done' : undefined}>
-            <UiIcon name={step.done ? 'check' : 'info'} className="status-icon" />
+            <UiIcon name={step.done ? 'check' : 'circle'} className="status-icon" />
             <span>{step.label}</span>
             {step.count != null && step.count > 0 && <span className="num">{step.count}</span>}
           </li>

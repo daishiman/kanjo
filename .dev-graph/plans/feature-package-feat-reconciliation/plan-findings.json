@@ -1,0 +1,201 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/sdp-feat-reconciliation-20260915T1102Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:76c705dfa24c67d6b3bf7e3e42d55f2e7b60c0a316f4df01b0343abd909431ad",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "goal-spec.json の scope_in/scope_out と各 task-spec の Workstream applicability・スコープ外節の間に矛盾は検出されなかった。P08 は migration 0040 の前進のみ整合とバックアップ対象整理という実体のある責務を持ち (N/A化していない)、P13 は build:artifact と deploy.yml 自動適用経路への close-out という実体のある責務を持つ。architecture_refs 9件・spec-reconciliation.md の API 契約 3 本は goal-spec と task-graph 全体で単一の parent_feature=feat-reconciliation / feature_package_id=feature-package/feat-reconciliation に一貫して束縛されており、phase 間の責務衝突 (同一 write_scope への重複書込み等) は確認されなかった。 (この評価は goal-spec.json・specs/spec-reconciliation.md・features/feat-reconciliation.context.json・design/FINAL-UI/images/04-reconciliation.png を読み評価の根拠として用いたが、これらは staging-manifest.json#files の exact-set に含まれないため evidence の参照先には含めず、同一事実を持つ manifest 内ファイルまたは gate 結果を evidence として記録する。)",
+      "evidence": [
+        "gate:deterministic-validation",
+        "workstream-inventory.json",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-13-release-deploy.md"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "FR-001..FR-007・BR-001..BR-009・API 3 本 (GET /api/reconciliation, POST /api/reconciliation/actions, POST /api/reconciliation/actions/:id/undo)・AC-001..AC-006 の全項目は P01 (docs/reconciliation/requirements-baseline.md への転記) → P02 (architecture-decision.md での確定記録) → P03 (独立レビュー) → P04 (core境界値・API統合・DOMの失敗テストで7件の未決事項を契約テストとして固定) → P05 (実装) → P06 (全テスト実行) → P07 (AC-001..AC-006・S1..S6受入検証) の一貫した経路で扱われている。バックエンド (照合API・core判定関数・D1 migration)、フロント (Reconciliation.tsx・3カラム構成)、UI/UX (トークン・共通Button/PageShell・狭幅縦積み)、アイコン (画像内 24 件の対応表が P05 acceptance に列挙され、既存流用/新規登録/対象外の区別と RouteIcon 登録名まで明記) のいずれも P05 write_scope・acceptance に具体的に現れる。画像 (04-reconciliation.png) を実見して照合した結果、サイドバー『照合』・絞り込み見出し・KPI 4 種 (事業支出/MF未計上/要確認一致候補/解消率リング)・候補一覧検索・対応キュー 4 分類・詳細パネル閉じるボタン・一致の理由チェック・ヘッダー (防衛ライン shield-check・検索・ダウンロード・ヘルプ・アバター)・ページング (chevron)・フッター 3 アイコン (lock/badge-check/cloud)・改善を送るボタンは対応表 24 件と概ね対応しており、目視で欠落する主要要素はなかった (『元に戻す』のアイコンは画像上テキストリンクのみに見え、対応表側は rotate-ccw を新規登録としており実装時の整合確認が必要な軽微な点として finding に記録する)。未決事項7件はいずれも捏造された確定値ではなく、goal-spec.json#open_items の disposition『実装 task の契約テストで確定する』のまま P04/P05 へ一貫して転記されている。 (この評価は goal-spec.json・specs/spec-reconciliation.md・features/feat-reconciliation.context.json・design/FINAL-UI/images/04-reconciliation.png を読み評価の根拠として用いたが、これらは staging-manifest.json#files の exact-set に含まれないため evidence の参照先には含めず、同一事実を持つ manifest 内ファイルまたは gate 結果を evidence として記録する。)",
+      "evidence": [
+        "gate:deterministic-validation",
+        "workstream-inventory.json",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "source_feature_digest (sha256:8101fcd30e1b38bf20475ba1f181fa3edc89f33c3d91a2befb891eb26704700f) は feature-package.json / system-build-handoff.json#identity / goal-spec.json#identity_check.context_digest / features/feat-reconciliation.context.json の実測 sha256 のいずれでも一致する。repository_id=github:daishiman/kanjo は goal-spec.json / workstream-inventory.json#repo_context / system-build-handoff.json#identity で統一されている。parent_feature=feat-reconciliation・feature_package_id=feature-package/feat-reconciliation は feature-package.json・workstream-inventory.json・task-graph.json・system-build-handoff.json 全体で一致する。task_node_ids と task_spec_paths は task-graph.json#nodes・workstream-inventory.json#tasks・system-build-handoff.json#execution_tasks の3箇所で同一順序・同一内容を保っている。staging-manifest.json の canonical_digest は validator の validated_digest と一致し、17ファイル全ての sha256 を本評価器が再計算した値と staging-manifest.json 記載値は完全一致した。ただし workstream-inventory.json#source_lineage.source_version が \"0.1.0\" であり、goal-spec.json の readiness_pin.source_pin_version / specs/spec-reconciliation.md frontmatter の source_version \"0.1.14\" (system-spec-harness の実バージョン) と食い違っており、low finding として記録する。 (この評価は goal-spec.json・specs/spec-reconciliation.md・features/feat-reconciliation.context.json・design/FINAL-UI/images/04-reconciliation.png を読み評価の根拠として用いたが、これらは staging-manifest.json#files の exact-set に含まれないため evidence の参照先には含めず、同一事実を持つ manifest 内ファイルまたは gate 結果を evidence として記録する。)",
+      "evidence": [
+        "feature-package.json",
+        "system-build-handoff.json",
+        "workstream-inventory.json",
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の13ノードは SYS-RECON-P01→P02→...→P13 の単純な線形鎖であり、各 depends_on は直前1ノードのみを指す前方参照のみで構成され、循環・後方 edge・cross-feature task 参照は検出されなかった。system-build-handoff.json#execution_tasks の depends_on も同一構成で完全に一致する。feature 間依存 (dev-graph 正本) は task へコピーされておらず、goal-spec.json 側にも他 feature task への直接参照は存在しない。 (この評価は goal-spec.json・specs/spec-reconciliation.md・features/feat-reconciliation.context.json・design/FINAL-UI/images/04-reconciliation.png を読み評価の根拠として用いたが、これらは staging-manifest.json#files の exact-set に含まれないため evidence の参照先には含めず、同一事実を持つ manifest 内ファイルまたは gate 結果を evidence として記録する。)",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "${SYSTEM_DEV_PLANNER_ROOT}/scripts/validate-system-plan.py",
+        "--repo-root",
+        ".",
+        "--staging",
+        ".dev-graph/staging/sdp-feat-reconciliation-20260915T1102Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:76c705dfa24c67d6b3bf7e3e42d55f2e7b60c0a316f4df01b0343abd909431ad\",\n  \"feature_package_id\": \"feature-package/feat-reconciliation\",\n  \"parent_feature\": \"feat-reconciliation\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "50bc7b34ef2d30bcef0968d731eb1053e6e87668cae1dfbafc0ace2df42a9d51"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "126bfcac412463ef2f759a069e17b2ac06566e6f949cd8eb723a67b05497cad0"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "312c269bcccb7636e59533926b9061d54b99f95aeab90cda4892cfac6b1f665a"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "449fa868f8056720704a8ebb9a4d8ebb3856877ad3ff7eb35a25169068bc5cca"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "f07deb447e7f53d040e9c71236a6483907cbbb2a3b31d2810a39e3d69c488c66"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "a1473a32c9f40da1e86ee67fc5af0050d9b6812ad0b9093c845b3fffa1500170"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "32d3c060ff50c0f9ef1449527a7148ea5c3051282ea287a6906b097d2761d74e"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "cb26c3743eb6b9bc3395c73630c9a61a0e7b5c16b0c833d02f16900d166cde38"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "c6a2f9a5bdd579f1056a4b086f8f3da3bc885e1daabcc0ac62f84a91d967cbef"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "7d822cf3568ebf65eebc08cbc2a9f4d0dc9f26d51ac8277e5fee8ebe6a667973"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "d181450b2de65e8f78152ed60bf083a734d7be041263471b3ca239b7b8aa91a0"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "2bf69f89b2ec560c7d74fde724a3df612eb6e12a78a82622e1a3c274d5e329d2"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "ed2f0e2242da59d8a30fec080fca64f48ee5cce8d6e2b162eb4d9766ee6ba9c1"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "11d8c87df27f0b8398e799c0ad8837189aafbb0630424bf03ca3b74b272e8692"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "dbc2bca8f330bae29c2c2904afc8217f4c5eac356598dcb2c9c99da66ce84690"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "15c1c1f4344787d07b4b3b656752a6b120b02c0e038f980c1396c830f8bc7186"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "1e89583a668083c2c54148f718366a4dda8cfd908ee11e73418f5c1301249efe"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "9b9154171d141d8139f0e97b3537b5f6d0d09fb277ecf3fb504a8de3fc5e3933"
+    }
+  ],
+  "staleness_rule": "evaluated_inputs のいずれかの sha256 が再計算値と一致しなくなった場合、staging-manifest.json#canonical_digest が evaluated_digest と一致しなくなった場合、または feature-package.json#source_feature_digest が features/feat-reconciliation.context.json の実測 sha256 (2026-09-15T11:19Z 時点で shasum -a 256 により sha256:8101fcd30e1b38bf20475ba1f181fa3edc89f33c3d91a2befb891eb26704700f と確認済み) と一致しなくなった場合、本 findings は無効とし再評価が必要である。",
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "C3-integrity",
+      "observation": "workstream-inventory.json#source_lineage.source_version が \"0.1.0\" であり、goal-spec.json#readiness_pin.source_pin_version と specs/spec-reconciliation.md frontmatter#source_lineage.source_version の \"0.1.14\" (system-spec-harness の実バージョン) と食い違っている。dev-graph 登録前に workstream-inventory.json#source_lineage.source_version を \"0.1.14\" へ修正することを推奨する。",
+      "evidence": [
+        "workstream-inventory.json"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "C2-completeness",
+      "observation": "P05 acceptance のアイコン対応表 (24件) は『直前の操作』の『元に戻す』を rotate-ccw の新規登録アイコンとして記載しているが、design/FINAL-UI/images/04-reconciliation.png の該当箇所はテキストリンク『元に戻す』のみに見え、アイコンの併記が画像から明確に確認できない。実装 task (P05) で画像との逐次照合を行い、アイコンを追加するかテキストのみに留めるかを確定することを推奨する。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "C4-dependency",
+      "observation": "task-graph.json の13ノードは SYS-RECON-P01 から P13 まで depends_on が直前ノード1件のみを指す完全な線形鎖であり、前方依存のみで循環は検出されなかった。system-build-handoff.json の execution_tasks も同一構成で一致する。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "grounding",
+      "observation": "goal-spec.json#open_items の7件 (低優先度の未決事項) はいずれも捏造された確定値を持たず、disposition『実装 task の契約テストで確定する』のまま workstream-inventory.json の P01/P04/P05 acceptance へ一貫して転記されている。specs/spec-reconciliation.md#未決事項の記述とも矛盾しない。",
+      "evidence": [
+        "workstream-inventory.json"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "handoff-boundary",
+      "observation": "system-build-handoff.json#registration_request は promotion_receipt (owner=system-dev-planner/C11, produced_by_this_component=false) と registration_receipt (owner=dev-graph/C02, produced_by_this_component=false) をいずれも status=not-emitted・deferred-until-promotion として明示しており、本 handoff producer がレシートを自己発行していないことを確認した。source_inputs の exact-set (17件) は staging-manifest.json#files と完全一致し、source_manifest.canonical_digest_before_handoff (sha256:45a36ff9...) は staging-manifest.json#handoff_contract.source_canonical_digest と一致する。",
+      "evidence": [
+        "system-build-handoff.json",
+        "staging-manifest.json"
+      ]
+    }
+  ]
+}

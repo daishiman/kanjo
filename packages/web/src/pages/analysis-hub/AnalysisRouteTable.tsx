@@ -15,6 +15,13 @@ type StatusDescriptor = { text: string; tone: StatusTone; icon: RouteIconName };
 function viewStatus(view: HubView): StatusDescriptor {
   switch (view.id) {
     case 'reconciliation':
+      return view.actionRequiredCount > 0
+        ? {
+            text: `要確認あり ${view.actionRequiredCount}件`,
+            tone: 'danger',
+            icon: ANALYSIS_HUB_ICONS.status.error,
+          }
+        : { text: '要確認なし', tone: 'success', icon: ANALYSIS_HUB_ICONS.status.success };
     case 'total-cashflow':
       return view.reviewCount > 0
         ? { text: `要確認あり ${view.reviewCount}件`, tone: 'danger', icon: ANALYSIS_HUB_ICONS.status.error }

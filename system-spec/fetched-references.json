@@ -1,65 +1,74 @@
 {
   "references": [
     {
-      "target_id": "react-router-use-search-params",
-      "retrieved_at": "2026-09-14T12:12:42Z",
-      "source_url": "https://api.reactrouter.com/v7/interfaces/react-router.NavigateOptions.html",
-      "official_publisher": "Remix / Shopify (React Router)",
-      "official_host": "api.reactrouter.com",
-      "version": "7.18.3",
-      "latest_checked_at": "2026-09-14T12:12:42Z",
-      "summary": "React Router v7 の API リファレンス NavigateOptions インターフェース。replace プロパティの説明は原文で \"Replace the current entry in the history stack instead of pushing a new one\" であり、useSearchParams が返す SetURLSearchParams の第 2 引数 navigateOpts はこの NavigateOptions を受け取る。ハブの行選択で setSearchParams({ focus }, { replace: true }) として ?focus= を履歴を積まずに置き換える根拠 (O2)。kanjo は react-router-dom ^7.18.2 で、version は npm registry の dist-tags version-7 = 7.18.3 (2026-09-14T12:12:42Z に WebFetch で確認。latest は 8.3.1 だが承認済み制約 C1 により v7 系を維持する)。"
-    },
-    {
       "target_id": "tanstack-query-invalidation",
-      "retrieved_at": "2026-09-14T11:57:54Z",
-      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation",
+      "retrieved_at": "2026-09-15T09:06:26Z",
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations",
       "official_publisher": "TanStack",
       "official_host": "tanstack.com",
       "version": "5.102.8",
-      "latest_checked_at": "2026-09-14T11:57:54Z",
-      "summary": "queryClient.invalidateQueries は一致したクエリを staleTime に関わらず stale にし、描画中のクエリをバックグラウンドで再取得する。queryKey は既定で前方一致、exact: true で完全一致、predicate で細かく絞れる。サイドバーのバッジとハブ画面が共有する queryKey ['analysis-hub', 期間 key] を、総収支の判定・除外・取込の成功後に前方一致で無効化する根拠 (qa-frontend-web-ah-decision-003)。version は 2026-09-14T11:57Z に registry.npmjs.org/@tanstack/react-query/latest で確認した最新 5.102.8 (github.com/TanStack/query/releases の 1 ページ目は 5.101.4 までしか表示していなかった)。kanjo は ^5.62.11 (v5 系)。"
+      "latest_checked_at": "2026-09-15T09:06:26Z",
+      "summary": "useMutation の onSuccess で queryClient.invalidateQueries を呼び、成功した書込に関係する queryKey を無効化する。原文 \"Returning a Promise on onSuccess makes sure the data is updated before the mutation is entirely complete (i.e., isPending is true until onSuccess is fulfilled)\"。複数キーは Promise.all で待てる。照合の書込 (actions / undo) 成功後に reconciliation・analysis hub・total-cashflow・summary の 4 キーを Promise.all で invalidate し、再取得完了までボタンを isPending で無効に保つ根拠 (qa-frontend-web-rc-inference-002)。ページに更新日の表示は無く、version は registry.npmjs.org/@tanstack/react-query/latest で 2026-09-15T09:06Z に確認した 5.102.8。"
     },
     {
-      "target_id": "clipboard-write-text",
-      "retrieved_at": "2026-09-14T11:44:16Z",
-      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/writeText",
-      "official_publisher": "Mozilla (MDN Web Docs)",
-      "official_host": "developer.mozilla.org",
-      "last_updated": "2025-11-30",
-      "latest_checked_at": "2026-09-14T11:44:16Z",
-      "summary": "navigator.clipboard.writeText(text) はクリップボード更新後に解決する Promise を返し、secure context (HTTPS) でのみ使える。書込が許可されないと NotAllowedError で reject されるため、URL コピーは利用者のクリック時に呼び、失敗時は成否を画面で知らせる。Baseline (2020 年 3 月以降広く利用可能)。"
+      "target_id": "lucide-static-icons",
+      "retrieved_at": "2026-09-15T09:06:26Z",
+      "source_url": "https://lucide.dev/license",
+      "official_publisher": "Lucide Contributors",
+      "official_host": "lucide.dev",
+      "version": "1.46.0",
+      "latest_checked_at": "2026-09-15T09:06:26Z",
+      "summary": "Lucide のアイコンは ISC License で、原文 \"Permission is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.\"。Feather 由来のアイコンは MIT License (Copyright Cole Bemis) が併存する。照合画面とシェルで追加するアイコンを外部ランタイム無しで RouteIcon の lucide-static 登録表へ SVG として足す際、既存のライセンス表記を維持すれば追加の義務が無いことの根拠。version は registry.npmjs.org/lucide-static/latest で 2026-09-15T09:06Z に確認した 1.46.0 (license フィールド ISC)。"
     },
     {
-      "target_id": "hono-middleware",
-      "retrieved_at": "2026-09-14T11:44:16Z",
-      "source_url": "https://hono.dev/docs/guides/middleware",
+      "target_id": "hono-validation",
+      "retrieved_at": "2026-09-15T09:06:39Z",
+      "source_url": "https://hono.dev/docs/guides/validation",
       "official_publisher": "Hono",
       "official_host": "hono.dev",
-      "version": "4.13.7",
-      "latest_checked_at": "2026-09-14T11:44:16Z",
-      "summary": "Hono の middleware は登録順に onion 型で実行され、app.use('/path/*', mw) でパスを限定できる。作用させたいハンドラーより前に登録する必要がある。GET /api/analysis/hub を authGuard などの /api/* middleware の後にマウントする根拠。version は github.com/honojs/hono/releases で確認した最新リリース。kanjo は ^4.13.5。"
+      "version": "4.13.8",
+      "latest_checked_at": "2026-09-15T09:06:39Z",
+      "summary": "@hono/zod-validator の zValidator('json', schema) をハンドラーの前に置くと JSON 本文を Zod schema で検証し、検証済みの値を c.req.valid('json') で受け取れる。json / form を検証するときはリクエストに一致する content-type ヘッダーが必要で、無いと空オブジェクトになる。POST /api/reconciliation/actions で action の列挙値・件数 1〜200・id 形式を許可リストで検証する根拠 (qa-security-web-rc-decision-009 と qa-backend-web-rc-decision-007)。ページは失敗時の status を明記していないため、400 の応答形は既存 route の zValidator 利用に合わせる。version は registry.npmjs.org/hono/latest で 2026-09-15T09:06Z に確認した 4.13.8。"
+    },
+    {
+      "target_id": "cloudflare-d1-batch",
+      "retrieved_at": "2026-09-15T09:06:26Z",
+      "source_url": "https://developers.cloudflare.com/d1/worker-api/d1-database/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-22",
+      "latest_checked_at": "2026-09-15T09:06:26Z",
+      "summary": "D1Database.batch() は原文 \"each statement in the list will execute and commit, sequentially, non-concurrently\" で、\"If a statement in the sequence fails, then an error is returned for that specific statement, and it aborts or rolls back the entire sequence.\"。照合の取消 (undo) を reconciliation_actions の before で判断・除外を書き戻し、履歴の取消済みフラグを立てる statement を 1 回の batch にまとめ、途中失敗で半分だけ戻る状態を作らない根拠 (qa-database-web-rc-decision-008)。一括照合の部分成功は件ごとの結果として返すため、件ごとに独立した batch 単位で扱う。ページ最終更新 2026-06-22。"
     },
     {
       "target_id": "cloudflare-d1-limits",
-      "retrieved_at": "2026-09-14T11:44:16Z",
+      "retrieved_at": "2026-09-15T09:06:26Z",
       "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-04-21",
-      "latest_checked_at": "2026-09-14T11:44:16Z",
-      "summary": "Worker 1 invocation あたりの D1 クエリ数は Free 50 / Paid 1000、行・文字列・BLOB は最大 2 MB、SQL 文は 100 KB、クエリ時間は最大 30 秒。1 つの D1 データベースはクエリを逐次処理する。ハブ API は loadDataset と freee 系 3 テーブルの読取りを 1 リクエストにまとめるため、クエリ本数をこの上限内に保つ。"
+      "latest_checked_at": "2026-09-15T09:06:26Z",
+      "summary": "D1 の Worker 1 回の呼び出しあたりのクエリ数は Free 50 / Paid 1,000、SQL 文の最大長は 100,000 bytes (100 KB)、行・文字列・BLOB の最大サイズは 2,000,000 bytes (2 MB)。GET /api/reconciliation の読取り本数を /total-cashflow と同程度に保ち、一括操作を 200 件で打ち切り、reconciliation_actions の before/after を行サイズ上限より十分小さい JSON に限る容量上の根拠 (infrastructure の reliability)。ページ最終更新 2026-04-21。"
     },
     {
-      "target_id": "wcag22-use-of-color",
-      "retrieved_at": "2026-09-14T11:44:16Z",
-      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
-      "official_publisher": "W3C WAI",
-      "official_host": "w3.org",
-      "version": "WCAG 2.2",
-      "last_updated": "2025-09-16",
-      "latest_checked_at": "2026-09-14T11:44:16Z",
-      "summary": "SC 1.4.1 Use of Color: 色を情報伝達の唯一の視覚的手段にしない。テキスト、アイコン、番号、パターンを併用する。ハブの増減率は符号 (+/-) と色の両方で、優先度は文字のバッジ (高/中) で、現在の状態はアイコンと文言で示す根拠。"
+      "target_id": "owasp-authorization-cheatsheet",
+      "retrieved_at": "2026-09-15T09:06:39Z",
+      "source_url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html",
+      "official_publisher": "OWASP Foundation (Cheat Sheet Series)",
+      "official_host": "cheatsheetseries.owasp.org",
+      "last_updated": "2026-08-31",
+      "latest_checked_at": "2026-09-15T09:06:39Z",
+      "summary": "原文 \"Permission should be validated correctly on every request, regardless of whether the request was initiated by an AJAX script, server-side, or any other source.\" と \"A user should not be able to access a resource they do not have permissions simply because they are able to guess and manipulate that object's identifier.\"。deny by default を採り、特定オブジェクトに対するアクセス制御を行う。照合 API・取消 API の全読み書きを userId で絞り、他人の reconciliation_actions id を存在の有無を漏らさず 404 にする根拠 (auth の security)。ページに更新日の表示が無いため、last_updated は公式リポジトリ OWASP/CheatSheetSeries の cheatsheets/Authorization_Cheat_Sheet.md の最新コミット日 2026-08-31 (\"Fix, Idor references fix (#2383)\") を 2026-09-15T09:06Z に確認した値。"
+    },
+    {
+      "target_id": "wcag22-status-messages",
+      "retrieved_at": "2026-09-15T09:06:26Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html",
+      "official_publisher": "W3C Web Accessibility Initiative",
+      "official_host": "www.w3.org",
+      "last_updated": "2026-05-11",
+      "latest_checked_at": "2026-09-15T09:06:26Z",
+      "summary": "WCAG 2.2 SC 4.1.3 Status Messages (Level AA) の原文 \"In content implemented using markup languages, status messages can be programmatically determined through role or properties such that they can be presented to the user by assistive technologies without receiving focus.\"。操作結果 (例 \"Your form was successfully submitted\")・待機・進捗・エラーが対象。照合・別の取引として処理・除外・元に戻すの結果、一括の成否件数、409 取込中の通知を role=status / role=alert で読み上げ、フォーカスを移さずに知らせる根拠 (ui-ux の presentation)。ページ最終更新 2026-05-11。"
     }
   ]
 }
