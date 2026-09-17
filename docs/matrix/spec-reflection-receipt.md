@@ -71,6 +71,21 @@ cannot close kanjo-wid: blocked by open issues [kanjo-cwr]
 
 `--force` で上書きはしていない。**このブロックは正しい**。P05 (API 拡張) が本当に未完なので、その下流を done にすると「feature が完了した」という誤った信号になる。作業が済んだことは各 task 仕様書の「実装で確定した結果」に残し、tracker 上は feature 未完として見えるままにした。
 
+## main の取り込み (2026-09-18)
+
+本ブランチは照合サイクル (230baaa) から分岐しており、その後 main に総収支 (PR #55) と推移 (PR #56) の 2 サイクルが積まれた。`origin/main` = ローカル `main` = `9a8bd28` で、リモートからローカル main への取り込みは差分 0 (no-op) だった。そこから本ブランチへマージし、衝突 17 件を解決した。
+
+| 衝突 | 解決 |
+|---|---|
+| `system-spec/` 直下 12 件 | 直下は「現行 1 世代」の運用なので、main 側 (推移サイクル) を `system-spec/archive/2026-09-17-trends-screen/` へバイト単位で退避し、直下はマトリックスサイクルを載せた。`arch-trends-screen-*` 8 ノードの `source_path` を退避先へ付け替え、複製なので `source_digest` は 1 件も打ち直していない |
+| `system-spec/archive/2026-09-16-reconciliation/README.md` (add/add) | 両系列が独立に同じ退避を行っていた。README 以外の 13 ファイルはバイト単位で同一だったため、経緯を統合した 1 本にまとめた |
+| `architecture/graph.json` | ノード集合の和を取った (85 + 77 → 93)。`arch-tax-preparation-boundary` は本サイクルで打ち直した digest を採用 |
+| `scripts/hooks/guard-real-data.sh` | 両方の意図を残した。main の「実測した時刻」除去 (`audited`) が無いと、本サイクルの premise 絞り込みだけでは判定行が空になり検査が空振りする |
+| `packages/web/src/components/ReportChart.tsx` | 本サイクルの `HeatGrid` 置き換えを採り、main が足した `data-table-kind` / `data-sort-reason` は置き換え先の `heat-grid.tsx` へ移した。`table-sort-coverage` が「無言でソート対象外になっている表」を禁じているため、移送しないと落ちる |
+| `packages/web/src/analysis-navigation.integration.dom.test.tsx` | 表記 (マトリックス) と main の `LAZY_WAIT` の両方を取り込んだ |
+
+マージ後の検証: `pnpm lint` 全 10 項目 PASS (`check-graph-lineage: 93 ノードすべてが正本と一致`)、`pnpm typecheck` 3 パッケージ Done、`packages/web` のテスト 85 ファイル 695 件 PASS。
+
 ## 残課題
 
 1. 受入 S2 / 受入 5: セル選択 → 詳細パネル → 明細遷移と URL 復元。α (偏りが見えても明細に降りられない) の本体。
