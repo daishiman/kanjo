@@ -69,6 +69,8 @@
 cannot close kanjo-wid: blocked by open issues [kanjo-cwr]
 ```
 
+P13 (`kanjo-8iy`) は draft PR #57 を作成したうえで `--pr 57` 付きの close を試みたが、同じ理由 (`blocked by open issues [kanjo-gje]`) で拒まれた。PR の存在は close の条件を満たすが、依存の未完了は満たさない。
+
 `--force` で上書きはしていない。**このブロックは正しい**。P05 (API 拡張) が本当に未完なので、その下流を done にすると「feature が完了した」という誤った信号になる。作業が済んだことは各 task 仕様書の「実装で確定した結果」に残し、tracker 上は feature 未完として見えるままにした。
 
 ## main の取り込み (2026-09-18)
