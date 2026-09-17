@@ -57,7 +57,7 @@ describe('ヘッダーの書き出しメニュー', () => {
     expect(screen.getByRole('menu')).toBeTruthy();
     expect(screen.getAllByRole('menuitem').map((item) => item.textContent)).toEqual([
       '統合データJSON',
-      'マトリクスCSV',
+      'マトリックスCSV',
     ]);
 
     fireEvent.keyDown(window, { key: 'Escape' });

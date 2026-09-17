@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G1, G4, G5]
+serves_goals: [G1, G2, G5]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G1, G4, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-frontend-web-rc-observed-001。裏付け質疑 (`qa_refs`): `qa-reconciliation-decision-001`, `qa-ui-ux-web-rc-decision-006`, `qa-frontend-web-rc-inference-002` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G4, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは照合画面・共通シェル・アイコン群を OS ネイティブ UI で別実装するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは照合画面・共通シェル・アイコン群を OS ネイティブ UI で別実装するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリでは照合画面・共通シェル・アイコン群を OS ネイティブ UI で別実装するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリでは照合画面・共通シェル・アイコン群を OS ネイティブ UI で別実装するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリでは照合画面・共通シェル・アイコン群を OS ネイティブ UI で別実装するかを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-matrix-frontend-web-004。裏付け質疑 (`qa_refs`): `qa-matrix-frontend-web-evidence-001`, `qa-matrix-frontend-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、フロントエンドでは React Native 等での表描画とセル選択、オフライン時のマトリクスキャッシュ、URL に代わる画面状態の保持方法を決める必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、フロントエンドでは分割ビューでのマトリクスと詳細パネルの同時描画とその再レンダリング境界を決める必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、フロントエンドでは Electron 等の配布形態とローカルキャッシュ、更新経路を決める必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、フロントエンドでは配布パッケージ形式と WebView の版差によるグリッド描画差を決める必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、フロントエンドでは署名・公証を含む配布と WebView 差分を決める必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G1, G4, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | Apple HIG の『選択と現在地を見失わせない』を、候補一覧の行選択を aria-selected と詳細パネルの見出しで示し、絞り込みやページを変えても選択中バーに件数を残して『選択をクリア』で外せる確定内容に反映した。書込中はボタンを無効化して二重送信を防ぎ、409 のときは取込中である旨と再試行を出す。 |
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の境界を、web が照合の判定規則を持たず API の結果を描くだけにし、書込後の invalidate を reconciliation・analysis hub・total-cashflow・summary の 4 キーにまとめる確定内容に反映した。共通シェルの件数バッジも同じ取得結果を読み、画面ごとに件数を数え直さない。 |
+| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | Apple HIG の『待たせるときは何が起きているかを示す』を、2 本に分けた取得の見え方へ反映した。表と偏り 3 点の読込中は表の骨格を保った読込表示にし、レイアウトが跳ねないようにする。セルを選んでから内訳が届くまでの間は、選択中バーの金額と比率だけ先に出し、取引一覧の領域を読込表示にする (選択そのものは即座に反映されるため、選択が効かなかったと誤解させない)。取得に失敗したときは表を空にせず、失敗した旨と再試行の導線を出す。データの最終更新と再取得は見出しカードの右上に置き、いま見ている数値がいつ時点のものかを常に確認できるようにする。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の境界を、画面が集計の規則を持たない構成へ反映した。web は API が返した数値・階級・順位をそのまま描き、前月比も濃淡の階級も画面側で再計算しない。取得キーは表 (期間・scope・axis・mode) とセル内訳 (期間・scope・axis・key・month) の 2 系統に分け、セル内訳は選択が入るまで開始しない条件付き取得にする。画面の状態は URL のクエリに置き、リロードと共有で失われないようにする。サイドバー・ヘッダー・フッターは既存の共通シェルをそのまま使い、本サイクルでは表記を『マトリクス』から『マトリックス』へ揃える以外に手を入れない。 |
 
 > **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
@@ -39,55 +39,43 @@ serves_goals: [G1, G4, G5]
 
 ### Web (web)
 
-- 資するゴール: G1, G4, G5
+- 資するゴール: G1, G2, G5
 
-#### 主たる接地根拠: `qa-frontend-web-rc-observed-001`
-
-**問**
-
-照合画面のフロントエンド構成と、再利用できる部品・アイコン・テストは何か。
-
-**答**
-
-ルートは /analysis/:tab (AuthenticatedApp.tsx:50) → pages/Analysis.tsx → pages/analysis/Reconciliation.tsx。データ取得は TanStack Query 5 の useQuery で GET /api/business-spend の 1 本、スタイルは styles.css:1025-1121。再利用できる部品は DataTable・PageState (読込/空/失敗)・KpiCard・ConfirmDialog・共通 Button (素の <button> は DOM テストで落ちる)・ANALYSIS_HUB_ICONS、総収支 TotalCashflow.tsx の一括選択バー・useMutation・相手選択ラジオ・除外の復元。トークン正本は packages/core/src/design-tokens.ts。アイコンはライブラリを使わず components/RouteIcon.tsx に lucide-static v1.37.0 の SVG を 27 個自前登録しており、画像に要る search・download・circle-help・check・undo-2・funnel・x・chevron-down/left/right・shield-check・wallet (credit-card は登録済み)・file-pen・external-link・lock・cloud・message-circle・circle 等が未登録。route-icon-distinct.test.tsx が絵柄の重複を検査する。Layout.tsx は summary・imports・analysis hub の 3 クエリを持ち、改善要望は lazy の ImprovementRequestButton と /improvement 画面がある。既存テストは reconciliation.dom.test.tsx (3 件)・analysis-tabs / analysis-hub / analysis-navigation の DOM テスト。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD cc0d5e3) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/web/src/AuthenticatedApp.tsx, packages/web/src/pages/Analysis.tsx, packages/web/src/pages/analysis/Reconciliation.tsx, packages/web/src/pages/analysis/TotalCashflow.tsx, packages/web/src/components/{RouteIcon,Layout,ImprovementRequestButton}.tsx, packages/web/src/styles.css。 / 回答時刻: 2026-09-15T08:59:56Z)
-
-#### 裏付け質疑: `qa-reconciliation-decision-001`
+#### 主たる接地根拠: `qa-matrix-frontend-web-004`
 
 **問**
 
-画像 04-reconciliation.png の共通シェル (全画面共通部分) と現行の差分をどこまで今回直すか。差分: サイドバー下部『月次クローズの進捗 3/4』カード (現行は現在地表示のみ)、上部バー『防衛ライン：正常』表記・ダウンロード/ヘルプのアイコンボタン・アバター、フッター文言 (毎晩バックアップ/利用規約・プライバシー・データ出典・v1.0 を横並びリンク)。直すと全 20 画面に波及する。選択肢: (A) 全て今回直す。月次クローズ 3/4 は既存 4 ステップ (データ取込/仕分け/照合/月次レビュー) の完了判定から算出し、既存 shell 系 DOM テストも更新する (推奨) / (B) 照合ページ本体だけ / (C) アイコンと文言だけ。
+web のフロントエンド実装要件は何か。マトリックス画面の状態管理・データ取得・URL 契約・部品構成・テストを確定する。 (このうち利用者が実際に選んだ部分)
 
 **答**
 
-(A) 全て今回直す を選択した。
+利用者が決めたのは次の 3 点である。(1) サイドバー・ヘッダー・フッターは既存の内容をそのまま使い、本画面のために作り直さない。ただしサイドバーの当該項目の表記が実態と違う場合は『マトリックス』へ揃えてよい。(2) 濃淡は表全体で共通の 7 階級とし、凡例は画面に 1 つだけ置く。(3) 行の分類が『取引先』のときは上位 20 件 + 『その他』を表示する。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T07:41:58Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者の直接の指示 (サイドバー・ヘッダー・フッターの既存踏襲とサイドバー表記の是正) と 承認 appr-foundation-expense-matrix-001、および AskUserQuestion で選択した dec-matrix-heat-scale (2) と dec-matrix-counterparty-axis (3)。 / 回答時刻: 2026-09-16T11:14:15Z)
 
-#### 裏付け質疑: `qa-ui-ux-web-rc-decision-006`
+#### 裏付け質疑: `qa-matrix-frontend-web-evidence-001`
 
 **問**
 
-照合画面の情報の優先順位 (狭い画面で何を上に残すか) をどうするか。選択肢: (A) 候補一覧と詳細が主役。①照合候補一覧+取引の詳細パネル (判定根拠と操作) ②対応キュー ③KPI 4 枚 ④下段 2 表 ⑤絞り込み。PC は画像の配置のまま。狭幅では KPI→キュー→一覧→詳細 (行選択で詳細へ移動)→下段の順に縦積みし、絞り込みは折りたたむ。誤照合が最も失敗コストが高いため根拠と操作を離さない (推奨) / (B) KPI が主役 / (C) 画像どおり差を付けない。
+frontend 章の裏付けとして、現行 packages/web/src/pages/analysis/Matrix.tsx は何をしていて、どこが足りないか。
 
 **答**
 
-(A) 候補一覧と詳細が主役 を選択した。束の順位は ①照合候補一覧+取引の詳細パネル (一致の理由・一致度・操作ボタン・直前の操作) ②対応キュー ③KPI 4 枚 ④下段 2 表 ⑤絞り込み。PC は画像の配置を変えず主役を視覚的な強さで示す。狭幅では KPI→対応キュー→候補一覧→詳細 (行選択で詳細へスクロール移動)→下段 2 表 の順に縦積みし、絞り込みは折りたたみにする。落とすものは無く、加工は狭幅での折りたたみだけ。
+現行は 174 行で、useQuery(['matrix', key], () => api<MatrixData>(withPeriod('/matrix'))) により /matrix を 1 本だけ叩き、Mode = 'val' | 'mom' | 'yoy' のローカル state で表示を切り替え、ColorLegend() と cell(series, i) で未記帳・前月比・前年同月比を算出し、DataTable に 科目列 + 月列 + 年計 + termColumn('yoy') を渡している。足りないのは、(1) 集計の対象 (総合/事業/家計) と行の分類 (カテゴリ/取引先) の切替、(2) 合計行・平均行・合計列・平均列、(3) 表全体共通スケールのヒートマップ、(4) セル選択とその URL 保持、(5) 選択中セルの詳細 (金額・前月比・前年同月比・取引一覧・出典)、(6) 偏りが大きい3点、(7) 下部の選択中バー、(8) 空状態カードである。切替が React state に閉じているためリロードで失われる点も、URL クエリへ移す理由になっている。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: packages/web/src/pages/analysis/Matrix.tsx (174 行) の読解 / 回答時刻: 2026-09-16T08:43:17Z)
 
-#### 裏付け質疑: `qa-frontend-web-rc-inference-002`
+#### 裏付け質疑: `qa-matrix-frontend-web-003`
 
 **問**
 
-照合画面の絞り込み・検索・ページ送り・選択状態をどこで持つか。
+web のフロントエンド実装要件は何か。マトリックス画面の状態管理・データ取得・URL 契約・部品構成・テストを確定する。 (このうち agent が補完した設計判断の部分)
 
 **答**
 
-GET /api/reconciliation は期間内の候補全件 (KPI・キュー件数も同じ応答) を返し、データソース・ステータス・対象年月・キュー選択・検索語・ページ (10/20/50 件) は web のコンポーネント状態で絞る。検索語と絞り込みは URL にもサーバーにも送らない (期間は既存どおり localStorage 共有、タブは URL)。選択中の行 id は候補の key (MF tx id) で持ち、絞り込みを変えても見えない選択は選択中バーの件数に含めて『選択をクリア』で外せる。書込後は ['reconciliation', period]・analysisHubQueryKey・['total-cashflow', period]・['summary', period] を invalidate し、ハブ・サイドバーのバッジ・総収支を追随させる。
+packages/web/src/pages/analysis/Matrix.tsx の作り直し方は agent の設計判断である。(1) 期間は既存 usePeriod をそのまま使い、本画面で新しい期間状態を持たない。(2) 表示モード / 集計の対象 / 行の分類 / 選択中セルの 4 つは URL クエリ (mode / scope / axis / cell=<行キー>:<YYYY-MM>) を単一の真実とし、リロードで復元する。React state は URL から導出する。(3) データ取得は TanStack Query 5 で、マトリクス本体 (queryKey: ['matrix', period, scope, axis]) と セル内訳 (queryKey: ['matrix-cell', period, scope, axis, cell]) を分け、セル内訳は選択時にだけ取得する (enabled)。(4) 表示モードの値は再取得せず、同じ series から core の純関数で導く。(5) 部品は既存の共通資産だけを使う (PageShell / DataTable / PageState / 共通 Button / Link className='btn' / Term / HowTo)。色は design-tokens.ts 由来のトークンのみで直書き色を作らず、ヒートマップの階級はトークンの teal 段階をクラスで当てる。(6) 表は行ヘッダ固定 + 月列の横スクロール (既存 scroll-x 規約) とし、セルは button 相当のロールで Tab / 矢印移動と Enter 選択に応答し、選択中は aria-selected と枠線で示す。(7) 『明細を開く』『該当明細を確認』は選択中の年月と行キーを付けて明細仕分けへ Link で遷移する。(8) テストは DOM テスト (packages/web/src/matrix-*.dom.test.tsx) で、切替 3 群・表の合計行/合計列/平均行/平均列・濃淡の階級・セル選択と詳細パネル・偏り3点・空状態・下部バー・読込/失敗、および URL 復元を検証する。既存の matrix-visual / matrix-legend のテストは新構成に合わせて更新し、色の凡例と未記帳月の扱いは維持する。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: アシスタントが 2026-09-15 に観測事実と利用者決定から導いた推定。単独では確定の根拠にせず、観測事実 (主根拠) の補足として qa_refs に載せる。answered_at は記録直前に date -u で実測した時刻。 前提: qa-backend-web-rc-decision-007 (1 回で返す GET)、docs/ui-decisions.md のタブ URL と期間 localStorage の既存判断、Layout.tsx の analysisHubQueryKey 共有。 / 回答時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 既存コード (usePeriod、共通シェル部品、design-tokens.ts、既存 matrix-visual / matrix-legend テスト) の読解にもとづく agent の設計判断。ファイル名・queryKey・テスト構成はいずれも利用者の選択を経ていない。 / 回答時刻: 2026-09-16T11:14:15Z)
 
 ## To-Be / Delta
 
@@ -95,30 +83,37 @@ GET /api/reconciliation は期間内の候補全件 (KPI・キュー件数も同
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: /analysis/reconciliation を 04-reconciliation.png どおりの照合画面にする。問いの見出しと説明文・5 タブ・KPI 4 枚 (事業支出 / MF未計上の件数と金額 / 要確認一致候補 / 解消済みの割合ドーナツ)・左の絞り込み (データソース・ステータス・対象年月・リセット) と対応キュー (要確認の候補 / MF未計上 / 金額の差異 / 日付の近い取引)・中央の照合候補一覧 (検索・一括チェック・ステータス・日付・MF の取引内容・金額・freee の候補・差額・一致度・ページ送りと件数切替)・右の取引の詳細パネル (MF の取引 / freee の候補 / 一致の理由 / 一致度バー / 同じ取引として照合 / 別の取引として処理 / 仕分けを開く / 直前の操作と元に戻す)・下段の 2 表 (MFにありfreeeにない支出 / 自動一致できなかった候補 と各導線)・下部の選択中バー (選択をクリア / 選択した取引を照合) を、トークン・共通 Button・PageShell の上に組む。読込・空・失敗・部分成功・確認の各状態も持つ。
-- **G4**: 共通シェルを画像に揃える。サイドバーの文言 (概要/データ取込/現金入力/明細仕分け/サブスク/累計収支/支出分析/決算書/AI分析/予算/トレードオフ/設定/使い方/改善リクエスト) とグループ・件数バッジ (データ取込=要確認の取込件数・明細仕分け=未整理明細数・サブスク=判定待ち候補数・照合=要確認件数)、ページ見出し・パンくず・コマンドパレットのラベル追随、月次クローズ進捗 3/4 (データ取込/仕分け/照合は直近の締め月について自動判定、月次レビューは利用者の完了操作を月単位で D1 に保存し取消可)、ヘッダー (防衛ライン：正常 の表記・未記録 Nか月・最終更新・⌘K 検索・ダウンロード・ヘルプのアイコンボタン・アバター)、フッター (外部送信しない / 税務上の正本は freee / 毎晩バックアップ と 利用規約・プライバシー・データ出典・v1.0) と改善を送るボタン。
-- **G5**: 画像で使われるアイコンを全て lucide-static 由来の SVG として RouteIcon (または同等の登録表) に追加し、KPI・キュー・ステータス・一致の理由・操作ボタン・ヘッダー・フッター・サイドバーで表示する。絵柄の重複検査テストを維持する。
+- **G1**: /analysis/matrix を 06-matrix.png どおりの画面にする。問いの見出し『どの月・カテゴリに支出が偏っていますか？』と説明文・データの最終更新と再取得・期間タブ (1年 / 2年 / 3年 / 任意 と対象範囲の表示)・3 つの切替 (表示モード=全部 / 構成比 / 前年差、集計の対象=総合 / 事業 / 家計、行の分類=カテゴリ / 取引先)・単位と濃淡凡例 (少ない→多い)・月×カテゴリのヒートマップ表 (行ヘッダ固定・月列は横スクロール・右端に合計と平均の列・下端に合計と平均の行・セル選択の枠)・下部の選択中バー (選択中のセル名と金額・前月比・前年同月比・該当明細を確認)・空状態 (『表示するデータがありません』とデータ取込への導線) を、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。
+- **G2**: 『選択中のセルの詳細』パネルを実装する。セルを選ぶと、カテゴリ×年月の見出しとバッジ (この月のカテゴリ内で最大 などの位置づけ)・支出金額・前月比 (矢印と増減額と増減率)・前年同月比・このセルに含まれる取引の一覧 (日付・取引先・内容・金額・区分)・データの出典 (決済手段と更新日時)・『明細を開く』導線を出し、閉じるで解除できるようにする。
+- **G5**: 共通シェルと既存資産を壊さずに載せる。サイドバー・ヘッダー・フッターは既存実装をそのまま使い、表記ゆれ (サイドバーの『マトリクス』を画像の『マトリックス』へ) の統一だけ行う。総収支・推移・診断・分析ハブと機能を重複させず、既存の色の凡例・未記帳月の扱い・期間選択 (usePeriod) を引き継ぐ。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | 照合画面が画像の全構成要素を描画する。 | DOM テストで見出し・KPI 4 枚・絞り込み・対応キュー 4 行・候補一覧 (列 8 と行選択・ページ送り)・詳細パネル・下段 2 表・選択中バーが描画され、読込・空・失敗・部分成功の各状態テストが緑である。 |
-| O4 | 共通シェルの差分を実装する。 | shell 系 DOM テストをサイドバー新文言・件数バッジ・月次クローズ 3/4 (自動 3 + レビュー手動の保存と取消)・ヘッダーのアイコンボタン・フッターリンクで更新して緑、月次レビュー API の統合テストが緑である。 |
-| O5 | 画像のアイコンを登録し表示する。 | 画像で使われるアイコンの一覧 (docs 記載) と RouteIcon の登録名が一致し、route-icon-distinct テストと各表示箇所の DOM テスト (svg の存在と aria-hidden) が緑である。 |
+| O1 | マトリックス画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出しと説明文・期間タブ 4 つと対象範囲・表示モード 3 つ・集計の対象 3 つ・行の分類 2 つ・濃淡凡例・ヒートマップ表 (合計行 / 平均行 / 合計列 / 平均列とセルの選択状態)・下部の選択中バー・空状態の取込導線が描画され、読込・空・失敗の状態テストが緑である。 |
+| O2 | セル選択で詳細パネルが開き、含まれる取引と出典と明細導線を出す。 | DOM テストでセル選択→見出し・金額・前月比・前年同月比・取引一覧の行・データの出典・明細を開くリンク・閉じる操作が検証され、未選択時にパネルと選択中バーが出ないことも検証される。 |
+| O5 | 共通シェルを変更せず、重複機能を作らない。 | サイドバー・ヘッダー・フッターの既存テストが無変更で緑のまま、表記統一の差分だけが入る。推移・診断・総収支・分析ハブの既存テストが緑で、同じ集計の二重実装が無い (core の 1 関数を参照している)。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: Reconciliation.tsx を 3 カラム (絞り込み+対応キュー / 候補一覧 / 詳細パネル) と KPI 4 枚・下段 2 表・選択中バーの構成に作り直し、行選択で詳細パネルを切り替える。
-- **I2**: 候補一覧の検索 (取引内容・金額・メモ)・絞り込み・キュー選択・ページ送りと件数切替を実装し、条件リセットを置く。
-- **I4**: 照合画面用 API と verdict 取消・MF 除外・操作履歴を migration 付きで足し、同じ取引として照合 / 別の取引として処理 / 除外 / 一括照合 / 元に戻すを web から呼ぶ。
-- **I5**: routeMetadata のラベルとグループを画像に揃え、件数バッジ・月次クローズ 3/4 (月次レビュー完了の保存と取消)・ヘッダーのアイコンボタン・フッター・改善を送るボタンを共通シェルに入れる。
-- **I6**: 画像のアイコン一覧を docs に書き、RouteIcon に不足分を登録して各箇所で表示する。
-- **I7**: 一致度・キュー・ステータス・月次クローズ判定の規則を docs に書き、docs/data-schema.md の古い候補条件を直し、境界値テストで固定する。
+- **I1**: Matrix.tsx を、問いの見出し・切替群 (表示モード / 集計の対象 / 行の分類)・濃淡凡例つきヒートマップ表 (合計と平均の行列、行ヘッダ固定、月列の横スクロール)・詳細パネル・偏り 3 点・空状態・下部の選択中バーの構成に作り直し、セル選択状態を URL に保つ。
+- **I2**: セルをクリック / キーボードで選択でき、選択中は枠で示し、詳細パネルと下部バーが同じ数値を出す。閉じるで選択を解除する。
+- **I5**: 明細を開く / 該当明細を確認 は、選択中の年月とカテゴリ (または取引先) で絞った明細仕分けへ遷移する。
+- **I6**: サイドバーの『マトリクス』表記を『マトリックス』に統一し、それ以外の共通シェルは変更しない。
+- **I7**: 集計規則・濃淡階級・偏り 3 点の選定規則・未記帳月の扱いを docs に記載し、core と DOM のテストで固定する。
 
 ### 本章に効く確定意思決定
 
-- (本章ゴールに効く確定 decision なし)
+- **dec-matrix-heat-scale**: ヒートマップの濃淡は何を基準に決めるか。表全体で共通のスケールにするか、月ごと (列ごと) に正規化するか。
+  - 採択: 表全体で共通の 7 階級 (表示中の全データセルの最小〜最大を等分) (`opt-global-scale`)
+  - 目的適合: G1 の『どの月・カテゴリに支出が偏っているか』という問いに直接答える。列をまたいで濃さを比較できるため、特定の月だけ突出しているセルが一目で分かる。
+- **dec-matrix-out-of-range-comparison**: 前月比・前年同月比の比較対象が表示期間の外にある場合、期間外のデータを参照するか、比較を空欄にするか。
+  - 採択: 表示期間の前後 12 か月まで読み取り範囲を広げて実データがあれば参照する (`opt-read-outside-range`)
+  - 目的適合: 画像の選択セル (広告宣伝費 2026年03月) は前年同月比 +300.0% を表示しており、前年同月は表の期間外にある。参照しなければ画像を再現できない。
+- **dec-matrix-counterparty-axis**: 行の分類を『取引先』に切り替えたとき、取引先が数百件ある場合に行をどう抑えるか。
+  - 採択: 期間合計の上位 20 取引先 + 『その他』1 行に畳む (サーバ側で集約) (`opt-top20-plus-other`)
+  - 目的適合: ヒートマップは一覧して偏りを見つける道具であり、行数が画面に収まることが前提。上位 20 件で支出の大半を覆える。
 
 ## 適用された設計知識
 
@@ -126,9 +121,9 @@ GET /api/reconciliation は期間内の候補全件 (KPI・キュー件数も同
 
 ### 本章での適用
 
-Clean Architecture card の依存方向を、web が照合の規則を持たない構成に適用した。照合画面は GET /api/reconciliation の結果を描き、一致度やステータスを画面側で再計算しない。検索・絞り込み・ページ送りは表示の都合なので web の状態に置く。Information Design card は同じ件数を 4 か所 (KPI・対応キュー・サイドバーの照合バッジ・ハブの行) に出すときの不一致の危険を示しており、書込後に reconciliation・analysis hub・total-cashflow・summary の queryKey をまとめて invalidate する設計 (qa-frontend-web-rc-inference-002) で 1 つの正本から描かれる状態を保つ。アイコンは外部ランタイムを足さず RouteIcon の lucide-static 登録表を広げ、重複検査テストを維持する。
+Clean Architecture card の依存方向を、web が集計規則を一切持たない構成に適用した。現行 Matrix.tsx は cell(series, i) で前月比・前年同月比を画面側で算出しているが、これを廃して API が返した値をそのまま描く。濃淡の階級も画面では決めず、API が返した階級境界に従って色を引くだけにする。加えて Information Design card の『状態は復元できる場所に置く』を、表示モード・集計の対象・行の分類・選択中セルの 4 つを React のローカル state から URL のクエリへ移すことに適用した。現行はローカル state のためリロードで切替が失われ、偏りを見つけた画面を共有することもできない。取得は 2 本に分け、表と偏り 3 点は画面表示時に、セル内訳は選択が入るまで開始しない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-16T10:14:46Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -222,5 +217,5 @@ Clean Architecture card の依存方向を、web が照合の規則を持たな�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| tanstack-query-invalidation | 5.102.8 | TanStack (tanstack.com) | https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations | 2026-09-15T09:06:26Z | 2026-09-15T09:06:26Z |
-| lucide-static-icons | 1.46.0 | Lucide Contributors (lucide.dev) | https://lucide.dev/license | 2026-09-15T09:06:26Z | 2026-09-15T09:06:26Z |
+| tanstack-query-dependent-queries | 5.103.0 | TanStack (tanstack.com) | https://tanstack.com/query/latest/docs/framework/react/guides/dependent-queries | 2026-09-16T09:22:00Z | 2026-09-16T09:42:00Z |
+| react-router-searchparams | 8.4.0 | React Router (Remix / Shopify) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-16T09:24:00Z | 2026-09-16T09:24:00Z |

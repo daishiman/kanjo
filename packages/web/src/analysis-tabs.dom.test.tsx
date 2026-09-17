@@ -89,7 +89,7 @@ describe('支出分析のタブ', () => {
     expect(await screen.findByText(/比較するデータが未取込です/)).toBeTruthy();
 
     // 統合前は route の taskDetail として出ていた文。消すと「増=赤」が誰にも伝わらない
-    const detail = screen.getByText('マトリクスのくわしい説明').closest('details');
+    const detail = screen.getByText('マトリックスのくわしい説明').closest('details');
     expect(detail?.textContent).toContain('増=赤');
     expect(detail?.querySelectorAll('.term').length ?? 0).toBeGreaterThan(0);
   });

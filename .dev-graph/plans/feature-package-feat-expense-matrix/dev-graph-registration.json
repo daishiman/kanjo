@@ -1,0 +1,1287 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-expense-matrix/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-expense-matrix",
+  "parent_feature": "feat-expense-matrix",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-MATRIX-P01": "beads",
+    "SYS-MATRIX-P02": "beads",
+    "SYS-MATRIX-P03": "beads",
+    "SYS-MATRIX-P04": "beads",
+    "SYS-MATRIX-P05": "beads",
+    "SYS-MATRIX-P06": "beads",
+    "SYS-MATRIX-P07": "beads",
+    "SYS-MATRIX-P08": "beads",
+    "SYS-MATRIX-P09": "beads",
+    "SYS-MATRIX-P10": "beads",
+    "SYS-MATRIX-P11": "beads",
+    "SYS-MATRIX-P12": "beads",
+    "SYS-MATRIX-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-MATRIX-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と持ち越し4件の着手時整理",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p01",
+        "requirements"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "docs/matrix/requirements-baseline.md"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 集計関数・2 経路 API・URL 単一真実のワークストリーム設計決定記録",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p02",
+        "architecture"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P01"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "docs/matrix/design-decisions.md"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "集計契約・API 契約・URL 契約の独立レビュー",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P02"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "docs/matrix/design-review.md"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 境界値・API 契約・DOM の失敗テスト先行作成 (持ち越し4件を契約テストで固定)",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P03"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "packages/core/test/matrix-contract.test.ts",
+        "packages/api/test/matrix-routes.test.ts",
+        "packages/web/src/matrix-visual.dom.test.tsx",
+        "packages/web/src/matrix-legend.dom.test.tsx",
+        "packages/web/src/matrix-cell.dom.test.tsx"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 集計純関数・2 経路 API・マトリックス画面・表記統一の実装",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p05",
+        "implementation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P04"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/analysis.ts",
+        "packages/core/src/csv.ts",
+        "packages/core/src/dataset.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/web/src/pages/analysis/Matrix.tsx",
+        "packages/web/src/routeMetadata.ts"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テストと型検査と lint の実行記録",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P05"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "docs/matrix/test-run.md"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入基準 S1 から S5 の検証",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P06"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "docs/matrix/acceptance.md"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "重複算出経路の除去と既存 matrix 利用箇所の整理",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p08",
+        "refactoring"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P07"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/analysis.ts",
+        "packages/core/src/csv.ts",
+        "packages/web/src/pages/analysis/Matrix.tsx"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・入力検証・応答上限・JS バンドル予算の保証確認",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P08"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "docs/matrix/quality-assurance.md"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p10",
+        "final-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P09"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "docs/matrix/final-review.md"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P10"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "docs/matrix/evidence-index.md"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "集計規則と表記統一の docs 最終同期",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p12",
+        "documentation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P11"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "docs/ui-decisions.md",
+        "docs/data-schema.md",
+        "docs/design-system.md",
+        "docs/matrix/aggregation-rules.md"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-MATRIX-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信とクローズアウト",
+      "project_id": "feature-package-feat-expense-matrix",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-16T12:34:56Z",
+      "updated_at": "2026-09-16T12:34:56Z",
+      "depends_on": [
+        "SYS-MATRIX-P12"
+      ],
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "resource_scope": [
+        "docs/matrix/release-notes.md"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-expense-matrix/sys-matrix-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-expense-matrix/plan-findings.json",
+        "evaluated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-expense-matrix/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "imported_at": "2026-09-16T12:34:56Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

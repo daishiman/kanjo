@@ -3,7 +3,7 @@ status: confirmed
 category: infrastructure
 aggregate: 確定
 spec_cells: [infrastructure.web, infrastructure.mobile, infrastructure.tablet, infrastructure.desktop-windows, infrastructure.desktop-linux, infrastructure.desktop-macos]
-serves_goals: [G3]
+serves_goals: [G4]
 ---
 
 # インフラ (infrastructure)
@@ -15,12 +15,12 @@ serves_goals: [G3]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-infrastructure-web-rc-observed-001。裏付け質疑 (`qa_refs`): `qa-database-web-rc-decision-008`, `qa-infrastructure-web-rc-inference-002` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではストア配信とアプリ更新の経路、および照合 API の旧版クライアントを並行して受け付ける期間を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではストア配信とアプリ更新の経路、および照合 API の旧版クライアントを並行して受け付ける期間を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリではストア配信とアプリ更新の経路、および照合 API の旧版クライアントを並行して受け付ける期間を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリではストア配信とアプリ更新の経路、および照合 API の旧版クライアントを並行して受け付ける期間を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリではストア配信とアプリ更新の経路、および照合 API の旧版クライアントを並行して受け付ける期間を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示 (3 カラムの縦積み) の中で扱う。対象を web のみとする利用者決定 (qa-target-platforms-rc-001 / appr-foundation-reconciliation-001、2026-09-15) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-matrix-infrastructure-web-004。裏付け質疑 (`qa_refs`): `qa-matrix-infrastructure-web-evidence-001`, `qa-matrix-infrastructure-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、インフラではアプリ配信ストアへの提出と版管理、プッシュ配信基盤の要否を決める必要があった。対象を web のみとする利用者決定 (appr-foundation-expense-matrix-001) によりその検討は発生しない。配信は既存の web ホスティングだけである。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、インフラでは別配信チャネルと端末別のビルド成果物を管理する必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、インフラではインストーラの配布先と自動更新サーバを用意する必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、インフラではディストリビューション別パッケージの生成と配布先を用意する必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、インフラでは署名・公証を含む配布パイプラインを用意する必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G3]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | Google SRE の容量計画を、GET /api/reconciliation の 1 リクエストの D1 読取り本数を /total-cashflow と同程度に保ち、一括操作を 200 件で打ち切る確定内容に反映した。単独利用のため SLO は定義しない。 |
-| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | Google SRE の『運用対象を増やさない』を、Worker・binding・cron の本数を変えず、履歴の 90 日削除を既存の夜間 cron の処理に足すだけにする確定内容に反映した。追加だけの migration は deploy.yml が自動適用し、手動の migrate.yml 手順は発生しない。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | Google SRE の容量計画を、応答を 2 本に分ける確定内容へ反映した。初回表示の応答は 12 か月 × 最大 21 行の表と偏り 3 点に上限づけられ、明細件数から切り離される。セル内訳は選択後にのみ 1 セルぶんを取得する。取引先軸の上位 20 件への集約をサーバ側で行うことで、取引先数が増えても表の大きさが変わらない。Cloudflare Workers の 1 呼び出しあたりの CPU 時間 (有料プラン既定 30 秒) に対し、集計はセル数に比例する O(n) の計算のみで十分な余裕がある。単独利用のため SLO は定義しない。 |
+| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | Google SRE の『運用対象を増やさない』を、本サイクルが配信構成を変えない点へ反映した。Worker・Workers Assets・D1・R2・cron の本数と binding は据え置き、新設するのは同一 Worker 内のルートだけである。migration が無いため deploy.yml の自動適用も手動の migrate.yml 手順も発生せず、本サイクルで新たに監視や定期作業が増えることはない。 |
 
 > **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
 
@@ -39,43 +39,43 @@ serves_goals: [G3]
 
 ### Web (web)
 
-- 資するゴール: G3
+- 資するゴール: G4
 
-#### 主たる接地根拠: `qa-infrastructure-web-rc-observed-001`
-
-**問**
-
-照合改善の配信とインフラ構成は現行どうなっていて、変更は要るか。
-
-**答**
-
-packages/api/wrangler.jsonc の Worker が SPA を Workers Assets (binding ASSETS) で配信し、D1 (DB)・R2 (FILES)・cron (0 18 * * *) を持つ。GitHub Actions は ci.yml・deploy.yml (追加だけの D1 migration を自動適用)・migrate.yml (破壊的 migration の手動承認)。照合改善は既存 Worker に route を足し、追加だけの migration と SPA 画面の更新を行うだけで、binding・Worker・デプロイ経路の変更は無い。GET /api/reconciliation は loadDataset と freee 系テーブル・MF 除外・直前の操作を 1 リクエストで読むため、既存 /total-cashflow と同程度の D1 読取りになる (d1-limits.ts の制限内)。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD cc0d5e3) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/wrangler.jsonc, .github/workflows/{ci,deploy,migrate}.yml, packages/api/src/d1-limits.ts。 / 回答時刻: 2026-09-15T08:59:56Z)
-
-#### 裏付け質疑: `qa-database-web-rc-decision-008`
+#### 主たる接地根拠: `qa-matrix-infrastructure-web-004`
 
 **問**
 
-『元に戻す』の範囲をどうするか。選択肢: (A) 直前の操作 1 件+履歴は保存: 画面には直前の操作 1 件 (一括なら一括単位) を出し、元に戻すで操作前の判断状態へ戻す。履歴表には全操作を 90 日保存し、取消済みの操作は再取消できない。中間の操作を戻すには各行の判断を解除する (推奨) / (B) 履歴から任意の操作を戻す / (C) 画面内の直前 1 件のみで履歴を保存しない。
+web のインフラ要件は何か。マトリックス画面と新 API の実行環境・性能・配信をどう置くかを確定する。 (このうち利用者が実際に選んだ部分)
 
 **答**
 
-(A) 直前の操作 1 件+履歴は保存 を選択した。
+利用者の決定が実行環境へ及ぶのは次の 2 点である。(1) 行の分類が『取引先』のときは上位 20 取引先 + 『その他』に畳むため、返す行数に上限がつく。(2) 要因の示唆を生成 AI に書かせないため、外部の推論サービスを実行環境へ追加しない。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion で選択した dec-matrix-counterparty-axis (1) と dec-matrix-insight-generation (2)。いずれも status=confirmed。 / 回答時刻: 2026-09-16T11:14:15Z)
 
-#### 裏付け質疑: `qa-infrastructure-web-rc-inference-002`
+#### 裏付け質疑: `qa-matrix-infrastructure-web-evidence-001`
 
 **問**
 
-照合操作の履歴 90 日保存をどう運用するか。
+infrastructure 章の裏付けとして、応答を 2 本に分ける判断の根拠は何か。
 
 **答**
 
-既存の夜間 cron (0 18 * * *) の処理に、reconciliation_actions の created_at が 90 日より古い行の削除を足す。新しい cron・binding・Worker は足さない。migration は追加のみ (新表 3 つと duplicate_verdicts への列追加なし) なので deploy.yml の自動適用経路に乗り、migrate.yml の手動承認は不要。
+1 本にまとめると、表 (12 か月 × 最大 21 行) に加えて全セルの明細を返すことになり、応答サイズが明細件数に比例して膨らむ。画像の画面では明細が見えるのは選択中の 1 セルだけで、初回表示時点ではどのセルも選択されていない。したがって初回に必要なのは表の数値と偏り3点だけであり、明細は選択という利用者の操作を待ってから取りに行けばよい。この分割により初回表示の応答サイズは月数 × 行数に上限づけられ、明細件数から切り離される。Cloudflare Workers の 1 リクエストあたりの CPU 時間にも余裕が生まれる。取引先軸で上位 20 件へ畳むのをサーバ側で行うのも同じ理由で、取引先数が増えても表の大きさが変わらないようにするためである。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: アシスタントが 2026-09-15 に観測事実と利用者決定から導いた推定。単独では確定の根拠にせず、観測事実 (主根拠) の補足として qa_refs に載せる。answered_at は記録直前に date -u で実測した時刻。 前提: qa-database-web-rc-decision-008 (履歴 90 日)、packages/api/wrangler.jsonc の crons、deploy.yml 冒頭の自動適用方針。 / 回答時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: design/FINAL-UI/images/06-matrix.png の情報量 (12 か月 × カテゴリ行 + 選択 1 セルのみの明細) と Cloudflare Workers の実行制約の突き合わせ / 回答時刻: 2026-09-16T08:43:17Z)
+
+#### 裏付け質疑: `qa-matrix-infrastructure-web-003`
+
+**問**
+
+web のインフラ要件は何か。マトリックス画面と新 API の実行環境・性能・配信をどう置くかを確定する。 (このうち agent が補完した設計判断の部分)
+
+**答**
+
+実行環境の具体的な扱いは agent の設計判断である。(1) API は既存の Cloudflare Workers (Hono) 上に置き、データは D1 を読む。新しいサービス・キュー・外部 SaaS を追加しない。(2) 集計は Worker の CPU 時間内に収める必要があるため、対象は表示期間 ± 12 か月の明細に限定し、行の分類が『取引先』のときはサーバ側で畳んでから返す。応答は表本体 (月 × 行) と偏り3点だけとし、明細はセル選択時の別リクエストに分ける。この分割により初回表示の応答サイズを明細件数に依存させない。(3) フロントは既存のビルド・配信をそのまま使い、本画面のために新しい外部依存やチャートライブラリを増やさない (既存の JS バンドル予算を超えさせない)。(4) 同一パラメータの再取得は TanStack Query のキャッシュで吸収し、サーバ側に新しいキャッシュ層を導入しない。(5) ローカル開発は既存の wrangler dev と seed 手順をそのまま使い、本画面用の追加セットアップを持ち込まない。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 既存コード (Cloudflare Workers + Hono の構成、D1、既存の JS バンドル予算、wrangler dev と seed 手順) の読解にもとづく agent の設計判断。± 12 か月という範囲や応答の分割方針は利用者の選択を経ていない。 / 回答時刻: 2026-09-16T11:14:15Z)
 
 ## To-Be / Delta
 
@@ -83,21 +83,34 @@ packages/api/wrangler.jsonc の Worker が SPA を Workers Assets (binding ASSET
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: 照合操作を保存し元に戻せるようにする。既存の duplicate_verdicts と freee 除外表を再利用し、照合画面用の API (一覧・KPI・キューを返す GET と、照合 / 別取引 / 除外 / 一括照合の POST)、verdict 取消 API、MF 側除外、照合操作の履歴表 (直前の操作と元に戻すに使う) を migration 付きで追加する。一括は最大 200 件で部分成功を返す。
+- **G4**: マトリックスの集計を core の純関数とセル指向の API に置き換える。月×(カテゴリ | 取引先)、総合 / 事業 / 家計、金額 / 構成比 / 前年差、行と列の合計と平均、濃淡の階級 (表示中の全データセルの最小〜最大を 7 階級に等分した表全体共通スケール。合計行・平均行・合計列・平均列は算出から除外)、偏り上位 3 点、セル内訳の取引と出典を 1 か所で算出し、GET /api/matrix をこの形へ拡張したうえで、セル内訳は選択時に取得する。取引先軸は期間合計の上位 20 取引先 + 『その他』1 行にまとめる。前月比・前年同月比は比較対象が表示期間の外にあっても実データがあれば参照する。既存の matrix CSV 出力と総収支・分析ハブ・推移の数値と突き合わせて一致させる。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | 照合操作 API・取消・MF 除外・操作履歴を migration 付きで追加する。 | API 統合テストが認証付きで照合 / 別取引 / 除外 / 一括 (201 件で 400、部分成功の内訳) / 取消 / 直前の操作の取得を検証し、migration が既存 D1 に冪等に適用され、元に戻すと KPI とキューが操作前の値に戻る。 |
+| O4 | core のマトリックス集計と API がスコープ・軸・モードを一貫して返す。 | core 単体テストで 総合=事業+家計 の合計整合・構成比の列合計が 1・前年差の対象外月 (未記帳・前年同月なし) の扱い・取引先軸のその他まとめ・濃淡階級の境界が検証され、API テストで期間とスコープと軸のクエリ、セル内訳の取得、既存 matrix CSV との金額一致が緑である。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I4**: 照合画面用 API と verdict 取消・MF 除外・操作履歴を migration 付きで足し、同じ取引として照合 / 別の取引として処理 / 除外 / 一括照合 / 元に戻すを web から呼ぶ。
+- **I3**: core に matrix 集計関数を置き、スコープ (総合 / 事業 / 家計)・軸 (カテゴリ / 取引先)・モード (金額 / 構成比 / 前年差)・行列の合計と平均・濃淡階級・偏り上位 3 点を 1 か所で算出する。
+- **I4**: GET /api/matrix を期間・スコープ・軸・モードのクエリで受け、セル内訳 (含まれる取引と出典) は選択時に別経路で取得する。既存の matrix CSV は同じ core 関数から生成する。
+- **I7**: 集計規則・濃淡階級・偏り 3 点の選定規則・未記帳月の扱いを docs に記載し、core と DOM のテストで固定する。
 
 ### 本章に効く確定意思決定
 
-- (本章ゴールに効く確定 decision なし)
+- **dec-matrix-heat-scale**: ヒートマップの濃淡は何を基準に決めるか。表全体で共通のスケールにするか、月ごと (列ごと) に正規化するか。
+  - 採択: 表全体で共通の 7 階級 (表示中の全データセルの最小〜最大を等分) (`opt-global-scale`)
+  - 目的適合: G1 の『どの月・カテゴリに支出が偏っているか』という問いに直接答える。列をまたいで濃さを比較できるため、特定の月だけ突出しているセルが一目で分かる。
+- **dec-matrix-out-of-range-comparison**: 前月比・前年同月比の比較対象が表示期間の外にある場合、期間外のデータを参照するか、比較を空欄にするか。
+  - 採択: 表示期間の前後 12 か月まで読み取り範囲を広げて実データがあれば参照する (`opt-read-outside-range`)
+  - 目的適合: 画像の選択セル (広告宣伝費 2026年03月) は前年同月比 +300.0% を表示しており、前年同月は表の期間外にある。参照しなければ画像を再現できない。
+- **dec-matrix-counterparty-axis**: 行の分類を『取引先』に切り替えたとき、取引先が数百件ある場合に行をどう抑えるか。
+  - 採択: 期間合計の上位 20 取引先 + 『その他』1 行に畳む (サーバ側で集約) (`opt-top20-plus-other`)
+  - 目的適合: ヒートマップは一覧して偏りを見つける道具であり、行数が画面に収まることが前提。上位 20 件で支出の大半を覆える。
+- **dec-matrix-fixture-authority**: 参照画像 06-matrix.png の合計・平均欄はセル値の実計算と最大 19.4 万円ずれている (画像側の丸め誤差)。再現テスト用フィクスチャはセル値と合計欄のどちらを正本にするか。
+  - 採択: セル値を正本とし、合計・平均欄を実計算値へ置き換える (`opt-cell-authority`)
+  - 目的適合: 成功基準 S4『合計・平均が表の値と一致する』を toBe による厳密一致でテストできる。期待値が算術的に閉じているため、集計ロジックの誤りがそのままテスト失敗として現れる。
 
 ## 適用された設計知識
 
@@ -105,9 +118,9 @@ packages/api/wrangler.jsonc の Worker が SPA を Workers Assets (binding ASSET
 
 ### 本章での適用
 
-本章へ引く card は 0 件である。配信構成 (Worker・Workers Assets・D1・R2・cron) と binding を変えず、追加だけの migration を既存の deploy.yml 自動適用に乗せるサイクルで、infrastructure 固有に適用すべき設計知識が無いことを確認した上での確定である。本章に効く制約は D1 のクエリ上限と batch の原子性で、GET /api/reconciliation の読取り本数を /total-cashflow と同程度に保ち、取消を 1 回の batch にすることで満たす。履歴の 90 日削除は既存の夜間 cron に足す。
+本章へ引く card は 0 件である。配信構成 (Worker・Workers Assets・D1・R2・cron) と binding を一切変えず、新設するのは同一 Worker 内の 2 経路だけであるため、infrastructure 固有に適用すべき設計知識が無いことを確認した上で 0 件と記録する。そのうえで本章が確定させたのは量的な設計条件である。初回表示の応答は表 (12 か月 × 最大 21 行) と偏り 3 点に限り、明細件数に比例して膨らまないようにする。取引先軸の上位 20 件への集約はサーバ側で行い、取引先数が増えても応答の行数が変わらないようにする。セル内訳は選択という操作を待ってから取りに行く。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T08:59:56Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-16T10:14:47Z)
 
 - `ref-system-design-knowledge/references/resource-map.yaml` (本章へ引く card は 0 件。未着手ではなく、上の適用記述で0 件である理由を述べた上での確定である)
 
@@ -115,4 +128,5 @@ packages/api/wrangler.jsonc の Worker が SPA を Workers Assets (binding ASSET
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-d1-limits | 2026-04-21 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/platform/limits/ | 2026-09-15T09:06:26Z | 2026-09-15T09:06:26Z |
+| cloudflare-workers-limits | 2026-09-05 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/workers/platform/limits/ | 2026-09-16T09:25:00Z | 2026-09-16T09:25:00Z |
+| cloudflare-workers-ai-pricing | 2026-08-28 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/workers-ai/platform/pricing/ | 2026-09-16T11:41:18Z | 2026-09-16T11:41:18Z |

@@ -157,7 +157,7 @@ const WIDE_TABLE = `
 const fixture = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${STYLES}</style></head><body>
 <div class="shell">
   ${SIDEBAR}
-  <header class="header"><a class="header-brand" href="#">収支統合管理</a><span class="period">2026年8月</span><span class="spacer"></span><span class="badge ok">防衛ライン OK<span class="badge-detail"> 見込 ¥714,353</span></span><span class="popover-host"><button type="button" aria-expanded="true" aria-haspopup="menu">書き出し ▾</button><span class="popover" role="menu"><a class="btn" role="menuitem" href="#json">統合データJSON</a><a class="btn" role="menuitem" href="#csv">マトリクスCSV</a></span></span></header>
+  <header class="header"><a class="header-brand" href="#">収支統合管理</a><span class="period">2026年8月</span><span class="spacer"></span><span class="badge ok">防衛ライン OK<span class="badge-detail"> 見込 ¥714,353</span></span><span class="popover-host"><button type="button" aria-expanded="true" aria-haspopup="menu">書き出し ▾</button><span class="popover" role="menu"><a class="btn" role="menuitem" href="#json">統合データJSON</a><a class="btn" role="menuitem" href="#csv">マトリックスCSV</a></span></span></header>
   <main class="main">
     <h1 class="page-title">公私仕分け</h1>
     ${CLASSIFY_TABLE}

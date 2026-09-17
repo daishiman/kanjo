@@ -14,8 +14,8 @@ vi.mock('./pages/analysis/Reconciliation.js', () => ({
   ReconciliationPage: () => <p>照合詳細パネル</p>,
 }));
 
-vi.mock('./pages/analysis/Matrix.js', () => ({
-  MatrixPage: () => <p>マトリクス詳細パネル</p>,
+vi.mock('./pages/analysis/matrix/MatrixPage.js', () => ({
+  MatrixPage: () => <p>マトリックス詳細パネル</p>,
 }));
 
 const period = {
@@ -130,9 +130,9 @@ describe('認証後シェルの支出分析遷移', () => {
   it('詳細の deep link をリロード相当で直接描画する', async () => {
     renderApp('/analysis/matrix');
 
-    expect(await screen.findByText('マトリクス詳細パネル')).toBeTruthy();
+    expect(await screen.findByText('マトリックス詳細パネル')).toBeTruthy();
     expect(window.location.pathname).toBe('/analysis/matrix');
-    await waitFor(() => expect(document.title).toBe('マトリクス | 支出分析 | Focus Ledger'));
+    await waitFor(() => expect(document.title).toBe('マトリックス | 支出分析 | Focus Ledger'));
     expect(window.scrollTo).not.toHaveBeenCalled();
   });
 });

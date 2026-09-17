@@ -213,7 +213,7 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": "6db8b40267bfb73cb1816b6d053a2bfba83996c845a392748838591603cfeec6",
+        "source_digest": "b6b438c561d6f4dc7f39f7764b5f7671c0cc6d1011c68ddf79b9e6815f6adb43",
         "imported_at": "2026-08-29T00:00:00Z"
       },
       "referenced_by": [
@@ -1437,7 +1437,7 @@
         "imported_at": "2026-09-15T10:39:59Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "20f2fb1c3077c7947868fff14a3e48c2704f83ffed4ae43fea33b6794b11eb52",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-16-reconciliation/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1458,7 +1458,7 @@
         "imported_at": "2026-09-15T10:39:59Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "bfbefb61b4bb32b77bc6aab54ba11ce0b6c87dbf960052820f9a6df74cca2ed0",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-16-reconciliation/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1479,7 +1479,7 @@
         "imported_at": "2026-09-15T10:39:59Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "1b216ebc004b3b0b5cb8c739b22c382e1fb2c211bd33b7dac2c4e566eceb11e0",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-16-reconciliation/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1500,7 +1500,7 @@
         "imported_at": "2026-09-15T10:39:59Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "fa73d81d52841cb01432498c3c1de96af84115861e0f21c1b1a8e09bafaf158a",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-16-reconciliation/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1521,7 +1521,7 @@
         "imported_at": "2026-09-15T10:39:59Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "80ce90a07bbc669ca0a008a166b4199aa4576f5d8c235f74a592e50216f9a978",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-16-reconciliation/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1542,7 +1542,7 @@
         "imported_at": "2026-09-15T10:39:59Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "8d99018c173d997d4371e57fbea80afd8d66a3ea442d85b108d2e1db7dbcdc1c",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-16-reconciliation/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1563,7 +1563,7 @@
         "imported_at": "2026-09-15T10:39:59Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "27d6303e5cf656d4286fa719941c7b912ad1f654de52595c7aeab9d15232ce25",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-16-reconciliation/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1584,11 +1584,195 @@
         "imported_at": "2026-09-15T10:39:59Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "36880c07d7b18428bc7692ba8123110c7c4d8da6603939b28b2ffd84437f3fec",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-16-reconciliation/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
       "referenced_by": []
+    },
+    {
+      "id": "arch-expense-matrix-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "支出マトリックス画面 — 情報の優先順位・ヒートマップの読ませ方・セル選択",
+      "file_path": "architecture/expense-matrix-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "940691e19ee39682e106476ef8be9117c203916c8f9cbd76bf06f63d76f9bd1b",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "支出マトリックス画面 — URL 単一真実・2 本の取得・部品境界",
+      "file_path": "architecture/expense-matrix-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e532dd19fe36b269cb64da9433bf854d7e576120457d6f095a5b7cebf75940dd",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "支出マトリックス — core 純関数 1 か所とセル指向 API",
+      "file_path": "architecture/expense-matrix-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "aa683b83952f8d5cda302aa3b26e2150fa8306d080c02fe03648cb32aeafe0b4",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "支出マトリックス — 読み取り範囲 ±12 か月・新しい保存を作らない",
+      "file_path": "architecture/expense-matrix-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "5819bdcc8ddab7f90e038451e3835e406b3c84c98a492dcb7088451ad73a674a",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "支出マトリックス — 新設 2 経路を既存 authGuard の内側に置く",
+      "file_path": "architecture/expense-matrix-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "05843382528fb59bac01a39618d21c7d16ffc2196844f40751292a2c77f85b33",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "支出マトリックス — 入力は列挙値で閉じ、出力へ明細を漏らさない",
+      "file_path": "architecture/expense-matrix-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "fede51eb4a0dd594e4e8cafb51c3ca7d389aea3a16228fcc353061d9679490db",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "支出マトリックス — 応答 2 分割と Workers CPU 予算に収める",
+      "file_path": "architecture/expense-matrix-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "43416dd0ae8d102622e9c3e1c75496c9f9d2ca8217b2fac378555d42c82cf8d6",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "支出マトリックス — 検算済みフィクスチャと語彙の統一",
+      "file_path": "architecture/expense-matrix-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "73ddaf752a28edcc278ef0accb77411a9a77dae0857990352307db902f74f9b1",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
     }
   ]
 }

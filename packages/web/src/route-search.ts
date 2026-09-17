@@ -25,7 +25,7 @@ export interface RouteSearchItem {
  * (パレットを開いた直後に一覧として機能させるため)。
  */
 export function searchRoutes<T extends RouteSearchItem>(query: string, routes: readonly T[]): T[] {
-  const q = query.trim().toLowerCase();
+  const q = normalize(query);
   if (!q) return [...routes];
 
   return (
@@ -55,6 +55,19 @@ export function withResolvedGroups<T extends RouteSearchItem>(routes: readonly T
 }
 
 const NO_MATCH = Number.POSITIVE_INFINITY;
+
+/**
+ * 画面名が変わっても、前の呼び名で辿り着けるようにする。
+ *
+ * 表記を「マトリックス」へ揃えたが、利用者の記憶と手が覚えているのは前の綴りなので、
+ * 打った語が当たらないと「画面が消えた」に見える。正本（routeMetadata）には旧称を
+ * 残さず、検索側の解釈として query を読み替える。
+ */
+const QUERY_ALIASES: readonly [RegExp, string][] = [[/マトリクス/g, 'マトリックス']];
+
+function normalize(query: string): string {
+  return QUERY_ALIASES.reduce((q, [from, to]) => q.replace(from, to), query.trim().toLowerCase());
+}
 
 /**
  * 当たり方に順位を付ける。小さいほど先に出す。

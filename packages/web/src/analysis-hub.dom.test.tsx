@@ -261,14 +261,14 @@ describe('支出分析ハブ', () => {
     const routes = await screen.findByRole('list', { name: '分析ルート' });
     const matrix = within(routes)
       .getAllByRole('listitem')
-      .find((item) => item.getAttribute('aria-label') === 'マトリクスの説明を選ぶ');
+      .find((item) => item.getAttribute('aria-label') === 'マトリックスの説明を選ぶ');
     expect(matrix).toBeTruthy();
     fireEvent.click(matrix as HTMLElement);
 
     await waitFor(() => expect(location()).toBe('/analysis?focus=matrix'));
     expect(screen.getByTestId('location').dataset.navigationType).toBe('REPLACE');
     const panel = screen.getByRole('complementary', { name: '選択中の分析' });
-    expect(within(panel).getByRole('heading', { name: 'マトリクス' })).toBeTruthy();
+    expect(within(panel).getByRole('heading', { name: 'マトリックス' })).toBeTruthy();
   });
 
   it('表の分析視点・目的・状態・優先度セルをクリックすると、その行の分析を選ぶ', async () => {
@@ -279,11 +279,11 @@ describe('支出分析ハブ', () => {
     fireEvent.click(within(row('総収支')).getByRole('rowheader'));
     await waitFor(() => expect(location()).toBe('/analysis?focus=total-cashflow'));
 
-    fireEvent.click(within(row('マトリクス')).getAllByRole('cell')[1] as HTMLElement);
+    fireEvent.click(within(row('マトリックス')).getAllByRole('cell')[1] as HTMLElement);
     await waitFor(() => expect(location()).toBe('/analysis?focus=matrix'));
     expect(
       within(screen.getByRole('complementary', { name: '選択中の分析' })).getByRole('heading', {
-        name: 'マトリクス',
+        name: 'マトリックス',
       }),
     ).toBeTruthy();
 
@@ -299,7 +299,7 @@ describe('支出分析ハブ', () => {
     const routes = await screen.findByRole('list', { name: '分析ルート' });
     const matrixCard = within(routes)
       .getAllByRole('listitem')
-      .find((item) => within(item).queryByRole('link', { name: 'マトリクスを開く' }));
+      .find((item) => within(item).queryByRole('link', { name: 'マトリックスを開く' }));
     expect(matrixCard).toBeTruthy();
 
     fireEvent.click(matrixCard as HTMLElement);
@@ -309,7 +309,7 @@ describe('支出分析ハブ', () => {
 
   it('デスクトップ表の行はキーボードでも選べ、フォーカス対象は行1つにまとまる', async () => {
     renderHub('/analysis');
-    const matrixRow = within(await screen.findByRole('table')).getByRole('row', { name: /マトリクス/ });
+    const matrixRow = within(await screen.findByRole('table')).getByRole('row', { name: /マトリックス/ });
     expect(matrixRow.tabIndex).toBe(0);
     expect(within(matrixRow).queryByRole('button')).toBeNull();
 
@@ -322,9 +322,9 @@ describe('支出分析ハブ', () => {
   it('行末 CTA は行選択を発火せず、詳細の pathname だけへ遷移する', async () => {
     renderHub('/analysis?focus=reconciliation');
     const table = await screen.findByRole('table');
-    const matrixRow = within(table).getByRole('row', { name: /マトリクス/ });
+    const matrixRow = within(table).getByRole('row', { name: /マトリックス/ });
 
-    fireEvent.click(within(matrixRow).getByRole('link', { name: 'マトリクスを開く' }));
+    fireEvent.click(within(matrixRow).getByRole('link', { name: 'マトリックスを開く' }));
 
     await waitFor(() => expect(location()).toBe('/analysis/matrix'));
     expect(screen.getByTestId('location').dataset.navigationType).toBe('PUSH');
@@ -333,7 +333,7 @@ describe('支出分析ハブ', () => {
   it('テキストを選択したクリックでは分析を切り替えない', async () => {
     renderHub('/analysis');
     vi.spyOn(window, 'getSelection').mockReturnValue({ toString: () => '支出の内訳' } as Selection);
-    const matrixRow = within(await screen.findByRole('table')).getByRole('row', { name: /マトリクス/ });
+    const matrixRow = within(await screen.findByRole('table')).getByRole('row', { name: /マトリックス/ });
 
     fireEvent.click(within(matrixRow).getAllByRole('cell')[1] as HTMLElement);
 
@@ -427,7 +427,7 @@ describe('支出分析ハブ', () => {
 
   it('/analysis/:tab は従来どおりタブを表示し、ハブを描かない', async () => {
     renderHub('/analysis/matrix');
-    expect(await screen.findByText('マトリクスのくわしい説明')).toBeTruthy();
+    expect(await screen.findByText('マトリックスのくわしい説明')).toBeTruthy();
     expect(screen.queryByRole('heading', { name: '支出のどこから確認しますか？' })).toBeNull();
   });
 });

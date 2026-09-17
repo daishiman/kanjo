@@ -34,6 +34,25 @@ export function revenueIdx(data: Dataset): number[] {
   return data.months.map((_, i) => i).filter((i) => data.biz.revenue[i] > 0);
 }
 
+/**
+ * 系列の中でその値がどれだけ外れているか（行内偏り = z スコア）。
+ * 診断の `要確認`（z >= 2）もマトリックスの偏り上位3点も、偏りの定義はこの1か所だけを使う。
+ * ばらつきが無い系列（sd = 0）は「どの値も等しく普通」なので 0 を返す。
+ */
+export function zOf(value: number, series: readonly number[]): number {
+  const a = [...series];
+  const sd = std(a);
+  return sd > 0 ? (value - mean(a)) / sd : 0;
+}
+
+/** 系列の各値の行内偏り。`zOf` を全要素へ適用したもの（平均・標準偏差は系列全体で1度だけ取る）。 */
+export function zScores(series: readonly number[]): number[] {
+  const a = [...series];
+  const m = mean(a);
+  const sd = std(a);
+  return a.map((v) => (sd > 0 ? (v - m) / sd : 0));
+}
+
 /** 科目別統計プロファイル（未記帳月除外）。CV<0.6 固定費 / <1.5 準変動 / それ以上 スポット */
 export function catProfile(data: Dataset, c: string): CatProfile {
   const s = catSeries(data, c);
@@ -49,7 +68,7 @@ export function catProfile(data: Dataset, c: string): CatProfile {
   const pAvg = mean(prior);
   const slope = pAvg > 0 ? rAvg / pAvg - 1 : rAvg > 0 ? 1 : 0;
   const lastVal = vals[vals.length - 1];
-  const z = sd > 0 ? (lastVal - m) / sd : 0;
+  const z = zOf(lastVal, vals);
   const type = cv < 0.6 ? '固定費' : cv < 1.5 ? '準変動' : 'スポット';
   return { mean: m, sd, cv, med, rAvg, pAvg, slope, z, lastVal, type, total: sum(vals) };
 }

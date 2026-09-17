@@ -47,7 +47,9 @@ const PANELS: Record<AnalysisTabId, ComponentType> = {
   'total-cashflow': lazy(() =>
     import('./analysis/TotalCashflow.js').then((module) => ({ default: module.TotalCashflowPage })),
   ),
-  matrix: lazy(() => import('./analysis/Matrix.js').then((module) => ({ default: module.MatrixPage }))),
+  matrix: lazy(() =>
+    import('./analysis/matrix/MatrixPage.js').then((module) => ({ default: module.MatrixPage })),
+  ),
   trends: lazy(() => import('./analysis/Trends.js').then((module) => ({ default: module.TrendsPage }))),
   diagnosis: lazy(() =>
     import('./analysis/Diagnosis.js').then((module) => ({ default: module.DiagnosisPage })),

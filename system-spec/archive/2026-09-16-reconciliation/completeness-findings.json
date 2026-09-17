@@ -1,0 +1,195 @@
+{
+  "evaluator": {
+    "name": "assign-system-spec-completeness-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "spec_dir": "system-spec",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "[照合画面サイクル 第4周 / 2026-09-15 評価] 第3周の PASS を引き継ぐ。引き継ぎの条件は満たしている。requirements_foundation は変更されておらず、approval_ref は appr-foundation-reconciliation-003 のまま approval_log に実在する。今周の追加 (qa-backend-web-rc-decision-013、qa-maintenance-ops-web-rc-inference-003、012 の corrections) は foundation を書き換えていない。しきい値は G2『規則を docs に書きテストで固定』を具体化したもので、qa と章に置かれている。validate-coverage-matrix.py --require-foundation と validate-spec-doc-sync.py は今周の再実行でも exit 0 だった。評価者が全章の qa/appr id (32 件) を突合したところ、未登録の id は 0 件だった。第3周の low (003 の note にある差の列挙漏れ) は範囲を変えないため、取り直しは不要のまま継続とする。",
+      "evidence": [
+        "G-foundation: validate-coverage-matrix.py --require-foundation exit 0 (第4周再実行)",
+        "G-spec-doc-sync: validate-spec-doc-sync.py exit 0 (第4周再実行)",
+        "requirements_foundation.approval_ref = appr-foundation-reconciliation-003 (approval_log に実在)",
+        "章内の qa/appr id の突合: 未登録 0 件"
+      ]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "第3周の medium は解消した。(1) しきい値の未確定について: qa-backend-web-rc-decision-013 (user-decision、answered_at 2026-09-15T10:23:56Z) で『Dice 0.5 以上で内容が似ている』が決まった。適用先の 2 か所 (金額の差異キュー = ±3日かつ類似 0.5 以上かつ金額不一致、一致の理由の内容行) と、内容点を 類似×20 の連続値のまま残すことが明記されている。選択肢は 3 案 (0.5 / 0.3 / 0 超) で、どの案にも長所と短所が同じ粒度で書かれ、実例の類似度が付いている。評価者が NFKC・空白除去・小文字化・bigram Dice で独立に再計算したところ、8 組の値 (0.75 / 0.67 / 0.57 / 0.33 / 0.25 / 0.37 / 0.40 / 0) はすべて提示値と一致した。多重集合と集合のどちらで数えても、この 8 組の値は同じだった。013 は backend.web と ui-ux.web の qa_refs に入り、backend.md L166-172 と ui-ux.md L119-125 に逐語で投影されている。(2) 012 の開示不足について: 012 に corrections が付き、013 の question の冒頭で『金額も表記も違う組は、どのしきい値でも金額の差異キューに入らない』と利用者に訂正が示された。(3) 境界値テストについて: qa-maintenance-ops-web-rc-inference-003 (agent-inference と明示) が、値そのもの・0.5 の直上と直下・キュー条件の各辺を 1 つずつ外すケースを固定している。残りは low が 3 件ある。(a) 内容点の丸め規則と、Dice の数え方 (多重集合か集合か、ちょうど 0.5 の比較) が未定義で、実装時に docs とテストへ書く前提になっている。内容点は一致度の表示にしか使われず、件数や分類は変わらない。数え方の違いは同じ bigram が繰り返し出る摘要だけに効き、差も小さい。どちらも利用者の判断を要しない技術上の定義なので low とした。(b) backend.md L112 の設計本文と O2 の測定文にはしきい値 0.5 がまだ書かれていない (同じ章の qa 節には書かれている)。(c) decisions[] が 0 件のまま (第1周から継続)。rubric の意味層 (利用者判断を要する規則が確定し、推定で埋める箇所が根拠の性質付きで宣言されている) を満たすので PASS とする。",
+      "evidence": [
+        "qa-backend-web-rc-decision-013 (user-decision, 3 案の長短 + 試算値)",
+        "qa-backend-web-rc-decision-012.corrections (2026-09-15T10:23:56Z)",
+        "qa-maintenance-ops-web-rc-inference-003 (agent-inference, 境界値テスト)",
+        "評価者による Dice 再計算: 提示 8 組すべて一致 (多重集合/集合で差なし)",
+        "backend.md L166-172 / ui-ux.md L119-125 / maintenance-ops.md L83-89"
+      ]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "C07 (第4周、独立 fork) の判定は loop_pass PASS / final_ready PASS。validate-coverage-matrix.py は loop / --require-complete / --require-basis / --require-foundation のすべてで exit 0 だった。48 セルの内訳は確定 8 / 対象外 40 / 未収集 0。対象外の理由 40 件に placeholder は無い。qa_ref と qa_refs の計 29 件に dangling は無く、今周追加の 013 と inference-003 も含まれる。category_aggregate は真理値表と一致し、canonical platform の 6 行も揃っている。C16 required-info (--state 付き) も exit 0 で、ungrounded_blocking_items は空だった。C07 は、013 を ui-ux.web にも付けたことを取り違えではないと判定した (キュー表示と一致の理由のチェックは UI の挙動に直結するため)。sub-input の C06 (第4周、独立 fork) は総合 FAIL を返したので、SSOT と突き合わせて次のとおり裁定した。誘導質問は PASS (013 は 3 案の長短を同じ粒度で提示し、第3周の誘導傾向は 013 では解消)、トレーサビリティは PASS。聞き漏れの medium 2 件 (丸め規則が未決定、Dice の多重集合と集合の別が未定義) は、利用者の判断を要しない技術上の定義で、表示や稀なケースにしか効かないため low とし、decision_guidance の low に統合した。早期停止の low-medium (reopen_log が空で loop_count が 3 のまま、第4周の追加が進捗に反映されていない) は、apply-spec-transition.py の add-qa-ref が『確定セルに qa_refs を追記する正規の経路』(L310-331、reopen を要しない) として定義されているので違反ではない。hearing_progress が第4周を数えていない点だけを low として残す。C06 の medium 以上は残らず、確定セルが Q&A に遡れることは C06 も PASS と確認したので、本観点は PASS とする。",
+      "evidence": [
+        "C07: validate-coverage-matrix.py loop/--require-complete/--require-basis/--require-foundation 全 exit 0",
+        "C07: validate-knowledge-graph.py --profile required-info --state exit 0, ungrounded_blocking_items []",
+        "C06: 誘導質問 PASS / トレーサビリティ PASS / 聞き漏れ・早期停止の指摘は評価者が low へ裁定",
+        "apply-spec-transition.py L310-331: add-qa-ref は確定セルのみ qa_refs 追記可 (reopen 不要の正規経路)"
+      ]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "機械層: aggregate-completeness.py --knowledge-graph を第4周に再実行し、knowledge / doctrine / required-info / cross の全 profile が exit 0 だった。8 章の『未記入』は各章 1 回ずつで、凡例の注記だけだった。意味層: 今周の変更は内容類似のしきい値と境界値テストの内容だけで、設計知識を当てる対象は増えていない。第3周までに確認した具体適用は再 compile 後も残っている (Dependency Rule による core と route の分離、web が一致度を再計算しない構成、Apple HIG の取消と結果通知、Clean Code の『規則は名前と境界値テストで読めるようにする』、Information Design による束の順位付け)。013 の決定は、この Clean Code 適用 (maintenance-ops.md L126) の境界値テストで固定する対象に加わる。",
+      "evidence": [
+        "G-knowledge-graph: aggregate-completeness.py --knowledge-graph exit 0 (第4周再実行)",
+        "maintenance-ops.md L126 / frontend.md L129 / ui-ux.md L164"
+      ]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "第1周の C08 の結果 (PASS) を引き継ぐ。引き継ぎの条件は満たしている。fetched-references.json の更新時刻は 2026-09-15 18:07:29 JST のままで、第1周の C08 の実行より前である。今周の変更 (内容類似のしきい値と境界値テスト) は新しい出典を必要としない。形式層の validate-source-citation.py は、第4周に評価者が再実行して exit 0 だった。",
+      "evidence": [
+        "G-source-citation: validate-source-citation.py exit 0 (第4周再実行)",
+        "fetched-references.json mtime 2026-09-15 18:07:29 JST (変更なし)"
+      ]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "第1周の結果 (全 18 prompt で verify-completeness.py と validate-prompt.py が失敗 0 件) を引き継ぐ。marketplaces/local/plugins/system-spec-harness の配下で 2026-09-15 18:10 JST より後に更新された prompts/*.md は、第4周の確認でも 0 件だった。"
+    }
+  },
+  "gate_results": [
+    {
+      "id": "G-matrix",
+      "name": "validate-coverage-matrix --require-complete --require-basis --require-foundation",
+      "conditions": ["matrix_coverage"],
+      "command": ["python3", "${SYSTEM_SPEC_HARNESS_ROOT}/scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json", "--require-complete", "--require-basis", "--require-foundation"],
+      "exit_code": 0,
+      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす"
+    },
+    {
+      "id": "G-foundation",
+      "name": "validate-coverage-matrix --require-foundation",
+      "conditions": ["foundation_trace", "decision_guidance"],
+      "command": ["python3", "${SYSTEM_SPEC_HARNESS_ROOT}/scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json", "--require-foundation"],
+      "exit_code": 0,
+      "stdout": "OK: 収集マトリクス網羅性 (loop+foundation(上位概念トレース)) を満たす"
+    },
+    {
+      "id": "G-spec-doc-sync",
+      "name": "validate-spec-doc-sync",
+      "conditions": ["foundation_trace"],
+      "command": ["python3", "${SYSTEM_SPEC_HARNESS_ROOT}/scripts/validate-spec-doc-sync.py", "--matrix", "system-spec/spec-state.json", "--references", "system-spec/fetched-references.json", "--spec-root", "system-spec"],
+      "exit_code": 0,
+      "stdout": "OK: 正本 spec-state.json の goal・根拠・出典が章へ投影されている"
+    },
+    {
+      "id": "G-knowledge-graph",
+      "name": "validate-knowledge-graph (knowledge/doctrine/required-info/cross)",
+      "conditions": ["design_knowledge_reflection", "matrix_coverage"],
+      "command": ["python3", "${SYSTEM_SPEC_HARNESS_ROOT}/skills/assign-system-spec-completeness-evaluator/scripts/aggregate-completeness.py", "--knowledge-graph"],
+      "exit_code": 0
+    },
+    {
+      "id": "G-required-info-state",
+      "name": "validate-knowledge-graph --profile required-info --state (C07 実行)",
+      "conditions": ["matrix_coverage"],
+      "exit_code": 0,
+      "stdout": "status ok, ungrounded_blocking_items []"
+    },
+    {
+      "id": "G-source-citation",
+      "name": "validate-source-citation",
+      "conditions": ["doc_freshness"],
+      "command": ["python3", "${SYSTEM_SPEC_HARNESS_ROOT}/scripts/validate-source-citation.py", "--targets", "system-spec/spec-state.json", "--references", "system-spec/fetched-references.json", "--state", "system-spec/spec-state.json"],
+      "exit_code": 0,
+      "stdout": "OK: 出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす"
+    },
+    {
+      "id": "G-prompt",
+      "name": "prompt-creator verify-completeness + validate-prompt (18 prompts, 第1周から引き継ぎ)",
+      "conditions": ["prompt_quality"],
+      "exit_code": 0,
+      "stdout": "prompts=18 fail=0 (第4周時点で prompts の更新 0 件)"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "decision_guidance (技術上の定義の残り)",
+      "observation": "qa-maintenance-ops-web-rc-inference-003 の (4) と provenance に『丸め規則は未決定で、実装時に docs とテストへ書く前提』とある (例: 類似 0.67 のとき内容点 13.4)。さらに 011/012/013/inference-003 のどれにも、bigram を多重集合 (重複込み) で数えるか集合で数えるかの定義がない。類似度がちょうど 0.5 のときの比較方法 (浮動小数での比較か、整数比の比較か) も書かれていない。C06 はこの 2 点を聞き漏れの medium と報告した。評価者は low と裁定する。理由は 3 つ。内容点は一致度の表示にしか使われず、キュー・ステータス・KPI の件数を変えない (backend.md L112)。数え方の違いは同じ bigram が繰り返し出る摘要だけに効き、提示 8 組ではどちらで数えても同じ値になる。どちらも利用者の判断を要しない技術上の定義である。ただし、inference-003 の固定値テストは多重集合と集合を区別できないため、テストが緑でも定義は固定されない。",
+      "suggested_fix": "次に elicit で qa を足すとき、または実装計画の段階で、agent-inference として次を記録する。(1) bigram は多重集合で数える (一般的な Dice の定義)。(2) 0.5 以上の判定は 4×共通数 ≥ bigram 総数 の整数比で比べる。(3) 内容点と一致度の丸め規則 (例: 一致度は整数 % に四捨五入)。あわせて、繰り返しの bigram を含む組と、ちょうど 0.5 になる組 (例: abcde / abcxy) をテストケースに加える。",
+      "evidence": [
+        "qa-maintenance-ops-web-rc-inference-003.answer (4) / provenance",
+        "C06 第4周 finding-1 / finding-2",
+        "backend.md L112 (matchScore は status/queue の定義に使われない)"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "decision_guidance (章本文への投影)",
+      "observation": "しきい値 0.5 は backend.md と ui-ux.md の qa 節に逐語で投影されている。しかし backend.md L112 の設計本文 (matchReasons・queue の定義) と O2 の測定文『内容類似 0/1』には、まだ書かれていない。foundation を変えない方針は妥当である。一方で、設計本文だけを読む実装者や計画者はしきい値を見落としうる。",
+      "suggested_fix": "設計本文 (design_applications 由来の段落) の『金額の差異』と matchReasons の内容行に『内容類似 0.5 以上 (qa-backend-web-rc-decision-013)』を追記して compile し直す。O2 は foundation のため、次に承認を取り直す機会があれば『内容類似 0/0.5 の直下・直上/1』に更新する。",
+      "evidence": ["backend.md L112", "objectives[O2].measure"]
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage (C06 sub-input: 進捗記録)",
+      "observation": "C06 は、第4周の追加 (013・inference-003・012 corrections) が reopen_log と hearing_progress.loop_count (3 のまま) に反映されていない点を low-medium と報告した。SSOT の apply-spec-transition.py L310-331 では、add-qa-ref が確定セルに qa_refs を追記する正規の経路 (reopen を要しない) として定義されているので、reopen_log が空でも違反ではない。残るのは、hearing_progress が第4周の活動を数えていない記録上の不一致だけである。",
+      "suggested_fix": "確定後に qa を追記する周回では hearing_progress.loop_count を進めるか、add-qa-ref の実施を記録する運用にする。harness 側で add-qa-ref のときに進捗を自動更新するかを検討する。",
+      "evidence": ["hearing_progress {loop_count:3, complete:true}", "apply-spec-transition.py L310-331"]
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage (C06 sub-input: 承認記録の正確性 / 第3周から継続)",
+      "observation": "appr-foundation-reconciliation-003 の note にある、提示文と正本の差の列挙漏れ (第3周の low) は継続している。承認の範囲と数値は変わらないので、取り直しは不要。",
+      "suggested_fix": "次に承認記録を書くときは、機械的な差分を添えるか、提示文が question に逐語で残っていることを明記する。"
+    },
+    {
+      "severity": "low",
+      "bucket": "decision_guidance (第1周から継続)",
+      "observation": "decisions[] は 0 件のままで、方式選定 (内容類似の方式・しきい値) を goal fit / TCO / security / operations / lock-in の比較軸で残した decision record がない。qa_log の user-decision が実質の記録になっている。",
+      "suggested_fix": "方式選定の論点は decisions[] に起票し、R5 の比較軸で残す。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace / harness (第2周から継続)",
+      "observation": "validate-spec-doc-sync.py には、章に出る qa/appr の id が spec-state.json に実在するかの検査がまだない。第4周も評価者の突合で未登録 0 件だった。",
+      "suggested_fix": "harness 側で validate-spec-doc-sync.py に id の実在検査を足す。"
+    },
+    {
+      "severity": "info",
+      "bucket": "decision_guidance",
+      "observation": "第3周の medium は解消した。qa-backend-web-rc-decision-013 (user-decision) で内容類似のしきい値 0.5 と 2 か所の適用先が決まった。3 案の長短は同じ粒度で書かれ、試算値は評価者の再計算と 8 組すべてで一致した。012 の開示不足は corrections と 013 の question 冒頭で訂正され、境界値テストの内容は inference-003 に根拠の性質付きで記録されている。"
+    },
+    {
+      "severity": "info",
+      "bucket": "matrix_coverage",
+      "observation": "C07 第4周の確認結果。48 セルで未収集 0。対象外理由 40 件に placeholder なし。qa_ref/qa_refs の 29 件に dangling 0 (013 と inference-003 を含む)。集約は真理値表と一致し、C16 の ungrounded blocking item は 0。C06 第4周では誘導質問とトレーサビリティが PASS だった。"
+    },
+    {
+      "severity": "info",
+      "bucket": "design_knowledge_reflection / doc_freshness / prompt_quality / foundation_trace",
+      "observation": "knowledge-graph の全 profile、validate-source-citation.py、validate-spec-doc-sync.py、validate-coverage-matrix.py を第4周に再実行し、すべて exit 0 だった。requirements_foundation・fetched-references.json・prompts は変わっていないので、foundation_trace は第3周から、doc_freshness の C08 と G-prompt は第1周から PASS を引き継いだ。"
+    }
+  ],
+  "gaps": [
+    "[総合 PASS / 差し戻し不要] 以下は任意の改善として残す。",
+    "[elicit または実装計画 / low] Dice の数え方 (多重集合)、0.5 の整数比による比較、一致度の丸め規則を agent-inference として記録し、繰り返し bigram の組とちょうど 0.5 の組を境界値テストに加える。",
+    "[compile / low] backend.md の設計本文 (金額の差異・matchReasons の内容行) にしきい値 0.5 を投影する。O2 は次に承認を取り直す機会に更新する。",
+    "[elicit 運用・harness / low] add-qa-ref の周回で hearing_progress を進める。decisions[] に方式選定を起票する。validate-spec-doc-sync.py に id の実在検査を足す。承認 note には機械的な差分を添える。"
+  ]
+}

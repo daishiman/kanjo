@@ -4,8 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { AiReportChart, CashFlow, MatrixData } from './api.js';
-import { CashFlowCharts, MatrixMoversChart } from './components/FinancialCharts.js';
+import type { AiReportChart, CashFlow } from './api.js';
+import { CashFlowCharts } from './components/FinancialCharts.js';
 import { ReportChartView } from './components/ReportChart.js';
 import { SubscriptionsPage } from './pages/Subscriptions.js';
 
@@ -101,69 +101,54 @@ const reportChart = (overrides: Partial<AiReportChart>): AiReportChart => ({
   ...overrides,
 });
 
-const matrix: MatrixData = {
-  months: ['2026-07', '2026-08'],
-  unrecordedExpMonths: [],
-  years: ['2026'],
-  rows: [
-    {
-      label: '広告宣伝費',
-      isTotal: false,
-      series: [10_000, 40_000],
-      yearTotals: [{ year: '2026', total: 50_000 }],
-      yoy: 0,
-    },
-    {
-      label: '通信費',
-      isTotal: false,
-      series: [25_000, 20_000],
-      yearTotals: [{ year: '2026', total: 45_000 }],
-      yoy: 0,
-    },
-  ],
-};
-
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
 
+/**
+ * 契約の題材は CashFlowCharts の1つ目の figure(月別の利益と営業CF)。
+ *
+ * ここが検査しているのは「canvas を読めない人にも figure の意味が届くか」という
+ * FinancialFigure 共通の契約であって、どの画面の図かではない。題材は2系列×2ヶ月で
+ * 結論・期間・単位・系列・次の行動・正確な表がすべて揃うものであれば替えが利く。
+ */
 describe('モバイル財務figureの意味同等性', () => {
   it('canvasに依存せず、見出し・結論・期間・単位・series・次の行動・正確な表を読める', () => {
-    const { container } = render(<MatrixMoversChart data={matrix} />);
+    const { container } = render(<CashFlowCharts cf={cashFlow} />);
     const figure = container.querySelector<HTMLElement>('[data-financial-figure]');
 
     expect(figure).not.toBeNull();
     if (!figure) throw new Error('financial figure contract missing');
 
-    expect(within(figure).getByRole('heading', { name: '変化が大きい科目' })).toBeTruthy();
-    expect(figure.querySelector('[data-financial-summary]')?.textContent).toMatch(/広告宣伝費.*30,000/);
+    expect(within(figure).getByRole('heading', { name: '月別の利益と営業キャッシュフロー' })).toBeTruthy();
+    expect(figure.querySelector('[data-financial-summary]')?.textContent).toMatch(/利益.*80,000/);
     expect(figure.querySelector('[data-financial-period]')?.textContent).toMatch(/7月.*8月/);
     expect(figure.querySelector('[data-financial-unit]')?.textContent).toContain('円');
-    expect(figure.querySelector('[data-financial-series]')?.textContent).toContain('増減額');
-    expect(figure.querySelector('[data-financial-action]')?.textContent).toMatch(/表|明細/);
+    expect(figure.querySelector('[data-financial-series]')?.textContent).toContain('営業CF');
+    expect(figure.querySelector('[data-financial-action]')?.textContent).toMatch(/照合|遡/);
 
     const table = within(figure).getByRole('table', { name: /正確な値/ });
-    expect(within(table).getByRole('columnheader', { name: /増減額/ })).toBeTruthy();
-    expect(within(table).getByRole('rowheader', { name: '広告宣伝費' })).toBeTruthy();
-    expect(within(table).getByRole('cell', { name: '+¥30,000' })).toBeTruthy();
+    expect(within(table).getByRole('columnheader', { name: /営業CF/ })).toBeTruthy();
+    expect(within(table).getByRole('rowheader', { name: '8月' })).toBeTruthy();
+    expect(within(table).getByRole('cell', { name: '+¥100,000' })).toBeTruthy();
   });
 
-  it('semantic tableの値はchartと同じmover modelから生成される', () => {
-    const { container } = render(<MatrixMoversChart data={matrix} />);
+  it('semantic tableの値はchartと同じmodelから生成される', () => {
+    const { container } = render(<CashFlowCharts cf={cashFlow} />);
     const figure = container.querySelector<HTMLElement>('[data-financial-figure]');
     if (!figure) throw new Error('financial figure contract missing');
 
     const chart = within(figure).getByRole('img');
-    expect(chart.getAttribute('aria-label')).not.toContain('¥30,000');
+    expect(chart.getAttribute('aria-label')).not.toContain('¥100,000');
 
     const table = within(figure).getByRole('table', { name: /正確な値/ });
     expect(within(table).getAllByRole('row')).toHaveLength(3);
-    expect(within(table).getByRole('cell', { name: '-¥5,000' })).toBeTruthy();
+    expect(within(table).getByRole('cell', { name: '+¥120,000' })).toBeTruthy();
   });
 
   it('正確な値は展開操作の下にあり、閉じても結論・期間・単位は残る', () => {
-    const { container } = render(<MatrixMoversChart data={matrix} />);
+    const { container } = render(<CashFlowCharts cf={cashFlow} />);
     const figure = container.querySelector<HTMLElement>('[data-financial-figure]');
     if (!figure) throw new Error('financial figure contract missing');
 
