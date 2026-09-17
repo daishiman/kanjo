@@ -44,21 +44,35 @@ describe('期間の選択をクエリにする', () => {
 });
 
 describe('保存された選択の読み込み', () => {
-  it('壊れた保存値は全期間に倒す', () => {
+  it('保存値がない初回だけ直近1年にし、壊れた値も安全な初回値へ倒す', () => {
     // 選択が読めないだけで画面が出ないのが一番困る
-    expect(parseSelection('not json')).toEqual({ mode: 'all' });
-    expect(parseSelection('{"mode":"year","year":"20xx"}')).toEqual({ mode: 'all' });
-    expect(parseSelection('{"mode":"span","span":7}')).toEqual({ mode: 'all' });
-    expect(parseSelection('{"mode":"custom","from":"2026-05","to":"2026-01"}')).toEqual({ mode: 'all' });
-    expect(parseSelection(null)).toEqual({ mode: 'all' });
+    expect(parseSelection('not json')).toEqual({ mode: 'span', span: 1 });
+    expect(parseSelection('{"mode":"year","year":"20xx"}')).toEqual({ mode: 'span', span: 1 });
+    expect(parseSelection('{"mode":"span","span":7}')).toEqual({ mode: 'span', span: 1 });
+    expect(parseSelection('{"mode":"custom","from":"2026-05","to":"2026-01"}')).toEqual({
+      mode: 'span',
+      span: 1,
+    });
+    expect(parseSelection(null)).toEqual({ mode: 'span', span: 1 });
   });
 
-  it('正しい保存値はそのまま復元する', () => {
+  it('正しい保存値は全期間も含めてそのまま復元する', () => {
     expect(parseSelection('{"mode":"year","year":"2025"}')).toEqual({ mode: 'year', year: '2025' });
+    expect(parseSelection('{"mode":"all"}')).toEqual({ mode: 'all' });
   });
 });
 
 describe('選択の共有', () => {
+  it('初回の問い合わせは直近1年で、まだ利用者選択として保存しない', () => {
+    render(
+      <PeriodProvider>
+        <Probe />
+      </PeriodProvider>,
+    );
+    expect(screen.getByRole('status').textContent).toContain('/summary?span=1');
+    expect(localStorage.getItem('kanjo:period')).toBeNull();
+  });
+
   it('保存された選択が問い合わせのパスに乗る', () => {
     localStorage.setItem('kanjo:period', JSON.stringify({ mode: 'year', year: '2025' }));
     render(

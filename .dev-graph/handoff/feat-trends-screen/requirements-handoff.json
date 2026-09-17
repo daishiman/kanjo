@@ -1,0 +1,243 @@
+{
+ "schema_version": "1.0.0",
+ "handoff_target": "task-graph",
+ "feature_id": "feat-trends-screen",
+ "parent_feature": "feat-trends-screen",
+ "feature_package_id": "feature-package/feat-trends-screen",
+ "snapshot_digest": "sha256:a3cbc5e433134fb660e44b03562b99eee6019c9825cf94a4a21a2f1b86c697fe",
+ "validated_plan_digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4",
+ "emitted_by": "dev-graph:run-dev-graph-requirements",
+ "emitted_at": "2026-09-16T10:35:21Z",
+ "repository_id": "github:daishiman/kanjo",
+ "package_reference": {
+  "plan_dir": ".dev-graph/plans/feature-package-feat-trends-screen",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-trends-screen/atomic-promotion-receipt.json",
+  "task_graph": ".dev-graph/plans/feature-package-feat-trends-screen/task-graph.json",
+  "registration_receipt": ".dev-graph/plans/feature-package-feat-trends-screen/dev-graph-registration-receipt.json"
+ },
+ "readiness": {
+  "status": "complete",
+  "missing_sections": [],
+  "checked_at": "2026-09-16T10:35:21Z"
+ },
+ "gates": [
+  {
+   "gate": "exact-13 external validator (validate-system-plan.py)",
+   "status": "pass",
+   "exit_code": 0,
+   "digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4",
+   "violations": 0
+  },
+  {
+   "gate": "graph schema + artifact parity (validate-graph-schema.py)",
+   "status": "pass",
+   "exit_code": 0,
+   "violations": 0,
+   "missing_sections": []
+  },
+  {
+   "gate": "C02 saved state (registration receipt + task nodes)",
+   "status": "pass",
+   "digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4",
+   "detail": "expected 13 = applied 13"
+  },
+  {
+   "gate": "C11 promotion + C05 evaluation digest",
+   "status": "pass",
+   "digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4"
+  }
+ ],
+ "tasks": [
+  {
+   "graph_node_id": "SYS-TRENDS-P01",
+   "phase_ref": "P01",
+   "title": "要件ベースライン確定と architecture の path 表記の対応表",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p01.md",
+   "depends_on": [],
+   "resource_scope": [
+    "docs/trends-screen/requirements-baseline.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P02",
+   "phase_ref": "P02",
+   "title": "指標の登録表・総収支と同じ取引集合の推移集計・GET /api/trends 拡張・/classify 絞込の設計決定記録",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p02.md",
+   "depends_on": [
+    "SYS-TRENDS-P01"
+   ],
+   "resource_scope": [
+    "docs/trends-screen/architecture-decision.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P03",
+   "phase_ref": "P03",
+   "title": "設計決定の独立レビュー (二つの基準の並存・総収支との一致・URL 状態)",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p03.md",
+   "depends_on": [
+    "SYS-TRENDS-P02"
+   ],
+   "resource_scope": [
+    "docs/trends-screen/design-review.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P04",
+   "phase_ref": "P04",
+   "title": "境界値付きの red テスト先行 (指標定義・比較期間・総収支との一致・画面ブロック・/classify 絞込)",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p04.md",
+   "depends_on": [
+    "SYS-TRENDS-P03"
+   ],
+   "resource_scope": [
+    "packages/core/test/trend-metrics-contract.test.ts",
+    "packages/core/test/trend-comparison.test.ts",
+    "packages/api/test/trends-screen.integration.test.ts",
+    "packages/web/src/pages/analysis/trends-screen.dom.test.tsx",
+    "packages/web/src/classify-trends-filter.dom.test.tsx"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P05",
+   "phase_ref": "P05",
+   "title": "指標の登録表・推移集計・GET /api/trends 拡張・Trends.tsx の 10 ブロック・/classify 絞込の実装",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p05.md",
+   "depends_on": [
+    "SYS-TRENDS-P04"
+   ],
+   "resource_scope": [
+    "packages/core/src/trend-metrics.ts",
+    "packages/core/src/trend.ts",
+    "packages/core/src/total-cashflow.ts",
+    "packages/core/src/analysis-hub.ts",
+    "packages/core/src/index.ts",
+    "packages/api/src/routes/analytics.ts",
+    "packages/web/src/pages/analysis/Trends.tsx",
+    "packages/web/src/pages/analysis/trends.css",
+    "packages/web/src/pages/Classify.tsx",
+    "packages/web/src/api.ts",
+    "packages/web/src/components/charts.ts"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P06",
+   "phase_ref": "P06",
+   "title": "全テスト・型検査・lint の実行記録",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p06.md",
+   "depends_on": [
+    "SYS-TRENDS-P05"
+   ],
+   "resource_scope": [
+    "docs/trends-screen/test-run.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P07",
+   "phase_ref": "P07",
+   "title": "受入条件 S1〜S6 の検証",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p07.md",
+   "depends_on": [
+    "SYS-TRENDS-P06"
+   ],
+   "resource_scope": [
+    "docs/trends-screen/acceptance.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P08",
+   "phase_ref": "P08",
+   "title": "指標 id 分岐の除去確認と集計ロジックの重複整理 (migration 無しの確認)",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p08.md",
+   "depends_on": [
+    "SYS-TRENDS-P07"
+   ],
+   "resource_scope": [
+    "packages/core/src/trend-metrics.ts",
+    "packages/core/src/trend.ts",
+    "packages/core/src/total-cashflow.ts",
+    "packages/core/src/analysis-hub.ts",
+    "packages/core/src/index.ts",
+    "packages/api/src/routes/analytics.ts",
+    "docs/trends-screen/refactoring.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P09",
+   "phase_ref": "P09",
+   "title": "アクセシビリティ・CSP・JS 予算・狭幅表示・クエリ入力境界の保証と視覚検査の更新",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p09.md",
+   "depends_on": [
+    "SYS-TRENDS-P08"
+   ],
+   "resource_scope": [
+    "packages/web/scripts/check-financial-visuals.mjs",
+    "docs/trends-screen/assurance.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P10",
+   "phase_ref": "P10",
+   "title": "最終レビュー (spec との突合と差分の確認)",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p10.md",
+   "depends_on": [
+    "SYS-TRENDS-P09"
+   ],
+   "resource_scope": [
+    "docs/trends-screen/final-review.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P11",
+   "phase_ref": "P11",
+   "title": "証跡索引の作成",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p11.md",
+   "depends_on": [
+    "SYS-TRENDS-P10"
+   ],
+   "resource_scope": [
+    "docs/trends-screen/evidence.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P12",
+   "phase_ref": "P12",
+   "title": "計算規則と説明文の規則の docs 化と画面監査表の更新",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p12.md",
+   "depends_on": [
+    "SYS-TRENDS-P11"
+   ],
+   "resource_scope": [
+    "docs/trends-screen.md",
+    "design/FINAL-UI/spec/AUDIT.md"
+   ],
+   "tracker_binding": "beads"
+  },
+  {
+   "graph_node_id": "SYS-TRENDS-P13",
+   "phase_ref": "P13",
+   "title": "単一 PR での配信と close-out",
+   "file_path": "tasks/feat-trends-screen/sys-trends-p13.md",
+   "depends_on": [
+    "SYS-TRENDS-P12"
+   ],
+   "resource_scope": [
+    "docs/trends-screen/close-out.md"
+   ],
+   "tracker_binding": "beads"
+  }
+ ],
+ "requirements_ref": ".dev-graph/requirements/feat-trends-screen/trace-plan.json",
+ "self_generated_code_files": []
+}

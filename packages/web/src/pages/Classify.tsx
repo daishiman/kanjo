@@ -187,6 +187,11 @@ export function ClassifyPage() {
     const value = initialParams.get('cls');
     return value === 'biz' || value === 'per' ? value : '';
   });
+  // 推移画面の「増減の明細を確認」から来たときの絞り込み。部分一致にすると別の取引先が混ざるので完全一致
+  const [trendFilter, setTrendFilter] = useState<{ category: string; payee: string | null } | null>(() => {
+    const category = initialParams.get('category');
+    return category ? { category, payee: initialParams.get('payee') || null } : null;
+  });
   const [owner, setOwner] = useState('');
   const [qtext, setQtext] = useState('');
   const [method, setMethod] = useState<PaymentMethod | ''>('');
@@ -314,7 +319,17 @@ export function ClassifyPage() {
     },
   });
 
-  const rows = q.data?.transactions ?? [];
+  const transactions = q.data?.transactions;
+  const rows = useMemo(() => {
+    const allRows = transactions ?? [];
+    return trendFilter
+      ? allRows.filter(
+          (t) =>
+            t.big === trendFilter.category &&
+            (trendFilter.payee === null || t.description === trendFilter.payee),
+        )
+      : allRows;
+  }, [transactions, trendFilter]);
 
   const onKey = useCallback(
     (e: KeyboardEvent) => {
@@ -564,6 +579,18 @@ export function ClassifyPage() {
         </Link>
       </div>
 
+      {trendFilter && (
+        // biome-ignore lint/a11y/useSemanticElements: output は phrasing content に限られ、解除ボタンを入れられないため status を付ける。
+        <div className="toolbar classify-trend-filter" role="status">
+          <span>
+            推移から絞り込み中: {trendFilter.category}
+            {trendFilter.payee && ` / ${trendFilter.payee}`}({rows.length}件)
+          </span>
+          <Button size="mini" variant="text" onClick={() => requestViewChange(() => setTrendFilter(null))}>
+            絞り込みを解除
+          </Button>
+        </div>
+      )}
       <div className="card scroll-x classify-table-card">
         {/* stack-sm: 640px以下では1行=1カード。仕分けは電車内など片手で回す作業なので、
             横スクロールで「この金額がどの明細のものか」を見失わせない */}

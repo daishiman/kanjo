@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { type AccountUser, ApiError, type AuthState, api } from '../api.js';
 import { Button } from './Button.js';
+import { DataTable } from './DataTable.js';
 
 interface IssuedPassword {
   email: string;
@@ -150,57 +151,49 @@ export function UserAdmin() {
 
       {users.isLoading && <p className="sub">読み込み中…</p>}
       {users.data && (
-        <table className="user-admin-table">
-          <thead>
-            <tr>
-              <th>メールアドレス</th>
-              <th>権限</th>
-              <th>状態</th>
-              <th>最終ログイン</th>
-              <th>操作</th>
+        <DataTable
+          className="user-admin-table"
+          columns={['メールアドレス', '権限', '状態', '最終ログイン', { label: '操作', sortable: false }]}
+        >
+          {users.data.users.map((user) => (
+            <tr key={user.id}>
+              <td>
+                {user.email}
+                {user.mustChangePassword && <span className="user-admin-flag">一時パスワード</span>}
+              </td>
+              <td data-sort={ROLE_LABEL[user.role]}>
+                <select
+                  value={user.role}
+                  aria-label={`${user.email} の権限`}
+                  onChange={(event) =>
+                    update.mutate({ id: user.id, role: event.target.value as 'admin' | 'member' })
+                  }
+                >
+                  <option value="member">{ROLE_LABEL.member}</option>
+                  <option value="admin">{ROLE_LABEL.admin}</option>
+                </select>
+              </td>
+              <td>{STATUS_LABEL[user.status]}</td>
+              <td>{formatMoment(user.lastLoginAt)}</td>
+              <td className="user-admin-actions">
+                <Button
+                  size="mini"
+                  onClick={() =>
+                    update.mutate({
+                      id: user.id,
+                      status: user.status === 'active' ? 'suspended' : 'active',
+                    })
+                  }
+                >
+                  {user.status === 'active' ? '停止する' : '再開する'}
+                </Button>
+                <Button size="mini" onClick={() => resetPassword.mutate(user)}>
+                  一時パスワード再発行
+                </Button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {users.data.users.map((user) => (
-              <tr key={user.id}>
-                <td>
-                  {user.email}
-                  {user.mustChangePassword && <span className="user-admin-flag">一時パスワード</span>}
-                </td>
-                <td>
-                  <select
-                    value={user.role}
-                    aria-label={`${user.email} の権限`}
-                    onChange={(event) =>
-                      update.mutate({ id: user.id, role: event.target.value as 'admin' | 'member' })
-                    }
-                  >
-                    <option value="member">{ROLE_LABEL.member}</option>
-                    <option value="admin">{ROLE_LABEL.admin}</option>
-                  </select>
-                </td>
-                <td>{STATUS_LABEL[user.status]}</td>
-                <td>{formatMoment(user.lastLoginAt)}</td>
-                <td className="user-admin-actions">
-                  <Button
-                    size="mini"
-                    onClick={() =>
-                      update.mutate({
-                        id: user.id,
-                        status: user.status === 'active' ? 'suspended' : 'active',
-                      })
-                    }
-                  >
-                    {user.status === 'active' ? '停止する' : '再開する'}
-                  </Button>
-                  <Button size="mini" onClick={() => resetPassword.mutate(user)}>
-                    一時パスワード再発行
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       )}
     </div>
   );

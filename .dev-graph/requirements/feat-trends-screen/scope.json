@@ -1,0 +1,41 @@
+{
+ "schema_version": "1.0.0",
+ "feature_id": "feat-trends-screen",
+ "parent_feature": "feat-trends-screen",
+ "feature_package_id": "feature-package/feat-trends-screen",
+ "handoff_target": "task-graph",
+ "selected_nodes": [
+  "spec-trends-screen",
+  "arch-trends-screen-ui-ux",
+  "arch-trends-screen-frontend",
+  "arch-trends-screen-backend",
+  "arch-trends-screen-database",
+  "arch-trends-screen-auth",
+  "arch-trends-screen-security",
+  "arch-trends-screen-infrastructure",
+  "arch-trends-screen-maintenance-ops",
+  "feat-trends-screen",
+  "SYS-TRENDS-P01",
+  "SYS-TRENDS-P02",
+  "SYS-TRENDS-P03",
+  "SYS-TRENDS-P04",
+  "SYS-TRENDS-P05",
+  "SYS-TRENDS-P06",
+  "SYS-TRENDS-P07",
+  "SYS-TRENDS-P08",
+  "SYS-TRENDS-P09",
+  "SYS-TRENDS-P10",
+  "SYS-TRENDS-P11",
+  "SYS-TRENDS-P12",
+  "SYS-TRENDS-P13"
+ ],
+ "artifact_kinds": [
+  "specification",
+  "architecture",
+  "feature",
+  "task"
+ ],
+ "closure_status": "complete",
+ "missing_nodes": [],
+ "snapshot_digest": "sha256:a3cbc5e433134fb660e44b03562b99eee6019c9825cf94a4a21a2f1b86c697fe"
+}

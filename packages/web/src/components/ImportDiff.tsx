@@ -183,7 +183,10 @@ function ConflictCard({
         </span>
       </div>
       <div className="import-conflict-table">
-        <table>
+        <table
+          data-table-kind="comparison"
+          data-sort-reason="前回・手当て・今回を属性単位で左右比較する差分入力表"
+        >
           <thead>
             <tr>
               <th scope="col" style={{ textAlign: 'left' }}>

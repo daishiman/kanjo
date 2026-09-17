@@ -25,6 +25,7 @@ const VIEWPORTS = viewportsByLabel([
   '1024',
   '1280',
   '1600',
+  '1908',
   'zoom200',
   'rail-zoom200',
 ]);
@@ -370,6 +371,167 @@ const trends = {
   })),
   period: statements.period,
 };
+// 推移の新しい応答 (比較・詳細・カテゴリ表・増減パレート)。
+// 新画面に旧判定を重複 mount せず、主要2図だけを実描画検査する。
+{
+  const cur = months.slice(-12);
+  const cmp = months.slice(-24, -12);
+  const current = expenseSeries.slice(-12);
+  const compare =
+    cmp.length === 12 ? expenseSeries.slice(-24, -12) : cur.map((_, i) => current[i] - 2_000 + i * 100);
+  const diff = current.map((v, i) => v - compare[i]);
+  const peak = diff.reduce((best, d, i) => (Math.abs(d) >= Math.abs(diff[best]) ? i : best), 0);
+  // 実運用相当の件数で、カテゴリ表がページとの二重縦スクロールを作らないことも検査する。
+  const categoryNames = [
+    '広告宣伝費',
+    '仕入高',
+    '人件費',
+    '家賃・地代',
+    '外注費',
+    '通信費',
+    '旅費交通費',
+    '水道・光熱費',
+    '保険',
+    'サブスク・通信',
+    '研修費',
+    '教養・教育',
+    '消耗品費',
+    '日用品',
+    '衣服・美容',
+    '交際費',
+    '税・社会保障',
+    '健康・医療',
+    '新聞図書費',
+    '会議費',
+    '車両費',
+    '租税公課',
+    '支払手数料',
+    '業務用クラウドサービス利用料・情報通信費',
+  ];
+  const categories = categoryNames.map((name, index) => {
+    const row = trendRows[index % trendRows.length];
+    const now = row.total;
+    const before = now - (index % 2 ? -3_000 : 6_000);
+    const columns = {
+      side: index % 2 ? 'household' : 'business',
+      origin: 'mf',
+      spark: row.series.slice(-12),
+      sparkMonths: cur,
+      current: now,
+      compare: before,
+      change: now - before,
+      changeRate: (now - before) / before,
+      share: 0.25,
+      contribution: (now - before) / 6_000,
+    };
+    return { ...columns, name, payees: [{ ...columns, payee: `支払先${index + 1}` }] };
+  });
+  Object.assign(trends, {
+    metrics: [
+      {
+        id: 'income',
+        label: '収入',
+        betterWhen: 'higher',
+        visualRole: 'income',
+        controlOrder: 1,
+        showInOverview: true,
+      },
+      {
+        id: 'expense',
+        label: '支出',
+        betterWhen: 'lower',
+        visualRole: 'expense',
+        controlOrder: 0,
+        showInOverview: true,
+      },
+      {
+        id: 'net',
+        label: '純収支',
+        betterWhen: 'higher',
+        visualRole: 'net',
+        controlOrder: 2,
+        showInOverview: true,
+      },
+    ],
+    selection: {
+      scope: 'total',
+      metric: 'expense',
+      compare: 'previous',
+      month: cur[peak],
+      side: null,
+      category: null,
+      payee: null,
+    },
+    comparePeriod: { from: cmp[0] ?? cur[0], to: cmp.at(-1) ?? cur.at(-1), label: '前12か月' },
+    compareUnavailable: null,
+    series: {
+      months: cur,
+      compareMonths: cmp.length === 12 ? cmp : cur,
+      values: {
+        income: { current: cur.map(() => 400_000), compare: cur.map(() => 380_000) },
+        expense: { current, compare },
+        net: { current: current.map((v) => 400_000 - v), compare: compare.map((v) => 380_000 - v) },
+      },
+      diff,
+    },
+    kpis: {
+      current: sum(current),
+      change: {
+        amount: sum(current) - sum(compare),
+        rate: (sum(current) - sum(compare)) / sum(compare),
+        basis: 'compare_period',
+      },
+      peakMonth: { month: cur[peak], diff: diff[peak], reason: '広告宣伝費が支払先1など2件で¥6,000増' },
+    },
+    detail: {
+      month: cur[peak],
+      values: { expense: { current: current[peak], compare: compare[peak] } },
+      drivers: [
+        {
+          category: '広告宣伝費',
+          side: 'business',
+          change: 6_000,
+          payee: '支払先1',
+          origin: 'mf',
+          text: '広告宣伝費が支払先1など2件で¥6,000増',
+        },
+      ],
+      sources: [
+        { origin: 'mf', account: '匿名カード', count: 12 },
+        { origin: 'freee', account: null, count: 1 },
+      ],
+    },
+    sparkMonths: cur,
+    categories,
+    changePareto: categories.map((row, index) => ({
+      name: row.name,
+      side: row.side,
+      change: row.change,
+      cumulativeShare: (index + 1) / categories.length,
+    })),
+    topMovers: categories.slice(0, 3),
+    review: { count: 1, amount: 3_300, monthCount: 0, monthAmount: 0 },
+    recommended: {
+      month: cur[peak],
+      category: '広告宣伝費',
+      payee: '支払先1',
+      change: 6_000,
+      changeRate: null,
+      origin: 'mf',
+      side: 'business',
+      href: `/classify?month=${cur[peak]}&cls=biz&category=${encodeURIComponent('広告宣伝費')}&payee=${encodeURIComponent('支払先1')}`,
+    },
+    focus: null,
+    judgementBasis: 'mf_only',
+    period: {
+      applied: { from: cur[0], to: cur.at(-1) },
+      label: `${cur[0]} 〜 ${cur.at(-1)}`,
+      full: { from: months[0], to: months.at(-1) },
+      years: [...new Set(months.map((month) => month.slice(0, 4)))],
+      monthCount: cur.length,
+    },
+  });
+}
 
 const householdMonths = months.slice(-6);
 const householdBalance = householdMonths.map((month, index) => ({
@@ -986,7 +1148,8 @@ const totalCashflow = {
 
 const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64');
 const responseFor = (url) => {
-  const path = new URL(url).pathname;
+  const requestUrl = new URL(url);
+  const path = requestUrl.pathname;
   if (path === '/api/auth/me') return { authenticated: true };
   if (path === '/api/total-cashflow') return totalCashflow;
   if (path === '/api/summary') return summary;
@@ -996,7 +1159,12 @@ const responseFor = (url) => {
   if (path === '/api/imports') return { imports: [] };
   if (path === '/api/reconciliation') return reconciliation;
   if (path === '/api/matrix') return matrix;
-  if (path === '/api/trends') return trends;
+  if (path === '/api/trends') {
+    if (requestUrl.searchParams.get('span') !== '1') {
+      throw new Error(`推移の実描画fixtureは初回1年queryを前提とします: ${requestUrl.search}`);
+    }
+    return trends;
+  }
   if (path === '/api/subscriptions') return subscriptions;
   if (path === '/api/sub-vendors/candidates') return { candidates: [], excluded: [], dealRows: 0 };
   if (path === '/api/sub-vendors') return { vendors: [], accountOptions: [], review: [] };
@@ -1319,7 +1487,8 @@ try {
     VISUAL_SCOPE === 'all' ||
     VISUAL_SCOPE === 'additional' ||
     VISUAL_SCOPE === 'overview' ||
-    VISUAL_SCOPE === 'reconciliation'
+    VISUAL_SCOPE === 'reconciliation' ||
+    VISUAL_SCOPE === 'trends'
   ) {
     const additionalRoutes = [
       { name: 'Overview', path: '/', expectedFigures: 1 },
@@ -1329,7 +1498,11 @@ try {
         expectedFigures: 0,
         readySelector: '.recon-kpis',
       },
-      { name: 'Trends', path: '/analysis/trends', expectedFigures: 3 },
+      {
+        name: 'Trends',
+        path: '/analysis/trends',
+        expectedFigureTitles: ['収支の推移', '増減の要因(パレート図)'],
+      },
       { name: 'Total cashflow', path: '/analysis/total-cashflow', expectedFigures: 1 },
       { name: 'Subscriptions', path: '/subscriptions', expectedFigures: 1 },
       { name: 'Household', path: '/household', expectedFigures: 1 },
@@ -1342,6 +1515,7 @@ try {
         (zoom === 1 && ADDITIONAL_WIDTHS.includes(width)) || viewportLabel === 'rail-zoom200';
       const routes = additionalRoutes.filter((route) => {
         if (VISUAL_SCOPE === 'overview') return route.name === 'Overview';
+        if (VISUAL_SCOPE === 'trends') return route.name === 'Trends';
         if (VISUAL_SCOPE === 'reconciliation')
           return (
             route.name === 'Reconciliation' && zoom === 1 && [375, 641, 768, 1024, 1280, 1600].includes(width)
@@ -1375,10 +1549,10 @@ try {
             `Boolean(document.querySelector(${JSON.stringify(route.readySelector)}))`,
             route.name,
           );
-        await waitFor(
-          `document.querySelectorAll('[data-financial-figure] .financial-figure__chart canvas').length === ${route.expectedFigures}`,
-          route.name,
-        );
+        const figureReadyExpression = route.expectedFigureTitles
+          ? `JSON.stringify([...document.querySelectorAll('[data-financial-figure] .financial-figure__caption h2, [data-financial-figure] .financial-figure__caption h3, [data-financial-figure] .financial-figure__caption h4')].map((node) => node.textContent?.trim())) === ${JSON.stringify(JSON.stringify(route.expectedFigureTitles))}`
+          : `document.querySelectorAll('[data-financial-figure] .financial-figure__chart canvas').length === ${route.expectedFigures}`;
+        await waitFor(figureReadyExpression, route.name);
         await waitFor(
           "Boolean(document.querySelector('.improve-trigger'))",
           `${route.name} improvement action`,
@@ -1762,6 +1936,7 @@ try {
           const canvas = figure.querySelector('.financial-figure__chart canvas');
           const box = canvas?.getBoundingClientRect();
           return {
+            title: figure.querySelector('.financial-figure__caption h2, .financial-figure__caption h3, .financial-figure__caption h4')?.textContent?.trim() ?? '',
             heading: Boolean(figure.querySelector('.financial-figure__caption h2, .financial-figure__caption h3, .financial-figure__caption h4')?.textContent?.trim()),
             summary: Boolean(figure.querySelector('[data-financial-summary]')?.textContent?.trim()),
             period: Boolean(figure.querySelector('[data-financial-period]')?.textContent?.trim()),
@@ -1772,6 +1947,172 @@ try {
             canvas: Boolean(canvas && canvas.width > 0 && canvas.height > 0 && box && box.width > 0 && box.height > 0),
           };
         }),
+        trends: (() => {
+          const conditions = document.querySelector('section[aria-label="比較条件"]');
+          const conditionLabels = [...(conditions?.querySelectorAll('[role="tablist"], [role="group"]') ?? [])]
+            .map((group) => group.getAttribute('aria-label'))
+            .filter(Boolean);
+          const visibleConditionLabels = [...(conditions?.querySelectorAll('.trends-condition-label') ?? [])]
+            .map((label) => label.textContent?.trim())
+            .filter(Boolean);
+          const headers = [...document.querySelectorAll('.trends-table thead th')]
+            .map((cell) => cell.textContent?.trim())
+            .filter(Boolean);
+          const initialAction = document.querySelector('.trends-detail-action');
+          const rect = (node) => {
+            const value = node?.getBoundingClientRect();
+            return value && value.width > 0 && value.height > 0
+              ? {
+                  left: value.left,
+                  right: value.right,
+                  top: value.top,
+                  bottom: value.bottom,
+                  width: value.width,
+                  height: value.height,
+                }
+              : null;
+          };
+          const categoryTable = document.querySelector('.trends-table');
+          const categoryWrap = categoryTable?.closest('.scroll-x');
+          const categoryHead = categoryTable?.querySelector('thead');
+          const headerCells = [...(categoryTable?.querySelectorAll('thead th') ?? [])];
+          const firstRowCells = [...(categoryTable?.querySelectorAll('tbody tr:first-child > th, tbody tr:first-child > td') ?? [])];
+          const firstCategoryButton = categoryTable?.querySelector('.trends-category-button, tbody tr:first-child button');
+          const sortButtons = [...(categoryTable?.querySelectorAll('thead .th-sort') ?? [])];
+          const mobileSort = categoryWrap?.querySelector('.trends-category-sort-mobile select');
+          const categoryNames = [...(categoryTable?.querySelectorAll('.trends-category-name') ?? [])];
+          const categoryLineCount = (node) => {
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            return range.getClientRects().length;
+          };
+          const categoryNameLines = categoryNames.map((node) => ({
+            name: node.textContent?.trim() ?? '',
+            lines: categoryLineCount(node),
+          }));
+          const longestCategoryName = categoryNames.reduce(
+            (longest, current) =>
+              (current.textContent?.length ?? 0) > (longest?.textContent?.length ?? 0) ? current : longest,
+            null,
+          );
+          const categoryWrapBox = rect(categoryWrap);
+          const categoryTableBox = rect(categoryTable);
+          const categoryHeadBox = rect(categoryTable?.querySelector('thead'));
+          const firstCategoryRowBox = rect(categoryTable?.querySelector('tbody > tr'));
+          const headerBoxes = headerCells.map(rect).filter(Boolean);
+          const cellWidths = firstRowCells.map((cell) => cell.getBoundingClientRect().width);
+          const metricWidths = cellWidths.slice(2);
+          const firstBodyCellBox = rect(firstRowCells[0]);
+          const lastBodyCell = firstRowCells.at(-1);
+          const lastBodyCellBox = rect(lastBodyCell);
+          const lastBodyContentBox = (() => {
+            if (!lastBodyCell) return null;
+            const range = document.createRange();
+            range.selectNodeContents(lastBodyCell);
+            const box = range.getBoundingClientRect();
+            return box.width > 0 || box.height > 0 ? box : null;
+          })();
+          const firstSortStyle = sortButtons[0] ? getComputedStyle(sortButtons[0]) : null;
+          const lastSortStyle = sortButtons.at(-1) ? getComputedStyle(sortButtons.at(-1)) : null;
+          const categoryMode = categoryHead && getComputedStyle(categoryHead).position === 'absolute' ? 'cards' : 'table';
+          const categoryLayout = {
+            mode: categoryMode,
+            wrapperWidth: categoryWrap?.clientWidth ?? 0,
+            wrapperScrollWidth: categoryWrap?.scrollWidth ?? 0,
+            wrapperHeight: categoryWrap?.clientHeight ?? 0,
+            wrapperScrollHeight: categoryWrap?.scrollHeight ?? 0,
+            wrapperMaxHeight: categoryWrap ? getComputedStyle(categoryWrap).maxHeight : '',
+            wrapperOverflowX: categoryWrap ? getComputedStyle(categoryWrap).overflowX : '',
+            wrapperOverflowY: categoryWrap ? getComputedStyle(categoryWrap).overflowY : '',
+            tableWidth: categoryTableBox?.width ?? 0,
+            categoryWidth: cellWidths[0] ?? 0,
+            sparkColumnWidth: cellWidths[1] ?? 0,
+            sparkWidth: categoryTable?.querySelector('.spark')?.getBoundingClientRect().width ?? 0,
+            metricWidths,
+            metricWidthSpread: metricWidths.length ? Math.max(...metricWidths) - Math.min(...metricWidths) : 0,
+            rightInset:
+              categoryWrapBox && categoryTableBox ? categoryWrapBox.right - categoryTableBox.right : 0,
+            leftInset:
+              categoryWrapBox && categoryTableBox ? categoryTableBox.left - categoryWrapBox.left : 0,
+            edgeContentInsets: {
+              bodyLeft:
+                firstBodyCellBox && firstCategoryButton
+                  ? firstCategoryButton.getBoundingClientRect().left - firstBodyCellBox.left
+                  : 0,
+              bodyRight:
+                lastBodyCellBox && lastBodyContentBox
+                  ? lastBodyCellBox.right - lastBodyContentBox.right
+                  : 0,
+              headerLeft: firstSortStyle ? Number.parseFloat(firstSortStyle.paddingLeft) : 0,
+              headerRight: lastSortStyle ? Number.parseFloat(lastSortStyle.paddingRight) : 0,
+            },
+            firstRowBelowHeader:
+              categoryMode === 'cards' ||
+              Boolean(
+                categoryHeadBox &&
+                  firstCategoryRowBox &&
+                  firstCategoryRowBox.top >= categoryHeadBox.bottom - 1,
+              ),
+            headersInside:
+              categoryMode === 'cards' ||
+              (headerBoxes.length === 8 &&
+                headerBoxes.every(
+                  (header) =>
+                    categoryWrapBox &&
+                    header.left >= categoryWrapBox.left - 1 &&
+                    header.right <= categoryWrapBox.right + 1,
+                )),
+            horizontalFit:
+              Boolean(categoryWrap && categoryTableBox && categoryWrapBox) &&
+              categoryWrap.scrollWidth <= categoryWrap.clientWidth + 1 &&
+              categoryTableBox.left >= categoryWrapBox.left - 1 &&
+              categoryTableBox.right <= categoryWrapBox.right + 1,
+            singlePageScroll:
+              Boolean(categoryWrap) &&
+              categoryWrap.scrollHeight <= categoryWrap.clientHeight + 1 &&
+              getComputedStyle(categoryWrap).maxHeight === 'none',
+            leftActionFits: (() => {
+              const buttonBox = rect(firstCategoryButton);
+              const firstCellBox = rect(firstRowCells[0]);
+              return Boolean(
+                buttonBox &&
+                  firstCellBox &&
+                  buttonBox.left >= firstCellBox.left - 1 &&
+                  buttonBox.right <= firstCellBox.right + 1 &&
+                  buttonBox.height >= 44,
+              );
+            })(),
+            singleLeftAction:
+              categoryTable?.querySelectorAll('tbody tr:first-child > th button').length === 1 &&
+              Boolean(firstCategoryButton?.querySelector('.trends-category-name[title]')) &&
+              Boolean(firstCategoryButton?.querySelector('.pill')),
+            sortControls:
+              categoryMode === 'cards'
+                ? Boolean(mobileSort && getComputedStyle(mobileSort).display !== 'none')
+                : sortButtons.length === 8 && sortButtons.every((button) => button.getBoundingClientRect().height >= 43),
+            horizontalFallback:
+              categoryWrap != null && ['auto', 'scroll'].includes(getComputedStyle(categoryWrap).overflowX),
+            longCategoryReadable:
+              Boolean(longestCategoryName) &&
+              longestCategoryName.scrollWidth <= longestCategoryName.clientWidth + 1 &&
+              longestCategoryName.scrollHeight <= longestCategoryName.clientHeight + 1 &&
+              getComputedStyle(longestCategoryName).whiteSpace !== 'nowrap',
+            categoryNameLines,
+            naturalNameWrapping:
+              categoryMode === 'cards' ||
+              (categoryNameLines.every(({ name, lines }) => (name.length <= 8 ? lines === 1 : lines <= 3)) &&
+                categoryNameLines.some(({ name, lines }) => name.length > 8 && lines >= 2)),
+          };
+          return {
+            conditionLabels,
+            visibleConditionLabels,
+            legacyJudgementAbsent: !document.querySelector('details.trends-judgement'),
+            categoryHeaders: headers,
+            initialAction: initialAction?.textContent?.trim() ?? '',
+            initialActionHref: initialAction?.getAttribute('href') ?? '',
+            categoryLayout,
+          };
+        })(),
         subscriptionDatasetCount: Number(document.querySelector('[data-financial-dataset-count]')?.getAttribute('data-financial-dataset-count') ?? 0),
         subscriptionDatasetLabels: document.querySelector('[data-financial-dataset-labels]')?.getAttribute('data-financial-dataset-labels') ?? '',
         subscriptionSummaryLabels: [...document.querySelectorAll('[data-financial-series] li')].map((item) => item.textContent?.trim() ?? '').join('|'),
@@ -2166,13 +2507,64 @@ try {
           console.log(`${tag} rail diagnostics ${JSON.stringify(routeMetrics.shell.diagnostics)}`);
         if (runtimeProblems.length)
           failures.push(`${tag} ${route.name} console/runtime error: ${runtimeProblems.join(' / ')}`);
+        const expectedFigureTitles = route.expectedFigureTitles ?? null;
+        const figuresMatch = expectedFigureTitles
+          ? JSON.stringify(routeMetrics.figures.map((figure) => figure.title)) ===
+            JSON.stringify(expectedFigureTitles)
+          : routeMetrics.figures.length === route.expectedFigures;
         if (
-          routeMetrics.figures.length !== route.expectedFigures ||
+          !figuresMatch ||
           routeMetrics.figures.some((contract) => Object.values(contract).some((value) => !value))
         )
           failures.push(
             `${tag} ${route.name} 見出し・結論・期間・単位・系列・次の行動・正確な表・実canvasが不足`,
           );
+        if (
+          route.name === 'Trends' &&
+          (routeMetrics.trends.conditionLabels.join('|') !== '集計の範囲|表示する指標|比較対象' ||
+            routeMetrics.trends.visibleConditionLabels.join('|') !== '分析の範囲|表示する指標|比較対象' ||
+            !routeMetrics.trends.legacyJudgementAbsent ||
+            routeMetrics.trends.categoryHeaders.join('|') !==
+              'カテゴリ|12か月の推移|今回合計|比較期間|増減額|増減率|構成比|寄与度' ||
+            routeMetrics.trends.initialAction !== '広告宣伝費の該当明細を開く' ||
+            !routeMetrics.trends.initialActionHref.includes('month='))
+        )
+          failures.push(
+            `${tag} Trends の比較条件、8列表、初期CTA、旧判定非重複、または主要2図構成が崩れている (${JSON.stringify(routeMetrics.trends)})`,
+          );
+        if (route.name === 'Trends') {
+          const layout = routeMetrics.trends.categoryLayout;
+          const edgeInsets = Object.values(layout.edgeContentInsets);
+          const tableContract =
+            layout.mode === 'cards' ||
+            (layout.headersInside &&
+              layout.leftInset >= 12 &&
+              layout.rightInset >= 12 &&
+              layout.firstRowBelowHeader &&
+              layout.categoryWidth >= 180 &&
+              layout.categoryWidth <= 245 &&
+              layout.sparkColumnWidth >= 84 &&
+              layout.sparkColumnWidth <= 168 &&
+              layout.metricWidths.length === 6 &&
+              layout.metricWidths.every((value) => value >= 96 && value <= 225) &&
+              edgeInsets.every((value) => value >= 15.5 && value <= 24));
+          if (
+            !layout.horizontalFit ||
+            !layout.firstRowBelowHeader ||
+            !layout.singlePageScroll ||
+            !layout.leftActionFits ||
+            !layout.singleLeftAction ||
+            !layout.sortControls ||
+            !layout.horizontalFallback ||
+            !layout.longCategoryReadable ||
+            !layout.naturalNameWrapping ||
+            !tableContract
+          )
+            failures.push(
+              `${tag} Trends のカテゴリ表で列幅・8ヘッダ・単一縦スクロール・左端44px操作の契約が崩れている (${JSON.stringify(layout)})`,
+            );
+          console.log(`${tag} Trendsカテゴリ表 ${JSON.stringify(layout)}`);
+        }
         if (route.name === 'Overview' && zoom === 1 && width === 1280) {
           if (!routeMetrics.overview.desktopBrandUnique)
             failures.push('1280px Overview で Focus Ledger がサイドバーとヘッダーに重複している');
@@ -2402,6 +2794,17 @@ try {
             join(OUTPUT_DIR, `total-cashflow-${width}.png`),
             Buffer.from(routeShot.data, 'base64'),
           );
+        }
+        if (route.name === 'Trends' && zoom === 1 && [1280, 1908].includes(width)) {
+          const layout = await send('Page.getLayoutMetrics');
+          const content = layout.cssContentSize ?? layout.contentSize;
+          const routeShot = await send('Page.captureScreenshot', {
+            format: 'png',
+            fromSurface: true,
+            captureBeyondViewport: true,
+            clip: { x: 0, y: 0, width: content.width, height: content.height, scale: 1 },
+          });
+          writeFileSync(join(OUTPUT_DIR, `trends-${width}-full.png`), Buffer.from(routeShot.data, 'base64'));
         }
         if (
           route.name === 'Reconciliation' &&

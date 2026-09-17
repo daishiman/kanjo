@@ -113,7 +113,11 @@ export function FinancialFigure({
               // biome-ignore lint/a11y/noNoninteractiveTabindex: overflow表をキーボードでスクロールできるようにする。
               tabIndex={0}
             >
-              <table className="data">
+              <table
+                className="data"
+                data-table-kind="matrix"
+                data-sort-reason="図の系列順と横軸の対応を守る正確値マトリクス"
+              >
                 <caption className="visually-hidden">{model.tableLabel}</caption>
                 <thead>
                   <tr>

@@ -31,6 +31,7 @@ export * from './persisted-projection.js';
 export * from './chart-aggregates.js';
 export * from './period.js';
 export * from './trend.js';
+export * from './trend-metrics.js';
 export * from './exports.js';
 export * from './improvement.js';
 export * from './report-css.js';

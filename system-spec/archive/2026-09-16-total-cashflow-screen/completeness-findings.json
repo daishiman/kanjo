@@ -1,0 +1,213 @@
+{
+  "evaluator": {
+    "name": "assign-system-spec-completeness-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "score": 90,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "上位概念 (requirements_foundation) と承認は前回から変わっていない。独立 compile (scratchpad/eval6/compile) と章を突き合わせた。00-requirements-definition.md は空行 1 行、ほかの 8 章は『**未記入** の行は…』注記 1 行だけが差分で、本文は一致する。章に現れる qa/appr id 43 種はすべて qa_log / approval_log に実在する (dangling 0)。置き換えられた db-inf-002〜005・be-inf-004/005・fe-inf-003・ui-inf-003 が章に出るのは、後継記録の問い・出所の文と過去の決定の出所の文だけで、主根拠・qa_refs・設計適用文には無い。answered_at 14:26:23Z (23:26:23 JST) は spec-state.json の mtime 23:27:48 JST より前で、未来日付ではない。",
+      "evidence": [
+        "compile-spec-doc.py compile --out-dir scratchpad/eval6/compile → diff: 8 章は未記入注記のみ、00-requirements-definition.md は空行のみ",
+        "grep -ohE '(qa|appr)-...-[0-9]{3}' system-spec/*.md (archive 除く) 43 種 ⊆ jq qa_log[].id ∪ approval_log[].id",
+        "jq paths(test('qa-database-web-tc-inference-00[2-5]')) → qa_log 本文・approval_log[3].note・reopen_log.reason のみ",
+        "validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit 0"
+      ]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "score": 88,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "前回 medium (前例 0040 の変更箇所の数え漏れ) は解消した。observed-004 の主張をコードで確かめた。cd470e3 の routes/imports.ts には reviewSnoozesBackupSchema / monthlyCloseReviewsBackupSchema・resolveRestoreReviewState (key 無し→null で既存行を残す、空配列でも置換、不正なら InvalidRestoreSettingsError)・prepareRestoreWriteSet への受け渡しがある。routes/analytics.ts の PUT/DELETE 4 本は invalidateJsonSnapshotQuery を呼ぶ。schema-guard.ts と deletion-schema.test.ts の期待値も変わっている。現行 routes/total-cashflow.ts の POST verdicts・POST/DELETE freee-exclusions は invalidateJsonSnapshotQuery を呼ばず、CANONICAL_MUTATION_ROUTES にも無い。be-inf-007 は実装できる。fence の consumers 型 (CanonicalConsumer = JsonSnapshotMutationConsumer | …) と invalidateJsonSnapshotQuery の consumer 型は、db-inf-006 が 3 表を JSON_SNAPSHOT_MUTATION_CONSUMERS に足すことで満たされる。route は既存形式 (/^\\/api\\/total-cashflow\\/…$/) で書ける。db-inf-006 の条件付き batch を SQLite 3.41.2 で検算した。二重取消は 2 回目の 3 文がすべて 0 行、照合後に新しい操作が割り込んだ場合も 3 文がすべて 0 行、DELETE … WHERE EXISTS と INSERT … SELECT … WHERE EXISTS … ON CONFLICT(…) DO UPDATE も成立した (SELECT に WHERE があるので upsert の構文曖昧性は起きない)。fence の lease は利用者ごとに排他なので、割り込みは lease でも直列化される。残りは low だけである。",
+      "evidence": [
+        "git show cd470e3 -- packages/api/src/{canonical-mutation-fence,import-active,import-lifecycle,import-lifecycle-pure.test,schema-guard,deletion-schema.test}.ts packages/api/src/routes/imports.ts",
+        "grep -n invalidateJsonSnapshotQuery packages/api/src → analytics.ts:290/310/328/346、total-cashflow.ts は 0 件",
+        "packages/api/src/canonical-mutation-fence.ts:19-24 (CanonicalConsumer 型)・:124-150 (lease 取得失敗で 409 canonical_write_busy)",
+        "packages/api/src/import-active.ts:37-47 (invalidateJsonSnapshotQuery の consumer 型)",
+        "scratchpad/eval6/run.sh (sqlite3 3.41.2: A 二重取消 1/1/1→0/0/0、B 割り込み 0/0/0、C DELETE 経路 1)",
+        "jq qa_log qa-infrastructure-web-tc-observed-004 / qa-backend-web-tc-inference-007 / qa-database-web-tc-inference-006"
+      ]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "score": 92,
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "C07 (21:37)・C06 (21:35) の PASS を土台に、以降の差分を spec-state.json で確かめた。確定セルの qa_refs から db-inf-005 は消え、db-inf-006・infra-observed-004 (database/infrastructure/maintenance-ops/backend)、be-inf-007 と decision-018 (backend) が加わっている。いずれも qa_log に実在する。reopen_log の末尾 4 件 (14:26:23Z) は、observed-004 と db-inf-006/be-inf-007 を理由に挙げる。決定論ゲート 3 本と required-info の state 検査は exit 0 で、ungrounded_blocking_items は空。",
+      "evidence": [
+        "validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit 0",
+        "validate-knowledge-graph.py --profile required-info --state exit 0 (ungrounded_blocking_items=[])",
+        "jq '.. | objects | select(has(\"qa_refs\"))'",
+        "jq .reopen_log[-6:]",
+        "scratchpad/c07-matrix-result.md / scratchpad/c06-hearing-result.md"
+      ]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "score": 86,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "design_applications の backend (14:26:23Z) は fence 登録・同じ batch での無効化・復元 payload 3 key の検証を、Clean Architecture の adapter 境界として具体的に書き、be-inf-007 と observed-004 を根拠に挙げる。maintenance-ops は前例の全箇所 (consumers・write-set・スナップショット SQL・fence・payload 検証・route の無効化・schema-guard) と、復元テストで旧バックアップの既存行が残ることを固定すると書く。database と infrastructure は db-inf-006・observed-003/004 を参照している。汎用ポインタだけの章は無い。knowledge graph の 4 profile も exit 0。",
+      "evidence": [
+        "jq .design_applications.backend / .database / .infrastructure / .[\"maintenance-ops\"]",
+        "aggregate-completeness.py --knowledge-graph exit 0"
+      ]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "score": 95,
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "fetched-references.json の mtime は 21:12:31 JST で、C08 (21:35) の PASS より前から変わっていない。今回の差分は qa・適用文・セルだけで、出典には触れていない。validate-spec-doc-sync.py exit 0。",
+      "evidence": [
+        "scratchpad/c08-doc-freshness-result.md",
+        "stat system-spec/fetched-references.json → Sep 15 21:12:31 2026",
+        "validate-spec-doc-sync.py exit 0"
+      ]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "score": 90,
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "installPath (0.1.14) に C08 結果 (21:35) より新しいファイルは 0 件で、以前の prompt 検証 18/18 PASS は有効なまま。",
+      "evidence": [
+        "find $P -newer scratchpad/c08-doc-freshness-result.md -type f → 0 件"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "G-matrix",
+      "name": "validate-coverage-matrix --require-complete --require-basis --require-foundation",
+      "exit_code": 0
+    },
+    {
+      "id": "G-doc-sync",
+      "name": "validate-spec-doc-sync",
+      "exit_code": 0
+    },
+    {
+      "id": "G-required-info-state",
+      "name": "validate-knowledge-graph --profile required-info --state",
+      "exit_code": 0
+    },
+    {
+      "id": "G-knowledge-graph",
+      "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)",
+      "exit_code": 0
+    },
+    {
+      "id": "G-fresh-compile-diff",
+      "name": "独立 compile (scratchpad/eval6/compile) と章の diff",
+      "exit_code": 1,
+      "note": "差分は 8 章の未記入注記 1 行と 00-requirements-definition.md の空行 1 行のみ"
+    },
+    {
+      "id": "G-id-existence",
+      "name": "章中の承認/qa id の SSOT 実在 (43 種 dangling 0)",
+      "exit_code": 0
+    },
+    {
+      "id": "G-sqlite-undo-batch",
+      "name": "db-inf-006 条件付き batch の SQLite 検算",
+      "exit_code": 0
+    }
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "decision_guidance",
+      "observation": "[新規] be-inf-007 で書込み route 4 本を fence に登録すると、lease を取れなかった要求は 409 canonical_write_busy になる (canonical-mutation-fence.ts:130-140)。fe-inf-004 は取消の 409 を一律に『別の画面で新しい操作があったため取り消せません』として操作 id の列を空にすると定めている。取込・復元や別タブの書込みの進行中に取消すと、再試行すれば通る要求で取消の列が消え、文言も事実と合わない。また別タブで復元した後に古い id を送ると、復元で行が置き換わっているので 409 でなく 404 になるが、fe-inf-004 は 404 の画面の扱いを書いていない (db-inf-006 の『復元後に古い id で取り消すことは無い』は同じタブの場合に限る)。どちらも安全側 (誤って戻さない) で、1 人で使うアプリでは稀なので low とする。",
+      "suggested_fix": "次の elicit で fe-inf-004 を置き換え、409 の error.code が canonical_write_busy のときは列を残して再試行を促し、stale のときだけ列を空にする。404 も列を空にして再読込を促す。",
+      "evidence": [
+        "packages/api/src/canonical-mutation-fence.ts:124-150",
+        "jq qa_log qa-frontend-web-tc-inference-004 (『409 なら列を空にして』)",
+        "grep -rn canonical_write_busy packages/web/src → 0 件"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "decision_guidance",
+      "observation": "[新規] observed-004 は『4 箇所の外に 3 系統』と書くが、cd470e3 の packages/api にはほかに import-lifecycle-pure.test.ts (consumers 列挙の toEqual と、lease 対象 route の列挙) と db/schema.ts (drizzle の表定義) の変更がある。consumers の列挙テストは更新を忘れると CI で落ちるので害は小さい。ただし route 列挙テストの routeSources (import-lifecycle-pure.test.ts:600-613) に routes/total-cashflow.ts が入っていない。そのため undo route の fence 登録を忘れても、このテストは落ちない (verdicts が total_cashflow_operations を consumers に持つので『全 consumer が fence される』テストも通る)。",
+      "suggested_fix": "db-inf-006 / be-inf-007 の後継で、import-lifecycle-pure.test.ts の consumers 列挙と route 列挙の期待値、routeSources への routes/total-cashflow.ts の追加、db/schema.ts の列と表の追加を変更箇所に挙げる。",
+      "evidence": [
+        "git show cd470e3 --stat (import-lifecycle-pure.test.ts +11, db/schema.ts +28)",
+        "packages/api/src/import-lifecycle-pure.test.ts:600-670"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace",
+      "observation": "[新規] 00-requirements-definition.md:92 (approval_log[3] の note) は『409 と id の契約は下位の推定 … qa-database-web-tc-inference-005 にだけ置く』と書き、置き換えられた 005 を指したままである。承認時点の記録なので書き換えは要らないが、読者が 005 を現行の根拠と読む余地がある。",
+      "suggested_fix": "次に set-foundation / 承認を回すとき、note に後継 (db-inf-006) を書き添える。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace",
+      "observation": "[継続] 確定 8 章に『**未記入** の行は…』注記が残る。独立 compile では出ない (doctrine 全行記入済み)。hook が既存章の上書きを遮断するため残っている。",
+      "suggested_fix": "C03 の正規 writer 経路で新規 compile に置き換えるか、merge compile が条件の偽になった注記を消すよう plugin を直す。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace",
+      "observation": "[継続] S4『同じ取消を 2 回送っても 1 回分しか戻らない』と G4/O4/S4/I9 の『意図しない操作を戻さない』句が、利用者に文として示されたかを approval note が書いていない。導出元の書き方が S4 を S4 から導く形になっている。"
+    },
+    {
+      "severity": "low",
+      "bucket": "decision_guidance",
+      "observation": "[継続] 除外を考えない候補が 2 件以上あり、全部除外済みの明細は review に残る (be-inf-006)。decision-015 の含意とずれる余地がある。fe-inf-004 の lastOperation の用途も書かれていない。decision-003/004 の選択肢に推奨の理由と代償が無い。"
+    },
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection",
+      "observation": "[継続] design_applications.backend『セグメント別合計と前期比』など、適用文と doctrine に『前期比』が残り『前年同期比』と混ざる。security の適用文は、3 表 (除外メモ・操作履歴) のバックアップの保護に触れていない。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace",
+      "observation": "[継続] system-spec/completeness-findings.json (20:38:23) は前サイクルのレポートのまま。dec-aggregation-strategy-001 は decisions[] に無く archive にだけある。"
+    },
+    {
+      "severity": "low",
+      "bucket": "decision_guidance",
+      "observation": "[fork 突合で追加・格下げ] fork は medium として次を挙げた。decision-004 で (A)『D1 に操作履歴を残し、再読込後も直前の操作が表示される』が選ばれたが、decision-017 で取消は『画面を開いている間』に限られた。そのため (A) を選んだ決め手が消え、振る舞いは不採用の (B) (画面のメモリで持つ) に近い。017 の問いは『操作履歴は無期限に残る設計』を前提に置いており、D1 に残すかは聞き直されていない。本体は、この食い違いの観察は正しいと確かめた (004 の選択肢文と 017 の問いの前提)。そのうえで low に下げる。理由は 2 つある。decision-018 は操作履歴を除く案『判定と除外だけ加える』を代償つきで示し、利用者は操作履歴を含む案を選んだ。017 の前提も問いの文として利用者に見えていた。fe-inf-004 の lastOperation の用途が書かれていない点 (継続 low) と同じ根を持つ。",
+      "suggested_fix": "次の elicit で、取消を画面表示中に限る前提のもとで操作履歴を D1 に残す目的 (監査・復元・将来の遡り) を推奨ラベルなしの 1 問で確かめ、004 が 017 と 018 に置き換えられたことを明示する。",
+      "evidence": [
+        "jq qa_log qa-total-cashflow-decision-004 / -017 / -018",
+        "scratchpad/completeness-findings-total-cashflow.json (fork)"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "doc_freshness",
+      "observation": "[fork 報告・本体未検証] fork は、fetched-references.json にある OWASP ASVS の出典メモの『307 転送』の記述が、実際の owasp.org 側の移行ページとずれていると報告した。C08 の判定 (7 件とも公式の現行版と一致) は変わらない。",
+      "suggested_fix": "doc-fetch で該当メモの転送の記述を直す。"
+    },
+    {
+      "severity": "info",
+      "bucket": "foundation_trace",
+      "observation": "[fork との突合] Skill のフォーク (context: fork) は総合 PASS・medium 1 件を返した。これは依頼の規則『medium が 1 件でもあれば総合 FAIL』に合わない。fork の medium は上の low として取り込んだ。fork は、依頼が禁じた marketplaces 配下 (配布元ソースの system-spec-harness) の plugin で gate を回したと自己申告している。そのため gate の exit code は、本体が installPath (cache/harness-local/system-spec-harness/0.1.14) で回した結果を正本にする。fork は当初 analysis-hub を重点にするよう監査 agent へ誤って伝え、途中で訂正したとも述べている。fork は今回の差分 (observed-004・be-inf-007・db-inf-006) を個別には検証していない。fork の出力は scratchpad/completeness-findings-total-cashflow.json で、22:00 の同名の旧ファイルを上書きした。system-spec/ への書込みはしていない (completeness-findings.json の mtime は 20:38:23 のまま)。"
+    },
+    {
+      "severity": "info",
+      "bucket": "decision_guidance",
+      "observation": "前回 medium (前例 0040 の変更箇所の数え漏れ) は解消した。observed-004 の 3 系統 (routes/imports.ts の payload 検証と受け渡し、書込み route の invalidateJsonSnapshotQuery、schema-guard と deletion-schema.test) と『total-cashflow の書込み route は無効化も fence も無い』は、git show とコードで真と確かめた。db-inf-006・be-inf-007・maintenance-ops/infrastructure/backend の適用文はこの全体に揃い、backend セルは reopen→confirm で be-inf-007 と decision-018 を持つ。前回 low (照合と batch のすき間・復元文の形) も db-inf-006 で解消した。basis は observed-004 が observed-fact、be-inf-007/db-inf-006 が agent-inference で、provenance は『consumers の組み合わせ・NOT EXISTS・旧バックアップの扱いは利用者の明示選択ではない』と開示しており、誠実である。"
+    },
+    {
+      "severity": "info",
+      "bucket": "decision_guidance",
+      "observation": "db-inf-006 の batch を SQLite 3.41.2 で検算した (scratchpad/eval6/run.sh)。A: 同じ id の二重取消は 1 回目 upsert/undo 行/undone_at が 1/1/1、2 回目 0/0/0。B: 照合後に新しい操作 op3 が入ると 0/0/0 で除外は戻らない。C: 1 つ前の操作への遡りで DELETE … WHERE EXISTS が 1 行。UPSERT は INSERT … SELECT … WHERE EXISTS(…) ON CONFLICT(user_id, freee_key) DO UPDATE の形で、SELECT に WHERE があるため構文の曖昧性は無い。invalidateJsonSnapshotQuery は drizzle のクエリなので db.batch に db.run(sql) と並べられ、raw の D1 batch なら invalidateJsonSnapshotStatement が使える。取消が 409 になる場合も無効化の文は実行されるが、スナップショットを捨てるだけで害は無い。"
+    }
+  ],
+  "gaps": [
+    "[次の elicit (任意)] fe-inf-004 の 409 canonical_write_busy / 404 の扱い、変更箇所に import-lifecycle-pure.test.ts の routeSources と db/schema.ts を加える (low)。",
+    "[compile / plugin] 8 章の未記入注記、『前期比』の表記、前サイクルの completeness-findings.json (low)。"
+  ]
+}

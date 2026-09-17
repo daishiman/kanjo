@@ -1,36 +1,31 @@
 {
-  "renderer": "render-graph-html.py (dev-graph 0.1.11)",
-  "rendered_at": "2026-09-15T21:56:34Z",
-  "scope": "all nodes",
-  "graph_revision": 3,
-  "input": ".dev-graph/state/graph.json",
-  "input_sha256": "de7900794f739cf7918815e359f792c8842322dc956ba01fec09be6821487d58",
-  "output": ".dev-graph/render/index.html",
-  "output_sha256": "7d252bd71ea1c8f345ad016b092bb49801a56851675c60936ee489a3c6cde08b",
-  "nodes": 23,
-  "edges": 21,
-  "feature_progress": {
-    "feat-total-cashflow-screen": {
-      "done": 0,
-      "total": 13
-    }
-  },
-  "external_refs": 0,
-  "svg": 1,
-  "inline_scripts": 2,
-  "registration_receipt": {
-    "path": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/dev-graph-registration-receipt.json",
-    "expected_count": 13,
-    "applied_count": 13,
-    "source_digest": "sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5"
-  },
-  "live_trial": {
-    "browser": "Google Chrome headless (new)",
-    "viewport": "1600x2300",
-    "svg_rendered": true,
-    "nodes_visible": 23,
-    "feature_label": "active · feature · 0/13",
-    "dom_external_refs": 0
-  },
-  "note": "render-graph-html.py は receipt を書かないため、stdout と registration receipt、実ファイル digest から再生成した。graph は read-only (前後 sha 不変)。 main (照合機能) との merge では render を合成しない。本 receipt の input は gitignore 対象の .dev-graph/state/graph.json で機能ごとのローカル投影のため、本ブランチの feat-total-cashflow-screen の投影を採用し、digest 不変 (再実行で同一 output_sha256) を確認した。"
+ "renderer": "render-graph-html.py (dev-graph 0.1.11)",
+ "rendered_at": "2026-09-16T10:38:50Z",
+ "scope": "all nodes",
+ "graph_revision": 4,
+ "input": ".dev-graph/state/graph.json",
+ "input_sha256": "45da2d55e5e160f2119ef1c47da24106dc854dd78a4b5191c00bdf5cfe4fe527",
+ "output": ".dev-graph/render/index.html",
+ "output_sha256": "cf1ab64568b07132c17863cf4a2fe48a8179a30832a0d96137e54c359f31020c",
+ "nodes": 23,
+ "edges": 21,
+ "feature_progress": {
+  "feat-trends-screen": {
+   "done": 0,
+   "total": 13
+  }
+ },
+ "external_refs": 0,
+ "svg": 1,
+ "inline_scripts": 2,
+ "registration_receipt": {
+  "path": ".dev-graph/plans/feature-package-feat-trends-screen/dev-graph-registration-receipt.json",
+  "expected_count": 13,
+  "applied_count": 13,
+  "source_digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4"
+ },
+ "beads_linked_nodes": 14,
+ "live_trial": "headless Chrome (--headless=new) screenshot で SVG DAG 描画と SYS-TRENDS-P01..P13 のノード表示を確認。'active · feature · 0/13' は HTML 本文で照合",
+ "known_display_issue": "長い title (P02/P04/P05/P09/P12) がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
+ "note": "renderer は receipt を書かず source_digest を HTML に描画しない。本 receipt は stdout と registration receipt から再作成し digest を照合した"
 }

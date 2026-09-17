@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G1, G2, G5]
+serves_goals: [G1, G2, G4]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,21 @@ serves_goals: [G1, G2, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-frontend-web-tc-observed-001。裏付け質疑 (`qa_refs`): `qa-total-cashflow-decision-001`, `qa-total-cashflow-decision-004`, `qa-total-cashflow-decision-006`, `qa-total-cashflow-decision-008`, `qa-total-cashflow-decision-009`, `qa-total-cashflow-decision-010`, `qa-total-cashflow-decision-011`, `qa-total-cashflow-decision-012`, `qa-total-cashflow-decision-013`, `qa-total-cashflow-decision-016`, `qa-total-cashflow-decision-017`, `qa-frontend-web-tc-inference-004`, `qa-backend-web-tc-inference-006` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではネイティブ UI フレームワークでの KPI・チャート・判定作業の再実装を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではネイティブ UI フレームワークでの KPI・チャート・判定作業の再実装を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、本カテゴリではネイティブ UI フレームワークでの KPI・チャート・判定作業の再実装を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、本カテゴリではネイティブ UI フレームワークでの KPI・チャート・判定作業の再実装を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、本カテゴリではネイティブ UI フレームワークでの KPI・チャート・判定作業の再実装を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-frontend-web-trends-observed-005。裏付け質疑 (`qa_refs`): `qa-frontend-web-trends-observed-004`, `qa-trends-decision-001`, `qa-trends-decision-004`, `qa-trends-decision-005`, `qa-trends-decision-007`, `qa-trends-decision-008`, `qa-trends-decision-009`, `qa-trends-decision-011`, `qa-trends-decision-012`, `qa-trends-decision-013`, `qa-trends-decision-014`, `qa-target-platforms-trends-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、推移画面の本カテゴリではネイティブ UI での推移チャートとスパークラインの描画部品を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、推移画面の本カテゴリではネイティブ UI での推移チャートとスパークラインの描画部品を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows デスクトップアプリを提供していたなら、推移画面の本カテゴリではネイティブ UI での推移チャートとスパークラインの描画部品を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux デスクトップアプリを提供していたなら、推移画面の本カテゴリではネイティブ UI での推移チャートとスパークラインの描画部品を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS デスクトップアプリを提供していたなら、推移画面の本カテゴリではネイティブ UI での推移チャートとスパークラインの描画部品を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。 |
+
+## 対象外の承認範囲
+
+> 本章の対象外セルが引用している承認の実体。状態表の「承認: <id>」だけでは、その承認が何をどこまで認めたものかを章から辿れない。
+
+### 承認: `appr-foundation-trends-001`
+
+2026-09-16T09:27:37Z (回答直後の date -u 実測、選択時刻の上限値) 利用者が AskUserQuestion で推移画面サイクルの foundation (U1・G1-G5・対象外・制約) を『この内容で承認』と回答。先行する利用者決定 (2026-09-16T09:16:35Z / 09:19:14Z): 手を打つ順番=開閉式で残す、要因の説明=規則で自動生成、汎用性=指標を登録制、明細への導線=/classify に絞込を足す、期間タブ=全体の期間選択を操作、前期間=直前の同じ長さ、初期の月=最も変化が大きい月。
+
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,10 +37,8 @@ serves_goals: [G1, G2, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 表示層を、API の summary・workbench・autoMatches をそのまま描くコンポーネントに分け、画面側の状態は選択・フィルタ・折りたたみの開閉と、取消に使うその画面で成功した操作 id の列だけに限る形に反映した。チャートは既存の Chart.js と系列色トークンを使い、新しい色を定義しない。 |
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | web の依存方向を、ページ → TanStack Query の取得フック → API クライアントの一方向に反映した。書込み後の追随は invalidate に一本化し、画面側でキャッシュを手で書き換えない。 |
-
-> **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
+| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 増減は符号と文字を併記して色だけに頼らず、全期間では比較の切替を無効にして理由を文で出す。遷移先の違いはボタンの文言で示す。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 画面は API の返却値を描くだけで足し算や比較期間の計算をしない。状態は URL の検索パラメータと usePeriod に置き、コンポーネントの内部状態に条件を閉じ込めない。 |
 
 ## 確定内容 (質疑録)
 
@@ -39,175 +46,163 @@ serves_goals: [G1, G2, G5]
 
 ### Web (web)
 
-- 資するゴール: G1, G2, G5
+- 資するゴール: G1, G2, G4
 
-#### 主たる接地根拠: `qa-frontend-web-tc-observed-001`
-
-**問**
-
-総収支タブのフロントエンド構成 (ルーティング・データ取得・共通部品・既存テスト) は現行どうなっているか。
-
-**答**
-
-React 18 + react-router-dom 7 + TanStack Query 5 + Chart.js 4 の Vite SPA (packages/web)。AuthenticatedApp.tsx が /analysis をハブ、/analysis/:tab を AnalysisPage へ割り当て、routeMetadata.ts の ANALYSIS_TABS が 5 タブの正本。総収支は pages/analysis/TotalCashflow.tsx で、queryKey ['total-cashflow', 期間 key] で GET /api/total-cashflow を読み、判定 POST /total-cashflow/verdicts・除外 POST/DELETE /total-cashflow/freee-exclusions の成功後に invalidateQueries({queryKey:['total-cashflow']}) を呼ぶ。PR #50 で分析系の更新はハブ要約 (['analysis-hub']) も追随させる。表示していないタブは遅延読み込みで API を呼ばない (analysis-tabs.dom.test.tsx)。期間は period.tsx の usePeriod() が selection/key/withPeriod(path) を返す (localStorage kanjo:period で全画面共有)。共通部品は components/Page.tsx (PageShell/PageHeader/KpiCard/PageState/PageActions)・Button.tsx (native button は data-native-control と ARIA 必須で AST テストが検査)・DataTable.tsx・charts.ts (チャート系列色)。トークンは packages/core/src/design-tokens.ts が正本で、web の色直書きは lint で落ちる。サイドバー (Layout.tsx) は GET /analysis/hub の結果で子行に件数バッジ (data-testid nav-review-badge-<id>) を出し、現在地を aria-current で示す。既存テストは packages/web/test/total-cashflow-table.dom.test.tsx・analysis-tabs.dom.test.tsx・common-shell.dom.test.tsx と、ルート verify:full の check:thead / check:mobile-layout / check:financial-figure / check:financial-routes / check:analysis-hub。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/web/src/{AuthenticatedApp.tsx,routeMetadata.ts,pages/Analysis.tsx,pages/analysis/TotalCashflow.tsx,period.tsx,components/{Page,Button,DataTable,Layout}.tsx,components/charts.ts}, packages/web/package.json, package.json。 / 回答時刻: 2026-09-15T12:00:44Z)
-
-#### 裏付け質疑: `qa-total-cashflow-decision-001`
+#### 主たる接地根拠: `qa-frontend-web-trends-observed-005`
 
 **問**
 
-05-total-cashflow.png には既存の 9 列の月次表 (総収入・総支出・純収支と事業/家計の内訳・事業へ寄せた件数・要確認) が無い。既存の月次表をどう扱うか。選択肢: (A) 『月次の内訳を表示』の開閉で残し、既定は閉じる (推奨) / (B) 画像どおり削除し KPI とチャートだけにする / (C) 常時表示のまま画像の要素を上に足す。
+初回期間の既定値と表の並べ替えは、フロントエンドのどこに置きますか?
 
 **答**
 
-(A) 折りたたみで残す を選択した。
+初回期間は packages/web/src/period.tsx の parseSelection と PeriodProvider の初期値 (INITIAL_SELECTION = span 1) だけで決め、画面ごとに既定値を持たない。並べ替えの比較規則は packages/web/src/table-sort.ts (sortedRowOrder と、親子行を保つ sortedRowsBy) に一本化し、見出しは components/SortableTableHeader.tsx を共通部品とする。推移のカテゴリ表は sortedRowsBy で親カテゴリだけを並べ、取引先の展開行を親に付けたまま移動する。生の table の種別宣言 (data-table-kind) は table-sort-coverage.test.ts が静的に監査する。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T11:48:28Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: 実装とテストの読解 (period.tsx、table-sort.ts・table-sort.test.ts、SortableTableHeader.tsx、table-sort-coverage.test.ts)。2026-09-17 の最終レビューで利用者から仕様書への反映指示を受けて記録した。 / 回答時刻: 2026-09-17T01:58:47Z)
 
-#### 裏付け質疑: `qa-total-cashflow-decision-004`
+#### 裏付け質疑: `qa-frontend-web-trends-observed-004`
 
 **問**
 
-画像の右ペインは『直前の操作 2026/09/10 10:12 1件の判定を元に戻しました / 元に戻す』を持つ。現行は判定を取り消す API が無く、戻せるのは freee 除外の DELETE だけである。元に戻すをどう実現するか。選択肢: (A) 判定・除外・戻すを 1 件ずつ D1 の操作履歴に残し、直前の操作を取り消せる。再読込後も直前の操作が表示される (推奨) / (B) 画面のメモリ上だけで直前 1 件を保持し、再読込で消える。
+推移画面のフロントエンドは何を再利用して組みますか?要確認の注記と傾向の判定の基準はどこに出しますか?
 
 **答**
 
-(A) 操作履歴を D1 に残す を選択した。
+packages/web は React 18 + react-router-dom 7 + TanStack Query 5 + chart.js 4 (react-chartjs-2)。Trends.tsx を作り直し、components/Page.tsx の PageShell/PageHeader/KpiCard、Button、charts.ts の COLORS/chartSeriesColor/baseChartOptions、FinancialFigure、DataTable、総収支の SegmentSwitch・DetailPane・選択バーの型、既存の自作 SVG スパークラインを再利用する。期間タブは全体の期間選択 usePeriod (span/from/to) を操作し、範囲・指標・比較対象・選択月・選択カテゴリはURL の検索パラメータに持つ。API が返す要確認の件数と金額が 1 件以上なら、比較条件の帯の末尾に注記と /analysis/total-cashflow へのリンクを出し、詳細パネルにも選択月の件数と金額を出す (qa-trends-decision-012)。傾向の判定の開閉部分の見出しには API が返す基準 (MF の明細) を表示する (qa-trends-decision-013)。口座が null の行は『—』と表示する (qa-trends-decision-014)。MF 由来の行は pages/Classify.tsx へ month・cls に加えて category と専用の payee を渡し、Classify.tsx (現状 month と cls だけを URL から読む) はその初期値を読む。freee 由来の行は /analysis/total-cashflow を開く (TotalCashflow.tsx は URL の月を読まないため、期間は usePeriod で引き継ぐ)。チャートは DOM テストで test-support/chart-test-doubles.tsx に差し替え、視覚は scripts/check-financial-visuals.mjs の headless Chrome で確認する。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-15T11:48:28Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: R4-reopen (2026-09-16T10:11:28Z、要確認の明細と傾向の判定の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善。packages/core/src/total-cashflow.ts の totalCashflowReport と月次行の reviewCount・reviewAmount、packages/core/src/trend.ts の trendsReport(data: Dataset, scope))。answered_at は読解直後に date -u で実測した時刻。 / 回答時刻: 2026-09-16T10:11:30Z)
 
-#### 裏付け質疑: `qa-total-cashflow-decision-006`
+#### 裏付け質疑: `qa-trends-decision-001`
 
 **問**
 
-総収支の KPI に出す『前期比』の比較対象はどれにするか。選択肢: 同じ長さの直前期間 (支出分析ハブの前期比と同じ関数・季節性は吸収しない) / 前年の同じ期間 (季節の影響を除ける・ハブの前期比とは定義が別・1 年分以上のデータが必要)。
+今の推移画面にある『手を打つ順番』表(MK検定・Theil-Sen の傾向判定、前半→後半の寄与度)をどう扱いますか?画像にはこの表がありません。選択肢: (A) 開閉式で残す (推奨) / (B) 画像どおり削除 / (C) 常時表示で残す。
 
 **答**
 
-前年の同じ期間。含意: 2026-04〜06 を選んだら 2025-04〜06 と比べる。支出分析ハブの前期間比 (直前の同じ長さ) とは別の定義になるので、画面の表記で区別する。
+(A) 開閉式で残す を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-15T12:19:17Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T09:16:35Z)
 
-#### 裏付け質疑: `qa-total-cashflow-decision-008`
+#### 裏付け質疑: `qa-trends-decision-004`
 
 **問**
 
-完全一致候補一覧の『同じ取引にする』は何をするか。選択肢: 判定の記録だけ (自動で寄せた組に確認済みの印を付け総額は変わらない) / 確認するまで保留 (完全一致でも自動では寄せず要確認扱い)。
+『該当明細を開く』と、カテゴリ行→取引先の内訳はどこまで作りますか?選択肢: (A) 明細画面 /classify に category・取引先(明細の内容)の絞込クエリを足す。取引先は名寄せなし (推奨) / (B) 月だけで開く / (C) 取引先の名寄せ規則も作る。
 
 **答**
 
-判定の記録だけ。含意: 完全一致の自動寄せ (qa-total-cashflow-decision-002) は維持し、same の記録で matched と総額は変わらない。
+(A) 明細画面に絞込を足す を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-15T12:19:17Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T09:16:35Z)
 
-#### 裏付け質疑: `qa-total-cashflow-decision-009`
+#### 裏付け質疑: `qa-trends-decision-005`
 
 **問**
 
-右ペインの『集計から除外』はどちら側の明細を除外するか。選択肢: 対応する freee 取引 (既存の freee 除外に理由区分付きで入れる・MF 明細は残る) / MF 明細の側 (MF 側の新しい除外を作る・テーブルと画面が新たに必要)。
+画像上部の『1年/2年/3年/任意』は、今ある全体の期間選択(usePeriod、他の分析タブと共有)とどう関係させますか?選択肢: (A) 全体の期間選択を操作する (推奨) / (B) 推移専用の期間。
 
 **答**
 
-対応する freee 取引。含意: 既存の freee_deal_exclusions に理由区分とメモ付きで入れ、MF 側の除外テーブルは作らない。
+(A) 全体の期間選択を操作する を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-15T12:19:17Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T09:19:14Z)
 
-#### 裏付け質疑: `qa-total-cashflow-decision-010`
+#### 裏付け質疑: `qa-trends-decision-007`
 
 **問**
 
-共通ヘッダーとフッターの文言をどうするか (現状『防衛線』『毎晩バックアップ(30日保持)』/ 画像『防衛ライン: 正常』『毎朝バックアップ』)。選択肢: 画像に揃える (全画面の共通シェルが変わる・『毎朝』が cron 時刻と合うかも扱う) / 現状のまま (総収支の本体だけを対象にする)。
+チャートで月を選ぶ前(初期表示)の右の詳細パネルは、どの月を出しますか?選択肢: (A) 最も変化が大きい月 (推奨。URL に選択月を保持) / (B) 最新月 / (C) 未選択(パネルを閉じる)。
 
 **答**
 
-画像に揃える。含意: 全画面の共通シェルの文言が変わる。cron は UTC 18 時 (日本時間 3 時) なので『毎朝』と矛盾しないことを実装時に確かめ、保持期間の表示を落とすかは画像に合わせる。
+(A) 最も変化が大きい月 を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-15T12:22:21Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T09:19:14Z)
 
-#### 裏付け質疑: `qa-total-cashflow-decision-011`
+#### 裏付け質疑: `qa-trends-decision-008`
 
 **問**
 
-サイドバーは今回どこまで扱うか。選択肢: 表示の確認だけ (支出分析 > 総収支 の現在地と照合の件数バッジが判定後に追随することをテストで確認し、構成と見た目は変えない) / 画像に合わせて直す (差があれば直し、対象が全画面共通の部品に広がる)。
+推移の数値 (収入・支出・純収支とカテゴリ・取引先の行) は、どの取引集合から数えますか?選択肢: (A) 総収支と同じ (freee 取引と MF 明細を消し込んだ後の集合。totalCashflowReport と同じ数え方で、総合・事業の値が概況と総収支画面に一致する。freee 由来の行の明細は総収支画面で開く) (推奨) / (B) MF 明細だけ (現行 /api/trends と同じ。事業の値が概況・総収支と一致しない)。
 
 **答**
 
-表示の確認だけ。
+(A) 総収支と同じ を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-15T12:22:21Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の decision_guidance 指摘を受けた追加質問)。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T09:50:42Z) で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T09:50:42Z)
 
-#### 裏付け質疑: `qa-total-cashflow-decision-012`
+#### 裏付け質疑: `qa-trends-decision-009`
 
 **問**
 
-完全一致候補一覧 (自動で寄せた組) に出す一致度はどうするか。自動で寄せる条件は日付と金額の一致だけで摘要を見ないため、配点どおりに計算すると 78〜100% に散る。選択肢: 規則どおり計算して表示 (摘要や口座の差が数字で見える・画像の『一致度 100%』と合わない場合があり一覧名を改める必要がある) / 自動で寄せた組は常に 100% (画像どおり・摘要が違う組も 100% と出て内訳を出さない)。
+カテゴリ表のスパークラインは何か月分を描きますか?選択肢: (A) 選択期間の末月から遡る直近 12 か月 (推奨。行の高さと列幅を期間によらず一定にする) / (B) 選択期間の全月。
 
 **答**
 
-規則どおり計算して表示。含意: 一覧の一致度は 78〜100% の値をそのまま出し、配点の内訳も見せる。画像の説明文『金額・日付・内容が完全一致する取引の候補です』は事実と合わなくなるので、一覧名と説明文を『日付と金額が一致して自動で寄せた組』の意味に改める。
+(A) 直近 12 か月 を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 完成度評価 (C05) の再評価が、アシスタント推定 qa-backend-web-tc-inference-004 で利用者に見える規則が一意に決まっていない (どちらで実装してもテストが通る) と medium 指摘したため、R3-reask で 1 問 1 論点に分けて質問した。利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-15T13:10:17Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の decision_guidance 指摘を受けた追加質問)。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T09:50:42Z) で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T09:50:42Z)
 
-#### 裏付け質疑: `qa-total-cashflow-decision-013`
+#### 裏付け質疑: `qa-trends-decision-011`
 
 **問**
 
-『元に戻す』を続けて押したときの動きはどうするか (取り消した操作も履歴に 1 件残る)。選択肢: 1 つ前の操作へ遡る (押すたびに未取消の操作を新しい順に戻す・取消のやり直しは無い) / 直前の 1 回だけ戻せる (取消後はボタンを消す・2 つ以上前は戻せない)。
+推移 API と明細画面のクエリの誤りと取引先の絞込はどう扱いますか?選択肢: (A) 形式違反の month などは既定値へ倒し、400 は未登録の metric (invalid_metric) だけにする。取引先は専用の payee クエリで完全一致で絞る (推奨) / (B) 形式違反はすべて 400 にし、取引先は既存の検索 q に入れて部分一致で絞る。
 
 **答**
 
-1 つ前の操作へ遡る。含意: 取消そのものは取消の対象にならず、押すたびに未取消の書込み操作を新しい順に 1 つずつ戻す。取り消した取消をやり直す手段は作らない。
+(A) 既定値へ倒す+専用 payee を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 完成度評価 (C05) の再評価が、アシスタント推定 qa-backend-web-tc-inference-004 で利用者に見える規則が一意に決まっていない (どちらで実装してもテストが通る) と medium 指摘したため、R3-reask で 1 問 1 論点に分けて質問した。利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-15T13:10:17Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の decision_guidance 指摘を受けた追加質問)。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T09:50:42Z) で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T09:50:42Z)
 
-#### 裏付け質疑: `qa-total-cashflow-decision-016`
+#### 裏付け質疑: `qa-trends-decision-012`
 
 **問**
 
-一致度が 78〜100% に散るため、画像の『完全一致候補』『金額・日付・内容が完全一致する…』の文言を『自動一致の候補』『日付と金額が一致して自動で寄せた取引です』に改める。画像の文言から外れるこの変更を、上位概念 (目標 G1/G3/G5・成果 O1/O5 など) にも反映してよいか。選択肢: 改名を承認 (上位概念と画面の文言を『自動一致の候補』に揃える・画像と文言が違うが表示される一致度と説明が矛盾しない) / 画像の文言を残す (見出しは『完全一致候補』のまま説明文だけ事実に合わせる・78% の組が『完全一致』の見出しの下に並ぶ)。
+総収支では『要確認』の MF 明細を事業にも家計にも数えない。推移も同じ取引集合から数えるため、月次クローズの途中で開くとその分だけ少なく出る。推移画面ではどう扱うか。選択肢: (A) 含めず件数を表示 — 数字は総収支と一致したまま、比較条件の帯に『要確認 N 件 (計 X 円) は含みません』と総収支画面への導線を出す。欠点: 要確認が片付くまで推移の値は確定前の値になる (推奨) / (B) 公私仕分けで仮に数える — 要確認の明細を resolveTx の結果で事業か家計に入れる。欠点: 推移の合計が総収支と一致しなくなり決定 008 が崩れる。
 
 **答**
 
-改名を承認。含意: 上位概念・画面・docs の語を『自動一致の候補』と『日付と金額の一致による自動寄せ』に揃え、画像の『完全一致候補』の文言からは外れる。
+(A) 含めず件数を表示 を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 完成度評価 (C05) の 3 回目の評価が medium を 3 件指摘した (除外後の数え方が core と食い違う・上位概念が改名に追随していない・取消が冪等でない)。そのうち利用者に見える規則の 2 件と、上位概念の語の変更の承認を、R3-reask で 1 問 1 論点に分けて質問した。利用者は AskUserQuestion の選択肢 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-15T13:41:26Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度再評価 FAIL の decision_guidance / matrix_coverage 指摘を受けた追加質問)。各選択肢には利点と欠点を併記して提示した。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T10:09:59Z) で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T10:09:59Z)
 
-#### 裏付け質疑: `qa-total-cashflow-decision-017`
+#### 裏付け質疑: `qa-trends-decision-013`
 
 **問**
 
-『元に戻す』はどこまで遡れるようにするか (操作履歴は無期限に残る設計)。選択肢: その画面を開いている間 (画面を開いてから行った操作だけを遡れる・再読込すると取消できない・古い判定を誤って戻す危険が小さい) / 上限なし (未取消の操作が残る限り何日前でも遡れる・押し続けると数か月前の判定まで戻る) / 当日の操作だけ (同じ日 (JST) の操作だけ・再読込後も戻せるが日をまたぐと取消できない)。
+開閉で残す『傾向の判定』(MK 検定・手を打つ順番) は MF 明細だけを受け取る trendsReport が計算する。上半分の数字は総収支と同じ取引集合から出すので、事業の支出が両者で食い違うことがある。どちらに合わせるか。選択肢: (A) MF 明細のまま+明記 — C4 を守り既存の契約テストをそのまま使う。開閉部分の見出しに『MF の明細だけで判定』と書き基準の違いを示す。欠点: 同じ画面に基準の違う数字が 2 種類並ぶ (推奨) / (B) 新しい取引集合へ移す — 傾向の判定も消し込み後の行から計算し画面全体の基準を 1 つにする。欠点: C4 を改め trend-contract.test.ts の期待値を更新する必要があり、既存の判定結果も変わる。
 
 **答**
 
-その画面を開いている間。含意: 取り消せるのは総収支の画面を開いてから行った操作だけで、再読込や画面の移動の後は取消の導線を出さない。操作履歴そのものは残る。
+(A) MF 明細のまま+明記 を選択した。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 完成度評価 (C05) の 3 回目の評価が medium を 3 件指摘した (除外後の数え方が core と食い違う・上位概念が改名に追随していない・取消が冪等でない)。そのうち利用者に見える規則の 2 件と、上位概念の語の変更の承認を、R3-reask で 1 問 1 論点に分けて質問した。利用者は AskUserQuestion の選択肢 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。 / 回答時刻: 2026-09-15T13:41:26Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度再評価 FAIL の decision_guidance / matrix_coverage 指摘を受けた追加質問)。各選択肢には利点と欠点を併記して提示した。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T10:09:59Z) で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T10:09:59Z)
 
-#### 裏付け質疑: `qa-frontend-web-tc-inference-004`
+#### 裏付け質疑: `qa-trends-decision-014`
 
 **問**
 
-取消を操作 id を送る条件付き要求にし、取り消せる範囲をその画面を開いている間に限る (qa-backend-web-tc-inference-006・qa-total-cashflow-decision-017) とき、総収支画面の API 契約と画面側の状態をどう定義するか。一覧名の改名 (qa-total-cashflow-decision-016) に応答の名前を揃えるか (qa-frontend-web-tc-inference-003 を置き換える)。
+freee 由来の行で口座の列 (settleAccount) が空のとき (列の無いエクスポートの取引や未決済の取引) の表示をどうするか。選択肢: (A) 『—』表示で絞らない — 口座が空の行は『—』と表示し、口座による絞込やグループ分けの対象から外す。欠点: 口座ごとの内訳が少し欠ける (推奨) / (B) 『口座なし』でまとめる — 空の行を『口座なし』という 1 つの口座として表や絞込に出す。欠点: 実在しない口座名が一覧に並ぶ。
 
 **答**
 
-GET /api/total-cashflow の応答へ追加で summary (total/business/household ごとの income・expense・net と previousYear {income, expense, net} | null・delta・rate | null、period と previousYearPeriod のラベル。画面の見出しは『前年同期』でハブの『前期間』とは語を分ける)、series (セグメントごとの月次 income/expense/net)、workbench (duplicates・review・exclusions の件数と明細。明細は mf・candidates[score 付き]・verdict)、autoMatches (by=auto の組と score・判定状態。一覧名『自動一致の候補』に合わせた名前)、lastOperation (kind が undo でない未取消の最新操作の id・kind・item_count・created_at | null) を返し、画面は 1 回の取得で全ブロックを描く (既存 months/review/matched/freeeOnly は互換のため残す)。一括判定は既存 POST /total-cashflow/verdicts (最大 200 件) を使い、応答に operationId を返す。除外は POST /total-cashflow/freee-exclusions の body を {items:[{freeeKey, reasonCode, memo?}]} と {freeeKeys[], reasonCode, memo?} (一括で理由を設定) に広げ、旧 {reason} は memo+other として受ける。DELETE (集計へ戻す) も操作履歴に残し、書込みの応答は全て operationId を返す。新設: POST /total-cashflow/operations/{id}/undo (id が kind が undo でない未取消の最新操作と一致するときだけ取り消し、取消後の lastOperation を返す。一致しない id は 409、他人の id や存在しない id は 404)。画面はその画面を開いてから成功した書込みの operationId を新しい順の列として持ち、『元に戻す』は列の先頭を送る。成功したら先頭を外し、409 なら列を空にして『別の画面で新しい操作があったため取り消せません』と再読込を促す。送信中はボタンを無効にする。列はページの状態で持ち、再読込や画面の移動で消えるので、取消はその画面を開いている間に限られる (qa-total-cashflow-decision-013/017)。画面は queryKey ['total-cashflow', 期間 key] 1 本を正本にし、判定・除外・戻す・取消の成功後に ['total-cashflow'] と ['analysis-hub'] を invalidate する (サイドバーの照合バッジと概況の要約を追随させる)。セグメント・区分・フィルタ・検索・選択は画面の状態で持ち API を再取得しない。総合/事業/家計は URL に載せない (期間と同じくタブ内の表示状態)。部分成功は件数で通知し、失敗した項目は選択状態のまま残す。本記録は qa-frontend-web-tc-inference-003 を置き換え (003 は 002 を置き換えていた)、以後 002 と 003 は根拠に使わない。
+(A) 『—』表示で絞らない を選択した。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: アシスタントが 2026-09-15 に、qa-frontend-web-tc-inference-003 の本文を基に、利用者決定 qa-total-cashflow-decision-013/016/017 と推測 qa-backend-web-tc-inference-006 を反映した推測。endpoint の形・操作 id の列の持ち方・409 時の文言・autoMatches の名前は利用者の明示選択ではない。 / 回答時刻: 2026-09-15T13:44:10Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度再評価 FAIL の decision_guidance / matrix_coverage 指摘を受けた追加質問)。各選択肢には利点と欠点を併記して提示した。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T10:09:59Z) で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T10:09:59Z)
 
-#### 裏付け質疑: `qa-backend-web-tc-inference-006`
+#### 裏付け質疑: `qa-target-platforms-trends-001`
 
 **問**
 
-利用者決定 qa-total-cashflow-decision-015 (唯一の候補を除外した明細は集計へ) と -017 (取消は画面を開いている間) を受けて、qa-backend-web-tc-inference-005 の除外後の数え方と取消の規則をどう改めるか。取消の二重送信・古い表示からの取消で利用者が見ていない操作を戻さないために、取消の要求をどう設計するか (005 を置き換える)。
+推移画面サイクルの対象プラットフォームはどれですか? foundation の対象外に『web 以外の platform (専用アプリ)』を含めた案を提示し、承認を求めた。
 
 **答**
 
-一致度 (0〜100 の整数) = 金額 40 (同額・同じ向きのときだけ候補になるので候補は常に 40) + 日付 30/20/10/5/0 (dayGap の絶対値 0/1/2/3/4 以上) + 口座 15/8/0 (一致/片側の情報なし/accountsConflict) + 摘要 15/8/0 (normalizeInstitution と同じ正規化の後に MF content と freee partner が一致/一方が他方を含む/それ以外)。満点は 100。判定作業の 3 区分: 『重複候補』は review のうち候補がちょうど 1 件で理由が『発生日が一致しません』または『取込月と表示日の月が一致しません』のもの (1 対 1 で同じ/別を決められる)。『要確認』は残りの review (候補 0 件・2 件以上・『口座不一致』・『対応する freee 取引が他の明細へ寄せられています』)。『freee除外』は excluded。3 区分の和は review 件数 + excluded 件数に一致する。自動一致の一覧は matched のうち by=auto の組で、自動で寄せる条件は発生日一致かつ金額一致だけなので一致度は 78〜100 の値になり、これを規則どおりそのまま出す (100 に丸めない。qa-total-cashflow-decision-012)。各組に判定状態 (same 記録があれば『同じ』、無ければ『未判定』) を付ける。『同じ取引にする』は same を記録するだけで matched の集合と総額は変わらない。セグメント: 総合=事業+家計 (months の bizIncome+householdIncome=totalIncome 等) の期間合計と月次系列。除外後の数え方: freee 取引を除外すると、その freee 取引は総額から外れ、対応していた MF 明細は公私仕分け (resolveTx) の結果で事業か家計に数える。除外の前後で事業と家計の内訳が入れ替わることがある (qa-total-cashflow-decision-014)。要確認に残る明細のうち、除外を考えずに引いた候補がちょうど 1 件で、その freee 取引が除外されているものは、理由 (月ずれ・発生日不一致・口座不一致・他の明細へ寄せられている) にかかわらず review から出して resolveTx で数える。もともと候補の無い明細と、除外を考えない候補が 2 件以上ある明細は review に残る (qa-total-cashflow-decision-015)。これは core の review 判定 (total-cashflow.ts の review 生成) に 1 条件を足す変更で、除外を集計へ戻すと明細は review へ戻る。前年同期比: core に previousYearPeriod(range) を足し、選択期間の開始月と終了月をそれぞれ 12 か月前へずらした期間を返す (例 2026-04〜2026-06 → 2025-04〜2025-06)。analysis-hub の previousPeriod (直前の同じ長さ) は変えず名前も分ける。前年同期間の全ての月がデータ範囲にあるときだけ前年値を出し、1 か月でも欠ければ null (画面は『比較データなし』)。差額 = 当期 − 前年値、率 = 差額 / |前年値| で前年値が 0 のとき率は null。ラベルは『前年同期』。判定進捗『N件中M件』は表示中区分の対象件数 N と、その中で verdict または除外を記録済みの件数 M。取消: 画面が取り消したい操作の id を送り、その id が kind が undo でなく undone_at が空の書込み操作のうち最新の 1 操作と一致するときだけ、記録した操作前の値へ戻す (一括は 1 操作に複数件)。一致しなければ何も変えず 409 を返す。同じ id の再送・通信の再試行・別タブの古い表示からの送信が、利用者の見ていない 1 つ前の操作を戻さないためである。取消した操作は undone_at を持ち、取消そのものも kind=undo の履歴 1 件 (undoes_id に対象) として残るが、undo の行は次の取消の対象にならないので、画面が自分の操作 id を新しい順に送れば 1 つ前の操作へ遡る。取消のやり直しは無い (qa-total-cashflow-decision-013)。取り消せる範囲はその画面を開いてから行った操作で、画面が保持する操作 id の列で決まる。サーバは古さの上限を持たず、最新の未取消操作との一致だけを見る (qa-total-cashflow-decision-017)。取消後の総収入・総支出・判定件数は操作前と一致する。本記録は qa-backend-web-tc-inference-005 を置き換え (005 は 003 と 004 を置き換えていた)、以後 003・004・005 は根拠に使わない。
+foundation を『この内容で承認』と回答した。対象は web のみ (狭幅は既存 web のレスポンシブ表示で扱う)。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: アシスタントが 2026-09-15 に、qa-backend-web-tc-inference-005 の本文を基に、利用者決定 qa-total-cashflow-decision-015/017 と、完成度評価 (C05) の medium 指摘『取消 API が id を受け取らず二重押下で 1 つ前まで戻る』を反映した推測。packages/core/src/total-cashflow.ts の review 生成 (monthMismatched と blocked の理由は候補数に関係なく review に入り、nearCandidates は除外済みの freee を候補から外す) を読んで条件を決めた。『除外を考えずに引いた候補がちょうど 1 件』という判定方法・409 の条件付き取消・id を送る契約は利用者の明示選択ではない (唯一の候補なら集計へ、取消は画面を開いている間、の 2 点は利用者決定)。 / 回答時刻: 2026-09-15T13:44:10Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-16 に AskUserQuestion で foundation 全体 (scope.out に web 以外を含む) を承認した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。 / 回答時刻: 2026-09-16T09:27:37Z)
 
 ## To-Be / Delta
 
@@ -215,34 +210,44 @@ GET /api/total-cashflow の応答へ追加で summary (total/business/household 
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: /analysis/total-cashflow を 05-total-cashflow.png どおりの構成にする。問いの見出しと説明・データの見方リンク・5 タブ・総合/事業/家計のセグメント・選択中期間と前期の表示・KPI 3 枚 (総収入/総支出/純収支と前期比の額と率)・月次の収入/支出の棒と純収支の折れ線チャート・重複除外の判定作業・freee から除外した明細・自動一致の候補 (日付と金額の一致で自動に寄せた組)・進捗の通知・下部の選択バーを、共通シェル・トークン・Button の上に組む。既存の 9 列月次表は『月次の内訳を表示』で開閉できる検算根拠として残す。
-- **G2**: 重複・除外の判定作業を 3 ペインにする。左に 重複候補/freee除外/要確認 の件数付きナビ、中央にソース/判定フィルタ・検索・チェック選択付きの明細表、右に選択明細の MF 明細と freee 対応候補の並列詳細・一致度・『同じ取引/別の取引/集計から除外』・直前の操作と元に戻す を置き、複数選択と下部の選択バーで一括判定できるようにする。
-- **G5**: 一致度・判定作業の区分・自動一致の候補の扱いを単純で説明可能な規則として docs に明記しテストで固定する。日付と金額が一致する組は既存どおり自動で freee 正本へ寄せ、一覧は確認用で『同じ取引にする』は same 判定の記録だけとし総額を変えない。共通ヘッダー/フッターの文言 (防衛ライン・毎朝バックアップ等) を画像に揃え、サイドバーは支出分析 > 総収支 の現在地と照合の件数バッジが表示されることを確認する。
+- **G1**: /analysis/trends を 07-trends.png どおりの構成にする。期間タブ (1年/2年/3年/任意) と期間表示、問いの見出し『収支は、いつ・なぜ変わりましたか?』と説明、比較条件の帯 (分析の範囲 事業/家計/総合・表示する指標 支出/収入/純収支・比較対象 前期間/前年)、KPI 3 枚 (現在の値・前期間からの増減・最も変化が大きい月)、収支の推移チャート (収入/支出/純収支の今回の折れ線、比較期間の点線、月次差の棒、選択月の強調)、選択月の詳細パネル (収入/支出/純収支/比較期間の値、主な増減要因 上位 3、データの出典、該当明細を開く)、カテゴリ別の推移と増減の表 (12 か月の推移・今回合計・比較期間・増減額・増減率・構成比・寄与度、行を開くと取引先の内訳)、増減の要因のパレート図、増減が大きい項目の上位 3、下部の選択バー (選択中の月とカテゴリ、増減の明細を確認) を、共通シェル・トークン・Button・chart.js の共通設定の上に組む。既存の『手を打つ順番』は『傾向の判定を表示』で開閉できる根拠として下部に残す。
+- **G2**: 推移の指標を登録制にする。指標定義 (id・表示名・月次系列の取り出し方・符号と良し悪しの向き・内訳の軸) を packages/core に置き、今回は収入・支出・純収支の 3 指標を登録する。画面・API・表は指標定義から描き、指標を足すときに画面と API の分岐を増やさない。
+- **G4**: 推移から根拠の明細へ辿れるようにする。MF 由来の行の『該当明細を開く』『増減の明細を確認』は /classify へ月・範囲に加えてカテゴリと取引先 (専用の payee クエリ、明細の内容と完全一致、名寄せなし) の絞込クエリを渡して開き、明細画面はその絞込で表示する。freee 由来の行は MF 明細の画面に無いため、全体の期間選択を保ったまま総収支画面 (/analysis/total-cashflow) を開く。期間タブは全体の期間選択 (usePeriod) を操作し、範囲・指標・比較対象・選択月・選択カテゴリは URL に保持して再読込と共有で同じ表示に戻る。URL の値が形式違反なら既定値へ倒して画面を出す。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | 総収支タブが画像の全ブロックを描画する。 | DOM テストで見出し・5 タブ・セグメント・期間表示・KPI 3 枚・チャート・判定作業・freee 除外一覧・自動一致の候補・選択バーが描画され、月次表は開閉で表示される。 |
-| O2 | セグメント切替で KPI とチャートが事業/家計/総合の値に切り替わり、前期比が額と率で出る。 | core テストで総合=事業+家計が期間合計・月次系列の双方で成り立ち、前期比が境界値 (前期 0・前期データ無し) 付きで検証される。 |
-| O3 | 3 ペインの判定作業で単票・一括の同じ/別/除外ができる。 | DOM テストで区分切替・フィルタ・検索・選択・右詳細・一括判定が動き、API 統合テストで判定後の総額が不変条件どおりになる。 |
-| O5 | 規則が docs とテストで固定され、既存の検査が緑のままである。 | 一致度・区分・自動一致の規則が docs に記載され、pnpm test / typecheck / lint と packages/web の check 系スクリプトが全て緑である。 |
+| O1 | 推移タブが画像の全ブロックを描画する。 | DOM テストで期間タブ・見出し・比較条件の帯・KPI 3 枚・推移チャート・詳細パネル・カテゴリ表と展開行・パレート図・上位 3・選択バーが描画され、傾向の判定は開閉で表示される。headless Chrome の視覚検査で推移の図が期待どおりの枚数描画される。要確認の明細がある期間では帯に件数と金額の注記と総収支へのリンクが出て、傾向の判定の見出しに基準 (MF の明細だけ) が表示される。 |
+| O2 | 範囲・指標・比較対象の切替で KPI・チャート・表・パレートが同じ条件の値に切り替わる。 | core テストで 3 指標×3 範囲×2 比較対象の組合せについて、総合=事業+家計、純収支=収入-支出、カテゴリ行の今回合計の和=指標の期間合計、寄与度の和=100% (増減 0 を除く) が成り立つ。 |
+| O3 | 指標の追加が定義 1 件の追加で済む。 | テスト用の指標定義を 1 件登録するだけで API の返却とチャートの系列に現れることを core と DOM のテストで確認する。 |
+| O4 | 選択した月・カテゴリ・取引先から絞り込んだ明細へ遷移できる。 | DOM テストで MF 由来の行の遷移先 URL (/classify の month・cls・category・payee) が正しく、/classify がそのクエリで該当明細だけを表示する。freee 由来の行は /analysis/total-cashflow へ遷移する。URL の条件から推移の表示が復元され、形式違反の値は既定値で表示される。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: 総収支タブの上部に問いの見出し『家計と事業を合わせた、本当の収支はいくらですか?』と説明、データの見方リンク、総合/事業/家計のセグメント、選択中の期間と前期の表示を置く。
-- **I2**: KPI 3 枚 (総収入/総支出/純収支) に期間合計と前期比の額・率を出し、前期データが無ければ『比較データなし』と表示する。
-- **I3**: 月次の収入・支出の棒と純収支の折れ線をチャート系列色で描き、凡例と金額軸 (万円) を付け、セグメントに追随させる。
-- **I4**: 判定作業の左ナビに 重複候補/freee除外/要確認 の件数を出し、中央表にソース/判定フィルタ・検索・チェック選択、右に MF 明細と freee 対応候補の並列詳細・一致度・同じ取引/別の取引/集計から除外 を置く。
-- **I5**: freee から除外した明細一覧に理由区分バッジ・メモ・集計へ戻す・全選択/選択クリア/一括で理由を設定 を置く。
-- **I6**: 自動一致の候補 (日付と金額の一致で自動に寄せた組) 一覧にソースフィルタ・全選択・一致度・『選択した取引を同じ取引にする』を置き、確定は same の記録だけで総額を変えない。
-- **I7**: 複数選択時に下部固定の選択バー (件数・選択をクリア・選択した取引を同じ取引にする) を出し、判定完了で『N件中M件の判定が完了しました』を通知する。
-- **I10**: 一致度 (金額・日付差・口座・摘要の各要素から算出)、判定作業の 3 区分、自動一致の扱いを docs に書き、境界値テストで固定する。
-- **I11**: 共通ヘッダー/フッターの文言を画像に揃え、サイドバーの支出分析 > 総収支 の現在地と照合バッジを DOM テストで確認する。
+- **I1**: 推移タブの上部に期間タブ (1年/2年/3年/任意) と期間表示を置き、全体の期間選択と同期させる。
+- **I2**: 問いの見出しの下に、分析の範囲・表示する指標・比較対象の 3 つの切替を 1 本の帯にまとめて置く。帯の末尾に、期間内に要確認の明細があれば『要確認 N 件 (計 X 円) は含みません』と総収支画面を開くリンクを出す。
+- **I3**: KPI 3 枚: 現在の値 (期間合計)、前期間 (または前年) からの増減の額と率、最も変化が大きい月とその増減と主な要因の一文。KPI の値は要確認の明細を含まない値である (帯の注記と対応する)。
+- **I4**: 推移チャート: 収入・支出・純収支の今回の折れ線と、選んだ指標の比較期間の点線、月次差の棒、選択月の縦帯。月をクリックで選択月を変える。
+- **I5**: 詳細パネル: 選択月の収入・支出・純収支と比較期間の値、主な増減要因 上位 3 (カテゴリ・増減額・説明文)、データの出典 (口座名と件数)、該当明細を開くボタン。選択月に要確認の明細があればその件数と金額も出す。freee 由来の行で口座が空のものは口座名を『—』と表示し、口座別の件数には数えない。
+- **I6**: カテゴリ別の推移と増減の表: 12 か月のスパークライン・今回合計・比較期間・増減額・増減率・構成比・寄与度。行を開くと取引先別の同じ列の内訳を出す。
+- **I7**: 増減の要因のパレート図 (増減額の棒と累計構成比の折れ線) と、増減が大きい項目の上位 3 のカード。
+- **I8**: 下部の選択バー: 選択中の月とカテゴリ (取引先) と増減額・率を出し、『増減の明細を確認』で絞込済みの明細へ遷移する。
+- **I9**: 指標定義の登録制: 収入・支出・純収支を定義として登録し、API はクエリの指標 id で定義を引く。
+- **I10**: /classify にカテゴリ・取引先の絞込クエリを追加する。
+- **I11**: 既存の『手を打つ順番』と傾向判定を『傾向の判定を表示』の開閉に移す。開閉部分の見出しに『MF の明細だけで判定』と基準を明記し、上半分の数字 (総収支と同じ取引集合) との違いを示す。
 
 ### 本章に効く確定意思決定
 
-- (本章ゴールに効く確定 decision なし)
+- **dec-trends-datasource-001**: 推移の数値をどの取引集合から数えるか (総収支と同じ freee+MF の消し込み後か、MF 明細だけか)
+  - 採択: 総収支と同じ取引集合 (totalCashflowReport) (`opt-total-cashflow`)
+  - 目的適合: G3 の『概況・総収支と一致する値』を満たし、事業費・事業収入を freee 側から数えるため事業の推移が会計と合う。
+- **dec-trends-review-rows-001**: 推移の数値に要確認の MF 明細をどう扱うか (含めず件数を表示するか、公私仕分けで仮に数えるか)
+  - 採択: 含めず件数と金額を注記する (`opt-exclude-with-note`)
+  - 目的適合: G3 の『総収支と一致する値』を保ったまま、G1 の画面上で欠けている量を見せられる。
+- **dec-trends-judgement-source-001**: 開閉で残す傾向の判定を MF 明細のまま計算するか、総収支と同じ取引集合へ移すか
+  - 採択: MF 明細のまま計算し、基準を見出しに明記する (`opt-keep-mf-with-label`)
+  - 目的適合: C4 (既存の傾向判定の値とテストを壊さない) を満たし、G5 の規則の固定も既存テストで続けられる。
 
 ## 適用された設計知識
 
@@ -250,9 +255,9 @@ GET /api/total-cashflow の応答へ追加で summary (total/business/household 
 
 ### 本章での適用
 
-Clean Architecture card の依存方向を、web が総収支の規則を持たない構成に適用した。KPI・前期比・3 区分・一致度・進捗は API の結果を表示するだけで画面側で再計算しない。画面が持つのはセグメント・区分・フィルタ・検索・選択といった表示状態と、その画面で成功した書込みの操作 id の列だけで、これらを切り替えても API を再取得しない (qa-frontend-web-tc-inference-004 / qa-backend-web-tc-inference-006)。書込みの成功後は ['total-cashflow'] と ['analysis-hub'] を invalidate し、サイドバーの照合バッジと概況の要約を同じ取得経路で追随させる。ヘッダー『防衛ライン』とフッター『毎朝バックアップ』は Layout の文言だけを差し替え、サイドバーは現在地とバッジの確認に留める (qa-total-cashflow-decision-010/011)。
+Clean Architecture の境界を、画面が数値を計算しないことで適用した。Trends.tsx は API の返却値を描くだけで、総合=事業+家計の足し算もしない。Information Design は遷移先の出し分け (MF 行は /classify、freee 行は総収支) とスパークラインを 12 か月に揃える規則として、部品ではなく行の種別と表示規則に落とした。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-15T13:44:10Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-16T09:55:39Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -346,4 +351,6 @@ Clean Architecture card の依存方向を、web が総収支の規則を持た�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| tanstack-query-invalidation | 5.102.8 | TanStack (tanstack.com) | https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations | 2026-09-15T12:11:33Z | 2026-09-15T12:11:33Z |
+| chartjs-mixed-chart | 2025-10-13 | Chart.js (www.chartjs.org) | https://www.chartjs.org/docs/latest/charts/mixed.html | 2026-09-16T09:31:19Z | 2026-09-16T09:31:19Z |
+| react-router-use-search-params | 8.4.0 | Remix Software (React Router) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-16T09:31:19Z | 2026-09-16T09:31:19Z |
+| tanstack-query-keys | 5 | TanStack (tanstack.com) | https://tanstack.com/query/latest/docs/framework/react/guides/query-keys | 2026-09-16T09:31:19Z | 2026-09-16T09:31:19Z |

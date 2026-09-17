@@ -7,14 +7,12 @@
  * 集計は `@kanjo/core` の analysisHub に委譲し、ここでは読み込みと受け渡しだけを行う。
  * 前期間比は期間で切ったあとのデータでは出せないので、切る前の `all` を渡す。
  */
-import { type FreeeExclusion, analysisHub } from '@kanjo/core';
-import { eq } from 'drizzle-orm';
+import { analysisHub } from '@kanjo/core';
 import { Hono } from 'hono';
 import type { AuthEnv } from '../auth.js';
-import * as s from '../db/schema.js';
-import { dealFromRow, getDb } from '../store.js';
+import { loadCashflowSources } from '../cashflow-sources.js';
+import { getDb } from '../store.js';
 import { loadScoped } from './analytics.js';
-import { bindDuplicateVerdicts, bindMfExclusions } from './duplicate-verdict-bindings.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
@@ -25,24 +23,20 @@ analysisHubRoute.get('/analysis/hub', async (c) => {
   const db = getDb(c.env.DB);
   const { all, period } = await loadScoped(c);
 
-  const [dealRows, verdictRows, exclusionRows, mfExclusionRows] = await Promise.all([
-    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
-    db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
-    db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),
-    db.select().from(s.mfTxExclusions).where(eq(s.mfTxExclusions.userId, userId)),
-  ]);
-  const exclusions: FreeeExclusion[] = exclusionRows.map((row) => ({
-    freeeKey: row.freeeKey,
-    reason: row.reason,
-  }));
+  const {
+    deals,
+    verdicts,
+    freeeExclusions: exclusions,
+    mfExclusions,
+  } = await loadCashflowSources(db, userId, all.mfTx);
 
   const report = analysisHub({
     all,
     range: period.applied,
-    deals: dealRows.map(dealFromRow),
-    verdicts: bindDuplicateVerdicts(verdictRows, all.mfTx),
+    deals,
+    verdicts,
     exclusions,
-    mfExclusions: bindMfExclusions(mfExclusionRows, all.mfTx),
+    mfExclusions,
   });
   return c.json({ period, ...report });
 });

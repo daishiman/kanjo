@@ -23,4 +23,8 @@ export const ANALYSIS_TAB_QUESTIONS: Partial<
     lead: '家計と事業の収入・支出を月次で確認し、重複や除外を調整した実質的な収支を把握しましょう。',
     guideSummary: 'データの見方',
   },
+  trends: {
+    question: '収支は、いつ・なぜ変わりましたか？',
+    lead: '収入・支出・純収支の時系列の変化から、増減のタイミングや要因を把握しましょう。',
+  },
 };

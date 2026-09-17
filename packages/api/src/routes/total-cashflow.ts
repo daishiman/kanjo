@@ -9,7 +9,6 @@ import { zValidator } from '@hono/zod-validator';
 import {
   EXCLUSION_MEMO_MAX,
   EXCLUSION_REASON_CODES,
-  type FreeeExclusion,
   type ReconcileReview,
   STABLE_KEY_VERSION,
   fullRange,
@@ -20,11 +19,11 @@ import { and, eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
+import { loadCashflowSources } from '../cashflow-sources.js';
 import { D1_MAX_BOUND_PARAMS } from '../d1-limits.js';
 import * as s from '../db/schema.js';
-import { dealFromRow, getDb } from '../store.js';
+import { getDb } from '../store.js';
 import { loadScoped } from './analytics.js';
-import { bindDuplicateVerdicts, bindMfExclusions } from './duplicate-verdict-bindings.js';
 import {
   type ExclusionOpItem,
   UndoRejected,
@@ -37,14 +36,6 @@ import {
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 
 export const totalCashflowRoute = new Hono<Ctx>();
-
-/** 除外行から core が要る形へ。reason は表示用、reasonCode は集計用 (0041) */
-const toExclusion = (row: typeof s.freeeDealExclusions.$inferSelect): FreeeExclusion => ({
-  freeeKey: row.freeeKey,
-  reason: row.reason,
-  reasonCode: row.reasonCode ?? undefined,
-  memo: row.memo ?? undefined,
-});
 
 /**
  * 要確認1件を画面の形へ。
@@ -73,19 +64,14 @@ totalCashflowRoute.get('/total-cashflow', async (c) => {
   const db = getDb(c.env.DB);
   const { all, period } = await loadScoped(c);
 
-  const [dealRows, verdictRows, exclusionRows, lastOperation, mfExclusionRows] = await Promise.all([
-    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
-    db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
-    db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),
+  const [sources, lastOperation] = await Promise.all([
+    loadCashflowSources(db, userId, all.mfTx),
     latestUndoable(db, userId),
-    db.select().from(s.mfTxExclusions).where(eq(s.mfTxExclusions.userId, userId)),
   ]);
-  const deals = dealRows.map(dealFromRow);
-  const verdicts = bindDuplicateVerdicts(verdictRows, all.mfTx);
-  const exclusions = exclusionRows.map(toExclusion);
+  const { deals, verdicts, freeeExclusions: exclusions, mfExclusions } = sources;
 
   // 照合画面 (0041) で外した MF 明細は要確認から外す (総額には残る)。照合・ハブ・概況と件数を揃える
-  const mfExcludedTxIds = bindMfExclusions(mfExclusionRows, all.mfTx).map((row) => row.txId);
+  const mfExcludedTxIds = mfExclusions.map((row) => row.txId);
 
   // 期間の指定が無ければデータ全体。取込前で1か月も無いときだけ range が null になる
   const range = period.applied ?? fullRange(all);

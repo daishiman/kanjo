@@ -694,7 +694,44 @@ export function totalCashflowReport(
   };
 }
 
-function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileResult): TotalCashflowMonth[] {
+/**
+ * 総収支の判定 (消し込み・除外・要確認) を通った 1 行。推移画面はこの行集合から数える。
+ *
+ * 総収支の月次値もこの行集合の和として作る。推移画面が別の選別を持つと、同じ月の支出が
+ * 総収支と推移で食い違い、どちらが正しいかを利用者が決められなくなる。
+ */
+export interface TrendSourceRow {
+  month: string;
+  side: 'business' | 'household';
+  io: 'income' | 'expense';
+  /** freee は勘定科目、MF は解決後の大項目 */
+  category: string;
+  /** freee は取引先、MF は明細の内容 (名寄せしない) */
+  payee: string;
+  /** 正の額。収入か支出かは io が持つ */
+  amount: number;
+  origin: 'mf' | 'freee';
+  /** MF は保有金融機関、freee は決済口座。空なら null (口座別の件数に数えない) */
+  account: string | null;
+  txId?: string;
+}
+
+/** freee の取引先が空の行に出す語。空文字のままだと表で行が読めない */
+export const TREND_PAYEE_UNKNOWN = '(取引先なし)';
+
+export interface TotalCashflowLedger {
+  months: string[];
+  rows: TrendSourceRow[];
+  /** 月ごとの自動付替 (freee と突合済みの MF) と要確認の明細 */
+  shifted: MfTx[];
+  review: MfTx[];
+}
+
+function ledgerFrom(
+  data: Dataset,
+  deals: readonly FreeeDeal[],
+  result: ReconcileResult,
+): TotalCashflowLedger {
   const shiftedMf = new Set(result.matched.map((m) => m.mfTxId));
   const txById = new Map(data.mfTx.map((tx) => [tx.id, tx]));
 
@@ -705,66 +742,112 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
   const counted = data.mfTx.filter(
     (tx) => !isCashTxId(tx.id) && isMfCountable(tx) && tx.splitProjection == null,
   );
-
-  // 事業か家計かは公私仕分けと同じ resolveTx に聞く。月ループの内側で解くと
-  // 明細数 x 月数になるため、ここで一度だけ畳む。
-  const resolvedById = new Map(
-    counted.map((tx) => [tx.id, resolveTx(tx, data.rules, data.edits, data.institutionOwners)]),
-  );
   // 要確認は判断が付いていない。事業にも家計にも、収入にも支出にも入れない
   const reviewMf = new Set(result.review.map((r) => r.mfTxId));
-
   // 二重登録として外した freee 取引は、事業費にも事業収入にも入れない
   const excludedIndexes = new Set(result.excluded.map((row) => row.freeeIndex));
-  const rows = months.map((month) => {
-    const monthDeals = deals.filter(
-      (deal, freeeIndex) => deal.month === month && deal.amount > 0 && !excludedIndexes.has(freeeIndex),
-    );
-    const freeeBizExpense = monthDeals
-      .filter((deal) => deal.io === 'expense')
-      .reduce((sum, deal) => sum + deal.amount, 0);
-    const freeeIncome = monthDeals
-      .filter((deal) => deal.io === 'income')
-      .reduce((sum, deal) => sum + deal.amount, 0);
+
+  // freee を先に並べる。支出内訳のキーの並び (freee の科目 → MF の大項目) を従来と変えないため
+  const rows: TrendSourceRow[] = [];
+  deals.forEach((deal, freeeIndex) => {
+    if (deal.amount <= 0 || excludedIndexes.has(freeeIndex)) return;
+    rows.push({
+      month: deal.month,
+      side: 'business',
+      io: deal.io,
+      category: deal.accountNorm || deal.accountRaw || 'その他',
+      payee: deal.partner || TREND_PAYEE_UNKNOWN,
+      amount: deal.amount,
+      origin: 'freee',
+      account: deal.settleAccount || null,
+    });
+  });
+  for (const tx of counted) {
+    // freee と突合済みの分は freee を正として数えているので、MF 側から積み増さない
+    if (shiftedMf.has(tx.id) || reviewMf.has(tx.id) || tx.a === 0) continue;
+    // 事業か家計かは公私仕分けと同じ resolveTx に聞く。判定式は 1 本だけにする
+    const resolved = resolveTx(tx, data.rules, data.edits, data.institutionOwners);
+    rows.push({
+      month: tx.m,
+      side: resolved.cls === 'biz' ? 'business' : 'household',
+      io: tx.a < 0 ? 'expense' : 'income',
+      category: resolved.big || tx.big || 'その他',
+      payee: tx.c,
+      amount: Math.abs(tx.a),
+      origin: 'mf',
+      account: tx.inst || null,
+      txId: tx.id,
+    });
+  }
+
+  const pick = (ids: readonly string[]): MfTx[] =>
+    ids.map((id) => txById.get(id)).filter((tx): tx is MfTx => tx != null);
+  return {
+    months,
+    rows,
+    shifted: pick(result.matched.map((m) => m.mfTxId)),
+    review: pick(result.review.map((r) => r.mfTxId)),
+  };
+}
+
+/**
+ * 総収支と同じ判定を通った行集合を返す。消し込みは 1 回だけ行う。
+ *
+ * `review` は同じ消し込みの要確認で、推移画面は件数と金額だけを使う (数値には含めない)。
+ */
+export function totalCashflowLedger(
+  data: Dataset,
+  deals: readonly FreeeDeal[] = [],
+  verdicts: readonly DuplicateVerdict[] = [],
+  exclusions: readonly FreeeExclusion[] = [],
+  mfExcludedTxIds: readonly string[] = [],
+): { ledger: TotalCashflowLedger; months: TotalCashflowMonth[] } {
+  const result = reconcileBizDuplicates(data, deals, verdicts, exclusions, mfExcludedTxIds);
+  const ledger = ledgerFrom(data, deals, result);
+  return { ledger, months: monthsFromLedger(ledger) };
+}
+
+function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileResult): TotalCashflowMonth[] {
+  return monthsFromLedger(ledgerFrom(data, deals, result));
+}
+
+function monthsFromLedger(ledger: TotalCashflowLedger): TotalCashflowMonth[] {
+  const sumAbs = (rows: MfTx[]) => rows.reduce((sum, tx) => sum + Math.abs(tx.a), 0);
+  const rows = ledger.months.map((month) => {
+    let freeeBizExpense = 0;
+    let freeeIncome = 0;
+    let mfBizExpense = 0;
+    let householdExpense = 0;
+    let mfBizIncome = 0;
+    let householdIncome = 0;
+    // 総支出と同じ選別済み集合から内訳を作る。元Datasetの月次カテゴリを別に足すと、
+    // 消し込み・要確認・除外が内訳だけへ反映されず、KPIと支出内訳が食い違う。
+    const expenseCategories: Record<string, number> = {};
+    for (const row of ledger.rows) {
+      if (row.month !== month) continue;
+      const biz = row.side === 'business';
+      if (row.io === 'expense') {
+        const label =
+          row.origin === 'freee' ? `事業 / ${row.category}` : `${biz ? '事業' : '家計'} / ${row.category}`;
+        expenseCategories[label] = (expenseCategories[label] ?? 0) + row.amount;
+      }
+      if (row.origin === 'freee') {
+        if (row.io === 'expense') freeeBizExpense += row.amount;
+        else freeeIncome += row.amount;
+      } else if (row.io === 'expense') {
+        if (biz) mfBizExpense += row.amount;
+        else householdExpense += row.amount;
+      } else if (biz) mfBizIncome += row.amount;
+      else householdIncome += row.amount;
+    }
 
     // 件数と金額は同じ集合から出す。別々に数えると片方だけが実数とずれても気づけない
-    const shiftedInMonth = result.matched
-      .map((m) => txById.get(m.mfTxId))
-      .filter((tx): tx is MfTx => tx != null && tx.m === month);
-
-    // 件数と金額を同じ集合から出すため、要確認の明細をここで一度だけ確定させる
-    const reviewInMonth = result.review
-      .map((r) => txById.get(r.mfTxId))
-      .filter((tx): tx is MfTx => tx != null && tx.m === month);
-
-    const leftover = counted.filter((tx) => tx.m === month && !shiftedMf.has(tx.id) && !reviewMf.has(tx.id));
-    const sumAbs = (rows: MfTx[]) => rows.reduce((sum, tx) => sum + Math.abs(tx.a), 0);
-    const isBiz = (tx: MfTx) => resolvedById.get(tx.id)?.cls === 'biz';
-    // freee と突合済みの分は freee を正として数えているので、MF 側から積み増さない
-    const mfBizExpense = sumAbs(leftover.filter((tx) => tx.a < 0 && isBiz(tx)));
-    const householdExpense = sumAbs(leftover.filter((tx) => tx.a < 0 && !isBiz(tx)));
-    const mfBizIncome = sumAbs(leftover.filter((tx) => tx.a > 0 && isBiz(tx)));
-    const householdIncome = sumAbs(leftover.filter((tx) => tx.a > 0 && !isBiz(tx)));
+    const shiftedInMonth = ledger.shifted.filter((tx) => tx.m === month);
+    const reviewInMonth = ledger.review.filter((tx) => tx.m === month);
 
     const bizIncome = freeeIncome + mfBizIncome;
     const totalExpense = freeeBizExpense + mfBizExpense + householdExpense;
     const totalIncome = bizIncome + householdIncome;
-    // 総支出と同じ選別済み集合から内訳を作る。元Datasetの月次カテゴリを別に足すと、
-    // 消し込み・要確認・除外が内訳だけへ反映されず、KPIと支出内訳が食い違う。
-    const expenseCategories: Record<string, number> = {};
-    const addExpenseCategory = (label: string, amount: number): void => {
-      expenseCategories[label] = (expenseCategories[label] ?? 0) + amount;
-    };
-    for (const deal of monthDeals) {
-      if (deal.io !== 'expense') continue;
-      addExpenseCategory(`事業 / ${deal.accountNorm || deal.accountRaw || 'その他'}`, deal.amount);
-    }
-    for (const tx of leftover) {
-      if (tx.a >= 0) continue;
-      const resolved = resolvedById.get(tx.id);
-      const side = resolved?.cls === 'biz' ? '事業' : '家計';
-      addExpenseCategory(`${side} / ${resolved?.big || tx.big || 'その他'}`, Math.abs(tx.a));
-    }
 
     return {
       month,
@@ -777,7 +860,7 @@ function rowsFrom(data: Dataset, deals: readonly FreeeDeal[], result: ReconcileR
       householdIncome,
       expenseCategories,
       shiftedCount: shiftedInMonth.length,
-      shiftedAmount: shiftedInMonth.reduce((sum, tx) => sum + Math.abs(tx.a), 0),
+      shiftedAmount: sumAbs(shiftedInMonth),
       reviewCount: reviewInMonth.length,
       reviewAmount: sumAbs(reviewInMonth),
       trend: '判定不可' as TrendDirection,

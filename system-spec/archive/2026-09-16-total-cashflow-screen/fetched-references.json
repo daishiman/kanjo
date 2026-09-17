@@ -1,0 +1,74 @@
+{
+  "references": [
+    {
+      "target_id": "hono-zod-validator",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://hono.dev/docs/guides/validation",
+      "official_publisher": "Hono",
+      "official_host": "hono.dev",
+      "version": "0.9.1",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "Hono 公式の Validation ガイド。@hono/zod-validator の zValidator('json' 等, zod スキーマ) を route に挟み、handler では c.req.valid(...) で検証済みの値だけを読む。総収支の除外 API の reasonCode 許可リスト・memo 長さ・items 件数上限をこの形で route の入口に置く根拠。ページは検証失敗時の既定応答や hook の詳細を記載していないため、失敗時の 400 応答は既存 route の実装に合わせる。version は 2026-09-15T12:11Z に npm registry の @hono/zod-validator latest が 0.9.1 (peer: hono>=4.11.2, zod ^3.25.0||^4.0.0) であることを確認した値。kanjo は ^0.4.2 と zod ^3.24.1 のままで、今回のサイクルでは版を上げない。"
+    },
+    {
+      "target_id": "cloudflare-d1-batch",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://developers.cloudflare.com/d1/worker-api/d1-database/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-22",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "D1 Worker API の D1Database。batch() は原文で \"Batched statements are SQL transactions. If a statement in the sequence fails, then an error is returned for that specific statement, and it aborts or rolls back the entire sequence.\"。判定・除外の更新と操作履歴 1 行を同じ batch に入れ、片方だけ残る状態を作らない設計 (qa-database-web-tc-inference-002) の根拠。"
+    },
+    {
+      "target_id": "cloudflare-d1-limits",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "D1 の上限。1 クエリの bind パラメータは最大 100、SQL 文長は最大 100KB、1 Worker 呼出しのクエリ数は Paid 1000 / Free 50、1 クエリの実行時間は最大 30 秒、行・文字列・BLOB は最大 2MB。一括操作 (最大 200 件) の書込みを bind 100 以内の文に分割すること、操作履歴の items_json を 1 行 2MB 未満に収めることの根拠。"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-08",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "D1 migrations。各 migration は migrations フォルダの .sql ファイルで、適用済みのものはデータベースの d1_migrations テーブルに記録され、wrangler d1 migrations apply が未適用分を実行する。ページは失敗時の自動ロールバックを明記していないため、0041 は追加だけの列・テーブルと既存行の移行 UPDATE に留め、既存の feat-deploy-migration-gate で本番 Worker より先に適用する方針の根拠とする。"
+    },
+    {
+      "target_id": "tanstack-query-invalidation",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations",
+      "official_publisher": "TanStack",
+      "official_host": "tanstack.com",
+      "version": "5.102.8",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "TanStack Query の Invalidations from Mutations。mutation の onSuccess で queryClient.invalidateQueries({ queryKey }) を呼び、複数のキーは Promise.all で並べて無効化し、Promise を返すと再取得の完了まで mutation の完了を待たせられる。判定・除外・集計へ戻す・取消の成功後に ['total-cashflow'] と ['analysis-hub'] を無効化してサイドバーのバッジと概況を追随させる根拠 (qa-frontend-web-tc-inference-002)。version は 2026-09-15T12:11Z に npm registry の @tanstack/react-query latest を確認した値。"
+    },
+    {
+      "target_id": "wcag22-use-of-color",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
+      "official_publisher": "W3C WAI",
+      "official_host": "www.w3.org",
+      "last_updated": "2025-09-16",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "WCAG 2.2 SC 1.4.1 Use of Color。原文 \"Color is not used as the only visual means of conveying information, indicating an action, prompting a response, or distinguishing a visual element.\"。前期比の増減を額・率・矢印でも示すこと、判定状態 (未判定/同じ/別/除外) と除外理由を文字バッジにすること、一致度を % の数値でも出すことの根拠 (qa-ui-ux-web-tc-inference-002)。"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-15T12:11:33Z",
+      "source_url": "https://owasp.github.io/www-project-application-security-verification-standard",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "owasp.github.io",
+      "version": "5.0.0",
+      "latest_checked_at": "2026-09-15T12:11:33Z",
+      "summary": "OWASP ASVS のプロジェクトページ。最新の安定版は 5.0.0 (2025-05-30 リリース)。doctrine registry が security concern の authority とする検証標準で、総収支の書込み API で入力を許可リスト (reasonCode 5 値)・長さ (memo 200 字)・件数 (200 件) で検証し、メモと摘要を HTML として解釈させない方針の上流根拠。owasp.org のページは 2026-09-15 時点で owasp.github.io へ 307 で転送されるため、転送先を参照元とした。"
+    }
+  ]
+}

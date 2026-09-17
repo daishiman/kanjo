@@ -1437,7 +1437,7 @@
         "imported_at": "2026-09-15T14:50:54Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "0533374f8a891a9c97862dfd8e1032d7a6f3031a9c35943fe6f05df77b35c089",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1460,7 +1460,7 @@
         "imported_at": "2026-09-15T14:50:54Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "f6ac44f0de3cd3a14d0c91273e9de3754b1ac63771f69e874422ea1e03d8504a",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1483,7 +1483,7 @@
         "imported_at": "2026-09-15T14:50:54Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "ade57808041002ca585aa08c609e6ba85dc2877a2fbd7e44142561cc27dd05f2",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1506,7 +1506,7 @@
         "imported_at": "2026-09-15T14:50:54Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "2ba109121f739e297f4606d918907edb59a493251a44ecf42584ba6042598649",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1529,7 +1529,7 @@
         "imported_at": "2026-09-15T14:50:54Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "832fa24c5786fc67f6381934b8f4658931250559581dc00dc4b0acdfc89e366b",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1552,7 +1552,7 @@
         "imported_at": "2026-09-15T14:50:54Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "c4eb8060c3032682c7822530ec9b4c39ed98dc8b67743db477681a8e0f56e9b3",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1575,7 +1575,7 @@
         "imported_at": "2026-09-15T14:50:54Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "4118eb0594d7db66724df96bb1c75d090a4f2578788d871f22bba750b0f5d399",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1598,7 +1598,7 @@
         "imported_at": "2026-09-15T14:50:54Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "5b14f0bb88713c5578abf9aea6d803f4aa8f9618d5bdfd3a3c4c71571750aef7",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1773,6 +1773,190 @@
         "source_version": "0.1.14"
       },
       "referenced_by": []
+    },
+    {
+      "id": "arch-trends-screen-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "推移画面 — 画面構成と情報の優先順位",
+      "file_path": "architecture/trends-screen-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-17T02:03:18Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0ebc698a6b757392361698fe279d162dcf02f658f2ed9825df3e57f08bd721e0",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-trends-screen"
+      ]
+    },
+    {
+      "id": "arch-trends-screen-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "推移画面 — React 画面・URL 状態・明細画面の絞込",
+      "file_path": "architecture/trends-screen-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-17T02:03:18Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0249499f3e5b25eb33e3f2c226f645c5d11b3ae389e7e006e4773ba4dc3db2a8",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-trends-screen"
+      ]
+    },
+    {
+      "id": "arch-trends-screen-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "推移画面 — core の指標定義・推移集計と GET /api/trends の拡張",
+      "file_path": "architecture/trends-screen-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T10:18:41Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "169f10287b73a085df6421db8008b8220f23bc5f54ecddbb6c0596d4ef28f4e1",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-trends-screen"
+      ]
+    },
+    {
+      "id": "arch-trends-screen-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "推移画面 — 既存 Dataset からの導出 (スキーマ変更なし)",
+      "file_path": "architecture/trends-screen-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T10:18:41Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "23c099c1af644a519c10d6769fa6baa464663b7f6e69333ccbd8284bd7699d59",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-trends-screen"
+      ]
+    },
+    {
+      "id": "arch-trends-screen-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "推移画面 — 既存の認証の内側での読取り",
+      "file_path": "architecture/trends-screen-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T10:18:41Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "7339496e4012a9e647a95c39cecedb1b236b45a8a7dc10518f39c5f011370aa5",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-trends-screen"
+      ]
+    },
+    {
+      "id": "arch-trends-screen-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "推移画面 — クエリの検証と出力の安全",
+      "file_path": "architecture/trends-screen-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T10:18:41Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "86e202cbbe0cfebf5e1eb0c4a89dc7c5c2d2cc1a104eeb70b23d9f3991c32b5e",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-trends-screen"
+      ]
+    },
+    {
+      "id": "arch-trends-screen-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "推移画面 — 実行環境とデプロイ (変更なし)",
+      "file_path": "architecture/trends-screen-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T10:18:41Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8a3c7ee5afbbb20f6044167c1ff0ff7dd1daa86713665a6d827b5ebd2b918362",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-trends-screen"
+      ]
+    },
+    {
+      "id": "arch-trends-screen-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "推移画面 — 規則の文書化と検証の運用",
+      "file_path": "architecture/trends-screen-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T10:18:41Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "3c906ccdb9d21f270fdda80194bab35a91d2140e5e46ea119c92798dd2e63aea",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-trends-screen"
+      ]
     }
   ]
 }

@@ -1465,6 +1465,7 @@ table.data thead th:has(> .th-sort) {
   align-items: center;
   gap: 4px;
   width: 100%;
+  min-height: var(--tap-target-min);
   padding: 8px 10px;
   border: 0;
   background: none;
@@ -5219,6 +5220,11 @@ label.check {
    積み重ねを列ごとに揃える(高さがずれると、同じ金額かを目で追えなくなる)。 */
 .tcf-review-table td {
   vertical-align: top;
+}
+
+.total-cashflow-linked-month {
+  display: block;
+  margin-bottom: var(--space-3);
 }
 .tcf-line {
   line-height: 1.7;
