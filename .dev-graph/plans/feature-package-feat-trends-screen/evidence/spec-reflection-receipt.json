@@ -1,0 +1,211 @@
+{
+  "graph_node_id": "SYS-TRENDS-P12",
+  "title": "仕様・設計への反映の受領書",
+  "recorded_at": "2026-09-17T02:25:24Z",
+  "verdict": "impact_present_and_reflected",
+  "judgement": "本変更は推移画面の情報階層・指標の登録制・GET /api/trends の応答・/classify の絞込を変えるため仕様・設計に影響がある。計画時の確定分は正規フロー (system-spec-harness → dev-graph register-package) で反映済み。最終レビューで、実装中に確定した FR13 (保存値が無い初回期間は直近1年) とカテゴリ表8列の並べ替え・表の並べ替え部品の共通化が仕様章の確定内容に無いと判明したため、R4-reopen で ui-ux/web・frontend/web を再確定し、章の再生成・graph の再打刻・下流文書の追従まで行った。DB スキーマ・migration・secret の変更は無い (migration は 0042 のまま)。",
+  "flow": [
+    {
+      "step": 1,
+      "channel": "system-spec-harness",
+      "skills": [
+        "run-system-spec-elicit",
+        "run-system-spec-compile"
+      ],
+      "result": "推移画面サイクルの foundation と 10 章を確定。前サイクルの章は archive/2026-09-16-total-cashflow-screen/ へ退避。"
+    },
+    {
+      "step": 2,
+      "channel": "dev-graph run-dev-graph-system-spec → run-dev-graph-decompose → run-system-dev-plan → register-package",
+      "result": "spec-trends-screen・arch-trends-screen-* 8 件・feat-trends-screen と exact-13 package SYS-TRENDS-P01..P13 を登録 (applied_count=13)。"
+    },
+    {
+      "step": 3,
+      "channel": "apply-spec-transition.py (R4-reopen)",
+      "result": "2026-09-17T01:58:03Z に ui-ux/web・frontend/web を reopen し、01:58:47Z に qa-*-trends-observed-005 (basis=observed-fact) を主根拠として再確定。旧根拠は qa_refs に保持。validate-coverage-matrix --require-complete --require-basis --require-foundation は OK。"
+    },
+    {
+      "step": 4,
+      "channel": "compile-spec-doc.py",
+      "result": "ui-ux.md と frontend.md だけを再生成して差し替え。他章は本件と無関係 (差分は空行などの書式のみ) のため据え置いた。"
+    },
+    {
+      "step": 5,
+      "channel": "architecture/graph.json 再打刻と下流文書の追従",
+      "result": "arch-trends-screen-ui-ux / -frontend の source_digest を更新し check-graph-lineage を回復。architecture / specs / features / tasks / docs に FR13 と並べ替えを追記。"
+    }
+  ],
+  "reflected_artifacts": [
+    {
+      "path": "system-spec/spec-state.json",
+      "kind": "spec-state",
+      "change": "modified",
+      "note": "本機能の foundation (appr-foundation-trends-001) と ui-ux/frontend ほか各セルの確定。2026-09-17 に ui-ux/web・frontend/web を reopen し、qa-ui-ux-web-trends-observed-005 / qa-frontend-web-trends-observed-005 (basis=observed-fact) を主根拠に再確定。"
+    },
+    {
+      "path": "system-spec/00-requirements-definition.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "d94b5a74659f2606bc81a2a15a9088c757b821991bf5ea548f3d9483028d1432"
+    },
+    {
+      "path": "system-spec/ui-ux.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "0ebc698a6b757392361698fe279d162dcf02f658f2ed9825df3e57f08bd721e0",
+      "note": "FR13 (初回期間は直近1年) と8列ソートを確定内容に含めて再生成。"
+    },
+    {
+      "path": "system-spec/frontend.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "0249499f3e5b25eb33e3f2c226f645c5d11b3ae389e7e006e4773ba4dc3db2a8",
+      "note": "PeriodProvider と table-sort / SortableTableHeader の置き場所を確定内容に含めて再生成。"
+    },
+    {
+      "path": "system-spec/archive/2026-09-16-total-cashflow-screen/",
+      "kind": "specification-archive",
+      "change": "added",
+      "note": "前サイクル (総収支画面) の章を退避。"
+    },
+    {
+      "path": "specs/spec-trends-screen.md",
+      "kind": "specification",
+      "change": "added",
+      "digest": "33ed3a4ce0929eb49f9dc55c45100c681500456088a99b557b95be8426f4ee3c",
+      "note": "FR1〜FR13・S1〜S5・GET /api/trends 契約。FR13 は I1 の具体化。"
+    },
+    {
+      "path": "architecture/trends-screen-ui-ux.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "5160aa6c7b3ec45ba4f3f1855e98c9ef8dd9d55b81d5512de1680556ef5f0188",
+      "note": "FR13・8列ソート・ADR を追記 (2026-09-17)。"
+    },
+    {
+      "path": "architecture/trends-screen-frontend.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "019d67a2fcff5af2ef75764bbe00d382cfe0c405e0e944d56b63fd140003beb1",
+      "note": "FR13・8列ソート・ADR を追記 (2026-09-17)。"
+    },
+    {
+      "path": "architecture/trends-screen-backend.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "d614338657a99a082d65ed9d841cf270e1f95409647be13f0e448e26264f3c3c"
+    },
+    {
+      "path": "architecture/trends-screen-database.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "6b3364d202d5529313564815f1d208a99219ef3d1ae9d9863c82f0b2e94685c1"
+    },
+    {
+      "path": "architecture/trends-screen-auth.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "5aa25b847626101c0c402551a45679f84fe1c769f59a79e4233e01e1b0516d2d"
+    },
+    {
+      "path": "architecture/trends-screen-security.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "c11c306a9f073cbe5f7abd0e529a8be698af40d2d4d955826462f86b3feada08"
+    },
+    {
+      "path": "architecture/trends-screen-infrastructure.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "636858bee1d8704693a0c3174d6d9891e676859226aab6efe80721d4b1fa7644"
+    },
+    {
+      "path": "architecture/trends-screen-maintenance-ops.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "fabd8ec48b9e5e1569db961e49e40d3035eec8b9b1f1ed0a53326a2dcffb4e1e"
+    },
+    {
+      "path": "architecture/graph.json",
+      "kind": "projection",
+      "change": "modified",
+      "note": "arch-trends-screen-* 8 件と feat-trends-screen / spec-trends-screen / SYS-TRENDS-P01..P13 を追加。ui-ux / frontend の source_digest と imported_at を再生成後の章へ再打刻。"
+    },
+    {
+      "path": "features/feat-trends-screen.md",
+      "kind": "feature",
+      "change": "added",
+      "digest": "5ad36a1955760ee2601420e87a2bc9f24a92510b76ea52abda1c50c873f1de93",
+      "note": "実装中に確定した追加分 (FR13・並べ替え) をスコープへ追記。"
+    },
+    {
+      "path": "features/feat-trends-screen.context.json",
+      "kind": "feature-context",
+      "change": "added",
+      "digest": "7d210739378d7cdf1960fad15f40bd490228cd9c3d0327ced00a9c6ec1e4ea9d"
+    },
+    {
+      "path": "tasks/feat-trends-screen/",
+      "kind": "task",
+      "change": "added",
+      "note": "SYS-TRENDS-P01..P13 の 13 仕様書。p01/p05/p10 に「実装時の追補 (2026-09-17)」を追加 (評価済み本文は不変)。"
+    },
+    {
+      "path": "docs/trends-screen.md",
+      "kind": "document",
+      "change": "added",
+      "digest": "956f98166dde15542186b780b6bfcd03e1ce00569586eab015660fd5f70a2131",
+      "note": "計算規則・説明文の規則・指標の足し方 (FR12)。"
+    },
+    {
+      "path": "docs/trends-screen/",
+      "kind": "document",
+      "change": "added",
+      "note": "P01〜P13 の工程記録。requirements-baseline の FR13 を I1 の具体化へ訂正。"
+    },
+    {
+      "path": "docs/product/backlog.md",
+      "kind": "document",
+      "change": "modified",
+      "digest": "f061e0cb3b72d82eac5df9c401406c75b86b90db7fe7312664691a2dc6e0c5c6",
+      "note": "初期 JS 削減の backlog 1 行。"
+    }
+  ],
+  "gates": [
+    {
+      "gate": "validate-system-plan.py --staging .dev-graph/plans/feature-package-feat-trends-screen",
+      "result": "pass",
+      "note": "P01..P13 の 13 件、violations 0"
+    },
+    {
+      "gate": "validate-coverage-matrix.py --require-complete --require-basis --require-foundation",
+      "result": "pass"
+    },
+    {
+      "gate": "pnpm typecheck",
+      "result": "pass",
+      "note": "core / api / web"
+    },
+    {
+      "gate": "pnpm lint (biome / check-graph-lineage / security:content ほか)",
+      "result": "pass",
+      "note": "check-graph-lineage は 85 ノードすべて一致、孤児 0"
+    },
+    {
+      "gate": "vitest (core)",
+      "result": "pass",
+      "note": "47 files / 718 passed, 6 skipped"
+    },
+    {
+      "gate": "vitest (api)",
+      "result": "pass",
+      "note": "47 files / 608 tests"
+    },
+    {
+      "gate": "vitest (web)",
+      "result": "pass",
+      "note": "81 files / 656 tests"
+    }
+  ],
+  "status": "pass"
+}

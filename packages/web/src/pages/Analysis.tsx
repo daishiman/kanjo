@@ -75,8 +75,6 @@ export function AnalysisPage() {
       ) : (
         <PageHeader route="analysis" />
       )}
-      <AnalysisTabsNav />
-
       <section aria-label={tab.label}>
         {!question && (
           <TaskCopy task={tab.task} detail={tab.taskDetail} summary={`${tab.label}のくわしい説明`} />

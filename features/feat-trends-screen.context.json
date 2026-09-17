@@ -1,0 +1,41 @@
+{
+  "graph_node_id": "feat-trends-screen",
+  "artifact_kind": "feature",
+  "purpose": "収支が『いつ・なぜ』変わったかを、推移画面の 1 画面で掴めるようにする。利用者が推移を開いた時点で、選んだ期間の収入・支出・純収支の月次推移と、前期間または前年との差が総合/事業/家計で読め、最も変化が大きい月の増減要因 (どのカテゴリのどの取引先がいくら動いたか) が根拠の明細まで辿れる状態にする。指標は登録制にして、収支以外の推移もあとから同じ画面の型で追えるようにする。",
+  "goal": "/analysis/trends が 07-trends.png の全構成要素をトークンと共通 Button/PageShell/chart の共通設定で描画し、総合/事業/家計×収入・支出・純収支×前期間・前年の KPI・チャート・カテゴリ表と取引先の展開行・パレート・上位 3 が、総収支と同じ取引集合から数えた core の値と一致して総合=事業+家計・純収支=収入-支出が成り立ち、要確認の明細は数値に含めず件数と金額を注記し、指標は定義 1 件の追加で画面と API に現れ、選択月の詳細と選択バーから MF 由来は /classify の月・範囲・カテゴリ・取引先の絞込へ、freee 由来は総収支画面へ辿れて条件は URL から復元され、既存の傾向判定は MF の明細だけを基準とする旨を明記した開閉部分に残り、計算規則と説明文の規則が docs/trends-screen.md と境界値テストで固定され、既存の test / typecheck / lint / 視覚検査が緑のままの状態。",
+  "scope_in": [
+    "推移タブ (07-trends.png) の画面構成の作り直し: 期間タブ・見出し・比較条件の帯・KPI・推移チャート・詳細パネル・カテゴリ表と取引先の展開行・パレート図・上位 3・選択バー、既存の傾向判定の開閉化",
+    "packages/core の推移集計の拡張と指標定義の登録制 (収入・支出・純収支)",
+    "GET /api/trends の条件 (範囲・指標・比較対象・選択月) と返却の拡張",
+    "明細画面 /classify のカテゴリ・取引先の絞込クエリ",
+    "計算規則と説明文の規則の docs とテスト"
+  ],
+  "scope_out": [
+    "収入・支出・純収支以外の指標 (件数・口座別残高など) の実装: 登録制の型だけ用意し、指標の追加は後続で行う (利用者の選択による)",
+    "取引先の名寄せ規則: 明細の内容をそのまま取引先として集計する (利用者の選択による)",
+    "AI による説明文の生成と利用者のメモ入力: 規則による自動生成だけにする (利用者の選択による)",
+    "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗) の変更: 既存の共通シェルをそのまま使う",
+    "照合・総収支・マトリクス・診断の各タブの中身: それぞれの画面サイクルで扱う",
+    "web 以外の platform (専用アプリ)"
+  ],
+  "acceptance": [
+    "S1 (G1): /analysis/trends で 07-trends.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button/PageShell/chart の共通設定経由で、直書き色の lint が 0 件である。",
+    "S2 (G2, G3): 3 指標×3 範囲×2 比較対象のどの組合せでも、画面の KPI・チャート・表の値が core の返却値と一致し、総合=事業+家計・純収支=収入-支出が成り立つ。総合・事業・家計の期間合計は同じ期間の総収支画面の値と一致する。",
+    "S3 (G2): 指標定義を 1 件足すだけで画面と API に新しい指標が現れ、画面と API のコードに指標 id の分岐が無い。",
+    "S4 (G4): 詳細パネルと選択バーからの遷移で、/classify が月・範囲・カテゴリ・取引先で絞り込んだ明細だけを表示し、推移の条件は URL から復元される。",
+    "S5 (G5): 計算規則と説明文の規則が docs に書かれ、境界値テストを含む vitest が通り、既存の傾向判定のテスト (trend-contract.test.ts) も壊れていない。",
+    "S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプト (視覚検査を含む) が全て緑のままである。"
+  ],
+  "architecture_refs": [
+    "architecture/trends-screen-ui-ux.md",
+    "architecture/trends-screen-frontend.md",
+    "architecture/trends-screen-backend.md",
+    "architecture/trends-screen-database.md",
+    "architecture/trends-screen-auth.md",
+    "architecture/trends-screen-security.md",
+    "architecture/trends-screen-infrastructure.md",
+    "architecture/trends-screen-maintenance-ops.md",
+    "specs/spec-trends-screen.md"
+  ],
+  "updated_at": "2026-09-16T10:19:11Z"
+}

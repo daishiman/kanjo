@@ -1,0 +1,152 @@
+{
+  "acceptance": [
+    "S1 (G1): /analysis/trends で 07-trends.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button/PageShell/chart の共通設定経由で、直書き色の lint が 0 件である。",
+    "S2 (G2, G3): 3 指標×3 範囲×2 比較対象のどの組合せでも、画面の KPI・チャート・表の値が core の返却値と一致し、総合=事業+家計・純収支=収入-支出が成り立つ。総合・事業・家計の期間合計は同じ期間の総収支画面の値と一致する。",
+    "S3 (G2): 指標定義を 1 件足すだけで画面と API に新しい指標が現れ、画面と API のコードに指標 id の分岐が無い。",
+    "S4 (G4): 詳細パネルと選択バーからの遷移で、/classify が月・範囲・カテゴリ・取引先で絞り込んだ明細だけを表示し、推移の条件は URL から復元される。",
+    "S5 (G5): 計算規則と説明文の規則が docs に書かれ、境界値テストを含む vitest が通り、既存の傾向判定のテスト (trend-contract.test.ts) も壊れていない。",
+    "S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプト (視覚検査を含む) が全て緑のままである。"
+  ],
+  "architecture_refs": [
+    "architecture/trends-screen-ui-ux.md",
+    "architecture/trends-screen-frontend.md",
+    "architecture/trends-screen-backend.md",
+    "architecture/trends-screen-database.md",
+    "architecture/trends-screen-auth.md",
+    "architecture/trends-screen-security.md",
+    "architecture/trends-screen-infrastructure.md",
+    "architecture/trends-screen-maintenance-ops.md",
+    "specs/spec-trends-screen.md"
+  ],
+  "artifact_kind": "feature",
+  "feature_id": "feat-trends-screen",
+  "generated_at": "2026-09-16T10:20:25Z",
+  "goal": "/analysis/trends が 07-trends.png の全構成要素をトークンと共通 Button/PageShell/chart の共通設定で描画し、総合/事業/家計×収入・支出・純収支×前期間・前年の KPI・チャート・カテゴリ表と取引先の展開行・パレート・上位 3 が、総収支と同じ取引集合から数えた core の値と一致して総合=事業+家計・純収支=収入-支出が成り立ち、要確認の明細は数値に含めず件数と金額を注記し、指標は定義 1 件の追加で画面と API に現れ、選択月の詳細と選択バーから MF 由来は /classify の月・範囲・カテゴリ・取引先の絞込へ、freee 由来は総収支画面へ辿れて条件は URL から復元され、既存の傾向判定は MF の明細だけを基準とする旨を明記した開閉部分に残り、計算規則と説明文の規則が docs/trends-screen.md と境界値テストで固定され、既存の test / typecheck / lint / 視覚検査が緑のままの状態。",
+  "identity_check": {
+    "graph_node_id": "feat-trends-screen",
+    "match": true,
+    "requested_feature_id": "feat-trends-screen"
+  },
+  "notes": [
+    "feature 分割は行わず、1 feature から P01..P13 の 13 task を生成した。",
+    "source_lineage の各 source_digest は生成時に実体から sha256 を計算して記録した。",
+    "migration は無い (最新は 0042 のまま)。P08 と P13 で追加が無いことを確認する。"
+  ],
+  "open_items": [
+    {
+      "description": "architecture 8 章の scope に実在しない path 表記が 8 件ある (例: packages/web/src/lib/api.ts)。",
+      "disposition": "P01 で対応表を作り、task は実在 path だけを使う",
+      "id": "info-architecture-scope-paths",
+      "severity": "low",
+      "source_ref": "architecture/trends-screen-frontend.md"
+    }
+  ],
+  "purpose": "収支が『いつ・なぜ』変わったかを、推移画面の 1 画面で掴めるようにする。利用者が推移を開いた時点で、選んだ期間の収入・支出・純収支の月次推移と、前期間または前年との差が総合/事業/家計で読め、最も変化が大きい月の増減要因 (どのカテゴリのどの取引先がいくら動いたか) が根拠の明細まで辿れる状態にする。指標は登録制にして、収支以外の推移もあとから同じ画面の型で追えるようにする。",
+  "readiness_pin": {
+    "checked_at": "2026-09-16T10:20:25Z",
+    "component": "C08",
+    "source_pin": "system-spec-harness",
+    "source_pin_digest": "sha256:244127d5bded40df90bf91eeac8cd80a55c006aaa98ae421d2696f130276f0a6",
+    "source_pin_version": "0.1.14",
+    "status": "complete"
+  },
+  "repository_id": "github:daishiman/kanjo",
+  "run_id": "plan-feat-trends-screen-20260916T1020Z",
+  "scope_in": [
+    "推移タブ (07-trends.png) の画面構成の作り直し: 期間タブ・見出し・比較条件の帯・KPI・推移チャート・詳細パネル・カテゴリ表と取引先の展開行・パレート図・上位 3・選択バー、既存の傾向判定の開閉化",
+    "packages/core の推移集計の拡張と指標定義の登録制 (収入・支出・純収支)",
+    "GET /api/trends の条件 (範囲・指標・比較対象・選択月) と返却の拡張",
+    "明細画面 /classify のカテゴリ・取引先の絞込クエリ",
+    "計算規則と説明文の規則の docs とテスト"
+  ],
+  "scope_out": [
+    "収入・支出・純収支以外の指標 (件数・口座別残高など) の実装: 登録制の型だけ用意し、指標の追加は後続で行う (利用者の選択による)",
+    "取引先の名寄せ規則: 明細の内容をそのまま取引先として集計する (利用者の選択による)",
+    "AI による説明文の生成と利用者のメモ入力: 規則による自動生成だけにする (利用者の選択による)",
+    "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗) の変更: 既存の共通シェルをそのまま使う",
+    "照合・総収支・マトリクス・診断の各タブの中身: それぞれの画面サイクルで扱う",
+    "web 以外の platform (専用アプリ)"
+  ],
+  "source_lineage": [
+    {
+      "digest_provenance": "measured_sha256",
+      "feature_id_match": true,
+      "graph_node_id": "feat-trends-screen",
+      "source_digest": "sha256:7d210739378d7cdf1960fad15f40bd490228cd9c3d0327ced00a9c6ec1e4ea9d",
+      "source_kind": "feature_context",
+      "source_path": "features/feat-trends-screen.context.json"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:b3951e2fe1dcd99a5109bae047584d1682033de282894c34bf7ecc73145d4b17",
+      "source_kind": "specification",
+      "source_path": "specs/spec-trends-screen.md"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:a01d36578c3ce33fa0a1db7d23dca6d289fd0cbe1477f95fba7ae6b1ebe6c0a5",
+      "source_kind": "requirements_definition",
+      "source_path": "system-spec/00-requirements-definition.md"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:01c199bd5fc8f6df7c8e14f1aee671e3f914df839bdac958077abb61c5c71ac0",
+      "source_kind": "completeness_evaluation",
+      "source_path": "system-spec/completeness-findings.json"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:6fc1ecaf24bb2f8ca6701a5516e51673553556281eab81cafba9c853c3b392c9",
+      "source_kind": "feature",
+      "source_path": "features/feat-trends-screen.md"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:18a2cfbc8572da5121e91c91cc72d8515d684cf0d2d620ee684f7101a73e8b5b",
+      "source_kind": "architecture",
+      "source_path": "architecture/trends-screen-ui-ux.md"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:da44ecc5ec830bce18aff8ea73421a04edae42b3c6c3cbeb98023265a7fb1754",
+      "source_kind": "architecture",
+      "source_path": "architecture/trends-screen-frontend.md"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:d614338657a99a082d65ed9d841cf270e1f95409647be13f0e448e26264f3c3c",
+      "source_kind": "architecture",
+      "source_path": "architecture/trends-screen-backend.md"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:6b3364d202d5529313564815f1d208a99219ef3d1ae9d9863c82f0b2e94685c1",
+      "source_kind": "architecture",
+      "source_path": "architecture/trends-screen-database.md"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:5aa25b847626101c0c402551a45679f84fe1c769f59a79e4233e01e1b0516d2d",
+      "source_kind": "architecture",
+      "source_path": "architecture/trends-screen-auth.md"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:c11c306a9f073cbe5f7abd0e529a8be698af40d2d4d955826462f86b3feada08",
+      "source_kind": "architecture",
+      "source_path": "architecture/trends-screen-security.md"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:636858bee1d8704693a0c3174d6d9891e676859226aab6efe80721d4b1fa7644",
+      "source_kind": "architecture",
+      "source_path": "architecture/trends-screen-infrastructure.md"
+    },
+    {
+      "digest_provenance": "measured_sha256",
+      "source_digest": "sha256:fabd8ec48b9e5e1569db961e49e40d3035eec8b9b1f1ed0a53326a2dcffb4e1e",
+      "source_kind": "architecture",
+      "source_path": "architecture/trends-screen-maintenance-ops.md"
+    }
+  ]
+}

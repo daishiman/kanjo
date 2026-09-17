@@ -154,7 +154,11 @@ export function AnalysisRouteTable({
       </div>
 
       <div className="analysis-route-table-wrap">
-        <table className="analysis-route-table">
+        <table
+          className="analysis-route-table"
+          data-table-kind="workflow"
+          data-sort-reason="業務の確認手順を段階1から5へ固定したナビゲーション"
+        >
           <colgroup>
             <col className="analysis-route-col analysis-route-col--step" />
             <col className="analysis-route-col analysis-route-col--view" />

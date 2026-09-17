@@ -36,6 +36,7 @@ import type {
   TotalCashflowSeriesRow,
   TradeoffCandidate,
   TradeoffReviewRow,
+  TrendsScreen,
   UnsettledDeal,
   UnsettledReport,
   WorkbenchProgress,
@@ -303,6 +304,26 @@ export interface TrendsResponse {
   }[];
   monthlySides: { month: string; biz: number; personal: number; total: number }[];
   period: PeriodMeta;
+  /**
+   * 推移画面の比較・要因 (SYS-TRENDS-P05)。rolling deploy 中の旧 Worker 応答では未定義なので、
+   * 画面は無ければ新しいブロックを描かない。
+   */
+  metrics?: TrendsScreen['metrics'];
+  selection?: TrendsScreen['selection'];
+  comparePeriod?: TrendsScreen['comparePeriod'];
+  compareUnavailable?: TrendsScreen['compareUnavailable'];
+  series?: TrendsScreen['series'];
+  kpis?: TrendsScreen['kpis'];
+  detail?: TrendsScreen['detail'];
+  sparkMonths?: TrendsScreen['sparkMonths'];
+  categories?: TrendsScreen['categories'];
+  changePareto?: TrendsScreen['changePareto'];
+  topMovers?: TrendsScreen['topMovers'];
+  review?: TrendsScreen['review'];
+  recommended?: TrendsScreen['recommended'];
+  focus?: TrendsScreen['focus'];
+  /** 傾向の判定 (rows/pareto/breakdown) が MF の明細だけで数えていることの宣言 */
+  judgementBasis?: 'mf_only';
 }
 
 export interface SubscriptionsData extends CoreSubscriptionsData {
@@ -417,6 +438,7 @@ export interface TxRow {
  */
 export type { CandidateMajor, CandidateSource, Candidates } from '@kanjo/core';
 export type { DuplicateVerdictValue, TotalCashflowMonth } from '@kanjo/core';
+export type { TrendCategoryRow, TrendDetail, TrendsScreen } from '@kanjo/core';
 /**
  * 除外理由の正本は core にある。画面で別のラベル表を持つと、
  * 集計で数えている区分と画面に出ている区分が静かにずれる。

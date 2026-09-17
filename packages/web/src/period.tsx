@@ -34,19 +34,24 @@ export interface PeriodMeta {
 
 const STORAGE_KEY = 'kanjo:period';
 const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+const INITIAL_SELECTION: PeriodSelection = { mode: 'span', span: 1 };
 
-/** 保存値の検証。壊れていれば全期間に倒す(選択が読めないだけで画面が出ないのは避ける) */
+/**
+ * 保存値の検証。保存値が無い初回は直近1年にする。
+ * 全期間は明示選択だけを復元し、壊れた値を全期間と誤認しない。
+ */
 export function parseSelection(raw: string | null): PeriodSelection {
-  if (!raw) return { mode: 'all' };
+  if (!raw) return INITIAL_SELECTION;
   try {
     const v = JSON.parse(raw) as PeriodSelection;
+    if (v?.mode === 'all') return v;
     if (v?.mode === 'year' && /^\d{4}$/.test(v.year)) return v;
     if (v?.mode === 'span' && [1, 2, 3].includes(v.span)) return v;
     if (v?.mode === 'custom' && MONTH_RE.test(v.from) && MONTH_RE.test(v.to) && v.from <= v.to) return v;
   } catch {
     // 壊れた保存値は捨てる
   }
-  return { mode: 'all' };
+  return INITIAL_SELECTION;
 }
 
 /** 選択をAPIのクエリ文字列にする。全期間のときは空文字(パラメータを付けない) */
@@ -76,7 +81,7 @@ export function PeriodProvider({ children }: { children: ReactNode }) {
       return parseSelection(localStorage.getItem(STORAGE_KEY));
     } catch {
       // プライベートモードなどで localStorage が使えない環境でも動かす
-      return { mode: 'all' };
+      return INITIAL_SELECTION;
     }
   });
 

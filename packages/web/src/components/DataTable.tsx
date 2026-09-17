@@ -21,7 +21,8 @@ import {
   useState,
 } from 'react';
 import { GLOSSARY, type TermId } from '../glossary.js';
-import { type SortDir, sortedRowOrder } from '../table-sort.js';
+import { type TableSort, sortedRowOrder } from '../table-sort.js';
+import { SortableTableHeader } from './SortableTableHeader.js';
 import { Term } from './Term.js';
 
 /**
@@ -99,7 +100,7 @@ export function DataTable({
   foot?: ReactNode;
 }) {
   const items = Children.toArray(children);
-  const [sort, setSort] = useState<{ col: number; dir: SortDir } | null>(null);
+  const [sort, setSort] = useState<TableSort<number>>(null);
   const [order, setOrder] = useState<number[]>([]);
   const tbodyRef = useRef<HTMLTableSectionElement>(null);
   // 効果の中から「いま画面に出ている行と並び」を読む。
@@ -134,17 +135,11 @@ export function DataTable({
       // 合計行と、セルを横に結合した小計・見出し行は動かさない(並べ替えで中に紛れると表が嘘になる)
       pinned[child] = tr.classList.contains('total') || [...tr.cells].some((c) => c.colSpan > 1);
     });
-    const next = sortedRowOrder(cells, sort.col, sort.dir, pinned);
+    const next = sortedRowOrder(cells, sort.column, sort.dir, pinned);
     if (next.join() !== displayed.join()) setOrder(next);
   }, [sort, rowsKey]);
 
   const shown = order.length === items.length ? order.map((i) => items[i]) : items;
-
-  const toggle = (col: number) =>
-    setSort((cur) =>
-      // 同じ列を押したら向きを反転、3回目で並べ替え前に戻す(元の順に意味がある表があるため)
-      cur?.col !== col ? { col, dir: 'asc' } : cur.dir === 'asc' ? { col, dir: 'desc' } : null,
-    );
 
   return (
     <table className={className} style={style}>
@@ -153,7 +148,21 @@ export function DataTable({
         <tr>
           {columns.map((c, i) => {
             const { label, sortable, className: thClass, title, after } = columnOf(c);
-            const active = sort?.col === i;
+            if (sortable)
+              return (
+                <SortableTableHeader
+                  // biome-ignore lint/suspicious/noArrayIndexKey: 列は固定
+                  key={i}
+                  column={i}
+                  sort={sort}
+                  onSort={setSort}
+                  className={thClass}
+                  title={title}
+                  after={after}
+                >
+                  {label}
+                </SortableTableHeader>
+              );
             return (
               <th
                 // 見出しは並び替えても増減しないので、位置を key にしてよい
@@ -162,22 +171,8 @@ export function DataTable({
                 scope="col"
                 className={thClass}
                 title={title}
-                aria-sort={active ? (sort.dir === 'asc' ? 'ascending' : 'descending') : undefined}
               >
-                {sortable ? (
-                  // 矢印は styles.css が th の aria-sort を読んで描く。
-                  // ここで文字として出すと、見出しの文言そのものが「金額▲」になってしまう
-                  <button
-                    data-native-control="sort"
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggle(i)}
-                  >
-                    {label}
-                  </button>
-                ) : (
-                  label
-                )}
+                {label}
                 {after}
               </th>
             );

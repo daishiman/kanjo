@@ -127,7 +127,11 @@ export function StatementsPage() {
           <span className="table-unit">単位: 円</span>
         </div>
         <div className="scroll-x">
-          <table className="data statement-table">
+          <table
+            className="data statement-table"
+            data-table-kind="hierarchy"
+            data-sort-reason="損益計算書の会計階層と合計行の位置を固定する"
+          >
             <caption className="visually-hidden">損益計算書の月別明細</caption>
             <thead>
               <tr>
@@ -427,7 +431,11 @@ function BalanceSheet({ bs, options }: { bs: BalanceSheetData; options: string[]
         <span className="table-unit">単位: 円</span>
       </div>
       <div className="scroll-x">
-        <table className="data statement-table">
+        <table
+          className="data statement-table"
+          data-table-kind="hierarchy"
+          data-sort-reason="貸借対照表の会計階層と合計行の位置を固定する"
+        >
           <caption className="visually-hidden">貸借対照表の月別明細</caption>
           <thead>
             <tr>

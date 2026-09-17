@@ -50,6 +50,10 @@ const hub = {
   },
 };
 
+// 全suiteでは別ファイルのtransform後にlazy importが1秒を超えることがある。
+// UI契約の上限はvite.configの30秒より十分短い5秒に固定し、CPU速度を判定対象にしない。
+const LAZY_WAIT = { timeout: 5_000 };
+
 function response(body: unknown): Response {
   return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
 }
@@ -99,14 +103,16 @@ afterEach(() => {
 describe('認証後シェルの支出分析遷移', () => {
   it('主要 CTA から lazy 詳細へ PUSH し、戻る/進むでハブと詳細を復元する', async () => {
     renderApp('/analysis');
-    expect(await screen.findByRole('heading', { name: '支出のどこから確認しますか？' })).toBeTruthy();
+    expect(
+      await screen.findByRole('heading', { name: '支出のどこから確認しますか？' }, LAZY_WAIT),
+    ).toBeTruthy();
     await waitFor(() => expect(document.title).toBe('支出分析 | Focus Ledger'));
     expect(window.scrollTo).not.toHaveBeenCalled();
 
     const action = screen.getByRole('region', { name: '選択中の分析の操作' });
     fireEvent.click(within(action).getByRole('link', { name: '照合を開く' }));
 
-    expect(await screen.findByText('照合詳細パネル')).toBeTruthy();
+    expect(await screen.findByText('照合詳細パネル', {}, LAZY_WAIT)).toBeTruthy();
     expect(window.location.pathname).toBe('/analysis/reconciliation');
     await waitFor(() => expect(document.title).toBe('照合 | 支出分析 | Focus Ledger'));
     expect(window.scrollTo).toHaveBeenCalledTimes(1);
@@ -117,20 +123,22 @@ describe('認証後シェルの支出分析遷移', () => {
 
     act(() => window.history.back());
     await waitFor(() => expect(window.location.pathname).toBe('/analysis'));
-    expect(await screen.findByRole('heading', { name: '支出のどこから確認しますか？' })).toBeTruthy();
+    expect(
+      await screen.findByRole('heading', { name: '支出のどこから確認しますか？' }, LAZY_WAIT),
+    ).toBeTruthy();
     expect(window.scrollTo).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(document.activeElement?.textContent).toBe('支出のどこから確認しますか？'));
 
     act(() => window.history.forward());
     await waitFor(() => expect(window.location.pathname).toBe('/analysis/reconciliation'));
-    expect(await screen.findByText('照合詳細パネル')).toBeTruthy();
+    expect(await screen.findByText('照合詳細パネル', {}, LAZY_WAIT)).toBeTruthy();
     expect(window.scrollTo).toHaveBeenCalledTimes(1);
   });
 
   it('詳細の deep link をリロード相当で直接描画する', async () => {
     renderApp('/analysis/matrix');
 
-    expect(await screen.findByText('マトリクス詳細パネル')).toBeTruthy();
+    expect(await screen.findByText('マトリクス詳細パネル', {}, LAZY_WAIT)).toBeTruthy();
     expect(window.location.pathname).toBe('/analysis/matrix');
     await waitFor(() => expect(document.title).toBe('マトリクス | 支出分析 | Focus Ledger'));
     expect(window.scrollTo).not.toHaveBeenCalled();

@@ -70,10 +70,38 @@ totalCashflow.workbench!.progress.duplicates.total = totalCashflow.review.length
 
 afterEach(() => {
   cleanup();
+  window.history.replaceState({}, '', '/');
+  localStorage.clear();
   vi.unstubAllGlobals();
 });
 
 describe('総収支の成功 mutation', () => {
+  it('推移から渡された月だけを総収支APIへ渡す', async () => {
+    window.history.replaceState({}, '', '/analysis/total-cashflow?month=2026-03');
+    const calls: string[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        calls.push(String(input));
+        return new Response(JSON.stringify(totalCashflow), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }),
+    );
+
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={client}>
+        <PeriodProvider>
+          <TotalCashflowPage />
+        </PeriodProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(await screen.findByText('推移画面で選んだ 2026-03 の総収支を表示しています。')).toBeTruthy();
+    expect(calls).toContain('/api/total-cashflow?from=2026-03&to=2026-03');
+  });
+
   it('重複判断の保存後に分析ハブ・照合・月次クローズのキューを無効化する', async () => {
     const calls: { url: string; method: string }[] = [];
     vi.stubGlobal(

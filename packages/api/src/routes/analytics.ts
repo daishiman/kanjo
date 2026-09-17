@@ -7,7 +7,7 @@ import {
   BALANCE_SHEET_SOURCES,
   type Dataset,
   type ExpenseScope,
-  type FreeeExclusion,
+  LEGACY_SCOPE,
   LIABILITY_CATEGORIES,
   type PeriodRange,
   type ReviewQueueItem,
@@ -25,6 +25,7 @@ import {
   defenseForecast,
   defenseLine,
   diagnosis,
+  findMetric,
   fullRange,
   household,
   isCloseMonth,
@@ -33,6 +34,7 @@ import {
   isReviewItemKind,
   matrix,
   monthlyCloseStatus,
+  normalizeTrendScope,
   overview,
   overviewAggregate,
   overviewScopeMonths,
@@ -51,6 +53,7 @@ import {
   tradeoffReview,
   transactionExportRows,
   trendsReport,
+  trendsScreen,
   unsettledReport,
 } from '@kanjo/core';
 import { and, desc, eq, sql } from 'drizzle-orm';
@@ -58,6 +61,7 @@ import type { Context } from 'hono';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv, AuthVariables } from '../auth.js';
+import { loadCashflowSources } from '../cashflow-sources.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import {
@@ -69,7 +73,6 @@ import {
   loadSubVendors,
   loadVendorMemories,
 } from '../store.js';
-import { bindDuplicateVerdicts, bindMfExclusions } from './duplicate-verdict-bindings.js';
 
 // 月次レビューの記録者 (actor) を読むため、ルートは認証ミドルウェアが載せる変数の型をそのまま使う
 type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
@@ -155,20 +158,8 @@ const apiError = (code: string, message: string) => ({ error: { code, message } 
 async function loadReviewSources<V extends { userId: string }>(c: Context<DataCtx<V>>, all: Dataset) {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const [
-    dealRows,
-    verdictRows,
-    exclusionRows,
-    mfExclusionRows,
-    failedRuns,
-    vendorMemories,
-    subVendors,
-    subExclusions,
-  ] = await Promise.all([
-    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
-    db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
-    db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),
-    db.select().from(s.mfTxExclusions).where(eq(s.mfTxExclusions.userId, userId)),
+  const [sources, failedRuns, vendorMemories, subVendors, subExclusions] = await Promise.all([
+    loadCashflowSources(db, userId, all.mfTx),
     db
       .select({
         id: s.importRuns.id,
@@ -181,13 +172,7 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
     loadSubVendors(db, userId),
     loadSubVendorExclusions(db, userId),
   ]);
-  const exclusions: FreeeExclusion[] = exclusionRows.map((row) => ({
-    freeeKey: row.freeeKey,
-    reason: row.reason,
-  }));
-  const deals = dealRows.map(dealFromRow);
-  const verdicts = bindDuplicateVerdicts(verdictRows, all.mfTx);
-  const mfExclusions = bindMfExclusions(mfExclusionRows, all.mfTx);
+  const { deals, verdicts, freeeExclusions: exclusions, mfExclusions } = sources;
   const report = totalCashflowReport(
     all,
     deals,
@@ -430,11 +415,45 @@ analyticsRoute.get('/diagnosis', async (c) => {
  * 期間を絞ると同じ指標がその期間だけで計算し直される。
  */
 analyticsRoute.get('/trends', async (c) => {
-  const { data, period } = await loadScoped(c);
+  // 未登録の指標だけは 400。壊れた month や未知の scope/compare は既定値へ倒す (古いブックマーク対策)
+  const metric = c.req.query('metric');
+  if (!findMetric(metric)) return c.json(apiError('invalid_metric', '未登録の指標です'), 400);
+  const { data, all, period } = await loadScoped(c);
+  const {
+    deals,
+    verdicts,
+    freeeExclusions: exclusions,
+    mfExclusions,
+  } = await loadCashflowSources(getDb(c.env.DB), c.get('userId'), all.mfTx);
   // 未知の値は合算に倒す。片側だけの画面が空で出るより、全部が見えるほうが害が小さい
-  const raw = c.req.query('scope');
-  const scope: ExpenseScope = raw === 'biz' || raw === 'personal' ? raw : 'all';
-  return c.json({ ...trendsReport(data, scope), period });
+  const scope = normalizeTrendScope(c.req.query('scope'));
+  const screen = trendsScreen(
+    {
+      all,
+      deals,
+      verdicts,
+      exclusions,
+      mfExcludedTxIds: mfExclusions.map((row) => row.txId),
+      range: period.applied,
+    },
+    {
+      scope,
+      metric,
+      compare: c.req.query('compare'),
+      month: c.req.query('month'),
+      category: c.req.query('category'),
+      side: c.req.query('side'),
+      payee: c.req.query('payee'),
+    },
+  );
+  // 傾向の判定 (rows/pareto/breakdown) は従来どおり MF の明細だけで数える。その基準を応答で明示する
+  const legacyScope: ExpenseScope = LEGACY_SCOPE[scope];
+  return c.json({
+    ...trendsReport(data, legacyScope),
+    period,
+    ...screen,
+    judgementBasis: 'mf_only' as const,
+  });
 });
 
 analyticsRoute.get('/subscriptions', async (c) => {

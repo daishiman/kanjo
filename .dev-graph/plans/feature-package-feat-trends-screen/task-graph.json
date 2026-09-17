@@ -1,0 +1,148 @@
+{
+  "feature_package_id": "feature-package/feat-trends-screen",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と architecture の path 表記の対応表"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P01"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P02",
+      "title": "指標の登録表・総収支と同じ取引集合の推移集計・GET /api/trends 拡張・/classify 絞込の設計決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P02"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P03",
+      "title": "設計決定の独立レビュー (二つの基準の並存・総収支との一致・URL 状態)"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P03"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P04",
+      "title": "境界値付きの red テスト先行 (指標定義・比較期間・総収支との一致・画面ブロック・/classify 絞込)"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P04"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P05",
+      "title": "指標の登録表・推移集計・GET /api/trends 拡張・Trends.tsx の 10 ブロック・/classify 絞込の実装"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P05"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P06",
+      "title": "全テスト・型検査・lint の実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P06"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P07",
+      "title": "受入条件 S1〜S6 の検証"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P07"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P08",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P08",
+      "title": "指標 id 分岐の除去確認と集計ロジックの重複整理 (migration 無しの確認)"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P08"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・CSP・JS 予算・狭幅表示・クエリ入力境界の保証と視覚検査の更新"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P09"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P10",
+      "title": "最終レビュー (spec との突合と差分の確認)"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P10"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P11",
+      "title": "証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P11"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P12",
+      "title": "計算規則と説明文の規則の docs 化と画面監査表の更新"
+    },
+    {
+      "depends_on": [
+        "SYS-TRENDS-P12"
+      ],
+      "feature_package_id": "feature-package/feat-trends-screen",
+      "id": "SYS-TRENDS-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-trends-screen",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信と close-out"
+    }
+  ],
+  "parent_feature": "feat-trends-screen",
+  "schema_version": "1.0.0"
+}

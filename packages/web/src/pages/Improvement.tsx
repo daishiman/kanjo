@@ -22,6 +22,7 @@ import {
   setImprovementStatus,
 } from '../api.js';
 import { Button } from '../components/Button.js';
+import { DataTable } from '../components/DataTable.js';
 
 const TOKEN_LABEL: Record<ImprovementRequestView['token']['status'], string> = {
   none: '未発行',
@@ -102,62 +103,60 @@ export function ImprovementPage() {
       {!list.isLoading && rows.length === 0 && <p className="page-state empty">まだ要望はありません</p>}
 
       {rows.length > 0 && (
-        <table className="table improvement-table">
-          <thead>
-            <tr>
-              <th>件名</th>
-              <th>画面</th>
-              <th>状態</th>
-              <th>添付</th>
-              <th>作成</th>
-              <th>添付の削除予定</th>
-              <th />
+        <DataTable
+          className="table improvement-table"
+          columns={[
+            '件名',
+            '画面',
+            '状態',
+            '添付',
+            '作成',
+            '添付の削除予定',
+            { label: '操作', sortable: false },
+          ]}
+        >
+          {rows.map((row) => (
+            <tr key={row.id} className={selected === row.id ? 'selected' : undefined}>
+              <td>{row.title}</td>
+              <td className="mono">{row.route || '—'}</td>
+              <td data-sort={IMPROVEMENT_STATUS_LABEL[row.status]}>
+                <select
+                  aria-label={`${row.title} の状態`}
+                  value={row.status}
+                  onChange={(e) =>
+                    changeStatus.mutate({ id: row.id, status: e.target.value as ImprovementStatus })
+                  }
+                >
+                  {IMPROVEMENT_STATUS_VALUES.map((value) => (
+                    <option key={value} value={value}>
+                      {IMPROVEMENT_STATUS_LABEL[value]}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              <td>
+                {row.purgedAt
+                  ? '削除済み'
+                  : [row.screenshot.available ? '画像' : null, row.diagnostics.available ? '診断' : null]
+                      .filter(Boolean)
+                      .join('・') || 'なし'}
+              </td>
+              <td>{dateTime(row.createdAt)}</td>
+              <td>{row.attachmentExpiresAt ? dateTime(row.attachmentExpiresAt) : '対応完了後30日'}</td>
+              <td>
+                <Button
+                  onClick={() => {
+                    setSelected(row.id);
+                    setPrompt(null);
+                    setNotice(null);
+                  }}
+                >
+                  詳細
+                </Button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.id} className={selected === row.id ? 'selected' : undefined}>
-                <td>{row.title}</td>
-                <td className="mono">{row.route || '—'}</td>
-                <td>
-                  <select
-                    aria-label={`${row.title} の状態`}
-                    value={row.status}
-                    onChange={(e) =>
-                      changeStatus.mutate({ id: row.id, status: e.target.value as ImprovementStatus })
-                    }
-                  >
-                    {IMPROVEMENT_STATUS_VALUES.map((value) => (
-                      <option key={value} value={value}>
-                        {IMPROVEMENT_STATUS_LABEL[value]}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  {row.purgedAt
-                    ? '削除済み'
-                    : [row.screenshot.available ? '画像' : null, row.diagnostics.available ? '診断' : null]
-                        .filter(Boolean)
-                        .join('・') || 'なし'}
-                </td>
-                <td>{dateTime(row.createdAt)}</td>
-                <td>{row.attachmentExpiresAt ? dateTime(row.attachmentExpiresAt) : '対応完了後30日'}</td>
-                <td>
-                  <Button
-                    onClick={() => {
-                      setSelected(row.id);
-                      setPrompt(null);
-                      setNotice(null);
-                    }}
-                  >
-                    詳細
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       )}
 
       {current && (
@@ -208,27 +207,18 @@ export function ImprovementPage() {
                 )
               </h3>
               {detail.data?.diagnostics ? (
-                <table className="table improvement-diagnostics">
-                  <thead>
-                    <tr>
-                      <th>時刻</th>
-                      <th>種別</th>
-                      <th>内容</th>
+                <DataTable className="table improvement-diagnostics" columns={['時刻', '種別', '内容']}>
+                  {detail.data.diagnostics.entries.map((entry) => (
+                    <tr key={`${entry.at}-${entry.message}`}>
+                      <td className="mono">{dateTime(entry.at)}</td>
+                      <td className="mono">{entry.kind}</td>
+                      <td>
+                        {entry.message}
+                        {entry.detail && <div className="improvement-detail-line mono">{entry.detail}</div>}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {detail.data.diagnostics.entries.map((entry) => (
-                      <tr key={`${entry.at}-${entry.message}`}>
-                        <td className="mono">{dateTime(entry.at)}</td>
-                        <td className="mono">{entry.kind}</td>
-                        <td>
-                          {entry.message}
-                          {entry.detail && <div className="improvement-detail-line mono">{entry.detail}</div>}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  ))}
+                </DataTable>
               ) : (
                 <p className="page-state empty">診断情報はありません</p>
               )}

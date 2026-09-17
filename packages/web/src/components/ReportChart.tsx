@@ -205,7 +205,11 @@ function HeatmapTable({ chart }: { chart: AiReportChart }) {
     // FinancialFigure の <details> 表を出さない図なので、この表が正確な値の正本。
     // 読み上げから隠すと、ヒートマップの数値に辿り着く手段が無くなる
     <div className="heatmap-scroll">
-      <table className="data heatmap">
+      <table
+        className="data heatmap"
+        data-table-kind="matrix"
+        data-sort-reason="ヒートマップの科目行と月列を図と同じ軸順に固定する"
+      >
         <thead>
           <tr>
             <th scope="col">科目</th>

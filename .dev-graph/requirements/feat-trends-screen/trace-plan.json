@@ -1,0 +1,291 @@
+{
+ "schema_version": "1.0.0",
+ "feature_id": "feat-trends-screen",
+ "snapshot_digest": "sha256:a3cbc5e433134fb660e44b03562b99eee6019c9825cf94a4a21a2f1b86c697fe",
+ "source_lineage": [
+  "system-spec/index.md",
+  "system-spec/00-requirements-definition.md",
+  "specs/spec-trends-screen.md",
+  "architecture/trends-screen-ui-ux.md",
+  "architecture/trends-screen-frontend.md",
+  "architecture/trends-screen-backend.md",
+  "architecture/trends-screen-database.md",
+  "architecture/trends-screen-auth.md",
+  "architecture/trends-screen-security.md",
+  "architecture/trends-screen-infrastructure.md",
+  "architecture/trends-screen-maintenance-ops.md",
+  "features/feat-trends-screen.md"
+ ],
+ "plan_package": ".dev-graph/plans/feature-package-feat-trends-screen",
+ "plan_digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4",
+ "cross_cutting_tasks": {
+  "SYS-TRENDS-P10": "独立最終レビュー (全要件横断)"
+ },
+ "requirements": [
+  {
+   "requirement_id": "REQ-TR-001",
+   "title": "画面構成と共通部品",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR1",
+    "specs/spec-trends-screen.md#FR2",
+    "specs/spec-trends-screen.md#FR8",
+    "basis:S1、非機能要件 (レスポンシブ)"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#機能要件",
+   "statement": "/analysis/trends を 07-trends.png の構成 (期間タブ・問いの見出し・範囲/指標/比較対象の帯・KPI・チャート・詳細パネル・カテゴリ表・パレート・上位 3・選択バー) で描き、色・余白・部品はトークンと共通 Button/PageShell/chart の共通設定だけを使う。期間タブは usePeriod を操作する。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05",
+    "SYS-TRENDS-P07",
+    "SYS-TRENDS-P09"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-002",
+   "title": "指標の登録表",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR9",
+    "basis:S3、qa-trends-decision-003"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#機能要件",
+   "statement": "指標定義 (id・表示名・月次系列の取り出し方・符号と良し悪しの向き・内訳の軸) を packages/core の登録表に置き、収入・支出・純収支の 3 件を登録する。API は metric クエリで定義を引き、未登録は 400 invalid_metric。画面と API に指標 id の分岐を書かない。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05",
+    "SYS-TRENDS-P08"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-003",
+   "title": "数値の出所と総収支との一致",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR3",
+    "specs/spec-trends-screen.md#FR4",
+    "basis:S2、dec-trends-datasource-001、非機能要件 (性能)"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#目的と成功状態",
+   "statement": "数値は totalCashflowReport と同じ取引集合 (freee+MF の消し込み後) から数え、総合=事業+家計・純収支=収入-支出が成り立ち、期間合計は GET /api/total-cashflow と一致する。loadDataset と freee 系 4 表は 1 リクエストで 1 回ずつ読む。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P03",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05",
+    "SYS-TRENDS-P06"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-004",
+   "title": "比較期間と KPI",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR3",
+    "specs/spec-trends-screen.md#FR4",
+    "basis:qa-trends-decision-006/007/010"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#機能要件",
+   "statement": "比較対象は前期間 (直前の同じ長さ) と前年 (前年の同じ月範囲)。前年は previousYearPeriod を analysis-hub.ts に新設し、Dataset を切って作る。全期間では comparePeriod を null にし、KPI の増減は最も変化が大きい月の前月差 (basis=peak_month_mom) とする。初期の選択月は最も変化が大きい月。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05",
+    "SYS-TRENDS-P07"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-005",
+   "title": "選択月の詳細パネルと出典",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR5",
+    "basis:qa-trends-decision-002/014"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#機能要件",
+   "statement": "選択月の 3 指標と比較値、増減要因上位 3 と規則で作る説明文、データの出典 (MF は口座名と件数、freee は『freee』と件数、口座が空の freee 行は『—』で口座別の件数に数えない) を出す。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05",
+    "SYS-TRENDS-P09"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-006",
+   "title": "カテゴリ表と取引先の展開",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR6",
+    "basis:qa-trends-decision-009"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#機能要件",
+   "statement": "カテゴリ別に直近 12 か月のスパークライン (期間末月から遡る 12 枠、データの無い月は空)・今回・比較・増減額・増減率・構成比・寄与度を出し、行の展開で取引先別の同じ列を出す。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-007",
+   "title": "パレート図と上位 3",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR7",
+    "basis:非機能要件 (互換)"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#機能要件",
+   "statement": "増減額の絶対値の降順の棒と累計構成比の折れ線、増減が大きい上位 3 のカードを出す。既存の pareto の値は壊さず、追加フィールドで拡張する。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-008",
+   "title": "明細への導線と /classify 絞込",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR10",
+    "specs/spec-trends-screen.md#FR8",
+    "basis:S4、qa-trends-decision-004/011"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#機能要件",
+   "statement": "MF 由来は /classify へ月・範囲・category・payee (専用クエリ、完全一致、名寄せなし) で遷移し、freee 由来は /analysis/total-cashflow を開く。/classify は category と payee を URL から読み、既存の month・cls・q と組み合わせる。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P03",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05",
+    "SYS-TRENDS-P07"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-009",
+   "title": "URL 状態と入力境界",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR1",
+    "specs/spec-trends-screen.md#FR2",
+    "basis:Contract tests、qa-trends-decision-011"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#API",
+   "statement": "範囲・指標・比較対象・選択月・選択カテゴリを URL に保持して再読込で復元する。形式違反の month と未知の scope/compare は既定値へ倒して 200、scope の別名 (all/biz/personal) を受ける。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P03",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05",
+    "SYS-TRENDS-P09"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-010",
+   "title": "要確認の明細の扱い",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR2",
+    "specs/spec-trends-screen.md#FR3",
+    "specs/spec-trends-screen.md#FR5",
+    "basis:dec-trends-review-rows-001"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#機能要件",
+   "statement": "要確認の MF 明細は推移の数値に含めず、期間と選択月の件数・金額 (totalCashflowReport の reviewCount・reviewAmount と一致) を帯と詳細パネルに出し、総収支画面へ導く。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05",
+    "SYS-TRENDS-P07"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-011",
+   "title": "傾向の判定の開閉と基準",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR11",
+    "basis:dec-trends-judgement-source-001、qa-trends-decision-001"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#機能要件",
+   "statement": "既存の手を打つ順番と傾向判定は『傾向の判定を表示』の details に移し、MF 明細だけの trendsReport で計算したまま judgementBasis=mf_only を返し、見出しに基準を明記する。rows/pareto/breakdown と trend-contract.test.ts を壊さない。",
+   "system_tasks": [
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P03",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05",
+    "SYS-TRENDS-P08"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-TR-012",
+   "title": "規則の docs 化・品質保証・配信",
+   "source_refs": [
+    "specs/spec-trends-screen.md#FR12",
+    "basis:S5、S6、非機能要件、互換性・移行・リリース"
+   ],
+   "spec_anchor": "specs/spec-trends-screen.md#テストと受入条件",
+   "statement": "計算規則と説明文の規則を docs/trends-screen.md に表で書き、境界値テストで固定する。WCAG 2.2 AA・CSP・JS 予算・視覚検査を含む pnpm verify:full が緑で、migration を伴わず既存 deploy.yml で単一 PR として配信する。",
+   "system_tasks": [
+    "SYS-TRENDS-P06",
+    "SYS-TRENDS-P08",
+    "SYS-TRENDS-P09",
+    "SYS-TRENDS-P11",
+    "SYS-TRENDS-P12",
+    "SYS-TRENDS-P13"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  }
+ ]
+}

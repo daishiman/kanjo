@@ -34,6 +34,8 @@ export const VIEWPORT_CASES = [
   { label: '1180', width: 1180, height: 820, zoom: 1, reducedMotion: false },
   { label: '1280', width: 1280, height: 900, zoom: 1, reducedMotion: false },
   { label: '1600', width: 1600, height: 1000, zoom: 1, reducedMotion: false },
+  // 利用者の実機キャプチャ相当。ワイドで右端の余白が消えないかを見る。
+  { label: '1908', width: 1908, height: 1200, zoom: 1, reducedMotion: false },
   // 本物の200%拡大。setPageScaleFactor を伴うのはこのケースだけ。
   { label: 'zoom200', width: 375, height: 812, zoom: 2, reducedMotion: false },
   // 1536px級の画面を200%表示したときに残る768px railも検査する。

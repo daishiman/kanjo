@@ -1222,10 +1222,20 @@ function AutoMatchSection({
 
 export function TotalCashflowPage() {
   const { key, withPeriod } = usePeriod();
+  // このページは既存の単体テストや埋込先でも Router なしで使う。画面遷移時には
+  // route 要素が mount し直されるため、遷移元の月だけを location から読む。
+  const requestedMonth =
+    typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('month');
+  const linkedMonth = /^\d{4}-(0[1-9]|1[0-2])$/.test(requestedMonth ?? '') ? requestedMonth : null;
   const client = useQueryClient();
   const q = useQuery({
-    queryKey: ['total-cashflow', key],
-    queryFn: () => api<TotalCashflowResponse>(withPeriod('/total-cashflow')),
+    queryKey: ['total-cashflow', key, linkedMonth],
+    queryFn: () =>
+      api<TotalCashflowResponse>(
+        linkedMonth
+          ? `/total-cashflow?from=${encodeURIComponent(linkedMonth)}&to=${encodeURIComponent(linkedMonth)}`
+          : withPeriod('/total-cashflow'),
+      ),
   });
   /** 表示する区分 (総合 / 事業 / 家計)。保存せず画面ごとに持つ */
   const [segment, setSegment] = useState<Segment>('total');
@@ -1327,6 +1337,11 @@ export function TotalCashflowPage() {
 
   return (
     <OperationSink.Provider value={setUndoableId}>
+      {linkedMonth && (
+        <output className="sub total-cashflow-linked-month">
+          推移画面で選んだ {linkedMonth} の総収支を表示しています。
+        </output>
+      )}
       {q.data.summary && (
         <SummarySection
           summary={q.data.summary}
