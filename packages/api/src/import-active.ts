@@ -28,6 +28,18 @@ export const JSON_SNAPSHOT_MUTATION_CONSUMERS = [
   // 0040: 概況の保留と月次レビュー。変えると復元後の未処理件数とクローズ状況が変わる
   'review_snoozes',
   'monthly_close_reviews',
+  /*
+   * 0041: 総収支の判断3表。復元後の合計そのものを動かす。
+   *
+   * 消し込みの判断 (duplicate_verdicts) と除外 (freee_deal_exclusions) は、
+   * 同じ明細から違う総額を導く唯一の入力である。これを write-set の外に置くと、
+   * 復元しても「前は合っていた金額」に戻らない。
+   * 操作履歴 (total_cashflow_operations) を一緒に戻すのは、判断だけ戻して履歴を残すと
+   * 取消ボタンが復元前の操作を指し、二重に戻してしまうため。
+   */
+  'duplicate_verdicts',
+  'freee_deal_exclusions',
+  'total_cashflow_operations',
 ] as const;
 
 export type JsonSnapshotMutationConsumer = (typeof JSON_SNAPSHOT_MUTATION_CONSUMERS)[number];

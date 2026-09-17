@@ -8,6 +8,8 @@
 
 export type SortDir = 'asc' | 'desc';
 
+export type TableSort<K extends PropertyKey = number> = { column: K; dir: SortDir } | null;
+
 /** 並べ替えの対象外にする行(合計行など)の位置。元の並びのまま、その場に残す */
 export type PinnedRow = boolean;
 
@@ -87,4 +89,23 @@ export function sortedRowOrder(
   let k = 0;
   for (let i = 0; i < cells.length; i += 1) order.push(pinned[i] ? i : sorted[k++]);
   return order;
+}
+
+export type TableSortValue = string | number | null | undefined;
+
+/**
+ * Reactの1 child=1行にできない階層表用。親行に展開行をつけたまま、
+ * 親の業務データだけを共通の比較規則で並べ替える。
+ */
+export function sortedRowsBy<T, K extends PropertyKey>(
+  rows: readonly T[],
+  sort: TableSort<K>,
+  getValue: (row: T, column: K) => TableSortValue,
+): T[] {
+  if (!sort) return [...rows];
+  const cells = rows.map((row) => {
+    const value = getValue(row, sort.column);
+    return [value == null ? '' : String(value)];
+  });
+  return sortedRowOrder(cells, 0, sort.dir).map((index) => rows[index] as T);
 }

@@ -1,0 +1,1569 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "database",
+      "label": "データベース"
+    },
+    {
+      "id": "auth",
+      "label": "認証(ログイン)"
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI-UX"
+    },
+    {
+      "id": "security",
+      "label": "セキュリティ"
+    },
+    {
+      "id": "infrastructure",
+      "label": "インフラ"
+    },
+    {
+      "id": "backend",
+      "label": "バックエンド"
+    },
+    {
+      "id": "frontend",
+      "label": "フロントエンド"
+    },
+    {
+      "id": "maintenance-ops",
+      "label": "保守運用管理"
+    }
+  ],
+  "platforms": [
+    "web",
+    "mobile",
+    "tablet",
+    "desktop-windows",
+    "desktop-linux",
+    "desktop-macos"
+  ],
+  "matrix": {
+    "database": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-database-web-tc-observed-001",
+        "serves_goals": [
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-total-cashflow-decision-003",
+          "qa-total-cashflow-decision-004",
+          "qa-total-cashflow-decision-013",
+          "qa-total-cashflow-decision-017",
+          "qa-total-cashflow-decision-018",
+          "qa-database-web-tc-inference-006",
+          "qa-infrastructure-web-tc-observed-003",
+          "qa-infrastructure-web-tc-observed-004"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは判定・除外・操作履歴をアプリ内に同期保持する方式 (端末内キャッシュとオフライン時の取消の整合)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは判定・除外・操作履歴をアプリ内に同期保持する方式 (端末内キャッシュとオフライン時の取消の整合)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリでは判定・除外・操作履歴をアプリ内に同期保持する方式 (端末内キャッシュとオフライン時の取消の整合)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリでは判定・除外・操作履歴をアプリ内に同期保持する方式 (端末内キャッシュとオフライン時の取消の整合)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリでは判定・除外・操作履歴をアプリ内に同期保持する方式 (端末内キャッシュとオフライン時の取消の整合)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      }
+    },
+    "auth": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-auth-web-tc-observed-001",
+        "serves_goals": [
+          "G2",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-total-cashflow-decision-004"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に保存するセッションや生体認証で判定・取消の書込を許可する方式を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に保存するセッションや生体認証で判定・取消の書込を許可する方式を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に保存するセッションや生体認証で判定・取消の書込を許可する方式を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に保存するセッションや生体認証で判定・取消の書込を許可する方式を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に保存するセッションや生体認証で判定・取消の書込を許可する方式を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      }
+    },
+    "ui-ux": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ui-ux-web-tc-observed-001",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-total-cashflow-decision-001",
+          "qa-total-cashflow-decision-002",
+          "qa-total-cashflow-decision-006",
+          "qa-total-cashflow-decision-007",
+          "qa-total-cashflow-decision-008",
+          "qa-total-cashflow-decision-009",
+          "qa-total-cashflow-decision-010",
+          "qa-total-cashflow-decision-011",
+          "qa-total-cashflow-decision-012",
+          "qa-total-cashflow-decision-013",
+          "qa-total-cashflow-decision-014",
+          "qa-total-cashflow-decision-015",
+          "qa-total-cashflow-decision-016",
+          "qa-total-cashflow-decision-017",
+          "qa-ui-ux-web-tc-inference-004"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは画面幅に合わせた 3 ペイン判定作業と下部選択バーのネイティブ操作 (スワイプでの同じ/別判定など)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは画面幅に合わせた 3 ペイン判定作業と下部選択バーのネイティブ操作 (スワイプでの同じ/別判定など)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリでは画面幅に合わせた 3 ペイン判定作業と下部選択バーのネイティブ操作 (スワイプでの同じ/別判定など)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリでは画面幅に合わせた 3 ペイン判定作業と下部選択バーのネイティブ操作 (スワイプでの同じ/別判定など)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリでは画面幅に合わせた 3 ペイン判定作業と下部選択バーのネイティブ操作 (スワイプでの同じ/別判定など)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      }
+    },
+    "security": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-security-web-tc-observed-001",
+        "serves_goals": [
+          "G2",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-total-cashflow-decision-003",
+          "qa-total-cashflow-decision-004"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリでは端末に残る明細・freee 取引・除外メモの保護 (端末暗号化とスクリーンショット対策)を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-infrastructure-web-tc-observed-001",
+        "serves_goals": [
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-total-cashflow-decision-004",
+          "qa-total-cashflow-decision-018",
+          "qa-database-web-tc-inference-006",
+          "qa-infrastructure-web-tc-observed-002",
+          "qa-infrastructure-web-tc-observed-003",
+          "qa-infrastructure-web-tc-observed-004"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではアプリ配布経路とストア審査、API のバージョン互換を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではアプリ配布経路とストア審査、API のバージョン互換を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリではアプリ配布経路とストア審査、API のバージョン互換を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリではアプリ配布経路とストア審査、API のバージョン互換を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリではアプリ配布経路とストア審査、API のバージョン互換を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      }
+    },
+    "backend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-backend-web-tc-observed-001",
+        "serves_goals": [
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-total-cashflow-decision-002",
+          "qa-total-cashflow-decision-003",
+          "qa-total-cashflow-decision-004",
+          "qa-total-cashflow-decision-006",
+          "qa-total-cashflow-decision-007",
+          "qa-total-cashflow-decision-008",
+          "qa-total-cashflow-decision-009",
+          "qa-total-cashflow-decision-012",
+          "qa-total-cashflow-decision-013",
+          "qa-total-cashflow-decision-014",
+          "qa-total-cashflow-decision-015",
+          "qa-total-cashflow-decision-017",
+          "qa-total-cashflow-decision-018",
+          "qa-backend-web-tc-inference-006",
+          "qa-backend-web-tc-inference-007",
+          "qa-database-web-tc-inference-006",
+          "qa-infrastructure-web-tc-observed-004"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではオフラインで行った判定と取消をサーバの操作履歴へ後から合流させる同期 APIを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではオフラインで行った判定と取消をサーバの操作履歴へ後から合流させる同期 APIを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリではオフラインで行った判定と取消をサーバの操作履歴へ後から合流させる同期 APIを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリではオフラインで行った判定と取消をサーバの操作履歴へ後から合流させる同期 APIを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリではオフラインで行った判定と取消をサーバの操作履歴へ後から合流させる同期 APIを決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-frontend-web-tc-observed-001",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-total-cashflow-decision-001",
+          "qa-total-cashflow-decision-004",
+          "qa-total-cashflow-decision-006",
+          "qa-total-cashflow-decision-008",
+          "qa-total-cashflow-decision-009",
+          "qa-total-cashflow-decision-010",
+          "qa-total-cashflow-decision-011",
+          "qa-total-cashflow-decision-012",
+          "qa-total-cashflow-decision-013",
+          "qa-total-cashflow-decision-016",
+          "qa-total-cashflow-decision-017",
+          "qa-frontend-web-tc-inference-004",
+          "qa-backend-web-tc-inference-006"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではネイティブ UI フレームワークでの KPI・チャート・判定作業の再実装を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではネイティブ UI フレームワークでの KPI・チャート・判定作業の再実装を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリではネイティブ UI フレームワークでの KPI・チャート・判定作業の再実装を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリではネイティブ UI フレームワークでの KPI・チャート・判定作業の再実装を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリではネイティブ UI フレームワークでの KPI・チャート・判定作業の再実装を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      }
+    },
+    "maintenance-ops": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-maintenance-ops-web-tc-observed-001",
+        "serves_goals": [
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-total-cashflow-decision-007",
+          "qa-total-cashflow-decision-010",
+          "qa-total-cashflow-decision-012",
+          "qa-total-cashflow-decision-013",
+          "qa-total-cashflow-decision-014",
+          "qa-total-cashflow-decision-015",
+          "qa-total-cashflow-decision-016",
+          "qa-total-cashflow-decision-017",
+          "qa-total-cashflow-decision-018",
+          "qa-backend-web-tc-inference-006",
+          "qa-database-web-tc-inference-006",
+          "qa-infrastructure-web-tc-observed-002",
+          "qa-infrastructure-web-tc-observed-003",
+          "qa-infrastructure-web-tc-observed-004"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、本カテゴリではアプリ版ごとの回帰確認とストア配布の更新手順を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、本カテゴリではアプリ版ごとの回帰確認とストア配布の更新手順を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、本カテゴリではアプリ版ごとの回帰確認とストア配布の更新手順を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、本カテゴリではアプリ版ごとの回帰確認とストア配布の更新手順を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、本カテゴリではアプリ版ごとの回帰確認とストア配布の更新手順を決める必要があった。狭幅は既存 web のアイコンレールと下部タブのレスポンシブ表示の中で扱う。対象を web のみとする利用者承認 (qa-target-platforms-tc-002 / appr-foundation-total-cashflow-001、2026-09-15) によりその検討は発生しない。",
+        "qa_ref": "qa-target-platforms-tc-002"
+      }
+    }
+  },
+  "qa_log": [
+    {
+      "id": "qa-total-cashflow-decision-001",
+      "question": "05-total-cashflow.png には既存の 9 列の月次表 (総収入・総支出・純収支と事業/家計の内訳・事業へ寄せた件数・要確認) が無い。既存の月次表をどう扱うか。選択肢: (A) 『月次の内訳を表示』の開閉で残し、既定は閉じる (推奨) / (B) 画像どおり削除し KPI とチャートだけにする / (C) 常時表示のまま画像の要素を上に足す。",
+      "answer": "(A) 折りたたみで残す を選択した。",
+      "provenance": "利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T11:48:28Z",
+      "required_info_items": [
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-002",
+      "question": "画像の『完全一致候補 (自動検出)』は判定が未判定で並び『選択した取引を同じ取引にする』ボタンを持つ。現行 core は発生日と金額が一致し口座が矛盾しない組を自動で freee 正本へ寄せている。完全一致をどう扱うか。選択肢: (A) 自動寄せは維持し、一覧は確認用で『同じ取引にする』は same 判定の記録だけ (総額不変) (推奨) / (B) 自動寄せをやめ、利用者が同じと判定するまで要確認として総額から隔離する。",
+      "answer": "(A) 自動寄せは維持 を選択した。",
+      "provenance": "利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T11:48:28Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-003",
+      "question": "画像の freee 除外一覧は『理由』列に 振替/内部移動/帳簿のみ のバッジと、別に『メモ』列を持ち、『一括で理由を設定』がある。現行 freee_deal_exclusions.reason は自由記述 1 列 (NOT NULL)。除外理由をどう持つか。選択肢: (A) 理由区分 reason_code (振替/内部移動/帳簿のみ/二重登録/その他) とメモ memo に分け、既存の自由記述は memo と『その他』へ移行する (推奨) / (B) 自由記述 1 列のまま、画面で先頭語をバッジ風に見せる。",
+      "answer": "(A) 理由区分+メモに分ける を選択した。",
+      "provenance": "利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T11:48:28Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-004",
+      "question": "画像の右ペインは『直前の操作 2026/09/10 10:12 1件の判定を元に戻しました / 元に戻す』を持つ。現行は判定を取り消す API が無く、戻せるのは freee 除外の DELETE だけである。元に戻すをどう実現するか。選択肢: (A) 判定・除外・戻すを 1 件ずつ D1 の操作履歴に残し、直前の操作を取り消せる。再読込後も直前の操作が表示される (推奨) / (B) 画面のメモリ上だけで直前 1 件を保持し、再読込で消える。",
+      "answer": "(A) 操作履歴を D1 に残す を選択した。",
+      "provenance": "利用者が 2026-09-15 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T11:48:28Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-target-platforms-tc-001",
+      "question": "本サイクル (総収支画面 05-total-cashflow.png の構成をフロントエンド・バックエンド・UI・UX・仕様へ反映) の対象プラットフォームはどれか。対象外は理由を述べる。",
+      "answer": "web のみを対象とする。解決する課題 (JTBD) は『月次クローズで総収支を開いたとき、家計と事業を合わせて今期いくらプラスかを前期と比べて掴み、その数字を歪める重複・除外を同じ画面で片付け、判断を誤ったら戻したい』である。対象ユーザーは単独の個人事業主 1 名 (唯一の利用者・保守者) と、その保守を手伝うコーディングエージェント。配信は Cloudflare Workers 上の React SPA 1 系統で、狭幅は既存のレスポンシブ (アイコンレール・下部タブ) の中で 3 ペインを縦積みにして扱う。スマートフォン・タブレット・デスクトップの専用アプリは上位概念 scope.out のスコープ外として対象外とする。",
+      "provenance": "対象ユーザーと JTBD は利用者の依頼文 (2026-09-15『この画面の構成が現状反映されていないので、フロントエンド、バックエンド、UI、UX、仕様などを反映させるようにしてください』) に由来する。platform を web に限る点は上位概念の承認 appr-foundation-total-cashflow-001 で利用者が承認した。answered_at は承認直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T11:57:18Z",
+      "required_info_items": [
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-tc-observed-001",
+      "question": "05-total-cashflow.png と FINAL-UI 仕様は総収支画面に何を求め、現行の総収支タブはどうなっているか。利用者はどの環境でどの作業に使うか。",
+      "answer": "画像 (design/FINAL-UI/images/05-total-cashflow.png) の構成: 共通ヘッダー (パンくず 確認/支出分析/総収支・『防衛ライン: 正常』・未記録 0か月・最終更新・⌘K・書き出し・ヘルプ・利用者) の下に期間ボタン (1年/2年/3年/任意) と期間ラベル。見出し『家計と事業を合わせた、本当の収支はいくらですか？』と補足文『家計と事業の収入・支出を月次で確認し、重複や除外を調整した実質的な収支を把握しましょう。』、右上に『データの見方』。5 タブ (照合/総収支/マトリクス/推移/診断、総収支に下線)。セグメント 総合/事業/家計 と右に『選択中の期間: 2025年9月 - 2026年8月 (1年) / 前期: 2024年9月 - 2025年8月 との比較』。KPI 3 枚 (総収入 ¥1,248,000 前期比 +¥96,800 (+8.4%)・総支出 ¥892,400 前期比 -¥49,200 (-5.2%)・純収支 +¥355,600 前期比 +¥130,800 (+58.1%)、矢印と色)。『月次の収入・支出・純収支の推移』(金額 (万円) 軸、収入/支出の棒と純収支の折れ線、凡例)。『重複・除外の判定作業』(左ナビ: 重複候補 3『同じ取引と思われる明細を確認』・freee除外 4『集計から除外した明細を確認』・要確認 2『判定が必要な明細を確認』/ 中央『重複候補の明細 (3件)』: すべてのソース・すべての判定の選択・『取引内容・金額で検索』・チェック列・日付・内容・金額・ソース・対応候補 (freee 日付)・判定 (未判定バッジ)・理由 / 右『選択中の明細の詳細』: MoneyForward の明細と freee の明細 (対応候補) を日付・内容・金額・口座で並べ、一致度 92% とバー、『同じ取引』(主)・『別の取引』・『集計から除外』、『直前の操作 2026/09/10 10:12 1件の判定を元に戻しました / 元に戻す』、閉じる×)。『freeeから除外した明細 (4件)』(すべて選択・選択をクリア・一括で理由を設定・適用 / 日付・内容・金額・理由バッジ (振替/内部移動/帳簿のみ)・ソース・メモ・『集計へ戻す』)。『完全一致候補 (自動検出)』『金額・日付・内容が完全一致する取引の候補です。』(すべてのソース・すべて選択・一致度 100%・判定 未判定・『選択した取引を同じ取引にする』)。進捗『3件中2件の判定が完了しました。/ 詳細を表示』。下部固定バー『2件選択中 | 選択をクリア | 選択した2件を同じ取引にする』。共通フッター (取込データは外部送信しません・税務上の正本はfreee・毎朝バックアップ / 利用規約・プライバシー・データ出典・v1.0 / 改善を送る)。サイドバーは支出分析を展開し 総収支 を現在地、照合 に件数 5 のバッジ。FINAL-UI 仕様: FUNCTION-MATRIX.md は 05 の主目的『全収入・全支出を重複なく比較』・必須『1/2/3年比較、事業/家計/総合、freee除外理由、複数選択、一致候補、同一/別取引判定、復元、全選択/解除』、AUDIT.md は『不足あり。除外、複数選択、同一/別取引、復元が不足。重複判定ワークベンチへ再設計』、全画面共通の必須は期間保持・読込/空/失敗/未保存/確認/Undo/部分成功・共通フッター。現行: packages/web/src/pages/analysis/TotalCashflow.tsx (805 行) は 9 列の月次表 TotalCashflowTable、FreeeCoverageSection (一致組の除外・残り・除外済みと自由記述の理由・総額へ戻す)、要確認表 (同じ/違うボタンと一括判定、表上の一括バーは非固定) を縦に積む。KPI・前期比・チャート・総合/事業/家計切替はタブに無く、概況 (Overview) とハブ (HubSummary) にだけある。3 ペイン・一致度・並列詳細・元に戻す・進捗通知は無い。共通ヘッダーは『防衛線 ¥金額 / 見込 ¥金額 状態』、フッターは『税務上の正本はfreeeです』『毎晩バックアップ(30日保持)』。利用文脈は DESIGN-SYSTEM.md の最頻シナリオ『照合して、収支を確認し』の収支確認で、PC 縦長画像を正本とする。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: design/FINAL-UI/images/05-total-cashflow.png, design/FINAL-UI/spec/{FUNCTION-MATRIX,AUDIT,DESIGN-SYSTEM}.md, packages/web/src/pages/analysis/TotalCashflow.tsx, packages/web/src/components/Layout.tsx, packages/web/src/pages/Analysis.tsx。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T12:00:44Z",
+      "required_info_items": [
+        "context-of-use"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-tc-observed-001",
+      "question": "総収支タブのフロントエンド構成 (ルーティング・データ取得・共通部品・既存テスト) は現行どうなっているか。",
+      "answer": "React 18 + react-router-dom 7 + TanStack Query 5 + Chart.js 4 の Vite SPA (packages/web)。AuthenticatedApp.tsx が /analysis をハブ、/analysis/:tab を AnalysisPage へ割り当て、routeMetadata.ts の ANALYSIS_TABS が 5 タブの正本。総収支は pages/analysis/TotalCashflow.tsx で、queryKey ['total-cashflow', 期間 key] で GET /api/total-cashflow を読み、判定 POST /total-cashflow/verdicts・除外 POST/DELETE /total-cashflow/freee-exclusions の成功後に invalidateQueries({queryKey:['total-cashflow']}) を呼ぶ。PR #50 で分析系の更新はハブ要約 (['analysis-hub']) も追随させる。表示していないタブは遅延読み込みで API を呼ばない (analysis-tabs.dom.test.tsx)。期間は period.tsx の usePeriod() が selection/key/withPeriod(path) を返す (localStorage kanjo:period で全画面共有)。共通部品は components/Page.tsx (PageShell/PageHeader/KpiCard/PageState/PageActions)・Button.tsx (native button は data-native-control と ARIA 必須で AST テストが検査)・DataTable.tsx・charts.ts (チャート系列色)。トークンは packages/core/src/design-tokens.ts が正本で、web の色直書きは lint で落ちる。サイドバー (Layout.tsx) は GET /analysis/hub の結果で子行に件数バッジ (data-testid nav-review-badge-<id>) を出し、現在地を aria-current で示す。既存テストは packages/web/test/total-cashflow-table.dom.test.tsx・analysis-tabs.dom.test.tsx・common-shell.dom.test.tsx と、ルート verify:full の check:thead / check:mobile-layout / check:financial-figure / check:financial-routes / check:analysis-hub。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/web/src/{AuthenticatedApp.tsx,routeMetadata.ts,pages/Analysis.tsx,pages/analysis/TotalCashflow.tsx,period.tsx,components/{Page,Button,DataTable,Layout}.tsx,components/charts.ts}, packages/web/package.json, package.json。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T12:00:44Z",
+      "required_info_items": [
+        "api-contract",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-backend-web-tc-observed-001",
+      "question": "総収支の集計・判定・除外に使えるドメイン関数と API は現行どこまであり、何が無いか。",
+      "answer": "API は Hono の Cloudflare Worker (packages/api/src/index.ts)。/api/* に authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence を掛けてから totalCashflowRoute をマウントする。GET /api/total-cashflow は loadScoped(c) で期間を解決し、freee_deals・duplicate_verdicts・freee_deal_exclusions を userId で読み、期間の月の deal だけを core の totalCashflowReport(data, deals, bindDuplicateVerdicts(verdictRows, data.mfTx), exclusions) へ渡して months・review (txId/reason/mf/candidates)・matched・freeeOnly 等を返す。POST /total-cashflow/verdicts は最大 200 件の {txId, verdict same|different, freeeKey?} を upsert する。POST /total-cashflow/freee-exclusions は {freeeKey, reason (1〜200 字)} または {freeeKeys[], reason} を最大 200 件、DELETE は除外を外す。core (packages/core/src/total-cashflow.ts) の取り決め: 消し込みの肯定条件は発生日一致かつ金額一致の 2 つだけで支払先は使わない、一致組は freee を正とし事業費として 1 度だけ数える、要確認の MF 明細は 4 つの束に入れない、口座は否定条件 (accountsConflict) にだけ使う、±3 日 (REVIEW_NEAR_DAYS) は自動で寄せず要確認に出す、候補は日付の近い順に 3 件 (REVIEW_MAX_CANDIDATES)、要確認理由は 4 種 (発生日が一致しません / 口座不一致 / 取込月と表示日の月が一致しません / 対応する freee 取引が他の明細へ寄せられています)、集計値は保存せず利用者の判断だけを保存する (dec-aggregation-strategy-001)。前期間は core analysis-hub.ts の previousPeriod(range) (直前の同じ長さ) と previousPeriodLabel がある。無いもの: 総収支の期間合計と前期比、総合/事業/家計のセグメント別系列 (月次行に内訳はあるが合計・前期比を返さない)、一致度、判定作業の 3 区分と件数、完全一致候補の一覧 (matched はあるが一致度・判定状態を持たない)、除外理由の区分、判定の取消 API、操作履歴。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,routes/total-cashflow.ts,routes/duplicate-verdict-bindings.ts,routes/analytics.ts}, packages/core/src/{total-cashflow.ts,analysis-hub.ts,period.ts}。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T12:00:44Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-database-web-tc-observed-001",
+      "question": "総収支の判定・除外は D1 のどこに保存され、今回の要件にはどんなスキーマ変更が要るか。",
+      "answer": "D1 (binding DB、drizzle-orm、packages/api/src/db/schema.ts)。判定は duplicate_verdicts (0036、user_id・tx_id・verdict、0037 で freee_key TEXT NULL を追加)、freee 側の二重登録除外は freee_deal_exclusions (0037、PRIMARY KEY (user_id, freee_key)、reason TEXT NOT NULL、created_at/updated_at) に保存する。最新 migration は 0040_review_snoozes_and_monthly_close_reviews.sql。集計値は保存しない方針 (dec-aggregation-strategy-001)。利用者決定 qa-total-cashflow-decision-003 により freee_deal_exclusions に reason_code と memo を足して既存 reason を移す変更が、qa-total-cashflow-decision-004 により判定・除外・戻すを 1 件ずつ記録する操作履歴テーブルの追加が要る。いずれも追加のみの migration (0041 以降) で、既存行を失わない。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: migrations/{0036_duplicate_verdicts,0037_freee_pairing_and_exclusions,0040_review_snoozes_and_monthly_close_reviews}.sql, packages/api/src/db/schema.ts, packages/core/src/total-cashflow.ts。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T12:00:44Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-auth-web-tc-observed-001",
+      "question": "総収支 API (読取・一括判定・除外・取消) と総収支画面の認証・認可はどうなるか。",
+      "answer": "利用者アカウント (メールアドレス + パスワード、PR #47、PBKDF2 は PR #52 で 100,000 回) のセッションで認証する。packages/api/src/index.ts は /api/* に authGuard() と mustChangePasswordFence() を掛け、route は c.get('userId') で利用者を特定する。既存の総収支 route は全ての読取・書込を userId で絞る。新設・拡張する一括判定・除外理由・操作履歴の取得と取消も同じ route に置き、userId で絞る (他利用者の判定や履歴を取り消せない)。書込 (POST/DELETE) は canonicalMutationFence の対象になる。画面は AuthenticatedApp.tsx 配下で、未認証は既存どおりログインへ送られる。認証方式・セッション・レート制限の変更は無い。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,auth.ts,canonical-mutation-fence.ts,routes/total-cashflow.ts}, packages/web/src/AuthenticatedApp.tsx。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T12:00:44Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-security-web-tc-observed-001",
+      "question": "総収支画面で扱う情報のセキュリティ上の前提 (公開範囲・入力検証・外部送信・監査可能性) は何か。",
+      "answer": "index.ts は secureHeaders と requestId を全体に掛け、/api/* は認証と runtimeSchemaGuard・canonicalMutationFence の後にある。総収支 API は利用者本人の明細・freee 取引・判定だけを返し、外部サービスへ送らない (フッター『取込データは外部送信しません』)。入力は zod で検証し、判定は verdict を same|different の許可値、件数は最大 200、除外理由は 1〜200 字に制限している。D1 のバインド上限は d1-limits.ts の D1_MAX_BOUND_PARAMS で分割する。今回足す理由区分は許可リスト (振替/内部移動/帳簿のみ/二重登録/その他) で検証し、メモは長さ上限付きの文字列として React のテキストとして描画する (HTML として解釈しない)。操作履歴は利用者本人の判断記録であり、取消は本人の直前の操作だけを対象にする。検索語はクエリ文字列に載せず画面内の絞り込みに留める。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/src/{index.ts,routes/total-cashflow.ts,d1-limits.ts}, design/FINAL-UI/images/05-total-cashflow.png のフッター。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T12:00:44Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-infrastructure-web-tc-observed-001",
+      "question": "総収支画面の配信とインフラ構成は現行どうなっていて、変更は要るか。",
+      "answer": "packages/api/wrangler.jsonc の Worker kanjo-console が SPA を Workers Assets (binding ASSETS) で配信し、D1 (DB)・R2 (FILES)・cron (\"0 18 * * *\" = 日本時間 03:00 の夜間処理、バックアップを含む) を持つ。GitHub Actions は ci.yml (lint・typecheck・test・build 等)・deploy.yml・migrate.yml で、本番 migration は feat-deploy-migration-gate の gate と runtimeSchemaGuard を通る。本サイクルは既存 Worker の総収支 route を拡張し D1 migration を 1〜2 本足す。binding・cron・デプロイ経路の変更は無い。cron が日本時間 03:00 に動くため、フッター文言は『毎朝バックアップ』が事実に沿う。GET /api/total-cashflow は 1 リクエストで loadDataset と freee 系 3 テーブル (+操作履歴の直近 1 件) を読み、d1-limits.ts の制限内に収まる。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: packages/api/wrangler.jsonc, .github/workflows/{ci,deploy,migrate}.yml, packages/api/src/{d1-limits.ts,schema-guard.ts}。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T12:00:44Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-maintenance-ops-web-tc-observed-001",
+      "question": "総収支画面の改修後の検証と保守の手順 (回帰確認・規則の維持・migration の運用) はどうなるか。",
+      "answer": "ルート package.json の verify:full (pnpm test → typecheck → lint → build → web の check:thead / check:mobile-layout / check:financial-figure / check:financial-routes / check:analysis-hub → preview:smoke) と design-system:fast がある。lint は biome・check-design-tokens・check-design-system-document-contract 等を束ね、CI (ci.yml) が lint/typecheck/test/build を実行する。本サイクルでは、一致度・判定作業の 3 区分・完全一致の扱い・前期比の null 規則を docs に明記し core テストの境界値で固定する。消し込みの不変条件は packages/core/test/total-cashflow-contract.test.ts、判定の保存は packages/api/test/total-cashflow-verdict.integration.test.ts、画面は packages/web/test/total-cashflow-table.dom.test.tsx が既に検査しており、これらを緑のまま拡張する。migration は追加のみで、既存除外の reason が memo へ移ることを統合テストで確かめる。check:financial-routes / check:mobile-layout の対象に /analysis/total-cashflow が含まれるかを確認し、無ければ追加して狭幅の横スクロールを検査する。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の該当ファイルを読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。 対象: package.json, packages/web/package.json, .github/workflows/ci.yml, packages/core/test/total-cashflow-contract.test.ts, packages/api/test/total-cashflow-verdict.integration.test.ts, packages/web/test/total-cashflow-table.dom.test.tsx。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T12:00:44Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-005",
+      "question": "上位概念の承認時に、アシスタントが提案した次の設計判断を利用者はどう扱うか: (1) 前期は選択期間と同じ長さの直前期間 (core analysis-hub.ts の previousPeriod を再利用)、(2) 一致度は金額・日付差・口座・摘要から説明可能な規則で算出し docs とテストで固定、(3) 完全一致候補一覧の『同じ取引にする』は same 判定の記録だけで総額を変えない、(4) 右ペインの『集計から除外』は対応する freee 候補を理由区分付きで freee 除外へ入れる、(5) 共通ヘッダーの『防衛線』表記を画像どおり『防衛ライン』、フッターの『毎晩バックアップ(30日保持)』を『毎朝バックアップ』に揃える、(6) サイドバーは 支出分析 > 総収支 の現在地と照合の件数バッジの確認だけに留める。",
+      "answer": "(1)〜(6) を含む foundation 要約に対し『この内容で承認』を選択した。",
+      "provenance": "利用者が 2026-09-15 に AskUserQuestion で上位概念 (目的・G1-G5・対象外) の要約を承認した (appr-foundation-total-cashflow-001)。要約の G3・G5 に (1)〜(6) を明記していた。選択肢には『修正してから承認』もあった。answered_at は承認直後に date -u で実測した時刻で、選択時刻の上限値。規則の数値の細部 (配点など) はこの承認に含まれず、qa-backend-web-tc-inference-002 のアシスタント推測である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T11:57:18Z",
+      "required_info_items": [
+        "domain-model",
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-backend-web-tc-inference-002",
+      "question": "一致度・判定作業の 3 区分・前期比・完全一致候補・判定進捗・操作の取消を、core の純関数としてどう定義するか (数値と境界)。",
+      "answer": "一致度 (0〜100 の整数) = 金額 40 (同額・同じ向きのときだけ候補になるので候補は常に 40) + 日付 30/20/10/5/0 (dayGap の絶対値 0/1/2/3/4 以上) + 口座 15/8/0 (一致/片側の情報なし/accountsConflict) + 摘要 15/8/0 (normalizeInstitution と同じ正規化の後に MF content と freee partner が一致/一方が他方を含む/それ以外)。完全一致 = 100。判定作業の 3 区分: 『重複候補』は review のうち候補がちょうど 1 件で理由が『発生日が一致しません』または『取込月と表示日の月が一致しません』のもの (1 対 1 で同じ/別を決められる)。『要確認』は残りの review (候補 0 件・2 件以上・『口座不一致』・『対応する freee 取引が他の明細へ寄せられています』)。『freee除外』は excluded。3 区分の和は review 件数 + excluded 件数に一致する。完全一致候補一覧は matched のうち by=auto のもので、一致度と判定状態 (same 記録があれば『同じ』、無ければ『未判定』) を付ける。『同じ取引にする』は same を記録するだけで matched の集合と総額は変わらない。セグメント: 総合=事業+家計 (months の bizIncome+householdIncome=totalIncome 等) の期間合計と月次系列。前期比: previousPeriod(range) の月がデータ範囲に全て揃うときだけ前期値を出し、1 か月でも欠ければ null (画面は『比較データなし』)。差額 = 当期 − 前期、率 = 差額 / |前期| で前期が 0 のとき率は null。判定進捗『N件中M件』は表示中区分の対象件数 N と、その中で verdict または除外を記録済みの件数 M。取消: 操作履歴の最新かつ未取消の 1 操作 (一括は 1 操作に複数件) を、記録した操作前の値へ戻す。取消した操作は undone_at を持ち、取消そのものも履歴に 1 件残す。取消後の総収入・総支出・判定件数は操作前と一致する。",
+      "provenance": "アシスタントが 2026-09-15 に、観測 qa-backend-web-tc-observed-001 (ReconcileReview/ReconcileMatch/candidates の dayGap・accountConflict、previousPeriod) と利用者決定 qa-total-cashflow-decision-002/004/005 から導いた推測。配点・区分境界・null 規則は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T12:07:30Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-database-web-tc-inference-002",
+      "question": "除外理由の区分とメモ、操作履歴を D1 にどう持ち、既存データをどう移すか。",
+      "answer": "migration 0041 (番号は取込時点の main の最新 +1 で確定する) で freee_deal_exclusions に reason_code TEXT NOT NULL DEFAULT 'other' (CHECK で transfer/internal/book_only/duplicate/other の 5 値) と memo TEXT を追加し、既存行は memo = reason、reason_code = 'other' に移す。reason 列は後方互換のため残し、書込時は memo を正本として同じ値を入れる (旧 Worker が読んでも壊れない)。画面の表示語は 振替/内部移動/帳簿のみ/二重登録/その他。操作履歴は total_cashflow_operations (id TEXT PRIMARY KEY、user_id TEXT NOT NULL、kind TEXT NOT NULL CHECK (verdict/exclude/restore/undo)、items_json TEXT NOT NULL (対象ごとの操作前後の値。判定なら txId・before verdict/freeeKey・after、除外なら freeeKey・before 行の有無と reason_code/memo・after)、item_count INTEGER NOT NULL、undoes_id TEXT NULL、undone_at TEXT NULL、created_at TEXT NOT NULL) を新設し、索引 (user_id, created_at DESC)。書込 1 操作 = 判定/除外の更新と履歴 1 行を D1 batch で同時に行い、片方だけ残らないようにする。items_json は 1 操作最大 200 件で、D1_MAX_BOUND_PARAMS に合わせて分割する。保持は無期限で、利用者の判断記録のみ (集計値は保存しない dec-aggregation-strategy-001 と矛盾しない)。",
+      "provenance": "アシスタントが 2026-09-15 に、観測 qa-database-web-tc-observed-001 (0036/0037/0040 と freee_deal_exclusions の制約) と利用者決定 qa-total-cashflow-decision-003/004 から導いた推測。列名・CHECK 値・後方互換の方法は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T12:07:30Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-tc-inference-002",
+      "question": "総収支画面が必要とする API 契約と、画面側のデータ取得・更新後の追随をどうするか。",
+      "answer": "GET /api/total-cashflow の応答へ追加で summary (total/business/household ごとの income・expense・net と previous {income, expense, net} | null・delta・rate | null、period と previousPeriod のラベル)、series (セグメントごとの月次 income/expense/net)、workbench (duplicates・review・exclusions の件数と明細。明細は mf・candidates[score 付き]・verdict)、exactMatches (by=auto の組と score・判定状態)、lastOperation (最新の未取消操作の kind・item_count・created_at | null) を返し、画面は 1 回の取得で全ブロックを描く (既存 months/review/matched/freeeOnly は互換のため残す)。一括判定は既存 POST /total-cashflow/verdicts (最大 200 件) を使い、応答に operationId を返す。除外は POST /total-cashflow/freee-exclusions の body を {items:[{freeeKey, reasonCode, memo?}]} と {freeeKeys[], reasonCode, memo?} (一括で理由を設定) に広げ、旧 {reason} は memo+other として受ける。DELETE (集計へ戻す) も操作履歴に残す。新設: POST /total-cashflow/operations/undo (直前の未取消操作を取り消し、取消後の lastOperation を返す。取り消す操作が無ければ 409)。画面は queryKey ['total-cashflow', 期間 key] 1 本を正本にし、判定・除外・戻す・取消の成功後に ['total-cashflow'] と ['analysis-hub'] を invalidate する (サイドバーの照合バッジと概況の要約を追随させる)。セグメント・区分・フィルタ・検索・選択は画面の状態で持ち API を再取得しない。総合/事業/家計は URL に載せない (期間と同じくタブ内の表示状態)。部分成功は件数で通知し、失敗した項目は選択状態のまま残す。",
+      "provenance": "アシスタントが 2026-09-15 に、観測 qa-frontend-web-tc-observed-001・qa-backend-web-tc-observed-001 と利用者決定 qa-total-cashflow-decision-001/003/004/005 から導いた推測。応答の形・endpoint 名は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T12:07:30Z",
+      "required_info_items": [
+        "api-contract",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-tc-inference-002",
+      "question": "総収支画面の表現物ごとに何を残し・落とし・加工するか。束の順位とその根拠 (task 頻度 × 失敗コスト) は何か。",
+      "answer": "1 位は KPI 3 枚と前期比 (毎回見る・誤読すると月次の判断を誤る) で、見出しの問いの直下に置く。2 位は判定作業の左ナビの件数 (未判断が残ると総額が確定しない、失敗コスト最大) で、件数 0 の区分も 0 と出して片付いたことを示す。3 位はチャート (推移の把握、頻度中)。4 位は freee 除外一覧と完全一致候補 (確認用、頻度低だが誤除外は総額を歪めるので理由区分とメモを常に見せる)。9 列の月次表は検算根拠として落とさず『月次の内訳を表示』で閉じて置く (qa-total-cashflow-decision-001)。加工: 前期比は額と率を並べ符号と矢印と色で示し色だけに頼らない。前期が欠けるときは 0% ではなく『比較データなし』。一致度は数値 % とバーに加え、右ペインで配点の内訳 (金額・日付・口座・摘要) を文字で出す。判定状態は 未判定/同じ/別/除外 の文字バッジ。落とすもの: 画像の見本値・架空の口座名。下部選択バーは 1 件以上選択したときだけ出し、選択が 0 件になれば消す。操作後の通知は『N件中M件の判定が完了しました』と、取消可能なときは『元に戻す』を同じ場所に出す。狭幅では 3 ペインを 左ナビ→明細表→詳細 の順に縦積みし、詳細は選択時に開く。",
+      "provenance": "アシスタントが 2026-09-15 に、観測 qa-ui-ux-web-tc-observed-001 (画像・FUNCTION-MATRIX・AUDIT) と利用者決定 qa-total-cashflow-decision-001/002/005 から導いた推測。順位は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T12:07:30Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-006",
+      "question": "総収支の KPI に出す『前期比』の比較対象はどれにするか。選択肢: 同じ長さの直前期間 (支出分析ハブの前期比と同じ関数・季節性は吸収しない) / 前年の同じ期間 (季節の影響を除ける・ハブの前期比とは定義が別・1 年分以上のデータが必要)。",
+      "answer": "前年の同じ期間。含意: 2026-04〜06 を選んだら 2025-04〜06 と比べる。支出分析ハブの前期間比 (直前の同じ長さ) とは別の定義になるので、画面の表記で区別する。",
+      "provenance": "C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T12:19:17Z",
+      "required_info_items": [
+        "domain-model",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-007",
+      "question": "判定作業に出す『一致度』はどう扱うか。選択肢: 規則で算出して表示 (金額・日付差・口座・摘要の配点で 0〜100、% と内訳を出し docs とテストで固定) / 数値は出さない (判定材料を文字で並べるだけ)。",
+      "answer": "規則で算出して表示する。含意: 確率ではなく配点の合計であることを内訳で示す。",
+      "provenance": "C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T12:19:17Z",
+      "required_info_items": [
+        "domain-model",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-008",
+      "question": "完全一致候補一覧の『同じ取引にする』は何をするか。選択肢: 判定の記録だけ (自動で寄せた組に確認済みの印を付け総額は変わらない) / 確認するまで保留 (完全一致でも自動では寄せず要確認扱い)。",
+      "answer": "判定の記録だけ。含意: 完全一致の自動寄せ (qa-total-cashflow-decision-002) は維持し、same の記録で matched と総額は変わらない。",
+      "provenance": "C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T12:19:17Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-009",
+      "question": "右ペインの『集計から除外』はどちら側の明細を除外するか。選択肢: 対応する freee 取引 (既存の freee 除外に理由区分付きで入れる・MF 明細は残る) / MF 明細の側 (MF 側の新しい除外を作る・テーブルと画面が新たに必要)。",
+      "answer": "対応する freee 取引。含意: 既存の freee_deal_exclusions に理由区分とメモ付きで入れ、MF 側の除外テーブルは作らない。",
+      "provenance": "C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T12:19:17Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-010",
+      "question": "共通ヘッダーとフッターの文言をどうするか (現状『防衛線』『毎晩バックアップ(30日保持)』/ 画像『防衛ライン: 正常』『毎朝バックアップ』)。選択肢: 画像に揃える (全画面の共通シェルが変わる・『毎朝』が cron 時刻と合うかも扱う) / 現状のまま (総収支の本体だけを対象にする)。",
+      "answer": "画像に揃える。含意: 全画面の共通シェルの文言が変わる。cron は UTC 18 時 (日本時間 3 時) なので『毎朝』と矛盾しないことを実装時に確かめ、保持期間の表示を落とすかは画像に合わせる。",
+      "provenance": "C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T12:22:21Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-011",
+      "question": "サイドバーは今回どこまで扱うか。選択肢: 表示の確認だけ (支出分析 > 総収支 の現在地と照合の件数バッジが判定後に追随することをテストで確認し、構成と見た目は変えない) / 画像に合わせて直す (差があれば直し、対象が全画面共通の部品に広がる)。",
+      "answer": "表示の確認だけ。",
+      "provenance": "C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T12:22:21Z",
+      "required_info_items": [
+        "context-of-use"
+      ]
+    },
+    {
+      "id": "qa-backend-web-tc-inference-003",
+      "question": "前期を前年の同じ期間とする決定 (qa-total-cashflow-decision-006) を受けて、総収支の前期比を core でどう定義するか。qa-backend-web-tc-inference-002 の前期比の部分を置き換える。",
+      "answer": "core に previousYearPeriod(range) を足し、選択期間の開始月と終了月をそれぞれ 12 か月前へずらした期間を返す (例 2026-04〜2026-06 → 2025-04〜2025-06)。analysis-hub の previousPeriod (直前の同じ長さ) は変えず、名前も分けて混同を防ぐ。前期値は、前年同期間の全ての月がデータ範囲にあるときだけ出し、1 か月でも欠ければ null (画面は『比較データなし』)。差額 = 当期 − 前期、率 = 差額 / |前期| で前期が 0 のとき率は null。画面とラベルは『前年同期』と書き、ハブの『前期間』と別の語にする。一致度の配点・3 区分・完全一致候補・進捗・取消の規則は qa-backend-web-tc-inference-002 のままとし、前期比の部分だけをこの記録で置き換える。",
+      "provenance": "アシスタントが 2026-09-15 に、利用者決定 qa-total-cashflow-decision-006〜009 と観測 qa-backend-web-tc-observed-001 (analysis-hub.ts の previousPeriod / previousPeriodLabel) から導いた推測。関数名・欠損月の null 規則・ラベルの語は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T12:27:12Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-product-goal-tc-inference-001",
+      "question": "総収支サイクルの JTBD と対象ユーザー (requirements_foundation の essential_purpose・background・stakeholders の元になった文) は何で、誰が書いたか。",
+      "answer": "JTBD は『月次クローズで総収支を開いたとき、家計と事業を合わせて今期いくらプラスかを前期と比べて掴み、その数字を歪める重複・除外を同じ画面で片付け、判断を誤ったら戻したい』。対象ユーザーは単独の個人事業主 1 名 (唯一の利用者・保守者) と、その保守を手伝うコーディングエージェント。",
+      "provenance": "C06 ヒアリング監査 (再実行) が、qa-target-platforms-tc-001 の answer に含まれる JTBD・利用者像の文をアシスタントの合成なのに basis=user-decision で記録していると指摘した (R6 観点 a)。qa_log は上書きできないため、tc-001 を platform の決定 (qa-target-platforms-tc-002) と JTBD・利用者像の推測 (qa-product-goal-tc-inference-001) の 2 件に分けて記録し直し、対象外セルの根拠参照を tc-002 へ差し替えた。 この JTBD と利用者像の文はアシスタントが 2026-09-15 に、利用者の依頼文 (05-total-cashflow.png の構成をフロントエンド・バックエンド・UI・UX・仕様へ反映する) と 05-total-cashflow.png の見出し・FINAL-UI の FUNCTION-MATRIX/AUDIT・既存 docs から合成した推測で、利用者の発言ではない。利用者はこの文を含む上位概念の要約を appr-foundation-total-cashflow-001 で『この内容で承認』と選択した (選択肢には『修正してから承認』もあった) が、文言自体は利用者が書いたものではない。answered_at はこの訂正記録を書く直前に date -u で実測した時刻。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T12:32:01Z",
+      "required_info_items": [
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-target-platforms-tc-002",
+      "question": "本サイクル (総収支画面 05-total-cashflow.png の構成をフロントエンド・バックエンド・UI・UX・仕様へ反映) の対象プラットフォームはどれか。",
+      "answer": "web のみ。",
+      "provenance": "C06 ヒアリング監査 (再実行) が、qa-target-platforms-tc-001 の answer に含まれる JTBD・利用者像の文をアシスタントの合成なのに basis=user-decision で記録していると指摘した (R6 観点 a)。qa_log は上書きできないため、tc-001 を platform の決定 (qa-target-platforms-tc-002) と JTBD・利用者像の推測 (qa-product-goal-tc-inference-001) の 2 件に分けて記録し直し、対象外セルの根拠参照を tc-002 へ差し替えた。 利用者の意思決定行為は、アシスタントが書いた上位概念の要約 (scope.out に『mobile / tablet / desktop 向け専用アプリ: 対象は web のみ』を明記) を AskUserQuestion で『この内容で承認』と選んだこと (appr-foundation-total-cashflow-001) だけで、要約の文はアシスタントが書いた。answered_at は承認直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T11:57:18Z",
+      "required_info_items": [
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-backend-web-tc-inference-004",
+      "question": "qa-backend-web-tc-inference-002 は前期比に廃止した旧定義 (previousPeriod = 直前の同じ長さ) を含み、根拠にも束ね質問 qa-total-cashflow-decision-005 を挙げている。前期比以外の規則 (一致度・3 区分・完全一致候補・セグメント・判定進捗・取消) を、現行の決定だけを根拠にどう定義し直すか。",
+      "answer": "一致度 (0〜100 の整数) = 金額 40 (同額・同じ向きのときだけ候補になるので候補は常に 40) + 日付 30/20/10/5/0 (dayGap の絶対値 0/1/2/3/4 以上) + 口座 15/8/0 (一致/片側の情報なし/accountsConflict) + 摘要 15/8/0 (normalizeInstitution と同じ正規化の後に MF content と freee partner が一致/一方が他方を含む/それ以外)。完全一致 = 100。判定作業の 3 区分: 『重複候補』は review のうち候補がちょうど 1 件で理由が『発生日が一致しません』または『取込月と表示日の月が一致しません』のもの (1 対 1 で同じ/別を決められる)。『要確認』は残りの review (候補 0 件・2 件以上・『口座不一致』・『対応する freee 取引が他の明細へ寄せられています』)。『freee除外』は excluded。3 区分の和は review 件数 + excluded 件数に一致する。完全一致候補一覧は matched のうち by=auto のもので、一致度と判定状態 (same 記録があれば『同じ』、無ければ『未判定』) を付ける。『同じ取引にする』は same を記録するだけで matched の集合と総額は変わらない。セグメント: 総合=事業+家計 (months の bizIncome+householdIncome=totalIncome 等) の期間合計と月次系列。前期比は本記録で定義せず、qa-backend-web-tc-inference-003 (previousYearPeriod・前年同期) だけに従う。判定進捗『N件中M件』は表示中区分の対象件数 N と、その中で verdict または除外を記録済みの件数 M。取消: 操作履歴の最新かつ未取消の 1 操作 (一括は 1 操作に複数件) を、記録した操作前の値へ戻す。取消した操作は undone_at を持ち、取消そのものも履歴に 1 件残す。取消後の総収入・総支出・判定件数は操作前と一致する。 本記録は qa-backend-web-tc-inference-002 を置き換える。以後 002 は根拠に使わず、inference-003 の『002 のまま』はこの記録の規則を指す。",
+      "provenance": "アシスタントが 2026-09-15 に、完成度評価 (C05) の medium 指摘『inference-002 の前期比旧定義が置換注記なしで章に残る』を受けて、inference-002 の本文から前期比の文を除き、根拠を観測 qa-backend-web-tc-observed-001 (ReconcileReview/ReconcileMatch/candidates の dayGap・accountConflict) と利用者決定 qa-total-cashflow-decision-002/004/007/008 に差し替えた推測。配点・区分境界・取消の範囲は利用者の明示選択ではない (一致度を規則で算出して表示すること自体は decision-007 の利用者決定)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T12:49:01Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-tc-inference-003",
+      "question": "qa-frontend-web-tc-inference-002 は API 応答に『period と previousPeriod のラベル』を置いており、前年同期 (qa-backend-web-tc-inference-003) の用語と衝突する。総収支画面の API 契約と、画面側の取得・更新後の追随を、前年同期の用語でどう定義し直すか。",
+      "answer": "GET /api/total-cashflow の応答へ追加で summary (total/business/household ごとの income・expense・net と previousYear {income, expense, net} | null・delta・rate | null、period と previousYearPeriod のラベル。画面の見出しは『前年同期』でハブの『前期間』とは語を分ける)、series (セグメントごとの月次 income/expense/net)、workbench (duplicates・review・exclusions の件数と明細。明細は mf・candidates[score 付き]・verdict)、exactMatches (by=auto の組と score・判定状態)、lastOperation (最新の未取消操作の kind・item_count・created_at | null) を返し、画面は 1 回の取得で全ブロックを描く (既存 months/review/matched/freeeOnly は互換のため残す)。一括判定は既存 POST /total-cashflow/verdicts (最大 200 件) を使い、応答に operationId を返す。除外は POST /total-cashflow/freee-exclusions の body を {items:[{freeeKey, reasonCode, memo?}]} と {freeeKeys[], reasonCode, memo?} (一括で理由を設定) に広げ、旧 {reason} は memo+other として受ける。DELETE (集計へ戻す) も操作履歴に残す。新設: POST /total-cashflow/operations/undo (直前の未取消操作を取り消し、取消後の lastOperation を返す。取り消す操作が無ければ 409)。画面は queryKey ['total-cashflow', 期間 key] 1 本を正本にし、判定・除外・戻す・取消の成功後に ['total-cashflow'] と ['analysis-hub'] を invalidate する (サイドバーの照合バッジと概況の要約を追随させる)。セグメント・区分・フィルタ・検索・選択は画面の状態で持ち API を再取得しない。総合/事業/家計は URL に載せない (期間と同じくタブ内の表示状態)。部分成功は件数で通知し、失敗した項目は選択状態のまま残す。本記録は qa-frontend-web-tc-inference-002 を置き換え、以後 002 は根拠に使わない。",
+      "provenance": "アシスタントが 2026-09-15 に、完成度評価 (C05) の medium 指摘『frontend の応答ラベル previousPeriod が前年同期の用語と衝突する』を受けて、inference-002 の本文の前期ラベルを previousYear / previousYearPeriod に改め、根拠を観測 qa-frontend-web-tc-observed-001・qa-backend-web-tc-observed-001、推測 qa-backend-web-tc-inference-003、利用者決定 qa-total-cashflow-decision-001/003/004/006/008 に差し替えた推測。応答の形・フィールド名・endpoint 名は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T12:49:01Z",
+      "required_info_items": [
+        "api-contract",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-012",
+      "question": "完全一致候補一覧 (自動で寄せた組) に出す一致度はどうするか。自動で寄せる条件は日付と金額の一致だけで摘要を見ないため、配点どおりに計算すると 78〜100% に散る。選択肢: 規則どおり計算して表示 (摘要や口座の差が数字で見える・画像の『一致度 100%』と合わない場合があり一覧名を改める必要がある) / 自動で寄せた組は常に 100% (画像どおり・摘要が違う組も 100% と出て内訳を出さない)。",
+      "answer": "規則どおり計算して表示。含意: 一覧の一致度は 78〜100% の値をそのまま出し、配点の内訳も見せる。画像の説明文『金額・日付・内容が完全一致する取引の候補です』は事実と合わなくなるので、一覧名と説明文を『日付と金額が一致して自動で寄せた組』の意味に改める。",
+      "provenance": "完成度評価 (C05) の再評価が、アシスタント推定 qa-backend-web-tc-inference-004 で利用者に見える規則が一意に決まっていない (どちらで実装してもテストが通る) と medium 指摘したため、R3-reask で 1 問 1 論点に分けて質問した。利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T13:10:17Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-013",
+      "question": "『元に戻す』を続けて押したときの動きはどうするか (取り消した操作も履歴に 1 件残る)。選択肢: 1 つ前の操作へ遡る (押すたびに未取消の操作を新しい順に戻す・取消のやり直しは無い) / 直前の 1 回だけ戻せる (取消後はボタンを消す・2 つ以上前は戻せない)。",
+      "answer": "1 つ前の操作へ遡る。含意: 取消そのものは取消の対象にならず、押すたびに未取消の書込み操作を新しい順に 1 つずつ戻す。取り消した取消をやり直す手段は作らない。",
+      "provenance": "完成度評価 (C05) の再評価が、アシスタント推定 qa-backend-web-tc-inference-004 で利用者に見える規則が一意に決まっていない (どちらで実装してもテストが通る) と medium 指摘したため、R3-reask で 1 問 1 論点に分けて質問した。利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T13:10:17Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-014",
+      "question": "freee 取引を『集計から除外』したとき、対応する MF 明細の事業/家計はどう数えるか。現行 core は freee 取引を総額から外し、MF 明細を公私仕分けの判定で数えるため、事業費だった取引が家計へ移ることがある。選択肢: MF の公私仕分けに従う (現行のまま・二重計上は消える・公私仕分けが家計の明細は事業費から家計支出へ移る) / 除外した freee の事業/家計を引き継ぐ (事業費の額が動かない・core に引継ぎ規則とテストが増え公私仕分けと食い違う明細が生じる)。",
+      "answer": "MF の公私仕分けに従う。含意: 除外後の MF 明細は公私仕分け (resolveTx) の結果で事業か家計に数え、除外の前後で事業と家計の内訳が入れ替わることがある。core の集計規則は変えず、この入れ替わりを境界テストで固定する。",
+      "provenance": "完成度評価 (C05) の再評価が、アシスタント推定 qa-backend-web-tc-inference-004 で利用者に見える規則が一意に決まっていない (どちらで実装してもテストが通る) と medium 指摘したため、R3-reask で 1 問 1 論点に分けて質問した。利用者は AskUserQuestion の 2 択 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T13:10:17Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-infrastructure-web-tc-observed-002",
+      "question": "毎日のバックアップ (nightly_backup) は総収支の判定・除外・新しい操作履歴の表を含むか。",
+      "answer": "含まない。バックアップの payload は packages/api/src/store.ts の loadBackupPayload が BACKUP_SNAPSHOT_SQL で表を 1 つずつ列挙して組み立てる (sqlite_master の走査ではない)。列挙に入るのは baseline・freee_deals・MF 明細・sub_vendor_exclusions・現金・review_snoozes・monthly_close_reviews など (0040 の保留と月次レビューは『復元で失うと片付けた未処理が戻る』として後から足された)。duplicate_verdicts と freee_deal_exclusions は列挙に無く、新設する total_cashflow_operations も足さない限り入らない。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の packages/api/src/store.ts (BACKUP_SNAPSHOT_SQL・loadBackupPayload) と packages/api/src/index.ts (nightlyBackup) を読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T13:12:17Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-database-web-tc-inference-003",
+      "question": "除外理由の区分とメモ、操作履歴を D1 にどう持ち、既存データをどう移すか。連続して取り消すとき (qa-total-cashflow-decision-013) に履歴のどの行を対象にするか (qa-database-web-tc-inference-002 を置き換える)。",
+      "answer": "migration 0041 (番号は取込時点の main の最新 +1 で確定する) で freee_deal_exclusions に reason_code TEXT NOT NULL DEFAULT 'other' (CHECK で transfer/internal/book_only/duplicate/other の 5 値) と memo TEXT を追加し、既存行は memo = reason、reason_code = 'other' に移す。reason 列は後方互換のため残し、書込時は memo を正本として同じ値を入れる (旧 Worker が読んでも壊れない)。画面の表示語は 振替/内部移動/帳簿のみ/二重登録/その他。操作履歴は total_cashflow_operations (id TEXT PRIMARY KEY、user_id TEXT NOT NULL、kind TEXT NOT NULL CHECK (verdict/exclude/restore/undo)、items_json TEXT NOT NULL (対象ごとの操作前後の値。判定なら txId・before verdict/freeeKey・after、除外なら freeeKey・before 行の有無と reason_code/memo・after。自由文は取消に要る memo だけを持つ)、item_count INTEGER NOT NULL、undoes_id TEXT NULL、undone_at TEXT NULL、created_at TEXT NOT NULL) を新設し、索引 (user_id, created_at DESC)。取消の対象は user_id が一致し kind <> 'undo' かつ undone_at IS NULL の行のうち created_at が最新の 1 行で、取消は対象行の undone_at の更新・対象の値の復元・kind=undo (undoes_id=対象 id) の行の追加を 1 つの D1 batch で行う。undo の行は対象にならないので、続けて取り消すと 1 つ前の操作へ遡り、やり直しの経路は持たない。書込 1 操作 = 判定/除外の更新と履歴 1 行を D1 batch で同時に行い、片方だけ残らないようにする。items_json は 1 操作最大 200 件で、D1_MAX_BOUND_PARAMS に合わせて分割する。保持は無期限で、利用者の判断記録のみ (集計値は保存しない dec-aggregation-strategy-001 と矛盾しない)。毎日のバックアップは表を列挙して組み立てており判定・除外・操作履歴を含まない (qa-infrastructure-web-tc-observed-002)。本サイクルはバックアップの対象を広げず、復元すると判定・除外・操作履歴は復元前の状態へは戻らない既存の制約を maintenance-ops に明記する。本記録は qa-database-web-tc-inference-002 を置き換え、以後 002 は根拠に使わない。",
+      "provenance": "アシスタントが 2026-09-15 に、観測 qa-database-web-tc-observed-001 (0036/0037/0040 と freee_deal_exclusions の制約)・qa-infrastructure-web-tc-observed-002 (バックアップの表の列挙) と利用者決定 qa-total-cashflow-decision-003/004/013 から導いた推測。列名・CHECK 値・後方互換の方法・取消対象の条件・バックアップ対象を広げないことは利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T13:12:17Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-backend-web-tc-inference-005",
+      "question": "利用者決定 qa-total-cashflow-decision-012〜014 を受けて、一致度・判定作業の 3 区分・前年同期比・完全一致候補・セグメント・除外後の数え方・判定進捗・操作の取消を、core の純関数として 1 つの記録にまとめて定義し直すか (qa-backend-web-tc-inference-003 と -004 を置き換える)。",
+      "answer": "一致度 (0〜100 の整数) = 金額 40 (同額・同じ向きのときだけ候補になるので候補は常に 40) + 日付 30/20/10/5/0 (dayGap の絶対値 0/1/2/3/4 以上) + 口座 15/8/0 (一致/片側の情報なし/accountsConflict) + 摘要 15/8/0 (normalizeInstitution と同じ正規化の後に MF content と freee partner が一致/一方が他方を含む/それ以外)。満点は 100。判定作業の 3 区分: 『重複候補』は review のうち候補がちょうど 1 件で理由が『発生日が一致しません』または『取込月と表示日の月が一致しません』のもの (1 対 1 で同じ/別を決められる)。『要確認』は残りの review (候補 0 件・2 件以上・『口座不一致』・『対応する freee 取引が他の明細へ寄せられています』)。『freee除外』は excluded。3 区分の和は review 件数 + excluded 件数に一致する。自動一致の一覧は matched のうち by=auto の組で、自動で寄せる条件は発生日一致かつ金額一致だけなので一致度は 78〜100 の値になり、これを規則どおりそのまま出す (100 に丸めない。qa-total-cashflow-decision-012)。各組に判定状態 (same 記録があれば『同じ』、無ければ『未判定』) を付ける。『同じ取引にする』は same を記録するだけで matched の集合と総額は変わらない。セグメント: 総合=事業+家計 (months の bizIncome+householdIncome=totalIncome 等) の期間合計と月次系列。除外後の数え方: freee 取引を除外すると、その freee 取引は総額から外れ、対応していた MF 明細は公私仕分け (resolveTx) の結果で事業か家計に数える。除外の前後で事業と家計の内訳が入れ替わることがあり、core の集計規則は変えない (qa-total-cashflow-decision-014)。前年同期比: core に previousYearPeriod(range) を足し、選択期間の開始月と終了月をそれぞれ 12 か月前へずらした期間を返す (例 2026-04〜2026-06 → 2025-04〜2025-06)。analysis-hub の previousPeriod (直前の同じ長さ) は変えず名前も分ける。前年同期間の全ての月がデータ範囲にあるときだけ前年値を出し、1 か月でも欠ければ null (画面は『比較データなし』)。差額 = 当期 − 前年値、率 = 差額 / |前年値| で前年値が 0 のとき率は null。ラベルは『前年同期』。判定進捗『N件中M件』は表示中区分の対象件数 N と、その中で verdict または除外を記録済みの件数 M。取消: 押すたびに、kind が undo でなく undone_at が空の書込み操作のうち最新の 1 操作 (一括は 1 操作に複数件) を、記録した操作前の値へ戻す。取消した操作は undone_at を持ち、取消そのものも kind=undo の履歴 1 件 (undoes_id に対象) として残るが、undo の行は次の取消の対象にならないので、続けて押すと 1 つ前の操作へ遡る。取消のやり直しは無い (qa-total-cashflow-decision-013)。取消後の総収入・総支出・判定件数は操作前と一致する。本記録は qa-backend-web-tc-inference-003 と qa-backend-web-tc-inference-004 を置き換え、以後 003 と 004 は根拠に使わない。",
+      "provenance": "アシスタントが 2026-09-15 に、利用者決定 qa-total-cashflow-decision-002/006/007/008/012/013/014 と観測 qa-backend-web-tc-observed-001 (ReconcileReview/ReconcileMatch/candidates の dayGap・accountConflict、analysis-hub.ts の previousPeriod) と packages/core/src/total-cashflow.ts (第一段の自動寄せは発生日と金額のみ・除外した freee を集計から外し MF 明細を resolveTx で数える) から、003 と 004 を 1 つにまとめ直した推測。配点・区分境界・null 規則・関数名は利用者の明示選択ではない (一致度を規則どおり出す・取消で遡る・除外後は公私仕分けに従う、の 3 点は利用者決定)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T13:12:17Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-tc-inference-003",
+      "question": "総収支画面の表現物ごとに何を残し・落とし・加工するか。束の順位とその根拠 (task 頻度 × 失敗コスト) は何か。自動一致の一覧と連続の取消 (qa-total-cashflow-decision-012/013) をどう見せるか (qa-ui-ux-web-tc-inference-002 を置き換える)。",
+      "answer": "1 位は KPI 3 枚と前年同期比 (毎回見る・誤読すると月次の判断を誤る) で、見出しの問いの直下に置く。2 位は判定作業の左ナビの件数 (未判断が残ると総額が確定しない、失敗コスト最大) で、件数 0 の区分も 0 と出して片付いたことを示す。3 位はチャート (推移の把握、頻度中)。4 位は freee 除外一覧と自動一致の一覧 (確認用、頻度低だが誤除外は総額を歪めるので理由区分とメモを常に見せる)。9 列の月次表は検算根拠として落とさず『月次の内訳を表示』で閉じて置く (qa-total-cashflow-decision-001)。加工: 前年同期比は額と率を並べ符号と矢印と色で示し色だけに頼らない。表記は『前年同期』でハブの『前期間』と区別し (qa-total-cashflow-decision-006)、前年同期が欠けるときは 0% ではなく『比較データなし』。一致度は数値 % とバーに加え、右ペインで配点の内訳 (金額・日付・口座・摘要) を文字で出す (qa-total-cashflow-decision-007)。画像の『完全一致候補』と説明文『金額・日付・内容が完全一致する取引の候補です』は、自動一致の組の一致度が 78〜100% に散る (qa-total-cashflow-decision-012) ため事実と合わず、一覧名を『自動一致の候補』、説明文を『日付と金額が一致して自動で寄せた取引です。摘要や口座の違いは一致度に出ます』に改める。判定状態は 未判定/同じ/別/除外 の文字バッジ。『同じ取引にする』は判定の記録だけで総額は動かないことを確認文に出す (qa-total-cashflow-decision-008)。『集計から除外』は対応する freee 取引を除外し、MF 明細が公私仕分けに従って事業/家計へ数え直されることを確認文に出す (qa-total-cashflow-decision-009/014)。落とすもの: 画像の見本値・架空の口座名。下部選択バーは 1 件以上選択したときだけ出し、選択が 0 件になれば消す。操作後の通知は『N件中M件の判定が完了しました』と『元に戻す』を同じ場所に出す。『元に戻す』は未取消の書込み操作が残っている間は取消の後も出し続け、押すたびに 1 つ前の操作へ遡る (qa-total-cashflow-decision-013)。狭幅では 3 ペインを 左ナビ→明細表→詳細 の順に縦積みし、詳細は選択時に開く。本記録は qa-ui-ux-web-tc-inference-002 を置き換え、以後 002 は根拠に使わない。",
+      "provenance": "アシスタントが 2026-09-15 に、観測 qa-ui-ux-web-tc-observed-001 (画像・FUNCTION-MATRIX・AUDIT) と利用者決定 qa-total-cashflow-decision-001/006/007/008/009/012/013/014 から導いた推測。束の順位・一覧名と説明文の文言・確認文の内容は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T13:12:17Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-015",
+      "question": "freee 取引を『集計から除外』したとき、月ずれ (取込月と表示日の月が違う) などで要確認に止まっている MF 明細はどう扱うか (現行 core は、候補が 0 件になっても要確認に残し、総額に入れない)。選択肢: 要確認に残す (現行 core のまま・確認文に『月ずれ等の明細は要確認に残り集計に入らない』と書く・総額の意味は変わらないが除外しても総額が動かないことがある) / 唯一の候補なら集計へ (除外した freee が唯一の候補だった明細は要確認から出し公私仕分けで事業/家計に数える・除外で総額が動くが core に規則とテストが増え月ずれの確認を飛ばすことになる)。",
+      "answer": "唯一の候補なら集計へ。含意: 除外した freee 取引がその明細の唯一の候補だったとき、明細は要確認から出て公私仕分けで事業か家計に数えられ、総額が動く。候補がもともと無い明細や、他にも候補がある明細は要確認に残る。",
+      "provenance": "完成度評価 (C05) の 3 回目の評価が medium を 3 件指摘した (除外後の数え方が core と食い違う・上位概念が改名に追随していない・取消が冪等でない)。そのうち利用者に見える規則の 2 件と、上位概念の語の変更の承認を、R3-reask で 1 問 1 論点に分けて質問した。利用者は AskUserQuestion の選択肢 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T13:41:26Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-016",
+      "question": "一致度が 78〜100% に散るため、画像の『完全一致候補』『金額・日付・内容が完全一致する…』の文言を『自動一致の候補』『日付と金額が一致して自動で寄せた取引です』に改める。画像の文言から外れるこの変更を、上位概念 (目標 G1/G3/G5・成果 O1/O5 など) にも反映してよいか。選択肢: 改名を承認 (上位概念と画面の文言を『自動一致の候補』に揃える・画像と文言が違うが表示される一致度と説明が矛盾しない) / 画像の文言を残す (見出しは『完全一致候補』のまま説明文だけ事実に合わせる・78% の組が『完全一致』の見出しの下に並ぶ)。",
+      "answer": "改名を承認。含意: 上位概念・画面・docs の語を『自動一致の候補』と『日付と金額の一致による自動寄せ』に揃え、画像の『完全一致候補』の文言からは外れる。",
+      "provenance": "完成度評価 (C05) の 3 回目の評価が medium を 3 件指摘した (除外後の数え方が core と食い違う・上位概念が改名に追随していない・取消が冪等でない)。そのうち利用者に見える規則の 2 件と、上位概念の語の変更の承認を、R3-reask で 1 問 1 論点に分けて質問した。利用者は AskUserQuestion の選択肢 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T13:41:26Z",
+      "required_info_items": [
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-017",
+      "question": "『元に戻す』はどこまで遡れるようにするか (操作履歴は無期限に残る設計)。選択肢: その画面を開いている間 (画面を開いてから行った操作だけを遡れる・再読込すると取消できない・古い判定を誤って戻す危険が小さい) / 上限なし (未取消の操作が残る限り何日前でも遡れる・押し続けると数か月前の判定まで戻る) / 当日の操作だけ (同じ日 (JST) の操作だけ・再読込後も戻せるが日をまたぐと取消できない)。",
+      "answer": "その画面を開いている間。含意: 取り消せるのは総収支の画面を開いてから行った操作だけで、再読込や画面の移動の後は取消の導線を出さない。操作履歴そのものは残る。",
+      "provenance": "完成度評価 (C05) の 3 回目の評価が medium を 3 件指摘した (除外後の数え方が core と食い違う・上位概念が改名に追随していない・取消が冪等でない)。そのうち利用者に見える規則の 2 件と、上位概念の語の変更の承認を、R3-reask で 1 問 1 論点に分けて質問した。利用者は AskUserQuestion の選択肢 (推奨ラベルなし・両案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T13:41:26Z",
+      "required_info_items": [
+        "context-of-use",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-database-web-tc-inference-004",
+      "question": "取消を『指定した操作 id が最新の未取消操作と一致するときだけ』行う契約 (qa-backend-web-tc-inference-006) を D1 でどう実現するか (qa-database-web-tc-inference-003 を置き換える)。",
+      "answer": "migration 0041 (番号は取込時点の main の最新 +1 で確定する) で freee_deal_exclusions に reason_code TEXT NOT NULL DEFAULT 'other' (CHECK で transfer/internal/book_only/duplicate/other の 5 値) と memo TEXT を追加し、既存行は memo = reason、reason_code = 'other' に移す。reason 列は後方互換のため残し、書込時は memo を正本として同じ値を入れる (旧 Worker が読んでも壊れない)。画面の表示語は 振替/内部移動/帳簿のみ/二重登録/その他。操作履歴は total_cashflow_operations (id TEXT PRIMARY KEY、user_id TEXT NOT NULL、kind TEXT NOT NULL CHECK (verdict/exclude/restore/undo)、items_json TEXT NOT NULL (対象ごとの操作前後の値。判定なら txId・before verdict/freeeKey・after、除外なら freeeKey・before 行の有無と reason_code/memo・after。自由文は取消に要る memo だけを持つ)、item_count INTEGER NOT NULL、undoes_id TEXT NULL、undone_at TEXT NULL、created_at TEXT NOT NULL) を新設し、索引 (user_id, created_at DESC)。取消は、指定された id が user_id の一致する kind <> 'undo' かつ undone_at IS NULL の行のうち最新 (created_at の降順、同時刻は id の降順) の 1 行と一致するときだけ行う。他人の id や存在しない id は 404、一致しない id (再送・古い表示) は書き込まず 409 とする。照合の後に、対象行の undone_at の更新・対象の値の復元・kind=undo (undoes_id=対象 id) の行の追加を 1 つの D1 batch で行う。undone_at の更新は WHERE id = ? AND undone_at IS NULL を条件にし、照合と batch の間に同じ id の 2 回目が割り込んでも復元が 2 度走らないよう、復元文も対象行の undone_at が本 batch の値であることを条件にする。undo の行は対象にならないので、画面が自分の操作 id を新しい順に送ると 1 つ前の操作へ遡り、やり直しの経路は持たない。取消できる範囲 (画面を開いている間) は画面が持つ id の列で決まり、D1 側は古さの上限を持たない (qa-total-cashflow-decision-017)。書込 1 操作 = 判定/除外の更新と履歴 1 行を D1 batch で同時に行い、片方だけ残らないようにする。items_json は 1 操作最大 200 件で、D1_MAX_BOUND_PARAMS に合わせて分割する。保持は無期限で、利用者の判断記録のみ (集計値は保存しない dec-aggregation-strategy-001 と矛盾しない)。毎日のバックアップは表を列挙して組み立てており判定・除外・操作履歴を含まない (qa-infrastructure-web-tc-observed-002)。本サイクルはバックアップの対象を広げず、復元すると判定・除外・操作履歴は復元前の状態へは戻らない既存の制約を maintenance-ops に明記する。本記録は qa-database-web-tc-inference-003 を置き換え (003 は 002 を置き換えていた)、以後 002 と 003 は根拠に使わない。",
+      "provenance": "アシスタントが 2026-09-15 に、qa-database-web-tc-inference-003 の本文を基に、推測 qa-backend-web-tc-inference-006 (id を送る条件付き取消) と利用者決定 qa-total-cashflow-decision-013/017 を反映した推測。404/409 の使い分け・同時刻の順序・条件付き UPDATE の形は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T13:44:10Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-backend-web-tc-inference-006",
+      "question": "利用者決定 qa-total-cashflow-decision-015 (唯一の候補を除外した明細は集計へ) と -017 (取消は画面を開いている間) を受けて、qa-backend-web-tc-inference-005 の除外後の数え方と取消の規則をどう改めるか。取消の二重送信・古い表示からの取消で利用者が見ていない操作を戻さないために、取消の要求をどう設計するか (005 を置き換える)。",
+      "answer": "一致度 (0〜100 の整数) = 金額 40 (同額・同じ向きのときだけ候補になるので候補は常に 40) + 日付 30/20/10/5/0 (dayGap の絶対値 0/1/2/3/4 以上) + 口座 15/8/0 (一致/片側の情報なし/accountsConflict) + 摘要 15/8/0 (normalizeInstitution と同じ正規化の後に MF content と freee partner が一致/一方が他方を含む/それ以外)。満点は 100。判定作業の 3 区分: 『重複候補』は review のうち候補がちょうど 1 件で理由が『発生日が一致しません』または『取込月と表示日の月が一致しません』のもの (1 対 1 で同じ/別を決められる)。『要確認』は残りの review (候補 0 件・2 件以上・『口座不一致』・『対応する freee 取引が他の明細へ寄せられています』)。『freee除外』は excluded。3 区分の和は review 件数 + excluded 件数に一致する。自動一致の一覧は matched のうち by=auto の組で、自動で寄せる条件は発生日一致かつ金額一致だけなので一致度は 78〜100 の値になり、これを規則どおりそのまま出す (100 に丸めない。qa-total-cashflow-decision-012)。各組に判定状態 (same 記録があれば『同じ』、無ければ『未判定』) を付ける。『同じ取引にする』は same を記録するだけで matched の集合と総額は変わらない。セグメント: 総合=事業+家計 (months の bizIncome+householdIncome=totalIncome 等) の期間合計と月次系列。除外後の数え方: freee 取引を除外すると、その freee 取引は総額から外れ、対応していた MF 明細は公私仕分け (resolveTx) の結果で事業か家計に数える。除外の前後で事業と家計の内訳が入れ替わることがある (qa-total-cashflow-decision-014)。要確認に残る明細のうち、除外を考えずに引いた候補がちょうど 1 件で、その freee 取引が除外されているものは、理由 (月ずれ・発生日不一致・口座不一致・他の明細へ寄せられている) にかかわらず review から出して resolveTx で数える。もともと候補の無い明細と、除外を考えない候補が 2 件以上ある明細は review に残る (qa-total-cashflow-decision-015)。これは core の review 判定 (total-cashflow.ts の review 生成) に 1 条件を足す変更で、除外を集計へ戻すと明細は review へ戻る。前年同期比: core に previousYearPeriod(range) を足し、選択期間の開始月と終了月をそれぞれ 12 か月前へずらした期間を返す (例 2026-04〜2026-06 → 2025-04〜2025-06)。analysis-hub の previousPeriod (直前の同じ長さ) は変えず名前も分ける。前年同期間の全ての月がデータ範囲にあるときだけ前年値を出し、1 か月でも欠ければ null (画面は『比較データなし』)。差額 = 当期 − 前年値、率 = 差額 / |前年値| で前年値が 0 のとき率は null。ラベルは『前年同期』。判定進捗『N件中M件』は表示中区分の対象件数 N と、その中で verdict または除外を記録済みの件数 M。取消: 画面が取り消したい操作の id を送り、その id が kind が undo でなく undone_at が空の書込み操作のうち最新の 1 操作と一致するときだけ、記録した操作前の値へ戻す (一括は 1 操作に複数件)。一致しなければ何も変えず 409 を返す。同じ id の再送・通信の再試行・別タブの古い表示からの送信が、利用者の見ていない 1 つ前の操作を戻さないためである。取消した操作は undone_at を持ち、取消そのものも kind=undo の履歴 1 件 (undoes_id に対象) として残るが、undo の行は次の取消の対象にならないので、画面が自分の操作 id を新しい順に送れば 1 つ前の操作へ遡る。取消のやり直しは無い (qa-total-cashflow-decision-013)。取り消せる範囲はその画面を開いてから行った操作で、画面が保持する操作 id の列で決まる。サーバは古さの上限を持たず、最新の未取消操作との一致だけを見る (qa-total-cashflow-decision-017)。取消後の総収入・総支出・判定件数は操作前と一致する。本記録は qa-backend-web-tc-inference-005 を置き換え (005 は 003 と 004 を置き換えていた)、以後 003・004・005 は根拠に使わない。",
+      "provenance": "アシスタントが 2026-09-15 に、qa-backend-web-tc-inference-005 の本文を基に、利用者決定 qa-total-cashflow-decision-015/017 と、完成度評価 (C05) の medium 指摘『取消 API が id を受け取らず二重押下で 1 つ前まで戻る』を反映した推測。packages/core/src/total-cashflow.ts の review 生成 (monthMismatched と blocked の理由は候補数に関係なく review に入り、nearCandidates は除外済みの freee を候補から外す) を読んで条件を決めた。『除外を考えずに引いた候補がちょうど 1 件』という判定方法・409 の条件付き取消・id を送る契約は利用者の明示選択ではない (唯一の候補なら集計へ、取消は画面を開いている間、の 2 点は利用者決定)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T13:44:10Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-tc-inference-004",
+      "question": "取消を操作 id を送る条件付き要求にし、取り消せる範囲をその画面を開いている間に限る (qa-backend-web-tc-inference-006・qa-total-cashflow-decision-017) とき、総収支画面の API 契約と画面側の状態をどう定義するか。一覧名の改名 (qa-total-cashflow-decision-016) に応答の名前を揃えるか (qa-frontend-web-tc-inference-003 を置き換える)。",
+      "answer": "GET /api/total-cashflow の応答へ追加で summary (total/business/household ごとの income・expense・net と previousYear {income, expense, net} | null・delta・rate | null、period と previousYearPeriod のラベル。画面の見出しは『前年同期』でハブの『前期間』とは語を分ける)、series (セグメントごとの月次 income/expense/net)、workbench (duplicates・review・exclusions の件数と明細。明細は mf・candidates[score 付き]・verdict)、autoMatches (by=auto の組と score・判定状態。一覧名『自動一致の候補』に合わせた名前)、lastOperation (kind が undo でない未取消の最新操作の id・kind・item_count・created_at | null) を返し、画面は 1 回の取得で全ブロックを描く (既存 months/review/matched/freeeOnly は互換のため残す)。一括判定は既存 POST /total-cashflow/verdicts (最大 200 件) を使い、応答に operationId を返す。除外は POST /total-cashflow/freee-exclusions の body を {items:[{freeeKey, reasonCode, memo?}]} と {freeeKeys[], reasonCode, memo?} (一括で理由を設定) に広げ、旧 {reason} は memo+other として受ける。DELETE (集計へ戻す) も操作履歴に残し、書込みの応答は全て operationId を返す。新設: POST /total-cashflow/operations/{id}/undo (id が kind が undo でない未取消の最新操作と一致するときだけ取り消し、取消後の lastOperation を返す。一致しない id は 409、他人の id や存在しない id は 404)。画面はその画面を開いてから成功した書込みの operationId を新しい順の列として持ち、『元に戻す』は列の先頭を送る。成功したら先頭を外し、409 なら列を空にして『別の画面で新しい操作があったため取り消せません』と再読込を促す。送信中はボタンを無効にする。列はページの状態で持ち、再読込や画面の移動で消えるので、取消はその画面を開いている間に限られる (qa-total-cashflow-decision-013/017)。画面は queryKey ['total-cashflow', 期間 key] 1 本を正本にし、判定・除外・戻す・取消の成功後に ['total-cashflow'] と ['analysis-hub'] を invalidate する (サイドバーの照合バッジと概況の要約を追随させる)。セグメント・区分・フィルタ・検索・選択は画面の状態で持ち API を再取得しない。総合/事業/家計は URL に載せない (期間と同じくタブ内の表示状態)。部分成功は件数で通知し、失敗した項目は選択状態のまま残す。本記録は qa-frontend-web-tc-inference-003 を置き換え (003 は 002 を置き換えていた)、以後 002 と 003 は根拠に使わない。",
+      "provenance": "アシスタントが 2026-09-15 に、qa-frontend-web-tc-inference-003 の本文を基に、利用者決定 qa-total-cashflow-decision-013/016/017 と推測 qa-backend-web-tc-inference-006 を反映した推測。endpoint の形・操作 id の列の持ち方・409 時の文言・autoMatches の名前は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T13:44:10Z",
+      "required_info_items": [
+        "api-contract",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-tc-inference-004",
+      "question": "利用者決定 qa-total-cashflow-decision-015〜017 を受けて、除外の確認文・取消の導線・一覧名をどう見せるか (qa-ui-ux-web-tc-inference-003 を置き換える)。",
+      "answer": "1 位は KPI 3 枚と前年同期比 (毎回見る・誤読すると月次の判断を誤る) で、見出しの問いの直下に置く。2 位は判定作業の左ナビの件数 (未判断が残ると総額が確定しない、失敗コスト最大) で、件数 0 の区分も 0 と出して片付いたことを示す。3 位はチャート (推移の把握、頻度中)。4 位は freee 除外一覧と自動一致の一覧 (確認用、頻度低だが誤除外は総額を歪めるので理由区分とメモを常に見せる)。9 列の月次表は検算根拠として落とさず『月次の内訳を表示』で閉じて置く (qa-total-cashflow-decision-001)。加工: 前年同期比は額と率を並べ符号と矢印と色で示し色だけに頼らない。表記は『前年同期』でハブの『前期間』と区別し (qa-total-cashflow-decision-006)、前年同期が欠けるときは 0% ではなく『比較データなし』。一致度は数値 % とバーに加え、右ペインで配点の内訳 (金額・日付・口座・摘要) を文字で出す (qa-total-cashflow-decision-007)。画像の『完全一致候補』と説明文『金額・日付・内容が完全一致する取引の候補です』は、自動一致の組の一致度が 78〜100% に散る (qa-total-cashflow-decision-012) ため事実と合わず、一覧名を『自動一致の候補』 (上位概念の語も同じに揃えた。qa-total-cashflow-decision-016)、説明文を『日付と金額が一致して自動で寄せた取引です。摘要や口座の違いは一致度に出ます』に改める。判定状態は 未判定/同じ/別/除外 の文字バッジ。『同じ取引にする』は判定の記録だけで総額は動かないことを確認文に出す (qa-total-cashflow-decision-008)。『集計から除外』は対応する freee 取引を除外し、MF 明細が公私仕分けに従って事業/家計へ数え直されること (その freee 取引が唯一の候補だった要確認の明細も要確認から出て数えられること) を確認文に出す (qa-total-cashflow-decision-009/014/015)。落とすもの: 画像の見本値・架空の口座名。下部選択バーは 1 件以上選択したときだけ出し、選択が 0 件になれば消す。操作後の通知は『N件中M件の判定が完了しました』と『元に戻す』を同じ場所に出す。『元に戻す』はその画面を開いてから行った未取消の操作が残っている間は取消の後も出し続け、押すたびに 1 つ前の操作へ遡る。再読込や画面の移動の後は出さない。送信中はボタンを無効にし、別のタブで新しい操作があって取り消せないときは理由と再読込の導線を出す (qa-total-cashflow-decision-013/017)。狭幅では 3 ペインを 左ナビ→明細表→詳細 の順に縦積みし、詳細は選択時に開く。本記録は qa-ui-ux-web-tc-inference-003 を置き換え (003 は 002 を置き換えていた)、以後 002 と 003 は根拠に使わない。",
+      "provenance": "アシスタントが 2026-09-15 に、qa-ui-ux-web-tc-inference-003 の本文を基に、利用者決定 qa-total-cashflow-decision-015/016/017 と推測 qa-backend-web-tc-inference-006 を反映した推測。確認文の内容・送信中の無効化・取り消せないときの文言は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T13:44:10Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-total-cashflow-decision-018",
+      "question": "毎日のバックアップは表を列挙して作っており、総収支の判定 (duplicate_verdicts)・freee 除外 (freee_deal_exclusions)・新しい操作履歴の 3 表は入っていない。バックアップから復元したとき、これらをどうするか (前例: 月次クローズの『後で確認』と月次レビューは、復元で失わないよう後からバックアップに加えた)。選択肢: 3 表をバックアップに加える (復元しても判定・除外理由・操作履歴が戻る・backup の SQL と payload と復元テストに 3 表ぶんの追加が要りバックアップが少し大きくなる) / 判定と除外だけ加える (総額に効く判定と除外理由は戻る・操作履歴は復元されず復元直後は取消の記録が無い) / 加えない (現行のまま・復元すると判定と除外がやり直しになり総額が復元前と変わりうる)。",
+      "answer": "3 表をバックアップに加える。含意: 復元すると判定・除外理由とメモ・操作履歴が復元時点の状態に戻り、総額も復元前の判断を反映したものになる。",
+      "provenance": "完成度評価 (C05) の 4 回目の評価が、判定・除外・操作履歴をバックアップに入れない方針がアシスタント推定だけで確定しており、PR #51 (0040) の前例と逆の判断になっていると medium 指摘したため、R3-reask で質問した。利用者は AskUserQuestion の 3 択 (推奨ラベルなし・各案の利点と代償を併記) から選んだ。利用者の意思決定行為はこの選択だけであり、question の選択肢説明と answer の含意の文はアシスタントが書いた。answered_at は回答直後に date -u で実測した時刻で、選択時刻の上限値。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-15T14:03:31Z",
+      "required_info_items": [
+        "data-persistence",
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-infrastructure-web-tc-observed-003",
+      "question": "既存の表をバックアップと復元の対象に加えるとき、コードのどこに手が入るか (0040 で review_snoozes と monthly_close_reviews を加えた前例)。",
+      "answer": "0040 の前例では 4 箇所に同じ表が並んでいる。(1) packages/api/src/import-active.ts の JSON_SNAPSHOT_MUTATION_CONSUMERS (復元の write-set を変える表の列挙。コメント『変えると復元後の未処理件数とクローズ状況が変わる』)。(2) packages/api/src/import-lifecycle.ts の復元 write-set (宛先が空でなければ DELETE FROM <表> WHERE user_id=? の後に insertJsonRows で行を入れ直す)。(3) packages/api/src/store.ts のスナップショット SQL (行の読出しと review_counts の件数)。(4) packages/api/src/canonical-mutation-fence.ts の書込み route ごとの consumers (PUT/DELETE の route に表名を結び付ける)。duplicate_verdicts と freee_deal_exclusions はこの 4 箇所のどれにも無い。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) の import-active.ts・import-lifecycle.ts・store.ts・canonical-mutation-fence.ts を grep と sed で読んで確認した観測事実。answered_at は確認直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T14:04:19Z",
+      "required_info_items": [
+        "data-persistence",
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-database-web-tc-inference-005",
+      "question": "判定・除外・操作履歴の 3 表をバックアップに加える決定 (qa-total-cashflow-decision-018) を受けて、D1 の持ち方と復元をどう改めるか。取消の batch で同じ id の 2 回目が割り込んだときの扱いを、undo 行の追加まで含めてどう条件付けるか (qa-database-web-tc-inference-004 を置き換える)。",
+      "answer": "migration 0041 (番号は取込時点の main の最新 +1 で確定する) で freee_deal_exclusions に reason_code TEXT NOT NULL DEFAULT 'other' (CHECK で transfer/internal/book_only/duplicate/other の 5 値) と memo TEXT を追加し、既存行は memo = reason、reason_code = 'other' に移す。reason 列は後方互換のため残し、書込時は memo を正本として同じ値を入れる (旧 Worker が読んでも壊れない)。画面の表示語は 振替/内部移動/帳簿のみ/二重登録/その他。操作履歴は total_cashflow_operations (id TEXT PRIMARY KEY、user_id TEXT NOT NULL、kind TEXT NOT NULL CHECK (verdict/exclude/restore/undo)、items_json TEXT NOT NULL (対象ごとの操作前後の値。判定なら txId・before verdict/freeeKey・after、除外なら freeeKey・before 行の有無と reason_code/memo・after。自由文は取消に要る memo だけを持つ)、item_count INTEGER NOT NULL、undoes_id TEXT NULL、undone_at TEXT NULL、created_at TEXT NOT NULL) を新設し、索引 (user_id, created_at DESC)。取消は、指定された id が user_id の一致する kind <> 'undo' かつ undone_at IS NULL の行のうち最新 (created_at の降順、同時刻は id の降順) の 1 行と一致するときだけ行う。他人の id や存在しない id は 404、一致しない id (再送・古い表示) は書き込まず 409 とする。照合の後に、対象の値の復元 → kind=undo (undoes_id=対象 id) の行の追加 → 対象行の undone_at の更新 の順に並べた文を 1 つの D1 batch で行う。3 種の文は全て『対象行が存在し undone_at IS NULL』を条件にした条件付き文 (UPDATE … WHERE EXISTS / INSERT … SELECT … WHERE EXISTS / UPDATE … WHERE id = ? AND undone_at IS NULL) にし、照合と batch の間に同じ id の 2 回目が割り込んだときは全ての文が 0 行になる。route は undone_at の更新件数が 0 なら 409 を返す。undo の行は対象にならないので、画面が自分の操作 id を新しい順に送ると 1 つ前の操作へ遡り、やり直しの経路は持たない。取消できる範囲 (画面を開いている間) は画面が持つ id の列で決まり、D1 側は古さの上限を持たない (qa-total-cashflow-decision-017)。書込 1 操作 = 判定/除外の更新と履歴 1 行を D1 batch で同時に行い、片方だけ残らないようにする。items_json は 1 操作最大 200 件で、D1_MAX_BOUND_PARAMS に合わせて分割する。保持は無期限で、利用者の判断記録のみ (集計値は保存しない dec-aggregation-strategy-001 と矛盾しない)。毎日のバックアップは表を列挙して組み立てており判定・除外・操作履歴を含まない (qa-infrastructure-web-tc-observed-002) ので、duplicate_verdicts・freee_deal_exclusions・total_cashflow_operations の 3 表を、0040 の前例 (qa-infrastructure-web-tc-observed-003) と同じ 4 箇所 (JSON_SNAPSHOT_MUTATION_CONSUMERS・復元 write-set の DELETE と insertJsonRows・スナップショット SQL の行と件数・canonical-mutation-fence の consumers) に加える (qa-total-cashflow-decision-018)。復元は 3 表を user_id 単位で入れ替え、復元前の操作履歴の行も復元時点のものに置き換わる。取消は画面を開いている間だけなので、復元の前に持っていた操作 id の列は再読込で消え、復元後に古い id で取り消すことは無い。本記録は qa-database-web-tc-inference-004 を置き換え (004 は 003 を、003 は 002 を置き換えていた)、以後 002・003・004 は根拠に使わない。",
+      "provenance": "アシスタントが 2026-09-15 に、qa-database-web-tc-inference-004 の本文を基に、利用者決定 qa-total-cashflow-decision-018 と観測 qa-infrastructure-web-tc-observed-002/003 を反映し、完成度評価 (C05) の low 指摘 (undo 行の追加が条件付きでない・競合時の応答が未定) を片付けた推測。条件付き文の形・文の順序・競合時の 409・復元で 3 表を入れ替える方法は利用者の明示選択ではない (3 表をバックアップに加えることは利用者決定)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T14:04:19Z",
+      "required_info_items": [
+        "data-persistence",
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-infrastructure-web-tc-observed-004",
+      "question": "0040 (cd470e3) で review_snoozes と monthly_close_reviews をバックアップと復元に加えたとき、qa-infrastructure-web-tc-observed-003 の 4 箇所の外で変わった箇所はあるか。総収支の書込み route は同じ仕組みにつながっているか。",
+      "answer": "ある。cd470e3 の packages/api の変更は 4 箇所の外に 3 系統ある。(5) packages/api/src/routes/imports.ts: 復元 payload の zod 検証 (reviewSnoozesBackupSchema / monthlyCloseReviewsBackupSchema)、resolveRestoreReviewState (key が無い旧バックアップは null を返して既存の行を残し、key があれば空配列でもその集合で置き換え、形が不正なら InvalidRestoreSettingsError で復元全体を拒む)、復元への受け渡しと reviewStateCounts。key は camelCase なので表名の grep では見つからない。(6) 書込み route からの invalidateJsonSnapshotQuery の呼出し (routes/analytics.ts の保留と月次レビューの PUT/DELETE)。consumer 引数は JSON_SNAPSHOT_MUTATION_CONSUMERS の型に縛られ、列挙外の表では呼べない。(7) schema-guard.ts の EXPECTED_D1_MIGRATION と deletion-schema.test.ts の期待値。現行の routes/total-cashflow.ts の書込み (POST /total-cashflow/verdicts・POST と DELETE /total-cashflow/freee-exclusions) は invalidateJsonSnapshotQuery を呼ばず、canonical-mutation-fence.ts にも登録されていない。qa-infrastructure-web-tc-observed-003 の『4 箇所』は前例の変更の一部だけを数えていたので、本記録で補う。",
+      "provenance": "アシスタントが 2026-09-15 にリポジトリ (HEAD 1b16825) で git show --stat cd470e3、routes/imports.ts 218〜245 行、import-active.ts の invalidateJsonSnapshotQuery、canonical-mutation-fence.ts、schema-guard.ts、routes/total-cashflow.ts の書込み route を読んで確認した観測事実。完成度評価 (C05) 5 回目の medium 指摘を受けて数え直した。answered_at は確認直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-15T14:26:23Z",
+      "required_info_items": [
+        "api-contract",
+        "data-persistence",
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-backend-web-tc-inference-007",
+      "question": "3 表をバックアップと復元に加える決定 (qa-total-cashflow-decision-018) に対し、backend の route は何を持つか。qa-backend-web-tc-inference-006 に書いていない、復元と書込みの重なりへの備えを補う。",
+      "answer": "総収支の書込み route 4 本 (POST /total-cashflow/verdicts、POST と DELETE /total-cashflow/freee-exclusions、POST /total-cashflow/operations/{id}/undo) を canonical-mutation-fence.ts に consumers (verdicts は duplicate_verdicts と total_cashflow_operations、freee-exclusions は freee_deal_exclusions と total_cashflow_operations、undo は 3 表) 付きで登録し、取込・復元と重ねない。各 route は書込みと同じ D1 batch で invalidateJsonSnapshotQuery (同じ consumers) を呼び、復元が古いスナップショットで判定・除外・操作履歴を上書きしないようにする。routes/imports.ts は復元 payload の 3 key を zod で検証して復元へ渡し、復元結果の件数に 3 表を加える。旧バックアップに key が無ければ既存の行を残す (qa-infrastructure-web-tc-observed-004 の前例)。取消契約 (id を送り最新の未取消操作と一致しなければ 409) は qa-backend-web-tc-inference-006 と qa-database-web-tc-inference-006 のまま変えない。本記録は qa-backend-web-tc-inference-006 を置き換えず補う。",
+      "provenance": "アシスタントが 2026-09-15 に、観測 qa-infrastructure-web-tc-observed-004 (前例 cd470e3 と現行 routes/total-cashflow.ts) と利用者決定 qa-total-cashflow-decision-018 から導いた推測。完成度評価 (C05) 5 回目の medium 指摘 (backend セルに route のスナップショット無効化と fence 登録が無い) を受けて足した。consumers の組み合わせと route の数は利用者の明示選択ではない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T14:26:23Z",
+      "required_info_items": [
+        "api-contract",
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-database-web-tc-inference-006",
+      "question": "バックアップと復元に 3 表を加えるときの変更箇所を前例の全体 (qa-infrastructure-web-tc-observed-003/004) で数え直し、取消 batch の照合と実行のすき間に別の操作が入った場合も含めてどう条件付けるか (qa-database-web-tc-inference-005 を置き換える)。",
+      "answer": "migration 0041 (番号は取込時点の main の最新 +1 で確定する) で freee_deal_exclusions に reason_code TEXT NOT NULL DEFAULT 'other' (CHECK で transfer/internal/book_only/duplicate/other の 5 値) と memo TEXT を追加し、既存行は memo = reason、reason_code = 'other' に移す。reason 列は後方互換のため残し、書込時は memo を正本として同じ値を入れる (旧 Worker が読んでも壊れない)。画面の表示語は 振替/内部移動/帳簿のみ/二重登録/その他。操作履歴は total_cashflow_operations (id TEXT PRIMARY KEY、user_id TEXT NOT NULL、kind TEXT NOT NULL CHECK (verdict/exclude/restore/undo)、items_json TEXT NOT NULL (対象ごとの操作前後の値。判定なら txId・before verdict/freeeKey・after、除外なら freeeKey・before 行の有無と reason_code/memo・after。自由文は取消に要る memo だけを持つ)、item_count INTEGER NOT NULL、undoes_id TEXT NULL、undone_at TEXT NULL、created_at TEXT NOT NULL) を新設し、索引 (user_id, created_at DESC)。取消は、指定された id が user_id の一致する kind <> 'undo' かつ undone_at IS NULL の行のうち最新 (created_at の降順、同時刻は id の降順) の 1 行と一致するときだけ行う。他人の id や存在しない id は 404、一致しない id (再送・古い表示) は書き込まず 409 とする。照合の後に、対象の値の復元 → kind=undo (undoes_id=対象 id) の行の追加 → 対象行の undone_at の更新 の順に並べた文を 1 つの D1 batch で行う。3 種の文は全て同じ条件『対象行が存在し undone_at IS NULL で、かつ対象より新しい kind <> 'undo' の未取消行が同じ user_id に無い (NOT EXISTS)』を持つ条件付き文にする。値の復元は、操作前に行が無かったものは DELETE … WHERE EXISTS、有ったものは INSERT … SELECT … WHERE EXISTS … ON CONFLICT DO UPDATE で操作前の値に戻す。undo 行は INSERT … SELECT … WHERE EXISTS、最後に UPDATE … SET undone_at WHERE id = ? AND undone_at IS NULL AND NOT EXISTS (より新しい未取消行)。照合と batch の間に同じ id の 2 回目や別タブの新しい操作が割り込んだときは全ての文が 0 行になる。route は undone_at の更新件数が 0 なら 409 を返す。undo の行は対象にならないので、画面が自分の操作 id を新しい順に送ると 1 つ前の操作へ遡り、やり直しの経路は持たない。取消できる範囲 (画面を開いている間) は画面が持つ id の列で決まり、D1 側は古さの上限を持たない (qa-total-cashflow-decision-017)。書込 1 操作 = 判定/除外の更新と履歴 1 行を D1 batch で同時に行い、片方だけ残らないようにする。items_json は 1 操作最大 200 件で、D1_MAX_BOUND_PARAMS に合わせて分割する。保持は無期限で、利用者の判断記録のみ (集計値は保存しない dec-aggregation-strategy-001 と矛盾しない)。毎日のバックアップは表を列挙して組み立てており判定・除外・操作履歴を含まない (qa-infrastructure-web-tc-observed-002) ので、duplicate_verdicts・freee_deal_exclusions・total_cashflow_operations の 3 表を、0040 の前例 (qa-infrastructure-web-tc-observed-003/004) が触れた全ての箇所に加える (qa-total-cashflow-decision-018): JSON_SNAPSHOT_MUTATION_CONSUMERS、復元 write-set の DELETE と insertJsonRows、スナップショット SQL の行と件数、canonical-mutation-fence の consumers、routes/imports.ts の復元 payload の zod 検証と受け渡しと件数 (key は duplicateVerdicts・freeeDealExclusions・totalCashflowOperations)、書込み route からの invalidateJsonSnapshotQuery、schema-guard の EXPECTED_D1_MIGRATION。旧バックアップに key が無いときは前例と同じく null として既存の行を残し、key があれば空配列でもその集合で置き換え、形が不正なら復元全体を拒む。復元は 3 表を user_id 単位で入れ替え、復元前の操作履歴の行も復元時点のものに置き換わる。取消は画面を開いている間だけなので、復元の前に持っていた操作 id の列は再読込で消え、復元後に古い id で取り消すことは無い。本記録は qa-database-web-tc-inference-005 を置き換え (005 は 004 を、004 は 003 を、003 は 002 を置き換えていた)、以後 002〜005 は根拠に使わない。",
+      "provenance": "アシスタントが 2026-09-15 に、qa-database-web-tc-inference-005 の本文を基に、観測 qa-infrastructure-web-tc-observed-004 で数え直した変更箇所と、完成度評価 (C05) 5 回目の low 指摘 (照合と batch のすき間に別の操作が入る場合・復元文の形) を反映した推測。NOT EXISTS の条件・DELETE と UPSERT による復元・旧バックアップで既存の行を残す扱いは利用者の明示選択ではない (3 表をバックアップに加えることは利用者決定 qa-total-cashflow-decision-018)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-15T14:26:23Z",
+      "required_info_items": [
+        "data-persistence",
+        "ops-runbook"
+      ]
+    }
+  ],
+  "approval_log": [
+    {
+      "id": "appr-foundation-total-cashflow-001",
+      "note": "2026-09-15T11:57:18Z 利用者が AskUserQuestion で総収支画面サイクルの foundation (目的・G1-G5・対象外) を『この内容で承認』と回答。先行する利用者決定 (2026-09-15T11:48:28Z): 月次表=折りたたみで残す、完全一致=自動寄せ維持、除外理由=理由区分+メモ、元に戻す=操作履歴を D1 に残す。"
+    },
+    {
+      "id": "appr-total-cashflow-reask-001",
+      "note": "2026-09-15 の R3-reask で利用者が 6 問に個別回答した: 前期=前年の同じ期間 / 一致度=規則で算出して表示 / 同じ取引にする=判定の記録だけ / 集計から除外=対応する freee 取引 / 共通ヘッダー・フッター文言=画像に揃える / サイドバー=表示の確認だけ。前期の回答が appr-foundation-total-cashflow-001 で承認した G3『同じ長さの直前期間』と異なるため、G3 をこの回答に合わせて更新した (他の U1-U9 は変更なし)。"
+    },
+    {
+      "id": "appr-total-cashflow-reask-002",
+      "note": "2026-09-15T13:41:26Z の R3-reask で利用者が 3 問に個別回答した: 除外後の要確認の明細=唯一の候補なら集計へ / 画像の『完全一致候補』の改名=上位概念への反映も含めて承認 / 元に戻す範囲=その画面を開いている間。改名の承認に従い G1/G3/G5・O1/O5・S5・scope・concrete_intents の『完全一致』を『自動一致』に揃えた。取消範囲の回答 (選択肢の説明に『再読込すると取消できない』と明記) が appr-foundation-total-cashflow-001 で承認した G4/S4 の『再読込後も直前の操作が表示される』と異なるため、目的・G4・O4・S4・concrete_intents を回答に合わせた。除外後の回答に合わせ G3 に 1 文を足した。取消の二重送信を 409 にすることはアシスタントの推定 (qa-backend-web-tc-inference-006) で、G4/S4 の該当句はその推定を上位概念へ写したもの。"
+    },
+    {
+      "id": "appr-total-cashflow-reask-003",
+      "note": "2026-09-15T14:03:31Z の R3-reask で利用者が『判定・除外・操作履歴の 3 表をバックアップに加える』を選んだ (qa-total-cashflow-decision-018)。これに合わせ G4・O4・S4・scope.in・I9 に、3 表をバックアップと復元の対象に加え復元しても戻ることを足した。あわせて、appr-total-cashflow-reask-002 で O4 と I9 に写していたアシスタント推定の実装方式 (409・取り消す操作の id を送る契約) を上位概念から外し、『同じ取消の再送や古い表示からの取消で意図しない操作を戻さない』という実装に依存しない句に揃えた。この句は承認済みの S4 (取消後は操作前と一致) と利用者決定 qa-total-cashflow-decision-017 から導いたもので、409 と id の契約は下位の推定 qa-backend-web-tc-inference-006 / qa-frontend-web-tc-inference-004 / qa-database-web-tc-inference-005 にだけ置く。"
+    }
+  ],
+  "reopen_log": [
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 前期の定義が承認済みの『同じ長さの直前期間』から『前年の同じ期間』に変わり、根拠に引いていた qa-total-cashflow-decision-005 (束ね質問) と qa-backend-web-tc-inference-002 の前期比の部分が現行の決定と合わなくなったため、根拠を差し替えて確定し直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T12:27:12Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 前期の定義が承認済みの『同じ長さの直前期間』から『前年の同じ期間』に変わり、根拠に引いていた qa-total-cashflow-decision-005 (束ね質問) と qa-backend-web-tc-inference-002 の前期比の部分が現行の決定と合わなくなったため、根拠を差し替えて確定し直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T12:27:12Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 前期の定義が承認済みの『同じ長さの直前期間』から『前年の同じ期間』に変わり、根拠に引いていた qa-total-cashflow-decision-005 (束ね質問) と qa-backend-web-tc-inference-002 の前期比の部分が現行の決定と合わなくなったため、根拠を差し替えて確定し直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T12:27:12Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "C06 ヒアリング監査が qa-total-cashflow-decision-005 を『複数論点を 1 問に束ねた誘導質問』(R6 観点 c) と判定したため、R3-reask で論点を 1 問 1 論点に分けて再質問した。 前期の定義が承認済みの『同じ長さの直前期間』から『前年の同じ期間』に変わり、根拠に引いていた qa-total-cashflow-decision-005 (束ね質問) と qa-backend-web-tc-inference-002 の前期比の部分が現行の決定と合わなくなったため、根拠を差し替えて確定し直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T12:27:12Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度評価 (C05) が、根拠に引いている qa-backend-web-tc-inference-002 に廃止した前期定義 (直前の同じ長さ / previousPeriod) が置換注記なしで残ると medium 指摘したため、前期比以外を現行の決定だけで定義し直した qa-backend-web-tc-inference-004 へ根拠を差し替えて確定し直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T12:49:01Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "完成度評価 (C05) が、根拠に引いている qa-backend-web-tc-inference-002 に廃止した前期定義 (直前の同じ長さ / previousPeriod) が置換注記なしで残ると medium 指摘したため、前期比以外を現行の決定だけで定義し直した qa-backend-web-tc-inference-004 へ根拠を差し替えて確定し直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T12:49:01Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "完成度評価 (C05) が、根拠に引いている qa-frontend-web-tc-inference-002 に廃止した前期定義 (直前の同じ長さ / previousPeriod) が置換注記なしで残ると medium 指摘したため、前期比以外を現行の決定だけで定義し直した qa-frontend-web-tc-inference-003 へ根拠を差し替えて確定し直す。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T12:49:01Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の再評価の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-012〜014 (自動一致の一致度を規則どおり出す・取消で 1 つ前へ遡る・除外後は公私仕分けに従う) を反映した qa-database-web-tc-inference-003 へ根拠を差し替えて確定し直す (qa-database-web-tc-inference-002 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:12:17Z"
+    },
+    {
+      "category": "infrastructure",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の再評価の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-012〜014 (自動一致の一致度を規則どおり出す・取消で 1 つ前へ遡る・除外後は公私仕分けに従う) を反映した qa-database-web-tc-inference-003 へ根拠を差し替えて確定し直す (qa-database-web-tc-inference-002 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:12:17Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の再評価の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-012〜014 (自動一致の一致度を規則どおり出す・取消で 1 つ前へ遡る・除外後は公私仕分けに従う) を反映した qa-backend-web-tc-inference-005 へ根拠を差し替えて確定し直す (qa-backend-web-tc-inference-003 / -004 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:12:17Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の再評価の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-012〜014 (自動一致の一致度を規則どおり出す・取消で 1 つ前へ遡る・除外後は公私仕分けに従う) を反映した qa-backend-web-tc-inference-005 へ根拠を差し替えて確定し直す (qa-backend-web-tc-inference-003 / -004 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:12:17Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の再評価の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-012〜014 (自動一致の一致度を規則どおり出す・取消で 1 つ前へ遡る・除外後は公私仕分けに従う) を反映した qa-backend-web-tc-inference-005 へ根拠を差し替えて確定し直す (qa-backend-web-tc-inference-003 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:12:17Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の再評価の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-012〜014 (自動一致の一致度を規則どおり出す・取消で 1 つ前へ遡る・除外後は公私仕分けに従う) を反映した qa-ui-ux-web-tc-inference-003 へ根拠を差し替えて確定し直す (qa-ui-ux-web-tc-inference-002 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:12:17Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 3 回目の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-015〜017 (唯一の候補を除外した明細は集計へ・改名の承認・取消は画面を開いている間) と、取消を操作 id の条件付き要求にする推定を反映した qa-database-web-tc-inference-004 へ根拠を差し替えて確定し直す (qa-database-web-tc-inference-003 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:44:10Z"
+    },
+    {
+      "category": "infrastructure",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 3 回目の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-015〜017 (唯一の候補を除外した明細は集計へ・改名の承認・取消は画面を開いている間) と、取消を操作 id の条件付き要求にする推定を反映した qa-database-web-tc-inference-004 へ根拠を差し替えて確定し直す (qa-database-web-tc-inference-003 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:44:10Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 3 回目の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-015〜017 (唯一の候補を除外した明細は集計へ・改名の承認・取消は画面を開いている間) と、取消を操作 id の条件付き要求にする推定を反映した qa-backend-web-tc-inference-006 へ根拠を差し替えて確定し直す (qa-backend-web-tc-inference-005 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:44:10Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 3 回目の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-015〜017 (唯一の候補を除外した明細は集計へ・改名の承認・取消は画面を開いている間) と、取消を操作 id の条件付き要求にする推定を反映した qa-backend-web-tc-inference-006 へ根拠を差し替えて確定し直す (qa-backend-web-tc-inference-005 / qa-database-web-tc-inference-003 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:44:10Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 3 回目の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-015〜017 (唯一の候補を除外した明細は集計へ・改名の承認・取消は画面を開いている間) と、取消を操作 id の条件付き要求にする推定を反映した qa-frontend-web-tc-inference-004 へ根拠を差し替えて確定し直す (qa-frontend-web-tc-inference-003 / qa-backend-web-tc-inference-005 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:44:10Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 3 回目の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-015〜017 (唯一の候補を除外した明細は集計へ・改名の承認・取消は画面を開いている間) と、取消を操作 id の条件付き要求にする推定を反映した qa-ui-ux-web-tc-inference-004 へ根拠を差し替えて確定し直す (qa-ui-ux-web-tc-inference-003 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T13:44:10Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 4 回目の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-018 (判定・除外・操作履歴の 3 表をバックアップに加える) と観測 qa-infrastructure-web-tc-observed-003 を反映した qa-database-web-tc-inference-005 へ根拠を差し替えて確定し直す (qa-database-web-tc-inference-004 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T14:04:19Z"
+    },
+    {
+      "category": "infrastructure",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 4 回目の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-018 (判定・除外・操作履歴の 3 表をバックアップに加える) と観測 qa-infrastructure-web-tc-observed-003 を反映した qa-database-web-tc-inference-005 へ根拠を差し替えて確定し直す (qa-database-web-tc-inference-004 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T14:04:19Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 4 回目の指摘を受け、R3-reask の利用者決定 qa-total-cashflow-decision-018 (判定・除外・操作履歴の 3 表をバックアップに加える) と観測 qa-infrastructure-web-tc-observed-003 を反映した qa-database-web-tc-inference-005 へ根拠を差し替えて確定し直す (qa-database-web-tc-inference-004 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T14:04:19Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 5 回目の medium 指摘を受け、前例の変更箇所を数え直した観測 qa-infrastructure-web-tc-observed-004 と、それを反映した qa-database-web-tc-inference-006 へ根拠を差し替えて確定し直す (qa-database-web-tc-inference-005 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T14:26:23Z"
+    },
+    {
+      "category": "infrastructure",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 5 回目の medium 指摘を受け、前例の変更箇所を数え直した観測 qa-infrastructure-web-tc-observed-004 と、それを反映した qa-database-web-tc-inference-006 へ根拠を差し替えて確定し直す (qa-database-web-tc-inference-005 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T14:26:23Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 5 回目の medium 指摘を受け、前例の変更箇所を数え直した観測 qa-infrastructure-web-tc-observed-004 と、それを反映した qa-database-web-tc-inference-006 へ根拠を差し替えて確定し直す (qa-database-web-tc-inference-005 を置き換え)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T14:26:23Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度評価 (C05) の 5 回目の medium 指摘を受け、前例の変更箇所を数え直した観測 qa-infrastructure-web-tc-observed-004 と、それを反映した qa-backend-web-tc-inference-007 へ根拠を差し替えて確定し直す (qa-backend-web-tc-inference-006 は置き換えず qa-backend-web-tc-inference-007 を補う)。",
+      "from": "確定",
+      "reopened_at": "2026-09-15T14:26:23Z"
+    }
+  ],
+  "category_aggregate": {
+    "database": "確定",
+    "auth": "確定",
+    "ui-ux": "確定",
+    "security": "確定",
+    "infrastructure": "確定",
+    "backend": "確定",
+    "frontend": "確定",
+    "maintenance-ops": "確定"
+  },
+  "targets": [
+    {
+      "target_id": "hono-zod-validator",
+      "category": "backend"
+    },
+    {
+      "target_id": "cloudflare-d1-batch",
+      "category": "database"
+    },
+    {
+      "target_id": "cloudflare-d1-limits",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "category": "maintenance-ops"
+    },
+    {
+      "target_id": "tanstack-query-invalidation",
+      "category": "frontend"
+    },
+    {
+      "target_id": "wcag22-use-of-color",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "category": "security"
+    }
+  ],
+  "requirements_foundation": {
+    "essential_purpose": "家計と事業を合わせた本当の収支を、重複と除外の判断ごと 1 画面で確かめて月次クローズの『照合→総収支』を終えられるようにする。利用者が総収支を開いた時点で、期間の総収入・総支出・純収支と前期比、月ごとの推移が総合/事業/家計で読め、その数字に効いている重複候補・freee 除外・要確認を同じ画面の判定作業で片付け、誤った判断はその画面を開いてから行った操作を新しい順に遡って元に戻せる状態にする。",
+    "background": "kanjo の総収支タブ (packages/web/src/pages/analysis/TotalCashflow.tsx、PR #40/#44) は、9 列の月次表と、freee の突合・除外・要確認の表を縦に積んだ構成である。FINAL-UI の監査 (design/FINAL-UI/spec/AUDIT.md) は 05 総収支を『不足あり。除外、複数選択、同一/別取引、復元が不足。重複判定ワークベンチへ再設計』と判定し、FUNCTION-MATRIX は必須を『1/2/3年比較、事業/家計/総合、freee除外理由、複数選択、一致候補、同一/別取引判定、復元、全選択/解除』としている。現行は KPI・前期比・収入/支出/純収支チャートがタブに無く (概況 Overview.tsx とハブ HubSummary.tsx に別実装)、事業/家計/総合の切替も無い。判定は 1 枚の表のボタンで行い、ソース/判定フィルタ・検索・一致度・並列の詳細比較が無い。freee 除外理由は自由記述必須 (migrations/0037) で、振替/内部移動/帳簿のみの区分や一括設定ができない。判定を取り消す API が無く、元に戻せるのは除外の DELETE だけである。PR #49 でデザインシステム基盤 (トークン・共通 Button・チャート系列色・共通シェル)、PR #50 で支出分析ハブが入り、各画面を FINAL-UI どおりに作り直す順番が回ってきた。利用者は 2026-09-15 に 05-total-cashflow.png を示し、画面構成をフロントエンド・バックエンド・UI・UX・仕様まで反映するよう依頼した。サイドバーは今回の画面に関わる部分 (支出分析 > 総収支 の現在地と照合バッジ) の反映確認だけでよい。",
+    "goals": [
+      {
+        "id": "G1",
+        "text": "/analysis/total-cashflow を 05-total-cashflow.png どおりの構成にする。問いの見出しと説明・データの見方リンク・5 タブ・総合/事業/家計のセグメント・選択中期間と前期の表示・KPI 3 枚 (総収入/総支出/純収支と前期比の額と率)・月次の収入/支出の棒と純収支の折れ線チャート・重複除外の判定作業・freee から除外した明細・自動一致の候補 (日付と金額の一致で自動に寄せた組)・進捗の通知・下部の選択バーを、共通シェル・トークン・Button の上に組む。既存の 9 列月次表は『月次の内訳を表示』で開閉できる検算根拠として残す。"
+      },
+      {
+        "id": "G2",
+        "text": "重複・除外の判定作業を 3 ペインにする。左に 重複候補/freee除外/要確認 の件数付きナビ、中央にソース/判定フィルタ・検索・チェック選択付きの明細表、右に選択明細の MF 明細と freee 対応候補の並列詳細・一致度・『同じ取引/別の取引/集計から除外』・直前の操作と元に戻す を置き、複数選択と下部の選択バーで一括判定できるようにする。"
+      },
+      {
+        "id": "G3",
+        "text": "総収支に必要な集計を packages/core の純関数と API に置く。総合/事業/家計ごとの期間合計と前期 (前年の同じ期間) 比較、月次系列、判定作業の 3 区分と件数、候補ごとの一致度、自動一致の候補の一覧を、既存の消し込み不変条件 (freee 正本・未判断候補の隔離・same の総額不変・different の独立残余加算) を保ったまま返す。除外した freee 取引が唯一の候補だった要確認の MF 明細は、要確認から出して公私仕分けで数える。"
+      },
+      {
+        "id": "G4",
+        "text": "判定と除外の操作を D1 に記録し元に戻せるようにする。freee 除外は理由区分 (振替/内部移動/帳簿のみ/二重登録/その他) とメモに分けて一括設定でき、既存の自由記述理由は失わずに移行する。判定・除外・戻すの操作履歴を残し、画面を開いてから行った操作を新しい順に取り消すと総額が操作前と一致し、同じ取消の再送や古い表示からの取消で意図しない操作を戻さない。再読込後は取り消せない (操作履歴は残る)。判定・除外・操作履歴はバックアップに含め、復元しても戻る。"
+      },
+      {
+        "id": "G5",
+        "text": "一致度・判定作業の区分・自動一致の候補の扱いを単純で説明可能な規則として docs に明記しテストで固定する。日付と金額が一致する組は既存どおり自動で freee 正本へ寄せ、一覧は確認用で『同じ取引にする』は same 判定の記録だけとし総額を変えない。共通ヘッダー/フッターの文言 (防衛ライン・毎朝バックアップ等) を画像に揃え、サイドバーは支出分析 > 総収支 の現在地と照合の件数バッジが表示されることを確認する。"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "O1",
+        "text": "総収支タブが画像の全ブロックを描画する。",
+        "serves": [
+          "G1"
+        ],
+        "serves_goals": [
+          "G1"
+        ],
+        "measure": "DOM テストで見出し・5 タブ・セグメント・期間表示・KPI 3 枚・チャート・判定作業・freee 除外一覧・自動一致の候補・選択バーが描画され、月次表は開閉で表示される。"
+      },
+      {
+        "id": "O2",
+        "text": "セグメント切替で KPI とチャートが事業/家計/総合の値に切り替わり、前期比が額と率で出る。",
+        "serves": [
+          "G1",
+          "G3"
+        ],
+        "serves_goals": [
+          "G1",
+          "G3"
+        ],
+        "measure": "core テストで総合=事業+家計が期間合計・月次系列の双方で成り立ち、前期比が境界値 (前期 0・前期データ無し) 付きで検証される。"
+      },
+      {
+        "id": "O3",
+        "text": "3 ペインの判定作業で単票・一括の同じ/別/除外ができる。",
+        "serves": [
+          "G2"
+        ],
+        "serves_goals": [
+          "G2"
+        ],
+        "measure": "DOM テストで区分切替・フィルタ・検索・選択・右詳細・一括判定が動き、API 統合テストで判定後の総額が不変条件どおりになる。"
+      },
+      {
+        "id": "O4",
+        "text": "除外理由区分とメモ、操作履歴と取消が永続化される。",
+        "serves": [
+          "G4"
+        ],
+        "serves_goals": [
+          "G4"
+        ],
+        "measure": "migration 適用後に既存除外の理由がメモへ保持され、取消 API の統合テストで操作前後の総額が一致し、同じ取消の再送や古い表示からの取消で意図しない操作が戻らず、再取込後も判定が再適用され、バックアップから復元すると判定・除外・操作履歴が復元時点に戻る。"
+      },
+      {
+        "id": "O5",
+        "text": "規則が docs とテストで固定され、既存の検査が緑のままである。",
+        "serves": [
+          "G5"
+        ],
+        "serves_goals": [
+          "G5"
+        ],
+        "measure": "一致度・区分・自動一致の規則が docs に記載され、pnpm test / typecheck / lint と packages/web の check 系スクリプトが全て緑である。"
+      }
+    ],
+    "success_criteria": [
+      "S1 (G1): /analysis/total-cashflow で 05-total-cashflow.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button/PageShell 経由で、直書き色の lint が 0 件である。",
+      "S2 (G1, G3): 総合/事業/家計それぞれで総収入・総支出・純収支と前期比 (額・率) が core の値と一致し、総合の値が事業と家計の和に一致する。",
+      "S3 (G2): 判定作業で単票・複数選択の『同じ取引/別の取引/集計から除外』が行え、判定後の総額が feat-total-cashflow の不変条件を満たす。",
+      "S4 (G4): 画面を開いてから行った操作を元に戻すと総収入・総支出・判定件数が操作前と一致し、同じ取消を 2 回送っても 1 回分しか戻らない。再読込後は取消の導線が出ない。既存の除外理由は migration 後もメモとして読め、バックアップから復元しても判定・除外・操作履歴が戻る。",
+      "S5 (G5): 一致度・区分・自動一致の規則が docs に明記され、境界値付きテストで固定される。サイドバーの支出分析 > 総収支 が現在地になり照合の件数バッジが要確認件数と一致する。",
+      "S6 (G1-G5): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプトが全て緑のままである。"
+    ],
+    "stakeholders": [
+      "SH1 利用者 (単独の個人事業主): 月次クローズで総収支を開いたとき、家計と事業を合わせて今期いくらプラスかを前期と比べて掴み、その数字を歪める重複・除外を同じ画面で片付け、判断を誤ったら戻したい。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 集計と判定規則が core の純関数・docs・テストで固定され、画面側に計算を二重実装しないこと。"
+    ],
+    "scope": {
+      "in": [
+        "総収支タブ (05-total-cashflow.png) の画面構成の作り直し: 見出し・セグメント・期間表示・KPI・チャート・3 ペイン判定作業・freee 除外一覧・自動一致の候補・進捗通知・下部選択バー、既存 9 列月次表の開閉化",
+        "packages/core の総収支集計の拡張 (セグメント別期間合計・前期比較・月次系列・判定作業 3 区分・一致度・自動一致の候補)",
+        "packages/api の総収支 API 拡張 (集計の返却、一括判定、除外の理由区分とメモ、操作履歴の取得と取消)",
+        "D1 migration: freee 除外の理由区分とメモ列、判定・除外の操作履歴テーブル、既存理由の移行、判定・除外・操作履歴の 3 表をバックアップと復元の対象に加えること",
+        "一致度・区分・自動一致の規則の docs 記載とテスト",
+        "共通ヘッダー/フッター文言の画像への揃え (防衛ライン・毎朝バックアップ等)",
+        "サイドバーの支出分析 > 総収支 の現在地と照合バッジの表示確認 (確認のみ)"
+      ],
+      "out": [
+        "サイドバーの総収支以外の項目・並び・月次クローズ進捗の形の変更: 利用者指示により今回は確認のみ",
+        "照合・マトリクス・推移・診断の各タブの中身: それぞれの画面サイクルで扱う",
+        "日付と金額の一致による自動寄せの廃止: 利用者決定により自動寄せを維持する",
+        "freee / Money Forward の取込経路の追加と明細分割の仕様変更",
+        "期間選択の保存先の変更 (既存どおり localStorage で全画面共有)",
+        "mobile / tablet / desktop 向け専用アプリ: 対象は web のみ (狭幅は既存のレスポンシブ表示で扱う)"
+      ]
+    },
+    "constraints": [
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1、web は React 18 + react-router-dom 7 + TanStack Query 5)。集計は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンとチャート系列色だけを使い、ボタンは共通 Button、本文は PageShell を使う。WCAG 2.2 AA (文字 4.5:1、部品 3:1) を維持し、色だけで判定状態を伝えない。",
+      "C3 データ不変条件: freee 正本による消し込み、未判断候補の 4 区分外への隔離、same の総額不変、different の独立残余加算、判断の再取込後の再適用 (feat-total-cashflow / spec-mf-business-classification) を変えない。",
+      "C4 既存方針: 表示していないタブの API は呼ばない、タブ状態は URL で持つ、分析系の更新でハブ要約を追随させる (PR #50 の invalidation) を維持する。",
+      "C5 運用: D1 migration は追加のみで既存データを失わず、本番の migration gate (feat-deploy-migration-gate) と runtime schema guard を通す。",
+      "C6 体制: 利用者 1 名が保守し、コーディングエージェントが実装する。表示値にサンプル以外の実データを docs やテストへ持ち込まない。"
+    ],
+    "concrete_intents": [
+      {
+        "id": "I1",
+        "text": "総収支タブの上部に問いの見出し『家計と事業を合わせた、本当の収支はいくらですか?』と説明、データの見方リンク、総合/事業/家計のセグメント、選択中の期間と前期の表示を置く。",
+        "serves": [
+          "G1"
+        ]
+      },
+      {
+        "id": "I2",
+        "text": "KPI 3 枚 (総収入/総支出/純収支) に期間合計と前期比の額・率を出し、前期データが無ければ『比較データなし』と表示する。",
+        "serves": [
+          "G1",
+          "G3"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "月次の収入・支出の棒と純収支の折れ線をチャート系列色で描き、凡例と金額軸 (万円) を付け、セグメントに追随させる。",
+        "serves": [
+          "G1",
+          "G3"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "判定作業の左ナビに 重複候補/freee除外/要確認 の件数を出し、中央表にソース/判定フィルタ・検索・チェック選択、右に MF 明細と freee 対応候補の並列詳細・一致度・同じ取引/別の取引/集計から除外 を置く。",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "freee から除外した明細一覧に理由区分バッジ・メモ・集計へ戻す・全選択/選択クリア/一括で理由を設定 を置く。",
+        "serves": [
+          "G2",
+          "G4"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "自動一致の候補 (日付と金額の一致で自動に寄せた組) 一覧にソースフィルタ・全選択・一致度・『選択した取引を同じ取引にする』を置き、確定は same の記録だけで総額を変えない。",
+        "serves": [
+          "G2",
+          "G5"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "複数選択時に下部固定の選択バー (件数・選択をクリア・選択した取引を同じ取引にする) を出し、判定完了で『N件中M件の判定が完了しました』を通知する。",
+        "serves": [
+          "G1",
+          "G2"
+        ]
+      },
+      {
+        "id": "I8",
+        "text": "core に総収支のセグメント別集計・前期比較・判定作業の区分・一致度関数を追加し、API が 1 回で返す。一括判定と取消の API を足す。",
+        "serves": [
+          "G3",
+          "G4"
+        ]
+      },
+      {
+        "id": "I9",
+        "text": "D1 に freee 除外の reason_code と memo を足し既存 reason を memo と『その他』へ移し、判定・除外・戻すの操作履歴テーブルを作って画面を開いてから行った操作の取消を、同じ取消の再送や古い表示から意図しない操作を戻さない形で実装する。判定・除外・操作履歴の 3 表をバックアップと復元の対象に加える。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I10",
+        "text": "一致度 (金額・日付差・口座・摘要の各要素から算出)、判定作業の 3 区分、自動一致の扱いを docs に書き、境界値テストで固定する。",
+        "serves": [
+          "G5"
+        ]
+      },
+      {
+        "id": "I11",
+        "text": "共通ヘッダー/フッターの文言を画像に揃え、サイドバーの支出分析 > 総収支 の現在地と照合バッジを DOM テストで確認する。",
+        "serves": [
+          "G5"
+        ]
+      }
+    ],
+    "confirmed": true,
+    "approval_ref": "appr-total-cashflow-reask-003"
+  },
+  "decisions": [],
+  "knowledge_candidates": [],
+  "design_applications": {
+    "backend": {
+      "text": "Clean Architecture card の Dependency Rule を、総収支の新しい規則の置き場所に適用した。一致度の配点・判定作業の 3 区分・セグメント別合計と前期比・判定進捗は入出力を持たない業務規則なので packages/core/src/total-cashflow.ts の純関数 (totalCashflowReport の結果を受け取る) に置き、Hono の route は D1 の読取り・書込みと操作履歴の記録だけを担う adapter に留める (qa-backend-web-tc-inference-006)。前期は前年の同じ期間 (qa-total-cashflow-decision-006) なので、core に previousYearPeriod を足し、ハブの previousPeriod (直前の同じ長さ) とは名前を分けて同じ規則の中に置く (qa-backend-web-tc-inference-006)。DDD card の集約は、消し込みの不変条件 (肯定条件は日付一致かつ金額一致だけ・支払先は使わない・口座は否定条件のみ・未判断の重複候補を合計へ入れない) を 1 つの集約境界として扱う判断に効いた。『同じ取引にする』を same の記録だけに留め matched と総額を動かさないのは、この境界を画面操作から守るためである (qa-total-cashflow-decision-002/008)。除外した freee の区分を MF 明細へ引き継がず公私仕分けに従わせるのも、集計規則を 1 つに保つ同じ判断である (qa-total-cashflow-decision-014)。除外した freee が唯一の候補だった明細を要確認から出す条件も、route ではなく core の review 判定に置く (qa-total-cashflow-decision-015)。API Design Patterns card は、画面が必要とする KPI・系列・判定作業・自動一致の候補・直前操作を既存 GET /api/total-cashflow の応答へ加算し、往復を 1 回に保つ判断と、取消を、画面が表示中の操作 id を送る POST /operations/{id}/undo とし、その id が最新の未取消操作でなければ 409 を返す条件付き要求にする資源設計に使った。二重押下・再試行・古いタブからの送信が、利用者の見ていない操作を戻さないためである。undo の行を取消の対象から外すので、画面が保持する id を新しい順に送れば 1 つ前へ遡る (qa-total-cashflow-decision-013/017)。 判定・除外・取消の書込み route は canonical-mutation-fence に登録し、書込みと同じ batch で invalidateJsonSnapshotQuery を呼び、復元 payload の 3 key を検証して受け渡す。復元と書込みが重なって古いスナップショットが利用者の判断を上書きしないためである (qa-backend-web-tc-inference-007・qa-infrastructure-web-tc-observed-004)。",
+      "recorded_at": "2026-09-15T14:26:23Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "DDD card の『永続化するのは利用者の判断であって派生値ではない』を、D1 に何を足すかの線引きに適用した。一致度・区分・前期比・進捗は取引と判定から毎回導出できる派生値なので保存しない (dec-aggregation-strategy-001 を維持)。保存を足すのは利用者の判断そのものである除外理由の区分とメモ (qa-total-cashflow-decision-003) と、元に戻すための操作履歴 (qa-total-cashflow-decision-004) の 2 つに限る。migration は追加だけで、freee_deal_exclusions に reason_code と memo を足し既存の reason を memo・その他へ移し、total_cashflow_operations を新設する (qa-database-web-tc-inference-006)。判定・除外の更新と履歴 1 行は同じ D1 batch に入れ、履歴だけ残る・更新だけ残るという集約の不整合を作らない。取消は、指定された id が kind が undo でない未取消の最新行と一致するときだけ行い、undo 行は記録として残すだけにする (qa-total-cashflow-decision-013/017)。",
+      "recorded_at": "2026-09-15T14:26:23Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、総収支に足す書込み API の認可に適用した。除外の一括設定・集計へ戻す・判定・取消はすべて /api/* の authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence の後にマウントし、route 内では認証済み user_id だけを条件に読み書きする。取消は操作履歴を user_id と id の両方で引くので、他人の操作 id を送っても 404 になり、存在の有無も漏らさない (qa-total-cashflow-decision-004)。新しい権限区分や共有機能は作らない。",
+      "recorded_at": "2026-09-15T12:08:50Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "Secure by Design card の『入力を許可リストで検証し、上限で止める』を、判定作業の入力に適用した。reasonCode は 5 値の許可リスト (DB の CHECK と zod の enum を同じ定数から作る)、memo は 0〜200 字、一括の件数は既存どおり最大 200 件で、超過は 400 で全体を拒否する (qa-total-cashflow-decision-003)。検索語・区分・セグメントは画面内の状態で API へ送らず、攻撃面を増やさない。操作履歴の before/after には判定と除外の値だけを入れ、取引の摘要やメモ以外の自由文を複製しない。メモと摘要は React の文字列描画だけで表示し HTML として解釈しない。",
+      "recorded_at": "2026-09-15T12:08:50Z",
+      "basis": "agent-inference"
+    },
+    "ui-ux": {
+      "text": "Information Design card の『task 頻度 × 失敗コストで束に順位を付け、残す・落とす・加工するを決める』を、総収支画面の表現物に適用した (qa-ui-ux-web-tc-inference-004)。KPI 3 枚と前期比を 1 位として見出しの直下に置き、未判断が残ると総額が確定しない判定作業の件数を 2 位として左ナビに常時出す。9 列の月次表は落とさず折りたたみで残す (qa-total-cashflow-decision-001)。加工として、前期比は額と率と矢印で示し色だけに頼らない、前期比は『前年同期』と表記してハブの『前期間』と区別し (qa-total-cashflow-decision-006)、前年同期が欠けるときは 0% と書かず『比較データなし』とする、一致度は % とバーに配点の内訳を文字で添える (qa-total-cashflow-decision-007)、判定状態は文字バッジにする。画像の『完全一致候補』は一致度が 78〜100% に散る事実に合わせ『自動一致の候補』に改め、上位概念の語も揃える (qa-total-cashflow-decision-012/016)。下部の選択バーと『元に戻す』は、操作が可能な間だけ出し、『元に戻す』はその画面を開いてから行った操作が残る間だけ出して 1 つ前へ遡らせ、再読込後は出さない (qa-total-cashflow-decision-013/017)。",
+      "recorded_at": "2026-09-15T13:44:10Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "Clean Architecture card の依存方向を、web が総収支の規則を持たない構成に適用した。KPI・前期比・3 区分・一致度・進捗は API の結果を表示するだけで画面側で再計算しない。画面が持つのはセグメント・区分・フィルタ・検索・選択といった表示状態と、その画面で成功した書込みの操作 id の列だけで、これらを切り替えても API を再取得しない (qa-frontend-web-tc-inference-004 / qa-backend-web-tc-inference-006)。書込みの成功後は ['total-cashflow'] と ['analysis-hub'] を invalidate し、サイドバーの照合バッジと概況の要約を同じ取得経路で追随させる。ヘッダー『防衛ライン』とフッター『毎朝バックアップ』は Layout の文言だけを差し替え、サイドバーは現在地とバッジの確認に留める (qa-total-cashflow-decision-010/011)。",
+      "recorded_at": "2026-09-15T13:44:10Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "本章へ引く card は 0 件である。Worker・Workers Assets・D1・R2・cron (0 18 * * *) の配信構成と binding を変えないサイクルで、infrastructure 固有に適用すべき設計知識が無いことを確認した上での確定である。本章に効く制約は D1 の上限 (1 文の bind パラメータ数・batch の文数) と、追加 migration を本番 Worker より先に適用する既存の順序 (feat-deploy-migration-gate) の 2 つで、どちらも qa-infrastructure-web-tc-observed-001 と qa-database-web-tc-inference-006 から直接導いている。毎日のバックアップは表を列挙して組み立て、判定・除外・操作履歴の表を含まない (qa-infrastructure-web-tc-observed-002)。配信構成は変えないが、判定・除外・操作履歴の 3 表はバックアップと復元の対象に加える (qa-total-cashflow-decision-018)。cron とバックアップの保存先は変えず、対象の列挙と復元の受け渡しに 3 表を足すだけに留める (qa-infrastructure-web-tc-observed-003/004)。",
+      "recorded_at": "2026-09-15T14:26:23Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "Clean Code card の『規則は名前と境界値テストで読めるようにする』を、総収支の判定規則の保守に適用した。一致度の配点 (金額 40・日付 30/20/10/5/0・口座 15/8/0・摘要 15/8/0)、3 区分の境界、前年同期比の null 規則、取消の対象範囲を docs と core の単体テストで固定し、数値は名前付き定数にする (qa-backend-web-tc-inference-006)。テストは境界値 (日付差 3 日と 4 日、候補 1 件と 2 件、前年同期の月が 1 か月欠ける場合、続けて 2 回取り消す場合、同じ操作 id を 2 回送る場合、古い id を送る場合、唯一の候補を除外した月ずれ明細が要確認から出る場合、除外の前後で事業/家計の内訳が入れ替わる場合、自動一致の組で摘要だけが違う場合) を持ち、旧実装では落ちる形にする。文言変更 (防衛ライン・毎朝バックアップ) は、その文言を期待値に持つテストがあれば同じ変更で更新する (qa-total-cashflow-decision-010)。判定・除外・操作履歴の 3 表をバックアップと復元の対象に加え (qa-total-cashflow-decision-018)、0040 の前例が触れた全ての箇所 (consumers の列挙・復元 write-set・スナップショット SQL と件数・fence・復元 payload の検証・route の無効化・schema-guard) に揃え、復元テストで 3 表が復元時点へ戻ること、key の無い旧バックアップでは既存の行が残ることを固定する (qa-infrastructure-web-tc-observed-003/004・qa-database-web-tc-inference-006)。",
+      "recorded_at": "2026-09-15T14:26:23Z",
+      "basis": "agent-inference"
+    }
+  },
+  "hearing_progress": {
+    "loop_count": 1,
+    "next_question": null,
+    "complete": true
+  },
+  "doctrine_applications": {
+    "backend": {
+      "application-architecture": {
+        "text": "Clean Architecture の依存方向を、core (一致度・3 区分・前期比・進捗) ← api (route と操作履歴の記録) ← web (表示) の一方向に反映した。一致度の計算を route に書くと、同じ規則をテストするのに D1 が要る形になるため、core の純関数に閉じる。",
+        "recorded_at": "2026-09-15T12:08:50Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "総収支の route のデータアクセスを、loadScoped と freee 系 3 テーブルの読取りに、判定・除外・操作履歴の書込みを足した範囲に限った。書込みは 1 操作 1 batch にまとめ、core には D1 を知らない配列だけを渡す。",
+        "recorded_at": "2026-09-15T12:08:50Z",
+        "basis": "agent-inference"
+      }
+    },
+    "database": {
+      "data-access": {
+        "text": "D1 側の読み書きを、freee_deal_exclusions (user_id, freee_key) の主キーと total_cashflow_operations の (user_id, created_at DESC) 索引で引く形に反映した。取消で指定された id が最新の未取消操作 (kind が undo でない) かの照合は、索引を created_at の降順にたどって引け、全件走査を必要としない。",
+        "recorded_at": "2026-09-15T13:44:10Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "追加だけの migration と既存行の移行 (reason → memo・reason_code=other) で、旧 Worker が新スキーマを読んでも壊れない順序にした。判定や除外の更新と履歴行を同じ batch に入れ、途中失敗で片方だけ残る状態を作らない。",
+        "recorded_at": "2026-09-15T12:08:50Z",
+        "basis": "agent-inference"
+      }
+    },
+    "auth": {
+      "authentication": {
+        "text": "総収支の新しい書込み API も既存のセッション認証 (authGuard) と初回パスワード変更の柵を通す位置にマウントし、総収支専用の認証経路を作らない形に反映した。",
+        "recorded_at": "2026-09-15T12:08:50Z",
+        "basis": "agent-inference"
+      },
+      "security": {
+        "text": "認可の単位を user_id に固定し、操作履歴の取消も user_id と id の組でしか引けない形に反映した。他人の操作 id を送った場合は存在の有無を返さず 404 にする。",
+        "recorded_at": "2026-09-15T12:08:50Z",
+        "basis": "agent-inference"
+      }
+    },
+    "security": {
+      "security": {
+        "text": "OWASP の入力検証を reasonCode の許可リスト・memo の長さ・一括件数の上限に、出力のエスケープをメモと摘要の文字列描画に反映した。操作履歴の JSON には判定と除外の値だけを入れ、自由文は取消で前後の値を戻すのに要る memo だけを持ち、摘要などそれ以外の自由文は複製しない。",
+        "recorded_at": "2026-09-15T13:12:17Z",
+        "basis": "agent-inference"
+      }
+    },
+    "ui-ux": {
+      "presentation": {
+        "text": "Apple HIG の明瞭さと一貫性を、判定状態を色と文字の両方で示すこと、破壊的でない『集計から除外』にも取消の導線を同じ位置に出すこと、狭幅で 3 ペインを縦に積み詳細を選択時に開くことに反映した。",
+        "recorded_at": "2026-09-15T12:08:50Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "presentation": {
+        "text": "表示層を、API の summary・workbench・autoMatches をそのまま描くコンポーネントに分け、画面側の状態は選択・フィルタ・折りたたみの開閉と、取消に使うその画面で成功した操作 id の列だけに限る形に反映した。チャートは既存の Chart.js と系列色トークンを使い、新しい色を定義しない。",
+        "recorded_at": "2026-09-15T14:04:19Z",
+        "basis": "agent-inference"
+      },
+      "application-architecture": {
+        "text": "web の依存方向を、ページ → TanStack Query の取得フック → API クライアントの一方向に反映した。書込み後の追随は invalidate に一本化し、画面側でキャッシュを手で書き換えない。",
+        "recorded_at": "2026-09-15T12:08:50Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "reliability": {
+        "text": "SRE の変更安全性を、migration を本番 Worker の配備より先に適用する既存のゲート (feat-deploy-migration-gate) を今回の追加 migration にも通すことに反映した。配信構成と binding は変えない。",
+        "recorded_at": "2026-09-15T12:08:50Z",
+        "basis": "agent-inference"
+      },
+      "operations": {
+        "text": "運用の変更を、既存の毎日のバックアップ cron と D1 の構成を変えないことに留め、バックアップが表を列挙して組み立て判定・除外・操作履歴の表を含まないことを確認した (qa-infrastructure-web-tc-observed-002)。利用者決定 (qa-total-cashflow-decision-018) により 3 表をバックアップと復元の対象に加え、cron と保存先は変えない。新しい監視や cron は足さない。",
+        "recorded_at": "2026-09-15T14:04:19Z",
+        "basis": "agent-inference"
+      }
+    },
+    "maintenance-ops": {
+      "operations": {
+        "text": "保守運用を、判定規則の docs とテストを同じ変更で更新する手順と、取消できない誤操作が起きた場合に操作履歴から前後の値を確認できることに反映した。文言変更は e2e の期待値と同時に直す。",
+        "recorded_at": "2026-09-15T12:08:50Z",
+        "basis": "agent-inference"
+      }
+    }
+  }
+}

@@ -17,7 +17,7 @@ template_id: "feature"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "25823f116de8be6463b9e511362b16bee70f1882ce96cb1be996d098052d2d62"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-16-reconciliation/completeness-findings.json", "evaluated_digest": "25823f116de8be6463b9e511362b16bee70f1882ce96cb1be996d098052d2d62"}
 source_lineage: {"origin_kind": "generated", "source_plugin": "dev-graph", "source_path": "specs/spec-reconciliation.md", "source_version": "0.1.11", "source_digest": "a14c275ce48dc122165fd3cb2269b89976e17a1dc364df13eec78865ee0a93d7", "imported_at": "2026-09-15T10:56:57Z"}
 created_at: "2026-09-15T10:56:57Z"
 updated_at: "2026-09-15T10:56:57Z"

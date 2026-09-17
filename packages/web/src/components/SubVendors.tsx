@@ -11,6 +11,7 @@ import {
 import { monthLabel, yen } from '../format.js';
 import { Button } from './Button.js';
 import { ConfirmDialog, usePendingConfirm } from './ConfirmDialog.js';
+import { DataTable } from './DataTable.js';
 import { HowTo } from './HowTo.js';
 
 const SUBS_KEYS = [['subscriptions'], ['sub-vendors'], ['sub-candidates'], ['summary']];
@@ -97,29 +98,27 @@ export function SubVendorsPanel() {
       {q.isLoading && <p className="sub">読み込み中…</p>}
       {q.isError && <p className="sub">登録一覧を読み込めませんでした。</p>}
       {vendors.length > 0 && (
-        <table className="data stack-sm">
-          <thead>
-            <tr>
-              <th>支払先</th>
-              <th>別名(カンマ区切り)</th>
-              <th>対象科目(空欄=全科目)</th>
-              <th>見直し</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {vendors.map((v) => (
-              <VendorRow
-                key={`${v.id}:${v.aliases.join('\u0000')}:${(v.accounts ?? []).join('\u0000')}`}
-                vendor={v}
-                review={review.get(v.id)}
-                accountOptions={accountOptions}
-                onError={setError}
-                onDelete={() => confirmRemove.ask(v)}
-              />
-            ))}
-          </tbody>
-        </table>
+        <DataTable
+          className="data stack-sm"
+          columns={[
+            '支払先',
+            '別名(カンマ区切り)',
+            '対象科目(空欄=全科目)',
+            '見直し',
+            { label: '操作', sortable: false },
+          ]}
+        >
+          {vendors.map((v) => (
+            <VendorRow
+              key={`${v.id}:${v.aliases.join('\u0000')}:${(v.accounts ?? []).join('\u0000')}`}
+              vendor={v}
+              review={review.get(v.id)}
+              accountOptions={accountOptions}
+              onError={setError}
+              onDelete={() => confirmRemove.ask(v)}
+            />
+          ))}
+        </DataTable>
       )}
       {confirmRemove.target && (
         <ConfirmDialog
@@ -208,7 +207,7 @@ function VendorRow({
   return (
     <tr>
       <td data-label="支払先">{vendor.name}</td>
-      <td data-label="別名">
+      <td data-label="別名" data-sort={aliasDraft}>
         <input
           type="text"
           value={aliasDraft}
@@ -219,7 +218,7 @@ function VendorRow({
           onKeyDown={onKey}
         />
       </td>
-      <td data-label="対象科目">
+      <td data-label="対象科目" data-sort={accountDraft.join('・')}>
         <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
           <MultiAccountField
             value={accountDraft}
@@ -276,7 +275,7 @@ function ReviewCell({
         ? '今月'
         : `${review.monthsSince}ヶ月前`;
   return (
-    <td data-label="見直し">
+    <td data-label="見直し" data-sort={review?.monthsSince ?? ''}>
       <span className={due ? 'pill warn' : 'pill calm'}>{label}</span>{' '}
       <Button
         type="button"
@@ -512,76 +511,74 @@ export function SubsCandidatesPanel({ hasDeals }: { hasDeals: boolean }) {
         </div>
       )}
       {candidates.length > 0 && (
-        <table className="data stack-sm">
-          <thead>
-            <tr>
-              <th>登録</th>
-              <th>支払先</th>
-              <th>サブスクらしさ</th>
-              <th>平均月額</th>
-              <th>支払月数</th>
-              <th>最終支払</th>
-              <th>科目</th>
-              <th />
+        <DataTable
+          className="data stack-sm"
+          columns={[
+            { label: '登録', sortable: false },
+            '支払先',
+            'サブスクらしさ',
+            '平均月額',
+            '支払月数',
+            '最終支払',
+            '科目',
+            { label: '操作', sortable: false },
+          ]}
+        >
+          {ranked.map(({ c, confidence }) => (
+            <tr key={c.partner}>
+              <td data-label="登録">
+                <input
+                  type="checkbox"
+                  checked={picked.has(c.partner)}
+                  aria-label={`${c.partner}をサブスクとして登録する`}
+                  onChange={() => toggle(c.partner)}
+                />
+              </td>
+              <td data-label="支払先" style={{ whiteSpace: 'nowrap' }}>
+                {c.partner}
+                <Reasons partner={c.partner} reasons={c.reasons} />
+              </td>
+              <td data-label="サブスクらしさ" className="num" data-sort={c.score}>
+                <span className={CONFIDENCE_CLS[confidence]}>{SUBS_CONFIDENCE_LABEL[confidence]}</span>{' '}
+                {c.score}点
+              </td>
+              <td data-label="平均月額" className="num" data-sort={c.avgMonthly}>
+                {yen(c.avgMonthly)}
+              </td>
+              <td data-label="支払月数" className="num" data-sort={c.activeMonths}>
+                {c.activeMonths}/{c.spanMonths}
+              </td>
+              <td data-label="最終支払" style={{ whiteSpace: 'nowrap' }}>
+                {monthLabel(c.lastMonth)}
+              </td>
+              <td data-label="科目" style={{ whiteSpace: 'nowrap' }}>
+                {c.accounts.join('・')}
+              </td>
+              <td data-label="判定">
+                <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="mini"
+                    disabled={add.isPending}
+                    onClick={() => add.mutate(c.partner)}
+                  >
+                    これはサブスク
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="mini"
+                    disabled={exclude.isPending}
+                    onClick={() => exclude.mutate(c.partner)}
+                  >
+                    サブスクではない
+                  </Button>
+                </span>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {ranked.map(({ c, confidence }) => (
-              <tr key={c.partner}>
-                <td data-label="登録">
-                  <input
-                    type="checkbox"
-                    checked={picked.has(c.partner)}
-                    aria-label={`${c.partner}をサブスクとして登録する`}
-                    onChange={() => toggle(c.partner)}
-                  />
-                </td>
-                <td data-label="支払先" style={{ whiteSpace: 'nowrap' }}>
-                  {c.partner}
-                  <Reasons partner={c.partner} reasons={c.reasons} />
-                </td>
-                <td data-label="サブスクらしさ" className="num">
-                  <span className={CONFIDENCE_CLS[confidence]}>{SUBS_CONFIDENCE_LABEL[confidence]}</span>{' '}
-                  {c.score}点
-                </td>
-                <td data-label="平均月額" className="num">
-                  {yen(c.avgMonthly)}
-                </td>
-                <td data-label="支払月数" className="num">
-                  {c.activeMonths}/{c.spanMonths}
-                </td>
-                <td data-label="最終支払" style={{ whiteSpace: 'nowrap' }}>
-                  {monthLabel(c.lastMonth)}
-                </td>
-                <td data-label="科目" style={{ whiteSpace: 'nowrap' }}>
-                  {c.accounts.join('・')}
-                </td>
-                <td data-label="判定">
-                  <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="mini"
-                      disabled={add.isPending}
-                      onClick={() => add.mutate(c.partner)}
-                    >
-                      これはサブスク
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="mini"
-                      disabled={exclude.isPending}
-                      onClick={() => exclude.mutate(c.partner)}
-                    >
-                      サブスクではない
-                    </Button>
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </DataTable>
       )}
       {excluded.length > 0 && (
         <div style={{ marginTop: 12 }}>

@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "1b216ebc004b3b0b5cb8c739b22c382e1fb2c211bd33b7dac2c4e566eceb11e0"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/database.md", "source_version": "0.1.14", "source_digest": "1b216ebc004b3b0b5cb8c739b22c382e1fb2c211bd33b7dac2c4e566eceb11e0", "imported_at": "2026-09-15T10:39:59Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-16-reconciliation/completeness-findings.json", "evaluated_digest": "1b216ebc004b3b0b5cb8c739b22c382e1fb2c211bd33b7dac2c4e566eceb11e0"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-16-reconciliation/database.md", "source_version": "0.1.14", "source_digest": "1b216ebc004b3b0b5cb8c739b22c382e1fb2c211bd33b7dac2c4e566eceb11e0", "imported_at": "2026-09-15T10:39:59Z"}
 created_at: "2026-09-15T10:39:59Z"
 updated_at: "2026-09-15T10:39:59Z"
 depends_on: ["spec-reconciliation"]
@@ -50,7 +50,7 @@ serves_goals: ["G3", "G4"]
 
 # Architecture overview
 
-照合画面 — 判断・除外・操作履歴・月次レビューの保存と派生値の線引き。`system-spec/database.md` は承認時入力、本書はデータ制約を持つ。現行の機能仕様の正本は `specs/spec-reconciliation.md`。
+照合画面 — 判断・除外・操作履歴・月次レビューの保存と派生値の線引き。`system-spec/archive/2026-09-16-reconciliation/database.md` は承認時入力、本書はデータ制約を持つ。現行の機能仕様の正本は `specs/spec-reconciliation.md`。
 
 ## Context and drivers
 

@@ -1,0 +1,30 @@
+{
+ "schema_version": "1.0.0",
+ "handoff_target": "task-graph",
+ "feature_id": "feat-trends-screen",
+ "parent_feature": "feat-trends-screen",
+ "feature_package_id": "feature-package/feat-trends-screen",
+ "snapshot_digest": "sha256:a3cbc5e433134fb660e44b03562b99eee6019c9825cf94a4a21a2f1b86c697fe",
+ "validated_plan_digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4",
+ "kind": "requirements-handoff",
+ "status": "ready",
+ "requirements_document": ".dev-graph/requirements/feat-trends-screen/requirements.md",
+ "readiness_matrix": ".dev-graph/requirements/feat-trends-screen/readiness-matrix.json",
+ "trace_plan": ".dev-graph/requirements/feat-trends-screen/trace-plan.json",
+ "task_graph": ".dev-graph/plans/feature-package-feat-trends-screen/task-graph.json",
+ "system_build_handoff": ".dev-graph/plans/feature-package-feat-trends-screen/system-build-handoff.json",
+ "task_spec_source_root": ".dev-graph/plans/feature-package-feat-trends-screen/task-specs",
+ "task_projection_target_root": "tasks/feat-trends-screen",
+ "requirement_count": 12,
+ "task_count": 13,
+ "missing_sections": [],
+ "self_generated_code_files": [],
+ "preconditions": [
+  "確定意思決定 17 件 (qa-trends-decision-001〜014、dec-trends-datasource-001、dec-trends-review-rows-001、dec-trends-judgement-source-001) を変更しない。変更が必要になったら spec を reopen してから着手する。",
+  "architecture 8 章の scope には現行 repository に実在しない path 表記が 8 件ある (例: packages/web/src/lib/api.ts)。SYS-TRENDS-P01 の対応表で実在 path へ読み替え、architecture 本文は書き換えない。",
+  "データ移行と D1 migration は無い。SYS-TRENDS-P08 で migration 追加が 0 件であることを確認する。",
+  "previousYearPeriod は packages/core/src/analysis-hub.ts の previousPeriod の隣に新設する (period.ts ではない)。",
+  "着手前に origin/main を fetch し、trends・total-cashflow 周辺の変更が入っていれば P01 の対応表を更新する。"
+ ],
+ "consumer_action": "dev-graph next で ready batch を算出し、worktree claim 後に SYS-TRENDS-P01 から task-graph build を開始する。"
+}

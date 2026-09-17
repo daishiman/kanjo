@@ -119,7 +119,11 @@ export function TradeoffPage() {
         <h2>削減余地リスト(効果額の大きい順)</h2>
         <HowTo id="tradeoffCuts" />
         {!d.candidates.length && <p className="empty">現在、検知された削減候補はありません。</p>}
-        <table className="data">
+        <table
+          className="data"
+          data-table-kind="layout"
+          data-sort-reason="列見出しのない選択リストで効果額の業務優先順を保つ"
+        >
           <tbody>
             {d.candidates.map((c) => (
               <tr key={c.id}>

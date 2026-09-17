@@ -1,10 +1,11 @@
 import type { AnalysisHubReport } from '@kanjo/core';
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { ANALYSIS_HUB_ICONS } from '../../analysis-hub-icons.js';
 import { Button } from '../../components/Button.js';
 import { RouteIcon, type RouteIconName } from '../../components/RouteIcon.js';
 import { pct, yen } from '../../format.js';
-import { ANALYSIS_HUB_ICONS, ANALYSIS_TABS, type AnalysisTabId } from '../../routeMetadata.js';
+import { ANALYSIS_TABS, type AnalysisTabId } from '../../routeMetadata.js';
 
 type HubView = AnalysisHubReport['views'][AnalysisTabId];
 export type HubDataState = 'loading' | 'error' | 'empty' | 'success';
@@ -153,7 +154,11 @@ export function AnalysisRouteTable({
       </div>
 
       <div className="analysis-route-table-wrap">
-        <table className="analysis-route-table">
+        <table
+          className="analysis-route-table"
+          data-table-kind="workflow"
+          data-sort-reason="業務の確認手順を段階1から5へ固定したナビゲーション"
+        >
           <colgroup>
             <col className="analysis-route-col analysis-route-col--step" />
             <col className="analysis-route-col analysis-route-col--view" />

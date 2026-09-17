@@ -151,15 +151,15 @@ afterEach(() => {
 });
 
 describe('支出トレンドの表示', () => {
-  it('事業と家計が同じ表に並び、規模を比べられる', async () => {
+  it('事業と家計の統計判定が同じ優先度表に並ぶ', async () => {
     renderWith();
-    const head = await screen.findByText('事業と家計の内訳');
+    const head = await screen.findByText('手を打つ順番');
     const table = head.parentElement?.querySelector('table') as HTMLElement;
     const rows = within(table).getAllByRole('row').slice(1);
     expect(rows).toHaveLength(2);
     expect(rows[0].textContent).toContain('事業');
-    expect(rows[0].textContent).toContain('¥1,200,000');
-    expect(rows[0].textContent).toContain('80.0%');
+    expect(rows[0].textContent).toContain('¥100,000');
+    expect(rows[0].textContent).toContain('40.0%');
     expect(rows[1].textContent).toContain('家計');
     expect(rows[1].textContent).toContain('食費');
   });
@@ -199,7 +199,7 @@ describe('支出トレンドの表示', () => {
 
   it('スコープの切り替えがサーバへ届く', async () => {
     const urls = renderWith();
-    await screen.findByText('事業と家計の内訳');
+    await screen.findByText('手を打つ順番');
     fireEvent.click(screen.getByRole('tab', { name: '家計' }));
     await waitFor(() => expect(urls.some((u) => u.includes('scope=personal'))).toBe(true));
   });

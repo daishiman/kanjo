@@ -342,6 +342,7 @@ describe('未処理件数の 3 か所一致 (AC-002)', () => {
   });
 
   it('優先明細表は期間の外の明細を出さないが、件数は全期間のまま', async () => {
+    localStorage.setItem('kanjo:period', JSON.stringify({ mode: 'all' }));
     renderOverview();
     await waitFor(() => expect(counts()).toEqual({ badge: 4, card: 4, bar: 4 }));
     const rows = () =>
@@ -357,6 +358,7 @@ describe('未処理件数の 3 か所一致 (AC-002)', () => {
   });
 
   it('期間から外れた選択明細を詳細に残さない', async () => {
+    localStorage.setItem('kanjo:period', JSON.stringify({ mode: 'all' }));
     renderOverview();
     await waitFor(() => expect(counts().card).toBe(4));
     const table = screen.getByRole('table', { name: '優先して確認する明細' });
@@ -648,6 +650,7 @@ describe('概況の情報設計と状態の整合', () => {
         return json({ overview: { months: [], unrecordedExpMonths: [] }, period: overview().period });
       }),
     );
+    localStorage.setItem('kanjo:period', JSON.stringify({ mode: 'all' }));
     renderOverview();
     expect((await screen.findAllByText('¥1,248,000')).length).toBeGreaterThan(0);
 
@@ -679,6 +682,7 @@ describe('概況の情報設計と状態の整合', () => {
         return json({ overview: { months: [], unrecordedExpMonths: [] }, period: overview().period });
       }),
     );
+    localStorage.setItem('kanjo:period', JSON.stringify({ mode: 'all' }));
     renderOverview();
     expect((await screen.findAllByText('¥1,248,000')).length).toBeGreaterThan(0);
 

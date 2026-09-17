@@ -61,11 +61,21 @@ export function TaskCopy({ task, detail, summary }: { task: string; detail: stri
   return (
     <>
       <p className="page-task">{linkTerms(task)}</p>
-      <details className="page-task-detail">
-        <summary>{summary}</summary>
-        <p>{linkTerms(detail)}</p>
-      </details>
+      <TaskDetail detail={detail} summary={summary} />
     </>
+  );
+}
+
+/**
+ * 畳んだ詳細だけ。問いの見出し (PageHeader の lead) が1文の役目を果たす画面で、
+ * 同じ文を二度出さずに「知らないと誤読する情報」だけを残すために使う。
+ */
+export function TaskDetail({ detail, summary }: { detail: string; summary: string }) {
+  return (
+    <details className="page-task-detail">
+      <summary>{summary}</summary>
+      <p>{linkTerms(detail)}</p>
+    </details>
   );
 }
 

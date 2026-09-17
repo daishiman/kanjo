@@ -6,7 +6,13 @@
  * 「一番高いのはどれか」を見るための並べ替えが機能しなくなる。
  */
 import { describe, expect, it } from 'vitest';
-import { type SortDir, compareSortValues, parseSortNumber, sortedRowOrder } from './table-sort.js';
+import {
+  type SortDir,
+  compareSortValues,
+  parseSortNumber,
+  sortedRowOrder,
+  sortedRowsBy,
+} from './table-sort.js';
 
 const sortTexts = (values: string[], dir: SortDir = 'asc'): string[] =>
   sortedRowOrder(
@@ -68,5 +74,19 @@ describe('sortedRowOrder', () => {
   it('固定行(合計行)は動かさず、その場に残す', () => {
     const cells = [['¥50'], ['¥100'], ['合計']];
     expect(sortedRowOrder(cells, 0, 'desc', [false, false, true])).toEqual([1, 0, 2]);
+  });
+});
+
+describe('階層表の並べ替え', () => {
+  it('親データを数値で安定ソートし、nullは末尾に置く', () => {
+    const rows = [
+      { id: 'a', amount: 20 },
+      { id: 'b', amount: null },
+      { id: 'c', amount: 10 },
+      { id: 'd', amount: 20 },
+    ];
+    expect(
+      sortedRowsBy(rows, { column: 'amount', dir: 'asc' }, (row) => row.amount).map((row) => row.id),
+    ).toEqual(['c', 'a', 'd', 'b']);
   });
 });

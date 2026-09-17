@@ -296,31 +296,12 @@ export const ANALYSIS_TABS = [
   },
 ] as const;
 
-/** ハブの補助アイコン。状態・操作の意味と図形の対応もルート定義と同じ場所で管理する。 */
-export const ANALYSIS_HUB_ICONS = {
-  copy: 'link-2',
-  status: {
-    success: 'circle-check',
-    error: 'circle-alert',
-    neutral: 'circle-minus',
-    warning: 'triangle-alert',
-    trendDown: 'arrow-down',
-    trendUp: 'trending-up',
-  },
-} as const;
-
 export type AnalysisTabId = (typeof ANALYSIS_TABS)[number]['id'];
 
 /**
- * 問いの見出しを持つタブ。PageHeader の「支出分析」を問いに置き換え、説明文をタブより上に置く。
- * 照合は作業画面なので、ハブと同じく「どこから手を付けるか」を先頭で問う(spec-reconciliation UI・状態遷移)。
+ * 問いの見出しの本文は `analysis-tab-questions.ts` にある。
+ * 読むのが支出分析タブ (遅延読込) だけなので、初期 JS へ載せないため分けている。
  */
-export const ANALYSIS_TAB_QUESTIONS: Partial<Record<AnalysisTabId, { question: string; lead: string }>> = {
-  reconciliation: {
-    question: '帳簿と口座の差異を、どこから解消しますか？',
-    lead: 'MoneyForwardの取引とfreeeの仕訳を照合し、未処理の差異を一つずつ確認・解消しましょう。',
-  },
-};
 
 /**
  * 子パスを持つ画面。ナビの現在地判定を前方一致にする対象。

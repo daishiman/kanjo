@@ -155,7 +155,12 @@ export function GuidePage() {
 
       <div className="card">
         <h2>データ充足度チェック</h2>
-        <table className="data" style={{ maxWidth: 620 }}>
+        <table
+          className="data"
+          style={{ maxWidth: 620 }}
+          data-table-kind="layout"
+          data-sort-reason="見出しのない2列の充足状態リストで行順が意味を持つ"
+        >
           <tbody>
             <tr>
               <td>取込済み期間</td>

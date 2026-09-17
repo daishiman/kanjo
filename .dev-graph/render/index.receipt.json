@@ -1,16 +1,16 @@
 {
  "renderer": "render-graph-html.py (dev-graph 0.1.11)",
- "rendered_at": "2026-09-15T11:45:40Z",
+ "rendered_at": "2026-09-16T10:38:50Z",
  "scope": "all nodes",
  "graph_revision": 4,
  "input": ".dev-graph/state/graph.json",
- "input_sha256": "4e2269d277b0d90c724ea547d839c9b0a352ebac0deb4d278e294c840436f783",
+ "input_sha256": "45da2d55e5e160f2119ef1c47da24106dc854dd78a4b5191c00bdf5cfe4fe527",
  "output": ".dev-graph/render/index.html",
- "output_sha256": "122b696c56ee313898803e63ebbf5b3a9ce1d5ceb7966a430af715fe4fa84eee",
+ "output_sha256": "cf1ab64568b07132c17863cf4a2fe48a8179a30832a0d96137e54c359f31020c",
  "nodes": 23,
  "edges": 21,
  "feature_progress": {
-  "feat-reconciliation": {
+  "feat-trends-screen": {
    "done": 0,
    "total": 13
   }
@@ -19,13 +19,13 @@
  "svg": 1,
  "inline_scripts": 2,
  "registration_receipt": {
-  "path": ".dev-graph/plans/feature-package-feat-reconciliation/dev-graph-registration-receipt.json",
+  "path": ".dev-graph/plans/feature-package-feat-trends-screen/dev-graph-registration-receipt.json",
   "expected_count": 13,
   "applied_count": 13,
-  "source_digest": "sha256:76c705dfa24c67d6b3bf7e3e42d55f2e7b60c0a316f4df01b0343abd909431ad"
+  "source_digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4"
  },
  "beads_linked_nodes": 14,
- "live_trial": "headless Chrome (--headless=new) screenshot で SVG DAG 描画と SYS-RECON-P01..P13 のノード表示を確認。'active · feature · 0/13' は HTML 本文で照合",
+ "live_trial": "headless Chrome (--headless=new) screenshot で SVG DAG 描画と SYS-TRENDS-P01..P13 のノード表示を確認。'active · feature · 0/13' は HTML 本文で照合",
  "known_display_issue": "長い title (P02/P04/P05/P09/P12) がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
  "note": "renderer は receipt を書かず source_digest を HTML に描画しない。本 receipt は stdout と registration receipt から再作成し digest を照合した"
 }

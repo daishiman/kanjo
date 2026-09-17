@@ -1,0 +1,211 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/plan-feat-trends-screen-20260916T1020Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "goal-spec.json の scope_in/scope_out と各 task-spec の目的節・Produced/Write scope の間に矛盾は検出されなかった。scope_out の6項目 (収入・支出・純収支以外の指標の実装、取引先の名寄せ規則、AI による説明文生成、共通シェルの変更、照合・総収支・マトリクス・診断タブの中身、web 以外の platform) は、P01〜P13 のどの Produced/Write scope にも現れない。P08 は『指標 id 分岐の除去確認と集計ロジックの重複整理』であり、scope_out の『指標の実装追加』ではなく整理のみで、acceptance に migration 追加なしが明記されている。migration は goal-spec notes のとおり 0042 のままで、repo の migrations/ 実測と一致する。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-08-refactoring-migration.md"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "specs/spec-trends-screen.md の FR1〜FR12 は task-specs/phase-01-requirements.md (転記)・phase-05-implementation.md (実装、FR1〜FR12と S1〜S4)・phase-10-final-review.md (FR1〜FR12の実装漏れ確認) に具体的に接続されている。受入 S1〜S5 は spec 自身の成功基準 (spec 337行『受入: S1〜S5』) であり、S6 (既存 test/typecheck/lint/視覚検査が緑) は features/feat-trends-screen.md と feature-package.json#acceptance に spec を上回る feature 全体ゲートとして追加されている。S1〜S6 は phase-07-acceptance.md (『S1〜S5 は spec の成功基準、S6 は既存の test・typecheck・lint・視覚検査が緑のままであること』として明記) と phase-11-evidence.md (証跡索引) で具体的に処理される。Contract tests 10 項目は phase-01 (転記)・phase-04 (integration test 化)・phase-05 (実装) に接続されている。goal-spec.open_items の1件 (info-architecture-scope-paths) は disposition どおり P01 の Path mapping 節 (8件の対応表) で処理されている。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-10-final-review.md",
+        "task-specs/phase-11-evidence.md"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "source_feature_digest (sha256:7d210739378d7cdf1960fad15f40bd490228cd9c3d0327ced00a9c6ec1e4ea9d) は feature-package.json・system-build-handoff.json#identity・goal-spec.json#source_lineage[0] で一致し、features/feat-trends-screen.context.json の実測 sha256 とも本評価で一致を確認した。goal-spec.json#source_lineage 全10件 (spec・feature・8件の architecture)・system-spec/00-requirements-definition.md・completeness-findings.json の実測 sha256 も全件一致を確認した。repository_id は goal-spec.json・system-build-handoff.json#identity・workstream-inventory.json#repo_context の全てで github:daishiman/kanjo に統一されている。write_scope に挙がる既存パス (packages/core/src/trend.ts, packages/core/src/total-cashflow.ts, packages/core/src/analysis-hub.ts, packages/api/src/routes/analytics.ts, packages/web/src/pages/analysis/Trends.tsx, packages/web/src/api.ts, packages/web/src/components/charts.ts, packages/api/src/store.ts, packages/web/src/period.tsx, packages/web/src/styles.css, packages/web/src/trends-scope.dom.test.tsx 等) は本評価で repo に実在を確認した。architecture 8章の scope に実在しない8件 (packages/web/src/lib/api.ts 等) は goal-spec.open_items で識別済みであり、P01 の Path mapping 節で実在 path への対応が示されているため、P01以降の Produced/Write scope はすべて対応後の実在 path を使う設計であり、architecture scope の非実在表記を write_scope に直接使っていない。packages/core/src/trend-metrics.ts, packages/web/src/pages/analysis/trends.css, packages/core/test/trend-comparison.test.ts, packages/core/test/trend-metrics-contract.test.ts, packages/api/test/trends-screen.integration.test.ts, packages/web/src/pages/analysis/trends-screen.dom.test.tsx, packages/web/src/classify-trends-filter.dom.test.tsx は repo に未実在だが、いずれも task-spec の『Produced artifacts』節で新規作成物として明示されており、既存パスの誤記とは区別される。staging-manifest.json#files の17件と staging-manifest.json 自身を合わせた18件を本評価で evaluated_inputs とし、実バイトの sha256 を再計算して全件一致を確認した。canonical_digest (sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4) は deterministic gate (validate-system-plan.py) の再実行でも validated_digest として同一値が算出され一致した。system-build-handoff.json の registration_request は owner を system-dev-planner/C11 (promotion_receipt) と dev-graph/C02 (registration_receipt) に分離し、両方 produced_by_this_component=false・status=not-emitted で promotion 前の境界を侵していない。ただし workstream-inventory.json#source_lineage.source_version が \"0.1.0\" で、goal-spec.json#readiness_pin.source_pin_version の \"0.1.14\" (system-spec-harness の実インストール版と一致、installed_plugins.json で確認) と食い違っており、low finding として記録する。",
+      "evidence": [
+        "feature-package.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "gate:deterministic-validation",
+        "workstream-inventory.json",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の13ノード (SYS-TRENDS-P01..P13) は depends_on が直前1ノードのみを指す単純な線形鎖であり、system-build-handoff.json#execution_tasks の depends_on も同一構成で一致する。feature-package.json#phase_refs / task_node_ids とも順序が一致し、循環依存や前方参照違反は検出されなかった。staging-manifest.json#files のキー集合と phase_refs (P01..P13) は task-specs/phase-01..13 の13ファイルと1対1で対応し、依存グラフの構成物に欠落・重複はない。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "${CLAUDE_PLUGIN_CACHE}/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        ".",
+        "--staging",
+        ".dev-graph/staging/plan-feat-trends-screen-20260916T1020Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4\",\n  \"feature_package_id\": \"feature-package/feat-trends-screen\",\n  \"parent_feature\": \"feat-trends-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "c572f353a1745ec29176d0e4bb1d0693f14c9916f55373f19f49951927b333ff"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "633a143ac4e3a10a03ef3a45b1c4812233dc62d8e267e069424ae8550168e6d3"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "d46e5886745201de3888b89d7c0ed31b66665353415f63bff96984c39821c425"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "c98bb22bbf8fa37c8fcd377740f32b24c804c82d33ced33a41927c61bd0b0aba"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "f8ef28c0ea1a4dc028c6f7204baf20516d1447b50cc0e5f14254acdda5f6529b"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "9be62d09ee3633843b00b8f9e302228746463aef993009e140eba66886b2dcc0"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "774f78ff05b2203d06a772a2b8c176cea68db143fec739f6df7441efd86804fb"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "e97a966ace480d9bfb103deb259d48af25455d8b6df918624c9d715d6b2dc49d"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "adb87590ad0f62b57609ac26f208d659cc5d6c05a7d640f599f64d21b5e912a3"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "7b26dd24db09634e48ffe76817ce4c3f46aaa3f093629a39617c002dfdda2c4a"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "6bb06d586435a9138e3bf19305d079701f553dbe44b7f42298db4534443edfe0"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "6ccd30314d5e347954b4489687a056c3f99064902451a1ef64809d48af2265c2"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "fc0daf15e7f1bf509418d115a0cc3604d9d58b19e2550ce37a78cdf0aa209f98"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "736210234b690cfbb897a587927702b5cb1ad0402a0517e0a9e865f5464f328e"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "57749f673dd3f8a7eedd9a65a812c1799e5820c270ca8a92d9c02d35b7b1759d"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "56ec7859f4a53d8fbdfdd65769fb03c6694cb6a4b6e7b758837ec5a41f25db66"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "65cfbbc3cff9bdd384fbc1db99762c13c8fde58162226f6dbf4d8ace823891b6"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "382feff72373921587dcec66718e9d66ae7e5cf2d513f9c8e1c7752e47e2c67e"
+    }
+  ],
+  "staleness_rule": "evaluated_inputs のいずれかの sha256 が再計算値と一致しなくなった場合、staging-manifest.json#canonical_digest が evaluated_digest と一致しなくなった場合、または feature-package.json#source_feature_digest が features/feat-trends-screen.context.json の実測 sha256 と一致しなくなった場合、本 findings は無効とし再評価が必要である。",
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "C3-integrity",
+      "observation": "workstream-inventory.json の source_lineage.source_version が \"0.1.0\" で、goal-spec.json の readiness_pin.source_pin_version (\"0.1.14\", インストール済み system-spec-harness の実バージョンと一致) と食い違っている。dev-graph 登録前に workstream-inventory.json の source_lineage.source_version を \"0.1.14\" へ修正することを推奨する。",
+      "evidence": [
+        "workstream-inventory.json",
+        "goal-spec.json#readiness_pin",
+        "gate:deterministic-validation"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "C2-traceability",
+      "observation": "specs/spec-trends-screen.md 自身の受入条件は S1〜S5 のみ (337行『受入: S1〜S5』) で、S6 は features/feat-trends-screen.md・feature-package.json#acceptance で feature レベルに追加された全体ゲートである。矛盾ではなく feature が spec を包含する形で拡張しており、phase-07-acceptance.md がその区別を明記しているため C2 の PASS 判定に影響しない。",
+      "evidence": [
+        "specs/spec-trends-screen.md",
+        "features/feat-trends-screen.md",
+        "task-specs/phase-07-acceptance.md"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "C3-grounding",
+      "observation": "architecture 8章 scope の非実在表記8件は goal-spec.open_items (info-architecture-scope-paths) で識別され、P01 の Path mapping 節で実在 path への対応が示されている。P04・P05 の Produced/Write scope はいずれも対応後の実在 path (packages/web/src/api.ts, packages/web/src/components/charts.ts, packages/web/src/period.tsx 等) を使っており、非実在表記をそのまま write_scope に転記した箇所は無い。",
+      "evidence": [
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "C4-dependency",
+      "observation": "task-graph.json の13ノードは SYS-TRENDS-P01からP13まで depends_on が直前ノード1件のみを指す完全な線形鎖であり、循環は検出されなかった。system-build-handoff.json の execution_tasks も同一構成で一致する。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "grounding",
+      "observation": "P05 の Produced artifacts に挙がる既存ファイル (packages/core/src/trend.ts, packages/core/src/total-cashflow.ts, packages/core/src/analysis-hub.ts, packages/api/src/routes/analytics.ts, packages/web/src/pages/analysis/Trends.tsx 等) は全て repo に実在を確認した。packages/core/src/trend-metrics.ts と packages/web/src/pages/analysis/trends.css は未実在だが P05 の Produced artifacts に明示された新規作成予定ファイルであり、packages/core/test/trend-comparison.test.ts ほか4件のテストファイルも P04 の Produced artifacts に明示された新規作成予定ファイルである。migration は最新 0042 のままで、goal-spec notes のとおり追加が無い。",
+      "evidence": [
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "migrations/0042_total_cashflow_operations_and_exclusion_reason.sql"
+      ]
+    }
+  ]
+}

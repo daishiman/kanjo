@@ -3,10 +3,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { TotalCashflowResponse } from './api.js';
 import { TotalCashflowPage } from './pages/analysis/TotalCashflow.js';
 import { PeriodProvider } from './period.js';
 
-const totalCashflow = {
+const totalCashflow: TotalCashflowResponse = {
   months: [],
   matched: [],
   freeeOnly: [],
@@ -29,17 +30,78 @@ const totalCashflow = {
         cls: 'per',
         clsSrc: '既定',
       },
-      candidates: [],
+      candidates: [
+        {
+          freeeIndex: 0,
+          freeeKey: 'v1:freee:sample#0',
+          date: '2026-08-02',
+          partner: 'サンプル店',
+          amount: 1_000,
+          account: '食費',
+          settleAccount: 'サンプルカード',
+          dayGap: 1,
+          accountConflict: false,
+          score: 90,
+        },
+      ],
     },
   ],
+  // 判定 mutation の入口は単一のワークベンチに集約している。
+  // 本試験も実際の画面と同じ状態経路から保存操作を検証する。
+  summary: null,
+  series: [],
+  workbench: {
+    duplicates: [],
+    needsReview: [],
+    excluded: [],
+    progress: {
+      duplicates: { total: 0, decided: 0 },
+      needsReview: { total: 0, decided: 0 },
+      excluded: { total: 0, decided: 0 },
+    },
+  },
+  autoMatches: [],
+  lastOperation: null,
+  period: { applied: null, label: '全期間', full: null, years: [], monthCount: 0 },
 };
+
+totalCashflow.workbench!.duplicates = totalCashflow.review;
+totalCashflow.workbench!.progress.duplicates.total = totalCashflow.review.length;
 
 afterEach(() => {
   cleanup();
+  window.history.replaceState({}, '', '/');
+  localStorage.clear();
   vi.unstubAllGlobals();
 });
 
 describe('総収支の成功 mutation', () => {
+  it('推移から渡された月だけを総収支APIへ渡す', async () => {
+    window.history.replaceState({}, '', '/analysis/total-cashflow?month=2026-03');
+    const calls: string[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        calls.push(String(input));
+        return new Response(JSON.stringify(totalCashflow), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }),
+    );
+
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={client}>
+        <PeriodProvider>
+          <TotalCashflowPage />
+        </PeriodProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(await screen.findByText('推移画面で選んだ 2026-03 の総収支を表示しています。')).toBeTruthy();
+    expect(calls).toContain('/api/total-cashflow?from=2026-03&to=2026-03');
+  });
+
   it('重複判断の保存後に分析ハブ・照合・月次クローズのキューを無効化する', async () => {
     const calls: { url: string; method: string }[] = [];
     vi.stubGlobal(
@@ -67,7 +129,8 @@ describe('総収支の成功 mutation', () => {
       </QueryClientProvider>,
     );
 
-    fireEvent.click(await screen.findByRole('button', { name: '同じ取引' }));
+    const [rowVerdictButton] = await screen.findAllByRole('button', { name: '同じ取引' });
+    fireEvent.click(rowVerdictButton!);
 
     await waitFor(() =>
       expect(calls).toContainEqual({ url: '/api/total-cashflow/verdicts', method: 'POST' }),

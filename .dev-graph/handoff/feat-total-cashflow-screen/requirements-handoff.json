@@ -1,0 +1,242 @@
+{
+  "schema_version": "1.0.0",
+  "handoff_target": "task-graph",
+  "feature_id": "feat-total-cashflow-screen",
+  "parent_feature": "feat-total-cashflow-screen",
+  "feature_package_id": "feature-package/feat-total-cashflow-screen",
+  "snapshot_digest": "sha256:ccd677d72151f4883bfb1d37a4c38232cf5711f48891d0d79664e5ab4985babf",
+  "validated_plan_digest": "sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5",
+  "emitted_by": "dev-graph:run-dev-graph-requirements",
+  "emitted_at": "2026-09-15T15:51:09Z",
+  "repository_id": "github:daishiman/kanjo",
+  "package_reference": {
+    "plan_dir": ".dev-graph/plans/feature-package-feat-total-cashflow-screen",
+    "promotion_receipt": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/atomic-promotion-receipt.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/task-graph.json",
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-total-cashflow-screen/dev-graph-registration-receipt.json"
+  },
+  "readiness": {
+    "status": "complete",
+    "missing_sections": [],
+    "checked_at": "2026-09-15T15:51:09Z"
+  },
+  "gates": [
+    {
+      "gate": "exact-13 external validator (validate-system-plan.py)",
+      "status": "pass",
+      "exit_code": 0,
+      "digest": "sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5",
+      "violations": 0
+    },
+    {
+      "gate": "graph schema + artifact parity (validate-graph-schema.py)",
+      "status": "pass",
+      "exit_code": 0,
+      "violations": 0,
+      "missing_sections": []
+    },
+    {
+      "gate": "C02 saved state (registration receipt + task nodes)",
+      "status": "pass",
+      "digest": "sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5",
+      "detail": "expected 13 = applied 13"
+    },
+    {
+      "gate": "C11 promotion + C05 evaluation digest",
+      "status": "pass",
+      "digest": "sha256:1ba15965f79abcfeb36897ece409784304af0b2d868cceaeb5a244e3e375c9b5"
+    }
+  ],
+  "tasks": [
+    {
+      "graph_node_id": "SYS-TCSCREEN-P01",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と未決事項の着手時確認",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p01.md",
+      "depends_on": [],
+      "resource_scope": [
+        "docs/total-cashflow-screen/requirements-baseline.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P02",
+      "phase_ref": "P02",
+      "title": "総収支集計・判定作業 API・操作履歴テーブルの設計決定記録",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p02.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P01"
+      ],
+      "resource_scope": [
+        "docs/total-cashflow-screen/architecture-decision.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P03",
+      "phase_ref": "P03",
+      "title": "設計決定の独立レビュー (不変条件・バックアップ・取消の競合)",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p03.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P02"
+      ],
+      "resource_scope": [
+        "docs/total-cashflow-screen/design-review.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P04",
+      "phase_ref": "P04",
+      "title": "境界値付きの red テスト先行 (core 規則・API 取消と復元・画面ブロック)",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p04.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P03"
+      ],
+      "resource_scope": [
+        "packages/core/test/total-cashflow-contract.test.ts",
+        "packages/core/test/total-cashflow-screen-rules.test.ts",
+        "packages/api/test/total-cashflow-verdict.integration.test.ts",
+        "packages/api/test/total-cashflow-operations.integration.test.ts",
+        "packages/web/test/total-cashflow-table.dom.test.tsx"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P05",
+      "phase_ref": "P05",
+      "title": "総収支集計・判定作業 API・操作履歴・migration 0041・TotalCashflow.tsx の実装",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p05.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P04"
+      ],
+      "resource_scope": [
+        "packages/core/src/total-cashflow.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/routes/total-cashflow.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/import-active.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/api/src/import-lifecycle-pure.test.ts",
+        "migrations/0041_total_cashflow_operations_and_exclusion_reason.sql",
+        "packages/web/src/pages/analysis/TotalCashflow.tsx",
+        "packages/web/src/api.ts",
+        "packages/web/src/analysis-query-invalidation.ts",
+        "packages/web/src/components/Layout.tsx"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P06",
+      "phase_ref": "P06",
+      "title": "全テスト・型検査・lint の実行記録",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p06.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P05"
+      ],
+      "resource_scope": [
+        "docs/total-cashflow-screen/test-run.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P07",
+      "phase_ref": "P07",
+      "title": "受入条件 AC-001..AC-006 の検証",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p07.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P06"
+      ],
+      "resource_scope": [
+        "docs/total-cashflow-screen/acceptance.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P08",
+      "phase_ref": "P08",
+      "title": "規則定数の整理と migration 0041・3 表バックアップの整合確認",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p08.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P07"
+      ],
+      "resource_scope": [
+        "packages/core/src/total-cashflow.ts",
+        "docs/total-cashflow-screen/refactoring.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P09",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・CSP・JS 予算・狭幅表示・入力境界の保証",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p09.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P08"
+      ],
+      "resource_scope": [
+        "docs/total-cashflow-screen/assurance.md",
+        "packages/web/scripts/check-financial-visuals.mjs",
+        "packages/web/scripts/check-mobile-layout.mjs"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P10",
+      "phase_ref": "P10",
+      "title": "最終レビュー (spec との突合と差分の確認)",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p10.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P09"
+      ],
+      "resource_scope": [
+        "docs/total-cashflow-screen/final-review.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P11",
+      "phase_ref": "P11",
+      "title": "証跡索引の作成",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p11.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P10"
+      ],
+      "resource_scope": [
+        "docs/total-cashflow-screen/evidence.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P12",
+      "phase_ref": "P12",
+      "title": "規則の docs 化と取消競合の runbook",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p12.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P11"
+      ],
+      "resource_scope": [
+        "docs/total-cashflow-screen.md",
+        "docs/runbooks/total-cashflow-undo-conflict.md"
+      ],
+      "tracker_binding": "beads"
+    },
+    {
+      "graph_node_id": "SYS-TCSCREEN-P13",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信と close-out",
+      "file_path": "tasks/feat-total-cashflow-screen/sys-tcscreen-p13.md",
+      "depends_on": [
+        "SYS-TCSCREEN-P12"
+      ],
+      "resource_scope": [
+        "docs/total-cashflow-screen/close-out.md"
+      ],
+      "tracker_binding": "beads"
+    }
+  ],
+  "requirements_ref": ".dev-graph/requirements/feat-total-cashflow-screen/trace-plan.json",
+  "self_generated_code_files": []
+}

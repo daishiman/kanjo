@@ -78,6 +78,12 @@ scan_public_docs() {
 
       if (FILENAME == root "/system-spec/spec-state.json" ||
           FILENAME ~ /mf-business-classification/) {
+        # 「date -u で実測した時刻」は実データではなく、いつ測ったかの監査記録。
+        # provenance にはこの定型句が必ず入るため、同じ行のどこかにある
+        # 「2 件」「245 行」と結び付いて実データ扱いされてしまう。
+        # samples/ を先に外しているのと同じ理由で、判定前に落とす。
+        audited = line
+        gsub(/(date -u で)?実測した時刻/, "", audited)
         # premise は「個人の口座・明細そのもの」を指す語だけに限る。
         # 「実データ」「実測(値)」は一般語で、仕様方針の記述 (窓の外に実データが
         # あれば参照する) や架空フィクスチャの提示 (実測値は ¥240,000) にも出る。
@@ -86,7 +92,7 @@ scan_public_docs() {
         # 止めたいのは実 CSV の件数・金額であって、仕様が書けなくなる検査ではない。
         premise = "(実CSV|実明細|実入力|実ファイル|実取引|実口座)"
         quantity = "(([^[:digit:]])[[:digit:]]{1,3}(,[[:digit:]]{3})+|[[:digit:]]+[[:space:]]*(件|行|円))"
-        if (line ~ premise ".*" quantity || line ~ quantity ".*" premise) {
+        if (audited ~ premise ".*" quantity || audited ~ quantity ".*" premise) {
           unsafe = 1
           exit
         }

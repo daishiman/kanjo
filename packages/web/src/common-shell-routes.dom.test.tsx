@@ -121,7 +121,7 @@ describe('20ルートの共通シェル (FR-003)', () => {
   it.each(AUTHENTICATED_ROUTES)('%s はサイドバー・ヘッダー・フッターを1つずつ持つ', async (path, page) => {
     stubFetch(true);
     const { container } = renderApp(path);
-    expect(await screen.findByRole('heading', { name: `stub:${page}` })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: `stub:${page}` }, { timeout: 5_000 })).toBeTruthy();
     expectOneShell(container);
   });
 

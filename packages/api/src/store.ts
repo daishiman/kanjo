@@ -605,6 +605,12 @@ interface BackupSourceSnapshot {
   reviewSnoozes: BackupReviewSnooze[];
   /** 0040: 月次レビューを済ませた月 */
   monthlyCloseReviews: BackupMonthlyCloseReview[];
+  /** 0041: 重複の「同じ / 違う」判断。落とすと復元後の総額が判断前の値に戻る */
+  duplicateVerdicts: BackupDuplicateVerdict[];
+  /** 0041: freee 側の二重登録を総額から外す判断 */
+  freeeDealExclusions: BackupFreeeDealExclusion[];
+  /** 0041: 総収支画面の操作履歴。取消ボタンの土台 */
+  totalCashflowOperations: BackupTotalCashflowOperation[];
 }
 
 export interface BackupReviewSnooze {
@@ -620,6 +626,36 @@ export interface BackupMonthlyCloseReview {
   reviewedByUserId: string;
 }
 
+export interface BackupDuplicateVerdict {
+  txId: string;
+  verdict: string;
+  stableKey: string | null;
+  fingerprintVersion: number | null;
+  decidedAt: string | null;
+  updatedAt: string | null;
+  freeeKey: string | null;
+}
+
+export interface BackupFreeeDealExclusion {
+  freeeKey: string;
+  reason: string;
+  reasonCode: string | null;
+  memo: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface BackupTotalCashflowOperation {
+  id: string;
+  kind: string;
+  /** 操作「前」の値の配列。中身は解釈せず、文字列のまま運ぶ(解釈すると版が増えたときに落ちる) */
+  itemsJson: string;
+  itemCount: number;
+  undoesId: string | null;
+  undoneAt: string | null;
+  createdAt: string;
+}
+
 export interface ImportRestoreSettingsSnapshot {
   normMap: Record<string, string>;
   statMinMonths: number;
@@ -630,15 +666,31 @@ export interface ImportRestoreSettingsSnapshot {
   /** 通常取込が1 statement snapshotで読む、利用者単位の決め事。 */
   vendorMemories: VendorMemoryRecord[];
   /**
-   * 0040: 移行先の「後で確認」と月次レビューの件数。0件の表は復元時の DELETE を省き、
-   * 復元1回のD1クエリ上限(<50)に新しい2表の置き換えを収める。
+   * 復元先に今ある行数。0件の表は復元時の DELETE を省き、復元1回のD1クエリ上限(<50)に収める。
+   *
+   * 0040 で「後で確認」と月次レビュー、0041 で総収支の判断3表がこの枠に入った。
+   * 置き換える表が増えるほど DELETE を省ける効きが要るので、以前から無条件に消していた
+   * 5表も同じ数え方へ揃える。数えるのは全部まとめて1 statement なので、問い合わせは増えない。
    */
-  reviewStateCounts: { reviewSnoozes: number; monthlyCloseReviews: number };
+  destinationRowCounts: {
+    reviewSnoozes: number;
+    monthlyCloseReviews: number;
+    duplicateVerdicts: number;
+    freeeDealExclusions: number;
+    totalCashflowOperations: number;
+    rules: number;
+    txEdits: number;
+    institutionOwners: number;
+    budgets: number;
+    cashOverrides: number;
+  };
 }
 
 /*
  * D1 batch/withSessionは逐次整合性までは型契約にあるが、複数readの同一snapshotは保証しない。
  * backupに影響する全canonical tableを1本のSQLite statementで読み、statement snapshotを境界にする。
+ * 表を足すときは既存の `SELECT * FROM (...)` の組へ入れる。1つの UNION ALL に6本目を並べると
+ * D1 が "too many terms in compound SELECT" で落ちる(組の数も本数も5まで)。
  * monthly_aggは派生cacheなので意図的に含めない。
  *
  * 禁止事項: improvement_requests をここへ追加しない。
@@ -728,12 +780,24 @@ UNION ALL
 SELECT 'monthly_close_review', NULL, NULL, NULL,
        month, reviewed_at, reviewed_by_user_id, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM monthly_close_reviews WHERE user_id = ?
+UNION ALL
+SELECT 'duplicate_verdict', NULL, NULL, NULL,
+       tx_id, verdict, CAST(stable_key AS TEXT), CAST(fingerprint_version AS TEXT), decided_at, updated_at, freee_key, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM duplicate_verdicts WHERE user_id = ?
+UNION ALL
+SELECT 'freee_deal_exclusion', NULL, NULL, NULL,
+       freee_key, reason, reason_code, memo, created_at, updated_at, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM freee_deal_exclusions WHERE user_id = ?
+UNION ALL
+SELECT 'total_cashflow_operation', NULL, NULL, item_count,
+       id, kind, items_json, undoes_id, undone_at, created_at, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM total_cashflow_operations WHERE user_id = ?
 )
 ORDER BY source, rank, id, v1, v2`;
 
 /** export用canonical rowsを、単一D1 read statementから型付きsnapshotへ変換する。 */
 async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupSourceSnapshot> {
-  const params = Array.from({ length: 17 }, () => userId);
+  const params = Array.from({ length: 20 }, () => userId);
   const result = await db.$client
     .prepare(BACKUP_SNAPSHOT_SQL)
     .bind(...params)
@@ -892,6 +956,34 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     reviewedAt: row.v2 ?? '',
     reviewedByUserId: row.v3 ?? '',
   }));
+  const duplicateVerdicts = bySource('duplicate_verdict').map((row) => ({
+    txId: row.v1 ?? '',
+    verdict: row.v2 ?? '',
+    // 第二の引き当て鍵(DR-13)と版。SQL側で TEXT に寄せてあるので、版だけ数へ戻す
+    stableKey: row.v3,
+    fingerprintVersion: row.v4 == null ? null : Number(row.v4),
+    decidedAt: row.v5,
+    updatedAt: row.v6,
+    freeeKey: row.v7,
+  }));
+  const freeeDealExclusions = bySource('freee_deal_exclusion').map((row) => ({
+    freeeKey: row.v1 ?? '',
+    reason: row.v2 ?? '',
+    // 0041 の理由コードと補足。0037 以前の行は NULL なので、空文字へ丸めない
+    reasonCode: row.v3,
+    memo: row.v4,
+    createdAt: row.v5,
+    updatedAt: row.v6,
+  }));
+  const totalCashflowOperations = bySource('total_cashflow_operation').map((row) => ({
+    id: row.v1 ?? '',
+    kind: row.v2 ?? '',
+    itemsJson: row.v3 ?? '',
+    itemCount: row.amount ?? 0,
+    undoesId: row.v4,
+    undoneAt: row.v5,
+    createdAt: row.v6 ?? '',
+  }));
 
   return {
     baselineRows,
@@ -911,6 +1003,9 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     subVendorExclusions,
     reviewSnoozes,
     monthlyCloseReviews,
+    duplicateVerdicts,
+    freeeDealExclusions,
+    totalCashflowOperations,
   };
 }
 
@@ -963,14 +1058,23 @@ export async function loadImportRestoreSettingsSnapshot(
          ))
        ), NULL, NULL
        UNION ALL
-       SELECT 'review_counts', json_object(
+       SELECT 'destination_counts', json_object(
          'reviewSnoozes', (SELECT count(*) FROM review_snoozes WHERE user_id=?),
-         'monthlyCloseReviews', (SELECT count(*) FROM monthly_close_reviews WHERE user_id=?)
+         'monthlyCloseReviews', (SELECT count(*) FROM monthly_close_reviews WHERE user_id=?),
+         'duplicateVerdicts', (SELECT count(*) FROM duplicate_verdicts WHERE user_id=?),
+         'freeeDealExclusions', (SELECT count(*) FROM freee_deal_exclusions WHERE user_id=?),
+         'totalCashflowOperations', (SELECT count(*) FROM total_cashflow_operations WHERE user_id=?),
+         'rules', (SELECT count(*) FROM rules WHERE user_id=?),
+         'txEdits', (SELECT count(*) FROM tx_edits WHERE user_id=?),
+         'institutionOwners', (SELECT count(*) FROM institution_owners WHERE user_id=?),
+         'budgets', (SELECT count(*) FROM budgets WHERE user_id=?),
+         'cashOverrides', (SELECT count(*) FROM cash_overrides WHERE user_id=?)
        ), NULL, NULL
        )
        ORDER BY source, v1, v2`,
     )
-    .bind(userId, userId, userId, userId, userId, userId, userId, userId, userId)
+    // 上の SELECT が ? を置いた順と同じ数だけ渡す。数え間違いは実行時まで出ない
+    .bind(...Array.from({ length: 17 }, () => userId))
     .all<{ source: string; v1: string | null; v2: string | null; amount: number | null }>();
   const normMap: Record<string, string> = {};
   for (const row of result.results.filter((row) => row.source === 'norm')) {
@@ -1038,9 +1142,19 @@ export async function loadImportRestoreSettingsSnapshot(
     freeeDeals,
     txSplits,
     vendorMemories,
-    reviewStateCounts: payloads<ImportRestoreSettingsSnapshot['reviewStateCounts']>('review_counts')[0] ?? {
+    destinationRowCounts: payloads<ImportRestoreSettingsSnapshot['destinationRowCounts']>(
+      'destination_counts',
+    )[0] ?? {
       reviewSnoozes: 0,
       monthlyCloseReviews: 0,
+      duplicateVerdicts: 0,
+      freeeDealExclusions: 0,
+      totalCashflowOperations: 0,
+      rules: 0,
+      txEdits: 0,
+      institutionOwners: 0,
+      budgets: 0,
+      cashOverrides: 0,
     },
   };
 }
@@ -1137,6 +1251,11 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
     // 0040: 保留と月次レビューは利用者の判断の記録。復元で失うと、片付けた未処理が全部戻ってくる
     reviewSnoozes: snapshot.reviewSnoozes,
     monthlyCloseReviews: snapshot.monthlyCloseReviews,
+    // 0041: 総収支の判断。落とすと復元後の総額が、判断する前の金額に戻ってしまう
+    duplicateVerdicts: snapshot.duplicateVerdicts,
+    freeeDealExclusions: snapshot.freeeDealExclusions,
+    // 判断だけ戻して履歴を残すと、取消ボタンが復元前の操作を指して二重に戻す
+    totalCashflowOperations: snapshot.totalCashflowOperations,
   };
 }
 

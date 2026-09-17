@@ -43,7 +43,11 @@ export function HeatGrid({
 }: HeatGridProps) {
   return (
     <div className={className}>
-      <table className="data heatmap">
+      <table
+        className="data heatmap"
+        data-table-kind="matrix"
+        data-sort-reason="ヒートマップの行と列は図と同じ軸順に固定する"
+      >
         {caption ? <caption className="visually-hidden">{caption}</caption> : null}
         <thead>
           <tr>

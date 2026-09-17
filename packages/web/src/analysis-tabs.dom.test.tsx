@@ -5,6 +5,7 @@
  *
  * 3画面を1画面へ束ねたので、束ねたことで壊れやすいものだけを固定する:
  *   - 切り口がURLに出ること(戻る/進む・リロード・ブックマークが効く)
+ *   - 詳細画面では共通サイドバーと同じ切り口ナビを本文に重ねないこと
  *   - 表示していないタブのAPIを呼ばないこと(束ねた瞬間に3倍遅くなるのを防ぐ)
  *   - 各タブの説明文が残っていること(画面を消すと説明ごと消えるのが一番起きやすい退行)
  *   - 旧URLが行き先を失っていないこと
@@ -59,19 +60,40 @@ function renderAt(path: string) {
   return calls;
 }
 
-describe('支出分析のタブ', () => {
-  it('切り口はURLに出て、現在のタブだけが現在地になる', async () => {
-    renderAt('/analysis/trends');
-    // パネルは遅延読み込みなので、中身が出るまで待つ
-    expect(await screen.findByText(/集計できる月がありません/)).toBeTruthy();
+describe('支出分析のルート', () => {
+  it('総収支は問いとデータの見方を本文より前に出し、共通の支出分析説明を重ねない', () => {
+    renderAt('/analysis/total-cashflow');
 
-    const tabs = screen.getByRole('navigation', { name: '支出分析の切り口' });
-    const links = [...tabs.querySelectorAll('a')];
-    expect(links.map((a) => a.getAttribute('href'))).toEqual(ANALYSIS_TABS.map((tab) => tab.path));
-    expect(links.map((a) => a.textContent)).toEqual(ANALYSIS_TABS.map((tab) => tab.label));
-    const current = links.filter((a) => a.getAttribute('aria-current') === 'page');
-    expect(current).toHaveLength(1);
-    expect(current[0]?.textContent).toBe('推移');
+    const heading = screen.getByRole('heading', {
+      level: 1,
+      name: '家計と事業を合わせた、本当の収支はいくらですか？',
+    });
+    const lead = screen.getByText(
+      '家計と事業の収入・支出を月次で確認し、重複や除外を調整した実質的な収支を把握しましょう。',
+    );
+    const guide = screen.getByText('データの見方').closest('details');
+    const panel = screen.getByRole('region', { name: '総収支' });
+
+    expect(guide).not.toBeNull();
+    for (const item of [heading, lead, guide!]) {
+      expect(item.compareDocumentPosition(panel) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    }
+    expect(screen.queryByRole('navigation', { name: '支出分析の切り口' })).toBeNull();
+    expect(screen.queryByRole('heading', { level: 1, name: '支出分析' })).toBeNull();
+    expect(screen.queryByText('帳簿と実際の支出を照合し、次に手を打つ場所を決めます。')).toBeNull();
+  });
+
+  it('切り口はURLに出し、詳細本文に共通ナビを二重表示しない', async () => {
+    renderAt('/analysis/trends');
+    expect(await screen.findByText(/集計できる月がありません/)).toBeTruthy();
+    expect(
+      screen.getByRole('heading', { level: 1, name: '収支は、いつ・なぜ変わりましたか？' }),
+    ).toBeTruthy();
+    expect(screen.getByText(/増減のタイミングや要因を把握しましょう/)).toBeTruthy();
+    expect(screen.queryByText('推移のくわしい説明')).toBeNull();
+    expect(screen.queryByRole('navigation', { name: '支出分析の切り口' })).toBeNull();
+    expect(new Set(ANALYSIS_TABS.map((tab) => tab.path)).size).toBe(ANALYSIS_TABS.length);
+    expect(ANALYSIS_TABS.find((tab) => tab.id === 'trends')?.path).toBe('/analysis/trends');
   });
 
   it('表示していないタブのAPIは呼ばない', async () => {

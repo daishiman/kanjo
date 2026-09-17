@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-total-cashflow-screen",
+  "parent_feature": "feat-total-cashflow-screen",
+  "feature_package_id": "feature-package/feat-total-cashflow-screen",
+  "handoff_target": "task-graph",
+  "selected_nodes": [
+    "spec-total-cashflow-screen",
+    "arch-total-cashflow-screen-ui-ux",
+    "arch-total-cashflow-screen-frontend",
+    "arch-total-cashflow-screen-backend",
+    "arch-total-cashflow-screen-database",
+    "arch-total-cashflow-screen-auth",
+    "arch-total-cashflow-screen-security",
+    "arch-total-cashflow-screen-infrastructure",
+    "arch-total-cashflow-screen-maintenance-ops",
+    "feat-total-cashflow-screen",
+    "SYS-TCSCREEN-P01",
+    "SYS-TCSCREEN-P02",
+    "SYS-TCSCREEN-P03",
+    "SYS-TCSCREEN-P04",
+    "SYS-TCSCREEN-P05",
+    "SYS-TCSCREEN-P06",
+    "SYS-TCSCREEN-P07",
+    "SYS-TCSCREEN-P08",
+    "SYS-TCSCREEN-P09",
+    "SYS-TCSCREEN-P10",
+    "SYS-TCSCREEN-P11",
+    "SYS-TCSCREEN-P12",
+    "SYS-TCSCREEN-P13"
+  ],
+  "artifact_kinds": [
+    "specification",
+    "architecture",
+    "feature",
+    "task"
+  ],
+  "closure_status": "complete",
+  "missing_nodes": [],
+  "snapshot_digest": "sha256:ccd677d72151f4883bfb1d37a4c38232cf5711f48891d0d79664e5ab4985babf"
+}

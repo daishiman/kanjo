@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "fa73d81d52841cb01432498c3c1de96af84115861e0f21c1b1a8e09bafaf158a"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/frontend.md", "source_version": "0.1.14", "source_digest": "fa73d81d52841cb01432498c3c1de96af84115861e0f21c1b1a8e09bafaf158a", "imported_at": "2026-09-15T10:39:59Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-16-reconciliation/completeness-findings.json", "evaluated_digest": "fa73d81d52841cb01432498c3c1de96af84115861e0f21c1b1a8e09bafaf158a"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-16-reconciliation/frontend.md", "source_version": "0.1.14", "source_digest": "fa73d81d52841cb01432498c3c1de96af84115861e0f21c1b1a8e09bafaf158a", "imported_at": "2026-09-15T10:39:59Z"}
 created_at: "2026-09-15T10:39:59Z"
 updated_at: "2026-09-15T10:39:59Z"
 depends_on: ["spec-reconciliation"]
@@ -50,7 +50,7 @@ serves_goals: ["G1", "G4", "G5"]
 
 # Architecture overview
 
-照合画面 — 3 カラム画面の状態・クエリ無効化・アイコン登録。`system-spec/frontend.md` は承認時入力、本書は frontend 制約を持つ。現行の機能仕様の正本は `specs/spec-reconciliation.md`。
+照合画面 — 3 カラム画面の状態・クエリ無効化・アイコン登録。`system-spec/archive/2026-09-16-reconciliation/frontend.md` は承認時入力、本書は frontend 制約を持つ。現行の機能仕様の正本は `specs/spec-reconciliation.md`。
 
 ## Context and drivers
 

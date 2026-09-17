@@ -1,0 +1,52 @@
+{
+  "feature_package_id": "feature-package/feat-trends-screen",
+  "parent_feature": "feat-trends-screen",
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "schema_version": "1.0.0",
+  "source_feature_digest": "sha256:7d210739378d7cdf1960fad15f40bd490228cd9c3d0327ced00a9c6ec1e4ea9d",
+  "task_count": 13,
+  "task_node_ids": [
+    "SYS-TRENDS-P01",
+    "SYS-TRENDS-P02",
+    "SYS-TRENDS-P03",
+    "SYS-TRENDS-P04",
+    "SYS-TRENDS-P05",
+    "SYS-TRENDS-P06",
+    "SYS-TRENDS-P07",
+    "SYS-TRENDS-P08",
+    "SYS-TRENDS-P09",
+    "SYS-TRENDS-P10",
+    "SYS-TRENDS-P11",
+    "SYS-TRENDS-P12",
+    "SYS-TRENDS-P13"
+  ],
+  "task_spec_paths": [
+    "task-specs/phase-01-requirements.md",
+    "task-specs/phase-02-architecture.md",
+    "task-specs/phase-03-design-review.md",
+    "task-specs/phase-04-test-design.md",
+    "task-specs/phase-05-implementation.md",
+    "task-specs/phase-06-test-run.md",
+    "task-specs/phase-07-acceptance.md",
+    "task-specs/phase-08-refactoring-migration.md",
+    "task-specs/phase-09-quality-assurance.md",
+    "task-specs/phase-10-final-review.md",
+    "task-specs/phase-11-evidence.md",
+    "task-specs/phase-12-documentation-operations.md",
+    "task-specs/phase-13-release-deploy.md"
+  ]
+}

@@ -171,7 +171,11 @@ export function HouseholdPage() {
           事業はfreeeの売上と事業経費、個人はMF明細で「個人」と仕分けた収入と生活費。片方しか無い月は「—」。合計はデータのある月数で平均します。
         </p>
         <div className="scroll-x">
-          <table className="data stack-sm">
+          <table
+            className="data stack-sm"
+            data-table-kind="matrix"
+            data-sort-reason="月の時間順と事業・個人の二段見出しを固定する比較表"
+          >
             <thead>
               <tr>
                 <th rowSpan={2}>月</th>

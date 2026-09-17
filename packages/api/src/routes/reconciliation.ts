@@ -24,6 +24,7 @@ import type { BatchItem } from 'drizzle-orm/batch';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
+import { loadCashflowSources } from '../cashflow-sources.js';
 import { D1_MAX_BOUND_PARAMS } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { type Db, dealFromRow, getDb } from '../store.js';
@@ -97,26 +98,20 @@ reconciliationRoute.get('/reconciliation', async (c) => {
   const db = getDb(c.env.DB);
   const { data, all, period } = await loadScoped(c);
 
-  const [dealRows, verdictRows, exclusionRows, mfExclusionRows, last] = await Promise.all([
-    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
-    db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
-    db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),
-    db.select().from(s.mfTxExclusions).where(eq(s.mfTxExclusions.userId, userId)),
+  const [sources, last] = await Promise.all([
+    loadCashflowSources(db, userId, all.mfTx),
     latestAction(db, userId),
   ]);
-  const freeeExclusions: FreeeExclusion[] = exclusionRows.map((row) => ({
-    freeeKey: row.freeeKey,
-    reason: row.reason,
-  }));
+  const { deals, verdicts, freeeExclusions, mfExclusions } = sources;
 
   // 消し込みは全期間で行い、表示だけを期間の月に絞る。先に期間で切ると月境界 (±3 日) の組が割れ、
   // 期間を問わない未処理キュー・月次クローズ・ハブの件数とずれる
   const report = reconciliationReport({
     data: all,
-    deals: dealRows.map(dealFromRow),
-    verdicts: bindDuplicateVerdicts(verdictRows, all.mfTx),
+    deals,
+    verdicts,
     freeeExclusions,
-    mfExclusions: bindMfExclusions(mfExclusionRows, all.mfTx),
+    mfExclusions,
     months: data.months,
   });
   return c.json({

@@ -1,0 +1,132 @@
+{
+ "schema_version": "1.0.0",
+ "feature_id": "feat-trends-screen",
+ "snapshot_digest": "sha256:a3cbc5e433134fb660e44b03562b99eee6019c9825cf94a4a21a2f1b86c697fe",
+ "snapshot_digest_method": "sha256 over sorted(rel + NUL + bytes + NUL) of gates.C11_snapshot_validation.source_inputs",
+ "status": "ready",
+ "checked_at": "2026-09-16T10:35:21Z",
+ "missing_sections": [],
+ "remediation_owners": {},
+ "gates": {
+  "C11_snapshot_validation": {
+   "status": "PASS",
+   "validator": "validate-graph-schema.py",
+   "exit_code": 0,
+   "valid": true,
+   "violations": 0,
+   "source_inputs": [
+    {
+     "path": ".dev-graph/plans/feature-package-feat-trends-screen/atomic-promotion-receipt.json",
+     "sha256": "d51baca8e2754ce085ed9d6e8abffa9d481b2496dbfc8fea3281c8560e215a1e"
+    },
+    {
+     "path": ".dev-graph/plans/feature-package-feat-trends-screen/dev-graph-registration-receipt.json",
+     "sha256": "a500ab897b520a8cfec02c3d887ed559d08215dafcac28a3213f178d458ce6b7"
+    },
+    {
+     "path": ".dev-graph/plans/feature-package-feat-trends-screen/staging-manifest.json",
+     "sha256": "382feff72373921587dcec66718e9d66ae7e5cf2d513f9c8e1c7752e47e2c67e"
+    },
+    {
+     "path": ".dev-graph/state/graph.json",
+     "sha256": "c3f0d3afb04c9941cd410e44c024038a32cc8133be94ec17b0a61668181970cc"
+    },
+    {
+     "path": "features/feat-trends-screen.context.json",
+     "sha256": "7d210739378d7cdf1960fad15f40bd490228cd9c3d0327ced00a9c6ec1e4ea9d"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p01.md",
+     "sha256": "7988c078d3dfee017a99cdfe9619315709b5fa20e1e5b7fddbb8a3149ecf99e7"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p02.md",
+     "sha256": "f070cbba39a49845ed572871f2b61e44679ee97fac8555b8a67f0d9f319dd3a2"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p03.md",
+     "sha256": "0625276ca6a4f5ec1053851a946c7fd0e83e14aeab388c1ad7ead82544d488e1"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p04.md",
+     "sha256": "554c230aa5189624122d0ed3f61ae928d6db242b16362ac30b5f4dc550d036dc"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p05.md",
+     "sha256": "4d9b481c6281a86a1a7028d1ffd0b06de7ac557717d475bb698f49905d5b4ad5"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p06.md",
+     "sha256": "8f89d6d5e1d24c7b8f3e08d6fcd62fa61f95e08b2d3dfed89fd208a8b4c26f34"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p07.md",
+     "sha256": "980af9c36e5a9904b7acfe16ddaff41264014dd013ac64af962fec703680f443"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p08.md",
+     "sha256": "43c6b813ae64177ada0e5bdad6f15e6b1669240a4244751e0fafc09174b75f5d"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p09.md",
+     "sha256": "a4f32289a1f4dc09804897aae5f7c66042e9051226ccdffeba8140a6e157b52a"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p10.md",
+     "sha256": "32d65893cd38ea016b5cb57af26b176d4fbd75e8d680e07233931bbad6ba041a"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p11.md",
+     "sha256": "197397b23e3d1b4291ec88a699dc159c7c370cd0ceecc01ad3793527ebfcbe0b"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p12.md",
+     "sha256": "7c84a786af49aba99e21364632b43cc6be45c45d7e7dc3041b60fea4a972f6ac"
+    },
+    {
+     "path": "tasks/feat-trends-screen/sys-trends-p13.md",
+     "sha256": "6ce8d48d74f83095be8a73777f0e67ae90a6fa18842079582f515351ad543a2f"
+    }
+   ]
+  },
+  "C02_saved_state": {
+   "status": "PASS",
+   "feature": {
+    "confirmation_status": "confirmed",
+    "evaluation_status": "pass",
+    "implementation_readiness": "complete"
+   },
+   "tasks": {
+    "count": 13,
+    "confirmation_status": "confirmed",
+    "evaluation_status": "pass",
+    "implementation_readiness": "complete",
+    "missing_sections": []
+   },
+   "registration_receipt": {
+    "path": ".dev-graph/plans/feature-package-feat-trends-screen/dev-graph-registration-receipt.json",
+    "expected_count": 13,
+    "applied_count": 13
+   }
+  },
+  "system_plan_validation": {
+   "status": "PASS",
+   "validator": "validate-system-plan.py",
+   "exit_code": 0,
+   "validated_digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4",
+   "phase_count": 13,
+   "node_count": 13,
+   "violations": []
+  }
+ },
+ "remediation_history": [
+  {
+   "loop": 1,
+   "verdict": "blocked",
+   "missing": "tasks/feat-trends-screen/sys-trends-p01..p13.md (artifact_missing 13)",
+   "owner": "C02/run-dev-graph-node",
+   "resolved_by": "node --dry-run (stage validate exit 0, repo write 0) → apply (13 created, 0 overwritten)"
+  }
+ ],
+ "staleness_rule": "source_inputs のいずれかの sha256、または promoted manifest の canonical_digest が変化した場合は handoff を無効化して再生成する。"
+}
