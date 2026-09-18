@@ -101,12 +101,12 @@ PR #57 の CI が `初期JSがbudget超過です: 110.28KiB > 110KiB` で落ち�
 |---|---|
 | 増分 | マトリックスのコードは初期チャンクに 1 バイトも入っていない。増えたのは `glossary.ts` の `desc` と `routeMetadata.ts` の `taskDetail`、つまり日本語の説明文 約 300 バイト |
 | 下地 | main 側の CI 実測が 109.85 / 109.98 / **110.00** KiB と推移しており、上限 110KiB に対する残余が実質ゼロだった。説明文 1 つで越える状態が先にあった |
-| 測定 | 同一バイト列 (生成物のハッシュが一致) でも、ローカル 109.61KiB / CI 110.28KiB と 0.67KiB ずれる。`check-initial-js-budget.mjs` は `gzipSync` を圧縮レベル無指定で呼ぶため、zlib 実装差がそのまま乗る |
+| 測定 | 同一バイト列 (生成物のハッシュが一致) でも、ローカル 109.61KiB / CI 110.28KiB と 0.67KiB ずれる。`check-initial-js-budget.mjs` は `gzipSync` を圧縮レベル無指定で呼ぶため、zlib 実装差がそのまま乗る。是正後も同じ向きにずれた (ローカル 102.95KiB / CI 103.45KiB) |
 | 真因 | 初期チャンクに core の `tax-accounts` / `household-categories` / `statements` / `improvement` が流入していた (sourcemap から復号した生成バイトで約 11.5KB)。どれも初期表示では呼ばれない |
 
 流入の仕組みは次の通り。core のバレル `src/index.ts` は `export * from './tax-accounts.js'` の形で全モジュールを再エクスポートする。web が `@kanjo/core` から値を 1 つ import すると、未使用モジュールも依存グラフに残る。それらを共有する lazy ページが複数あるため、Vite の `experimentalMinChunkSize` (20kB 未満の共有チャンクは親へ吸収) が entry へ引き上げていた。
 
-**対処: `packages/core/package.json` に `"sideEffects": false` を 1 行足した。** 109.61KiB → **102.95KiB** (ローカル実測)。マージンが 7KiB になり、CI とローカルの測定差 0.67KiB を大きく上回る。
+**対処: `packages/core/package.json` に `"sideEffects": false` を 1 行足した。** 109.61KiB → **102.95KiB** (ローカル実測)。同じコミットの CI 実測は **103.45KiB / 110KiB** で緑 (run 35291470851)。ローカルとの差は 0.50KiB、マージンは 6.55KiB あり、測定差 (実測 0.50〜0.67KiB) を大きく上回る。
 
 `manualChunks` で `category-master` チャンクへ切り出す案も試したが、初期チャンクから静的に到達できる限り manifest の `imports` に載り予算へ算入されるため効果がなかった (109.69KiB)。上限を引き上げる案は採らなかった。予算検査の趣旨は「意図しない依存流入の検出」であり、流入そのものを止めるのが筋である。
 
