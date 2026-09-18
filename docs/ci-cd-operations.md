@@ -375,6 +375,7 @@ gh variable list
 | Deployは成功したが画面が古い | 30秒・90秒後の結果、対象deployment、`APP_URL` |
 | 本番でDBエラー | migrationがコードより先に適用されたか |
 | スモークテスト失敗 | `/`の200、title、未認証APIの401、本番ログ |
+| 初期JS予算だけが超過 | ローカルで再現しないことがある。下の「初期JS予算がCIだけで落ちるとき」を参照 |
 
 ```bash
 gh run view <run-id> --log-failed
@@ -383,6 +384,14 @@ pnpm --filter @kanjo/api exec wrangler tail kanjo-console
 ```
 
 Actionsログにsecretの値を出して調査してはいけません。
+
+### 初期JS予算がCIだけで落ちるとき
+
+`packages/web/scripts/check-initial-js-budget.mjs` は生成物を`gzipSync`で圧縮して測ります。圧縮レベルを指定していないため、**同じバイト列でもzlibの実装差でローカルとCIの数値がずれます**（2026-09-18の実測で0.67KiB。ローカル109.61KiB / CI 110.28KiB、生成物のハッシュは一致）。上限ぎりぎりで通している状態は、コードを1行も変えずに赤へ転びます。
+
+`pnpm lint`に`check:js-budget`は含まれません。バンドルに影響しうる変更は`pnpm --filter @kanjo/web build`まで通してください。
+
+超過したら、まず上限を上げるのではなく**初期チャンクに何が載っているか**を疑います。`@kanjo/core`のようなバレル（`export *`）を持つパッケージは、値を1つimportしただけで未使用モジュールを依存グラフに残し、複数のlazyページが共有するものはViteの`experimentalMinChunkSize`でentryへ引き上げられます。`packages/core/package.json`の`"sideEffects": false`はこれを断つ宣言で、2026-09-18に109.61KiB→102.95KiBまで下がりました。宣言が実態と食い違うとモジュールが黙って落ちるため、`packages/core/test/side-effect-free-contract.test.ts`が宣言そのものを検査しています。
 
 ## 10. ロールバックと復旧
 

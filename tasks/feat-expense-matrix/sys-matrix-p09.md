@@ -169,4 +169,8 @@ implementation_readiness: {"checked_at": "2026-09-16T12:11:25Z", "missing_sectio
 | アクセシビリティ | 行ヘッダは `<th scope="row">`。濃淡は色だけで判断させず、セルに金額を常に表示し凡例に階級の下限を出す |
 | 入力検証 | API を変更していないため既存 `GET /matrix` の検証をそのまま使う |
 | 応答上限 | 同上。新しいクエリ経路を足していない |
-| JS バンドル予算 | **未実測**。`pnpm lint` の 10 項目に js-budget は含まれない。`matrixMovers` / `MatrixMoversChart` の削除により増加方向ではないが、数値は取っていない |
+| JS バンドル予算 | **達成**。`pnpm --filter @kanjo/web build` の `check:js-budget` が `初期JS budget: 102.95KiB / 110KiB` |
+
+`pnpm lint` の 10 項目に js-budget は含まれないため、当初これを未実測のまま PR を出し、CI が `110.28KiB > 110KiB` で落ちた。超過の実体は日本語の説明文 約 300 バイトだったが、真因は core のバレル (`export *`) 経由で未使用モジュールが初期チャンクへ流入していたことだった。`packages/core/package.json` に `"sideEffects": false` を宣言して 109.61KiB → 102.95KiB へ下げ、宣言が実態と食い違わないよう規約テスト `packages/core/test/side-effect-free-contract.test.ts` を置いた。詳細は `docs/matrix/spec-reflection-receipt.md` の「JS バンドル予算の超過と是正」。
+
+この保証項目は今後 `pnpm lint` だけでは閉じない。バンドルに影響しうる変更では `pnpm --filter @kanjo/web build` まで通す。

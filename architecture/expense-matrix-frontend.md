@@ -138,6 +138,8 @@ web は API が返した数値・階級・順位をそのまま描き、前月�
 
 表と偏り 3 点の読込中は表の骨格を保った読込表示にしてレイアウトを跳ねさせない。セル内訳の待ち時間は取引一覧の領域だけを読込表示にする。新しい外部依存を増やさず既存の JS バンドル予算を超えさせない。
 
+予算の守り方は「積む量を減らす」より先に「載る物を減らす」を取る。`@kanjo/core` はバレル (`export *`) で全モジュールを再エクスポートするため、web が値を 1 つ import すると未使用モジュールも依存グラフに残り、複数の lazy ページが共有するものは Vite の `experimentalMinChunkSize` によって entry へ引き上げられる。これを断つのが `packages/core/package.json` の `"sideEffects": false` であり、宣言と実態の食い違いは `packages/core/test/side-effect-free-contract.test.ts` が検査する。`pnpm lint` に js-budget は含まれないため、バンドルに影響しうる変更は `pnpm --filter @kanjo/web build` まで通して初めて確認できる。
+
 #### Frontend verification
 
 DOM テスト (`packages/web/src/matrix-*.dom.test.tsx`) で、切替 3 群・表の合計行/合計列/平均行/平均列・濃淡の階級・セル選択と詳細パネル・偏り 3 点・空状態・下部バー・読込/失敗、および URL 復元を検証する。
@@ -151,6 +153,7 @@ DOM テスト (`packages/web/src/matrix-*.dom.test.tsx`) で、切替 3 群・�
 | dec-matrix-heat-scale | 階級は API が返し、画面は色を引くだけ | 画面側で最小〜最大を計算 | 画面と CSV と API で濃淡が食い違わない | 階級境界が API 契約の一部になる |
 | qa-matrix-frontend-web-004 | 共通シェルは既存踏襲、表記のみ『マトリックス』へ統一 | シェルも作り直す | 既存テストを無変更で緑に保てる | routeMetadata の label と journeyHint も同語へ揃える |
 | dec-matrix-heat-scale | 濃淡は `heatmap/` の 1 部品に寄せ、分母は `heatIntensities` だけが作る (`HeatGrid` は分母を受け取らない) | 画面ごとに濃淡を実装し続ける | 同じ偏りが画面ごとに違う定義で計算される経路が減る | props の型が制約であり、後から絞れないので最初に決める |
+| 実測 (2026-09-18 CI 110.28KiB 超過) | core を `sideEffects: false` と宣言し、初期チャンクへの依存流入を断つ | 予算上限を引き上げる / `manualChunks` で切り出す | 上限引き上げは検査の趣旨 (意図しない流入の検出) を無効にする。`manualChunks` は静的到達が残る限り予算へ算入され効かなかった | 宣言が嘘になるとモジュールが黙って落ちるため、規約テストで宣言そのものを検査する |
 | dec-matrix-heat-scale | `model.ts` は写像だけを持ち、濃淡・偏りスコアを置かない | 画面の近くに計算を置く | 計算の置き場所が名前で一意になる | 新しい計算の追加時に置き場所の判断が要る |
 
 ## Delivery, migration and rollback

@@ -48,7 +48,7 @@ MVP のため個別ファイルへは分割せず、**既に正本があるも�
 | アクセシビリティ | 表は行ヘッダを `<th scope="row">` で持ち、濃淡は色だけでなく数値と凡例で伝える。色覚の異なる利用者が濃淡の順序だけで判断しないよう、セルは金額を常に表示する |
 | 入力検証 | 本サイクルで API を変更していないため、既存の `GET /matrix` の検証をそのまま使う |
 | 応答上限 | 同上。新しいクエリ経路を足していない |
-| JS バンドル予算 | **本サイクルでは未実測**。`pnpm lint` の 10 項目に js-budget は含まれない。`financial-chart-model.ts` から `matrixMovers` / `MatrixMoversChart` を削除しているので増加方向の変更ではないが、数値は取っていない |
+| JS バンドル予算 | **達成**。`pnpm --filter @kanjo/web build` の `check:js-budget` が `初期JS budget: 102.95KiB / 110KiB`。当初は CI で 110.28KiB の超過だった。経緯と対処は [`spec-reflection-receipt.md`](./spec-reflection-receipt.md) の「JS バンドル予算の超過と是正」に記録した |
 
 ## 4. リリースノート
 

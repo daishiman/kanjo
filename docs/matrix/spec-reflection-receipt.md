@@ -54,13 +54,14 @@
 | matrix 系 web テスト | Test Files 6 passed、Tests 42 passed |
 | `validate-system-plan.py --staging .dev-graph/plans/feature-package-feat-expense-matrix` | `status: pass`、`violations: []`、P01..P13 exact 13 |
 | ローカル実機 | `wrangler dev --local` (8788) で `/analysis/matrix` が 200 |
+| `pnpm --filter @kanjo/web build` (`check:js-budget` を含む) | PASS。`初期JS budget: 102.95KiB / 110KiB` |
 
 ## Beads の状態
 
 | 状態 | 課題 |
 |---|---|
 | closed | `kanjo-c6w` (P01 要件ベースライン)、`kanjo-mr0` (P02 設計決定)、`kanjo-az2` (P03 独立レビュー) |
-| in_progress | `kanjo-3o1` (P04 失敗テスト先行 — API 契約テスト未作成)、`kanjo-cwr` (P05 実装 — API 拡張未着手)、`kanjo-uhg` (P07 受入検証 — S2 未達)、`kanjo-dyk` (P09 保証確認 — JS バンドル予算が未実測) |
+| in_progress | `kanjo-3o1` (P04 失敗テスト先行 — API 契約テスト未作成)、`kanjo-cwr` (P05 実装 — API 拡張未着手)、`kanjo-uhg` (P07 受入検証 — S2 未達)、`kanjo-dyk` (P09 保証確認 — JS バンドル予算は後述の通り実測済みだが、上流 `kanjo-lvr` が open のため close できない) |
 | open | `kanjo-wid` (P06)、`kanjo-lvr` (P08)、`kanjo-b7f` (P10)、`kanjo-8qs` (P11)、`kanjo-gje` (P12)、`kanjo-8iy` (P13) |
 
 **P06 / P08 / P10 / P11 / P12 の作業内容そのものは完了している** (テスト実行記録・重複経路の除去・最終レビュー・証跡索引・docs 同期)。それでも open のままなのは、`bd` の依存 DAG が上流の未完了を理由に close を拒むためである。
@@ -70,6 +71,8 @@ cannot close kanjo-wid: blocked by open issues [kanjo-cwr]
 ```
 
 P13 (`kanjo-8iy`) は draft PR #57 を作成したうえで `--pr 57` 付きの close を試みたが、同じ理由 (`blocked by open issues [kanjo-gje]`) で拒まれた。PR の存在は close の条件を満たすが、依存の未完了は満たさない。
+
+P09 (`kanjo-dyk`) も、JS バンドル予算を実測して保証項目 4 つが全て埋まった後に close を試みたが `blocked by open issues [kanjo-lvr]` で拒まれた。同様に `--force` は使っていない。
 
 `--force` で上書きはしていない。**このブロックは正しい**。P05 (API 拡張) が本当に未完なので、その下流を done にすると「feature が完了した」という誤った信号になる。作業が済んだことは各 task 仕様書の「実装で確定した結果」に残し、tracker 上は feature 未完として見えるままにした。
 
@@ -87,6 +90,27 @@ P13 (`kanjo-8iy`) は draft PR #57 を作成したうえで `--pr 57` 付きの 
 | `packages/web/src/analysis-navigation.integration.dom.test.tsx` | 表記 (マトリックス) と main の `LAZY_WAIT` の両方を取り込んだ |
 
 マージ後の検証: `pnpm lint` 全 10 項目 PASS (`check-graph-lineage: 93 ノードすべてが正本と一致`)、`pnpm typecheck` 3 パッケージ Done、`packages/web` のテスト 85 ファイル 695 件 PASS。
+
+## JS バンドル予算の超過と是正 (2026-09-18)
+
+PR #57 の CI が `初期JSがbudget超過です: 110.28KiB > 110KiB` で落ちた。超過は 0.28KiB。
+
+原因を層に分けて実測した。
+
+| 層 | 事実 |
+|---|---|
+| 増分 | マトリックスのコードは初期チャンクに 1 バイトも入っていない。増えたのは `glossary.ts` の `desc` と `routeMetadata.ts` の `taskDetail`、つまり日本語の説明文 約 300 バイト |
+| 下地 | main 側の CI 実測が 109.85 / 109.98 / **110.00** KiB と推移しており、上限 110KiB に対する残余が実質ゼロだった。説明文 1 つで越える状態が先にあった |
+| 測定 | 同一バイト列 (生成物のハッシュが一致) でも、ローカル 109.61KiB / CI 110.28KiB と 0.67KiB ずれる。`check-initial-js-budget.mjs` は `gzipSync` を圧縮レベル無指定で呼ぶため、zlib 実装差がそのまま乗る |
+| 真因 | 初期チャンクに core の `tax-accounts` / `household-categories` / `statements` / `improvement` が流入していた (sourcemap から復号した生成バイトで約 11.5KB)。どれも初期表示では呼ばれない |
+
+流入の仕組みは次の通り。core のバレル `src/index.ts` は `export * from './tax-accounts.js'` の形で全モジュールを再エクスポートする。web が `@kanjo/core` から値を 1 つ import すると、未使用モジュールも依存グラフに残る。それらを共有する lazy ページが複数あるため、Vite の `experimentalMinChunkSize` (20kB 未満の共有チャンクは親へ吸収) が entry へ引き上げていた。
+
+**対処: `packages/core/package.json` に `"sideEffects": false` を 1 行足した。** 109.61KiB → **102.95KiB** (ローカル実測)。マージンが 7KiB になり、CI とローカルの測定差 0.67KiB を大きく上回る。
+
+`manualChunks` で `category-master` チャンクへ切り出す案も試したが、初期チャンクから静的に到達できる限り manifest の `imports` に載り予算へ算入されるため効果がなかった (109.69KiB)。上限を引き上げる案は採らなかった。予算検査の趣旨は「意図しない依存流入の検出」であり、流入そのものを止めるのが筋である。
+
+この宣言はバンドラへの約束なので、嘘になった瞬間にモジュールが黙って落とされる。型検査にもテストにも映らない壊れ方なので、宣言そのものを検査する規約テスト `packages/core/test/side-effect-free-contract.test.ts` を置いた。トップレベルに宣言以外の文がないことを全 core モジュールで確認し、あわせて「検査対象が 30 件超あること」「わざと副作用を書いたコードを本当に検出できること」の 2 本で検算する。
 
 ## 残課題
 
