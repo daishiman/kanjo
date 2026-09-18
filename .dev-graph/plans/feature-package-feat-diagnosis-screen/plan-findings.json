@@ -1,0 +1,162 @@
+{
+  "plan_dir": ".dev-graph/staging/sdp-feat-diagnosis-screen",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:13faf94a21513a4fa3b49d5ee9e526e0ad84bf3e469ca60c900fb479d3be08e6",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "exact-13 の phase_refs/task_node_ids/task_spec_paths が feature-package.json・workstream-inventory.json・task-graph.json・system-build-handoff.json の間で完全一致し、DAG は P01→P02→...→P13 の単一直線鎖で欠落・循環・孤立ノードがない。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "FR-001〜FR-011・BR-001〜BR-009・AC-001〜AC-006・検知器6種・健全性スコア4要素(重み30/30/25/15)が specs/spec-diagnosis-screen.md と architecture/arch-diagnosis-screen.md の記述量と phase-01/02/05/07 の acceptance/成果物と過不足なく対応し、13 phase の write_scope が feature context の scope_in/scope_out を超えない。P01 の成果物に spec/architecture 側の migration 置き場所の誤記(packages/api/migrations)を本 plan 内で訂正する旨が明記され、実体パス(migrations)へ下流 phase が揃って追随している。",
+      "evidence": [
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "system-build-handoff.json の identity.repository_id は github:daishiman/kanjo で一致。前回検出した migration 実体パスの誤り (packages/api/migrations) は解消済みで、phase-05/08/13 の write_scope はいずれも 'migrations' (repository 直下) に修正されており、実ファイルシステム上の 'migrations/' ディレクトリ(0038〜0042 の既存 migration を含む)および packages/api/wrangler.jsonc の migrations_dir=\"../../migrations\" と接地する。staging 配下 17 ファイルに 'packages/api/migrations' への参照は残っていない(P01 の成果物にある 1 件は誤記を訂正した旨の記述であり write_scope 宣言ではない)。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-13-release-deploy.md",
+        "workstream-inventory.json"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "staging-manifest.json の canonical_digest は gate:deterministic-validation の validated_digest と完全一致し、17 ファイル全件の実 sha256 が manifest 記載値と一致する。feature-package.json/system-build-handoff.json の source_feature_digest は features/feat-diagnosis-screen.context.json 実体の sha256 と一致し、system-build-handoff.json の source_manifest.canonical_digest_before_handoff は staging-manifest.json の handoff_contract.source_canonical_digest (sha256:bb6c42111eb32743c302320fbc3de4be1cca372e3a09def81a60b589a9418096) と一致する。修正に伴う digest 更新後も連鎖は健全。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "staging-manifest.json",
+        "system-build-handoff.json",
+        "feature-package.json"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<PLUGIN_CACHE>/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<REPO_ROOT>",
+        "--staging",
+        ".dev-graph/staging/sdp-feat-diagnosis-screen"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:13faf94a21513a4fa3b49d5ee9e526e0ad84bf3e469ca60c900fb479d3be08e6\",\n  \"feature_package_id\": \"feature-package/feat-diagnosis-screen\",\n  \"parent_feature\": \"feat-diagnosis-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n"
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "b00d57bef72892751b505a84e31ad5a16c6d37b7a3ceeb6e43b6003bef250b6b"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "0684e076466da17dc6673d656e9cf16a67a3f9e56b348ba7af86c9d8cc3584b5"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "d52e652990553fafebb6b1256d6aef516abfe1f17ac0f98410f64cb3f00cc101"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "423c9f022aa04b478767276490d81bd42db147850e598f3185ee1bfb0f01f134"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "f767276a92ca78cafce0b52687e2fb8c57c70943d401a59f19021ffa37ac5efb"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "deafefb9fc44a23827b83314579dbe22edaccea145c07ad49be547aa7663eb60"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "f052e1f89a496bc387f4e04a2761e3a32a88473844b27dc572fe03f8cf649062"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "3e83706d299137d1bbcc778af9ed9943c7c43f5c96a86766ef8b90e71967824a"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "a286cd333949509d81608354bb8a6fb69918f4e96a9b08fd17d7f5a0e1403838"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "821c01038c658f7d80cd10782c12de36c4e8add6e166334dd9604209fe235938"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "9392c45cb755ebd921d71e6098ad6860268c0e5b1d627ac82107f9b6860241c1"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "87fb9e07ae985c177ba9d3a9c68f591ddc7c15f1df3501d5576572321cb5095c"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "6860d3c02b7a2bee0e20bbace96a2115f46fcc6102d264b4d13992fec765b6e7"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "678b22e8e91512d714e099a944e98d54e4815fe0ab5db770692549b6eb09df67"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "3e8fb13f7ba29d1914a7757e2ea1664d725ccaefc79698aab0239494967942e2"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "8a1f4ea664890f8419dc32cfcdb128d6e41587aaac7eb054b7ca2499cb1f05bd"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "d058832a76105c0808a2582d8808a151d402617746d3496c833f3d313095d34a"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "e69469e84c44016ea8df6f29e8d46985debb4ae004442f97ea6d22f60ecaf0ab"
+    }
+  ],
+  "staleness_rule": "staging 配下17ファイルまたは staging-manifest.json のいずれか1件でも内容が変わり canonical_digest が evaluated_digest と不一致になった場合、または repository の migrations 実体パス(packages/api/wrangler.jsonc の migrations_dir、もしくは repository 直下 migrations/ ディレクトリの位置)が変更された場合、本 findings は無効とし再評価を要する。",
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "traceability",
+      "observation": "task-graph.json と feature-package.json の graph_node_registration.file_path (tasks/feat-diagnosis-screen/sys-diagnosis-screen-pNN.md) はまだリポジトリに存在しない (promotion 後に dev-graph が生成する想定の path)。staging 段階では想定どおりだが、C11 promotion 後の実体化を追跡する明示的な checklist 項目が package 内に無い。",
+      "evidence": [
+        "task-graph.json"
+      ]
+    }
+  ]
+}

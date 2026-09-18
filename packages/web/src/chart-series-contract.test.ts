@@ -36,6 +36,7 @@ describe('チャート系列の描画契約 (BR-004)', () => {
       'pages/Overview.tsx',
       'pages/Subscriptions.tsx',
       'pages/analysis/TotalCashflow.tsx',
+      'pages/analysis/diagnosis/ImpactWaterfall.tsx',
       'pages/analysis/trends/ChangeFactors.tsx',
       'pages/analysis/trends/TrendSeriesPanel.tsx',
     ]);

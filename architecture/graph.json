@@ -603,6 +603,33 @@
       ]
     },
     {
+      "id": "arch-diagnosis-screen",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend",
+        "backend",
+        "data",
+        "security",
+        "infrastructure"
+      ],
+      "title": "診断画面 (08-diagnosis) のアーキテクチャ",
+      "file_path": "architecture/arch-diagnosis-screen.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/index.md",
+        "source_version": "0.1.14",
+        "source_digest": "981e7c821de2de5b44e158922e6285e30b75637137c22e47ea324910f2d47c55",
+        "imported_at": "2026-09-18T01:29:14Z"
+      },
+      "referenced_by": [
+        "feat-diagnosis-screen"
+      ]
+    },
+    {
       "id": "arch-expense-matrix-auth",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -617,7 +644,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "05843382528fb59bac01a39618d21c7d16ffc2196844f40751292a2c77f85b33",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -640,7 +667,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "aa683b83952f8d5cda302aa3b26e2150fa8306d080c02fe03648cb32aeafe0b4",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -663,7 +690,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "5819bdcc8ddab7f90e038451e3835e406b3c84c98a492dcb7088451ad73a674a",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -686,7 +713,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "e532dd19fe36b269cb64da9433bf854d7e576120457d6f095a5b7cebf75940dd",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -709,7 +736,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "43416dd0ae8d102622e9c3e1c75496c9f9d2ca8217b2fac378555d42c82cf8d6",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -732,7 +759,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "73ddaf752a28edcc278ef0accb77411a9a77dae0857990352307db902f74f9b1",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -755,7 +782,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "fede51eb4a0dd594e4e8cafb51c3ca7d389aea3a16228fcc353061d9679490db",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -778,7 +805,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "940691e19ee39682e106476ef8be9117c203916c8f9cbd76bf06f63d76f9bd1b",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1485,8 +1512,8 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": "b6b438c561d6f4dc7f39f7764b5f7671c0cc6d1011c68ddf79b9e6815f6adb43",
-        "imported_at": "2026-08-29T00:00:00Z"
+        "source_digest": "dfad3bf16dd92fe3b93e232514cbd45142a28d144b91e9b3ec3c227696a85825",
+        "imported_at": "2026-09-18T00:00:00Z"
       },
       "referenced_by": [
         "feat-tax-preparation"

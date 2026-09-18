@@ -1,7 +1,7 @@
 /** P4 サブスク分析: いま何にいくら払っているか(月額・年換算)と、推移・重複・急増を確認する */
 import { useQuery } from '@tanstack/react-query';
 import { Chart } from 'react-chartjs-2';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { type SubscriptionsData, api } from '../api.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { FinancialFigure } from '../components/FinancialFigure.js';
@@ -17,8 +17,10 @@ import {
 } from '../components/figure-view-model.js';
 import { monthLabel, monthShort, ratio, yen } from '../format.js';
 import { usePeriod } from '../period.js';
+import { targetChoice, targetMonth } from './target-query.js';
 
 export function SubscriptionsPage() {
+  const [searchParams] = useSearchParams();
   const { key, withPeriod } = usePeriod();
   const q = useQuery({
     queryKey: ['subscriptions', key],
@@ -55,9 +57,26 @@ export function SubscriptionsPage() {
         <SubVendorsPanel />
       </>
     );
-  const labels = s.months.map(monthShort);
+  const vendorAccounts = s.vendorAccounts ?? {};
+  const requestedVendor = targetChoice(searchParams, 'vendor', s.vendors);
+  const accountChoices = [...new Set(Object.values(vendorAccounts).flat())];
+  const requestedAccount = targetChoice(searchParams, 'account', accountChoices);
+  const requestedMonth = targetMonth(searchParams, s.months);
+  const matchingVendors = s.vendors.filter(
+    (vendor) =>
+      (!requestedVendor || vendor === requestedVendor) &&
+      (!requestedAccount || (vendorAccounts[vendor] ?? []).includes(requestedAccount)),
+  );
+  // 個々には実在しても組み合わせが存在しない query は、安全に全ベンダーへ戻す。
+  const hasVendorFocus = Boolean((requestedVendor || requestedAccount) && matchingVendors.length);
+  const focusedVendors = hasVendorFocus ? matchingVendors : s.vendors;
+  const focusedVendorTable = s.vendorTable.filter((row) => focusedVendors.includes(row.vendor));
+  const monthIndexes = requestedMonth
+    ? [s.months.indexOf(requestedMonth)]
+    : s.months.map((_, index) => index);
+  const labels = monthIndexes.map((index) => monthShort(s.months[index]!));
   const latestMonthIndex = s.months.length - 1;
-  const rankedVendors = s.vendors
+  const rankedVendors = focusedVendors
     .map((vendor, originalIndex) => ({
       vendor,
       originalIndex,
@@ -70,19 +89,23 @@ export function SubscriptionsPage() {
     ...visibleVendors.map(({ vendor }) => ({
       key: vendor,
       label: vendor,
-      values: s.matrix[vendor] ?? [],
+      values: monthIndexes.map((index) => s.matrix[vendor]?.[index] ?? 0),
     })),
     hiddenVendors.length > 0
       ? {
           key: 'collapsed',
           label: `他${hiddenVendors.length}件`,
-          values: s.months.map(
-            (_, monthIndex) =>
-              (s.other[monthIndex] ?? 0) +
+          values: monthIndexes.map(
+            (monthIndex) =>
+              (hasVendorFocus ? 0 : (s.other[monthIndex] ?? 0)) +
               hiddenVendors.reduce((total, { vendor }) => total + (s.matrix[vendor]?.[monthIndex] ?? 0), 0),
           ),
         }
-      : { key: 'other', label: 'その他', values: s.other },
+      : {
+          key: 'other',
+          label: 'その他',
+          values: monthIndexes.map((index) => (hasVendorFocus ? 0 : (s.other[index] ?? 0))),
+        },
   ];
   /* 図の色と凡例チップの色を1箇所で決める(別々に選ぶと凡例が図の色と対応しなくなる) */
   const palette = vendorPalette();
@@ -91,7 +114,9 @@ export function SubscriptionsPage() {
   const vendorModel = createFinancialFigureModel({
     id: 'subscriptions-vendor-monthly',
     title: '支払いの内訳推移',
-    summary: `${labels[latestMonthIndex]}のサブスク合計は${yen(s.now.monthlyTotal)}です。`,
+    summary: requestedMonth
+      ? `${monthLabel(requestedMonth)}の対象支払いを表示しています。`
+      : `${monthLabel(s.months[latestMonthIndex]!)}のサブスク合計は${yen(s.now.monthlyTotal)}です。`,
     period: financialPeriod(labels),
     labels,
     summarySeries: chartSeries.map(({ key, label }, index) => ({
@@ -100,13 +125,18 @@ export function SubscriptionsPage() {
       color: chartSeriesColor(key, index),
     })),
     series: [
-      ...s.vendors.map((vendor) => ({
+      ...focusedVendors.map((vendor) => ({
         key: vendor,
         label: vendor,
-        values: s.matrix[vendor],
+        values: monthIndexes.map((index) => s.matrix[vendor]?.[index] ?? 0),
         unit: 'yen' as const,
       })),
-      { key: 'other', label: 'その他', values: s.other, unit: 'yen' as const },
+      {
+        key: 'other',
+        label: 'その他',
+        values: monthIndexes.map((index) => (hasVendorFocus ? 0 : (s.other[index] ?? 0))),
+        unit: 'yen' as const,
+      },
     ],
     action: '月額が増えた月に始まった契約を洗い出し、重複と解約候補を見直します。',
   });
@@ -115,20 +145,50 @@ export function SubscriptionsPage() {
     <>
       <PageHeader route="subscriptions" />
 
-      {s.alerts.length > 0 && (
-        <div className="notice">
-          <strong>検知アラート {s.alerts.length}件</strong>
+      {(hasVendorFocus || requestedMonth) && (
+        <output className="notice" aria-label="診断からの絞り込み">
+          <strong>診断からの絞り込み</strong>{' '}
+          {[requestedAccount, requestedVendor, requestedMonth ? monthLabel(requestedMonth) : null]
+            .filter(Boolean)
+            .join(' / ')}
+          {' · '}
+          <Link to="/subscriptions">すべて表示</Link>
+        </output>
+      )}
+
+      {s.alerts.filter(
+        (alert) =>
+          focusedVendors.includes(alert.vendor) && (!requestedMonth || alert.month === requestedMonth),
+      ).length > 0 && (
+        <section className="notice" aria-label="検知アラート">
+          <strong>
+            検知アラート{' '}
+            {
+              s.alerts.filter(
+                (alert) =>
+                  focusedVendors.includes(alert.vendor) &&
+                  (!requestedMonth || alert.month === requestedMonth),
+              ).length
+            }
+            件
+          </strong>
           <ul style={{ margin: '4px 0 0 18px', padding: 0 }}>
-            {s.alerts.map((a) => (
-              <li key={`${a.vendor}-${a.month}-${a.type}`}>
-                {monthLabel(a.month)} <strong>{a.vendor}</strong>{' '}
-                {a.type === 'dup' ? <Term id="subsDup" /> : <Term id="subsSpike" />}:{' '}
-                <span className="num">{yen(a.value)}</span>(通常月
-                <Term id="median" /> <span className="num">{yen(a.median)}</span>)
-              </li>
-            ))}
+            {s.alerts
+              .filter(
+                (alert) =>
+                  focusedVendors.includes(alert.vendor) &&
+                  (!requestedMonth || alert.month === requestedMonth),
+              )
+              .map((a) => (
+                <li key={`${a.vendor}-${a.month}-${a.type}`}>
+                  {monthLabel(a.month)} <strong>{a.vendor}</strong>{' '}
+                  {a.type === 'dup' ? <Term id="subsDup" /> : <Term id="subsSpike" />}:{' '}
+                  <span className="num">{yen(a.value)}</span>(通常月
+                  <Term id="median" /> <span className="num">{yen(a.median)}</span>)
+                </li>
+              ))}
           </ul>
-        </div>
+        </section>
       )}
 
       <div className="kpis">
@@ -172,7 +232,7 @@ export function SubscriptionsPage() {
         </p>
       )}
 
-      <div className="card scroll-x">
+      <section className="card scroll-x" aria-label="現在のサブスク支払い">
         <h2>いま何にいくら払っているか</h2>
         <DataTable
           className="data stack-sm"
@@ -188,20 +248,23 @@ export function SubscriptionsPage() {
             <tr className="total">
               <td data-label="ベンダー">合計(その他を含む)</td>
               <td data-label="直近月額" className="num">
-                {yen(s.now.monthlyTotal)}
+                {yen(focusedVendorTable.reduce((total, row) => total + row.lastMonthly, 0))}
               </td>
               <td />
               <td />
               <td data-label="直近12ヶ月合計" className="num">
-                {yen(s.now.last12Total)}
+                {yen(focusedVendorTable.reduce((total, row) => total + row.last12Total, 0))}
               </td>
               <td data-label="年換算" className="num">
-                {yen(s.now.annualized)}
+                {yen(focusedVendorTable.reduce((total, row) => total + row.lastMonthly * 12, 0))}
               </td>
             </tr>
           }
         >
-          {[...s.vendorTable]
+          {focusedVendorTable
+            .filter(
+              (row) => !requestedMonth || (s.matrix[row.vendor]?.[s.months.indexOf(requestedMonth)] ?? 0) > 0,
+            )
             .sort((a, b) => b.lastMonthly - a.lastMonthly || b.avgMonthly - a.avgMonthly)
             .map((r) => (
               <tr key={r.vendor}>
@@ -227,7 +290,7 @@ export function SubscriptionsPage() {
         <p className="sub">
           「その他」はベンダー名を特定していないサブスク・通信の支払。月3,000円のサブスクは年3.6万円。契約は月次にし、解約の見直しは四半期ごとに行う。
         </p>
-      </div>
+      </section>
 
       <div className="card">
         <h2>ベンダー別月次(積み上げ)</h2>
@@ -284,13 +347,15 @@ export function SubscriptionsPage() {
           subjectLabel="ベンダー"
           previousLabel={`${s.years.prev}年実績`}
           currentLabel={`${s.years.curr}年換算`}
-          rows={s.vendorTable.map((r) => ({
-            key: r.vendor,
-            label: r.vendor,
-            previous: r.prevActual,
-            current: r.currAnnualized,
-            delta: r.delta,
-          }))}
+          rows={s.vendorTable
+            .filter((row) => focusedVendors.includes(row.vendor))
+            .map((r) => ({
+              key: r.vendor,
+              label: r.vendor,
+              previous: r.prevActual,
+              current: r.currAnnualized,
+              delta: r.delta,
+            }))}
         />
       </div>
       <SubVendorsPanel />

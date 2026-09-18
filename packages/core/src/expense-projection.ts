@@ -271,18 +271,26 @@ export function sourceNeutralSubscriptions(
     projected.subs.vendors.map((vendor) => [vendor, projected.months.map(() => 0)]),
   );
   projected.subs.other = projected.months.map(() => 0);
+  const vendorAccounts = new Map(projected.subs.vendors.map((vendor) => [vendor, new Set<string>()]));
 
   for (const fact of projection.effectiveExpenses) {
     const index = ensureMonth(projected, fact.month);
     const vendor = registeredVendorFor(fact, projected);
-    if (vendor) projected.subs.matrix[vendor][index] += fact.amount;
-    else if (fact.categoryRaw === 'サブスク・通信' || fact.categoryNorm === 'サブスク・通信') {
+    if (vendor) {
+      projected.subs.matrix[vendor][index] += fact.amount;
+      const accounts = vendorAccounts.get(vendor);
+      if (fact.categoryRaw) accounts?.add(fact.categoryRaw);
+      if (fact.categoryNorm) accounts?.add(fact.categoryNorm);
+    } else if (fact.categoryRaw === 'サブスク・通信' || fact.categoryNorm === 'サブスク・通信') {
       projected.subs.other[index] += fact.amount;
     }
   }
 
   return {
     ...subscriptions(projected),
+    vendorAccounts: Object.fromEntries(
+      projected.subs.vendors.map((vendor) => [vendor, [...(vendorAccounts.get(vendor) ?? [])]]),
+    ),
     sourceCoverage: {
       freee: projection.effectiveExpenses.filter((fact) => fact.source === 'freee').length,
       moneyForward: projection.effectiveExpenses.filter((fact) => fact.source === 'mf').length,

@@ -1,182 +1,195 @@
-/** P3 統計診断: 信号(判定)を見て対応すべき科目を決める */
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { type DiagnosisData, api } from '../../api.js';
-import { DataTable, termColumn } from '../../components/DataTable.js';
-import { HowTo } from '../../components/HowTo.js';
-import { KpiCard, PageState } from '../../components/Page.js';
-import { Term } from '../../components/Term.js';
-import { pct, yen } from '../../format.js';
+/**
+ * 診断画面のページ制御。
+ * URL 状態・取得・判断の保存・rolling deploy 互換境界だけを持ち、表示責務は diagnosis/ に分ける。
+ */
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ApiError } from '../../api-client.js';
+import { type DiagnosisActionStatus, type DiagnosisResponse, type DiagnosisScreen, api } from '../../api.js';
+import { PageState } from '../../components/Page.js';
 import { usePeriod } from '../../period.js';
+import { DiagnosisActionTable } from './diagnosis/ActionTable.js';
+import { DiagnosisConditions } from './diagnosis/Conditions.js';
+import { DiagnosisDetailPanel } from './diagnosis/DetailPanel.js';
+import { DiagnosisEvidenceTable } from './diagnosis/EvidenceTable.js';
+import { DiagnosisImpactWaterfall } from './diagnosis/ImpactWaterfall.js';
+import { DiagnosisLegacyStats } from './diagnosis/LegacyStats.js';
+import { DiagnosisOutcome } from './diagnosis/Outcome.js';
+import { DiagnosisResultCards } from './diagnosis/ResultCards.js';
+import { DiagnosisSelectionBar } from './diagnosis/SelectionBar.js';
+import { DiagnosisSignals } from './diagnosis/Signals.js';
+import { COMPARES, METRICS, SCOPES, type UrlState } from './diagnosis/types.js';
+import { choiceParam, patchSearchParams } from './url-state.js';
+import './diagnosis.css';
 
-const judgePill: Record<string, string> = {
-  要確認: 'pill alert',
-  やや高い: 'pill warn',
-  低め: 'pill calm',
-  通常レンジ: 'pill neutral',
-};
+function readUrl(params: URLSearchParams): UrlState {
+  return {
+    scope: choiceParam(
+      params,
+      'scope',
+      SCOPES.map((item) => item.id),
+      'total',
+    ),
+    metric: choiceParam(
+      params,
+      'metric',
+      METRICS.map((item) => item.id),
+      'expense',
+    ),
+    compare: choiceParam(
+      params,
+      'compare',
+      COMPARES.map((item) => item.id),
+      'previous',
+    ),
+    action: params.get('action') || null,
+    done: params.get('done') === '1',
+    stats: params.get('stats') === '1',
+  };
+}
 
-const kindLabel: Record<string, string> = {
-  cut: '削減',
-  watch: '監視',
-  invest: '投資',
-  fix: '固定費',
-};
+function screenQuery(state: UrlState): string {
+  const query = new URLSearchParams({ scope: state.scope, metric: state.metric });
+  if (state.compare !== 'previous') query.set('compare', state.compare);
+  return query.toString();
+}
+
+/** 新フィールドが揃う応答だけを新ブロックへ渡す。旧 Worker は従来表示へ落とす (rolling deploy) */
+function screenOf(response: DiagnosisResponse): DiagnosisScreen | null {
+  if (
+    !response.selection ||
+    !response.improvements ||
+    !response.health ||
+    !response.waterfall ||
+    !response.signals ||
+    !response.evidence ||
+    !response.totals
+  )
+    return null;
+  return {
+    ...response,
+    selection: response.selection,
+    improvements: response.improvements,
+    health: response.health,
+    waterfall: response.waterfall,
+    signals: response.signals,
+    evidence: response.evidence,
+    totals: response.totals,
+    // 条件の帯の合計だけは後から足したフィールド。欠けていても新ブロックは出す
+    scopeTotals: response.scopeTotals ?? null,
+  };
+}
 
 export function DiagnosisPage() {
+  const [params, setParams] = useSearchParams();
+  const url = readUrl(params);
   const { key, withPeriod } = usePeriod();
-  const q = useQuery({
-    queryKey: ['diagnosis', key],
-    queryFn: () => api<DiagnosisData>(withPeriod('/diagnosis')),
+  const queryClient = useQueryClient();
+  const queryKey = ['diagnosis', key, url.scope, url.metric, url.compare];
+  const query = useQuery({
+    queryKey,
+    queryFn: () => api<DiagnosisResponse>(withPeriod(`/diagnosis?${screenQuery(url)}`)),
+    placeholderData: keepPreviousData,
   });
-  if (q.isLoading)
+
+  const update = (patch: Partial<Record<keyof UrlState, string | null>>) => {
+    setParams((previous) => patchSearchParams(previous, patch), { replace: true });
+  };
+
+  // 楽観更新しない (ADR-006)。保存が通ってから取り直した値で合計・棒・シグナルを描き直す
+  const save = useMutation({
+    mutationFn: (input: { actionKey: string; status: DiagnosisActionStatus; note: string | null }) =>
+      api(`/diagnosis/actions/${encodeURIComponent(input.actionKey)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: input.status, note: input.note }),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['diagnosis'] }),
+  });
+
+  if (query.isLoading) return <PageState status="loading" />;
+  if (!query.data) return <PageState status="error" error={query.error} />;
+
+  const response = query.data;
+  const screen = screenOf(response);
+  const hasImportedPeriod =
+    response.entries.length > 0 ||
+    Boolean(screen?.improvements.length) ||
+    // 取込0件の応答は kpi/bep ごと欠けることがある。空状態の判定自体で落とさない
+    (screen?.selection.metric !== 'expense' &&
+      ((response.kpi?.months ?? 0) > 0 || (response.bep?.revenueMonths ?? 0) > 0));
+  if (!hasImportedPeriod && !screen?.improvements.length) {
     return (
-      <>
-        <PageState status="loading" />
-      </>
+      <PageState
+        status="empty"
+        message="診断できるデータが未取込です。"
+        action={
+          <Link className="btn primary" to="/import">
+            データ取込へ
+          </Link>
+        }
+      />
     );
-  if (q.isError || !q.data)
+  }
+
+  if (!screen) {
+    // 旧 Worker の応答。新ブロックを出さず、従来の統計だけを開いた状態で見せる
     return (
-      <>
-        <PageState status="error" error={q.error} />
-      </>
+      <div className="diagnosis">
+        <DiagnosisLegacyStats data={response} open update={update} />
+      </div>
     );
-  const d = q.data;
-  if (!d.entries.length)
-    return (
-      <>
-        <PageState
-          status="empty"
-          message="診断できるデータが未取込です。"
-          action={
-            <Link className="btn primary" to="/import">
-              データ取込へ
-            </Link>
-          }
-        />
-      </>
-    );
+  }
+
+  const requested = screen.improvements.find((row) => row.action_key === url.action) ?? null;
+  const firstActive = screen.improvements.find((row) => row.status !== '対応済み' && row.status !== '見送り');
+  // 最頻フローは「上位候補の根拠を読む」から始まる。URL 指定が無い初回だけ、
+  // サーバ順位の先頭にある未対応 1 件を賢い既定として選ぶ。
+  const requestedIsVisible =
+    requested && (url.done || (requested.status !== '対応済み' && requested.status !== '見送り'));
+  const selected =
+    (requestedIsVisible ? requested : null) ??
+    firstActive ??
+    (url.done ? screen.improvements[0] : null) ??
+    null;
+  const saveError =
+    save.error instanceof ApiError ? save.error.message : save.error ? '保存できませんでした' : null;
 
   return (
-    <>
-      <div className="kpis">
-        <KpiCard
-          label={
-            <>
-              経費 平均 / <Term id="median" />({d.kpi.months}ヶ月)
-            </>
-          }
-          value={yen(d.kpi.expenseMean)}
-          note={
-            <span className="num">
-              中央値 {yen(d.kpi.expenseMedian)} / <Term id="cv" /> {d.kpi.expenseCv.toFixed(2)}
-            </span>
-          }
-        />
-        <KpiCard
-          label={
-            <>
-              <Term id="fixedCost" />
-              (CV&lt;0.6 直近3ヶ月平均)
-            </>
-          }
-          value={yen(d.kpi.fixedCost)}
-        />
-        <KpiCard
-          label={
-            <>
-              <Term id="breakEven" />
-              (BEP)
-            </>
-          }
-          value={yen(d.bep.breakEven)}
-          note={
-            <span className="num">
-              <Term id="safetyMargin" /> {pct(d.bep.safetyMargin, 0)}
-            </span>
-          }
-        />
-        <KpiCard
-          label={`平均月商(売上${d.bep.revenueMonths}ヶ月)`}
-          value={yen(d.bep.avgRevenue)}
-          note={
-            <span className="num">
-              <Term id="expenseRatio" /> {pct(d.kpi.expenseRatio, 0)}
-            </span>
-          }
-        />
+    <div className={`diagnosis${query.isPlaceholderData ? ' is-stale' : ''}`} aria-busy={query.isFetching}>
+      <DiagnosisConditions screen={screen} update={update} />
+      <div className="diagnosis-overview">
+        <DiagnosisResultCards screen={screen} />
+        <DiagnosisSignals signals={screen.signals} />
       </div>
-
-      <div className="card scroll-x">
-        <h2>
-          科目別プロファイル(
-          <Term id="unrecordedMonth" />
-          は除外)
-        </h2>
-        <HowTo id="diagnosisProfile" />
-        <DataTable
-          columns={[
-            '科目',
-            termColumn('classification'),
-            '直近3ヶ月平均',
-            '平均',
-            termColumn('median'),
-            termColumn('cv'),
-            termColumn('range'),
-            termColumn('zScore'),
-            termColumn('judge'),
-            termColumn('signal'),
-          ]}
-        >
-          {d.entries.map((e) => (
-            <tr key={e.account}>
-              <td>{e.account}</td>
-              <td>
-                <span className="pill neutral">{e.profile.type}</span>
-              </td>
-              <td className="num">{yen(e.profile.rAvg)}</td>
-              <td className="num">{yen(e.profile.mean)}</td>
-              <td className="num">{yen(e.profile.med)}</td>
-              <td className="num">{e.profile.cv.toFixed(2)}</td>
-              <td className="num">
-                {yen(e.range.lo)}〜{yen(e.range.hi)}
-              </td>
-              <td className="num">{e.profile.z.toFixed(1)}</td>
-              <td>
-                <span className={judgePill[e.judge]}>{e.judge}</span>
-              </td>
-              <td>
-                {e.signals.map((s) => (
-                  <span
-                    key={s}
-                    className={`pill ${s === '契約見直し対象' ? 'warn' : s === '上昇' ? 'alert' : 'calm'}`}
-                  >
-                    {s}
-                  </span>
-                ))}
-              </td>
-            </tr>
-          ))}
-        </DataTable>
+      <div className="diagnosis-workspace">
+        <DiagnosisActionTable
+          improvements={screen.improvements}
+          totals={screen.totals}
+          selected={selected?.action_key ?? null}
+          showDone={url.done}
+          update={update}
+        />
+        {selected ? (
+          <DiagnosisDetailPanel
+            key={selected.action_key}
+            row={selected}
+            saving={save.isPending}
+            error={saveError}
+            onSave={({ status, note }) => save.mutate({ actionKey: selected.action_key, status, note })}
+          />
+        ) : (
+          <section className="card diagnosis-detail diagnosis-detail-empty" aria-label="課題の詳細">
+            <h2>選択した項目の詳細</h2>
+            <p>未対応の改善アクションはありません。次回の取込後に診断結果が更新されます。</p>
+            <Link to="/import">取込状況を確認する</Link>
+          </section>
+        )}
       </div>
-
-      <div className="card">
-        <h2>自動診断</h2>
-        {d.autoDiagnosis.map((a) => (
-          <div key={a.title} style={{ borderBottom: '1px solid var(--line)', padding: '8px 0' }}>
-            <span className={`pill ${a.kind === 'cut' ? 'alert' : a.kind === 'watch' ? 'warn' : 'neutral'}`}>
-              {kindLabel[a.kind] ?? a.tag}
-            </span>{' '}
-            <strong>{a.title}</strong> <span className="num">{a.value}</span>
-            <div className="sub">{a.body}</div>
-          </div>
-        ))}
-      </div>
-
-      <p className="sub">
-        高止まりの科目は <Link to="/classify">公私仕分け</Link> で内訳を確認 →{' '}
-        <Link to="/budget">予算管理</Link> で上限を決める。
-      </p>
-    </>
+      <DiagnosisImpactWaterfall waterfall={screen.waterfall} />
+      <DiagnosisOutcome screen={screen} />
+      <DiagnosisEvidenceTable evidence={screen.evidence} />
+      <DiagnosisLegacyStats data={response} open={url.stats} update={update} />
+      {selected && <DiagnosisSelectionBar row={selected} />}
+    </div>
   );
 }
