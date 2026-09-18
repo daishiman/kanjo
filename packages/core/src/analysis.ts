@@ -410,6 +410,28 @@ export interface SubscriptionsData {
   years: { curr: string; prev: string };
 }
 
+/**
+ * 1 ベンダーの月別支払額から、重複疑い (dup) と急増 (spike) の月を拾う。
+ * 基準は支払いのあった月の中央値。サブスク画面の検出理由カードも同じ関数で判定する。
+ */
+export function subsSpendAlerts(
+  vendor: string,
+  months: readonly string[],
+  series: readonly number[],
+): SubsAlert[] {
+  const nz = series.filter((x) => x > 0);
+  if (!nz.length) return [];
+  const med = median(nz);
+  const out: SubsAlert[] = [];
+  series.forEach((v, i) => {
+    if (v >= med * 1.8 && v > 20000 && med > 5000)
+      out.push({ month: months[i], vendor, value: v, median: med, type: 'dup' });
+    else if (v >= med * 3 && v > 15000)
+      out.push({ month: months[i], vendor, value: v, median: med, type: 'spike' });
+  });
+  return out;
+}
+
 /** 重複疑い=中央値の1.8倍超かつ2万円超かつ中央値5千円超 / 急増=3倍超かつ1.5万円超 */
 export function subscriptions(data: Dataset): SubscriptionsData {
   const M = data.months;
@@ -451,19 +473,7 @@ export function subscriptions(data: Dataset): SubscriptionsData {
     revenueShare: avgRev > 0 && recent3.length ? mean(recent3) / avgRev : null,
   };
 
-  const alerts: SubsAlert[] = [];
-  V.forEach((vd) => {
-    const s = data.subs.matrix[vd];
-    const nz = s.filter((x) => x > 0);
-    if (!nz.length) return;
-    const med = median(nz);
-    s.forEach((v, i) => {
-      if (v >= med * 1.8 && v > 20000 && med > 5000)
-        alerts.push({ month: M[i], vendor: vd, value: v, median: med, type: 'dup' });
-      else if (v >= med * 3 && v > 15000)
-        alerts.push({ month: M[i], vendor: vd, value: v, median: med, type: 'spike' });
-    });
-  });
+  const alerts: SubsAlert[] = V.flatMap((vd) => subsSpendAlerts(vd, M, data.subs.matrix[vd]));
   return {
     months: M,
     vendors: V,

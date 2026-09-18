@@ -10,6 +10,7 @@ import {
   FINGERPRINT_VERSION,
   type FreeeDeal,
   OwnerValidationError,
+  SUB_VENDOR_NAME_MAX,
   TX_EDIT_BASE_BITS,
   TxSplitsSnapshotError,
   applyFreeeDeals,
@@ -48,6 +49,8 @@ import {
   type RestoreFreeeDealExclusion,
   type RestoreMonthlyCloseReview,
   type RestoreReviewSnooze,
+  type RestoreSubVendorMetadata,
+  type RestoreSubVendorReviewDecision,
   type RestoreTotalCashflowOperation,
   acquireImportWriter,
   activeDuplicateOf,
@@ -120,6 +123,31 @@ const subVendorExclusionsBackupSchema = z
   .max(5_000);
 // 0040: 保留と月次レビュー。kind/itemKey/month はルートと同じ core の検証器で受け、D1 の CHECK 違反を commit まで持ち込まない
 const isoTimestamp = z.string().min(1).max(40);
+const subVendorMetadataBackupSchema = z
+  .array(
+    z
+      .object({
+        name: z.string().trim().min(1).max(SUB_VENDOR_NAME_MAX),
+        category: z.string().trim().min(1).max(20).nullable(),
+        reviewedAt: isoTimestamp.nullable(),
+      })
+      .strict(),
+  )
+  .max(5_000)
+  .refine((rows) => new Set(rows.map((row) => row.name)).size === rows.length);
+const subVendorReviewDecisionsBackupSchema = z
+  .array(
+    z
+      .object({
+        vendorKey: z.string().trim().min(1).max(SUB_VENDOR_NAME_MAX),
+        decision: z.enum(['confirmed', 'dismissed']),
+        ruleFingerprint: z.string().min(1).max(500),
+        decidedAt: isoTimestamp,
+      })
+      .strict(),
+  )
+  .max(5_000)
+  .refine((rows) => new Set(rows.map((row) => row.vendorKey)).size === rows.length);
 const reviewSnoozesBackupSchema = z
   .array(
     z
@@ -263,12 +291,40 @@ const resolveRestoreSettings = (
     normMap: destination.normMap,
     statMinMonths: analysis.data.statMinMonths ?? DEFAULT_STAT_MIN_MONTHS,
     subVendorExclusions: [...byKey.values()],
+    subVendors: destination.subVendors,
+    subVendorReviewDecisions: destination.subVendorReviewDecisions,
     cashEntries: destination.cashEntries,
     freeeDeals: destination.freeeDeals,
     txSplits: destination.txSplits,
     // JSON復元は現在の取引先の決め事を置き換えない。通常取込の解決入力として保持する。
     vendorMemories: destination.vendorMemories,
     destinationRowCounts: destination.destinationRowCounts,
+  };
+};
+
+/**
+ * 新backupはベンダーの補助属性と見直し判断をcanonicalに運ぶ。
+ * 旧backupのキー欠落は空集合とは扱わず、復元先の値を保つ。
+ */
+const resolveRestoreSubscriptionState = (
+  obj: Record<string, unknown>,
+): {
+  metadata: RestoreSubVendorMetadata[] | null;
+  decisions: RestoreSubVendorReviewDecision[] | null;
+} => {
+  const has = (key: string) => Object.prototype.hasOwnProperty.call(obj, key);
+  const metadata = has('subVendorMetadata')
+    ? subVendorMetadataBackupSchema.safeParse(obj.subVendorMetadata)
+    : null;
+  const decisions = has('subVendorReviewDecisions')
+    ? subVendorReviewDecisionsBackupSchema.safeParse(obj.subVendorReviewDecisions)
+    : null;
+  if ((metadata && !metadata.success) || (decisions && !decisions.success)) {
+    throw new InvalidRestoreSettingsError();
+  }
+  return {
+    metadata: metadata?.success ? metadata.data : null,
+    decisions: decisions?.success ? decisions.data : null,
   };
 };
 
@@ -813,13 +869,10 @@ const prepareJsonApplication = async (args: {
   const restoringCash = args.restoredCashEntries !== undefined && args.restoredCashEntries.length > 0;
   const effectiveCash = restoringCash ? (args.restoredCashEntries ?? []) : args.cashEntries;
   const restoreSettings = resolveRestoreSettings(args.json, args.destinationSettings);
+  const subscriptionState = resolveRestoreSubscriptionState(args.json);
   const reviewState = resolveRestoreReviewState(args.json);
   const destinationCashEdits = restoringCash ? {} : currentCashEdits(candidate, args.cashEntries);
-  const destinationVendors = candidate.subs.vendors.map((name) => ({
-    name,
-    aliases: candidate.subs.aliases?.[name] ?? [],
-    accounts: candidate.subs.accounts?.[name] ?? [],
-  }));
+  const destinationVendors = args.destinationSettings.subVendors;
   // importJSON assigns the aggregate maps from its input by reference. The same
   // restore unit is prepared during planning, runtime validation, and execution,
   // so mutating those maps would make each pass inflate the next one. Clone the
@@ -827,15 +880,38 @@ const prepareJsonApplication = async (args: {
   // 旧snapshotにtxSplitsが無い場合も、移行先の現在値を残さずcanonical集合を空へ置換する。
   candidate.txSplits = [];
   importJSON(candidate, structuredClone(args.json));
+  const sourceVendorNames = new Set(candidate.subs.vendors);
+  if (
+    subscriptionState.metadata &&
+    (subscriptionState.metadata.length !== sourceVendorNames.size ||
+      subscriptionState.metadata.some((row) => !sourceVendorNames.has(row.name)))
+  ) {
+    throw new InvalidRestoreSettingsError();
+  }
+  const sourceVendorKeys = new Set(candidate.subs.vendors.map(vendorKey));
+  if (subscriptionState.decisions?.some((row) => !sourceVendorKeys.has(row.vendorKey))) {
+    throw new InvalidRestoreSettingsError();
+  }
   // JSON restoreは初期移行。sourceの同名設定を優先しつつ、移行先だけの登録を削除しない。
   for (const vendor of destinationVendors) {
     if (candidate.subs.vendors.includes(vendor.name)) continue;
     candidate.subs.vendors.push(vendor.name);
     candidate.subs.aliases[vendor.name] = vendor.aliases;
     candidate.subs.accounts ??= {};
-    candidate.subs.accounts[vendor.name] = vendor.accounts;
+    candidate.subs.accounts[vendor.name] = vendor.accounts ?? [];
     candidate.subs.matrix[vendor.name] = candidate.months.map(() => 0);
   }
+  const metadataByName = new Map(
+    destinationVendors.map((vendor) => [
+      vendor.name,
+      { name: vendor.name, category: vendor.category, reviewedAt: vendor.reviewedAt },
+    ]),
+  );
+  for (const metadata of subscriptionState.metadata ?? []) metadataByName.set(metadata.name, metadata);
+  const mergedSubVendorMetadata = candidate.subs.vendors.map(
+    (name): RestoreSubVendorMetadata =>
+      metadataByName.get(name) ?? { name, category: null, reviewedAt: null },
+  );
   candidate.personal = {};
   candidate.bizPersonal = {};
   candidate.personalByOwner = {};
@@ -864,6 +940,8 @@ const prepareJsonApplication = async (args: {
     subVendorExclusions: restoreSettings.subVendorExclusions,
     existingStatMinMonths: args.destinationSettings.statMinMonths,
     existingSubVendorExclusions: args.destinationSettings.subVendorExclusions,
+    subVendorMetadata: mergedSubVendorMetadata,
+    subVendorReviewDecisions: subscriptionState.decisions,
     restoredCashEntries: restoringCash ? args.restoredCashEntries : undefined,
     reviewSnoozes: reviewState.reviewSnoozes,
     monthlyCloseReviews: reviewState.monthlyCloseReviews,
@@ -1352,11 +1430,14 @@ importsRoute.post('/imports', async (c) => {
     normMap: {},
     statMinMonths: DEFAULT_STAT_MIN_MONTHS,
     subVendorExclusions: [],
+    subVendors: [],
+    subVendorReviewDecisions: [],
     cashEntries: [],
     freeeDeals: [],
     txSplits: [],
     vendorMemories: [],
     destinationRowCounts: {
+      subVendorReviewDecisions: 0,
       reviewSnoozes: 0,
       monthlyCloseReviews: 0,
       duplicateVerdicts: 0,
@@ -1876,11 +1957,14 @@ importsRoute.post('/restore', async (c) => {
     normMap: {},
     statMinMonths: DEFAULT_STAT_MIN_MONTHS,
     subVendorExclusions: [],
+    subVendors: [],
+    subVendorReviewDecisions: [],
     cashEntries: [],
     freeeDeals: [],
     txSplits: [],
     vendorMemories: [],
     destinationRowCounts: {
+      subVendorReviewDecisions: 0,
       reviewSnoozes: 0,
       monthlyCloseReviews: 0,
       duplicateVerdicts: 0,

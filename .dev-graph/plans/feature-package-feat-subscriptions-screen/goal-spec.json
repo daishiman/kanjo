@@ -1,0 +1,112 @@
+{
+  "acceptance": [
+    "S1 (G1): /subscriptions で 09-subscriptions.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件、ロゴ画像の取得・表示が 0 件である。",
+    "S2 (G2): 任意の行を選ぶと詳細パネルが同じ行の月額推定と年換算を示し、生の取引名を選んで統合すると aliases に反映され、再読込後も同じベンダーにまとまって表示される。",
+    "S3 (G3): 見直し候補の規則と文テンプレートが docs に明記され、境界値テストで固定され、KPI 件数・一覧バッジ・検出理由カード・サイドバーのバッジが同じ件数 (未判断の候補数) を示す。",
+    "S4 (G4): 一覧の合計行・カテゴリ別比較の合計・KPI の月額合計 (登録済みかつ継続中の推定月額の和) が互いに一致し、直近 12 か月の支払額と売上比が既存関数の値と一致する。数値の正本は core の検算済み fixture であり、画像の数値は写し取らない。",
+    "S5 (G5): migration 0043 適用後に既存の登録ベンダー・除外・見直し日時が失われず、旧 UI にあった操作 (別名・対象科目の編集・四半期見直し・アラート・未登録候補の採用 / 除外) がすべて新しい画面から実行できる。"
+  ],
+  "architecture_refs": [
+    "architecture/subscriptions-ui-ux.md",
+    "architecture/subscriptions-frontend.md",
+    "architecture/subscriptions-backend.md",
+    "architecture/subscriptions-database.md",
+    "architecture/subscriptions-auth.md",
+    "architecture/subscriptions-security.md",
+    "architecture/subscriptions-infrastructure.md",
+    "architecture/subscriptions-maintenance-ops.md",
+    "specs/spec-subscriptions-screen.md"
+  ],
+  "artifact_kind": "feature",
+  "feature_id": "feat-subscriptions-screen",
+  "generated_at": "2026-09-18T07:30:00Z",
+  "goal": "/subscriptions が 09-subscriptions.png の全構成要素 (問いの見出しと説明文・KPI 5 枚と前期間比・データソースのカバー率カードと最終更新 / 再取得・検索とステータス絞込と候補バッジと合計行を持つ一覧・カテゴリ別の月次推移・年換算の比較・右の詳細パネル (3 タブ・名称編集・生の取引名・直近の取引・データソース別件数・名称を統合・候補として確認)・検出理由カード・下部の選択バー・読込 / 空 / 失敗) をトークンと共通部品で描画し、ロゴ画像を取得も表示もせず、数値と見直し候補が core の純関数 1 か所 (subscriptionsScreen) で算出されて GET /api/subscriptions と GET /api/subscriptions/vendors/:key が返し、KPI 件数・一覧バッジ・検出理由カード・サイドバーのバッジが同じ関数の結果を示し、名称の統合・カテゴリ・見直し判断が migration 0043 と既存表に保存され、旧 UI の操作を失わずに撤去された状態。",
+  "identity_check": {
+    "artifact_kind_matches": true,
+    "feature_context_path": "features/feat-subscriptions-screen.context.json",
+    "feature_context_sha256": "172ec8eb19f4852c61f608a9e3165eccac82ce40c7805d0f513b1a3484129916",
+    "graph_node_id": "feat-subscriptions-screen",
+    "graph_node_id_matches_feature_id": true,
+    "resolved_by": "resolve-project-context.py"
+  },
+  "notes": [
+    "参照画像 design/FINAL-UI/images/09-subscriptions.png は配置の正本で、数値の正本は仕様 13.3 節の検算済み fixture とする (画像の算術矛盾は仕様 13.4 節に記録)",
+    "ロゴ画像は取得も表示もしない。頭文字の代替表示もしない",
+    "サイドバー・ヘッダー・フッターは既存踏襲で、バッジの件数の定義だけを付け替える",
+    "migration 0043 は列と表の追加だけで既存行を書き換えない"
+  ],
+  "open_items": [
+    {
+      "id": "OI-01",
+      "item": "仕様 15.4 節の暫定 U 項目のうち数値と閾値に関わるもの",
+      "note": "P04 の境界値テストで値を確定し docs へ写す",
+      "resolution_owner": "SYS-SUBS-P04"
+    },
+    {
+      "id": "OI-02",
+      "item": "仕様 15.4 節の暫定 U 項目のうち画面の見え方と文言に関わるもの",
+      "note": "P07 の受入判定で実画面を見て確定する",
+      "resolution_owner": "SYS-SUBS-P07"
+    },
+    {
+      "id": "OI-03",
+      "item": "AI 指示文側の見直し候補の定義との差",
+      "note": "指示文は変えず、差を P10 の最終レビューで報告する",
+      "resolution_owner": "SYS-SUBS-P10"
+    }
+  ],
+  "purpose": "サブスク画面を、『毎月の固定費に重複や見直し候補はありますか？』という問いに 1 画面で答え、見直すべき契約を見つけてその場で決着 (名称の統合・未登録候補の採用 / 除外・見直し候補の確認 / 除外) まで進められる場にする。銀行口座・クレジットカード・電子マネーの取引から検出した継続的な支払いを、月額の推定・年換算・カテゴリ・データの出典つきで一覧し、見直し候補の理由を読み、同じサービスの表記ゆれを 1 つにまとめられる状態にする。",
+  "readiness_pin": {
+    "checked_at": "2026-09-18T07:23:43Z",
+    "completeness_report": "system-spec/completeness-findings.json",
+    "missing_sections": [],
+    "source_pin": {
+      "compile_entrypoint": "run-system-spec-compile",
+      "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+      "plugin": "system-spec-harness",
+      "source_digest": "sha256:193063d7598631d12dc730e0ac5e697a60c161d45e0339764ce112a19b21301d",
+      "version": "0.1.14"
+    },
+    "status": "complete"
+  },
+  "repository_id": "github:daishiman/kanjo",
+  "run_id": "plan-feat-subscriptions-screen-20260918",
+  "scope_in": [
+    "サブスク画面 (09-subscriptions.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直し。選択中のサブスクを URL に保ち、期間は既存 usePeriod を引き継ぐ。説明文は『不要な支出の見直しで』に直す",
+    "サブスクの詳細パネル (概要 / 取引履歴 / 関連データの 3 タブ・正規化名とカテゴリの編集・マッチした生の取引名とソース種別・月額の推定と年換算・直近の取引 3 件と『すべて見る (N件)』・データソース別件数・名称を統合・候補として確認) と、生の取引名の選択で出る下部の選択バー",
+    "packages/core の純関数: 推定月額 (年額払いは 12 等分)・年換算・前期間比・直近 12 か月・売上比・カテゴリ既定辞書と利用者上書き・口座名 3 分類とカバー率・カテゴリ別の月次推移と年換算比較・見直し候補の決定論 5 規則と定型文の理由・判断の指紋 (当たった全規則 + 基準金額) を subscriptionsScreen 1 か所に置く。既存 subscriptions() は他画面のため残す",
+    "packages/api: GET /api/subscriptions の拡張 (集計値のみ) と GET /api/subscriptions/vendors/:key の新設 (analyticsRoute)、PUT /api/sub-vendors/:id への category 追加・POST /api/sub-vendors/:id/aliases・POST / DELETE /api/subscriptions/review-decisions の新設 (subsRoute)。aliases の上限を全経路で 50 件 × 100 文字へ揃える",
+    "migration 0043: sub_vendors.category 列と、登録済みベンダーの見直し判断 (confirmed / dismissed と指紋) を保存する表の追加。既存行は書き換えない",
+    "旧 UI (SubVendorsPanel・SubsCandidatesPanel・重複 / 急増アラート・ベンダー別前年比較表・一括登録) を詳細パネル・検出理由カード・ステータス絞込・行ごとの採用 / 除外へ吸収して撤去し、既存テストを新しい置き場所へ移す",
+    "既存実装の是正: 照合の多重計算の畳み込み、見直し期限の判定日を期間の最新月へ、:id の整数検査と 400、同時要求での重複登録の防止、reviewQueue の invalidate、サイドバーのバッジを未判断の見直し候補数へ付け替え",
+    "規則・文テンプレート・カテゴリ辞書・口座の手がかり語彙の docs 記載、検算済み fixture (月額 9,778・年換算 117,336 ほか) による core の境界値テスト・API テスト・DOM テスト、check-financial-visuals の更新とロゴ 0 件の検査"
+  ],
+  "scope_out": [
+    "サービスのロゴ・アイコン画像の取得と表示 (利用者指示によりコスト回避。頭文字の代替表示もしない)",
+    "外部サービス・生成 AI による分類や理由文の生成 (決定論の規則と定型文で固定する)。AI 指示文側の候補定義は変えず差を報告する",
+    "サイドバー / ヘッダー / フッター / 月次クローズ進捗の構造変更 (バッジの件数の定義だけを付け替える)",
+    "他の画面 (総収支・推移・マトリックス・診断・照合など) の中身の作り直し (数値の一致確認だけを扱う)",
+    "一覧の行チェックによる一括操作 (チェックだけ置く。§15.4 U-10)",
+    "web 以外のプラットフォーム (web SPA 1 系統のレスポンシブで扱う)"
+  ],
+  "source_lineage": [
+    {
+      "note": "C09 が identity 一致を確認した feature context",
+      "path": "features/feat-subscriptions-screen.context.json",
+      "sha256": "172ec8eb19f4852c61f608a9e3165eccac82ce40c7805d0f513b1a3484129916",
+      "source_kind": "feature_context"
+    },
+    {
+      "note": "dev-graph decompose が生成した macro feature 文書",
+      "path": "features/feat-subscriptions-screen.md",
+      "sha256": "4e64de86ad7f5c2d551d38ada9ac1d5a1a3de2e99cadf95591615d0db77db5b5",
+      "source_kind": "feature_document"
+    },
+    {
+      "note": "画面仕様の正本",
+      "path": "specs/spec-subscriptions-screen.md",
+      "sha256": "0f378382bc04719e3f8ac37722ffb410e33e307359326ee71d5cbf6db03c7757",
+      "source_kind": "specification"
+    }
+  ]
+}

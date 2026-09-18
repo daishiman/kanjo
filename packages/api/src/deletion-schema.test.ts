@@ -63,7 +63,7 @@ describe('現行migrationの適用', () => {
       .sort()
       .at(-1);
     expect(latest).toBe(EXPECTED_D1_MIGRATION);
-    expect(EXPECTED_D1_MIGRATION).toBe('0042_total_cashflow_operations_and_exclusion_reason.sql');
+    expect(EXPECTED_D1_MIGRATION).toBe('0043_sub_vendor_category_and_review_decisions.sql');
   });
 
   it('Release Aは共有R2 cleanupを追加し、退役表を互換性のため残す', async () => {
@@ -431,5 +431,34 @@ describe('決め事', () => {
 
   it('JSON 復元の write-set を変える表として登録されている', () => {
     expect(JSON_SNAPSHOT_MUTATION_CONSUMERS).toContain('vendor_memory');
+  });
+});
+
+describe('サブスクの見直し判断 (0043)', () => {
+  const insertDecision = (userId: string, vendorKey: string, decision: string) =>
+    d1
+      .prepare(
+        'INSERT INTO sub_vendor_review_decisions (user_id,vendor_key,decision,rule_fingerprint,decided_at) VALUES (?,?,?,?,?)',
+      )
+      .bind(userId, vendorKey, decision, 'priceUp:2728', '2026-09-18T00:00:00Z')
+      .run();
+
+  it('sub_vendors にカテゴリ上書きの列が増え、既存の列は残る', async () => {
+    const columns = await columnsOf('sub_vendors');
+    expect(columns).toContain('category');
+    expect(columns).toEqual(expect.arrayContaining(['id', 'user_id', 'name', 'aliases']));
+  });
+
+  it('判断は confirmed / dismissed 以外を受け付けない', async () => {
+    await expect(insertDecision('u1', 'adobe', 'pending')).rejects.toThrow();
+  });
+
+  it('1利用者1ベンダーにつき1件だけ', async () => {
+    await insertDecision('u1', 'adobe', 'dismissed');
+    await expect(insertDecision('u1', 'adobe', 'confirmed')).rejects.toThrow();
+  });
+
+  it('利用者が違えば別の判断になる', async () => {
+    await expect(insertDecision('u2', 'adobe', 'confirmed')).resolves.toBeTruthy();
   });
 });

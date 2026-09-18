@@ -1,0 +1,832 @@
+{
+  "capturedAt": "2026-09-18T12:14:35.316Z",
+  "loginStatus": 200,
+  "metrics": [
+    {
+      "file": "baseline-1024x1536.png",
+      "viewport": {
+        "width": 1024,
+        "height": 1536
+      },
+      "title": "サブスク",
+      "main": {
+        "left": 220,
+        "right": 1009,
+        "width": 789
+      },
+      "root": {
+        "left": 252,
+        "right": 977,
+        "width": 725
+      },
+      "scrollWidth": 1009,
+      "clientWidth": 1009,
+      "duplicateTrendHeadings": 1,
+      "reasonActionCount": 15,
+      "selectionCheckboxCount": 21,
+      "detailOpen": false,
+      "overflow": [
+        {
+          "tag": "TABLE",
+          "className": "data subs-table",
+          "left": 269,
+          "right": 1254.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "THEAD",
+          "className": "",
+          "left": 269,
+          "right": 1254.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 269,
+          "right": 1254.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TH",
+          "className": "num",
+          "left": 993.171875,
+          "right": 1090.171875,
+          "width": 97
+        },
+        {
+          "tag": "TH",
+          "className": "",
+          "left": 1090.171875,
+          "right": 1181.171875,
+          "width": 91
+        },
+        {
+          "tag": "TH",
+          "className": "subs-badge-column",
+          "left": 1181.171875,
+          "right": 1254.171875,
+          "width": 73
+        },
+        {
+          "tag": "TBODY",
+          "className": "",
+          "left": 269,
+          "right": 1254.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 269,
+          "right": 1254.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 993.171875,
+          "right": 1090.171875,
+          "width": 97
+        },
+        {
+          "tag": "TD",
+          "className": "",
+          "left": 1090.171875,
+          "right": 1181.171875,
+          "width": 91
+        },
+        {
+          "tag": "TD",
+          "className": "subs-badge-column",
+          "left": 1181.171875,
+          "right": 1254.171875,
+          "width": 73
+        },
+        {
+          "tag": "SPAN",
+          "className": "subs-badge is-pending",
+          "left": 1202.171875,
+          "right": 1246.171875,
+          "width": 44
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 269,
+          "right": 1254.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 993.171875,
+          "right": 1090.171875,
+          "width": 97
+        },
+        {
+          "tag": "TD",
+          "className": "",
+          "left": 1090.171875,
+          "right": 1181.171875,
+          "width": 91
+        },
+        {
+          "tag": "TD",
+          "className": "subs-badge-column",
+          "left": 1181.171875,
+          "right": 1254.171875,
+          "width": 73
+        },
+        {
+          "tag": "SPAN",
+          "className": "subs-badge is-pending",
+          "left": 1202.171875,
+          "right": 1246.171875,
+          "width": 44
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 269,
+          "right": 1254.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 993.171875,
+          "right": 1090.171875,
+          "width": 97
+        },
+        {
+          "tag": "TD",
+          "className": "",
+          "left": 1090.171875,
+          "right": 1181.171875,
+          "width": 91
+        },
+        {
+          "tag": "TD",
+          "className": "subs-badge-column",
+          "left": 1181.171875,
+          "right": 1254.171875,
+          "width": 73
+        },
+        {
+          "tag": "SPAN",
+          "className": "subs-badge is-pending",
+          "left": 1202.171875,
+          "right": 1246.171875,
+          "width": 44
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 269,
+          "right": 1254.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 993.171875,
+          "right": 1090.171875,
+          "width": 97
+        },
+        {
+          "tag": "TD",
+          "className": "",
+          "left": 1090.171875,
+          "right": 1181.171875,
+          "width": 91
+        },
+        {
+          "tag": "TD",
+          "className": "subs-badge-column",
+          "left": 1181.171875,
+          "right": 1254.171875,
+          "width": 73
+        },
+        {
+          "tag": "SPAN",
+          "className": "subs-badge is-pending",
+          "left": 1202.171875,
+          "right": 1246.171875,
+          "width": 44
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 269,
+          "right": 1254.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 993.171875,
+          "right": 1090.171875,
+          "width": 97
+        },
+        {
+          "tag": "TD",
+          "className": "",
+          "left": 1090.171875,
+          "right": 1181.171875,
+          "width": 91
+        }
+      ]
+    },
+    {
+      "file": "baseline-1280x1000.png",
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
+      "title": "サブスク",
+      "main": {
+        "left": 220,
+        "right": 1265,
+        "width": 1045
+      },
+      "root": {
+        "left": 252,
+        "right": 1233,
+        "width": 981
+      },
+      "scrollWidth": 1265,
+      "clientWidth": 1265,
+      "duplicateTrendHeadings": 1,
+      "reasonActionCount": 15,
+      "selectionCheckboxCount": 21,
+      "detailOpen": false,
+      "overflow": [
+        {
+          "tag": "P",
+          "className": "",
+          "left": -14.234375,
+          "right": 305.765625,
+          "width": 320
+        }
+      ]
+    },
+    {
+      "file": "baseline-375x1000.png",
+      "viewport": {
+        "width": 375,
+        "height": 1000
+      },
+      "title": "サブスク",
+      "main": {
+        "left": 0,
+        "right": 375,
+        "width": 375
+      },
+      "root": {
+        "left": 20,
+        "right": 355,
+        "width": 335
+      },
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "duplicateTrendHeadings": 1,
+      "reasonActionCount": 15,
+      "selectionCheckboxCount": 21,
+      "detailOpen": false,
+      "overflow": [
+        {
+          "tag": "ASIDE",
+          "className": "sidebar",
+          "left": -240,
+          "right": 0,
+          "width": 240
+        },
+        {
+          "tag": "A",
+          "className": "brand",
+          "left": -230,
+          "right": -11,
+          "width": 219
+        },
+        {
+          "tag": "svg",
+          "className": "[object SVGAnimatedString]",
+          "left": -220,
+          "right": -192,
+          "width": 28
+        },
+        {
+          "tag": "line",
+          "className": "[object SVGAnimatedString]",
+          "left": -199,
+          "right": -199,
+          "width": 0
+        },
+        {
+          "tag": "line",
+          "className": "[object SVGAnimatedString]",
+          "left": -206,
+          "right": -206,
+          "width": 0
+        },
+        {
+          "tag": "line",
+          "className": "[object SVGAnimatedString]",
+          "left": -213,
+          "right": -213,
+          "width": 0
+        },
+        {
+          "tag": "SPAN",
+          "className": "brand-copy",
+          "left": -184,
+          "right": -48.203125,
+          "width": 135.796875
+        },
+        {
+          "tag": "SPAN",
+          "className": "brand-name",
+          "left": -184,
+          "right": -48.203125,
+          "width": 135.796875
+        },
+        {
+          "tag": "SMALL",
+          "className": "",
+          "left": -184,
+          "right": -48.203125,
+          "width": 135.796875
+        },
+        {
+          "tag": "NAV",
+          "className": "nav",
+          "left": -230,
+          "right": -11,
+          "width": 219
+        },
+        {
+          "tag": "DIV",
+          "className": "",
+          "left": -230,
+          "right": -11,
+          "width": 219
+        },
+        {
+          "tag": "DIV",
+          "className": "nav-group",
+          "left": -220,
+          "right": -21,
+          "width": 199
+        },
+        {
+          "tag": "A",
+          "className": "",
+          "left": -230,
+          "right": -11,
+          "width": 219
+        },
+        {
+          "tag": "svg",
+          "className": "[object SVGAnimatedString]",
+          "left": -219,
+          "right": -199,
+          "width": 20
+        },
+        {
+          "tag": "path",
+          "className": "[object SVGAnimatedString]",
+          "left": -209,
+          "right": -205.6666717529297,
+          "width": 3.3333282470703125
+        },
+        {
+          "tag": "path",
+          "className": "[object SVGAnimatedString]",
+          "left": -217.3333282470703,
+          "right": -200.66665649414062,
+          "width": 16.666671752929688
+        },
+        {
+          "tag": "SPAN",
+          "className": "nav-label",
+          "left": -189,
+          "right": -159,
+          "width": 30
+        },
+        {
+          "tag": "SPAN",
+          "className": "nav-badge",
+          "left": -58.671875,
+          "right": -22,
+          "width": 36.671875
+        },
+        {
+          "tag": "SPAN",
+          "className": "visually-hidden",
+          "left": -53.671875,
+          "right": -52.671875,
+          "width": 1
+        },
+        {
+          "tag": "SPAN",
+          "className": "visually-hidden",
+          "left": -29,
+          "right": -28,
+          "width": 1
+        },
+        {
+          "tag": "DIV",
+          "className": "",
+          "left": -230,
+          "right": -11,
+          "width": 219
+        },
+        {
+          "tag": "A",
+          "className": "",
+          "left": -230,
+          "right": -11,
+          "width": 219
+        },
+        {
+          "tag": "svg",
+          "className": "[object SVGAnimatedString]",
+          "left": -219,
+          "right": -199,
+          "width": 20
+        },
+        {
+          "tag": "path",
+          "className": "[object SVGAnimatedString]",
+          "left": -215.6666717529297,
+          "right": -202.3333282470703,
+          "width": 13.333343505859375
+        },
+        {
+          "tag": "path",
+          "className": "[object SVGAnimatedString]",
+          "left": -207.3333282470703,
+          "right": -202.3333282470703,
+          "width": 5
+        },
+        {
+          "tag": "path",
+          "className": "[object SVGAnimatedString]",
+          "left": -209,
+          "right": -209,
+          "width": 0
+        },
+        {
+          "tag": "path",
+          "className": "[object SVGAnimatedString]",
+          "left": -211.5,
+          "right": -206.5,
+          "width": 5
+        },
+        {
+          "tag": "SPAN",
+          "className": "nav-label",
+          "left": -189,
+          "right": -114,
+          "width": 75
+        },
+        {
+          "tag": "DIV",
+          "className": "",
+          "left": -230,
+          "right": -11,
+          "width": 219
+        },
+        {
+          "tag": "A",
+          "className": "",
+          "left": -230,
+          "right": -11,
+          "width": 219
+        }
+      ]
+    },
+    {
+      "file": "baseline-768x1000.png",
+      "viewport": {
+        "width": 768,
+        "height": 1000
+      },
+      "title": "サブスク",
+      "main": {
+        "left": 68,
+        "right": 753,
+        "width": 685
+      },
+      "root": {
+        "left": 100,
+        "right": 721,
+        "width": 621
+      },
+      "scrollWidth": 753,
+      "clientWidth": 753,
+      "duplicateTrendHeadings": 1,
+      "reasonActionCount": 15,
+      "selectionCheckboxCount": 21,
+      "detailOpen": false,
+      "overflow": [
+        {
+          "tag": "TABLE",
+          "className": "data subs-table",
+          "left": 117,
+          "right": 1102.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "THEAD",
+          "className": "",
+          "left": 117,
+          "right": 1102.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 117,
+          "right": 1102.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TH",
+          "className": "num",
+          "left": 760.171875,
+          "right": 841.171875,
+          "width": 81
+        },
+        {
+          "tag": "TH",
+          "className": "num",
+          "left": 841.171875,
+          "right": 938.171875,
+          "width": 97
+        },
+        {
+          "tag": "TH",
+          "className": "",
+          "left": 938.171875,
+          "right": 1029.171875,
+          "width": 91
+        },
+        {
+          "tag": "TH",
+          "className": "subs-badge-column",
+          "left": 1029.171875,
+          "right": 1102.171875,
+          "width": 73
+        },
+        {
+          "tag": "TBODY",
+          "className": "",
+          "left": 117,
+          "right": 1102.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 117,
+          "right": 1102.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 760.171875,
+          "right": 841.171875,
+          "width": 81
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 841.171875,
+          "right": 938.171875,
+          "width": 97
+        },
+        {
+          "tag": "TD",
+          "className": "",
+          "left": 938.171875,
+          "right": 1029.171875,
+          "width": 91
+        },
+        {
+          "tag": "TD",
+          "className": "subs-badge-column",
+          "left": 1029.171875,
+          "right": 1102.171875,
+          "width": 73
+        },
+        {
+          "tag": "SPAN",
+          "className": "subs-badge is-pending",
+          "left": 1050.171875,
+          "right": 1094.171875,
+          "width": 44
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 117,
+          "right": 1102.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 760.171875,
+          "right": 841.171875,
+          "width": 81
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 841.171875,
+          "right": 938.171875,
+          "width": 97
+        },
+        {
+          "tag": "TD",
+          "className": "",
+          "left": 938.171875,
+          "right": 1029.171875,
+          "width": 91
+        },
+        {
+          "tag": "TD",
+          "className": "subs-badge-column",
+          "left": 1029.171875,
+          "right": 1102.171875,
+          "width": 73
+        },
+        {
+          "tag": "SPAN",
+          "className": "subs-badge is-pending",
+          "left": 1050.171875,
+          "right": 1094.171875,
+          "width": 44
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 117,
+          "right": 1102.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 760.171875,
+          "right": 841.171875,
+          "width": 81
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 841.171875,
+          "right": 938.171875,
+          "width": 97
+        },
+        {
+          "tag": "TD",
+          "className": "",
+          "left": 938.171875,
+          "right": 1029.171875,
+          "width": 91
+        },
+        {
+          "tag": "TD",
+          "className": "subs-badge-column",
+          "left": 1029.171875,
+          "right": 1102.171875,
+          "width": 73
+        },
+        {
+          "tag": "SPAN",
+          "className": "subs-badge is-pending",
+          "left": 1050.171875,
+          "right": 1094.171875,
+          "width": 44
+        },
+        {
+          "tag": "TR",
+          "className": "",
+          "left": 117,
+          "right": 1102.171875,
+          "width": 985.171875
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 760.171875,
+          "right": 841.171875,
+          "width": 81
+        },
+        {
+          "tag": "TD",
+          "className": "num",
+          "left": 841.171875,
+          "right": 938.171875,
+          "width": 97
+        },
+        {
+          "tag": "TD",
+          "className": "",
+          "left": 938.171875,
+          "right": 1029.171875,
+          "width": 91
+        }
+      ]
+    },
+    {
+      "file": "baseline-1600x1000.png",
+      "viewport": {
+        "width": 1600,
+        "height": 1000
+      },
+      "title": "サブスク",
+      "main": {
+        "left": 220,
+        "right": 1585,
+        "width": 1365
+      },
+      "root": {
+        "left": 252,
+        "right": 1553,
+        "width": 1301
+      },
+      "scrollWidth": 1585,
+      "clientWidth": 1585,
+      "duplicateTrendHeadings": 1,
+      "reasonActionCount": 15,
+      "selectionCheckboxCount": 21,
+      "detailOpen": false,
+      "overflow": [
+        {
+          "tag": "P",
+          "className": "",
+          "left": -14.234375,
+          "right": 305.765625,
+          "width": 320
+        }
+      ]
+    }
+  ],
+  "detailMetrics": {
+    "url": "/subscriptions?vendor=%E3%83%86%E3%82%B9%E3%83%88%E3%82%B9%E3%83%BC%E3%83%91%E3%83%BC",
+    "detailTitle": "サブスクの詳細",
+    "tabs": ["概要", "取引履歴", "関連データ"],
+    "selectionCheckboxCount": 1,
+    "reasonActionCount": 15,
+    "scrollWidth": 1009,
+    "clientWidth": 1009
+  },
+  "apiRequests": [
+    {
+      "method": "POST",
+      "url": "/api/auth/login"
+    },
+    {
+      "method": "GET",
+      "url": "/api/auth/me"
+    },
+    {
+      "method": "GET",
+      "url": "/api/summary?span=1"
+    },
+    {
+      "method": "GET",
+      "url": "/api/imports"
+    },
+    {
+      "method": "GET",
+      "url": "/api/review-queue"
+    },
+    {
+      "method": "GET",
+      "url": "/api/analysis/hub?span=1"
+    },
+    {
+      "method": "GET",
+      "url": "/api/subscriptions?span=1"
+    },
+    {
+      "method": "GET",
+      "url": "/api/sub-vendors"
+    },
+    {
+      "method": "GET",
+      "url": "/api/sub-vendors/candidates"
+    },
+    {
+      "method": "GET",
+      "url": "/api/subscriptions/vendors/%E3%83%86%E3%82%B9%E3%83%88%E3%82%B9%E3%83%BC%E3%83%91%E3%83%BC?span=1"
+    }
+  ],
+  "consoleEntries": []
+}

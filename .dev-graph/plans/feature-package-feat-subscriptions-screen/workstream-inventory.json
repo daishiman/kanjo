@@ -1,0 +1,1215 @@
+{
+  "feature_package_id": "feature-package/feat-subscriptions-screen",
+  "parent_feature": "feat-subscriptions-screen",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "git"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/00-requirements-definition.md",
+      "system-spec/completeness-findings.json",
+      "specs/spec-subscriptions-screen.md",
+      "features/feat-subscriptions-screen.md",
+      "features/feat-subscriptions-screen.context.json"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "docs/subscriptions-screen.md に受入 19 項目と成果物と検証手段の対応表がある。",
+        "U-2・U-9・U-12・U-13 は決定済みとして、残る暫定 U 項目は確定先 phase (SYS-SUBS-P04 または SYS-SUBS-P07) つきで列挙されている。",
+        "旧 UI の操作 (別名・対象科目の編集・四半期見直し・アラート・未登録候補の採用と除外・一括登録) の吸収先が 1 行ずつ決まっている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p01.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [],
+      "deploy_unit": "N/A: 文書のみで配信単位を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p01.md",
+        "graph_node_id": "SYS-SUBS-P01",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-SUBS-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "docs/subscriptions-screen.md の追記を revert する。コードと D1 に影響しない。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "specs/spec-subscriptions-screen.md",
+        "features/feat-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p01",
+        "requirements"
+      ],
+      "title": "要件ベースライン確定と暫定 U 項目の着手時整理",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "test -f docs/subscriptions-screen.md",
+        "pnpm lint"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "subscriptionsScreen の返り値の全項目が、画面のどの部品に使われるか対応づいている。",
+        "更新系の成功後に invalidate するクエリ (subscriptions・詳細・review-queue・サイドバーのバッジ) が経路ごとに列挙され、楽観更新をしないことが明記されている。",
+        "migration 0043 が列と表の追加だけで、既存行を書き換えないことが明記されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p02.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P01"
+      ],
+      "deploy_unit": "N/A: 文書のみで配信単位を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p02.md",
+        "graph_node_id": "SYS-SUBS-P02",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-SUBS-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "docs/subscriptions-screen.md の設計節を revert する。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "api",
+        "data"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p02",
+        "architecture"
+      ],
+      "title": "集計・API・保存・部品分割の設計決定の記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "API 6 経路それぞれに、認証・所有者絞込・入力検証・応答の no-store の要否がレビュー済みとして記録されている。",
+        "設計と仕様の食い違いが 0 件、または訂正先つきで記録されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p03.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P02"
+      ],
+      "deploy_unit": "N/A: 文書のみで配信単位を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p03.md",
+        "graph_node_id": "SYS-SUBS-P03",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-SUBS-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "レビュー記録を revert する。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "security"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p03",
+        "design-review"
+      ],
+      "title": "集計・API・保存・URL の各契約の独立レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "fixture の期待値が仕様 13.3 節と 1 円単位で一致し、旧実装では失敗する。",
+        "見直し候補 5 規則のそれぞれに、当たる最小の入力とぎりぎり当たらない入力の対がある。",
+        "確定先が SYS-SUBS-P04 の暫定 U 項目が全て値つきで docs に写されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p04.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P03"
+      ],
+      "deploy_unit": "N/A: テストコードのみで配信単位を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p04.md",
+        "graph_node_id": "SYS-SUBS-P04",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-SUBS-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "追加したテストを revert する。プロダクトの挙動に影響しない。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "api"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p04",
+        "test-design"
+      ],
+      "title": "検算済み fixture・境界値・API・DOM の失敗テストの先行作成",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/test/subs-screen-contract.test.ts",
+        "packages/core/test/subs-contract.test.ts",
+        "packages/api/src/subs-vendor-scope.test.ts",
+        "packages/api/src/subs-screen.integration.test.ts",
+        "packages/web/src/subscriptions-screen.dom.test.tsx",
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "KPI 件数・一覧バッジ・検出理由カード・サイドバーのバッジが、subscriptionsScreen の同じ候補数を示す。",
+        "migration 0043 が sub_vendors.category と sub_vendor_review_decisions の追加だけで、既存行を書き換えない。",
+        "画面に色の直書きとロゴ画像の読込が 0 件で、部品はトークンと共通 Button と PageShell 経由である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p05.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P04"
+      ],
+      "deploy_unit": "web ビルドと Worker と D1 migration 0043 (追加のみ。既存行を書き換えない)",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p05.md",
+        "graph_node_id": "SYS-SUBS-P05",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-SUBS-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "本 task のコミットを revert する。migration 0043 は追加のみのため、表と列が残っても既存機能に影響しない。",
+      "secondary_workstreams": [
+        "backend",
+        "api",
+        "data",
+        "security"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p05",
+        "implementation"
+      ],
+      "title": "core の subscriptionsScreen・API 6 経路・migration 0043・サブスク画面の実装",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test",
+        "pnpm typecheck"
+      ],
+      "workstream_kind": "frontend",
+      "write_scope": [
+        "packages/core/src/subs.ts",
+        "migrations/0043_sub_vendor_category_and_review_decisions.sql",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/routes/subs.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/Subscriptions.tsx",
+        "packages/web/src/pages/subscriptions/",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/components/ReviewQueue.tsx"
+      ]
+    },
+    {
+      "acceptance": [
+        "pnpm test と pnpm typecheck と pnpm lint が exit 0 である。",
+        "P04 で固定した期待値が 1 件も緩められていない。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p06.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P05"
+      ],
+      "deploy_unit": "N/A: テストコードのみで配信単位を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p06.md",
+        "graph_node_id": "SYS-SUBS-P06",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-SUBS-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "テストの追加と修正を revert する。",
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p06",
+        "test-run"
+      ],
+      "title": "テスト実行と緑化",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/test/subs-screen-contract.test.ts",
+        "packages/api/src/subs-screen.integration.test.ts",
+        "packages/web/src/subscriptions-screen.dom.test.tsx"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入 19 項目の全てに PASS または差し戻しの判定と実測値がある。",
+        "確定先が SYS-SUBS-P07 の暫定 U 項目が全て決まり、docs に写されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p07.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P06"
+      ],
+      "deploy_unit": "N/A: テストコードのみで配信単位を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p07.md",
+        "graph_node_id": "SYS-SUBS-P07",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-SUBS-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "判定記録を revert する。差し戻しは該当 phase へ戻す。",
+      "secondary_workstreams": [
+        "frontend"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p07",
+        "acceptance"
+      ],
+      "title": "成功基準 S1 から S5 と受入 19 項目の判定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/web test",
+        "pnpm --filter @kanjo/web run check:financial-routes"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "旧 UI の部品が画面から参照されず、同じ操作が新しい画面から全て実行できる。",
+        "旧テストの検査項目が 1 件も失われずに移設されている。",
+        "既存 subscriptions() を使う他画面のテストが緑のままである。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p08.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P07"
+      ],
+      "deploy_unit": "web ビルドと Worker (既存の配信単位。新しい binding を伴わない)",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p08.md",
+        "graph_node_id": "SYS-SUBS-P08",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-SUBS-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "本 task のコミットを revert する。旧 UI が戻るだけで、データに影響しない。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "data"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p08",
+        "refactoring-migration"
+      ],
+      "title": "旧 UI の撤去・旧テストの移設・既存集計の是正",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/src/subs.ts",
+        "packages/web/src/pages/Subscriptions.tsx",
+        "packages/web/src/pages/subscriptions/",
+        "packages/web/src/components/SubVendors.tsx",
+        "packages/web/src/components/SubVendors.dom.test.tsx",
+        "packages/web/src/subs-review.dom.test.tsx",
+        "packages/core/test/subs-contract.test.ts",
+        "packages/core/test/subs-review-contract.test.ts"
+      ]
+    },
+    {
+      "acceptance": [
+        "初期 JS 予算を超えていない。",
+        "他人のベンダー id を指定した更新が 404 になり、不正な入力が 400 になる。",
+        "画面のロゴ画像の取得と表示が 0 件である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p09.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P08"
+      ],
+      "deploy_unit": "N/A: テストコードのみで配信単位を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p09.md",
+        "graph_node_id": "SYS-SUBS-P09",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-SUBS-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "検査の追加を revert する。プロダクトの挙動に影響しない。",
+      "secondary_workstreams": [
+        "security",
+        "frontend"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "title": "a11y・入力検証・所有者絞込・JS 予算・ロゴ 0 件の品質保証",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/web run build:bundle",
+        "pnpm --filter @kanjo/web run check:js-budget",
+        "pnpm --filter @kanjo/web run check:financial-figure",
+        "pnpm run verify:full"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/web/scripts/check-financial-visuals.mjs",
+        "packages/web/src/subscriptions-screen.dom.test.tsx",
+        "packages/api/src/subs-screen.integration.test.ts"
+      ]
+    },
+    {
+      "acceptance": [
+        "レビューの指摘が全て解消済みか、follow-up として理由つきで切り出されている。",
+        "OI-03 として、AI 指示文の見直し候補 (subsCandidates、上限 10 件、除外済み支払先を除く) と subscriptionsScreen の見直し候補 (5 規則、未判断と確認済みの 2 状態、指紋が一致する dismissed は返さない) の定義差が、項目ごとの対比と画面・AI で件数が食い違いうる条件つきで docs/subscriptions-screen.md に記録され、解消を要する場合は follow-up feature candidate として切り出されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p10.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P09"
+      ],
+      "deploy_unit": "N/A: テストコードのみで配信単位を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p10.md",
+        "graph_node_id": "SYS-SUBS-P10",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-SUBS-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "レビュー記録を revert する。",
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p10",
+        "final-review"
+      ],
+      "title": "独立した最終レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "grep -n OI-03 docs/subscriptions-screen.md"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入 19 項目と品質ゲートの証跡が 1 項目 1 件以上ある。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p11.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P10"
+      ],
+      "deploy_unit": "N/A: 文書のみで配信単位を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p11.md",
+        "graph_node_id": "SYS-SUBS-P11",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-SUBS-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "証跡の追加を revert する。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p11",
+        "evidence"
+      ],
+      "title": "受入と品質の証跡の集約",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm run evidence:check"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/evidence/"
+      ]
+    },
+    {
+      "acceptance": [
+        "docs の規則と閾値がテストの期待値と一致し、根拠のテスト名が並んでいる。",
+        "docs/data-schema.md に sub_vendors.category と sub_vendor_review_decisions がある。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p12.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P11"
+      ],
+      "deploy_unit": "N/A: 文書のみで配信単位を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p12.md",
+        "graph_node_id": "SYS-SUBS-P12",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-SUBS-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "docs の変更を revert する。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p12",
+        "documentation-operations"
+      ],
+      "title": "docs と運用記述の同期",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/subscriptions-screen.md",
+        "docs/data-schema.md",
+        "docs/design-system.md",
+        "docs/ui-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "migration 0043 の適用が Deploy より先に完了し、適用結果を CI ログから辿れる。",
+        "本番の /subscriptions で KPI とサイドバーのバッジが同じ候補数を示す。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p13.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBS-P12"
+      ],
+      "deploy_unit": "web ビルドと Worker と D1 migration 0043 (追加のみ。既存行を書き換えない)",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-screen",
+        "file_path": "tasks/feat-subscriptions-screen/sys-subs-p13.md",
+        "graph_node_id": "SYS-SUBS-P13",
+        "parent_feature": "feat-subscriptions-screen",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-SUBS-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "rollback": "画面と API の変更を revert して再 Deploy する。migration 0043 は追加のみのため巻き戻さない。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-screen.md"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p13",
+        "release-deploy"
+      ],
+      "title": "単一 PR での配信と migration 0043 の本番適用",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm run verify:full",
+        "pnpm run db:migrate:remote"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        "migrations/0043_sub_vendor_category_and_review_decisions.sql",
+        "docs/evidence/"
+      ]
+    }
+  ]
+}

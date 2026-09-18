@@ -248,41 +248,83 @@ const summary = {
   period: statements.period,
 };
 
-const subscriptionVendors = Array.from(
-  { length: 20 },
-  (_, index) => `支払先${String(index + 1).padStart(2, '0')}`,
-);
-const subscriptionMatrix = Object.fromEntries(
-  subscriptionVendors.map((vendor, index) => [
-    vendor,
-    months.map((_, monthIndex) => (index + 1) * 1_000 + (monthIndex % 3) * 100),
-  ]),
-);
+// 新しい GET /api/subscriptions (core の subscriptionsScreen) の形。
+// 20 支払先を 5 カテゴリへ散らし、推移は上位 3 カテゴリ + その他の 4 系列になる。
+const subscriptionMonths = months.slice(-12);
+const subscriptionCategories = ['エンタメ', '仕事効率化', 'クラウド', 'ニュース', 'セキュリティ'];
+const subscriptionRows = Array.from({ length: 20 }, (_, index) => {
+  const name = `支払先${String(index + 1).padStart(2, '0')}`;
+  const monthly = (index + 1) * 1_000;
+  return {
+    vendorKey: `vendor-${index + 1}`,
+    vendorId: index + 1,
+    status: 'registered',
+    normalizedName: name,
+    displayName: name,
+    sourceCount: 1 + (index % 2),
+    latestAmount: monthly,
+    estimatedMonthly: monthly,
+    annualized: monthly * 12,
+    billing: 'monthly',
+    active: true,
+    category: subscriptionCategories[index % subscriptionCategories.length],
+    categorySource: 'dictionary',
+    review: null,
+  };
+});
+const subscriptionMonthlyTotal = sum(subscriptionRows.map((row) => row.estimatedMonthly));
+const subscriptionByCategory = subscriptionCategories
+  .map((category) => {
+    const monthly = sum(
+      subscriptionRows.filter((row) => row.category === category).map((row) => row.estimatedMonthly),
+    );
+    return {
+      category,
+      monthly,
+      annualized: monthly * 12,
+      share: monthly / subscriptionMonthlyTotal,
+      prevMonthly: monthly,
+    };
+  })
+  .sort((a, b) => b.monthly - a.monthly);
+const subscriptionTopCategories = subscriptionByCategory.slice(0, 3);
+const subscriptionOtherMonthly = sum(subscriptionByCategory.slice(3).map((item) => item.monthly));
 const subscriptions = {
-  months,
-  vendors: subscriptionVendors,
-  matrix: subscriptionMatrix,
-  other: months.map(() => 500),
-  vendorTable: subscriptionVendors.map((vendor, index) => ({
-    vendor,
-    prevActual: (index + 1) * 12_000,
-    currAnnualized: (index + 1) * 13_000,
-    delta: 0.08,
-    lastMonthly: subscriptionMatrix[vendor].at(-1),
-    avgMonthly: sum(subscriptionMatrix[vendor]) / months.length,
-    last12Total: sum(subscriptionMatrix[vendor].slice(-12)),
-    activeMonths: months.length,
-  })),
-  now: {
-    month: months.at(-1),
-    monthlyTotal:
-      subscriptionVendors.reduce((total, vendor) => total + subscriptionMatrix[vendor].at(-1), 0) + 500,
-    annualized: 2_600_000,
-    last12Total: 2_450_000,
+  period: { from: subscriptionMonths[0], to: subscriptionMonths.at(-1) },
+  previousPeriod: { from: '2024-09', to: '2025-08' },
+  generatedAt: '2026-08-31T10:00:00+09:00',
+  kpis: {
+    monthlyTotal: subscriptionMonthlyTotal,
+    monthlyTotalPrev: subscriptionMonthlyTotal,
+    annualized: subscriptionMonthlyTotal * 12,
+    annualizedPrev: subscriptionMonthlyTotal * 12,
+    last12Total: subscriptionMonthlyTotal * 12,
     revenueShare: 0.1,
+    reviewCandidates: 0,
   },
-  alerts: [],
-  years: { curr: '2026', prev: '2025' },
+  coverage: {
+    bank: { percent: 1, imported: 1, accounts: 1 },
+    card: { percent: 1, imported: 1, accounts: 1 },
+    emoney: { percent: 0, imported: 0, accounts: 0 },
+    unclassified: 0,
+  },
+  rows: subscriptionRows,
+  trend: {
+    months: subscriptionMonths,
+    series: [
+      ...subscriptionTopCategories.map((item) => ({
+        category: item.category,
+        values: subscriptionMonths.map(() => item.monthly),
+      })),
+      { category: 'その他', values: subscriptionMonths.map(() => subscriptionOtherMonthly) },
+    ],
+  },
+  comparison: subscriptionByCategory,
+  comparisonTotal: {
+    monthly: subscriptionMonthlyTotal,
+    annualized: subscriptionMonthlyTotal * 12,
+    prevMonthly: subscriptionMonthlyTotal,
+  },
 };
 
 const trendRows = rows.slice(0, 4).map((row, index) => ({
@@ -1577,6 +1619,21 @@ try {
           await evaluate("document.querySelector('.tcf-workbench')?.scrollIntoView({ block: 'start' })");
           await sleep(150);
         }
+        if (route.name === 'Subscriptions') {
+          // ロゴは取得しない (発注者の指示)。jsdom では見えない CSS 由来の背景画像も、実ブラウザの計算値で 0 件を確かめる
+          const logoCount = Number(
+            await evaluate(`(() => {
+              const root = document.querySelector('.subs');
+              if (!root) return -1;
+              const nodes = [root, ...root.querySelectorAll('*')];
+              const images = root.querySelectorAll('img, picture, [class*="logo"], [class*="avatar"]').length;
+              const backgrounds = nodes.filter((node) => getComputedStyle(node).backgroundImage.includes('url(')).length;
+              return images + backgrounds;
+            })()`),
+          );
+          if (logoCount !== 0)
+            failures.push(`${tag} Subscriptions にロゴ要素が ${logoCount} 件ある (0 件のはず)`);
+        }
         if (route.name === 'Reconciliation') {
           // 表内の横移動はDOM代入ではなく、利用者と同じ横ホイール入力で確かめる。
           const scrollProbe = JSON.parse(
@@ -1865,13 +1922,24 @@ try {
           const regions = [document.querySelector('.header'), main, document.querySelector('.review-action-bar')]
             .map(box)
             .filter(Boolean);
-          const tableBoxesFit = [...document.querySelectorAll('main .scroll-x')].every((scroller) =>
-            insideHorizontally(box(scroller), mainBox),
-          );
+          const tableOverflows = [...document.querySelectorAll('main .scroll-x')]
+            .filter((scroller) => !insideHorizontally(box(scroller), mainBox))
+            .map((scroller) => {
+              const scrollerBox = box(scroller);
+              // はみ出しの持ち主を1つ上まで出す (scroller 自身か、その枠を押し広げた親か)
+              const owner = scroller.closest('section.card, .card') ?? scroller.parentElement;
+              return (
+                scroller.className + '(' + Math.round(scrollerBox.left) + '-' + Math.round(scrollerBox.right) + 'px) in ' +
+                (owner?.className ?? '?') + '(' + Math.round(box(owner)?.right ?? 0) + 'px) main=' +
+                Math.round(mainBox.left) + '-' + Math.round(mainBox.right) + 'px'
+              );
+            });
+          const tableBoxesFit = tableOverflows.length === 0;
           return {
             rail,
             pageRegionsFit: regions.every((region) => region.left >= -1 && region.right <= viewportWidth + 1),
             tableBoxesFit,
+            tableOverflows,
             headerGroupsDoNotOverlap: headerGroups.every((group, index) =>
               headerGroups.slice(0, index).every((previous) => !overlaps(previous, group)),
             ),
@@ -2490,7 +2558,9 @@ try {
         if (!routeMetrics.shell.pageRegionsFit)
           failures.push(`${tag} ${route.name} のheader・main・sticky actionがviewportをはみ出す`);
         if (!routeMetrics.shell.tableBoxesFit)
-          failures.push(`${tag} ${route.name} の表containerがmainをはみ出す`);
+          failures.push(
+            `${tag} ${route.name} の表containerがmainをはみ出す: ${routeMetrics.shell.tableOverflows.join(' / ')}`,
+          );
         if (!routeMetrics.shell.headerGroupsDoNotOverlap)
           failures.push(`${tag} ${route.name} のheader群が重なる`);
         if (!routeMetrics.shell.headerTextSingleLine)
@@ -2722,10 +2792,10 @@ try {
           failures.push('375px Overview でサイドバー非表示時の Focus Ledger ブランドが無い');
         if (
           route.name === 'Subscriptions' &&
-          (routeMetrics.subscriptionDatasetCount < 1 || routeMetrics.subscriptionDatasetCount > 7)
+          (routeMetrics.subscriptionDatasetCount < 1 || routeMetrics.subscriptionDatasetCount > 4)
         )
           failures.push(
-            `${tag} Subscriptionsの実Chart.js系列が${routeMetrics.subscriptionDatasetCount}件で上位6+他Nに収まらない`,
+            `${tag} Subscriptionsの実Chart.js系列が${routeMetrics.subscriptionDatasetCount}件で上位3カテゴリ+その他に収まらない`,
           );
         if (
           route.name === 'Subscriptions' &&
@@ -2739,7 +2809,10 @@ try {
         // 対象は「色の引き当てが非自明な図」だけに絞る。値ごとに色が変わる系列(Matrixの増減額など)は
         // 色を持たないのが正しいので、全ルートに一律の規則は置けない。
         // fig-4(waterfall)は増加=赤/減少=緑を1本のデータセットに色配列で塗るため、系列に1色は決まらない。
-        const COLORED = { 'AI report': ['fig-2', 'fig-3'], Subscriptions: ['subscriptions-vendor-monthly'] };
+        const COLORED = {
+          'AI report': ['fig-2', 'fig-3'],
+          Subscriptions: ['subscriptions-category-monthly'],
+        };
         const COLORLESS = { 'AI report': ['fig-4'] };
         for (const figureLegend of routeMetrics.legend) {
           const colored = figureLegend.chips.filter((chip) => chip.color).length;

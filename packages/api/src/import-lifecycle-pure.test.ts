@@ -300,6 +300,7 @@ describe('D1 statement budget', () => {
    */
   it('総収支の判断3表を積んだ復元が、白紙の移行先で上限未満に収まる', () => {
     const decisions = {
+      subVendorReviewDecisions: [],
       // 0040 の2表。key があれば置き換え対象なので、行が空でも DELETE の条件判定に入る
       reviewSnoozes: [],
       monthlyCloseReviews: [],
@@ -337,6 +338,7 @@ describe('D1 statement budget', () => {
       ],
     };
     const emptyDestination = {
+      subVendorReviewDecisions: 0,
       reviewSnoozes: 0,
       monthlyCloseReviews: 0,
       duplicateVerdicts: 0,
@@ -368,9 +370,9 @@ describe('D1 statement budget', () => {
     const plan = planRestoreImportQueries(countFor(emptyDestination));
     expect(plan.accepted).toBe(true);
     expect(plan.total).toBeLessThan(plan.limit);
-    // 件数を渡さない側は「行があるかもしれない」として置換対象10表すべてを消す。
-    // 差が 10 でなければ、条件化した DELETE のどれかが素通りしている
-    expect(countFor()).toBe(countFor(emptyDestination) + 10);
+    // 件数を渡さない側は「行があるかもしれない」として置換対象11表すべてを消す。
+    // 差が 11 でなければ、条件化した DELETE のどれかが素通りしている
+    expect(countFor()).toBe(countFor(emptyDestination) + 11);
   });
 
   it('各JSON payloadをUTF-8 80KiB以下に分け、1行超過は拒否する', () => {
@@ -537,6 +539,50 @@ describe('JSON restore persisted projection', () => {
     expect(await restoreWriteSetFingerprint(base)).not.toBe(await restoreWriteSetFingerprint(different));
   });
 
+  it('サブスクの補助属性と見直し判断もrestore fingerprintの正本に含める', async () => {
+    const data = emptyDataset();
+    data.subs.vendors = ['架空SaaS'];
+    const restored = emptyDataset();
+    const base = prepareRestoreWriteSet({ userId: 'synthetic-user', data, restored });
+    const withMetadata = prepareRestoreWriteSet({
+      userId: 'synthetic-user',
+      data,
+      restored,
+      subVendorMetadata: [
+        {
+          name: '架空SaaS',
+          category: '仕事効率化',
+          reviewedAt: '2026-08-01T00:00:00.000Z',
+        },
+      ],
+    });
+    const withDecisions = prepareRestoreWriteSet({
+      userId: 'synthetic-user',
+      data,
+      restored,
+      subVendorReviewDecisions: [
+        {
+          vendorKey: '架空saas',
+          decision: 'confirmed',
+          ruleFingerprint: 'reviewDue:100',
+          decidedAt: '2026-08-02T00:00:00.000Z',
+        },
+      ],
+    });
+    expect(await restoreWriteSetFingerprint(withMetadata)).not.toBe(await restoreWriteSetFingerprint(base));
+    expect(await restoreWriteSetFingerprint(withDecisions)).not.toBe(await restoreWriteSetFingerprint(base));
+    expect(
+      await restoreWriteSetFingerprint(
+        prepareRestoreWriteSet({
+          userId: 'synthetic-user',
+          data,
+          restored,
+          subVendorReviewDecisions: [],
+        }),
+      ),
+    ).not.toBe(await restoreWriteSetFingerprint(base));
+  });
+
   it('partial payloadで保持される既存値をfingerprintへ含める', async () => {
     const a = emptyDataset();
     const b = emptyDataset();
@@ -585,6 +631,7 @@ describe('JSON pointer invalidation consumers', () => {
       'unrecorded_months',
       'cash_overrides',
       'sub_vendors',
+      'sub_vendor_review_decisions',
       'sub_vendor_exclusions',
       'analysis_settings',
       'freee_deals',
@@ -642,7 +689,11 @@ describe('canonical mutation lease predicate', () => {
       ['PUT', '/api/classification'],
       ['POST', '/api/sub-vendors'],
       ['PUT', '/api/sub-vendors/1'],
+      ['POST', '/api/sub-vendors/1/aliases'],
       ['DELETE', '/api/sub-vendors/1'],
+      ['POST', '/api/sub-vendors/1/review'],
+      ['POST', '/api/subscriptions/review-decisions'],
+      ['DELETE', '/api/subscriptions/review-decisions'],
       ['POST', '/api/sub-vendors/exclusions'],
       ['DELETE', '/api/sub-vendors/exclusions/1'],
     ] as const;
@@ -663,8 +714,7 @@ describe('canonical mutation lease predicate', () => {
       // アーカイブは表示の出し分けだけを変え、記帳の正本には触れない。
       ['PUT', '/api/ai/reports/1/archive'],
       ['POST', '/api/tradeoff'],
-      // 見直し記録・コピー記録はどちらも「いつ操作したか」だけで、記帳の正本に触れない。
-      ['POST', '/api/sub-vendors/1/review'],
+      // コピー記録は「いつ操作したか」だけで、記帳の正本に触れない。
       ['POST', '/api/ai/tasks/1/copied'],
       // suggestionは読み取りのみでbudgetを書かない。
       ['POST', '/api/budgets/suggest'],
@@ -730,6 +780,9 @@ describe('canonical mutation lease predicate', () => {
       'PUT /api/classification',
       'POST /api/sub-vendors',
       'PUT /api/sub-vendors/:id',
+      'POST /api/sub-vendors/:id/aliases',
+      'POST /api/subscriptions/review-decisions',
+      'DELETE /api/subscriptions/review-decisions',
       'DELETE /api/sub-vendors/:id',
       'POST /api/sub-vendors/:id/review',
       'POST /api/sub-vendors/exclusions',

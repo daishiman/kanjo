@@ -1,0 +1,148 @@
+{
+  "feature_package_id": "feature-package/feat-subscriptions-screen",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と暫定 U 項目の着手時整理"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P01"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P02",
+      "title": "集計・API・保存・部品分割の設計決定の記録"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P02"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P03",
+      "title": "集計・API・保存・URL の各契約の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P03"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P04",
+      "title": "検算済み fixture・境界値・API・DOM の失敗テストの先行作成"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P04"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P05",
+      "title": "core の subscriptionsScreen・API 6 経路・migration 0043・サブスク画面の実装"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P05"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P06",
+      "title": "テスト実行と緑化"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P06"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P07",
+      "title": "成功基準 S1 から S5 と受入 19 項目の判定"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P07"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P08",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P08",
+      "title": "旧 UI の撤去・旧テストの移設・既存集計の是正"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P08"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P09",
+      "title": "a11y・入力検証・所有者絞込・JS 予算・ロゴ 0 件の品質保証"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P09"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P10",
+      "title": "独立した最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P10"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P11",
+      "title": "受入と品質の証跡の集約"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P11"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P12",
+      "title": "docs と運用記述の同期"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBS-P12"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "id": "SYS-SUBS-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-subscriptions-screen",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信と migration 0043 の本番適用"
+    }
+  ],
+  "parent_feature": "feat-subscriptions-screen",
+  "schema_version": "1.0.0"
+}
