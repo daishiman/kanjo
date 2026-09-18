@@ -1,0 +1,842 @@
+/* サブスク: 一覧が主役、右列に最終更新・詳細・検出理由。色は styles.css のトークンだけを使う (spec §0)。 */
+.subs {
+  display: grid;
+  /* 暗黙の列 (auto) は子の min-content まで広がり、狭い幅で一覧・比較の表が画面をはみ出す。0 まで縮めて横スクロールは .scroll-x に任せる */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding-bottom: 96px;
+}
+
+.subs .ui-icon {
+  inline-size: 18px;
+  block-size: 18px;
+  flex: none;
+}
+
+.subs h2 {
+  margin: 0 0 8px;
+  font-size: var(--fs-base);
+}
+
+.subs h3 {
+  margin: 12px 0 6px;
+  font-size: var(--fs-md, 15px);
+}
+
+.subs .page-heading {
+  margin-bottom: 0;
+}
+
+.subs-description {
+  margin: -8px 0 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+/* ---- KPI 5 枚 (横一列) ---- */
+.subs-kpis {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 0;
+}
+.subs-kpis .kpi {
+  position: relative;
+  min-inline-size: 0;
+  padding: 10px 12px;
+}
+.subs-kpis .kpi-icon {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-start: 12px;
+  display: grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 50%;
+  color: var(--biz-strong);
+  background: var(--biz-soft);
+}
+.subs-kpis .kpi-icon .ui-icon {
+  inline-size: 16px;
+  block-size: 16px;
+}
+.subs-kpis .kpi-content .label {
+  display: flex;
+  align-items: center;
+  min-block-size: 28px;
+  padding-inline-start: 36px;
+  line-height: 1.25;
+}
+.subs-kpis .kpi .value {
+  margin-block-start: 2px;
+  font-size: clamp(var(--fs-lg), 1.7vw, var(--fs-3xl));
+  line-height: 1.25;
+}
+.subs-kpis .kpi .note {
+  margin-block-start: 2px;
+  line-height: 1.35;
+}
+
+.subs-delta.is-danger {
+  color: var(--danger);
+}
+.subs-delta.is-good {
+  color: var(--good);
+}
+.subs-delta.is-flat {
+  color: var(--ink-soft);
+}
+
+/* ---- 主列 + 右列 ---- */
+.subs-context-row,
+.subs-layout {
+  display: grid;
+  min-inline-size: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(268px, clamp(268px, 22vw, var(--aside-panel-w)));
+  gap: 12px;
+  align-items: start;
+}
+.subs-context-row {
+  grid-template-columns: minmax(0, 1fr) minmax(250px, clamp(250px, 21vw, var(--aside-panel-w)));
+  align-items: stretch;
+}
+.subs-main,
+.subs-side {
+  display: grid;
+  /* 列の中も .subs と同じ理由で 0 まで縮める。暗黙の auto 列だと表の min-content で主列ごと main をはみ出す */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  min-inline-size: 0;
+}
+.subs-context-row > .card,
+.subs-main > .card,
+.subs-side > .card {
+  margin: 0;
+  padding: 12px;
+}
+.subs-context-row > .card {
+  padding-block: 8px;
+}
+
+/* ---- 通知 ---- */
+.subs-message {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.subs-message p {
+  margin: 0;
+  flex: 1 1 240px;
+}
+.subs-message.is-error {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+/* ---- カバー率・最終更新 ---- */
+.subs-coverage {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 16px;
+}
+.subs-coverage-heading h2 {
+  margin: 0;
+}
+.subs-coverage-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.subs-coverage-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 2px 8px;
+}
+.subs-coverage-list .ui-icon {
+  grid-row: span 2;
+  inline-size: 28px;
+  block-size: 28px;
+  padding: 6px;
+  border-radius: var(--radius);
+  color: var(--biz);
+  background: var(--biz-soft);
+}
+.subs-coverage-label {
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+  line-height: 1.2;
+}
+.subs-coverage-value {
+  font-weight: 700;
+  line-height: 1.25;
+}
+.subs-coverage-count {
+  font-weight: 400;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+.subs-coverage-unclassified {
+  margin: 2px 0 0;
+  white-space: nowrap;
+}
+
+.subs-refresh {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.subs-refresh p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+.subs-refresh-copy {
+  display: grid;
+  gap: 1px;
+  min-inline-size: 0;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.subs-refresh-copy > span {
+  font-size: var(--fs-xs);
+}
+.subs-refresh-copy time {
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: normal;
+}
+.subs-refresh .btn {
+  gap: 4px;
+  padding-inline: 6px;
+}
+
+/* ---- 一覧 ---- */
+.subs-table-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
+.subs-table-head h2 {
+  margin: 0;
+}
+.subs-table-tools {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) max-content;
+  flex: 1 1 auto;
+  gap: 8px;
+  max-inline-size: 430px;
+}
+.subs-search {
+  min-inline-size: 0;
+}
+.subs-search input {
+  inline-size: 100%;
+}
+.subs-table th,
+.subs-table td {
+  white-space: nowrap;
+}
+@media (min-width: 1024px) {
+  .shell:has(.subs) {
+    --sidebar-w: 160px;
+  }
+  .shell:has(.subs) .sidebar {
+    padding-inline: 8px;
+  }
+  .shell:has(.subs) .brand {
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 4px;
+    padding-inline: 2px;
+    font-size: var(--fs-md);
+  }
+  .shell:has(.subs) .brand-mark {
+    inline-size: 20px;
+    block-size: 20px;
+  }
+  .shell:has(.subs) .nav a,
+  .shell:has(.subs) .nav-locked {
+    gap: 6px;
+    padding-inline: 6px;
+    font-size: var(--fs-xs);
+  }
+  .shell:has(.subs) .nav-sub {
+    margin-inline-start: 8px;
+    padding-inline-start: 4px;
+  }
+  .shell:has(.subs) .nav-sub a,
+  .shell:has(.subs) .nav-sub .nav-locked {
+    padding-inline: 4px;
+    font-size: var(--fs-2xs);
+  }
+  .shell:has(.subs) .nav-review-badge {
+    min-inline-size: 22px;
+    padding-inline: 4px;
+  }
+  .shell:has(.subs) .nav-label {
+    white-space: nowrap;
+  }
+  .main:has(.subs) {
+    padding: 12px;
+  }
+  .subs-table-scroll table.subs-table {
+    width: 100%;
+    inline-size: 100%;
+    min-width: 0;
+    min-inline-size: 0;
+    table-layout: fixed;
+    font-size: var(--fs-2xs);
+  }
+  .subs-table th,
+  .subs-table td {
+    overflow: hidden;
+    padding-inline: 2px;
+    text-overflow: ellipsis;
+  }
+  .subs-table th:nth-child(1) {
+    inline-size: 19%;
+  }
+  .subs-table th:nth-child(2) {
+    inline-size: 17%;
+  }
+  .subs-table th:nth-child(3) {
+    inline-size: 7%;
+  }
+  .subs-table th:nth-child(4),
+  .subs-table th:nth-child(5) {
+    inline-size: 12%;
+  }
+  .subs-table th:nth-child(6) {
+    inline-size: 14%;
+  }
+  .subs-table th:nth-child(7) {
+    inline-size: 11%;
+  }
+  .subs-table th:nth-child(8) {
+    inline-size: 8%;
+  }
+  .subs-row-open {
+    display: block;
+    max-inline-size: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .subs-table th {
+    font-size: var(--fs-2xs);
+  }
+  .subs-tabpanel {
+    gap: 4px;
+  }
+  .subs-tabpanel h3 {
+    margin-block-end: 2px;
+  }
+  .subs-review-decisions {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  .subs-side > .subs-detail {
+    gap: 4px;
+    padding-block: 10px;
+  }
+  .subs-detail .subs-raw-names {
+    padding-block: 4px;
+  }
+}
+.subs-table tbody tr {
+  block-size: var(--tap-target-min);
+}
+.subs-table tbody td {
+  padding-block: 0;
+}
+.subs-table tbody tr {
+  cursor: pointer;
+}
+.subs-table tbody tr:hover {
+  background: var(--biz-soft);
+}
+/* 選んだ行は accent の淡色。色だけに頼らず aria-current も付ける (SubscriptionTable) */
+.subs-table tbody tr.is-active {
+  background: var(--biz-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.subs-row-open {
+  padding: 0;
+  font-weight: 700;
+  text-align: start;
+}
+.subs-no-hit {
+  margin: 12px 0 0;
+}
+
+@media (min-width: 1024px) {
+  .subs-table-scroll {
+    max-block-size: 440px;
+    scrollbar-gutter: stable;
+  }
+  .subs-table tbody tr.total {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    block-size: var(--tap-target-min);
+    box-shadow: 0 -1px 0 var(--line);
+  }
+}
+
+/* ---- バッジ ---- */
+.subs-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.subs-badge.is-pending {
+  color: var(--warn);
+  border-color: var(--warn-fill);
+  background: var(--warn-soft);
+}
+.subs-badge.is-confirmed {
+  color: var(--good);
+  border-color: var(--good);
+  background: var(--good-soft);
+}
+.subs-badge.is-unregistered {
+  color: var(--ink-soft);
+}
+.subs-badge.is-none {
+  border: 0;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+
+/* ---- 詳細パネル ---- */
+.subs-detail {
+  display: grid;
+  gap: 6px;
+  scroll-margin-top: calc(var(--header-h, 56px) + 12px);
+}
+.subs-detail:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.subs-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.subs-detail-head h2 {
+  margin: 0;
+}
+.subs-detail-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+}
+.subs-detail-name {
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+.subs-detail-category {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+.subs-detail-loading {
+  display: block;
+}
+.subs-detail-error {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+.subs-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.subs-tab {
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--ink-soft);
+  font: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.subs-tab.on {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.subs-tabpanel {
+  display: grid;
+  gap: 8px;
+  padding-top: 2px;
+}
+.subs-tabpanel h3 {
+  margin: 0 0 6px;
+}
+.subs-inline-form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.subs-inline-form input {
+  flex: 1 1 120px;
+  min-inline-size: 0;
+}
+.subs-name-form {
+  display: grid;
+  gap: 4px;
+}
+.subs-name-form label {
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+.subs-name-form .sub {
+  margin: 0;
+  font-size: var(--fs-2xs);
+  line-height: 1.25;
+}
+.subs-field-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+.subs-raw-names,
+.subs-accounts {
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.subs-raw-names legend,
+.subs-accounts legend {
+  padding: 0 4px;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+.subs-raw-head,
+.subs-raw-names li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.subs-raw-head {
+  margin: 0 0 4px;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+.subs-raw-names ul,
+.subs-by-source ul,
+.subs-alias-list,
+.subs-excluded ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.subs-raw-names label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+  min-block-size: var(--tap-target-min);
+}
+.subs-raw-names input[type="checkbox"] {
+  min-inline-size: 18px;
+  min-block-size: 18px;
+  inline-size: 18px;
+  block-size: 18px;
+}
+.subs-raw-source {
+  flex: none;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+.subs-estimate {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.subs-estimate dt {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+.subs-estimate dd {
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+.subs-tx-table {
+  inline-size: 100%;
+  table-layout: fixed;
+  font-size: var(--fs-2xs);
+}
+.subs-tx-table th,
+.subs-tx-table td {
+  overflow: hidden;
+  padding-block: 2px;
+  padding-inline: 2px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.subs-tx-table th:first-child {
+  inline-size: 32%;
+}
+.subs-tx-table th:last-child {
+  inline-size: 30%;
+}
+.subs-by-source li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.subs-alias-list li,
+.subs-excluded li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.subs-accounts label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.subs-review-date p {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 6px;
+}
+.subs-detail-actions,
+.subs-review-decisions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.subs-review-decisions .btn {
+  padding-inline: 6px;
+  font-size: var(--fs-2xs);
+}
+.subs-merge-target {
+  display: grid;
+  gap: 4px;
+  flex-basis: 100%;
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+.subs-excluded summary {
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+
+/* ---- 推移・比較 ---- */
+.subs-comparison-table {
+  inline-size: 100%;
+}
+.subs-trend {
+  --financial-chart-height: 180px;
+}
+.subs-trend .financial-figure__summary {
+  margin-block-start: 2px;
+  font-size: var(--fs-sm);
+}
+.subs-trend .financial-figure__meta {
+  margin-block-start: 2px;
+}
+.subs-trend .financial-figure__series {
+  margin-block: 2px 4px;
+}
+.subs-trend .financial-figure__action {
+  margin-block: 4px 0;
+  font-size: var(--fs-xs);
+}
+@media (min-width: 1024px) {
+  .subs-main > .subs-trend {
+    --financial-chart-height: 140px;
+  }
+}
+
+/* ---- 検出理由 ---- */
+.subs-reason-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.subs-reason {
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.subs-reason-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+.subs-reason-text {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+}
+.subs-reasons-all {
+  margin-block-start: 4px;
+}
+/* ---- 選択中バー (下端固定) ---- */
+.subs-selection {
+  position: sticky;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 10px 16px;
+  border: 1px solid var(--biz-soft-line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-floating-action);
+}
+.subs-selection > p {
+  margin: 0;
+  font-weight: 700;
+}
+.subs-selection-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  margin-inline-end: auto;
+  padding: 0;
+  list-style: none;
+}
+.subs-selection-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px 2px 10px;
+  border-radius: 999px;
+  background: var(--biz-soft);
+  font-size: var(--fs-sm);
+}
+.subs-selection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 狭い幅: 右列を解いて縦に積む。詳細パネルは一覧の直下 (spec §0)。 */
+@media (max-width: 1023px) {
+  .subs-layout,
+  .subs-layout.is-detail-closed {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .subs-main,
+  .subs-side {
+    display: contents;
+  }
+  .subs-table-card {
+    order: 3;
+  }
+  .subs-detail {
+    order: 4;
+  }
+  .subs-reasons {
+    order: 5;
+  }
+  .subs-trend {
+    order: 6;
+  }
+  .subs-comparison {
+    order: 7;
+  }
+  .subs-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .subs {
+    gap: 12px;
+  }
+  .subs-description {
+    font-size: var(--fs-sm);
+  }
+  .subs-context-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .subs-coverage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .subs-coverage-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .subs-table-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .subs-table-tools {
+    max-inline-size: none;
+  }
+  .subs-selection {
+    bottom: calc(var(--tabbar-h) + 8px + env(safe-area-inset-bottom, 0px));
+    gap: 6px 8px;
+  }
+  .subs-selection > p {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 359px) {
+  .subs-kpis {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

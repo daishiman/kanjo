@@ -126,16 +126,20 @@ describe('支出照合API', () => {
     const response = await request('/subscriptions?from=2026-08&to=2026-08');
     expect(response.status).toBe(200);
     const body = (await response.json()) as {
-      matrix: Record<string, number[]>;
-      sourceCoverage: { freee: number; moneyForward: number; matched: number; review: number };
+      rows: Array<{ vendorKey: string; normalizedName: string; latestAmount: number; status: string }>;
     };
-    expect(Object.keys(body.matrix)).toEqual(
-      expect.arrayContaining(['架空クラウド', '架空SaaS', '架空動画']),
+    const amountOf = (name: string) => body.rows.find((row) => row.normalizedName === name)?.latestAmount;
+    expect(amountOf('架空クラウド')).toBe(3300);
+    expect(amountOf('架空SaaS')).toBe(5000);
+    expect(amountOf('架空動画')).toBe(1200);
+    // freee と照合済みの MF (mf-exact) は二重に数えない: 架空クラウドの取引は freee の 1 件だけ
+    const cloud = body.rows.find((row) => row.normalizedName === '架空クラウド');
+    const detail = await request(
+      `/subscriptions/vendors/${encodeURIComponent(cloud?.vendorKey ?? '')}?from=2026-08&to=2026-08`,
     );
-    expect(body.matrix['架空クラウド']).toEqual([3300]);
-    expect(body.matrix['架空SaaS']).toEqual([5000]);
-    expect(body.matrix['架空動画']).toEqual([1200]);
-    expect(body.sourceCoverage).toEqual({ freee: 3, moneyForward: 2, matched: 2, review: 0 });
+    expect(detail.status).toBe(200);
+    expect(((await detail.json()) as { transactionCount: number }).transactionCount).toBe(1);
+    expect(JSON.stringify(body)).not.toContain('999999');
   });
 
   it('MFだけの定期支出もサブスク候補に出す', async () => {

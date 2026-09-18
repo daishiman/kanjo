@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py (派生ビュー・手書き編集しない・再生成で上書き)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-SUBS-P01",
+      "title": "要件ベースライン確定と暫定 U 項目の着手時整理",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P02",
+      "title": "集計・API・保存・部品分割の設計決定の記録",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P03",
+      "title": "集計・API・保存・URL の各契約の独立レビュー",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P04",
+      "title": "検算済み fixture・境界値・API・DOM の失敗テストの先行作成",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P05",
+      "title": "core の subscriptionsScreen・API 6 経路・migration 0043・サブスク画面の実装",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P06",
+      "title": "テスト実行と緑化",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P07",
+      "title": "成功基準 S1 から S5 と受入 19 項目の判定",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P08",
+      "title": "旧 UI の撤去・旧テストの移設・既存集計の是正",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P09",
+      "title": "a11y・入力検証・所有者絞込・JS 予算・ロゴ 0 件の品質保証",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P10",
+      "title": "独立した最終レビュー",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P11",
+      "title": "受入と品質の証跡の集約",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P12",
+      "title": "docs と運用記述の同期",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBS-P13",
+      "title": "単一 PR での配信と migration 0043 の本番適用",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

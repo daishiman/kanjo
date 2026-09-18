@@ -592,7 +592,7 @@ interface BackupSourceSnapshot {
   rules: Rule[];
   edits: Record<string, TxEdit>;
   institutionOwners: Dataset['institutionOwners'];
-  vendors: SubVendorRow[];
+  vendors: SubVendorWithReview[];
   budgets: Dataset['budgets'];
   cashOverride: Dataset['cashOverride'];
   unrecordedExpMonths: string[];
@@ -601,6 +601,7 @@ interface BackupSourceSnapshot {
   normMap: Record<string, string>;
   statMinMonths: number;
   subVendorExclusions: Array<{ partner: string; vendorKey: string }>;
+  subVendorReviewDecisions: SubVendorReviewDecisionRow[];
   /** 0040: 概況の「後で確認」。指紋だけを持ち、明細本文の写しは持たない */
   reviewSnoozes: BackupReviewSnooze[];
   /** 0040: 月次レビューを済ませた月 */
@@ -660,6 +661,9 @@ export interface ImportRestoreSettingsSnapshot {
   normMap: Record<string, string>;
   statMinMonths: number;
   subVendorExclusions: Array<{ partner: string; vendorKey: string }>;
+  /** 旧JSONにメタデータが無いときに、復元先の値を保つためのauthoritative snapshot */
+  subVendors: SubVendorWithReview[];
+  subVendorReviewDecisions: SubVendorReviewDecisionRow[];
   cashEntries: CashEntry[];
   freeeDeals: FreeeDeal[];
   txSplits: TxSplit[];
@@ -673,6 +677,7 @@ export interface ImportRestoreSettingsSnapshot {
    * 5表も同じ数え方へ揃える。数えるのは全部まとめて1 statement なので、問い合わせは増えない。
    */
   destinationRowCounts: {
+    subVendorReviewDecisions: number;
     reviewSnoozes: number;
     monthlyCloseReviews: number;
     duplicateVerdicts: number;
@@ -745,8 +750,12 @@ FROM institution_owners WHERE user_id = ?
 UNION ALL
 SELECT * FROM (
 SELECT 'vendor', id, sort_order, NULL,
-       name, aliases, accounts, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       name, aliases, accounts, category, reviewed_at, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendors WHERE user_id = ?
+UNION ALL
+SELECT 'sub_vendor_review_decision', id, NULL, NULL,
+       vendor_key, decision, rule_fingerprint, decided_at, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM sub_vendor_review_decisions WHERE user_id = ?
 UNION ALL
 SELECT 'cash', id, NULL, amount,
        date, month, side, io, description, category_major, category_mid, memo, NULL, transit_from, transit_to, transit_round, receipt_waived, NULL, NULL
@@ -797,7 +806,7 @@ ORDER BY source, rank, id, v1, v2`;
 
 /** export用canonical rowsを、単一D1 read statementから型付きsnapshotへ変換する。 */
 async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupSourceSnapshot> {
-  const params = Array.from({ length: 20 }, () => userId);
+  const params = Array.from({ length: 21 }, () => userId);
   const result = await db.$client
     .prepare(BACKUP_SNAPSHOT_SQL)
     .bind(...params)
@@ -889,6 +898,8 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
       name: row.v1 ?? '',
       aliases: parseStringArray(row.v2 ?? '[]'),
       accounts: parseStringArray(row.v3 ?? '[]'),
+      category: row.v4,
+      reviewedAt: row.v5,
     }));
   const budgets: Dataset['budgets'] = {};
   for (const row of bySource('budget')) if (row.amount != null) budgets[row.v1 ?? ''] = row.amount;
@@ -944,6 +955,12 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
   const subVendorExclusions = bySource('sub_vendor_exclusion').map((row) => ({
     partner: row.v1 ?? '',
     vendorKey: row.v2 ?? '',
+  }));
+  const subVendorReviewDecisions = bySource('sub_vendor_review_decision').map((row) => ({
+    vendorKey: row.v1 ?? '',
+    decision: row.v2 === 'dismissed' ? ('dismissed' as const) : ('confirmed' as const),
+    ruleFingerprint: row.v3 ?? '',
+    decidedAt: row.v4 ?? '',
   }));
   const reviewSnoozes = bySource('review_snooze').map((row) => ({
     kind: row.v1 ?? '',
@@ -1001,6 +1018,7 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     normMap,
     statMinMonths,
     subVendorExclusions,
+    subVendorReviewDecisions,
     reviewSnoozes,
     monthlyCloseReviews,
     duplicateVerdicts,
@@ -1025,6 +1043,16 @@ export async function loadImportRestoreSettingsSnapshot(
        UNION ALL
        SELECT 'exclusion', partner, vendor_key, NULL
          FROM sub_vendor_exclusions WHERE user_id=?
+       UNION ALL
+       SELECT 'sub_vendor', json_object(
+         'id',id,'name',name,'aliases',json(aliases),'accounts',json(accounts),
+         'category',category,'reviewedAt',reviewed_at), NULL, NULL
+         FROM sub_vendors WHERE user_id=?
+       UNION ALL
+       SELECT 'sub_vendor_review_decision', json_object(
+         'vendorKey',vendor_key,'decision',decision,'ruleFingerprint',rule_fingerprint,'decidedAt',decided_at
+       ), NULL, NULL
+         FROM sub_vendor_review_decisions WHERE user_id=?
        )
        UNION ALL
        SELECT * FROM (
@@ -1074,7 +1102,7 @@ export async function loadImportRestoreSettingsSnapshot(
        ORDER BY source, v1, v2`,
     )
     // 上の SELECT が ? を置いた順と同じ数だけ渡す。数え間違いは実行時まで出ない
-    .bind(...Array.from({ length: 17 }, () => userId))
+    .bind(...Array.from({ length: 19 }, () => userId))
     .all<{ source: string; v1: string | null; v2: string | null; amount: number | null }>();
   const normMap: Record<string, string> = {};
   for (const row of result.results.filter((row) => row.source === 'norm')) {
@@ -1132,30 +1160,37 @@ export async function loadImportRestoreSettingsSnapshot(
       revoked: row.revoked === 1,
     }))
     .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey, 'ja'));
+  const subVendors = payloads<SubVendorWithReview>('sub_vendor').sort((a, b) => a.id - b.id);
+  const subVendorReviewDecisions = payloads<SubVendorReviewDecisionRow>('sub_vendor_review_decision');
+  const destinationRowCounts = payloads<ImportRestoreSettingsSnapshot['destinationRowCounts']>(
+    'destination_counts',
+  )[0] ?? {
+    subVendorReviewDecisions: 0,
+    reviewSnoozes: 0,
+    monthlyCloseReviews: 0,
+    duplicateVerdicts: 0,
+    freeeDealExclusions: 0,
+    totalCashflowOperations: 0,
+    rules: 0,
+    txEdits: 0,
+    institutionOwners: 0,
+    budgets: 0,
+    cashOverrides: 0,
+  };
+  destinationRowCounts.subVendorReviewDecisions = subVendorReviewDecisions.length;
   return {
     normMap,
     statMinMonths: result.results.find((row) => row.source === 'analysis')?.amount ?? DEFAULT_STAT_MIN_MONTHS,
     subVendorExclusions: result.results
       .filter((row) => row.source === 'exclusion')
       .map((row) => ({ partner: row.v1 ?? '', vendorKey: row.v2 ?? '' })),
+    subVendors,
+    subVendorReviewDecisions,
     cashEntries,
     freeeDeals,
     txSplits,
     vendorMemories,
-    destinationRowCounts: payloads<ImportRestoreSettingsSnapshot['destinationRowCounts']>(
-      'destination_counts',
-    )[0] ?? {
-      reviewSnoozes: 0,
-      monthlyCloseReviews: 0,
-      duplicateVerdicts: 0,
-      freeeDealExclusions: 0,
-      totalCashflowOperations: 0,
-      rules: 0,
-      txEdits: 0,
-      institutionOwners: 0,
-      budgets: 0,
-      cashOverrides: 0,
-    },
+    destinationRowCounts,
   };
 }
 
@@ -1246,6 +1281,12 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
     mfTx: raw.mfTx,
     analysisSettings: { statMinMonths: snapshot.statMinMonths },
     subVendorExclusions: snapshot.subVendorExclusions.map(({ partner }) => ({ partner })),
+    subVendorMetadata: snapshot.vendors.map(({ name, category, reviewedAt }) => ({
+      name,
+      category,
+      reviewedAt,
+    })),
+    subVendorReviewDecisions: snapshot.subVendorReviewDecisions,
     cashEntries: snapshot.cashEntries,
     cashProjection,
     // 0040: 保留と月次レビューは利用者の判断の記録。復元で失うと、片付けた未処理が全部戻ってくる
@@ -1319,6 +1360,8 @@ export interface SubVendorRow extends SubVendor {
 export interface SubVendorWithReview extends SubVendorRow {
   /** 最後に契約を見直した日時(ISO)。null は一度も見直していない */
   reviewedAt: string | null;
+  /** 0043: 利用者が上書きしたカテゴリ。null は既定辞書に従う */
+  category: string | null;
 }
 
 const parseStringArray = (raw: string): string[] => {
@@ -1343,6 +1386,32 @@ export async function loadSubVendors(db: Db, userId: string): Promise<SubVendorW
     aliases: parseStringArray(r.aliases),
     accounts: parseStringArray(r.accounts),
     reviewedAt: r.reviewedAt ?? null,
+    category: r.category ?? null,
+  }));
+}
+
+export interface SubVendorReviewDecisionRow {
+  vendorKey: string;
+  decision: 'confirmed' | 'dismissed';
+  ruleFingerprint: string;
+  decidedAt: string;
+}
+
+/** 0043: 見直し候補への判断。1 ベンダー 1 行。候補の判定は core が毎回やり直す */
+export async function loadSubVendorReviewDecisions(
+  db: Db,
+  userId: string,
+): Promise<SubVendorReviewDecisionRow[]> {
+  const rows = await db
+    .select()
+    .from(s.subVendorReviewDecisions)
+    .where(eq(s.subVendorReviewDecisions.userId, userId))
+    .orderBy(asc(s.subVendorReviewDecisions.id));
+  return rows.map((r) => ({
+    vendorKey: r.vendorKey,
+    decision: r.decision,
+    ruleFingerprint: r.ruleFingerprint,
+    decidedAt: r.decidedAt,
   }));
 }
 

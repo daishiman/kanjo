@@ -15,6 +15,7 @@ export * from './subs.js';
 export * from './analysis.js';
 export * from './overview.js';
 export * from './expense-projection.js';
+export * from './subs-screen.js';
 export * from './total-cashflow.js';
 export * from './reconciliation.js';
 export * from './analysis-hub.js';

@@ -158,6 +158,8 @@ import { Button } from '../components/Button.js';
 - 収入・支出・純収支の系列に `${COLORS.income}d9` のような透明度を連結しない。背景と混ざって 3:1 を割る(`chart-series-contract.test.ts` が合成後の色で検査する)。他の系列(`neutral`・`good` など)に残る透明度は既存の表現で、この検査の対象外
 - 注意系列は塗りなので `warnFill` を使う(文字用の `warn` ではない)
 - 財務図の高さは `--financial-chart-height`(300px)。表示幅ごとの崩れは `check:financial-figure` と `check:financial-routes` で確かめる
+- 積み上げの系列が多い図は、core 側で**上位 N + 「その他」**に畳んでから渡す。サブスクの推移(`pages/subscriptions/CategoryTrendChart.tsx`)は上位 3 カテゴリ + その他の最大 4 系列で、その他は `neutral`、残りは `chartSeriesColor(...)` の既定順。色は consumer で関数に包まず `chartSeriesColor(role)` を直接呼ぶ(`scripts/ui-contract-ast.mjs` の出どころ検査は直接呼出しだけを認める)。図の代替となる表と凡例は同じ系列配列から作る
+- 表は並べ替えられるもの(`data-table-kind="sortable"` + `SortableTableHeader`)か、並びを固定する理由を持つもの(`layout`・`matrix`・`hierarchy`・`comparison`・`workflow` のどれかと、10 文字以上の `data-sort-reason`)のどちらか。サブスクの年換算比較は `comparison`(月額の降順 + 合計行を末尾に固定)、詳細パネルの直近取引は `layout`(新しい日付順に固定)
 
 ## 検査の一覧
 
