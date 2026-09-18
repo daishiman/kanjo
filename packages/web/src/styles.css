@@ -1230,8 +1230,7 @@ a[href] {
   max-width: 100% !important;
   height: 100% !important;
 }
-.financial-figure__chart--horizontal,
-.matrix-movers-chart {
+.financial-figure__chart--horizontal {
   --financial-chart-height: 320px;
   /* 横棒は項目数だけ行が要る。狭幅でも既定より高い上限を許す */
   --financial-chart-height-narrow-max: 300px;
@@ -1329,9 +1328,6 @@ a[href] {
   margin: 6px 0 0;
   color: var(--ink-soft);
   font-size: var(--fs-xs);
-}
-.matrix-summary .financial-figure {
-  max-width: 1040px;
 }
 .financial-equation {
   display: grid;
@@ -1636,15 +1632,15 @@ table.data th.stmt-account {
  * 増減マトリクスの科目は月次の数字を読むための軸。
  * 月数が増えてもこの列を縮めず、名称を必ず1行で読める幅に保つ。
  */
-.scroll-x table.data.matrix-table th:first-child,
-.scroll-x table.data.matrix-table td:first-child {
+.matrix-table-card table.data th:first-child,
+.matrix-table-card table.data td:first-child {
   width: 12rem;
   min-width: 12rem;
   white-space: nowrap;
 }
 
 /* collapse の共有境界は sticky 列の下に数pxだけ下層セルを描くことがある。Matrixだけ分離して遮蔽する。 */
-.scroll-x table.data.matrix-table {
+.matrix-table-card table.data {
   border-collapse: separate;
   border-spacing: 0;
 }
@@ -3408,6 +3404,36 @@ table.heatmap td.heat {
   min-width: 56px;
   text-align: right;
   font-variant-numeric: tabular-nums;
+}
+/* セルを選べる表の押しどころ。td の見た目を保ったまま、キーボードでも辿れるようにする */
+table.heatmap td.heat > .heat-cell {
+  all: unset;
+  display: block;
+  width: 100%;
+  text-align: right;
+  cursor: pointer;
+}
+table.heatmap td.heat > .heat-cell:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+table.heatmap td.heat > .heat-cell[aria-pressed="true"] {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* 濃淡の凡例。色だけに頼らせないため、両端に「少ない/多い」の語と実額を添える(§3.3) */
+.heat-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.heat-legend-swatch {
+  width: 22px;
+  height: 12px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
 }
 
 /* 前回との並列比較 */

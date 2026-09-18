@@ -1,0 +1,1800 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "database",
+      "label": "データベース"
+    },
+    {
+      "id": "auth",
+      "label": "認証(ログイン)"
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI-UX"
+    },
+    {
+      "id": "security",
+      "label": "セキュリティ"
+    },
+    {
+      "id": "infrastructure",
+      "label": "インフラ"
+    },
+    {
+      "id": "backend",
+      "label": "バックエンド"
+    },
+    {
+      "id": "frontend",
+      "label": "フロントエンド"
+    },
+    {
+      "id": "maintenance-ops",
+      "label": "保守運用管理"
+    }
+  ],
+  "platforms": [
+    "web",
+    "mobile",
+    "tablet",
+    "desktop-windows",
+    "desktop-linux",
+    "desktop-macos"
+  ],
+  "matrix": {
+    "database": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-database-web-trends-observed-003",
+        "serves_goals": [
+          "G3",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-trends-decision-002",
+          "qa-trends-decision-003",
+          "qa-trends-decision-004",
+          "qa-trends-decision-006",
+          "qa-trends-decision-008",
+          "qa-trends-decision-010",
+          "qa-target-platforms-trends-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、推移画面の本カテゴリでは端末内に明細の写しを持ち、今回と比較期間の集計をオフラインで出すための同期方式を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、推移画面の本カテゴリでは端末内に明細の写しを持ち、今回と比較期間の集計をオフラインで出すための同期方式を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、推移画面の本カテゴリでは端末内に明細の写しを持ち、今回と比較期間の集計をオフラインで出すための同期方式を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、推移画面の本カテゴリでは端末内に明細の写しを持ち、今回と比較期間の集計をオフラインで出すための同期方式を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、推移画面の本カテゴリでは端末内に明細の写しを持ち、今回と比較期間の集計をオフラインで出すための同期方式を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      }
+    },
+    "auth": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-auth-web-trends-observed-003",
+        "serves_goals": [
+          "G3",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-trends-decision-008",
+          "qa-target-platforms-trends-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、推移画面の本カテゴリでは端末に保存するセッションの扱いと生体認証などの再認証方式を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、推移画面の本カテゴリでは端末に保存するセッションの扱いと生体認証などの再認証方式を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、推移画面の本カテゴリでは端末に保存するセッションの扱いと生体認証などの再認証方式を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、推移画面の本カテゴリでは端末に保存するセッションの扱いと生体認証などの再認証方式を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、推移画面の本カテゴリでは端末に保存するセッションの扱いと生体認証などの再認証方式を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      }
+    },
+    "ui-ux": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ui-ux-web-trends-observed-005",
+        "serves_goals": [
+          "G1",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-ui-ux-web-trends-observed-004",
+          "qa-trends-decision-001",
+          "qa-trends-decision-002",
+          "qa-trends-decision-003",
+          "qa-trends-decision-004",
+          "qa-trends-decision-005",
+          "qa-trends-decision-006",
+          "qa-trends-decision-007",
+          "qa-trends-decision-008",
+          "qa-trends-decision-009",
+          "qa-trends-decision-010",
+          "qa-trends-decision-011",
+          "qa-trends-decision-012",
+          "qa-trends-decision-013",
+          "qa-trends-decision-014",
+          "qa-target-platforms-trends-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、推移画面の本カテゴリではチャート・詳細パネル・カテゴリ表を端末固有の画面部品 (タブバー・ボトムシート等) へ置き換える構成を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、推移画面の本カテゴリではチャート・詳細パネル・カテゴリ表を端末固有の画面部品 (タブバー・ボトムシート等) へ置き換える構成を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、推移画面の本カテゴリではチャート・詳細パネル・カテゴリ表を端末固有の画面部品 (タブバー・ボトムシート等) へ置き換える構成を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、推移画面の本カテゴリではチャート・詳細パネル・カテゴリ表を端末固有の画面部品 (タブバー・ボトムシート等) へ置き換える構成を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、推移画面の本カテゴリではチャート・詳細パネル・カテゴリ表を端末固有の画面部品 (タブバー・ボトムシート等) へ置き換える構成を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      }
+    },
+    "security": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-security-web-trends-observed-003",
+        "serves_goals": [
+          "G3",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-trends-decision-002",
+          "qa-trends-decision-004",
+          "qa-trends-decision-011",
+          "qa-target-platforms-trends-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、推移画面の本カテゴリでは端末内に保存した明細と取引先名の暗号化とアプリ配布経路の保護を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、推移画面の本カテゴリでは端末内に保存した明細と取引先名の暗号化とアプリ配布経路の保護を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、推移画面の本カテゴリでは端末内に保存した明細と取引先名の暗号化とアプリ配布経路の保護を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、推移画面の本カテゴリでは端末内に保存した明細と取引先名の暗号化とアプリ配布経路の保護を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、推移画面の本カテゴリでは端末内に保存した明細と取引先名の暗号化とアプリ配布経路の保護を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-infrastructure-web-trends-observed-003",
+        "serves_goals": [
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-trends-decision-002",
+          "qa-trends-decision-008",
+          "qa-target-platforms-trends-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、推移画面の本カテゴリではアプリストア配布と、Worker とは別の更新配信の経路を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、推移画面の本カテゴリではアプリストア配布と、Worker とは別の更新配信の経路を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、推移画面の本カテゴリではアプリストア配布と、Worker とは別の更新配信の経路を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、推移画面の本カテゴリではアプリストア配布と、Worker とは別の更新配信の経路を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、推移画面の本カテゴリではアプリストア配布と、Worker とは別の更新配信の経路を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      }
+    },
+    "backend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-backend-web-trends-observed-004",
+        "serves_goals": [
+          "G2",
+          "G3",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-trends-decision-002",
+          "qa-trends-decision-003",
+          "qa-trends-decision-006",
+          "qa-trends-decision-008",
+          "qa-trends-decision-009",
+          "qa-trends-decision-010",
+          "qa-trends-decision-011",
+          "qa-trends-decision-012",
+          "qa-trends-decision-013",
+          "qa-trends-decision-014",
+          "qa-target-platforms-trends-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、推移画面の本カテゴリではアプリ向けに集計結果を先に計算して配る API の版管理を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、推移画面の本カテゴリではアプリ向けに集計結果を先に計算して配る API の版管理を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、推移画面の本カテゴリではアプリ向けに集計結果を先に計算して配る API の版管理を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、推移画面の本カテゴリではアプリ向けに集計結果を先に計算して配る API の版管理を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、推移画面の本カテゴリではアプリ向けに集計結果を先に計算して配る API の版管理を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-frontend-web-trends-observed-005",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-frontend-web-trends-observed-004",
+          "qa-trends-decision-001",
+          "qa-trends-decision-004",
+          "qa-trends-decision-005",
+          "qa-trends-decision-007",
+          "qa-trends-decision-008",
+          "qa-trends-decision-009",
+          "qa-trends-decision-011",
+          "qa-trends-decision-012",
+          "qa-trends-decision-013",
+          "qa-trends-decision-014",
+          "qa-target-platforms-trends-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、推移画面の本カテゴリではネイティブ UI での推移チャートとスパークラインの描画部品を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、推移画面の本カテゴリではネイティブ UI での推移チャートとスパークラインの描画部品を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、推移画面の本カテゴリではネイティブ UI での推移チャートとスパークラインの描画部品を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、推移画面の本カテゴリではネイティブ UI での推移チャートとスパークラインの描画部品を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、推移画面の本カテゴリではネイティブ UI での推移チャートとスパークラインの描画部品を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      }
+    },
+    "maintenance-ops": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-maintenance-ops-web-trends-observed-004",
+        "serves_goals": [
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-trends-decision-002",
+          "qa-trends-decision-006",
+          "qa-trends-decision-008",
+          "qa-trends-decision-009",
+          "qa-trends-decision-010",
+          "qa-trends-decision-012",
+          "qa-trends-decision-013",
+          "qa-trends-decision-014",
+          "qa-target-platforms-trends-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS/Android)を提供していたなら、推移画面の本カテゴリではアプリの版ごとに計算規則の差を追う保守手順とストア審査の対応を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS/Android)を提供していたなら、推移画面の本カテゴリではアプリの版ごとに計算規則の差を追う保守手順とストア審査の対応を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、推移画面の本カテゴリではアプリの版ごとに計算規則の差を追う保守手順とストア審査の対応を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、推移画面の本カテゴリではアプリの版ごとに計算規則の差を追う保守手順とストア審査の対応を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、推移画面の本カテゴリではアプリの版ごとに計算規則の差を追う保守手順とストア審査の対応を決める必要があった。対象を web のみとする利用者承認 (qa-target-platforms-trends-001 / appr-foundation-trends-001、2026-09-16) によりその検討は発生しない。",
+        "approval_ref": "appr-foundation-trends-001",
+        "qa_ref": "qa-target-platforms-trends-001"
+      }
+    }
+  },
+  "qa_log": [
+    {
+      "id": "qa-trends-decision-001",
+      "question": "今の推移画面にある『手を打つ順番』表(MK検定・Theil-Sen の傾向判定、前半→後半の寄与度)をどう扱いますか?画像にはこの表がありません。選択肢: (A) 開閉式で残す (推奨) / (B) 画像どおり削除 / (C) 常時表示で残す。",
+      "answer": "(A) 開閉式で残す を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:16:35Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-002",
+      "question": "画像の増減要因の説明文(例『春のキャンペーンに伴う広告出稿の増加』)は、何から作りますか?選択肢: (A) 規則で自動生成 (推奨) / (B) 利用者がメモを書く / (C) AI で生成。",
+      "answer": "(A) 規則で自動生成 を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:16:35Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-003",
+      "question": "『様々な情報の推移を管理できる汎用性』はどこまで作りますか?選択肢: (A) 指標を登録制にする (推奨。今回は収入・支出・純収支の 3 指標で出し、あとから指標を足せる形にする) / (B) 画像の 3 指標だけ固定 / (C) 件数・口座別残高なども今回出す。",
+      "answer": "(A) 指標を登録制にする を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:16:35Z",
+      "required_info_items": [
+        "domain-model",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-004",
+      "question": "『該当明細を開く』と、カテゴリ行→取引先の内訳はどこまで作りますか?選択肢: (A) 明細画面 /classify に category・取引先(明細の内容)の絞込クエリを足す。取引先は名寄せなし (推奨) / (B) 月だけで開く / (C) 取引先の名寄せ規則も作る。",
+      "answer": "(A) 明細画面に絞込を足す を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:16:35Z",
+      "required_info_items": [
+        "context-of-use",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-005",
+      "question": "画像上部の『1年/2年/3年/任意』は、今ある全体の期間選択(usePeriod、他の分析タブと共有)とどう関係させますか?選択肢: (A) 全体の期間選択を操作する (推奨) / (B) 推移専用の期間。",
+      "answer": "(A) 全体の期間選択を操作する を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:19:14Z",
+      "required_info_items": [
+        "context-of-use"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-006",
+      "question": "比較対象『前期間』はどの期間を指しますか?(『前年』は前年の同じ月範囲とします) 選択肢: (A) 直前の同じ長さ (推奨。支出分析ハブの previousPeriod と同じ定義) / (B) 期間内の前半と後半。",
+      "answer": "(A) 直前の同じ長さ を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:19:14Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-007",
+      "question": "チャートで月を選ぶ前(初期表示)の右の詳細パネルは、どの月を出しますか?選択肢: (A) 最も変化が大きい月 (推奨。URL に選択月を保持) / (B) 最新月 / (C) 未選択(パネルを閉じる)。",
+      "answer": "(A) 最も変化が大きい月 を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:19:14Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-target-platforms-trends-001",
+      "question": "推移画面サイクルの対象プラットフォームはどれですか? foundation の対象外に『web 以外の platform (専用アプリ)』を含めた案を提示し、承認を求めた。",
+      "answer": "foundation を『この内容で承認』と回答した。対象は web のみ (狭幅は既存 web のレスポンシブ表示で扱う)。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で foundation 全体 (scope.out に web 以外を含む) を承認した。answered_at は回答直後に date -u で実測した時刻で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:27:37Z",
+      "required_info_items": [
+        "context-of-use",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-database-web-trends-observed-001",
+      "question": "推移の拡張で D1 のスキーマ変更は要りますか?",
+      "answer": "要らない。推移の系列・比較・カテゴリ行・取引先行・説明文は、loadDataset が D1 から読む既存の Dataset (MF 明細 MfTx の日付・金額・カテゴリ・内容 c・口座 inst、事業/家計の区分) と総収支の判定表から毎回導出でき、説明文は規則で生成してメモを保存しないため、新しい表も migration (最新は 0042) も足さない。期間は applyPeriod/sliceDataset で Dataset を切り、比較期間も同じ関数で切り出す。バックアップ・復元の対象表は変わらない。",
+      "provenance": "既存コードの読解 (2026-09-16、worktree 07推移画面改善、origin/main 9da407b)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:29:07Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-auth-web-trends-observed-001",
+      "question": "推移の API と明細画面の絞込は、どの認証・認可の下で動きますか?",
+      "answer": "packages/api/src/index.ts で /api/* に authGuard() と mustChangePasswordFence() が掛かり、GET /api/trends は analyticsRoute としてその内側にある。認証はメールアドレス+パスワードの署名付きセッション Cookie (利用者ID・有効期限・世代、users.session_generation で即時失効) で、未認証で業務データへ届く経路は無い。データは TENANT_ID=default の単一テナントで、今回の変更は読取専用の集計と /classify のクエリ追加だけのため、新しい認証・認可の仕組みは足さない。",
+      "provenance": "既存コードの読解 (2026-09-16、worktree 07推移画面改善、origin/main 9da407b)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:29:07Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-trends-observed-001",
+      "question": "推移画面の構成と情報の優先順位は、画像と既存画面のどこから決めますか?",
+      "answer": "design/FINAL-UI/images/07-trends.png の構成を正とし、上から 期間タブ → 問い → 比較条件の帯 → KPI 3 枚 → 推移チャートと選択月の詳細 → カテゴリ別の推移と増減 (取引先の展開行) → パレート図と上位 3 → 選択バー の順に置く。AUDIT.md の『比較条件をヘッダー直下へ集約』に従い、範囲・指標・比較対象の切替を見出し直下の 1 本の帯にまとめる。月次の振り返りで最も頻度が高く誤読の損失が大きいのは『どの月にいくら変わったか』と『その原因』なので、KPI と選択月の詳細を最上位に置き、傾向の判定 (既存の手を打つ順番) は開閉式の根拠へ下げる。増減は符号と文字を併記し色だけに頼らない。狭幅は既存 web のレスポンシブ (表は横スクロール、詳細パネルはチャートの下へ) で扱う。",
+      "provenance": "既存コードの読解 (2026-09-16、worktree 07推移画面改善、origin/main 9da407b)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:29:07Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-security-web-trends-observed-001",
+      "question": "推移の拡張でセキュリティ上気を付けることは何ですか?",
+      "answer": "新しいクエリ (scope・metric・compare・month、/classify の category・取引先) はすべて許可値の列挙または YYYY-MM 形式で検証し、未知の値は既定値へ倒すか 400 を返す (既存の scope は未知値を合算へ倒している)。指標 id は登録済み定義の辞書で引き、任意の関数名やキーを評価しない。取引先の文字列は React のテキストとして描画し innerHTML を使わない。CSP は index.ts の secureHeaders (script-src 'self'、frame-ancestors 'none') のまま。説明文は規則で作り外部の AI や API へ明細を送らない。変更は読取専用で canonicalMutationFence と監査ログの対象になる書込は増えない。",
+      "provenance": "既存コードの読解 (2026-09-16、worktree 07推移画面改善、origin/main 9da407b)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:29:07Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-infrastructure-web-trends-observed-001",
+      "question": "推移の拡張で実行環境・デプロイは変わりますか?",
+      "answer": "変わらない。api は packages/api/wrangler.jsonc の Cloudflare Worker (D1・R2・ASSETS のバインディング) のままで、web は同じ Worker の静的アセットとして配信する。CI は .github/workflows/ci.yml、デプロイは deploy.yml、migration は migrate.yml だが今回 migration は無い。集計は 1 リクエストで Dataset を 1 回読み、今回と比較期間を同じ Dataset から切り出すため、D1 への問い合わせ回数は増やさない。Workers の CPU 時間は既存の分析 API と同程度に収める。",
+      "provenance": "既存コードの読解 (2026-09-16、worktree 07推移画面改善、origin/main 9da407b)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:29:07Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-backend-web-trends-observed-001",
+      "question": "推移の集計と API は既存のどこを土台にしますか?",
+      "answer": "集計は packages/core/src/trend.ts (trendsReport、expenseSeriesByCategory、contributionBreakdown、monthlySides) と total-cashflow.ts (monthlyTotalCashflow が月次の収入・支出・収支と事業/家計の内訳を返す)、比較期間は analysis-hub.ts の previousPeriod と period.ts の previousYearPeriod を土台にする。API は packages/api/src/routes/analytics.ts の GET /api/trends で、loadScoped が ?from/to/year/span (span=1|2|3 は直近 n 年) を解決して期間を切った Dataset を渡している。これに scope=total|business|household (既存の all/biz/personal は互換で受ける)・metric・compare=previous|yoy・month を足し、指標定義の登録表から系列を引いて返す。既存の rows/pareto/breakdown は互換のため残す。",
+      "provenance": "既存コードの読解 (2026-09-16、worktree 07推移画面改善、origin/main 9da407b)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:29:07Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-trends-observed-001",
+      "question": "推移画面のフロントエンドは何を再利用して組みますか?",
+      "answer": "packages/web は React 18 + react-router-dom 7 + TanStack Query 5 + chart.js 4 (react-chartjs-2)。Trends.tsx を作り直し、components/Page.tsx の PageShell/PageHeader/KpiCard、Button、charts.ts の COLORS/chartSeriesColor/baseChartOptions、FinancialFigure、DataTable、総収支の SegmentSwitch・DetailPane・選択バーの型、既存の自作 SVG スパークラインを再利用する。期間タブは全体の期間選択 usePeriod (span/from/to) を操作し、範囲・指標・比較対象・選択月・選択カテゴリは URL の検索パラメータに持つ。明細画面 pages/Classify.tsx は month・cls に加え category と取引先 (既存の検索 q を使うか専用クエリ) の初期値を URL から読む。チャートは DOM テストで test-support/chart-test-doubles.tsx に差し替え、視覚は scripts/check-financial-visuals.mjs の headless Chrome で確認する。",
+      "provenance": "既存コードの読解 (2026-09-16、worktree 07推移画面改善、origin/main 9da407b)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:29:07Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-maintenance-ops-web-trends-observed-001",
+      "question": "推移の拡張の保守・運用で残すものは何ですか?",
+      "answer": "計算規則 (増減額・増減率・構成比・寄与度・最大変化月・比較期間・説明文の規則) を docs/trends-screen.md に表で書き、core の境界値テストと web の DOM テストで固定する。検証は pnpm verify:full (test・typecheck・lint・build・check:financial-figure などの視覚検査・preview:smoke) を通す。既存の packages/core/test/trend-contract.test.ts と trends-scope.dom.test.tsx は壊さず、画面構成の変更に合わせて期待値を更新する場合は理由をテストに残す。D1 の変更が無いのでバックアップ・復元の手順と runbook は変わらない。",
+      "provenance": "既存コードの読解 (2026-09-16、worktree 07推移画面改善、origin/main 9da407b)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:29:07Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-database-web-trends-observed-002",
+      "question": "推移の拡張で D1 のスキーマ変更は要りますか?",
+      "answer": "要らない。推移の系列・比較・カテゴリ行・取引先行・説明文は、loadDataset が D1 から読む既存の Dataset (MF 明細 MfTx の日付・金額・カテゴリ・内容 c・口座 inst、事業/家計の区分) と総収支の判定表から毎回導出でき、説明文は規則で生成してメモを保存しないため、新しい表も migration (最新は 0042) も足さない。期間は applyPeriod/sliceDataset で Dataset を切り、比較期間も同じ関数で切り出す。バックアップ・復元の対象表は変わらない。",
+      "provenance": "R4-reopen (2026-09-16T09:33:51Z、章の作り直しのため) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b)。authGuard・trendsReport・previousPeriod・previousYearPeriod・monthlyTotalCashflow・GET /trends・migration 最新 0042 を git grep で再確認し、前回 (qa-<cat>-web-trends-observed-001) と同じ内容であることを確かめた。answered_at は読直し直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:39:44Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-auth-web-trends-observed-002",
+      "question": "推移の API と明細画面の絞込は、どの認証・認可の下で動きますか?",
+      "answer": "packages/api/src/index.ts で /api/* に authGuard() と mustChangePasswordFence() が掛かり、GET /api/trends は analyticsRoute としてその内側にある。認証はメールアドレス+パスワードの署名付きセッション Cookie (利用者ID・有効期限・世代、users.session_generation で即時失効) で、未認証で業務データへ届く経路は無い。データは TENANT_ID=default の単一テナントで、今回の変更は読取専用の集計と /classify のクエリ追加だけのため、新しい認証・認可の仕組みは足さない。",
+      "provenance": "R4-reopen (2026-09-16T09:33:51Z、章の作り直しのため) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b)。authGuard・trendsReport・previousPeriod・previousYearPeriod・monthlyTotalCashflow・GET /trends・migration 最新 0042 を git grep で再確認し、前回 (qa-<cat>-web-trends-observed-001) と同じ内容であることを確かめた。answered_at は読直し直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:39:44Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-trends-observed-002",
+      "question": "推移画面の構成と情報の優先順位は、画像と既存画面のどこから決めますか?",
+      "answer": "design/FINAL-UI/images/07-trends.png の構成を正とし、上から 期間タブ → 問い → 比較条件の帯 → KPI 3 枚 → 推移チャートと選択月の詳細 → カテゴリ別の推移と増減 (取引先の展開行) → パレート図と上位 3 → 選択バー の順に置く。AUDIT.md の『比較条件をヘッダー直下へ集約』に従い、範囲・指標・比較対象の切替を見出し直下の 1 本の帯にまとめる。月次の振り返りで最も頻度が高く誤読の損失が大きいのは『どの月にいくら変わったか』と『その原因』なので、KPI と選択月の詳細を最上位に置き、傾向の判定 (既存の手を打つ順番) は開閉式の根拠へ下げる。増減は符号と文字を併記し色だけに頼らない。狭幅は既存 web のレスポンシブ (表は横スクロール、詳細パネルはチャートの下へ) で扱う。",
+      "provenance": "R4-reopen (2026-09-16T09:33:51Z、章の作り直しのため) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b)。authGuard・trendsReport・previousPeriod・previousYearPeriod・monthlyTotalCashflow・GET /trends・migration 最新 0042 を git grep で再確認し、前回 (qa-<cat>-web-trends-observed-001) と同じ内容であることを確かめた。answered_at は読直し直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:39:44Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-security-web-trends-observed-002",
+      "question": "推移の拡張でセキュリティ上気を付けることは何ですか?",
+      "answer": "新しいクエリ (scope・metric・compare・month、/classify の category・取引先) はすべて許可値の列挙または YYYY-MM 形式で検証し、未知の値は既定値へ倒すか 400 を返す (既存の scope は未知値を合算へ倒している)。指標 id は登録済み定義の辞書で引き、任意の関数名やキーを評価しない。取引先の文字列は React のテキストとして描画し innerHTML を使わない。CSP は index.ts の secureHeaders (script-src 'self'、frame-ancestors 'none') のまま。説明文は規則で作り外部の AI や API へ明細を送らない。変更は読取専用で canonicalMutationFence と監査ログの対象になる書込は増えない。",
+      "provenance": "R4-reopen (2026-09-16T09:33:51Z、章の作り直しのため) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b)。authGuard・trendsReport・previousPeriod・previousYearPeriod・monthlyTotalCashflow・GET /trends・migration 最新 0042 を git grep で再確認し、前回 (qa-<cat>-web-trends-observed-001) と同じ内容であることを確かめた。answered_at は読直し直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:39:44Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-infrastructure-web-trends-observed-002",
+      "question": "推移の拡張で実行環境・デプロイは変わりますか?",
+      "answer": "変わらない。api は packages/api/wrangler.jsonc の Cloudflare Worker (D1・R2・ASSETS のバインディング) のままで、web は同じ Worker の静的アセットとして配信する。CI は .github/workflows/ci.yml、デプロイは deploy.yml、migration は migrate.yml だが今回 migration は無い。集計は 1 リクエストで Dataset を 1 回読み、今回と比較期間を同じ Dataset から切り出すため、D1 への問い合わせ回数は増やさない。Workers の CPU 時間は既存の分析 API と同程度に収める。",
+      "provenance": "R4-reopen (2026-09-16T09:33:51Z、章の作り直しのため) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b)。authGuard・trendsReport・previousPeriod・previousYearPeriod・monthlyTotalCashflow・GET /trends・migration 最新 0042 を git grep で再確認し、前回 (qa-<cat>-web-trends-observed-001) と同じ内容であることを確かめた。answered_at は読直し直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:39:44Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-backend-web-trends-observed-002",
+      "question": "推移の集計と API は既存のどこを土台にしますか?",
+      "answer": "集計は packages/core/src/trend.ts (trendsReport、expenseSeriesByCategory、contributionBreakdown、monthlySides) と total-cashflow.ts (monthlyTotalCashflow が月次の収入・支出・収支と事業/家計の内訳を返す)、比較期間は analysis-hub.ts の previousPeriod と period.ts の previousYearPeriod を土台にする。API は packages/api/src/routes/analytics.ts の GET /api/trends で、loadScoped が ?from/to/year/span (span=1|2|3 は直近 n 年) を解決して期間を切った Dataset を渡している。これに scope=total|business|household (既存の all/biz/personal は互換で受ける)・metric・compare=previous|yoy・month を足し、指標定義の登録表から系列を引いて返す。既存の rows/pareto/breakdown は互換のため残す。",
+      "provenance": "R4-reopen (2026-09-16T09:33:51Z、章の作り直しのため) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b)。authGuard・trendsReport・previousPeriod・previousYearPeriod・monthlyTotalCashflow・GET /trends・migration 最新 0042 を git grep で再確認し、前回 (qa-<cat>-web-trends-observed-001) と同じ内容であることを確かめた。answered_at は読直し直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:39:44Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-trends-observed-002",
+      "question": "推移画面のフロントエンドは何を再利用して組みますか?",
+      "answer": "packages/web は React 18 + react-router-dom 7 + TanStack Query 5 + chart.js 4 (react-chartjs-2)。Trends.tsx を作り直し、components/Page.tsx の PageShell/PageHeader/KpiCard、Button、charts.ts の COLORS/chartSeriesColor/baseChartOptions、FinancialFigure、DataTable、総収支の SegmentSwitch・DetailPane・選択バーの型、既存の自作 SVG スパークラインを再利用する。期間タブは全体の期間選択 usePeriod (span/from/to) を操作し、範囲・指標・比較対象・選択月・選択カテゴリは URL の検索パラメータに持つ。明細画面 pages/Classify.tsx は month・cls に加え category と取引先 (既存の検索 q を使うか専用クエリ) の初期値を URL から読む。チャートは DOM テストで test-support/chart-test-doubles.tsx に差し替え、視覚は scripts/check-financial-visuals.mjs の headless Chrome で確認する。",
+      "provenance": "R4-reopen (2026-09-16T09:33:51Z、章の作り直しのため) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b)。authGuard・trendsReport・previousPeriod・previousYearPeriod・monthlyTotalCashflow・GET /trends・migration 最新 0042 を git grep で再確認し、前回 (qa-<cat>-web-trends-observed-001) と同じ内容であることを確かめた。answered_at は読直し直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:39:44Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-maintenance-ops-web-trends-observed-002",
+      "question": "推移の拡張の保守・運用で残すものは何ですか?",
+      "answer": "計算規則 (増減額・増減率・構成比・寄与度・最大変化月・比較期間・説明文の規則) を docs/trends-screen.md に表で書き、core の境界値テストと web の DOM テストで固定する。検証は pnpm verify:full (test・typecheck・lint・build・check:financial-figure などの視覚検査・preview:smoke) を通す。既存の packages/core/test/trend-contract.test.ts と trends-scope.dom.test.tsx は壊さず、画面構成の変更に合わせて期待値を更新する場合は理由をテストに残す。D1 の変更が無いのでバックアップ・復元の手順と runbook は変わらない。",
+      "provenance": "R4-reopen (2026-09-16T09:33:51Z、章の作り直しのため) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b)。authGuard・trendsReport・previousPeriod・previousYearPeriod・monthlyTotalCashflow・GET /trends・migration 最新 0042 を git grep で再確認し、前回 (qa-<cat>-web-trends-observed-001) と同じ内容であることを確かめた。answered_at は読直し直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:39:44Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-008",
+      "question": "推移の数値 (収入・支出・純収支とカテゴリ・取引先の行) は、どの取引集合から数えますか?選択肢: (A) 総収支と同じ (freee 取引と MF 明細を消し込んだ後の集合。totalCashflowReport と同じ数え方で、総合・事業の値が概況と総収支画面に一致する。freee 由来の行の明細は総収支画面で開く) (推奨) / (B) MF 明細だけ (現行 /api/trends と同じ。事業の値が概況・総収支と一致しない)。",
+      "answer": "(A) 総収支と同じ を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の decision_guidance 指摘を受けた追加質問)。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T09:50:42Z) で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:50:42Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-009",
+      "question": "カテゴリ表のスパークラインは何か月分を描きますか?選択肢: (A) 選択期間の末月から遡る直近 12 か月 (推奨。行の高さと列幅を期間によらず一定にする) / (B) 選択期間の全月。",
+      "answer": "(A) 直近 12 か月 を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の decision_guidance 指摘を受けた追加質問)。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T09:50:42Z) で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:50:42Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-010",
+      "question": "期間に『全期間』を選んだとき、比較期間 (前期間・前年) はどう扱いますか?選択肢: (A) 比較を出さない (推奨。比較対象の切替を無効にして理由を表示し、KPI の増減は最も変化が大きい月の前月差で出す) / (B) 前年だけ出す。",
+      "answer": "(A) 比較を出さない を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の decision_guidance 指摘を受けた追加質問)。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T09:50:42Z) で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:50:42Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-011",
+      "question": "推移 API と明細画面のクエリの誤りと取引先の絞込はどう扱いますか?選択肢: (A) 形式違反の month などは既定値へ倒し、400 は未登録の metric (invalid_metric) だけにする。取引先は専用の payee クエリで完全一致で絞る (推奨) / (B) 形式違反はすべて 400 にし、取引先は既存の検索 q に入れて部分一致で絞る。",
+      "answer": "(A) 既定値へ倒す+専用 payee を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度評価 FAIL の decision_guidance 指摘を受けた追加質問)。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T09:50:42Z) で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T09:50:42Z",
+      "required_info_items": [
+        "api-contract",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-database-web-trends-observed-003",
+      "question": "推移の拡張で D1 のスキーマ変更は要りますか?どの表を読みますか?",
+      "answer": "要らない。推移の数値は総収支と同じ取引集合から数える (qa-trends-decision-008)。読むのは loadDataset が作る Dataset (MF 明細 MfTx の日付・金額・大項目・内容 c・口座 inst、事業/家計の区分) と、loadReviewSources が読む freee_deals・duplicate_verdicts・freee_deal_exclusions・mf_tx_exclusions の 4 表で、どれも既存の表である。系列・比較・カテゴリ行・取引先行・説明文はこの読み取り結果から毎回導出し、説明文もメモも保存しないため、新しい表も migration (最新は 0042) も足さない。期間は applyPeriod/sliceDataset で切り、比較期間も同じ関数で切り出す。バックアップ・復元の対象表は変わらない。",
+      "provenance": "R4-reopen (2026-09-16T09:55:09Z、数値の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b。packages/api/src/routes/analytics.ts の loadScoped / loadReviewSources、packages/core/src/total-cashflow.ts の totalCashflowReport、packages/web/src/pages/analysis/TotalCashflow.tsx)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:55:39Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-auth-web-trends-observed-003",
+      "question": "推移の API と明細画面の絞込は、どの認証・認可の下で動きますか?",
+      "answer": "packages/api/src/index.ts で /api/* に authGuard() と mustChangePasswordFence() が掛かり、GET /api/trends は analyticsRoute としてその内側にある。認証はメールアドレス+パスワードの署名付きセッション Cookie (利用者ID・有効期限・世代、users.session_generation で即時失効) で、未認証で業務データへ届く経路は無い。総収支と同じ集合を数えるために増える freee 系 4 表の読み取りも、loadReviewSources と同じく c.get('userId') で絞る。データは TENANT_ID=default の単一テナントで、今回の変更は読取専用の集計と /classify のクエリ追加だけのため、新しい認証・認可の仕組みは足さない。",
+      "provenance": "R4-reopen (2026-09-16T09:55:09Z、数値の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b。packages/api/src/routes/analytics.ts の loadScoped / loadReviewSources、packages/core/src/total-cashflow.ts の totalCashflowReport、packages/web/src/pages/analysis/TotalCashflow.tsx)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:55:39Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-trends-observed-003",
+      "question": "推移画面の構成と情報の優先順位は、画像と既存画面のどこから決めますか?",
+      "answer": "design/FINAL-UI/images/07-trends.png の構成を正とし、上から 期間タブ → 問い → 比較条件の帯 → KPI 3 枚 → 推移チャートと選択月の詳細 → カテゴリ別の推移と増減 (取引先の展開行) → パレート図と上位 3 → 選択バー の順に置く。AUDIT.md の『比較条件をヘッダー直下へ集約』に従い、範囲・指標・比較対象の切替を見出し直下の 1 本の帯にまとめる。月次の振り返りで最も頻度が高く誤読の損失が大きいのは『どの月にいくら変わったか』と『その原因』なので、KPI と選択月の詳細を最上位に置き、傾向の判定は開閉式の根拠へ下げる。全期間を選んだときは比較対象の切替を無効にして『全期間では比較しません』と理由を出し、KPI の増減は最も変化が大きい月の前月差と明記する。カテゴリ表のスパークラインは直近 12 か月で揃える。freee 由来の行のボタンは『総収支で確認』、MF 由来の行は『該当明細を開く』と遷移先が分かる文言にする。増減は符号と文字を併記し色だけに頼らない。狭幅は既存 web のレスポンシブ (表は横スクロール、詳細パネルはチャートの下へ) で扱う。",
+      "provenance": "R4-reopen (2026-09-16T09:55:09Z、数値の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b。packages/api/src/routes/analytics.ts の loadScoped / loadReviewSources、packages/core/src/total-cashflow.ts の totalCashflowReport、packages/web/src/pages/analysis/TotalCashflow.tsx)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:55:39Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-security-web-trends-observed-003",
+      "question": "推移の拡張でセキュリティ上気を付けることは何ですか?",
+      "answer": "新しいクエリ (scope・metric・compare・month、/classify の category・payee) はすべて許可値の列挙または YYYY-MM 形式で検証する。qa-trends-decision-011 に従い、形式違反の month・未知の scope/compare は既定値へ倒し、未登録の metric だけ 400 invalid_metric を返す。指標 id は登録済み定義の辞書で引き、任意の関数名やキーを評価しない。payee は取得後の配列で完全一致の比較にだけ使い、SQL へ連結しない。取引先の文字列は React のテキストとして描画し innerHTML を使わない。CSP は index.ts の secureHeaders (script-src 'self'、frame-ancestors 'none') のまま。説明文は規則で作り外部の AI や API へ明細を送らない。変更は読取専用で canonicalMutationFence と監査ログの対象になる書込は増えない。",
+      "provenance": "R4-reopen (2026-09-16T09:55:09Z、数値の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b。packages/api/src/routes/analytics.ts の loadScoped / loadReviewSources、packages/core/src/total-cashflow.ts の totalCashflowReport、packages/web/src/pages/analysis/TotalCashflow.tsx)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:55:39Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-infrastructure-web-trends-observed-003",
+      "question": "推移の拡張で実行環境・デプロイは変わりますか?",
+      "answer": "変わらない。api は packages/api/wrangler.jsonc の Cloudflare Worker (D1・R2・ASSETS のバインディング) のままで、web は同じ Worker の静的アセットとして配信する。CI は .github/workflows/ci.yml、デプロイは deploy.yml、migration は migrate.yml だが今回 migration は無い。総収支と同じ集合を数えるため、1 リクエストで Dataset と freee 系 4 表を 1 回ずつ読む。これは概況と総収支 API が既に行っている読み取りと同じ量で、今回と比較期間は同じ読み取り結果から切り出すため追加の問い合わせは無い。Workers の CPU 時間は総収支 API と同程度に収める。",
+      "provenance": "R4-reopen (2026-09-16T09:55:09Z、数値の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b。packages/api/src/routes/analytics.ts の loadScoped / loadReviewSources、packages/core/src/total-cashflow.ts の totalCashflowReport、packages/web/src/pages/analysis/TotalCashflow.tsx)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:55:39Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-backend-web-trends-observed-003",
+      "question": "推移の集計と API は既存のどこを土台にしますか?",
+      "answer": "数値は packages/core/src/total-cashflow.ts の totalCashflowReport (freee 取引・重複判定・freee 除外・MF 除外を受け、消し込み後の matched/freeeOnly/excluded/review の行と月次 months を返す) と同じ集合から数える (qa-trends-decision-008)。その行を推移の集計 (trend.ts の trendsReport・expenseSeriesByCategory・contributionBreakdown・monthlySides を土台に拡張) へ渡し、比較期間は analysis-hub.ts の previousPeriod と period.ts の previousYearPeriod で作る。カテゴリの軸は expenseCategories と同じく事業は freee の勘定科目、家計は MF の大項目で、同名でも混ぜない。API は packages/api/src/routes/analytics.ts の GET /api/trends で、loadScoped の期間 (from/to/year/span) と loadReviewSources と同じ 4 表の読み取りを使う。scope=total|business|household (all/biz/personal は互換で受ける)・metric・compare=previous|yoy・month・category・payee を足し、指標定義の登録表から系列を引く。全期間では比較期間を返さない (qa-trends-decision-010)。スパークラインの系列は直近 12 か月 (qa-trends-decision-009)。既存の rows/pareto/breakdown は互換のため残す。",
+      "provenance": "R4-reopen (2026-09-16T09:55:09Z、数値の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b。packages/api/src/routes/analytics.ts の loadScoped / loadReviewSources、packages/core/src/total-cashflow.ts の totalCashflowReport、packages/web/src/pages/analysis/TotalCashflow.tsx)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:55:39Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-trends-observed-003",
+      "question": "推移画面のフロントエンドは何を再利用して組みますか?",
+      "answer": "packages/web は React 18 + react-router-dom 7 + TanStack Query 5 + chart.js 4 (react-chartjs-2)。Trends.tsx を作り直し、components/Page.tsx の PageShell/PageHeader/KpiCard、Button、charts.ts の COLORS/chartSeriesColor/baseChartOptions、FinancialFigure、DataTable、総収支の SegmentSwitch・DetailPane・選択バーの型、既存の自作 SVG スパークラインを再利用する。期間タブは全体の期間選択 usePeriod (span/from/to) を操作し、範囲・指標・比較対象・選択月・選択カテゴリはURL の検索パラメータに持つ。MF 由来の行は pages/Classify.tsx へ month・cls に加えて category と専用の payee を渡し、Classify.tsx (現状 month と cls だけを URL から読む) はその初期値を読む。freee 由来の行は /analysis/total-cashflow を開く (TotalCashflow.tsx は URL の月を読まないため、期間は usePeriod で引き継ぐ)。チャートは DOM テストで test-support/chart-test-doubles.tsx に差し替え、視覚は scripts/check-financial-visuals.mjs の headless Chrome で確認する。",
+      "provenance": "R4-reopen (2026-09-16T09:55:09Z、数値の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b。packages/api/src/routes/analytics.ts の loadScoped / loadReviewSources、packages/core/src/total-cashflow.ts の totalCashflowReport、packages/web/src/pages/analysis/TotalCashflow.tsx)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:55:39Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-maintenance-ops-web-trends-observed-003",
+      "question": "推移の拡張の保守・運用で残すものは何ですか?",
+      "answer": "計算規則 (数値の出所=総収支と同じ取引集合、増減額・増減率・構成比・寄与度・最大変化月・比較期間・全期間では比較しない規則・スパークラインの 12 か月・説明文の規則) を docs/trends-screen.md に表で書き、core の境界値テストと web の DOM テストで固定する。総収支画面との値の一致は core のテストで固定し、総収支の規則を変えたときに推移の差分として落ちるようにする。検証は pnpm verify:full (test・typecheck・lint・build・check:financial-figure などの視覚検査・preview:smoke) を通す。既存の packages/core/test/trend-contract.test.ts と trends-scope.dom.test.tsx は壊さず、期待値を更新する場合は理由をテストに残す。D1 の変更が無いのでバックアップ・復元の手順と runbook は変わらない。",
+      "provenance": "R4-reopen (2026-09-16T09:55:09Z、数値の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善、origin/main 9da407b。packages/api/src/routes/analytics.ts の loadScoped / loadReviewSources、packages/core/src/total-cashflow.ts の totalCashflowReport、packages/web/src/pages/analysis/TotalCashflow.tsx)。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T09:55:39Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-012",
+      "question": "総収支では『要確認』の MF 明細を事業にも家計にも数えない。推移も同じ取引集合から数えるため、月次クローズの途中で開くとその分だけ少なく出る。推移画面ではどう扱うか。選択肢: (A) 含めず件数を表示 — 数字は総収支と一致したまま、比較条件の帯に『要確認 N 件 (計 X 円) は含みません』と総収支画面への導線を出す。欠点: 要確認が片付くまで推移の値は確定前の値になる (推奨) / (B) 公私仕分けで仮に数える — 要確認の明細を resolveTx の結果で事業か家計に入れる。欠点: 推移の合計が総収支と一致しなくなり決定 008 が崩れる。",
+      "answer": "(A) 含めず件数を表示 を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度再評価 FAIL の decision_guidance / matrix_coverage 指摘を受けた追加質問)。各選択肢には利点と欠点を併記して提示した。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T10:09:59Z) で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T10:09:59Z",
+      "required_info_items": [
+        "domain-model",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-013",
+      "question": "開閉で残す『傾向の判定』(MK 検定・手を打つ順番) は MF 明細だけを受け取る trendsReport が計算する。上半分の数字は総収支と同じ取引集合から出すので、事業の支出が両者で食い違うことがある。どちらに合わせるか。選択肢: (A) MF 明細のまま+明記 — C4 を守り既存の契約テストをそのまま使う。開閉部分の見出しに『MF の明細だけで判定』と書き基準の違いを示す。欠点: 同じ画面に基準の違う数字が 2 種類並ぶ (推奨) / (B) 新しい取引集合へ移す — 傾向の判定も消し込み後の行から計算し画面全体の基準を 1 つにする。欠点: C4 を改め trend-contract.test.ts の期待値を更新する必要があり、既存の判定結果も変わる。",
+      "answer": "(A) MF 明細のまま+明記 を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度再評価 FAIL の decision_guidance / matrix_coverage 指摘を受けた追加質問)。各選択肢には利点と欠点を併記して提示した。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T10:09:59Z) で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T10:09:59Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-trends-decision-014",
+      "question": "freee 由来の行で口座の列 (settleAccount) が空のとき (列の無いエクスポートの取引や未決済の取引) の表示をどうするか。選択肢: (A) 『—』表示で絞らない — 口座が空の行は『—』と表示し、口座による絞込やグループ分けの対象から外す。欠点: 口座ごとの内訳が少し欠ける (推奨) / (B) 『口座なし』でまとめる — 空の行を『口座なし』という 1 つの口座として表や絞込に出す。欠点: 実在しない口座名が一覧に並ぶ。",
+      "answer": "(A) 『—』表示で絞らない を選択した。",
+      "provenance": "利用者が 2026-09-16 に AskUserQuestion で推奨案を選択した (完成度再評価 FAIL の decision_guidance / matrix_coverage 指摘を受けた追加質問)。各選択肢には利点と欠点を併記して提示した。answered_at は回答後に最初に date -u で実測した時刻 (2026-09-16T10:09:59Z) で、実際の選択時刻の上限値である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-16T10:09:59Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-trends-observed-004",
+      "question": "推移画面の構成と情報の優先順位は、画像と既存画面のどこから決めますか?要確認の明細と傾向の判定の基準はどう見せますか?",
+      "answer": "design/FINAL-UI/images/07-trends.png の構成を正とし、上から 期間タブ → 問い → 比較条件の帯 → KPI 3 枚 → 推移チャートと選択月の詳細 → カテゴリ別の推移と増減 (取引先の展開行) → パレート図と上位 3 → 選択バー の順に置く。AUDIT.md の『比較条件をヘッダー直下へ集約』に従い、範囲・指標・比較対象の切替を見出し直下の 1 本の帯にまとめる。月次の振り返りで最も頻度が高く誤読の損失が大きいのは『どの月にいくら変わったか』と『その原因』なので、KPI と選択月の詳細を最上位に置き、傾向の判定は開閉式の根拠へ下げる。推移の値は総収支と同じく要確認の明細を含まないので、期間内に要確認があれば帯の末尾に『要確認 N 件 (計 X 円) は含みません』と総収支画面へのリンクを出し、選択月の詳細にもその月の件数と金額を出す (qa-trends-decision-012)。開閉部分の見出しには『MF の明細だけで判定』と書き、上半分の数字と基準が違うことを示す (qa-trends-decision-013)。全期間を選んだときは比較対象の切替を無効にして『全期間では比較しません』と理由を出し、KPI の増減は最も変化が大きい月の前月差と明記する。カテゴリ表のスパークラインは直近 12 か月で揃える。freee 由来の行のボタンは『総収支で確認』、MF 由来の行は『該当明細を開く』と遷移先が分かる文言にする。freee 由来の行で口座が空のものは口座名を『—』と表示する (qa-trends-decision-014)。増減は符号と文字を併記し色だけに頼らない。狭幅は既存 web のレスポンシブ (表は横スクロール、詳細パネルはチャートの下へ) で扱う。",
+      "provenance": "R4-reopen (2026-09-16T10:11:28Z、要確認の明細と傾向の判定の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善。packages/core/src/total-cashflow.ts の totalCashflowReport と月次行の reviewCount・reviewAmount、packages/core/src/trend.ts の trendsReport(data: Dataset, scope))。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T10:11:30Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-backend-web-trends-observed-004",
+      "question": "推移の集計と API は既存のどこを土台にしますか?要確認の明細と傾向の判定はどの集合から数えますか?",
+      "answer": "上半分の数値 (系列・KPI・詳細・カテゴリ行・取引先行・パレート) は packages/core/src/total-cashflow.ts の totalCashflowReport と同じ集合から数える (qa-trends-decision-008)。totalCashflowReport は freee 取引・重複判定・freee 除外・MF 除外を受け、消し込み後の matched・freeeOnly・excluded・review と月次 months を返す。推移ではこの結果を行 (origin=mf/freee・月・区分・カテゴリ・取引先・口座・金額) へ平らにする新しい純関数を足し、その行から今回と比較期間の集計を作る。この集計は trendsReport を土台にせず、行を入力にする新しい関数として trend.ts に置く。要確認 (review) の MF 明細は総収支と同じく行に入れず、months の reviewCount・reviewAmount を期間と選択月で合計して返す (qa-trends-decision-012)。開閉で残す傾向の判定は現行どおり trendsReport(data: Dataset, scope) に MF の Dataset を渡して計算し、値を変えない (C4、qa-trends-decision-013)。返却の傾向の判定の部分には基準が MF 明細であることを示す値を付ける。比較期間は analysis-hub.ts の previousPeriod と period.ts の previousYearPeriod で作る。カテゴリの軸は expenseCategories と同じく事業は freee の勘定科目、家計は MF の大項目で、同名でも混ぜない。freee 行の口座は settleAccount で、空なら null を返し口座別の件数に数えない (qa-trends-decision-014)。API は packages/api/src/routes/analytics.ts の GET /api/trends で、loadScoped の期間 (from/to/year/span) と loadReviewSources と同じ 4 表の読み取りを使う。scope=total|business|household (all/biz/personal は互換で受ける)・metric・compare=previous|yoy・month・category・payee を足し、指標定義の登録表から系列を引く。全期間では比較期間を返さない (qa-trends-decision-010)。スパークラインの系列は直近 12 か月 (qa-trends-decision-009)。既存の rows/pareto/breakdown は互換のため残す。",
+      "provenance": "R4-reopen (2026-09-16T10:11:28Z、要確認の明細と傾向の判定の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善。packages/core/src/total-cashflow.ts の totalCashflowReport と月次行の reviewCount・reviewAmount、packages/core/src/trend.ts の trendsReport(data: Dataset, scope))。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T10:11:30Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-trends-observed-004",
+      "question": "推移画面のフロントエンドは何を再利用して組みますか?要確認の注記と傾向の判定の基準はどこに出しますか?",
+      "answer": "packages/web は React 18 + react-router-dom 7 + TanStack Query 5 + chart.js 4 (react-chartjs-2)。Trends.tsx を作り直し、components/Page.tsx の PageShell/PageHeader/KpiCard、Button、charts.ts の COLORS/chartSeriesColor/baseChartOptions、FinancialFigure、DataTable、総収支の SegmentSwitch・DetailPane・選択バーの型、既存の自作 SVG スパークラインを再利用する。期間タブは全体の期間選択 usePeriod (span/from/to) を操作し、範囲・指標・比較対象・選択月・選択カテゴリはURL の検索パラメータに持つ。API が返す要確認の件数と金額が 1 件以上なら、比較条件の帯の末尾に注記と /analysis/total-cashflow へのリンクを出し、詳細パネルにも選択月の件数と金額を出す (qa-trends-decision-012)。傾向の判定の開閉部分の見出しには API が返す基準 (MF の明細) を表示する (qa-trends-decision-013)。口座が null の行は『—』と表示する (qa-trends-decision-014)。MF 由来の行は pages/Classify.tsx へ month・cls に加えて category と専用の payee を渡し、Classify.tsx (現状 month と cls だけを URL から読む) はその初期値を読む。freee 由来の行は /analysis/total-cashflow を開く (TotalCashflow.tsx は URL の月を読まないため、期間は usePeriod で引き継ぐ)。チャートは DOM テストで test-support/chart-test-doubles.tsx に差し替え、視覚は scripts/check-financial-visuals.mjs の headless Chrome で確認する。",
+      "provenance": "R4-reopen (2026-09-16T10:11:28Z、要確認の明細と傾向の判定の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善。packages/core/src/total-cashflow.ts の totalCashflowReport と月次行の reviewCount・reviewAmount、packages/core/src/trend.ts の trendsReport(data: Dataset, scope))。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T10:11:30Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-maintenance-ops-web-trends-observed-004",
+      "question": "推移の拡張の保守・運用で残すものは何ですか?",
+      "answer": "計算規則 (数値の出所=総収支と同じ取引集合、要確認の明細を含めず件数と金額を注記する規則、傾向の判定だけは MF 明細を基準にする規則、増減額・増減率・構成比・寄与度・最大変化月・比較期間・全期間では比較しない規則・スパークラインの 12 か月・口座が空の freee 行の扱い・説明文の規則) を docs/trends-screen.md に表で書き、core の境界値テストと web の DOM テストで固定する。総収支画面との値の一致 (要確認を含めない値と要確認の件数・金額) は core のテストで固定し、総収支の規則を変えたときに推移の差分として落ちるようにする。検証は pnpm verify:full (test・typecheck・lint・build・check:financial-figure などの視覚検査・preview:smoke) を通す。既存の packages/core/test/trend-contract.test.ts と trends-scope.dom.test.tsx は期待値を変えずに通す (C4)。D1 の変更が無いのでバックアップ・復元の手順と runbook は変わらない。",
+      "provenance": "R4-reopen (2026-09-16T10:11:28Z、要確認の明細と傾向の判定の出所の利用者決定の反映) の後に既存コードを読み直した再観測 (worktree 07推移画面改善。packages/core/src/total-cashflow.ts の totalCashflowReport と月次行の reviewCount・reviewAmount、packages/core/src/trend.ts の trendsReport(data: Dataset, scope))。answered_at は読解直後に date -u で実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-16T10:11:30Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-ui-ux-web-trends-observed-005",
+      "question": "推移画面の実装で追加された『初回の期間』と『カテゴリ表の並べ替え』は、画面仕様としてどう確定しますか?",
+      "answer": "(1) 期間: 共通シェルの PeriodProvider は、保存値が無い初回だけ直近1年 (span=1) を既定にする。利用者が明示して保存した全期間は復元し既定値で上書きしない。壊れた保存値は直近1年へ戻す (I1 の具体化。推移の比較期間と8列の増減表を初回から使える状態で開くため)。(2) カテゴリ表: カテゴリ・12か月の変化量・今回合計・比較期間・増減額・増減率・構成比・寄与度の8見出しを 昇順→降順→元の順序 の3状態で並べ替え、aria-sort を同期する。比較値が無い行は null として安定ソートし、12か月は最初と最後の記録値の差で並べる。展開した取引先行は親カテゴリと一緒に移動する。8列は fixed layout で容器内に収め、54rem 以下と 200% 拡大ではカード化する (I6 の具体化)。(3) 全画面の生の table は、ソート対象なら共通 SortableTableHeader (44px 以上のタップ領域) を使い、並べ替えない表は layout / matrix / hierarchy / comparison / workflow のいずれかの種別を明示する。",
+      "provenance": "実装とテストの読解 (packages/web/src/period.tsx・period-picker.dom.test.tsx、pages/analysis/trends/CategoryBreakdown.tsx・trends-screen.dom.test.tsx、components/SortableTableHeader.tsx・table-sort-coverage.test.ts、check-financial-visuals.mjs の 1908px を含む実描画検査) と specs/spec-trends-screen.md FR13 の記述を突き合わせた。2026-09-17 の最終レビューで利用者から仕様書への反映指示を受けて記録した。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-17T01:58:47Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-frontend-web-trends-observed-005",
+      "question": "初回期間の既定値と表の並べ替えは、フロントエンドのどこに置きますか?",
+      "answer": "初回期間は packages/web/src/period.tsx の parseSelection と PeriodProvider の初期値 (INITIAL_SELECTION = span 1) だけで決め、画面ごとに既定値を持たない。並べ替えの比較規則は packages/web/src/table-sort.ts (sortedRowOrder と、親子行を保つ sortedRowsBy) に一本化し、見出しは components/SortableTableHeader.tsx を共通部品とする。推移のカテゴリ表は sortedRowsBy で親カテゴリだけを並べ、取引先の展開行を親に付けたまま移動する。生の table の種別宣言 (data-table-kind) は table-sort-coverage.test.ts が静的に監査する。",
+      "provenance": "実装とテストの読解 (period.tsx、table-sort.ts・table-sort.test.ts、SortableTableHeader.tsx、table-sort-coverage.test.ts)。2026-09-17 の最終レビューで利用者から仕様書への反映指示を受けて記録した。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-17T01:58:47Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    }
+  ],
+  "approval_log": [
+    {
+      "id": "appr-foundation-trends-001",
+      "note": "2026-09-16T09:27:37Z (回答直後の date -u 実測、選択時刻の上限値) 利用者が AskUserQuestion で推移画面サイクルの foundation (U1・G1-G5・対象外・制約) を『この内容で承認』と回答。先行する利用者決定 (2026-09-16T09:16:35Z / 09:19:14Z): 手を打つ順番=開閉式で残す、要因の説明=規則で自動生成、汎用性=指標を登録制、明細への導線=/classify に絞込を足す、期間タブ=全体の期間選択を操作、前期間=直前の同じ長さ、初期の月=最も変化が大きい月。"
+    },
+    {
+      "id": "appr-trends-datasource-001",
+      "note": "2026-09-16T09:50:42Z (回答後に最初に実測した date -u、選択時刻の上限値) 利用者が AskUserQuestion で、完成度評価の指摘に対する 4 つの追加決定 (数値の出所=総収支と同じ、スパークライン=直近 12 か月、全期間=比較を出さない、クエリ=既定値へ倒す+専用 payee) をすべて推奨案で回答した。appr-foundation-trends-001 で承認済みの foundation のうち、G3・G4・G5 と O4・O5・S2 をこの決定に合わせて具体化する (目的・範囲・対象外は変えない)。"
+    },
+    {
+      "id": "appr-trends-review-001",
+      "note": "2026-09-16T10:09:59Z (回答後に最初に実測した date -u、選択時刻の上限値) 利用者が AskUserQuestion で、完成度再評価の指摘に対する 3 つの追加決定 (要確認の明細=含めず件数を表示、傾向の判定=MF 明細のまま基準を明記、freee 行の空の口座=『—』表示で絞らない) をすべて推奨案で回答した。appr-trends-datasource-001 までで承認済みの foundation のうち、G3・G5・I2・I3・I5・I11・C4・O1・O5 をこの決定に合わせて具体化する (目的・範囲・対象外は変えない)。"
+    }
+  ],
+  "reopen_log": [
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "世代交代の手順誤り: 直下の前世代 (総収支) の章を削除する前に R1-init/R2 を済ませたため、前世代章が新しい確定セルで保護され、compile の注記引継ぎ (_carry_prose) で前世代の U1/U2 などの本文が推移世代の章へ混入した。前世代章は archive/2026-09-16-total-cashflow-screen/ に HEAD とバイト一致で退避済み。章を作り直すために本セルを再オープンし、既存コードを読み直した回答で確定し直す。確定内容は変えない。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:33:51Z"
+    },
+    {
+      "category": "auth",
+      "platform": "web",
+      "reason": "世代交代の手順誤り: 直下の前世代 (総収支) の章を削除する前に R1-init/R2 を済ませたため、前世代章が新しい確定セルで保護され、compile の注記引継ぎ (_carry_prose) で前世代の U1/U2 などの本文が推移世代の章へ混入した。前世代章は archive/2026-09-16-total-cashflow-screen/ に HEAD とバイト一致で退避済み。章を作り直すために本セルを再オープンし、既存コードを読み直した回答で確定し直す。確定内容は変えない。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:33:51Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "世代交代の手順誤り: 直下の前世代 (総収支) の章を削除する前に R1-init/R2 を済ませたため、前世代章が新しい確定セルで保護され、compile の注記引継ぎ (_carry_prose) で前世代の U1/U2 などの本文が推移世代の章へ混入した。前世代章は archive/2026-09-16-total-cashflow-screen/ に HEAD とバイト一致で退避済み。章を作り直すために本セルを再オープンし、既存コードを読み直した回答で確定し直す。確定内容は変えない。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:33:51Z"
+    },
+    {
+      "category": "security",
+      "platform": "web",
+      "reason": "世代交代の手順誤り: 直下の前世代 (総収支) の章を削除する前に R1-init/R2 を済ませたため、前世代章が新しい確定セルで保護され、compile の注記引継ぎ (_carry_prose) で前世代の U1/U2 などの本文が推移世代の章へ混入した。前世代章は archive/2026-09-16-total-cashflow-screen/ に HEAD とバイト一致で退避済み。章を作り直すために本セルを再オープンし、既存コードを読み直した回答で確定し直す。確定内容は変えない。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:33:51Z"
+    },
+    {
+      "category": "infrastructure",
+      "platform": "web",
+      "reason": "世代交代の手順誤り: 直下の前世代 (総収支) の章を削除する前に R1-init/R2 を済ませたため、前世代章が新しい確定セルで保護され、compile の注記引継ぎ (_carry_prose) で前世代の U1/U2 などの本文が推移世代の章へ混入した。前世代章は archive/2026-09-16-total-cashflow-screen/ に HEAD とバイト一致で退避済み。章を作り直すために本セルを再オープンし、既存コードを読み直した回答で確定し直す。確定内容は変えない。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:33:51Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "世代交代の手順誤り: 直下の前世代 (総収支) の章を削除する前に R1-init/R2 を済ませたため、前世代章が新しい確定セルで保護され、compile の注記引継ぎ (_carry_prose) で前世代の U1/U2 などの本文が推移世代の章へ混入した。前世代章は archive/2026-09-16-total-cashflow-screen/ に HEAD とバイト一致で退避済み。章を作り直すために本セルを再オープンし、既存コードを読み直した回答で確定し直す。確定内容は変えない。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:33:51Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "世代交代の手順誤り: 直下の前世代 (総収支) の章を削除する前に R1-init/R2 を済ませたため、前世代章が新しい確定セルで保護され、compile の注記引継ぎ (_carry_prose) で前世代の U1/U2 などの本文が推移世代の章へ混入した。前世代章は archive/2026-09-16-total-cashflow-screen/ に HEAD とバイト一致で退避済み。章を作り直すために本セルを再オープンし、既存コードを読み直した回答で確定し直す。確定内容は変えない。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:33:51Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "世代交代の手順誤り: 直下の前世代 (総収支) の章を削除する前に R1-init/R2 を済ませたため、前世代章が新しい確定セルで保護され、compile の注記引継ぎ (_carry_prose) で前世代の U1/U2 などの本文が推移世代の章へ混入した。前世代章は archive/2026-09-16-total-cashflow-screen/ に HEAD とバイト一致で退避済み。章を作り直すために本セルを再オープンし、既存コードを読み直した回答で確定し直す。確定内容は変えない。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:33:51Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-16、decision_guidance FAIL) で、画面の数値の出所 (総収支と同じ freee+MF か MF 明細だけか) が AI の観測から暗黙に決まり、backend・database・infrastructure の確定内容が互いに食い違っていると指摘された。利用者決定 qa-trends-decision-008〜011 を受け、全章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:55:09Z"
+    },
+    {
+      "category": "auth",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-16、decision_guidance FAIL) で、画面の数値の出所 (総収支と同じ freee+MF か MF 明細だけか) が AI の観測から暗黙に決まり、backend・database・infrastructure の確定内容が互いに食い違っていると指摘された。利用者決定 qa-trends-decision-008〜011 を受け、全章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:55:09Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-16、decision_guidance FAIL) で、画面の数値の出所 (総収支と同じ freee+MF か MF 明細だけか) が AI の観測から暗黙に決まり、backend・database・infrastructure の確定内容が互いに食い違っていると指摘された。利用者決定 qa-trends-decision-008〜011 を受け、全章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:55:09Z"
+    },
+    {
+      "category": "security",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-16、decision_guidance FAIL) で、画面の数値の出所 (総収支と同じ freee+MF か MF 明細だけか) が AI の観測から暗黙に決まり、backend・database・infrastructure の確定内容が互いに食い違っていると指摘された。利用者決定 qa-trends-decision-008〜011 を受け、全章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:55:09Z"
+    },
+    {
+      "category": "infrastructure",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-16、decision_guidance FAIL) で、画面の数値の出所 (総収支と同じ freee+MF か MF 明細だけか) が AI の観測から暗黙に決まり、backend・database・infrastructure の確定内容が互いに食い違っていると指摘された。利用者決定 qa-trends-decision-008〜011 を受け、全章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:55:09Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-16、decision_guidance FAIL) で、画面の数値の出所 (総収支と同じ freee+MF か MF 明細だけか) が AI の観測から暗黙に決まり、backend・database・infrastructure の確定内容が互いに食い違っていると指摘された。利用者決定 qa-trends-decision-008〜011 を受け、全章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:55:09Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-16、decision_guidance FAIL) で、画面の数値の出所 (総収支と同じ freee+MF か MF 明細だけか) が AI の観測から暗黙に決まり、backend・database・infrastructure の確定内容が互いに食い違っていると指摘された。利用者決定 qa-trends-decision-008〜011 を受け、全章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:55:09Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-16、decision_guidance FAIL) で、画面の数値の出所 (総収支と同じ freee+MF か MF 明細だけか) が AI の観測から暗黙に決まり、backend・database・infrastructure の確定内容が互いに食い違っていると指摘された。利用者決定 qa-trends-decision-008〜011 を受け、全章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T09:55:09Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "完成度再評価 (2026-09-16、decision_guidance / matrix_coverage FAIL) で、要確認の MF 明細の扱いが決まっておらず、backend 章が消し込み後の行を trendsReport を土台にした集計へ渡すと書いて C4 と食い違うと指摘された。利用者決定 qa-trends-decision-012〜014 を受け、該当章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T10:11:28Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度再評価 (2026-09-16、decision_guidance / matrix_coverage FAIL) で、要確認の MF 明細の扱いが決まっておらず、backend 章が消し込み後の行を trendsReport を土台にした集計へ渡すと書いて C4 と食い違うと指摘された。利用者決定 qa-trends-decision-012〜014 を受け、該当章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T10:11:28Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "完成度再評価 (2026-09-16、decision_guidance / matrix_coverage FAIL) で、要確認の MF 明細の扱いが決まっておらず、backend 章が消し込み後の行を trendsReport を土台にした集計へ渡すと書いて C4 と食い違うと指摘された。利用者決定 qa-trends-decision-012〜014 を受け、該当章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T10:11:28Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "完成度再評価 (2026-09-16、decision_guidance / matrix_coverage FAIL) で、要確認の MF 明細の扱いが決まっておらず、backend 章が消し込み後の行を trendsReport を土台にした集計へ渡すと書いて C4 と食い違うと指摘された。利用者決定 qa-trends-decision-012〜014 を受け、該当章の確定内容をその決定に合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-16T10:11:28Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "実装差分の最終レビュー (2026-09-17) で、specs/spec-trends-screen.md の FR13 (保存値が無い初回期間は直近1年、明示した全期間は保持) とカテゴリ表の8列3状態ソート・全表のソート適用範囲監査が実装・テスト済みなのに、本セルの確定内容に無いことを確認した。確定内容をその実装済み方針へ合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-17T01:58:03Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "実装差分の最終レビュー (2026-09-17) で、specs/spec-trends-screen.md の FR13 (保存値が無い初回期間は直近1年、明示した全期間は保持) とカテゴリ表の8列3状態ソート・全表のソート適用範囲監査が実装・テスト済みなのに、本セルの確定内容に無いことを確認した。確定内容をその実装済み方針へ合わせて書き直すために本セルを再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-17T01:58:03Z"
+    }
+  ],
+  "category_aggregate": {
+    "database": "確定",
+    "auth": "確定",
+    "ui-ux": "確定",
+    "security": "確定",
+    "infrastructure": "確定",
+    "backend": "確定",
+    "frontend": "確定",
+    "maintenance-ops": "確定"
+  },
+  "targets": [
+    {
+      "target_id": "hono-zod-validator",
+      "category": "backend"
+    },
+    {
+      "target_id": "cloudflare-d1-limits",
+      "category": "database"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "chartjs-mixed-chart",
+      "category": "frontend"
+    },
+    {
+      "target_id": "react-router-use-search-params",
+      "category": "frontend"
+    },
+    {
+      "target_id": "tanstack-query-keys",
+      "category": "frontend"
+    },
+    {
+      "target_id": "wcag22-use-of-color",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "category": "security"
+    }
+  ],
+  "requirements_foundation": {
+    "essential_purpose": "収支が『いつ・なぜ』変わったかを、推移画面の 1 画面で掴めるようにする。利用者が推移を開いた時点で、選んだ期間の収入・支出・純収支の月次推移と、前期間または前年との差が総合/事業/家計で読め、最も変化が大きい月の増減要因 (どのカテゴリのどの取引先がいくら動いたか) が根拠の明細まで辿れる状態にする。指標は登録制にして、収支以外の推移もあとから同じ画面の型で追えるようにする。",
+    "background": "kanjo の推移タブ (packages/web/src/pages/analysis/Trends.tsx、/analysis/trends) は、支出だけを科目単位で並べ、MK 検定と Theil-Sen の傾向判定・前半→後半の寄与度・パレート図から『手を打つ順番』を決める画面である。API は GET /api/trends (packages/api/src/routes/analytics.ts) で、集計は packages/core/src/trend.ts の trendsReport が返す。収入・純収支の系列、前期間/前年との比較、月を選んだときの詳細と増減要因、取引先の内訳、データの出典、該当明細への導線、上位増減のカード、選択バーが無い。前期間 (analysis-hub.ts の previousPeriod) と前年 (period.ts の previousYearPeriod) の関数は別の場所にあり推移では使っていない。明細画面 /classify は month と cls しか絞り込めない。FINAL-UI の監査 (design/FINAL-UI/spec/AUDIT.md) は 07 推移を『事業/家計切替と展開行が見えにくい。比較条件をヘッダー直下へ集約』とし、FUNCTION-MATRIX は『事業/家計範囲切替、複数チャート、Pareto、前年差、展開行、期間比較』を必須としている。PR #49 のデザインシステム基盤、#50 の支出分析ハブ、#54 の照合、#55 の総収支に続き、FINAL-UI どおりに作り直す順番が推移に回ってきた。利用者は 2026-09-16 に 07-trends.png を示し、画像の内容を作れるようにバックエンド・フロントエンド・UI・UX の観点で改善すること、既存に引っ張られすぎないこと、画像のままで汎用性が無いなら様々な情報の推移を管理できるように整えることを依頼した。",
+    "goals": [
+      {
+        "id": "G1",
+        "text": "/analysis/trends を 07-trends.png どおりの構成にする。期間タブ (1年/2年/3年/任意) と期間表示、問いの見出し『収支は、いつ・なぜ変わりましたか?』と説明、比較条件の帯 (分析の範囲 事業/家計/総合・表示する指標 支出/収入/純収支・比較対象 前期間/前年)、KPI 3 枚 (現在の値・前期間からの増減・最も変化が大きい月)、収支の推移チャート (収入/支出/純収支の今回の折れ線、比較期間の点線、月次差の棒、選択月の強調)、選択月の詳細パネル (収入/支出/純収支/比較期間の値、主な増減要因 上位 3、データの出典、該当明細を開く)、カテゴリ別の推移と増減の表 (12 か月の推移・今回合計・比較期間・増減額・増減率・構成比・寄与度、行を開くと取引先の内訳)、増減の要因のパレート図、増減が大きい項目の上位 3、下部の選択バー (選択中の月とカテゴリ、増減の明細を確認) を、共通シェル・トークン・Button・chart.js の共通設定の上に組む。既存の『手を打つ順番』は『傾向の判定を表示』で開閉できる根拠として下部に残す。"
+      },
+      {
+        "id": "G2",
+        "text": "推移の指標を登録制にする。指標定義 (id・表示名・月次系列の取り出し方・符号と良し悪しの向き・内訳の軸) を packages/core に置き、今回は収入・支出・純収支の 3 指標を登録する。画面・API・表は指標定義から描き、指標を足すときに画面と API の分岐を増やさない。"
+      },
+      {
+        "id": "G3",
+        "text": "推移に必要な集計を packages/core の純関数と API に置く。数値は総収支と同じ取引集合 (freee 取引と MF 明細を消し込んだ後、totalCashflowReport と同じ数え方) から数え、総合・事業・家計の値を概況と総収支画面に一致させる。範囲 (総合/事業/家計)・指標・比較対象 (前期間=直前の同じ長さ / 前年=前年の同じ月範囲) を受け取り、今回と比較期間の月次系列、月次差、KPI (現在値・増減額と率・最も変化が大きい月)、選択月の詳細 (各指標の値・増減要因 上位 3・出典の口座)、カテゴリ別の行 (直近 12 か月の系列・今回・比較・増減額・増減率・構成比・寄与度。カテゴリは MF 由来が大項目、freee 由来が勘定科目)、カテゴリ内の取引先別の行、パレート (増減額の降順と累計構成比) を返す。期間は既存の Dataset を切る設計 (sliceDataset) に従い、比較期間のデータは同じ方法で切り出す。全期間を選んだときは比較期間を作らず、KPI の増減は最も変化が大きい月の前月差で出す。要確認の MF 明細は総収支と同じく事業にも家計にも数えず、期間と選択月の要確認の件数と金額 (totalCashflowReport の月次 reviewCount・reviewAmount) を返す。開閉で残す傾向の判定は現行どおり MF 明細だけから trendsReport で計算し、どの基準で数えたかを返却に含める。"
+      },
+      {
+        "id": "G4",
+        "text": "推移から根拠の明細へ辿れるようにする。MF 由来の行の『該当明細を開く』『増減の明細を確認』は /classify へ月・範囲に加えてカテゴリと取引先 (専用の payee クエリ、明細の内容と完全一致、名寄せなし) の絞込クエリを渡して開き、明細画面はその絞込で表示する。freee 由来の行は MF 明細の画面に無いため、全体の期間選択を保ったまま総収支画面 (/analysis/total-cashflow) を開く。期間タブは全体の期間選択 (usePeriod) を操作し、範囲・指標・比較対象・選択月・選択カテゴリは URL に保持して再読込と共有で同じ表示に戻る。URL の値が形式違反なら既定値へ倒して画面を出す。"
+      },
+      {
+        "id": "G5",
+        "text": "増減の計算と要因の説明を単純で説明可能な規則として docs に明記しテストで固定する。増減額・増減率 (比較期間が 0 のときの表示)・構成比・寄与度・最も変化が大きい月の選び方・比較期間の定義・増減要因の説明文 (増減額が大きい取引先と件数から決まった形の文を作る。外部送信や AI 生成はしない) の規則を定め、境界値付きの core テストと DOM テストで固定する。数値の出所 (総収支と同じ取引集合)、全期間では比較を出さない規則、スパークラインを直近 12 か月とする規則も同じ docs に書く。要確認の明細を含めない規則と、傾向の判定だけは MF 明細を基準にする規則も同じ docs に書く。"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "O1",
+        "text": "推移タブが画像の全ブロックを描画する。",
+        "serves": [
+          "G1"
+        ],
+        "measure": "DOM テストで期間タブ・見出し・比較条件の帯・KPI 3 枚・推移チャート・詳細パネル・カテゴリ表と展開行・パレート図・上位 3・選択バーが描画され、傾向の判定は開閉で表示される。headless Chrome の視覚検査で推移の図が期待どおりの枚数描画される。要確認の明細がある期間では帯に件数と金額の注記と総収支へのリンクが出て、傾向の判定の見出しに基準 (MF の明細だけ) が表示される。"
+      },
+      {
+        "id": "O2",
+        "text": "範囲・指標・比較対象の切替で KPI・チャート・表・パレートが同じ条件の値に切り替わる。",
+        "serves": [
+          "G1",
+          "G2",
+          "G3"
+        ],
+        "measure": "core テストで 3 指標×3 範囲×2 比較対象の組合せについて、総合=事業+家計、純収支=収入-支出、カテゴリ行の今回合計の和=指標の期間合計、寄与度の和=100% (増減 0 を除く) が成り立つ。"
+      },
+      {
+        "id": "O3",
+        "text": "指標の追加が定義 1 件の追加で済む。",
+        "serves": [
+          "G2"
+        ],
+        "measure": "テスト用の指標定義を 1 件登録するだけで API の返却とチャートの系列に現れることを core と DOM のテストで確認する。"
+      },
+      {
+        "id": "O4",
+        "text": "選択した月・カテゴリ・取引先から絞り込んだ明細へ遷移できる。",
+        "serves": [
+          "G4"
+        ],
+        "measure": "DOM テストで MF 由来の行の遷移先 URL (/classify の month・cls・category・payee) が正しく、/classify がそのクエリで該当明細だけを表示する。freee 由来の行は /analysis/total-cashflow へ遷移する。URL の条件から推移の表示が復元され、形式違反の値は既定値で表示される。"
+      },
+      {
+        "id": "O5",
+        "text": "計算規則と説明文の規則が docs とテストで固定される。",
+        "serves": [
+          "G5"
+        ],
+        "measure": "docs に規則表 (数値の出所・要確認の明細を含めない規則・傾向の判定の基準・比較期間・全期間の扱い・直近 12 か月・口座が空の行の扱い) があり、比較期間 0・比較データ無し・全期間・増減 0・負の値・要確認 0 件と 1 件以上・口座が空の freee 行の境界値テストが通る。"
+      }
+    ],
+    "success_criteria": [
+      "S1 (G1): /analysis/trends で 07-trends.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button/PageShell/chart の共通設定経由で、直書き色の lint が 0 件である。",
+      "S2 (G2, G3): 3 指標×3 範囲×2 比較対象のどの組合せでも、画面の KPI・チャート・表の値が core の返却値と一致し、総合=事業+家計・純収支=収入-支出が成り立つ。総合・事業・家計の期間合計は同じ期間の総収支画面の値と一致する。",
+      "S3 (G2): 指標定義を 1 件足すだけで画面と API に新しい指標が現れ、画面と API のコードに指標 id の分岐が無い。",
+      "S4 (G4): 詳細パネルと選択バーからの遷移で、/classify が月・範囲・カテゴリ・取引先で絞り込んだ明細だけを表示し、推移の条件は URL から復元される。",
+      "S5 (G5): 計算規則と説明文の規則が docs に書かれ、境界値テストを含む vitest が通り、既存の傾向判定のテスト (trend-contract.test.ts) も壊れていない。"
+    ],
+    "stakeholders": [
+      "SH1 利用者 (単独の個人事業主): 月次の振り返りで推移を開いたとき、収支がいつ・どれだけ変わったか、その原因のカテゴリと取引先はどれかを前期間や前年と比べて掴み、必要なら根拠の明細を開いて確かめたい。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 集計・比較・説明文の規則が core の純関数・docs・テストで固定され、指標を足すときに画面と API を個別に直さずに済むこと。"
+    ],
+    "scope": {
+      "in": [
+        "推移タブ (07-trends.png) の画面構成の作り直し: 期間タブ・見出し・比較条件の帯・KPI・推移チャート・詳細パネル・カテゴリ表と取引先の展開行・パレート図・上位 3・選択バー、既存の傾向判定の開閉化",
+        "packages/core の推移集計の拡張と指標定義の登録制 (収入・支出・純収支)",
+        "GET /api/trends の条件 (範囲・指標・比較対象・選択月) と返却の拡張",
+        "明細画面 /classify のカテゴリ・取引先の絞込クエリ",
+        "計算規則と説明文の規則の docs とテスト"
+      ],
+      "out": [
+        "収入・支出・純収支以外の指標 (件数・口座別残高など) の実装: 登録制の型だけ用意し、指標の追加は後続で行う (利用者の選択による)",
+        "取引先の名寄せ規則: 明細の内容をそのまま取引先として集計する (利用者の選択による)",
+        "AI による説明文の生成と利用者のメモ入力: 規則による自動生成だけにする (利用者の選択による)",
+        "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗) の変更: 既存の共通シェルをそのまま使う",
+        "照合・総収支・マトリクス・診断の各タブの中身: それぞれの画面サイクルで扱う",
+        "web 以外の platform (専用アプリ)"
+      ]
+    },
+    "constraints": [
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1、web は React 18 + react-router-dom 7 + TanStack Query 5 + chart.js 4)。集計は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンとチャート系列色だけを使い、ボタンは共通 Button、本文は PageShell を使う。WCAG 2.2 AA (文字 4.5:1、部品 3:1) を維持し、増減の良し悪しを色だけで伝えない (符号と文字を併記する)。",
+      "C3 データ: 取込データは外部送信しない。説明文は端末外のサービスを使わずに作る。",
+      "C4 互換: 既存の傾向判定 (trendsReport の rows/pareto/breakdown) の値と既存テストを壊さない。旧 /trends の転送も維持する。傾向の判定は MF 明細だけを入力とする現行の基準のまま残し、画面上で基準の違いを明記する。",
+      "C5 運用: 単独利用で予算は Cloudflare の無料枠内。スキーマ変更が不要なら migration を足さない。"
+    ],
+    "concrete_intents": [
+      {
+        "id": "I1",
+        "text": "推移タブの上部に期間タブ (1年/2年/3年/任意) と期間表示を置き、全体の期間選択と同期させる。",
+        "serves": [
+          "G1",
+          "G4"
+        ]
+      },
+      {
+        "id": "I2",
+        "text": "問いの見出しの下に、分析の範囲・表示する指標・比較対象の 3 つの切替を 1 本の帯にまとめて置く。帯の末尾に、期間内に要確認の明細があれば『要確認 N 件 (計 X 円) は含みません』と総収支画面を開くリンクを出す。",
+        "serves": [
+          "G1"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "KPI 3 枚: 現在の値 (期間合計)、前期間 (または前年) からの増減の額と率、最も変化が大きい月とその増減と主な要因の一文。KPI の値は要確認の明細を含まない値である (帯の注記と対応する)。",
+        "serves": [
+          "G1",
+          "G3",
+          "G5"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "推移チャート: 収入・支出・純収支の今回の折れ線と、選んだ指標の比較期間の点線、月次差の棒、選択月の縦帯。月をクリックで選択月を変える。",
+        "serves": [
+          "G1",
+          "G3"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "詳細パネル: 選択月の収入・支出・純収支と比較期間の値、主な増減要因 上位 3 (カテゴリ・増減額・説明文)、データの出典 (口座名と件数)、該当明細を開くボタン。選択月に要確認の明細があればその件数と金額も出す。freee 由来の行で口座が空のものは口座名を『—』と表示し、口座別の件数には数えない。",
+        "serves": [
+          "G1",
+          "G3",
+          "G4",
+          "G5"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "カテゴリ別の推移と増減の表: 12 か月のスパークライン・今回合計・比較期間・増減額・増減率・構成比・寄与度。行を開くと取引先別の同じ列の内訳を出す。",
+        "serves": [
+          "G1",
+          "G3"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "増減の要因のパレート図 (増減額の棒と累計構成比の折れ線) と、増減が大きい項目の上位 3 のカード。",
+        "serves": [
+          "G1",
+          "G3"
+        ]
+      },
+      {
+        "id": "I8",
+        "text": "下部の選択バー: 選択中の月とカテゴリ (取引先) と増減額・率を出し、『増減の明細を確認』で絞込済みの明細へ遷移する。",
+        "serves": [
+          "G1",
+          "G4"
+        ]
+      },
+      {
+        "id": "I9",
+        "text": "指標定義の登録制: 収入・支出・純収支を定義として登録し、API はクエリの指標 id で定義を引く。",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I10",
+        "text": "/classify にカテゴリ・取引先の絞込クエリを追加する。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I11",
+        "text": "既存の『手を打つ順番』と傾向判定を『傾向の判定を表示』の開閉に移す。開閉部分の見出しに『MF の明細だけで判定』と基準を明記し、上半分の数字 (総収支と同じ取引集合) との違いを示す。",
+        "serves": [
+          "G1"
+        ]
+      },
+      {
+        "id": "I12",
+        "text": "計算規則と説明文の規則を docs に表で書き、境界値テストで固定する。",
+        "serves": [
+          "G5"
+        ]
+      }
+    ],
+    "confirmed": true,
+    "approval_ref": "appr-trends-review-001"
+  },
+  "decisions": [
+    {
+      "id": "dec-trends-datasource-001",
+      "question": "推移の数値をどの取引集合から数えるか (総収支と同じ freee+MF の消し込み後か、MF 明細だけか)",
+      "status": "confirmed",
+      "serves_goals": [
+        "G3",
+        "G4",
+        "G5"
+      ],
+      "options": [
+        {
+          "id": "opt-total-cashflow",
+          "label": "総収支と同じ取引集合 (totalCashflowReport)",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "monthly",
+            "tco": "Cloudflare Workers Free と D1 Free の枠内で追加費用 0。差は保守の手間だけ。"
+          },
+          "free_tier_limits": "D1 Free は 1 日 500 万行の読み取り。推移 1 回の読み取りは総収支 API (routes/total-cashflow.ts) と同じく Dataset と freee 系 4 表を 1 回ずつ読む量で、単独利用の範囲に収まる。",
+          "goal_fit": "G3 の『概況・総収支と一致する値』を満たし、事業費・事業収入を freee 側から数えるため事業の推移が会計と合う。",
+          "security_fit": "読み取り専用で、freee 系 4 表も user_id で絞る既存の loadReviewSources と同じ経路を使う。",
+          "pros": [
+            "総合・事業の値が概況と総収支画面に一致する",
+            "消し込み・除外・要確認の扱いを総収支と共有し二重実装しない"
+          ],
+          "cons": [
+            "freee 由来の行は /classify で開けないため遷移先が 2 種類になる",
+            "1 リクエストの読み取り表が現行の推移より増える"
+          ],
+          "risks": [
+            "総収支の数え方が変わると推移も変わる (共有の純関数を通すので差は出ないが、テストで一致を固定する必要がある)"
+          ],
+          "lock_in": "既存の core 純関数に依存するだけで外部サービスへの依存は増えない。",
+          "ops_burden": "総収支の規則変更時に推移の一致テストが落ちるので、原因の特定が容易。",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/platform/limits/",
+            "https://developers.cloudflare.com/workers/platform/limits/"
+          ]
+        },
+        {
+          "id": "opt-mf-only",
+          "label": "MF 明細だけ (現行 /api/trends と同じ)",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "monthly",
+            "tco": "Cloudflare Workers Free と D1 Free の枠内で追加費用 0。差は保守の手間だけ。"
+          },
+          "free_tier_limits": "D1 Free の読み取りは現行と同じ量。",
+          "goal_fit": "家計の推移は出せるが、事業の値が freee と一致せず G3 の一致条件を満たさない。",
+          "security_fit": "読み取り表が少ない。",
+          "pros": [
+            "全行を /classify で開ける",
+            "現行の実装に近く変更が小さい"
+          ],
+          "cons": [
+            "事業収入・事業費が概況と総収支画面の値とずれる",
+            "消し込みの結果が推移に反映されない"
+          ],
+          "risks": [
+            "画面ごとに数字が違い、利用者がどれを信じるかを判断できなくなる"
+          ],
+          "lock_in": "外部依存は増えない。",
+          "ops_burden": "数字の不一致についての問い合わせ (自分自身の再確認) が続く。",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/platform/limits/",
+            "https://developers.cloudflare.com/workers/platform/limits/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-total-cashflow",
+        "rationale": "推移の価値は『いつ・なぜ変わったか』を信じられる数字で示すことで、概況と総収支画面と値が違えば根拠にならない。費用は両案とも無料枠内で差が無い。",
+        "caveats": [
+          "freee 由来の行は総収支画面へ遷移させ、ボタンの文言で遷移先の違いを示す",
+          "総収支との一致を core のテストで固定する"
+        ],
+        "confidence": "high",
+        "latest_checked_at": "2026-09-16T09:31:19Z",
+        "comparison_basis": {
+          "goal_fit": "G3 の一致条件を満たすのは総収支と同じ集合だけ。",
+          "tco": "両案とも Cloudflare の無料枠内で費用差 0。",
+          "security": "両案とも読み取り専用で user_id で絞る。差は読み取る表の数だけ。",
+          "operations": "共有の純関数を使う案のほうが規則変更の追従が 1 か所で済む。",
+          "lock_in": "両案とも外部依存を増やさない。"
+        }
+      },
+      "user_decision": {
+        "option_id": "opt-total-cashflow",
+        "confirmed_at": "2026-09-16T09:50:42Z"
+      }
+    },
+    {
+      "id": "dec-trends-review-rows-001",
+      "question": "推移の数値に要確認の MF 明細をどう扱うか (含めず件数を表示するか、公私仕分けで仮に数えるか)",
+      "status": "confirmed",
+      "serves_goals": [
+        "G1",
+        "G3",
+        "G5"
+      ],
+      "options": [
+        {
+          "id": "opt-exclude-with-note",
+          "label": "含めず件数と金額を注記する",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "monthly",
+            "tco": "Cloudflare Workers Free と D1 Free の枠内で追加費用 0。差は実装と保守の手間だけ。"
+          },
+          "free_tier_limits": "件数と金額は totalCashflowReport が既に返す reviewCount・reviewAmount を使うので、D1 の読み取りは増えない。",
+          "goal_fit": "G3 の『総収支と一致する値』を保ったまま、G1 の画面上で欠けている量を見せられる。",
+          "security_fit": "追加の入力も書込みも無い。",
+          "pros": [
+            "推移の値が総収支と常に一致する",
+            "欠けている量と片付ける場所 (総収支) が画面から分かる"
+          ],
+          "cons": [
+            "要確認が片付くまで推移の値は確定前の値になる"
+          ],
+          "risks": [
+            "注記を見落とすと少なく出た値をそのまま読む (帯の中で件数と金額を数字で出して目に入れる)"
+          ],
+          "lock_in": "外部依存は増えない。",
+          "ops_burden": "総収支の要確認の規則をそのまま使うので、推移側で保守する規則は増えない。",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/platform/limits/",
+            "https://developers.cloudflare.com/workers/platform/limits/"
+          ]
+        },
+        {
+          "id": "opt-count-provisionally",
+          "label": "公私仕分け (resolveTx) で仮に数える",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "monthly",
+            "tco": "Cloudflare Workers Free と D1 Free の枠内で追加費用 0。差は実装と保守の手間だけ。"
+          },
+          "free_tier_limits": "読み取り量は同じ。",
+          "goal_fit": "月次クローズの途中でも値が欠けないが、G3 の総収支との一致条件を満たさない。",
+          "security_fit": "追加の入力も書込みも無い。",
+          "pros": [
+            "要確認が残っていても推移の値が大きく欠けない"
+          ],
+          "cons": [
+            "推移の合計が総収支と一致しなくなる",
+            "要確認の明細を二重に数える可能性を推移側で別に防ぐ必要がある"
+          ],
+          "risks": [
+            "決定 008 (総収支と同じ数値) と矛盾し、画面ごとに数字が違う状態に戻る"
+          ],
+          "lock_in": "外部依存は増えない。",
+          "ops_burden": "推移だけの数え方を別に保守する必要がある。",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/platform/limits/",
+            "https://developers.cloudflare.com/workers/platform/limits/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-exclude-with-note",
+        "rationale": "決定 008 で推移の値を総収支と一致させると決めたため、要確認の扱いも総収支と揃えるのが一貫する。欠けている量は数字で注記すれば読み違えを防げる。",
+        "caveats": [
+          "帯の注記に件数と金額を数字で出す",
+          "総収支画面へのリンクを同じ場所に置く"
+        ],
+        "confidence": "high",
+        "latest_checked_at": "2026-09-16T10:09:59Z",
+        "comparison_basis": {
+          "goal_fit": "G3 の一致条件を満たすのは含めない案だけ。",
+          "tco": "両案とも Cloudflare の無料枠内で費用差 0。",
+          "security": "両案とも読み取り専用で user_id で絞る。差は無い。",
+          "operations": "含めない案は総収支の規則を共有するだけで、推移側の規則が増えない。",
+          "lock_in": "両案とも外部依存を増やさない。"
+        }
+      },
+      "user_decision": {
+        "option_id": "opt-exclude-with-note",
+        "confirmed_at": "2026-09-16T10:09:59Z"
+      }
+    },
+    {
+      "id": "dec-trends-judgement-source-001",
+      "question": "開閉で残す傾向の判定を MF 明細のまま計算するか、総収支と同じ取引集合へ移すか",
+      "status": "confirmed",
+      "serves_goals": [
+        "G1",
+        "G3",
+        "G5"
+      ],
+      "options": [
+        {
+          "id": "opt-keep-mf-with-label",
+          "label": "MF 明細のまま計算し、基準を見出しに明記する",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "monthly",
+            "tco": "Cloudflare Workers Free と D1 Free の枠内で追加費用 0。差は実装と保守の手間だけ。"
+          },
+          "free_tier_limits": "trendsReport は既に読み込む Dataset を使うので、D1 の読み取りは増えない。",
+          "goal_fit": "C4 (既存の傾向判定の値とテストを壊さない) を満たし、G5 の規則の固定も既存テストで続けられる。",
+          "security_fit": "変更が無い。",
+          "pros": [
+            "trend-contract.test.ts をそのまま使える",
+            "既存の判定結果が変わらない"
+          ],
+          "cons": [
+            "同じ画面に基準の違う数字が 2 種類並ぶ"
+          ],
+          "risks": [
+            "見出しの明記を読まずに上半分と比べると食い違いに見える (見出しと docs の両方に基準を書く)"
+          ],
+          "lock_in": "外部依存は増えない。",
+          "ops_burden": "基準が 2 つあることを docs の規則表で管理する。",
+          "evidence_refs": [
+            "https://owasp.org/www-project-application-security-verification-standard/"
+          ]
+        },
+        {
+          "id": "opt-move-to-total-cashflow",
+          "label": "総収支と同じ取引集合へ移す",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "monthly",
+            "tco": "Cloudflare Workers Free と D1 Free の枠内で追加費用 0。差は実装と保守の手間だけ。"
+          },
+          "free_tier_limits": "読み取り量は同じ。",
+          "goal_fit": "画面全体の基準が 1 つになるが、C4 を改める必要がある。",
+          "security_fit": "変更が無い。",
+          "pros": [
+            "画面内の数字の基準が 1 つになる"
+          ],
+          "cons": [
+            "C4 を改め trend-contract.test.ts の期待値を更新する必要がある",
+            "既存の判定結果が変わる"
+          ],
+          "risks": [
+            "freee の勘定科目と MF の大項目が混ざる系列で傾向の検定を行うことになり、既存の判定の意味が変わる"
+          ],
+          "lock_in": "外部依存は増えない。",
+          "ops_burden": "既存の判定ロジックとテストの作り直しが要る。",
+          "evidence_refs": [
+            "https://owasp.org/www-project-application-security-verification-standard/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-keep-mf-with-label",
+        "rationale": "承認済みの C4 を守れ、既存の判定の意味も変わらない。基準の違いは見出しの明記で読み違いを防げる。",
+        "caveats": [
+          "開閉部分の見出しに『MF の明細だけで判定』と書く",
+          "docs の規則表に 2 つの基準を並べて書く"
+        ],
+        "confidence": "medium",
+        "latest_checked_at": "2026-09-16T10:09:59Z",
+        "comparison_basis": {
+          "goal_fit": "C4 を満たすのは MF 明細のまま残す案だけ。",
+          "tco": "両案とも Cloudflare の無料枠内で費用差 0。",
+          "security": "両案とも読み取り専用で user_id で絞る。差は無い。",
+          "operations": "残す案は既存テストをそのまま使え、移す案は判定ロジックとテストの作り直しが要る。",
+          "lock_in": "両案とも外部依存を増やさない。"
+        }
+      },
+      "user_decision": {
+        "option_id": "opt-keep-mf-with-label",
+        "confirmed_at": "2026-09-16T10:09:59Z"
+      }
+    }
+  ],
+  "knowledge_candidates": [],
+  "design_applications": {
+    "database": {
+      "text": "Domain-Driven Design の集約境界を、推移では『読むだけ』の側に適用した。freee_deals・duplicate_verdicts・freee_deal_exclusions・mf_tx_exclusions は総収支の判定作業が所有する集約で、推移はそれを書き換えず、同じ読み取り関数 (loadReviewSources) を通して参照する。推移専用の表を作らないので、集約の不変条件 (1 つの MF 明細は消し込み・除外・要確認のどれか 1 つ) の持ち主は総収支のまま 1 か所に保たれる。",
+      "recorded_at": "2026-09-16T09:55:39Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design の『既定で安全』を、新しい経路を足さないことで適用した。推移 API は既存の authGuard と mustChangePasswordFence の内側にだけ置き、freee 系 4 表の読み取りも既存の userId 絞込を再利用する。推移のために認可の例外や別の Cookie を作らないので、セッション失効 (session_generation) がそのまま推移にも効く。",
+      "recorded_at": "2026-09-16T09:55:39Z",
+      "basis": "agent-inference"
+    },
+    "ui-ux": {
+      "text": "Information Design の『頻度 × 失敗コストで束を並べる』を適用した。最も見る頻度が高く読み違えの損失が大きい『どの月にいくら変わったか』(KPI と選択月の詳細) を最上位に置き、傾向の判定は開閉の根拠へ下げた。全期間では比較の数字を出さず理由の文を出すことで、意味の無い比較値を読ませない。遷移先の違い (総収支 / 明細) はボタンの文言で先に示す。",
+      "recorded_at": "2026-09-16T09:55:39Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "Secure by Design の『入力は許可リストで検証し、失敗は安全側へ倒す』を適用した。scope・compare・month は既定値へ倒し、評価の入口になる metric だけ 400 で止める。payee は取得後の配列の完全一致比較にだけ使い、SQL・HTML・関数名のどれにも渡さない。",
+      "recorded_at": "2026-09-16T09:55:39Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "既存の Worker 1 本の構成を保ち、推移の読み取り量を概況・総収支 API と同じ『Dataset と freee 系 4 表を 1 回ずつ』に揃えた。比較期間を別問い合わせにせず同じ読み取り結果から切るので、D1 の無料枠と Workers の CPU 時間の見積もりは総収支 API の実績をそのまま使える。",
+      "recorded_at": "2026-09-16T09:55:39Z",
+      "basis": "agent-inference"
+    },
+    "backend": {
+      "text": "Clean Architecture の依存方向を、数え方を core の totalCashflowReport 1 か所に置くことで適用した。API (analytics.ts) は D1 から読んで core へ渡すだけで、消し込み・除外・要確認の規則を持たない。API Design Patterns の『列挙型パラメータと既定値』は scope・compare に、『互換の別名』は all/biz/personal に適用した。Domain-Driven Design の用語は総収支と揃え、事業=freee の勘定科目、家計=MF の大項目と軸を分けた。",
+      "recorded_at": "2026-09-16T09:55:39Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "Clean Architecture の境界を、画面が数値を計算しないことで適用した。Trends.tsx は API の返却値を描くだけで、総合=事業+家計の足し算もしない。Information Design は遷移先の出し分け (MF 行は /classify、freee 行は総収支) とスパークラインを 12 か月に揃える規則として、部品ではなく行の種別と表示規則に落とした。",
+      "recorded_at": "2026-09-16T09:55:39Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "Clean Code の『規則は名前の付いた 1 か所に』を、計算規則と数値の出所を docs/trends-screen.md の表と core の境界値テストの対に置くことで適用した。総収支との一致テストを置くので、総収支の規則変更が推移へ波及したときに黙って値が変わらず、テストの失敗として現れる。",
+      "recorded_at": "2026-09-16T09:55:39Z",
+      "basis": "agent-inference"
+    }
+  },
+  "hearing_progress": {
+    "loop_count": 2,
+    "next_question": null,
+    "complete": true
+  },
+  "doctrine_applications": {
+    "database": {
+      "data-access": {
+        "text": "推移は新しい表も migration も足さず、Dataset と freee 系 4 表を総収支と同じ関数で読む。永続化の形は総収支の判定作業が所有したままにする。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "説明文も集計結果も保存しないので、推移の値は元データから常に再計算でき、バックアップ・復元の対象と手順は変わらない。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      }
+    },
+    "auth": {
+      "authentication": {
+        "text": "GET /api/trends を authGuard の内側に置き、推移のために認証の例外経路を作らない。session_generation による即時失効が推移の読み取りにもそのまま効く。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      },
+      "security": {
+        "text": "freee 系 4 表の読み取りを loadReviewSources と同じ userId 絞込で行い、利用者の境界を越える読み取りを足さない (ASVS の access control を既存経路の再利用で満たす)。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      }
+    },
+    "ui-ux": {
+      "presentation": {
+        "text": "期間・範囲・指標・比較対象を見出し直下の 1 本の帯に集め、KPI と選択月の詳細を最上位に置いた。全期間では比較の数字を出さない。増減は色と符号と文字の 3 つで伝える。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      }
+    },
+    "security": {
+      "security": {
+        "text": "未登録の metric だけ 400 で止め、scope・compare・month は既定値へ倒す。payee は完全一致の比較にだけ使い、SQL と HTML へ渡さない。読取専用のため監査ログの対象の書込は増えない。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "reliability": {
+        "text": "推移 1 回の D1 読み取りを総収支 API と同じく Dataset と freee 系 4 表の 1 回ずつに揃え、比較期間の追加問い合わせをしないので、無料枠と CPU 時間の余裕は総収支の実績で見積もれる。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      },
+      "operations": {
+        "text": "migration を伴わないので migrate.yml は動かさず、ci.yml と deploy.yml の既存の流れだけで出せる。戻すときは Worker の前の版へ戻すだけで済む。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      }
+    },
+    "backend": {
+      "application-architecture": {
+        "text": "集計規則を core の純関数 (totalCashflowReport と推移の集計) に置き、api は D1 から読んで渡すだけにした。依存は api → core の内向きだけで、core は D1 も Hono も知らない。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "D1 の読み取りを analytics.ts の loadScoped と loadReviewSources に閉じ、core には行の配列だけを渡す。推移のために core から DB を触る経路は作らない。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "presentation": {
+        "text": "増減は符号と文字を併記して色だけに頼らず、全期間では比較の切替を無効にして理由を文で出す。遷移先の違いはボタンの文言で示す。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      },
+      "application-architecture": {
+        "text": "画面は API の返却値を描くだけで足し算や比較期間の計算をしない。状態は URL の検索パラメータと usePeriod に置き、コンポーネントの内部状態に条件を閉じ込めない。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      }
+    },
+    "maintenance-ops": {
+      "operations": {
+        "text": "総収支との値の一致を core のテストで固定し、pnpm verify:full に含める。規則変更の影響はテストの失敗として出るので、運用中に数字のずれを目で探す作業を作らない。",
+        "recorded_at": "2026-09-16T09:55:39Z",
+        "basis": "agent-inference"
+      }
+    }
+  }
+}

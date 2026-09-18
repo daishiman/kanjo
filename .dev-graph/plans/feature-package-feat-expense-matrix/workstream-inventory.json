@@ -1,0 +1,1223 @@
+{
+  "feature_package_id": "feature-package/feat-expense-matrix",
+  "parent_feature": "feat-expense-matrix",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "git"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/00-requirements-definition.md",
+      "system-spec/completeness-findings.json",
+      "specs/spec-expense-matrix-screen.md",
+      "features/feat-expense-matrix.md",
+      "features/feat-expense-matrix.context.json"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "specs/spec-expense-matrix-screen.md の画面構成要素・集計規則・§3.5 の行 かける 月のセル値と検算済み合計と平均・URL クエリ契約・2 経路の API 契約を docs/matrix/requirements-baseline.md へ転記し、原文との差分が0件である。",
+        "持ち越し4件 (偏り度スコアの標準偏差の下限値・構成比と前年差の丸め桁・明細導線の実クエリ形・取引先名の正規化の適用範囲) を一覧化し、本 task ではいずれの値も確定または仮置きしない。",
+        "参照画像が掲げる合計 1,065.5 と 1,066.2 と 1,082.0 を採らず §3.5 の検算値 (総計 1,062.6 / 平均 88.5) を正本とする理由を requirements-baseline.md に記録している。",
+        "各持ち越し事項がどの task (P04 の失敗テストと P05 の実装) で契約テストとして確定される予定かを記録している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p01.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p01.md",
+        "graph_node_id": "SYS-MATRIX-P01",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-MATRIX-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "docs/matrix/requirements-baseline.md の追加コミットを revert する。他ファイルへの書込みがないため単独で戻せる。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "specs/spec-expense-matrix-screen.md",
+        "system-spec/00-requirements-definition.md",
+        "system-spec/completeness-findings.json"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p01",
+        "requirements"
+      ],
+      "title": "要件ベースライン確定と持ち越し4件の着手時整理",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint (既存の文書検査が緑のままであることを確認する)"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/matrix/requirements-baseline.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "core の返り値契約 (months・rows の key と label と series と total と average・columnTotals・columnAverages・grandTotal・grandAverage・heatScale の min と max と steps 7) が関数名と型の水準で記録されている。",
+        "偏り度スコア score(cell) が月方向 z 値と行方向 z 値の大きい方に前月比増加率の正の部分を加えた式として記録され、同点解消の順序と示唆 6 パターンの適用条件が記録されている。",
+        "GET /api/matrix のクエリ (scope と axis と mode) と GET /api/matrix/cell のクエリ (month と axis と key と scope) の受理値と応答形 (取引上位 10 件と truncated) が記録されている。",
+        "URL クエリ 4 項目の名前と値域、期間は既存 usePeriod を引き継ぐこと、画面側で再集計しないことが記録されている。",
+        "表示期間の前後 12 か月まで読み広げ、集計範囲は表示期間のままとする読み取り境界が記録され、新しい保存と migration を伴わないことが明記されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p02.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P01"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p02.md",
+        "graph_node_id": "SYS-MATRIX-P02",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-MATRIX-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "docs/matrix/design-decisions.md の追加コミットを revert する。実装コードに未反映のため単独で戻せる。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "data"
+      ],
+      "source_lineage": [
+        "specs/spec-expense-matrix-screen.md",
+        "architecture/expense-matrix-backend.md",
+        "architecture/expense-matrix-frontend.md",
+        "architecture/expense-matrix-database.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p02",
+        "architecture"
+      ],
+      "title": "core 集計関数・2 経路 API・URL 単一真実のワークストリーム設計決定記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint (既存の文書検査が緑のままであることを確認する)"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/matrix/design-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "合計と平均と構成比と濃淡階級と偏り上位 3 点が core の 1 か所だけで算出される設計であることを確認し、画面側または API 側に二重の算出経路が残らないことを記録している。",
+        "既存の matrix CSV が同じ core 関数へ付け替えられる設計であることを確認し、CSV と画面の金額が構造的に一致することを記録している。",
+        "期待値の出所が §3.5 の検算値であり参照画像の合計欄ではないことを確認し、相違点を記録している。",
+        "新設 2 経路が既存 authGuard の内側にあり、利用者 id による絞り込みが両経路に入る設計であることを確認している。",
+        "指摘事項がある場合は重大度と対応先 task を明記し、未対応の重大な指摘が0件である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p03.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P02"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p03.md",
+        "graph_node_id": "SYS-MATRIX-P03",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-MATRIX-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "docs/matrix/design-review.md の追加コミットを revert する。実装コードに未反映のため単独で戻せる。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend"
+      ],
+      "source_lineage": [
+        "docs/matrix/design-decisions.md",
+        "specs/spec-expense-matrix-screen.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p03",
+        "design-review"
+      ],
+      "title": "集計契約・API 契約・URL 契約の独立レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint (既存の文書検査が緑のままであることを確認する)"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/matrix/design-review.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "core の境界値テストが §3.5 のセル値から合計と平均と構成比と 7 階級の階級境界と偏り上位 3 点の順序を厳密一致で固定し、旧実装に対して落ちる。",
+        "偏り度スコアの標準偏差の下限値と、構成比と前年差の丸め桁を契約テストの値として確定し、docs/matrix/requirements-baseline.md の持ち越し一覧へ確定済みとして反映している。",
+        "API テストが scope と axis と mode と month と key の許可リスト外の値に 400 を返すこと、未認証の要求が新設 2 経路で拒否されること、他の利用者の範囲を指す key に空の内訳が返ることを固定している。",
+        "DOM テストが切替 3 群と合計行と合計列と平均行と平均列と濃淡階級とセル選択と詳細パネルと偏り 3 点と空状態と下部バーと読込と失敗、および URL からの復元を固定している。",
+        "選択セルの回帰根拠 (広告宣伝費 かける 2026年03月 の金額 240,000 円、前月比 プラス 120,000 円 の プラス 100.0 パーセント、前年同月比 プラス 180,000 円 の プラス 300.0 パーセント、取引 3 件) が詳細パネルのテストに入っている。",
+        "明細導線の実クエリ形と取引先名の正規化の適用範囲を契約テストで確定している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p04.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P03"
+      ],
+      "deploy_unit": "N/A: テストコードは配布物に含まれない",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p04.md",
+        "graph_node_id": "SYS-MATRIX-P04",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-MATRIX-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "追加および更新したテストファイルのコミットを revert する。製品コードへ未反映のため単独で戻せる。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend"
+      ],
+      "source_lineage": [
+        "docs/matrix/design-decisions.md",
+        "specs/spec-expense-matrix-screen.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p04",
+        "test-design"
+      ],
+      "title": "core 境界値・API 契約・DOM の失敗テスト先行作成 (持ち越し4件を契約テストで固定)",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test (新規の境界値テストが実装前に落ちることを確認する)",
+        "pnpm --filter @kanjo/api test (新規の API テストが実装前に落ちることを確認する)",
+        "pnpm --filter @kanjo/web test (新規の DOM テストが実装前に落ちることを確認する)"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/test/matrix-contract.test.ts",
+        "packages/api/test/matrix-routes.test.ts",
+        "packages/web/src/matrix-visual.dom.test.tsx",
+        "packages/web/src/matrix-legend.dom.test.tsx",
+        "packages/web/src/matrix-cell.dom.test.tsx"
+      ]
+    },
+    {
+      "acceptance": [
+        "core の集計純関数が months と rows と columnTotals と columnAverages と grandTotal と grandAverage と heatScale を返し、スコープ 3 種と軸 2 種とモード 3 種の全組合せで P04 の境界値テストが緑である。",
+        "GET /api/matrix が scope と axis と mode を受理し、GET /api/matrix/cell が month と axis と key と scope を受理して取引上位 10 件と truncated を返し、既存 matrix CSV が同じ core 関数へ付け替えられている。",
+        "新設 2 経路が既存 authGuard の内側にあり、両経路が利用者 id で行を絞り、許可リスト外の列挙値に既定値へ倒さず 400 を返す。",
+        "マトリックス画面が参照画像の構成要素を全て描画し、URL クエリ 4 項目から切替と選択が復元され、画面側の再集計 (cell(series, i) 相当) が残っていない。",
+        "色と余白と部品がトークンと共通 Button と PageShell 経由で、本画面に危険な生 HTML 挿入 (dangerouslySetInnerHTML) が0件である。",
+        "サイドバーとヘッダーとフッターの実装差分が表記統一のみで、routeMetadata の label と journeyHint も マトリックス へ揃っている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p05.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P04"
+      ],
+      "deploy_unit": "web ビルドと Worker (既存の配信単位。新しい binding と migration を伴わない)",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p05.md",
+        "graph_node_id": "SYS-MATRIX-P05",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-MATRIX-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "本 task のコミットを revert する。新しい表と migration を伴わないため、データの巻き戻しは不要で、配信済みなら直前のビルドへ戻す。",
+      "secondary_workstreams": [
+        "backend",
+        "api",
+        "data",
+        "security"
+      ],
+      "source_lineage": [
+        "docs/matrix/design-decisions.md",
+        "specs/spec-expense-matrix-screen.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p05",
+        "implementation"
+      ],
+      "title": "core 集計純関数・2 経路 API・マトリックス画面・表記統一の実装",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test",
+        "pnpm typecheck"
+      ],
+      "workstream_kind": "frontend",
+      "write_scope": [
+        "packages/core/src/analysis.ts",
+        "packages/core/src/csv.ts",
+        "packages/core/src/dataset.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/web/src/pages/analysis/Matrix.tsx",
+        "packages/web/src/routeMetadata.ts"
+      ]
+    },
+    {
+      "acceptance": [
+        "pnpm test と pnpm typecheck と pnpm lint の実行結果 (実行日時と件数と結果) が docs/matrix/test-run.md に記録されている。",
+        "既存の分析タブ (照合・総収支・推移・診断) のテストが緑であることが記録されている。",
+        "落ちたテストがある場合は原因と修正先 task が記録され、未解決の赤が0件である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p06.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P05"
+      ],
+      "deploy_unit": "N/A: 実行記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p06.md",
+        "graph_node_id": "SYS-MATRIX-P06",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-MATRIX-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "docs/matrix/test-run.md の追加コミットを revert する。製品コードへの書込みがないため単独で戻せる。",
+      "source_lineage": [
+        "docs/matrix/design-decisions.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p06",
+        "test-run"
+      ],
+      "title": "全テストと型検査と lint の実行記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/matrix/test-run.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "S1 として、マトリックス画面で参照画像の構成要素が全て描画され、直書き色の lint が 0 件であることを確認し記録している。",
+        "S2 として、セルを選ぶと詳細パネルと下部バーが同じ金額と前月比と前年同月比を示し、含まれる取引の合計がセル金額と一致し、明細導線が対象の月とカテゴリで絞った明細へ遷移することを確認し記録している。",
+        "S3 として、偏りが大きい 3 点の選定規則が docs に明記され境界値テストで固定され、表示中のスコープと軸と期間と同じ条件で算出されることを確認し記録している。",
+        "S4 として、スコープ 3 種と軸 2 種とモード 3 種の全組合せで合計と平均と構成比が表の値と一致し、matrix CSV および総収支と推移の同一期間の金額と一致することを確認し記録している。",
+        "S5 として、サイドバーとヘッダーとフッターの実装差分が表記統一のみであり、既存の分析タブのテストが緑であることを確認し記録している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p07.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P06"
+      ],
+      "deploy_unit": "N/A: 検証記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p07.md",
+        "graph_node_id": "SYS-MATRIX-P07",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-MATRIX-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "docs/matrix/acceptance.md の追加コミットを revert する。製品コードへの書込みがないため単独で戻せる。",
+      "secondary_workstreams": [
+        "frontend"
+      ],
+      "source_lineage": [
+        "docs/matrix/requirements-baseline.md",
+        "specs/spec-expense-matrix-screen.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p07",
+        "acceptance"
+      ],
+      "title": "受入基準 S1 から S5 の検証",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm --filter @kanjo/web lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/matrix/acceptance.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "画面側の月次集計と階級決定と順位付けのコードが残っていないことを検索で確認し、該当0件である。",
+        "matrix CSV が core の同一関数を経由し、CSV 専用の集計経路が残っていない。",
+        "新しいテーブルと migration を追加していないことを確認し、データの前進のみの整合を確かめる必要がないことを記録している。",
+        "整理の前後で pnpm test と pnpm typecheck が緑である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p08.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P07"
+      ],
+      "deploy_unit": "web ビルドと Worker (既存の配信単位)",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p08.md",
+        "graph_node_id": "SYS-MATRIX-P08",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-MATRIX-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "本 task のコミットを revert する。新しい表と migration を伴わないため、データの巻き戻しは不要である。",
+      "secondary_workstreams": [
+        "backend",
+        "frontend"
+      ],
+      "source_lineage": [
+        "docs/matrix/design-review.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p08",
+        "refactoring"
+      ],
+      "title": "重複算出経路の除去と既存 matrix 利用箇所の整理",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/src/analysis.ts",
+        "packages/core/src/csv.ts",
+        "packages/web/src/pages/analysis/Matrix.tsx"
+      ]
+    },
+    {
+      "acceptance": [
+        "セルがキーボードの Tab と矢印で移動でき Enter で選択でき、選択中が aria-selected と枠線で示されることを確認し記録している。",
+        "列挙値の許可リスト外と書式違いの month と長さ上限超過の key に 400 が返り、既定値へ倒れないことを確認し記録している。",
+        "明細を返す応答に Cache-Control の no-store が付き、URL に金額と個人名が入らないことを確認し記録している。",
+        "CSV の先頭が等号とプラスとマイナスとアットマークのいずれかになる値に数式エスケープが効くことを確認し記録している。",
+        "JS バンドル予算を build:bundle の直後に測り、超えていないことを確認し記録している。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p09.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P08"
+      ],
+      "deploy_unit": "N/A: 保証確認の記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p09.md",
+        "graph_node_id": "SYS-MATRIX-P09",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-MATRIX-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "docs/matrix/quality-assurance.md の追加コミットを revert する。製品コードへの書込みがないため単独で戻せる。",
+      "secondary_workstreams": [
+        "security",
+        "frontend"
+      ],
+      "source_lineage": [
+        "architecture/expense-matrix-security.md",
+        "architecture/expense-matrix-infrastructure.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p09",
+        "quality-assurance"
+      ],
+      "title": "アクセシビリティ・入力検証・応答上限・JS バンドル予算の保証確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/web build:bundle",
+        "pnpm --filter @kanjo/web js-budget",
+        "pnpm --filter @kanjo/web test",
+        "pnpm --filter @kanjo/api test"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/matrix/quality-assurance.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入記録と保証記録とテスト実行記録の間に矛盾がないことを確認し記録している。",
+        "core の境界値テストが旧実装に対して落ちることを確認し記録している。",
+        "持ち越し4件が全て契約テストで確定済みであるか、未確定なら次サイクルの候補として明記されている。",
+        "未対応の重大な指摘が0件である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p10.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P09"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p10.md",
+        "graph_node_id": "SYS-MATRIX-P10",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-MATRIX-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "docs/matrix/final-review.md の追加コミットを revert する。製品コードへの書込みがないため単独で戻せる。",
+      "source_lineage": [
+        "docs/matrix/acceptance.md",
+        "docs/matrix/quality-assurance.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p10",
+        "final-review"
+      ],
+      "title": "独立最終レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/matrix/final-review.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "仕様書の確定章と architecture 8 章と各 phase の記録への参照が索引に揃っている。",
+        "§3.5 の検算値と参照画像の合計欄の相違、および正本がどちらかが索引から辿れる。",
+        "検証に使ったコマンドが列挙され、同じ手順で再実行できる。",
+        "索引中のリンク先が全て実在する。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p11.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P10"
+      ],
+      "deploy_unit": "N/A: 索引のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p11.md",
+        "graph_node_id": "SYS-MATRIX-P11",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-MATRIX-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "docs/matrix/evidence-index.md の追加コミットを revert する。他ファイルへの書込みがないため単独で戻せる。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/matrix/final-review.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p11",
+        "evidence"
+      ],
+      "title": "再現可能な証跡索引の作成",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint (既存の文書検査が緑のままであることを確認する)"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/matrix/evidence-index.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "集計規則と 7 階級の濃淡と偏り 3 点の選定規則と示唆 6 パターンと未記帳月の扱いが docs に記載されている。",
+        "UI の決定 (URL 単一真実・取得 2 本・セルの操作) が docs/ui-decisions.md に追記されている。",
+        "docs の記載と core の実装とテストの期待値が一致している。",
+        "表記の統一がサイドバーと routeMetadata と画面見出しの 3 か所で確認され、旧表記が残っていない。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p12.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P11"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p12.md",
+        "graph_node_id": "SYS-MATRIX-P12",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-MATRIX-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "本 task の docs コミットを revert する。製品コードへの書込みがないため単独で戻せる。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "docs/matrix/design-decisions.md",
+        "specs/spec-expense-matrix-screen.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p12",
+        "documentation"
+      ],
+      "title": "集計規則と表記統一の docs 最終同期",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint",
+        "pnpm test"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/ui-decisions.md",
+        "docs/data-schema.md",
+        "docs/design-system.md",
+        "docs/matrix/aggregation-rules.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "全変更が単一の PR にまとまり、本文に dev-graph の graph_node_id が記載されている。",
+        "配信前に pnpm test と pnpm typecheck と pnpm lint が緑である。",
+        "配信後に マトリックス画面 が参照画像どおりに表示され、既存の分析タブが壊れていないことを確認し記録している。",
+        "差し戻し手順 (直前のビルドへ戻す) が記録され、データの巻き戻しが不要であることが明記されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-expense-matrix/sys-matrix-p13.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-MATRIX-P12"
+      ],
+      "deploy_unit": "web ビルドと Worker (単一 PR で同時に配信する)",
+      "feature_package_id": "feature-package/feat-expense-matrix",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-expense-matrix",
+        "file_path": "tasks/feat-expense-matrix/sys-matrix-p13.md",
+        "graph_node_id": "SYS-MATRIX-P13",
+        "parent_feature": "feat-expense-matrix",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-MATRIX-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-09-16T12:11:25Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-expense-matrix",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-expense-matrix-auth",
+        "arch-expense-matrix-backend",
+        "arch-expense-matrix-database",
+        "arch-expense-matrix-frontend",
+        "arch-expense-matrix-infrastructure",
+        "arch-expense-matrix-maintenance-ops",
+        "arch-expense-matrix-security",
+        "arch-expense-matrix-ui-ux",
+        "spec-expense-matrix-screen"
+      ],
+      "rollback": "PR を revert し、配信済みなら直前のビルドへ戻す。新しい表と migration を伴わないため、データの巻き戻しは不要である。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/matrix/evidence-index.md"
+      ],
+      "tags": [
+        "expense-matrix",
+        "p13",
+        "release"
+      ],
+      "title": "単一 PR での配信とクローズアウト",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint",
+        "pnpm --filter @kanjo/web build"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        "docs/matrix/release-notes.md"
+      ]
+    }
+  ]
+}

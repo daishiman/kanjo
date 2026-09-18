@@ -1,0 +1,181 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/feature-package-feat-expense-matrix",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "13 本の task spec を全文照合した結果、期待値の正本は仕様書 §3.5 の検算値であり参照画像の合計欄ではないこと、サイドバー・ヘッダー・フッターは表記統一のみで構造を変更しないこと、本サイクルは新しいテーブル・migration・キャッシュ層を作らないことの 3 命題が全 task で一貫して記載されており矛盾は検出しなかった。scope_out (照合・総収支・推移・診断・分析ハブの中身作り直し、新テーブル/永続化/キャッシュ層、生成AI示唆文、サイドバー等の構造作り直し、認証方式変更、専用アプリ) が task 側の作業内容として混入している箇所もなかった (全 13 task で scope_out は『やらないこと』の確認としてのみ記載)。加えて各 task spec の『前提条件』節の Entry gate が参照する staging run id (run-feat-expense-matrix-20260916T121130Z) は goal-spec.json の run_id と完全一致しており、Entry gate が指す run が実在しない/別 run を指すという矛盾も無い。",
+      "evidence": [
+        "task-specs/phase-01-requirements.md#期待値の正本は§3.5の検算値であり参照画像の合計欄ではないことを明記",
+        "task-specs/phase-01-requirements.md#Entry gate の staging run id が run-feat-expense-matrix-20260916T121130Zで統一",
+        "task-specs/phase-04-test-design.md#§3.5の検算値をフィクスチャの正本として境界値テストを固定",
+        "task-specs/phase-05-implementation.md#サイドバー等の構造は変更せず表記のみマトリックスへ統一",
+        "task-specs/phase-08-refactoring-migration.md#新しい表とmigrationは作らないと明記",
+        "task-specs/phase-13-release-deploy.md#新しい表とmigrationとbindingを伴わないと明記",
+        "gate:deterministic-validation#task-spec必須セクション欠落/重複/空を含む構造違反0件"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "goal-spec.json の scope_in 7 件 (画面作り直し・core集計純関数・API 2経路とCSV付け替え・前後12か月読み広げ・入力検証と400/no-store/CSVエスケープ・サイドバー等表記統一・docs記載と境界値/API/DOMテスト) はいずれも 13 task のどこかで明示的に引き受けられていることを確認した (P01-P02で設計、P04で契約テスト化、P05で実装、P09で保証確認、P12で docs 最終同期)。持ち越し4件 (偏り度スコアの標準偏差の下限値・構成比と前年差の丸め桁・明細導線の実クエリ形・取引先名の正規化の適用範囲) は goal-spec.json の open_items で resolution_owner が全て SYS-MATRIX-P04 と指定され、workstream-inventory.json の P04 task の acceptance 本文でも同一4件が契約テストとして確定する対象として明記されており、確定先 task が一致している。acceptance S1-S5 は P07 (受入基準 S1-S5 の検証) の acceptance にそのまま転写されており、漏れは見つからなかった。",
+      "evidence": [
+        "workstream-inventory.json#tasks[3].acceptance (SYS-MATRIX-P04: 持ち越し4件を契約テストで確定)",
+        "workstream-inventory.json#tasks[4].acceptance (SYS-MATRIX-P05: core純関数・2経路API・画面・表記統一の実装)",
+        "workstream-inventory.json#tasks[8].acceptance (SYS-MATRIX-P09: 400/no-store/CSVエスケープ/JSバンドル予算)",
+        "workstream-inventory.json#tasks[6].acceptance (SYS-MATRIX-P07: S1からS5の検証)",
+        "workstream-inventory.json#tasks[11].acceptance (SYS-MATRIX-P12: 集計規則と表記統一のdocs最終同期)",
+        "task-specs/phase-04-test-design.md#持ち越し4件を契約テストの値として確定しrequirements-baselineの持ち越し一覧へ反映"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "workstream-inventory.json の 13 task と task-graph.json の 13 node と feature-package.json の task_node_ids / task_spec_paths は完全に一致し (SYS-MATRIX-P01..P13, phase_ref P01..P13 の順)、各 task spec の Machine-readable registration fields (feature_package_id / owners / tags / related_nodes / parent_feature / phase_ref / classification / tracker_binding_intent / github_publication / branch_policy) も inventory の値と一致していた。write_scope の各パスは実在または (未着手の新規作成物として) 未作成のいずれかで、既存コード (packages/core/src/analysis.ts 等) は実在し既存ファイル更新という task の性質と整合していた。決定論ゲートは violations 0 件、validated_digest は sha256:8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c であり、staging-manifest.json の canonical_digest および本 findings の evaluated_digest と完全一致した (bf2ab290... を対象とした前回評価時点の digest 不一致は、proposer が task spec 13本の『前提条件』節の staging run id 誤記 (sdp-feat-expense-matrix-...) を run-feat-expense-matrix-20260916T121130Z へ修正し system-build-handoff.json / staging-manifest.json / goal-spec.json を作り直したことによる正当な再生成であったと現在は確認できる。system-build-handoff.json の sha256 も現在の manifest 記載値 ca0a036a... と一致)。run id 修正に伴う他フィールドへの意図しない波及も、決定論ゲートの handoff-identity / handoff-source-digest / handoff-source-canonical-digest / handoff-manifest-contract 系違反が 0 件であることから確認した。以上より evaluated digest が staging manifest と完全一致し、repository/digest identity の不一致は解消したため C3 は PASS とする。",
+      "evidence": [
+        "staging-manifest.json#canonical_digest=sha256:8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c (evaluated_digestと一致)",
+        "gate:deterministic-validation#validated_digest=sha256:8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+        "gate:deterministic-validation#violations=[] (handoff-identity/handoff-source-digest/handoff-manifest-contract等の違反なし)",
+        "task-specs/phase-01-requirements.md#Entry gateのstaging run idがgoal-spec.jsonのrun_idと一致",
+        "feature-package.json#task_node_ids/task_spec_pathsがtask-graph.json/workstream-inventory.jsonと一致"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の depends_on は SYS-MATRIX-P01 (無し) から SYS-MATRIX-P13 (P12依存) まで単純な前方参照の直列鎖であり、循環や後方参照は存在しない。workstream-inventory.json の各 task の depends_on も task-graph.json の同名 node の depends_on と完全に一致する。成果物の生産と消費の順序 (例: P01が書くdocs/matrix/requirements-baseline.mdをP07が受入検証で参照、P02のdesign-decisions.mdをP03/P04/P05/P08/P12が参照、P04の失敗テストをP05が緑化、P05の実装をP06が実行記録、P08の整理結果をP09以降が保証確認)も依存順と矛盾しなかった。決定論ゲートの non-forward-edge / cross-feature-or-missing-edge 系違反も 0 件だった。",
+      "evidence": [
+        "task-graph.json#nodes[*].depends_on が P01→P02→...→P13 の単調な前方参照のみ",
+        "workstream-inventory.json#tasks[*].depends_on が task-graph.jsonのdepends_onと一致",
+        "gate:deterministic-validation#violations=[] (non-forward-edge/cross-feature-or-missing-edge等の違反なし)"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "${CLAUDE_PLUGIN_CACHE}/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "${REPO_ROOT}",
+        "--staging",
+        ".dev-graph/staging/feature-package-feat-expense-matrix"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c\",\n  \"feature_package_id\": \"feature-package/feat-expense-matrix\",\n  \"parent_feature\": \"feat-expense-matrix\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "63250c0ed5dd401a2ca2873a6132cf40163a09e9d4bb2ce05b83124862c5268d"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "ca0a036a4103f801b16e2b79adbd01dc92682da008c87270e9bef6d2c717dbc3"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "2ca968e8a1ad9cddea56301f12ecf715f356298efd3435381d9951b649a81a14"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "a9123e46032212e3644c68608c495f61f5b7083af81c1006f5549f828d527178"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "7db0b44e9abe8809bcbc879dbd1781e89596d853f10a3edccd3499d8c544dde7"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "ec9b1ed76c3fb996e2ae3a2952b8656ca791515511c01721496bc2d755a760ed"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "774d50190ae89d831b56f8c9b66a685919a547658912abdecd1fd4ead9407404"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "fdf262031876a1115a5b23a4cea39b293c9697c88f10c6834b054c2f97e4aa4f"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "7765ae42631afa481ef4ff007313cd9ae2492614d3f827982b8fa46d9f19f518"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "4ef0a02cca68f05421421c8da9986b7f8eccf6339aa4cae8e55de194f81c1ef4"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "4c5ba007bd0c7554530abe2be7c2efb47e34cc3b3aeef4bd4cd3609b2fa16280"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "110fb9e42ecf72807df387f9b9916a503a1160c391dfa202d9b7ad822f1975c2"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "f08fe53db24ad173be3e46eb549c158044f37e888a8dbbc182a0ff3eda5293f9"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "9fad259c6e13d2ace6c6835e76735736bf32a100f7f54e3cc9e45235db3d1f01"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "db654888a45d0f3ac55ce0dc74dbbe49e5a081d047f9c5878c163a150be35ba2"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "8319d220e9f93084fae6233fd81f5f9bf05620996429ecc13d4cf8a28232b225"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "b9b692fb6b74291f2eb0779dddc2621f98e6e269f3abb6a5e3dfcc2418cbb978"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "6ca80d9f46122774807107896ef66c9c2eb5bf95b240615b2f83d94f7f11c155"
+    }
+  ],
+  "staleness_rule": "本 findings は evaluated_digest (sha256:8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c) を宣言する staging-manifest.json の canonical_digest と、staging 配下の byte 列から独立に再計算した digest (決定論ゲートの validated_digest) が完全一致する間だけ有効である。staging-manifest.json / system-build-handoff.json / feature-package.json / workstream-inventory.json / task-graph.json / 13本の task-specs のいずれか 1 バイトでも変化すれば canonical_digest は変わり、本 findings は無効 (stale) となる。C11 promote は evaluated_digest とその時点の staging canonical_digest が一致することを都度再確認すること。本 evaluated_digest は評価途中で 1 度 sha256:bf2ab290e34c1640edbf3b54aba2b9a0f75589560bcf8286fc1ac667498ef3b4 から現在値へ変化した経緯があり (task spec 13本の Entry gate の staging run id 誤記修正に伴う正当な再生成)、旧 digest sha256:bf2ab290... を対象とする過去の判定は本 findings によって完全に上書きされ無効である。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "digest-history",
+      "observation": "本評価の過程で、当初の評価対象として指定された canonical digest sha256:bf2ab290e34c1640edbf3b54aba2b9a0f75589560bcf8286fc1ac667498ef3b4 が staging-manifest.json の宣言 canonical_digest および決定論ゲートの validated_digest と一致しない期間が観測された。事後確認 (proposer側からの報告および本評価者による task-specs 13本の前提条件節と goal-spec.json の run_id の突合) により、これは task spec の Entry gate が参照する staging run id の誤記 (sdp-feat-expense-matrix-20260916T121130Z) を実際の lock 値 (run-feat-expense-matrix-20260916T121130Z) へ修正し、system-build-handoff.json / staging-manifest.json / goal-spec.json を作り直した正当な再生成であったと判断した。現在の staging は sha256:8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c で安定しており、この digest を evaluated_digest として本 findings を確定する。旧 digest sha256:bf2ab290... を対象とする過去の verdict=FAIL の findings は本 findings により上書きされ、C11 は本 findings (evaluated_digest=8cde5b2e1b...) のみを promotion 判断に用いること。",
+      "evidence": [
+        "staging-manifest.json#canonical_digest",
+        "gate:deterministic-validation#validated_digest",
+        "task-specs/phase-01-requirements.md#Entry gateのstaging run id"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "write-scope-existence",
+      "observation": "13 task の write_scope に列挙された全パスを実在確認した。docs/matrix/*.md と packages/*/test/matrix-*.test.ts の大半 (requirements-baseline.md, design-decisions.md, design-review.md, test-run.md, acceptance.md, quality-assurance.md, final-review.md, evidence-index.md, aggregation-rules.md, release-notes.md, matrix-contract.test.ts, matrix-routes.test.ts, matrix-cell.dom.test.tsx) は現時点で未作成であるが、それぞれ対応する task の acceptance が新規作成を前提とした記述であり、計画上の想定どおり (未着手のためまだ存在しない) と判断した。一方 packages/core/src/analysis.ts・csv.ts・dataset.ts、packages/api/src/routes/analytics.ts、packages/web/src/pages/analysis/Matrix.tsx、packages/web/src/routeMetadata.ts、docs/ui-decisions.md、docs/data-schema.md、docs/design-system.md、packages/web/src/matrix-visual.dom.test.tsx、packages/web/src/matrix-legend.dom.test.tsx は既存ファイルとして実在し、P05/P08/P12 が想定する『既存ファイルの更新』という性質と整合していた。",
+      "evidence": [
+        "workstream-inventory.json#tasks[4].write_scope",
+        "workstream-inventory.json#tasks[3].write_scope"
+      ]
+    }
+  ]
+}

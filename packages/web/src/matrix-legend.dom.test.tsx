@@ -5,11 +5,11 @@
 // 一致していること(凡例が嘘をつかないこと)まで確かめる。
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, expect, it, vi } from 'vitest';
 import type { MatrixData } from './api.js';
-import { MatrixPage } from './pages/analysis/Matrix.js';
+import { MatrixPage } from './pages/analysis/matrix/MatrixPage.js';
 
 vi.mock('react-chartjs-2', async () => ({
   Chart: (await import('./test-support/chart-test-doubles.js')).AccessibleChart,
@@ -57,8 +57,7 @@ async function renderMatrix() {
       </MemoryRouter>
     </QueryClientProvider>,
   );
-  const table = await screen.findByRole('table', { name: /科目別の月次増減明細/ });
-  return within(table).getByRole('rowheader', { name: '広告宣伝費' });
+  return await screen.findByRole('table', { name: /科目別の月次明細/ });
 }
 
 it('色凡例が初期表示で見えていて、色以外の手掛かり(符号と語)を伴う', async () => {
@@ -73,7 +72,7 @@ it('色凡例が初期表示で見えていて、色以外の手掛かり(符号
 });
 
 it('凡例の見本の色クラスが、表のセルに実際に付く色クラスと一致する', async () => {
-  const head = await renderMatrix();
+  const table = await renderMatrix();
 
   const legend = screen.getByText(/色の凡例/).closest('p');
   const up = legend?.querySelector('.pos');
@@ -82,10 +81,15 @@ it('凡例の見本の色クラスが、表のセルに実際に付く色クラ�
   expect(up?.textContent).toBe('+12.3%');
   expect(down?.textContent).toBe('-12.3%');
 
-  // 実データ: 増えた科目の前年比セルは pos、減った科目は neg
-  const upCell = head.parentElement?.querySelector('td.pos');
-  expect(upCell?.textContent).toBe('+25.0%');
-  const monthlyTable = screen.getByRole('table', { name: /科目別の月次増減明細/ });
-  const downRow = within(monthlyTable).getByRole('rowheader', { name: '通信費' }).parentElement;
-  expect(downRow?.querySelector('td.neg')?.textContent).toBe('-25.0%');
+  // 色が付くのは率のモードだけ。金額のモードは濃淡で表すので色クラスを持たない
+  expect(table.querySelectorAll('td.pos, td.neg').length).toBe(0);
+  // 偏り表にも「前月比」列のソートボタンがあるので、押された状態を持つ切替の方を選ぶ
+  fireEvent.click(screen.getByRole('button', { name: '前月比', pressed: false }));
+
+  const rates = await screen.findByRole('table', { name: /科目別の月次明細/ });
+  // 広告宣伝費は 1.0万 → 4.0万 で +300%、通信費は 4.0万 → 1.0万 で -75%
+  const upRow = within(rates).getByRole('rowheader', { name: '広告宣伝費' }).parentElement;
+  expect(upRow?.querySelector('td.pos')?.textContent).toBe('+300.0%');
+  const downRow = within(rates).getByRole('rowheader', { name: '通信費' }).parentElement;
+  expect(downRow?.querySelector('td.neg')?.textContent).toBe('-75.0%');
 });

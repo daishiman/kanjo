@@ -11,7 +11,7 @@ import {
   financialPeriod,
   seriesData,
 } from './figure-view-model.js';
-import { latestCompleteBalance, matrixMovers } from './financial-chart-model.js';
+import { latestCompleteBalance } from './financial-chart-model.js';
 
 const legend = {
   position: 'bottom' as const,
@@ -44,69 +44,6 @@ const horizontalOptions = (stacked = false): ChartOptions<'bar'> => ({
     tooltip: tooltipOptions('yen'),
   },
 });
-
-/** 科目×月の全表へ入る前に、変化量が大きい行だけを先に見つける。 */
-export function MatrixMoversChart({ data }: { data: MatrixData }) {
-  const movers = matrixMovers(data);
-  if (!movers) {
-    return <p className="sub">増減図は、記帳済みの月が2ヶ月以上になると表示します。</p>;
-  }
-  if (!movers.rows.length) {
-    return <p className="sub">直近2記帳月で金額が変わった科目はありません。</p>;
-  }
-
-  const top = movers.rows[0];
-  const model = createFinancialFigureModel({
-    id: 'matrix-movers',
-    title: '変化が大きい科目',
-    summary: top ? `${top.label}の変化が最大で、${yenS(top.delta)}です。` : '変化した科目はありません。',
-    period: `${monthShort(movers.fromMonth)}〜${monthShort(movers.toMonth)}`,
-    unitLabel: '増減額（円）',
-    rowHeader: '科目',
-    labels: movers.rows.map((row) => row.label),
-    series: [
-      {
-        key: 'delta',
-        label: '増減額',
-        values: movers.rows.map((row) => row.delta),
-        unit: 'yen',
-        signed: true,
-      },
-    ],
-    action: '増減が大きい科目の月別明細へ進み、増えた取引を特定します。',
-  });
-
-  return (
-    <FinancialFigure
-      model={model}
-      chartClassName="matrix-movers-chart"
-      afterChart={
-        <p className="chart-guide">赤は増加、緑は減少。上の表示切替に関係なく増減額(円)を示します。</p>
-      }
-    >
-      <Chart
-        type="bar"
-        role="img"
-        aria-label="直近2記帳月の科目別増減を比較する図"
-        fallbackContent="直近2記帳月の科目別増減を比較する図"
-        data={{
-          labels: figureLabels(model),
-          datasets: [
-            {
-              label: model.series[0]?.label,
-              data: seriesData(model, 0),
-              backgroundColor: seriesData(model, 0).map((value) =>
-                (value ?? 0) > 0 ? chartSeriesColor('danger') : chartSeriesColor('good'),
-              ),
-              borderRadius: 3,
-            },
-          ],
-        }}
-        options={horizontalOptions()}
-      />
-    </FinancialFigure>
-  );
-}
 
 function ProfitEquation({ pl }: { pl: ProfitAndLoss }) {
   return (

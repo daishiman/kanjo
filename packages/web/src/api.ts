@@ -163,7 +163,9 @@ export const unmarkMonthlyCloseReviewed = (month: string) =>
 
 /* -------- 支出トレンド(規模・増減・優先度) -------- */
 
-export type ExpenseScope = 'all' | 'biz' | 'personal';
+// API が返す値の型は core が正本。ここで同じ union を書き直すと、片方だけ増えても型検査に映らない
+import type { ExpenseScope } from '@kanjo/core';
+export type { ExpenseScope };
 export type TrendDirection = '増加' | '減少' | '横ばい' | '判定不可';
 export type PriorityAction = '削減を検討' | '継続監視' | '記録を整える' | '対応不要';
 

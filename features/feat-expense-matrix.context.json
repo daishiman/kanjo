@@ -1,0 +1,42 @@
+{
+  "graph_node_id": "feat-expense-matrix",
+  "artifact_kind": "feature",
+  "purpose": "マトリックス画面を、『どの月・どのカテゴリに支出が偏っているか』という問いに一画面で答える道具にする。月×カテゴリ (または取引先) のヒートマップで偏りを見つけ、気になるセルを選んで金額・前月比・前年同月比・含まれる取引・出典まで降り、明細へ繋げるところまでを、切替と選択を URL に保ったまま行える状態にする。",
+  "goal": "/analysis/matrix が 06-matrix.png の全構成要素 (問いの見出しと最終更新・期間タブ・切替 3 群・単位と濃淡凡例・行ヘッダ固定のヒートマップ表と合計/平均の行列・選択中セルの詳細パネル・偏りが大きい 3 点・下部の選択中バー・空状態) をトークンと共通部品で描画し、集計 (スコープ / 軸 / モード / 合計と平均 / 濃淡階級 / 偏り上位 3 点 / セル内訳) が core の純関数 1 か所で算出されて GET /api/matrix と GET /api/matrix/cell が返し、画面側の再集計が無くなり、切替と選択が URL から復元でき、既存の matrix CSV・総収支・推移の同一期間の金額と一致し、サイドバー等の共通シェルは表記統一のみで既存テストが緑のままの状態。",
+  "scope_in": [
+    "マトリックス画面 (06-matrix.png の全構成要素と読込・空・失敗の各状態) の作り直し。表示モード / 集計の対象 / 行の分類 / 選択中セルを URL クエリの単一の真実にし、期間は既存 usePeriod を引き継ぐ",
+    "packages/core の matrix 集計純関数 (スコープ 事業/家計・軸 カテゴリ/取引先・モード 金額/構成比/前年差・行と列の合計と平均・7 階級の表全体共通スケール・偏り度スコアと同点解消・決定論の示唆テンプレート 6 パターン・セル内訳の絞り込み)",
+    "packages/api の GET /api/matrix 拡張 (scope / axis / mode クエリ) と GET /api/matrix/cell の新設 (月 × 行キー × スコープ の内訳、取引上位 10 件と truncated、出典と明細導線)、既存 matrix CSV の同一 core 関数への付け替え",
+    "表示期間の前後 12 か月まで読み広げた Dataset 構築 (期間外の前月比・前年同月比を実データがあれば参照する。集計範囲は表示期間のまま)",
+    "クエリの列挙値検証と 400、key の完全一致と長さ上限、CSV の数式エスケープ、明細応答の no-store",
+    "サイドバー等の表記を『マトリックス』へ統一 (routeMetadata の label と journeyHint を含む)。共通シェルの構造は変更しない",
+    "集計規則・濃淡階級・偏り 3 点の選定規則と文テンプレート・未記帳月の扱いの docs 記載と、core の境界値テスト・API テスト・DOM テスト (既存 matrix-visual / matrix-legend の更新を含む)"
+  ],
+  "scope_out": [
+    "照合・総収支・推移・診断・分析ハブの各画面の中身の作り直し (表記統一と数値の一致確認だけを扱う)",
+    "新しいテーブル・集計結果の永続化・キャッシュ層の導入 (本サイクルは既存明細の読み取りだけで満たす)",
+    "生成 AI による示唆文の作成 (決定論テンプレートで固定する)",
+    "サイドバー・ヘッダー・フッターの構造の作り直し (表記ゆれの是正のみ)",
+    "認証方式・権限分離の変更、および新しい外部依存やチャートライブラリの追加",
+    "スマートフォン・タブレット・デスクトップ専用アプリ (web SPA 1 系統のレスポンシブで扱う)"
+  ],
+  "acceptance": [
+    "S1 (G1): /analysis/matrix で 06-matrix.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件である。",
+    "S2 (G2): 任意のセルを選ぶと詳細パネルと下部バーが同じ数値 (金額・前月比・前年同月比) を示し、含まれる取引の合計がセル金額と一致し、明細を開くが対象の月とカテゴリで絞った明細へ遷移する。",
+    "S3 (G3): 偏りが大きい 3 点の選定規則が docs に明記され、境界値テストで固定され、表示中のスコープ・軸・期間と同じ条件で算出される。",
+    "S4 (G4): 事業 / 家計、カテゴリ / 取引先、全部 / 構成比 / 前年差 のどの組合せでも、合計・平均・構成比が表の値と一致し、matrix CSV および総収支・推移の同一期間の金額と一致する。",
+    "S5 (G5): サイドバー・ヘッダー・フッターの実装差分が表記統一のみで、`pnpm test` が全件緑である (画面を列挙しない。列挙は必ず漏れる)。"
+  ],
+  "architecture_refs": [
+    "architecture/expense-matrix-ui-ux.md",
+    "architecture/expense-matrix-frontend.md",
+    "architecture/expense-matrix-backend.md",
+    "architecture/expense-matrix-database.md",
+    "architecture/expense-matrix-auth.md",
+    "architecture/expense-matrix-security.md",
+    "architecture/expense-matrix-infrastructure.md",
+    "architecture/expense-matrix-maintenance-ops.md",
+    "specs/spec-expense-matrix-screen.md"
+  ],
+  "updated_at": "2026-09-17T21:53:31Z"
+}

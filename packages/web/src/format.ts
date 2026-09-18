@@ -6,6 +6,15 @@ export const yen = (v: number | null | undefined): string =>
 export const yenS = (v: number | null | undefined): string =>
   v == null ? '—' : `${v < 0 ? '−' : ''}¥${Math.abs(Math.round(v)).toLocaleString('ja-JP')}`;
 
+/**
+ * 万円 1 桁丸め（仕様 §3.2）。表は俯瞰なので万円、セル詳細だけが `yen` で円の実額を出す。
+ * 桁区切りを付けるので総計（`1,139.4万`）も読める。
+ */
+export const man = (v: number | null | undefined): string =>
+  v == null
+    ? '—'
+    : `${(v / 10_000).toLocaleString('ja-JP', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}万`;
+
 export const pct = (v: number | null | undefined, digits = 1): string =>
   v == null ? '—' : `${v > 0 ? '+' : ''}${(v * 100).toFixed(digits)}%`;
 

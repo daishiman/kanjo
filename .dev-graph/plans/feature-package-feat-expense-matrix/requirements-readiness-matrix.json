@@ -1,0 +1,221 @@
+{
+  "feature_id": "feat-expense-matrix",
+  "gates": {
+    "C08": "complete",
+    "C11": true,
+    "validate_system_plan": "pass"
+  },
+  "graph_revision": 3,
+  "graph_snapshot_digest": "99c00006beac270f67fe6be8a485d695883ff4034e09637247133f4c6b63d16f",
+  "missing_sections": [],
+  "nodes": [
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P01",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P01",
+      "resource_scope_count": 1,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P01"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P02",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P02",
+      "resource_scope_count": 1,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P02"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P03",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P03",
+      "resource_scope_count": 1,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P03"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P04",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P04",
+      "resource_scope_count": 6,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P04"
+      ],
+      "domain": "frontend",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P05",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P05",
+      "resource_scope_count": 12,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P05"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P06",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P06",
+      "resource_scope_count": 1,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P06"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P07",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P07",
+      "resource_scope_count": 1,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P07"
+      ],
+      "domain": "frontend",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P08",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P08",
+      "resource_scope_count": 10,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P08"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P09",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P09",
+      "resource_scope_count": 1,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P09"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P10",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P10",
+      "resource_scope_count": 1,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P10"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P11",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P11",
+      "resource_scope_count": 1,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P11"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P12",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P12",
+      "resource_scope_count": 4,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-MATRIX-P12"
+      ],
+      "domain": "operations",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-MATRIX-P13",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P13",
+      "resource_scope_count": 1,
+      "source_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+      "source_version": "0.1.11"
+    }
+  ],
+  "plan_validated_digest": "8cde5b2e1bdebb3896de7bfc985c34151547a3dd94e4884af66febbb49090a4c",
+  "status": "pass"
+}
