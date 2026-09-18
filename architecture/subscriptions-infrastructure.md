@@ -87,7 +87,7 @@ serves_goals: ["G4"]
 - Errors/resilience: 集計が失敗したら GET /api/subscriptions 全体を失敗として返し、画面全体を error にする (一部のカードだけ古い値や 0 を出さない)。詳細の失敗は一覧の表示を壊さない (取得が別経路であることの帰結)。
 - Observability/audit: 新しい計測基盤を導入しない。JS バンドル予算は既存の測定 (build:bundle 直後) を使う。
 - Configuration/secrets: `wrangler.jsonc` の binding を据え置く。
-- Compatibility/versioning: migration 0043 は Migrate → Deploy の順で配る (`architecture/subscriptions-database.md`)。
+- Compatibility/versioning: migration 0043 は追加だけ (DROP・DELETE・UPDATE・RENAME なし) なので、main へのマージ後に Deploy が `plan-auto-migration.mjs` の判定 `apply` で自動適用する。手動の Migrate (APPLY) は使わない (`architecture/subscriptions-database.md`)。
 
 ## Subtype architecture
 

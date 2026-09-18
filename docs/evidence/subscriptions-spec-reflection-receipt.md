@@ -72,4 +72,4 @@ PR のマージと本番適用の後に閉じる。
 1. 判断を保存する期間 (いまは表示中の期間)。
 2. AI 指示文の候補との定義差 (OI-03)。
 3. `pnpm run evidence:check` の stale (design-system の manifest の `base_revision` が `35fffe4`)。本 feature の前から残る不一致。
-4. 本番 D1 への migration 0043 の適用 (Migrate → Deploy の順)。
+4. 本番 D1 への migration 0043 の適用。追加だけなので main へのマージ後に Deploy が自動適用する (`destructiveFindings` は 0 件)。手動の Migrate は不要。

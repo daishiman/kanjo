@@ -131,7 +131,7 @@ migration 適用後、GET /api/subscriptions の応答に category と reviewCou
 ## Delivery, migration and rollback
 
 - Build/deploy topology: 既存 Worker + D1。binding の追加なし。
-- Migration sequence: `migrations/0043_*.sql` で `ALTER TABLE sub_vendors ADD COLUMN category TEXT` と `CREATE TABLE sub_vendor_review_decisions` (一意索引 `(user_id, vendor_key)`) → schema.ts を同じ内容に更新 → Migrate → Deploy の順。適用後の確認は GET の応答に category と reviewCount が含まれること。
+- Migration sequence: `migrations/0043_*.sql` で `ALTER TABLE sub_vendors ADD COLUMN category TEXT` と `CREATE TABLE sub_vendor_review_decisions` (一意索引 `(user_id, vendor_key)`) → schema.ts を同じ内容に更新 → main へのマージで Deploy が自動適用 (追加だけなので `plan-auto-migration.mjs` の判定は `apply`。手動の Migrate は不要)。適用後の確認は GET の応答に category と reviewCount が含まれること。
 - Improvement (既存実装の是正): 候補除外の重複検査は全件を読んで `vendorKey(e.partner)` を比べている (`packages/api/src/routes/subs.ts:191-193`)。保存済みの `vendor_key` 列と一意索引に任せる形 (挿入の競合を ok として扱う) にすると、読み出しが消え同時要求でも 500 にならない。判断表も同じ upsert の形にする。
 - Rollback trigger/procedure: migration は加法的なので、実装を差し戻せば旧画面は新しい列と表を無視して動く。列と表の削除は行わない。
 - Backup/restore (P10 で追加): `category`・`reviewed_at` と `sub_vendor_review_decisions` を canonical backup の snapshot と復元の write-set・lease 対象 (`import-active.ts`) に加える。キーの無い旧 JSON は復元先の値を保ち、空配列は「判断なし」として置き換える。
