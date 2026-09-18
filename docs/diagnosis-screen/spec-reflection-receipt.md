@@ -67,8 +67,24 @@ HTML 版の由来を述べる箇所 (§1 背景、移行対応表) の「統計�
 
 `origin/main` = ローカル `main` = `4e3583c`。本ブランチの `f58d4a9` が既にこれをマージ済みで、取り込みは差分 0 (no-op) だった。衝突なし。
 
+## P13 (本番反映) の実際の経路
+
+task spec (`tasks/feat-diagnosis-screen/sys-diagnosis-screen-p13.md`) は本番反映の手順を
+「manifest → Migrate APPLY → Deploy」と書いているが、**今回の migration にこの経路は当てはまらない**。
+
+- `.github/workflows/migrate.yml` は冒頭で「列や行を失う D1 変更だけを、承認 manifest つきで手動実行する。追加だけの migration は Deploy が自動適用するので、通常このworkflowは使わない」と宣言している。
+- `migrations/0043_diagnosis_action_states.sql` は新表の `CREATE TABLE` のみで、既存の列・行を失わない (task spec の「スコープ外」にも「既存表の行書き換えは行わない」と明記されている)。
+- `.github/workflows/deploy.yml` は main の CI 成功後に起動し、migration の適用を Worker 配信より**前**に行う (`schema-guard` が期待版に達するまで D1 経路を 503 で閉じるため)。
+
+したがって P13 の実体は **PR #59 を `main` へ merge すること**であり、手動の Migrate APPLY は不要である。
+task spec の記述は行書き換えを含む一般手順であって、本 migration の分類 (追加のみ) を反映していない。
+task spec は system-dev-planner の生成物なので本サイクルでは書き換えず、実際の経路をここへ記録する。
+
+P13 の完了判定は task spec 自身が `linked_pr_merged_all` (PR が既定ブランチへ merge された時点) と
+定めており、merge 前に閉じられる phase ではない。`kanjo-8bk.13` と epic `kanjo-8bk` は open のままとした。
+
 ## 残課題
 
-1. **P13 本番反映が未実施**。manifest → Migrate APPLY → Deploy は利用者の明示承認待ち。
+1. **P13 本番反映が未実施**。PR #59 の merge が前提 (上記のとおり手動 Migrate APPLY は不要)。
 2. `duplicate_payment` 検知器が同額多発のデータで候補を出しすぎる傾向がある。claim 交差による排他は効いているが、しきい値の追い込みは次サイクル。
 3. 比較対象 (`baseline`) は前 20 か月が不完全だと `null` になる。ローカル seed の範囲では常に `null` で、欠け月の扱いは実データでの確認が残る。
