@@ -63,8 +63,9 @@ HTML 版の由来を述べる箇所 (§2 の機能一覧、移行対応表) の�
 
 ## Beads の状態
 
-14 件 (epic と子 13 件) はすべて open のまま。`bd close` は external-mutation-guard の対象で、
-1 件ごとに利用者の確認が要る。P13 (配信と migration 0043 の本番適用) と epic は PR のマージ後に閉じる。
+子 `kanjo-fge.1` .. `.12` は `bd-bridge.py --op close` で closed にした (理由: PR #60 で実装・検証済み)。
+`kanjo-fge.13` (配信と migration 0043 の本番適用) と epic `kanjo-fge` は open のまま残し、
+PR のマージと本番適用の後に閉じる。
 
 ## 残課題
 
