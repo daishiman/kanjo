@@ -13,7 +13,6 @@ import type {
   CashFlow,
   ClassificationProgress,
   ClassificationSource,
-  SubscriptionsData as CoreSubscriptionsData,
   DefenseForecast,
   DefenseLine,
   DiagnosisData,
@@ -339,10 +338,13 @@ export interface TrendsResponse {
   judgementBasis?: 'mf_only';
 }
 
-export interface SubscriptionsData extends CoreSubscriptionsData {
-  /** rolling deploy中の旧Worker応答では未定義。画面は数値本体を優先して描画する。 */
-  sourceCoverage?: { freee: number; moneyForward: number; matched: number; review: number };
-}
+/** GET /api/subscriptions と詳細。サーバが core で導出した値をそのまま描く */
+export type {
+  SubscriptionRow,
+  SubscriptionTransaction,
+  SubscriptionVendorDetail,
+  SubscriptionsScreen,
+} from '@kanjo/core';
 
 /** API表示に必要なdeal項目だけを公開し、集計・状態・予定の型はcore契約を再利用する。 */
 type UnsettledDealView = Omit<UnsettledDeal, 'deal'> & {

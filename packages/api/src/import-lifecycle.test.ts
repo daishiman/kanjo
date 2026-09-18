@@ -824,6 +824,91 @@ describe('active target duplicate', () => {
   });
 });
 
+describe('サブスクのcanonical backup往復', () => {
+  const seedSubscriptionState = async (): Promise<void> => {
+    await d1.batch([
+      d1.prepare(
+        `INSERT INTO sub_vendors
+           (user_id,name,aliases,accounts,sort_order,category,reviewed_at)
+         VALUES ('default','架空クラウド','["架空CLOUD"]','["通信費"]',100,'仕事効率化','2026-08-01T12:34:56.000Z')`,
+      ),
+      d1.prepare(
+        `INSERT INTO sub_vendor_review_decisions
+           (user_id,vendor_key,decision,rule_fingerprint,decided_at)
+         VALUES ('default','架空クラウド','dismissed','priceUp:1234','2026-08-02T12:34:56.000Z')`,
+      ),
+    ]);
+  };
+
+  it('category/reviewedAtと見直し判断を、空DBへ復元できる', async () => {
+    await seedSubscriptionState();
+    const backup = await loadBackupPayload(getDb(d1), 'default');
+    expect(backup.subVendorMetadata).toEqual([
+      {
+        name: '架空クラウド',
+        category: '仕事効率化',
+        reviewedAt: '2026-08-01T12:34:56.000Z',
+      },
+    ]);
+    expect(backup.subVendorReviewDecisions).toEqual([
+      {
+        vendorKey: '架空クラウド',
+        decision: 'dismissed',
+        ruleFingerprint: 'priceUp:1234',
+        decidedAt: '2026-08-02T12:34:56.000Z',
+      },
+    ]);
+
+    await d1.prepare("DELETE FROM sub_vendor_review_decisions WHERE user_id='default'").run();
+    await d1.prepare("DELETE FROM sub_vendors WHERE user_id='default'").run();
+    expect((await restore(backup as Record<string, unknown>)).status).toBe(200);
+
+    await expect(
+      d1
+        .prepare(
+          `SELECT name,aliases,accounts,category,reviewed_at AS reviewedAt
+             FROM sub_vendors WHERE user_id='default'`,
+        )
+        .first(),
+    ).resolves.toEqual({
+      name: '架空クラウド',
+      aliases: '["架空CLOUD"]',
+      accounts: '["通信費"]',
+      category: '仕事効率化',
+      reviewedAt: '2026-08-01T12:34:56.000Z',
+    });
+    await expect(
+      d1
+        .prepare(
+          `SELECT vendor_key AS vendorKey,decision,rule_fingerprint AS ruleFingerprint,decided_at AS decidedAt
+             FROM sub_vendor_review_decisions WHERE user_id='default'`,
+        )
+        .first(),
+    ).resolves.toEqual({
+      vendorKey: '架空クラウド',
+      decision: 'dismissed',
+      ruleFingerprint: 'priceUp:1234',
+      decidedAt: '2026-08-02T12:34:56.000Z',
+    });
+  });
+
+  it('旧JSONはキー欠落を空集合と読まず、復元先の補助属性と判断を保つ', async () => {
+    await seedSubscriptionState();
+    expect((await restore(structuredClone(restoreBody))).status).toBe(200);
+    await expect(
+      d1
+        .prepare(
+          `SELECT category,reviewed_at AS reviewedAt FROM sub_vendors
+            WHERE user_id='default' AND name='架空クラウド'`,
+        )
+        .first(),
+    ).resolves.toEqual({ category: '仕事効率化', reviewedAt: '2026-08-01T12:34:56.000Z' });
+    await expect(
+      d1.prepare("SELECT decision FROM sub_vendor_review_decisions WHERE user_id='default'").first(),
+    ).resolves.toEqual({ decision: 'dismissed' });
+  });
+});
+
 describe('writer claim', () => {
   it('同一利用者の同時claimを単一writerにする', async () => {
     const now = Date.parse('2026-08-26T00:00:00.000Z');

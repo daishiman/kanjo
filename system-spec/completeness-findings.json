@@ -1,207 +1,204 @@
 {
   "evaluator": {
     "name": "assign-system-spec-completeness-evaluator",
-    "version": "0.1.0",
+    "version": "0.1.14",
     "context": "fork"
   },
-  "spec_dir": "<REPO_ROOT>/system-spec",
+  "spec_dir": "system-spec",
   "verdict": "PASS",
   "aspects": {
     "foundation_trace": {
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "前回 high の残置は解消済み。00-requirements-definition.md は appr-foundation-diagnosis-001 の 1 件のみを承認節に持ち、appr-trends-review-001 / appr-trends-datasource-001 / appr-foundation-trends-001 は章から消えている。U1 essential_purpose と U2 background は正本 spec-state.json の文字列と逐語一致し、推移画面の第2段落は残っていない (『推移画面 (PR #56)』の言及は platform 対象外理由中の先行サイクル参照であり、前サイクルの確定内容の残置ではない)。U1-U9 は全て値で確定し、全 8 章の serves_goals (G1-G6) に dangling 0、章が名指す qa は qa-target-platforms-diagnosis-001 の 1 件で qa_log に実在。",
+      "summary": "評価 3 回目 (評価時刻 2026-09-18T07:01:32Z)。前回の high 2 件はどちらも解消した。(1) 上位概念 G5 / I5 を confirmed / dismissed の 2 値に改訂し、appr-foundation-subscriptions-002 で利用者の承認を記録している。00 章の 30 行目と 76 行目の文面は、AskUserQuestion で見せたプレビュー (transcript 2514 行) と一致する。(2) security は 06:54:11Z に reopen され、security-006 と design_applications.security の enum が 2 値に揃った。章本文から adopted は消えている。残っているのは spec-state の superseded な qa-003、review-decision-001、reopen の理由文だけで、どれも履歴として正しい。confirmed の 8 セルはどれも、上位概念 G1〜G5 / I1〜I5 と Q&A をたどって追える。appr-001 節が残っていることは既知の差として申告されており、同じサイクルの承認で、qa-subs-target-platforms-001 と auth-web-005 がこれを名指ししているので、指摘にはしない。",
       "evidence": [
-        "validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit0",
-        "validate-spec-doc-sync.py exit0",
-        "spec-state.json approval_log = [appr-foundation-diagnosis-001] / requirements_foundation.approval_ref = appr-foundation-diagnosis-001",
-        "00 章本文への grep: appr- の出現は appr-foundation-diagnosis-001 のみ",
-        "requirements_foundation.essential_purpose / background の文字列が 00 章に逐語包含 (Python で照合)",
-        "serves_goals 照合: auth[G4,G5] backend[G2,G3,G4] database[G4] frontend[G1,G2,G5] infrastructure[G1,G6] maintenance-ops[G2,G6] security[G4,G6] ui-ux[G1,G3,G5] いずれも dangling 0"
+        "00-requirements-definition.md:30,76 (G5 / I5 改訂)",
+        "spec-state.json approval_log appr-foundation-subscriptions-002",
+        "spec-state.json reopen_log security (06:54:11Z) / qa-subs-security-web-006",
+        "security.md (enum confirmed / dismissed)",
+        "transcript 2514 行 (G5/I5 プレビューの提示) / 2517 行 (承認)"
       ]
     },
     "decision_guidance": {
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "needs_guidance セル 0 件で新規技術選定が発生せず、decisions[] 空と章の『(意思決定支援の記録なし)』は整合する。spec-state-contract.md 169-178 行が『候補の組み立てを伴わない利用者決定は decisions[] でなく qa_log entry の basis: user-decision で記録する』という設計上の非対称を明文化しており、decisions[] の件数不足を欠落と読まない根拠になる。qa_log 9 件は basis (user-decision / observed-fact) を宣言し agent-inference のみで確定したセルは無い。",
+      "summary": "前回の medium 2 件は解消した。(1) 候補への判断の主な根拠は qa-subs-review-decision-002 に差し替わった。AskUserQuestion で 3 問に 2〜3 個の選択肢と説明を付けて提示し、利用者が明示的に選んだ回答 (06:51:17Z) である。推定を利用者の決定として記録する形ではなくなった。(2) confirmed にした候補の扱いも決まった。一覧には候補バッジを『確認済み』に変えて残し、KPI とサイドバーのバッジはまだ判断していない候補だけを数える (backend-007 (7)、uiux-006 (4)、frontend-006 (7))。decisions の 7 件には、採択案・代替案・目的適合が揃っている。残る論点は low にとどめる。指紋の説明で使っている『だけ』が規則の脱落の場合と矛盾すること、サイドバーのバッジがどの母集団を数えるかの明示の 2 点である。",
       "evidence": [
-        "spec-state.json decisions = [] / matrix に needs_guidance 0 件",
-        "spec-state-contract.md 169-178 行 (decisions[] 登録基準と basis: user-decision との非対称)",
-        "qa_log 9 件の basis は user-decision / observed-fact のみ (agent-inference 0)",
-        "validate-coverage-matrix.py --require-basis exit0 (確定セル根拠の basis 宣言を要求するモード)"
+        "spec-state.json qa-subs-review-decision-002",
+        "transcript 2514 / 2517 行 (AskUserQuestion の提示と回答)",
+        "backend.md qa-subs-backend-web-007 (6)(7)",
+        "ui-ux.md:99 (4)",
+        "frontend.md:52"
       ]
     },
     "matrix_coverage": {
       "verdict": "PASS",
       "auditor": "system-spec-matrix-auditor",
       "component": "C07",
-      "summary": "C07 独立監査 PASS (指摘 0)。48 セル (8 カテゴリ×6 platform) が確定 8 / 対象外 40 で未収集 0、対象外理由はカテゴリ固有の検討内容を書き分けており placeholder でない、確定 8 セルの qa_ref は全件 qa_log に実在、category_aggregate は真理値表と整合、canonical platform の web 行は 8 カテゴリ全てに存在する。C16 は --profile required-info --state で ungrounded_blocking_items が空。C06 sub-input は R3 で PASS (聞き漏れ・早期停止・トレーサビリティに指摘なし、多論点束ね 2 件のみ非ブロッキング) となり、網羅性の裏付けは崩れていない。",
+      "summary": "C07 の判定は PASS。48 セルの内訳は確定 8・対象外 40・未収集 0 で、category_aggregate も正しく、qa_ref に dangling は無い。C07 は security.web の主 qa_ref が 004 のまま (兄弟セルは review-decision-002) である点を high として出した。しかし SSOT の基準で見ると、004 は dangling でも混線でもなく、承認範囲にも入っている。004 は『AI を使わず、データを外に送らない』という利用者の決定で、2 値化の影響を受けない。新しい根拠 002 / 006 も qa_refs に載っている。違うのは兄弟セルとの慣行だけなので、low に下げた。補助入力の C06 の判定は FAIL で、そのまま記録する。ただし各指摘は次のとおり採否を決めた。review-decision-002 は中立な選択式で、C06 自身も主要な論点は解消したと認めている。C06 は『Q2 の回答が選択肢のラベルを超えている』と指摘したが、transcript 2514 行の Q2 の選択肢の説明に『候補バッジは確認済みに変えて残す。KPI とサイドバーはまだ判断していない候補だけを数える』と逐語で書かれており、この指摘は当たらないので info に移す。kpi-caption-001 が『つづけて』で一括承認されている点は low のまま残す。C06 は hearing_progress が無いとも書いたが、実際には存在する。確定セルは誘導なく Q&A に遡れるので、この観点は PASS とする。",
       "evidence": [
-        "validate-coverage-matrix.py --require-complete exit0 / --require-basis --require-foundation exit0",
-        "validate-knowledge-graph.py --profile required-info --state exit0 (ungrounded_blocking_items: [])",
-        "C07 matrix-auditor R3 verdict=PASS 指摘0",
-        "C06 hearing-auditor R3 verdict=PASS (非ブロッキング 2 件。SSOT spec-state-contract.md 81-85/141/143/169-178/276 行を引いた訂正版)"
+        "validate-coverage-matrix.py (loop / --require-complete / --require-basis --require-foundation) exit 0",
+        "C07 PASS (high 1 件 → low に格下げ。理由は summary)",
+        "C06 FAIL (軸2 の Q2 指摘は transcript 2514 行と照合して info、kpi-caption-001 は low、軸4 は low)",
+        "spec-state.json hearing_progress (存在する)"
       ]
     },
     "design_knowledge_reflection": {
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "意味層は健全: 全 8 章に章固有の『本章での適用』があり、検知器レジストリ・action_key・diagnosis_action_states・統計量の開閉といった本サイクルの確定セル要件へ具体適用されている (汎用ポインタ止まりの章なし)。doctrine 表に『未記入』行は 0。C13/C15 の機械層は 4 profile 全て exit0。C14 については backend.md の card 描画順が topo_order に反したまま (medium で残置) だが、確定内容の順序 (境界・依存方向 → API 契約 → 永続化) は上位概念先行で破れておらず、rubric C14 の FAIL 条件『位相順を破って下位技術を先に確定した章』には当たらない。破れているのは非規範の参考資料 (章自身が『非規範の参考資料』と宣言する deep knowledge card) の並び順のみで、章の確定を妨げない。",
+      "summary": "8 章すべての上流原則表と『本章での適用』に、この画面に当てはめた具体的な記述がある。単なるポインタではない。例は次のとおり。database: DDD の『判断は保存し、導出できる値は保存しない』を、月を含まない指紋に適用。backend: 依存の向きを core ← api ← web にし、reviewQueue が同じ判定関数を呼ぶ。frontend: 部品を分けて、画面側で再集計しない。ui-ux: Information Design の問いの順番。security / auth: 対象を userId と組で引き、他人の id には 404 を返す。infrastructure: card が 0 件であることを明記したうえで Workers の上限を制約として扱う。maintenance-ops: 規則名をそのままテスト名にする。security の Secure by Design の適用も 2 値に揃った。validate-knowledge-graph の knowledge / doctrine / required-info / cross の 4 profile はすべて exit 0 だった。",
       "evidence": [
-        "8 章すべてに『### 本章での適用』+ basis 宣言、design_applications 8 件 / doctrine_applications 8 カテゴリ",
-        "『| 未記入 |』の doctrine 行 0 件",
-        "aggregate-completeness.py --knowledge-graph exit0 (knowledge / doctrine / required-info / cross)",
-        "topo_order = [clean-code, ddd, design-patterns, clean-architecture, api-design-patterns, information-design, secure-by-design]",
-        "backend.md の card 出現順 = Clean Architecture (130行) → API Design Patterns (171行) → DDD (214行)",
-        "backend.md 確定内容の順序: 責務の置き場所 (境界) → 検知器レジストリ → Improvement 構造 → API → 合計規則"
+        "database.md:31-32,147",
+        "backend.md:31",
+        "frontend.md:145",
+        "ui-ux.md:158",
+        "auth.md / security.md / infrastructure.md / maintenance-ops.md の本章での適用",
+        "validate-knowledge-graph.py 4 profile exit 0"
       ]
     },
     "doc_freshness": {
       "verdict": "PASS",
       "auditor": "system-spec-doc-freshness-auditor",
       "component": "C08",
-      "summary": "C08 verdict 2 件が回収され、前段の INDETERMINATE 要因 (verdict 未回収) は解消した。R3 は形式層 (validate-source-citation.py --state 付き、decision-vs-targets drift 検査込み) exit0 に加え、内容鮮度層で 8/8 全件を公式サイトへ再照合し記録値との一致を個別に示している (未到達 0)。R3b は 6/8 到達で当初 FAIL (high 3) を出したが訂正済みで、主因の『hono-zod-validator 0.9.1 は実在しない疑い』は WebSearch のインデックス遅延による誤検出として撤回され、残りは medium 2 件 (D1 の CHECK 接地 / react-router 版跨ぎ) と未到達 2 件の INDETERMINATE に落ちた。R3b 自身も『R3 が 8/8 到達しているならその結果を優先してよい』と自認しており、到達分の実測が優先される。撤回の正しさは C05 が registry.npmjs.org を直接 fetch して独立に裏取りした (伝聞の反転を無検証で受けない)。latest_checked_at が初回取得時刻のままである点は C02 (doc-fetch) の書込責務であり、C08 の再照合責務の未達ではないため PASS を妨げない (低重要度の観察事項として finding に残す)。",
+      "summary": "C08 の判定は PASS。13 件すべてを公式の現行版と照合し、一致した。非公式の host は無い。owasp の 1 件の host は github.com だが、OWASP 組織自身のリポジトリである。fetched-references.json の retrieved_at (03:49:46Z) と latest_checked_at (03:50:20Z) はこのサイクルで更新されていないが、C08 が今日の時点で内容をもう一度照合した。どちらも info として記録する。G-source-citation も exit 0。",
       "evidence": [
-        "validate-source-citation.py --targets spec-state.json --references fetched-references.json --state spec-state.json exit0 (C05 / C08-R3 双方で確認)",
-        "C08-R3: 8/8 を WebFetch 再照合。chartjs Last Updated 10/13/2025・d1 Last updated Apr 21 2026・workers-limits Last updated Sep 5 2026 (CPU/サブリクエスト値も一致)・wcag Updated 16 September 2025・owasp Latest Version 5.0.0・react-router 8.4.0 がいずれも記録値と一致、非公式ミラー 0、未来日付 0",
-        "C08-R3b: 訂正後 INDETERMINATE (high 0)。未到達 2 件は PASS/FAIL の材料としない",
-        "C05 独立裏取り: registry.npmjs.org/@hono/zod-validator の dist-tags.latest=0.9.1、time[\"0.9.1\"]=2026-08-31T11:40:36.400Z を直接確認し R3b の撤回が正当であることを検証"
+        "C08 PASS (info F1 / F2)",
+        "fetched-references.json (13 件)",
+        "validate-source-citation exit 0"
       ]
     },
     "prompt_quality": {
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "system-spec-harness の prompts/*.md 18 件すべてで prompt-creator の verify-completeness.py / validate-prompt.py が exit0 (依存 plugin は installPath で解決でき skip 例外は発生せず)。意味層も R1-score / R2-delegate の L5 が成果状態・原子的停止条件 (5.3)・動的実行方式 (5.4) を備え、L7→L1 の一貫性と read-only 制約が保たれている。",
+      "summary": "prompt-creator の validate-prompt.py と verify-completeness.py を 18 prompt に対して実行し、失敗は 0 件だった。",
       "evidence": [
-        "verify-completeness.py --input / validate-prompt.py --input を 18 prompt に実行し failing 0",
-        "R1-score 5.3 に 10 項目、R2-delegate 5.3 に 6 項目の停止条件"
+        "validate-prompt.py / verify-completeness.py 18 件 失敗 0"
       ]
     }
   },
   "gate_results": [
     {
       "id": "G-matrix",
-      "name": "validate-coverage-matrix --require-complete --require-basis --require-foundation",
-      "conditions": ["matrix_coverage", "foundation_trace", "decision_guidance"],
-      "exit_code": 0,
-      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす"
-    },
-    {
-      "id": "G-doc-sync",
-      "name": "validate-spec-doc-sync",
-      "conditions": ["foundation_trace"],
-      "exit_code": 0,
-      "stdout": "OK: 正本 spec-state.json の goal・根拠・出典が章へ投影されている"
-    },
-    {
-      "id": "G-knowledge-graph",
-      "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)",
-      "conditions": ["design_knowledge_reflection", "matrix_coverage"],
+      "name": "収集マトリクス検証",
+      "conditions": [
+        "loop",
+        "--require-complete",
+        "--require-basis --require-foundation"
+      ],
       "exit_code": 0
     },
     {
-      "id": "G-citation",
-      "name": "validate-source-citation --state (形式層。内容鮮度層は C08-R3 の 8/8 再照合で充足)",
-      "conditions": ["doc_freshness"],
-      "exit_code": 0,
-      "stdout": "OK: 出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす"
+      "id": "G-knowledge-graph",
+      "name": "知識グラフ検証 (knowledge / doctrine / required-info / cross)",
+      "exit_code": 0
     },
     {
       "id": "G-prompt",
-      "name": "verify-completeness + validate-prompt (18 prompts)",
-      "conditions": ["prompt_quality"],
+      "name": "prompt 品質検証",
+      "exit_code": 0
+    },
+    {
+      "id": "G-doc-sync",
+      "name": "仕様書と state の同期検証",
+      "exit_code": 0
+    },
+    {
+      "id": "G-required-info-state",
+      "name": "required-info の state 接地",
+      "exit_code": 0
+    },
+    {
+      "id": "G-source-citation",
+      "name": "出典引用検証",
       "exit_code": 0
     }
   ],
   "findings": [
     {
-      "severity": "medium",
-      "bucket": "doc_freshness",
-      "observation": "react-router の版跨ぎ: 記録は version 8.4.0 (公式 latest) だが、本リポジトリの実装は react-router-dom 7 系。useSearchParams の返り値と setSearchParams の受理型という本サイクルで参照した挙動は 7 系でも同一のため確定内容は揺らがないが、出典と実装の版が一致していない状態そのものは残る。summary 内で自己申告済みで隠蔽はない。",
-      "suggested_fix": "C02 で 7 系の該当ページを version 固定で取得し直すか、8.4.0 を引き続き参照するなら『参照した API は 7/8 で同一』の接地を summary に明記する。仕様書側の確定内容の変更は不要。",
+      "severity": "low",
+      "bucket": "decision_guidance",
+      "observation": "指紋は『当たった規則の種類すべて (表示順) + 判定時の基準金額』で作られる。しかし説明文は『新しい規則が加わるか金額が変わったときだけ再び候補に出す (判断を無効にする)』と書いている。当たる規則が 1 つ外れた場合も指紋は変わるので、除外した判断が無効になり、候補がもう一度出る。『だけ』は仕様の実際の挙動と矛盾する。また、基準金額が少しでも変わると除外が解ける (為替による外貨サブスクの変動など)。これは利用者が選んだ案の帰結だが、明記されていない。",
+      "suggested_fix": "compile で文言を『当たる規則の組み合わせか基準金額が変わったとき』に直す。金額の変化に許容幅を設けるかどうかは、実装計画の段階で決めるか、次のサイクルで elicit する。",
       "evidence": [
-        "fetched-references.json react-router-use-search-params (version 8.4.0 + 但し書き)",
-        "C08-R3b 訂正後の medium"
+        "database.md qa-subs-database-web-006 (2)",
+        "ui-ux.md:51 (3)",
+        "frontend.md:52 (3)"
       ]
     },
     {
       "severity": "low",
-      "bucket": "doc_freshness",
-      "observation": "retrieved_at / latest_checked_at が 8 件とも秒単位まで同一 (2026-09-17T22:05:46Z) で、個別実測ではなくバッチスタンプの可能性がある。本ラウンドの C08 再照合でも値は更新されていない (更新は C02 の書込責務であり C08 の責務外)。ゲートはブロックしていないが、粒度がこのままだと『いつ確認したか』が target 単位で追えず、次サイクル以降で鮮度の実効性を判断する材料にならない。",
-      "suggested_fix": "C02 の取得時に latest_checked_at を target ごとの実測時刻で刻む。C08 の再照合結果を記録へ反映する経路を持たせるかどうかは別途 plugin 側で検討 (現状は C08 が読み取り専用監査であることと整合している)。",
+      "bucket": "decision_guidance",
+      "observation": "サイドバーのバッジは、これまで reviewQueue.subscriptionCandidates (未登録候補の件数) を表示していた。新しい仕様では『まだ判断していない候補だけを数える』とあり、reviewQueue は同じ判定関数を呼ぶ。しかし、未登録の候補 (ステータス絞込の『未登録の候補』) がこの件数に入るのかどうかは、明示されていない。O5 の『サイドバーのバッジ件数が画面の候補件数と一致する』を検査するには、この母集団を決める必要がある。",
+      "suggested_fix": "backend の reviewQueue の記述に、母集団を 1 文で書き足す (compile)。『見直し候補のうち未判断のもの。未登録の候補は含む / 含まない』のどちらかを明記する。",
       "evidence": [
-        "fetched-references.json 8 件の retrieved_at / latest_checked_at",
-        "C08-R3 の low 観察事項"
+        "frontend.md:64 (Layout.tsx:246 の現行)",
+        "backend.md:31",
+        "frontend.md:108 (O5)"
       ]
-    },
-    {
-      "severity": "medium",
-      "bucket": "doc_freshness",
-      "observation": "前回ラウンドの medium 2 件のうち 1 件が未解消のまま残っている。cloudflare-d1-sql-statements の summary は『CHECK 制約・PRIMARY KEY・FOREIGN KEY・CREATE INDEX をサポートする』と断定するが、出典ページ本文がそこまで述べているかの接地は前回も確認できていない。C08-R3b も同一事実・同一判定で medium に差し戻しており、独立監査と一致した。",
-      "suggested_fix": "C02 (run-system-spec-doc-fetch) へ差し戻し、D1 の SQL サポート範囲を述べた公式ページを追加取得して summary の接地を直す。断定を維持するなら、その記述がどの公式ページのどの節に接地しているかを summary に明記する。",
-      "evidence": [
-        "system-spec/fetched-references.json cloudflare-d1-sql-statements.summary",
-        "前回レポート system-spec/completeness-findings.json の doc_freshness medium 2 件"
-      ]
-    },
-    {
-      "severity": "medium",
-      "bucket": "design_knowledge_reflection",
-      "observation": "backend.md の deep knowledge card 描画順が topo_order に反したまま (Clean Architecture → API Design Patterns → DDD。topo は ddd → clean-architecture → api-design-patterns)。原因はリポジトリ側ではなく plugin 側にあることを確認した: compile-spec-doc.py の category_design_refs() が resource-map.yaml の記載順をそのまま返し topo sort を掛けていない。さらに SSOT 側にも矛盾があり、R2-render.md 28 行は『topo_order で並べ替えて反映』と述べながら同じ行の例示で『backend→clean-architecture+api-design-patterns+ddd (depends_on 先の clean-architecture を先に踏まえる)』と、topo に反する順序を規定し、かつ depends_on の向きを取り違えている (knowledge-catalog では clean-architecture.depends_on=[ddd, design-patterns] であり depends_on 先は ddd)。生成側は SSOT の例示どおりに描画しており、リポジトリ内で塞げる欠陥ではない。",
-      "suggested_fix": "plugin 側 follow-up として切り出す (リポジトリ側の差し戻しにしない)。(1) category_design_refs() の返り値を validate-knowledge-graph.py --profile knowledge --order の topo_order で並べ替える。(2) R2-render.md 28 行の例示を ddd → clean-architecture → api-design-patterns へ直し、depends_on の向きの誤記も同時に直す (例示と一般規則が矛盾している限り、実装だけ直しても再発する)。(3) 章の card 出現順と --order 出力を突き合わせる決定論検査を足す。",
-      "evidence": [
-        "compile-spec-doc.py category_design_refs() (111-123 行) — resource-map の列挙順をそのまま append、sort なし",
-        "resource-map.yaml の記載順 = clean-architecture → design-patterns → api-design-patterns → secure-by-design → ddd → information-design → clean-code",
-        "R2-render.md 28 行の例示と 一般規則の矛盾",
-        "knowledge-catalog: clean-architecture.depends_on = [ddd, design-patterns]"
-      ]
-    },
-    {
-      "severity": "low",
-      "bucket": "design_knowledge_reflection",
-      "observation": "backend.md の『本章での適用』が Clean Architecture の 1 原則だけを述べており、同章が引く残り 2 枚の card (API Design Patterns / DDD) をどう確定内容へ当てたかが章固有の記述として現れていない。qa 回答側には Improvement 構造 (ドメインモデル) と API 契約の決定があり、doctrine 表の data-access 行も具体反映を述べているため形骸化ではないが、card 単位の適用記述としては 3 枚に対し 1 枚ぶんしかない。",
-      "suggested_fix": "C01 の set-design-application で backend の適用記述に API 契約 (PATCH の単一経路・許可リスト検証) と Improvement 構造 (境界づけられた語彙) の 2 段を足す。compile 側で card 枚数と適用記述の対応を数える必要はない (枚数合わせは Goodhart になる)。",
-      "evidence": ["system-spec/backend.md 124-128 行", "spec-state.json design_applications.backend"]
     },
     {
       "severity": "low",
       "bucket": "matrix_coverage",
-      "observation": "C06 の非ブロッキング指摘 2 件: (1) qa-diagnosis-ui-ux-web-001 と qa-diagnosis-backend-web-001 が複数論点を 1 問に束ねている (次サイクル申し送り)。(2) qa_log 9 件の answered_at が完全同一時刻 (2026-09-17T22:01:23Z) で loop_count=1。いずれも回答が各論点を網羅しトレーサビリティも健全なため網羅性の裏付けは崩れない。なお C06 は当初 critical 3 件で FAIL を出した後、SSOT (spec-state-contract.md) の該当条文と突き合わせて基準側の漂流と判断し PASS へ訂正している。訂正根拠の条文 (81-85 / 169-178 行) は C05 側でも原典を読んで裏取りした。",
-      "suggested_fix": "次サイクルの C01 R2-interview で、カテゴリ内の独立論点 (保存先 / 語彙 / 既存表との関係 / migration) を別問として出す。本サイクルの再ヒアリングは不要。",
-      "evidence": ["C06 hearing-auditor R3 報告", "spec-state-contract.md 81-85 行 / 169-178 行 を C05 が直接確認"]
+      "observation": "security.web の主 qa_ref は qa-subs-security-web-004 のままである。兄弟セルの database / backend / frontend / ui-ux は review-decision-002 を指している。004 は『AI を使わず、データを外部に送らない』という利用者の決定で、2 値化の影響を受けない。新しい根拠 (review-decision-002 / security-web-006) も qa_refs に入っているので、追跡は切れていない。C07 はこれを high としたが、SSOT の基準 (dangling / 混線 / 承認範囲外) のどれにも当たらないため low に下げた。問題は慣行が揃っていないことだけである。",
+      "suggested_fix": "次に compile するとき、主 qa_ref の選び方 (そのセルを最後に確定させた Q&A を指すかどうか) をカテゴリ間で揃える。今回、確定値を直す必要はない。",
+      "evidence": [
+        "spec-state.json targets security.web.qa_ref / qa_refs",
+        "C07 監査結果"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage",
+      "observation": "qa-subs-kpi-caption-001 は、推奨と代替の両方を示したうえで『つづけて』の一言で確定している (前回からの持ち越し)。片側だけを示す Yes/No の誘導質問には当たらない。ただし一括承認なので、選択が明示されたとは言いにくい。",
+      "suggested_fix": "次に ui-ux を reopen するときに、AskUserQuestion の選択肢形式でもう一度確認する (elicit)。今回、確定を戻す必要はない。",
+      "evidence": [
+        "ui-ux.md:89",
+        "C06 軸2"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "matrix_coverage",
+      "observation": "C06 は『review-decision-002 の Q2 の回答は、選択肢のラベルが示した範囲を超えている』と指摘した。transcript 2514 行で照合すると、Q2 の選択肢の説明に『一覧の候補バッジは確認済みに変えて残す。KPI とサイドバーのバッジはまだ判断していない候補だけを数える』と逐語で書かれており、指摘は当たらない。C06 が根拠にできたのは qa_log の選択肢ラベルだけで、説明文は読めなかったことが原因である。",
+      "suggested_fix": "今後、AskUserQuestion の結果を qa_log に記録するときは、選択肢のラベルだけでなく説明文も残す。監査者が transcript を読まなくても照合できるようにするため。",
+      "evidence": [
+        "transcript 2514 行 / 2517 行",
+        "spec-state.json qa-subs-review-decision-002"
+      ]
     },
     {
       "severity": "info",
       "bucket": "foundation_trace",
-      "observation": "確認した観点: 前回 high (推移画面サイクルの残置) の解消を実測で確認した。00-requirements-definition.md 中の appr- 出現は appr-foundation-diagnosis-001 のみ、U1/U2 は正本文字列と逐語一致、承認節は 1 件、U3-U9 と本文の齟齬なし。章が正本の超集合になっている状態は解消している。",
-      "evidence": ["00-requirements-definition.md 全文照合", "spec-state.json requirements_foundation"]
-    },
-    {
-      "severity": "info",
-      "bucket": "matrix_coverage",
-      "observation": "確認した観点: C13-C16 の機械層 4 profile (knowledge / doctrine / required-info / cross) を出荷カタログに対し独立再実行し全て exit0。required-info の blocking item (auth-model / context-of-use / domain-model / product-goal / security-posture / target-platforms) は全て確定セルの qa_ref から接地しており、missing_effect=block のまま確定へ進んだセルは無い。",
-      "evidence": ["aggregate-completeness.py --knowledge-graph exit0", "C07 の --state 付き required-info 検証"]
+      "observation": "前回 FAIL の対応 (a)〜(d) はすべて反映されていることを確認した。(a) 主根拠を review-decision-002 に差し替えた。(b) G5 / I5 を改訂し、appr-002 で承認を得た。(c) security の enum と design_applications を 2 値にし、指紋を『全規則 + 基準金額』にした。(d) backend-007 で (6) の重複した文末を直した。ui-ux の provenance の古い文も消えている。申告された既知の差 (appr-001 節が残っていること、凡例の注記 1 行) は指摘の対象にしない。",
+      "evidence": [
+        "00-requirements-definition.md",
+        "backend.md qa-subs-backend-web-007",
+        "security.md",
+        "ui-ux.md:53"
+      ]
     },
     {
       "severity": "info",
       "bucket": "doc_freshness",
-      "observation": "確認した観点: C08-R3b が当初出した high 3 件の主因『hono-zod-validator 0.9.1 は実在しない疑い (npm 現行最新は 0.9.0)』の撤回を、伝聞のまま受けずに C05 が registry.npmjs.org を直接取得して裏取りした。dist-tags.latest=0.9.1、time[\"0.9.1\"]=2026-08-31T11:40:36.400Z で実在を確認。WebSearch のインデックス遅延による誤検出という診断は正しく、記録値 0.9.1 は現行版として妥当。監査の verdict 反転を無検証で採用しない運用 (C06 の反転時と同じ扱い) を本ラウンドでも維持した。",
-      "evidence": ["registry.npmjs.org/@hono/zod-validator を C05 が直接 fetch"]
+      "observation": "C08 の info を 2 件記録する。F1: owasp-asvs の出典の host は github.com だが、OWASP 公式組織のリポジトリである。F2: latest_checked_at はこのサイクルで更新されていないが、今日の時点で内容をもう一度照合して一致した。",
+      "suggested_fix": "次に doc-fetch を実行するときに、latest_checked_at を実測した時刻で更新する。",
+      "evidence": [
+        "fetched-references.json",
+        "C08 監査結果"
+      ]
     },
     {
       "severity": "info",
-      "bucket": "prompt_quality",
-      "observation": "確認した観点: prompt 機械ゲートを 18 件すべてに実行し failing 0。外部 prompt-creator は plugins/prompt-creator で解決でき、rubric の skip 例外 (依存不在時の INDETERMINATE 緩和) は発動していない。",
-      "evidence": ["verify-completeness.py / validate-prompt.py 18/18 exit0"]
+      "bucket": "decision_guidance",
+      "observation": "00 章の decision 表に security_fit / comparison_basis の列が出ない。これは compile-spec-doc.py のテンプレートの問題で、harness 側の課題として持ち越す (前回から変化なし)。",
+      "evidence": [
+        "compile-spec-doc.py:1108"
+      ]
     }
   ],
-  "gaps": [
-    "C02 (run-system-spec-doc-fetch) へ差し戻し (章の確定を妨げない残課題): cloudflare-d1-sql-statements の summary が断定する CHECK / PRIMARY KEY / FOREIGN KEY / CREATE INDEX のサポートを出典本文へ接地させる。あわせて react-router の版跨ぎ (記録 8.4.0 / 実装 7 系) を版固定の取り直しか『参照 API は 7/8 同一』の接地明記で解消し、latest_checked_at を target ごとの実測時刻で刻む。",
-    "plugin 側 follow-up (リポジトリ側の差し戻しではない): compile-spec-doc.py category_design_refs() に topo_order の並べ替えを入れ、あわせて R2-render.md 28 行の例示 (clean-architecture を depends_on 先とする誤記) を直す。章の確定は妨げないため、本サイクルの進行を止める理由にはしない。",
-    "C01 (run-system-spec-elicit) への申し送り (本サイクルの再ヒアリングは不要): backend の design_application へ API 契約と Improvement 構造の適用を追記する。次サイクルの質問はカテゴリ内の独立論点を分割して出す。"
-  ]
+  "gaps": []
 }

@@ -18,6 +18,7 @@ import {
   subscriptions,
 } from './analysis.js';
 import { sum } from './stats.js';
+import { vendorKey } from './subs.js';
 import type { Dataset } from './types.js';
 
 /** 改善余地 1 件の根拠。実測値・比較値・期間を必ず持たせ、切り分けの順序を固定する */
@@ -329,7 +330,8 @@ const spike: DiagnosisDetector = {
         ],
         nextAction: {
           label: '契約を確認する',
-          to: withQuery('/subscriptions', { vendor: a.vendor, month: a.month }),
+          // サブスク画面は URL の vendor を正規化済みキーで引く。表示名のまま渡すと当たらない
+          to: withQuery('/subscriptions', { vendor: vendorKey(a.vendor), month: a.month }),
         },
       });
       if (row) out.push(row);
@@ -441,7 +443,8 @@ const subsDuplicate: DiagnosisDetector = {
         ],
         nextAction: {
           label: '契約を確認する',
-          to: withQuery('/subscriptions', { vendor: a.vendor, month: a.month }),
+          // サブスク画面は URL の vendor を正規化済みキーで引く。表示名のまま渡すと当たらない
+          to: withQuery('/subscriptions', { vendor: vendorKey(a.vendor), month: a.month }),
         },
       });
       if (row) out.push(row);

@@ -50,7 +50,7 @@
 
 | 項目 | 状態 |
 |---|---|
-| migration | `migrations/0043_diagnosis_action_states.sql` |
+| migration | `migrations/0044_diagnosis_action_states.sql` |
 | 主キー | `(user_id, action_key)` の複合主キー |
 | ローカル適用 | 0001〜0043 を適用し、0043 を含めて PASS |
 | 実行時ガード | `packages/api/src/schema-guard.ts` の期待 head を 0043 に更新済み |

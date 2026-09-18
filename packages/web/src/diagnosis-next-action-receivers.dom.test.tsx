@@ -1,56 +1,98 @@
 // @vitest-environment jsdom
 
+/**
+ * 診断画面が出す nextAction の遷移先が、実在する受け手の画面に「届く」かを端から端で固定する。
+ *
+ * 診断側は遷移先 URL を作るだけなので、受け手が query をどう読むかを知らないまま壊れうる。
+ * サブスク画面は URL の vendor を正規化済みキー (core の `vendorKey`) で引くため、
+ * 表示名をそのまま渡すと当たらず、URL から静かに捨てられる。この非対称を DOM で接地する。
+ */
+import { vendorKey } from '@kanjo/core';
+import type { SubscriptionRow, SubscriptionVendorDetail, SubscriptionsScreen } from '@kanjo/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, render, screen, within } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { BudgetPage } from './pages/Budget.js';
 import { SubscriptionsPage } from './pages/Subscriptions.js';
+import { PeriodProvider } from './period.js';
 
 vi.mock('react-chartjs-2', async () => ({
   Chart: (await import('./test-support/chart-test-doubles.js')).SilentChart,
 }));
 
-const subscriptionPayload = {
-  months: ['2026-07', '2026-08'],
-  vendors: ['架空クラウド', '架空広告'],
-  vendorAccounts: { 架空クラウド: ['通信費'], 架空広告: ['広告宣伝費'] },
-  matrix: { 架空クラウド: [3_300, 6_600], 架空広告: [10_000, 20_000] },
-  other: [0, 0],
-  vendorTable: [
-    {
-      vendor: '架空クラウド',
-      prevActual: 0,
-      currAnnualized: 59_400,
-      delta: 1,
-      lastMonthly: 6_600,
-      avgMonthly: 4_950,
-      last12Total: 9_900,
-      activeMonths: 2,
-    },
-    {
-      vendor: '架空広告',
-      prevActual: 0,
-      currAnnualized: 180_000,
-      delta: 1,
-      lastMonthly: 20_000,
-      avgMonthly: 15_000,
-      last12Total: 30_000,
-      activeMonths: 2,
-    },
-  ],
-  now: {
-    month: '2026-08',
+/** 表示名と正規化キーがずれる名前にする (ずれない名前だと正規化の有無を判別できない) */
+const CLOUD_NAME = '株式会社 架空クラウド';
+const CLOUD_KEY = vendorKey(CLOUD_NAME);
+const ADS_NAME = '架空広告';
+
+function subRow(name: string, monthly: number, category: string): SubscriptionRow {
+  return {
+    vendorKey: vendorKey(name),
+    vendorId: null,
+    status: 'registered',
+    displayName: name,
+    normalizedName: name,
+    matchedNameCount: 1,
+    latestAmount: monthly,
+    estimatedMonthly: monthly,
+    annualized: monthly * 12,
+    billing: 'monthly',
+    active: true,
+    category,
+    categorySource: 'dictionary',
+    review: null,
+  };
+}
+
+const cloudRow = subRow(CLOUD_NAME, 6_600, 'クラウド');
+const adsRow = subRow(ADS_NAME, 20_000, '広告');
+
+const subscriptionsScreen: SubscriptionsScreen = {
+  period: null,
+  previousPeriod: null,
+  generatedAt: '2026-08-31T00:00:00.000Z',
+  kpis: {
     monthlyTotal: 26_600,
+    monthlyTotalPrev: null,
     annualized: 319_200,
+    annualizedPrev: null,
     last12Total: 39_900,
-    revenueShare: 0.1,
+    revenueShare: null,
+    reviewCandidates: 0,
   },
-  alerts: [
-    { month: '2026-08', vendor: '架空クラウド', value: 6_600, median: 3_300, type: 'dup' },
-    { month: '2026-07', vendor: '架空広告', value: 10_000, median: 5_000, type: `sp${'ike'}` as const },
+  coverage: {
+    bank: { percent: 1, imported: 1, accounts: 1 },
+    card: { percent: 1, imported: 1, accounts: 1 },
+    emoney: { percent: null, imported: 0, accounts: 0 },
+    unclassified: 0,
+  },
+  rows: [cloudRow, adsRow],
+  trend: {
+    months: ['2026-07', '2026-08'],
+    series: [
+      { category: 'クラウド', values: [3_300, 6_600] },
+      { category: '広告', values: [10_000, 20_000] },
+    ],
+  },
+  comparison: [
+    { category: '広告', monthly: 20_000, annualized: 240_000, share: 0.75, prevMonthly: 10_000 },
+    { category: 'クラウド', monthly: 6_600, annualized: 79_200, share: 0.25, prevMonthly: 3_300 },
   ],
-  years: { curr: '2026', prev: '2025' },
+  comparisonTotal: { monthly: 26_600, annualized: 319_200, prevMonthly: 13_300 },
+};
+
+const cloudDetail: SubscriptionVendorDetail = {
+  vendorKey: CLOUD_KEY,
+  vendorId: null,
+  row: cloudRow,
+  rawNames: [{ name: CLOUD_NAME, source: 'card', count: 2 }],
+  estimatedMonthly: 6_600,
+  annualized: 79_200,
+  recent: [{ date: '2026-08-01', name: CLOUD_NAME, source: 'card', amount: 6_600 }],
+  transactionCount: 2,
+  bySource: [{ source: 'card', count: 2 }],
+  related: null,
 };
 
 const budgetPayload = {
@@ -89,27 +131,38 @@ const budgetPayload = {
   },
 };
 
+function LocationProbe() {
+  const location = useLocation();
+  return <output data-testid="location">{`${location.pathname}${location.search}`}</output>;
+}
+
+const location = () => screen.getByTestId('location').textContent ?? '';
+
 function renderAt(page: 'subscriptions' | 'budget', path: string) {
   vi.stubGlobal(
     'fetch',
-    vi.fn(async (input: RequestInfo | URL) => {
+    vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
-      const body = url.includes('/api/subscriptions')
-        ? subscriptionPayload
-        : url.includes('/api/budgets')
-          ? budgetPayload
-          : url.includes('/api/sub-vendors/candidates')
-            ? { candidates: [], excluded: [], dealRows: 0 }
-            : { vendors: [], accountOptions: [], review: [] };
-      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
+      const json = (body: unknown) =>
+        new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
+      if ((init?.method ?? 'GET') !== 'GET') return json({ ok: true, aliases: [] });
+      if (url.includes('/api/subscriptions/vendors/')) return json(cloudDetail);
+      if (url.includes('/api/subscriptions')) return json(subscriptionsScreen);
+      if (url.includes('/api/budgets')) return json(budgetPayload);
+      if (url.includes('/api/sub-vendors/candidates'))
+        return json({ candidates: [], excluded: [], dealRows: 0 });
+      return json({ vendors: [], accountOptions: [], review: [] });
     }),
   );
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <QueryClientProvider client={client}>
-      <MemoryRouter initialEntries={[path]}>
-        {page === 'subscriptions' ? <SubscriptionsPage /> : <BudgetPage />}
-      </MemoryRouter>
+      <PeriodProvider>
+        <MemoryRouter initialEntries={[path]}>
+          {page === 'subscriptions' ? <SubscriptionsPage /> : <BudgetPage />}
+          <LocationProbe />
+        </MemoryRouter>
+      </PeriodProvider>
     </QueryClientProvider>,
   );
 }
@@ -120,30 +173,24 @@ afterEach(() => {
 });
 
 describe('診断 nextAction の受信契約', () => {
-  it('Subscriptions は account/vendor/month が一致する対象だけを初期表示する', async () => {
-    renderAt(
-      'subscriptions',
-      '/subscriptions?account=%E9%80%9A%E4%BF%A1%E8%B2%BB&vendor=%E6%9E%B6%E7%A9%BA%E3%82%AF%E3%83%A9%E3%82%A6%E3%83%89&month=2026-08',
-    );
-    const status = await screen.findByRole('status', { name: '診断からの絞り込み' });
-    expect(status.textContent).toContain('通信費');
-    expect(status.textContent).toContain('架空クラウド');
-    expect(status.textContent).toContain('2026年8月');
-    const section = screen.getByRole('region', { name: '現在のサブスク支払い' });
-    expect(section.textContent).toContain('架空クラウド');
-    expect(section.textContent).not.toContain('架空広告');
-    const alerts = screen.getByRole('region', { name: '検知アラート' });
-    expect(alerts.textContent).toContain('架空クラウド');
-    expect(alerts.textContent).not.toContain('架空広告');
+  it('Subscriptions は診断が渡す正規化キーで対象の詳細を開く', async () => {
+    renderAt('subscriptions', `/subscriptions?vendor=${encodeURIComponent(CLOUD_KEY)}`);
+    const panel = await screen.findByRole('complementary', { name: 'サブスクの詳細' });
+    // 詳細は URL の vendor で別途 fetch する。読込が終わってから中身を見る
+    await within(panel).findByText('マッチした生の取引名（1件）');
+    expect(within(panel).getAllByText(CLOUD_NAME).length).toBeGreaterThan(0);
+    expect(location()).toBe(`/subscriptions?vendor=${encodeURIComponent(CLOUD_KEY)}`);
   });
 
-  it('Subscriptions は不正・不存在queryを無視して全件表示する', async () => {
-    renderAt('subscriptions', '/subscriptions?account=x&vendor=x&month=2026-99');
-    await screen.findByText('いま何にいくら払っているか');
-    expect(screen.queryByRole('status', { name: '診断からの絞り込み' })).toBeNull();
-    const section = screen.getByRole('region', { name: '現在のサブスク支払い' });
-    expect(section.textContent).toContain('架空クラウド');
-    expect(section.textContent).toContain('架空広告');
+  it('Subscriptions は表示名のままや不存在の vendor を静かに捨てる', async () => {
+    // 診断が vendorKey を通し忘れると (表示名のまま渡すと) この経路に落ちる
+    renderAt('subscriptions', `/subscriptions?vendor=${encodeURIComponent(CLOUD_NAME)}`);
+    await screen.findByRole('region', { name: '最終更新' });
+    await waitFor(() => expect(location()).toBe('/subscriptions'));
+    expect(screen.queryByRole('complementary', { name: 'サブスクの詳細' })).toBeNull();
+    const list = screen.getByRole('table', { name: 'サブスク一覧' });
+    expect(list.textContent).toContain(CLOUD_NAME);
+    expect(list.textContent).toContain(ADS_NAME);
   });
 
   it('Budget は存在する account を初期表示し、不存在accountは全件へ戻す', async () => {

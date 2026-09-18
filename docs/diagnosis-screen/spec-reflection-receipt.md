@@ -25,7 +25,7 @@
 | features | `features/feat-diagnosis-screen.md`、`features/feat-diagnosis-screen.context.json` (新規) | macro feature の purpose / goal / scope_in / scope_out / acceptance (S1..S6) |
 | tasks | `tasks/feat-diagnosis-screen/sys-diagnosis-screen-p01.md` .. `p13.md` (新規 13 本) | exact-13 package の task spec |
 | docs | `docs/diagnosis-screen.md`、`docs/diagnosis-screen-design.md`、`docs/diagnosis-screen-test-plan.md`、`docs/diagnosis-screen-evidence.md`、`docs/requirements-feat-diagnosis-screen.md`、本受領書 (いずれも新規)、`docs/spec-v1.1.md` (更新) | 見取り図・設計・テスト計画・証跡・要件と、製品全体の正本への反映 |
-| migrations | `migrations/0043_diagnosis_action_states.sql` (新規) | `diagnosis_action_states`。主キー `(user_id, action_key)`、`status` は 4 語の CHECK、`note` は 500 字の CHECK |
+| migrations | `migrations/0044_diagnosis_action_states.sql` (新規) | `diagnosis_action_states`。主キー `(user_id, action_key)`、`status` は 4 語の CHECK、`note` は 500 字の CHECK |
 
 ## `docs/spec-v1.1.md` をどう更新したか
 
@@ -73,7 +73,7 @@ task spec (`tasks/feat-diagnosis-screen/sys-diagnosis-screen-p13.md`) は本番�
 「manifest → Migrate APPLY → Deploy」と書いているが、**今回の migration にこの経路は当てはまらない**。
 
 - `.github/workflows/migrate.yml` は冒頭で「列や行を失う D1 変更だけを、承認 manifest つきで手動実行する。追加だけの migration は Deploy が自動適用するので、通常このworkflowは使わない」と宣言している。
-- `migrations/0043_diagnosis_action_states.sql` は新表の `CREATE TABLE` のみで、既存の列・行を失わない (task spec の「スコープ外」にも「既存表の行書き換えは行わない」と明記されている)。
+- `migrations/0044_diagnosis_action_states.sql` は新表の `CREATE TABLE` のみで、既存の列・行を失わない (task spec の「スコープ外」にも「既存表の行書き換えは行わない」と明記されている)。
 - `.github/workflows/deploy.yml` は main の CI 成功後に起動し、migration の適用を Worker 配信より**前**に行う (`schema-guard` が期待版に達するまで D1 経路を 503 で閉じるため)。
 
 したがって P13 の実体は **PR #59 を `main` へ merge すること**であり、手動の Migrate APPLY は不要である。

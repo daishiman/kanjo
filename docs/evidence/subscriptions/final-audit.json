@@ -1,0 +1,238 @@
+{
+  "capturedAt": "2026-09-18T14:15:38.233Z",
+  "fixture": "scripts/seed-local.mjs (anonymous synthetic data)",
+  "initial1024": {
+    "viewport": {
+      "width": 1024,
+      "height": 1536
+    },
+    "document": {
+      "clientWidth": 1009,
+      "scrollWidth": 1009,
+      "overflow": false
+    },
+    "kpiIcons": 5,
+    "coverage": {
+      "top": 324,
+      "bottom": 395,
+      "left": 172,
+      "right": 735,
+      "width": 563,
+      "height": 71
+    },
+    "refresh": {
+      "top": 324,
+      "bottom": 395,
+      "left": 747,
+      "right": 997,
+      "width": 250,
+      "height": 71
+    },
+    "tableCard": {
+      "top": 407,
+      "bottom": 925,
+      "left": 172,
+      "right": 717,
+      "width": 545,
+      "height": 518
+    },
+    "trend": {
+      "top": 937,
+      "bottom": 1278,
+      "left": 172,
+      "right": 717,
+      "width": 545,
+      "height": 341
+    },
+    "comparison": {
+      "top": 1290,
+      "bottom": 1392,
+      "left": 172,
+      "right": 717,
+      "width": 545,
+      "height": 102
+    },
+    "reason": {
+      "top": 407,
+      "bottom": 700,
+      "left": 729,
+      "right": 997,
+      "width": 268,
+      "height": 293
+    },
+    "reasonItems": 1,
+    "reasonMore": "他4件を候補一覧で見る →",
+    "table": {
+      "clientHeight": 440,
+      "scrollHeight": 997,
+      "scrollTop": 557,
+      "rows": 20,
+      "totalPosition": "sticky",
+      "totalBeforeBottom": 912,
+      "totalAfterBottom": 912,
+      "scrollBottom": 912,
+      "totalVisibleAtBottom": true
+    }
+  },
+  "reviewFilterTriggered": true,
+  "reviewReachability": {
+    "value": "review",
+    "rows": 5,
+    "focused": true
+  },
+  "selected1024": {
+    "viewport": {
+      "width": 1024,
+      "height": 1536
+    },
+    "document": {
+      "clientWidth": 1009,
+      "scrollWidth": 1009,
+      "overflow": false
+    },
+    "kpiIcons": 5,
+    "coverage": {
+      "top": 324,
+      "bottom": 395,
+      "left": 172,
+      "right": 735,
+      "width": 563,
+      "height": 71
+    },
+    "refresh": {
+      "top": 324,
+      "bottom": 395,
+      "left": 747,
+      "right": 997,
+      "width": 250,
+      "height": 71
+    },
+    "tableCard": {
+      "top": 407,
+      "bottom": 925,
+      "left": 172,
+      "right": 717,
+      "width": 545,
+      "height": 518
+    },
+    "trend": {
+      "top": 937,
+      "bottom": 1278,
+      "left": 172,
+      "right": 717,
+      "width": 545,
+      "height": 341
+    },
+    "comparison": {
+      "top": 1290,
+      "bottom": 1392,
+      "left": 172,
+      "right": 717,
+      "width": 545,
+      "height": 102
+    },
+    "reason": {
+      "top": 1274,
+      "bottom": 1519,
+      "left": 729,
+      "right": 997,
+      "width": 268,
+      "height": 245
+    },
+    "reasonItems": 1,
+    "reasonMore": "他4件を候補一覧で見る →",
+    "table": {
+      "clientHeight": 440,
+      "scrollHeight": 997,
+      "scrollTop": 557,
+      "rows": 20,
+      "totalPosition": "sticky",
+      "totalBeforeBottom": 912,
+      "totalAfterBottom": 912,
+      "scrollBottom": 912,
+      "totalVisibleAtBottom": true
+    }
+  },
+  "narrow375": {
+    "viewport": {
+      "width": 375,
+      "height": 1000
+    },
+    "document": {
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "overflow": false
+    },
+    "kpiIcons": 5,
+    "coverage": {
+      "top": 754,
+      "bottom": 960,
+      "left": 20,
+      "right": 355,
+      "width": 335,
+      "height": 206
+    },
+    "refresh": {
+      "top": 972,
+      "bottom": 1034,
+      "left": 20,
+      "right": 355,
+      "width": 335,
+      "height": 62
+    },
+    "tableCard": {
+      "top": 1046,
+      "bottom": 1830,
+      "left": 20,
+      "right": 355,
+      "width": 335,
+      "height": 785
+    },
+    "trend": {
+      "top": 2097,
+      "bottom": 2499,
+      "left": 20,
+      "right": 355,
+      "width": 335,
+      "height": 402
+    },
+    "comparison": {
+      "top": 2511,
+      "bottom": 2613,
+      "left": 20,
+      "right": 355,
+      "width": 335,
+      "height": 102
+    },
+    "reason": {
+      "top": 1842,
+      "bottom": 2085,
+      "left": 20,
+      "right": 355,
+      "width": 335,
+      "height": 242
+    },
+    "reasonItems": 1,
+    "reasonMore": "他4件を候補一覧で見る →",
+    "table": {
+      "clientHeight": 673,
+      "scrollHeight": 997,
+      "scrollTop": 324,
+      "rows": 20,
+      "totalPosition": "static",
+      "totalBeforeBottom": 2141,
+      "totalAfterBottom": 1817,
+      "scrollBottom": 1817,
+      "totalVisibleAtBottom": true
+    }
+  },
+  "console": {
+    "errorCount": 0,
+    "exceptionCount": 0,
+    "loadingFailedCount": 0,
+    "console": [],
+    "exceptions": [],
+    "loadingFailed": []
+  },
+  "screenshots": ["final-1024x1536.png", "final-375x1000.png"]
+}

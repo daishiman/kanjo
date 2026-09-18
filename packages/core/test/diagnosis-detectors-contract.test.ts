@@ -200,7 +200,8 @@ describe('§1 検知器の境界値', () => {
     expect(rows[0].monthlyImpact).toBe(10_001);
     expect(rows[0].annualImpact).toBe(10_001);
     expect(rows[0].impactBasis).toBe('one_off');
-    expect(new URL(rows[0].nextAction.to, 'https://example.test').searchParams.get('vendor')).toBe('Zoom');
+    // 遷移先のサブスク画面は vendor を正規化済みキーで引く。表示名のまま渡すと当たらない
+    expect(new URL(rows[0].nextAction.to, 'https://example.test').searchParams.get('vendor')).toBe('zoom');
     expect(rows[0].evidence[0]).toEqual({
       label: '当月の支払額',
       value: 15_001,

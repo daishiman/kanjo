@@ -54,9 +54,7 @@ import {
   resolvePeriodQuery,
   reviewItemFingerprint,
   reviewQueueCounts,
-  sourceNeutralSubscriptionDeals,
-  sourceNeutralSubscriptions,
-  subsCandidates,
+  subscriptionsScreen,
   toCsv,
   totalCashflowReport,
   tradeoffCandidates,
@@ -74,15 +72,8 @@ import type { AuthEnv, AuthVariables } from '../auth.js';
 import { loadCashflowSources } from '../cashflow-sources.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
-import {
-  dealFromRow,
-  getDb,
-  loadBackupPayload,
-  loadDataset,
-  loadSubVendorExclusions,
-  loadSubVendors,
-  loadVendorMemories,
-} from '../store.js';
+import { dealFromRow, getDb, loadBackupPayload, loadDataset, loadVendorMemories } from '../store.js';
+import { loadSubscriptionsInput } from './subs.js';
 
 // 月次レビューの記録者 (actor) を読むため、ルートは認証ミドルウェアが載せる変数の型をそのまま使う
 type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
@@ -168,7 +159,7 @@ const apiError = (code: string, message: string) => ({ error: { code, message } 
 async function loadReviewSources<V extends { userId: string }>(c: Context<DataCtx<V>>, all: Dataset) {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const [sources, failedRuns, vendorMemories, subVendors, subExclusions] = await Promise.all([
+  const [sources, failedRuns, vendorMemories] = await Promise.all([
     loadCashflowSources(db, userId, all.mfTx),
     db
       .select({
@@ -179,8 +170,6 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
       .from(s.importRuns)
       .where(and(eq(s.importRuns.userId, userId), eq(s.importRuns.status, 'failed'))),
     loadVendorMemories(db, userId),
-    loadSubVendors(db, userId),
-    loadSubVendorExclusions(db, userId),
   ]);
   const { deals, verdicts, freeeExclusions: exclusions, mfExclusions } = sources;
   const report = totalCashflowReport(
@@ -204,13 +193,11 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
     freeeExclusions: exclusions,
     mfExclusions,
   }).kpi.actionRequiredCount;
-  // サイドバーの「サブスク」バッジ。サブスク画面の候補一覧と同じ関数・同じ上限で数える
-  const subscriptionCandidates = subsCandidates(
-    sourceNeutralSubscriptionDeals(all, deals),
-    subVendors,
-    20,
-    subExclusions.map((row) => row.partner),
-  ).length;
+  // サイドバーの「サブスク」バッジ。サブスク画面の KPI 5 枚目 (未判断の見直し候補) と同じ入口・同じ関数で数える。
+  // バッジは画面の期間タブを知らないので、既定の期間 (直近 1 年) で数える (spec §12.2)
+  const subscriptionCandidates = subscriptionsScreen(
+    await loadSubscriptionsInput(db, userId, { span: '1' }, { all, deals }),
+  ).kpis.reviewCandidates;
   return { report, items, actionRequiredCount, subscriptionCandidates };
 }
 
@@ -558,25 +545,6 @@ analyticsRoute.get('/trends', async (c) => {
     ...screen,
     judgementBasis: 'mf_only' as const,
   });
-});
-
-analyticsRoute.get('/subscriptions', async (c) => {
-  const { data, all } = await loadScoped(c);
-  // 期間絞り込みは従来、値が0の支払先を表から落とす。しかし登録定義まで落とすと、
-  // MFにしか無い支払先をここから新たに集計できない。設定は全期間側から戻す。
-  data.subs.vendors = [...all.subs.vendors];
-  data.subs.aliases = structuredClone(all.subs.aliases);
-  data.subs.accounts = structuredClone(all.subs.accounts);
-  data.subs.matrix = Object.fromEntries(
-    data.subs.vendors.map((vendor) => [vendor, data.months.map(() => 0)]),
-  );
-  const months = new Set(data.months);
-  const rows = await getDb(c.env.DB)
-    .select()
-    .from(s.freeeDeals)
-    .where(eq(s.freeeDeals.userId, c.get('userId')));
-  const deals = rows.map(dealFromRow).filter((deal) => months.has(deal.month));
-  return c.json(sourceNeutralSubscriptions(data, deals));
 });
 
 /**

@@ -19,7 +19,7 @@
 | `packages/core/src/diagnosis-screen.ts` | 既存診断と改善項目を画面応答へ合成する `diagnosisScreen()` |
 | `packages/api/src/routes/analytics.ts` | Dataset と認証済み user_id の組み立て、GET /diagnosis、PATCH /diagnosis/actions/:action_key |
 | `packages/api/src/db/schema.ts` | migration を写した Drizzle schema |
-| `migrations/0043_diagnosis_action_states.sql` | `(user_id, action_key)` を主キーにした永続化の正本 |
+| `migrations/0044_diagnosis_action_states.sql` | `(user_id, action_key)` を主キーにした永続化の正本 |
 | `packages/web/src/pages/analysis/Diagnosis.tsx` | URL 状態、取得、保存、master-detail のページ制御 |
 | `packages/web/src/pages/analysis/diagnosis/` | 条件、結果、表、詳細、図、根拠、固定アクションバー、旧統計の表示部品 |
 | `packages/web/src/pages/analysis/diagnosis.css` | トークンだけを使う画面レイアウト |

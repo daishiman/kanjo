@@ -1,0 +1,885 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "database",
+      "label": "データベース"
+    },
+    {
+      "id": "auth",
+      "label": "認証(ログイン)"
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI-UX"
+    },
+    {
+      "id": "security",
+      "label": "セキュリティ"
+    },
+    {
+      "id": "infrastructure",
+      "label": "インフラ"
+    },
+    {
+      "id": "backend",
+      "label": "バックエンド"
+    },
+    {
+      "id": "frontend",
+      "label": "フロントエンド"
+    },
+    {
+      "id": "maintenance-ops",
+      "label": "保守運用管理"
+    }
+  ],
+  "platforms": [
+    "web",
+    "mobile",
+    "tablet",
+    "desktop-windows",
+    "desktop-linux",
+    "desktop-macos"
+  ],
+  "matrix": {
+    "database": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-diagnosis-database-web-001",
+        "serves_goals": [
+          "G4"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS / Android)を提供していたなら、診断画面の本カテゴリでは端末内に明細と診断結果の写しを置き、対応状況の変更をオフラインで保持して後から同期する保存方式を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS / Android)を提供していたなら、診断画面の本カテゴリでは端末内に明細と診断結果の写しを置き、対応状況の変更をオフラインで保持して後から同期する保存方式を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末内に明細と診断結果の写しを置き、対応状況の変更をオフラインで保持して後から同期する保存方式を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末内に明細と診断結果の写しを置き、対応状況の変更をオフラインで保持して後から同期する保存方式を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末内に明細と診断結果の写しを置き、対応状況の変更をオフラインで保持して後から同期する保存方式を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      }
+    },
+    "auth": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-diagnosis-auth-web-001",
+        "serves_goals": [
+          "G4",
+          "G5"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS / Android)を提供していたなら、診断画面の本カテゴリでは端末の生体認証や安全な資格情報保管を使った、ログイン状態の持続方式を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS / Android)を提供していたなら、診断画面の本カテゴリでは端末の生体認証や安全な資格情報保管を使った、ログイン状態の持続方式を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末の生体認証や安全な資格情報保管を使った、ログイン状態の持続方式を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末の生体認証や安全な資格情報保管を使った、ログイン状態の持続方式を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末の生体認証や安全な資格情報保管を使った、ログイン状態の持続方式を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      }
+    },
+    "ui-ux": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-diagnosis-ui-ux-web-001",
+        "serves_goals": [
+          "G1",
+          "G3",
+          "G5"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS / Android)を提供していたなら、診断画面の本カテゴリでは小さな画面で優先順位の表と詳細パネルを同時に読ませる配置と操作を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS / Android)を提供していたなら、診断画面の本カテゴリでは小さな画面で優先順位の表と詳細パネルを同時に読ませる配置と操作を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、診断画面の本カテゴリでは小さな画面で優先順位の表と詳細パネルを同時に読ませる配置と操作を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、診断画面の本カテゴリでは小さな画面で優先順位の表と詳細パネルを同時に読ませる配置と操作を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、診断画面の本カテゴリでは小さな画面で優先順位の表と詳細パネルを同時に読ませる配置と操作を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      }
+    },
+    "security": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-diagnosis-security-web-001",
+        "serves_goals": [
+          "G4",
+          "G6"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS / Android)を提供していたなら、診断画面の本カテゴリでは端末内に残る明細と対応状況の保護、およびアプリ配布経路の改竄対策を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS / Android)を提供していたなら、診断画面の本カテゴリでは端末内に残る明細と対応状況の保護、およびアプリ配布経路の改竄対策を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末内に残る明細と対応状況の保護、およびアプリ配布経路の改竄対策を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末内に残る明細と対応状況の保護、およびアプリ配布経路の改竄対策を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末内に残る明細と対応状況の保護、およびアプリ配布経路の改竄対策を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-diagnosis-infrastructure-web-001",
+        "serves_goals": [
+          "G1",
+          "G6"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS / Android)を提供していたなら、診断画面の本カテゴリではアプリの配布・更新経路と、端末ごとに版が割れたときの扱いを決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS / Android)を提供していたなら、診断画面の本カテゴリではアプリの配布・更新経路と、端末ごとに版が割れたときの扱いを決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、診断画面の本カテゴリではアプリの配布・更新経路と、端末ごとに版が割れたときの扱いを決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、診断画面の本カテゴリではアプリの配布・更新経路と、端末ごとに版が割れたときの扱いを決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、診断画面の本カテゴリではアプリの配布・更新経路と、端末ごとに版が割れたときの扱いを決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      }
+    },
+    "backend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-diagnosis-backend-web-001",
+        "serves_goals": [
+          "G2",
+          "G3",
+          "G4"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS / Android)を提供していたなら、診断画面の本カテゴリでは端末向けに通信量を抑えた返却形と、オフライン時の再送を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS / Android)を提供していたなら、診断画面の本カテゴリでは端末向けに通信量を抑えた返却形と、オフライン時の再送を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末向けに通信量を抑えた返却形と、オフライン時の再送を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末向けに通信量を抑えた返却形と、オフライン時の再送を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末向けに通信量を抑えた返却形と、オフライン時の再送を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-diagnosis-frontend-web-001",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G5"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS / Android)を提供していたなら、診断画面の本カテゴリでは端末向けの描画方式と、チャート部品の置き換えを決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS / Android)を提供していたなら、診断画面の本カテゴリでは端末向けの描画方式と、チャート部品の置き換えを決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末向けの描画方式と、チャート部品の置き換えを決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末向けの描画方式と、チャート部品の置き換えを決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末向けの描画方式と、チャート部品の置き換えを決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      }
+    },
+    "maintenance-ops": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-diagnosis-maintenance-ops-web-001",
+        "serves_goals": [
+          "G2",
+          "G6"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリ (iOS / Android)を提供していたなら、診断画面の本カテゴリでは端末へ配った版の不具合追跡と回収の手順を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリ (iPadOS / Android)を提供していたなら、診断画面の本カテゴリでは端末へ配った版の不具合追跡と回収の手順を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末へ配った版の不具合追跡と回収の手順を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末へ配った版の不具合追跡と回収の手順を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS デスクトップアプリを提供していたなら、診断画面の本カテゴリでは端末へ配った版の不具合追跡と回収の手順を決める必要があった。本サイクルの対象は既存 Web アプリ (packages/web、ブラウザ配信) の /analysis/diagnosis 画面だけであり、専用アプリは作らない。対象 platform を web のみとする利用者承認 (appr-foundation-diagnosis-001、qa-target-platforms-diagnosis-001) により、この検討は発生しない。",
+        "approval_ref": "appr-foundation-diagnosis-001",
+        "qa_ref": "qa-target-platforms-diagnosis-001"
+      }
+    }
+  },
+  "qa_log": [
+    {
+      "id": "qa-target-platforms-diagnosis-001",
+      "question": "診断画面 (08-diagnosis) の作り直しは、どの platform を対象にしますか。web / mobile / tablet / desktop-windows / desktop-linux / desktop-macos の6 種それぞれについて、対象に含めるか外すかを決めてください。",
+      "answer": "対象は web のみとする。mobile / tablet / desktop-windows / desktop-linux / desktop-macos の 5 種は本サイクルの対象外とする。\n\n理由: 本プロダクト kanjo は Cloudflare Workers 上の API (packages/api) と、ブラウザへ配信する SPA (packages/web、React 18 + react-router-dom 7) の 2 つだけで構成されており、専用アプリの成果物・配布経路・ビルド設定はリポジトリに存在しない。直前の総収支画面 (PR #55)・照合画面 (PR #54)・推移画面 (PR #56) の各サイクルも同じ理由で web のみを対象としており、本サイクルで方針を変える理由がない。上位概念の対象外 (scope.out) にも『web 以外の platform』を明記して利用者承認済み (appr-foundation-diagnosis-001)。\n\nなお web はレスポンシブで提供するため、スマートフォンのブラウザからも閲覧できる。ここで対象外にしたのは『専用アプリという成果物』であって『小さい画面』ではない。小さい画面での表示は ui-ux / frontend の web セルで扱う。",
+      "provenance": "利用者承認 (上位概念 scope.out) + リポジトリ構成の観測 (packages/ 配下は api / core / web のみ)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-17T22:01:23Z",
+      "required_info_items": [
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-diagnosis-ui-ux-web-001",
+      "question": "診断画面 (/analysis/diagnosis) を web でどう構成しますか。利用者は何を読み、どの順に読み、何を落としますか。既存の科目別プロファイル表と自動診断はどう扱いますか。",
+      "answer": "画面の問いを『次に改善すると、最も効くのはどこですか?』に固定し、上から次の順で読ませる (design/FINAL-UI/images/08-diagnosis.png の構成)。\n\n1. **期間タブ** — 1年 / 2年 / 3年 / 任意。既存 usePeriod と同じ語彙で、URL に保持する。\n2. **条件の帯** — 分析の範囲 (事業 / 家計 / 総合)、表示する指標 (支出 / 収入 / 純収支)、比較対象 (前期間 / 前年) の 3 つ。いま何を見ているかを 1 行で読めるようにし、指標の意味は Term で引けるようにする。\n3. **診断結果カード** と **健全性カード** — 結論 (改善余地の合計・年間インパクト) と健全性スコア (0-100・区分 健全/注意/要改善) を並べる。健全性は内訳 (実測値・要素スコア・重み・寄与点) を開閉で出し、閉じた状態を既定にする。\n4. **主なシグナル 3 件** — 直近で最も変化した事象を 3 件まで。4 件目以降は出さない(読む量を増やすと順位付けの意味が消えるため)。\n5. **改善アクションの優先順位** (この画面の主役) — 表の列は #・優先度・課題・年間改善インパクト・対応の手間・ステータス・次のアクション。既定の並びは年間改善インパクトの降順で、# はその順位。対応済み・見送りは既定で畳み、『対応済みも表示』で開く。畳んだ行は合計から除外する。\n6. **改善インパクトのウォーターフォール** — 現状から各改善を積んだときの到達点。表の並びと同じ順で積む (表と図で順位が食い違わないようにする)。\n7. **診断根拠** — 各改善余地について、どの数値をどう比べてその金額になったかを表で出す。根拠には出典 (どのデータ・どの期間) と信頼度を必ず添える。\n8. **完了すると変わる指標** — その改善を終えたとき、健全性スコアと月次収支がどう動くか。\n9. **詳細パネル** — 行を選ぶと開く。概要 / 関連データ / 明細サンプル の 3 タブ。\n10. **下部の選択バー** — 選んだ行に対して、ステータス変更と次のアクション(/classify・/budget・/subscriptions・/analysis/reconciliation・/analysis/total-cashflow) への遷移をまとめて行う。\n\n**情報の優先度 (何を残し、何を落とし、何を加工するか)**: 残すのは『順位・金額・根拠・次の一手』。落とすのは統計量そのものの一覧性 — 既存の科目別プロファイル表 (平均 / 中央値 / CV / レンジ / z値 / 判定 / シグナル) と自動診断は削除せず『統計の詳細を表示』の開閉の中へ移し、既定は閉じる。加工するのは金額で、表と図では年額へ換算した値を主に出し、月額は補助として添える(利用者の判断単位が『年間でいくら効くか』であるため)。\n\n**状態**: 読み込み中・エラー・空 (未取込) は既存 PageState を使い、空のときは/import への導線を出す。改善余地が 0 件のときは表を空にせず『今は大きな改善余地が見つかっていません』と健全性スコアだけを出す。\n\n**色に依存しない表現**: 優先度・ステータス・信頼度はいずれも文字ラベルを持ち、色は補助にとどめる。既存の pill クラス (alert / warn / calm / neutral) を流用する。\n\n**操作の手触り**: 行の選択・ステータス変更は 1 クリックで確定し、取り消せる。CI の headless Chrome は pointer:none のため、hover 前提の操作を唯一の経路にしない。",
+      "provenance": "design/FINAL-UI/images/08-diagnosis.png + 利用者承認済みの上位概念 (G1/G3/G5) + 既存実装の観測 (packages/web/src/pages/analysis/Diagnosis.tsx、components/Page.tsx、DataTable.tsx)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-17T22:01:23Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-diagnosis-frontend-web-001",
+      "question": "診断画面のフロントエンドはどう作りますか。既存の web 構成 (React 18 / react-router-dom 7 / TanStack Query 5 / chart.js 4) のどこに何を置き、検知器の種類をどう扱いますか。",
+      "answer": "既存構成をそのまま使い、新しいライブラリは入れない。\n\n**配置**: 画面は packages/web/src/pages/analysis/Diagnosis.tsx を作り直す。1 ファイルに詰め込まず、改善アクション表・ウォーターフォール・診断根拠・詳細パネル・健全性内訳を同ディレクトリ配下の子コンポーネントへ分ける。KpiCard / PageState / DataTable / HowTo / Term は既存のものを再利用し、新しい表示部品を作る前に既存 components を探す。\n\n**データ取得**: TanStack Query 5 の useQuery を使い、queryKey に期間キーと条件の帯 (範囲・指標・比較対象) を含める。api ヘルパと usePeriod の withPeriod を通し、fetch を直接書かない。ステータス変更は useMutation で、成功時にdiagnosis の queryKey を invalidate する。楽観更新はせず、サーバ返却を正とする (合計金額がずれて見えるのを避けるため)。\n\n**検知器の分岐を持たない (G2)**: 画面側に検知器 id の switch / if を書かない。サーバが返す improvements[] の各要素が、表示に必要な値 (ラベル・説明・年間インパクト・手間・根拠・次のアクション先) を自分で持つ。既存 Diagnosis.tsx の kindLabel / judgePill のような『種類名を画面が知っている』マップは、汎用の見た目マップ (severity → pill class) 以外には作らない。次のアクション先はサーバが返す経路名をreact-router-dom の Link へ渡すだけにする。\n\n**チャート**: ウォーターフォールは chart.js 4 の bar で、各バーの value を [start, end] の floating bar として与えて表現する (専用プラグインを足さない)。既存チャートと同じ色トークンと目盛り書式 (yen) を使う。\n\n**状態の URL 保持**: 期間・範囲・指標・比較対象・選択行は searchParams に持ち、再読み込みと共有リンクで同じ画面が開くようにする。\n\n**型**: 返却形の型は packages/web/src/api.ts の DiagnosisData を拡張し、packages/core の型と齟齬が出ないようにする。any を置かない。",
+      "provenance": "既存実装の観測 (packages/web/src/pages/analysis/*.tsx、api.ts、period.ts、package.json の依存) + G1/G2/G5",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-17T22:01:23Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-diagnosis-backend-web-001",
+      "question": "診断画面のバックエンドはどう作りますか。改善余地の検知器を登録制にするとは具体的に何をどう置くことですか。API の返却形と、健全性スコアの算出はどこで行いますか。",
+      "answer": "**責務の置き場所**: 計算は packages/core の純粋関数に置き、packages/api (Hono on Cloudflare Workers) は Dataset の組み立てとHTTP の入出力だけを行う。core は依存を持たない既存方針を守る。\n\n**検知器レジストリ (G2)**: packages/core/src/analysis.ts の diagnosis() がいま持っている科目名の直書き分岐 (『サブスク・通信』なら cut、『研修費』なら invest) をやめ、検知器を配列へ登録する形にする。検知器は `{ id, label, detect(data: Dataset): Improvement[] }` の形で、diagnosis() は登録済み検知器を順に回して結果を連結するだけにする。初期登録は 6 種 — 固定費の見直し / 急増した費目 / 重複支払いの候補 / サブスクの重複候補 / 未分類明細 / 通信費の見直し。既存の tradeoffCandidates() が持つ 5 種 (subs_dup / subs_spike / budget_over / above_range / unexplained) は、この登録制へ寄せて重複実装を残さない。検知器を足すとき、api と web には変更を要さないことを受入条件にする。\n\n**Improvement の形**: id (検知器 id + 対象キー) / action_key (永続化キー) / label / detail / severity / annualImpact (年間) / monthlyImpact (月額) / effort (手間 小・中・大) / confidence (信頼度 高・中・低) / evidence[] (何をどう比べたか: 指標名・実測値・比較値・期間・出典) / nextAction (経路と表示名) / status (永続化から join)。画面が種類を知らずに描けるだけの情報を、この構造だけで満たす。\n\n**健全性スコア (G3)**: 固定費比率 30% + 貯蓄率 30% + 収支の安定性 25% + データカバー率 15% を 0-100 へ合成する。各要素は実測値を 0-100 の要素スコアへ正規化してから重みを掛け、寄与点を内訳として返す。区分は 健全 / 注意 / 要改善。境界値 (0・100・要素が算出不能なときの扱い) を境界値テストで固定する。\n\n**API**: GET /diagnosis を拡張し、improvements[] / health{score, band, breakdown[]} / waterfall[] / signals[] (最大 3) / evidence[] / 既存の kpi・bep・entries・autoDiagnosis を返す。既存の期間絞り込みは Dataset を切る方式 (分析関数へ引数を配らない) を維持し、条件の帯 (範囲・指標・比較対象) も Dataset 側で解決する。対応状況の更新は PATCH /diagnosis/actions/:action_key で {status, note} を受ける。未知の action_key と未知の status は 400 で拒む。\n\n**合計の規則**: 改善インパクトの合計は、対応済み・見送りの行を除外した金額の和とする。同じ支出を二重に数えないため、同一 action_key は 1 度しか数えない。丸めは表示時のみ行い、内部は円単位の整数で保持する。",
+      "provenance": "既存実装の観測 (packages/core/src/analysis.ts の diagnosis()/tradeoffCandidates()、packages/api/src/routes/analytics.ts:408) + 利用者決定 (健全性スコアの重み) + G2/G3/G4",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-17T22:01:23Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-diagnosis-database-web-001",
+      "question": "改善アクションの対応状況はどこにどう保存しますか。表の形・状態の語彙・既存表との関係・migration の扱いを決めてください。",
+      "answer": "Cloudflare D1 に新表 `diagnosis_action_states` を作って保存する (画面ローカルや localStorage には置かない。判断の履歴が端末に閉じると『いまどこまで対応したか』を引き継げないため)。\n\n**列**: action_key TEXT PRIMARY KEY (検知器 id + 対象キーで決まる安定キー) / status TEXT NOT NULL (未着手 / 対応中 / 対応済み / 見送り) / note TEXT / decided_at TEXT (状態を最後に決めた時刻、RFC3339) / created_at TEXT NOT NULL / updated_at TEXT NOT NULL。status は CHECK 制約で 4 語に限定する。\n\n**設計の型**: 既存の照合画面が持つ reconciliation_actions と同じ型にそろえる (キー 1 件につき 1 行・状態 + メモ + 決定時刻・行を消さない)。見送りも『判断した』という記録なので削除せず状態として残す。\n\n**検知結果は保存しない**: 改善余地そのもの (金額・根拠) は毎回データから計算する導出値であり、保存しない。保存するのは利用者の判断だけとする。これにより、明細が更新されて金額が変わっても判断が残り、逆に古い金額が正本として残り続けることもない。\n\n**検知器が消えた行の扱い**: 明細が変わって検知されなくなった action_key の行は削除せず残し、画面には出さない (再び検知されたら以前の判断が復帰する)。\n\n**migration**: packages/api の既存 migration ディレクトリに、既存最大番号 + 1 の連番で新規ファイルを 1 つ足す。既存表の行書き換えは行わず、新表の作成のみとする。適用は manifest → Migrate APPLY → Deploy の順で、既存の本番反映手順に従う。番号が他ブランチと衝突しうるため、作成直前に origin/main を取り直して最大番号を確認する。",
+      "provenance": "利用者決定 (D1 へ保存する・状態 4 語・reconciliation_actions と同型) + 既存 migration 運用の観測 + G4",
+      "basis": "user-decision",
+      "answered_at": "2026-09-17T22:01:23Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-diagnosis-auth-web-001",
+      "question": "診断画面と対応状況の更新に、認証・認可の追加要件はありますか。",
+      "answer": "新しい認証方式は導入せず、既存のログイン (Cookie セッション) をそのまま使う。\n\n**保護範囲**: GET /diagnosis と PATCH /diagnosis/actions/:action_key はいずれも既存の認証ミドルウェアの配下に置き、未認証は 401 を返す。web 側は 401 を受けたらログイン画面へ送る (既存の扱いに合わせる)。診断結果は全明細を横断した金額そのものであり、未認証で読める経路を作らない。\n\n**認可**: 本プロダクトは単一利用者の家計・事業データを扱う構成で、役割ごとの権限分離は現状持たない。したがって diagnosis_action_states に利用者 ID 列は持たせず、行はデータセット全体に対して一意とする。複数利用者を扱う要件が出た時点で、この列の追加を伴う移行が必要になることを制約として明記しておく (本サイクルでは対象外)。\n\n**資格情報**: 新しい秘密情報・外部サービスの資格情報は増やさない。本番の管理者資格情報の投入は既存スクリプト経由の一本化を維持する。",
+      "provenance": "既存実装の観測 (packages/api の認証ミドルウェアと既存 analytics ルートの保護) + G4/G5",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-17T22:01:23Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-diagnosis-security-web-001",
+      "question": "診断画面で増える攻撃面と、その防ぎ方を決めてください。新しく受け取る入力は何で、どう検証しますか。",
+      "answer": "新しく外から受け取る入力は PATCH /diagnosis/actions/:action_key の action_key・status・note の 3 つだけであり、ここを閉じることが要点になる。\n\n**入力検証**: action_key は検知器レジストリが生成しうる形 (登録済み検知器 id + 許可文字種・長さ上限) に一致するものだけ受ける。status は 4 語の許可集合との完全一致。note は長さ上限を設け、超過は 400 で拒む。いずれも許可リスト方式とし、拒否リストで通さない。\n\n**保存と出力**: D1 へはプレースホルダ束縛で書き、文字列連結で SQL を組み立てない。note は保存時に加工せず、表示は React の既定のエスケープに委ねる (dangerouslySetInnerHTML を使わない)。\n\n**CSRF**: 状態変更は GET ではなく PATCH で行い、既存のセッション Cookie の SameSite 設定に依存する。既存の他画面の状態変更操作と同じ扱いにそろえる。\n\n**情報の露出**: 診断の根拠には取引先名や金額が含まれる。サーバログ・クライアントログへ明細の内容を出さない。エラー応答には内部の SQL やスタックを含めない。\n\n**新しい依存**: 本サイクルで外部サービスへの送信・新規依存パッケージの追加は行わない(供給網の面を増やさない)。",
+      "provenance": "既存実装の観測 (packages/api のルート実装とバインド方式、web のレンダリング方式) + G4/G6",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-17T22:01:23Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-diagnosis-infrastructure-web-001",
+      "question": "配信・実行環境と、変更を本番へ届けるまでの経路に追加要件はありますか。",
+      "answer": "構成は変えない。API は Cloudflare Workers、データは D1、web は既存のビルド成果物としてブラウザへ配信する。新しいサービス・キュー・キャッシュ層は増やさない。\n\n**本番反映の経路**: 新表を伴うため、順序は manifest → Migrate APPLY → Deploy とする。Deploy を先に流すと、新表を前提とするコードが表のない本番に当たる。migration の適用結果は CI ログから追えるようにしておく。\n\n**CI ゲート (G6)**: 既存ゲート (typecheck / lint / test / verify:full / js-budget) を緑のまま維持する。js-budget は build:bundle の直後に測る (build:artifact が manifest を消すため順序を入れ替えない)。verify:full は 4175 の vite が前提であり、起動していないと落ちる。\n\n**CI 環境の差**: CI の headless Chrome は pointer:none として振る舞うため、@media (pointer: fine) を単独条件にしたスタイルはローカルで緑・CI で赤になる。新しく hover 前提の見た目を足すときは否定形の 2 段で書く。\n\n**ローカル**: 開発は既存の wrangler dev と vite で行う。背景での常駐起動はメモリ逼迫で落とされることがあるため、長時間の自動実行では前提にしない。",
+      "provenance": "既存 CI 設定・デプロイ運用の観測 (package.json スクリプト、CI ワークフロー、過去の本番反映記録) + G6",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-17T22:01:23Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-diagnosis-maintenance-ops-web-001",
+      "question": "この画面を後から保守する人が困らないように、何をどこへ残し、どう検証できるようにしますか。",
+      "answer": "**計算規則の正本 (G6)**: docs/diagnosis-screen.md を新規に書き、(a) 6 種の検知器それぞれが何を根拠にいくらと見積もるか、(b) 健全性スコアの 4 要素・重み・正規化・区分の境界、(c) 合計から除外する条件 (対応済み・見送り・重複キー)、(d) 年額と月額の換算規則と丸めの位置、を数式と例で固定する。画面の文言と食い違ったらこの文書を正とする。\n\n**テスト**: packages/core に境界値テストを置く。各検知器について『検知される最小の入力』『ぎりぎり検知されない入力』を対で書き、健全性スコアは 0・100・要素が算出不能 (分母 0・データ不足) の各点を固定する。テストは旧実装でも緑になってはならない — 件数と金額を固定値で検算し、『0 件の違反』と『0 件しか調べていない』を区別できる形にする。\n\n**検知器を足す手順**: レジストリへ 1 件追加し、docs と境界値テストを足すだけで画面・API に手を入れずに済むことを、追加手順として docs に書く。これが崩れていたら G2 が壊れている合図になる。\n\n**調査の手順**: 金額が想定と違うときは (1) 期間の切り方、(2) 範囲 (事業/家計/総合) の選択、(3) 検知器ごとの evidence、の順で切り分ける。evidence に実測値と比較値と期間を必ず載せるのは、この切り分けを画面だけで完結させるため。\n\n**戻し方**: 新表の追加のみで既存データの書き換えを伴わないため、問題時は画面と API の変更を戻せば足りる。表は残っていても既存機能に影響しない。",
+      "provenance": "既存 docs / テスト運用の観測 (docs/ 配下の画面別文書、packages/core のテスト構成) + G2/G6",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-17T22:01:23Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    }
+  ],
+  "approval_log": [
+    {
+      "id": "appr-foundation-diagnosis-001",
+      "note": "2026-09-17T21:57:21Z (回答直後の date -u 実測、選択時刻の上限値) 利用者が AskUserQuestion で診断画面サイクルの foundation (U1・G1-G6・対象外・制約) を『この内容で承認』と回答した。先行する利用者決定 (同日 2026-09-17T21:51:23Z より前の同一セッション): 健全性スコア=固定費比率30%・貯蓄率30%・収支の安定性25%・データカバー率15%の重みで 0-100 へ合成する規則ベースの指標とし内訳を開閉表示する、改善アクションの対応状況=D1 の新表 (照合の reconciliation_actions と同じ型) へ保存して期間切替と再取込をまたいで引き継ぐ。指標切替 (支出/収入/純収支) と旧統計表の開閉保持も承認に含まれる。"
+    }
+  ],
+  "reopen_log": [],
+  "category_aggregate": {
+    "database": "確定",
+    "auth": "確定",
+    "ui-ux": "確定",
+    "security": "確定",
+    "infrastructure": "確定",
+    "backend": "確定",
+    "frontend": "確定",
+    "maintenance-ops": "確定"
+  },
+  "targets": [
+    {
+      "target_id": "chartjs-bar-floating",
+      "category": "frontend"
+    },
+    {
+      "target_id": "tanstack-query-invalidation",
+      "category": "frontend"
+    },
+    {
+      "target_id": "react-router-use-search-params",
+      "category": "frontend"
+    },
+    {
+      "target_id": "hono-zod-validator",
+      "category": "backend"
+    },
+    {
+      "target_id": "cloudflare-d1-sql-statements",
+      "category": "database"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "wcag22-use-of-color",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "category": "security"
+    }
+  ],
+  "requirements_foundation": {
+    "essential_purpose": "『次に何を改善すると最も効くのか』を、診断画面の 1 画面で決められるようにする。利用者が診断を開いた時点で、選んだ期間の収支データから見つかった改善余地が年間の改善インパクト順に並び、なぜその順位なのか (根拠の数値・出典・信頼度) と、対応にどれだけ手間がかかるか、いま自分がどこまで対応したかが読め、次の操作 (明細仕分け・予算・サブスク・照合) へそのまま進める状態にする。改善余地の見つけ方は登録制にして、新しい観点をあとから同じ画面の型で足せるようにする。",
+    "background": "kanjo の診断タブ (packages/web/src/pages/analysis/Diagnosis.tsx、/analysis/diagnosis) は、事業の科目ごとに平均・中央値・変動係数・z 値・基準レンジを並べた統計プロファイル表と、自動診断の箇条書きを出す画面である。API は GET /api/diagnosis (packages/api/src/routes/analytics.ts:408) で、集計は packages/core/src/analysis.ts の diagnosis() が返す。この diagnosis() は 'サブスク・通信' と '研修費' というカテゴリ名を直書きで分岐しており、観点を足すたびに関数本体を編集する構造になっている。数値は MF 明細の事業側 (data.biz) だけを見ており、家計も、freee 取引と消し込んだ後の取引集合も見ていない。改善余地を金額で並べる仕組みは別の場所にあり、同じ analysis.ts の tradeoffCandidates() が『サブスクの重複疑い・急増・予算超過・基準レンジ超え・未分類支出』を効果額の降順で返しているが、これはやりくり試算 (トレードオフ画面) の持ち物で診断画面には出ていない。診断画面には、改善余地の優先順位・年間の改善インパクト・対応の手間・対応状況・診断の根拠 (データソース別のカバー率)・改善後の見込み・健全性スコア・選択した項目の詳細パネル・下部の選択バーが無い。FINAL-UI の監査 (design/FINAL-UI/spec/AUDIT.md:14) は 08 診断を『良好→整理。結論は明快。根拠・影響額・実行先を一続きにする』とし、FUNCTION-MATRIX (design/FINAL-UI/spec/FUNCTION-MATRIX.md:14) は『改善余地を優先順位化。診断指標、根拠、影響額、優先度、仕分け／予算への実行リンク』を必須としている。PR #49 のデザインシステム基盤、#50 の支出分析ハブ、#54 の照合、#55 の総収支、#56 の推移に続き、FINAL-UI どおりに作り直す順番が診断に回ってきた。先行する 3 サイクル (照合・総収支・推移) は scope_out に『診断の中身はそれぞれの画面サイクルで扱う』と書いて本サイクルを予約している。利用者は 2026-09-18 に 08-diagnosis.png を示し、画像の内容を作れるように既存の内容と画像の内容を分析したうえで UI・UX・フロントエンド・バックエンドのすべてを改善することを依頼した。あわせて 2026-09-18 に 2 つの判断を示した: 健全性スコアは固定費比率・貯蓄率・収支の安定性・データカバー率を定義済みの重みで 0-100 へ合成する規則ベースの指標とし内訳を画面で分解表示する (外部基準に依存せず再現可能にする)、改善アクションの対応状況は D1 の新表へ保存して期間の切替と再取込をまたいで引き継ぐ (照合の reconciliation_actions・総収支の total_cashflow_operations と同じ型)。",
+    "goals": [
+      {
+        "id": "G1",
+        "text": "/analysis/diagnosis を 08-diagnosis.png どおりの構成にする。期間タブ (1年/2年/3年/任意) と期間表示、問いの見出し『次に改善すると、最も効くのはどこですか?』と説明、条件の帯 (分析の範囲 事業/家計/総合・表示する指標 支出/収入/純収支・比較対象 前期間/前年)、診断結果カード (最も効く改善の見出しと年間改善余地の金額・補足・信頼度・データカバー率)、健全性カード (0-100 のスコアと区分)、主なシグナル 3 件、改善アクションの優先順位の表 (# ・優先度・課題・年間改善インパクト・対応の手間・ステータス・次のアクション)、改善インパクトの見込みのウォーターフォールチャート (改善余地合計→項目ごとの削減→改善後の支出見込み) と注記、診断根拠の表 (データソース・対象期間・カバー率・主な内容)、完了すると変わる指標 (年間支出・固定費比率・月次収支の平均・貯蓄率の before→after)、選択した項目の詳細パネル (優先度・タイトル・説明・概要/関連データ/明細サンプルのタブ・なぜ優先度が高いのか・関連する数値・主な内訳・実行ボタン 2 つ)、下部の選択バー (選択中の課題・年間改善インパクト・対応の手間・実行ボタン) を、共通シェル・トークン・共通 Button/PageShell・chart.js の共通設定の上に組む。既存の科目別プロファイル表と自動診断は『統計の詳細を表示』で開閉できる根拠として下部に残す。"
+      },
+      {
+        "id": "G2",
+        "text": "改善余地の見つけ方を登録制にする。検知器の定義 (id・表示名・課題文の作り方・年間改善インパクトの見積り方・対応の手間・優先度の決め方・次のアクションの行き先・根拠に使う数値と明細の取り出し方・信頼度の出し方) を packages/core に置き、今回は固定費の見直し・急増した費目・重複支払いの候補・サブスクの重複候補・未分類明細・通信費の見直しを登録する。画面・API・表は検知器の定義から描き、検知器を足すときに画面と API のコードに検知器 id の分岐を増やさない。"
+      },
+      {
+        "id": "G3",
+        "text": "健全性スコアを規則ベースの合成指標として定義する。固定費比率・貯蓄率・収支の安定性・データカバー率の 4 要素を、それぞれ定義済みの変換で 0-100 の要素スコアにし、定義済みの重み (30%/30%/25%/15%) で合成して 0-100 の総合スコアと区分 (健全・注意・要改善) を出す。画面はスコアだけでなく内訳 (要素ごとの実測値・要素スコア・重み・寄与点) を開閉で示し、どの要素が点を落としているかが読めるようにする。算式・重み・区分の境界は docs と境界値テストで固定し、外部の基準値に依存しない。"
+      },
+      {
+        "id": "G4",
+        "text": "改善アクションの対応状況を D1 に保存して引き継ぐ。検知器と対象から決まる安定した action_key を持つ新表を作り、利用者が選んだ状態 (未着手・対応中・対応済み・見送り) と任意のメモ・決定時刻を保存する。期間の切替・再取込・再ログインをまたいで同じ判断が復元され、対応済みと見送りは既定では一覧から畳まれて改善余地の合計にも入らない (畳んだ件数と金額は注記で示し、切替で再表示できる)。検知結果が消えた action_key の記録は消さずに残し、同じ課題が再発したときに前回の判断を示す。"
+      },
+      {
+        "id": "G5",
+        "text": "診断から根拠と実行先へ辿れるようにする。詳細パネルの『明細サンプル』は検知の根拠になった明細を数件その場で示し、『明細仕分けで確認』は /classify へ期間・範囲・カテゴリ・取引先の絞込クエリを渡して開き、『予算に反映』は /budget へ対象科目と提案する上限額を渡して開く。サブスクの重複候補は /subscriptions へ、重複支払いの候補は /analysis/reconciliation へ、freee 由来の課題は /analysis/total-cashflow へ、対象を絞った状態で開く。診断根拠の表の各行はデータ取込 (/import) の該当ソースへ辿れる。期間タブは全体の期間選択を操作し、範囲・指標・比較対象・選択した課題・畳みの切替は URL に保持して再読込と共有で同じ表示に戻る。URL の値が形式違反なら既定値へ倒して画面を出す。"
+      },
+      {
+        "id": "G6",
+        "text": "診断の計算規則を単純で説明可能な形で docs に明記しテストで固定する。年間改善インパクトの見積り方 (検知器ごとの根拠と年換算の仕方)、優先度の決め方 (改善インパクトと対応の手間の組合せ)、信頼度とデータカバー率の出し方、改善後の見込みの積み上げ方、完了すると変わる指標の before→after の出し方、要確認の明細を数値に含めない規則、事業/家計/総合の取引集合を総収支・推移と一致させる規則を docs/diagnosis-screen.md に書き、境界値付きの core テストと DOM テストで固定する。既存の pnpm test / typecheck / lint と packages/web の check 系スクリプト (視覚検査を含む) を緑のまま保つ。"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "O1",
+        "text": "診断タブが画像の全ブロックを描画する。",
+        "serves": [
+          "G1"
+        ],
+        "measure": "DOM テストで期間タブ・見出し・条件の帯・診断結果カード・健全性カード・主なシグナル 3 件・改善アクションの表・ウォーターフォールチャート・診断根拠の表・完了すると変わる指標・詳細パネル (3 タブ)・選択バーが描画され、科目別プロファイルは開閉で表示されることを確認する。色・余白・部品はトークンと共通 Button/PageShell/chart の共通設定経由で、直書き色の lint が 0 件である。"
+      },
+      {
+        "id": "O2",
+        "text": "検知器を足すときに画面と API を編集しなくてよい。",
+        "serves": [
+          "G2"
+        ],
+        "measure": "検知器定義を 1 件足したテストで、画面の表・ウォーターフォール・詳細パネルと API の返却に新しい課題が現れ、packages/web と packages/api のコードに検知器 id の分岐が 0 件であることを静的検査とテストで確認する。"
+      },
+      {
+        "id": "O3",
+        "text": "健全性スコアが内訳まで再現可能である。",
+        "serves": [
+          "G3"
+        ],
+        "measure": "要素の実測値を与える境界値テストで、要素スコア・重み・寄与点・総合スコア・区分が算式どおりに一致し、寄与点の合計が総合スコアと一致する。画面の内訳表示が core の返却値と一致する。"
+      },
+      {
+        "id": "O4",
+        "text": "対応状況が期間と再取込をまたいで引き継がれる。",
+        "serves": [
+          "G4"
+        ],
+        "measure": "対応中に変更 → 期間切替 → 再取込 → 再取得の順で API を叩く統合テストで、同じ action_key の状態・メモ・決定時刻が保持され、対応済みと見送りが既定の一覧から畳まれ改善余地の合計から除かれ、畳んだ件数と金額が注記に現れることを確認する。"
+      },
+      {
+        "id": "O5",
+        "text": "診断から根拠と実行先へ辿れる。",
+        "serves": [
+          "G5"
+        ],
+        "measure": "課題の種類ごとに実行ボタンを押した DOM テストで、/classify・/budget・/subscriptions・/analysis/reconciliation・/analysis/total-cashflow が期待した絞込クエリで開き、条件が URL から復元されることを確認する。"
+      },
+      {
+        "id": "O6",
+        "text": "数値が他画面と一致し、規則が docs とテストで固定されている。",
+        "serves": [
+          "G6"
+        ],
+        "measure": "同じ期間の総収支・推移の API 返却と、診断が使う取引集合の合計が一致する core テストが通り、docs/diagnosis-screen.md に見積り・優先度・信頼度・カバー率・改善後の見込みの規則が書かれ、境界値テストが緑である。"
+      }
+    ],
+    "success_criteria": [
+      "S1 (G1): /analysis/diagnosis で 08-diagnosis.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button/PageShell/chart の共通設定経由で、直書き色の lint が 0 件である。既存の科目別プロファイルと自動診断は開閉部分に残り、消えていない。",
+      "S2 (G2): 検知器定義を 1 件足すだけで画面と API に新しい課題が現れ、画面と API のコードに検知器 id の分岐が無い。今回登録する 6 種の検知器すべてが、課題文・年間改善インパクト・対応の手間・優先度・次のアクション・根拠の数値・信頼度を定義から埋められる。",
+      "S3 (G3): 健全性スコアの要素スコア・重み・寄与点・総合スコア・区分が境界値テストで算式どおりに一致し、画面の内訳が core の返却値と一致する。要素の実測値が欠ける場合 (データ不足) は要素を除いて重みを正規化し、その旨を画面に示す。",
+      "S4 (G4): 改善アクションの状態が D1 に保存され、期間切替・再取込・再ログインをまたいで復元される。対応済みと見送りは既定の一覧と改善余地の合計から外れ、畳んだ件数と金額が注記に出て、切替で再表示できる。検知結果が消えても記録は残り、再発時に前回の判断が示される。",
+      "S5 (G5): 詳細パネルと選択バーからの遷移で /classify・/budget・/subscriptions・/analysis/reconciliation・/analysis/total-cashflow が対象を絞った状態で開き、診断の条件 (範囲・指標・比較対象・選択した課題・畳みの切替) は URL から復元される。明細サンプルは検知の根拠になった明細だけを示す。",
+      "S6 (G6): 3 指標×3 範囲×2 比較対象のどの組合せでも、画面の数値が core の返却値と一致し、総合=事業+家計 が成り立ち、期間合計は同じ期間の総収支画面の値と一致する。要確認の明細は数値に含めず件数と金額を注記する。見積り・優先度・信頼度・カバー率・改善後の見込みの規則が docs/diagnosis-screen.md にあり、境界値テストで固定されている。",
+      "S7 (G1-G6): 既存の pnpm test / typecheck / lint と packages/web の check 系スクリプト (視覚検査を含む) が全て緑のままである。既存の GET /api/diagnosis を使う画面 (トレードオフ・使い方) が壊れていない。"
+    ],
+    "stakeholders": [
+      "SH1 利用者 (単独の個人事業主): 月次の振り返りで診断を開いたとき、限られた時間で次に手を付ける 1 件を決めたい。改善の余地がいくらあるのか、なぜその順番なのか、対応にどれだけ手間がかかるのか、前回どこまでやったのかを 1 画面で確かめ、決めたらその場で明細仕分けや予算の操作へ進みたい。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 改善余地の検知・見積り・スコアの規則が core の純関数と docs にまとまっていて、観点を足すときに画面と API を編集せずに済み、境界値テストで壊れたことが分かる状態にしたい。",
+      "SH3 データ提供元 (MoneyForward の明細 CSV と freee の取引): 取込済みの範囲でしか診断できないため、どこまで取り込めているか (データカバー率) を画面に示し、足りない範囲を根拠なく断定しないこと。"
+    ],
+    "scope": {
+      "in": [
+        "診断タブ (08-diagnosis.png) の画面構成の作り直し: 期間タブ・見出し・条件の帯・診断結果カード・健全性カード・主なシグナル・改善アクションの優先順位の表・改善インパクトのウォーターフォール・診断根拠の表・完了すると変わる指標・詳細パネル (3 タブ)・選択バー、既存の科目別プロファイルと自動診断の開閉化",
+        "packages/core に改善余地の検知器の登録制 (6 種の検知器) と、年間改善インパクト・対応の手間・優先度・信頼度の算出",
+        "packages/core に健全性スコア (4 要素の合成・内訳・区分) の算出",
+        "GET /api/diagnosis の条件 (範囲・指標・比較対象・選択した課題・畳みの切替) と返却の拡張、対応状況の保存と取得の API",
+        "D1 の新表 (改善アクションの対応状況) と migration",
+        "実行先への導線: /classify・/budget・/subscriptions・/analysis/reconciliation・/analysis/total-cashflow の絞込クエリ",
+        "計算規則と説明文の規則の docs (docs/diagnosis-screen.md) とテスト"
+      ],
+      "out": [
+        "AI による改善提案の生成: 検知器の規則による自動生成だけにする (外部送信や LLM 呼出しはしない。AI 分析タブは別画面として既存のまま)",
+        "改善の実行そのもの (解約手続き・契約変更の代行): 診断は対象と金額と行き先を示すところまでにする",
+        "今回登録する 6 種以外の検知器の実装: 登録制の型だけ用意し、観点の追加は後続で行う (利用者の選択による)",
+        "外部のベンチマーク (業種平均・世帯平均) との比較: 健全性スコアは自分のデータだけから規則で出す (利用者の選択による)",
+        "取引先の名寄せ規則: 明細の内容をそのまま取引先として扱う (推移サイクルの決定を踏襲する)",
+        "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗) の変更: 既存の共通シェルをそのまま使う",
+        "照合・総収支・マトリクス・推移の各タブの中身: それぞれの画面サイクルで確定済みの内容を変えない",
+        "web 以外の platform (専用アプリ)"
+      ]
+    },
+    "constraints": [
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1、web は React 18 + react-router-dom 7 + TanStack Query 5 + chart.js 4)。集計は core に置き api/web へ重複実装しない。",
+      "C2 データ: 取込済みの MoneyForward 明細と freee 取引だけを使う。数値は総収支・推移と同じ取引集合 (消し込み後) から数え、要確認の明細は事業にも家計にも数えない。外部 API へ明細を送信しない。",
+      "C3 UI: design/FINAL-UI のトークンと共通部品 (PageShell・Button・DataTable・chart.js の共通設定) の上に組み、色・余白を直書きしない。表は横スクロール可能にし、CI の headless Chrome (pointer:none) でも操作できる形にする。",
+      "C4 移行: D1 の新表は追加のみで、既存の表と行を書き換えない。migration は連番の追加 1 本に収め、Deploy の migration ゲートを通す。",
+      "C5 運用: 単独利用の個人事業主向けで、Cloudflare Workers Free と D1 Free の枠内に収める。診断 1 回の読み取りは総収支 API と同じ量に収める。",
+      "C6 対象 platform: web のみ。専用アプリ (mobile / tablet / desktop) は提供しない。"
+    ],
+    "concrete_intents": [
+      {
+        "id": "I1",
+        "text": "診断タブの上部に期間タブ (1年/2年/3年/任意) と期間表示を置き、全体の期間選択と同期させる。",
+        "serves": [
+          "G1",
+          "G5"
+        ]
+      },
+      {
+        "id": "I2",
+        "text": "問いの見出し『次に改善すると、最も効くのはどこですか?』の下に、分析の範囲・表示する指標・比較対象の 3 つの切替を 1 本の帯にまとめて置く。",
+        "serves": [
+          "G1"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "診断結果カードに、最も効く改善の見出し (例『固定費の見直しで年間 ¥148,000 の改善余地』)・補足・信頼度・データカバー率を出す。",
+        "serves": [
+          "G1",
+          "G6"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "健全性カードに 0-100 のスコアと区分を出し、開閉で 4 要素の実測値・要素スコア・重み・寄与点の内訳を示す。",
+        "serves": [
+          "G3"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "主なシグナルを 3 件まで、順位付きで短文と根拠の数値つきで出す。",
+        "serves": [
+          "G1",
+          "G2"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "改善アクションの優先順位の表を、# ・優先度 (高/中/低)・課題・年間改善インパクト・対応の手間 (高/中/低)・ステータス (未着手/対応中/対応済み/見送り、要確認は判断待ちの検知)・次のアクション の列で出し、行を選ぶと詳細パネルと選択バーが連動する。",
+        "serves": [
+          "G1",
+          "G2",
+          "G4"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "改善インパクトの見込みをウォーターフォールチャートで出す。左端に改善余地の合計、中間に項目ごとの削減 (負の棒)、右端に改善後の支出見込みを置き、『年間 ¥X の改善で支出を Y% 削減できます』の注記を添える。",
+        "serves": [
+          "G1",
+          "G6"
+        ]
+      },
+      {
+        "id": "I8",
+        "text": "診断根拠の表に、データソース (銀行口座・クレジットカード・電子マネー・手入力データ) ごとの対象期間・カバー率・主な内容と、全体のデータカバー率を出す。",
+        "serves": [
+          "G1",
+          "G6"
+        ]
+      },
+      {
+        "id": "I9",
+        "text": "完了すると変わる指標として、年間支出・固定費比率・月次収支の平均・貯蓄率の before→after と差分を出す。",
+        "serves": [
+          "G1",
+          "G3"
+        ]
+      },
+      {
+        "id": "I10",
+        "text": "選択した項目の詳細パネルに、優先度・タイトル・説明・タブ (概要/関連データ/明細サンプル)・なぜ優先度が高いのか・関連する数値 (今回/前期間/増減額/増減率/対象期間/信頼度)・主な内訳 (カテゴリ)・実行ボタン 2 つを出し、閉じるとパネルが畳まれる。",
+        "serves": [
+          "G1",
+          "G5"
+        ]
+      },
+      {
+        "id": "I11",
+        "text": "下部の選択バーに、選択中の課題・年間改善インパクト・対応の手間と、主たる実行ボタンを固定表示する。",
+        "serves": [
+          "G1",
+          "G5"
+        ]
+      },
+      {
+        "id": "I12",
+        "text": "改善アクションのステータスを画面から変更でき、変更は D1 の新表へ保存される。対応済みと見送りは既定で畳まれ、注記から再表示できる。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I13",
+        "text": "既存の科目別プロファイル表と自動診断は『統計の詳細を表示』で開閉できる根拠として下部に残し、どの基準で数えたか (MF 明細の事業側だけか) を明記する。",
+        "serves": [
+          "G1",
+          "G6"
+        ]
+      }
+    ],
+    "confirmed": true,
+    "approval_ref": "appr-foundation-diagnosis-001"
+  },
+  "decisions": [],
+  "knowledge_candidates": [],
+  "design_applications": {
+    "ui-ux": {
+      "text": "Information Design の『頻度 × 失敗コストで束を並べ、残す・落とす・加工するを宣言する』を診断画面へ当てた。読む頻度が最も高く読み違えの損失が最も大きい束は『次に何を改善するか』であり、改善アクションの優先順位の表 (#・優先度・課題・年間改善インパクト・対応の手間・ステータス・次のアクション) を画面の主役として上位に置いた。統計量そのもの (平均 / 中央値 / CV / レンジ / z値) は頻度が低く、誤読しても判断を直接誤らせない束なので『統計の詳細を表示』の開閉へ落とした (既定は閉じる)。加工は金額に当て、判断単位である年額を主に出し月額を補助に添えた。シグナルを 3 件で打ち切るのも同じ規準で、件数を増やすと順位付けという束の意味が消えるため。",
+      "recorded_at": "2026-09-17T23:25:04Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "Clean Architecture の依存方向 (内側は外側を知らない) を、検知器の種類を画面に漏らさない形で適用した。improvements[] の各要素が表示に必要な値 (ラベル・年間インパクト・手間・根拠・次のアクション先) を自分で持ち、画面は種類 id で分岐しない。既存 Diagnosis.tsx の kindLabel / judgePill のような『画面が科目名と種類を知っている』写像は、severity → pill class の汎用写像を除いて作らない。Information Design 側は URL に持つ状態 (期間・範囲・指標・比較対象・選択行) の選定へ効いており、再読込と共有で同じ画面へ戻る束だけを URL に載せ、開閉状態のような一時的な束は載せない。",
+      "recorded_at": "2026-09-17T23:25:04Z",
+      "basis": "agent-inference"
+    },
+    "backend": {
+      "text": "Clean Architecture の『業務規則を framework から独立させる』を、検知器レジストリの置き場所の決定に使った。6 種の検知器と健全性スコアの合成規則は依存を持たない packages/core の純粋関数に置き、Hono の route は Dataset の組み立てと HTTP 入出力だけを担う。現行 diagnosis() が科目名 (『サブスク・通信』『研修費』) を直書きで分岐しているのは、業務規則が実装の内側へ癒着した状態であり、検知器を足すたびに中心が壊れる。これを `{ id, label, detect(data) }` の登録配列へ置き換え、diagnosis() は登録順に回して連結するだけにすることで、検知器の追加が api / web のコード変更を要さないことを受入条件にできる。",
+      "recorded_at": "2026-09-17T23:25:04Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "データ設計の『導出値を保存しない・判断は保存する』を、diagnosis_action_states の列の取捨に当てた。改善余地の金額・根拠・順位は毎回データから計算し直せる導出値なので保存しない。保存するのは利用者が決めたこと (状態 4 語・メモ・決定時刻) だけとする。この切り分けにより、明細が更新されて金額が動いても判断が残り、逆に古い金額が正本として居座ることもない。検知されなくなった action_key の行を消さずに残すのも同じ考えで、行の存在は『判断があった』という事実であって『いま課題がある』ことではない。",
+      "recorded_at": "2026-09-17T23:25:04Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "認証設計の『新しい認証面を増やさない』を、診断画面の追加経路へ適用した。GET /diagnosis と PATCH /diagnosis/actions/:action_key はいずれも既存のセッション認証の配下に置き、専用のトークン・API キー・公開読み取り経路を作らない。診断結果は全明細を横断した金額そのものであり、未認証で読める経路は攻撃面を増やすだけで利得がない。あわせて、単一利用者前提であることを明示的な制約として章に残し、diagnosis_action_states に利用者 ID 列を持たせない判断の射程 (複数利用者化には移行が要る) を将来へ申し送る。",
+      "recorded_at": "2026-09-17T23:25:04Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "入力検証の『許可リストで受ける』を、本サイクルで新たに増える 3 つの入力へ具体化した。action_key は検知器レジストリが生成しうる形との一致、status は 4 語の完全一致、note は長さ上限で受ける。拒否リストは作らない。書込は D1 へのプレースホルダ束縛に限り、note は保存時に加工せず出力は React の既定エスケープへ委ねる (dangerouslySetInnerHTML を使わない)。攻撃面の増分をこの 3 入力に限定し、外部サービスへの送信と新規依存の追加を行わないことで、供給網の面も増やさない。",
+      "recorded_at": "2026-09-17T23:25:04Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "SRE の『変更こそが障害要因である』を、新表を伴う本サイクルの反映順序へ当てた。manifest → Migrate APPLY → Deploy の順を固定する。Deploy を先に流すと、新表を前提とするコードが表のない本番に当たるという、順序だけで起きる障害を招く。実行環境自体は Workers + D1 のまま変えず、キュー・キャッシュ層といった新しい可動部を増やさない。CI ゲート (typecheck / lint / test / verify:full / js-budget) を緑のまま維持し、js-budget は build:bundle 直後に測る順序を守る。",
+      "recorded_at": "2026-09-17T23:25:04Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "運用設計の『規則を文書と実行可能な検査の両方で固定する』を、診断の計算規則に当てた。docs/diagnosis-screen.md に検知器ごとの見積り方・健全性スコアの 4 要素と重みと境界・合計から除外する条件・年額換算と丸めの位置を数式と例で書き、同じ規則を packages/core の境界値テストで固定する。テストは『検知される最小の入力』と『ぎりぎり検知されない入力』を対で持ち、旧実装でも緑になる書き方をしない (0 件の違反と 0 件しか調べていないを区別する)。検知器を足す手順を docs に書き、画面と API に触れずに足せることが崩れていたら登録制が壊れた合図として扱う。",
+      "recorded_at": "2026-09-17T23:25:04Z",
+      "basis": "agent-inference"
+    }
+  },
+  "hearing_progress": {
+    "loop_count": 1,
+    "next_question": null,
+    "complete": true
+  },
+  "doctrine_applications": {
+    "ui-ux": {
+      "presentation": {
+        "text": "問いの見出しと条件の帯 (分析の範囲・表示する指標・比較対象) を画面上部の 1 本の帯にまとめ、いま何を見ているかを読んでから順位の表へ入る順路にした。優先度・ステータス・信頼度には必ず文字ラベルを与え、色は補助にとどめる。選択した行の詳細は画面遷移ではなく同一画面の詳細パネル (概要 / 関連データ / 明細サンプル) で開き、判断の文脈を切らない。操作は 1 クリックで確定し取り消せる形にし、hover 前提の操作を唯一の経路にしない。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "presentation": {
+        "text": "表とウォーターフォールで積む順序を同一にし、同じ事実が 2 つの表現で食い違わないようにした。チャートは chart.js の bar の floating bar ([start, end]) で描き、プラグインを足さずに既存の色トークンと yen 書式へそろえる。ステータス変更は楽観更新せずサーバ返却を正として invalidate し、合計金額が一瞬ずれて見える状態を作らない。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      },
+      "application-architecture": {
+        "text": "画面は improvements[] を描くだけの層に保ち、検知器 id の分岐と金額の再計算を持たない。次のアクションの行き先もサーバが返す経路名を Link へ渡すだけにして、どの課題がどこへ繋がるかという業務判断を画面側へ写さない。1 ファイルに詰めず、優先順位表・ウォーターフォール・診断根拠・詳細パネル・健全性内訳を子コンポーネントへ分ける。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      }
+    },
+    "backend": {
+      "application-architecture": {
+        "text": "検知と健全性スコアの合成を packages/core の純粋関数へ置き、route は Dataset 組み立てと入出力に限る。検知器は配列への登録で増え、diagnosis() 側に分岐が増えない構造にする。期間と条件は Dataset を切る方式で解決し、分析関数へ引数を配らない既存の設計をそのまま延長する。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "対応状況の読取りは Dataset を 1 回読む流れの中で join し、検知器ごとに問い合わせを増やさない。更新は PATCH の 1 経路に絞り、未知の action_key と未知の status を 400 で弾いてから書く。合計は同一 action_key を 1 度しか数えず、内部は円単位の整数で保持して丸めは表示時にだけ行う。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      }
+    },
+    "database": {
+      "data-access": {
+        "text": "action_key を主キーに置き、1 件の課題に 1 行だけが対応する形にした。status は D1 (SQLite) の CHECK 制約で 4 語に限定し、語彙のずれをアプリ層の約束ではなく表の制約として持たせる。判断は行の削除ではなく状態で表し、見送りも記録として残す。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "本サイクルの migration は新表の作成のみとし、既存表の行書き換えを含めない。番号は origin/main を取り直して既存最大 + 1 を確認してから付ける (他ブランチとの衝突は git の差分に出ないため)。表が残っていても既存機能に影響しない構造なので、問題時は画面と API の変更を戻すだけで復旧できる。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      }
+    },
+    "auth": {
+      "authentication": {
+        "text": "新しい認証方式を導入せず、診断の読取りと対応状況の更新をどちらも既存セッションの配下へ置く。未認証は 401 を返し、web 側はログイン画面へ送る。専用トークンや公開読み取り経路は作らない。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      },
+      "security": {
+        "text": "新しい秘密情報と外部資格情報を増やさない。本番の管理者資格情報の投入は既存スクリプト経由の一本化を維持する。単一利用者前提であることを制約として明記し、利用者 ID 列を持たない判断の射程を将来の移行要件として残す。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      }
+    },
+    "security": {
+      "security": {
+        "text": "新たに受ける action_key / status / note を許可リストで検証し、長さ上限を設ける。D1 へはプレースホルダ束縛で書き、文字列連結で SQL を組み立てない。診断の根拠には取引先名と金額が含まれるため、サーバ・クライアントのログへ明細の内容を出さず、エラー応答に内部の SQL やスタックを含めない。状態変更は GET ではなく PATCH で行う。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "reliability": {
+        "text": "6 種の検知器を 1 リクエストで回しても、Dataset を 1 回読んで純粋関数で集計する形なら Workers の CPU 時間 (Paid 既定 30 秒) の内側に収まる見積りを根拠として章に残した。新しい可動部 (キュー・キャッシュ層・外部サービス) を増やさず、障害要因の数を現状から変えない。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      },
+      "operations": {
+        "text": "本番反映は manifest → Migrate APPLY → Deploy の順に固定し、migration の適用結果を CI ログから追える状態にする。CI の headless Chrome が pointer:none として振る舞う差を前提に、hover 前提のスタイルは否定形の 2 段で書く。背景常駐の wrangler dev は落とされうるため、自動実行の前提にしない。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      }
+    },
+    "maintenance-ops": {
+      "operations": {
+        "text": "金額が想定と違うときの切り分け順 (期間 → 範囲 → 検知器ごとの evidence) を章に定め、その切り分けが画面だけで完結するように evidence へ実測値・比較値・期間・出典を必ず載せる。計算規則は docs/diagnosis-screen.md を正本とし、画面の文言と食い違ったら文書を正とする。検知器の追加手順も同じ文書に置き、画面と API に触れずに足せることを保守時の健全性の指標にする。",
+        "recorded_at": "2026-09-17T23:25:04Z",
+        "basis": "agent-inference"
+      }
+    }
+  }
+}

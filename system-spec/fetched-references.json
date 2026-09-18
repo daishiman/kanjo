@@ -1,85 +1,134 @@
 {
   "references": [
     {
-      "target_id": "chartjs-bar-floating",
-      "retrieved_at": "2026-09-17T22:05:46Z",
-      "source_url": "https://www.chartjs.org/docs/latest/charts/bar.html",
-      "official_publisher": "Chart.js",
-      "official_host": "www.chartjs.org",
-      "last_updated": "2025-10-13",
-      "latest_checked_at": "2026-09-17T22:05:46Z",
-      "summary": "bar chart の internal data format は {x, y, _custom} で、_custom は {start, end, barStart, barEnd, min, max} を持つ。棒の開始点と終了点を指定できるため、改善インパクトのウォーターフォール (現状から各改善を積み上げる図) を追加プラグインなしで bar だけで描ける根拠。既存 chart.js 4 の範囲に収める。"
+      "target_id": "wcag22-non-text-contrast",
+      "retrieved_at": "2026-09-18T03:49:46Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html",
+      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
+      "official_host": "www.w3.org",
+      "last_updated": "2026-06-15",
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "WCAG 2.2 SC 1.4.11 非テキストのコントラストの解説 (Updated 15 June 2026)。UI 部品とグラフィックの必要部分は隣接色に対して 3:1 以上のコントラストを求める。サブスク画面のカテゴリ別積み上げ棒の系列色・候補バッジ・カバー率バーの色を、背景と隣接系列に対して 3:1 以上に保ち、色だけで区別させない判断の根拠。"
     },
     {
-      "target_id": "tanstack-query-invalidation",
-      "retrieved_at": "2026-09-17T22:05:46Z",
-      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation",
+      "target_id": "wai-aria-apg-tabs",
+      "retrieved_at": "2026-09-18T03:49:46Z",
+      "source_url": "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/",
+      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
+      "official_host": "www.w3.org",
+      "last_updated": "2025-09-02",
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "WAI-ARIA Authoring Practices の Tabs パターン。tablist / tab / tabpanel の role、選択中の tab の aria-selected=true、tab から tabpanel への aria-controls、tabpanel から tab への aria-labelledby を要求する。キーボードは Tab で選択中のタブへ入りもう一度 Tab でパネルへ、左右矢印でタブ間を移動、Home / End は任意。詳細パネルの『概要 / 取引履歴 / 関連データ』タブの実装の正本。更新日はページに表示が無いため、公式リポジトリ w3c/aria-practices の tabs-pattern.html の最新コミット日 (2025-09-02) で確認した。"
+    },
+    {
+      "target_id": "tanstack-query-dependent-queries",
+      "retrieved_at": "2026-09-18T03:49:46Z",
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/dependent-queries",
       "official_publisher": "TanStack",
       "official_host": "tanstack.com",
       "version": "5.103.1",
-      "latest_checked_at": "2026-09-17T22:05:46Z",
-      "summary": "invalidateQueries は queryKey の前方一致で複数クエリをまとめて無効化し、exact: true で完全一致に絞れる。対応状況を PATCH した後に ['diagnosis', ...] を前方一致で invalidate すれば、期間・条件違いのキャッシュもまとめて取り直せる。version は公式 releases (github.com/TanStack/query/releases、Release 2026-09-16 に @tanstack/react-query@5.103.1) で確認した現行版。"
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "TanStack Query の依存クエリ (Dependent Queries) の公式ガイド。useQuery の enabled に真偽値を渡し、先行する値が揃うまで取得を始めない (例: enabled: !!userId)。サブスク一覧で行を選ぶまで詳細 API (GET /api/subscriptions/vendors/:key) を呼ばず、選択後にだけ取得する二段構えの根拠。版は公式リポジトリ TanStack/query のリリース一覧先頭 (@tanstack/react-query@5.103.1、2026-09-16) で確認した。"
     },
     {
-      "target_id": "react-router-use-search-params",
-      "retrieved_at": "2026-09-17T22:05:46Z",
+      "target_id": "tanstack-query-invalidations-from-mutations",
+      "retrieved_at": "2026-09-18T03:49:46Z",
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations",
+      "official_publisher": "TanStack",
+      "official_host": "tanstack.com",
+      "version": "5.103.1",
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "TanStack Query の『変更からの無効化』公式ガイド。useMutation の onSuccess で queryClient.invalidateQueries({ queryKey }) を呼び、関連するクエリを古い扱いにして再取得させる。名称の統合・カテゴリ変更・候補の採用 / 除外 / 確認の成功後に、サブスク一覧・詳細・サイドバーのバッジのクエリをまとめて無効化して表示を揃える設計の根拠。版は公式リポジトリのリリース一覧 (@tanstack/react-query@5.103.1) で確認した。"
+    },
+    {
+      "target_id": "react-router-searchparams",
+      "retrieved_at": "2026-09-18T03:49:46Z",
       "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
-      "official_publisher": "Remix Software (React Router)",
+      "official_publisher": "React Router (Remix / Shopify)",
       "official_host": "reactrouter.com",
       "version": "8.4.0",
-      "latest_checked_at": "2026-09-17T22:05:46Z",
-      "summary": "useSearchParams は [URLSearchParams, SetURLSearchParams] を返し、setSearchParams は文字列・オブジェクト・配列値・タプル配列・URLSearchParams・コールバック関数を受ける。期間・分析の範囲・表示する指標・比較対象・選択行を URL に保持して共有と再読み込みで同じ画面を開く根拠。本リポジトリは react-router-dom 7 で、公式ドキュメントは latest (8.4.0) を指す。"
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "React Router の useSearchParams の API リファレンス (ページ表示 8.4.0)。現在の URL の URLSearchParams と更新関数の組を返し、更新はナビゲーションとして履歴に残る。選んだベンダーを ?vendor=<照合キー> として URL に保ち、再読込や戻る操作で詳細パネルを復元する設計の根拠。"
     },
     {
       "target_id": "hono-zod-validator",
-      "retrieved_at": "2026-09-17T22:05:46Z",
+      "retrieved_at": "2026-09-18T03:49:46Z",
       "source_url": "https://hono.dev/docs/guides/validation",
       "official_publisher": "Hono",
       "official_host": "hono.dev",
-      "version": "0.9.1",
-      "latest_checked_at": "2026-09-17T22:05:46Z",
-      "summary": "validator の対象は form に加えて json / query / header / param / cookie。zValidator は第1引数に対象、第2引数に Zod スキーマを取り、ハンドラでは c.req.valid() で検証済みの値を受ける。PATCH /diagnosis/actions/:action_key の body (status / note) と param (action_key) を許可リストで検証する根拠。version は公式 releases (github.com/honojs/middleware、@hono/zod-validator@0.9.1) で確認した現行版。"
+      "version": "4.13.8",
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "Hono の検証 (Validation) 公式ガイド。@hono/zod-validator の zValidator('json' | 'query' | 'param', z.object({...})) で入力を Zod スキーマで検証し、ハンドラでは c.req.valid(...) で検証済みの値だけを使う。見直し判断の列挙値・統合する別名の件数と長さ・カテゴリ名を許可リストで受け取る新設 API の根拠。版は公式リポジトリ honojs/hono のリリース一覧先頭 (v4.13.8) で確認した。"
     },
     {
-      "target_id": "cloudflare-d1-sql-statements",
-      "retrieved_at": "2026-09-17T22:05:46Z",
-      "source_url": "https://developers.cloudflare.com/d1/sql-api/sql-statements/",
+      "target_id": "unicode-tr15-normalization",
+      "retrieved_at": "2026-09-18T03:49:46Z",
+      "source_url": "https://unicode.org/reports/tr15/",
+      "official_publisher": "Unicode Consortium",
+      "official_host": "unicode.org",
+      "version": "18.0.0",
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "Unicode Standard Annex #15 Unicode Normalization Forms (Unicode 18.0.0, Revision 58, 2026-08-12)。NFKC は互換分解の後に正準合成を行い、全角 / 半角カタカナや互換文字の見た目の違いを同じ表現へ揃える。取引名の表記ゆれを吸収してベンダーの照合キーと『正規化された名称』を作る処理 (既存 vendorKey の延長) と、カテゴリ辞書の照合で NFKC を前処理に使う判断の根拠。"
+    },
+    {
+      "target_id": "cloudflare-d1-query",
+      "retrieved_at": "2026-09-18T03:49:46Z",
+      "source_url": "https://developers.cloudflare.com/d1/worker-api/d1-database/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-04-21",
-      "latest_checked_at": "2026-09-17T22:05:46Z",
-      "summary": "D1 は SQLite のクエリエンジンを使い、SQL 慣例のほとんどに互換。CHECK 制約・PRIMARY KEY・FOREIGN KEY・CREATE INDEX をサポートする。diagnosis_action_states の status を 4 語 (未着手 / 対応中 / 対応済み / 見送り) へ CHECK 制約で限定し、action_key を PRIMARY KEY に置く設計が D1 上で成立する根拠。"
+      "last_updated": "2026-06-22",
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "Cloudflare D1 の Worker API (D1Database) の公式リファレンス (最終更新 2026-06-22)。prepare().bind() でプレースホルダに値を束縛し、batch() は複数の文を 1 往復で順に実行し、トランザクションとして扱う。見直し判断の upsert と照合キーによる読み取りを文字列連結ではなく束縛で行い、名称の統合で複数行を更新するときに batch でまとめる設計の根拠。"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "retrieved_at": "2026-09-18T03:49:46Z",
+      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-08",
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "Cloudflare D1 の migrations 公式リファレンス (最終更新 2026-06-08)。wrangler d1 migrations create / apply で migrations ディレクトリの .sql を順に適用し、適用済みの記録を d1_migrations 表で管理する。sub_vendors への category 列の追加と sub_vendor_review_decisions の新設を migration 0043 として追加だけで行い、既存の Migrate → Deploy の順で適用する判断の根拠。"
     },
     {
       "target_id": "cloudflare-workers-limits",
-      "retrieved_at": "2026-09-17T22:05:46Z",
+      "retrieved_at": "2026-09-18T03:49:46Z",
       "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-09-05",
-      "latest_checked_at": "2026-09-17T22:05:46Z",
-      "summary": "CPU 時間は Free 10ms、Paid は既定 30 秒 (最大 5 分)。サブリクエストは Free 50 / Paid 10,000。応答本文のサイズ制限は課さない。6 種の検知器を 1 リクエストで回しても、Dataset を 1 回読んで純粋関数で集計する形なら既存の分析 API と同程度の CPU 時間に収まることを見積もる根拠。"
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "Cloudflare Workers の上限の公式ページ (最終更新 2026-09-05)。CPU 時間は Free 10 ms、Paid 既定 30 秒 (最大 5 分)、メモリは 128 MB。サブスクの初回表示の応答をベンダー数 × 月数の集計値に限り、取引の実体は詳細パネルで選んだ 1 ベンダーぶんだけ返して、CPU 時間と応答サイズを明細件数から切り離す設計の根拠。"
     },
     {
-      "target_id": "wcag22-use-of-color",
-      "retrieved_at": "2026-09-17T22:05:46Z",
-      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
-      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
-      "official_host": "www.w3.org",
-      "version": "WCAG 2.2",
-      "last_updated": "2025-09-16",
-      "latest_checked_at": "2026-09-17T22:05:46Z",
-      "summary": "1.4.1 Use of Color は、情報伝達・操作の指示・応答の促し・要素の区別に色だけを使わないことを求める。テキストやアイコンなど色以外の手掛かりを併記する例が挙げられている。優先度・ステータス・信頼度に必ず文字ラベルを持たせ、色 (pill の alert / warn / calm / neutral) は補助にとどめる根拠。"
+      "target_id": "cloudflare-workers-ai-pricing",
+      "retrieved_at": "2026-09-18T03:49:46Z",
+      "source_url": "https://developers.cloudflare.com/workers-ai/platform/pricing/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-09-17",
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "Cloudflare Workers AI の料金の公式ページ (最終更新 2026-09-17)。1,000 Neurons あたり $0.011、1 日 10,000 Neurons まで無料。カテゴリ判定と見直し候補の理由文を AI で作る案 (dec-subs-category の opt-workers-ai、dec-subs-review-candidate の opt-ai-reason) の費用比較に使い、利用者が決定論の辞書と定型文を選んだ判断の比較根拠。"
     },
     {
-      "target_id": "owasp-asvs",
-      "retrieved_at": "2026-09-17T22:05:46Z",
-      "source_url": "https://owasp.org/projects/asvs",
+      "target_id": "owasp-asvs-encoding",
+      "retrieved_at": "2026-09-18T03:49:46Z",
+      "source_url": "https://github.com/OWASP/ASVS/blob/master/README.md",
       "official_publisher": "OWASP Foundation",
-      "official_host": "owasp.org",
+      "official_host": "github.com",
       "version": "5.0.0",
-      "latest_checked_at": "2026-09-17T22:05:46Z",
-      "summary": "ASVS は Web アプリ・Web サービスの設計/開発/テストで満たすべきセキュリティ統制を定めた検証標準で、現行は v5.0.0。要件参照は v<version>-<chapter>.<section>.<requirement> の形で書く。XSS や SQL injection といった脆弱性に対する技術的統制の検証基盤として位置づけられる。PATCH で新たに受ける action_key / status / note を許可リストで検証し、D1 へはプレースホルダ束縛で書き、note を dangerouslySetInnerHTML で出さない方針の上流根拠。"
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "OWASP ASVS の公式リポジトリ README。最新の安定版は 5.0.0 (2025 年 5 月)。Encoding and Sanitization 章は、出力先の文脈に応じたエンコードと入力の検証・無害化を要件とする。取込明細の取引名と利用者が入力する別名・カテゴリ名を、入力側で許可リスト検証し、出力側では HTML として挿入せずテキストとして描く設計の根拠。"
+    },
+    {
+      "target_id": "vitest-expect",
+      "retrieved_at": "2026-09-18T03:49:46Z",
+      "source_url": "https://vitest.dev/api/expect.html",
+      "official_publisher": "Vitest",
+      "official_host": "vitest.dev",
+      "version": "5.0.1",
+      "latest_checked_at": "2026-09-18T03:50:20Z",
+      "summary": "Vitest の expect API リファレンス (ページ表示 v5.0.1)。toBe は Object.is による厳密一致、toBeCloseTo は浮動小数点の丸め誤差を許容して比べる。サブスクの検算済み fixture で、金額 (推定月額・年換算・合計行) は整数の toBe、売上比とカバー率の割合は toBeCloseTo で比べる検証設計の根拠。"
     }
   ]
 }

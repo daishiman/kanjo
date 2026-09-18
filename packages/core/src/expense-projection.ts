@@ -10,7 +10,7 @@ import { isCashTxId } from './cash.js';
 import { resolveTx } from './classify.js';
 import { ensureMonth, subVendorDefs } from './dataset.js';
 import { normalizeMfDisplayDate } from './persisted-projection.js';
-import { matchSubVendor } from './subs.js';
+import { type SubVendor, matchSubVendor } from './subs.js';
 import { type DuplicateVerdict, type FreeeExclusion, reconcileBizDuplicates } from './total-cashflow.js';
 import type { Dataset, FreeeDeal, MfTx } from './types.js';
 import { isMfCountable } from './types.js';
@@ -251,8 +251,18 @@ export interface SourceNeutralSubscriptionsData extends SubscriptionsData {
 }
 
 function registeredVendorFor(fact: ExpenseFact, data: Dataset): string | null {
-  const defs = subVendorDefs(data);
-  const matched = matchSubVendor(fact.party, defs);
+  return registeredVendorOf(fact, subVendorDefs(data));
+}
+
+/**
+ * 明細が当たる登録ベンダー名。名前・別名で照合し、対象科目を指定したベンダーはその科目の明細だけにする。
+ * サブスク集計 (`sourceNeutralSubscriptions`) と画面 (`subscriptionsScreen`) が同じ判定を使う。
+ */
+export function registeredVendorOf(
+  fact: Pick<ExpenseFact, 'party' | 'categoryRaw' | 'categoryNorm'>,
+  defs: readonly SubVendor[],
+): string | null {
+  const matched = matchSubVendor(fact.party, [...defs]);
   if (!matched) return null;
   const definition = defs.find((vendor) => vendor.name === matched);
   if (!definition?.accounts?.length) return matched;

@@ -230,6 +230,8 @@ export const subVendors = sqliteTable('sub_vendors', {
   /** 最後に契約を見直した日時(ISO)。NULL は一度も見直していない */
   reviewedAt: text('reviewed_at'),
   createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  /** 0043: 利用者が上書きしたカテゴリ。NULL は既定辞書 (core の SUBS_CATEGORY_DICTIONARY) に従う */
+  category: text('category'),
 });
 
 /** 「これはサブスクではない」と記録した支払先。候補一覧から外すためだけに使う */
@@ -244,6 +246,23 @@ export const subVendorExclusions = sqliteTable(
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
   },
   (t) => [uniqueIndex('uq_sub_vendor_exclusions_user_key').on(t.userId, t.vendorKey)],
+);
+
+/**
+ * 0043: 登録済みベンダーの見直し候補への判断。1 利用者 1 ベンダーにつき 1 行 (upsert、取消は削除)。
+ * rule_fingerprint = 当たった規則 (表示順) + 基準金額。指紋が変わると dismissed は効かなくなる
+ */
+export const subVendorReviewDecisions = sqliteTable(
+  'sub_vendor_review_decisions',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: text('user_id').notNull(),
+    vendorKey: text('vendor_key').notNull(),
+    decision: text('decision', { enum: ['confirmed', 'dismissed'] }).notNull(),
+    ruleFingerprint: text('rule_fingerprint').notNull(),
+    decidedAt: text('decided_at').notNull(),
+  },
+  (t) => [uniqueIndex('uq_sub_vendor_review_decisions_user_key').on(t.userId, t.vendorKey)],
 );
 
 /**

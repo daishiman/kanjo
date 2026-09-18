@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "status": "pass",
+  "validated_digest": "sha256:43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+  "feature_package_id": "feature-package/feat-subscriptions-screen",
+  "parent_feature": "feat-subscriptions-screen",
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "violations": []
+}
