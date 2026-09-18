@@ -387,7 +387,7 @@ Actionsログにsecretの値を出して調査してはいけません。
 
 ### 初期JS予算がCIだけで落ちるとき
 
-`packages/web/scripts/check-initial-js-budget.mjs` は生成物を`gzipSync`で圧縮して測ります。圧縮レベルを指定していないため、**同じバイト列でもzlibの実装差でローカルとCIの数値がずれます**（2026-09-18の実測で0.67KiB。ローカル109.61KiB / CI 110.28KiB、生成物のハッシュは一致）。上限ぎりぎりで通している状態は、コードを1行も変えずに赤へ転びます。
+`packages/web/scripts/check-initial-js-budget.mjs` は生成物を`gzipSync`で圧縮して測ります。圧縮レベルを指定していないため、**同じバイト列でもzlibの実装差でローカルとCIの数値がずれます**（2026-09-18の実測で、同一コミットがローカル109.61KiB / CI 110.28KiBの0.67KiB差。生成物のハッシュは一致。是正後も同じ向きにローカル102.95KiB / CI 103.45KiBの0.50KiB差）。**CIの方が大きく出ます**。上限ぎりぎりでローカルを通している状態は、コードを1行も変えずに赤へ転びます。
 
 `pnpm lint`に`check:js-budget`は含まれません。バンドルに影響しうる変更は`pnpm --filter @kanjo/web build`まで通してください。
 
