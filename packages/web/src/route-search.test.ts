@@ -20,8 +20,15 @@ describe('画面検索の絞り込み', () => {
   });
 
   it('画面名の一部で辿り着ける', () => {
-    expect(idsOf('マトリクス')).toContain('matrix');
+    expect(idsOf('マトリックス')).toContain('matrix');
     expect(idsOf('サブスク')).toContain('subscriptions');
+  });
+
+  it('前の呼び名でも同じ画面へ辿り着く', () => {
+    // 表記を「マトリックス」へ揃えたあとも、旧称で打った人が迷子にならないこと。
+    // 別名は検索側だけが持つので、正本の label には旧称が残っていない
+    expect(idsOf('マトリクス')[0]).toBe('matrix');
+    expect(SEARCH_ROUTES.some((route) => route.label.includes('マトリクス'))).toBe(false);
   });
 
   it('名前に出ない語でも、画面の説明から辿り着ける', () => {

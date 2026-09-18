@@ -1,0 +1,176 @@
+{
+  "acceptance": [
+    "S1 (G1): /analysis/matrix で 06-matrix.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件である。",
+    "S2 (G2): 任意のセルを選ぶと詳細パネルと下部バーが同じ数値 (金額・前月比・前年同月比) を示し、含まれる取引の合計がセル金額と一致し、明細を開くが対象の月とカテゴリで絞った明細へ遷移する。",
+    "S3 (G3): 偏りが大きい 3 点の選定規則が docs に明記され、境界値テストで固定され、表示中のスコープ・軸・期間と同じ条件で算出される。",
+    "S4 (G4): 総合 / 事業 / 家計、カテゴリ / 取引先、全部 / 構成比 / 前年差 のどの組合せでも、合計・平均・構成比が表の値と一致し、matrix CSV および総収支・推移の同一期間の金額と一致する。",
+    "S5 (G5): サイドバー・ヘッダー・フッターの実装差分が表記統一のみで、既存の分析タブ (照合・総収支・推移・診断) のテストが緑である。"
+  ],
+  "architecture_refs": [
+    "architecture/expense-matrix-ui-ux.md",
+    "architecture/expense-matrix-frontend.md",
+    "architecture/expense-matrix-backend.md",
+    "architecture/expense-matrix-database.md",
+    "architecture/expense-matrix-auth.md",
+    "architecture/expense-matrix-security.md",
+    "architecture/expense-matrix-infrastructure.md",
+    "architecture/expense-matrix-maintenance-ops.md",
+    "specs/spec-expense-matrix-screen.md"
+  ],
+  "artifact_kind": "feature",
+  "feature_id": "feat-expense-matrix",
+  "generated_at": "2026-09-16T12:23:57Z",
+  "goal": "/analysis/matrix が 06-matrix.png の全構成要素 (問いの見出しと最終更新・期間タブ・切替 3 群・単位と濃淡凡例・行ヘッダ固定のヒートマップ表と合計/平均の行列・選択中セルの詳細パネル・偏りが大きい 3 点・下部の選択中バー・空状態) をトークンと共通部品で描画し、集計 (スコープ / 軸 / モード / 合計と平均 / 濃淡階級 / 偏り上位 3 点 / セル内訳) が core の純関数 1 か所で算出されて GET /api/matrix と GET /api/matrix/cell が返し、画面側の再集計が無くなり、切替と選択が URL から復元でき、既存の matrix CSV・総収支・推移の同一期間の金額と一致し、サイドバー等の共通シェルは表記統一のみで既存テストが緑のままの状態。",
+  "identity_check": {
+    "artifact_kind_matches": true,
+    "feature_context_path": "features/feat-expense-matrix.context.json",
+    "feature_context_sha256": "790a899bcade4ca1b3f013ec0bcea425d97b6e5ee8c6c2b929a1b0e50ef9aa88",
+    "graph_node_id": "feat-expense-matrix",
+    "graph_node_id_matches_feature_id": true,
+    "resolved_by": "resolve-project-context.py"
+  },
+  "notes": [
+    "参照画像 design/FINAL-UI/images/06-matrix.png の合計欄 (1,065.5 / 1,066.2 / 1,082.0) は閉じていない。期待値の正本は仕様書 3.5 節の検算値 (総計 1,062.6 / 平均 88.5) とする",
+    "サイドバー・ヘッダー・フッターは既存踏襲で、実装差分は表記統一のみに限る",
+    "本サイクルは新しいテーブル・migration・キャッシュ層を伴わない読み取り専用の追加である"
+  ],
+  "open_items": [
+    {
+      "id": "OI-01",
+      "item": "偏り度スコアの標準偏差の下限値",
+      "note": "P04 の境界値テストで値を確定する。P01 では仮置きしない",
+      "resolution_owner": "SYS-MATRIX-P04"
+    },
+    {
+      "id": "OI-02",
+      "item": "構成比と前年差の丸め桁",
+      "note": "P04 の契約テストで確定し docs の集計規則へ写す",
+      "resolution_owner": "SYS-MATRIX-P04"
+    },
+    {
+      "id": "OI-03",
+      "item": "明細導線の実クエリ形",
+      "note": "明細仕分け画面の既存クエリに合わせて P04 で固定する",
+      "resolution_owner": "SYS-MATRIX-P04"
+    },
+    {
+      "id": "OI-04",
+      "item": "取引先名の正規化の適用範囲",
+      "note": "軸が取引先のときの行キー生成規則として P04 で固定する",
+      "resolution_owner": "SYS-MATRIX-P04"
+    }
+  ],
+  "purpose": "マトリックス画面を、『どの月・どのカテゴリに支出が偏っているか』という問いに一画面で答える道具にする。月×カテゴリ (または取引先) のヒートマップで偏りを見つけ、気になるセルを選んで金額・前月比・前年同月比・含まれる取引・出典まで降り、明細へ繋げるところまでを、切替と選択を URL に保ったまま行える状態にする。",
+  "readiness_pin": {
+    "checked_at": "2026-09-16T12:23:57Z",
+    "completeness_report": "system-spec/completeness-findings.json",
+    "missing_sections": [],
+    "source_pin": {
+      "compile_entrypoint": "run-system-spec-compile",
+      "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+      "plugin": "system-spec-harness",
+      "source_digest": "sha256:a77e82bf8e9b3eb3684ab778a36fcbc1df8cb660b22283b62e29740e31cf374c",
+      "version": "0.1.14"
+    },
+    "status": "complete"
+  },
+  "repository_id": "github:daishiman/kanjo",
+  "run_id": "run-feat-expense-matrix-20260916T121130Z",
+  "scope_in": [
+    "マトリックス画面 (06-matrix.png の全構成要素と読込・空・失敗の各状態) の作り直し。表示モード / 集計の対象 / 行の分類 / 選択中セルを URL クエリの単一の真実にし、期間は既存 usePeriod を引き継ぐ",
+    "packages/core の matrix 集計純関数 (スコープ 総合/事業/家計・軸 カテゴリ/取引先・モード 金額/構成比/前年差・行と列の合計と平均・7 階級の表全体共通スケール・偏り度スコアと同点解消・決定論の示唆テンプレート 6 パターン・セル内訳の絞り込み)",
+    "packages/api の GET /api/matrix 拡張 (scope / axis / mode クエリ) と GET /api/matrix/cell の新設 (月 × 行キー × スコープ の内訳、取引上位 10 件と truncated、出典と明細導線)、既存 matrix CSV の同一 core 関数への付け替え",
+    "表示期間の前後 12 か月まで読み広げた Dataset 構築 (期間外の前月比・前年同月比を実データがあれば参照する。集計範囲は表示期間のまま)",
+    "クエリの列挙値検証と 400、key の完全一致と長さ上限、CSV の数式エスケープ、明細応答の no-store",
+    "サイドバー等の表記を『マトリックス』へ統一 (routeMetadata の label と journeyHint を含む)。共通シェルの構造は変更しない",
+    "集計規則・濃淡階級・偏り 3 点の選定規則と文テンプレート・未記帳月の扱いの docs 記載と、core の境界値テスト・API テスト・DOM テスト (既存 matrix-visual / matrix-legend の更新を含む)"
+  ],
+  "scope_out": [
+    "照合・総収支・推移・診断・分析ハブの各画面の中身の作り直し (表記統一と数値の一致確認だけを扱う)",
+    "新しいテーブル・集計結果の永続化・キャッシュ層の導入 (本サイクルは既存明細の読み取りだけで満たす)",
+    "生成 AI による示唆文の作成 (決定論テンプレートで固定する)",
+    "サイドバー・ヘッダー・フッターの構造の作り直し (表記ゆれの是正のみ)",
+    "認証方式・権限分離の変更、および新しい外部依存やチャートライブラリの追加",
+    "スマートフォン・タブレット・デスクトップ専用アプリ (web SPA 1 系統のレスポンシブで扱う)"
+  ],
+  "source_lineage": [
+    {
+      "note": "C09 が identity 一致を確認した feature context",
+      "path": "features/feat-expense-matrix.context.json",
+      "sha256": "790a899bcade4ca1b3f013ec0bcea425d97b6e5ee8c6c2b929a1b0e50ef9aa88",
+      "source_kind": "feature_context"
+    },
+    {
+      "note": "dev-graph decompose が生成した macro feature 文書",
+      "path": "features/feat-expense-matrix.md",
+      "sha256": "dc0a0f6f2c4cb9f75e86c4056896be14721765320c641c48d9bc74ca9506b506",
+      "source_kind": "feature_document"
+    },
+    {
+      "note": "画面仕様の正本。期待値は 3.5 節の検算値を採る",
+      "path": "specs/spec-expense-matrix-screen.md",
+      "sha256": "ac40e8a1d1ef41217ce096c3281c3c52365dd931e814c9092aa11e9084f0a306",
+      "source_kind": "specification"
+    },
+    {
+      "note": "system-spec-harness 0.1.14 の要件定義書",
+      "path": "system-spec/00-requirements-definition.md",
+      "sha256": "6c5ffc3ec380bd3af81af6212ae2e32268ebb0b738bc2653aca322c758aff0f6",
+      "source_kind": "system_spec_requirements"
+    },
+    {
+      "note": "完成度 evaluator の verdict=PASS 記録",
+      "path": "system-spec/completeness-findings.json",
+      "sha256": "d9e1ec67e4fd04ac37494664215c9e76dbc32b096014f3337a9710e19be39d40",
+      "source_kind": "completeness_evaluation"
+    },
+    {
+      "note": "arch-expense-matrix-ui-ux (ui-ux 領域の architecture 制約)",
+      "path": "architecture/expense-matrix-ui-ux.md",
+      "sha256": "d6e12a34e2661b38162b845153c2db1f957c6b2bc1be137e50363433c248122c",
+      "source_kind": "architecture"
+    },
+    {
+      "note": "arch-expense-matrix-frontend (frontend 領域の architecture 制約)",
+      "path": "architecture/expense-matrix-frontend.md",
+      "sha256": "ec824a98ad078939d714596b7e525a9d3c6ffaa0c6b6e2daca1f7dde0f4d22b3",
+      "source_kind": "architecture"
+    },
+    {
+      "note": "arch-expense-matrix-backend (backend 領域の architecture 制約)",
+      "path": "architecture/expense-matrix-backend.md",
+      "sha256": "e5927ec12450a90f906aff035c0a2cd68566298a3fa8d3d108494a530cec5061",
+      "source_kind": "architecture"
+    },
+    {
+      "note": "arch-expense-matrix-database (database 領域の architecture 制約)",
+      "path": "architecture/expense-matrix-database.md",
+      "sha256": "64af05998195c21d84baa2543f241810b5e0cc4ca4084553a4f8a308cc0a2016",
+      "source_kind": "architecture"
+    },
+    {
+      "note": "arch-expense-matrix-auth (auth 領域の architecture 制約)",
+      "path": "architecture/expense-matrix-auth.md",
+      "sha256": "bde58fccc94ce49d82604edbfa6162eb2c3f8aad8a5cfa7c6c3bb25c3b4b74ba",
+      "source_kind": "architecture"
+    },
+    {
+      "note": "arch-expense-matrix-security (security 領域の architecture 制約)",
+      "path": "architecture/expense-matrix-security.md",
+      "sha256": "f45e3b867753d87875e1a6060a73c2f00221527596ebce20ef9c2851e2b8c6d0",
+      "source_kind": "architecture"
+    },
+    {
+      "note": "arch-expense-matrix-infrastructure (infrastructure 領域の architecture 制約)",
+      "path": "architecture/expense-matrix-infrastructure.md",
+      "sha256": "e706aa475762c9d4383bdf99121bd6151a631155025e3d8e37e5512e94fc89a1",
+      "source_kind": "architecture"
+    },
+    {
+      "note": "arch-expense-matrix-maintenance-ops (maintenance-ops 領域の architecture 制約)",
+      "path": "architecture/expense-matrix-maintenance-ops.md",
+      "sha256": "f4e1d253fdb73daaebfef719f7c6c8a4e5110942161a31112a5aed61d5335b4c",
+      "source_kind": "architecture"
+    }
+  ]
+}

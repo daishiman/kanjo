@@ -19,6 +19,8 @@ import {
   yenTick,
 } from './charts.js';
 import { createFinancialFigureModel, financialPeriod } from './figure-view-model.js';
+import { HeatGrid } from './heatmap/heat-grid.js';
+import { heatRow } from './heatmap/heat-model.js';
 
 const pctTick = (v: number | string) => `${Math.round(Number(v) * 100)}%`;
 
@@ -201,58 +203,24 @@ function datasets(chart: AiReportChart): { type: 'bar' | 'line'; data: CjsData; 
  */
 function HeatmapTable({ chart }: { chart: AiReportChart }) {
   const d = chart.data ?? { labels: [], series: [] };
+  // ChartSeries ({label, data}) は API とフロントの契約なので階級値を通せない。
+  // よって変換層を挟まず、HeatGrid の直前で生値から行ごとの階級値を作る (仕様 §3.3 の制約 3)
+  const rows = d.series.map((sr) => heatRow(sr.label, sr.label, sr.data, 'row'));
   return (
     // FinancialFigure の <details> 表を出さない図なので、この表が正確な値の正本。
     // 読み上げから隠すと、ヒートマップの数値に辿り着く手段が無くなる
-    <div className="heatmap-scroll">
-      <table
-        className="data heatmap"
-        data-table-kind="matrix"
-        data-sort-reason="ヒートマップの科目行と月列を図と同じ軸順に固定する"
-      >
-        <thead>
-          <tr>
-            <th scope="col">科目</th>
-            {d.labels.map((l) => (
-              <th key={l} scope="col" className="num">
-                {tooltipTitle(l)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {d.series.map((sr) => {
-            const max = sr.data.reduce<number>((m, v) => Math.max(m, v ?? 0), 0);
-            return (
-              <tr key={sr.label}>
-                <th scope="row">{sr.label}</th>
-                {sr.data.map((v, i) => (
-                  <td
-                    // 月ラベルと1対1で並ぶ固定長の列なので、行名+月ラベルで一意になる
-                    key={`${sr.label}-${d.labels[i] ?? i}`}
-                    className="num heat"
-                    style={
-                      v == null || max <= 0
-                        ? undefined
-                        : { backgroundColor: chartDecorativeFill(COLORS.biz, shade(v / max)) }
-                    }
-                    title={`${sr.label} ${tooltipTitle(d.labels[i] ?? '')}: ${tooltipValue(v, chart.unit)}`}
-                  >
-                    {v == null ? '' : yenTick(v)}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <HeatGrid
+      className="heatmap-scroll"
+      columns={d.labels.map((l) => tooltipTitle(l))}
+      rows={rows}
+      rowHeader="科目"
+      color={COLORS.biz}
+      formatValue={yenTick}
+      cellTitle={(row, i) =>
+        `${row.label} ${tooltipTitle(d.labels[i] ?? '')}: ${tooltipValue(row.cells[i]?.value ?? null, chart.unit)}`
+      }
+    />
   );
-}
-
-/** 値を文字でも併記する heatmap の装飾濃度(5%〜90%)。 */
-function shade(ratio: number): number {
-  return (13 + Math.min(1, Math.max(0, ratio)) * (230 - 13)) / 255;
 }
 
 const STATUS_TEXT: Record<AiReportChart['status'], string> = {

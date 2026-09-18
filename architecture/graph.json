@@ -4,873 +4,6 @@
   "projection_note": "dev-graph macro graph の architecture ノードのみを写像した従属成果物。dev-graph 由来ノードの編集は dev-graph 側で行う。source_lineage.origin_kind='manual' のノードは dev-graph 計画を経ずに直接登録したもので、次回 projection 時に上書きせず突合する。",
   "nodes": [
     {
-      "id": "arch-d1-schema-lifecycle",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data",
-        "infrastructure"
-      ],
-      "title": "本番 D1 スキーマ版数ライフサイクル",
-      "file_path": "architecture/arch-d1-schema-lifecycle.md",
-      "status": "draft",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pending",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-08-27-d1-schema-recovery/database.md",
-        "source_version": "0.1.11",
-        "source_digest": "75aad1e24be701c779a9a444cdb747e56bdcdfbc148ca2af819ca480976d68f6",
-        "imported_at": "2026-08-27T05:10:00Z"
-      },
-      "referenced_by": [
-        "feat-prod-d1-schema-recovery"
-      ]
-    },
-    {
-      "id": "arch-deploy-migration-gate",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "デプロイ前マイグレーション検査ゲート",
-      "file_path": "architecture/arch-deploy-migration-gate.md",
-      "status": "draft",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pending",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-08-27-d1-schema-recovery/infrastructure.md",
-        "source_version": "0.1.11",
-        "source_digest": "0cb82aac382b24a14d69e150e9866d1cd7c58e83039bb4e39db187f66b06515a",
-        "imported_at": "2026-08-27T05:10:00Z"
-      },
-      "referenced_by": [
-        "feat-deploy-migration-gate"
-      ]
-    },
-    {
-      "id": "arch-import-deletion-undo-boundary",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend",
-        "data",
-        "infrastructure"
-      ],
-      "title": "取込データ削除・上書きと取り消しの境界",
-      "file_path": "architecture/arch-import-deletion-undo-boundary.md",
-      "status": "draft",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pending",
-      "source_lineage": {
-        "origin_kind": "manual",
-        "source_plugin": null,
-        "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json",
-        "source_version": "1.0",
-        "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027",
-        "imported_at": "2026-08-31T00:00:00Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-improvement-request-pipeline",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend",
-        "backend",
-        "data",
-        "security",
-        "infrastructure"
-      ],
-      "title": "改善要望の収集・受け渡し・失効の境界",
-      "file_path": "architecture/arch-improvement-request-pipeline.md",
-      "status": "draft",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-02-mobile-visualization-and-improvement-request/index.md",
-        "source_version": "0.1.11",
-        "source_digest": "3be8aad9e13b562e1c1365d327633fbfe6e665e3c687ea4f3aba90a156bc8254",
-        "imported_at": "2026-08-31T00:00:00Z"
-      },
-      "referenced_by": [
-        "feat-improvement-request"
-      ]
-    },
-    {
-      "id": "arch-mobile-financial-experience",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "モバイル財務情報の体験アーキテクチャ",
-      "file_path": "architecture/arch-mobile-financial-experience.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-02-mobile-visualization-and-improvement-request/ui-ux.md",
-        "source_version": "0.1.11",
-        "source_digest": "7638a33287d1cf64541556c0ff6c2bb01177112d0b593fb25f14069a2bf82e70",
-        "imported_at": "2026-08-31T00:00:00Z"
-      },
-      "referenced_by": [
-        "feat-mobile-financial-visualization"
-      ]
-    },
-    {
-      "id": "arch-mobile-financial-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "モバイル財務chartのフロントエンドアーキテクチャ",
-      "file_path": "architecture/arch-mobile-financial-frontend.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-02-mobile-visualization-and-improvement-request/frontend.md",
-        "source_version": "0.1.11",
-        "source_digest": "a1e7983b026e86e7add4a160a17add636815798ccb226cc20f9114fb08d3153b",
-        "imported_at": "2026-08-31T00:00:00Z"
-      },
-      "referenced_by": [
-        "feat-mobile-financial-visualization"
-      ]
-    },
-    {
-      "id": "arch-override-reapply-three-way-merge",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend",
-        "data",
-        "frontend"
-      ],
-      "title": "手当ての継続再適用と3点比較の境界",
-      "file_path": "architecture/arch-override-reapply-three-way-merge.md",
-      "status": "draft",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pending",
-      "source_lineage": {
-        "origin_kind": "manual",
-        "source_plugin": null,
-        "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json",
-        "source_version": "1.0",
-        "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027",
-        "imported_at": "2026-08-31T00:00:00Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-schema-guard-error-contract",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend",
-        "frontend",
-        "security"
-      ],
-      "title": "実行時スキーマ版数ガードと説明可能なエラー契約",
-      "file_path": "architecture/arch-schema-guard-error-contract.md",
-      "status": "draft",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pending",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-08-27-d1-schema-recovery/backend.md",
-        "source_version": "0.1.11",
-        "source_digest": "9e686b473abcc5d659c6795c88470ddfa31ef27931a3d829555dff2d0c6da8a0",
-        "imported_at": "2026-08-27T05:10:00Z"
-      },
-      "referenced_by": [
-        "feat-runtime-schema-guard"
-      ]
-    },
-    {
-      "id": "arch-tax-preparation-boundary",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend",
-        "frontend",
-        "data",
-        "security"
-      ],
-      "title": "確定申告準備の対象年境界と証憑完全性の契約",
-      "file_path": "architecture/arch-tax-preparation-boundary.md",
-      "status": "draft",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pending",
-      "source_lineage": {
-        "origin_kind": "manual",
-        "source_plugin": null,
-        "source_path": "docs/spec-v1.1.md",
-        "source_version": "1.1",
-        "source_digest": "6db8b40267bfb73cb1816b6d053a2bfba83996c845a392748838591603cfeec6",
-        "imported_at": "2026-08-29T00:00:00Z"
-      },
-      "referenced_by": [
-        "feat-tax-preparation"
-      ]
-    },
-    {
-      "id": "arch-transaction-split-projection",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend",
-        "frontend",
-        "data"
-      ],
-      "title": "明細の分割記帳を投影で解く境界",
-      "file_path": "architecture/arch-transaction-split-projection.md",
-      "status": "draft",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pending",
-      "source_lineage": {
-        "origin_kind": "manual",
-        "source_plugin": null,
-        "source_path": "specs/transaction-splits.md",
-        "source_version": "1.1",
-        "source_digest": "db733029b4a27dd011a59e77e244908872de7a5b7c0553b5a5d7183f2e5e4d83",
-        "imported_at": "2026-08-30T00:00:00Z"
-      },
-      "referenced_by": [
-        "feat-transaction-split-readability"
-      ]
-    },
-    {
-      "id": "arch-ui-navigation-experience",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "ナビゲーションと情報階層の体験設計",
-      "file_path": "architecture/arch-ui-navigation-experience.md",
-      "status": "draft",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pending",
-      "source_lineage": {
-        "origin_kind": "manual",
-        "source_plugin": null,
-        "source_path": "specs/ui-navigation-cognitive-load.md",
-        "source_version": "1.0",
-        "source_digest": "8aba234893fd72683db1f5e8e21f3bcb60297aca83ca3c792e8f50e45811a434",
-        "imported_at": "2026-09-07T13:55:37Z"
-      },
-      "referenced_by": [
-        "feat-ui-navigation-cognitive-load"
-      ]
-    },
-    {
-      "id": "arch-ui-navigation-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "共通UI実装境界と回帰防止",
-      "file_path": "architecture/arch-ui-navigation-frontend.md",
-      "status": "draft",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pending",
-      "source_lineage": {
-        "origin_kind": "manual",
-        "source_plugin": null,
-        "source_path": "specs/ui-navigation-cognitive-load.md",
-        "source_version": "1.0",
-        "source_digest": "8aba234893fd72683db1f5e8e21f3bcb60297aca83ca3c792e8f50e45811a434",
-        "imported_at": "2026-09-07T13:55:37Z"
-      },
-      "referenced_by": [
-        "feat-ui-navigation-cognitive-load"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-system",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend",
-        "backend",
-        "infrastructure",
-        "data",
-        "security"
-      ],
-      "title": "事業・家計トータル収支システム アーキテクチャ",
-      "file_path": "architecture/arch-total-cashflow-system.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/index.md",
-        "source_version": "0.1.12",
-        "source_digest": "69a9cb667945e7769df55e373d35de54a2a2f7f094d38454c9c008971fb6ce94",
-        "imported_at": "2026-09-08T07:32:48Z"
-      },
-      "referenced_by": [
-        "feature-retire-tax-receipt-and-clarify-freee-only"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "トータル収支 — バックエンド構成",
-      "file_path": "architecture/total-cashflow-backend.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/backend.md",
-        "source_version": "0.1.11",
-        "source_digest": "778e674fc0686dad4f026f0a3ecbeb663952ab43718e8594f91067dab5445a86",
-        "imported_at": "2026-09-05T12:42:39Z"
-      },
-      "referenced_by": [
-        "feat-total-cashflow"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "トータル収支 — データ永続化構成",
-      "file_path": "architecture/total-cashflow-database.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/database.md",
-        "source_version": "0.1.11",
-        "source_digest": "313d15d861b25509ad473928d72bd45c3f5686ec5afb8aa6472f5a1f01228d67",
-        "imported_at": "2026-09-05T12:42:39Z"
-      },
-      "referenced_by": [
-        "feat-total-cashflow"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "トータル収支 — フロントエンド構成",
-      "file_path": "architecture/total-cashflow-frontend.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/frontend.md",
-        "source_version": "0.1.11",
-        "source_digest": "6d9a3099e81f6ccae5e93105dd5b41d485bcc4a57a9c478239b8f6e694ddacb2",
-        "imported_at": "2026-09-05T12:42:39Z"
-      },
-      "referenced_by": [
-        "feat-total-cashflow"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "トータル収支 — UI/UX 構成",
-      "file_path": "architecture/total-cashflow-ui-ux.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ui-ux.md",
-        "source_version": "0.1.11",
-        "source_digest": "0ae53d13baeaefe134054d1bca4ca872f9bc0904ec65ff2356bddcd526c14368",
-        "imported_at": "2026-09-05T12:42:39Z"
-      },
-      "referenced_by": [
-        "feat-total-cashflow"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "トータル収支 — 認証境界",
-      "file_path": "architecture/total-cashflow-auth.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/auth.md",
-        "source_version": "0.1.11",
-        "source_digest": "a87513e0ed417ea678374665baa176e4a2272dcd5aaa730aa658e2e339e2a635",
-        "imported_at": "2026-09-05T12:42:39Z"
-      },
-      "referenced_by": [
-        "feat-total-cashflow"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "トータル収支 — 脅威モデルと対策",
-      "file_path": "architecture/total-cashflow-security.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/security.md",
-        "source_version": "0.1.11",
-        "source_digest": "b2c10d6b0ea7473d6d33e4a062f35af35d3aa8cdafff6c38a18f66be03bf2764",
-        "imported_at": "2026-09-05T12:42:39Z"
-      },
-      "referenced_by": [
-        "feat-total-cashflow"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "トータル収支 — インフラ構成と算出戦略",
-      "file_path": "architecture/total-cashflow-infrastructure.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/infrastructure.md",
-        "source_version": "0.1.11",
-        "source_digest": "2e0294fec0e238866bfe2ecffee52e662bbdc1638f3d143e86eee7149b1bdbcf",
-        "imported_at": "2026-09-05T12:42:39Z"
-      },
-      "referenced_by": [
-        "feat-total-cashflow"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "トータル収支 — 運用と異常への気付き方",
-      "file_path": "architecture/total-cashflow-maintenance-ops.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/maintenance-ops.md",
-        "source_version": "0.1.11",
-        "source_digest": "7f916ede6073bf90e8501649a140e54c570fcce61d09d6da14315aaf0fd7f529",
-        "imported_at": "2026-09-05T12:42:39Z"
-      },
-      "referenced_by": [
-        "feat-total-cashflow"
-      ]
-    },
-    {
-      "id": "arch-mf-business-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "MF 事業判定 — バックエンド境界",
-      "file_path": "architecture/mf-business-backend.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-10T06:03:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "8ef2dbf6dd24ac4e3884e328fcddb7bc711b21f9e4c54d0b6f760284746baf44",
-        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/backend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-mf-business-classification"
-      ]
-    },
-    {
-      "id": "arch-mf-business-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "MF 事業判定 — データ境界",
-      "file_path": "architecture/mf-business-database.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-10T06:03:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "2fe5bbedace90f133275f839664b0b31ff7394e29f0ef4495cbed932e6816c0e",
-        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/database.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-mf-business-classification"
-      ]
-    },
-    {
-      "id": "arch-mf-business-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "MF 事業判定 — フロントエンド境界",
-      "file_path": "architecture/mf-business-frontend.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-10T06:03:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "c0e51ae2eff4d0c53e4008887db4a39f6a508fa74c3422c32bf0fda0fd3cd31b",
-        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/frontend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-mf-business-classification"
-      ]
-    },
-    {
-      "id": "arch-mf-business-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "MF 事業判定 — 表現物と情報階層",
-      "file_path": "architecture/mf-business-ui-ux.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-10T06:03:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "d835852b1d3cadf91f2679d08b8472b369775907805c49f3ad381f025ea9fcd3",
-        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/ui-ux.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-mf-business-classification"
-      ]
-    },
-    {
-      "id": "arch-mf-business-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "MF 事業判定 — 認証境界",
-      "file_path": "architecture/mf-business-auth.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-10T06:03:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "af72f5ae696d778cf43742b746026376215565ba28a46de52e7b930b480f4567",
-        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/auth.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-mf-business-classification"
-      ]
-    },
-    {
-      "id": "arch-mf-business-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "MF 事業判定 — 入力検証と脅威",
-      "file_path": "architecture/mf-business-security.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-10T06:03:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "96053444178396c297587b1bc18328344cf9f5301945414f38f30c87751f5f99",
-        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/security.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-mf-business-classification"
-      ]
-    },
-    {
-      "id": "arch-mf-business-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "MF 事業判定 — 実行環境と配信",
-      "file_path": "architecture/mf-business-infrastructure.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-10T06:03:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "d13ad4a5a60401079275bbaccb6a9ef671f0118ae7db6f7f44f42c248e5854d7",
-        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/infrastructure.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-mf-business-classification"
-      ]
-    },
-    {
-      "id": "arch-mf-business-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "MF 事業判定 — 運用と文書",
-      "file_path": "architecture/mf-business-maintenance-ops.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-10T06:03:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "696083a21c3ae1034c1eeff2c8db92cb2c3e7c7f499f57ee1f89360da74df3a2",
-        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/maintenance-ops.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-mf-business-classification"
-      ]
-    },
-    {
-      "id": "arch-design-system-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "デザインシステム共通化 — 未認証時の共通シェル",
-      "file_path": "architecture/design-system-auth.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-13T08:15:21Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "c43d364880309fe1dc22bde3bf61a5cfb7eb4e996e2f3f9193b968df3aef3c59",
-        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/auth.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-design-system-foundation"
-      ]
-    },
-    {
-      "id": "arch-design-system-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "デザインシステム共通化 — サーバ境界の不変条件",
-      "file_path": "architecture/design-system-backend.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-13T22:33:44Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "58c252551b1ba2c531913f4d13d7b959a11fb20a5fced89658cde126787dfd90",
-        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/backend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-design-system-foundation"
-      ]
-    },
-    {
-      "id": "arch-design-system-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "デザインシステム共通化 — 永続化を変えない判断",
-      "file_path": "architecture/design-system-database.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-13T22:33:44Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "3498ef5a73233e6a933baaa19d2cbd5bb02dd79baa462ec9cc1bbe55f831ebb2",
-        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/database.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-design-system-foundation"
-      ]
-    },
-    {
-      "id": "arch-design-system-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "デザインシステム共通化 — トークン正本と写しの導出",
-      "file_path": "architecture/design-system-frontend.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-13T22:33:44Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "26fcc96ee685950911cfd893979243d5685559547fe037de554254f8ea57e008",
-        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/frontend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-design-system-foundation"
-      ]
-    },
-    {
-      "id": "arch-design-system-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "デザインシステム共通化 — 配信構成と JS 予算",
-      "file_path": "architecture/design-system-infrastructure.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-13T22:33:44Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "d26a9eb5fda7ca0d9e4c407106b69b2b84de2bff328260b18a78dd6f5abcf9df",
-        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/infrastructure.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-design-system-foundation"
-      ]
-    },
-    {
-      "id": "arch-design-system-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "デザインシステム共通化 — 規約の機械検出と規約文書",
-      "file_path": "architecture/design-system-maintenance-ops.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-13T08:15:21Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "d81c4f38a04af0e0932f7a05c2f55cf87885aa55eeae8cd66f7cf442fb2b67ff",
-        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/maintenance-ops.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-design-system-foundation"
-      ]
-    },
-    {
-      "id": "arch-design-system-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "デザインシステム共通化 — CSP と実データ混入の防止",
-      "file_path": "architecture/design-system-security.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-13T22:33:44Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "87e8c5a76765563551fc0cd2e989c5876c4f64e05e391a6b32accb387bb7be5d",
-        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/security.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-design-system-foundation"
-      ]
-    },
-    {
-      "id": "arch-design-system-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "デザインシステム共通化 — 表現規約と色の役割",
-      "file_path": "architecture/design-system-ui-ux.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-13T22:33:44Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "90861d884f6550debe818e41909cbc5334ad7f75ef03e3172ef0f6373f19ee70",
-        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/ui-ux.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-design-system-foundation"
-      ]
-    },
-    {
       "id": "arch-account-login-auth",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -1239,44 +372,739 @@
       ]
     },
     {
-      "id": "arch-overview-ui-ux",
+      "id": "arch-d1-schema-lifecycle",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
-        "frontend"
+        "data",
+        "infrastructure"
       ],
-      "title": "概況画面改善 — 情報優先度と段階的開示",
-      "file_path": "architecture/overview-screen-ui-ux.md",
-      "status": "active",
+      "title": "本番 D1 スキーマ版数ライフサイクル",
+      "file_path": "architecture/arch-d1-schema-lifecycle.md",
+      "status": "draft",
       "confirmation_status": "confirmed",
       "evaluation_status": "pending",
       "source_lineage": {
-        "imported_at": "2026-09-15T00:18:48Z",
         "origin_kind": "system-spec-harness",
-        "source_digest": "c16e7904243093915bdbb78348fa5bdd042eaa945a52243250e54f29b454e1de",
-        "source_path": "system-spec/archive/2026-09-14-overview-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-08-27-d1-schema-recovery/database.md",
+        "source_version": "0.1.11",
+        "source_digest": "75aad1e24be701c779a9a444cdb747e56bdcdfbc148ca2af819ca480976d68f6",
+        "imported_at": "2026-08-27T05:10:00Z"
+      },
+      "referenced_by": [
+        "feat-prod-d1-schema-recovery"
+      ]
+    },
+    {
+      "id": "arch-deploy-migration-gate",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "デプロイ前マイグレーション検査ゲート",
+      "file_path": "architecture/arch-deploy-migration-gate.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-08-27-d1-schema-recovery/infrastructure.md",
+        "source_version": "0.1.11",
+        "source_digest": "0cb82aac382b24a14d69e150e9866d1cd7c58e83039bb4e39db187f66b06515a",
+        "imported_at": "2026-08-27T05:10:00Z"
+      },
+      "referenced_by": [
+        "feat-deploy-migration-gate"
+      ]
+    },
+    {
+      "id": "arch-design-system-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "デザインシステム共通化 — 未認証時の共通シェル",
+      "file_path": "architecture/design-system-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T08:15:21Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c43d364880309fe1dc22bde3bf61a5cfb7eb4e996e2f3f9193b968df3aef3c59",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
       "referenced_by": [
-        "feat-overview-screen"
+        "feat-design-system-foundation"
       ]
     },
     {
-      "id": "arch-overview-frontend",
+      "id": "arch-design-system-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "デザインシステム共通化 — サーバ境界の不変条件",
+      "file_path": "architecture/design-system-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "58c252551b1ba2c531913f4d13d7b959a11fb20a5fced89658cde126787dfd90",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "デザインシステム共通化 — 永続化を変えない判断",
+      "file_path": "architecture/design-system-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "3498ef5a73233e6a933baaa19d2cbd5bb02dd79baa462ec9cc1bbe55f831ebb2",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-frontend",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
         "frontend"
       ],
-      "title": "概況画面改善 — 共通部品と応答型境界",
-      "file_path": "architecture/overview-screen-frontend.md",
+      "title": "デザインシステム共通化 — トークン正本と写しの導出",
+      "file_path": "architecture/design-system-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "26fcc96ee685950911cfd893979243d5685559547fe037de554254f8ea57e008",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "デザインシステム共通化 — 配信構成と JS 予算",
+      "file_path": "architecture/design-system-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "d26a9eb5fda7ca0d9e4c407106b69b2b84de2bff328260b18a78dd6f5abcf9df",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "デザインシステム共通化 — 規約の機械検出と規約文書",
+      "file_path": "architecture/design-system-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T08:15:21Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "d81c4f38a04af0e0932f7a05c2f55cf87885aa55eeae8cd66f7cf442fb2b67ff",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "デザインシステム共通化 — CSP と実データ混入の防止",
+      "file_path": "architecture/design-system-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "87e8c5a76765563551fc0cd2e989c5876c4f64e05e391a6b32accb387bb7be5d",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-design-system-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "デザインシステム共通化 — 表現規約と色の役割",
+      "file_path": "architecture/design-system-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-13T22:33:44Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "90861d884f6550debe818e41909cbc5334ad7f75ef03e3172ef0f6373f19ee70",
+        "source_path": "system-spec/archive/2026-09-14-design-system-foundation/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-design-system-foundation"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "支出マトリックス — 新設 2 経路を既存 authGuard の内側に置く",
+      "file_path": "architecture/expense-matrix-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "05843382528fb59bac01a39618d21c7d16ffc2196844f40751292a2c77f85b33",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "支出マトリックス — core 純関数 1 か所とセル指向 API",
+      "file_path": "architecture/expense-matrix-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "aa683b83952f8d5cda302aa3b26e2150fa8306d080c02fe03648cb32aeafe0b4",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "支出マトリックス — 読み取り範囲 ±12 か月・新しい保存を作らない",
+      "file_path": "architecture/expense-matrix-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "5819bdcc8ddab7f90e038451e3835e406b3c84c98a492dcb7088451ad73a674a",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "支出マトリックス画面 — URL 単一真実・2 本の取得・部品境界",
+      "file_path": "architecture/expense-matrix-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e532dd19fe36b269cb64da9433bf854d7e576120457d6f095a5b7cebf75940dd",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "支出マトリックス — 応答 2 分割と Workers CPU 予算に収める",
+      "file_path": "architecture/expense-matrix-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "43416dd0ae8d102622e9c3e1c75496c9f9d2ca8217b2fac378555d42c82cf8d6",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "支出マトリックス — 検算済みフィクスチャと語彙の統一",
+      "file_path": "architecture/expense-matrix-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "73ddaf752a28edcc278ef0accb77411a9a77dae0857990352307db902f74f9b1",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "支出マトリックス — 入力は列挙値で閉じ、出力へ明細を漏らさない",
+      "file_path": "architecture/expense-matrix-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "fede51eb4a0dd594e4e8cafb51c3ca7d389aea3a16228fcc353061d9679490db",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-expense-matrix-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "支出マトリックス画面 — 情報の優先順位・ヒートマップの読ませ方・セル選択",
+      "file_path": "architecture/expense-matrix-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T11:55:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "940691e19ee39682e106476ef8be9117c203916c8f9cbd76bf06f63d76f9bd1b",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-import-deletion-undo-boundary",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend",
+        "data",
+        "infrastructure"
+      ],
+      "title": "取込データ削除・上書きと取り消しの境界",
+      "file_path": "architecture/arch-import-deletion-undo-boundary.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json",
+        "source_version": "1.0",
+        "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027",
+        "imported_at": "2026-08-31T00:00:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-request-pipeline",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend",
+        "backend",
+        "data",
+        "security",
+        "infrastructure"
+      ],
+      "title": "改善要望の収集・受け渡し・失効の境界",
+      "file_path": "architecture/arch-improvement-request-pipeline.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-02-mobile-visualization-and-improvement-request/index.md",
+        "source_version": "0.1.11",
+        "source_digest": "3be8aad9e13b562e1c1365d327633fbfe6e665e3c687ea4f3aba90a156bc8254",
+        "imported_at": "2026-08-31T00:00:00Z"
+      },
+      "referenced_by": [
+        "feat-improvement-request"
+      ]
+    },
+    {
+      "id": "arch-mf-business-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "MF 事業判定 — 認証境界",
+      "file_path": "architecture/mf-business-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "af72f5ae696d778cf43742b746026376215565ba28a46de52e7b930b480f4567",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "MF 事業判定 — バックエンド境界",
+      "file_path": "architecture/mf-business-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8ef2dbf6dd24ac4e3884e328fcddb7bc711b21f9e4c54d0b6f760284746baf44",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "MF 事業判定 — データ境界",
+      "file_path": "architecture/mf-business-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2fe5bbedace90f133275f839664b0b31ff7394e29f0ef4495cbed932e6816c0e",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "MF 事業判定 — フロントエンド境界",
+      "file_path": "architecture/mf-business-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c0e51ae2eff4d0c53e4008887db4a39f6a508fa74c3422c32bf0fda0fd3cd31b",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "MF 事業判定 — 実行環境と配信",
+      "file_path": "architecture/mf-business-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "d13ad4a5a60401079275bbaccb6a9ef671f0118ae7db6f7f44f42c248e5854d7",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "MF 事業判定 — 運用と文書",
+      "file_path": "architecture/mf-business-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "696083a21c3ae1034c1eeff2c8db92cb2c3e7c7f499f57ee1f89360da74df3a2",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "MF 事業判定 — 入力検証と脅威",
+      "file_path": "architecture/mf-business-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "96053444178396c297587b1bc18328344cf9f5301945414f38f30c87751f5f99",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mf-business-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "MF 事業判定 — 表現物と情報階層",
+      "file_path": "architecture/mf-business-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-10T06:03:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "d835852b1d3cadf91f2679d08b8472b369775907805c49f3ad381f025ea9fcd3",
+        "source_path": "system-spec/archive/2026-09-11-mf-business-classification/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-mf-business-classification"
+      ]
+    },
+    {
+      "id": "arch-mobile-financial-experience",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "モバイル財務情報の体験アーキテクチャ",
+      "file_path": "architecture/arch-mobile-financial-experience.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-02-mobile-visualization-and-improvement-request/ui-ux.md",
+        "source_version": "0.1.11",
+        "source_digest": "7638a33287d1cf64541556c0ff6c2bb01177112d0b593fb25f14069a2bf82e70",
+        "imported_at": "2026-08-31T00:00:00Z"
+      },
+      "referenced_by": [
+        "feat-mobile-financial-visualization"
+      ]
+    },
+    {
+      "id": "arch-mobile-financial-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "モバイル財務chartのフロントエンドアーキテクチャ",
+      "file_path": "architecture/arch-mobile-financial-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-02-mobile-visualization-and-improvement-request/frontend.md",
+        "source_version": "0.1.11",
+        "source_digest": "a1e7983b026e86e7add4a160a17add636815798ccb226cc20f9114fb08d3153b",
+        "imported_at": "2026-08-31T00:00:00Z"
+      },
+      "referenced_by": [
+        "feat-mobile-financial-visualization"
+      ]
+    },
+    {
+      "id": "arch-override-reapply-three-way-merge",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend",
+        "data",
+        "frontend"
+      ],
+      "title": "手当ての継続再適用と3点比較の境界",
+      "file_path": "architecture/arch-override-reapply-three-way-merge.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "system-spec/archive/2026-08-31-import-deletion-override-reapply/spec-state.json",
+        "source_version": "1.0",
+        "source_digest": "9246668a4814cd0e589efacb5f8b9a22ac196e4fccf3dd37490f3529d0f14027",
+        "imported_at": "2026-08-31T00:00:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-overview-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "概況画面改善 — 既存 authGuard への新 API の収容",
+      "file_path": "architecture/overview-screen-auth.md",
       "status": "active",
       "confirmation_status": "confirmed",
       "evaluation_status": "pending",
       "source_lineage": {
         "imported_at": "2026-09-15T00:18:48Z",
         "origin_kind": "system-spec-harness",
-        "source_digest": "222efa30c534ea1fb7280fbca65798e6bde43946c3eedec15c6ce54bf650fe2d",
-        "source_path": "system-spec/archive/2026-09-14-overview-screen/frontend.md",
+        "source_digest": "30046c2b1e2c1624ca0896fdc06b323adb88c061ae579513c0a6a081d3f9833a",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1331,44 +1159,21 @@
       ]
     },
     {
-      "id": "arch-overview-auth",
+      "id": "arch-overview-frontend",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
-        "security"
+        "frontend"
       ],
-      "title": "概況画面改善 — 既存 authGuard への新 API の収容",
-      "file_path": "architecture/overview-screen-auth.md",
+      "title": "概況画面改善 — 共通部品と応答型境界",
+      "file_path": "architecture/overview-screen-frontend.md",
       "status": "active",
       "confirmation_status": "confirmed",
       "evaluation_status": "pending",
       "source_lineage": {
         "imported_at": "2026-09-15T00:18:48Z",
         "origin_kind": "system-spec-harness",
-        "source_digest": "30046c2b1e2c1624ca0896fdc06b323adb88c061ae579513c0a6a081d3f9833a",
-        "source_path": "system-spec/archive/2026-09-14-overview-screen/auth.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-overview-screen"
-      ]
-    },
-    {
-      "id": "arch-overview-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "概況画面改善 — 入力検証の二重化と書込の直列化",
-      "file_path": "architecture/overview-screen-security.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pending",
-      "source_lineage": {
-        "imported_at": "2026-09-15T00:18:48Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "d4114fbfaf233de302221927cc9ac76e37b3a395b499a9afa1c7ebbb401afca3",
-        "source_path": "system-spec/archive/2026-09-14-overview-screen/security.md",
+        "source_digest": "222efa30c534ea1fb7280fbca65798e6bde43946c3eedec15c6ce54bf650fe2d",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1423,187 +1228,49 @@
       ]
     },
     {
-      "id": "arch-total-cashflow-screen-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "総収支画面 — 情報の優先順位と 3 ペイン判定作業",
-      "file_path": "architecture/total-cashflow-screen-ui-ux.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-15T14:50:54Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "0533374f8a891a9c97862dfd8e1032d7a6f3031a9c35943fe6f05df77b35c089",
-        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/ui-ux.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-total-cashflow-screen"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-screen-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "総収支画面 — API 結果の描画と操作 id の列",
-      "file_path": "architecture/total-cashflow-screen-frontend.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-15T14:50:54Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "f6ac44f0de3cd3a14d0c91273e9de3754b1ac63771f69e874422ea1e03d8504a",
-        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/frontend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-total-cashflow-screen"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-screen-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "総収支画面 — core 規則関数と総収支 API の拡張",
-      "file_path": "architecture/total-cashflow-screen-backend.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-15T14:50:54Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "ade57808041002ca585aa08c609e6ba85dc2877a2fbd7e44142561cc27dd05f2",
-        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/backend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-total-cashflow-screen"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-screen-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "総収支画面 — 除外理由区分と操作履歴の D1 スキーマ",
-      "file_path": "architecture/total-cashflow-screen-database.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-15T14:50:54Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "2ba109121f739e297f4606d918907edb59a493251a44ecf42584ba6042598649",
-        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/database.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-total-cashflow-screen"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-screen-auth",
+      "id": "arch-overview-security",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
         "security"
       ],
-      "title": "総収支画面 — 既存セッション認証と user_id 単位の認可",
-      "file_path": "architecture/total-cashflow-screen-auth.md",
+      "title": "概況画面改善 — 入力検証の二重化と書込の直列化",
+      "file_path": "architecture/overview-screen-security.md",
       "status": "active",
       "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
+      "evaluation_status": "pending",
       "source_lineage": {
-        "imported_at": "2026-09-15T14:50:54Z",
+        "imported_at": "2026-09-15T00:18:48Z",
         "origin_kind": "system-spec-harness",
-        "source_digest": "832fa24c5786fc67f6381934b8f4658931250559581dc00dc4b0acdfc89e366b",
-        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/auth.md",
+        "source_digest": "d4114fbfaf233de302221927cc9ac76e37b3a395b499a9afa1c7ebbb401afca3",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
       "referenced_by": [
-        "feat-total-cashflow-screen"
+        "feat-overview-screen"
       ]
     },
     {
-      "id": "arch-total-cashflow-screen-security",
+      "id": "arch-overview-ui-ux",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
-        "security"
+        "frontend"
       ],
-      "title": "総収支画面 — 入力の許可リスト・上限と履歴の最小化",
-      "file_path": "architecture/total-cashflow-screen-security.md",
+      "title": "概況画面改善 — 情報優先度と段階的開示",
+      "file_path": "architecture/overview-screen-ui-ux.md",
       "status": "active",
       "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
+      "evaluation_status": "pending",
       "source_lineage": {
-        "imported_at": "2026-09-15T14:50:54Z",
+        "imported_at": "2026-09-15T00:18:48Z",
         "origin_kind": "system-spec-harness",
-        "source_digest": "c4eb8060c3032682c7822530ec9b4c39ed98dc8b67743db477681a8e0f56e9b3",
-        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/security.md",
+        "source_digest": "c16e7904243093915bdbb78348fa5bdd042eaa945a52243250e54f29b454e1de",
+        "source_path": "system-spec/archive/2026-09-14-overview-screen/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
       "referenced_by": [
-        "feat-total-cashflow-screen"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-screen-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "総収支画面 — 既存 Worker 構成の維持とバックアップ対象の追加",
-      "file_path": "architecture/total-cashflow-screen-infrastructure.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-15T14:50:54Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "4118eb0594d7db66724df96bb1c75d090a4f2578788d871f22bba750b0f5d399",
-        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/infrastructure.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-total-cashflow-screen"
-      ]
-    },
-    {
-      "id": "arch-total-cashflow-screen-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "総収支画面 — 規則の docs とテストによる固定と回帰検証",
-      "file_path": "architecture/total-cashflow-screen-maintenance-ops.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-15T14:50:54Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "5b14f0bb88713c5578abf9aea6d803f4aa8f9618d5bdfd3a3c4c71571750aef7",
-        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/maintenance-ops.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-total-cashflow-screen"
+        "feat-overview-screen"
       ]
     },
     {
@@ -1775,44 +1442,492 @@
       "referenced_by": []
     },
     {
-      "id": "arch-trends-screen-ui-ux",
+      "id": "arch-schema-guard-error-contract",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
-        "frontend"
+        "backend",
+        "frontend",
+        "security"
       ],
-      "title": "推移画面 — 画面構成と情報の優先順位",
-      "file_path": "architecture/trends-screen-ui-ux.md",
+      "title": "実行時スキーマ版数ガードと説明可能なエラー契約",
+      "file_path": "architecture/arch-schema-guard-error-contract.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-08-27-d1-schema-recovery/backend.md",
+        "source_version": "0.1.11",
+        "source_digest": "9e686b473abcc5d659c6795c88470ddfa31ef27931a3d829555dff2d0c6da8a0",
+        "imported_at": "2026-08-27T05:10:00Z"
+      },
+      "referenced_by": [
+        "feat-runtime-schema-guard"
+      ]
+    },
+    {
+      "id": "arch-tax-preparation-boundary",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend",
+        "frontend",
+        "data",
+        "security"
+      ],
+      "title": "確定申告準備の対象年境界と証憑完全性の契約",
+      "file_path": "architecture/arch-tax-preparation-boundary.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "docs/spec-v1.1.md",
+        "source_version": "1.1",
+        "source_digest": "b6b438c561d6f4dc7f39f7764b5f7671c0cc6d1011c68ddf79b9e6815f6adb43",
+        "imported_at": "2026-08-29T00:00:00Z"
+      },
+      "referenced_by": [
+        "feat-tax-preparation"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "トータル収支 — 認証境界",
+      "file_path": "architecture/total-cashflow-auth.md",
       "status": "active",
       "confirmation_status": "confirmed",
       "evaluation_status": "pass",
       "source_lineage": {
-        "imported_at": "2026-09-17T02:03:18Z",
         "origin_kind": "system-spec-harness",
-        "source_digest": "0ebc698a6b757392361698fe279d162dcf02f658f2ed9825df3e57f08bd721e0",
-        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/auth.md",
+        "source_version": "0.1.11",
+        "source_digest": "a87513e0ed417ea678374665baa176e4a2272dcd5aaa730aa658e2e339e2a635",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "トータル収支 — バックエンド構成",
+      "file_path": "architecture/total-cashflow-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/backend.md",
+        "source_version": "0.1.11",
+        "source_digest": "778e674fc0686dad4f026f0a3ecbeb663952ab43718e8594f91067dab5445a86",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "トータル収支 — データ永続化構成",
+      "file_path": "architecture/total-cashflow-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/database.md",
+        "source_version": "0.1.11",
+        "source_digest": "313d15d861b25509ad473928d72bd45c3f5686ec5afb8aa6472f5a1f01228d67",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "トータル収支 — フロントエンド構成",
+      "file_path": "architecture/total-cashflow-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/frontend.md",
+        "source_version": "0.1.11",
+        "source_digest": "6d9a3099e81f6ccae5e93105dd5b41d485bcc4a57a9c478239b8f6e694ddacb2",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "トータル収支 — インフラ構成と算出戦略",
+      "file_path": "architecture/total-cashflow-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/infrastructure.md",
+        "source_version": "0.1.11",
+        "source_digest": "2e0294fec0e238866bfe2ecffee52e662bbdc1638f3d143e86eee7149b1bdbcf",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "トータル収支 — 運用と異常への気付き方",
+      "file_path": "architecture/total-cashflow-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/maintenance-ops.md",
+        "source_version": "0.1.11",
+        "source_digest": "7f916ede6073bf90e8501649a140e54c570fcce61d09d6da14315aaf0fd7f529",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "総収支画面 — 既存セッション認証と user_id 単位の認可",
+      "file_path": "architecture/total-cashflow-screen-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "832fa24c5786fc67f6381934b8f4658931250559581dc00dc4b0acdfc89e366b",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
       "referenced_by": [
-        "feat-trends-screen"
+        "feat-total-cashflow-screen"
       ]
     },
     {
-      "id": "arch-trends-screen-frontend",
+      "id": "arch-total-cashflow-screen-backend",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
-        "frontend"
+        "backend"
       ],
-      "title": "推移画面 — React 画面・URL 状態・明細画面の絞込",
-      "file_path": "architecture/trends-screen-frontend.md",
+      "title": "総収支画面 — core 規則関数と総収支 API の拡張",
+      "file_path": "architecture/total-cashflow-screen-backend.md",
       "status": "active",
       "confirmation_status": "confirmed",
       "evaluation_status": "pass",
       "source_lineage": {
-        "imported_at": "2026-09-17T02:03:18Z",
+        "imported_at": "2026-09-15T14:50:54Z",
         "origin_kind": "system-spec-harness",
-        "source_digest": "0249499f3e5b25eb33e3f2c226f645c5d11b3ae389e7e006e4773ba4dc3db2a8",
-        "source_path": "system-spec/frontend.md",
+        "source_digest": "ade57808041002ca585aa08c609e6ba85dc2877a2fbd7e44142561cc27dd05f2",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "総収支画面 — 除外理由区分と操作履歴の D1 スキーマ",
+      "file_path": "architecture/total-cashflow-screen-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2ba109121f739e297f4606d918907edb59a493251a44ecf42584ba6042598649",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "総収支画面 — API 結果の描画と操作 id の列",
+      "file_path": "architecture/total-cashflow-screen-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f6ac44f0de3cd3a14d0c91273e9de3754b1ac63771f69e874422ea1e03d8504a",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "総収支画面 — 既存 Worker 構成の維持とバックアップ対象の追加",
+      "file_path": "architecture/total-cashflow-screen-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "4118eb0594d7db66724df96bb1c75d090a4f2578788d871f22bba750b0f5d399",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "総収支画面 — 規則の docs とテストによる固定と回帰検証",
+      "file_path": "architecture/total-cashflow-screen-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "5b14f0bb88713c5578abf9aea6d803f4aa8f9618d5bdfd3a3c4c71571750aef7",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "総収支画面 — 入力の許可リスト・上限と履歴の最小化",
+      "file_path": "architecture/total-cashflow-screen-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c4eb8060c3032682c7822530ec9b4c39ed98dc8b67743db477681a8e0f56e9b3",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-screen-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "総収支画面 — 情報の優先順位と 3 ペイン判定作業",
+      "file_path": "architecture/total-cashflow-screen-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-15T14:50:54Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0533374f8a891a9c97862dfd8e1032d7a6f3031a9c35943fe6f05df77b35c089",
+        "source_path": "system-spec/archive/2026-09-16-total-cashflow-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-total-cashflow-screen"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "トータル収支 — 脅威モデルと対策",
+      "file_path": "architecture/total-cashflow-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/security.md",
+        "source_version": "0.1.11",
+        "source_digest": "b2c10d6b0ea7473d6d33e4a062f35af35d3aa8cdafff6c38a18f66be03bf2764",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-system",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend",
+        "backend",
+        "infrastructure",
+        "data",
+        "security"
+      ],
+      "title": "事業・家計トータル収支システム アーキテクチャ",
+      "file_path": "architecture/arch-total-cashflow-system.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/index.md",
+        "source_version": "0.1.12",
+        "source_digest": "69a9cb667945e7769df55e373d35de54a2a2f7f094d38454c9c008971fb6ce94",
+        "imported_at": "2026-09-08T07:32:48Z"
+      },
+      "referenced_by": [
+        "feature-retire-tax-receipt-and-clarify-freee-only"
+      ]
+    },
+    {
+      "id": "arch-total-cashflow-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "トータル収支 — UI/UX 構成",
+      "file_path": "architecture/total-cashflow-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-10-retire-tax-receipt-and-clarify-freee-only/ui-ux.md",
+        "source_version": "0.1.11",
+        "source_digest": "0ae53d13baeaefe134054d1bca4ca872f9bc0904ec65ff2356bddcd526c14368",
+        "imported_at": "2026-09-05T12:42:39Z"
+      },
+      "referenced_by": [
+        "feat-total-cashflow"
+      ]
+    },
+    {
+      "id": "arch-transaction-split-projection",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend",
+        "frontend",
+        "data"
+      ],
+      "title": "明細の分割記帳を投影で解く境界",
+      "file_path": "architecture/arch-transaction-split-projection.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "specs/transaction-splits.md",
+        "source_version": "1.1",
+        "source_digest": "db733029b4a27dd011a59e77e244908872de7a5b7c0553b5a5d7183f2e5e4d83",
+        "imported_at": "2026-08-30T00:00:00Z"
+      },
+      "referenced_by": [
+        "feat-transaction-split-readability"
+      ]
+    },
+    {
+      "id": "arch-trends-screen-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "推移画面 — 既存の認証の内側での読取り",
+      "file_path": "architecture/trends-screen-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T10:18:41Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "7339496e4012a9e647a95c39cecedb1b236b45a8a7dc10518f39c5f011370aa5",
+        "source_path": "system-spec/archive/2026-09-17-trends-screen/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1835,7 +1950,7 @@
         "imported_at": "2026-09-16T10:18:41Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "169f10287b73a085df6421db8008b8220f23bc5f54ecddbb6c0596d4ef28f4e1",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-17-trends-screen/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1858,7 +1973,7 @@
         "imported_at": "2026-09-16T10:18:41Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "23c099c1af644a519c10d6769fa6baa464663b7f6e69333ccbd8284bd7699d59",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-17-trends-screen/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1867,44 +1982,21 @@
       ]
     },
     {
-      "id": "arch-trends-screen-auth",
+      "id": "arch-trends-screen-frontend",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
-        "security"
+        "frontend"
       ],
-      "title": "推移画面 — 既存の認証の内側での読取り",
-      "file_path": "architecture/trends-screen-auth.md",
+      "title": "推移画面 — React 画面・URL 状態・明細画面の絞込",
+      "file_path": "architecture/trends-screen-frontend.md",
       "status": "active",
       "confirmation_status": "confirmed",
       "evaluation_status": "pass",
       "source_lineage": {
-        "imported_at": "2026-09-16T10:18:41Z",
+        "imported_at": "2026-09-17T02:03:18Z",
         "origin_kind": "system-spec-harness",
-        "source_digest": "7339496e4012a9e647a95c39cecedb1b236b45a8a7dc10518f39c5f011370aa5",
-        "source_path": "system-spec/auth.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-trends-screen"
-      ]
-    },
-    {
-      "id": "arch-trends-screen-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "推移画面 — クエリの検証と出力の安全",
-      "file_path": "architecture/trends-screen-security.md",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "source_lineage": {
-        "imported_at": "2026-09-16T10:18:41Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "86e202cbbe0cfebf5e1eb0c4a89dc7c5c2d2cc1a104eeb70b23d9f3991c32b5e",
-        "source_path": "system-spec/security.md",
+        "source_digest": "0249499f3e5b25eb33e3f2c226f645c5d11b3ae389e7e006e4773ba4dc3db2a8",
+        "source_path": "system-spec/archive/2026-09-17-trends-screen/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1927,7 +2019,7 @@
         "imported_at": "2026-09-16T10:18:41Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "8a3c7ee5afbbb20f6044167c1ff0ff7dd1daa86713665a6d827b5ebd2b918362",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-17-trends-screen/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1950,12 +2042,104 @@
         "imported_at": "2026-09-16T10:18:41Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "3c906ccdb9d21f270fdda80194bab35a91d2140e5e46ea119c92798dd2e63aea",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-17-trends-screen/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
       "referenced_by": [
         "feat-trends-screen"
+      ]
+    },
+    {
+      "id": "arch-trends-screen-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "推移画面 — クエリの検証と出力の安全",
+      "file_path": "architecture/trends-screen-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-16T10:18:41Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "86e202cbbe0cfebf5e1eb0c4a89dc7c5c2d2cc1a104eeb70b23d9f3991c32b5e",
+        "source_path": "system-spec/archive/2026-09-17-trends-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-trends-screen"
+      ]
+    },
+    {
+      "id": "arch-trends-screen-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "推移画面 — 画面構成と情報の優先順位",
+      "file_path": "architecture/trends-screen-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "imported_at": "2026-09-17T02:03:18Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0ebc698a6b757392361698fe279d162dcf02f658f2ed9825df3e57f08bd721e0",
+        "source_path": "system-spec/archive/2026-09-17-trends-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-trends-screen"
+      ]
+    },
+    {
+      "id": "arch-ui-navigation-experience",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "ナビゲーションと情報階層の体験設計",
+      "file_path": "architecture/arch-ui-navigation-experience.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "specs/ui-navigation-cognitive-load.md",
+        "source_version": "1.0",
+        "source_digest": "8aba234893fd72683db1f5e8e21f3bcb60297aca83ca3c792e8f50e45811a434",
+        "imported_at": "2026-09-07T13:55:37Z"
+      },
+      "referenced_by": [
+        "feat-ui-navigation-cognitive-load"
+      ]
+    },
+    {
+      "id": "arch-ui-navigation-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "共通UI実装境界と回帰防止",
+      "file_path": "architecture/arch-ui-navigation-frontend.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pending",
+      "source_lineage": {
+        "origin_kind": "manual",
+        "source_plugin": null,
+        "source_path": "specs/ui-navigation-cognitive-load.md",
+        "source_version": "1.0",
+        "source_digest": "8aba234893fd72683db1f5e8e21f3bcb60297aca83ca3c792e8f50e45811a434",
+        "imported_at": "2026-09-07T13:55:37Z"
+      },
+      "referenced_by": [
+        "feat-ui-navigation-cognitive-load"
       ]
     }
   ]

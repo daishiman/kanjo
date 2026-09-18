@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "sideEffects": false,
   "description": "純粋な計算・仕分け・正規化ロジック（依存ゼロ）。HTML版リファレンス実装と同一結果を保証する",
   "main": "src/index.ts",
   "exports": {

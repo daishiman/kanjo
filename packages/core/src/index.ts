@@ -37,3 +37,5 @@ export * from './improvement.js';
 export * from './report-css.js';
 export * from './report-html.js';
 export * from './design-tokens.js';
+export * from './heat-scale.js';
+export * from './matrix-derived.js';

@@ -1313,8 +1313,10 @@ try {
       });
       await send('Emulation.setPageScaleFactor', { pageScaleFactor: zoom });
       await send('Page.navigate', { url: `${BASE_URL}/analysis/matrix` });
+      // Matrix は図ではなく表で読む画面になった。要約(偏りが大きい3点)と月次表が
+      // 両方出そろってから測る
       await waitFor(
-        "document.querySelectorAll('[data-financial-figure] .financial-figure__chart canvas').length === 1",
+        "document.querySelectorAll('.matrix-summary table tbody tr').length > 0 && document.querySelectorAll('.matrix-table-card table.heatmap tbody tr').length > 0",
         'Matrix',
       );
       await evaluate('window.scrollTo(0, 0)');
@@ -1322,8 +1324,8 @@ try {
       const metrics = await evaluate(`(async () => {
       const wait = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       await wait();
-      const scroller = document.querySelector('.matrix-table')?.closest('.scroll-x');
-      const label = document.querySelector('.matrix-table tbody th[scope="row"]');
+      const scroller = document.querySelector('.matrix-table-card');
+      const label = document.querySelector('.matrix-table-card tbody th[scope="row"]');
       const labelStyle = label ? getComputedStyle(label) : null;
       const textRange = label ? document.createRange() : null;
       if (textRange && label) textRange.selectNodeContents(label);
@@ -1345,22 +1347,25 @@ try {
         scrollerWidth: scroller?.clientWidth ?? 0,
         tableWidth: scroller?.scrollWidth ?? 0,
         stickyDelta: before === null || after === null ? null : Math.abs(before - after),
-        chartCount: document.querySelectorAll('[data-financial-figure] .financial-figure__chart canvas').length,
-        fixedAmountGuide: document.querySelector('.matrix-summary .chart-guide')?.textContent?.includes('表示切替に関係なく増減額(円)') ?? false,
-        contracts: [...document.querySelectorAll('[data-financial-figure]')].map((figure) => ({
-          heading: Boolean(figure.querySelector('.financial-figure__caption h2, .financial-figure__caption h3, .financial-figure__caption h4')?.textContent?.trim()),
-          summary: Boolean(figure.querySelector('[data-financial-summary]')?.textContent?.trim()),
-          period: Boolean(figure.querySelector('[data-financial-period]')?.textContent?.trim()),
-          unit: Boolean(figure.querySelector('[data-financial-unit]')?.textContent?.trim()),
-          series: Boolean(figure.querySelector('[data-financial-series] li')?.textContent?.trim()),
-          action: Boolean(figure.querySelector('[data-financial-action]')?.textContent?.trim()),
-          table: Boolean(figure.querySelector('.financial-figure__details table, .heatmap-scroll table')),
-          canvas: (() => {
-            const canvas = figure.querySelector('.financial-figure__chart canvas');
-            const box = canvas?.getBoundingClientRect();
-            return Boolean(canvas && canvas.width > 0 && canvas.height > 0 && box && box.width > 0 && box.height > 0);
-          })(),
-        })),
+        // 偏りが大きい3点。ここで名指しされた科目が下の月次表にも実在することが
+        // 「偏りが見えても明細に降りられない」を塞ぐ回路の本体
+        skewLabels: [...document.querySelectorAll('.matrix-summary table tbody tr')].map(
+          (tr) => tr.querySelectorAll('td')[0]?.textContent?.trim() ?? '',
+        ),
+        monthlyLabels: [...document.querySelectorAll('.matrix-table-card tbody th[scope="row"]')].map(
+          (th) => th.textContent?.trim() ?? '',
+        ),
+        // 濃淡は色だけの手掛かりなので、凡例が実際に塗られて並ぶことまで見る
+        legendSwatches: [...document.querySelectorAll('.heat-legend .heat-legend-swatch')].map(
+          (el) => getComputedStyle(el).backgroundColor,
+        ),
+        // 背景の濃さが実際に階級ごとに違う(全セル同じ色に潰れていない)
+        shadeVariety: new Set(
+          [...document.querySelectorAll('.matrix-table-card td.heat')].map(
+            (td) => getComputedStyle(td).backgroundColor,
+          ),
+        ).size,
+        unit: document.querySelector('.table-unit')?.textContent?.trim() ?? '',
       };
     })()`);
       if (metrics.firstColumnWidth < 191)
@@ -1374,15 +1379,18 @@ try {
         failures.push(`${width}px 横スクロール時に科目列が固定されない`);
       if (metrics.pageWidth > metrics.viewportWidth + 1)
         failures.push(`${width}px Matrixページ本体が横にはみ出す`);
-      if (metrics.chartCount !== 1 || !metrics.fixedAmountGuide)
-        failures.push(`${viewportLabel} Matrix 増減額固定の要約図が確認できない`);
-      if (
-        metrics.contracts.length !== 1 ||
-        metrics.contracts.some((contract) => Object.values(contract).some((value) => !value))
-      )
+      if (metrics.skewLabels.length === 0)
+        failures.push(`${viewportLabel} Matrix 偏りが大きい点の要約が出ていない`);
+      const orphan = metrics.skewLabels.find((label) => !metrics.monthlyLabels.includes(label));
+      if (orphan)
+        failures.push(`${viewportLabel} Matrix 偏りの科目「${orphan}」が月次表に無く明細へ降りられない`);
+      if (metrics.legendSwatches.length !== 7 || new Set(metrics.legendSwatches).size !== 7)
         failures.push(
-          `${viewportLabel} Matrix 見出し・結論・期間・単位・系列・次の行動・正確な表・実canvasが不足`,
+          `${viewportLabel} Matrix 濃淡の凡例が7段で塗り分かれていない(${metrics.legendSwatches.length}件/${new Set(metrics.legendSwatches).size}色)`,
         );
+      if (metrics.shadeVariety < 2) failures.push(`${viewportLabel} Matrix 本体セルの濃淡が1色に潰れている`);
+      if (metrics.unit !== '単位: 万円')
+        failures.push(`${viewportLabel} Matrix 単位表記が「${metrics.unit}」`);
 
       if (zoom === 1 && (width === 375 || width === 1280)) {
         const matrixShot = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });

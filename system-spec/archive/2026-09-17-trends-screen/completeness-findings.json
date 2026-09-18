@@ -1,0 +1,169 @@
+{
+  "evaluator": {
+    "name": "assign-system-spec-completeness-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "spec_dir": "system-spec",
+  "evaluated_at": "2026-09-16T10:15:54Z",
+  "previous_report": "eval-log/completeness-findings-2.json (FAIL: decision_guidance medium 2 件・low 1 件 / matrix_coverage は C06 sub-input の FAIL で FAIL)",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "G3・G5・I2・I3・I5・I11・C4・O1・O5 の更新は appr-trends-review-001 (10:09:59Z) に接地している。approval_log に書かれた対象の一覧と、requirements_foundation で実際に変わった行が一致する。目的・範囲・対象外は変わっていない。G3 には『要確認は数えず reviewCount・reviewAmount を返す』『傾向の判定は MF 明細から trendsReport で計算し、基準を返却に含める』が入った。O5 の境界値には『要確認 0 件と 1 件以上』『口座が空の freee 行』が加わった。章に出てくる既存コードは worktree に実在する (total-cashflow.ts:257/263 の reviewCount・reviewAmount、781-782 の代入、trend.ts:544 の trendsReport(data: Dataset, scope)、types.ts:219 の settleAccount?: string | null)。",
+      "evidence": [
+        "validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit 0",
+        "validate-spec-doc-sync.py exit 0",
+        "spec-state.json requirements_foundation.approval_ref = appr-trends-review-001 (approval_log に実在)",
+        "00-requirements-definition.md:28,30,36,40,65,73,74,76,82"
+      ]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "前回の medium 2 件と low 1 件は、すべて利用者の決定で解消された。(1) 要確認の明細: dec-trends-review-rows-001 は 2 案 (含めず件数と金額を注記 / resolveTx で仮に数える) を、費用・無料枠・goal fit・security・pros/cons/risks・lock-in・運用負荷の同じ項目で比べている。推奨理由 (決定 008 との一貫性) と注意点も書かれ、利用者が 10:09:59Z に選んだ。章では、帯の注記と総収支へのリンク (ui-ux)、months の reviewCount・reviewAmount を合計して返す処理 (backend)、件数が 1 以上のときの表示 (frontend)、一致テスト (maintenance-ops) にまで落ちている。(2) 傾向の判定の出所: dec-trends-judgement-source-001 で『MF 明細のまま計算し、見出しに基準を明記する』に決まった。backend.md:60 は『新しい集計は trendsReport を土台にしない』『傾向の判定は現行どおり trendsReport に MF の Dataset を渡す (C4)』と書き直され、前回指摘した C4 との食い違いは消えた。旧文言も system-spec のどこにも残っていない。(3) freee 行の空の口座: qa-trends-decision-014 で『—』と表示し、口座別の件数に数えないと決まり、I5・backend・frontend に反映された。残る指摘は low 2 件だけ。1 つは、dec-trends-judgement-source-001 の evidence_refs が決定の中身と関係の薄い OWASP ASVS であること。もう 1 つは、注記の『計 X 円』が符号を落とした絶対値の合計 (total-cashflow.ts:741 の sumAbs) であることを、どこにも書いていないこと。",
+      "evidence": [
+        "spec-state.json decisions[1] dec-trends-review-rows-001 status=confirmed, user_decision.confirmed_at=2026-09-16T10:09:59Z",
+        "spec-state.json decisions[2] dec-trends-judgement-source-001 status=confirmed, user_decision.confirmed_at=2026-09-16T10:09:59Z",
+        "qa-trends-decision-012〜014 basis=user-decision (両案に欠点を併記)",
+        "backend.md:60 (trendsReport を土台にしない / 傾向の判定は MF の Dataset のまま)",
+        "grep 'trendsReport (など|を土台)|土台にした集計' system-spec (archive 除く): 章本文に旧文言なし",
+        "packages/core/src/total-cashflow.ts:736-741,781-782"
+      ]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "C07 は PASS。48 セルの内訳は確定 8・対象外 40・未収集 0。ui-ux・backend・frontend・maintenance-ops は 10:11:28Z に reopen され、10:11:30Z に observed-004 で再確定されている。database・auth・security・infrastructure は observed-003 のまま。時刻は単調に増えていて、未来の日付は無い (監査時点 10:14:13Z)。対象外 40 セルの理由はカテゴリごとに具体的に書かれ、category_aggregate も正しい。C16 の block 6 item もすべて接地している。sub-input の C06 も今回は 4 軸すべて PASS。前回の聞き漏れ (要確認の明細) は qa-trends-decision-012 で閉じた。012〜014 は、どちらの案にも欠点を同じ形で書いている。前回からの持ち越しとして、qa-trends-decision-008 の質問文が B 案にだけ不利な帰結を書いている点が low で残る。",
+      "evidence": [
+        "C07: validate-coverage-matrix 素 / --require-complete / --require-basis / --require-foundation すべて exit 0",
+        "C07: validate-knowledge-graph --profile required-info --state exit 0 (ungrounded_blocking_items 空)",
+        "C06 (sub-input): 聞き漏れ PASS / 誘導 PASS (low 1 件の持ち越し) / 早期停止 PASS / トレーサビリティ PASS",
+        "aggregate-completeness.py --matrix --require-complete --knowledge-graph exit 0"
+      ]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "design_applications は 8 カテゴリすべてに具体的な適用が書かれ、doctrine_applications は 13 件ある。前回 PASS の状態を保っている。今回の決定は、既存の適用と食い違っていない。backend の『数え方を core の totalCashflowReport 1 か所に置く』(Clean Architecture) は、上半分の集計ではそのまま守られている。傾向の判定だけ MF 基準にする例外は、C4 と docs の規則表で明示的に管理されている。ui-ux の『頻度 × 失敗コスト』には、欠けている量を帯に数字で出す注記が加わった。ただし、design_applications の recorded_at は 09:55:39Z のままで、今回の 2 決定 (要確認の注記、2 つの基準の並立) を適用の文に書き足していない (info)。機械層の knowledge・doctrine・required-info・cross の 4 profile は、すべて exit 0。",
+      "evidence": [
+        "spec-state.json design_applications: 8 keys (basis=agent-inference)",
+        "spec-state.json doctrine_applications: 8 カテゴリ 13 件",
+        "aggregate-completeness.py --knowledge-graph exit 0"
+      ]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "C08 は形式層も内容鮮度層も PASS。validate-source-citation は exit 0 で、targets 8 件と references 8 件が 1 対 1 に対応する。必須フィールドの欠落、非公式 host、孤児参照はどれも無い。WebFetch と WebSearch で 8 件すべてが公式の現行版と一致した (hono-zod-validator 0.9.1、D1 limits 2026-04-21、Workers limits 2026-09-05、Chart.js 2025-10-13、React Router 8.4.0、TanStack Query v5、WCAG 2.2 の 2025-09-16 版、ASVS 5.0.0)。到達できないものは無かった。",
+      "evidence": [
+        "validate-source-citation.py exit 0",
+        "C08 内容鮮度: 8/8 現行版と一致"
+      ]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "installPath (system-spec-harness 0.1.14) の prompt は 18 本。前回の評価 (prompt 18/18 が validate-prompt と verify-completeness で exit 0) より後に変更された prompt は無い (find -newermt で 0 件)。このため前回の判定を引き継ぐ。",
+      "evidence": [
+        "find <plugin-cache>/harness-local/system-spec-harness/0.1.14 -path '*prompts/*.md' -newermt '2026-09-16 18:50' → 0 件 (全 18 本)",
+        "前回レポート: validate-prompt.py / verify-completeness.py 18/18 exit 0"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "G-matrix",
+      "name": "validate-coverage-matrix --require-complete --require-basis --require-foundation",
+      "conditions": [
+        "matrix_coverage",
+        "foundation_trace"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "G-doc-sync",
+      "name": "validate-spec-doc-sync",
+      "conditions": [
+        "foundation_trace"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "G-source-citation",
+      "name": "validate-source-citation (C08)",
+      "conditions": [
+        "doc_freshness"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "G-required-info-state",
+      "name": "validate-knowledge-graph --profile required-info --state (C07)",
+      "conditions": [
+        "matrix_coverage"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "G-knowledge-graph",
+      "name": "aggregate-completeness --matrix --require-complete --knowledge-graph (knowledge/doctrine/required-info/cross)",
+      "conditions": [
+        "design_knowledge_reflection",
+        "matrix_coverage"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "G-prompt",
+      "name": "validate-prompt + verify-completeness (18 prompts、前回から変更なし)",
+      "conditions": [
+        "prompt_quality"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "decision_guidance",
+      "observation": "注記『要確認 N 件 (計 X 円) は含みません』の金額は reviewAmount で、収入と支出を区別せずに符号を落とした絶対値の合計になっている (total-cashflow.ts:259-263, 741, 782)。指標を収入や純収支に切り替えても同じ金額が出るが、その意味がどこにも書かれていない。",
+      "suggested_fix": "実装時に docs/trends-screen.md の規則表へ『注記の金額は要確認明細の実額の絶対値合計 (総収支画面と同じ値)』と 1 行加える。仕様の差し戻しは不要。",
+      "evidence": [
+        "packages/core/src/total-cashflow.ts:259-263",
+        "packages/core/src/total-cashflow.ts:741,782"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "decision_guidance",
+      "observation": "dec-trends-judgement-source-001 の evidence_refs が、2 案とも OWASP ASVS になっている。この決定はデータの出所と既存テストの互換性についての判断で、根拠の中身は repo 内の trend.ts:544 と trend-contract.test.ts にある。公式文書が裏付けとして効いていない。",
+      "suggested_fix": "次に更新するときは evidence_refs を空にする。または、コード上の根拠 (trend.ts:544、trend-contract.test.ts) を示す欄へ置き換える。判定への影響は無い。"
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage",
+      "observation": "C06 sub-input (前回から持ち越し): qa-trends-decision-008 の質問文は、B 案にだけ不利な帰結を書いたまま。対応する decisions[0] は両案に pros と cons を揃えて持つので、実害は小さい。012〜014 は両案に欠点を同じ形で書いている。",
+      "suggested_fix": "修正は不要。次のサイクルからは、012〜014 と同じ対称な書き方を続ける。"
+    },
+    {
+      "severity": "info",
+      "bucket": "design_knowledge_reflection",
+      "observation": "design_applications の recorded_at が 09:55:39Z のままで、今回の 2 決定 (要確認の注記、傾向の判定の基準の並立) を適用の文に書き足していない。既存の適用とは食い違っておらず、確定セルと foundation には反映済み。"
+    },
+    {
+      "severity": "info",
+      "bucket": "foundation_trace",
+      "observation": "確認した観点は次のとおり。前回の medium 2 件と low 1 件が是正されたこと。利用者決定 012〜014 と decisions[] と appr-trends-review-001 の時刻 (10:09:59Z) が一致すること。foundation 9 行の更新が承認に接地していること。reopen (10:11:28Z) から observed-004 (10:11:30Z) への時刻の順序。backend.md:60 の旧文言が消えたこと。章に出てくる既存コードが実在すること (reviewCount・reviewAmount、trendsReport、settleAccount)。決定論ゲート 6 本の exit 0。C06・C07・C08 の PASS。prompt 18 本が前回から変わっていないこと。今回の評価時刻 (date -u 実測) は 2026-09-16T10:15:54Z で、記録されたどの時刻よりも後。"
+    }
+  ],
+  "gaps": []
+}

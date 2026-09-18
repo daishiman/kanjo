@@ -49,7 +49,7 @@ export function ExportMenu() {
             統合データJSON
           </a>
           <a className="btn" role="menuitem" href={withPeriod('/api/export/matrix.csv')}>
-            マトリクスCSV
+            マトリックスCSV
           </a>
         </span>
       )}

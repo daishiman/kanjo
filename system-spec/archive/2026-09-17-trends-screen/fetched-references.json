@@ -1,0 +1,85 @@
+{
+  "references": [
+    {
+      "target_id": "hono-zod-validator",
+      "retrieved_at": "2026-09-16T09:31:19Z",
+      "source_url": "https://github.com/honojs/middleware/releases?q=%40hono%2Fzod-validator&expanded=true",
+      "official_publisher": "Hono (honojs)",
+      "official_host": "github.com",
+      "version": "0.9.1",
+      "latest_checked_at": "2026-09-16T09:31:19Z",
+      "summary": "@hono/zod-validator の zValidator('query', schema) で GET /api/trends の scope・metric・compare・month を検証し、c.req.valid('query') で受け取る。第3引数の hook で失敗時の応答を差し替えられる。hono.dev の Validation ガイドは validator の対象に query があることを示す。"
+    },
+    {
+      "target_id": "cloudflare-d1-limits",
+      "retrieved_at": "2026-09-16T09:31:19Z",
+      "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-09-16T09:31:19Z",
+      "summary": "D1 は 1 Worker 呼出あたり Paid 1,000 / Free 50 クエリ、SQL 1 本の最長 30 秒、DB サイズ Paid 10GB / Free 500MB。単一スレッドのためクエリ時間がスループットを決める。推移の拡張は Dataset を 1 回読むだけで問い合わせ回数を増やさない。"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "retrieved_at": "2026-09-16T09:31:19Z",
+      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-09-05",
+      "latest_checked_at": "2026-09-16T09:31:19Z",
+      "summary": "Workers の CPU 時間は Free 10ms、Paid は既定 30 秒 (最大 5 分)。サブリクエストは Free 50 / Paid 10,000。CPU 時間にネットワーク待ちは含まない。今回と比較期間を同じ Dataset から切り出し、集計の CPU 時間を既存の分析 API と同程度に収める。"
+    },
+    {
+      "target_id": "chartjs-mixed-chart",
+      "retrieved_at": "2026-09-16T09:31:19Z",
+      "source_url": "https://www.chartjs.org/docs/latest/charts/mixed.html",
+      "official_publisher": "Chart.js",
+      "official_host": "www.chartjs.org",
+      "last_updated": "2025-10-13",
+      "latest_checked_at": "2026-09-16T09:31:19Z",
+      "summary": "混合チャートは dataset ごとに type ('bar' / 'line') を指定する。order は重みとして働き、値が大きいほど先に描かれて下に重なる。収入・支出・純収支の折れ線と棒、前期間の支出の点線を 1 つの図に重ねる根拠。"
+    },
+    {
+      "target_id": "react-router-use-search-params",
+      "retrieved_at": "2026-09-16T09:31:19Z",
+      "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
+      "official_publisher": "Remix Software (React Router)",
+      "official_host": "reactrouter.com",
+      "version": "8.4.0",
+      "latest_checked_at": "2026-09-16T09:31:19Z",
+      "summary": "useSearchParams は [URLSearchParams, setSearchParams] を返し、setSearchParams は文字列・オブジェクト・関数形を受け、呼ぶとナビゲーションが起きる。関数形は setState のようなキューイングをしない。範囲・指標・比較対象・選択月・選択カテゴリを URL に保持する根拠。本リポジトリは react-router-dom 7 で、ドキュメントは latest (v8.4.0) のため API 差分は実装時に確認する。"
+    },
+    {
+      "target_id": "tanstack-query-keys",
+      "retrieved_at": "2026-09-16T09:31:19Z",
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-keys",
+      "official_publisher": "TanStack",
+      "official_host": "tanstack.com",
+      "version": "5",
+      "latest_checked_at": "2026-09-16T09:31:19Z",
+      "summary": "クエリキーは最上位が配列で JSON 直列化でき、データに一意である必要がある。クエリ関数が依存する変数はキーに含め、変わるたびに再取得させる。オブジェクト内のキー順は無視され、配列の順序は区別される。推移 API のキーに期間・範囲・指標・比較対象を含める根拠。"
+    },
+    {
+      "target_id": "wcag22-use-of-color",
+      "retrieved_at": "2026-09-16T09:31:19Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
+      "official_publisher": "W3C WAI",
+      "official_host": "www.w3.org",
+      "version": "2.2",
+      "last_updated": "2025-09-16",
+      "latest_checked_at": "2026-09-16T09:31:19Z",
+      "summary": "達成基準 1.4.1: 色を情報伝達の唯一の手段にしない。テキスト・形状・パターン・番号などを併用する。増減の符号と文字の併記、前期間の点線、強調月の枠で色に頼らない根拠。"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-16T09:31:19Z",
+      "source_url": "https://owasp.org/www-project-asvs/",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "owasp.org",
+      "version": "5.0.0",
+      "latest_checked_at": "2026-09-16T09:31:19Z",
+      "summary": "ASVS の最新安定版は v5.0.0。XSS やインジェクションを防ぐ技術的管理策の検証基準を提供する。クエリを許可値の列挙と YYYY-MM 形式で検証し、取引先名をテキストとして描画する方針の上位基準。"
+    }
+  ]
+}

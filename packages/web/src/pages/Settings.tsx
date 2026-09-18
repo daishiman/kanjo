@@ -320,7 +320,7 @@ export function SettingsPage() {
             統合データJSONをダウンロード
           </a>
           <a className="btn" href="/api/export/matrix.csv">
-            マトリクスCSV(BOM付きUTF-8)
+            マトリックスCSV(BOM付きUTF-8)
           </a>
           {/* 集計だけだと「この金額はどの明細か」を追えない。明細の粒度で渡せる口を並べる */}
           <a className="btn" href="/api/export/transactions.csv">

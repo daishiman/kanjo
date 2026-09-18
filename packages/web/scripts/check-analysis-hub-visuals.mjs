@@ -26,7 +26,7 @@ const VIEWPORTS = viewportsByLabel([
 ]);
 const DESKTOP_VIEWPORT = viewportsByLabel(['1280'])[0];
 const MOBILE_VIEWPORT = viewportsByLabel(['390'])[0];
-const OPEN_LABELS = ['照合を開く', '総収支を開く', 'マトリクスを開く', '推移を開く', '診断を開く'];
+const OPEN_LABELS = ['照合を開く', '総収支を開く', 'マトリックスを開く', '推移を開く', '診断を開く'];
 const period = {
   applied: { from: '2026-01', to: '2026-08' },
   label: '2026年1月 〜 2026年8月',
@@ -510,7 +510,7 @@ try {
   await clickAt('.analysis-route-cards [data-route-id="matrix"] > p');
   await waitFor("location.search === '?focus=matrix'", 'カード余白選択');
   await waitFor(
-    "document.querySelector('.analysis-selected h2')?.textContent === 'マトリクス'",
+    "document.querySelector('.analysis-selected h2')?.textContent === 'マトリックス'",
     'カード選択後のpanel同期',
   );
   const mobileSynchronized = await evaluate(`({
@@ -520,7 +520,7 @@ try {
     action: document.querySelector('.analysis-hub-action a')?.getAttribute('href'),
   })`);
   if (
-    mobileSynchronized.panel !== 'マトリクス' ||
+    mobileSynchronized.panel !== 'マトリックス' ||
     mobileSynchronized.tab !== '/analysis/matrix' ||
     mobileSynchronized.journey !== '偏りを見る' ||
     mobileSynchronized.action !== '/analysis/matrix'

@@ -228,16 +228,17 @@ export const ANALYSIS_TABS = [
   {
     id: 'matrix',
     path: '/analysis/matrix',
-    label: 'マトリクス',
+    label: 'マトリックス',
     task: '科目ごとの増減を月別に比較します。',
-    taskDetail: '色は増=赤・減=緑で、支出が増えた月ほど赤くなる。前年同月比と年換算も同じ表で読む。',
+    taskDetail:
+      '金額は濃淡、前月比・前年同月比は増=赤・減=緑で読む。偏りが大きい3点から同じ科目と月へ降りられる。',
     icon: 'grid-2x2',
     navGroup: null,
     step: '偏りを見る',
     summary: '支出の内訳と構成のバランスを分析します。',
     purpose: '支出の内訳を科目と月の2軸で確認します。',
-    journeyHint: 'マトリクスで支出の構成を分析',
-    learn: 'どの科目がどの月に増えたか、減ったか。前年同月との差と年換算。',
+    journeyHint: 'マトリックスで支出の構成を分析',
+    learn: 'どの科目がどの月に増えたか、減ったか。いつもの額から離れていた月。',
     sources: [
       { label: 'Money Forwardの明細', icon: 'credit-card' },
       { label: '科目・月ごとの集計', icon: 'grid-2x2' },
