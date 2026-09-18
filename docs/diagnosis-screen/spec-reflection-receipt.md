@@ -41,7 +41,7 @@ HTML 版の由来を述べる箇所 (§1 背景、移行対応表) の「統計�
 
 `specs/spec-diagnosis-screen.md` の AC-001..AC-006 はいずれも自動テストで固定済みで、今回は仕様側の記述を削っていない。
 
-本番反映 (P13 = `kanjo-8bk.13`) は未実施である。`migrations/0043` はローカル D1 へ 0001〜0043 を通して適用し PASS しているが、本番の Migrate APPLY と Deploy は行っていない。日本語 4 語リテラルの CHECK 制約が本番 D1 で通ることは、ローカル範囲までしか接地していない。
+本番反映 (P13 = `kanjo-8bk.13`) は未実施である。`migrations/0044` はローカル D1 へ 0001〜0044 を通して適用し PASS しているが、本番の Migrate APPLY と Deploy は行っていない。日本語 4 語リテラルの CHECK 制約が本番 D1 で通ることは、ローカル範囲までしか接地していない。
 
 ## 検証結果
 
@@ -67,6 +67,44 @@ HTML 版の由来を述べる箇所 (§1 背景、移行対応表) の「統計�
 
 `origin/main` = ローカル `main` = `4e3583c`。本ブランチの `f58d4a9` が既にこれをマージ済みで、取り込みは差分 0 (no-op) だった。衝突なし。
 
+## main の再取り込みと衝突解消 (2026-09-19)
+
+その後 `origin/main` がサブスク画面サイクル (PR #60、`e477824`) を取り込んだため、本ブランチへ再度 merge した (`7fa36c0`)。18 ファイルが衝突し、いずれも行マージでは決まらない「どちらの世代を正本とするか」の判断を含んだ。
+
+### migration 番号の二重取り (0043 → 0044)
+
+`main` 側が `0043_sub_vendor_category_and_review_decisions.sql` を先に取っていた。本サイクルの `diagnosis_action_states` を `0044` へ繰り下げ、`packages/api/src/schema-guard.ts` の `EXPECTED_D1_MIGRATION`、`packages/api/src/deletion-schema.test.ts`、`docs/diagnosis-screen-design.md`、`docs/diagnosis-screen-evidence.md`、本受領書を追随させた。
+
+**これは git のテキスト衝突には現れない事故である。** 両ブランチとも別名のファイルを追加しただけなので、git は何も言わない。番号の重複は `schema-guard` の期待版と実ファイルの照合で初めて表面化する。番号だけでなく参照側を全て洗う必要があった。
+
+### 仕様書一式の世代整理
+
+`system-spec/` 直下は「現行 1 世代」の運用で、上位概念 (U1) を 1 つだけ置く。診断サイクルの U1 と、後から `main` に入ったサブスクサイクルの U1 は入れ替わる関係にある。
+
+後者を直下の正本とし、診断世代の 13 章は `system-spec/archive/2026-09-18-diagnosis-screen/` へ丸ごと退避した (退避理由は同ディレクトリの `README.md`)。どちらの章も消していない。
+
+あわせて、私が別名で退避していた `system-spec/archive/2026-09-18-expense-matrix/` は `main` 側の `2026-09-18-expense-matrix-screen/` と 13/14 ファイルが同一 (差異は README.md のみ) の重複だったため削除した。同一性は `filecmp` で確認した。
+
+`architecture/graph.json` は 9 個の衝突ブロックを解決したのち、`arch-diagnosis-screen` の `source_path` を退避先へ、`arch-tax-preparation-boundary` の `source_digest` を merge 後の `docs/spec-v1.1.md` から再計算した。`check-graph-lineage` は 102 ノード一致で PASS。
+
+### サブスク画面との噛み合わせ
+
+`main` 版のサブスク画面は URL の `vendor` を core の `vendorKey()` で正規化してから行を引く (`packages/web/src/pages/Subscriptions.tsx`)。診断の `nextAction` は表示名をそのまま渡していたため当たらず、URL から静かに捨てられていた。
+
+`packages/core/src/diagnosis-detectors.ts` で `vendorKey()` を通し、`packages/core/test/diagnosis-detectors-contract.test.ts` と `packages/web/src/diagnosis-next-action-receivers.dom.test.tsx` を追随させた。web 側は「表示名のまま渡すと URL から捨てられる」経路をテストで明示し、なぜ正規化が必須かを DOM に接地した。
+
+正規化規則が core の 1 か所 (`packages/core/src/subs.ts` の `vendorKey`) にあったため、送り手と受け手が同じ関数を指すだけで噛み合った。
+
+### 再検証
+
+| 検査 | 結果 |
+|---|---|
+| core | Test Files 52 passed / 1 skipped、Tests 836 passed / 6 skipped |
+| api | Test Files 49 passed、Tests 658 passed |
+| web | Test Files 86 passed、Tests 744 passed |
+| `pnpm lint` | 全 PASS (`Checked 512 files`、`check-graph-lineage: 102ノードすべてが正本と一致`、公開文書の実データ参照 OK) |
+| `pnpm build` | PASS。初期 JS 102.98 KiB / 上限 110 KiB |
+
 ## P13 (本番反映) の実際の経路
 
 task spec (`tasks/feat-diagnosis-screen/sys-diagnosis-screen-p13.md`) は本番反映の手順を
@@ -88,3 +126,4 @@ P13 の完了判定は task spec 自身が `linked_pr_merged_all` (PR が既定�
 1. **P13 本番反映が未実施**。PR #59 の merge が前提 (上記のとおり手動 Migrate APPLY は不要)。
 2. `duplicate_payment` 検知器が同額多発のデータで候補を出しすぎる傾向がある。claim 交差による排他は効いているが、しきい値の追い込みは次サイクル。
 3. 比較対象 (`baseline`) は前 20 か月が不完全だと `null` になる。ローカル seed の範囲では常に `null` で、欠け月の扱いは実データでの確認が残る。
+4. 診断の `nextAction` には `withQuery('/subscriptions', { account })` が 2 か所残っており、`main` 版のサブスク画面は `account` を読まない。無視されるだけで壊れはしないが、絞り込みが効かない。サブスク画面側が `account` を受けるか、診断側が別の遷移先を選ぶかは次サイクルの判断。
