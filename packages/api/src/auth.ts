@@ -109,8 +109,9 @@ export async function issueSession(
   user: Pick<UserRow, 'id' | 'session_generation'>,
   remember: boolean,
 ): Promise<void> {
-  const ttl = sessionTtlMs(remember);
-  await issueSessionUntil(c, secret, user, Date.now() + ttl);
+  // 時刻は1回だけ読む。期限と Max-Age で別々に読むと、間でミリ秒が進んだとき Max-Age が1秒欠ける。
+  const now = Date.now();
+  await issueSessionUntil(c, secret, user, now + sessionTtlMs(remember), now);
 }
 
 /** 元の絶対期限を維持してCookieだけを新しい世代へ載せ替える。 */
@@ -119,8 +120,9 @@ export async function issueSessionUntil(
   secret: string,
   user: Pick<UserRow, 'id' | 'session_generation'>,
   expiresAt: number,
+  now: number = Date.now(),
 ): Promise<void> {
-  const ttl = Math.max(1_000, expiresAt - Date.now());
+  const ttl = Math.max(1_000, expiresAt - now);
   const payload = sessionPayload(user.id, expiresAt, user.session_generation);
   const sig = b64url(await hmac(secret, payload));
   setCookie(c, COOKIE, `${payload}.${sig}`, {
