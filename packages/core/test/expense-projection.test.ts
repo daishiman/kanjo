@@ -156,6 +156,8 @@ describe('データ元に依存しないサブスク集計', () => {
 
     expect(result.matrix['架空クラウド']).toEqual([3_300]);
     expect(result.matrix['架空動画']).toEqual([1_200]);
+    expect(result.vendorAccounts?.['架空クラウド']).toEqual(['通信費', 'サブスク・通信']);
+    expect(result.vendorAccounts?.['架空動画']).toContain('通信費');
     expect(result.sourceCoverage).toEqual({ freee: 1, moneyForward: 1, matched: 1, review: 0 });
   });
 });

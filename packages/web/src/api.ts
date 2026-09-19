@@ -13,7 +13,6 @@ import type {
   CashFlow,
   ClassificationProgress,
   ClassificationSource,
-  SubscriptionsData as CoreSubscriptionsData,
   DefenseForecast,
   DefenseLine,
   DiagnosisData,
@@ -44,6 +43,7 @@ import type {
 } from '@kanjo/core';
 import {
   type Owner as CoreOwner,
+  DIAGNOSIS_ACTION_STATUSES,
   type ImprovementStatus,
   OWNER_VALUES,
   type OwnerLabels,
@@ -52,6 +52,16 @@ import {
   type PaymentMethod,
 } from '@kanjo/core';
 import type {
+  DiagnosisActionStatus,
+  DiagnosisEvidence,
+  DiagnosisEvidenceRow,
+  DiagnosisHealth,
+  DiagnosisHealthFactor,
+  DiagnosisImprovement,
+  DiagnosisScreen,
+  DiagnosisSignal,
+  DiagnosisTotals,
+  DiagnosisWaterfallBar,
   MonthlyCloseStatus,
   OverviewBreakdownItem,
   OverviewComparisonRow,
@@ -337,10 +347,13 @@ export interface TrendsResponse {
   judgementBasis?: 'mf_only';
 }
 
-export interface SubscriptionsData extends CoreSubscriptionsData {
-  /** rolling deploy中の旧Worker応答では未定義。画面は数値本体を優先して描画する。 */
-  sourceCoverage?: { freee: number; moneyForward: number; matched: number; review: number };
-}
+/** GET /api/subscriptions と詳細。サーバが core で導出した値をそのまま描く */
+export type {
+  SubscriptionRow,
+  SubscriptionTransaction,
+  SubscriptionVendorDetail,
+  SubscriptionsScreen,
+} from '@kanjo/core';
 
 /** API表示に必要なdeal項目だけを公開し、集計・状態・予定の型はcore契約を再利用する。 */
 type UnsettledDealView = Omit<UnsettledDeal, 'deal'> & {
@@ -891,7 +904,17 @@ export type {
   CashFlow,
   DefenseForecast,
   DefenseLine,
+  DiagnosisActionStatus,
   DiagnosisData,
+  DiagnosisEvidence,
+  DiagnosisEvidenceRow,
+  DiagnosisHealth,
+  DiagnosisHealthFactor,
+  DiagnosisImprovement,
+  DiagnosisScreen,
+  DiagnosisSignal,
+  DiagnosisTotals,
+  DiagnosisWaterfallBar,
   HouseholdCategoryDetail,
   MatrixData,
   OwnerLabels,
@@ -1151,3 +1174,11 @@ export const setImprovementStatus = (id: string, status: ImprovementStatus) =>
 
 /** スクリーンショットの取得先。R2 の公開URLではなく必ず Worker を通す */
 export const improvementScreenshotUrl = (id: string) => `/api/improvements/${id}/screenshot`;
+
+export { DIAGNOSIS_ACTION_STATUSES };
+
+/**
+ * GET /api/diagnosis の応答。旧 Worker は improvements / health を持たないので、
+ * 画面はそれを見て新ブロックの描画可否を決める (rolling deploy 互換)。
+ */
+export type DiagnosisResponse = DiagnosisData & Partial<Omit<DiagnosisScreen, keyof DiagnosisData>>;

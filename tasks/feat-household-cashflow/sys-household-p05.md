@@ -23,7 +23,7 @@ created_at: "2026-09-18T12:54:50Z"
 updated_at: "2026-09-18T12:54:50Z"
 depends_on: ["SYS-HOUSEHOLD-P04"]
 related_nodes: ["arch-household-cashflow-auth", "arch-household-cashflow-backend", "arch-household-cashflow-database", "arch-household-cashflow-frontend", "arch-household-cashflow-infrastructure", "arch-household-cashflow-maintenance-ops", "arch-household-cashflow-security", "arch-household-cashflow-ui-ux", "spec-household-cashflow-screen"]
-resource_scope: ["packages/core/src/household-summary.ts", "packages/core/src/total-cashflow.ts", "packages/core/src/analysis.ts", "packages/core/src/classify.ts", "packages/core/src/types.ts", "packages/core/src/exports.ts", "packages/core/src/chart-aggregates.ts", "packages/api/src/routes/analytics.ts", "packages/api/src/routes/settings.ts", "packages/api/src/ai/dataset.ts", "packages/api/src/cashflow-sources.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/index.ts", "migrations/0043_owner_labels.sql", "packages/web/src/api.ts", "packages/web/src/pages/Household.tsx", "packages/web/src/pages/household/", "packages/web/src/components/Page.tsx", "packages/web/src/components/charts.ts", "packages/web/src/period.tsx", "packages/web/src/routeMetadata.ts", "packages/web/src/figure-guides.ts", "packages/web/src/glossary.ts"]
+resource_scope: ["packages/core/src/household-summary.ts", "packages/core/src/total-cashflow.ts", "packages/core/src/analysis.ts", "packages/core/src/classify.ts", "packages/core/src/types.ts", "packages/core/src/exports.ts", "packages/core/src/chart-aggregates.ts", "packages/api/src/routes/analytics.ts", "packages/api/src/routes/settings.ts", "packages/api/src/ai/dataset.ts", "packages/api/src/cashflow-sources.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/index.ts", "migrations/0045_owner_labels.sql", "packages/web/src/api.ts", "packages/web/src/pages/Household.tsx", "packages/web/src/pages/household/", "packages/web/src/components/Page.tsx", "packages/web/src/components/charts.ts", "packages/web/src/period.tsx", "packages/web/src/routeMetadata.ts", "packages/web/src/figure-guides.ts", "packages/web/src/glossary.ts"]
 purpose: null
 goal: null
 scope_in: null
@@ -103,7 +103,7 @@ P04 の失敗テストが全て緑になるまで core / API / web / owner_label
 - packages/core/src/household-summary.ts
 - packages/api/src/routes/analytics.ts
 - packages/api/src/routes/settings.ts
-- migrations/0043_owner_labels.sql
+- migrations/0045_owner_labels.sql
 - packages/web/src/pages/household/
 - Consumed artifacts:
 - docs/household-screen/design-decisions.md
@@ -126,7 +126,7 @@ P04 の失敗テストが全て緑になるまで core / API / web / owner_label
 - packages/api/src/db/schema.ts
 - packages/api/src/schema-guard.ts
 - packages/api/src/index.ts
-- migrations/0043_owner_labels.sql
+- migrations/0045_owner_labels.sql
 - packages/web/src/api.ts
 - packages/web/src/pages/Household.tsx
 - packages/web/src/pages/household/
@@ -180,7 +180,7 @@ P04 の失敗テストが全て緑になるまで core / API / web / owner_label
 - packages/core/src/household-summary.ts
 - packages/api/src/routes/analytics.ts
 - packages/api/src/routes/settings.ts
-- migrations/0043_owner_labels.sql
+- migrations/0045_owner_labels.sql
 - packages/web/src/pages/household/
 
 ## Rollout and rollback

@@ -1,0 +1,85 @@
+{
+  "references": [
+    {
+      "target_id": "chartjs-bar-floating",
+      "retrieved_at": "2026-09-17T22:05:46Z",
+      "source_url": "https://www.chartjs.org/docs/latest/charts/bar.html",
+      "official_publisher": "Chart.js",
+      "official_host": "www.chartjs.org",
+      "last_updated": "2025-10-13",
+      "latest_checked_at": "2026-09-17T22:05:46Z",
+      "summary": "bar chart の internal data format は {x, y, _custom} で、_custom は {start, end, barStart, barEnd, min, max} を持つ。棒の開始点と終了点を指定できるため、改善インパクトのウォーターフォール (現状から各改善を積み上げる図) を追加プラグインなしで bar だけで描ける根拠。既存 chart.js 4 の範囲に収める。"
+    },
+    {
+      "target_id": "tanstack-query-invalidation",
+      "retrieved_at": "2026-09-17T22:05:46Z",
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation",
+      "official_publisher": "TanStack",
+      "official_host": "tanstack.com",
+      "version": "5.103.1",
+      "latest_checked_at": "2026-09-17T22:05:46Z",
+      "summary": "invalidateQueries は queryKey の前方一致で複数クエリをまとめて無効化し、exact: true で完全一致に絞れる。対応状況を PATCH した後に ['diagnosis', ...] を前方一致で invalidate すれば、期間・条件違いのキャッシュもまとめて取り直せる。version は公式 releases (github.com/TanStack/query/releases、Release 2026-09-16 に @tanstack/react-query@5.103.1) で確認した現行版。"
+    },
+    {
+      "target_id": "react-router-use-search-params",
+      "retrieved_at": "2026-09-17T22:05:46Z",
+      "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
+      "official_publisher": "Remix Software (React Router)",
+      "official_host": "reactrouter.com",
+      "version": "8.4.0",
+      "latest_checked_at": "2026-09-17T22:05:46Z",
+      "summary": "useSearchParams は [URLSearchParams, SetURLSearchParams] を返し、setSearchParams は文字列・オブジェクト・配列値・タプル配列・URLSearchParams・コールバック関数を受ける。期間・分析の範囲・表示する指標・比較対象・選択行を URL に保持して共有と再読み込みで同じ画面を開く根拠。本リポジトリは react-router-dom 7 で、公式ドキュメントは latest (8.4.0) を指す。"
+    },
+    {
+      "target_id": "hono-zod-validator",
+      "retrieved_at": "2026-09-17T22:05:46Z",
+      "source_url": "https://hono.dev/docs/guides/validation",
+      "official_publisher": "Hono",
+      "official_host": "hono.dev",
+      "version": "0.9.1",
+      "latest_checked_at": "2026-09-17T22:05:46Z",
+      "summary": "validator の対象は form に加えて json / query / header / param / cookie。zValidator は第1引数に対象、第2引数に Zod スキーマを取り、ハンドラでは c.req.valid() で検証済みの値を受ける。PATCH /diagnosis/actions/:action_key の body (status / note) と param (action_key) を許可リストで検証する根拠。version は公式 releases (github.com/honojs/middleware、@hono/zod-validator@0.9.1) で確認した現行版。"
+    },
+    {
+      "target_id": "cloudflare-d1-sql-statements",
+      "retrieved_at": "2026-09-17T22:05:46Z",
+      "source_url": "https://developers.cloudflare.com/d1/sql-api/sql-statements/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-09-17T22:05:46Z",
+      "summary": "D1 は SQLite のクエリエンジンを使い、SQL 慣例のほとんどに互換。CHECK 制約・PRIMARY KEY・FOREIGN KEY・CREATE INDEX をサポートする。diagnosis_action_states の status を 4 語 (未着手 / 対応中 / 対応済み / 見送り) へ CHECK 制約で限定し、action_key を PRIMARY KEY に置く設計が D1 上で成立する根拠。"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "retrieved_at": "2026-09-17T22:05:46Z",
+      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-09-05",
+      "latest_checked_at": "2026-09-17T22:05:46Z",
+      "summary": "CPU 時間は Free 10ms、Paid は既定 30 秒 (最大 5 分)。サブリクエストは Free 50 / Paid 10,000。応答本文のサイズ制限は課さない。6 種の検知器を 1 リクエストで回しても、Dataset を 1 回読んで純粋関数で集計する形なら既存の分析 API と同程度の CPU 時間に収まることを見積もる根拠。"
+    },
+    {
+      "target_id": "wcag22-use-of-color",
+      "retrieved_at": "2026-09-17T22:05:46Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
+      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
+      "official_host": "www.w3.org",
+      "version": "WCAG 2.2",
+      "last_updated": "2025-09-16",
+      "latest_checked_at": "2026-09-17T22:05:46Z",
+      "summary": "1.4.1 Use of Color は、情報伝達・操作の指示・応答の促し・要素の区別に色だけを使わないことを求める。テキストやアイコンなど色以外の手掛かりを併記する例が挙げられている。優先度・ステータス・信頼度に必ず文字ラベルを持たせ、色 (pill の alert / warn / calm / neutral) は補助にとどめる根拠。"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-17T22:05:46Z",
+      "source_url": "https://owasp.org/projects/asvs",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "owasp.org",
+      "version": "5.0.0",
+      "latest_checked_at": "2026-09-17T22:05:46Z",
+      "summary": "ASVS は Web アプリ・Web サービスの設計/開発/テストで満たすべきセキュリティ統制を定めた検証標準で、現行は v5.0.0。要件参照は v<version>-<chapter>.<section>.<requirement> の形で書く。XSS や SQL injection といった脆弱性に対する技術的統制の検証基盤として位置づけられる。PATCH で新たに受ける action_key / status / note を許可リストで検証し、D1 へはプレースホルダ束縛で書き、note を dangerouslySetInnerHTML で出さない方針の上流根拠。"
+    }
+  ]
+}

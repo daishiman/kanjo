@@ -1,0 +1,2012 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "database",
+      "label": "データベース"
+    },
+    {
+      "id": "auth",
+      "label": "認証(ログイン)"
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI-UX"
+    },
+    {
+      "id": "security",
+      "label": "セキュリティ"
+    },
+    {
+      "id": "infrastructure",
+      "label": "インフラ"
+    },
+    {
+      "id": "backend",
+      "label": "バックエンド"
+    },
+    {
+      "id": "frontend",
+      "label": "フロントエンド"
+    },
+    {
+      "id": "maintenance-ops",
+      "label": "保守運用管理"
+    }
+  ],
+  "platforms": [
+    "web",
+    "mobile",
+    "tablet",
+    "desktop-windows",
+    "desktop-linux",
+    "desktop-macos"
+  ],
+  "matrix": {
+    "database": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-subs-review-decision-002",
+        "serves_goals": [
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-subs-database-web-evidence-001",
+          "qa-subs-database-web-004",
+          "qa-subs-database-web-006"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリなら、明細とベンダー定義を端末へ複製してオフラインで推定月額を出すか、その同期と競合をどう解くかを決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリなら、一覧と詳細パネルを同時に開く前提で一度に読むベンダー数と取引件数のキャッシュ方針を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリなら、ベンダー定義と見直し判断をローカルファイルに持つか D1 と同期するかを決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリなら、ローカル保存先のパス規約とバックアップの扱いを決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリなら、サンドボックス下の保存先とアクセス権を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      }
+    },
+    "auth": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-subs-auth-web-004",
+        "serves_goals": [
+          "G2",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-subs-auth-web-evidence-001",
+          "qa-subs-auth-web-003",
+          "qa-subs-auth-web-005"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリなら、名称の統合や候補の採用といった書込み操作の前に端末の生体認証で再確認するか、トークンをどこに保管するかを決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリなら、家族と共用される端末での自動ログアウトの時間を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリなら、資格情報を Windows の資格情報マネージャーへ保存するかを決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリなら、Secret Service などの鍵保管の有無に応じた資格情報の保存方法を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリなら、キーチェーンへの保存と署名済みアプリからの読出しを決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      }
+    },
+    "ui-ux": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-subs-review-decision-002",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-subs-uiux-web-evidence-001",
+          "qa-subs-uiux-web-004",
+          "qa-subs-kpi-caption-001",
+          "qa-subs-uiux-web-006"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリなら、9 列の一覧・右の詳細パネル・下部の選択バーを狭い画面でどう積むか (一覧をカードにするか、詳細を全画面にするか) を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリなら、詳細パネルを横に並べるか重ねるかをタッチ操作前提で決め、生の取引名のチェックの押しやすさを確保する必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリなら、一覧の行選択と複数選択に Ctrl / Shift の操作規約を合わせる必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリなら、デスクトップ環境ごとのテーマと文字の描画差を吸収する必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリなら、メニューバーと ⌘ キーのショートカットで統合や除外を操作させるかを決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      }
+    },
+    "security": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-subs-security-web-004",
+        "serves_goals": [
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-subs-security-web-evidence-001",
+          "qa-subs-review-decision-002",
+          "qa-subs-security-web-006"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリなら、端末に残る取引名・金額の暗号化と、端末紛失時の遠隔消去を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリなら、共用端末で他人に支払い履歴が見える状態をどう防ぐかを決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリなら、ローカルに保存する明細の暗号化と、更新プログラムの署名検証を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリなら、配布形式ごとの署名と、ローカル保存のファイル権限を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリなら、公証 (notarization) とサンドボックスの権限を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-subs-infrastructure-web-004",
+        "serves_goals": [
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-subs-infrastructure-web-evidence-001",
+          "qa-subs-infrastructure-web-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリなら、ストアでの配布と審査、バックグラウンドでの取込同期の実行環境を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリなら、スマートフォン版と共通の配布経路にするか別ビルドにするかを決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリなら、インストーラの配布と自動更新の配信元を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリなら、パッケージ形式 (AppImage・deb など) と配布先を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリなら、署名と公証を含む配布と自動更新を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      }
+    },
+    "backend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-subs-review-decision-002",
+        "serves_goals": [
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-subs-backend-web-evidence-001",
+          "qa-subs-backend-web-004",
+          "qa-subs-backend-web-007"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリなら、一覧・詳細・操作を 1 往復で返すモバイル向けの API の形と、通信量を抑えるための差分取得を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリなら、一覧と詳細を同時に表示する前提でまとめて返す API の形を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリなら、オフライン時に行った統合や除外をあとから API へ送る再送と競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリなら、同じくオフライン操作の再送と、その順序保証を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリなら、同じくオフライン操作の再送と、スリープ復帰時の再同期を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-subs-review-decision-002",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-subs-frontend-web-evidence-001",
+          "qa-subs-frontend-web-004",
+          "qa-subs-frontend-web-006"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリなら、React Native などの別の描画基盤で一覧・詳細・グラフを作り直す必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリなら、分割表示と回転に応じた詳細パネルの出し分けを実装する必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリなら、Electron や Tauri などの殻に web の画面を載せる構成を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリなら、同じく殻の選定と、WebView の差による描画差の検証を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリなら、同じく殻の選定と、ネイティブのメニューとの統合を決める必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      }
+    },
+    "maintenance-ops": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-subs-maintenance-ops-web-004",
+        "serves_goals": [
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-subs-maintenance-ops-web-evidence-001",
+          "qa-subs-maintenance-ops-web-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリなら、OS 版ごとの実機テストと、ストア審査を含むリリース手順を運用する必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリなら、画面サイズ別の見た目検査を追加で運用する必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリなら、インストーラのテストと更新の段階配信を運用する必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリなら、ディストリビューションごとの動作確認を運用する必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリなら、署名証明書の更新と公証の失敗対応を運用する必要があった。対象を web のみとする利用者決定 (qa-subs-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-subs-target-platforms-001"
+      }
+    }
+  },
+  "qa_log": [
+    {
+      "id": "qa-subs-foundation-001",
+      "question": "サブスク画面 (design/FINAL-UI/images/09-subscriptions.png) を正本として画面・集計・API・保存を作り直す今サイクルの上位概念 U1-U9 (本質的目的 / 背景 / ゴール G1-G5 / 目標 O1-O5 / 成功基準 S1-S5 / 関係者 SH1-SH2 / 範囲 in 7・out 5 / 制約 C1-C5 / 具体的やりたいこと I1-I7) を、要件定義書の憲法として確定してよいか。範囲は『サブスク画面・詳細パネルと下部の選択バー・見直し候補の決定論判定と検出理由・core 集計の純関数・GET /subscriptions の拡張と保存 API・migration 0043・旧 UI の吸収と撤去』、対象外は『サービスのロゴ画像の取得と表示・外部サービスや AI による分類と理由文・サイドバー/ヘッダー/フッター/月次クローズ進捗の構造変更・他の画面の作り直し・web 以外のプラットフォーム』である。",
+      "answer": "承認して進む。提示した U1-U9 をそのまま今サイクルの上位概念として確定する。あわせて先に選んだ 7 つの判断を確定する: (1) カテゴリは core の既定辞書 (正規化名→カテゴリ、当たらなければ『その他』) に利用者の変更を重ね、sub_vendors に category 列を足して保存する。(2) 見直し候補は AI を呼ばず、同じカテゴリ内の重複・金額の急増・直近の値上げ・四半期見直しの期限切れなどの決定論ルールで判定し、理由は定型文に金額・件数・月数を差し込んで作る。規則は docs とテストで固定する。(3) データソースのカバー率は、口座名の手がかりで銀行口座 / クレジットカード / 電子マネーの 3 分類にし、(分子/分母) は最新月まで取込済みの口座数 / 口座数、% は期間の (口座×月) のうち取引がある割合とする。(4) 保存は既存表を再利用して拡張する — 名称の統合は既存ベンダーの aliases へ追加、候補の採用は sub_vendors への登録、候補から除外は sub_vendor_exclusions、カテゴリと見直し判断は migration 0043 で足す。(5) 画像に無い旧 UI (登録ベンダー編集・四半期見直し・アラート・前年比較表・未登録候補パネル) は画像の部品へ吸収し、旧 UI は撤去する。(6) 画像の数値は閉じていないため、画像は構成・文言・配置の正本、数値は core が算出する検算済み fixture を正本とする。(7) KPI の月額は最新月時点で継続中の各ベンダーの推定月額の和 (年額払いは 12 等分)、年換算はその ×12、前期間比は直前の同じ長さの期間の同じ定義の値との差とする。サービスのロゴ (アイコン) は取得コストが大きいため今回は取得も表示もしない。",
+      "provenance": "AskUserQuestion / 選択肢と preview 提示あり。2026-09-18T03:05:24Z にカテゴリ・見直し候補・カバー率・保存の 4 問、03:33:42Z に既存機能・数値の正本・KPI 定義の 3 問へ利用者がいずれも推奨案を選択し、03:36:08Z に U1-U9 草案全文へ『承認して進む』を選択した。ロゴ不要は最初の依頼文での利用者指示。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "context-of-use",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-subs-target-platforms-001",
+      "question": "サブスク画面の作り直しで対象とするプラットフォームはどれか。web 以外 (スマートフォン / タブレット / Windows / Linux / macOS の専用アプリ) を範囲に含めるか。",
+      "answer": "web のみを対象とする。承認した U1-U9 の scope.out に『web 以外のプラットフォーム』を明記しており、スマートフォン・タブレット・デスクトップの専用アプリは作らない。狭い画面でも web の画面をそのまま使う (本サイクルで狭幅専用の構成は作らない)。",
+      "provenance": "利用者が 2026-09-18T03:36:08Z に承認した U1-U9 の scope.out (appr-foundation-subscriptions-001)。kanjo は web アプリとして運用されており、本サイクルでも変更しない。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-subs-uiux-web-evidence-001",
+      "question": "ui-ux 章の裏付けとして、現行のサブスク画面と参照画像の差は何か。",
+      "answer": "現行の /subscriptions (packages/web/src/pages/Subscriptions.tsx、305 行) は、重複・急増アラート、KPI 4 枚 (最新月の実支払・年換算・直近 12 か月の実支払・売上比)、データ元の 1 行注記 (freee / MF の件数)、ベンダー別の表 (直近月額 / 平均月額 / 支払月数 / 直近 12 か月 / 年換算)、ベンダー別の月次積み上げ棒、ベンダー別の前年比較表、登録ベンダーの編集パネル (components/SubVendors.tsx の SubVendorsPanel、別名・対象科目・四半期見直し)、未登録候補パネル (SubsCandidatesPanel) を縦に並べている。参照画像 design/FINAL-UI/images/09-subscriptions.png は、問いの見出し『毎月の固定費に、重複や見直し候補はありますか？』と説明文、前期間比つきの KPI 5 枚 (5 枚目は見直し候補の件数)、データソースのカバー率カード (銀行口座 98% (3/3) / クレジットカード 100% (2/2) / 電子マネー 92% (12/13)) と最終更新・再取得、サブスク一覧 (検索・ステータス絞込・行チェック・9 列・合計行・候補バッジ)、右の『サブスクの詳細』パネル (概要 / 取引履歴 / 関連データのタブ)、『月次のサブスク支出推移』(カテゴリ別積み上げ棒)、『年換算の比較 (カテゴリ別)』表、『サブスク候補の検出理由』カード、画面下部の『2件の取引を選択中』バーで構成される。画像にはサービスのロゴが描かれている。KPI 2 枚目『売上比』の補足は『総支出に占める割合』と書かれており、見出しの『売上比』と食い違っている。design/FINAL-UI/spec/AUDIT.md は 09 サブスクを『不足あり』と判定している。",
+      "provenance": "packages/web/src/pages/Subscriptions.tsx と components/SubVendors.tsx の読解、参照画像の目視、design/FINAL-UI/spec/AUDIT.md:15 の確認 (2026-09-18)。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-subs-uiux-web-003",
+      "question": "web のサブスク画面の UI-UX 要件のうち、画像から一意に決まらず agent が補完した部分は何か。",
+      "answer": "(1) 縦の並びは画像どおり 見出し → KPI 5 枚 → カバー率 → 一覧と右の詳細パネル → 推移と検出理由 → 年換算比較 とし、task 頻度 × 失敗コストで最上位の『見直し候補がいくつあるか』を KPI 5 枚目と一覧の候補バッジの 2 か所で先に読ませる。(2) 詳細パネルは一覧で行を選んだときだけ開き、選択は URL (?vendor=<照合キー>) に保って再読込でも復元する。× で閉じると URL から消す。(3) 詳細パネルのタブは WAI-ARIA の tabs パターン (左右の矢印キーで移動、Tab でパネルへ) で作る。(4) ステータス絞込の選択肢は『すべてのステータス / 見直し候補 / 登録済み / 未登録の候補』とし、旧 UI の未登録候補パネルの役割を『未登録の候補』へ移す。(5) 旧 UI の別名・対象科目の編集と四半期見直しは詳細パネルの『関連データ』タブへ、重複・急増アラートは検出理由カードへ移す。(6) ロゴの位置には何も置かず、ベンダー名の頭文字も描かない (画像取得をしないため、代替の図形で場所を取らない)。(7) KPI 2 枚目の補足は、数値の定義 (サブスク ÷ 売上) に合わせて『売上に占める割合』と書く。画像の『総支出に占める割合』は見出しと定義が食い違っており、見出しを優先した。(8) 読込中は各カードの骨格を保つ表示、データ 0 件は一覧の位置に空状態、取得失敗は PageState の error とする。色だけで区別させず、候補バッジと前期間比の増減には文字と記号を必ず併記する。",
+      "provenance": "参照画像・既存の PageShell / PageState / KpiCard の使い方・既存画面 (照合 / 推移 / マトリックス) の選択と URL 保持の慣例からの agent の設計判断。(7) は画像の文言を変える判断であり、利用者へ選択肢を提示していない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-subs-uiux-web-004",
+      "question": "web のサブスク画面の UI-UX 要件は何か。(このうち利用者が実際に選んだ部分)",
+      "answer": "利用者の決定は次の 3 点である。(1) 画面は design/FINAL-UI/images/09-subscriptions.png の構成・文言・配置を正本とする (数値は正本にしない)。(2) サービスのロゴ (アイコン) は取得コストが大きいため、取得も表示もしない。(3) 画像に無い旧 UI は画像の部品へ吸収して撤去する。",
+      "provenance": "最初の依頼文 (画像どおりにする・ロゴ不要) と、AskUserQuestion で選択された dec-subs-legacy-ui / dec-subs-fixture-authority。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-subs-frontend-web-evidence-001",
+      "question": "frontend 章の裏付けとして、現行のサブスク画面はどう作られているか。",
+      "answer": "Subscriptions.tsx は useQuery で GET /api/subscriptions を 1 本取得し、KPI・表・グラフの値を画面側で整形して描いている。登録ベンダーの編集と未登録候補は components/SubVendors.tsx (614 行) の 2 パネルが別の取得 (GET /api/sub-vendors、GET /api/sub-vendors/candidates) と変更 (POST / PUT / DELETE /api/sub-vendors、POST /api/sub-vendors/exclusions、POST /api/sub-vendors/:id/review) を持つ。画面の登録は routeMetadata.ts:57-66 (id subscriptions、path /subscriptions、label サブスク)、サイドバーの所属は Layout.tsx:56 で『整える』、バッジは Layout.tsx:246 が reviewQueue の subscriptionCandidates を出している。共通部品は components/Page.tsx (PageShell / PageHeader / PageState / KpiCard / AnnualComparisonTable)、期間は period.tsx の usePeriod、表は DataTable.tsx、照合画面の詳細パネル (reconciliation/DetailPanel.tsx) と下部の選択バー (SelectionActions.tsx) が既にある。テストは web/src/subs-review.dom.test.tsx と components/SubVendors.dom.test.tsx。",
+      "provenance": "packages/web/src の該当ファイルの読解 (2026-09-18)。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-subs-frontend-web-003",
+      "question": "web のサブスク画面の frontend 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) 画面は数値を再計算しない。KPI・一覧・合計行・カテゴリ別推移・年換算比較・候補の判定と理由文は API が返した値をそのまま描く。(2) 取得は 2 本に分ける。画面全体は GET /api/subscriptions (期間つき) の 1 本、詳細パネルは選んだベンダーについて GET /api/subscriptions/vendors/:key を選択後にだけ取得する (TanStack Query の依存クエリ)。(3) 変更 (統合・カテゴリ変更・採用・除外・確認・四半期見直し) の成功後は、サブスク一覧・詳細・サイドバーのバッジ (reviewQueue) のクエリを無効化して揃える。(4) 部品は pages/subscriptions/ 配下に Kpis / CoverageCard / SubscriptionTable / DetailPanel / CategoryTrendChart / AnnualComparison / ReasonCard / SelectionBar として分け、照合画面の DetailPanel と SelectionActions の作りを踏襲する (共通化は 2 画面目の本サイクルでは行わず、同じ形を保つ)。(5) 旧 SubVendorsPanel / SubsCandidatesPanel は撤去し、その操作を DetailPanel の『関連データ』タブと ReasonCard へ移す。旧テストは新しい部品のテストへ移し替える。(6) 色はデザイントークンと既存の系列パレットだけを使い、カテゴリの色は固定順で割り当てる。",
+      "provenance": "既存の web の構成 (照合・推移・マトリックス画面の分割と取得の分け方) の読解にもとづく agent の設計判断。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "frontend-arch",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-subs-frontend-web-004",
+      "question": "web のサブスク画面の frontend 要件は何か。(このうち利用者が実際に選んだ部分)",
+      "answer": "利用者の決定は次の 2 点である。(1) 旧 UI (登録ベンダー編集・四半期見直し・アラート・前年比較表・未登録候補パネル) は画像の部品へ吸収して撤去し、機能は失わない。(2) 画面の数値は画像を写さず、core が算出する検算済み fixture を正本とする。",
+      "provenance": "AskUserQuestion で選択された dec-subs-legacy-ui と dec-subs-fixture-authority。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "frontend-arch",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-subs-backend-web-evidence-001",
+      "question": "backend 章の裏付けとして、現行のサブスクの検出と集計はどこにあるか。",
+      "answer": "検出は core/src/subs.ts にある — vendorKey (:31-37、表記ゆれを吸収した照合キー)、matchSubVendor (:58-74、登録ベンダーと別名で照合)、subsCandidates (:105-170、未登録の継続的な支払いの採点)、subsConfidence (:196-216)、autoRegisterable (:219)。集計は core/src/analysis.ts の subscriptions() (:414-472) で、KPI の monthlyTotal は最新月の実支払 (登録ベンダーの和 + サブスク・通信科目の未登録分)、annualized はその ×12、last12Total は直近 12 か月の実支払、revenueShare は直近 3 か月の平均 ÷ 売上のある月の平均売上。アラートは dup (中央値の 1.8 倍超かつ 2 万円超かつ中央値 5 千円超) と spike (3 倍超かつ 1.5 万円超)。四半期見直しは subsReviewStatus (:1485、SUBS_REVIEW_INTERVAL_MONTHS=3)。API は api/src/routes/analytics.ts:459-474 の GET /subscriptions が expense-projection.ts:264-307 の sourceNeutralSubscriptions (freee と MF を照合した後の実質支出) を返す。サイドバーのバッジ (analytics.ts:197-202) は subsCandidates の件数 (上限 20) で、画像の『見直し候補 2 件』とは別の数である。カテゴリ、見直し候補の判定、口座の 3 分類、サブスク用の前期間比はコードに無い。汎用の previousPeriod (core/src/analysis-hub.ts:38-44) はある。",
+      "provenance": "packages/core/src/subs.ts・analysis.ts・expense-projection.ts・analysis-hub.ts と packages/api/src/routes/analytics.ts の読解 (2026-09-18)。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-subs-backend-web-003",
+      "question": "web のサブスク画面の backend 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) core に subscriptionsScreen(data, deals, vendors, decisions, period) を置き、推定月額・継続中の判定・年換算・前期間比・カテゴリ (既定辞書 → 利用者の上書き)・口座の 3 分類とカバー率・カテゴリ別の月次推移と年換算比較・見直し候補と理由文を 1 か所で算出する。既存の sourceNeutralSubscriptions の照合後の明細を入力にし、別経路で明細を数え直さない。(2) 推定月額は、直近 12 か月の支払い間隔が 11〜13 か月なら年額払いとして最新の支払額 ÷ 12、それ以外は最新の支払額とする。継続中は、月払いなら最新月か前月に支払いがあること、年額払いなら直近 12 か月に支払いがあること。(3) 見直し候補の規則は 5 つ — 同じカテゴリ (その他を除く) に継続中が 2 件以上 / 既存 dup の条件 (二重請求の疑い) / 既存 spike の条件 (急増) / 直前の支払額からの値上げ (5% 以上が 2 か月続く) / 四半期見直しの期限切れ (subsReviewStatus.due)。理由文は規則ごとの定型文に金額・件数・月数を差し込む。複数の規則に当たるときは 二重請求 → 急増 → 値上げ → 重複 → 期限切れ の順に並べる。(4) 前期間比は previousPeriod で直前の同じ長さの期間を取り、同じ関数を同じ定義で当てた差とする。(5) GET /api/subscriptions は期間つきで上記をまとめて返し、GET /api/subscriptions/vendors/:key は詳細パネル用に生の取引名 (ソース種別つき)・直近の取引・データソース別件数を返す。(6) 保存 API は既存の /api/sub-vendors 系を延長し、PUT /api/sub-vendors/:id に category を足し、POST /api/sub-vendors/:id/aliases (統合) と POST / DELETE /api/subscriptions/review-decisions (確認・採用・除外の判断) を新設する。(7) サイドバーのバッジは見直し候補の件数へ切り替え、画面の KPI と同じ関数で数える。",
+      "provenance": "既存 core / api の関数と境界 (純関数は core、route は Dataset を組んで渡すだけ) の読解にもとづく agent の設計判断。閾値 (5%・2 か月・11〜13 か月) は agent の提案で、実装時に docs とテストで固定する。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-subs-backend-web-004",
+      "question": "web のサブスク画面の backend 要件は何か。(このうち利用者が実際に選んだ部分)",
+      "answer": "利用者の決定は次の 4 点である。(1) 見直し候補は AI を呼ばず決定論ルール + 定型文で判定し、規則は docs とテストで固定する。(2) カテゴリは core の既定辞書 + 利用者の変更。(3) カバー率は口座名の手がかりで 3 分類し、(分子/分母) は最新月まで取込済みの口座数 / 口座数、% は期間の (口座×月) のうち取引がある割合。(4) KPI の月額は最新月時点で継続中の各ベンダーの推定月額の和 (年額払いは 12 等分)、年換算は ×12、前期間比は直前の同じ長さの期間との差。",
+      "provenance": "AskUserQuestion で選択された dec-subs-review-candidate / dec-subs-category / dec-subs-coverage / dec-subs-kpi-definition。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-subs-database-web-evidence-001",
+      "question": "database 章の裏付けとして、サブスクの保存は現状どうなっているか。",
+      "answer": "sub_vendors (migrations 0005 で作成、0020 で accounts、0023 で reviewed_at を追加) が 利用者ごとの登録ベンダー (name・aliases の JSON 配列文字列・accounts・sort_order・reviewed_at) を持つ。sub_vendor_exclusions (0021) が『サブスクではない』と記録した支払先を (user_id, vendor_key) の一意索引つきで持つ。カテゴリと見直し判断を保存する列・表は無い。口座名は mf_transactions.institution (MF の保有金融機関) にあり、口座の種別を保存する列は無い。最新の migration は 0042_total_cashflow_operations_and_exclusion_reason.sql。",
+      "provenance": "packages/api/src/db/schema.ts:222-247 と migrations/ の一覧の読解 (2026-09-18)。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "data-persistence"
+      ]
+    },
+    {
+      "id": "qa-subs-database-web-003",
+      "question": "web のサブスク画面の database 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) migration 0043 は追加だけにする — sub_vendors に category TEXT NULL (NULL は既定辞書に従う) を ADD COLUMN し、sub_vendor_review_decisions (id, user_id, vendor_key, decision は confirmed / adopted / dismissed のいずれか, rule_fingerprint, decided_at、(user_id, vendor_key) 一意) を CREATE TABLE する。既存行は書き換えない。(2) 判断には判定時の規則の指紋 (当たった規則と月) を保存し、同じ理由では再び候補に出さず、新しい規則に当たったときだけ再び出す。(3) 統合は既存の aliases 配列への追加で表し、統合の取り消しは配列からの削除で表す。(4) 口座の種別は保存しない (口座名から毎回導出する)。(5) Drizzle の schema.ts を migration と同じ内容に更新し、ローカル D1 への適用で確かめる。",
+      "provenance": "既存 schema と過去の migration の書き方 (追加のみ・行の書き換えをしない) の読解にもとづく agent の設計判断。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-subs-database-web-004",
+      "question": "web のサブスク画面の database 要件は何か。(このうち利用者が実際に選んだ部分)",
+      "answer": "利用者の決定は次の 1 点である。保存は既存表を再利用して拡張する — 名称の統合は既存ベンダーの aliases へ追加、候補の採用は sub_vendors への登録、候補から除外は sub_vendor_exclusions、カテゴリと見直し判断は migration 0043 で足す。",
+      "provenance": "AskUserQuestion で選択された dec-subs-persistence。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-subs-auth-web-evidence-001",
+      "question": "auth 章の裏付けとして、サブスクの API は認証の下にどう置かれているか。",
+      "answer": "packages/api/src/index.ts:102 と :104 で /api/* 全体に authGuard と mustChangePasswordFence を掛け、:114 で analyticsRoute、:118 で subsRoute を /api の下にマウントしている。したがって GET /api/subscriptions と /api/sub-vendors 系はすべてログイン済みで、初期パスワード変更後の利用者だけが到達できる。各 route は c.get('userId') で利用者を絞っている。パスワードは PBKDF2 (本番 Workers の上限に合わせた 100,000 回、password-hash-workerd.test.ts で検査) で保存している。",
+      "provenance": "packages/api/src/index.ts・routes/subs.ts・routes/analytics.ts の読解 (2026-09-18)。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-subs-auth-web-003",
+      "question": "web のサブスク画面の auth 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) 新設する GET /api/subscriptions/vendors/:key・POST /api/sub-vendors/:id/aliases・POST / DELETE /api/subscriptions/review-decisions は既存の subsRoute / analyticsRoute に足し、authGuard と mustChangePasswordFence の内側に置く。route の中で認証を再判定しない。(2) 利用者の識別は c.get('userId') だけから取り、パスやクエリの値を利用者の同定に使わない。:id と :key は必ず userId と組にして引き、他の利用者のベンダーを更新できないようにする。(3) 認証の方式 (PBKDF2・セッション Cookie) は変えない。",
+      "provenance": "既存の認証配線の読解にもとづく agent の設計判断。既存方式の踏襲であり、利用者へ選択肢を提示していない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-subs-auth-web-004",
+      "question": "web のサブスク画面の auth 要件は何か。(このうち利用者が実際に選んだ部分)",
+      "answer": "利用者の決定は次の 1 点である。単独利用者の個人事業主向けという前提を本サイクルでも継続し、役割の分担や複数ユーザーの権限分離を導入しない。",
+      "provenance": "前サイクルまでに利用者が確定した単独利用者前提 (U1-U9 の SH1『単独の個人事業主』) を、本サイクルでも変更しないという継続決定。本サイクルで新たな選択肢を提示していないため decision は起票していない。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-subs-security-web-evidence-001",
+      "question": "security 章の裏付けとして、サブスクの API の入力検証と外部送信は現状どうか。",
+      "answer": "routes/subs.ts は POST / PUT /sub-vendors と POST /sub-vendors/exclusions の本文を zValidator (Zod) で検証している。GET /subscriptions は期間を loadScoped で受け取る。サブスクの検出・集計は core の純関数で完結し、外部の API を呼んでいない。kanjo の画面下部には『取込データは外部送信しません』と表示している。",
+      "provenance": "packages/api/src/routes/subs.ts・analytics.ts の読解と、参照画像の下部表示の確認 (2026-09-18)。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-subs-security-web-003",
+      "question": "web のサブスク画面の security 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) 新設 API の入力はすべて Zod で許可リスト検証する — vendorKey は長さ上限つきの文字列、aliases は 1〜50 件・各 1〜100 文字の配列、decision は confirmed / adopted / dismissed の列挙、category は既定辞書のカテゴリ名の列挙か 1〜20 文字の自由記述。(2) 取引名・ベンダー名は利用者が取り込んだ外部由来の文字列なので、画面では React のテキストとしてだけ描き、HTML として挿入しない。(3) カテゴリ辞書と口座の手がかりはコード内の固定表で持ち、判定のために外部へ問い合わせない。(4) 更新系は :id / :key を userId と組にして引き、見つからなければ 404 を返して他の利用者の存在を示さない。",
+      "provenance": "既存の検証の書き方と OWASP ASVS の入力検証・出力エンコードの指針からの agent の設計判断。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "api-contract",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-subs-security-web-004",
+      "question": "web のサブスク画面の security 要件は何か。(このうち利用者が実際に選んだ部分)",
+      "answer": "利用者の決定が機密面へ及ぶのは次の 1 点である。カテゴリの判定と見直し候補の理由文に AI を使わず、コード内の辞書と決定論ルールで作ると決めたため、取引名・金額を外部の推論サービスへ送る経路を本サイクルで作らない。",
+      "provenance": "AskUserQuestion で選択された dec-subs-category と dec-subs-review-candidate。選択時の比較で『取込データを外部へ送らない』ことが採用理由として提示されている。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "api-contract",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-subs-infrastructure-web-evidence-001",
+      "question": "infrastructure 章の裏付けとして、サブスクの画面と API はどこで動いているか。",
+      "answer": "kanjo は 1 つの Cloudflare Worker が API (Hono) と web の静的配信 (Workers Assets) を兼ね、データは D1、バックアップは R2 に置いている。GET /api/subscriptions は期間の Dataset と freee の仕訳を D1 から読み、Worker 内の純関数で集計して返す。外部の推論サービスは本機能では使っていない。",
+      "provenance": "packages/api の構成と routes/analytics.ts の読解 (2026-09-18)。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-subs-infrastructure-web-003",
+      "question": "web のサブスク画面の infrastructure 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) 配信構成 (Worker・Workers Assets・D1・R2・cron) と binding は変えない。新設はすべて同じ Worker 内の route。(2) 初回表示の応答はベンダー数 × 月数に比例する集計値に限り、取引の実体は詳細パネルの選択後に 1 ベンダーぶんだけ返す (直近 3 件と件数、取引履歴タブは期間内を上限つきで返す)。これで Worker の CPU 時間とレスポンスの大きさを明細件数から切り離す。(3) migration 0043 は既存の Migrate → Deploy の手順で適用する。",
+      "provenance": "既存の配信構成と Cloudflare Workers の上限の読解にもとづく agent の設計判断。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-subs-infrastructure-web-004",
+      "question": "web のサブスク画面の infrastructure 要件は何か。(このうち利用者が実際に選んだ部分)",
+      "answer": "利用者の決定が実行環境へ及ぶのは次の 2 点である。(1) カテゴリと見直し候補の理由を AI で作らないため、外部の推論サービスを実行環境へ追加しない。(2) サービスのロゴを取得しないため、外部の画像取得やその保存先を追加しない。",
+      "provenance": "AskUserQuestion で選択された dec-subs-category / dec-subs-review-candidate と、最初の依頼文のロゴ不要の指示。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-subs-maintenance-ops-web-evidence-001",
+      "question": "maintenance-ops 章の裏付けとして、サブスクの既存テストと見た目検査は何を固定しているか。",
+      "answer": "core/test/subs-contract.test.ts と subs-review-contract.test.ts が照合・候補採点・四半期見直しを、api/src/subs-vendor-scope.test.ts が API の利用者の絞り込みを、web/src/subs-review.dom.test.tsx と components/SubVendors.dom.test.tsx が旧 UI の操作を固定している。packages/web/scripts/check-financial-visuals.mjs は /api/subscriptions をモックして Subscriptions 画面の図の数 (expectedFigures: 1) を検査している。参照画像の数値は閉じていない — 一覧 8 行の『月額の推定』の和は ¥9,778 だが合計行は ¥64,800 である。",
+      "provenance": "テストと検査スクリプトの読解、および参照画像の数値の検算 (2026-09-18)。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-subs-maintenance-ops-web-003",
+      "question": "web のサブスク画面の maintenance-ops 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) 検算済み fixture を core のテストに置き、推定月額・継続中・年額払い・前期間比・カテゴリ辞書と上書き・口座 3 分類とカバー率・見直し候補の 5 規則の境界値を固定する。金額は整数の toBe、割合は許容幅つきの toBeCloseTo で比べる。(2) 一覧の合計行 = 行の和、カテゴリ別比較の合計 = 一覧の合計、KPI の月額 = 一覧の合計、直近 12 か月の支払額 = 既存 last12Total を、同じ fixture で突き合わせるテストを置く。(3) 旧 UI のテストは新しい部品のテストへ移し、移した操作の一覧で欠落 0 件を確かめる。(4) check-financial-visuals のモックを新しい応答の形に更新し、ロゴ画像要素が 0 件であることを検査に足す。(5) 見直し候補の規則・閾値・文テンプレートは docs/subscriptions-screen.md に書き、規則を変えるときは docs とテストを同じ変更で直す。",
+      "provenance": "既存のテスト構成と前サイクル (マトリックス・推移) の検査の書き方からの agent の設計判断。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T03:44:05Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-subs-maintenance-ops-web-004",
+      "question": "web のサブスク画面の maintenance-ops 要件は何か。(このうち利用者が実際に選んだ部分)",
+      "answer": "利用者の決定が保守へ及ぶのは次の 2 点である。(1) 画像の数値は閉じていないため写さず、core が算出する検算済み fixture をテストの正本とする。(2) 見直し候補の規則と文テンプレートは docs とテストで固定する。",
+      "provenance": "AskUserQuestion で選択された dec-subs-fixture-authority と dec-subs-review-candidate。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-subs-auth-web-005",
+      "question": "web のサブスク画面で単独利用者前提を継続する決定は、今サイクルのどの承認に遡れるか。",
+      "answer": "今サイクルの上位概念承認 appr-foundation-subscriptions-001 (2026-09-18T03:36:08Z) で、利用者は SH1 を『利用者 (単独の個人事業主)』として承認した。役割分担や複数ユーザーの権限分離は scope.in に無く、本サイクルでも導入しない。認証の主体と保存の境界 (userId と組で引く) は account-login サイクル (system-spec/archive/2026-09-14-account-login/) の確定を変えない。",
+      "provenance": "appr-foundation-subscriptions-001 の SH1 (利用者が承認した U1-U9 草案と同文)。qa-subs-auth-web-004 の継続決定の根拠をこの承認へ明示的に結び付ける。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T03:36:08Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-subs-review-decision-001",
+      "question": "見直し候補カードと詳細パネルの『候補を採用 / 候補から除外 / 候補として確認』は何を意味し、どこに保存するか。同じ理由で候補を再表示しないための指紋は何で作るか。",
+      "answer": "推奨どおりとする。(1) 対象の種類で分ける。未登録の候補 (まだ sub_vendors に無い継続的な支払い) では、採用=sub_vendors への登録、除外=sub_vendor_exclusions への記録とし、G5 と dec-subs-persistence のとおり既存表を使う。(2) 登録済みベンダーの見直し候補では、検出理由カードの『候補を採用』と詳細パネルの『候補として確認』はどちらも『見直す対象として残す』= sub_vendor_review_decisions の confirmed、『候補から除外』は『この理由では見直さない』= dismissed とする。adopted という値は持たない。(3) 指紋は当たった規則の種類と判定時の基準金額で作り、月は含めない。規則と金額が同じなら月が変わっても再表示せず、金額が変わるか別の規則に当たったときだけ再び候補に出す。",
+      "provenance": "2026-09-18T06:33:00Z の利用者の返答『つづけて』。直前の assistant の報告で 3 点の推奨 (本回答の内容) を提示し、『推奨どおりでよければ「推奨どおり」とだけ』と依頼していたため、推奨の採用として記録する。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T06:33:00Z",
+      "required_info_items": [
+        "api-contract",
+        "data-persistence",
+        "domain-model",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-subs-kpi-caption-001",
+      "question": "KPI 2 枚目『売上比』の補足文言を、画像どおり『総支出に占める割合』にするか、定義 (サブスク ÷ 売上) に合わせて『売上に占める割合』にするか。",
+      "answer": "推奨どおり『売上に占める割合』とする。KPI の定義 (サブスク ÷ 売上) と見出し『売上比』を変えず、画像の補足文言だけを定義に合わせる。画像は配置の正本であり、この 1 語だけを例外として変える。",
+      "provenance": "2026-09-18T06:33:00Z の利用者の返答『つづけて』。直前の assistant の報告で本推奨と代替 (画像どおりにするなら定義をサブスク ÷ 総支出へ変える) を提示したうえでの推奨の採用。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T06:33:00Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-subs-database-web-005",
+      "question": "web のサブスク画面の database 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) migration 0043 は追加だけにする — sub_vendors に category TEXT NULL (NULL は既定辞書に従う) を ADD COLUMN し、sub_vendor_review_decisions (id, user_id, vendor_key, decision は confirmed / dismissed のいずれか (登録済みベンダーの見直し候補への判断だけを持つ。未登録候補の採用 / 除外は既存の sub_vendors / sub_vendor_exclusions に保存する), rule_fingerprint, decided_at、(user_id, vendor_key) 一意) を CREATE TABLE する。既存行は書き換えない。(2) 判断には判定時の規則の指紋 (当たった規則の種類と判定時の基準金額。月は含めない) を保存し、同じ理由では再び候補に出さず、新しい規則に当たったときだけ再び出す。(3) 統合は既存の aliases 配列への追加で表し、統合の取り消しは配列からの削除で表す。(4) 口座の種別は保存しない (口座名から毎回導出する)。(5) Drizzle の schema.ts を migration と同じ内容に更新し、ローカル D1 への適用で確かめる。",
+      "provenance": "既存 schema と過去の migration の書き方 (追加のみ・行の書き換えをしない) の読解にもとづく agent の設計判断。 qa-subs-database-web-003 を 2026-09-18 の完成度評価の差し戻しと利用者判断 qa-subs-review-decision-001 に合わせて改訂した版。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T06:34:03Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-subs-backend-web-005",
+      "question": "web のサブスク画面の backend 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) core に subscriptionsScreen(data, deals, vendors, decisions, period) を置き、推定月額・継続中の判定・年換算・前期間比・カテゴリ (既定辞書 → 利用者の上書き)・口座の 3 分類とカバー率・カテゴリ別の月次推移と年換算比較・見直し候補と理由文を 1 か所で算出する。既存の sourceNeutralSubscriptions の照合後の明細を入力にし、別経路で明細を数え直さない。(2) 推定月額は、直近 12 か月の支払い間隔が 11〜13 か月なら年額払いとして最新の支払額 ÷ 12、それ以外は最新の支払額とする。継続中は、月払いなら最新月か前月に支払いがあること、年額払いなら直近 12 か月に支払いがあること。(3) 見直し候補の規則は 5 つ — 同じカテゴリ (その他を除く) に継続中が 2 件以上 / 既存 dup の条件 (二重請求の疑い) / 既存 spike の条件 (急増) / 直前の支払額からの値上げ (5% 以上が 2 か月続く) / 四半期見直しの期限切れ (subsReviewStatus.due)。理由文は規則ごとの定型文に金額・件数・月数を差し込む。複数の規則に当たるときは 二重請求 → 急増 → 値上げ → 重複 → 期限切れ の順に並べる。(4) 前期間比は previousPeriod で直前の同じ長さの期間を取り、同じ関数を同じ定義で当てた差とする。(5) GET /api/subscriptions は期間つきで上記をまとめて返し、GET /api/subscriptions/vendors/:key は詳細パネル用に生の取引名 (ソース種別つき)・直近の取引・データソース別件数を返す。(6) 保存 API は既存の /api/sub-vendors 系を延長し、PUT /api/sub-vendors/:id に category を足し、POST /api/sub-vendors/:id/aliases (統合) と POST / DELETE /api/subscriptions/review-decisions (登録済みベンダーの見直し候補への確認 = confirmed・除外 = dismissed の判断)。未登録候補の採用は既存の POST /api/sub-vendors、除外は既存の POST /api/sub-vendors/exclusions をそのまま使う を新設する。(7) サイドバーのバッジは見直し候補の件数へ切り替え、画面の KPI と同じ関数で数える。",
+      "provenance": "既存 core / api の関数と境界 (純関数は core、route は Dataset を組んで渡すだけ) の読解にもとづく agent の設計判断。閾値 (5%・2 か月・11〜13 か月) は agent の提案で、実装時に docs とテストで固定する。 qa-subs-backend-web-003 を 2026-09-18 の完成度評価の差し戻しと利用者判断 qa-subs-review-decision-001 に合わせて改訂した版。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T06:34:03Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-subs-frontend-web-005",
+      "question": "web のサブスク画面の frontend 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) 画面は数値を再計算しない。KPI・一覧・合計行・カテゴリ別推移・年換算比較・候補の判定と理由文は API が返した値をそのまま描く。(2) 取得は 2 本に分ける。画面全体は GET /api/subscriptions (期間つき) の 1 本、詳細パネルは選んだベンダーについて GET /api/subscriptions/vendors/:key を選択後にだけ取得する (TanStack Query の依存クエリ)。(3) 変更 (統合・カテゴリ変更・未登録候補の採用 / 除外・見直し候補の確認 / 除外・四半期見直し)。検出理由カードの『候補を採用』と詳細パネルの『候補として確認』は同じ confirmed を送り、未登録候補の行ではそれぞれ登録 / 除外の既存 API を呼ぶ の成功後は、サブスク一覧・詳細・サイドバーのバッジ (reviewQueue) のクエリを無効化して揃える。(4) 部品は pages/subscriptions/ 配下に Kpis / CoverageCard / SubscriptionTable / DetailPanel / CategoryTrendChart / AnnualComparison / ReasonCard / SelectionBar として分け、照合画面の DetailPanel と SelectionActions の作りを踏襲する (共通化は 2 画面目の本サイクルでは行わず、同じ形を保つ)。(5) 旧 SubVendorsPanel / SubsCandidatesPanel は撤去し、その操作を DetailPanel の『関連データ』タブと ReasonCard へ移す。旧テストは新しい部品のテストへ移し替える。(6) 色はデザイントークンと既存の系列パレットだけを使い、カテゴリの色は固定順で割り当てる。",
+      "provenance": "既存の web の構成 (照合・推移・マトリックス画面の分割と取得の分け方) の読解にもとづく agent の設計判断。 qa-subs-frontend-web-003 を 2026-09-18 の完成度評価の差し戻しと利用者判断 qa-subs-review-decision-001 に合わせて改訂した版。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T06:34:03Z",
+      "required_info_items": [
+        "frontend-arch",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-subs-uiux-web-005",
+      "question": "web のサブスク画面の UI-UX 要件のうち、画像から一意に決まらず agent が補完した部分は何か。",
+      "answer": "(1) 縦の並びは画像どおり 見出し → KPI 5 枚 → カバー率 → 一覧と右の詳細パネル → 推移と検出理由 → 年換算比較 とし、task 頻度 × 失敗コストで最上位の『見直し候補がいくつあるか』を KPI 5 枚目と一覧の候補バッジの 2 か所で先に読ませる。(2) 詳細パネルは一覧で行を選んだときだけ開き、選択は URL (?vendor=<照合キー>) に保って再読込でも復元する。× で閉じると URL から消す。(3) 詳細パネルのタブは WAI-ARIA の tabs パターン (左右の矢印キーで移動、Tab でパネルへ) で作る。(4) ステータス絞込の選択肢は『すべてのステータス / 見直し候補 / 登録済み / 未登録の候補』とし、旧 UI の未登録候補パネルの役割を『未登録の候補』へ移す。(5) 旧 UI の別名・対象科目の編集と四半期見直しは詳細パネルの『関連データ』タブへ、重複・急増アラートは検出理由カードへ移す。(6) ロゴの位置には何も置かず、ベンダー名の頭文字も描かない (画像取得をしないため、代替の図形で場所を取らない)。(7) KPI 2 枚目の補足は『売上に占める割合』と書く (利用者判断 qa-subs-kpi-caption-001)。(8) 読込中は各カードの骨格を保つ表示、データ 0 件は一覧の位置に空状態、取得失敗は PageState の error とする。色だけで区別させず、候補バッジと前期間比の増減には文字と記号を必ず併記する。",
+      "provenance": "参照画像・既存の PageShell / PageState / KpiCard の使い方・既存画面 (照合 / 推移 / マトリックス) の選択と URL 保持の慣例からの agent の設計判断。(7) は画像の文言を変える判断であり、利用者へ選択肢を提示していない。 qa-subs-uiux-web-003 を 2026-09-18 の完成度評価の差し戻しと利用者判断 qa-subs-kpi-caption-001 に合わせて改訂した版。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T06:34:03Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-subs-review-decision-002",
+      "question": "(AskUserQuestion で 3 問を選択肢つきで提示) (1) 登録済みのサブスクが見直し候補になったとき、検出理由カードの『候補を採用』は何を意味させるか。選択肢: 『候補として確認』と同じ (推奨) / 見直しを済ませた記録 (resolved) / 未登録の候補だけに出す。(2) 『見直し候補として確認』(confirmed) にした候補を画面でどう扱うか。選択肢: 一覧に残し件数から外す (推奨) / すべて残す / すべてから外す。(3) 複数の規則に同時に当たったとき、同じ理由では再び出さないための指紋をどう作るか。選択肢: 当たった全規則+基準金額 (推奨) / 最優先の規則+基準金額。",
+      "answer": "(1) 『候補として確認』と同じ — 登録済みベンダーの見直し候補では、検出理由カードの『候補を採用』と詳細パネルの『候補として確認』はどちらも confirmed (見直す対象として残す) を記録する。保存する値は confirmed / dismissed の 2 つだけ。(2) 一覧に残し件数から外す — confirmed の候補は一覧の候補バッジを『確認済み』に変えて残し、KPI の『見直し候補 N 件』とサイドバーのバッジはまだ判断していない候補だけを数える。(3) 当たった全規則+基準金額 — 指紋は当たった規則の種類すべてと判定時の基準金額から作り、月は含めない。新しい規則が加わるか金額が変わったときだけ再び候補に出す。",
+      "provenance": "AskUserQuestion への利用者の明示選択 (2026-09-18T06:51:17Z)。各問に 2〜3 の選択肢と説明を示し、利用者が 3 問とも推奨案を選んだ。qa-subs-review-decision-001 (『つづけて』からの推定の採用) を置き換える。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-18T06:51:17Z",
+      "required_info_items": [
+        "api-contract",
+        "data-persistence",
+        "domain-model",
+        "frontend-arch",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-subs-database-web-006",
+      "question": "web のサブスク画面の database 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) migration 0043 は追加だけにする — sub_vendors に category TEXT NULL (NULL は既定辞書に従う) を ADD COLUMN し、sub_vendor_review_decisions (id, user_id, vendor_key, decision は confirmed / dismissed のいずれか (登録済みベンダーの見直し候補への判断だけを持つ。未登録候補の採用 / 除外は既存の sub_vendors / sub_vendor_exclusions に保存する), rule_fingerprint, decided_at、(user_id, vendor_key) 一意) を CREATE TABLE する。既存行は書き換えない。(2) 判断には判定時の規則の指紋を保存する。指紋は当たった規則の種類すべてを表示順に並べたものと判定時の基準金額から作り、月は含めない。指紋が同じなら月が変わっても判断を保ち、金額が変わるか新しい規則が加わったときだけ判断を無効にして未判断の候補へ戻す。(3) 統合は既存の aliases 配列への追加で表し、統合の取り消しは配列からの削除で表す。(4) 口座の種別は保存しない (口座名から毎回導出する)。(5) Drizzle の schema.ts を migration と同じ内容に更新し、ローカル D1 への適用で確かめる。",
+      "provenance": "既存 schema と過去の migration の書き方 (追加のみ・行の書き換えをしない) の読解にもとづく agent の設計判断。 qa-subs-database-web-003 の改訂版。 2026-09-18 の完成度評価 2 回目の差し戻しを受け、利用者決定 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 に合わせて agent が書き直した設計判断。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T06:54:11Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-subs-backend-web-006",
+      "question": "web のサブスク画面の backend 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) core に subscriptionsScreen(data, deals, vendors, decisions, period) を置き、推定月額・継続中の判定・年換算・前期間比・カテゴリ (既定辞書 → 利用者の上書き)・口座の 3 分類とカバー率・カテゴリ別の月次推移と年換算比較・見直し候補と理由文を 1 か所で算出する。既存の sourceNeutralSubscriptions の照合後の明細を入力にし、別経路で明細を数え直さない。(2) 推定月額は、直近 12 か月の支払い間隔が 11〜13 か月なら年額払いとして最新の支払額 ÷ 12、それ以外は最新の支払額とする。継続中は、月払いなら最新月か前月に支払いがあること、年額払いなら直近 12 か月に支払いがあること。(3) 見直し候補の規則は 5 つ — 同じカテゴリ (その他を除く) に継続中が 2 件以上 / 既存 dup の条件 (二重請求の疑い) / 既存 spike の条件 (急増) / 直前の支払額からの値上げ (5% 以上が 2 か月続く) / 四半期見直しの期限切れ (subsReviewStatus.due)。理由文は規則ごとの定型文に金額・件数・月数を差し込む。複数の規則に当たるときは 二重請求 → 急増 → 値上げ → 重複 → 期限切れ の順に並べる。(4) 前期間比は previousPeriod で直前の同じ長さの期間を取り、同じ関数を同じ定義で当てた差とする。(5) GET /api/subscriptions は期間つきで上記をまとめて返し、GET /api/subscriptions/vendors/:key は詳細パネル用に生の取引名 (ソース種別つき)・直近の取引・データソース別件数を返す。(6) 保存 API は既存の /api/sub-vendors 系を延長し、PUT /api/sub-vendors/:id に category を足し、POST /api/sub-vendors/:id/aliases (統合) と POST / DELETE /api/subscriptions/review-decisions (登録済みベンダーの見直し候補への確認 = confirmed・除外 = dismissed の判断とその取消) を新設する。未登録候補の採用は既存の POST /api/sub-vendors、除外は既存の POST /api/sub-vendors/exclusions をそのまま使う を新設する。(7) 見直し候補は 未判断 / 確認済み の 2 状態で返し、指紋が一致する dismissed の候補は返さない。KPI の『見直し候補 N 件』とサイドバーのバッジは未判断の候補だけを同じ関数で数え、確認済みは一覧の候補バッジ (『確認済み』) にだけ出す。",
+      "provenance": "既存 core / api の関数と境界 (純関数は core、route は Dataset を組んで渡すだけ) の読解にもとづく agent の設計判断。閾値 (5%・2 か月・11〜13 か月) は agent の提案で、実装時に docs とテストで固定する。 qa-subs-backend-web-003 の改訂版。 2026-09-18 の完成度評価 2 回目の差し戻しを受け、利用者決定 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 に合わせて agent が書き直した設計判断。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T06:54:11Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-subs-frontend-web-006",
+      "question": "web のサブスク画面の frontend 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) 画面は数値を再計算しない。KPI・一覧・合計行・カテゴリ別推移・年換算比較・候補の判定と理由文は API が返した値をそのまま描く。(2) 取得は 2 本に分ける。画面全体は GET /api/subscriptions (期間つき) の 1 本、詳細パネルは選んだベンダーについて GET /api/subscriptions/vendors/:key を選択後にだけ取得する (TanStack Query の依存クエリ)。(3) 変更 (統合・カテゴリ変更・未登録候補の採用 / 除外・見直し候補の確認 / 除外とその取消・四半期見直し) の成功後は、サブスク一覧・詳細・サイドバーのバッジ (reviewQueue) のクエリを無効化して揃える。(4) 部品は pages/subscriptions/ 配下に Kpis / CoverageCard / SubscriptionTable / DetailPanel / CategoryTrendChart / AnnualComparison / ReasonCard / SelectionBar として分け、照合画面の DetailPanel と SelectionActions の作りを踏襲する (共通化は 2 画面目の本サイクルでは行わず、同じ形を保つ)。(5) 旧 SubVendorsPanel / SubsCandidatesPanel は撤去し、その操作を DetailPanel の『関連データ』タブと ReasonCard へ移す。旧テストは新しい部品のテストへ移し替える。(6) 色はデザイントークンと既存の系列パレットだけを使い、カテゴリの色は固定順で割り当てる。 (7) 検出理由カードの『候補を採用』と詳細パネルの『候補として確認』は同じ confirmed を送る。未登録候補の行では、採用は登録、除外は除外の既存 API を呼ぶ。",
+      "provenance": "既存の web の構成 (照合・推移・マトリックス画面の分割と取得の分け方) の読解にもとづく agent の設計判断。 qa-subs-frontend-web-003 の改訂版。 2026-09-18 の完成度評価 2 回目の差し戻しを受け、利用者決定 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 に合わせて agent が書き直した設計判断。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T06:54:11Z",
+      "required_info_items": [
+        "frontend-arch",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-subs-uiux-web-006",
+      "question": "web のサブスク画面の UI-UX 要件のうち、画像から一意に決まらず agent が補完した部分は何か。",
+      "answer": "(1) 縦の並びは画像どおり 見出し → KPI 5 枚 → カバー率 → 一覧と右の詳細パネル → 推移と検出理由 → 年換算比較 とし、task 頻度 × 失敗コストで最上位の『見直し候補がいくつあるか』を KPI 5 枚目と一覧の候補バッジの 2 か所で先に読ませる。(2) 詳細パネルは一覧で行を選んだときだけ開き、選択は URL (?vendor=<照合キー>) に保って再読込でも復元する。× で閉じると URL から消す。(3) 詳細パネルのタブは WAI-ARIA の tabs パターン (左右の矢印キーで移動、Tab でパネルへ) で作る。(4) ステータス絞込の選択肢は『すべてのステータス / 見直し候補 / 登録済み / 未登録の候補』とし、旧 UI の未登録候補パネルの役割を『未登録の候補』へ移す。確認済みにした見直し候補は一覧に残し、候補バッジを『確認済み』に変える (KPI の件数とサイドバーのバッジには数えない)。(5) 旧 UI の別名・対象科目の編集と四半期見直しは詳細パネルの『関連データ』タブへ、重複・急増アラートは検出理由カードへ移す。(6) ロゴの位置には何も置かず、ベンダー名の頭文字も描かない (画像取得をしないため、代替の図形で場所を取らない)。(7) KPI 2 枚目の補足は『売上に占める割合』と書く (利用者判断 qa-subs-kpi-caption-001)。(8) 読込中は各カードの骨格を保つ表示、データ 0 件は一覧の位置に空状態、取得失敗は PageState の error とする。色だけで区別させず、候補バッジと前期間比の増減には文字と記号を必ず併記する。",
+      "provenance": "参照画像・既存の PageShell / PageState / KpiCard の使い方・既存画面 (照合 / 推移 / マトリックス) の選択と URL 保持の慣例からの agent の設計判断。(7) の文言は利用者判断 qa-subs-kpi-caption-001 に従う。 qa-subs-uiux-web-003 の改訂版。 2026-09-18 の完成度評価 2 回目の差し戻しを受け、利用者決定 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 に合わせて agent が書き直した設計判断。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T06:54:11Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-subs-security-web-006",
+      "question": "web のサブスク画面の security 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) 新設 API の入力はすべて Zod で許可リスト検証する — vendorKey は長さ上限つきの文字列、aliases は 1〜50 件・各 1〜100 文字の配列、decision は confirmed / dismissed の列挙、category は既定辞書のカテゴリ名の列挙か 1〜20 文字の自由記述。(2) 取引名・ベンダー名は利用者が取り込んだ外部由来の文字列なので、画面では React のテキストとしてだけ描き、HTML として挿入しない。(3) カテゴリ辞書と口座の手がかりはコード内の固定表で持ち、判定のために外部へ問い合わせない。(4) 更新系は :id / :key を userId と組にして引き、見つからなければ 404 を返して他の利用者の存在を示さない。",
+      "provenance": "既存の検証の書き方と OWASP ASVS の入力検証・出力エンコードの指針からの agent の設計判断。 qa-subs-security-web-003 の改訂版。 2026-09-18 の完成度評価 2 回目の差し戻しを受け、利用者決定 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 に合わせて agent が書き直した設計判断。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T06:54:11Z",
+      "required_info_items": [
+        "api-contract",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-subs-backend-web-007",
+      "question": "web のサブスク画面の backend 要件のうち、agent が補完した設計判断は何か。",
+      "answer": "(1) core に subscriptionsScreen(data, deals, vendors, decisions, period) を置き、推定月額・継続中の判定・年換算・前期間比・カテゴリ (既定辞書 → 利用者の上書き)・口座の 3 分類とカバー率・カテゴリ別の月次推移と年換算比較・見直し候補と理由文を 1 か所で算出する。既存の sourceNeutralSubscriptions の照合後の明細を入力にし、別経路で明細を数え直さない。(2) 推定月額は、直近 12 か月の支払い間隔が 11〜13 か月なら年額払いとして最新の支払額 ÷ 12、それ以外は最新の支払額とする。継続中は、月払いなら最新月か前月に支払いがあること、年額払いなら直近 12 か月に支払いがあること。(3) 見直し候補の規則は 5 つ — 同じカテゴリ (その他を除く) に継続中が 2 件以上 / 既存 dup の条件 (二重請求の疑い) / 既存 spike の条件 (急増) / 直前の支払額からの値上げ (5% 以上が 2 か月続く) / 四半期見直しの期限切れ (subsReviewStatus.due)。理由文は規則ごとの定型文に金額・件数・月数を差し込む。複数の規則に当たるときは 二重請求 → 急増 → 値上げ → 重複 → 期限切れ の順に並べる。(4) 前期間比は previousPeriod で直前の同じ長さの期間を取り、同じ関数を同じ定義で当てた差とする。(5) GET /api/subscriptions は期間つきで上記をまとめて返し、GET /api/subscriptions/vendors/:key は詳細パネル用に生の取引名 (ソース種別つき)・直近の取引・データソース別件数を返す。(6) 保存 API は既存の /api/sub-vendors 系を延長し、PUT /api/sub-vendors/:id に category を足し、POST /api/sub-vendors/:id/aliases (統合) と POST / DELETE /api/subscriptions/review-decisions (登録済みベンダーの見直し候補への確認 = confirmed・除外 = dismissed の判断とその取消) を新設する。未登録候補の採用は既存の POST /api/sub-vendors、除外は既存の POST /api/sub-vendors/exclusions をそのまま使う。(7) 見直し候補は 未判断 / 確認済み の 2 状態で返し、指紋が一致する dismissed の候補は返さない。KPI の『見直し候補 N 件』とサイドバーのバッジは未判断の候補だけを同じ関数で数え、確認済みは一覧の候補バッジ (『確認済み』) にだけ出す。",
+      "provenance": "qa-subs-backend-web-006 の (6) の文末の重複 (『をそのまま使う を新設する。』) を『をそのまま使う。』に直した版。内容は 006 と同じで、根拠は 006 の出所をそのまま引き継ぐ。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-18T06:55:33Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    }
+  ],
+  "approval_log": [
+    {
+      "id": "appr-foundation-subscriptions-001",
+      "note": "サブスク画面サイクルの上位概念 U1-U9 を利用者が承認 (2026-09-18T03:36:08Z)。提示した草案は scratchpad の foundation-subs.json と同文で、U1 本質的目的・U2 背景・G1-G5・O1-O5・S1-S5・SH1-SH2・scope in 7 / out 5・C1-C5・I1-I7 の全項目を提示した。画像 design/FINAL-UI/images/09-subscriptions.png を構成の正本とし、カテゴリ=既定辞書+利用者変更 / 見直し候補=決定論ルール+定型文 / カバー率=口座名で 3 分類+取込済み月の割合 / 保存=既存表の再利用+migration 0043 / 旧 UI=吸収して撤去 / 数値=検算済み fixture / KPI 月額=推定月額の和 の 7 決定を同時に承認。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-subscriptions-002",
+      "note": "G5 と I5 の改訂を利用者が承認 (2026-09-18T06:51:17Z、AskUserQuestion で改訂前後の文面を preview で提示し『この文面で承認する』を選択)。改訂は『採用』を未登録候補 (sub_vendors 登録 / sub_vendor_exclusions) と登録済みベンダーの見直し候補 (確認 / 除外を migration 0043 の判断表へ) で書き分ける 2 か所だけで、ほかの U1-U9 は appr-foundation-subscriptions-001 の承認のまま変えない。basis=user-decision。"
+    }
+  ],
+  "reopen_log": [
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-18) の high 指摘: 『候補を採用 / 候補から除外 / 候補として確認』の意味と保存先が G5・dec-subs-persistence と To-Be (sub_vendor_review_decisions の adopted / dismissed) で食い違う。利用者判断 qa-subs-review-decision-001 で決め直すため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-18T06:34:03Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-18) の high 指摘: 『候補を採用 / 候補から除外 / 候補として確認』の意味と保存先が G5・dec-subs-persistence と To-Be (sub_vendor_review_decisions の adopted / dismissed) で食い違う。利用者判断 qa-subs-review-decision-001 で決め直すため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-18T06:34:03Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-18) の high 指摘: 『候補を採用 / 候補から除外 / 候補として確認』の意味と保存先が G5・dec-subs-persistence と To-Be (sub_vendor_review_decisions の adopted / dismissed) で食い違う。利用者判断 qa-subs-review-decision-001 で決め直すため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-18T06:34:03Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-18) の medium 指摘: KPI 2 枚目の補足文言を agent が画像から変えていた。利用者判断 qa-subs-kpi-caption-001 で決め直すため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-18T06:34:03Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "完成度評価 2 回目 (2026-09-18) の high / medium 指摘: adopted の廃止が security と上位概念 I5 に伝わっておらず、主根拠 qa-subs-review-decision-001 は『つづけて』からの推定だった。利用者の明示選択 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 で決め直すため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-18T06:54:11Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度評価 2 回目 (2026-09-18) の high / medium 指摘: adopted の廃止が security と上位概念 I5 に伝わっておらず、主根拠 qa-subs-review-decision-001 は『つづけて』からの推定だった。利用者の明示選択 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 で決め直すため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-18T06:54:11Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "完成度評価 2 回目 (2026-09-18) の high / medium 指摘: adopted の廃止が security と上位概念 I5 に伝わっておらず、主根拠 qa-subs-review-decision-001 は『つづけて』からの推定だった。利用者の明示選択 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 で決め直すため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-18T06:54:11Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "完成度評価 2 回目 (2026-09-18) の high / medium 指摘: adopted の廃止が security と上位概念 I5 に伝わっておらず、主根拠 qa-subs-review-decision-001 は『つづけて』からの推定だった。利用者の明示選択 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 で決め直すため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-18T06:54:11Z"
+    },
+    {
+      "category": "security",
+      "platform": "web",
+      "reason": "完成度評価 2 回目 (2026-09-18) の high / medium 指摘: adopted の廃止が security と上位概念 I5 に伝わっておらず、主根拠 qa-subs-review-decision-001 は『つづけて』からの推定だった。利用者の明示選択 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 で決め直すため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-18T06:54:11Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "qa-subs-backend-web-006 の (6) で、置換の境界を誤り文末に『を新設する』が二重に残った (compile 後の backend.md で確認)。文意は変えずに文を直した 007 版へ根拠を差し替えるため再オープンする。",
+      "from": "確定",
+      "reopened_at": "2026-09-18T06:55:33Z"
+    }
+  ],
+  "category_aggregate": {
+    "database": "確定",
+    "auth": "確定",
+    "ui-ux": "確定",
+    "security": "確定",
+    "infrastructure": "確定",
+    "backend": "確定",
+    "frontend": "確定",
+    "maintenance-ops": "確定"
+  },
+  "targets": [
+    {
+      "target_id": "wcag22-non-text-contrast",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "wai-aria-apg-tabs",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "tanstack-query-dependent-queries",
+      "category": "frontend"
+    },
+    {
+      "target_id": "tanstack-query-invalidations-from-mutations",
+      "category": "frontend"
+    },
+    {
+      "target_id": "react-router-searchparams",
+      "category": "frontend"
+    },
+    {
+      "target_id": "hono-zod-validator",
+      "category": "backend"
+    },
+    {
+      "target_id": "unicode-tr15-normalization",
+      "category": "backend"
+    },
+    {
+      "target_id": "cloudflare-d1-query",
+      "category": "database"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "category": "database"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "cloudflare-workers-ai-pricing",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "owasp-asvs-encoding",
+      "category": "security"
+    },
+    {
+      "target_id": "vitest-expect",
+      "category": "maintenance-ops"
+    }
+  ],
+  "requirements_foundation": {
+    "essential_purpose": "サブスク画面を、『毎月の固定費に重複や見直し候補はありますか？』という問いに 1 画面で答え、見直すべき契約を見つけてその場で決着 (名称の統合・候補の採用 / 除外・見直し候補として確認) まで進められる場にする。利用者が銀行口座・クレジットカード・電子マネーの取引から検出された継続的な支払いを、月額・年換算・カテゴリ・データの出典つきで一覧し、見直し候補の理由を読み、同じサービスの表記ゆれを 1 つにまとめられる状態にする。",
+    "background": "現行の /subscriptions (packages/web/src/pages/Subscriptions.tsx、305 行) は、重複・急増アラート、KPI 4 枚 (最新月の実支払・年換算・直近 12 か月の実支払・売上比)、データ元の 1 行注記、ベンダー別の表 (直近月額 / 平均月額 / 支払月数 / 直近 12 か月 / 年換算)、ベンダー別の月次積み上げ棒、ベンダー別の前年比較表、登録ベンダーの編集パネル (別名・対象科目・四半期見直し)、未登録候補パネルを縦に並べた画面である。design/FINAL-UI/images/09-subscriptions.png が示す構成 (問いの見出し、前期間比つき KPI 5 枚、データソースのカバー率、ベンダー名と正規化名とカテゴリを持つ一覧、右の詳細パネル、見直し候補の検出理由、カテゴリ別の推移と年換算比較、下部の選択バー) とは大きく離れ、design/FINAL-UI/spec/AUDIT.md も『09 サブスク | 不足あり』と判定している。カテゴリの仕組み、見直し候補の判定、口座種別 (銀行 / カード / 電子マネー) の区別、名称統合と見直し判断の保存、サブスク用の前期間比はいずれもコードに存在しない。検出 (core/src/subs.ts の vendorKey / matchSubVendor / subsCandidates / subsConfidence) と集計 (core/src/analysis.ts の subscriptions、expense-projection.ts の sourceNeutralSubscriptions) は既にあり、これを土台にする。",
+    "goals": [
+      {
+        "id": "G1",
+        "text": "/subscriptions を 09-subscriptions.png どおりの画面にする。問いの見出し『毎月の固定費に、重複や見直し候補はありますか？』と説明文、KPI 5 枚 (月額のサブスク合計・年換算の合計・直近 12 か月の支払額・売上比・見直し候補 N 件。月額と年換算は前期間比つき)、データソースのカバー率カード (銀行口座 / クレジットカード / 電子マネーの % と取込済み口座数) と最終更新・再取得、サブスク一覧 (ベンダー名・カテゴリで検索、ステータス絞込、行チェック、列=ベンダー名 / 正規化名 / ソース数 / 最新の金額 / 月額の推定 / 年換算 / カテゴリ / 候補、合計行)、月次のサブスク支出推移 (カテゴリ別の積み上げ棒と凡例)、年換算の比較 (カテゴリ別の月額 / 年換算 / 構成比 / 前期間比と合計行) を、既存のデザイントークン・共通 Button・PageShell・期間タブ (usePeriod) の上に組む。読込・空・失敗の各状態を持つ。ロゴ (サービスのアイコン) 画像は取得も表示もしない。"
+      },
+      {
+        "id": "G2",
+        "text": "一覧で選んだサブスクの『サブスクの詳細』パネルを実装する。正規化名・カテゴリ (変更可)・見直し候補バッジ、概要 / 取引履歴 / 関連データのタブ、正規化された名称 (編集可)、マッチした生の取引名 (チェックとソース種別)、月額の推定と年換算、直近の取引 3 件と『すべて見る (N件)』、データソース別件数、『名称を統合』『候補として確認』を出し、閉じるで解除できる。生の取引名を選ぶと画面下部に『N件の取引を選択中』バー (選択チップの解除・選択した N 件を統合・選択を解除) を出す。"
+      },
+      {
+        "id": "G3",
+        "text": "『見直し候補』を core の純関数で決定論的に判定し、KPI の件数・一覧の候補バッジ・『サブスク候補の検出理由』カードに同じ結果を出す。理由は AI を呼ばず、同じカテゴリ内の重複 / 金額の急増 / 直近の値上げ / 四半期見直しの期限切れ などの規則を判定し、金額・件数・月数を差し込む定型文で生成する。カードから『候補を採用』『候補から除外』『この候補を詳しく見る』を操作できる。規則と文テンプレートを docs に明記しテストで固定する。"
+      },
+      {
+        "id": "G4",
+        "text": "サブスク画面の数値を core の純関数 1 か所で算出し、GET /subscriptions をその形へ拡張する。推定月額 (年額払いは 12 等分) とその合計・年換算・前期間比 (直前の同じ長さの期間の最新月時点との差)、直近 12 か月の支払額、売上比、正規化名→カテゴリの既定辞書と利用者上書き、口座名の手がかりによる 銀行 / カード / 電子マネー の 3 分類とカバー率 (取込済み口座数 / 口座数、期間の口座×月のうち取引がある割合)、カテゴリ別の月次推移と年換算比較、見直し候補を算出する。既存の sourceNeutralSubscriptions・サイドバーのバッジ件数・総収支 / 推移の数値と突き合わせて一致させる。"
+      },
+      {
+        "id": "G5",
+        "text": "保存は既存表を再利用して拡張し、画像に無い旧 UI は画像の部品へ吸収して撤去する。名称の統合=既存ベンダーの aliases 追加、未登録候補の採用=sub_vendors 登録・除外=sub_vendor_exclusions、登録済みベンダーの見直し候補への判断 (確認 / 除外) とカテゴリは migration 0043 で足す。登録ベンダーの別名・対象科目の編集、四半期見直し、重複・急増アラート、未登録候補の各機能は失わず、詳細パネル・候補バッジ・検出理由・ステータス絞込へ移す。サイドバー・ヘッダー・フッター・月次クローズ進捗は既存実装をそのまま使う。"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "O1",
+        "text": "サブスク画面が画像の全構成要素を描画する。",
+        "serves": [
+          "G1"
+        ],
+        "serves_goals": [
+          "G1"
+        ],
+        "measure": "DOM テストで、問いの見出しと説明文・KPI 5 枚と前期間比・カバー率カード 3 区分と最終更新と再取得・一覧 (検索 / ステータス絞込 / 9 列 / 合計行)・カテゴリ別推移の凡例と棒・年換算比較表 (合計行つき) が描画され、読込・空・失敗の状態テストが緑である。ロゴ画像要素が 0 件である。"
+      },
+      {
+        "id": "O2",
+        "text": "行を選ぶと詳細パネルが開き、統合と確認の操作ができる。",
+        "serves": [
+          "G2"
+        ],
+        "serves_goals": [
+          "G2"
+        ],
+        "measure": "DOM テストで、行選択→詳細パネル (3 タブ・正規化名・生の取引名・月額推定・直近の取引・データソース・2 操作) 表示、生の取引名 2 件選択→下部バー『2件の取引を選択中』表示→統合 API 呼出し、閉じる / 選択を解除で状態が戻ることが緑である。"
+      },
+      {
+        "id": "O3",
+        "text": "見直し候補の判定と理由文が規則どおりに出る。",
+        "serves": [
+          "G3"
+        ],
+        "serves_goals": [
+          "G3"
+        ],
+        "measure": "core の単体テストで各規則の境界値と理由文テンプレートが固定され、KPI 件数・一覧バッジ・検出理由カードの件数が同一入力で一致する。"
+      },
+      {
+        "id": "O4",
+        "text": "画面の数値が core の 1 か所から出て既存と一致する。",
+        "serves": [
+          "G4"
+        ],
+        "serves_goals": [
+          "G4"
+        ],
+        "measure": "core 単体テストで推定月額・年換算・前期間比・カバー率・カテゴリ別集計の境界値が緑、API 統合テストで GET /subscriptions の新しい形が返り、合計行 = 行の和、カテゴリ別合計 = 一覧合計、直近 12 か月の支払額が既存 last12Total と一致する。"
+      },
+      {
+        "id": "O5",
+        "text": "保存と旧機能の移設が壊れずに完了する。",
+        "serves": [
+          "G5"
+        ],
+        "serves_goals": [
+          "G5"
+        ],
+        "measure": "migration 0043 がローカル D1 に適用でき、統合・採用・除外・確認・カテゴリ変更の API 統合テストが緑、旧パネルのテストが新しい置き場所のテストへ移されて機能の欠落が 0 件、サイドバーのバッジ件数が画面の候補件数と一致する。"
+      }
+    ],
+    "success_criteria": [
+      "S1 (G1): /subscriptions で 09-subscriptions.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件、ロゴ画像の取得・表示が 0 件である。",
+      "S2 (G2): 任意の行を選ぶと詳細パネルが同じ行の月額推定と年換算を示し、生の取引名を選んで統合すると aliases に反映され、再読込後も同じベンダーにまとまって表示される。",
+      "S3 (G3): 見直し候補の規則と文テンプレートが docs に明記され、境界値テストで固定され、KPI 件数・一覧バッジ・検出理由カードが同じ件数を示す。",
+      "S4 (G4): 一覧の合計行・カテゴリ別比較の合計・KPI の月額合計が互いに一致し、直近 12 か月の支払額と売上比が既存関数の値と一致する。数値の正本は core が算出する検算済み fixture であり、画像の数値は写し取らない。",
+      "S5 (G5): migration 0043 適用後に既存の登録ベンダー・除外・見直し日時が失われず、旧 UI にあった操作がすべて新しい画面から実行できる。"
+    ],
+    "stakeholders": [
+      "SH1 利用者 (単独の個人事業主): 月次クローズの『整える』段階で、毎月の固定費に重複や不要な契約がないかを 1 画面で確かめ、表記ゆれを 1 つにまとめ、見直し候補を採用 / 除外して決着させたい。家計と事業の両方の支払いを同じ画面で見たい。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 推定月額・カテゴリ・カバー率・見直し候補の規則が core の純関数 1 か所と docs・テストで固定され、総収支・推移・サイドバーのバッジと二重実装にならないこと。"
+    ],
+    "scope": {
+      "in": [
+        "サブスク画面 (09-subscriptions.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直し",
+        "サブスクの詳細パネル (3 タブ・名称編集・生の取引名・直近の取引・データソース・名称を統合・候補として確認) と下部の選択バー",
+        "見直し候補の決定論判定・定型文の理由・検出理由カード (採用 / 除外 / 詳しく見る)",
+        "core の純関数: 推定月額・年換算・前期間比・カテゴリ既定辞書・口座名 3 分類とカバー率・カテゴリ別推移と年換算比較",
+        "GET /subscriptions の拡張と、統合・カテゴリ変更・見直し候補の確認を保存する API",
+        "migration 0043 (sub_vendors.category と見直し判断の保存)",
+        "旧 UI (登録ベンダー編集・四半期見直し・アラート・前年比較表・候補パネル) の新しい部品への吸収と撤去"
+      ],
+      "out": [
+        "サービスのロゴ・アイコン画像の取得と表示 (利用者指示によりコスト回避)",
+        "外部サービス・AI による分類や理由文の生成",
+        "サイドバー / ヘッダー / フッター / 月次クローズ進捗の構造変更",
+        "他の画面 (総収支・推移・マトリックス・診断など) の作り直し",
+        "web 以外のプラットフォーム"
+      ]
+    },
+    "constraints": [
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。集計・判定は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、ボタンは共通 Button (遷移は Link className=btn)、本文は PageShell。カテゴリの色も既存の系列パレットから当てる。",
+      "C3 データ: 取込データは外部送信しない。カテゴリ辞書・口座 3 分類の手がかりはコード内の固定表で持ち、外部 API を呼ばない。",
+      "C4 DB: 破壊的な行書き換え migration をしない。0043 は列と表の追加だけにし、既存の sub_vendors / sub_vendor_exclusions の行を保つ。",
+      "C5 数値: 画像の数値は閉じていない (一覧 8 行の月額合計 ¥9,778 に対し合計欄 ¥64,800) ため、画像は構成・文言・配置の正本、数値は core が算出する検算済み fixture を正本とする。"
+    ],
+    "concrete_intents": [
+      {
+        "id": "I1",
+        "text": "Subscriptions.tsx を、問いの見出し・KPI 5 枚・カバー率カード・一覧 (検索 / ステータス絞込 / 候補バッジ / 合計行)・カテゴリ別推移・年換算比較・右の詳細パネル・検出理由カード・下部の選択バーの構成に作り直し、選択中のサブスクを URL に保つ。",
+        "serves": [
+          "G1",
+          "G2"
+        ]
+      },
+      {
+        "id": "I2",
+        "text": "詳細パネルで正規化名とカテゴリを編集し、生の取引名を選んで『選択した N 件を統合』で既存ベンダーの aliases に加えられるようにする。",
+        "serves": [
+          "G2",
+          "G5"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "core に見直し候補の判定関数と理由文テンプレートを置き、KPI・一覧・検出理由カード・サイドバーのバッジが同じ関数を使う。",
+        "serves": [
+          "G3",
+          "G4"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "core に推定月額・前期間比・カテゴリ辞書・口座 3 分類とカバー率・カテゴリ別集計の純関数を置き、GET /subscriptions がそれを返す。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "migration 0043 で sub_vendors に category を足し、登録済みベンダーの見直し候補への判断 (確認 / 除外) を保存する表を足して、既存の除外・見直し日時と一緒に扱う。",
+        "serves": [
+          "G5"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "旧 SubVendorsPanel / SubsCandidatesPanel / アラート / ベンダー別前年比較表を撤去し、その操作を詳細パネル・検出理由カード・ステータス絞込へ移したうえで、既存テストを新しい置き場所へ移す。",
+        "serves": [
+          "G5"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "検算済み fixture と見た目検査 (check-financial-visuals) を新しい構成へ更新し、ロゴ画像が無いことも検査する。",
+        "serves": [
+          "G1",
+          "G4"
+        ]
+      }
+    ],
+    "confirmed": true,
+    "approval_ref": "appr-foundation-subscriptions-002"
+  },
+  "decisions": [
+    {
+      "id": "dec-subs-category",
+      "question": "サブスクのカテゴリ (エンタメ / クラウド / 仕事効率化 など) をどう決めるか。",
+      "status": "confirmed",
+      "serves_goals": [
+        "G1",
+        "G4",
+        "G5"
+      ],
+      "options": [
+        {
+          "id": "opt-dict-plus-override",
+          "label": "core の既定辞書 (正規化名→カテゴリ、当たらなければ『その他』) + 利用者の変更を sub_vendors.category に保存",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "辞書は core の固定表、上書きは既存表への列追加だけで追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "G1 のカテゴリ列・カテゴリ別推移・年換算比較と G4 の集計を、取込直後から辞書で埋められる。辞書が外れても利用者が詳細パネルで直せば以後は上書きが勝つ。",
+          "security_fit": "取引名をコード内の表と照合するだけで、取込データを外部へ送らない (C3)。",
+          "pros": [
+            "取込直後からカテゴリが埋まる",
+            "判定が決定論でテストに固定できる",
+            "利用者の判断が最終的に勝つ"
+          ],
+          "cons": [
+            "辞書に無いサービスは『その他』に落ちる",
+            "辞書の保守が要る"
+          ],
+          "risks": [
+            "表記ゆれで辞書に当たらない。照合前に NFKC 正規化と vendorKey を通す必要がある"
+          ],
+          "lock_in": "なし。辞書と上書き列だけで、外部仕様に依存しない。",
+          "ops_burden": "辞書への追記はコード変更 1 か所とテスト 1 件。",
+          "evidence_refs": [
+            "https://unicode.org/reports/tr15/"
+          ]
+        },
+        {
+          "id": "opt-manual-only",
+          "label": "辞書を持たず、利用者が全ベンダーに手でカテゴリを付ける",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "列追加だけで追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "付けるまでカテゴリ列・カテゴリ別推移が全て『未分類』になり、G1 の画面が初回に成立しない。",
+          "security_fit": "外部送信なし。",
+          "pros": [
+            "実装が最小",
+            "誤分類が起きない"
+          ],
+          "cons": [
+            "初回は全件未分類で画面の半分が空く",
+            "利用者の作業量が件数に比例する"
+          ],
+          "risks": [
+            "面倒で放置され、カテゴリ別の比較が常に使えない状態になる"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "運用作業は利用者の手入力のみ。",
+          "evidence_refs": [
+            "https://unicode.org/reports/tr15/"
+          ]
+        },
+        {
+          "id": "opt-workers-ai",
+          "label": "Workers AI でサービス名からカテゴリを推定し、結果を保存",
+          "cost_model": {
+            "category": "low-cost",
+            "amount": 0.011,
+            "currency": "USD",
+            "billing_period": "per-1000-neurons",
+            "tco": "Workers AI は 1 日 10,000 Neurons まで無料で、超過分は 1,000 Neurons あたり $0.011。個人利用の件数なら無料枠に収まる見込みだが、呼び出し経路・失敗時の扱い・結果の保存が増える。"
+          },
+          "free_tier_limits": "1 日 10,000 Neurons まで無料。超過は 1,000 Neurons あたり $0.011。",
+          "goal_fit": "未知のサービスにもカテゴリを付けられるが、判定が非決定論で、テストで固定できない。",
+          "security_fit": "取引名 (取込データ) を推論のため外部の実行基盤へ渡すことになり、『取込データは外部送信しない』の前提 (C3) と衝突する。",
+          "pros": [
+            "未知のサービスにも対応できる"
+          ],
+          "cons": [
+            "非決定論でテストに固定できない",
+            "呼び出しの失敗時と費用の管理が増える"
+          ],
+          "risks": [
+            "取込データの送信が前提と衝突する",
+            "同じ名前でも結果が揺れる"
+          ],
+          "lock_in": "Workers AI のモデルと料金体系に依存する。",
+          "ops_burden": "モデル更新ごとの確認と、無料枠の監視が要る。",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/workers-ai/platform/pricing/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-dict-plus-override",
+        "rationale": "取込直後から画面が埋まり、判定を決定論のままテストに固定でき、取込データを外へ出さずに済む。辞書の外れは利用者の上書きで吸収できる。",
+        "caveats": [
+          "辞書の照合は vendorKey (NFKC 正規化後) の結果で行い、生の取引名で行わない",
+          "上書き済みの category は辞書より優先し、辞書の更新で上書きを消さない",
+          "『その他』は辞書の欠落を示すので、件数を画面で読めるようにする"
+        ],
+        "confidence": "high",
+        "comparison_basis": {
+          "goal_fit": "辞書+上書きだけが初回から G1 を成立させ、利用者の判断も反映できる。手入力のみは初回が空、AI は決定論でない。",
+          "tco": "辞書+上書きと手入力は追加費用ゼロ。AI は無料枠内でも費用監視の運用が増える。",
+          "security": "辞書と手入力は外部送信なし。AI は取込データを外部の推論へ渡し C3 と衝突する。",
+          "operations": "辞書は追記 1 か所とテスト 1 件。AI はモデル更新と無料枠の監視が増える。",
+          "lock_in": "辞書と手入力は依存なし。AI は Workers AI のモデルと料金に依存する。"
+        },
+        "latest_checked_at": "2026-09-18T03:40:35Z"
+      },
+      "user_decision": {
+        "option_id": "opt-dict-plus-override",
+        "confirmed_at": "2026-09-18T03:05:24Z",
+        "note": "既定の辞書+利用者が変更 を選択"
+      }
+    },
+    {
+      "id": "dec-subs-review-candidate",
+      "question": "『見直し候補』を何で判定し、検出理由の文をどう作るか。",
+      "status": "confirmed",
+      "serves_goals": [
+        "G3",
+        "G4"
+      ],
+      "options": [
+        {
+          "id": "opt-rules-template",
+          "label": "決定論ルール (同カテゴリ内の重複 / 金額の急増 / 直近の値上げ / 四半期見直しの期限切れ など) + 定型文に金額・件数・月数を差し込む",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "core の純関数とテンプレートだけで追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "KPI の件数・一覧の候補バッジ・検出理由カード・サイドバーのバッジを同じ関数で出せ、G3 の『同じ結果を出す』を構造で満たす。",
+          "security_fit": "集計値だけを使い、外部送信なし。",
+          "pros": [
+            "同じ入力で必ず同じ結果",
+            "境界値をテストで固定できる",
+            "理由の根拠 (どの規則か) を画面で示せる"
+          ],
+          "cons": [
+            "規則に無いパターンは検出できない",
+            "文が定型的になる"
+          ],
+          "risks": [
+            "閾値が実データに合わず候補が多すぎる / 少なすぎる"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "閾値の変更はコード 1 か所とテスト。",
+          "evidence_refs": [
+            "https://vitest.dev/api/expect.html"
+          ]
+        },
+        {
+          "id": "opt-ai-reason",
+          "label": "Workers AI に支払い履歴を渡し、見直し候補と理由文を生成",
+          "cost_model": {
+            "category": "low-cost",
+            "amount": 0.011,
+            "currency": "USD",
+            "billing_period": "per-1000-neurons",
+            "tco": "Workers AI は 1 日 10,000 Neurons まで無料で、超過分は 1,000 Neurons あたり $0.011。個人利用の件数なら無料枠に収まる見込みだが、呼び出し経路・失敗時の扱い・結果の保存が増える。"
+          },
+          "free_tier_limits": "1 日 10,000 Neurons まで無料。超過は 1,000 Neurons あたり $0.011。",
+          "goal_fit": "文は自然になるが、KPI・バッジ・カードの件数を同じ結果に揃える保証が無く G3 を満たしにくい。",
+          "security_fit": "支払い履歴 (取込データ) を外部の推論へ渡し C3 と衝突する。",
+          "pros": [
+            "規則外のパターンも拾える可能性がある"
+          ],
+          "cons": [
+            "非決定論でテストに固定できない",
+            "件数の一致を保証できない"
+          ],
+          "risks": [
+            "根拠の無い理由文を事実のように表示する",
+            "取込データの送信が前提と衝突する"
+          ],
+          "lock_in": "Workers AI に依存する。",
+          "ops_burden": "生成結果の監視と費用の監視が要る。",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/workers-ai/platform/pricing/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-rules-template",
+        "rationale": "件数の一致と再現性が G3 の要件そのものであり、決定論ルールでしか構造的に保証できない。理由文は判定した規則と数値から作るため、根拠の無い文にならない。",
+        "caveats": [
+          "規則と閾値・文テンプレートを docs に明記し、各規則の境界値テストを置く",
+          "1 ベンダーが複数の規則に当たるときの表示順 (優先順位) を決めておく",
+          "『候補から除外』した判断は以後の判定から外し、判定そのものは変えない"
+        ],
+        "confidence": "high",
+        "comparison_basis": {
+          "goal_fit": "決定論ルールは件数一致と再現性を満たす。AI は一致を保証できない。",
+          "tco": "ルールは追加費用ゼロ。AI は無料枠内でも費用と生成結果の監視が要る。",
+          "security": "ルールは外部送信なし。AI は取込データを外部へ渡す。",
+          "operations": "ルールは閾値の保守だけ。AI はモデル更新ごとの品質確認が要る。",
+          "lock_in": "ルールは依存なし。AI は Workers AI に依存する。"
+        },
+        "latest_checked_at": "2026-09-18T03:40:35Z"
+      },
+      "user_decision": {
+        "option_id": "opt-rules-template",
+        "confirmed_at": "2026-09-18T03:05:24Z",
+        "note": "決定論ルール+定型文 を選択"
+      }
+    },
+    {
+      "id": "dec-subs-coverage",
+      "question": "『データソースのカバー率』の 銀行口座 / クレジットカード / 電子マネー をどう分類し、% と (分子/分母) を何で定義するか。",
+      "status": "confirmed",
+      "serves_goals": [
+        "G1",
+        "G4"
+      ],
+      "options": [
+        {
+          "id": "opt-account-name-3way",
+          "label": "口座名の手がかりで 3 分類 (paymentMethodOf を拡張)。(分子/分母) = 最新月まで取込済みの口座数 / 口座数、% = 期間の (口座×月) のうち取引がある割合",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "core の固定表の拡張だけで追加費用なし。保存も増えない。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "取込済みのデータだけで画像の 3 区分と 2 種の数値を出せ、利用者の追加入力なしに G1 のカードが成立する。",
+          "security_fit": "口座名をコード内の表と照合するだけで外部送信なし。",
+          "pros": [
+            "追加の入力も保存も要らない",
+            "既存の paymentMethodOf の延長で一貫する",
+            "% と (分子/分母) が別の問いに答える"
+          ],
+          "cons": [
+            "口座名に手がかりが無い口座は分類できない",
+            "電子マネーの語彙を新たに持つ必要がある"
+          ],
+          "risks": [
+            "分類できない口座が多いと 3 区分の合計が口座数に届かない。『分類できない』を数える必要がある"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "語彙の追記はコード 1 か所とテスト。",
+          "evidence_refs": [
+            "https://unicode.org/reports/tr15/"
+          ]
+        },
+        {
+          "id": "opt-user-typed-accounts",
+          "label": "口座ごとに種別を利用者が登録する表を新設する",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "表 1 つの追加で追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "分類は正確になるが、登録するまでカードが空く。本サイクルの範囲外の口座設定画面も要る。",
+          "security_fit": "外部送信なし。",
+          "pros": [
+            "分類が正確"
+          ],
+          "cons": [
+            "口座設定の画面と API が新たに要る",
+            "初回はカードが空く"
+          ],
+          "risks": [
+            "登録漏れの口座が黙って分母から落ちる"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "口座の追加ごとに登録作業が要る。",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/reference/migrations/"
+          ]
+        },
+        {
+          "id": "opt-two-way-only",
+          "label": "既存の paymentMethodOf のまま カード / それ以外 の 2 区分で出す",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "変更なしで追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "画像の 3 区分 (電子マネーが独立) を満たさず G1 と食い違う。",
+          "security_fit": "外部送信なし。",
+          "pros": [
+            "実装が最小"
+          ],
+          "cons": [
+            "画像の構成と一致しない",
+            "電子マネーの取込漏れに気づけない"
+          ],
+          "risks": [
+            "画像と異なる画面を正として固定してしまう"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "なし。",
+          "evidence_refs": [
+            "https://unicode.org/reports/tr15/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-account-name-3way",
+        "rationale": "取込済みのデータだけで画像の 3 区分と 2 種の数値を出せる唯一の案で、利用者の追加作業も保存の追加も要らない。",
+        "caveats": [
+          "口座名の照合も NFKC 正規化後に行う",
+          "どの区分にも当たらない口座を別に数え、黙って落とさない",
+          "口座×月の % は表示期間の月だけを数え、口座が取込を始める前の月を分母に入れるかを docs に明記する"
+        ],
+        "confidence": "high",
+        "comparison_basis": {
+          "goal_fit": "口座名の 3 分類だけが画像の 3 区分を追加入力なしで満たす。利用者登録は初回が空き、2 区分は画像と一致しない。",
+          "tco": "3 案とも追加費用ゼロ。利用者登録だけが画面と API の追加実装を要する。",
+          "security": "3 案とも外部送信なし。差はない。",
+          "operations": "口座名の 3 分類は語彙の保守だけ。利用者登録は口座ごとの登録作業が続く。",
+          "lock_in": "3 案とも依存なし。"
+        },
+        "latest_checked_at": "2026-09-18T03:40:35Z"
+      },
+      "user_decision": {
+        "option_id": "opt-account-name-3way",
+        "confirmed_at": "2026-09-18T03:05:24Z",
+        "note": "口座名で3分類+取込済み月の割合 を選択"
+      }
+    },
+    {
+      "id": "dec-subs-persistence",
+      "question": "名称の統合・候補の採用 / 除外・カテゴリ・見直し判断をどこに保存するか。",
+      "status": "confirmed",
+      "serves_goals": [
+        "G2",
+        "G5"
+      ],
+      "options": [
+        {
+          "id": "opt-reuse-extend",
+          "label": "既存表を再利用して拡張 — 統合=既存ベンダーの aliases 追加、採用=sub_vendors 登録、除外=sub_vendor_exclusions、category と見直し判断は migration 0043 で追加",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "D1 の列と表の追加だけで追加費用なし。"
+          },
+          "free_tier_limits": "D1 の無料枠と既存の Workers Paid の範囲内",
+          "goal_fit": "既存の照合 (matchSubVendor) と候補除外がそのまま新しい操作の保存先になり、G5 の『旧機能を失わない』と両立する。",
+          "security_fit": "既存の userId 条件つきの経路を延長するだけで、新しい権限境界を作らない。",
+          "pros": [
+            "既存データがそのまま生きる",
+            "照合ロジックを作り直さない",
+            "migration が追加だけで済む"
+          ],
+          "cons": [
+            "aliases が JSON 文字列のため、統合の取り消しは配列からの削除になる"
+          ],
+          "risks": [
+            "統合の取り消し手順が無いと誤統合を戻せない"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "migration 1 本と API の追加。",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/reference/migrations/",
+            "https://tanstack.com/query/v5/docs/framework/react/guides/invalidations-from-mutations"
+          ]
+        },
+        {
+          "id": "opt-new-merge-table",
+          "label": "統合・判断を記録する専用の表群を新設し、既存表と並べて持つ",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "表の追加だけで追加費用なし。"
+          },
+          "free_tier_limits": "D1 の無料枠の範囲内",
+          "goal_fit": "履歴は細かく残るが、照合時に既存の aliases と新しい表の 2 か所を読む二重実装になる。",
+          "security_fit": "新しい表にも userId 条件を漏れなく付ける必要がある。",
+          "pros": [
+            "操作の履歴を細かく残せる"
+          ],
+          "cons": [
+            "照合が 2 か所に分かれる",
+            "既存データの移行か併用の規則が要る"
+          ],
+          "risks": [
+            "どちらの記録が正かで食い違う"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "表と照合の保守が 2 系統になる。",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/reference/migrations/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-reuse-extend",
+        "rationale": "既存の照合と除外が既に正しく動いており、その保存先を延長するのが G5 の『失わない』を最も確実に満たす。追加は列と表だけで、行の書き換えを伴わない。",
+        "caveats": [
+          "0043 は ADD COLUMN と CREATE TABLE だけにし、既存行を書き換えない",
+          "統合の取り消し (aliases からの削除) を API で用意する",
+          "保存後は一覧・候補・サイドバーのバッジの取得を無効化して揃える"
+        ],
+        "confidence": "high",
+        "comparison_basis": {
+          "goal_fit": "再利用+拡張は旧機能を失わずに新しい操作を保存できる。専用表は照合が二重になる。",
+          "tco": "両案とも追加費用ゼロ。",
+          "security": "再利用は既存の userId 条件を延長するだけ。専用表は新しい条件漏れの余地が増える。",
+          "operations": "再利用は migration 1 本。専用表は照合の保守が 2 系統になる。",
+          "lock_in": "両案とも D1 内で依存は同じ。"
+        },
+        "latest_checked_at": "2026-09-18T03:40:35Z"
+      },
+      "user_decision": {
+        "option_id": "opt-reuse-extend",
+        "confirmed_at": "2026-09-18T03:05:24Z",
+        "note": "既存表を再利用+拡張 を選択"
+      }
+    },
+    {
+      "id": "dec-subs-legacy-ui",
+      "question": "画像に無い既存の機能 (登録ベンダーの別名・対象科目の編集、四半期見直し、重複・急増アラート、ベンダー別前年比較表、未登録候補パネル) をどう扱うか。",
+      "status": "confirmed",
+      "serves_goals": [
+        "G1",
+        "G2",
+        "G5"
+      ],
+      "options": [
+        {
+          "id": "opt-absorb-and-remove",
+          "label": "画像の部品 (詳細パネル・候補バッジ・検出理由カード・ステータス絞込) へ吸収し、旧 UI は撤去する",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "画面の組み替えだけで追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "画面が画像どおりになり (G1)、旧機能の操作は詳細パネルと検出理由へ移って失われない (G5)。",
+          "security_fit": "新しい入力経路を作らず、既存 API を使い回す。",
+          "pros": [
+            "画面が画像と一致する",
+            "同じ操作の入口が 1 つになる"
+          ],
+          "cons": [
+            "移設先の設計とテストの移し替えが要る"
+          ],
+          "risks": [
+            "移し忘れた操作が黙って消える。旧テストを新しい置き場所へ移して欠落 0 を確かめる必要がある"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "テストの移設 1 回。",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/"
+          ]
+        },
+        {
+          "id": "opt-keep-below",
+          "label": "旧 UI を画像の構成の下にそのまま残す",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "旧機能は確実に残るが、画面が画像と一致せず、同じ操作の入口が 2 つになる。",
+          "security_fit": "変化なし。",
+          "pros": [
+            "移設の手間が無い"
+          ],
+          "cons": [
+            "画像と一致しない",
+            "同じ操作が 2 か所にあり食い違う"
+          ],
+          "risks": [
+            "片方だけ直して挙動が分かれる"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "2 系統の UI の保守が続く。",
+          "evidence_refs": [
+            "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-absorb-and-remove",
+        "rationale": "画像を正本とする今サイクルの目的と、旧機能を失わない制約の両方を満たすのは吸収して撤去する案だけである。",
+        "caveats": [
+          "撤去前に旧 UI の操作を一覧化し、移設先を 1 対 1 で決める",
+          "旧テスト (SubVendors.dom.test.tsx・subs-review.dom.test.tsx) を新しい置き場所へ移し、機能の欠落を 0 件にする",
+          "詳細パネルのタブは WAI-ARIA の tabs パターン (矢印キー移動) で作る"
+        ],
+        "confidence": "high",
+        "comparison_basis": {
+          "goal_fit": "吸収して撤去は G1 と G5 を同時に満たす。残す案は G1 と一致しない。",
+          "tco": "両案とも追加費用ゼロ。",
+          "security": "両案とも新しい入力経路を作らない。",
+          "operations": "吸収は移設 1 回。残す案は 2 系統の保守が続く。",
+          "lock_in": "両案とも依存なし。"
+        },
+        "latest_checked_at": "2026-09-18T03:40:35Z"
+      },
+      "user_decision": {
+        "option_id": "opt-absorb-and-remove",
+        "confirmed_at": "2026-09-18T03:33:42Z",
+        "note": "画像の部品へ吸収し旧UI撤去 を選択"
+      }
+    },
+    {
+      "id": "dec-subs-fixture-authority",
+      "question": "画像の数値 (一覧 8 行の月額の和 ¥9,778 に対し合計欄 ¥64,800 など、閉じていない) をテストの期待値にどう使うか。",
+      "status": "confirmed",
+      "serves_goals": [
+        "G1",
+        "G4"
+      ],
+      "options": [
+        {
+          "id": "opt-layout-from-image-numbers-from-fixture",
+          "label": "画像は構成・文言・配置の正本、数値は core が算出する検算済み fixture を正本とする",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "fixture の作成だけで追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "合計行 = 行の和、カテゴリ別合計 = 一覧合計 という G4 の一致条件を満たしたまま、画面は画像どおりに作れる。",
+          "security_fit": "fixture は架空の値で、実データを含めない。",
+          "pros": [
+            "数値の一致をテストで保証できる",
+            "画像の構成はそのまま再現できる"
+          ],
+          "cons": [
+            "画像と数値が一致しないスクリーンショットになる"
+          ],
+          "risks": [
+            "画像の値を写したテストが混ざると合計が閉じない"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "fixture の検算を 1 回行い、以後はテストで固定。",
+          "evidence_refs": [
+            "https://vitest.dev/api/expect.html"
+          ]
+        },
+        {
+          "id": "opt-copy-image-numbers",
+          "label": "画像の数値をそのまま期待値にする",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "画像の見た目とは一致するが、合計欄が行の和と一致しないため G4 の一致条件と矛盾する。",
+          "security_fit": "変化なし。",
+          "pros": [
+            "画像との見た目の一致が最大"
+          ],
+          "cons": [
+            "合計が閉じない表を正とすることになる"
+          ],
+          "risks": [
+            "計算の正しい実装がテストで失敗する"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "なし。",
+          "evidence_refs": [
+            "https://vitest.dev/api/expect.html"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-layout-from-image-numbers-from-fixture",
+        "rationale": "画像の合計欄が閉じていない以上、画像の数値を正とすると正しい実装がテストで落ちる。構成は画像、数値は検算済み fixture と役割を分けるしかない。",
+        "caveats": [
+          "fixture の検算結果 (行の和・列の和・合計欄) を仕様書に記録する",
+          "金額の比較は整数 (円) で行い、構成比などの割合は小数の許容幅を明示する"
+        ],
+        "confidence": "high",
+        "comparison_basis": {
+          "goal_fit": "役割を分ける案だけが画像の再現と数値の一致を両立する。",
+          "tco": "両案とも追加費用ゼロ。",
+          "security": "両案とも架空の値で差はない。",
+          "operations": "fixture は検算 1 回で以後固定。画像写しは失敗するテストの保守が続く。",
+          "lock_in": "両案とも依存なし。"
+        },
+        "latest_checked_at": "2026-09-18T03:40:35Z"
+      },
+      "user_decision": {
+        "option_id": "opt-layout-from-image-numbers-from-fixture",
+        "confirmed_at": "2026-09-18T03:33:42Z",
+        "note": "画像は配置の正本、数値は検算済fixture を選択"
+      }
+    },
+    {
+      "id": "dec-subs-kpi-definition",
+      "question": "KPI『月額のサブスク合計』『年換算の合計』と前期間比を何で定義するか。",
+      "status": "confirmed",
+      "serves_goals": [
+        "G1",
+        "G4"
+      ],
+      "options": [
+        {
+          "id": "opt-sum-of-estimated-monthly",
+          "label": "月額 = 最新月時点で継続中の各ベンダーの推定月額の和 (年額払いは 12 等分)。年換算 = 月額 ×12。前期間比 = 直前の同じ長さの期間の同じ定義の値との差",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "core の純関数だけで追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "一覧の『月額の推定』列の合計と KPI が同じ定義になり、合計行・カテゴリ別比較・KPI が一致する (G4)。",
+          "security_fit": "集計値のみで外部送信なし。",
+          "pros": [
+            "一覧・比較表・KPI が同じ定義で閉じる",
+            "年額払いが月額を跳ねさせない"
+          ],
+          "cons": [
+            "推定 (継続中の判定・年額払いの判定) の規則が要る"
+          ],
+          "risks": [
+            "継続中の判定を誤ると解約済みが月額に残る"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "判定規則のテスト固定だけ。",
+          "evidence_refs": [
+            "https://vitest.dev/api/expect.html"
+          ]
+        },
+        {
+          "id": "opt-latest-month-actual",
+          "label": "月額 = 最新月の実支払額 (現行の KPI)",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "none",
+            "tco": "変更なしで追加費用なし。"
+          },
+          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内)",
+          "goal_fit": "年額払いがある月だけ跳ね、一覧の『月額の推定』列の合計と KPI が一致しない。",
+          "security_fit": "変化なし。",
+          "pros": [
+            "実績そのもので説明が要らない"
+          ],
+          "cons": [
+            "年額払いの月に大きく振れる",
+            "一覧の合計と一致しない"
+          ],
+          "risks": [
+            "前期間比が年額払いの有無で符号ごと変わる"
+          ],
+          "lock_in": "なし。",
+          "ops_burden": "なし。",
+          "evidence_refs": [
+            "https://vitest.dev/api/expect.html"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-sum-of-estimated-monthly",
+        "rationale": "一覧の列・比較表・KPI を同じ定義で閉じられるのは推定月額の和だけで、年額払いによる月ごとの振れも除ける。",
+        "caveats": [
+          "『継続中』の判定規則 (直近何か月に支払いがあるか) を docs とテストで固定する",
+          "直近 12 か月の支払額は実支払の和のまま残し、推定と実績を別の KPI として並べる"
+        ],
+        "confidence": "high",
+        "comparison_basis": {
+          "goal_fit": "推定月額の和は一覧と KPI を一致させる。最新月の実支払は一致しない。",
+          "tco": "両案とも追加費用ゼロ。",
+          "security": "両案とも集計値のみで差はない。",
+          "operations": "推定は判定規則のテスト固定が要る。実支払は変更なし。",
+          "lock_in": "両案とも依存なし。"
+        },
+        "latest_checked_at": "2026-09-18T03:40:35Z"
+      },
+      "user_decision": {
+        "option_id": "opt-sum-of-estimated-monthly",
+        "confirmed_at": "2026-09-18T03:33:42Z",
+        "note": "月額=各ベンダーの推定月額の和 を選択"
+      }
+    }
+  ],
+  "knowledge_candidates": [],
+  "design_applications": {
+    "backend": {
+      "text": "Clean Architecture card の Dependency Rule をサブスクの算出の置き場所に適用した。推定月額・継続中の判定・年額払いの 12 等分・前期間比・カテゴリの既定辞書と上書きの解決・口座名による 3 分類とカバー率・見直し候補の 5 規則と理由文は、いずれも入出力を持たない計算なので core の subscriptionsScreen に集める。api の route は期間を受け取って照合後の Dataset とベンダー定義・見直し判断を組み、純関数へ渡して JSON へ写すだけにする。サイドバーのバッジも同じ関数の見直し候補件数から数えることで、画面の KPI 5 枚目とバッジが別定義になっている現状の不一致を構造で解消する。",
+      "recorded_at": "2026-09-18T03:48:08Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を保存範囲の線引きに適用した。利用者の意思 (カテゴリの上書き・名称の統合・未登録候補の採用 / 除外と、登録済みベンダーの見直し候補への確認 / 除外という判断) はドメインの状態なので保存し、推定月額・年換算・カバー率・候補の判定結果は明細から毎回導出できるので保存しない。見直し判断は、当たった規則の種類すべてと判定時の基準金額から作る指紋と組で持ち、同じ理由では候補を再表示しない一方、金額が変わるか新しい規則が加われば未判断の候補へ戻す。保存は既存の sub_vendors と sub_vendor_exclusions を延長し、足すのは category 列と判断の表の 2 点だけに留める。",
+      "recorded_at": "2026-09-18T06:54:11Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、サブスクで新設する 4 経路 (ベンダー詳細の取得・名称の統合・見直し判断の記録と取消) の配置に適用した。いずれも既存の subsRoute / analyticsRoute に足して /api/* の authGuard と mustChangePasswordFence の内側に置き、route の中で認証を再判定しない。更新系は :id / :key を c.get('userId') と組にして引くことで、他の利用者のベンダーや判断を指す値を受け取っても書き換えられない形にする。",
+      "recorded_at": "2026-09-18T03:48:08Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "Secure by Design card の『入力を許可リストで検証する』を、サブスクで利用者が書き込める 3 種の値に適用した。見直し判断は confirmed / dismissed の列挙、統合する別名は件数と長さを上限つきで縛った文字列配列、カテゴリは既定辞書の名前か長さ上限つきの自由記述とし、いずれも Zod で境界検証する。取引名とベンダー名は取込元に由来する外部文字列なので、画面ではテキストとしてだけ描く。カテゴリ辞書と口座の手がかりはコード内の固定表で持ち、判定のために取引名を外部へ送らない。",
+      "recorded_at": "2026-09-18T06:54:11Z",
+      "basis": "agent-inference"
+    },
+    "ui-ux": {
+      "text": "Information Design card の『問いに答える順に並べ、最上位の判断を最初に読ませる』をサブスク画面の縦の並びに適用した。画面の問いは『重複や見直し候補はあるか』なので、見直し候補の件数を KPI の 5 枚目と一覧の候補バッジの 2 か所で示し、理由は検出理由カードの定型文で読ませる。月額・年換算・直近 12 か月・売上比は規模の把握、カバー率は数字を信じてよいかの前提として候補より手前に置く。ロゴの場所には代替の図形も置かず、名称と金額の列に幅を回す。色だけで区別させず、候補と増減には文字と記号を併記する。",
+      "recorded_at": "2026-09-18T03:48:08Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "Clean Architecture card の『画面は外側の詳細であり、方針を持たない』をサブスク画面の部品分割に適用した。KPI・一覧・合計行・カテゴリ別推移・年換算比較・候補の理由文は API の値をそのまま描き、画面側で再集計しない。取得は画面全体の 1 本と、行を選んだときだけ走る詳細の 1 本に分け、変更の成功後は一覧・詳細・サイドバーのバッジのクエリをまとめて無効化する。旧 SubVendorsPanel と SubsCandidatesPanel の操作は詳細パネルの『関連データ』タブと検出理由カードへ移し、機能を落とさずに旧部品を撤去する。",
+      "recorded_at": "2026-09-18T03:48:08Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "infrastructure に対応する design card は C04 の resource-map に 0 件であり、card からの引用は行っていない。代わりに Cloudflare Workers の上限 (CPU 時間・応答サイズ) を設計の制約として扱い、初回表示の応答をベンダー数 × 月数の集計値に限って、取引の実体は詳細パネルで選んだ 1 ベンダーぶんだけ返す形にした。配信構成・binding・cron は変えず、migration 0043 は既存の Migrate → Deploy の順で適用する。",
+      "recorded_at": "2026-09-18T03:48:08Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "Clean Code card の『テストは仕様を名前で語る』をサブスクの検証設計に適用した。見直し候補の 5 規則・推定月額・継続中・年額払い・カバー率の境界値を、規則名をそのままテスト名にした core のテストで固定し、画像の数値ではなく検算済み fixture を期待値にする。一覧の合計行・カテゴリ別比較の合計・KPI の月額が同じ fixture で一致することを突き合わせるテストを置き、旧 UI のテストは移設した操作の一覧で欠落 0 件を確かめる。規則を変えるときは docs/subscriptions-screen.md とテストを同じ変更で直す。",
+      "recorded_at": "2026-09-18T03:48:08Z",
+      "basis": "agent-inference"
+    }
+  },
+  "hearing_progress": {
+    "loop_count": 3,
+    "next_question": null,
+    "complete": true
+  },
+  "doctrine_applications": {
+    "backend": {
+      "application-architecture": {
+        "text": "依存の向きを core (subscriptionsScreen・見直し規則・カテゴリ辞書・口座分類) ← api (subscriptions と sub-vendors の route) ← web (サブスク画面) の一方向へ反映した。現行の subscriptions() は最新月の実支払を KPI にしているため、推定月額の和を月額とする定義へ置き換えた関数を別名で足し、旧関数を参照する箇所 (分析ハブの要約など) を洗い出してから置き換える。バッジを数える analytics の reviewQueue も同じ関数を呼ぶ形にし、候補数の定義を 1 か所に寄せる。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "サブスクの集計は sourceNeutralSubscriptions と同じく照合後の実質支出 (freee と MF の二重計上を除いた明細) を入力にし、MF 明細と freee 仕訳を別経路で数え直さない形へ反映した。前期間比のために直前の同じ長さの期間まで読む範囲の拡大は route の Dataset 組み立てで行い、純関数には表示期間と比較期間を区別して渡す。詳細パネルの取引は選んだベンダーの照合キーで Dataset を絞って返し、詳細専用の SQL を足さない。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      }
+    },
+    "database": {
+      "data-access": {
+        "text": "永続化の境界を『利用者の意思だけを保存する』形へ反映した。migration 0043 は sub_vendors への category 列の追加と sub_vendor_review_decisions の新設だけで、既存行を書き換えない。判断の記録は (user_id, vendor_key) の一意索引で upsert し、同じベンダーへの判断を重ねない。読み取りと更新はいずれもプレースホルダ束縛で行い、照合キーを SQL 文字列へ連結しない。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "Google SRE の『変更を小さく可逆に保つ』を migration 0043 の形に反映した。列の追加は NULL 許容で既存行の意味を変えず、新表は既存表を参照しないため、アプリを戻しても古いコードは新しい列と表を無視して動く。行の書き換えを伴わないので、過去に起きた『行書き換え migration で Deploy が止まる』類の復旧手順は不要である。判断の表が空でも見直し候補は規則だけで出るため、表の欠落は機能の縮退で済む。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      }
+    },
+    "auth": {
+      "authentication": {
+        "text": "OWASP ASVS の『全ての保護資源で認証を要求する』を、サブスクで新設する 4 経路が既存の authGuard の配下に入ることで満たす形へ反映した。新しい経路を /api の外や認証前のミドルウェアの手前に置かないことを、マウント位置のテスト (未ログインで 401、初期パスワード未変更で遮断) で固定する。パスワードの保存方式とセッションは変えない。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      },
+      "security": {
+        "text": "サブスクの更新系 (カテゴリ変更・名称の統合・候補の採用 / 除外 / 確認と取消) は、いずれも対象を userId と組で引いてから書き換える形へ反映した。他の利用者のベンダー id や照合キーを指定された場合は 404 を返し、存在の有無も示さない。これを利用者を 2 人用意した API テストで確かめ、既存の subs-vendor-scope.test.ts の流儀に揃える。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      }
+    },
+    "security": {
+      "security": {
+        "text": "サブスクで外部由来の文字列が通る 2 か所 (取込明細の取引名と、利用者が入力する別名・カテゴリ名) に、入力側の許可リスト検証と出力側のテキスト描画を対で置く形へ反映した。カテゴリの判定と候補の理由文を AI に頼らないため、取引名・金額を外部の推論サービスへ送る経路は作らない。ロゴも取得しないため、サービス名から外部の画像 URL を組み立てて問い合わせる経路も作らない。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      }
+    },
+    "ui-ux": {
+      "presentation": {
+        "text": "Information Design の『要素ごとに残す・落とす・加工するを決める』をサブスク画面の各部品に反映した。一覧は画像の 9 列を残し、ロゴは落とす。詳細パネルは生の取引名とソース種別を残し、直近の取引は 3 件に絞って残りを『すべて見る』へ回す。KPI 2 枚目は数値の定義 (売上に対する比率) に合わせて補足を『売上に占める割合』へ加工する。カバー率は % だけでなく (分子/分母) を併記し、分類できない口座は別に件数を示す。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "presentation": {
+        "text": "詳細パネルのタブは WAI-ARIA の tabs パターン (tablist / tab / tabpanel、左右の矢印キーで移動) で作り、選んだベンダーは URL の vendor パラメータに保って再読込でも復元する形へ反映した。下部の選択バーは照合画面の SelectionActions と同じ操作語と配置にし、画面をまたいで同じ操作が同じ場所にあるようにする。読込中・0 件・取得失敗は既存の PageState の 3 状態で描き分ける。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      },
+      "application-architecture": {
+        "text": "サブスク画面を pages/subscriptions/ 配下の部品 (Kpis・CoverageCard・SubscriptionTable・DetailPanel・CategoryTrendChart・AnnualComparison・ReasonCard・SelectionBar) へ分け、取得と変更のフックを 1 ファイルに集める形へ反映した。部品は取得を持たず props だけで描くため、DOM テストは fixture を渡すだけで書ける。旧 components/SubVendors.tsx の 614 行は、関連データタブと検出理由カードへ操作を移した後に撤去する。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "reliability": {
+        "text": "サブスクの初回表示を、明細件数ではなくベンダー数 × 月数に比例する集計値の応答に限る形へ反映した。取引の実体は詳細パネルで選んだ 1 ベンダーぶんだけを上限つきで返すため、明細が増えても初回の応答サイズと Worker の CPU 時間が伸びにくい。集計に失敗した場合は画面全体を error にし、部分的に古い数字を混ぜて見せない。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      },
+      "operations": {
+        "text": "サブスクの変更に伴う運用手順を『migration 0043 を Migrate で適用してから Deploy する』の 1 本に絞る形へ反映した。新しい binding・secret・cron・外部サービスは追加しないため、環境変数や Cloudflare 側の設定変更は発生しない。適用後の確認は GET /api/subscriptions の応答に category と reviewCount が含まれることで行う。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      }
+    },
+    "maintenance-ops": {
+      "operations": {
+        "text": "サブスクの見直し規則・閾値・理由文テンプレートを docs/subscriptions-screen.md に表で書き、規則の変更は docs と core のテストを同じ変更で直す運用へ反映した。check-financial-visuals のモックを新しい応答の形へ更新し、図の数とロゴ画像要素 0 件を見た目検査に足す。旧 UI のテスト (subs-review.dom.test.tsx・SubVendors.dom.test.tsx) は移設先の部品テストへ移し、移した操作の対応表を PR に残す。",
+        "recorded_at": "2026-09-18T03:48:08Z",
+        "basis": "agent-inference"
+      }
+    }
+  }
+}

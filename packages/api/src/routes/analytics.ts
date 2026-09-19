@@ -5,6 +5,7 @@ import { zValidator } from '@hono/zod-validator';
  */
 import {
   BALANCE_SHEET_SOURCES,
+  DIAGNOSIS_NOTE_MAX,
   type Dataset,
   type ExpenseScope,
   HOUSEHOLD_CATEGORY_KEYS,
@@ -13,6 +14,7 @@ import {
   type PeriodRange,
   type ReviewQueueItem,
   TRANSACTION_EXPORT_HEADER,
+  applyDiagnosisStatuses,
   applyPeriod,
   applyReviewSnoozes,
   availableYears,
@@ -26,14 +28,21 @@ import {
   defenseForecast,
   defenseLine,
   diagnosis,
+  diagnosisCashflowSeries,
+  diagnosisScreen,
+  diagnosisSignals,
+  diagnosisTotals,
+  diagnosisWaterfall,
   findMetric,
   fullRange,
   householdCategoryDetail,
   householdSummary,
   isCloseMonth,
+  isDiagnosisActionStatus,
   isOverviewScope,
   isReviewItemKey,
   isReviewItemKind,
+  isValidDiagnosisActionKey,
   matrix,
   monthlyCloseStatus,
   normalizeTrendScope,
@@ -44,12 +53,11 @@ import {
   periodMonths,
   profitAndLoss,
   reconciliationReport,
+  resolveDiagnosisSelection,
   resolvePeriodQuery,
   reviewItemFingerprint,
   reviewQueueCounts,
-  sourceNeutralSubscriptionDeals,
-  sourceNeutralSubscriptions,
-  subsCandidates,
+  subscriptionsScreen,
   toCsv,
   totalCashflowReport,
   tradeoffCandidates,
@@ -68,15 +76,8 @@ import { loadCashflowSources } from '../cashflow-sources.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import { loadOwnerLabels } from '../owner-labels-store.js';
-import {
-  dealFromRow,
-  getDb,
-  loadBackupPayload,
-  loadDataset,
-  loadSubVendorExclusions,
-  loadSubVendors,
-  loadVendorMemories,
-} from '../store.js';
+import { dealFromRow, getDb, loadBackupPayload, loadDataset, loadVendorMemories } from '../store.js';
+import { loadSubscriptionsInput } from './subs.js';
 
 // 月次レビューの記録者 (actor) を読むため、ルートは認証ミドルウェアが載せる変数の型をそのまま使う
 type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
@@ -162,7 +163,7 @@ const apiError = (code: string, message: string) => ({ error: { code, message } 
 async function loadReviewSources<V extends { userId: string }>(c: Context<DataCtx<V>>, all: Dataset) {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const [sources, failedRuns, vendorMemories, subVendors, subExclusions] = await Promise.all([
+  const [sources, failedRuns, vendorMemories] = await Promise.all([
     loadCashflowSources(db, userId, all.mfTx),
     db
       .select({
@@ -173,8 +174,6 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
       .from(s.importRuns)
       .where(and(eq(s.importRuns.userId, userId), eq(s.importRuns.status, 'failed'))),
     loadVendorMemories(db, userId),
-    loadSubVendors(db, userId),
-    loadSubVendorExclusions(db, userId),
   ]);
   const { deals, verdicts, freeeExclusions: exclusions, mfExclusions } = sources;
   const report = totalCashflowReport(
@@ -198,13 +197,11 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
     freeeExclusions: exclusions,
     mfExclusions,
   }).kpi.actionRequiredCount;
-  // サイドバーの「サブスク」バッジ。サブスク画面の候補一覧と同じ関数・同じ上限で数える
-  const subscriptionCandidates = subsCandidates(
-    sourceNeutralSubscriptionDeals(all, deals),
-    subVendors,
-    20,
-    subExclusions.map((row) => row.partner),
-  ).length;
+  // サイドバーの「サブスク」バッジ。サブスク画面の KPI 5 枚目 (未判断の見直し候補) と同じ入口・同じ関数で数える。
+  // バッジは画面の期間タブを知らないので、既定の期間 (直近 1 年) で数える (spec §12.2)
+  const subscriptionCandidates = subscriptionsScreen(
+    await loadSubscriptionsInput(db, userId, { span: '1' }, { all, deals }),
+  ).kpis.reviewCandidates;
   return { report, items, actionRequiredCount, subscriptionCandidates };
 }
 
@@ -409,10 +406,104 @@ analyticsRoute.get('/matrix', async (c) => {
   return c.json(matrix(data));
 });
 
+/**
+ * 改善余地・健全性・改善インパクト・診断根拠を 1 応答で返す。
+ * 改善余地は毎回計算し直し、D1 から読むのは利用者の判断 (status / note) だけ。
+ */
 analyticsRoute.get('/diagnosis', async (c) => {
-  const { data } = await loadScoped(c);
-  return c.json(diagnosis(data));
+  const { data, all, period } = await loadScoped(c);
+  // 未知の scope/metric/compare は 400 にせず既定へ倒す (古いブックマーク対策・FR-010)
+  const query = {
+    scope: c.req.query('scope'),
+    metric: c.req.query('metric'),
+    compare: c.req.query('compare'),
+  };
+  const selection = resolveDiagnosisSelection(query);
+  const {
+    deals,
+    verdicts,
+    freeeExclusions: exclusions,
+    mfExclusions,
+  } = await loadCashflowSources(getDb(c.env.DB), c.get('userId'), all.mfTx);
+  // 条件の帯の合計は総収支画面と同じ経路で作る (BR-004)。診断だけ別に足すと合計が食い違う
+  const cashflow = diagnosisCashflowSeries(
+    all,
+    deals,
+    verdicts,
+    exclusions,
+    period.applied ?? fullRange(all),
+    selection.compare,
+    mfExclusions.map((row) => row.txId),
+  );
+  const screen = diagnosisScreen(data, query, undefined, cashflow);
+  const rows = await getDb(c.env.DB)
+    .select({
+      actionKey: s.diagnosisActionStates.actionKey,
+      status: s.diagnosisActionStates.status,
+      note: s.diagnosisActionStates.note,
+      decidedAt: s.diagnosisActionStates.decidedAt,
+    })
+    .from(s.diagnosisActionStates)
+    .where(eq(s.diagnosisActionStates.userId, c.get('userId')));
+  const states = new Map(
+    rows.map((row) => [row.actionKey, { status: row.status, note: row.note, decided_at: row.decidedAt }]),
+  );
+  // 判断を重ねた後に、合計・棒・シグナルを組み直す (画面側で足し直さないため)
+  const improvements = applyDiagnosisStatuses(screen.improvements, states);
+  return c.json({
+    ...screen,
+    improvements,
+    waterfall: diagnosisWaterfall(improvements, screen.waterfall[0]?.to ?? 0, screen.selection.metric),
+    signals: diagnosisSignals(screen, improvements),
+    totals: diagnosisTotals(improvements),
+  });
 });
+
+const diagnosisActionBody = z.object({
+  status: z.string(),
+  note: z.string().nullish(),
+});
+
+/**
+ * 改善アクション 1 件の判断を保存する。同じ鍵への再送は上書き (冪等)。
+ * 鍵は登録済み検知器 id で始まるものだけを受け付ける (許可リスト方式)。
+ */
+analyticsRoute.patch(
+  '/diagnosis/actions/:action_key',
+  zValidator('json', diagnosisActionBody, (result, c) => {
+    if (!result.success) return c.json(apiError('invalid_request', 'status は必須です'), 400);
+  }),
+  async (c) => {
+    const actionKey = c.req.param('action_key');
+    if (!isValidDiagnosisActionKey(actionKey))
+      return c.json(apiError('invalid_request', 'action_key の形式が不正です'), 400);
+    const { status, note } = c.req.valid('json');
+    if (!isDiagnosisActionStatus(status))
+      return c.json(apiError('invalid_request', 'status は 4 種のいずれかです'), 400);
+    if (note != null && note.length > DIAGNOSIS_NOTE_MAX)
+      return c.json(apiError('invalid_request', 'note は 500 文字以内です'), 400);
+
+    const now = new Date().toISOString();
+    const userId = c.get('userId');
+    const row = {
+      userId,
+      actionKey,
+      status,
+      note: note ?? null,
+      decidedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await getDb(c.env.DB)
+      .insert(s.diagnosisActionStates)
+      .values(row)
+      .onConflictDoUpdate({
+        target: [s.diagnosisActionStates.userId, s.diagnosisActionStates.actionKey],
+        set: { status, note: row.note, decidedAt: now, updatedAt: now },
+      });
+    return c.json({ action_key: actionKey, status, note: row.note, decided_at: now });
+  },
+);
 
 /**
  * 科目ごとの規模・増減・記録状況と、次に手を打つ順番。
@@ -458,25 +549,6 @@ analyticsRoute.get('/trends', async (c) => {
     ...screen,
     judgementBasis: 'mf_only' as const,
   });
-});
-
-analyticsRoute.get('/subscriptions', async (c) => {
-  const { data, all } = await loadScoped(c);
-  // 期間絞り込みは従来、値が0の支払先を表から落とす。しかし登録定義まで落とすと、
-  // MFにしか無い支払先をここから新たに集計できない。設定は全期間側から戻す。
-  data.subs.vendors = [...all.subs.vendors];
-  data.subs.aliases = structuredClone(all.subs.aliases);
-  data.subs.accounts = structuredClone(all.subs.accounts);
-  data.subs.matrix = Object.fromEntries(
-    data.subs.vendors.map((vendor) => [vendor, data.months.map(() => 0)]),
-  );
-  const months = new Set(data.months);
-  const rows = await getDb(c.env.DB)
-    .select()
-    .from(s.freeeDeals)
-    .where(eq(s.freeeDeals.userId, c.get('userId')));
-  const deals = rows.map(dealFromRow).filter((deal) => months.has(deal.month));
-  return c.json(sourceNeutralSubscriptions(data, deals));
 });
 
 /**

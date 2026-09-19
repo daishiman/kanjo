@@ -208,7 +208,7 @@ export const institutionOwners = sqliteTable('institution_owners', {
 });
 
 /**
- * 0043: 名義の表示名。内部値 (owner) は集計の鍵のまま、見せる語だけを利用者ごとに持つ。
+ * 0045: 名義の表示名。内部値 (owner) は集計の鍵のまま、見せる語だけを利用者ごとに持つ。
  * 行が無い名義は core の DEFAULT_OWNER_LABELS を使う。読み書きは settings route の owner-labels だけ。
  */
 export const ownerLabels = sqliteTable(
@@ -245,6 +245,8 @@ export const subVendors = sqliteTable('sub_vendors', {
   /** 最後に契約を見直した日時(ISO)。NULL は一度も見直していない */
   reviewedAt: text('reviewed_at'),
   createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  /** 0043: 利用者が上書きしたカテゴリ。NULL は既定辞書 (core の SUBS_CATEGORY_DICTIONARY) に従う */
+  category: text('category'),
 });
 
 /** 「これはサブスクではない」と記録した支払先。候補一覧から外すためだけに使う */
@@ -259,6 +261,23 @@ export const subVendorExclusions = sqliteTable(
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
   },
   (t) => [uniqueIndex('uq_sub_vendor_exclusions_user_key').on(t.userId, t.vendorKey)],
+);
+
+/**
+ * 0043: 登録済みベンダーの見直し候補への判断。1 利用者 1 ベンダーにつき 1 行 (upsert、取消は削除)。
+ * rule_fingerprint = 当たった規則 (表示順) + 基準金額。指紋が変わると dismissed は効かなくなる
+ */
+export const subVendorReviewDecisions = sqliteTable(
+  'sub_vendor_review_decisions',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: text('user_id').notNull(),
+    vendorKey: text('vendor_key').notNull(),
+    decision: text('decision', { enum: ['confirmed', 'dismissed'] }).notNull(),
+    ruleFingerprint: text('rule_fingerprint').notNull(),
+    decidedAt: text('decided_at').notNull(),
+  },
+  (t) => [uniqueIndex('uq_sub_vendor_review_decisions_user_key').on(t.userId, t.vendorKey)],
 );
 
 /**
@@ -836,4 +855,22 @@ export const r2CleanupJobs = sqliteTable(
     uniqueIndex('uq_r2_cleanup_key').on(t.userId, t.r2Key),
     index('idx_r2_cleanup_due').on(t.state, t.notBefore, t.id),
   ],
+);
+
+/**
+ * 0043: 診断画面の改善アクションに対する利用者の判断。
+ * 改善余地そのものは毎回計算し直す派生物で、ここに残すのは判断だけ。
+ */
+export const diagnosisActionStates = sqliteTable(
+  'diagnosis_action_states',
+  {
+    userId: text('user_id').notNull(),
+    actionKey: text('action_key').notNull(),
+    status: text('status', { enum: ['未着手', '対応中', '対応済み', '見送り'] }).notNull(),
+    note: text('note'),
+    decidedAt: text('decided_at'),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.actionKey] })],
 );

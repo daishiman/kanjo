@@ -14,6 +14,7 @@ import { ScopeTabs } from './trends/Conditions.js';
 import { JudgementDisclosure } from './trends/LegacyJudgement.js';
 import { signedYen } from './trends/format.js';
 import { COMPARES, LEGACY_SCOPE, SCOPES, type TrendSide, type UrlState } from './trends/types.js';
+import { choiceParam, patchSearchParams } from './url-state.js';
 import './trends.css';
 
 export { signedYen };
@@ -21,17 +22,25 @@ export { signedYen };
 const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 function readUrl(params: URLSearchParams): UrlState {
-  const scope = params.get('scope');
-  const compare = params.get('compare');
   const month = params.get('month');
   const metric = params.get('metric');
   const category = params.get('category');
   const side = params.get('side');
   const validSide = side === 'business' || side === 'household' ? (side as TrendSide) : null;
   return {
-    scope: SCOPES.some((item) => item.id === scope) ? (scope as UrlState['scope']) : 'total',
+    scope: choiceParam(
+      params,
+      'scope',
+      SCOPES.map((item) => item.id),
+      'total',
+    ),
     metric: metric && /^[a-z][a-z0-9_]*$/.test(metric) ? metric : null,
-    compare: COMPARES.some((item) => item.id === compare) ? (compare as UrlState['compare']) : 'previous',
+    compare: choiceParam(
+      params,
+      'compare',
+      COMPARES.map((item) => item.id),
+      'previous',
+    ),
     month: month && MONTH_RE.test(month) ? month : null,
     category: category || null,
     side: category ? validSide : null,
@@ -100,18 +109,7 @@ export function TrendsPage() {
   });
 
   const update = (patch: Partial<Record<keyof UrlState, string | null>>) => {
-    setParams(
-      (previous) => {
-        const next = new URLSearchParams(previous);
-        for (const [keyName, value] of Object.entries(patch)) {
-          if (value === undefined) continue;
-          if (value === null) next.delete(keyName);
-          else next.set(keyName, value);
-        }
-        return next;
-      },
-      { replace: true },
-    );
+    setParams((previous) => patchSearchParams(previous, patch), { replace: true });
   };
 
   const invalidMetric = query.error instanceof ApiError && query.error.code === 'invalid_metric';

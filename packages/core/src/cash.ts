@@ -77,6 +77,67 @@ export function paymentMethodOf(tx: { id: string; inst?: string | null }): Payme
   if (CARD_HINTS.some((hint) => upper.includes(hint))) return 'card';
   return 'account';
 }
+/**
+ * 口座の種別 (サブスク画面のカバー率・データソース)。保存せず口座名から毎回導く。
+ * 支払手段 (`paymentMethodOf`) とは別の分類で、銀行と電子マネーを分ける。
+ */
+export type AccountKind = 'card' | 'bank' | 'emoney' | 'unclassified';
+
+/** 表示順。カードを先に判定するのは「〇〇銀行カード」をカードの利用明細として数えるため */
+export const ACCOUNT_KIND_ORDER: readonly AccountKind[] = ['card', 'bank', 'emoney', 'unclassified'];
+
+export const ACCOUNT_KIND_LABEL: Record<AccountKind, string> = {
+  card: 'クレジットカード',
+  bank: '銀行口座',
+  emoney: '電子マネー',
+  unclassified: 'その他の口座',
+};
+
+const BANK_HINTS = [
+  '銀行',
+  '信金',
+  '信用金庫',
+  '信用組合',
+  '労働金庫',
+  '労金',
+  '農協',
+  'JAバンク',
+  'ゆうちょ',
+  'BANK',
+];
+
+const EMONEY_HINTS = [
+  '電子マネー',
+  'SUICA',
+  'PASMO',
+  'ICOCA',
+  'NANACO',
+  'WAON',
+  'EDY',
+  'PAYPAY',
+  'LINE PAY',
+  'メルペイ',
+  'AU PAY',
+  'D払い',
+  '楽天ペイ',
+  'ファミペイ',
+  'KYASH',
+];
+
+/** 口座名の種別。NFKC と大文字化のあと、カード → 銀行 → 電子マネーの順に部分一致で当てる */
+export function accountKindOf(name: string | null | undefined): AccountKind {
+  const raw = (name ?? '').trim();
+  const upper = raw.normalize('NFKC').toUpperCase();
+  if (!upper) return 'unclassified';
+  const has = (hints: readonly string[]) =>
+    hints.some((hint) => upper.includes(hint.normalize('NFKC').toUpperCase()));
+  // ｶｰﾄﾞ は NFKC でカードになるが、正規化前の名前でも当てておく (paymentMethodOf と同じ語彙)
+  if (has(CARD_HINTS) || CARD_HINTS.some((hint) => raw.toUpperCase().includes(hint))) return 'card';
+  if (has(BANK_HINTS)) return 'bank';
+  if (has(EMONEY_HINTS)) return 'emoney';
+  return 'unclassified';
+}
+
 export const monthOf = (date: string): string => date.slice(0, 7);
 
 /** 事業分の現金明細を freee 仕訳1行として扱う(科目の正規化は取込と同じ対応表を使う) */

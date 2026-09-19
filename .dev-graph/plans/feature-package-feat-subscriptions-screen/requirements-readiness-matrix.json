@@ -1,0 +1,404 @@
+{
+  "feature_id": "feat-subscriptions-screen",
+  "gates": {
+    "C08": "complete",
+    "C11": true,
+    "exact_13": true,
+    "registration_source_digest_match": true,
+    "validate_system_plan": "pass"
+  },
+  "graph_revision": 2,
+  "graph_snapshot_digest": "ea608480b4be4b9a7b70c1b1932721f1f1c424b253f37f9b129c589a7aa5f79b",
+  "missing_sections": [],
+  "nodes": [
+    {
+      "artifact_kind": "feature",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "spec-subscriptions-screen"
+      ],
+      "domain": "analysis",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "feat-subscriptions-screen",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": null,
+      "resource_scope_count": 47,
+      "source_digest": "0f378382bc04719e3f8ac37722ffb410e33e307359326ee71d5cbf6db03c7757",
+      "source_version": "0.1.11"
+    },
+    {
+      "artifact_kind": "architecture",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "spec-subscriptions-screen"
+      ],
+      "domain": "ui-ux",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "arch-subscriptions-ui-ux",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": null,
+      "resource_scope_count": 7,
+      "source_digest": "c57c493d5fccb5546f47fbcffb51582dfc2f062eb0e9a6e19d3aa556bf35321c",
+      "source_version": "0.1.14"
+    },
+    {
+      "artifact_kind": "architecture",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "spec-subscriptions-screen"
+      ],
+      "domain": "frontend",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "arch-subscriptions-frontend",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": null,
+      "resource_scope_count": 9,
+      "source_digest": "0385cef0f9a5fc253c897319fd57272535bb16b673021801905ecf18a0299dcb",
+      "source_version": "0.1.14"
+    },
+    {
+      "artifact_kind": "architecture",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "spec-subscriptions-screen"
+      ],
+      "domain": "backend",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "arch-subscriptions-backend",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": null,
+      "resource_scope_count": 8,
+      "source_digest": "102b53266ca9482459d9e09387eee03cbf38511e454facd753abccbfde75e7c0",
+      "source_version": "0.1.14"
+    },
+    {
+      "artifact_kind": "architecture",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "spec-subscriptions-screen"
+      ],
+      "domain": "database",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "arch-subscriptions-database",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": null,
+      "resource_scope_count": 5,
+      "source_digest": "a134f80aef224140a8f2e00afd7b0a78840fd535a82953fb4bce53bb90648132",
+      "source_version": "0.1.14"
+    },
+    {
+      "artifact_kind": "architecture",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "spec-subscriptions-screen"
+      ],
+      "domain": "auth",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "arch-subscriptions-auth",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": null,
+      "resource_scope_count": 5,
+      "source_digest": "bbbdb0f3f20821bab23f4630cf52590be216844fc88f52cdfc9b298128b2af5c",
+      "source_version": "0.1.14"
+    },
+    {
+      "artifact_kind": "architecture",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "spec-subscriptions-screen"
+      ],
+      "domain": "security",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "arch-subscriptions-security",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": null,
+      "resource_scope_count": 5,
+      "source_digest": "6567f6d8c87bcbb896e448870b953cebeee86e94308a5b547775c066b8b464de",
+      "source_version": "0.1.14"
+    },
+    {
+      "artifact_kind": "architecture",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "spec-subscriptions-screen"
+      ],
+      "domain": "infrastructure",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "arch-subscriptions-infrastructure",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": null,
+      "resource_scope_count": 5,
+      "source_digest": "bb164e7e24bdf08c42118ba28bafd7da1b202af00db698e1186e1a9eded03256",
+      "source_version": "0.1.14"
+    },
+    {
+      "artifact_kind": "architecture",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "spec-subscriptions-screen"
+      ],
+      "domain": "maintenance-ops",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "arch-subscriptions-maintenance-ops",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": null,
+      "resource_scope_count": 8,
+      "source_digest": "f8daeaa66129e8592eb9875eba41e3ec019734a6d5be99149c79dd5586b29b18",
+      "source_version": "0.1.14"
+    },
+    {
+      "artifact_kind": "specification",
+      "confirmation_status": "confirmed",
+      "depends_on": [],
+      "domain": "analysis",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "spec-subscriptions-screen",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": null,
+      "resource_scope_count": 10,
+      "source_digest": "4b15720a81f3bdf4649d3a5185fc91878bb7ae6ca21dd3049de5a2b4a8f21f77",
+      "source_version": "0.1.14"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P01",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P01",
+      "resource_scope_count": 1,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P01"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P02",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P02",
+      "resource_scope_count": 1,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P02"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P03",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P03",
+      "resource_scope_count": 1,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P03"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P04",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P04",
+      "resource_scope_count": 6,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P04"
+      ],
+      "domain": "frontend",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P05",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P05",
+      "resource_scope_count": 12,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P05"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P06",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P06",
+      "resource_scope_count": 3,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P06"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P07",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P07",
+      "resource_scope_count": 1,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P07"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P08",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P08",
+      "resource_scope_count": 8,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P08"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P09",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P09",
+      "resource_scope_count": 3,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P09"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P10",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P10",
+      "resource_scope_count": 1,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P10"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P11",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P11",
+      "resource_scope_count": 1,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P11"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P12",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P12",
+      "resource_scope_count": 4,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    },
+    {
+      "artifact_kind": "task",
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-SUBS-P12"
+      ],
+      "domain": "operations",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-SUBS-P13",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P13",
+      "resource_scope_count": 2,
+      "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+      "source_version": "0.1.0"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "verdict": "ready"
+}

@@ -1,0 +1,49 @@
+{
+  "execution_order_note": "13 task の depends_on は P01→P13 の一直線で、実測した依存ではなく安全側の既定値である。並列化する場合は resource_scope の交わりを実測してから depends_on を書き直すこと。",
+  "feature_id": "feat-subscriptions-screen",
+  "feature_package_id": "feature-package/feat-subscriptions-screen",
+  "graph_revision": 2,
+  "graph_snapshot_digest": "ea608480b4be4b9a7b70c1b1932721f1f1c424b253f37f9b129c589a7aa5f79b",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-subscriptions-screen/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-subscriptions-screen/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-graph.json",
+    "task_specs": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs"
+  },
+  "plan_validated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-SUBS-P01",
+    "SYS-SUBS-P02",
+    "SYS-SUBS-P03",
+    "SYS-SUBS-P04",
+    "SYS-SUBS-P05",
+    "SYS-SUBS-P06",
+    "SYS-SUBS-P07",
+    "SYS-SUBS-P08",
+    "SYS-SUBS-P09",
+    "SYS-SUBS-P10",
+    "SYS-SUBS-P11",
+    "SYS-SUBS-P12",
+    "SYS-SUBS-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "requirements_sources": {
+    "acceptance": "specs/spec-subscriptions-screen.md §15.1 (受入 19 項目)",
+    "architecture": [
+      "architecture/subscriptions-ui-ux.md",
+      "architecture/subscriptions-frontend.md",
+      "architecture/subscriptions-backend.md",
+      "architecture/subscriptions-database.md",
+      "architecture/subscriptions-auth.md",
+      "architecture/subscriptions-security.md",
+      "architecture/subscriptions-infrastructure.md",
+      "architecture/subscriptions-maintenance-ops.md"
+    ],
+    "feature": "features/feat-subscriptions-screen.md",
+    "specification": "specs/spec-subscriptions-screen.md"
+  },
+  "schema_version": "1.0.0"
+}

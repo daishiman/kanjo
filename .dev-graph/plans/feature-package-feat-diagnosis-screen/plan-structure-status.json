@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py (派生ビュー・手書き編集しない・再生成で上書き)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P01",
+      "title": "診断画面の要件確定と受入条件の分解",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P02",
+      "title": "検知器レジストリ境界と実装アーキテクチャの確定",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P03",
+      "title": "画面構成と API 契約の設計レビュー",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P04",
+      "title": "境界値・contract・統合テストの設計",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P05",
+      "title": "検知器レジストリ・健全性スコア・2 endpoint・D1 新表・診断画面の実装",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P06",
+      "title": "テスト実行と緑化",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P07",
+      "title": "受入条件 AC-001 から AC-006 の判定",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P08",
+      "title": "tradeoffCandidates の統合と D1 migration の整理",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P09",
+      "title": "CI ゲートの緑維持と js-budget の確認",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P10",
+      "title": "最終レビューと差分の確認",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P11",
+      "title": "証跡の集約",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P12",
+      "title": "docs の更新と運用手順の記載",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-DIAGNOSIS-SCREEN-P13",
+      "title": "本番反映 (Migrate APPLY から Deploy)",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

@@ -103,7 +103,7 @@ migration を伴うため、Deploy の前に Migrate が適用されている必
 - docs/household-screen/design-decisions.md
 - Consumed artifacts:
 - docs/household-screen/design-decisions.md
-- migrations/0043_owner_labels.sql
+- migrations/0045_owner_labels.sql
 - Write scope/touches:
 - docs/household-screen/design-decisions.md
 

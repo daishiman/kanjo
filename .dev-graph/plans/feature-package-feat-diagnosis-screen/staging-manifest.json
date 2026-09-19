@@ -1,0 +1,33 @@
+{
+  "canonical_digest": "sha256:13faf94a21513a4fa3b49d5ee9e526e0ad84bf3e469ca60c900fb479d3be08e6",
+  "feature_package_id": "feature-package/feat-diagnosis-screen",
+  "files": {
+    "feature-package.json": "b00d57bef72892751b505a84e31ad5a16c6d37b7a3ceeb6e43b6003bef250b6b",
+    "system-build-handoff.json": "0684e076466da17dc6673d656e9cf16a67a3f9e56b348ba7af86c9d8cc3584b5",
+    "task-graph.json": "d52e652990553fafebb6b1256d6aef516abfe1f17ac0f98410f64cb3f00cc101",
+    "task-specs/phase-01-requirements.md": "423c9f022aa04b478767276490d81bd42db147850e598f3185ee1bfb0f01f134",
+    "task-specs/phase-02-architecture.md": "f767276a92ca78cafce0b52687e2fb8c57c70943d401a59f19021ffa37ac5efb",
+    "task-specs/phase-03-design-review.md": "deafefb9fc44a23827b83314579dbe22edaccea145c07ad49be547aa7663eb60",
+    "task-specs/phase-04-test-design.md": "f052e1f89a496bc387f4e04a2761e3a32a88473844b27dc572fe03f8cf649062",
+    "task-specs/phase-05-implementation.md": "3e83706d299137d1bbcc778af9ed9943c7c43f5c96a86766ef8b90e71967824a",
+    "task-specs/phase-06-test-run.md": "a286cd333949509d81608354bb8a6fb69918f4e96a9b08fd17d7f5a0e1403838",
+    "task-specs/phase-07-acceptance.md": "821c01038c658f7d80cd10782c12de36c4e8add6e166334dd9604209fe235938",
+    "task-specs/phase-08-refactoring-migration.md": "9392c45cb755ebd921d71e6098ad6860268c0e5b1d627ac82107f9b6860241c1",
+    "task-specs/phase-09-quality-assurance.md": "87fb9e07ae985c177ba9d3a9c68f591ddc7c15f1df3501d5576572321cb5095c",
+    "task-specs/phase-10-final-review.md": "6860d3c02b7a2bee0e20bbace96a2115f46fcc6102d264b4d13992fec765b6e7",
+    "task-specs/phase-11-evidence.md": "678b22e8e91512d714e099a944e98d54e4815fe0ab5db770692549b6eb09df67",
+    "task-specs/phase-12-documentation-operations.md": "3e8fb13f7ba29d1914a7757e2ea1664d725ccaefc79698aab0239494967942e2",
+    "task-specs/phase-13-release-deploy.md": "8a1f4ea664890f8419dc32cfcdb128d6e41587aaac7eb054b7ca2499cb1f05bd",
+    "workstream-inventory.json": "d058832a76105c0808a2582d8808a151d402617746d3496c833f3d313095d34a"
+  },
+  "handoff_contract": {
+    "manifest_is_commit_point": true,
+    "path": "system-build-handoff.json",
+    "schema_version": "1.0.0",
+    "self_reference_policy": "handoff hash and final digest are manifest-only",
+    "sha256": "0684e076466da17dc6673d656e9cf16a67a3f9e56b348ba7af86c9d8cc3584b5",
+    "source_canonical_digest": "sha256:bb6c42111eb32743c302320fbc3de4be1cca372e3a09def81a60b589a9418096"
+  },
+  "parent_feature": "feat-diagnosis-screen",
+  "schema_version": "1.0.0"
+}

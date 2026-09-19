@@ -11,6 +11,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { ApiError } from '../../api-client.js';
 import { type HouseholdResponse, api } from '../../api.js';
 import { KpiCard, PageHeader, PageState } from '../../components/Page.js';
+import { Term } from '../../components/Term.js';
 import { monthLabel, yen } from '../../format.js';
 import { usePeriod } from '../../period.js';
 import { HouseholdCategories } from './HouseholdCategories.js';
@@ -130,7 +131,12 @@ export function HouseholdPage() {
         <KpiCard
           label={`総収入（${span}）`}
           value={yen(summary.total.income)}
-          note={`月平均 ${yen(summary.monthlyAverage.income)} / 年換算 ${yen(summary.annualized.income)}`}
+          note={
+            <>
+              月平均 {yen(summary.monthlyAverage.income)} / <Term id="annualized" />{' '}
+              {yen(summary.annualized.income)}
+            </>
+          }
         />
         <KpiCard
           label={`総支出（${span}）`}

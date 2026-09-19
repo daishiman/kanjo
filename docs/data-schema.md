@@ -100,6 +100,8 @@ freeeが複合行を出力すると、2行目以降の`発生日`が空欄にな
   },
   "analysisSettings": { "statMinMonths": 6 }, // durableな分析意図
   "subVendorExclusions": [{ "partner": "架空家賃" }], // 復元可能な候補除外
+  "subVendorMetadata": [{ "name": "Anthropic", "category": "仕事効率化", "reviewedAt": "2026-08-01T..." }], // subs.vendorsのD1補助属性
+  "subVendorReviewDecisions": [{ "vendorKey": "anthropic", "decision": "dismissed", "ruleFingerprint": "priceUp:3124", "decidedAt": "2026-08-02T..." }],
   "budgets":   { "サブスク・通信": 80000 },
   "unrecordedExpMonths": ["2026-07"],
   "exportedAt": "2026-08-24T..."
@@ -162,12 +164,45 @@ freeeが複合行を出力すると、2行目以降の`発生日`が空欄にな
 - `matchSubVendor(partner, vendors, account?)` は**先に科目で候補を絞ってから**名前・エイリアスを照合する。科目を渡さない呼び出し(候補一覧の「登録済みか」判定など)は絞り込みを行わない。
 - `sub_vendor_exclusions (user_id, partner, vendor_key)` は「これはサブスクではない」と記録した支払先。候補表示に効くdurable intentで、backup/restore/fingerprint対象。行を消せば除外は取り消せる。
 
+## サブスクのカテゴリ上書きと見直し判断 (migration 0043)
+
+追加だけの migration で、既存行の書き換えと backfill はしない。設計の正本は `docs/subscriptions-screen.md`。
+
+| 表・列 | 形 | 意味 | 書く経路 |
+|---|---|---|---|
+| `sub_vendors.category` | `TEXT` NULL 可 | 利用者が上書きしたカテゴリ。NULL は「core の `SUBS_CATEGORY_DICTIONARY` に従う」。辞書を直すと上書きしていない行は新しい辞書に従う | `PUT /api/sub-vendors/:id` の `category` (辞書名か 1〜20 文字、`null` で辞書へ戻す) |
+| `sub_vendor_review_decisions` | `(id, user_id TEXT, vendor_key, decision, rule_fingerprint, decided_at)`、`UNIQUE(user_id, vendor_key)`、`decision IN ('confirmed','dismissed')` | 見直し候補への判断。1 利用者 1 ベンダー 1 行で、保存は upsert、取消は行の削除 | `POST` / `DELETE /api/subscriptions/review-decisions` |
+
+- `rule_fingerprint` = 当たった規則を表示順に `+` で連結 + `:` + 推定月額 (例 `overlap:980`)。月は含めない。
+  指紋はクライアントから受け取らず、サーバが同じ期間で `subscriptionsScreen` を組んで求める。
+- `user_id` は spec の例 (`INTEGER`) ではなく既存 `sub_vendors.user_id` (0005) と同じ `TEXT`。
+- 見直し候補・推定月額・継続中・口座の 3 分類は保存しない (入力から毎回導く派生値)。
+- **backup / restore / fingerprint の対象**: `sub_vendors.category/reviewed_at` は `subVendorMetadata`、
+  `sub_vendor_review_decisions` は `subVendorReviewDecisions` として運ぶ。新backupは空DBへ復元しても両方を失わない。
+  これらのキーが無い旧JSONは空集合と読まず、復元先の既存値を保つ。変更経路はwriter leaseと
+  JSON pointer invalidationに接続し、restoreのauthoritative snapshotと競合させない。
+- 確かめるテスト: `packages/api/src/deletion-schema.test.ts` の `サブスクの見直し判断 (0043)`、
+  `packages/api/src/subs-screen.integration.test.ts`。
+
+### 0043 の適用と確認
+
+```bash
+# ローカル (wrangler の local D1)
+pnpm db:migrate:local
+pnpm --filter @kanjo/api exec wrangler d1 execute kanjo-db --local \
+  --command "SELECT name FROM pragma_table_info('sub_vendors') WHERE name='category'; SELECT name FROM sqlite_master WHERE name='sub_vendor_review_decisions';"
+```
+
+本番は `Deploy` が `wrangler d1 migrations list kanjo-db --remote` の pending を読み、追加だけの 0043 を Worker 配信の前に
+自動適用する (`docs/ci-cd-operations.md`)。既存行への影響は無く、適用前後で `SELECT COUNT(*) FROM sub_vendors` が
+変わらないことを確かめる。
+
 ## 状態分類（正本）
 
 | 状態 | 例 | backup / restore | fingerprint | cache・lease・保持 |
 |---|---|---|---|---|
 | canonical原本 | freee/MF、cash、rules、edits、budgets、owners、norm map、sub vendors | 対象（freee原本はCSV再取込） | 実効write-set | `monthly_agg`を無効化しwriter lease下で永続保持 |
-| durable intent | `analysis_settings`、`sub_vendor_exclusions` | 対象・移行先と非破壊merge | 対象 | JSON pointerを同batchで無効化し永続保持 |
+| durable intent | `analysis_settings`、`sub_vendor_exclusions`、サブスクのカテゴリ・見直し日・判断 | 対象。旧JSONのキー欠落時は移行先を保持 | 対象 | JSON pointerを同batchで無効化し永続保持 |
 | derived cache | `monthly_agg`、JSON active pointer | 原本から再生成 | 対象外 | mutationで無効化、再計算可能 |
 | 外部原本 | 取込原本、夜間バックアップ、改善要望の画像 | 取込・復旧・改善要望それぞれの経路で管理 | 取込原本以外は対象外 | R2で用途別prefixと保持期間を管理 |
 | disposable UI | filter、開閉、未保存draft | 対象外 | 対象外 | 画面/セッション内のみ |
@@ -388,7 +423,7 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 閾値の段階的な上下(可動域 0.70〜0.95)の基準は仕様書のD4に置く。判定はD1内の算術で閉じ、明細を外部へ送らない(DR-14)。
 - 画面へは割合ではなく件数で出す。「40件中40件」と「1件中1件」を同じ 1.00 として見せないため。
 
-## 家計収支の集計(0043 / feat-household-cashflow)
+## 家計収支の集計(0045 / feat-household-cashflow)
 
 家計収支画面(`/household`)の数値は core の `householdSummary` 1 本から出る。入力は総収支画面と同じ `totalCashflowLedger(...)` の `ledger.rows` だけで、家計画面は独自の選別を持たない。画面仕様の正本は `specs/spec-household-cashflow-screen.md`、判断の経緯は [`household-screen/design-decisions.md`](household-screen/design-decisions.md)。
 

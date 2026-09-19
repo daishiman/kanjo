@@ -1,4 +1,4 @@
-import { tradeoffCandidates } from './analysis.js';
+import { tradeoffCandidates } from './diagnosis-detectors.js';
 /**
  * 支出分析ハブ: 5 つの分析 (照合・総収支・マトリクス・推移・診断) のどこから見るかを決める材料。
  *

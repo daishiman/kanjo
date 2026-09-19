@@ -33,11 +33,12 @@ describe('チャート系列の描画契約 (BR-004)', () => {
       'components/ReportChart.tsx',
       'pages/Ai.tsx',
       'pages/Overview.tsx',
-      'pages/Subscriptions.tsx',
       'pages/analysis/TotalCashflow.tsx',
+      'pages/analysis/diagnosis/ImpactWaterfall.tsx',
       'pages/analysis/trends/ChangeFactors.tsx',
       'pages/analysis/trends/TrendSeriesPanel.tsx',
       'pages/household/HouseholdSeries.tsx',
+      'pages/subscriptions/CategoryTrendChart.tsx',
     ]);
   });
 

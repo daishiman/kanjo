@@ -137,19 +137,25 @@ export function KpiCard({
   label,
   value,
   note,
+  icon,
   tone,
   compact = false,
 }: {
   label: ReactNode;
   value: ReactNode;
   note?: ReactNode;
+  /** 画面固有の意味アイコン。装飾目的では渡さず、既存 UiIcon registry の要素を使う。 */
+  icon?: ReactNode;
   tone?: 'biz' | 'per';
   compact?: boolean;
 }) {
   return (
     <div className={`kpi${compact ? ' compact' : ''}`}>
-      <div className="label">{label}</div>
-      <div className={`value${tone ? ` ${tone}` : ''}`}>{value}</div>
+      {icon != null && <span className="kpi-icon">{icon}</span>}
+      <div className="kpi-content">
+        <div className="label">{label}</div>
+        <div className={`value${tone ? ` ${tone}` : ''}`}>{value}</div>
+      </div>
       {note != null && <div className="note">{note}</div>}
     </div>
   );

@@ -377,6 +377,8 @@ export interface SubsAlert {
 export interface SubscriptionsData {
   months: string[];
   vendors: string[];
+  /** ベンダーの登録対象科目。診断遷移の account を表示対象へ解決するために使う。 */
+  vendorAccounts?: Record<string, string[]>;
   matrix: Record<string, number[]>;
   other: number[];
   /** deltaは1=100%の小数。負値・1超を許容する増減率。 */
@@ -408,6 +410,28 @@ export interface SubscriptionsData {
   };
   alerts: SubsAlert[];
   years: { curr: string; prev: string };
+}
+
+/**
+ * 1 ベンダーの月別支払額から、重複疑い (dup) と急増 (spike) の月を拾う。
+ * 基準は支払いのあった月の中央値。サブスク画面の検出理由カードも同じ関数で判定する。
+ */
+export function subsSpendAlerts(
+  vendor: string,
+  months: readonly string[],
+  series: readonly number[],
+): SubsAlert[] {
+  const nz = series.filter((x) => x > 0);
+  if (!nz.length) return [];
+  const med = median(nz);
+  const out: SubsAlert[] = [];
+  series.forEach((v, i) => {
+    if (v >= med * 1.8 && v > 20000 && med > 5000)
+      out.push({ month: months[i], vendor, value: v, median: med, type: 'dup' });
+    else if (v >= med * 3 && v > 15000)
+      out.push({ month: months[i], vendor, value: v, median: med, type: 'spike' });
+  });
+  return out;
 }
 
 /** 重複疑い=中央値の1.8倍超かつ2万円超かつ中央値5千円超 / 急増=3倍超かつ1.5万円超 */
@@ -451,22 +475,13 @@ export function subscriptions(data: Dataset): SubscriptionsData {
     revenueShare: avgRev > 0 && recent3.length ? mean(recent3) / avgRev : null,
   };
 
-  const alerts: SubsAlert[] = [];
-  V.forEach((vd) => {
-    const s = data.subs.matrix[vd];
-    const nz = s.filter((x) => x > 0);
-    if (!nz.length) return;
-    const med = median(nz);
-    s.forEach((v, i) => {
-      if (v >= med * 1.8 && v > 20000 && med > 5000)
-        alerts.push({ month: M[i], vendor: vd, value: v, median: med, type: 'dup' });
-      else if (v >= med * 3 && v > 15000)
-        alerts.push({ month: M[i], vendor: vd, value: v, median: med, type: 'spike' });
-    });
-  });
+  const alerts: SubsAlert[] = V.flatMap((vd) => subsSpendAlerts(vd, M, data.subs.matrix[vd]));
   return {
     months: M,
     vendors: V,
+    vendorAccounts: Object.fromEntries(
+      V.map((vendor) => [vendor, [...(data.subs.accounts?.[vendor] ?? [])]]),
+    ),
     matrix: data.subs.matrix,
     other: data.subs.other,
     vendorTable,
@@ -1277,74 +1292,10 @@ export function judgeDefenseForecast(input: DefenseForecastInput): {
 
 /* ======================== FR-09 やりくり試算 ======================== */
 
-export interface TradeoffCandidate {
-  id: string;
-  kind: 'subs_dup' | 'subs_spike' | 'budget_over' | 'above_range' | 'unexplained';
-  label: string;
-  detail: string;
-  /** 月あたりの捻出期待額 */
-  amount: number;
-}
-
-/**
- * 削減余地リスト（効果額降順）。
- * 未分類・説明不能支出の削減期待値は精査で3割解消できる想定（可逆な運用仮説）。
+/*
+ * 削減余地リスト (TradeoffCandidate / tradeoffCandidates) は diagnosis-detectors.ts へ移した。
+ * 同じ「改善の余地」を見つける規則が検知器レジストリと二重に実装されていたため (ADR-001)。
  */
-export function tradeoffCandidates(data: Dataset): TradeoffCandidate[] {
-  const out: TradeoffCandidate[] = [];
-  const subs = subscriptions(data);
-  const latestByVendor = new Map<string, SubsAlert>();
-  subs.alerts.forEach((a) => {
-    const prev = latestByVendor.get(a.vendor);
-    if (!prev || a.month > prev.month) latestByVendor.set(a.vendor, a);
-  });
-  latestByVendor.forEach((a) => {
-    const excess = Math.round(a.value - a.median);
-    out.push({
-      id: `subs:${a.vendor}`,
-      kind: a.type === 'dup' ? 'subs_dup' : 'subs_spike',
-      label: `${a.vendor} の${a.type === 'dup' ? '重複契約疑い' : '急増'}を解消`,
-      detail: `${a.month} に ¥${a.value.toLocaleString()}（通常月中央値 ¥${Math.round(a.median).toLocaleString()}）`,
-      amount: excess,
-    });
-  });
-  budgetTable(data).forEach((r) => {
-    if (r.judge === '超過' && r.diff != null) {
-      out.push({
-        id: `budget:${r.account}`,
-        kind: 'budget_over',
-        label: `${r.account} を予算内に戻す`,
-        detail: `直近3ヶ月平均 ¥${Math.round(r.recentAvg).toLocaleString()} が予算 ¥${(r.budget ?? 0).toLocaleString()} を超過`,
-        amount: Math.round(r.diff),
-      });
-    }
-  });
-  diagnosis(data).entries.forEach((e) => {
-    if ((e.judge === '要確認' || e.judge === 'やや高い') && data.budgets[e.account] == null) {
-      const excess = Math.round(e.profile.lastVal - e.profile.mean);
-      if (excess > 0) {
-        out.push({
-          id: `range:${e.account}`,
-          kind: 'above_range',
-          label: `${e.account} を基準レンジへ戻す`,
-          detail: `直近 ¥${Math.round(e.profile.lastVal).toLocaleString()} が基準レンジ上限 ¥${Math.round(e.range.hi).toLocaleString()} 超え`,
-          amount: excess,
-        });
-      }
-    }
-  });
-  const explainability = personalExplainability(data);
-  if (explainability && explainability.unexplained > 0) {
-    out.push({
-      id: 'unexplained',
-      kind: 'unexplained',
-      label: '未分類・明細不明支出の精査',
-      detail: `${explainability.month} の未分類＋カード引落 ¥${explainability.unexplained.toLocaleString()}（精査で3割解消想定）`,
-      amount: Math.round(explainability.unexplained * 0.3),
-    });
-  }
-  return out.filter((c) => c.amount > 0).sort((a, b) => b.amount - a.amount);
-}
 
 /** 突合に使う、保存済みのやりくり計画。DB行のうち判定に必要な列だけ */
 export interface TradeoffPlanRecord {

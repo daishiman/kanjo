@@ -1,0 +1,656 @@
+/* 診断: 上位 1 件を選び、根拠を確認し、実行へ進む。色は共通 token だけを使う。 */
+.diagnosis {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  min-width: 0;
+  padding-bottom: 104px;
+  transition: opacity var(--motion-fast) var(--ease-standard);
+}
+
+/* 条件を変えて取り直す間は、直前の判断材料を薄く残してレイアウトシフトを防ぐ。 */
+.diagnosis.is-stale > :not(.diagnosis-conditions) {
+  opacity: 0.55;
+}
+
+.diagnosis > .card,
+.diagnosis-overview > .card,
+.diagnosis-workspace > .card {
+  margin-bottom: 0;
+}
+
+/* ---------------- 条件 ---------------- */
+.diagnosis-conditions {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  align-items: end;
+  gap: 12px 24px;
+}
+
+.diagnosis-condition-group {
+  display: grid;
+  gap: 6px;
+}
+
+.diagnosis-condition-label,
+.diagnosis-eyebrow {
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.diagnosis-condition-total {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.diagnosis-condition-value {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+/* ---------------- 結論 ---------------- */
+.diagnosis-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 0.9fr);
+  gap: 12px;
+  min-width: 0;
+}
+
+.diagnosis-overview > :only-child {
+  grid-column: 1 / -1;
+}
+
+.diagnosis-result {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 0.34fr);
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.diagnosis-result-main,
+.diagnosis-health {
+  min-width: 0;
+  padding: 18px;
+}
+
+.diagnosis-result-main {
+  border-right: 1px solid var(--line);
+}
+
+.diagnosis-result-main h2 {
+  max-width: 28ch;
+  margin: 4px 0 6px;
+  font-size: var(--fs-xl);
+  line-height: 1.45;
+  text-wrap: balance;
+}
+
+.diagnosis-result-impact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: 8px 0 6px;
+}
+
+.diagnosis-result-impact .num {
+  color: var(--biz-strong);
+  font-size: var(--fs-3xl);
+  font-weight: 600;
+}
+
+.diagnosis-result-copy,
+.diagnosis-result-none p {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+
+.diagnosis-result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 16px 0 0;
+}
+
+.diagnosis-result-meta > div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.diagnosis-result-meta dt,
+.diagnosis-detail-facts dt,
+.diagnosis-detail-breakdown dt,
+.diagnosis-outcome-list dt {
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+}
+
+.diagnosis-result-meta dd,
+.diagnosis-detail-facts dd,
+.diagnosis-detail-breakdown dd,
+.diagnosis-outcome-list dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.diagnosis-health-score {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin: 4px 0 8px;
+}
+
+.diagnosis-health-value {
+  color: var(--biz-strong);
+  font-size: var(--fs-3xl);
+  font-weight: 600;
+}
+
+.diagnosis-health-unit {
+  color: var(--ink-soft);
+}
+
+.diagnosis-health-note {
+  margin: 0 0 8px;
+}
+
+.diagnosis-health-breakdown > summary,
+.diagnosis-action-state > summary,
+.diagnosis-legacy > summary {
+  width: fit-content;
+  min-height: var(--tap-target-min);
+  padding-block: 10px;
+  color: var(--biz-strong);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.diagnosis-health-factors {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 0;
+}
+
+.diagnosis-health-factors > div {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.diagnosis-health-factors dt {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.diagnosis-health-factors dd {
+  margin: 2px 0 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+/* ---------------- 上位シグナル ---------------- */
+.diagnosis-signals h2 {
+  margin-bottom: 12px;
+}
+
+.diagnosis-signal-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.diagnosis-signal {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.diagnosis-signal:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.diagnosis-signal-rank {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--surface-alt);
+  color: var(--biz-strong);
+  font-weight: 600;
+}
+
+.diagnosis-signal-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.diagnosis-signal-body strong,
+.diagnosis-signal-body .sub {
+  overflow-wrap: anywhere;
+}
+
+/* ---------------- 一覧 + 詳細 (master-detail) ---------------- */
+.diagnosis-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.62fr) minmax(300px, 0.82fr);
+  align-items: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.diagnosis-actions,
+.diagnosis-detail {
+  min-width: 0;
+}
+
+.diagnosis-actions-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.diagnosis-actions-head h2 {
+  margin: 0;
+}
+
+.diagnosis-actions-head .btn {
+  margin-left: auto;
+}
+
+.diagnosis-collapsed-note,
+.diagnosis-more-note {
+  margin: 6px 0 10px;
+}
+
+.diagnosis-actions-table-wrap {
+  margin-inline: -8px;
+}
+
+.diagnosis-action-table td:nth-child(2) {
+  min-width: 15rem;
+  text-align: left;
+}
+
+.diagnosis-action-table td:last-child {
+  white-space: nowrap;
+}
+
+.diagnosis-row.is-selected > td {
+  background: var(--row-hover);
+}
+
+.diagnosis-row[aria-current="true"] > td:first-child {
+  box-shadow: inset 3px 0 0 var(--biz);
+}
+
+.diagnosis-actions-empty,
+.diagnosis-detail-empty,
+.diagnosis-sample-empty {
+  padding: 24px 12px;
+  text-align: center;
+}
+
+.diagnosis-actions-empty h3,
+.diagnosis-actions-empty p,
+.diagnosis-detail-empty h2,
+.diagnosis-detail-empty p,
+.diagnosis-sample-empty h3,
+.diagnosis-sample-empty p {
+  margin: 0 0 8px;
+}
+
+.diagnosis-detail {
+  display: grid;
+  gap: 14px;
+  position: sticky;
+  top: calc(var(--header-h) + 12px);
+}
+
+.diagnosis-detail-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.diagnosis-detail-heading h2 {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: var(--fs-lg);
+  text-wrap: balance;
+}
+
+.diagnosis-detail [role="tabpanel"] {
+  min-width: 0;
+}
+
+.diagnosis-detail-lead {
+  margin-top: 0;
+}
+
+.diagnosis-detail h3 {
+  margin: 18px 0 6px;
+  font-size: var(--fs-sm);
+}
+
+.diagnosis-reason-list {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 20px;
+  font-size: var(--fs-sm);
+}
+
+.diagnosis-detail-facts,
+.diagnosis-detail-breakdown,
+.diagnosis-outcome-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  margin: 0;
+}
+
+.diagnosis-detail-facts > div,
+.diagnosis-detail-breakdown > div {
+  display: grid;
+  gap: 2px;
+}
+
+.diagnosis-detail-breakdown > div {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.diagnosis-action-state {
+  border-top: 1px solid var(--line);
+}
+
+.diagnosis-selection-status,
+.diagnosis-selection-note {
+  display: grid;
+  gap: 8px;
+}
+
+.diagnosis-selection-note {
+  margin-top: 14px;
+  justify-items: start;
+}
+
+.diagnosis-selection-note textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.diagnosis-selection-error {
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+
+/* ---------------- 成果・根拠・旧統計 ---------------- */
+.diagnosis-outcome-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.diagnosis-outcome-list > div {
+  display: grid;
+  gap: 3px;
+}
+
+.diagnosis-outcome-list dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.diagnosis-outcome-list dd > span[aria-hidden="true"] {
+  color: var(--ink-soft);
+}
+
+.diagnosis-legacy-kpis {
+  margin-top: 14px;
+}
+
+.diagnosis-auto-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.diagnosis-auto-row:last-child {
+  border-bottom: 0;
+}
+
+/* ---------------- 選択要約 + 主 CTA ---------------- */
+.diagnosis-selection {
+  position: fixed;
+  z-index: 24;
+  right: 0;
+  bottom: 0;
+  left: var(--sidebar-w);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px 20px;
+  min-height: 76px;
+  padding: 10px var(--page-gutter);
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line-strong);
+  background: var(--surface);
+  box-shadow: var(--shadow-popover);
+}
+
+.diagnosis-selection-summary,
+.diagnosis-selection-impact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  min-width: 0;
+}
+
+.diagnosis-selection-summary > span:first-child,
+.diagnosis-selection-impact > span {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+.diagnosis-selection-summary > strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.diagnosis-selection-impact > strong {
+  color: var(--biz-strong);
+  font-size: var(--fs-lg);
+}
+
+.diagnosis-selection .btn.primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+html:has(.diagnosis-selection) {
+  scroll-padding-bottom: 104px;
+}
+
+@media (max-width: 1023px) {
+  .diagnosis-overview,
+  .diagnosis-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .diagnosis-result {
+    grid-template-columns: minmax(0, 1fr) minmax(210px, 0.42fr);
+  }
+
+  .diagnosis-detail {
+    position: static;
+  }
+
+  .diagnosis-selection {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .diagnosis-selection-impact {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .diagnosis {
+    gap: 12px;
+    padding-bottom: calc(150px + var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .diagnosis-conditions,
+  .diagnosis-result {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .diagnosis-condition-group .segment,
+  .diagnosis-detail > .segment {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .diagnosis-condition-group .segment button,
+  .diagnosis-detail > .segment button {
+    min-width: 0;
+    padding-inline: 8px;
+  }
+
+  .diagnosis-result-main {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .diagnosis-result-impact .num {
+    font-size: var(--fs-2xl);
+  }
+
+  .diagnosis-signal {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .diagnosis-signal > .pill {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .diagnosis-actions-head {
+    align-items: flex-start;
+  }
+
+  .diagnosis-actions-head .btn {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .diagnosis-actions-table-wrap {
+    margin-inline: 0;
+    overflow-x: visible;
+  }
+
+  table.data.diagnosis-action-table td:first-child {
+    display: none;
+  }
+
+  table.data.diagnosis-action-table td:nth-child(2) {
+    display: block;
+    min-width: 0;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+  }
+
+  table.data.diagnosis-action-table td:nth-child(2)::before {
+    display: none;
+  }
+
+  table.data.diagnosis-action-table td:nth-child(5),
+  table.data.diagnosis-action-table td:nth-child(6) {
+    display: none;
+  }
+
+  table.data.diagnosis-action-table td:last-child .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .diagnosis-detail-facts,
+  .diagnosis-detail-breakdown,
+  .diagnosis-outcome-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .diagnosis-selection-status .segment {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .diagnosis-selection-status .segment button {
+    min-width: 0;
+    padding-inline: 8px;
+  }
+
+  .diagnosis-selection {
+    right: 0;
+    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    min-height: 0;
+    padding: 9px var(--page-gutter-compact);
+  }
+
+  .diagnosis-selection-summary {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .diagnosis-selection .btn.primary {
+    width: 100%;
+  }
+
+  html:has(.diagnosis-selection) {
+    scroll-padding-bottom: calc(150px + var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diagnosis,
+  .diagnosis * {
+    scroll-behavior: auto;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

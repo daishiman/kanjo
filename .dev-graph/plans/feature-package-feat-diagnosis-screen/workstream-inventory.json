@@ -1,0 +1,1071 @@
+{
+  "feature_package_id": "feature-package/feat-diagnosis-screen",
+  "parent_feature": "feat-diagnosis-screen",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "explicit-cli"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "specs/spec-diagnosis-screen.md",
+      "architecture/arch-diagnosis-screen.md",
+      "features/feat-diagnosis-screen.context.json",
+      "system-spec/index.md"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "docs/diagnosis-screen.md に FR/BR/AC と成果物の対応表が存在する。",
+        "6 種の検知器と健全性スコア 4 要素の定義が数式と単位まで書かれている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p01.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [],
+      "deploy_unit": "documentation",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p01.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P01",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "docs/diagnosis-screen.md の当該追記を revert する。コードと D1 に影響しない。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "診断画面の要件確定と受入条件の分解",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "FR-001 から FR-011 の全項目が対応表の行として存在すること。",
+        "AC-001 から AC-006 の各受入条件に検証手段が 1 つ以上割り当たっていること。"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs"
+      ]
+    },
+    {
+      "acceptance": [
+        "検知器インターフェースと Improvement の型が確定し、画面と API に検知器 id の分岐が不要であることが構造として示される。",
+        "既存 5 種の寄せ先が全件決まっている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p02.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P01"
+      ],
+      "deploy_unit": "documentation",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p02.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P02",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "設計節の追記を revert する。実装が未着手のため影響が閉じる。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "検知器レジストリ境界と実装アーキテクチャの確定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "Improvement の各項目が画面の表・ウォーターフォール・詳細パネルのどの表示に使われるか対応づいていること。",
+        "既存 tradeoffCandidates() の 5 種がレジストリの何番へ寄るか明記されていること。"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "docs",
+        "packages/core/src"
+      ]
+    },
+    {
+      "acceptance": [
+        "画面 11 ブロックの配置と分割単位が確定しレビュー記録が残る。",
+        "2 endpoint の契約が spec と一致していることが確認される。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p03.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P02"
+      ],
+      "deploy_unit": "documentation",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p03.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P03",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "レビュー記録の追記を revert する。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "画面構成と API 契約の設計レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "返却形状が spec の API契約節と一致すること。",
+        "色と余白の直書きが設計上発生しないことをレビューで確認すること。"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs"
+      ]
+    },
+    {
+      "acceptance": [
+        "6 種すべてに対の境界値入力が定義される。",
+        "健全性スコアの 3 点と 2 endpoint の contract 入力表が揃う。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p04.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P03"
+      ],
+      "deploy_unit": "documentation",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p04.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P04",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "テスト設計の追記を revert する。プロダクトコードに影響しない。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "境界値・contract・統合テストの設計",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "各検知器に対で 2 件以上の入力が定義されていること。",
+        "401 と 400 の negative ケースが両 endpoint に存在すること。"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs",
+        "packages/core/src",
+        "packages/api/src/routes",
+        "packages/web/src/pages/analysis"
+      ]
+    },
+    {
+      "acceptance": [
+        "/analysis/diagnosis が 11 ブロックを描画し、条件が searchParams に載る。",
+        "2 endpoint が許可リスト方式の検証つきで動き、対応状況が D1 に保存される。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p05.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P04"
+      ],
+      "deploy_unit": "browser-web-bundle",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p05.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P05",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "当該コミットを revert する。新表は作成のみで既存データを書き換えないため、表が残っても既存機能に影響しない。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "検知器レジストリ・健全性スコア・2 endpoint・D1 新表・診断画面の実装",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "packages/web と packages/api に検知器 id の分岐が 0 件であること。",
+        "色と余白の直書きが lint で 0 件であること。",
+        "migration が既存表の行書き換えを含まないこと。"
+      ],
+      "workstream_kind": "frontend",
+      "write_scope": [
+        "packages/core/src",
+        "packages/api/src/routes",
+        "migrations",
+        "packages/web/src/pages/analysis",
+        "packages/web/src"
+      ]
+    },
+    {
+      "acceptance": [
+        "全テストが緑で、旧実装では落ちることが確認されている。",
+        "検知器追加テストが画面と API の無編集で通る。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p06.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P05"
+      ],
+      "deploy_unit": "ci-pipeline",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p06.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P06",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "テスト追加コミットを revert する。プロダクト挙動に影響しない。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "テスト実行と緑化",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "typecheck / lint / test が exit 0 であること。",
+        "検知器を 1 件足したテストで画面と API を編集せずに新しい課題が現れること。"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/src",
+        "packages/api/src/routes",
+        "packages/web/src"
+      ]
+    },
+    {
+      "acceptance": [
+        "AC-001 から AC-006 が全件 PASS である。",
+        "各判定の根拠が実測値として記録される。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p07.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P06"
+      ],
+      "deploy_unit": "ci-pipeline",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p07.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P07",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "判定記録を revert する。差し戻しが出た場合は該当 phase へ戻す。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "受入条件 AC-001 から AC-006 の判定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "6 件すべてに PASS または差し戻しの判定が付いていること。",
+        "判定の根拠が実測値であり推定でないこと。"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/web/src",
+        "packages/api/src/routes",
+        "packages/core/src"
+      ]
+    },
+    {
+      "acceptance": [
+        "重複実装が 0 件になる。",
+        "migration 番号が origin/main の最大番号 + 1 で衝突しない。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p08.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P07"
+      ],
+      "deploy_unit": "cloudflare-d1",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p08.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P08",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "統合コミットを revert する。migration は追加のみのため巻き戻しを行わない。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "tradeoffCandidates の統合と D1 migration の整理",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "同じ観点の実装が core に 1 箇所だけであること。",
+        "migration が新表の作成のみで既存表に触れないこと。"
+      ],
+      "workstream_kind": "data",
+      "write_scope": [
+        "packages/core/src",
+        "migrations"
+      ]
+    },
+    {
+      "acceptance": [
+        "5 ゲートが緑である。",
+        "js-budget が予算内に収まる。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p09.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P08"
+      ],
+      "deploy_unit": "ci-pipeline",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p09.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P09",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "ゲートを落とした変更を特定して revert する。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "CI ゲートの緑維持と js-budget の確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "5 ゲートがすべて exit 0 であること。",
+        "新規依存パッケージの追加が 0 件であること。"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/web/src",
+        "packages/api/src",
+        "packages/core/src"
+      ]
+    },
+    {
+      "acceptance": [
+        "レビュー指摘がすべて解消される。",
+        "スコープ外へのはみ出しが 0 件である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p10.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P09"
+      ],
+      "deploy_unit": "documentation",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p10.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P10",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "レビュー由来の修正コミットを個別に revert する。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "最終レビューと差分の確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "差分の起点が origin/main であること。",
+        "feature の scope_out 12 項目のいずれにも触れていないこと。"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/src",
+        "packages/api/src",
+        "packages/web/src",
+        "docs"
+      ]
+    },
+    {
+      "acceptance": [
+        "証跡が一覧化され、各項目の出所が明示される。",
+        "記録された時刻がすべて実測値である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p11.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P10"
+      ],
+      "deploy_unit": "documentation",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p11.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P11",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "証跡の追記を revert する。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "証跡の集約",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "各証跡に出所が付いていること。",
+        "時刻が実測値であり未来日付でないこと。"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs"
+      ]
+    },
+    {
+      "acceptance": [
+        "計算規則の正本が docs に置かれ実装と一致する。",
+        "検知器追加手順と切り分け順序が記載される。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p12.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P11"
+      ],
+      "deploy_unit": "documentation",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p12.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P12",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "docs の更新を revert する。コードに影響しない。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "docs の更新と運用手順の記載",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "docs の算式が実装と一致すること。",
+        "検知器追加手順が 3 ステップ以内で書かれていること。"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs"
+      ]
+    },
+    {
+      "acceptance": [
+        "新表が本番に作られ、その後に Deploy が完了する。",
+        "適用結果が CI ログから復元できる。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p13.md",
+            "confidence": 1.0
+          }
+        ],
+        "confidence": 1.0,
+        "reason": "確定済み仕様と設計から導かれた単一 phase の実行単位であり artifact_kind=task に一意に定まる。"
+      },
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P12"
+      ],
+      "deploy_unit": "cloudflare-workers-api",
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-diagnosis-screen",
+        "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p13.md",
+        "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P13",
+        "parent_feature": "feat-diagnosis-screen",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-DIAGNOSIS-SCREEN-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T01:57:38Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "SH2-maintainer"
+      ],
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "spec-diagnosis-screen",
+        "arch-diagnosis-screen"
+      ],
+      "rollback": "画面と API の変更を戻す。新表は追加のみのため残っても既存機能に影響せず、migration の巻き戻しは行わない。",
+      "source_lineage": [
+        "specs/spec-diagnosis-screen.md",
+        "architecture/arch-diagnosis-screen.md",
+        "features/feat-diagnosis-screen.context.json"
+      ],
+      "tags": [
+        "diagnosis",
+        "analysis",
+        "system-dev-plan"
+      ],
+      "title": "本番反映 (Migrate APPLY から Deploy)",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "Migrate APPLY が Deploy より先に完了していること。",
+        "適用結果が CI ログから追えること。"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        "migrations",
+        "packages/api/src",
+        "docs"
+      ]
+    }
+  ]
+}

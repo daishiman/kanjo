@@ -3673,28 +3673,6 @@ label.check {
   }
 }
 
-/* サブスク候補の採点根拠: 広い画面は常時表示、スマホ幅は <details> で畳む */
-.reasons-narrow {
-  display: none;
-}
-.reasons-narrow > summary {
-  font-size: var(--fs-xs);
-  color: var(--ink-soft);
-  cursor: pointer;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-}
-@media (max-width: 640px) {
-  .reasons-wide {
-    display: none;
-  }
-  .reasons-narrow {
-    display: block;
-    font-weight: 400;
-  }
-}
-
 /* 画面検索パレット(Cmd+K)。ネイティブ <dialog> なので開閉・背面の不活性化はブラウザが持つ */
 .palette {
   width: min(560px, calc(100vw - 32px));

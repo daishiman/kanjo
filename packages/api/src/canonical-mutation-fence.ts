@@ -149,8 +149,30 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
    */
   { method: 'PUT', path: /^\/api\/settings\/owner-labels$/, consumers: ['owner_labels'] },
   { method: 'POST', path: /^\/api\/sub-vendors$/, consumers: ['sub_vendors'] },
-  { method: 'PUT', path: /^\/api\/sub-vendors\/[^/]+$/, consumers: ['sub_vendors'] },
-  { method: 'DELETE', path: /^\/api\/sub-vendors\/[^/]+$/, consumers: ['sub_vendors'] },
+  {
+    method: 'PUT',
+    path: /^\/api\/sub-vendors\/[^/]+$/,
+    consumers: ['sub_vendors', 'sub_vendor_review_decisions'],
+  },
+  // 名称の統合 (別名の追加)。別名は集計の正本に効くので PUT と同じく lease で直列化する
+  { method: 'POST', path: /^\/api\/sub-vendors\/[^/]+\/aliases$/, consumers: ['sub_vendors'] },
+  {
+    method: 'DELETE',
+    path: /^\/api\/sub-vendors\/[^/]+$/,
+    consumers: ['sub_vendors', 'sub_vendor_review_decisions'],
+  },
+  // 見直し日と候補への判断もbackup/restore対象。restore snapshotと重ねない
+  { method: 'POST', path: /^\/api\/sub-vendors\/[^/]+\/review$/, consumers: ['sub_vendors'] },
+  {
+    method: 'POST',
+    path: /^\/api\/subscriptions\/review-decisions$/,
+    consumers: ['sub_vendor_review_decisions'],
+  },
+  {
+    method: 'DELETE',
+    path: /^\/api\/subscriptions\/review-decisions$/,
+    consumers: ['sub_vendor_review_decisions'],
+  },
   { method: 'POST', path: /^\/api\/sub-vendors\/exclusions$/, consumers: ['sub_vendor_exclusions'] },
   {
     method: 'DELETE',

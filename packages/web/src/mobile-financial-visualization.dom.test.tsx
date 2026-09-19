@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import type { SubscriptionsScreen } from '@kanjo/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -159,36 +160,37 @@ describe('モバイル財務figureの意味同等性', () => {
     expect(figure.querySelector('[data-financial-unit]')).not.toBeNull();
   });
 
-  it('20系列でもChart.jsは上位6件+他N件に集約し、正確な表は全支払先を保つ', async () => {
-    const vendors = Array.from({ length: 20 }, (_, index) => `支払先${String(index + 1).padStart(2, '0')}`);
+  it('サブスク推移は上位3カテゴリ+その他の4系列に畳み、図・凡例・正確な表で同じ系列を保つ', async () => {
     const months = ['2026-07', '2026-08'];
-    const matrix = Object.fromEntries(
-      vendors.map((vendor, index) => [vendor, months.map(() => (index + 1) * 1_000)]),
-    );
-    const payload = {
-      months,
-      vendors,
-      matrix,
-      other: [500, 500],
-      vendorTable: vendors.map((vendor, index) => ({
-        vendor,
-        prevActual: 0,
-        currAnnualized: (index + 1) * 12_000,
-        delta: 1,
-        lastMonthly: (index + 1) * 1_000,
-        avgMonthly: (index + 1) * 1_000,
-        last12Total: (index + 1) * 2_000,
-        activeMonths: 2,
-      })),
-      now: {
-        month: '2026-08',
-        monthlyTotal: 210_500,
-        annualized: 2_526_000,
-        last12Total: 421_000,
+    const series = [
+      { category: 'エンタメ', values: [4_000, 4_000] },
+      { category: '仕事効率化', values: [3_000, 3_000] },
+      { category: 'クラウド', values: [2_000, 2_000] },
+      { category: 'その他', values: [1_500, 1_500] },
+    ];
+    const payload: SubscriptionsScreen = {
+      period: { from: '2026-07', to: '2026-08' },
+      previousPeriod: { from: '2026-05', to: '2026-06' },
+      generatedAt: '2026-08-31T10:00:00+09:00',
+      kpis: {
+        monthlyTotal: 10_500,
+        monthlyTotalPrev: 10_500,
+        annualized: 126_000,
+        annualizedPrev: 126_000,
+        last12Total: 21_000,
         revenueShare: 0.1,
+        reviewCandidates: 0,
       },
-      alerts: [],
-      years: { curr: '2026', prev: '2025' },
+      coverage: {
+        bank: { percent: 1, imported: 1, accounts: 1 },
+        card: { percent: 1, imported: 1, accounts: 1 },
+        emoney: { percent: 0, imported: 0, accounts: 0 },
+        unclassified: 0,
+      },
+      rows: [],
+      trend: { months, series },
+      comparison: [],
+      comparisonTotal: { monthly: 10_500, annualized: 126_000, prevMonthly: 10_500 },
     };
     vi.stubGlobal(
       'fetch',
@@ -211,10 +213,11 @@ describe('モバイル財務figureの意味同等性', () => {
       </QueryClientProvider>,
     );
 
-    const chart = await screen.findByRole('img', { name: '月別のサブスク支払い内訳を積み上げで示す図' });
-    expect(chart.getAttribute('data-dataset-labels')).toBe(
-      '支払先20|支払先19|支払先18|支払先17|支払先16|支払先15|他14件',
-    );
+    const labels = series.map((item) => item.category);
+    const chart = await screen.findByRole('img', {
+      name: '月別のサブスク支払いをカテゴリ別の積み上げで示す図',
+    });
+    expect(chart.getAttribute('data-dataset-labels')).toBe(labels.join('|'));
     const figure = container.querySelector<HTMLElement>('[data-financial-figure]');
     if (!figure) throw new Error('subscription financial figure missing');
     const visibleSeries = within(figure).getByRole('list', { name: '図の系列' });
@@ -222,14 +225,11 @@ describe('モバイル財務figureの意味同等性', () => {
       within(visibleSeries)
         .getAllByRole('listitem')
         .map((item) => item.textContent?.trim()),
-    ).toEqual(['支払先20', '支払先19', '支払先18', '支払先17', '支払先16', '支払先15', '他14件']);
+    ).toEqual(labels);
     const table = within(figure).getByRole('table', { name: /正確な値/ });
-    // 図は上位6件+他N件へ畳むが、正確な表は20支払先すべてを残す。ここが表の存在理由なので、
-    // 一部を抜き取るのではなく見出しの全件を固定する(畳まれたら件数が合わずに落ちる)。
-    //
     // アクセシブル名の文字列そのものは見ない。見出しは「ラベルのテキストノード + 単位のspan」の
     // 2ノードでできており、その連結に区切りの空白を入れるかは算出側の実装差になる
-    // (同一バージョンでも macOS では「支払先01（円）」、CI(Linux)では「支払先01 （円）」)。
+    // (同一バージョンでも macOS と CI(Linux) で空白の有無が違う)。
     // 守りたいのは表記と読み上げ用の単位が両方あることなので、その2つを別々に確かめる。
     const headers = within(table).getAllByRole('columnheader');
     const headerLabels = headers.map((th) => {
@@ -237,16 +237,16 @@ describe('モバイル財務figureの意味同等性', () => {
       for (const hidden of visible.querySelectorAll('.visually-hidden')) hidden.remove();
       return visible.textContent?.trim() ?? '';
     });
-    expect(headerLabels).toEqual(['月', ...vendors, 'その他']);
+    expect(headerLabels).toEqual(['月', ...labels]);
     // 数値列は見出し文に単位を出さず、読み上げにだけ渡す。
     expect(headers.slice(1).map((th) => th.querySelector('.visually-hidden')?.textContent)).toEqual(
-      Array.from({ length: vendors.length + 1 }, () => '（円）'),
+      labels.map(() => '（円）'),
     );
 
-    // 集約後の7系列は、凡例チップと図で同じ色でなければ対応が読めない。
+    // 4系列は、凡例チップと図で同じ色でなければ対応が読めない。「その他」も上位と別の色にする。
     const legend = legendColors(figure);
     const chartByLabel = chartColors(figure);
-    for (const label of chartByLabel.keys()) {
+    for (const label of labels) {
       expect(legend.get(label), `${label} の凡例チップ`).toBe(chartByLabel.get(label));
     }
     expect(new Set([...legend.values()]).size).toBe(legend.size);

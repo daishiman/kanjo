@@ -940,6 +940,8 @@ const editRows = (edits: Record<string, TxEdit>): unknown[][] =>
 export interface RestoreWriteSet {
   mfRows: ReturnType<typeof mfPersistedIdentityRow>[];
   vendorRows: unknown[][];
+  /** nullは旧JSONでkey無し。復元先を保ち、[]は判断なしのauthoritative集合 */
+  subVendorReviewDecisionRows: unknown[][] | null;
   analysisSettingsRow: [number];
   subVendorExclusionRows: unknown[][];
   /** commitの差分計画。fingerprintは最終行だけを使い、この実行手順は含めない。 */
@@ -980,6 +982,7 @@ export interface RestoreWriteSet {
    * snapshotで読み、保留/レビューの書込も同じleaseで直列化されるので、読んだ後に行は増えない。
    */
   reviewSnoozesDestinationEmpty: boolean;
+  subVendorReviewDecisionsDestinationEmpty: boolean;
   monthlyCloseReviewsDestinationEmpty: boolean;
   duplicateVerdictsDestinationEmpty: boolean;
   freeeDealExclusionsDestinationEmpty: boolean;
@@ -989,6 +992,21 @@ export interface RestoreWriteSet {
   institutionOwnersDestinationEmpty: boolean;
   budgetsDestinationEmpty: boolean;
   cashOverridesDestinationEmpty: boolean;
+}
+
+/** サブスク登録本体のJSON形状には無い、D1 canonicalの補助属性 */
+export interface RestoreSubVendorMetadata {
+  name: string;
+  category: string | null;
+  reviewedAt: string | null;
+}
+
+/** 復元で置き換えるサブスク見直し判断 */
+export interface RestoreSubVendorReviewDecision {
+  vendorKey: string;
+  decision: 'confirmed' | 'dismissed';
+  ruleFingerprint: string;
+  decidedAt: string;
 }
 
 /** 復元で置き換える「後で確認」1件。kind/itemKey/指紋は復元前に検証済みであること */
@@ -1047,6 +1065,9 @@ export function prepareRestoreWriteSet(args: {
   subVendorExclusions?: ReadonlyArray<{ partner: string; vendorKey: string }>;
   existingStatMinMonths?: number;
   existingSubVendorExclusions?: ReadonlyArray<{ partner: string; vendorKey: string }>;
+  subVendorMetadata?: ReadonlyArray<RestoreSubVendorMetadata>;
+  /** null/undefinedは旧backup。復元先の判断を残す */
+  subVendorReviewDecisions?: ReadonlyArray<RestoreSubVendorReviewDecision> | null;
   /** 復元する現金の記帳。移行先に既存の記帳があるときは渡さない */
   restoredCashEntries?: ReadonlyArray<CashEntry>;
   /** raw canonical dataから明示的に作った集計・表示用projection */
@@ -1060,6 +1081,7 @@ export function prepareRestoreWriteSet(args: {
   totalCashflowOperations?: ReadonlyArray<RestoreTotalCashflowOperation> | null;
   /** 移行先の既存件数。未指定は「行があるかもしれない」として DELETE を残す */
   existingDestinationRowCounts?: {
+    subVendorReviewDecisions: number;
     reviewSnoozes: number;
     monthlyCloseReviews: number;
     duplicateVerdicts: number;
@@ -1073,17 +1095,28 @@ export function prepareRestoreWriteSet(args: {
   };
 }): RestoreWriteSet {
   const rawTxs = canonicalMfTransactions(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)));
+  const subVendorMetadata = new Map((args.subVendorMetadata ?? []).map((row) => [row.name, row]));
   return {
     // MF/editsはDBでは集合として永続化される。JSON配列/object挿入順を指紋へ混ぜない。
     mfRows: rawTxs
       .map(mfPersistedIdentityRow)
       .sort((a, b) => canonicalEncode(a).localeCompare(canonicalEncode(b))),
-    vendorRows: [...new Set(args.data.subs.vendors)].map((name, index) => [
-      name,
-      JSON.stringify([...new Set(args.data.subs.aliases?.[name] ?? [])].sort()),
-      JSON.stringify([...new Set(args.data.subs.accounts?.[name] ?? [])].sort()),
-      index,
-    ]),
+    vendorRows: [...new Set(args.data.subs.vendors)].map((name, index) => {
+      const metadata = subVendorMetadata.get(name);
+      return [
+        name,
+        JSON.stringify([...new Set(args.data.subs.aliases?.[name] ?? [])].sort()),
+        JSON.stringify([...new Set(args.data.subs.accounts?.[name] ?? [])].sort()),
+        index,
+        metadata?.category ?? null,
+        metadata?.reviewedAt ?? null,
+      ];
+    }),
+    subVendorReviewDecisionRows: args.subVendorReviewDecisions
+      ? [...args.subVendorReviewDecisions]
+          .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey))
+          .map((row) => [row.vendorKey, row.decision, row.ruleFingerprint, row.decidedAt])
+      : null,
     analysisSettingsRow: [args.statMinMonths ?? 6],
     subVendorExclusionRows: [...(args.subVendorExclusions ?? [])]
       .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey))
@@ -1199,6 +1232,8 @@ export function prepareRestoreWriteSet(args: {
           ])
       : null,
     reviewSnoozesDestinationEmpty: args.existingDestinationRowCounts?.reviewSnoozes === 0,
+    subVendorReviewDecisionsDestinationEmpty:
+      args.existingDestinationRowCounts?.subVendorReviewDecisions === 0,
     monthlyCloseReviewsDestinationEmpty: args.existingDestinationRowCounts?.monthlyCloseReviews === 0,
     duplicateVerdictsDestinationEmpty: args.existingDestinationRowCounts?.duplicateVerdicts === 0,
     freeeDealExclusionsDestinationEmpty: args.existingDestinationRowCounts?.freeeDealExclusions === 0,
@@ -1217,6 +1252,7 @@ export async function restoreWriteSetFingerprint(writeSet: RestoreWriteSet): Pro
     analysisSettingsChanged: _analysisChanged,
     subVendorExclusionsChanged: _exclusionsChanged,
     reviewSnoozesDestinationEmpty: _snoozesEmpty,
+    subVendorReviewDecisionsDestinationEmpty: _subVendorDecisionsEmpty,
     monthlyCloseReviewsDestinationEmpty: _reviewsEmpty,
     duplicateVerdictsDestinationEmpty: _verdictsEmpty,
     freeeDealExclusionsDestinationEmpty: _exclusionRowsEmpty,
@@ -1273,18 +1309,36 @@ export function restoreCommitStatements(args: {
     ...chunkJsonRowsByBytes(writeSet.vendorRows).map((payload) =>
       database
         .prepare(
-          `INSERT INTO sub_vendors (user_id,name,aliases,accounts,sort_order,created_at)
+          `INSERT INTO sub_vendors
+             (user_id,name,aliases,accounts,sort_order,category,reviewed_at,created_at)
            SELECT ?,
                   CAST(json_extract(item.value,'$[0]') AS TEXT),
                   CAST(json_extract(item.value,'$[1]') AS TEXT),
                   CAST(json_extract(item.value,'$[2]') AS TEXT),
-                  CAST(json_extract(item.value,'$[3]') AS INTEGER), ?
+                  CAST(json_extract(item.value,'$[3]') AS INTEGER),
+                  json_extract(item.value,'$[4]'),
+                  json_extract(item.value,'$[5]'), ?
            FROM json_each(?) AS item WHERE 1
            ON CONFLICT(user_id,name) DO UPDATE SET
-             aliases=excluded.aliases, accounts=excluded.accounts, sort_order=excluded.sort_order`,
+             aliases=excluded.aliases, accounts=excluded.accounts, sort_order=excluded.sort_order,
+             category=excluded.category, reviewed_at=excluded.reviewed_at`,
         )
         .bind(userId, now, payload),
     ),
+    ...(writeSet.subVendorReviewDecisionRows
+      ? [
+          ...(writeSet.subVendorReviewDecisionsDestinationEmpty
+            ? []
+            : [database.prepare('DELETE FROM sub_vendor_review_decisions WHERE user_id=?').bind(userId)]),
+          ...insertJsonRows(
+            database,
+            'sub_vendor_review_decisions',
+            ['vendor_key', 'decision', 'rule_fingerprint', 'decided_at'],
+            writeSet.subVendorReviewDecisionRows,
+            [{ column: 'user_id', value: userId }],
+          ),
+        ]
+      : []),
     ...(writeSet.analysisSettingsChanged
       ? [
           database

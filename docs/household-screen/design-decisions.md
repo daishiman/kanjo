@@ -29,7 +29,7 @@
 
 | id | 事項 | 担当 | 決定 (§3.3 で確定) |
 |---|---|---|---|
-| OI-01 | owner_labels の migration 番号 | P05 | `0043_owner_labels.sql`。2026-09-18 に `git fetch origin` し、origin/main (`4e3583c`) の最新が `0042_...` であることを確認 |
+| OI-01 | owner_labels の migration 番号 | P05 | `0045_owner_labels.sql`。2026-09-18 に `git fetch origin` した時点では origin/main (`4e3583c`) の最新が `0042_...` で `0043` を採ったが、PR 前に main を取り込んだ 2026-09-19 の時点で main がサブスク (`0043`) と診断 (`0044_diagnosis_action_states.sql`) を使っていたため `0045` へ改番した。新しい表の追加だけなので改番で意味は変わらない |
 | OI-02 | 構成比と前年比率の丸め | P04 | core は丸めない比 (0..1) を返す。表示で `×100` を小数 1 桁に四捨五入 (`Math.round(x*1000)/10`)。各行独立で和を 100.0 に寄せない |
 | OI-03 | 表示名の文字種 | P04 | 前後空白を除いて 1〜20 文字 (コードポイント数)。空白のみは空扱いで拒否。制御文字 U+0000–U+001F / U+007F は拒否。絵文字・全角空白を含む文字列は許可 (制御文字でないため) |
 | OI-04 | 振替の対推定の同点解消 | P04 | 日付差 → 出金側の日付 → 出金側の明細 id → 入金側の明細 id の昇順で貪欲に確定。相手の無い明細は `相手不明` |
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS owner_labels (
 ```
 
 - 既存表の行を書き換えない。初期データを入れない (行が無い名義は既定の表示名)。
-- `runtimeSchemaGuard` は表ごとではなく**最新 migration 名**で照合する実装 (`EXPECTED_D1_MIGRATION`)。spec §11.4 の「必須表へ追加」はこの定数を `0043_owner_labels.sql` に進めることで満たす。未適用の環境は既存の 503 `schema_unavailable` で止まる。
+- `runtimeSchemaGuard` は表ごとではなく**最新 migration 名**で照合する実装 (`EXPECTED_D1_MIGRATION`)。spec §11.4 の「必須表へ追加」はこの定数を `0045_owner_labels.sql` に進めることで満たす。未適用の環境は既存の 503 `schema_unavailable` で止まる。
 - 変更系フェンス: `CANONICAL_MUTATION_ROUTES` に `PUT /api/settings/owner-labels` (consumer `owner_labels`) を足す。取込の確定中は 409 `canonical_write_busy`。`owner_labels` は JSON スナップショット (バックアップ / 復元) の対象に**入れない** (入れると復元の形式が変わる。表示名は再入力できる設定であり、会計の正本ではない)。
 
 ### 2.5 画面と URL
@@ -116,7 +116,7 @@ P02 の決定を (a) spec の不変条件、(b) 既存の総収支画面の契�
 |---|---|---|---|
 | R1 | (b) | 不変条件 1 の比較対象を `monthlyTotalCashflow` の和にすると、期間の切り方 (`applyPeriod` + 期間内の freee) が総収支画面とずれうる | **解消**。比較対象は `totalCashflowScreen(all, deals, verdicts, exclusions, range, mfExcludedTxIds).summary.total`。core は同じ `reportFor` 相当で切る |
 | R2 | (c) | `PUT /api/settings/owner-labels` がフェンスの外にあると取込の確定と競合する | **解消**。`index.ts` の `/api/*` の 4 段の後にルートを登録し、`CANONICAL_MUTATION_ROUTES` に足す。`import-lifecycle-pure.test.ts` の全経路の突き合わせに加える |
-| R3 | (c) | `runtimeSchemaGuard` は表の存在ではなく最新 migration 名を見る | **解消**。`EXPECTED_D1_MIGRATION` を 0043 へ。`deletion-schema.test.ts` の固定名も更新 |
+| R3 | (c) | `runtimeSchemaGuard` は表の存在ではなく最新 migration 名を見る | **解消**。`EXPECTED_D1_MIGRATION` を 0045 へ。`deletion-schema.test.ts` の固定名も更新 |
 | R4 | (a) | 画像の事業 +¥420,000 / 個人 +¥336,000 は、収入と支出の正本値と同時に成立しない | **解消済み**。フィクスチャは事業の収入 ¥2,275,000 / 支出 ¥1,704,000 / 純収支 +¥571,000、個人の収入 ¥4,205,000 / 支出 ¥4,020,000 / 純収支 +¥185,000 (和 ¥756,000) を正とし、spec §4.5 / §10 / §11.1 へ同期した |
 | R5 | (a) | 不変条件 3 は「事業側の支出を `その他` に入れる」ことで初めて閉じる。事業側の MF 明細が `食費` 等の大項目を持っていても家計側の区分に入れない | **解消**。`householdCategoryOf` は `side === 'business'` を先に判定して `other` を返す |
 | R6 | (b) | 名義の既定表示名が `事業 / 妻 / 家族 / 未設定` から `本人 / パートナー / 子ども / その他` に変わる。明細画面・エクスポート・グラフの既存テストが旧名を期待している | **解消**。`OWNER_LABEL` の直参照を `ownerLabel()` に置き換える実装と旧参照除去を P05 で完了し、P08 は読取専用の監査にする。CSV エクスポートの名義列も表示名に従う |
@@ -146,7 +146,7 @@ P10 のレビュー後に足したテストは、実装を旧い形へ戻して�
 | 対象 | 主な変更 |
 |---|---|
 | core | `household-summary.ts` (集計・詳細・6 区分の対応表・`householdCategoryOfTx`・`householdDetailHref`)、`owner-labels.ts` (既定の表示名・`resolveOwnerLabels`・`validateOwnerLabels`・`OWNER_LABEL_MAX = 20`)。旧 `household()` と `HouseholdData` を削除し、`analysis.ts` / `exports.ts` / `chart-aggregates.ts` / `total-cashflow.ts` の名義表示を `ownerLabel()` へ寄せた |
-| DB | `migrations/0043_owner_labels.sql` (新しい表の追加のみ)。`db/schema.ts` に `ownerLabels`、`schema-guard.ts` の `EXPECTED_D1_MIGRATION` を 0043 へ |
+| DB | `migrations/0045_owner_labels.sql` (新しい表の追加のみ)。`db/schema.ts` に `ownerLabels`、`schema-guard.ts` の `EXPECTED_D1_MIGRATION` を 0045 へ |
 | api | `routes/analytics.ts` の `GET /household` (zod の許可リスト・`invalid_month`) と `GET /household/category`、`routes/settings.ts` の `GET` / `PUT /settings/owner-labels`、`canonical-mutation-fence.ts` へ PUT を登録、`ai/dataset.ts` を新しい集計へ付け替え |
 | web | `pages/household/` (ページ・区分表と詳細・名義別・月別系列・view-model・CSS)、`owner-labels.ts` (`useOwnerLabels` / `useSaveOwnerLabels`)、`Classify.tsx` の `big` / `hcat` / `transfer` 対応と名義の表示名、`ClassificationSettings.tsx` / `SplitEditor.tsx` / `VendorMemory.tsx` / `ImportDiff.tsx` の名義表示、`routeMetadata.ts` / `figure-guides.ts` / `glossary.ts` / `guide-sections.ts` の名称を「家計収支」へ |
 
@@ -235,7 +235,7 @@ scope_out の侵犯: 0 件 (累計収支画面・名義の内部値・相手口�
 | S1 | `packages/web/src/pages/household/household.dom.test.tsx`、`packages/web/src/common-shell.dom.test.tsx` | `pnpm --filter @kanjo/web test`、`pnpm lint` |
 | S2 | `packages/core/test/household-summary-contract.test.ts`、`packages/api/test/household.integration.test.ts` | `pnpm --filter @kanjo/core test`、`pnpm --filter @kanjo/api test` |
 | S3 | 同上 + `packages/web/src/classify-household-filter.dom.test.tsx` | 同上 + `pnpm --filter @kanjo/web test` |
-| S4 | `packages/api/test/owner-labels.integration.test.ts`、`packages/api/src/deletion-schema.test.ts`、`migrations/0043_owner_labels.sql` | `pnpm --filter @kanjo/api test` |
+| S4 | `packages/api/test/owner-labels.integration.test.ts`、`packages/api/src/deletion-schema.test.ts`、`migrations/0045_owner_labels.sql` | `pnpm --filter @kanjo/api test` |
 | S5 | `packages/core/test/household-summary-contract.test.ts`、`docs/data-schema.md` | `pnpm --filter @kanjo/core test` |
 | S6 | §6・§9 | `pnpm test && pnpm typecheck && pnpm lint`、`pnpm --filter @kanjo/web build:bundle && pnpm --filter @kanjo/web check:js-budget` |
 
@@ -251,6 +251,6 @@ scope_out の侵犯: 0 件 (累計収支画面・名義の内部値・相手口�
 
 配信するときの確認手順:
 
-1. PR を default branch へ merge し、CI の Migrate (0043 の適用) と Deploy が緑であることを確かめる。0043 は新しい表の追加だけなので、既存の行は書き換わらない。
+1. PR を default branch へ merge し、CI の Migrate (0045 の適用) と Deploy が緑であることを確かめる。0045 は新しい表の追加だけなので、既存の行は書き換わらない。
 2. 配信先で同じ期間を選び、家計収支画面の家計全体 (総収入・総支出・純収支) と総収支画面の総合が一致することを確かめる。
 3. 設定で名義の表示名を変え、家計収支・明細・設定の 3 画面に反映されることを確かめる。

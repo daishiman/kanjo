@@ -1,0 +1,1304 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-subscriptions-screen/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-subscriptions-screen",
+  "parent_feature": "feat-subscriptions-screen",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-SUBS-P01": "beads",
+    "SYS-SUBS-P02": "beads",
+    "SYS-SUBS-P03": "beads",
+    "SYS-SUBS-P04": "beads",
+    "SYS-SUBS-P05": "beads",
+    "SYS-SUBS-P06": "beads",
+    "SYS-SUBS-P07": "beads",
+    "SYS-SUBS-P08": "beads",
+    "SYS-SUBS-P09": "beads",
+    "SYS-SUBS-P10": "beads",
+    "SYS-SUBS-P11": "beads",
+    "SYS-SUBS-P12": "beads",
+    "SYS-SUBS-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-SUBS-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と暫定 U 項目の着手時整理",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p01",
+        "requirements"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "集計・API・保存・部品分割の設計決定の記録",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p02",
+        "architecture"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P01"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "集計・API・保存・URL の各契約の独立レビュー",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P02"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "検算済み fixture・境界値・API・DOM の失敗テストの先行作成",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P03"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "packages/core/test/subs-screen-contract.test.ts",
+        "packages/core/test/subs-contract.test.ts",
+        "packages/api/src/subs-vendor-scope.test.ts",
+        "packages/api/src/subs-screen.integration.test.ts",
+        "packages/web/src/subscriptions-screen.dom.test.tsx",
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core の subscriptionsScreen・API 6 経路・migration 0043・サブスク画面の実装",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p05",
+        "implementation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P04"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/subs.ts",
+        "migrations/0043_sub_vendor_category_and_review_decisions.sql",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/routes/subs.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/Subscriptions.tsx",
+        "packages/web/src/pages/subscriptions/",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/components/ReviewQueue.tsx"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "テスト実行と緑化",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P05"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "packages/core/test/subs-screen-contract.test.ts",
+        "packages/api/src/subs-screen.integration.test.ts",
+        "packages/web/src/subscriptions-screen.dom.test.tsx"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "成功基準 S1 から S5 と受入 19 項目の判定",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P06"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "旧 UI の撤去・旧テストの移設・既存集計の是正",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p08",
+        "refactoring-migration"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P07"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/subs.ts",
+        "packages/web/src/pages/Subscriptions.tsx",
+        "packages/web/src/pages/subscriptions/",
+        "packages/web/src/components/SubVendors.tsx",
+        "packages/web/src/components/SubVendors.dom.test.tsx",
+        "packages/web/src/subs-review.dom.test.tsx",
+        "packages/core/test/subs-contract.test.ts",
+        "packages/core/test/subs-review-contract.test.ts"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "a11y・入力検証・所有者絞込・JS 予算・ロゴ 0 件の品質保証",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P08"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "packages/web/scripts/check-financial-visuals.mjs",
+        "packages/web/src/subscriptions-screen.dom.test.tsx",
+        "packages/api/src/subs-screen.integration.test.ts"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立した最終レビュー",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p10",
+        "final-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P09"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入と品質の証跡の集約",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P10"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "docs/evidence/"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "docs と運用記述の同期",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p12",
+        "documentation-operations"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P11"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md",
+        "docs/data-schema.md",
+        "docs/design-system.md",
+        "docs/ui-decisions.md"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBS-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信と migration 0043 の本番適用",
+      "project_id": "feature-package-feat-subscriptions-screen",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-screen",
+        "p13",
+        "release-deploy"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T07:41:41Z",
+      "updated_at": "2026-09-18T07:41:41Z",
+      "depends_on": [
+        "SYS-SUBS-P12"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-auth",
+        "arch-subscriptions-backend",
+        "arch-subscriptions-database",
+        "arch-subscriptions-frontend",
+        "arch-subscriptions-infrastructure",
+        "arch-subscriptions-maintenance-ops",
+        "arch-subscriptions-security",
+        "arch-subscriptions-ui-ux",
+        "spec-subscriptions-screen"
+      ],
+      "resource_scope": [
+        "migrations/0043_sub_vendor_category_and_review_decisions.sql",
+        "docs/evidence/"
+      ],
+      "parent_feature": "feat-subscriptions-screen",
+      "feature_package_id": "feature-package/feat-subscriptions-screen",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-subscriptions-screen/sys-subs-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-screen/plan-findings.json",
+        "evaluated_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-screen/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "imported_at": "2026-09-18T07:41:41Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-screen/sys-subs-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T07:23:43Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

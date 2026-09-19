@@ -1,0 +1,175 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/feature-package-feat-subscriptions-screen",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "13 本の task spec と workstream-inventory.json を全文照合した。目的節・スコープ外節で一貫して「core の subscriptionsScreen 1 か所に集約」「migration 0043 は列と表の追加のみで既存行を書き換えない」「ロゴ画像は取得も表示もしない」の 3 命題が矛盾なく繰り返され、scope_out (ロゴ取得・生成AIによる分類/理由文生成・サイドバー等の構造変更・他画面の中身作り直し・一括操作・web以外) が各 task の作業内容として混入している箇所は無かった。2 周目の修正対象である SYS-SUBS-P10 は、目的節に OI-03 (AI 指示文の候補定義との差の報告) を新設し、スコープ外節に『AI 指示文の候補定義の変更 (packages/api/src/routes/ai.ts は変更しない)』を明記しており、『報告するが変更しない』という記述は P10 の write_scope が docs/subscriptions-screen.md のみである点および consumed に packages/api/src/routes/ai.ts が (write_scope ではなく) 読み取り専用の参照として列挙されている点と矛盾しない。architecture/subscriptions-backend.md の Risks and verification 節は『AI 側は対象外として残る差を報告する』と記載しており、P10 の記述と一致する。各 task の Entry gate が参照する staging run id (plan-feat-subscriptions-screen-20260918) は goal-spec.json の run_id と一致し、Entry gate の指す run が矛盾する箇所も無かった。",
+      "evidence": [
+        "task-specs/phase-10-final-review.md#目的節にOI-03(packages/api/src/routes/ai.tsのsubsCandidates呼出し、上限10件)を追記し、スコープ外節にai.tsを変更しないことを明記",
+        "task-specs/phase-10-final-review.md#Consumed artifactsにpackages/api/src/routes/ai.tsとarchitecture/subscriptions-backend.mdを列挙、Write scope/touchesはdocs/subscriptions-screen.mdのみ",
+        "task-specs/phase-05-implementation.md#migration 0043は列と表の追加のみで既存行を書き換えないと明記",
+        "task-specs/phase-08-refactoring-migration.md#旧UIの撤去と既存集計の是正の範囲を明記",
+        "gate:deterministic-validation#task-spec必須セクション欠落/重複/空を含む構造違反0件"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "goal-spec.json の scope_in 8 件はいずれも 13 task のいずれかで明示的に引き受けられている (P01-P03 で要件と設計を確定、P04 で fixture と境界値を契約テスト化、P05 で core/API/migration/画面を実装、P08 で旧 UI 撤去と既存実装の是正、P09 で a11y/入力検証/JS 予算/ロゴ0件、P12 で docs 同期、P13 で単一 PR 配信)。受入 19 項目と S1-S5 は SYS-SUBS-P07 の acceptance (『受入 19 項目の全てに PASS または差し戻しの判定と実測値がある』『成功基準 S1 から S5 と受入 19 項目の判定』) にそのまま転写されている。仕様 15.4 節の暫定 U 項目は goal-spec.json の open_items で OI-01 (数値・閾値系) が SYS-SUBS-P04、OI-02 (見え方・文言系) が SYS-SUBS-P07 に確定先として割り当てられ、両 task の acceptance/本文にも『確定先が SYS-SUBS-P04/P07 の暫定 U 項目』の記述が対応して存在する。1 周目で FAIL とされた OI-03 (AI 指示文側の見直し候補定義との差を P10 で報告) は、今回の修正で workstream-inventory.json の SYS-SUBS-P10 の目的・背景・acceptance・consumed・スコープ外の 5 箇所全てに一貫して反映され、task-specs/phase-10-final-review.md にも同内容が展開されている。acceptance には『定義差が項目ごとの対比と画面・AI で件数が食い違いうる条件つきで docs/subscriptions-screen.md に記録され、解消を要する場合は follow-up feature candidate として切り出されている』という検証可能な達成条件が追加されており、verification に grep -n OI-03 docs/subscriptions-screen.md が追加されている。これにより open_items OI-01/OI-02/OI-03 の 3 件全てが具体的な確定先 task へ落とし込まれ、1 周目の high finding は解消したと判断する。旧 UI の操作 (別名・対象科目の編集・四半期見直し・アラート・未登録候補の採用/除外・一括登録) の吸収先も SYS-SUBS-P08 の acceptance 1 行目 (『旧 UI の部品が画面から参照されず、同じ操作が新しい画面から全て実行できる』) と workstream-inventory.json#tasks[0].acceptance (SYS-SUBS-P01: 吸収先が1行ずつ決まっている) の 2 段で担保されている。",
+      "evidence": [
+        "workstream-inventory.json#tasks[9].acceptance (SYS-SUBS-P10: OI-03の定義差をdocs/subscriptions-screen.mdに記録し、follow-up feature candidateとして切り出す条件を明記)",
+        "workstream-inventory.json#tasks[9].purpose相当節と consumed に packages/api/src/routes/ai.ts と architecture/subscriptions-backend.md を追加",
+        "task-specs/phase-10-final-review.md#目的節・背景節・Verification and evidence節にOI-03を反映、Consumed artifactsにai.tsを追加",
+        "workstream-inventory.json#tasks[0].acceptance (SYS-SUBS-P01: 旧UI操作の吸収先が1行ずつ決まっている)",
+        "workstream-inventory.json#tasks[7].acceptance (SYS-SUBS-P08: 旧UIの部品が画面から参照されず同じ操作が新しい画面から全て実行できる)",
+        "workstream-inventory.json#tasks[6].acceptance (SYS-SUBS-P07: 受入19項目とS1-S5の判定)",
+        "workstream-inventory.json#tasks[3].acceptance (SYS-SUBS-P04: 確定先がSYS-SUBS-P04の暫定U項目が全て値つきでdocsに写されている)"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "feature-package.json の task_node_ids/task_spec_paths、task-graph.json の 13 node、workstream-inventory.json の 13 task は SYS-SUBS-P01..P13/phase_ref P01..P13 の順で完全に一致する。各 task spec の Machine-readable registration fields も inventory の値と一致する。write_scope に列挙された実装対象パス (packages/core/src/subs.ts、packages/api/src/db/schema.ts、packages/api/src/routes/subs.ts、packages/api/src/routes/analytics.ts、packages/web/src/pages/Subscriptions.tsx 等) はリポジトリに実在し、migrations/0043_sub_vendor_category_and_review_decisions.sql のみ新設予定として未作成であることを確認した (goal-spec.json の migration 0043 の記述と一致)。deploy_unit は SYS-SUBS-P05/P13 で『web ビルドと Worker と D1 migration 0043 (追加のみ。既存行を書き換えない)』と明記され、migration の扱いが既存行非破壊であることが一貫している。決定論ゲートは violations 0 件、validated_digest=sha256:43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe であり、staging-manifest.json の canonical_digest および本 findings の evaluated_digest と完全一致した。repository_id は goal-spec.json/workstream-inventory.json/task-graph.json (repo_context.repo_identity) のいずれも github:daishiman/kanjo で一致し、repo boundary の不一致は検出しなかった。",
+      "evidence": [
+        "feature-package.json#task_node_ids/task_spec_paths",
+        "task-graph.json#nodes[*] (SYS-SUBS-P01..P13)",
+        "workstream-inventory.json#tasks[*].write_scope",
+        "workstream-inventory.json#tasks[4].deploy_unit / tasks[12].deploy_unit (D1 migration 0043 追加のみ)",
+        "staging-manifest.json#canonical_digest=sha256:43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "gate:deterministic-validation#validated_digest=sha256:43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe",
+        "gate:deterministic-validation#violations=[]",
+        "workstream-inventory.json#repo_context.repo_identity=github:daishiman/kanjo"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の depends_on は SYS-SUBS-P01 (無し) から SYS-SUBS-P13 (P12依存) までの単純な前方参照の直列鎖であり、循環や後方参照は存在しない。workstream-inventory.json の各 task の depends_on も task-graph.json の同名 node の depends_on と完全に一致する。SYS-SUBS-P10 (OI-03 の修正対象) は SYS-SUBS-P09 に依存し SYS-SUBS-P11 に先行する位置を維持しており、今回の目的・acceptance・consumed の追記が depends_on や phase_ref を変更していないことを確認した。成果物の生産と消費の順序 (P01 の docs/subscriptions-screen.md をP02以降が参照、P04 の失敗テストをP05が緑化、P05 の実装をP06が実行記録、P09 の品質保証結果をP10が独立レビュー、P10 の docs 記録をP12がdocsとして最終同期) も依存順と矛盾しない。決定論ゲートの non-forward-edge/cross-feature-or-missing-edge 系違反も 0 件だった。",
+      "evidence": [
+        "task-graph.json#nodes[*].depends_on が P01→P02→...→P13 の単調な前方参照のみ",
+        "workstream-inventory.json#tasks[*].depends_on が task-graph.jsonのdepends_onと一致",
+        "workstream-inventory.json#tasks[9].depends_on=[SYS-SUBS-P09] (SYS-SUBS-P10)",
+        "gate:deterministic-validation#violations=[] (non-forward-edge/cross-feature-or-missing-edge等の違反なし)"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<harness>/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<repo-root>",
+        "--staging",
+        ".dev-graph/staging/feature-package-feat-subscriptions-screen"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe\",\n  \"feature_package_id\": \"feature-package/feat-subscriptions-screen\",\n  \"parent_feature\": \"feat-subscriptions-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "c790027f714535bf58106976661ddc6e26cffc82316b00ef1a75c581a5f92501"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "b042a7536b95a05cb16bb3bbee8faf6dc4cec9a1c5768fc8290802c9a72ea869"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "cecf95aec5756ef2950dece635d06c5145a65a221c84ad088b0c236916ae756b"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "e0496266af218c7d7e6ebebfe967e94910f770d2be74349e2072ece8bc7027f5"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "465d1a5653fb311f0d5d8866d8db96d0f8098047b2027a6054f40fe2ff6987a4"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "4580a8c0d0fa48b97cbcd597b05691fe81a211703c4c0049aaf499f13f492fb2"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "fd5a477eb3703599f3430f8b2180043212adf9dd8d687f2df22c9c82ae3c5c8c"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "ad1b4fbe7ffbd7c2d05bb7ad709d2318c6844a11648778f188f9a82d9a167e4e"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "59e4955a8983269ee4795da5ce047323b3b976eecf0981e19178384bcd088ea4"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "f74231158b7d59e8bcaee65d31a185a5db67e798c328e9663117d291c969be5f"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "8a7b2cf02f96b8066cfee6db72fa10b4275e5255fb6c937492d22d1c759b3de2"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "002a6982a7a961bd8fa83cc515e1115b81155b7b2ba630896f02323d770f9d50"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "27c3963871b9ffa69eb9e572207cb75d43c88e5a22178ca6164bb4481c5b0b15"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "ee5840b133223dff4e55637e0ce6befcb7624918e4d02b8ae920b51a28e75194"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "eb5fc8db09ce94af7144f4c2d372eb6c40d53f9c11868afad5c76a758cf5ab11"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "f0dc2fce2f998b0cc33ff44a9bcc1c6981d64fb1a9ff73029f9de34ee0330e7c"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "02b558f1bed633c22a06ea09c8767f0788aa089dd95049c548be1b6c046791c7"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "af90e6a242404c3742b0ac66b16e1b7e35734d707bd7ad5fa714f59251190611"
+    }
+  ],
+  "staleness_rule": "本 findings は evaluated_digest (sha256:43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe) を宣言する staging-manifest.json の canonical_digest と、staging 配下の byte 列から独立に再計算した決定論ゲートの validated_digest が完全一致する間だけ有効である。staging-manifest.json / system-build-handoff.json / feature-package.json / workstream-inventory.json / task-graph.json / 13 本の task-specs のいずれか 1 バイトでも変化すれば canonical_digest は変わり、本 findings は無効 (stale) となる。本 evaluated_digest は 1 周目評価時と異なる値である。1 周目 (evaluated_digest=sha256:8134d2c2fbac930e34333a40d97e52c3de58793a7aa078cdbdfc7792d5b329ee 相当の staging、OI-03 未対応で verdict=FAIL) の findings は、SYS-SUBS-P10 と workstream-inventory.json の修正により再生成された本 digest (sha256:43c180442d323619da959ba559d05c4cc62b59a5e1b0c231fe45d360537324fe) の staging に対して完全に上書きされ無効である。C11 promote は evaluated_digest とその時点の staging canonical_digest が一致することを都度再確認すること。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "oi-03-remediation-verified",
+      "observation": "1 周目 high finding (OI-03 が SYS-SUBS-P10 に落とし込まれていない) について、2 周目の修正を独立に検証した。workstream-inventory.json の SYS-SUBS-P10 は目的・背景・acceptance・consumed・スコープ外の 5 箇所全てに OI-03 (AI 指示文の候補定義、上限 10 件、subscriptionsScreen の 5 規則との差) を一貫して反映しており、task-specs/phase-10-final-review.md にも同内容が展開されている。さらにコード実体を確認したところ、packages/api/src/routes/ai.ts:168 の subsCandidates 呼出しは limit=10 で固定されており (packages/core/src/subs.ts:105-110 の既定値は 20)、architecture/subscriptions-backend.md の Risks and verification 節にも『サイドバーのバッジ (上限20) と AI 指示文の候補 (上限10) と画面の見直し候補が別定義で並存している。バッジは本サイクルで同じ関数へ寄せ、AI 側は対象外として残る差を報告する』と明記されており、修正内容の事実関係 (上限10件・AI側は変更しない・差を報告する) はコードとアーキテクチャ文書のいずれとも矛盾しなかった。write_scope が docs/subscriptions-screen.md のみで ai.ts が consumed (読み取り専用) に留まっている点も、scope_out の『AI 指示文の候補定義の変更 (ai.ts は変更しない)』と整合している。以上により OI-03 の high finding は解消したと判断する。",
+      "evidence": [
+        "workstream-inventory.json#tasks[9] (SYS-SUBS-P10)",
+        "task-specs/phase-10-final-review.md#目的・背景・Consumed artifacts・Verification and evidence",
+        "gate:deterministic-validation#violations=[]"
+      ]
+    }
+  ]
+}

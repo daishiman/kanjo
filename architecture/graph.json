@@ -603,6 +603,33 @@
       ]
     },
     {
+      "id": "arch-diagnosis-screen",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend",
+        "backend",
+        "data",
+        "security",
+        "infrastructure"
+      ],
+      "title": "診断画面 (08-diagnosis) のアーキテクチャ",
+      "file_path": "architecture/arch-diagnosis-screen.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-18-diagnosis-screen/index.md",
+        "source_version": "0.1.14",
+        "source_digest": "981e7c821de2de5b44e158922e6285e30b75637137c22e47ea324910f2d47c55",
+        "imported_at": "2026-09-18T01:29:14Z"
+      },
+      "referenced_by": [
+        "feat-diagnosis-screen"
+      ]
+    },
+    {
       "id": "arch-expense-matrix-auth",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -617,7 +644,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "05843382528fb59bac01a39618d21c7d16ffc2196844f40751292a2c77f85b33",
-        "source_path": "system-spec/archive/2026-09-18-expense-matrix/auth.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix-screen/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -640,7 +667,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "aa683b83952f8d5cda302aa3b26e2150fa8306d080c02fe03648cb32aeafe0b4",
-        "source_path": "system-spec/archive/2026-09-18-expense-matrix/backend.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix-screen/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -663,7 +690,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "5819bdcc8ddab7f90e038451e3835e406b3c84c98a492dcb7088451ad73a674a",
-        "source_path": "system-spec/archive/2026-09-18-expense-matrix/database.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix-screen/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -686,7 +713,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "e532dd19fe36b269cb64da9433bf854d7e576120457d6f095a5b7cebf75940dd",
-        "source_path": "system-spec/archive/2026-09-18-expense-matrix/frontend.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix-screen/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -709,7 +736,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "43416dd0ae8d102622e9c3e1c75496c9f9d2ca8217b2fac378555d42c82cf8d6",
-        "source_path": "system-spec/archive/2026-09-18-expense-matrix/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix-screen/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -732,7 +759,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "73ddaf752a28edcc278ef0accb77411a9a77dae0857990352307db902f74f9b1",
-        "source_path": "system-spec/archive/2026-09-18-expense-matrix/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix-screen/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -755,7 +782,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "fede51eb4a0dd594e4e8cafb51c3ca7d389aea3a16228fcc353061d9679490db",
-        "source_path": "system-spec/archive/2026-09-18-expense-matrix/security.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix-screen/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -778,7 +805,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "940691e19ee39682e106476ef8be9117c203916c8f9cbd76bf06f63d76f9bd1b",
-        "source_path": "system-spec/archive/2026-09-18-expense-matrix/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix-screen/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -1669,8 +1696,8 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": "b6b438c561d6f4dc7f39f7764b5f7671c0cc6d1011c68ddf79b9e6815f6adb43",
-        "imported_at": "2026-08-29T00:00:00Z"
+        "source_digest": "ca1a7d4ebc7c4a05a480ce8604fbab86d9eeb13738395bcf4aefaee4124e2579",
+        "imported_at": "2026-09-18T00:00:00Z"
       },
       "referenced_by": [
         "feat-tax-preparation"
@@ -2324,6 +2351,190 @@
       },
       "referenced_by": [
         "feat-ui-navigation-cognitive-load"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "サブスク画面 — 新設 4 経路を既存 authGuard の内側に置き userId と組で引く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "bbbdb0f3f20821bab23f4630cf52590be216844fc88f52cdfc9b298128b2af5c",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "サブスク画面 — core の subscriptionsScreen 1 か所と既存 API の延長",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "102b53266ca9482459d9e09387eee03cbf38511e454facd753abccbfde75e7c0",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "サブスク画面 — migration 0043 で category と見直し判断だけを足す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "a134f80aef224140a8f2e00afd7b0a78840fd535a82953fb4bce53bb90648132",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "サブスク画面 — URL の選択・2 本の取得・部品境界と旧 UI の吸収",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0385cef0f9a5fc253c897319fd57272535bb16b673021801905ecf18a0299dcb",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "サブスク画面 — 配信構成を変えずベンダー数 × 月数の計算量に収める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "bb164e7e24bdf08c42118ba28bafd7da1b202af00db698e1186e1a9eded03256",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "サブスク画面 — 検算済み fixture・規則の docs 化・旧テストの移設",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f8daeaa66129e8592eb9875eba41e3ec019734a6d5be99149c79dd5586b29b18",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "サブスク画面 — 入力は許可リストで閉じ、外部取得と HTML 描画の経路を作らない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "6567f6d8c87bcbb896e448870b953cebeee86e94308a5b547775c066b8b464de",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "サブスク画面 — 見直し候補を先に読ませる縦の並び・詳細パネル・検出理由カード",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c57c493d5fccb5546f47fbcffb51582dfc2f062eb0e9a6e19d3aa556bf35321c",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
       ]
     }
   ]
