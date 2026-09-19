@@ -1,31 +1,31 @@
 {
- "renderer": "render-graph-html.py (dev-graph 0.1.11)",
- "rendered_at": "2026-09-16T10:38:50Z",
- "scope": "all nodes",
- "graph_revision": 4,
- "input": ".dev-graph/state/graph.json",
- "input_sha256": "45da2d55e5e160f2119ef1c47da24106dc854dd78a4b5191c00bdf5cfe4fe527",
- "output": ".dev-graph/render/index.html",
- "output_sha256": "cf1ab64568b07132c17863cf4a2fe48a8179a30832a0d96137e54c359f31020c",
- "nodes": 23,
- "edges": 21,
- "feature_progress": {
-  "feat-trends-screen": {
-   "done": 0,
-   "total": 13
-  }
- },
- "external_refs": 0,
- "svg": 1,
- "inline_scripts": 2,
- "registration_receipt": {
-  "path": ".dev-graph/plans/feature-package-feat-trends-screen/dev-graph-registration-receipt.json",
-  "expected_count": 13,
-  "applied_count": 13,
-  "source_digest": "sha256:ad9f046d57b0189604f64f5669609c5feb4462b9f403d3f31a053df4268349b4"
- },
- "beads_linked_nodes": 14,
- "live_trial": "headless Chrome (--headless=new) screenshot で SVG DAG 描画と SYS-TRENDS-P01..P13 のノード表示を確認。'active · feature · 0/13' は HTML 本文で照合",
- "known_display_issue": "長い title (P02/P04/P05/P09/P12) がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
- "note": "renderer は receipt を書かず source_digest を HTML に描画しない。本 receipt は stdout と registration receipt から再作成し digest を照合した"
+  "renderer": "render-graph-html.py (dev-graph 0.1.11)",
+  "rendered_at": "2026-09-18T05:05:49Z",
+  "scope": "all nodes",
+  "graph_revision": 1,
+  "input": ".dev-graph/state/graph.json",
+  "input_sha256": "374837456c5851fc438fcc97e31e25308d7fd524425f77dacb4351bb5245a3fb",
+  "output": ".dev-graph/render/index.html",
+  "output_sha256": "8e2df757e555fb7fcaddb9df159f419b636686fd57739af5ebcc7f339c33a171",
+  "nodes": 16,
+  "edges": 12,
+  "feature_progress": {
+    "feat-diagnosis-screen": {
+      "done": 0,
+      "total": 13
+    }
+  },
+  "external_refs": 0,
+  "svg": 1,
+  "inline_scripts": 1,
+  "registration_receipt": {
+    "path": ".dev-graph/receipts/register-feat-diagnosis-screen.json",
+    "expected_count": 13,
+    "applied_count": 13,
+    "source_digest": "sha256:13faf94a21513a4fa3b49d5ee9e526e0ad84bf3e469ca60c900fb479d3be08e6"
+  },
+  "beads_linked_nodes": 14,
+  "live_trial": "headless Chrome (--headless=new) screenshot で SVG DAG と SYS-DIAGNOSIS-SCREEN-P01..P13、'active · feature · 0/13' の表示を確認",
+  "known_display_issue": "長い title (P05) がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
+  "note": "renderer は receipt を書かないため、本 receipt は render-graph-html.py の stdout と registration receipt から再作成し digest を実ファイルと照合した"
 }

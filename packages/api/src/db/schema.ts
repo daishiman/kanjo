@@ -841,3 +841,21 @@ export const r2CleanupJobs = sqliteTable(
     index('idx_r2_cleanup_due').on(t.state, t.notBefore, t.id),
   ],
 );
+
+/**
+ * 0043: 診断画面の改善アクションに対する利用者の判断。
+ * 改善余地そのものは毎回計算し直す派生物で、ここに残すのは判断だけ。
+ */
+export const diagnosisActionStates = sqliteTable(
+  'diagnosis_action_states',
+  {
+    userId: text('user_id').notNull(),
+    actionKey: text('action_key').notNull(),
+    status: text('status', { enum: ['未着手', '対応中', '対応済み', '見送り'] }).notNull(),
+    note: text('note'),
+    decidedAt: text('decided_at'),
+    createdAt: text('created_at').notNull().$defaultFn(nowIso),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.actionKey] })],
+);

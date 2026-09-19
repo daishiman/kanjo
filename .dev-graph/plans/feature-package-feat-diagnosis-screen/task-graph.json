@@ -1,0 +1,187 @@
+{
+  "feature_package_id": "feature-package/feat-diagnosis-screen",
+  "nodes": [
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p01.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P01",
+      "id": "SYS-DIAGNOSIS-SCREEN-P01",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P01",
+      "task_spec_path": "task-specs/phase-01-requirements.md",
+      "title": "診断画面の要件確定と受入条件の分解"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P01"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p02.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P02",
+      "id": "SYS-DIAGNOSIS-SCREEN-P02",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P02",
+      "task_spec_path": "task-specs/phase-02-architecture.md",
+      "title": "検知器レジストリ境界と実装アーキテクチャの確定"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P02"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p03.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P03",
+      "id": "SYS-DIAGNOSIS-SCREEN-P03",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P03",
+      "task_spec_path": "task-specs/phase-03-design-review.md",
+      "title": "画面構成と API 契約の設計レビュー"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P03"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p04.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P04",
+      "id": "SYS-DIAGNOSIS-SCREEN-P04",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P04",
+      "task_spec_path": "task-specs/phase-04-test-design.md",
+      "title": "境界値・contract・統合テストの設計"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P04"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p05.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P05",
+      "id": "SYS-DIAGNOSIS-SCREEN-P05",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P05",
+      "task_spec_path": "task-specs/phase-05-implementation.md",
+      "title": "検知器レジストリ・健全性スコア・2 endpoint・D1 新表・診断画面の実装"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P05"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p06.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P06",
+      "id": "SYS-DIAGNOSIS-SCREEN-P06",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P06",
+      "task_spec_path": "task-specs/phase-06-test-run.md",
+      "title": "テスト実行と緑化"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P06"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p07.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P07",
+      "id": "SYS-DIAGNOSIS-SCREEN-P07",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P07",
+      "task_spec_path": "task-specs/phase-07-acceptance.md",
+      "title": "受入条件 AC-001 から AC-006 の判定"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P07"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p08.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P08",
+      "id": "SYS-DIAGNOSIS-SCREEN-P08",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P08",
+      "task_spec_path": "task-specs/phase-08-refactoring-migration.md",
+      "title": "tradeoffCandidates の統合と D1 migration の整理"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P08"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p09.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P09",
+      "id": "SYS-DIAGNOSIS-SCREEN-P09",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P09",
+      "task_spec_path": "task-specs/phase-09-quality-assurance.md",
+      "title": "CI ゲートの緑維持と js-budget の確認"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P09"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p10.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P10",
+      "id": "SYS-DIAGNOSIS-SCREEN-P10",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P10",
+      "task_spec_path": "task-specs/phase-10-final-review.md",
+      "title": "最終レビューと差分の確認"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P10"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p11.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P11",
+      "id": "SYS-DIAGNOSIS-SCREEN-P11",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P11",
+      "task_spec_path": "task-specs/phase-11-evidence.md",
+      "title": "証跡の集約"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P11"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p12.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P12",
+      "id": "SYS-DIAGNOSIS-SCREEN-P12",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P12",
+      "task_spec_path": "task-specs/phase-12-documentation-operations.md",
+      "title": "docs の更新と運用手順の記載"
+    },
+    {
+      "build_target_kind": "application-code",
+      "depends_on": [
+        "SYS-DIAGNOSIS-SCREEN-P12"
+      ],
+      "feature_package_id": "feature-package/feat-diagnosis-screen",
+      "file_path": "tasks/feat-diagnosis-screen/sys-diagnosis-screen-p13.md",
+      "graph_node_id": "SYS-DIAGNOSIS-SCREEN-P13",
+      "id": "SYS-DIAGNOSIS-SCREEN-P13",
+      "parent_feature": "feat-diagnosis-screen",
+      "phase_ref": "P13",
+      "task_spec_path": "task-specs/phase-13-release-deploy.md",
+      "title": "本番反映 (Migrate APPLY から Deploy)"
+    }
+  ],
+  "parent_feature": "feat-diagnosis-screen",
+  "schema_version": "1.0.0"
+}

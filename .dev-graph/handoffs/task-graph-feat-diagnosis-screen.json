@@ -1,0 +1,75 @@
+{
+  "feature_package_id": "feature-package/feat-diagnosis-screen",
+  "gates": {
+    "c02_saved_state": {
+      "mismatches": [],
+      "result": "pass"
+    },
+    "c11_validate_graph_schema": {
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "result": "pass"
+    },
+    "validate_system_plan": {
+      "result": "pass",
+      "validated_digest": "sha256:13faf94a21513a4fa3b49d5ee9e526e0ad84bf3e469ca60c900fb479d3be08e6",
+      "violations": []
+    }
+  },
+  "generated_by": "dev-graph/run-dev-graph-requirements@0.1.11",
+  "graph_snapshot": [
+    {
+      "artifact_kind": "feature",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "features/feat-diagnosis-screen.md",
+      "graph_node_id": "feat-diagnosis-screen",
+      "source_digest": "08f4c63b61367bf4feebdb1d14cfa3f4b49f4504a1c20c57833486b6fd87f92e"
+    },
+    {
+      "artifact_kind": "specification",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "specs/spec-diagnosis-screen.md",
+      "graph_node_id": "spec-diagnosis-screen",
+      "source_digest": "bdf85a500e716a7cc8a76dd25d91d5c9ff1cae62ab1b9002cbbd197fe0a75047"
+    },
+    {
+      "artifact_kind": "architecture",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/arch-diagnosis-screen.md",
+      "graph_node_id": "arch-diagnosis-screen",
+      "source_digest": "bdf85a500e716a7cc8a76dd25d91d5c9ff1cae62ab1b9002cbbd197fe0a75047"
+    }
+  ],
+  "graph_snapshot_digest": "sha256:d23397b74a630417fe36a9191f13c0e2b71cf165b38b58965fc283bf8563e5c7",
+  "handoff_target": "task-graph",
+  "missing_sections": [],
+  "package_digest": "sha256:13faf94a21513a4fa3b49d5ee9e526e0ad84bf3e469ca60c900fb479d3be08e6",
+  "package_root": ".dev-graph/plans/feature-package-feat-diagnosis-screen",
+  "parent_feature": "feat-diagnosis-screen",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-diagnosis-screen/atomic-promotion-receipt.json",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-diagnosis-screen/dev-graph-registration.json",
+  "repository_id": "github:daishiman/kanjo",
+  "requirements_document": "docs/requirements-feat-diagnosis-screen.md",
+  "requirements_document_digest": "sha256:c4b40d701b32df5c301a1137d18229f7a0008055f65ca7548db9dd2ae13492ef",
+  "schema_version": "1.0.0",
+  "self_generated_code_files": 0,
+  "status": "ready",
+  "task_node_ids": [
+    "SYS-DIAGNOSIS-SCREEN-P01",
+    "SYS-DIAGNOSIS-SCREEN-P02",
+    "SYS-DIAGNOSIS-SCREEN-P03",
+    "SYS-DIAGNOSIS-SCREEN-P04",
+    "SYS-DIAGNOSIS-SCREEN-P05",
+    "SYS-DIAGNOSIS-SCREEN-P06",
+    "SYS-DIAGNOSIS-SCREEN-P07",
+    "SYS-DIAGNOSIS-SCREEN-P08",
+    "SYS-DIAGNOSIS-SCREEN-P09",
+    "SYS-DIAGNOSIS-SCREEN-P10",
+    "SYS-DIAGNOSIS-SCREEN-P11",
+    "SYS-DIAGNOSIS-SCREEN-P12",
+    "SYS-DIAGNOSIS-SCREEN-P13"
+  ]
+}

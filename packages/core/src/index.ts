@@ -40,3 +40,6 @@ export * from './report-html.js';
 export * from './design-tokens.js';
 export * from './heat-scale.js';
 export * from './matrix-derived.js';
+export * from './diagnosis-detectors.js';
+export * from './diagnosis-health.js';
+export * from './diagnosis-screen.js';

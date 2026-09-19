@@ -716,6 +716,9 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/tradeoff'],
       // コピー記録は「いつ操作したか」だけで、記帳の正本に触れない。
       ['POST', '/api/ai/tasks/1/copied'],
+      // 診断の対応状態も action_key ごとの判断記録だけ(ADR-002)。明細を読んでから書く
+      // read-modify-write ではなく、総収支の判断表 (duplicate_verdicts) にも触れない。
+      ['PATCH', '/api/diagnosis/actions/fixed_cost_review'],
       // suggestionは読み取りのみでbudgetを書かない。
       ['POST', '/api/budgets/suggest'],
       // preflight は「何がどうなるか」を数えて返すだけで、1件も書き換えない(DR-1)。
@@ -820,6 +823,7 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/auth/logout',
       'POST /api/auth/password',
       'POST /api/total-cashflow/operations/:id/undo',
+      'PATCH /api/diagnosis/actions/:action_key',
     ].sort();
     expect(discovered.sort()).toEqual(expected);
   });

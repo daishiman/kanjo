@@ -5,6 +5,7 @@ import { zValidator } from '@hono/zod-validator';
  */
 import {
   BALANCE_SHEET_SOURCES,
+  DIAGNOSIS_NOTE_MAX,
   type Dataset,
   type ExpenseScope,
   LEGACY_SCOPE,
@@ -12,6 +13,7 @@ import {
   type PeriodRange,
   type ReviewQueueItem,
   TRANSACTION_EXPORT_HEADER,
+  applyDiagnosisStatuses,
   applyPeriod,
   applyReviewSnoozes,
   availableYears,
@@ -25,13 +27,20 @@ import {
   defenseForecast,
   defenseLine,
   diagnosis,
+  diagnosisCashflowSeries,
+  diagnosisScreen,
+  diagnosisSignals,
+  diagnosisTotals,
+  diagnosisWaterfall,
   findMetric,
   fullRange,
   household,
   isCloseMonth,
+  isDiagnosisActionStatus,
   isOverviewScope,
   isReviewItemKey,
   isReviewItemKind,
+  isValidDiagnosisActionKey,
   matrix,
   monthlyCloseStatus,
   normalizeTrendScope,
@@ -41,6 +50,7 @@ import {
   periodLabel,
   profitAndLoss,
   reconciliationReport,
+  resolveDiagnosisSelection,
   resolvePeriodQuery,
   reviewItemFingerprint,
   reviewQueueCounts,
@@ -392,10 +402,104 @@ analyticsRoute.get('/matrix', async (c) => {
   return c.json(matrix(data));
 });
 
+/**
+ * 改善余地・健全性・改善インパクト・診断根拠を 1 応答で返す。
+ * 改善余地は毎回計算し直し、D1 から読むのは利用者の判断 (status / note) だけ。
+ */
 analyticsRoute.get('/diagnosis', async (c) => {
-  const { data } = await loadScoped(c);
-  return c.json(diagnosis(data));
+  const { data, all, period } = await loadScoped(c);
+  // 未知の scope/metric/compare は 400 にせず既定へ倒す (古いブックマーク対策・FR-010)
+  const query = {
+    scope: c.req.query('scope'),
+    metric: c.req.query('metric'),
+    compare: c.req.query('compare'),
+  };
+  const selection = resolveDiagnosisSelection(query);
+  const {
+    deals,
+    verdicts,
+    freeeExclusions: exclusions,
+    mfExclusions,
+  } = await loadCashflowSources(getDb(c.env.DB), c.get('userId'), all.mfTx);
+  // 条件の帯の合計は総収支画面と同じ経路で作る (BR-004)。診断だけ別に足すと合計が食い違う
+  const cashflow = diagnosisCashflowSeries(
+    all,
+    deals,
+    verdicts,
+    exclusions,
+    period.applied ?? fullRange(all),
+    selection.compare,
+    mfExclusions.map((row) => row.txId),
+  );
+  const screen = diagnosisScreen(data, query, undefined, cashflow);
+  const rows = await getDb(c.env.DB)
+    .select({
+      actionKey: s.diagnosisActionStates.actionKey,
+      status: s.diagnosisActionStates.status,
+      note: s.diagnosisActionStates.note,
+      decidedAt: s.diagnosisActionStates.decidedAt,
+    })
+    .from(s.diagnosisActionStates)
+    .where(eq(s.diagnosisActionStates.userId, c.get('userId')));
+  const states = new Map(
+    rows.map((row) => [row.actionKey, { status: row.status, note: row.note, decided_at: row.decidedAt }]),
+  );
+  // 判断を重ねた後に、合計・棒・シグナルを組み直す (画面側で足し直さないため)
+  const improvements = applyDiagnosisStatuses(screen.improvements, states);
+  return c.json({
+    ...screen,
+    improvements,
+    waterfall: diagnosisWaterfall(improvements, screen.waterfall[0]?.to ?? 0, screen.selection.metric),
+    signals: diagnosisSignals(screen, improvements),
+    totals: diagnosisTotals(improvements),
+  });
 });
+
+const diagnosisActionBody = z.object({
+  status: z.string(),
+  note: z.string().nullish(),
+});
+
+/**
+ * 改善アクション 1 件の判断を保存する。同じ鍵への再送は上書き (冪等)。
+ * 鍵は登録済み検知器 id で始まるものだけを受け付ける (許可リスト方式)。
+ */
+analyticsRoute.patch(
+  '/diagnosis/actions/:action_key',
+  zValidator('json', diagnosisActionBody, (result, c) => {
+    if (!result.success) return c.json(apiError('invalid_request', 'status は必須です'), 400);
+  }),
+  async (c) => {
+    const actionKey = c.req.param('action_key');
+    if (!isValidDiagnosisActionKey(actionKey))
+      return c.json(apiError('invalid_request', 'action_key の形式が不正です'), 400);
+    const { status, note } = c.req.valid('json');
+    if (!isDiagnosisActionStatus(status))
+      return c.json(apiError('invalid_request', 'status は 4 種のいずれかです'), 400);
+    if (note != null && note.length > DIAGNOSIS_NOTE_MAX)
+      return c.json(apiError('invalid_request', 'note は 500 文字以内です'), 400);
+
+    const now = new Date().toISOString();
+    const userId = c.get('userId');
+    const row = {
+      userId,
+      actionKey,
+      status,
+      note: note ?? null,
+      decidedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await getDb(c.env.DB)
+      .insert(s.diagnosisActionStates)
+      .values(row)
+      .onConflictDoUpdate({
+        target: [s.diagnosisActionStates.userId, s.diagnosisActionStates.actionKey],
+        set: { status, note: row.note, decidedAt: now, updatedAt: now },
+      });
+    return c.json({ action_key: actionKey, status, note: row.note, decided_at: now });
+  },
+);
 
 /**
  * 科目ごとの規模・増減・記録状況と、次に手を打つ順番。

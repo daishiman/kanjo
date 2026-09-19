@@ -27,4 +27,8 @@ export const ANALYSIS_TAB_QUESTIONS: Partial<
     question: '収支は、いつ・なぜ変わりましたか？',
     lead: '収入・支出・純収支の時系列の変化から、増減のタイミングや要因を把握しましょう。',
   },
+  diagnosis: {
+    question: '次に改善すると、最も効くのはどこですか？',
+    lead: '収支データから改善余地の大きい項目を特定し、根拠を確認して実行へ進みましょう。',
+  },
 };

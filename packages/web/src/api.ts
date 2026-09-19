@@ -42,6 +42,7 @@ import type {
 } from '@kanjo/core';
 import {
   type Owner as CoreOwner,
+  DIAGNOSIS_ACTION_STATUSES,
   type ImprovementStatus,
   OWNER_LABEL,
   OWNER_VALUES,
@@ -50,6 +51,16 @@ import {
   type PaymentMethod,
 } from '@kanjo/core';
 import type {
+  DiagnosisActionStatus,
+  DiagnosisEvidence,
+  DiagnosisEvidenceRow,
+  DiagnosisHealth,
+  DiagnosisHealthFactor,
+  DiagnosisImprovement,
+  DiagnosisScreen,
+  DiagnosisSignal,
+  DiagnosisTotals,
+  DiagnosisWaterfallBar,
   MonthlyCloseStatus,
   OverviewBreakdownItem,
   OverviewComparisonRow,
@@ -884,7 +895,17 @@ export type {
   CashFlow,
   DefenseForecast,
   DefenseLine,
+  DiagnosisActionStatus,
   DiagnosisData,
+  DiagnosisEvidence,
+  DiagnosisEvidenceRow,
+  DiagnosisHealth,
+  DiagnosisHealthFactor,
+  DiagnosisImprovement,
+  DiagnosisScreen,
+  DiagnosisSignal,
+  DiagnosisTotals,
+  DiagnosisWaterfallBar,
   HouseholdData,
   MatrixData,
   OverviewData,
@@ -1143,3 +1164,11 @@ export const setImprovementStatus = (id: string, status: ImprovementStatus) =>
 
 /** スクリーンショットの取得先。R2 の公開URLではなく必ず Worker を通す */
 export const improvementScreenshotUrl = (id: string) => `/api/improvements/${id}/screenshot`;
+
+export { DIAGNOSIS_ACTION_STATUSES };
+
+/**
+ * GET /api/diagnosis の応答。旧 Worker は improvements / health を持たないので、
+ * 画面はそれを見て新ブロックの描画可否を決める (rolling deploy 互換)。
+ */
+export type DiagnosisResponse = DiagnosisData & Partial<Omit<DiagnosisScreen, keyof DiagnosisData>>;

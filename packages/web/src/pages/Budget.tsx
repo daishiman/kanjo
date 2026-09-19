@@ -2,7 +2,7 @@
 import { budgetRowsWithDraft, budgetSummary, judgeBudget, parseBudgetDraft } from '@kanjo/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { invalidateAnalysisDerived } from '../analysis-query-invalidation.js';
 import { type BudgetOutlook, type BudgetRow, api } from '../api.js';
 import { Button } from '../components/Button.js';
@@ -11,10 +11,12 @@ import { HowTo } from '../components/HowTo.js';
 import { KpiCard, PageHeader, PageState } from '../components/Page.js';
 import { Term } from '../components/Term.js';
 import { yen, yenS } from '../format.js';
+import { targetChoice } from './target-query.js';
 
 const judgePill: Record<string, string> = { 超過: 'pill alert', 範囲内: 'pill neutral', 余裕: 'pill calm' };
 
 export function BudgetPage() {
+  const [searchParams] = useSearchParams();
   const qc = useQueryClient();
   const q = useQuery({
     queryKey: ['budgets'],
@@ -79,6 +81,12 @@ export function BudgetPage() {
 
   // 編集中の下書きを重ねた表。判定規則は core と共有するので、保存前後で見え方が変わらない
   const view = budgetRowsWithDraft(rows, draft);
+  const requestedAccount = targetChoice(
+    searchParams,
+    'account',
+    rows.map((row) => row.account),
+  );
+  const visibleView = requestedAccount ? view.filter((row) => row.account === requestedAccount) : view;
   const summary = budgetSummary(view);
 
   const submit = () => {
@@ -90,6 +98,12 @@ export function BudgetPage() {
   return (
     <>
       <PageHeader route="budget" />
+
+      {requestedAccount && (
+        <output className="notice" aria-label="診断からの絞り込み">
+          <strong>診断からの絞り込み</strong> {requestedAccount} · <Link to="/budget">すべて表示</Link>
+        </output>
+      )}
 
       <div className="toolbar">
         <Button onClick={() => suggest.mutate()} disabled={suggest.isPending}>
@@ -141,6 +155,7 @@ export function BudgetPage() {
 
       <div className="card scroll-x">
         <DataTable
+          caption={<caption className="visually-hidden">科目別の月次予算</caption>}
           columns={[
             '科目',
             termColumn('classification'),
@@ -150,7 +165,7 @@ export function BudgetPage() {
             termColumn('judge'),
           ]}
         >
-          {view.map((r) => (
+          {visibleView.map((r) => (
             <tr key={r.account}>
               <td>{r.account}</td>
               <td>
@@ -186,7 +201,7 @@ export function BudgetPage() {
         </DataTable>
       </div>
 
-      <AnnualOutlook outlook={q.data.outlook} draft={draft} />
+      <AnnualOutlook outlook={q.data.outlook} draft={draft} account={requestedAccount} />
     </>
   );
 }
@@ -204,16 +219,20 @@ export function BudgetPage() {
 function AnnualOutlook({
   outlook,
   draft,
+  account,
 }: {
   outlook: BudgetOutlook;
   draft: Record<string, string>;
+  account: string | null;
 }) {
   if (!outlook.rows.length) return null;
-  const rows = outlook.rows.map((r) => {
-    const budget = parseBudgetDraft(draft[r.account], r.budget);
-    const annualBudget = budget == null ? null : budget * 12;
-    return { ...r, annualBudget, ...judgeBudget(r.landing, annualBudget) };
-  });
+  const rows = outlook.rows
+    .filter((row) => !account || row.account === account)
+    .map((r) => {
+      const budget = parseBudgetDraft(draft[r.account], r.budget);
+      const annualBudget = budget == null ? null : budget * 12;
+      return { ...r, annualBudget, ...judgeBudget(r.landing, annualBudget) };
+    });
   const withBudget = rows.filter((r) => r.annualBudget != null);
   const annualBudget = withBudget.reduce((t, r) => t + (r.annualBudget ?? 0), 0);
   const landing = withBudget.reduce((t, r) => t + r.landing, 0);

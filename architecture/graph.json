@@ -603,6 +603,33 @@
       ]
     },
     {
+      "id": "arch-diagnosis-screen",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend",
+        "backend",
+        "data",
+        "security",
+        "infrastructure"
+      ],
+      "title": "診断画面 (08-diagnosis) のアーキテクチャ",
+      "file_path": "architecture/arch-diagnosis-screen.md",
+      "status": "draft",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-18-diagnosis-screen/index.md",
+        "source_version": "0.1.14",
+        "source_digest": "981e7c821de2de5b44e158922e6285e30b75637137c22e47ea324910f2d47c55",
+        "imported_at": "2026-09-18T01:29:14Z"
+      },
+      "referenced_by": [
+        "feat-diagnosis-screen"
+      ]
+    },
+    {
       "id": "arch-expense-matrix-auth",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -1485,8 +1512,8 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": "966f6154d55468de31c6ea8ea0d0f4687ca1f30013f38611f6be22abc35797ef",
-        "imported_at": "2026-08-29T00:00:00Z"
+        "source_digest": "8796a2195649a0d6047362ffb0f208c44fa64240d69c6efa8e6c9c892b8d6173",
+        "imported_at": "2026-09-18T00:00:00Z"
       },
       "referenced_by": [
         "feat-tax-preparation"

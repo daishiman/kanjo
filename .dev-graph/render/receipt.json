@@ -4,33 +4,33 @@
   "status": "pass",
   "output": ".dev-graph/render/index.html",
   "scope": "all",
-  "graph_revision": 10,
+  "graph_revision": 1,
   "counts": {
-    "nodes": 17,
+    "nodes": 16,
     "edges": 12,
     "feature_progress": {
-      "feat-mobile-financial-visualization": {
+      "feat-diagnosis-screen": {
         "done": 0,
         "total": 13
       }
     }
   },
   "registration": {
-    "feature_package_id": "feature-package/feat-mobile-financial-visualization",
+    "feature_package_id": "feature-package/feat-diagnosis-screen",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:e4745a1c30c978feee27da5d14e3bcd1bd0dfbbca3f55483b63524009796ceda",
-    "receipt": ".dev-graph/plans/feature-package-feat-mobile-financial-visualization/dev-graph-registration-receipt.json"
+    "source_digest": "sha256:13faf94a21513a4fa3b49d5ee9e526e0ad84bf3e469ca60c900fb479d3be08e6",
+    "receipt": ".dev-graph/receipts/register-feat-diagnosis-screen.json"
   },
   "digests": {
-    "input_sha256": "27286040bcded9313153204288eda5938b1ef10f869845174be4a9e22be1bace",
-    "output_sha256": "f578966aa127ef26b2a0843675555a2ca7e7c49a7a2e5beb2baa796bd554fa8e"
+    "input_sha256": "374837456c5851fc438fcc97e31e25308d7fd524425f77dacb4351bb5245a3fb",
+    "output_sha256": "8e2df757e555fb7fcaddb9df159f419b636686fd57739af5ebcc7f339c33a171"
   },
   "zero_dependency": {
     "external_script_count": 0,
     "external_link_count": 0,
     "external_url_count": 0,
     "svg_count": 1,
-    "inline_script_count": 2
+    "inline_script_count": 1
   }
 }
