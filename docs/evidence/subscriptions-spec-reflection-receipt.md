@@ -64,8 +64,9 @@ HTML 版の由来を述べる箇所 (§2 の機能一覧、移行対応表) の�
 ## Beads の状態
 
 子 `kanjo-fge.1` .. `.12` は `bd-bridge.py --op close` で closed にした (理由: PR #60 で実装・検証済み)。
-`kanjo-fge.13` (配信と migration 0043 の本番適用) と epic `kanjo-fge` は open のまま残し、
-PR のマージと本番適用の後に閉じる。
+`kanjo-fge.13` (配信と migration 0043 の本番適用) と epic `kanjo-fge` は、PR #60 のマージ (e477824) の後に閉じた。
+その Deploy のログで `0043_sub_vendor_category_and_review_decisions.sql` の適用 (✅) を確かめた (2026-09-19)。
+epic の close には、13 件の子の実測値から作った `.dev-graph/handoff/feat-subscriptions-screen/feature-rollup-manifest.json` を使った。
 
 ## 残課題
 

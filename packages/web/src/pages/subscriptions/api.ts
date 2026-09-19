@@ -30,7 +30,7 @@ export const deleteReviewDecision = (vendorKey: string) =>
   api<{ ok: true }>('/subscriptions/review-decisions', json('DELETE', { vendorKey }));
 
 export const postSubVendor = (name: string) =>
-  api<{ ok: true }>('/sub-vendors', json('POST', { name, aliases: [], accounts: [] }));
+  api<{ ok: true; id: number }>('/sub-vendors', json('POST', { name, aliases: [], accounts: [] }));
 
 export const putSubVendor = (
   id: number,

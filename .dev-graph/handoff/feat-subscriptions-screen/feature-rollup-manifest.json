@@ -1,0 +1,99 @@
+{
+  "epic_bd_issue_id": "kanjo-fge",
+  "parent_feature": "feat-subscriptions-screen",
+  "generated_at": "2026-09-19T00:16:31Z",
+  "source": "bd-bridge --op show (measured)",
+  "children": [
+    {
+      "bd_issue_id": "kanjo-fge.1",
+      "graph_node_id": "SYS-SUBS-P01",
+      "phase_ref": "P01",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:13Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.2",
+      "graph_node_id": "SYS-SUBS-P02",
+      "phase_ref": "P02",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:15Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.3",
+      "graph_node_id": "SYS-SUBS-P03",
+      "phase_ref": "P03",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:17Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.4",
+      "graph_node_id": "SYS-SUBS-P04",
+      "phase_ref": "P04",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:19Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.5",
+      "graph_node_id": "SYS-SUBS-P05",
+      "phase_ref": "P05",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:21Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.6",
+      "graph_node_id": "SYS-SUBS-P06",
+      "phase_ref": "P06",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:23Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.7",
+      "graph_node_id": "SYS-SUBS-P07",
+      "phase_ref": "P07",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:25Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.8",
+      "graph_node_id": "SYS-SUBS-P08",
+      "phase_ref": "P08",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:27Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.9",
+      "graph_node_id": "SYS-SUBS-P09",
+      "phase_ref": "P09",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:29Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.10",
+      "graph_node_id": "SYS-SUBS-P10",
+      "phase_ref": "P10",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:31Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.11",
+      "graph_node_id": "SYS-SUBS-P11",
+      "phase_ref": "P11",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:33Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.12",
+      "graph_node_id": "SYS-SUBS-P12",
+      "phase_ref": "P12",
+      "status": "closed",
+      "closed_at": "2026-09-18T14:34:35Z"
+    },
+    {
+      "bd_issue_id": "kanjo-fge.13",
+      "graph_node_id": "SYS-SUBS-P13",
+      "phase_ref": "P13",
+      "status": "closed",
+      "closed_at": "2026-09-19T00:15:46Z"
+    }
+  ]
+}

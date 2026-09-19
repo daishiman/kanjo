@@ -1,5 +1,5 @@
-import type { AccountKind, SubscriptionVendorDetail } from '@kanjo/core';
-import { useId, useState } from 'react';
+import { type AccountKind, SUB_VENDOR_NAME_MAX, type SubscriptionVendorDetail } from '@kanjo/core';
+import { useEffect, useId, useRef, useState } from 'react';
 import { ApiError } from '../../api.js';
 import { Button } from '../../components/Button.js';
 import { UiIcon } from '../../components/UiIcon.js';
@@ -7,7 +7,7 @@ import { yen } from '../../format.js';
 import { ReviewDecisionActions } from './ReviewDecisionActions.js';
 import { putSubVendor } from './api.js';
 import { SOURCE_LABEL, rawNameKey, slashDate } from './format.js';
-import type { RawSelection, RunAction, VendorOptionsState } from './types.js';
+import type { CreateMergeTarget, RawSelection, RunAction, VendorOptionsState } from './types.js';
 
 const SOURCE_ICON: Record<AccountKind, 'lock' | 'wallet' | 'cloud' | 'info'> = {
   bank: 'lock',
@@ -76,15 +76,17 @@ export function TransactionTable({
   rows,
   caption,
   withSource = false,
+  expanded = false,
 }: {
   rows: SubscriptionVendorDetail['recent'];
   caption: string;
   withSource?: boolean;
+  expanded?: boolean;
 }) {
   if (!rows.length) return <p className="sub">期間内の取引はありません。</p>;
   return (
     <table
-      className="data subs-tx-table"
+      className={`data subs-tx-table${expanded ? ' is-expanded' : ''}`}
       data-table-kind="layout"
       data-sort-reason="詳細パネル内の直近取引を新しい日付順に固定した短い履歴"
     >
@@ -120,6 +122,7 @@ export function DetailOverview({
   onToggleRaw,
   mergeTargetId,
   onMergeTarget,
+  onCreateMergeTarget,
   run,
   busy,
   onShowHistory,
@@ -130,6 +133,7 @@ export function DetailOverview({
   onToggleRaw: (raw: RawSelection) => void;
   mergeTargetId: number | null;
   onMergeTarget: (id: number | null) => void;
+  onCreateMergeTarget: CreateMergeTarget;
   run: RunAction;
   busy: boolean;
   onShowHistory: () => void;
@@ -178,23 +182,26 @@ export function DetailOverview({
             </span>
           )}
           {vendorOptions.status === 'ready' && (
-            <select
-              aria-label="統合先"
-              value={mergeTargetId ?? ''}
-              disabled={!vendorOptions.vendors.length}
-              onChange={(event) =>
-                onMergeTarget(event.target.value === '' ? null : Number(event.target.value))
-              }
-            >
-              <option value="">
-                {vendorOptions.vendors.length ? '登録済みのサブスクを選ぶ' : '統合先がありません'}
-              </option>
-              {vendorOptions.vendors.map((vendor) => (
-                <option key={vendor.id} value={vendor.id}>
-                  {vendor.name}
+            <>
+              <select
+                aria-label="統合先"
+                value={mergeTargetId ?? ''}
+                disabled={!vendorOptions.vendors.length}
+                onChange={(event) =>
+                  onMergeTarget(event.target.value === '' ? null : Number(event.target.value))
+                }
+              >
+                <option value="">
+                  {vendorOptions.vendors.length ? '登録済みのサブスクを選ぶ' : '統合先がありません'}
                 </option>
-              ))}
-            </select>
+                {vendorOptions.vendors.map((vendor) => (
+                  <option key={vendor.id} value={vendor.id}>
+                    {vendor.name}
+                  </option>
+                ))}
+              </select>
+              <MergeTargetCreator busy={busy} onCreate={onCreateMergeTarget} onCreated={onMergeTarget} />
+            </>
           )}
         </div>
       )}
@@ -232,5 +239,111 @@ export function DetailOverview({
 
       <ReviewDecisionActions row={row} run={run} busy={busy} />
     </>
+  );
+}
+
+function MergeTargetCreator({
+  busy,
+  onCreate,
+  onCreated,
+}: {
+  busy: boolean;
+  onCreate: CreateMergeTarget;
+  onCreated: (id: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const wasOpen = useRef(false);
+  const id = useId();
+  const trimmed = value.trim();
+
+  useEffect(() => {
+    if (open) inputRef.current?.focus();
+    else if (wasOpen.current) triggerRef.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
+
+  if (!open) {
+    return (
+      <div className="subs-merge-create-entry">
+        <Button
+          ref={triggerRef}
+          variant="text"
+          onClick={() => {
+            setOpen(true);
+            setError(null);
+            setNotice(null);
+          }}
+        >
+          新しい統合先を登録
+        </Button>
+        {notice && <output>{notice}</output>}
+      </div>
+    );
+  }
+
+  return (
+    <form
+      className="subs-merge-create"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        setError(null);
+        if (!trimmed) {
+          setError('統合先の名前を入力してください。');
+          return;
+        }
+        try {
+          const created = await onCreate(trimmed);
+          onCreated(created.id);
+          setValue('');
+          setOpen(false);
+          setNotice(`「${trimmed}」を登録し、統合先に選びました。`);
+        } catch (caught) {
+          setError(
+            caught instanceof ApiError && caught.status === 409
+              ? '同じ名前の統合先がすでにあります。上の一覧から選んでください。'
+              : '統合先を登録できませんでした。入力内容を確認してもう一度お試しください。',
+          );
+        }
+      }}
+    >
+      <label htmlFor={id}>新しい統合先の名前</label>
+      <input
+        ref={inputRef}
+        id={id}
+        value={value}
+        required
+        maxLength={SUB_VENDOR_NAME_MAX}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
+        onChange={(event) => {
+          setValue(event.target.value);
+          if (error) setError(null);
+        }}
+      />
+      {error && (
+        <p id={`${id}-error`} className="subs-field-error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="subs-merge-create-actions">
+        <Button type="submit" variant="primary" disabled={busy}>
+          {busy ? '登録中…' : '登録して統合先に選ぶ'}
+        </Button>
+        <Button
+          onClick={() => {
+            setOpen(false);
+            setError(null);
+          }}
+          disabled={busy}
+        >
+          やめる
+        </Button>
+      </div>
+    </form>
   );
 }

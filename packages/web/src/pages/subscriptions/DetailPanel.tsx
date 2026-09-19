@@ -4,6 +4,7 @@ import { Button } from '../../components/Button.js';
 import { ConfirmDialog } from '../../components/ConfirmDialog.js';
 import { UiIcon } from '../../components/UiIcon.js';
 import { useConfirmDialog } from '../../components/use-confirm-dialog.js';
+import { yen } from '../../format.js';
 import { CandidateStatusBadges } from './CandidateStatusBadges.js';
 import { DetailOverview, TransactionTable } from './DetailOverview.js';
 import {
@@ -13,8 +14,15 @@ import {
   postVendorReview,
   putSubVendor,
 } from './api.js';
-import { jpDateTime } from './format.js';
-import type { ExclusionsState, RawSelection, RunAction, VendorOptionsState } from './types.js';
+import { SOURCE_LABEL, jpDateTime, slashDate } from './format.js';
+import { summarizeObservedHistory } from './history-summary.js';
+import type {
+  CreateMergeTarget,
+  ExclusionsState,
+  RawSelection,
+  RunAction,
+  VendorOptionsState,
+} from './types.js';
 
 const TABS = [
   { id: 'overview', label: '概要' },
@@ -35,6 +43,8 @@ interface PanelProps {
   mergeTargetId: number | null;
   /** 未登録の行で統合先を選ぶ。下部の選択中バーと同じ値を共有するため画面側が持つ */
   onMergeTarget: (id: number | null) => void;
+  /** 統合先の選択肢が無い場合に、同じ sub-vendor 作成経路でその場登録する */
+  onCreateMergeTarget: CreateMergeTarget;
   run: RunAction;
   busy: boolean;
   onRelatedVisibilityChange: (visible: boolean) => void;
@@ -208,10 +218,122 @@ function CategoryEditor({
 }
 
 function HistoryTab({ detail }: { detail: SubscriptionVendorDetail }) {
+  const dialog = useConfirmDialog();
+  const titleId = `${dialog.titleId}-history`;
+  const usageTitleId = `${titleId}-usage`;
+  const usage = summarizeObservedHistory(detail.recent);
   return (
     <>
       <p className="sub">期間内の取引 {detail.transactionCount}件（新しい順）</p>
-      <TransactionTable rows={detail.recent} caption="取引履歴" withSource />
+      {detail.recent.length ? (
+        <>
+          <ul className="subs-history-summary" aria-label="直近の取引履歴">
+            {detail.recent.slice(0, 3).map((tx, index) => (
+              <li key={`${tx.date}-${tx.name}-${tx.amount}-${index}`}>
+                <time dateTime={tx.date}>{slashDate(tx.date)}</time>
+                <strong>{tx.name}</strong>
+                <span>{SOURCE_LABEL[tx.source]}</span>
+                <span className="num">{yen(tx.amount)}</span>
+              </li>
+            ))}
+          </ul>
+          <Button ref={dialog.triggerRef} onClick={() => dialog.setOpen(true)}>
+            取引履歴を大きく表示（{detail.transactionCount}件）
+          </Button>
+        </>
+      ) : (
+        <p className="sub">期間内の取引はありません。</p>
+      )}
+      {dialog.open && (
+        <dialog
+          ref={dialog.bind}
+          className="deletion-confirm-dialog subs-history-dialog"
+          aria-labelledby={titleId}
+          onClose={dialog.close}
+          onCancel={(event) => {
+            event.preventDefault();
+            dialog.close();
+          }}
+        >
+          <div className="subs-history-dialog-body">
+            <div className="subs-history-dialog-head">
+              <div>
+                <h3 ref={dialog.titleRef} id={titleId} tabIndex={-1}>
+                  {detail.row.normalizedName}の取引履歴
+                </h3>
+                <p className="sub">新しい順</p>
+              </div>
+              <Button aria-label="取引履歴を閉じる" onClick={dialog.close}>
+                <UiIcon name="close" aria-hidden="true" />
+                閉じる
+              </Button>
+            </div>
+            {usage && (
+              <section className="subs-history-usage" aria-labelledby={usageTitleId}>
+                <div className="subs-history-usage-head">
+                  <h4 id={usageTitleId}>履歴からわかる利用状況</h4>
+                  <p>対象期間内の履歴から算出</p>
+                </div>
+                <dl>
+                  <div className="subs-history-usage-period">
+                    <dt>確認できる利用期間</dt>
+                    <dd className="num">
+                      <time dateTime={usage.firstDate}>{slashDate(usage.firstDate)}</time>
+                      {usage.firstDate === usage.lastDate ? (
+                        <span>（1日の記録）</span>
+                      ) : (
+                        <>
+                          <span>〜</span>
+                          <time dateTime={usage.lastDate}>{slashDate(usage.lastDate)}</time>
+                        </>
+                      )}
+                    </dd>
+                  </div>
+                  <div className="subs-history-usage-payments">
+                    <dt>支払い実績</dt>
+                    <dd>
+                      <span className="num">{usage.paymentMonthCount}か月</span>
+                      <span>・</span>
+                      <span className="num">{usage.transactionCount}件</span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>合計支払額</dt>
+                    <dd className="num">{yen(usage.totalAmount)}</dd>
+                  </div>
+                  <div>
+                    <dt>支払い月あたり平均</dt>
+                    <dd className="num">{yen(usage.monthlyAverage)}</dd>
+                  </div>
+                </dl>
+              </section>
+            )}
+            <div className="subs-history-table-scroll">
+              <TransactionTable
+                rows={detail.recent}
+                caption={`${detail.row.normalizedName}の取引履歴`}
+                withSource
+                expanded
+              />
+            </div>
+            <ul
+              className="subs-history-mobile"
+              aria-label={`${detail.row.normalizedName}の取引履歴（モバイル表示）`}
+            >
+              {detail.recent.map((tx, index) => (
+                <li key={`${tx.date}-${tx.name}-${tx.amount}-${index}`}>
+                  <div>
+                    <time dateTime={tx.date}>{slashDate(tx.date)}</time>
+                    <strong className="num">{yen(tx.amount)}</strong>
+                  </div>
+                  <p>{tx.name}</p>
+                  <span>{SOURCE_LABEL[tx.source]}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </dialog>
+      )}
     </>
   );
 }
