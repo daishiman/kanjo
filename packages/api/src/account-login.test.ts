@@ -12,7 +12,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SESSION_TTL_MS } from './auth.js';
 import {
   TEST_ADMIN,
@@ -235,6 +235,25 @@ describe('セッションの持ち方', () => {
     expect(Number(cookieAttr(transient.headers.get('set-cookie') ?? '', 'Max-Age'))).toBe(
       SESSION_TTL_MS.transient / 1000,
     );
+  });
+
+  it('ログイン処理の途中で時計が進んでも Max-Age は1秒欠けない', async () => {
+    await seedTestUser(d1);
+    // 読むたびに 1ms 進む時計。時刻を2回読む実装だと Max-Age が 2591999 になる。
+    let tick = Date.now();
+    const clock = vi.spyOn(Date, 'now').mockImplementation(() => ++tick);
+    try {
+      const response = await post('/auth/login', {
+        email: TEST_ADMIN.email,
+        password: TEST_ADMIN.password,
+        remember: true,
+      });
+      expect(Number(cookieAttr(response.headers.get('set-cookie') ?? '', 'Max-Age'))).toBe(
+        SESSION_TTL_MS.remembered / 1000,
+      );
+    } finally {
+      clock.mockRestore();
+    }
   });
 
   it('保持の指定が無いときは保持する', async () => {
