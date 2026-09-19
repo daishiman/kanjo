@@ -131,18 +131,23 @@ subsRoute.post('/sub-vendors', zValidator('json', vendorSchema), async (c) => {
     return c.json({ error: { code: 'duplicate', message: '同じ名前のベンダーが既に登録されています' } }, 409);
   }
   const sortOrder = (existing.at(-1)?.id ?? 0) + 100;
-  await db.batch([
-    db.insert(s.subVendors).values({
-      userId,
-      name: b.name,
-      aliases: JSON.stringify(cleanAliases(b.name, b.aliases)),
-      accounts: JSON.stringify(cleanAccounts(b.accounts)),
-      sortOrder,
-    }),
+  const [inserted] = await db.batch([
+    db
+      .insert(s.subVendors)
+      .values({
+        userId,
+        name: b.name,
+        aliases: JSON.stringify(cleanAliases(b.name, b.aliases)),
+        accounts: JSON.stringify(cleanAccounts(b.accounts)),
+        sortOrder,
+      })
+      .returning({ id: s.subVendors.id }),
     invalidateJsonSnapshotQuery(db, userId, 'sub_vendors'),
   ]);
+  const [created] = inserted;
+  if (!created) throw new Error('sub vendor insert did not return an id');
   await recomputeFromDeals(db, userId);
-  return c.json({ ok: true });
+  return c.json({ ok: true, id: created.id });
 });
 
 /**

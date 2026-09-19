@@ -85,7 +85,7 @@ serves_goals: ["G3", "G4", "G5"]
 | GET /api/subscriptions/vendors/:key | 詳細パネル用 — 生の取引名とソース種別・直近 3 件と件数・データソース別件数・取引履歴 (上限つき) | HTTP JSON | packages/api | Worker |
 | PUT /api/sub-vendors/:id (category 追加) / POST /api/sub-vendors/:id/aliases | カテゴリの上書き / 名称の統合 | HTTP JSON | packages/api (subsRoute) | Worker |
 | POST / DELETE /api/subscriptions/review-decisions | 登録済みベンダーの見直し判断 (confirmed / dismissed) とその取消 | HTTP JSON | packages/api | Worker |
-| 既存 POST /api/sub-vendors / POST /api/sub-vendors/exclusions | 未登録候補の採用 / 除外 (変更なし) | HTTP JSON | packages/api (subsRoute) | Worker |
+| 既存 POST /api/sub-vendors / POST /api/sub-vendors/exclusions | 未登録候補の採用 / 除外。POST /api/sub-vendors は応答に作成 `id` を足した (`{ok, id}`、加法のみ。詳細で統合先をその場で作って自動で選ぶため) | HTTP JSON | packages/api (subsRoute) | Worker |
 
 ## Cross-cutting contracts
 

@@ -23,10 +23,12 @@ import { SubscriptionTable } from './subscriptions/SubscriptionTable.js';
 import {
   type SubCandidatesResponse,
   type SubVendorsResponse,
+  postSubVendor,
   postSubVendorAliases,
 } from './subscriptions/api.js';
 import { rawNameKey } from './subscriptions/format.js';
 import type {
+  CreateMergeTarget,
   ExclusionsState,
   LookupStatus,
   MutationImpact,
@@ -243,6 +245,21 @@ export function SubscriptionsPage() {
       setSelection([]);
     }
   };
+  const createMergeTarget: CreateMergeTarget = async (name) => {
+    const created = await mutation.mutateAsync({
+      send: () => postSubVendor(name),
+      impact: 'vendorDefinition',
+    });
+    if (
+      typeof created !== 'object' ||
+      created === null ||
+      !('id' in created) ||
+      !Number.isInteger(created.id)
+    ) {
+      throw new Error('統合先の登録結果を確認できませんでした。');
+    }
+    return { ok: true, id: created.id as number };
+  };
 
   return (
     <div className="subs">
@@ -307,6 +324,7 @@ export function SubscriptionsPage() {
               onToggleRaw={toggleRaw}
               mergeTargetId={mergeTargetId}
               onMergeTarget={setChosenTarget}
+              onCreateMergeTarget={createMergeTarget}
               run={run}
               busy={busy}
               onRelatedVisibilityChange={setRelatedVisible}

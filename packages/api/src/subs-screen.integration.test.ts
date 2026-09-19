@@ -466,9 +466,13 @@ describe('名称の統合と部分更新', () => {
   it('明細由来のベンダー名は全経路で120文字まで、121文字は400', async () => {
     const max = `V${'x'.repeat(119)}`;
     const tooLong = `V${'x'.repeat(120)}`;
-    expect((await request('/sub-vendors', 'POST', { name: max })).status).toBe(200);
+    const created = await request('/sub-vendors', 'POST', { name: max });
+    expect(created.status).toBe(200);
+    const createdBody = (await created.json()) as { ok: true; id: number };
+    expect(createdBody.ok).toBe(true);
+    expect(createdBody.id).toBe(await vendorIdOf(max));
     expect((await request('/sub-vendors', 'POST', { name: tooLong })).status).toBe(400);
-    const id = await vendorIdOf(max);
+    const id = createdBody.id;
     expect((await request(`/sub-vendors/${id}`, 'DELETE')).status).toBe(200);
 
     expect((await request('/sub-vendors/exclusions', 'POST', { partner: max })).status).toBe(200);

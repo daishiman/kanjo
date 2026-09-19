@@ -652,9 +652,184 @@ describe('サブスクの詳細', () => {
     expect(within(recent).getAllByRole('row')).toHaveLength(4);
     fireEvent.click(within(panel).getByRole('button', { name: 'すべて見る (12件) →' }));
     expect(within(panel).getByRole('tab', { name: '取引履歴' }).getAttribute('aria-selected')).toBe('true');
-    expect(within(within(panel).getByRole('table', { name: '取引履歴' })).getAllByRole('row')).toHaveLength(
-      13,
+    expect(
+      within(within(panel).getByRole('list', { name: '直近の取引履歴' })).getAllByRole('listitem'),
+    ).toHaveLength(3);
+    expect(within(panel).getByRole('button', { name: '取引履歴を大きく表示（12件）' })).toBeTruthy();
+  });
+
+  it('狭い詳細は直近3件に要約し、全履歴は広いdialogで省略せず読める', async () => {
+    renderPage({ path: '/subscriptions?vendor=spotify' });
+    const panel = await detailPanel();
+    fireEvent.click(await within(panel).findByRole('tab', { name: '取引履歴' }));
+
+    const summary = within(panel).getByRole('list', { name: '直近の取引履歴' });
+    expect(within(summary).getAllByRole('listitem')).toHaveLength(3);
+    const trigger = within(panel).getByRole('button', { name: '取引履歴を大きく表示（12件）' });
+    fireEvent.click(trigger);
+
+    const dialog = await screen.findByRole('dialog', { name: 'Spotifyの取引履歴' });
+    const usageSummary = within(dialog).getByRole('region', { name: '履歴からわかる利用状況' });
+    expect(usageSummary.textContent).toContain('対象期間内の履歴から算出');
+    expect(usageSummary.textContent).toContain('確認できる利用期間');
+    expect(usageSummary.textContent).toContain('2025/09/01〜2026/08/01');
+    expect(usageSummary.textContent).toContain('支払い実績');
+    expect(usageSummary.textContent).toContain('12か月・12件');
+    expect(usageSummary.textContent).toContain('合計支払額');
+    expect(usageSummary.textContent).toContain('¥11,760');
+    expect(usageSummary.textContent).toContain('支払い月あたり平均');
+    expect(usageSummary.textContent).toContain('¥980');
+    const history = within(dialog).getByRole('table', { name: 'Spotifyの取引履歴' });
+    expect(history.classList.contains('is-expanded')).toBe(true);
+    expect(within(history).getAllByRole('row')).toHaveLength(13);
+    expect(history.textContent).toContain('SPOTIFY.COM');
+    expect(history.textContent).toContain('クレジットカード');
+    expect(history.textContent).toContain('銀行口座');
+
+    fireEvent(dialog, new Event('cancel', { cancelable: true }));
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Spotifyの取引履歴' })).toBeNull());
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('1件の履歴は1日の記録として要約し、長い名称もdialogでは省略しない', async () => {
+    const longVendorName = 'とても長い名称のテスト用クラウドストレージ年間利用サービス';
+    const longTransactionName = 'とても長い名称のテスト用クラウドストレージ年間利用サービス決済明細';
+    const row = { ...spotify, displayName: longVendorName, normalizedName: longVendorName };
+    const detail: SubscriptionVendorDetail = {
+      ...spotifyDetail,
+      row,
+      recent: [{ date: '2026-08-13', name: longTransactionName, source: 'card', amount: 8_454 }],
+      transactionCount: 1,
+      bySource: [{ source: 'card', count: 1 }],
+    };
+    renderPage({
+      data: {
+        ...fixtureScreen,
+        rows: fixtureScreen.rows.map((item) => (item.vendorKey === row.vendorKey ? row : item)),
+      },
+      detail,
+      path: '/subscriptions?vendor=spotify',
+    });
+    const panel = await detailPanel();
+    fireEvent.click(await within(panel).findByRole('tab', { name: '取引履歴' }));
+    fireEvent.click(within(panel).getByRole('button', { name: '取引履歴を大きく表示（1件）' }));
+
+    const dialog = await screen.findByRole('dialog', { name: `${longVendorName}の取引履歴` });
+    const usageSummary = within(dialog).getByRole('region', { name: '履歴からわかる利用状況' });
+    expect(usageSummary.textContent).toContain('2026/08/13（1日の記録）');
+    expect(usageSummary.textContent).toContain('1か月・1件');
+    expect(usageSummary.textContent).toContain('合計支払額¥8,454');
+    expect(usageSummary.textContent).toContain('支払い月あたり平均¥8,454');
+    expect(within(dialog).getByRole('table').textContent).toContain(longTransactionName);
+  });
+
+  it('履歴が0件なら利用要約と全件dialogの入口を出さず、理由を表示する', async () => {
+    const data = { ...fixtureScreen, rows: [unregistered, ...fixtureRows] };
+    renderPage({
+      data,
+      detail: unregisteredDetail,
+      path: `/subscriptions?vendor=${encodeURIComponent(unregistered.vendorKey)}`,
+    });
+    const panel = await detailPanel();
+    fireEvent.click(await within(panel).findByRole('tab', { name: '取引履歴' }));
+
+    expect(within(panel).getByText('期間内の取引はありません。')).toBeTruthy();
+    expect(within(panel).queryByRole('button', { name: /取引履歴を大きく表示/ })).toBeNull();
+    expect(screen.queryByRole('region', { name: '履歴からわかる利用状況' })).toBeNull();
+  });
+
+  it('未登録の概要から新しい統合先を登録し、その統合先を自動選択する', async () => {
+    const data = { ...fixtureScreen, rows: [unregistered, ...fixtureRows] };
+    const path = `/subscriptions?vendor=${encodeURIComponent(unregistered.vendorKey)}`;
+    let created = false;
+    const { calls } = renderPage({
+      data,
+      detail: unregisteredDetail,
+      path,
+      handler: (url, init) => {
+        const method = init?.method ?? 'GET';
+        if (url === '/api/sub-vendors' && method === 'POST') {
+          created = true;
+          return json({ ok: true, id: 99 });
+        }
+        if (url === '/api/sub-vendors' && method === 'GET' && created) {
+          return json({
+            ...vendorsResponse,
+            vendors: [
+              ...vendorsResponse.vendors,
+              { id: 99, name: '新しいクラウド', aliases: [], accounts: [] },
+            ],
+          });
+        }
+        return undefined;
+      },
+    });
+    const panel = await detailPanel();
+    const select = await within(panel).findByRole('combobox', { name: '統合先' });
+    const createTrigger = within(panel).getByRole('button', { name: '新しい統合先を登録' });
+    fireEvent.click(createTrigger);
+    const input = within(panel).getByRole('textbox', { name: '新しい統合先の名前' });
+    expect(document.activeElement).toBe(input);
+    expect(input.getAttribute('maxlength')).toBe('120');
+    fireEvent.change(input, { target: { value: '新しいクラウド' } });
+    fireEvent.click(within(panel).getByRole('button', { name: '登録して統合先に選ぶ' }));
+
+    await waitFor(() =>
+      expect(calls).toContainEqual({
+        method: 'POST',
+        url: '/api/sub-vendors',
+        body: { name: '新しいクラウド', aliases: [], accounts: [] },
+      }),
     );
+    await waitFor(() => expect((select as HTMLSelectElement).value).toBe('99'));
+    expect(within(panel).getByRole('status').textContent).toContain('登録し、統合先に選びました');
+  });
+
+  it('統合先の登録をやめると開始ボタンへフォーカスを戻す', async () => {
+    const data = { ...fixtureScreen, rows: [unregistered, ...fixtureRows] };
+    const path = `/subscriptions?vendor=${encodeURIComponent(unregistered.vendorKey)}`;
+    renderPage({ data, detail: unregisteredDetail, path });
+    const panel = await detailPanel();
+    await within(panel).findByRole('combobox', { name: '統合先' });
+    const trigger = within(panel).getByRole('button', { name: '新しい統合先を登録' });
+    fireEvent.click(trigger);
+
+    const input = within(panel).getByRole('textbox', { name: '新しい統合先の名前' });
+    expect(document.activeElement).toBe(input);
+    fireEvent.click(within(panel).getByRole('button', { name: 'やめる' }));
+
+    const restoredTrigger = within(panel).getByRole('button', { name: '新しい統合先を登録' });
+    expect(document.activeElement).toBe(restoredTrigger);
+  });
+
+  it('新しい統合先の重複は入力の近くで既存選択へ案内する', async () => {
+    const data = { ...fixtureScreen, rows: [unregistered, ...fixtureRows] };
+    const path = `/subscriptions?vendor=${encodeURIComponent(unregistered.vendorKey)}`;
+    renderPage({
+      data,
+      detail: unregisteredDetail,
+      path,
+      handler: (url, init) => {
+        if (url === '/api/sub-vendors' && init?.method === 'POST') {
+          return json(
+            { error: { code: 'duplicate', message: '同じ名前のベンダーが既に登録されています' } },
+            409,
+          );
+        }
+        return undefined;
+      },
+    });
+    const panel = await detailPanel();
+    await within(panel).findByRole('combobox', { name: '統合先' });
+    fireEvent.click(within(panel).getByRole('button', { name: '新しい統合先を登録' }));
+    fireEvent.change(within(panel).getByRole('textbox', { name: '新しい統合先の名前' }), {
+      target: { value: 'Spotify' },
+    });
+    fireEvent.click(within(panel).getByRole('button', { name: '登録して統合先に選ぶ' }));
+
+    const error = await within(panel).findByRole('alert');
+    expect(error.textContent).toContain('すでにあります');
+    expect(error.textContent).toContain('上の一覧から選んでください');
   });
 
   it('候補として確認すると判断 API に confirmed を送る', async () => {

@@ -235,6 +235,7 @@ subscriptionVendorDetail(input, vendorKey): SubscriptionVendorDetail | null
 | `DELETE /api/subscriptions/review-decisions` | `{vendorKey}` | `{ok}`。判断が無ければ 404 | 同上 |
 | `POST /api/sub-vendors/:id/aliases` | `{aliases}` (1〜50 件、各 1〜120 文字) | `{ok, aliases}`。結合後 50 件超は 400 | 同上 |
 | `PUT /api/sub-vendors/:id` | `{name?, aliases?, accounts?, category?}` | `{ok}` | 同上 |
+| `POST /api/sub-vendors` | `{name, aliases, accounts}` (名前は 1〜120 文字) | `{ok, id}`。同じ名前があれば 409。`id` は詳細の「新しい統合先を登録」が統合先を自動で選ぶのに使う | 同上 |
 
 - 指紋はクライアントから受け取らない。サーバが同じ期間で `subscriptionsScreen` を組み、その行の指紋を保存する。
   web は判断の POST に必ず `usePeriod().withPeriod` を通す (`pages/subscriptions/api.ts` の `postReviewDecision` が
