@@ -13,164 +13,219 @@ category: requirements-definition
 
 ## U1 本質的目的 (essential_purpose)
 
-サブスク画面を、『毎月の固定費に重複や見直し候補はありますか？』という問いに 1 画面で答え、見直すべき契約を見つけてその場で決着 (名称の統合・候補の採用 / 除外・見直し候補として確認) まで進められる場にする。利用者が銀行口座・クレジットカード・電子マネーの取引から検出された継続的な支払いを、月額・年換算・カテゴリ・データの出典つきで一覧し、見直し候補の理由を読み、同じサービスの表記ゆれを 1 つにまとめられる状態にする。
+家計収支画面を、『家計の総収入・総支出・純収支は、どう変わりましたか？』という問いに 1 画面で答え切る場にする。利用者が期間 (1年 / 2年 / 3年 / 任意) を選ぶと、家計全体の総収入・総支出・純収支とその前年差を最初に掴み、月別の推移で『いつ』動いたかを、事業と個人の内訳・生活費カテゴリ・名義別の収入で『どこが』動いたかを確かめ、振替を二重に数えていないことを納得したうえで、選んだ月やカテゴリの明細まで一直線に降りて手を打てる状態にする。家計全体の数字は総収支画面の『総合』と必ず一致し、事業と個人の和が家計全体に重複なく閉じることを、画面と集計の両方で保証する。
 
 ## U2 背景 (background)
 
-現行の /subscriptions (packages/web/src/pages/Subscriptions.tsx、305 行) は、重複・急増アラート、KPI 4 枚 (最新月の実支払・年換算・直近 12 か月の実支払・売上比)、データ元の 1 行注記、ベンダー別の表 (直近月額 / 平均月額 / 支払月数 / 直近 12 か月 / 年換算)、ベンダー別の月次積み上げ棒、ベンダー別の前年比較表、登録ベンダーの編集パネル (別名・対象科目・四半期見直し)、未登録候補パネルを縦に並べた画面である。design/FINAL-UI/images/09-subscriptions.png が示す構成 (問いの見出し、前期間比つき KPI 5 枚、データソースのカバー率、ベンダー名と正規化名とカテゴリを持つ一覧、右の詳細パネル、見直し候補の検出理由、カテゴリ別の推移と年換算比較、下部の選択バー) とは大きく離れ、design/FINAL-UI/spec/AUDIT.md も『09 サブスク | 不足あり』と判定している。カテゴリの仕組み、見直し候補の判定、口座種別 (銀行 / カード / 電子マネー) の区別、名称統合と見直し判断の保存、サブスク用の前期間比はいずれもコードに存在しない。検出 (core/src/subs.ts の vendorKey / matchSubVendor / subsCandidates / subsConfidence) と集計 (core/src/analysis.ts の subscriptions、expense-projection.ts の sourceNeutralSubscriptions) は既にあり、これを土台にする。
+現行の /household (packages/web/src/pages/Household.tsx、657 行の 1 ファイル) はナビ上『累計収支』という名前で、選んだ 1 か月の KPI 4 枚・事業と個人の月別表・収入計と支出計の棒グラフ・生活費の大項目別 (全期間)・前月比・名義別収入 (事業 / 妻 / 家族)・中項目別収入を縦に並べた読み物で、問いの見出しも前年との比較も無い。集計は core の household() が担うが、事業入金と事業立替を家計の収支に含める独自定義で、総収支画面の totalCashflowLedger (事業 = freee、家計 = MF の家計行、振替と二重計上は除外) と数字が一致しない。前年比較・振替の一覧・名義ラベルの編集はどの層にも無く、名義は D1 の CHECK 制約で business / spouse / family の 3 値に固定され表示名はハードコードされている。design/FINAL-UI/images/10-household.png はこれらを 1 画面に統合した完成形で、design/FINAL-UI/spec/AUDIT.md も『家計の総収入・総支出・純収支と 1/2/3 年比較が弱い。最上位 KPI と事業/個人比較を追加』と指摘している。総収支 (#55)・推移 (#56)・マトリックス (#57) を同じ流儀で作り直し終えた今、残る『整える』段階の中心画面として揃える時期にある。
 
 ## U3 ゴール (goals)
 
 | ID | ゴール |
 |---|---|
-| G1 | /subscriptions を 09-subscriptions.png どおりの画面にする。問いの見出し『毎月の固定費に、重複や見直し候補はありますか？』と説明文、KPI 5 枚 (月額のサブスク合計・年換算の合計・直近 12 か月の支払額・売上比・見直し候補 N 件。月額と年換算は前期間比つき)、データソースのカバー率カード (銀行口座 / クレジットカード / 電子マネーの % と取込済み口座数) と最終更新・再取得、サブスク一覧 (ベンダー名・カテゴリで検索、ステータス絞込、行チェック、列=ベンダー名 / 正規化名 / ソース数 / 最新の金額 / 月額の推定 / 年換算 / カテゴリ / 候補、合計行)、月次のサブスク支出推移 (カテゴリ別の積み上げ棒と凡例)、年換算の比較 (カテゴリ別の月額 / 年換算 / 構成比 / 前期間比と合計行) を、既存のデザイントークン・共通 Button・PageShell・期間タブ (usePeriod) の上に組む。読込・空・失敗の各状態を持つ。ロゴ (サービスのアイコン) 画像は取得も表示もしない。 |
-| G2 | 一覧で選んだサブスクの『サブスクの詳細』パネルを実装する。正規化名・カテゴリ (変更可)・見直し候補バッジ、概要 / 取引履歴 / 関連データのタブ、正規化された名称 (編集可)、マッチした生の取引名 (チェックとソース種別)、月額の推定と年換算、直近の取引 3 件と『すべて見る (N件)』、データソース別件数、『名称を統合』『候補として確認』を出し、閉じるで解除できる。生の取引名を選ぶと画面下部に『N件の取引を選択中』バー (選択チップの解除・選択した N 件を統合・選択を解除) を出す。 |
-| G3 | 『見直し候補』を core の純関数で決定論的に判定し、KPI の件数・一覧の候補バッジ・『サブスク候補の検出理由』カードに同じ結果を出す。理由は AI を呼ばず、同じカテゴリ内の重複 / 金額の急増 / 直近の値上げ / 四半期見直しの期限切れ などの規則を判定し、金額・件数・月数を差し込む定型文で生成する。カードから『候補を採用』『候補から除外』『この候補を詳しく見る』を操作できる。規則と文テンプレートを docs に明記しテストで固定する。 |
-| G4 | サブスク画面の数値を core の純関数 1 か所で算出し、GET /subscriptions をその形へ拡張する。推定月額 (年額払いは 12 等分) とその合計・年換算・前期間比 (直前の同じ長さの期間の最新月時点との差)、直近 12 か月の支払額、売上比、正規化名→カテゴリの既定辞書と利用者上書き、口座名の手がかりによる 銀行 / カード / 電子マネー の 3 分類とカバー率 (取込済み口座数 / 口座数、期間の口座×月のうち取引がある割合)、カテゴリ別の月次推移と年換算比較、見直し候補を算出する。既存の sourceNeutralSubscriptions・サイドバーのバッジ件数・総収支 / 推移の数値と突き合わせて一致させる。 |
-| G5 | 保存は既存表を再利用して拡張し、画像に無い旧 UI は画像の部品へ吸収して撤去する。名称の統合=既存ベンダーの aliases 追加、未登録候補の採用=sub_vendors 登録・除外=sub_vendor_exclusions、登録済みベンダーの見直し候補への判断 (確認 / 除外) とカテゴリは migration 0043 で足す。登録ベンダーの別名・対象科目の編集、四半期見直し、重複・急増アラート、未登録候補の各機能は失わず、詳細パネル・候補バッジ・検出理由・ステータス絞込へ移す。サイドバー・ヘッダー・フッター・月次クローズ進捗は既存実装をそのまま使う。 |
+| G1 | /household を 10-household.png どおりの画面にする。問いの見出し『家計の総収入・総支出・純収支は、どう変わりましたか？』と説明文、データの出典カード (取込元の代表名と件数・取込明細を確認)、期間タブ (既存の `usePeriod` / localStorage を正本とする 1年 / 2年 / 3年 / 任意と対象範囲)、KPI 3 枚 (総収入・総支出・純収支と月平均・年換算) と前年差カード、月別の家計収支推移、事業と個人の内訳、生活費カテゴリ別の内訳表、名義別の収入、選択月の振替全件 (抜粋なし) の除外一覧、名義ラベルの設定、前年との比較、下部の選択中バーを、既存のデザイントークン・共通 Button・PageShell の上に組む。ブラウザ URL は `seg` / `month` / `cat` のみを持つ。選択期間の集計対象台帳行 0 件 (振替のみ・除外行のみを含む) を空とし、読込・空・失敗の各状態を持ち、ナビの名称を『家計収支』へ改める。 |
+| G2 | 家計の集計を core の純関数 1 か所に集め、総収支の台帳 (totalCashflowLedger) を正本にする。総収入・総支出・純収支と月平均・年換算、事業と個人の分解 (和が家計全体に一致)、前年同期間との比較 (前年に欠けた月があれば比較不能として null)、月別の収入・支出・純収支と前年系列、生活費カテゴリ 6 区分の集計と構成比・前年差、名義別の収入と前年差を同じ関数から算出し、GET /api/household をこの形へ拡張する。総収支画面の『総合』と家計画面の『家計全体』が同じ期間で同じ数字になることをテストで固定する。 |
+| G3 | 生活費カテゴリの行を選ぶと『カテゴリの詳細』パネルを出す。カテゴリ名・選択期間の合計 `current`・前年比・選択月の全件合計 `monthTotal`・選択月の最大 5 件プレビュー `transactions`・カテゴリのすべて見る・集計ルールの説明と分類ルールの確認導線を示し、閉じるで解除できるようにする。期間合計・月合計・プレビューの和を混同しない。 |
+| G4 | 名義を『本人 / パートナー / 子ども / その他』で扱えるようにする。内部値 (business / spouse / family と未設定) は変えず、名義ラベル表を追加する追加のみの migration と、表示名の取得・更新 API を設ける。初期表示名は business→本人、spouse→パートナー、family→子ども、未設定→その他。『名義ラベルを編集』から表示名だけを変更でき、家計画面・設定画面・明細画面の名義表示がすべてこの表示名を参照する。更新 API は既存の authGuard・パスワード変更フェンス・スキーマガード・変更系フェンスの内側に置き、入力は zod で長さと文字種を検証する。 |
+| G5 | 振替を家計の収入・支出から除外していることを利用者が確かめられるようにする。期間内に除外した振替の一覧 (日付・内容・金額・名義間) を出し、名義間は同額・逆符号・日付が近い振替 2 行を core の純関数で対にし、それぞれの口座の名義表示名から『本人 → パートナー』のように示す。対にならない行は『相手不明』と示す。スキーマは変えない。 |
 
 ## U4 目標 (objectives)
 
 | ID | 目標 | 測定基準 |
 |---|---|---|
-| O1 | サブスク画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出しと説明文・KPI 5 枚と前期間比・カバー率カード 3 区分と最終更新と再取得・一覧 (検索 / ステータス絞込 / 9 列 / 合計行)・カテゴリ別推移の凡例と棒・年換算比較表 (合計行つき) が描画され、読込・空・失敗の状態テストが緑である。ロゴ画像要素が 0 件である。 |
-| O2 | 行を選ぶと詳細パネルが開き、統合と確認の操作ができる。 | DOM テストで、行選択→詳細パネル (3 タブ・正規化名・生の取引名・月額推定・直近の取引・データソース・2 操作) 表示、生の取引名 2 件選択→下部バー『2件の取引を選択中』表示→統合 API 呼出し、閉じる / 選択を解除で状態が戻ることが緑である。 |
-| O3 | 見直し候補の判定と理由文が規則どおりに出る。 | core の単体テストで各規則の境界値と理由文テンプレートが固定され、KPI 件数・一覧バッジ・検出理由カードの件数が同一入力で一致する。 |
-| O4 | 画面の数値が core の 1 か所から出て既存と一致する。 | core 単体テストで推定月額・年換算・前期間比・カバー率・カテゴリ別集計の境界値が緑、API 統合テストで GET /subscriptions の新しい形が返り、合計行 = 行の和、カテゴリ別合計 = 一覧合計、直近 12 か月の支払額が既存 last12Total と一致する。 |
-| O5 | 保存と旧機能の移設が壊れずに完了する。 | migration 0043 がローカル D1 に適用でき、統合・採用・除外・確認・カテゴリ変更の API 統合テストが緑、旧パネルのテストが新しい置き場所のテストへ移されて機能の欠落が 0 件、サイドバーのバッジ件数が画面の候補件数と一致する。 |
+| O1 | 家計収支画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出しと説明文・出典カード・期間タブ・KPI 3 枚と前年差カード・推移のタブ 3 つと凡例 5 系列と月送り・事業と個人の等式・生活費カテゴリ表・名義別収入・振替除外の一覧・名義ラベル設定・前年との比較・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。 |
+| O2 | 家計の数字が総収支画面と一致し、等式が閉じる。 | core の単体テストで、同じ Dataset と期間に対し家計全体の総収入・総支出・純収支が totalCashflowLedger の総合と toBe で一致し、事業 + 個人 = 家計全体が全月で成り立ち、前年欠損月があるとき前年差が null になる。 |
+| O3 | カテゴリ詳細が選択と同期し、明細へ遷移できる。 | DOM テストで、行の選択 (クリックとキーボード) で詳細パネルが開き、`current` が期間合計、`monthTotal` が選択月全件合計、`transactions` が最大 5 件のプレビューとして分離され、カテゴリのすべて見るが月とカテゴリで絞った明細画面の URL へ遷移する。 |
+| O4 | 名義ラベルの編集が安全に保存され全画面に反映される。 | API 統合テストで、未認証 401・変更系フェンス違反の拒否・長さ超過と制御文字の 400・正常更新の 200 と再取得での反映を確認し、migration が既存行を 1 行も書き換えないことを検査する。 |
+| O5 | 振替の対推定が決定論で再現する。 | core の単体テストで、同額・逆符号・日付差の許容内の 2 行が対になり、許容外・同符号・3 行以上の競合が相手不明または一意な規則で解決され、同じ入力で同じ出力になる。 |
 
 ## U5 成功基準 (success_criteria)
 
-- S1 (G1): /subscriptions で 09-subscriptions.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件、ロゴ画像の取得・表示が 0 件である。
-- S2 (G2): 任意の行を選ぶと詳細パネルが同じ行の月額推定と年換算を示し、生の取引名を選んで統合すると aliases に反映され、再読込後も同じベンダーにまとまって表示される。
-- S3 (G3): 見直し候補の規則と文テンプレートが docs に明記され、境界値テストで固定され、KPI 件数・一覧バッジ・検出理由カードが同じ件数を示す。
-- S4 (G4): 一覧の合計行・カテゴリ別比較の合計・KPI の月額合計が互いに一致し、直近 12 か月の支払額と売上比が既存関数の値と一致する。数値の正本は core が算出する検算済み fixture であり、画像の数値は写し取らない。
-- S5 (G5): migration 0043 適用後に既存の登録ベンダー・除外・見直し日時が失われず、旧 UI にあった操作がすべて新しい画面から実行できる。
+- S1 (G1): /household で 10-household.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件である。ナビとパンくずの名称が『家計収支』である。集計対象台帳行 0 件 (振替のみ・除外行のみ) で空状態になる。
+- S2 (G2): 同じ期間で家計画面の家計全体 (総収入・総支出・純収支) と総収支画面の総合が一致し、事業 + 個人 = 家計全体が全月で閉じ、前年差の算出が総収支画面の前年比較と同じ欠損規則に従う。
+- S3 (G3): カテゴリ行の選択で詳細パネルと下部の選択中バーが同じ期間・同じ対象を示し、`current` / `monthTotal` / 最大 5 件の `transactions` プレビューが分離され、カテゴリのすべて見るが対象の月とカテゴリで絞った明細へ遷移する。
+- S4 (G4): 名義ラベルの更新が認証・変更系フェンス・入力検証を通った場合だけ保存され、家計・設定・明細の各画面の名義表示が更新後の表示名になる。migration は追加のみで既存行の書き換えが 0 件である。
+- S5 (G5): 選択月の除外振替が家計カード内に全件 (抜粋なし) 現れ、振替用の循環する『すべて見る』導線が無く、その合計が家計の総収入・総支出に 1 円も含まれていない。名義間の表示が対推定規則どおりで、規則は docs に明記されテストで固定されている。
+- S6 (G1-G5): URL は `seg` / `month` / `cat` のみ、期間は `usePeriod` / localStorage から復元する。既存の総収支・推移・マトリックス・分析ハブの数値テストが緑のままで、初期 JS 予算 (CI 実測) を超えない。既知の逸脱・未実施・一部適合は PASS に数えない。
 
 ## U6 ステークホルダー (stakeholders)
 
-- SH1 利用者 (単独の個人事業主): 月次クローズの『整える』段階で、毎月の固定費に重複や不要な契約がないかを 1 画面で確かめ、表記ゆれを 1 つにまとめ、見直し候補を採用 / 除外して決着させたい。家計と事業の両方の支払いを同じ画面で見たい。
-- SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 推定月額・カテゴリ・カバー率・見直し候補の規則が core の純関数 1 か所と docs・テストで固定され、総収支・推移・サイドバーのバッジと二重実装にならないこと。
+- SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 月次クローズの『整える』段階で、家計全体の収入と支出の差が前年と比べてどう動いたか、それが事業と個人のどちらから・どの生活費カテゴリから・誰の収入から来たかを 1 画面で確かめ、振替を二重に数えていないと納得したうえで、気になる月やカテゴリの明細へ降りて手を打ちたい。名義は家族の呼び方で表示したい。
+- SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 家計の集計規則 (家計全体 = 事業 + 個人、前年比較の欠損規則、生活費 6 区分、振替の対推定、名義表示名) が core の純関数 1 か所と docs・テストで固定され、総収支画面と数字がずれないこと。
 
 ## U7 スコープ (scope)
 
-- **対象 (in)**: サブスク画面 (09-subscriptions.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直し, サブスクの詳細パネル (3 タブ・名称編集・生の取引名・直近の取引・データソース・名称を統合・候補として確認) と下部の選択バー, 見直し候補の決定論判定・定型文の理由・検出理由カード (採用 / 除外 / 詳しく見る), core の純関数: 推定月額・年換算・前期間比・カテゴリ既定辞書・口座名 3 分類とカバー率・カテゴリ別推移と年換算比較, GET /subscriptions の拡張と、統合・カテゴリ変更・見直し候補の確認を保存する API, migration 0043 (sub_vendors.category と見直し判断の保存), 旧 UI (登録ベンダー編集・四半期見直し・アラート・前年比較表・候補パネル) の新しい部品への吸収と撤去
-- **対象外 (out)**: サービスのロゴ・アイコン画像の取得と表示 (利用者指示によりコスト回避), 外部サービス・AI による分類や理由文の生成, サイドバー / ヘッダー / フッター / 月次クローズ進捗の構造変更, 他の画面 (総収支・推移・マトリックス・診断など) の作り直し, web 以外のプラットフォーム
+- **対象 (in)**: 家計収支画面 (10-household.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと、ナビ・パンくずの名称を『家計収支』へ改めること, core の家計集計純関数 (totalCashflowLedger を正本とする家計全体・事業・個人、前年比較、月別系列、生活費 6 区分、名義別収入、振替一覧と対推定), GET /api/household の拡張と、カテゴリ内訳 (主な取引) の取得経路, 名義ラベル表の追加 migration と表示名の取得・更新 API、名義ラベル編集 UI、既存画面の名義表示の参照先の一本化, カテゴリの詳細パネル・下部の選択中バー・明細画面への遷移 (月・カテゴリ・対象で絞る URL。期間は usePeriod / localStorage), docs への集計規則 (等式・欠損規則・6 区分の対応表・振替の対推定) の明記と回帰テスト
+- **対象外 (out)**: 『累計収支』の新設: 対応するデザイン画像が無いため今回は追加しない (利用者決定), 名義の内部値 (business / spouse / family) の変更と既存行の書き換え: 表示名の編集で目的を満たせるため行わない (利用者決定), 共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗) の作り直し: 既存実装をそのまま使う, 明細への相手口座カラムの追加: 振替の名義間は対推定で示す (利用者決定), スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ (既存の利用者決定)
 
 ## U8 制約 (constraints)
 
-- C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。集計・判定は core に置き api/web へ重複実装しない。
-- C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、ボタンは共通 Button (遷移は Link className=btn)、本文は PageShell。カテゴリの色も既存の系列パレットから当てる。
-- C3 データ: 取込データは外部送信しない。カテゴリ辞書・口座 3 分類の手がかりはコード内の固定表で持ち、外部 API を呼ばない。
-- C4 DB: 破壊的な行書き換え migration をしない。0043 は列と表の追加だけにし、既存の sub_vendors / sub_vendor_exclusions の行を保つ。
-- C5 数値: 画像の数値は閉じていない (一覧 8 行の月額合計 ¥9,778 に対し合計欄 ¥64,800) ため、画像は構成・文言・配置の正本、数値は core が算出する検算済み fixture を正本とする。
+- C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。集計は core に置き api/web へ重複実装しない。
+- C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、ボタンは共通 Button、ページは PageShell。グラフは既存の FinancialFigure と系列色の定義を使う。
+- C3 migration: D1 の migration は追加のみ (新表・新カラム) とし、行を書き換える migration は作らない。本番反映は既存の Deploy / Migrate の手順とゲートに従う。
+- C4 セキュリティ: /api/* の authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence の内側に置く。入力は zod で検証し、利用者が入力した表示名は React の既定エスケープで描画して HTML として解釈しない。取込データを外部へ送信しない。
+- C5 性能: 初期 JS 予算 (CI 実測) を超えない。家計画面は遅延読み込みのまま、カテゴリ内訳は選択時に取得する。
+- C6 数値の正本: 10-household.png の数値はモックアップであり、算術が閉じない欄は計算値へ置き換えてフィクスチャにする (利用者決定に従う)。
 
 ## U9 具体的にやりたいこと (concrete_intents)
 
 | ID | やりたいこと | 資するゴール |
 |---|---|---|
-| I1 | Subscriptions.tsx を、問いの見出し・KPI 5 枚・カバー率カード・一覧 (検索 / ステータス絞込 / 候補バッジ / 合計行)・カテゴリ別推移・年換算比較・右の詳細パネル・検出理由カード・下部の選択バーの構成に作り直し、選択中のサブスクを URL に保つ。 | G1, G2 |
-| I2 | 詳細パネルで正規化名とカテゴリを編集し、生の取引名を選んで『選択した N 件を統合』で既存ベンダーの aliases に加えられるようにする。 | G2, G5 |
-| I3 | core に見直し候補の判定関数と理由文テンプレートを置き、KPI・一覧・検出理由カード・サイドバーのバッジが同じ関数を使う。 | G3, G4 |
-| I4 | core に推定月額・前期間比・カテゴリ辞書・口座 3 分類とカバー率・カテゴリ別集計の純関数を置き、GET /subscriptions がそれを返す。 | G4 |
-| I5 | migration 0043 で sub_vendors に category を足し、登録済みベンダーの見直し候補への判断 (確認 / 除外) を保存する表を足して、既存の除外・見直し日時と一緒に扱う。 | G5 |
-| I6 | 旧 SubVendorsPanel / SubsCandidatesPanel / アラート / ベンダー別前年比較表を撤去し、その操作を詳細パネル・検出理由カード・ステータス絞込へ移したうえで、既存テストを新しい置き場所へ移す。 | G5 |
-| I7 | 検算済み fixture と見た目検査 (check-financial-visuals) を新しい構成へ更新し、ロゴ画像が無いことも検査する。 | G1, G4 |
+| I1 | Household.tsx を pages/household/ 配下へ分割し、問いの見出し・出典カード・KPI と前年差・推移チャート・事業と個人の等式・カテゴリ表と詳細パネル・名義別収入・振替除外・名義ラベル設定・前年との比較・下部の選択中バーの構成に作り直し、選択中の月とカテゴリとタブだけを URL に保つ。期間は `usePeriod` / localStorage を正本にする。 | G1, G3 |
+| I2 | 月別推移に家計全体 / 事業 / 個人のタブ、当期の収入・支出の棒、純収支の折れ線、前年の収入・支出の点線、月送り (< 2026年8月 >) を持たせ、月の選択を下部バーと同期する。 | G1 |
+| I3 | core に household-summary (仮称) を新設し、totalCashflowLedger の行集合から家計全体・事業・個人の総額と月別系列、前年比較、生活費 6 区分、名義別収入を 1 か所で算出する。旧 household() の独自定義は置き換える。 | G2 |
+| I4 | 生活費 6 区分 (住居費 / 食費 / 光熱費 / 教育費 / 交通費 / その他) と MF 大項目の対応表を core に 1 か所だけ置き、docs に同じ表を載せる。 | G2, G3 |
+| I5 | カテゴリ詳細の期間合計 `current`、選択月全件合計 `monthTotal`、最大 5 件の `transactions` プレビューを返す取得経路を設け、選択時にだけ取得する。カテゴリのすべて見るは明細画面を月・カテゴリ・対象で絞った URL で開く。 | G3 |
+| I6 | owner_labels 表と GET / PUT の表示名 API、名義ラベル編集ダイアログを作り、家計・設定・明細の名義表示を表示名の取得関数 1 つへ寄せる。 | G4 |
+| I7 | 振替の一覧と対推定を core の純関数にし、日付差の許容・同額・逆符号・一意性の規則を docs とテストで固定する。 | G5 |
+| I8 | routeMetadata の /household の名称を『家計収支』に改め、パンくず・figure-guides・glossary の記述を合わせる。 | G1 |
 
 ## 確定の接地根拠 (承認)
 
 > 上の `status` を確定たらしめている利用者承認の実体。承認範囲がここに現れない項目は、本章の確定内容ではない。
 
-### 承認: `appr-foundation-subscriptions-002`
+### 承認: `appr-foundation-household-cashflow-001`
 
-G5 と I5 の改訂を利用者が承認 (2026-09-18T06:51:17Z、AskUserQuestion で改訂前後の文面を preview で提示し『この文面で承認する』を選択)。改訂は『採用』を未登録候補 (sub_vendors 登録 / sub_vendor_exclusions) と登録済みベンダーの見直し候補 (確認 / 除外を migration 0043 の判断表へ) で書き分ける 2 か所だけで、ほかの U1-U9 は appr-foundation-subscriptions-001 の承認のまま変えない。basis=user-decision。
+家計収支画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/10-household.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択。同時に 家計の定義=totalCashflowLedger 正本 / 名義=内部値を残し表示名編集 (owner_labels) / 振替=名義間の対推定 / 画面名=家計収支へ改名 (累計収支は新設しない) / 数値の正本=収入・支出 (差は計算値) / カテゴリ=固定6区分 の 6 決定を承認。実測時刻 2026-09-18T11:25:37Z。basis=user-decision。
 
-#### この承認を名指ししている質疑: `qa-subs-database-web-006`
-
-**問**
-
-web のサブスク画面の database 要件のうち、agent が補完した設計判断は何か。
-
-**答**
-
-(1) migration 0043 は追加だけにする — sub_vendors に category TEXT NULL (NULL は既定辞書に従う) を ADD COLUMN し、sub_vendor_review_decisions (id, user_id, vendor_key, decision は confirmed / dismissed のいずれか (登録済みベンダーの見直し候補への判断だけを持つ。未登録候補の採用 / 除外は既存の sub_vendors / sub_vendor_exclusions に保存する), rule_fingerprint, decided_at、(user_id, vendor_key) 一意) を CREATE TABLE する。既存行は書き換えない。(2) 判断には判定時の規則の指紋を保存する。指紋は当たった規則の種類すべてを表示順に並べたものと判定時の基準金額から作り、月は含めない。指紋が同じなら月が変わっても判断を保ち、金額が変わるか新しい規則が加わったときだけ判断を無効にして未判断の候補へ戻す。(3) 統合は既存の aliases 配列への追加で表し、統合の取り消しは配列からの削除で表す。(4) 口座の種別は保存しない (口座名から毎回導出する)。(5) Drizzle の schema.ts を migration と同じ内容に更新し、ローカル D1 への適用で確かめる。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 既存 schema と過去の migration の書き方 (追加のみ・行の書き換えをしない) の読解にもとづく agent の設計判断。 qa-subs-database-web-003 の改訂版。 2026-09-18 の完成度評価 2 回目の差し戻しを受け、利用者決定 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 に合わせて agent が書き直した設計判断。 / 回答時刻: 2026-09-18T06:54:11Z)
-
-#### この承認を名指ししている質疑: `qa-subs-frontend-web-006`
+#### この承認を名指ししている質疑: `qa-household-target-platforms-001`
 
 **問**
 
-web のサブスク画面の frontend 要件のうち、agent が補完した設計判断は何か。
+家計収支画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。
 
 **答**
 
-(1) 画面は数値を再計算しない。KPI・一覧・合計行・カテゴリ別推移・年換算比較・候補の判定と理由文は API が返した値をそのまま描く。(2) 取得は 2 本に分ける。画面全体は GET /api/subscriptions (期間つき) の 1 本、詳細パネルは選んだベンダーについて GET /api/subscriptions/vendors/:key を選択後にだけ取得する (TanStack Query の依存クエリ)。(3) 変更 (統合・カテゴリ変更・未登録候補の採用 / 除外・見直し候補の確認 / 除外とその取消・四半期見直し) の成功後は、サブスク一覧・詳細・サイドバーのバッジ (reviewQueue) のクエリを無効化して揃える。(4) 部品は pages/subscriptions/ 配下に Kpis / CoverageCard / SubscriptionTable / DetailPanel / CategoryTrendChart / AnnualComparison / ReasonCard / SelectionBar として分け、照合画面の DetailPanel と SelectionActions の作りを踏襲する (共通化は 2 画面目の本サイクルでは行わず、同じ形を保つ)。(5) 旧 SubVendorsPanel / SubsCandidatesPanel は撤去し、その操作を DetailPanel の『関連データ』タブと ReasonCard へ移す。旧テストは新しい部品のテストへ移し替える。(6) 色はデザイントークンと既存の系列パレットだけを使い、カテゴリの色は固定順で割り当てる。 (7) 検出理由カードの『候補を採用』と詳細パネルの『候補として確認』は同じ confirmed を送る。未登録候補の行では、採用は登録、除外は除外の既存 API を呼ぶ。
+対象にしない。上位概念の範囲外 (scope.out) に『スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ』を置き、利用者が U1-U9 をこの内容で承認した (appr-foundation-household-cashflow-001)。狭い画面は既存 web のレスポンシブ規約 (2・3 カラムの縦積み、表の横スクロール) の中で扱う。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 既存の web の構成 (照合・推移・マトリックス画面の分割と取得の分け方) の読解にもとづく agent の設計判断。 qa-subs-frontend-web-003 の改訂版。 2026-09-18 の完成度評価 2 回目の差し戻しを受け、利用者決定 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 に合わせて agent が書き直した設計判断。 / 回答時刻: 2026-09-18T06:54:11Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / U1-U9 承認 (scope.out に web 以外を明記) / 回答時刻: 2026-09-18T11:25:37Z)
 
-#### この承認を名指ししている質疑: `qa-subs-uiux-web-006`
+#### この承認を名指ししている質疑: `qa-household-frontend-web-001`
 
 **問**
 
-web のサブスク画面の UI-UX 要件のうち、画像から一意に決まらず agent が補完した部分は何か。
+web の家計収支画面のフロントエンド構成 (ファイル分割・状態・取得・部品) をどう作るか。
 
 **答**
 
-(1) 縦の並びは画像どおり 見出し → KPI 5 枚 → カバー率 → 一覧と右の詳細パネル → 推移と検出理由 → 年換算比較 とし、task 頻度 × 失敗コストで最上位の『見直し候補がいくつあるか』を KPI 5 枚目と一覧の候補バッジの 2 か所で先に読ませる。(2) 詳細パネルは一覧で行を選んだときだけ開き、選択は URL (?vendor=<照合キー>) に保って再読込でも復元する。× で閉じると URL から消す。(3) 詳細パネルのタブは WAI-ARIA の tabs パターン (左右の矢印キーで移動、Tab でパネルへ) で作る。(4) ステータス絞込の選択肢は『すべてのステータス / 見直し候補 / 登録済み / 未登録の候補』とし、旧 UI の未登録候補パネルの役割を『未登録の候補』へ移す。確認済みにした見直し候補は一覧に残し、候補バッジを『確認済み』に変える (KPI の件数とサイドバーのバッジには数えない)。(5) 旧 UI の別名・対象科目の編集と四半期見直しは詳細パネルの『関連データ』タブへ、重複・急増アラートは検出理由カードへ移す。(6) ロゴの位置には何も置かず、ベンダー名の頭文字も描かない (画像取得をしないため、代替の図形で場所を取らない)。(7) KPI 2 枚目の補足は『売上に占める割合』と書く (利用者判断 qa-subs-kpi-caption-001)。(8) 読込中は各カードの骨格を保つ表示、データ 0 件は一覧の位置に空状態、取得失敗は PageState の error とする。色だけで区別させず、候補バッジと前期間比の増減には文字と記号を必ず併記する。
+Household.tsx を packages/web/src/pages/household/ へ分割する (画面の親、KPI と前年より、推移チャート、事業と個人の等式、カテゴリ表、カテゴリ詳細パネル、名義別収入、振替一覧、名義ラベル編集ダイアログ、前年との比較、下部バー)。選択中の対象 (seg)・月 (month)・区分 (cat) は useSearchParams で URL に保ち、期間は既存 usePeriod を使う。本体は TanStack Query で GET /api/household を 1 回取得し、カテゴリ詳細は cat と month が決まったときだけ GET /api/household/category を取得する (dependent query)。名義ラベルは GET / PUT /api/settings/owner-labels を useMutation で保存し、成功時に家計・設定・明細のクエリを無効化する。色は design-tokens のトークンだけ、ボタンは共通 Button、ページは PageShell / PageState、グラフは FinancialFigure と charts.ts の系列色。名義の表示は core の ownerLabel だけを通し、OWNER_LABEL の直参照を残さない。routeMetadata の /household の名称を『家計収支』へ改め、figure-guides と用語集を合わせる。ページは遅延読み込みのままにし、初期 JS 予算 (CI 実測) を超えない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 参照画像・既存の PageShell / PageState / KpiCard の使い方・既存画面 (照合 / 推移 / マトリックス) の選択と URL 保持の慣例からの agent の設計判断。(7) の文言は利用者判断 qa-subs-kpi-caption-001 に従う。 qa-subs-uiux-web-003 の改訂版。 2026-09-18 の完成度評価 2 回目の差し戻しを受け、利用者決定 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 に合わせて agent が書き直した設計判断。 / 回答時刻: 2026-09-18T06:54:11Z)
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-18T12:02:30Z` — answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。
+>   - 変更: `answered_at` `'2026-09-18T11:25:37Z'` → `'2026-09-18T11:36:56Z'` (フィールドは訂正後の値。旧値はこの行にのみ残る)
+> - `2026-09-18T12:02:30Z` — answered_at の訂正を記録した。本文の値は利用者の決定 001〜007 と承認の範囲に収まり、agent が補った値は含まない。
 
-#### この承認を名指ししている質疑: `qa-subs-security-web-006`
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答 / 回答時刻: 2026-09-18T11:36:56Z)
+
+#### この承認を名指ししている質疑: `qa-household-auth-web-001`
 
 **問**
 
-web のサブスク画面の security 要件のうち、agent が補完した設計判断は何か。
+家計収支画面と名義ラベルの API は、誰がどの条件で読み書きできるか。
 
 **答**
 
-(1) 新設 API の入力はすべて Zod で許可リスト検証する — vendorKey は長さ上限つきの文字列、aliases は 1〜50 件・各 1〜100 文字の配列、decision は confirmed / dismissed の列挙、category は既定辞書のカテゴリ名の列挙か 1〜20 文字の自由記述。(2) 取引名・ベンダー名は利用者が取り込んだ外部由来の文字列なので、画面では React のテキストとしてだけ描き、HTML として挿入しない。(3) カテゴリ辞書と口座の手がかりはコード内の固定表で持ち、判定のために外部へ問い合わせない。(4) 更新系は :id / :key を userId と組にして引き、見つからなければ 404 を返して他の利用者の存在を示さない。
+既存のログイン (セッション cookie) を変えず、家計の API (GET /api/household・GET /api/household/category) と名義ラベルの API (GET / PUT /api/settings/owner-labels) を /api/* の authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence の内側に置く。未認証は 401、一時パスワードのままは既存のフェンスで止める。データは利用者単位 (user_id) で閉じ、他の利用者の家計や表示名を読めない・書けない。名義ラベルの更新は利用者本人の表示設定であり、管理者専用の権限を新設しない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 既存の検証の書き方と OWASP ASVS の入力検証・出力エンコードの指針からの agent の設計判断。 qa-subs-security-web-003 の改訂版。 2026-09-18 の完成度評価 2 回目の差し戻しを受け、利用者決定 qa-subs-review-decision-002 と上位概念改訂 appr-foundation-subscriptions-002 に合わせて agent が書き直した設計判断。 / 回答時刻: 2026-09-18T06:54:11Z)
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-18T12:02:30Z` — answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。
+>   - 変更: `answered_at` `'2026-09-18T11:25:37Z'` → `'2026-09-18T11:36:56Z'` (フィールドは訂正後の値。旧値はこの行にのみ残る)
+> - `2026-09-18T12:02:30Z` — answered_at の訂正を記録した。本文の値は利用者の決定 001〜007 と承認の範囲に収まり、agent が補った値は含まない。
 
-- この承認を名指ししているが**現在どの決着済みセルからも参照されていない質疑**: `qa-subs-backend-web-006` — R4-reopen で差し替えられた旧版であり、接地根拠としては効いていない (本文と基準は spec-state.json の qa_log と reopen_log に残る)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答 / 回答時刻: 2026-09-18T11:36:56Z)
 
-### 承認: `appr-foundation-subscriptions-001`
-
-サブスク画面サイクルの上位概念 U1-U9 を利用者が承認 (2026-09-18T03:36:08Z)。提示した草案は scratchpad の foundation-subs.json と同文で、U1 本質的目的・U2 背景・G1-G5・O1-O5・S1-S5・SH1-SH2・scope in 7 / out 5・C1-C5・I1-I7 の全項目を提示した。画像 design/FINAL-UI/images/09-subscriptions.png を構成の正本とし、カテゴリ=既定辞書+利用者変更 / 見直し候補=決定論ルール+定型文 / カバー率=口座名で 3 分類+取込済み月の割合 / 保存=既存表の再利用+migration 0043 / 旧 UI=吸収して撤去 / 数値=検算済み fixture / KPI 月額=推定月額の和 の 7 決定を同時に承認。basis=user-decision。
-
-#### この承認を名指ししている質疑: `qa-subs-target-platforms-001`
+#### この承認を名指ししている質疑: `qa-household-infrastructure-web-001`
 
 **問**
 
-サブスク画面の作り直しで対象とするプラットフォームはどれか。web 以外 (スマートフォン / タブレット / Windows / Linux / macOS の専用アプリ) を範囲に含めるか。
+家計収支画面のために配信・実行・DB 反映の基盤をどう変えるか。
 
 **答**
 
-web のみを対象とする。承認した U1-U9 の scope.out に『web 以外のプラットフォーム』を明記しており、スマートフォン・タブレット・デスクトップの専用アプリは作らない。狭い画面でも web の画面をそのまま使う (本サイクルで狭幅専用の構成は作らない)。
+基盤は変えない。既存の Cloudflare Workers (Hono) と D1、静的資産の配信をそのまま使い、家計画面は既存と同じく遅延読み込みのルートとして配信する。集計は要求のたびに core の純関数で導出し、新しいキャッシュ層・キュー・外部サービスを足さない (Workers の CPU 時間の範囲内。期間は最大 3 年分の台帳)。owner_labels の migration は既存の Migrate ワークフロー (.github/workflows/migrate.yml) と Deploy ワークフローの手順とゲートで反映し、行を書き換えない追加のみなので巻き戻しは表の不使用で足りる。初期 JS 予算は CI の実測値で守る。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が 2026-09-18T03:36:08Z に承認した U1-U9 の scope.out (appr-foundation-subscriptions-001)。kanjo は web アプリとして運用されており、本サイクルでも変更しない。 / 回答時刻: 2026-09-18T03:36:08Z)
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-18T12:02:30Z` — answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。
+>   - 変更: `answered_at` `'2026-09-18T11:25:37Z'` → `'2026-09-18T11:36:56Z'` (フィールドは訂正後の値。旧値はこの行にのみ残る)
+> - `2026-09-18T12:02:30Z` — answered_at の訂正を記録した。本文の値は利用者の決定 001〜007 と承認の範囲に収まり、agent が補った値は含まない。
 
-#### この承認を名指ししている質疑: `qa-subs-auth-web-005`
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答 / 回答時刻: 2026-09-18T11:36:56Z)
+
+#### この承認を名指ししている質疑: `qa-household-ui-ux-web-004`
 
 **問**
 
-web のサブスク画面で単独利用者前提を継続する決定は、今サイクルのどの承認に遡れるか。
+web の家計収支画面 (/household) の UI-UX 要件は何か。画面の構成要素・文言・切替・選択・詳細パネル・名義ラベル編集・状態・アクセシビリティを 10-household.png のとおりに確定する。
 
 **答**
 
-今サイクルの上位概念承認 appr-foundation-subscriptions-001 (2026-09-18T03:36:08Z) で、利用者は SH1 を『利用者 (単独の個人事業主)』として承認した。役割分担や複数ユーザーの権限分離は scope.in に無く、本サイクルでも導入しない。認証の主体と保存の境界 (userId と組で引く) は account-login サイクル (system-spec/archive/2026-09-14-account-login/) の確定を変えない。
+上から (1) 問いの見出し『家計の総収入・総支出・純収支は、どう変わりましたか？』と説明文、右上に『データの出典』カード (代表の取込元と他 N 件・取込明細を確認)。(2) KPI 3 枚 (総収入・総支出・純収支と月平均・年換算) と『前年より』カード (純収支の前年差と決定論の一文)。(3) 月別の家計収支推移: 家計全体 / 事業 / 個人のタブ、凡例 5 系列 (収入・支出の当期の棒、純収支の折れ線、収入・支出の前年の点線)、月送り ‹ 2026年8月 ›、選択月の帯。下端に『事業と個人の内訳』と等式『家計全体 = 事業 + 個人』と重複なしの注記。(4) 左に生活費カテゴリ 6 区分の表 (当期・前年・増減額・構成比・合計)、右に『カテゴリの詳細』パネル (金額・前年比・主な取引 5 件・すべて見る・集計の説明と分類ルールへの導線、× で閉じる)。既定の選択の規則は qa-household-ui-ux-web-003 (agent 推定) を参照。(5) 名義別の収入 / 振替は収入・支出から除外 (名義間の対推定と相手不明) / 名義ラベルの設定 (編集ダイアログ。入力規則は qa-household-security-web-003 (agent 推定) を参照) の 3 カラム。(6) 前年との比較 3 枚と文章の要約。(7) 下部固定バー『選択中: 2026年8月 / 純収支 / 内訳の明細を確認』。読込・空・失敗、前年欠損の各状態を持つ。選択 (seg / month / cat) は URL に保つ。行と棒はキーボードで選べ、増減は符号と矢印を併記して色だけに頼らない。ナビとパンくずは『家計収支』。画像の算術が閉じない欄は計算値を正本にする。文言・数値・フィクスチャの正本は specs/spec-household-cashflow-screen.md。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: appr-foundation-subscriptions-001 の SH1 (利用者が承認した U1-U9 草案と同文)。qa-subs-auth-web-004 の継続決定の根拠をこの承認へ明示的に結び付ける。 / 回答時刻: 2026-09-18T03:36:08Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-ui-ux-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-ui-ux-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
+
+#### この承認を名指ししている質疑: `qa-household-backend-web-004`
+
+**問**
+
+家計の集計ロジックと API をどこに置き、どの契約で返すか。
+
+**答**
+
+家計の集計は core の新しい純関数 householdSummary (household-summary.ts) 1 か所に集め、入力は総収支画面と同じ totalCashflowLedger の行集合とする (利用者決定 qa-household-decision-001)。旧 household() と HouseholdData は置き換えて削除する。台帳行へ名義 (freee 行は business、MF 行は resolveTx の owner、未解決は unset) を追加する。1 回の呼び出しで家計全体・事業・個人の総額と月平均・年換算、前年同期間 (欠けた月があれば null)、月別系列と前年同月、生活費 6 区分 (対応表は core の定数 1 か所。qa-household-decision-007)、名義別収入、振替一覧と対推定 (同額・逆符号の入出金を組にする。qa-household-decision-003。日付の許容幅と同点の決め方は qa-household-backend-web-003 (agent 推定) を参照) を返す。数値は収入・支出を正本にし、差・率・構成比は計算値にする (qa-household-decision-006)。api は GET /api/household をこの形へ拡張し、選択時だけの GET /api/household/category (主な取引 5 件と区分の月合計) と GET / PUT /api/settings/owner-labels を設ける。期間は loadScoped、freee・判定・除外は loadCashflowSources で読み、クエリと本文は zod で検証する。不変条件 (総収支の総合と一致、事業 + 個人 = 家計全体、6 区分の和 = 総支出、名義別の和 = 総収入、振替は台帳に現れない) をテストで固定する。契約の正本は specs/spec-household-cashflow-screen.md §11-§12。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-backend-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-backend-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
+
+#### この承認を名指ししている質疑: `qa-household-database-web-004`
+
+**問**
+
+家計収支画面のために D1 のスキーマをどう変えるか。
+
+**答**
+
+名義の表示名を保存する owner_labels 表だけを追加する (追加のみの migration。次の空き番号は実装時に origin/main を fetch して確定する)。列は user_id・owner (CHECK で business / spouse / family / unset)・label (長さの上限を CHECK で守る。具体値は qa-household-database-web-003 (agent 推定) を参照)・updated_at、主キーは (user_id, owner)。行が無い名義は既定の表示名 (本人 / パートナー / 子ども / その他) を使い、初期データを投入しない。名義の内部値と既存表 (institution_owners・rules.owner・tx_edits.owner・tx_splits.owner) の行は 1 行も書き換えない (利用者決定 qa-household-decision-002)。家計の集計値は保存せず要求のたびに導出する。振替の対推定のために相手口座カラムを足さない (qa-household-decision-003)。runtimeSchemaGuard の必須表へ owner_labels を加える。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-database-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-database-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
+
+#### この承認を名指ししている質疑: `qa-household-security-web-004`
+
+**問**
+
+家計収支画面で新しく生じる入力・出力・外部送信のリスクにどう備えるか。
+
+**答**
+
+新しい入力は名義ラベルの表示名だけで、zod の許可リスト (長さ・使える文字・名義間の重複) で検証し (具体値は qa-household-security-web-003 (agent 推定) を参照)、違反は 400 とフィールド別のエラーを返す。D1 の CHECK 制約でも長さを守る。表示名は React の既定のエスケープで描画し、dangerouslySetInnerHTML を使わない。家計 API のクエリ (month・key・期間) も zod で enum と書式を検証し、期間外の月は 400。応答は利用者本人のデータだけで、明細の内容・取引先はこれまでどおり画面に出すが外部へ送信しない (取込データの外部送信なし)。振替の対推定は表示だけで、データを書き換えない。更新系は既存の canonicalMutationFence の内側に置く。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-security-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-security-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
+
+#### この承認を名指ししている質疑: `qa-household-maintenance-ops-web-004`
+
+**問**
+
+家計収支画面の品質をどう保ち、規則をどこに残すか。
+
+**答**
+
+core の単体テストで不変条件 (総収支の総合と toBe で一致、全月で事業 + 個人 = 家計全体、6 区分の和 = 総支出、名義別の和 = 総収入、前年欠損で null、振替は台帳に現れない、対推定の決定論) を固定し、specs/spec-household-cashflow-screen.md のフィクスチャ (計算値を含む) で画面再現を DOM テストする。API 統合テストで未認証 401・フェンス違反・表示名の 400 (入力規則の境界。具体値は qa-household-maintenance-ops-web-003 (agent 推定) を参照)・正常更新 200 と再取得を確かめ、migration が既存行を書き換えないことを検査する。集計規則 (等式・欠損規則・6 区分の対応表・振替の対推定) は docs/data-schema.md に明記する。既存の総収支・推移・マトリックス・分析ハブの数値テストが緑のまま、pnpm lint (直書き色の検査を含む)・typecheck・初期 JS 予算を CI で通す。旧 household() の参照が残らないことを検索で確かめる。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-maintenance-ops-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-maintenance-ops-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
+
+- この承認を名指ししているが**現在どの決着済みセルからも参照されていない質疑**: `qa-household-ui-ux-web-001`, `qa-household-backend-web-001`, `qa-household-database-web-001`, `qa-household-security-web-001`, `qa-household-maintenance-ops-web-001` — R4-reopen で差し替えられた旧版であり、接地根拠としては効いていない (本文と基準は spec-state.json の qa_log と reopen_log に残る)
 
 ## 意思決定支援 (decisions)
 
 | ID | 論点 | 状態 | 選択肢 (費用・適合・注意点) | AI推奨 | ユーザー決定 | 資するゴール |
 |---|---|---|---|---|---|---|
-| dec-subs-category | サブスクのカテゴリ (エンタメ / クラウド / 仕事効率化 など) をどう決めるか。 | confirmed | opt-dict-plus-override:core の既定辞書 (正規化名→カテゴリ、当たらなければ『その他』) + 利用者の変更を sub_vendors.category に保存 / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '辞書は core の固定表、上書きは既存表への列追加だけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=G1 のカテゴリ列・カテゴリ別推移・年換算比較と G4 の集計を、取込直後から辞書で埋められる。辞書が外れても利用者が詳細パネルで直せば以後は上書きが勝つ。 / pros=取込直後からカテゴリが埋まる, 判定が決定論でテストに固定できる, 利用者の判断が最終的に勝つ / cons=辞書に無いサービスは『その他』に落ちる, 辞書の保守が要る / risks=表記ゆれで辞書に当たらない。照合前に NFKC 正規化と vendorKey を通す必要がある / lock-in=なし。辞書と上書き列だけで、外部仕様に依存しない。 / ops=辞書への追記はコード変更 1 か所とテスト 1 件。 / evidence=https://unicode.org/reports/tr15/<br>opt-manual-only:辞書を持たず、利用者が全ベンダーに手でカテゴリを付ける / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '列追加だけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=付けるまでカテゴリ列・カテゴリ別推移が全て『未分類』になり、G1 の画面が初回に成立しない。 / pros=実装が最小, 誤分類が起きない / cons=初回は全件未分類で画面の半分が空く, 利用者の作業量が件数に比例する / risks=面倒で放置され、カテゴリ別の比較が常に使えない状態になる / lock-in=なし。 / ops=運用作業は利用者の手入力のみ。 / evidence=https://unicode.org/reports/tr15/<br>opt-workers-ai:Workers AI でサービス名からカテゴリを推定し、結果を保存 / cost={'category': 'low-cost', 'amount': 0.011, 'currency': 'USD', 'billing_period': 'per-1000-neurons', 'tco': 'Workers AI は 1 日 10,000 Neurons まで無料で、超過分は 1,000 Neurons あたり $0.011。個人利用の件数なら無料枠に収まる見込みだが、呼び出し経路・失敗時の扱い・結果の保存が増える。'} / free=1 日 10,000 Neurons まで無料。超過は 1,000 Neurons あたり $0.011。 / fit=未知のサービスにもカテゴリを付けられるが、判定が非決定論で、テストで固定できない。 / pros=未知のサービスにも対応できる / cons=非決定論でテストに固定できない, 呼び出しの失敗時と費用の管理が増える / risks=取込データの送信が前提と衝突する, 同じ名前でも結果が揺れる / lock-in=Workers AI のモデルと料金体系に依存する。 / ops=モデル更新ごとの確認と、無料枠の監視が要る。 / evidence=https://developers.cloudflare.com/workers-ai/platform/pricing/ | opt-dict-plus-override — 取込直後から画面が埋まり、判定を決定論のままテストに固定でき、取込データを外へ出さずに済む。辞書の外れは利用者の上書きで吸収できる。 (注意: 辞書の照合は vendorKey (NFKC 正規化後) の結果で行い、生の取引名で行わない, 上書き済みの category は辞書より優先し、辞書の更新で上書きを消さない, 『その他』は辞書の欠落を示すので、件数を画面で読めるようにする; confidence=high; checked=2026-09-18T03:40:35Z) | opt-dict-plus-override @ 2026-09-18T03:05:24Z | G1, G4, G5 |
-| dec-subs-review-candidate | 『見直し候補』を何で判定し、検出理由の文をどう作るか。 | confirmed | opt-rules-template:決定論ルール (同カテゴリ内の重複 / 金額の急増 / 直近の値上げ / 四半期見直しの期限切れ など) + 定型文に金額・件数・月数を差し込む / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': 'core の純関数とテンプレートだけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=KPI の件数・一覧の候補バッジ・検出理由カード・サイドバーのバッジを同じ関数で出せ、G3 の『同じ結果を出す』を構造で満たす。 / pros=同じ入力で必ず同じ結果, 境界値をテストで固定できる, 理由の根拠 (どの規則か) を画面で示せる / cons=規則に無いパターンは検出できない, 文が定型的になる / risks=閾値が実データに合わず候補が多すぎる / 少なすぎる / lock-in=なし。 / ops=閾値の変更はコード 1 か所とテスト。 / evidence=https://vitest.dev/api/expect.html<br>opt-ai-reason:Workers AI に支払い履歴を渡し、見直し候補と理由文を生成 / cost={'category': 'low-cost', 'amount': 0.011, 'currency': 'USD', 'billing_period': 'per-1000-neurons', 'tco': 'Workers AI は 1 日 10,000 Neurons まで無料で、超過分は 1,000 Neurons あたり $0.011。個人利用の件数なら無料枠に収まる見込みだが、呼び出し経路・失敗時の扱い・結果の保存が増える。'} / free=1 日 10,000 Neurons まで無料。超過は 1,000 Neurons あたり $0.011。 / fit=文は自然になるが、KPI・バッジ・カードの件数を同じ結果に揃える保証が無く G3 を満たしにくい。 / pros=規則外のパターンも拾える可能性がある / cons=非決定論でテストに固定できない, 件数の一致を保証できない / risks=根拠の無い理由文を事実のように表示する, 取込データの送信が前提と衝突する / lock-in=Workers AI に依存する。 / ops=生成結果の監視と費用の監視が要る。 / evidence=https://developers.cloudflare.com/workers-ai/platform/pricing/ | opt-rules-template — 件数の一致と再現性が G3 の要件そのものであり、決定論ルールでしか構造的に保証できない。理由文は判定した規則と数値から作るため、根拠の無い文にならない。 (注意: 規則と閾値・文テンプレートを docs に明記し、各規則の境界値テストを置く, 1 ベンダーが複数の規則に当たるときの表示順 (優先順位) を決めておく, 『候補から除外』した判断は以後の判定から外し、判定そのものは変えない; confidence=high; checked=2026-09-18T03:40:35Z) | opt-rules-template @ 2026-09-18T03:05:24Z | G3, G4 |
-| dec-subs-coverage | 『データソースのカバー率』の 銀行口座 / クレジットカード / 電子マネー をどう分類し、% と (分子/分母) を何で定義するか。 | confirmed | opt-account-name-3way:口座名の手がかりで 3 分類 (paymentMethodOf を拡張)。(分子/分母) = 最新月まで取込済みの口座数 / 口座数、% = 期間の (口座×月) のうち取引がある割合 / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': 'core の固定表の拡張だけで追加費用なし。保存も増えない。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=取込済みのデータだけで画像の 3 区分と 2 種の数値を出せ、利用者の追加入力なしに G1 のカードが成立する。 / pros=追加の入力も保存も要らない, 既存の paymentMethodOf の延長で一貫する, % と (分子/分母) が別の問いに答える / cons=口座名に手がかりが無い口座は分類できない, 電子マネーの語彙を新たに持つ必要がある / risks=分類できない口座が多いと 3 区分の合計が口座数に届かない。『分類できない』を数える必要がある / lock-in=なし。 / ops=語彙の追記はコード 1 か所とテスト。 / evidence=https://unicode.org/reports/tr15/<br>opt-user-typed-accounts:口座ごとに種別を利用者が登録する表を新設する / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '表 1 つの追加で追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=分類は正確になるが、登録するまでカードが空く。本サイクルの範囲外の口座設定画面も要る。 / pros=分類が正確 / cons=口座設定の画面と API が新たに要る, 初回はカードが空く / risks=登録漏れの口座が黙って分母から落ちる / lock-in=なし。 / ops=口座の追加ごとに登録作業が要る。 / evidence=https://developers.cloudflare.com/d1/reference/migrations/<br>opt-two-way-only:既存の paymentMethodOf のまま カード / それ以外 の 2 区分で出す / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '変更なしで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=画像の 3 区分 (電子マネーが独立) を満たさず G1 と食い違う。 / pros=実装が最小 / cons=画像の構成と一致しない, 電子マネーの取込漏れに気づけない / risks=画像と異なる画面を正として固定してしまう / lock-in=なし。 / ops=なし。 / evidence=https://unicode.org/reports/tr15/ | opt-account-name-3way — 取込済みのデータだけで画像の 3 区分と 2 種の数値を出せる唯一の案で、利用者の追加作業も保存の追加も要らない。 (注意: 口座名の照合も NFKC 正規化後に行う, どの区分にも当たらない口座を別に数え、黙って落とさない, 口座×月の % は表示期間の月だけを数え、口座が取込を始める前の月を分母に入れるかを docs に明記する; confidence=high; checked=2026-09-18T03:40:35Z) | opt-account-name-3way @ 2026-09-18T03:05:24Z | G1, G4 |
-| dec-subs-persistence | 名称の統合・候補の採用 / 除外・カテゴリ・見直し判断をどこに保存するか。 | confirmed | opt-reuse-extend:既存表を再利用して拡張 — 統合=既存ベンダーの aliases 追加、採用=sub_vendors 登録、除外=sub_vendor_exclusions、category と見直し判断は migration 0043 で追加 / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': 'D1 の列と表の追加だけで追加費用なし。'} / free=D1 の無料枠と既存の Workers Paid の範囲内 / fit=既存の照合 (matchSubVendor) と候補除外がそのまま新しい操作の保存先になり、G5 の『旧機能を失わない』と両立する。 / pros=既存データがそのまま生きる, 照合ロジックを作り直さない, migration が追加だけで済む / cons=aliases が JSON 文字列のため、統合の取り消しは配列からの削除になる / risks=統合の取り消し手順が無いと誤統合を戻せない / lock-in=なし。 / ops=migration 1 本と API の追加。 / evidence=https://developers.cloudflare.com/d1/reference/migrations/, https://tanstack.com/query/v5/docs/framework/react/guides/invalidations-from-mutations<br>opt-new-merge-table:統合・判断を記録する専用の表群を新設し、既存表と並べて持つ / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '表の追加だけで追加費用なし。'} / free=D1 の無料枠の範囲内 / fit=履歴は細かく残るが、照合時に既存の aliases と新しい表の 2 か所を読む二重実装になる。 / pros=操作の履歴を細かく残せる / cons=照合が 2 か所に分かれる, 既存データの移行か併用の規則が要る / risks=どちらの記録が正かで食い違う / lock-in=なし。 / ops=表と照合の保守が 2 系統になる。 / evidence=https://developers.cloudflare.com/d1/reference/migrations/ | opt-reuse-extend — 既存の照合と除外が既に正しく動いており、その保存先を延長するのが G5 の『失わない』を最も確実に満たす。追加は列と表だけで、行の書き換えを伴わない。 (注意: 0043 は ADD COLUMN と CREATE TABLE だけにし、既存行を書き換えない, 統合の取り消し (aliases からの削除) を API で用意する, 保存後は一覧・候補・サイドバーのバッジの取得を無効化して揃える; confidence=high; checked=2026-09-18T03:40:35Z) | opt-reuse-extend @ 2026-09-18T03:05:24Z | G2, G5 |
-| dec-subs-legacy-ui | 画像に無い既存の機能 (登録ベンダーの別名・対象科目の編集、四半期見直し、重複・急増アラート、ベンダー別前年比較表、未登録候補パネル) をどう扱うか。 | confirmed | opt-absorb-and-remove:画像の部品 (詳細パネル・候補バッジ・検出理由カード・ステータス絞込) へ吸収し、旧 UI は撤去する / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '画面の組み替えだけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=画面が画像どおりになり (G1)、旧機能の操作は詳細パネルと検出理由へ移って失われない (G5)。 / pros=画面が画像と一致する, 同じ操作の入口が 1 つになる / cons=移設先の設計とテストの移し替えが要る / risks=移し忘れた操作が黙って消える。旧テストを新しい置き場所へ移して欠落 0 を確かめる必要がある / lock-in=なし。 / ops=テストの移設 1 回。 / evidence=https://www.w3.org/WAI/ARIA/apg/patterns/tabs/<br>opt-keep-below:旧 UI を画像の構成の下にそのまま残す / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=旧機能は確実に残るが、画面が画像と一致せず、同じ操作の入口が 2 つになる。 / pros=移設の手間が無い / cons=画像と一致しない, 同じ操作が 2 か所にあり食い違う / risks=片方だけ直して挙動が分かれる / lock-in=なし。 / ops=2 系統の UI の保守が続く。 / evidence=https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ | opt-absorb-and-remove — 画像を正本とする今サイクルの目的と、旧機能を失わない制約の両方を満たすのは吸収して撤去する案だけである。 (注意: 撤去前に旧 UI の操作を一覧化し、移設先を 1 対 1 で決める, 旧テスト (SubVendors.dom.test.tsx・subs-review.dom.test.tsx) を新しい置き場所へ移し、機能の欠落を 0 件にする, 詳細パネルのタブは WAI-ARIA の tabs パターン (矢印キー移動) で作る; confidence=high; checked=2026-09-18T03:40:35Z) | opt-absorb-and-remove @ 2026-09-18T03:33:42Z | G1, G2, G5 |
-| dec-subs-fixture-authority | 画像の数値 (一覧 8 行の月額の和 ¥9,778 に対し合計欄 ¥64,800 など、閉じていない) をテストの期待値にどう使うか。 | confirmed | opt-layout-from-image-numbers-from-fixture:画像は構成・文言・配置の正本、数値は core が算出する検算済み fixture を正本とする / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': 'fixture の作成だけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=合計行 = 行の和、カテゴリ別合計 = 一覧合計 という G4 の一致条件を満たしたまま、画面は画像どおりに作れる。 / pros=数値の一致をテストで保証できる, 画像の構成はそのまま再現できる / cons=画像と数値が一致しないスクリーンショットになる / risks=画像の値を写したテストが混ざると合計が閉じない / lock-in=なし。 / ops=fixture の検算を 1 回行い、以後はテストで固定。 / evidence=https://vitest.dev/api/expect.html<br>opt-copy-image-numbers:画像の数値をそのまま期待値にする / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=画像の見た目とは一致するが、合計欄が行の和と一致しないため G4 の一致条件と矛盾する。 / pros=画像との見た目の一致が最大 / cons=合計が閉じない表を正とすることになる / risks=計算の正しい実装がテストで失敗する / lock-in=なし。 / ops=なし。 / evidence=https://vitest.dev/api/expect.html | opt-layout-from-image-numbers-from-fixture — 画像の合計欄が閉じていない以上、画像の数値を正とすると正しい実装がテストで落ちる。構成は画像、数値は検算済み fixture と役割を分けるしかない。 (注意: fixture の検算結果 (行の和・列の和・合計欄) を仕様書に記録する, 金額の比較は整数 (円) で行い、構成比などの割合は小数の許容幅を明示する; confidence=high; checked=2026-09-18T03:40:35Z) | opt-layout-from-image-numbers-from-fixture @ 2026-09-18T03:33:42Z | G1, G4 |
-| dec-subs-kpi-definition | KPI『月額のサブスク合計』『年換算の合計』と前期間比を何で定義するか。 | confirmed | opt-sum-of-estimated-monthly:月額 = 最新月時点で継続中の各ベンダーの推定月額の和 (年額払いは 12 等分)。年換算 = 月額 ×12。前期間比 = 直前の同じ長さの期間の同じ定義の値との差 / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': 'core の純関数だけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=一覧の『月額の推定』列の合計と KPI が同じ定義になり、合計行・カテゴリ別比較・KPI が一致する (G4)。 / pros=一覧・比較表・KPI が同じ定義で閉じる, 年額払いが月額を跳ねさせない / cons=推定 (継続中の判定・年額払いの判定) の規則が要る / risks=継続中の判定を誤ると解約済みが月額に残る / lock-in=なし。 / ops=判定規則のテスト固定だけ。 / evidence=https://vitest.dev/api/expect.html<br>opt-latest-month-actual:月額 = 最新月の実支払額 (現行の KPI) / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '変更なしで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間の範囲内) / fit=年額払いがある月だけ跳ね、一覧の『月額の推定』列の合計と KPI が一致しない。 / pros=実績そのもので説明が要らない / cons=年額払いの月に大きく振れる, 一覧の合計と一致しない / risks=前期間比が年額払いの有無で符号ごと変わる / lock-in=なし。 / ops=なし。 / evidence=https://vitest.dev/api/expect.html | opt-sum-of-estimated-monthly — 一覧の列・比較表・KPI を同じ定義で閉じられるのは推定月額の和だけで、年額払いによる月ごとの振れも除ける。 (注意: 『継続中』の判定規則 (直近何か月に支払いがあるか) を docs とテストで固定する, 直近 12 か月の支払額は実支払の和のまま残し、推定と実績を別の KPI として並べる; confidence=high; checked=2026-09-18T03:40:35Z) | opt-sum-of-estimated-monthly @ 2026-09-18T03:33:42Z | G1, G4 |
+| dec-household-categories | 生活費の区分をどう作るか。画像の固定 6 区分へ寄せるか、金額上位 5 大項目とその他にするか。 | confirmed | opt-fixed-six:固定 6 区分へ寄せる / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '大項目から 6 区分への対応表を core に 1 か所置くだけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=G1 の画像の表と一致し、G3 の詳細パネルで区分の意味が期間をまたいで一定になる。 / pros=前年との比較で区分が入れ替わらない, 画像の表と一致する / cons=対応表に無い大項目は『その他』に入る / risks=対応表の漏れで『その他』が膨らむ。境界テストで確かめる必要がある / lock-in=なし。 / ops=対応表とテストの保守。 / evidence=https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html, https://vitest.dev/api/expect.html<br>opt-top5-plus-other:金額上位 5 大項目 + その他 / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '集計時に並べ替えるだけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=データに追随するが、期間ごとに区分が変わり前年との比較が崩れる。画像とも一致しない。 / pros=対応表の保守が要らない / cons=当期と前年で並ぶ区分が異なり得る / risks=増減額の比較が成立しない行が出る / lock-in=なし。 / ops=保守は小さいが説明が難しい。 / evidence=https://vitest.dev/api/expect.html | opt-fixed-six — 前年との比較は区分が一定でないと成り立たず、画像の表も固定 6 区分である。 (注意: 事業側の支出は『その他』に入ることを境界テストで固定する; confidence=high; checked=2026-09-18T11:23:19Z) | opt-fixed-six @ 2026-09-18T11:25:32Z | G1, G3 |
+| dec-household-figure-source | 画像の数値が算術で閉じない欄をどう扱うか。収入・支出を正本に差を計算するか、画像の純収支を正本にして前年の総支出を調整するか。 | confirmed | opt-compute-from-income-expense:収入・支出を正本に差を計算する (−¥80,000) / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '計算で出すだけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=G2 の『数字は台帳の行から作る』と一致し、どの欄も算術で閉じる。見た目の数値は一部画像と変わる。 / pros=全欄が算術で閉じる, テストで数値を検算できる / cons=画像の純収支 +¥120,000 と表示が変わる / risks=画像との差を不具合と誤解される。仕様書に差の理由を残す必要がある / lock-in=なし。 / ops=フィクスチャの期待値を計算値で持つ。 / evidence=https://vitest.dev/api/expect.html<br>opt-image-net-as-source:純収支 +¥120,000 を正本にし前年の総支出を 5,164,000 に調整する / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': 'フィクスチャの調整だけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=画像の見た目には一致するが、前年の値を画像に合わせて作ることになり、台帳から作るという G2 に反する。 / pros=画像と数値が一致する / cons=前年の総支出を実データと無関係に決めることになる / risks=調整した値がほかの欄 (前年比・構成比) とさらに食い違う / lock-in=なし。 / ops=調整の理由を別途保守する必要がある。 / evidence=https://vitest.dev/api/expect.html | opt-compute-from-income-expense — 画像の値を合わせるために入力を作ると、台帳から作るという原則が崩れる。計算値を正本にすれば全欄が検算できる。 (注意: 画像と異なる欄は仕様書の『画像の算術が閉じない欄』に理由とともに列挙する; confidence=high; checked=2026-09-18T11:23:19Z) | opt-compute-from-income-expense @ 2026-09-18T11:25:32Z | G1, G2 |
+| dec-household-ledger-source | 家計収支の数字を何から作るか。総収支画面の台帳を正本にするか、現行の household() を拡張するか。 | confirmed | opt-ledger-source:総収支の台帳を正本にする / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': 'core の純関数を 1 つ置き換えるだけで追加費用なし。旧 household() と HouseholdData の削除で保守対象が減る。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=G2 の『家計の集計を 1 か所に集め、総収支と同じ行から作る』に直接答える。総収支の総合と家計全体が同じ行集合から出るため、両画面の数字が一致する。 / pros=総収支と家計の数字が構造的に一致する, 事業入金・事業立替の独自定義が消え、説明が 1 通りになる / cons=旧 household() を使う箇所の書き換えが要る / risks=台帳の変更が家計にも波及するため、総収支側の回帰テストが家計の回帰も兼ねる必要がある / lock-in=なし。純関数の差し替えで戻せる。 / ops=一致を検査する単体テストを 1 本足すだけ。 / evidence=https://vitest.dev/api/expect.html, https://developers.cloudflare.com/workers/platform/limits/<br>opt-extend-household:現行 household() を拡張する / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '既存関数へ欄を足すだけで追加費用なし。ただし集計規則が 2 系統のまま残る。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=画像の欄は埋められるが、家計全体と総収支の総合が別の規則で計算されるため、G2 の『1 か所に集める』に反する。 / pros=変更量が小さい, 既存の画面を壊しにくい / cons=総収支と家計で同じ期間の数字が食い違い得る, 事業入金を家計に含める独自定義が残る / risks=利用者が 2 画面の差を不具合と受け取り、どちらを信じるか判断できなくなる / lock-in=なし。 / ops=2 系統の規則を並行して保守し続ける必要がある。 / evidence=https://vitest.dev/api/expect.html | opt-ledger-source — G2 は集計の一本化そのものを目的にしており、拡張案では 2 系統が残る。一致を toBe で検査できるのは台帳を正本にしたときだけである。 (注意: 旧 household() の参照が残っていないことを検索で確かめる, 総収支側の変更時に家計のテストも走るようにする; confidence=high; checked=2026-09-18T11:19:20Z) | opt-ledger-source @ 2026-09-18T11:20:19Z | G2, G1 |
+| dec-household-nav-name | ナビの名称をどうするか。/household を『家計収支』へ改名するか、改名に加えて累計収支を新設するか。 | confirmed | opt-rename-household:/household を『家計収支』に改名する / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': 'ナビとパンくずの文言変更だけで追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=G1 の『10-household.png どおりの画面にする』に合わせ、画像の見出しと一致する。 / pros=URL を変えないためブックマークが壊れない, 変更が文言に閉じる / cons=旧名称に慣れた利用者が一時的に迷う / risks=テストが旧名称を固定していると落ちる。文言の検索で洗い出す必要がある / lock-in=なし。 / ops=文言の一括確認だけ。 / evidence=https://reactrouter.com/api/hooks/useSearchParams<br>opt-rename-and-cumulative:改名し累計収支も新設する / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '新しい画面・API の実装が要る。費用はかからないが作業量が大きい。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=画像に累計収支の画面は無く、G1 の範囲を超える。 / pros=累計の推移を別画面で見られる / cons=画像に無い画面を作ることになる, 初期 JS 予算を圧迫する / risks=範囲が膨らみ家計収支画面の完成が遅れる / lock-in=なし。 / ops=新画面の保守が増える。 / evidence=https://reactrouter.com/api/hooks/useSearchParams | opt-rename-household — 画像を正解とする方針で、累計収支は画像に無い。改名だけで G1 を満たせる。 (注意: ナビ・パンくず・ページタイトルの 3 か所を揃える; confidence=high; checked=2026-09-18T11:19:20Z) | opt-rename-household @ 2026-09-18T11:20:19Z | G1 |
+| dec-household-owner-model | 名義を『本人 / パートナー / 子ども / その他』で扱うとき、内部値を移行するか、内部値を残して表示名だけを編集可能にするか。 | confirmed | opt-owner-display-label:内部値は残し表示名を編集可能にする / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': 'owner_labels 表を追加のみの migration で足すだけで追加費用なし。既存行の書き換えが無い。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=G4 の表示名の要件を満たし、既存の business / spouse / family / unset を使う規則・明細を壊さない。 / pros=既存行を 1 行も書き換えない, 巻き戻しは表を使わないだけで済む / cons=内部値と表示名の対応を 1 か所 (core の ownerLabel) で管理する必要がある / risks=OWNER_LABEL の直参照が残ると表示名が画面によって食い違う / lock-in=なし。 / ops=既定の表示名の補完と検証のテストを保守する。 / evidence=https://developers.cloudflare.com/d1/reference/migrations/, https://github.com/OWASP/ASVS/blob/master/README.md<br>opt-owner-migrate:内部値を self/partner/child/other へ移行する / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '費用はかからないが、4 表の CHECK 制約と既存行を書き換える migration が要る。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=表示と内部値が揃い読みやすいが、G4 の要件以上の変更になる。 / pros=内部値と表示名が一致する / cons=institution_owners・rules・tx_edits・tx_splits の行書き換えが要る / risks=行を書き換える migration で Deploy が止まった過去がある (復旧に manifest→Migrate→Deploy の再実行が要った) / lock-in=なし。 / ops=移行時の検証と巻き戻し手順の準備が要る。 / evidence=https://developers.cloudflare.com/d1/reference/migrations/ | opt-owner-display-label — G4 は表示名の扱いを求めており、内部値の移行は要件を超える。行の書き換えを伴う migration は Deploy 停止の前例があり、追加のみの方が安全である。 (注意: 名義の表示は core の ownerLabel だけを通す, 表示名は 1〜20 文字・制御文字不可・重複不可で検証する; confidence=high; checked=2026-09-18T11:19:20Z) | opt-owner-display-label @ 2026-09-18T11:20:19Z | G4 |
+| dec-household-transfer-pairs | 振替の欄で名義間の移動を見せるか。入出金の対を推定して表示するか、名義間の欄を出さないか。 | confirmed | opt-transfer-pair-estimate:入出金の対を推定して表示する / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '表示時に純関数で対を組むだけで追加費用なし。データは書き換えない。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=G5 の『振替を家計の収入・支出から除外していることを確かめられる』に、どこからどこへ動いたかまで見せて答える。 / pros=画像の振替欄を再現できる, 相手不明を明示でき、除外の理由が読める / cons=推定の規則 (日付の許容幅・同点の決め方) を決めて保守する必要がある / risks=推定が誤ると名義間の移動を誤って示す。相手不明として出す逃げ道が要る / lock-in=なし。 / ops=境界の単体テストで規則を固定する。 / evidence=https://vitest.dev/api/expect.html, https://developers.cloudflare.com/workers/platform/limits/<br>opt-transfer-no-pairs:名義間の欄は出さない / cost={'category': 'free', 'amount': 0, 'currency': 'JPY', 'billing_period': 'none', 'tco': '実装が最小で追加費用なし。'} / free=外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内) / fit=除外した合計額は示せるが、どの名義間の移動かが分からず G5 の確認が弱くなる。 / pros=推定の誤りが起きない / cons=画像の振替欄と一致しない / risks=利用者が除外の妥当性を確かめられない / lock-in=なし。 / ops=保守対象が増えない。 / evidence=https://vitest.dev/api/expect.html | opt-transfer-pair-estimate — G5 は除外を利用者が確かめられることを求めており、対が見えないと確かめる手段が無い。表示だけの推定なので誤ってもデータは壊れない。 (注意: 対にならない振替は『相手不明』として出す, 推定の許容幅と同点の決め方は名前付き定数とテストで固定する; confidence=high; checked=2026-09-18T11:19:20Z) | opt-transfer-pair-estimate @ 2026-09-18T11:20:19Z | G5 |

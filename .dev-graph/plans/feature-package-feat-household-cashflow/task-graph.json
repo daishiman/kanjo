@@ -1,0 +1,148 @@
+{
+  "feature_package_id": "feature-package/feat-household-cashflow",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と持ち越し 4 件の着手時整理"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P01"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P02",
+      "title": "household-summary 純関数・3 経路 API・owner_labels・URL 単一真実のワークストリーム設計決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P02"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P03",
+      "title": "集計契約・API 契約・名義表示名契約・URL 契約の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P03"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P04",
+      "title": "core 不変条件・API 契約・migration・DOM の失敗テスト先行作成 (持ち越し 4 件を契約テストで固定)"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P04"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P05",
+      "title": "household-summary 純関数・3 経路 API・owner_labels・家計収支画面・旧参照除去の最終実装"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P05"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P06",
+      "title": "全テストと型検査と lint の実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P06"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P07",
+      "title": "受入基準 S1 から S6 の検証"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P07"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P08",
+      "lifecycle_role": "audit",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P08",
+      "title": "重複・旧参照の読取専用監査"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P08"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・入力検証・変更系フェンス・JS バンドル予算の保証確認"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P09"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P10"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P11"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P12",
+      "title": "集計規則・6 区分の対応表・振替の対推定・名義表示名の docs 最終同期"
+    },
+    {
+      "depends_on": [
+        "SYS-HOUSEHOLD-P12"
+      ],
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "id": "SYS-HOUSEHOLD-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-household-cashflow",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信と migration 適用とクローズアウト"
+    }
+  ],
+  "parent_feature": "feat-household-cashflow",
+  "schema_version": "1.0.0"
+}

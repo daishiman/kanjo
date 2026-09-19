@@ -18,7 +18,8 @@ import type {
   DiagnosisData,
   DiagnosticPayload,
   FreeeCoverage,
-  HouseholdData,
+  HouseholdCategoryDetail,
+  HouseholdSummary,
   MatrixData,
   OverviewData,
   ProfitAndLoss,
@@ -44,8 +45,8 @@ import {
   type Owner as CoreOwner,
   DIAGNOSIS_ACTION_STATUSES,
   type ImprovementStatus,
-  OWNER_LABEL,
   OWNER_VALUES,
+  type OwnerLabels,
   PAYMENT_METHOD_LABEL,
   PAYMENT_METHOD_VALUES,
   type PaymentMethod,
@@ -106,6 +107,14 @@ export interface PeriodMeta {
 
 /** GET /api/analysis/hub の応答。集計本体は core、期間は全分析 API 共通形を使う。 */
 export type AnalysisHubResponse = AnalysisHubReport & { period: PeriodMeta };
+
+/**
+ * GET /api/household の応答 (spec §11.1)。集計本体は core の householdSummary。
+ * 期間内で集計対象になった台帳行が 0 件なら empty=true で、数値の欄を持たない (0 と区別する)。
+ */
+export type HouseholdResponse =
+  | (HouseholdSummary & { empty: false; period: PeriodMeta; updatedAt: string | null })
+  | { empty: true; labels: OwnerLabels; period: PeriodMeta; updatedAt: string | null };
 
 /** 防衛ラインの実績判定に、先行き見通し(事前警告)を足したもの */
 export interface DefenseLineWithForecast extends DefenseLine {
@@ -563,8 +572,8 @@ export interface ClassificationResponse {
   edits: EditListRow[];
 }
 
-export { OWNER_LABEL };
-export const ownerLabel = (o: Owner | null | undefined): string => OWNER_LABEL[o ?? 'unset'];
+/** 名義の表示名は core の ownerLabel 1 か所から引く。保存済みの表示名は useOwnerLabels() が渡す */
+export { ownerLabel } from '@kanjo/core';
 
 export interface ImportCountSummary {
   /** 明細へ変換できた入力行（同一IDの重複を含む） */
@@ -906,8 +915,9 @@ export type {
   DiagnosisSignal,
   DiagnosisTotals,
   DiagnosisWaterfallBar,
-  HouseholdData,
+  HouseholdCategoryDetail,
   MatrixData,
+  OwnerLabels,
   OverviewData,
   ProfitAndLoss,
   StatementSource,

@@ -112,7 +112,7 @@ HTML版ダッシュボードで、(1)重複排除した三面比較(個人/事�
 | P3 | 支出分析 — 診断 | `/analysis/diagnosis` | 次に改善すると最も効く一手を決め、根拠を確認して実行画面へ移る(詳細は[`diagnosis-screen.md`](diagnosis-screen.md)) |
 | P4 | サブスク | `/subscriptions` | 定期支出の月額・年換算を並べ、見直し候補を確認済み/対象外に決める(詳細は[`subscriptions-screen.md`](subscriptions-screen.md)) |
 | P5 | 公私仕分け | `/classify` | 明細を事業/個人に確定する |
-| P6 | 家計 | `/household` | 個人分の月次比較を確認する |
+| P6 | 家計収支 | `/household` | 家計全体の総収入・総支出・純収支と前年差を掴み、事業と個人・生活費カテゴリ・名義のどこが動いたかを確かめて明細へ降りる(詳細は[`specs/spec-household-cashflow-screen.md`](../specs/spec-household-cashflow-screen.md)) |
 | P7 | 予算管理 | `/budget` | 科目別予算の設定と予実確認 |
 | P8 | データ取込 | `/import` | ファイル投入と取込履歴の確認 |
 | P9 | 設定 | `/settings` | 科目正規化・未記帳月・エクスポート |

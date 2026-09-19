@@ -207,6 +207,21 @@ export const institutionOwners = sqliteTable('institution_owners', {
   owner: text('owner', { enum: ['business', 'spouse', 'family'] }).notNull(),
 });
 
+/**
+ * 0045: 名義の表示名。内部値 (owner) は集計の鍵のまま、見せる語だけを利用者ごとに持つ。
+ * 行が無い名義は core の DEFAULT_OWNER_LABELS を使う。読み書きは settings route の owner-labels だけ。
+ */
+export const ownerLabels = sqliteTable(
+  'owner_labels',
+  {
+    userId: text('user_id').notNull(),
+    owner: text('owner', { enum: ['business', 'spouse', 'family', 'unset'] }).notNull(),
+    label: text('label').notNull(),
+    updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.owner] })],
+);
+
 /** 大項目/中項目の追加候補 */
 export const categoryOptions = sqliteTable('category_options', {
   userId: text('user_id').notNull(),

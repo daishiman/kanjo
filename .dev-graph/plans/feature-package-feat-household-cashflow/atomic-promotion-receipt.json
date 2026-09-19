@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "promoted",
+  "promoted_at": "2026-09-18T12:54:50Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+  "evaluated_digest": "sha256:4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+  "published_digest": "sha256:4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+  "implementation_readiness": "complete",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS"
+  },
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-household-cashflow/dev-graph-registration.json"
+}

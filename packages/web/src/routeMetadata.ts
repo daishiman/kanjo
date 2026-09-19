@@ -68,10 +68,10 @@ export const APP_ROUTES = [
   {
     id: 'household',
     path: '/household',
-    label: '累計収支',
-    task: '暮らしのお金と名義別の収支を確認します。',
+    label: '家計収支',
+    task: '家計の総収入・総支出・純収支の変化と、その要因を確認します。',
     taskDetail:
-      '公私仕分けを反映したうえで、事業と個人のお金を並べる。名義別の収入と口座間振替の除外もここで確認する。',
+      '公私仕分けを反映したうえで、事業と個人を合わせた家計全体の収支を月ごとに並べ、前年と比べる。生活費の内訳・名義別の収入・除外した振替もここで確認する。',
     icon: 'house',
     navGroup: null,
     mobileLabel: null,

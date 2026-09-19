@@ -14,7 +14,7 @@ import {
   budgetTable,
   catProfile,
   catSeries,
-  household,
+  personalExplainability,
   subscriptions,
 } from './analysis.js';
 import { sum } from './stats.js';
@@ -459,7 +459,7 @@ const unclassified: DiagnosisDetector = {
   id: 'unclassified',
   label: '未分類明細',
   detect(data) {
-    const ex = household(data).explainability;
+    const ex = personalExplainability(data);
     if (!ex || ex.unexplained <= 0) return [];
     const row = improvement('unclassified', ex.month, {
       label: '未分類・明細不明の支出を精査する',

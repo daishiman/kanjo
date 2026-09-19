@@ -1,134 +1,84 @@
 {
   "references": [
     {
-      "target_id": "wcag22-non-text-contrast",
-      "retrieved_at": "2026-09-18T03:49:46Z",
-      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html",
+      "target_id": "wcag22-use-of-color",
+      "retrieved_at": "2026-09-18T11:39:30Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
       "official_publisher": "W3C Web Accessibility Initiative (WAI)",
       "official_host": "www.w3.org",
-      "last_updated": "2026-06-15",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "WCAG 2.2 SC 1.4.11 非テキストのコントラストの解説 (Updated 15 June 2026)。UI 部品とグラフィックの必要部分は隣接色に対して 3:1 以上のコントラストを求める。サブスク画面のカテゴリ別積み上げ棒の系列色・候補バッジ・カバー率バーの色を、背景と隣接系列に対して 3:1 以上に保ち、色だけで区別させない判断の根拠。"
-    },
-    {
-      "target_id": "wai-aria-apg-tabs",
-      "retrieved_at": "2026-09-18T03:49:46Z",
-      "source_url": "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/",
-      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
-      "official_host": "www.w3.org",
-      "last_updated": "2025-09-02",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "WAI-ARIA Authoring Practices の Tabs パターン。tablist / tab / tabpanel の role、選択中の tab の aria-selected=true、tab から tabpanel への aria-controls、tabpanel から tab への aria-labelledby を要求する。キーボードは Tab で選択中のタブへ入りもう一度 Tab でパネルへ、左右矢印でタブ間を移動、Home / End は任意。詳細パネルの『概要 / 取引履歴 / 関連データ』タブの実装の正本。更新日はページに表示が無いため、公式リポジトリ w3c/aria-practices の tabs-pattern.html の最新コミット日 (2025-09-02) で確認した。"
+      "last_updated": "2025-09-16",
+      "latest_checked_at": "2026-09-18T11:39:30Z",
+      "summary": "WCAG 2.2 SC 1.4.1 Use of Color (レベル A)。色を情報伝達の唯一の手段にしない。家計収支画面の増減は符号と矢印を併記し、前年系列は点線で区別する根拠。"
     },
     {
       "target_id": "tanstack-query-dependent-queries",
-      "retrieved_at": "2026-09-18T03:49:46Z",
-      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/dependent-queries",
+      "retrieved_at": "2026-09-18T11:39:30Z",
+      "source_url": "https://github.com/TanStack/query/releases/latest",
       "official_publisher": "TanStack",
-      "official_host": "tanstack.com",
+      "official_host": "github.com",
       "version": "5.103.1",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "TanStack Query の依存クエリ (Dependent Queries) の公式ガイド。useQuery の enabled に真偽値を渡し、先行する値が揃うまで取得を始めない (例: enabled: !!userId)。サブスク一覧で行を選ぶまで詳細 API (GET /api/subscriptions/vendors/:key) を呼ばず、選択後にだけ取得する二段構えの根拠。版は公式リポジトリ TanStack/query のリリース一覧先頭 (@tanstack/react-query@5.103.1、2026-09-16) で確認した。"
-    },
-    {
-      "target_id": "tanstack-query-invalidations-from-mutations",
-      "retrieved_at": "2026-09-18T03:49:46Z",
-      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations",
-      "official_publisher": "TanStack",
-      "official_host": "tanstack.com",
-      "version": "5.103.1",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "TanStack Query の『変更からの無効化』公式ガイド。useMutation の onSuccess で queryClient.invalidateQueries({ queryKey }) を呼び、関連するクエリを古い扱いにして再取得させる。名称の統合・カテゴリ変更・候補の採用 / 除外 / 確認の成功後に、サブスク一覧・詳細・サイドバーのバッジのクエリをまとめて無効化して表示を揃える設計の根拠。版は公式リポジトリのリリース一覧 (@tanstack/react-query@5.103.1) で確認した。"
+      "latest_checked_at": "2026-09-18T11:39:30Z",
+      "summary": "@tanstack/react-query@5.103.1 (2026-09-16 リリース)。公式ガイド tanstack.com/query/latest/docs/framework/react/guides/dependent-queries は enabled: !!value で前段の値が揃うまで後続クエリを遅らせる (直列になる点に注意)。カテゴリ詳細を cat と month が決まったときだけ取得する根拠。"
     },
     {
       "target_id": "react-router-searchparams",
-      "retrieved_at": "2026-09-18T03:49:46Z",
+      "retrieved_at": "2026-09-18T11:39:30Z",
       "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
       "official_publisher": "React Router (Remix / Shopify)",
       "official_host": "reactrouter.com",
       "version": "8.4.0",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "React Router の useSearchParams の API リファレンス (ページ表示 8.4.0)。現在の URL の URLSearchParams と更新関数の組を返し、更新はナビゲーションとして履歴に残る。選んだベンダーを ?vendor=<照合キー> として URL に保ち、再読込や戻る操作で詳細パネルを復元する設計の根拠。"
+      "latest_checked_at": "2026-09-18T11:39:30Z",
+      "summary": "useSearchParams は URLSearchParams と更新関数の組を返し、更新はナビゲーションを起こす。seg・month・cat を URL に保つ根拠。"
     },
     {
       "target_id": "hono-zod-validator",
-      "retrieved_at": "2026-09-18T03:49:46Z",
-      "source_url": "https://hono.dev/docs/guides/validation",
+      "retrieved_at": "2026-09-18T11:59:07Z",
+      "source_url": "https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md",
       "official_publisher": "Hono",
-      "official_host": "hono.dev",
-      "version": "4.13.8",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "Hono の検証 (Validation) 公式ガイド。@hono/zod-validator の zValidator('json' | 'query' | 'param', z.object({...})) で入力を Zod スキーマで検証し、ハンドラでは c.req.valid(...) で検証済みの値だけを使う。見直し判断の列挙値・統合する別名の件数と長さ・カテゴリ名を許可リストで受け取る新設 API の根拠。版は公式リポジトリ honojs/hono のリリース一覧先頭 (v4.13.8) で確認した。"
-    },
-    {
-      "target_id": "unicode-tr15-normalization",
-      "retrieved_at": "2026-09-18T03:49:46Z",
-      "source_url": "https://unicode.org/reports/tr15/",
-      "official_publisher": "Unicode Consortium",
-      "official_host": "unicode.org",
-      "version": "18.0.0",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "Unicode Standard Annex #15 Unicode Normalization Forms (Unicode 18.0.0, Revision 58, 2026-08-12)。NFKC は互換分解の後に正準合成を行い、全角 / 半角カタカナや互換文字の見た目の違いを同じ表現へ揃える。取引名の表記ゆれを吸収してベンダーの照合キーと『正規化された名称』を作る処理 (既存 vendorKey の延長) と、カテゴリ辞書の照合で NFKC を前処理に使う判断の根拠。"
-    },
-    {
-      "target_id": "cloudflare-d1-query",
-      "retrieved_at": "2026-09-18T03:49:46Z",
-      "source_url": "https://developers.cloudflare.com/d1/worker-api/d1-database/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-06-22",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "Cloudflare D1 の Worker API (D1Database) の公式リファレンス (最終更新 2026-06-22)。prepare().bind() でプレースホルダに値を束縛し、batch() は複数の文を 1 往復で順に実行し、トランザクションとして扱う。見直し判断の upsert と照合キーによる読み取りを文字列連結ではなく束縛で行い、名称の統合で複数行を更新するときに batch でまとめる設計の根拠。"
+      "official_host": "github.com",
+      "version": "0.9.1",
+      "latest_checked_at": "2026-09-18T11:59:07Z",
+      "summary": "@hono/zod-validator の公式 CHANGELOG。最新は 0.9.1。リポジトリは 0.4.3 を使う。0.5.0 で validationFunction、0.6.0 で Zod v4 対応 (Breaking)、0.7.0 で peer が zod ^3.25.0、0.8.0 で既定の 400 失敗応答を RPC 型へ伝播 (peer hono >=4.10.0)、0.9.0 で hono >=4.11.2。本サイクルは 0.4.3 のまま zValidator('query' | 'json' | 'param', schema, hook) を使い、hook で 400 を自前で組み立てる既存の形 (cash.ts・ai.ts・deletions.ts) に揃える。0.6 以降の Zod v4 対応と 0.8.0 の既定 400 の変更は本サイクルの範囲外。"
     },
     {
       "target_id": "cloudflare-d1-migrations",
-      "retrieved_at": "2026-09-18T03:49:46Z",
+      "retrieved_at": "2026-09-18T11:39:30Z",
       "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-06-08",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "Cloudflare D1 の migrations 公式リファレンス (最終更新 2026-06-08)。wrangler d1 migrations create / apply で migrations ディレクトリの .sql を順に適用し、適用済みの記録を d1_migrations 表で管理する。sub_vendors への category 列の追加と sub_vendor_review_decisions の新設を migration 0043 として追加だけで行い、既存の Migrate → Deploy の順で適用する判断の根拠。"
+      "latest_checked_at": "2026-09-18T11:39:30Z",
+      "summary": "D1 の migration は migrations/ の .sql を wrangler d1 migrations apply で適用し、適用済みを d1_migrations 表に記録する。owner_labels を追加のみの migration で足す根拠。"
     },
     {
       "target_id": "cloudflare-workers-limits",
-      "retrieved_at": "2026-09-18T03:49:46Z",
+      "retrieved_at": "2026-09-18T11:39:30Z",
       "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-09-05",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "Cloudflare Workers の上限の公式ページ (最終更新 2026-09-05)。CPU 時間は Free 10 ms、Paid 既定 30 秒 (最大 5 分)、メモリは 128 MB。サブスクの初回表示の応答をベンダー数 × 月数の集計値に限り、取引の実体は詳細パネルで選んだ 1 ベンダーぶんだけ返して、CPU 時間と応答サイズを明細件数から切り離す設計の根拠。"
+      "latest_checked_at": "2026-09-18T11:39:30Z",
+      "summary": "Workers の CPU 時間は Free が 1 リクエスト 10 ms、Paid が既定 30 秒 (cpu_ms で最大 5 分)。家計集計を要求ごとに導出してもキャッシュ層を足さない判断の上限。"
     },
     {
-      "target_id": "cloudflare-workers-ai-pricing",
-      "retrieved_at": "2026-09-18T03:49:46Z",
-      "source_url": "https://developers.cloudflare.com/workers-ai/platform/pricing/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-09-17",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "Cloudflare Workers AI の料金の公式ページ (最終更新 2026-09-17)。1,000 Neurons あたり $0.011、1 日 10,000 Neurons まで無料。カテゴリ判定と見直し候補の理由文を AI で作る案 (dec-subs-category の opt-workers-ai、dec-subs-review-candidate の opt-ai-reason) の費用比較に使い、利用者が決定論の辞書と定型文を選んだ判断の比較根拠。"
-    },
-    {
-      "target_id": "owasp-asvs-encoding",
-      "retrieved_at": "2026-09-18T03:49:46Z",
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-18T11:39:30Z",
       "source_url": "https://github.com/OWASP/ASVS/blob/master/README.md",
       "official_publisher": "OWASP Foundation",
       "official_host": "github.com",
       "version": "5.0.0",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "OWASP ASVS の公式リポジトリ README。最新の安定版は 5.0.0 (2025 年 5 月)。Encoding and Sanitization 章は、出力先の文脈に応じたエンコードと入力の検証・無害化を要件とする。取込明細の取引名と利用者が入力する別名・カテゴリ名を、入力側で許可リスト検証し、出力側では HTML として挿入せずテキストとして描く設計の根拠。"
+      "latest_checked_at": "2026-09-18T11:39:30Z",
+      "summary": "ASVS の最新安定版は 5.0.0 (2025 年 5 月)。第 1 章 Encoding and Sanitization が出力エンコーディングとインジェクション防止を扱う。名義ラベルの表示名を許可リストで検証し、描画時にエスケープする根拠。"
     },
     {
       "target_id": "vitest-expect",
-      "retrieved_at": "2026-09-18T03:49:46Z",
+      "retrieved_at": "2026-09-18T11:39:30Z",
       "source_url": "https://vitest.dev/api/expect.html",
       "official_publisher": "Vitest",
       "official_host": "vitest.dev",
       "version": "5.0.1",
-      "latest_checked_at": "2026-09-18T03:50:20Z",
-      "summary": "Vitest の expect API リファレンス (ページ表示 v5.0.1)。toBe は Object.is による厳密一致、toBeCloseTo は浮動小数点の丸め誤差を許容して比べる。サブスクの検算済み fixture で、金額 (推定月額・年換算・合計行) は整数の toBe、売上比とカバー率の割合は toBeCloseTo で比べる検証設計の根拠。"
+      "latest_checked_at": "2026-09-18T11:39:30Z",
+      "summary": "toBe は Object.is による同一性、toEqual は再帰的な構造比較。家計全体と総収支の総合の一致を数値の toBe で固定する根拠。"
     }
   ]
 }

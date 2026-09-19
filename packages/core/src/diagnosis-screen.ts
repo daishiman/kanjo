@@ -6,7 +6,13 @@ import { previousPeriod, previousPeriodLabel } from './analysis-hub.js';
  * 改善余地 → 健全性 → インパクト → シグナル → 根拠 を同じ Dataset から一括で作る。
  * 画面側で足し直す値を残さないのは、表と図で合計が食い違う状態を作らないため。
  */
-import { type DiagnosisData, diagnosis, household } from './analysis.js';
+import {
+  type DiagnosisData,
+  comparison,
+  diagnosis,
+  personalExplainability,
+  personalMonths,
+} from './analysis.js';
 import {
   type DiagnosisActionStatus,
   type DiagnosisDetector,
@@ -285,7 +291,7 @@ export function diagnosisWaterfall(
 
 /** cashflow を渡さない純関数利用でも、選択した scope×metric の年換算を同じ Dataset から作る */
 function diagnosisAnnualBaseline(data: Dataset, selection: DiagnosisSelection): number {
-  const rows = household(data).comparison.rows;
+  const rows = comparison(data, personalMonths(data)).rows;
   const values = rows.flatMap((row) => {
     const sides =
       selection.scope === 'business'
@@ -333,7 +339,7 @@ export function diagnosisEvidence(data: Dataset): DiagnosisEvidenceRow[] {
   const period = months.length ? `${months[0]}〜${months[months.length - 1]}` : '未取込';
   const unrecorded = new Set(data.unrecordedExpMonths);
   const recorded = months.filter((m) => !unrecorded.has(m)).length;
-  const hh = household(data);
+  const hh = { months: personalMonths(data), explainability: personalExplainability(data) };
   return [
     {
       source: 'freee 取引 (事業)',

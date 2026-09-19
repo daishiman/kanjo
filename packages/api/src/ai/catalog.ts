@@ -10,6 +10,7 @@
 import {
   DEFAULT_STAT_MIN_MONTHS,
   type Dataset,
+  type OwnerKey,
   accountMonthMatrix,
   mean,
   ownerMonthlyExpense,
@@ -222,7 +223,7 @@ export const CHART_CATALOG: readonly CatalogEntry[] = [
     minMonths: 0,
     types: ['monthly', 'annual', 'longterm'],
     requiredData: ['personal.byOwner'],
-    axes: ['区分(名義: 事業/妻/家族/未設定)', '期間(対象期間の前12ヶ月〜終了月)'],
+    axes: ['区分(保存済みの名義表示名)', '期間(対象期間の前12ヶ月〜終了月)'],
     readingGuide:
       '柱の高さが個人支出の合計、色の帯が名義の内訳。特定の名義の帯だけが厚くなっている月はその名義の支出が増えている。すべて「未設定」の場合は名義の割り当てが済んでいないだけなので、内訳としては読まない。',
   },
@@ -277,6 +278,7 @@ export interface ChartContext {
    * 平均・標準偏差・移動平均・固定費判定など「ふだんの姿」を測る図が必要とする記帳月数。
    */
   minMonths?: number;
+  ownerLabels?: Partial<Record<OwnerKey, string>> | null;
 }
 
 /** ctx から基準月数を取り出す(未設定なら既定の6ヶ月) */
@@ -606,7 +608,7 @@ const builders: Record<string, Builder> = {
   owner_trend: (ctx) => {
     const win = chartWindow(ctx.data.months, ctx.period);
     if (win.length === 0) return unavailable('対象の窓に取込済みの月がありません。');
-    const owners = ownerMonthlyExpense(ctx.data, win);
+    const owners = ownerMonthlyExpense(ctx.data, win, ctx.ownerLabels);
     if (owners.rows.length === 0) return unavailable('期間内に個人支出の記録がありません。');
     let labels: string[] = win;
     let granularity: 'month' | 'quarter' = 'month';

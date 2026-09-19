@@ -166,6 +166,51 @@ const UI_ICON_PATHS = {
   ),
   'chevron-left': <path d="m15 18-6-6 6-6" />,
   'chevron-right': <path d="m9 18 6-6-6-6" />,
+  house: (
+    <>
+      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+      <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    </>
+  ),
+  utensils: (
+    <>
+      <path d="M3 2v7c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V2" />
+      <path d="M7 2v20" />
+      <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+    </>
+  ),
+  zap: (
+    <path d="M4 14a1 1 0 0 1-.78-1.63l9-11a.5.5 0 0 1 .87.46l-1.05 6.58A1 1 0 0 0 13.03 9H20a1 1 0 0 1 .78 1.63l-9 11a.5.5 0 0 1-.87-.46l1.05-6.58A1 1 0 0 0 10.97 14z" />
+  ),
+  'book-open': (
+    <>
+      <path d="M12 7v14" />
+      <path d="M3 18a1 1 0 0 1-1-1V5a2 2 0 0 1 2-2h5a3 3 0 0 1 3 3v15a3 3 0 0 0-3-3Z" />
+      <path d="M21 18a1 1 0 0 0 1-1V5a2 2 0 0 0-2-2h-5a3 3 0 0 0-3 3v15a3 3 0 0 1 3-3Z" />
+    </>
+  ),
+  car: (
+    <>
+      <path d="M19 17H5a2 2 0 0 1-2-2v-3l2-5h14l2 5v3a2 2 0 0 1-2 2Z" />
+      <path d="M7 17v2M17 17v2M5 12h14" />
+      <path d="M7 12h.01M17 12h.01" />
+    </>
+  ),
+  ellipsis: (
+    <>
+      <circle cx="5" cy="12" r="1" />
+      <circle cx="12" cy="12" r="1" />
+      <circle cx="19" cy="12" r="1" />
+    </>
+  ),
+  repeat: (
+    <>
+      <path d="m2 9 3-3 3 3" />
+      <path d="M13 18H7a2 2 0 0 1-2-2V6" />
+      <path d="m22 15-3 3-3-3" />
+      <path d="M11 6h6a2 2 0 0 1 2 2v10" />
+    </>
+  ),
   circle: <circle cx="12" cy="12" r="10" />,
 } satisfies Record<string, ReactNode>;
 

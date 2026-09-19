@@ -687,6 +687,8 @@ describe('canonical mutation lease predicate', () => {
       ['PUT', '/api/category-options'],
       ['DELETE', '/api/category-options'],
       ['PUT', '/api/classification'],
+      // 名義の表示名は 4 名義を 1 回で差し替える。重なった保存が名義ごとに混ざらないよう直列化する
+      ['PUT', '/api/settings/owner-labels'],
       ['POST', '/api/sub-vendors'],
       ['PUT', '/api/sub-vendors/1'],
       ['POST', '/api/sub-vendors/1/aliases'],
@@ -781,6 +783,7 @@ describe('canonical mutation lease predicate', () => {
       'PUT /api/category-options',
       'DELETE /api/category-options',
       'PUT /api/classification',
+      'PUT /api/settings/owner-labels',
       'POST /api/sub-vendors',
       'PUT /api/sub-vendors/:id',
       'POST /api/sub-vendors/:id/aliases',

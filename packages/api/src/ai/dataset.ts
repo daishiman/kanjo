@@ -8,15 +8,20 @@
 import {
   DEFAULT_STAT_MIN_MONTHS,
   type Dataset,
+  type OwnerKey,
   type SubsCandidate,
   applyClassification,
   benchmarks,
+  byOwner,
   catProfile,
   clampStatMinMonths,
+  comparison,
   countableMfTxs,
   diagnosis,
-  household,
+  livingCostByBig,
   overview,
+  personalExplainability,
+  personalMonths,
   previousPeriod,
   recordedExpIdx,
   statThresholds,
@@ -145,6 +150,8 @@ export interface BuildOptions {
   candidates?: SubsCandidate[];
   /** 統計指標の基準月数(設定画面で変更可。既定6)。範囲外の値は core 側で丸める */
   statMinMonths?: number;
+  /** 家計画面・設定画面と同じ保存済み名義。 */
+  ownerLabels?: Partial<Record<OwnerKey, string>> | null;
 }
 
 /** 期間プリセット(画面の「直近月 / 四半期 / 13ヶ月 / 5年」と同じ切り方)。終了月を基準に切る */
@@ -165,7 +172,8 @@ export interface CoverageRow {
 
 export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions = {}) {
   const ov = overview(data);
-  const hh = household(data);
+  const hhMonths = personalMonths(data);
+  const owners = byOwner(data, hhMonths);
   const subs = subscriptions(data);
   const diag = diagnosis(data);
   const months = data.months;
@@ -261,6 +269,7 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
     subsOther: subs.other,
     subsMonths: subs.months,
     minMonths: statMinMonths,
+    ownerLabels: opts.ownerLabels,
   };
   const charts = buildCharts(chartCtx);
   const coverage: CoverageRow[] = charts.map((c) => ({
@@ -328,7 +337,7 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
         : null,
       owner: {
         ...ownerTotals,
-        note: 'unset は名義未設定の金融機関分。設定画面で名義を割り当てると事業/妻/家族に分かれる',
+        note: 'unset は名義未設定の金融機関分。設定画面で名義を割り当てると、保存済みの表示名ごとに分かれる',
         range: rangeOf(inPeriod),
       },
       fixedVariable: fixedVariableAvailable
@@ -494,15 +503,15 @@ export function buildAgentData(data: Dataset, period: Period, opts: BuildOptions
     },
     personal: {
       byMonth: Object.fromEntries(months.map((m) => [m, data.personal[m] ?? { income: {}, expense: {} }])),
-      livingCost: hh.livingCost,
-      explainability: hh.explainability,
+      livingCost: livingCostByBig(data, hhMonths),
+      explainability: personalExplainability(data),
     },
     bizPersonal: data.bizPersonal,
-    comparison: hh.comparison,
+    comparison: comparison(data, hhMonths),
     byOwner: {
-      rows: hh.byOwner.rows,
-      totals: hh.byOwner.totals,
-      unmappedInstitutions: hh.byOwner.unmappedInstitutions,
+      rows: owners.rows,
+      totals: owners.totals,
+      unmappedInstitutions: owners.unmappedInstitutions,
     },
     subscriptions: {
       now: subs.now,

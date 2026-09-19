@@ -422,3 +422,60 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 自動適用は `hit_count >= 3` かつ `confidence >= 0.80` の両方を満たす場合だけ(実装の定数は `VENDOR_MEMORY_MIN_HITS` / `VENDOR_MEMORY_MIN_CONFIDENCE`)。満たさないものは候補提示に留める。`pinned` は件数によらず当て、`revoked` は候補にも出さない。
 - 閾値の段階的な上下(可動域 0.70〜0.95)の基準は仕様書のD4に置く。判定はD1内の算術で閉じ、明細を外部へ送らない(DR-14)。
 - 画面へは割合ではなく件数で出す。「40件中40件」と「1件中1件」を同じ 1.00 として見せないため。
+
+## 家計収支の集計(0045 / feat-household-cashflow)
+
+家計収支画面(`/household`)の数値は core の `householdSummary` 1 本から出る。入力は総収支画面と同じ `totalCashflowLedger(...)` の `ledger.rows` だけで、家計画面は独自の選別を持たない。画面仕様の正本は `specs/spec-household-cashflow-screen.md`、判断の経緯は [`household-screen/design-decisions.md`](household-screen/design-decisions.md)。
+
+### 家計全体 = 事業 + 個人
+
+- 区分は台帳行の `side` で決める。`business` → 事業、`household` → 個人。1 行はどちらか一方にだけ入るので、全月と期間合計で `事業 + 個人 = 家計全体` が収入・支出・純収支のすべてで成り立つ。
+- 家計全体の `income / expense / balance` は、同じ Dataset と期間の `totalCashflowScreen(...).summary.total` と一致する(`toBe` で比較するテストで固定)。
+- 月平均の分母は期間内の**記帳済みの月**の数。年換算は月平均 × 12。構成比・増減率は丸めずに 0..1 の比で返し、表示で小数 1 桁に四捨五入する(各行独立。和を 100.0 に寄せない)。
+
+### 前年比較の欠損規則
+
+- 前年同期間に 1 か月でも記帳の無い月があれば、`previousYear` / `change` と各行の `previous` / `diff` / `rate` を `null` にする(総収支画面と同じ BR-006)。画面は `—` を出し、0 と描かない。
+- 推移グラフの前年系列は月ごとに判定する。前年同月の実データがある月だけ値を持ち、無い月は `null`。
+- 前年値が 0 の増減率は `null`(0 除算を 0% や ∞ と見せない)。
+
+### 生活費 6 区分と MF 大項目の対応
+
+正本は `packages/core/src/household-summary.ts` の `HOUSEHOLD_CATEGORY_MAP`。下の表はその写しで、`household-summary-contract.test.ts` が行・順序・大項目の一致を検査する。表を直すときは core を先に直す。
+
+<!-- household-category-map:start -->
+| key | 区分 | MF 大項目 |
+|---|---|---|
+| `housing` | 住居費 | 住まい、住宅ローン、住宅購入、住宅 |
+| `food` | 食費 | 食費 |
+| `utilities` | 光熱費 | 水道・光熱費 |
+| `education` | 教育費 | 教養・教育、子育て |
+| `transport` | 交通費 | 交通費、車・バイク、自動車 |
+| `other` | その他 | (上のどれにも当たらない大項目) |
+<!-- household-category-map:end -->
+
+- **事業側の支出は大項目にかかわらず `その他` に入れる**。事業の支出を `食費` 等に混ぜると、6 区分の和が総支出と合っていても区分の意味が変わる。`その他` の詳細は「家計の残り」と「事業の支出」の内訳を示す。
+- 6 区分の和 = 総支出(前年も)。
+
+### 振替の対推定
+
+- 振替(`isTransfer === true` の MF 明細)は台帳に 1 件も入らない。家計の総収入・総支出にも 1 円も入らない。画面は選択月の振替を一覧で見せるだけで、集計には使わない。
+- 対は core の純関数 `pairTransfers` が決定論で推定する。候補は「金額の絶対値が等しく、符号が逆で、日付差が `TRANSFER_PAIR_MAX_DAYS = 3` 日以内」の 2 明細。
+- 同点の解消: 日付差 → 出金側の日付 → 出金側の明細 id → 入金側の明細 id の昇順で貪欲に確定し、1 明細は 1 組にしか入らない。入力の並び順を変えても結果は同じ。
+- 組にならない明細は 1 明細 1 行で、相手側を `相手不明` と表示する(出金側は `<名義> → 相手不明`、入金側は `相手不明 → <名義>`)。同じ名義どうしの組も表示する。
+- 明細に相手口座の列は足さない。
+
+### `owner_labels`(名義の表示名)
+
+| 列 | 型 | 制約 |
+|---|---|---|
+| `user_id` | TEXT | NOT NULL。主キーの前半。読み書きは常にログイン中の利用者の行だけ |
+| `owner` | TEXT | `business` / `spouse` / `family` / `unset` の 4 値。主キーの後半 |
+| `label` | TEXT | 1〜20 文字(CHECK は最後の防波堤。先に core の `validateOwnerLabels` が検査) |
+| `updated_at` | TEXT | 保存時刻 |
+
+- 名義の**内部値は変えない**。この表は利用者に見せる語だけを差し替える。ここでの `unset` は「名義が決まっていない明細」の表示名の鍵であり、明細に `unset` を書くわけではない(名義schema v2 の 3 値は変わらない)。
+- 行が無い名義は既定の表示名 `本人 / パートナー / 子ども / その他` を使う。初期データは入れない。migration は `CREATE TABLE` のみで、既存表の行を書き換えない。
+- 表示名の規則: 前後の空白を除いて 1〜20 文字(コードポイント数)。空白だけは空として拒否、制御文字 U+0000–U+001F / U+007F は拒否、4 名義の間の重複は拒否。違反は 400 `invalid_owner_labels` と `fields`(名義ごとの理由)。
+- `PUT /api/settings/owner-labels` は変更系フェンスの内側にあり、取込の確定中は 409 `canonical_write_busy`。JSON スナップショット(バックアップ / 復元)の対象には入れない(再入力できる表示の設定であり、会計の正本ではない)。
+- 画面は家計・設定・明細のどれも `useOwnerLabels()` → core の `ownerLabel()` を経由して名義を表示する。

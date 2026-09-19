@@ -82,12 +82,17 @@ describe('科目×月のヒートマップ集計', () => {
 });
 
 describe('名義別の個人支出推移', () => {
-  it('支出のある名義だけを既定順(事業→妻→家族→未設定)で返す', () => {
+  it('支出のある名義だけを既定順(本人→パートナー→子ども→その他)で返す', () => {
     const s = ownerMonthlyExpense(syntheticDataset(), MONTHS);
     expect(s.rows.map((r) => r.owner)).toEqual(['business', 'spouse', 'unset']);
-    expect(s.rows.map((r) => r.label)).toEqual(['事業', '妻', '未設定']);
+    expect(s.rows.map((r) => r.label)).toEqual(['本人', 'パートナー', 'その他']);
     expect(s.rows[0].values).toEqual([10000, 12000, 11000]);
     expect(s.allUnset).toBe(false);
+  });
+
+  it('保存した表示名があれば凡例はその名前になる (名義ラベル設定と同じ ownerLabel を通す)', () => {
+    const s = ownerMonthlyExpense(syntheticDataset(), MONTHS, { business: 'わたし' });
+    expect(s.rows.map((r) => r.label)).toEqual(['わたし', 'パートナー', 'その他']);
   });
 
   it('名義が1つも割り当てられていなければ allUnset を立てる', () => {

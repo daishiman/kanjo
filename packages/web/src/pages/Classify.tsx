@@ -3,6 +3,12 @@
  * 行内3ボタン(個人/事業/自動)は楽観的更新+失敗時ロールバック。キーボード J/K移動・B/P/A判定。
  * 編集は取込値(MFのCSV)とは別枠に保存され、再取込しても残る。ルール・名義・編集一覧の管理は設定画面。
  */
+import {
+  HOUSEHOLD_CATEGORY_MAP,
+  type HouseholdCategoryKey,
+  type OwnerKey,
+  householdCategoryOfTx,
+} from '@kanjo/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type MouseEvent as ReactMouseEvent, useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -17,7 +23,6 @@ import {
   type TransactionsResponse,
   type TxRow,
   api,
-  ownerLabel,
   paymentMethodLabel,
 } from '../api.js';
 import { Button } from '../components/Button.js';
@@ -31,6 +36,7 @@ import { SplitEditor } from '../components/SplitEditor.js';
 import { Term } from '../components/Term.js';
 import { VendorMemoryBadge } from '../components/VendorMemory.js';
 import { monthLabel, yen, yenS } from '../format.js';
+import { useOwnerLabels } from '../owner-labels.js';
 
 /** 確認の本文。問いは見出しが持つので、ここは失うものだけを書く */
 export const DISCARD_CLASSIFICATION_DRAFT_MESSAGE = 'この行の編集内容は保存されずに消えます。';
@@ -177,6 +183,7 @@ export function ClassificationProgressPanel({
 }
 
 export function ClassifyPage() {
+  const { ownerLabel } = useOwnerLabels();
   const qc = useQueryClient();
   const [initialParams] = useSearchParams();
   const [month, setMonth] = useState<string | null>(() => {
@@ -192,6 +199,8 @@ export function ClassifyPage() {
     const category = initialParams.get('category');
     return category ? { category, payee: initialParams.get('payee') || null } : null;
   });
+  // 家計収支画面の「すべて見る」から来たときの絞り込み。`big` は大項目の列挙、`hcat` は大項目で列挙できない区分
+  const [householdFilter, setHouseholdFilter] = useState(() => readHouseholdFilter(initialParams));
   const [owner, setOwner] = useState('');
   const [qtext, setQtext] = useState('');
   const [method, setMethod] = useState<PaymentMethod | ''>('');
@@ -322,14 +331,15 @@ export function ClassifyPage() {
   const transactions = q.data?.transactions;
   const rows = useMemo(() => {
     const allRows = transactions ?? [];
-    return trendFilter
+    const byTrend = trendFilter
       ? allRows.filter(
           (t) =>
             t.big === trendFilter.category &&
             (trendFilter.payee === null || t.description === trendFilter.payee),
         )
       : allRows;
-  }, [transactions, trendFilter]);
+    return householdFilter ? byTrend.filter(householdFilter.match) : byTrend;
+  }, [transactions, trendFilter, householdFilter]);
 
   const onKey = useCallback(
     (e: KeyboardEvent) => {
@@ -517,7 +527,7 @@ export function ClassifyPage() {
               ['business', ownerLabel('business')],
               ['spouse', ownerLabel('spouse')],
               ['family', ownerLabel('family')],
-              ['unset', '未設定'],
+              ['unset', ownerLabel('unset')],
             ] as const
           ).map(([k, label]) => (
             <button
@@ -591,6 +601,21 @@ export function ClassifyPage() {
           </Button>
         </div>
       )}
+      {householdFilter && (
+        // biome-ignore lint/a11y/useSemanticElements: output は phrasing content に限られ、解除ボタンを入れられないため status を付ける。
+        <div className="toolbar classify-trend-filter" role="status">
+          <span>
+            家計収支から絞り込み中: {householdFilter.label}({rows.length}件)
+          </span>
+          <Button
+            size="mini"
+            variant="text"
+            onClick={() => requestViewChange(() => setHouseholdFilter(null))}
+          >
+            絞り込みを解除
+          </Button>
+        </div>
+      )}
       <div className="card scroll-x classify-table-card">
         {/* stack-sm: 640px以下では1行=1カード。仕分けは電車内など片手で回す作業なので、
             横スクロールで「この金額がどの明細のものか」を見失わせない */}
@@ -624,6 +649,7 @@ export function ClassifyPage() {
                 editBusy={busyEditingId !== null}
                 candidates={d.candidates}
                 institutions={d.institutions}
+                ownerLabel={ownerLabel}
                 onFocus={() => setFocusIdx(i)}
                 onSet={(next) => setClass.mutate({ txId: t.id, next })}
                 onToggleEdit={() => requestEditingId(editing ? null : editSession, editing ? null : t.rowKey)}
@@ -680,6 +706,7 @@ function TxLine({
   editBusy,
   candidates,
   institutions,
+  ownerLabel,
   onFocus,
   onSet,
   onToggleEdit,
@@ -697,6 +724,7 @@ function TxLine({
   candidates: Candidates;
   /** 口座の振替先候補。行から編集パネルへ渡すだけ */
   institutions: string[];
+  ownerLabel: (owner: OwnerKey | null | undefined) => string;
   onFocus: () => void;
   onSet: (next: Cls | null) => void;
   onToggleEdit: () => void;
@@ -798,7 +826,7 @@ function TxLine({
           <span className="pill neutral">{t.src}</span>
         </td>
         <td data-label="名義">
-          {t.owner ? ownerLabel(t.owner) : <span className="pill neutral">未設定</span>}
+          {t.owner ? ownerLabel(t.owner) : <span className="pill neutral">{ownerLabel('unset')}</span>}
           {t.owner && <span className="orig owner-source">{t.ownerSrc}</span>}
         </td>
         <td data-label="操作">
@@ -1132,4 +1160,29 @@ function EditorRow({
       </td>
     </tr>
   );
+}
+
+interface HouseholdFilter {
+  label: string;
+  match: (t: TxRow) => boolean;
+}
+
+/**
+ * `big` (大項目の列挙) と `hcat` (区分キー) を、家計画面の集計と同じ判定の絞り込みにする。
+ * 大項目が一致しても事業側の明細は家計の区分に入らない (家計画面では「その他」) ので落とす。
+ */
+function readHouseholdFilter(params: URLSearchParams): HouseholdFilter | null {
+  const hcat = params.get('hcat');
+  const def = HOUSEHOLD_CATEGORY_MAP.find((c) => c.key === hcat);
+  if (def) {
+    const key: HouseholdCategoryKey = def.key;
+    return { label: def.label, match: (t) => householdCategoryOfTx(t) === key };
+  }
+  const bigs = params.getAll('big').filter(Boolean);
+  if (bigs.length === 0) return null;
+  const known = HOUSEHOLD_CATEGORY_MAP.find((c) => c.majors.length > 0 && c.majors.includes(bigs[0]!));
+  return {
+    label: known?.label ?? bigs.join('・'),
+    match: (t) => t.cls === 'per' && t.big !== null && bigs.includes(t.big),
+  };
 }

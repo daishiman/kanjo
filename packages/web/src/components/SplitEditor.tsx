@@ -17,16 +17,9 @@
 import { type RatioLine, splitByRatio, validateSplits } from '@kanjo/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  type Candidates,
-  type Cls,
-  OWNER_VALUES,
-  type Owner,
-  type SplitsResponse,
-  api,
-  ownerLabel,
-} from '../api.js';
+import { type Candidates, type Cls, OWNER_VALUES, type Owner, type SplitsResponse, api } from '../api.js';
 import { yen } from '../format.js';
+import { useOwnerLabels } from '../owner-labels.js';
 import { Button } from './Button.js';
 import { CategoryPicker } from './CategoryPicker.js';
 import { DataTable } from './DataTable.js';
@@ -92,6 +85,7 @@ export function SplitEditor({
   onDirtyChange: (dirty: boolean) => void;
   onBusyChange: (busy: boolean) => void;
 }) {
+  const { ownerLabel } = useOwnerLabels();
   const q = useQuery({
     queryKey: ['splits', txId],
     queryFn: () => api<SplitsResponse>(`/transactions/${encodeURIComponent(txId)}/splits`),

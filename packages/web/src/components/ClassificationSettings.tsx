@@ -18,9 +18,9 @@ import {
   SCOPE_LABEL,
   SCOPE_SHORT,
   api,
-  ownerLabel,
 } from '../api.js';
 import { dateTime, yenS } from '../format.js';
+import { useOwnerLabels } from '../owner-labels.js';
 import { Button } from './Button.js';
 import { AddCategoryInline, CategoryPicker } from './CategoryPicker.js';
 import { ConfirmDialog, usePendingConfirm } from './ConfirmDialog.js';
@@ -45,6 +45,7 @@ export function OwnerSelect({
   onChange: (v: Owner | null) => void;
   allowEmpty?: boolean;
 }) {
+  const { ownerLabel } = useOwnerLabels();
   return (
     <select value={value ?? ''} onChange={(e) => onChange((e.target.value || null) as Owner | null)}>
       {allowEmpty && <option value="">名義(変えない)</option>}
@@ -62,6 +63,7 @@ const clsLabel = (c: Cls | null) => (c === 'biz' ? '事業' : c === 'per' ? '個
 /* -------- 口座の名義 -------- */
 
 export function InstitutionOwnersCard({ data }: { data: ClassificationResponse }) {
+  const { ownerLabel } = useOwnerLabels();
   const invalidate = useInvalidateClassification();
   const save = useMutation({
     mutationFn: (body: { institutionOwners: Record<string, Owner | null> }) =>
@@ -72,8 +74,7 @@ export function InstitutionOwnersCard({ data }: { data: ClassificationResponse }
     <div className="card">
       <h2>
         口座の
-        <Term id="holderName" />
-        (事業/妻/家族)
+        <Term id="holderName" />({ownerLabel('business')}/{ownerLabel('spouse')}/{ownerLabel('family')})
       </h2>
       <p className="sub">
         根拠はMF明細の「保有金融機関」列。口座ごとに名義を決めると、その口座の明細が名義別の収入・支出に入ります(明細ごとの手動編集が優先)。
@@ -103,9 +104,11 @@ export function InstitutionOwnersCard({ data }: { data: ClassificationResponse }
                   }
                 >
                   <option value="">未設定</option>
-                  <option value="business">事業</option>
-                  <option value="spouse">妻</option>
-                  <option value="family">家族</option>
+                  {OWNER_VALUES.map((owner) => (
+                    <option key={owner} value={owner}>
+                      {ownerLabel(owner)}
+                    </option>
+                  ))}
                 </select>
               </td>
             </tr>
@@ -172,6 +175,7 @@ function RuleFields({
 }
 
 export function RulesCard({ candidates, initial }: { candidates: Candidates; initial?: Partial<RuleBody> }) {
+  const { ownerLabel } = useOwnerLabels();
   const invalidate = useInvalidateClassification();
   const q = useQuery({
     queryKey: ['rules'],
@@ -566,6 +570,7 @@ const STATUS_LABEL = {
 } as const;
 
 export function EditsCard({ data }: { data: ClassificationResponse }) {
+  const { ownerLabel } = useOwnerLabels();
   const invalidate = useInvalidateClassification();
   const reset = useMutation({
     mutationFn: (txIds: string[]) =>

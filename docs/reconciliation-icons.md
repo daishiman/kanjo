@@ -80,4 +80,11 @@
 | `external-link` | external-link |
 | `chevron-left` | chevron-left |
 | `chevron-right` | chevron-right |
+| `house` | house |
+| `utensils` | utensils |
+| `zap` | zap |
+| `book-open` | book-open |
+| `car` | car |
+| `ellipsis` | ellipsis |
+| `repeat` | repeat-2 |
 | `circle` | circle |

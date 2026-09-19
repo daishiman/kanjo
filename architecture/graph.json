@@ -814,6 +814,190 @@
       ]
     },
     {
+      "id": "arch-household-cashflow-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "家計収支 — 既存の認証とフェンスの内側に置く 4 経路",
+      "file_path": "architecture/household-cashflow-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "30ba6c0055709da3317723b5e3225f3beb6ac0701fa529a32aad9b60a8fdd496",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "家計収支 — 総収支台帳を入力にする core 純関数 1 か所と 3 経路の API",
+      "file_path": "architecture/household-cashflow-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "05968afeedc3f4ae572a389eb14e57436114352c58442d5b78104aafd8ca45b4",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "家計収支 — owner_labels 表だけを足す追加のみの migration",
+      "file_path": "architecture/household-cashflow-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "06cac52233e70390939c023e2c62c85b27c991c3c1e26a623c4528de81400bba",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "家計収支 — pages/household への分割とサーバ状態・URL 状態の分離",
+      "file_path": "architecture/household-cashflow-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "6dac265091684f5892afc368f27a7fbcdb0c9bbc4f69109a47eea70afaeb6dff",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "家計収支 — 基盤を変えず要求ごとに導出する",
+      "file_path": "architecture/household-cashflow-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "b80d7f55fdb32981311d2c931a5bbc3d422edbe0ba5460e15b40ee1722e522b1",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "家計収支 — 不変条件テストと仕様フィクスチャによる回帰検出",
+      "file_path": "architecture/household-cashflow-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "6bc0855d54a0d2a8171fe86914b37c161e1f43eaf752e682790bf02402052dfb",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "家計収支 — 表示名とクエリの zod 許可リストと外部送信なし",
+      "file_path": "architecture/household-cashflow-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "b6a0a70a0aa6c4be9670003a387dc7ab359b9df4fc8b5da5eddcbef130867dd2",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "家計収支 — 問いから明細までの縦積みと選択の URL 保持",
+      "file_path": "architecture/household-cashflow-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "8f63b6a76287ed9a738241c5371344a231b534404672337abe67d6ff7f97f4d8",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
       "id": "arch-import-deletion-undo-boundary",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -1512,7 +1696,7 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": "8796a2195649a0d6047362ffb0f208c44fa64240d69c6efa8e6c9c892b8d6173",
+        "source_digest": "ca1a7d4ebc7c4a05a480ce8604fbab86d9eeb13738395bcf4aefaee4124e2579",
         "imported_at": "2026-09-18T00:00:00Z"
       },
       "referenced_by": [
@@ -2184,7 +2368,7 @@
         "imported_at": "2026-09-18T07:04:09Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "bbbdb0f3f20821bab23f4630cf52590be216844fc88f52cdfc9b298128b2af5c",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2207,7 +2391,7 @@
         "imported_at": "2026-09-18T07:04:09Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "102b53266ca9482459d9e09387eee03cbf38511e454facd753abccbfde75e7c0",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2230,7 +2414,7 @@
         "imported_at": "2026-09-18T07:04:09Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "a134f80aef224140a8f2e00afd7b0a78840fd535a82953fb4bce53bb90648132",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2253,7 +2437,7 @@
         "imported_at": "2026-09-18T07:04:09Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "0385cef0f9a5fc253c897319fd57272535bb16b673021801905ecf18a0299dcb",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2276,7 +2460,7 @@
         "imported_at": "2026-09-18T07:04:09Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "bb164e7e24bdf08c42118ba28bafd7da1b202af00db698e1186e1a9eded03256",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2299,7 +2483,7 @@
         "imported_at": "2026-09-18T07:04:09Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "f8daeaa66129e8592eb9875eba41e3ec019734a6d5be99149c79dd5586b29b18",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2322,7 +2506,7 @@
         "imported_at": "2026-09-18T07:04:09Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "6567f6d8c87bcbb896e448870b953cebeee86e94308a5b547775c066b8b464de",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2345,7 +2529,7 @@
         "imported_at": "2026-09-18T07:04:09Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "c57c493d5fccb5546f47fbcffb51582dfc2f062eb0e9a6e19d3aa556bf35321c",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },

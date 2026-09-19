@@ -1,0 +1,221 @@
+{
+  "feature_id": "feat-household-cashflow",
+  "gates": {
+    "C08": "complete",
+    "C11": true,
+    "validate_system_plan": "pass"
+  },
+  "graph_revision": 3,
+  "graph_snapshot_digest": "9c4a6b22dd5bb7eab69fd05fa079d13534146bae429a26493debe420373b7f42",
+  "missing_sections": [],
+  "nodes": [
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P01",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P01",
+      "resource_scope_count": 1,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P01"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P02",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P02",
+      "resource_scope_count": 1,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P02"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P03",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P03",
+      "resource_scope_count": 1,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P03"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P04",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P04",
+      "resource_scope_count": 5,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P04"
+      ],
+      "domain": "frontend",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P05",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P05",
+      "resource_scope_count": 24,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P05"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P06",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P06",
+      "resource_scope_count": 1,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P06"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P07",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P07",
+      "resource_scope_count": 1,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P07"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P08",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P08",
+      "resource_scope_count": 6,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P08"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P09",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P09",
+      "resource_scope_count": 1,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P09"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P10",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P10",
+      "resource_scope_count": 1,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P10"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P11",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P11",
+      "resource_scope_count": 1,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P11"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P12",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P12",
+      "resource_scope_count": 3,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P12"
+      ],
+      "domain": "operations",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-HOUSEHOLD-P13",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P13",
+      "resource_scope_count": 1,
+      "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+      "source_version": "0.1.0"
+    }
+  ],
+  "plan_validated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+  "status": "pass"
+}

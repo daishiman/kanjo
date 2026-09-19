@@ -576,104 +576,147 @@ const trends = {
 }
 
 const householdMonths = months.slice(-6);
-const householdBalance = householdMonths.map((month, index) => ({
-  month,
-  personalIncome: 280_000 + index * 2_000,
-  bizIncome: 120_000 + index * 3_000,
-  income: 400_000 + index * 5_000,
-  livingCost: 210_000 + index * 1_000,
-  bizAdvance: 20_000,
-  expense: 230_000 + index * 1_000,
-  balance: 170_000 + index * 4_000,
-  saveRate: 0.42,
-  revenue: 450_000 + index * 5_000,
-  bizExpense: 130_000 + index * 1_000,
-}));
-const compareTotal = (income, expense) => ({
-  months: householdMonths.length,
-  income,
-  expense,
-  balance: income - expense,
-  monthlyAvg: {
-    income: income / householdMonths.length,
-    expense: expense / householdMonths.length,
-    balance: (income - expense) / householdMonths.length,
-  },
-  annualized: {
-    income: (income / householdMonths.length) * 12,
-    expense: (expense / householdMonths.length) * 12,
-    balance: ((income - expense) / householdMonths.length) * 12,
-  },
-});
-const ownerMonth = (income, expense) => ({ income, expense });
-const ownerTotal = (income, expense, share) => ({
-  income,
-  expense,
-  monthlyAvg: { income: income / householdMonths.length, expense: expense / householdMonths.length },
-  annualized: {
-    income: (income / householdMonths.length) * 12,
-    expense: (expense / householdMonths.length) * 12,
-  },
-  incomeShare: share,
-});
-const household = {
-  months: householdMonths,
-  personal: Object.fromEntries(
-    householdMonths.map((month, index) => [
-      month,
-      { income: { 給与: 280_000 + index * 2_000 }, expense: { 住宅: 120_000, 食費: 90_000 + index * 1_000 } },
-    ]),
-  ),
-  bizPersonal: Object.fromEntries(
-    householdMonths.map((month) => [month, { income: 120_000, expense: 20_000 }]),
-  ),
-  explainability: { month: householdMonths.at(-1), rate: 0.96, unexplained: 8_000, total: 215_000 },
-  balance: householdBalance,
-  totals: {
-    months: householdMonths.length,
-    income: sum(householdBalance.map((row) => row.income)),
-    livingCost: sum(householdBalance.map((row) => row.livingCost)),
-    bizAdvance: sum(householdBalance.map((row) => row.bizAdvance)),
-    expense: sum(householdBalance.map((row) => row.expense)),
-    balance: sum(householdBalance.map((row) => row.balance)),
-    saveRate: 0.42,
-    monthlyAvg: { income: 412_500, livingCost: 212_500, expense: 232_500, balance: 180_000 },
-    annualized: { income: 4_950_000, livingCost: 2_550_000, expense: 2_790_000, balance: 2_160_000 },
-  },
-  livingCost: [
-    { big: '住宅', total: 720_000, monthlyAvg: 120_000, annualized: 1_440_000, share: 0.56 },
-    { big: '食費', total: 555_000, monthlyAvg: 92_500, annualized: 1_110_000, share: 0.44 },
-  ],
-  comparison: {
-    rows: householdBalance.map((row) => ({
-      month: row.month,
-      biz: { income: row.revenue, expense: row.bizExpense, balance: row.revenue - row.bizExpense },
-      personal: {
-        income: row.personalIncome,
-        expense: row.livingCost,
-        balance: row.personalIncome - row.livingCost,
-      },
-    })),
-    biz: compareTotal(2_775_000, 795_000),
-    personal: compareTotal(1_710_000, 1_275_000),
-  },
-  byOwner: {
-    rows: householdMonths.map((month, index) => ({
-      month,
-      business: ownerMonth(120_000 + index * 3_000, 20_000),
-      spouse: ownerMonth(260_000 + index * 2_000, 190_000),
-      family: ownerMonth(20_000, 10_000),
-      unset: ownerMonth(0, 0),
-    })),
-    totals: {
-      business: ownerTotal(765_000, 120_000, 0.43),
-      spouse: ownerTotal(1_590_000, 1_140_000, 0.89),
-      family: ownerTotal(120_000, 60_000, 0.07),
-      unset: ownerTotal(0, 0, 0),
+// 家計収支 (GET /api/household) は core householdSummary の形。家計全体 = 事業 + 個人 を全月で閉じる
+const segmentTotals = (income, expense) => ({ income, expense, balance: income - expense });
+const householdSeries = householdMonths.map((month, index) => {
+  const biz = segmentTotals(120_000 + index * 3_000, 40_000);
+  const personal = segmentTotals(280_000 + index * 2_000, 230_000 + index * 1_000);
+  const previousBiz = segmentTotals(110_000, 38_000);
+  const previousPersonal = segmentTotals(270_000, 220_000);
+  const sumTotals = (a, b) => segmentTotals(a.income + b.income, a.expense + b.expense);
+  return {
+    month,
+    total: sumTotals(biz, personal),
+    biz,
+    personal,
+    previous: {
+      total: sumTotals(previousBiz, previousPersonal),
+      biz: previousBiz,
+      personal: previousPersonal,
     },
-    unmappedInstitutions: [],
-    noInstitutionCount: 0,
+  };
+});
+const householdTotal = (key) =>
+  segmentTotals(
+    sum(householdSeries.map((row) => row[key].income)),
+    sum(householdSeries.map((row) => row[key].expense)),
+  );
+const householdPrevious = segmentTotals(
+  sum(householdSeries.map((row) => row.previous.total.income)),
+  sum(householdSeries.map((row) => row.previous.total.expense)),
+);
+const householdCurrent = householdTotal('total');
+const householdChange = (key) => ({
+  diff: householdCurrent[key] - householdPrevious[key],
+  rate: (householdCurrent[key] - householdPrevious[key]) / householdPrevious[key],
+});
+const householdMonth = householdMonths.at(-1);
+const household = {
+  empty: false,
+  range: { from: householdMonths[0], to: householdMonth },
+  months: householdMonths,
+  selectedMonth: householdMonth,
+  summary: {
+    total: householdCurrent,
+    monthlyAverage: segmentTotals(
+      householdCurrent.income / householdMonths.length,
+      householdCurrent.expense / householdMonths.length,
+    ),
+    annualized: segmentTotals(
+      (householdCurrent.income / householdMonths.length) * 12,
+      (householdCurrent.expense / householdMonths.length) * 12,
+    ),
+    recordedMonths: householdMonths.length,
+    ledgerRowCount: householdSeries.length,
+    previousYear: householdPrevious,
+    change: {
+      income: householdChange('income'),
+      expense: householdChange('expense'),
+      balance: householdChange('balance'),
+    },
   },
+  segments: {
+    biz: { ...householdTotal('biz'), incomeShare: householdTotal('biz').income / householdCurrent.income },
+    personal: {
+      ...householdTotal('personal'),
+      incomeShare: householdTotal('personal').income / householdCurrent.income,
+    },
+  },
+  series: householdSeries,
+  categories: [
+    ['housing', '住居費', 720_000, 700_000],
+    ['food', '食費', 540_000, 500_000],
+    ['utilities', '光熱費', 90_000, 95_000],
+    ['education', '教育費', 60_000, 60_000],
+    ['transport', '交通費', 30_000, 25_000],
+    ['other', 'その他', householdCurrent.expense - 1_440_000, householdPrevious.expense - 1_380_000],
+  ].map(([key, label, current, previous]) => ({
+    key,
+    label,
+    current,
+    previous,
+    diff: current - previous,
+    rate: (current - previous) / previous,
+    share: current / householdCurrent.expense,
+  })),
+  defaultCategory: 'food',
+  owners: [
+    { owner: 'business', label: '本人', current: householdTotal('biz').income, previous: 660_000 },
+    {
+      owner: 'spouse',
+      label: 'パートナー',
+      current: householdTotal('personal').income - 120_000,
+      previous: 1_500_000,
+    },
+    { owner: 'family', label: '子ども', current: 120_000, previous: 120_000 },
+    { owner: 'unset', label: 'その他', current: 0, previous: 0 },
+  ].map((row) => ({ ...row, diff: row.current - row.previous })),
+  transfers: {
+    month: householdMonth,
+    rows: [
+      {
+        date: `${householdMonth}-05`,
+        description: '口座振替',
+        amount: 100_000,
+        from: { owner: 'business', label: '本人' },
+        to: { owner: 'spouse', label: 'パートナー' },
+      },
+    ],
+    totalCount: 1,
+  },
+  sources: { primary: 'マネーフォワード ME', otherCount: 1 },
+  labels: { business: '本人', spouse: 'パートナー', family: '子ども', unset: 'その他' },
+  period: {
+    applied: { from: householdMonths[0], to: householdMonth },
+    label: `${householdMonths[0]} 〜 ${householdMonth}`,
+  },
+  updatedAt: null,
+};
+const householdCategory = {
+  key: 'food',
+  label: '食費',
+  range: { from: householdMonths[0], to: householdMonth },
+  current: 540_000,
+  previous: 500_000,
+  diff: 40_000,
+  rate: 0.08,
+  month: householdMonth,
+  monthTotal: 12_000,
+  transactions: [
+    {
+      date: `${householdMonth}-03`,
+      description: 'スーパー',
+      amount: 12_000,
+      payee: 'スーパー',
+      owner: { owner: 'spouse', label: 'パートナー' },
+    },
+  ],
+  totalCount: 1,
+  rule: {
+    majors: ['食費'],
+    note: '「食費」に該当する取引（食料品・外食・飲料等）を自動で分類して集計しています。',
+  },
+  detailHref: `/classify?month=${householdMonth}&big=食費`,
 };
 
 const aiReportRow = {
@@ -1211,6 +1254,7 @@ const responseFor = (url) => {
   if (path === '/api/sub-vendors/candidates') return { candidates: [], excluded: [], dealRows: 0 };
   if (path === '/api/sub-vendors') return { vendors: [], accountOptions: [], review: [] };
   if (path === '/api/household') return household;
+  if (path === '/api/household/category') return householdCategory;
   if (path === '/api/statements') return statements;
   if (path === '/api/unsettled') return { rows: [] };
   if (path === '/api/ai/tasks') return { tasks: [] };
@@ -1538,6 +1582,7 @@ try {
     VISUAL_SCOPE === 'additional' ||
     VISUAL_SCOPE === 'overview' ||
     VISUAL_SCOPE === 'reconciliation' ||
+    VISUAL_SCOPE === 'household' ||
     VISUAL_SCOPE === 'trends'
   ) {
     const additionalRoutes = [
@@ -1565,6 +1610,7 @@ try {
         (zoom === 1 && ADDITIONAL_WIDTHS.includes(width)) || viewportLabel === 'rail-zoom200';
       const routes = additionalRoutes.filter((route) => {
         if (VISUAL_SCOPE === 'overview') return route.name === 'Overview';
+        if (VISUAL_SCOPE === 'household') return route.name === 'Household';
         if (VISUAL_SCOPE === 'trends') return route.name === 'Trends';
         if (VISUAL_SCOPE === 'reconciliation')
           return (
@@ -1584,6 +1630,7 @@ try {
       for (const route of routes) {
         runtimeProblems.length = 0;
         let reconciliationInteraction = null;
+        let householdInteraction = null;
         await send('Page.navigate', { url: `${BASE_URL}${route.path}` });
         if (route.openReport) {
           await waitFor(
@@ -1851,6 +1898,53 @@ try {
             failures.push(`${tag} Reconciliation INPが200msを超えている`);
           if (PERFORMANCE_GATE && vitals.cls > 0.1)
             failures.push(`${tag} Reconciliation CLSが0.1を超えている`);
+        }
+        if (route.name === 'Household') {
+          const measureCategorySelection = async (label) => {
+            await evaluate(`(() => {
+              const button = [...document.querySelectorAll('.household-category-table tbody button')]
+                .find((node) => node.textContent?.trim() === ${JSON.stringify(label)});
+              button?.click();
+            })()`);
+            await waitFor(
+              `[...document.querySelectorAll('.household-category-table tbody button')]
+                .some((node) => node.textContent?.trim() === ${JSON.stringify(label)} && node.getAttribute('aria-pressed') === 'true')`,
+              `${tag} Household ${label} 選択`,
+            );
+            // React の属性更新と、border-collapse を含むテーブルのスタイル再計算を同じフレームで採らない。
+            await evaluate(
+              '(async () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))))()',
+            );
+            return JSON.parse(
+              await evaluate(`JSON.stringify((() => {
+                const button = [...document.querySelectorAll('.household-category-table tbody button')]
+                  .find((node) => node.textContent?.trim() === ${JSON.stringify(label)});
+                const row = button?.closest('tr');
+                const cells = [...(row?.children ?? [])];
+                const styles = cells.map((cell) => getComputedStyle(cell));
+                const px = (value) => Number.parseFloat(value || '0');
+                return {
+                  label: ${JSON.stringify(label)},
+                  ariaSelected: row?.getAttribute('aria-selected') === 'true',
+                  ariaPressed: button?.getAttribute('aria-pressed') === 'true',
+                  cellCount: cells.length,
+                  oneSurface: styles.length === 5 && new Set(styles.map((style) => style.backgroundColor)).size === 1,
+                  frame: {
+                    top: styles.length === 5 && styles.every((style) => px(style.borderTopWidth) >= 2),
+                    bottom: styles.length === 5 && styles.every((style) => px(style.borderBottomWidth) >= 2),
+                    left: px(styles[0]?.borderLeftWidth) >= 2,
+                    right: px(styles.at(-1)?.borderRightWidth) >= 2,
+                  },
+                };
+              })())`),
+            );
+          };
+
+          householdInteraction = {
+            first: await measureCategorySelection('住居費'),
+            middle: await measureCategorySelection('食費'),
+            last: await measureCategorySelection('その他'),
+          };
         }
         const routeMetrics = JSON.parse(
           await evaluate(`JSON.stringify((() => ({
@@ -2783,6 +2877,24 @@ try {
           failures.push(
             `${tag} Total cashflow の3ペイン・内部scroll・sticky見出し・選択操作の文脈が崩れている (${JSON.stringify(routeMetrics.totalCashflow)})`,
           );
+        if (route.name === 'Household') {
+          const selections = Object.values(householdInteraction ?? {});
+          if (
+            selections.length !== 3 ||
+            selections.some(
+              (selection) =>
+                !selection.ariaSelected ||
+                !selection.ariaPressed ||
+                selection.cellCount !== 5 ||
+                !selection.oneSurface ||
+                Object.values(selection.frame).some((value) => !value),
+            )
+          )
+            failures.push(
+              `${tag} Household のカテゴリ選択行が、先頭・中間・末尾のどこでも5列で閉じた1つの面と強罫線にならない (${JSON.stringify(householdInteraction)})`,
+            );
+          console.log(`${tag} Householdカテゴリ選択 ${JSON.stringify(householdInteraction)}`);
+        }
         if (
           route.name === 'Overview' &&
           zoom === 1 &&
@@ -2874,6 +2986,17 @@ try {
           writeFileSync(
             join(OUTPUT_DIR, `total-cashflow-${width}.png`),
             Buffer.from(routeShot.data, 'base64'),
+          );
+        }
+        if (route.name === 'Household' && zoom === 1 && [375, 768, 1280, 1600].includes(width)) {
+          await evaluate(
+            "document.querySelector('.household-categories')?.scrollIntoView({ block: 'center' })",
+          );
+          await sleep(100);
+          const categoryShot = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
+          writeFileSync(
+            join(OUTPUT_DIR, `household-categories-${width}.png`),
+            Buffer.from(categoryShot.data, 'base64'),
           );
         }
         if (route.name === 'Trends' && zoom === 1 && [1280, 1908].includes(width)) {

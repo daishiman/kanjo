@@ -8,6 +8,7 @@ import {
   DIAGNOSIS_NOTE_MAX,
   type Dataset,
   type ExpenseScope,
+  HOUSEHOLD_CATEGORY_KEYS,
   LEGACY_SCOPE,
   LIABILITY_CATEGORIES,
   type PeriodRange,
@@ -34,7 +35,8 @@ import {
   diagnosisWaterfall,
   findMetric,
   fullRange,
-  household,
+  householdCategoryDetail,
+  householdSummary,
   isCloseMonth,
   isDiagnosisActionStatus,
   isOverviewScope,
@@ -48,6 +50,7 @@ import {
   overviewAggregate,
   overviewScopeMonths,
   periodLabel,
+  periodMonths,
   profitAndLoss,
   reconciliationReport,
   resolveDiagnosisSelection,
@@ -72,6 +75,7 @@ import type { AuthEnv, AuthVariables } from '../auth.js';
 import { loadCashflowSources } from '../cashflow-sources.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
+import { loadOwnerLabels } from '../owner-labels-store.js';
 import { dealFromRow, getDb, loadBackupPayload, loadDataset, loadVendorMemories } from '../store.js';
 import { loadSubscriptionsInput } from './subs.js';
 
@@ -597,10 +601,92 @@ analyticsRoute.get('/business-spend', async (c) => {
   });
 });
 
-analyticsRoute.get('/household', async (c) => {
-  const { data } = await loadScoped(c);
-  return c.json(household(data));
+/* -------- 家計収支 (spec-household-cashflow-screen §11) -------- */
+
+const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
+// 期間パラメータ (from / to / year / span) は loadScoped が解く。壊れた期間は全期間に倒す既存の規則のまま
+const periodQuery = {
+  from: z.string().optional(),
+  to: z.string().optional(),
+  year: z.string().optional(),
+  span: z.string().optional(),
+};
+const householdQuery = z
+  .object({ ...periodQuery, month: z.string().regex(MONTH_PATTERN).optional() })
+  .strict();
+const householdCategoryQuery = z
+  .object({
+    ...periodQuery,
+    key: z.enum(HOUSEHOLD_CATEGORY_KEYS),
+    month: z.string().regex(MONTH_PATTERN).optional(),
+  })
+  .strict();
+// zValidator の hook は成功時にも呼ばれる。success を見ずに応答を返すと正しい要求まで 400 になる
+const invalidHouseholdQuery = (result: { success: boolean }, c: Context) => {
+  if (!result.success)
+    return c.json(
+      apiError('invalid_query', 'month は YYYY-MM、key は 6 区分のいずれかで指定してください'),
+      400,
+    );
+};
+
+/**
+ * 家計画面の入力。総収支画面と同じ `loadScoped` + `loadCashflowSources` で読み、
+ * core の `householdSummary` / `householdCategoryDetail` に同じ入力を渡す。
+ * 読み方を画面ごとに変えると、家計全体と総収支の総合が同じ期間で食い違う (不変条件 1)。
+ */
+async function loadHouseholdInput(c: ScopedContext, month: string | undefined) {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const { all, period } = await loadScoped(c);
+  const [sources, labels, [updated]] = await Promise.all([
+    loadCashflowSources(db, userId, all.mfTx),
+    loadOwnerLabels(db, userId),
+    db
+      .select({ at: sql<string | null>`max(${s.imports.committedAt})` })
+      .from(s.imports)
+      .where(and(eq(s.imports.userId, userId), eq(s.imports.status, 'committed'))),
+  ]);
+  const range = period.applied ?? fullRange(all);
+  const input = range && {
+    all,
+    deals: sources.deals,
+    verdicts: sources.verdicts,
+    exclusions: sources.freeeExclusions,
+    mfExcludedTxIds: sources.mfExclusions.map((row) => row.txId),
+    range,
+    month: month ?? null,
+    labels,
+  };
+  // 期間外の月は黙って最終月に倒さず 400 にする。URL の month と画面の選択月が食い違ったまま表示しない
+  const monthOutOfRange = Boolean(range && month && !periodMonths(range).includes(month));
+  return { input, labels, period, monthOutOfRange, updatedAt: updated?.at ?? null };
+}
+
+const monthOutOfRangeError = apiError('invalid_month', '選んだ月は表示中の期間に含まれていません');
+
+analyticsRoute.get('/household', zValidator('query', householdQuery, invalidHouseholdQuery), async (c) => {
+  const { month } = c.req.valid('query');
+  const { input, labels, period, monthOutOfRange, updatedAt } = await loadHouseholdInput(c, month);
+  if (monthOutOfRange) return c.json(monthOutOfRangeError, 400);
+  // 期間内で集計対象になった台帳行が 0 件なら空状態。振替・除外行だけの月を 0 円実績と誤認しない。
+  if (!input) return c.json({ empty: true, labels, period, updatedAt });
+  const summary = householdSummary(input);
+  if (summary.summary.ledgerRowCount === 0) return c.json({ empty: true, labels, period, updatedAt });
+  return c.json({ empty: false, ...summary, period, updatedAt });
 });
+
+analyticsRoute.get(
+  '/household/category',
+  zValidator('query', householdCategoryQuery, invalidHouseholdQuery),
+  async (c) => {
+    const { key, month } = c.req.valid('query');
+    const { input, monthOutOfRange } = await loadHouseholdInput(c, month);
+    if (monthOutOfRange) return c.json(monthOutOfRangeError, 400);
+    if (!input) return c.json(apiError('no_data', 'まだ取り込まれたデータがありません'), 404);
+    return c.json(householdCategoryDetail({ ...input, key }));
+  },
+);
 
 /**
  * freee 未決済(未入金・未払)の一覧。
@@ -765,7 +851,12 @@ analyticsRoute.get('/export/matrix.csv', async (c) => {
  */
 analyticsRoute.get('/export/transactions.csv', async (c) => {
   const { data } = await loadScoped(c);
-  const rows: (string | number)[][] = [[...TRANSACTION_EXPORT_HEADER], ...transactionExportRows(data)];
+  const labels = await loadOwnerLabels(getDb(c.env.DB), c.get('userId'));
+  // 名義列は利用者が保存した表示名で出す。画面とCSVで同じ人が別の名前にならないようにする
+  const rows: (string | number)[][] = [
+    [...TRANSACTION_EXPORT_HEADER],
+    ...transactionExportRows(data, labels),
+  ];
   return new Response(`﻿${toCsv(rows)}`, {
     headers: {
       'Content-Type': 'text/csv; charset=utf-8',

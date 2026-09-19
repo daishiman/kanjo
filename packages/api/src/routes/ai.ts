@@ -26,6 +26,7 @@ import {
 import { type PreviousReportSummary, buildAgentData } from '../ai/dataset.js';
 import type { AuthEnv } from '../auth.js';
 import * as s from '../db/schema.js';
+import { loadOwnerLabels } from '../owner-labels-store.js';
 import { runtimeSchemaGuard } from '../schema-guard.js';
 import { dealFromRow, getDb, loadDataset, loadSubVendorExclusions, loadSubVendors } from '../store.js';
 
@@ -157,12 +158,13 @@ async function loadPreviousReports(
 async function agentPayload(db: ReturnType<typeof getDb>, task: typeof s.aiTasks.$inferSelect) {
   const data = await loadDataset(db, task.userId);
   if (data.months.length === 0) return null;
-  const [previousReports, vendors, excluded, dealRows, analysis] = await Promise.all([
+  const [previousReports, vendors, excluded, dealRows, analysis, ownerLabels] = await Promise.all([
     loadPreviousReports(db, task),
     loadSubVendors(db, task.userId),
     loadSubVendorExclusions(db, task.userId),
     db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, task.userId)),
     db.select().from(s.analysisSettings).where(eq(s.analysisSettings.userId, task.userId)),
+    loadOwnerLabels(db, task.userId),
   ]);
   // 「サブスクではない」と記録済みの支払先は、AIへの指示文でも候補に挙げない
   const candidates = subsCandidates(
@@ -177,6 +179,7 @@ async function agentPayload(db: ReturnType<typeof getDb>, task: typeof s.aiTasks
     candidates,
     // 設定画面で変えられる統計の基準月数(行が無ければ既定の6ヶ月)
     statMinMonths: analysis[0]?.statMinMonths,
+    ownerLabels,
   });
 }
 

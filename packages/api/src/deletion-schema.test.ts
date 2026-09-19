@@ -63,7 +63,7 @@ describe('現行migrationの適用', () => {
       .sort()
       .at(-1);
     expect(latest).toBe(EXPECTED_D1_MIGRATION);
-    expect(EXPECTED_D1_MIGRATION).toBe('0044_diagnosis_action_states.sql');
+    expect(EXPECTED_D1_MIGRATION).toBe('0045_owner_labels.sql');
   });
 
   it('Release Aは共有R2 cleanupを追加し、退役表を互換性のため残す', async () => {

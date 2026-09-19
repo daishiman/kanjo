@@ -18,9 +18,24 @@ const AUTHENTICATED_APP_SOURCE = readFileSync(new URL('./AuthenticatedApp.tsx', 
 // 画面で、いずれも PageHeader が要求する route id を持たない。
 // 業務ルートの表示契約はこの3枚を除いた集合に掛ける
 const NON_ROUTED_PAGES = ['/Login.tsx', '/PasswordChange.tsx', '/Improvement.tsx'];
+// 実装を下位ディレクトリへ分けたページ (例: pages/household/) は、ルートの import 先に再輸出だけを残す。
+// 契約は再輸出の先の実体に掛ける (再輸出の1行だけを見て PageHeader 無しと判定しない)
+const NESTED_PAGE_SOURCES = import.meta.glob('./pages/*/*.tsx', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+}) as Record<string, string>;
+const REEXPORT = /^export \{ \w+ \} from '(\.\/[\w/]+)\.js';$/m;
+const resolvePageSource = (source: string): string => {
+  const target = REEXPORT.exec(source)?.[1];
+  if (!target) return source;
+  const nested = NESTED_PAGE_SOURCES[`./pages/${target.slice(2)}.tsx`];
+  if (nested === undefined) throw new Error(`再輸出の先が見つからない: ${target}`);
+  return nested;
+};
 const ROUTED_PAGE_SOURCES = Object.entries(PAGE_SOURCES)
   .filter(([path]) => !NON_ROUTED_PAGES.some((name) => path.endsWith(name)) && !path.includes('.test.'))
-  .map(([, source]) => source);
+  .map(([, source]) => resolvePageSource(source));
 
 describe('業務ルート契約', () => {
   it('パスとIDが一意で全件がナビに含まれる', () => {

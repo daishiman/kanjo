@@ -3,7 +3,8 @@
  * - 画面もAPIも数値を作らず、この純関数の結果だけを描く(計算の正本は1箇所)。
  * - 未記帳月は 0 ではなく null。0 は「使わなかった」、null は「まだ入力していない」で意味が違う。
  */
-import { type Dataset, OWNER_LABEL, type OwnerKey } from './types.js';
+import { OWNER_LABEL_KEYS, ownerLabel } from './owner-labels.js';
+import type { Dataset, OwnerKey } from './types.js';
 
 /** 科目1行分。values は months と同じ長さ */
 export interface AccountMonthRow {
@@ -81,19 +82,21 @@ export interface OwnerMonthSeries {
   allUnset: boolean;
 }
 
-const OWNER_ORDER: OwnerKey[] = ['business', 'spouse', 'family', 'unset'];
-
 /**
- * 名義(事業/妻/家族/未設定)別の個人支出の月次推移。
+ * 名義(本人/パートナー/子ども/その他。表示名は利用者が変えられる)別の個人支出の月次推移。
  * 個人支出は未記帳月の概念を持たない(MF明細は取り込んだ月がそのまま実績)ので 0 埋めで返す。
  * 期間合計が 0 の名義は落とす(使っていない名義の帯を積み上げない)。
  */
-export function ownerMonthlyExpense(data: Dataset, months: string[]): OwnerMonthSeries {
-  const rows = OWNER_ORDER.map((owner) => {
+export function ownerMonthlyExpense(
+  data: Dataset,
+  months: string[],
+  labels?: Partial<Record<OwnerKey, string>> | null,
+): OwnerMonthSeries {
+  const rows = OWNER_LABEL_KEYS.map((owner) => {
     const values = months.map((m) => data.personalByOwner[m]?.[owner]?.expense ?? 0);
     return {
       owner,
-      label: OWNER_LABEL[owner],
+      label: ownerLabel(owner, labels),
       values,
       total: values.reduce((s, v) => s + v, 0),
     };

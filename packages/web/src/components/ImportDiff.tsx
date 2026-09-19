@@ -28,11 +28,13 @@ import {
   type ImportDiffResult,
   type ImportVendorCandidate,
   type Owner,
+  type OwnerLabels,
   type TxRow,
   api,
   apiUpload,
   ownerLabel,
 } from '../api.js';
+import { useOwnerLabels } from '../owner-labels.js';
 import { Button } from './Button.js';
 import { describeError } from './Page.js';
 
@@ -46,10 +48,10 @@ export const MAX_DECISION_TXS = 200;
 const SCOPE_TEXT: Record<string, string> = { biz: '事業', per: '家計' };
 
 /** 属性値を人の読む語にする。空欄は「—」に寄せて、無指定と空文字を同じに見せない */
-const valueText = (attr: Attr, raw: string | null): string => {
+const valueText = (attr: Attr, raw: string | null, labels?: OwnerLabels): string => {
   if (raw === null || raw === '') return '—';
   if (attr === 'cls') return SCOPE_TEXT[raw] ?? raw;
-  if (attr === 'owner') return ownerLabel(raw as Owner);
+  if (attr === 'owner') return ownerLabel(raw as Owner, labels);
   return raw;
 };
 
@@ -145,16 +147,17 @@ function useDescriptions(months: readonly string[]) {
 
 /** 3点比較の1行。base(前回の取込値)・current(今の手当て)・incoming(今回の取込値) */
 function ThreeWayRow({ attr, cell }: { attr: Attr; cell: NonNullable<ImportDiffConflict['attrs'][Attr]> }) {
+  const { labels } = useOwnerLabels();
   return (
     <tr>
       <th scope="row" style={{ textAlign: 'left', fontWeight: 'normal' }}>
         {ATTR_LABEL[attr]}
       </th>
-      <td className="sub">{valueText(attr, cell.base)}</td>
+      <td className="sub">{valueText(attr, cell.base, labels)}</td>
       <td>
-        <strong>{valueText(attr, cell.current)}</strong>
+        <strong>{valueText(attr, cell.current, labels)}</strong>
       </td>
-      <td>{valueText(attr, cell.incoming)}</td>
+      <td>{valueText(attr, cell.incoming, labels)}</td>
     </tr>
   );
 }
@@ -251,6 +254,7 @@ function ConflictCard({
  * ここで「これでいい」と言えれば、次の取込から自動で当たるようになる。
  */
 function SuggestList({ candidates }: { candidates: readonly ImportVendorCandidate[] }) {
+  const { labels } = useOwnerLabels();
   const pin = useMutation({
     mutationFn: (vendorKey: string) =>
       api(`/vendor-memory/${encodeURIComponent(vendorKey)}`, {
@@ -270,7 +274,8 @@ function SuggestList({ candidates }: { candidates: readonly ImportVendorCandidat
             <span>
               <strong>{row.vendorLabel}</strong>
               <small>
-                {valueText('cls', row.cls)} / {valueText('big', row.big)} / {valueText('owner', row.owner)}・
+                {valueText('cls', row.cls)} / {valueText('big', row.big)} /{' '}
+                {valueText('owner', row.owner, labels)}・
                 {candidates.filter((candidate) => candidate.vendorKey === row.vendorKey).length}件
               </small>
             </span>

@@ -144,6 +144,18 @@ describe('図表カタログ', () => {
     expect(b.indicator.every((i) => typeof i.basis === 'string' && i.basis.length > 0)).toBe(true);
   });
 
+  it('名義別推移の系列名に保存済みの表示名を使う', () => {
+    const d = synthetic(3);
+    d.personalByOwner[last(d)] = {
+      business: { income: 0, expense: 12_000 },
+      spouse: { income: 0, expense: 0 },
+      family: { income: 0, expense: 0 },
+      unset: { income: 0, expense: 0 },
+    };
+    const out = buildAgentData(d, { from: last(d), to: last(d) }, { ownerLabels: { business: 'わたし' } });
+    expect(out.charts.find((chart) => chart.id === 'owner_trend')?.data?.series[0]?.label).toBe('わたし');
+  });
+
   it('Skill 側の chart-catalog.json がアプリのカタログと一致する(pnpm catalog:export で更新)', () => {
     const onDisk = readFileSync(resolve(process.cwd(), '../..', CATALOG_JSON_RELATIVE), 'utf8');
     expect(onDisk).toBe(catalogJson());

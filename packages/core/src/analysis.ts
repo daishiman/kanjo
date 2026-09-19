@@ -541,22 +541,12 @@ export interface LivingCostRow {
   share: number;
 }
 
-export interface HouseholdData {
-  months: string[];
-  personal: Dataset['personal'];
-  bizPersonal: Dataset['bizPersonal'];
-  /** 説明可能率 = (支出合計 − 未分類 − 明細不明のカード引落) ÷ 支出合計（最新月・個人分） */
-  explainability: { month: string; rate: number; unexplained: number; total: number } | null;
-  /** 月別の収支バランス(取込月の昇順) */
-  balance: BalanceMonth[];
-  /** 全期間の合計・月平均・年換算 */
-  totals: BalanceTotals;
-  /** 生活費の大項目別(全期間、金額の大きい順) */
-  livingCost: LivingCostRow[];
-  /** 事業(freee帳簿) と 個人(MF・仕分け「個人」) を並べた比較 */
-  comparison: Comparison;
-  /** 個人分の名義別(事業/妻/家族/未設定)。根拠は MF の保有金融機関→名義の設定と手動編集 */
-  byOwner: ByOwner;
+/** 説明可能率 = (支出合計 − 未分類 − 明細不明のカード引落) ÷ 支出合計（最新月・個人分） */
+export interface PersonalExplainability {
+  month: string;
+  rate: number;
+  unexplained: number;
+  total: number;
 }
 
 /** 片側(事業 or 個人)の1ヶ月。データが無い月は null */
@@ -783,28 +773,18 @@ export function byOwner(data: Dataset, months: string[]): ByOwner {
   return { rows, totals, unmappedInstitutions: Array.from(unmapped).sort(), noInstitutionCount: noInst };
 }
 
-export function household(data: Dataset): HouseholdData {
-  const months = Object.keys(data.personal).sort();
-  let explainability: HouseholdData['explainability'] = null;
-  if (months.length) {
-    const m = months[months.length - 1];
-    const exp = data.personal[m].expense;
-    const total = sum(Object.values(exp));
-    const unexplained = (exp['未分類'] || 0) + (exp['現金・カード'] || 0);
-    explainability = { month: m, rate: total > 0 ? (total - unexplained) / total : 1, unexplained, total };
-  }
-  const balance = months.map((m) => balanceMonth(data, m));
-  return {
-    months,
-    personal: data.personal,
-    bizPersonal: data.bizPersonal,
-    explainability,
-    balance,
-    totals: balanceTotals(balance),
-    livingCost: livingCostByBig(data, months),
-    comparison: comparison(data, months),
-    byOwner: byOwner(data, months),
-  };
+/** 個人分 (MF) の記帳がある月。取込月の昇順 */
+export const personalMonths = (data: Dataset): string[] => Object.keys(data.personal).sort();
+
+/** 最新月の個人支出のうち、未分類と明細不明のカード引落が占めない割合。個人の記帳が無ければ null */
+export function personalExplainability(data: Dataset): PersonalExplainability | null {
+  const months = personalMonths(data);
+  if (!months.length) return null;
+  const m = months[months.length - 1];
+  const exp = data.personal[m].expense;
+  const total = sum(Object.values(exp));
+  const unexplained = (exp['未分類'] || 0) + (exp['現金・カード'] || 0);
+  return { month: m, rate: total > 0 ? (total - unexplained) / total : 1, unexplained, total };
 }
 
 /* ======================== 指標ガイド: ベンチマーク ======================== */
@@ -848,12 +828,14 @@ export function benchmarks(data: Dataset): Benchmark[] {
   const subsShare = avgRev > 0 && recent3.length ? mean(recent3.map(subsMonthly)) / avgRev : null;
   const bep = diagnosis(data).bep;
   const safetyMargin = avgRev > 0 && bep.breakEven > 0 ? bep.safetyMargin : null;
-  const hh = household(data);
-  const saveRate = hh.totals.saveRate;
-  const living = hh.totals.livingCost;
+  const months = personalMonths(data);
+  const totals = balanceTotals(months.map((m) => balanceMonth(data, m)));
+  const livingCost = livingCostByBig(data, months);
+  const saveRate = totals.saveRate;
+  const living = totals.livingCost;
   const share = (big: string) => {
     if (living <= 0) return null;
-    return (hh.livingCost.find((r) => r.big === big)?.total ?? 0) / living;
+    return (livingCost.find((r) => r.big === big)?.total ?? 0) / living;
   };
   const foodShare = share('食費');
   const telecomShare = share('通信費');

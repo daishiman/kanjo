@@ -7,7 +7,7 @@
  * 算出できない要素 (平均月商 0 など) はその要素を落とし、残った重みで正規化し直す。
  * 0 点として混ぜると「データが無い」と「悪い」が同じ点になり、読み違えるため。
  */
-import { diagnosis, household } from './analysis.js';
+import { balanceMonth, balanceTotals, diagnosis, personalMonths } from './analysis.js';
 import { mean, std } from './stats.js';
 import type { Dataset } from './types.js';
 
@@ -112,7 +112,7 @@ function fixedCostRatioFactor(data: Dataset): RawFactor {
 /** 貯蓄率 = (収入 − 支出) / 収入。0.30 以上で 100、0 以下で 0 */
 function savingsRateFactor(data: Dataset): RawFactor {
   const label = '貯蓄率';
-  const totals = household(data).totals;
+  const totals = balanceTotals(personalMonths(data).map((m) => balanceMonth(data, m)));
   if (totals.income <= 0) return unavailable('savings_rate', label, '収入が 0 のため');
   const actual = totals.balance / totals.income;
   return ok('savings_rate', label, actual, clamp((100 * actual) / 0.3));
@@ -121,7 +121,7 @@ function savingsRateFactor(data: Dataset): RawFactor {
 /** 収支の安定性 = 月次純収支の CV。0.10 以下で 100、0.50 以上で 0 */
 function stabilityFactor(data: Dataset): RawFactor {
   const label = '収支の安定性';
-  const balances = household(data).balance.map((b) => b.balance);
+  const balances = personalMonths(data).map((m) => balanceMonth(data, m).balance);
   if (balances.length < STABILITY_MIN_MONTHS)
     return unavailable('stability', label, `対象月が ${STABILITY_MIN_MONTHS} ヶ月に満たないため`);
   const avg = mean(balances);

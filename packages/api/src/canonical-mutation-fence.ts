@@ -24,7 +24,8 @@ type CanonicalConsumer =
   | 'duplicate_verdicts'
   | 'freee_deal_exclusions'
   | 'mf_tx_exclusions'
-  | 'reconciliation_actions';
+  | 'reconciliation_actions'
+  | 'owner_labels';
 
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -141,6 +142,12 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   },
   { method: 'DELETE', path: /^\/api\/category-options$/, consumers: ['category_options'] },
   { method: 'PUT', path: /^\/api\/classification$/, consumers: ['institution_owners', 'tx_edits'] },
+  /*
+   * 0043: 名義の表示名。復元の write-set には入らない (JSON バックアップは表示名を持たない) が、
+   * 名義の割当て (PUT /classification) と同じ利用者設定の更新なので、同じ変更系保護の下で直列化する。
+   * 4 名義を 1 回で差し替えるため、2 つの保存が重なると名義ごとに別の保存の値が残りうる。
+   */
+  { method: 'PUT', path: /^\/api\/settings\/owner-labels$/, consumers: ['owner_labels'] },
   { method: 'POST', path: /^\/api\/sub-vendors$/, consumers: ['sub_vendors'] },
   {
     method: 'PUT',

@@ -167,6 +167,26 @@
 
 セルを選んだときの詳細パネルと明細への遷移(受入 S2)、選択セルの URL 復元(受入 5)、行の分類を取引先へ切り替える軸(§2.2)は本サイクルで実装していない。仕様側の記述は緩めていないので、次に着手するときは `specs/spec-expense-matrix-screen.md` がそのまま使える。
 
+## 決定の更新(2026-09-19 / 家計収支画面)
+
+`/household` を作り直した。判断の正本は `specs/spec-household-cashflow-screen.md` と `architecture/household-cashflow-*.md`、実装判断の記録は [`household-screen/design-decisions.md`](household-screen/design-decisions.md)、集計の定義は [`data-schema.md`](data-schema.md) の「家計収支の集計」。
+
+| 更新した判断 | これまで | 2026-09-19の決定 | 変更した理由 / 却下案 |
+|---|---|---|---|
+| ナビの表示名 | 累計収支 | **家計収支** | 画面が答える問いが「累計」ではなく「家計全体の収支がどう変わったか」になった。`routeMetadata.ts` の `label` / `task` / `journeyHint` を同時に変えた |
+| 家計全体の定義 | 事業と個人を別々に並べる | **家計全体 = 事業 + 個人**(重複なし)。総収支画面の総合と一致させる | 2 つの画面で「全体」の数字が違うと、どちらを信じればよいか分からない。却下: 画面側で合算する(定義が 2 か所に分かれる) |
+| 名義の表示名 | コード内の固定語(`OWNER_LABEL`) | **既定は 本人 / パートナー / 子ども / その他**。利用者が「名義ラベルを編集」ダイアログで 1〜20 文字に変えられ、家計・設定・明細・仕分けの全画面に同じ名前で出る | 家族構成は世帯ごとに違う。保存成功時に名義を表示する画面のキャッシュをまとめて無効化し、画面ごとに古い名前が残らないようにする |
+| 画面状態の URL | 無し | **`seg`(グラフの対象: 既定 all は書かない)/ `month`(選択月)/ `cat`(開いているカテゴリ。`none` は閉じた状態)** | 再読み込みや共有で同じ画面に戻れるようにする。期間外の `month` は API が `invalid_month` を返し、画面が指定を外して期間の最終月へ戻す |
+| 前年データが無い月・項目 | 0 として比べる | **「—」を表示し、増減も率も出さない**(BR-006) | 0 と比べると「前年より 100% 増えた」という誤った読みになる |
+| 用語集 | `explainability` / `savingsRate` を収録 | **2 語を外した** | 作り直した画面のどこにも出ない語で、`check-glossary` が「辞書にあるが画面で使われない語」として落とす |
+| 事業と個人の純収支 | — | **R4 の決定値(事業 +¥571,000 / 個人 +¥185,000)** | spec の画像の数値が自己矛盾していたため、計算で整合する値を正とした(design-decisions §3 R4) |
+
+### この決定を古びさせないために
+
+- `packages/core/test/household-summary-contract.test.ts` が spec のフィクスチャの計算値、前年欠損の null、振替の対推定、そして `data-schema.md` の 6 区分の表と `HOUSEHOLD_CATEGORY_MAP` の一致を固定する。表だけ・core だけを書き換えると落ちる。
+- `packages/web/src/pages/household/household.dom.test.tsx` が URL の `seg` / `month` / `cat` の読み書きと、前年欠損の「—」を固定する。
+- `packages/api/test/owner-labels.integration.test.ts` が名義ラベルの入力検証(空・21 文字・制御文字・重複・未知のキー)、20 文字ちょうどの保存、取込み中の 409 を固定する。
+
 ## 決定の更新(2026-09-18 / サブスク画面)
 
 `/subscriptions`(整える > サブスク)を `design/FINAL-UI/images/09-subscriptions.png` に合わせて作り直した。判断の正本は `specs/spec-subscriptions-screen.md` と `architecture/subscriptions-*.md`、見取り図と規則の値は [`subscriptions-screen.md`](subscriptions-screen.md)。
