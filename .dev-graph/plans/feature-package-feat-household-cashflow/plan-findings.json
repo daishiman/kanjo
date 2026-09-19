@@ -1,0 +1,160 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/run-feat-household-cashflow-20260918T124500Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "task-graph.json / workstream-inventory.json / feature-package.json / system-build-handoff.json は同一 feature_package_id (feature-package/feat-household-cashflow) と parent_feature (feat-household-cashflow) を一貫して持ち、P05 の成果物 (household-summary.ts / analytics.ts / settings.ts / migrations/0043_owner_labels.sql / pages/household) と P07/P13 の記述が相互に矛盾しない。task-specs 間・inventory-graph 間で相互に矛盾する記述は検出されなかった (goal-spec.json との整合は評価時に確認済みだが、evidence は digest-bound な staging exact-set と決定論 gate に限定して束縛する)。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "P01..P13 exact-13 が揃い (validator phase_refs=P01..P13, violations=[])、各 task-spec は 107〜150 行の実質記述を持ち placeholder/空 section は無い。P08/P13 の適用外項目はすべて `N/A: reason` 形式で理由付きである。spec 13 節の受入 1-8 が P07 の Verification/Acceptance に写像されている (¥960,000 / +¥120,000 (+14.3%) 等の具体値まで一致)。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-13-release-deploy.md",
+        "task-specs/phase-07-acceptance.md",
+        "workstream-inventory.json"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "feature-package.json/task-graph.json/workstream-inventory.json/system-build-handoff.json は同一 feature_package_id・parent_feature・repository_id (github:daishiman/kanjo) を持ち、task_node_ids と task-graph.json の node id が SYS-HOUSEHOLD-P01..P13 で完全一致する。staging-manifest.json 記載17ファイル (+ staging-manifest.json 自身) の sha256 を独立に再計算し全件一致した。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の13 nodeは P01→P02→...→P13の単一直鎖 (depends_on は常に直前 phase_ref 1件のみ、P01の depends_on=[])。循環・後方 edge・cross-feature task 参照は検出されず、全 edge が同一 feature_package_id/parent_feature 内に閉じている。",
+      "evidence": [
+        "task-graph.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "${CLAUDE_PLUGIN_CACHE}/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "${REPO_ROOT}",
+        "--staging",
+        ".dev-graph/staging/run-feat-household-cashflow-20260918T124500Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b\",\n  \"feature_package_id\": \"feature-package/feat-household-cashflow\",\n  \"parent_feature\": \"feat-household-cashflow\",\n  \"phase_refs\": [\"P01\",\"P02\",\"P03\",\"P04\",\"P05\",\"P06\",\"P07\",\"P08\",\"P09\",\"P10\",\"P11\",\"P12\",\"P13\"],\n  \"violations\": []\n}",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "22b07711e220c6ce01f24167176389bc684df634762e43ae97fb123a6bb43697"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "8a23278da9e14d83ef5ec9793d2bee48d9e6b197df285096b50ddd97e21254e6"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "a09a3e506e980b91c2a46cd0081845ce5588c3c477ed05d14a2a45b2b2643e5f"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "a0eaa777d6b542352fa47b5114fd86e5cb8bacf49797e787d3872f9a073e6fb2"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "f784a6e2ab67642fba1931547a1b7f96b1f03b14fa5eaa5f1f3671f7118d5275"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "30810e1ff42685ad2e031fe3986ff53404495669a6d3b93af86a1982b0d78d0d"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "76c36389bcc76017615f162b6a6df9b974e045b1b0eb34a8637bd37a7b580e33"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "e8b82a111400273499eabd6bd7aa8eaaaa965642ce60037a875b6f579648200b"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "0d713968f89d1dd8028a465acf0964f43570a1fa723b9c888650deac348b9555"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "4ea90bc51e96aeeb2ad7faff2472785b95c978eabc50d9dfd01ce249f576368b"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "d95e9262ed1df9f5ef8950ee7bdf41b648137da3553a336abfa9e2d08c907a07"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "742c0b7a677bda028a09fd42b7852794cabe865a48f1afec63ba1ed653590ef8"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "7cabb41247288fbecd4882e10b82f5fd0655be1d7ed455171facc10a7e440515"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "2e1146481e408bc7552f6422d21881336212fcf1df733058f3b7f96e745265e2"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "e08598fef4ccac7652aaa97ceada0ac72d756ebd6b462e7e156f9b26459697c8"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "7abb41ae6c915fa8aed7d46e404c77c0a5821271f6e2dbc2ac3f0fa7f0818990"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "fda3649cf91993270541ab9a227b7b292b183c4ff8830d49e175192fa441d061"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "1323ea8801dfbc7adc95efac86cb88c7ede1cbbed14cfdf2dd7b746f60c95742"
+    }
+  ],
+  "staleness_rule": "promotion 直前に staging-manifest.json#files 記載17ファイルおよび staging-manifest.json 自身の current-byte SHA-256 を再計算し、本 evaluated_inputs の記録値・本 evaluated_digest (validated_digest)・staging-manifest.json#canonical_digest の三者へ再照合する。1バイトでも current-byte が evaluated_inputs の記録値と異なれば、本 plan-findings は stale として無効化し、evaluator を再起動して新しい validated_digest に対する verdict を再発行する。別 digest に対する古い verdict は promotion gate で破棄する。",
+  "findings": []
+}

@@ -3,7 +3,7 @@ status: confirmed
 category: backend
 aggregate: 確定
 spec_cells: [backend.web, backend.mobile, backend.tablet, backend.desktop-windows, backend.desktop-linux, backend.desktop-macos]
-serves_goals: [G3, G4]
+serves_goals: [G2, G3, G5]
 ---
 
 # バックエンド (backend)
@@ -15,12 +15,12 @@ serves_goals: [G3, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-matrix-backend-web-004。裏付け質疑 (`qa_refs`): `qa-matrix-backend-web-evidence-001`, `qa-matrix-backend-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、バックエンドでは端末内での再集計とサーバ集計の分担、オフライン時のセル内訳の取得可否を決める必要があった。対象を web のみとする利用者決定によりその検討は発生しない。集計は Worker 上の core 純関数に一本化する。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、バックエンドでは一度に取得する月数を増やしたときの応答サイズと分割取得の方針を決める必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、バックエンドではローカル実行時のデータ格納先と API の同梱可否を決める必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、バックエンドではローカル実行時のプロセス構成と D1 代替の保存先を決める必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、バックエンドではローカル実行時の権限とバックグラウンド集計を決める必要があった。対象を web のみとする利用者決定によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-household-backend-web-004。裏付け質疑 (`qa_refs`): `qa-household-backend-web-evidence-001`, `qa-household-backend-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、バックエンドではモバイル向けに家計の集計を小分けにした API (月単位のページング・差分同期) を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、バックエンドではタブレットの 2 ペイン表示向けに本体とカテゴリ詳細をまとめて返す API を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップアプリの端末内キャッシュと同期するための版管理 API を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップアプリからの長期トークン認証を受ける経路を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、バックエンドではネイティブ版のバックグラウンド更新向けに集計の差分通知を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,10 +28,8 @@ serves_goals: [G3, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | Clean Architecture の依存方向を core (matrix 集計・偏り度スコア・セル内訳) ← api (matrix route) ← web (マトリックス画面) の一方向へ反映した。現行 matrix(data: Dataset) は事業固定で行が data.biz.categories に限られているため、scope と axis を引数に取り、行と列の合計と平均・階級境界・偏り上位 3 点を含む形へ拡張する。api は既存 GET /api/matrix をこの形へ広げ、セル内訳は別経路として足す。既存の CSV 出力は同じ純関数の結果から書き出し、画面と CSV で別々に集計しない。 |
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側に閉じ、core の集計関数は D1 を知らない Dataset だけを受け取る形へ反映した。期間の前後 12 か月まで広げた読み取りも route の Dataset 組み立てで行い、純関数には『表示期間』と『比較のために読めた範囲』を区別した形で渡す。セル内訳の取得も同じ Dataset の絞り込みで組み、内訳専用の SQL を別に増やさない。取引先軸の上位 20 件 + その他への集約も純関数側で行い、route は集約後の行だけを JSON へ写す。 |
-
-> **未記入** の行は、上流の正本を掲げただけで本章の確定内容へ反映した箇所を示せていない。表への出現は反映の証拠ではない。
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 依存方向を core (householdSummary・区分詳細・振替の対推定) ← api (household route・owner-labels route) ← web (家計収支画面) の一方向へ反映した。旧 household(data) と HouseholdData を削除し、総収支画面と同じ台帳の行集合を入力にする純関数へ置き換える。台帳行へ名義を足すのは core の totalCashflowLedger の中で行い、api と web は名義の解決規則を持たない。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側に閉じ、householdSummary は D1 を知らない台帳の行集合だけを受け取る形へ反映した。前年同期間の読み取りは loadScoped の範囲拡張で行い、純関数には表示期間と前年の範囲を分けて渡す。freee の取引・判定・除外は総収支と同じ loadCashflowSources で読み、家計専用の SQL を増やさない。区分詳細の主な取引 5 件も同じ行集合の絞り込みで作る。 |
 
 ## 確定内容 (質疑録)
 
@@ -39,43 +37,43 @@ serves_goals: [G3, G4]
 
 ### Web (web)
 
-- 資するゴール: G3, G4
+- 資するゴール: G2, G3, G5
 
-#### 主たる接地根拠: `qa-matrix-backend-web-004`
-
-**問**
-
-web のバックエンド要件は何か。マトリックスの集計 (スコープ・軸・モード・合計と平均・濃淡階級・偏り3点) とセル内訳をどこでどう算出し、どの API で返すかを確定する。 (このうち利用者が実際に選んだ部分)
-
-**答**
-
-利用者が本サイクルで選んだのは次の 5 点である。(1) 濃淡の階級は表示中のデータセルの最小〜最大を 7 階級に等分した、表全体で共通のスケールとする。合計行・平均行・合計列・平均列は階級の算出から除外する (含めると本体セルが最下位階級に潰れるため)。(2) 前月比・前年同月比の比較対象が表示期間の外にあっても、実データがあれば参照する。(3) 偏りが大きい 3 点は、月内偏り ((セル金額 − その月の平均) ÷ その月の標準偏差) と 行内偏り ((セル金額 − その行の平均) ÷ その行の標準偏差) の大きい方に、前月比が算出できる場合の増加ボーナス max(0, 前月比) を足したスコアの降順で選ぶ。(4) 要因の示唆は生成 AI を呼ばず、決定論のテンプレートへ金額・比率・件数を差し込んで作る。(5) 行の分類が『取引先』のときは、期間合計の上位 20 取引先 + 『その他』1 行に畳む。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion で選択した dec-matrix-heat-scale (1)、dec-matrix-out-of-range-comparison (2)、dec-matrix-outlier-score (3)、dec-matrix-insight-generation (4)、dec-matrix-counterparty-axis (5)。いずれも status=confirmed で user_decision を持つ。 / 回答時刻: 2026-09-16T11:14:15Z)
-
-#### 裏付け質疑: `qa-matrix-backend-web-evidence-001`
+#### 主たる接地根拠: `qa-household-backend-web-004`
 
 **問**
 
-backend 章の裏付けとして、現行の core 集計関数と API は何を返していて、どこを拡張する必要があるか。
+家計の集計ロジックと API をどこに置き、どの契約で返すか。
 
 **答**
 
-packages/core/src/analysis.ts の matrix(data: Dataset): MatrixData は MatrixRow {label, isTotal, series, yearTotals, yoy} の配列を返し、行は data.biz.categories に 経費計 と 売上（記帳） を足したものである。MatrixData は months / unrecordedExpMonths / years / rows を持つ。packages/api/src/routes/analytics.ts は :418 で analyticsRoute.get('/matrix', ...) が c.json(matrix(data)) を返し、:648 で /export/matrix.csv を返す。拡張が要るのは、(1) 事業固定ではなく scope (total|biz|home) を受けること、(2) 行を取引先でも組めること (axis)、(3) 合計・平均を行方向と列方向の両方で返すこと、(4) 濃淡の階級境界を返すこと、(5) 偏り3点を返すこと、(6) セル単位の内訳を返す新エンドポイントである。現行に合計行 (isTotal) の概念はあるが、平均と列方向の集計、および濃淡スケールは存在しない。
+家計の集計は core の新しい純関数 householdSummary (household-summary.ts) 1 か所に集め、入力は総収支画面と同じ totalCashflowLedger の行集合とする (利用者決定 qa-household-decision-001)。旧 household() と HouseholdData は置き換えて削除する。台帳行へ名義 (freee 行は business、MF 行は resolveTx の owner、未解決は unset) を追加する。1 回の呼び出しで家計全体・事業・個人の総額と月平均・年換算、前年同期間 (欠けた月があれば null)、月別系列と前年同月、生活費 6 区分 (対応表は core の定数 1 か所。qa-household-decision-007)、名義別収入、振替一覧と対推定 (同額・逆符号の入出金を組にする。qa-household-decision-003。日付の許容幅と同点の決め方は qa-household-backend-web-003 (agent 推定) を参照) を返す。数値は収入・支出を正本にし、差・率・構成比は計算値にする (qa-household-decision-006)。api は GET /api/household をこの形へ拡張し、選択時だけの GET /api/household/category (主な取引 5 件と区分の月合計) と GET / PUT /api/settings/owner-labels を設ける。期間は loadScoped、freee・判定・除外は loadCashflowSources で読み、クエリと本文は zod で検証する。不変条件 (総収支の総合と一致、事業 + 個人 = 家計全体、6 区分の和 = 総支出、名義別の和 = 総収入、振替は台帳に現れない) をテストで固定する。契約の正本は specs/spec-household-cashflow-screen.md §11-§12。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: packages/core/src/analysis.ts:177-217 と packages/api/src/routes/analytics.ts:418,648 の読解 / 回答時刻: 2026-09-16T08:43:17Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-backend-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-backend-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
 
-#### 裏付け質疑: `qa-matrix-backend-web-003`
+#### 裏付け質疑: `qa-household-backend-web-evidence-001`
 
 **問**
 
-web のバックエンド要件は何か。マトリックスの集計 (スコープ・軸・モード・合計と平均・濃淡階級・偏り3点) とセル内訳をどこでどう算出し、どの API で返すかを確定する。 (このうち agent が補完した設計判断の部分)
+backend 章の裏付けとして、現行の家計集計と総収支台帳について何を観測したか。
 
 **答**
 
-上記の利用者決定を満たすための実装配置は agent の設計判断であり、利用者へ選択肢として提示していない。(1) 算出は packages/core の純関数 1 か所に置く。matrix 集計関数は Dataset と {scope: total|biz|home, axis: category|vendor} を受け、months / rows (key, label, series, total, average) / columnTotals / columnAverages / grandTotal / grandAverage / heatScale {min,max,steps:7} を返す。scope は total = biz + home を必ず満たす。未記帳月は合計・平均・比率・濃淡から除外し、平均は未記帳月を除いた月数で割る。(2) 表示モード (全部 / 構成比 / 前年差) は同じ series から導く別の純関数とし、構成比はその月の合計に対する割合 (列合計 100%)、前年差は前年同月との差額で、前年同月が無ければ '—'。(3) 偏り3点の同点は 金額降順 → 新しい月 → 行の固定順で解く。標準偏差 0 の行・月はスコア 0 とし、未記帳月・合計行・平均行は対象外、候補が 3 件未満ならある分だけ返す。示唆のパターンは 急増 (前月比 ≥ +50%) / 増加 (+10% 以上 +50% 未満) / 継続高水準 (前月比 +10% 未満かつ行平均の 1.5 倍以上) / 減少後も高水準 (前月比 < 0 かつ 前年同月比 > 0) / 前年比のみ増 / その他 の 6 種に分ける。(4) API は Hono の Cloudflare Worker (packages/api/src/routes/analytics.ts) に置き、GET /api/matrix に既存の期間クエリへ scope / axis / mode を足して集計結果と movers と updatedAt を返す。セル内訳は GET /api/matrix/cell?month=&axis=&key=&scope= を新設し、amount / mom / yoy / badge / transactions (金額降順で上位 10 件と truncated) / sources / updatedAt / detailHref を返す。含まれる取引の合計はセル金額と一致させる。(5) 既存の GET /api/export/matrix.csv は同じ core 関数から生成し、画面と CSV で数値が食い違わないようにする。
+GET /api/household は packages/api/src/routes/analytics.ts:528-531 で loadScoped の data を core の household(data) に渡して返すだけで、専用の zod 検証を持たない。household() は packages/core/src/analysis.ts:771-790、HouseholdData は同 529-548 にあり、事業入金と事業立替を家計へ含める独自定義で前年比較を持たない。総収支の台帳は packages/core/src/total-cashflow.ts の totalCashflowLedger (798 行目) で、TrendSourceRow (703 行目) は side・io・category・payee・amount・origin・account を持つが名義を持たない。前年同期間の欠損規則は totalCashflowScreen 内で previousYearPeriod の全月が既知のときだけ前年を出す (1050-1066 行目)。振替は MfTx.isTransfer (types.ts:80) で、isMfCountable (types.ts:92-94) が台帳から除く。名義の解決は classify.ts の resolveTx が owner を返す。総収支ルートは routes/total-cashflow.ts で loadCashflowSources から deals・verdicts・除外を読む。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 既存コード (packages/core/src/dataset.ts、packages/api/src/routes/analytics.ts、既存の CSV 出力) の読解にもとづく agent の設計判断。利用者へ提示して選択を得たものではない。 / 回答時刻: 2026-09-16T11:14:15Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-18T11:33:59Z)
+
+#### 裏付け質疑: `qa-household-backend-web-003`
+
+**問**
+
+web の家計収支画面で、利用者が決めていない 振替の入出金の対推定の規則 を何にするか。
+
+**答**
+
+TRANSFER_PAIR_MAX_DAYS = 3。同額の出金と入金を日付差 3 日以内で対にし、候補が複数あるときは日付差 → 出金側の日付 → id の順で決める。対にならないものは相手不明とする。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-18T12:02:30Z)
 
 ## To-Be / Delta
 
@@ -83,42 +81,40 @@ web のバックエンド要件は何か。マトリックスの集計 (スコ�
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: 『偏りが大きい 3 点』を core の純関数で算出して表示する。順位・対象 (カテゴリと年月)・金額・前月比・前年同月比・要因の示唆を、月内偏り (その月の平均と標準偏差) と行内偏り (その行の平均と標準偏差) の大きい方に増加ボーナスを足したスコアの降順で 3 件選ぶ。要因の示唆は AI を呼ばず、増減パターン (急増 / 増加 / 継続高水準 / 減少後も高水準 / 前年比のみ増 / その他) を判定して金額・比率・件数を差し込む決定論テンプレートで生成する。選定規則と文テンプレートを docs に明記しテストで固定する。
-- **G4**: マトリックスの集計を core の純関数とセル指向の API に置き換える。月×(カテゴリ | 取引先)、総合 / 事業 / 家計、金額 / 構成比 / 前年差、行と列の合計と平均、濃淡の階級 (表示中の全データセルの最小〜最大を 7 階級に等分した表全体共通スケール。合計行・平均行・合計列・平均列は算出から除外)、偏り上位 3 点、セル内訳の取引と出典を 1 か所で算出し、GET /api/matrix をこの形へ拡張したうえで、セル内訳は選択時に取得する。取引先軸は期間合計の上位 20 取引先 + 『その他』1 行にまとめる。前月比・前年同月比は比較対象が表示期間の外にあっても実データがあれば参照する。既存の matrix CSV 出力と総収支・分析ハブ・推移の数値と突き合わせて一致させる。
+- **G2**: 家計の集計を core の純関数 1 か所に集め、総収支の台帳 (totalCashflowLedger) を正本にする。総収入・総支出・純収支と月平均・年換算、事業と個人の分解 (和が家計全体に一致)、前年同期間との比較 (前年に欠けた月があれば比較不能として null)、月別の収入・支出・純収支と前年系列、生活費カテゴリ 6 区分の集計と構成比・前年差、名義別の収入と前年差を同じ関数から算出し、GET /api/household をこの形へ拡張する。総収支画面の『総合』と家計画面の『家計全体』が同じ期間で同じ数字になることをテストで固定する。
+- **G3**: 生活費カテゴリの行を選ぶと『カテゴリの詳細』パネルを出す。期間合計 `current`、選択月全件合計 `monthTotal`、選択月の最大 5 件プレビュー `transactions` を分離し、カテゴリのすべて見るは月とカテゴリで絞った明細へ遷移する。
+- **G5**: 振替を家計の収入・支出から除外していることを利用者が確かめられるようにする。選択月に除外した振替を家計カード内に全件 (抜粋なし) 出し、振替用の循環する『すべて見る』導線は置かない。名義間は同額・逆符号・日付が近い振替 2 行を core の純関数で対にし、それぞれの口座の名義表示名から『本人 → パートナー』のように示す。対にならない行は『相手不明』と示す。スキーマは変えない。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | 偏り上位 3 点を core の純関数で決め、境界値をテストで固定する。 | core 単体テストが、同値のときの順位付け・前月比が算出できない月・前年同月が無い場合・候補が 3 件未満の場合を検証し、画面の 3 行と一致する。 |
-| O4 | core のマトリックス集計と API がスコープ・軸・モードを一貫して返す。 | core 単体テストで 総合=事業+家計 の合計整合・構成比の列合計が 1・前年差の対象外月 (未記帳・前年同月なし) の扱い・取引先軸のその他まとめ・濃淡階級の境界が検証され、API テストで期間とスコープと軸のクエリ、セル内訳の取得、既存 matrix CSV との金額一致が緑である。 |
+| O2 | 家計の数字が総収支画面と一致し、等式が閉じる。 | core の単体テストで、同じ Dataset と期間に対し家計全体の総収入・総支出・純収支が totalCashflowLedger の総合と toBe で一致し、事業 + 個人 = 家計全体が全月で成り立ち、前年欠損月があるとき前年差が null になる。 |
+| O3 | カテゴリ詳細が選択と同期し、明細へ遷移できる。 | DOM テストで `current` / `monthTotal` / 最大 5 件の `transactions` プレビューの分離と、カテゴリのすべて見るの月・カテゴリ絞り込みを確かめる。 |
+| O5 | 振替の対推定が決定論で再現する。 | core の単体テストで、同額・逆符号・日付差の許容内の 2 行が対になり、許容外・同符号・3 行以上の競合が相手不明または一意な規則で解決され、同じ入力で同じ出力になる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I3**: core に matrix 集計関数を置き、スコープ (総合 / 事業 / 家計)・軸 (カテゴリ / 取引先)・モード (金額 / 構成比 / 前年差)・行列の合計と平均・濃淡階級・偏り上位 3 点を 1 か所で算出する。
-- **I4**: GET /api/matrix を期間・スコープ・軸・モードのクエリで受け、セル内訳 (含まれる取引と出典) は選択時に別経路で取得する。既存の matrix CSV は同じ core 関数から生成する。
-- **I7**: 集計規則・濃淡階級・偏り 3 点の選定規則・未記帳月の扱いを docs に記載し、core と DOM のテストで固定する。
+- **I1**: Household.tsx を pages/household/ 配下へ分割し、問いの見出し・出典カード・KPI と前年差・推移チャート・事業と個人の等式・カテゴリ表と詳細パネル・名義別収入・振替除外・名義ラベル設定・前年との比較・下部の選択中バーの構成に作り直し、選択中の月とカテゴリとタブを URL に保つ。
+- **I3**: core に household-summary (仮称) を新設し、totalCashflowLedger の行集合から家計全体・事業・個人の総額と月別系列、前年比較、生活費 6 区分、名義別収入を 1 か所で算出する。旧 household() の独自定義は置き換える。
+- **I4**: 生活費 6 区分 (住居費 / 食費 / 光熱費 / 教育費 / 交通費 / その他) と MF 大項目の対応表を core に 1 か所だけ置き、docs に同じ表を載せる。
+- **I5**: カテゴリ詳細の `current` / `monthTotal` / 最大 5 件の `transactions` プレビューを返す取得経路を設け、選択時にだけ取得する。カテゴリのすべて見るは明細画面を月・カテゴリ・対象で絞った URL で開く。
+- **I7**: 振替の一覧と対推定を core の純関数にし、日付差の許容・同額・逆符号・一意性の規則を docs とテストで固定する。
 
 ### 本章に効く確定意思決定
 
-- **dec-matrix-heat-scale**: ヒートマップの濃淡は何を基準に決めるか。表全体で共通のスケールにするか、月ごと (列ごと) に正規化するか。
-  - 採択: 表全体で共通の 7 階級 (表示中の全データセルの最小〜最大を等分) (`opt-global-scale`)
-  - 目的適合: G1 の『どの月・カテゴリに支出が偏っているか』という問いに直接答える。列をまたいで濃さを比較できるため、特定の月だけ突出しているセルが一目で分かる。
-- **dec-matrix-insight-generation**: 偏りが大きい 3 点の『要因の示唆』をどう生成するか。AI 生成文にするか、決定論テンプレートにするか。
-  - 採択: 増減パターンを判定し金額・比率・件数を差し込む決定論テンプレート (`opt-deterministic-template`)
-  - 目的適合: G3 の『選定規則と文テンプレートを docs に明記しテストで固定する』を満たす。同じ入力から必ず同じ文が出る。
-- **dec-matrix-out-of-range-comparison**: 前月比・前年同月比の比較対象が表示期間の外にある場合、期間外のデータを参照するか、比較を空欄にするか。
-  - 採択: 表示期間の前後 12 か月まで読み取り範囲を広げて実データがあれば参照する (`opt-read-outside-range`)
-  - 目的適合: 画像の選択セル (広告宣伝費 2026年03月) は前年同月比 +300.0% を表示しており、前年同月は表の期間外にある。参照しなければ画像を再現できない。
-- **dec-matrix-counterparty-axis**: 行の分類を『取引先』に切り替えたとき、取引先が数百件ある場合に行をどう抑えるか。
-  - 採択: 期間合計の上位 20 取引先 + 『その他』1 行に畳む (サーバ側で集約) (`opt-top20-plus-other`)
-  - 目的適合: ヒートマップは一覧して偏りを見つける道具であり、行数が画面に収まることが前提。上位 20 件で支出の大半を覆える。
-- **dec-matrix-outlier-score**: 『偏りが大きい 3 点』をどの規則で選ぶか。単純な金額順にするか、偏り度のスコア順にするか。
-  - 採択: 偏り度スコア score(cell) = max(z_month, z_row) + max(0, mom_rate) の降順 (`opt-deviation-score`)
-  - 目的適合: G3 の『月内偏りと行内偏りの大きい方に増加ボーナスを足したスコアの降順で 3 件選ぶ』をそのまま実装する。
-- **dec-matrix-fixture-authority**: 参照画像 06-matrix.png の合計・平均欄はセル値の実計算と最大 19.4 万円ずれている (画像側の丸め誤差)。再現テスト用フィクスチャはセル値と合計欄のどちらを正本にするか。
-  - 採択: セル値を正本とし、合計・平均欄を実計算値へ置き換える (`opt-cell-authority`)
-  - 目的適合: 成功基準 S4『合計・平均が表の値と一致する』を toBe による厳密一致でテストできる。期待値が算術的に閉じているため、集計ロジックの誤りがそのままテスト失敗として現れる。
+- **dec-household-categories**: 生活費の区分をどう作るか。画像の固定 6 区分へ寄せるか、金額上位 5 大項目とその他にするか。
+  - 採択: 固定 6 区分へ寄せる (`opt-fixed-six`)
+  - 目的適合: G1 の画像の表と一致し、G3 の詳細パネルで区分の意味が期間をまたいで一定になる。
+- **dec-household-figure-source**: 画像の数値が算術で閉じない欄をどう扱うか。収入・支出を正本に差を計算するか、画像の純収支を正本にして前年の総支出を調整するか。
+  - 採択: 収入・支出を正本に差を計算する (−¥80,000) (`opt-compute-from-income-expense`)
+  - 目的適合: G2 の『数字は台帳の行から作る』と一致し、どの欄も算術で閉じる。見た目の数値は一部画像と変わる。
+- **dec-household-ledger-source**: 家計収支の数字を何から作るか。総収支画面の台帳を正本にするか、現行の household() を拡張するか。
+  - 採択: 総収支の台帳を正本にする (`opt-ledger-source`)
+  - 目的適合: G2 の『家計の集計を 1 か所に集め、総収支と同じ行から作る』に直接答える。総収支の総合と家計全体が同じ行集合から出るため、両画面の数字が一致する。
+- **dec-household-transfer-pairs**: 振替の欄で名義間の移動を見せるか。入出金の対を推定して表示するか、名義間の欄を出さないか。
+  - 採択: 入出金の対を推定して表示する (`opt-transfer-pair-estimate`)
+  - 目的適合: G5 の『振替を家計の収入・支出から除外していることを確かめられる』に、どこからどこへ動いたかまで見せて答える。
 
 ## 適用された設計知識
 
@@ -126,9 +122,9 @@ web のバックエンド要件は何か。マトリックスの集計 (スコ�
 
 ### 本章での適用
 
-Clean Architecture card の Dependency Rule を集計の置き場所に適用した。月×(カテゴリ|取引先)の集計、総合/事業/家計の切り分け、金額/構成比/前年差の変換、行と列の合計と平均、濃淡の階級境界、偏り度スコアによる上位 3 点の選定は、いずれも入出力を持たない計算なので core の純関数に置く。api の route は期間と切替をクエリから受け取り、Dataset を組んで純関数へ渡し、結果を JSON の形へ写すだけにする。これにより同じ集計を CSV 出力と画面で二重に書かずに済み、既存の総収支・分析ハブ・推移との数値の一致も純関数の単体テストで確かめられる。セル内訳だけは取引の実体を返すため別の関数と別のエンドポイントに分ける。
+Clean Architecture card の Dependency Rule を家計集計の置き場所に適用した。家計全体・事業・個人の総額、月平均と年換算、前年同期間の欠損判定、生活費 6 区分への写像、名義別収入、振替の対推定は、いずれも入出力を持たない計算なので core の householdSummary 1 か所に置く。入力は総収支画面と同じ totalCashflowLedger の行集合に限り、旧 household() の独自定義 (事業入金・事業立替を家計へ含める) は削除する。こうすると総収支の総合と家計全体が同じ行から出るため、両画面の数字の一致を toBe の単体テストで確かめられる。api の /household と /household/category は期間とクエリを zod で受け、loadScoped と loadCashflowSources で組んだ入力を純関数へ渡して JSON に写すだけにする。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-16T10:14:46Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-18T11:37:52Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -259,4 +255,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| hono-zod-validator | 4.13.8 | Hono (hono.dev) | https://hono.dev/docs/guides/validation | 2026-09-16T09:23:00Z | 2026-09-16T10:13:57Z |
+| hono-zod-validator | 0.9.1 | Hono (github.com) | https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md | 2026-09-18T11:59:07Z | 2026-09-18T11:59:07Z |

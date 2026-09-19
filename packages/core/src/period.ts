@@ -67,6 +67,30 @@ export const previousYearPeriod = (range: PeriodRange): PeriodRange => ({
   to: shiftYear(range.to),
 });
 
+/** 'YYYY-MM' の期間を月キーの配列へ開く。両端を含む。 */
+export function periodMonths(range: PeriodRange): string[] {
+  const out: string[] = [];
+  let y = Number(range.from.slice(0, 4));
+  let m = Number(range.from.slice(5, 7));
+  for (;;) {
+    const key = `${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}`;
+    if (key > range.to) break;
+    out.push(key);
+    m += 1;
+    if (m > 12) {
+      m = 1;
+      y += 1;
+    }
+  }
+  return out;
+}
+
+/** 差額と率。率は前年値 0 のとき null。 */
+export const changeFromPrevious = (current: number, previous: number) => ({
+  diff: current - previous,
+  rate: previous === 0 ? null : (current - previous) / Math.abs(previous),
+});
+
 const shiftYear = (month: string): string =>
   `${String(Number(month.slice(0, 4)) - 1).padStart(4, '0')}-${month.slice(5, 7)}`;
 

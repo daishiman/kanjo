@@ -4,12 +4,14 @@ import {
   type Rule,
   type TxEdit,
   applyClassification,
+  byOwner,
+  comparison,
   emptyDataset,
   exportJSON,
-  household,
   importJSON,
   overridesFromEdits,
   parseMfRows,
+  personalMonths,
   resolveTx,
 } from '../src/index.js';
 
@@ -220,8 +222,8 @@ describe('事業 vs 個人の比較と名義別(家計)', () => {
       },
     };
     d.mfTx = [tx({ id: 'a', inst: '未設定銀行' }), tx({ id: 'b' })];
-    const h = household(d);
-    const c = h.comparison;
+    const months = personalMonths(d);
+    const c = comparison(d, months);
     expect(c.rows.map((r) => r.month)).toEqual(['2026-06', '2026-07', '2026-08']);
     expect(c.rows[0]).toMatchObject({
       biz: { income: 500000, expense: 100000, balance: 400000 },
@@ -240,7 +242,7 @@ describe('事業 vs 個人の比較と名義別(家計)', () => {
     expect(c.personal.expense).toBe(120000);
     expect(c.personal.annualized.balance).toBe(((600000 - 120000) / 2) * 12);
 
-    const o = h.byOwner;
+    const o = byOwner(d, months);
     expect(o.rows).toHaveLength(2);
     expect(o.totals.business.income).toBe(500000);
     expect(o.totals.spouse.income).toBe(100000);

@@ -1,0 +1,45 @@
+{
+  "graph_node_id": "feat-household-cashflow",
+  "artifact_kind": "feature",
+  "purpose": "家計収支画面を、『家計の総収入・総支出・純収支は、どう変わりましたか？』という問いに 1 画面で答え切る場にする。期間を選ぶと家計全体の総額と前年差を最初に掴み、月別推移で『いつ』、事業と個人・生活費カテゴリ・名義別の収入で『どこが』動いたかを確かめ、振替を二重に数えていないと納得したうえで、選んだ月やカテゴリの明細へ一直線に降りられる状態にする。家計全体の数字は総収支画面の『総合』と必ず一致させる。",
+  "goal": "/household が 10-household.png の全構成要素 (問いの見出しと出典カード・期間タブ・KPI 3 枚と前年差・月別推移 (家計全体 / 事業 / 個人のタブ、当期の棒と純収支の折れ線、前年の点線、月送り)・事業 + 個人 = 家計全体の内訳・生活費 6 区分の表とカテゴリの詳細パネル・名義別の収入・振替の除外一覧・名義ラベルの設定・前年との比較・下部の選択中バー・読込 / 空 / 失敗) をトークンと共通部品で描画し、集計が totalCashflowLedger を正本とする core の純関数 1 か所で算出されて GET /api/household と GET /api/household/category が返し、名義の表示名が owner_labels 表と GET / PUT /api/settings/owner-labels で家計・設定・明細の全画面に効き、URL の seg / month / cat と usePeriod / localStorage の期間から選択が復元でき、ナビ・パンくずが『家計収支』になり、既存の総収支・推移・マトリックス・分析ハブのテストが緑のままの状態。",
+  "scope_in": [
+    "家計収支画面 (10-household.png の全構成要素と読込・空・失敗の各状態) の作り直し。Household.tsx を packages/web/src/pages/household/ 配下へ分割し、期間は usePeriod / localStorage、URL は seg / month / cat だけを正本にする。空は選択期間の集計対象台帳行 0 件とし、振替のみ・除外行のみも空にする",
+    "packages/core の家計集計純関数 household-summary (totalCashflowLedger の行集合から家計全体・事業・個人の総額と月平均・年換算、月別系列と前年系列、前年比較と欠損時 null、生活費 6 区分と構成比・前年差、名義別収入と前年差、選択月の振替全件 (抜粋なし) と対推定)。旧 household() と HouseholdData を置き換え、参照元 (api の analytics route と ai/dataset、web の api.ts) を付け替える",
+    "生活費 6 区分 (住居費 / 食費 / 光熱費 / 教育費 / 交通費 / その他) と MF 大項目の対応表を core に 1 か所だけ置き、docs に同じ表を載せる",
+    "GET /api/household の拡張と GET /api/household/category (期間合計 current・選択月合計 monthTotal・最大 5 件の transactions プレビュー・明細導線) の新設。クエリは zod の許可リストで検証し不正は 400",
+    "owner_labels 表の追加のみの migration、runtimeSchemaGuard の必須表への追加、GET / PUT /api/settings/owner-labels (認証・パスワード変更フェンス・変更系フェンスの内側、表示名の長さと文字種の検証)、名義ラベル編集ダイアログ、家計・設定・明細の名義表示を表示名の取得関数 1 つへ寄せる",
+    "カテゴリの詳細パネル・下部の選択中バー・明細画面への遷移 (月・カテゴリ・対象で絞る URL。期間は usePeriod / localStorage)",
+    "routeMetadata・パンくず・figure-guides・glossary の /household の名称を『家計収支』へ改める",
+    "集計規則 (家計全体 = 事業 + 個人、前年比較の欠損規則、6 区分の対応表、振替の対推定) の docs 記載と、core の不変条件テスト・API 統合テスト・migration 検査・DOM テスト"
+  ],
+  "scope_out": [
+    "『累計収支』画面の新設 (対応するデザイン画像が無いため。利用者決定)",
+    "名義の内部値 (business / spouse / family) の変更と既存行の書き換え (表示名の編集で目的を満たすため。利用者決定)",
+    "明細への相手口座カラムの追加 (振替の名義間は対推定で示す。利用者決定)",
+    "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗) の作り直し (名称の統一のみ扱う)",
+    "総収支・推移・マトリックス・分析ハブの各画面の中身の作り直し (数値の一致確認だけを扱う)",
+    "集計結果の永続化・キャッシュ層・新しい索引・新しい外部依存やチャートライブラリの導入",
+    "スマートフォン・タブレット・デスクトップ向け専用アプリ (web のみ。既存の利用者決定)"
+  ],
+  "acceptance": [
+    "S1 (G1): /household で 10-household.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件である。ナビとパンくずの名称が『家計収支』である。期間内の集計対象台帳行 0 件 (振替のみ・除外行のみを含む) で空状態になる。",
+    "S2 (G2): 同じ期間で家計画面の家計全体 (総収入・総支出・純収支) と総収支画面の総合が toBe で一致し、事業 + 個人 = 家計全体が全月で閉じ、前年差の算出が総収支画面の前年比較と同じ欠損規則に従う。",
+    "S3 (G3): カテゴリ行の選択で詳細パネルと下部の選択中バーが同じ期間・同じ対象を示し、current が期間合計、monthTotal が選択月全件の合計、transactions が最大 5 件のプレビューとして分離され、カテゴリのすべて見るが対象の月とカテゴリで絞った明細へ遷移する。",
+    "S4 (G4): 名義ラベルの更新が認証・変更系フェンス・入力検証を通った場合だけ保存され、家計・設定・明細の各画面の名義表示が更新後の表示名になる。migration は追加のみで既存行の書き換えが 0 件である。",
+    "S5 (G5): 選択月の除外振替が家計カード内に全件 (抜粋なし) 現れ、振替用の循環する『すべて見る』導線が無く、その合計が家計の総収入・総支出に 1 円も含まれていない。名義間の表示が対推定規則どおりで、規則は docs に明記されテストで固定されている。",
+    "S6 (G1-G5): URL は seg / month / cat のみを持ち、期間は usePeriod / localStorage から復元する。既存の総収支・推移・マトリックス・分析ハブの数値テストが緑のままで、初期 JS 予算 (CI 実測) を超えない。既知の逸脱・未実施・一部適合は PASS に数えない。"
+  ],
+  "architecture_refs": [
+    "architecture/household-cashflow-ui-ux.md",
+    "architecture/household-cashflow-frontend.md",
+    "architecture/household-cashflow-backend.md",
+    "architecture/household-cashflow-database.md",
+    "architecture/household-cashflow-auth.md",
+    "architecture/household-cashflow-security.md",
+    "architecture/household-cashflow-infrastructure.md",
+    "architecture/household-cashflow-maintenance-ops.md",
+    "specs/spec-household-cashflow-screen.md"
+  ],
+  "updated_at": "2026-09-18T12:40:05Z"
+}

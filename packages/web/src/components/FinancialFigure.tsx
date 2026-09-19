@@ -85,7 +85,7 @@ export function FinancialFigure({
        */}
       <ul className="financial-figure__series" data-financial-series aria-label="図の系列">
         {model.summarySeries.map((series) => (
-          <li key={series.key}>
+          <li key={series.key} data-series-key={series.key}>
             <span
               aria-hidden="true"
               // 色は図のデータセットと同じ出どころ。CSS 側は var(--series-color, currentColor) で受ける

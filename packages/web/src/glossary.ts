@@ -125,13 +125,6 @@ export const GLOSSARY = {
     // 「急増」単体は交際費などの普通の文章にも出るため、サブスク文脈だと分かる表記だけを入口にする
     aliases: ['サブスクの急増', 'サブスク急増', '月額の急増'],
   },
-  explainability: {
-    term: '説明可能率',
-    short: '個人支出のうち「未分類」「現金・カード引落」以外の割合。家計がどこまで見える化できているか。',
-    desc: '個人支出のうち「未分類」「現金・カード」以外の割合。家計の見える化の度合い。',
-    bench: '80%以上を維持したい',
-    aliases: ['説明可能率', '説明可能割合', '説明可能性'],
-  },
   expenseRatio: {
     term: '経費率',
     short: '売上に対する経費の割合(経費÷売上)。',
@@ -159,12 +152,6 @@ export const GLOSSARY = {
     short: 'その科目の普段の範囲(平均±標準偏差)。上限を超えた月は「レンジ超過」として削減候補に出る。',
     bench: '上限超えは「基準レンジへ戻す」候補',
     aliases: ['基準レンジ', 'レンジ超過', '通常レンジ'],
-  },
-  savingsRate: {
-    term: '貯蓄率',
-    short: '収入のうち手元に残った割合((収入−支出)÷収入)。',
-    bench: '20%以上(世帯)',
-    aliases: ['貯蓄率', '貯蓄割合'],
   },
   bizAdvance: {
     term: '事業立替',
@@ -408,7 +395,7 @@ export const GLOSSARY = {
   },
   holderName: {
     term: '名義',
-    short: 'その口座やカードが誰のものか(事業・妻・家族)。同じ支出でも名義で家計の見え方が変わる。',
+    short: 'その口座やカードが誰のものか(事業・配偶者・家族など)。同じ支出でも名義で家計の見え方が変わる。',
     desc: 'MF明細の「保有金融機関」列から口座を特定し、口座ごとに決めた名義をその明細に付ける。明細ごとの手動編集が優先される。',
     aliases: ['名義', '口座名義'],
   },
@@ -534,16 +521,7 @@ export const GUIDE_SECTIONS: readonly GuideSection[] = [
   {
     title: 'サブスクと家計',
     lead: '毎月出ていくものと、家庭のお金の流れを見るための言葉。',
-    ids: [
-      'subsDup',
-      'subsSpike',
-      'vendor',
-      'revenueShare',
-      'explainability',
-      'savingsRate',
-      'bizAdvance',
-      'transfer',
-    ],
+    ids: ['subsDup', 'subsSpike', 'vendor', 'revenueShare', 'bizAdvance', 'transfer'],
   },
   {
     title: '記帳と仕分けの決まりごと',

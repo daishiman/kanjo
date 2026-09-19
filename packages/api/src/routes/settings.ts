@@ -6,6 +6,7 @@ import { zValidator } from '@hono/zod-validator';
 import {
   DEFAULT_STAT_MIN_MONTHS,
   type MfTx,
+  OWNER_LABEL_KEYS,
   OWNER_VALUES,
   STAT_MIN_MONTHS_MAX,
   STAT_MIN_MONTHS_MIN,
@@ -16,6 +17,7 @@ import {
   normalizeAccount,
   resolveTx,
   suggestBudgets,
+  validateOwnerLabels,
 } from '@kanjo/core';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
@@ -24,6 +26,7 @@ import type { AuthEnv } from '../auth.js';
 import { inClauseChunkSize } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
+import { loadOwnerLabels } from '../owner-labels-store.js';
 import {
   type Db,
   cashFromRow,
@@ -720,3 +723,78 @@ settingsRoute.get('/backups/:date', zValidator('param', backupDateSchema), async
     );
   return new Response(obj.body, { headers: { 'Content-Type': 'application/json' } });
 });
+
+/* -------- 名義の表示名 (0043) -------- */
+
+/**
+ * 利用者の名義の表示名。保存の無い名義は既定 (本人 / パートナー / 子ども / その他)。
+ *
+ * 家計収支・明細・CSV はすべてここを通して表示名を得る。画面ごとに別々に読むと、
+ * 保存直後に一部の画面だけ古い名前を出しうる。
+ */
+settingsRoute.get('/settings/owner-labels', async (c) => {
+  return c.json({ labels: await loadOwnerLabels(getDb(c.env.DB), c.get('userId')) });
+});
+
+/**
+ * 4 名義すべて必須・未知のキーは拒否 (部分更新しない)。
+ * 値の規則 (長さ・制御文字・重複) は画面のダイアログと同じ core の validateOwnerLabels で見る。
+ * zod は形だけを見る。ここで長さまで見ると、画面とサーバで規則が二重になりずれる。
+ */
+const ownerLabelsSchema = z
+  .object({
+    labels: z
+      .object({
+        business: z.string(),
+        spouse: z.string(),
+        family: z.string(),
+        unset: z.string(),
+      })
+      .strict(),
+  })
+  .strict();
+
+settingsRoute.put(
+  '/settings/owner-labels',
+  zValidator('json', ownerLabelsSchema, (result, c) => {
+    if (!result.success) {
+      return c.json(
+        {
+          error: {
+            code: 'invalid_owner_labels',
+            message: '名義の表示名は business / spouse / family / unset の 4 つをすべて送ってください',
+          },
+        },
+        400,
+      );
+    }
+  }),
+  async (c) => {
+    const userId = c.get('userId');
+    const checked = validateOwnerLabels(c.req.valid('json').labels);
+    if (!checked.ok) {
+      return c.json(
+        {
+          error: {
+            code: 'invalid_owner_labels',
+            message: '名義の表示名を確認してください',
+            fields: checked.fields,
+          },
+        },
+        400,
+      );
+    }
+    const db = getDb(c.env.DB);
+    const updatedAt = new Date().toISOString();
+    // 4 行を 1 回の batch で差し替える。途中で止まって名義ごとに新旧が混ざる状態を作らない
+    await db.batch([
+      db.delete(s.ownerLabels).where(eq(s.ownerLabels.userId, userId)),
+      db
+        .insert(s.ownerLabels)
+        .values(
+          OWNER_LABEL_KEYS.map((owner) => ({ userId, owner, label: checked.labels[owner], updatedAt })),
+        ),
+    ]);
+    return c.json({ labels: checked.labels });
+  },
+);

@@ -37,7 +37,7 @@
 | 図7 | `summary.current.expenseByAccount` | 項目(freee勘定科目)/ 期間(対象期間) | アプリ(降順・累積構成比) |
 | 図8 | `subscriptions.vendors` `subscriptions.other` | 項目(サブスク登録ベンダー)/ 期間(前12ヶ月〜終了月) | アプリ(上位8ベンダー+その他) |
 | 図9 | `biz.expenseByAccount` `biz.categories` `unrecordedExpenseMonths` | 項目(freee勘定科目)/ 期間(前12ヶ月〜終了月) | アプリ(core `accountMonthMatrix`。上位8科目+その他、未記帳月は空欄) |
-| 図10 | `personal.byOwner` | 区分(名義: 事業/妻/家族/未設定)/ 期間(前12ヶ月〜終了月) | アプリ(core `ownerMonthlyExpense`。支出のある名義のみ) |
+| 図10 | `personal.byOwner` | 区分(保存済みの名義表示名)/ 期間(前12ヶ月〜終了月) | アプリ(core `ownerMonthlyExpense`。支出のある名義のみ) |
 
 ### 切り口の一覧(`axes` キー。ここに無い軸は作らない)
 

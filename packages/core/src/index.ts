@@ -16,6 +16,8 @@ export * from './analysis.js';
 export * from './overview.js';
 export * from './expense-projection.js';
 export * from './total-cashflow.js';
+export * from './owner-labels.js';
+export * from './household-summary.js';
 export * from './reconciliation.js';
 export * from './analysis-hub.js';
 export * from './categories.js';

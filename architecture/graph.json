@@ -617,7 +617,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "05843382528fb59bac01a39618d21c7d16ffc2196844f40751292a2c77f85b33",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -640,7 +640,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "aa683b83952f8d5cda302aa3b26e2150fa8306d080c02fe03648cb32aeafe0b4",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -663,7 +663,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "5819bdcc8ddab7f90e038451e3835e406b3c84c98a492dcb7088451ad73a674a",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -686,7 +686,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "e532dd19fe36b269cb64da9433bf854d7e576120457d6f095a5b7cebf75940dd",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -709,7 +709,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "43416dd0ae8d102622e9c3e1c75496c9f9d2ca8217b2fac378555d42c82cf8d6",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -732,7 +732,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "73ddaf752a28edcc278ef0accb77411a9a77dae0857990352307db902f74f9b1",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -755,7 +755,7 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "fede51eb4a0dd594e4e8cafb51c3ca7d389aea3a16228fcc353061d9679490db",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -778,12 +778,196 @@
         "imported_at": "2026-09-16T11:55:20Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "940691e19ee39682e106476ef8be9117c203916c8f9cbd76bf06f63d76f9bd1b",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-18-expense-matrix/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
       "referenced_by": [
         "feat-expense-matrix"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "家計収支 — 既存の認証とフェンスの内側に置く 4 経路",
+      "file_path": "architecture/household-cashflow-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "30ba6c0055709da3317723b5e3225f3beb6ac0701fa529a32aad9b60a8fdd496",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "家計収支 — 総収支台帳を入力にする core 純関数 1 か所と 3 経路の API",
+      "file_path": "architecture/household-cashflow-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "05968afeedc3f4ae572a389eb14e57436114352c58442d5b78104aafd8ca45b4",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "家計収支 — owner_labels 表だけを足す追加のみの migration",
+      "file_path": "architecture/household-cashflow-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "06cac52233e70390939c023e2c62c85b27c991c3c1e26a623c4528de81400bba",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "家計収支 — pages/household への分割とサーバ状態・URL 状態の分離",
+      "file_path": "architecture/household-cashflow-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "6dac265091684f5892afc368f27a7fbcdb0c9bbc4f69109a47eea70afaeb6dff",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "家計収支 — 基盤を変えず要求ごとに導出する",
+      "file_path": "architecture/household-cashflow-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "b80d7f55fdb32981311d2c931a5bbc3d422edbe0ba5460e15b40ee1722e522b1",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "家計収支 — 不変条件テストと仕様フィクスチャによる回帰検出",
+      "file_path": "architecture/household-cashflow-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "6bc0855d54a0d2a8171fe86914b37c161e1f43eaf752e682790bf02402052dfb",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "家計収支 — 表示名とクエリの zod 許可リストと外部送信なし",
+      "file_path": "architecture/household-cashflow-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "b6a0a70a0aa6c4be9670003a387dc7ab359b9df4fc8b5da5eddcbef130867dd2",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
+      ]
+    },
+    {
+      "id": "arch-household-cashflow-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "家計収支 — 問いから明細までの縦積みと選択の URL 保持",
+      "file_path": "architecture/household-cashflow-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "8f63b6a76287ed9a738241c5371344a231b534404672337abe67d6ff7f97f4d8",
+        "imported_at": "2026-09-18T12:24:49Z"
+      },
+      "referenced_by": [
+        "feat-household-cashflow"
       ]
     },
     {

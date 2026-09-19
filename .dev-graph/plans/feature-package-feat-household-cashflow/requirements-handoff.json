@@ -1,0 +1,48 @@
+{
+  "feature_id": "feat-household-cashflow",
+  "feature_package_id": "feature-package/feat-household-cashflow",
+  "graph_revision": 3,
+  "graph_snapshot_digest": "9c4a6b22dd5bb7eab69fd05fa079d13534146bae429a26493debe420373b7f42",
+  "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-household-cashflow/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-household-cashflow/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-household-cashflow/task-graph.json"
+  },
+  "plan_validated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-HOUSEHOLD-P01",
+    "SYS-HOUSEHOLD-P02",
+    "SYS-HOUSEHOLD-P03",
+    "SYS-HOUSEHOLD-P04",
+    "SYS-HOUSEHOLD-P05",
+    "SYS-HOUSEHOLD-P06",
+    "SYS-HOUSEHOLD-P07",
+    "SYS-HOUSEHOLD-P08",
+    "SYS-HOUSEHOLD-P09",
+    "SYS-HOUSEHOLD-P10",
+    "SYS-HOUSEHOLD-P11",
+    "SYS-HOUSEHOLD-P12",
+    "SYS-HOUSEHOLD-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0",
+  "task_artifacts": [
+    "tasks/feat-household-cashflow/sys-household-p01.md",
+    "tasks/feat-household-cashflow/sys-household-p02.md",
+    "tasks/feat-household-cashflow/sys-household-p03.md",
+    "tasks/feat-household-cashflow/sys-household-p04.md",
+    "tasks/feat-household-cashflow/sys-household-p05.md",
+    "tasks/feat-household-cashflow/sys-household-p06.md",
+    "tasks/feat-household-cashflow/sys-household-p07.md",
+    "tasks/feat-household-cashflow/sys-household-p08.md",
+    "tasks/feat-household-cashflow/sys-household-p09.md",
+    "tasks/feat-household-cashflow/sys-household-p10.md",
+    "tasks/feat-household-cashflow/sys-household-p11.md",
+    "tasks/feat-household-cashflow/sys-household-p12.md",
+    "tasks/feat-household-cashflow/sys-household-p13.md"
+  ]
+}

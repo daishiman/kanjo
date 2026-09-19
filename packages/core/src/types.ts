@@ -134,18 +134,12 @@ export function normalizeOwner(value: unknown): Owner | null {
   throw new OwnerValidationError(value);
 }
 
-/** 名義の表示名 */
+/** 名義の鍵。表示名は owner-labels.ts の ownerLabel() から引く */
 export type OwnerKey = Owner | 'unset';
 export interface OwnerMonth {
   income: number;
   expense: number;
 }
-export const OWNER_LABEL: Record<Owner | 'unset', string> = {
-  business: '事業',
-  spouse: '妻',
-  family: '家族',
-  unset: '未設定',
-};
 
 /**
  * 仕分けルール。配列の並び順＝評価順（先勝ち）。

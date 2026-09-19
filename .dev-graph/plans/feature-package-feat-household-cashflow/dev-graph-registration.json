@@ -1,0 +1,1307 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-household-cashflow/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-household-cashflow",
+  "parent_feature": "feat-household-cashflow",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-HOUSEHOLD-P01": "beads",
+    "SYS-HOUSEHOLD-P02": "beads",
+    "SYS-HOUSEHOLD-P03": "beads",
+    "SYS-HOUSEHOLD-P04": "beads",
+    "SYS-HOUSEHOLD-P05": "beads",
+    "SYS-HOUSEHOLD-P06": "beads",
+    "SYS-HOUSEHOLD-P07": "beads",
+    "SYS-HOUSEHOLD-P08": "beads",
+    "SYS-HOUSEHOLD-P09": "beads",
+    "SYS-HOUSEHOLD-P10": "beads",
+    "SYS-HOUSEHOLD-P11": "beads",
+    "SYS-HOUSEHOLD-P12": "beads",
+    "SYS-HOUSEHOLD-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と持ち越し 4 件の着手時整理",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p01",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "docs/household-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "household-summary 純関数・3 経路 API・owner_labels・URL 単一真実のワークストリーム設計決定記録",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p02",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P01"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "docs/household-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "集計契約・API 契約・名義表示名契約・URL 契約の独立レビュー",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P02"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "docs/household-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 不変条件・API 契約・migration・DOM の失敗テスト先行作成 (持ち越し 4 件を契約テストで固定)",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P03"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "packages/core/test/household-summary-contract.test.ts",
+        "packages/api/test/household.integration.test.ts",
+        "packages/api/test/owner-labels.integration.test.ts",
+        "packages/web/src/pages/household/household.dom.test.tsx",
+        "packages/core/test/household-categories-contract.test.ts"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "household-summary 純関数・3 経路 API・owner_labels・家計収支画面・名称統一の実装",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p05",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P04"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/household-summary.ts",
+        "packages/core/src/total-cashflow.ts",
+        "packages/core/src/analysis.ts",
+        "packages/core/src/classify.ts",
+        "packages/core/src/types.ts",
+        "packages/core/src/exports.ts",
+        "packages/core/src/chart-aggregates.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/api/src/routes/settings.ts",
+        "packages/api/src/ai/dataset.ts",
+        "packages/api/src/cashflow-sources.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/index.ts",
+        "migrations/0043_owner_labels.sql",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/Household.tsx",
+        "packages/web/src/pages/household/",
+        "packages/web/src/components/Page.tsx",
+        "packages/web/src/components/charts.ts",
+        "packages/web/src/period.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/figure-guides.ts",
+        "packages/web/src/glossary.ts"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テストと型検査と lint の実行記録",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P05"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "docs/household-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入基準 S1 から S6 の検証",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P06"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "docs/household-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "旧 household() と HouseholdData の除去と名義表示の重複経路の整理",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p08",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P07"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/analysis.ts",
+        "packages/core/src/types.ts",
+        "packages/core/src/exports.ts",
+        "packages/core/src/chart-aggregates.ts",
+        "packages/api/src/ai/dataset.ts",
+        "packages/web/src/api.ts"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・入力検証・変更系フェンス・JS バンドル予算の保証確認",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P08"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "docs/household-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p10",
+        "independent-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P09"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "docs/household-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P10"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "docs/household-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "集計規則・6 区分の対応表・振替の対推定・名義表示名の docs 最終同期",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p12",
+        "documentation-sync"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P11"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "docs/household-screen/design-decisions.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-HOUSEHOLD-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信と migration 適用とクローズアウト",
+      "project_id": "feature-package-feat-household-cashflow",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "household-cashflow",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-18T12:54:50Z",
+      "updated_at": "2026-09-18T12:54:50Z",
+      "depends_on": [
+        "SYS-HOUSEHOLD-P12"
+      ],
+      "related_nodes": [
+        "arch-household-cashflow-auth",
+        "arch-household-cashflow-backend",
+        "arch-household-cashflow-database",
+        "arch-household-cashflow-frontend",
+        "arch-household-cashflow-infrastructure",
+        "arch-household-cashflow-maintenance-ops",
+        "arch-household-cashflow-security",
+        "arch-household-cashflow-ui-ux",
+        "spec-household-cashflow-screen"
+      ],
+      "resource_scope": [
+        "docs/household-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-household-cashflow",
+      "feature_package_id": "feature-package/feat-household-cashflow",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-household-cashflow/sys-household-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-household-cashflow/plan-findings.json",
+        "evaluated_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-household-cashflow/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "4780d9fe76b196197a6648e031dc9cdce44fb72507396ce1d5557d93402c9c2b",
+        "imported_at": "2026-09-18T12:54:50Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-household-cashflow/sys-household-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-18T12:50:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

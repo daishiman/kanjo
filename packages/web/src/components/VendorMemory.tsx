@@ -18,12 +18,14 @@ import { Link } from 'react-router-dom';
 import {
   type Cls,
   type Owner,
+  type OwnerLabels,
   type VendorMemoryReapply,
   type VendorMemoryRow,
   api,
   ownerLabel,
 } from '../api.js';
 import { dateTime } from '../format.js';
+import { useOwnerLabels } from '../owner-labels.js';
 import { Button } from './Button.js';
 import { DataTable } from './DataTable.js';
 import { describeError } from './Page.js';
@@ -43,12 +45,12 @@ const DISPOSITION_PILL: Record<VendorMemoryRow['disposition'], string> = {
 };
 
 /** 適用内容を1行の文にする。空欄は書かない(「— / — / —」を読ませない) */
-export function appliedText(row: VendorMemoryRow): string {
+export function appliedText(row: VendorMemoryRow, labels?: OwnerLabels): string {
   const parts = [
     row.cls ? SCOPE_TEXT[row.cls] : null,
     row.big || null,
     row.mid || null,
-    row.owner ? ownerLabel(row.owner as Owner) : null,
+    row.owner ? ownerLabel(row.owner as Owner, labels) : null,
   ].filter((part): part is string => !!part);
   return parts.length ? parts.join(' / ') : '(何も決めていません)';
 }
@@ -177,6 +179,7 @@ export function VendorMemorySettings() {
     queryFn: () => api<{ memories: VendorMemoryRow[] }>('/vendor-memory'),
   });
   const rows = memories.data?.memories ?? [];
+  const { labels } = useOwnerLabels();
 
   return (
     <div className="card">
@@ -210,7 +213,7 @@ export function VendorMemorySettings() {
             {rows.map((row) => (
               <tr key={row.vendorKey}>
                 <td>{row.vendorLabel || row.vendorKey}</td>
-                <td>{appliedText(row)}</td>
+                <td>{appliedText(row, labels)}</td>
                 <td>
                   <span className={DISPOSITION_PILL[row.disposition]}>
                     {DISPOSITION_LABEL[row.disposition]}

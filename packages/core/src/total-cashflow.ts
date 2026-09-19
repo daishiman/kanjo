@@ -20,10 +20,16 @@
 import { isCashTxId } from './cash.js';
 import { type ResolvedTx, resolveTx } from './classify.js';
 import { freeeDealKeys, mfStableKey } from './identity.js';
-import { type PeriodRange, applyPeriod, previousYearPeriod } from './period.js';
+import {
+  type PeriodRange,
+  applyPeriod,
+  changeFromPrevious,
+  periodMonths,
+  previousYearPeriod,
+} from './period.js';
 import { normalizeMfDisplayDate } from './persisted-projection.js';
 import { type TrendDirection, trendDirection } from './trend.js';
-import type { Dataset, FreeeDeal, MfTx } from './types.js';
+import type { Dataset, FreeeDeal, MfTx, OwnerKey } from './types.js';
 import { isMfCountable } from './types.js';
 
 /** 候補抽出器が近接とみなす日数。自動付替には使わない (要確認一覧の生成にだけ用いる) */
@@ -714,6 +720,13 @@ export interface TrendSourceRow {
   /** MF は保有金融機関、freee は決済口座。空なら null (口座別の件数に数えない) */
   account: string | null;
   txId?: string;
+  /**
+   * 名義。freee は事業の取引なので business、MF は公私仕分けと同じ resolveTx の owner
+   * (未解決は unset)。家計画面の名義別収入だけが読む。総収支・推移は読まない
+   */
+  owner: OwnerKey;
+  /** 'YYYY-MM-DD'。freee は取引日、MF は取込月と表示日から作った日付 */
+  date: string;
 }
 
 /** freee の取引先が空の行に出す語。空文字のままだと表で行が読めない */
@@ -760,6 +773,8 @@ function ledgerFrom(
       amount: deal.amount,
       origin: 'freee',
       account: deal.settleAccount || null,
+      owner: 'business',
+      date: deal.date,
     });
   });
   for (const tx of counted) {
@@ -777,6 +792,8 @@ function ledgerFrom(
       origin: 'mf',
       account: tx.inst || null,
       txId: tx.id,
+      owner: resolved.owner ?? 'unset',
+      date: mfMatchDate(tx),
     });
   }
 
@@ -941,22 +958,6 @@ export interface TotalCashflowScreen {
   report: ReturnType<typeof totalCashflowReport>;
 }
 
-/** 'YYYY-MM' の期間を月キーの配列へ開く。両端を含む */
-function monthsOf(range: PeriodRange): string[] {
-  const out: string[] = [];
-  let y = Number(range.from.slice(0, 4));
-  let m = Number(range.from.slice(5, 7));
-  while (`${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}` <= range.to) {
-    out.push(`${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}`);
-    m += 1;
-    if (m > 12) {
-      m = 1;
-      y += 1;
-    }
-  }
-  return out;
-}
-
 const zeroTotals = (): SegmentTotals => ({ income: 0, expense: 0, balance: 0 });
 
 const addTotals = (acc: SegmentTotals, income: number, expense: number): SegmentTotals => ({
@@ -982,21 +983,15 @@ function sumSegment(rows: readonly SegmentTotals[]): SegmentTotals {
   return rows.reduce((acc, r) => addTotals(acc, r.income, r.expense), zeroTotals());
 }
 
-/** 差額と率。率は前年値 0 のとき null。符号は「当期 − 前年」のまま持つ */
-const changeOf = (current: number, previous: number): SegmentChange => ({
-  diff: current - previous,
-  rate: previous === 0 ? null : (current - previous) / Math.abs(previous),
-});
-
 function summaryOf(current: SegmentTotals, previousYear: SegmentTotals | null): SegmentSummary {
   return {
     ...current,
     previousYear,
     change: previousYear
       ? {
-          income: changeOf(current.income, previousYear.income),
-          expense: changeOf(current.expense, previousYear.expense),
-          balance: changeOf(current.balance, previousYear.balance),
+          income: changeFromPrevious(current.income, previousYear.income),
+          expense: changeFromPrevious(current.expense, previousYear.expense),
+          balance: changeFromPrevious(current.balance, previousYear.balance),
         }
       : null,
   };
@@ -1057,7 +1052,7 @@ export function totalCashflowScreen(
   // 取込が始まる前の月まで「支出 0 だった」と読めてしまい、増減が実態と逆に出る
   const prevRange = previousYearPeriod(range);
   const known = new Set(all.months);
-  const prevComplete = monthsOf(prevRange).every((m) => known.has(m));
+  const prevComplete = periodMonths(prevRange).every((m) => known.has(m));
   const prev = prevComplete ? seriesOf(reportFor(prevRange).months) : null;
   const previous = prev
     ? {
