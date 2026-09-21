@@ -1,0 +1,173 @@
+{
+  "feature_id": "feat-classify-screen",
+  "repository_id": "github:daishiman/kanjo",
+  "run_id": "run-feat-classify-screen-20260919T142500Z",
+  "artifact_kind": "feature",
+  "generated_at": "2026-09-19T14:25:00Z",
+  "identity_check": {
+    "graph_node_id": "feat-classify-screen",
+    "graph_node_id_matches_feature_id": true,
+    "artifact_kind_matches": true,
+    "feature_context_path": "features/feat-classify-screen.context.json",
+    "feature_context_sha256": "103b13e5771e7f6deb41e1443e6f779a62af0078566c4c618d4282fbd5a2d661",
+    "resolved_by": "resolve-project-context.py (C09, run-feat-classify-screen-20260919T142500Z preflight)"
+  },
+  "purpose": "取り込んだ明細のうち自動では決まらなかったものを、利用者が『なぜその提案なのか』を確かめながら素早く確定でき、確定した内容を次から自動で効くルールにでき、まとめて保存して一部が失敗しても失敗分だけやり直せ、入力の途中で画面を離れても作業を失わない状態にする。分類ステータスの定義・信頼度の算出・ルールの適用規則は core の純関数 1 か所と docs・テストで固定し、ナビのバッジ・月次クローズ・仕分け画面の件数をずらさない。",
+  "goal": "/classify が 13-classify.png の全構成要素 (見出しと問い・期間タブ・KPI 4 枚 (未整理・要確認 (未整理のうち)・手動変更・完了)・絞り込みパネルと保存フィルタ・6 列の取引一覧と選択・ページ送り・編集パネル (証憑欄の代わりに『証憑は freee 側で管理します』)・一括操作バー・部分失敗の通知と失敗分だけの再試行・削除の取り消し・分割明細の編集・ルール適用プレビュー・下書きの自動保存と復元・読込 / 空 / 失敗) をトークンと共通部品で描画し、分類ステータスが core の classifyStatus 1 か所 (未整理 + 手動変更 + 完了 = 全件、要確認 ⊆ 未整理、信頼度は 0〜100 の整数か提案なしの null) から出てバッジと月次クローズもそれを使い、一括保存・履歴・ルールのプレビューと適用・保存フィルタの API が認証と変更系フェンスの内側で動き、migration 0046 が追加のみで既存行を書き換えず、外部送信 0 件で、既存の仕分け・照合・月次クローズ・家計収支・総収支の数値テストが緑のままの状態。",
+  "scope_in": [
+    "/classify の作り直し (13-classify.png の全構成要素と読込・空・失敗の各状態)。Classify.tsx (1188 行) を packages/web/src/pages/classify/ 配下へ分割し、期間は usePeriod / localStorage、絞り込み・ページ・選択は URL に保つ",
+    "core の分類ステータス判定 classifyStatus の新設 (未整理・手動変更・完了の 3 区分の排他、未整理の内訳としての要確認 (信頼度 80 未満・衝突・矛盾)、提案どおりの確定は完了・提案と異なる確定は手動変更)",
+    "提案・信頼度・根拠の算出を recommendationFor の拡張に一本化し、参照元 (診断・サブスクの core を含む) を壊さない",
+    "ナビのバッジと月次クローズの『仕分け』を classifyStatus へ差し替える (現行の clsSrc=既定 と意味を変えない)",
+    "GET /api/transactions の拡張 (絞り込み・50 件ずつ・提案・信頼度・根拠・ステータス・KPI)、PUT /api/transactions/:txId/edit と POST /api/rules の拡張",
+    "POST /api/transactions/bulk (部分失敗の応答)・GET /api/transactions/:txId/history・POST /api/rules/preview・POST /api/rules/:id/apply (分割ルールを含む)・GET / POST / DELETE /api/saved-filters の新設。すべて認証・パスワード変更フェンス・変更系フェンスの内側で zod 検証",
+    "migration 0046_classify_workbench.sql (追加のみ): saved_filters と tx_history の新設、rules への payee・scope・split_template_json、tx_edits への payment_method・matched_proposal の追加。runtimeSchemaGuard への反映",
+    "下書きの端末保存と復元、未保存のまま離れるときの確認、削除の『元に戻す』",
+    "分類ステータス・信頼度・ルール適用の規則の docs (data-schema.md・ui-decisions.md) 記載と、core 単体・API 統合・migration 検査・DOM テスト"
+  ],
+  "scope_out": [
+    "領収書・証憑の添付と保管 (#42 で廃止し freee 側で管理。利用者決定 qa-classify-decision-001。証憑は再導入しない)",
+    "外部 LLM による提案 (取込データを外部へ送らない。利用者決定 qa-classify-decision-003。外部送信 0 件)",
+    "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗表示) の見た目の作り直し (バッジと『仕分け』の件数の定義だけ扱う)",
+    "取込処理・照合画面の変更 (照合側の明細を『仕分け』から除く現行規則は保つ)",
+    "スマートフォン等の専用アプリ (web のみ)",
+    "画像ヘッダーの『取引ライン：正常』への文言変更",
+    "サイドバーの『AI分析』『改善リクエスト』項目"
+  ],
+  "acceptance": [
+    "S1 (G1): /classify に 13-classify.png の構成要素がすべて描画され、色・余白・部品はトークンと共通部品を通し、直書き色の lint が 0 件である。証憑欄は無く『証憑は freee 側で管理します』の案内がある。期間内の明細 0 件で空状態になる。",
+    "S2 (G2): 同じ期間で 未整理 + 手動変更 + 完了 = 全件、要確認は未整理を超えず (要確認は未整理の内訳)、ナビのバッジ・月次クローズの『仕分け』・画面の件数が同じ関数から出る。信頼度は全由来で 0〜100 の整数で、提案が無いときだけ null。外部送信は 0 件。",
+    "S3 (G3): 一括保存の一部が失敗しても成功分は保存され、通知が成功件数と失敗件数を正しく示し、再試行は失敗分だけを送る。削除は元に戻せる。",
+    "S4 (G4): ルール作成前のプレビューの件数・明細が適用後に変わった明細と一致し、手動変更の明細は変わらず、分割ルールの行の和は元の金額に一致する。",
+    "S5 (G5): 保存フィルタと取引の履歴が D1 に残り (フィルタと履歴は D1 に保存)、下書きは再読込後も復元でき (下書きは端末 localStorage に保存)、migration は追加のみで既存行の書き換えが 0 件である。",
+    "S6 (G1-G5): 期間は usePeriod / localStorage、絞り込み・ページ・選択は URL から復元し、既存の仕分け・照合・月次クローズ・家計収支・総収支の数値テストが緑のままで、pnpm lint・typecheck・初期 JS 予算を CI で通す。既知の逸脱・未実施・一部適合は PASS に数えない。"
+  ],
+  "architecture_refs": [
+    "architecture/classify-ui-ux.md",
+    "architecture/classify-frontend.md",
+    "architecture/classify-backend.md",
+    "architecture/classify-database.md",
+    "architecture/classify-auth.md",
+    "architecture/classify-security.md",
+    "architecture/classify-infrastructure.md",
+    "architecture/classify-maintenance-ops.md",
+    "specs/spec-classify-screen.md"
+  ],
+  "readiness_pin": {
+    "checked_at": "2026-09-19T14:03:38Z",
+    "completeness_report": "system-spec/completeness-findings.json",
+    "missing_sections": [],
+    "source_pin": {
+      "compile_entrypoint": "run-system-spec-compile",
+      "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+      "plugin": "system-spec-harness",
+      "source_digest": "sha256:976c5b04bf7ef1a291c764e5880123f7f5f4698e74c9ff11a07053f83dd8b5aa",
+      "version": "0.1.14"
+    },
+    "status": "complete"
+  },
+  "notes": [
+    "利用者の確定決定を反映: 証憑は再導入しない (#42・qa-classify-decision-001)、外部送信は 0 件で外部 LLM を呼ばない (qa-classify-decision-003)、要確認は分類ステータスの区分ではなく未整理の内訳、提案どおりの確定は完了・提案と異なる確定は手動変更、保存フィルタと取引の履歴は D1 に保存し下書きは端末 (localStorage) に保存する。",
+    "分類ステータス・信頼度・ルール適用の判定は packages/core/src/classify-status.ts (新設) と packages/core/src/overview.ts (recommendationFor の拡張) の core 純関数 1 か所に置き、api / web は再実装しない (specs/spec-classify-screen.md §ビジネスルールと検証)。",
+    "migration 0046_classify_workbench.sql は追加のみ (saved_filters・tx_history の新設、rules への payee/scope/split_template_json、tx_edits への payment_method/matched_proposal の追加) で既存行を書き換えない。",
+    "受入の詳細 (AT-01〜AT-21) は specs/spec-classify-screen.md の「テストと受入条件」を正本とし、本 goal-spec へは複製しない。"
+  ],
+  "open_items": [
+    {
+      "id": "Q-1",
+      "item": "vendor_memory が取込時に自動で materialize した手当て (tx_edits.origin='vendor_memory'、clsSrc='手動'、matched_proposal=NULL) を、完了とするか手動変更とするかが未確定。",
+      "note": "specs/spec-classify-screen.md §未決事項 Q-1 および §ビジネスルールと検証 BR-01(d) を正本とする。system-spec に規定が無く、本書は値を決めない。完了と読める根拠 (利用者が決めていない自動決定はルール・MF 中項目と同じ側) と、手動変更と読める根拠 (値が無い既存の手入力は手動変更) の両方が成立しうる。",
+      "resolution_owner": "classifyStatus を実装する task (R2-decompose/R3-emit で P01..P13 のどの task に割り当てるかを確定する)。決まるまで classify-status.test.ts のこの分岐 (origin='vendor_memory' の判定) は確定しない。",
+      "status": "unresolved_precondition"
+    }
+  ],
+  "source_lineage": [
+    {
+      "source_kind": "feature_context",
+      "path": "features/feat-classify-screen.context.json",
+      "sha256": "103b13e5771e7f6deb41e1443e6f779a62af0078566c4c618d4282fbd5a2d661",
+      "note": "呼出し元から明示された feature-context の digest。graph_node_id=feat-classify-screen と --feature-id が一致することを確認した。"
+    },
+    {
+      "source_kind": "feature_document",
+      "path": "features/feat-classify-screen.md",
+      "sha256": "976c5b04bf7ef1a291c764e5880123f7f5f4698e74c9ff11a07053f83dd8b5aa",
+      "note": "dev-graph decompose が生成した macro feature 文書の front matter に埋め込まれた confirmation_evidence.evaluated_digest。今回のセッションにはハッシュ計算ツールが無く、ファイル本文の再計算はできなかったため、文書自身が保持する confirmed evaluation digest をそのまま引用した。"
+    },
+    {
+      "source_kind": "specification",
+      "path": "specs/spec-classify-screen.md",
+      "sha256": "58d6ff86fdfc9a0ee09f08b93921e338946b78263b6f65057658c8c06287795d",
+      "note": "画面仕様の正本。digest は features/feat-classify-screen.md の source_lineage.source_digest (source_path=specs/spec-classify-screen.md, source_version=0.1.11, source_plugin=dev-graph) にすでに記録されていた値をそのまま引用した。"
+    },
+    {
+      "source_kind": "system_spec_requirements",
+      "path": "system-spec/00-requirements-definition.md",
+      "sha256": "976c5b04bf7ef1a291c764e5880123f7f5f4698e74c9ff11a07053f83dd8b5aa",
+      "note": "system-spec-harness 0.1.14 の要件定義書。specs/spec-classify-screen.md の source_lineage.source_digest / confirmation_evidence.evaluated_digest から引用。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "completeness_evaluation",
+      "path": "system-spec/completeness-findings.json",
+      "sha256": "976c5b04bf7ef1a291c764e5880123f7f5f4698e74c9ff11a07053f83dd8b5aa",
+      "note": "verdict=PASS の完成度 evaluator 記録。digest はこのファイルが評価した対象 (00-requirements-definition.md) の evaluated_digest を引用したもので、completeness-findings.json 自体のバイト内容のハッシュではない (本セッションにハッシュ計算ツールが無いため独自算出はしていない)。gate_results は全 5 件 exit_code=0、findings に blocking (high/critical) は無い。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/classify-ui-ux.md",
+      "sha256": "7afdc6ecbca54a0a7aeb3e4498bc6a9cbe6b98c8f58cd8f1c18ca364ec711f62",
+      "note": "arch-classify-ui-ux。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/ui-ux.md, version=0.1.14) から引用。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/classify-frontend.md",
+      "sha256": "331f13c5d50b4b0807e4b39c944536f191fe4680ef2fc901e924c804a0c8ec4c",
+      "note": "arch-classify-frontend。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/frontend.md, version=0.1.14) から引用。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/classify-backend.md",
+      "sha256": "28297c3d03be9cf9a1f52e5d03cb310b2ca3291534bb4e2591ba22da81ed9035",
+      "note": "arch-classify-backend。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/backend.md, version=0.1.14) から引用。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/classify-database.md",
+      "sha256": "64a5feecbecad51c781e6e8fcf07d055304f0a93cba019ee29d5586aa3be8aba",
+      "note": "arch-classify-database。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/database.md, version=0.1.14) から引用。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/classify-auth.md",
+      "sha256": "0380be1d0882724cbfb1302956f76a9aeb05544ee6c9dfb8f71fa2fb42f9c186",
+      "note": "arch-classify-auth。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/auth.md, version=0.1.14) から引用。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/classify-security.md",
+      "sha256": "9d1fbf27441cf7ee74f85d419f4611beeda5aac386765a3f669b0a939c1508d6",
+      "note": "arch-classify-security。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/security.md, version=0.1.14) から引用。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/classify-infrastructure.md",
+      "sha256": "6de2efee9fda877fe65cd1545eba12549dbf0d9e7d9797f186235936a5ef4027",
+      "note": "arch-classify-infrastructure。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/infrastructure.md, version=0.1.14) から引用。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/classify-maintenance-ops.md",
+      "sha256": "5b8f24c0344ea95abaf6eba3e8a983caa814090f7de068bb89e433cc4fcb38ee",
+      "note": "arch-classify-maintenance-ops。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/maintenance-ops.md, version=0.1.14) から引用。"
+    }
+  ],
+  "checklist_summary": {
+    "feature_identity_matches": true,
+    "purpose_goal_scope_acceptance_nonempty": true,
+    "architecture_refs_resolved_in_repo": true,
+    "system_spec_source_confirmed_pass": true,
+    "lineage_has_path_version_digest": "partial: feature_document と completeness_evaluation の 2 件は本セッションにハッシュ計算ツールが無いため、文書自身が保持する confirmed evaluation digest を代用引用した (自己算出したファイル内容ハッシュではない)。その他 (feature_context・specification・system_spec_requirements・architecture x8) は既存の confirmed 埋め込み digest をそのまま引用した実測値。",
+    "no_feature_split_or_task_generation": true
+  }
+}

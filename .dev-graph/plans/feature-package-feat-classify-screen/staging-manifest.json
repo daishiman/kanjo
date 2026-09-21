@@ -1,0 +1,35 @@
+{
+  "canonical_digest": "sha256:7c218fe0d853660e36f0514a16a73caf263ddd8dfe8c20e45ab7eb46dd88d6ce",
+  "feature_package_id": "feature-package/feat-classify-screen",
+  "files": {
+    "feature-package.json": "832bc302a5a7a2abb49a115a385118a7dfe2650cc9dea1a12ff865e76a4bc47c",
+    "system-build-handoff.json": "901c5c7217ee0cd2cf029d9e47a40ecc75dfd6a063e76222120838c853936f6f",
+    "task-graph.json": "2124832aadf9a46072c3016a7da370572315490041d5f2e3b2fcfdc5ad22dbfc",
+    "task-specs/phase-01-requirements.md": "2bb3a43fea9369a251ae5317c1de65368fe28d48f97a56ba58b337f2867c0cee",
+    "task-specs/phase-02-architecture.md": "fdee181aa99c8d1aead283af9ba2defd6188ba23bc832f3038b81abbe9e40669",
+    "task-specs/phase-03-design-review.md": "e287c21e359c5239871cb387f0e9cbdcd12433866b7dfebb61bc14df31829e2d",
+    "task-specs/phase-04-test-design.md": "a08b7851c810f7a89d24a37fa20939ddb8301fded7950d6d2069bb582d8098a0",
+    "task-specs/phase-05-implementation.md": "944dc5496c3a476283c840bba2785c0ac7f665e9f49c29099829e666f7fc1e84",
+    "task-specs/phase-06-test-run.md": "fdf53fdba5716294ecf9f3bbe132265bd456edb442a852c591af2e4763599000",
+    "task-specs/phase-07-acceptance.md": "18de0d762b43024b1303699be6a82212f10fba5de9a35ec04d7ed38de51a6b57",
+    "task-specs/phase-08-refactoring-migration.md": "42a77f99cc90ef059fd7c1aa4f9b259743f879dba577d6a03b28f11cc2fdad40",
+    "task-specs/phase-09-quality-assurance.md": "f3ce9d14d1e01a9217aed2207f0259f11195a703614e73c22b2bfffdcfebbd1a",
+    "task-specs/phase-10-final-review.md": "0471df12d8089fc99c38c4bbaec5c8f41438b8f5eeaa40f0d7f9ae870ef742d6",
+    "task-specs/phase-11-evidence.md": "6564427093ac29b40552746eb0da0ec9b61a99425d4d9b7d2dab882efcb8d29a",
+    "task-specs/phase-12-documentation-operations.md": "d173030886afb49abd3b74d433947042812cfc7185a3551456e20e42091e3a8a",
+    "task-specs/phase-13-release-deploy.md": "9ac999b967cf56ef05f466d7ab032baa36ec7edc87b16768e665e3ebfd2a88ce",
+    "workstream-inventory.json": "6b36ce50301718dd2c36376e41a2051b670023508a02ef76bb93de792cda5df1"
+  },
+  "handoff_contract": {
+    "manifest_is_commit_point": true,
+    "path": "system-build-handoff.json",
+    "schema_version": "1.0.0",
+    "self_reference_policy": "handoff hash and final digest are manifest-only",
+    "sha256": "901c5c7217ee0cd2cf029d9e47a40ecc75dfd6a063e76222120838c853936f6f",
+    "source_canonical_digest": "sha256:f9316d04c0b17ddb648c5d2549057ae316eb87008d56eb008fdb90e92ac2a34a"
+  },
+  "note": "system-build-handoff.json は本 manifest の対象外。build-system-handoff.py 実行後に別途生成・追記される。",
+  "parent_feature": "feat-classify-screen",
+  "schema_version": "1.0.0",
+  "staging_run": "run-feat-classify-screen-20260919T142500Z"
+}

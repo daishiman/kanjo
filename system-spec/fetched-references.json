@@ -1,114 +1,84 @@
 {
   "references": [
     {
-      "target_id": "wai-aria-tabs",
-      "retrieved_at": "2026-09-19T11:58:09Z",
-      "source_url": "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/",
+      "target_id": "wcag22-use-of-color",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
       "official_publisher": "W3C Web Accessibility Initiative (WAI)",
       "official_host": "www.w3.org",
-      "last_updated": "2025-09-02",
-      "latest_checked_at": "2026-09-19T11:58:09Z",
-      "summary": "WAI-ARIA Authoring Practices Guide (APG) の Tabs パターン。定義は『Tabs are a set of layered sections of content, known as tab panels, that display one panel of content at a time.』で、tablist / tab / tabpanel は一度に 1 パネルだけを見せる層構造を前提にする。決算書は 3 計算書を縦にすべて描画して見比べるため、この前提に合わず tablist を使わない根拠。ページは版も更新日も示さないため、last_updated はソース (github.com/w3c/aria-practices の content/patterns/tabs/tabs-pattern.html) の最終コミット日 2025-09-02 を記録した。"
+      "last_updated": "2025-09-16",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "SC 1.4.1 は色の違いだけで情報を伝えず、色以外の視覚的手段を併用することを求める。明細仕分けの信頼度と 4 区分の表示で数値と文言を併記する根拠。"
+    },
+    {
+      "target_id": "tanstack-query-dependent-queries",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://github.com/TanStack/query/releases/latest",
+      "official_publisher": "TanStack",
+      "official_host": "github.com",
+      "version": "5.103.1",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "TanStack Query の最新リリースは v5.103.1 (2026-09-16、query-core の修正)。一括保存・ルール適用後の問い合わせ無効化は v5 系の API で行う。"
     },
     {
       "target_id": "react-router-searchparams",
-      "retrieved_at": "2026-09-19T02:03:50Z",
+      "retrieved_at": "2026-09-19T13:26:35Z",
       "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
       "official_publisher": "React Router (Remix / Shopify)",
       "official_host": "reactrouter.com",
       "version": "8.4.0",
-      "latest_checked_at": "2026-09-19T02:03:50Z",
-      "summary": "useSearchParams は URLSearchParams と更新関数の組を返し、更新はナビゲーションを起こす。関数形の更新は同一 tick の連続呼出しを積み上げない。tab・row・ref を URL に保つ根拠と、同時更新は 1 回にまとめる注意。"
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "useSearchParams は現在の URLSearchParams と更新関数を返し、更新は navigation を起こす。絞り込み・ページ・選択を URL に保つ根拠。"
     },
     {
-      "target_id": "web-storage-localstorage",
-      "retrieved_at": "2026-09-19T02:03:50Z",
-      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage",
-      "official_publisher": "MDN Web Docs (Mozilla)",
-      "official_host": "developer.mozilla.org",
-      "last_updated": "2026-07-28",
-      "latest_checked_at": "2026-09-19T02:03:50Z",
-      "summary": "localStorage はオリジン単位で分離され、ブラウザを閉じても残り有効期限を持たない。プライベートモードでは最後のタブを閉じると消える。オリジンが不正な場合や利用者設定で保存が禁じられた場合は SecurityError を投げる。負債の下書きを try/catch 付きで扱い、利用者別キーとログアウト時の明示削除を要する根拠。"
-    },
-    {
-      "target_id": "tanstack-query",
-      "retrieved_at": "2026-09-19T11:43:20Z",
-      "source_url": "https://tanstack.com/query/v5/docs/framework/react/guides/invalidations-from-mutations",
-      "official_publisher": "TanStack",
-      "official_host": "tanstack.com",
-      "version": "5.103.1",
-      "latest_checked_at": "2026-09-19T11:43:20Z",
-      "summary": "TanStack Query v5 の公式ガイド。useMutation の onSuccess で queryClient.invalidateQueries({ queryKey }) を呼び、Promise を返すと再取得の完了までミューテーションが pending のまま残る。負債の保存成功時に statements のクエリを無効化して再取得する根拠。版は GitHub のリリース @tanstack/react-query@5.103.1 (github.com/TanStack/query/releases/tag/@tanstack/react-query@5.103.1) で確認した現行版。"
-    },
-    {
-      "target_id": "hono-body-limit",
-      "retrieved_at": "2026-09-19T11:43:20Z",
-      "source_url": "https://hono.dev/docs/middleware/builtin/body-limit",
+      "target_id": "hono-zod-validator",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md",
       "official_publisher": "Hono",
-      "official_host": "hono.dev",
-      "version": "4.13.8",
-      "latest_checked_at": "2026-09-19T11:43:20Z",
-      "summary": "Hono 公式の Body Limit ミドルウェア。maxSize (既定 100KB) と onError を取り、超過時は既定で 413 を返す。まず Content-Length を見て、無ければ本文をストリームで読みながら上限で打ち切る。PUT /api/balances/liabilities に 8 KiB の上限と 413 応答を掛ける根拠。版は GitHub のリリース v4.13.8 (github.com/honojs/hono/releases/tag/v4.13.8) で確認した現行版。"
-    },
-    {
-      "target_id": "sqlite-alter-table",
-      "retrieved_at": "2026-09-19T02:03:50Z",
-      "source_url": "https://www.sqlite.org/lang_altertable.html",
-      "official_publisher": "SQLite",
-      "official_host": "www.sqlite.org",
-      "last_updated": "2026-06-04",
-      "latest_checked_at": "2026-09-19T02:03:50Z",
-      "summary": "ADD COLUMN は NOT NULL なら NULL 以外の既定値が必須で、PRIMARY KEY / UNIQUE は付けられない。既存列の CHECK 制約は変更できず、12 手順の再構築 (新表作成・複写・DROP・RENAME) が要る。balance_entries に status を NOT NULL DEFAULT 'amount' で足し、audit_log の CHECK は拡張せず新表で監査する根拠。"
+      "official_host": "github.com",
+      "version": "0.9.1",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "@hono/zod-validator の最新は 0.9.1 (header schema のメタデータをキャッシュ)。一括保存・ルールのプレビューと適用・保存フィルタの入力を zod で検証する。"
     },
     {
       "target_id": "cloudflare-d1-migrations",
-      "retrieved_at": "2026-09-19T02:03:50Z",
+      "retrieved_at": "2026-09-19T13:26:35Z",
       "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-06-08",
-      "latest_checked_at": "2026-09-19T02:03:50Z",
-      "summary": "D1 の migration は migrations/ の .sql をファイル名の番号順に wrangler d1 migrations apply で適用し、適用済みを d1_migrations 表に記録する。0045 を既存の migrate.yml の流れで適用し、番号衝突時に繰り下げる根拠。"
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "D1 の migration は migrations フォルダの SQL を Wrangler で未適用分だけ順に適用し、d1_migrations 表で適用済みを管理する。追加のみの migration 1 本で保存フィルタ・履歴表とルール・手当ての列を足す。"
     },
     {
-      "target_id": "set-cookie-samesite",
-      "retrieved_at": "2026-09-19T02:03:50Z",
-      "source_url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie",
-      "official_publisher": "MDN Web Docs (Mozilla)",
-      "official_host": "developer.mozilla.org",
-      "last_updated": "2026-09-01",
-      "latest_checked_at": "2026-09-19T02:03:50Z",
-      "summary": "SameSite=Strict は同一サイトからの要求だけに Cookie を送り CSRF に最も強い。HttpOnly は Document.cookie からの読取りを禁じ、Secure は https のときだけ送る。既存のセッション Cookie のまま負債保存を守れる根拠。"
+      "target_id": "cloudflare-workers-limits",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-09-05",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "Workers Free はリクエストあたり CPU 10 ms・サブリクエスト 50・1 日 100,000 リクエスト。一括保存とルール適用に件数の上限を置き D1 batch で書く根拠。"
     },
     {
-      "target_id": "owasp-asvs-csv-injection",
-      "retrieved_at": "2026-09-19T11:43:20Z",
-      "source_url": "https://github.com/OWASP/ASVS/blob/v5.0.0/5.0/en/0x10-V1-Encoding-and-Sanitization.md",
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://github.com/OWASP/ASVS/blob/master/README.md",
       "official_publisher": "OWASP Foundation",
       "official_host": "github.com",
       "version": "5.0.0",
-      "latest_checked_at": "2026-09-19T11:43:20Z",
-      "summary": "ASVS v5.0.0 タグ版の 1.2.10 は CSV / 数式注入への防御を求め、RFC 4180 の 2.6/2.7 に従うエスケープと、先頭が '=' '+' '-' '@' タブ NUL のセルへの単一引用符の前置を定める。PL の CSV エクスポートの書き出し規則の根拠 (タグに固定した URL)。"
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "ASVS の最新安定版は 5.0.0 (2025-05)。入力検証・業務ロジック・アクセス制御の要件を、一括保存・ルール適用・保存フィルタの認可と検証に当てる。"
     },
     {
       "target_id": "vitest-expect",
-      "retrieved_at": "2026-09-19T02:03:50Z",
+      "retrieved_at": "2026-09-19T13:26:35Z",
       "source_url": "https://vitest.dev/api/expect.html",
       "official_publisher": "Vitest",
       "official_host": "vitest.dev",
       "version": "5.0.1",
-      "latest_checked_at": "2026-09-19T02:03:50Z",
-      "summary": "toBe は Object.is による同一性、toEqual は再帰的な構造比較、toStrictEqual は undefined の有無や型も区別する。段階損益の恒等式を数値の toBe で、画面の契約形を toStrictEqual で固定する根拠。"
-    },
-    {
-      "target_id": "mdn-aria-current",
-      "retrieved_at": "2026-09-19T11:58:09Z",
-      "source_url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-current",
-      "official_publisher": "Mozilla (MDN Web Docs)",
-      "official_host": "developer.mozilla.org",
-      "last_updated": "2025-10-29",
-      "latest_checked_at": "2026-09-19T11:58:09Z",
-      "summary": "MDN の aria-current。『A non-null aria-current state on an element indicates that this element represents the current item within a container or set of related elements.』値 location は環境・文脈の中の現在位置を表し、『Only mark one element in a set of elements as current with aria-current.』とする。tab 役割の aria-selected の代わりに使うなとも書く。決算書のページ内ナビで、選んだ 1 項目だけに aria-current=\"location\" を付け role=tab を使わない根拠。"
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "Vitest v5.0.1 の expect は toBe / toEqual など Jest 互換の matcher を持つ。4 区分の和・信頼度の範囲・プレビューと適用の一致を単体テストで固定する。"
     }
   ]
 }

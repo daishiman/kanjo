@@ -158,6 +158,31 @@ describe('名義別の集計', () => {
     expect(JSON.stringify(exported)).not.toContain('"self"');
   });
 
+  it('0046のルール条件と分割テンプレートをJSON往復で保つ', () => {
+    const data = emptyDataset();
+    const rule = {
+      k: '会議',
+      cls: 'biz' as const,
+      big: '会議費',
+      mid: '打合せ',
+      owner: 'business' as const,
+      payee: '架空商店',
+      scope: 'unconfirmed' as const,
+      splitTemplate: {
+        lines: [
+          { kind: 'fixed' as const, amount: 300, cls: 'biz' as const, big: '会議費' },
+          { kind: 'remainder' as const, cls: 'biz' as const, big: '雑費' },
+        ],
+      },
+    };
+    data.rules = [rule];
+
+    const restored = emptyDataset();
+    importJSON(restored, exportJSON(data));
+
+    expect(restored.rules).toEqual([rule]);
+  });
+
   it('未知ownerは復元時に捨てず拒否する', () => {
     expect(() => importJSON(emptyDataset(), { institutionOwners: { 架空銀行: 'unknown' } })).toThrow(
       'unknown owner',

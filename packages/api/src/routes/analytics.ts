@@ -186,52 +186,57 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
     failedImports: failedRuns,
     vendorMemories,
   });
-  // 照合件数の正本を一度だけ作り、月次クローズへそのまま渡す (照合画面 BR-006)
-  const actionRequiredCount = reconciliationReport({
-    data: all,
-    deals,
-    verdicts,
-    freeeExclusions: exclusions,
-    mfExclusions,
-  }).kpi.actionRequiredCount;
   // サイドバーの「サブスク」バッジ。サブスク画面の KPI 5 枚目 (未判断の見直し候補) と同じ入口・同じ関数で数える。
   // バッジは画面の期間タブを知らないので、既定の期間 (直近 1 年) で数える (spec §12.2)
   const subscriptionCandidates = subscriptionsScreen(
     await loadSubscriptionsInput(db, userId, { span: '1' }, { all, deals }),
   ).kpis.reviewCandidates;
-  return { report, items, actionRequiredCount, subscriptionCandidates };
+  return { report, items, subscriptionCandidates };
 }
 
 /**
  * 月次クローズの状況。概況の本体とサイドバーのカード (未処理キューの応答) が同じ関数で作る。
- * 期間にも範囲にも依存しない (BR-003) ので、必ず全期間の `all` と保留前の全件 `items` を渡す。
+ * 期間にも範囲にも依存しない。全期間から作ったキューのうち、
+ * 指紋の一致する保留を除いた集合を渡し、core 側が対象月に絞る。
  */
 async function loadCloseStatus<V extends { userId: string }>(
   c: Context<DataCtx<V>>,
   all: Dataset,
-  sources: { items: ReviewQueueItem[]; actionRequiredCount: number },
+  sources: { items: ReviewQueueItem[] },
 ) {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const [reviewRows, [updated]] = await Promise.all([
+  const [reviewRows, importRows] = await Promise.all([
     db
       .select({ month: s.monthlyCloseReviews.month, reviewedAt: s.monthlyCloseReviews.reviewedAt })
       .from(s.monthlyCloseReviews)
       .where(eq(s.monthlyCloseReviews.userId, userId)),
     db
-      .select({ at: sql<string | null>`max(${s.imports.committedAt})` })
+      .select({ months: s.imports.months, committedAt: s.imports.committedAt })
       .from(s.imports)
       .where(and(eq(s.imports.userId, userId), eq(s.imports.status, 'committed'))),
   ]);
+  const month = all.months.at(-1) ?? null;
+  const hasCommittedImport =
+    month !== null &&
+    importRows.some((row) =>
+      (row.months ?? '')
+        .split(',')
+        .map((value) => value.trim())
+        .includes(month),
+    );
+  const dataUpdatedAt = importRows.reduce<string | null>(
+    (latest, row) => (!row.committedAt || (latest && row.committedAt <= latest) ? latest : row.committedAt),
+    null,
+  );
   return {
     closeStatus: monthlyCloseStatus({
       data: all,
       items: sources.items,
       reviews: reviewRows,
-      hasCommittedImport: updated?.at != null,
-      actionRequiredCount: sources.actionRequiredCount,
+      hasCommittedImport,
     }),
-    dataUpdatedAt: updated?.at ?? null,
+    dataUpdatedAt,
   };
 }
 
@@ -253,9 +258,10 @@ analyticsRoute.get('/overview', async (c) => {
     return c.json(apiError('invalid_scope', 'scope は total / business / household のいずれかです'), 400);
   }
   const { data, all, period } = await loadScoped(c);
-  const sources = await loadReviewSources(c, all);
+  const [sources, snoozes] = await Promise.all([loadReviewSources(c, all), loadSnoozes(c)]);
+  const effective = await applyReviewSnoozes(sources.items, snoozes);
   const { report } = sources;
-  const { closeStatus, dataUpdatedAt } = await loadCloseStatus(c, all, sources);
+  const { closeStatus, dataUpdatedAt } = await loadCloseStatus(c, all, { items: effective.items });
   // 系列は全期間から作り、期間は「表示する月の集合」として渡す。前年の比較窓を欠かさないため
   const series = overviewScopeMonths(rawScope, { data: all, totalMonths: report.months });
   const aggregate = overviewAggregate(series, period.applied);
@@ -276,11 +282,9 @@ analyticsRoute.get('/review-queue', async (c) => {
   // 読み込みは loadScoped に一本化する。件数は期間に依存させないので all だけを使う
   const { all } = await loadScoped(c);
   const [sources, snoozes] = await Promise.all([loadReviewSources(c, all), loadSnoozes(c)]);
-  const [{ items, snoozed, snoozedCount }, { closeStatus }] = await Promise.all([
-    applyReviewSnoozes(sources.items, snoozes),
-    // サイドバーの月次クローズカードは全画面に出るので、全画面が読む未処理キューに載せる
-    loadCloseStatus(c, all, sources),
-  ]);
+  const { items, snoozed, snoozedCount } = await applyReviewSnoozes(sources.items, snoozes);
+  // サイドバーの月次クローズカードも同じ有効キューで判定する。
+  const { closeStatus } = await loadCloseStatus(c, all, { items });
   return c.json({
     total: items.length,
     counts: reviewQueueCounts(items),

@@ -1,0 +1,46 @@
+{
+  "graph_node_id": "feat-classify-screen",
+  "artifact_kind": "feature",
+  "purpose": "取り込んだ明細のうち自動では決まらなかったものを、利用者が『なぜその提案なのか』を確かめながら素早く確定でき、確定した内容を次から自動で効くルールにでき、まとめて保存して一部が失敗しても失敗分だけやり直せ、入力の途中で画面を離れても作業を失わない状態にする。分類ステータスの定義・信頼度の算出・ルールの適用規則は core の純関数 1 か所と docs・テストで固定し、ナビのバッジ・月次クローズ・仕分け画面の件数をずらさない。",
+  "goal": "/classify が 13-classify.png の全構成要素 (見出しと問い・期間タブ・KPI 4 枚 (未整理・要確認 (未整理のうち)・手動変更・完了)・絞り込みパネルと保存フィルタ・6 列の取引一覧と選択・ページ送り・編集パネル (証憑欄の代わりに『証憑は freee 側で管理します』)・一括操作バー・部分失敗の通知と失敗分だけの再試行・削除の取り消し・分割明細の編集・ルール適用プレビュー・下書きの自動保存と復元・読込 / 空 / 失敗) をトークンと共通部品で描画し、分類ステータスが core の classifyStatus 1 か所 (未整理 + 手動変更 + 完了 = 全件、要確認 ⊆ 未整理、信頼度は 0〜100 の整数か提案なしの null) から出てバッジと月次クローズもそれを使い、一括保存・履歴・ルールのプレビューと適用・保存フィルタの API が認証と変更系フェンスの内側で動き、migration 0046 が追加のみで既存行を書き換えず、外部送信 0 件で、既存の仕分け・照合・月次クローズ・家計収支・総収支の数値テストが緑のままの状態。",
+  "scope_in": [
+    "/classify の作り直し (13-classify.png の全構成要素と読込・空・失敗の各状態)。Classify.tsx (1188 行) を packages/web/src/pages/classify/ 配下へ分割し、期間は usePeriod / localStorage、絞り込み・ページ・選択は URL に保つ",
+    "core の分類ステータス判定 classifyStatus の新設 (未整理・手動変更・完了の 3 区分の排他、未整理の内訳としての要確認 (信頼度 80 未満・衝突・矛盾)、提案どおりの確定は完了・提案と異なる確定は手動変更)",
+    "提案・信頼度・根拠の算出を recommendationFor の拡張に一本化し、参照元 (診断・サブスクの core を含む) を壊さない",
+    "ナビのバッジと月次クローズの『仕分け』を classifyStatus へ差し替える (現行の clsSrc=既定 と意味を変えない)",
+    "GET /api/transactions の拡張 (絞り込み・50 件ずつ・提案・信頼度・根拠・ステータス・KPI)、PUT /api/transactions/:txId/edit と POST /api/rules の拡張",
+    "POST /api/transactions/bulk (部分失敗の応答)・GET /api/transactions/:txId/history・POST /api/rules/preview・POST /api/rules/:id/apply (分割ルールを含む)・GET / POST / DELETE /api/saved-filters の新設。すべて認証・パスワード変更フェンス・変更系フェンスの内側で zod 検証",
+    "migration 0046_classify_workbench.sql (追加のみ): saved_filters と tx_history の新設、rules への payee・scope・split_template_json、tx_edits への payment_method・matched_proposal の追加。runtimeSchemaGuard への反映",
+    "下書きの端末保存と復元、未保存のまま離れるときの確認、削除の『元に戻す』",
+    "分類ステータス・信頼度・ルール適用の規則の docs (data-schema.md・ui-decisions.md) 記載と、core 単体・API 統合・migration 検査・DOM テスト"
+  ],
+  "scope_out": [
+    "領収書・証憑の添付と保管 (#42 で廃止し freee 側で管理。利用者決定 qa-classify-decision-001)",
+    "外部 LLM による提案 (取込データを外部へ送らない。利用者決定 qa-classify-decision-003)",
+    "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗表示) の見た目の作り直し (バッジと『仕分け』の件数の定義だけ扱う)",
+    "取込処理・照合画面の変更 (照合側の明細を『仕分け』から除く現行規則は保つ)",
+    "スマートフォン等の専用アプリ (web のみ)",
+    "画像ヘッダーの『取引ライン：正常』への文言変更",
+    "サイドバーの『AI分析』『改善リクエスト』項目"
+  ],
+  "acceptance": [
+    "S1 (G1): /classify に 13-classify.png の構成要素がすべて描画され、色・余白・部品はトークンと共通部品を通し、直書き色の lint が 0 件である。証憑欄は無く『証憑は freee 側で管理します』の案内がある。期間内の明細 0 件で空状態になる。",
+    "S2 (G2): 同じ期間で 未整理 + 手動変更 + 完了 = 全件、要確認は未整理を超えず、ナビのバッジ・月次クローズの『仕分け』・画面の件数が同じ関数から出る。信頼度は全由来で 0〜100 の整数で、提案が無いときだけ null。外部送信は 0 件。",
+    "S3 (G3): 一括保存の一部が失敗しても成功分は保存され、通知が成功件数と失敗件数を正しく示し、再試行は失敗分だけを送る。削除は元に戻せる。",
+    "S4 (G4): ルール作成前のプレビューの件数・明細が適用後に変わった明細と一致し、手動変更の明細は変わらず、分割ルールの行の和は元の金額に一致する。",
+    "S5 (G5): 保存フィルタと取引の履歴が D1 に残り、下書きは再読込後も復元でき、migration は追加のみで既存行の書き換えが 0 件である。",
+    "S6 (G1-G5): 期間は usePeriod / localStorage、絞り込み・ページ・選択は URL から復元し、既存の仕分け・照合・月次クローズ・家計収支・総収支の数値テストが緑のままで、pnpm lint・typecheck・初期 JS 予算を CI で通す。既知の逸脱・未実施・一部適合は PASS に数えない。"
+  ],
+  "architecture_refs": [
+    "architecture/classify-ui-ux.md",
+    "architecture/classify-frontend.md",
+    "architecture/classify-backend.md",
+    "architecture/classify-database.md",
+    "architecture/classify-auth.md",
+    "architecture/classify-security.md",
+    "architecture/classify-infrastructure.md",
+    "architecture/classify-maintenance-ops.md",
+    "specs/spec-classify-screen.md"
+  ],
+  "updated_at": "2026-09-19T14:21:28Z"
+}

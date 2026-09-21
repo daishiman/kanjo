@@ -1,186 +1,32 @@
 {
-  "evaluator": {
-    "name": "assign-system-spec-completeness-evaluator",
-    "version": "0.1.14",
-    "context": "fork"
-  },
+  "evaluator": {"name": "assign-system-spec-completeness-evaluator", "version": "0.1.0", "context": "fork"},
   "spec_dir": "system-spec",
   "verdict": "PASS",
   "aspects": {
-    "foundation_trace": {
-      "verdict": "PASS",
-      "auditor": "assign-system-spec-completeness-evaluator",
-      "component": "C05",
-      "summary": "決算書画面サイクルの評価 5 回目 (評価時刻 2026-09-19T12:05:08Z)。validate-coverage-matrix.py --require-foundation は exit 0。G1 / O1 は appr-foundation-statements-002 の改訂文面のまま (00 章 36 行・97 行)。O1 の測定は『3 計算書へのページ内ナビ (nav と aria-current)』で、decision-006 と一致する。確定 8 セルは主 qa_ref (decision-005/006/007、foundation-001/002) から G1-G5 / I1-I8 までたどれる (C06 のトレース軸でも dangling 0)。pass-4 で low にした『I1 の 3 タブを ARIA の tablist と誤読しうる』懸念は、誤読を誘っていた ui-ux.md:31 の tablist 記述が消えたため弱まった。I1 の語の統一は次の foundation 改訂時の任意対応として low のまま残す。",
-      "evidence": [
-        "validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit 0",
-        "00-requirements-definition.md 36 行 (O1)・97 行 (appr-foundation-statements-002)",
-        "C06 トレーサビリティ軸: 確定 8 セルの qa_ref / qa_refs が qa_log に全件実在"
-      ]
-    },
-    "decision_guidance": {
-      "verdict": "PASS",
-      "auditor": "assign-system-spec-completeness-evaluator",
-      "component": "C05",
-      "summary": "decision-005 / 006 / 007 は選択肢と推奨を併記した利用者の選択で、今回の変更 (doctrine_applications の書き直し、出典の付け替え) は決定の中身を変えていない。decision-006 は ui-ux.md 49 行・frontend.md 50 行に『(提示した他の選択肢: 本物のタブ = tablist/tabpanel)』付きで残る。今回、決定の根拠となる出典 (APG Tabs の『一度に 1 パネルだけを見せる』定義、MDN aria-current の location と『1 要素だけに付ける』) が公式ページで裏付けられたため、decision-006 の推奨理由が出典に接地した。foundation-002 の質問文が『現金増減は画像どおり金額のみ』を 3 決定の 1 つと数えている点は、pass-4 と同じく low で残す。",
-      "evidence": [
-        "spec-state.json qa-statements-decision-005 / 006 / 007 / foundation-002",
-        "ui-ux.md 49 行、frontend.md 50 行 (decision-006 と他の選択肢)",
-        "C08: wai-aria-tabs・mdn-aria-current の summary を公式ページで逐語確認"
-      ]
-    },
-    "matrix_coverage": {
-      "verdict": "PASS",
-      "auditor": "system-spec-matrix-auditor",
-      "component": "C07",
-      "summary": "validate-coverage-matrix.py は loop / --require-complete / --require-basis --require-foundation のどれも exit 0。48 セルは確定 8 (web)・対象外 40・未収集 0。C07 は 5 軸で PASS を返し、ブロッキングな指摘は無い。low は auth.web の主 qa_ref が包括承認の foundation-001 である点の 1 件 (pass-4 と同じ扱い)。C07 は SSOT (run-system-spec-elicit/prompts/R7-audit-matrix.md) を『未取得』と留保したが、ファイルは installPath に実在する。SSOT の完了チェックリストのうち C07 が触れなかった『カテゴリ軸の床』は、validate-coverage-matrix.py が検査しており (114-121 行) exit 0 なので、判定は変わらない。C16 の機械層 validate-knowledge-graph.py --profile required-info --state は exit 0 で、blocking_items 6 件がすべて grounded、ungrounded_blocking_items は空。sub-input の C06 は 4 軸すべて PASS。doctrine_applications.ui-ux.presentation の書き直しが decision-006 の Q&A と、cells / qa_log / requirements_foundation のどれとも矛盾しないことも確認した。",
-      "evidence": [
-        "validate-coverage-matrix.py 3 モード exit 0",
-        "C07 PASS (low 1 件: auth.web の主 qa_ref)",
-        "C06 PASS (聞き漏れ 0 / 誘導 0 / 早期停止 0 / トレース欠落 0)",
-        "validate-knowledge-graph.py --profile required-info --state exit 0、ungrounded_blocking_items=[]"
-      ]
-    },
-    "design_knowledge_reflection": {
-      "verdict": "PASS",
-      "auditor": "assign-system-spec-completeness-evaluator",
-      "component": "C05",
-      "summary": "pass-4 の F2 は解消した。ui-ux.md:31 の presentation 行は『3 計算書は縦にすべて描画して見比べられる階層を保ち、上部は画像のタブの見た目のページ内ナビ (nav のリンク、選んだ 1 項目だけ aria-current=\"location\"、tablist / tab は使わない) にする』に書き直され、同じ章の 49 行・97 行・109 行、spec §1.4 (51・53 行)・§7 (244 行)・§8 (255 行) と一致する。出どころの spec-state doctrine_applications.ui-ux.presentation も同じ文面で、recorded_at は 11:58:09Z (decision-006 の 02:41:21Z より後)、basis は agent-inference と正直に申告されている。system-spec/*.md 全体で tablist の採用を示す記述は残っていない (出てくるのは『使わない』と『提示した他の選択肢』だけ)。ほかの 7 章の上流指針表も、ポインタを置いただけではなく確定セルに具体的に当てはめている。auth / security は OWASP ASVS をセッション Cookie・authGuard・金額なしの監査表・1.2.10 の CSV 数式注入対策に、backend / frontend / database は Clean Architecture を core ← api ← web の依存方向・route に閉じたデータアクセスに、infrastructure / database / maintenance-ops は Google SRE を追加のみの migration 0045・runtimeSchemaGuard・js-budget・CI ゲートに当てはめている。C13-C15 の機械層 (aggregate-completeness.py --knowledge-graph の knowledge / doctrine / required-info / cross) は全 exit 0。",
-      "evidence": [
-        "ui-ux.md:31 (presentation 行、書き直し後)",
-        "ui-ux.md:49, 97, 109 / specs/spec-statements-screen.md 51, 53, 244, 255 行",
-        "spec-state.json doctrine_applications.ui-ux.presentation (recorded_at 2026-09-19T11:58:09Z, basis=agent-inference)",
-        "auth / security / backend / frontend / database / infrastructure / maintenance-ops 各章の上流指針表",
-        "aggregate-completeness.py --knowledge-graph exit 0 (4 profile)"
-      ]
-    },
-    "doc_freshness": {
-      "verdict": "PASS",
-      "auditor": "system-spec-doc-freshness-auditor",
-      "component": "C08",
-      "summary": "層 1 の validate-source-citation.py (--state 付き) は exit 0 で、targets 11 件と references 11 件が 1 対 1 に対応する。層 2 で C08 は 11 件すべてを公式ページで WebFetch し直し、PASS を返した。F1: wai-aria-tabs は https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ に付け替わり、summary の定義文『Tabs are a set of layered sections of content, known as tab panels, that display one panel of content at a time.』が本文に逐語で存在する。last_updated 2025-09-02 は w3c/aria-practices の tabs-pattern.html の最新コミット (457f47a、PR #3320) の日付と一致する。F3: mdn-aria-current は定義文・location の意味・『Only mark one element ... as current』の 2 文が逐語で一致し、『Last modified on Oct 29, 2025』も記録と一致する。取得時刻はすべて 2026-09-19 の 02:03:50Z から 11:58:09Z の範囲で、評価時刻 12:05:08Z より前にある。未来時刻は無い。react-router (記録 v8.4.0) と vitest (記録 5.0.1) は公式の現行版を正しく指している。プロジェクトの依存 (^7.18.2 / ^4.1.11) とメジャー版が食い違う点は、C08 の 4 軸 (欠落 / 非公式 host / 古い版 / 確認時刻欠落) には当たらない。そのため low の継続指摘として残す。",
-      "evidence": [
-        "validate-source-citation.py exit 0 (層 1)",
-        "C08 PASS: 11/11 件を再照合、欠落・非公式 host・古い版・時刻欠落はいずれも 0",
-        "fetched-references.json wai-aria-tabs / mdn-aria-current",
-        "github.com/w3c/aria-practices commits (tabs-pattern.html, 2025-09-02)"
-      ]
-    },
-    "prompt_quality": {
-      "verdict": "PASS",
-      "auditor": "assign-system-spec-completeness-evaluator",
-      "component": "C05",
-      "summary": "prompt-creator 2.1.7 の validate-prompt.py と verify-completeness.py を、system-spec-harness 0.1.14 installPath の prompts 18 件に --input 付きでかけた。失敗は 0 件だった。specs/spec-statements-screen.md は、ページ内ナビの意味論 (§1.4)、受入テストで role=tab が無いことを確かめる項目 (§7)、画像との差の根拠 (§8) を実装者がそのまま使える粒度で持ち、今回の出典の付け替えとも矛盾しない。",
-      "evidence": [
-        "validate-prompt.py / verify-completeness.py: 18 件、失敗 0",
-        "specs/spec-statements-screen.md §1.4 / §7 / §8"
-      ]
-    }
+    "foundation_trace": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "00 章 U1 は段落 1 つだけになり、正本 requirements_foundation.essential_purpose と一致する (未整理・手動変更・完了の排他 + 要確認は未整理の内訳)。改訂前の『4 区分の件数は排他』の文は全 10 章から消えた。G2 / O2 / I2 / scope.in も 3 区分 + 内訳のモデルで全章に揃っている。validate-coverage-matrix --require-foundation と validate-spec-doc-sync はどちらも exit0。", "evidence": ["00-requirements-definition.md:16 U1 は 1 段落", "grep 『排他』: 全章が 3 区分 + 要確認は内訳", "validate-spec-doc-sync.py exit0"]},
+    "decision_guidance": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "decisions 3 件はどれも 2〜3 案と無料案を持つ。cost_model・goal_fit・security・ops・lock-in・推奨理由・注意点・comparison_basis が揃い、user_decision が利用者の選択 (qa-classify-decision-001/003/004) に紐づく。ただし公式根拠の確認 (13:18:15Z) が利用者の決定 (13:12:52Z) より後で、その旨の注記はまだ無い (medium のまま)。", "evidence": ["decisions[] 3 件", "recommendation.latest_checked_at=13:18:15Z > user_decision.confirmed_at=13:12:52Z"]},
+    "matrix_coverage": {"verdict": "PASS", "auditor": "system-spec-matrix-auditor", "component": "C07", "summary": "C07 の判定は loop_pass・final_ready ともに PASS。48 セル (確定 8 / 対象外 40 / 未収集 0)。対象外の理由はセルごとに具体的で、qa_ref はすべて実在し dangling は 0。category_aggregate も真理値表と一致する。C16 required-info の blocking_items 6 件はすべて根拠に接地している。sub-input の C06 も PASS (聞き漏れ・誘導・早期停止・トレース欠落 0)。ただし loop_count と reopen の時系列について medium の観察がある。", "evidence": ["validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit0 (C05 と C07 がそれぞれ実行)", "validate-knowledge-graph.py --profile required-info --state exit0 / ungrounded_blocking_items=[]", "C06 hearing-auditor verdict PASS"]},
+    "design_knowledge_reflection": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "8 技術章すべてに doctrine anchor 表があり、『本章の確定セルへの反映』列と『本章での適用』節に明細仕分け固有の具体的な適用がある。例: database=expand のみの migration で既存行の書換 0、security=ASVS V11 でフェンスに登録、backend=Dependency Rule でプレビューと適用を同じ core 関数に通す、ui-ux=3 カラムの情報優先度。汎用ポインタだけで済ませた章は無い。C13〜C15 の knowledge / doctrine / cross ゲートはすべて exit0。『4 区分』の言い方の残存と、infrastructure の card 0 件の記述の不整合は low として記録した。", "evidence": ["aggregate-completeness.py --knowledge-graph exit0 (knowledge/doctrine/required-info/cross)", "各章 ## 適用された設計知識 > ### 本章での適用 が 1 節ずつ"]},
+    "doc_freshness": {"verdict": "PASS", "auditor": "system-spec-doc-freshness-auditor", "component": "C08", "summary": "C08 は二層とも PASS。validate-source-citation は exit0。8 target すべてを WebFetch / WebSearch で公式の現行値と照合し、version・last_updated は一致した。欠落・非公式 host・世代落ち・確認時刻の欠落はいずれも 0。github.com を出典にした 3 件は publisher の公式 org と確認済み (info)。", "evidence": ["validate-source-citation.py exit0", "8/8 target 公式照合一致"]},
+    "prompt_quality": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "system-spec-harness の prompts 18 件を validate-prompt.py --input と verify-completeness.py --input にかけ、失敗は 0 件。", "evidence": ["prompts=18 fails=0"]}
   },
   "gate_results": [
-    {
-      "id": "G-matrix",
-      "name": "収集マトリクス検証",
-      "conditions": [
-        "loop",
-        "--require-complete",
-        "--require-basis --require-foundation"
-      ],
-      "exit_code": 0
-    },
-    {
-      "id": "G-knowledge-graph",
-      "name": "知識グラフ検証 (knowledge / doctrine / required-info / cross)",
-      "exit_code": 0
-    },
-    {
-      "id": "G-required-info-state",
-      "name": "required-info の state 接地 (ungrounded_blocking_items=[])",
-      "exit_code": 0
-    },
-    {
-      "id": "G-source-citation",
-      "name": "出典引用検証 (11 件、--state 付き)",
-      "exit_code": 0
-    },
-    {
-      "id": "G-doc-sync",
-      "name": "仕様書と state の同期検証",
-      "exit_code": 0
-    },
-    {
-      "id": "G-prompt",
-      "name": "prompt 品質検証 (18 件)",
-      "exit_code": 0
-    }
+    {"id": "G-matrix", "name": "validate-coverage-matrix (--require-complete --require-basis --require-foundation)", "conditions": ["matrix_coverage", "foundation_trace", "decision_guidance"], "exit_code": 0},
+    {"id": "G-knowledge-graph", "name": "validate-knowledge-graph (knowledge/doctrine/required-info/cross)", "conditions": ["design_knowledge_reflection", "matrix_coverage"], "exit_code": 0},
+    {"id": "G-spec-doc-sync", "name": "validate-spec-doc-sync", "conditions": ["foundation_trace"], "exit_code": 0},
+    {"id": "G-source-citation", "name": "validate-source-citation (C08 実行)", "conditions": ["doc_freshness"], "exit_code": 0},
+    {"id": "G-prompt", "name": "validate-prompt + verify-completeness (18 prompts)", "conditions": ["prompt_quality"], "exit_code": 0}
   ],
   "findings": [
-    {
-      "severity": "info",
-      "bucket": "doc_freshness",
-      "observation": "pass-4 の F1 (high) は解消した。wai-aria-tabs の source_url は APG Tabs パターンになり、summary の定義文がページに逐語で存在する。last_updated 2025-09-02 は GitHub のコミット履歴と一致する (C08 が再照合)。",
-      "suggested_fix": "対応不要。"
-    },
-    {
-      "severity": "info",
-      "bucket": "doc_freshness",
-      "observation": "pass-4 の F3 (medium) は解消した。mdn-aria-current は独立した target として登録され、原文 2 文と更新日 2025-10-29 が MDN の現行ページと一致する (C08 が再照合)。",
-      "suggested_fix": "対応不要。"
-    },
-    {
-      "severity": "info",
-      "bucket": "design_knowledge_reflection",
-      "observation": "pass-4 の F2 (medium) は解消した。ui-ux.md:31 の presentation 行と spec-state の doctrine_applications.ui-ux.presentation は、nav + aria-current で tablist を使わない形に揃い、decision-006・同じ章の 49/97/109 行・spec §1.4/§7/§8 と矛盾しない。",
-      "suggested_fix": "対応不要。"
-    },
-    {
-      "severity": "low",
-      "bucket": "foundation_trace",
-      "observation": "I1 は appr-001 のまま『3 タブ … 選択中のタブを URL に保つ』と書いている。ui-ux.md:31 の tablist 記述が消えたので、ARIA の tablist と誤読されるおそれは小さくなった。それでも G1 の『ページ内ナビ』と語がまだ揃っていない。",
-      "suggested_fix": "elicit: 次に foundation を改訂するとき、I1 の『3 タブ』を『3 項目のページ内ナビ』に揃える (任意)。"
-    },
-    {
-      "severity": "low",
-      "bucket": "decision_guidance",
-      "observation": "foundation-002 の質問文は『現金増減は画像どおり金額のみ』を『いまの 3 決定』の 1 つとして扱っている。実際の 3 決定は 005/006/007 で、現金増減について選択肢を示した個別の質問は無い。ただし G1 の文面は利用者が承認している。",
-      "suggested_fix": "elicit: foundation-002 に『現金増減は決定ではなく画像どおりの表示を G1 の承認で確認した』と注記する (任意)。"
-    },
-    {
-      "severity": "low",
-      "bucket": "matrix_coverage",
-      "observation": "auth.web の主 qa_ref は包括承認の foundation-001 で、ほかのカテゴリ (論点ごとの決定を主根拠にしている) より特定性が弱い (C07)。dangling ではなく、G5 の承認範囲に入っている。",
-      "suggested_fix": "elicit: 主根拠を appr-foundation-statements-001 (G5『既存の認証・セッションを保つ』) へ差し替えるか、認証だけを扱う決定 QA を立てる (任意)。"
-    },
-    {
-      "severity": "low",
-      "bucket": "matrix_coverage",
-      "observation": "database / security / infrastructure は、狭い decision-007 を主 qa_ref として共有している。中身の大半は agent-inference で、basis は正直に申告されている (pass-4 から継続)。",
-      "suggested_fix": "elicit: 次に reopen するとき、各セルの主根拠を G4/G5 の承認か、カテゴリ固有の決定に寄せる (任意)。"
-    },
-    {
-      "severity": "low",
-      "bucket": "matrix_coverage",
-      "observation": "csv-chars-001 の basis は observed-fact だが、= + - @ にタブと NUL を加えるのは規範的な判断で、agent-inference に近い。また web-001 系に superseded の印が無い (pass-4 から継続、今回は未対応と申告済み)。",
-      "suggested_fix": "elicit: csv-chars-001 の basis を見直し、差し替え済みの *-web-001 に superseded の印を付ける (任意)。"
-    },
-    {
-      "severity": "low",
-      "bucket": "doc_freshness",
-      "observation": "react-router-searchparams (記録 v8.4.0) と vitest-expect (記録 5.0.1) は公式の現行版を正しく指している。しかし、プロジェクトの依存 (react-router-dom ^7.18.2 / vitest ^4.1.11) とはメジャー版が食い違う (C08 は鮮度違反には当たらないと判定)。",
-      "suggested_fix": "doc-fetch: v7 / v4 の版付き文書を記録するか、summary に『依存は v7 / v4 で、引用した API は両版で同じ』と注記する (任意)。"
-    },
-    {
-      "severity": "info",
-      "bucket": "matrix_coverage",
-      "observation": "doctrine_applications の各エントリは、cells の qa_ref のような構造化された根拠フィールドを持たない。根拠は本文中の自然文の引用 (『利用者決定 qa-statements-decision-006 に合わせて書き直し』) だけである (C06)。今回の書き直しに固有の後退ではなく、既存の構造によるもの。",
-      "suggested_fix": "harness 側の任意改善: doctrine_applications に qa_ref フィールドを設けて機械でたどれるようにする。"
-    },
-    {
-      "severity": "info",
-      "bucket": "matrix_coverage",
-      "observation": "監査報告の精度について 2 点。C06 のサマリ表は『確定 32 + 対象外 16』と数えているが、実際は確定 8 + 対象外 40 である (validate-coverage-matrix と C07 が一致)。C07 は SSOT の R7-audit-matrix.md を『未取得』と留保したが、ファイルは installPath に実在する。『カテゴリ軸の床』の検査は validate-coverage-matrix.py が exit 0 で担保している。どちらも判定には影響しない。",
-      "suggested_fix": "対応不要 (監査を再実行するときは、C06 のセル数と C07 の SSOT 読み込みを確かめる)。"
-    }
+    {"severity": "info", "bucket": "foundation_trace", "observation": "前回 high (00 章 U1 に改訂前の段落が残存) は解消を確認した。U1 は 1 段落で、正本と一致する。『4 区分の件数は排他』の文はどの章にも無い。", "evidence": ["00-requirements-definition.md:14-16"]},
+    {"severity": "medium", "bucket": "matrix_coverage/hearing (C06 F2・C07 info・前回 medium の継続)", "observation": "backend / ui-ux / maintenance-ops の web セルの主根拠 -003 は answered_at が 13:40:10Z で、改訂承認 appr-foundation-classify-002 (13:44:19Z) と reopen (13:44:54Z) より前になっている。hearing_progress.loop_count=1 も、reopen を経た実際の周回を反映していない。", "suggested_fix": "C01 R4-reopen: 導出した qa に recorded_at / derived_from を持たせ、reopen → 再回答 → 再確定の順序を writer で担保する。reopen のたびに loop_count を増やす。"},
+    {"severity": "medium", "bucket": "decision_guidance (前回 medium の継続)", "observation": "decisions[] の公式根拠の確認時刻 (latest_checked_at 13:18:15Z) が利用者の決定 (13:12:52Z) より後で、『根拠は決定後に取得』の注記がまだ無い。選んだ案と根拠は矛盾しない。", "suggested_fix": "C01 R5-decision-guide: 公式根拠を決定前に取得する順序にする。今回の 3 件には『根拠は決定後に取得・結論は不変』の注記を足す。"},
+    {"severity": "low", "bucket": "design_knowledge_reflection", "observation": "『本章での適用』と補助根拠に『4 区分』の言い方が残っている (backend.md:146、frontend.md:32 / :118、maintenance-ops.md:73)。KPI が 4 枚なのは正しいが、『4 区分の判定』『4 区分の和』は排他の 4 区分と読める。", "suggested_fix": "compile / elicit で『分類ステータス (3 区分 + 要確認)』へ言い換える。"},
+    {"severity": "low", "bucket": "design_knowledge_reflection", "observation": "infrastructure.md:119 は『Serverless の制約 card』を適用したと書く一方、:123 は『本章へ引く card は 0 件』とあり、食い違っている。", "suggested_fix": "compile: card を引くか、適用文を card に依らない表現にする。"},
+    {"severity": "low", "bucket": "decision_guidance", "observation": "00-requirements-definition.md:95-97 の意思決定表に、cost_model が Python の dict 表記 (cost={'category': ...}) のまま出ている。", "suggested_fix": "compile R2-render: cost_model を『free / 0 USD / none — tco』のように整形する。"},
+    {"severity": "low", "bucket": "matrix_coverage/hearing (C06 F1)", "observation": "qa-classify-target-platforms-001 (web のみ) は、個別の中立な質問ではなく、scope.out に既定値を入れた U1-U9 の一括承認で決まっている。", "suggested_fix": "C01: 範囲を決める質問は独立した qa として残すか、既定値を含む一括承認であることを provenance に書く。"},
+    {"severity": "info", "bucket": "doc_freshness", "observation": "確認した観点: C08 が 8/8 target を公式で照合し、すべて現行版と一致した。github.com を出典とする 3 件 (tanstack / hono / owasp) は各 publisher の公式 org と確認した。"},
+    {"severity": "info", "bucket": "prompt_quality", "observation": "確認した観点: prompts 18 件で validate-prompt と verify-completeness の失敗は 0 件。"}
   ],
   "gaps": []
 }

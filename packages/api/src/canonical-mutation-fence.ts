@@ -25,7 +25,14 @@ type CanonicalConsumer =
   | 'freee_deal_exclusions'
   | 'mf_tx_exclusions'
   | 'reconciliation_actions'
-  | 'owner_labels';
+  | 'owner_labels'
+  /*
+   * 0046: 明細仕分けの作業台。どちらも JSON バックアップの write-set には入らない
+   * (復元はフィルタも履歴も書き戻さない) が、取込の洗い替えと重なると
+   * 「消えかけの明細に一括保存が当たる」「消えた明細の履歴だけが残る」が作れる。
+   */
+  | 'saved_filters'
+  | 'tx_history';
 
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -39,10 +46,14 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
     path: /^\/api\/cash-entries\/[^/]+$/,
     consumers: ['cash_entries', 'tx_edits'],
   },
-  { method: 'PUT', path: /^\/api\/transactions\/[^/]+\/(?:class|edit)$/, consumers: ['tx_edits'] },
+  {
+    method: 'PUT',
+    path: /^\/api\/transactions\/[^/]+\/(?:class|edit)$/,
+    consumers: ['tx_edits', 'tx_history'],
+  },
   // 分割は明細そのものを内訳N行に差し替える。取込の洗替えと重なると、
   // 元の明細が消えた後の内訳だけが残りうるので同じleaseで直列化する
-  { method: 'PUT', path: /^\/api\/transactions\/[^/]+\/splits$/, consumers: ['tx_splits'] },
+  { method: 'PUT', path: /^\/api\/transactions\/[^/]+\/splits$/, consumers: ['tx_splits', 'tx_history'] },
   { method: 'PUT', path: /^\/api\/balances\/liabilities$/, consumers: ['balance_entries'] },
   // 取込データの削除・取り消し。取込の洗替えと重なると、
   // 消した直後に同じCSVが入って半分だけ戻る状態が作れるので同じleaseで直列化する(DR-3)
@@ -124,7 +135,22 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
     path: /^\/api\/reconciliation\/actions\/[^/]+\/undo$/,
     consumers: ['duplicate_verdicts', 'freee_deal_exclusions', 'mf_tx_exclusions', 'reconciliation_actions'],
   },
+  // 一括保存は明細 N 件の手当てと履歴をまとめて書く
+  { method: 'POST', path: /^\/api\/transactions\/bulk$/, consumers: ['tx_edits', 'tx_history'] },
   { method: 'POST', path: /^\/api\/rules$/, consumers: ['rules'] },
+  // ルール適用は手当て・内訳・履歴へ同時に書く。プレビューは読むだけなので対象外
+  {
+    method: 'POST',
+    path: /^\/api\/rules\/apply$/,
+    consumers: ['rules', 'tx_edits', 'tx_splits', 'tx_history'],
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/rules\/[^/]+\/apply$/,
+    consumers: ['rules', 'tx_edits', 'tx_splits', 'tx_history'],
+  },
+  { method: 'POST', path: /^\/api\/saved-filters$/, consumers: ['saved_filters'] },
+  { method: 'DELETE', path: /^\/api\/saved-filters\/[^/]+$/, consumers: ['saved_filters'] },
   { method: 'PATCH', path: /^\/api\/rules$/, consumers: ['rules'] },
   { method: 'PUT', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },
   { method: 'DELETE', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },

@@ -4,6 +4,7 @@
  */
 import type {
   AnalysisHubReport,
+  AppliedSplitLine,
   AutoMatch,
   Benchmark,
   BudgetOutlook,
@@ -12,6 +13,8 @@ import type {
   CashFlow,
   ClassificationProgress,
   ClassificationSource,
+  ClassifyCounts,
+  ClassifyStatus,
   DefenseForecast,
   DefenseLine,
   DiagnosisData,
@@ -25,12 +28,15 @@ import type {
   ReconcileFreee,
   ReconcileMatch,
   ReconcileReview,
+  ReviewReason,
   SegmentSummary,
+  SplitTemplate,
   StatementSource,
   StatementsScreen,
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
+  SuggestionBasis,
   TotalCashflowMonth,
   TotalCashflowSeriesRow,
   TradeoffCandidate,
@@ -378,6 +384,10 @@ export interface TxEditView {
   owner: Owner | null;
   /** 口座の振替。null は「取込値の口座のまま」 */
   inst: string | null;
+  /** 支払手段の手動指定。null は「口座名と現金 ID からの導出のまま」 */
+  paymentMethod: 'cash' | 'card' | 'account' | null;
+  /** 明細に付けたメモ */
+  note: string | null;
   updatedAt: string | null;
   origin: 'manual' | 'vendor_memory' | null;
   originKey: string | null;
@@ -453,6 +463,144 @@ export interface TxRow {
   /** 手動の科目が現在の公私の系統(事業=freee科目 / 個人=MF内訳)に無い */
   scopeMismatch: boolean;
   edit: TxEditView | null;
+}
+
+/* -------- 明細仕分け画面 (spec-classify-screen) -------- */
+
+export type {
+  AppliedSplitLine,
+  ClassifyCounts,
+  ClassifyStatus,
+  ReviewReason,
+  SplitTemplate,
+  SuggestionBasis,
+};
+
+/**
+ * 一覧の 1 行。TxRow に、提案・信頼度・分類ステータスを足したもの。
+ * 既存画面が読む TxRow を狭めないために、拡張分だけを別の型で重ねる。
+ */
+export interface ClassifyRow extends TxRow {
+  /** 取引先の表示値 (BR-12) */
+  payee: string;
+  /** 内容から導いた支払手段の出どころ */
+  paymentMethodSource: '手動' | '口座' | '現金' | '不明';
+  /** 提案が無ければ null。api は提案なしを空オブジェクトでなく null で返す */
+  suggestion: { cls: Cls | null; big: string | null; mid: string | null; owner: Owner | null } | null;
+  /** 提案の表示文言。無ければ null (画面は「提案なし」を出す) */
+  suggestionLabel: string | null;
+  confidence: number | null;
+  basis: SuggestionBasis;
+  basisText: string;
+  status: ClassifyStatus;
+  needsReview: boolean;
+  reviewReasons: ReviewReason[];
+  note: string | null;
+}
+
+export interface ClassifyTransactionsResponse extends Omit<TransactionsResponse, 'transactions'> {
+  period: { from: string | null; to: string | null };
+  transactions: ClassifyRow[];
+  rows: ClassifyRow[];
+  /** 絞り込み後の件数 (ページ送りの母数) */
+  total: number;
+  page: number;
+  limit: number;
+  /** 絞り込み前・期間内の件数 (KPI 4 枚。画面で数え直さない) */
+  kpi: ClassifyCounts;
+}
+
+/** 保存したフィルタ。期間は含めない (7.4) */
+export interface SavedFilterQuery {
+  status?: ClassifyStatus[] | 'review'[];
+  category?: string;
+  owner?: string;
+  method?: 'cash' | 'card' | 'account' | 'unknown';
+  manual?: boolean;
+  q?: string;
+  sort?: 'date_desc' | 'date_asc';
+}
+
+export interface SavedFilterRow {
+  id: string;
+  name: string;
+  query: SavedFilterQuery;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TxHistoryRow {
+  changedAt: string;
+  field: 'cls' | 'category' | 'owner' | 'payment_method' | 'note' | 'split' | 'delete';
+  before: string | null;
+  after: string | null;
+  source: 'auto' | 'manual' | 'rule' | 'bulk' | 'split' | 'delete' | 'undo';
+  sourceLabel: string;
+  confidence: number | null;
+  opId: string;
+}
+
+export interface BulkItemBody {
+  txId: string;
+  cls?: Cls | null;
+  big?: string | null;
+  mid?: string | null;
+  owner?: Owner | null;
+  paymentMethod?: 'cash' | 'card' | 'account' | null;
+  note?: string | null;
+}
+
+export interface BulkItemResult {
+  txId: string;
+  ok: boolean;
+  status?: string;
+  error?: { code: string; message: string };
+}
+
+export interface BulkSaveResponse {
+  results: BulkItemResult[];
+  opId: string;
+  saved: number;
+  failed: number;
+}
+
+export interface RulePreviewRow {
+  txId: string;
+  date: string;
+  payee: string;
+  description: string;
+  amount: number;
+  /** 適用後の仕訳。分割の型があれば行ごとに 1 要素 */
+  after: { label: string; amount: number }[];
+}
+
+export interface RulePreviewResponse {
+  count: number;
+  rows: RulePreviewRow[];
+  omitted: number;
+  skipped: { txId: string; reason: 'remainder_not_positive' }[];
+  /** プレビューと適用が同じ対象を見ていることの印 (O4) */
+  fingerprint: string;
+}
+
+export interface RuleApplyResponse {
+  applied: number;
+  txIds: string[];
+  skipped: { txId: string; reason: string }[];
+  opId: string | null;
+}
+
+/** ルールの本文 (拡張)。取引先・適用範囲・分割の型を持つ */
+export interface ClassifyRuleBody extends RuleBody {
+  payee?: string | null;
+  scope?: 'all' | 'unconfirmed';
+  splitTemplate?: SplitTemplate | null;
+}
+
+export interface ClassifyRuleRow extends RuleRow {
+  payee: string | null;
+  scope: 'all' | 'unconfirmed';
+  splitTemplate: SplitTemplate | null;
 }
 
 /**

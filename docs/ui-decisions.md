@@ -219,6 +219,43 @@ system-spec から再生成した現行投影で、`features/feat-statements-scr
 - `packages/web/src/pages/household/household.dom.test.tsx` が URL の `seg` / `month` / `cat` の読み書きと、前年欠損の「—」を固定する。
 - `packages/api/test/owner-labels.integration.test.ts` が名義ラベルの入力検証(空・21 文字・制御文字・重複・未知のキー)、20 文字ちょうどの保存、取込み中の 409 を固定する。
 
+## 決定の更新(2026-09-20 / 明細仕分け画面)
+
+`/classify`(整える > 明細仕分け)を `design/FINAL-UI/images/13-classify.png` に合わせて作り直した。判断の正本は `specs/spec-classify-screen.md` と `architecture/classify-*.md`、実装判断の記録は [`classify-screen/design-decisions.md`](classify-screen/design-decisions.md)、表の定義は [`data-schema.md`](data-schema.md) の「明細仕分けの作業台(0046)」。
+
+| 更新した判断 | これまで | 2026-09-20の決定 | 変更した理由 / 却下案 |
+|---|---|---|---|
+| 分類の区分 | 画面ごとに「未分類」「要確認」を各自で数える | **`classifyStatus` の 3 区分 `unsorted` / `manual` / `done` が排他で全件を覆い、`review` は `unsorted` の部分集合**(BR-01〜BR-03) | 同じ月の「未整理◯件」が画面ごとに違うと、どれを片づければ終わるのか分からない。サイドバーのバッジも月次クローズも同じ関数から出す |
+| 要確認の位置づけ | 独立した 4 つ目の区分 | **未整理のうち、低い信頼度・矛盾・競合のいずれかに当たるもの**。KPI にも「未整理のうち」と添える | 4 区分にすると和が全件を超える。却下: 要確認を未整理から外す(片づけ漏れが数から消える) |
+| 絞り込みの置き場所 | コンポーネントの state | **URL が正本**(状態・カテゴリ・所有者・支払方法・キーワード・ページ・選択) | URL から開き直した人と画面で押して絞った人で、同じ URL が別の結果になってはいけない |
+| 条件の再利用 | 毎回入れ直す | **「条件を保存」で名前を付けて残す**(`saved_filters`)。条件は JSON で持ち列に割らない | 毎月同じ絞り込みを作り直す作業になっていた |
+| 変更の追跡 | 無し | **7 つの経路すべてが履歴を 1 件ずつ残す**(手動・自動一致・一括・ルール・分割・削除・取消)。削除と取消も `field='deleted'` の行を書く(FR-16) | 「いつの間にか変わっている / 消えている」を読めるようにする。書き手は `classify-history.ts` の 1 か所で、経路ごとに規則が分かれないようにした |
+| 証憑の添付 | ファイル選択欄 | **置かない**。編集パネルに「証憑は freee 側で管理します」と出す | 2026-09-08 の税申告・証憑機能の廃止に合わせる。欄だけ残すと保存先が無いまま添付を促すことになる |
+| 「AI」という語 | 提案の見出しなどに使う | **画面に 1 つも出さない**。提案は「提案」、確からしさは数値の信頼度で示す | 提案はルールと過去の手当てからの導出で、その中身を語が隠す。却下: 「AI 提案」と書いて注釈を添える(注釈は読まれない) |
+| 色だけの区別 | 信頼度・区分をバッジの色で示す | **数値と文言を必ず併記する**(AT-18) | 色だけでは色覚や単色印刷で区別できない |
+| 分割の保存 | 合計が合わなくても保存できる | **合計が元の金額と一致するまで保存を押せない**。一致・不一致の文言は金額を入れて完全一致で出す(§7.9) | 内訳と親の金額がずれたまま残ると、どちらが正しいのか後から決められない |
+| ルールの適用 | 作ってから結果を見る | **プレビューで件数・変更後・対象外件数を見せ、指紋を付けて適用**(§7.10) | プレビュー以降に対象が変わっていたら書き換えを止める。却下: 件数だけ見せる(何がどう変わるか読めない) |
+
+### 決定の追記と、まだ決めていないこと
+
+Q-1 は system-spec の承認済み契約と一貫する `done` に確定した。残る Q-3〜Q-5 は `specs/spec-classify-screen.md` の未決事項から移し、**この文書で値を決めない。** 決めるときは system-spec を直してから仕様書・本書の順に直す。
+
+| ID | 未決の中身 | いまの扱い |
+|---|---|---|
+| Q-1（解決済み） | 取込時に `vendor_memory` が自動で materialize した手当て(`tx_edits.origin='vendor_memory'`・`clsSrc='手動'`・`matched_proposal=NULL`)を、**完了とするか手動変更とするか**。 | **完了（`done`）とする。** `matched_proposal=NULL` でも `needsReview=false`。利用者の手入力ではなく、承認済みの取引先メモリを取込時に自動適用した決定として扱う。 |
+| Q-3 | ルール適用プレビューの見出し『今後 N 件に適用』が、**どの範囲の明細を指すか**。 | 対象は表示期間内の既存の明細として実装した(agent 推定)。未来に取り込まれる明細には、保存したルールが判定の時点で効く。見出しの語と対象の範囲が合っているかは利用者に確認する。 |
+| Q-4 | localStorage の下書きを、**利用者で区切らない**前提。 | 単一利用者の前提(SH1)で区切らない。共用端末を想定するなら、キーに利用者 id を含める変更を別途決める。いまは共用端末で『下書きを復元』に他人の下書きが出うる。 |
+| Q-5 | 本書と仕様書の値のうち、**agent 推定で利用者が未確認のもの**の一覧。 | 信頼度の数値と衝突の −20・矛盾の定義 / 一括保存の上限 100 と 200 応答 / endpoint の形 / 列名 `matched_proposal`・`tx_history.confidence` / 下書きのキー・1 秒・30 日 / 選択の上限 50 / 既定の並び / KPI を押したときの絞り込み / 1024px 未満の並び / プレビューの 50 行 / batch の 50 文 / 保存フィルタの 20 件 / `scope` の効き方 / 指紋の照合 / 一括保存で送る値 / 空・失敗の文言。実装はこの値で進めている。 |
+
+バッジ(全期間・有効な保留を除く未整理)と月次クローズの『仕分け』(対象月・有効な保留と照合側や現金の行などを除く)は、同じ `classifyStatus` を使うが**母集団が違うので同件数は要求しない**。`saved_filters` と `tx_history` は利用者の作業記録として保持し、会計 JSON バックアップ／復元と full reset の対象外とする。
+
+### この決定を古びさせないために
+
+- `packages/core/src/classify-status.test.ts` が 3 区分の排他と全件被覆(`unsorted + manual + done === all`)、`review <= unsorted`、提案が後から変わっても区分が動かないことを固定する。バッジと月次クローズを別の式にすると落ちる。
+- `packages/web/src/pages/classify/classify.dom.test.tsx` が §7.1〜§7.12 の文言・KPI・絞り込み項目・一覧の列とページ送り・一括保存の失敗通知・分割の一致文言・ルールのプレビュー・削除と取消・「AI」0 件・外部送信 0 件を固定する。
+- `packages/api/src/classify-deletion-history.integration.test.ts` が、明細を名指しで消した経路だけが `deleted` の履歴を残し、取消が同じ明細へ `undo` を返すことを固定する。期間削除で履歴が増えたら落ちる。
+- `packages/api/src/classify-bulk.integration.test.ts` / `rules-preview-apply.integration.test.ts` / `saved-filters.integration.test.ts` が、一括・ルール・分割・保存フィルタの各経路の履歴と `op_id` を固定する。
+
 ## 決定の更新(2026-09-18 / サブスク画面)
 
 `/subscriptions`(整える > サブスク)を `design/FINAL-UI/images/09-subscriptions.png` に合わせて作り直した。判断の正本は `specs/spec-subscriptions-screen.md` と `architecture/subscriptions-*.md`、見取り図と規則の値は [`subscriptions-screen.md`](subscriptions-screen.md)。

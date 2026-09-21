@@ -3,7 +3,7 @@ status: confirmed
 category: database
 aggregate: 確定
 spec_cells: [database.web, database.mobile, database.tablet, database.desktop-windows, database.desktop-linux, database.desktop-macos]
-serves_goals: [G4, G5]
+serves_goals: [G2, G4, G5]
 ---
 
 # データベース (database)
@@ -15,12 +15,12 @@ serves_goals: [G4, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-statements-decision-007。裏付け質疑 (`qa_refs`): `qa-statements-decision-002`, `qa-statements-database-web-002`, `qa-statements-agent-decisions-001`, `qa-statements-reopen-pass3-001`, `qa-statements-database-web-evidence-001`, `qa-statements-zero-amount-legacy-001`, `qa-statements-migration-0046-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、データベースでは端末内の SQLite と D1 の同期・競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、データベースではタブレットの端末内キャッシュの持ち方と失効を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、データベースでは Windows 版のローカル DB ファイルの置き場所と暗号化を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、データベースでは Linux 版のローカル DB の置き場所と権限を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、データベースでは macOS 版のローカル DB とキーチェーンの使い分けを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-classify-database-web-001。裏付け質疑 (`qa_refs`): `qa-classify-database-web-evidence-001`, `qa-classify-database-web-002`, `qa-classify-database-web-003`, `qa-classify-decision-006` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G4, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、データベースでは端末内に明細と下書きを持つ SQLite の同期をどう設計するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、データベースではオフライン閲覧のため期間分の明細を端末へどこまで持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存先と暗号化の方式をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存の権限をどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、データベースではネイティブ版のローカル保存とキーチェーンでの鍵管理をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G4, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | balance_entries の読み書きを balances route と statements route に限る形へ反映した。status 列は既定値 'amount' で追加し既存行を書き換えない。未入力を行の不在で表すので、既存の UNIQUE(user_id, month, side, category) がそのまま『1 項目 1 状態』を保証する。 |
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration を追加のみにすることで、Deploy が自動適用判定で止まらない形へ反映した。audit_log の CHECK 拡張に要する表再構築は採らず新表で監査する。実体は 0045_owner_labels.sql と衝突しない migrations/0046_liability_status.sql である。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 明細仕分けの D1 では、変更履歴を UPDATE しない追記のみの表にし、利用者と明細と時刻の索引で編集パネルの新しい順の表示を 1 回の読取りで返せる形へ反映した。保存フィルタの条件は JSON 1 列に入れ、絞り込みの項目が増えても列を足さない。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | 明細仕分けの D1 では、追加のみの migration 1 本に留めて Migrate の失敗時に行の巻き戻しが要らない形へ反映した。取引の削除と取消は既存の /data/deletions と /data/undo を使い、履歴にも削除と取消の行を残して復元後の状態を辿れるようにした。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,123 +37,67 @@ serves_goals: [G4, G5]
 
 ### Web (web)
 
-- 資するゴール: G4, G5
+- 資するゴール: G2, G4, G5
 
-#### 主たる接地根拠: `qa-statements-decision-007`
-
-**問**
-
-負債残高の保存・削除の記録 (監査ログ) をどう残しますか？
-
-**答**
-
-新表・金額は残さない (推奨)。migration 0045 で liability_audit_log を追加し、誰がいつどの月のどの項目を 保存/0円/未入力 にしたかだけを記録し、金額は残さない。既存 audit_log の CHECK 変更は表の再構築 (Deploy 自動適用で止まる) が要るため避ける。(提示した他の選択肢: 新表・金額も残す / 記録しない)
-
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: 新表で金額を残さない決定は有効だが、実 migration は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり (2026-09-19T02:30:05Z 提示・02:41:21Z 回答) / 回答時刻: 2026-09-19T02:41:21Z)
-
-#### 裏付け質疑: `qa-statements-decision-002`
+#### 主たる接地根拠: `qa-classify-database-web-001`
 
 **問**
 
-BS の負債入力で、画像の 3 項目 (借入金・未払金・クレジット未払) と既存の『その他の負債』をどう扱うか。
+明細仕分けのために D1 のスキーマをどう変えるか。
 
 **答**
 
-3 項目は必須、その他は任意。画像の 3 項目は『未入力 / 0円 / 金額』の選択を必須にし、項目ごとに状態を保存する (migration 0045 で状態列を追加)。その他の負債は任意項目として残す。
+追加のみの migration (新表・新カラム) とし、行を書き換える migration は作らない (qa-classify-decision-004 と U8 の C3)。保存したフィルタを名前付きで保存する新しい表、明細の変更履歴 (いつ・どの項目が・変更前後・どの由来 自動提案 / 手動 / ルール / 一括保存 / 分割 / 削除 / 取消 で変わったか) を追記のみで残す新しい表を設ける。ルールには取引先・適用範囲 (一致する明細すべて / 未確定の明細だけ)・分割の型 (固定額の行と残額の行) を持たせる列を追加する。支払方法を編集パネルで直せるよう、明細の手当て (tx_edits) に支払方法の上書きの列を追加し、値が無い明細は従来どおり機関名から導く。下書きは D1 に置かない。すべての表は利用者で区切る。本番反映は既存の Deploy / Migrate の手順とゲートに従う。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: 状態列と 3 状態の決定は有効だが、実 migration は 0045_owner_labels.sql との衝突を避けた migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T13:24:40Z)
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり / 回答時刻: 2026-09-19T01:53:56Z)
-
-#### 裏付け質疑: `qa-statements-database-web-002`
+#### 裏付け質疑: `qa-classify-database-web-evidence-001`
 
 **問**
 
-負債の 3 状態と保存の監査を、どのテーブル変更で持つか。
+データベース 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。
 
 **答**
 
-migration 0045 で ALTER TABLE balance_entries ADD COLUMN status TEXT NOT NULL DEFAULT 'amount' CHECK (status IN ('zero','amount')) を足し、既存行は金額ありのまま保つ (C4)。『未入力』は行を持たないことで表す。『0円』は status=zero・amount=0 の行。UNIQUE(user_id, month, side, category) は変えない。監査は同じ migration で新表 liability_audit_log (id, user_id, actor_user_id, month, changed_json, occurred_at) を CREATE TABLE で足し、金額は残さず項目ごとの状態遷移と件数だけを残す。既存 audit_log の action は CHECK 制約で閉じており拡張には表の再構築 (INSERT…SELECT と DROP TABLE) が要るが、Deploy の自動適用判定が止めるうえ C4 に反するので採らない。drizzle の schema.ts に列と表を足す。並行サイクルが 0045 を使っていれば実装時に次の番号へ繰り下げる。
+最新の migration は migrations/0045_owner_labels.sql。明細の手当ては tx_edits (note 列 200 字を含む)、分割は tx_splits (migrations/0035)、ルールは rules 表、取引先の決め事は vendor_memory 表にある。保存したフィルタと変更履歴の表は無い。支払方法の上書きの列はどこにも無い。証憑の表と R2 の保存は #42 (462dd9d) で全廃済み。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: DDL と追加のみの方針は有効だが、実 migration は 0045_owner_labels.sql との衝突を避けた migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現行実装 (main 0003cb4) の読取りによる観測。 / 回答時刻: 2026-09-19T13:24:40Z)
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: qa-statements-database-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-007 (監査は新表・金額は残さない)・002 (負債=3 項目必須+その他任意) と appr-foundation-statements-001 の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。 / 回答時刻: 2026-09-19T11:41:33Z)
-
-#### 裏付け質疑: `qa-statements-agent-decisions-001`
+#### 裏付け質疑: `qa-classify-database-web-002`
 
 **問**
 
-pass-3 の差し戻しを直すときに、利用者の決定を具体化するためエージェントが決めた点は何か。
+web の明細仕分け画面で、データベース について利用者が決めていない具体値を何にするか。
 
 **答**
 
-(a) 行の選択は勘定科目セル内のボタンと aria-pressed で示す (表の行は aria-selected を持てないため)。(b) ページ内ナビは選んだ項目だけに aria-current="location" を付け、スクロール位置で自動更新しない。選択時は節見出し (tabIndex=-1) へフォーカスを移す。(c) ref が期間外・不正なら期間の最終月に丸め、丸めた月を bs.referenceMonth で返し web は URL をその値へ置き換える。(d) CF は原因 3 種 (未仕訳件数・現金口座の欠け {月数, 決済列なし}・科目未設定件数) のどれかが立つときだけ不可にし、決済方法の列が無い場合 (既存 settlementUnknown) は 2 番目の原因に添えて表示する。原因が 1 つも無ければ可 (原因の無い不能表示を出さない)。(e) liability_audit_log の列は id・user_id・actor_user_id・month・changed_json・occurred_at で、changed_json は項目ごとの状態遷移と件数。(f) 画像との差 (負債 KPI の文言と色・ナビの意味論・行の選択・月次表の数値・CF 原因・監査) を spec §8 と docs/ui-decisions.md に記録する。
+migration は migrations/0046_classify_workbench.sql の 1 本とし、実装時に origin/main を fetch して番号の空きを確かめる。表は saved_filters (id・user_id・name 1〜40 字・query_json 2000 字以内・created_at・updated_at、(user_id, name) で一意、利用者あたり 20 件まで) と tx_history (id・user_id・tx_id・changed_at・field・before_value・after_value・source を CHECK で auto / manual / rule / bulk / split / delete / undo・op_id、索引 (user_id, tx_id, changed_at))。rules には payee (NULL 可)・scope (CHECK で all / unconfirmed、既定 all)・split_template_json (NULL 可) を、tx_edits には payment_method (CHECK で cash / card / account、NULL 可) を追加する。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる具体化 (利用者決定 qa-statements-decision-005〜007 と WAI-ARIA / 既存コードからの導出。利用者への個別確認なし) / 回答時刻: 2026-09-19T11:41:33Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent の推定 (利用者未確認) / 回答時刻: 2026-09-19T13:24:40Z)
 
-#### 裏付け質疑: `qa-statements-reopen-pass3-001`
+#### 裏付け質疑: `qa-classify-database-web-003`
 
 **問**
 
-決算書画面サイクルの web × 8 セルを再オープンする理由は何か。
+提案どおりの確定と提案と異なる確定 (qa-classify-decision-006) を、後から提案が変わっても区分が揺れないようにどこへ残すか。
 
 **答**
 
-完成度 evaluator の pass-3 (FAIL) の high 指摘 H1: 8 セルの主根拠 qa-statements-<cat>-web-001 は basis=user-decision だが、利用者が代替案を見ずにエージェントが具体化した設計 (監査の新表、ref の丸め、タブの構成、負債 KPI の色の向き、現金 KPI の %) を含む。3 点は利用者に選択肢を示して決定を得た (qa-statements-decision-005〜007、foundation-002)。残りはエージェント判断として qa-statements-agent-decisions-001 に分けた。各セルを reopen し、利用者決定を主根拠に、訂正版の回答 web-002 (agent-inference) を補助根拠として確定し直す。
+明細の手当て (tx_edits) に、利用者が確定したときに提案と一致していたかを表す列を追加のみの migration で足す。値が無い既存の手入力の明細は手動変更として扱う。行を書き換える migration は作らない。 これは agent の推定で、利用者は未確認である。決定 006 の保存先は利用者が指定していないため、実装で決定論を保つために置いた。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: エージェントによる再オープン理由の記録 (evaluator 指摘の転記) / 回答時刻: 2026-09-19T11:41:33Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent-inference (qa-classify-decision-006 の実装上の帰結) / 回答時刻: 2026-09-19T13:40:10Z)
 
-#### 裏付け質疑: `qa-statements-database-web-evidence-001`
+#### 裏付け質疑: `qa-classify-decision-006`
 
 **問**
 
-database 章の裏付けとして、既存のテーブルと migration の規則について何を観測したか。
+一覧や編集パネルで明細を『確定』したとき、どの区分に移すか。
 
 **答**
 
-migrations/0026_balance_entries.sql は id・user_id・month・date・side・category・amount・source ('mf' | 'manual')・created_at・updated_at と UNIQUE(user_id, month, side, category)。migrations/0033_audit_log.sql は action を CHECK で閉じ、0034 と 0039 は CHECK を広げるために audit_log_new を作って RENAME する再構築をしている。.github/scripts/plan-auto-migration.mjs は DROP TABLE・DROP COLUMN・DELETE FROM・UPDATE…SET・ALTER TABLE…RENAME を自動適用しない。最新の migration は 0044_diagnosis_action_states.sql。
+提案どおりなら完了 (推奨)。提案をそのまま受け入れたものは完了、区分・カテゴリ・所有者のどれかを提案と違う値にしたものは手動変更。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T02:01:29Z)
-
-#### 裏付け質疑: `qa-statements-zero-amount-legacy-001`
-
-**問**
-
-migration 0045 の適用前に金額 0 で保存された既存の手入力負債行 (status 列の既定値で 'amount' になる) を、画面と集計でどう扱うか。
-
-**答**
-
-(status='amount', amount=0) の組を『0円』(zero) と同じ扱いで表示・完了判定する。現行 UI で 0 を入れて保存した行は利用者が値を入れた項目であり、未入力ではないため。行は書き換えない (C4。UPDATE を含む migration は Deploy の自動適用判定で止まる)。次にその項目が保存されたとき status='zero' で上書きされる。core の契約テストでこの扱いを固定する (specs/spec-statements-screen.md §3.4・§7)。
-
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: 『状態列の適用前に amount=0 で保存された行』の互換処理は有効だが、状態列を追加する実 migration は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる既存データの扱いの決定 (C4 と G4 から導出。利用者への個別確認なし) / 回答時刻: 2026-09-19T02:18:27Z)
-
-#### 裏付け質疑: `qa-statements-migration-0046-001`
-
-**問**
-
-負債 3 状態の migration 番号は、実際のワークツリーで何番になったか。
-
-**答**
-
-0045_owner_labels.sql が先に存在するため、仕様の衝突時繰り下げ規則を適用し、実体は migrations/0046_liability_status.sql になった。現行の仕様・運用・schema guard・テスト参照は 0046 を使う。0045 という記述は生成済み計画の履歴を除き、現行契約として扱わない。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: migrations/0045_owner_labels.sql と migrations/0046_liability_status.sql のワークツリー観測 / 回答時刻: 2026-09-19T21:52:53Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し) / 回答時刻: 2026-09-19T13:40:10Z)
 
 ## To-Be / Delta
 
@@ -161,27 +105,34 @@ migration 0045 の適用前に金額 0 で保存された既存の手入力負�
 
 ### 到達すべき状態 (To-Be)
 
-- **G4**: 貸借対照表の負債残高を、基準月ごと・項目ごとに『未入力 / 0円 / 金額』の 3 状態で入力・保存できるようにする。借入金・未払金・クレジット未払の 3 項目は状態の選択を必須とし、その他の負債は任意項目として残す。保存済みの値を読み込んで初期表示し、保存は項目単位で上書きして他の項目を消さない。基準月は期間内の任意の月を選べる。入力中の値はブラウザ内に利用者ごとの下書きとして自動保存し保存時刻を示し、リセットで保存済みの値へ戻し、未保存の項目数を画面下部の固定バーに出す。未入力の項目がある月は BS にデータ不足の表示を出し、純資産を出さない。
-- **G5**: 負債の保存経路と画面の安全性を整える。既存の認証・セッション・CSRF 相当の防御 (SameSite=Strict の Cookie と JSON の Content-Type 検証) と取込との直列化を保ったまま、金額の上限、リクエストの大きさの上限、保存操作の監査ログを加える。下書きには利用者の識別子をキーに含め、ログアウトで消す。取込データや下書きを外部へ送らない。
+- **G2**: 分類ステータスと提案を core の純関数 1 か所に集める。各明細を 未整理 (利用者・ルール・MF 中項目のどれもまだ決めていない明細。提案の有無と信頼度は問わない) / 手動変更 (利用者が提案と異なる値で確定した明細。提案が無いまま利用者が決めた明細と、この変更より前の手入力の明細を含む) / 完了 (利用者が提案どおりに確定した明細と、ルール・MF 中項目が決めた明細) の 3 区分に排他で振り分け、和が全件に一致する。要確認は区分ではなく未整理の内訳で、提案の信頼度が 80% 未満・提案どうしの衝突・区分と名義の矛盾のいずれかがある未整理の明細を数える。ナビのバッジは未整理の件数、月次クローズの『仕分け』は同じ判定の未整理から照合側で数える明細を除いた件数とし (現行の clsSrc=既定 と同じ意味)、同じ関数から導かれることをテストで固定する。提案カテゴリ・信頼度・根拠の文は recommendationFor を拡張し、過去の同取引先・ルール・MF 中項目のどの由来にも決定論の信頼度を付け、/transactions の応答にも載せる。外部の LLM は呼ばず、表示は『自動提案』とする。
+- **G4**: 『この条件をルールにする』で取引先・キーワード・適用範囲 (一致する明細すべて / 未確定の明細だけ) を選んでルールを作り、作成前に該当する明細と適用後の仕訳 (カテゴリ・分割の内訳) の一覧と件数をプレビューで確かめてから適用できるようにする。分割の内容もルールにでき、固定額の行と残額の行で同じ条件の明細を同じ形に分ける。該当する既存のルールと、そのルールの対象件数を編集パネルに示す。手動変更した明細はルールで上書きしない。
+- **G5**: 仕分けの作業状態を失わない。保存したフィルタは D1 に新しい表を追加のみの migration で設け、名前付きで保存・呼出・削除できる。取引の履歴は D1 に明細の変更履歴表を追加のみで設け、いつ・何が (区分・カテゴリ・所有者・支払方法・メモ・分割)・どの由来 (自動提案 / 手動 / ルール / 一括保存) で変わったかを残し、編集パネルに新しい順で出す。編集パネルの下書きは端末の localStorage に明細単位で自動保存し、最終保存時刻を表示し、保存に成功したら消し、次回に『下書きを復元』できる。未保存のまま離れるときは確認する。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O4 | 負債残高の 3 状態入力が値を失わない。 | API と DOM のテストで、1 項目だけ保存しても他項目の保存値が残り、保存済みの値が初期表示され、『未入力』と『0円』が別々に保存・表示され、必須 3 項目の状態が未選択なら保存できず、下書きの復元・リセット・未保存件数の表示が緑である。 |
-| O5 | 負債の保存経路が入力の上限と監査を持つ。 | API テストで、上限を超える金額と大きすぎる本文が 4xx で拒否され、保存が監査ログに 1 件残り、未認証の保存が拒否されることが緑である。 |
+| O2 | 未整理・手動変更・完了の件数が排他で閉じ、要確認が未整理の内訳に収まり、他画面と一致する。 | core の単体テストで、同じ Dataset と期間に対し 未整理 + 手動変更 + 完了 = 全件、各明細がちょうど 1 区分に入り、要確認 ⊆ 未整理、未整理の明細で信頼度 80% の境界 (79 は要確認・80 は要確認でない) と衝突・矛盾の各規則、提案どおりの確定は完了・提案と異なる確定は手動変更になることが固定され、ナビのバッジと月次クローズの『仕分け』の件数が同じ関数から出る。 |
+| O4 | ルールのプレビューと適用結果が一致する。 | core の単体テストで、プレビューが列挙した明細と件数が、適用後に実際に変わった明細と一致し、手動変更の明細が変わらず、分割ルールの各行の和が元の金額に一致する。 |
+| O5 | 作業状態が失われない。 | API 統合テストで保存フィルタの作成・一覧・削除と、各変更経路で履歴が 1 件ずつ残ることを確かめ、migration が既存行を 1 行も書き換えないことを検査する。DOM テストで下書きの自動保存・復元・保存成功での消去・離脱確認を確かめる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I6**: 負債入力を基準月の月ピッカーと項目ごとの 3 択 (未入力 / 0円 / 金額を入力) に作り直し、migration 0046 で balance_entries に状態列を足し、PUT を項目単位の upsert にして保存済みの値を読み込む。
-- **I7**: 入力中の負債を localStorage に利用者別のキーで下書き保存し、保存時刻・リセット・未保存件数の固定バーを出し、ログアウトで下書きを消す。
-- **I8**: PUT /api/balances/liabilities に金額の上限と本文の大きさの上限を課し、保存を監査ログへ記録する。
+- **I2**: core に分類ステータス判定 (仮称 classifyStatus) を新設し、3 区分の排他判定と要確認の内訳・件数集計を 1 か所で行い、サイドバーのバッジと月次クローズの『仕分け』もここを参照させる。
+- **I3**: recommendationFor を拡張し、ルール・MF 中項目由来にも決定論の信頼度を付け、根拠の文を由来ごとに整え、/transactions の各行に提案・信頼度・根拠・ステータスを載せる。
+- **I5**: ルールに取引先・適用範囲・分割の型 (固定額の行と残額の行) を持たせる追加のみの migration と、作成前プレビュー・適用 API を設ける。
+- **I6**: 保存フィルタ表と明細の変更履歴表を追加のみで設け、全変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。
+- **I7**: 編集パネルの下書きを localStorage に明細単位で自動保存し、保存時刻の表示・復元・保存成功での消去・未保存の離脱確認を行う。
 
 ### 本章に効く確定意思決定
 
-- **D-statements-draft-storage**: 決算書の負債入力の下書き (『下書きを自動保存しました』) をどこに保存するか
-  - 採択: ブラウザ内 (localStorage に利用者別キー) (`browser-localstorage`)
-  - 目的適合: G4 の『入力中の値をブラウザ内に利用者ごとの下書きとして自動保存』をそのまま満たす。既存の period.tsx と同じ方式。
+- **dec-classify-confidence-source**: 一覧の信頼度と自動提案をどう算出するか。
+  - 採択: 既存規則の拡張・外部送信なし (`opt-deterministic`)
+  - 目的適合: G2 の決定論と『取込データは外部送信しません』の約束に一致する。
+- **dec-classify-state-storage**: 保存したフィルタ・下書き・取引の履歴の保存先をどうするか。
+  - 採択: フィルタと履歴は D1、下書きは端末 (`opt-d1-and-local`)
+  - 目的適合: 共有と監査が要るものは D1、頻繁に変わる下書きは端末に置き G5 を満たす。
 
 ## 適用された設計知識
 
@@ -189,9 +140,9 @@ migration 0045 の適用前に金額 0 で保存された既存の手入力負�
 
 ### 本章での適用
 
-DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、負債の状態列だけを足す判断に適用した。段階損益・前期比・構成比・CF の原因件数は既存の明細と判定から導出できるので保存しない。一方で負債の『0円』と『未入力』の区別は利用者が決めた事実であり導出できないため、balance_entries に status 列を足し、未入力は行が無いこと、0円は status=zero の行で表す。監査は既存 audit_log の CHECK を再構築せず、状態遷移だけを残す新表 liability_audit_log を足す。
+Schema evolution の card (expand のみで contract しない) を明細仕分けに適用した。ルールの新しい列は NULL 可か既定値付きにして既存のルールが今までどおり動くようにし、支払方法の上書きも NULL なら従来の導出に落ちる。こうして C3 の『既存行の書き換え 0 件』を migration 1 本で守る。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T02:05:18Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T13:24:40Z)
 
 ### Domain-Driven Design — deep knowledge card
 
@@ -238,4 +189,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| sqlite-alter-table | 2026-06-04 | SQLite (www.sqlite.org) | https://www.sqlite.org/lang_altertable.html | 2026-09-19T02:03:50Z | 2026-09-19T02:03:50Z |
+| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-19T13:26:35Z | 2026-09-19T13:26:35Z |

@@ -3,7 +3,7 @@ status: confirmed
 category: auth
 aggregate: 確定
 spec_cells: [auth.web, auth.mobile, auth.tablet, auth.desktop-windows, auth.desktop-linux, auth.desktop-macos]
-serves_goals: [G4, G5]
+serves_goals: [G3, G5]
 ---
 
 # 認証(ログイン) (auth)
@@ -15,12 +15,12 @@ serves_goals: [G4, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-statements-foundation-001。裏付け質疑 (`qa_refs`): `qa-statements-decision-007`, `qa-statements-auth-web-002`, `qa-statements-agent-decisions-001`, `qa-statements-reopen-pass3-001`, `qa-statements-auth-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、認証ではモバイルの生体認証と端末内のトークン保管 (Keychain / Keystore) を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、認証では共用されやすいタブレットでの自動ログアウトと再認証の間隔を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、認証では Windows 資格情報マネージャへのトークン保管と OS ログインとの連携を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、認証では Linux の Secret Service へのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、認証では macOS キーチェーンへのトークン保管と Touch ID 連携を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-classify-auth-web-001。裏付け質疑 (`qa_refs`): `qa-classify-auth-web-evidence-001`, `qa-classify-auth-web-002` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、認証(ログイン)では生体認証やトークンの端末保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、認証(ログイン)では共有されやすい家庭用タブレットでのセッションの寿命をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、認証(ログイン)ではWindows の資格情報マネージャーへのセッション保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、認証(ログイン)ではLinux の Secret Service へのセッション保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、認証(ログイン)ではmacOS のキーチェーンへのセッション保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G4, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 決算書と負債保存の 2 経路に既存のセッション Cookie (HttpOnly・Secure・SameSite=Strict) による認証をそのまま効かせる形へ反映した。未認証は authGuard が 401 を返し、一時パスワードのままの利用者は mustChangePasswordFence が止める。新しい認証方式や役割は足さない。 |
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 負債保存の操作者を liability_audit_log の actor_user_id に残す形へ反映した。監査には金額を残さず項目ごとの状態遷移だけを記録し、監査表そのものが金額の複製にならないようにする。ブラウザ内の下書きは userId をキーに含めログアウト時に消す。 |
+| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 明細仕分けでは新しいログイン経路を足さず、既存のセッション Cookie と session_generation による無効化にそのまま乗せる形へ反映した。パスワード変更が必要な利用者は mustChangePasswordFence で一括保存やルール適用に届かない。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 明細仕分けの認可では、一括保存・ルール適用・保存フィルタ・履歴の全 SQL を利用者で区切り、他人の明細 id を渡されても明細単位の not_found に落とす形へ反映した。利用者 id を要求の本文から受け取らない。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,84 +37,43 @@ serves_goals: [G4, G5]
 
 ### Web (web)
 
-- 資するゴール: G4, G5
+- 資するゴール: G3, G5
 
-#### 主たる接地根拠: `qa-statements-foundation-001`
-
-**問**
-
-決算書画面 (design/FINAL-UI/images/11-statements.png) を正本として画面・集計・API・保存を作り直す今サイクルの上位概念 U1-U9 (本質的目的 / 背景 / ゴール G1-G5 / 目標 O1-O5 / 成功基準 S1-S5 / 関係者 SH1-SH2 / 範囲 in 7・out 5 / 制約 C1-C5 / 具体的やりたいこと I1-I8) を、要件定義書の憲法として確定してよいか。
-
-**答**
-
-この内容で承認する。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / U1-U9 要約を preview で提示 / 回答時刻: 2026-09-19T01:53:56Z)
-
-#### 裏付け質疑: `qa-statements-decision-007`
+#### 主たる接地根拠: `qa-classify-auth-web-001`
 
 **問**
 
-負債残高の保存・削除の記録 (監査ログ) をどう残しますか？
+明細仕分けの新しい API と保存データに、認証と認可をどう適用するか。
 
 **答**
 
-新表・金額は残さない (推奨)。migration 0045 で liability_audit_log を追加し、誰がいつどの月のどの項目を 保存/0円/未入力 にしたかだけを記録し、金額は残さない。既存 audit_log の CHECK 変更は表の再構築 (Deploy 自動適用で止まる) が要るため避ける。(提示した他の選択肢: 新表・金額も残す / 記録しない)
+新しい認証方式は作らない。新しい API (一括保存・ルールのプレビューと適用・保存フィルタ・履歴) はすべて /api/* の authGuard と mustChangePasswordFence の内側に置き、利用者 id はセッションから取り、要求の本文や URL からは受け取らない。保存したフィルタ・変更履歴・ルールは利用者で区切り、他の利用者の行を読み書きできない。下書きは端末の localStorage に置くため、共有端末に残らないよう保存成功で消す (qa-classify-decision-004)。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: 新表で金額を残さない決定は有効だが、実 migration は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T13:24:40Z)
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり (2026-09-19T02:30:05Z 提示・02:41:21Z 回答) / 回答時刻: 2026-09-19T02:41:21Z)
-
-#### 裏付け質疑: `qa-statements-auth-web-002`
+#### 裏付け質疑: `qa-classify-auth-web-evidence-001`
 
 **問**
 
-決算書の閲覧と負債の保存を、誰がどの認証で行えるか。
+認証(ログイン) 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。
 
 **答**
 
-既存のアカウントログイン (メールアドレス+パスワード、HttpOnly・Secure・SameSite=Strict のセッション Cookie) をそのまま使い、/api/* の authGuard と一時パスワードの fence を通った利用者だけが自分の user_id の決算書を読み、負債を保存できる。新しい認証方式・権限は足さない。監査 liability_audit_log には actor_user_id を残す。下書きのキーに userId を含め、ログアウトで消すので、同じブラウザで別の利用者に前の利用者の下書きが見えない。
+packages/api/src/index.ts の 56〜106 行目で /api/* に authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence が順に掛かる。セッションは kanjo_session Cookie で、users 表の session_generation で無効化される。既存の classify route は c.get('userId') で利用者を取り、全ての SQL を user_id で絞っている。テナントは TENANT_ID='default' の単一。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: qa-statements-auth-web-001 を置き換える訂正版。利用者が選んだのは appr-foundation-statements-001 (G5: 既存の認証・セッションを保つ) と qa-statements-decision-007 (保存の監査) の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。 / 回答時刻: 2026-09-19T11:41:33Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現行実装 (main 0003cb4) の読取りによる観測。 / 回答時刻: 2026-09-19T13:24:40Z)
 
-#### 裏付け質疑: `qa-statements-agent-decisions-001`
+#### 裏付け質疑: `qa-classify-auth-web-002`
 
 **問**
 
-pass-3 の差し戻しを直すときに、利用者の決定を具体化するためエージェントが決めた点は何か。
+web の明細仕分け画面で、認証(ログイン) について利用者が決めていない具体値を何にするか。
 
 **答**
 
-(a) 行の選択は勘定科目セル内のボタンと aria-pressed で示す (表の行は aria-selected を持てないため)。(b) ページ内ナビは選んだ項目だけに aria-current="location" を付け、スクロール位置で自動更新しない。選択時は節見出し (tabIndex=-1) へフォーカスを移す。(c) ref が期間外・不正なら期間の最終月に丸め、丸めた月を bs.referenceMonth で返し web は URL をその値へ置き換える。(d) CF は原因 3 種 (未仕訳件数・現金口座の欠け {月数, 決済列なし}・科目未設定件数) のどれかが立つときだけ不可にし、決済方法の列が無い場合 (既存 settlementUnknown) は 2 番目の原因に添えて表示する。原因が 1 つも無ければ可 (原因の無い不能表示を出さない)。(e) liability_audit_log の列は id・user_id・actor_user_id・month・changed_json・occurred_at で、changed_json は項目ごとの状態遷移と件数。(f) 画像との差 (負債 KPI の文言と色・ナビの意味論・行の選択・月次表の数値・CF 原因・監査) を spec §8 と docs/ui-decisions.md に記録する。
+他の利用者の保存フィルタや明細を id で指したときは、存在を漏らさないため 403 ではなく 404 を返す。一括保存では他の利用者の明細 id を明細単位の失敗 (not_found) として返し、要求全体は止めない。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる具体化 (利用者決定 qa-statements-decision-005〜007 と WAI-ARIA / 既存コードからの導出。利用者への個別確認なし) / 回答時刻: 2026-09-19T11:41:33Z)
-
-#### 裏付け質疑: `qa-statements-reopen-pass3-001`
-
-**問**
-
-決算書画面サイクルの web × 8 セルを再オープンする理由は何か。
-
-**答**
-
-完成度 evaluator の pass-3 (FAIL) の high 指摘 H1: 8 セルの主根拠 qa-statements-<cat>-web-001 は basis=user-decision だが、利用者が代替案を見ずにエージェントが具体化した設計 (監査の新表、ref の丸め、タブの構成、負債 KPI の色の向き、現金 KPI の %) を含む。3 点は利用者に選択肢を示して決定を得た (qa-statements-decision-005〜007、foundation-002)。残りはエージェント判断として qa-statements-agent-decisions-001 に分けた。各セルを reopen し、利用者決定を主根拠に、訂正版の回答 web-002 (agent-inference) を補助根拠として確定し直す。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: エージェントによる再オープン理由の記録 (evaluator 指摘の転記) / 回答時刻: 2026-09-19T11:41:33Z)
-
-#### 裏付け質疑: `qa-statements-auth-web-evidence-001`
-
-**問**
-
-auth 章の裏付けとして、既存の認証の仕組みについて何を観測したか。
-
-**答**
-
-packages/api/src/index.ts は認証エンドポイントの後に app.use('/api/*', authGuard()) と mustChangePasswordFence() を掛ける (102 行付近)。packages/api/src/auth.ts はセッション Cookie を sameSite 'Strict'・httpOnly・secure で発行し (129 行)、ログアウトで maxAge 0 にする (136 行)。migrations/0039_account_login.sql が users と audit_log の actor_user_id を導入している。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T02:01:29Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent の推定 (利用者未確認) / 回答時刻: 2026-09-19T13:24:40Z)
 
 ## To-Be / Delta
 
@@ -122,27 +81,27 @@ packages/api/src/index.ts は認証エンドポイントの後に app.use('/api/
 
 ### 到達すべき状態 (To-Be)
 
-- **G4**: 貸借対照表の負債残高を、基準月ごと・項目ごとに『未入力 / 0円 / 金額』の 3 状態で入力・保存できるようにする。借入金・未払金・クレジット未払の 3 項目は状態の選択を必須とし、その他の負債は任意項目として残す。保存済みの値を読み込んで初期表示し、保存は項目単位で上書きして他の項目を消さない。基準月は期間内の任意の月を選べる。入力中の値はブラウザ内に利用者ごとの下書きとして自動保存し保存時刻を示し、リセットで保存済みの値へ戻し、未保存の項目数を画面下部の固定バーに出す。未入力の項目がある月は BS にデータ不足の表示を出し、純資産を出さない。
-- **G5**: 負債の保存経路と画面の安全性を整える。既存の認証・セッション・CSRF 相当の防御 (SameSite=Strict の Cookie と JSON の Content-Type 検証) と取込との直列化を保ったまま、金額の上限、リクエストの大きさの上限、保存操作の監査ログを加える。下書きには利用者の識別子をキーに含め、ログアウトで消す。取込データや下書きを外部へ送らない。
+- **G3**: 選択した複数の明細を 1 回の要求で保存する一括保存を設ける。明細ごとの成否を返し、画面は『N 件のうち M 件を保存、K 件はエラー』と失敗した明細だけの再試行を示す。成功分は取り消されない。削除は既存の取消 (undo) で元に戻せる。一括保存・ルール作成・ルール適用・保存フィルタの変更は既存の canonicalMutationFence の内側に置く。
+- **G5**: 仕分けの作業状態を失わない。保存したフィルタは D1 に新しい表を追加のみの migration で設け、名前付きで保存・呼出・削除できる。取引の履歴は D1 に明細の変更履歴表を追加のみで設け、いつ・何が (区分・カテゴリ・所有者・支払方法・メモ・分割)・どの由来 (自動提案 / 手動 / ルール / 一括保存) で変わったかを残し、編集パネルに新しい順で出す。編集パネルの下書きは端末の localStorage に明細単位で自動保存し、最終保存時刻を表示し、保存に成功したら消し、次回に『下書きを復元』できる。未保存のまま離れるときは確認する。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O4 | 負債残高の 3 状態入力が値を失わない。 | API と DOM のテストで、1 項目だけ保存しても他項目の保存値が残り、保存済みの値が初期表示され、『未入力』と『0円』が別々に保存・表示され、必須 3 項目の状態が未選択なら保存できず、下書きの復元・リセット・未保存件数の表示が緑である。 |
-| O5 | 負債の保存経路が入力の上限と監査を持つ。 | API テストで、上限を超える金額と大きすぎる本文が 4xx で拒否され、保存が監査ログに 1 件残り、未認証の保存が拒否されることが緑である。 |
+| O3 | 一括保存の部分失敗が報告され、失敗分だけ再試行できる。 | API 統合テストで、3 件中 1 件が検証エラーの一括保存が 2 件を保存して明細ごとの結果を返し、再試行が失敗分だけを送ることを DOM テストで確かめる。未認証 401・変更系フェンス違反の拒否・上限件数超過の 400 を確かめる。 |
+| O5 | 作業状態が失われない。 | API 統合テストで保存フィルタの作成・一覧・削除と、各変更経路で履歴が 1 件ずつ残ることを確かめ、migration が既存行を 1 行も書き換えないことを検査する。DOM テストで下書きの自動保存・復元・保存成功での消去・離脱確認を確かめる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I6**: 負債入力を基準月の月ピッカーと項目ごとの 3 択 (未入力 / 0円 / 金額を入力) に作り直し、migration 0046 で balance_entries に状態列を足し、PUT を項目単位の upsert にして保存済みの値を読み込む。
-- **I7**: 入力中の負債を localStorage に利用者別のキーで下書き保存し、保存時刻・リセット・未保存件数の固定バーを出し、ログアウトで下書きを消す。
-- **I8**: PUT /api/balances/liabilities に金額の上限と本文の大きさの上限を課し、保存を監査ログへ記録する。
+- **I4**: 一括保存 API を新設し、明細ごとに検証と保存を行って成否の配列を返す。画面は部分失敗の通知と失敗分だけの再試行を出す。
+- **I6**: 保存フィルタ表と明細の変更履歴表を追加のみで設け、全変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。
+- **I7**: 編集パネルの下書きを localStorage に明細単位で自動保存し、保存時刻の表示・復元・保存成功での消去・未保存の離脱確認を行う。
 
 ### 本章に効く確定意思決定
 
-- **D-statements-draft-storage**: 決算書の負債入力の下書き (『下書きを自動保存しました』) をどこに保存するか
-  - 採択: ブラウザ内 (localStorage に利用者別キー) (`browser-localstorage`)
-  - 目的適合: G4 の『入力中の値をブラウザ内に利用者ごとの下書きとして自動保存』をそのまま満たす。既存の period.tsx と同じ方式。
+- **dec-classify-state-storage**: 保存したフィルタ・下書き・取引の履歴の保存先をどうするか。
+  - 採択: フィルタと履歴は D1、下書きは端末 (`opt-d1-and-local`)
+  - 目的適合: 共有と監査が要るものは D1、頻繁に変わる下書きは端末に置き G5 を満たす。
 
 ## 適用された設計知識
 
@@ -150,9 +109,9 @@ packages/api/src/index.ts は認証エンドポイントの後に app.use('/api/
 
 ### 本章での適用
 
-Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、決算書の読み取りと負債保存の 2 経路の配置に適用した。GET /api/statements と PUT /api/balances/liabilities はどちらも /api/* の authGuard → mustChangePasswordFence → runtimeSchemaGuard の内側に載せ、route の中で個別の認可判定を書かない。利用者の識別は c.get('userId') だけから取り、本文やクエリで user_id を受け取らない。ブラウザ内の下書きもキーに userId を含め、ログアウトで消すことで同じ端末の別利用者へ漏れないようにする。
+Least privilege と resource ownership の card を明細仕分けに適用した。新しい表はすべて user_id を主キーか索引の先頭に持たせ、route は WHERE user_id = ? を必ず付ける。所有していない行は存在しないものとして扱い、一括保存でも明細単位で同じ規則を当てる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T02:05:18Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T13:24:40Z)
 
 ### Secure by Design — deep knowledge card
 
@@ -197,6 +156,4 @@ Secure by Design card の『既定で拒否し、境界で一度だけ判定す�
 
 ## 最新ドキュメント出典
 
-| 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
-|---|---|---|---|---|---|
-| set-cookie-samesite | 2026-09-01 | MDN Web Docs (Mozilla) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie | 2026-09-19T02:03:50Z | 2026-09-19T02:03:50Z |
+- (このカテゴリに割り当てた取得済みドキュメントなし。全体出典は index.md 参照)

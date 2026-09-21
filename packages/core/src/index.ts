@@ -13,6 +13,7 @@ export * from './parsers/mf-assets.js';
 export * from './dataset.js';
 export * from './subs.js';
 export * from './analysis.js';
+export * from './classify-status.js';
 export * from './overview.js';
 export * from './expense-projection.js';
 export * from './subs-screen.js';

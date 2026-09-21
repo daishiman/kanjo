@@ -1,0 +1,48 @@
+{
+  "feature_id": "feat-classify-screen",
+  "feature_package_id": "feature-package/feat-classify-screen",
+  "graph_revision": 3,
+  "graph_snapshot_digest": "04f3c1a250ac3c5422d151a111c0eca3db330020168c15fb7526d24886324fdf",
+  "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-classify-screen/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-classify-screen/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-classify-screen/task-graph.json"
+  },
+  "plan_validated_digest": "7c218fe0d853660e36f0514a16a73caf263ddd8dfe8c20e45ab7eb46dd88d6ce",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-CLASSIFY-P01",
+    "SYS-CLASSIFY-P02",
+    "SYS-CLASSIFY-P03",
+    "SYS-CLASSIFY-P04",
+    "SYS-CLASSIFY-P05",
+    "SYS-CLASSIFY-P06",
+    "SYS-CLASSIFY-P07",
+    "SYS-CLASSIFY-P08",
+    "SYS-CLASSIFY-P09",
+    "SYS-CLASSIFY-P10",
+    "SYS-CLASSIFY-P11",
+    "SYS-CLASSIFY-P12",
+    "SYS-CLASSIFY-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0",
+  "task_artifacts": [
+    "tasks/feat-classify-screen/sys-classify-p01.md",
+    "tasks/feat-classify-screen/sys-classify-p02.md",
+    "tasks/feat-classify-screen/sys-classify-p03.md",
+    "tasks/feat-classify-screen/sys-classify-p04.md",
+    "tasks/feat-classify-screen/sys-classify-p05.md",
+    "tasks/feat-classify-screen/sys-classify-p06.md",
+    "tasks/feat-classify-screen/sys-classify-p07.md",
+    "tasks/feat-classify-screen/sys-classify-p08.md",
+    "tasks/feat-classify-screen/sys-classify-p09.md",
+    "tasks/feat-classify-screen/sys-classify-p10.md",
+    "tasks/feat-classify-screen/sys-classify-p11.md",
+    "tasks/feat-classify-screen/sys-classify-p12.md",
+    "tasks/feat-classify-screen/sys-classify-p13.md"
+  ]
+}

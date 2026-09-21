@@ -22,7 +22,7 @@ vi.mock('./pages/Subscriptions.js', () => ({ SubscriptionsPage: () => <h1>stub:S
 vi.mock('./pages/Household.js', () => ({ HouseholdPage: () => <h1>stub:HouseholdPage</h1> }));
 vi.mock('./pages/Statements.js', () => ({ StatementsPage: () => <h1>stub:StatementsPage</h1> }));
 vi.mock('./pages/Ai.js', () => ({ AiPage: () => <h1>stub:AiPage</h1> }));
-vi.mock('./pages/Classify.js', () => ({ ClassifyPage: () => <h1>stub:ClassifyPage</h1> }));
+vi.mock('./pages/classify/ClassifyPage.js', () => ({ ClassifyPage: () => <h1>stub:ClassifyPage</h1> }));
 vi.mock('./pages/Budget.js', () => ({ BudgetPage: () => <h1>stub:BudgetPage</h1> }));
 vi.mock('./pages/Tradeoff.js', () => ({ TradeoffPage: () => <h1>stub:TradeoffPage</h1> }));
 vi.mock('./pages/Import.js', () => ({ ImportPage: () => <h1>stub:ImportPage</h1> }));

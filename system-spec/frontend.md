@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G1, G3, G4]
+serves_goals: [G1, G3, G5]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G1, G3, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-statements-decision-006。裏付け質疑 (`qa_refs`): `qa-statements-decision-003`, `qa-statements-image-observations-001`, `qa-statements-frontend-web-002`, `qa-statements-agent-decisions-001`, `qa-statements-reopen-pass3-001`, `qa-statements-frontend-web-evidence-001`, `qa-statements-detail-parameters-001`, `qa-statements-csv-chars-001`, `qa-statements-screen-only-contract-001`, `qa-statements-monthly-pl-unit-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G3, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、フロントエンドではネイティブの描画基盤 (React Native など) と web との部品共有を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、フロントエンドではタブレット専用ビルドの分岐と画面幅ごとの部品差し替えを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、フロントエンドでは Windows 向けのデスクトップ殻 (Electron など) への組込みを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、フロントエンドでは Linux 向けの殻と描画エンジンの差を吸収する方法を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、フロントエンドでは macOS 向けの殻とネイティブメニューとの接続を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-classify-frontend-web-001。裏付け質疑 (`qa_refs`): `qa-classify-frontend-web-evidence-001`, `qa-classify-frontend-web-002` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G3, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、フロントエンドではネイティブ UI の部品で編集パネルと分割の編集をどう作り直すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、フロントエンドでは分割画面表示で一覧と編集パネルの状態をどう共有するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、フロントエンドではWindows 版の配布形式と自動更新をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、フロントエンドではLinux 版のパッケージ形式ごとの描画差をどう吸収するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、フロントエンドではmacOS 版の署名と公証をどう通すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G1, G3, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | Apple HIG の『利用者の操作に即座に応える』を負債入力のフィードバックへ反映した。3 択の選択で金額欄が即時に出入りし、変更から 800ms で下書きを保存して保存時刻を出し、未保存の件数を下部固定バーに数える。保存中はボタンを無効化して『保存中…』と出し、失敗は role=alert で理由を示して下書きを残す。 |
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 依存方向を core (statementsScreen) ← api (statements route・balances route) ← web (決算書画面) の一方向へ反映した。web の部品 (KpiStrip・PlCard・PlDetailPanel・CashFlowSection・LiabilitySection・UnsavedBar) は screen の部分を props で受けて描くだけで、互いに計算結果を渡し合わない。 |
+| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 明細仕分けのフロントエンドでは、部品が色を直書きせず design-tokens.ts のトークンだけを使う形にし、信頼度の表示は数値の文字列を view-model.ts で作ってから描く形へ反映した。一覧の行は 50 件単位でサーバから受け取り、仮想スクロールは入れない。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 明細仕分けのフロントエンドでは、判定 (4 区分・信頼度・ルールの該当) を core に、取得と無効化を container に、整形を view-model.ts に置く三層へ反映した。下書きだけは端末の localStorage に閉じ、サーバの状態と混ぜないため問い合わせのキャッシュに入れない。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,144 +37,43 @@ serves_goals: [G1, G3, G4]
 
 ### Web (web)
 
-- 資するゴール: G1, G3, G4
+- 資するゴール: G1, G3, G5
 
-#### 主たる接地根拠: `qa-statements-decision-006`
-
-**問**
-
-上部の『損益計算書 / キャッシュフロー計算書 / 貸借対照表』の切り替えをどう作りますか？
-
-**答**
-
-ページ内ナビ (推奨)。画像どおり 3 表を縦に全部描画し、上部は節へ移動するナビ (nav + aria-current) にする。(提示した他の選択肢: 本物のタブ = 選んだ 1 表だけを表示する tablist/tabpanel)
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり (2026-09-19T02:30:05Z 提示・02:41:21Z 回答) / 回答時刻: 2026-09-19T02:41:21Z)
-
-#### 裏付け質疑: `qa-statements-decision-003`
+#### 主たる接地根拠: `qa-classify-frontend-web-001`
 
 **問**
 
-『下書きを自動保存しました』の下書きをどこに保存するか。
+web の明細仕分け画面のフロントエンドの構成 (ファイル分割・状態の置き場所・データ取得・下書き) をどうするか。
 
 **答**
 
-ブラウザ内。localStorage に利用者ごとのキーで保存し、サーバへ送るのは『負債残高を保存』のときだけ。既存の Cash / Budget 画面と同じ方式で migration は不要。
+Classify.tsx を pages/classify/ 配下へ分割し、見出し・期間タブ・KPI・絞り込みパネル・取引一覧・編集パネル・一括操作バー・通知・分割明細の編集・ルール適用プレビューを部品に分ける。表示用の整形は view-model.ts の純関数に置き、判定と集計は core の結果を使って web で再実装しない。期間は usePeriod / localStorage から復元し、絞り込み・ページ・選択は URL の検索パラメータに保つ。データ取得は TanStack Query で行い、一括保存・ルール作成と適用・分割・削除と取消・保存フィルタの変更の後は一覧・KPI・ナビのバッジの問い合わせを無効化する。編集パネルの下書きは端末の localStorage に明細単位で自動保存し、最終保存時刻を表示し、保存に成功したら消し、次回に『下書きを復元』で戻せる (qa-classify-decision-004)。未保存のまま離れるときは確認する。既存のデザイントークンと共通部品の上に組み、初期 JS 予算 (CI 実測) を超えない。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり / 回答時刻: 2026-09-19T01:53:56Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T13:24:40Z)
 
-#### 裏付け質疑: `qa-statements-image-observations-001`
+#### 裏付け質疑: `qa-classify-frontend-web-evidence-001`
 
 **問**
 
-design/FINAL-UI/images/11-statements.png から読み取れる、仕様の分かれ目になる事実は何か。
+フロントエンド 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。
 
 **答**
 
-(1) 現金増減の KPI は『前期比 +¥120,000』で % が無い。(2) 負債残高の KPI は『前期比 -¥200,000 (-8.0%)』を赤で出している。(3) 上部の『損益計算書 / キャッシュフロー計算書 / 貸借対照表』はタブの見た目で、画面は PL の下に CF・BS が縦に続き 3 節すべてが描かれている。(4) CF の不能表示の原因は 3 行 (未仕訳の件数・現金口座データの月数・科目未設定の件数) で、決済方法の列については書かれていない。(5) 月次の損益計算書の表は行の和が合計列と一致しない。
+現行の /classify は routeMetadata.ts の 46〜56 行目で定義され、Classify.tsx 1 ファイルに状態・取得・描画が同居している。期間は src/period.tsx の usePeriod があるが /classify は使っていない。最近の作り直し (家計収支 #62・サブスク #60・診断 #59) は pages/<screen>/ 配下・view-model.ts・css・dom test の型で揃っている。初期 JS 予算は build:bundle 直後の CI 実測で検査される。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-19T23:35:14Z` — SUPERSEDED OBSERVATION: 『月次の損益計算書の表は行の和が合計列と一致しない』は誤り。画像の 950〜合計 12,480 は千円値として各月合計と上部の 12,480,000円に整合する。画像の問題は単位ラベルが（万円）であることと、月見出しに 5月が重複して 8月が空欄なこと。現行の単位契約は qa-statements-monthly-pl-unit-001 を規範とする。
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現行実装 (main 0003cb4) の読取りによる観測。 / 回答時刻: 2026-09-19T13:24:40Z)
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: 11-statements.png の目視読み取り (エージェント) / 回答時刻: 2026-09-19T11:41:33Z)
-
-#### 裏付け質疑: `qa-statements-frontend-web-002`
+#### 裏付け質疑: `qa-classify-frontend-web-002`
 
 **問**
 
-決算書画面のフロントエンド構成 (部品分割・データ取得・URL 状態・下書き) をどう組むか。
+web の明細仕分け画面で、フロントエンド について利用者が決めていない具体値を何にするか。
 
 **答**
 
-Statements.tsx を薄い組み立てにし、packages/web/src/pages/statements/ に KpiStrip・PlCard (表と展開)・PlDetailPanel・PlTrendChart (FinancialCharts の系列規約に乗せる)・MonthlyPlTable・CashFlowSection (不能表示と概算の切替)・LiabilitySection (3 状態入力と基準月)・UnsavedBar を置く。データは TanStack Query で GET /api/statements の screen (期間クエリ + ref) を 1 本読み、数値の計算を web で重複実装しない。ページ内ナビの選択 (tab)・行・基準月は useSearchParams に保つ (ナビは nav のリンクと aria-current、行の選択は aria-pressed のボタン。基準月は api が丸めて返した月へ URL を置き換える)。負債の保存は useMutation で PUT し、成功時に statements のクエリを無効化する。下書きは localStorage の kanjo.statements.liabilityDraft.<userId>.<YYYY-MM> に 800ms の遅延で保存し (period.tsx の try/catch の書き方に倣う)、ログアウト処理でこの接頭辞のキーを消す。色はトークン、ボタンは共通 Button、遷移は Link className=btn、本文は PageShell。CSV は web で組み、数式注入対策で = + - @・タブ・NUL で始まる文字列セルに ' を付ける。
+下書きの localStorage のキーは kanjo:classify:draft:<txId> とし、入力から 1 秒後に保存し、30 日を過ぎた下書きは読込時に捨てる。URL の選択は取引 id を最大 50 件までとし、超えた選択は URL に載せず画面内の状態に留める。未保存の離脱確認は react-router の useBlocker と beforeunload の両方で行う。/classify の画面は既存の遅延読込 (lazy route) の単位に置き、初期 JS に含めない。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: qa-statements-frontend-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-006 (ページ内ナビ)・003 (下書きはブラウザ内) と appr-foundation-statements-001/002 の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。 / 回答時刻: 2026-09-19T11:41:33Z)
-
-#### 裏付け質疑: `qa-statements-agent-decisions-001`
-
-**問**
-
-pass-3 の差し戻しを直すときに、利用者の決定を具体化するためエージェントが決めた点は何か。
-
-**答**
-
-(a) 行の選択は勘定科目セル内のボタンと aria-pressed で示す (表の行は aria-selected を持てないため)。(b) ページ内ナビは選んだ項目だけに aria-current="location" を付け、スクロール位置で自動更新しない。選択時は節見出し (tabIndex=-1) へフォーカスを移す。(c) ref が期間外・不正なら期間の最終月に丸め、丸めた月を bs.referenceMonth で返し web は URL をその値へ置き換える。(d) CF は原因 3 種 (未仕訳件数・現金口座の欠け {月数, 決済列なし}・科目未設定件数) のどれかが立つときだけ不可にし、決済方法の列が無い場合 (既存 settlementUnknown) は 2 番目の原因に添えて表示する。原因が 1 つも無ければ可 (原因の無い不能表示を出さない)。(e) liability_audit_log の列は id・user_id・actor_user_id・month・changed_json・occurred_at で、changed_json は項目ごとの状態遷移と件数。(f) 画像との差 (負債 KPI の文言と色・ナビの意味論・行の選択・月次表の数値・CF 原因・監査) を spec §8 と docs/ui-decisions.md に記録する。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる具体化 (利用者決定 qa-statements-decision-005〜007 と WAI-ARIA / 既存コードからの導出。利用者への個別確認なし) / 回答時刻: 2026-09-19T11:41:33Z)
-
-#### 裏付け質疑: `qa-statements-reopen-pass3-001`
-
-**問**
-
-決算書画面サイクルの web × 8 セルを再オープンする理由は何か。
-
-**答**
-
-完成度 evaluator の pass-3 (FAIL) の high 指摘 H1: 8 セルの主根拠 qa-statements-<cat>-web-001 は basis=user-decision だが、利用者が代替案を見ずにエージェントが具体化した設計 (監査の新表、ref の丸め、タブの構成、負債 KPI の色の向き、現金 KPI の %) を含む。3 点は利用者に選択肢を示して決定を得た (qa-statements-decision-005〜007、foundation-002)。残りはエージェント判断として qa-statements-agent-decisions-001 に分けた。各セルを reopen し、利用者決定を主根拠に、訂正版の回答 web-002 (agent-inference) を補助根拠として確定し直す。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: エージェントによる再オープン理由の記録 (evaluator 指摘の転記) / 回答時刻: 2026-09-19T11:41:33Z)
-
-#### 裏付け質疑: `qa-statements-frontend-web-evidence-001`
-
-**問**
-
-frontend 章の裏付けとして、既存の web の土台について何を観測したか。
-
-**答**
-
-packages/web は React 18 + react-router-dom 7 + TanStack Query 5。period.tsx は localStorage を STORAGE_KEY で try/catch つきで読み書きする (81-91 行)。Classify.tsx は ?month= と ?category= を初期値として読む (181-194 行)。ログアウトの呼出しは components/Layout.tsx にある。localStorage を使うのは period.tsx と pages/analysis/diagnosis/types.ts だけ。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T02:01:29Z)
-
-#### 裏付け質疑: `qa-statements-detail-parameters-001`
-
-**問**
-
-ui-ux・frontend・backend・security の web-001 回答に含まれる具体値のうち、どれが利用者の決定で、どれがエージェントの具体化か。
-
-**答**
-
-利用者が決めたのは 4 決定 (qa-statements-decision-001〜004) と U1-U9 の承認 (appr-foundation-statements-001) まで。次の値はエージェントが既存コードと公式資料から具体化した既定値で、利用者は個別に選んでいない: 金額上限 1 兆円 (表示と集計の桁あふれ防止)、本文上限 8 KiB (4 項目の本文は 1 KiB 未満。既存の /api/auth/* は 16 KiB)、下書き保存の遅延 800ms、詳細パネルの主な内訳 3 科目、月次表の万円丸め (合計列は円で合算してから丸める)、URL パラメータ名 (tab・row・ref)、下書きのキー名、区分対応表に載せる科目の列挙 (仕入高・期首商品棚卸高・期末商品棚卸高)。いずれも上位概念 G1-G5 と 4 決定に反しない調整値で、実装中に変えるときは specs/spec-statements-screen.md とテストを同時に変える。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる具体化の区分表示 (利用者への個別確認なし) / 回答時刻: 2026-09-19T02:18:27Z)
-
-#### 裏付け質疑: `qa-statements-csv-chars-001`
-
-**問**
-
-CSV エクスポートの数式注入対策で ' を前置する先頭文字は何か (qa-statements-frontend-web-001 と qa-statements-security-web-001 は = + - @ だけを挙げている)。
-
-**答**
-
-OWASP ASVS 5.0 の 1.2.10 (fetched-references の owasp-asvs-csv-injection、2026-09-19T02:03:50Z 確認) に従い、= + - @ に加えてタブ (0x09) と NUL (0x00) で始まる文字列セルにも ' を前置する。qa-statements-frontend-web-001 と qa-statements-security-web-001 の『= + - @』はこの集合の一部だけを挙げた記述であり、正本は specs/spec-statements-screen.md §5 (= + - @・タブ・NUL) とする。金額のセルは数値のまま書き出し ' を付けない。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: 公式資料 (OWASP ASVS 5.0 1.2.10) と specs/spec-statements-screen.md §5 の照合 / 回答時刻: 2026-09-19T02:18:27Z)
-
-#### 裏付け質疑: `qa-statements-screen-only-contract-001`
-
-**問**
-
-GET /api/statements の現行契約で、画面が参照しない旧 pl/cf/bs/period 等を screen と重ねて返す必要があるか。
-
-**答**
-
-不要。決算書画面の表示値は core の statementsScreen 出力だけを正本にしているため、GET /api/statements は {screen} だけを返す。旧キーを同時に返す後方互換は、同じ数値の二重契約と応答・型・テストの重複を残すので撤去する。PUT /api/balances/liabilities の応答 {ok, bs} は保存結果の契約として別に維持する。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 2026-09-20 elegant review: 重複契約を除き、core→API→web の単一データフローへ収束する判断 / 回答時刻: 2026-09-19T21:52:53Z)
-
-#### 裏付け質疑: `qa-statements-monthly-pl-unit-001`
-
-**問**
-
-画像の月次PLと core / web の間で、数値の単位と月見出しをどう確定するか。
-
-**答**
-
-画像の月次PLはラベルが（万円）だが、950〜合計12,480は千円値として上部の12,480,000円と整合する。したがって画像の不整合は単位ラベルと、5月が重複して8月が空欄の月見出しである。数値の正本は core contract fixture の千円配列とし、core は各値を1,000倍して円を返す。web は表示だけで円を10,000で割って万円へ丸め、950,000円を95万円、12,480,000円を1,248万円と表示する。画像の950〜12,480を万円として写さない。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: design/FINAL-UI/images/11-statements.png の再読、packages/core/src/statements-screen.ts の fixture と packages/web/src/pages/statements/view-model.ts の表示変換の照合 / 回答時刻: 2026-09-19T23:35:14Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent の推定 (利用者未確認) / 回答時刻: 2026-09-19T13:24:40Z)
 
 ## To-Be / Delta
 
@@ -182,32 +81,33 @@ GET /api/statements の現行契約で、画面が参照しない旧 pl/cf/bs/pe
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: /statements を 11-statements.png どおりの画面にする。問いの見出し『損益・資金・残高は、整合していますか？』と説明文、期間の範囲表示と前後移動、KPI 4 枚 (売上高・営業利益は前期比の金額と %、現金増減は前期比の金額のみ (画像どおり)、負債残高は前月末比の金額と % で減少を良化色。各々 出典と対象期間または基準日)、3 計算書の節へ移動するページ内ナビ (画像のタブの見た目。3 節は縦にすべて描画)、PL 表 (勘定科目・当期・前期・差額・構成比、行の展開、エクスポート)、右の『項目の詳細』パネル (金額・計算式・主な内訳の勘定科目・月別の推移・データの出典・明細を開く)、月別の損益推移グラフ (売上高・売上原価の棒と営業利益の線)、月次の損益計算書表 (万円・合計列) を、既存のデザイントークン・共通 Button・PageShell・期間 (usePeriod) の上に組む。読込・空・失敗の各状態を持つ。
-- **G3**: キャッシュフロー計算書が集計できないときは、画像の表示 (『キャッシュフロー計算書は、現在集計できていません』・主な原因・解決方法の 3 手順・取引データを確認) に切り替え、表とグラフを出さない。原因は core が判定し、未仕訳の取引件数・現金口座データの欠け・勘定科目が未設定の取引件数を件数つきで示す。集計できるときは既存の営業 CF 概算 (表とグラフ) を出す。
-- **G4**: 貸借対照表の負債残高を、基準月ごと・項目ごとに『未入力 / 0円 / 金額』の 3 状態で入力・保存できるようにする。借入金・未払金・クレジット未払の 3 項目は状態の選択を必須とし、その他の負債は任意項目として残す。保存済みの値を読み込んで初期表示し、保存は項目単位で上書きして他の項目を消さない。基準月は期間内の任意の月を選べる。入力中の値はブラウザ内に利用者ごとの下書きとして自動保存し保存時刻を示し、リセットで保存済みの値へ戻し、未保存の項目数を画面下部の固定バーに出す。未入力の項目がある月は BS にデータ不足の表示を出し、純資産を出さない。
+- **G1**: /classify を 13-classify.png どおりの画面にする。問いの見出し『未整理の明細を、根拠を見ながら確定しますか？』と説明文、期間タブ (usePeriod の 1年 / 2年 / 3年 / 任意と期間送り)、件数 KPI 4 枚 (未整理・要確認・手動変更・完了)、左の絞り込みパネル (対象月・分類ステータスのチェックと件数・カテゴリ・所有者・支払方法・手動変更のみ・キーワード検索・保存したフィルタ・現在の条件を保存・フィルタをクリア・折りたたみ)、中央の取引一覧 (選択チェック・日付の並べ替え・取引先 / 内容・金額・提案カテゴリ・信頼度・表示件数 50 件とページ送り)、右の取引の編集パネル (未保存の表示・クイック仕分け 事業 / 個人 / リセット・カテゴリ・所有者・支払方法・メモ 200 字と字数・取引の履歴・信頼度の根拠・編集 / 分割 / 削除・この条件をルールにする・該当する既存のルール)、一括操作バー (N 件選択中・選択をクリア・選択した N 件を保存)、結果の通知 (一括保存の部分失敗と失敗分だけ再試行・削除の元に戻す)、下段の分割明細の編集とルール適用プレビュー、下書きの自動保存時刻を、既存のデザイントークン・共通部品 (PageHeader・KpiCard・Button・ConfirmDialog・PeriodPicker) の上に組み、一括操作バーはサブスク・診断と同じく画面専用の部品として pages/classify に置く。証憑欄は置かず、その位置に『証憑は freee 側で管理します』の案内を出す。読込・空・失敗の各状態を持つ。
+- **G3**: 選択した複数の明細を 1 回の要求で保存する一括保存を設ける。明細ごとの成否を返し、画面は『N 件のうち M 件を保存、K 件はエラー』と失敗した明細だけの再試行を示す。成功分は取り消されない。削除は既存の取消 (undo) で元に戻せる。一括保存・ルール作成・ルール適用・保存フィルタの変更は既存の canonicalMutationFence の内側に置く。
+- **G5**: 仕分けの作業状態を失わない。保存したフィルタは D1 に新しい表を追加のみの migration で設け、名前付きで保存・呼出・削除できる。取引の履歴は D1 に明細の変更履歴表を追加のみで設け、いつ・何が (区分・カテゴリ・所有者・支払方法・メモ・分割)・どの由来 (自動提案 / 手動 / ルール / 一括保存) で変わったかを残し、編集パネルに新しい順で出す。編集パネルの下書きは端末の localStorage に明細単位で自動保存し、最終保存時刻を表示し、保存に成功したら消し、次回に『下書きを復元』できる。未保存のまま離れるときは確認する。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | 決算書画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出しと説明文・期間の範囲表示と前後移動・KPI 4 枚・3 計算書へのページ内ナビ・PL 表・詳細パネル・損益推移グラフ・月次表・読込/空/失敗を確認する。加えて 834px 幅の基準画像と同条件のスクリーンショットを overlay し、動的な金額・日付・グラフ値と仕様 §8 の意図的差分だけを除外して、説明できない配置・余白・文字階層・色の差が 0 件であることを記録する。pixel 差の数値閾値は未計測差を暗黙に許容するため設けず、許容対象を明示除外に限定する。 |
-| O3 | CF が集計できないときに原因を件数つきで示す。 | core と DOM のテストで、集計不能の fixture で原因 3 種の件数と解決方法 3 手順と取引データへのリンクが出て CF の表とグラフが 0 件、集計可能な fixture では営業 CF の表とグラフが出ることが緑である。 |
-| O4 | 負債残高の 3 状態入力が値を失わない。 | API と DOM のテストで、1 項目だけ保存しても他項目の保存値が残り、保存済みの値が初期表示され、『未入力』と『0円』が別々に保存・表示され、必須 3 項目の状態が未選択なら保存できず、下書きの復元・リセット・未保存件数の表示が緑である。 |
+| O1 | 仕分け画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出し・期間タブ・KPI 4 枚・絞り込みパネルの全項目・一覧の 6 列と 50 件ページング・編集パネルの全欄・一括操作バー・通知 2 種・分割明細の編集・ルール適用プレビュー・下書きの保存時刻が描画され、証憑欄が無く freee 管理の案内がある。読込・空・失敗の状態テストが緑である。 |
+| O3 | 一括保存の部分失敗が報告され、失敗分だけ再試行できる。 | API 統合テストで、3 件中 1 件が検証エラーの一括保存が 2 件を保存して明細ごとの結果を返し、再試行が失敗分だけを送ることを DOM テストで確かめる。未認証 401・変更系フェンス違反の拒否・上限件数超過の 400 を確かめる。 |
+| O5 | 作業状態が失われない。 | API 統合テストで保存フィルタの作成・一覧・削除と、各変更経路で履歴が 1 件ずつ残ることを確かめ、migration が既存行を 1 行も書き換えないことを検査する。DOM テストで下書きの自動保存・復元・保存成功での消去・離脱確認を確かめる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: Statements.tsx を、問いの見出し・期間の範囲表示と前後移動・KPI 4 枚・3 タブ・PL 表と詳細パネル・損益推移グラフ・月次表・CF セクション・BS セクション・下部の未保存バーの構成に作り直し、選択中のタブと PL の行を URL に保つ。
-- **I3**: 詳細パネルの『明細を開く』から、選んだ区分の科目と期間で絞った明細仕分け画面 (Classify の ?category=&month=) へ移動できる。
-- **I4**: PL のエクスポートで、表示中の段階損益 (当期・前期・差額・構成比と月次) を CSV で書き出せる。
-- **I5**: core が CF の集計可否と原因 (未仕訳の件数・現金口座データの欠け・科目未設定の件数) を判定し、画面が集計不能表示と営業 CF 概算を切り替える。
-- **I6**: 負債入力を基準月の月ピッカーと項目ごとの 3 択 (未入力 / 0円 / 金額を入力) に作り直し、migration 0046 で balance_entries に状態列を足し、PUT を項目単位の upsert にして保存済みの値を読み込む。
-- **I7**: 入力中の負債を localStorage に利用者別のキーで下書き保存し、保存時刻・リセット・未保存件数の固定バーを出し、ログアウトで下書きを消す。
+- **I1**: Classify.tsx を pages/classify/ 配下へ分割し、見出し・期間タブ・KPI 4 枚・絞り込みパネル・取引一覧・編集パネル・一括操作バー・通知・分割明細の編集・ルール適用プレビューの構成に作り直す。
+- **I4**: 一括保存 API を新設し、明細ごとに検証と保存を行って成否の配列を返す。画面は部分失敗の通知と失敗分だけの再試行を出す。
+- **I6**: 保存フィルタ表と明細の変更履歴表を追加のみで設け、全変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。
+- **I7**: 編集パネルの下書きを localStorage に明細単位で自動保存し、保存時刻の表示・復元・保存成功での消去・未保存の離脱確認を行う。
 
 ### 本章に効く確定意思決定
 
-- **D-statements-draft-storage**: 決算書の負債入力の下書き (『下書きを自動保存しました』) をどこに保存するか
-  - 採択: ブラウザ内 (localStorage に利用者別キー) (`browser-localstorage`)
-  - 目的適合: G4 の『入力中の値をブラウザ内に利用者ごとの下書きとして自動保存』をそのまま満たす。既存の period.tsx と同じ方式。
+- **dec-classify-receipts**: 画像の領収書・証憑の添付をどう扱うか。
+  - 採択: 再導入しない (freee 管理の案内のみ) (`opt-no-receipts`)
+  - 目的適合: #42 と spec-v1.1 の判断に一致し、G1 の画面は証憑欄を案内で置き換える。
+- **dec-classify-state-storage**: 保存したフィルタ・下書き・取引の履歴の保存先をどうするか。
+  - 採択: フィルタと履歴は D1、下書きは端末 (`opt-d1-and-local`)
+  - 目的適合: 共有と監査が要るものは D1、頻繁に変わる下書きは端末に置き G5 を満たす。
 
 ## 適用された設計知識
 
@@ -215,9 +115,9 @@ GET /api/statements の現行契約で、画面が参照しない旧 pl/cf/bs/pe
 
 ### 本章での適用
 
-Clean Architecture card の依存方向を、web が決算書の計算規則を持たない現在の構成に適用した。packages/web/src/pages/Statements.tsx は StatementsPage の 2 行の re-export だけを持ち、pages/statements/StatementsKpis.tsx・StatementsPl.tsx・StatementsCf.tsx・StatementsBs.tsx などの部品が GET /api/statements の screen を描く。657 行の単一ファイルで KPI や BS 判定を組んでいた構成は再設計前の課題であり、段階損益・前期比・構成比・CF の可否・負債の 3 状態は現在すべて core の statementsScreen が決める。web に残す判断は URL 状態、下書きと未保存件数、CSV のセル書き出しだけで、計算結果を変えない。
+Container / Presentational の分離と view-model の card を適用した。取得と変更は pages/classify の container 1 か所に置き、各部品は view-model.ts が作った表示用の値だけを受け取る。こうすると 4 区分の件数や信頼度の表示を DOM テストなしに純関数のテストで固定でき、core の判定を web で書き直す余地が無くなる。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 記録時刻: 2026-09-19T22:46:05Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T13:24:40Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -311,6 +211,5 @@ Clean Architecture card の依存方向を、web が決算書の計算規則を�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| react-router-searchparams | 8.4.0 | React Router (Remix / Shopify) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-19T02:03:50Z | 2026-09-19T02:03:50Z |
-| web-storage-localstorage | 2026-07-28 | MDN Web Docs (Mozilla) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage | 2026-09-19T02:03:50Z | 2026-09-19T02:03:50Z |
-| tanstack-query | 5.103.1 | TanStack (tanstack.com) | https://tanstack.com/query/v5/docs/framework/react/guides/invalidations-from-mutations | 2026-09-19T11:43:20Z | 2026-09-19T11:43:20Z |
+| tanstack-query-dependent-queries | 5.103.1 | TanStack (github.com) | https://github.com/TanStack/query/releases/latest | 2026-09-19T13:26:35Z | 2026-09-19T13:26:35Z |
+| react-router-searchparams | 8.4.0 | React Router (Remix / Shopify) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-19T13:26:35Z | 2026-09-19T13:26:35Z |

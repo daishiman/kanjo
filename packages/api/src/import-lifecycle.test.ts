@@ -822,6 +822,63 @@ describe('active target duplicate', () => {
       ],
     });
   });
+
+  it('0046のルール条件・分割templateと編集属性をbackupから空表へ完全復元する', async () => {
+    const template = JSON.stringify({
+      lines: [
+        { kind: 'fixed', amount: 300, cls: 'biz', big: '会議費' },
+        { kind: 'remainder', cls: 'biz', big: '雑費' },
+      ],
+    });
+    await d1.batch([
+      d1
+        .prepare(
+          `INSERT INTO rules
+             (user_id,keyword,cls,category_major,category_mid,owner,payee,scope,split_template_json,sort_order)
+           VALUES ('default','会議','biz','会議費','打合せ','business','架空商店','unconfirmed',?,10)`,
+        )
+        .bind(template),
+      d1.prepare(
+        `INSERT INTO tx_edits
+           (user_id,tx_id,cls,payment_method,matched_proposal)
+         VALUES ('default','synthetic-0046','biz','card',1)`,
+      ),
+    ]);
+
+    const backup = await loadBackupPayload(getDb(d1), 'default');
+    expect(backup.rules).toEqual([
+      expect.objectContaining({
+        k: '会議',
+        payee: '架空商店',
+        scope: 'unconfirmed',
+        splitTemplate: JSON.parse(template),
+      }),
+    ]);
+    expect(backup.edits).toMatchObject({
+      'synthetic-0046': { cls: 'biz', paymentMethod: 'card', matchedProposal: 1 },
+    });
+
+    await d1.prepare("DELETE FROM rules WHERE user_id='default'").run();
+    await d1.prepare("DELETE FROM tx_edits WHERE user_id='default'").run();
+    const response = await restore(backup);
+    expect(response.status, await response.clone().text()).toBe(200);
+    const restoredRule = await d1
+      .prepare(
+        `SELECT payee,scope,split_template_json AS splitTemplate
+           FROM rules WHERE user_id='default' AND keyword='会議'`,
+      )
+      .first<{ payee: string; scope: string; splitTemplate: string }>();
+    expect(restoredRule).toMatchObject({ payee: '架空商店', scope: 'unconfirmed' });
+    expect(JSON.parse(restoredRule?.splitTemplate ?? 'null')).toEqual(JSON.parse(template));
+    await expect(
+      d1
+        .prepare(
+          `SELECT payment_method AS paymentMethod,matched_proposal AS matchedProposal
+             FROM tx_edits WHERE user_id='default' AND tx_id='synthetic-0046'`,
+        )
+        .first(),
+    ).resolves.toEqual({ paymentMethod: 'card', matchedProposal: 1 });
+  });
 });
 
 describe('サブスクのcanonical backup往復', () => {
