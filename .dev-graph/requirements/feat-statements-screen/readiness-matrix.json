@@ -1,0 +1,129 @@
+{
+ "schema_version": "1.0.0",
+ "feature_id": "feat-statements-screen",
+ "snapshot_digest": "sha256:b876c2be84bd04c8eb94bb534f844df79cdec90a30302138b120def569641d91",
+ "snapshot_digest_method": "sha256 over sorted(rel + NUL + bytes + NUL) of gates.C11_snapshot_validation.source_inputs",
+ "status": "ready",
+ "checked_at": "2026-09-19T12:38:43Z",
+ "missing_sections": [],
+ "remediation_owners": {},
+ "gates": {
+  "C11_snapshot_validation": {
+   "status": "PASS",
+   "validator": "validate-graph-schema.py",
+   "exit_code": 0,
+   "valid": true,
+   "violations": 0,
+   "graph_revision": 4,
+   "source_inputs": [
+    {
+     "path": ".dev-graph/plans/feature-package-feat-statements-screen/atomic-promotion-receipt.json",
+     "sha256": "74a69d18e2e67f97232d087ea04499410c846848b4ae42e5d9257ea3a9290fcb"
+    },
+    {
+     "path": ".dev-graph/plans/feature-package-feat-statements-screen/dev-graph-registration-receipt.json",
+     "sha256": "4a0b700f93a64362e11bc1b6f8317c691295b80c0dd47e3c885b234946578105"
+    },
+    {
+     "path": ".dev-graph/plans/feature-package-feat-statements-screen/staging-manifest.json",
+     "sha256": "850059630eb935dc0e9b1fdc7a787cfc041f325a299390bc98d0d27b6c0711e6"
+    },
+    {
+     "path": ".dev-graph/state/graph.json",
+     "sha256": "e959562947d1036f26c55b1d2f79130c21fb2006924d55929071ad4cf85a9fdd"
+    },
+    {
+     "path": "features/feat-statements-screen.context.json",
+     "sha256": "67d663abaf197b58f09f5e0324ceefff5789b8c23ed3ccdca7dacb323ce3a699"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p01.md",
+     "sha256": "c915f53986cae83023faa0f0ef3786eed4c7f6826f3841b39bae1f6b54f67518"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p02.md",
+     "sha256": "4ee6cca066dca4ee106de2c64ef3774e58314b8beb02c5b972e09c18d2015740"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p03.md",
+     "sha256": "b50b3cc12246d63bb1804de7bae63cda89787ca52f96c26046453a97b8e3923e"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p04.md",
+     "sha256": "8d564b8dce05e251fa07417bf8a187dada17b626d4c4a229fad72c14fa0cf3db"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p05.md",
+     "sha256": "528efd2c34c39d2154e4f4b5e545961979b24515650573b75fb09177dd9686d9"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p06.md",
+     "sha256": "cb6501d3b8065f580bc525c35aa76375f2c8760b920f370ce36b218c402d0f60"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p07.md",
+     "sha256": "9ee01551b29c175b8f31811f439875671e26ba5541e4fb6770e3a70234a28bb9"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p08.md",
+     "sha256": "62fe8ff598058a80ef407d0a6b3c9684ac30cf873ae5878ba159e1a83ed054ea"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p09.md",
+     "sha256": "e97abed70864cb0dbdff5c4b7c1554ed8f2a45a52e8feac60d71163378bfc83e"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p10.md",
+     "sha256": "5f790017a7f6bc077ff5e5c2c901ad106c9b0bed5526764a3f4c99b84ee3ebe1"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p11.md",
+     "sha256": "c5aca2b8572ac77d107b1966a4e5b100bf150e2338e68799800f226f9f0801e6"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p12.md",
+     "sha256": "5db6bf2aa8a85808b9088f4fd8472e08e29693148a93f1eb9e6ffee397ea5628"
+    },
+    {
+     "path": "tasks/feat-statements-screen/sys-stmt-p13.md",
+     "sha256": "f1e879651676b5b3abc1c646f0dfef3fef418bdd4e7c4797323e43bd1e9aa294"
+    }
+   ]
+  },
+  "C02_saved_state": {
+   "status": "PASS",
+   "specification_and_architecture": {
+    "count": 9,
+    "confirmation_status": "confirmed",
+    "evaluation_status": "pass",
+    "implementation_readiness": "complete"
+   },
+   "feature": {
+    "confirmation_status": "confirmed",
+    "evaluation_status": "pass",
+    "implementation_readiness": "complete"
+   },
+   "tasks": {
+    "count": 13,
+    "confirmation_status": "confirmed",
+    "evaluation_status": "pass",
+    "implementation_readiness": "complete",
+    "missing_sections": []
+   },
+   "registration_receipt": {
+    "path": ".dev-graph/plans/feature-package-feat-statements-screen/dev-graph-registration-receipt.json",
+    "expected_count": 13,
+    "applied_count": 13
+   }
+  },
+  "system_plan_validation": {
+   "status": "PASS",
+   "validator": "validate-system-plan.py",
+   "exit_code": 0,
+   "validated_digest": "sha256:b7b5463d81396f3733f71694ba174d935c886841941c232029b6574add8f6eb1",
+   "phase_count": 13,
+   "node_count": 13,
+   "violations": []
+  }
+ }
+}

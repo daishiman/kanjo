@@ -194,12 +194,12 @@ describe('資産推移CSVの取込', () => {
 });
 
 describe('負債の手入力', () => {
-  it('月ごとに種類別の残高を保存する', async () => {
+  it('月ごとに種類別の残高を、0円と金額を区別して保存する', async () => {
     const response = await jsonRequest('/balances/liabilities', 'PUT', {
       month: '2026-08',
       lines: [
-        { category: 'クレジットカード未払金', amount: 50 },
-        { category: '借入金', amount: 0 },
+        { category: 'クレジットカード未払金', status: 'amount', amount: 50 },
+        { category: '借入金', status: 'zero' },
       ],
     });
     expect(response.status).toBe(200);
@@ -210,23 +210,44 @@ describe('負債の手入力', () => {
     ]);
   });
 
-  it('入れ直すと、その月の手入力だけを置き換える', async () => {
+  it('送った項目だけを書き換え、送っていない項目は残す', async () => {
+    // 以前は月の手入力を全部消して入れ直していたため、1項目だけ直すと残りが消えていた
     await jsonRequest('/balances/liabilities', 'PUT', {
       month: '2026-08',
-      lines: [{ category: 'クレジットカード未払金', amount: 50 }],
+      lines: [{ category: 'クレジットカード未払金', status: 'amount', amount: 50 }],
     });
     await jsonRequest('/balances/liabilities', 'PUT', {
       month: '2026-08',
-      lines: [{ category: '借入金', amount: 70 }],
+      lines: [{ category: '借入金', status: 'amount', amount: 70 }],
     });
-    expect((await balanceRows()).map((r) => [r.category, r.amount])).toEqual([['借入金', 70]]);
+    expect((await balanceRows()).map((r) => [r.category, r.amount])).toEqual([
+      ['クレジットカード未払金', 50],
+      ['借入金', 70],
+    ]);
+  });
+
+  it('未入力に戻した項目だけ行を消す', async () => {
+    await jsonRequest('/balances/liabilities', 'PUT', {
+      month: '2026-08',
+      lines: [
+        { category: 'クレジットカード未払金', status: 'amount', amount: 50 },
+        { category: '借入金', status: 'amount', amount: 70 },
+      ],
+    });
+    await jsonRequest('/balances/liabilities', 'PUT', {
+      month: '2026-08',
+      lines: [{ category: '借入金', status: 'unset' }],
+    });
+    expect((await balanceRows()).map((r) => [r.category, r.amount])).toEqual([
+      ['クレジットカード未払金', 50],
+    ]);
   });
 
   it('一覧に無い種類は受けない', async () => {
     // 自由入力にすると月ごとに名前が揺れて、前月と比べられなくなる
     const response = await jsonRequest('/balances/liabilities', 'PUT', {
       month: '2026-08',
-      lines: [{ category: '架空の負債', amount: 1 }],
+      lines: [{ category: '架空の負債', status: 'amount', amount: 1 }],
     });
     expect(response.status).toBe(400);
   });
@@ -234,7 +255,7 @@ describe('負債の手入力', () => {
   it('資産推移CSVの取込で消えない', async () => {
     await jsonRequest('/balances/liabilities', 'PUT', {
       month: '2026-08',
-      lines: [{ category: 'クレジットカード未払金', amount: 50 }],
+      lines: [{ category: 'クレジットカード未払金', status: 'amount', amount: 50 }],
     });
     expect((await importAssets()).status).toBe(200);
     const manual = (await balanceRows()).filter((r) => r.source === 'manual');
@@ -248,36 +269,52 @@ describe('負債の手入力', () => {
 describe('決算書の貸借対照表', () => {
   it('負債を入れていない月の純資産を出さない', async () => {
     expect((await importAssets()).status).toBe(200);
-    const response = await jsonRequest('/statements');
-    expect(response.status).toBe(200);
-    const body = (await response.json()) as {
-      bs: {
-        months: Array<{ month: string; assetTotal: number; netAssets: number | null; partial: boolean }>;
-        monthsWithoutLiabilities: string[];
+    const read = async (ref: string) => {
+      const response = await jsonRequest(`/statements?ref=${ref}`);
+      expect(response.status).toBe(200);
+      return (await response.json()) as {
+        screen: {
+          bs: {
+            referenceMonth: string;
+            assetTotal: number;
+            netAssets: number | null;
+            complete: boolean;
+          };
+        };
       };
     };
-    expect(body.bs.months.map((m) => [m.month, m.assetTotal, m.netAssets])).toEqual([
-      ['2026-07', 240, null],
-      ['2026-08', 300, null],
-    ]);
-    expect(body.bs.monthsWithoutLiabilities).toEqual(['2026-07', '2026-08']);
+    expect((await read('2026-07')).screen.bs).toMatchObject({
+      referenceMonth: '2026-07',
+      assetTotal: 240,
+      netAssets: null,
+      complete: false,
+    });
+    expect((await read('2026-08')).screen.bs).toMatchObject({
+      referenceMonth: '2026-08',
+      assetTotal: 300,
+      netAssets: null,
+      complete: false,
+    });
   });
 
-  it('負債を入れた月だけ純資産を出す', async () => {
+  it('必須の負債 3 項目を入れた月だけ純資産を出す', async () => {
     expect((await importAssets()).status).toBe(200);
     await jsonRequest('/balances/liabilities', 'PUT', {
       month: '2026-08',
-      lines: [{ category: 'クレジットカード未払金', amount: 120 }],
+      lines: [
+        { category: 'クレジットカード未払金', status: 'amount', amount: 120 },
+        { category: '借入金', status: 'zero' },
+        { category: '未払金・買掛金', status: 'zero' },
+      ],
     });
     const body = (await (await jsonRequest('/statements')).json()) as {
-      bs: { months: Array<{ month: string; netAssets: number | null; partial: boolean; asOf: string }> };
+      screen: {
+        bs: { referenceMonth: string; netAssets: number | null; partial: boolean; asOf: string };
+      };
     };
-    expect(body.bs.months.map((m) => [m.month, m.netAssets])).toEqual([
-      ['2026-07', null],
-      ['2026-08', 180],
-    ]);
+    expect(body.screen.bs).toMatchObject({ referenceMonth: '2026-08', netAssets: 180 });
     // 8月は28日時点。31日の残高ではないと画面で断れるようにする
-    expect(body.bs.months[1].partial).toBe(true);
-    expect(body.bs.months[1].asOf).toBe('2026-08-28');
+    expect(body.screen.bs.partial).toBe(true);
+    expect(body.screen.bs.asOf).toBe('2026-08-28');
   });
 });

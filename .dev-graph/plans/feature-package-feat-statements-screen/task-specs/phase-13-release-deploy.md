@@ -1,0 +1,110 @@
+# System task overlay: 単一 PR での配信と migration 0045 の本番適用
+
+## Machine-readable registration fields
+
+- feature_package_id: feature-package/feat-statements-screen
+- owners: ["daishiman"]
+- tags: ["statements-screen", "p13", "release-deploy"]
+- related_nodes: ["arch-statements-auth", "arch-statements-backend", "arch-statements-database", "arch-statements-frontend", "arch-statements-infrastructure", "arch-statements-maintenance-ops", "arch-statements-security", "arch-statements-ui-ux", "spec-statements-screen"]
+- parent_feature: feat-statements-screen
+- phase_ref: P13
+- classification: confidence 0.95、reason 単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない、candidate tasks/feat-statements-screen/sys-stmt-p13.md
+- tracker_binding_intent: beads
+- github_publication: mode local_only、project_aliases []、labels []、milestone null
+- branch_policy: one-task-one-branch + worktree lease required + default-branch reconciliation + assignment_owner=dev-graph-scheduler
+
+## 目的
+
+単一の PR で default branch へ配信し、migration 0045 の適用から Deploy の順を守って本番へ反映し、クローズアウトする。
+
+## 背景
+
+Deploy を先に流すと、新しい列と表を前提とするコードが列の無い本番に当たる。順序の固定がこの phase の本質である。
+
+## 前提条件
+
+- Required spec/architecture/phase/task nodes: arch-statements-auth, arch-statements-backend, arch-statements-database, arch-statements-frontend, arch-statements-infrastructure, arch-statements-maintenance-ops, arch-statements-security, arch-statements-ui-ux, spec-statements-screen
+- Entry gate: staging run plan-feat-statements-screen-20260919 の goal-spec.json が readiness_pin.status=complete であること
+- Source pin: system-spec-harness v0.1.14 / run-system-spec-compile / assign-system-spec-completeness-evaluator (evidence: system-spec/completeness-findings.json)
+- Repository context: repo_identity github:daishiman/kanjo / root_resolution_source git / .dev-graph/config.json
+- SYS-STMT-P12 の docs 同期が完了していること
+- SYS-STMT-P09 の品質ゲートが緑のままであること
+
+## Workstream applicability
+
+- Frontend: N/A: 本 phase は Frontend の成果物を変更しない
+- Backend: N/A: 本 phase は Backend の成果物を変更しない
+- API: N/A: 本 phase は API の成果物を変更しない
+- Data: applicable: 本番で migration 0045 を適用し、既存行が変わらないことを確かめる
+- Infrastructure: N/A: 本 phase は Infrastructure の成果物を変更しない
+- Security: N/A: 本 phase は Security の成果物を変更しない
+- Quality: applicable: 本番の /statements で KPI と負債の保存を確かめる
+- Documentation: N/A: 本 phase は Documentation の成果物を変更しない
+- Operations: applicable: migration の適用と Deploy と確認を順に行う
+
+## Architecture and deploy unit
+
+- Architecture decisions: arch-statements-auth, arch-statements-backend, arch-statements-database, arch-statements-frontend, arch-statements-infrastructure, arch-statements-maintenance-ops, arch-statements-security, arch-statements-ui-ux, spec-statements-screen
+- Deploy unit/environment: web ビルドと Worker と D1 migration 0045 (列と表の追加のみ。既存行を書き換えない)
+- Compatibility/migration/backfill: migration 0045 は列と表の追加だけで、既存行を書き換えず backfill も行わない
+
+## 成果物
+
+- Produced artifacts:
+- docs/evidence/
+- Consumed artifacts:
+- migrations/0045_liability_status.sql
+- Write scope/touches:
+- migrations/0045_liability_status.sql
+- docs/evidence/
+
+## Tracker publication and completion
+
+本 spec は tracker_binding_intent と GitHub 公開 intent だけを宣言し、永続 binding の解決・起票・完了収束は dev-graph が所有する。
+
+- Tracker binding intent: beads
+- Publication mode: local_only
+- Project aliases / labels / milestone: いずれも値なし (local_only のため)
+- PR completion policy: linked_pr_merged_all
+- PR body contract: dev-graph graph_node_id SYS-STMT-P13 を本文に記載し、default branch を対象にする
+- Ownership boundary: system-dev-planner は intent を宣言するのみで、dev-graph が実際の mutation/reconciliation を行う
+
+## Branch and worktree execution
+
+- Branch: dev-graph 登録後に C15 が devgraph/SYS-STMT-P13 として割り当てる。system-dev-planner は事前割り当てを行わない
+- Worktree lease: 実装着手前に SYS-STMT-P13 の worktree lease を claim し、heartbeat/release を行う
+- Parallel safety: depends_on (SYS-STMT-P12) が完了し、write_scope が他の active lease と重複しないこと
+- Completion projection: feature branch は pending event のみを記録し、default branch へのクリーンな書き込みが durable な done を確定する
+
+## スコープ外
+
+- goal-spec.json の scope_out (投資 CF と財務 CF の区分、区分対応表の利用者による上書き、下書きのサーバ保存、共通シェルの構造変更、既存 audit_log の action 拡張、他画面の作り直しと web 以外のプラットフォーム)
+- 新しい秘密情報の投入
+- 既存表の行の書き換え
+- 本 phase の責務外にある他 phase の成果物への書込み
+
+## Verification and evidence
+
+- Automated commands:
+- pnpm run verify:full
+- pnpm run db:migrate:remote
+- Required evidence:
+- docs/evidence/
+
+## Rollout and rollback
+
+- Rollout: 単一の PR で配信し、default branch への merge をもって反映する
+- Rollback trigger and steps: 画面と API の変更を revert して再 Deploy する。migration 0045 は追加のみのため巻き戻さない。
+
+## Handoff
+
+- Executor: task-graph build / capability-build への application-code handoff (build_target_kind=application-code)
+- Ready when: confirmed かつ evaluation pass かつ implementation_readiness complete かつ promoted digest かつ dev-graph registration complete
+
+## 参照情報
+
+- System specification: system-spec/00-requirements-definition.md (system-spec-harness v0.1.14 出力)
+- Architecture: arch-statements-auth, arch-statements-backend, arch-statements-database, arch-statements-frontend, arch-statements-infrastructure, arch-statements-maintenance-ops, arch-statements-security, arch-statements-ui-ux, spec-statements-screen
+- Feature: feat-statements-screen
+- Phase doc: 別文書は生成しない (references/feature-execution-package-contract.md により本 task spec 自体が phase の実行単位)
+- Dependencies: SYS-STMT-P12

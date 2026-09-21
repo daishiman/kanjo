@@ -5,30 +5,15 @@
  * ほとんどの時間に無駄なハンドラが走る)。書き出しは見ている期間に対して行うので、
  * マトリクスCSVのURLには現在の期間選択を必ず載せる。
  */
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { usePeriod } from '../period.js';
 import { DeferredUiIcon as UiIcon } from './DeferredUiIcon.js';
+import { useDismissablePopover } from './use-dismissable-popover.js';
 
 export function ExportMenu() {
   const [open, setOpen] = useState(false);
   const { withPeriod } = usePeriod();
-  const ref = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-    const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    window.addEventListener('mousedown', onClick);
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      window.removeEventListener('mousedown', onClick);
-    };
-  }, [open]);
+  const ref = useDismissablePopover<HTMLSpanElement>(open, setOpen);
 
   return (
     <span className="popover-host" ref={ref}>

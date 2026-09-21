@@ -546,3 +546,35 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 表示名の規則: 前後の空白を除いて 1〜20 文字(コードポイント数)。空白だけは空として拒否、制御文字 U+0000–U+001F / U+007F は拒否、4 名義の間の重複は拒否。違反は 400 `invalid_owner_labels` と `fields`(名義ごとの理由)。
 - `PUT /api/settings/owner-labels` は変更系フェンスの内側にあり、取込の確定中は 409 `canonical_write_busy`。JSON スナップショット(バックアップ / 復元)の対象には入れない(再入力できる表示の設定であり、会計の正本ではない)。
 - 画面は家計・設定・明細のどれも `useOwnerLabels()` → core の `ownerLabel()` を経由して名義を表示する。
+
+## 負債の手入力の 3 状態と監査(0046 / feat-statements-screen)
+
+決算書画面 (`/statements`) の負債 4 項目は「未入力 / 0円 / 金額」の 3 状態を持つ。画面仕様の正本は `specs/spec-statements-screen.md` §3、実装の決定は [`statements-screen.md`](statements-screen.md) §2.5・§2.7。
+
+### `balance_entries.status`
+
+| 状態 | 表し方 |
+|---|---|
+| 未入力 (`unset`) | **行が無い**。既存の `UNIQUE(user_id, month, side, category)` がそのまま 1 項目 1 状態を保証する |
+| 0円 (`zero`) | `status='zero'`、`amount=0` |
+| 金額 (`amount`) | `status='amount'`、`amount` は 0 以上 1 兆円以下の整数 |
+
+- 列は `ALTER TABLE ... ADD COLUMN status TEXT NOT NULL DEFAULT 'amount' CHECK (status IN ('zero','amount'))` で足した。既存行は 1 行も書き換えない。
+- 0046 より前に「0」を保存した行は `('amount', 0)` のまま残る。core の `statementsScreen` はこれを 0円 と同じ扱いで読む(未入力とは区別する)。
+- 画面からの保存 (`PUT /api/balances/liabilities`) は送られた項目だけを処理する。`unset` は `source='manual'` の行を削除、`zero` / `amount` は `source='manual'` で upsert。送られた項目に取込 (`source='mf'`) の行があれば何も書かずに 409 `liability_owned_by_import`(一意キーに `source` が無く、upsert すると取込の行を上書きするため)。
+- 取込データの削除と退避(0030)は `status` も退避・復元する。0046 より前に退避した行は既定の `'amount'` で戻る。
+
+### `liability_audit_log`
+
+| 列 | 型 | 内容 |
+|---|---|---|
+| `id` | INTEGER | 連番 |
+| `user_id` | TEXT | 業務テナントの利用者 |
+| `actor_user_id` | TEXT | 保存した認証主体 |
+| `month` | TEXT | 対象月 `YYYY-MM` |
+| `changed_json` | TEXT | `{ lines: { <category>: "<前の状態>→<後の状態>" }, count }`。**金額は入れない** |
+| `occurred_at` | TEXT | 保存時刻 |
+
+- 保存と同じ D1 batch で 1 件書く(保存が失敗すれば監査も残らない)。
+- 既存の `audit_log` は `action` を CHECK で閉じており、広げるには表の再構築が要る。行を書き換えない方針と Deploy の自動適用判定に合わないため、新表にした。
+- migration 番号は仕様とタスク仕様では 0045 だったが、main で 0045 が `owner_labels` に使われたため 0046 に繰り下げた。

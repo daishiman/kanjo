@@ -6,7 +6,6 @@ import type {
   AnalysisHubReport,
   AppliedSplitLine,
   AutoMatch,
-  BalanceSheet,
   Benchmark,
   BudgetOutlook,
   BudgetRow,
@@ -25,7 +24,6 @@ import type {
   HouseholdSummary,
   MatrixData,
   OverviewData,
-  ProfitAndLoss,
   ReconcileExcluded,
   ReconcileFreee,
   ReconcileMatch,
@@ -34,6 +32,7 @@ import type {
   SegmentSummary,
   SplitTemplate,
   StatementSource,
+  StatementsScreen,
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
@@ -1033,19 +1032,17 @@ export interface TradeoffResponse {
 /* -------- 決算書(PL・キャッシュフロー・BSの取込元) -------- */
 
 export interface StatementsResponse {
-  pl: ProfitAndLoss;
-  cf: CashFlow;
-  /** 残高。1件も入っていなければ months が空になる */
-  bs: BalanceSheet;
-  /** 手入力で受ける負債の種類。画面の入力欄をこの並びで作る */
-  liabilityCategoryOptions: string[];
-  /** BSがまだ作れないときに出す「何を取り込めば作れるか」 */
-  balanceSheetSources: StatementSource[];
-  period: PeriodMeta;
+  /** 決算書画面の単一正本。Web は旧 PL / CF / BS を再集計しない。 */
+  screen: StatementsScreen;
+}
+
+/** PUT /balances/liabilities の応答。保存後の基準月の BS */
+export interface LiabilitiesSaveResponse {
+  ok: true;
+  bs: StatementsScreen['bs'];
 }
 
 export type {
-  BalanceSheet,
   Benchmark,
   BudgetOutlook,
   BudgetRow,
@@ -1067,7 +1064,6 @@ export type {
   MatrixData,
   OwnerLabels,
   OverviewData,
-  ProfitAndLoss,
   StatementSource,
   SubVendor,
   SubsCandidate,

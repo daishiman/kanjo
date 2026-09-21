@@ -1,0 +1,731 @@
+/* 決算書: 色は styles.css のトークンだけを使う (直書き色を置かない)。 */
+.statements {
+  display: grid;
+  /* 横長の表(.scroll-x)が main を押し広げないよう列の下限を 0 にする */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  transition: opacity var(--motion-fast) var(--ease-standard);
+}
+
+/* 期間や基準月を変えて取り直す間は、直前の数字を薄く残す(空白にしない) */
+.statements.is-stale > .stmt-section {
+  opacity: 0.55;
+}
+
+.statements .card,
+.stmt-section .card {
+  margin: 0;
+}
+
+.stmt-section {
+  display: grid;
+  gap: 12px;
+  scroll-margin-top: 16px;
+}
+
+.stmt-section h2:focus {
+  outline: none;
+}
+
+.stmt-section h2:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- 期間バー ---- */
+.stmt-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px 24px;
+}
+
+.stmt-intro .page-task {
+  margin-bottom: 0;
+}
+
+.stmt-range {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.stmt-range-label {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- KPI ---- */
+.stmt-kpis {
+  margin-bottom: 0;
+}
+
+.stmt-kpis .kpi {
+  position: relative;
+  min-width: 0;
+}
+
+.stmt-kpis .kpi-icon {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline-start: 14px;
+  display: grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 50%;
+  background: var(--biz-soft);
+  color: var(--biz-strong);
+}
+
+.stmt-kpis .kpi-icon .ui-icon {
+  inline-size: 18px;
+  block-size: 18px;
+}
+
+.stmt-kpis .kpi-content .label {
+  min-height: 32px;
+  padding-inline-start: 40px;
+}
+
+.stmt-kpi-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stmt-kpi-note {
+  display: grid;
+  gap: 2px;
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+
+.stmt-kpi-diff {
+  font-weight: 600;
+}
+
+/* ---- ? の説明 ---- */
+.stmt-help-host {
+  position: relative;
+  display: inline-flex;
+}
+
+.stmt-help {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.stmt-help[aria-expanded="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.stmt-help-text {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 30;
+  width: max-content;
+  max-width: 16rem;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-popover);
+  color: var(--ink);
+  font-size: var(--fs-2xs);
+  font-weight: 400;
+  white-space: normal;
+}
+
+/* ---- ページ内ナビ (見た目はタブ) ---- */
+.stmt-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.stmt-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target-min);
+  padding: 0 14px;
+  border-bottom: 2px solid transparent;
+  color: var(--ink-soft);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.stmt-nav a:hover {
+  color: var(--ink);
+}
+
+.stmt-nav a[aria-current="location"] {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+}
+
+/* ---- PL ---- */
+.stmt-pl-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.stmt-pl-grid.has-detail {
+  grid-template-columns: minmax(0, 2.15fr) minmax(15rem, 1fr);
+}
+
+.stmt-pl-grid.has-detail > .stmt-detail {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: stretch;
+}
+
+.stmt-pl-grid.has-detail > .stmt-pl-trend {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.stmt-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
+
+.stmt-card-head h2 {
+  margin: 0 0 4px;
+}
+
+.stmt-icon-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stmt-action-icon,
+.stmt-status-icon {
+  inline-size: 16px;
+  block-size: 16px;
+  flex: 0 0 16px;
+}
+
+.stmt-row-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stmt-expand {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-standard);
+}
+
+.stmt-expand[aria-expanded="true"] {
+  transform: rotate(90deg);
+}
+
+/* 行名は「右の詳細を選ぶ」操作でページは移らない。リンクの下線と色をやめ、選べる項目として見せる
+   (移動する操作は詳細パネルの『明細を開く ↗』だけに残す) */
+.btn.stmt-row-select {
+  padding-inline: 4px;
+  border-radius: var(--radius);
+  color: inherit;
+  font-weight: 400;
+  text-align: left;
+  text-decoration: none;
+}
+
+.btn.stmt-row-select:hover {
+  background: var(--biz-soft);
+}
+
+.btn.stmt-row-select[aria-pressed="true"] {
+  color: var(--biz-strong);
+  font-weight: 700;
+}
+
+.stmt-pl-table tr.stmt-selected > * {
+  background: var(--biz-soft);
+}
+
+/* PLは5列を同時に照合する表。共通の12rem科目列よりこの5区分だけを絞り、PCで全列を見渡せる。 */
+.scroll-x table.stmt-pl-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.scroll-x .stmt-pl-table th:first-child,
+.scroll-x .stmt-pl-table td:first-child {
+  width: 9rem;
+  min-width: 9rem;
+}
+
+.stmt-pl-table {
+  font-size: var(--fs-sm);
+}
+
+.stmt-pl-table th,
+.stmt-pl-table td {
+  padding-inline: 6px;
+}
+
+/* 期間は参照画面どおり2行にできる。数値セルは折り返さず、5列を同時に照合できる幅を優先する。 */
+.scroll-x .stmt-pl-table thead th {
+  white-space: normal;
+}
+
+.stmt-period-head {
+  display: inline-grid;
+  justify-items: end;
+  gap: 2px;
+}
+
+.stmt-period-head > span:last-child {
+  font-size: var(--fs-2xs);
+  white-space: nowrap;
+}
+
+.stmt-pl-table td.num {
+  white-space: nowrap;
+}
+
+.stmt-detail-row > * {
+  background: var(--row-detail);
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+.stmt-detail {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.stmt-detail-name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.stmt-detail-value {
+  margin: 0;
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.stmt-detail-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.stmt-detail-list dt {
+  margin-bottom: 4px;
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+}
+
+.stmt-detail-list dd {
+  margin: 0;
+}
+
+.stmt-plain-list,
+.stmt-bars,
+.stmt-cause-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.stmt-cause-list li::before {
+  content: "・";
+}
+
+.stmt-bars {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(24px, 1fr));
+  align-items: end;
+  gap: 4px;
+  min-height: 112px;
+  overflow-x: auto;
+}
+
+.stmt-bars li {
+  display: grid;
+  grid-template-rows: auto 72px auto;
+  align-items: end;
+  gap: 3px;
+  min-width: 24px;
+  font-size: var(--fs-2xs);
+  text-align: center;
+}
+
+.stmt-bar-track {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 72px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--surface-alt);
+  overflow: hidden;
+}
+
+.stmt-bar {
+  display: block;
+  width: 100%;
+  background: var(--biz);
+}
+
+.stmt-bar.is-negative {
+  background: var(--danger);
+}
+
+.stmt-bar-value {
+  grid-row: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stmt-bar-track {
+  grid-row: 2;
+}
+
+.stmt-bar-month {
+  grid-row: 3;
+}
+
+.stmt-monthly h3 {
+  margin: 0;
+}
+
+/* 直下の月次PL表を正確値の正本とし、図は見出し・凡例・推移に集約する */
+.stmt-pl-trend {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "caption series"
+    "unit unit"
+    "chart chart";
+  gap: 6px 16px;
+}
+
+.stmt-pl-trend .financial-figure__caption {
+  grid-area: caption;
+}
+
+.stmt-pl-trend .financial-figure__series {
+  grid-area: series;
+  align-self: center;
+  margin: 0;
+}
+
+.stmt-pl-trend .stmt-pl-trend-unit {
+  grid-area: unit;
+}
+
+.stmt-pl-trend .stmt-pl-trend-chart {
+  grid-area: chart;
+  --financial-chart-height: 248px;
+}
+
+/* ---- CF ---- */
+.stmt-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.stmt-banner p {
+  margin: 0;
+}
+
+.stmt-banner-copy,
+.stmt-alert-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.stmt-banner-copy .stmt-status-icon,
+.stmt-alert-copy .stmt-status-icon {
+  margin-top: 2px;
+}
+
+.notice.info .stmt-status-icon {
+  color: var(--biz-strong);
+}
+
+.stmt-bs-alert-icon,
+.stmt-alert-copy .stmt-status-icon {
+  color: var(--danger);
+}
+
+.stmt-cf-help {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 8px;
+}
+
+.stmt-cf-help > section {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+}
+
+.stmt-cf-help h3 {
+  margin: 0 0 6px;
+  font-size: var(--fs-sm);
+}
+
+.stmt-steps {
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+/* ---- BS ---- */
+.stmt-bs-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.stmt-bs-grid.is-incomplete {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.stmt-sources {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.stmt-form {
+  display: grid;
+  gap: 12px;
+  container-type: inline-size;
+}
+
+/* 固定の未保存バーが末尾のリセット・保存を隠さないだけのスクロール余白。 */
+.stmt-form.has-unsaved {
+  padding-bottom: calc(var(--tap-target-min) + 24px);
+}
+
+/* display:grid が hidden 属性の display:none を打ち消さないようにする */
+.stmt-form[hidden] {
+  display: none;
+}
+
+.stmt-form-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stmt-month {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.stmt-draft-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--good);
+  font-size: var(--fs-2xs);
+}
+
+.stmt-line {
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.stmt-line-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.stmt-line-layout {
+  display: grid;
+  gap: 4px 12px;
+}
+
+.stmt-line-control {
+  min-width: 0;
+}
+
+.stmt-required {
+  padding: 0 6px;
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: var(--fs-2xs);
+}
+
+.stmt-line-choices {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.stmt-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--tap-target-min);
+}
+
+.stmt-amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stmt-amount input {
+  width: 10em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.stmt-field-error {
+  margin: 6px 0 0;
+  color: var(--danger);
+  font-size: var(--fs-xs);
+}
+
+.stmt-inline-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stmt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ---- 未保存バー (下部固定) ---- */
+.stmt-unsaved {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line);
+  background: var(--warn-soft);
+  box-shadow: var(--shadow-popover);
+}
+
+.stmt-unsaved p {
+  margin: 0;
+}
+
+/* ---- 空 ---- */
+.stmt-empty {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+}
+
+.stmt-empty h2 {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .stmt-pl-grid.has-detail,
+  .stmt-bs-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stmt-pl-grid.has-detail > .stmt-detail,
+  .stmt-pl-grid.has-detail > .stmt-pl-trend {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .stmt-pl-trend {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "caption"
+      "series"
+      "unit"
+      "chart";
+  }
+}
+
+@media (max-width: 639px) {
+  .stmt-intro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stmt-range {
+    justify-content: flex-start;
+  }
+}
+
+@container (min-width: 38rem) {
+  .stmt-line-layout {
+    grid-template-columns: minmax(8.5rem, 0.4fr) minmax(0, 1.6fr);
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statements,
+  .stmt-expand {
+    transition: none;
+  }
+}
