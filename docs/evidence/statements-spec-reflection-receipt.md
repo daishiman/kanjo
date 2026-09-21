@@ -40,7 +40,9 @@
 
 ## 仕様を実装に合わせて緩めなかった点
 
-受入基準・業務規則は仕様側の記述を削っていない。未達ゲートと再検証項目は `docs/evidence/statements-screen.md` §1・§6 に残した。`pnpm verify:full` の exit 0 だけが未達で、原因は 4175 番ポートを同じ機械の別ワークツリーが占有していることである (各段は個別に緑)。
+受入基準・業務規則は仕様側の記述を削っていない。未達ゲートと再検証項目は `docs/evidence/statements-screen.md` §1・§6 に残した。ローカルで未達だったのは `pnpm verify:full` の exit 0 だけで、原因は 4175 番ポートを同じ機械の別ワークツリーが占有していることである (各段は個別に緑)。CI の `verify` ジョブは commit `9469ae9` で SUCCESS となり、1 本実行としても閉じた。
+
+CI の `テスト (api)` が一度 `timeout-minutes: 20` 超過で `cancelled` になったが、同一 commit の再実行は 11 分 32 秒で SUCCESS だった。ログ上どのテストも失敗・停止しておらず、main の実行と比べた所要時間の倍率は本変更が触っていないファイルにも一様に乗っていたため、原因はランナー側のばらつきと判断した。`timeout-minutes` は緩めない。
 
 本番反映 (P13 = `kanjo-oju.13`) は未実施である。`0046_liability_status.sql` はローカル D1 への適用まで確認済みで、本番の Migrate APPLY と Deploy は PR merge 後の CI で行う。
 
@@ -55,7 +57,7 @@
 | `pnpm lint` | rc 0。`check-graph-lineage: 118ノードすべてが正本と一致`、`check-glossary: 57語`、`公開文書の実データ参照チェック: OK` |
 | `build:bundle` 直後の `check:js-budget` | 初期 JS 103.74 KiB / 上限 110 KiB |
 | `validate-system-plan.py` | `status: pass`、P01..P13 exact 13、`violations: []` |
-| `pnpm verify:full` | **未達**。4175 番ポートが別ワークツリー占有。各段を個別に実行して置き換え、1 本での実行は CI に委ねる |
+| `pnpm verify:full` | ローカルは **未達** (4175 番ポートを別ワークツリーが占有。各段を個別に実行して置き換え)。CI の `verify` ジョブが commit `9469ae9` で SUCCESS となり、1 本実行は CI 側で確認済み |
 
 ## commit の範囲
 
