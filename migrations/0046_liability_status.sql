@@ -9,7 +9,8 @@
 -- それは Deploy の自動適用判定で止まるうえ、行を書き換えない方針に反する。
 -- changed_json には項目ごとの状態遷移と件数だけを入れ、金額は入れない。
 --
--- 追加のみ。仕様とタスク仕様は 0045 と書いているが、main で 0045 が owner_labels に使われたため 0046 に繰り下げた。
+-- 追加のみ。計画時点では 0045 だったが、main で 0045 が owner_labels に使われたため 0046 に繰り下げた。
+-- 仕様・タスク仕様・schema guard は 0046 に揃えてある (計画時点の記録 .dev-graph/plans/ だけ 0045 のまま)。
 ALTER TABLE balance_entries ADD COLUMN status TEXT NOT NULL DEFAULT 'amount' CHECK (status IN ('zero', 'amount'));
 
 CREATE TABLE IF NOT EXISTS liability_audit_log (
