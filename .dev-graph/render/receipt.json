@@ -1,36 +1,40 @@
 {
   "schema_version": "1.0.0",
-  "verb": "render",
-  "status": "pass",
+  "renderer": "render-graph-html.py (dev-graph 0.1.11)",
+  "generated_at": "2026-09-19T23:40:28Z",
+  "graph": ".dev-graph/state/graph.json",
+  "graph_revision": 5,
   "output": ".dev-graph/render/index.html",
-  "scope": "all",
-  "graph_revision": 1,
-  "counts": {
-    "nodes": 16,
-    "edges": 12,
-    "feature_progress": {
-      "feat-diagnosis-screen": {
+  "input_sha256": "a90865d77f3166dca067d5183fc0bf079d77b6e40f3e9dbc57e82ae1b7f07dd7",
+  "output_sha256": "2c8fe514cae6aab38db7105080f700d698c4fd47554776466f7009e706480cad",
+  "nodes": 23,
+  "edges": 21,
+  "feature_progress": {
+    "aggregate": {
+      "done": 0,
+      "total": 13
+    },
+    "by_feature": {
+      "feat-statements-screen": {
         "done": 0,
         "total": 13
       }
     }
   },
   "registration": {
-    "feature_package_id": "feature-package/feat-diagnosis-screen",
-    "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:13faf94a21513a4fa3b49d5ee9e526e0ad84bf3e469ca60c900fb479d3be08e6",
-    "receipt": ".dev-graph/receipts/register-feat-diagnosis-screen.json"
+    "expected_count": 13,
+    "source_digest": "sha256:b7b5463d81396f3733f71694ba174d935c886841941c232029b6574add8f6eb1",
+    "status": "registered"
   },
-  "digests": {
-    "input_sha256": "374837456c5851fc438fcc97e31e25308d7fd524425f77dacb4351bb5245a3fb",
-    "output_sha256": "8e2df757e555fb7fcaddb9df159f419b636686fd57739af5ebcc7f339c33a171"
-  },
-  "zero_dependency": {
-    "external_script_count": 0,
-    "external_link_count": 0,
-    "external_url_count": 0,
-    "svg_count": 1,
-    "inline_script_count": 1
+  "checks": {
+    "input_sha256": true,
+    "output_sha256": true,
+    "nodes": true,
+    "edges": true,
+    "feature_progress": true,
+    "external_refs_zero": true,
+    "svg_present": true,
+    "inline_script_present": true
   }
 }

@@ -1,0 +1,293 @@
+{
+ "schema_version": "1.0.0",
+ "feature_id": "feat-statements-screen",
+ "snapshot_digest": "sha256:b876c2be84bd04c8eb94bb534f844df79cdec90a30302138b120def569641d91",
+ "source_lineage": [
+  "system-spec/index.md",
+  "system-spec/00-requirements-definition.md",
+  "specs/spec-statements-screen.md",
+  "architecture/statements-ui-ux.md",
+  "architecture/statements-frontend.md",
+  "architecture/statements-backend.md",
+  "architecture/statements-database.md",
+  "architecture/statements-auth.md",
+  "architecture/statements-security.md",
+  "architecture/statements-infrastructure.md",
+  "architecture/statements-maintenance-ops.md",
+  "features/feat-statements-screen.md"
+ ],
+ "plan_package": ".dev-graph/plans/feature-package-feat-statements-screen",
+ "plan_digest": "sha256:b7b5463d81396f3733f71694ba174d935c886841941c232029b6574add8f6eb1",
+ "cross_cutting_tasks": {
+  "SYS-STMT-P01": "要件ベースライン確定と O1-O5・S1-S5 の対応表 (全要件横断)",
+  "SYS-STMT-P10": "独立最終レビュー (全要件横断)"
+ },
+ "requirements": [
+  {
+   "requirement_id": "REQ-ST-001",
+   "title": "画面構成・見出し・期間バー・ページ内ナビ",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§1.1",
+    "specs/spec-statements-screen.md#§1.2",
+    "specs/spec-statements-screen.md#§1.4",
+    "basis:S1"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§1.1",
+   "statement": "/statements を 11-statements.png の構成で描く。問いの見出し『損益・資金・残高は、整合していますか？』と説明文、usePeriod の期間バーと範囲表示・同じ長さの前後移動 (全期間では無効)、3 計算書へのページ内ナビ (nav aria-label=計算書 のリンク #pl/#cf/#bs、選択項目だけ aria-current=location、?tab= を URL に保持、3 節は縦にすべて描画し見出しへフォーカス、role=tab は使わない)。色・余白・部品はトークンと共通 Button / PageShell だけを使い、外枠 (Layout.tsx) は変えない。",
+   "system_tasks": [
+    "SYS-STMT-P02",
+    "SYS-STMT-P04",
+    "SYS-STMT-P05",
+    "SYS-STMT-P07",
+    "SYS-STMT-P09"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-002",
+   "title": "KPI 4 枚と比較の向き",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§1.3",
+    "basis:S1、S2、qa-statements-decision-005"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§1.3",
+   "statement": "売上高・営業利益は前期比の金額と %、現金増減は前期比の金額だけ (CF 集計不能で —)、負債残高は基準月の合計を前月末比の金額と % で出し、減少を良化色・増加を注意色にする。各 KPI に ? の計算式説明・出典・対象期間 / 基準日を出す。前期 0 は % を —、前期データ無しは —、必須 3 項目に未入力があれば値は『未入力あり』で合計を出さない。符号と矢印を必ず併記する。",
+   "system_tasks": [
+    "SYS-STMT-P02",
+    "SYS-STMT-P04",
+    "SYS-STMT-P05",
+    "SYS-STMT-P07"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-003",
+   "title": "PL の区分・段階損益・前期比・構成比を core 1 か所で算出",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§3.1",
+    "specs/spec-statements-screen.md#§6",
+    "basis:S2"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§3.1",
+   "statement": "新設 packages/core/src/statements-screen.ts の statementsScreen(input) が、固定の区分対応表 (仕入系は売上原価・期末棚卸は減算・外注工賃と未知科目は販管費・売上系は売上高) で 5 行を算出し、全月と合計で gross=sales−cogs・operating=gross−sga を満たす。diff=current−previous、diffRate=diff/|previous| (0 か null で null)、構成比は売上高比 (売上高 0 で null)。前期 Dataset は api が applyPeriod で切って渡す。§6 の検算済みフィクスチャを数値の正本とし、画像の数値は写さない。",
+   "system_tasks": [
+    "SYS-STMT-P02",
+    "SYS-STMT-P03",
+    "SYS-STMT-P04",
+    "SYS-STMT-P05",
+    "SYS-STMT-P06"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-004",
+   "title": "PL 表・項目の詳細パネル・月別推移グラフ・月次 PL 表",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§1.5",
+    "specs/spec-statements-screen.md#§1.6",
+    "specs/spec-statements-screen.md#§1.7",
+    "specs/spec-statements-screen.md#§1.8",
+    "basis:S1、S2"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§1.5",
+   "statement": "PL 表は 5 行 × (勘定科目 / 当期 / 前期 / 差額 / 構成比) で、行の展開 (aria-expanded) と科目セルの選択ボタン (aria-pressed、?row=、既定 sales) を持つ。詳細パネルは計算式・主な内訳 3 科目・月別推移・データの出典・明細を開く (/classify?category=&month=、計算行は無効) を出し、× で閉じる。月別の損益推移グラフは chart-series-contract に乗せる。月次 PL 表は万円表示で合計列は円で合算してから丸め、表だけ横スクロールする。値はすべて screen の出力をそのまま描く。",
+   "system_tasks": [
+    "SYS-STMT-P04",
+    "SYS-STMT-P05",
+    "SYS-STMT-P07",
+    "SYS-STMT-P09"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-005",
+   "title": "CF の集計可否と原因件数",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§1.9",
+    "specs/spec-statements-screen.md#§3.1",
+    "basis:S3"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§1.9",
+   "statement": "cf.status は原因 (unclassified>0 / missingCash.months>0 / missingCash.settlementUnknown / accountUnset>0) のどれかが立つときだけ unavailable とし、件数は core の 1 か所で数えて web は数え直さない。unavailable では情報バナー・該当する原因だけの件数表示・解決方法 3 手順・取引データを確認 (/classify) を出して表とグラフを描かない。available では既存の営業 CF 概算の表とグラフを出し、投資 CF・財務 CF は出さない。",
+   "system_tasks": [
+    "SYS-STMT-P02",
+    "SYS-STMT-P04",
+    "SYS-STMT-P05",
+    "SYS-STMT-P07"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-006",
+   "title": "GET /api/statements の screen 追加 (後方互換)",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§3.2",
+    "basis:S2"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§3.2",
+   "statement": "既存の pl / cf / bs / liabilityCategoryOptions / balanceSheetSources / period を残したまま screen: StatementsScreen を足し、新画面は screen だけを読む。クエリ ref=YYYY-MM は期間外・不正を期間の最終月に丸め、丸めた月を bs.referenceMonth で返し、web は URL をその値に置き換える。",
+   "system_tasks": [
+    "SYS-STMT-P02",
+    "SYS-STMT-P04",
+    "SYS-STMT-P05",
+    "SYS-STMT-P08"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-007",
+   "title": "BS と負債残高の 3 状態入力",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§1.10",
+    "basis:S4"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§1.10",
+   "statement": "基準月に必須 3 項目 (借入金 / 未払金・買掛金 / クレジットカード未払金) のいずれかが未入力なら警告バナーと開閉できる入力フォームを出し、純資産は『データ不足』とする。各行は 未入力 / 0円 / 金額を入力 のラジオで、金額は整数・0 以上・上限以下。必須行の未選択は項目直下に role=alert のエラーを出して保存させない。表示名と保存カテゴリの対応は既存 LIABILITY_CATEGORIES を変えない。",
+   "system_tasks": [
+    "SYS-STMT-P04",
+    "SYS-STMT-P05",
+    "SYS-STMT-P07",
+    "SYS-STMT-P09"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-008",
+   "title": "PUT /api/balances/liabilities の項目単位 upsert と入力上限",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§3.3",
+    "specs/spec-statements-screen.md#§5",
+    "basis:S4、S5"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§3.3",
+   "statement": "本文を { month, lines[{category,status,amount?}] } の zod strict にし、送られた項目だけを upsert / 削除して送られていない項目と source=mf の行に触らない (月の manual 負債の全削除をやめる)。unset は行を消し、zero は amount=0 で保存する。amount 上限 1 兆円・本文 8 KiB (bodyLimit)・行数上限を持ち、超過は 400 / 413。authGuard・JSON Content-Type 検証・取込との直列化 (409) を通し、応答は保存後の bs。",
+   "system_tasks": [
+    "SYS-STMT-P02",
+    "SYS-STMT-P03",
+    "SYS-STMT-P04",
+    "SYS-STMT-P05",
+    "SYS-STMT-P09"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-009",
+   "title": "migration 0045 と liability_audit_log",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§3.4",
+    "basis:S5、C4"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§3.4",
+   "statement": "migration 0045_liability_status.sql で balance_entries に status 列 (zero|amount、既定 amount) を ADD COLUMN し、新表 liability_audit_log を CREATE TABLE で足す。既存行は書き換えず backfill もしない。0045 以前の (amount, 0) 行は core が zero と同じ扱いで表示・完了判定する。監査は保存ごとに 1 件、状態遷移と件数だけを残し金額は残さない。番号が並行サイクルと衝突すれば次の番号へ繰り下げ、本番は Migrate を Deploy の前に適用する。",
+   "system_tasks": [
+    "SYS-STMT-P02",
+    "SYS-STMT-P03",
+    "SYS-STMT-P05",
+    "SYS-STMT-P13"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-010",
+   "title": "下書き・未保存バー・ログアウト時の消去",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§4",
+    "specs/spec-statements-screen.md#§1.11",
+    "basis:S4、S5、C3"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§4",
+   "statement": "下書きは localStorage のキー kanjo.statements.liabilityDraft.<userId>.<YYYY-MM> に入力から 800ms 後に保存し『下書きを自動保存しました HH:mm』を出す。サーバへは送らない。保存成功とリセットで消し、ログアウト時に同じ接頭辞のキーを全て消す (Layout.tsx)。保存値と違う項目が 1 件以上あれば下部固定の未保存バーに件数・リセット・保存を出し、離脱時は beforeunload で確認する。",
+   "system_tasks": [
+    "SYS-STMT-P04",
+    "SYS-STMT-P05",
+    "SYS-STMT-P07",
+    "SYS-STMT-P09"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-011",
+   "title": "エクスポート CSV の数式注入対策",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§1.5",
+    "specs/spec-statements-screen.md#§5",
+    "basis:S5"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§1.5",
+   "statement": "PL のエクスポート (CSV) は、= + - @・タブ・NUL で始まる文字列セルの先頭に ' を付け、RFC 4180 に従い , \" 改行を含むセルを二重引用符で囲んで \" を \"\" にする。金額セルは数値のまま書き出し ' を付けない。科目名は利用者データ由来なので必ずこの処理を通す。",
+   "system_tasks": [
+    "SYS-STMT-P04",
+    "SYS-STMT-P05",
+    "SYS-STMT-P09"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  },
+  {
+   "requirement_id": "REQ-ST-012",
+   "title": "旧画面の置き換え・既存テスト更新・docs 化・配信",
+   "source_refs": [
+    "specs/spec-statements-screen.md#§7",
+    "specs/spec-statements-screen.md#§8",
+    "basis:S1〜S5、互換性・移行・リリース"
+   ],
+   "spec_anchor": "specs/spec-statements-screen.md#§7",
+   "statement": "旧 Statements.tsx の UI と旧 PUT 本文形を撤去し、statements-balance-sheet.dom.test.tsx ほか既存テストを新しい文言と本文形へ更新する (契約を緩めず、旧実装で落ちることを確かめる)。§8 の画像との意図的な差を docs/ui-decisions.md に、区分表・計算式・状態列と監査表を docs/data-schema.md に記録し、verify:full と JS 予算を緑にして単一 PR で配信する。",
+   "system_tasks": [
+    "SYS-STMT-P06",
+    "SYS-STMT-P08",
+    "SYS-STMT-P11",
+    "SYS-STMT-P12",
+    "SYS-STMT-P13"
+   ],
+   "handoff_fields": [
+    "acceptance",
+    "verification",
+    "resource_scope"
+   ]
+  }
+ ]
+}

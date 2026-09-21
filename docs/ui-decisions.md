@@ -167,6 +167,38 @@
 
 セルを選んだときの詳細パネルと明細への遷移(受入 S2)、選択セルの URL 復元(受入 5)、行の分類を取引先へ切り替える軸(§2.2)は本サイクルで実装していない。仕様側の記述は緩めていないので、次に着手するときは `specs/spec-expense-matrix-screen.md` がそのまま使える。
 
+## 決定の更新(2026-09-20 / 決算書画面)
+
+`/statements` の現行要件は `system-spec/00-requirements-definition.md`、実装境界は
+[`statements-screen.md`](statements-screen.md)、負債の 3 状態と監査の保持は [`data-schema.md`](data-schema.md) の
+「負債の手入力の 3 状態と監査」を参照する。`specs/spec-statements-screen.md` と `architecture/statements-*.md` は
+system-spec から再生成した現行投影で、`features/feat-statements-screen*` もそこから再投影する。凍結した task 計画とは分けて扱う。
+基準画像 `design/FINAL-UI/images/11-statements.png` と意図的に変える点は次の 8 つだけとする。
+
+| 箇所 | 画像 | 2026-09-20の決定 | 変更した理由 / 却下案 |
+|---|---|---|---|
+| 負債残高 KPI の比較 | `前期比`・減少を赤 | **`前月末比`・減少を良化色、増加を注意色** | 残高は時点の値で、期間どうしより前月末との比較が意味を持つ。負債の減少は良い変化(利用者決定 qa-statements-decision-005) |
+| 上部の 3 項目 | タブの見た目 | **見た目はタブのまま、意味論はページ内ナビ**(`nav[aria-label=計算書]` + `aria-current`、`role=tab` 0 件) | 3 節を隠さず全部描くので tablist の意味と合わない(qa-statements-decision-006)。却下: tablist にして 2 節を隠す(整合の確認に 3 表を並べて見る必要がある) |
+| 行の選択 | 行の背景色 | **背景色 + 勘定科目セルのボタン(`aria-pressed`)。ボタンは下線とリンク色を持たず、選択中だけ濃い色と太字にする** | 表の行は `aria-selected` を持てず、背景色だけでは支援技術に伝わらない。下線付きのリンクに見えると「押すとページが移る」と読めてしまう(実際は右の詳細が変わるだけ)ので、移動する操作は詳細パネルの `明細を開く ↗` だけに残した |
+| 月次の損益計算書 | `（万円）` のラベルに対して `950`〜合計 `12,480` は千円値。月見出しも `5月` が重複し `8月` が空欄 | **仕様 §6 の千円 fixture を core で円にし、web では万円へ換算した `95`〜合計 `1,248` と 12 か月の見出しを表示する** | 画像の数値は千円としては各月合計・上部の `12,480,000円` と整合する。誤っている単位ラベルと月見出しだけを引き継がず、恒等式と変換境界を core / web のテストで固定する |
+| CF 原因の 2 番目 | 月数のみ | **決済方法の列が無い取込も同じ原因として添える** | 既存の概算が出せない条件を落とさない。月欠けが 0 でも決済方法が不明なら不能と表示する |
+| 監査 | 画面に出ない | **保存ごとに `liability_audit_log` へ状態遷移と件数(金額なし)** | 誰がいつ未入力→0円などに変えたかを後から追えるようにする(qa-statements-decision-007)。金額を入れないのは監査ログからの漏えい面を増やさないため |
+| 共通シェル | 画像固有のサイドバー幅・2段ヘッダー | **全19ルート共通の `Layout.tsx` と 220px / 64px のシェルを維持する** | 2026-09-21 の再確認で「システム全体の構成と大きくずらさない」を優先した。決算書だけシェルを上書きすると共通導線が画面ごとに変わる |
+| 負債入力 | 必須3行のみ | **現行仕様の必須3行 + 任意「その他の負債」を維持する** | 既存データを入力できなくなる削除は画像合わせでは正当化できない。任意行なので3つの必須判定には影響させない |
+
+### 画像忠実度の判定
+
+動的な金額・日付・グラフ値と上の 8 件を比較から除外する。参照画像の原子要素はすべて照合し、
+ページ内の情報階層・5列比較・原因と解決・負債入力の密度は画像へ寄せる。一方、共通シェルや共通トークンを
+決算書だけ上書きする literal pixel 一致は受入条件にしない。内容網羅とシステム整合の判定・実画像は
+[`evidence/statements-screen.md`](evidence/statements-screen.md) に一元化する。
+
+### この決定を古びさせないために
+
+- `packages/core/test/statements-screen-contract.test.ts` が恒等式・前期比・未入力と 0円 の区別・検算済みフィクスチャを固定する。
+- `packages/web/src/statements-screen.dom.test.tsx` がページ内ナビ(`role=tab` 0 件・`aria-current`)、負債 KPI の `前月末比` と色の向き、行選択の `aria-pressed`、未入力月で BS の図を出さないことを固定する。
+- `packages/api/src/statements-screen.integration.test.ts` が部分保存・`unset` で行が消えること・取込の行への 409・監査に金額が入らないことを固定する。
+
 ## 決定の更新(2026-09-19 / 家計収支画面)
 
 `/household` を作り直した。判断の正本は `specs/spec-household-cashflow-screen.md` と `architecture/household-cashflow-*.md`、実装判断の記録は [`household-screen/design-decisions.md`](household-screen/design-decisions.md)、集計の定義は [`data-schema.md`](data-schema.md) の「家計収支の集計」。

@@ -80,7 +80,25 @@ const DELETION_COLUMNS: Record<DeletionTable, readonly string[]> = {
     'settled_amount',
     'settlement_known',
   ],
-  balance_entries: ['month', 'date', 'side', 'category', 'amount', 'source', 'created_at', 'updated_at'],
+  balance_entries: [
+    'month',
+    'date',
+    'side',
+    'category',
+    'amount',
+    'source',
+    'status',
+    'created_at',
+    'updated_at',
+  ],
+};
+
+/**
+ * 戻すときに payload に列が無ければ使う値。後から足した NOT NULL 列のためにある。
+ * 0046 より前に退避された balance_entries の行は status を持たないので、列の既定と同じ 'amount' で戻す。
+ */
+const RESTORE_DEFAULTS: Partial<Record<DeletionTable, Record<string, unknown>>> = {
+  balance_entries: { status: 'amount' },
 };
 
 /** 退避と戻しで使う行の識別子。id ではなく業務上の同一性キーを使う。 */
@@ -852,7 +870,7 @@ export async function executeUndo(args: {
     const values = rows.map((row) => {
       const payload = JSON.parse(row.payload_json) as Record<string, unknown>;
       if (row.month) months.add(row.month);
-      return columns.map((column) => payload[column] ?? null);
+      return columns.map((column) => payload[column] ?? RESTORE_DEFAULTS[table]?.[column] ?? null);
     });
     statements.push(
       ...insertJsonRows(database, table, columns, values, [{ column: 'user_id', value: userId }]),

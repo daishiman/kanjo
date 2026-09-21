@@ -3,7 +3,7 @@ status: confirmed
 category: security
 aggregate: 確定
 spec_cells: [security.web, security.mobile, security.tablet, security.desktop-windows, security.desktop-linux, security.desktop-macos]
-serves_goals: [G4, G5]
+serves_goals: [G5]
 ---
 
 # セキュリティ (security)
@@ -15,12 +15,12 @@ serves_goals: [G4, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-household-security-web-004。裏付け質疑 (`qa_refs`): `qa-household-security-web-evidence-001`, `qa-household-security-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、セキュリティではモバイル端末の紛失時に家計データを消す手段と、画面の録画・スクリーンショット対策を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、セキュリティでは共有端末に家計の明細が残らないようにするキャッシュ方針を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、セキュリティではインストーラの署名と自動更新の改ざん対策を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、セキュリティでは配布パッケージの署名検証とサンドボックス権限を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、セキュリティでは公証 (notarization) とサンドボックスの権限範囲を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-statements-decision-007。裏付け質疑 (`qa_refs`): `qa-statements-decision-003`, `qa-statements-security-web-002`, `qa-statements-agent-decisions-001`, `qa-statements-reopen-pass3-001`, `qa-statements-security-web-evidence-001`, `qa-statements-detail-parameters-001`, `qa-statements-csv-chars-001`, `qa-statements-migration-0046-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、セキュリティでは端末の紛失時に端末内の決算データを消す手段とジェイルブレイク検知を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、セキュリティでは共用タブレットの画面ロックと端末内キャッシュの消去を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、セキュリティでは Windows 版のコード署名と更新配信の改ざん防止を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、セキュリティでは Linux 版パッケージの署名と配布元の検証を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、セキュリティでは macOS の公証とサンドボックス権限を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,7 +28,7 @@ serves_goals: [G4, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 入力検証・出力の無害化・外部送信なしの 3 点を、家計収支画面で増える入出力に反映した。入力は名義ラベルの表示名と家計 API のクエリだけで、どちらも zod の許可リストで受ける。出力の表示名と取引先名は React のエスケープで描く。明細や表示名を外部サービスへ送らず、公開文書への実データ混入は既存の security:content で検査する。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | OWASP ASVS 5.0 の入力検証と 1.2.10 (CSV / 数式注入) を負債保存と PL エクスポートへ反映した。負債は zod strict の列挙・整数・上限・8 KiB の本文上限で受けて 400 / 413 を返し、CSV は RFC 4180 のエスケープに加えて先頭の = + - @ タブ NUL に単一引用符を前置する。取込データと下書きは外部へ送らない。 |
 
 ## 確定内容 (質疑録)
 
@@ -36,43 +36,120 @@ serves_goals: [G4, G5]
 
 ### Web (web)
 
-- 資するゴール: G4, G5
+- 資するゴール: G5
 
-#### 主たる接地根拠: `qa-household-security-web-004`
-
-**問**
-
-家計収支画面で新しく生じる入力・出力・外部送信のリスクにどう備えるか。
-
-**答**
-
-新しい入力は名義ラベルの表示名だけで、zod の許可リスト (長さ・使える文字・名義間の重複) で検証し (具体値は qa-household-security-web-003 (agent 推定) を参照)、違反は 400 とフィールド別のエラーを返す。D1 の CHECK 制約でも長さを守る。表示名は React の既定のエスケープで描画し、dangerouslySetInnerHTML を使わない。家計 API のクエリ (month・key・期間) も zod で enum と書式を検証し、期間外の月は 400。応答は利用者本人のデータだけで、明細の内容・取引先はこれまでどおり画面に出すが外部へ送信しない (取込データの外部送信なし)。振替の対推定は表示だけで、データを書き換えない。更新系は既存の canonicalMutationFence の内側に置く。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-security-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-security-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
-
-#### 裏付け質疑: `qa-household-security-web-evidence-001`
+#### 主たる接地根拠: `qa-statements-decision-007`
 
 **問**
 
-security 章の裏付けとして、既存の入力検証と公開物の検査について何を観測したか。
+負債残高の保存・削除の記録 (監査ログ) をどう残しますか？
 
 **答**
 
-settingsRoute の PUT /classification は zValidator('json', classificationSchema) で institutionOwners を z.record(z.string().max(100), z.enum(OWNER_VALUES).nullable()) と検証している (packages/api/src/routes/settings.ts:654-661)。一方、家計の GET /api/household は専用の zod 検証を持たない (analytics.ts:528-531)。リポジトリには pnpm run security:content (scripts/hooks/guard-real-data.sh --scan-public-docs) が lint に組み込まれており、公開文書への実データ混入を検査している。フッターは『取込データは外部送信しません』を掲げる。
+新表・金額は残さない (推奨)。migration 0045 で liability_audit_log を追加し、誰がいつどの月のどの項目を 保存/0円/未入力 にしたかだけを記録し、金額は残さない。既存 audit_log の CHECK 変更は表の再構築 (Deploy 自動適用で止まる) が要るため避ける。(提示した他の選択肢: 新表・金額も残す / 記録しない)
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-18T11:33:59Z)
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: 新表で金額を残さない決定は有効だが、実 migration は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
 
-#### 裏付け質疑: `qa-household-security-web-003`
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり (2026-09-19T02:30:05Z 提示・02:41:21Z 回答) / 回答時刻: 2026-09-19T02:41:21Z)
+
+#### 裏付け質疑: `qa-statements-decision-003`
 
 **問**
 
-web の家計収支画面で、利用者が決めていない 名義ラベルの表示名の入力規則 を何にするか。
+『下書きを自動保存しました』の下書きをどこに保存するか。
 
 **答**
 
-前後の空白を除いて 1〜20 文字、制御文字 U+0000–U+001F と U+007F を拒否、4 つの名義の表示名が互いに異なることを zod で確かめ、違反はフィールド別の 400 で返す。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。
+ブラウザ内。localStorage に利用者ごとのキーで保存し、サーバへ送るのは『負債残高を保存』のときだけ。既存の Cash / Budget 画面と同じ方式で migration は不要。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-18T12:02:30Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり / 回答時刻: 2026-09-19T01:53:56Z)
+
+#### 裏付け質疑: `qa-statements-security-web-002`
+
+**問**
+
+負債の保存経路と決算書画面の安全性要件は何か。
+
+**答**
+
+既存の防御 (authGuard、SameSite=Strict の Cookie、JSON の Content-Type 検証、取込との直列化 canonical-mutation-fence) を保ったまま、(1) 金額は整数・0 以上・1 兆円以下を zod で検証、(2) PUT /api/balances/liabilities に bodyLimit 8 KiB (超過は 413)、(3) 保存ごとに liability_audit_log へ 1 件 (金額は残さない)、(4) 下書きは利用者別キーでブラウザ内に留めログアウトで消す、(5) CSV エクスポートは = + - @・タブ・NUL で始まる文字列セルに ' を付けて数式注入を防ぐ、(6) 取込データ・下書きを外部へ送らない。未認証の保存は 401、不正な本文は 400。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: qa-statements-security-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-007 (監査は新表・金額は残さない)・003 (下書きはブラウザ内) と appr-foundation-statements-001 (G5) の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。 / 回答時刻: 2026-09-19T11:41:33Z)
+
+#### 裏付け質疑: `qa-statements-agent-decisions-001`
+
+**問**
+
+pass-3 の差し戻しを直すときに、利用者の決定を具体化するためエージェントが決めた点は何か。
+
+**答**
+
+(a) 行の選択は勘定科目セル内のボタンと aria-pressed で示す (表の行は aria-selected を持てないため)。(b) ページ内ナビは選んだ項目だけに aria-current="location" を付け、スクロール位置で自動更新しない。選択時は節見出し (tabIndex=-1) へフォーカスを移す。(c) ref が期間外・不正なら期間の最終月に丸め、丸めた月を bs.referenceMonth で返し web は URL をその値へ置き換える。(d) CF は原因 3 種 (未仕訳件数・現金口座の欠け {月数, 決済列なし}・科目未設定件数) のどれかが立つときだけ不可にし、決済方法の列が無い場合 (既存 settlementUnknown) は 2 番目の原因に添えて表示する。原因が 1 つも無ければ可 (原因の無い不能表示を出さない)。(e) liability_audit_log の列は id・user_id・actor_user_id・month・changed_json・occurred_at で、changed_json は項目ごとの状態遷移と件数。(f) 画像との差 (負債 KPI の文言と色・ナビの意味論・行の選択・月次表の数値・CF 原因・監査) を spec §8 と docs/ui-decisions.md に記録する。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる具体化 (利用者決定 qa-statements-decision-005〜007 と WAI-ARIA / 既存コードからの導出。利用者への個別確認なし) / 回答時刻: 2026-09-19T11:41:33Z)
+
+#### 裏付け質疑: `qa-statements-reopen-pass3-001`
+
+**問**
+
+決算書画面サイクルの web × 8 セルを再オープンする理由は何か。
+
+**答**
+
+完成度 evaluator の pass-3 (FAIL) の high 指摘 H1: 8 セルの主根拠 qa-statements-<cat>-web-001 は basis=user-decision だが、利用者が代替案を見ずにエージェントが具体化した設計 (監査の新表、ref の丸め、タブの構成、負債 KPI の色の向き、現金 KPI の %) を含む。3 点は利用者に選択肢を示して決定を得た (qa-statements-decision-005〜007、foundation-002)。残りはエージェント判断として qa-statements-agent-decisions-001 に分けた。各セルを reopen し、利用者決定を主根拠に、訂正版の回答 web-002 (agent-inference) を補助根拠として確定し直す。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: エージェントによる再オープン理由の記録 (evaluator 指摘の転記) / 回答時刻: 2026-09-19T11:41:33Z)
+
+#### 裏付け質疑: `qa-statements-security-web-evidence-001`
+
+**問**
+
+security 章の裏付けとして、既存の入力上限と直列化について何を観測したか。
+
+**答**
+
+packages/api/src/index.ts の bodyLimit は /api/auth/* だけに 16 KiB で掛かり (85-92 行)、保護された API には掛かっていない。balances.ts の amount は z.number().int().nonnegative() で上限が無い。取込との直列化は packages/api/src/canonical-mutation-fence.ts (45 行) にある。監査ログの書込みは packages/api/src/audit-log.ts の buildAuditStatements (248 行)。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T02:01:29Z)
+
+#### 裏付け質疑: `qa-statements-detail-parameters-001`
+
+**問**
+
+ui-ux・frontend・backend・security の web-001 回答に含まれる具体値のうち、どれが利用者の決定で、どれがエージェントの具体化か。
+
+**答**
+
+利用者が決めたのは 4 決定 (qa-statements-decision-001〜004) と U1-U9 の承認 (appr-foundation-statements-001) まで。次の値はエージェントが既存コードと公式資料から具体化した既定値で、利用者は個別に選んでいない: 金額上限 1 兆円 (表示と集計の桁あふれ防止)、本文上限 8 KiB (4 項目の本文は 1 KiB 未満。既存の /api/auth/* は 16 KiB)、下書き保存の遅延 800ms、詳細パネルの主な内訳 3 科目、月次表の万円丸め (合計列は円で合算してから丸める)、URL パラメータ名 (tab・row・ref)、下書きのキー名、区分対応表に載せる科目の列挙 (仕入高・期首商品棚卸高・期末商品棚卸高)。いずれも上位概念 G1-G5 と 4 決定に反しない調整値で、実装中に変えるときは specs/spec-statements-screen.md とテストを同時に変える。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる具体化の区分表示 (利用者への個別確認なし) / 回答時刻: 2026-09-19T02:18:27Z)
+
+#### 裏付け質疑: `qa-statements-csv-chars-001`
+
+**問**
+
+CSV エクスポートの数式注入対策で ' を前置する先頭文字は何か (qa-statements-frontend-web-001 と qa-statements-security-web-001 は = + - @ だけを挙げている)。
+
+**答**
+
+OWASP ASVS 5.0 の 1.2.10 (fetched-references の owasp-asvs-csv-injection、2026-09-19T02:03:50Z 確認) に従い、= + - @ に加えてタブ (0x09) と NUL (0x00) で始まる文字列セルにも ' を前置する。qa-statements-frontend-web-001 と qa-statements-security-web-001 の『= + - @』はこの集合の一部だけを挙げた記述であり、正本は specs/spec-statements-screen.md §5 (= + - @・タブ・NUL) とする。金額のセルは数値のまま書き出し ' を付けない。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: 公式資料 (OWASP ASVS 5.0 1.2.10) と specs/spec-statements-screen.md §5 の照合 / 回答時刻: 2026-09-19T02:18:27Z)
+
+#### 裏付け質疑: `qa-statements-migration-0046-001`
+
+**問**
+
+負債 3 状態の migration 番号は、実際のワークツリーで何番になったか。
+
+**答**
+
+0045_owner_labels.sql が先に存在するため、仕様の衝突時繰り下げ規則を適用し、実体は migrations/0046_liability_status.sql になった。現行の仕様・運用・schema guard・テスト参照は 0046 を使う。0045 という記述は生成済み計画の履歴を除き、現行契約として扱わない。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: migrations/0045_owner_labels.sql と migrations/0046_liability_status.sql のワークツリー観測 / 回答時刻: 2026-09-19T21:52:53Z)
 
 ## To-Be / Delta
 
@@ -80,29 +157,24 @@ web の家計収支画面で、利用者が決めていない 名義ラベルの
 
 ### 到達すべき状態 (To-Be)
 
-- **G4**: 名義を『本人 / パートナー / 子ども / その他』で扱えるようにする。内部値 (business / spouse / family と未設定) は変えず、名義ラベル表を追加する追加のみの migration と、表示名の取得・更新 API を設ける。初期表示名は business→本人、spouse→パートナー、family→子ども、未設定→その他。『名義ラベルを編集』から表示名だけを変更でき、家計画面・設定画面・明細画面の名義表示がすべてこの表示名を参照する。更新 API は既存の authGuard・パスワード変更フェンス・スキーマガード・変更系フェンスの内側に置き、入力は zod で長さと文字種を検証する。
-- **G5**: 振替を家計の収入・支出から除外していることを利用者が確かめられるようにする。期間内に除外した振替の一覧 (日付・内容・金額・名義間) を出し、名義間は同額・逆符号・日付が近い振替 2 行を core の純関数で対にし、それぞれの口座の名義表示名から『本人 → パートナー』のように示す。対にならない行は『相手不明』と示す。スキーマは変えない。
+- **G5**: 負債の保存経路と画面の安全性を整える。既存の認証・セッション・CSRF 相当の防御 (SameSite=Strict の Cookie と JSON の Content-Type 検証) と取込との直列化を保ったまま、金額の上限、リクエストの大きさの上限、保存操作の監査ログを加える。下書きには利用者の識別子をキーに含め、ログアウトで消す。取込データや下書きを外部へ送らない。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O4 | 名義ラベルの編集が安全に保存され全画面に反映される。 | API 統合テストで、未認証 401・変更系フェンス違反の拒否・長さ超過と制御文字の 400・正常更新の 200 と再取得での反映を確認し、migration が既存行を 1 行も書き換えないことを検査する。 |
-| O5 | 振替の対推定が決定論で再現する。 | core の単体テストで、同額・逆符号・日付差の許容内の 2 行が対になり、許容外・同符号・3 行以上の競合が相手不明または一意な規則で解決され、同じ入力で同じ出力になる。 |
+| O5 | 負債の保存経路が入力の上限と監査を持つ。 | API テストで、上限を超える金額と大きすぎる本文が 4xx で拒否され、保存が監査ログに 1 件残り、未認証の保存が拒否されることが緑である。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I6**: owner_labels 表と GET / PUT の表示名 API、名義ラベル編集ダイアログを作り、家計・設定・明細の名義表示を表示名の取得関数 1 つへ寄せる。
-- **I7**: 振替の一覧と対推定を core の純関数にし、日付差の許容・同額・逆符号・一意性の規則を docs とテストで固定する。
+- **I7**: 入力中の負債を localStorage に利用者別のキーで下書き保存し、保存時刻・リセット・未保存件数の固定バーを出し、ログアウトで下書きを消す。
+- **I8**: PUT /api/balances/liabilities に金額の上限と本文の大きさの上限を課し、保存を監査ログへ記録する。
 
 ### 本章に効く確定意思決定
 
-- **dec-household-owner-model**: 名義を『本人 / パートナー / 子ども / その他』で扱うとき、内部値を移行するか、内部値を残して表示名だけを編集可能にするか。
-  - 採択: 内部値は残し表示名を編集可能にする (`opt-owner-display-label`)
-  - 目的適合: G4 の表示名の要件を満たし、既存の business / spouse / family / unset を使う規則・明細を壊さない。
-- **dec-household-transfer-pairs**: 振替の欄で名義間の移動を見せるか。入出金の対を推定して表示するか、名義間の欄を出さないか。
-  - 採択: 入出金の対を推定して表示する (`opt-transfer-pair-estimate`)
-  - 目的適合: G5 の『振替を家計の収入・支出から除外していることを確かめられる』に、どこからどこへ動いたかまで見せて答える。
+- **D-statements-draft-storage**: 決算書の負債入力の下書き (『下書きを自動保存しました』) をどこに保存するか
+  - 採択: ブラウザ内 (localStorage に利用者別キー) (`browser-localstorage`)
+  - 目的適合: G4 の『入力中の値をブラウザ内に利用者ごとの下書きとして自動保存』をそのまま満たす。既存の period.tsx と同じ方式。
 
 ## 適用された設計知識
 
@@ -110,9 +182,9 @@ web の家計収支画面で、利用者が決めていない 名義ラベルの
 
 ### 本章での適用
 
-Secure by Design card の『入力を許可リストで検証する』を、本サイクルで唯一増える自由記述の入力 (名義ラベルの表示名) に適用した。前後の空白を除いて 1〜20 文字、制御文字 U+0000–U+001F と U+007F を拒否、4 つの名義の表示名が互いに異なることを zod で確かめ、違反はフィールド別の 400 で返す。D1 の CHECK 制約でも長さを二重に守る。家計 API のクエリ (month・key・期間) も enum と YYYY-MM の書式で受け、期間外の月は 400 にする。表示名は React の既定のエスケープで描き、dangerouslySetInnerHTML を使わない。振替の対推定は表示だけでデータを書き換えない。
+Secure by Design card の『入力を許可リストで検証する』を、本サイクルで増える入力 (負債の状態と金額、基準月、CSV に書き出す科目名) に適用した。状態は unset / zero / amount の列挙、金額は整数・0 以上・1 兆円以下、項目は LIABILITY_CATEGORIES の列挙で zod strict に受け、本文は 8 KiB で打ち切る。出力側では、利用者データ由来の科目名を CSV に書くとき先頭の = + - @ タブ NUL に単一引用符を前置して数式として評価されないようにする。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-18T11:37:52Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T02:05:18Z)
 
 ### Secure by Design — deep knowledge card
 
@@ -159,4 +231,4 @@ Secure by Design card の『入力を許可リストで検証する』を、本�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| owasp-asvs | 5.0.0 | OWASP Foundation (github.com) | https://github.com/OWASP/ASVS/blob/master/README.md | 2026-09-18T11:39:30Z | 2026-09-18T11:39:30Z |
+| owasp-asvs-csv-injection | 5.0.0 | OWASP Foundation (github.com) | https://github.com/OWASP/ASVS/blob/v5.0.0/5.0/en/0x10-V1-Encoding-and-Sanitization.md | 2026-09-19T11:43:20Z | 2026-09-19T11:43:20Z |

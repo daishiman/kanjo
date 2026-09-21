@@ -1,0 +1,30 @@
+{
+ "schema_version": "1.0.0",
+ "handoff_target": "task-graph",
+ "feature_id": "feat-statements-screen",
+ "parent_feature": "feat-statements-screen",
+ "feature_package_id": "feature-package/feat-statements-screen",
+ "snapshot_digest": "sha256:b876c2be84bd04c8eb94bb534f844df79cdec90a30302138b120def569641d91",
+ "validated_plan_digest": "sha256:b7b5463d81396f3733f71694ba174d935c886841941c232029b6574add8f6eb1",
+ "kind": "requirements-handoff",
+ "status": "ready",
+ "requirements_document": ".dev-graph/requirements/feat-statements-screen/requirements.md",
+ "readiness_matrix": ".dev-graph/requirements/feat-statements-screen/readiness-matrix.json",
+ "trace_plan": ".dev-graph/requirements/feat-statements-screen/trace-plan.json",
+ "task_graph": ".dev-graph/plans/feature-package-feat-statements-screen/task-graph.json",
+ "system_build_handoff": ".dev-graph/plans/feature-package-feat-statements-screen/system-build-handoff.json",
+ "task_spec_source_root": ".dev-graph/plans/feature-package-feat-statements-screen/task-specs",
+ "task_projection_target_root": "tasks/feat-statements-screen",
+ "requirement_count": 12,
+ "task_count": 13,
+ "missing_sections": [],
+ "self_generated_code_files": [],
+ "preconditions": [
+  "確定意思決定 (qa-statements-decision-001〜007、appr-foundation-statements-001/002) を変更しない。変更が必要になったら spec を reopen してから着手する。",
+  "数値の正本は spec §6 の検算済みフィクスチャで、画像の月次表 (列見出しの重複・行の和が合計と不一致) の数値は写さない。",
+  "OI-01: migration 番号 0045 の衝突有無は SYS-STMT-P05 の着手時に origin/main を取り直して確かめ、衝突すれば繰り下げて docs と spec の参照を揃える。",
+  "OI-02: 仕様 low findings 6 件 (system-spec/completeness-findings.json) の扱いは SYS-STMT-P03 の独立レビューで決め、実装に影響するものは docs/statements-screen.md に記録する。",
+  "system-spec/ 直下は並行サイクルと共有される。main 取込時に衝突したら archive/ への退避規則に従い、本サイクルの確定章を上書きしない。"
+ ],
+ "consumer_action": "dev-graph next で ready batch を算出し、worktree claim 後に SYS-STMT-P01 から task-graph build を開始する。"
+}

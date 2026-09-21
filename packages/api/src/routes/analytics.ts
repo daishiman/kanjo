@@ -4,13 +4,11 @@ import { zValidator } from '@hono/zod-validator';
  * 集計はすべて packages/core の純関数に委譲し、ここでは組み立てと整形のみ行う。
  */
 import {
-  BALANCE_SHEET_SOURCES,
   DIAGNOSIS_NOTE_MAX,
   type Dataset,
   type ExpenseScope,
   HOUSEHOLD_CATEGORY_KEYS,
   LEGACY_SCOPE,
-  LIABILITY_CATEGORIES,
   type PeriodRange,
   type ReviewQueueItem,
   TRANSACTION_EXPORT_HEADER,
@@ -20,11 +18,9 @@ import {
   availableYears,
   benchmarks,
   budgetTable,
-  buildBalanceSheet,
   buildExpenseProjection,
   buildReportHtml,
   buildReviewQueue,
-  cashFlow,
   defenseForecast,
   defenseLine,
   diagnosis,
@@ -51,12 +47,13 @@ import {
   overviewScopeMonths,
   periodLabel,
   periodMonths,
-  profitAndLoss,
+  previousPeriod,
   reconciliationReport,
   resolveDiagnosisSelection,
   resolvePeriodQuery,
   reviewItemFingerprint,
   reviewQueueCounts,
+  statementsScreen,
   subscriptionsScreen,
   toCsv,
   totalCashflowReport,
@@ -704,14 +701,16 @@ analyticsRoute.get('/unsettled', async (c) => {
 });
 
 /**
- * 財務三表(PL・キャッシュフロー)。BSは残高が要るのでまだ作れない。
- * 期間を絞ると、その期間だけの損益計算書になる。
+ * 財務三表(PL・キャッシュフロー・BS)を、core が組み立てた screen 契約で返す。
+ * 期間を絞ると PL / CF はその期間、BS は期間内の基準月の残高になる。
  *
  * キャッシュフローは freee 原本の決済列を見るため、集計済みの Dataset とは別に
  * freee_deals を読む(未決済かどうかは集計に残っていない)。
  */
+const MONTH_KEY = /^\d{4}-(0[1-9]|1[0-2])$/;
+
 analyticsRoute.get('/statements', async (c) => {
-  const { data, period } = await loadScoped(c);
+  const { data, all, period } = await loadScoped(c);
   const db = getDb(c.env.DB);
   const rows = await db
     .select()
@@ -725,14 +724,25 @@ analyticsRoute.get('/statements', async (c) => {
     .from(s.balanceEntries)
     .where(eq(s.balanceEntries.userId, c.get('userId')))
     .orderBy(s.balanceEntries.month);
-  return c.json({
-    pl: profitAndLoss(data),
-    cf: cashFlow(data, deals),
-    bs: buildBalanceSheet(balances),
-    liabilityCategoryOptions: LIABILITY_CATEGORIES,
-    balanceSheetSources: BALANCE_SHEET_SOURCES,
-    period,
+  // 前期は直前の同じ長さの期間。全期間を選んでいるときもデータ全体の長さで 1 つ前を見る (その範囲は通常空で、前期なし)
+  const range = period.applied ?? fullRange(all);
+  const previous = range ? applyPeriod(all, previousPeriod(range)) : null;
+  // 基準月は期間内だけを受ける。不正・期間外は core が期間の最終月へ丸める
+  const ref = c.req.query('ref');
+  const screen = statementsScreen({
+    current: data,
+    previous,
+    deals,
+    balances,
+    referenceMonth: ref && MONTH_KEY.test(ref) ? ref : null,
+    navigation: {
+      applied: period.applied,
+      full: period.full,
+      years: period.years,
+      monthCount: period.monthCount,
+    },
   });
+  return c.json({ screen });
 });
 
 analyticsRoute.get('/defense-line', async (c) => {

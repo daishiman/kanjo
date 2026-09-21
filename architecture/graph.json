@@ -827,7 +827,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-19-household-screen/auth.md",
         "source_version": "0.1.14",
         "source_digest": "30ba6c0055709da3317723b5e3225f3beb6ac0701fa529a32aad9b60a8fdd496",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -850,7 +850,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-19-household-screen/backend.md",
         "source_version": "0.1.14",
         "source_digest": "05968afeedc3f4ae572a389eb14e57436114352c58442d5b78104aafd8ca45b4",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -873,7 +873,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-19-household-screen/database.md",
         "source_version": "0.1.14",
         "source_digest": "06cac52233e70390939c023e2c62c85b27c991c3c1e26a623c4528de81400bba",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -896,7 +896,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-19-household-screen/frontend.md",
         "source_version": "0.1.14",
         "source_digest": "6dac265091684f5892afc368f27a7fbcdb0c9bbc4f69109a47eea70afaeb6dff",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -919,7 +919,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-19-household-screen/infrastructure.md",
         "source_version": "0.1.14",
         "source_digest": "b80d7f55fdb32981311d2c931a5bbc3d422edbe0ba5460e15b40ee1722e522b1",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -942,7 +942,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-19-household-screen/maintenance-ops.md",
         "source_version": "0.1.14",
         "source_digest": "6bc0855d54a0d2a8171fe86914b37c161e1f43eaf752e682790bf02402052dfb",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -965,7 +965,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-19-household-screen/security.md",
         "source_version": "0.1.14",
         "source_digest": "b6a0a70a0aa6c4be9670003a387dc7ab359b9df4fc8b5da5eddcbef130867dd2",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -988,7 +988,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-19-household-screen/ui-ux.md",
         "source_version": "0.1.14",
         "source_digest": "8f63b6a76287ed9a738241c5371344a231b534404672337abe67d6ff7f97f4d8",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -2536,6 +2536,174 @@
       "referenced_by": [
         "feat-subscriptions-screen"
       ]
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-ui-ux.md",
+      "id": "arch-statements-ui-ux",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T23:36:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c0bfb4dcb73ff2a5fe9d619b8fc6b0bcf742184d11c5ec7eaae9a9c8889b2809",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 問いの見出しから根拠へ降りる 1 画面と、負債の 3 状態入力"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-frontend.md",
+      "id": "arch-statements-frontend",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T23:36:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e08a7544aa1da43742a06cd81aa8348b2c219aa4c1d153c69751660d9e010820",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 薄いページと `pages/statements/` の部品、1 本の取得と 1 本の保存、利用者別の下書き"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-backend.md",
+      "id": "arch-statements-backend",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T23:36:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c7df4f617d6b5584de1046f01f33acd1da7e396a903ac403bbea6802927859fc",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — core の statementsScreen 1 か所と、GET /api/statements の screen-only 契約・PUT の項目単位 upsert"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-database.md",
+      "id": "arch-statements-database",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T22:38:08Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "a72d7ffaaa1919526a5975eb739dc52250162c735a4a024818a3f05924fbbbe8",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — balance_entries に状態列を足し、監査は新表 liability_audit_log で持つ追加のみの migration 0046"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-auth.md",
+      "id": "arch-statements-auth",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T22:38:08Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "7bce6415965c0d792d7b8bbda988ffddefcfe679591e6adf72713134c21314e1",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 2 経路を既存の authGuard と一時パスワードの fence の内側に置き、user_id と組で引く"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-security.md",
+      "id": "arch-statements-security",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T22:38:08Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e7373096230225e022ceb7e55f8c181d0384679fa70979420a0b218130e20a76",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 負債の保存経路に金額と本文の上限・監査を足し、CSV エクスポートの数式注入を防ぐ"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-infrastructure.md",
+      "id": "arch-statements-infrastructure",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T22:38:08Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "9f317cd28a76d3182c8481438a351013f992e45b44247cfbd7b5ae24f2f7c90c",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 既存の Worker・D1・静的配信と ci / deploy / migrate の流れに乗せ、新しい基盤を足さない"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-maintenance-ops.md",
+      "id": "arch-statements-maintenance-ops",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T23:36:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "342df0a3bb828c5fe8c971d23a780a99cefdb816226db5b9558dc98eaf4b0adc",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 恒等式と 3 状態を契約テストで固定し、既存テストを旧実装で落ちる形へ更新し、規則を docs に残す"
     }
   ]
 }

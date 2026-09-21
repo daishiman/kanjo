@@ -96,85 +96,265 @@ const cfMonths = months.map((month, index) => {
 const cumulative = cfMonths.map((month, index) =>
   sum(cfMonths.slice(0, index + 1).map((item) => item.operating)),
 );
+const statementPeriod = {
+  applied: null,
+  label: '全期間',
+  full: { from: months[0], to: months.at(-1) },
+  years: ['2025', '2026'],
+  monthCount: months.length,
+};
+const statementCfLimits = ['匿名フィクスチャ: 営業活動のみです。'];
+const statementBalance = {
+  assets: [
+    { category: '預金・現金', amount: 1_420_000 },
+    { category: '売掛金', amount: 380_000 },
+  ],
+  assetTotal: 1_800_000,
+  liabilities: [
+    { category: 'クレジットカード未払金', amount: 260_000 },
+    { category: '借入金', amount: 490_000 },
+  ],
+  liabilityTotal: 750_000,
+  netAssets: 1_050_000,
+};
+
+// 決算書画面は応答の screen (core の statementsScreen) だけを読む。既存の匿名系列から導き、
+// 図と表が同じ数字から出ることを保つ。PL 5 行の月の和は期間合計に一致させる。
+const cogsSeries = expenseSeries.map((value) => Math.round(value * 0.4));
+const sgaSeries = expenseSeries.map((value, index) => value - cogsSeries[index]);
+const grossSeries = revenueSeries.map((value, index) => value - cogsSeries[index]);
+const plRow = (key, label, series, formula, accounts = []) => ({
+  key,
+  label,
+  current: sum(series),
+  previous: null,
+  diff: null,
+  ratio: sum(series) / sum(revenueSeries),
+  formula,
+  source: key === 'sales' ? '出典：仕訳データ' : '出典：損益計算書',
+  accounts: accounts.map((account) => ({
+    ...account,
+    ratio: account.current / sum(revenueSeries),
+  })),
+  monthly: months.map((month, index) => ({ month, amount: series[index] })),
+});
+const periodLabel = `${months[0].slice(0, 4)}年${Number(months[0].slice(5))}月 - ${months.at(-1).slice(0, 4)}年${Number(months.at(-1).slice(5))}月`;
+const liabilityLines = [
+  { category: '借入金', label: '借入金', required: true, status: 'amount', amount: 490_000 },
+  { category: '未払金・買掛金', label: '未払金', required: true, status: 'zero', amount: 0 },
+  // 必須 3 項目がそろった月にする。BS の図は必須がそろった基準月だけに出る (未入力の月は図を出さない)。
+  // フォームはこの状態では閉じて始まるので、測る前に開く
+  {
+    category: 'クレジットカード未払金',
+    label: 'クレジット未払',
+    required: true,
+    status: 'amount',
+    amount: 260_000,
+  },
+  { category: 'その他の負債', label: 'その他の負債', required: false, status: 'unset', amount: null },
+];
+const flowKpi = (value, source) => ({
+  value,
+  previous: null,
+  diff: null,
+  diffRate: null,
+  source,
+  periodLabel: `対象期間：${periodLabel}`,
+});
 const statements = {
-  pl: {
-    months,
-    revenue: { monthly: revenueSeries, total: sum(revenueSeries) },
-    groups: [
-      {
-        group: 'その他',
-        rows: rows.map((row) => ({
-          account: row.label,
-          monthly: row.series,
-          total: sum(row.series),
-          share: sum(row.series) / sum(expenseSeries),
-        })),
-        monthly: expenseSeries,
-        total: sum(expenseSeries),
-        share: 1,
+  screen: {
+    period: {
+      from: months[0],
+      to: months.at(-1),
+      label: periodLabel,
+      previous: null,
+      navigation: {
+        applied: null,
+        full: { from: months[0], to: months.at(-1) },
+        years: ['2025', '2026'],
+        monthCount: months.length,
       },
-    ],
-    expense: { monthly: expenseSeries, total: sum(expenseSeries) },
-    profit: { monthly: profitSeries, total: sum(profitSeries) },
-    profitRate: sum(profitSeries) / sum(revenueSeries),
-    limits: ['匿名フィクスチャ: 決算整理前の数値です。'],
-  },
-  cf: {
-    months: cfMonths,
-    cumulative,
-    total: cumulative.at(-1),
-    settlementUnknown: false,
-    limits: ['匿名フィクスチャ: 営業活動のみです。'],
-  },
-  bs: {
-    months: [
-      {
-        month: '2026-07',
-        asOf: '2026-07-31',
-        partial: false,
-        assets: [
-          { category: '預金・現金', amount: 1_280_000 },
-          { category: '売掛金', amount: 320_000 },
-        ],
-        assetTotal: 1_600_000,
-        liabilities: [
-          { category: 'クレジットカード未払金', amount: 280_000 },
-          { category: '借入金', amount: 520_000 },
-        ],
-        liabilityTotal: 800_000,
-        netAssets: 800_000,
+    },
+    kpis: {
+      sales: flowKpi(sum(revenueSeries), '出典：仕訳データ'),
+      operatingProfit: flowKpi(sum(profitSeries), '出典：損益計算書'),
+      cashChange: flowKpi(cumulative.at(-1), '出典：現金収支/キャッシュフロー'),
+      liabilities: {
+        ...flowKpi(750_000, '出典：貸借対照表'),
+        previous: 800_000,
+        diff: -50_000,
+        diffRate: -0.0625,
+        periodLabel: '基準日：2026年8月末',
+        referenceMonth: '2026-08',
+        incomplete: false,
       },
-      {
-        month: '2026-08',
-        asOf: '2026-08-28',
-        partial: true,
-        assets: [
-          { category: '預金・現金', amount: 1_420_000 },
-          { category: '売掛金', amount: 380_000 },
-        ],
-        assetTotal: 1_800_000,
-        liabilities: [
-          { category: 'クレジットカード未払金', amount: 260_000 },
-          { category: '借入金', amount: 490_000 },
-        ],
-        liabilityTotal: 750_000,
-        netAssets: 1_050_000,
-      },
-    ],
-    assetCategories: ['預金・現金', '売掛金'],
-    liabilityCategories: ['クレジットカード未払金', '借入金'],
-    monthsWithoutLiabilities: [],
-    limits: ['匿名フィクスチャ: 簿外資産は含みません。'],
+    },
+    pl: {
+      rows: [
+        plRow('sales', '売上高', revenueSeries, '売上高 ＝ 売上に関する収益の合計', [
+          { account: '売上高', current: sum(revenueSeries), previous: null },
+        ]),
+        plRow('cogs', '売上原価', cogsSeries, '売上原価 ＝ 仕入高 ＋ 期首棚卸 − 期末棚卸', [
+          { account: '仕入高', current: sum(cogsSeries), previous: null },
+        ]),
+        plRow('gross', '売上総利益', grossSeries, '売上総利益 ＝ 売上高 − 売上原価', [
+          { account: '売上高', current: sum(revenueSeries), previous: null },
+          { account: '売上原価', current: -sum(cogsSeries), previous: null },
+        ]),
+        plRow(
+          'sga',
+          '販管費',
+          sgaSeries,
+          '販管費 ＝ 売上原価以外の経費の合計',
+          rows.slice(0, 3).map((row) => ({
+            account: row.label,
+            current: Math.round(sum(row.series) * 0.6),
+            previous: null,
+          })),
+        ),
+        plRow('operating', '営業利益', profitSeries, '営業利益 ＝ 売上総利益 − 販管費', [
+          { account: '売上総利益', current: sum(grossSeries), previous: null },
+          { account: '販管費', current: -sum(sgaSeries), previous: null },
+        ]),
+      ],
+    },
+    cf: {
+      status: 'available',
+      months: cfMonths,
+      cumulative,
+      total: cumulative.at(-1),
+      limits: statementCfLimits,
+    },
+    bs: {
+      referenceMonth: '2026-08',
+      asOf: '2026-08-28',
+      partial: true,
+      lines: liabilityLines,
+      complete: true,
+      assets: statementBalance.assets,
+      assetTotal: statementBalance.assetTotal,
+      liabilities: statementBalance.liabilities,
+      liabilityTotal: statementBalance.liabilityTotal,
+      netAssets: statementBalance.netAssets,
+      sources: [],
+    },
   },
-  liabilityCategoryOptions: ['クレジットカード未払金', '借入金', '未払金・買掛金', 'その他の負債'],
-  balanceSheetSources: [],
-  period: {
-    applied: null,
-    label: '全期間',
-    full: { from: months[0], to: months.at(-1) },
-    years: ['2025', '2026'],
-    monthCount: months.length,
+};
+
+// FINAL-UI と同じ「CF 未集計 + BS 未入力」の状態を 834px で比較するための匿名 fixture。
+// 通常の回帰検査は完成状態の `statements` を使い、参照画像用の複合状態だけを分ける。
+const statementsReference = structuredClone(statements);
+const referenceMonths = months.slice(-12);
+const referenceFrom = referenceMonths[0];
+const referenceTo = referenceMonths.at(-1);
+// 基準画像の見本値は千円相当。screen には core と同じ円値で渡す。
+const referenceThousandYen = {
+  sales: [950, 980, 1020, 1180, 1120, 1060, 1200, 1080, 1040, 1080, 1200, 570],
+  cogs: [600, 620, 640, 760, 720, 680, 760, 700, 660, 680, 760, 280],
+  gross: [350, 360, 380, 420, 400, 380, 440, 380, 380, 400, 440, 290],
+  sga: [210, 220, 240, 260, 230, 220, 260, 240, 220, 230, 260, 210],
+  operating: [140, 140, 140, 160, 170, 160, 180, 140, 160, 170, 180, 80],
+};
+const referencePrevious = {
+  sales: 11_240_000,
+  cogs: 7_120_000,
+  gross: 4_120_000,
+  sga: 2_620_000,
+  operating: 1_500_000,
+};
+const referencePeriodLabel = `${referenceFrom.slice(0, 4)}年${Number(referenceFrom.slice(5))}月 - ${referenceTo.slice(0, 4)}年${Number(referenceTo.slice(5))}月`;
+statementsReference.screen.period = {
+  ...statementsReference.screen.period,
+  from: referenceFrom,
+  to: referenceTo,
+  label: referencePeriodLabel,
+  previous: { from: '2024-09', to: '2025-08', label: '2024年9月 - 2025年8月' },
+  navigation: {
+    ...statementsReference.screen.period.navigation,
+    applied: { from: referenceFrom, to: referenceTo },
+    monthCount: referenceMonths.length,
   },
+};
+statementsReference.screen.pl.rows = statementsReference.screen.pl.rows.map((row) => {
+  const monthly = referenceMonths.map((month, index) => ({
+    month,
+    amount: (referenceThousandYen[row.key]?.[index] ?? 0) * 1_000,
+  }));
+  const current = sum(monthly.map((point) => point.amount));
+  const previous = referencePrevious[row.key] ?? null;
+  const accountTotals = {
+    sales: [current],
+    cogs: [current],
+    gross: [12_480_000, -7_860_000],
+    sga: [1_200_000, 900_000, 700_000],
+    operating: [4_620_000, -2_800_000],
+  };
+  return {
+    ...row,
+    current,
+    previous,
+    diff: previous === null ? null : current - previous,
+    accounts: row.accounts.map((account, index) => ({
+      ...account,
+      current: accountTotals[row.key]?.[index] ?? account.current,
+    })),
+    monthly,
+  };
+});
+const referenceSales = statementsReference.screen.pl.rows.find((row) => row.key === 'sales')?.current ?? 0;
+statementsReference.screen.pl.rows = statementsReference.screen.pl.rows.map((row) => ({
+  ...row,
+  ratio: referenceSales === 0 ? null : row.current / referenceSales,
+  accounts: row.accounts.map((account) => ({
+    ...account,
+    ratio: referenceSales === 0 ? null : account.current / referenceSales,
+  })),
+}));
+statementsReference.screen.kpis.sales.value = referenceSales;
+statementsReference.screen.kpis.operatingProfit.value =
+  statementsReference.screen.pl.rows.find((row) => row.key === 'operating')?.current ?? 0;
+statementsReference.screen.kpis.sales.previous = referencePrevious.sales;
+statementsReference.screen.kpis.sales.diff = referenceSales - referencePrevious.sales;
+statementsReference.screen.kpis.sales.diffRate =
+  statementsReference.screen.kpis.sales.diff / referencePrevious.sales;
+statementsReference.screen.kpis.operatingProfit.previous = referencePrevious.operating;
+statementsReference.screen.kpis.operatingProfit.diff =
+  statementsReference.screen.kpis.operatingProfit.value - referencePrevious.operating;
+statementsReference.screen.kpis.operatingProfit.diffRate =
+  statementsReference.screen.kpis.operatingProfit.diff / referencePrevious.operating;
+Object.assign(statementsReference.screen.kpis.cashChange, {
+  value: 756_000,
+  previous: 636_000,
+  diff: 120_000,
+  diffRate: null,
+});
+for (const kpi of [
+  statementsReference.screen.kpis.sales,
+  statementsReference.screen.kpis.operatingProfit,
+  statementsReference.screen.kpis.cashChange,
+])
+  kpi.periodLabel = `対象期間：${referencePeriodLabel}`;
+statementsReference.screen.kpis.liabilities.incomplete = true;
+statementsReference.screen.cf = {
+  status: 'unavailable',
+  causes: {
+    unclassified: 12,
+    missingCash: { months: 1, settlementUnknown: false },
+    accountUnset: 3,
+  },
+  limits: statementCfLimits,
+};
+statementsReference.screen.bs = {
+  ...statementsReference.screen.bs,
+  lines: statementsReference.screen.bs.lines.map((line) =>
+    line.category === 'クレジットカード未払金' || line.category === 'その他の負債'
+      ? { ...line, status: 'unset', amount: null }
+      : line,
+  ),
+  complete: false,
+  liabilities: null,
+  liabilityTotal: null,
+  netAssets: null,
 };
 
 const movingAverage = expenseSeries.map((_, index) =>
@@ -245,7 +425,7 @@ const summary = {
     },
   },
   benchmarks: [],
-  period: statements.period,
+  period: statementPeriod,
 };
 
 // 新しい GET /api/subscriptions (core の subscriptionsScreen) の形。
@@ -411,7 +591,7 @@ const trends = {
     personal: 60_000 + index * 300,
     total: 150_000 + index * 800,
   })),
-  period: statements.period,
+  period: statementPeriod,
 };
 // 推移の新しい応答 (比較・詳細・カテゴリ表・増減パレート)。
 // 新画面に旧判定を重複 mount せず、主要2図だけを実描画検査する。
@@ -1235,7 +1415,8 @@ const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64'
 const responseFor = (url) => {
   const requestUrl = new URL(url);
   const path = requestUrl.pathname;
-  if (path === '/api/auth/me') return { authenticated: true };
+  if (path === '/api/auth/me')
+    return { authenticated: true, user: { id: 'visual-user', email: 'visual@example.test' } };
   if (path === '/api/total-cashflow') return totalCashflow;
   if (path === '/api/summary') return summary;
   if (path === '/api/overview') return overviewFixture;
@@ -1255,7 +1436,8 @@ const responseFor = (url) => {
   if (path === '/api/sub-vendors') return { vendors: [], accountOptions: [], review: [] };
   if (path === '/api/household') return household;
   if (path === '/api/household/category') return householdCategory;
-  if (path === '/api/statements') return statements;
+  if (path === '/api/statements')
+    return VISUAL_SCOPE === 'statements-reference' ? statementsReference : statements;
   if (path === '/api/unsettled') return { rows: [] };
   if (path === '/api/ai/tasks') return { tasks: [] };
   if (path === '/api/ai/reports/anonymous-report-1') return aiReportDetail;
@@ -1389,6 +1571,126 @@ try {
     failures.push(
       `Reconciliation 匿名fixtureが122件(MFのみ42・要確認39・照合済み41)ではない: ${JSON.stringify(reconciliationFixtureCounts)}`,
     );
+  if (VISUAL_SCOPE === 'statements-reference') {
+    // FINAL-UI は 1280px の desktop 構成を 834px に縮小した承認画像。
+    // CSS viewport を 834px にすると tablet rail に切り替わり、異なるレイアウトを比べることになる。
+    const referenceCssWidth = 1280;
+    const referenceScale = 834 / referenceCssWidth;
+    await send('Emulation.setDeviceMetricsOverride', {
+      width: referenceCssWidth,
+      height: 1000,
+      deviceScaleFactor: referenceScale,
+      mobile: false,
+    });
+    await send('Emulation.setPageScaleFactor', { pageScaleFactor: 1 });
+    await send('Page.navigate', { url: `${BASE_URL}/statements` });
+    await waitFor(
+      "Boolean(document.querySelector('#cf .stmt-cf-help') && document.querySelector('#bs .stmt-form'))",
+      'Statements 834px 参照状態',
+    );
+
+    // 参照画像と同じく、編集中3件と必須項目の未選択エラーを同時に描画する。
+    await evaluate(`(() => {
+      const fields = [...document.querySelectorAll('#bs .stmt-line')];
+      const setText = (input, value) => {
+        const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+        setter?.call(input, value);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      };
+      setText(fields[0]?.querySelector('input[type="text"]'), '2,000,000');
+      fields[1]?.querySelector('input[value="amount"]')?.click();
+      fields[3]?.querySelector('input[value="zero"]')?.click();
+    })()`);
+    await sleep(100);
+    await evaluate(`(() => {
+      const fields = [...document.querySelectorAll('#bs .stmt-line')];
+      const input = fields[1]?.querySelector('input[type="text"]');
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      setter?.call(input, '300,000');
+      input?.dispatchEvent(new Event('input', { bubbles: true }));
+      document.querySelector('#bs .stmt-form')?.requestSubmit();
+    })()`);
+    await waitFor(
+      "Boolean(document.querySelector('#bs .stmt-field-error') && document.querySelector('.stmt-unsaved') && document.querySelector('.stmt-draft-saved [data-stmt-icon=\"saved\"]'))",
+      'Statements 834px 未保存・エラー・下書き保存状態',
+    );
+    const pageHeight = Number(
+      await evaluate('Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)'),
+    );
+    await send('Emulation.setDeviceMetricsOverride', {
+      width: referenceCssWidth,
+      height: Math.max(1000, pageHeight),
+      deviceScaleFactor: referenceScale,
+      mobile: false,
+    });
+    await evaluate('window.scrollTo(0, 0)');
+    await sleep(300);
+    const metrics = await evaluate(`(() => ({
+      width: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+      height: document.documentElement.scrollHeight,
+      unsaved: document.querySelector('.stmt-unsaved strong')?.textContent?.trim() ?? '',
+      error: document.querySelector('#bs .stmt-field-error')?.textContent?.trim() ?? '',
+      trendUnit: document.querySelector('#pl .stmt-pl-trend-unit')?.textContent?.trim() ?? '',
+      plTable: (() => {
+        const table = document.querySelector('#pl .stmt-pl-table');
+        const scroller = table?.closest('.scroll-x');
+        return scroller
+          ? { clientWidth: scroller.clientWidth, scrollWidth: scroller.scrollWidth }
+          : null;
+      })(),
+      formActionOverlap: (() => {
+        const actions = document.querySelector('#bs .stmt-form .stmt-actions');
+        const unsaved = document.querySelector('.stmt-unsaved');
+        if (!actions || !unsaved) return 0;
+        const actionBox = actions.getBoundingClientRect();
+        const unsavedBox = unsaved.getBoundingClientRect();
+        return Math.max(0, actionBox.bottom - unsavedBox.top);
+      })(),
+      visualAtoms: [
+        '#pl [data-stmt-icon="download"]',
+        '#cf [data-stmt-icon="info"]',
+        '#bs .stmt-banner [data-stmt-icon="alert"]',
+        '#bs .stmt-field-error [data-stmt-icon="field-alert"]',
+        '#bs .stmt-inline-status [data-stmt-icon="distinction"]',
+        '#bs .stmt-draft-saved [data-stmt-icon="saved"]',
+        '#bs .stmt-form [data-stmt-icon="reset"]',
+        '.stmt-unsaved [data-stmt-icon="alert"]',
+        '.stmt-unsaved [data-stmt-icon="reset"]',
+      ].map((selector) => ({
+        selector,
+        visible: Boolean(document.querySelector(selector)?.getClientRects().length),
+      })),
+    }))()`);
+    if (metrics.scrollWidth > metrics.width + 1)
+      failures.push(
+        `1280px→834px Statements 参照状態が横にはみ出す(${metrics.scrollWidth}/${metrics.width})`,
+      );
+    if (!metrics.unsaved.includes('3 件') || !metrics.error)
+      failures.push('1280px→834px Statements の未保存3件または必須エラーが描画されない');
+    if (metrics.trendUnit !== '(万円)')
+      failures.push(`1280px→834px Statements PL推移図の単位が「${metrics.trendUnit}」`);
+    if (metrics.plTable && metrics.plTable.scrollWidth > metrics.plTable.clientWidth + 1)
+      failures.push(
+        `1280px→834px Statements PL比較表の5列を同時に見渡せない(${metrics.plTable.scrollWidth}/${metrics.plTable.clientWidth})`,
+      );
+    if (metrics.formActionOverlap > 1)
+      failures.push(
+        `1280px→834px Statements のフォーム操作が未保存バーと ${metrics.formActionOverlap}px 重なる`,
+      );
+    const missingAtom = metrics.visualAtoms.find((atom) => !atom.visible);
+    if (missingAtom)
+      failures.push(`1280px→834px Statements の意味記号が描画されない: ${missingAtom.selector}`);
+    const screenshot = await send('Page.captureScreenshot', {
+      format: 'png',
+      fromSurface: true,
+      captureBeyondViewport: true,
+    });
+    writeFileSync(join(OUTPUT_DIR, 'statements-reference-834.png'), Buffer.from(screenshot.data, 'base64'));
+    console.log(
+      `1280px→834px Statements 参照状態 本体=${metrics.scrollWidth}/${metrics.width}px CSS高=${metrics.height}px ${metrics.unsaved}`,
+    );
+  }
   if (VISUAL_SCOPE === 'all' || VISUAL_SCOPE === 'core') {
     for (const { label: viewportLabel, width, zoom } of VIEWPORTS) {
       await send('Emulation.setDeviceMetricsOverride', {
@@ -1495,6 +1797,12 @@ try {
         "document.querySelectorAll('[data-financial-figure] .financial-figure__chart canvas').length === 4",
         'Statements',
       );
+      // 必須がそろった月はフォームが閉じて始まる。照合表・図・フォームの 3 つの配置を測るため開く
+      await evaluate(`document.querySelector('#bs button[aria-expanded="false"][aria-controls]')?.click()`);
+      await waitFor(
+        "Boolean(document.querySelector('#bs .stmt-form')?.getBoundingClientRect().height)",
+        'Statements 負債入力フォーム',
+      );
       await evaluate('window.scrollTo(0, 0)');
       await sleep(300);
       const statementMetrics = await evaluate(`(() => ({
@@ -1503,12 +1811,13 @@ try {
       chartCount: document.querySelectorAll('[data-financial-figure] .financial-figure__chart canvas').length,
       figures: [...document.querySelectorAll('[data-financial-figure] .financial-figure__caption h2, [data-financial-figure] .financial-figure__caption h3, [data-financial-figure] .financial-figure__caption h4')].map((node) => node.textContent?.trim()),
       tables: document.querySelectorAll('table.data').length,
-      equationVisible: Boolean(document.querySelector('.financial-equation')),
+      plTableVisible: Boolean(document.querySelector('#pl .stmt-pl-table tbody tr')),
       canvasBoxes: [...document.querySelectorAll('[data-financial-figure] .financial-figure__chart canvas')].map((canvas) => {
         const box = canvas.getBoundingClientRect();
         return { width: box.width, height: box.height, bitmapWidth: canvas.width, bitmapHeight: canvas.height };
       }),
       contracts: [...document.querySelectorAll('[data-financial-figure]')].map((figure) => ({
+        variant: figure.getAttribute('data-financial-figure-variant') ?? 'standalone',
         heading: Boolean(figure.querySelector('.financial-figure__caption h2, .financial-figure__caption h3, .financial-figure__caption h4')?.textContent?.trim()),
         summary: Boolean(figure.querySelector('[data-financial-summary]')?.textContent?.trim()),
         period: Boolean(figure.querySelector('[data-financial-period]')?.textContent?.trim()),
@@ -1516,11 +1825,13 @@ try {
         series: Boolean(figure.querySelector('[data-financial-series] li')?.textContent?.trim()),
         action: Boolean(figure.querySelector('[data-financial-action]')?.textContent?.trim()),
         table: Boolean(figure.querySelector('.financial-figure__details table, .heatmap-scroll table')),
+        companionTable: Boolean(figure.closest('#pl')?.querySelector('.stmt-monthly table')),
       })),
-      bsFigureBottom: document.querySelectorAll('.financial-figure')[3]?.getBoundingClientRect().bottom ?? 0,
-      bsTableTop: document.querySelectorAll('.table-heading.compact')[2]?.getBoundingClientRect().top ?? 0,
-      bsTableBottom: document.querySelector('.liability-form')?.previousElementSibling?.getBoundingClientRect().bottom ?? 0,
-      liabilityFormTop: document.querySelector('.liability-form')?.getBoundingClientRect().top ?? 0,
+      // BS 節は 照合表 → 図 の縦積みと、負債入力フォームの 2 カラム (狭い幅では 1 カラム)。3 つの箱が重ならないこと
+      bsBoxes: ['#bs .stmt-bs-table', '#bs .financial-figure', '#bs .stmt-form'].map((selector) => {
+        const box = document.querySelector(selector)?.getBoundingClientRect();
+        return box ? { selector, top: box.top, bottom: box.bottom, left: box.left, right: box.right } : null;
+      }),
       reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     }))()`);
       if (statementMetrics.pageWidth > statementMetrics.viewportWidth + 1)
@@ -1528,7 +1839,7 @@ try {
       if (
         statementMetrics.chartCount !== 4 ||
         statementMetrics.tables < 3 ||
-        !statementMetrics.equationVisible
+        !statementMetrics.plTableVisible
       )
         failures.push(`${viewportLabel} Statements PL/CF/BSの図解または照合表が不足`);
       if (
@@ -1539,14 +1850,38 @@ try {
         failures.push(`${viewportLabel} Statements PL/CF/BSのcanvas描画領域が0`);
       if (
         statementMetrics.contracts.length !== 4 ||
-        statementMetrics.contracts.some((contract) => Object.values(contract).some((value) => !value))
+        statementMetrics.contracts.some((contract) =>
+          contract.variant === 'companion-table'
+            ? !contract.heading ||
+              !contract.series ||
+              !contract.companionTable ||
+              contract.summary ||
+              contract.period ||
+              contract.unit ||
+              contract.action ||
+              contract.table
+            : !contract.heading ||
+              !contract.summary ||
+              !contract.period ||
+              !contract.unit ||
+              !contract.series ||
+              !contract.action ||
+              !contract.table,
+        )
       )
-        failures.push(`${viewportLabel} Statements 見出し・結論・期間・単位・系列・次の行動・正確な表が不足`);
+        failures.push(`${viewportLabel} Statements 単独図の意味契約、または月次PL伴走表との非重複契約が不足`);
+      const [bsTable, bsFigure, bsForm] = statementMetrics.bsBoxes;
+      const overlaps = (a, b) =>
+        a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
       if (
-        statementMetrics.bsFigureBottom > statementMetrics.bsTableTop + 1 ||
-        statementMetrics.bsTableBottom > statementMetrics.liabilityFormTop + 1
+        !bsTable ||
+        !bsFigure ||
+        !bsForm ||
+        bsTable.bottom > bsFigure.top + 1 ||
+        overlaps(bsTable, bsForm) ||
+        overlaps(bsFigure, bsForm)
       )
-        failures.push(`${width}px BS図・照合表・負債入力フォームの順序が重なる`);
+        failures.push(`${width}px BS照合表・図・負債入力フォームの順序が崩れるか重なる`);
       if (!statementMetrics.reducedMotion) failures.push(`${width}px reduced-motion の実描画条件を作れない`);
       if (zoom === 1 && (width === 375 || width === 1280)) {
         const statementsTopShot = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
@@ -1555,10 +1890,10 @@ try {
           Buffer.from(statementsTopShot.data, 'base64'),
         );
         const targets = [
-          { name: 'pl', expression: "document.querySelector('.financial-equation')" },
-          { name: 'cf-monthly', expression: "document.querySelectorAll('.financial-figure')[1]" },
-          { name: 'cf-cumulative', expression: "document.querySelectorAll('.financial-figure')[2]" },
-          { name: 'bs', expression: "document.querySelectorAll('.financial-figure')[3]" },
+          { name: 'pl', expression: "document.querySelector('#pl')" },
+          { name: 'cf-monthly', expression: "document.querySelectorAll('#cf .financial-figure')[0]" },
+          { name: 'cf-cumulative', expression: "document.querySelectorAll('#cf .financial-figure')[1]" },
+          { name: 'bs', expression: "document.querySelector('#bs')" },
         ];
         for (const target of targets) {
           await evaluate(`${target.expression}?.scrollIntoView({ block: 'center' })`);

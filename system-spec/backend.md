@@ -3,7 +3,7 @@ status: confirmed
 category: backend
 aggregate: 確定
 spec_cells: [backend.web, backend.mobile, backend.tablet, backend.desktop-windows, backend.desktop-linux, backend.desktop-macos]
-serves_goals: [G2, G3, G5]
+serves_goals: [G2, G3, G4, G5]
 ---
 
 # バックエンド (backend)
@@ -15,12 +15,12 @@ serves_goals: [G2, G3, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-household-backend-web-004。裏付け質疑 (`qa_refs`): `qa-household-backend-web-evidence-001`, `qa-household-backend-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、バックエンドではモバイル向けに家計の集計を小分けにした API (月単位のページング・差分同期) を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、バックエンドではタブレットの 2 ペイン表示向けに本体とカテゴリ詳細をまとめて返す API を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップアプリの端末内キャッシュと同期するための版管理 API を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップアプリからの長期トークン認証を受ける経路を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、バックエンドではネイティブ版のバックグラウンド更新向けに集計の差分通知を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-statements-decision-005。裏付け質疑 (`qa_refs`): `qa-statements-decision-001`, `qa-statements-decision-004`, `qa-statements-foundation-002`, `qa-statements-backend-web-002`, `qa-statements-agent-decisions-001`, `qa-statements-reopen-pass3-001`, `qa-statements-backend-web-evidence-001`, `qa-statements-detail-parameters-001`, `qa-statements-zero-amount-legacy-001`, `qa-statements-kpi-liability-basis-001`, `qa-statements-screen-only-contract-001`, `qa-statements-monthly-pl-unit-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G4, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、バックエンドではモバイルアプリ向けのオフライン同期 API と版ごとの互換を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、バックエンドではタブレット向けに別の応答形 (画面幅別の要約) を出すかを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、バックエンドでは Windows 版がローカルに持つ集計とサーバ集計の一致方法を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、バックエンドでは Linux 版のローカル保存とサーバの同期契約を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、バックエンドでは macOS 版のローカル保存とサーバの同期契約を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G2, G3, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 依存方向を core (householdSummary・区分詳細・振替の対推定) ← api (household route・owner-labels route) ← web (家計収支画面) の一方向へ反映した。旧 household(data) と HouseholdData を削除し、総収支画面と同じ台帳の行集合を入力にする純関数へ置き換える。台帳行へ名義を足すのは core の totalCashflowLedger の中で行い、api と web は名義の解決規則を持たない。 |
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側に閉じ、householdSummary は D1 を知らない台帳の行集合だけを受け取る形へ反映した。前年同期間の読み取りは loadScoped の範囲拡張で行い、純関数には表示期間と前年の範囲を分けて渡す。freee の取引・判定・除外は総収支と同じ loadCashflowSources で読み、家計専用の SQL を増やさない。区分詳細の主な取引 5 件も同じ行集合の絞り込みで作る。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 依存方向を core ← api の一方向へ反映した。statementsScreen は Dataset・freee 取引・残高行・基準月だけを受け、D1 も Hono も知らない。GET /api/statements は表示正本を二重化せず {screen} だけを返し、旧 pl/cf/bs/period 契約は撤去する。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側に閉じる形へ反映した。前期の範囲は loadScoped の all を applyPeriod で切って作り、決算書専用の SQL を増やさない。負債の保存は送られた項目だけを (user_id, month, side, category) で upsert / 削除し、source=mf の行と送られていない項目には触れない。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,43 +37,178 @@ serves_goals: [G2, G3, G5]
 
 ### Web (web)
 
-- 資するゴール: G2, G3, G5
+- 資するゴール: G2, G3, G4, G5
 
-#### 主たる接地根拠: `qa-household-backend-web-004`
-
-**問**
-
-家計の集計ロジックと API をどこに置き、どの契約で返すか。
-
-**答**
-
-家計の集計は core の新しい純関数 householdSummary (household-summary.ts) 1 か所に集め、入力は総収支画面と同じ totalCashflowLedger の行集合とする (利用者決定 qa-household-decision-001)。旧 household() と HouseholdData は置き換えて削除する。台帳行へ名義 (freee 行は business、MF 行は resolveTx の owner、未解決は unset) を追加する。1 回の呼び出しで家計全体・事業・個人の総額と月平均・年換算、前年同期間 (欠けた月があれば null)、月別系列と前年同月、生活費 6 区分 (対応表は core の定数 1 か所。qa-household-decision-007)、名義別収入、振替一覧と対推定 (同額・逆符号の入出金を組にする。qa-household-decision-003。日付の許容幅と同点の決め方は qa-household-backend-web-003 (agent 推定) を参照) を返す。数値は収入・支出を正本にし、差・率・構成比は計算値にする (qa-household-decision-006)。api は GET /api/household をこの形へ拡張し、選択時だけの GET /api/household/category (主な取引 5 件と区分の月合計) と GET / PUT /api/settings/owner-labels を設ける。期間は loadScoped、freee・判定・除外は loadCashflowSources で読み、クエリと本文は zod で検証する。不変条件 (総収支の総合と一致、事業 + 個人 = 家計全体、6 区分の和 = 総支出、名義別の和 = 総収入、振替は台帳に現れない) をテストで固定する。契約の正本は specs/spec-household-cashflow-screen.md §11-§12。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-backend-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-backend-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
-
-#### 裏付け質疑: `qa-household-backend-web-evidence-001`
+#### 主たる接地根拠: `qa-statements-decision-005`
 
 **問**
 
-backend 章の裏付けとして、現行の家計集計と総収支台帳について何を観測したか。
+負債残高 KPI の「前期比」は何と比べ、減少を何色で示しますか？ (画像は『前期比 -¥200,000 (-8.0%)』を赤で表示)
 
 **答**
 
-GET /api/household は packages/api/src/routes/analytics.ts:528-531 で loadScoped の data を core の household(data) に渡して返すだけで、専用の zod 検証を持たない。household() は packages/core/src/analysis.ts:771-790、HouseholdData は同 529-548 にあり、事業入金と事業立替を家計へ含める独自定義で前年比較を持たない。総収支の台帳は packages/core/src/total-cashflow.ts の totalCashflowLedger (798 行目) で、TrendSourceRow (703 行目) は side・io・category・payee・amount・origin・account を持つが名義を持たない。前年同期間の欠損規則は totalCashflowScreen 内で previousYearPeriod の全月が既知のときだけ前年を出す (1050-1066 行目)。振替は MfTx.isTransfer (types.ts:80) で、isMfCountable (types.ts:92-94) が台帳から除く。名義の解決は classify.ts の resolveTx が owner を返す。総収支ルートは routes/total-cashflow.ts で loadCashflowSources から deals・verdicts・除外を読む。
+前月末比・減少は良化色 (推奨)。比較先は前月末で、ラベルを『前月末比』に変え、減少=良化色・増加=注意色とする。画像の文言と色から意図的に外れる点は ui-decisions.md に記録する。(提示した他の選択肢: 前月末比・色は画像どおり / 画像どおり前期比)
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-18T11:33:59Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり (2026-09-19T02:30:05Z 提示・02:41:21Z 回答) / 回答時刻: 2026-09-19T02:41:21Z)
 
-#### 裏付け質疑: `qa-household-backend-web-003`
+#### 裏付け質疑: `qa-statements-decision-001`
 
 **問**
 
-web の家計収支画面で、利用者が決めていない 振替の入出金の対推定の規則 を何にするか。
+PL の『売上原価』と『販管費』をどう分けるか。現行 PL は 売上 / 経費グループ / 利益 だけで売上原価の区分が無い。
 
 **答**
 
-TRANSFER_PAIR_MAX_DAYS = 3。同額の出金と入金を日付差 3 日以内で対にし、候補が複数あるときは日付差 → 出金側の日付 → id の順で決める。対にならないものは相手不明とする。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。
+固定の対応表にする。core に勘定科目→区分の固定表を置き (仕入高など仕入系→売上原価、残り→販管費)、表と計算式は docs とテストで固定する。青色申告決算書の区分に合わせる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-18T12:02:30Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり / 回答時刻: 2026-09-19T01:53:56Z)
+
+#### 裏付け質疑: `qa-statements-decision-004`
+
+**問**
+
+CF が集計できるときは何を表示するか (画像は集計できないときの表示だけ)。
+
+**答**
+
+既存の営業 CF 概算と原因別件数。集計できるときは今の営業 CF 概算 (表とグラフ) を出し、集計できないときは画像の表示に切り替え、未仕訳の件数・口座データの欠け・科目未設定を件数つきで出す。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり / 回答時刻: 2026-09-19T01:53:56Z)
+
+#### 裏付け質疑: `qa-statements-foundation-002`
+
+**問**
+
+上位概念 G1 と O1 を、3 決定 (負債=前月末比・減少は良化色 / ページ内ナビ / 現金増減は画像どおり金額のみ) に合わせて改訂した文面で承認しますか？ ほかの U1-U9 は変えない。
+
+**答**
+
+この文面で承認する (appr-foundation-statements-002)。G1:『KPI 4 枚 (売上高・営業利益は前期比の金額と %、現金増減は前期比の金額のみ (画像どおり)、負債残高は前月末比の金額と % で減少を良化色。各々 出典と対象期間または基準日)、3 計算書の節へ移動するページ内ナビ (画像のタブの見た目。3 節は縦にすべて描画)』。O1 測定:『KPI 4 枚 (G1 の比較先と表示規則、出典、対象期間 / 基準日)・3 計算書へのページ内ナビ (nav と aria-current)』。(提示した他の選択肢: 修正が必要)
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 改訂前後の文面を提示 (2026-09-19T02:42:17Z 提示・11:34:24Z 回答) / 回答時刻: 2026-09-19T11:34:24Z)
+
+#### 裏付け質疑: `qa-statements-backend-web-002`
+
+**問**
+
+決算書の集計と負債保存のバックエンド (core の関数と API 契約) をどう定めるか。
+
+**答**
+
+core に statementsScreen(input) を新設し、勘定科目→区分の固定対応表 (青色申告決算書の売上原価欄に載る仕入高・期首/期末商品棚卸高を売上原価、売上系を売上高、それ以外と未知の科目を販管費) から段階損益を月別と合計で出し、恒等式 (売上総利益=売上高−売上原価、営業利益=売上総利益−販管費) を保つ。前期比は直前の同じ長さの期間 (api が applyPeriod(all, 前期範囲) で Dataset を切って渡す) との金額と % (現金増減は金額のみ、負債残高だけは前月末比) で、前期 0 / 欠損は % を null。構成比・計算式・主な内訳科目・出典・KPI 4 枚・CF の可否と原因 (未仕訳件数・現金口座の欠け {月数, 決済列なし}・科目未設定件数。どれかが立つときだけ不可、どれも立たなければ可)・BS の項目別 3 状態も同じ関数が返す。GET /api/statements は既存の pl/cf/bs/period を残し screen を足す (後方互換)。クエリに ref=YYYY-MM (基準月、期間外・不正は最終月へ丸め、丸めた月を bs.referenceMonth で返す)。PUT /api/balances/liabilities は {month, lines:[{category, status: unset|zero|amount, amount?}]} の zod strict で、送られた項目だけを upsert / 削除し他項目と source=mf 行に触らない。応答は保存後の bs。
+
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-19T22:35:37Z` — SUPERSEDED: 『旧 pl/cf/bs/period を残し screen を足す』という後方互換方針は qa-statements-screen-only-contract-001 により非規範化された。現行 GET /api/statements の契約は {screen} だけで、旧キーは返さない。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: qa-statements-backend-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-001 (区分=固定対応表)・004 (CF=営業 CF 概算+原因別件数)・005 (負債 KPI=前月末比) と appr-foundation-statements-001/002 の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。 / 回答時刻: 2026-09-19T11:41:33Z)
+
+#### 裏付け質疑: `qa-statements-agent-decisions-001`
+
+**問**
+
+pass-3 の差し戻しを直すときに、利用者の決定を具体化するためエージェントが決めた点は何か。
+
+**答**
+
+(a) 行の選択は勘定科目セル内のボタンと aria-pressed で示す (表の行は aria-selected を持てないため)。(b) ページ内ナビは選んだ項目だけに aria-current="location" を付け、スクロール位置で自動更新しない。選択時は節見出し (tabIndex=-1) へフォーカスを移す。(c) ref が期間外・不正なら期間の最終月に丸め、丸めた月を bs.referenceMonth で返し web は URL をその値へ置き換える。(d) CF は原因 3 種 (未仕訳件数・現金口座の欠け {月数, 決済列なし}・科目未設定件数) のどれかが立つときだけ不可にし、決済方法の列が無い場合 (既存 settlementUnknown) は 2 番目の原因に添えて表示する。原因が 1 つも無ければ可 (原因の無い不能表示を出さない)。(e) liability_audit_log の列は id・user_id・actor_user_id・month・changed_json・occurred_at で、changed_json は項目ごとの状態遷移と件数。(f) 画像との差 (負債 KPI の文言と色・ナビの意味論・行の選択・月次表の数値・CF 原因・監査) を spec §8 と docs/ui-decisions.md に記録する。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる具体化 (利用者決定 qa-statements-decision-005〜007 と WAI-ARIA / 既存コードからの導出。利用者への個別確認なし) / 回答時刻: 2026-09-19T11:41:33Z)
+
+#### 裏付け質疑: `qa-statements-reopen-pass3-001`
+
+**問**
+
+決算書画面サイクルの web × 8 セルを再オープンする理由は何か。
+
+**答**
+
+完成度 evaluator の pass-3 (FAIL) の high 指摘 H1: 8 セルの主根拠 qa-statements-<cat>-web-001 は basis=user-decision だが、利用者が代替案を見ずにエージェントが具体化した設計 (監査の新表、ref の丸め、タブの構成、負債 KPI の色の向き、現金 KPI の %) を含む。3 点は利用者に選択肢を示して決定を得た (qa-statements-decision-005〜007、foundation-002)。残りはエージェント判断として qa-statements-agent-decisions-001 に分けた。各セルを reopen し、利用者決定を主根拠に、訂正版の回答 web-002 (agent-inference) を補助根拠として確定し直す。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: エージェントによる再オープン理由の記録 (evaluator 指摘の転記) / 回答時刻: 2026-09-19T11:41:33Z)
+
+#### 裏付け質疑: `qa-statements-backend-web-evidence-001`
+
+**問**
+
+backend 章の裏付けとして、現行の決算書 API と負債保存について何を観測したか。
+
+**答**
+
+packages/api/src/routes/analytics.ts:627-650 の GET /api/statements は loadScoped (data と all と period を返す) の data から profitAndLoss・cashFlow・buildBalanceSheet を返す。packages/api/src/routes/balances.ts の PUT /api/balances/liabilities は zod strict・最大 4 行で、その月の manual 負債を全削除してから挿入するため、1 種類だけ送ると他の種類が消える。core の statements.ts は profitAndLoss (77 行)・cashFlow (157 行、決済列が無いと settlementUnknown) を持ち、tax-accounts.ts の 6 グループに売上原価は無い。balances.ts の LIABILITY_CATEGORIES はクレジットカード未払金・借入金・未払金・買掛金・その他の負債。
+
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-19T22:35:37Z` — SUPERSEDED OBSERVATION: これは refactor 前の実装観測であり、現行契約ではない。現行 GET /api/statements は statementsScreen の {screen} だけを返し、旧 pl/cf/bs/period は返さない。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T02:01:29Z)
+
+#### 裏付け質疑: `qa-statements-detail-parameters-001`
+
+**問**
+
+ui-ux・frontend・backend・security の web-001 回答に含まれる具体値のうち、どれが利用者の決定で、どれがエージェントの具体化か。
+
+**答**
+
+利用者が決めたのは 4 決定 (qa-statements-decision-001〜004) と U1-U9 の承認 (appr-foundation-statements-001) まで。次の値はエージェントが既存コードと公式資料から具体化した既定値で、利用者は個別に選んでいない: 金額上限 1 兆円 (表示と集計の桁あふれ防止)、本文上限 8 KiB (4 項目の本文は 1 KiB 未満。既存の /api/auth/* は 16 KiB)、下書き保存の遅延 800ms、詳細パネルの主な内訳 3 科目、月次表の万円丸め (合計列は円で合算してから丸める)、URL パラメータ名 (tab・row・ref)、下書きのキー名、区分対応表に載せる科目の列挙 (仕入高・期首商品棚卸高・期末商品棚卸高)。いずれも上位概念 G1-G5 と 4 決定に反しない調整値で、実装中に変えるときは specs/spec-statements-screen.md とテストを同時に変える。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる具体化の区分表示 (利用者への個別確認なし) / 回答時刻: 2026-09-19T02:18:27Z)
+
+#### 裏付け質疑: `qa-statements-zero-amount-legacy-001`
+
+**問**
+
+migration 0045 の適用前に金額 0 で保存された既存の手入力負債行 (status 列の既定値で 'amount' になる) を、画面と集計でどう扱うか。
+
+**答**
+
+(status='amount', amount=0) の組を『0円』(zero) と同じ扱いで表示・完了判定する。現行 UI で 0 を入れて保存した行は利用者が値を入れた項目であり、未入力ではないため。行は書き換えない (C4。UPDATE を含む migration は Deploy の自動適用判定で止まる)。次にその項目が保存されたとき status='zero' で上書きされる。core の契約テストでこの扱いを固定する (specs/spec-statements-screen.md §3.4・§7)。
+
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: 『状態列の適用前に amount=0 で保存された行』の互換処理は有効だが、状態列を追加する実 migration は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる既存データの扱いの決定 (C4 と G4 から導出。利用者への個別確認なし) / 回答時刻: 2026-09-19T02:18:27Z)
+
+#### 裏付け質疑: `qa-statements-kpi-liability-basis-001`
+
+**問**
+
+KPI 4 枚のうち負債残高だけ前期比を前月末比にするのはなぜか。
+
+**答**
+
+負債残高は期間の流量ではなく基準日時点の残高 (ストック) だから。売上高・営業利益・現金増減は期間の合計なので直前の同じ長さの期間と比べるが、残高を 12 か月前の残高と比べても今月の入力漏れや急増に気づけない。前月末に必須項目の未入力があるとき、または前月末の行が 1 件も無いときは前期比を — とする (specs/spec-statements-screen.md §1.3)。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる比較基準の決定 (G1 と画像の『基準日：2026年8月末』から導出。利用者への個別確認なし) / 回答時刻: 2026-09-19T02:18:27Z)
+
+#### 裏付け質疑: `qa-statements-screen-only-contract-001`
+
+**問**
+
+GET /api/statements の現行契約で、画面が参照しない旧 pl/cf/bs/period 等を screen と重ねて返す必要があるか。
+
+**答**
+
+不要。決算書画面の表示値は core の statementsScreen 出力だけを正本にしているため、GET /api/statements は {screen} だけを返す。旧キーを同時に返す後方互換は、同じ数値の二重契約と応答・型・テストの重複を残すので撤去する。PUT /api/balances/liabilities の応答 {ok, bs} は保存結果の契約として別に維持する。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 2026-09-20 elegant review: 重複契約を除き、core→API→web の単一データフローへ収束する判断 / 回答時刻: 2026-09-19T21:52:53Z)
+
+#### 裏付け質疑: `qa-statements-monthly-pl-unit-001`
+
+**問**
+
+画像の月次PLと core / web の間で、数値の単位と月見出しをどう確定するか。
+
+**答**
+
+画像の月次PLはラベルが（万円）だが、950〜合計12,480は千円値として上部の12,480,000円と整合する。したがって画像の不整合は単位ラベルと、5月が重複して8月が空欄の月見出しである。数値の正本は core contract fixture の千円配列とし、core は各値を1,000倍して円を返す。web は表示だけで円を10,000で割って万円へ丸め、950,000円を95万円、12,480,000円を1,248万円と表示する。画像の950〜12,480を万円として写さない。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: design/FINAL-UI/images/11-statements.png の再読、packages/core/src/statements-screen.ts の fixture と packages/web/src/pages/statements/view-model.ts の表示変換の照合 / 回答時刻: 2026-09-19T23:35:14Z)
 
 ## To-Be / Delta
 
@@ -81,40 +216,35 @@ TRANSFER_PAIR_MAX_DAYS = 3。同額の出金と入金を日付差 3 日以内で
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 家計の集計を core の純関数 1 か所に集め、総収支の台帳 (totalCashflowLedger) を正本にする。総収入・総支出・純収支と月平均・年換算、事業と個人の分解 (和が家計全体に一致)、前年同期間との比較 (前年に欠けた月があれば比較不能として null)、月別の収入・支出・純収支と前年系列、生活費カテゴリ 6 区分の集計と構成比・前年差、名義別の収入と前年差を同じ関数から算出し、GET /api/household をこの形へ拡張する。総収支画面の『総合』と家計画面の『家計全体』が同じ期間で同じ数字になることをテストで固定する。
-- **G3**: 生活費カテゴリの行を選ぶと『カテゴリの詳細』パネルを出す。期間合計 `current`、選択月全件合計 `monthTotal`、選択月の最大 5 件プレビュー `transactions` を分離し、カテゴリのすべて見るは月とカテゴリで絞った明細へ遷移する。
-- **G5**: 振替を家計の収入・支出から除外していることを利用者が確かめられるようにする。選択月に除外した振替を家計カード内に全件 (抜粋なし) 出し、振替用の循環する『すべて見る』導線は置かない。名義間は同額・逆符号・日付が近い振替 2 行を core の純関数で対にし、それぞれの口座の名義表示名から『本人 → パートナー』のように示す。対にならない行は『相手不明』と示す。スキーマは変えない。
+- **G2**: 決算書の数値を core の純関数 1 か所で算出し、GET /api/statements がその screen だけを返す。勘定科目→区分 (売上高 / 売上原価 / 販管費) の固定対応表 (青色申告決算書の区分に合わせ、仕入高など仕入系の科目だけを売上原価、ほかの経費を販管費とする) から段階損益 (売上高・売上原価・売上総利益・販管費・営業利益) を月別と期間合計で出し、直前の同じ長さの期間との前期比 (金額と %)・構成比・各行の計算式と主な内訳科目を出す。KPI の現金増減と負債残高、各数値の出典と対象期間 / 基準日も同じ関数から出す。対応表と計算式は docs とテストで固定する。
+- **G3**: キャッシュフロー計算書が集計できないときは、画像の表示 (『キャッシュフロー計算書は、現在集計できていません』・主な原因・解決方法の 3 手順・取引データを確認) に切り替え、表とグラフを出さない。原因は core が判定し、未仕訳の取引件数・現金口座データの欠け・勘定科目が未設定の取引件数を件数つきで示す。集計できるときは既存の営業 CF 概算 (表とグラフ) を出す。
+- **G4**: 貸借対照表の負債残高を、基準月ごと・項目ごとに『未入力 / 0円 / 金額』の 3 状態で入力・保存できるようにする。借入金・未払金・クレジット未払の 3 項目は状態の選択を必須とし、その他の負債は任意項目として残す。保存済みの値を読み込んで初期表示し、保存は項目単位で上書きして他の項目を消さない。基準月は期間内の任意の月を選べる。入力中の値はブラウザ内に利用者ごとの下書きとして自動保存し保存時刻を示し、リセットで保存済みの値へ戻し、未保存の項目数を画面下部の固定バーに出す。未入力の項目がある月は BS にデータ不足の表示を出し、純資産を出さない。
+- **G5**: 負債の保存経路と画面の安全性を整える。既存の認証・セッション・CSRF 相当の防御 (SameSite=Strict の Cookie と JSON の Content-Type 検証) と取込との直列化を保ったまま、金額の上限、リクエストの大きさの上限、保存操作の監査ログを加える。下書きには利用者の識別子をキーに含め、ログアウトで消す。取込データや下書きを外部へ送らない。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | 家計の数字が総収支画面と一致し、等式が閉じる。 | core の単体テストで、同じ Dataset と期間に対し家計全体の総収入・総支出・純収支が totalCashflowLedger の総合と toBe で一致し、事業 + 個人 = 家計全体が全月で成り立ち、前年欠損月があるとき前年差が null になる。 |
-| O3 | カテゴリ詳細が選択と同期し、明細へ遷移できる。 | DOM テストで `current` / `monthTotal` / 最大 5 件の `transactions` プレビューの分離と、カテゴリのすべて見るの月・カテゴリ絞り込みを確かめる。 |
-| O5 | 振替の対推定が決定論で再現する。 | core の単体テストで、同額・逆符号・日付差の許容内の 2 行が対になり、許容外・同符号・3 行以上の競合が相手不明または一意な規則で解決され、同じ入力で同じ出力になる。 |
+| O2 | 段階損益と前期比を core が決定論的に算出する。 | core の契約テストで、売上高−売上原価=売上総利益、売上総利益−販管費=営業利益が月別と合計で一致し、前期比は直前の同じ長さの期間から算出され、前期が 0 のとき % は null になり、未知の科目は販管費に入ることが緑である。 |
+| O3 | CF が集計できないときに原因を件数つきで示す。 | core と DOM のテストで、集計不能の fixture で原因 3 種の件数と解決方法 3 手順と取引データへのリンクが出て CF の表とグラフが 0 件、集計可能な fixture では営業 CF の表とグラフが出ることが緑である。 |
+| O4 | 負債残高の 3 状態入力が値を失わない。 | API と DOM のテストで、1 項目だけ保存しても他項目の保存値が残り、保存済みの値が初期表示され、『未入力』と『0円』が別々に保存・表示され、必須 3 項目の状態が未選択なら保存できず、下書きの復元・リセット・未保存件数の表示が緑である。 |
+| O5 | 負債の保存経路が入力の上限と監査を持つ。 | API テストで、上限を超える金額と大きすぎる本文が 4xx で拒否され、保存が監査ログに 1 件残り、未認証の保存が拒否されることが緑である。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: Household.tsx を pages/household/ 配下へ分割し、問いの見出し・出典カード・KPI と前年差・推移チャート・事業と個人の等式・カテゴリ表と詳細パネル・名義別収入・振替除外・名義ラベル設定・前年との比較・下部の選択中バーの構成に作り直し、選択中の月とカテゴリとタブを URL に保つ。
-- **I3**: core に household-summary (仮称) を新設し、totalCashflowLedger の行集合から家計全体・事業・個人の総額と月別系列、前年比較、生活費 6 区分、名義別収入を 1 か所で算出する。旧 household() の独自定義は置き換える。
-- **I4**: 生活費 6 区分 (住居費 / 食費 / 光熱費 / 教育費 / 交通費 / その他) と MF 大項目の対応表を core に 1 か所だけ置き、docs に同じ表を載せる。
-- **I5**: カテゴリ詳細の `current` / `monthTotal` / 最大 5 件の `transactions` プレビューを返す取得経路を設け、選択時にだけ取得する。カテゴリのすべて見るは明細画面を月・カテゴリ・対象で絞った URL で開く。
-- **I7**: 振替の一覧と対推定を core の純関数にし、日付差の許容・同額・逆符号・一意性の規則を docs とテストで固定する。
+- **I2**: core に勘定科目→区分の固定対応表と段階損益・前期比・構成比・計算式・主な内訳科目・出典を返す純関数を置き、GET /api/statements がそれを返す。
+- **I3**: 詳細パネルの『明細を開く』から、選んだ区分の科目と期間で絞った明細仕分け画面 (Classify の ?category=&month=) へ移動できる。
+- **I4**: PL のエクスポートで、表示中の段階損益 (当期・前期・差額・構成比と月次) を CSV で書き出せる。
+- **I5**: core が CF の集計可否と原因 (未仕訳の件数・現金口座データの欠け・科目未設定の件数) を判定し、画面が集計不能表示と営業 CF 概算を切り替える。
+- **I6**: 負債入力を基準月の月ピッカーと項目ごとの 3 択 (未入力 / 0円 / 金額を入力) に作り直し、migration 0046 で balance_entries に状態列を足し、PUT を項目単位の upsert にして保存済みの値を読み込む。
+- **I7**: 入力中の負債を localStorage に利用者別のキーで下書き保存し、保存時刻・リセット・未保存件数の固定バーを出し、ログアウトで下書きを消す。
+- **I8**: PUT /api/balances/liabilities に金額の上限と本文の大きさの上限を課し、保存を監査ログへ記録する。
 
 ### 本章に効く確定意思決定
 
-- **dec-household-categories**: 生活費の区分をどう作るか。画像の固定 6 区分へ寄せるか、金額上位 5 大項目とその他にするか。
-  - 採択: 固定 6 区分へ寄せる (`opt-fixed-six`)
-  - 目的適合: G1 の画像の表と一致し、G3 の詳細パネルで区分の意味が期間をまたいで一定になる。
-- **dec-household-figure-source**: 画像の数値が算術で閉じない欄をどう扱うか。収入・支出を正本に差を計算するか、画像の純収支を正本にして前年の総支出を調整するか。
-  - 採択: 収入・支出を正本に差を計算する (−¥80,000) (`opt-compute-from-income-expense`)
-  - 目的適合: G2 の『数字は台帳の行から作る』と一致し、どの欄も算術で閉じる。見た目の数値は一部画像と変わる。
-- **dec-household-ledger-source**: 家計収支の数字を何から作るか。総収支画面の台帳を正本にするか、現行の household() を拡張するか。
-  - 採択: 総収支の台帳を正本にする (`opt-ledger-source`)
-  - 目的適合: G2 の『家計の集計を 1 か所に集め、総収支と同じ行から作る』に直接答える。総収支の総合と家計全体が同じ行集合から出るため、両画面の数字が一致する。
-- **dec-household-transfer-pairs**: 振替の欄で名義間の移動を見せるか。入出金の対を推定して表示するか、名義間の欄を出さないか。
-  - 採択: 入出金の対を推定して表示する (`opt-transfer-pair-estimate`)
-  - 目的適合: G5 の『振替を家計の収入・支出から除外していることを確かめられる』に、どこからどこへ動いたかまで見せて答える。
+- **D-statements-draft-storage**: 決算書の負債入力の下書き (『下書きを自動保存しました』) をどこに保存するか
+  - 採択: ブラウザ内 (localStorage に利用者別キー) (`browser-localstorage`)
+  - 目的適合: G4 の『入力中の値をブラウザ内に利用者ごとの下書きとして自動保存』をそのまま満たす。既存の period.tsx と同じ方式。
 
 ## 適用された設計知識
 
@@ -122,9 +252,9 @@ TRANSFER_PAIR_MAX_DAYS = 3。同額の出金と入金を日付差 3 日以内で
 
 ### 本章での適用
 
-Clean Architecture card の Dependency Rule を家計集計の置き場所に適用した。家計全体・事業・個人の総額、月平均と年換算、前年同期間の欠損判定、生活費 6 区分への写像、名義別収入、振替の対推定は、いずれも入出力を持たない計算なので core の householdSummary 1 か所に置く。入力は総収支画面と同じ totalCashflowLedger の行集合に限り、旧 household() の独自定義 (事業入金・事業立替を家計へ含める) は削除する。こうすると総収支の総合と家計全体が同じ行から出るため、両画面の数字の一致を toBe の単体テストで確かめられる。api の /household と /household/category は期間とクエリを zod で受け、loadScoped と loadCashflowSources で組んだ入力を純関数へ渡して JSON に写すだけにする。
+Clean Architecture card の Dependency Rule を決算書集計の置き場所に適用した。勘定科目→区分の固定対応表、段階損益、前期比、構成比、計算式、主な内訳科目、CF の可否と原因件数、負債の 3 状態は、いずれも入出力を持たない計算なので core の statementsScreen 1 か所に置く。前期の Dataset は api が loadScoped の all から applyPeriod で切って渡し、純関数に期間の解釈を配らない。api の GET /api/statements と PUT /api/balances/liabilities は zod で受けた値を純関数や D1 に渡して JSON に写すだけにする。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-18T11:37:52Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T02:05:18Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -255,4 +385,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| hono-zod-validator | 0.9.1 | Hono (github.com) | https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md | 2026-09-18T11:59:07Z | 2026-09-18T11:59:07Z |
+| hono-body-limit | 4.13.8 | Hono (hono.dev) | https://hono.dev/docs/middleware/builtin/body-limit | 2026-09-19T11:43:20Z | 2026-09-19T11:43:20Z |
