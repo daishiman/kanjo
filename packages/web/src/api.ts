@@ -3,6 +3,7 @@
  * 型は @kanjo/core の分析出力型をそのまま利用する(サーバと完全一致)。
  */
 import type {
+  AiCopyTarget,
   AnalysisHubReport,
   AutoMatch,
   BalanceSheet,
@@ -183,7 +184,7 @@ export const unmarkMonthlyCloseReviewed = (month: string) =>
 /* -------- 支出トレンド(規模・増減・優先度) -------- */
 
 // API が返す値の型は core が正本。ここで同じ union を書き直すと、片方だけ増えても型検査に映らない
-import type { ExpenseScope } from '@kanjo/core';
+import type { AiTaskStage, ExpenseScope } from '@kanjo/core';
 export type { ExpenseScope };
 export type TrendDirection = '増加' | '減少' | '横ばい' | '判定不可';
 export type PriorityAction = '削減を検討' | '継続監視' | '記録を整える' | '対応不要';
@@ -982,6 +983,18 @@ export interface AiTaskView {
   /** 指示文を最後にコピーした日時。null は一度もコピーしていない */
   copiedAt: string | null;
   copiedTarget: 'claude_code' | 'codex' | null;
+  /** 利用者ごとの通し番号。0046 より前の依頼は null */
+  seq: number | null;
+  /** 画面に出す T-番号 (seq が無い旧依頼は作成日時から作る) */
+  displayId: string;
+  /** 段階の判定は core の aiTaskStage だけが行う。画面は表示と操作の出し分けにだけ使う */
+  stage: AiTaskStage;
+  /** 0〜100。失敗・キャンセルは null */
+  progress: number | null;
+  dataFetchedAt: string | null;
+  rejectedAt: string | null;
+  rejectCount: number;
+  canceledAt: string | null;
 }
 export interface AiReportItem {
   label: string;
@@ -1052,10 +1065,11 @@ export interface AiReportChart {
   caption: string;
 }
 export interface AiReportBody {
-  version: 3;
+  version: 3 | 4;
   generatedBy: string;
   model: string | null;
   title: string;
+  analysisDepth: 'concise' | 'standard' | 'detailed';
   summary: string;
   keyFindings: AiReportKeyFindings;
   sections: AiReportSection[];
@@ -1063,6 +1077,47 @@ export interface AiReportBody {
   needs: AiReportNeed[];
   charts: AiReportChart[];
   dataGaps: string[];
+  /** v4。旧レポートでは未定義。会計数値と外部背景を混ぜない独立領域。 */
+  contextAnalysis?: {
+    externalResearch: 'off' | 'used';
+    questionType:
+      | 'distribution'
+      | 'comparison'
+      | 'relationship'
+      | 'decomposition'
+      | 'trend'
+      | 'concentration'
+      | 'anomaly';
+    question: { decision: string; metric: string; comparison: string; range: string };
+    interviewFacts: { id: string; source: 'user_reported'; question: string; answer: string }[];
+    statisticalFacts: { id: string; statement: string; basis: string; evidenceRefs: string[] }[];
+    interpretations: { statement: string; factRefs: string[]; limitation: string }[];
+    externalEvidence: {
+      id: string;
+      title: string;
+      url: string;
+      publishedAt: string | null;
+      accessedAt: string;
+      claim: string;
+      relevance: string;
+      evidenceLevel: 'published_source';
+    }[];
+    causalHypotheses: {
+      role: 'primary' | 'alternative';
+      hypothesis: string;
+      cause: string;
+      mechanism: string;
+      outcome: string;
+      evidenceFor: string[];
+      evidenceAgainst: string[];
+      confounders: string[];
+      falsificationCondition: string;
+      evidenceLevel: 'data_confirmed' | 'user_reported' | 'published_source' | 'assumption';
+      evidenceRefs: string[];
+      confidence: 'low' | 'medium' | 'high';
+      validationAction: string;
+    }[];
+  } | null;
 }
 export interface AiReportRow {
   id: string;
@@ -1082,15 +1137,32 @@ export interface AiReportRow {
 export interface AiTaskCreateBody extends AiPeriod {
   supplement?: string;
   parentReportId?: string;
+  /** 指示文の宛先。冒頭の一行 (どこの Skill を読むか) だけが変わる。既定は claude_code */
+  target?: AiCopyTarget;
 }
 export interface AiTaskCreateResponse {
   task: AiTaskView;
   prompt: string;
 }
+/** 版履歴の1行。versionNote は利用者が書いた1行目 (無ければ初回/再分析の定型文) */
+export type AiReportVersion = AiReportRow & { versionNote: string };
 export interface AiReportDetailResponse {
   report: AiReportRow & { body: AiReportBody };
   previous: AiReportRow | null;
-  versions: AiReportRow[];
+  /** 古い順 */
+  versions: AiReportVersion[];
+}
+export interface AiReportListResponse {
+  reports: AiReportRow[];
+  archivedCount: number;
+}
+/** 「使用するデータ」カードの件数 (集計値だけ。明細は含まない) */
+export interface AiInventoryResponse {
+  period: { from: string; to: string; label: string };
+  freeeDeals: number;
+  mfTransactions: number;
+  categories: number;
+  counterparties: number;
 }
 
 /* -------- 改善要望(system-spec D5〜D9) -------- */

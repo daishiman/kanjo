@@ -1,13 +1,14 @@
-# 送信JSONの形(POST 結果送信URL)— 第3版
+# 送信JSONの形(POST 結果送信URL)— 第4版
 
 すべての文字列はプレーンテキスト。HTMLタグは保存時に取り除かれる。正本は `packages/api/src/ai/contract.ts` の `reportInputSchema` と `normalizeReport`(保存時検査)。手元の検査は `scripts/validate-report.py`(同じ規則の写し)。
 
-第3版で変わったこと: **図の数値を送らない**(`charts` はカタログ id と読み解きだけ)/ **要点は3段(事実→解釈→次の一手)を必須**/ **5節に最低行数**(足りなければ `gap` に理由)/ **文字数に下限**(短すぎる分析を拒否)。
+第4版は第3版の5節・要点・図に `contextAnalysis` を追加した。会計金額の事実と外部背景を分離し、因果は断定せず反証可能な仮説として送る。
 
 ```json
 {
   "generatedBy": "claude-code",
   "model": "claude-fable-5",
+  "analysisDepth": "standard",
   "title": "2025年8月〜2026年8月(13ヶ月・年次)の会計分析",
   "summary": "対象期間の事業経費は 4,980,000円(月平均 383,000円)で、前年同期比 +8.1% でした。増加分の大半は外注費で説明できます。\n- 図2のとおり外注費が 2,040,000円(41.0%)で最大、家賃と合わせて7割です\n- 図3のとおり前期比 +372,000円 のうち外注費が +630,000円 を占めます\n- 図8のサブスクは月 38,000円 前後で横ばいです",
   "keyFindings": {
@@ -59,7 +60,50 @@
   "needs": [
     { "gap": "個人の家賃が公私仕分けで未分類", "action": "公私仕分け画面で家賃の行を「個人」にする", "screen": "classify" }
   ],
-  "dataGaps": ["前年同期(2024-08〜2025-07)の取込が無く、図5(前年同月比)は出せない(あと12ヶ月分)"]
+  "dataGaps": ["前年同期(2024-08〜2025-07)の取込が無く、図5(前年同月比)は出せない(あと12ヶ月分)"],
+  "contextAnalysis": {
+    "externalResearch": "off",
+    "questionType": "trend",
+    "question": {
+      "decision": "外注費の上限を見直すか決める",
+      "metric": "外注費の月次推移",
+      "comparison": "直近3ヶ月とその前3ヶ月",
+      "range": "2025-09〜2026-08"
+    },
+    "interviewFacts": [{ "id": "interview-change", "source": "user_reported", "question": "対象期間の変化", "answer": "6月に新規案件が始まった" }],
+    "statisticalFacts": [{ "id": "fact-outsourcing-trend", "statement": "外注費は直近3ヶ月連続で増加した", "basis": "monthlyCategories.businessExpense の外注費", "evidenceRefs": ["monthlyCategories.businessExpense"] }],
+    "interpretations": [{ "statement": "外注依存が高まった可能性がある", "factRefs": ["fact-outsourcing-trend"], "limitation": "案件別の発注量は取込データにない" }],
+    "externalEvidence": [],
+    "causalHypotheses": [{
+      "role": "primary",
+      "hypothesis": "新規案件と外注費の増加が関連した可能性がある",
+      "cause": "新規案件の開始",
+      "mechanism": "内部工数の不足を外注で補った",
+      "outcome": "外注費の月次額が増えた",
+      "evidenceFor": ["案件開始後の3ヶ月で外注費が増えた"],
+      "evidenceAgainst": ["案件別の外注費は取込データにない"],
+      "confounders": ["契約単価の改定でも説明できる"],
+      "falsificationCondition": "案件別に見て新規案件の外注費が増えていない",
+      "evidenceLevel": "data_confirmed",
+      "evidenceRefs": ["monthlyCategories.businessExpense"],
+      "confidence": "low",
+      "validationAction": "案件別の発注記録と突合する"
+    }, {
+      "role": "alternative",
+      "hypothesis": "契約単価の改定と外注費の増加が関連した可能性がある",
+      "cause": "外注先の契約単価改定",
+      "mechanism": "同じ発注量でも支払額が増えた",
+      "outcome": "外注費の月次額が増えた",
+      "evidenceFor": ["外注費は増えている"],
+      "evidenceAgainst": ["単価の内訳は取込データにない"],
+      "confounders": ["新規案件の開始でも説明できる"],
+      "falsificationCondition": "契約書の単価に変更がない",
+      "evidenceLevel": "data_confirmed",
+      "evidenceRefs": ["monthlyCategories.businessExpense"],
+      "confidence": "low",
+      "validationAction": "契約書と請求書を突合する"
+    }]
+  }
 }
 ```
 
@@ -96,12 +140,15 @@
 | 項目 | 必須 | 内容 / 制限 |
 |---|---|---|
 | `generatedBy` | 必須 | `claude-code` / `codex` など実行環境の名前(60字) |
+| `analysisDepth` | 必須 | `concise` / `standard` / `detailed`。画面の既定は `standard` |
 | `model` | 任意 | 使用モデル名(120字) |
 | `title` | 任意 | 省略時は「<期間ラベル>の会計分析」(120字) |
 | `summary` | 必須 | 総評 **60〜1,200字**。出せた図を「図N」で1つ以上参照する。書き方は上の「本文の書き方」 |
 | `keyFindings` | **必須** | `improvements`(改善すべき点)/ `wasted`(無駄なコスト)/ `quickWins`(すぐ効く対策)の3配列(各10件まで)+ `notes`。**0件の区分は `notes.<区分>` に理由を10字以上**(「該当なし」だけは不可) |
 | `keyFindings.*[]`(要点1件) | — | `label`(200字)/ **`fact`(事実: 数値つき、10〜600字)**/ **`basis`(計算根拠: どのキーからどう出したか、5〜400字)**/ **`interpretation`(解釈、10〜800字)**/ **`action`(次のアクション、5〜600字)**/ `expectedEffect`(期待効果・円・整数・年換算・`null` 可)/ `amount`(影響額・円・整数・`null` 可)/ `priority`(`high` `mid` `low` `null`)/ `chart`(根拠となる図の `catalogId`・`null` 可) |
-| `charts[]` | 任意(出せる図がある限り実質必須) | **8件まで**。`catalogId`(`references/chart-catalog.md` の id)/ `caption`(この図から言えること **15〜400字**)。数値・`labels`・`series`・`kind` は送らない(手元の検査で拒否。アプリ側は無視して保存しない)。`available=true` の図は `caption` と本文の「図N」参照が必須 |
+| `charts[]` | 任意(出せる図がある限り実質必須) | **10件まで(カタログ数)**。`catalogId` / `caption`(15〜400字)。図の数値は送らない。`available=true` の図は `caption` と本文の「図N」参照が必須 |
+| `contextAnalysis` | 第4版で必須 | 問い / 利用者回答 / `statisticalFacts` / `interpretations` / 外部出典 / 主・対立仮説。`statisticalFacts` と `interpretations` は0件でも配列自体は必須。出せない理由は `dataGaps` / `needs` に書く |
+| `causalHypotheses[]` | 任意 | 仮説を出す場合は `primary` と `alternative` を各1件以上。`cause` / `mechanism` / `outcome` / 支持 / 反証 / 交絡 / 反証条件 / 根拠水準 / 根拠参照 / 確度 / 次の確認を持つ |
 | `followUp` | 任意 | 前回レポートがあるときだけ。`body`(6,000字・上の「本文の書き方」)+ `items`(30件まで)。前回の指摘ごとに「解消 / 未実施 / 悪化」 |
 | `sections[]` | 必須 | 5節すべて(`spend` `change` `reduction` `split` `subscriptions`)。`title` 任意(120字)/ `body` **80〜6,000字**(上の「本文の書き方」)/ `items` 60件まで / `gap`(10〜400字・`null` 可) |
 | `sections[].items` の最低行数 | — | `spend` **3** / `change` **1** / `reduction` **2** / `split` **2** / `subscriptions` **1**。満たせないときは `gap` にデータ不足の理由(何があれば出せるか)を書く。理由なしは拒否 |

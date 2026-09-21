@@ -7,149 +7,88 @@
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "U1-U9 は確定済みで、approval_ref=appr-foundation-household-cashflow-001 は実在する。G1-G5 は確定 8 セルの serves_goals で被覆されている。--require-foundation と validate-spec-doc-sync を今回も再実行し、どちらも exit 0。C06 は軸5で『O/S/I の詳細は承認後に AI が書き足したのではないか』という疑いを medium で挙げたが、会話記録と照合して反証した。承認の質問 (11:23:19Z) は要約を示したうえで『全文は scratchpad/foundation.json』と案内している。そのファイルは 11:22:25Z に書かれ、以後変更されていない。現在の requirements_foundation と比べると、approval_ref と confirmed 以外の 9 フィールドはすべて同一だった。残る問題は、承認時の内容の digest が approval_log に無いこと (low、前回から継続) だけである。",
+      "summary": "U1-U9 は確定済みで、approval_ref=appr-foundation-ai-analysis-001 は approval_log に実在する。G1-G5 は O1-O5・I1-I7・確定 8 セルの serves_goals で被覆され、dangling は無い。--require-foundation・--require-basis・validate-spec-doc-sync はいずれも exit 0。セッション記録と照合し、scratchpad/foundation-ai.json は承認の質問 (12:33:25Z) より前の 12:33:07Z に書かれ、現在の requirements_foundation とは confirmed と approval_ref 以外の 9 フィールドが同一だった (承認後の書き足しは無い)。ただし承認の質問が示したのは要約だけで、O1-O5・S1-S6・C1-C8・I1-I7 の本文も全文ファイルの場所も示していない (medium)。",
       "evidence": [
-        "validate-coverage-matrix.py --require-foundation exit 0 (再実行)",
-        "validate-spec-doc-sync.py exit 0 (再実行)",
-        "セッション jsonl: Write foundation.json 11:22:25Z → AskUserQuestion 11:23:19Z『全文は scratchpad/foundation.json』→ 承認 11:25:37Z",
-        "scratchpad/foundation.json (mtime 11:22:25Z) と spec-state.json requirements_foundation: essential_purpose/background/goals/objectives/success_criteria/concrete_intents/scope/constraints/stakeholders が同一"
+        "validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit 0",
+        "validate-spec-doc-sync.py exit 0",
+        "セッション jsonl: Write foundation-ai.json 12:33:07Z → AskUserQuestion 12:33:25Z → 承認 12:34:47Z (qa-ai-decision-009 answered_at 12:34:50Z)",
+        "foundation-ai.json と spec-state.json requirements_foundation の 9 フィールド一致"
       ]
     },
     "decision_guidance": {
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "前回から変化なし。decisions[] 6 件それぞれに 2 案があり、比較欄 (cost_model・goal_fit・security_fit・pros・cons・risks・lock_in・ops_burden・evidence_refs) と recommendation・user_decision が揃っている。選択肢と利用者の回答は会話記録の AskUserQuestion と一致する。ただし前回の medium (latest_checked_at が質問時刻のままで、比較欄を書き足した時刻や出典を取得した 11:39:30Z より前になっている) と low (00 章で cost_model が dict 表記のまま出ている) は直っていない。",
+      "summary": "decisions[] は 0 件。spec-state-contract.md:169-178 は decisions[] を『R5 が公式一次情報に接地した候補を組み立てる技術選定』に限り、業務規則や画面の決定は qa_log の basis=user-decision に置くと定めている。本サイクルの 8 決定 (qa-ai-decision-001〜008) はいずれも画面と業務規則の決定で、基盤は変えない (infrastructure-web-001)。技術選定の needs_guidance は発生していない。8 決定はセッション記録で 2〜3 択と推奨の提示を確認し、利用者が明示選択していた (12:27:04Z / 12:28:50Z)。AI 推奨だけで confirmed にした決定は無い。0 件は契約どおりで、調べ漏れによる 0 件ではない。",
       "evidence": [
-        "spec-state.json decisions[].recommendation.latest_checked_at = 11:19:20Z / 11:23:19Z (未変更)",
-        "system-spec/00-requirements-definition.md:226-231 cost={'category': ...}"
+        "spec-state-contract.md:169-178 (decisions[] の登録基準)",
+        "セッション jsonl AskUserQuestion 12:23:43Z (4 問・各 2〜3 択) / 12:27:58Z (4 問・各 2 択)",
+        "qa-ai-decision-001〜008 basis=user-decision, answered_at は実回答の 4〜5 秒後"
       ]
     },
     "matrix_coverage": {
       "verdict": "PASS",
       "auditor": "system-spec-matrix-auditor",
       "component": "C07",
-      "summary": "前回の FAIL 要因は解消した。R4-reopen 5 件 (reopen_log 12:14:41Z) によって、ui-ux/backend/database/security/maintenance-ops の web セルの確定質疑 (qa_ref) は qa-*-web-004 (basis=user-decision) に替わった。-004 の本文は推定値を含まず、『具体値は qa-*-web-003 (agent 推定) を参照』という形で外に出している。C05 も 5 件の本文を直接読んで確かめた。matrix から 5 件の -001 への参照は消え、章にも投影されている。決定論ゲートは loop / --require-complete / --require-foundation (C07 はさらに --require-basis も) がすべて exit 0 で、C16 required-info も exit 0。C07 の判定は loop_pass=PASS、final_ready=PASS で、48 セルの内訳は確定 8・対象外 40・未収集 0。block の必須情報 6 件はどれも確定セルの主根拠に接地している。C06 の sub-input では、rubric の 4 軸 (聞き漏れ / 誘導 / 早期停止 / セル単位の qa_ref トレース) がすべて PASS だった。C06 自身の総合は FAIL だが、根拠は 2 つとも rubric の sub-input 基準の外にある。1 つ目の軸4b は、C05 が依頼で足した旧 qa の扱いの確認である。旧 -001 が basis=user-decision のまま qa_log に残り、置き換えを示すフィールドが無いという指摘で、確定セルからは辿れず、corrections と 00 章の注記で開示されている。そのため medium で残す。2 つ目の軸5 は foundation_trace の論点で、上記のとおり反証した。",
+      "summary": "C07 は PASS。48 セルの内訳は確定 8 (web) と対象外 40 で、未収集は 0。対象外 40 件の理由は、どれもカテゴリとプラットフォームに固有の内容で、web の使い回しは無い。qa_ref の dangling は 0、集約の真理値表は一致、canonical 6 行もすべてある。block の必須情報 6 項目はすべて確定に接地している (ungrounded_blocking_items=[])。sub-input の C06 は FAIL を返し、agent-inference の 5 件 (-003) を『早期停止』として high に挙げた。しかし C06 自身の SSOT (hearing-auditor.md:54) は、早期停止を『未収集セルが残るのに complete=true』と定義しており、未収集は 0 である。さらに spec-state-contract.md:81-87 は、推定が確定セルの唯一の根拠でない限り許容している (--require-basis exit 0)。このため C05 は high を medium と裁定した。C06 の原判定は証跡に残す。旧推定上限と契約の不整合は、その後 qa-ai-security-web-003 を固定 4 MiB の request budget へ同期して解消した。-001 の basis 表示が実態より強いことは medium で記録する。",
       "evidence": [
-        "validate-coverage-matrix.py loop / --require-complete / --require-foundation: すべて exit 0 (C05 と C07 で再実行)。C07 --require-basis exit 0",
-        "C07: loop_pass=PASS, final_ready=PASS, 確定 8 / 対象外 40 / 未収集 0。low 1 件 (qa_refs に agent-inference の id が『裏付け質疑』として並ぶ)",
-        "C06 sub-input: 聞き漏れ PASS / 誘導 PASS (info 1) / 早期停止 PASS / 4a qa_ref 実在 PASS / 4b 旧 qa の扱い FAIL (medium) / 5 上位概念 FAIL (medium・疑い、C05 が反証)",
-        "spec-state.json matrix.{ui-ux,backend,database,security,maintenance-ops}.web.qa_ref = qa-household-*-web-004",
-        "aggregate-completeness.py --knowledge-graph required-info exit 0"
+        "C07: validate-coverage-matrix.py loop / --require-complete / --require-foundation すべて exit 0、aggregate-completeness.py --knowledge-graph 4 profile すべて exit 0",
+        "validate-knowledge-graph.py --profile required-info --state: ungrounded_blocking_items=[] (blocking 6 件すべて grounded)",
+        "C06 原判定: FAIL (high 1 = 5 件の agent-inference を早期停止と判定 / medium 1 = -001 から -003 への委任 / low 1 = 一括承認)。C05 の裁定: high を medium に (SSOT の定義外のため)",
+        "hearing-auditor.md:54 (早期停止の定義) / spec-state-contract.md:81-87 (basis=agent-inference の扱い)"
       ]
     },
     "design_knowledge_reflection": {
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "章を作り直したあとも、8 章すべてに『本章での適用』があり、中身は具体的である。backend は Dependency Rule に従って householdSummary を 1 か所に置く。database は導出できる値を保存しない。auth は Secure by Design で 4 経路をフェンスの内側に置く。security は許可リスト検証、ui-ux は頻度×失敗コストによる縦の順序、maintenance-ops は名前付き定数と境界値テストを適用している。C13・C15・cross の機械ゲートは exit 0。気になる点が 1 つある。security と maintenance-ops の『本章での適用』(ui-ux にも一部) に、推定値 (1〜20 文字、TRANSFER_PAIR_MAX_DAYS=3、20/21 文字の境界、既定は前年差が最大) が -003 への参照なしに書かれている。ただし節には『アシスタントの推定』という basis が表示され、節全体が非規範と宣言されているので、low とする。",
+      "summary": "8 章すべてに、章固有の『本章での適用』と doctrine の反映がある。ポインタの存在ではなく、確定セルへの具体適用を確認した。backend は Dependency Rule で段階の導出を core に置き taskStatus を置き換える。database は DDD で、導けない出来事 (取得・差し戻し・取消の時刻と連番) だけを列にし、進捗は保存しない。auth は Secure by Design で、agentGuard 1 か所で期限切れ・受信済み・キャンセル済みを拒否する。security は、body 上限を zod の前に置く順序を定める。ui-ux は Information Design (頻度と失敗コスト) で段の順と問い順のタブを決める。frontend は、サーバー状態と URL・localStorage の分離を定める。maintenance-ops は Clean Code で、名前付きの順序表と境界テストを置く。infrastructure は card 0 件で、その理由 (基盤を変えない) を記述している。doctrine 表は章ごとに違う文で書かれ、同じ文の写しは無い。C13-C16 の機械層 (knowledge / doctrine / required-info / cross) はすべて exit 0。適用文は basis=agent-inference と正直に表示されている。",
       "evidence": [
-        "system-spec/*.md『適用された設計知識 > 本章での適用』8 章",
-        "security.md:113-115, maintenance-ops.md:128-130, ui-ux.md:134 (根拠の性質: アシスタントの推定)",
-        "aggregate-completeness.py --knowledge-graph: knowledge / doctrine / required-info / cross すべて exit 0"
+        "system-spec/{backend,database,auth,security,ui-ux,frontend,maintenance-ops,infrastructure}.md『本章での適用』節と『上流指針』表",
+        "aggregate-completeness.py --knowledge-graph 全 subgate exit_code 0"
       ]
     },
     "doc_freshness": {
       "verdict": "PASS",
       "auditor": "system-spec-doc-freshness-auditor",
       "component": "C08",
-      "summary": "C08 は SSOT (R4-audit-doc-freshness.md) を読み込んだうえで、4 軸だけで判定した。今回は C08 自身の判定も PASS である。層1 の validate-source-citation は exit 0。層2 では 8 target すべてが公式 host に到達し、記録した version / last_updated は公式の現行版と一致した (tanstack 5.103.1、react-router 8.4.0、hono-zod-validator 0.9.1、vitest 5.0.1、ASVS 5.0.0、D1 2026-06-08、Workers limits 2026-09-05、WCAG 2025-09-16)。欠落・非公式・世代落ち・確認時刻の欠落は 0 件で、鮮度未確認の target も無い。SSOT の外の所見 (リポジトリで実際に使う版との差、latest や master を指す可変 URL) は、verdict に算入せず medium / low として残す。",
+      "summary": "C08 は PASS。validate-source-citation.py は exit 0。targets 10 件と references 10 件は 1 対 1 で対応する。10 件すべてを WebFetch / WebSearch で公式ページに再照合し、version と更新日が現行版と一致した (TanStack Query 5.103.1、React Router 8.4.0、Hono 4.13.8、@hono/zod-validator 0.9.1、Vitest 5.0.1、OWASP ASVS 5.0.0、MDN・WCAG・Cloudflare の更新日)。非公式 host・未来日付・到達不能はいずれも 0 件。章の出典表の記載も fetched-references.json と逐語で一致した。",
       "evidence": [
-        "validate-source-citation.py exit 0 (C05 と C08 の両方で再実行)",
-        "C08 層2: 8/8 が公式で現行版と一致、finding 0 件",
-        "skills/run-system-spec-doc-fetch/prompts/R4-audit-doc-freshness.md (4 軸の定義。C08 は読み込み済みと申告)"
+        "validate-source-citation.py exit 0",
+        "retrieved_at=latest_checked_at=2026-09-19T12:40:44Z (監査時刻 13:03Z より前)"
       ]
     },
     "prompt_quality": {
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "installPath (system-spec-harness 0.1.14) の prompt 18 本すべてで、prompt-creator 2.1.7 の validate-prompt.py --input と verify-completeness.py --input を今回も実行し直し、すべて exit 0 だった。今日付けで変更された prompt は 0 本。",
-      "evidence": ["validate-prompt.py: 18/18 exit 0", "verify-completeness.py: 18/18 exit 0"]
+      "summary": "installPath (system-spec-harness 0.1.14) の prompt 18 本すべてで、prompt-creator 2.1.7 の validate-prompt.py --input と verify-completeness.py --input を実行し、すべて exit 0 だった。今日付けで変更された prompt は 0 本で、前サイクルの独立評価から変化は無い。",
+      "evidence": [
+        "validate-prompt.py --input: 18/18 exit 0",
+        "verify-completeness.py --input: 18/18 exit 0"
+      ]
     }
   },
   "gate_results": [
-    {"id": "G-matrix", "name": "validate-coverage-matrix --require-complete / (loop) / --require-foundation", "conditions": ["matrix_coverage", "foundation_trace"], "exit_code": 0},
-    {"id": "G-doc-sync", "name": "validate-spec-doc-sync", "conditions": ["foundation_trace"], "exit_code": 0},
-    {"id": "G-source-citation", "name": "validate-source-citation (C08 層1)", "conditions": ["doc_freshness"], "exit_code": 0},
-    {"id": "G-knowledge-graph", "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)", "conditions": ["design_knowledge_reflection", "matrix_coverage"], "exit_code": 0},
+    {"id": "G-matrix", "name": "validate-coverage-matrix --require-complete --require-basis --require-foundation", "conditions": ["matrix_coverage", "foundation_trace", "decision_guidance"], "exit_code": 0, "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす"},
+    {"id": "G-docsync", "name": "validate-spec-doc-sync", "conditions": ["foundation_trace"], "exit_code": 0},
+    {"id": "G-kg", "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)", "conditions": ["design_knowledge_reflection", "matrix_coverage"], "exit_code": 0},
+    {"id": "G-required-info-state", "name": "validate-knowledge-graph --profile required-info --state", "conditions": ["matrix_coverage"], "exit_code": 0, "stdout": "ungrounded_blocking_items=[]"},
+    {"id": "G-citation", "name": "validate-source-citation (C08)", "conditions": ["doc_freshness"], "exit_code": 0},
     {"id": "G-prompt", "name": "validate-prompt --input + verify-completeness --input (18 prompts)", "conditions": ["prompt_quality"], "exit_code": 0}
   ],
   "findings": [
-    {
-      "severity": "medium",
-      "bucket": "matrix_coverage",
-      "observation": "(C06 軸4b) 置き換え済みの qa-household-{ui-ux,backend,database,security,maintenance-ops}-web-001 が、basis=user-decision のまま qa_log に残っている。本文には推定値が入ったままで、superseded_by のような置き換えを示すフィールドも無い。確定セルからは辿れず、corrections[1].note と 00 章の『どのセルからも参照されていない質疑』の注記で開示されている。ただし qa_log を id で直接読む監査や実装では、利用者が確定した根拠と読み違える余地がある。",
-      "suggested_fix": "C01 (R4-reopen / apply-spec-transition) で、5 件の -001 に置き換え先 (superseded_by: qa-household-<cat>-web-004) を記録する。schema にフィールドが無ければ corrections に corrected_field=basis の訂正を加える。qa_log は追記型なので本文は消さない。plugin 側では、spec-state-contract に qa の置き換えを表す語彙を足すことを検討する。",
-      "evidence": ["spec-state.json qa_log[id=qa-household-*-web-001].basis / corrections[1].note", "system-spec/00-requirements-definition.md:220"]
-    },
-    {
-      "severity": "medium",
-      "bucket": "decision_guidance",
-      "observation": "(前回から継続) decisions の比較欄は決定のあと (12:02Z ごろ) に書き足したものだが、recommendation.latest_checked_at は質問した時刻 (11:19:20Z / 11:23:19Z) のままである。evidence_refs の出典を取得したのは 11:39:30Z で、この時刻より後である。",
-      "suggested_fix": "C01 R5-decision-guide で、latest_checked_at を比較欄と evidence を実際に確認した時刻 (date -u で計った値) に直す。利用者に提示した内容 (label と description) と、あとから書き足した比較欄を区別する note も付ける。",
-      "evidence": ["spec-state.json decisions[].recommendation.latest_checked_at", "fetched-references.json retrieved_at 11:39:30Z"]
-    },
-    {
-      "severity": "medium",
-      "bucket": "doc_freshness",
-      "observation": "(前回から継続。SSOT の 4 軸の外なので verdict には算入しない) react-router-searchparams (記録 8.4.0) と vitest-expect (記録 5.0.1) は公式の現行版と一致している。一方、リポジトリが解決しているのは react-router 7.18.3 と vitest 4.1.11 で、メジャーが 1 つ違う。hono-zod-validator の summary は採用版との差を書いているが、この 2 件の summary には書かれていない。",
-      "suggested_fix": "C02 (doc-fetch R3-record) で、2 件の summary に『採用版 (7.18.3 / 4.1.11) でも useSearchParams・toBe/toEqual の挙動が同じ』ことを CHANGELOG か v7/v4 のドキュメントで確かめた結果を書き足す。",
-      "evidence": ["pnpm-lock.yaml react-router@7.18.3 / vitest@4.1.11", "fetched-references.json react-router-searchparams / vitest-expect summary"]
-    },
-    {
-      "severity": "low",
-      "bucket": "doc_freshness",
-      "observation": "(前回から継続。C08 の SSOT 外の所見) tanstack-query の source_url は releases/latest を、owasp-asvs の source_url は master ブランチの README を指している。どちらも後から指す先が変わる URL で、記録した版を再現できない。",
-      "suggested_fix": "C02 で source_url を tag 固定の URL (releases/tag/v5.103.1、ASVS/blob/v5.0.0/README.md) に替える。",
-      "evidence": ["fetched-references.json tanstack-query-dependent-queries / owasp-asvs"]
-    },
-    {
-      "severity": "low",
-      "bucket": "matrix_coverage",
-      "observation": "(C07 low + 前回 C06 F2) 5 セルの qa_refs と章の『裏付け質疑』に、agent-inference の -003 が確定の裏付けと同じ扱いで並んでいる。また章は -004 の根拠の性質を『利用者が代替案を見たうえで明示選択した決定』と描画しているが、-004 の実態は承認と決定の範囲で agent が具体化したものである。",
-      "suggested_fix": "plugin 側の課題。spec-state-contract で qa_refs の意味 (参照の集合なのか、確定の裏付けなのか) を明文化する。C03 の basis の描画文言に『決定から具体化した』区分を足すことも検討する。",
-      "evidence": ["spec-state.json matrix.*.web.qa_refs", "system-spec/{ui-ux,backend,database,security,maintenance-ops}.md:18, :51-52"]
-    },
-    {
-      "severity": "low",
-      "bucket": "design_knowledge_reflection",
-      "observation": "security.md:113 と maintenance-ops.md:128 の『本章での適用』(ui-ux.md:134 にも一部) に、推定値 (1〜20 文字・制御文字、TRANSFER_PAIR_MAX_DAYS=3、20/21 文字の境界、既定は前年差が最大) が -003 への参照なしで書かれている。節には『アシスタントの推定』と表示され、非規範と宣言されている。",
-      "suggested_fix": "C01 で design_applications の本文から具体値を外し、『qa-household-<cat>-web-003 (agent 推定) の規則』という参照に替える。そのあと C03 で章を作り直す。",
-      "evidence": ["system-spec/security.md:113-115", "system-spec/maintenance-ops.md:128-130", "system-spec/ui-ux.md:134"]
-    },
-    {
-      "severity": "low",
-      "bucket": "decision_guidance",
-      "observation": "(前回から継続) 00-requirements-definition.md の意思決定支援の表で、cost_model が Python の dict 表記のまま出ている。",
-      "suggested_fix": "C03 (compile) の decisions 表の描画で、cost_model を『無料 / TCO: …』の形に整える。",
-      "evidence": ["system-spec/00-requirements-definition.md:226-231"]
-    },
-    {
-      "severity": "low",
-      "bucket": "foundation_trace",
-      "observation": "(前回から継続。C06 軸5 はこれに当たり、疑いの部分は反証した) 承認時に利用者が見たのは U1-U9 の要約と、全文ファイルへの案内だった。U1-U9 の digest は approval_log に残っていない。いまは scratchpad のファイルと mtime で再現できたが、scratchpad は消える。",
-      "suggested_fix": "C01 R0 で、承認時に提示した U1-U9 全文の digest (または snapshot) を approval_log に残す。",
-      "evidence": ["approval_log appr-foundation-household-cashflow-001", "scratchpad/foundation.json mtime 11:22:25Z"]
-    },
-    {
-      "severity": "info",
-      "bucket": "matrix_coverage",
-      "observation": "確認した観点: 5 セルの qa_ref が -004 に替わったこと。-004 の本文に推定値が含まれないこと。matrix と章から -001 への参照が消えたこと。reopen_log の理由と現状が一致すること。C06 の誘導の観点 (qa-household-decision-005 の文型) は、approval_log の 2 択提示で裏付けられており、違反ではない。",
-      "suggested_fix": "対応不要。"
-    },
-    {
-      "severity": "info",
-      "bucket": "doc_freshness",
-      "observation": "確認した観点: C08 が SSOT を読み込み、4 軸だけで PASS と判定したこと (8/8 が公式で現行版)。",
-      "suggested_fix": "対応不要。"
-    },
-    {
-      "severity": "info",
-      "bucket": "prompt_quality",
-      "observation": "確認した観点: installPath 0.1.14 の prompt 18 本で、validate-prompt と verify-completeness がすべて exit 0。",
-      "suggested_fix": "対応不要。"
-    }
+    {"severity": "medium", "bucket": "matrix_coverage", "observation": "(C06 F1、high を medium と裁定) 利用者が確認していない agent-inference が 5 件ある。qa-ai-{database,security,backend,ui-ux,maintenance-ops}-web-003 で、中身は採番方式、固定 4 MiB の report/paste request budget と 4KB の action budget、段階の優先順位と使用データの数え方、選択の既定値と比較の既定、境界テスト 4 件である。5 件とも承認 (12:34:50Z) の後の 12:36:49Z に記録され、確定セルの qa_refs に並んでいる。basis は正直に宣言され、各セルの主たる根拠は -001 なので、契約違反ではない。", "suggested_fix": "C01 R3-reask で、5 件のうち少なくとも security-web-003 (上限値) と backend-web-003 (優先順位・数え方) を AskUserQuestion で確認する。確認後は -004 (user-decision) に置き換える。dev-graph へ渡すときは、-003 を『未確認の既定値』として扱うよう明記する。", "evidence": ["spec-state.json qa_log[qa-ai-*-web-003] basis=agent-inference", "C06 finding #1"]},
+    {"severity": "resolved", "bucket": "matrix_coverage", "observation": "qa-ai-security-web-003 の旧推定上限は契約適合レポートを転送境界で拒否しうる不整合があった。その後、実装と仕様を固定 4 MiB (4,194,304 bytes) の request budget に同期し、1 byte 超過を JSON 読み込み前に 413 とし、個別 field・配列は contract validator が別に検証する責務へ統一した。", "suggested_fix": "解消済み。固定 4 MiB の境界テストと contract validator のテストを維持する。", "evidence": ["system-spec/spec-state.json qa_log[qa-ai-security-web-003]", "system-spec/security.md", "packages/api/src/ai/contract.ts", "packages/api/src/ai-screen.integration.test.ts"]},
+    {"severity": "medium", "bucket": "matrix_coverage", "observation": "(C06 F2) 確定セルの主たる根拠 qa-ai-*-web-001 は basis=user-decision で、章には『利用者が代替案を見たうえで明示選択した決定』と表示される。しかし実態は、承認の 2 分後 (12:36:49Z) に agent が承認と決定の範囲で具体化したものである。runtimeSchemaGuard の必須列への追加、他人の id に 404 を返すこと、キャンセル済みトークンの 401、TanStack Query の無効化の単位などは、利用者が選んだ値ではない。前サイクルでも同じ型が low で挙がっており、今回も解消していない。", "suggested_fix": "plugin 側の課題。spec-state-contract の basis に『決定から具体化した』区分 (例: decision-derived) を足し、C03 の描画文言を分ける。それまでは -001 の provenance を、章の『根拠の性質』欄にも併記する。", "evidence": ["system-spec/00-requirements-definition.md:103-199『根拠の性質』行", "C06 finding #2"]},
+    {"severity": "medium", "bucket": "foundation_trace", "observation": "U1-U9 承認の質問 (12:33:25Z) が示したのは要約で、U4『O1-O5 (各ゴールのテスト測定)』、U8『制約 C1-C8』、U9『具体策 I1-I7』は見出しだけだった。前サイクルでは全文ファイルの場所も示していたが、今回はそれも無い。書き足しが無いことは検算した (foundation-ai.json と同一) が、C1-C8 と I1-I7 と O/S の本文を、利用者が見て承認したとは言えない。", "suggested_fix": "C01 R0-foundation の承認手順で、全文 (または全文ファイルのパス) の提示を必須にする。本サイクルでは、plan に進む前に C1-C8・I1-I7・O1-O5・S1-S6 の本文を利用者に一度見せ、異論が無いことを approval_log に追記すると確実になる。", "evidence": ["セッション jsonl AskUserQuestion 12:33:25Z の question 本文", "scratchpad/foundation-ai.json mtime 12:33:07Z"]},
+    {"severity": "low", "bucket": "foundation_trace", "observation": "キャンセル済みトークンを拒否するときの状態コードが章ごとに揃っていない。S3 は『401 / 410 相当』で、auth.md と auth-web-001 は『期限切れ・受信済みと同じ 401』に固定している。", "suggested_fix": "C01 で S3 の文言を 401 に揃える (既存の agentGuard と一致させる) か、410 を採るなら auth-web-001 を直し、C03 で章を作り直す。", "evidence": ["requirements_foundation.success_criteria S3", "system-spec/auth.md 『本章での適用』"]},
+    {"severity": "low", "bucket": "decision_guidance", "observation": "qa-ai-decision-001〜008 の provenance は『選択肢と推奨案・preview 提示あり』と書くだけで、退けた案の名前を残していない。『AI が進捗を送る API』『キャンセル=削除』『依頼なしで取り込み』などである。一部は scope.out から逆算できるが、そこに無い案 (例: 既存 3 状態の名前だけ変える) は失われている。", "suggested_fix": "C01 R2 で、user-decision の qa entry に提示した選択肢のラベルを残す (question 本文への追記か、options フィールドの追加)。", "evidence": ["セッション jsonl AskUserQuestion 12:23:43Z / 12:27:58Z", "spec-state.json qa_log[qa-ai-decision-00x].provenance"]},
+    {"severity": "low", "bucket": "evaluator_io", "observation": "system-spec/completeness-findings.json に残っているのは前サイクル (家計収支、appr-foundation-household-cashflow-001) の PASS レポートで、本サイクルの評価ではない。同じ内容が archive/2026-09-19-household-screen/ に保存されている。", "suggested_fix": "本レポートで system-spec/completeness-findings.json を置き換える (writer は caller)。", "evidence": ["system-spec/completeness-findings.json foundation_trace.summary"]},
+    {"severity": "info", "bucket": "decision_guidance", "observation": "確認した観点: decisions[]=0 は spec-state-contract.md:169-178 の登録基準どおりである。本サイクルに技術選定の needs_guidance は無い。8 決定はすべて、利用者が 2〜3 択から明示選択したものだった。", "suggested_fix": "対応不要。"},
+    {"severity": "info", "bucket": "design_knowledge_reflection", "observation": "確認した観点: 8 章の『本章での適用』と doctrine 表が、どれも章固有の確定内容 (列の選定・guard の位置・段の順・境界テスト) に具体的に接地していた。汎用ポインタだけの章は 0。", "suggested_fix": "対応不要。"},
+    {"severity": "info", "bucket": "doc_freshness", "observation": "確認した観点: C08 が 10/10 件を公式の現行版と照合し、一致した。", "suggested_fix": "対応不要。"},
+    {"severity": "info", "bucket": "prompt_quality", "observation": "確認した観点: prompt 18 本の validator がすべて exit 0。", "suggested_fix": "対応不要。"}
   ],
   "gaps": []
 }

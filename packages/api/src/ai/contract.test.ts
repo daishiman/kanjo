@@ -61,14 +61,100 @@ const chartsWith = (available: string[]): ChartResult[] =>
   }));
 const validInput = () => ({
   generatedBy: 'test',
+  analysisDepth: 'standard' as const,
   summary: `${SUMMARY} 図2が示すとおり上位2科目で6割を占める。`,
   keyFindings: keyFindings(),
   sections: fiveSections(),
   charts: [{ catalogId: 'composition', caption: '上位2科目(通信費・外注費)で経費の62%を占める' }],
+  contextAnalysis: {
+    externalResearch: 'off' as const,
+    questionType: 'trend' as const,
+    question: { decision: '費用を見直す', metric: '通信費', comparison: '直近3ヶ月', range: '対象期間' },
+    interviewFacts: [],
+    statisticalFacts: [],
+    interpretations: [],
+    externalEvidence: [],
+    causalHypotheses: [],
+  },
 });
 const PERIOD = { from: '2026-08', to: '2026-08' };
 
 describe('AI分析レポートの契約', () => {
+  it('v4は深度と事実→解釈の参照を必須にする', () => {
+    const base = validInput();
+    expect(reportInputSchema.safeParse({ ...base, analysisDepth: undefined }).success).toBe(false);
+    // 背景分析は兄弟の節と同じく任意。契約 v3 のまま送ってくるレポートを 400 にしない
+    expect(reportInputSchema.safeParse({ ...base, contextAnalysis: undefined }).success).toBe(true);
+    const withBrokenRef = {
+      ...base,
+      contextAnalysis: {
+        ...base.contextAnalysis,
+        statisticalFacts: [
+          {
+            id: 'fact-1',
+            statement: '通信費は3ヶ月連続で増加している',
+            basis: 'biz.expenseByAccount',
+            evidenceRefs: ['biz.expenseByAccount'],
+          },
+        ],
+        interpretations: [
+          { statement: '固定費化した可能性がある', factRefs: ['missing'], limitation: '契約内容は未確認' },
+        ],
+      },
+    };
+    expect(reportInputSchema.safeParse(withBrokenRef).success).toBe(false);
+  });
+
+  it('背景仮説は主/対立と根拠種別の参照先を整合させる', () => {
+    const base = validInput();
+    const hypothesis = {
+      role: 'primary' as const,
+      hypothesis: '利用者が回答した事業変化と通信費が関連した可能性がある',
+      cause: '新しい事業の開始',
+      mechanism: '回線を追加した',
+      outcome: '通信費が増えた',
+      evidenceFor: ['開始後に通信費が増えた'],
+      evidenceAgainst: ['回線別請求は未確認'],
+      confounders: ['単価改定でも説明できる'],
+      falsificationCondition: '回線が追加されていない',
+      evidenceLevel: 'user_reported' as const,
+      evidenceRefs: ['interview-change'],
+      confidence: 'low' as const,
+      validationAction: '通信契約を確認する',
+    };
+    const context = {
+      ...base.contextAnalysis,
+      interviewFacts: [
+        {
+          id: 'interview-change',
+          source: 'user_reported' as const,
+          question: '期間中の変化',
+          answer: '新しい事業を始めた',
+        },
+      ],
+      causalHypotheses: [hypothesis],
+    };
+    expect(reportInputSchema.safeParse({ ...base, contextAnalysis: context }).success).toBe(false);
+    expect(
+      reportInputSchema.safeParse({
+        ...base,
+        contextAnalysis: {
+          ...context,
+          causalHypotheses: [hypothesis, { ...hypothesis, role: 'alternative', evidenceRefs: ['missing'] }],
+        },
+      }).success,
+    ).toBe(false);
+    expect(
+      reportInputSchema.safeParse({
+        ...base,
+        contextAnalysis: {
+          ...context,
+          causalHypotheses: [hypothesis, { ...hypothesis, role: 'alternative' }],
+        },
+      }).success,
+    ).toBe(true);
+  });
+
   it('期間は 開始年月<=終了年月 かつ 61ヶ月以内だけを受け付ける', () => {
     expect(periodSchema.safeParse({ from: '2026-08', to: '2026-08' }).success).toBe(true);
     expect(periodSchema.safeParse({ from: '2025-08', to: '2026-08' }).success).toBe(true);
@@ -227,7 +313,7 @@ describe('AI分析レポートの契約', () => {
     });
     const r = normalizeReport(input, { from: '2026-01', to: '2026-12' }, chartsWith([]));
     if (!r.ok) throw new Error(r.issues.join('\n'));
-    expect(r.body.version).toBe(3);
+    expect(r.body.version).toBe(4);
     expect(r.body.sections.map((x) => x.id)).toEqual([...SECTION_IDS]);
     expect(r.body.title).toBe('2026年1月〜2026年12月(12ヶ月・年次)の会計分析');
     expect(r.body.summary).toBe(SUMMARY);
@@ -276,7 +362,7 @@ describe('AI分析レポートの契約', () => {
     expect(r.body.followUp?.body).toContain('Adobe');
   });
 
-  it('保存済みの旧形式(version 1 / 2)も v3 の形に読み替える', () => {
+  it('保存済みの旧形式(version 1 / 2)も v4 の形に読み替える', () => {
     const b = upgradeBody({
       version: 1,
       generatedBy: 'x',
@@ -285,7 +371,7 @@ describe('AI分析レポートの契約', () => {
       sections: [],
       dataGaps: ['a'],
     });
-    expect(b.version).toBe(3);
+    expect(b.version).toBe(4);
     expect(b.keyFindings.improvements).toEqual([]);
     expect(b.keyFindings.notes.wasted).toBe('');
     expect(b.charts).toEqual([]);
@@ -323,6 +409,7 @@ describe('AI分析レポートの契約', () => {
       token: 'kjo_abc',
       period: { from: '2025-08', to: '2026-08' },
       expiresAt: '2026-08-26T01:02:00.000Z',
+      target: 'claude_code',
       supplement: '家賃は事業用に按分済み',
       parentReportId: 'r0',
     });
@@ -335,5 +422,42 @@ describe('AI分析レポートの契約', () => {
     expect(p).toContain('データ不足');
     expect(p).toContain('図N');
     expect(p).toContain('expectedEffect');
+  });
+
+  it('背景分析の無いレポートを受け付け、空の節を作らず null で残す', () => {
+    const { contextAnalysis: _omitted, ...withoutContext } = validInput();
+    const parsed = reportInputSchema.safeParse(withoutContext);
+    expect(parsed.success).toBe(true);
+    const r = normalizeReport(
+      parsed.success ? parsed.data : (withoutContext as never),
+      PERIOD,
+      chartsWith(['composition']),
+    );
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.body.contextAnalysis).toBeNull();
+    // 他の節は今までどおり保存される (任意化が本文全体を落としていないことの確認)
+    expect(r.body.sections).toHaveLength(SECTION_IDS.length);
+  });
+
+  it('指示文はコピー先ごとに道具名と Skill の置き場所が変わる', () => {
+    const base = {
+      origin: 'http://localhost:8787',
+      taskId: 't1',
+      token: 'kjo_abc',
+      period: { from: '2026-08', to: '2026-08' },
+      expiresAt: '2026-08-26T01:02:00.000Z',
+    };
+    const claude = buildPrompt({ ...base, target: 'claude_code' });
+    const codex = buildPrompt({ ...base, target: 'codex' });
+    expect(claude).toContain('Claude Code で');
+    expect(claude).toContain('.claude/skills/run-kanjo-accounting-report/SKILL.md');
+    expect(codex).toContain('Codex で');
+    expect(codex).toContain('.agents/skills/run-kanjo-accounting-report/SKILL.md');
+    expect(claude).not.toBe(codex);
+    // 変わるのは宛先の1行だけ。トークン・期間・期限・守ることは同じ依頼のまま
+    const rest = (p: string) => p.split('\n').slice(1).join('\n');
+    expect(rest(claude)).toBe(rest(codex));
+    expect(rest(claude)).toContain('Bearer kjo_abc');
   });
 });

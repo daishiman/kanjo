@@ -1,0 +1,538 @@
+/* AI分析: 色は styles.css のトークンだけを使う (直書き色を置かない)。 */
+.ai {
+  display: grid;
+  /* 横長の表(.scroll-x)が main を押し広げないよう列の下限を 0 にする */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.ai .card {
+  margin: 0;
+}
+
+.ai-title-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ai-title-row .page-heading {
+  flex: 1;
+}
+
+.ai-title-row > .ai-howto-link {
+  flex: none;
+  margin-top: 6px;
+  font-size: var(--fs-sm);
+}
+
+.ai-title-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ai-back-link {
+  width: fit-content;
+  min-height: var(--tap-target-min);
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.ai-howto {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 8px 12px;
+}
+
+.ai-howto summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.ai-howto ol {
+  margin: 8px 0 0;
+  padding-left: 1.4em;
+  line-height: var(--line-height-body);
+}
+
+.ai-intro h2 {
+  margin: 0 0 4px;
+  font-size: var(--fs-xl);
+}
+
+.ai-intro p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.ai-step-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-bottom: 12px;
+}
+
+.ai-step-head h2 {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+
+.ai-step-head .sub {
+  margin: 0;
+}
+
+/* 1. 依頼: 左に期間と補足指示、右に使用するデータ */
+.ai-request-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(14rem, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.ai-request-main {
+  display: grid;
+  gap: 12px;
+}
+
+.ai-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.ai-period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-period-custom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ai-period-range {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+
+.ai-supplement {
+  display: grid;
+  gap: 6px;
+}
+
+.ai-supplement textarea,
+.ai-supplement input[type="text"],
+.ai-supplement select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ai-external-research {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--tap-target-min);
+  font-weight: 600;
+}
+
+.ai-supplement-count {
+  align-self: flex-end;
+}
+
+.ai-supplement-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+}
+
+.ai-inventory {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  padding: 12px;
+}
+
+.ai-inventory h3 {
+  margin: 0 0 8px;
+  font-size: var(--fs-md);
+}
+
+.ai-inventory-list {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 12px;
+  margin: 0 0 8px;
+}
+
+.ai-inventory-list dt {
+  color: var(--ink-soft);
+}
+
+.ai-inventory-list dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-prompt-fallback,
+.ai-dataset {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+}
+
+/* 2. 実行中 */
+.ai-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-progress-bar {
+  display: inline-block;
+  width: 64px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--row-group);
+  overflow: hidden;
+}
+
+.ai-progress-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.ai-task-summary {
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+td.ai-task-summary {
+  display: table-cell;
+}
+
+.ai-run-table tbody tr {
+  cursor: pointer;
+}
+
+.ai-run-table tbody tr:focus-visible,
+.ai-report-table tbody tr:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.ai-row-selected > td {
+  background: var(--biz-soft);
+}
+
+.ai-row-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ai-task-hero {
+  display: grid;
+  gap: 16px;
+}
+
+.ai-task-hero h2 {
+  margin: 4px 0 10px;
+  font-size: var(--fs-xl);
+}
+
+.ai-task-meta,
+.ai-context-question,
+.ai-context-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.ai-task-meta > div,
+.ai-context-question > div,
+.ai-context-facts > div {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.ai-task-meta dt,
+.ai-context-question dt,
+.ai-context-facts dt,
+.ai-causal-evidence dt {
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+}
+
+.ai-task-meta dd,
+.ai-context-question dd,
+.ai-context-facts dd,
+.ai-causal-evidence dd {
+  margin: 4px 0 0;
+}
+
+.ai-next-action {
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  padding: 12px;
+}
+
+.ai-next-action h3,
+.ai-next-action p {
+  margin: 0 0 8px;
+}
+
+.ai-causal-list,
+.ai-source-list,
+.ai-context-layer-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+.ai-causal-list > li,
+.ai-source-list > li {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.ai-causal-list header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-causal-list header strong {
+  margin-right: auto;
+}
+
+.ai-causal-flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.ai-causal-flow > span:not(.ai-causal-arrow) {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+}
+
+.ai-causal-flow small {
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.ai-causal-arrow {
+  align-self: center;
+  position: relative;
+  width: 30px;
+  border-top: 2px dashed var(--line-strong);
+}
+
+.ai-causal-arrow::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  right: 0;
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid var(--line-strong);
+  border-right: 2px solid var(--line-strong);
+  transform: rotate(45deg);
+}
+
+.ai-causal-evidence {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.ai-causal-evidence > div {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.ai-causal-evidence ul {
+  margin: 0;
+  padding-left: 1.3em;
+}
+
+.ai-source-list p {
+  margin: 4px 0 0;
+}
+
+.ai-context-layer-list li {
+  margin-bottom: 8px;
+}
+
+.ai-context-layer-list p {
+  margin: 4px 0 0;
+}
+
+/* 実行中は「動いている」ことを待機中と区別する (文字は常に段階名) */
+.pill.ai-running {
+  background: var(--biz-soft);
+  color: var(--biz-strong);
+  border-color: var(--biz-soft-line);
+}
+
+.ai-panel {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 12px;
+}
+
+.ai-panel h3 {
+  margin: 0 0 8px;
+  font-size: var(--fs-md);
+}
+
+.ai-panel textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ai-issues {
+  margin: 4px 0 0;
+  padding-left: 1.2em;
+  font-size: var(--fs-2xs);
+}
+
+.ai-report-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ai-report-head h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+
+.ai-report-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.ai-report-meta dt {
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+}
+
+.ai-report-meta dd {
+  margin: 0;
+}
+
+.ai-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+
+.ai-tabs button {
+  min-height: var(--tap-target-min);
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--ink-soft);
+  font: inherit;
+  cursor: pointer;
+}
+
+.ai-tabs button.on {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.ai-tabs button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.ai-highlights,
+.ai-actions,
+.ai-related {
+  margin: 0;
+  padding-left: 1.4em;
+  line-height: var(--line-height-body);
+}
+
+.ai-highlights li {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 900px) {
+  .ai-request-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .ai-title-row {
+    display: grid;
+  }
+
+  .ai-title-actions {
+    justify-content: flex-start;
+  }
+
+  .ai-causal-flow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ai-causal-arrow {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+}
+
+/* 状態の文 (<output>) は既定で inline。段落と同じく行を取る */
+.ai output {
+  display: block;
+}

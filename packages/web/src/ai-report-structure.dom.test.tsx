@@ -68,7 +68,9 @@ describe('本文の構造化', () => {
 
 describe('要点カードの読む順', () => {
   it('事実は項目名つきで1文1行になり、根拠は畳んだ中に入る', () => {
-    const { container } = render(<FindingList title="改善すべき点" items={[finding()]} note="" />);
+    const { container } = render(
+      <FindingList title="改善すべき点" items={[finding()]} note="" depth="standard" />,
+    );
     const part = container.querySelector('.finding-part');
     expect(part?.querySelector('.finding-tag')?.textContent).toBe('事実');
     expect(part?.querySelectorAll('ul.prose-lines > li').length).toBe(3);
@@ -82,14 +84,14 @@ describe('要点カードの読む順', () => {
     expect(container.querySelector('.finding-card > .finding-basis')).toBeNull();
   });
 
-  it('優先度が高くない要点は解釈も畳み、最初に見えるのは事実と次の一手だけにする', () => {
+  it('標準は優先度に関わらず事実・解釈・次の一手を見せ、計算根拠だけ畳む', () => {
     const { container } = render(
-      <FindingList title="無駄なコスト" items={[finding({ priority: 'low' })]} note="" />,
+      <FindingList title="無駄なコスト" items={[finding({ priority: 'low' })]} note="" depth="standard" />,
     );
     const tags = [...container.querySelectorAll('.finding-tag')].map((el) => el.textContent);
-    expect(tags).toEqual(['事実']);
+    expect(tags).toEqual(['事実', '解釈']);
     const more = container.querySelector('details.finding-more');
-    expect(more?.textContent).toContain('妻名義の収入が');
+    expect(more?.textContent).toContain('household.byOwner');
     // 次の一手は畳まず、カードの中に残す
     expect(container.querySelector('.finding-action')?.textContent).toContain(
       '設定画面で4機関に名義を割り当てる',
@@ -97,13 +99,33 @@ describe('要点カードの読む順', () => {
   });
 
   it('優先度が高い要点だけは解釈も最初から見せる', () => {
-    const { container } = render(<FindingList title="改善すべき点" items={[finding()]} note="" />);
+    const { container } = render(
+      <FindingList title="改善すべき点" items={[finding()]} note="" depth="standard" />,
+    );
     const tags = [...container.querySelectorAll('.finding-tag')].map((el) => el.textContent);
     expect(tags).toEqual(['事実', '解釈']);
   });
 
+  it('簡潔は解釈を畳み、詳細は計算根拠まで展開する', () => {
+    const concise = render(<FindingList title="改善" items={[finding()]} note="" depth="concise" />);
+    expect([...concise.container.querySelectorAll('.finding-tag')].map((el) => el.textContent)).toEqual([
+      '事実',
+    ]);
+    concise.unmount();
+    const detailed = render(<FindingList title="改善" items={[finding()]} note="" depth="detailed" />);
+    expect(detailed.container.querySelector('.finding-card > .finding-basis')).toBeTruthy();
+    expect(detailed.container.querySelector('details.finding-more')).toBeNull();
+  });
+
   it('0件の区分は理由を添えて1行で終える', () => {
-    render(<FindingList title="すぐ効く対策" items={[]} note="今月中に金額が確定する対策が無い" />);
+    render(
+      <FindingList
+        title="すぐ効く対策"
+        items={[]}
+        note="今月中に金額が確定する対策が無い"
+        depth="standard"
+      />,
+    );
     expect(screen.getByText('なし: 今月中に金額が確定する対策が無い')).toBeTruthy();
   });
 });

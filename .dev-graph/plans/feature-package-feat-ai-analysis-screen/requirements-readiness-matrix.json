@@ -1,0 +1,221 @@
+{
+ "feature_id": "feat-ai-analysis-screen",
+ "gates": {
+  "C08": "complete",
+  "C11": true,
+  "validate_system_plan": "pass"
+ },
+ "graph_revision": 3,
+ "graph_snapshot_digest": "c7a35446134ed51850be3ca8bf4558c2e0279be891694241527db4c2044d0ae4",
+ "missing_sections": [],
+ "nodes": [
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [],
+   "domain": "documentation",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P01",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P01",
+   "resource_scope_count": 1,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P01"
+   ],
+   "domain": "documentation",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P02",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P02",
+   "resource_scope_count": 1,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P02"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P03",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P03",
+   "resource_scope_count": 1,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P03"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P04",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P04",
+   "resource_scope_count": 4,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P04"
+   ],
+   "domain": "frontend",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P05",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P05",
+   "resource_scope_count": 20,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P05"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P06",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P06",
+   "resource_scope_count": 1,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P06"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P07",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P07",
+   "resource_scope_count": 1,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P07"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P08",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P08",
+   "resource_scope_count": 1,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P08"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P09",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P09",
+   "resource_scope_count": 1,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P09"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P10",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P10",
+   "resource_scope_count": 1,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P10"
+   ],
+   "domain": "documentation",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P11",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P11",
+   "resource_scope_count": 1,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P11"
+   ],
+   "domain": "documentation",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P12",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P12",
+   "resource_scope_count": 4,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-AI-P12"
+   ],
+   "domain": "operations",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-AI-P13",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P13",
+   "resource_scope_count": 1,
+   "source_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+   "source_version": "0.1.0"
+  }
+ ],
+ "plan_validated_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+ "status": "ready"
+}

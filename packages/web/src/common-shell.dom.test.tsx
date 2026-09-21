@@ -179,7 +179,10 @@ describe('全画面共通シェル', () => {
   it('信頼の前提と確認先を全画面のフッターに残す', () => {
     renderLayout('/');
     const footer = screen.getByRole('contentinfo');
-    expect(footer.textContent).toContain('外部送信しません');
+    // AI分析は利用者の手で集計データを外へ渡す。「外部送信しません」では嘘になるので、
+    // 「自動では送らない」「AI実行時は渡す」の2つを並べて残す (spec-ai-analysis-screen)
+    expect(footer.textContent).toContain('アプリからは自動送信しません');
+    expect(footer.textContent).toContain('AI実行時は確認した集計データを選択したAIへ渡します');
     expect(footer.textContent).toContain('税務上の正本はfreee');
     expect(footer.textContent).toContain('毎晩バックアップ');
     expect(within(footer).getByRole('link', { name: 'データ出典' })).toBeTruthy();

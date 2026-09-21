@@ -9,6 +9,7 @@ import {
   PASSWORD_LOGIN_RATE_LIMIT_DEFAULTS,
   cleanupStalePasswordLoginRateLimits,
 } from './login-rate-limit.js';
+import { splitMigrationStatements } from './migration-test-support.js';
 import { SCHEDULED_MAINTENANCE_D1_PLAN } from './scheduled-maintenance-budget.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
@@ -25,11 +26,7 @@ async function applyMigrations(database: D1Database): Promise<void> {
   for (const filename of readdirSync(migrationsDir)
     .filter((entry) => entry.endsWith('.sql'))
     .sort()) {
-    const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-      .replace(/^\s*--.*$/gm, '')
-      .split(';')
-      .map((sql) => sql.trim())
-      .filter(Boolean);
+    const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
     for (const sql of statements) await database.prepare(sql).run();
   }
 }

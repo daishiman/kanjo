@@ -1,5 +1,8 @@
 /** 金額・率の表示整形(HTML版の表記を踏襲) */
 
+// 月の表記は core が正本 (core/month.ts)。web 側からはここ経由で引く
+export { monthLabel, monthShort } from '@kanjo/core';
+
 export const yen = (v: number | null | undefined): string =>
   v == null ? '—' : `¥${Math.round(v).toLocaleString('ja-JP')}`;
 
@@ -29,13 +32,6 @@ export const gainCls = (v: number | null | undefined): string =>
 /** 増減の色クラス(支出文脈: 増=赤 pos / 減=緑 neg) */
 export const deltaCls = (v: number | null | undefined): string =>
   v == null || v === 0 ? '' : v > 0 ? 'pos' : 'neg';
-
-export const monthLabel = (m: string): string => {
-  const [y, mm] = m.split('-');
-  return `${y}年${Number(mm)}月`;
-};
-
-export const monthShort = (m: string): string => `${Number(m.split('-')[1])}月`;
 
 /** ISO日時 → 「2026/8/25 14:30」(閲覧者のローカル時刻)。不正・未記録は「—」 */
 export const dateTime = (iso: string | null | undefined): string => {

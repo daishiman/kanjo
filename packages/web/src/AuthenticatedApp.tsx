@@ -9,6 +9,13 @@ import { APP_ROUTES, type AppRouteId, LEGACY_ROUTE_REDIRECTS } from './routeMeta
 const ImprovementPage = lazy(() =>
   import('./pages/Improvement.js').then((module) => ({ default: module.ImprovementPage })),
 );
+const AiTaskDetailPage = lazy(() =>
+  import('./pages/Ai.js').then((module) => ({ default: module.AiTaskDetailPage })),
+);
+const AiReportLibraryPage = lazy(() =>
+  import('./pages/Ai.js').then((module) => ({ default: module.AiReportLibraryPage })),
+);
+const AiReportPage = lazy(() => import('./pages/Ai.js').then((module) => ({ default: module.AiReportPage })));
 
 export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
   overview: lazy(() => import('./pages/Overview.js').then((module) => ({ default: module.OverviewPage }))),
@@ -43,6 +50,9 @@ export function AuthenticatedApp() {
           }
         >
           <Routes>
+            <Route path="/ai/tasks/:taskId" element={<AiTaskDetailPage />} />
+            <Route path="/ai/reports" element={<AiReportLibraryPage />} />
+            <Route path="/ai/reports/:reportId" element={<AiReportPage />} />
             {APP_ROUTES.map((route) => {
               const Component = ROUTE_COMPONENTS[route.id];
               return <Route key={route.id} path={route.path} element={<Component />} />;

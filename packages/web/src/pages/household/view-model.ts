@@ -5,7 +5,13 @@
  * URL 状態の解釈、符号と率の表記、前年との比較の文章。DOM を持たない純関数にして、
  * 文言の分岐 (黒字/収支、増加/減少/横ばい、比較不能) をテストで網羅できるようにする。
  */
-import { HOUSEHOLD_CATEGORY_KEYS, type HouseholdCategoryKey, type HouseholdSummary } from '@kanjo/core';
+import {
+  HOUSEHOLD_CATEGORY_KEYS,
+  type HouseholdCategoryKey,
+  type HouseholdSummary,
+  monthLabel,
+  monthShort,
+} from '@kanjo/core';
 import type { PeriodSelection } from '../../period.js';
 
 export type HouseholdSeg = 'all' | 'biz' | 'personal';
@@ -123,7 +129,7 @@ export function comparisonSentence(change: HouseholdSummary['summary']['change']
 /** 横軸の月ラベル。期間の最初の月と 1 月にだけ年を添える (spec §4.4) */
 export function axisMonthLabel(month: string, index: number): string | string[] {
   const [y, m] = month.split('-');
-  const label = `${Number(m)}月`;
+  const label = monthShort(month);
   return index === 0 || m === '01' ? [label, y ?? ''] : label;
 }
 
@@ -143,11 +149,7 @@ export function adjacentMonth(months: readonly string[], current: string, step: 
 /** 期間の表記 `2025年9月-2026年8月` (表の列の副題) */
 export function rangeText(range: { from: string; to: string } | null): string {
   if (!range) return '';
-  const f = (m: string) => {
-    const [y, mm] = m.split('-');
-    return `${y}年${Number(mm)}月`;
-  };
-  return `${f(range.from)}-${f(range.to)}`;
+  return `${monthLabel(range.from)}-${monthLabel(range.to)}`;
 }
 
 /** 前年同期間 (12 か月前へずらす) */

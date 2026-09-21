@@ -1,0 +1,48 @@
+{
+ "feature_id": "feat-ai-analysis-screen",
+ "feature_package_id": "feature-package/feat-ai-analysis-screen",
+ "graph_revision": 3,
+ "graph_snapshot_digest": "c7a35446134ed51850be3ca8bf4558c2e0279be891694241527db4c2044d0ae4",
+ "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+ "handoff_target": "task-graph",
+ "implementation_code_generated": 0,
+ "package_reference": {
+  "registration_receipt": ".dev-graph/plans/feature-package-feat-ai-analysis-screen/dev-graph-registration-receipt.json",
+  "system_build_handoff": ".dev-graph/plans/feature-package-feat-ai-analysis-screen/system-build-handoff.json",
+  "task_graph": ".dev-graph/plans/feature-package-feat-ai-analysis-screen/task-graph.json"
+ },
+ "plan_validated_digest": "dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+ "readiness_matrix": "requirements-readiness-matrix.json",
+ "registered_node_ids": [
+  "SYS-AI-P01",
+  "SYS-AI-P02",
+  "SYS-AI-P03",
+  "SYS-AI-P04",
+  "SYS-AI-P05",
+  "SYS-AI-P06",
+  "SYS-AI-P07",
+  "SYS-AI-P08",
+  "SYS-AI-P09",
+  "SYS-AI-P10",
+  "SYS-AI-P11",
+  "SYS-AI-P12",
+  "SYS-AI-P13"
+ ],
+ "repository_id": "github:daishiman/kanjo",
+ "schema_version": "1.0.0",
+ "task_artifacts": [
+  "tasks/feat-ai-analysis-screen/sys-ai-p01.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p02.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p03.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p04.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p05.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p06.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p07.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p08.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p09.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p10.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p11.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p12.md",
+  "tasks/feat-ai-analysis-screen/sys-ai-p13.md"
+ ]
+}

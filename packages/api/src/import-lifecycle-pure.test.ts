@@ -718,6 +718,9 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/tradeoff'],
       // コピー記録は「いつ操作したか」だけで、記帳の正本に触れない。
       ['POST', '/api/ai/tasks/1/copied'],
+      // 依頼の取り消し・再実行も ai_tasks の自分の行だけを触り、記帳の正本には触れない。
+      ['POST', '/api/ai/tasks/1/cancel'],
+      ['POST', '/api/ai/tasks/1/retry'],
       // 診断の対応状態も action_key ごとの判断記録だけ(ADR-002)。明細を読んでから書く
       // read-modify-write ではなく、総収支の判断表 (duplicate_verdicts) にも触れない。
       ['PATCH', '/api/diagnosis/actions/fixed_cost_review'],
@@ -817,6 +820,8 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/tradeoff',
       'POST /api/ai/tasks',
       'POST /api/ai/tasks/:id/copied',
+      'POST /api/ai/tasks/:id/cancel',
+      'POST /api/ai/tasks/:id/retry',
       'POST /api/ai/tasks/:id/paste',
       'POST /api/ai/tasks/:id/report',
       'PUT /api/ai/reports/:id/archive',

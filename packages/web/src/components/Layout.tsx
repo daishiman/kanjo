@@ -72,7 +72,9 @@ function currentLocation(pathname: string, locked: boolean) {
   if (analysis) return { group: '確認' as const, labels: ['支出分析', analysis.label] };
 
   const route = APP_ROUTES.find((candidate) =>
-    candidate.path === '/' ? pathname === '/' : pathname === candidate.path,
+    candidate.path === '/'
+      ? pathname === '/'
+      : pathname === candidate.path || pathname.startsWith(`${candidate.path}/`),
   );
   if (!route) return { group: '管理' as const, labels: ['ページ'] };
   return { group: ROUTE_GROUP[route.id], labels: [route.label] };
@@ -486,7 +488,7 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
         <div className="footer-trust">
           <span>
             <UiIcon name="lock" className="trust-icon" />
-            取込データは外部送信しません
+            アプリからは自動送信しません。AI実行時は確認した集計データを選択したAIへ渡します
           </span>
           <span>
             <UiIcon name="badge-check" className="trust-icon" />

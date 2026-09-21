@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # /// script
 # name: test_validate_report
-# version: 3.1.0
-# purpose: validate-report.py(第3版)の機能テスト(unittest・実データ非使用)
+# version: 4.0.0
+# purpose: validate-report.py(第4版)の機能テスト(unittest・実データ非使用)
 # inputs:
 #   - なし(python3 -B -m unittest discover -s <scripts dir> -p 'test_*.py' で起動)
 # outputs:
@@ -78,6 +78,7 @@ def good_report() -> dict:
         "generatedBy": "claude-code",
         "model": "test-model",
         "title": "テスト期間の会計分析",
+        "analysisDepth": "standard",
         "summary": SUMMARY,
         "sections": [
             {
@@ -98,6 +99,61 @@ def good_report() -> dict:
         "followUp": {"body": FOLLOW_UP_BODY, "items": [{"label": "解消済み", "amount": None}]},
         "needs": [{"gap": "家賃が未仕分け", "action": "公私仕分けで家賃を個人にする", "screen": "classify"}],
         "dataGaps": ["前年同月のデータが未取込"],
+        "contextAnalysis": {
+            "externalResearch": "off",
+            "questionType": "trend",
+            "question": {
+                "decision": "外注費の上限を見直すか決める",
+                "metric": "外注費の月次推移",
+                "comparison": "直近3ヶ月とその前3ヶ月",
+                "range": "対象期間",
+            },
+            "interviewFacts": [{"id": "interview-change", "source": "user_reported", "question": "期間中の変化", "answer": "新規案件が始まった"}],
+            "statisticalFacts": [{
+                "id": "fact-outsourcing-trend",
+                "statement": "外注費は直近3ヶ月連続で増加しています",
+                "basis": "monthlyCategories.businessExpense の外注費",
+                "evidenceRefs": ["monthlyCategories.businessExpense"],
+            }],
+            "interpretations": [{
+                "statement": "外注依存が高まった可能性があります",
+                "factRefs": ["fact-outsourcing-trend"],
+                "limitation": "案件別の発注量は取込データにありません",
+            }],
+            "externalEvidence": [],
+            "causalHypotheses": [
+                {
+                    "role": "primary",
+                    "hypothesis": "新規案件と外注費の増加が関連した可能性がある",
+                    "cause": "新規案件の開始",
+                    "mechanism": "内部工数の不足を外注で補った",
+                    "outcome": "外注費の月次額が増えた",
+                    "evidenceFor": ["案件開始後の3ヶ月で外注費が増えた"],
+                    "evidenceAgainst": ["案件別の外注費は取込データにない"],
+                    "confounders": ["契約単価の改定でも説明できる"],
+                    "falsificationCondition": "案件別に見て新規案件の外注費が増えていない",
+                    "evidenceLevel": "data_confirmed",
+                    "evidenceRefs": ["monthlyCategories.businessExpense"],
+                    "confidence": "low",
+                    "validationAction": "案件別の発注記録と突合する",
+                },
+                {
+                    "role": "alternative",
+                    "hypothesis": "案件数ではなく契約単価の改定が外注費と関連した可能性がある",
+                    "cause": "外注先の契約単価改定",
+                    "mechanism": "同じ発注量でも支払額が増えた",
+                    "outcome": "外注費の月次額が増えた",
+                    "evidenceFor": ["外注費は増えている"],
+                    "evidenceAgainst": ["発注量と単価の内訳は取込データにない"],
+                    "confounders": ["新規案件の開始でも説明できる"],
+                    "falsificationCondition": "契約書上の単価に変更がない",
+                    "evidenceLevel": "data_confirmed",
+                    "evidenceRefs": ["monthlyCategories.businessExpense"],
+                    "confidence": "low",
+                    "validationAction": "対象期間の契約書と請求書を突合する",
+                },
+            ],
+        },
     }
 
 
@@ -125,6 +181,53 @@ class CatalogTest(unittest.TestCase):
 class ValidateTest(unittest.TestCase):
     def test_good_report_has_no_issues(self) -> None:
         self.assertEqual(MOD.validate(good_report()), [])
+
+    def test_context_analysis_is_required_for_current_skill(self) -> None:
+        r = good_report()
+        del r["contextAnalysis"]
+        self.assertTrue(any("contextAnalysis" in issue and "必須" in issue for issue in MOD.validate(r)))
+
+    def test_external_research_requires_sources_and_valid_refs(self) -> None:
+        r = good_report()
+        r["contextAnalysis"]["externalResearch"] = "used"
+        self.assertTrue(any("外部調査を使った" in issue for issue in MOD.validate(r)))
+        r["contextAnalysis"]["externalEvidence"] = [{
+            "id": "cabinet-cpi",
+            "title": "公的統計",
+            "url": "https://example.go.jp/statistics",
+            "publishedAt": "2026-09-01",
+            "accessedAt": "2026-09-21",
+            "claim": "対象期間の価格指標の動きを公表しています",
+            "relevance": "契約単価の背景仮説を検討する材料になります",
+            "evidenceLevel": "published_source",
+        }]
+        hypothesis = r["contextAnalysis"]["causalHypotheses"][0]
+        hypothesis["evidenceLevel"] = "published_source"
+        hypothesis["evidenceRefs"] = ["missing"]
+        self.assertTrue(any("externalEvidence.id" in issue for issue in MOD.validate(r)))
+        hypothesis["evidenceRefs"] = ["cabinet-cpi"]
+        self.assertEqual(MOD.validate(r), [])
+
+    def test_external_research_off_rejects_sources(self) -> None:
+        r = good_report()
+        r["contextAnalysis"]["externalEvidence"] = [{"id": "x"}]
+        issues = MOD.validate(r)
+        self.assertTrue(any("外部調査OFF" in issue for issue in issues), issues)
+
+    def test_causal_thread_and_assumption_limit(self) -> None:
+        r = good_report()
+        hypothesis = r["contextAnalysis"]["causalHypotheses"][0]
+        del hypothesis["mechanism"]
+        self.assertTrue(any("mechanism" in issue and "必須" in issue for issue in MOD.validate(r)))
+        r = good_report()
+        for hypothesis in r["contextAnalysis"]["causalHypotheses"]:
+            hypothesis["evidenceLevel"] = "assumption"
+        self.assertTrue(any("半数以下" in issue for issue in MOD.validate(r)))
+
+    def test_interpretation_must_reference_statistical_fact(self) -> None:
+        r = good_report()
+        r["contextAnalysis"]["interpretations"][0]["factRefs"] = ["missing"]
+        self.assertTrue(any("statisticalFacts.id" in issue for issue in MOD.validate(r)))
 
     def test_top_level_must_be_object(self) -> None:
         self.assertEqual(len(MOD.validate([])), 1)

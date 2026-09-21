@@ -609,10 +609,20 @@ export const aiTasks = sqliteTable(
     copiedTarget: text('copied_target', { enum: ['claude_code', 'codex'] }),
     reportId: text('report_id'),
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
+    /** 0046: 利用者ごとの通し番号 (画面の T-0001)。旧来の行は NULL */
+    seq: integer('seq'),
+    /** 0046: エージェントが初めてデータを取得した日時 (実行中 50%) */
+    dataFetchedAt: text('data_fetched_at'),
+    /** 0046: 契約違反で差し戻した最後の日時 (実行中 75%) と回数 */
+    rejectedAt: text('rejected_at'),
+    rejectCount: integer('reject_count').notNull().default(0),
+    /** 0046: 利用者が取り消した日時。トークンはこの時点で使えなくなる */
+    canceledAt: text('canceled_at'),
   },
   (t) => [
     uniqueIndex('uq_ai_tasks_token').on(t.tokenHash),
     index('idx_ai_tasks_user').on(t.userId, t.createdAt),
+    uniqueIndex('uq_ai_tasks_user_seq').on(t.userId, t.seq),
   ],
 );
 
@@ -644,6 +654,13 @@ export const aiReports = sqliteTable(
     index('idx_ai_reports_period').on(t.userId, t.periodKind, t.periodKey),
     index('idx_ai_reports_type').on(t.userId, t.reportType, t.periodFrom, t.periodTo),
     index('idx_ai_reports_archived').on(t.userId, t.archivedAt, t.createdAt),
+    uniqueIndex('uq_ai_reports_series_version').on(
+      t.userId,
+      t.reportType,
+      t.periodFrom,
+      t.periodTo,
+      t.version,
+    ),
   ],
 );
 

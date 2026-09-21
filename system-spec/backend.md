@@ -15,12 +15,12 @@ serves_goals: [G2, G3, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-household-backend-web-004。裏付け質疑 (`qa_refs`): `qa-household-backend-web-evidence-001`, `qa-household-backend-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、バックエンドではモバイル向けに家計の集計を小分けにした API (月単位のページング・差分同期) を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、バックエンドではタブレットの 2 ペイン表示向けに本体とカテゴリ詳細をまとめて返す API を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップアプリの端末内キャッシュと同期するための版管理 API を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップアプリからの長期トークン認証を受ける経路を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、バックエンドではネイティブ版のバックグラウンド更新向けに集計の差分通知を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-ai-backend-web-001。裏付け質疑 (`qa_refs`): `qa-ai-backend-web-evidence-001`, `qa-ai-backend-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、backend では端末からの長いポーリングを避けるための依頼の状態変化の通知 APIを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、backend ではタブレットと web で同じ依頼を同時に操作したときの競合規則を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリ向けの API 版管理と後方互換の期間を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリ向けの API 版管理と、古い版からの呼び出しの拒否を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリから AI エージェントを直接起動する経路の要否を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G2, G3, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 依存方向を core (householdSummary・区分詳細・振替の対推定) ← api (household route・owner-labels route) ← web (家計収支画面) の一方向へ反映した。旧 household(data) と HouseholdData を削除し、総収支画面と同じ台帳の行集合を入力にする純関数へ置き換える。台帳行へ名義を足すのは core の totalCashflowLedger の中で行い、api と web は名義の解決規則を持たない。 |
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側に閉じ、householdSummary は D1 を知らない台帳の行集合だけを受け取る形へ反映した。前年同期間の読み取りは loadScoped の範囲拡張で行い、純関数には表示期間と前年の範囲を分けて渡す。freee の取引・判定・除外は総収支と同じ loadCashflowSources で読み、家計専用の SQL を増やさない。区分詳細の主な取引 5 件も同じ行集合の絞り込みで作る。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 依存方向を core (段階の導出・T-番号・版の説明・タブの振り分け・JSON エラー位置) ← api (ai route と agent route) ← web (AI分析画面) の一方向へ反映した。api の taskStatus と web の状態文言を削除し、両者が同じ純関数の結果を使う。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側に閉じ、段階の純関数は D1 を知らない依頼の記録 (時刻列と現在時刻) だけを受け取る形へ反映した。使用するデータの件数は期間で絞った既存の表の件数読み取りで作り、AI 用の SQL を増やさない。 |
 
 ## 確定内容 (質疑録)
 
@@ -39,41 +39,41 @@ serves_goals: [G2, G3, G5]
 
 - 資するゴール: G2, G3, G5
 
-#### 主たる接地根拠: `qa-household-backend-web-004`
+#### 主たる接地根拠: `qa-ai-backend-web-001`
 
 **問**
 
-家計の集計ロジックと API をどこに置き、どの契約で返すか。
+AI 依頼の段階・操作・使用するデータの規則をどこに置き、どの契約で返すか。
 
 **答**
 
-家計の集計は core の新しい純関数 householdSummary (household-summary.ts) 1 か所に集め、入力は総収支画面と同じ totalCashflowLedger の行集合とする (利用者決定 qa-household-decision-001)。旧 household() と HouseholdData は置き換えて削除する。台帳行へ名義 (freee 行は business、MF 行は resolveTx の owner、未解決は unset) を追加する。1 回の呼び出しで家計全体・事業・個人の総額と月平均・年換算、前年同期間 (欠けた月があれば null)、月別系列と前年同月、生活費 6 区分 (対応表は core の定数 1 か所。qa-household-decision-007)、名義別収入、振替一覧と対推定 (同額・逆符号の入出金を組にする。qa-household-decision-003。日付の許容幅と同点の決め方は qa-household-backend-web-003 (agent 推定) を参照) を返す。数値は収入・支出を正本にし、差・率・構成比は計算値にする (qa-household-decision-006)。api は GET /api/household をこの形へ拡張し、選択時だけの GET /api/household/category (主な取引 5 件と区分の月合計) と GET / PUT /api/settings/owner-labels を設ける。期間は loadScoped、freee・判定・除外は loadCashflowSources で読み、クエリと本文は zod で検証する。不変条件 (総収支の総合と一致、事業 + 個人 = 家計全体、6 区分の和 = 総支出、名義別の和 = 総収入、振替は台帳に現れない) をテストで固定する。契約の正本は specs/spec-household-cashflow-screen.md §11-§12。
+段階と進捗の導出 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル、qa-ai-decision-002)、T-番号の整形、版の説明の導出 (qa-ai-decision-007)、レポートのタブへの振り分け (qa-ai-decision-008)、JSON 取り込みエラーの行・位置の算出を packages/core の純関数に置き、api の taskStatus はこれに置き換える。GET /ai/tasks は段階・進捗・T-番号を返す。POST /ai/tasks/:id/cancel はトークンを無効にして行を残し、POST /ai/tasks/:id/retry は同じ期間と補足指示で新しい依頼とトークンを返す。DELETE /ai/tasks/:id は結果の無い依頼だけを消す (qa-ai-decision-003)。GET /ai/inventory は期間の使用するデータ (freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を返す (qa-ai-decision-004)。エージェントのデータ取得で取得時刻を、形式エラーの差し戻しで差し戻し時刻と回数を記録する。期間は usePeriod の範囲をそのまま受け、前年比較に要る範囲は API が導く (qa-ai-decision-001)。レポート JSON 契約 v3 と skill は変えない。具体の優先順位と数え方は qa-ai-backend-web-003 (agent 推定) を参照。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-backend-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-backend-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
 
-#### 裏付け質疑: `qa-household-backend-web-evidence-001`
+#### 裏付け質疑: `qa-ai-backend-web-evidence-001`
 
 **問**
 
-backend 章の裏付けとして、現行の家計集計と総収支台帳について何を観測したか。
+backend 章の裏付けとして、現行の AI 依頼の状態判定と経路について何を観測したか。
 
 **答**
 
-GET /api/household は packages/api/src/routes/analytics.ts:528-531 で loadScoped の data を core の household(data) に渡して返すだけで、専用の zod 検証を持たない。household() は packages/core/src/analysis.ts:771-790、HouseholdData は同 529-548 にあり、事業入金と事業立替を家計へ含める独自定義で前年比較を持たない。総収支の台帳は packages/core/src/total-cashflow.ts の totalCashflowLedger (798 行目) で、TrendSourceRow (703 行目) は side・io・category・payee・amount・origin・account を持つが名義を持たない。前年同期間の欠損規則は totalCashflowScreen 内で previousYearPeriod の全月が既知のときだけ前年を出す (1050-1066 行目)。振替は MfTx.isTransfer (types.ts:80) で、isMfCountable (types.ts:92-94) が台帳から除く。名義の解決は classify.ts の resolveTx が owner を返す。総収支ルートは routes/total-cashflow.ts で loadCashflowSources から deals・verdicts・除外を読む。
+packages/api/src/routes/ai.ts の taskStatus (ai.ts:68-72) は used_at があれば done、expires_at を過ぎれば expired、それ以外 waiting の 3 値だけを返す。レポートの形式エラーは reportValidator (ai.ts:40-56) が 400 invalid_report と issues 最大 20 件で返すが、差し戻しの事実は記録しない。エージェントのデータ取得 GET /ai/tasks/:id/data (ai.ts:476) も取得時刻を記録しない。DELETE /ai/tasks/:id (ai.ts:373-411) は結果待ちの依頼を行ごと削除し (画面では『取り消し』と呼ぶ)、受信済みは 409 already_done で拒否する。再実行の経路は無い。AI へ渡すデータは packages/api/src/ai/dataset.ts が組み、冒頭 (dataset.ts:2) に『集計値だけ。明細行・摘要・ルール・編集は含めない』とある。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-18T11:33:59Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
 
-#### 裏付け質疑: `qa-household-backend-web-003`
+#### 裏付け質疑: `qa-ai-backend-web-003`
 
 **問**
 
-web の家計収支画面で、利用者が決めていない 振替の入出金の対推定の規則 を何にするか。
+web の AI分析画面で、利用者が決めていない 段階の判定の優先順位と、使用するデータの数え方 を何にするか。
 
 **答**
 
-TRANSFER_PAIR_MAX_DAYS = 3。同額の出金と入金を日付差 3 日以内で対にし、候補が複数あるときは日付差 → 出金側の日付 → id の順で決める。対にならないものは相手不明とする。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。
+段階は キャンセル (canceled_at あり) → 完了 (used_at あり) → 失敗 (期限切れ) → 実行中 75% (rejected_at あり) → 実行中 50% (data_fetched_at あり) → 待機中 0% の順で最初に当たったものとする。使用するデータは、期間内の freee 取引の件数、期間内で集計対象の MF 明細の件数 (振替と除外を除く)、期間内に出現した科目の種類数、期間内に出現した取引先の種類数とする。 これは agent の推定で、利用者は未確認である。画像と決定 001〜008 のどれにも値が無いため、実装で決定論を保つために置いた。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-18T12:02:30Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-19T12:36:49Z)
 
 ## To-Be / Delta
 
@@ -81,40 +81,27 @@ TRANSFER_PAIR_MAX_DAYS = 3。同額の出金と入金を日付差 3 日以内で
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 家計の集計を core の純関数 1 か所に集め、総収支の台帳 (totalCashflowLedger) を正本にする。総収入・総支出・純収支と月平均・年換算、事業と個人の分解 (和が家計全体に一致)、前年同期間との比較 (前年に欠けた月があれば比較不能として null)、月別の収入・支出・純収支と前年系列、生活費カテゴリ 6 区分の集計と構成比・前年差、名義別の収入と前年差を同じ関数から算出し、GET /api/household をこの形へ拡張する。総収支画面の『総合』と家計画面の『家計全体』が同じ期間で同じ数字になることをテストで固定する。
-- **G3**: 生活費カテゴリの行を選ぶと『カテゴリの詳細』パネルを出す。期間合計 `current`、選択月全件合計 `monthTotal`、選択月の最大 5 件プレビュー `transactions` を分離し、カテゴリのすべて見るは月とカテゴリで絞った明細へ遷移する。
-- **G5**: 振替を家計の収入・支出から除外していることを利用者が確かめられるようにする。選択月に除外した振替を家計カード内に全件 (抜粋なし) 出し、振替用の循環する『すべて見る』導線は置かない。名義間は同額・逆符号・日付が近い振替 2 行を core の純関数で対にし、それぞれの口座の名義表示名から『本人 → パートナー』のように示す。対にならない行は『相手不明』と示す。スキーマは変えない。
+- **G2**: 依頼の段階と進捗を core の純関数 1 か所で記録から導く。発行済みでデータ未取得 = 待機中 0%、データ取得済み = 実行中 50%、形式エラーで差し戻し = 実行中 75%、受信 = 完了 100%、結果なしで期限切れ = 失敗、取り消し = キャンセル。依頼には利用者ごとの連番から T-0001 形式の ID を振る。
+- **G3**: 依頼の操作を画面で決着できるようにする。キャンセルはトークンを無効にして行を残し、再実行は同じ期間と補足指示で新しい依頼を発行し、削除は結果の無い依頼だけを消す (受信済みは削除不可)。依頼の発行とプロンプトのコピーを 1 操作にする。
+- **G5**: データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | 家計の数字が総収支画面と一致し、等式が閉じる。 | core の単体テストで、同じ Dataset と期間に対し家計全体の総収入・総支出・純収支が totalCashflowLedger の総合と toBe で一致し、事業 + 個人 = 家計全体が全月で成り立ち、前年欠損月があるとき前年差が null になる。 |
-| O3 | カテゴリ詳細が選択と同期し、明細へ遷移できる。 | DOM テストで `current` / `monthTotal` / 最大 5 件の `transactions` プレビューの分離と、カテゴリのすべて見るの月・カテゴリ絞り込みを確かめる。 |
-| O5 | 振替の対推定が決定論で再現する。 | core の単体テストで、同額・逆符号・日付差の許容内の 2 行が対になり、許容外・同符号・3 行以上の競合が相手不明または一意な規則で解決され、同じ入力で同じ出力になる。 |
+| O2 | 依頼の段階と進捗が記録から一意に決まる。 | core の単体テストで、6 つの段階 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル) が記録の組合せから toBe で導かれ、期限切れと受信・取消の優先順位が境界ケースで固定される。 |
+| O3 | キャンセル・再実行・削除が規則どおりに効く。 | API テストで、キャンセル後のトークンがデータ取得とレポート送信で拒否され行が残ること、再実行が同じ期間と補足指示の新しい依頼を作ること、受信済みの依頼の削除が拒否されることを確かめる。 |
+| O5 | データの件数が実データと一致し、外部へ出るのは集計値だけである。 | API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: Household.tsx を pages/household/ 配下へ分割し、問いの見出し・出典カード・KPI と前年差・推移チャート・事業と個人の等式・カテゴリ表と詳細パネル・名義別収入・振替除外・名義ラベル設定・前年との比較・下部の選択中バーの構成に作り直し、選択中の月とカテゴリとタブを URL に保つ。
-- **I3**: core に household-summary (仮称) を新設し、totalCashflowLedger の行集合から家計全体・事業・個人の総額と月別系列、前年比較、生活費 6 区分、名義別収入を 1 か所で算出する。旧 household() の独自定義は置き換える。
-- **I4**: 生活費 6 区分 (住居費 / 食費 / 光熱費 / 教育費 / 交通費 / その他) と MF 大項目の対応表を core に 1 か所だけ置き、docs に同じ表を載せる。
-- **I5**: カテゴリ詳細の `current` / `monthTotal` / 最大 5 件の `transactions` プレビューを返す取得経路を設け、選択時にだけ取得する。カテゴリのすべて見るは明細画面を月・カテゴリ・対象で絞った URL で開く。
-- **I7**: 振替の一覧と対推定を core の純関数にし、日付差の許容・同額・逆符号・一意性の規則を docs とテストで固定する。
+- **I2**: core に依頼の段階と進捗を導く純関数と T-番号の整形を新設し、api の taskStatus と web の表示をこれに寄せる。
+- **I3**: キャンセル (トークン無効化・行を残す) と再実行 (同じ期間と補足指示で新規発行) の API を足し、実行中の表の操作列から呼ぶ。発行とコピーを 1 操作にする。
+- **I6**: 使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。
 
 ### 本章に効く確定意思決定
 
-- **dec-household-categories**: 生活費の区分をどう作るか。画像の固定 6 区分へ寄せるか、金額上位 5 大項目とその他にするか。
-  - 採択: 固定 6 区分へ寄せる (`opt-fixed-six`)
-  - 目的適合: G1 の画像の表と一致し、G3 の詳細パネルで区分の意味が期間をまたいで一定になる。
-- **dec-household-figure-source**: 画像の数値が算術で閉じない欄をどう扱うか。収入・支出を正本に差を計算するか、画像の純収支を正本にして前年の総支出を調整するか。
-  - 採択: 収入・支出を正本に差を計算する (−¥80,000) (`opt-compute-from-income-expense`)
-  - 目的適合: G2 の『数字は台帳の行から作る』と一致し、どの欄も算術で閉じる。見た目の数値は一部画像と変わる。
-- **dec-household-ledger-source**: 家計収支の数字を何から作るか。総収支画面の台帳を正本にするか、現行の household() を拡張するか。
-  - 採択: 総収支の台帳を正本にする (`opt-ledger-source`)
-  - 目的適合: G2 の『家計の集計を 1 か所に集め、総収支と同じ行から作る』に直接答える。総収支の総合と家計全体が同じ行集合から出るため、両画面の数字が一致する。
-- **dec-household-transfer-pairs**: 振替の欄で名義間の移動を見せるか。入出金の対を推定して表示するか、名義間の欄を出さないか。
-  - 採択: 入出金の対を推定して表示する (`opt-transfer-pair-estimate`)
-  - 目的適合: G5 の『振替を家計の収入・支出から除外していることを確かめられる』に、どこからどこへ動いたかまで見せて答える。
+- (本章ゴールに効く確定 decision なし)
 
 ## 適用された設計知識
 
@@ -122,9 +109,9 @@ TRANSFER_PAIR_MAX_DAYS = 3。同額の出金と入金を日付差 3 日以内で
 
 ### 本章での適用
 
-Clean Architecture card の Dependency Rule を家計集計の置き場所に適用した。家計全体・事業・個人の総額、月平均と年換算、前年同期間の欠損判定、生活費 6 区分への写像、名義別収入、振替の対推定は、いずれも入出力を持たない計算なので core の householdSummary 1 か所に置く。入力は総収支画面と同じ totalCashflowLedger の行集合に限り、旧 household() の独自定義 (事業入金・事業立替を家計へ含める) は削除する。こうすると総収支の総合と家計全体が同じ行から出るため、両画面の数字の一致を toBe の単体テストで確かめられる。api の /household と /household/category は期間とクエリを zod で受け、loadScoped と loadCashflowSources で組んだ入力を純関数へ渡して JSON に写すだけにする。
+Clean Architecture card の Dependency Rule を、依頼の段階と進捗の置き場所に適用した。段階 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル) は ai_tasks の時刻列と現在時刻だけから決まる入出力のない計算なので core の純関数 1 か所に置き、api の taskStatus (done / expired / waiting の 3 値) はこれに置き換える。T-番号の整形・版の説明 (補足指示の 1 行目か既定文)・レポートのタブへの振り分け・JSON 取り込みエラーの行と位置も同じく core に置く。api はキャンセル・再実行・使用するデータの経路で D1 を読み書きし、判定は純関数へ渡して JSON に写すだけにする。こうすると画面の表示と agentGuard の拒否が同じ判定から出るため、キャンセル済みなのに画面では実行中に見えるといったずれを単体テストで塞げる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-18T11:37:52Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -255,4 +242,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| hono-zod-validator | 0.9.1 | Hono (github.com) | https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md | 2026-09-18T11:59:07Z | 2026-09-18T11:59:07Z |
+| hono-zod-validator | 0.9.1 | Hono (honojs) (github.com) | https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |

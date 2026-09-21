@@ -9,6 +9,7 @@
  * 期間が効かないという、画面を見ても気づけないバグになる。
  * ここで切れば下流は1行も変えずに全部が期間対応になる。
  */
+import { monthLabel } from './month.js';
 import type { Dataset } from './types.js';
 
 /** 対象期間。両端を含む 'YYYY-MM' */
@@ -206,6 +207,7 @@ export function resolvePeriodQuery(data: Dataset, q: PeriodQuery): PeriodRange |
 /** 期間の表示ラベル。'2026年1月 〜 2026年8月' */
 export function periodLabel(range: PeriodRange | null): string {
   if (!range) return '全期間';
-  const fmt = (m: string): string => `${m.slice(0, 4)}年${Number(m.slice(5))}月`;
-  return range.from === range.to ? fmt(range.from) : `${fmt(range.from)} 〜 ${fmt(range.to)}`;
+  return range.from === range.to
+    ? monthLabel(range.from)
+    : `${monthLabel(range.from)} 〜 ${monthLabel(range.to)}`;
 }

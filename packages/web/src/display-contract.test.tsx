@@ -58,13 +58,20 @@ describe('業務ルート契約', () => {
   });
 
   it('業務ルートは全てルート単位の遅延読み込みで、eagerな同期importは認証2画面だけに限る', () => {
-    // 業務ルートは正本の件数、routeMetadata 外の改善要望は1枚が lazy。
+    // 業務ルートは正本の件数、routeMetadata 外は改善要望1枚と AI分析の子ルート3枚が lazy。
     // 同期 import を許すのは業務画面へ入る「門」だけ: 未認証の Login と、
     // 一時パスワードのままの利用者を止める PasswordChange。門で「読み込み中…」を挟むと
     // 締め出されたのか読み込み中なのかが利用者に判別できない。
     // 件数ではなく名前の完全一致で固定する。3枚目が黙って増えたらここで落ちる。
+    // routeMetadata の外にある lazy ページは名前で列挙し、黙って増えたら落ちるようにする
+    expect([...AUTHENTICATED_APP_SOURCE.matchAll(/^const (\w+) = lazy\(/gm)].map((m) => m[1])).toEqual([
+      'ImprovementPage',
+      'AiTaskDetailPage',
+      'AiReportLibraryPage',
+      'AiReportPage',
+    ]);
     expect(AUTHENTICATED_APP_SOURCE.match(/lazy\(\(\) =>\s*import\('\.\/pages\//g)).toHaveLength(
-      APP_ROUTES.length + 1,
+      APP_ROUTES.length + 4,
     );
     expect(AUTHENTICATED_APP_SOURCE).toMatch(/<Suspense\s+fallback=/);
     expect(APP_SOURCE).toContain("import { AuthenticatedApp } from './AuthenticatedApp.js'");

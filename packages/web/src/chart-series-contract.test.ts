@@ -31,7 +31,6 @@ describe('チャート系列の描画契約 (BR-004)', () => {
     expect(CHART_SOURCES.map((path) => relative(sourceRoot, path)).sort()).toEqual([
       'components/FinancialCharts.tsx',
       'components/ReportChart.tsx',
-      'pages/Ai.tsx',
       'pages/Overview.tsx',
       'pages/analysis/TotalCashflow.tsx',
       'pages/analysis/diagnosis/ImpactWaterfall.tsx',

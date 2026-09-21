@@ -4,6 +4,7 @@
  *   言葉づかいが合わない。ここで用語辞書(glossary.ts)と同じ言い方・同じ単位表記に揃える。
  * - 文字を作る部分はすべて純関数にして、Chart.js に渡すのは薄い入口だけにする(テストしやすさのため)。
  */
+import { monthLabel } from '@kanjo/core';
 import type { TooltipItem } from 'chart.js';
 import type { AiReportChart } from '../api.js';
 import { GLOSSARY, TERM_ALIASES, type TermId } from '../glossary.js';
@@ -20,9 +21,7 @@ export function termInLabel(label: string): TermId | null {
 export function tooltipTitle(label: string): string {
   const q = /^(\d{4})-Q([1-4])$/.exec(label);
   if (q) return `${q[1]}年 第${q[2]}四半期`;
-  const m = /^(\d{4})-(\d{2})$/.exec(label);
-  if (m) return `${m[1]}年${Number(m[2])}月`;
-  return label;
+  return monthLabel(label);
 }
 
 /**

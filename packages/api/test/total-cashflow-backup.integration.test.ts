@@ -19,6 +19,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { loginForTest } from '../src/auth.test-support.js';
 import { app } from '../src/index.js';
+import { splitMigrationStatements } from '../src/migration-test-support.js';
 import { recordTestMigrationHead } from '../src/schema-guard.test-support.js';
 import { getDb, loadBackupPayload } from '../src/store.js';
 
@@ -41,11 +42,7 @@ const migrationFilenames = readdirSync(migrationsDir)
 /** 移行番号の境目で区切って当てる。`only` に挙げた分だけを順に実行する */
 async function applyMigrationFiles(db: D1Database, only: readonly string[]): Promise<void> {
   for (const filename of only) {
-    const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-      .replace(/^\s*--.*$/gm, '')
-      .split(';')
-      .map((sql) => sql.trim())
-      .filter(Boolean);
+    const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
     for (const sql of statements) await db.prepare(sql).run();
   }
 }

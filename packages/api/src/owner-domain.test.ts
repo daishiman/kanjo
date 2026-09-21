@@ -6,6 +6,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterEach, describe, expect, it } from 'vitest';
 import { loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
+import { splitMigrationStatements } from './migration-test-support.js';
 import { recordTestMigrationHead } from './schema-guard.test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
@@ -15,11 +16,7 @@ const migrationFiles = () =>
     .sort();
 
 const statements = (filename: string): string[] =>
-  readFileSync(resolve(migrationsDir, filename), 'utf8')
-    .replace(/^\s*--.*$/gm, '')
-    .split(';')
-    .map((sql) => sql.trim())
-    .filter(Boolean);
+  splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
 
 async function apply(database: D1Database, filenames: string[]): Promise<void> {
   for (const filename of filenames) {

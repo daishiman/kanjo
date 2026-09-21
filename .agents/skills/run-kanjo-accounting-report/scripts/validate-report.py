@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # /// script
 # name: validate-report
-# version: 3.1.0
-# purpose: kanjo 会計分析レポートJSON(第3版)を送信前に検査する(5節の最低行数・3段の要点・図表カタログ参照・上限・プレーンテキスト)
+# version: 4.0.0
+# purpose: kanjo 会計分析レポートJSON(第4版)を送信前に検査する(5節・図表・背景仮説と外部出典の分離)
 # inputs:
 #   - argv[1]: 検査するレポートJSONのパス
 #   - --data <path>: GET /api/ai/data の保存JSON(任意)。渡すと図の available と本文の「図N」参照を照合する
@@ -16,7 +16,7 @@
 # network: false
 # write-scope: none
 # ///
-"""送信前にレポートJSON(第3版)の形を検査する(標準ライブラリのみ)。
+"""送信前にレポートJSON(第4版)の形を検査する(標準ライブラリのみ)。
 
 - 5節 (spend / change / reduction / split / subscriptions) が全て揃い、節ごとの最低行数(items)を満たすこと。
   満たせないときは gap にデータ不足の理由(10字以上)があること
@@ -42,6 +42,10 @@ SECTION_IDS = ("spend", "change", "reduction", "split", "subscriptions")
 PRIORITIES = {"high", "mid", "low"}
 FINDING_KEYS = ("improvements", "wasted", "quickWins")
 NEED_SCREENS = {"import", "classify", "settings", "budget", "subscriptions", "household", "overview"}
+QUESTION_TYPES = {"distribution", "comparison", "relationship", "decomposition", "trend", "concentration", "anomaly"}
+EVIDENCE_LEVELS = {"data_confirmed", "published_source", "assumption"}
+EVIDENCE_LEVELS.add("user_reported")
+CONFIDENCES = {"low", "medium", "high"}
 DEFAULT_CATALOG = Path(__file__).resolve().parent.parent / "references" / "chart-catalog.json"
 _ZEN2HAN = str.maketrans("０１２３４５６７８９", "0123456789")
 FIGURE_RE = re.compile(r"図\s*([0-9０-９]+)")  # アプリ側(contract.ts)と同じ: 空白・全角数字も拾う
@@ -192,6 +196,12 @@ def _finding_issues(where: str, item: object) -> list[str]:
     if isinstance(fact, str) and fact.strip() and not re.search(r"[0-9０-９]", fact):
         issues.append(f"{where}.fact: 数値が入っていません(金額・比率・月数など、取得データにある数字で事実を書いてください)")
     issues += _text_issues(f"{where}.basis", item.get("basis"), LIMITS["finding_basis"], required=True, minimum=5)
+    for key in ("fact", "basis"):
+        value = item.get(key)
+        if isinstance(value, str) and re.search(r"https?://", value):
+            issues.append(
+                f"{where}.{key}: 外部URLを会計金額の根拠に混ぜないでください(contextAnalysis.externalEvidence へ分離)"
+            )
     issues += _text_issues(
         f"{where}.interpretation", item.get("interpretation"), LIMITS["finding_interpretation"], required=True, minimum=10
     )
@@ -279,6 +289,178 @@ def _needs_issues(needs: object) -> list[str]:
                 issues.append(
                     f"{where}.screen: {screen!r} は未定義の画面です(使える id: {', '.join(sorted(NEED_SCREENS))} / null)"
                 )
+    return issues
+
+
+def _context_analysis_issues(context: object) -> list[str]:
+    """第4版の背景分析を fail-closed で検査する。
+
+    会計数値の事実と外部情報は、形の段階で別フィールドにする。
+    因果は断定せず、背景→作用経路→観測指標と反証条件を必須にする。
+    """
+    if context is None:
+        return ["contextAnalysis: 第4版では必須です(外部調査OFFでも問いと仮説を分離して記録)"]
+    if not isinstance(context, dict):
+        return ["contextAnalysis: オブジェクトにしてください"]
+    issues: list[str] = []
+    external_research = context.get("externalResearch")
+    if external_research not in {"off", "used"}:
+        issues.append("contextAnalysis.externalResearch: off / used のどちらかにしてください")
+    if context.get("questionType") not in QUESTION_TYPES:
+        issues.append("contextAnalysis.questionType: 7種の問いの型から選んでください")
+    question = context.get("question")
+    if not isinstance(question, dict):
+        issues.append("contextAnalysis.question: オブジェクトにしてください")
+    else:
+        for field, limit in (("decision", 500), ("metric", 300), ("comparison", 500), ("range", 200)):
+            issues += _text_issues(f"contextAnalysis.question.{field}", question.get(field), limit, required=True)
+
+    facts = context.get("interviewFacts", [])
+    interview_ids: set[str] = set()
+    if not isinstance(facts, list):
+        issues.append("contextAnalysis.interviewFacts: 配列にしてください")
+    else:
+        if len(facts) > 20:
+            issues.append("contextAnalysis.interviewFacts: 20件以下にしてください")
+        for index, fact in enumerate(facts):
+            where = f"contextAnalysis.interviewFacts[{index}]"
+            if not isinstance(fact, dict):
+                issues.append(f"{where}: オブジェクトにしてください")
+                continue
+            fact_id = fact.get("id")
+            if not isinstance(fact_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,39}", fact_id):
+                issues.append(f"{where}.id: 小文字英数・_ ・- の40字以下にしてください")
+            elif fact_id in interview_ids:
+                issues.append(f"{where}.id: {fact_id!r} が重複しています")
+            else:
+                interview_ids.add(fact_id)
+            if fact.get("source") != "user_reported":
+                issues.append(f"{where}.source: user_reported にしてください")
+            issues += _text_issues(f"{where}.question", fact.get("question"), 300, required=True)
+            issues += _text_issues(f"{where}.answer", fact.get("answer"), 1200, required=True)
+
+    statistical_facts = context.get("statisticalFacts")
+    fact_ids: set[str] = set()
+    if not isinstance(statistical_facts, list):
+        issues.append("contextAnalysis.statisticalFacts: 配列にしてください")
+        statistical_facts = []
+    for index, fact in enumerate(statistical_facts):
+        where = f"contextAnalysis.statisticalFacts[{index}]"
+        if not isinstance(fact, dict):
+            issues.append(f"{where}: オブジェクトにしてください")
+            continue
+        fact_id = fact.get("id")
+        if not isinstance(fact_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,39}", fact_id):
+            issues.append(f"{where}.id: 小文字英数・_ ・- の40字以下にしてください")
+        elif fact_id in fact_ids:
+            issues.append(f"{where}.id: {fact_id!r} が重複しています")
+        else:
+            fact_ids.add(fact_id)
+        issues += _text_issues(f"{where}.statement", fact.get("statement"), 1000, required=True, minimum=10)
+        issues += _text_issues(f"{where}.basis", fact.get("basis"), 800, required=True, minimum=5)
+        refs = fact.get("evidenceRefs")
+        if not isinstance(refs, list) or not refs or any(not isinstance(ref, str) or not ref.strip() for ref in refs):
+            issues.append(f"{where}.evidenceRefs: 取得JSONの根拠名を1件以上記録してください")
+
+    interpretations = context.get("interpretations")
+    if not isinstance(interpretations, list):
+        issues.append("contextAnalysis.interpretations: 配列にしてください")
+        interpretations = []
+    for index, interpretation in enumerate(interpretations):
+        where = f"contextAnalysis.interpretations[{index}]"
+        if not isinstance(interpretation, dict):
+            issues.append(f"{where}: オブジェクトにしてください")
+            continue
+        issues += _text_issues(f"{where}.statement", interpretation.get("statement"), 1000, required=True, minimum=10)
+        issues += _text_issues(f"{where}.limitation", interpretation.get("limitation"), 800, required=True, minimum=5)
+        refs = interpretation.get("factRefs")
+        if not isinstance(refs, list) or not refs or any(ref not in fact_ids for ref in refs):
+            issues.append(f"{where}.factRefs: statisticalFacts.id を1件以上参照してください")
+
+    evidence = context.get("externalEvidence", [])
+    source_ids: set[str] = set()
+    if not isinstance(evidence, list):
+        issues.append("contextAnalysis.externalEvidence: 配列にしてください")
+        evidence = []
+    else:
+        if len(evidence) > 20:
+            issues.append("contextAnalysis.externalEvidence: 20件以下にしてください")
+        for index, source in enumerate(evidence):
+            where = f"contextAnalysis.externalEvidence[{index}]"
+            if not isinstance(source, dict):
+                issues.append(f"{where}: オブジェクトにしてください")
+                continue
+            source_id = source.get("id")
+            if not isinstance(source_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,39}", source_id):
+                issues.append(f"{where}.id: 小文字英数・_ ・- の40字以下にしてください")
+            elif source_id in source_ids:
+                issues.append(f"{where}.id: {source_id!r} が重複しています")
+            else:
+                source_ids.add(source_id)
+            issues += _text_issues(f"{where}.title", source.get("title"), 300, required=True)
+            url = source.get("url")
+            if not isinstance(url, str) or not re.fullmatch(r"https?://[^\s]+", url):
+                issues.append(f"{where}.url: http(s) URL を記録してください")
+            accessed = source.get("accessedAt")
+            if not isinstance(accessed, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", accessed):
+                issues.append(f"{where}.accessedAt: YYYY-MM-DD 形式にしてください")
+            published = source.get("publishedAt")
+            if published is not None and not isinstance(published, str):
+                issues.append(f"{where}.publishedAt: 文字列か null にしてください")
+            issues += _text_issues(f"{where}.claim", source.get("claim"), 1000, required=True, minimum=10)
+            issues += _text_issues(f"{where}.relevance", source.get("relevance"), 1000, required=True, minimum=10)
+            if source.get("evidenceLevel") != "published_source":
+                issues.append(f"{where}.evidenceLevel: published_source にしてください")
+    if external_research == "off" and evidence:
+        issues.append("contextAnalysis.externalEvidence: 外部調査OFFのときは空配列にしてください")
+    if external_research == "used" and not evidence:
+        issues.append("contextAnalysis.externalEvidence: 外部調査を使った場合はURL・取得日・主張を1件以上記録してください")
+
+    hypotheses = context.get("causalHypotheses", [])
+    assumption_count = 0
+    if not isinstance(hypotheses, list):
+        issues.append("contextAnalysis.causalHypotheses: 配列にしてください")
+        hypotheses = []
+    else:
+        if len(hypotheses) > 12:
+            issues.append("contextAnalysis.causalHypotheses: 12件以下にしてください")
+        for index, hypothesis in enumerate(hypotheses):
+            where = f"contextAnalysis.causalHypotheses[{index}]"
+            if not isinstance(hypothesis, dict):
+                issues.append(f"{where}: オブジェクトにしてください")
+                continue
+            if hypothesis.get("role") not in {"primary", "alternative"}:
+                issues.append(f"{where}.role: primary / alternative のどちらかにしてください")
+            for field, limit in (("hypothesis", 1000), ("cause", 500), ("mechanism", 700), ("outcome", 500)):
+                issues += _text_issues(f"{where}.{field}", hypothesis.get(field), limit, required=True, minimum=5)
+            for field in ("evidenceFor", "evidenceAgainst", "confounders"):
+                values = hypothesis.get(field)
+                if not isinstance(values, list) or len(values) == 0:
+                    issues.append(f"{where}.{field}: 1件以上の配列にしてください")
+                elif len(values) > 12 or any(not isinstance(value, str) or not value.strip() for value in values):
+                    issues.append(f"{where}.{field}: 空でない文字列を12件以下にしてください")
+            for field, limit in (("falsificationCondition", 800), ("validationAction", 800)):
+                issues += _text_issues(f"{where}.{field}", hypothesis.get(field), limit, required=True, minimum=5)
+            level = hypothesis.get("evidenceLevel")
+            if level not in EVIDENCE_LEVELS:
+                issues.append(f"{where}.evidenceLevel: data_confirmed / user_reported / published_source / assumption から選んでください")
+            if level == "assumption":
+                assumption_count += 1
+            if hypothesis.get("confidence") not in CONFIDENCES:
+                issues.append(f"{where}.confidence: low / medium / high から選んでください")
+            refs = hypothesis.get("evidenceRefs")
+            if not isinstance(refs, list) or any(not isinstance(ref, str) or not ref.strip() for ref in refs):
+                issues.append(f"{where}.evidenceRefs: 空でない文字列の配列にしてください")
+            elif level == "published_source" and (not refs or any(ref not in source_ids for ref in refs)):
+                issues.append(f"{where}.evidenceRefs: externalEvidence.id を1件以上参照してください")
+            elif level == "user_reported" and (not refs or any(ref not in interview_ids for ref in refs)):
+                issues.append(f"{where}.evidenceRefs: interviewFacts.id を1件以上参照してください")
+    if hypotheses and assumption_count * 2 > len(hypotheses):
+        issues.append("contextAnalysis.causalHypotheses: 想定(assumption)は仮説全体の半数以下にしてください")
+    if hypotheses:
+        roles = {hypothesis.get("role") for hypothesis in hypotheses if isinstance(hypothesis, dict)}
+        if not {"primary", "alternative"}.issubset(roles):
+            issues.append("contextAnalysis.causalHypotheses: 主仮説(primary)と対立仮説(alternative)を各1件以上必要です")
     return issues
 
 
@@ -392,6 +574,8 @@ def validate(report: object, catalog: dict | None = None, data: dict | None = No
     _apply_catalog_limits(catalog)
     catalog_ids = {c["id"] for c in catalog.get("charts", []) if isinstance(c, dict) and isinstance(c.get("id"), str)}
     issues = _text_issues("generatedBy", report.get("generatedBy"), LIMITS["generatedBy"], required=True)
+    if report.get("analysisDepth") not in {"concise", "standard", "detailed"}:
+        issues.append("analysisDepth: concise / standard / detailed のどれかにしてください")
     issues += _text_issues("model", report.get("model"), LIMITS["model"], required=False)
     issues += _text_issues("title", report.get("title"), LIMITS["title"], required=False)
     issues += _text_issues(
@@ -406,6 +590,7 @@ def validate(report: object, catalog: dict | None = None, data: dict | None = No
     issues += _follow_up_issues(report.get("followUp"))
     issues += _needs_issues(report.get("needs"))
     issues += _charts_issues(report.get("charts"), catalog_ids)
+    issues += _context_analysis_issues(report.get("contextAnalysis"))
 
     sections = report.get("sections")
     if not isinstance(sections, list):
@@ -495,7 +680,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"NG {issue}")
         print(f"修正が必要です({len(issues)}件)。直してから再検査してください。")
         return 1
-    print("OK 5節の行数・3段の要点・図表カタログ参照・上限・プレーンテキストの条件を満たしています。送信できます。")
+    print("OK 5節・要点・図表・背景仮説・外部出典の分離条件を満たしています。送信できます。")
     return 0
 
 

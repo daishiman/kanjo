@@ -733,6 +733,28 @@ const aiReportRow = {
   createdAt: '2026-08-30T00:00:00.000Z',
   archivedAt: null,
 };
+const aiTaskRow = {
+  id: 'anonymous-task-running',
+  period: { from: months.at(-3), to: months.at(-1) },
+  type: 'monthly',
+  label: '匿名月次分析',
+  supplement: '固定費の変化を確認する',
+  parentReportId: null,
+  expiresAt: '2099-12-31T00:00:00.000Z',
+  createdAt: '2026-08-30T00:00:00.000Z',
+  reportId: null,
+  status: 'waiting',
+  copiedAt: '2026-08-30T00:01:00.000Z',
+  copiedTarget: 'codex',
+  seq: 1,
+  displayId: 'T-0001',
+  stage: 'running',
+  progress: 50,
+  dataFetchedAt: '2026-08-30T00:02:00.000Z',
+  rejectedAt: null,
+  rejectCount: 0,
+  canceledAt: null,
+};
 const anonymousChart = (figure, kind, title) => ({
   id: `anonymous-chart-${figure}`,
   figure,
@@ -1257,7 +1279,15 @@ const responseFor = (url) => {
   if (path === '/api/household/category') return householdCategory;
   if (path === '/api/statements') return statements;
   if (path === '/api/unsettled') return { rows: [] };
-  if (path === '/api/ai/tasks') return { tasks: [] };
+  if (path === '/api/ai/tasks') return { tasks: [aiTaskRow] };
+  if (path === '/api/ai/inventory')
+    return {
+      period: { from: months.at(-3), to: months.at(-1), label: '匿名3か月' },
+      freeeDeals: 42,
+      mfTransactions: 18,
+      categories: 9,
+      counterparties: 12,
+    };
   if (path === '/api/ai/reports/anonymous-report-1') return aiReportDetail;
   if (path === '/api/ai/reports') return { reports: [aiReportRow], archivedCount: 0 };
   return undefined;
@@ -1583,7 +1613,8 @@ try {
     VISUAL_SCOPE === 'overview' ||
     VISUAL_SCOPE === 'reconciliation' ||
     VISUAL_SCOPE === 'household' ||
-    VISUAL_SCOPE === 'trends'
+    VISUAL_SCOPE === 'trends' ||
+    VISUAL_SCOPE === 'ai'
   ) {
     const additionalRoutes = [
       { name: 'Overview', path: '/', expectedFigures: 1 },
@@ -1601,7 +1632,16 @@ try {
       { name: 'Total cashflow', path: '/analysis/total-cashflow', expectedFigures: 1 },
       { name: 'Subscriptions', path: '/subscriptions', expectedFigures: 1 },
       { name: 'Household', path: '/household', expectedFigures: 1 },
-      { name: 'AI report', path: '/ai', expectedFigures: 4, openReport: true },
+      // AI分析は画面が分かれた (spec-ai-analysis-screen FR-14)。入口・レポート一覧・レポート詳細を別々に開く。
+      // 図があるのは詳細の「根拠データ」タブだけで、入口と一覧は図を持たない
+      { name: 'AI hub', path: '/ai', expectedFigures: 0, readySelector: '.ai-howto-link' },
+      {
+        name: 'AI report library',
+        path: '/ai/reports',
+        expectedFigures: 0,
+        readySelector: '.ai-report-table',
+      },
+      { name: 'AI report', path: '/ai/reports/anonymous-report-1?tab=evidence', expectedFigures: 4 },
     ];
     // rail境界は共通shellの変更なので、代表6画面をすべて同じ幅で監査する。
     const ADDITIONAL_WIDTHS = [360, 375, 390, 641, 768, 900, 1023, 1024, 1280, 1600];
@@ -1612,6 +1652,11 @@ try {
         if (VISUAL_SCOPE === 'overview') return route.name === 'Overview';
         if (VISUAL_SCOPE === 'household') return route.name === 'Household';
         if (VISUAL_SCOPE === 'trends') return route.name === 'Trends';
+        if (VISUAL_SCOPE === 'ai')
+          return (
+            route.name === 'AI report' &&
+            ((zoom === 1 && [360, 768, 1280].includes(width)) || viewportLabel === 'zoom200')
+          );
         if (VISUAL_SCOPE === 'reconciliation')
           return (
             route.name === 'Reconciliation' && zoom === 1 && [375, 641, 768, 1024, 1280, 1600].includes(width)
@@ -1654,6 +1699,22 @@ try {
           "Boolean(document.querySelector('.improve-trigger'))",
           `${route.name} improvement action`,
         );
+        if (route.name === 'AI hub') {
+          await mouseClick('.ai-howto-link', `${tag} AI help`);
+          await waitFor("document.querySelector('.ai-howto')?.open === true", `${tag} AI help open`);
+        }
+        if (route.name === 'AI report library') {
+          await evaluate(`(() => {
+            const input = document.querySelector('input[aria-label="レポートを検索"]');
+            const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+            setter?.call(input, '匿名財務');
+            input?.dispatchEvent(new Event('input', { bubbles: true }));
+          })()`);
+          await waitFor(
+            "document.querySelector('input[aria-label=\"レポートを検索\"]')?.value === '匿名財務' && Boolean(document.querySelector('.ai-report-table tbody tr'))",
+            `${tag} AI report search`,
+          );
+        }
         if (route.name === 'Total cashflow') {
           await evaluate(`(() => {
             document.querySelector('.tcf-row-open')?.click();
@@ -1935,6 +1996,15 @@ try {
                     left: px(styles[0]?.borderLeftWidth) >= 2,
                     right: px(styles.at(-1)?.borderRightWidth) >= 2,
                   },
+                  // 判定は上の真偽値だが、落ちたときに「5列のどれが」「何pxで」落ちたかが
+                  // 分からないと追えない。クラスと実測値を一緒に残す(合否には使わない)。
+                  cells: cells.map((cell, i) => ({
+                    tag: cell.tagName,
+                    top: px(styles[i].borderTopWidth),
+                    bottom: px(styles[i].borderBottomWidth),
+                  })),
+                  rowClass: row?.className ?? null,
+                  prevRowClass: row?.previousElementSibling?.className ?? null,
                 };
               })())`),
             );
@@ -2637,6 +2707,39 @@ try {
             compactMobileColumns: hiddenSecondaryColumns,
           };
         })(),
+        ai: (() => {
+          // 入口に残るのは「1. 依頼」と「2. 実行中」の2段。レポートは別画面へ出たので
+          // ここに3段目は無い (spec-ai-analysis-screen FR-14)
+          const stepIds = ['ai-step-request', 'ai-step-run'];
+          const steps = stepIds.map(
+            (id) => document.getElementById(id)?.closest('.ai-step')?.getBoundingClientRect().top ?? null,
+          );
+          return {
+            hub: {
+              stepHeadings:
+                ['1. 依頼', '2. 実行中'].every(
+                  (label, index) => document.getElementById(stepIds[index])?.textContent?.trim() === label,
+                ) &&
+                steps.every((top) => top !== null) &&
+                steps[0] < steps[1] &&
+                document.getElementById('ai-step-report') === null,
+              helpOpen: document.querySelector('.ai-howto')?.open === true,
+              progress: document.querySelector('#ai-task-anonymous-task-running .ai-progress')?.getAttribute('aria-label') === '進捗 50%',
+            },
+            library: {
+              search:
+                document.querySelector('input[aria-label="レポートを検索"]')?.value === '匿名財務' &&
+                Boolean(document.querySelector('.ai-report-table tbody tr')),
+            },
+            report: {
+              detail: Boolean(document.querySelector('#ai-report-detail')),
+              // 要約 / 根拠データ / 背景仮説 / 改善提案 / 関連リンク
+              tabs: document.querySelectorAll('.ai-tabs [role="tab"]').length === 5,
+              // 版履歴は詳細だけが持つ表 (一覧の .ai-report-table とは別物)
+              history: Boolean(document.querySelector('.ai-version-table tbody tr')),
+            },
+          };
+        })(),
         legend: [...document.querySelectorAll('[data-financial-figure]')].map((figure) => ({
           // アンカーを持たない図は、結論のid「model.id + useIdの値 + summary」から model.id を復元する
           key: figure.id || (figure.querySelector('[data-financial-summary]')?.id ?? '').split('-').slice(0, -2).join('-'),
@@ -2679,6 +2782,16 @@ try {
           console.log(`${tag} rail diagnostics ${JSON.stringify(routeMetrics.shell.diagnostics)}`);
         if (runtimeProblems.length)
           failures.push(`${tag} ${route.name} console/runtime error: ${runtimeProblems.join(' / ')}`);
+        // 画面ごとに見るものが違う: 入口は2段と使い方と進捗、一覧は検索、詳細は本文とタブと版履歴
+        const aiPart = { 'AI hub': 'hub', 'AI report library': 'library', 'AI report': 'report' }[route.name];
+        if (aiPart) {
+          const measured = routeMetrics.ai[aiPart];
+          if (Object.values(measured).some((value) => !value))
+            failures.push(`${tag} ${route.name} の構造が不足 (${JSON.stringify(measured)})`);
+          console.log(
+            `${tag} AI構造 ${route.name} ${JSON.stringify(measured)} 本体=${routeMetrics.pageWidth}/${routeMetrics.viewportWidth}px`,
+          );
+        }
         const expectedFigureTitles = route.expectedFigureTitles ?? null;
         const figuresMatch = expectedFigureTitles
           ? JSON.stringify(routeMetrics.figures.map((figure) => figure.title)) ===

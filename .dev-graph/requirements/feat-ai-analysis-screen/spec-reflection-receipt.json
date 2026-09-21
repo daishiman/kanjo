@@ -1,0 +1,100 @@
+{
+  "receipt_kind": "spec-reflection",
+  "parent_feature": "feat-ai-analysis-screen",
+  "graph_node_id": "feat-ai-analysis-screen",
+  "beads_epic": "kanjo-5ru",
+  "recorded_at": "2026-09-21T14:05:00Z",
+  "verdict": "IMPACTED_AND_REFLECTED",
+  "summary": "AI分析画面 (12-ai) の新規追加は仕様・設計へ影響があると判定し、system-spec/ specs/ architecture/ features/ tasks/ docs/ へ反映した。13 phase の計画外に入れた5件 (契約 v4 / migration 0047 / skill 改訂 / month.ts 集約 / 共通シェル) も仕様へ明記した。",
+  "impacts": [
+    {
+      "id": "I1",
+      "finding": "AI分析画面そのもの (4ルート・依頼の段階・版・タブ) の正本が無い。",
+      "action": "specs/spec-ai-analysis-screen.md を新設し、FR・UI表・API契約・データモデル・ビジネスルール・受入条件を確定した。",
+      "files": ["specs/spec-ai-analysis-screen.md", "features/feat-ai-analysis-screen.md"]
+    },
+    {
+      "id": "I2",
+      "finding": "system-spec のカテゴリ章に AI分析サイクル (人間を経由する非同期パイプライン) の決定が無い。",
+      "action": "ui-ux / frontend / backend / database / auth / security / infrastructure / maintenance-ops の各章と要件定義書 (U1-U9・ゴール) を更新し、architecture/ai-analysis-*.md 8件を新設して章と対応づけた。",
+      "files": [
+        "system-spec/00-requirements-definition.md",
+        "system-spec/ui-ux.md",
+        "system-spec/frontend.md",
+        "system-spec/backend.md",
+        "system-spec/database.md",
+        "system-spec/auth.md",
+        "system-spec/security.md",
+        "system-spec/infrastructure.md",
+        "system-spec/maintenance-ops.md",
+        "system-spec/index.md"
+      ]
+    },
+    {
+      "id": "I3",
+      "finding": "migration 0047 は既存行の version を書き換える (このハーネスで唯一の行更新 migration) が、巻き戻しの非対称性が仕様に無い。",
+      "action": "データモデル節へ 0047 の一意索引と trigger、互換性・移行節へ『索引と trigger は DROP で戻せるが正規化した version は戻らない』、受入条件へ列消失を行ごと固定する項目を追記した。",
+      "files": ["specs/spec-ai-analysis-screen.md", "migrations/0047_ai_report_invariants.sql"]
+    },
+    {
+      "id": "I4",
+      "finding": "共通シェルのフッター文言『取込データは外部送信しません』が、本機能の追加で事実と食い違う。",
+      "action": "『アプリからは自動送信しません。AI実行時は確認した集計データを選択したAIへ渡します』へ変更し、仕様へ『共通シェルへの波及 (全13画面)』節を新設。旧文言を引用していた2仕様も同じ決定へ合わせた。狭幅 375/360px の折り返しを実測し、常設ゲートが無いことも明記した。",
+      "files": [
+        "specs/spec-ai-analysis-screen.md",
+        "specs/spec-expense-matrix-screen.md",
+        "specs/spec-subscriptions-screen.md",
+        "packages/web/src/components/Layout.tsx"
+      ]
+    },
+    {
+      "id": "I5",
+      "finding": "画面の規則 (段階・T-番号・版の説明・タブ振り分け・エラー文言) の読み物が無い。",
+      "action": "docs/ai-screen/ に rules.md / design-decisions.md / evidence.md を置き、規則表と決定の理由と証跡索引を分けた。",
+      "files": ["docs/ai-screen/rules.md", "docs/ai-screen/design-decisions.md", "docs/ai-screen/evidence.md"]
+    },
+    {
+      "id": "I6",
+      "finding": "13 phase の計画に無い変更 (契約 v4 の contextAnalysis・migration 0047・skill 改訂・month.ts 集約・共通シェル) が実装に入った。",
+      "action": "仕様へ『13 phase の外で入れた変更』節を新設し、5件それぞれ『なぜ計画に無かったか』『どのテストが守るか』を表で記録した。month.ts はテスト5件のうち旧実装で落ちるのは1件だけである旨も実測値で明記した。",
+      "files": ["specs/spec-ai-analysis-screen.md"]
+    }
+  ],
+  "not_impacted": [
+    {
+      "area": "auth の方式そのもの",
+      "reason": "セッション Cookie・ログイン経路・失効規則に変更なし。AI分析の3経路は既存の認証ミドルウェアをそのまま通る。"
+    },
+    {
+      "area": "外部送信の経路",
+      "reason": "アプリは外部AIへ自動送信しない。利用者がプロンプトを手で運ぶ設計は変わらず、新しい送信先・鍵・ネットワーク経路を増やしていない。"
+    }
+  ],
+  "reflected_files": [
+    { "file": "specs/spec-ai-analysis-screen.md", "digest": "sha256:dd490db4494cd49e203ecd42e64ddc13cbafb266b2cf4a6bdaa45a289834e24e" },
+    { "file": "features/feat-ai-analysis-screen.md", "digest": "sha256:fd705a54d5f9c474dc904b5f08fd7deed772074dadf7f3f729d5882fa1b4f515" },
+    { "file": "system-spec/00-requirements-definition.md", "digest": "sha256:29d1ab19bb45bce2141681efa823c5b7313b48e93c2cef05410b67044ab4d746" },
+    { "file": "system-spec/ui-ux.md", "digest": "sha256:5c6788a52947b35f54ae87183aa1e3e6f17ed9ff5e8ff0b86f3192ca418f7a06" },
+    { "file": "system-spec/frontend.md", "digest": "sha256:eba3e33334b9f5c6dcff8e1b78b8fff1804f2f52604edca0382f1a6158f36ef4" },
+    { "file": "system-spec/backend.md", "digest": "sha256:e39b090e33900452ae1d5ce73e97bb80e02c65be0deb210278f19af238dafca4" },
+    { "file": "system-spec/database.md", "digest": "sha256:1a0540e072013253e364b82ad4a3f1e91124019fd5baba6c85772025d47dcbfb" },
+    { "file": "architecture/ai-analysis-frontend.md", "digest": "sha256:e9cdf95dea1e7c443cf2f707058b1dfae068b0abf3fcf929ae4655b41e193a0e" },
+    { "file": "architecture/ai-analysis-backend.md", "digest": "sha256:f5a7364bf8b077687f76ac20aa6b1d85e18805dcce817365437769810b1def22" },
+    { "file": "architecture/ai-analysis-database.md", "digest": "sha256:ee507a54d2c63693db6a764e6aebed89d7158d5251280065b888a15a4c711cec" },
+    { "file": "docs/ai-screen/rules.md", "digest": "sha256:577d74e4847cff4f0c7c8d625a1073722e66bfcee9d297a0d2c9b449fe05d463" },
+    { "file": "docs/ai-screen/design-decisions.md", "digest": "sha256:a89d5218a84a64ebde46d00db5bac6e7be7702163048f59d3fc35c659044e895" },
+    { "file": "specs/spec-expense-matrix-screen.md", "digest": "sha256:ac4b1ffc91fb2594727bf259a9b0655f12d9fd804f8f016857601b6eb29dc0af" },
+    { "file": "specs/spec-subscriptions-screen.md", "digest": "sha256:7cc062d7d47d9bc34aaa59e444bcc67ae5797dc349d5faf4ef3b71183e02539c" }
+  ],
+  "gates": {
+    "typecheck": "PASS",
+    "lint": "PASS (biome 560 files / graph-lineage 118 nodes / real-data guard OK)",
+    "test": { "core": 909, "api": 722, "web": 809, "failed": 0, "exit": 0 }
+  },
+  "result": "PASS",
+  "open_items": [
+    "P13 の本番 Migrate / Deploy は未実施 (保留)。PR 作成までを本ブランチの範囲とする。",
+    "共通シェルのフッター文言の折り返しを継続的に見る常設ゲートが無い (check:mobile-layout のフィクスチャは偽フッター)。follow-up。",
+    "check:financial-routes の Household 罫線検査が 60 計測中 1 回だけ落ちる。原因未特定のため、合否条件は変えずセル単位の実測値を失敗メッセージへ残す診断だけを足した。"
+  ]
+}

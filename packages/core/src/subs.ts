@@ -6,6 +6,7 @@
  *   (Amazon のように物販とサブスクが同じ取引先名で混ざる支払先のため)。
  * - 名前は正規化キーの完全一致、別名は部分一致(支払先に別名が含まれれば一致)。
  */
+import { monthIndex } from './month.js';
 import { mean, std } from './stats.js';
 import type { FreeeDeal } from './types.js';
 
@@ -92,8 +93,6 @@ export interface SubsCandidate {
   /** 採点の根拠(画面にそのまま出す) */
   reasons: string[];
 }
-
-const monthIndex = (m: string) => Number(m.slice(0, 4)) * 12 + Number(m.slice(5, 7)) - 1;
 
 /**
  * 登録外の支払先を「サブスクらしさ」順に並べる。

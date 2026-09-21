@@ -1,31 +1,41 @@
 {
   "renderer": "render-graph-html.py (dev-graph 0.1.11)",
-  "rendered_at": "2026-09-18T05:05:49Z",
+  "rendered_at": "2026-09-19T14:03:53Z",
   "scope": "all nodes",
-  "graph_revision": 1,
+  "graph_revision": 4,
   "input": ".dev-graph/state/graph.json",
-  "input_sha256": "374837456c5851fc438fcc97e31e25308d7fd524425f77dacb4351bb5245a3fb",
+  "input_sha256": "441dc82c90fa71df157e3fe4bce716fb04504bcb2296460b3abdb3243e30ea13",
   "output": ".dev-graph/render/index.html",
-  "output_sha256": "8e2df757e555fb7fcaddb9df159f419b636686fd57739af5ebcc7f339c33a171",
-  "nodes": 16,
-  "edges": 12,
+  "output_sha256": "9cbcb245fe7c64a018354ef989c619720e7f0fce2a29e25a6f8f9fd3c81859b8",
+  "nodes": 23,
+  "edges": 21,
   "feature_progress": {
-    "feat-diagnosis-screen": {
+    "feat-ai-analysis-screen": {
       "done": 0,
       "total": 13
     }
   },
   "external_refs": 0,
   "svg": 1,
-  "inline_scripts": 1,
+  "inline_scripts": 2,
   "registration_receipt": {
-    "path": ".dev-graph/receipts/register-feat-diagnosis-screen.json",
+    "path": ".dev-graph/plans/feature-package-feat-ai-analysis-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:13faf94a21513a4fa3b49d5ee9e526e0ad84bf3e469ca60c900fb479d3be08e6"
+    "source_digest": "sha256:dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405"
   },
   "beads_linked_nodes": 14,
-  "live_trial": "headless Chrome (--headless=new) screenshot で SVG DAG と SYS-DIAGNOSIS-SCREEN-P01..P13、'active · feature · 0/13' の表示を確認",
-  "known_display_issue": "長い title (P05) がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
+  "live_trial": "headless Chrome (--headless=new) screenshot で SVG DAG と SYS-AI-P01..P13・arch-ai-analysis-* 8 件・'active · feature · 0/13' の表示を確認",
+  "known_display_issue": "長い title (P02/P05/P12 等) がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
+  "checks": {
+    "input_digest": true,
+    "output_digest": true,
+    "nodes": true,
+    "edges": true,
+    "progress": true,
+    "external_refs_zero": true,
+    "svg": true,
+    "inline_script": true
+  },
   "note": "renderer は receipt を書かないため、本 receipt は render-graph-html.py の stdout と registration receipt から再作成し digest を実ファイルと照合した"
 }

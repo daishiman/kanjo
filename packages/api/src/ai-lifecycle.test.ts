@@ -9,6 +9,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
+import { splitMigrationStatements } from './migration-test-support.js';
 import { recordTestMigrationHead } from './schema-guard.test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
@@ -27,12 +28,8 @@ async function applyMigrations(database: D1Database): Promise<void> {
     .filter((f) => f.endsWith('.sql'))
     .sort();
   for (const filename of filenames) {
-    const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-      .replace(/^\s*--.*$/gm, '')
-      .split(';')
-      .map((sql) => sql.trim())
-      .filter(Boolean);
-    for (const sql of statements) await database.prepare(sql).run();
+    const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
+    for (const statement of statements) await database.prepare(statement).run();
   }
   // 実行時スキーマガードは d1_migrations の先頭名で判定するため、テストD1にも台帳を記録する。
   await recordTestMigrationHead(database, filenames);
@@ -52,29 +49,40 @@ const request = async (path: string, method = 'GET', body?: unknown): Promise<Re
 const requestWithDb = async (database: D1Database, path: string, method = 'GET'): Promise<Response> =>
   app.request(`/api${path}`, { method, headers: { cookie } }, { ...auth, DB: database });
 
-/** 架空の依頼行。used=true なら結果を受け取り済み(取り消せない)、expired=true なら期限切れ */
+/**
+ * 架空の依頼行。used=true なら結果を受け取り済み、expired=true なら期限切れ(失敗)、
+ * canceled=true なら取り消し済み。削除できるのは失敗と取り消しだけ (core の能力表)。
+ */
 async function insertTask(
   id: string,
   {
     used = false,
     expired = false,
+    canceled = false,
     reportId = null,
-  }: { used?: boolean; expired?: boolean; reportId?: string | null } = {},
+  }: { used?: boolean; expired?: boolean; canceled?: boolean; reportId?: string | null } = {},
 ): Promise<void> {
   const expiresAt = new Date(Date.now() + (expired ? -1000 : 60_000)).toISOString();
   await d1
     .prepare(
       `INSERT INTO ai_tasks
        (id, user_id, period_kind, period_key, period_from, period_to, report_type,
-        token_hash, expires_at, used_at, report_id, created_at)
-       VALUES (?, 'default', 'range', '', '2026-01', '2026-01', 'monthly', ?, ?, ?, ?, '2026-02-01T00:00:00.000Z')`,
+        token_hash, expires_at, used_at, canceled_at, report_id, created_at)
+       VALUES (?, 'default', 'range', '', '2026-01', '2026-01', 'monthly', ?, ?, ?, ?, ?, '2026-02-01T00:00:00.000Z')`,
     )
-    .bind(id, `hash-${id}`, expiresAt, used ? '2026-02-01T01:00:00.000Z' : null, reportId)
+    .bind(
+      id,
+      `hash-${id}`,
+      expiresAt,
+      used ? '2026-02-01T01:00:00.000Z' : null,
+      canceled ? '2026-02-01T00:30:00.000Z' : null,
+      reportId,
+    )
     .run();
 }
 
 /** 架空のレポート行(本文は空の第3版) */
-async function insertReport(id: string, taskId: string, createdAt: string): Promise<void> {
+async function insertReport(id: string, taskId: string, createdAt: string, version = 1): Promise<void> {
   const body = JSON.stringify({
     version: 3,
     generatedBy: 'test',
@@ -90,9 +98,9 @@ async function insertReport(id: string, taskId: string, createdAt: string): Prom
       `INSERT INTO ai_reports
        (id, user_id, task_id, period_kind, period_key, period_from, period_to, report_type,
         version, generated_by, title, summary, body_json, created_at)
-       VALUES (?, 'default', ?, 'range', '', '2026-01', '2026-01', 'monthly', 1, 'test', ?, ?, ?, ?)`,
+       VALUES (?, 'default', ?, 'range', '', '2026-01', '2026-01', 'monthly', ?, 'test', ?, ?, ?, ?)`,
     )
-    .bind(id, taskId, `架空レポート ${id}`, '架空の総評です。', body, createdAt)
+    .bind(id, taskId, version, `架空レポート ${id}`, '架空の総評です。', body, createdAt)
     .run();
 }
 
@@ -117,10 +125,10 @@ beforeAll(async () => {
   expect(cookie).not.toBe('');
 
   await insertTask('task-a', { used: true, reportId: 'rep-a' });
-  await insertTask('task-b');
+  await insertTask('task-b', { canceled: true });
   await insertTask('task-c', { expired: true });
   await insertReport('rep-a', 'task-a', '2026-02-01T01:00:00.000Z');
-  await insertReport('rep-b', 'task-a', '2026-02-02T01:00:00.000Z');
+  await insertReport('rep-b', 'legacy-task-b', '2026-02-02T01:00:00.000Z', 2);
 });
 
 afterAll(async () => {
@@ -165,8 +173,8 @@ describe('レポートのアーカイブ', () => {
            INSERT INTO ai_reports
              (id,user_id,task_id,period_kind,period_key,period_from,period_to,report_type,
               version,generated_by,title,summary,body_json,created_at)
-           SELECT printf('bulk-%03d', n), 'default', 'task-a', 'range', '',
-                  '2030-01', '2030-01', 'monthly', 1, 'test', '架空一括', '架空', '{}',
+           SELECT printf('bulk-%03d', n), 'default', printf('bulk-task-%03d', n), 'range', '',
+                  '2030-01', '2030-01', 'monthly', n, 'test', '架空一括', '架空', '{}',
                   datetime('2030-01-01', printf('+%d minutes', n))
              FROM seq`,
         )
@@ -176,15 +184,15 @@ describe('レポートのアーカイブ', () => {
           `INSERT INTO ai_reports
              (id,user_id,task_id,period_kind,period_key,period_from,period_to,report_type,
               version,generated_by,title,summary,body_json,archived_at,created_at)
-             VALUES ('old-long-active','default','task-a','range','','2024-01','2026-01','longterm',
+             VALUES ('old-long-active','default','old-long-task-active','range','','2024-01','2026-01','longterm',
                      1,'test','古い長期レポート','架空','{}',NULL,'2020-01-02T00:00:00.000Z')`,
         ),
         d1.prepare(
           `INSERT INTO ai_reports
              (id,user_id,task_id,period_kind,period_key,period_from,period_to,report_type,
               version,generated_by,title,summary,body_json,archived_at,created_at)
-             VALUES ('old-long-archived','default','task-a','range','','2024-01','2026-01','longterm',
-                     1,'test','古いアーカイブ','架空','{}','2020-01-03T00:00:00.000Z','2020-01-01T00:00:00.000Z')`,
+             VALUES ('old-long-archived','default','old-long-task-archived','range','','2024-01','2026-01','longterm',
+                     2,'test','古いアーカイブ','架空','{}','2020-01-03T00:00:00.000Z','2020-01-01T00:00:00.000Z')`,
         ),
       ]);
 
@@ -206,17 +214,16 @@ describe('レポートのアーカイブ', () => {
   });
 });
 
-describe('レポートの削除', () => {
-  it('削除すると本文ごと消え、依頼・後続レポートの参照をすべて外す', async () => {
+describe('旧DELETE経路の安全なアーカイブ互換', () => {
+  it('DELETEでも本文と参照を壊さずアーカイブする', async () => {
     await d1.batch([
       d1.prepare('UPDATE ai_tasks SET parent_report_id = ? WHERE id = ?').bind('rep-a', 'task-b'),
       d1.prepare('UPDATE ai_reports SET parent_report_id = ? WHERE id = ?').bind('rep-a', 'rep-b'),
     ]);
     const res = await request('/ai/reports/rep-a', 'DELETE');
     expect(res.status).toBe(200);
-    expect(await reportIds('?archived=1')).toEqual(['rep-b']);
-    expect((await request('/ai/reports/rep-a')).status).toBe(404);
-    // 依頼の履歴自体は残す(いつ何を依頼したかを追えるように)
+    expect(await reportIds('?archived=1')).toEqual(['rep-b', 'rep-a']);
+    expect((await request('/ai/reports/rep-a')).status).toBe(200);
     const sourceTask = await d1
       .prepare('SELECT report_id FROM ai_tasks WHERE id = ?')
       .bind('task-a')
@@ -229,13 +236,13 @@ describe('レポートの削除', () => {
       .prepare('SELECT parent_report_id FROM ai_reports WHERE id = ?')
       .bind('rep-b')
       .first<{ parent_report_id: string | null }>();
-    expect(sourceTask?.report_id).toBeNull();
-    expect(childTask?.parent_report_id).toBeNull();
-    expect(childReport?.parent_report_id).toBeNull();
+    expect(sourceTask?.report_id).toBe('rep-a');
+    expect(childTask?.parent_report_id).toBe('rep-a');
+    expect(childReport?.parent_report_id).toBe('rep-a');
   });
 
   it('無いレポートの削除は404', async () => {
-    expect((await request('/ai/reports/rep-a', 'DELETE')).status).toBe(404);
+    expect((await request('/ai/reports/unknown', 'DELETE')).status).toBe(404);
   });
 });
 
@@ -267,7 +274,7 @@ describe('統計の基準月数の設定', () => {
 });
 
 describe('依頼の取り消し', () => {
-  it('結果待ち・期限切れの依頼は消せる', async () => {
+  it('取り消し済み・期限切れの依頼は消せる', async () => {
     expect((await request('/ai/tasks/task-b', 'DELETE')).status).toBe(200);
     expect((await request('/ai/tasks/task-c', 'DELETE')).status).toBe(200);
     const res = await request('/ai/tasks');
@@ -278,11 +285,23 @@ describe('依頼の取り消し', () => {
   it('受信済みの依頼はレポートの出所なので消さない(409)', async () => {
     const res = await request('/ai/tasks/task-a', 'DELETE');
     expect(res.status).toBe(409);
-    expect((await res.json()) as { code: string }).toMatchObject({ code: 'already_done' });
+    expect((await res.json()) as { code: string }).toMatchObject({ code: 'not_deletable' });
+  });
+
+  it('結果待ちの依頼は削除でなく取り消しの担当なので 409(行は残る)', async () => {
+    await insertTask('task-waiting');
+    const res = await request('/ai/tasks/task-waiting', 'DELETE');
+    expect(res.status).toBe(409);
+    expect((await res.json()) as { code: string }).toMatchObject({ code: 'not_deletable' });
+    expect(
+      await d1.prepare('SELECT id FROM ai_tasks WHERE id = ?').bind('task-waiting').first(),
+    ).toMatchObject({ id: 'task-waiting' });
+    await d1.prepare('DELETE FROM ai_tasks WHERE id = ?').bind('task-waiting').run();
   });
 
   it('SELECT後に結果受信が割り込んでもCAS削除せず409にする', async () => {
-    await insertTask('task-race');
+    // 削除できる段階 (取り消し済み) の行で、削除SQLの直前に結果受信が割り込む場合を作る
+    await insertTask('task-race', { canceled: true });
     let raced = false;
     const wrapStatement = (statement: D1PreparedStatement): D1PreparedStatement =>
       new Proxy(statement, {

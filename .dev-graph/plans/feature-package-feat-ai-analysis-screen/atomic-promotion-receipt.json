@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "promoted",
+  "promoted_at": "2026-09-19T13:50:42Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+  "evaluated_digest": "sha256:dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+  "published_digest": "sha256:dede168b82fcdec85ff00d13378d586344ebdd90747d5ea9bd779c6a825d5405",
+  "implementation_readiness": "complete",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS"
+  },
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-ai-analysis-screen/dev-graph-registration.json"
+}

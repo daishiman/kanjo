@@ -14,6 +14,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { splitMigrationStatements } from './migration-test-support.js';
 import { runImprovementRetention } from './routes/improvement.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -90,11 +91,7 @@ describe('削除ジョブの失敗が他へ波及しないこと', () => {
       .filter((f) => f.endsWith('.sql'))
       .sort();
     for (const filename of filenames) {
-      const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-        .replace(/^\s*--.*$/gm, '')
-        .split(';')
-        .map((sql) => sql.trim())
-        .filter(Boolean);
+      const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
       for (const sql of statements) await d1.prepare(sql).run();
     }
     // 期限を過ぎた要望を2件だけ置く。片方の削除は R2 側で失敗させる

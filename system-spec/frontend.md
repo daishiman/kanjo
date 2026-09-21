@@ -15,12 +15,12 @@ serves_goals: [G1, G3, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-household-frontend-web-001。裏付け質疑 (`qa_refs`): `qa-household-frontend-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G3, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、フロントエンドでは React Native などのネイティブ実行環境で推移グラフと表を描き直すか、web の部品をどこまで共有するかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、フロントエンドではタブレット専用の画面分割 (表と詳細の常時 2 ペイン) を別ルートにするか、同じ家計画面の分岐にするかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、フロントエンドでは Electron などのシェルに web 資産を同梱するか、オフライン時に家計の集計をどこまで端末で持つかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、フロントエンドでは配布形式 (AppImage・Flatpak 等) ごとに web 資産の更新をどう届けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、フロントエンドでは WebView 版とネイティブ版のどちらで家計画面を描き、署名と自動更新をどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-ai-frontend-web-001。裏付け質疑 (`qa_refs`): `qa-ai-frontend-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G3, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、frontend ではReact Native などへの移植と、web と共有できる部品の範囲を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、frontend ではタブレット向けの分割表示の部品と、画面回転時の状態保持を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、frontend ではElectron / Tauri などの殻の選定と、web 版との差分管理を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、frontend では殻の選定と、Linux のフォント・DPI 差の吸収を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、frontend では殻の選定と、macOS のウィンドウ復元時の状態保持を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G1, G3, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 表示の共通部品を使う規則を、家計収支画面の部品分割に反映した。ページの枠は PageShell / PageState、KPI は KpiCard、グラフは FinancialFigure と charts.ts の系列色、ボタンは共通 Button を使い、色は design-tokens のトークンだけで書く (直書き色は lint の check-design-tokens で落ちる)。下部の選択中バーは総収支と推移に個別実装があるため、家計画面でも同じ見た目の規約に合わせる。 |
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | サーバ状態と画面状態を分ける規則を、家計収支画面の取得と選択に反映した。家計の本体・区分詳細・名義ラベルはどれも TanStack Query のサーバ状態として持ち、名義ラベルの保存後は家計・設定・明細のクエリを無効化して再取得する。seg・month・cat の選択は URL の状態として持ち、コンポーネント内に複製しない。ページは遅延読み込みのまま初期 JS 予算に含めない。 |
+| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 表示の共通部品を使う規則を、AI分析画面の表・タブ・ボタン・選択中バーに反映した。表と選択中バーはサブスク・診断画面の既存部品と同じ流儀で組み、ボタンは共通 Button、色はトークンだけにする。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | サーバー状態と画面状態を分ける規則を、依頼一覧・レポート一覧・レポート詳細・使用するデータの 4 つの取得と、選択中の依頼・レポート・タブ (URL) と下書き (localStorage) の分離に反映した。操作の後は該当する取得だけを無効化し、選択は URL から復元する。 |
 
 ## 確定内容 (質疑録)
 
@@ -39,36 +39,29 @@ serves_goals: [G1, G3, G4]
 
 - 資するゴール: G1, G3, G4
 
-#### 主たる接地根拠: `qa-household-frontend-web-001`
+#### 主たる接地根拠: `qa-ai-frontend-web-001`
 
 **問**
 
-web の家計収支画面のフロントエンド構成 (ファイル分割・状態・取得・部品) をどう作るか。
+web の AI分析画面のフロントエンド構成 (ファイル分割・状態・取得・部品) をどう作るか。
 
 **答**
 
-Household.tsx を packages/web/src/pages/household/ へ分割する (画面の親、KPI と前年より、推移チャート、事業と個人の等式、カテゴリ表、カテゴリ詳細パネル、名義別収入、選択月の振替全件 (抜粋なし)、名義ラベル編集ダイアログ、前年との比較、下部バー)。選択中の対象 (seg)・月 (month)・区分 (cat) は useSearchParams で URL に保ち、期間は既存 usePeriod を使う。本体は TanStack Query で GET /api/household を 1 回取得し、カテゴリ詳細は cat と month が決まったときだけ GET /api/household/category を取得する (dependent query)。名義ラベルは GET / PUT /api/settings/owner-labels を useMutation で保存し、成功時に家計・設定・明細のクエリを無効化する。色は design-tokens のトークンだけ、ボタンは共通 Button、ページは PageShell / PageState、グラフは FinancialFigure と charts.ts の系列色。名義の表示は core の ownerLabel だけを通し、OWNER_LABEL の直参照を残さない。routeMetadata の /household の名称を『家計収支』へ改め、figure-guides と用語集を合わせる。ページは遅延読み込みのままにし、初期 JS 予算 (CI 実測) を超えない。
+Ai.tsx を packages/web/src/pages/ai/ 配下へ分割し (依頼・実行中・レポート一覧・取り込み・詳細・版履歴・版比較・選択中バー)、段階・進捗・版の説明・タブの振り分け・JSON エラー位置は core の純関数の結果を描くだけにする。期間は usePeriod から取り旧 PRESETS を消す (qa-ai-decision-001)。取得は TanStack Query で依頼一覧・レポート一覧・レポート詳細・使用するデータを分け、キャンセル・再実行・削除・取り込み・アーカイブの mutation 後に該当キーを無効化する。選択中の依頼・レポート・タブは URL の検索パラメータに持つ。補足指示の下書きは localStorage に自動保存し発行時に消す (qa-ai-decision-006)。色はトークン、ボタンは共通 Button、ページは PageShell。画面は遅延読み込みのまま。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-18T12:02:30Z` — answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。
->   - 変更: `answered_at` `'2026-09-18T11:25:37Z'` → `'2026-09-18T11:36:56Z'` (フィールドは訂正後の値。旧値はこの行にのみ残る)
-> - `2026-09-18T12:02:30Z` — answered_at の訂正を記録した。本文の値は利用者の決定 001〜007 と承認の範囲に収まり、agent が補った値は含まない。
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答 / 回答時刻: 2026-09-18T11:36:56Z)
-
-#### 裏付け質疑: `qa-household-frontend-web-evidence-001`
+#### 裏付け質疑: `qa-ai-frontend-web-evidence-001`
 
 **問**
 
-frontend 章の裏付けとして、現行の家計画面と共通部品について何を観測したか。
+frontend 章の裏付けとして、現行の AI 画面と共通部品について何を観測したか。
 
 **答**
 
-packages/web/src/pages/Household.tsx は 657 行の 1 ファイルで、routeMetadata.ts:68-79 の /household はラベル『累計収支』・グループ『整える』(Layout.tsx:57)。共通部品は components/Page.tsx の PageShell / PageHeader / PageState / KpiCard / PageActions、period.tsx の usePeriod / PeriodPicker、trends/TrendDetailPanel.tsx (出典)、SortableTableHeader、FinancialFigure がある。下部の選択中バーは共通化されておらず、trends/ComparisonScreen.tsx:51 の tcf-selection-bar と TotalCashflow.tsx:1089 に個別実装がある。推移 (#56) は pages/analysis/trends/、マトリックス (#57) は pages/analysis/matrix/ へ分割した前例がある。
+AI 画面は AuthenticatedApp.tsx:23 で lazy(() => import('./pages/Ai.js')) により遅延読み込みされる。Ai.tsx は AiPage・PromptCard・RunCard・ReportDetail・CompareView・ReportToc・FindingList を 1 ファイルに持ち、useQuery で /summary・/ai/tasks・/ai/reports を取得する (Ai.tsx:98-101)。既存の DOM テスト (ai-copy-log / ai-report-structure / ai-report-archive / ai-task-collapse の各 .dom.test.tsx) が RunCard・FindingList・ReportText・AiPage を Ai.js から直接 import している。共通の期間は packages/web/src/period.tsx の usePeriod / PeriodPicker が担う。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-18T11:33:59Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
 
 ## To-Be / Delta
 
@@ -76,44 +69,29 @@ packages/web/src/pages/Household.tsx は 657 行の 1 ファイルで、routeMet
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: /household を 10-household.png どおりの画面にする。問いの見出し『家計の総収入・総支出・純収支は、どう変わりましたか？』と説明文、データの出典カード (取込元の代表名と件数・取込明細を確認)、期間タブ (既存の期間選択を引き継ぐ 1年 / 2年 / 3年 / 任意と対象範囲)、KPI 3 枚 (総収入・総支出・純収支と月平均・年換算) と前年差カード、月別の家計収支推移 (家計全体 / 事業 / 個人のタブ、当期の収入・支出の棒、純収支の折れ線、前年の収入・支出の点線、月送り)、事業と個人の内訳 (家計全体 = 事業 + 個人の等式と重複なしの注記)、生活費カテゴリ別の内訳表、名義別の収入、振替は収入・支出から除外、名義ラベルの設定、前年との比較 (増減と文章の要約)、下部の選択中バー (選択中の月と純収支・内訳の明細を確認) を、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持ち、ナビの名称を『家計収支』へ改める。
-- **G3**: 生活費カテゴリの行を選ぶと『カテゴリの詳細』パネルを出す。期間合計 `current`、選択月全件合計 `monthTotal`、選択月の最大 5 件プレビュー `transactions` を分離し、カテゴリのすべて見るは月とカテゴリで絞った明細へ遷移する。
-- **G4**: 名義を『本人 / パートナー / 子ども / その他』で扱えるようにする。内部値 (business / spouse / family と未設定) は変えず、名義ラベル表を追加する追加のみの migration と、表示名の取得・更新 API を設ける。初期表示名は business→本人、spouse→パートナー、family→子ども、未設定→その他。『名義ラベルを編集』から表示名だけを変更でき、家計画面・設定画面・明細画面の名義表示がすべてこの表示名を参照する。更新 API は既存の authGuard・パスワード変更フェンス・スキーマガード・変更系フェンスの内側に置き、入力は zod で長さと文字種を検証する。
+- **G1**: /ai を 12-ai.png どおりの画面にする。問いの見出し『AIに分析を依頼し、根拠と版を確認しますか？』と説明文、共通の期間タブ (1年 / 2年 / 3年 / 任意と範囲の送り)、1.依頼 (期間・補足指示 0/1000 と下書き自動保存・Claude Code 用 / Codex 用のコピー・使用するデータのカード・自動送信しない注記)、2.実行中の表 (ID・ステータス・依頼期間・作成日時・進捗・依頼内容・操作)、3.レポート (一覧の検索とアーカイブ表示・結果の取り込み・詳細のタブと版履歴と版比較)、下部の選択中バーを、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。
+- **G3**: 依頼の操作を画面で決着できるようにする。キャンセルはトークンを無効にして行を残し、再実行は同じ期間と補足指示で新しい依頼を発行し、削除は結果の無い依頼だけを消す (受信済みは削除不可)。依頼の発行とプロンプトのコピーを 1 操作にする。
+- **G4**: 結果の取り込みとレポートの読み方を整える。取り込み先は選択中の依頼 (結果待ちが 1 件なら自動選択・無ければ無効)、JSON の構文エラーは行と位置を、契約違反は項目名を日本語で示し、入力は保持する。レポートは 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、版履歴は補足指示の 1 行目 (無ければ既定文) を説明にし、2 つの版を並べて比較できる。一覧は名前で検索でき、アーカイブの表示を切り替えられる。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | 家計収支画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出しと説明文・出典カード・期間タブ・KPI 3 枚と前年差カード・推移のタブ 3 つと凡例 5 系列と月送り・事業と個人の等式・生活費カテゴリ表・名義別収入・振替除外の一覧・名義ラベル設定・前年との比較・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。 |
-| O3 | カテゴリ詳細が選択と同期し、明細へ遷移できる。 | DOM テストで `current` / `monthTotal` / 最大 5 件の `transactions` プレビューの分離と、カテゴリのすべて見るの月・カテゴリ絞り込みを確かめる。 |
-| O4 | 名義ラベルの編集が安全に保存され全画面に反映される。 | API 統合テストで、未認証 401・変更系フェンス違反の拒否・長さ超過と制御文字の 400・正常更新の 200 と再取得での反映を確認し、migration が既存行を 1 行も書き換えないことを検査する。 |
+| O1 | AI分析画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出し・期間タブ・1.依頼 (補足指示の文字数と下書き復元・コピー 2 種・使用するデータ・注記)・2.実行中の表の 7 列・3.レポートの一覧と取り込みと詳細 4 タブと版履歴・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。 |
+| O3 | キャンセル・再実行・削除が規則どおりに効く。 | API テストで、キャンセル後のトークンがデータ取得とレポート送信で拒否され行が残ること、再実行が同じ期間と補足指示の新しい依頼を作ること、受信済みの依頼の削除が拒否されることを確かめる。 |
+| O4 | 取り込みの誤りが直せる形で示され、レポートがタブと版で読める。 | DOM と core のテストで、構文エラーの行・列の表示と入力の保持、契約違反の項目名表示、選択中の依頼への取り込み、4 タブへの振り分け、版の説明の導出、2 版比較、一覧の検索とアーカイブ切替を確かめる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: Household.tsx を pages/household/ 配下へ分割し、問いの見出し・出典カード・KPI と前年差・推移チャート・事業と個人の等式・カテゴリ表と詳細パネル・名義別収入・振替除外・名義ラベル設定・前年との比較・下部の選択中バーの構成に作り直し、選択中の月とカテゴリとタブを URL に保つ。
-- **I2**: 月別推移に家計全体 / 事業 / 個人のタブ、当期の収入・支出の棒、純収支の折れ線、前年の収入・支出の点線、月送り (< 2026年8月 >) を持たせ、月の選択を下部バーと同期する。
-- **I4**: 生活費 6 区分 (住居費 / 食費 / 光熱費 / 教育費 / 交通費 / その他) と MF 大項目の対応表を core に 1 か所だけ置き、docs に同じ表を載せる。
-- **I5**: カテゴリ詳細の `current` / `monthTotal` / 最大 5 件の `transactions` プレビューを返す取得経路を設け、選択時にだけ取得する。カテゴリのすべて見るは明細画面を月・カテゴリ・対象で絞った URL で開く。
-- **I6**: owner_labels 表と GET / PUT の表示名 API、名義ラベル編集ダイアログを作り、家計・設定・明細の名義表示を表示名の取得関数 1 つへ寄せる。
-- **I8**: routeMetadata の /household の名称を『家計収支』に改め、パンくず・figure-guides・glossary の記述を合わせる。
+- **I1**: Ai.tsx を pages/ai/ 配下へ分割し、問いの見出し・期間タブ・1.依頼・2.実行中・3.レポート・下部の選択中バーの構成に作り直す。選択中の依頼とレポートとタブを URL に保つ。
+- **I3**: キャンセル (トークン無効化・行を残す) と再実行 (同じ期間と補足指示で新規発行) の API を足し、実行中の表の操作列から呼ぶ。発行とコピーを 1 操作にする。
+- **I4**: 結果の取り込みを選択中の依頼へ向け、JSON の構文エラーの行・位置と契約違反の項目名を示し、入力を保持する。
+- **I5**: レポート詳細を 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、要約の下に関連ページのリンクと版履歴 (補足指示の 1 行目から説明) と 2 版比較を置く。一覧に検索とアーカイブ切替を付ける。
+- **I7**: 補足指示の下書きを localStorage に自動保存し、発行時に消す。
 
 ### 本章に効く確定意思決定
 
-- **dec-household-categories**: 生活費の区分をどう作るか。画像の固定 6 区分へ寄せるか、金額上位 5 大項目とその他にするか。
-  - 採択: 固定 6 区分へ寄せる (`opt-fixed-six`)
-  - 目的適合: G1 の画像の表と一致し、G3 の詳細パネルで区分の意味が期間をまたいで一定になる。
-- **dec-household-figure-source**: 画像の数値が算術で閉じない欄をどう扱うか。収入・支出を正本に差を計算するか、画像の純収支を正本にして前年の総支出を調整するか。
-  - 採択: 収入・支出を正本に差を計算する (−¥80,000) (`opt-compute-from-income-expense`)
-  - 目的適合: G2 の『数字は台帳の行から作る』と一致し、どの欄も算術で閉じる。見た目の数値は一部画像と変わる。
-- **dec-household-ledger-source**: 家計収支の数字を何から作るか。総収支画面の台帳を正本にするか、現行の household() を拡張するか。
-  - 採択: 総収支の台帳を正本にする (`opt-ledger-source`)
-  - 目的適合: G2 の『家計の集計を 1 か所に集め、総収支と同じ行から作る』に直接答える。総収支の総合と家計全体が同じ行集合から出るため、両画面の数字が一致する。
-- **dec-household-nav-name**: ナビの名称をどうするか。/household を『家計収支』へ改名するか、改名に加えて累計収支を新設するか。
-  - 採択: /household を『家計収支』に改名する (`opt-rename-household`)
-  - 目的適合: G1 の『10-household.png どおりの画面にする』に合わせ、画像の見出しと一致する。
-- **dec-household-owner-model**: 名義を『本人 / パートナー / 子ども / その他』で扱うとき、内部値を移行するか、内部値を残して表示名だけを編集可能にするか。
-  - 採択: 内部値は残し表示名を編集可能にする (`opt-owner-display-label`)
-  - 目的適合: G4 の表示名の要件を満たし、既存の business / spouse / family / unset を使う規則・明細を壊さない。
+- (本章ゴールに効く確定 decision なし)
 
 ## 適用された設計知識
 
@@ -121,9 +99,9 @@ packages/web/src/pages/Household.tsx は 657 行の 1 ファイルで、routeMet
 
 ### 本章での適用
 
-Clean Architecture card の依存方向を、web が家計の集計規則を持たない構成に適用した。現行 Household.tsx は 657 行の 1 ファイルで前月比や名義の振り分けを画面側で組んでいるが、新しい構成では householdSummary の結果をそのまま描く部品群 (KPI・推移・6 区分の表・詳細パネル・名義別収入・振替・名義ラベル編集・下部バー) を pages/household/ に分ける。seg・month・cat の選択は URL に置き、再読込や共有で同じ画面へ戻れるようにする。カテゴリ詳細は選択が決まったときだけ取得する dependent query にし、本体の取得を 1 回に抑える。名義の表示は core の ownerLabel だけを通し、OWNER_LABEL の直参照を残さない。
+Clean Architecture card の依存方向を、web が段階の判定を持たない構成に適用した。現行 Ai.tsx は 1277 行の 1 ファイルで、状態の文言や期限の判定を画面側で組んでいるが、新しい構成では api が返す段階・進捗・T-番号・版の説明をそのまま描く部品群 (依頼・実行中の表・レポート一覧・取り込み・詳細・版履歴・版比較・選択中バー) に分ける。画面が持つ状態は選択中の依頼・レポート・タブ (URL) と補足指示の下書き (localStorage) だけにする。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-18T11:37:52Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -217,5 +195,6 @@ Clean Architecture card の依存方向を、web が家計の集計規則を持�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| tanstack-query-dependent-queries | 5.103.1 | TanStack (github.com) | https://github.com/TanStack/query/releases/latest | 2026-09-18T11:39:30Z | 2026-09-18T11:39:30Z |
-| react-router-searchparams | 8.4.0 | React Router (Remix / Shopify) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-18T11:39:30Z | 2026-09-18T11:39:30Z |
+| tanstack-query-invalidation | 5.103.1 | TanStack (github.com) | https://github.com/TanStack/query/releases/latest | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
+| react-router-searchparams | 8.4.0 | React Router (Shopify / Remix team) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
+| mdn-localstorage | 2026-07-28 | Mozilla (MDN Web Docs) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |

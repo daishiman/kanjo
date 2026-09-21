@@ -12,6 +12,7 @@ import { subsReviewStatus, subsSpendAlerts, subscriptions } from './analysis.js'
 import { type AccountKind, accountKindOf, isCashTxId } from './cash.js';
 import { ensureMonth } from './dataset.js';
 import { type ExpenseFact, buildExpenseProjection, registeredVendorOf } from './expense-projection.js';
+import { monthIndex, monthKey, monthLabel } from './month.js';
 import { type PeriodRange, applyPeriod } from './period.js';
 import { type SubVendor, subsCandidates, vendorKey } from './subs.js';
 import type { Dataset, FreeeDeal } from './types.js';
@@ -204,22 +205,19 @@ export function subsCategoryOf(
 
 /* ======================== 月の計算 ======================== */
 
-const monthNo = (m: string) => Number(m.slice(0, 4)) * 12 + Number(m.slice(5, 7)) - 1;
-const monthOfNo = (n: number) => `${Math.floor(n / 12)}-${String((n % 12) + 1).padStart(2, '0')}`;
 const monthsBetween = (from: string, to: string): string[] => {
   const out: string[] = [];
-  for (let n = monthNo(from); n <= monthNo(to); n++) out.push(monthOfNo(n));
+  for (let n = monthIndex(from); n <= monthIndex(to); n++) out.push(monthKey(n));
   return out;
 };
 const inRange = (m: string, range: PeriodRange) => m >= range.from && m <= range.to;
 const yen = (n: number) => Math.round(n).toLocaleString('ja-JP');
-const jpMonth = (m: string) => `${Number(m.slice(0, 4))}年${Number(m.slice(5, 7))}月`;
 const fixed1 = (n: number) => (Math.round(n * 10) / 10).toFixed(1);
 
 /** 直前の同じ長さの期間 */
 export function previousSubsPeriod(range: PeriodRange): PeriodRange {
-  const len = monthNo(range.to) - monthNo(range.from) + 1;
-  return { from: monthOfNo(monthNo(range.from) - len), to: monthOfNo(monthNo(range.to) - len) };
+  const len = monthIndex(range.to) - monthIndex(range.from) + 1;
+  return { from: monthKey(monthIndex(range.from) - len), to: monthKey(monthIndex(range.to) - len) };
 }
 
 /* ======================== 明細の準備 ======================== */
@@ -300,7 +298,8 @@ function paymentsOf(facts: readonly Fact[]): { month: string; amount: number }[]
 
 function billingOf(payments: readonly { month: string }[]): 'monthly' | 'annual' {
   if (payments.length < 2) return 'monthly';
-  const gap = monthNo(payments[payments.length - 1]!.month) - monthNo(payments[payments.length - 2]!.month);
+  const gap =
+    monthIndex(payments[payments.length - 1]!.month) - monthIndex(payments[payments.length - 2]!.month);
   return gap >= 11 && gap <= 13 ? 'annual' : 'monthly';
 }
 
@@ -317,7 +316,7 @@ function baseRow(
   const latest = payments[payments.length - 1];
   const latestAmount = latest?.amount ?? 0;
   const estimatedMonthly = billing === 'annual' ? Math.round(latestAmount / 12) : latestAmount;
-  const since = latest ? monthNo(range.to) - monthNo(latest.month) : Number.POSITIVE_INFINITY;
+  const since = latest ? monthIndex(range.to) - monthIndex(latest.month) : Number.POSITIVE_INFINITY;
   const active = billing === 'annual' ? since <= 11 : since <= 1;
   const { category, source } = subsCategoryOf(meta.normalizedName, meta.override);
   return {
@@ -401,14 +400,14 @@ function spendHits(base: BaseRow, range: PeriodRange): RuleHit[] {
   if (dup) {
     hits.push({
       rule: 'dup',
-      reason: `${jpMonth(dup.month)}の支払い ¥${yen(dup.value)} が通常 (¥${yen(dup.median)}) の ${fixed1(dup.value / dup.median)} 倍です。二重請求の可能性があります。`,
+      reason: `${monthLabel(dup.month)}の支払い ¥${yen(dup.value)} が通常 (¥${yen(dup.median)}) の ${fixed1(dup.value / dup.median)} 倍です。二重請求の可能性があります。`,
     });
   }
   const spike = alerts.filter((a) => a.type === 'spike').at(-1);
   if (spike) {
     hits.push({
       rule: 'spike',
-      reason: `${jpMonth(spike.month)}の支払い ¥${yen(spike.value)} が通常の ${fixed1(spike.value / spike.median)} 倍に増えています。`,
+      reason: `${monthLabel(spike.month)}の支払い ¥${yen(spike.value)} が通常の ${fixed1(spike.value / spike.median)} 倍に増えています。`,
     });
   }
   return hits;
@@ -426,7 +425,7 @@ function priceUpHit(base: BaseRow, range: PeriodRange): RuleHit | null {
     const now = p[i]!.amount;
     return {
       rule: 'priceUp',
-      reason: `${jpMonth(p[i]!.month)}から ¥${yen(prev)} → ¥${yen(now)} (+${fixed1(((now - prev) / prev) * 100)}%) に値上がりし、${run}か月続いています。`,
+      reason: `${monthLabel(p[i]!.month)}から ¥${yen(prev)} → ¥${yen(now)} (+${fixed1(((now - prev) / prev) * 100)}%) に値上がりし、${run}か月続いています。`,
     };
   }
   return null;
@@ -586,7 +585,7 @@ function coverageOf(ctx: Context, range: PeriodRange | null): SubscriptionsScree
   for (const tx of ctx.input.all.mfTx) if (!isCashTxId(tx.id)) touch(tx.inst, tx.m);
   for (const deal of ctx.input.deals) touch(deal.settleAccount, deal.month);
 
-  const span = monthNo(eff.to) - monthNo(eff.from) + 1;
+  const span = monthIndex(eff.to) - monthIndex(eff.from) + 1;
   const buckets = { bank: empty(), card: empty(), emoney: empty() };
   const filled = { bank: 0, card: 0, emoney: 0 };
   let unclassified = 0;
