@@ -318,11 +318,12 @@ describe('AC-006 推奨と信頼度は決定論', () => {
     });
 
     const rule = recommendationFor(byId.get('mf-same-new') ?? null, '架空雑貨', data.rules, vendorMemories);
-    expect(rule).toMatchObject({ recommendation: '消耗品費', basis: 'rule', confidence: null });
+    // BR-04: 由来ごとの信頼度が決まったので、ルールは 85・MF 中項目は 70 になる (旧実装は null)
+    expect(rule).toMatchObject({ recommendation: '消耗品費', basis: 'rule', confidence: 85 });
 
     const midTx = { ...(byId.get('mf-large') as MfTx), mid: '事業用品' };
     const mid = recommendationFor(midTx, '架空書店', data.rules, vendorMemories);
-    expect(mid).toMatchObject({ recommendation: '事業', basis: 'mf_mid', confidence: null });
+    expect(mid).toMatchObject({ recommendation: '事業', basis: 'mf_mid', confidence: 70 });
 
     const none = recommendationFor(byId.get('mf-same-old') ?? null, '架空文具', data.rules, vendorMemories);
     expect(none).toEqual({ recommendation: null, basis: 'none', basisLabel: '根拠なし', confidence: null });
@@ -455,7 +456,6 @@ describe('AC-004 月次クローズ 4 ステップの判定表', () => {
         items,
         reviews,
         hasCommittedImport: row.committed ?? true,
-        actionRequiredCount: row.rec,
       });
       expect(status.month).toBe('2026-09');
       expect(status.steps.map((s) => s.key)).toEqual([
@@ -473,7 +473,7 @@ describe('AC-004 月次クローズ 4 ステップの判定表', () => {
     });
   }
 
-  it('保留中の明細は保留前の全件で数え、仕分けステップを完了にしない (BR-005)', async () => {
+  it('指紋が一致する保留はキューと同じく仕分けステップの件数から除く', async () => {
     const input = queueFixture();
     const queue = buildReviewQueue(input);
     const snoozes = await Promise.all(
@@ -489,29 +489,71 @@ describe('AC-004 月次クローズ 4 ステップの判定表', () => {
     expect(visible.items.some((x) => x.kind === 'classification')).toBe(false);
     const status = monthlyCloseStatus({
       data: input.data,
-      items: queue,
+      items: visible.items,
       reviews: [],
       hasCommittedImport: true,
-      actionRequiredCount: 1,
     });
-    expect(status.steps[1]).toMatchObject({ key: 'classification', done: false, count: 4 });
+    expect(status.steps[1]).toMatchObject({ key: 'classification', done: true, count: 0 });
   });
 
-  it('照合ステップは actionRequiredCount をそのまま使い、要確認を再加算しない (照合画面 BR-006)', () => {
+  it('対象月の有効な未処理だけを数え、保留とクローズの件数を一致させる', async () => {
+    const input = queueFixture();
+    const queue = buildReviewQueue(input);
+    const september = queue.find((x) => x.kind === 'classification' && x.month === '2026-09');
+    if (!september) throw new Error('fixture');
+    const effective = await applyReviewSnoozes(queue, [
+      {
+        kind: september.kind,
+        itemKey: september.itemKey,
+        fingerprint: await reviewItemFingerprint(september),
+      },
+    ]);
+    const status = monthlyCloseStatus({
+      data: input.data,
+      items: effective.items,
+      reviews: [],
+      hasCommittedImport: true,
+    });
+
+    expect(status.month).toBe('2026-09');
+    expect(status.steps[1]).toMatchObject({
+      key: 'classification',
+      count: effective.items.filter((x) => x.kind === 'classification' && x.month === '2026-09').length,
+    });
+    // 2026-08 の未処理と全期間の照合件数は、2026-09 のクローズに混ぜない。
+    expect(status.steps[2]).toMatchObject({ key: 'reconciliation', count: 1 });
+  });
+
+  it('指紋が stale な保留は対象月の未処理に復帰する', async () => {
+    const input = queueFixture();
+    const queue = buildReviewQueue(input);
+    const target = queue.find((x) => x.kind === 'classification' && x.month === '2026-09');
+    if (!target) throw new Error('fixture');
+    const effective = await applyReviewSnoozes(queue, [
+      { kind: target.kind, itemKey: target.itemKey, fingerprint: '0'.repeat(64) },
+    ]);
+    const status = monthlyCloseStatus({
+      data: input.data,
+      items: effective.items,
+      reviews: [],
+      hasCommittedImport: true,
+    });
+    expect(effective.items).toContainEqual(target);
+    expect(status.steps[1].count).toBe(
+      effective.items.filter((x) => x.kind === 'classification' && x.month === '2026-09').length,
+    );
+  });
+
+  it('照合ステップは有効な未処理キューの対象月だけを数える', () => {
     const input = queueFixture();
     const items = buildReviewQueue(input);
     const base = { data: input.data, items, reviews: [], hasCommittedImport: true };
-    // items には要確認が 1 件ある。照合 API の単一契約を consumer が再加算しないことを固定する。
+    // items には 2026-09 の照合待ちが 1 件ある。
     expect(items.filter((item) => item.kind === 'reconciliation')).toHaveLength(1);
-    expect(monthlyCloseStatus({ ...base, actionRequiredCount: 0 }).steps[2]).toMatchObject({
-      key: 'reconciliation',
-      done: true,
-      count: 0,
-    });
-    expect(monthlyCloseStatus({ ...base, actionRequiredCount: 2 }).steps[2]).toMatchObject({
+    expect(monthlyCloseStatus(base).steps[2]).toMatchObject({
       key: 'reconciliation',
       done: false,
-      count: 2,
+      count: 1,
     });
   });
 
@@ -521,7 +563,6 @@ describe('AC-004 月次クローズ 4 ステップの判定表', () => {
       items: [],
       reviews: [],
       hasCommittedImport: false,
-      actionRequiredCount: 0,
     });
     expect(status.month).toBeNull();
     expect(status.steps[0].done).toBe(false);

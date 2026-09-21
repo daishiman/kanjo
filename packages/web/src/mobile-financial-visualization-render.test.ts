@@ -91,12 +91,28 @@ describe('financial visualization real-browser gate', () => {
       });
       expect(coreRoutes).toContain('財務画面の実描画検査: すべて合格');
 
-      const additionalRoutes = await runRenderScript(ROUTE_SCRIPT, {
-        env: { ...process.env, KANJO_VISUAL_BASE_URL: origin, KANJO_VISUAL_SCOPE: 'additional' },
-        timeoutMs: 420_000,
-      });
-      expect(additionalRoutes).toContain('財務画面の実描画検査: すべて合格');
+      // 全viewportを1つのChromeで直列実行すると、高負荷時に個別の描画失敗ではなく
+      // 子プロセスのhard killに到達する。検査幅とrouteは減らさず、Chromeの寿命だけを分ける。
+      const additionalViewportShards = [
+        '320,360,375,390,641',
+        '768,900,1023,1024',
+        '1280,1600,1908,zoom200,rail-zoom200',
+      ];
+      for (const viewports of additionalViewportShards) {
+        const additionalRoutes = await runRenderScript(ROUTE_SCRIPT, {
+          env: {
+            ...process.env,
+            KANJO_VISUAL_BASE_URL: origin,
+            KANJO_VISUAL_SCOPE: 'additional',
+            KANJO_VISUAL_VIEWPORTS: viewports,
+          },
+          timeoutMs: 420_000,
+        });
+        expect(additionalRoutes).toContain('財務画面の実描画検査: すべて合格');
+      }
     },
-    900_000,
+    // responsive(110s) + core(420s) + additional 3 shard(3×420s) の各終了理由を
+    // 外側が先に隠さない。個々の固着は runRenderScript の短い上限が担う。
+    1_820_000,
   );
 });

@@ -46,83 +46,88 @@
     "database": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-household-database-web-004",
+        "qa_ref": "qa-classify-database-web-001",
         "serves_goals": [
           "G2",
-          "G4"
+          "G4",
+          "G5"
         ],
         "qa_refs": [
-          "qa-household-database-web-evidence-001",
-          "qa-household-database-web-003"
+          "qa-classify-database-web-evidence-001",
+          "qa-classify-database-web-002",
+          "qa-classify-database-web-003",
+          "qa-classify-decision-006"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、データベースでは端末内に家計の集計や名義ラベルを複製する SQLite を持つか、その同期の衝突をどう解くかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、データベースでは端末内に明細と下書きを持つ SQLite の同期をどう設計するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、データベースではタブレット端末でのオフライン閲覧のために期間分の台帳を端末へ持つかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、データベースではオフライン閲覧のため期間分の明細を端末へどこまで持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存先と暗号化の方式を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存先と暗号化の方式をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存の権限 (ユーザーディレクトリの扱い) を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存の権限をどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、データベースではネイティブ版のローカル保存とキーチェーンでの鍵管理を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、データベースではネイティブ版のローカル保存とキーチェーンでの鍵管理をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       }
     },
     "auth": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-household-auth-web-001",
+        "qa_ref": "qa-classify-auth-web-001",
         "serves_goals": [
-          "G4"
+          "G3",
+          "G5"
         ],
         "qa_refs": [
-          "qa-household-auth-web-evidence-001"
+          "qa-classify-auth-web-evidence-001",
+          "qa-classify-auth-web-002"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、認証ではモバイルアプリ向けの生体認証やトークンの端末保存をどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、認証(ログイン)では生体認証やトークンの端末保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、認証では家族で共有するタブレットでの利用者切替とセッションの分離を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、認証(ログイン)では共有されやすい家庭用タブレットでのセッションの寿命をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、認証では Windows Hello や資格情報マネージャとの連携を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、認証(ログイン)ではWindows の資格情報マネージャーへのセッション保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、認証では Secret Service などの鍵保管との連携を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、認証(ログイン)ではLinux の Secret Service へのセッション保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、認証では Touch ID とキーチェーンとの連携を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、認証(ログイン)ではmacOS のキーチェーンへのセッション保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       }
     },
     "ui-ux": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-household-ui-ux-web-004",
+        "qa_ref": "qa-classify-ui-ux-web-003",
         "serves_goals": [
           "G1",
           "G3",
@@ -130,634 +135,570 @@
           "G5"
         ],
         "qa_refs": [
-          "qa-household-ui-ux-web-evidence-001",
-          "qa-household-ui-ux-web-003"
+          "qa-classify-ui-ux-web-evidence-001",
+          "qa-classify-ui-ux-web-002",
+          "qa-classify-decision-005",
+          "qa-classify-decision-006"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、UI-UX では KPI 3 枚と推移グラフを縦長画面でどう畳むか、カテゴリ詳細をボトムシートにするか、下部の選択中バーとタブバーの競合をどう解くかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、UI-UXでは片手操作で 3 カラムの仕分けをどう畳み、一括選択をどう出すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、UI-UX では横向き時にカテゴリ表と詳細パネルを左右に並べ続けるか、推移グラフの月をタッチで選ぶときの当たり判定をどう取るかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、UI-UXでは横置きで絞り込み・一覧・編集パネルの 3 つをどう並べるかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、UI-UX ではネイティブのメニューやウィンドウ分割に推移グラフ・カテゴリ詳細・名義ラベル編集をどう割り付けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、UI-UXではWindows の既定の配色と高コントラストモードで信頼度の表示をどう保つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、UI-UX ではデスクトップ環境ごとのテーマや既定フォントの差の中で、増減の色と符号の読みやすさをどう保つかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、UI-UXではLinux のデスクトップ環境ごとのフォントで一覧の金額の桁揃えをどう保つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、UI-UX ではメニューバーのコマンドと共有シートから名義ラベル編集や明細への遷移をどう呼ぶかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、UI-UXではmacOS のメニューとショートカットに仕分けの操作をどう割り当てるかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       }
     },
     "security": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-household-security-web-004",
+        "qa_ref": "qa-classify-security-web-001",
         "serves_goals": [
+          "G2",
+          "G3",
           "G4",
           "G5"
         ],
         "qa_refs": [
-          "qa-household-security-web-evidence-001",
-          "qa-household-security-web-003"
+          "qa-classify-security-web-evidence-001",
+          "qa-classify-security-web-002"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、セキュリティではモバイル端末の紛失時に家計データを消す手段と、画面の録画・スクリーンショット対策を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、セキュリティでは端末紛失時に下書きやメモをどう消すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、セキュリティでは共有端末に家計の明細が残らないようにするキャッシュ方針を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、セキュリティでは共有端末に残る下書きとメモをどう保護するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、セキュリティではインストーラの署名と自動更新の改ざん対策を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、セキュリティではデスクトップ版の自動更新の署名検証をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、セキュリティでは配布パッケージの署名検証とサンドボックス権限を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、セキュリティではデスクトップ版の配布経路の改ざん検知をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、セキュリティでは公証 (notarization) とサンドボックスの権限範囲を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、セキュリティではネイティブ版のサンドボックス権限をどう絞るかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       }
     },
     "infrastructure": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-household-infrastructure-web-001",
+        "qa_ref": "qa-classify-infrastructure-web-001",
         "serves_goals": [
           "G2",
-          "G4"
+          "G3",
+          "G5"
         ],
         "qa_refs": [
-          "qa-household-infrastructure-web-evidence-001"
+          "qa-classify-infrastructure-web-evidence-001",
+          "qa-classify-infrastructure-web-002"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、インフラではアプリストアへの配布と、プッシュ通知で月次の家計の変化を知らせる基盤を持つかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、インフラではプッシュ通知やアプリストア配布の基盤をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、インフラではタブレット向けの別ビルドと配布経路を持つかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、インフラではタブレット版のストア配布と審査をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、インフラでは Windows 向けインストーラのビルドと更新配信の基盤を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、インフラではWindows 版の更新配信の置き場をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、インフラでは Linux 向けパッケージのビルドとリポジトリ配信を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、インフラではLinux 版のパッケージリポジトリをどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、インフラでは macOS 向けのビルド・公証・更新配信の基盤を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、インフラではmacOS 版の更新配信と公証の基盤をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       }
     },
     "backend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-household-backend-web-004",
+        "qa_ref": "qa-classify-backend-web-003",
         "serves_goals": [
           "G2",
           "G3",
+          "G4",
           "G5"
         ],
         "qa_refs": [
-          "qa-household-backend-web-evidence-001",
-          "qa-household-backend-web-003"
+          "qa-classify-backend-web-evidence-001",
+          "qa-classify-backend-web-002",
+          "qa-classify-decision-005",
+          "qa-classify-decision-006"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、バックエンドではモバイル向けに家計の集計を小分けにした API (月単位のページング・差分同期) を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、バックエンドではオフラインで仕分けた変更を一括保存へどう同期し衝突をどう解くかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、バックエンドではタブレットの 2 ペイン表示向けに本体とカテゴリ詳細をまとめて返す API を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、バックエンドではオフライン編集の下書きをサーバの履歴とどう突き合わせるかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップアプリの端末内キャッシュと同期するための版管理 API を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップ版からの一括保存の件数上限と再送をどう設計するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップアプリからの長期トークン認証を受ける経路を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップ版が古い API 版で動くときの互換をどう保つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、バックエンドではネイティブ版のバックグラウンド更新向けに集計の差分通知を設けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、バックエンドではネイティブ版向けに提案と信頼度の API をどう版管理するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       }
     },
     "frontend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-household-frontend-web-001",
+        "qa_ref": "qa-classify-frontend-web-001",
         "serves_goals": [
           "G1",
           "G3",
-          "G4"
+          "G5"
         ],
         "qa_refs": [
-          "qa-household-frontend-web-evidence-001"
+          "qa-classify-frontend-web-evidence-001",
+          "qa-classify-frontend-web-002"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、フロントエンドでは React Native などのネイティブ実行環境で推移グラフと表を描き直すか、web の部品をどこまで共有するかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、フロントエンドではネイティブ UI の部品で編集パネルと分割の編集をどう作り直すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、フロントエンドではタブレット専用の画面分割 (表と詳細の常時 2 ペイン) を別ルートにするか、同じ家計画面の分岐にするかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、フロントエンドでは分割画面表示で一覧と編集パネルの状態をどう共有するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、フロントエンドでは Electron などのシェルに web 資産を同梱するか、オフライン時に家計の集計をどこまで端末で持つかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、フロントエンドではWindows 版の配布形式と自動更新をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、フロントエンドでは配布形式 (AppImage・Flatpak 等) ごとに web 資産の更新をどう届けるかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、フロントエンドではLinux 版のパッケージ形式ごとの描画差をどう吸収するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、フロントエンドでは WebView 版とネイティブ版のどちらで家計画面を描き、署名と自動更新をどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、フロントエンドではmacOS 版の署名と公証をどう通すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       }
     },
     "maintenance-ops": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-household-maintenance-ops-web-004",
+        "qa_ref": "qa-classify-maintenance-ops-web-003",
         "serves_goals": [
           "G1",
           "G2",
+          "G3",
+          "G4",
           "G5"
         ],
         "qa_refs": [
-          "qa-household-maintenance-ops-web-evidence-001",
-          "qa-household-maintenance-ops-web-003"
+          "qa-classify-maintenance-ops-web-evidence-001",
+          "qa-classify-maintenance-ops-web-002",
+          "qa-classify-decision-005",
+          "qa-classify-decision-006"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、保守運用ではモバイルアプリのバージョンごとの互換と、ストア審査を含むリリース手順を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、保守運用管理では端末ごとの E2E テストと OS 更新への追従をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、保守運用ではタブレット専用画面の回帰テスト (実機の画面幅) をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、保守運用管理では画面サイズごとの表示テストをどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、保守運用では Windows 版の更新失敗時の復旧手順とクラッシュ報告の扱いを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、保守運用管理ではWindows 版のクラッシュ報告と更新の運用をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、保守運用では配布形式ごとの動作確認と不具合報告の窓口を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、保守運用管理ではLinux 版のディストリビューションごとの検証をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、保守運用では macOS の版更新ごとの互換確認と公証のやり直し手順を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-household-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、保守運用管理ではmacOS 版の OS 更新ごとの検証をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
       }
     }
   },
   "qa_log": [
     {
-      "id": "qa-household-decision-001",
-      "question": "家計の定義 (何を家計の収入・支出に数えるか) の正本をどれにするか。現行 household() は事業入金と事業立替を独自に家計へ含めており、総収支画面の総合と一致しない。",
-      "answer": "総収支の台帳 (packages/core の totalCashflowLedger) を正本にする。家計全体 = 事業 + 個人 で、総収支画面の総合と必ず一致させる。household() 独自の定義は廃止する。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
+      "id": "qa-classify-decision-001",
+      "question": "画像の『領収書・証憑』(JPG/PNG/PDF 最大10MB の添付) は #42 で製品として全廃し spec-v1.1 で『外部の正本側で管理』と対象外にした機能である。今回どう扱うか。",
+      "answer": "再導入しない (推奨)。#42 の判断を維持する。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:20:37Z",
+      "answered_at": "2026-09-19T13:12:52Z",
+      "required_info_items": [
+        "product-goal",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-classify-decision-002",
+      "question": "KPI と絞り込みの『要確認』(画像では5件) の定義は現状どこにも無い。何を要確認に数えるか。",
+      "answer": "低信頼の自動提案 (推奨)。提案カテゴリはあるが信頼度が 80% 未満、またはルール同士の衝突・区分と名義の矛盾がある明細を要確認に数える。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:12:52Z",
       "required_info_items": [
         "domain-model",
         "product-goal"
       ]
     },
     {
-      "id": "qa-household-decision-002",
-      "question": "画像の名義 (本人 / パートナー / 子ども / その他) と既存の内部値 (business / spouse / family / 未設定) の差をどう埋めるか。",
-      "answer": "内部値は移行せず残し、表示名だけを編集可能にする (owner_labels 表。追加のみの migration)。初期表示名は business→本人、spouse→パートナー、family→子ども、未設定→その他。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
+      "id": "qa-classify-decision-003",
+      "question": "一覧の『信頼度%』と履歴の『自動提案 (AI)』をどう算出するか (フッタは『取込データは外部送信しません』)。",
+      "answer": "既存規則を拡張・外部送信なし (推奨)。過去の同取引先・ルール・MF 中項目からの決定論の提案と信頼度にし、外部 LLM は呼ばない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:20:37Z",
+      "answered_at": "2026-09-19T13:12:52Z",
       "required_info_items": [
+        "domain-model",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-classify-decision-004",
+      "question": "保存したフィルタ・編集パネルの下書き・取引の履歴の保存先をどうするか。",
+      "answer": "フィルタと履歴は D1、下書きは端末 (推奨)。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:12:52Z",
+      "required_info_items": [
+        "data-persistence",
         "domain-model"
       ]
     },
     {
-      "id": "qa-household-decision-003",
-      "question": "画像の『振替』欄 (名義間の資金移動) を既存データからどう出すか。MF の is_transfer は相手口座を持たない。",
-      "answer": "入出金の対を推定して表示する (同額・逆符号・日付近接)。対にならない行は『相手不明』として出す。相手口座カラムは新設しない。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-18T11:20:37Z",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-household-decision-004",
-      "question": "現行の /household (ナビ名『累計収支』) と画像の『家計収支』の関係をどうするか。",
-      "answer": "/household を『家計収支』へ改名する。累計収支という画面は新設しない。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-18T11:20:37Z",
-      "required_info_items": [
-        "context-of-use",
-        "product-goal"
-      ]
-    },
-    {
-      "id": "qa-household-decision-005",
-      "question": "家計収支サイクルの上位概念 U1-U9 (本質的目的 / 背景 / ゴール G1-G5 / 目標 O1-O5 / 成功基準 S1-S6 / 関係者 / 範囲 / 制約 C1-C6 / やりたいこと I1-I8) を要件定義書の憲法として確定してよいか。",
-      "answer": "この内容で承認する。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-18T11:25:37Z",
-      "required_info_items": [
-        "context-of-use",
-        "product-goal"
-      ]
-    },
-    {
-      "id": "qa-household-decision-006",
-      "question": "画像の数値が閉じていない (総収入 +280,000・総支出 +360,000 なら純収支の前年差は −80,000 (−9.6%) のはずが、画像は +120,000 (+18.9%))。どれを正本にするか。",
-      "answer": "収入・支出を正本にし、純収支とその前年差は計算値にする。画像の純収支差の表記は期待値にしない。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-18T11:25:37Z",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-household-decision-007",
-      "question": "生活費カテゴリ (household-categories.ts の major 19 個) を画像の 6 区分へどう寄せるか。",
-      "answer": "固定 6 区分に寄せる。住居費 = 住まい + 住宅ローン + 住宅購入、食費 = 食費、光熱費 = 水道・光熱費、教育費 = 教養・教育 + 子育て、交通費 = 交通費 + 車・バイク、その他 = 残り。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-18T11:25:37Z",
-      "required_info_items": [
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-household-target-platforms-001",
-      "question": "家計収支画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
-      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ』を置き、利用者が U1-U9 をこの内容で承認した (appr-foundation-household-cashflow-001)。狭い画面は既存 web のレスポンシブ規約 (2・3 カラムの縦積み、表の横スクロール) の中で扱う。",
+      "id": "qa-classify-target-platforms-001",
+      "question": "明細仕分けサイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
+      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『web 以外の専用アプリ (対象は web のみ)』を置いた U1-U9 要約を、利用者が『この内容で承認』で承認した。",
       "provenance": "AskUserQuestion / U1-U9 承認 (scope.out に web 以外を明記)",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:25:37Z",
+      "answered_at": "2026-09-19T13:15:30Z",
       "required_info_items": [
         "target-platforms"
       ]
     },
     {
-      "id": "qa-household-ui-ux-web-001",
-      "question": "web の家計収支画面 (/household) の UI-UX 要件は何か。画面の構成要素・文言・切替・選択・詳細パネル・名義ラベル編集・状態・アクセシビリティを 10-household.png のとおりに確定する。",
-      "answer": "上から (1) 問いの見出し『家計の総収入・総支出・純収支は、どう変わりましたか？』と説明文、右上に『データの出典』カード (代表の取込元と他 N 件・取込明細を確認)。(2) KPI 3 枚 (総収入・総支出・純収支と月平均・年換算) と『前年より』カード (純収支の前年差と決定論の一文)。(3) 月別の家計収支推移: 家計全体 / 事業 / 個人のタブ、凡例 5 系列 (収入・支出の当期の棒、純収支の折れ線、収入・支出の前年の点線)、月送り ‹ 2026年8月 ›、選択月の帯。下端に『事業と個人の内訳』と等式『家計全体 = 事業 + 個人』と重複なしの注記。(4) 左に生活費カテゴリ 6 区分の表 (当期・前年・増減額・構成比・合計)、右に『カテゴリの詳細』パネル (金額・前年比・主な取引 5 件・すべて見る・集計の説明と分類ルールへの導線、× で閉じる)。既定の選択は前年差が最大の区分。(5) 名義別の収入 / 振替は収入・支出から除外 (名義間の対推定と相手不明) / 名義ラベルの設定 (編集ダイアログ、1〜20 文字・制御文字不可・重複不可) の 3 カラム。(6) 前年との比較 3 枚と文章の要約。(7) 下部固定バー『選択中: 2026年8月 / 純収支 / 内訳の明細を確認』。読込・空・失敗、前年欠損の各状態を持つ。選択 (seg / month / cat) は URL に保つ。行と棒はキーボードで選べ、増減は符号と矢印を併記して色だけに頼らない。ナビとパンくずは『家計収支』。画像の算術が閉じない欄は計算値を正本にする。文言・数値・フィクスチャの正本は specs/spec-household-cashflow-screen.md。",
-      "provenance": "利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答",
+      "id": "qa-classify-ui-ux-web-evidence-001",
+      "question": "UI-UX 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "13-classify.png は上記 (1)〜(7) の構成である。現行 packages/web/src/pages/Classify.tsx (1188 行・1 ファイル) は ClassificationProgressPanel (104 行目)・ClassifyPage (185 行目)・TxLine (701 行目)・EditorRow (950 行目) で構成され、期間は usePeriod を使わず単月の select (488 行目)、URL は month / cls / category / payee / hcat / big を持つ。分割は components/SplitEditor.tsx。問いの見出し・KPI 4 枚・信頼度列・編集パネル・一括保存・保存したフィルタ・取引の履歴・信頼度の根拠・ルールのプレビュー・下書きは無い。tx_edits の note 列 (200 字) は UI に出ていない。共通部品 PageHeader・KpiCard・PageState・Button・ConfirmDialog・Term・SelectionBar (サブスク) と design-tokens.ts がある。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-ui-ux-web-002",
+      "question": "web の明細仕分け画面で、UI-UX について利用者が決めていない具体値を何にするか。",
+      "answer": "一覧の既定の並びは日付の降順、同日は取引 id の昇順とする。KPI カードを押すとその分類ステータスだけに絞り込む。行を押すと右の編集パネルにその明細を開き、チェックは一括選択だけに使う。画面幅が 1024px 未満では 3 カラムを 一覧 → 編集パネル → 絞り込み の順に縦へ積み、絞り込みは折りたたんだ状態で始める。信頼度 80% 未満は要確認の色と『要確認』の文言を併記する。ルール適用プレビューの表は最大 50 行を出し、それ以上は件数だけを示す。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-ui-ux-web-001",
+      "question": "web の明細仕分け画面 (/classify) の UI-UX 要件は何か。画面の構成要素・文言・選択・編集・一括操作・通知・状態・アクセシビリティをどうするか。",
+      "answer": "上から (1) パンくず『整える / 明細仕分け』、期間タブ 1年 / 2年 / 3年 / 任意 と期間送り ‹ 2025年9月 - 2026年8月 ›、右上に『明細仕分けの使い方』。(2) 見出し『明細仕分け』と問い『未整理の明細を、根拠を見ながら確定しますか？』、説明文、KPI 4 枚 (未整理・要確認・手動変更・完了 と件数)。(3) 3 カラム: 左に絞り込み (対象月・分類ステータスのチェックと件数・カテゴリ・所有者・支払方法・手動変更のみ・キーワード検索・保存したフィルタと『現在の条件を保存』・『フィルタをクリア』・折りたたみ)、中央に取引一覧 (件数見出し・表示件数 50 件・選択チェックと全選択・日付の並べ替え・取引先 / 内容・金額・提案カテゴリ・信頼度・ページ送り)、右に取引の編集パネル (未保存の印・閉じる・日付と取引先と内容と金額・クイック仕分け 事業 / 個人 / リセット・カテゴリ・所有者・支払方法・メモ 200 字と字数・取引の履歴・信頼度の根拠・編集 / 分割 / 削除・この条件をルールにする (取引先・キーワード・適用範囲・ルールを作成)・該当する既存のルールとその対象件数の案内)。証憑欄は置かず、その位置に『証憑は freee 側で管理します』の案内を出す (qa-classify-decision-001)。(4) 結果の通知: 一括保存の部分失敗『選択した N 件のうち M 件を保存しました。K 件はエラーのため保存できませんでした。』と『失敗した K 件のみ再試行』、削除の『元に戻す』。(5) 一括操作バー『N 件選択中・選択をクリア・選択した N 件を保存』。(6) 下段に分割明細の編集 (元の取引・分割後の仕訳の行 カテゴリ / 金額 / 所有者 / メモ / 削除・分割行を追加・金額の合計と元の金額の一致表示・キャンセル・この内容で分割を適用) と、ルール適用プレビュー (今後 N 件に適用・日付 / 取引先 / 金額 / 適用後の仕訳の表・このルールを適用・下書きを復元)。(7) 下書きを自動保存した時刻の表示。未保存のまま離れるときは確認する。読込・空 (期間内の明細 0 件)・失敗の各状態を持つ。信頼度と分類ステータスは色だけで区別せず、数値と文言を併記する。自動提案の表示は『AI』ではなく『自動提案』とする (qa-classify-decision-003)。数値は画像のモックではなく実データから core で算出したものを出す。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:36:56Z",
+      "answered_at": "2026-09-19T13:24:40Z",
       "required_info_items": [
         "context-of-use",
         "information-priority",
         "product-goal",
         "target-platforms"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。",
-          "corrected_field": "answered_at",
-          "previous_value": "2026-09-18T11:25:37Z",
-          "corrected_value": "2026-09-18T11:36:56Z"
-        },
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "本文には利用者が決めていない値 (カテゴリの詳細パネルの既定の選択と、主な取引の並べ方) が含まれる。これは agent の推定であり、根拠は qa-household-ui-ux-web-003 (basis=agent-inference) に分けた。"
-        }
       ]
     },
     {
-      "id": "qa-household-ui-ux-web-evidence-001",
-      "question": "ui-ux 章の裏付けとして、10-household.png と現行 /household の差分として何を観測したか。",
-      "answer": "画像は見出しカード → KPI 行 → 推移カード (タブ 3・凡例 5・月送り) → 事業と個人の等式 → カテゴリ表とカテゴリ詳細の 2 カラム → 名義別収入・振替除外・名義ラベル設定の 3 カラム → 前年との比較 → 下部の選択中バーの順に縦積みである。現行の packages/web/src/pages/Household.tsx (657 行・1 ファイル) は月選択の KPI 4 枚・事業と個人の月別表・収入/支出の棒・生活費の大項目 (全期間)・前月比・名義別収入 (事業/妻/家族)・中項目別を描き、問いの見出し・出典カード・前年系列・カテゴリ詳細・振替一覧・名義ラベル編集・下部バーを持たない。ナビの表記は routeMetadata.ts の『累計収支』。画像の数値を検算し、純収支の前年差 (画像 +120,000 / 計算 −80,000)、住居費とその他の構成比 (25.1→25.2、31.8→31.9)、食費の前年比率 (16.7→14.3)、主な取引の名義表記 (家族→子ども) が閉じないことを確かめ、specs/spec-household-cashflow-screen.md §10 に計算値を記録した。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-classify-frontend-web-evidence-001",
+      "question": "フロントエンド 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "現行の /classify は routeMetadata.ts の 46〜56 行目で定義され、Classify.tsx 1 ファイルに状態・取得・描画が同居している。期間は src/period.tsx の usePeriod があるが /classify は使っていない。最近の作り直し (家計収支 #62・サブスク #60・診断 #59) は pages/<screen>/ 配下・view-model.ts・css・dom test の型で揃っている。初期 JS 予算は build:bundle 直後の CI 実測で検査される。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-18T11:33:59Z"
+      "answered_at": "2026-09-19T13:24:40Z"
     },
     {
-      "id": "qa-household-frontend-web-001",
-      "question": "web の家計収支画面のフロントエンド構成 (ファイル分割・状態・取得・部品) をどう作るか。",
-      "answer": "Household.tsx を packages/web/src/pages/household/ へ分割する (画面の親、KPI と前年より、推移チャート、事業と個人の等式、カテゴリ表、カテゴリ詳細パネル、名義別収入、振替一覧、名義ラベル編集ダイアログ、前年との比較、下部バー)。選択中の対象 (seg)・月 (month)・区分 (cat) は useSearchParams で URL に保ち、期間は既存 usePeriod を使う。本体は TanStack Query で GET /api/household を 1 回取得し、カテゴリ詳細は cat と month が決まったときだけ GET /api/household/category を取得する (dependent query)。名義ラベルは GET / PUT /api/settings/owner-labels を useMutation で保存し、成功時に家計・設定・明細のクエリを無効化する。色は design-tokens のトークンだけ、ボタンは共通 Button、ページは PageShell / PageState、グラフは FinancialFigure と charts.ts の系列色。名義の表示は core の ownerLabel だけを通し、OWNER_LABEL の直参照を残さない。routeMetadata の /household の名称を『家計収支』へ改め、figure-guides と用語集を合わせる。ページは遅延読み込みのままにし、初期 JS 予算 (CI 実測) を超えない。",
-      "provenance": "利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答",
+      "id": "qa-classify-frontend-web-002",
+      "question": "web の明細仕分け画面で、フロントエンド について利用者が決めていない具体値を何にするか。",
+      "answer": "下書きの localStorage のキーは kanjo:classify:draft:<txId> とし、入力から 1 秒後に保存し、30 日を過ぎた下書きは読込時に捨てる。URL の選択は取引 id を最大 50 件までとし、超えた選択は URL に載せず画面内の状態に留める。未保存の離脱確認は react-router の useBlocker と beforeunload の両方で行う。/classify の画面は既存の遅延読込 (lazy route) の単位に置き、初期 JS に含めない。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-frontend-web-001",
+      "question": "web の明細仕分け画面のフロントエンドの構成 (ファイル分割・状態の置き場所・データ取得・下書き) をどうするか。",
+      "answer": "Classify.tsx を pages/classify/ 配下へ分割し、見出し・期間タブ・KPI・絞り込みパネル・取引一覧・編集パネル・一括操作バー・通知・分割明細の編集・ルール適用プレビューを部品に分ける。表示用の整形は view-model.ts の純関数に置き、判定と集計は core の結果を使って web で再実装しない。期間は usePeriod / localStorage から復元し、絞り込み・ページ・選択は URL の検索パラメータに保つ。データ取得は TanStack Query で行い、一括保存・ルール作成と適用・分割・削除と取消・保存フィルタの変更の後は一覧・KPI・ナビのバッジの問い合わせを無効化する。編集パネルの下書きは端末の localStorage に明細単位で自動保存し、最終保存時刻を表示し、保存に成功したら消し、次回に『下書きを復元』で戻せる (qa-classify-decision-004)。未保存のまま離れるときは確認する。既存のデザイントークンと共通部品の上に組み、初期 JS 予算 (CI 実測) を超えない。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:36:56Z",
+      "answered_at": "2026-09-19T13:24:40Z",
       "required_info_items": [
-        "frontend-arch",
-        "target-platforms"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。",
-          "corrected_field": "answered_at",
-          "previous_value": "2026-09-18T11:25:37Z",
-          "corrected_value": "2026-09-18T11:36:56Z"
-        },
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at の訂正を記録した。本文の値は利用者の決定 001〜007 と承認の範囲に収まり、agent が補った値は含まない。"
-        }
+        "frontend-arch"
       ]
     },
     {
-      "id": "qa-household-frontend-web-evidence-001",
-      "question": "frontend 章の裏付けとして、現行の家計画面と共通部品について何を観測したか。",
-      "answer": "packages/web/src/pages/Household.tsx は 657 行の 1 ファイルで、routeMetadata.ts:68-79 の /household はラベル『累計収支』・グループ『整える』(Layout.tsx:57)。共通部品は components/Page.tsx の PageShell / PageHeader / PageState / KpiCard / PageActions、period.tsx の usePeriod / PeriodPicker、trends/TrendDetailPanel.tsx (出典)、SortableTableHeader、FinancialFigure がある。下部の選択中バーは共通化されておらず、trends/ComparisonScreen.tsx:51 の tcf-selection-bar と TotalCashflow.tsx:1089 に個別実装がある。推移 (#56) は pages/analysis/trends/、マトリックス (#57) は pages/analysis/matrix/ へ分割した前例がある。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-classify-backend-web-evidence-001",
+      "question": "バックエンド 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "現行 packages/api/src/routes/classify.ts は GET /transactions (94 行目)・PUT /transactions/:txId/class (265)・PUT /transactions/:txId/edit (310)・GET と PUT /transactions/:txId/splits (395・436)・GET /rules (559, 該当件数 hits 付き)・POST /rules (624)・PUT と DELETE /rules/:id (658・688) を持つ。支払方法は core/src/cash.ts の paymentMethodOf が機関名から導く値 (cash / card / account / unknown) で、/transactions の絞り込み (193 行目) に使われるが上書きの列は無い。core/src/overview.ts:246 の recommendationFor は vendor_memory 由来のときだけ信頼度が数値で、ルールと MF 中項目由来は null、利用は /review-queue に限られる。分類の進捗は core/src/classify.ts:335 の classificationProgress で、未確認は clsSrc === '既定' (346 行目)。月次クローズ (overview.ts:413-460) の『仕分け』は counts.classification を使う。一括保存・ルールのプレビュー・保存フィルタ・履歴の API は無い。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-18T11:33:59Z"
+      "answered_at": "2026-09-19T13:24:40Z"
     },
     {
-      "id": "qa-household-backend-web-001",
-      "question": "家計の集計ロジックと API をどこに置き、どの契約で返すか。",
-      "answer": "家計の集計は core の新しい純関数 householdSummary (household-summary.ts) 1 か所に集め、入力は総収支画面と同じ totalCashflowLedger の行集合とする (利用者決定 qa-household-decision-001)。旧 household() と HouseholdData は置き換えて削除する。台帳行へ名義 (freee 行は business、MF 行は resolveTx の owner、未解決は unset) を追加する。1 回の呼び出しで家計全体・事業・個人の総額と月平均・年換算、前年同期間 (欠けた月があれば null)、月別系列と前年同月、生活費 6 区分 (対応表は core の定数 1 か所。qa-household-decision-007)、名義別収入、振替一覧と対推定 (同額・逆符号・日付差 3 日以内・貪欲で一意。qa-household-decision-003) を返す。数値は収入・支出を正本にし、差・率・構成比は計算値にする (qa-household-decision-006)。api は GET /api/household をこの形へ拡張し、選択時だけの GET /api/household/category (主な取引 5 件と区分の月合計) と GET / PUT /api/settings/owner-labels を設ける。期間は loadScoped、freee・判定・除外は loadCashflowSources で読み、クエリと本文は zod で検証する。不変条件 (総収支の総合と一致、事業 + 個人 = 家計全体、6 区分の和 = 総支出、名義別の和 = 総収入、振替は台帳に現れない) をテストで固定する。契約の正本は specs/spec-household-cashflow-screen.md §11-§12。",
-      "provenance": "利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答",
+      "id": "qa-classify-backend-web-002",
+      "question": "web の明細仕分け画面で、バックエンド について利用者が決めていない具体値を何にするか。",
+      "answer": "エンドポイントは POST /api/transactions/bulk (1 回 100 件まで)・POST /api/rules/preview・POST /api/rules/:id/apply・GET / POST /api/saved-filters・DELETE /api/saved-filters/:id・GET /api/transactions/:txId/history とする。信頼度は 取引先の決め事 (vendor_memory) 由来は既存の値、取引先とキーワードの両方が一致するルールは 95、キーワードだけのルールは 85、MF 中項目の対応表は 70 とし、2 つ以上の由来が異なるカテゴリを提案する衝突では最小値から 20 を引く (下限 0)。区分と名義の矛盾は 区分=個人 かつ 所有者=事業、または 区分=事業 かつ 所有者が事業以外 とする。一括保存の応答は { results: [{ txId, ok, error? }] } とし、HTTP は部分失敗でも 200 を返す。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-backend-web-001",
+      "question": "明細仕分けのために core と api をどう変えるか。分類ステータス・提案と信頼度・一括保存・ルールのプレビューと適用・保存フィルタ・履歴の契約は何か。",
+      "answer": "core に分類ステータスの判定を 1 か所に新設し、各明細を 未整理 (提案が無く既定のまま) / 要確認 (提案の信頼度が 80% 未満、または提案どうしの衝突・区分と名義の矛盾) / 手動変更 (利用者が手で変更した) / 完了 (それ以外で確定済み) の 4 区分へ排他で振り分け、件数の和が全件に一致するようにする (qa-classify-decision-002)。ナビのバッジと月次クローズの『仕分け』もこの関数から導く。提案カテゴリ・信頼度・根拠の文は recommendationFor を拡張し、過去の同取引先・ルール・MF 中項目のどの由来にも決定論の信頼度を付け、/transactions の各行に提案・信頼度・根拠・分類ステータスを載せる。外部の LLM は呼ばない (qa-classify-decision-003)。/transactions は期間・分類ステータス・カテゴリ・所有者・支払方法・手動変更のみ・キーワードで絞り込み、サーバ側で 50 件ずつ返す。選択した複数の明細を 1 回の要求で保存する一括保存を設け、明細ごとに検証と保存を行って成否を返し、成功分は取り消さない。ルールに取引先・キーワード・適用範囲 (一致する明細すべて / 未確定の明細だけ)・分割の型 (固定額の行と残額の行) を持たせ、作成前に該当する明細と適用後の仕訳の一覧と件数を返すプレビューと、同じ判定で適用する API を設ける。手動変更した明細はルールで上書きしない。保存したフィルタの保存・一覧・削除と、明細の取引の履歴の取得を設ける。全ての変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。入力は zod で検証し、変更系は canonicalMutationFence に登録する。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:36:56Z",
+      "answered_at": "2026-09-19T13:24:40Z",
       "required_info_items": [
         "api-contract",
         "domain-model"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。",
-          "corrected_field": "answered_at",
-          "previous_value": "2026-09-18T11:25:37Z",
-          "corrected_value": "2026-09-18T11:36:56Z"
-        },
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "本文には利用者が決めていない値 (振替の入出金の対推定の規則) が含まれる。これは agent の推定であり、根拠は qa-household-backend-web-003 (basis=agent-inference) に分けた。"
-        }
       ]
     },
     {
-      "id": "qa-household-backend-web-evidence-001",
-      "question": "backend 章の裏付けとして、現行の家計集計と総収支台帳について何を観測したか。",
-      "answer": "GET /api/household は packages/api/src/routes/analytics.ts:528-531 で loadScoped の data を core の household(data) に渡して返すだけで、専用の zod 検証を持たない。household() は packages/core/src/analysis.ts:771-790、HouseholdData は同 529-548 にあり、事業入金と事業立替を家計へ含める独自定義で前年比較を持たない。総収支の台帳は packages/core/src/total-cashflow.ts の totalCashflowLedger (798 行目) で、TrendSourceRow (703 行目) は side・io・category・payee・amount・origin・account を持つが名義を持たない。前年同期間の欠損規則は totalCashflowScreen 内で previousYearPeriod の全月が既知のときだけ前年を出す (1050-1066 行目)。振替は MfTx.isTransfer (types.ts:80) で、isMfCountable (types.ts:92-94) が台帳から除く。名義の解決は classify.ts の resolveTx が owner を返す。総収支ルートは routes/total-cashflow.ts で loadCashflowSources から deals・verdicts・除外を読む。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-classify-database-web-evidence-001",
+      "question": "データベース 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "最新の migration は migrations/0045_owner_labels.sql。明細の手当ては tx_edits (note 列 200 字を含む)、分割は tx_splits (migrations/0035)、ルールは rules 表、取引先の決め事は vendor_memory 表にある。保存したフィルタと変更履歴の表は無い。支払方法の上書きの列はどこにも無い。証憑の表と R2 の保存は #42 (462dd9d) で全廃済み。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-18T11:33:59Z"
+      "answered_at": "2026-09-19T13:24:40Z"
     },
     {
-      "id": "qa-household-database-web-001",
-      "question": "家計収支画面のために D1 のスキーマをどう変えるか。",
-      "answer": "名義の表示名を保存する owner_labels 表だけを追加する (追加のみの migration。次の空き番号は実装時に origin/main を fetch して確定する)。列は user_id・owner (CHECK で business / spouse / family / unset)・label (CHECK で 1〜20 文字)・updated_at、主キーは (user_id, owner)。行が無い名義は既定の表示名 (本人 / パートナー / 子ども / その他) を使い、初期データを投入しない。名義の内部値と既存表 (institution_owners・rules.owner・tx_edits.owner・tx_splits.owner) の行は 1 行も書き換えない (利用者決定 qa-household-decision-002)。家計の集計値は保存せず要求のたびに導出する。振替の対推定のために相手口座カラムを足さない (qa-household-decision-003)。runtimeSchemaGuard の必須表へ owner_labels を加える。",
-      "provenance": "利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答",
+      "id": "qa-classify-database-web-002",
+      "question": "web の明細仕分け画面で、データベース について利用者が決めていない具体値を何にするか。",
+      "answer": "migration は migrations/0046_classify_workbench.sql の 1 本とし、実装時に origin/main を fetch して番号の空きを確かめる。表は saved_filters (id・user_id・name 1〜40 字・query_json 2000 字以内・created_at・updated_at、(user_id, name) で一意、利用者あたり 20 件まで) と tx_history (id・user_id・tx_id・changed_at・field・before_value・after_value・source を CHECK で auto / manual / rule / bulk / split / delete / undo・op_id、索引 (user_id, tx_id, changed_at))。rules には payee (NULL 可)・scope (CHECK で all / unconfirmed、既定 all)・split_template_json (NULL 可) を、tx_edits には payment_method (CHECK で cash / card / account、NULL 可) を追加する。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-database-web-001",
+      "question": "明細仕分けのために D1 のスキーマをどう変えるか。",
+      "answer": "追加のみの migration (新表・新カラム) とし、行を書き換える migration は作らない (qa-classify-decision-004 と U8 の C3)。保存したフィルタを名前付きで保存する新しい表、明細の変更履歴 (いつ・どの項目が・変更前後・どの由来 自動提案 / 手動 / ルール / 一括保存 / 分割 / 削除 / 取消 で変わったか) を追記のみで残す新しい表を設ける。ルールには取引先・適用範囲 (一致する明細すべて / 未確定の明細だけ)・分割の型 (固定額の行と残額の行) を持たせる列を追加する。支払方法を編集パネルで直せるよう、明細の手当て (tx_edits) に支払方法の上書きの列を追加し、値が無い明細は従来どおり機関名から導く。下書きは D1 に置かない。すべての表は利用者で区切る。本番反映は既存の Deploy / Migrate の手順とゲートに従う。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:36:56Z",
+      "answered_at": "2026-09-19T13:24:40Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。",
-          "corrected_field": "answered_at",
-          "previous_value": "2026-09-18T11:25:37Z",
-          "corrected_value": "2026-09-18T11:36:56Z"
-        },
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "本文には利用者が決めていない値 (owner_labels の表示名の長さ制約) が含まれる。これは agent の推定であり、根拠は qa-household-database-web-003 (basis=agent-inference) に分けた。"
-        }
       ]
     },
     {
-      "id": "qa-household-database-web-evidence-001",
-      "question": "database 章の裏付けとして、名義と振替の保存形について何を観測したか。",
-      "answer": "名義の内部値は packages/core/src/types.ts:114-147 の OWNER_VALUES (business / spouse / family) と導出値 unset で、表示名 OWNER_LABEL (事業 / 妻 / 家族 / 未設定) はコードに固定されている。D1 では institution_owners、rules.owner、tx_edits.owner (migrations/0009)、tx_splits.owner (migrations/0035) がいずれも CHECK で 3 値に固定されている。振替は migrations/0022 の mf_transactions.is_transfer で、相手口座の列は無い。最新の migration は 0042_total_cashflow_operations_and_exclusion_reason.sql である。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-classify-auth-web-evidence-001",
+      "question": "認証(ログイン) 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "packages/api/src/index.ts の 56〜106 行目で /api/* に authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence が順に掛かる。セッションは kanjo_session Cookie で、users 表の session_generation で無効化される。既存の classify route は c.get('userId') で利用者を取り、全ての SQL を user_id で絞っている。テナントは TENANT_ID='default' の単一。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-18T11:33:59Z"
+      "answered_at": "2026-09-19T13:24:40Z"
     },
     {
-      "id": "qa-household-auth-web-001",
-      "question": "家計収支画面と名義ラベルの API は、誰がどの条件で読み書きできるか。",
-      "answer": "既存のログイン (セッション cookie) を変えず、家計の API (GET /api/household・GET /api/household/category) と名義ラベルの API (GET / PUT /api/settings/owner-labels) を /api/* の authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence の内側に置く。未認証は 401、一時パスワードのままは既存のフェンスで止める。データは利用者単位 (user_id) で閉じ、他の利用者の家計や表示名を読めない・書けない。名義ラベルの更新は利用者本人の表示設定であり、管理者専用の権限を新設しない。",
-      "provenance": "利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答",
+      "id": "qa-classify-auth-web-002",
+      "question": "web の明細仕分け画面で、認証(ログイン) について利用者が決めていない具体値を何にするか。",
+      "answer": "他の利用者の保存フィルタや明細を id で指したときは、存在を漏らさないため 403 ではなく 404 を返す。一括保存では他の利用者の明細 id を明細単位の失敗 (not_found) として返し、要求全体は止めない。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-auth-web-001",
+      "question": "明細仕分けの新しい API と保存データに、認証と認可をどう適用するか。",
+      "answer": "新しい認証方式は作らない。新しい API (一括保存・ルールのプレビューと適用・保存フィルタ・履歴) はすべて /api/* の authGuard と mustChangePasswordFence の内側に置き、利用者 id はセッションから取り、要求の本文や URL からは受け取らない。保存したフィルタ・変更履歴・ルールは利用者で区切り、他の利用者の行を読み書きできない。下書きは端末の localStorage に置くため、共有端末に残らないよう保存成功で消す (qa-classify-decision-004)。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:36:56Z",
+      "answered_at": "2026-09-19T13:24:40Z",
       "required_info_items": [
         "auth-model"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。",
-          "corrected_field": "answered_at",
-          "previous_value": "2026-09-18T11:25:37Z",
-          "corrected_value": "2026-09-18T11:36:56Z"
-        },
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at の訂正を記録した。本文の値は利用者の決定 001〜007 と承認の範囲に収まり、agent が補った値は含まない。"
-        }
       ]
     },
     {
-      "id": "qa-household-auth-web-evidence-001",
-      "question": "auth 章の裏付けとして、保護された API の認可の並びについて何を観測したか。",
-      "answer": "packages/api/src/index.ts の『保護されたAPI』節 (101-114 行付近) で app.use('/api/*', authGuard()) → mustChangePasswordFence() → runtimeSchemaGuard → canonicalMutationFence() の順に登録し、その後に analyticsRoute・settingsRoute・totalCashflowRoute などを app.route('/api', ...) で載せている。家計の GET /api/household は analyticsRoute に、名義の設定 (PUT /classification の institutionOwners) は settingsRoute にあり、いずれも userId を c.get('userId') から取って利用者単位で読み書きしている。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-classify-security-web-evidence-001",
+      "question": "セキュリティ 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "canonical-mutation-fence.ts の CANONICAL_MUTATION_ROUTES (30〜80 行目) に PUT /transactions/:id/(class|edit)・PUT /transactions/:id/splits・POST /data/deletions・POST /data/undo/:opId などが登録され、登録の無い変更系は直列化されない。packages/api/src/ai は外部の LLM を呼んでいない。証憑は #42 で全廃され specs/attachments-and-transit.md は superseded。CSP は packages/web/public/_headers にある。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-18T11:33:59Z"
+      "answered_at": "2026-09-19T13:24:40Z"
     },
     {
-      "id": "qa-household-security-web-001",
-      "question": "家計収支画面で新しく生じる入力・出力・外部送信のリスクにどう備えるか。",
-      "answer": "新しい入力は名義ラベルの表示名だけで、zod で前後の空白を除いた 1〜20 文字・制御文字 (U+0000–U+001F, U+007F) 不可・4 つが互いに異なることを検証し、違反は 400 とフィールド別のエラーを返す。D1 の CHECK 制約でも長さを守る。表示名は React の既定のエスケープで描画し、dangerouslySetInnerHTML を使わない。家計 API のクエリ (month・key・期間) も zod で enum と書式を検証し、期間外の月は 400。応答は利用者本人のデータだけで、明細の内容・取引先はこれまでどおり画面に出すが外部へ送信しない (取込データの外部送信なし)。振替の対推定は表示だけで、データを書き換えない。更新系は既存の canonicalMutationFence の内側に置く。",
-      "provenance": "利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答",
+      "id": "qa-classify-security-web-002",
+      "question": "web の明細仕分け画面で、セキュリティ について利用者が決めていない具体値を何にするか。",
+      "answer": "上限は 一括保存 1 回 100 件、フィルタ名 40 字、キーワード 100 字、保存フィルタの条件 JSON 2000 字、ルールのプレビューの走査は表示期間の明細に限る。フェンスの登録は POST /api/transactions/bulk (tx_edits・tx_splits・tx_history)、POST /api/rules/:id/apply (rules・tx_edits・tx_splits・tx_history)、POST /api/saved-filters と DELETE /api/saved-filters/:id (saved_filters) とする。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-security-web-001",
+      "question": "明細仕分けのセキュリティ要件 (入力検証・変更の直列化・外部送信・ファイル・端末保存) は何か。",
+      "answer": "入力はすべて zod で検証し、メモ (200 字)・フィルタ名・キーワード・ルールの条件は長さを制限し、React の既定のエスケープで描画する。一括保存・ルール作成と適用・分割・保存フィルタの変更は canonicalMutationFence に登録し、取込の洗替えと直列化する。取込データを外部へ送信しない。提案と信頼度は外部の LLM を呼ばずに決定論で出す (qa-classify-decision-003)。証憑ファイルを受け付けない (qa-classify-decision-001)。下書きにはメモが入るため、保存成功で消し、サーバへ送らない。CSP (packages/web/public/_headers) は緩めない。一括保存は 1 回の件数に上限を置く。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:36:56Z",
+      "answered_at": "2026-09-19T13:24:40Z",
       "required_info_items": [
         "security-posture"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。",
-          "corrected_field": "answered_at",
-          "previous_value": "2026-09-18T11:25:37Z",
-          "corrected_value": "2026-09-18T11:36:56Z"
-        },
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "本文には利用者が決めていない値 (名義ラベルの表示名の入力規則) が含まれる。これは agent の推定であり、根拠は qa-household-security-web-003 (basis=agent-inference) に分けた。"
-        }
       ]
     },
     {
-      "id": "qa-household-security-web-evidence-001",
-      "question": "security 章の裏付けとして、既存の入力検証と公開物の検査について何を観測したか。",
-      "answer": "settingsRoute の PUT /classification は zValidator('json', classificationSchema) で institutionOwners を z.record(z.string().max(100), z.enum(OWNER_VALUES).nullable()) と検証している (packages/api/src/routes/settings.ts:654-661)。一方、家計の GET /api/household は専用の zod 検証を持たない (analytics.ts:528-531)。リポジトリには pnpm run security:content (scripts/hooks/guard-real-data.sh --scan-public-docs) が lint に組み込まれており、公開文書への実データ混入を検査している。フッターは『取込データは外部送信しません』を掲げる。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-classify-infrastructure-web-evidence-001",
+      "question": "インフラ 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "api は Hono の Cloudflare Worker で D1 を使う (wrangler 設定)。証憑用の R2 は #42 で撤去済み。D1 Free は rows read 5 million / day・rows written 100,000 / day・5 GB (https://developers.cloudflare.com/d1/platform/pricing/)。行書き換えの migration で Deploy が止まった過去があり、追加のみを原則にしている。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-18T11:33:59Z"
+      "answered_at": "2026-09-19T13:24:40Z"
     },
     {
-      "id": "qa-household-infrastructure-web-001",
-      "question": "家計収支画面のために配信・実行・DB 反映の基盤をどう変えるか。",
-      "answer": "基盤は変えない。既存の Cloudflare Workers (Hono) と D1、静的資産の配信をそのまま使い、家計画面は既存と同じく遅延読み込みのルートとして配信する。集計は要求のたびに core の純関数で導出し、新しいキャッシュ層・キュー・外部サービスを足さない (Workers の CPU 時間の範囲内。期間は最大 3 年分の台帳)。owner_labels の migration は既存の Migrate ワークフロー (.github/workflows/migrate.yml) と Deploy ワークフローの手順とゲートで反映し、行を書き換えない追加のみなので巻き戻しは表の不使用で足りる。初期 JS 予算は CI の実測値で守る。",
-      "provenance": "利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答",
+      "id": "qa-classify-infrastructure-web-002",
+      "question": "web の明細仕分け画面で、インフラ について利用者が決めていない具体値を何にするか。",
+      "answer": "一括保存とルール適用は D1 の batch 1 回あたり最大 50 文に区切って書く。ルールのプレビューは読取りだけで、表示期間の明細 (最大 3 年) を 1 回の SQL で読む。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-infrastructure-web-001",
+      "question": "明細仕分けのためにインフラ (Workers・D1・ストレージ・バインディング) をどう変えるか。",
+      "answer": "構成は変えない。既存の Cloudflare Worker と D1 の上に載せ、R2 やキュー、新しいバインディングや外部サービスを足さない (qa-classify-decision-001, 003)。Cloudflare の無料枠 (Workers の CPU 時間・D1 の読み書き) の範囲で動くよう、一覧はサーバ側で 50 件ずつ返し、一括保存とルール適用は件数の上限を置いて D1 の batch でまとめて書く。migration の本番反映は既存の Deploy / Migrate の手順に従う。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:36:56Z",
+      "answered_at": "2026-09-19T13:24:40Z",
       "required_info_items": [
         "infra-topology"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。",
-          "corrected_field": "answered_at",
-          "previous_value": "2026-09-18T11:25:37Z",
-          "corrected_value": "2026-09-18T11:36:56Z"
-        },
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at の訂正を記録した。本文の値は利用者の決定 001〜007 と承認の範囲に収まり、agent が補った値は含まない。"
-        }
       ]
     },
     {
-      "id": "qa-household-infrastructure-web-evidence-001",
-      "question": "infrastructure 章の裏付けとして、既存の配信と反映の仕組みについて何を観測したか。",
-      "answer": ".github/workflows には ci.yml・deploy.yml・migrate.yml がある。ルートの package.json は build (web の build と wrangler deploy --dry-run)、deploy (build:artifact と api の deploy)、db:migrate:local / db:migrate:remote (wrangler d1 migrations apply kanjo-db) を持つ。api は packages/api/wrangler.jsonc の Worker で、D1 を DB binding として使う。直近の #58 で初期 JS 予算の CI 実測値を記録している。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-classify-maintenance-ops-web-evidence-001",
+      "question": "保守運用管理 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "最近の作り直しは specs/spec-<screen>-screen.md・architecture/<screen>-{8 カテゴリ}.md・features/feat-<screen>.md・tasks/feat-<screen>/・docs/<screen>-screen/design-decisions.md・docs/evidence/ に成果物を残している。verify:full は 4175 の vite を前提にし、初期 JS 予算は build:bundle 直後に測る。CI の headless Chrome は pointer:none である。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-18T11:33:59Z"
+      "answered_at": "2026-09-19T13:24:40Z"
     },
     {
-      "id": "qa-household-maintenance-ops-web-001",
-      "question": "家計収支画面の品質をどう保ち、規則をどこに残すか。",
-      "answer": "core の単体テストで不変条件 (総収支の総合と toBe で一致、全月で事業 + 個人 = 家計全体、6 区分の和 = 総支出、名義別の和 = 総収入、前年欠損で null、振替は台帳に現れない、対推定の決定論) を固定し、specs/spec-household-cashflow-screen.md のフィクスチャ (計算値を含む) で画面再現を DOM テストする。API 統合テストで未認証 401・フェンス違反・表示名の 400 (21 文字・制御文字・重複)・正常更新 200 と再取得を確かめ、migration が既存行を書き換えないことを検査する。集計規則 (等式・欠損規則・6 区分の対応表・振替の対推定) は docs/data-schema.md に明記する。既存の総収支・推移・マトリックス・分析ハブの数値テストが緑のまま、pnpm lint (直書き色の検査を含む)・typecheck・初期 JS 予算を CI で通す。旧 household() の参照が残らないことを検索で確かめる。",
-      "provenance": "利用者承認 (appr-foundation-household-cashflow-001) と利用者決定 qa-household-decision-001〜007 を、specs/spec-household-cashflow-screen.md へ具体化した回答",
+      "id": "qa-classify-maintenance-ops-web-002",
+      "question": "web の明細仕分け画面で、保守運用管理 について利用者が決めていない具体値を何にするか。",
+      "answer": "テストは packages/core/src/classify-status.test.ts・packages/api/src/routes/classify-bulk.test.ts・packages/web/src/pages/classify/classify.dom.test.tsx を新設する。文書は specs/spec-classify-screen.md・architecture/classify-*.md・docs/classify-screen/design-decisions.md に置く。旧実装で落ちること (4 区分の和・信頼度 null) を検算してからテストを確定する。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-maintenance-ops-web-001",
+      "question": "明細仕分けの検証・運用 (テスト・CI・文書・証跡) をどうするか。",
+      "answer": "core の単体テストで、4 区分が排他で和が全件に一致すること・ナビのバッジと月次クローズの『仕分け』が同じ関数から出ること・信頼度が全由来で 0〜100 の整数か提案なしのときだけ null であること・ルールのプレビューと適用の結果が一致すること・手動変更がルールで変わらないこと・分割ルールの行の和が元の金額に一致することを固定する。api のテストで一括保存の部分失敗と再試行・フェンスの登録・利用者の区切りを、web の DOM テストで画像の構成要素と通知と下書きの復元を確かめる。既存の仕分け・照合・月次クローズ・家計収支・総収支の数値テストを緑のまま保ち、pnpm lint・typecheck・初期 JS 予算を CI で通す。画面仕様・設計・設計判断・証跡を既存の作り直しと同じ場所に残す。既知の逸脱・未実施・一部適合は受入 PASS に数えない。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T11:36:56Z",
+      "answered_at": "2026-09-19T13:24:40Z",
       "required_info_items": [
         "ops-runbook"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "answered_at に承認時刻 2026-09-18T11:25:37Z を写していた。この回答は利用者の承認と決定 001〜007 を agent が具体化した文で、実際に記録したのは R2 の chunk を適用した 2026-09-18T11:36:56Z である。",
-          "corrected_field": "answered_at",
-          "previous_value": "2026-09-18T11:25:37Z",
-          "corrected_value": "2026-09-18T11:36:56Z"
-        },
-        {
-          "corrected_at": "2026-09-18T12:02:30Z",
-          "note": "本文には利用者が決めていない値 (推定規則を固定する境界テスト) が含まれる。これは agent の推定であり、根拠は qa-household-maintenance-ops-web-003 (basis=agent-inference) に分けた。"
-        }
       ]
     },
     {
-      "id": "qa-household-maintenance-ops-web-evidence-001",
-      "question": "maintenance-ops 章の裏付けとして、既存の検証コマンドと記録の場所について何を観測したか。",
-      "answer": "ルートの package.json は test (全パッケージの test と test:aux)、typecheck、lint (biome と check-design-tokens などの独自検査、security:content)、verify:full (test・typecheck・lint・build と web の check:* 群・preview:smoke) を持つ。design-system:fast は chart-series-contract や common-shell-routes の DOM テストを含む。docs/data-schema.md と docs/ui-decisions.md が集計規則と UI の決定の記録先として使われている。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-18T11:33:59Z"
-    },
-    {
-      "id": "qa-household-ui-ux-web-003",
-      "question": "web の家計収支画面で、利用者が決めていない カテゴリの詳細パネルの既定の選択と、主な取引の並べ方 を何にするか。",
-      "answer": "URL に cat が無いときは前年差 (増減額) が最大の区分を選び、同額なら固定順で先の区分を選ぶ。主な取引は日付の昇順で最大 5 件を出す。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-18T12:02:30Z"
-    },
-    {
-      "id": "qa-household-backend-web-003",
-      "question": "web の家計収支画面で、利用者が決めていない 振替の入出金の対推定の規則 を何にするか。",
-      "answer": "TRANSFER_PAIR_MAX_DAYS = 3。同額の出金と入金を日付差 3 日以内で対にし、候補が複数あるときは日付差 → 出金側の日付 → id の順で決める。対にならないものは相手不明とする。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-18T12:02:30Z"
-    },
-    {
-      "id": "qa-household-database-web-003",
-      "question": "web の家計収支画面で、利用者が決めていない owner_labels の表示名の長さ制約 を何にするか。",
-      "answer": "表示名は前後の空白を除いて 1〜20 文字とし、D1 の CHECK 制約でも長さを守る。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-18T12:02:30Z"
-    },
-    {
-      "id": "qa-household-security-web-003",
-      "question": "web の家計収支画面で、利用者が決めていない 名義ラベルの表示名の入力規則 を何にするか。",
-      "answer": "前後の空白を除いて 1〜20 文字、制御文字 U+0000–U+001F と U+007F を拒否、4 つの名義の表示名が互いに異なることを zod で確かめ、違反はフィールド別の 400 で返す。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-18T12:02:30Z"
-    },
-    {
-      "id": "qa-household-maintenance-ops-web-003",
-      "question": "web の家計収支画面で、利用者が決めていない 推定規則を固定する境界テスト を何にするか。",
-      "answer": "振替の対推定は日付差 3 日と 4 日、同額が複数あるときの決定論をテストで固定する。名義ラベルは 20 文字と 21 文字、制御文字、重複の境界を API 統合テストで固定する。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-18T12:02:30Z"
-    },
-    {
-      "id": "qa-household-ui-ux-web-004",
-      "question": "web の家計収支画面 (/household) の UI-UX 要件は何か。画面の構成要素・文言・切替・選択・詳細パネル・名義ラベル編集・状態・アクセシビリティを 10-household.png のとおりに確定する。",
-      "answer": "上から (1) 問いの見出し『家計の総収入・総支出・純収支は、どう変わりましたか？』と説明文、右上に『データの出典』カード (代表の取込元と他 N 件・取込明細を確認)。(2) KPI 3 枚 (総収入・総支出・純収支と月平均・年換算) と『前年より』カード (純収支の前年差と決定論の一文)。(3) 月別の家計収支推移: 家計全体 / 事業 / 個人のタブ、凡例 5 系列 (収入・支出の当期の棒、純収支の折れ線、収入・支出の前年の点線)、月送り ‹ 2026年8月 ›、選択月の帯。下端に『事業と個人の内訳』と等式『家計全体 = 事業 + 個人』と重複なしの注記。(4) 左に生活費カテゴリ 6 区分の表 (当期・前年・増減額・構成比・合計)、右に『カテゴリの詳細』パネル (金額・前年比・主な取引 5 件・すべて見る・集計の説明と分類ルールへの導線、× で閉じる)。既定の選択の規則は qa-household-ui-ux-web-003 (agent 推定) を参照。(5) 名義別の収入 / 振替は収入・支出から除外 (名義間の対推定と相手不明) / 名義ラベルの設定 (編集ダイアログ。入力規則は qa-household-security-web-003 (agent 推定) を参照) の 3 カラム。(6) 前年との比較 3 枚と文章の要約。(7) 下部固定バー『選択中: 2026年8月 / 純収支 / 内訳の明細を確認』。読込・空・失敗、前年欠損の各状態を持つ。選択 (seg / month / cat) は URL に保つ。行と棒はキーボードで選べ、増減は符号と矢印を併記して色だけに頼らない。ナビとパンくずは『家計収支』。画像の算術が閉じない欄は計算値を正本にする。文言・数値・フィクスチャの正本は specs/spec-household-cashflow-screen.md。",
-      "provenance": "qa-household-ui-ux-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-ui-ux-web-003 (agent-inference) に分けた。",
+      "id": "qa-classify-decision-005",
+      "question": "明細の区分はどう数えるか (完成度評価で『どこにも入らない明細がある』『画像と食い違う』と指摘された点)。",
+      "answer": "要確認は未整理の内訳 (推奨)。未整理 = 利用者もルールも中項目もまだ決めていない明細すべて (提案の有無・信頼度は問わない)。要確認 = 未整理のうち信頼度 80% 未満・衝突・矛盾があるもの。手動変更と完了は確定済みの排他区分。未整理 + 手動変更 + 完了 = 全件。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し)",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T12:14:43Z",
+      "answered_at": "2026-09-19T13:40:10Z",
+      "required_info_items": [
+        "domain-model",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-classify-decision-006",
+      "question": "一覧や編集パネルで明細を『確定』したとき、どの区分に移すか。",
+      "answer": "提案どおりなら完了 (推奨)。提案をそのまま受け入れたものは完了、区分・カテゴリ・所有者のどれかを提案と違う値にしたものは手動変更。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:40:10Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-classify-backend-web-003",
+      "question": "明細仕分けのために core と api をどう変えるか。分類ステータス・提案と信頼度・一括保存・ルールのプレビューと適用・保存フィルタ・履歴の契約は何か。",
+      "answer": "core に分類ステータスの判定を 1 か所に新設し、各明細を 未整理 (利用者・ルール・MF 中項目のどれもまだ決めていない明細。提案の有無と信頼度は問わない) / 手動変更 (利用者が提案と異なる値で確定した明細。提案が無いまま利用者が決めた明細と、この変更より前の手入力の明細を含む) / 完了 (利用者が提案どおりに確定した明細と、ルール・MF 中項目が決めた明細) の 3 区分に排他で振り分け、和が全件に一致する。要確認は区分ではなく未整理の内訳で、提案の信頼度が 80% 未満・提案どうしの衝突・区分と名義の矛盾のいずれかがある未整理の明細を数える (qa-classify-decision-002・005)。利用者が確定したとき、区分・カテゴリ・所有者がすべてその時点の提案と一致すれば完了、1 つでも異なるか提案が無ければ手動変更とし、確定時の判断を明細の手当てに残して後から提案が変わっても区分が揺れないようにする (qa-classify-decision-006)。ルール・MF 中項目が決めた明細は完了で、その由来の信頼度は表示にだけ使い要確認には数えない。ナビのバッジは未整理の件数、月次クローズの『仕分け』は同じ判定の未整理から照合側で数える明細を除いた件数とし、現行の clsSrc=既定 と意味を変えない。提案カテゴリ・信頼度・根拠の文は recommendationFor を拡張し、過去の同取引先・ルール・MF 中項目のどの由来にも決定論の信頼度を付け、/transactions の各行に提案・信頼度・根拠・分類ステータスを載せる。外部の LLM は呼ばない (qa-classify-decision-003)。/transactions は期間・分類ステータス・カテゴリ・所有者・支払方法・手動変更のみ・キーワードで絞り込み、サーバ側で 50 件ずつ返す。選択した複数の明細を 1 回の要求で保存する一括保存を設け、明細ごとに検証と保存を行って成否を返し、成功分は取り消さない。ルールに取引先・キーワード・適用範囲 (一致する明細すべて / 未確定の明細だけ)・分割の型 (固定額の行と残額の行) を持たせ、作成前に該当する明細と適用後の仕訳の一覧と件数を返すプレビューと、同じ判定で適用する API を設ける。手動変更した明細はルールで上書きしない。保存したフィルタの保存・一覧・削除と、明細の取引の履歴の取得を設ける。全ての変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。入力は zod で検証し、変更系は canonicalMutationFence に登録する。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し)。qa-classify-backend-web-001 を改訂",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:40:10Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-classify-ui-ux-web-003",
+      "question": "web の明細仕分け画面 (/classify) の UI-UX 要件は何か。画面の構成要素・文言・選択・編集・一括操作・通知・状態・アクセシビリティをどうするか。",
+      "answer": "上から (1) パンくず『整える / 明細仕分け』、期間タブ 1年 / 2年 / 3年 / 任意 と期間送り ‹ 2025年9月 - 2026年8月 ›、右上に『明細仕分けの使い方』。(2) 見出し『明細仕分け』と問い『未整理の明細を、根拠を見ながら確定しますか？』、説明文、KPI 4 枚 (未整理・要確認・手動変更・完了 と件数)。要確認は未整理の内訳なので、要確認のカードは『未整理のうち』と添えて示し、絞り込みの『要確認』は未整理のうち要確認に当たる明細を出す。未整理の行にも提案カテゴリと信頼度を出し、要確認に当たる行には『要確認』の文言を併記する (qa-classify-decision-005)。(3) 3 カラム: 左に絞り込み (対象月・分類ステータスのチェックと件数・カテゴリ・所有者・支払方法・手動変更のみ・キーワード検索・保存したフィルタと『現在の条件を保存』・『フィルタをクリア』・折りたたみ)、中央に取引一覧 (件数見出し・表示件数 50 件・選択チェックと全選択・日付の並べ替え・取引先 / 内容・金額・提案カテゴリ・信頼度・ページ送り)、右に取引の編集パネル (提案どおりに確定すると完了、提案と異なる値で確定すると手動変更になることを保存前に示す (qa-classify-decision-006)・未保存の印・閉じる・日付と取引先と内容と金額・クイック仕分け 事業 / 個人 / リセット・カテゴリ・所有者・支払方法・メモ 200 字と字数・取引の履歴・信頼度の根拠・編集 / 分割 / 削除・この条件をルールにする (取引先・キーワード・適用範囲・ルールを作成)・該当する既存のルールとその対象件数の案内)。証憑欄は置かず、その位置に『証憑は freee 側で管理します』の案内を出す (qa-classify-decision-001)。(4) 結果の通知: 一括保存の部分失敗『選択した N 件のうち M 件を保存しました。K 件はエラーのため保存できませんでした。』と『失敗した K 件のみ再試行』、削除の『元に戻す』。(5) 一括操作バー『N 件選択中・選択をクリア・選択した N 件を保存』。(6) 下段に分割明細の編集 (元の取引・分割後の仕訳の行 カテゴリ / 金額 / 所有者 / メモ / 削除・分割行を追加・金額の合計と元の金額の一致表示・キャンセル・この内容で分割を適用) と、ルール適用プレビュー (今後 N 件に適用・日付 / 取引先 / 金額 / 適用後の仕訳の表・このルールを適用・下書きを復元)。(7) 下書きを自動保存した時刻の表示。未保存のまま離れるときは確認する。読込・空 (期間内の明細 0 件)・失敗の各状態を持つ。信頼度と分類ステータスは色だけで区別せず、数値と文言を併記する。自動提案の表示は『AI』ではなく『自動提案』とする (qa-classify-decision-003)。数値は画像のモックではなく実データから core で算出したものを出す。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し)。qa-classify-ui-ux-web-001 を改訂",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:40:10Z",
       "required_info_items": [
         "context-of-use",
         "information-priority",
@@ -766,93 +707,60 @@
       ]
     },
     {
-      "id": "qa-household-backend-web-004",
-      "question": "家計の集計ロジックと API をどこに置き、どの契約で返すか。",
-      "answer": "家計の集計は core の新しい純関数 householdSummary (household-summary.ts) 1 か所に集め、入力は総収支画面と同じ totalCashflowLedger の行集合とする (利用者決定 qa-household-decision-001)。旧 household() と HouseholdData は置き換えて削除する。台帳行へ名義 (freee 行は business、MF 行は resolveTx の owner、未解決は unset) を追加する。1 回の呼び出しで家計全体・事業・個人の総額と月平均・年換算、前年同期間 (欠けた月があれば null)、月別系列と前年同月、生活費 6 区分 (対応表は core の定数 1 か所。qa-household-decision-007)、名義別収入、振替一覧と対推定 (同額・逆符号の入出金を組にする。qa-household-decision-003。日付の許容幅と同点の決め方は qa-household-backend-web-003 (agent 推定) を参照) を返す。数値は収入・支出を正本にし、差・率・構成比は計算値にする (qa-household-decision-006)。api は GET /api/household をこの形へ拡張し、選択時だけの GET /api/household/category (主な取引 5 件と区分の月合計) と GET / PUT /api/settings/owner-labels を設ける。期間は loadScoped、freee・判定・除外は loadCashflowSources で読み、クエリと本文は zod で検証する。不変条件 (総収支の総合と一致、事業 + 個人 = 家計全体、6 区分の和 = 総支出、名義別の和 = 総収入、振替は台帳に現れない) をテストで固定する。契約の正本は specs/spec-household-cashflow-screen.md §11-§12。",
-      "provenance": "qa-household-backend-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-backend-web-003 (agent-inference) に分けた。",
+      "id": "qa-classify-maintenance-ops-web-003",
+      "question": "明細仕分けの検証・運用 (テスト・CI・文書・証跡) をどうするか。",
+      "answer": "core の単体テストで、未整理・手動変更・完了が排他で和が全件に一致し要確認が未整理の内訳に収まること・提案どおりの確定は完了・提案と異なる確定は手動変更になること・ナビのバッジと月次クローズの『仕分け』が同じ関数から出ること・信頼度が全由来で 0〜100 の整数か提案なしのときだけ null であること・ルールのプレビューと適用の結果が一致すること・手動変更がルールで変わらないこと・分割ルールの行の和が元の金額に一致することを固定する。api のテストで一括保存の部分失敗と再試行・フェンスの登録・利用者の区切りを、web の DOM テストで画像の構成要素と通知と下書きの復元を確かめる。既存の仕分け・照合・月次クローズ・家計収支・総収支の数値テストを緑のまま保ち、pnpm lint・typecheck・初期 JS 予算を CI で通す。画面仕様・設計・設計判断・証跡を既存の作り直しと同じ場所に残す。既知の逸脱・未実施・一部適合は受入 PASS に数えない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し)。qa-classify-maintenance-ops-web-001 を改訂",
       "basis": "user-decision",
-      "answered_at": "2026-09-18T12:14:43Z",
-      "required_info_items": [
-        "api-contract",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-household-database-web-004",
-      "question": "家計収支画面のために D1 のスキーマをどう変えるか。",
-      "answer": "名義の表示名を保存する owner_labels 表だけを追加する (追加のみの migration。次の空き番号は実装時に origin/main を fetch して確定する)。列は user_id・owner (CHECK で business / spouse / family / unset)・label (長さの上限を CHECK で守る。具体値は qa-household-database-web-003 (agent 推定) を参照)・updated_at、主キーは (user_id, owner)。行が無い名義は既定の表示名 (本人 / パートナー / 子ども / その他) を使い、初期データを投入しない。名義の内部値と既存表 (institution_owners・rules.owner・tx_edits.owner・tx_splits.owner) の行は 1 行も書き換えない (利用者決定 qa-household-decision-002)。家計の集計値は保存せず要求のたびに導出する。振替の対推定のために相手口座カラムを足さない (qa-household-decision-003)。runtimeSchemaGuard の必須表へ owner_labels を加える。",
-      "provenance": "qa-household-database-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-database-web-003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-18T12:14:43Z",
-      "required_info_items": [
-        "data-persistence",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-household-security-web-004",
-      "question": "家計収支画面で新しく生じる入力・出力・外部送信のリスクにどう備えるか。",
-      "answer": "新しい入力は名義ラベルの表示名だけで、zod の許可リスト (長さ・使える文字・名義間の重複) で検証し (具体値は qa-household-security-web-003 (agent 推定) を参照)、違反は 400 とフィールド別のエラーを返す。D1 の CHECK 制約でも長さを守る。表示名は React の既定のエスケープで描画し、dangerouslySetInnerHTML を使わない。家計 API のクエリ (month・key・期間) も zod で enum と書式を検証し、期間外の月は 400。応答は利用者本人のデータだけで、明細の内容・取引先はこれまでどおり画面に出すが外部へ送信しない (取込データの外部送信なし)。振替の対推定は表示だけで、データを書き換えない。更新系は既存の canonicalMutationFence の内側に置く。",
-      "provenance": "qa-household-security-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-security-web-003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-18T12:14:43Z",
-      "required_info_items": [
-        "security-posture"
-      ]
-    },
-    {
-      "id": "qa-household-maintenance-ops-web-004",
-      "question": "家計収支画面の品質をどう保ち、規則をどこに残すか。",
-      "answer": "core の単体テストで不変条件 (総収支の総合と toBe で一致、全月で事業 + 個人 = 家計全体、6 区分の和 = 総支出、名義別の和 = 総収入、前年欠損で null、振替は台帳に現れない、対推定の決定論) を固定し、specs/spec-household-cashflow-screen.md のフィクスチャ (計算値を含む) で画面再現を DOM テストする。API 統合テストで未認証 401・フェンス違反・表示名の 400 (入力規則の境界。具体値は qa-household-maintenance-ops-web-003 (agent 推定) を参照)・正常更新 200 と再取得を確かめ、migration が既存行を書き換えないことを検査する。集計規則 (等式・欠損規則・6 区分の対応表・振替の対推定) は docs/data-schema.md に明記する。既存の総収支・推移・マトリックス・分析ハブの数値テストが緑のまま、pnpm lint (直書き色の検査を含む)・typecheck・初期 JS 予算を CI で通す。旧 household() の参照が残らないことを検索で確かめる。",
-      "provenance": "qa-household-maintenance-ops-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-maintenance-ops-web-003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-18T12:14:43Z",
+      "answered_at": "2026-09-19T13:40:10Z",
       "required_info_items": [
         "ops-runbook"
       ]
+    },
+    {
+      "id": "qa-classify-database-web-003",
+      "question": "提案どおりの確定と提案と異なる確定 (qa-classify-decision-006) を、後から提案が変わっても区分が揺れないようにどこへ残すか。",
+      "answer": "明細の手当て (tx_edits) に、利用者が確定したときに提案と一致していたかを表す列を追加のみの migration で足す。値が無い既存の手入力の明細は手動変更として扱う。行を書き換える migration は作らない。 これは agent の推定で、利用者は未確認である。決定 006 の保存先は利用者が指定していないため、実装で決定論を保つために置いた。",
+      "provenance": "agent-inference (qa-classify-decision-006 の実装上の帰結)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:40:10Z"
     }
   ],
   "approval_log": [
     {
-      "id": "appr-foundation-household-cashflow-001",
-      "note": "家計収支画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/10-household.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択。同時に 家計の定義=totalCashflowLedger 正本 / 名義=内部値を残し表示名編集 (owner_labels) / 振替=名義間の対推定 / 画面名=家計収支へ改名 (累計収支は新設しない) / 数値の正本=収入・支出 (差は計算値) / カテゴリ=固定6区分 の 6 決定を承認。実測時刻 2026-09-18T11:25:37Z。basis=user-decision。"
+      "id": "appr-foundation-classify-001",
+      "note": "明細仕分けサイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/13-classify.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択 (2026-09-19T13:15:30Z、transcript の回答行の実測時刻)。範囲外: 証憑添付・外部LLM・共通シェルの作り直し・取込/照合の変更・web 以外の専用アプリ。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-classify-002",
+      "note": "完成度評価 (high: 分類ステータスの定義漏れ) を受けた上位概念の改訂を利用者が承認。要確認を未整理の内訳にし、提案どおりの確定は完了・提案と異なる確定は手動変更とする (qa-classify-decision-005/006)。一括操作バーを画面専用部品と改める。選択肢は『この内容で承認 / 修正して再提示』で利用者は承認を選択 (2026-09-19T13:44:19Z、transcript の回答行の実測時刻)。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-classify-003",
+      "note": "Q-1 は承認済みの契約「提案どおりの確定と自動決定は完了」から明確化。取込時に vendor_memory が materialize した手当ては、matched_proposal が NULL でも done（完了）とし、要確認には数えない。新しい区分や保存値は追加せず、core の既存判定と実テストに固定する（2026-09-21）。basis=approved-contract-clarification。"
     }
   ],
   "reopen_log": [
     {
-      "category": "ui-ux",
-      "platform": "web",
-      "reason": "完成度評価 (matrix_coverage) の差し戻し。主根拠 qa-household-ui-ux-web-001 (user-decision) に利用者未確認の agent 推定値が混ざっていたため、推定値を除いた qa-household-ui-ux-web-004 に主根拠を差し替える。",
-      "from": "確定",
-      "reopened_at": "2026-09-18T12:14:41Z"
-    },
-    {
       "category": "backend",
       "platform": "web",
-      "reason": "完成度評価 (matrix_coverage) の差し戻し。主根拠 qa-household-backend-web-001 (user-decision) に利用者未確認の agent 推定値が混ざっていたため、推定値を除いた qa-household-backend-web-004 に主根拠を差し替える。",
+      "reason": "完成度評価 high: 分類ステータス 4 区分の定義漏れ (どこにも入らない明細・画像との食い違い・確定後の区分未定義・MF 中項目由来の要確認滞留・月次クローズの意味)。利用者決定 qa-classify-decision-005/006 と上位概念改訂 appr-foundation-classify-002 で差し替える",
       "from": "確定",
-      "reopened_at": "2026-09-18T12:14:41Z"
+      "reopened_at": "2026-09-19T13:44:54Z"
     },
     {
-      "category": "database",
+      "category": "ui-ux",
       "platform": "web",
-      "reason": "完成度評価 (matrix_coverage) の差し戻し。主根拠 qa-household-database-web-001 (user-decision) に利用者未確認の agent 推定値が混ざっていたため、推定値を除いた qa-household-database-web-004 に主根拠を差し替える。",
+      "reason": "完成度評価 high: 要確認が未整理の内訳であることと確定後の区分が画面仕様に無い。利用者決定 qa-classify-decision-005/006 と上位概念改訂 appr-foundation-classify-002 で差し替える",
       "from": "確定",
-      "reopened_at": "2026-09-18T12:14:41Z"
-    },
-    {
-      "category": "security",
-      "platform": "web",
-      "reason": "完成度評価 (matrix_coverage) の差し戻し。主根拠 qa-household-security-web-001 (user-decision) に利用者未確認の agent 推定値が混ざっていたため、推定値を除いた qa-household-security-web-004 に主根拠を差し替える。",
-      "from": "確定",
-      "reopened_at": "2026-09-18T12:14:41Z"
+      "reopened_at": "2026-09-19T13:44:54Z"
     },
     {
       "category": "maintenance-ops",
       "platform": "web",
-      "reason": "完成度評価 (matrix_coverage) の差し戻し。主根拠 qa-household-maintenance-ops-web-001 (user-decision) に利用者未確認の agent 推定値が混ざっていたため、推定値を除いた qa-household-maintenance-ops-web-004 に主根拠を差し替える。",
+      "reason": "完成度評価 high に連動: テスト条件が 4 区分排他の旧定義のまま。利用者決定 qa-classify-decision-005/006 と上位概念改訂 appr-foundation-classify-002 で差し替える",
       "from": "確定",
-      "reopened_at": "2026-09-18T12:14:41Z"
+      "reopened_at": "2026-09-19T13:44:54Z"
     }
   ],
   "category_aggregate": {
@@ -900,857 +808,631 @@
     }
   ],
   "requirements_foundation": {
-    "essential_purpose": "家計収支画面を、『家計の総収入・総支出・純収支は、どう変わりましたか？』という問いに 1 画面で答え切る場にする。利用者が期間 (1年 / 2年 / 3年 / 任意) を選ぶと、家計全体の総収入・総支出・純収支とその前年差を最初に掴み、月別の推移で『いつ』動いたかを、事業と個人の内訳・生活費カテゴリ・名義別の収入で『どこが』動いたかを確かめ、振替を二重に数えていないことを納得したうえで、選んだ月やカテゴリの明細まで一直線に降りて手を打てる状態にする。家計全体の数字は総収支画面の『総合』と必ず一致し、事業と個人の和が家計全体に重複なく閉じることを、画面と集計の両方で保証する。",
-    "background": "現行の /household (packages/web/src/pages/Household.tsx、657 行の 1 ファイル) はナビ上『累計収支』という名前で、選んだ 1 か月の KPI 4 枚・事業と個人の月別表・収入計と支出計の棒グラフ・生活費の大項目別 (全期間)・前月比・名義別収入 (事業 / 妻 / 家族)・中項目別収入を縦に並べた読み物で、問いの見出しも前年との比較も無い。集計は core の household() が担うが、事業入金と事業立替を家計の収支に含める独自定義で、総収支画面の totalCashflowLedger (事業 = freee、家計 = MF の家計行、振替と二重計上は除外) と数字が一致しない。前年比較・振替の一覧・名義ラベルの編集はどの層にも無く、名義は D1 の CHECK 制約で business / spouse / family の 3 値に固定され表示名はハードコードされている。design/FINAL-UI/images/10-household.png はこれらを 1 画面に統合した完成形で、design/FINAL-UI/spec/AUDIT.md も『家計の総収入・総支出・純収支と 1/2/3 年比較が弱い。最上位 KPI と事業/個人比較を追加』と指摘している。総収支 (#55)・推移 (#56)・マトリックス (#57) を同じ流儀で作り直し終えた今、残る『整える』段階の中心画面として揃える時期にある。",
+    "essential_purpose": "明細仕分け画面を、『未整理の明細を、根拠を見ながら確定しますか？』という問いに 1 画面で答え切る場にする。利用者が期間 (1年 / 2年 / 3年 / 任意) を選ぶと、未整理・要確認・手動変更・完了の件数を最初に掴み、絞り込みで片付ける対象を選び、一覧で提案カテゴリと信頼度を見比べ、右の編集パネルで信頼度の根拠と取引の履歴を読んだうえで確定できる。複数件はまとめて保存し、一部が失敗しても失敗した明細だけを再試行でき、繰り返し現れる取引はその場でルールにして、今後どの明細にどう適用されるかをプレビューで確かめてから適用できる。分割は合計が元の金額に一致することを確かめて適用でき、削除は元に戻せ、入力中の下書きは画面を離れても失われない。未整理・手動変更・完了の件数は排他で和が全件に一致し、要確認は未整理の内訳として数え、ナビのバッジと月次クローズの『仕分け』と同じ定義から導く。取込データは外部へ送信しない。",
+    "background": "現行の /classify (packages/web/src/pages/Classify.tsx、1188 行の 1 ファイル) は対象月を単月の select で選び、KPI は明細数・総収入などの金額で、画像の件数 KPI (未整理 / 要確認 / 手動変更 / 完了) ではない。絞り込みはツールバー横並びで、保存したフィルタ・一覧のチェックボックスと 50 件ページング・右の編集パネル・一括保存 (部分失敗の報告と再試行)・取引の履歴・下書きの自動保存と復元・ルール作成前の適用プレビューがどの層にも無い。提案カテゴリと信頼度は core の recommendationFor にあるが /review-queue 専用で /transactions には載らず、信頼度が数値になるのは過去の同取引先 (vendor_memory) 由来のときだけで、ルール・MF 中項目由来は null。『要確認』の定義はどこにも無い。design/FINAL-UI/images/13-classify.png はこれらを 1 画面に統合した完成形で、design/FINAL-UI/spec/AUDIT.md も『中核は良い。分割、全フィルタ、ルール適用、下書き/離脱防止を追加』と指摘している。総収支・推移・マトリックス・サブスク・家計収支を同じ流儀で作り直し終えた今、『整える』段階の入口である仕分け画面を揃える時期にある。画像の『領収書・証憑』欄は #42 で製品として廃止し spec-v1.1 で外部の正本側 (freee) 管理と定めた機能で、今回も再導入しない (利用者決定)。",
     "goals": [
       {
         "id": "G1",
-        "text": "/household を 10-household.png どおりの画面にする。問いの見出し『家計の総収入・総支出・純収支は、どう変わりましたか？』と説明文、データの出典カード (取込元の代表名と件数・取込明細を確認)、期間タブ (既存の期間選択を引き継ぐ 1年 / 2年 / 3年 / 任意と対象範囲)、KPI 3 枚 (総収入・総支出・純収支と月平均・年換算) と前年差カード、月別の家計収支推移 (家計全体 / 事業 / 個人のタブ、当期の収入・支出の棒、純収支の折れ線、前年の収入・支出の点線、月送り)、事業と個人の内訳 (家計全体 = 事業 + 個人の等式と重複なしの注記)、生活費カテゴリ別の内訳表、名義別の収入、振替は収入・支出から除外、名義ラベルの設定、前年との比較 (増減と文章の要約)、下部の選択中バー (選択中の月と純収支・内訳の明細を確認) を、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持ち、ナビの名称を『家計収支』へ改める。"
+        "text": "/classify を 13-classify.png どおりの画面にする。問いの見出し『未整理の明細を、根拠を見ながら確定しますか？』と説明文、期間タブ (usePeriod の 1年 / 2年 / 3年 / 任意と期間送り)、件数 KPI 4 枚 (未整理・要確認・手動変更・完了)、左の絞り込みパネル (対象月・分類ステータスのチェックと件数・カテゴリ・所有者・支払方法・手動変更のみ・キーワード検索・保存したフィルタ・現在の条件を保存・フィルタをクリア・折りたたみ)、中央の取引一覧 (選択チェック・日付の並べ替え・取引先 / 内容・金額・提案カテゴリ・信頼度・表示件数 50 件とページ送り)、右の取引の編集パネル (未保存の表示・クイック仕分け 事業 / 個人 / リセット・カテゴリ・所有者・支払方法・メモ 200 字と字数・取引の履歴・信頼度の根拠・編集 / 分割 / 削除・この条件をルールにする・該当する既存のルール)、一括操作バー (N 件選択中・選択をクリア・選択した N 件を保存)、結果の通知 (一括保存の部分失敗と失敗分だけ再試行・削除の元に戻す)、下段の分割明細の編集とルール適用プレビュー、下書きの自動保存時刻を、既存のデザイントークン・共通部品 (PageHeader・KpiCard・Button・ConfirmDialog・PeriodPicker) の上に組み、一括操作バーはサブスク・診断と同じく画面専用の部品として pages/classify に置く。証憑欄は置かず、その位置に『証憑は freee 側で管理します』の案内を出す。読込・空・失敗の各状態を持つ。"
       },
       {
         "id": "G2",
-        "text": "家計の集計を core の純関数 1 か所に集め、総収支の台帳 (totalCashflowLedger) を正本にする。総収入・総支出・純収支と月平均・年換算、事業と個人の分解 (和が家計全体に一致)、前年同期間との比較 (前年に欠けた月があれば比較不能として null)、月別の収入・支出・純収支と前年系列、生活費カテゴリ 6 区分の集計と構成比・前年差、名義別の収入と前年差を同じ関数から算出し、GET /api/household をこの形へ拡張する。総収支画面の『総合』と家計画面の『家計全体』が同じ期間で同じ数字になることをテストで固定する。"
+        "text": "分類ステータスと提案を core の純関数 1 か所に集める。各明細を 未整理 (利用者・ルール・MF 中項目のどれもまだ決めていない明細。提案の有無と信頼度は問わない) / 手動変更 (利用者が提案と異なる値で確定した明細。提案が無いまま利用者が決めた明細と、この変更より前の手入力の明細を含む) / 完了 (利用者が提案どおりに確定した明細、ルール・MF 中項目が決めた明細、および取込時に vendor_memory が materialize した明細) の 3 区分に排他で振り分け、和が全件に一致する。vendor_memory 由来は matched_proposal が NULL でも完了とする。要確認は区分ではなく未整理の内訳で、提案の信頼度が 80% 未満・提案どうしの衝突・区分と名義の矛盾のいずれかがある未整理の明細を数える。ナビのバッジは未整理の件数、月次クローズの『仕分け』は同じ判定の未整理から照合側で数える明細を除いた件数とし (現行の clsSrc=既定 と同じ意味)、同じ関数から導かれることをテストで固定する。提案カテゴリ・信頼度・根拠の文は recommendationFor を拡張し、過去の同取引先・ルール・MF 中項目のどの由来にも決定論の信頼度を付け、/transactions の応答にも載せる。外部の LLM は呼ばず、表示は『自動提案』とする。"
       },
       {
         "id": "G3",
-        "text": "生活費カテゴリの行を選ぶと『カテゴリの詳細』パネルを出す。期間合計 current、選択月全件合計 monthTotal、選択月の最大 5 件プレビュー transactions を分離し、カテゴリのすべて見るは月とカテゴリで絞った明細へ遷移する。"
+        "text": "選択した複数の明細を 1 回の要求で保存する一括保存を設ける。明細ごとの成否を返し、画面は『N 件のうち M 件を保存、K 件はエラー』と失敗した明細だけの再試行を示す。成功分は取り消されない。削除は既存の取消 (undo) で元に戻せる。一括保存・ルール作成・ルール適用・保存フィルタの変更は既存の canonicalMutationFence の内側に置く。"
       },
       {
         "id": "G4",
-        "text": "名義を『本人 / パートナー / 子ども / その他』で扱えるようにする。内部値 (business / spouse / family と未設定) は変えず、名義ラベル表を追加する追加のみの migration と、表示名の取得・更新 API を設ける。初期表示名は business→本人、spouse→パートナー、family→子ども、未設定→その他。『名義ラベルを編集』から表示名だけを変更でき、家計画面・設定画面・明細画面の名義表示がすべてこの表示名を参照する。更新 API は既存の authGuard・パスワード変更フェンス・スキーマガード・変更系フェンスの内側に置き、入力は zod で長さと文字種を検証する。"
+        "text": "『この条件をルールにする』で取引先・キーワード・適用範囲 (一致する明細すべて / 未確定の明細だけ) を選んでルールを作り、作成前に該当する明細と適用後の仕訳 (カテゴリ・分割の内訳) の一覧と件数をプレビューで確かめてから適用できるようにする。分割の内容もルールにでき、固定額の行と残額の行で同じ条件の明細を同じ形に分ける。該当する既存のルールと、そのルールの対象件数を編集パネルに示す。手動変更した明細はルールで上書きしない。"
       },
       {
         "id": "G5",
-        "text": "振替を家計の収入・支出から除外していることを利用者が確かめられるようにする。期間内に除外した振替の一覧 (日付・内容・金額・名義間) を出し、名義間は同額・逆符号・日付が近い振替 2 行を core の純関数で対にし、それぞれの口座の名義表示名から『本人 → パートナー』のように示す。対にならない行は『相手不明』と示す。スキーマは変えない。"
+        "text": "仕分けの作業状態を失わない。保存したフィルタは D1 に新しい表を追加のみの migration で設け、名前付きで保存・呼出・削除できる。取引の履歴は D1 に明細の変更履歴表を追加のみで設け、いつ・何が (区分・カテゴリ・所有者・支払方法・メモ・分割)・どの由来 (自動提案 / 手動 / ルール / 一括保存) で変わったかを残し、編集パネルに新しい順で出す。編集パネルの下書きは端末の localStorage に明細単位で自動保存し、最終保存時刻を表示し、保存に成功したら消し、次回に『下書きを復元』できる。未保存のまま離れるときは確認する。"
       }
     ],
     "objectives": [
       {
         "id": "O1",
-        "text": "家計収支画面が画像の全構成要素を描画する。",
+        "text": "仕分け画面が画像の全構成要素を描画する。",
         "serves": [
           "G1"
         ],
         "serves_goals": [
           "G1"
         ],
-        "measure": "DOM テストで、問いの見出しと説明文・出典カード・期間タブ・KPI 3 枚と前年差カード・推移のタブ 3 つと凡例 5 系列と月送り・事業と個人の等式・生活費カテゴリ表・名義別収入・振替除外の一覧・名義ラベル設定・前年との比較・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。"
+        "measure": "DOM テストで、問いの見出し・期間タブ・KPI 4 枚・絞り込みパネルの全項目・一覧の 6 列と 50 件ページング・編集パネルの全欄・一括操作バー・通知 2 種・分割明細の編集・ルール適用プレビュー・下書きの保存時刻が描画され、証憑欄が無く freee 管理の案内がある。読込・空・失敗の状態テストが緑である。"
       },
       {
         "id": "O2",
-        "text": "家計の数字が総収支画面と一致し、等式が閉じる。",
+        "text": "未整理・手動変更・完了の件数が排他で閉じ、要確認が未整理の内訳に収まり、他画面と一致する。",
         "serves": [
           "G2"
         ],
         "serves_goals": [
           "G2"
         ],
-        "measure": "core の単体テストで、同じ Dataset と期間に対し家計全体の総収入・総支出・純収支が totalCashflowLedger の総合と toBe で一致し、事業 + 個人 = 家計全体が全月で成り立ち、前年欠損月があるとき前年差が null になる。"
+        "measure": "core の単体テストで、同じ Dataset と期間に対し 未整理 + 手動変更 + 完了 = 全件、各明細がちょうど 1 区分に入り、要確認 ⊆ 未整理、未整理の明細で信頼度 80% の境界 (79 は要確認・80 は要確認でない) と衝突・矛盾の各規則、提案どおりの確定は完了・提案と異なる確定は手動変更、vendor_memory の materialize は matched_proposal=NULL でも完了かつ要確認でないことが固定され、ナビのバッジと月次クローズの『仕分け』の件数が同じ関数から出る。"
       },
       {
         "id": "O3",
-        "text": "カテゴリ詳細が選択と同期し、明細へ遷移できる。",
+        "text": "一括保存の部分失敗が報告され、失敗分だけ再試行できる。",
         "serves": [
           "G3"
         ],
         "serves_goals": [
           "G3"
         ],
-        "measure": "DOM テストで current / monthTotal / 最大 5 件の transactions プレビューの分離と、カテゴリのすべて見るの月・カテゴリ絞り込みを確かめる。"
+        "measure": "API 統合テストで、3 件中 1 件が検証エラーの一括保存が 2 件を保存して明細ごとの結果を返し、再試行が失敗分だけを送ることを DOM テストで確かめる。未認証 401・変更系フェンス違反の拒否・上限件数超過の 400 を確かめる。"
       },
       {
         "id": "O4",
-        "text": "名義ラベルの編集が安全に保存され全画面に反映される。",
+        "text": "ルールのプレビューと適用結果が一致する。",
         "serves": [
           "G4"
         ],
         "serves_goals": [
           "G4"
         ],
-        "measure": "API 統合テストで、未認証 401・変更系フェンス違反の拒否・長さ超過と制御文字の 400・正常更新の 200 と再取得での反映を確認し、migration が既存行を 1 行も書き換えないことを検査する。"
+        "measure": "core の単体テストで、プレビューが列挙した明細と件数が、適用後に実際に変わった明細と一致し、手動変更の明細が変わらず、分割ルールの各行の和が元の金額に一致する。"
       },
       {
         "id": "O5",
-        "text": "振替の対推定が決定論で再現する。",
+        "text": "作業状態が失われない。",
         "serves": [
           "G5"
         ],
         "serves_goals": [
           "G5"
         ],
-        "measure": "core の単体テストで、同額・逆符号・日付差の許容内の 2 行が対になり、許容外・同符号・3 行以上の競合が相手不明または一意な規則で解決され、同じ入力で同じ出力になる。"
+        "measure": "API 統合テストで保存フィルタの作成・一覧・削除と、各変更経路で履歴が 1 件ずつ残ることを確かめ、migration が既存行を 1 行も書き換えないことを検査する。DOM テストで下書きの自動保存・復元・保存成功での消去・離脱確認を確かめる。"
       }
     ],
     "success_criteria": [
-      "S1 (G1): /household で 10-household.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件である。ナビとパンくずの名称が『家計収支』である。期間内の集計対象台帳行 0 件 (振替のみ・除外行のみを含む) で空状態になる。",
-      "S2 (G2): 同じ期間で家計画面の家計全体 (総収入・総支出・純収支) と総収支画面の総合が一致し、事業 + 個人 = 家計全体が全月で閉じ、前年差の算出が総収支画面の前年比較と同じ欠損規則に従う。",
-      "S3 (G3): カテゴリ行の選択で current / monthTotal / 最大 5 件の transactions プレビューが分離され、カテゴリのすべて見るが対象の月とカテゴリで絞った明細へ遷移する。",
-      "S4 (G4): 名義ラベルの更新が認証・変更系フェンス・入力検証を通った場合だけ保存され、家計・設定・明細の各画面の名義表示が更新後の表示名になる。migration は追加のみで既存行の書き換えが 0 件である。",
-      "S5 (G5): 選択月の除外振替が家計カード内に全件 (抜粋なし) 現れ、振替用の循環するすべて見る導線が無く、その合計が家計の総収入・総支出に 1 円も含まれていない。",
-      "S6 (G1-G5): URL は seg / month / cat のみを持ち、期間は usePeriod / localStorage から復元する。既存の総収支・推移・マトリックス・分析ハブの数値テストが緑のままで、初期 JS 予算 (CI 実測) を超えない。既知の逸脱・未実施・一部適合は PASS に数えない。"
+      "S1 (G1): /classify で 13-classify.png の構成要素がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件である。証憑欄は無く freee 管理の案内がある。期間内の明細 0 件で空状態になる。",
+      "S2 (G2): 同じ期間で 未整理・手動変更・完了の件数の和が全件に一致し、要確認は未整理を超えず、ナビのバッジと月次クローズの『仕分け』の件数と画面の件数が同じ関数から出る。信頼度は全由来で 0〜100 の整数か、提案が無いときだけ null である。外部送信が 0 件である。",
+      "S3 (G3): 一括保存で一部が失敗しても成功分が保存され、画面の通知が成功件数と失敗件数を正しく示し、再試行は失敗分だけを送る。削除は元に戻せる。",
+      "S4 (G4): ルール作成前のプレビューの件数・明細と、適用後に変わった明細が一致し、手動変更の明細は変わらない。分割ルールの行の和が元の金額に一致する。",
+      "S5 (G5): 保存フィルタ・取引の履歴が D1 に残り、下書きが画面の再読込後に復元できる。migration は追加のみで既存行の書き換えが 0 件である。",
+      "S6 (G1-G5): 期間は usePeriod / localStorage から復元し、絞り込みと選択は URL に保つ。既存の仕分け・照合・月次クローズ・家計収支・総収支の数値テストが緑のまま、pnpm lint・typecheck・初期 JS 予算を CI で通す。既知の逸脱・未実施・一部適合は受入 PASS に数えない。"
     ],
     "stakeholders": [
-      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 月次クローズの『整える』段階で、家計全体の収入と支出の差が前年と比べてどう動いたか、それが事業と個人のどちらから・どの生活費カテゴリから・誰の収入から来たかを 1 画面で確かめ、振替を二重に数えていないと納得したうえで、気になる月やカテゴリの明細へ降りて手を打ちたい。名義は家族の呼び方で表示したい。",
-      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 家計の集計規則 (家計全体 = 事業 + 個人、前年比較の欠損規則、生活費 6 区分、振替の対推定、名義表示名) が core の純関数 1 か所と docs・テストで固定され、総収支画面と数字がずれないこと。"
+      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 月次クローズの『整える』段階で、取り込んだ明細のうち自動では決まらなかったものを、なぜその提案なのかを確かめながら素早く確定し、同じ取引先が次から自動で決まるようにしたい。まとめて保存したときに一部が失敗しても、何が失敗したか分かり失敗分だけやり直したい。入力途中で画面を離れても作業を失いたくない。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 分類ステータスの定義・信頼度の算出・ルールの適用規則が core の純関数 1 か所と docs・テストで固定され、バッジ・月次クローズ・仕分け画面の件数がずれないこと。"
     ],
     "scope": {
       "in": [
-        "家計収支画面 (10-household.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと、ナビ・パンくずの名称を『家計収支』へ改めること",
-        "core の家計集計純関数 (totalCashflowLedger を正本とする家計全体・事業・個人、前年比較、月別系列、生活費 6 区分、名義別収入、振替一覧と対推定)",
-        "GET /api/household の拡張と、カテゴリ内訳 (主な取引) の取得経路",
-        "名義ラベル表の追加 migration と表示名の取得・更新 API、名義ラベル編集 UI、既存画面の名義表示の参照先の一本化",
-        "カテゴリの詳細パネル・下部の選択中バー・明細画面への遷移 (月・カテゴリ・対象で絞る URL。期間は usePeriod / localStorage)",
-        "docs への集計規則 (等式・欠損規則・6 区分の対応表・振替の対推定) の明記と回帰テスト"
+        "明細仕分け画面 (13-classify.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと pages/classify/ 配下への分割",
+        "core の分類ステータス判定 (未整理・手動変更・完了の 3 区分の排他と、未整理の内訳としての要確認・信頼度 80% の閾値・衝突と矛盾・提案どおりの確定の扱い) と提案・信頼度・根拠の算出の一本化、ナビのバッジと月次クローズの参照先の統一",
+        "GET /transactions への提案・信頼度・根拠・ステータスの追加、一括保存 API (明細ごとの結果)、ルールの作成前プレビューと適用 API (分割ルールを含む)",
+        "保存フィルタ表・明細の変更履歴表の追加のみの migration と、それぞれの API",
+        "下書きの端末保存と復元、未保存の離脱確認、削除の元に戻す",
+        "docs への分類ステータス・信頼度・ルール適用の規則の明記と回帰テスト"
       ],
       "out": [
-        "『累計収支』の新設: 対応するデザイン画像が無いため今回は追加しない (利用者決定)",
-        "名義の内部値 (business / spouse / family) の変更と既存行の書き換え: 表示名の編集で目的を満たせるため行わない (利用者決定)",
-        "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗) の作り直し: 既存実装をそのまま使う",
-        "明細への相手口座カラムの追加: 振替の名義間は対推定で示す (利用者決定)",
-        "スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ (既存の利用者決定)"
+        "領収書・証憑の添付と保管: #42 の判断を維持し再導入しない (利用者決定)。画面には freee 管理の案内だけを置く",
+        "外部の LLM による提案: 取込データを外部へ送信しない約束を守り、既存の決定論の規則を拡張する (利用者決定)",
+        "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗の見た目) の作り直し: 既存実装を使い、件数の定義だけを揃える",
+        "取込処理・照合画面の変更",
+        "スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ (狭い画面は既存 web のレスポンシブ規約の中で扱う)"
       ]
     },
     "constraints": [
-      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。集計は core に置き api/web へ重複実装しない。",
-      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、ボタンは共通 Button、ページは PageShell。グラフは既存の FinancialFigure と系列色の定義を使う。",
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。判定と集計は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、共通部品 (PageHeader・KpiCard・Button・ConfirmDialog) を使う。一括操作バーは共通部品ではなく、サブスク・診断と同じく画面専用に置く。",
       "C3 migration: D1 の migration は追加のみ (新表・新カラム) とし、行を書き換える migration は作らない。本番反映は既存の Deploy / Migrate の手順とゲートに従う。",
-      "C4 セキュリティ: /api/* の authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence の内側に置く。入力は zod で検証し、利用者が入力した表示名は React の既定エスケープで描画して HTML として解釈しない。取込データを外部へ送信しない。",
-      "C5 性能: 初期 JS 予算 (CI 実測) を超えない。家計画面は遅延読み込みのまま、カテゴリ内訳は選択時に取得する。",
-      "C6 数値の正本: 10-household.png の数値はモックアップであり、算術が閉じない欄は計算値へ置き換えてフィクスチャにする (利用者決定に従う)。"
+      "C4 セキュリティ: /api/* の authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence の内側に置く。入力は zod で検証し、メモ・フィルタ名・キーワードは長さを制限し React の既定エスケープで描画する。取込データを外部へ送信しない。証憑ファイルを受け付けない。",
+      "C5 性能とコスト: Cloudflare の無料枠 (Workers の CPU 時間・D1) の範囲で動かし、初期 JS 予算 (CI 実測) を超えない。一覧はサーバ側で 50 件ずつ返す。",
+      "C6 数値の正本: 13-classify.png の数値はモックであり、画面の件数・金額は実データから core で算出したものを正本にする。"
     ],
     "concrete_intents": [
       {
         "id": "I1",
-        "text": "Household.tsx を pages/household/ 配下へ分割し、問いの見出し・出典カード・KPI と前年差・推移チャート・事業と個人の等式・カテゴリ表と詳細パネル・名義別収入・振替除外・名義ラベル設定・前年との比較・下部の選択中バーの構成に作り直し、選択中の月とカテゴリとタブを URL に保つ。",
-        "serves": [
-          "G1",
-          "G3"
-        ]
-      },
-      {
-        "id": "I2",
-        "text": "月別推移に家計全体 / 事業 / 個人のタブ、当期の収入・支出の棒、純収支の折れ線、前年の収入・支出の点線、月送り (< 2026年8月 >) を持たせ、月の選択を下部バーと同期する。",
+        "text": "Classify.tsx を pages/classify/ 配下へ分割し、見出し・期間タブ・KPI 4 枚・絞り込みパネル・取引一覧・編集パネル・一括操作バー・通知・分割明細の編集・ルール適用プレビューの構成に作り直す。",
         "serves": [
           "G1"
         ]
       },
       {
+        "id": "I2",
+        "text": "core に分類ステータス判定 (仮称 classifyStatus) を新設し、3 区分の排他判定と要確認の内訳・件数集計を 1 か所で行い、サイドバーのバッジと月次クローズの『仕分け』もここを参照させる。",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
         "id": "I3",
-        "text": "core に household-summary (仮称) を新設し、totalCashflowLedger の行集合から家計全体・事業・個人の総額と月別系列、前年比較、生活費 6 区分、名義別収入を 1 か所で算出する。旧 household() の独自定義は置き換える。",
+        "text": "recommendationFor を拡張し、ルール・MF 中項目由来にも決定論の信頼度を付け、根拠の文を由来ごとに整え、/transactions の各行に提案・信頼度・根拠・ステータスを載せる。",
         "serves": [
           "G2"
         ]
       },
       {
         "id": "I4",
-        "text": "生活費 6 区分 (住居費 / 食費 / 光熱費 / 教育費 / 交通費 / その他) と MF 大項目の対応表を core に 1 か所だけ置き、docs に同じ表を載せる。",
+        "text": "一括保存 API を新設し、明細ごとに検証と保存を行って成否の配列を返す。画面は部分失敗の通知と失敗分だけの再試行を出す。",
         "serves": [
-          "G2",
           "G3"
         ]
       },
       {
         "id": "I5",
-        "text": "カテゴリ詳細の current / monthTotal / 最大 5 件の transactions プレビューを返す取得経路を設け、選択時にだけ取得する。カテゴリのすべて見るは明細画面を月・カテゴリ・対象で絞った URL で開く。",
-        "serves": [
-          "G3"
-        ]
-      },
-      {
-        "id": "I6",
-        "text": "owner_labels 表と GET / PUT の表示名 API、名義ラベル編集ダイアログを作り、家計・設定・明細の名義表示を表示名の取得関数 1 つへ寄せる。",
+        "text": "ルールに取引先・適用範囲・分割の型 (固定額の行と残額の行) を持たせる追加のみの migration と、作成前プレビュー・適用 API を設ける。",
         "serves": [
           "G4"
         ]
       },
       {
-        "id": "I7",
-        "text": "振替の一覧と対推定を core の純関数にし、日付差の許容・同額・逆符号・一意性の規則を docs とテストで固定する。",
+        "id": "I6",
+        "text": "保存フィルタ表と明細の変更履歴表を追加のみで設け、全変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。",
         "serves": [
           "G5"
         ]
       },
       {
-        "id": "I8",
-        "text": "routeMetadata の /household の名称を『家計収支』に改め、パンくず・figure-guides・glossary の記述を合わせる。",
+        "id": "I7",
+        "text": "編集パネルの下書きを localStorage に明細単位で自動保存し、保存時刻の表示・復元・保存成功での消去・未保存の離脱確認を行う。",
         "serves": [
-          "G1"
+          "G5"
         ]
       }
     ],
     "confirmed": true,
-    "approval_ref": "appr-foundation-household-cashflow-001"
+    "approval_ref": "appr-foundation-classify-003"
   },
   "decisions": [
     {
-      "id": "dec-household-categories",
-      "question": "生活費の区分をどう作るか。画像の固定 6 区分へ寄せるか、金額上位 5 大項目とその他にするか。",
+      "id": "dec-classify-receipts",
+      "question": "画像の領収書・証憑の添付をどう扱うか。",
       "status": "confirmed",
       "serves_goals": [
-        "G1",
-        "G3"
+        "G1"
       ],
       "options": [
         {
-          "id": "opt-fixed-six",
-          "label": "固定 6 区分へ寄せる",
+          "id": "opt-no-receipts",
+          "label": "再導入しない (freee 管理の案内のみ)",
           "cost_model": {
             "category": "free",
             "amount": 0,
-            "currency": "JPY",
+            "currency": "USD",
             "billing_period": "none",
-            "tco": "大項目から 6 区分への対応表を core に 1 か所置くだけで追加費用なし。"
+            "tco": "追加の構築・運用・撤退費なし。案内文の保守のみ。"
           },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "G1 の画像の表と一致し、G3 の詳細パネルで区分の意味が期間をまたいで一定になる。",
-          "security_fit": "差はない。",
+          "free_tier_limits": "外部サービスを使わない。",
+          "goal_fit": "#42 と spec-v1.1 の判断に一致し、G1 の画面は証憑欄を案内で置き換える。",
+          "security_fit": "ファイルを受け付けないため新しい攻撃面が生じない。",
           "pros": [
-            "前年との比較で区分が入れ替わらない",
-            "画像の表と一致する"
+            "新しいリスクが無い",
+            "既存仕様と矛盾しない"
           ],
           "cons": [
-            "対応表に無い大項目は『その他』に入る"
+            "画像と 1 欄だけ異なる"
           ],
           "risks": [
-            "対応表の漏れで『その他』が膨らむ。境界テストで確かめる必要がある"
+            "利用者が証憑欄を探す。案内文で補う"
           ],
-          "lock_in": "なし。",
-          "ops_burden": "対応表とテストの保守。",
+          "lock_in": "なし",
+          "ops_burden": "低",
           "evidence_refs": [
-            "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
-            "https://vitest.dev/api/expect.html"
+            "https://developers.cloudflare.com/r2/pricing/"
           ]
         },
         {
-          "id": "opt-top5-plus-other",
-          "label": "金額上位 5 大項目 + その他",
+          "id": "opt-r2-attachments",
+          "label": "R2 に添付として再導入",
           "cost_model": {
             "category": "free",
             "amount": 0,
-            "currency": "JPY",
-            "billing_period": "none",
-            "tco": "集計時に並べ替えるだけで追加費用なし。"
+            "currency": "USD",
+            "billing_period": "month",
+            "tco": "R2 無料枠内なら月額0。超過で従量課金。検証・削除連動・容量監視の構築と運用費が加わる。"
           },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "データに追随するが、期間ごとに区分が変わり前年との比較が崩れる。画像とも一致しない。",
-          "security_fit": "差はない。",
+          "free_tier_limits": "R2 無料枠: 10 GB-month / month、Class A 1 million / month、Class B 10 million / month。",
+          "goal_fit": "画像と一致するが spec-v1.1 の対象外記述の改訂が要る。",
+          "security_fit": "MIME とマジックバイト・サイズ検証、非公開 URL、削除連動が新たに必要。",
           "pros": [
-            "対応表の保守が要らない"
+            "画像と一致する"
           ],
           "cons": [
-            "当期と前年で並ぶ区分が異なり得る"
+            "#42 の判断を覆す",
+            "保持と削除の運用が増える"
           ],
           "risks": [
-            "増減額の比較が成立しない行が出る"
+            "不正ファイルの混入や個人情報の長期保管"
           ],
-          "lock_in": "なし。",
-          "ops_burden": "保守は小さいが説明が難しい。",
+          "lock_in": "中 (R2 API に依存)",
+          "ops_burden": "高",
           "evidence_refs": [
-            "https://vitest.dev/api/expect.html"
+            "https://developers.cloudflare.com/r2/pricing/"
+          ]
+        },
+        {
+          "id": "opt-external-link",
+          "label": "外部リンクだけを保存",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "USD",
+            "billing_period": "month",
+            "tco": "D1 の文字列列 1 つで無料枠内。URL 検証の保守費。"
+          },
+          "free_tier_limits": "D1 Free: rows written 100,000 / day、storage 5 GB。",
+          "goal_fit": "ファイルは持たないが画像のアップロード体験と異なる。",
+          "security_fit": "https のみ許可する URL 検証が要る。",
+          "pros": [
+            "保存が軽い"
+          ],
+          "cons": [
+            "画像の体験と異なる"
+          ],
+          "risks": [
+            "リンク切れ"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "低",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/platform/pricing/"
           ]
         }
       ],
       "recommendation": {
-        "option_id": "opt-fixed-six",
-        "rationale": "前年との比較は区分が一定でないと成り立たず、画像の表も固定 6 区分である。",
+        "option_id": "opt-no-receipts",
+        "rationale": "#42 で全廃し spec-v1.1 で対象外と定めた判断を覆す理由が、今回の目的 (未整理の明細を根拠を見ながら確定する) に無い。",
         "caveats": [
-          "事業側の支出は『その他』に入ることを境界テストで固定する"
+          "画像との差 (証憑欄) を仕様書に明記する"
         ],
         "confidence": "high",
         "comparison_basis": {
-          "goal_fit": "固定案が G1・G3 に一致する。",
-          "tco": "両案とも費用ゼロ。",
-          "security": "差はない。",
-          "operations": "固定案は対応表の保守、上位案は説明の保守。",
-          "lock_in": "差はない。"
+          "goal_fit": "再導入しない案だけが既存仕様と矛盾しない。",
+          "tco": "3 案とも無料枠内だが R2 案は構築・運用費が大きい。",
+          "security": "再導入しない案だけが攻撃面を増やさない。",
+          "operations": "R2 案だけが保持・削除・容量監視の運用を要する。",
+          "lock_in": "R2 案だけが R2 に依存する。"
         },
-        "latest_checked_at": "2026-09-18T11:23:19Z"
+        "latest_checked_at": "2026-09-19T13:18:15Z"
       },
       "user_decision": {
-        "option_id": "opt-fixed-six",
-        "confirmed_at": "2026-09-18T11:25:32Z",
-        "note": "利用者が推奨案『固定 6 区分へ寄せる』を選択"
+        "option_id": "opt-no-receipts",
+        "confirmed_at": "2026-09-19T13:12:52Z",
+        "note": "利用者が推奨案『再導入しない』を選択 (qa-classify-decision-001)。confirmed_at は transcript の回答行の実測時刻。"
       }
     },
     {
-      "id": "dec-household-figure-source",
-      "question": "画像の数値が算術で閉じない欄をどう扱うか。収入・支出を正本に差を計算するか、画像の純収支を正本にして前年の総支出を調整するか。",
+      "id": "dec-classify-confidence-source",
+      "question": "一覧の信頼度と自動提案をどう算出するか。",
       "status": "confirmed",
       "serves_goals": [
-        "G1",
         "G2"
       ],
       "options": [
         {
-          "id": "opt-compute-from-income-expense",
-          "label": "収入・支出を正本に差を計算する (−¥80,000)",
+          "id": "opt-deterministic",
+          "label": "既存規則の拡張・外部送信なし",
           "cost_model": {
             "category": "free",
             "amount": 0,
-            "currency": "JPY",
+            "currency": "USD",
             "billing_period": "none",
-            "tco": "計算で出すだけで追加費用なし。"
+            "tco": "core の純関数の拡張だけで追加費用なし。規則の保守費のみ。"
           },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "G2 の『数字は台帳の行から作る』と一致し、どの欄も算術で閉じる。見た目の数値は一部画像と変わる。",
-          "security_fit": "差はない。",
+          "free_tier_limits": "外部サービスを使わない。",
+          "goal_fit": "G2 の決定論と『取込データは外部送信しません』の約束に一致する。",
+          "security_fit": "取込データが外部へ出ない。",
           "pros": [
-            "全欄が算術で閉じる",
-            "テストで数値を検算できる"
+            "再現性がある",
+            "費用ゼロ"
           ],
           "cons": [
-            "画像の純収支 +¥120,000 と表示が変わる"
+            "表現力は規則の範囲に留まる"
           ],
           "risks": [
-            "画像との差を不具合と誤解される。仕様書に差の理由を残す必要がある"
+            "規則に無い取引は提案が出ず未整理に残る"
           ],
-          "lock_in": "なし。",
-          "ops_burden": "フィクスチャの期待値を計算値で持つ。",
+          "lock_in": "なし",
+          "ops_burden": "低",
           "evidence_refs": [
-            "https://vitest.dev/api/expect.html"
+            "https://claude.com/pricing"
           ]
         },
         {
-          "id": "opt-image-net-as-source",
-          "label": "純収支 +¥120,000 を正本にし前年の総支出を 5,164,000 に調整する",
+          "id": "opt-external-llm",
+          "label": "外部 LLM で推論",
           "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "none",
-            "tco": "フィクスチャの調整だけで追加費用なし。"
+            "category": "unknown",
+            "amount": null,
+            "currency": "USD",
+            "billing_period": "usage-based",
+            "tco": "Claude API はトークン従量課金で、明細件数に比例して費用が出る。鍵管理・費用監視の運用費が加わる。"
           },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "画像の見た目には一致するが、前年の値を画像に合わせて作ることになり、台帳から作るという G2 に反する。",
-          "security_fit": "差はない。",
+          "free_tier_limits": "無料枠なし (従量課金)。",
+          "goal_fit": "精度は上がり得るがフッタの約束と矛盾する。",
+          "security_fit": "取込データが外部へ送信され、API キーの管理が要る。",
           "pros": [
-            "画像と数値が一致する"
+            "規則に無い取引にも提案が出る"
           ],
           "cons": [
-            "前年の総支出を実データと無関係に決めることになる"
+            "外部送信が発生する",
+            "費用と鍵管理が要る"
           ],
           "risks": [
-            "調整した値がほかの欄 (前年比・構成比) とさらに食い違う"
+            "個人の取引内容の外部流出"
           ],
-          "lock_in": "なし。",
-          "ops_burden": "調整の理由を別途保守する必要がある。",
+          "lock_in": "高 (LLM 提供者に依存)",
+          "ops_burden": "中",
           "evidence_refs": [
-            "https://vitest.dev/api/expect.html"
+            "https://claude.com/pricing"
           ]
         }
       ],
       "recommendation": {
-        "option_id": "opt-compute-from-income-expense",
-        "rationale": "画像の値を合わせるために入力を作ると、台帳から作るという原則が崩れる。計算値を正本にすれば全欄が検算できる。",
+        "option_id": "opt-deterministic",
+        "rationale": "フッタの『取込データは外部送信しません』を守りつつ、既存の recommendationFor を全由来へ広げれば画像の信頼度列を満たせる。",
         "caveats": [
-          "画像と異なる欄は仕様書の『画像の算術が閉じない欄』に理由とともに列挙する"
+          "表示は『AI』ではなく『自動提案』にする"
         ],
         "confidence": "high",
         "comparison_basis": {
-          "goal_fit": "計算案は G2 に一致し、画像正本案は G1 の見た目だけに寄る。",
-          "tco": "両案とも費用ゼロ。",
-          "security": "差はない。",
-          "operations": "計算案は期待値の検算ができる。",
-          "lock_in": "差はない。"
+          "goal_fit": "決定論案が G2 と外部送信なしに一致する。",
+          "tco": "決定論案は費用ゼロ、LLM 案は従量課金。",
+          "security": "決定論案は外部送信が無い。",
+          "operations": "LLM 案は鍵と費用の監視が要る。",
+          "lock_in": "LLM 案は提供者に依存する。"
         },
-        "latest_checked_at": "2026-09-18T11:23:19Z"
+        "latest_checked_at": "2026-09-19T13:18:15Z"
       },
       "user_decision": {
-        "option_id": "opt-compute-from-income-expense",
-        "confirmed_at": "2026-09-18T11:25:32Z",
-        "note": "利用者が推奨案『収入・支出を正本に差を計算 (−¥80,000)』を選択"
+        "option_id": "opt-deterministic",
+        "confirmed_at": "2026-09-19T13:12:52Z",
+        "note": "利用者が推奨案『既存規則を拡張・外部送信なし』を選択 (qa-classify-decision-003)。confirmed_at は transcript の回答行の実測時刻。"
       }
     },
     {
-      "id": "dec-household-ledger-source",
-      "question": "家計収支の数字を何から作るか。総収支画面の台帳を正本にするか、現行の household() を拡張するか。",
-      "status": "confirmed",
-      "serves_goals": [
-        "G2",
-        "G1"
-      ],
-      "options": [
-        {
-          "id": "opt-ledger-source",
-          "label": "総収支の台帳を正本にする",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "none",
-            "tco": "core の純関数を 1 つ置き換えるだけで追加費用なし。旧 household() と HouseholdData の削除で保守対象が減る。"
-          },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "G2 の『家計の集計を 1 か所に集め、総収支と同じ行から作る』に直接答える。総収支の総合と家計全体が同じ行集合から出るため、両画面の数字が一致する。",
-          "security_fit": "新しい入力経路を増やさず、既存の loadScoped / loadCashflowSources の認可範囲をそのまま使う。",
-          "pros": [
-            "総収支と家計の数字が構造的に一致する",
-            "事業入金・事業立替の独自定義が消え、説明が 1 通りになる"
-          ],
-          "cons": [
-            "旧 household() を使う箇所の書き換えが要る"
-          ],
-          "risks": [
-            "台帳の変更が家計にも波及するため、総収支側の回帰テストが家計の回帰も兼ねる必要がある"
-          ],
-          "lock_in": "なし。純関数の差し替えで戻せる。",
-          "ops_burden": "一致を検査する単体テストを 1 本足すだけ。",
-          "evidence_refs": [
-            "https://vitest.dev/api/expect.html",
-            "https://developers.cloudflare.com/workers/platform/limits/"
-          ]
-        },
-        {
-          "id": "opt-extend-household",
-          "label": "現行 household() を拡張する",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "none",
-            "tco": "既存関数へ欄を足すだけで追加費用なし。ただし集計規則が 2 系統のまま残る。"
-          },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "画像の欄は埋められるが、家計全体と総収支の総合が別の規則で計算されるため、G2 の『1 か所に集める』に反する。",
-          "security_fit": "差はない。",
-          "pros": [
-            "変更量が小さい",
-            "既存の画面を壊しにくい"
-          ],
-          "cons": [
-            "総収支と家計で同じ期間の数字が食い違い得る",
-            "事業入金を家計に含める独自定義が残る"
-          ],
-          "risks": [
-            "利用者が 2 画面の差を不具合と受け取り、どちらを信じるか判断できなくなる"
-          ],
-          "lock_in": "なし。",
-          "ops_burden": "2 系統の規則を並行して保守し続ける必要がある。",
-          "evidence_refs": [
-            "https://vitest.dev/api/expect.html"
-          ]
-        }
-      ],
-      "recommendation": {
-        "option_id": "opt-ledger-source",
-        "rationale": "G2 は集計の一本化そのものを目的にしており、拡張案では 2 系統が残る。一致を toBe で検査できるのは台帳を正本にしたときだけである。",
-        "caveats": [
-          "旧 household() の参照が残っていないことを検索で確かめる",
-          "総収支側の変更時に家計のテストも走るようにする"
-        ],
-        "confidence": "high",
-        "comparison_basis": {
-          "goal_fit": "台帳案は G2 に直接答え、拡張案は G2 に反する。",
-          "tco": "両案とも追加費用ゼロ。台帳案は保守対象が減る。",
-          "security": "両案とも既存の読込経路を使い差はない。",
-          "operations": "台帳案は規則 1 系統、拡張案は 2 系統の保守。",
-          "lock_in": "両案とも純関数で差はない。"
-        },
-        "latest_checked_at": "2026-09-18T11:19:20Z"
-      },
-      "user_decision": {
-        "option_id": "opt-ledger-source",
-        "confirmed_at": "2026-09-18T11:20:19Z",
-        "note": "利用者が推奨案『総収支の台帳を正本にする』を選択"
-      }
-    },
-    {
-      "id": "dec-household-nav-name",
-      "question": "ナビの名称をどうするか。/household を『家計収支』へ改名するか、改名に加えて累計収支を新設するか。",
-      "status": "confirmed",
-      "serves_goals": [
-        "G1"
-      ],
-      "options": [
-        {
-          "id": "opt-rename-household",
-          "label": "/household を『家計収支』に改名する",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "none",
-            "tco": "ナビとパンくずの文言変更だけで追加費用なし。"
-          },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "G1 の『10-household.png どおりの画面にする』に合わせ、画像の見出しと一致する。",
-          "security_fit": "差はない。",
-          "pros": [
-            "URL を変えないためブックマークが壊れない",
-            "変更が文言に閉じる"
-          ],
-          "cons": [
-            "旧名称に慣れた利用者が一時的に迷う"
-          ],
-          "risks": [
-            "テストが旧名称を固定していると落ちる。文言の検索で洗い出す必要がある"
-          ],
-          "lock_in": "なし。",
-          "ops_burden": "文言の一括確認だけ。",
-          "evidence_refs": [
-            "https://reactrouter.com/api/hooks/useSearchParams"
-          ]
-        },
-        {
-          "id": "opt-rename-and-cumulative",
-          "label": "改名し累計収支も新設する",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "none",
-            "tco": "新しい画面・API の実装が要る。費用はかからないが作業量が大きい。"
-          },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "画像に累計収支の画面は無く、G1 の範囲を超える。",
-          "security_fit": "新しい API が増える分、認可と入力検証の範囲が広がる。",
-          "pros": [
-            "累計の推移を別画面で見られる"
-          ],
-          "cons": [
-            "画像に無い画面を作ることになる",
-            "初期 JS 予算を圧迫する"
-          ],
-          "risks": [
-            "範囲が膨らみ家計収支画面の完成が遅れる"
-          ],
-          "lock_in": "なし。",
-          "ops_burden": "新画面の保守が増える。",
-          "evidence_refs": [
-            "https://reactrouter.com/api/hooks/useSearchParams"
-          ]
-        }
-      ],
-      "recommendation": {
-        "option_id": "opt-rename-household",
-        "rationale": "画像を正解とする方針で、累計収支は画像に無い。改名だけで G1 を満たせる。",
-        "caveats": [
-          "ナビ・パンくず・ページタイトルの 3 か所を揃える"
-        ],
-        "confidence": "high",
-        "comparison_basis": {
-          "goal_fit": "改名案が G1 に一致し、新設案は範囲を超える。",
-          "tco": "両案とも費用ゼロ。新設案は作業量が大きい。",
-          "security": "新設案は API が増える分だけ守る範囲が広がる。",
-          "operations": "改名案は保守対象が増えない。",
-          "lock_in": "差はない。"
-        },
-        "latest_checked_at": "2026-09-18T11:19:20Z"
-      },
-      "user_decision": {
-        "option_id": "opt-rename-household",
-        "confirmed_at": "2026-09-18T11:20:19Z",
-        "note": "利用者が推奨案『/household を「家計収支」に改名』を選択"
-      }
-    },
-    {
-      "id": "dec-household-owner-model",
-      "question": "名義を『本人 / パートナー / 子ども / その他』で扱うとき、内部値を移行するか、内部値を残して表示名だけを編集可能にするか。",
-      "status": "confirmed",
-      "serves_goals": [
-        "G4"
-      ],
-      "options": [
-        {
-          "id": "opt-owner-display-label",
-          "label": "内部値は残し表示名を編集可能にする",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "none",
-            "tco": "owner_labels 表を追加のみの migration で足すだけで追加費用なし。既存行の書き換えが無い。"
-          },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "G4 の表示名の要件を満たし、既存の business / spouse / family / unset を使う規則・明細を壊さない。",
-          "security_fit": "表示名は自由記述の入力が増えるため、許可リスト検証と出力時のエスケープで守る。",
-          "pros": [
-            "既存行を 1 行も書き換えない",
-            "巻き戻しは表を使わないだけで済む"
-          ],
-          "cons": [
-            "内部値と表示名の対応を 1 か所 (core の ownerLabel) で管理する必要がある"
-          ],
-          "risks": [
-            "OWNER_LABEL の直参照が残ると表示名が画面によって食い違う"
-          ],
-          "lock_in": "なし。",
-          "ops_burden": "既定の表示名の補完と検証のテストを保守する。",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/d1/reference/migrations/",
-            "https://github.com/OWASP/ASVS/blob/master/README.md"
-          ]
-        },
-        {
-          "id": "opt-owner-migrate",
-          "label": "内部値を self/partner/child/other へ移行する",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "JPY",
-            "billing_period": "none",
-            "tco": "費用はかからないが、4 表の CHECK 制約と既存行を書き換える migration が要る。"
-          },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "表示と内部値が揃い読みやすいが、G4 の要件以上の変更になる。",
-          "security_fit": "書き換え中の不整合でデータの意味が変わる恐れがある。",
-          "pros": [
-            "内部値と表示名が一致する"
-          ],
-          "cons": [
-            "institution_owners・rules・tx_edits・tx_splits の行書き換えが要る"
-          ],
-          "risks": [
-            "行を書き換える migration で Deploy が止まった過去がある (復旧に manifest→Migrate→Deploy の再実行が要った)"
-          ],
-          "lock_in": "なし。",
-          "ops_burden": "移行時の検証と巻き戻し手順の準備が要る。",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/d1/reference/migrations/"
-          ]
-        }
-      ],
-      "recommendation": {
-        "option_id": "opt-owner-display-label",
-        "rationale": "G4 は表示名の扱いを求めており、内部値の移行は要件を超える。行の書き換えを伴う migration は Deploy 停止の前例があり、追加のみの方が安全である。",
-        "caveats": [
-          "名義の表示は core の ownerLabel だけを通す",
-          "表示名は 1〜20 文字・制御文字不可・重複不可で検証する"
-        ],
-        "confidence": "high",
-        "comparison_basis": {
-          "goal_fit": "両案とも G4 を満たすが、移行案は要件を超える。",
-          "tco": "両案とも費用ゼロ。移行案は作業量が大きい。",
-          "security": "表示名案は入力検証が要る。移行案は書き換え中の不整合リスクがある。",
-          "operations": "表示名案は追加のみで巻き戻しが容易。",
-          "lock_in": "差はない。"
-        },
-        "latest_checked_at": "2026-09-18T11:19:20Z"
-      },
-      "user_decision": {
-        "option_id": "opt-owner-display-label",
-        "confirmed_at": "2026-09-18T11:20:19Z",
-        "note": "利用者が推奨案『内部値は残し表示名を編集可能に』を選択"
-      }
-    },
-    {
-      "id": "dec-household-transfer-pairs",
-      "question": "振替の欄で名義間の移動を見せるか。入出金の対を推定して表示するか、名義間の欄を出さないか。",
+      "id": "dec-classify-state-storage",
+      "question": "保存したフィルタ・下書き・取引の履歴の保存先をどうするか。",
       "status": "confirmed",
       "serves_goals": [
         "G5"
       ],
       "options": [
         {
-          "id": "opt-transfer-pair-estimate",
-          "label": "入出金の対を推定して表示する",
+          "id": "opt-d1-and-local",
+          "label": "フィルタと履歴は D1、下書きは端末",
           "cost_model": {
             "category": "free",
             "amount": 0,
-            "currency": "JPY",
-            "billing_period": "none",
-            "tco": "表示時に純関数で対を組むだけで追加費用なし。データは書き換えない。"
+            "currency": "USD",
+            "billing_period": "month",
+            "tco": "D1 無料枠内で月額0。追加のみ migration 1 本と 2 表の保守費。"
           },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "G5 の『振替を家計の収入・支出から除外していることを確かめられる』に、どこからどこへ動いたかまで見せて答える。",
-          "security_fit": "表示だけでデータを書き換えないため、推定が誤っても台帳には影響しない。",
+          "free_tier_limits": "D1 Free: rows written 100,000 / day、storage 5 GB。localStorage はオリジン単位で永続。",
+          "goal_fit": "共有と監査が要るものは D1、頻繁に変わる下書きは端末に置き G5 を満たす。",
+          "security_fit": "下書きはサーバへ送らず、履歴は監査に使える。",
           "pros": [
-            "画像の振替欄を再現できる",
-            "相手不明を明示でき、除外の理由が読める"
+            "書込回数が少ない",
+            "履歴を監査できる"
           ],
           "cons": [
-            "推定の規則 (日付の許容幅・同点の決め方) を決めて保守する必要がある"
+            "下書きは端末をまたがない"
           ],
           "risks": [
-            "推定が誤ると名義間の移動を誤って示す。相手不明として出す逃げ道が要る"
+            "共有端末に下書きが残る。保存成功で消す"
           ],
-          "lock_in": "なし。",
-          "ops_burden": "境界の単体テストで規則を固定する。",
+          "lock_in": "なし",
+          "ops_burden": "中",
           "evidence_refs": [
-            "https://vitest.dev/api/expect.html",
-            "https://developers.cloudflare.com/workers/platform/limits/"
+            "https://developers.cloudflare.com/d1/platform/pricing/",
+            "https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API"
           ]
         },
         {
-          "id": "opt-transfer-no-pairs",
-          "label": "名義間の欄は出さない",
+          "id": "opt-all-d1",
+          "label": "すべて D1",
           "cost_model": {
             "category": "free",
             "amount": 0,
-            "currency": "JPY",
-            "billing_period": "none",
-            "tco": "実装が最小で追加費用なし。"
+            "currency": "USD",
+            "billing_period": "month",
+            "tco": "入力のたびの書込で D1 の書込枠を消費する。下書き表の掃除の運用費。"
           },
-          "free_tier_limits": "外部サービスを使わないため上限なし (Cloudflare Workers の CPU 時間と D1 の範囲内)",
-          "goal_fit": "除外した合計額は示せるが、どの名義間の移動かが分からず G5 の確認が弱くなる。",
-          "security_fit": "差はない。",
+          "free_tier_limits": "D1 Free: rows written 100,000 / day。",
+          "goal_fit": "端末をまたいで復元できる。",
+          "security_fit": "書込のたびに変更系フェンスを通る。",
           "pros": [
-            "推定の誤りが起きない"
+            "端末をまたぐ"
           ],
           "cons": [
-            "画像の振替欄と一致しない"
+            "書込が多い",
+            "競合の扱いが増える"
           ],
           "risks": [
-            "利用者が除外の妥当性を確かめられない"
+            "書込枠の消費"
           ],
-          "lock_in": "なし。",
-          "ops_burden": "保守対象が増えない。",
+          "lock_in": "なし",
+          "ops_burden": "中",
           "evidence_refs": [
-            "https://vitest.dev/api/expect.html"
+            "https://developers.cloudflare.com/d1/platform/pricing/"
+          ]
+        },
+        {
+          "id": "opt-all-local",
+          "label": "すべて端末",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "USD",
+            "billing_period": "none",
+            "tco": "サーバ変更なしで追加費用なし。"
+          },
+          "free_tier_limits": "localStorage はオリジン単位で永続 (プライベートモードでは閉じると消える)。",
+          "goal_fit": "実装は最小だが履歴が監査に使えない。",
+          "security_fit": "差は小さい。",
+          "pros": [
+            "実装が最小"
+          ],
+          "cons": [
+            "履歴が端末ごとに失われる"
+          ],
+          "risks": [
+            "監査できない"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "低",
+          "evidence_refs": [
+            "https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API"
           ]
         }
       ],
       "recommendation": {
-        "option_id": "opt-transfer-pair-estimate",
-        "rationale": "G5 は除外を利用者が確かめられることを求めており、対が見えないと確かめる手段が無い。表示だけの推定なので誤ってもデータは壊れない。",
+        "option_id": "opt-d1-and-local",
+        "rationale": "フィルタと履歴は端末をまたいで共有・監査したく、下書きは頻繁に変わるので端末に置くのが書込量と目的の両方に合う。",
         "caveats": [
-          "対にならない振替は『相手不明』として出す",
-          "推定の許容幅と同点の決め方は名前付き定数とテストで固定する"
+          "下書きは保存成功で消し、共有端末に残し続けない"
         ],
         "confidence": "high",
         "comparison_basis": {
-          "goal_fit": "推定案は G5 に直接答え、非表示案は弱い。",
-          "tco": "両案とも費用ゼロ。",
-          "security": "両案とも書き換えなしで差はない。",
-          "operations": "推定案は規則のテスト保守が増える。",
+          "goal_fit": "混合案が G5 の各要素の性質に合う。",
+          "tco": "3 案とも無料枠内。",
+          "security": "混合案は下書きをサーバへ送らず、履歴は監査に使える。",
+          "operations": "すべて D1 案は下書き表の掃除が要る。",
           "lock_in": "差はない。"
         },
-        "latest_checked_at": "2026-09-18T11:19:20Z"
+        "latest_checked_at": "2026-09-19T13:18:15Z"
       },
       "user_decision": {
-        "option_id": "opt-transfer-pair-estimate",
-        "confirmed_at": "2026-09-18T11:20:19Z",
-        "note": "利用者が推奨案『入出金の対を推定して表示』を選択"
+        "option_id": "opt-d1-and-local",
+        "confirmed_at": "2026-09-19T13:12:52Z",
+        "note": "利用者が推奨案『フィルタと履歴は D1、下書きは端末』を選択 (qa-classify-decision-004)。confirmed_at は transcript の回答行の実測時刻。"
       }
     }
   ],
   "knowledge_candidates": [],
   "design_applications": {
-    "backend": {
-      "text": "Clean Architecture card の Dependency Rule を家計集計の置き場所に適用した。家計全体・事業・個人の総額、月平均と年換算、前年同期間の欠損判定、生活費 6 区分への写像、名義別収入、振替の対推定は、いずれも入出力を持たない計算なので core の householdSummary 1 か所に置く。入力は総収支画面と同じ totalCashflowLedger の行集合に限り、旧 household() の独自定義 (事業入金・事業立替を家計へ含める) は削除する。こうすると総収支の総合と家計全体が同じ行から出るため、両画面の数字の一致を toBe の単体テストで確かめられる。api の /household と /household/category は期間とクエリを zod で受け、loadScoped と loadCashflowSources で組んだ入力を純関数へ渡して JSON に写すだけにする。",
-      "recorded_at": "2026-09-18T11:37:52Z",
-      "basis": "agent-inference"
-    },
-    "database": {
-      "text": "DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、名義ラベルだけ表を足す判断に適用した。家計の集計値・前年比・構成比・振替の対は、どれも既存の明細と判定から導出できるので保存しない。一方で名義の表示名 (本人 / パートナー / 子ども / その他) は利用者が決める状態であり、導出できないので owner_labels 表として持つ。名義の内部値 (business / spouse / family / unset) は institution_owners・rules・tx_edits・tx_splits の CHECK 制約に固定された識別子なので変えず、表示名だけを別の表に分ける。行が無いときは既定の表示名で補い、初期データの投入も既存行の書き換えも行わない。",
-      "recorded_at": "2026-09-18T11:37:52Z",
-      "basis": "agent-inference"
-    },
-    "auth": {
-      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を家計の 2 経路と名義ラベルの 2 経路の配置に適用した。GET /api/household・GET /api/household/category・GET / PUT /api/settings/owner-labels はいずれも /api/* の authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence の内側に載せ、route の中で個別の認可判定を書かない。利用者の識別は c.get('userId') だけから取り、クエリや本文で user_id を受け取らない。名義ラベルの変更は利用者本人の表示設定なので、管理者専用の役割を新設しない。",
-      "recorded_at": "2026-09-18T11:37:52Z",
-      "basis": "agent-inference"
-    },
-    "security": {
-      "text": "Secure by Design card の『入力を許可リストで検証する』を、本サイクルで唯一増える自由記述の入力 (名義ラベルの表示名) に適用した。前後の空白を除いて 1〜20 文字、制御文字 U+0000–U+001F と U+007F を拒否、4 つの名義の表示名が互いに異なることを zod で確かめ、違反はフィールド別の 400 で返す。D1 の CHECK 制約でも長さを二重に守る。家計 API のクエリ (month・key・期間) も enum と YYYY-MM の書式で受け、期間外の月は 400 にする。表示名は React の既定のエスケープで描き、dangerouslySetInnerHTML を使わない。振替の対推定は表示だけでデータを書き換えない。",
-      "recorded_at": "2026-09-18T11:37:52Z",
-      "basis": "agent-inference"
-    },
     "ui-ux": {
-      "text": "Information Design card の『task 頻度 × 失敗コストで束に順位を付ける』を家計収支画面の縦積み順に適用した。最も頻度が高い問いは『今期の家計は黒字か、前年より良いか』なので KPI 3 枚と前年よりカードを最上段に置く。次に『いつ変わったか』を推移グラフ (家計全体 / 事業 / 個人のタブ・前年の点線) で、続けて『何が増えたか』を 6 区分の表と詳細パネル (既定は前年差が最大の区分) で答える。名義別収入・振替・名義ラベルは頻度が低いが、振替を見落とすと収支を二重に数えたと誤解する失敗コストが高いので、除外の理由と相手不明を明示した 3 カラムにまとめる。画像の数値が算術で閉じない欄は計算値を優先し、見た目の一致より数字の整合を取る。",
-      "recorded_at": "2026-09-18T11:37:52Z",
+      "text": "Visual hierarchy と情報優先度の card を明細仕分けの 3 カラムに適用した。task 頻度が最も高い『1 件を開いて区分とカテゴリを確定する』を中央一覧と右パネルの往復に置き、失敗コストが高い一括保存と削除は結果を通知で必ず返す。KPI 4 枚は分類ステータスの絞り込みの入口を兼ね、見出しの問いに対する答え (残り何件か) を最上段に置いた。証憑欄は落とし、その位置へ freee 管理の案内を加工して残した。",
+      "recorded_at": "2026-09-19T13:24:40Z",
       "basis": "agent-inference"
     },
     "frontend": {
-      "text": "Clean Architecture card の依存方向を、web が家計の集計規則を持たない構成に適用した。現行 Household.tsx は 657 行の 1 ファイルで前月比や名義の振り分けを画面側で組んでいるが、新しい構成では householdSummary の結果をそのまま描く部品群 (KPI・推移・6 区分の表・詳細パネル・名義別収入・振替・名義ラベル編集・下部バー) を pages/household/ に分ける。seg・month・cat の選択は URL に置き、再読込や共有で同じ画面へ戻れるようにする。カテゴリ詳細は選択が決まったときだけ取得する dependent query にし、本体の取得を 1 回に抑える。名義の表示は core の ownerLabel だけを通し、OWNER_LABEL の直参照を残さない。",
-      "recorded_at": "2026-09-18T11:37:52Z",
+      "text": "Container / Presentational の分離と view-model の card を適用した。取得と変更は pages/classify の container 1 か所に置き、各部品は view-model.ts が作った表示用の値だけを受け取る。こうすると 4 区分の件数や信頼度の表示を DOM テストなしに純関数のテストで固定でき、core の判定を web で書き直す余地が無くなる。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "backend": {
+      "text": "Clean Architecture の Dependency Rule を明細仕分けに適用した。4 区分の判定・信頼度・ルールの該当と分割の型の展開は入出力を持たない計算なので core に置き、api の route は zod で受けて D1 から組んだ入力を純関数へ渡し、結果を書くだけにする。プレビューと適用が同じ core 関数を通るため、S4 の『プレビューの件数と適用後に変わった明細が一致する』を単体テストで確かめられる。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "Schema evolution の card (expand のみで contract しない) を明細仕分けに適用した。ルールの新しい列は NULL 可か既定値付きにして既存のルールが今までどおり動くようにし、支払方法の上書きも NULL なら従来の導出に落ちる。こうして C3 の『既存行の書き換え 0 件』を migration 1 本で守る。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Least privilege と resource ownership の card を明細仕分けに適用した。新しい表はすべて user_id を主キーか索引の先頭に持たせ、route は WHERE user_id = ? を必ず付ける。所有していない行は存在しないものとして扱い、一括保存でも明細単位で同じ規則を当てる。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "OWASP ASVS の入力検証と業務ロジックの card を明細仕分けに適用した。一括保存は明細ごとに検証して失敗を個別に返すが、件数の上限で 1 要求の負荷を抑える。ルール適用は手動変更を上書きしないという業務規則をサーバ側の core で守り、画面の表示に頼らない。",
+      "recorded_at": "2026-09-19T13:24:40Z",
       "basis": "agent-inference"
     },
     "infrastructure": {
-      "text": "本章へ引く card は 0 件である。配信構成 (Worker・Workers Assets・D1) と binding を変えず、新設するのは同一 Worker 内の 3 経路 (家計の区分詳細・名義ラベルの取得と更新) と追加のみの owner_labels 表だけであるため、infrastructure 固有の設計判断が生じない。migration は既存の Migrate ワークフローで反映し、Deploy の前に表の存在を runtimeSchemaGuard で確かめる。",
-      "recorded_at": "2026-09-18T11:37:52Z",
+      "text": "Serverless の制約 card (CPU 時間・書込枠) を明細仕分けに適用した。一括保存・ルール適用の最悪ケースを件数の上限と batch の区切りで押さえ、無料枠の書込 100,000 行 / 日に対して 1 回の操作が数百行に収まる形にした。",
+      "recorded_at": "2026-09-19T13:24:40Z",
       "basis": "agent-inference"
     },
     "maintenance-ops": {
-      "text": "Clean Code card の『規則は名前と境界値テストで読めるようにする』を、本サイクルで新たに増える 3 つの規則の保守に適用した。(1) 生活費 6 区分の対応表は core の名前付き定数 1 か所に置き、事業側の支出が other に入ることを境界のテストで固定する。(2) 振替の対推定は TRANSFER_PAIR_MAX_DAYS=3 を名前付き定数にし、日付差 3 日と 4 日、同額が複数あるときの決定論 (日付差 → 日付 → id) をテストで固定する。(3) 名義ラベルの検証は 20 文字と 21 文字、制御文字、重複の境界を API 統合テストで固定する。いずれの規則も docs/data-schema.md に同じ名前で記す。",
-      "recorded_at": "2026-09-18T11:37:52Z",
+      "text": "Test pyramid の card を明細仕分けに適用した。数え方と信頼度とルールの一致は core の純関数テストで大半を固め、api は部分失敗とフェンス、web は構成要素と通知の DOM テストに絞る。旧実装で落ちるテストだけを受入の根拠に数える。",
+      "recorded_at": "2026-09-19T13:24:40Z",
       "basis": "agent-inference"
     }
   },
   "hearing_progress": {
-    "loop_count": 5,
+    "loop_count": 1,
     "next_question": null,
     "complete": true
   },
   "doctrine_applications": {
+    "ui-ux": {
+      "presentation": {
+        "text": "明細仕分け画面では、信頼度と 4 つの分類ステータスを色だけで伝えず数値と文言を併記する形へ反映した (WCAG 2.2 SC 1.4.1)。自動提案は『AI』と称さず『自動提案』と表示し、外部推論をしていないことと表示を一致させた。狭い画面での列削除は採らず、3 カラムを縦積みにして一覧の金額と信頼度の列を残した。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "application-architecture": {
+        "text": "明細仕分けのフロントエンドでは、判定 (4 区分・信頼度・ルールの該当) を core に、取得と無効化を container に、整形を view-model.ts に置く三層へ反映した。下書きだけは端末の localStorage に閉じ、サーバの状態と混ぜないため問い合わせのキャッシュに入れない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      },
+      "presentation": {
+        "text": "明細仕分けのフロントエンドでは、部品が色を直書きせず design-tokens.ts のトークンだけを使う形にし、信頼度の表示は数値の文字列を view-model.ts で作ってから描く形へ反映した。一覧の行は 50 件単位でサーバから受け取り、仮想スクロールは入れない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      }
+    },
     "backend": {
       "application-architecture": {
-        "text": "依存方向を core (householdSummary・区分詳細・振替の対推定) ← api (household route・owner-labels route) ← web (家計収支画面) の一方向へ反映した。旧 household(data) と HouseholdData を削除し、総収支画面と同じ台帳の行集合を入力にする純関数へ置き換える。台帳行へ名義を足すのは core の totalCashflowLedger の中で行い、api と web は名義の解決規則を持たない。",
-        "recorded_at": "2026-09-18T11:37:52Z",
+        "text": "明細仕分けでは依存方向を core (分類ステータス・recommendationFor・ルールの該当と分割展開) ← api (classify route・一括保存・ルールのプレビューと適用・保存フィルタ・履歴) ← web の一方向へ反映した。ナビのバッジと月次クローズの『仕分け』は classificationProgress を置き換える新しい判定を参照し、同じ数え方を 2 か所に持たない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
         "basis": "agent-inference"
       },
       "data-access": {
-        "text": "データアクセスを route 側に閉じ、householdSummary は D1 を知らない台帳の行集合だけを受け取る形へ反映した。前年同期間の読み取りは loadScoped の範囲拡張で行い、純関数には表示期間と前年の範囲を分けて渡す。freee の取引・判定・除外は総収支と同じ loadCashflowSources で読み、家計専用の SQL を増やさない。区分詳細の主な取引 5 件も同じ行集合の絞り込みで作る。",
-        "recorded_at": "2026-09-18T11:37:52Z",
+        "text": "明細仕分けの api では、一括保存・ルール適用の書込を route に閉じ、core は D1 を知らない明細の行集合だけを受け取る形へ反映した。履歴の記録は各変更経路の書込と同じ D1 batch に入れ、書込は成功して履歴だけ欠ける状態を作らない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
         "basis": "agent-inference"
       }
     },
     "database": {
       "data-access": {
-        "text": "owner_labels の読み書きを settings の route に 1 か所だけ置く形へ反映した。読み取りは利用者の 4 行以下を 1 回で取り、欠けた名義は既定の表示名で補う。更新は 4 行の upsert をまとめて行い、途中で失敗したときに一部だけ変わらないようにする。家計の集計は既存の明細・判定・除外の表からの読み取りだけで作り、新しい索引も追加しない。",
-        "recorded_at": "2026-09-18T11:37:52Z",
+        "text": "明細仕分けの D1 では、変更履歴を UPDATE しない追記のみの表にし、利用者と明細と時刻の索引で編集パネルの新しい順の表示を 1 回の読取りで返せる形へ反映した。保存フィルタの条件は JSON 1 列に入れ、絞り込みの項目が増えても列を足さない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
         "basis": "agent-inference"
       },
       "reliability": {
-        "text": "migration を追加のみにすることで、巻き戻しが表を使わないことだけで済む形へ反映した。既存の名義列 (institution_owners・rules.owner・tx_edits.owner・tx_splits.owner) を 1 行も書き換えないため、行の書き換えで Deploy が止まった過去の復旧手順が要らない。runtimeSchemaGuard の必須表に owner_labels を加え、migration を適用する前の Worker が新しい経路を中途半端に動かさないようにする。",
-        "recorded_at": "2026-09-18T11:37:52Z",
+        "text": "明細仕分けの D1 では、追加のみの migration 1 本に留めて Migrate の失敗時に行の巻き戻しが要らない形へ反映した。取引の削除と取消は既存の /data/deletions と /data/undo を使い、履歴にも削除と取消の行を残して復元後の状態を辿れるようにした。",
+        "recorded_at": "2026-09-19T13:24:40Z",
         "basis": "agent-inference"
       }
     },
     "auth": {
       "authentication": {
-        "text": "家計と名義ラベルの 4 経路に、既存のセッション cookie による認証をそのまま効かせる形へ反映した。未認証は authGuard が 401 を返し、一時パスワードのままの利用者は mustChangePasswordFence が止める。家計画面のための新しいログイン手段や長期トークンは設けない。",
-        "recorded_at": "2026-09-18T11:37:52Z",
+        "text": "明細仕分けでは新しいログイン経路を足さず、既存のセッション Cookie と session_generation による無効化にそのまま乗せる形へ反映した。パスワード変更が必要な利用者は mustChangePasswordFence で一括保存やルール適用に届かない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
         "basis": "agent-inference"
       },
       "security": {
-        "text": "利用者単位でデータを閉じる規則を、名義ラベルの表の主キー (user_id, owner) と家計集計の入力に反映した。どちらも c.get('userId') で絞り、他の利用者の表示名や明細が混ざらないことを API 統合テストで確かめる。名義ラベルの更新は canonicalMutationFence の内側にあり、既存の更新系と同じ保護を受ける。",
-        "recorded_at": "2026-09-18T11:37:52Z",
+        "text": "明細仕分けの認可では、一括保存・ルール適用・保存フィルタ・履歴の全 SQL を利用者で区切り、他人の明細 id を渡されても明細単位の not_found に落とす形へ反映した。利用者 id を要求の本文から受け取らない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
         "basis": "agent-inference"
       }
     },
     "security": {
       "security": {
-        "text": "入力検証・出力の無害化・外部送信なしの 3 点を、家計収支画面で増える入出力に反映した。入力は名義ラベルの表示名と家計 API のクエリだけで、どちらも zod の許可リストで受ける。出力の表示名と取引先名は React のエスケープで描く。明細や表示名を外部サービスへ送らず、公開文書への実データ混入は既存の security:content で検査する。",
-        "recorded_at": "2026-09-18T11:37:52Z",
-        "basis": "agent-inference"
-      }
-    },
-    "ui-ux": {
-      "presentation": {
-        "text": "増減を色だけで伝えない規則を、前年よりカード・6 区分の表・前年との比較に反映した。増減には符号 (+ / −) と矢印を必ず添え、支出の増加と収入の増加で色の意味が逆になる箇所でも文字だけで読めるようにする。推移グラフの前年系列は点線で区別し、凡例 5 系列に名前を付ける。表の行とグラフの棒はキーボードで選べ、選んだ区分と月を下部バーの文で読み上げられる形にする。",
-        "recorded_at": "2026-09-18T11:37:52Z",
-        "basis": "agent-inference"
-      }
-    },
-    "frontend": {
-      "presentation": {
-        "text": "表示の共通部品を使う規則を、家計収支画面の部品分割に反映した。ページの枠は PageShell / PageState、KPI は KpiCard、グラフは FinancialFigure と charts.ts の系列色、ボタンは共通 Button を使い、色は design-tokens のトークンだけで書く (直書き色は lint の check-design-tokens で落ちる)。下部の選択中バーは総収支と推移に個別実装があるため、家計画面でも同じ見た目の規約に合わせる。",
-        "recorded_at": "2026-09-18T11:37:52Z",
-        "basis": "agent-inference"
-      },
-      "application-architecture": {
-        "text": "サーバ状態と画面状態を分ける規則を、家計収支画面の取得と選択に反映した。家計の本体・区分詳細・名義ラベルはどれも TanStack Query のサーバ状態として持ち、名義ラベルの保存後は家計・設定・明細のクエリを無効化して再取得する。seg・month・cat の選択は URL の状態として持ち、コンポーネント内に複製しない。ページは遅延読み込みのまま初期 JS 予算に含めない。",
-        "recorded_at": "2026-09-18T11:37:52Z",
+        "text": "明細仕分けでは、一括保存・ルール適用・保存フィルタの変更をフェンスへ登録して取込の洗替えと重ならない形へ反映した (ASVS V11 業務ロジック)。外部送信の経路を作らず、端末に残る下書きは保存成功で消し、証憑のアップロード面を持たない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
         "basis": "agent-inference"
       }
     },
     "infrastructure": {
-      "reliability": {
-        "text": "家計集計を要求ごとに導出しても Worker の CPU 時間に収まる範囲に反映した。入力は最大 3 年分の台帳で、集計は行数に比例する 1 回の走査と振替の対推定 (同額でまとめてから日付差で照合) で済むため、キャッシュ層やキューを足さない。migration の反映は既存の Migrate ワークフローのゲートを通す。",
-        "recorded_at": "2026-09-18T11:37:52Z",
+      "operations": {
+        "text": "明細仕分けのインフラでは、新しい資源を増やさず既存の Deploy / Migrate の手順 1 本で反映できる形へ反映した。追加のみの migration なので Deploy の前後どちらの版とも動く。",
+        "recorded_at": "2026-09-19T13:24:40Z",
         "basis": "agent-inference"
       },
-      "operations": {
-        "text": "既存の CI と Deploy の手順をそのまま使う形へ反映した。ci.yml の lint・typecheck・test・初期 JS 予算の検査に家計画面も含め、migrate.yml で owner_labels を反映してから deploy.yml で Worker を出す順序を守る。新しい監視や通知は設けない。",
-        "recorded_at": "2026-09-18T11:37:52Z",
+      "reliability": {
+        "text": "明細仕分けのインフラでは、一括保存を D1 の batch で明細ごとに区切り、1 件の失敗で残りを巻き戻さない形へ反映した。単独利用のため SLO は定めず、失敗は画面の通知と再試行で回復させる。",
+        "recorded_at": "2026-09-19T13:24:40Z",
         "basis": "agent-inference"
       }
     },
     "maintenance-ops": {
       "operations": {
-        "text": "家計収支画面の回帰を検出する手順を既存の verify:full に載せる形へ反映した。core の不変条件テスト (総収支と一致・事業 + 個人 = 家計全体・6 区分の和 = 総支出・名義別の和 = 総収入・振替は台帳に現れない)、仕様フィクスチャでの画面の DOM テスト、owner-labels の API 統合テストを追加し、旧 household() の参照が残っていないことを検索で確かめる。規則の説明は docs/data-schema.md に集め、画面の決定は docs/ui-decisions.md に残す。",
-        "recorded_at": "2026-09-18T11:37:52Z",
+        "text": "明細仕分けの保守では、画面仕様・設計・設計判断・証跡を既存の作り直しと同じ配置に置き、次の画面の作り直しでも同じ場所を読めば辿れる形へ反映した。migration の反映は既存の Migrate の手順書に従い、独自の運用手順を足さない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
         "basis": "agent-inference"
       }
     }

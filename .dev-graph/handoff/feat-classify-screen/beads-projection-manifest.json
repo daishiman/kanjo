@@ -1,0 +1,151 @@
+{
+  "feature": {
+    "graph_node_id": "feat-classify-screen",
+    "title": "明細仕分け画面 (13-classify) の作り直しと分類ステータス・信頼度・ルール適用の core 一本化",
+    "description": "dev-graph feature projection (features/feat-classify-screen.md)",
+    "bd_issue_id": "kanjo-d6m"
+  },
+  "children": [
+    {
+      "graph_node_id": "SYS-CLASSIFY-P01",
+      "phase_ref": "P01",
+      "parent_feature": "feat-classify-screen",
+      "title": "P01 要件ベースライン確定と未決事項 Q-1〜Q-5 の着手時整理",
+      "description": "dev-graph P01 projection (tasks/feat-classify-screen/sys-classify-p01.md)",
+      "depends_on": [],
+      "bd_issue_id": "kanjo-d6m.1"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P02",
+      "phase_ref": "P02",
+      "parent_feature": "feat-classify-screen",
+      "title": "P02 classifyStatus・recommendationFor 拡張・6 API 新設拡張・migration 0046 のワークストリーム設計決定記録",
+      "description": "dev-graph P02 projection (tasks/feat-classify-screen/sys-classify-p02.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P01"
+      ],
+      "bd_issue_id": "kanjo-d6m.2"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P03",
+      "phase_ref": "P03",
+      "parent_feature": "feat-classify-screen",
+      "title": "P03 分類ステータス契約・API 契約・migration 契約・URL 契約の独立レビュー",
+      "description": "dev-graph P03 projection (tasks/feat-classify-screen/sys-classify-p03.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P02"
+      ],
+      "bd_issue_id": "kanjo-d6m.3"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P04",
+      "phase_ref": "P04",
+      "parent_feature": "feat-classify-screen",
+      "title": "P04 core 不変条件・API 契約・migration・DOM の失敗テスト先行作成（Q-1 の vendor_memory 分岐を除く）",
+      "description": "dev-graph P04 projection (tasks/feat-classify-screen/sys-classify-p04.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P03"
+      ],
+      "bd_issue_id": "kanjo-d6m.4"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P05",
+      "phase_ref": "P05",
+      "parent_feature": "feat-classify-screen",
+      "title": "P05 classifyStatus・6 API・migration 0046・/classify 画面の最終実装",
+      "description": "dev-graph P05 projection (tasks/feat-classify-screen/sys-classify-p05.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P04"
+      ],
+      "bd_issue_id": "kanjo-d6m.5"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P06",
+      "phase_ref": "P06",
+      "parent_feature": "feat-classify-screen",
+      "title": "P06 全テストと型検査と lint の実行記録",
+      "description": "dev-graph P06 projection (tasks/feat-classify-screen/sys-classify-p06.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P05"
+      ],
+      "bd_issue_id": "kanjo-d6m.6"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P07",
+      "phase_ref": "P07",
+      "parent_feature": "feat-classify-screen",
+      "title": "P07 受入基準 S1 から S6（AT-01〜AT-21）の検証",
+      "description": "dev-graph P07 projection (tasks/feat-classify-screen/sys-classify-p07.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P06"
+      ],
+      "bd_issue_id": "kanjo-d6m.7"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P08",
+      "phase_ref": "P08",
+      "parent_feature": "feat-classify-screen",
+      "title": "P08 旧 Classify.tsx 参照・証憑欄・重複判定ロジックの読取専用監査",
+      "description": "dev-graph P08 projection (tasks/feat-classify-screen/sys-classify-p08.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P07"
+      ],
+      "bd_issue_id": "kanjo-d6m.8"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P09",
+      "phase_ref": "P09",
+      "parent_feature": "feat-classify-screen",
+      "title": "P09 アクセシビリティ・入力検証・変更系フェンス・外部送信ゼロ・JS バンドル予算の保証確認",
+      "description": "dev-graph P09 projection (tasks/feat-classify-screen/sys-classify-p09.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P08"
+      ],
+      "bd_issue_id": "kanjo-d6m.9"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P10",
+      "phase_ref": "P10",
+      "parent_feature": "feat-classify-screen",
+      "title": "P10 独立最終レビュー",
+      "description": "dev-graph P10 projection (tasks/feat-classify-screen/sys-classify-p10.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P09"
+      ],
+      "bd_issue_id": "kanjo-d6m.10"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P11",
+      "phase_ref": "P11",
+      "parent_feature": "feat-classify-screen",
+      "title": "P11 再現可能な証跡索引の作成",
+      "description": "dev-graph P11 projection (tasks/feat-classify-screen/sys-classify-p11.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P10"
+      ],
+      "bd_issue_id": "kanjo-d6m.11"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P12",
+      "phase_ref": "P12",
+      "parent_feature": "feat-classify-screen",
+      "title": "P12 分類ステータス・信頼度・ルール適用の規則と Q-1〜Q-5・保存フィルタ / 履歴のバックアップ方針の docs 最終同期",
+      "description": "dev-graph P12 projection (tasks/feat-classify-screen/sys-classify-p12.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P11"
+      ],
+      "bd_issue_id": "kanjo-d6m.12"
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P13",
+      "phase_ref": "P13",
+      "parent_feature": "feat-classify-screen",
+      "title": "P13 単一 PR での配信と migration 0046 適用とクローズアウト",
+      "description": "dev-graph P13 projection (tasks/feat-classify-screen/sys-classify-p13.md)",
+      "depends_on": [
+        "SYS-CLASSIFY-P12"
+      ],
+      "bd_issue_id": "kanjo-d6m.13"
+    }
+  ]
+}

@@ -827,7 +827,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-18-household-cashflow/auth.md",
         "source_version": "0.1.14",
         "source_digest": "30ba6c0055709da3317723b5e3225f3beb6ac0701fa529a32aad9b60a8fdd496",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -850,7 +850,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-18-household-cashflow/backend.md",
         "source_version": "0.1.14",
         "source_digest": "05968afeedc3f4ae572a389eb14e57436114352c58442d5b78104aafd8ca45b4",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -873,7 +873,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-18-household-cashflow/database.md",
         "source_version": "0.1.14",
         "source_digest": "06cac52233e70390939c023e2c62c85b27c991c3c1e26a623c4528de81400bba",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -896,7 +896,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-18-household-cashflow/frontend.md",
         "source_version": "0.1.14",
         "source_digest": "6dac265091684f5892afc368f27a7fbcdb0c9bbc4f69109a47eea70afaeb6dff",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -919,7 +919,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-18-household-cashflow/infrastructure.md",
         "source_version": "0.1.14",
         "source_digest": "b80d7f55fdb32981311d2c931a5bbc3d422edbe0ba5460e15b40ee1722e522b1",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -942,7 +942,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-18-household-cashflow/maintenance-ops.md",
         "source_version": "0.1.14",
         "source_digest": "6bc0855d54a0d2a8171fe86914b37c161e1f43eaf752e682790bf02402052dfb",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -965,7 +965,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-18-household-cashflow/security.md",
         "source_version": "0.1.14",
         "source_digest": "b6a0a70a0aa6c4be9670003a387dc7ab359b9df4fc8b5da5eddcbef130867dd2",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -988,7 +988,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-18-household-cashflow/ui-ux.md",
         "source_version": "0.1.14",
         "source_digest": "8f63b6a76287ed9a738241c5371344a231b534404672337abe67d6ff7f97f4d8",
         "imported_at": "2026-09-18T12:24:49Z"
@@ -2535,6 +2535,190 @@
       },
       "referenced_by": [
         "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "明細仕分け — 既存の認証とフェンスの内側に置く新経路と利用者単位の区切り",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "0380be1d0882724cbfb1302956f76a9aeb05544ee6c9dfb8f71fa2fb42f9c186",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "明細仕分け — 分類ステータスと提案を導く core 純関数 1 か所と変更系 API",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "28297c3d03be9cf9a1f52e5d03cb310b2ca3291534bb4e2591ba22da81ed9035",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "明細仕分け — 2 表と既存表への列を足す追加のみの migration",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "64a5feecbecad51c781e6e8fcf07d055304f0a93cba019ee29d5586aa3be8aba",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "明細仕分け — pages/classify への分割と URL・サーバ状態・端末下書きの分離",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "331f13c5d50b4b0807e4b39c944536f191fe4680ef2fc901e924c804a0c8ec4c",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "明細仕分け — 基盤を変えず件数上限と batch の区切りで無料枠に収める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "6de2efee9fda877fe65cd1545eba12549dbf0d9e7d9797f186235936a5ef4027",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "明細仕分け — 3 区分の不変条件テストと旧実装で落ちる検算による回帰検出",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "5b8f24c0344ea95abaf6eba3e8a983caa814090f7de068bb89e433cc4fcb38ee",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "明細仕分け — zod の長さ制限・フェンス登録・外部送信なし・証憑面を持たない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "9d1fbf27441cf7ee74f85d419f4611beeda5aac386765a3f669b0a939c1508d6",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "明細仕分け — 問いと件数から 3 カラムの確定、結果の通知までの 1 画面",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "7afdc6ecbca54a0a7aeb3e4498bc6a9cbe6b98c8f58cd8f1c18ca364ec711f62",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
       ]
     }
   ]

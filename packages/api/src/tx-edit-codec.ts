@@ -15,7 +15,9 @@ import type * as s from './db/schema.js';
 
 export type TxEditDbRow = typeof s.txEdits.$inferSelect;
 
-export type ManualEditPatch = Partial<Pick<TxEdit, 'cls' | 'big' | 'mid' | 'owner' | 'inst' | 'note'>>;
+export type ManualEditPatch = Partial<
+  Pick<TxEdit, 'cls' | 'big' | 'mid' | 'owner' | 'inst' | 'note' | 'paymentMethod'>
+>;
 export type EffectiveEditBase = Required<Pick<TxEdit, 'cls' | 'big' | 'mid' | 'owner'>>;
 
 /**
@@ -62,6 +64,9 @@ export function applyManualEditWithBase(
   // 口座は3点比較に載せないので base を控えない(TxEdit.inst の注記)。空文字は「振替なし」に寄せる。
   if (patch.inst !== undefined) next.inst = patch.inst || null;
   if (patch.note !== undefined) next.note = patch.note;
+  // 支払方法は3点比較に載せない。取込値に相当するものが無く(導出値であり)、
+  // 「取込側が変わった」を観測する相手がいないためである。
+  if (patch.paymentMethod !== undefined) next.paymentMethod = patch.paymentMethod;
 
   next.origin = 'manual';
   next.originKey = null;
@@ -104,6 +109,8 @@ export const txEditFromRow = (row: TxEditDbRow): TxEdit => ({
   fingerprintVersion: row.fingerprintVersion ?? null,
   origin: row.origin ?? null,
   originKey: row.originKey ?? null,
+  paymentMethod: row.paymentMethod ?? null,
+  matchedProposal: row.matchedProposal ?? null,
 });
 
 /** Drizzle insert/upsert 用。列を増やすときはここだけを変える。 */
@@ -136,9 +143,11 @@ export const txEditInsertValues = (
   fingerprintVersion: edit.fingerprintVersion ?? null,
   origin: edit.origin ?? null,
   originKey: edit.originKey ?? null,
+  paymentMethod: edit.paymentMethod ?? null,
+  matchedProposal: edit.matchedProposal ?? null,
 });
 
-/** JSON restore write-set の既存列順。適用由来は古いbackupには無いため安全側(NULL=手動)へ落とす。 */
+/** JSON restore write-set。新列は既存列の末尾に追加し、古いbackupはNULLへ安全に倒す。 */
 export const txEditRestoreRow = (txId: string, edit: TxEdit): unknown[] => [
   txId,
   edit.cls ?? null,
@@ -161,4 +170,7 @@ export const txEditRestoreRow = (txId: string, edit: TxEdit): unknown[] => [
   edit.stableKey && edit.fingerprintVersion === STABLE_KEY_VERSION ? edit.fingerprintVersion : null,
   // 0035: 口座の振替。列は末尾に足す(既存列順は動かさない)
   edit.inst ?? null,
+  // 0046: 仕分け画面の手動確定属性
+  edit.paymentMethod ?? null,
+  edit.matchedProposal ?? null,
 ];

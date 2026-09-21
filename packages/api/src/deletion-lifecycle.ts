@@ -116,6 +116,7 @@ export function planDeletionQueries(args: {
   targetChunks: number;
   auditStatements: number;
   recomputeStatements: number;
+  historyStatements?: number;
 }): DeletionQueryPlan {
   return sumPlan({
     // 対象候補(mf/freee/balance) + 取込種別 + 手動記録3種 + active target
@@ -134,6 +135,7 @@ export function planDeletionQueries(args: {
       1 +
       1 +
       args.auditStatements,
+    history: args.historyStatements ?? 0,
     // 集計の作り直し(planRecomputeFromDeals の読み + 入れ替え)
     recompute: args.recomputeStatements,
     release: 1,
@@ -148,13 +150,14 @@ export function planUndoQueries(args: {
   restoreStatements: number;
   auditStatements: number;
   recomputeStatements: number;
+  historyStatements?: number;
 }): DeletionQueryPlan {
   return sumPlan({
     // operation、保持後の監査存在確認、退避行、active target の4読み
     metadataReads: 4,
     // canonical-mutation-fence のstale回復を含む上界
     claim: 4,
-    commit: args.restoreStatements + args.auditStatements,
+    commit: args.restoreStatements + args.auditStatements + (args.historyStatements ?? 0),
     recompute: args.recomputeStatements,
     release: 1,
   });
@@ -576,6 +579,37 @@ export interface ConfirmedDeletionPeriod {
   to: string;
 }
 
+/** 削除/取消の明細履歴を1明細1statementではなくJSON bulkで作る。 */
+function deletionHistoryStatements(
+  database: D1Database,
+  userId: string,
+  txIds: readonly string[],
+  meta: { source: 'delete' | 'undo'; opId: string; changedAt: string },
+): D1PreparedStatement[] {
+  const before = meta.source === 'undo' ? '削除' : null;
+  const after = meta.source === 'delete' ? '削除' : null;
+  const rows = [...new Set(txIds)]
+    .sort()
+    .map((txId) => [
+      `${meta.opId}:${txId}:deleted:0`,
+      txId,
+      meta.changedAt,
+      'deleted',
+      before,
+      after,
+      meta.source,
+      null,
+      meta.opId,
+    ]);
+  return insertJsonRows(
+    database,
+    'tx_history',
+    ['id', 'tx_id', 'changed_at', 'field', 'before_value', 'after_value', 'source', 'confidence', 'op_id'],
+    rows,
+    [{ column: 'user_id', value: userId }],
+  );
+}
+
 export interface DeletionExecution {
   operationId: string;
   targets: DeletionTargets;
@@ -642,6 +676,8 @@ export async function executeDeletion(args: {
   expectedFingerprint?: string;
   now?: Date;
   recomputeStatements?: number;
+  /** 明細指定削除の履歴をcanonical削除と同じbatchへ載せる。 */
+  recordTransactionHistory?: boolean;
 }): Promise<DeletionExecution> {
   const { database, userId, operationId, request } = args;
   const now = args.now ?? new Date();
@@ -727,6 +763,14 @@ export async function executeDeletion(args: {
     occurredAt: now.toISOString(),
     result: 'succeeded',
   });
+  const history =
+    args.recordTransactionHistory && request.granularity === 'transaction'
+      ? deletionHistoryStatements(database, userId, targets.mfTxIds, {
+          source: 'delete',
+          opId: operationId,
+          changedAt: now.toISOString(),
+        })
+      : [];
 
   const plan = planDeletionQueries({
     payloadChunks: commit.tombstoneChunks,
@@ -740,11 +784,12 @@ export async function executeDeletion(args: {
       args.recomputeStatements ?? 0,
       RECOMPUTE_PLAN_READS + recomputeStatements.length,
     ),
+    historyStatements: history.length,
   });
   // 予算を超えるなら1文も書かない。途中まで消してから落ちる方が悪い
   if (!plan.accepted) throw new DeletionBudgetError(plan);
 
-  await database.batch([...commit.statements, ...recomputeStatements, ...audit.statements]);
+  await database.batch([...commit.statements, ...recomputeStatements, ...history, ...audit.statements]);
   return { operationId, targets, counts: preflight.counts, fingerprint, expiresAt, plan };
 }
 
@@ -787,6 +832,8 @@ export async function executeUndo(args: {
   undoOperationId: string;
   now?: Date;
   recomputeStatements?: number;
+  /** 削除時の退避行を正本に、取消履歴も同じbatchで戻す。 */
+  recordTransactionHistory?: boolean;
 }): Promise<UndoExecution> {
   const { database, userId, operationId, undoOperationId } = args;
   const now = args.now ?? new Date();
@@ -929,16 +976,29 @@ export async function executeUndo(args: {
     occurredAt: now.toISOString(),
     result: 'succeeded',
   });
+  const restoredTxIds = tombstones.results.flatMap((row) => {
+    if (row.table_name !== 'mf_transactions') return [];
+    const payload = JSON.parse(row.payload_json) as { tx_id?: unknown };
+    return typeof payload.tx_id === 'string' ? [payload.tx_id] : [];
+  });
+  const history = args.recordTransactionHistory
+    ? deletionHistoryStatements(database, userId, restoredTxIds, {
+        source: 'undo',
+        opId: undoOperationId,
+        changedAt: now.toISOString(),
+      })
+    : [];
 
   const plan = planUndoQueries({
     restoreStatements: statements.length + recomputeStatements.length,
     auditStatements: audit.queryCount,
     recomputeStatements: Math.max(args.recomputeStatements ?? 0, RECOMPUTE_PLAN_READS),
+    historyStatements: history.length,
   });
   // 読み取りは済んでいても、この時点まで利用者データは1行も動いていない。
   if (!plan.accepted) throw new DeletionBudgetError(plan);
 
-  await database.batch([...statements, ...recomputeStatements, ...audit.statements]);
+  await database.batch([...statements, ...recomputeStatements, ...history, ...audit.statements]);
   return { operationId, undoOperationId, restored, months: [...months].sort() };
 }
 

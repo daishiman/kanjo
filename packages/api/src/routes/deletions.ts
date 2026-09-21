@@ -211,6 +211,7 @@ async function runDeletion(
     request,
     expectedFingerprint,
     confirmedPeriod,
+    recordTransactionHistory: request.granularity === 'transaction',
   });
   return result;
 }
@@ -265,13 +266,8 @@ deletionsRoute.post('/data/deletions', zValidator('json', deletionRequestSchema)
     );
   try {
     const { fingerprint, confirmedPeriod, ...request } = body;
-    const result = await runDeletion(
-      c.env.DB,
-      c.get('userId'),
-      request as never,
-      fingerprint,
-      confirmedPeriod,
-    );
+    const userId = c.get('userId');
+    const result = await runDeletion(c.env.DB, userId, request as never, fingerprint, confirmedPeriod);
     return c.json({
       operationId: result.operationId,
       counts: result.counts,
@@ -316,6 +312,7 @@ deletionsRoute.post('/data/undo/:operationId', zValidator('param', operationIdPa
       userId,
       operationId,
       undoOperationId: crypto.randomUUID(),
+      recordTransactionHistory: true,
     });
     return c.json({
       operationId: result.undoOperationId,

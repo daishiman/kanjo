@@ -8,6 +8,7 @@
  * - 保留は明細本文を保存せず、内容指紋 (SHA-256) が一致する間だけ効く (BR-004)。
  */
 import { isCashTxId } from './cash.js';
+import { classifyStatus, classifySuggestion } from './classify-status.js';
 import { resolveTx, ruleMatches } from './classify.js';
 import { canonicalEncode } from './fingerprint.js';
 import { sha256Hex } from './improvement.js';
@@ -242,49 +243,48 @@ const labelOf = (
   mid: string | null | undefined,
 ) => [cls ? CLS_LABEL[cls] : null, big, mid].filter((x): x is string => !!x).join(' / ');
 
-/** 推奨と根拠。vendor_memory → ルール → MF中項目 → なし の順で最初に当たったものだけを返す (BR-006) */
+/**
+ * 推奨と根拠。vendor_memory → ルール → MF中項目 → なし の順で最初に当たったものだけを返す (BR-006)。
+ *
+ * 判定そのものは `classifySuggestion` が唯一の持ち主で、ここはその結果を
+ * /review-queue の既存の形 (recommendation / basisLabel) へ写すだけである。
+ * 優先順をこちらにも書くと、同じ明細に対して画面ごとに違う推奨が出る。
+ */
 export function recommendationFor(
   tx: MfTx | null,
   content: string,
   rules: readonly Rule[],
   vendorMemories: readonly VendorMemoryRecord[],
 ): Recommendation {
-  const key = normalizeVendorKey(content);
-  const memory = key ? vendorMemories.find((m) => !m.revoked && m.vendorKey === key) : undefined;
-  if (memory) {
-    const label = labelOf(memory.cls, memory.big, memory.mid);
-    if (label) {
-      const total = memory.hitCount + memory.disagreeCount;
-      return {
-        recommendation: label,
-        basis: 'vendor_memory',
-        basisLabel: `過去 ${total} 件中 ${memory.hitCount} 件`,
-        confidence: Math.round(vendorConfidence(memory) * 100),
-      };
-    }
+  const s = classifySuggestion(tx, content, rules, vendorMemories);
+  if (!s.suggestion || s.basis === 'none') return { ...NO_RECOMMENDATION };
+  return {
+    recommendation: s.label,
+    basis: s.basis,
+    basisLabel: legacyBasisLabel(s.basis, tx, content, rules, vendorMemories),
+    confidence: s.confidence,
+  };
+}
+
+/** /review-queue が表示している短い根拠文。BR-08 の basisText とは別物なので分けて持つ */
+function legacyBasisLabel(
+  basis: Exclude<RecommendationBasis, 'none'>,
+  tx: MfTx | null,
+  content: string,
+  rules: readonly Rule[],
+  vendorMemories: readonly VendorMemoryRecord[],
+): string {
+  if (basis === 'vendor_memory') {
+    const key = normalizeVendorKey(content);
+    const memory = key ? vendorMemories.find((m) => !m.revoked && m.vendorKey === key) : undefined;
+    if (memory) return `過去 ${memory.hitCount + memory.disagreeCount} 件中 ${memory.hitCount} 件`;
+    return NO_RECOMMENDATION.basisLabel;
   }
-  if (tx) {
-    for (const rule of rules) {
-      if (!ruleMatches(tx, rule)) continue;
-      const label = labelOf(rule.cls, rule.big, rule.mid);
-      if (label)
-        return {
-          recommendation: label,
-          basis: 'rule',
-          basisLabel: `ルール「${rule.k}」に一致`,
-          confidence: null,
-        };
-    }
-    if (isMfBizByMid(tx)) {
-      return {
-        recommendation: CLS_LABEL.biz,
-        basis: 'mf_mid',
-        basisLabel: 'MF の中項目が「事業」',
-        confidence: null,
-      };
-    }
+  if (basis === 'rule') {
+    const rule = tx ? rules.find((r) => ruleMatches(tx, r) && !!labelOf(r.cls, r.big, r.mid)) : undefined;
+    return rule ? `ルール「${rule.k}」に一致` : NO_RECOMMENDATION.basisLabel;
   }
-  return { ...NO_RECOMMENDATION };
+  return 'MF の中項目が「事業」';
 }
 
 const KIND_ORDER: Record<ReviewItemKind, number> = { reconciliation: 0, classification: 1, import: 2 };
@@ -339,8 +339,21 @@ export function buildReviewQueue({
   // 分割の射影は親で 1 件、照合待ちに載った明細は照合側で 1 件と数え、同じ明細を二重に数えない
   for (const t of data.mfTx) {
     if (isCashTxId(t.id) || !isMfCountable(t) || t.splitProjection != null || reviewIds.has(t.id)) continue;
-    if (resolveTx(t, data.rules, data.edits, data.institutionOwners).clsSrc !== '既定') continue;
     const content = t.c ?? '';
+    const resolved = resolveTx(t, data.rules, data.edits, data.institutionOwners);
+    const suggestion = classifySuggestion(t, content, data.rules, vendorMemories);
+    const edit = data.edits[t.id];
+    if (
+      classifyStatus({
+        clsSrc: resolved.clsSrc,
+        origin: edit?.origin,
+        matchedProposal: edit?.matchedProposal,
+        confidence: suggestion.confidence,
+        conflict: suggestion.conflict,
+        contradiction: suggestion.contradiction,
+      }).status !== 'unsorted'
+    )
+      continue;
     items.push({
       kind: 'classification',
       itemKey: t.id,
@@ -427,30 +440,34 @@ export interface MonthlyCloseStatus {
   reviewedAt: string | null;
 }
 
-/** 対象月はデータの最終月。仕分けは保留を含む items、照合は専用集約の総数で判定する */
+/**
+ * 対象月はデータの最終月。呼び出し側が指紋の一致する保留を除いた `items` を渡し、
+ * ここで対象月だけに絞る。キューとクローズが別々の集合を数えないための単一契約。
+ */
 export function monthlyCloseStatus({
   data,
   items,
   reviews,
   hasCommittedImport,
-  actionRequiredCount,
 }: {
   data: Dataset;
   items: readonly ReviewQueueItem[];
   reviews: readonly { month: string; reviewedAt: string }[];
-  /** committed の取込が 1 件でもあるか。手入力の現金だけで月が立っても「取込済み」にしない (FR-004) */
+  /** 対象月を含む committed の取込があるか。手入力の現金だけで月が立っても「取込済み」にしない */
   hasCommittedImport: boolean;
-  /** 照合画面が返す対応必要総数。要確認と未処理を consumer 側で再加算しない */
-  actionRequiredCount: number;
 }): MonthlyCloseStatus {
   const month = data.months.length > 0 ? data.months[data.months.length - 1] : null;
-  const counts = reviewQueueCounts(items);
+  const counts = reviewQueueCounts(month ? items.filter((item) => item.month === month) : []);
   const reviewedAt = month ? (reviews.find((r) => r.month === month)?.reviewedAt ?? null) : null;
   const steps: CloseStep[] = [
     {
       key: 'import',
       label: 'データ取込',
-      done: month !== null && hasCommittedImport && !data.unrecordedExpMonths.includes(month),
+      done:
+        month !== null &&
+        hasCommittedImport &&
+        !data.unrecordedExpMonths.includes(month) &&
+        counts.import === 0,
       count: null,
     },
     {
@@ -462,8 +479,8 @@ export function monthlyCloseStatus({
     {
       key: 'reconciliation',
       label: '照合',
-      done: month !== null && actionRequiredCount === 0,
-      count: actionRequiredCount,
+      done: month !== null && counts.reconciliation === 0,
+      count: counts.reconciliation,
     },
     { key: 'review', label: '月次レビュー', done: reviewedAt !== null, count: null },
   ];

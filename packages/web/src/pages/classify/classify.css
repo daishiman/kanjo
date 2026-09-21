@@ -1,0 +1,451 @@
+/*
+ * 明細仕分け画面の体裁 (spec-classify-screen 7.2・7.12)。
+ *
+ * 3 枚 (絞り込み・一覧・編集) を横に並べ、狭い画面では縦に積む。
+ * 色・余白・角丸は共通のトークンを使い、この画面だけの見た目を作らない。
+ */
+
+.classify-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/*
+ * grid / flex の子は既定の min-width:auto だと、表や長い取引先名の min-content 幅まで
+ * 親を押し広げる。ページ全体を横へ動かさず、各作業面の中で折り返すための共通境界。
+ */
+.classify-page > *,
+.classify-body > *,
+.classify-lower > *,
+.classify-main,
+.classify-side,
+.classify-table,
+.classify-table-scroll {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.classify-howto summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.classify-howto p {
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+}
+
+/* -------- KPI (7.3) -------- */
+
+.classify-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* 共通の KpiCard は押せない div なので、押せる KPI はここで button として組む */
+.classify-kpis .kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.classify-kpis .kpi.is-active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.classify-kpis .kpi .kpi-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.classify-kpis .kpi .value {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.classify-kpis .kpi .note {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+
+/* -------- 3 枚の並び (7.2) -------- */
+
+.classify-body {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr) minmax(280px, 360px);
+  gap: 16px;
+  align-items: start;
+}
+
+.classify-side {
+  position: sticky;
+  top: 16px;
+}
+
+/* 必要なときだけ現れる下段。分割とルールは同じ作業面を共有する。 */
+.classify-lower {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.classify-lower > :only-child {
+  grid-column: 1 / -1;
+}
+
+.classify-filters,
+.classify-edit,
+.classify-split,
+.classify-preview {
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.classify-filters.is-collapsed {
+  min-width: 0;
+}
+
+.classify-filters-head,
+.classify-edit-head,
+.classify-table-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.classify-filters-body,
+.classify-filters-body fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.classify-filter-group,
+.classify-edit-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.classify-page :is(input, select, textarea, .cat-picker) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.classify-filter-group > :is(input, select, textarea),
+.classify-edit-group > :is(input, select, textarea) {
+  width: 100%;
+}
+
+.classify-check {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.classify-saved,
+.classify-history,
+.classify-rules,
+.classify-split-lines,
+.classify-preview-rows,
+.classify-bulk-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.classify-saved li,
+.classify-split-lines li,
+.classify-preview-rows li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* -------- 一覧 (7.5) -------- */
+
+.classify-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+}
+
+.classify-transactions {
+  width: 100%;
+  min-width: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--fs-sm);
+}
+
+.classify-transactions th,
+.classify-transactions td {
+  min-width: 0;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.classify-transactions th {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+  text-align: left;
+}
+
+.classify-transactions th:nth-child(1) {
+  width: 44px;
+}
+
+.classify-transactions th:nth-child(2) {
+  width: 13%;
+}
+
+.classify-transactions th:nth-child(5) {
+  width: 15%;
+}
+
+.classify-transactions th:nth-child(7) {
+  width: 13%;
+}
+
+.classify-transactions :is(th, td):nth-child(2),
+.classify-transactions :is(th, td):nth-child(5) {
+  white-space: nowrap;
+}
+
+.classify-transactions :is(th, td):nth-child(7) {
+  white-space: normal;
+}
+
+.classify-transactions :is(th, td):nth-child(5),
+.classify-transactions :is(th, td):nth-child(7) {
+  text-align: right;
+}
+
+.classify-transactions td .btn.linklike {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.classify-table tbody tr {
+  cursor: pointer;
+}
+
+.classify-table tbody tr.is-open {
+  background: var(--row-hover);
+}
+
+.classify-confidence.is-review {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.classify-confidence {
+  white-space: nowrap;
+}
+
+.classify-review-flag {
+  display: block;
+  margin-inline-start: 4px;
+  font-size: 0.75rem;
+  color: var(--warn);
+}
+
+.classify-pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* -------- 編集・通知 (7.6・7.7) -------- */
+
+.classify-unsaved {
+  color: var(--warn);
+  font-size: 0.8rem;
+}
+
+.classify-edit-basic {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.classify-edit-basic dt {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+
+.classify-edit-basic dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.classify-quick-row,
+.classify-edit-actions,
+.classify-saved-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.classify-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.classify-notice.is-ok {
+  background: var(--good-soft);
+}
+
+.classify-notice.is-ng {
+  background: var(--warn-soft);
+}
+
+.classify-split-sum.is-ok {
+  color: var(--good);
+}
+
+.classify-split-sum.is-ng {
+  color: var(--danger);
+}
+
+.classify-history li,
+.classify-rules li,
+.classify-preview-rows li,
+.classify-split-lines li > * {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* -------- 一括操作バー (7.8) -------- */
+
+.classify-bulk-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+/* -------- 共通シェル込みで本文が狭い幅 (7.2・7.12) -------- */
+
+/*
+ * 1024〜1199px は常設 220px サイドバーとページ余白を引くと、本文は 740〜915px。
+ * 1024px の参照画像どおり3面を保ち、入力欄を読める左右幅を固定して一覧へ残りを渡す。
+ * 一覧は固定レイアウトで7列をセル内折返しにするため、ページ幅を押し広げない。
+ */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .classify-body {
+    grid-template-columns: 150px minmax(0, 1fr) 200px;
+    gap: 10px;
+  }
+
+  .classify-filters,
+  .classify-edit {
+    padding: 8px;
+  }
+
+  .classify-transactions {
+    font-size: var(--fs-2xs);
+  }
+
+  .classify-transactions th,
+  .classify-transactions td {
+    padding: 4px;
+  }
+
+  .classify-transactions .th-sort {
+    gap: 2px;
+    padding-inline: 2px;
+    font-size: inherit;
+  }
+
+  .classify-filters-head h2,
+  .classify-edit-head h2,
+  .classify-table-head h2 {
+    font-size: var(--fs-lg);
+  }
+}
+
+/* -------- 狭い画面 (7.12) -------- */
+
+@media (max-width: 1023px) {
+  .classify-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .classify-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .classify-main {
+    order: 1;
+  }
+
+  .classify-side {
+    position: static;
+    order: 2;
+  }
+
+  .classify-filters {
+    order: 3;
+  }
+
+  .classify-lower {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  /* 小さい画面では表の情報量を削らず、表自身だけを横へ送る。ページ幅は増やさない。 */
+  .classify-transactions {
+    min-width: 680px;
+  }
+}

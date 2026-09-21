@@ -151,6 +151,33 @@ export interface Rule {
   big?: string | null;
   mid?: string | null;
   owner?: Owner | null;
+  /**
+   * 正規化済みの取引先キー(normalizeVendorKey の結果)。
+   * キーワード一致に取引先一致を重ねる絞り込みで、一致すると提案の信頼度が上がる。
+   */
+  payee?: string | null;
+  /** all=一致する明細すべて / unconfirmed=未整理の明細だけ。既定は all。 */
+  scope?: RuleScope;
+  /** 分割の型。持つルールは仕分けではなく内訳の作成を行う。 */
+  splitTemplate?: SplitTemplate | null;
+}
+
+export type RuleScope = 'all' | 'unconfirmed';
+
+/** 分割の型の1行。fixed は金額固定、remainder は残り全部。 */
+export interface SplitTemplateLine {
+  kind: 'fixed' | 'remainder';
+  /** kind='fixed' のときだけ意味を持つ正の整数 */
+  amount?: number;
+  cls: Cls;
+  big?: string;
+  mid?: string;
+  owner?: Owner;
+  memo?: string;
+}
+
+export interface SplitTemplate {
+  lines: SplitTemplateLine[];
 }
 
 /**
@@ -191,7 +218,21 @@ export interface TxEdit {
   origin?: 'manual' | 'vendor_memory' | null;
   /** origin=vendor_memory のときの正規化済み取引先キー。 */
   originKey?: string | null;
+  /**
+   * 支払方法の手動上書き。null/未指定は明細から判定した値に従う。
+   * 'unknown' を保存値にしないのは、それが「判定できなかった」という
+   * 導出結果であって、利用者が選べる答えではないためである。
+   */
+  paymentMethod?: PaymentMethodOverride | null;
+  /**
+   * 保存した値が、そのときの提案と全一致していたか(1/0)。サーバだけが書く。
+   * 列が無かった時期の行は null で、完了か手動変更かを判定できない。
+   */
+  matchedProposal?: number | null;
 }
+
+/** 利用者が選べる支払方法。導出専用の 'unknown' を含まない。 */
+export type PaymentMethodOverride = 'cash' | 'card' | 'account';
 
 /** freee仕訳1行 */
 export interface FreeeDeal {

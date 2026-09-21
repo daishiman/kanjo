@@ -4,33 +4,25 @@
   "status": "pass",
   "output": ".dev-graph/render/index.html",
   "scope": "all",
-  "graph_revision": 1,
+  "graph_revision": 4,
   "counts": {
-    "nodes": 16,
-    "edges": 12,
+    "nodes": 23,
+    "edges": 21,
     "feature_progress": {
-      "feat-diagnosis-screen": {
+      "feat-classify-screen": {
         "done": 0,
         "total": 13
       }
     }
   },
   "registration": {
-    "feature_package_id": "feature-package/feat-diagnosis-screen",
+    "feature_package_id": "feature-package/feat-classify-screen",
+    "path": ".dev-graph/plans/feature-package-feat-classify-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:13faf94a21513a4fa3b49d5ee9e526e0ad84bf3e469ca60c900fb479d3be08e6",
-    "receipt": ".dev-graph/receipts/register-feat-diagnosis-screen.json"
+    "source_digest": "sha256:7c218fe0d853660e36f0514a16a73caf263ddd8dfe8c20e45ab7eb46dd88d6ce"
   },
-  "digests": {
-    "input_sha256": "374837456c5851fc438fcc97e31e25308d7fd524425f77dacb4351bb5245a3fb",
-    "output_sha256": "8e2df757e555fb7fcaddb9df159f419b636686fd57739af5ebcc7f339c33a171"
-  },
-  "zero_dependency": {
-    "external_script_count": 0,
-    "external_link_count": 0,
-    "external_url_count": 0,
-    "svg_count": 1,
-    "inline_script_count": 1
-  }
+  "input_sha256": "8e286b2edd96fafae112aa7bff02fc99d164e1dc93f404fa39db5bc46b86cc46",
+  "output_sha256": "fbdd639cf0f9f4f19e3465ceba44448ea15a98d2ba5bbc7c0dea7a95011d4ad5",
+  "rendered_at": "2026-09-19T15:08:58Z"
 }

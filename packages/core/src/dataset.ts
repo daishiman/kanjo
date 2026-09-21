@@ -202,6 +202,9 @@ export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
         big?: string | null;
         mid?: string | null;
         owner?: Owner | null;
+        payee?: string | null;
+        scope?: Rule['scope'];
+        splitTemplate?: Rule['splitTemplate'];
       }>
     ).map((r) => ({
       k: r.k ?? r.keyword ?? '',
@@ -209,6 +212,9 @@ export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
       big: r.big ?? null,
       mid: r.mid ?? null,
       owner: normalizeOwner(r.owner),
+      payee: r.payee ?? null,
+      scope: r.scope === 'unconfirmed' ? 'unconfirmed' : 'all',
+      splitTemplate: r.splitTemplate ?? null,
     })) as Rule[];
   }
   // 新形式 edits を優先。HTML版の overrides({id: cls}) は cls だけの編集として取り込む

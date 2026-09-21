@@ -30,6 +30,7 @@ import {
   matchSubVendor,
   normalizeAccount,
   normalizeOwner,
+  parseSplitTemplate,
   projectAccountingDataset,
   recomputeClassification,
   subVendorDefs,
@@ -201,6 +202,9 @@ export const ruleFromRow = (r: typeof s.rules.$inferSelect): Rule => ({
   big: r.categoryMajor ?? null,
   mid: r.categoryMid ?? null,
   owner: r.owner ?? null,
+  payee: r.payee ?? null,
+  scope: r.scope ?? 'all',
+  splitTemplate: parseSplitTemplate(r.splitTemplateJson),
 });
 
 /** vendor_memoryのDB行をcoreの純粋resolverへ渡す唯一の投影。 */
@@ -252,19 +256,28 @@ export const splitFromRow = (r: typeof s.txSplits.$inferSelect): TxSplit => ({
 /** @deprecated tx_edits の列投影は tx-edit-codec が正本。既存callerの名前だけ保つ。 */
 export const editFromRow = txEditFromRow;
 
-/** 編集が空(全属性 null)なら行ごと消す */
-export const editIsEmpty = (e: TxEdit): boolean => !e.cls && !e.big && !e.mid && !e.owner && !e.inst;
+/**
+ * 編集が空(全属性 null)なら行ごと消す。
+ *
+ * メモと支払方法もここで数える。数えないと「メモだけ書いて保存」が
+ * 空の編集と見なされ、書いた直後に行ごと消える(0046 以前の取りこぼし)。
+ */
+export const editIsEmpty = (e: TxEdit): boolean =>
+  !e.cls && !e.big && !e.mid && !e.owner && !e.inst && !e.note && !e.paymentMethod;
 
-export async function upsertEdit(
+/**
+ * tx_edits の 1 行を書き換える文の並び。1 明細ぶんがこの配列 1 つに収まるので、
+ * 一括保存は「明細の境界で batch を切る」を配列の連結だけで守れる。
+ */
+export function editWriteQueries(
   db: Db,
   userId: string,
   txId: string,
   e: TxEdit,
-  options: { disagreeOriginKey?: string | null } = {},
-): Promise<void> {
+  options: { disagreeOriginKey?: string | null; now?: string } = {},
+): DbBatchQuery[] {
+  const now = options.now ?? new Date().toISOString();
   const remove = db.delete(s.txEdits).where(and(eq(s.txEdits.userId, userId), eq(s.txEdits.txId, txId)));
-  const invalidate = invalidateJsonSnapshotQuery(db, userId, 'tx_edits');
-  const now = new Date().toISOString();
   const disagreement = options.disagreeOriginKey
     ? db
         .update(s.vendorMemory)
@@ -273,16 +286,35 @@ export async function upsertEdit(
           and(eq(s.vendorMemory.userId, userId), eq(s.vendorMemory.vendorKey, options.disagreeOriginKey)),
         )
     : null;
-  if (editIsEmpty(e)) {
-    await db.batch([remove, ...(disagreement ? [disagreement] : []), invalidate]);
-  } else {
-    await db.batch([
-      remove,
-      db.insert(s.txEdits).values(txEditInsertValues(userId, txId, e, now)),
-      ...(disagreement ? [disagreement] : []),
-      invalidate,
-    ]);
-  }
+  return [
+    remove,
+    ...(editIsEmpty(e) ? [] : [db.insert(s.txEdits).values(txEditInsertValues(userId, txId, e, now))]),
+    ...(disagreement ? [disagreement] : []),
+  ];
+}
+
+/**
+ * 文の配列を batch へ渡せる形にする。drizzle の batch は「1 文以上」をタプルで要求するが、
+ * 組み立て側は連結で作るので配列にならざるを得ない。空配列を渡す呼び手は先に弾く。
+ */
+export function toBatch(queries: DbBatchQuery[]): DbBatchQueries {
+  if (queries.length === 0) throw new Error('batch requires at least one statement');
+  return queries as unknown as DbBatchQueries;
+}
+
+export async function upsertEdit(
+  db: Db,
+  userId: string,
+  txId: string,
+  e: TxEdit,
+  options: { disagreeOriginKey?: string | null } = {},
+): Promise<void> {
+  await db.batch(
+    toBatch([
+      ...editWriteQueries(db, userId, txId, e, options),
+      invalidateJsonSnapshotQuery(db, userId, 'tx_edits'),
+    ]),
+  );
 }
 
 export async function replaceEdits(db: Db, userId: string, edits: Record<string, TxEdit>): Promise<void> {
@@ -564,7 +596,8 @@ const aggregateAmounts = (data: Dataset): Map<string, number> =>
 
 type BackupSnapshotRow = {
   source: string;
-  id: number | null;
+  /** sourceごとの汎用枠。editでは0046のpayment_methodを運ぶ。 */
+  id: number | string | null;
   rank: number | null;
   amount: number | null;
   v1: string | null;
@@ -721,12 +754,12 @@ SELECT 'mf', id, NULL, amount,
 FROM mf_transactions WHERE user_id = ?
 UNION ALL
 SELECT 'rule', id, sort_order, NULL,
-       keyword, cls, category_major, category_mid, owner, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       keyword, cls, category_major, category_mid, owner, payee, scope, split_template_json, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM rules WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
-SELECT 'edit', NULL, NULL, NULL,
+SELECT 'edit', payment_method, matched_proposal, NULL,
        tx_id, cls, category_major, category_mid, owner, base_major, base_mid, note, updated_at,
        base_cls, base_owner, stable_key, CAST(fingerprint_version AS TEXT), base_known, institution
 FROM tx_edits WHERE user_id = ?
@@ -849,7 +882,7 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     )
     .sort((a, b) => a.m.localeCompare(b.m) || a.d.localeCompare(b.d) || a.id.localeCompare(b.id));
   const ruleRows = bySource('rule').sort(
-    (a, b) => (a.rank ?? 0) - (b.rank ?? 0) || (a.id ?? 0) - (b.id ?? 0),
+    (a, b) => (a.rank ?? 0) - (b.rank ?? 0) || Number(a.id ?? 0) - Number(b.id ?? 0),
   );
   const rules = ruleRows.length
     ? ruleRows.map(
@@ -859,6 +892,9 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
           big: row.v3,
           mid: row.v4,
           owner: normalizeOwner(row.v5),
+          payee: row.v6,
+          scope: row.v7 === 'unconfirmed' ? 'unconfirmed' : 'all',
+          splitTemplate: parseSplitTemplate(row.v8),
         }),
       )
     : [...DEFAULT_RULES];
@@ -884,6 +920,9 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
       baseKnown: row.v14 == null ? undefined : Number(row.v14),
       // 0035 の口座の振替。base を持たないので、値そのものだけを運ぶ
       inst: row.v15,
+      // 0046。editで未使用だった汎用id/rank枠に載せ、snapshotの列数を増やさない
+      paymentMethod: row.id === 'cash' || row.id === 'card' || row.id === 'account' ? row.id : null,
+      matchedProposal: row.rank == null ? null : Number(row.rank),
     };
   }
   const institutionOwners: Dataset['institutionOwners'] = {};
@@ -892,9 +931,9 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     if (owner) institutionOwners[row.v1 ?? ''] = owner;
   }
   const vendors = bySource('vendor')
-    .sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0) || (a.id ?? 0) - (b.id ?? 0))
+    .sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0) || Number(a.id ?? 0) - Number(b.id ?? 0))
     .map((row) => ({
-      id: row.id ?? 0,
+      id: Number(row.id ?? 0),
       name: row.v1 ?? '',
       aliases: parseStringArray(row.v2 ?? '[]'),
       accounts: parseStringArray(row.v3 ?? '[]'),
@@ -913,7 +952,7 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
   const cashEntries = bySource('cash')
     .map(
       (row): CashEntry => ({
-        id: row.id ?? 0,
+        id: Number(row.id ?? 0),
         date: row.v1 ?? '',
         month: row.v2 ?? '',
         side: row.v3 === 'biz' ? 'biz' : 'per',
@@ -1599,7 +1638,9 @@ export async function planRecomputeFromDeals(
   return { data, normalizedDealUpdates };
 }
 
-type DbBatchQueries = Parameters<Db['batch']>[0];
+export type DbBatchQueries = Parameters<Db['batch']>[0];
+/** batch へ渡す文 1 つ。空配列を許すので、明細ごとの文を連結してから batch へ渡せる */
+export type DbBatchQuery = DbBatchQueries[number];
 
 /** 集計キャッシュ全件入れ替えを他の正本mutationと同じbatchへ組み込む。 */
 export function aggregateReplacementQueries(db: Db, userId: string, data: Dataset): DbBatchQueries {

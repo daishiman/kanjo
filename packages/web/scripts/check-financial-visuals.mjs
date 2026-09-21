@@ -12,23 +12,13 @@ import { viewportsByLabel } from './viewports.mjs';
 const BASE_URL = process.env.KANJO_VISUAL_BASE_URL ?? 'http://127.0.0.1:4175';
 const VISUAL_SCOPE = process.env.KANJO_VISUAL_SCOPE ?? 'all';
 const PERFORMANCE_GATE = process.env.KANJO_PERFORMANCE_GATE === '1';
+const TRACE_INTERACTIONS = process.env.KANJO_VISUAL_TRACE === '1';
+const VIEWPORT_LABELS = (
+  process.env.KANJO_VISUAL_VIEWPORTS ??
+  '320,360,375,390,641,768,900,1023,1024,1280,1600,1908,zoom200,rail-zoom200'
+).split(',');
 // 実ルートは高さを1000で揃えて測る(縦は検査対象ではない)ため、幅とzoomだけ使う。
-const VIEWPORTS = viewportsByLabel([
-  '320',
-  '360',
-  '375',
-  '390',
-  '641',
-  '768',
-  '900',
-  '1023',
-  '1024',
-  '1280',
-  '1600',
-  '1908',
-  'zoom200',
-  'rail-zoom200',
-]);
+const VIEWPORTS = viewportsByLabel(VIEWPORT_LABELS);
 const OUTPUT_DIR = process.env.KANJO_VISUAL_OUTPUT_DIR ?? join(tmpdir(), 'kanjo-financial-review');
 const months = Array.from({ length: 20 }, (_, index) => {
   const date = new Date(Date.UTC(2025, index, 1));
@@ -1316,8 +1306,7 @@ try {
     throw new Error(`${label} の描画待ちがタイムアウトしました: ${body}`);
   };
   const mouseClick = async (selector, label) => {
-    const point = JSON.parse(
-      await evaluate(`JSON.stringify((() => {
+    const probe = await evaluate(`(async () => {
         const node = document.querySelector(${JSON.stringify(selector)});
         if (!node) return null;
         node.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
@@ -1328,24 +1317,48 @@ try {
           if (targetBox.left < scrollBox.left) scroller.scrollLeft -= scrollBox.left - targetBox.left + 8;
           if (targetBox.right > scrollBox.right) scroller.scrollLeft += targetBox.right - scrollBox.right + 8;
         }
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
         const clickSurface = node.querySelector('.recon-control-indicator') ?? node;
         const box = clickSurface.getBoundingClientRect();
-        return box.width > 0 && box.height > 0
-          ? { x: box.left + box.width / 2, y: box.top + box.height / 2 }
-          : null;
-      })())`),
-    );
-    if (!point) throw new Error(`${label} の実クリック対象が見つかりません: ${selector}`);
+        if (box.width <= 0 || box.height <= 0) return null;
+        const scrollBox = scroller?.getBoundingClientRect();
+        const visible = {
+          left: Math.max(box.left, scrollBox?.left ?? 0, 0),
+          right: Math.min(box.right, scrollBox?.right ?? innerWidth, innerWidth),
+          top: Math.max(box.top, scrollBox?.top ?? 0, 0),
+          bottom: Math.min(box.bottom, scrollBox?.bottom ?? innerHeight, innerHeight),
+        };
+        if (visible.right <= visible.left || visible.bottom <= visible.top) return null;
+        const point = {
+          x: visible.left + (visible.right - visible.left) / 2,
+          y: visible.top + (visible.bottom - visible.top) / 2,
+        };
+        const hit = document.elementFromPoint(point.x, point.y);
+        return {
+          point,
+          target: { tag: node.tagName, className: node.className, text: node.textContent?.trim() },
+          box: { left: box.left, right: box.right, top: box.top, bottom: box.bottom },
+          hit: hit ? { tag: hit.tagName, className: hit.className, text: hit.textContent?.trim() } : null,
+          hitWithinTarget: Boolean(hit && (hit === node || node.contains(hit))),
+        };
+      })()`);
+    if (!probe) throw new Error(`${label} の実クリック対象が見つかりません: ${selector}`);
+    if (TRACE_INTERACTIONS) console.log(`${label} click probe ${JSON.stringify(probe)}`);
+    if (!probe.hitWithinTarget)
+      throw new Error(`${label} のクリック位置が対象外です: ${JSON.stringify(probe)}`);
+    const { point } = probe;
     await send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
     await send('Input.dispatchMouseEvent', {
       type: 'mousePressed',
       button: 'left',
+      buttons: 1,
       clickCount: 1,
       ...point,
     });
     await send('Input.dispatchMouseEvent', {
       type: 'mouseReleased',
       button: 'left',
+      buttons: 0,
       clickCount: 1,
       ...point,
     });
@@ -1705,7 +1718,10 @@ try {
               deltaX: 240,
               deltaY: 0,
             });
-            await sleep(100);
+            await waitFor(
+              "Number(document.querySelector('.recon-table-scroll')?.scrollLeft ?? 0) > 0",
+              `${tag} Reconciliation 横ホイール`,
+            );
           }
           const horizontalScrollWorked =
             !scrollProbe?.overflow ||

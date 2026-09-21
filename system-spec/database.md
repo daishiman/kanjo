@@ -3,7 +3,7 @@ status: confirmed
 category: database
 aggregate: 確定
 spec_cells: [database.web, database.mobile, database.tablet, database.desktop-windows, database.desktop-linux, database.desktop-macos]
-serves_goals: [G2, G4]
+serves_goals: [G2, G4, G5]
 ---
 
 # データベース (database)
@@ -15,12 +15,12 @@ serves_goals: [G2, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-household-database-web-004。裏付け質疑 (`qa_refs`): `qa-household-database-web-evidence-001`, `qa-household-database-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、データベースでは端末内に家計の集計や名義ラベルを複製する SQLite を持つか、その同期の衝突をどう解くかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、データベースではタブレット端末でのオフライン閲覧のために期間分の台帳を端末へ持つかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存先と暗号化の方式を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存の権限 (ユーザーディレクトリの扱い) を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、データベースではネイティブ版のローカル保存とキーチェーンでの鍵管理を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-classify-database-web-001。裏付け質疑 (`qa_refs`): `qa-classify-database-web-evidence-001`, `qa-classify-database-web-002`, `qa-classify-database-web-003`, `qa-classify-decision-006` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G4, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、データベースでは端末内に明細と下書きを持つ SQLite の同期をどう設計するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、データベースではオフライン閲覧のため期間分の明細を端末へどこまで持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存先と暗号化の方式をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存の権限をどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、データベースではネイティブ版のローカル保存とキーチェーンでの鍵管理をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G2, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | owner_labels の読み書きを settings の route に 1 か所だけ置く形へ反映した。読み取りは利用者の 4 行以下を 1 回で取り、欠けた名義は既定の表示名で補う。更新は 4 行の upsert をまとめて行い、途中で失敗したときに一部だけ変わらないようにする。家計の集計は既存の明細・判定・除外の表からの読み取りだけで作り、新しい索引も追加しない。 |
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration を追加のみにすることで、巻き戻しが表を使わないことだけで済む形へ反映した。既存の名義列 (institution_owners・rules.owner・tx_edits.owner・tx_splits.owner) を 1 行も書き換えないため、行の書き換えで Deploy が止まった過去の復旧手順が要らない。runtimeSchemaGuard の必須表に owner_labels を加え、migration を適用する前の Worker が新しい経路を中途半端に動かさないようにする。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 明細仕分けの D1 では、変更履歴を UPDATE しない追記のみの表にし、利用者と明細と時刻の索引で編集パネルの新しい順の表示を 1 回の読取りで返せる形へ反映した。保存フィルタの条件は JSON 1 列に入れ、絞り込みの項目が増えても列を足さない。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | 明細仕分けの D1 では、追加のみの migration 1 本に留めて Migrate の失敗時に行の巻き戻しが要らない形へ反映した。取引の削除と取消は既存の /data/deletions と /data/undo を使い、履歴にも削除と取消の行を残して復元後の状態を辿れるようにした。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,43 +37,67 @@ serves_goals: [G2, G4]
 
 ### Web (web)
 
-- 資するゴール: G2, G4
+- 資するゴール: G2, G4, G5
 
-#### 主たる接地根拠: `qa-household-database-web-004`
-
-**問**
-
-家計収支画面のために D1 のスキーマをどう変えるか。
-
-**答**
-
-名義の表示名を保存する owner_labels 表だけを追加する (追加のみの migration。次の空き番号は実装時に origin/main を fetch して確定する)。列は user_id・owner (CHECK で business / spouse / family / unset)・label (長さの上限を CHECK で守る。具体値は qa-household-database-web-003 (agent 推定) を参照)・updated_at、主キーは (user_id, owner)。行が無い名義は既定の表示名 (本人 / パートナー / 子ども / その他) を使い、初期データを投入しない。名義の内部値と既存表 (institution_owners・rules.owner・tx_edits.owner・tx_splits.owner) の行は 1 行も書き換えない (利用者決定 qa-household-decision-002)。家計の集計値は保存せず要求のたびに導出する。振替の対推定のために相手口座カラムを足さない (qa-household-decision-003)。runtimeSchemaGuard の必須表へ owner_labels を加える。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-database-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-database-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
-
-#### 裏付け質疑: `qa-household-database-web-evidence-001`
+#### 主たる接地根拠: `qa-classify-database-web-001`
 
 **問**
 
-database 章の裏付けとして、名義と振替の保存形について何を観測したか。
+明細仕分けのために D1 のスキーマをどう変えるか。
 
 **答**
 
-名義の内部値は packages/core/src/types.ts:114-147 の OWNER_VALUES (business / spouse / family) と導出値 unset で、表示名 OWNER_LABEL (事業 / 妻 / 家族 / 未設定) はコードに固定されている。D1 では institution_owners、rules.owner、tx_edits.owner (migrations/0009)、tx_splits.owner (migrations/0035) がいずれも CHECK で 3 値に固定されている。振替は migrations/0022 の mf_transactions.is_transfer で、相手口座の列は無い。最新の migration は 0042_total_cashflow_operations_and_exclusion_reason.sql である。
+追加のみの migration (新表・新カラム) とし、行を書き換える migration は作らない (qa-classify-decision-004 と U8 の C3)。保存したフィルタを名前付きで保存する新しい表、明細の変更履歴 (いつ・どの項目が・変更前後・どの由来 自動提案 / 手動 / ルール / 一括保存 / 分割 / 削除 / 取消 で変わったか) を追記のみで残す新しい表を設ける。ルールには取引先・適用範囲 (一致する明細すべて / 未確定の明細だけ)・分割の型 (固定額の行と残額の行) を持たせる列を追加する。支払方法を編集パネルで直せるよう、明細の手当て (tx_edits) に支払方法の上書きの列を追加し、値が無い明細は従来どおり機関名から導く。下書きは D1 に置かない。すべての表は利用者で区切る。本番反映は既存の Deploy / Migrate の手順とゲートに従う。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-18T11:33:59Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T13:24:40Z)
 
-#### 裏付け質疑: `qa-household-database-web-003`
+#### 裏付け質疑: `qa-classify-database-web-evidence-001`
 
 **問**
 
-web の家計収支画面で、利用者が決めていない owner_labels の表示名の長さ制約 を何にするか。
+データベース 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。
 
 **答**
 
-表示名は前後の空白を除いて 1〜20 文字とし、D1 の CHECK 制約でも長さを守る。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。
+最新の migration は migrations/0045_owner_labels.sql。明細の手当ては tx_edits (note 列 200 字を含む)、分割は tx_splits (migrations/0035)、ルールは rules 表、取引先の決め事は vendor_memory 表にある。保存したフィルタと変更履歴の表は無い。支払方法の上書きの列はどこにも無い。証憑の表と R2 の保存は #42 (462dd9d) で全廃済み。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-18T12:02:30Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現行実装 (main 0003cb4) の読取りによる観測。 / 回答時刻: 2026-09-19T13:24:40Z)
+
+#### 裏付け質疑: `qa-classify-database-web-002`
+
+**問**
+
+web の明細仕分け画面で、データベース について利用者が決めていない具体値を何にするか。
+
+**答**
+
+migration は migrations/0046_classify_workbench.sql の 1 本とし、実装時に origin/main を fetch して番号の空きを確かめる。表は saved_filters (id・user_id・name 1〜40 字・query_json 2000 字以内・created_at・updated_at、(user_id, name) で一意、利用者あたり 20 件まで) と tx_history (id・user_id・tx_id・changed_at・field・before_value・after_value・source を CHECK で auto / manual / rule / bulk / split / delete / undo・op_id、索引 (user_id, tx_id, changed_at))。rules には payee (NULL 可)・scope (CHECK で all / unconfirmed、既定 all)・split_template_json (NULL 可) を、tx_edits には payment_method (CHECK で cash / card / account、NULL 可) を追加する。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent の推定 (利用者未確認) / 回答時刻: 2026-09-19T13:24:40Z)
+
+#### 裏付け質疑: `qa-classify-database-web-003`
+
+**問**
+
+提案どおりの確定と提案と異なる確定 (qa-classify-decision-006) を、後から提案が変わっても区分が揺れないようにどこへ残すか。
+
+**答**
+
+明細の手当て (tx_edits) に、利用者が確定したときに提案と一致していたかを表す列を追加のみの migration で足す。値が無い既存の手入力の明細は手動変更として扱う。行を書き換える migration は作らない。 これは agent の推定で、利用者は未確認である。決定 006 の保存先は利用者が指定していないため、実装で決定論を保つために置いた。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent-inference (qa-classify-decision-006 の実装上の帰結) / 回答時刻: 2026-09-19T13:40:10Z)
+
+#### 裏付け質疑: `qa-classify-decision-006`
+
+**問**
+
+一覧や編集パネルで明細を『確定』したとき、どの区分に移すか。
+
+**答**
+
+提案どおりなら完了 (推奨)。提案をそのまま受け入れたものは完了、区分・カテゴリ・所有者のどれかを提案と違う値にしたものは手動変更。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し) / 回答時刻: 2026-09-19T13:40:10Z)
 
 ## To-Be / Delta
 
@@ -81,33 +105,34 @@ web の家計収支画面で、利用者が決めていない owner_labels の�
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 家計の集計を core の純関数 1 か所に集め、総収支の台帳 (totalCashflowLedger) を正本にする。総収入・総支出・純収支と月平均・年換算、事業と個人の分解 (和が家計全体に一致)、前年同期間との比較 (前年に欠けた月があれば比較不能として null)、月別の収入・支出・純収支と前年系列、生活費カテゴリ 6 区分の集計と構成比・前年差、名義別の収入と前年差を同じ関数から算出し、GET /api/household をこの形へ拡張する。総収支画面の『総合』と家計画面の『家計全体』が同じ期間で同じ数字になることをテストで固定する。
-- **G4**: 名義を『本人 / パートナー / 子ども / その他』で扱えるようにする。内部値 (business / spouse / family と未設定) は変えず、名義ラベル表を追加する追加のみの migration と、表示名の取得・更新 API を設ける。初期表示名は business→本人、spouse→パートナー、family→子ども、未設定→その他。『名義ラベルを編集』から表示名だけを変更でき、家計画面・設定画面・明細画面の名義表示がすべてこの表示名を参照する。更新 API は既存の authGuard・パスワード変更フェンス・スキーマガード・変更系フェンスの内側に置き、入力は zod で長さと文字種を検証する。
+- **G2**: 分類ステータスと提案を core の純関数 1 か所に集める。各明細を 未整理 (利用者・ルール・MF 中項目のどれもまだ決めていない明細。提案の有無と信頼度は問わない) / 手動変更 (利用者が提案と異なる値で確定した明細。提案が無いまま利用者が決めた明細と、この変更より前の手入力の明細を含む) / 完了 (利用者が提案どおりに確定した明細と、ルール・MF 中項目が決めた明細) の 3 区分に排他で振り分け、和が全件に一致する。要確認は区分ではなく未整理の内訳で、提案の信頼度が 80% 未満・提案どうしの衝突・区分と名義の矛盾のいずれかがある未整理の明細を数える。ナビのバッジは未整理の件数、月次クローズの『仕分け』は同じ判定の未整理から照合側で数える明細を除いた件数とし (現行の clsSrc=既定 と同じ意味)、同じ関数から導かれることをテストで固定する。提案カテゴリ・信頼度・根拠の文は recommendationFor を拡張し、過去の同取引先・ルール・MF 中項目のどの由来にも決定論の信頼度を付け、/transactions の応答にも載せる。外部の LLM は呼ばず、表示は『自動提案』とする。
+- **G4**: 『この条件をルールにする』で取引先・キーワード・適用範囲 (一致する明細すべて / 未確定の明細だけ) を選んでルールを作り、作成前に該当する明細と適用後の仕訳 (カテゴリ・分割の内訳) の一覧と件数をプレビューで確かめてから適用できるようにする。分割の内容もルールにでき、固定額の行と残額の行で同じ条件の明細を同じ形に分ける。該当する既存のルールと、そのルールの対象件数を編集パネルに示す。手動変更した明細はルールで上書きしない。
+- **G5**: 仕分けの作業状態を失わない。保存したフィルタは D1 に新しい表を追加のみの migration で設け、名前付きで保存・呼出・削除できる。取引の履歴は D1 に明細の変更履歴表を追加のみで設け、いつ・何が (区分・カテゴリ・所有者・支払方法・メモ・分割)・どの由来 (自動提案 / 手動 / ルール / 一括保存) で変わったかを残し、編集パネルに新しい順で出す。編集パネルの下書きは端末の localStorage に明細単位で自動保存し、最終保存時刻を表示し、保存に成功したら消し、次回に『下書きを復元』できる。未保存のまま離れるときは確認する。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | 家計の数字が総収支画面と一致し、等式が閉じる。 | core の単体テストで、同じ Dataset と期間に対し家計全体の総収入・総支出・純収支が totalCashflowLedger の総合と toBe で一致し、事業 + 個人 = 家計全体が全月で成り立ち、前年欠損月があるとき前年差が null になる。 |
-| O4 | 名義ラベルの編集が安全に保存され全画面に反映される。 | API 統合テストで、未認証 401・変更系フェンス違反の拒否・長さ超過と制御文字の 400・正常更新の 200 と再取得での反映を確認し、migration が既存行を 1 行も書き換えないことを検査する。 |
+| O2 | 未整理・手動変更・完了の件数が排他で閉じ、要確認が未整理の内訳に収まり、他画面と一致する。 | core の単体テストで、同じ Dataset と期間に対し 未整理 + 手動変更 + 完了 = 全件、各明細がちょうど 1 区分に入り、要確認 ⊆ 未整理、未整理の明細で信頼度 80% の境界 (79 は要確認・80 は要確認でない) と衝突・矛盾の各規則、提案どおりの確定は完了・提案と異なる確定は手動変更になることが固定され、ナビのバッジと月次クローズの『仕分け』の件数が同じ関数から出る。 |
+| O4 | ルールのプレビューと適用結果が一致する。 | core の単体テストで、プレビューが列挙した明細と件数が、適用後に実際に変わった明細と一致し、手動変更の明細が変わらず、分割ルールの各行の和が元の金額に一致する。 |
+| O5 | 作業状態が失われない。 | API 統合テストで保存フィルタの作成・一覧・削除と、各変更経路で履歴が 1 件ずつ残ることを確かめ、migration が既存行を 1 行も書き換えないことを検査する。DOM テストで下書きの自動保存・復元・保存成功での消去・離脱確認を確かめる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I3**: core に household-summary (仮称) を新設し、totalCashflowLedger の行集合から家計全体・事業・個人の総額と月別系列、前年比較、生活費 6 区分、名義別収入を 1 か所で算出する。旧 household() の独自定義は置き換える。
-- **I4**: 生活費 6 区分 (住居費 / 食費 / 光熱費 / 教育費 / 交通費 / その他) と MF 大項目の対応表を core に 1 か所だけ置き、docs に同じ表を載せる。
-- **I6**: owner_labels 表と GET / PUT の表示名 API、名義ラベル編集ダイアログを作り、家計・設定・明細の名義表示を表示名の取得関数 1 つへ寄せる。
+- **I2**: core に分類ステータス判定 (仮称 classifyStatus) を新設し、3 区分の排他判定と要確認の内訳・件数集計を 1 か所で行い、サイドバーのバッジと月次クローズの『仕分け』もここを参照させる。
+- **I3**: recommendationFor を拡張し、ルール・MF 中項目由来にも決定論の信頼度を付け、根拠の文を由来ごとに整え、/transactions の各行に提案・信頼度・根拠・ステータスを載せる。
+- **I5**: ルールに取引先・適用範囲・分割の型 (固定額の行と残額の行) を持たせる追加のみの migration と、作成前プレビュー・適用 API を設ける。
+- **I6**: 保存フィルタ表と明細の変更履歴表を追加のみで設け、全変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。
+- **I7**: 編集パネルの下書きを localStorage に明細単位で自動保存し、保存時刻の表示・復元・保存成功での消去・未保存の離脱確認を行う。
 
 ### 本章に効く確定意思決定
 
-- **dec-household-figure-source**: 画像の数値が算術で閉じない欄をどう扱うか。収入・支出を正本に差を計算するか、画像の純収支を正本にして前年の総支出を調整するか。
-  - 採択: 収入・支出を正本に差を計算する (−¥80,000) (`opt-compute-from-income-expense`)
-  - 目的適合: G2 の『数字は台帳の行から作る』と一致し、どの欄も算術で閉じる。見た目の数値は一部画像と変わる。
-- **dec-household-ledger-source**: 家計収支の数字を何から作るか。総収支画面の台帳を正本にするか、現行の household() を拡張するか。
-  - 採択: 総収支の台帳を正本にする (`opt-ledger-source`)
-  - 目的適合: G2 の『家計の集計を 1 か所に集め、総収支と同じ行から作る』に直接答える。総収支の総合と家計全体が同じ行集合から出るため、両画面の数字が一致する。
-- **dec-household-owner-model**: 名義を『本人 / パートナー / 子ども / その他』で扱うとき、内部値を移行するか、内部値を残して表示名だけを編集可能にするか。
-  - 採択: 内部値は残し表示名を編集可能にする (`opt-owner-display-label`)
-  - 目的適合: G4 の表示名の要件を満たし、既存の business / spouse / family / unset を使う規則・明細を壊さない。
+- **dec-classify-confidence-source**: 一覧の信頼度と自動提案をどう算出するか。
+  - 採択: 既存規則の拡張・外部送信なし (`opt-deterministic`)
+  - 目的適合: G2 の決定論と『取込データは外部送信しません』の約束に一致する。
+- **dec-classify-state-storage**: 保存したフィルタ・下書き・取引の履歴の保存先をどうするか。
+  - 採択: フィルタと履歴は D1、下書きは端末 (`opt-d1-and-local`)
+  - 目的適合: 共有と監査が要るものは D1、頻繁に変わる下書きは端末に置き G5 を満たす。
 
 ## 適用された設計知識
 
@@ -115,9 +140,9 @@ web の家計収支画面で、利用者が決めていない owner_labels の�
 
 ### 本章での適用
 
-DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、名義ラベルだけ表を足す判断に適用した。家計の集計値・前年比・構成比・振替の対は、どれも既存の明細と判定から導出できるので保存しない。一方で名義の表示名 (本人 / パートナー / 子ども / その他) は利用者が決める状態であり、導出できないので owner_labels 表として持つ。名義の内部値 (business / spouse / family / unset) は institution_owners・rules・tx_edits・tx_splits の CHECK 制約に固定された識別子なので変えず、表示名だけを別の表に分ける。行が無いときは既定の表示名で補い、初期データの投入も既存行の書き換えも行わない。
+Schema evolution の card (expand のみで contract しない) を明細仕分けに適用した。ルールの新しい列は NULL 可か既定値付きにして既存のルールが今までどおり動くようにし、支払方法の上書きも NULL なら従来の導出に落ちる。こうして C3 の『既存行の書き換え 0 件』を migration 1 本で守る。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-18T11:37:52Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T13:24:40Z)
 
 ### Domain-Driven Design — deep knowledge card
 
@@ -164,4 +189,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-18T11:39:30Z | 2026-09-18T11:39:30Z |
+| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-19T13:26:35Z | 2026-09-19T13:26:35Z |
