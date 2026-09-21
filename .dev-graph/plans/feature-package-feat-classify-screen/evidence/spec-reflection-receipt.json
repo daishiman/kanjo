@@ -1,0 +1,272 @@
+{
+  "graph_node_id": "SYS-CLASSIFY-P12",
+  "beads_epic": "kanjo-d6m",
+  "dev_graph_node": "feat-classify-screen",
+  "title": "仕様・設計への反映の受領書",
+  "recorded_at": "2026-09-21T12:47:15Z",
+  "verdict": "impact_present_and_reflected",
+  "judgement": "本変更は明細仕分けの状態判定 (未仕分け・手動・完了) を core の 1 か所へ集約し、一覧のページング・一括保存・保存フィルタ・ルールの事前適用・削除と取消という新しい API と、saved_filters / tx_history の 2 表を加えるため、仕様・設計に影響がある。影響分は計画時に正規フロー (system-spec-harness → dev-graph register-package) で反映済みで、最終レビューでは反映漏れを検出しなかった。最終レビュー時点の追加反映は main 取り込みに伴う 2 件のみ: (1) migration 番号を 0046 から 0047 へ繰り上げ (先行 merge の #64 が 0046 を取得)、(2) システム仕様の直下を明細仕分けの章に入れ替え、決算書画面の章を archive へ退避。どちらも意味の変更ではなく、番号と世代の付け替えである。",
+  "flow": [
+    {
+      "step": 1,
+      "channel": "system-spec-harness",
+      "skills": [
+        "run-system-spec-elicit",
+        "run-system-spec-doc-fetch",
+        "run-system-spec-compile"
+      ],
+      "result": "明細仕分けサイクルの foundation と 10 章を確定。未収集 0・全確定セルに basis 宣言あり。"
+    },
+    {
+      "step": 2,
+      "channel": "dev-graph run-dev-graph-system-spec → run-dev-graph-decompose → run-system-dev-plan → register-package",
+      "result": "spec-classify-screen・arch-classify-* 8 件・feat-classify-screen と exact-13 package SYS-CLASSIFY-P01..P13 を登録 (applied_count=13 / expected_count=13)。"
+    },
+    {
+      "step": 3,
+      "channel": "bd-bridge.py (Beads projection)",
+      "result": "epic kanjo-d6m と子 .1〜.13 を投影。blocks 辺の parity は confirmed。"
+    },
+    {
+      "step": 4,
+      "channel": "git merge origin/main の衝突解決",
+      "result": "migration を 0047 へ git mv し schema-guard.ts の EXPECTED_D1_MIGRATION を追従。システム仕様の直下は明細仕分けを現行世代とし、決算書画面の章を archive/2026-09-21-statements-screen/ へ退避。graph.json の arch-statements-* 8 件の source_path を退避先へ付け替え。"
+    },
+    {
+      "step": 5,
+      "channel": "render-graph-html.py",
+      "result": ".dev-graph/state/graph.json (23 node / 21 edge) から index.html を再生成し、receipt の input/output digest と一致することを確認。"
+    }
+  ],
+  "reflected_artifacts": [
+    {
+      "path": "system-spec/spec-state.json",
+      "kind": "spec-state",
+      "change": "modified",
+      "digest": "b440d823f7181dba056057d68e601591ebc0c86e42aecf13a7f9f958539e675b",
+      "note": "明細仕分けサイクルの foundation (U1『取り込んだ明細を未仕分け・手動・完了のどれかへ 1 画面で決着させる』) と 10 カテゴリ×6 platform の全セルを確定。未収集 0。"
+    },
+    {
+      "path": "system-spec/00-requirements-definition.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "8a88ee3cc3feb83f4dcd522da3c4df4db5678f4b22cf3799b07eaba607f8d1bb"
+    },
+    {
+      "path": "system-spec/ui-ux.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "7afdc6ecbca54a0a7aeb3e4498bc6a9cbe6b98c8f58cd8f1c18ca364ec711f62",
+      "note": "3 区分の見せ方・一括操作・履歴の読み方を確定。"
+    },
+    {
+      "path": "system-spec/frontend.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "331f13c5d50b4b0807e4b39c944536f191fe4680ef2fc901e924c804a0c8ec4c",
+      "note": "pages/classify/ への分解と下書き保存の置き場所を確定。"
+    },
+    {
+      "path": "system-spec/backend.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "28297c3d03be9cf9a1f52e5d03cb310b2ca3291534bb4e2591ba22da81ed9035",
+      "note": "一覧のページング・一括保存・ルール事前適用・削除と取消の契約を確定。"
+    },
+    {
+      "path": "system-spec/database.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "64a5feecbecad51c781e6e8fcf07d055304f0a93cba019ee29d5586aa3be8aba",
+      "note": "saved_filters と tx_history の新設、rules と tx_edits への列追加を確定。本文の migration 番号は着手時点の予定値 (0046) のまま。実体は 0047 (下記 open_items 参照)。"
+    },
+    {
+      "path": "system-spec/auth.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "0380be1d0882724cbfb1302956f76a9aeb05544ee6c9dfb8f71fa2fb42f9c186"
+    },
+    {
+      "path": "system-spec/security.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "9d1fbf27441cf7ee74f85d419f4611beeda5aac386765a3f669b0a939c1508d6"
+    },
+    {
+      "path": "system-spec/infrastructure.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "6de2efee9fda877fe65cd1545eba12549dbf0d9e7d9797f186235936a5ef4027"
+    },
+    {
+      "path": "system-spec/maintenance-ops.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "5b8f24c0344ea95abaf6eba3e8a983caa814090f7de068bb89e433cc4fcb38ee"
+    },
+    {
+      "path": "system-spec/index.md",
+      "kind": "specification",
+      "change": "modified",
+      "digest": "061616593b25f10fb2614766c430b3a29a0afe10615adb41231c751a861182a9"
+    },
+    {
+      "path": "system-spec/archive/2026-09-21-statements-screen/",
+      "kind": "specification-archive",
+      "change": "added",
+      "note": "前サイクル (決算書画面・PR #64) の章を退避。README.md 以外は取り込み時点の main と同一。"
+    },
+    {
+      "path": "specs/spec-classify-screen.md",
+      "kind": "specification",
+      "change": "added",
+      "digest": "130c742e5025db63f2a0c81a5e28a772d67a86a660b8e436c66cebc82a8648c1",
+      "note": "FR・受入条件・API 契約・データモデル。migration 参照を 0047 へ更新。"
+    },
+    {
+      "path": "architecture/classify-ui-ux.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "8c5c2541406d969c575a794eb76c5cdd4938e1dbe75ab89913887c238ae0e62f"
+    },
+    {
+      "path": "architecture/classify-frontend.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "dbc05fc8b831ce1ddf37b1e27f7a7d9c740f993ea97ad273dd68989c4530ecd3"
+    },
+    {
+      "path": "architecture/classify-backend.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "c7c3bdfaa20c2915fa7dbfe2bebc26cb4f87bf2d122d211b72f21125b10daa90"
+    },
+    {
+      "path": "architecture/classify-database.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "408f4512fbf8f05b45e08d297026cd826ca83de441630fc83f120846134eb746"
+    },
+    {
+      "path": "architecture/classify-auth.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "31871b7efe8a1a448ea1b13ba51fe3eb5f5820e6f2b7b94e781d53f614cf9767"
+    },
+    {
+      "path": "architecture/classify-security.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "2f399571f0236e037e0f6b6a0bae6aef9aa2b221ab62fe8fad58c06c2ec5fda1"
+    },
+    {
+      "path": "architecture/classify-infrastructure.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "bc1b4529f2186599ed2269f34c4a8c3dcec1463282e48a0b9a300257ab4acdcc"
+    },
+    {
+      "path": "architecture/classify-maintenance-ops.md",
+      "kind": "architecture",
+      "change": "added",
+      "digest": "bd3bdda860b4e7ca0ba185198106bcc9a118b3e1862f12a07698b4b3fd889a48"
+    },
+    {
+      "path": "architecture/graph.json",
+      "kind": "projection",
+      "change": "modified",
+      "note": "arch-classify-* 8 件と feat-classify-screen / spec-classify-screen / SYS-CLASSIFY-P01..P13 を追加。main 取り込みで arch-statements-* 8 件の source_path を退避先へ付け替え (内容同一のため digest は据え置き)。check-graph-lineage は 126 ノードすべて一致、孤児 0。"
+    },
+    {
+      "path": "features/feat-classify-screen.md",
+      "kind": "feature",
+      "change": "added",
+      "digest": "e33a8819ae807a51e2907f85bff7d45759689773a959e8ebe3fc7376f8ab0539"
+    },
+    {
+      "path": "features/feat-classify-screen.context.json",
+      "kind": "feature-context",
+      "change": "added",
+      "digest": "103b13e5771e7f6deb41e1443e6f779a62af0078566c4c618d4282fbd5a2d661",
+      "note": "計画時点で凍結。migration 番号は予定値 0046 のまま。"
+    },
+    {
+      "path": "tasks/feat-classify-screen/",
+      "kind": "task",
+      "change": "added",
+      "note": "SYS-CLASSIFY-P01..P13 の 13 仕様書。p05/p12/p13 の migration 参照を 0047 へ更新。"
+    },
+    {
+      "path": "docs/classify-screen/design-decisions.md",
+      "kind": "document",
+      "change": "added",
+      "digest": "c2c0a86669e13dc733b6739a63c315ffada84a9021c756161a3a7f7c118913fb",
+      "note": "設計判断と工程記録。12.1.1 に main 取り込みで決めたこと (migration 0046→0047、章の退避) を追記。"
+    },
+    {
+      "path": "migrations/0047_classify_workbench.sql",
+      "kind": "migration",
+      "change": "added",
+      "digest": "da32e63dbb2992426a733470566f345a1925f9239a353b77d3a212d28642043f",
+      "note": "saved_filters・tx_history の新設と rules/tx_edits への列追加。追加のみ、行の書き換え 0 文。"
+    }
+  ],
+  "gates": [
+    {
+      "gate": "pnpm lint (biome / check-graph-lineage / security:content ほか)",
+      "result": "pass",
+      "note": "check-graph-lineage は 126 ノードすべて一致、孤児 0"
+    },
+    {
+      "gate": "pnpm typecheck",
+      "result": "pass",
+      "note": "core / api / web"
+    },
+    {
+      "gate": "vitest (api) src/deletion-schema.test.ts",
+      "result": "pass",
+      "note": "23 tests。EXPECTED_D1_MIGRATION=0047_classify_workbench.sql を固定"
+    },
+    {
+      "gate": "vitest (core)",
+      "result": "pass",
+      "note": "55 files / 911 passed・6 skipped・1 todo (merge 前の実測)"
+    },
+    {
+      "gate": "vitest (api) 全体",
+      "result": "pass",
+      "note": "56 files / 729 passed (merge 前の実測)"
+    },
+    {
+      "gate": "vitest (web)",
+      "result": "pass",
+      "note": "82 files / 786 passed (merge 前の実測)"
+    },
+    {
+      "gate": "js-budget",
+      "result": "pass",
+      "note": "102.84 KiB of 110 KiB"
+    }
+  ],
+  "open_items": [
+    {
+      "id": "OI-1",
+      "item": "system-spec/spec-state.json と system-spec/database.md の migration 番号が着手時点の予定値 0046 のまま。",
+      "reason": "両ファイルは確定章として guard-confirmed-chapter-overwrite により保護され、架け替えには R4-reopen → compile → graph 再打刻の正規フローが要る。本文は『実装時に origin/main を fetch して番号の空きを確かめる』と自ら断っており、予定値として誤りではない。実体が 0047 であることは specs/ ・architecture/ ・tasks/ ・docs/ ・migrations/ 側で一致している。",
+      "next": "次サイクルの elicit で該当セルを reopen する際にあわせて実値へ更新する。"
+    },
+    {
+      "id": "OI-2",
+      "item": ".dev-graph/plans/ と features/*.context.json の migration 番号も 0046 のまま。",
+      "reason": "promotion 済み package の digest で凍結されており、書き換えると staging-manifest の canonical digest と不一致になる。着手時点の予定番号として正しい。",
+      "next": "対応不要。実体は migrations/0047_classify_workbench.sql。"
+    },
+    {
+      "id": "OI-3",
+      "item": "SYS-CLASSIFY-P13 (kanjo-d6m.13) の受入条件『単一 PR での配信と migration 適用』は merge 後にしか満たせない。",
+      "reason": "draft PR 作成までが本作業の範囲。",
+      "next": "PR merge 後に CI の Migrate → Deploy が緑であることを確認して close する。"
+    }
+  ],
+  "status": "pass"
+}

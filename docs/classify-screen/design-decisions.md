@@ -128,9 +128,9 @@ zod の許可リスト（BR-14）: メモ 200 字 ／ フィルタ名 1〜40 字
 
 一致判定の持ち主（BR-09）はサーバ。クライアントが送った一致の値は信用しない。比べるのは cls・大項目・中項目・所有者の 4 値で、メモ・支払方法・機関名だけの保存はフラグを変えない。
 
-### 2.4 migration 0046 は追加のみ
+### 2.4 migration 0047 は追加のみ
 
-`migrations/0046_classify_workbench.sql`。`saved_filters` と `tx_history` の新設、索引の追加、`rules`（payee・scope・split_template_json）と `tx_edits`（payment_method・matched_proposal）への列追加だけ。UPDATE・DELETE・表の作り直しは 0 文（AT-20）。
+`migrations/0047_classify_workbench.sql`。`saved_filters` と `tx_history` の新設、索引の追加、`rules`（payee・scope・split_template_json）と `tx_edits`（payment_method・matched_proposal）への列追加だけ。UPDATE・DELETE・表の作り直しは 0 文（AT-20）。
 
 - `rules.scope` の `DEFAULT 'all'` により既存ルールは今までどおり働く。
 - `tx_edits.matched_proposal` の既存行は NULL のままで、BR-01 (c) により手動変更として扱う。
@@ -530,13 +530,18 @@ S1〜S6 と AT-01〜AT-21 の各項目から、証跡ファイルと再現コマ
 
 ## 第12章 配信とクローズアウト（P13）
 
-**この phase は commit の手前で止めてある。** 依頼で commit・push・PR 作成を禁じられているため、「PR が default branch へ merge され CI の Migrate と Deploy が緑」という受入条件は、この作業では満たせない。満たせないものを満たしたと書かないために、ここには**配信の直前までに揃った物と、配信のときに確かめること**を残す。
+**この phase は draft PR の作成までを行い、merge は行わない。** 「PR が default branch へ merge され CI の Migrate と Deploy が緑」という受入条件は merge の後にしか満たせない。満たせないものを満たしたと書かないために、ここには**配信の直前までに揃った物と、配信のときに確かめること**を残す。
 
 ### 12.1 いま揃っているもの
 
-- 実装・テスト・docs の変更はすべて worktree 上にある（commit 前）。
+- 実装・テスト・docs の変更は commit 済みで、`devgraph/feat-classify-screen` から `main` へ draft PR を出している。
 - ローカルの lint・typecheck・build・preview smoke と集中テストは緑。最新の全体 test は上記の実描画 gate の失敗により未達。
-- migration は `0046_classify_workbench.sql` の 1 本で、追加のみ。既存行を書き換えないことは `rules-preview-apply.integration.test.ts:403` が固定する。
+- migration は `0047_classify_workbench.sql` の 1 本で、追加のみ。既存行を書き換えないことは `rules-preview-apply.integration.test.ts:403` が固定する。
+
+### 12.1.1 `main` 取り込みで決めたこと
+
+1. **migration 番号を 0046 から 0047 へ繰り上げた。** 本サイクルの着手時は 0046 が空きだったが、先に merge された決算書画面（#64）が `0046_liability_status.sql` を取った。`git mv` でファイル名を変え、`schema-guard.ts` の `EXPECTED_D1_MIGRATION` と実装側ドキュメントの参照を揃えた。計画時点の受領書（`.dev-graph/plans/`・`features/*.context.json`・システム仕様の各章）は digest で凍結されているため 0046 のまま残す。これらは**着手時点の予定番号**であり、実体は 0047 である。
+2. **システム仕様の直下は明細仕分けの章を現行世代にした。** `system-spec/` は現行 1 世代の運用で、上位概念を 1 つだけ置く。決算書画面の章は `system-spec/archive/2026-09-21-statements-screen/` へ丸ごと退避し、`architecture/graph.json` の `arch-statements-*` 8 件の `source_lineage.source_path` を退避先へ付け替えた。内容は同一なので digest は打ち直していない。どちらの章も消していない。
 
 ### 12.2 配信のときに確かめること
 

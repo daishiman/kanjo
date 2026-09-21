@@ -80,7 +80,7 @@ serves_goals: ["G2", "G4", "G5"]
 
 | Container/Component | Responsibility | Interface | Data owner | Deployment unit |
 |---|---|---|---|---|
-| `migrations/0046_classify_workbench.sql` (番号は予定) | 2 表の作成と既存 2 表への列の追加を 1 本で行う | SQL | migrations | D1 |
+| `migrations/0047_classify_workbench.sql` | 2 表の作成と既存 2 表への列の追加を 1 本で行う | SQL | migrations | D1 |
 | `saved_filters` | 利用者ごとの名前付き絞り込み条件 | Drizzle | packages/api | D1 |
 | `tx_history` | 明細の変更 1 件ごとの記録 (項目・変更前・変更後・経路・操作 id) | Drizzle | packages/api | D1 |
 | `rules` (列の追加) | 取引先・適用範囲・分割の型 | Drizzle | packages/api | D1 |
@@ -135,7 +135,7 @@ serves_goals: ["G2", "G4", "G5"]
 
 #### Migration and recovery
 
-- Migration/backfill/dual-write/cutover: migration は追加のみの 1 本 (`0046_classify_workbench.sql` を予定、agent 推定・利用者未確認、根拠 qa-classify-database-web-002)。着手時に `origin/main` を fetch して番号の衝突を確かめる。埋め戻しはせず、NULL を既存の意味 (支払方法は導出値、提案一致は手動変更) で読む。`schema-guard.ts` の `EXPECTED_D1_MIGRATION` を同じ変更で上げる。
+- Migration/backfill/dual-write/cutover: migration は追加のみの 1 本 (`0047_classify_workbench.sql`、agent 推定・利用者未確認、根拠 qa-classify-database-web-002)。番号は `main` 取り込み時に 0046 が先に使われていたため 0047 へ繰り上げた。埋め戻しはせず、NULL を既存の意味 (支払方法は導出値、提案一致は手動変更) で読む。`schema-guard.ts` の `EXPECTED_D1_MIGRATION` を同じ変更で上げる。
 - Backup/restore/RPO/RTO: 既存の D1 の Time Travel と JSON バックアップに従う。追加の RPO/RTO を定めない。
 - Rollback/forward-fix: 追加表と追加列は直前版の Worker に無視されるため、Worker を戻すだけで足りる。schema は戻さず forward-fix にする。
 

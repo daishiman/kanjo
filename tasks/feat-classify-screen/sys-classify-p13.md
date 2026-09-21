@@ -103,7 +103,7 @@ implementation_readiness: {"checked_at": "2026-09-19T14:35:00Z", "missing_sectio
 - docs/classify-screen/design-decisions.md
 - Consumed artifacts:
 - packages/web/src/pages/classify/
-- migrations/0046_classify_workbench.sql
+- migrations/0047_classify_workbench.sql
 - Write scope/touches:
 - docs/classify-screen/design-decisions.md
 

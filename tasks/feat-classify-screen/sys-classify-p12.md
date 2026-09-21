@@ -105,7 +105,7 @@ Constraint: 本 task は Q-1（vendor_memory 分岐）・Q-3（ルール適用�
 - docs/data-schema.md
 - docs/ui-decisions.md
 - Consumed artifacts:
-- migrations/0046_classify_workbench.sql
+- migrations/0047_classify_workbench.sql
 - packages/core/src/classify-status.ts
 - Write scope/touches:
 - docs/classify-screen/design-decisions.md

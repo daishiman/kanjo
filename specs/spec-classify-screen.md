@@ -98,7 +98,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
   - ルールのプレビュー API と適用 API を新設する（分割ルールを含む）。
   - 保存フィルタ API と取引の履歴 API を新設する。
   - `POST /api/rules` と `PUT /api/transactions/:txId/edit` を拡張する。
-- migration `0046_classify_workbench.sql`（追加のみ）。
+- migration `0047_classify_workbench.sql`（追加のみ）。
 - 下書きの端末保存と復元、未保存のまま離れるときの確認、削除の『元に戻す』。
 - docs への規則の明記と回帰テスト。
   - docs は `docs/data-schema.md` と `docs/ui-decisions.md`。
@@ -1384,7 +1384,7 @@ N/A: 単一行の削除。成功後に一覧を無効化する。
 
 ## データモデル
 
-### migration `migrations/0046_classify_workbench.sql`
+### migration `migrations/0047_classify_workbench.sql`
 
 - 追加のみの 1 本（利用者決定 qa-classify-database-web-001）。
 - ファイル名と列の細目は agent 推定・利用者未確認（根拠 qa-classify-database-web-002・003）。
@@ -1392,7 +1392,7 @@ N/A: 単一行の削除。成功後に一覧を無効化する。
 - 既存の行を書き換える文（UPDATE・DELETE・表の作り直し）は入れない。
 
 ```sql
--- 0046_classify_workbench.sql : 明細仕分けの作業状態 (追加のみ)
+-- 0047_classify_workbench.sql : 明細仕分けの作業状態 (追加のみ)
 CREATE TABLE saved_filters (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
@@ -1538,7 +1538,7 @@ N/A: サーバ側に非同期処理は無い。キュー・Cron・Durable Object
 
 ## 互換性・移行・リリース
 
-- DB: `0046_classify_workbench.sql` は追加のみ。
+- DB: `0047_classify_workbench.sql` は追加のみ。
   - 既存の rules は `scope='all'` で、今までどおり働く。
   - 既存の tx_edits は `matched_proposal=NULL` で、手動変更として数える。
   - 行の書き換えは 0 件で、migration 検査で確かめる（O5）。

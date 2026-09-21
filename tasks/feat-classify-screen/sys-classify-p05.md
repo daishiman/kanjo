@@ -23,7 +23,7 @@ created_at: "2026-09-19T14:51:41Z"
 updated_at: "2026-09-19T14:51:41Z"
 depends_on: ["SYS-CLASSIFY-P04"]
 related_nodes: ["arch-classify-auth", "arch-classify-backend", "arch-classify-database", "arch-classify-frontend", "arch-classify-infrastructure", "arch-classify-maintenance-ops", "arch-classify-security", "arch-classify-ui-ux", "spec-classify-screen"]
-resource_scope: ["packages/core/src/classify-status.ts", "packages/core/src/overview.ts", "packages/core/src/types.ts", "packages/core/src/exports.ts", "packages/api/src/routes/classify.ts", "packages/api/src/routes/classify-bulk.ts", "packages/api/src/routes/saved-filters.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/canonical-mutation-fence.ts", "packages/api/src/index.ts", "migrations/0046_classify_workbench.sql", "packages/web/src/api.ts", "packages/web/src/pages/classify/", "packages/web/src/pages/Classify.tsx", "packages/web/src/components/Layout.tsx", "packages/web/src/components/classification-invalidate.ts", "packages/web/src/routeMetadata.ts", "packages/web/src/period.tsx"]
+resource_scope: ["packages/core/src/classify-status.ts", "packages/core/src/overview.ts", "packages/core/src/types.ts", "packages/core/src/exports.ts", "packages/api/src/routes/classify.ts", "packages/api/src/routes/classify-bulk.ts", "packages/api/src/routes/saved-filters.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/canonical-mutation-fence.ts", "packages/api/src/index.ts", "migrations/0047_classify_workbench.sql", "packages/web/src/api.ts", "packages/web/src/pages/classify/", "packages/web/src/pages/Classify.tsx", "packages/web/src/components/Layout.tsx", "packages/web/src/components/classification-invalidate.ts", "packages/web/src/routeMetadata.ts", "packages/web/src/period.tsx"]
 purpose: null
 goal: null
 scope_in: null
@@ -97,7 +97,7 @@ Open risk: saved_filters・tx_history をバックアップ・全削除の対象
 ## Architecture and deploy unit
 
 - Architecture decisions: arch-classify-auth, arch-classify-backend, arch-classify-database, arch-classify-frontend, arch-classify-infrastructure, arch-classify-maintenance-ops, arch-classify-security, arch-classify-ui-ux, spec-classify-screen
-- Deploy unit/environment: web ビルドと Worker と D1 migration（0046_classify_workbench.sql の追加のみ）
+- Deploy unit/environment: web ビルドと Worker と D1 migration（0047_classify_workbench.sql の追加のみ）
 - Compatibility/migration/backfill: saved_filters・tx_history 表の新設と rules・tx_edits への列追加のみ。既存行の書き換えと backfill は 0 件。番号は実装時に origin/main を fetch して確定する
 
 ## 成果物
@@ -107,7 +107,7 @@ Open risk: saved_filters・tx_history をバックアップ・全削除の対象
 - packages/api/src/routes/classify.ts
 - packages/api/src/routes/classify-bulk.ts
 - packages/api/src/routes/saved-filters.ts
-- migrations/0046_classify_workbench.sql
+- migrations/0047_classify_workbench.sql
 - packages/web/src/pages/classify/
 - Consumed artifacts:
 - docs/classify-screen/design-decisions.md
@@ -126,7 +126,7 @@ Open risk: saved_filters・tx_history をバックアップ・全削除の対象
 - packages/api/src/schema-guard.ts
 - packages/api/src/canonical-mutation-fence.ts
 - packages/api/src/index.ts
-- migrations/0046_classify_workbench.sql
+- migrations/0047_classify_workbench.sql
 - packages/web/src/api.ts
 - packages/web/src/pages/classify/
 - packages/web/src/pages/Classify.tsx
@@ -175,7 +175,7 @@ Open risk: saved_filters・tx_history をバックアップ・全削除の対象
 - Required evidence:
 - packages/core/src/classify-status.ts
 - packages/api/src/routes/classify.ts
-- migrations/0046_classify_workbench.sql
+- migrations/0047_classify_workbench.sql
 - packages/web/src/pages/classify/
 
 ## Rollout and rollback
