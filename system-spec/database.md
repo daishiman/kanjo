@@ -3,7 +3,7 @@ status: confirmed
 category: database
 aggregate: 確定
 spec_cells: [database.web, database.mobile, database.tablet, database.desktop-windows, database.desktop-linux, database.desktop-macos]
-serves_goals: [G2, G4]
+serves_goals: [G4, G5]
 ---
 
 # データベース (database)
@@ -15,12 +15,12 @@ serves_goals: [G2, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-household-database-web-004。裏付け質疑 (`qa_refs`): `qa-household-database-web-evidence-001`, `qa-household-database-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、データベースでは端末内に家計の集計や名義ラベルを複製する SQLite を持つか、その同期の衝突をどう解くかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、データベースではタブレット端末でのオフライン閲覧のために期間分の台帳を端末へ持つかを決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存先と暗号化の方式を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存の権限 (ユーザーディレクトリの扱い) を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、データベースではネイティブ版のローカル保存とキーチェーンでの鍵管理を決める必要があった。対象を web のみとする利用者決定 (qa-household-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-statements-decision-007。裏付け質疑 (`qa_refs`): `qa-statements-decision-002`, `qa-statements-database-web-002`, `qa-statements-agent-decisions-001`, `qa-statements-reopen-pass3-001`, `qa-statements-database-web-evidence-001`, `qa-statements-zero-amount-legacy-001`, `qa-statements-migration-0046-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、データベースでは端末内の SQLite と D1 の同期・競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、データベースではタブレットの端末内キャッシュの持ち方と失効を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、データベースでは Windows 版のローカル DB ファイルの置き場所と暗号化を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、データベースでは Linux 版のローカル DB の置き場所と権限を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、データベースでは macOS 版のローカル DB とキーチェーンの使い分けを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G2, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | owner_labels の読み書きを settings の route に 1 か所だけ置く形へ反映した。読み取りは利用者の 4 行以下を 1 回で取り、欠けた名義は既定の表示名で補う。更新は 4 行の upsert をまとめて行い、途中で失敗したときに一部だけ変わらないようにする。家計の集計は既存の明細・判定・除外の表からの読み取りだけで作り、新しい索引も追加しない。 |
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration を追加のみにすることで、巻き戻しが表を使わないことだけで済む形へ反映した。既存の名義列 (institution_owners・rules.owner・tx_edits.owner・tx_splits.owner) を 1 行も書き換えないため、行の書き換えで Deploy が止まった過去の復旧手順が要らない。runtimeSchemaGuard の必須表に owner_labels を加え、migration を適用する前の Worker が新しい経路を中途半端に動かさないようにする。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | balance_entries の読み書きを balances route と statements route に限る形へ反映した。status 列は既定値 'amount' で追加し既存行を書き換えない。未入力を行の不在で表すので、既存の UNIQUE(user_id, month, side, category) がそのまま『1 項目 1 状態』を保証する。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration を追加のみにすることで、Deploy が自動適用判定で止まらない形へ反映した。audit_log の CHECK 拡張に要する表再構築は採らず新表で監査する。実体は 0045_owner_labels.sql と衝突しない migrations/0046_liability_status.sql である。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,43 +37,123 @@ serves_goals: [G2, G4]
 
 ### Web (web)
 
-- 資するゴール: G2, G4
+- 資するゴール: G4, G5
 
-#### 主たる接地根拠: `qa-household-database-web-004`
-
-**問**
-
-家計収支画面のために D1 のスキーマをどう変えるか。
-
-**答**
-
-名義の表示名を保存する owner_labels 表だけを追加する (追加のみの migration。次の空き番号は実装時に origin/main を fetch して確定する)。列は user_id・owner (CHECK で business / spouse / family / unset)・label (長さの上限を CHECK で守る。具体値は qa-household-database-web-003 (agent 推定) を参照)・updated_at、主キーは (user_id, owner)。行が無い名義は既定の表示名 (本人 / パートナー / 子ども / その他) を使い、初期データを投入しない。名義の内部値と既存表 (institution_owners・rules.owner・tx_edits.owner・tx_splits.owner) の行は 1 行も書き換えない (利用者決定 qa-household-decision-002)。家計の集計値は保存せず要求のたびに導出する。振替の対推定のために相手口座カラムを足さない (qa-household-decision-003)。runtimeSchemaGuard の必須表へ owner_labels を加える。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: qa-household-database-web-001 から利用者が決めていない具体値を除いた版。値の範囲は利用者承認 (appr-foundation-household-cashflow-001) と決定 qa-household-decision-001〜007 に収まる。除いた値は qa-household-database-web-003 (agent-inference) に分けた。 / 回答時刻: 2026-09-18T12:14:43Z)
-
-#### 裏付け質疑: `qa-household-database-web-evidence-001`
+#### 主たる接地根拠: `qa-statements-decision-007`
 
 **問**
 
-database 章の裏付けとして、名義と振替の保存形について何を観測したか。
+負債残高の保存・削除の記録 (監査ログ) をどう残しますか？
 
 **答**
 
-名義の内部値は packages/core/src/types.ts:114-147 の OWNER_VALUES (business / spouse / family) と導出値 unset で、表示名 OWNER_LABEL (事業 / 妻 / 家族 / 未設定) はコードに固定されている。D1 では institution_owners、rules.owner、tx_edits.owner (migrations/0009)、tx_splits.owner (migrations/0035) がいずれも CHECK で 3 値に固定されている。振替は migrations/0022 の mf_transactions.is_transfer で、相手口座の列は無い。最新の migration は 0042_total_cashflow_operations_and_exclusion_reason.sql である。
+新表・金額は残さない (推奨)。migration 0045 で liability_audit_log を追加し、誰がいつどの月のどの項目を 保存/0円/未入力 にしたかだけを記録し、金額は残さない。既存 audit_log の CHECK 変更は表の再構築 (Deploy 自動適用で止まる) が要るため避ける。(提示した他の選択肢: 新表・金額も残す / 記録しない)
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-18T11:33:59Z)
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: 新表で金額を残さない決定は有効だが、実 migration は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
 
-#### 裏付け質疑: `qa-household-database-web-003`
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり (2026-09-19T02:30:05Z 提示・02:41:21Z 回答) / 回答時刻: 2026-09-19T02:41:21Z)
+
+#### 裏付け質疑: `qa-statements-decision-002`
 
 **問**
 
-web の家計収支画面で、利用者が決めていない owner_labels の表示名の長さ制約 を何にするか。
+BS の負債入力で、画像の 3 項目 (借入金・未払金・クレジット未払) と既存の『その他の負債』をどう扱うか。
 
 **答**
 
-表示名は前後の空白を除いて 1〜20 文字とし、D1 の CHECK 制約でも長さを守る。 これは agent の推定で、利用者は未確認である。画像と決定 001〜007 のどれにも値が無いため、実装で決定論を保つために置いた。
+3 項目は必須、その他は任意。画像の 3 項目は『未入力 / 0円 / 金額』の選択を必須にし、項目ごとに状態を保存する (migration 0045 で状態列を追加)。その他の負債は任意項目として残す。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様書 specs/spec-household-cashflow-screen.md を書く際に補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-18T12:02:30Z)
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: 状態列と 3 状態の決定は有効だが、実 migration は 0045_owner_labels.sql との衝突を避けた migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案提示あり / 回答時刻: 2026-09-19T01:53:56Z)
+
+#### 裏付け質疑: `qa-statements-database-web-002`
+
+**問**
+
+負債の 3 状態と保存の監査を、どのテーブル変更で持つか。
+
+**答**
+
+migration 0045 で ALTER TABLE balance_entries ADD COLUMN status TEXT NOT NULL DEFAULT 'amount' CHECK (status IN ('zero','amount')) を足し、既存行は金額ありのまま保つ (C4)。『未入力』は行を持たないことで表す。『0円』は status=zero・amount=0 の行。UNIQUE(user_id, month, side, category) は変えない。監査は同じ migration で新表 liability_audit_log (id, user_id, actor_user_id, month, changed_json, occurred_at) を CREATE TABLE で足し、金額は残さず項目ごとの状態遷移と件数だけを残す。既存 audit_log の action は CHECK 制約で閉じており拡張には表の再構築 (INSERT…SELECT と DROP TABLE) が要るが、Deploy の自動適用判定が止めるうえ C4 に反するので採らない。drizzle の schema.ts に列と表を足す。並行サイクルが 0045 を使っていれば実装時に次の番号へ繰り下げる。
+
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: DDL と追加のみの方針は有効だが、実 migration は 0045_owner_labels.sql との衝突を避けた migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: qa-statements-database-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-007 (監査は新表・金額は残さない)・002 (負債=3 項目必須+その他任意) と appr-foundation-statements-001 の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。 / 回答時刻: 2026-09-19T11:41:33Z)
+
+#### 裏付け質疑: `qa-statements-agent-decisions-001`
+
+**問**
+
+pass-3 の差し戻しを直すときに、利用者の決定を具体化するためエージェントが決めた点は何か。
+
+**答**
+
+(a) 行の選択は勘定科目セル内のボタンと aria-pressed で示す (表の行は aria-selected を持てないため)。(b) ページ内ナビは選んだ項目だけに aria-current="location" を付け、スクロール位置で自動更新しない。選択時は節見出し (tabIndex=-1) へフォーカスを移す。(c) ref が期間外・不正なら期間の最終月に丸め、丸めた月を bs.referenceMonth で返し web は URL をその値へ置き換える。(d) CF は原因 3 種 (未仕訳件数・現金口座の欠け {月数, 決済列なし}・科目未設定件数) のどれかが立つときだけ不可にし、決済方法の列が無い場合 (既存 settlementUnknown) は 2 番目の原因に添えて表示する。原因が 1 つも無ければ可 (原因の無い不能表示を出さない)。(e) liability_audit_log の列は id・user_id・actor_user_id・month・changed_json・occurred_at で、changed_json は項目ごとの状態遷移と件数。(f) 画像との差 (負債 KPI の文言と色・ナビの意味論・行の選択・月次表の数値・CF 原因・監査) を spec §8 と docs/ui-decisions.md に記録する。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる具体化 (利用者決定 qa-statements-decision-005〜007 と WAI-ARIA / 既存コードからの導出。利用者への個別確認なし) / 回答時刻: 2026-09-19T11:41:33Z)
+
+#### 裏付け質疑: `qa-statements-reopen-pass3-001`
+
+**問**
+
+決算書画面サイクルの web × 8 セルを再オープンする理由は何か。
+
+**答**
+
+完成度 evaluator の pass-3 (FAIL) の high 指摘 H1: 8 セルの主根拠 qa-statements-<cat>-web-001 は basis=user-decision だが、利用者が代替案を見ずにエージェントが具体化した設計 (監査の新表、ref の丸め、タブの構成、負債 KPI の色の向き、現金 KPI の %) を含む。3 点は利用者に選択肢を示して決定を得た (qa-statements-decision-005〜007、foundation-002)。残りはエージェント判断として qa-statements-agent-decisions-001 に分けた。各セルを reopen し、利用者決定を主根拠に、訂正版の回答 web-002 (agent-inference) を補助根拠として確定し直す。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: エージェントによる再オープン理由の記録 (evaluator 指摘の転記) / 回答時刻: 2026-09-19T11:41:33Z)
+
+#### 裏付け質疑: `qa-statements-database-web-evidence-001`
+
+**問**
+
+database 章の裏付けとして、既存のテーブルと migration の規則について何を観測したか。
+
+**答**
+
+migrations/0026_balance_entries.sql は id・user_id・month・date・side・category・amount・source ('mf' | 'manual')・created_at・updated_at と UNIQUE(user_id, month, side, category)。migrations/0033_audit_log.sql は action を CHECK で閉じ、0034 と 0039 は CHECK を広げるために audit_log_new を作って RENAME する再構築をしている。.github/scripts/plan-auto-migration.mjs は DROP TABLE・DROP COLUMN・DELETE FROM・UPDATE…SET・ALTER TABLE…RENAME を自動適用しない。最新の migration は 0044_diagnosis_action_states.sql。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T02:01:29Z)
+
+#### 裏付け質疑: `qa-statements-zero-amount-legacy-001`
+
+**問**
+
+migration 0045 の適用前に金額 0 で保存された既存の手入力負債行 (status 列の既定値で 'amount' になる) を、画面と集計でどう扱うか。
+
+**答**
+
+(status='amount', amount=0) の組を『0円』(zero) と同じ扱いで表示・完了判定する。現行 UI で 0 を入れて保存した行は利用者が値を入れた項目であり、未入力ではないため。行は書き換えない (C4。UPDATE を含む migration は Deploy の自動適用判定で止まる)。次にその項目が保存されたとき status='zero' で上書きされる。core の契約テストでこの扱いを固定する (specs/spec-statements-screen.md §3.4・§7)。
+
+> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
+> 本文中の記述と食い違う場合は、訂正側が正である。
+>
+> - `2026-09-19T22:35:37Z` — SUPERSEDED NUMBER ONLY: 『状態列の適用前に amount=0 で保存された行』の互換処理は有効だが、状態列を追加する実 migration は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: エージェントによる既存データの扱いの決定 (C4 と G4 から導出。利用者への個別確認なし) / 回答時刻: 2026-09-19T02:18:27Z)
+
+#### 裏付け質疑: `qa-statements-migration-0046-001`
+
+**問**
+
+負債 3 状態の migration 番号は、実際のワークツリーで何番になったか。
+
+**答**
+
+0045_owner_labels.sql が先に存在するため、仕様の衝突時繰り下げ規則を適用し、実体は migrations/0046_liability_status.sql になった。現行の仕様・運用・schema guard・テスト参照は 0046 を使う。0045 という記述は生成済み計画の履歴を除き、現行契約として扱わない。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: migrations/0045_owner_labels.sql と migrations/0046_liability_status.sql のワークツリー観測 / 回答時刻: 2026-09-19T21:52:53Z)
 
 ## To-Be / Delta
 
@@ -81,33 +161,27 @@ web の家計収支画面で、利用者が決めていない owner_labels の�
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 家計の集計を core の純関数 1 か所に集め、総収支の台帳 (totalCashflowLedger) を正本にする。総収入・総支出・純収支と月平均・年換算、事業と個人の分解 (和が家計全体に一致)、前年同期間との比較 (前年に欠けた月があれば比較不能として null)、月別の収入・支出・純収支と前年系列、生活費カテゴリ 6 区分の集計と構成比・前年差、名義別の収入と前年差を同じ関数から算出し、GET /api/household をこの形へ拡張する。総収支画面の『総合』と家計画面の『家計全体』が同じ期間で同じ数字になることをテストで固定する。
-- **G4**: 名義を『本人 / パートナー / 子ども / その他』で扱えるようにする。内部値 (business / spouse / family と未設定) は変えず、名義ラベル表を追加する追加のみの migration と、表示名の取得・更新 API を設ける。初期表示名は business→本人、spouse→パートナー、family→子ども、未設定→その他。『名義ラベルを編集』から表示名だけを変更でき、家計画面・設定画面・明細画面の名義表示がすべてこの表示名を参照する。更新 API は既存の authGuard・パスワード変更フェンス・スキーマガード・変更系フェンスの内側に置き、入力は zod で長さと文字種を検証する。
+- **G4**: 貸借対照表の負債残高を、基準月ごと・項目ごとに『未入力 / 0円 / 金額』の 3 状態で入力・保存できるようにする。借入金・未払金・クレジット未払の 3 項目は状態の選択を必須とし、その他の負債は任意項目として残す。保存済みの値を読み込んで初期表示し、保存は項目単位で上書きして他の項目を消さない。基準月は期間内の任意の月を選べる。入力中の値はブラウザ内に利用者ごとの下書きとして自動保存し保存時刻を示し、リセットで保存済みの値へ戻し、未保存の項目数を画面下部の固定バーに出す。未入力の項目がある月は BS にデータ不足の表示を出し、純資産を出さない。
+- **G5**: 負債の保存経路と画面の安全性を整える。既存の認証・セッション・CSRF 相当の防御 (SameSite=Strict の Cookie と JSON の Content-Type 検証) と取込との直列化を保ったまま、金額の上限、リクエストの大きさの上限、保存操作の監査ログを加える。下書きには利用者の識別子をキーに含め、ログアウトで消す。取込データや下書きを外部へ送らない。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | 家計の数字が総収支画面と一致し、等式が閉じる。 | core の単体テストで、同じ Dataset と期間に対し家計全体の総収入・総支出・純収支が totalCashflowLedger の総合と toBe で一致し、事業 + 個人 = 家計全体が全月で成り立ち、前年欠損月があるとき前年差が null になる。 |
-| O4 | 名義ラベルの編集が安全に保存され全画面に反映される。 | API 統合テストで、未認証 401・変更系フェンス違反の拒否・長さ超過と制御文字の 400・正常更新の 200 と再取得での反映を確認し、migration が既存行を 1 行も書き換えないことを検査する。 |
+| O4 | 負債残高の 3 状態入力が値を失わない。 | API と DOM のテストで、1 項目だけ保存しても他項目の保存値が残り、保存済みの値が初期表示され、『未入力』と『0円』が別々に保存・表示され、必須 3 項目の状態が未選択なら保存できず、下書きの復元・リセット・未保存件数の表示が緑である。 |
+| O5 | 負債の保存経路が入力の上限と監査を持つ。 | API テストで、上限を超える金額と大きすぎる本文が 4xx で拒否され、保存が監査ログに 1 件残り、未認証の保存が拒否されることが緑である。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I3**: core に household-summary (仮称) を新設し、totalCashflowLedger の行集合から家計全体・事業・個人の総額と月別系列、前年比較、生活費 6 区分、名義別収入を 1 か所で算出する。旧 household() の独自定義は置き換える。
-- **I4**: 生活費 6 区分 (住居費 / 食費 / 光熱費 / 教育費 / 交通費 / その他) と MF 大項目の対応表を core に 1 か所だけ置き、docs に同じ表を載せる。
-- **I6**: owner_labels 表と GET / PUT の表示名 API、名義ラベル編集ダイアログを作り、家計・設定・明細の名義表示を表示名の取得関数 1 つへ寄せる。
+- **I6**: 負債入力を基準月の月ピッカーと項目ごとの 3 択 (未入力 / 0円 / 金額を入力) に作り直し、migration 0046 で balance_entries に状態列を足し、PUT を項目単位の upsert にして保存済みの値を読み込む。
+- **I7**: 入力中の負債を localStorage に利用者別のキーで下書き保存し、保存時刻・リセット・未保存件数の固定バーを出し、ログアウトで下書きを消す。
+- **I8**: PUT /api/balances/liabilities に金額の上限と本文の大きさの上限を課し、保存を監査ログへ記録する。
 
 ### 本章に効く確定意思決定
 
-- **dec-household-figure-source**: 画像の数値が算術で閉じない欄をどう扱うか。収入・支出を正本に差を計算するか、画像の純収支を正本にして前年の総支出を調整するか。
-  - 採択: 収入・支出を正本に差を計算する (−¥80,000) (`opt-compute-from-income-expense`)
-  - 目的適合: G2 の『数字は台帳の行から作る』と一致し、どの欄も算術で閉じる。見た目の数値は一部画像と変わる。
-- **dec-household-ledger-source**: 家計収支の数字を何から作るか。総収支画面の台帳を正本にするか、現行の household() を拡張するか。
-  - 採択: 総収支の台帳を正本にする (`opt-ledger-source`)
-  - 目的適合: G2 の『家計の集計を 1 か所に集め、総収支と同じ行から作る』に直接答える。総収支の総合と家計全体が同じ行集合から出るため、両画面の数字が一致する。
-- **dec-household-owner-model**: 名義を『本人 / パートナー / 子ども / その他』で扱うとき、内部値を移行するか、内部値を残して表示名だけを編集可能にするか。
-  - 採択: 内部値は残し表示名を編集可能にする (`opt-owner-display-label`)
-  - 目的適合: G4 の表示名の要件を満たし、既存の business / spouse / family / unset を使う規則・明細を壊さない。
+- **D-statements-draft-storage**: 決算書の負債入力の下書き (『下書きを自動保存しました』) をどこに保存するか
+  - 採択: ブラウザ内 (localStorage に利用者別キー) (`browser-localstorage`)
+  - 目的適合: G4 の『入力中の値をブラウザ内に利用者ごとの下書きとして自動保存』をそのまま満たす。既存の period.tsx と同じ方式。
 
 ## 適用された設計知識
 
@@ -115,9 +189,9 @@ web の家計収支画面で、利用者が決めていない owner_labels の�
 
 ### 本章での適用
 
-DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、名義ラベルだけ表を足す判断に適用した。家計の集計値・前年比・構成比・振替の対は、どれも既存の明細と判定から導出できるので保存しない。一方で名義の表示名 (本人 / パートナー / 子ども / その他) は利用者が決める状態であり、導出できないので owner_labels 表として持つ。名義の内部値 (business / spouse / family / unset) は institution_owners・rules・tx_edits・tx_splits の CHECK 制約に固定された識別子なので変えず、表示名だけを別の表に分ける。行が無いときは既定の表示名で補い、初期データの投入も既存行の書き換えも行わない。
+DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、負債の状態列だけを足す判断に適用した。段階損益・前期比・構成比・CF の原因件数は既存の明細と判定から導出できるので保存しない。一方で負債の『0円』と『未入力』の区別は利用者が決めた事実であり導出できないため、balance_entries に status 列を足し、未入力は行が無いこと、0円は status=zero の行で表す。監査は既存 audit_log の CHECK を再構築せず、状態遷移だけを残す新表 liability_audit_log を足す。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-18T11:37:52Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T02:05:18Z)
 
 ### Domain-Driven Design — deep knowledge card
 
@@ -164,4 +238,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-18T11:39:30Z | 2026-09-18T11:39:30Z |
+| sqlite-alter-table | 2026-06-04 | SQLite (www.sqlite.org) | https://www.sqlite.org/lang_altertable.html | 2026-09-19T02:03:50Z | 2026-09-19T02:03:50Z |

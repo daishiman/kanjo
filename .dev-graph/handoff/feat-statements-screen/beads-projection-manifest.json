@@ -1,0 +1,151 @@
+{
+  "feature": {
+    "graph_node_id": "feat-statements-screen",
+    "title": "決算書画面 (11-statements) の作り直しと段階損益・CF 可否・負債 3 状態の core 単一化",
+    "description": "dev-graph feature projection: features/feat-statements-screen.md",
+    "bd_issue_id": "kanjo-oju"
+  },
+  "children": [
+    {
+      "graph_node_id": "SYS-STMT-P01",
+      "phase_ref": "P01",
+      "parent_feature": "feat-statements-screen",
+      "title": "P01 要件ベースライン確定と受入 O1-O5・S1-S5 の対応表",
+      "description": "dev-graph P01 projection: tasks/feat-statements-screen/sys-stmt-p01.md",
+      "depends_on": [],
+      "bd_issue_id": "kanjo-oju.1"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P02",
+      "phase_ref": "P02",
+      "parent_feature": "feat-statements-screen",
+      "title": "P02 statementsScreen・API 2 経路・migration 0045・部品分割の設計決定の記録",
+      "description": "dev-graph P02 projection: tasks/feat-statements-screen/sys-stmt-p02.md",
+      "depends_on": [
+        "SYS-STMT-P01"
+      ],
+      "bd_issue_id": "kanjo-oju.2"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P03",
+      "phase_ref": "P03",
+      "parent_feature": "feat-statements-screen",
+      "title": "P03 集計・保存・監査・URL の各契約の独立レビュー",
+      "description": "dev-graph P03 projection: tasks/feat-statements-screen/sys-stmt-p03.md",
+      "depends_on": [
+        "SYS-STMT-P02"
+      ],
+      "bd_issue_id": "kanjo-oju.3"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P04",
+      "phase_ref": "P04",
+      "parent_feature": "feat-statements-screen",
+      "title": "P04 検算済みフィクスチャ・境界値・API・DOM の失敗テストの先行作成",
+      "description": "dev-graph P04 projection: tasks/feat-statements-screen/sys-stmt-p04.md",
+      "depends_on": [
+        "SYS-STMT-P03"
+      ],
+      "bd_issue_id": "kanjo-oju.4"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P05",
+      "phase_ref": "P05",
+      "parent_feature": "feat-statements-screen",
+      "title": "P05 core statementsScreen・GET と PUT・migration 0045・決算書画面の実装",
+      "description": "dev-graph P05 projection: tasks/feat-statements-screen/sys-stmt-p05.md",
+      "depends_on": [
+        "SYS-STMT-P04"
+      ],
+      "bd_issue_id": "kanjo-oju.5"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P06",
+      "phase_ref": "P06",
+      "parent_feature": "feat-statements-screen",
+      "title": "P06 テスト実行と緑化",
+      "description": "dev-graph P06 projection: tasks/feat-statements-screen/sys-stmt-p06.md",
+      "depends_on": [
+        "SYS-STMT-P05"
+      ],
+      "bd_issue_id": "kanjo-oju.6"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P07",
+      "phase_ref": "P07",
+      "parent_feature": "feat-statements-screen",
+      "title": "P07 成功基準 S1 から S5 と仕様 §7 の受入の判定",
+      "description": "dev-graph P07 projection: tasks/feat-statements-screen/sys-stmt-p07.md",
+      "depends_on": [
+        "SYS-STMT-P06"
+      ],
+      "bd_issue_id": "kanjo-oju.7"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P08",
+      "phase_ref": "P08",
+      "parent_feature": "feat-statements-screen",
+      "title": "P08 旧画面実装の整理・既存テストの更新・旧 PUT 本文形の撤去",
+      "description": "dev-graph P08 projection: tasks/feat-statements-screen/sys-stmt-p08.md",
+      "depends_on": [
+        "SYS-STMT-P07"
+      ],
+      "bd_issue_id": "kanjo-oju.8"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P09",
+      "phase_ref": "P09",
+      "parent_feature": "feat-statements-screen",
+      "title": "P09 a11y・入力検証・本文上限・監査・CSV・JS 予算の品質保証",
+      "description": "dev-graph P09 projection: tasks/feat-statements-screen/sys-stmt-p09.md",
+      "depends_on": [
+        "SYS-STMT-P08"
+      ],
+      "bd_issue_id": "kanjo-oju.9"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P10",
+      "phase_ref": "P10",
+      "parent_feature": "feat-statements-screen",
+      "title": "P10 独立した最終レビュー",
+      "description": "dev-graph P10 projection: tasks/feat-statements-screen/sys-stmt-p10.md",
+      "depends_on": [
+        "SYS-STMT-P09"
+      ],
+      "bd_issue_id": "kanjo-oju.10"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P11",
+      "phase_ref": "P11",
+      "parent_feature": "feat-statements-screen",
+      "title": "P11 受入と品質の証跡の集約",
+      "description": "dev-graph P11 projection: tasks/feat-statements-screen/sys-stmt-p11.md",
+      "depends_on": [
+        "SYS-STMT-P10"
+      ],
+      "bd_issue_id": "kanjo-oju.11"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P12",
+      "phase_ref": "P12",
+      "parent_feature": "feat-statements-screen",
+      "title": "P12 docs と運用記述の同期",
+      "description": "dev-graph P12 projection: tasks/feat-statements-screen/sys-stmt-p12.md",
+      "depends_on": [
+        "SYS-STMT-P11"
+      ],
+      "bd_issue_id": "kanjo-oju.12"
+    },
+    {
+      "graph_node_id": "SYS-STMT-P13",
+      "phase_ref": "P13",
+      "parent_feature": "feat-statements-screen",
+      "title": "P13 単一 PR での配信と migration 0045 の本番適用",
+      "description": "dev-graph P13 projection: tasks/feat-statements-screen/sys-stmt-p13.md",
+      "depends_on": [
+        "SYS-STMT-P12"
+      ],
+      "bd_issue_id": "kanjo-oju.13"
+    }
+  ]
+}

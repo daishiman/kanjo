@@ -4,97 +4,169 @@
  * 資産はMFの資産推移CSV(取込)から入る。負債はそのCSVに列が無いので、
  * クレジットカードの未払いと借入を月ごとに画面から入れてもらう。
  *
- * 消して入れ直すのは source='manual' の行だけ。取込んだ資産(source='mf')には触らない。
+ * 項目ごとに「未入力 / 0円 / 金額」の 3 状態を持つ (決算書画面, 0046)。
+ * 送られた項目だけを upsert / 削除し、送られていない項目と他の月には触らない。
+ * 以前は月の手入力行を全部消して入れ直していたため、1 項目だけ直すと残りが消えていた。
+ *
+ * 触るのは source='manual' の行だけ。取込んだ行(source='mf')には触らない。
  * 逆に取込側も 'mf' しか消さないので、どちらが先でも相手を壊さない。
  */
 import { zValidator } from '@hono/zod-validator';
-import { LIABILITY_CATEGORIES } from '@kanjo/core';
-import { and, eq } from 'drizzle-orm';
+import {
+  type BalanceRow,
+  LIABILITY_AMOUNT_MAX,
+  LIABILITY_CATEGORIES,
+  statementsBalanceSheet,
+} from '@kanjo/core';
+import { and, eq, inArray } from 'drizzle-orm';
 import { Hono } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
-import type { AuthEnv } from '../auth.js';
+import type { AuthEnv, AuthVariables } from '../auth.js';
 import * as s from '../db/schema.js';
 import { getDb } from '../store.js';
 
-type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
+type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
 
 export const balancesRoute = new Hono<Ctx>();
+
+const category = z.enum(LIABILITY_CATEGORIES);
+
+// 状態ごとに受ける形を分ける。amount は status='amount' のときだけ必須で、それ以外に付いていたら 400
+const lineSchema = z.discriminatedUnion('status', [
+  z.object({ category, status: z.literal('unset') }).strict(),
+  z.object({ category, status: z.literal('zero') }).strict(),
+  z
+    .object({
+      category,
+      status: z.literal('amount'),
+      amount: z.number().int().min(0).max(LIABILITY_AMOUNT_MAX),
+    })
+    .strict(),
+]);
 
 const liabilitiesSchema = z
   .object({
     month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
     lines: z
-      .array(
-        z
-          .object({
-            // 種類は決め打ちの一覧から選ぶ。自由入力だと月ごとに名前が揺れて前月と比べられなくなる
-            category: z.enum(LIABILITY_CATEGORIES as unknown as [string, ...string[]]),
-            amount: z.number().int().nonnegative(),
-          })
-          .strict(),
-      )
-      .max(LIABILITY_CATEGORIES.length),
+      .array(lineSchema)
+      .min(1)
+      .max(LIABILITY_CATEGORIES.length)
+      // 同じ項目が 2 回来たら、どちらが正か決められない。後勝ちにせず送り直してもらう
+      .refine((lines) => new Set(lines.map((l) => l.category)).size === lines.length, {
+        message: '同じ項目が2回含まれています',
+      }),
   })
   .strict();
 
-/**
- * 保存する行を決める。
- *
- * 0円の行は残す。「返し終えた」は分かっている情報で、伏せると
- * 「入力していない月」と区別が付かなくなる(純資産が出せなくなる)。
- * 同じ種類が2回来たら後勝ちにする。UNIQUE制約に当ててエラーにする理由がない。
- */
-const rowsToStore = (
-  lines: ReadonlyArray<{ category: string; amount: number }>,
-): Array<{ category: string; amount: number }> => {
-  const byCategory = new Map<string, number>();
-  for (const line of lines) byCategory.set(line.category, line.amount);
-  // 並びは入力順ではなく決め打ちの一覧順。月をまたいで表の行がずれない
-  return LIABILITY_CATEGORIES.filter((category) => byCategory.has(category)).map((category) => ({
-    category,
-    amount: byCategory.get(category) ?? 0,
-  }));
-};
+type Status = 'unset' | 'zero' | 'amount';
+
+balancesRoute.use(
+  '/balances/*',
+  bodyLimit({
+    maxSize: 8 * 1024,
+    onError: (c) =>
+      c.json({ error: { code: 'payload_too_large', message: 'リクエストが大きすぎます' } }, 413),
+  }),
+);
 
 balancesRoute.put('/balances/liabilities', zValidator('json', liabilitiesSchema), async (c) => {
   const userId = c.get('userId');
+  const actorId = c.get('actor').id;
   const db = getDb(c.env.DB);
   const { month, lines } = c.req.valid('json');
   const now = new Date().toISOString();
 
-  const remove = db
-    .delete(s.balanceEntries)
+  const before = await db
+    .select()
+    .from(s.balanceEntries)
     .where(
       and(
         eq(s.balanceEntries.userId, userId),
         eq(s.balanceEntries.month, month),
         eq(s.balanceEntries.side, 'liability'),
-        eq(s.balanceEntries.source, 'manual'),
+        inArray(
+          s.balanceEntries.category,
+          lines.map((l) => l.category),
+        ),
       ),
     );
-
-  const rows = rowsToStore(lines);
-  if (!rows.length) {
-    await remove;
-    return c.json({ ok: true, stored: 0 });
+  // 同じ項目に取込の行があると、手入力の upsert がそれを上書きしてしまう。黙って潰さず止める
+  if (before.some((r) => r.source === 'mf')) {
+    return c.json(
+      { error: { code: 'liability_owned_by_import', message: '取込で入った負債は画面から変更できません' } },
+      409,
+    );
   }
+  const statusOf = (cat: string): Status => {
+    const row = before.find((r) => r.category === cat);
+    if (!row) return 'unset';
+    return row.status === 'zero' || row.amount === 0 ? 'zero' : 'amount';
+  };
 
-  await db.batch([
-    remove,
-    db.insert(s.balanceEntries).values(
-      rows.map(({ category, amount }) => ({
+  const transitions: Record<string, string> = {};
+  const writes = lines.map((line) => {
+    // 金額 0 を「金額あり」で送られても 0円 として保存する。同じ事実に 2 つの表し方を残さない
+    const next: Status = line.status === 'amount' && line.amount === 0 ? 'zero' : line.status;
+    transitions[line.category] = `${statusOf(line.category)}→${next}`;
+    const key = and(
+      eq(s.balanceEntries.userId, userId),
+      eq(s.balanceEntries.month, month),
+      eq(s.balanceEntries.side, 'liability'),
+      eq(s.balanceEntries.category, line.category),
+      eq(s.balanceEntries.source, 'manual'),
+    );
+    if (next === 'unset') return db.delete(s.balanceEntries).where(key);
+    const amount = next === 'amount' && line.status === 'amount' ? line.amount : 0;
+    return db
+      .insert(s.balanceEntries)
+      .values({
         userId,
         month,
         // 負債は月単位でしか持たない。日付は資産側(CSV)が持っている
         date: `${month}-01`,
-        side: 'liability' as const,
-        category,
+        side: 'liability',
+        category: line.category,
         amount,
-        source: 'manual' as const,
+        source: 'manual',
+        status: next,
         createdAt: now,
         updatedAt: now,
-      })),
-    ),
-  ]);
-  return c.json({ ok: true, stored: rows.length });
+      })
+      .onConflictDoUpdate({
+        target: [
+          s.balanceEntries.userId,
+          s.balanceEntries.month,
+          s.balanceEntries.side,
+          s.balanceEntries.category,
+        ],
+        set: { amount, status: next, source: 'manual', updatedAt: now },
+      });
+  });
+
+  // 監査は同じ batch で書く。金額は残さず、項目ごとの状態遷移と件数だけ
+  const audit = db.insert(s.liabilityAuditLog).values({
+    userId,
+    actorUserId: actorId,
+    month,
+    changedJson: JSON.stringify({ lines: transitions, count: lines.length }),
+    occurredAt: now,
+  });
+  const [first, ...rest] = writes;
+  await db.batch([first, ...rest, audit]);
+
+  const rows = await db
+    .select()
+    .from(s.balanceEntries)
+    .where(and(eq(s.balanceEntries.userId, userId), eq(s.balanceEntries.month, month)));
+  const balances: BalanceRow[] = rows.map((r) => ({
+    month: r.month,
+    date: r.date,
+    side: r.side,
+    category: r.category,
+    amount: r.amount,
+    source: r.source,
+    status: r.status,
+  }));
+  return c.json({ ok: true, bs: statementsBalanceSheet(balances, month) });
 });
