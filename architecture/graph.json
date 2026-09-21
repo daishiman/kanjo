@@ -2538,6 +2538,190 @@
       ]
     },
     {
+      "id": "arch-ai-analysis-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "AI分析 — 依頼・実行中・レポートの 3 段と選択中バーで、依頼から版の比較までを 1 画面に並べる",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "5c6788a52947b35f54ae87183aa1e3e6f17ed9ff5e8ff0b86f3192ca418f7a06",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "AI分析 — Ai.tsx を pages/ai/ へ分割し、core の判定結果を描くだけにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "eba3e33334b9f5c6dcff8e1b78b8fff1804f2f52604edca0382f1a6158f36ef4",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "AI分析 — 依頼の段階を core の純関数 1 か所で導き、キャンセル・再実行・使用するデータの経路を足す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e39b090e33900452ae1d5ce73e97bb80e02c65be0deb210278f19af238dafca4",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "AI分析 — ai_tasks へ出来事の時刻と連番を足す追加のみの migration 0046",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "1a0540e072013253e364b82ad4a3f1e91124019fd5baba6c85772025d47dcbfb",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "AI分析 — 利用者経路はフェンスの内側、エージェント経路は agentGuard 1 か所で 401 に揃える",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "43dfdc557b5f5aaf98b06b941235ed93dba451d3a240fd2721a898a582678f37",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "AI分析 — 固定 4 MiB の request budget で過大転送を止め、集計値だけを外へ出す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8f446762dac8ac8a6d4309890f85c19832143ab42e22e3bc11914f39c88a8831",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "AI分析 — 基盤を変えず Migrate → Deploy の順で列の追加だけを反映する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2dd60db420ad646ddde4503af53e0162b59f324570faa0ddfe547fc7b417fd88",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "AI分析 — 段階の規則を docs/ai-screen/ の表と境界テストで固定し、skill 不変を緑のまま保つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2b3f704b5a4f10f10bf1f37852d1094d0c80cb21fbe1ec9470a3b9fa1f01ee08",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
       "artifact_kind": "architecture",
       "artifact_subtypes": [
         "frontend"
@@ -2719,7 +2903,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/auth.md",
         "source_version": "0.1.14",
         "source_digest": "0380be1d0882724cbfb1302956f76a9aeb05544ee6c9dfb8f71fa2fb42f9c186",
         "imported_at": "2026-09-19T14:03:38Z"
@@ -2742,7 +2926,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/backend.md",
         "source_version": "0.1.14",
         "source_digest": "28297c3d03be9cf9a1f52e5d03cb310b2ca3291534bb4e2591ba22da81ed9035",
         "imported_at": "2026-09-19T14:03:38Z"
@@ -2765,7 +2949,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/database.md",
         "source_version": "0.1.14",
         "source_digest": "64a5feecbecad51c781e6e8fcf07d055304f0a93cba019ee29d5586aa3be8aba",
         "imported_at": "2026-09-19T14:03:38Z"
@@ -2788,7 +2972,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/frontend.md",
         "source_version": "0.1.14",
         "source_digest": "331f13c5d50b4b0807e4b39c944536f191fe4680ef2fc901e924c804a0c8ec4c",
         "imported_at": "2026-09-19T14:03:38Z"
@@ -2811,7 +2995,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/infrastructure.md",
         "source_version": "0.1.14",
         "source_digest": "6de2efee9fda877fe65cd1545eba12549dbf0d9e7d9797f186235936a5ef4027",
         "imported_at": "2026-09-19T14:03:38Z"
@@ -2834,7 +3018,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/maintenance-ops.md",
         "source_version": "0.1.14",
         "source_digest": "5b8f24c0344ea95abaf6eba3e8a983caa814090f7de068bb89e433cc4fcb38ee",
         "imported_at": "2026-09-19T14:03:38Z"
@@ -2857,7 +3041,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/security.md",
         "source_version": "0.1.14",
         "source_digest": "9d1fbf27441cf7ee74f85d419f4611beeda5aac386765a3f669b0a939c1508d6",
         "imported_at": "2026-09-19T14:03:38Z"
@@ -2880,7 +3064,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/ui-ux.md",
         "source_version": "0.1.14",
         "source_digest": "7afdc6ecbca54a0a7aeb3e4498bc6a9cbe6b98c8f58cd8f1c18ca364ec711f62",
         "imported_at": "2026-09-19T14:03:38Z"

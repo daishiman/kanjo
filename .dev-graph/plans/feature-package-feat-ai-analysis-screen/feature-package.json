@@ -1,0 +1,52 @@
+{
+  "feature_package_id": "feature-package/feat-ai-analysis-screen",
+  "parent_feature": "feat-ai-analysis-screen",
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "schema_version": "1.0.0",
+  "source_feature_digest": "sha256:c33d62f4c7298717d49462f442c7b1ce5419b2a673970df2ebbd3643b2fccc4a",
+  "task_count": 13,
+  "task_node_ids": [
+    "SYS-AI-P01",
+    "SYS-AI-P02",
+    "SYS-AI-P03",
+    "SYS-AI-P04",
+    "SYS-AI-P05",
+    "SYS-AI-P06",
+    "SYS-AI-P07",
+    "SYS-AI-P08",
+    "SYS-AI-P09",
+    "SYS-AI-P10",
+    "SYS-AI-P11",
+    "SYS-AI-P12",
+    "SYS-AI-P13"
+  ],
+  "task_spec_paths": [
+    "task-specs/phase-01-requirements.md",
+    "task-specs/phase-02-architecture.md",
+    "task-specs/phase-03-design-review.md",
+    "task-specs/phase-04-test-design.md",
+    "task-specs/phase-05-implementation.md",
+    "task-specs/phase-06-test-run.md",
+    "task-specs/phase-07-acceptance.md",
+    "task-specs/phase-08-refactoring-migration.md",
+    "task-specs/phase-09-quality-assurance.md",
+    "task-specs/phase-10-final-review.md",
+    "task-specs/phase-11-evidence.md",
+    "task-specs/phase-12-documentation-operations.md",
+    "task-specs/phase-13-release-deploy.md"
+  ]
+}

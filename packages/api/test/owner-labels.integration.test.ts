@@ -18,6 +18,7 @@ import { TENANT_ID } from '../src/auth.js';
 import { loginForTest } from '../src/auth.test-support.js';
 import { acquireImportWriter, releaseImportWriter } from '../src/import-lifecycle.js';
 import { app } from '../src/index.js';
+import { splitMigrationStatements } from '../src/migration-test-support.js';
 import { recordTestMigrationHead } from '../src/schema-guard.test-support.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -37,11 +38,7 @@ async function applyMigrations(db: D1Database): Promise<void> {
     .filter((filename) => filename.endsWith('.sql'))
     .sort();
   for (const filename of filenames) {
-    const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-      .replace(/^\s*--.*$/gm, '')
-      .split(';')
-      .map((sql) => sql.trim())
-      .filter(Boolean);
+    const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
     for (const sql of statements) await db.prepare(sql).run();
   }
   await recordTestMigrationHead(db, filenames);

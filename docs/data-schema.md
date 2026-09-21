@@ -224,7 +224,7 @@ MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_
 | `rules` | キーワードルール。`cls`/`category_major`/`category_mid`/`owner` を任意の組み合わせで持てる(いずれか1つ以上) |
 | `institution_owners` | `保有金融機関` → canonical名義(`business`/`spouse`/`family`)。未設定は行を持たず、`unset`は集計時だけ導出 |
 | `category_options` | 候補科目の追加分。`scope`(`biz`=事業/`per`=家計)で系統を持つ(0002 マイグレーション)。取込値由来の候補と合わせて候補一覧になる |
-| `ai_tasks` | AI分析の依頼(0003)。`period_kind`(`month`/`year`)+`period_key`、使い捨てトークンの SHA-256(`token_hash`、原文は保存しない)、`expires_at`(24時間)、`used_at`(結果受信で確定=1回きり)、`report_id` |
+| `ai_tasks` | AI分析の依頼(0003)。`period_kind`(`month`/`year`)+`period_key`、使い捨てトークンの SHA-256(`token_hash`、原文は保存しない)、`expires_at`(24時間)、`used_at`(結果受信で確定=1回きり)、`report_id`。段階と T-番号のための列は 0046 で追加(下の「AI分析の依頼の段階(0046)」) |
 | `ai_reports` | AIから届いた分析レポート(0003)。`body_json` は固定5節(`spend`/`change`/`reduction`/`split`/`subscriptions`)+`dataGaps` を無害化済みのプレーンテキストで保持。明細は含まない(集計値と本文だけ)。`archived_at` は片付け用(0018)で、入れると既定の一覧から外れるだけで本文は消えない |
 | `analysis_settings` | AI分析の統計指標の基準月数(0019)。利用者ごとに1行だけ持ち、`stat_min_months`(3〜24、既定6)を保存する。記帳の正本には触れないため、変更しても集計スナップショットの作り直しは要らない |
 | `overrides` | 旧テーブル。`tx_edits` へ移行済み(読み取りは `tx_edits` のみ) |
@@ -578,3 +578,19 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 保存と同じ D1 batch で 1 件書く(保存が失敗すれば監査も残らない)。
 - 既存の `audit_log` は `action` を CHECK で閉じており、広げるには表の再構築が要る。行を書き換えない方針と Deploy の自動適用判定に合わないため、新表にした。
 - migration 番号は仕様とタスク仕様では 0045 だったが、main で 0045 が `owner_labels` に使われたため 0046 に繰り下げた。
+
+## AI分析の依頼の段階(0048)
+
+`migrations/0048_ai_task_stages.sql` が `ai_tasks` に 5 列と 1 索引を足す。画面仕様の正本は `specs/spec-ai-analysis-screen.md`、規則の一覧は [`ai-screen/rules.md`](ai-screen/rules.md)。
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `seq` | INTEGER | 利用者ごとの通し番号。画面の `T-0001` の元。発行時に `max(seq)+1` で採り、一意索引に衝突したら 1 回だけ採り直す。0048 より前の行は NULL のままで、画面は「旧 作成日」と表示する |
+| `data_fetched_at` | TEXT | エージェントが最初にデータを取得した時刻。2 回目以降の取得では動かさない |
+| `rejected_at` | TEXT | 最後に契約違反の送信を差し戻した時刻 |
+| `reject_count` | INTEGER NOT NULL DEFAULT 0 | 差し戻しの回数。受信後・取り消し後の送信は数えない |
+| `canceled_at` | TEXT | 利用者が取り消した時刻。2 回目の取り消しでは動かさない |
+
+- 索引: `uq_ai_tasks_user_seq`(`user_id`, `seq`)の一意索引。SQLite は NULL どうしを重複とみなさないので、`seq` の無い既存行は何行あっても衝突しない。
+- **段階名(待機中 / 実行中 / 完了 / 失敗 / キャンセル)と進捗 % は保存しない**。core の `aiTaskStage` が `canceled_at` → `used_at` → `expires_at` → `rejected_at` → `data_fetched_at` の順に時刻から毎回導く。列に持つと、期限切れのような「時間が経っただけで変わる段階」を更新し忘れて表示と食い違う。
+- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE UNIQUE INDEX` のみ)。`ai_reports` は変えない。`packages/api/src/ai-migration-0048.test.ts` が、当てても行の更新が 0 件であることと既存列の値が変わらないことを固定する。

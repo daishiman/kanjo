@@ -6,8 +6,11 @@
  *   v2 では冒頭の「要点サマリー」「精度を上げるために必要な情報」「図表データ」「前回からの変化」を追加で受け取る。
  *   v3(要望23/24/25)では要点を「事実→解釈→次のアクション」の3段に固定し、図は図表カタログの id と説明文だけを受け取る
  *   (数値はアプリが計算し、保存時にスナップショットとして本文へ同梱する)。節ごとの最低件数・文字数もここで検査する。
+ *   v4 では、利用者へのヒアリング、外部情勢の出典、因果「仮説」と反証・限界を contextAnalysis へ分離する。
+ *   外部情報は会計金額の根拠ではなく、背景仮説の根拠だけに使う。
  * - 本文はプレーンテキスト(改行・箇条書きのみ)。HTMLタグ・制御文字は保存前に落とす。
  */
+import { AI_ANALYSIS_DEPTHS, type AiAnalysisDepth } from '@kanjo/core';
 import { z } from 'zod';
 import {
   CATALOG_IDS,
@@ -22,6 +25,9 @@ export * from './period.js';
 import { type Period, REPORT_TYPE_LABEL, periodLabel, reportTypeOf } from './period.js';
 
 /* -------- 受信レポートの検証 -------- */
+
+/** 固定 4 MiB の request budget。個別 field・配列の上限は reportInputSchema が別に検証する。 */
+export const REPORT_BODY_MAX_BYTES = 4 * 1024 * 1024;
 
 const textField = (max: number) => z.string().max(max);
 
@@ -128,10 +134,176 @@ const followUpSchema = z.object({
   items: z.array(itemSchema).max(30).optional(),
 });
 
+const interviewFactSchema = z.object({
+  id: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,39}$/),
+  source: z.literal('user_reported'),
+  question: textField(300).min(1),
+  answer: textField(1200).min(1),
+});
+
+const statisticalFactSchema = z.object({
+  id: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,39}$/),
+  statement: textField(1000).min(10),
+  basis: textField(800).min(5),
+  evidenceRefs: z.array(textField(120).min(1)).min(1).max(20),
+});
+
+const interpretationSchema = z.object({
+  statement: textField(1000).min(10),
+  factRefs: z.array(textField(40).min(1)).min(1).max(20),
+  limitation: textField(800).min(5),
+});
+
+const externalEvidenceSchema = z.object({
+  id: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,39}$/),
+  title: textField(300).min(1),
+  url: z
+    .string()
+    .url()
+    .max(2000)
+    .refine((value) => value.startsWith('https://') || value.startsWith('http://'), {
+      message: 'http(s) URL だけを指定してください',
+    }),
+  publishedAt: z.string().max(40).nullable().optional(),
+  accessedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  claim: textField(1000).min(10),
+  relevance: textField(1000).min(10),
+  evidenceLevel: z.literal('published_source'),
+});
+
+const causalHypothesisSchema = z.object({
+  role: z.enum(['primary', 'alternative']),
+  hypothesis: textField(1000).min(10),
+  /** 未検証の因果スレッド。 */
+  cause: textField(500).min(1),
+  mechanism: textField(700).min(1),
+  outcome: textField(500).min(1),
+  evidenceFor: z.array(textField(600).min(1)).min(1).max(12),
+  evidenceAgainst: z.array(textField(600).min(1)).min(1).max(12),
+  confounders: z.array(textField(600).min(1)).min(1).max(12),
+  falsificationCondition: textField(800).min(5),
+  evidenceLevel: z.enum(['data_confirmed', 'user_reported', 'published_source', 'assumption']),
+  /** published_source は externalEvidence.id、data_confirmed は dataset 内の根拠名を指す。 */
+  evidenceRefs: z.array(textField(80).min(1)).max(20),
+  confidence: z.enum(['low', 'medium', 'high']),
+  validationAction: textField(800).min(5),
+});
+
+const contextAnalysisSchema = z
+  .object({
+    /** off のときは外部検索をしない。used は URL と取得日の記録が必須。 */
+    externalResearch: z.enum(['off', 'used']).default('off'),
+    questionType: z.enum([
+      'distribution',
+      'comparison',
+      'relationship',
+      'decomposition',
+      'trend',
+      'concentration',
+      'anomaly',
+    ]),
+    question: z.object({
+      decision: textField(500).min(1),
+      metric: textField(300).min(1),
+      comparison: textField(500).min(1),
+      range: textField(200).min(1),
+    }),
+    interviewFacts: z.array(interviewFactSchema).max(20).optional(),
+    statisticalFacts: z.array(statisticalFactSchema).max(30),
+    interpretations: z.array(interpretationSchema).max(30),
+    externalEvidence: z.array(externalEvidenceSchema).max(20).optional(),
+    causalHypotheses: z.array(causalHypothesisSchema).max(12).optional(),
+  })
+  .superRefine((value, ctx) => {
+    const evidenceCount = value.externalEvidence?.length ?? 0;
+    if (value.externalResearch === 'off' && evidenceCount > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['externalEvidence'],
+        message: '外部調査OFFのレポートに外部出典は保存できません',
+      });
+    }
+    if (value.externalResearch === 'used' && evidenceCount === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['externalEvidence'],
+        message: '外部調査を使った場合は URL・取得日・主張を少なくとも1件記録してください',
+      });
+    }
+    const sourceIds = new Set((value.externalEvidence ?? []).map((evidence) => evidence.id));
+    if (sourceIds.size !== evidenceCount) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['externalEvidence'],
+        message: '外部出典の id は重複できません',
+      });
+    }
+    const interviewIds = new Set((value.interviewFacts ?? []).map((fact) => fact.id));
+    const hypotheses = value.causalHypotheses ?? [];
+    const factIds = new Set((value.statisticalFacts ?? []).map((fact) => fact.id));
+    if (factIds.size !== (value.statisticalFacts?.length ?? 0)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['statisticalFacts'],
+        message: '統計的事実の id は重複できません',
+      });
+    }
+    for (const [index, interpretation] of (value.interpretations ?? []).entries()) {
+      if (interpretation.factRefs.some((reference) => !factIds.has(reference))) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['interpretations', index, 'factRefs'],
+          message: 'factRefs は statisticalFacts.id を参照してください',
+        });
+      }
+    }
+    const roles = new Set(hypotheses.map((hypothesis) => hypothesis.role));
+    if (hypotheses.length > 0 && (!roles.has('primary') || !roles.has('alternative'))) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['causalHypotheses'],
+        message: '背景仮説を出す場合は主仮説と対立仮説を各1件以上記録してください',
+      });
+    }
+    const assumptions = hypotheses.filter((hypothesis) => hypothesis.evidenceLevel === 'assumption').length;
+    if (hypotheses.length > 0 && assumptions * 2 > hypotheses.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['causalHypotheses'],
+        message: '想定(assumption)の仮説は全体の半数以下にしてください',
+      });
+    }
+    for (const [index, hypothesis] of hypotheses.entries()) {
+      if (
+        hypothesis.evidenceLevel === 'user_reported' &&
+        (hypothesis.evidenceRefs.length === 0 ||
+          hypothesis.evidenceRefs.some((reference) => !interviewIds.has(reference)))
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['causalHypotheses', index, 'evidenceRefs'],
+          message: '利用者回答を根拠にする仮説は interviewFacts.id を参照してください',
+        });
+      }
+      if (hypothesis.evidenceLevel !== 'published_source') continue;
+      if (
+        hypothesis.evidenceRefs.length === 0 ||
+        hypothesis.evidenceRefs.some((reference) => !sourceIds.has(reference))
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['causalHypotheses', index, 'evidenceRefs'],
+          message: '公表資料を根拠にする仮説は externalEvidence.id を参照してください',
+        });
+      }
+    }
+  });
+
 export const reportInputSchema = z.object({
   generatedBy: textField(60).min(1),
   model: textField(120).nullable().optional(),
   title: textField(120).nullable().optional(),
+  analysisDepth: z.enum(AI_ANALYSIS_DEPTHS),
   summary: textField(TEXT_LIMITS.summary.max).min(TEXT_LIMITS.summary.min),
   keyFindings: keyFindingsSchema,
   sections: z
@@ -140,11 +312,13 @@ export const reportInputSchema = z.object({
     .max(SECTION_IDS.length * 2),
   followUp: followUpSchema.nullable().optional(),
   needs: z.array(needSchema).max(30).optional(),
-  charts: z
-    .array(chartRefSchema)
-    .max(CHART_CATALOG.length * 2)
-    .optional(),
+  charts: z.array(chartRefSchema).max(CHART_CATALOG.length).optional(),
   dataGaps: z.array(textField(500)).max(40).optional(),
+  /**
+   * v4 で足した背景分析。兄弟の節 (followUp / needs / charts / dataGaps) と同じく任意で、
+   * 無いレポートも受け付ける (契約 v3 を壊さない)。無ければ保存本文でも null のままにする。
+   */
+  contextAnalysis: contextAnalysisSchema.optional(),
 });
 export type ReportInput = z.infer<typeof reportInputSchema>;
 
@@ -202,11 +376,52 @@ export interface ReportKeyFindings {
   quickWins: ReportFinding[];
   notes: { improvements: string; wasted: string; quickWins: string };
 }
+export interface ReportContextAnalysis {
+  externalResearch: 'off' | 'used';
+  questionType:
+    | 'distribution'
+    | 'comparison'
+    | 'relationship'
+    | 'decomposition'
+    | 'trend'
+    | 'concentration'
+    | 'anomaly';
+  question: { decision: string; metric: string; comparison: string; range: string };
+  interviewFacts: { id: string; source: 'user_reported'; question: string; answer: string }[];
+  statisticalFacts: { id: string; statement: string; basis: string; evidenceRefs: string[] }[];
+  interpretations: { statement: string; factRefs: string[]; limitation: string }[];
+  externalEvidence: {
+    id: string;
+    title: string;
+    url: string;
+    publishedAt: string | null;
+    accessedAt: string;
+    claim: string;
+    relevance: string;
+    evidenceLevel: 'published_source';
+  }[];
+  causalHypotheses: {
+    role: 'primary' | 'alternative';
+    hypothesis: string;
+    cause: string;
+    mechanism: string;
+    outcome: string;
+    evidenceFor: string[];
+    evidenceAgainst: string[];
+    confounders: string[];
+    falsificationCondition: string;
+    evidenceLevel: 'data_confirmed' | 'user_reported' | 'published_source' | 'assumption';
+    evidenceRefs: string[];
+    confidence: 'low' | 'medium' | 'high';
+    validationAction: string;
+  }[];
+}
 export interface AiReportBody {
-  version: 3;
+  version: 4;
   generatedBy: string;
   model: string | null;
   title: string;
+  analysisDepth: AiAnalysisDepth;
   summary: string;
   keyFindings: ReportKeyFindings;
   sections: ReportSection[];
@@ -214,6 +429,7 @@ export interface AiReportBody {
   needs: ReportNeed[];
   charts: ReportChart[];
   dataGaps: string[];
+  contextAnalysis: ReportContextAnalysis | null;
 }
 
 /** HTMLタグ・制御文字を落とし、改行は最大2連続に丸める。保存も表示もこの文字列だけを使う */
@@ -250,6 +466,66 @@ const normFindings = (items: InputFinding[] | undefined): ReportFinding[] =>
     priority: it.priority ?? null,
     chart: it.chart && catalogSet.has(it.chart) ? it.chart : null,
   }));
+
+const normTextList = (items: string[] | undefined): string[] =>
+  (items ?? []).map(sanitizeText).filter((item) => item.length > 0);
+
+function normContext(input: ReportInput['contextAnalysis'] | undefined): ReportContextAnalysis {
+  return {
+    externalResearch: input?.externalResearch ?? 'off',
+    questionType: input?.questionType ?? 'trend',
+    question: input?.question
+      ? {
+          decision: sanitizeText(input.question.decision),
+          metric: sanitizeText(input.question.metric),
+          comparison: sanitizeText(input.question.comparison),
+          range: sanitizeText(input.question.range),
+        }
+      : { decision: '', metric: '', comparison: '', range: '' },
+    interviewFacts: (input?.interviewFacts ?? []).map((fact, index) => ({
+      id: fact.id ?? `interview-${index + 1}`,
+      source: 'user_reported',
+      question: sanitizeText(fact.question),
+      answer: sanitizeText(fact.answer),
+    })),
+    statisticalFacts: (input?.statisticalFacts ?? []).map((fact) => ({
+      id: fact.id,
+      statement: sanitizeText(fact.statement),
+      basis: sanitizeText(fact.basis),
+      evidenceRefs: normTextList(fact.evidenceRefs),
+    })),
+    interpretations: (input?.interpretations ?? []).map((interpretation) => ({
+      statement: sanitizeText(interpretation.statement),
+      factRefs: normTextList(interpretation.factRefs),
+      limitation: sanitizeText(interpretation.limitation),
+    })),
+    externalEvidence: (input?.externalEvidence ?? []).map((evidence) => ({
+      id: evidence.id,
+      title: sanitizeText(evidence.title),
+      url: evidence.url,
+      publishedAt: evidence.publishedAt ? sanitizeText(evidence.publishedAt) || null : null,
+      accessedAt: evidence.accessedAt,
+      claim: sanitizeText(evidence.claim),
+      relevance: sanitizeText(evidence.relevance),
+      evidenceLevel: evidence.evidenceLevel,
+    })),
+    causalHypotheses: (input?.causalHypotheses ?? []).map((hypothesis, index) => ({
+      role: hypothesis.role ?? (index === 0 ? 'primary' : 'alternative'),
+      hypothesis: sanitizeText(hypothesis.hypothesis),
+      cause: sanitizeText(hypothesis.cause ?? hypothesis.hypothesis),
+      mechanism: sanitizeText(hypothesis.mechanism ?? '作用経路は未確認'),
+      outcome: sanitizeText(hypothesis.outcome ?? '会計指標との関連を検証する'),
+      evidenceFor: normTextList(hypothesis.evidenceFor),
+      evidenceAgainst: normTextList(hypothesis.evidenceAgainst),
+      confounders: normTextList(hypothesis.confounders),
+      falsificationCondition: sanitizeText(hypothesis.falsificationCondition),
+      evidenceLevel: hypothesis.evidenceLevel,
+      evidenceRefs: normTextList(hypothesis.evidenceRefs),
+      confidence: hypothesis.confidence,
+      validationAction: sanitizeText(hypothesis.validationAction),
+    })),
+  };
+}
 
 export const FINDING_KEYS = ['improvements', 'wasted', 'quickWins'] as const;
 export const FINDING_LABEL: Record<(typeof FINDING_KEYS)[number], string> = {
@@ -383,10 +659,11 @@ export function normalizeReport(input: ReportInput, period: Period, charts: Char
   return {
     ok: true,
     body: {
-      version: 3,
+      version: 4,
       generatedBy: sanitizeText(input.generatedBy) || 'unknown',
       model: input.model ? sanitizeText(input.model) || null : null,
       title: sanitizeText(input.title ?? '') || `${periodLabel(period)}の会計分析`,
+      analysisDepth: input.analysisDepth,
       summary: sanitizeText(input.summary),
       keyFindings,
       sections,
@@ -396,6 +673,8 @@ export function normalizeReport(input: ReportInput, period: Period, charts: Char
       needs,
       charts: storedCharts,
       dataGaps: (input.dataGaps ?? []).map(sanitizeText).filter((g) => g.length > 0),
+      // 送られてこなかった背景分析は作らない (空の節を捏造せず、無かったことを null で残す)
+      contextAnalysis: input.contextAnalysis ? normContext(input.contextAnalysis) : null,
     },
   };
 }
@@ -447,14 +726,14 @@ const legacyChart = (ch: LegacyChart, i: number): ReportChart => ({
   caption: ch.note ?? '',
 });
 
-/** 保存済みの本文(v1 / v2 も含む)を v3 の形に揃えて返す。画面はこの形だけを扱う */
+/** 保存済みの本文(v1〜v4)を表示用の形に揃える。旧版の contextAnalysis は null のままにする。 */
 export function upgradeBody(raw: unknown): AiReportBody {
   const b = (raw ?? {}) as Record<string, unknown> & { version?: number };
   const kf = (b.keyFindings ?? {}) as Record<string, unknown>;
-  const isV3 = b.version === 3;
+  const isV3OrLater = b.version === 3 || b.version === 4;
   const findings = (k: string): ReportFinding[] => {
     const arr = (kf[k] ?? []) as (LegacyItem | ReportFinding)[];
-    return isV3 ? (arr as ReportFinding[]) : (arr as LegacyItem[]).map(legacyFinding);
+    return isV3OrLater ? (arr as ReportFinding[]) : (arr as LegacyItem[]).map(legacyFinding);
   };
   const notesRaw = (kf.notes ?? {}) as Partial<ReportKeyFindings['notes']>;
   const sections = ((b.sections ?? []) as Partial<ReportSection>[]).map((sec) => ({
@@ -466,10 +745,12 @@ export function upgradeBody(raw: unknown): AiReportBody {
   }));
   const chartsRaw = (b.charts ?? []) as (LegacyChart | ReportChart)[];
   return {
-    version: 3,
+    version: 4,
     generatedBy: (b.generatedBy as string) ?? 'unknown',
     model: (b.model as string | null) ?? null,
     title: (b.title as string) ?? '',
+    analysisDepth:
+      b.analysisDepth === 'concise' || b.analysisDepth === 'detailed' ? b.analysisDepth : 'standard',
     summary: (b.summary as string) ?? '',
     keyFindings: {
       improvements: findings('improvements'),
@@ -484,8 +765,12 @@ export function upgradeBody(raw: unknown): AiReportBody {
     sections,
     followUp: (b.followUp as AiReportBody['followUp']) ?? null,
     needs: (b.needs as ReportNeed[]) ?? [],
-    charts: isV3 ? (chartsRaw as ReportChart[]) : (chartsRaw as LegacyChart[]).map(legacyChart),
+    charts: isV3OrLater ? (chartsRaw as ReportChart[]) : (chartsRaw as LegacyChart[]).map(legacyChart),
     dataGaps: (b.dataGaps as string[]) ?? [],
+    contextAnalysis:
+      Number(b.version ?? 0) >= 4 && b.contextAnalysis
+        ? normContext(b.contextAnalysis as ReportInput['contextAnalysis'])
+        : null,
   };
 }
 
@@ -493,20 +778,36 @@ export function upgradeBody(raw: unknown): AiReportBody {
 
 export const SKILL_NAME = 'run-kanjo-accounting-report';
 
+export const COPY_TARGETS = ['claude_code', 'codex'] as const;
+export type AiCopyTarget = (typeof COPY_TARGETS)[number];
+
+/**
+ * コピー先ごとの差は「どの道具に貼るか」と「その道具が読む Skill の置き場所」だけにする。
+ * 同じ Skill をリポジトリが2か所に置いている (Claude Code は .claude/skills、Codex は .agents/skills) ので、
+ * 宛先を間違えた指示文は相手が読めない。それ以外の手順は共通で、宛先ごとに変えない。
+ */
+export const COPY_TARGET_GUIDE: Record<AiCopyTarget, { tool: string; skillPath: string }> = {
+  claude_code: { tool: 'Claude Code', skillPath: `.claude/skills/${SKILL_NAME}/SKILL.md` },
+  codex: { tool: 'Codex', skillPath: `.agents/skills/${SKILL_NAME}/SKILL.md` },
+};
+
 export function buildPrompt(p: {
   origin: string;
   taskId: string;
   token: string;
   period: Period;
   expiresAt: string;
+  /** 貼り付け先。指示文の宛先と Skill の置き場所がこれで変わる */
+  target: AiCopyTarget;
   supplement?: string | null;
   parentReportId?: string | null;
 }): string {
   const exp = new Date(p.expiresAt);
   const expText = `${exp.getUTCFullYear()}-${String(exp.getUTCMonth() + 1).padStart(2, '0')}-${String(exp.getUTCDate()).padStart(2, '0')} ${String(exp.getUTCHours()).padStart(2, '0')}:${String(exp.getUTCMinutes()).padStart(2, '0')} UTC`;
   const type = reportTypeOf(p.period);
+  const guide = COPY_TARGET_GUIDE[p.target];
   const lines = [
-    `このリポジトリの Skill「${SKILL_NAME}」を読み、その手順どおりに会計分析レポートを作成して送信してください。`,
+    `${guide.tool} で、このリポジトリの Skill「${SKILL_NAME}」(${guide.skillPath}) を読み、その手順どおりに会計分析レポートを作成して送信してください。`,
     '',
     `- 対象期間: ${periodLabel(p.period)}(${p.period.from} 〜 ${p.period.to})`,
     `- レポートの型: ${REPORT_TYPE_LABEL[type]}(${type})`,
@@ -524,7 +825,7 @@ export function buildPrompt(p: {
   if (sup) {
     lines.push(
       '',
-      '利用者からの補足情報(数字の根拠として使ってよいが、データと矛盾する場合はデータを優先し、その旨を書く):',
+      '利用者からの補足情報(背景仮説と interviewFacts にだけ使う。会計金額の fact / basis / expectedEffect の根拠には使わない):',
     );
     for (const l of sup.split('\n')) lines.push(`  ${l}`);
   }
@@ -536,6 +837,11 @@ export function buildPrompt(p: {
     '- 冒頭の keyFindings(改善すべき点・無駄なコスト・すぐ効く対策)は1件ごとに fact(数値+計算根拠)・basis(どのデータ・期間から)・interpretation(統計的な解釈)・action(次の一手と期待効果 expectedEffect 円)の4つを必ず書く。',
     '- 図は取得データの charts(図表カタログ)にある図だけを使う。available=true の図は本文で「図N」と参照し、charts に {catalogId, caption} を付けて送る。図の数値は送らない(アプリが計算済み)。',
     '- 本文はプレーンテキスト(HTMLやMarkdownの表は使わない)。専門用語は括弧で言い換える。',
+    '- 第4版の contextAnalysis を含める。補足の回答は interviewFacts に質問/回答で記録する。',
+    '- analysisDepth は依頼のレポート量(concise / standard / detailed)を必ず書く。contextAnalysis で statisticalFacts(統計的事実)→interpretations(解釈)→causalHypotheses(主/対立仮説)を分離し、id参照でつなぐ。',
+    '- 因果を断定せず、仮説ごとに cause→mechanism→outcome、支持/反証、交絡候補、反証条件、次の確認を書く。',
+    '- 外部調査は利用者が希望した場合だけ。取引先名・個人名・具体金額・明細は検索語に含めず、公的資料優先でURL/取得日/主張を externalEvidence に記録する。',
+    '- 外部出典は背景仮説の材料に限り、会計金額・科目の fact/basis に使わない。',
     '- 送信が 201 で受け付けられたら、返ってきた reportId を表示して終了する。',
   );
   return lines.join('\n');

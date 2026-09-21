@@ -65,6 +65,8 @@ export const taskCreateSchema = periodSchema.and(
   z.object({
     supplement: z.string().max(4000).optional(),
     parentReportId: z.string().max(64).optional(),
+    /** 貼り付け先。指示文の宛先が変わる。旧い画面は送ってこないので既定は Claude Code */
+    target: z.enum(['claude_code', 'codex']).optional(),
   }),
 );
 

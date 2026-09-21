@@ -15,6 +15,7 @@ import {
   runAuditDetailRetention,
   runAuditHeaderRetention,
 } from './audit-log.js';
+import { splitMigrationStatements } from './migration-test-support.js';
 
 const sourceDir = dirname(fileURLToPath(import.meta.url));
 const migrationsDir = resolve(sourceDir, '../../../migrations');
@@ -26,11 +27,7 @@ async function applyMigrations(database: D1Database): Promise<void> {
     .filter((filename) => filename.endsWith('.sql'))
     .sort();
   for (const filename of filenames) {
-    const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-      .replace(/^\s*--.*$/gm, '')
-      .split(';')
-      .map((sql) => sql.trim())
-      .filter(Boolean);
+    const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
     for (const sql of statements) await database.prepare(sql).run();
   }
 }

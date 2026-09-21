@@ -8,6 +8,7 @@
  * 指標ごとの分岐は書かない。規則の正本は `specs/spec-trends-screen.md` と `docs/trends-screen.md`。
  */
 import { previousPeriod, previousPeriodLabel } from './analysis-hub.js';
+import { monthIndex, monthKey } from './month.js';
 import { type PeriodRange, applyPeriod, fullRange, isMonthKey, previousYearPeriod } from './period.js';
 import {
   type DuplicateVerdict,
@@ -275,8 +276,6 @@ export interface TrendsScreen {
 
 /* ======================== 月の計算 ======================== */
 
-const monthIndex = (m: string): number => Number(m.slice(0, 4)) * 12 + Number(m.slice(5, 7)) - 1;
-const monthKey = (i: number): string => `${Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, '0')}`;
 const shiftMonth = (m: string, n: number): string => monthKey(monthIndex(m) - n);
 
 const sum = (xs: readonly number[]): number => xs.reduce((a, b) => a + b, 0);

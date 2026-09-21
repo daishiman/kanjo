@@ -1,0 +1,1440 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "database",
+      "label": "データベース"
+    },
+    {
+      "id": "auth",
+      "label": "認証(ログイン)"
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI-UX"
+    },
+    {
+      "id": "security",
+      "label": "セキュリティ"
+    },
+    {
+      "id": "infrastructure",
+      "label": "インフラ"
+    },
+    {
+      "id": "backend",
+      "label": "バックエンド"
+    },
+    {
+      "id": "frontend",
+      "label": "フロントエンド"
+    },
+    {
+      "id": "maintenance-ops",
+      "label": "保守運用管理"
+    }
+  ],
+  "platforms": [
+    "web",
+    "mobile",
+    "tablet",
+    "desktop-windows",
+    "desktop-linux",
+    "desktop-macos"
+  ],
+  "matrix": {
+    "database": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-classify-database-web-001",
+        "serves_goals": [
+          "G2",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-classify-database-web-evidence-001",
+          "qa-classify-database-web-002",
+          "qa-classify-database-web-003",
+          "qa-classify-decision-006"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、データベースでは端末内に明細と下書きを持つ SQLite の同期をどう設計するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、データベースではオフライン閲覧のため期間分の明細を端末へどこまで持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存先と暗号化の方式をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、データベースではデスクトップ版のローカル保存の権限をどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、データベースではネイティブ版のローカル保存とキーチェーンでの鍵管理をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      }
+    },
+    "auth": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-classify-auth-web-001",
+        "serves_goals": [
+          "G3",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-classify-auth-web-evidence-001",
+          "qa-classify-auth-web-002"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、認証(ログイン)では生体認証やトークンの端末保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、認証(ログイン)では共有されやすい家庭用タブレットでのセッションの寿命をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、認証(ログイン)ではWindows の資格情報マネージャーへのセッション保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、認証(ログイン)ではLinux の Secret Service へのセッション保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、認証(ログイン)ではmacOS のキーチェーンへのセッション保存をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      }
+    },
+    "ui-ux": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-classify-ui-ux-web-003",
+        "serves_goals": [
+          "G1",
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-classify-ui-ux-web-evidence-001",
+          "qa-classify-ui-ux-web-002",
+          "qa-classify-decision-005",
+          "qa-classify-decision-006"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、UI-UXでは片手操作で 3 カラムの仕分けをどう畳み、一括選択をどう出すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、UI-UXでは横置きで絞り込み・一覧・編集パネルの 3 つをどう並べるかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、UI-UXではWindows の既定の配色と高コントラストモードで信頼度の表示をどう保つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、UI-UXではLinux のデスクトップ環境ごとのフォントで一覧の金額の桁揃えをどう保つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、UI-UXではmacOS のメニューとショートカットに仕分けの操作をどう割り当てるかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      }
+    },
+    "security": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-classify-security-web-001",
+        "serves_goals": [
+          "G2",
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-classify-security-web-evidence-001",
+          "qa-classify-security-web-002"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、セキュリティでは端末紛失時に下書きやメモをどう消すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、セキュリティでは共有端末に残る下書きとメモをどう保護するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、セキュリティではデスクトップ版の自動更新の署名検証をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、セキュリティではデスクトップ版の配布経路の改ざん検知をどうするかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、セキュリティではネイティブ版のサンドボックス権限をどう絞るかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-classify-infrastructure-web-001",
+        "serves_goals": [
+          "G2",
+          "G3",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-classify-infrastructure-web-evidence-001",
+          "qa-classify-infrastructure-web-002"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、インフラではプッシュ通知やアプリストア配布の基盤をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、インフラではタブレット版のストア配布と審査をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、インフラではWindows 版の更新配信の置き場をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、インフラではLinux 版のパッケージリポジトリをどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、インフラではmacOS 版の更新配信と公証の基盤をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      }
+    },
+    "backend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-classify-backend-web-003",
+        "serves_goals": [
+          "G2",
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-classify-backend-web-evidence-001",
+          "qa-classify-backend-web-002",
+          "qa-classify-decision-005",
+          "qa-classify-decision-006"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、バックエンドではオフラインで仕分けた変更を一括保存へどう同期し衝突をどう解くかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、バックエンドではオフライン編集の下書きをサーバの履歴とどう突き合わせるかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップ版からの一括保存の件数上限と再送をどう設計するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、バックエンドではデスクトップ版が古い API 版で動くときの互換をどう保つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、バックエンドではネイティブ版向けに提案と信頼度の API をどう版管理するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-classify-frontend-web-001",
+        "serves_goals": [
+          "G1",
+          "G3",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-classify-frontend-web-evidence-001",
+          "qa-classify-frontend-web-002"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、フロントエンドではネイティブ UI の部品で編集パネルと分割の編集をどう作り直すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、フロントエンドでは分割画面表示で一覧と編集パネルの状態をどう共有するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、フロントエンドではWindows 版の配布形式と自動更新をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、フロントエンドではLinux 版のパッケージ形式ごとの描画差をどう吸収するかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、フロントエンドではmacOS 版の署名と公証をどう通すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      }
+    },
+    "maintenance-ops": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-classify-maintenance-ops-web-003",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-classify-maintenance-ops-web-evidence-001",
+          "qa-classify-maintenance-ops-web-002",
+          "qa-classify-decision-005",
+          "qa-classify-decision-006"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、保守運用管理では端末ごとの E2E テストと OS 更新への追従をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、保守運用管理では画面サイズごとの表示テストをどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、保守運用管理ではWindows 版のクラッシュ報告と更新の運用をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、保守運用管理ではLinux 版のディストリビューションごとの検証をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、保守運用管理ではmacOS 版の OS 更新ごとの検証をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-classify-target-platforms-001"
+      }
+    }
+  },
+  "qa_log": [
+    {
+      "id": "qa-classify-decision-001",
+      "question": "画像の『領収書・証憑』(JPG/PNG/PDF 最大10MB の添付) は #42 で製品として全廃し spec-v1.1 で『外部の正本側で管理』と対象外にした機能である。今回どう扱うか。",
+      "answer": "再導入しない (推奨)。#42 の判断を維持する。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:12:52Z",
+      "required_info_items": [
+        "product-goal",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-classify-decision-002",
+      "question": "KPI と絞り込みの『要確認』(画像では5件) の定義は現状どこにも無い。何を要確認に数えるか。",
+      "answer": "低信頼の自動提案 (推奨)。提案カテゴリはあるが信頼度が 80% 未満、またはルール同士の衝突・区分と名義の矛盾がある明細を要確認に数える。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:12:52Z",
+      "required_info_items": [
+        "domain-model",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-classify-decision-003",
+      "question": "一覧の『信頼度%』と履歴の『自動提案 (AI)』をどう算出するか (フッタは『取込データは外部送信しません』)。",
+      "answer": "既存規則を拡張・外部送信なし (推奨)。過去の同取引先・ルール・MF 中項目からの決定論の提案と信頼度にし、外部 LLM は呼ばない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:12:52Z",
+      "required_info_items": [
+        "domain-model",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-classify-decision-004",
+      "question": "保存したフィルタ・編集パネルの下書き・取引の履歴の保存先をどうするか。",
+      "answer": "フィルタと履歴は D1、下書きは端末 (推奨)。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:12:52Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-classify-target-platforms-001",
+      "question": "明細仕分けサイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
+      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『web 以外の専用アプリ (対象は web のみ)』を置いた U1-U9 要約を、利用者が『この内容で承認』で承認した。",
+      "provenance": "AskUserQuestion / U1-U9 承認 (scope.out に web 以外を明記)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:15:30Z",
+      "required_info_items": [
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-classify-ui-ux-web-evidence-001",
+      "question": "UI-UX 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "13-classify.png は上記 (1)〜(7) の構成である。現行 packages/web/src/pages/Classify.tsx (1188 行・1 ファイル) は ClassificationProgressPanel (104 行目)・ClassifyPage (185 行目)・TxLine (701 行目)・EditorRow (950 行目) で構成され、期間は usePeriod を使わず単月の select (488 行目)、URL は month / cls / category / payee / hcat / big を持つ。分割は components/SplitEditor.tsx。問いの見出し・KPI 4 枚・信頼度列・編集パネル・一括保存・保存したフィルタ・取引の履歴・信頼度の根拠・ルールのプレビュー・下書きは無い。tx_edits の note 列 (200 字) は UI に出ていない。共通部品 PageHeader・KpiCard・PageState・Button・ConfirmDialog・Term・SelectionBar (サブスク) と design-tokens.ts がある。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-ui-ux-web-002",
+      "question": "web の明細仕分け画面で、UI-UX について利用者が決めていない具体値を何にするか。",
+      "answer": "一覧の既定の並びは日付の降順、同日は取引 id の昇順とする。KPI カードを押すとその分類ステータスだけに絞り込む。行を押すと右の編集パネルにその明細を開き、チェックは一括選択だけに使う。画面幅が 1024px 未満では 3 カラムを 一覧 → 編集パネル → 絞り込み の順に縦へ積み、絞り込みは折りたたんだ状態で始める。信頼度 80% 未満は要確認の色と『要確認』の文言を併記する。ルール適用プレビューの表は最大 50 行を出し、それ以上は件数だけを示す。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-ui-ux-web-001",
+      "question": "web の明細仕分け画面 (/classify) の UI-UX 要件は何か。画面の構成要素・文言・選択・編集・一括操作・通知・状態・アクセシビリティをどうするか。",
+      "answer": "上から (1) パンくず『整える / 明細仕分け』、期間タブ 1年 / 2年 / 3年 / 任意 と期間送り ‹ 2025年9月 - 2026年8月 ›、右上に『明細仕分けの使い方』。(2) 見出し『明細仕分け』と問い『未整理の明細を、根拠を見ながら確定しますか？』、説明文、KPI 4 枚 (未整理・要確認・手動変更・完了 と件数)。(3) 3 カラム: 左に絞り込み (対象月・分類ステータスのチェックと件数・カテゴリ・所有者・支払方法・手動変更のみ・キーワード検索・保存したフィルタと『現在の条件を保存』・『フィルタをクリア』・折りたたみ)、中央に取引一覧 (件数見出し・表示件数 50 件・選択チェックと全選択・日付の並べ替え・取引先 / 内容・金額・提案カテゴリ・信頼度・ページ送り)、右に取引の編集パネル (未保存の印・閉じる・日付と取引先と内容と金額・クイック仕分け 事業 / 個人 / リセット・カテゴリ・所有者・支払方法・メモ 200 字と字数・取引の履歴・信頼度の根拠・編集 / 分割 / 削除・この条件をルールにする (取引先・キーワード・適用範囲・ルールを作成)・該当する既存のルールとその対象件数の案内)。証憑欄は置かず、その位置に『証憑は freee 側で管理します』の案内を出す (qa-classify-decision-001)。(4) 結果の通知: 一括保存の部分失敗『選択した N 件のうち M 件を保存しました。K 件はエラーのため保存できませんでした。』と『失敗した K 件のみ再試行』、削除の『元に戻す』。(5) 一括操作バー『N 件選択中・選択をクリア・選択した N 件を保存』。(6) 下段に分割明細の編集 (元の取引・分割後の仕訳の行 カテゴリ / 金額 / 所有者 / メモ / 削除・分割行を追加・金額の合計と元の金額の一致表示・キャンセル・この内容で分割を適用) と、ルール適用プレビュー (今後 N 件に適用・日付 / 取引先 / 金額 / 適用後の仕訳の表・このルールを適用・下書きを復元)。(7) 下書きを自動保存した時刻の表示。未保存のまま離れるときは確認する。読込・空 (期間内の明細 0 件)・失敗の各状態を持つ。信頼度と分類ステータスは色だけで区別せず、数値と文言を併記する。自動提案の表示は『AI』ではなく『自動提案』とする (qa-classify-decision-003)。数値は画像のモックではなく実データから core で算出したものを出す。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:24:40Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-classify-frontend-web-evidence-001",
+      "question": "フロントエンド 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "現行の /classify は routeMetadata.ts の 46〜56 行目で定義され、Classify.tsx 1 ファイルに状態・取得・描画が同居している。期間は src/period.tsx の usePeriod があるが /classify は使っていない。最近の作り直し (家計収支 #62・サブスク #60・診断 #59) は pages/<screen>/ 配下・view-model.ts・css・dom test の型で揃っている。初期 JS 予算は build:bundle 直後の CI 実測で検査される。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-frontend-web-002",
+      "question": "web の明細仕分け画面で、フロントエンド について利用者が決めていない具体値を何にするか。",
+      "answer": "下書きの localStorage のキーは kanjo:classify:draft:<txId> とし、入力から 1 秒後に保存し、30 日を過ぎた下書きは読込時に捨てる。URL の選択は取引 id を最大 50 件までとし、超えた選択は URL に載せず画面内の状態に留める。未保存の離脱確認は react-router の useBlocker と beforeunload の両方で行う。/classify の画面は既存の遅延読込 (lazy route) の単位に置き、初期 JS に含めない。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-frontend-web-001",
+      "question": "web の明細仕分け画面のフロントエンドの構成 (ファイル分割・状態の置き場所・データ取得・下書き) をどうするか。",
+      "answer": "Classify.tsx を pages/classify/ 配下へ分割し、見出し・期間タブ・KPI・絞り込みパネル・取引一覧・編集パネル・一括操作バー・通知・分割明細の編集・ルール適用プレビューを部品に分ける。表示用の整形は view-model.ts の純関数に置き、判定と集計は core の結果を使って web で再実装しない。期間は usePeriod / localStorage から復元し、絞り込み・ページ・選択は URL の検索パラメータに保つ。データ取得は TanStack Query で行い、一括保存・ルール作成と適用・分割・削除と取消・保存フィルタの変更の後は一覧・KPI・ナビのバッジの問い合わせを無効化する。編集パネルの下書きは端末の localStorage に明細単位で自動保存し、最終保存時刻を表示し、保存に成功したら消し、次回に『下書きを復元』で戻せる (qa-classify-decision-004)。未保存のまま離れるときは確認する。既存のデザイントークンと共通部品の上に組み、初期 JS 予算 (CI 実測) を超えない。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:24:40Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-classify-backend-web-evidence-001",
+      "question": "バックエンド 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "現行 packages/api/src/routes/classify.ts は GET /transactions (94 行目)・PUT /transactions/:txId/class (265)・PUT /transactions/:txId/edit (310)・GET と PUT /transactions/:txId/splits (395・436)・GET /rules (559, 該当件数 hits 付き)・POST /rules (624)・PUT と DELETE /rules/:id (658・688) を持つ。支払方法は core/src/cash.ts の paymentMethodOf が機関名から導く値 (cash / card / account / unknown) で、/transactions の絞り込み (193 行目) に使われるが上書きの列は無い。core/src/overview.ts:246 の recommendationFor は vendor_memory 由来のときだけ信頼度が数値で、ルールと MF 中項目由来は null、利用は /review-queue に限られる。分類の進捗は core/src/classify.ts:335 の classificationProgress で、未確認は clsSrc === '既定' (346 行目)。月次クローズ (overview.ts:413-460) の『仕分け』は counts.classification を使う。一括保存・ルールのプレビュー・保存フィルタ・履歴の API は無い。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-backend-web-002",
+      "question": "web の明細仕分け画面で、バックエンド について利用者が決めていない具体値を何にするか。",
+      "answer": "エンドポイントは POST /api/transactions/bulk (1 回 100 件まで)・POST /api/rules/preview・POST /api/rules/:id/apply・GET / POST /api/saved-filters・DELETE /api/saved-filters/:id・GET /api/transactions/:txId/history とする。信頼度は 取引先の決め事 (vendor_memory) 由来は既存の値、取引先とキーワードの両方が一致するルールは 95、キーワードだけのルールは 85、MF 中項目の対応表は 70 とし、2 つ以上の由来が異なるカテゴリを提案する衝突では最小値から 20 を引く (下限 0)。区分と名義の矛盾は 区分=個人 かつ 所有者=事業、または 区分=事業 かつ 所有者が事業以外 とする。一括保存の応答は { results: [{ txId, ok, error? }] } とし、HTTP は部分失敗でも 200 を返す。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-backend-web-001",
+      "question": "明細仕分けのために core と api をどう変えるか。分類ステータス・提案と信頼度・一括保存・ルールのプレビューと適用・保存フィルタ・履歴の契約は何か。",
+      "answer": "core に分類ステータスの判定を 1 か所に新設し、各明細を 未整理 (提案が無く既定のまま) / 要確認 (提案の信頼度が 80% 未満、または提案どうしの衝突・区分と名義の矛盾) / 手動変更 (利用者が手で変更した) / 完了 (それ以外で確定済み) の 4 区分へ排他で振り分け、件数の和が全件に一致するようにする (qa-classify-decision-002)。ナビのバッジと月次クローズの『仕分け』もこの関数から導く。提案カテゴリ・信頼度・根拠の文は recommendationFor を拡張し、過去の同取引先・ルール・MF 中項目のどの由来にも決定論の信頼度を付け、/transactions の各行に提案・信頼度・根拠・分類ステータスを載せる。外部の LLM は呼ばない (qa-classify-decision-003)。/transactions は期間・分類ステータス・カテゴリ・所有者・支払方法・手動変更のみ・キーワードで絞り込み、サーバ側で 50 件ずつ返す。選択した複数の明細を 1 回の要求で保存する一括保存を設け、明細ごとに検証と保存を行って成否を返し、成功分は取り消さない。ルールに取引先・キーワード・適用範囲 (一致する明細すべて / 未確定の明細だけ)・分割の型 (固定額の行と残額の行) を持たせ、作成前に該当する明細と適用後の仕訳の一覧と件数を返すプレビューと、同じ判定で適用する API を設ける。手動変更した明細はルールで上書きしない。保存したフィルタの保存・一覧・削除と、明細の取引の履歴の取得を設ける。全ての変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。入力は zod で検証し、変更系は canonicalMutationFence に登録する。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:24:40Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-classify-database-web-evidence-001",
+      "question": "データベース 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "最新の migration は migrations/0045_owner_labels.sql。明細の手当ては tx_edits (note 列 200 字を含む)、分割は tx_splits (migrations/0035)、ルールは rules 表、取引先の決め事は vendor_memory 表にある。保存したフィルタと変更履歴の表は無い。支払方法の上書きの列はどこにも無い。証憑の表と R2 の保存は #42 (462dd9d) で全廃済み。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-database-web-002",
+      "question": "web の明細仕分け画面で、データベース について利用者が決めていない具体値を何にするか。",
+      "answer": "migration は migrations/0046_classify_workbench.sql の 1 本とし、実装時に origin/main を fetch して番号の空きを確かめる。表は saved_filters (id・user_id・name 1〜40 字・query_json 2000 字以内・created_at・updated_at、(user_id, name) で一意、利用者あたり 20 件まで) と tx_history (id・user_id・tx_id・changed_at・field・before_value・after_value・source を CHECK で auto / manual / rule / bulk / split / delete / undo・op_id、索引 (user_id, tx_id, changed_at))。rules には payee (NULL 可)・scope (CHECK で all / unconfirmed、既定 all)・split_template_json (NULL 可) を、tx_edits には payment_method (CHECK で cash / card / account、NULL 可) を追加する。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-database-web-001",
+      "question": "明細仕分けのために D1 のスキーマをどう変えるか。",
+      "answer": "追加のみの migration (新表・新カラム) とし、行を書き換える migration は作らない (qa-classify-decision-004 と U8 の C3)。保存したフィルタを名前付きで保存する新しい表、明細の変更履歴 (いつ・どの項目が・変更前後・どの由来 自動提案 / 手動 / ルール / 一括保存 / 分割 / 削除 / 取消 で変わったか) を追記のみで残す新しい表を設ける。ルールには取引先・適用範囲 (一致する明細すべて / 未確定の明細だけ)・分割の型 (固定額の行と残額の行) を持たせる列を追加する。支払方法を編集パネルで直せるよう、明細の手当て (tx_edits) に支払方法の上書きの列を追加し、値が無い明細は従来どおり機関名から導く。下書きは D1 に置かない。すべての表は利用者で区切る。本番反映は既存の Deploy / Migrate の手順とゲートに従う。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:24:40Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-classify-auth-web-evidence-001",
+      "question": "認証(ログイン) 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "packages/api/src/index.ts の 56〜106 行目で /api/* に authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence が順に掛かる。セッションは kanjo_session Cookie で、users 表の session_generation で無効化される。既存の classify route は c.get('userId') で利用者を取り、全ての SQL を user_id で絞っている。テナントは TENANT_ID='default' の単一。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-auth-web-002",
+      "question": "web の明細仕分け画面で、認証(ログイン) について利用者が決めていない具体値を何にするか。",
+      "answer": "他の利用者の保存フィルタや明細を id で指したときは、存在を漏らさないため 403 ではなく 404 を返す。一括保存では他の利用者の明細 id を明細単位の失敗 (not_found) として返し、要求全体は止めない。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-auth-web-001",
+      "question": "明細仕分けの新しい API と保存データに、認証と認可をどう適用するか。",
+      "answer": "新しい認証方式は作らない。新しい API (一括保存・ルールのプレビューと適用・保存フィルタ・履歴) はすべて /api/* の authGuard と mustChangePasswordFence の内側に置き、利用者 id はセッションから取り、要求の本文や URL からは受け取らない。保存したフィルタ・変更履歴・ルールは利用者で区切り、他の利用者の行を読み書きできない。下書きは端末の localStorage に置くため、共有端末に残らないよう保存成功で消す (qa-classify-decision-004)。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:24:40Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-classify-security-web-evidence-001",
+      "question": "セキュリティ 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "canonical-mutation-fence.ts の CANONICAL_MUTATION_ROUTES (30〜80 行目) に PUT /transactions/:id/(class|edit)・PUT /transactions/:id/splits・POST /data/deletions・POST /data/undo/:opId などが登録され、登録の無い変更系は直列化されない。packages/api/src/ai は外部の LLM を呼んでいない。証憑は #42 で全廃され specs/attachments-and-transit.md は superseded。CSP は packages/web/public/_headers にある。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-security-web-002",
+      "question": "web の明細仕分け画面で、セキュリティ について利用者が決めていない具体値を何にするか。",
+      "answer": "上限は 一括保存 1 回 100 件、フィルタ名 40 字、キーワード 100 字、保存フィルタの条件 JSON 2000 字、ルールのプレビューの走査は表示期間の明細に限る。フェンスの登録は POST /api/transactions/bulk (tx_edits・tx_splits・tx_history)、POST /api/rules/:id/apply (rules・tx_edits・tx_splits・tx_history)、POST /api/saved-filters と DELETE /api/saved-filters/:id (saved_filters) とする。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-security-web-001",
+      "question": "明細仕分けのセキュリティ要件 (入力検証・変更の直列化・外部送信・ファイル・端末保存) は何か。",
+      "answer": "入力はすべて zod で検証し、メモ (200 字)・フィルタ名・キーワード・ルールの条件は長さを制限し、React の既定のエスケープで描画する。一括保存・ルール作成と適用・分割・保存フィルタの変更は canonicalMutationFence に登録し、取込の洗替えと直列化する。取込データを外部へ送信しない。提案と信頼度は外部の LLM を呼ばずに決定論で出す (qa-classify-decision-003)。証憑ファイルを受け付けない (qa-classify-decision-001)。下書きにはメモが入るため、保存成功で消し、サーバへ送らない。CSP (packages/web/public/_headers) は緩めない。一括保存は 1 回の件数に上限を置く。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:24:40Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-classify-infrastructure-web-evidence-001",
+      "question": "インフラ 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "api は Hono の Cloudflare Worker で D1 を使う (wrangler 設定)。証憑用の R2 は #42 で撤去済み。D1 Free は rows read 5 million / day・rows written 100,000 / day・5 GB (https://developers.cloudflare.com/d1/platform/pricing/)。行書き換えの migration で Deploy が止まった過去があり、追加のみを原則にしている。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-infrastructure-web-002",
+      "question": "web の明細仕分け画面で、インフラ について利用者が決めていない具体値を何にするか。",
+      "answer": "一括保存とルール適用は D1 の batch 1 回あたり最大 50 文に区切って書く。ルールのプレビューは読取りだけで、表示期間の明細 (最大 3 年) を 1 回の SQL で読む。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-infrastructure-web-001",
+      "question": "明細仕分けのためにインフラ (Workers・D1・ストレージ・バインディング) をどう変えるか。",
+      "answer": "構成は変えない。既存の Cloudflare Worker と D1 の上に載せ、R2 やキュー、新しいバインディングや外部サービスを足さない (qa-classify-decision-001, 003)。Cloudflare の無料枠 (Workers の CPU 時間・D1 の読み書き) の範囲で動くよう、一覧はサーバ側で 50 件ずつ返し、一括保存とルール適用は件数の上限を置いて D1 の batch でまとめて書く。migration の本番反映は既存の Deploy / Migrate の手順に従う。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:24:40Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-classify-maintenance-ops-web-evidence-001",
+      "question": "保守運用管理 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。",
+      "answer": "最近の作り直しは specs/spec-<screen>-screen.md・architecture/<screen>-{8 カテゴリ}.md・features/feat-<screen>.md・tasks/feat-<screen>/・docs/<screen>-screen/design-decisions.md・docs/evidence/ に成果物を残している。verify:full は 4175 の vite を前提にし、初期 JS 予算は build:bundle 直後に測る。CI の headless Chrome は pointer:none である。",
+      "provenance": "リポジトリの現行実装 (main 0003cb4) の読取りによる観測。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-maintenance-ops-web-002",
+      "question": "web の明細仕分け画面で、保守運用管理 について利用者が決めていない具体値を何にするか。",
+      "answer": "テストは packages/core/src/classify-status.test.ts・packages/api/src/routes/classify-bulk.test.ts・packages/web/src/pages/classify/classify.dom.test.tsx を新設する。文書は specs/spec-classify-screen.md・architecture/classify-*.md・docs/classify-screen/design-decisions.md に置く。旧実装で落ちること (4 区分の和・信頼度 null) を検算してからテストを確定する。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent の推定 (利用者未確認)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:24:40Z"
+    },
+    {
+      "id": "qa-classify-maintenance-ops-web-001",
+      "question": "明細仕分けの検証・運用 (テスト・CI・文書・証跡) をどうするか。",
+      "answer": "core の単体テストで、4 区分が排他で和が全件に一致すること・ナビのバッジと月次クローズの『仕分け』が同じ関数から出ること・信頼度が全由来で 0〜100 の整数か提案なしのときだけ null であること・ルールのプレビューと適用の結果が一致すること・手動変更がルールで変わらないこと・分割ルールの行の和が元の金額に一致することを固定する。api のテストで一括保存の部分失敗と再試行・フェンスの登録・利用者の区切りを、web の DOM テストで画像の構成要素と通知と下書きの復元を確かめる。既存の仕分け・照合・月次クローズ・家計収支・総収支の数値テストを緑のまま保ち、pnpm lint・typecheck・初期 JS 予算を CI で通す。画面仕様・設計・設計判断・証跡を既存の作り直しと同じ場所に残す。既知の逸脱・未実施・一部適合は受入 PASS に数えない。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:24:40Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-classify-decision-005",
+      "question": "明細の区分はどう数えるか (完成度評価で『どこにも入らない明細がある』『画像と食い違う』と指摘された点)。",
+      "answer": "要確認は未整理の内訳 (推奨)。未整理 = 利用者もルールも中項目もまだ決めていない明細すべて (提案の有無・信頼度は問わない)。要確認 = 未整理のうち信頼度 80% 未満・衝突・矛盾があるもの。手動変更と完了は確定済みの排他区分。未整理 + 手動変更 + 完了 = 全件。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:40:10Z",
+      "required_info_items": [
+        "domain-model",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-classify-decision-006",
+      "question": "一覧や編集パネルで明細を『確定』したとき、どの区分に移すか。",
+      "answer": "提案どおりなら完了 (推奨)。提案をそのまま受け入れたものは完了、区分・カテゴリ・所有者のどれかを提案と違う値にしたものは手動変更。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:40:10Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-classify-backend-web-003",
+      "question": "明細仕分けのために core と api をどう変えるか。分類ステータス・提案と信頼度・一括保存・ルールのプレビューと適用・保存フィルタ・履歴の契約は何か。",
+      "answer": "core に分類ステータスの判定を 1 か所に新設し、各明細を 未整理 (利用者・ルール・MF 中項目のどれもまだ決めていない明細。提案の有無と信頼度は問わない) / 手動変更 (利用者が提案と異なる値で確定した明細。提案が無いまま利用者が決めた明細と、この変更より前の手入力の明細を含む) / 完了 (利用者が提案どおりに確定した明細と、ルール・MF 中項目が決めた明細) の 3 区分に排他で振り分け、和が全件に一致する。要確認は区分ではなく未整理の内訳で、提案の信頼度が 80% 未満・提案どうしの衝突・区分と名義の矛盾のいずれかがある未整理の明細を数える (qa-classify-decision-002・005)。利用者が確定したとき、区分・カテゴリ・所有者がすべてその時点の提案と一致すれば完了、1 つでも異なるか提案が無ければ手動変更とし、確定時の判断を明細の手当てに残して後から提案が変わっても区分が揺れないようにする (qa-classify-decision-006)。ルール・MF 中項目が決めた明細は完了で、その由来の信頼度は表示にだけ使い要確認には数えない。ナビのバッジは未整理の件数、月次クローズの『仕分け』は同じ判定の未整理から照合側で数える明細を除いた件数とし、現行の clsSrc=既定 と意味を変えない。提案カテゴリ・信頼度・根拠の文は recommendationFor を拡張し、過去の同取引先・ルール・MF 中項目のどの由来にも決定論の信頼度を付け、/transactions の各行に提案・信頼度・根拠・分類ステータスを載せる。外部の LLM は呼ばない (qa-classify-decision-003)。/transactions は期間・分類ステータス・カテゴリ・所有者・支払方法・手動変更のみ・キーワードで絞り込み、サーバ側で 50 件ずつ返す。選択した複数の明細を 1 回の要求で保存する一括保存を設け、明細ごとに検証と保存を行って成否を返し、成功分は取り消さない。ルールに取引先・キーワード・適用範囲 (一致する明細すべて / 未確定の明細だけ)・分割の型 (固定額の行と残額の行) を持たせ、作成前に該当する明細と適用後の仕訳の一覧と件数を返すプレビューと、同じ判定で適用する API を設ける。手動変更した明細はルールで上書きしない。保存したフィルタの保存・一覧・削除と、明細の取引の履歴の取得を設ける。全ての変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。入力は zod で検証し、変更系は canonicalMutationFence に登録する。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し)。qa-classify-backend-web-001 を改訂",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:40:10Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-classify-ui-ux-web-003",
+      "question": "web の明細仕分け画面 (/classify) の UI-UX 要件は何か。画面の構成要素・文言・選択・編集・一括操作・通知・状態・アクセシビリティをどうするか。",
+      "answer": "上から (1) パンくず『整える / 明細仕分け』、期間タブ 1年 / 2年 / 3年 / 任意 と期間送り ‹ 2025年9月 - 2026年8月 ›、右上に『明細仕分けの使い方』。(2) 見出し『明細仕分け』と問い『未整理の明細を、根拠を見ながら確定しますか？』、説明文、KPI 4 枚 (未整理・要確認・手動変更・完了 と件数)。要確認は未整理の内訳なので、要確認のカードは『未整理のうち』と添えて示し、絞り込みの『要確認』は未整理のうち要確認に当たる明細を出す。未整理の行にも提案カテゴリと信頼度を出し、要確認に当たる行には『要確認』の文言を併記する (qa-classify-decision-005)。(3) 3 カラム: 左に絞り込み (対象月・分類ステータスのチェックと件数・カテゴリ・所有者・支払方法・手動変更のみ・キーワード検索・保存したフィルタと『現在の条件を保存』・『フィルタをクリア』・折りたたみ)、中央に取引一覧 (件数見出し・表示件数 50 件・選択チェックと全選択・日付の並べ替え・取引先 / 内容・金額・提案カテゴリ・信頼度・ページ送り)、右に取引の編集パネル (提案どおりに確定すると完了、提案と異なる値で確定すると手動変更になることを保存前に示す (qa-classify-decision-006)・未保存の印・閉じる・日付と取引先と内容と金額・クイック仕分け 事業 / 個人 / リセット・カテゴリ・所有者・支払方法・メモ 200 字と字数・取引の履歴・信頼度の根拠・編集 / 分割 / 削除・この条件をルールにする (取引先・キーワード・適用範囲・ルールを作成)・該当する既存のルールとその対象件数の案内)。証憑欄は置かず、その位置に『証憑は freee 側で管理します』の案内を出す (qa-classify-decision-001)。(4) 結果の通知: 一括保存の部分失敗『選択した N 件のうち M 件を保存しました。K 件はエラーのため保存できませんでした。』と『失敗した K 件のみ再試行』、削除の『元に戻す』。(5) 一括操作バー『N 件選択中・選択をクリア・選択した N 件を保存』。(6) 下段に分割明細の編集 (元の取引・分割後の仕訳の行 カテゴリ / 金額 / 所有者 / メモ / 削除・分割行を追加・金額の合計と元の金額の一致表示・キャンセル・この内容で分割を適用) と、ルール適用プレビュー (今後 N 件に適用・日付 / 取引先 / 金額 / 適用後の仕訳の表・このルールを適用・下書きを復元)。(7) 下書きを自動保存した時刻の表示。未保存のまま離れるときは確認する。読込・空 (期間内の明細 0 件)・失敗の各状態を持つ。信頼度と分類ステータスは色だけで区別せず、数値と文言を併記する。自動提案の表示は『AI』ではなく『自動提案』とする (qa-classify-decision-003)。数値は画像のモックではなく実データから core で算出したものを出す。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し)。qa-classify-ui-ux-web-001 を改訂",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:40:10Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-classify-maintenance-ops-web-003",
+      "question": "明細仕分けの検証・運用 (テスト・CI・文書・証跡) をどうするか。",
+      "answer": "core の単体テストで、未整理・手動変更・完了が排他で和が全件に一致し要確認が未整理の内訳に収まること・提案どおりの確定は完了・提案と異なる確定は手動変更になること・ナビのバッジと月次クローズの『仕分け』が同じ関数から出ること・信頼度が全由来で 0〜100 の整数か提案なしのときだけ null であること・ルールのプレビューと適用の結果が一致すること・手動変更がルールで変わらないこと・分割ルールの行の和が元の金額に一致することを固定する。api のテストで一括保存の部分失敗と再試行・フェンスの登録・利用者の区切りを、web の DOM テストで画像の構成要素と通知と下書きの復元を確かめる。既存の仕分け・照合・月次クローズ・家計収支・総収支の数値テストを緑のまま保ち、pnpm lint・typecheck・初期 JS 予算を CI で通す。画面仕様・設計・設計判断・証跡を既存の作り直しと同じ場所に残す。既知の逸脱・未実施・一部適合は受入 PASS に数えない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (完成度評価 high 指摘への差し戻し)。qa-classify-maintenance-ops-web-001 を改訂",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T13:40:10Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-classify-database-web-003",
+      "question": "提案どおりの確定と提案と異なる確定 (qa-classify-decision-006) を、後から提案が変わっても区分が揺れないようにどこへ残すか。",
+      "answer": "明細の手当て (tx_edits) に、利用者が確定したときに提案と一致していたかを表す列を追加のみの migration で足す。値が無い既存の手入力の明細は手動変更として扱う。行を書き換える migration は作らない。 これは agent の推定で、利用者は未確認である。決定 006 の保存先は利用者が指定していないため、実装で決定論を保つために置いた。",
+      "provenance": "agent-inference (qa-classify-decision-006 の実装上の帰結)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T13:40:10Z"
+    }
+  ],
+  "approval_log": [
+    {
+      "id": "appr-foundation-classify-001",
+      "note": "明細仕分けサイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/13-classify.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択 (2026-09-19T13:15:30Z、transcript の回答行の実測時刻)。範囲外: 証憑添付・外部LLM・共通シェルの作り直し・取込/照合の変更・web 以外の専用アプリ。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-classify-002",
+      "note": "完成度評価 (high: 分類ステータスの定義漏れ) を受けた上位概念の改訂を利用者が承認。要確認を未整理の内訳にし、提案どおりの確定は完了・提案と異なる確定は手動変更とする (qa-classify-decision-005/006)。一括操作バーを画面専用部品と改める。選択肢は『この内容で承認 / 修正して再提示』で利用者は承認を選択 (2026-09-19T13:44:19Z、transcript の回答行の実測時刻)。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-classify-003",
+      "note": "Q-1 は承認済みの契約「提案どおりの確定と自動決定は完了」から明確化。取込時に vendor_memory が materialize した手当ては、matched_proposal が NULL でも done（完了）とし、要確認には数えない。新しい区分や保存値は追加せず、core の既存判定と実テストに固定する（2026-09-21）。basis=approved-contract-clarification。"
+    }
+  ],
+  "reopen_log": [
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度評価 high: 分類ステータス 4 区分の定義漏れ (どこにも入らない明細・画像との食い違い・確定後の区分未定義・MF 中項目由来の要確認滞留・月次クローズの意味)。利用者決定 qa-classify-decision-005/006 と上位概念改訂 appr-foundation-classify-002 で差し替える",
+      "from": "確定",
+      "reopened_at": "2026-09-19T13:44:54Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "完成度評価 high: 要確認が未整理の内訳であることと確定後の区分が画面仕様に無い。利用者決定 qa-classify-decision-005/006 と上位概念改訂 appr-foundation-classify-002 で差し替える",
+      "from": "確定",
+      "reopened_at": "2026-09-19T13:44:54Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "完成度評価 high に連動: テスト条件が 4 区分排他の旧定義のまま。利用者決定 qa-classify-decision-005/006 と上位概念改訂 appr-foundation-classify-002 で差し替える",
+      "from": "確定",
+      "reopened_at": "2026-09-19T13:44:54Z"
+    }
+  ],
+  "category_aggregate": {
+    "database": "確定",
+    "auth": "確定",
+    "ui-ux": "確定",
+    "security": "確定",
+    "infrastructure": "確定",
+    "backend": "確定",
+    "frontend": "確定",
+    "maintenance-ops": "確定"
+  },
+  "targets": [
+    {
+      "target_id": "wcag22-use-of-color",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "tanstack-query-dependent-queries",
+      "category": "frontend"
+    },
+    {
+      "target_id": "react-router-searchparams",
+      "category": "frontend"
+    },
+    {
+      "target_id": "hono-zod-validator",
+      "category": "backend"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "category": "database"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "category": "security"
+    },
+    {
+      "target_id": "vitest-expect",
+      "category": "maintenance-ops"
+    }
+  ],
+  "requirements_foundation": {
+    "essential_purpose": "明細仕分け画面を、『未整理の明細を、根拠を見ながら確定しますか？』という問いに 1 画面で答え切る場にする。利用者が期間 (1年 / 2年 / 3年 / 任意) を選ぶと、未整理・要確認・手動変更・完了の件数を最初に掴み、絞り込みで片付ける対象を選び、一覧で提案カテゴリと信頼度を見比べ、右の編集パネルで信頼度の根拠と取引の履歴を読んだうえで確定できる。複数件はまとめて保存し、一部が失敗しても失敗した明細だけを再試行でき、繰り返し現れる取引はその場でルールにして、今後どの明細にどう適用されるかをプレビューで確かめてから適用できる。分割は合計が元の金額に一致することを確かめて適用でき、削除は元に戻せ、入力中の下書きは画面を離れても失われない。未整理・手動変更・完了の件数は排他で和が全件に一致し、要確認は未整理の内訳として数え、ナビのバッジと月次クローズの『仕分け』と同じ定義から導く。取込データは外部へ送信しない。",
+    "background": "現行の /classify (packages/web/src/pages/Classify.tsx、1188 行の 1 ファイル) は対象月を単月の select で選び、KPI は明細数・総収入などの金額で、画像の件数 KPI (未整理 / 要確認 / 手動変更 / 完了) ではない。絞り込みはツールバー横並びで、保存したフィルタ・一覧のチェックボックスと 50 件ページング・右の編集パネル・一括保存 (部分失敗の報告と再試行)・取引の履歴・下書きの自動保存と復元・ルール作成前の適用プレビューがどの層にも無い。提案カテゴリと信頼度は core の recommendationFor にあるが /review-queue 専用で /transactions には載らず、信頼度が数値になるのは過去の同取引先 (vendor_memory) 由来のときだけで、ルール・MF 中項目由来は null。『要確認』の定義はどこにも無い。design/FINAL-UI/images/13-classify.png はこれらを 1 画面に統合した完成形で、design/FINAL-UI/spec/AUDIT.md も『中核は良い。分割、全フィルタ、ルール適用、下書き/離脱防止を追加』と指摘している。総収支・推移・マトリックス・サブスク・家計収支を同じ流儀で作り直し終えた今、『整える』段階の入口である仕分け画面を揃える時期にある。画像の『領収書・証憑』欄は #42 で製品として廃止し spec-v1.1 で外部の正本側 (freee) 管理と定めた機能で、今回も再導入しない (利用者決定)。",
+    "goals": [
+      {
+        "id": "G1",
+        "text": "/classify を 13-classify.png どおりの画面にする。問いの見出し『未整理の明細を、根拠を見ながら確定しますか？』と説明文、期間タブ (usePeriod の 1年 / 2年 / 3年 / 任意と期間送り)、件数 KPI 4 枚 (未整理・要確認・手動変更・完了)、左の絞り込みパネル (対象月・分類ステータスのチェックと件数・カテゴリ・所有者・支払方法・手動変更のみ・キーワード検索・保存したフィルタ・現在の条件を保存・フィルタをクリア・折りたたみ)、中央の取引一覧 (選択チェック・日付の並べ替え・取引先 / 内容・金額・提案カテゴリ・信頼度・表示件数 50 件とページ送り)、右の取引の編集パネル (未保存の表示・クイック仕分け 事業 / 個人 / リセット・カテゴリ・所有者・支払方法・メモ 200 字と字数・取引の履歴・信頼度の根拠・編集 / 分割 / 削除・この条件をルールにする・該当する既存のルール)、一括操作バー (N 件選択中・選択をクリア・選択した N 件を保存)、結果の通知 (一括保存の部分失敗と失敗分だけ再試行・削除の元に戻す)、下段の分割明細の編集とルール適用プレビュー、下書きの自動保存時刻を、既存のデザイントークン・共通部品 (PageHeader・KpiCard・Button・ConfirmDialog・PeriodPicker) の上に組み、一括操作バーはサブスク・診断と同じく画面専用の部品として pages/classify に置く。証憑欄は置かず、その位置に『証憑は freee 側で管理します』の案内を出す。読込・空・失敗の各状態を持つ。"
+      },
+      {
+        "id": "G2",
+        "text": "分類ステータスと提案を core の純関数 1 か所に集める。各明細を 未整理 (利用者・ルール・MF 中項目のどれもまだ決めていない明細。提案の有無と信頼度は問わない) / 手動変更 (利用者が提案と異なる値で確定した明細。提案が無いまま利用者が決めた明細と、この変更より前の手入力の明細を含む) / 完了 (利用者が提案どおりに確定した明細、ルール・MF 中項目が決めた明細、および取込時に vendor_memory が materialize した明細) の 3 区分に排他で振り分け、和が全件に一致する。vendor_memory 由来は matched_proposal が NULL でも完了とする。要確認は区分ではなく未整理の内訳で、提案の信頼度が 80% 未満・提案どうしの衝突・区分と名義の矛盾のいずれかがある未整理の明細を数える。ナビのバッジは未整理の件数、月次クローズの『仕分け』は同じ判定の未整理から照合側で数える明細を除いた件数とし (現行の clsSrc=既定 と同じ意味)、同じ関数から導かれることをテストで固定する。提案カテゴリ・信頼度・根拠の文は recommendationFor を拡張し、過去の同取引先・ルール・MF 中項目のどの由来にも決定論の信頼度を付け、/transactions の応答にも載せる。外部の LLM は呼ばず、表示は『自動提案』とする。"
+      },
+      {
+        "id": "G3",
+        "text": "選択した複数の明細を 1 回の要求で保存する一括保存を設ける。明細ごとの成否を返し、画面は『N 件のうち M 件を保存、K 件はエラー』と失敗した明細だけの再試行を示す。成功分は取り消されない。削除は既存の取消 (undo) で元に戻せる。一括保存・ルール作成・ルール適用・保存フィルタの変更は既存の canonicalMutationFence の内側に置く。"
+      },
+      {
+        "id": "G4",
+        "text": "『この条件をルールにする』で取引先・キーワード・適用範囲 (一致する明細すべて / 未確定の明細だけ) を選んでルールを作り、作成前に該当する明細と適用後の仕訳 (カテゴリ・分割の内訳) の一覧と件数をプレビューで確かめてから適用できるようにする。分割の内容もルールにでき、固定額の行と残額の行で同じ条件の明細を同じ形に分ける。該当する既存のルールと、そのルールの対象件数を編集パネルに示す。手動変更した明細はルールで上書きしない。"
+      },
+      {
+        "id": "G5",
+        "text": "仕分けの作業状態を失わない。保存したフィルタは D1 に新しい表を追加のみの migration で設け、名前付きで保存・呼出・削除できる。取引の履歴は D1 に明細の変更履歴表を追加のみで設け、いつ・何が (区分・カテゴリ・所有者・支払方法・メモ・分割)・どの由来 (自動提案 / 手動 / ルール / 一括保存) で変わったかを残し、編集パネルに新しい順で出す。編集パネルの下書きは端末の localStorage に明細単位で自動保存し、最終保存時刻を表示し、保存に成功したら消し、次回に『下書きを復元』できる。未保存のまま離れるときは確認する。"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "O1",
+        "text": "仕分け画面が画像の全構成要素を描画する。",
+        "serves": [
+          "G1"
+        ],
+        "serves_goals": [
+          "G1"
+        ],
+        "measure": "DOM テストで、問いの見出し・期間タブ・KPI 4 枚・絞り込みパネルの全項目・一覧の 6 列と 50 件ページング・編集パネルの全欄・一括操作バー・通知 2 種・分割明細の編集・ルール適用プレビュー・下書きの保存時刻が描画され、証憑欄が無く freee 管理の案内がある。読込・空・失敗の状態テストが緑である。"
+      },
+      {
+        "id": "O2",
+        "text": "未整理・手動変更・完了の件数が排他で閉じ、要確認が未整理の内訳に収まり、他画面と一致する。",
+        "serves": [
+          "G2"
+        ],
+        "serves_goals": [
+          "G2"
+        ],
+        "measure": "core の単体テストで、同じ Dataset と期間に対し 未整理 + 手動変更 + 完了 = 全件、各明細がちょうど 1 区分に入り、要確認 ⊆ 未整理、未整理の明細で信頼度 80% の境界 (79 は要確認・80 は要確認でない) と衝突・矛盾の各規則、提案どおりの確定は完了・提案と異なる確定は手動変更、vendor_memory の materialize は matched_proposal=NULL でも完了かつ要確認でないことが固定され、ナビのバッジと月次クローズの『仕分け』の件数が同じ関数から出る。"
+      },
+      {
+        "id": "O3",
+        "text": "一括保存の部分失敗が報告され、失敗分だけ再試行できる。",
+        "serves": [
+          "G3"
+        ],
+        "serves_goals": [
+          "G3"
+        ],
+        "measure": "API 統合テストで、3 件中 1 件が検証エラーの一括保存が 2 件を保存して明細ごとの結果を返し、再試行が失敗分だけを送ることを DOM テストで確かめる。未認証 401・変更系フェンス違反の拒否・上限件数超過の 400 を確かめる。"
+      },
+      {
+        "id": "O4",
+        "text": "ルールのプレビューと適用結果が一致する。",
+        "serves": [
+          "G4"
+        ],
+        "serves_goals": [
+          "G4"
+        ],
+        "measure": "core の単体テストで、プレビューが列挙した明細と件数が、適用後に実際に変わった明細と一致し、手動変更の明細が変わらず、分割ルールの各行の和が元の金額に一致する。"
+      },
+      {
+        "id": "O5",
+        "text": "作業状態が失われない。",
+        "serves": [
+          "G5"
+        ],
+        "serves_goals": [
+          "G5"
+        ],
+        "measure": "API 統合テストで保存フィルタの作成・一覧・削除と、各変更経路で履歴が 1 件ずつ残ることを確かめ、migration が既存行を 1 行も書き換えないことを検査する。DOM テストで下書きの自動保存・復元・保存成功での消去・離脱確認を確かめる。"
+      }
+    ],
+    "success_criteria": [
+      "S1 (G1): /classify で 13-classify.png の構成要素がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件である。証憑欄は無く freee 管理の案内がある。期間内の明細 0 件で空状態になる。",
+      "S2 (G2): 同じ期間で 未整理・手動変更・完了の件数の和が全件に一致し、要確認は未整理を超えず、ナビのバッジと月次クローズの『仕分け』の件数と画面の件数が同じ関数から出る。信頼度は全由来で 0〜100 の整数か、提案が無いときだけ null である。外部送信が 0 件である。",
+      "S3 (G3): 一括保存で一部が失敗しても成功分が保存され、画面の通知が成功件数と失敗件数を正しく示し、再試行は失敗分だけを送る。削除は元に戻せる。",
+      "S4 (G4): ルール作成前のプレビューの件数・明細と、適用後に変わった明細が一致し、手動変更の明細は変わらない。分割ルールの行の和が元の金額に一致する。",
+      "S5 (G5): 保存フィルタ・取引の履歴が D1 に残り、下書きが画面の再読込後に復元できる。migration は追加のみで既存行の書き換えが 0 件である。",
+      "S6 (G1-G5): 期間は usePeriod / localStorage から復元し、絞り込みと選択は URL に保つ。既存の仕分け・照合・月次クローズ・家計収支・総収支の数値テストが緑のまま、pnpm lint・typecheck・初期 JS 予算を CI で通す。既知の逸脱・未実施・一部適合は受入 PASS に数えない。"
+    ],
+    "stakeholders": [
+      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 月次クローズの『整える』段階で、取り込んだ明細のうち自動では決まらなかったものを、なぜその提案なのかを確かめながら素早く確定し、同じ取引先が次から自動で決まるようにしたい。まとめて保存したときに一部が失敗しても、何が失敗したか分かり失敗分だけやり直したい。入力途中で画面を離れても作業を失いたくない。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 分類ステータスの定義・信頼度の算出・ルールの適用規則が core の純関数 1 か所と docs・テストで固定され、バッジ・月次クローズ・仕分け画面の件数がずれないこと。"
+    ],
+    "scope": {
+      "in": [
+        "明細仕分け画面 (13-classify.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと pages/classify/ 配下への分割",
+        "core の分類ステータス判定 (未整理・手動変更・完了の 3 区分の排他と、未整理の内訳としての要確認・信頼度 80% の閾値・衝突と矛盾・提案どおりの確定の扱い) と提案・信頼度・根拠の算出の一本化、ナビのバッジと月次クローズの参照先の統一",
+        "GET /transactions への提案・信頼度・根拠・ステータスの追加、一括保存 API (明細ごとの結果)、ルールの作成前プレビューと適用 API (分割ルールを含む)",
+        "保存フィルタ表・明細の変更履歴表の追加のみの migration と、それぞれの API",
+        "下書きの端末保存と復元、未保存の離脱確認、削除の元に戻す",
+        "docs への分類ステータス・信頼度・ルール適用の規則の明記と回帰テスト"
+      ],
+      "out": [
+        "領収書・証憑の添付と保管: #42 の判断を維持し再導入しない (利用者決定)。画面には freee 管理の案内だけを置く",
+        "外部の LLM による提案: 取込データを外部へ送信しない約束を守り、既存の決定論の規則を拡張する (利用者決定)",
+        "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗の見た目) の作り直し: 既存実装を使い、件数の定義だけを揃える",
+        "取込処理・照合画面の変更",
+        "スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ (狭い画面は既存 web のレスポンシブ規約の中で扱う)"
+      ]
+    },
+    "constraints": [
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。判定と集計は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、共通部品 (PageHeader・KpiCard・Button・ConfirmDialog) を使う。一括操作バーは共通部品ではなく、サブスク・診断と同じく画面専用に置く。",
+      "C3 migration: D1 の migration は追加のみ (新表・新カラム) とし、行を書き換える migration は作らない。本番反映は既存の Deploy / Migrate の手順とゲートに従う。",
+      "C4 セキュリティ: /api/* の authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence の内側に置く。入力は zod で検証し、メモ・フィルタ名・キーワードは長さを制限し React の既定エスケープで描画する。取込データを外部へ送信しない。証憑ファイルを受け付けない。",
+      "C5 性能とコスト: Cloudflare の無料枠 (Workers の CPU 時間・D1) の範囲で動かし、初期 JS 予算 (CI 実測) を超えない。一覧はサーバ側で 50 件ずつ返す。",
+      "C6 数値の正本: 13-classify.png の数値はモックであり、画面の件数・金額は実データから core で算出したものを正本にする。"
+    ],
+    "concrete_intents": [
+      {
+        "id": "I1",
+        "text": "Classify.tsx を pages/classify/ 配下へ分割し、見出し・期間タブ・KPI 4 枚・絞り込みパネル・取引一覧・編集パネル・一括操作バー・通知・分割明細の編集・ルール適用プレビューの構成に作り直す。",
+        "serves": [
+          "G1"
+        ]
+      },
+      {
+        "id": "I2",
+        "text": "core に分類ステータス判定 (仮称 classifyStatus) を新設し、3 区分の排他判定と要確認の内訳・件数集計を 1 か所で行い、サイドバーのバッジと月次クローズの『仕分け』もここを参照させる。",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "recommendationFor を拡張し、ルール・MF 中項目由来にも決定論の信頼度を付け、根拠の文を由来ごとに整え、/transactions の各行に提案・信頼度・根拠・ステータスを載せる。",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "一括保存 API を新設し、明細ごとに検証と保存を行って成否の配列を返す。画面は部分失敗の通知と失敗分だけの再試行を出す。",
+        "serves": [
+          "G3"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "ルールに取引先・適用範囲・分割の型 (固定額の行と残額の行) を持たせる追加のみの migration と、作成前プレビュー・適用 API を設ける。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "保存フィルタ表と明細の変更履歴表を追加のみで設け、全変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。",
+        "serves": [
+          "G5"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "編集パネルの下書きを localStorage に明細単位で自動保存し、保存時刻の表示・復元・保存成功での消去・未保存の離脱確認を行う。",
+        "serves": [
+          "G5"
+        ]
+      }
+    ],
+    "confirmed": true,
+    "approval_ref": "appr-foundation-classify-003"
+  },
+  "decisions": [
+    {
+      "id": "dec-classify-receipts",
+      "question": "画像の領収書・証憑の添付をどう扱うか。",
+      "status": "confirmed",
+      "serves_goals": [
+        "G1"
+      ],
+      "options": [
+        {
+          "id": "opt-no-receipts",
+          "label": "再導入しない (freee 管理の案内のみ)",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "USD",
+            "billing_period": "none",
+            "tco": "追加の構築・運用・撤退費なし。案内文の保守のみ。"
+          },
+          "free_tier_limits": "外部サービスを使わない。",
+          "goal_fit": "#42 と spec-v1.1 の判断に一致し、G1 の画面は証憑欄を案内で置き換える。",
+          "security_fit": "ファイルを受け付けないため新しい攻撃面が生じない。",
+          "pros": [
+            "新しいリスクが無い",
+            "既存仕様と矛盾しない"
+          ],
+          "cons": [
+            "画像と 1 欄だけ異なる"
+          ],
+          "risks": [
+            "利用者が証憑欄を探す。案内文で補う"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "低",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/r2/pricing/"
+          ]
+        },
+        {
+          "id": "opt-r2-attachments",
+          "label": "R2 に添付として再導入",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "USD",
+            "billing_period": "month",
+            "tco": "R2 無料枠内なら月額0。超過で従量課金。検証・削除連動・容量監視の構築と運用費が加わる。"
+          },
+          "free_tier_limits": "R2 無料枠: 10 GB-month / month、Class A 1 million / month、Class B 10 million / month。",
+          "goal_fit": "画像と一致するが spec-v1.1 の対象外記述の改訂が要る。",
+          "security_fit": "MIME とマジックバイト・サイズ検証、非公開 URL、削除連動が新たに必要。",
+          "pros": [
+            "画像と一致する"
+          ],
+          "cons": [
+            "#42 の判断を覆す",
+            "保持と削除の運用が増える"
+          ],
+          "risks": [
+            "不正ファイルの混入や個人情報の長期保管"
+          ],
+          "lock_in": "中 (R2 API に依存)",
+          "ops_burden": "高",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/r2/pricing/"
+          ]
+        },
+        {
+          "id": "opt-external-link",
+          "label": "外部リンクだけを保存",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "USD",
+            "billing_period": "month",
+            "tco": "D1 の文字列列 1 つで無料枠内。URL 検証の保守費。"
+          },
+          "free_tier_limits": "D1 Free: rows written 100,000 / day、storage 5 GB。",
+          "goal_fit": "ファイルは持たないが画像のアップロード体験と異なる。",
+          "security_fit": "https のみ許可する URL 検証が要る。",
+          "pros": [
+            "保存が軽い"
+          ],
+          "cons": [
+            "画像の体験と異なる"
+          ],
+          "risks": [
+            "リンク切れ"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "低",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/platform/pricing/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-no-receipts",
+        "rationale": "#42 で全廃し spec-v1.1 で対象外と定めた判断を覆す理由が、今回の目的 (未整理の明細を根拠を見ながら確定する) に無い。",
+        "caveats": [
+          "画像との差 (証憑欄) を仕様書に明記する"
+        ],
+        "confidence": "high",
+        "comparison_basis": {
+          "goal_fit": "再導入しない案だけが既存仕様と矛盾しない。",
+          "tco": "3 案とも無料枠内だが R2 案は構築・運用費が大きい。",
+          "security": "再導入しない案だけが攻撃面を増やさない。",
+          "operations": "R2 案だけが保持・削除・容量監視の運用を要する。",
+          "lock_in": "R2 案だけが R2 に依存する。"
+        },
+        "latest_checked_at": "2026-09-19T13:18:15Z"
+      },
+      "user_decision": {
+        "option_id": "opt-no-receipts",
+        "confirmed_at": "2026-09-19T13:12:52Z",
+        "note": "利用者が推奨案『再導入しない』を選択 (qa-classify-decision-001)。confirmed_at は transcript の回答行の実測時刻。"
+      }
+    },
+    {
+      "id": "dec-classify-confidence-source",
+      "question": "一覧の信頼度と自動提案をどう算出するか。",
+      "status": "confirmed",
+      "serves_goals": [
+        "G2"
+      ],
+      "options": [
+        {
+          "id": "opt-deterministic",
+          "label": "既存規則の拡張・外部送信なし",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "USD",
+            "billing_period": "none",
+            "tco": "core の純関数の拡張だけで追加費用なし。規則の保守費のみ。"
+          },
+          "free_tier_limits": "外部サービスを使わない。",
+          "goal_fit": "G2 の決定論と『取込データは外部送信しません』の約束に一致する。",
+          "security_fit": "取込データが外部へ出ない。",
+          "pros": [
+            "再現性がある",
+            "費用ゼロ"
+          ],
+          "cons": [
+            "表現力は規則の範囲に留まる"
+          ],
+          "risks": [
+            "規則に無い取引は提案が出ず未整理に残る"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "低",
+          "evidence_refs": [
+            "https://claude.com/pricing"
+          ]
+        },
+        {
+          "id": "opt-external-llm",
+          "label": "外部 LLM で推論",
+          "cost_model": {
+            "category": "unknown",
+            "amount": null,
+            "currency": "USD",
+            "billing_period": "usage-based",
+            "tco": "Claude API はトークン従量課金で、明細件数に比例して費用が出る。鍵管理・費用監視の運用費が加わる。"
+          },
+          "free_tier_limits": "無料枠なし (従量課金)。",
+          "goal_fit": "精度は上がり得るがフッタの約束と矛盾する。",
+          "security_fit": "取込データが外部へ送信され、API キーの管理が要る。",
+          "pros": [
+            "規則に無い取引にも提案が出る"
+          ],
+          "cons": [
+            "外部送信が発生する",
+            "費用と鍵管理が要る"
+          ],
+          "risks": [
+            "個人の取引内容の外部流出"
+          ],
+          "lock_in": "高 (LLM 提供者に依存)",
+          "ops_burden": "中",
+          "evidence_refs": [
+            "https://claude.com/pricing"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-deterministic",
+        "rationale": "フッタの『取込データは外部送信しません』を守りつつ、既存の recommendationFor を全由来へ広げれば画像の信頼度列を満たせる。",
+        "caveats": [
+          "表示は『AI』ではなく『自動提案』にする"
+        ],
+        "confidence": "high",
+        "comparison_basis": {
+          "goal_fit": "決定論案が G2 と外部送信なしに一致する。",
+          "tco": "決定論案は費用ゼロ、LLM 案は従量課金。",
+          "security": "決定論案は外部送信が無い。",
+          "operations": "LLM 案は鍵と費用の監視が要る。",
+          "lock_in": "LLM 案は提供者に依存する。"
+        },
+        "latest_checked_at": "2026-09-19T13:18:15Z"
+      },
+      "user_decision": {
+        "option_id": "opt-deterministic",
+        "confirmed_at": "2026-09-19T13:12:52Z",
+        "note": "利用者が推奨案『既存規則を拡張・外部送信なし』を選択 (qa-classify-decision-003)。confirmed_at は transcript の回答行の実測時刻。"
+      }
+    },
+    {
+      "id": "dec-classify-state-storage",
+      "question": "保存したフィルタ・下書き・取引の履歴の保存先をどうするか。",
+      "status": "confirmed",
+      "serves_goals": [
+        "G5"
+      ],
+      "options": [
+        {
+          "id": "opt-d1-and-local",
+          "label": "フィルタと履歴は D1、下書きは端末",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "USD",
+            "billing_period": "month",
+            "tco": "D1 無料枠内で月額0。追加のみ migration 1 本と 2 表の保守費。"
+          },
+          "free_tier_limits": "D1 Free: rows written 100,000 / day、storage 5 GB。localStorage はオリジン単位で永続。",
+          "goal_fit": "共有と監査が要るものは D1、頻繁に変わる下書きは端末に置き G5 を満たす。",
+          "security_fit": "下書きはサーバへ送らず、履歴は監査に使える。",
+          "pros": [
+            "書込回数が少ない",
+            "履歴を監査できる"
+          ],
+          "cons": [
+            "下書きは端末をまたがない"
+          ],
+          "risks": [
+            "共有端末に下書きが残る。保存成功で消す"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "中",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/platform/pricing/",
+            "https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API"
+          ]
+        },
+        {
+          "id": "opt-all-d1",
+          "label": "すべて D1",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "USD",
+            "billing_period": "month",
+            "tco": "入力のたびの書込で D1 の書込枠を消費する。下書き表の掃除の運用費。"
+          },
+          "free_tier_limits": "D1 Free: rows written 100,000 / day。",
+          "goal_fit": "端末をまたいで復元できる。",
+          "security_fit": "書込のたびに変更系フェンスを通る。",
+          "pros": [
+            "端末をまたぐ"
+          ],
+          "cons": [
+            "書込が多い",
+            "競合の扱いが増える"
+          ],
+          "risks": [
+            "書込枠の消費"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "中",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/platform/pricing/"
+          ]
+        },
+        {
+          "id": "opt-all-local",
+          "label": "すべて端末",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "USD",
+            "billing_period": "none",
+            "tco": "サーバ変更なしで追加費用なし。"
+          },
+          "free_tier_limits": "localStorage はオリジン単位で永続 (プライベートモードでは閉じると消える)。",
+          "goal_fit": "実装は最小だが履歴が監査に使えない。",
+          "security_fit": "差は小さい。",
+          "pros": [
+            "実装が最小"
+          ],
+          "cons": [
+            "履歴が端末ごとに失われる"
+          ],
+          "risks": [
+            "監査できない"
+          ],
+          "lock_in": "なし",
+          "ops_burden": "低",
+          "evidence_refs": [
+            "https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "opt-d1-and-local",
+        "rationale": "フィルタと履歴は端末をまたいで共有・監査したく、下書きは頻繁に変わるので端末に置くのが書込量と目的の両方に合う。",
+        "caveats": [
+          "下書きは保存成功で消し、共有端末に残し続けない"
+        ],
+        "confidence": "high",
+        "comparison_basis": {
+          "goal_fit": "混合案が G5 の各要素の性質に合う。",
+          "tco": "3 案とも無料枠内。",
+          "security": "混合案は下書きをサーバへ送らず、履歴は監査に使える。",
+          "operations": "すべて D1 案は下書き表の掃除が要る。",
+          "lock_in": "差はない。"
+        },
+        "latest_checked_at": "2026-09-19T13:18:15Z"
+      },
+      "user_decision": {
+        "option_id": "opt-d1-and-local",
+        "confirmed_at": "2026-09-19T13:12:52Z",
+        "note": "利用者が推奨案『フィルタと履歴は D1、下書きは端末』を選択 (qa-classify-decision-004)。confirmed_at は transcript の回答行の実測時刻。"
+      }
+    }
+  ],
+  "knowledge_candidates": [],
+  "design_applications": {
+    "ui-ux": {
+      "text": "Visual hierarchy と情報優先度の card を明細仕分けの 3 カラムに適用した。task 頻度が最も高い『1 件を開いて区分とカテゴリを確定する』を中央一覧と右パネルの往復に置き、失敗コストが高い一括保存と削除は結果を通知で必ず返す。KPI 4 枚は分類ステータスの絞り込みの入口を兼ね、見出しの問いに対する答え (残り何件か) を最上段に置いた。証憑欄は落とし、その位置へ freee 管理の案内を加工して残した。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "Container / Presentational の分離と view-model の card を適用した。取得と変更は pages/classify の container 1 か所に置き、各部品は view-model.ts が作った表示用の値だけを受け取る。こうすると 4 区分の件数や信頼度の表示を DOM テストなしに純関数のテストで固定でき、core の判定を web で書き直す余地が無くなる。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "backend": {
+      "text": "Clean Architecture の Dependency Rule を明細仕分けに適用した。4 区分の判定・信頼度・ルールの該当と分割の型の展開は入出力を持たない計算なので core に置き、api の route は zod で受けて D1 から組んだ入力を純関数へ渡し、結果を書くだけにする。プレビューと適用が同じ core 関数を通るため、S4 の『プレビューの件数と適用後に変わった明細が一致する』を単体テストで確かめられる。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "Schema evolution の card (expand のみで contract しない) を明細仕分けに適用した。ルールの新しい列は NULL 可か既定値付きにして既存のルールが今までどおり動くようにし、支払方法の上書きも NULL なら従来の導出に落ちる。こうして C3 の『既存行の書き換え 0 件』を migration 1 本で守る。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Least privilege と resource ownership の card を明細仕分けに適用した。新しい表はすべて user_id を主キーか索引の先頭に持たせ、route は WHERE user_id = ? を必ず付ける。所有していない行は存在しないものとして扱い、一括保存でも明細単位で同じ規則を当てる。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "OWASP ASVS の入力検証と業務ロジックの card を明細仕分けに適用した。一括保存は明細ごとに検証して失敗を個別に返すが、件数の上限で 1 要求の負荷を抑える。ルール適用は手動変更を上書きしないという業務規則をサーバ側の core で守り、画面の表示に頼らない。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "Serverless の制約 card (CPU 時間・書込枠) を明細仕分けに適用した。一括保存・ルール適用の最悪ケースを件数の上限と batch の区切りで押さえ、無料枠の書込 100,000 行 / 日に対して 1 回の操作が数百行に収まる形にした。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "Test pyramid の card を明細仕分けに適用した。数え方と信頼度とルールの一致は core の純関数テストで大半を固め、api は部分失敗とフェンス、web は構成要素と通知の DOM テストに絞る。旧実装で落ちるテストだけを受入の根拠に数える。",
+      "recorded_at": "2026-09-19T13:24:40Z",
+      "basis": "agent-inference"
+    }
+  },
+  "hearing_progress": {
+    "loop_count": 1,
+    "next_question": null,
+    "complete": true
+  },
+  "doctrine_applications": {
+    "ui-ux": {
+      "presentation": {
+        "text": "明細仕分け画面では、信頼度と 4 つの分類ステータスを色だけで伝えず数値と文言を併記する形へ反映した (WCAG 2.2 SC 1.4.1)。自動提案は『AI』と称さず『自動提案』と表示し、外部推論をしていないことと表示を一致させた。狭い画面での列削除は採らず、3 カラムを縦積みにして一覧の金額と信頼度の列を残した。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "application-architecture": {
+        "text": "明細仕分けのフロントエンドでは、判定 (4 区分・信頼度・ルールの該当) を core に、取得と無効化を container に、整形を view-model.ts に置く三層へ反映した。下書きだけは端末の localStorage に閉じ、サーバの状態と混ぜないため問い合わせのキャッシュに入れない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      },
+      "presentation": {
+        "text": "明細仕分けのフロントエンドでは、部品が色を直書きせず design-tokens.ts のトークンだけを使う形にし、信頼度の表示は数値の文字列を view-model.ts で作ってから描く形へ反映した。一覧の行は 50 件単位でサーバから受け取り、仮想スクロールは入れない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      }
+    },
+    "backend": {
+      "application-architecture": {
+        "text": "明細仕分けでは依存方向を core (分類ステータス・recommendationFor・ルールの該当と分割展開) ← api (classify route・一括保存・ルールのプレビューと適用・保存フィルタ・履歴) ← web の一方向へ反映した。ナビのバッジと月次クローズの『仕分け』は classificationProgress を置き換える新しい判定を参照し、同じ数え方を 2 か所に持たない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "明細仕分けの api では、一括保存・ルール適用の書込を route に閉じ、core は D1 を知らない明細の行集合だけを受け取る形へ反映した。履歴の記録は各変更経路の書込と同じ D1 batch に入れ、書込は成功して履歴だけ欠ける状態を作らない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      }
+    },
+    "database": {
+      "data-access": {
+        "text": "明細仕分けの D1 では、変更履歴を UPDATE しない追記のみの表にし、利用者と明細と時刻の索引で編集パネルの新しい順の表示を 1 回の読取りで返せる形へ反映した。保存フィルタの条件は JSON 1 列に入れ、絞り込みの項目が増えても列を足さない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "明細仕分けの D1 では、追加のみの migration 1 本に留めて Migrate の失敗時に行の巻き戻しが要らない形へ反映した。取引の削除と取消は既存の /data/deletions と /data/undo を使い、履歴にも削除と取消の行を残して復元後の状態を辿れるようにした。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      }
+    },
+    "auth": {
+      "authentication": {
+        "text": "明細仕分けでは新しいログイン経路を足さず、既存のセッション Cookie と session_generation による無効化にそのまま乗せる形へ反映した。パスワード変更が必要な利用者は mustChangePasswordFence で一括保存やルール適用に届かない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      },
+      "security": {
+        "text": "明細仕分けの認可では、一括保存・ルール適用・保存フィルタ・履歴の全 SQL を利用者で区切り、他人の明細 id を渡されても明細単位の not_found に落とす形へ反映した。利用者 id を要求の本文から受け取らない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      }
+    },
+    "security": {
+      "security": {
+        "text": "明細仕分けでは、一括保存・ルール適用・保存フィルタの変更をフェンスへ登録して取込の洗替えと重ならない形へ反映した (ASVS V11 業務ロジック)。外部送信の経路を作らず、端末に残る下書きは保存成功で消し、証憑のアップロード面を持たない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "operations": {
+        "text": "明細仕分けのインフラでは、新しい資源を増やさず既存の Deploy / Migrate の手順 1 本で反映できる形へ反映した。追加のみの migration なので Deploy の前後どちらの版とも動く。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "明細仕分けのインフラでは、一括保存を D1 の batch で明細ごとに区切り、1 件の失敗で残りを巻き戻さない形へ反映した。単独利用のため SLO は定めず、失敗は画面の通知と再試行で回復させる。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      }
+    },
+    "maintenance-ops": {
+      "operations": {
+        "text": "明細仕分けの保守では、画面仕様・設計・設計判断・証跡を既存の作り直しと同じ配置に置き、次の画面の作り直しでも同じ場所を読めば辿れる形へ反映した。migration の反映は既存の Migrate の手順書に従い、独自の運用手順を足さない。",
+        "recorded_at": "2026-09-19T13:24:40Z",
+        "basis": "agent-inference"
+      }
+    }
+  }
+}

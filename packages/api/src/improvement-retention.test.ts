@@ -16,6 +16,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
+import { splitMigrationStatements } from './migration-test-support.js';
 import {
   IMPROVEMENT_ORPHAN_CHECKPOINT_KEY,
   IMPROVEMENT_ORPHAN_GRACE_MS,
@@ -121,11 +122,7 @@ async function applyMigrations(database: D1Database): Promise<void> {
     .filter((f) => f.endsWith('.sql'))
     .sort();
   for (const filename of filenames) {
-    const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-      .replace(/^\s*--.*$/gm, '')
-      .split(';')
-      .map((sql) => sql.trim())
-      .filter(Boolean);
+    const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
     for (const sql of statements) await database.prepare(sql).run();
   }
   await recordTestMigrationHead(database, filenames);

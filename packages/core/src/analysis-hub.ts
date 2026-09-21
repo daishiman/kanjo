@@ -1,4 +1,5 @@
 import { tradeoffCandidates } from './diagnosis-detectors.js';
+import { monthIndex, monthKey } from './month.js';
 /**
  * 支出分析ハブ: 5 つの分析 (照合・総収支・マトリクス・推移・診断) のどこから見るかを決める材料。
  *
@@ -25,11 +26,6 @@ export type AnalysisHubViewId = (typeof ANALYSIS_HUB_VIEW_IDS)[number];
 export type HubPriority = '高' | '中';
 
 /* ======================== 期間 (BR-004) ======================== */
-
-const monthIndex = (m: string): number => Number(m.slice(0, 4)) * 12 + Number(m.slice(5)) - 1;
-
-const monthKey = (index: number): string =>
-  `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, '0')}`;
 
 /** 期間の月数 (両端を含む) */
 const rangeLength = (range: PeriodRange): number => monthIndex(range.to) - monthIndex(range.from) + 1;

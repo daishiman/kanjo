@@ -12,6 +12,7 @@ import { classifyStatus, classifySuggestion } from './classify-status.js';
 import { resolveTx, ruleMatches } from './classify.js';
 import { canonicalEncode } from './fingerprint.js';
 import { sha256Hex } from './improvement.js';
+import { monthIndex, monthLabel } from './month.js';
 import type { PeriodRange } from './period.js';
 import type { ReconcileReview, TotalCashflowMonth } from './total-cashflow.js';
 import { type Cls, type Dataset, type MfTx, type Rule, isMfBizByMid, isMfCountable } from './types.js';
@@ -116,8 +117,6 @@ export const OVERVIEW_WINDOW_MONTHS = 12;
 export const OVERVIEW_BREAKDOWN_TOP = 5;
 export const OVERVIEW_BREAKDOWN_OTHER = 'その他';
 
-const monthLabel = (month: string) => `${month.slice(0, 4)}年${Number(month.slice(5, 7))}月`;
-
 function breakdownOf(window: readonly ScopeMonth[]): OverviewAggregate['breakdown'] {
   const byLabel = new Map<string, number>();
   for (const m of window) {
@@ -136,10 +135,6 @@ function breakdownOf(window: readonly ScopeMonth[]): OverviewAggregate['breakdow
   return { items: rows.map((r) => ({ ...r, share: total === 0 ? 0 : r.amount / total })), total };
 }
 
-/** 'YYYY-MM' を通し月番号にする (暦の連続を比べるため) */
-const monthOrdinal = (month: string): number =>
-  Number(month.slice(0, 4)) * 12 + Number(month.slice(5, 7)) - 1;
-
 /**
  * 表示する期間 (range。null は全期間) の直近 12 か月を集計窓にし、KPI・年次比較の今期・内訳を同じ窓から出す。
  * 前期は窓の直前の暦で連続した同じ月数。系列に揃わなければ (欠けた月を含めて) null (欠けた月を 0 で埋めると前年比が嘘になる)。
@@ -154,7 +149,7 @@ export function overviewAggregate(
   const startIndex = window.length > 0 ? series.indexOf(window[0]) : -1;
   const candidate = k > 0 && startIndex >= k ? series.slice(startIndex - k, startIndex) : null;
   // 系列の要素数ではなく暦で揃える。途中に欠けた月があると「前 k か月」が k か月より長い期間を指してしまう
-  const previous = candidate?.every((m, i) => monthOrdinal(m.month) === monthOrdinal(window[0].month) - k + i)
+  const previous = candidate?.every((m, i) => monthIndex(m.month) === monthIndex(window[0].month) - k + i)
     ? candidate
     : null;
 

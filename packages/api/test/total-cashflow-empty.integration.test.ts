@@ -9,6 +9,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { loginForTest } from '../src/auth.test-support.js';
 import { app } from '../src/index.js';
+import { splitMigrationStatements } from '../src/migration-test-support.js';
 import { recordTestMigrationHead } from '../src/schema-guard.test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
@@ -36,11 +37,7 @@ beforeAll(async () => {
     .filter((filename) => filename.endsWith('.sql'))
     .sort();
   for (const filename of filenames) {
-    const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-      .replace(/^\s*--.*$/gm, '')
-      .split(';')
-      .map((sql) => sql.trim())
-      .filter(Boolean);
+    const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
     for (const sql of statements) await database.prepare(sql).run();
   }
   await recordTestMigrationHead(database, filenames);

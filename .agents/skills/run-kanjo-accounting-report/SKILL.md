@@ -1,16 +1,16 @@
 ---
 name: run-kanjo-accounting-report
-description: kanjo(収支管理コンソール)の「AI分析」画面が発行した指示文(取得URLと送信URLと使い捨てトークンを含む)を貼り付けられたとき、取り込み済みの実績データを会計の実務家として読み、事実→解釈→次の一手の要点・図表カタログの読み解き・固定5節からなる第3版レポートを生成してアプリへ返したいときに使う。
+description: kanjo(収支管理コンソール)のAI分析指示を受け、取込済み数値とヒアリング・外部情勢を分離し、反証可能な背景仮説と固定5節からなる第4版レポートを生成・送信するときに使う。
 disable-model-invocation: false
 user-invocable: true
-allowed-tools: Read, Bash(curl *), Bash(python3 *)
+allowed-tools: Read, Bash(curl *), Bash(python3 *), WebSearch, WebFetch
 kind: run
 prefix: run
 effect: external-mutation
-version: 3.1.0
+version: 4.0.0
 owner: daishiman
 since: 2026-08-25
-last-audited: 2026-09-10
+last-audited: 2026-09-21
 audit-trigger: on-change
 source: packages/api/src/ai/contract.ts
 source-tier: internal
@@ -64,6 +64,7 @@ reference_refs:
   - references/report-schema.md
   - references/chart-catalog.md
   - references/chart-catalog.json
+  - references/statistical-causal-analysis.md
 rubric_hash: sha256:6e1843e5204accb8c76c96bf0d8189dafff6d51f2d182096424fcb6c6bfd3d0d
 ---
 
@@ -85,7 +86,7 @@ rubric_hash: sha256:6e1843e5204accb8c76c96bf0d8189dafff6d51f2d182096424fcb6c6bfd
 アプリ「AI分析」画面が発行した指示文(対象期間とレポートの型 / データ取得URL / 結果送信URL / `Authorization: Bearer kjo_…` / 有効期限。再分析なら前回レポートID、任意で利用者の補足情報)を受け取り、**データ取得 → 分析 → 送信前検査 → 送信** を1回で完了する。送信前の形式検査は必ず `scripts/validate-report.py` で行い、推測の数字を書くことは禁止。
 
 - **入力**: 貼り付けられた指示文(上記5項目 + 任意2項目)。
-- **出力**: アプリへ POST した第3版レポート = `summary` + `keyFindings`(改善すべき点 / 無駄なコスト / すぐ効く対策。**1件 = 事実(数値+計算根拠) → 解釈 → 次のアクション(期待効果)**) + `charts`(図表カタログの id と読み解きだけ。**図の数値はアプリが計算する**) + 固定5節(`spend` / `change` / `reduction` / `split` / `subscriptions`。節ごとの最低行数あり) + `needs`(精度を上げるために利用者がアプリで行う操作) + `followUp`(前回レポートがあるときの追跡) + `dataGaps`。受理時に返る `reportId`。形の正本は `references/report-schema.md`(APIの `reportInputSchema` を写したもの)、図は `references/chart-catalog.md`。
+- **出力**: アプリへ POST する第4版レポート。従来の5節・要点・図に、`analysisDepth` と `contextAnalysis`(問い・利用者回答・統計的事実・解釈・外部出典・主/対立の背景仮説)を加える。会計金額の根拠は取得データのみとする。形の正本は `references/report-schema.md`、分析手順は `references/statistical-causal-analysis.md`。
 - **レポートの型**: 期間の長さで決まる(1ヶ月=月次 / 2〜13ヶ月=年次 / 14ヶ月以上=長期)。5節と10図は固定し、型ごとの重心と主役にする図は `references/analysis-guide.md` §2。
 - **完了条件**: `201` を受け取り `reportId` を利用者へ示す。送信不能環境では検査済みJSONをそのまま提示し、画面の「結果を貼り付ける」へ誘導する。
 
@@ -97,6 +98,7 @@ rubric_hash: sha256:6e1843e5204accb8c76c96bf0d8189dafff6d51f2d182096424fcb6c6bfd
 - トークンは指示文の中と curl の引数にだけ使う。ファイル・ログ・要約へ書き写さない。
 - アプリ側のスキーマ(`packages/api/src/ai/contract.ts`)を変える提案はしない。形が合わないときはレポート側を直す。
 - 分析に使う観点は `references/analysis-guide.md` の範囲。税務判断の断定・法的助言はしない。
+- 外部調査は利用者がONと明示したときだけ行う。検索語に取引先名・個人名・具体金額・明細を送らず、業種・地域・期間・一般経済指標に限る。
 
 ## 主要ルール
 
@@ -113,6 +115,9 @@ rubric_hash: sha256:6e1843e5204accb8c76c96bf0d8189dafff6d51f2d182096424fcb6c6bfd
 9. 立場は税理士・管理会計の実務家。**事実(数字) → 解釈 → 打ち手** の順、1文は短く、金額は「123,456円」、比率は「12.3%」、増減は「+12,000円(+8.1%)」。断定できないことは「〜の可能性(根拠: …)」。専門用語は括弧で言い換える(例: 固定費(毎月ほぼ同額で出るもの))。
 10. **要点は 事実(数値+`basis` に計算根拠)→ 解釈 → 次のアクション(`expectedEffect` に期待効果)の4欄をすべて埋める**。0件の区分は `notes` に理由。
 11. **図は取得データの `charts` で `available=true` のものだけ**。すべて本文で「図N」と参照し、`charts` に `{catalogId, caption}`(caption 15字以上・図から言えること)を付けて送る。出せない図は参照せず `dataGaps` に「図N はあと◯ヶ月分で出せる」。`status=app_missing` の図は「アプリ側の不備」と書く。
+12. **背景と内訳を分ける**。取得データで「どこが動いたか」を示し、ヒアリング・公表資料で「なぜか」の仮説を組む。因果を断定せず、`cause → mechanism → outcome` と反証条件を対にする。
+13. **外部情報は出典付きの背景だけ**。公的資料→業界/学術→報道の順に探し、URL・取得日・主張・関連を記録する。支持と反証を同じ基準で集め、想定の仮説は全体の半数以下にする。
+14. **事実・解釈・仮説を分ける**。統計的事実は `statisticalFacts`、解釈は `interpretations`、原因候補は `causalHypotheses` とし、id参照でつなぐ。利用者回答は `source=user_reported` とし、取込データの事実と混ぜない。
 
 ## 評価・改善ループ契約
 
@@ -124,7 +129,7 @@ frontmatter `feedback_contract.criteria` が評価基準の正本。inner(IN1〜
 
 ### ゴール (Goal)
 
-指示文の対象期間と型について、取得した実績データだけを根拠にした第3版レポート(4欄の要点・カタログ図の読み解き・最低行数を満たす固定5節・needs)が `validate-report.py` exit 0 を経てアプリに `201` で受理され、`reportId` が利用者に示されている。
+指示文の対象期間と型について、会計事実と背景仮説を分離した第4版レポートが `validate-report.py` exit 0 を経てアプリに `201` で受理され、`reportId` が利用者に示されている。
 
 ### 目的・背景 (Why)
 
@@ -134,7 +139,7 @@ frontmatter `feedback_contract.criteria` が評価基準の正本。inner(IN1〜
 
 - [ ] 指示文から 対象期間と型 / GET URL / POST URL / トークン / 有効期限(+ 再分析の前回ID・補足情報)を読み取った <!-- CL-1 -->
 - [ ] 本文・keyFindings・charts の金額・科目・ベンダーが取得JSON(または計算式を示せる派生値)に由来し、無いものは「データ不足」と本文・`dataGaps` に書き、解消操作を `needs` に書いた。`stats.available=false` の手法・BS の数字を書いていない <!-- CL-2 -->
-- [ ] `summary`(図N参照つき) + `keyFindings`(3区分・各件 fact/basis/interpretation/action・0件は notes) + `charts`(available=true の全図に catalogId+caption) + 5節(最低行数か gap) + `needs`(+ 前回があれば `followUp`)を含む送信JSONを組み立てた。本文は「リード文 + 『- 』の箇条書き」で書いた <!-- CL-3 -->
+- [ ] 従来の5節・要点・図・needsに加え、`analysisDepth` と `contextAnalysis`(利用者回答、統計的事実、解釈、主/対立仮説、外部出典)を参照整合させた <!-- CL-3 -->
 - [ ] `validate-report.py --data <取得JSON>` が exit 0 を返した <!-- CL-4 -->
 - [ ] POST が `201` を返し `reportId` を利用者へ示した(送信不能環境ではJSONを提示し貼り付け先を案内した) <!-- CL-5 -->
 - [ ] 一時ファイルを削除し、トークンをファイル・ログ・要約に残していない <!-- CL-6 -->
@@ -165,7 +170,7 @@ curl -sS -H "Authorization: Bearer <token>" "<データ取得URL>" -o "${TMPDIR:
 
 ### 局面: 分析
 
-`references/analysis-guide.md` §1 でデータの読み方(各キーの意味)、§2 で型(月次/年次/長期)の重心と主役にする図を確認し、§3 の観点チェックリストを上から順に当てる。判定は §8 の閾値(アプリ計算済み)だけを使う。図は取得JSONの `charts` を `references/chart-catalog.md` と照らして読み、`available=true` の図ごとに「この図から言えること」を1〜2文にまとめる(これが `caption` になる)。比較対象(`summary.previous` / `summary.yearAgo`)が `null` の観点は「データ不足」で確定させ、`dataGaps` と `needs` へ積む。統計・PL・BS は §4、前回レポートと補足情報は §5 に従う。`dataRange` が指示文の期間より狭ければ、本文冒頭に「実データは○〜○の○ヶ月分」と書く。
+`references/analysis-guide.md` §1〜§5 で数値・型・図の読み方を確認し、`references/statistical-causal-analysis.md` で問いの型→主仮説/対立仮説→反証条件→内訳と背景の分離を行う。外部調査がOFFなら検索ツールは呼ばない。ONなら Claude Code は `WebSearch` / `WebFetch`、Codex はホストが提供するWeb検索機能を使い、公的資料→業界/学術→報道の順に探す。検索語は業種・地域・期間・一般経済指標だけとし、取引先名・個人名・具体金額・明細は送らない。判定は analysis-guide §8 の閾値だけを使う。比較対象がない観点は「データ不足」とし `dataGaps` と `needs` へ積む。
 
 ### 局面: 組立
 
@@ -251,7 +256,8 @@ curl -sS -X POST -H "Authorization: Bearer <token>" -H "Content-Type: applicatio
 ## 追加リソース
 
 - `references/analysis-guide.md` — データの読み方(各キーの意味)、型ごとの重心、分析観点のチェックリスト、統計・PL・BS の扱い、前回レポートの追跡
-- `references/report-schema.md` — 送信JSONの形(第3版: 要点4欄 / charts はカタログ参照 / 節の最低行数と gap)・上限下限・画面 id・応答コード
+- `references/report-schema.md` — 送信JSONの形(第4版: 要点4欄 / 図 / 固定5節 / contextAnalysis)・上限下限・画面 id・応答コード
+- `references/statistical-causal-analysis.md` — 問いの型、統計的保留条件、背景仮説・外部調査・図解選択の再現可能な手順
 - `references/chart-catalog.md` — 図表カタログ10枚と必要データ・切り口・粒度・出せない理由の区別・検査規則の対応表。`chart-catalog.json` は機械可読の正本(`pnpm catalog:export` 生成)
 - `scripts/validate-report.py` — 送信前の形式検査(標準ライブラリのみ)。`scripts/test_validate_report.py` が機能テスト
 - 契約の正本: `packages/api/src/ai/contract.ts`(`reportInputSchema` / `SKILL_NAME`)。`docs/spec-v1.1.md` §16 が仕様
@@ -259,5 +265,5 @@ curl -sS -X POST -H "Authorization: Bearer <token>" -H "Content-Type: applicatio
 ## セキュリティと権限
 
 - `effect: external-mutation`: 結果送信URLへの POST がアプリのデータを1件作る。書き込み先はこの1エンドポイントだけで、他の外部サービスへ送らない。
-- `allowed-tools` は `Read` / `Bash(curl *)` / `Bash(python3 *)` に限定。git 操作・ファイルのリポジトリ内保存は行わない。
+- `allowed-tools` は `Read` / `Bash(curl *)` / `Bash(python3 *)` / `WebSearch` / `WebFetch` に限定。Webツールは外部調査ON時だけ使う。git 操作・ファイルのリポジトリ内保存は行わない。
 - 取得データには金額・取引先が含まれる。応答・要約・ログへ明細行を貼らない(レポート本文に集計値として書く範囲は可)。

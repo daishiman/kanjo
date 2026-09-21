@@ -384,7 +384,9 @@ export function routePageTitle(pathname: string): string {
   if (tab) return `${tab.label} | 支出分析 | Focus Ledger`;
   if (pathname === '/improvement') return '改善要望 | Focus Ledger';
   const route = APP_ROUTES.find((candidate) =>
-    candidate.path === '/' ? pathname === '/' : pathname === candidate.path,
+    candidate.path === '/'
+      ? pathname === '/'
+      : pathname === candidate.path || pathname.startsWith(`${candidate.path}/`),
   );
   return route ? `${route.label} | Focus Ledger` : 'Focus Ledger';
 }

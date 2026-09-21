@@ -31,7 +31,7 @@
 | `coverage[]` | 図ごとの `status` と `detail`。`app_missing` は `dataGaps` に書いて利用者へ伝える |
 | `axes` | レポート・図に使ってよい切り口(項目・分類 / 区分 / 期間プリセット / 指標)。**ここに無い軸は作らない**(例: 決済状況は `settlement.available=false`)。詳細は `chart-catalog.md` §2 |
 | `previousReports[]` | 同じ型の過去レポート(最新2件。再分析なら親レポートを含む)。`version`・`summary`・`keyFindings`・`reductionItems`・`needs` が入る |
-| `supplement` | 利用者が画面で入力した補足情報(無ければ `null`)。数字の根拠に使ってよいが、データと矛盾するときはデータを優先し、その旨を書く |
+| `supplement` | 利用者が画面で入力した補足情報。背景仮説と `interviewFacts` にだけ使い、会計金額の fact / basis / expectedEffect の根拠には使わない |
 
 金額はすべて円の整数。比率は 1=100% の小数(本文では % に直す: 0.123 → 12.3%)。
 
@@ -96,7 +96,7 @@
 
 - `previousReports` があれば `followUp` を必ず書く。前回の `keyFindings.quickWins` と `reductionItems` を1件ずつ追い、「解消(数字で確認)/ 未実施 / 悪化」を判定する。判定できないものは「データでは確認できない」と書く。
 - 前回の `needs` が今回のデータで解消されているか(例: 名義未設定が減ったか)も1行で触れる。
-- `supplement` は根拠として引用してよい(「利用者の補足: 家賃は事業按分済み」)。データと矛盾するときはデータを優先し、矛盾を `dataGaps` に書く。
+- `supplement` は `interviewFacts` と背景仮説の材料に限る。会計金額の事実・計算根拠・期待効果は取得JSONだけを根拠にする。データと矛盾する回答は `dataGaps` に書く。
 
 ## 6. データ不足と `needs` の書き方
 

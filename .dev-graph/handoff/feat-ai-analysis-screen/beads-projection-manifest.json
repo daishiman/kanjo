@@ -1,0 +1,151 @@
+{
+ "feature": {
+  "graph_node_id": "feat-ai-analysis-screen",
+  "title": "AI分析画面 (12-ai) の作り直しと依頼の段階・版・タブの導出の core 単一化",
+  "description": "dev-graph feature projection (features/feat-ai-analysis-screen.md)",
+  "bd_issue_id": "kanjo-5ru"
+ },
+ "children": [
+  {
+   "graph_node_id": "SYS-AI-P01",
+   "phase_ref": "P01",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P01 要件ベースライン確定と持ち越し事項の解決担当の割り当て",
+   "description": "dev-graph P01 projection (tasks/feat-ai-analysis-screen/sys-ai-p01.md)",
+   "depends_on": [],
+   "bd_issue_id": "kanjo-5ru.1"
+  },
+  {
+   "graph_node_id": "SYS-AI-P02",
+   "phase_ref": "P02",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P02 段階導出純関数・3 経路 API・migration 0046・画面分割のワークストリーム設計決定記録",
+   "description": "dev-graph P02 projection (tasks/feat-ai-analysis-screen/sys-ai-p02.md)",
+   "depends_on": [
+    "SYS-AI-P01"
+   ],
+   "bd_issue_id": "kanjo-5ru.2"
+  },
+  {
+   "graph_node_id": "SYS-AI-P03",
+   "phase_ref": "P03",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P03 段階契約・API 契約・データ公開範囲・URL 契約の独立レビュー",
+   "description": "dev-graph P03 projection (tasks/feat-ai-analysis-screen/sys-ai-p03.md)",
+   "depends_on": [
+    "SYS-AI-P02"
+   ],
+   "bd_issue_id": "kanjo-5ru.3"
+  },
+  {
+   "graph_node_id": "SYS-AI-P04",
+   "phase_ref": "P04",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P04 core 境界値・API 契約・migration・DOM の失敗テスト先行作成",
+   "description": "dev-graph P04 projection (tasks/feat-ai-analysis-screen/sys-ai-p04.md)",
+   "depends_on": [
+    "SYS-AI-P03"
+   ],
+   "bd_issue_id": "kanjo-5ru.4"
+  },
+  {
+   "graph_node_id": "SYS-AI-P05",
+   "phase_ref": "P05",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P05 ai-screen 純関数・3 経路 API・migration 0046・AI分析画面の分割と旧操作の移設の最終実装",
+   "description": "dev-graph P05 projection (tasks/feat-ai-analysis-screen/sys-ai-p05.md)",
+   "depends_on": [
+    "SYS-AI-P04"
+   ],
+   "bd_issue_id": "kanjo-5ru.5"
+  },
+  {
+   "graph_node_id": "SYS-AI-P06",
+   "phase_ref": "P06",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P06 全テストと型検査と lint と skill テストの実行記録",
+   "description": "dev-graph P06 projection (tasks/feat-ai-analysis-screen/sys-ai-p06.md)",
+   "depends_on": [
+    "SYS-AI-P05"
+   ],
+   "bd_issue_id": "kanjo-5ru.6"
+  },
+  {
+   "graph_node_id": "SYS-AI-P07",
+   "phase_ref": "P07",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P07 受入基準 S1 から S6 の検証",
+   "description": "dev-graph P07 projection (tasks/feat-ai-analysis-screen/sys-ai-p07.md)",
+   "depends_on": [
+    "SYS-AI-P06"
+   ],
+   "bd_issue_id": "kanjo-5ru.7"
+  },
+  {
+   "graph_node_id": "SYS-AI-P08",
+   "phase_ref": "P08",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P08 段階判定の重複・旧参照の読取専用監査",
+   "description": "dev-graph P08 projection (tasks/feat-ai-analysis-screen/sys-ai-p08.md)",
+   "depends_on": [
+    "SYS-AI-P07"
+   ],
+   "bd_issue_id": "kanjo-5ru.8"
+  },
+  {
+   "graph_node_id": "SYS-AI-P09",
+   "phase_ref": "P09",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P09 アクセシビリティ・入力検証・トークン失効・JS バンドル予算の保証確認",
+   "description": "dev-graph P09 projection (tasks/feat-ai-analysis-screen/sys-ai-p09.md)",
+   "depends_on": [
+    "SYS-AI-P08"
+   ],
+   "bd_issue_id": "kanjo-5ru.9"
+  },
+  {
+   "graph_node_id": "SYS-AI-P10",
+   "phase_ref": "P10",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P10 独立最終レビュー",
+   "description": "dev-graph P10 projection (tasks/feat-ai-analysis-screen/sys-ai-p10.md)",
+   "depends_on": [
+    "SYS-AI-P09"
+   ],
+   "bd_issue_id": "kanjo-5ru.10"
+  },
+  {
+   "graph_node_id": "SYS-AI-P11",
+   "phase_ref": "P11",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P11 再現可能な証跡索引の作成",
+   "description": "dev-graph P11 projection (tasks/feat-ai-analysis-screen/sys-ai-p11.md)",
+   "depends_on": [
+    "SYS-AI-P10"
+   ],
+   "bd_issue_id": "kanjo-5ru.11"
+  },
+  {
+   "graph_node_id": "SYS-AI-P12",
+   "phase_ref": "P12",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P12 段階・T-番号・版の説明・タブ振り分け・エラー文言の規則表の docs 最終同期",
+   "description": "dev-graph P12 projection (tasks/feat-ai-analysis-screen/sys-ai-p12.md)",
+   "depends_on": [
+    "SYS-AI-P11"
+   ],
+   "bd_issue_id": "kanjo-5ru.12"
+  },
+  {
+   "graph_node_id": "SYS-AI-P13",
+   "phase_ref": "P13",
+   "parent_feature": "feat-ai-analysis-screen",
+   "title": "P13 単一 PR での配信と migration 0046 の適用とクローズアウト",
+   "description": "dev-graph P13 projection (tasks/feat-ai-analysis-screen/sys-ai-p13.md)",
+   "depends_on": [
+    "SYS-AI-P12"
+   ],
+   "bd_issue_id": "kanjo-5ru.13"
+  }
+ ]
+}

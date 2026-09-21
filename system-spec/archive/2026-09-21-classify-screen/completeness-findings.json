@@ -1,0 +1,32 @@
+{
+  "evaluator": {"name": "assign-system-spec-completeness-evaluator", "version": "0.1.0", "context": "fork"},
+  "spec_dir": "system-spec",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "00 章 U1 は段落 1 つだけになり、正本 requirements_foundation.essential_purpose と一致する (未整理・手動変更・完了の排他 + 要確認は未整理の内訳)。改訂前の『4 区分の件数は排他』の文は全 10 章から消えた。G2 / O2 / I2 / scope.in も 3 区分 + 内訳のモデルで全章に揃っている。validate-coverage-matrix --require-foundation と validate-spec-doc-sync はどちらも exit0。", "evidence": ["00-requirements-definition.md:16 U1 は 1 段落", "grep 『排他』: 全章が 3 区分 + 要確認は内訳", "validate-spec-doc-sync.py exit0"]},
+    "decision_guidance": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "decisions 3 件はどれも 2〜3 案と無料案を持つ。cost_model・goal_fit・security・ops・lock-in・推奨理由・注意点・comparison_basis が揃い、user_decision が利用者の選択 (qa-classify-decision-001/003/004) に紐づく。ただし公式根拠の確認 (13:18:15Z) が利用者の決定 (13:12:52Z) より後で、その旨の注記はまだ無い (medium のまま)。", "evidence": ["decisions[] 3 件", "recommendation.latest_checked_at=13:18:15Z > user_decision.confirmed_at=13:12:52Z"]},
+    "matrix_coverage": {"verdict": "PASS", "auditor": "system-spec-matrix-auditor", "component": "C07", "summary": "C07 の判定は loop_pass・final_ready ともに PASS。48 セル (確定 8 / 対象外 40 / 未収集 0)。対象外の理由はセルごとに具体的で、qa_ref はすべて実在し dangling は 0。category_aggregate も真理値表と一致する。C16 required-info の blocking_items 6 件はすべて根拠に接地している。sub-input の C06 も PASS (聞き漏れ・誘導・早期停止・トレース欠落 0)。ただし loop_count と reopen の時系列について medium の観察がある。", "evidence": ["validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit0 (C05 と C07 がそれぞれ実行)", "validate-knowledge-graph.py --profile required-info --state exit0 / ungrounded_blocking_items=[]", "C06 hearing-auditor verdict PASS"]},
+    "design_knowledge_reflection": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "8 技術章すべてに doctrine anchor 表があり、『本章の確定セルへの反映』列と『本章での適用』節に明細仕分け固有の具体的な適用がある。例: database=expand のみの migration で既存行の書換 0、security=ASVS V11 でフェンスに登録、backend=Dependency Rule でプレビューと適用を同じ core 関数に通す、ui-ux=3 カラムの情報優先度。汎用ポインタだけで済ませた章は無い。C13〜C15 の knowledge / doctrine / cross ゲートはすべて exit0。『4 区分』の言い方の残存と、infrastructure の card 0 件の記述の不整合は low として記録した。", "evidence": ["aggregate-completeness.py --knowledge-graph exit0 (knowledge/doctrine/required-info/cross)", "各章 ## 適用された設計知識 > ### 本章での適用 が 1 節ずつ"]},
+    "doc_freshness": {"verdict": "PASS", "auditor": "system-spec-doc-freshness-auditor", "component": "C08", "summary": "C08 は二層とも PASS。validate-source-citation は exit0。8 target すべてを WebFetch / WebSearch で公式の現行値と照合し、version・last_updated は一致した。欠落・非公式 host・世代落ち・確認時刻の欠落はいずれも 0。github.com を出典にした 3 件は publisher の公式 org と確認済み (info)。", "evidence": ["validate-source-citation.py exit0", "8/8 target 公式照合一致"]},
+    "prompt_quality": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "system-spec-harness の prompts 18 件を validate-prompt.py --input と verify-completeness.py --input にかけ、失敗は 0 件。", "evidence": ["prompts=18 fails=0"]}
+  },
+  "gate_results": [
+    {"id": "G-matrix", "name": "validate-coverage-matrix (--require-complete --require-basis --require-foundation)", "conditions": ["matrix_coverage", "foundation_trace", "decision_guidance"], "exit_code": 0},
+    {"id": "G-knowledge-graph", "name": "validate-knowledge-graph (knowledge/doctrine/required-info/cross)", "conditions": ["design_knowledge_reflection", "matrix_coverage"], "exit_code": 0},
+    {"id": "G-spec-doc-sync", "name": "validate-spec-doc-sync", "conditions": ["foundation_trace"], "exit_code": 0},
+    {"id": "G-source-citation", "name": "validate-source-citation (C08 実行)", "conditions": ["doc_freshness"], "exit_code": 0},
+    {"id": "G-prompt", "name": "validate-prompt + verify-completeness (18 prompts)", "conditions": ["prompt_quality"], "exit_code": 0}
+  ],
+  "findings": [
+    {"severity": "info", "bucket": "foundation_trace", "observation": "前回 high (00 章 U1 に改訂前の段落が残存) は解消を確認した。U1 は 1 段落で、正本と一致する。『4 区分の件数は排他』の文はどの章にも無い。", "evidence": ["00-requirements-definition.md:14-16"]},
+    {"severity": "medium", "bucket": "matrix_coverage/hearing (C06 F2・C07 info・前回 medium の継続)", "observation": "backend / ui-ux / maintenance-ops の web セルの主根拠 -003 は answered_at が 13:40:10Z で、改訂承認 appr-foundation-classify-002 (13:44:19Z) と reopen (13:44:54Z) より前になっている。hearing_progress.loop_count=1 も、reopen を経た実際の周回を反映していない。", "suggested_fix": "C01 R4-reopen: 導出した qa に recorded_at / derived_from を持たせ、reopen → 再回答 → 再確定の順序を writer で担保する。reopen のたびに loop_count を増やす。"},
+    {"severity": "medium", "bucket": "decision_guidance (前回 medium の継続)", "observation": "decisions[] の公式根拠の確認時刻 (latest_checked_at 13:18:15Z) が利用者の決定 (13:12:52Z) より後で、『根拠は決定後に取得』の注記がまだ無い。選んだ案と根拠は矛盾しない。", "suggested_fix": "C01 R5-decision-guide: 公式根拠を決定前に取得する順序にする。今回の 3 件には『根拠は決定後に取得・結論は不変』の注記を足す。"},
+    {"severity": "low", "bucket": "design_knowledge_reflection", "observation": "『本章での適用』と補助根拠に『4 区分』の言い方が残っている (backend.md:146、frontend.md:32 / :118、maintenance-ops.md:73)。KPI が 4 枚なのは正しいが、『4 区分の判定』『4 区分の和』は排他の 4 区分と読める。", "suggested_fix": "compile / elicit で『分類ステータス (3 区分 + 要確認)』へ言い換える。"},
+    {"severity": "low", "bucket": "design_knowledge_reflection", "observation": "infrastructure.md:119 は『Serverless の制約 card』を適用したと書く一方、:123 は『本章へ引く card は 0 件』とあり、食い違っている。", "suggested_fix": "compile: card を引くか、適用文を card に依らない表現にする。"},
+    {"severity": "low", "bucket": "decision_guidance", "observation": "00-requirements-definition.md:95-97 の意思決定表に、cost_model が Python の dict 表記 (cost={'category': ...}) のまま出ている。", "suggested_fix": "compile R2-render: cost_model を『free / 0 USD / none — tco』のように整形する。"},
+    {"severity": "low", "bucket": "matrix_coverage/hearing (C06 F1)", "observation": "qa-classify-target-platforms-001 (web のみ) は、個別の中立な質問ではなく、scope.out に既定値を入れた U1-U9 の一括承認で決まっている。", "suggested_fix": "C01: 範囲を決める質問は独立した qa として残すか、既定値を含む一括承認であることを provenance に書く。"},
+    {"severity": "info", "bucket": "doc_freshness", "observation": "確認した観点: C08 が 8/8 target を公式で照合し、すべて現行版と一致した。github.com を出典とする 3 件 (tanstack / hono / owasp) は各 publisher の公式 org と確認した。"},
+    {"severity": "info", "bucket": "prompt_quality", "observation": "確認した観点: prompts 18 件で validate-prompt と verify-completeness の失敗は 0 件。"}
+  ],
+  "gaps": []
+}

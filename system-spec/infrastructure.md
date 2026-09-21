@@ -3,7 +3,7 @@ status: confirmed
 category: infrastructure
 aggregate: 確定
 spec_cells: [infrastructure.web, infrastructure.mobile, infrastructure.tablet, infrastructure.desktop-windows, infrastructure.desktop-linux, infrastructure.desktop-macos]
-serves_goals: [G2, G3, G5]
+serves_goals: [G5]
 ---
 
 # インフラ (infrastructure)
@@ -15,12 +15,12 @@ serves_goals: [G2, G3, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-classify-infrastructure-web-001。裏付け質疑 (`qa_refs`): `qa-classify-infrastructure-web-evidence-001`, `qa-classify-infrastructure-web-002` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、インフラではプッシュ通知やアプリストア配布の基盤をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、インフラではタブレット版のストア配布と審査をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、インフラではWindows 版の更新配信の置き場をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、インフラではLinux 版のパッケージリポジトリをどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、インフラではmacOS 版の更新配信と公証の基盤をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-classify-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-ai-infrastructure-web-001。裏付け質疑 (`qa_refs`): `qa-ai-infrastructure-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、infrastructure ではApp Store / Google Play の配布と審査、プッシュ通知の基盤を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、infrastructure ではタブレット向けビルドの配布経路と対応 OS 版を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、infrastructure ではMSI / MSIX の配布と自動更新サーバを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、infrastructure ではdeb / rpm / AppImage のどれで配るかと更新の経路を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、infrastructure ではdmg の配布と Sparkle などの自動更新を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G2, G3, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | 明細仕分けのインフラでは、一括保存を D1 の batch で明細ごとに区切り、1 件の失敗で残りを巻き戻さない形へ反映した。単独利用のため SLO は定めず、失敗は画面の通知と再試行で回復させる。 |
-| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | 明細仕分けのインフラでは、新しい資源を増やさず既存の Deploy / Migrate の手順 1 本で反映できる形へ反映した。追加のみの migration なので Deploy の前後どちらの版とも動く。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | 反映の順序を Migrate → Deploy に固定する形へ反映した。migration 0046 は列の追加だけなので、適用後に旧 Worker が動いていても新しい列を読まないだけで壊れない。 |
+| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | 基盤の変更が D1 の列追加だけであることを、既存の deploy.yml と migrate.yml をそのまま使う形へ反映した。新しい secret・キュー・外部サービスの登録は発生しない。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,43 +37,31 @@ serves_goals: [G2, G3, G5]
 
 ### Web (web)
 
-- 資するゴール: G2, G3, G5
+- 資するゴール: G5
 
-#### 主たる接地根拠: `qa-classify-infrastructure-web-001`
-
-**問**
-
-明細仕分けのためにインフラ (Workers・D1・ストレージ・バインディング) をどう変えるか。
-
-**答**
-
-構成は変えない。既存の Cloudflare Worker と D1 の上に載せ、R2 やキュー、新しいバインディングや外部サービスを足さない (qa-classify-decision-001, 003)。Cloudflare の無料枠 (Workers の CPU 時間・D1 の読み書き) の範囲で動くよう、一覧はサーバ側で 50 件ずつ返し、一括保存とルール適用は件数の上限を置いて D1 の batch でまとめて書く。migration の本番反映は既存の Deploy / Migrate の手順に従う。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が正本として指示した画像 design/FINAL-UI/images/13-classify.png と、利用者承認 (appr-foundation-classify-001) の U1-U9、決定 qa-classify-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T13:24:40Z)
-
-#### 裏付け質疑: `qa-classify-infrastructure-web-evidence-001`
+#### 主たる接地根拠: `qa-ai-infrastructure-web-001`
 
 **問**
 
-インフラ 章の裏付けとして、13-classify.png と現行実装の差分として何を観測したか。
+AI分析画面のために配信・実行・DB 反映の基盤をどう変えるか。
 
 **答**
 
-api は Hono の Cloudflare Worker で D1 を使う (wrangler 設定)。証憑用の R2 は #42 で撤去済み。D1 Free は rows read 5 million / day・rows written 100,000 / day・5 GB (https://developers.cloudflare.com/d1/platform/pricing/)。行書き換えの migration で Deploy が止まった過去があり、追加のみを原則にしている。
+基盤は変えない。既存の Cloudflare Worker と D1 のまま、migration 0046 を既存の Migrate の手順とゲートで適用してから Deploy する。アプリから LLM を呼ぶ経路・キュー・外部ストレージは足さない (scope.out)。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現行実装 (main 0003cb4) の読取りによる観測。 / 回答時刻: 2026-09-19T13:24:40Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
 
-#### 裏付け質疑: `qa-classify-infrastructure-web-002`
+#### 裏付け質疑: `qa-ai-infrastructure-web-evidence-001`
 
 **問**
 
-web の明細仕分け画面で、インフラ について利用者が決めていない具体値を何にするか。
+infrastructure 章の裏付けとして、既存の配信と反映の仕組みについて何を観測したか。
 
 **答**
 
-一括保存とルール適用は D1 の batch 1 回あたり最大 50 文に区切って書く。ルールのプレビューは読取りだけで、表示期間の明細 (最大 3 年) を 1 回の SQL で読む。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
+API は Cloudflare Worker (Hono) と D1 で、配信は .github/workflows/deploy.yml、D1 の migration 適用は .github/workflows/migrate.yml が担う。ルートの build は web の build と wrangler deploy --dry-run を行う (package.json:16)。AI 分析はアプリから LLM を呼ばず、外部の Claude Code / Codex がトークンで API を呼ぶ構成である。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent の推定 (利用者未確認) / 回答時刻: 2026-09-19T13:24:40Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
 
 ## To-Be / Delta
 
@@ -81,34 +69,21 @@ web の明細仕分け画面で、インフラ について利用者が決めて
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 分類ステータスと提案を core の純関数 1 か所に集める。各明細を 未整理 (利用者・ルール・MF 中項目のどれもまだ決めていない明細。提案の有無と信頼度は問わない) / 手動変更 (利用者が提案と異なる値で確定した明細。提案が無いまま利用者が決めた明細と、この変更より前の手入力の明細を含む) / 完了 (利用者が提案どおりに確定した明細と、ルール・MF 中項目が決めた明細) の 3 区分に排他で振り分け、和が全件に一致する。要確認は区分ではなく未整理の内訳で、提案の信頼度が 80% 未満・提案どうしの衝突・区分と名義の矛盾のいずれかがある未整理の明細を数える。ナビのバッジは未整理の件数、月次クローズの『仕分け』は同じ判定の未整理から照合側で数える明細を除いた件数とし (現行の clsSrc=既定 と同じ意味)、同じ関数から導かれることをテストで固定する。提案カテゴリ・信頼度・根拠の文は recommendationFor を拡張し、過去の同取引先・ルール・MF 中項目のどの由来にも決定論の信頼度を付け、/transactions の応答にも載せる。外部の LLM は呼ばず、表示は『自動提案』とする。
-- **G3**: 選択した複数の明細を 1 回の要求で保存する一括保存を設ける。明細ごとの成否を返し、画面は『N 件のうち M 件を保存、K 件はエラー』と失敗した明細だけの再試行を示す。成功分は取り消されない。削除は既存の取消 (undo) で元に戻せる。一括保存・ルール作成・ルール適用・保存フィルタの変更は既存の canonicalMutationFence の内側に置く。
-- **G5**: 仕分けの作業状態を失わない。保存したフィルタは D1 に新しい表を追加のみの migration で設け、名前付きで保存・呼出・削除できる。取引の履歴は D1 に明細の変更履歴表を追加のみで設け、いつ・何が (区分・カテゴリ・所有者・支払方法・メモ・分割)・どの由来 (自動提案 / 手動 / ルール / 一括保存) で変わったかを残し、編集パネルに新しい順で出す。編集パネルの下書きは端末の localStorage に明細単位で自動保存し、最終保存時刻を表示し、保存に成功したら消し、次回に『下書きを復元』できる。未保存のまま離れるときは確認する。
+- **G5**: データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | 未整理・手動変更・完了の件数が排他で閉じ、要確認が未整理の内訳に収まり、他画面と一致する。 | core の単体テストで、同じ Dataset と期間に対し 未整理 + 手動変更 + 完了 = 全件、各明細がちょうど 1 区分に入り、要確認 ⊆ 未整理、未整理の明細で信頼度 80% の境界 (79 は要確認・80 は要確認でない) と衝突・矛盾の各規則、提案どおりの確定は完了・提案と異なる確定は手動変更になることが固定され、ナビのバッジと月次クローズの『仕分け』の件数が同じ関数から出る。 |
-| O3 | 一括保存の部分失敗が報告され、失敗分だけ再試行できる。 | API 統合テストで、3 件中 1 件が検証エラーの一括保存が 2 件を保存して明細ごとの結果を返し、再試行が失敗分だけを送ることを DOM テストで確かめる。未認証 401・変更系フェンス違反の拒否・上限件数超過の 400 を確かめる。 |
-| O5 | 作業状態が失われない。 | API 統合テストで保存フィルタの作成・一覧・削除と、各変更経路で履歴が 1 件ずつ残ることを確かめ、migration が既存行を 1 行も書き換えないことを検査する。DOM テストで下書きの自動保存・復元・保存成功での消去・離脱確認を確かめる。 |
+| O5 | データの件数が実データと一致し、外部へ出るのは集計値だけである。 | API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I2**: core に分類ステータス判定 (仮称 classifyStatus) を新設し、3 区分の排他判定と要確認の内訳・件数集計を 1 か所で行い、サイドバーのバッジと月次クローズの『仕分け』もここを参照させる。
-- **I3**: recommendationFor を拡張し、ルール・MF 中項目由来にも決定論の信頼度を付け、根拠の文を由来ごとに整え、/transactions の各行に提案・信頼度・根拠・ステータスを載せる。
-- **I4**: 一括保存 API を新設し、明細ごとに検証と保存を行って成否の配列を返す。画面は部分失敗の通知と失敗分だけの再試行を出す。
-- **I6**: 保存フィルタ表と明細の変更履歴表を追加のみで設け、全変更経路 (手動・一括・ルール・分割・削除と取消) で履歴を 1 件ずつ残す。
-- **I7**: 編集パネルの下書きを localStorage に明細単位で自動保存し、保存時刻の表示・復元・保存成功での消去・未保存の離脱確認を行う。
+- **I6**: 使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。
 
 ### 本章に効く確定意思決定
 
-- **dec-classify-confidence-source**: 一覧の信頼度と自動提案をどう算出するか。
-  - 採択: 既存規則の拡張・外部送信なし (`opt-deterministic`)
-  - 目的適合: G2 の決定論と『取込データは外部送信しません』の約束に一致する。
-- **dec-classify-state-storage**: 保存したフィルタ・下書き・取引の履歴の保存先をどうするか。
-  - 採択: フィルタと履歴は D1、下書きは端末 (`opt-d1-and-local`)
-  - 目的適合: 共有と監査が要るものは D1、頻繁に変わる下書きは端末に置き G5 を満たす。
+- (本章ゴールに効く確定 decision なし)
 
 ## 適用された設計知識
 
@@ -116,9 +91,9 @@ web の明細仕分け画面で、インフラ について利用者が決めて
 
 ### 本章での適用
 
-Serverless の制約 card (CPU 時間・書込枠) を明細仕分けに適用した。一括保存・ルール適用の最悪ケースを件数の上限と batch の区切りで押さえ、無料枠の書込 100,000 行 / 日に対して 1 回の操作が数百行に収まる形にした。
+本章へ引く card は 0 件である。配信構成 (Worker・Workers Assets・D1) と binding を変えない判断を記録する。AI 分析はアプリが LLM を呼ばず、外部のエージェントがトークンで既存の API を呼ぶ構成なので、キュー・外部ストレージ・LLM の鍵を Worker に持たせない。変更は D1 の列追加だけで、既存の Migrate → Deploy の順序で反映できる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T13:24:40Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
 
 - `ref-system-design-knowledge/references/resource-map.yaml` (本章へ引く card は 0 件。未着手ではなく、上の適用記述で0 件である理由を述べた上での確定である)
 
@@ -126,4 +101,4 @@ Serverless の制約 card (CPU 時間・書込枠) を明細仕分けに適用�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-workers-limits | 2026-09-05 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/workers/platform/limits/ | 2026-09-19T13:26:35Z | 2026-09-19T13:26:35Z |
+| cloudflare-workers-limits | 2026-09-05 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/workers/platform/limits/ | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |

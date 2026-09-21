@@ -2,83 +2,103 @@
   "references": [
     {
       "target_id": "wcag22-use-of-color",
-      "retrieved_at": "2026-09-19T13:26:35Z",
+      "retrieved_at": "2026-09-19T12:40:44Z",
       "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
       "official_publisher": "W3C Web Accessibility Initiative (WAI)",
       "official_host": "www.w3.org",
       "last_updated": "2025-09-16",
-      "latest_checked_at": "2026-09-19T13:26:35Z",
-      "summary": "SC 1.4.1 は色の違いだけで情報を伝えず、色以外の視覚的手段を併用することを求める。明細仕分けの信頼度と 4 区分の表示で数値と文言を併記する根拠。"
+      "latest_checked_at": "2026-09-19T12:40:44Z",
+      "summary": "WCAG 2.2 SC 1.4.1 Use of Color (レベル A)。色を情報伝達の唯一の手段にしない。実行中の表のステータス (待機中 / 実行中 / 完了 / 失敗 / キャンセル) に文字を添え、進捗を % の数値と棒で示し、版履歴の最新版の印を文字で出す根拠。"
     },
     {
-      "target_id": "tanstack-query-dependent-queries",
-      "retrieved_at": "2026-09-19T13:26:35Z",
+      "target_id": "tanstack-query-invalidation",
+      "retrieved_at": "2026-09-19T12:40:44Z",
       "source_url": "https://github.com/TanStack/query/releases/latest",
       "official_publisher": "TanStack",
       "official_host": "github.com",
       "version": "5.103.1",
-      "latest_checked_at": "2026-09-19T13:26:35Z",
-      "summary": "TanStack Query の最新リリースは v5.103.1 (2026-09-16、query-core の修正)。一括保存・ルール適用後の問い合わせ無効化は v5 系の API で行う。"
+      "latest_checked_at": "2026-09-19T12:40:44Z",
+      "summary": "@tanstack/react-query@5.103.1 (2026-09-16 リリース)。公式ガイド tanstack.com/query/latest/docs/framework/react/guides/invalidations-from-mutations は useMutation の onSuccess で queryClient.invalidateQueries({ queryKey }) を呼び、Promise を返すと無効化完了まで isPending が続く。キャンセル・再実行・削除・取り込み・アーカイブの後に依頼一覧とレポート一覧のキーだけを無効化する根拠。"
     },
     {
       "target_id": "react-router-searchparams",
-      "retrieved_at": "2026-09-19T13:26:35Z",
+      "retrieved_at": "2026-09-19T12:40:44Z",
       "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
-      "official_publisher": "React Router (Remix / Shopify)",
+      "official_publisher": "React Router (Shopify / Remix team)",
       "official_host": "reactrouter.com",
       "version": "8.4.0",
-      "latest_checked_at": "2026-09-19T13:26:35Z",
-      "summary": "useSearchParams は現在の URLSearchParams と更新関数を返し、更新は navigation を起こす。絞り込み・ページ・選択を URL に保つ根拠。"
+      "latest_checked_at": "2026-09-19T12:40:44Z",
+      "summary": "useSearchParams は [searchParams, setSearchParams] を返し、setSearchParams は関数形式でも更新でき、呼ぶとナビゲーションになる。文書の表示版は v8.4.0 で、リポジトリは react-router-dom 7 系を使う (同 API)。選択中の依頼・レポート・タブを URL の検索パラメータに持ち、再読込で復元する根拠。"
+    },
+    {
+      "target_id": "mdn-localstorage",
+      "retrieved_at": "2026-09-19T12:40:44Z",
+      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage",
+      "official_publisher": "Mozilla (MDN Web Docs)",
+      "official_host": "developer.mozilla.org",
+      "last_updated": "2026-07-28",
+      "latest_checked_at": "2026-09-19T12:40:44Z",
+      "summary": "localStorage はオリジン単位で有効期限なく残る文字列の保存領域で、プライベートブラウズでは最後のタブを閉じると消え、ポリシー違反などで SecurityError を投げ得る。補足指示の下書きをブラウザ内だけに保存し、読み書きの失敗を例外として握って画面を止めない根拠。"
     },
     {
       "target_id": "hono-zod-validator",
-      "retrieved_at": "2026-09-19T13:26:35Z",
+      "retrieved_at": "2026-09-19T12:40:44Z",
       "source_url": "https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md",
-      "official_publisher": "Hono",
+      "official_publisher": "Hono (honojs)",
       "official_host": "github.com",
       "version": "0.9.1",
-      "latest_checked_at": "2026-09-19T13:26:35Z",
-      "summary": "@hono/zod-validator の最新は 0.9.1 (header schema のメタデータをキャッシュ)。一括保存・ルールのプレビューと適用・保存フィルタの入力を zod で検証する。"
+      "latest_checked_at": "2026-09-19T12:40:44Z",
+      "summary": "@hono/zod-validator の最新は 0.9.1 (header schema のメタデータをキャッシュする性能改善)。公式ガイド hono.dev/docs/guides/validation は zValidator(target, schema) で json / param / query を検証し c.req.valid(target) で受け取る。キャンセル・再実行・使用するデータの経路の id と期間を zod で検証する根拠。"
     },
     {
-      "target_id": "cloudflare-d1-migrations",
-      "retrieved_at": "2026-09-19T13:26:35Z",
-      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-06-08",
-      "latest_checked_at": "2026-09-19T13:26:35Z",
-      "summary": "D1 の migration は migrations フォルダの SQL を Wrangler で未適用分だけ順に適用し、d1_migrations 表で適用済みを管理する。追加のみの migration 1 本で保存フィルタ・履歴表とルール・手当ての列を足す。"
-    },
-    {
-      "target_id": "cloudflare-workers-limits",
-      "retrieved_at": "2026-09-19T13:26:35Z",
-      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-09-05",
-      "latest_checked_at": "2026-09-19T13:26:35Z",
-      "summary": "Workers Free はリクエストあたり CPU 10 ms・サブリクエスト 50・1 日 100,000 リクエスト。一括保存とルール適用に件数の上限を置き D1 batch で書く根拠。"
+      "target_id": "hono-body-limit",
+      "retrieved_at": "2026-09-19T12:40:44Z",
+      "source_url": "https://github.com/honojs/hono/releases/latest",
+      "official_publisher": "Hono (honojs)",
+      "official_host": "github.com",
+      "version": "4.13.8",
+      "latest_checked_at": "2026-09-19T12:40:44Z",
+      "summary": "hono の最新は v4.13.8 (2026-09-15)。公式文書 hono.dev/docs/middleware/builtin/body-limit の bodyLimit は maxSize と onError を取り、Content-Length があればそれで、無ければ本文をストリームで読んで超過時に 413 を返す。エージェントのレポート送信と利用者の貼り付けを JSON の読み込み前に止める根拠。"
     },
     {
       "target_id": "owasp-asvs",
-      "retrieved_at": "2026-09-19T13:26:35Z",
+      "retrieved_at": "2026-09-19T12:40:44Z",
       "source_url": "https://github.com/OWASP/ASVS/blob/master/README.md",
       "official_publisher": "OWASP Foundation",
       "official_host": "github.com",
       "version": "5.0.0",
-      "latest_checked_at": "2026-09-19T13:26:35Z",
-      "summary": "ASVS の最新安定版は 5.0.0 (2025-05)。入力検証・業務ロジック・アクセス制御の要件を、一括保存・ルール適用・保存フィルタの認可と検証に当てる。"
+      "latest_checked_at": "2026-09-19T12:40:44Z",
+      "summary": "OWASP ASVS の最新安定版は 5.0.0 (2025 年 5 月公開)。検証要件の上流指針として、入力の許可リスト検証・出力の文脈に応じた無害化・トークンの失効を扱う。キャンセル済みトークンの拒否、body 上限と契約検証、レポート文字列のエスケープの根拠。"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "retrieved_at": "2026-09-19T12:40:44Z",
+      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-08",
+      "latest_checked_at": "2026-09-19T12:40:44Z",
+      "summary": "D1 の migration は migrations ディレクトリに版番号付きの .sql を順に置き、wrangler d1 migrations apply が未適用分を実行し、適用済みを d1_migrations 表に記録する。追加のみの migration 0046 (ai_tasks への列追加) を既存の Migrate 手順で適用する根拠。"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "retrieved_at": "2026-09-19T12:40:44Z",
+      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-09-05",
+      "latest_checked_at": "2026-09-19T12:40:44Z",
+      "summary": "Workers のリクエスト body 上限は Free / Pro で 100MB、CPU 時間は Free 10ms・Paid 既定 30 秒で、D1 などの待ち時間は CPU 時間に数えない。基盤の上限はレポート JSON より十分大きいので、アプリ側で body 上限を小さく掛けて早く止める必要があること、使用するデータの件数読み取りが CPU 時間を圧迫しないことの根拠。"
     },
     {
       "target_id": "vitest-expect",
-      "retrieved_at": "2026-09-19T13:26:35Z",
+      "retrieved_at": "2026-09-19T12:40:44Z",
       "source_url": "https://vitest.dev/api/expect.html",
-      "official_publisher": "Vitest",
+      "official_publisher": "Vitest (VoidZero)",
       "official_host": "vitest.dev",
       "version": "5.0.1",
-      "latest_checked_at": "2026-09-19T13:26:35Z",
-      "summary": "Vitest v5.0.1 の expect は toBe / toEqual など Jest 互換の matcher を持つ。4 区分の和・信頼度の範囲・プレビューと適用の一致を単体テストで固定する。"
+      "latest_checked_at": "2026-09-19T12:40:44Z",
+      "summary": "toBe は Object.is による厳密一致、toEqual は構造の再帰比較。文書の表示版は v5.0.1 で、リポジトリは vitest 4 系を使う (同 API)。段階と進捗の導出の境界ケースを toBe で、レポートのタブへの振り分け結果を toEqual で固定する根拠。"
     }
   ]
 }

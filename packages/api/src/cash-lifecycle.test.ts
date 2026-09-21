@@ -9,6 +9,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
+import { splitMigrationStatements } from './migration-test-support.js';
 import { planCashParentDeleteQueries } from './routes/cash.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
 import {
@@ -40,11 +41,7 @@ const migrationFiles = () =>
 
 async function applyMigrations(database: D1Database, filenames = migrationFiles()): Promise<void> {
   for (const filename of filenames) {
-    const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-      .replace(/^\s*--.*$/gm, '')
-      .split(';')
-      .map((sql) => sql.trim())
-      .filter(Boolean);
+    const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
     for (const sql of statements) await database.prepare(sql).run();
   }
   await recordTestMigrationHead(database, filenames);

@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { JSON_SNAPSHOT_MUTATION_CONSUMERS } from './import-active.js';
+import { splitMigrationStatements } from './migration-test-support.js';
 import { runR2Cleanup } from './r2-cleanup.js';
 import { EXPECTED_D1_MIGRATION } from './schema-guard.js';
 
@@ -25,12 +26,8 @@ async function applyMigrations(database: D1Database): Promise<void> {
     .filter((filename) => filename.endsWith('.sql'))
     .sort();
   for (const filename of filenames) {
-    const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-      .replace(/^\s*--.*$/gm, '')
-      .split(';')
-      .map((sql) => sql.trim())
-      .filter(Boolean);
-    for (const sql of statements) await database.prepare(sql).run();
+    const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
+    for (const statement of statements) await database.prepare(statement).run();
   }
 }
 
@@ -63,7 +60,7 @@ describe('現行migrationの適用', () => {
       .sort()
       .at(-1);
     expect(latest).toBe(EXPECTED_D1_MIGRATION);
-    expect(EXPECTED_D1_MIGRATION).toBe('0047_classify_workbench.sql');
+    expect(EXPECTED_D1_MIGRATION).toBe('0049_ai_report_invariants.sql');
   });
 
   it('Release Aは共有R2 cleanupを追加し、退役表を互換性のため残す', async () => {
@@ -101,12 +98,8 @@ describe('現行migrationの適用', () => {
         .filter((filename) => filename.endsWith('.sql'))
         .sort();
       const applyFile = async (filename: string) => {
-        const statements = readFileSync(resolve(migrationsDir, filename), 'utf8')
-          .replace(/^\s*--.*$/gm, '')
-          .split(';')
-          .map((sql) => sql.trim())
-          .filter(Boolean);
-        for (const sql of statements) await database.prepare(sql).run();
+        const statements = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'));
+        for (const statement of statements) await database.prepare(statement).run();
       };
       for (const filename of filenames.filter((name) => name < '0038_')) await applyFile(filename);
       await database
