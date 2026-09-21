@@ -1,0 +1,41 @@
+{
+ "schema_version": "1.0.0",
+ "feature_id": "feat-statements-screen",
+ "parent_feature": "feat-statements-screen",
+ "feature_package_id": "feature-package/feat-statements-screen",
+ "handoff_target": "task-graph",
+ "selected_nodes": [
+  "spec-statements-screen",
+  "arch-statements-ui-ux",
+  "arch-statements-frontend",
+  "arch-statements-backend",
+  "arch-statements-database",
+  "arch-statements-auth",
+  "arch-statements-security",
+  "arch-statements-infrastructure",
+  "arch-statements-maintenance-ops",
+  "feat-statements-screen",
+  "SYS-STMT-P01",
+  "SYS-STMT-P02",
+  "SYS-STMT-P03",
+  "SYS-STMT-P04",
+  "SYS-STMT-P05",
+  "SYS-STMT-P06",
+  "SYS-STMT-P07",
+  "SYS-STMT-P08",
+  "SYS-STMT-P09",
+  "SYS-STMT-P10",
+  "SYS-STMT-P11",
+  "SYS-STMT-P12",
+  "SYS-STMT-P13"
+ ],
+ "artifact_kinds": [
+  "specification",
+  "architecture",
+  "feature",
+  "task"
+ ],
+ "closure_status": "complete",
+ "missing_nodes": [],
+ "snapshot_digest": "sha256:b876c2be84bd04c8eb94bb534f844df79cdec90a30302138b120def569641d91"
+}

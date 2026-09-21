@@ -1,0 +1,166 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/feature-package-feat-statements-screen",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:b7b5463d81396f3733f71694ba174d935c886841941c232029b6574add8f6eb1",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "13 本の task spec と workstream-inventory.json を全文照合した。目的節・スコープ外節で『core の statementsScreen 1 か所に集約』『migration 0045 は列と表の追加のみで既存行を書き換えない』『0045 以前の金額 0 の既存 amount 行は zero と同じ扱いで表示・完了判定するが行は書き換えない』の各命題が全 task で一貫し、矛盾する記述は無かった。scope_out 6 項目は 13 task 全ての『スコープ外』節に同一文言で列挙され、SYS-STMT-P05 はさらに『投資 CF と財務 CF の算出』を明示的に除外しており、実装対象への混入は確認しなかった。2 周目で修正された SYS-STMT-P03 は、目的節に OI-02 (system-spec/completeness-findings.json の severity=low 6 件を判定し docs/statements-screen.md へ記録する) を追記し、スコープ外節に『system-spec/ の改訂 (low findings の修正は次の spec サイクルで任意に行い、本 phase は判定の記録だけを行う)』を新設している。この『判定は記録するが system-spec を改訂しない』という記述は、P03 の Produced/Write scope が docs/statements-screen.md のみで system-spec/ 配下を含まない点、および Consumed artifacts に system-spec/completeness-findings.json が読み取り専用として列挙されている点と矛盾しない。他の 12 task の completeness-findings.json への言及は Entry gate の Source pin 定型行のみで、P03 の新規記述と衝突する記述は無かった。各 task の Entry gate が参照する staging run id (plan-feat-statements-screen-20260919) は goal-spec.json の run_id と一致した。",
+      "evidence": [
+        "task-specs/phase-03-design-review.md#目的節 (OI-02: completeness-findings.jsonのlow6件を判定しdocs/statements-screen.mdへ記録)",
+        "task-specs/phase-03-design-review.md#スコープ外節 (system-spec/の改訂はスコープ外、判定の記録のみ)",
+        "task-specs/phase-03-design-review.md#成果物 (Produced/Write scope=docs/statements-screen.mdのみ、Consumed artifactsにsystem-spec/completeness-findings.jsonを読み取り専用で列挙)",
+        "task-specs/phase-05-implementation.md#Compatibility/migration/backfill (specs/spec-statements-screen.md §3.4と一致: migration 0045は列と表の追加のみで既存行を書き換えず、0045以前の金額0行はzero扱い)",
+        "workstream-inventory.json#tasks[*].スコープ外 (goal-spec.json#scope_out の6項目が13 task全てのスコープ外節に同一文言で列挙され一致)",
+        "gate:deterministic-validation#task-spec必須セクション欠落/重複/空を含む構造違反0件"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "goal-spec.json の scope_in 9 項目は SYS-STMT-P01/P02/P04/P05/P06/P08/P09/P12 にそれぞれ具体的な acceptance として落ちている。acceptance S1-S5 は SYS-STMT-P07 の acceptance にそのまま転写されている。scope_out 6 項目は各 task のスコープ外節に反映されている。1 周目で high finding とされた OI-02 (system-spec/completeness-findings.json の severity=low 6 件、resolution_owner=SYS-STMT-P03) は、今回の修正で workstream-inventory.json#tasks[2] (SYS-STMT-P03) と task-specs/phase-03-design-review.md の目的節・Workstream applicability (Documentation)・成果物 (Write scope=docs/statements-screen.md)・Verification and evidence (Automated commands に grep -n '仕様 low findings の扱い' docs/statements-screen.md を追加)・acceptance の 5 箇所に一貫して反映された。acceptance[2] は『OI-02 として、completeness-findings.json の severity=low の 6 件が bucket 名つきで 1 件 1 行に列挙され、各行に実装への影響の有無と、影響がある場合の反映先 phase (SYS-STMT-P04 以降) が記録されている』という検証可能な達成条件であり、system-spec/completeness-findings.json を独立に再読し、記載された bucket 名 (foundation_trace 1 件・decision_guidance 1 件・matrix_coverage 3 件・doc_freshness 1 件、計 6 件) が P03 目的節の列挙と完全一致することを確認した。これにより OI-02 は resolution_owner task の目的・acceptance・検証のいずれからも欠落しておらず、1 周目の high finding は解消したと判断する。なお OI-01 (migration 0045 の衝突有無、resolution_owner=SYS-STMT-P05) は前回同様 task-specs/phase-05-implementation.md#前提条件 に反映されたままであり、漏れなしと判断する。P03 の acceptance 追加によって新たな未充足の open item やスコープ漏れは生じていない (P03 の Write scope は docs/statements-screen.md 1 件のみで、goal-spec.json#scope_in の新規パスとは重複しない)。",
+      "evidence": [
+        "task-specs/phase-03-design-review.md#目的節 (goal-spec.json#open_items[1] OI-02「仕様low findings6件、resolution_owner=SYS-STMT-P03」の内容と一致)",
+        "task-specs/phase-03-design-review.md#目的節 (system-spec/completeness-findings.json#findingsのseverity=low6件 [foundation_trace, decision_guidance, matrix_coverage x3, doc_freshness] の列挙と完全一致)",
+        "workstream-inventory.json#tasks[2].acceptance[2] (OI-02のbucket名つき列挙・影響有無・反映先phaseを検証可能な条件として明記)",
+        "task-specs/phase-03-design-review.md#Verification and evidence (grep -n '仕様 low findings の扱い' docs/statements-screen.md を追加)",
+        "task-specs/phase-03-design-review.md#Workstream applicability (Documentation: 仕様 low findings 6 件の判定を docs/statements-screen.md に記録する)",
+        "task-specs/phase-05-implementation.md#前提条件 (goal-spec.json#open_items[0] OI-01「migration 0045の衝突有無、resolution_owner=SYS-STMT-P05」の内容が反映されており漏れなし、対比のため確認)",
+        "task-specs/phase-01-requirements.md#Source pin (completeness-findings.json言及はP01/P02/P04-P13共通のSource pin定型行のみでOI-02固有記述と衝突なし、P03以外の12 task は同一文言)"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "feature-package.json の task_node_ids/task_spec_paths、task-graph.json の 13 node、workstream-inventory.json の 13 task は SYS-STMT-P01..P13/phase_ref P01..P13 の順で完全に一致した。write_scope に列挙された実装対象パスはリポジトリに実在することを確認した (docs/statements-screen.md、packages/core/src/statements-screen.ts、packages/web/src/pages/statements/、migrations/0045_*.sql は未作成だが goal-spec.json#scope_in と specs/spec-statements-screen.md §3.4 に新設パス・次の空き番号として明記されており正当)。決定論ゲート (validate-system-plan.py --repo-root . --staging .dev-graph/staging/feature-package-feat-statements-screen) は exit 0、violations=[]、validated_digest=sha256:b7b5463d81396f3733f71694ba174d935c886841941c232029b6574add8f6eb1 を返し、staging-manifest.json の canonical_digest および本 findings の evaluated_digest と完全一致した。staging 配下の 18 ファイル (manifest/handoff を除く) の sha256 を独立に再計算し staging-manifest.json#files の値と全件一致を確認した (task-specs/phase-03-design-review.md は 25f27d02729b480f2715bdb84863b02229e2e0edf8d9ca37f2fd5a68f5559e6a、workstream-inventory.json は 56bbadc8ba4257a7bfb71818d214ef11429f514b9eaf50e2349e0f00d2bd0bbb で、いずれもマニフェスト記載値と一致)。repo_identity は goal-spec.json / workstream-inventory.json#repo_context のいずれも github:daishiman/kanjo で一致し、repo boundary の不一致は検出しなかった。migrations/ 配下の最大番号は 0044 であり 0045 は次の空き番号として整合する。",
+      "evidence": [
+        "feature-package.json#task_node_ids/task_spec_paths",
+        "task-graph.json#nodes[*] (SYS-STMT-P01..P13)",
+        "workstream-inventory.json#tasks[*].write_scope",
+        "staging-manifest.json#canonical_digest=sha256:b7b5463d81396f3733f71694ba174d935c886841941c232029b6574add8f6eb1",
+        "gate:deterministic-validation#validated_digest=sha256:b7b5463d81396f3733f71694ba174d935c886841941c232029b6574add8f6eb1",
+        "gate:deterministic-validation#violations=[]",
+        "staging-manifest.json#files (独立再計算した18ファイルのsha256が全件一致。task-specs/phase-03-design-review.md=25f27d02729b480f2715bdb84863b02229e2e0edf8d9ca37f2fd5a68f5559e6a、workstream-inventory.json=56bbadc8ba4257a7bfb71818d214ef11429f514b9eaf50e2349e0f00d2bd0bbb)",
+        "workstream-inventory.json#repo_context.repo_identity=github:daishiman/kanjo",
+        "task-specs/phase-05-implementation.md#前提条件 (origin/mainを取り直してmigrationsの最大番号が0044のままであることを確認する前提を明記、0045が次の空き番号として整合)"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の depends_on は SYS-STMT-P01 (無し) から SYS-STMT-P13 (P12依存) までの単純な前方参照の直列鎖であり、循環や後方参照は存在しない。workstream-inventory.json の各 task の depends_on は task-graph.json の同名 node の depends_on と完全に一致した。SYS-STMT-P03 (OI-02 の修正対象) の depends_on は SYS-STMT-P02 のまま変更されておらず、phase_ref/位置も維持されている。P04 の前提条件に『SYS-STMT-P03 のレビューが通過していること』、Consumed artifacts に docs/statements-screen.md が明記されており、P03 が新設する『仕様 low findings の扱い』節を P04 以降が参照できる依存順が成立している。決定論ゲートの violations は 0 件だった。",
+      "evidence": [
+        "task-graph.json#nodes[*].depends_on が P01→P02→...→P13 の単調な前方参照のみ",
+        "task-graph.json#nodes[2] (SYS-STMT-P03.depends_on=[SYS-STMT-P02]、修正前後で不変)",
+        "task-specs/phase-04-test-design.md#前提条件 (SYS-STMT-P03のレビューが通過していること) と Consumed artifacts (docs/statements-screen.md)",
+        "gate:deterministic-validation#violations=[] (non-forward-edge/cross-feature-or-missing-edge等の違反なし)"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<harness>/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<repo-root>",
+        "--staging",
+        ".dev-graph/staging/feature-package-feat-statements-screen"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:b7b5463d81396f3733f71694ba174d935c886841941c232029b6574add8f6eb1\",\n  \"feature_package_id\": \"feature-package/feat-statements-screen\",\n  \"parent_feature\": \"feat-statements-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "eeecfb5a12ca2ff46c0ad3587f60b42d3bc28cdbcaa9b3f3fabe2513b1b7b88f"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "850059630eb935dc0e9b1fdc7a787cfc041f325a299390bc98d0d27b6c0711e6"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "44bdf35cb23f3ec59f54e9df95c6230e90681de6ec82ccd4515cdebae904c904"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "d9c0ed4640be4c0bb9dc5a614b37a50688da7943d81f381997551c80692a1dc0"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "7cfc76cdace917c45116864734881af04f2038c15f0a5614820826d21beb8123"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "648d35ab6179bb034fa8bf648be6c3286cb5ee2832b473ecc82b88d6c9046288"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "25f27d02729b480f2715bdb84863b02229e2e0edf8d9ca37f2fd5a68f5559e6a"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "3b8872f2f10c9544f1019e5370b7dc73fe0335afc87cefec06a86b91ae00bd66"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "2adb93a129f6adef661bdcb130d3ef13e486bc705fe3acab154054c517d3333c"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "ecf7d41042d99fd04bb8f26a723bd7200c1aa904bcac677f1e2404a1871cc18e"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "7f57293bf7f93de4439daac60cad92ed76a1ac7a8720378752c469d1b5e970f1"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "89bae66e6807608dd7aff925869eeaf56a5d9af0634526011efdcf5838b504c0"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "2c008c9eedae4e095230068efab3cf3ac1a3504c4ef6ab3b2efc6392f2bc3a5d"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "fb0f7c2b5adf559277e536a171bfeeda6cd7d8c3eedbe496a752b8a31f513d40"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "cd2e94e96126682f7ce3c917885b8319bf49aabb0a80ca20093bfecd12faad80"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "e0e18c2377e59c8e56856184733625e22a0f322b6e3fc1a49e1f4207708cfad4"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "ac70381617ff3be6cd86b85ae89dfc0b80fb38c8b6898f10cfb845de86d2f42f"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "56bbadc8ba4257a7bfb71818d214ef11429f514b9eaf50e2349e0f00d2bd0bbb"
+    }
+  ],
+  "staleness_rule": "本 findings は evaluated_digest (sha256:b7b5463d81396f3733f71694ba174d935c886841941c232029b6574add8f6eb1) を宣言する staging-manifest.json の canonical_digest と、staging 配下の byte 列から独立に再計算した決定論ゲートの validated_digest が完全一致する間だけ有効である。staging-manifest.json / system-build-handoff.json / feature-package.json / workstream-inventory.json / task-graph.json / 13 本の task-specs のいずれか 1 バイトでも変化すれば canonical_digest は変わり、本 findings は無効 (stale) となる。C11 promote は evaluated_digest とその時点の staging canonical_digest が一致することを都度再確認すること。",
+  "findings": []
+}

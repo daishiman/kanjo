@@ -28,7 +28,9 @@ export const ROUTE_COMPONENTS: Record<AppRouteId, ComponentType> = {
     import('./pages/Statements.js').then((module) => ({ default: module.StatementsPage })),
   ),
   ai: lazy(() => import('./pages/Ai.js').then((module) => ({ default: module.AiPage }))),
-  classify: lazy(() => import('./pages/Classify.js').then((module) => ({ default: module.ClassifyPage }))),
+  classify: lazy(() =>
+    import('./pages/classify/ClassifyPage.js').then((module) => ({ default: module.ClassifyPage })),
+  ),
   budget: lazy(() => import('./pages/Budget.js').then((module) => ({ default: module.BudgetPage }))),
   tradeoff: lazy(() => import('./pages/Tradeoff.js').then((module) => ({ default: module.TradeoffPage }))),
   import: lazy(() => import('./pages/Import.js').then((module) => ({ default: module.ImportPage }))),

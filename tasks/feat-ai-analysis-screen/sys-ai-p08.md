@@ -113,7 +113,7 @@ implementation_readiness: {"checked_at": "2026-09-19T13:45:00Z", "missing_sectio
 - packages/api/src/schema-guard.ts
 - packages/api/src/index.ts
 - packages/api/src/auth.ts
-- migrations/0046_ai_task_stages.sql
+- migrations/0048_ai_task_stages.sql
 - packages/web/src/api.ts
 - packages/web/src/pages/Ai.tsx
 - packages/web/src/pages/ai/

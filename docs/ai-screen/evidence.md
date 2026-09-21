@@ -45,7 +45,7 @@ feature `feat-ai-analysis-screen`(Beads epic `kanjo-5ru`)の検査記録。受�
 | S5-b 明細と摘要を渡さない | PASS | E1 の統合テスト「エージェントへ渡すデータ」(MF の摘要で確認。freee の `memo` は次の改訂で目印を足す) |
 | S5-c 上限ちょうどを保存する | PASS | E1 の統合テスト「ちょうど 4 MiB の契約適合レポートは保存され…」(report と paste の両方) |
 | S5-d 1 バイト超えは読み込み前に 413 | PASS | 同上(差し戻しの回数が増えない) |
-| S5-e migration 0046 は既存行を更新しない | PASS | E1 の `ai-migration-0046.test.ts` |
+| S5-e migration 0046 は既存行を更新しない | PASS | E1 の `ai-migration-0048.test.ts` |
 | S6-a verify:full・skills:test・JS 予算 | PASS | E1(EXIT 0、102.89KiB / 110KiB)、E3 |
 | S6-b 旧画面の操作を引き継ぐ | PASS | E1 の `ai-copy-log` / `ai-report-archive` / `ai-task-collapse` の DOM テスト |
 | S6-c 最新の証跡で判定する | PASS | この文書は E1・E2 だけを判定に使う(§0) |
@@ -75,7 +75,7 @@ feature `feat-ai-analysis-screen`(Beads epic `kanjo-5ru`)の検査記録。受�
 
 ## 5. P13 配信
 
-**未実施(保留)**。commit・push・PR の作成・merge と、本番の Migrate / Deploy は、この作業では行っていない。`0047_ai_report_invariants.sql` も本番には適用していない。
+**未実施(保留)**。commit・push・PR の作成・merge と、本番の Migrate / Deploy は、この作業では行っていない。`0049_ai_report_invariants.sql` も本番には適用していない。
 
 ## 6. 2026-09-20 改善後の検証台帳
 

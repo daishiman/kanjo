@@ -1,0 +1,148 @@
+{
+  "feature_package_id": "feature-package/feat-statements-screen",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と受入 O1-O5・S1-S5 の対応表"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P01"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P02",
+      "title": "statementsScreen・API 2 経路・migration 0045・部品分割の設計決定の記録"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P02"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P03",
+      "title": "集計・保存・監査・URL の各契約の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P03"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P04",
+      "title": "検算済みフィクスチャ・境界値・API・DOM の失敗テストの先行作成"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P04"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P05",
+      "title": "core statementsScreen・GET と PUT・migration 0045・決算書画面の実装"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P05"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P06",
+      "title": "テスト実行と緑化"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P06"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P07",
+      "title": "成功基準 S1 から S5 と仕様 §7 の受入の判定"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P07"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P08",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P08",
+      "title": "旧画面実装の整理・既存テストの更新・旧 PUT 本文形の撤去"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P08"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P09",
+      "title": "a11y・入力検証・本文上限・監査・CSV・JS 予算の品質保証"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P09"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P10",
+      "title": "独立した最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P10"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P11",
+      "title": "受入と品質の証跡の集約"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P11"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P12",
+      "title": "docs と運用記述の同期"
+    },
+    {
+      "depends_on": [
+        "SYS-STMT-P12"
+      ],
+      "feature_package_id": "feature-package/feat-statements-screen",
+      "id": "SYS-STMT-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-statements-screen",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信と migration 0045 の本番適用"
+    }
+  ],
+  "parent_feature": "feat-statements-screen",
+  "schema_version": "1.0.0"
+}

@@ -1,0 +1,84 @@
+{
+  "references": [
+    {
+      "target_id": "wcag22-use-of-color",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
+      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
+      "official_host": "www.w3.org",
+      "last_updated": "2025-09-16",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "SC 1.4.1 は色の違いだけで情報を伝えず、色以外の視覚的手段を併用することを求める。明細仕分けの信頼度と 4 区分の表示で数値と文言を併記する根拠。"
+    },
+    {
+      "target_id": "tanstack-query-dependent-queries",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://github.com/TanStack/query/releases/latest",
+      "official_publisher": "TanStack",
+      "official_host": "github.com",
+      "version": "5.103.1",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "TanStack Query の最新リリースは v5.103.1 (2026-09-16、query-core の修正)。一括保存・ルール適用後の問い合わせ無効化は v5 系の API で行う。"
+    },
+    {
+      "target_id": "react-router-searchparams",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
+      "official_publisher": "React Router (Remix / Shopify)",
+      "official_host": "reactrouter.com",
+      "version": "8.4.0",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "useSearchParams は現在の URLSearchParams と更新関数を返し、更新は navigation を起こす。絞り込み・ページ・選択を URL に保つ根拠。"
+    },
+    {
+      "target_id": "hono-zod-validator",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md",
+      "official_publisher": "Hono",
+      "official_host": "github.com",
+      "version": "0.9.1",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "@hono/zod-validator の最新は 0.9.1 (header schema のメタデータをキャッシュ)。一括保存・ルールのプレビューと適用・保存フィルタの入力を zod で検証する。"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-08",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "D1 の migration は migrations フォルダの SQL を Wrangler で未適用分だけ順に適用し、d1_migrations 表で適用済みを管理する。追加のみの migration 1 本で保存フィルタ・履歴表とルール・手当ての列を足す。"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-09-05",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "Workers Free はリクエストあたり CPU 10 ms・サブリクエスト 50・1 日 100,000 リクエスト。一括保存とルール適用に件数の上限を置き D1 batch で書く根拠。"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://github.com/OWASP/ASVS/blob/master/README.md",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "github.com",
+      "version": "5.0.0",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "ASVS の最新安定版は 5.0.0 (2025-05)。入力検証・業務ロジック・アクセス制御の要件を、一括保存・ルール適用・保存フィルタの認可と検証に当てる。"
+    },
+    {
+      "target_id": "vitest-expect",
+      "retrieved_at": "2026-09-19T13:26:35Z",
+      "source_url": "https://vitest.dev/api/expect.html",
+      "official_publisher": "Vitest",
+      "official_host": "vitest.dev",
+      "version": "5.0.1",
+      "latest_checked_at": "2026-09-19T13:26:35Z",
+      "summary": "Vitest v5.0.1 の expect は toBe / toEqual など Jest 互換の matcher を持つ。4 区分の和・信頼度の範囲・プレビューと適用の一致を単体テストで固定する。"
+    }
+  ]
+}

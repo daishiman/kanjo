@@ -495,7 +495,7 @@ body 上限: レポート送信・貼り付けの request budget は固定 4 MiB
 
 ## データモデル
 
-migration `migrations/0046_ai_task_stages.sql` (追加のみ)。既存の最新は `0045_owner_labels.sql`。
+migration `migrations/0048_ai_task_stages.sql` (追加のみ)。既存の最新は `0045_owner_labels.sql`。
 
 | 列 (ai_tasks) | 型 | 既定 | 書く経路 |
 | --- | --- | --- | --- |
@@ -510,7 +510,7 @@ migration `migrations/0046_ai_task_stages.sql` (追加のみ)。既存の最新�
 - `ai_reports` には列を足さない。
 - `packages/api/src/db/schema.ts` の `aiTasks` に同じ列と索引を足す。
 
-migration `migrations/0047_ai_report_invariants.sql`。版の一意性を DB 側の不変条件にする。列は足さず、既存行の `version` だけを書き換える。
+migration `migrations/0049_ai_report_invariants.sql`。版の一意性を DB 側の不変条件にする。列は足さず、既存行の `version` だけを書き換える。
 
 | 対象 | 内容 |
 | --- | --- |
@@ -582,7 +582,7 @@ API テスト:
 - `inventory` の件数が同じ期間の D1 行数と一致する。
 - 他の利用者の id に 404。
 - migration 0046 の適用で既存行の更新が 0 件。
-- migration 0047 は重複版を持つ系列を作成順の連番へ直す (`ai-migration-0047.test.ts`)。
+- migration 0047 は重複版を持つ系列を作成順の連番へ直す (`ai-migration-0049.test.ts`)。
 - 0047 の連番化で `version` 以外の列を失わない。本文 (`body_json`)・`created_at`・`task_id`・自己参照
   (`parent_report_id`) を含め、行ごと `toEqual` で固定する。列を選んで見ると選ばなかった列の消失が漏れる。
 - 0047 適用後、同じ系列の同じ版の INSERT が DB 制約で落ち、別の版は通る。
@@ -610,7 +610,7 @@ P01..P13 のどの phase の受入条件にも属さないが、本サイクル�
 | 変更 | なぜ 13 phase に無かったか | どこが守るか |
 | --- | --- | --- |
 | レポート契約 v4 (`contextAnalysis`) | 画面を作る過程で、利用者ヒアリング・外部情勢の出典・因果仮説を会計金額と同じ節に混ぜられないと分かった。当初の計画は契約を変えない前提だった。 | `contract.ts:321` で `.optional()`。**v3 の入力はそのまま通る**ので既存レポートは読め、「契約 v3 は変えない」の宣言 (上記「互換性・移行・リリース」) と両立する。`contract.test.ts` が v3/v4 双方を固定する。 |
-| migration 0047 | 版の一意性を DB の不変条件にする判断は、実装中に重複版が作れると分かってから。0046 の設計時点では列追加だけの想定だった。 | 上記「データモデル」の 0047 節と `ai-migration-0047.test.ts` (4 件)。 |
+| migration 0047 | 版の一意性を DB の不変条件にする判断は、実装中に重複版が作れると分かってから。0046 の設計時点では列追加だけの想定だった。 | 上記「データモデル」の 0047 節と `ai-migration-0049.test.ts` (4 件)。 |
 | skill `run-kanjo-accounting-report` の改訂 | 契約 v4 に合わせて指示文と検証器を揃える必要が生じた。契約を変えない前提だったので計画に無い。 | `skills:test` (`test_validate_report.py`)。 |
 | 月表記の正本 `packages/core/src/month.ts` への集約 | 重複解消の依頼を受けて本サイクルで実施。AI分析画面の外 (core 6 ファイル・web 3 ファイル) へ及ぶ。 | `month.test.ts` 5 件。`monthLabel` を集約前の多数派 (`m.split('-')` で無防備に整形する版) へ差し替えると「月の形でない文字列は整形せずそのまま返す」だけが落ちる (2026-09-21 実測: 1 failed / 4 passed)。残り 4 件は旧実装でも通る — 差があるのは不正な入力の扱いだけだからで、**テストが 5 件あることは 5 通りの退行を防ぐ意味ではない。** |
 | 共通シェル `Layout.tsx` の 2 点 | 上記「共通シェルへの波及」。旧フッター文言が本機能の追加で不正確になるため、画面の外を直さざるを得なかった。 | `common-shell.dom.test.tsx`。狭幅の寸法は常設ゲート無し (同節に記載)。 |

@@ -1,7 +1,8 @@
+import type { StatementsScreen } from '@kanjo/core';
 import type { ChartOptions } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
-import type { BalanceSheet, CashFlow, MatrixData, ProfitAndLoss } from '../api.js';
-import { gainCls, monthShort, yen, yenS } from '../format.js';
+import type { CashFlow, MatrixData } from '../api.js';
+import { monthShort, yen, yenS } from '../format.js';
 import { FinancialFigure } from './FinancialFigure.js';
 import { tooltipOptions } from './chart-tooltip.js';
 import { COLORS, baseChartOptions, chartDecorativeFill, chartSeriesColor, yenTick } from './charts.js';
@@ -11,7 +12,6 @@ import {
   financialPeriod,
   seriesData,
 } from './figure-view-model.js';
-import { latestCompleteBalance } from './financial-chart-model.js';
 
 const legend = {
   position: 'bottom' as const,
@@ -45,106 +45,104 @@ const horizontalOptions = (stacked = false): ChartOptions<'bar'> => ({
   },
 });
 
-function ProfitEquation({ pl }: { pl: ProfitAndLoss }) {
-  return (
-    <div
-      className="financial-equation"
-      aria-label={`売上${yen(pl.revenue.total)}から経費${yen(pl.expense.total)}を引き、利益は${yenS(pl.profit.total)}です`}
-    >
-      <div>
-        <span>売上</span>
-        <strong className="num">{yen(pl.revenue.total)}</strong>
-      </div>
-      <span className="equation-operator">−</span>
-      <div>
-        <span>経費</span>
-        <strong className="num">{yen(pl.expense.total)}</strong>
-      </div>
-      <span className="equation-operator">＝</span>
-      <div>
-        <span>利益</span>
-        <strong className={`num ${gainCls(pl.profit.total)}`}>{yenS(pl.profit.total)}</strong>
-      </div>
-    </div>
-  );
-}
-
-export function ProfitAndLossCharts({ pl }: { pl: ProfitAndLoss }) {
-  const labels = pl.months.map(monthShort);
-  const latestIndex = Math.max(0, pl.months.length - 1);
-  const latestProfit = pl.profit.monthly[latestIndex] ?? 0;
+/**
+ * 決算書画面の「月別の損益推移」。売上高・売上原価を棒、営業利益を線で重ねる。
+ * 数字は core の statementsScreen の PL 行 (monthly) をそのまま使い、ここでは足し直さない。
+ */
+export function StatementsPlTrendChart({ rows }: { rows: StatementsScreen['pl']['rows'] }) {
+  const sales = rows.find((row) => row.key === 'sales');
+  const cogs = rows.find((row) => row.key === 'cogs');
+  const operating = rows.find((row) => row.key === 'operating');
+  if (!sales || !cogs || !operating || sales.monthly.length === 0) return null;
+  const labels = sales.monthly.map((point) => monthShort(point.month));
+  const latestIndex = labels.length - 1;
+  const latestOperating = operating.monthly[latestIndex]?.amount ?? 0;
   const model = createFinancialFigureModel({
-    id: 'profit-and-loss-monthly',
-    title: '月別の売上・経費・利益',
-    summary: `${labels[latestIndex] ?? '直近月'}の利益は${yenS(latestProfit)}で、${
-      latestProfit >= 0 ? '黒字' : '赤字'
-    }です。`,
+    id: 'statements-pl-trend',
+    title: '月別の損益推移',
+    summary: `${labels[latestIndex]}の営業利益は${yenS(latestOperating)}です。`,
     period: financialPeriod(labels),
     labels,
     series: [
-      { key: 'revenue', label: '売上', values: pl.revenue.monthly, unit: 'yen', color: COLORS.income },
-      { key: 'expense', label: '経費', values: pl.expense.monthly, unit: 'yen', color: COLORS.expense },
       {
-        key: 'profit',
-        label: '利益',
-        values: pl.profit.monthly,
+        key: 'sales',
+        label: '売上高',
+        values: sales.monthly.map((p) => p.amount),
+        unit: 'yen',
+        color: COLORS.income,
+      },
+      {
+        key: 'cogs',
+        label: '売上原価',
+        values: cogs.monthly.map((p) => p.amount),
+        unit: 'yen',
+        color: COLORS.expense,
+      },
+      {
+        key: 'operating',
+        label: '営業利益',
+        values: operating.monthly.map((p) => p.amount),
         unit: 'yen',
         signed: true,
         color: COLORS.net,
       },
     ],
-    action: '赤字の月について、科目別の経費で原因になった科目を絞り込みます。',
+    action: '営業利益が落ちた月は、売上原価と販管費のどちらが増えたかを表で確かめます。',
   });
   return (
-    <div className="analysis-visual">
-      <ProfitEquation pl={pl} />
-      <FinancialFigure
-        model={model}
-        afterChart={<p className="chart-guide">棒で収支を比べ、利益の線で赤字月を見つけます。</p>}
-      >
-        <Chart
-          type={'bar' as 'bar' | 'line'}
-          role="img"
-          aria-label="月別の売上、経費、利益の推移を示す図"
-          fallbackContent="月別の売上、経費、利益の推移を示す図"
-          data={{
-            labels: figureLabels(model),
-            datasets: [
-              {
-                label: model.series[0]?.label,
-                data: seriesData(model, 0),
-                backgroundColor: COLORS.income,
-                borderRadius: 3,
-              },
-              {
-                label: model.series[1]?.label,
-                data: seriesData(model, 1),
-                backgroundColor: COLORS.expense,
-                borderRadius: 3,
-              },
-              {
-                type: 'line' as const,
-                label: model.series[2]?.label,
-                data: seriesData(model, 2),
-                borderColor: COLORS.net,
-                backgroundColor: COLORS.net,
-                pointBackgroundColor: seriesData(model, 2).map((value) =>
-                  (value ?? 0) >= 0 ? COLORS.good : COLORS.danger,
-                ),
-                pointRadius: 3,
-                borderWidth: 2,
-                tension: 0.18,
-              },
-            ],
-          }}
-          options={verticalOptions()}
-        />
-      </FinancialFigure>
-    </div>
+    <FinancialFigure
+      model={model}
+      variant="companion-table"
+      className="card stmt-pl-trend"
+      chartClassName="stmt-pl-trend-chart"
+      beforeChart={<span className="table-unit stmt-pl-trend-unit">(万円)</span>}
+    >
+      <Chart
+        type={'bar' as 'bar' | 'line'}
+        role="img"
+        aria-label="月別の売上高、売上原価、営業利益の推移を示す図"
+        fallbackContent="月別の売上高、売上原価、営業利益の推移を示す図"
+        data={{
+          labels: figureLabels(model),
+          datasets: [
+            {
+              label: model.series[0]?.label,
+              data: seriesData(model, 0),
+              backgroundColor: COLORS.income,
+              borderRadius: 3,
+            },
+            {
+              label: model.series[1]?.label,
+              data: seriesData(model, 1),
+              backgroundColor: COLORS.expense,
+              borderRadius: 3,
+            },
+            {
+              type: 'line' as const,
+              label: model.series[2]?.label,
+              data: seriesData(model, 2),
+              borderColor: COLORS.net,
+              backgroundColor: COLORS.net,
+              pointBackgroundColor: seriesData(model, 2).map((value) =>
+                (value ?? 0) >= 0 ? COLORS.good : COLORS.danger,
+              ),
+              pointRadius: 3,
+              borderWidth: 2,
+              tension: 0.18,
+            },
+          ],
+        }}
+        options={verticalOptions(false)}
+      />
+    </FinancialFigure>
   );
 }
 
-export function CashFlowCharts({ cf }: { cf: CashFlow }) {
+export function CashFlowCharts({
+  cf,
+}: {
+  cf: Pick<CashFlow, 'months' | 'cumulative' | 'total' | 'limits'>;
+}) {
   if (!cf.months.length) return null;
   const labels = cf.months.map((month) => monthShort(month.month));
   const latest = cf.months[cf.months.length - 1];
@@ -218,7 +216,7 @@ export function CashFlowCharts({ cf }: { cf: CashFlow }) {
               },
             ],
           }}
-          options={verticalOptions()}
+          options={verticalOptions(false)}
         />
       </FinancialFigure>
       <FinancialFigure
@@ -256,27 +254,26 @@ export function CashFlowCharts({ cf }: { cf: CashFlow }) {
   );
 }
 
-export function BalanceSheetChart({ bs }: { bs: BalanceSheet }) {
-  const month = latestCompleteBalance(bs);
-  if (!month) {
+export function BalanceSheetChart({ bs }: { bs: StatementsScreen['bs'] }) {
+  if (!bs.complete || bs.liabilities === null || bs.liabilityTotal === null || bs.netAssets === null) {
     return <p className="sub">資産と負債・純資産の図は、負債を入力した月ができると表示します。</p>;
   }
-  const netAssets = month.netAssets ?? 0;
+  const netAssets = bs.netAssets;
   const model = createFinancialFigureModel({
     id: 'balance-sheet-equation',
     title: netAssets < 0 ? '資産と負債の比較' : '資産と負債・純資産の均衡',
     summary:
       netAssets < 0
         ? `負債が資産を${yen(Math.abs(netAssets))}上回っています。`
-        : `資産${yen(month.assetTotal)}と、負債・純資産の合計が均衡しています。`,
-    period: `${monthShort(month.month)} / ${month.asOf}時点`,
+        : `資産${yen(bs.assetTotal)}と、負債・純資産の合計が均衡しています。`,
+    period: `${monthShort(bs.referenceMonth)} / ${bs.asOf}時点`,
     rowHeader: '内訳',
     labels: ['資産', '負債', '純資産'],
     series: [
       {
         key: 'balance',
         label: '残高',
-        values: [month.assetTotal, month.liabilityTotal, netAssets],
+        values: [bs.assetTotal, bs.liabilityTotal, netAssets],
         unit: 'yen',
         signed: true,
       },

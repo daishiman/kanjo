@@ -13,7 +13,7 @@
  *   同じ数値を必ずテキストでも持たせる。ここを別計算にすると図と表がずれるため、
  *   表は必ずこのモデルの rows から作る(呼び出し側で再集計しない)。
  *
- * 命名: データ抽出は financial-chart-model.ts、表示への変換はこのファイル。
+ * 命名: 集計・抽出は core、表示への変換はこのファイル。
  */
 
 export type FinancialFigureUnit = 'yen' | 'pct' | 'count';

@@ -33,6 +33,76 @@ const fakeStatement = {
 const fakeDb = { prepare: () => fakeStatement } as unknown as D1Database;
 
 describe('D1 statement budget', () => {
+  it('0046で追加したルールと編集の列をJSON復元で落とさない', () => {
+    const data = emptyDataset();
+    data.rules = [
+      {
+        k: '会議',
+        cls: 'biz',
+        big: '会議費',
+        mid: '打合せ',
+        owner: 'business',
+        payee: '架空商店',
+        scope: 'unconfirmed',
+        splitTemplate: {
+          lines: [
+            { kind: 'fixed', amount: 300, cls: 'biz', big: '会議費', memo: '架空固定' },
+            { kind: 'remainder', cls: 'biz', big: '雑費', memo: '架空残額' },
+          ],
+        },
+      },
+    ];
+    data.edits['synthetic-0046'] = {
+      cls: 'biz',
+      paymentMethod: 'card',
+      matchedProposal: 1,
+    };
+
+    const writeSet = prepareRestoreWriteSet({
+      userId: 'synthetic-user',
+      data,
+      restored: emptyDataset(),
+    });
+
+    expect(writeSet.ruleRows[0]).toEqual([
+      '会議',
+      'biz',
+      '会議費',
+      '打合せ',
+      'business',
+      '架空商店',
+      'unconfirmed',
+      JSON.stringify(data.rules[0].splitTemplate),
+      0,
+    ]);
+    expect(writeSet.editRows[0].slice(-2)).toEqual(['card', 1]);
+
+    const sql: string[] = [];
+    const statement = {
+      bind() {
+        return statement;
+      },
+    } as unknown as D1PreparedStatement;
+    const recordingDb = {
+      prepare(query: string) {
+        sql.push(query);
+        return statement;
+      },
+    } as unknown as D1Database;
+    restoreCommitStatements({
+      database: recordingDb,
+      userId: 'synthetic-user',
+      runId: 'synthetic-run',
+      writeSet,
+      importId: 1,
+      contentHash: 'v2:synthetic',
+      targetKeys: ['json:global'],
+    });
+    expect(sql.join('\n')).toContain('split_template_json');
+    expect(sql.join('\n')).toContain('payment_method');
+    expect(sql.join('\n')).toContain('matched_proposal');
+  });
+
   it('import-resolution監査のstatement数をcanonical commitと同じ予算に足す', async () => {
     const common = {
       database: fakeDb,
@@ -678,6 +748,13 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/reconciliation/actions'],
       ['POST', '/api/reconciliation/actions/op-1/undo'],
       ['POST', '/api/rules'],
+      // 0046: 一括保存・ルール適用・保存したフィルタ。
+      // どれも明細を読んでから書くので、取込の洗い替えと重ねない
+      ['POST', '/api/transactions/bulk'],
+      ['POST', '/api/rules/apply'],
+      ['POST', '/api/rules/1/apply'],
+      ['POST', '/api/saved-filters'],
+      ['DELETE', '/api/saved-filters/f-1'],
       ['PUT', '/api/rules/1'],
       ['DELETE', '/api/rules/1'],
       ['PATCH', '/api/rules'],
@@ -732,6 +809,8 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/imports/1/discard/preflight'],
       // 差分previewは完全にread-only。writer claimすら書かない。
       ['POST', '/api/imports/diff'],
+      // ルールのプレビューも同じく読むだけ。何が変わるかを数えて返す
+      ['POST', '/api/rules/preview'],
     ] as const;
     for (const [method, path] of canonical) {
       expect(classifyCanonicalMutation(method, path), `${method} ${path}`).toBe('canonical-mutation');
@@ -752,10 +831,12 @@ describe('canonical mutation lease predicate', () => {
       'routes/analytics.ts',
       'routes/cash.ts',
       'routes/classify.ts',
+      'routes/classify-bulk.ts',
       'routes/deletions.ts',
       'routes/import-diff.ts',
       'routes/imports.ts',
       'routes/reconciliation.ts',
+      'routes/saved-filters.ts',
       'routes/settings.ts',
       'routes/subs.ts',
       'routes/total-cashflow.ts',
@@ -776,6 +857,12 @@ describe('canonical mutation lease predicate', () => {
       'PUT /api/transactions/:txId/edit',
       'PUT /api/transactions/:txId/splits',
       'POST /api/rules',
+      'POST /api/rules/preview',
+      'POST /api/rules/apply',
+      'POST /api/rules/:id/apply',
+      'POST /api/transactions/bulk',
+      'POST /api/saved-filters',
+      'DELETE /api/saved-filters/:id',
       'PUT /api/rules/:id',
       'DELETE /api/rules/:id',
       'PATCH /api/rules',

@@ -29,7 +29,7 @@ feature の受入条件は 1 文に複数の主張を含む。「一部だけ満
 | | S5-b エージェントへ渡すデータに明細行と摘要が含まれない | 統合テスト「エージェントへ渡すデータ」 |
 | | S5-c 上限ちょうどの契約適合レポートが 413 にならず保存される | 統合テスト「ちょうど 4 MiB の契約適合レポートは保存され…」(report と paste の両方) |
 | | S5-d 上限を 1 バイト超える body は JSON の読み込み前に 413 | 同上(差し戻し回数が増えない = ハンドラに届いていない) |
-| | S5-e migration 0046 の適用で既存行の更新が 0 件 | `ai-migration-0046.test.ts`「当てても行の更新は 0 件」 |
+| | S5-e migration 0046 の適用で既存行の更新が 0 件 | `ai-migration-0048.test.ts`「当てても行の更新は 0 件」 |
 | S6 | S6-a `verify:full`・`skills:test`・初期 JS 予算が緑 | §7 P06・P09 の実行記録 |
 | | S6-b 旧 `Ai.tsx` の操作(コピーの記録・データセット表示・アーカイブ / 表示・削除の確認)が新しい構成から実行できる | `ai-copy-log.dom.test.tsx`、`ai-report-archive.dom.test.tsx`、`ai-task-collapse.dom.test.tsx`、DOM テスト「Claude Code 用のコピーは…」 |
 | | S6-c 受入は実行済みの最新の証跡だけで判定する | [`evidence.md`](evidence.md) の実行日時とコミット |

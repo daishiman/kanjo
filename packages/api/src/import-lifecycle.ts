@@ -1139,6 +1139,9 @@ export function prepareRestoreWriteSet(args: {
       rule.big ?? null,
       rule.mid ?? null,
       rule.owner ?? null,
+      rule.payee ?? null,
+      rule.scope ?? 'all',
+      rule.splitTemplate ? JSON.stringify(rule.splitTemplate) : null,
       index,
     ]),
     editRows: editRows(args.data.edits).sort(([a], [b]) => String(a).localeCompare(String(b))),
@@ -1450,7 +1453,17 @@ export function restoreCommitStatements(args: {
     ...insertJsonRows(
       database,
       'rules',
-      ['keyword', 'cls', 'category_major', 'category_mid', 'owner', 'sort_order'],
+      [
+        'keyword',
+        'cls',
+        'category_major',
+        'category_mid',
+        'owner',
+        'payee',
+        'scope',
+        'split_template_json',
+        'sort_order',
+      ],
       writeSet.ruleRows,
       [
         { column: 'user_id', value: userId },
@@ -1482,6 +1495,9 @@ export function restoreCommitStatements(args: {
         'fingerprint_version',
         // 0035: 口座の振替。戻さないと、復元後に振り替えた明細が元の口座へ戻る
         'institution',
+        // 0046: 確定画面の支払方法と提案一致フラグ
+        'payment_method',
+        'matched_proposal',
       ],
       writeSet.editRows,
       [{ column: 'user_id', value: userId }],

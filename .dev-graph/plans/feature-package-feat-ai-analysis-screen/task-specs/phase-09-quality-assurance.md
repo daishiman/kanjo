@@ -62,7 +62,7 @@ pages/ai/ への分割で初期 JS が増えないこと、下書きの localSto
 - packages/api/src/schema-guard.ts
 - packages/api/src/index.ts
 - packages/api/src/auth.ts
-- migrations/0046_ai_task_stages.sql
+- migrations/0048_ai_task_stages.sql
 - packages/web/src/api.ts
 - packages/web/src/pages/Ai.tsx
 - packages/web/src/pages/ai/

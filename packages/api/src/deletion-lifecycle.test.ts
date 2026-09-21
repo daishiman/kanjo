@@ -806,7 +806,7 @@ describe('削除の実行', () => {
       (
         await jsonRequest('/balances/liabilities', 'PUT', {
           month: '2026-06',
-          lines: [{ category: 'クレジットカード未払金', amount: 7000 }],
+          lines: [{ category: 'クレジットカード未払金', status: 'amount', amount: 7000 }],
         })
       ).status,
     ).toBe(200);

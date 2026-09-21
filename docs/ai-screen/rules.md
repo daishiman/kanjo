@@ -34,7 +34,7 @@ AI分析画面(`/ai`)の数値・段階・表示の規則と、それを実装�
 | # | 規則 | 根拠 | 実装 | テスト |
 |---|---|---|---|---|
 | R14 | 表示 ID は `T-` と 4 桁のゼロ埋め。10000 以上は桁をそのまま、`seq` が無い既存行は「旧」と作成日(Asia/Tokyo) | 推定(桁) | `aiTaskDisplayId` | `ai-screen.test.ts`「T-番号」 |
-| R15 | 通し番号は利用者ごとに `max(seq)+1`。`(user_id, seq)` の一意索引に衝突したら 1 回だけ採り直す | 推定 | `routes/ai.ts`(採番、`isUniqueViolation` は drizzle の `cause` を辿る) | 統合テスト「通し番号と表示ID」「同時発行で (user_id, seq) に衝突したら 1 回だけ採り直し…」、`ai-migration-0046.test.ts` |
+| R15 | 通し番号は利用者ごとに `max(seq)+1`。`(user_id, seq)` の一意索引に衝突したら 1 回だけ採り直す | 推定 | `routes/ai.ts`(採番、`isUniqueViolation` は drizzle の `cause` を辿る) | 統合テスト「通し番号と表示ID」「同時発行で (user_id, seq) に衝突したら 1 回だけ採り直し…」、`ai-migration-0048.test.ts` |
 | R16 | 版の説明は、その版を発行した依頼の補足指示の最初の空でない行。補足指示が無ければ v1 は「初回レポート」、v2 以降は「最新のデータで再分析」 | 利用者 | `aiVersionNote` | `ai-screen.test.ts`「版の説明」、統合テスト「版の説明」 |
 | R17 | レポートを 要約 / 根拠データ / 背景仮説 / 改善提案 / 関連リンク の 5 タブへ振り分ける。主な発見は `keyFindings` の 3 分類を並べ、priority が high → mid → low → なし の順、同順位は配列の順で上位 3 件 | 利用者(5 タブ。2026-09-21 に利用者が実装どおりの 5 タブへ決め直した。旧: 4 タブ)、推定(選び方) | `aiReportTabs`、`aiTopFindings` | `ai-screen.test.ts`「タブの振り分け」(`toEqual`) |
 | R18 | 使用するデータの件数: 期間内の freee 取引、期間内で集計対象の MF 明細(振替と対象外を除く)、科目の種類数(freee と MF を別に数える)、取引先の種類数。dataset はカードと同じ期間の依頼だけ開ける | 推定 | `routes/ai.ts` `GET /ai/inventory`、`AiInventoryCard` | 統合テスト「使用するデータの件数」、DOM 期間不一致テスト |
@@ -55,7 +55,7 @@ AI分析画面(`/ai`)の数値・段階・表示の規則と、それを実装�
 
 | # | 規則 | 根拠 | 実装 | テスト |
 |---|---|---|---|---|
-| R26 | 0046 は列と索引の追加だけ。既存の行は 1 行も書き換えない。`ai_reports` は変えない | 利用者 | `migrations/0046_ai_task_stages.sql` | `ai-migration-0046.test.ts`「当てても行の更新は 0 件」「既存の列の値はそのまま…」 |
+| R26 | 0046 は列と索引の追加だけ。既存の行は 1 行も書き換えない。`ai_reports` は変えない | 利用者 | `migrations/0048_ai_task_stages.sql` | `ai-migration-0048.test.ts`「当てても行の更新は 0 件」「既存の列の値はそのまま…」 |
 | R27 | 段階名と進捗 % は列に持たない(R1 で毎回導く) | 利用者 | 同上 | 同上、`packages/api/src/schema-guard.ts` |
-| R28 | task claim と report INSERT は D1 batch で原子的に行う。同じ版系列の版番号は一意。旧重複版は本文・参照を失わず作成順に連番化し、同一taskの今後の重複INSERTはtriggerで拒否する | 利用者 | `routes/ai.ts` `storeReport`、`0047_ai_report_invariants.sql` | 原子性・同時受信・0047 migration テスト |
+| R28 | task claim と report INSERT は D1 batch で原子的に行う。同じ版系列の版番号は一意。旧重複版は本文・参照を失わず作成順に連番化し、同一taskの今後の重複INSERTはtriggerで拒否する | 利用者 | `routes/ai.ts` `storeReport`、`0049_ai_report_invariants.sql` | 原子性・同時受信・0047 migration テスト |
 | R29 | レポート本文は物理削除せずアーカイブする。旧DELETE経路も参照を保ったままアーカイブへ変換する | 利用者 | `PUT /ai/reports/:id/archive`、互換 `DELETE /ai/reports/:id` | `ai-lifecycle.test.ts`「旧DELETE経路の安全なアーカイブ互換」 |

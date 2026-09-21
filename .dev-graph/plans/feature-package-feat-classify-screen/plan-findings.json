@@ -1,0 +1,182 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/run-feat-classify-screen-20260919T142500Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:7c218fe0d853660e36f0514a16a73caf263ddd8dfe8c20e45ab7eb46dd88d6ce",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "feature-package.json / workstream-inventory.json / task-graph.json / system-build-handoff.json は同一 feature_package_id (feature-package/feat-classify-screen) と parent_feature (feat-classify-screen) を一貫して持つ。Q-1 (vendor_memory 分岐の未解決) の扱いは P01 (持ち越し記録)・P02 (未確定の明記)・P04 (該当ケースのみ pending テスト)・P05 (当該分岐は complete を宣言しない)・P12 (未決のまま docs 転記) の5 task 間で矛盾なく一貫している。P08 の監査対象 (旧 Classify.tsx 参照・証憑欄・重複判定ロジック) は goal-spec の scope_out および P05 の削除方針と矛盾しない。P13 は他画面と同じ単一 PR 配信契約に従い、P12 の docs 同期完了を前提としており矛盾は検出されなかった。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-12-documentation-operations.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "P01..P13 exact-13 が揃い (validator phase_refs=P01..P13, violations=[])、各 task-spec は 107〜147 行・14 見出しの実質記述を持ち、空 section・placeholder・title+1文の擬似 task は検出されなかった。P08/P13 は node を省略せず、非該当 workstream には理由付きの `N/A: reason` が付いている。goal-spec.json の受入 S1〜S6・AT-01〜AT-21 (specs/spec-classify-screen.md に AT-01〜AT-21 の21件を確認) は P07 (Verification/Acceptance)・P11 (証跡索引)・P12 (docs 最終同期) へ写像され、未決事項 Q-1 も P01/P02/P04/P05/P12 の前提条件・持ち越し事項として明示的に写像されている。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-13-release-deploy.md",
+        "task-specs/phase-07-acceptance.md",
+        "workstream-inventory.json"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "feature-package.json / task-graph.json / workstream-inventory.json / system-build-handoff.json は同一 feature_package_id・parent_feature・repository_id (github:daishiman/kanjo、.dev-graph/config.json および git remote と一致) を持ち、task_node_ids と task-graph.json の node id が SYS-CLASSIFY-P01..P13 で完全一致する。staging-manifest.json 記載17ファイルの sha256 を独立に再計算し全件一致した (shasum -a 256 による再算出、差分0件)。features/feat-classify-screen.context.json の実測 sha256 (103b13e5...) は goal-spec.json の identity_check.feature_context_sha256 / feature-package.json の source_feature_digest / system-build-handoff.json の identity.source_feature_digest と一致した。staging-manifest.json#canonical_digest と validator の validated_digest も一致する。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の13 node は P01→P02→...→P13 の単一直鎖 (depends_on は常に直前 phase_ref 1件のみ、P01 の depends_on=[])。循環・後方 edge・cross-feature task 参照は検出されず、全 edge が同一 feature_package_id/parent_feature (feature-package/feat-classify-screen) 内に閉じている。system-build-handoff.json の execution_tasks も同じ直鎖を再掲しており矛盾はない。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<harness>/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<repo-root>",
+        "--staging",
+        ".dev-graph/staging/run-feat-classify-screen-20260919T142500Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:7c218fe0d853660e36f0514a16a73caf263ddd8dfe8c20e45ab7eb46dd88d6ce\",\n  \"feature_package_id\": \"feature-package/feat-classify-screen\",\n  \"parent_feature\": \"feat-classify-screen\",\n  \"phase_refs\": [\"P01\",\"P02\",\"P03\",\"P04\",\"P05\",\"P06\",\"P07\",\"P08\",\"P09\",\"P10\",\"P11\",\"P12\",\"P13\"],\n  \"violations\": []\n}",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "832bc302a5a7a2abb49a115a385118a7dfe2650cc9dea1a12ff865e76a4bc47c"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "901c5c7217ee0cd2cf029d9e47a40ecc75dfd6a063e76222120838c853936f6f"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "2124832aadf9a46072c3016a7da370572315490041d5f2e3b2fcfdc5ad22dbfc"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "2bb3a43fea9369a251ae5317c1de65368fe28d48f97a56ba58b337f2867c0cee"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "fdee181aa99c8d1aead283af9ba2defd6188ba23bc832f3038b81abbe9e40669"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "e287c21e359c5239871cb387f0e9cbdcd12433866b7dfebb61bc14df31829e2d"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "a08b7851c810f7a89d24a37fa20939ddb8301fded7950d6d2069bb582d8098a0"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "944dc5496c3a476283c840bba2785c0ac7f665e9f49c29099829e666f7fc1e84"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "fdf53fdba5716294ecf9f3bbe132265bd456edb442a852c591af2e4763599000"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "18de0d762b43024b1303699be6a82212f10fba5de9a35ec04d7ed38de51a6b57"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "42a77f99cc90ef059fd7c1aa4f9b259743f879dba577d6a03b28f11cc2fdad40"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "f3ce9d14d1e01a9217aed2207f0259f11195a703614e73c22b2bfffdcfebbd1a"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "0471df12d8089fc99c38c4bbaec5c8f41438b8f5eeaa40f0d7f9ae870ef742d6"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "6564427093ac29b40552746eb0da0ec9b61a99425d4d9b7d2dab882efcb8d29a"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "d173030886afb49abd3b74d433947042812cfc7185a3551456e20e42091e3a8a"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "9ac999b967cf56ef05f466d7ab032baa36ec7edc87b16768e665e3ebfd2a88ce"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "6b36ce50301718dd2c36376e41a2051b670023508a02ef76bb93de792cda5df1"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "d57043b3d80433f82fddc2a30cc2889e03cdbfec89f2730f05c5dcd5d3ee1353"
+    }
+  ],
+  "staleness_rule": "promotion 直前に staging-manifest.json#files 記載17ファイルおよび staging-manifest.json 自身の current-byte SHA-256 を再計算し、本 evaluated_inputs の記録値・本 evaluated_digest (validated_digest)・staging-manifest.json#canonical_digest の三者へ再照合する。1バイトでも current-byte が evaluated_inputs の記録値と異なれば、本 plan-findings は stale として無効化し、evaluator を再起動して新しい validated_digest に対する verdict を再発行する。別 digest に対する古い verdict は promotion gate で破棄する。",
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "C2/P13-close-out-receipt",
+      "observation": "feature-execution-package-contract.md はP13に『実デプロイ不要でも N/A: reason と close-out receipt を持つ』ことを求めるが、task-specs/phase-13-release-deploy.md は今回実デプロイが必要なケースであり、『クローズアウト』という語は目的・Operations 欄にあるものの、close-out receipt に相当する独立した成果物・Required evidence 項目は明記されていない。verdict を左右する high/medium ではないが、promotion 前に close-out receipt の所在 (例: 既存の PR merge/CI Deploy ログをそのまま充当する旨) を明記すると監査性が上がる。",
+      "evidence": [
+        "task-specs/phase-13-release-deploy.md",
+        "../../references/feature-execution-package-contract.md#3"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "C3/lineage-partial-note",
+      "observation": "goal-spec.json の checklist_summary.lineage_has_path_version_digest は 'partial' であり、feature_document と completeness_evaluation の2件はセッション内でのハッシュ再計算ではなく既存の confirmed digest を引用したものである旨が明記されている。これは generator 側の既知の限定事項として goal-spec 自身が開示しており、staging exact-set の digest 整合性 (C3 の評価対象) には影響しない。",
+      "evidence": [
+        "goal-spec.json#source_lineage"
+      ]
+    }
+  ]
+}

@@ -12,6 +12,13 @@
 import { monthLabel } from './month.js';
 import type { Dataset } from './types.js';
 
+/**
+ * 期間の解決に要るのは月の一覧だけ。Dataset 全体を要求すると、
+ * 月しか手元に無い呼び出し側 (API の一覧ルートなど) が同じ解決規則を
+ * 再実装せざるを得なくなり、規則が 2 か所に増える。
+ */
+export type MonthsOnly = Pick<Dataset, 'months'>;
+
 /** 対象期間。両端を含む 'YYYY-MM' */
 export interface PeriodRange {
   from: string;
@@ -30,7 +37,7 @@ export function isValidPeriod(range: unknown): range is PeriodRange {
 }
 
 /** データが持つ年の一覧(新しい年が先)。年別の選択肢はここから作る */
-export function availableYears(data: Dataset): string[] {
+export function availableYears(data: MonthsOnly): string[] {
   return [...new Set(data.months.map((m) => m.slice(0, 4)))].sort().reverse();
 }
 
@@ -38,7 +45,7 @@ export function availableYears(data: Dataset): string[] {
 export const yearRange = (year: string): PeriodRange => ({ from: `${year}-01`, to: `${year}-12` });
 
 /** データ全体の期間。データが無ければ null */
-export function fullRange(data: Dataset): PeriodRange | null {
+export function fullRange(data: MonthsOnly): PeriodRange | null {
   if (!data.months.length) return null;
   const sorted = [...data.months].sort();
   return { from: sorted[0], to: sorted[sorted.length - 1] };
@@ -48,7 +55,7 @@ export function fullRange(data: Dataset): PeriodRange | null {
  * 直近 n ヶ月の期間。終点はデータの最終月で、暦の今日ではない。
  * 取込が1ヶ月遅れているとき、今日基準にすると必ず末尾が空の期間になる。
  */
-export function lastMonthsRange(data: Dataset, n: number): PeriodRange | null {
+export function lastMonthsRange(data: MonthsOnly, n: number): PeriodRange | null {
   const full = fullRange(data);
   if (!full || n < 1) return null;
   const months = [...data.months].sort();
@@ -188,7 +195,7 @@ export interface PeriodQuery {
  * 「期間を知るための問い合わせ自体が期間に依存する」循環になるため、
  * データを持っているサーバ側で解決する。
  */
-export function resolvePeriodQuery(data: Dataset, q: PeriodQuery): PeriodRange | null {
+export function resolvePeriodQuery(data: MonthsOnly, q: PeriodQuery): PeriodRange | null {
   const range = { from: q.from ?? '', to: q.to ?? '' };
   if (isValidPeriod(range)) return range;
 

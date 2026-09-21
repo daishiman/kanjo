@@ -96,7 +96,7 @@ export const GUIDE_CURRENT = {
   subsSpike: location('サブスクページで表示'),
   vendor: location('サブスクページで表示'),
   revenueShare: location('サブスクページで表示'),
-  bizAdvance: location('公私仕分けページで表示'),
+  bizAdvance: location('明細仕分けページの使い方で表示'),
   transfer: location('公私仕分けページで集計対象外として表示'),
   journalize: notApplicable,
   account: notApplicable,

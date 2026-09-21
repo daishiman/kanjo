@@ -25,6 +25,9 @@ const NESTED_PAGE_SOURCES = import.meta.glob('./pages/*/*.tsx', {
   query: '?raw',
   import: 'default',
 }) as Record<string, string>;
+// classify は利用されていなかった pages/Classify.tsx wrapper を削除し、
+// AuthenticatedApp が実体を直接 lazy import する。契約の対象に実体を明示する。
+const DIRECT_ROUTED_PAGE_PATHS = ['./pages/classify/ClassifyPage.tsx'] as const;
 const REEXPORT = /^export \{ \w+ \} from '(\.\/[\w/]+)\.js';$/m;
 const resolvePageSource = (source: string): string => {
   const target = REEXPORT.exec(source)?.[1];
@@ -35,7 +38,14 @@ const resolvePageSource = (source: string): string => {
 };
 const ROUTED_PAGE_SOURCES = Object.entries(PAGE_SOURCES)
   .filter(([path]) => !NON_ROUTED_PAGES.some((name) => path.endsWith(name)) && !path.includes('.test.'))
-  .map(([, source]) => resolvePageSource(source));
+  .map(([, source]) => resolvePageSource(source))
+  .concat(
+    DIRECT_ROUTED_PAGE_PATHS.map((path) => {
+      const source = NESTED_PAGE_SOURCES[path];
+      if (source === undefined) throw new Error(`直接ルートの実体が見つからない: ${path}`);
+      return source;
+    }),
+  );
 
 describe('業務ルート契約', () => {
   it('パスとIDが一意で全件がナビに含まれる', () => {

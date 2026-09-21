@@ -52,7 +52,7 @@
 - docs/ai-screen/design-decisions.md
 - Consumed artifacts:
 - docs/ai-screen/design-decisions.md
-- migrations/0046_ai_task_stages.sql
+- migrations/0048_ai_task_stages.sql
 - Write scope/touches:
 - docs/ai-screen/design-decisions.md
 

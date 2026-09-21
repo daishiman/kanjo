@@ -4,13 +4,11 @@ import { zValidator } from '@hono/zod-validator';
  * 集計はすべて packages/core の純関数に委譲し、ここでは組み立てと整形のみ行う。
  */
 import {
-  BALANCE_SHEET_SOURCES,
   DIAGNOSIS_NOTE_MAX,
   type Dataset,
   type ExpenseScope,
   HOUSEHOLD_CATEGORY_KEYS,
   LEGACY_SCOPE,
-  LIABILITY_CATEGORIES,
   type PeriodRange,
   type ReviewQueueItem,
   TRANSACTION_EXPORT_HEADER,
@@ -20,11 +18,9 @@ import {
   availableYears,
   benchmarks,
   budgetTable,
-  buildBalanceSheet,
   buildExpenseProjection,
   buildReportHtml,
   buildReviewQueue,
-  cashFlow,
   defenseForecast,
   defenseLine,
   diagnosis,
@@ -51,12 +47,13 @@ import {
   overviewScopeMonths,
   periodLabel,
   periodMonths,
-  profitAndLoss,
+  previousPeriod,
   reconciliationReport,
   resolveDiagnosisSelection,
   resolvePeriodQuery,
   reviewItemFingerprint,
   reviewQueueCounts,
+  statementsScreen,
   subscriptionsScreen,
   toCsv,
   totalCashflowReport,
@@ -189,52 +186,57 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
     failedImports: failedRuns,
     vendorMemories,
   });
-  // 照合件数の正本を一度だけ作り、月次クローズへそのまま渡す (照合画面 BR-006)
-  const actionRequiredCount = reconciliationReport({
-    data: all,
-    deals,
-    verdicts,
-    freeeExclusions: exclusions,
-    mfExclusions,
-  }).kpi.actionRequiredCount;
   // サイドバーの「サブスク」バッジ。サブスク画面の KPI 5 枚目 (未判断の見直し候補) と同じ入口・同じ関数で数える。
   // バッジは画面の期間タブを知らないので、既定の期間 (直近 1 年) で数える (spec §12.2)
   const subscriptionCandidates = subscriptionsScreen(
     await loadSubscriptionsInput(db, userId, { span: '1' }, { all, deals }),
   ).kpis.reviewCandidates;
-  return { report, items, actionRequiredCount, subscriptionCandidates };
+  return { report, items, subscriptionCandidates };
 }
 
 /**
  * 月次クローズの状況。概況の本体とサイドバーのカード (未処理キューの応答) が同じ関数で作る。
- * 期間にも範囲にも依存しない (BR-003) ので、必ず全期間の `all` と保留前の全件 `items` を渡す。
+ * 期間にも範囲にも依存しない。全期間から作ったキューのうち、
+ * 指紋の一致する保留を除いた集合を渡し、core 側が対象月に絞る。
  */
 async function loadCloseStatus<V extends { userId: string }>(
   c: Context<DataCtx<V>>,
   all: Dataset,
-  sources: { items: ReviewQueueItem[]; actionRequiredCount: number },
+  sources: { items: ReviewQueueItem[] },
 ) {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const [reviewRows, [updated]] = await Promise.all([
+  const [reviewRows, importRows] = await Promise.all([
     db
       .select({ month: s.monthlyCloseReviews.month, reviewedAt: s.monthlyCloseReviews.reviewedAt })
       .from(s.monthlyCloseReviews)
       .where(eq(s.monthlyCloseReviews.userId, userId)),
     db
-      .select({ at: sql<string | null>`max(${s.imports.committedAt})` })
+      .select({ months: s.imports.months, committedAt: s.imports.committedAt })
       .from(s.imports)
       .where(and(eq(s.imports.userId, userId), eq(s.imports.status, 'committed'))),
   ]);
+  const month = all.months.at(-1) ?? null;
+  const hasCommittedImport =
+    month !== null &&
+    importRows.some((row) =>
+      (row.months ?? '')
+        .split(',')
+        .map((value) => value.trim())
+        .includes(month),
+    );
+  const dataUpdatedAt = importRows.reduce<string | null>(
+    (latest, row) => (!row.committedAt || (latest && row.committedAt <= latest) ? latest : row.committedAt),
+    null,
+  );
   return {
     closeStatus: monthlyCloseStatus({
       data: all,
       items: sources.items,
       reviews: reviewRows,
-      hasCommittedImport: updated?.at != null,
-      actionRequiredCount: sources.actionRequiredCount,
+      hasCommittedImport,
     }),
-    dataUpdatedAt: updated?.at ?? null,
+    dataUpdatedAt,
   };
 }
 
@@ -256,9 +258,10 @@ analyticsRoute.get('/overview', async (c) => {
     return c.json(apiError('invalid_scope', 'scope は total / business / household のいずれかです'), 400);
   }
   const { data, all, period } = await loadScoped(c);
-  const sources = await loadReviewSources(c, all);
+  const [sources, snoozes] = await Promise.all([loadReviewSources(c, all), loadSnoozes(c)]);
+  const effective = await applyReviewSnoozes(sources.items, snoozes);
   const { report } = sources;
-  const { closeStatus, dataUpdatedAt } = await loadCloseStatus(c, all, sources);
+  const { closeStatus, dataUpdatedAt } = await loadCloseStatus(c, all, { items: effective.items });
   // 系列は全期間から作り、期間は「表示する月の集合」として渡す。前年の比較窓を欠かさないため
   const series = overviewScopeMonths(rawScope, { data: all, totalMonths: report.months });
   const aggregate = overviewAggregate(series, period.applied);
@@ -279,11 +282,9 @@ analyticsRoute.get('/review-queue', async (c) => {
   // 読み込みは loadScoped に一本化する。件数は期間に依存させないので all だけを使う
   const { all } = await loadScoped(c);
   const [sources, snoozes] = await Promise.all([loadReviewSources(c, all), loadSnoozes(c)]);
-  const [{ items, snoozed, snoozedCount }, { closeStatus }] = await Promise.all([
-    applyReviewSnoozes(sources.items, snoozes),
-    // サイドバーの月次クローズカードは全画面に出るので、全画面が読む未処理キューに載せる
-    loadCloseStatus(c, all, sources),
-  ]);
+  const { items, snoozed, snoozedCount } = await applyReviewSnoozes(sources.items, snoozes);
+  // サイドバーの月次クローズカードも同じ有効キューで判定する。
+  const { closeStatus } = await loadCloseStatus(c, all, { items });
   return c.json({
     total: items.length,
     counts: reviewQueueCounts(items),
@@ -704,14 +705,16 @@ analyticsRoute.get('/unsettled', async (c) => {
 });
 
 /**
- * 財務三表(PL・キャッシュフロー)。BSは残高が要るのでまだ作れない。
- * 期間を絞ると、その期間だけの損益計算書になる。
+ * 財務三表(PL・キャッシュフロー・BS)を、core が組み立てた screen 契約で返す。
+ * 期間を絞ると PL / CF はその期間、BS は期間内の基準月の残高になる。
  *
  * キャッシュフローは freee 原本の決済列を見るため、集計済みの Dataset とは別に
  * freee_deals を読む(未決済かどうかは集計に残っていない)。
  */
+const MONTH_KEY = /^\d{4}-(0[1-9]|1[0-2])$/;
+
 analyticsRoute.get('/statements', async (c) => {
-  const { data, period } = await loadScoped(c);
+  const { data, all, period } = await loadScoped(c);
   const db = getDb(c.env.DB);
   const rows = await db
     .select()
@@ -725,14 +728,25 @@ analyticsRoute.get('/statements', async (c) => {
     .from(s.balanceEntries)
     .where(eq(s.balanceEntries.userId, c.get('userId')))
     .orderBy(s.balanceEntries.month);
-  return c.json({
-    pl: profitAndLoss(data),
-    cf: cashFlow(data, deals),
-    bs: buildBalanceSheet(balances),
-    liabilityCategoryOptions: LIABILITY_CATEGORIES,
-    balanceSheetSources: BALANCE_SHEET_SOURCES,
-    period,
+  // 前期は直前の同じ長さの期間。全期間を選んでいるときもデータ全体の長さで 1 つ前を見る (その範囲は通常空で、前期なし)
+  const range = period.applied ?? fullRange(all);
+  const previous = range ? applyPeriod(all, previousPeriod(range)) : null;
+  // 基準月は期間内だけを受ける。不正・期間外は core が期間の最終月へ丸める
+  const ref = c.req.query('ref');
+  const screen = statementsScreen({
+    current: data,
+    previous,
+    deals,
+    balances,
+    referenceMonth: ref && MONTH_KEY.test(ref) ? ref : null,
+    navigation: {
+      applied: period.applied,
+      full: period.full,
+      years: period.years,
+      monthCount: period.monthCount,
+    },
   });
+  return c.json({ screen });
 });
 
 analyticsRoute.get('/defense-line', async (c) => {

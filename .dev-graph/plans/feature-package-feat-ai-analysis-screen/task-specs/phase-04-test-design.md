@@ -51,7 +51,7 @@
 - Produced artifacts:
 - packages/core/test/ai-screen.test.ts
 - packages/api/src/ai-screen.integration.test.ts
-- packages/api/src/ai-migration-0046.test.ts
+- packages/api/src/ai-migration-0048.test.ts
 - packages/web/src/pages/ai/ai-screen.dom.test.tsx
 - Consumed artifacts:
 - docs/ai-screen/design-decisions.md
@@ -59,7 +59,7 @@
 - Write scope/touches:
 - packages/core/test/ai-screen.test.ts
 - packages/api/src/ai-screen.integration.test.ts
-- packages/api/src/ai-migration-0046.test.ts
+- packages/api/src/ai-migration-0048.test.ts
 - packages/web/src/pages/ai/ai-screen.dom.test.tsx
 
 ## Tracker publication and completion
@@ -99,7 +99,7 @@
 - Required evidence:
 - packages/core/test/ai-screen.test.ts
 - packages/api/src/ai-screen.integration.test.ts
-- packages/api/src/ai-migration-0046.test.ts
+- packages/api/src/ai-migration-0048.test.ts
 - packages/web/src/pages/ai/ai-screen.dom.test.tsx
 
 ## Rollout and rollback

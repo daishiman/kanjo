@@ -16,6 +16,11 @@ import type { FinancialFigureModel, FinancialFigureUnit } from './figure-view-mo
 interface FinancialFigureProps {
   model: FinancialFigureModel;
   children: ReactNode;
+  /**
+   * 直下に同じ数値の表が続く場合は、図の見出し・凡例・本体だけを表示する。
+   * 「正確値の表」や行動文をもう一度描画しないための明示的な例外。
+   */
+  variant?: 'standalone' | 'companion-table';
   headingLevel?: 2 | 3 | 4;
   className?: string;
   chartClassName?: string;
@@ -39,6 +44,7 @@ const UNIT_LABELS: Record<FinancialFigureUnit, string> = {
 export function FinancialFigure({
   model,
   children,
+  variant = 'standalone',
   headingLevel = 3,
   className,
   chartClassName,
@@ -53,31 +59,37 @@ export function FinancialFigure({
   const summaryId = `${id}-summary`;
   const tableId = `${id}-table`;
   const Heading = `h${headingLevel}` as const;
+  const hasCompanionTable = variant === 'companion-table';
 
   return (
     <figure
       id={anchorId}
       className={['financial-figure', className].filter(Boolean).join(' ')}
       data-financial-figure
+      data-financial-figure-variant={variant}
       aria-labelledby={titleId}
-      aria-describedby={summaryId}
+      aria-describedby={hasCompanionTable ? undefined : summaryId}
     >
       <figcaption className="financial-figure__caption">
         <Heading id={titleId}>{model.title}</Heading>
       </figcaption>
-      <p className="financial-figure__summary" id={summaryId} data-financial-summary>
-        {model.summary}
-      </p>
-      <dl className="financial-figure__meta">
-        <div>
-          <dt>期間</dt>
-          <dd data-financial-period>{model.period}</dd>
-        </div>
-        <div>
-          <dt>単位</dt>
-          <dd data-financial-unit>{model.unitLabel}</dd>
-        </div>
-      </dl>
+      {!hasCompanionTable && (
+        <>
+          <p className="financial-figure__summary" id={summaryId} data-financial-summary>
+            {model.summary}
+          </p>
+          <dl className="financial-figure__meta">
+            <div>
+              <dt>期間</dt>
+              <dd data-financial-period>{model.period}</dd>
+            </div>
+            <div>
+              <dt>単位</dt>
+              <dd data-financial-unit>{model.unitLabel}</dd>
+            </div>
+          </dl>
+        </>
+      )}
       {/*
        * 系列が1本でもこのリストは残す。1件でも「図に描かれているのが何か」を canvas の外で
        * 名指しする唯一の場所で、7要素(見出し・結論・期間・単位・系列・行動・表)の1つだから。
@@ -98,10 +110,12 @@ export function FinancialFigure({
       {beforeChart}
       <div className={['financial-figure__chart', chartClassName].filter(Boolean).join(' ')}>{children}</div>
       {afterChart}
-      <p className="financial-figure__action" data-financial-action>
-        <strong>次の行動:</strong> {model.action}
-      </p>
-      {!hideDetails && (
+      {!hasCompanionTable && (
+        <p className="financial-figure__action" data-financial-action>
+          <strong>次の行動:</strong> {model.action}
+        </p>
+      )}
+      {!hasCompanionTable && !hideDetails && (
         <details className="financial-figure__details">
           <summary aria-controls={tableId}>正確な値を表で確認</summary>
           <div className="financial-figure__table-frame" id={tableId}>

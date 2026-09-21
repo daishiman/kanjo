@@ -5,108 +5,46 @@
  *
  * BSは資産だけ自動で入り、負債は手入力という非対称な作りになっている。
  * だから固定したいのは「入っていないものが、入っているように見えないこと」。
- *   - 負債を入れていない月の純資産は数字を出さない(資産だけで純資産を名乗らない)
- *   - どの月が未入力かを名指しする(全体を見て探させない)
- *   - 空欄のまま保存しても、その種類を0円として送らない
- * 残高がまだ1件も無いときは、代わりに「何を取り込めば作れるか」を出す。
+ *   - 必須の負債に未入力がある月は、負債合計と純資産に数字を出さない(資産だけで純資産を名乗らない)
+ *   - どの月の残高かを列見出しで名指しし、月末前なら何日時点かを添える
+ *   - 何も選んでいない任意項目は送らない(0円として保存しない)。0円は「0円」を選んだときだけ
+ * 残高がまだ1件も無いときは、「何を取り込めば作れるか」を出す。
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { BalanceSheet, StatementsResponse } from './api.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { StatementsResponse } from './api.js';
 import { StatementsPage } from './pages/Statements.js';
+import { liabilityLines, statementsPayload } from './test-support/statements-fixture.js';
 
 vi.mock('react-chartjs-2', async () => ({
   Chart: (await import('./test-support/chart-test-doubles.js')).AccessibleChart,
 }));
 
-const LIABILITY_OPTIONS = ['クレジットカード未払金', '借入金', '未払金・買掛金', 'その他の負債'];
-
-const emptyBs: BalanceSheet = {
-  months: [],
-  assetCategories: [],
-  liabilityCategories: [],
-  monthsWithoutLiabilities: [],
-  limits: [],
-};
-
-/** 7月は負債入力済み、8月は未入力かつ月末前 */
-const bs: BalanceSheet = {
-  months: [
-    {
-      month: '2026-07',
-      asOf: '2026-07-31',
-      partial: false,
-      assets: [{ category: '預金・現金', amount: 400000 }],
-      assetTotal: 400000,
-      liabilities: [{ category: 'クレジットカード未払金', amount: 150000 }],
-      liabilityTotal: 150000,
-      netAssets: 250000,
-    },
-    {
-      month: '2026-08',
-      asOf: '2026-08-28',
-      partial: true,
-      assets: [{ category: '預金・現金', amount: 500000 }],
-      assetTotal: 500000,
-      liabilities: [],
-      liabilityTotal: 0,
-      netAssets: null,
-    },
-  ],
-  assetCategories: ['預金・現金'],
-  liabilityCategories: ['クレジットカード未払金'],
-  monthsWithoutLiabilities: ['2026-08'],
-  limits: ['資産はマネーフォワードに連携した口座の分だけです'],
-};
-
-/**
- * PLは空にする。資産推移CSVだけを入れた直後の状態で、
- * 「仕訳がまだ無いからBSも見せない」にならないことを一緒に確かめる。
- */
-const payload = (over: Partial<StatementsResponse> = {}): StatementsResponse =>
-  ({
-    pl: { months: [] },
-    cf: { months: [] },
-    bs,
-    liabilityCategoryOptions: LIABILITY_OPTIONS,
-    balanceSheetSources: [
-      {
-        step: 1,
-        name: '資産推移(全口座の残高)',
-        service: 'MF',
-        where: '資産 → 資産推移 → CSVダウンロード',
-        url: 'https://moneyforward.com/bs/history',
-        columns: ['日付', '合計（円）'],
-        use: 'BSの資産の部が埋まります。',
-      },
-    ],
-    period: { applied: null, label: '全期間', full: null, years: [], monthCount: 0 },
-    ...over,
-  }) as unknown as StatementsResponse;
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
 /** PUTの本文を記録する。空欄を0円として送っていないかを見るため */
-function renderWith(over: Partial<StatementsResponse> = {}) {
+function renderWith(data: StatementsResponse = statementsPayload(), path = '/statements') {
   const puts: unknown[] = [];
   vi.stubGlobal(
     'fetch',
-    vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+    vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes('/auth/me'))
+        return json({ authenticated: true, user: { id: 'u1', email: 'owner@example.test' } });
       if (init?.method === 'PUT') {
         puts.push(JSON.parse(String(init.body)));
-        return new Response(JSON.stringify({ ok: true }), {
-          headers: { 'Content-Type': 'application/json' },
-        });
+        return json({ ok: true, bs: data.screen.bs });
       }
-      return new Response(JSON.stringify(payload(over)), {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return json(data);
     }),
   );
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <QueryClientProvider client={client}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[path]}>
         <StatementsPage />
       </MemoryRouter>
     </QueryClientProvider>,
@@ -114,68 +52,119 @@ function renderWith(over: Partial<StatementsResponse> = {}) {
   return puts;
 }
 
-/** 行見出しから、その行の各月のセルを取り出す */
+/** 行見出しから、その行のセルを取り出す */
 const rowCells = (label: string) => {
-  const table = screen.getByRole('table', { name: '貸借対照表の月別明細' });
+  const table = screen.getByRole('table', { name: /末の貸借対照表/ });
   const head = within(table).getByRole('rowheader', { name: label });
   return [...(head.closest('tr')?.querySelectorAll('td') ?? [])].map((td) => td.textContent);
 };
 
+const form = () => screen.getByRole('form', { name: '負債残高の入力' });
+const lineGroup = (label: RegExp) => within(form()).getByRole('group', { name: label });
+
+beforeEach(() => localStorage.clear());
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
 
 describe('決算書のBS', () => {
-  it('負債を入れた月だけ純資産を出し、入れていない月は数字を出さない', async () => {
+  it('必須の負債に未入力がある月は、負債合計と純資産に数字を出さない', async () => {
     renderWith();
-    await screen.findByText('資産合計');
-    expect(rowCells('資産合計')).toEqual(['¥400,000', '¥500,000']);
-    // 8月は資産だけ入っている。ここに 500,000 と出ると、借金の無い人の数字に見える
-    expect(rowCells('純資産')).toEqual(['¥250,000', '—']);
-    expect(screen.getByRole('img', { name: /資産.*負債.*純資産/ })).toBeTruthy();
+    await screen.findByRole('heading', { name: '貸借対照表（BS）' });
+    // 未入力時は不完全な表や図を重ねず、ここで完了できる入力行動を主にする。
+    expect(screen.queryByRole('table', { name: /末の貸借対照表/ })).toBeNull();
+    expect(document.getElementById('bs')?.querySelector('.financial-figure')).toBeNull();
+    expect(screen.getByRole('form', { name: '負債残高の入力' })).toBeTruthy();
+    expect(screen.getByText('負債残高のデータが入力されていません。')).toBeTruthy();
   });
 
-  it('未入力の月を名指しする', async () => {
-    renderWith();
-    await screen.findByText(/未入力/);
-    expect(screen.getByText(/未入力/).textContent).toContain('8月');
+  it('必須がそろえば合計と純資産を出し、0円は 0 として足す', async () => {
+    const data = statementsPayload();
+    const lines = data.screen.bs.lines.map((line) =>
+      line.category === 'クレジットカード未払金' ? { ...line, status: 'zero' as const, amount: 0 } : line,
+    );
+    renderWith(statementsPayload({ lines }));
+    await screen.findByRole('heading', { name: '貸借対照表（BS）' });
+    expect(rowCells('クレジット未払')).toEqual(['¥0']);
+    expect(rowCells('負債合計')).toEqual(['¥2,300,000']);
+    expect(rowCells('純資産')).toEqual(['¥2,700,000']);
   });
 
-  it('月末前の月には、何日時点かを添える', async () => {
-    renderWith();
-    const august = await screen.findByRole('columnheader', { name: /8月/ });
+  it('基準月を列見出しで名指しし、月末前の月には何日時点かを添える', async () => {
+    const lines = liabilityLines().map((line) =>
+      line.category === 'クレジットカード未払金' ? { ...line, status: 'zero' as const, amount: 0 } : line,
+    );
+    renderWith(statementsPayload({ lines }));
+    const august = await screen.findByRole('columnheader', { name: /2026年8月末/ });
     expect(august.textContent).toContain('2026-08-28時点');
-    // 月末に達している7月には要らない
-    expect(screen.getByRole('columnheader', { name: /7月/ }).textContent).not.toContain('時点');
   });
 
-  it('空欄の種類は送らない(0円として保存しない)', async () => {
+  it('月末に達している月には「時点」を付けない', async () => {
+    const lines = liabilityLines().map((line) =>
+      line.category === 'クレジットカード未払金' ? { ...line, status: 'zero' as const, amount: 0 } : line,
+    );
+    renderWith(statementsPayload({ lines, referenceMonth: '2026-07' }));
+    const july = await screen.findByRole('columnheader', { name: /2026年7月末/ });
+    expect(july.textContent).not.toContain('時点');
+  });
+
+  it('変更した項目だけを送り、保存済みの行と未選択の任意項目は送らない', async () => {
     const puts = renderWith();
-    await screen.findByText('負債を入れる');
-    fireEvent.change(screen.getByLabelText('借入金'), { target: { value: '30000' } });
-    fireEvent.click(screen.getByRole('button', { name: 'この月の負債を保存' }));
+    await screen.findByRole('form', { name: '負債残高の入力' });
+    fireEvent.click(within(lineGroup(/クレジット未払/)).getByRole('radio', { name: '0円' }));
+    fireEvent.click(within(form()).getByRole('button', { name: '負債残高を保存' }));
 
     await waitFor(() => expect(puts).toHaveLength(1));
-    expect(puts[0]).toEqual({ month: '2026-08', lines: [{ category: '借入金', amount: 30000 }] });
+    expect(puts[0]).toEqual({
+      month: '2026-08',
+      lines: [{ category: 'クレジットカード未払金', status: 'zero' }],
+    });
+  });
+
+  it('必須項目を選ばないままでは保存させず、どの項目かを名指しする', async () => {
+    const puts = renderWith();
+    await screen.findByRole('form', { name: '負債残高の入力' });
+    fireEvent.click(within(form()).getByRole('button', { name: '負債残高を保存' }));
+    expect(await screen.findByText('クレジット未払の入力方法を選択してください。')).toBeTruthy();
+    expect(puts).toHaveLength(0);
   });
 
   it('数字でない金額のままでは保存させない', async () => {
-    renderWith();
-    await screen.findByText('負債を入れる');
-    fireEvent.change(screen.getByLabelText('借入金'), { target: { value: '3万' } });
-    expect((screen.getByRole('button', { name: 'この月の負債を保存' }) as HTMLButtonElement).disabled).toBe(
-      true,
-    );
-    expect(screen.getByText(/0以上の整数/)).toBeTruthy();
+    const puts = renderWith();
+    await screen.findByRole('form', { name: '負債残高の入力' });
+    const group = lineGroup(/クレジット未払/);
+    fireEvent.click(within(group).getByRole('radio', { name: '金額を入力' }));
+    fireEvent.change(within(group).getByLabelText('クレジット未払の金額'), { target: { value: '3万' } });
+    expect(within(group).getByText(/0 以上 1 兆円以下の整数/)).toBeTruthy();
+    fireEvent.click(within(form()).getByRole('button', { name: '負債残高を保存' }));
+    // 送信は同期で止まる。非同期の送信が紛れていないことも待って確かめる
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(puts).toHaveLength(0);
   });
 
-  it('残高が1件も無いときは、表の代わりに取込元を出す', async () => {
-    renderWith({ bs: emptyBs });
-    await screen.findByText(/はまだ作れません/);
-    expect(screen.queryByText('負債を入れる')).toBeNull();
+  it('仕訳が無くても、資産の残高があれば BS を隠さない', async () => {
+    renderWith(statementsPayload({ plMonths: [] }));
+    await screen.findByText('この期間の取引がありません');
+    expect(screen.getByRole('heading', { name: '貸借対照表（BS）' })).toBeTruthy();
+    expect(screen.getByRole('form', { name: '負債残高の入力' })).toBeTruthy();
+  });
+
+  it('残高が1件も無いときは、表の図の代わりに取込元を出す', async () => {
+    renderWith(statementsPayload({ plMonths: [], assets: [] }));
+    await screen.findByText('資産の残高はまだ取り込まれていません');
+    expect(screen.queryByRole('img', { name: /資産.*負債.*純資産/ })).toBeNull();
     // 書き出す場所は、探させずにそのまま開けるようにする
     const link = screen.getByRole('link', { name: 'https://moneyforward.com/bs/history' });
     expect(link.getAttribute('href')).toBe('https://moneyforward.com/bs/history');
+  });
+
+  it('基準月の負債がそろっていれば、資産と負債・純資産の図を出す', async () => {
+    const lines = liabilityLines().map((line) =>
+      line.category === 'クレジットカード未払金' ? { ...line, status: 'zero' as const, amount: 0 } : line,
+    );
+    renderWith(statementsPayload({ lines, referenceMonth: '2026-07' }));
+    await screen.findByRole('heading', { name: '貸借対照表（BS）' });
+    expect(screen.getByRole('img', { name: /資産.*負債.*純資産/ })).toBeTruthy();
   });
 });

@@ -23,7 +23,7 @@ created_at: "2026-09-19T13:50:42Z"
 updated_at: "2026-09-19T13:50:42Z"
 depends_on: ["SYS-AI-P04"]
 related_nodes: ["arch-ai-analysis-auth", "arch-ai-analysis-backend", "arch-ai-analysis-database", "arch-ai-analysis-frontend", "arch-ai-analysis-infrastructure", "arch-ai-analysis-maintenance-ops", "arch-ai-analysis-security", "arch-ai-analysis-ui-ux", "spec-ai-analysis-screen"]
-resource_scope: ["packages/core/src/ai-screen.ts", "packages/core/src/index.ts", "packages/core/src/exports.ts", "packages/api/src/routes/ai.ts", "packages/api/src/ai/dataset.ts", "packages/api/src/ai/period.ts", "packages/api/src/ai/catalog.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/index.ts", "packages/api/src/auth.ts", "migrations/0046_ai_task_stages.sql", "packages/web/src/api.ts", "packages/web/src/pages/Ai.tsx", "packages/web/src/pages/ai/", "packages/web/src/period.tsx", "packages/web/src/ai-copy-log.dom.test.tsx", "packages/web/src/ai-report-archive.dom.test.tsx", "packages/web/src/ai-report-structure.dom.test.tsx", "packages/web/src/ai-task-collapse.dom.test.tsx"]
+resource_scope: ["packages/core/src/ai-screen.ts", "packages/core/src/index.ts", "packages/core/src/exports.ts", "packages/api/src/routes/ai.ts", "packages/api/src/ai/dataset.ts", "packages/api/src/ai/period.ts", "packages/api/src/ai/catalog.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/index.ts", "packages/api/src/auth.ts", "migrations/0048_ai_task_stages.sql", "packages/web/src/api.ts", "packages/web/src/pages/Ai.tsx", "packages/web/src/pages/ai/", "packages/web/src/period.tsx", "packages/web/src/ai-copy-log.dom.test.tsx", "packages/web/src/ai-report-archive.dom.test.tsx", "packages/web/src/ai-report-structure.dom.test.tsx", "packages/web/src/ai-task-collapse.dom.test.tsx"]
 purpose: null
 goal: null
 scope_in: null
@@ -102,13 +102,13 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Produced artifacts:
 - packages/core/src/ai-screen.ts
 - packages/api/src/routes/ai.ts
-- migrations/0046_ai_task_stages.sql
+- migrations/0048_ai_task_stages.sql
 - packages/web/src/pages/ai/
 - Consumed artifacts:
 - docs/ai-screen/design-decisions.md
 - packages/core/test/ai-screen.test.ts
 - packages/api/src/ai-screen.integration.test.ts
-- packages/api/src/ai-migration-0046.test.ts
+- packages/api/src/ai-migration-0048.test.ts
 - packages/web/src/pages/ai/ai-screen.dom.test.tsx
 - Write scope/touches:
 - packages/core/src/ai-screen.ts
@@ -122,7 +122,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - packages/api/src/schema-guard.ts
 - packages/api/src/index.ts
 - packages/api/src/auth.ts
-- migrations/0046_ai_task_stages.sql
+- migrations/0048_ai_task_stages.sql
 - packages/web/src/api.ts
 - packages/web/src/pages/Ai.tsx
 - packages/web/src/pages/ai/
@@ -172,7 +172,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Required evidence:
 - packages/core/src/ai-screen.ts
 - packages/api/src/routes/ai.ts
-- migrations/0046_ai_task_stages.sql
+- migrations/0048_ai_task_stages.sql
 - packages/web/src/pages/ai/
 
 ## Rollout and rollback

@@ -167,6 +167,38 @@
 
 セルを選んだときの詳細パネルと明細への遷移(受入 S2)、選択セルの URL 復元(受入 5)、行の分類を取引先へ切り替える軸(§2.2)は本サイクルで実装していない。仕様側の記述は緩めていないので、次に着手するときは `specs/spec-expense-matrix-screen.md` がそのまま使える。
 
+## 決定の更新(2026-09-20 / 決算書画面)
+
+`/statements` の現行要件は `system-spec/00-requirements-definition.md`、実装境界は
+[`statements-screen.md`](statements-screen.md)、負債の 3 状態と監査の保持は [`data-schema.md`](data-schema.md) の
+「負債の手入力の 3 状態と監査」を参照する。`specs/spec-statements-screen.md` と `architecture/statements-*.md` は
+system-spec から再生成した現行投影で、`features/feat-statements-screen*` もそこから再投影する。凍結した task 計画とは分けて扱う。
+基準画像 `design/FINAL-UI/images/11-statements.png` と意図的に変える点は次の 8 つだけとする。
+
+| 箇所 | 画像 | 2026-09-20の決定 | 変更した理由 / 却下案 |
+|---|---|---|---|
+| 負債残高 KPI の比較 | `前期比`・減少を赤 | **`前月末比`・減少を良化色、増加を注意色** | 残高は時点の値で、期間どうしより前月末との比較が意味を持つ。負債の減少は良い変化(利用者決定 qa-statements-decision-005) |
+| 上部の 3 項目 | タブの見た目 | **見た目はタブのまま、意味論はページ内ナビ**(`nav[aria-label=計算書]` + `aria-current`、`role=tab` 0 件) | 3 節を隠さず全部描くので tablist の意味と合わない(qa-statements-decision-006)。却下: tablist にして 2 節を隠す(整合の確認に 3 表を並べて見る必要がある) |
+| 行の選択 | 行の背景色 | **背景色 + 勘定科目セルのボタン(`aria-pressed`)。ボタンは下線とリンク色を持たず、選択中だけ濃い色と太字にする** | 表の行は `aria-selected` を持てず、背景色だけでは支援技術に伝わらない。下線付きのリンクに見えると「押すとページが移る」と読めてしまう(実際は右の詳細が変わるだけ)ので、移動する操作は詳細パネルの `明細を開く ↗` だけに残した |
+| 月次の損益計算書 | `（万円）` のラベルに対して `950`〜合計 `12,480` は千円値。月見出しも `5月` が重複し `8月` が空欄 | **仕様 §6 の千円 fixture を core で円にし、web では万円へ換算した `95`〜合計 `1,248` と 12 か月の見出しを表示する** | 画像の数値は千円としては各月合計・上部の `12,480,000円` と整合する。誤っている単位ラベルと月見出しだけを引き継がず、恒等式と変換境界を core / web のテストで固定する |
+| CF 原因の 2 番目 | 月数のみ | **決済方法の列が無い取込も同じ原因として添える** | 既存の概算が出せない条件を落とさない。月欠けが 0 でも決済方法が不明なら不能と表示する |
+| 監査 | 画面に出ない | **保存ごとに `liability_audit_log` へ状態遷移と件数(金額なし)** | 誰がいつ未入力→0円などに変えたかを後から追えるようにする(qa-statements-decision-007)。金額を入れないのは監査ログからの漏えい面を増やさないため |
+| 共通シェル | 画像固有のサイドバー幅・2段ヘッダー | **全19ルート共通の `Layout.tsx` と 220px / 64px のシェルを維持する** | 2026-09-21 の再確認で「システム全体の構成と大きくずらさない」を優先した。決算書だけシェルを上書きすると共通導線が画面ごとに変わる |
+| 負債入力 | 必須3行のみ | **現行仕様の必須3行 + 任意「その他の負債」を維持する** | 既存データを入力できなくなる削除は画像合わせでは正当化できない。任意行なので3つの必須判定には影響させない |
+
+### 画像忠実度の判定
+
+動的な金額・日付・グラフ値と上の 8 件を比較から除外する。参照画像の原子要素はすべて照合し、
+ページ内の情報階層・5列比較・原因と解決・負債入力の密度は画像へ寄せる。一方、共通シェルや共通トークンを
+決算書だけ上書きする literal pixel 一致は受入条件にしない。内容網羅とシステム整合の判定・実画像は
+[`evidence/statements-screen.md`](evidence/statements-screen.md) に一元化する。
+
+### この決定を古びさせないために
+
+- `packages/core/test/statements-screen-contract.test.ts` が恒等式・前期比・未入力と 0円 の区別・検算済みフィクスチャを固定する。
+- `packages/web/src/statements-screen.dom.test.tsx` がページ内ナビ(`role=tab` 0 件・`aria-current`)、負債 KPI の `前月末比` と色の向き、行選択の `aria-pressed`、未入力月で BS の図を出さないことを固定する。
+- `packages/api/src/statements-screen.integration.test.ts` が部分保存・`unset` で行が消えること・取込の行への 409・監査に金額が入らないことを固定する。
+
 ## 決定の更新(2026-09-19 / 家計収支画面)
 
 `/household` を作り直した。判断の正本は `specs/spec-household-cashflow-screen.md` と `architecture/household-cashflow-*.md`、実装判断の記録は [`household-screen/design-decisions.md`](household-screen/design-decisions.md)、集計の定義は [`data-schema.md`](data-schema.md) の「家計収支の集計」。
@@ -186,6 +218,43 @@
 - `packages/core/test/household-summary-contract.test.ts` が spec のフィクスチャの計算値、前年欠損の null、振替の対推定、そして `data-schema.md` の 6 区分の表と `HOUSEHOLD_CATEGORY_MAP` の一致を固定する。表だけ・core だけを書き換えると落ちる。
 - `packages/web/src/pages/household/household.dom.test.tsx` が URL の `seg` / `month` / `cat` の読み書きと、前年欠損の「—」を固定する。
 - `packages/api/test/owner-labels.integration.test.ts` が名義ラベルの入力検証(空・21 文字・制御文字・重複・未知のキー)、20 文字ちょうどの保存、取込み中の 409 を固定する。
+
+## 決定の更新(2026-09-20 / 明細仕分け画面)
+
+`/classify`(整える > 明細仕分け)を `design/FINAL-UI/images/13-classify.png` に合わせて作り直した。判断の正本は `specs/spec-classify-screen.md` と `architecture/classify-*.md`、実装判断の記録は [`classify-screen/design-decisions.md`](classify-screen/design-decisions.md)、表の定義は [`data-schema.md`](data-schema.md) の「明細仕分けの作業台(0046)」。
+
+| 更新した判断 | これまで | 2026-09-20の決定 | 変更した理由 / 却下案 |
+|---|---|---|---|
+| 分類の区分 | 画面ごとに「未分類」「要確認」を各自で数える | **`classifyStatus` の 3 区分 `unsorted` / `manual` / `done` が排他で全件を覆い、`review` は `unsorted` の部分集合**(BR-01〜BR-03) | 同じ月の「未整理◯件」が画面ごとに違うと、どれを片づければ終わるのか分からない。サイドバーのバッジも月次クローズも同じ関数から出す |
+| 要確認の位置づけ | 独立した 4 つ目の区分 | **未整理のうち、低い信頼度・矛盾・競合のいずれかに当たるもの**。KPI にも「未整理のうち」と添える | 4 区分にすると和が全件を超える。却下: 要確認を未整理から外す(片づけ漏れが数から消える) |
+| 絞り込みの置き場所 | コンポーネントの state | **URL が正本**(状態・カテゴリ・所有者・支払方法・キーワード・ページ・選択) | URL から開き直した人と画面で押して絞った人で、同じ URL が別の結果になってはいけない |
+| 条件の再利用 | 毎回入れ直す | **「条件を保存」で名前を付けて残す**(`saved_filters`)。条件は JSON で持ち列に割らない | 毎月同じ絞り込みを作り直す作業になっていた |
+| 変更の追跡 | 無し | **7 つの経路すべてが履歴を 1 件ずつ残す**(手動・自動一致・一括・ルール・分割・削除・取消)。削除と取消も `field='deleted'` の行を書く(FR-16) | 「いつの間にか変わっている / 消えている」を読めるようにする。書き手は `classify-history.ts` の 1 か所で、経路ごとに規則が分かれないようにした |
+| 証憑の添付 | ファイル選択欄 | **置かない**。編集パネルに「証憑は freee 側で管理します」と出す | 2026-09-08 の税申告・証憑機能の廃止に合わせる。欄だけ残すと保存先が無いまま添付を促すことになる |
+| 「AI」という語 | 提案の見出しなどに使う | **画面に 1 つも出さない**。提案は「提案」、確からしさは数値の信頼度で示す | 提案はルールと過去の手当てからの導出で、その中身を語が隠す。却下: 「AI 提案」と書いて注釈を添える(注釈は読まれない) |
+| 色だけの区別 | 信頼度・区分をバッジの色で示す | **数値と文言を必ず併記する**(AT-18) | 色だけでは色覚や単色印刷で区別できない |
+| 分割の保存 | 合計が合わなくても保存できる | **合計が元の金額と一致するまで保存を押せない**。一致・不一致の文言は金額を入れて完全一致で出す(§7.9) | 内訳と親の金額がずれたまま残ると、どちらが正しいのか後から決められない |
+| ルールの適用 | 作ってから結果を見る | **プレビューで件数・変更後・対象外件数を見せ、指紋を付けて適用**(§7.10) | プレビュー以降に対象が変わっていたら書き換えを止める。却下: 件数だけ見せる(何がどう変わるか読めない) |
+
+### 決定の追記と、まだ決めていないこと
+
+Q-1 は system-spec の承認済み契約と一貫する `done` に確定した。残る Q-3〜Q-5 は `specs/spec-classify-screen.md` の未決事項から移し、**この文書で値を決めない。** 決めるときは system-spec を直してから仕様書・本書の順に直す。
+
+| ID | 未決の中身 | いまの扱い |
+|---|---|---|
+| Q-1（解決済み） | 取込時に `vendor_memory` が自動で materialize した手当て(`tx_edits.origin='vendor_memory'`・`clsSrc='手動'`・`matched_proposal=NULL`)を、**完了とするか手動変更とするか**。 | **完了（`done`）とする。** `matched_proposal=NULL` でも `needsReview=false`。利用者の手入力ではなく、承認済みの取引先メモリを取込時に自動適用した決定として扱う。 |
+| Q-3 | ルール適用プレビューの見出し『今後 N 件に適用』が、**どの範囲の明細を指すか**。 | 対象は表示期間内の既存の明細として実装した(agent 推定)。未来に取り込まれる明細には、保存したルールが判定の時点で効く。見出しの語と対象の範囲が合っているかは利用者に確認する。 |
+| Q-4 | localStorage の下書きを、**利用者で区切らない**前提。 | 単一利用者の前提(SH1)で区切らない。共用端末を想定するなら、キーに利用者 id を含める変更を別途決める。いまは共用端末で『下書きを復元』に他人の下書きが出うる。 |
+| Q-5 | 本書と仕様書の値のうち、**agent 推定で利用者が未確認のもの**の一覧。 | 信頼度の数値と衝突の −20・矛盾の定義 / 一括保存の上限 100 と 200 応答 / endpoint の形 / 列名 `matched_proposal`・`tx_history.confidence` / 下書きのキー・1 秒・30 日 / 選択の上限 50 / 既定の並び / KPI を押したときの絞り込み / 1024px 未満の並び / プレビューの 50 行 / batch の 50 文 / 保存フィルタの 20 件 / `scope` の効き方 / 指紋の照合 / 一括保存で送る値 / 空・失敗の文言。実装はこの値で進めている。 |
+
+バッジ(全期間・有効な保留を除く未整理)と月次クローズの『仕分け』(対象月・有効な保留と照合側や現金の行などを除く)は、同じ `classifyStatus` を使うが**母集団が違うので同件数は要求しない**。`saved_filters` と `tx_history` は利用者の作業記録として保持し、会計 JSON バックアップ／復元と full reset の対象外とする。
+
+### この決定を古びさせないために
+
+- `packages/core/src/classify-status.test.ts` が 3 区分の排他と全件被覆(`unsorted + manual + done === all`)、`review <= unsorted`、提案が後から変わっても区分が動かないことを固定する。バッジと月次クローズを別の式にすると落ちる。
+- `packages/web/src/pages/classify/classify.dom.test.tsx` が §7.1〜§7.12 の文言・KPI・絞り込み項目・一覧の列とページ送り・一括保存の失敗通知・分割の一致文言・ルールのプレビュー・削除と取消・「AI」0 件・外部送信 0 件を固定する。
+- `packages/api/src/classify-deletion-history.integration.test.ts` が、明細を名指しで消した経路だけが `deleted` の履歴を残し、取消が同じ明細へ `undo` を返すことを固定する。期間削除で履歴が増えたら落ちる。
+- `packages/api/src/classify-bulk.integration.test.ts` / `rules-preview-apply.integration.test.ts` / `saved-filters.integration.test.ts` が、一括・ルール・分割・保存フィルタの各経路の履歴と `op_id` を固定する。
 
 ## 決定の更新(2026-09-18 / サブスク画面)
 
@@ -224,4 +293,4 @@
 
 - `packages/core/test/ai-screen.test.ts` が段階の優先順と境界 4 件(期限切れと受信が同時なら完了 ほか)、T-番号の桁、版の説明、タブの振り分けと主な発見の選び方を固定する。
 - `packages/web/src/pages/ai/ai-screen.dom.test.tsx` が段階ごとの操作、URL の読み書き、壊れた URL の既定への戻り、結果待ちがあるあいだだけの 10 秒ごとの取り直しを固定する。
-- `packages/api/src/ai-screen.integration.test.ts` が取り消しの冪等と 409、再実行、4 MiB の送信上限、エージェントへ渡すデータに明細の行と摘要が入らないことを固定する。`packages/api/src/ai-migration-0046.test.ts` が 0046 で既存行が書き換わらないことを固定する。
+- `packages/api/src/ai-screen.integration.test.ts` が取り消しの冪等と 409、再実行、4 MiB の送信上限、エージェントへ渡すデータに明細の行と摘要が入らないことを固定する。`packages/api/src/ai-migration-0048.test.ts` が 0046 で既存行が書き換わらないことを固定する。

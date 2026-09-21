@@ -51,13 +51,13 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Produced artifacts:
 - packages/core/src/ai-screen.ts
 - packages/api/src/routes/ai.ts
-- migrations/0046_ai_task_stages.sql
+- migrations/0048_ai_task_stages.sql
 - packages/web/src/pages/ai/
 - Consumed artifacts:
 - docs/ai-screen/design-decisions.md
 - packages/core/test/ai-screen.test.ts
 - packages/api/src/ai-screen.integration.test.ts
-- packages/api/src/ai-migration-0046.test.ts
+- packages/api/src/ai-migration-0048.test.ts
 - packages/web/src/pages/ai/ai-screen.dom.test.tsx
 - Write scope/touches:
 - packages/core/src/ai-screen.ts
@@ -71,7 +71,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - packages/api/src/schema-guard.ts
 - packages/api/src/index.ts
 - packages/api/src/auth.ts
-- migrations/0046_ai_task_stages.sql
+- migrations/0048_ai_task_stages.sql
 - packages/web/src/api.ts
 - packages/web/src/pages/Ai.tsx
 - packages/web/src/pages/ai/
@@ -121,7 +121,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Required evidence:
 - packages/core/src/ai-screen.ts
 - packages/api/src/routes/ai.ts
-- migrations/0046_ai_task_stages.sql
+- migrations/0048_ai_task_stages.sql
 - packages/web/src/pages/ai/
 
 ## Rollout and rollback

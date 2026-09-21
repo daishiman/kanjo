@@ -242,6 +242,26 @@ describe('GET /api/overview', () => {
     expect(narrowed.kpi.months).toBe(1);
     expect(narrowed.closeStatus).toEqual(all.closeStatus);
   });
+
+  it('クローズの取込済みは対象月を含む committed import だけで判定する', async () => {
+    await seed();
+    await d1
+      .prepare("UPDATE imports SET months = '2026-08' WHERE user_id = 'default' AND status = 'committed'")
+      .run();
+
+    const outside = (await (await request('/overview')).json()) as {
+      closeStatus: { steps: Array<{ key: string; done: boolean }> };
+    };
+    expect(outside.closeStatus.steps.find((x) => x.key === 'import')?.done).toBe(false);
+
+    await d1
+      .prepare(
+        "UPDATE imports SET months = '2026-08,2026-09' WHERE user_id = 'default' AND status = 'committed'",
+      )
+      .run();
+    const included = (await (await request('/overview')).json()) as typeof outside;
+    expect(included.closeStatus.steps.find((x) => x.key === 'import')?.done).toBe(true);
+  });
 });
 
 describe('GET /api/review-queue', () => {
@@ -313,6 +333,30 @@ describe('保留 (PUT/DELETE /api/review-queue/snoozes/:kind/:itemKey)', () => {
     const body = await queue();
     expect(body.snoozedCount).toBe(0);
     expect(body.items.map((x) => x.itemKey)).toContain('mf-a');
+  });
+
+  it('有効な保留後のキューと月次クローズの仕分け件数が一致し、stale 指紋は両方で復帰する', async () => {
+    await seed();
+    expect((await request('/review-queue/snoozes/classification/mf-a', 'PUT')).status).toBe(200);
+
+    const effectiveQueue = await queue();
+    const effectiveOverview = (await (await request('/overview')).json()) as {
+      closeStatus: { steps: Array<{ key: string; count: number | null }> };
+    };
+    expect(effectiveOverview.closeStatus.steps.find((x) => x.key === 'classification')?.count).toBe(
+      effectiveQueue.counts.classification,
+    );
+
+    await d1
+      .prepare("UPDATE review_snoozes SET fingerprint = ? WHERE item_key = 'mf-a'")
+      .bind('0'.repeat(64))
+      .run();
+    const staleQueue = await queue();
+    const staleOverview = (await (await request('/overview')).json()) as typeof effectiveOverview;
+    expect(staleQueue.items.map((x) => x.itemKey)).toContain('mf-a');
+    expect(staleOverview.closeStatus.steps.find((x) => x.key === 'classification')?.count).toBe(
+      staleQueue.counts.classification,
+    );
   });
 
   it('キューに無い明細は 404 review_item_not_found', async () => {

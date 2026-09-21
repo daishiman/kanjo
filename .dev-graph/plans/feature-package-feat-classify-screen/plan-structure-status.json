@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py (派生ビュー・手書き編集しない・再生成で上書き)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-CLASSIFY-P01",
+      "title": "要件ベースライン確定と未決事項 Q-1〜Q-5 の着手時整理",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P02",
+      "title": "classifyStatus・recommendationFor 拡張・6 API 新設拡張・migration 0046 のワークストリーム設計決定記録",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P03",
+      "title": "分類ステータス契約・API 契約・migration 契約・URL 契約の独立レビュー",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P04",
+      "title": "core 不変条件・API 契約・migration・DOM の失敗テスト先行作成（Q-1 の vendor_memory 分岐を除く）",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P05",
+      "title": "classifyStatus・6 API・migration 0046・/classify 画面の最終実装",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P06",
+      "title": "全テストと型検査と lint の実行記録",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P07",
+      "title": "受入基準 S1 から S6（AT-01〜AT-21）の検証",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P08",
+      "title": "旧 Classify.tsx 参照・証憑欄・重複判定ロジックの読取専用監査",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P09",
+      "title": "アクセシビリティ・入力検証・変更系フェンス・外部送信ゼロ・JS バンドル予算の保証確認",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P10",
+      "title": "独立最終レビュー",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P11",
+      "title": "再現可能な証跡索引の作成",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P12",
+      "title": "分類ステータス・信頼度・ルール適用の規則と Q-1〜Q-5・保存フィルタ / 履歴のバックアップ方針の docs 最終同期",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-P13",
+      "title": "単一 PR での配信と migration 0046 適用とクローズアウト",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

@@ -160,6 +160,9 @@ export function canonicalJsonSnapshot(snapshot: Record<string, unknown>): string
         big: rule.big ?? null,
         mid: rule.mid ?? null,
         owner: normalizeOwner(rule.owner),
+        payee: rule.payee ?? null,
+        scope: rule.scope === 'unconfirmed' ? 'unconfirmed' : 'all',
+        splitTemplate: rule.splitTemplate ?? null,
       };
     });
   }

@@ -246,7 +246,7 @@ describe('GET /reconciliation', () => {
     expect(step(overview)).toEqual(step(queue));
   });
 
-  it('未処理だけが残る場合も actionRequiredCount がハブと月次クローズの正本になる', async () => {
+  it('対象月外の未処理はハブに数えるが月次クローズを止めない', async () => {
     await database
       .prepare(
         `INSERT INTO mf_tx_exclusions
@@ -273,7 +273,7 @@ describe('GET /reconciliation', () => {
       const queue = (await (await request('/review-queue')).json()) as Close;
       const overview = (await (await request('/overview?scope=total')).json()) as Close;
       const step = (body: Close) => body.closeStatus.steps.find((value) => value.key === 'reconciliation');
-      expect(step(queue)).toEqual({ key: 'reconciliation', label: '照合', done: false, count: 1 });
+      expect(step(queue)).toEqual({ key: 'reconciliation', label: '照合', done: true, count: 0 });
       expect(step(overview)).toEqual(step(queue));
     } finally {
       await database

@@ -23,7 +23,7 @@ created_at: "2026-09-19T13:50:42Z"
 updated_at: "2026-09-19T13:50:42Z"
 depends_on: ["SYS-AI-P03"]
 related_nodes: ["arch-ai-analysis-auth", "arch-ai-analysis-backend", "arch-ai-analysis-database", "arch-ai-analysis-frontend", "arch-ai-analysis-infrastructure", "arch-ai-analysis-maintenance-ops", "arch-ai-analysis-security", "arch-ai-analysis-ui-ux", "spec-ai-analysis-screen"]
-resource_scope: ["packages/core/test/ai-screen.test.ts", "packages/api/src/ai-screen.integration.test.ts", "packages/api/src/ai-migration-0046.test.ts", "packages/web/src/pages/ai/ai-screen.dom.test.tsx"]
+resource_scope: ["packages/core/test/ai-screen.test.ts", "packages/api/src/ai-screen.integration.test.ts", "packages/api/src/ai-migration-0048.test.ts", "packages/web/src/pages/ai/ai-screen.dom.test.tsx"]
 purpose: null
 goal: null
 scope_in: null
@@ -102,7 +102,7 @@ implementation_readiness: {"checked_at": "2026-09-19T13:45:00Z", "missing_sectio
 - Produced artifacts:
 - packages/core/test/ai-screen.test.ts
 - packages/api/src/ai-screen.integration.test.ts
-- packages/api/src/ai-migration-0046.test.ts
+- packages/api/src/ai-migration-0048.test.ts
 - packages/web/src/pages/ai/ai-screen.dom.test.tsx
 - Consumed artifacts:
 - docs/ai-screen/design-decisions.md
@@ -110,7 +110,7 @@ implementation_readiness: {"checked_at": "2026-09-19T13:45:00Z", "missing_sectio
 - Write scope/touches:
 - packages/core/test/ai-screen.test.ts
 - packages/api/src/ai-screen.integration.test.ts
-- packages/api/src/ai-migration-0046.test.ts
+- packages/api/src/ai-migration-0048.test.ts
 - packages/web/src/pages/ai/ai-screen.dom.test.tsx
 
 ## Tracker publication and completion
@@ -150,7 +150,7 @@ implementation_readiness: {"checked_at": "2026-09-19T13:45:00Z", "missing_sectio
 - Required evidence:
 - packages/core/test/ai-screen.test.ts
 - packages/api/src/ai-screen.integration.test.ts
-- packages/api/src/ai-migration-0046.test.ts
+- packages/api/src/ai-migration-0048.test.ts
 - packages/web/src/pages/ai/ai-screen.dom.test.tsx
 
 ## Rollout and rollback

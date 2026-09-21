@@ -1,0 +1,1500 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "database",
+      "label": "データベース"
+    },
+    {
+      "id": "auth",
+      "label": "認証(ログイン)"
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI-UX"
+    },
+    {
+      "id": "security",
+      "label": "セキュリティ"
+    },
+    {
+      "id": "infrastructure",
+      "label": "インフラ"
+    },
+    {
+      "id": "backend",
+      "label": "バックエンド"
+    },
+    {
+      "id": "frontend",
+      "label": "フロントエンド"
+    },
+    {
+      "id": "maintenance-ops",
+      "label": "保守運用管理"
+    }
+  ],
+  "platforms": [
+    "web",
+    "mobile",
+    "tablet",
+    "desktop-windows",
+    "desktop-linux",
+    "desktop-macos"
+  ],
+  "matrix": {
+    "database": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-statements-decision-007",
+        "serves_goals": [
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-statements-decision-002",
+          "qa-statements-database-web-002",
+          "qa-statements-agent-decisions-001",
+          "qa-statements-reopen-pass3-001",
+          "qa-statements-database-web-evidence-001",
+          "qa-statements-zero-amount-legacy-001",
+          "qa-statements-migration-0046-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、データベースでは端末内の SQLite と D1 の同期・競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、データベースではタブレットの端末内キャッシュの持ち方と失効を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、データベースでは Windows 版のローカル DB ファイルの置き場所と暗号化を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、データベースでは Linux 版のローカル DB の置き場所と権限を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、データベースでは macOS 版のローカル DB とキーチェーンの使い分けを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      }
+    },
+    "auth": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-statements-foundation-001",
+        "serves_goals": [
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-statements-decision-007",
+          "qa-statements-auth-web-002",
+          "qa-statements-agent-decisions-001",
+          "qa-statements-reopen-pass3-001",
+          "qa-statements-auth-web-evidence-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、認証ではモバイルの生体認証と端末内のトークン保管 (Keychain / Keystore) を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、認証では共用されやすいタブレットでの自動ログアウトと再認証の間隔を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、認証では Windows 資格情報マネージャへのトークン保管と OS ログインとの連携を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、認証では Linux の Secret Service へのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、認証では macOS キーチェーンへのトークン保管と Touch ID 連携を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      }
+    },
+    "ui-ux": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-statements-decision-006",
+        "serves_goals": [
+          "G1",
+          "G3",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-statements-decision-005",
+          "qa-statements-foundation-002",
+          "qa-statements-image-observations-001",
+          "qa-statements-ui-ux-web-002",
+          "qa-statements-agent-decisions-001",
+          "qa-statements-reopen-pass3-001",
+          "qa-statements-ui-ux-web-evidence-001",
+          "qa-statements-detail-parameters-001",
+          "qa-statements-kpi-liability-basis-001",
+          "qa-statements-image-fidelity-evidence-001",
+          "qa-statements-monthly-pl-unit-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、UI-UX では 3 表と詳細パネルを縦 1 列に畳む専用の画面構成と、負債入力の数値キーボード操作を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、UI-UX では PL 表と詳細パネルを横に並べるか重ねるかの専用レイアウトとタッチ操作を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、UI-UX では Windows 標準のメニューとキーボード規約に合わせた決算書の操作体系を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、UI-UX では Linux のデスクトップ環境ごとに異なる見た目への合わせ方を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、UI-UX では macOS のメニューバーと Human Interface Guidelines に合わせた画面構成を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      }
+    },
+    "security": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-statements-decision-007",
+        "serves_goals": [
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-statements-decision-003",
+          "qa-statements-security-web-002",
+          "qa-statements-agent-decisions-001",
+          "qa-statements-reopen-pass3-001",
+          "qa-statements-security-web-evidence-001",
+          "qa-statements-detail-parameters-001",
+          "qa-statements-csv-chars-001",
+          "qa-statements-migration-0046-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、セキュリティでは端末の紛失時に端末内の決算データを消す手段とジェイルブレイク検知を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、セキュリティでは共用タブレットの画面ロックと端末内キャッシュの消去を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、セキュリティでは Windows 版のコード署名と更新配信の改ざん防止を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、セキュリティでは Linux 版パッケージの署名と配布元の検証を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、セキュリティでは macOS の公証とサンドボックス権限を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-statements-decision-007",
+        "serves_goals": [
+          "G1",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-statements-infrastructure-web-002",
+          "qa-statements-agent-decisions-001",
+          "qa-statements-reopen-pass3-001",
+          "qa-statements-infrastructure-web-evidence-001",
+          "qa-statements-migration-0046-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、インフラではアプリストアへの配布と、プッシュ通知で月次の決算の整合を知らせる基盤を持つかを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、インフラではタブレット向けの別ビルドと配布経路を持つかを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、インフラでは Windows 向けインストーラのビルドと更新配信の基盤を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、インフラでは Linux 向けパッケージのビルドとリポジトリ配信を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、インフラでは macOS 向けのビルド・公証・更新配信の基盤を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      }
+    },
+    "backend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-statements-decision-005",
+        "serves_goals": [
+          "G2",
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-statements-decision-001",
+          "qa-statements-decision-004",
+          "qa-statements-foundation-002",
+          "qa-statements-backend-web-002",
+          "qa-statements-agent-decisions-001",
+          "qa-statements-reopen-pass3-001",
+          "qa-statements-backend-web-evidence-001",
+          "qa-statements-detail-parameters-001",
+          "qa-statements-zero-amount-legacy-001",
+          "qa-statements-kpi-liability-basis-001",
+          "qa-statements-screen-only-contract-001",
+          "qa-statements-monthly-pl-unit-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、バックエンドではモバイルアプリ向けのオフライン同期 API と版ごとの互換を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、バックエンドではタブレット向けに別の応答形 (画面幅別の要約) を出すかを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、バックエンドでは Windows 版がローカルに持つ集計とサーバ集計の一致方法を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、バックエンドでは Linux 版のローカル保存とサーバの同期契約を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、バックエンドでは macOS 版のローカル保存とサーバの同期契約を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-statements-decision-006",
+        "serves_goals": [
+          "G1",
+          "G3",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-statements-decision-003",
+          "qa-statements-image-observations-001",
+          "qa-statements-frontend-web-002",
+          "qa-statements-agent-decisions-001",
+          "qa-statements-reopen-pass3-001",
+          "qa-statements-frontend-web-evidence-001",
+          "qa-statements-detail-parameters-001",
+          "qa-statements-csv-chars-001",
+          "qa-statements-screen-only-contract-001",
+          "qa-statements-monthly-pl-unit-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、フロントエンドではネイティブの描画基盤 (React Native など) と web との部品共有を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、フロントエンドではタブレット専用ビルドの分岐と画面幅ごとの部品差し替えを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、フロントエンドでは Windows 向けのデスクトップ殻 (Electron など) への組込みを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、フロントエンドでは Linux 向けの殻と描画エンジンの差を吸収する方法を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、フロントエンドでは macOS 向けの殻とネイティブメニューとの接続を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      }
+    },
+    "maintenance-ops": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-statements-foundation-002",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-statements-foundation-001",
+          "qa-statements-decision-005",
+          "qa-statements-decision-006",
+          "qa-statements-maintenance-ops-web-002",
+          "qa-statements-agent-decisions-001",
+          "qa-statements-reopen-pass3-001",
+          "qa-statements-maintenance-ops-web-evidence-001",
+          "qa-statements-image-fidelity-evidence-001",
+          "qa-statements-migration-0046-001",
+          "qa-statements-monthly-pl-unit-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、保守運用ではモバイルアプリのバージョンごとの互換と、ストア審査を含むリリース手順を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、保守運用ではタブレット専用画面の回帰テスト (実機の画面幅) をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、保守運用では Windows 版の更新失敗時の復旧手順とクラッシュ報告の扱いを決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、保守運用では配布形式ごとの動作確認と不具合報告の窓口を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、保守運用では macOS の版更新ごとの互換確認と公証のやり直し手順を決める必要があった。対象を web のみとする利用者決定 (qa-statements-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-statements-target-platforms-001"
+      }
+    }
+  },
+  "qa_log": [
+    {
+      "id": "qa-statements-decision-001",
+      "question": "PL の『売上原価』と『販管費』をどう分けるか。現行 PL は 売上 / 経費グループ / 利益 だけで売上原価の区分が無い。",
+      "answer": "固定の対応表にする。core に勘定科目→区分の固定表を置き (仕入高など仕入系→売上原価、残り→販管費)、表と計算式は docs とテストで固定する。青色申告決算書の区分に合わせる。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T01:53:56Z",
+      "required_info_items": [
+        "domain-model",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-statements-decision-002",
+      "question": "BS の負債入力で、画像の 3 項目 (借入金・未払金・クレジット未払) と既存の『その他の負債』をどう扱うか。",
+      "answer": "3 項目は必須、その他は任意。画像の 3 項目は『未入力 / 0円 / 金額』の選択を必須にし、項目ごとに状態を保存する (migration 0045 で状態列を追加)。その他の負債は任意項目として残す。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T01:53:56Z",
+      "required_info_items": [
+        "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:35:37Z",
+          "note": "SUPERSEDED NUMBER ONLY: 状態列と 3 状態の決定は有効だが、実 migration は 0045_owner_labels.sql との衝突を避けた migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-decision-003",
+      "question": "『下書きを自動保存しました』の下書きをどこに保存するか。",
+      "answer": "ブラウザ内。localStorage に利用者ごとのキーで保存し、サーバへ送るのは『負債残高を保存』のときだけ。既存の Cash / Budget 画面と同じ方式で migration は不要。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T01:53:56Z",
+      "required_info_items": [
+        "domain-model",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-statements-decision-004",
+      "question": "CF が集計できるときは何を表示するか (画像は集計できないときの表示だけ)。",
+      "answer": "既存の営業 CF 概算と原因別件数。集計できるときは今の営業 CF 概算 (表とグラフ) を出し、集計できないときは画像の表示に切り替え、未仕訳の件数・口座データの欠け・科目未設定を件数つきで出す。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T01:53:56Z",
+      "required_info_items": [
+        "domain-model",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-statements-foundation-001",
+      "question": "決算書画面 (design/FINAL-UI/images/11-statements.png) を正本として画面・集計・API・保存を作り直す今サイクルの上位概念 U1-U9 (本質的目的 / 背景 / ゴール G1-G5 / 目標 O1-O5 / 成功基準 S1-S5 / 関係者 SH1-SH2 / 範囲 in 7・out 5 / 制約 C1-C5 / 具体的やりたいこと I1-I8) を、要件定義書の憲法として確定してよいか。",
+      "answer": "この内容で承認する。",
+      "provenance": "AskUserQuestion / U1-U9 要約を preview で提示",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T01:53:56Z",
+      "required_info_items": [
+        "context-of-use",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-statements-target-platforms-001",
+      "question": "決算書画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
+      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『他の画面の作り直し、web 以外のプラットフォーム』を置き、利用者が U1-U9 をこの内容で承認した (appr-foundation-statements-001)。狭い画面は既存 web のレスポンシブ規約 (カードの縦積み、表だけの横スクロール、下部固定バーのセーフエリア) の中で扱う。",
+      "provenance": "AskUserQuestion / U1-U9 承認 (scope.out に web 以外を明記)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "required_info_items": [
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-statements-ui-ux-web-001",
+      "question": "web の決算書画面 (/statements) の UI-UX 要件は何か。構成要素・文言・選択・詳細パネル・負債の 3 状態入力・状態・アクセシビリティを 11-statements.png のとおりに確定する。",
+      "answer": "上から (1) 期間バー (1年/2年/3年/任意と ‹ 2025年9月 - 2026年8月 › の前後移動、同じ長さでずらす)。(2) 問いの見出し『損益・資金・残高は、整合していますか？』と説明文。(3) KPI 4 枚 (売上高・営業利益・現金増減・負債残高。前期比の金額と %、出典、対象期間 / 基準日。負債は増加が注意色で向きが逆、必須項目に未入力があれば『未入力あり』で合計を出さない)。(4) 損益計算書 / キャッシュフロー計算書 / 貸借対照表 のタブ (?tab= に保ち該当セクションへ移動)。(5) PL 表 5 行 (売上高・売上原価・売上総利益・販管費・営業利益) × 勘定科目・当期・前期・差額・構成比、行の展開、エクスポート (CSV)。行の選択 (?row=) で右の『項目の詳細』(金額・計算式・主な内訳の勘定科目 3 件・月別の推移・データの出典・明細を開く、× で閉じる) を切り替える。(6) 月別の損益推移 (売上高・売上原価の棒と営業利益の線) と月次の損益計算書表 (万円、合計列は円で合算後に丸める)。(7) CF: 集計できないときは画像の不能表示 (原因 3 種を件数つき・解決方法 3 手順・取引データを確認) で表とグラフを出さず、集計できるときは既存の営業 CF 概算。(8) BS: 未入力の警告バナーと開閉、基準月ピッカー、借入金・未払金・クレジット未払 (必須) とその他の負債 (任意) を『未入力 / 0円 / 金額を入力』の 3 択、未選択のエラー文、『0円と未入力は区別されます』、下書きの自動保存時刻、リセットと負債残高を保存。(9) 未保存の項目数を示す下部固定バー。読込・空・失敗・前期欠損・保存中 / 失敗の各状態を持ち、増減は符号と矢印を併記して色だけに頼らない。画像の月次表は閉じないので数値は検算済みフィクスチャを正本にする。文言・数値の正本は specs/spec-statements-screen.md。",
+      "provenance": "利用者承認 (appr-foundation-statements-001) と利用者決定 qa-statements-decision-001〜004 を、specs/spec-statements-screen.md へ具体化した回答",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T23:36:20Z",
+          "note": "SUPERSEDED UNIT EXPLANATION: 『画像の月次表は閉じない』は誤り。画像値は千円として合計が閉じる。現行は qa-statements-monthly-pl-unit-001 のとおり、core の千円 fixture を円にし、web で万円へ換算する。画像の単位ラベルと重複月見出しだけを引き継がない。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-ui-ux-web-evidence-001",
+      "question": "ui-ux 章の裏付けとして、現行の決算書画面と共通の外枠について何を観測したか。",
+      "answer": "packages/web/src/pages/Statements.tsx (657 行) は PL・CF・BS を縦に並べ、KPI は 売上/経費/利益/利益率 (88-112 行) で前期比と出典が無い。負債入力 LiabilityForm (506-582 行付近) は amounts を {} で始め保存済みの値を読まず、ボタン文言は『この月の負債を保存』。見出しの上書きは Page.tsx の PageHeader (31-37 行)、期間は period.tsx の usePeriod、外枠の『税務ライン』バッジは Layout.tsx (421-437 行) にある。design/FINAL-UI/spec/AUDIT.md:17 は『タブはあるが負債入力、0/不明、BS不足、CF限界が不足』と記録している。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:46:05Z",
+          "note": "SUPERSEDED OBSERVATION: 657 行の単一 Statements.tsx とその行番号は refactor 前の課題を示す過去観測であり、現在形ではない。現在の packages/web/src/pages/Statements.tsx は pages/statements/StatementsPage.tsx の 2 行の re-export だけを持ち、KPI・PL・CF・BS・負債入力の実装は pages/statements/* に分割済みである。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-frontend-web-001",
+      "question": "決算書画面のフロントエンド構成 (部品分割・データ取得・URL 状態・下書き) をどう組むか。",
+      "answer": "Statements.tsx を薄い組み立てにし、packages/web/src/pages/statements/ に KpiStrip・PlCard (表と展開)・PlDetailPanel・PlTrendChart (FinancialCharts の系列規約に乗せる)・MonthlyPlTable・CashFlowSection (不能表示と概算の切替)・LiabilitySection (3 状態入力と基準月)・UnsavedBar を置く。データは TanStack Query で GET /api/statements の screen (期間クエリ + ref) を 1 本読み、数値の計算を web で重複実装しない。タブ・行・基準月は useSearchParams に保つ。負債の保存は useMutation で PUT し、成功時に statements のクエリを無効化する。下書きは localStorage の kanjo.statements.liabilityDraft.<userId>.<YYYY-MM> に 800ms の遅延で保存し (period.tsx の try/catch の書き方に倣う)、ログアウト処理でこの接頭辞のキーを消す。色はトークン、ボタンは共通 Button、遷移は Link className=btn、本文は PageShell。CSV は web で組み、数式注入対策で = + - @ 始まりのセルに ' を付ける。",
+      "provenance": "利用者承認 (appr-foundation-statements-001) と利用者決定 qa-statements-decision-001〜004 を、specs/spec-statements-screen.md へ具体化した回答",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "required_info_items": [
+        "frontend-arch",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-statements-frontend-web-evidence-001",
+      "question": "frontend 章の裏付けとして、既存の web の土台について何を観測したか。",
+      "answer": "packages/web は React 18 + react-router-dom 7 + TanStack Query 5。period.tsx は localStorage を STORAGE_KEY で try/catch つきで読み書きする (81-91 行)。Classify.tsx は ?month= と ?category= を初期値として読む (181-194 行)。ログアウトの呼出しは components/Layout.tsx にある。localStorage を使うのは period.tsx と pages/analysis/diagnosis/types.ts だけ。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T02:01:29Z"
+    },
+    {
+      "id": "qa-statements-backend-web-001",
+      "question": "決算書の集計と負債保存のバックエンド (core の関数と API 契約) をどう定めるか。",
+      "answer": "core に statementsScreen(input) を新設し、勘定科目→区分の固定対応表 (青色申告決算書の売上原価欄に載る仕入高・期首/期末商品棚卸高を売上原価、売上系を売上高、それ以外と未知の科目を販管費) から段階損益を月別と合計で出し、恒等式 (売上総利益=売上高−売上原価、営業利益=売上総利益−販管費) を保つ。前期比は直前の同じ長さの期間 (api が applyPeriod(all, 前期範囲) で Dataset を切って渡す) との金額と % で、前期 0 / 欠損は % を null。構成比・計算式・主な内訳科目・出典・KPI 4 枚・CF の可否と原因件数 (未仕訳・現金口座の月欠け・科目未設定)・BS の項目別 3 状態も同じ関数が返す。GET /api/statements は既存の pl/cf/bs/period を残し screen を足す (後方互換)。クエリに ref=YYYY-MM (基準月、期間外は最終月へ丸める)。PUT /api/balances/liabilities は {month, lines:[{category, status: unset|zero|amount, amount?}]} の zod strict で、送られた項目だけを upsert / 削除し他項目と source=mf 行に触らない。応答は保存後の bs。",
+      "provenance": "利用者承認 (appr-foundation-statements-001) と利用者決定 qa-statements-decision-001〜004 を、specs/spec-statements-screen.md へ具体化した回答",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:35:37Z",
+          "note": "SUPERSEDED: 『旧 pl/cf/bs/period を残し screen を足す』という後方互換方針は qa-statements-screen-only-contract-001 により非規範化された。現行 GET /api/statements の契約は {screen} だけで、旧キーは返さない。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-backend-web-evidence-001",
+      "question": "backend 章の裏付けとして、現行の決算書 API と負債保存について何を観測したか。",
+      "answer": "packages/api/src/routes/analytics.ts:627-650 の GET /api/statements は loadScoped (data と all と period を返す) の data から profitAndLoss・cashFlow・buildBalanceSheet を返す。packages/api/src/routes/balances.ts の PUT /api/balances/liabilities は zod strict・最大 4 行で、その月の manual 負債を全削除してから挿入するため、1 種類だけ送ると他の種類が消える。core の statements.ts は profitAndLoss (77 行)・cashFlow (157 行、決済列が無いと settlementUnknown) を持ち、tax-accounts.ts の 6 グループに売上原価は無い。balances.ts の LIABILITY_CATEGORIES はクレジットカード未払金・借入金・未払金・買掛金・その他の負債。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:35:37Z",
+          "note": "SUPERSEDED OBSERVATION: これは refactor 前の実装観測であり、現行契約ではない。現行 GET /api/statements は statementsScreen の {screen} だけを返し、旧 pl/cf/bs/period は返さない。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-database-web-001",
+      "question": "負債の 3 状態と保存の監査を、どのテーブル変更で持つか。",
+      "answer": "migration 0045 で ALTER TABLE balance_entries ADD COLUMN status TEXT NOT NULL DEFAULT 'amount' CHECK (status IN ('zero','amount')) を足し、既存行は金額ありのまま保つ (C4)。『未入力』は行を持たないことで表す。『0円』は status=zero・amount=0 の行。UNIQUE(user_id, month, side, category) は変えない。監査は同じ migration で新表 liability_audit_log (id, user_id, actor_user_id, month, changed_json, occurred_at) を CREATE TABLE で足し、金額は残さず項目ごとの状態遷移と件数だけを残す。既存 audit_log の action は CHECK 制約で閉じており拡張には表の再構築 (INSERT…SELECT と DROP TABLE) が要るが、Deploy の自動適用判定が止めるうえ C4 に反するので採らない。drizzle の schema.ts に列と表を足す。並行サイクルが 0045 を使っていれば実装時に次の番号へ繰り下げる。",
+      "provenance": "利用者承認 (appr-foundation-statements-001) と利用者決定 qa-statements-decision-001〜004 を、specs/spec-statements-screen.md へ具体化した回答",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:35:37Z",
+          "note": "SUPERSEDED NUMBER ONLY: DDL と追加のみの方針は有効だが、実 migration は 0045_owner_labels.sql との衝突を避けた migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-database-web-evidence-001",
+      "question": "database 章の裏付けとして、既存のテーブルと migration の規則について何を観測したか。",
+      "answer": "migrations/0026_balance_entries.sql は id・user_id・month・date・side・category・amount・source ('mf' | 'manual')・created_at・updated_at と UNIQUE(user_id, month, side, category)。migrations/0033_audit_log.sql は action を CHECK で閉じ、0034 と 0039 は CHECK を広げるために audit_log_new を作って RENAME する再構築をしている。.github/scripts/plan-auto-migration.mjs は DROP TABLE・DROP COLUMN・DELETE FROM・UPDATE…SET・ALTER TABLE…RENAME を自動適用しない。最新の migration は 0044_diagnosis_action_states.sql。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T02:01:29Z"
+    },
+    {
+      "id": "qa-statements-auth-web-001",
+      "question": "決算書の閲覧と負債の保存を、誰がどの認証で行えるか。",
+      "answer": "既存のアカウントログイン (メールアドレス+パスワード、HttpOnly・Secure・SameSite=Strict のセッション Cookie) をそのまま使い、/api/* の authGuard と一時パスワードの fence を通った利用者だけが自分の user_id の決算書を読み、負債を保存できる。新しい認証方式・権限は足さない。監査 liability_audit_log には actor_user_id を残す。下書きのキーに userId を含め、ログアウトで消すので、同じブラウザで別の利用者に前の利用者の下書きが見えない。",
+      "provenance": "利用者承認 (appr-foundation-statements-001) と利用者決定 qa-statements-decision-001〜004 を、specs/spec-statements-screen.md へ具体化した回答",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-statements-auth-web-evidence-001",
+      "question": "auth 章の裏付けとして、既存の認証の仕組みについて何を観測したか。",
+      "answer": "packages/api/src/index.ts は認証エンドポイントの後に app.use('/api/*', authGuard()) と mustChangePasswordFence() を掛ける (102 行付近)。packages/api/src/auth.ts はセッション Cookie を sameSite 'Strict'・httpOnly・secure で発行し (129 行)、ログアウトで maxAge 0 にする (136 行)。migrations/0039_account_login.sql が users と audit_log の actor_user_id を導入している。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T02:01:29Z"
+    },
+    {
+      "id": "qa-statements-security-web-001",
+      "question": "負債の保存経路と決算書画面の安全性要件は何か。",
+      "answer": "既存の防御 (authGuard、SameSite=Strict の Cookie、JSON の Content-Type 検証、取込との直列化 canonical-mutation-fence) を保ったまま、(1) 金額は整数・0 以上・1 兆円以下を zod で検証、(2) PUT /api/balances/liabilities に bodyLimit 8 KiB (超過は 413)、(3) 保存ごとに liability_audit_log へ 1 件 (金額は残さない)、(4) 下書きは利用者別キーでブラウザ内に留めログアウトで消す、(5) CSV エクスポートは = + - @ 始まりのセルに ' を付けて数式注入を防ぐ、(6) 取込データ・下書きを外部へ送らない。未認証の保存は 401、不正な本文は 400。",
+      "provenance": "利用者承認 (appr-foundation-statements-001) と利用者決定 qa-statements-decision-001〜004 を、specs/spec-statements-screen.md へ具体化した回答",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-statements-security-web-evidence-001",
+      "question": "security 章の裏付けとして、既存の入力上限と直列化について何を観測したか。",
+      "answer": "packages/api/src/index.ts の bodyLimit は /api/auth/* だけに 16 KiB で掛かり (85-92 行)、保護された API には掛かっていない。balances.ts の amount は z.number().int().nonnegative() で上限が無い。取込との直列化は packages/api/src/canonical-mutation-fence.ts (45 行) にある。監査ログの書込みは packages/api/src/audit-log.ts の buildAuditStatements (248 行)。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T02:01:29Z"
+    },
+    {
+      "id": "qa-statements-infrastructure-web-001",
+      "question": "決算書画面の変更をどの基盤でどう配信・反映するか。",
+      "answer": "既存の Cloudflare Worker (packages/api、D1 の DB binding) と web の静的配信をそのまま使い、新しい基盤・外部サービスは足さない。migration 0045 は ADD COLUMN と CREATE TABLE だけなので Deploy の自動適用判定で止まらずに適用される。反映は既存の ci.yml・deploy.yml・migrate.yml の流れに乗せ、初期 JS 予算 (js-budget) を超えないよう決算書の部品はルート単位で分割読込する。",
+      "provenance": "利用者承認 (appr-foundation-statements-001) と利用者決定 qa-statements-decision-001〜004 を、specs/spec-statements-screen.md へ具体化した回答",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "required_info_items": [
+        "infra-topology"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:35:37Z",
+          "note": "SUPERSEDED NUMBER ONLY: 追加のみの配信方針は有効だが、適用対象は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-infrastructure-web-evidence-001",
+      "question": "infrastructure 章の裏付けとして、既存の配信と反映の仕組みについて何を観測したか。",
+      "answer": ".github/workflows には ci.yml・deploy.yml・migrate.yml がある。api は packages/api/wrangler.jsonc の Worker で D1 を DB binding として使う。.github/scripts/plan-auto-migration.mjs は pending migration の SQL を静的に判定し、行を失う・書き換える文を含むと自動適用を止める。直近の #58 で初期 JS 予算の CI 実測値を記録している。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T02:01:29Z"
+    },
+    {
+      "id": "qa-statements-maintenance-ops-web-001",
+      "question": "決算書画面の品質をどう保ち、規則をどこに残すか。",
+      "answer": "core の契約テストで恒等式 (全月と合計)・前期比 (前期 0 / 欠損で null)・未知科目は販管費・構成比・CF 不能の原因件数・負債の unset と zero の区別を固定し、specs/spec-statements-screen.md の検算済みフィクスチャで画面を DOM テストする。API 統合テストで 1 項目保存で他項目が残ること・unset で行が消えること・上限超過 400・本文超過 413・未認証 401・監査 1 件・取込中 409 を確かめ、migration が既存行を書き換えないことを検査する。既存の statements-balance-sheet.dom.test.tsx・balances-lifecycle.test.ts・statements-contract.test.ts は新しい文言と本文形へ更新し、旧実装で落ちることを確かめる (契約を緩めない)。区分の対応表と計算式は docs/data-schema.md に、UI の決定は docs/ui-decisions.md に記録する。pnpm lint (直書き色の検査)・typecheck・初期 JS 予算・verify:full を通す。",
+      "provenance": "利用者承認 (appr-foundation-statements-001) と利用者決定 qa-statements-decision-001〜004 を、specs/spec-statements-screen.md へ具体化した回答",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:01:29Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-statements-maintenance-ops-web-evidence-001",
+      "question": "maintenance-ops 章の裏付けとして、既存の検証コマンドと決算書のテストについて何を観測したか。",
+      "answer": "ルートの package.json は test・typecheck・lint (biome と check-design-tokens などの独自検査、security:content)・verify:full を持つ。決算書を固定するテストは packages/core/test/statements-contract.test.ts・packages/core/test/balances-contract.test.ts・packages/web/src/statements-balance-sheet.dom.test.tsx (文言『貸借対照表の月別明細』『負債を入れる』『この月の負債を保存』と PUT 本文 {month:'2026-08', lines:[{category:'借入金', amount:30000}]} を固定)・packages/api/src/balances-lifecycle.test.ts・common-shell-routes.dom.test.tsx (StatementsPage の export)。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T02:01:29Z"
+    },
+    {
+      "id": "qa-statements-detail-parameters-001",
+      "question": "ui-ux・frontend・backend・security の web-001 回答に含まれる具体値のうち、どれが利用者の決定で、どれがエージェントの具体化か。",
+      "answer": "利用者が決めたのは 4 決定 (qa-statements-decision-001〜004) と U1-U9 の承認 (appr-foundation-statements-001) まで。次の値はエージェントが既存コードと公式資料から具体化した既定値で、利用者は個別に選んでいない: 金額上限 1 兆円 (表示と集計の桁あふれ防止)、本文上限 8 KiB (4 項目の本文は 1 KiB 未満。既存の /api/auth/* は 16 KiB)、下書き保存の遅延 800ms、詳細パネルの主な内訳 3 科目、月次表の万円丸め (合計列は円で合算してから丸める)、URL パラメータ名 (tab・row・ref)、下書きのキー名、区分対応表に載せる科目の列挙 (仕入高・期首商品棚卸高・期末商品棚卸高)。いずれも上位概念 G1-G5 と 4 決定に反しない調整値で、実装中に変えるときは specs/spec-statements-screen.md とテストを同時に変える。",
+      "provenance": "エージェントによる具体化の区分表示 (利用者への個別確認なし)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T02:18:27Z"
+    },
+    {
+      "id": "qa-statements-csv-chars-001",
+      "question": "CSV エクスポートの数式注入対策で ' を前置する先頭文字は何か (qa-statements-frontend-web-001 と qa-statements-security-web-001 は = + - @ だけを挙げている)。",
+      "answer": "OWASP ASVS 5.0 の 1.2.10 (fetched-references の owasp-asvs-csv-injection、2026-09-19T02:03:50Z 確認) に従い、= + - @ に加えてタブ (0x09) と NUL (0x00) で始まる文字列セルにも ' を前置する。qa-statements-frontend-web-001 と qa-statements-security-web-001 の『= + - @』はこの集合の一部だけを挙げた記述であり、正本は specs/spec-statements-screen.md §5 (= + - @・タブ・NUL) とする。金額のセルは数値のまま書き出し ' を付けない。",
+      "provenance": "公式資料 (OWASP ASVS 5.0 1.2.10) と specs/spec-statements-screen.md §5 の照合",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T02:18:27Z"
+    },
+    {
+      "id": "qa-statements-zero-amount-legacy-001",
+      "question": "migration 0045 の適用前に金額 0 で保存された既存の手入力負債行 (status 列の既定値で 'amount' になる) を、画面と集計でどう扱うか。",
+      "answer": "(status='amount', amount=0) の組を『0円』(zero) と同じ扱いで表示・完了判定する。現行 UI で 0 を入れて保存した行は利用者が値を入れた項目であり、未入力ではないため。行は書き換えない (C4。UPDATE を含む migration は Deploy の自動適用判定で止まる)。次にその項目が保存されたとき status='zero' で上書きされる。core の契約テストでこの扱いを固定する (specs/spec-statements-screen.md §3.4・§7)。",
+      "provenance": "エージェントによる既存データの扱いの決定 (C4 と G4 から導出。利用者への個別確認なし)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T02:18:27Z",
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:35:37Z",
+          "note": "SUPERSEDED NUMBER ONLY: 『状態列の適用前に amount=0 で保存された行』の互換処理は有効だが、状態列を追加する実 migration は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-kpi-liability-basis-001",
+      "question": "KPI 4 枚のうち負債残高だけ前期比を前月末比にするのはなぜか。",
+      "answer": "負債残高は期間の流量ではなく基準日時点の残高 (ストック) だから。売上高・営業利益・現金増減は期間の合計なので直前の同じ長さの期間と比べるが、残高を 12 か月前の残高と比べても今月の入力漏れや急増に気づけない。前月末に必須項目の未入力があるとき、または前月末の行が 1 件も無いときは前期比を — とする (specs/spec-statements-screen.md §1.3)。",
+      "provenance": "エージェントによる比較基準の決定 (G1 と画像の『基準日：2026年8月末』から導出。利用者への個別確認なし)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T02:18:27Z"
+    },
+    {
+      "id": "qa-statements-decision-005",
+      "question": "負債残高 KPI の「前期比」は何と比べ、減少を何色で示しますか？ (画像は『前期比 -¥200,000 (-8.0%)』を赤で表示)",
+      "answer": "前月末比・減少は良化色 (推奨)。比較先は前月末で、ラベルを『前月末比』に変え、減少=良化色・増加=注意色とする。画像の文言と色から意図的に外れる点は ui-decisions.md に記録する。(提示した他の選択肢: 前月末比・色は画像どおり / 画像どおり前期比)",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり (2026-09-19T02:30:05Z 提示・02:41:21Z 回答)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:41:21Z",
+      "required_info_items": [
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-statements-decision-006",
+      "question": "上部の『損益計算書 / キャッシュフロー計算書 / 貸借対照表』の切り替えをどう作りますか？",
+      "answer": "ページ内ナビ (推奨)。画像どおり 3 表を縦に全部描画し、上部は節へ移動するナビ (nav + aria-current) にする。(提示した他の選択肢: 本物のタブ = 選んだ 1 表だけを表示する tablist/tabpanel)",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり (2026-09-19T02:30:05Z 提示・02:41:21Z 回答)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:41:21Z",
+      "required_info_items": [
+        "frontend-arch",
+        "information-priority"
+      ]
+    },
+    {
+      "id": "qa-statements-decision-007",
+      "question": "負債残高の保存・削除の記録 (監査ログ) をどう残しますか？",
+      "answer": "新表・金額は残さない (推奨)。migration 0045 で liability_audit_log を追加し、誰がいつどの月のどの項目を 保存/0円/未入力 にしたかだけを記録し、金額は残さない。既存 audit_log の CHECK 変更は表の再構築 (Deploy 自動適用で止まる) が要るため避ける。(提示した他の選択肢: 新表・金額も残す / 記録しない)",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり (2026-09-19T02:30:05Z 提示・02:41:21Z 回答)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T02:41:21Z",
+      "required_info_items": [
+        "data-persistence",
+        "security-posture"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:35:37Z",
+          "note": "SUPERSEDED NUMBER ONLY: 新表で金額を残さない決定は有効だが、実 migration は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-foundation-002",
+      "question": "上位概念 G1 と O1 を、3 決定 (負債=前月末比・減少は良化色 / ページ内ナビ / 現金増減は画像どおり金額のみ) に合わせて改訂した文面で承認しますか？ ほかの U1-U9 は変えない。",
+      "answer": "この文面で承認する (appr-foundation-statements-002)。G1:『KPI 4 枚 (売上高・営業利益は前期比の金額と %、現金増減は前期比の金額のみ (画像どおり)、負債残高は前月末比の金額と % で減少を良化色。各々 出典と対象期間または基準日)、3 計算書の節へ移動するページ内ナビ (画像のタブの見た目。3 節は縦にすべて描画)』。O1 測定:『KPI 4 枚 (G1 の比較先と表示規則、出典、対象期間 / 基準日)・3 計算書へのページ内ナビ (nav と aria-current)』。(提示した他の選択肢: 修正が必要)",
+      "provenance": "AskUserQuestion / 改訂前後の文面を提示 (2026-09-19T02:42:17Z 提示・11:34:24Z 回答)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T11:34:24Z",
+      "required_info_items": [
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-statements-image-observations-001",
+      "question": "design/FINAL-UI/images/11-statements.png から読み取れる、仕様の分かれ目になる事実は何か。",
+      "answer": "(1) 現金増減の KPI は『前期比 +¥120,000』で % が無い。(2) 負債残高の KPI は『前期比 -¥200,000 (-8.0%)』を赤で出している。(3) 上部の『損益計算書 / キャッシュフロー計算書 / 貸借対照表』はタブの見た目で、画面は PL の下に CF・BS が縦に続き 3 節すべてが描かれている。(4) CF の不能表示の原因は 3 行 (未仕訳の件数・現金口座データの月数・科目未設定の件数) で、決済方法の列については書かれていない。(5) 月次の損益計算書の表は行の和が合計列と一致しない。",
+      "provenance": "11-statements.png の目視読み取り (エージェント)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T11:41:33Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T23:35:14Z",
+          "note": "SUPERSEDED OBSERVATION: 『月次の損益計算書の表は行の和が合計列と一致しない』は誤り。画像の 950〜合計 12,480 は千円値として各月合計と上部の 12,480,000円に整合する。画像の問題は単位ラベルが（万円）であることと、月見出しに 5月が重複して 8月が空欄なこと。現行の単位契約は qa-statements-monthly-pl-unit-001 を規範とする。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-agent-decisions-001",
+      "question": "pass-3 の差し戻しを直すときに、利用者の決定を具体化するためエージェントが決めた点は何か。",
+      "answer": "(a) 行の選択は勘定科目セル内のボタンと aria-pressed で示す (表の行は aria-selected を持てないため)。(b) ページ内ナビは選んだ項目だけに aria-current=\"location\" を付け、スクロール位置で自動更新しない。選択時は節見出し (tabIndex=-1) へフォーカスを移す。(c) ref が期間外・不正なら期間の最終月に丸め、丸めた月を bs.referenceMonth で返し web は URL をその値へ置き換える。(d) CF は原因 3 種 (未仕訳件数・現金口座の欠け {月数, 決済列なし}・科目未設定件数) のどれかが立つときだけ不可にし、決済方法の列が無い場合 (既存 settlementUnknown) は 2 番目の原因に添えて表示する。原因が 1 つも無ければ可 (原因の無い不能表示を出さない)。(e) liability_audit_log の列は id・user_id・actor_user_id・month・changed_json・occurred_at で、changed_json は項目ごとの状態遷移と件数。(f) 画像との差 (負債 KPI の文言と色・ナビの意味論・行の選択・月次表の数値・CF 原因・監査) を spec §8 と docs/ui-decisions.md に記録する。",
+      "provenance": "エージェントによる具体化 (利用者決定 qa-statements-decision-005〜007 と WAI-ARIA / 既存コードからの導出。利用者への個別確認なし)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T11:41:33Z",
+      "required_info_items": [
+        "api-contract",
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-statements-reopen-pass3-001",
+      "question": "決算書画面サイクルの web × 8 セルを再オープンする理由は何か。",
+      "answer": "完成度 evaluator の pass-3 (FAIL) の high 指摘 H1: 8 セルの主根拠 qa-statements-<cat>-web-001 は basis=user-decision だが、利用者が代替案を見ずにエージェントが具体化した設計 (監査の新表、ref の丸め、タブの構成、負債 KPI の色の向き、現金 KPI の %) を含む。3 点は利用者に選択肢を示して決定を得た (qa-statements-decision-005〜007、foundation-002)。残りはエージェント判断として qa-statements-agent-decisions-001 に分けた。各セルを reopen し、利用者決定を主根拠に、訂正版の回答 web-002 (agent-inference) を補助根拠として確定し直す。",
+      "provenance": "エージェントによる再オープン理由の記録 (evaluator 指摘の転記)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T11:41:33Z"
+    },
+    {
+      "id": "qa-statements-ui-ux-web-002",
+      "question": "web の決算書画面 (/statements) の UI-UX 要件は何か。構成要素・文言・選択・詳細パネル・負債の 3 状態入力・状態・アクセシビリティを 11-statements.png のとおりに確定する。",
+      "answer": "上から (1) 期間バー (1年/2年/3年/任意と ‹ 2025年9月 - 2026年8月 › の前後移動、同じ長さでずらす)。(2) 問いの見出し『損益・資金・残高は、整合していますか？』と説明文。(3) KPI 4 枚 (売上高・営業利益は前期比の金額と %、現金増減は前期比の金額のみ、負債残高は前月末比の金額と % でラベルも『前月末比』、増加が注意色・減少が良化色。各々 出典と対象期間 / 基準日。必須項目に未入力があれば『未入力あり』で合計を出さない)。(4) 損益計算書 / キャッシュフロー計算書 / 貸借対照表 へのページ内ナビ (見た目は画像のタブ。nav のリンクと aria-current で、3 節は縦にすべて描画し、?tab= に保って該当節へ移動しフォーカスを節見出しへ)。(5) PL 表 5 行 (売上高・売上原価・売上総利益・販管費・営業利益) × 勘定科目・当期・前期・差額・構成比、行の展開、エクスポート (CSV)。行の選択 (勘定科目セルのボタンと aria-pressed、?row=) で右の『項目の詳細』(金額・計算式・主な内訳の勘定科目 3 件・月別の推移・データの出典・明細を開く、× で閉じる) を切り替える。(6) 月別の損益推移 (売上高・売上原価の棒と営業利益の線) と月次の損益計算書表 (万円、合計列は円で合算後に丸める)。(7) CF: 原因 3 種 (未仕訳・現金口座データの欠け (月数または決済方法の列なし)・科目未設定) のどれかが立つときだけ画像の不能表示 (立った原因だけを件数つき・解決方法 3 手順・取引データを確認) で表とグラフを出さず、集計できるときは既存の営業 CF 概算。(8) BS: 未入力の警告バナーと開閉、基準月ピッカー、借入金・未払金・クレジット未払 (必須) とその他の負債 (任意) を『未入力 / 0円 / 金額を入力』の 3 択、未選択のエラー文、『0円と未入力は区別されます』、下書きの自動保存時刻、リセットと負債残高を保存。(9) 未保存の項目数を示す下部固定バー。読込・空・失敗・前期欠損・保存中 / 失敗の各状態を持ち、増減は符号と矢印を併記して色だけに頼らない。画像の月次表は閉じないので数値は検算済みフィクスチャを正本にする。文言・数値の正本は specs/spec-statements-screen.md。",
+      "provenance": "qa-statements-ui-ux-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-005 (負債 KPI=前月末比・減少は良化色)・006 (ページ内ナビ)・003 (下書きはブラウザ内)・004 (CF=営業 CF 概算+原因別件数)・002 (負債=3 項目必須+その他任意) と appr-foundation-statements-001/002 の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T11:41:33Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T23:36:20Z",
+          "note": "SUPERSEDED UNIT EXPLANATION: 『画像の月次表は閉じない』は誤り。画像値は千円として合計が閉じる。現行は qa-statements-monthly-pl-unit-001 のとおり、core の千円 fixture を円にし、web で万円へ換算する。画像の単位ラベルと重複月見出しだけを引き継がない。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-frontend-web-002",
+      "question": "決算書画面のフロントエンド構成 (部品分割・データ取得・URL 状態・下書き) をどう組むか。",
+      "answer": "Statements.tsx を薄い組み立てにし、packages/web/src/pages/statements/ に KpiStrip・PlCard (表と展開)・PlDetailPanel・PlTrendChart (FinancialCharts の系列規約に乗せる)・MonthlyPlTable・CashFlowSection (不能表示と概算の切替)・LiabilitySection (3 状態入力と基準月)・UnsavedBar を置く。データは TanStack Query で GET /api/statements の screen (期間クエリ + ref) を 1 本読み、数値の計算を web で重複実装しない。ページ内ナビの選択 (tab)・行・基準月は useSearchParams に保つ (ナビは nav のリンクと aria-current、行の選択は aria-pressed のボタン。基準月は api が丸めて返した月へ URL を置き換える)。負債の保存は useMutation で PUT し、成功時に statements のクエリを無効化する。下書きは localStorage の kanjo.statements.liabilityDraft.<userId>.<YYYY-MM> に 800ms の遅延で保存し (period.tsx の try/catch の書き方に倣う)、ログアウト処理でこの接頭辞のキーを消す。色はトークン、ボタンは共通 Button、遷移は Link className=btn、本文は PageShell。CSV は web で組み、数式注入対策で = + - @・タブ・NUL で始まる文字列セルに ' を付ける。",
+      "provenance": "qa-statements-frontend-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-006 (ページ内ナビ)・003 (下書きはブラウザ内) と appr-foundation-statements-001/002 の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T11:41:33Z",
+      "required_info_items": [
+        "frontend-arch",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-statements-backend-web-002",
+      "question": "決算書の集計と負債保存のバックエンド (core の関数と API 契約) をどう定めるか。",
+      "answer": "core に statementsScreen(input) を新設し、勘定科目→区分の固定対応表 (青色申告決算書の売上原価欄に載る仕入高・期首/期末商品棚卸高を売上原価、売上系を売上高、それ以外と未知の科目を販管費) から段階損益を月別と合計で出し、恒等式 (売上総利益=売上高−売上原価、営業利益=売上総利益−販管費) を保つ。前期比は直前の同じ長さの期間 (api が applyPeriod(all, 前期範囲) で Dataset を切って渡す) との金額と % (現金増減は金額のみ、負債残高だけは前月末比) で、前期 0 / 欠損は % を null。構成比・計算式・主な内訳科目・出典・KPI 4 枚・CF の可否と原因 (未仕訳件数・現金口座の欠け {月数, 決済列なし}・科目未設定件数。どれかが立つときだけ不可、どれも立たなければ可)・BS の項目別 3 状態も同じ関数が返す。GET /api/statements は既存の pl/cf/bs/period を残し screen を足す (後方互換)。クエリに ref=YYYY-MM (基準月、期間外・不正は最終月へ丸め、丸めた月を bs.referenceMonth で返す)。PUT /api/balances/liabilities は {month, lines:[{category, status: unset|zero|amount, amount?}]} の zod strict で、送られた項目だけを upsert / 削除し他項目と source=mf 行に触らない。応答は保存後の bs。",
+      "provenance": "qa-statements-backend-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-001 (区分=固定対応表)・004 (CF=営業 CF 概算+原因別件数)・005 (負債 KPI=前月末比) と appr-foundation-statements-001/002 の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T11:41:33Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:35:37Z",
+          "note": "SUPERSEDED: 『旧 pl/cf/bs/period を残し screen を足す』という後方互換方針は qa-statements-screen-only-contract-001 により非規範化された。現行 GET /api/statements の契約は {screen} だけで、旧キーは返さない。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-database-web-002",
+      "question": "負債の 3 状態と保存の監査を、どのテーブル変更で持つか。",
+      "answer": "migration 0045 で ALTER TABLE balance_entries ADD COLUMN status TEXT NOT NULL DEFAULT 'amount' CHECK (status IN ('zero','amount')) を足し、既存行は金額ありのまま保つ (C4)。『未入力』は行を持たないことで表す。『0円』は status=zero・amount=0 の行。UNIQUE(user_id, month, side, category) は変えない。監査は同じ migration で新表 liability_audit_log (id, user_id, actor_user_id, month, changed_json, occurred_at) を CREATE TABLE で足し、金額は残さず項目ごとの状態遷移と件数だけを残す。既存 audit_log の action は CHECK 制約で閉じており拡張には表の再構築 (INSERT…SELECT と DROP TABLE) が要るが、Deploy の自動適用判定が止めるうえ C4 に反するので採らない。drizzle の schema.ts に列と表を足す。並行サイクルが 0045 を使っていれば実装時に次の番号へ繰り下げる。",
+      "provenance": "qa-statements-database-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-007 (監査は新表・金額は残さない)・002 (負債=3 項目必須+その他任意) と appr-foundation-statements-001 の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T11:41:33Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:35:37Z",
+          "note": "SUPERSEDED NUMBER ONLY: DDL と追加のみの方針は有効だが、実 migration は 0045_owner_labels.sql との衝突を避けた migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-auth-web-002",
+      "question": "決算書の閲覧と負債の保存を、誰がどの認証で行えるか。",
+      "answer": "既存のアカウントログイン (メールアドレス+パスワード、HttpOnly・Secure・SameSite=Strict のセッション Cookie) をそのまま使い、/api/* の authGuard と一時パスワードの fence を通った利用者だけが自分の user_id の決算書を読み、負債を保存できる。新しい認証方式・権限は足さない。監査 liability_audit_log には actor_user_id を残す。下書きのキーに userId を含め、ログアウトで消すので、同じブラウザで別の利用者に前の利用者の下書きが見えない。",
+      "provenance": "qa-statements-auth-web-001 を置き換える訂正版。利用者が選んだのは appr-foundation-statements-001 (G5: 既存の認証・セッションを保つ) と qa-statements-decision-007 (保存の監査) の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T11:41:33Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-statements-security-web-002",
+      "question": "負債の保存経路と決算書画面の安全性要件は何か。",
+      "answer": "既存の防御 (authGuard、SameSite=Strict の Cookie、JSON の Content-Type 検証、取込との直列化 canonical-mutation-fence) を保ったまま、(1) 金額は整数・0 以上・1 兆円以下を zod で検証、(2) PUT /api/balances/liabilities に bodyLimit 8 KiB (超過は 413)、(3) 保存ごとに liability_audit_log へ 1 件 (金額は残さない)、(4) 下書きは利用者別キーでブラウザ内に留めログアウトで消す、(5) CSV エクスポートは = + - @・タブ・NUL で始まる文字列セルに ' を付けて数式注入を防ぐ、(6) 取込データ・下書きを外部へ送らない。未認証の保存は 401、不正な本文は 400。",
+      "provenance": "qa-statements-security-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-007 (監査は新表・金額は残さない)・003 (下書きはブラウザ内) と appr-foundation-statements-001 (G5) の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T11:41:33Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-statements-infrastructure-web-002",
+      "question": "決算書画面の変更をどの基盤でどう配信・反映するか。",
+      "answer": "既存の Cloudflare Worker (packages/api、D1 の DB binding) と web の静的配信をそのまま使い、新しい基盤・外部サービスは足さない。migration 0045 は ADD COLUMN と CREATE TABLE だけなので Deploy の自動適用判定で止まらずに適用される。反映は既存の ci.yml・deploy.yml・migrate.yml の流れに乗せ、初期 JS 予算 (js-budget) を超えないよう決算書の部品はルート単位で分割読込する。",
+      "provenance": "qa-statements-infrastructure-web-001 を置き換える訂正版。利用者が選んだのは qa-statements-decision-007 (migration は CREATE TABLE の追加だけ) と appr-foundation-statements-001 (C4) の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T11:41:33Z",
+      "required_info_items": [
+        "infra-topology"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-19T22:35:37Z",
+          "note": "SUPERSEDED NUMBER ONLY: 追加のみの配信方針は有効だが、適用対象は migrations/0046_liability_status.sql。qa-statements-migration-0046-001 が現行番号の規範である。"
+        }
+      ]
+    },
+    {
+      "id": "qa-statements-maintenance-ops-web-002",
+      "question": "決算書画面の品質をどう保ち、規則をどこに残すか。",
+      "answer": "core の契約テストで恒等式 (全月と合計)・前期比 (前期 0 / 欠損で null)・未知科目は販管費・構成比・CF 不能の原因件数と『原因が 1 つも無ければ可』・負債の unset と zero の区別を固定し、specs/spec-statements-screen.md の検算済みフィクスチャで画面を DOM テストする (ページ内ナビの aria-current と role=tab が無いこと、行の aria-pressed、負債 KPI の『前月末比』と色の向き、現金 KPI に % が無いことを含む)。API 統合テストで 1 項目保存で他項目が残ること・unset で行が消えること・上限超過 400・本文超過 413・未認証 401・監査 1 件・取込中 409 を確かめ、migration が既存行を書き換えないことを検査する。既存の statements-balance-sheet.dom.test.tsx・balances-lifecycle.test.ts・statements-contract.test.ts は新しい文言と本文形へ更新し、旧実装で落ちることを確かめる (契約を緩めない)。区分の対応表と計算式は docs/data-schema.md に、UI の決定は docs/ui-decisions.md に記録する。pnpm lint (直書き色の検査)・typecheck・初期 JS 予算・verify:full を通す。",
+      "provenance": "qa-statements-maintenance-ops-web-001 を置き換える訂正版。利用者が選んだのは appr-foundation-statements-001/002 (O1-O5 の測定) と qa-statements-decision-001・005・006 の範囲で、それ以外の具体化 (値・部品分割・名前・判定式・テスト観点) はエージェント判断 (qa-statements-detail-parameters-001・qa-statements-agent-decisions-001 に列挙)。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T11:41:33Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-statements-screen-only-contract-001",
+      "question": "GET /api/statements の現行契約で、画面が参照しない旧 pl/cf/bs/period 等を screen と重ねて返す必要があるか。",
+      "answer": "不要。決算書画面の表示値は core の statementsScreen 出力だけを正本にしているため、GET /api/statements は {screen} だけを返す。旧キーを同時に返す後方互換は、同じ数値の二重契約と応答・型・テストの重複を残すので撤去する。PUT /api/balances/liabilities の応答 {ok, bs} は保存結果の契約として別に維持する。",
+      "provenance": "2026-09-20 elegant review: 重複契約を除き、core→API→web の単一データフローへ収束する判断",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T21:52:53Z"
+    },
+    {
+      "id": "qa-statements-migration-0046-001",
+      "question": "負債 3 状態の migration 番号は、実際のワークツリーで何番になったか。",
+      "answer": "0045_owner_labels.sql が先に存在するため、仕様の衝突時繰り下げ規則を適用し、実体は migrations/0046_liability_status.sql になった。現行の仕様・運用・schema guard・テスト参照は 0046 を使う。0045 という記述は生成済み計画の履歴を除き、現行契約として扱わない。",
+      "provenance": "migrations/0045_owner_labels.sql と migrations/0046_liability_status.sql のワークツリー観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T21:52:53Z"
+    },
+    {
+      "id": "qa-statements-image-fidelity-evidence-001",
+      "question": "11-statements.png どおりであることを、現行の証跡はどこまで検証しているか。",
+      "answer": "現行証跡が確認したのは構成要素・順序・操作・横はみ出し・重なりの不在であり、基準画像との pixel diff または overlay の許容差は定義も測定もしていない。したがって機能・構造の受入は別に判定できるが、画像忠実度を『達成』とは判定しない。834px 幅の基準画像と同じ条件で比較し、動的な金額・日付・グラフ値と仕様 §8 の意図的差分だけを除外した overlay レビューが完了するまで画像忠実度は未達とする。許容対象はその明示除外だけで、未計測のずれを数値閾値で暗黙に許容しない。",
+      "provenance": "design/FINAL-UI/images/11-statements.png (834x1886)、docs/evidence/statements/*.png、check-financial-visuals.mjs の検査項目の照合",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T21:52:53Z"
+    },
+    {
+      "id": "qa-statements-monthly-pl-unit-001",
+      "question": "画像の月次PLと core / web の間で、数値の単位と月見出しをどう確定するか。",
+      "answer": "画像の月次PLはラベルが（万円）だが、950〜合計12,480は千円値として上部の12,480,000円と整合する。したがって画像の不整合は単位ラベルと、5月が重複して8月が空欄の月見出しである。数値の正本は core contract fixture の千円配列とし、core は各値を1,000倍して円を返す。web は表示だけで円を10,000で割って万円へ丸め、950,000円を95万円、12,480,000円を1,248万円と表示する。画像の950〜12,480を万円として写さない。",
+      "provenance": "design/FINAL-UI/images/11-statements.png の再読、packages/core/src/statements-screen.ts の fixture と packages/web/src/pages/statements/view-model.ts の表示変換の照合",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T23:35:14Z"
+    }
+  ],
+  "approval_log": [
+    {
+      "id": "appr-foundation-statements-001",
+      "note": "決算書画面サイクルの上位概念 U1-U9 を利用者が承認 (2026-09-19T01:53:56Z)。提示した草案は scratchpad の foundation.json と同文で、U1・U2・G1-G5・O1-O5・S1-S5・SH1-SH2・scope in 7 / out 5・C1-C5・I1-I8 を提示した。先に選んだ 4 決定 (区分=固定対応表 / 負債=3 項目必須+その他任意 / 下書き=ブラウザ内 / CF=営業 CF 概算+原因別件数) と整合する。対象は web のみ (scope.out)。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-statements-002",
+      "note": "決算書画面サイクルの上位概念 G1 と O1 の改訂を利用者が承認 (AskUserQuestion 回答受領 2026-09-19T11:34:24Z、選択『この文面で承認する』。選択肢は『この文面で承認する / 修正が必要』)。改訂は 3 決定 (qa-statements-decision-005 負債=前月末比・減少は良化色 / qa-statements-decision-006 ページ内ナビ / 現金増減は画像どおり金額のみ) に合わせたもの。G1 前:『KPI 4 枚 (売上高・営業利益・現金増減・負債残高。各々 前期比の金額と %、出典、対象期間または基準日)、損益計算書 / キャッシュフロー計算書 / 貸借対照表 のタブ』→ 後:『KPI 4 枚 (売上高・営業利益は前期比の金額と %、現金増減は前期比の金額のみ (画像どおり)、負債残高は前月末比の金額と % で減少を良化色。各々 出典と対象期間または基準日)、3 計算書の節へ移動するページ内ナビ (画像のタブの見た目。3 節は縦にすべて描画)』。O1 測定 前:『KPI 4 枚 (前期比の金額と %、出典、対象期間 / 基準日)・3 タブ』→ 後:『KPI 4 枚 (G1 の比較先と表示規則、出典、対象期間 / 基準日)・3 計算書へのページ内ナビ (nav と aria-current)』。ほかの U1-U9 (U1・U2・G2-G5・O2-O5・S1-S5・SH・scope・C1-C5・I1-I8) は appr-foundation-statements-001 のまま変えない。basis=user-decision。"
+    }
+  ],
+  "reopen_log": [
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "evaluator pass-3 H1 (web-001 の basis=user-decision 過大申告)。主根拠を利用者決定 (qa-statements-decision-005〜007 / foundation-002 ほか) へ付け替え、web-001 を訂正版 web-002 (agent-inference) で置き換えるため (qa-statements-reopen-pass3-001)",
+      "from": "確定",
+      "reopened_at": "2026-09-19T11:41:33Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "evaluator pass-3 H1 (web-001 の basis=user-decision 過大申告)。主根拠を利用者決定 (qa-statements-decision-005〜007 / foundation-002 ほか) へ付け替え、web-001 を訂正版 web-002 (agent-inference) で置き換えるため (qa-statements-reopen-pass3-001)",
+      "from": "確定",
+      "reopened_at": "2026-09-19T11:41:33Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "evaluator pass-3 H1 (web-001 の basis=user-decision 過大申告)。主根拠を利用者決定 (qa-statements-decision-005〜007 / foundation-002 ほか) へ付け替え、web-001 を訂正版 web-002 (agent-inference) で置き換えるため (qa-statements-reopen-pass3-001)",
+      "from": "確定",
+      "reopened_at": "2026-09-19T11:41:33Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "evaluator pass-3 H1 (web-001 の basis=user-decision 過大申告)。主根拠を利用者決定 (qa-statements-decision-005〜007 / foundation-002 ほか) へ付け替え、web-001 を訂正版 web-002 (agent-inference) で置き換えるため (qa-statements-reopen-pass3-001)",
+      "from": "確定",
+      "reopened_at": "2026-09-19T11:41:33Z"
+    },
+    {
+      "category": "auth",
+      "platform": "web",
+      "reason": "evaluator pass-3 H1 (web-001 の basis=user-decision 過大申告)。主根拠を利用者決定 (qa-statements-decision-005〜007 / foundation-002 ほか) へ付け替え、web-001 を訂正版 web-002 (agent-inference) で置き換えるため (qa-statements-reopen-pass3-001)",
+      "from": "確定",
+      "reopened_at": "2026-09-19T11:41:33Z"
+    },
+    {
+      "category": "security",
+      "platform": "web",
+      "reason": "evaluator pass-3 H1 (web-001 の basis=user-decision 過大申告)。主根拠を利用者決定 (qa-statements-decision-005〜007 / foundation-002 ほか) へ付け替え、web-001 を訂正版 web-002 (agent-inference) で置き換えるため (qa-statements-reopen-pass3-001)",
+      "from": "確定",
+      "reopened_at": "2026-09-19T11:41:33Z"
+    },
+    {
+      "category": "infrastructure",
+      "platform": "web",
+      "reason": "evaluator pass-3 H1 (web-001 の basis=user-decision 過大申告)。主根拠を利用者決定 (qa-statements-decision-005〜007 / foundation-002 ほか) へ付け替え、web-001 を訂正版 web-002 (agent-inference) で置き換えるため (qa-statements-reopen-pass3-001)",
+      "from": "確定",
+      "reopened_at": "2026-09-19T11:41:33Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "evaluator pass-3 H1 (web-001 の basis=user-decision 過大申告)。主根拠を利用者決定 (qa-statements-decision-005〜007 / foundation-002 ほか) へ付け替え、web-001 を訂正版 web-002 (agent-inference) で置き換えるため (qa-statements-reopen-pass3-001)",
+      "from": "確定",
+      "reopened_at": "2026-09-19T11:41:33Z"
+    }
+  ],
+  "category_aggregate": {
+    "database": "確定",
+    "auth": "確定",
+    "ui-ux": "確定",
+    "security": "確定",
+    "infrastructure": "確定",
+    "backend": "確定",
+    "frontend": "確定",
+    "maintenance-ops": "確定"
+  },
+  "targets": [
+    {
+      "target_id": "wai-aria-tabs",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "react-router-searchparams",
+      "category": "frontend"
+    },
+    {
+      "target_id": "web-storage-localstorage",
+      "category": "frontend"
+    },
+    {
+      "target_id": "tanstack-query",
+      "category": "frontend"
+    },
+    {
+      "target_id": "hono-body-limit",
+      "category": "backend"
+    },
+    {
+      "target_id": "sqlite-alter-table",
+      "category": "database"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "set-cookie-samesite",
+      "category": "auth"
+    },
+    {
+      "target_id": "owasp-asvs-csv-injection",
+      "category": "security"
+    },
+    {
+      "target_id": "vitest-expect",
+      "category": "maintenance-ops"
+    },
+    {
+      "target_id": "mdn-aria-current",
+      "category": "ui-ux"
+    }
+  ],
+  "requirements_foundation": {
+    "essential_purpose": "決算書画面を、『損益・資金・残高は、整合していますか？』という問いに 1 画面で答え、整合していない箇所 (集計できない資金、未入力の負債) をその場で決着 (原因の把握と取引データへの移動、負債残高の入力と保存) まで進められる場にする。利用者が損益計算書・キャッシュフロー計算書・貸借対照表を前期比・出典・対象期間つきで読み、数字の根拠 (計算式・内訳の勘定科目・月別の推移・データの出典) を辿り、『0円』と『未入力』を取り違えずに負債残高を入れられる状態にする。",
+    "background": "再設計前の /statements は packages/web/src/pages/Statements.tsx 1 ファイル（657 行）に PL・CF・BS・負債入力と画面側計算を抱え、前期比・出典・段階損益・CF の原因と解決手順・負債の未入力状態を欠いていた。保存も月の manual 負債を全削除してから挿入するため、1 種類だけ保存すると他項目が消える課題があった。現在の packages/web/src/pages/Statements.tsx は packages/web/src/pages/statements/StatementsPage.tsx の 2 行の re-export だけを持ち、KPI・PL・CF・BS・下書き・CSV は pages/statements/* に分割済みで、表示値は core の statementsScreen と GET /api/statements の screen-only 契約を正本とする。design/FINAL-UI/images/11-statements.png と spec/AUDIT.md:17 は再設計の基準と、当初の負債入力・0/不明・BS不足・CF限界の差を示す。",
+    "goals": [
+      {
+        "id": "G1",
+        "text": "/statements を 11-statements.png どおりの画面にする。問いの見出し『損益・資金・残高は、整合していますか？』と説明文、期間の範囲表示と前後移動、KPI 4 枚 (売上高・営業利益は前期比の金額と %、現金増減は前期比の金額のみ (画像どおり)、負債残高は前月末比の金額と % で減少を良化色。各々 出典と対象期間または基準日)、3 計算書の節へ移動するページ内ナビ (画像のタブの見た目。3 節は縦にすべて描画)、PL 表 (勘定科目・当期・前期・差額・構成比、行の展開、エクスポート)、右の『項目の詳細』パネル (金額・計算式・主な内訳の勘定科目・月別の推移・データの出典・明細を開く)、月別の損益推移グラフ (売上高・売上原価の棒と営業利益の線)、月次の損益計算書表 (万円・合計列) を、既存のデザイントークン・共通 Button・PageShell・期間 (usePeriod) の上に組む。読込・空・失敗の各状態を持つ。"
+      },
+      {
+        "id": "G2",
+        "text": "決算書の数値を core の純関数 1 か所で算出し、GET /api/statements がその screen だけを返す。勘定科目→区分 (売上高 / 売上原価 / 販管費) の固定対応表 (青色申告決算書の区分に合わせ、仕入高など仕入系の科目だけを売上原価、ほかの経費を販管費とする) から段階損益 (売上高・売上原価・売上総利益・販管費・営業利益) を月別と期間合計で出し、直前の同じ長さの期間との前期比 (金額と %)・構成比・各行の計算式と主な内訳科目を出す。KPI の現金増減と負債残高、各数値の出典と対象期間 / 基準日も同じ関数から出す。対応表と計算式は docs とテストで固定する。"
+      },
+      {
+        "id": "G3",
+        "text": "キャッシュフロー計算書が集計できないときは、画像の表示 (『キャッシュフロー計算書は、現在集計できていません』・主な原因・解決方法の 3 手順・取引データを確認) に切り替え、表とグラフを出さない。原因は core が判定し、未仕訳の取引件数・現金口座データの欠け・勘定科目が未設定の取引件数を件数つきで示す。集計できるときは既存の営業 CF 概算 (表とグラフ) を出す。"
+      },
+      {
+        "id": "G4",
+        "text": "貸借対照表の負債残高を、基準月ごと・項目ごとに『未入力 / 0円 / 金額』の 3 状態で入力・保存できるようにする。借入金・未払金・クレジット未払の 3 項目は状態の選択を必須とし、その他の負債は任意項目として残す。保存済みの値を読み込んで初期表示し、保存は項目単位で上書きして他の項目を消さない。基準月は期間内の任意の月を選べる。入力中の値はブラウザ内に利用者ごとの下書きとして自動保存し保存時刻を示し、リセットで保存済みの値へ戻し、未保存の項目数を画面下部の固定バーに出す。未入力の項目がある月は BS にデータ不足の表示を出し、純資産を出さない。"
+      },
+      {
+        "id": "G5",
+        "text": "負債の保存経路と画面の安全性を整える。既存の認証・セッション・CSRF 相当の防御 (SameSite=Strict の Cookie と JSON の Content-Type 検証) と取込との直列化を保ったまま、金額の上限、リクエストの大きさの上限、保存操作の監査ログを加える。下書きには利用者の識別子をキーに含め、ログアウトで消す。取込データや下書きを外部へ送らない。"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "O1",
+        "text": "決算書画面が画像の全構成要素を描画する。",
+        "serves": [
+          "G1"
+        ],
+        "serves_goals": [
+          "G1"
+        ],
+        "measure": "DOM テストで、問いの見出しと説明文・期間の範囲表示と前後移動・KPI 4 枚・3 計算書へのページ内ナビ・PL 表・詳細パネル・損益推移グラフ・月次表・読込/空/失敗を確認する。加えて 834px 幅の基準画像と同条件のスクリーンショットを overlay し、動的な金額・日付・グラフ値と仕様 §8 の意図的差分だけを除外して、説明できない配置・余白・文字階層・色の差が 0 件であることを記録する。pixel 差の数値閾値は未計測差を暗黙に許容するため設けず、許容対象を明示除外に限定する。"
+      },
+      {
+        "id": "O2",
+        "text": "段階損益と前期比を core が決定論的に算出する。",
+        "serves": [
+          "G2"
+        ],
+        "serves_goals": [
+          "G2"
+        ],
+        "measure": "core の契約テストで、売上高−売上原価=売上総利益、売上総利益−販管費=営業利益が月別と合計で一致し、前期比は直前の同じ長さの期間から算出され、前期が 0 のとき % は null になり、未知の科目は販管費に入ることが緑である。"
+      },
+      {
+        "id": "O3",
+        "text": "CF が集計できないときに原因を件数つきで示す。",
+        "serves": [
+          "G3"
+        ],
+        "serves_goals": [
+          "G3"
+        ],
+        "measure": "core と DOM のテストで、集計不能の fixture で原因 3 種の件数と解決方法 3 手順と取引データへのリンクが出て CF の表とグラフが 0 件、集計可能な fixture では営業 CF の表とグラフが出ることが緑である。"
+      },
+      {
+        "id": "O4",
+        "text": "負債残高の 3 状態入力が値を失わない。",
+        "serves": [
+          "G4"
+        ],
+        "serves_goals": [
+          "G4"
+        ],
+        "measure": "API と DOM のテストで、1 項目だけ保存しても他項目の保存値が残り、保存済みの値が初期表示され、『未入力』と『0円』が別々に保存・表示され、必須 3 項目の状態が未選択なら保存できず、下書きの復元・リセット・未保存件数の表示が緑である。"
+      },
+      {
+        "id": "O5",
+        "text": "負債の保存経路が入力の上限と監査を持つ。",
+        "serves": [
+          "G5"
+        ],
+        "serves_goals": [
+          "G5"
+        ],
+        "measure": "API テストで、上限を超える金額と大きすぎる本文が 4xx で拒否され、保存が監査ログに 1 件残り、未認証の保存が拒否されることが緑である。"
+      }
+    ],
+    "success_criteria": [
+      "S1 (G1): /statements で 11-statements.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件である。834px 幅の overlay レビューで、動的内容と仕様 §8 の意図的差分を除く説明不能な視覚差が 0 件である。",
+      "S2 (G2): 画面の KPI・PL 表・詳細パネル・月次表・グラフの数値が core の 1 関数の出力と一致し、段階損益の恒等式と前期比の契約テストが緑である。",
+      "S3 (G3): CF が集計できない状態で表とグラフが描画されず、原因の件数と解決手順が出る。",
+      "S4 (G4): 負債を 1 項目ずつ保存しても既存の値が消えず、未入力と 0 円が保存後も区別されたまま BS と KPI に反映される。",
+      "S5 (G5): 負債保存の入力上限・本文上限・監査ログ・未認証拒否のテストが緑で、verify:full が緑である。"
+    ],
+    "stakeholders": [
+      "SH1 利用者 (単独の個人事業主): 月次クローズと確定申告の前に、損益・資金・残高が整合しているかを 1 画面で確かめ、数字の根拠を辿り、足りない負債残高をその場で入れて決着させたい。",
+      "SH2 将来の保守者 (同じ利用者または AI エージェント): 決算書の区分と計算式が core の 1 か所と docs に固定され、画面と API とテストが同じ定義を見ていることを確認したい。"
+    ],
+    "scope": {
+      "in": [
+        "決算書画面 (11-statements.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直し",
+        "PL の段階損益・前期比・構成比・詳細パネル・月次表・エクスポート (CSV)",
+        "CF の集計不能表示と原因の件数、集計可能時の営業 CF 概算",
+        "BS の負債残高 3 状態入力 (必須 3 項目と任意のその他)・保存済み値の読込・項目単位の保存・下書き自動保存・リセット・未保存バー",
+        "core 集計の純関数と GET /api/statements の screen-only 契約、PUT /api/balances/liabilities の項目単位化と migration 0046（状態列の追加）",
+        "負債保存の入力上限・本文上限・監査ログ、下書きの利用者別キーとログアウト時の消去",
+        "既存テスト (statements-balance-sheet.dom.test.tsx ほか) の新しい文言・構成への更新"
+      ],
+      "out": [
+        "投資 CF・財務 CF の区分 (営業 CF の概算に留める)",
+        "勘定科目→区分の利用者による上書き (固定の対応表だけにする)",
+        "サーバ側の下書き保存 (ブラウザ内に留める)",
+        "サイドバー / ヘッダー (『防衛ライン』バッジ・未記録の表示を含む) / フッター / 月次クローズ進捗の構造変更",
+        "他の画面の作り直し、web 以外のプラットフォーム"
+      ]
+    },
+    "constraints": [
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。集計・判定は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、ボタンは共通 Button (遷移は Link className=btn)、本文は PageShell。",
+      "C3 データ: 取込データと下書きは外部送信しない。区分の対応表はコード内の固定表で持ち、外部 API を呼ばない。",
+      "C4 DB: 破壊的な行書き換え migration をしない。実 migration 0046_liability_status.sql は balance_entries への列追加と liability_audit_log の新設だけにし、既存行は『金額あり』の状態として保つ。",
+      "C5 数値: 画像の月次PLは（万円）ラベルだが 950〜合計12,480 は千円値として上部12,480,000円と整合し、月見出しには5月の重複と8月の空欄がある。数値の正本は core の千円 fixture とし、core は1,000倍した円、web は円を10,000で割った万円 (95〜合計1,248) を表示する。画像は構成・文言・配置の正本だが、誤った単位ラベルと月見出しは正本にしない。"
+    ],
+    "concrete_intents": [
+      {
+        "id": "I1",
+        "text": "Statements.tsx を、問いの見出し・期間の範囲表示と前後移動・KPI 4 枚・3 タブ・PL 表と詳細パネル・損益推移グラフ・月次表・CF セクション・BS セクション・下部の未保存バーの構成に作り直し、選択中のタブと PL の行を URL に保つ。",
+        "serves": [
+          "G1"
+        ]
+      },
+      {
+        "id": "I2",
+        "text": "core に勘定科目→区分の固定対応表と段階損益・前期比・構成比・計算式・主な内訳科目・出典を返す純関数を置き、GET /api/statements がそれを返す。",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "詳細パネルの『明細を開く』から、選んだ区分の科目と期間で絞った明細仕分け画面 (Classify の ?category=&month=) へ移動できる。",
+        "serves": [
+          "G1",
+          "G2"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "PL のエクスポートで、表示中の段階損益 (当期・前期・差額・構成比と月次) を CSV で書き出せる。",
+        "serves": [
+          "G1",
+          "G2"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "core が CF の集計可否と原因 (未仕訳の件数・現金口座データの欠け・科目未設定の件数) を判定し、画面が集計不能表示と営業 CF 概算を切り替える。",
+        "serves": [
+          "G3"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "負債入力を基準月の月ピッカーと項目ごとの 3 択 (未入力 / 0円 / 金額を入力) に作り直し、migration 0046 で balance_entries に状態列を足し、PUT を項目単位の upsert にして保存済みの値を読み込む。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "入力中の負債を localStorage に利用者別のキーで下書き保存し、保存時刻・リセット・未保存件数の固定バーを出し、ログアウトで下書きを消す。",
+        "serves": [
+          "G4",
+          "G5"
+        ]
+      },
+      {
+        "id": "I8",
+        "text": "PUT /api/balances/liabilities に金額の上限と本文の大きさの上限を課し、保存を監査ログへ記録する。",
+        "serves": [
+          "G5"
+        ]
+      }
+    ],
+    "confirmed": true,
+    "approval_ref": "appr-foundation-statements-002"
+  },
+  "decisions": [
+    {
+      "id": "D-statements-draft-storage",
+      "question": "決算書の負債入力の下書き (『下書きを自動保存しました』) をどこに保存するか",
+      "status": "confirmed",
+      "options": [
+        {
+          "id": "browser-localstorage",
+          "label": "ブラウザ内 (localStorage に利用者別キー)",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "month",
+            "tco": "ブラウザ標準機能で利用料 0 円。構築は web の下書きストア 1 個とログアウト時の削除処理だけで、migration・API・保守対象の表を増やさない。撤退時はキーを消すだけ。"
+          },
+          "free_tier_limits": "オリジンあたりの保存容量はブラウザが決める (負債 4 項目の下書きは 1 KiB 未満で上限に届かない)。端末・ブラウザをまたいで共有されない。",
+          "goal_fit": "G4 の『入力中の値をブラウザ内に利用者ごとの下書きとして自動保存』をそのまま満たす。既存の period.tsx と同じ方式。",
+          "security_fit": "C3 (取込データと下書きを外部送信しない) を満たす。共有端末での漏えいはキーに userId を含めログアウトで消すことで抑える。localStorage は SecurityError を投げうるため try/catch を要する。",
+          "pros": [
+            "migration 不要",
+            "サーバへ送らない",
+            "既存の書き方に倣える"
+          ],
+          "cons": [
+            "別の端末では下書きが見えない",
+            "ブラウザのデータ消去で消える"
+          ],
+          "risks": [
+            "userId が無い状態で書くと利用者間で共有されるキーになる (userId が無いときは書かない)"
+          ],
+          "lock_in": "低",
+          "ops_burden": "低",
+          "evidence_refs": [
+            "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage"
+          ]
+        },
+        {
+          "id": "server-d1-draft-table",
+          "label": "サーバ側 (D1 に下書き表を追加)",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "month",
+            "tco": "既存の D1 の範囲内で追加の利用料は見込まない。ただし migration・下書きの API (保存・取得・削除)・保持期間の規則・監査対象の追加と、その保守の工数が掛かる。撤退には表の削除 (DROP) が要り、Deploy の自動適用で止まる。"
+          },
+          "free_tier_limits": "既存 D1 の上限の範囲内。",
+          "goal_fit": "端末をまたいで下書きを続けられるが、G4 が求めるのは同じ画面での入力途中の保護で、端末をまたぐ要求は上位概念に無い。",
+          "security_fit": "下書きがサーバに残るため C3 と衝突し、保持・削除・監査の規則が新たに要る。",
+          "pros": [
+            "端末をまたいで下書きが残る"
+          ],
+          "cons": [
+            "migration と API が増える",
+            "C3 と衝突する"
+          ],
+          "risks": [
+            "下書き表の撤去が破壊的 migration になり自動適用で止まる"
+          ],
+          "lock_in": "中",
+          "ops_burden": "中",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/reference/migrations/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "browser-localstorage",
+        "rationale": "G4 の要求 (同じ画面での入力途中の保護) と C3 (外部送信しない) を、migration・API を増やさずに満たす。",
+        "comparison_basis": {
+          "goal_fit": "G4 をそのまま満たす。端末をまたぐ要求は上位概念に無い",
+          "tco": "どちらも利用料 0 円だが、サーバ案は migration・API・保守の工数が掛かる",
+          "security": "ブラウザ案は C3 を満たし、userId 付きキーとログアウト時の削除で共有端末の漏えいを抑える",
+          "operations": "ブラウザ案は保守対象の表を増やさない",
+          "lock_in": "ブラウザ案はキーを消すだけで撤退できる"
+        },
+        "caveats": [
+          "別の端末では下書きが見えない",
+          "localStorage の例外 (SecurityError) を try/catch で扱う",
+          "userId が無いときは下書きを書かない"
+        ],
+        "confidence": "high",
+        "latest_checked_at": "2026-09-19T02:03:50Z"
+      },
+      "serves_goals": [
+        "G4",
+        "G5"
+      ],
+      "user_decision": {
+        "option_id": "browser-localstorage",
+        "confirmed_at": "2026-09-19T01:53:56Z",
+        "note": "利用者が AskUserQuestion で推奨案『ブラウザ内』を選んだ (qa-statements-decision-003)。confirmed_at はその回答の記録時刻で、選択が行われた時刻の上限値。decisions[] への構造化は後から行った記録である。"
+      }
+    }
+  ],
+  "knowledge_candidates": [],
+  "design_applications": {
+    "ui-ux": {
+      "text": "Information Design card の『task 頻度 × 失敗コストで束に順位を付ける』を決算書画面の縦積み順に適用した。最も頻度が高い問いは『今期は黒字か、前期より良いか』なので KPI 4 枚と PL 表を最上段に置き、根拠を辿る詳細パネルを PL 表の右に並べる。失敗コストが最も高いのは『0円』と『未入力』の取り違えで、負債の合計や純資産を誤って信じることにつながるため、未入力がある月は KPI を『未入力あり』、BS を『データ不足』にして数字自体を出さず、3 状態のラジオで明示的に選ばせる。CF が集計できないときは表とグラフを描かず、原因の件数と解決手順を出して『読めない数字』を見せない。",
+      "recorded_at": "2026-09-19T02:05:18Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "Clean Architecture card の依存方向を、web が決算書の計算規則を持たない現在の構成に適用した。packages/web/src/pages/Statements.tsx は StatementsPage の 2 行の re-export だけを持ち、pages/statements/StatementsKpis.tsx・StatementsPl.tsx・StatementsCf.tsx・StatementsBs.tsx などの部品が GET /api/statements の screen を描く。657 行の単一ファイルで KPI や BS 判定を組んでいた構成は再設計前の課題であり、段階損益・前期比・構成比・CF の可否・負債の 3 状態は現在すべて core の statementsScreen が決める。web に残す判断は URL 状態、下書きと未保存件数、CSV のセル書き出しだけで、計算結果を変えない。",
+      "recorded_at": "2026-09-19T22:46:05Z",
+      "basis": "observed-fact"
+    },
+    "backend": {
+      "text": "Clean Architecture card の Dependency Rule を決算書集計の置き場所に適用した。勘定科目→区分の固定対応表、段階損益、前期比、構成比、計算式、主な内訳科目、CF の可否と原因件数、負債の 3 状態は、いずれも入出力を持たない計算なので core の statementsScreen 1 か所に置く。前期の Dataset は api が loadScoped の all から applyPeriod で切って渡し、純関数に期間の解釈を配らない。api の GET /api/statements と PUT /api/balances/liabilities は zod で受けた値を純関数や D1 に渡して JSON に写すだけにする。",
+      "recorded_at": "2026-09-19T02:05:18Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、負債の状態列だけを足す判断に適用した。段階損益・前期比・構成比・CF の原因件数は既存の明細と判定から導出できるので保存しない。一方で負債の『0円』と『未入力』の区別は利用者が決めた事実であり導出できないため、balance_entries に status 列を足し、未入力は行が無いこと、0円は status=zero の行で表す。監査は既存 audit_log の CHECK を再構築せず、状態遷移だけを残す新表 liability_audit_log を足す。",
+      "recorded_at": "2026-09-19T02:05:18Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、決算書の読み取りと負債保存の 2 経路の配置に適用した。GET /api/statements と PUT /api/balances/liabilities はどちらも /api/* の authGuard → mustChangePasswordFence → runtimeSchemaGuard の内側に載せ、route の中で個別の認可判定を書かない。利用者の識別は c.get('userId') だけから取り、本文やクエリで user_id を受け取らない。ブラウザ内の下書きもキーに userId を含め、ログアウトで消すことで同じ端末の別利用者へ漏れないようにする。",
+      "recorded_at": "2026-09-19T02:05:18Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "Secure by Design card の『入力を許可リストで検証する』を、本サイクルで増える入力 (負債の状態と金額、基準月、CSV に書き出す科目名) に適用した。状態は unset / zero / amount の列挙、金額は整数・0 以上・1 兆円以下、項目は LIABILITY_CATEGORIES の列挙で zod strict に受け、本文は 8 KiB で打ち切る。出力側では、利用者データ由来の科目名を CSV に書くとき先頭の = + - @ タブ NUL に単一引用符を前置して数式として評価されないようにする。",
+      "recorded_at": "2026-09-19T02:05:18Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "本章へ引く card は 0 件である。配信構成 (Worker・静的配信・D1) と binding を変えず、新設は同一 Worker 内の既存 2 経路の拡張と migrations/0046_liability_status.sql だけである。0046 を ADD COLUMN と CREATE TABLE に限ったのは、Deploy 前の自動適用判定が行の書き換え・削除を含む SQL を止める運用に合わせ、承認 manifest を要する復旧手順を発生させないためである。",
+      "recorded_at": "2026-09-19T22:35:37Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "Clean Code card の『規則は名前と境界値テストで読めるようにする』を、本サイクルで増える 3 つの規則の保守に適用した。(1) 勘定科目→区分の対応表は core の名前付き定数にし、未知の科目が販管費に入る境界をテストで固定する。(2) 前期比は前期 0・前期欠損で % が null になる境界をテストで固定する。(3) 負債の 3 状態は、1 項目だけ保存して他項目が残ること、unset で行が消えること、zero が 0 として合計に入ることを API テストで固定する。いずれも旧実装で落ちることを確かめてから緑にする。",
+      "recorded_at": "2026-09-19T02:05:18Z",
+      "basis": "agent-inference"
+    }
+  },
+  "hearing_progress": {
+    "loop_count": 2,
+    "next_question": null,
+    "complete": true
+  },
+  "doctrine_applications": {
+    "ui-ux": {
+      "presentation": {
+        "text": "Apple HIG の『明確さ』と『階層』を決算書画面の見出しと状態表示へ反映した。問いを見出しにして画面の目的を 1 文で示し、KPI → PL 表と詳細 → 月次 → CF → BS の順で概要から根拠へ降りる階層にする。増減は符号と矢印を併記して色だけに頼らず、未入力・集計不能は数字の代わりに状態の文言を出す。3 計算書は縦にすべて描画して見比べられる階層を保ち、上部は画像のタブの見た目のページ内ナビ (nav のリンク、選んだ 1 項目だけ aria-current=\"location\"、tablist / tab は使わない) にする (利用者決定 qa-statements-decision-006 に合わせて書き直し)。",
+        "recorded_at": "2026-09-19T11:58:09Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "presentation": {
+        "text": "Apple HIG の『利用者の操作に即座に応える』を負債入力のフィードバックへ反映した。3 択の選択で金額欄が即時に出入りし、変更から 800ms で下書きを保存して保存時刻を出し、未保存の件数を下部固定バーに数える。保存中はボタンを無効化して『保存中…』と出し、失敗は role=alert で理由を示して下書きを残す。",
+        "recorded_at": "2026-09-19T02:05:18Z",
+        "basis": "agent-inference"
+      },
+      "application-architecture": {
+        "text": "依存方向を core (statementsScreen) ← api (statements route・balances route) ← web (決算書画面) の一方向へ反映した。web の部品 (KpiStrip・PlCard・PlDetailPanel・CashFlowSection・LiabilitySection・UnsavedBar) は screen の部分を props で受けて描くだけで、互いに計算結果を渡し合わない。",
+        "recorded_at": "2026-09-19T02:05:18Z",
+        "basis": "agent-inference"
+      }
+    },
+    "backend": {
+      "application-architecture": {
+        "text": "依存方向を core ← api の一方向へ反映した。statementsScreen は Dataset・freee 取引・残高行・基準月だけを受け、D1 も Hono も知らない。GET /api/statements は表示正本を二重化せず {screen} だけを返し、旧 pl/cf/bs/period 契約は撤去する。",
+        "recorded_at": "2026-09-19T22:35:37Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "データアクセスを route 側に閉じる形へ反映した。前期の範囲は loadScoped の all を applyPeriod で切って作り、決算書専用の SQL を増やさない。負債の保存は送られた項目だけを (user_id, month, side, category) で upsert / 削除し、source=mf の行と送られていない項目には触れない。",
+        "recorded_at": "2026-09-19T02:05:18Z",
+        "basis": "agent-inference"
+      }
+    },
+    "database": {
+      "data-access": {
+        "text": "balance_entries の読み書きを balances route と statements route に限る形へ反映した。status 列は既定値 'amount' で追加し既存行を書き換えない。未入力を行の不在で表すので、既存の UNIQUE(user_id, month, side, category) がそのまま『1 項目 1 状態』を保証する。",
+        "recorded_at": "2026-09-19T02:05:18Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "migration を追加のみにすることで、Deploy が自動適用判定で止まらない形へ反映した。audit_log の CHECK 拡張に要する表再構築は採らず新表で監査する。実体は 0045_owner_labels.sql と衝突しない migrations/0046_liability_status.sql である。",
+        "recorded_at": "2026-09-19T22:35:37Z",
+        "basis": "agent-inference"
+      }
+    },
+    "auth": {
+      "authentication": {
+        "text": "決算書と負債保存の 2 経路に既存のセッション Cookie (HttpOnly・Secure・SameSite=Strict) による認証をそのまま効かせる形へ反映した。未認証は authGuard が 401 を返し、一時パスワードのままの利用者は mustChangePasswordFence が止める。新しい認証方式や役割は足さない。",
+        "recorded_at": "2026-09-19T02:05:18Z",
+        "basis": "agent-inference"
+      },
+      "security": {
+        "text": "負債保存の操作者を liability_audit_log の actor_user_id に残す形へ反映した。監査には金額を残さず項目ごとの状態遷移だけを記録し、監査表そのものが金額の複製にならないようにする。ブラウザ内の下書きは userId をキーに含めログアウト時に消す。",
+        "recorded_at": "2026-09-19T02:05:18Z",
+        "basis": "agent-inference"
+      }
+    },
+    "security": {
+      "security": {
+        "text": "OWASP ASVS 5.0 の入力検証と 1.2.10 (CSV / 数式注入) を負債保存と PL エクスポートへ反映した。負債は zod strict の列挙・整数・上限・8 KiB の本文上限で受けて 400 / 413 を返し、CSV は RFC 4180 のエスケープに加えて先頭の = + - @ タブ NUL に単一引用符を前置する。取込データと下書きは外部へ送らない。",
+        "recorded_at": "2026-09-19T02:05:18Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "reliability": {
+        "text": "migrations/0046_liability_status.sql を追加のみに限り、Deploy の自動適用で止まらず、巻き戻しも新列・新表を使わないだけで済む形へ反映した。runtimeSchemaGuard の必須列に balance_entries.status と liability_audit_log を加え、migration 適用前の Worker が新しい保存経路を中途半端に動かさないようにする。",
+        "recorded_at": "2026-09-19T22:35:37Z",
+        "basis": "agent-inference"
+      },
+      "operations": {
+        "text": "決算書の部品をルート単位で分割読込し、CI の初期 JS 予算 (js-budget) を超えない形へ反映した。配信は既存の ci.yml・deploy.yml・migrate.yml の流れに乗せ、新しい監視やジョブは足さない。",
+        "recorded_at": "2026-09-19T02:05:18Z",
+        "basis": "agent-inference"
+      }
+    },
+    "maintenance-ops": {
+      "operations": {
+        "text": "決算書の回帰を CI の test・typecheck・lint・verify:full で止める形へ反映した。既存の statements-balance-sheet.dom.test.tsx と balances-lifecycle.test.ts は新しい文言と本文形へ書き換え、旧実装で落ちることを確かめてから緑にする。区分の対応表と計算式は docs/data-schema.md、UI の決定は docs/ui-decisions.md に残す。",
+        "recorded_at": "2026-09-19T02:05:18Z",
+        "basis": "agent-inference"
+      }
+    }
+  }
+}

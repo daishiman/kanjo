@@ -351,6 +351,73 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 合計不一致・`parent_amount` 不一致・`line_id` 重複・`identity_stable=0` のいずれかで、内訳は集計へ出さず親の金額のまま数える(fail-closed)。無かったことにはせず `splitProjection.state` を `amount_conflict` / `identity_unstable` として画面へ返す。
 - 統合JSONは canonical な親行(`raw.mfTx`)を保存し、投影後の子行は保存しない。子行は表示・集計専用の派生である。
 
+## 明細仕分けの作業台(0046)
+
+`saved_filters` / `tx_history` の2表と、`rules` / `tx_edits` への列追加。契約の正本は `specs/spec-classify-screen.md`。
+
+### 条件は列に割らず JSON で持つ(saved_filters)
+
+列は `id / user_id / name / query_json / created_at / updated_at`、一意制約は `(user_id, name)`。
+
+- **絞り込みの項目は画面の都合で増減するので列に割らない。** 状態・カテゴリ・所有者・支払方法・キーワードを列にすると、画面へ1つ条件を足すたびに migration が要る。`query_json` は 2〜2000 字の CHECK を持ち、壊れた値の際限ない保存だけを防ぐ。
+- 名前は 1〜40 字。同じ名前を二つ作れないのは、一覧から選ぶ操作が名前でしか区別できないため。
+
+### 変わった項目ごとに1行(tx_history)
+
+列は `id / user_id / tx_id / changed_at / field / before_value / after_value / source / confidence / op_id`。索引は `(user_id, tx_id, changed_at)` で、「この明細の新しい順に20件」という唯一の読み方に合わせてある。
+
+- **1つの保存が複数行になる。** 区分と科目を同時に変えれば2行で、どちらも同じ `op_id` を持つ。`op_id` は1回の要求の識別子で、画面はこれで1つの出来事としてまとめ直す。値が変わらない保存では1行も書かない(`historyEntries` が前後を表示値で比べる)。
+- `before_value` / `after_value` を文字列で持つのは、型の違う項目を1つの表に収めるため。どう読ませるかは `field` を見て画面が決める。
+- `confidence` は `source='auto'` の行にだけ入る。手動やルールの変更に自動提案の信頼度を付けると、後から見たとき誰の判断か読めなくなる。
+- 通常の履歴行は `packages/api/src/classify-history.ts` が作り、削除／取消の `delete` / `undo` は `packages/api/src/deletion-lifecycle.ts` が削除本体と同じ D1 batch にまとめる。経路は 手動(`manual`) / 自動一致(`auto`) / 一括保存(`bulk`) / ルール(`rule`) / 分割(`split`) / 削除(`delete`) / 取消(`undo`) の7つである(FR-16)。
+- **明細が消えても履歴は残す。** `tx_id` に外部キーを張っていないのは、削除の事実そのものを持つ行が削除で消えては意味をなさないため。取消時の txId は `import_deleted_rows` の tombstone payload から復元し、同じ batch で `undo` の行を追記する。
+- `saved_filters` と `tx_history` は利用者の UI 設定／監査・作業記録であるため、会計データの JSON バックアップ／復元と取込データの full reset に**含めない**。これは未決ではなく保持方針であり、明細削除後も両表を残す。
+
+### rules / tx_edits の追加列
+
+| 表 | 列 | 意味 |
+|---|---|---|
+| `rules` | `payee` | 正規化済みの取引先キー。キーワード一致に重ねて提案の確度を上げる |
+| `rules` | `scope` | `all`(既定) か `unconfirmed`。既定はこの migration 以前に作られたルールの現在の挙動と同じ |
+| `rules` | `split_template_json` | ルールから分割を作るときの型 |
+| `tx_edits` | `payment_method` | `cash`/`card`/`account` の手動上書き。`unknown` を許さないのは、それが判定できなかったという導出結果であって利用者が選べる答えではないため |
+| `tx_edits` | `matched_proposal` | 保存時に提案と一致していたかの印。NULL の既存行は「分からない」= 手動変更として扱う(BR-01) |
+
+### 分類ステータスは列ではなく導出(BR-01〜BR-03)
+
+表に `classify_status` の列を置いていない。区分は `mf_transactions` と `tx_edits` の現在の値から `packages/core/src/classify-status.ts` の `classifyStatus(resolved, edit)` が毎回導く。**列に持つと、提案の規則を直した翌日に列の値と画面の値が食い違う。**
+
+- `unsorted`(未整理) = `clsSrc === '既定'`。`manual`(手動変更) と `done`(完了) を合わせた 3 区分は**排他で全件を覆う**。どの明細もちょうど 1 区分に入る(BR-01)。
+- `done` になるのは `clsSrc` が `ルール` / `中項目` のとき、`origin='vendor_memory'` のとき（`matched_proposal` が NULL でも完了、Q-1 解決済み）、または `clsSrc === '手動'` かつ `matched_proposal=1` のとき。その他の手動行は `manual` に倒す(BR-01)。
+- `review`(要確認) は 4 つ目の区分ではなく **`unsorted` の部分集合**。信頼度 80 未満・衝突・矛盾のいずれかに当たる未整理の明細だけが立つ。提案が無い(信頼度 NULL)未整理は要確認に数えない(BR-03)。
+- 未整理を `clsSrc === '既定'` と同じ集合に固定するのは、月次クローズの『仕分け』の意味を変えないためである(BR-02)。
+
+### 信頼度は保存値ではなく提案の副産物(BR-04・BR-05)
+
+`tx_history.confidence` に入るのは `source='auto'` の行の**そのときの値**であって、明細の属性ではない。現在の信頼度は提案を作るたびに導く。
+
+| 提案の由来 | 信頼度 |
+|---|---|
+| `vendor_memory` | `Math.round(vendorConfidence(memory) * 100)` |
+| 取引先とキーワードの両方が一致するルール | 95 |
+| キーワードだけのルール | 85 |
+| MF 中項目の対応表 | 70 |
+| 提案なし | NULL |
+
+- 衝突(2 つ以上の由来が違うカテゴリを提案する)のときは、先頭の由来の信頼度を**関与した由来の最小値 − 20**に置き換え、下限 0 で止める。矛盾(区分=個人 かつ 所有者=事業、または 区分=事業 かつ 所有者が事業以外)も要確認の理由になる(BR-05)。
+- 値は常に 0〜100 の整数へ丸める。由来の優先順は `vendor_memory → ルール → MF 中項目 → なし`(BR-006 と同じ)。
+
+### バッジと月次クローズは母集団が違う(BR-06・BR-07)
+
+どちらも `classifyStatus` の `unsorted` から数えるが、**数える範囲が違うので一致しない**。一致させると片方が二重計上になる。
+
+| | 期間 | 母集団から外すもの |
+|---|---|---|
+| ナビのバッジ(BR-06) | **全期間**(`/review-queue`・BR-002) | 保留 |
+| 月次クローズの『仕分け』(BR-07) | **その月** | 保留に加えて、照合側で数える明細・現金の行・`isMfCountable` の外・`splitProjection` のある明細 |
+
+画面の KPI は**選択期間**で数えるので、バッジとも月次クローズとも違う値になりうる。判定関数が 1 つでも、母集団は 3 通りある。
+
 ## 仕分けルールの順序契約
 
 - 全consumer（明細解決、hit count、候補科目usage/rename/delete guard）は共通loaderの `sort_order ASC, id ASC` を使う。DBにルールが無い場合の既定fallbackも同loader境界で一元化する。
@@ -480,13 +547,45 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - `PUT /api/settings/owner-labels` は変更系フェンスの内側にあり、取込の確定中は 409 `canonical_write_busy`。JSON スナップショット(バックアップ / 復元)の対象には入れない(再入力できる表示の設定であり、会計の正本ではない)。
 - 画面は家計・設定・明細のどれも `useOwnerLabels()` → core の `ownerLabel()` を経由して名義を表示する。
 
-## AI分析の依頼の段階(0046)
+## 負債の手入力の 3 状態と監査(0046 / feat-statements-screen)
 
-`migrations/0046_ai_task_stages.sql` が `ai_tasks` に 5 列と 1 索引を足す。画面仕様の正本は `specs/spec-ai-analysis-screen.md`、規則の一覧は [`ai-screen/rules.md`](ai-screen/rules.md)。
+決算書画面 (`/statements`) の負債 4 項目は「未入力 / 0円 / 金額」の 3 状態を持つ。画面仕様の正本は `specs/spec-statements-screen.md` §3、実装の決定は [`statements-screen.md`](statements-screen.md) §2.5・§2.7。
+
+### `balance_entries.status`
+
+| 状態 | 表し方 |
+|---|---|
+| 未入力 (`unset`) | **行が無い**。既存の `UNIQUE(user_id, month, side, category)` がそのまま 1 項目 1 状態を保証する |
+| 0円 (`zero`) | `status='zero'`、`amount=0` |
+| 金額 (`amount`) | `status='amount'`、`amount` は 0 以上 1 兆円以下の整数 |
+
+- 列は `ALTER TABLE ... ADD COLUMN status TEXT NOT NULL DEFAULT 'amount' CHECK (status IN ('zero','amount'))` で足した。既存行は 1 行も書き換えない。
+- 0046 より前に「0」を保存した行は `('amount', 0)` のまま残る。core の `statementsScreen` はこれを 0円 と同じ扱いで読む(未入力とは区別する)。
+- 画面からの保存 (`PUT /api/balances/liabilities`) は送られた項目だけを処理する。`unset` は `source='manual'` の行を削除、`zero` / `amount` は `source='manual'` で upsert。送られた項目に取込 (`source='mf'`) の行があれば何も書かずに 409 `liability_owned_by_import`(一意キーに `source` が無く、upsert すると取込の行を上書きするため)。
+- 取込データの削除と退避(0030)は `status` も退避・復元する。0046 より前に退避した行は既定の `'amount'` で戻る。
+
+### `liability_audit_log`
+
+| 列 | 型 | 内容 |
+|---|---|---|
+| `id` | INTEGER | 連番 |
+| `user_id` | TEXT | 業務テナントの利用者 |
+| `actor_user_id` | TEXT | 保存した認証主体 |
+| `month` | TEXT | 対象月 `YYYY-MM` |
+| `changed_json` | TEXT | `{ lines: { <category>: "<前の状態>→<後の状態>" }, count }`。**金額は入れない** |
+| `occurred_at` | TEXT | 保存時刻 |
+
+- 保存と同じ D1 batch で 1 件書く(保存が失敗すれば監査も残らない)。
+- 既存の `audit_log` は `action` を CHECK で閉じており、広げるには表の再構築が要る。行を書き換えない方針と Deploy の自動適用判定に合わないため、新表にした。
+- migration 番号は仕様とタスク仕様では 0045 だったが、main で 0045 が `owner_labels` に使われたため 0046 に繰り下げた。
+
+## AI分析の依頼の段階(0048)
+
+`migrations/0048_ai_task_stages.sql` が `ai_tasks` に 5 列と 1 索引を足す。画面仕様の正本は `specs/spec-ai-analysis-screen.md`、規則の一覧は [`ai-screen/rules.md`](ai-screen/rules.md)。
 
 | 列 | 型 | 意味 |
 |---|---|---|
-| `seq` | INTEGER | 利用者ごとの通し番号。画面の `T-0001` の元。発行時に `max(seq)+1` で採り、一意索引に衝突したら 1 回だけ採り直す。0046 より前の行は NULL のままで、画面は「旧 作成日」と表示する |
+| `seq` | INTEGER | 利用者ごとの通し番号。画面の `T-0001` の元。発行時に `max(seq)+1` で採り、一意索引に衝突したら 1 回だけ採り直す。0048 より前の行は NULL のままで、画面は「旧 作成日」と表示する |
 | `data_fetched_at` | TEXT | エージェントが最初にデータを取得した時刻。2 回目以降の取得では動かさない |
 | `rejected_at` | TEXT | 最後に契約違反の送信を差し戻した時刻 |
 | `reject_count` | INTEGER NOT NULL DEFAULT 0 | 差し戻しの回数。受信後・取り消し後の送信は数えない |
@@ -494,4 +593,4 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 
 - 索引: `uq_ai_tasks_user_seq`(`user_id`, `seq`)の一意索引。SQLite は NULL どうしを重複とみなさないので、`seq` の無い既存行は何行あっても衝突しない。
 - **段階名(待機中 / 実行中 / 完了 / 失敗 / キャンセル)と進捗 % は保存しない**。core の `aiTaskStage` が `canceled_at` → `used_at` → `expires_at` → `rejected_at` → `data_fetched_at` の順に時刻から毎回導く。列に持つと、期限切れのような「時間が経っただけで変わる段階」を更新し忘れて表示と食い違う。
-- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE UNIQUE INDEX` のみ)。`ai_reports` は変えない。`packages/api/src/ai-migration-0046.test.ts` が、当てても行の更新が 0 件であることと既存列の値が変わらないことを固定する。
+- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE UNIQUE INDEX` のみ)。`ai_reports` は変えない。`packages/api/src/ai-migration-0048.test.ts` が、当てても行の更新が 0 件であることと既存列の値が変わらないことを固定する。

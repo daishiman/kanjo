@@ -3,15 +3,18 @@
   "parent_feature": "feat-ai-analysis-screen",
   "graph_node_id": "feat-ai-analysis-screen",
   "beads_epic": "kanjo-5ru",
-  "recorded_at": "2026-09-21T14:05:00Z",
+  "recorded_at": "2026-09-21T16:40:00Z",
   "verdict": "IMPACTED_AND_REFLECTED",
-  "summary": "AI分析画面 (12-ai) の新規追加は仕様・設計へ影響があると判定し、system-spec/ specs/ architecture/ features/ tasks/ docs/ へ反映した。13 phase の計画外に入れた5件 (契約 v4 / migration 0047 / skill 改訂 / month.ts 集約 / 共通シェル) も仕様へ明記した。",
+  "summary": "AI分析画面 (12-ai) の新規追加は仕様・設計へ影響があると判定し、system-spec/ specs/ architecture/ features/ tasks/ docs/ へ反映した。13 phase の計画外に入れた5件 (契約 v4 / migration 0049 / skill 改訂 / month.ts 集約 / 共通シェル) も仕様へ明記した。",
   "impacts": [
     {
       "id": "I1",
       "finding": "AI分析画面そのもの (4ルート・依頼の段階・版・タブ) の正本が無い。",
       "action": "specs/spec-ai-analysis-screen.md を新設し、FR・UI表・API契約・データモデル・ビジネスルール・受入条件を確定した。",
-      "files": ["specs/spec-ai-analysis-screen.md", "features/feat-ai-analysis-screen.md"]
+      "files": [
+        "specs/spec-ai-analysis-screen.md",
+        "features/feat-ai-analysis-screen.md"
+      ]
     },
     {
       "id": "I2",
@@ -32,9 +35,12 @@
     },
     {
       "id": "I3",
-      "finding": "migration 0047 は既存行の version を書き換える (このハーネスで唯一の行更新 migration) が、巻き戻しの非対称性が仕様に無い。",
-      "action": "データモデル節へ 0047 の一意索引と trigger、互換性・移行節へ『索引と trigger は DROP で戻せるが正規化した version は戻らない』、受入条件へ列消失を行ごと固定する項目を追記した。",
-      "files": ["specs/spec-ai-analysis-screen.md", "migrations/0047_ai_report_invariants.sql"]
+      "finding": "migration 0049 は既存行の version を書き換える (このハーネスで唯一の行更新 migration) が、巻き戻しの非対称性が仕様に無い。",
+      "action": "データモデル節へ 0049 の一意索引と trigger、互換性・移行節へ『索引と trigger は DROP で戻せるが正規化した version は戻らない』、受入条件へ列消失を行ごと固定する項目を追記した。",
+      "files": [
+        "specs/spec-ai-analysis-screen.md",
+        "migrations/0049_ai_report_invariants.sql"
+      ]
     },
     {
       "id": "I4",
@@ -51,13 +57,32 @@
       "id": "I5",
       "finding": "画面の規則 (段階・T-番号・版の説明・タブ振り分け・エラー文言) の読み物が無い。",
       "action": "docs/ai-screen/ に rules.md / design-decisions.md / evidence.md を置き、規則表と決定の理由と証跡索引を分けた。",
-      "files": ["docs/ai-screen/rules.md", "docs/ai-screen/design-decisions.md", "docs/ai-screen/evidence.md"]
+      "files": [
+        "docs/ai-screen/rules.md",
+        "docs/ai-screen/design-decisions.md",
+        "docs/ai-screen/evidence.md"
+      ]
     },
     {
       "id": "I6",
-      "finding": "13 phase の計画に無い変更 (契約 v4 の contextAnalysis・migration 0047・skill 改訂・month.ts 集約・共通シェル) が実装に入った。",
+      "finding": "13 phase の計画に無い変更 (契約 v4 の contextAnalysis・migration 0049・skill 改訂・month.ts 集約・共通シェル) が実装に入った。",
       "action": "仕様へ『13 phase の外で入れた変更』節を新設し、5件それぞれ『なぜ計画に無かったか』『どのテストが守るか』を表で記録した。month.ts はテスト5件のうち旧実装で落ちるのは1件だけである旨も実測値で明記した。",
-      "files": ["specs/spec-ai-analysis-screen.md"]
+      "files": [
+        "specs/spec-ai-analysis-screen.md"
+      ]
+    },
+    {
+      "id": "I7",
+      "finding": "main 取り込みで入った統合テスト 6 件が migration を split(';') で素朴に分割しており、本サイクルが 0049 で入れた CREATE TRIGGER の BEGIN ... END 内のセミコロンで文が途切れて SQLITE_ERROR (incomplete input) になる。TRIGGER を持つ migration は本ハーネスで 0049 が初。",
+      "action": "同じ分割ロジックが 6 ファイルへ複製されていたため、本サイクルが作った packages/api/src/migration-test-support.ts の splitMigrationStatements (文字列・引用識別子・コメント・CASE/BEGIN の入れ子を読む) へ全件を寄せた。以後 TRIGGER を持つ migration が増えても、分割の直し先は 1 か所で済む。",
+      "files": [
+        "packages/api/src/statements-screen.integration.test.ts",
+        "packages/api/src/classify-deletion-history.integration.test.ts",
+        "packages/api/src/classify-bulk.integration.test.ts",
+        "packages/api/src/saved-filters.integration.test.ts",
+        "packages/api/src/rules-preview-apply.integration.test.ts",
+        "packages/api/src/classify-list-paging.integration.test.ts"
+      ]
     }
   ],
   "not_impacted": [
@@ -71,30 +96,82 @@
     }
   ],
   "reflected_files": [
-    { "file": "specs/spec-ai-analysis-screen.md", "digest": "sha256:dd490db4494cd49e203ecd42e64ddc13cbafb266b2cf4a6bdaa45a289834e24e" },
-    { "file": "features/feat-ai-analysis-screen.md", "digest": "sha256:fd705a54d5f9c474dc904b5f08fd7deed772074dadf7f3f729d5882fa1b4f515" },
-    { "file": "system-spec/00-requirements-definition.md", "digest": "sha256:29d1ab19bb45bce2141681efa823c5b7313b48e93c2cef05410b67044ab4d746" },
-    { "file": "system-spec/ui-ux.md", "digest": "sha256:5c6788a52947b35f54ae87183aa1e3e6f17ed9ff5e8ff0b86f3192ca418f7a06" },
-    { "file": "system-spec/frontend.md", "digest": "sha256:eba3e33334b9f5c6dcff8e1b78b8fff1804f2f52604edca0382f1a6158f36ef4" },
-    { "file": "system-spec/backend.md", "digest": "sha256:e39b090e33900452ae1d5ce73e97bb80e02c65be0deb210278f19af238dafca4" },
-    { "file": "system-spec/database.md", "digest": "sha256:1a0540e072013253e364b82ad4a3f1e91124019fd5baba6c85772025d47dcbfb" },
-    { "file": "architecture/ai-analysis-frontend.md", "digest": "sha256:e9cdf95dea1e7c443cf2f707058b1dfae068b0abf3fcf929ae4655b41e193a0e" },
-    { "file": "architecture/ai-analysis-backend.md", "digest": "sha256:f5a7364bf8b077687f76ac20aa6b1d85e18805dcce817365437769810b1def22" },
-    { "file": "architecture/ai-analysis-database.md", "digest": "sha256:ee507a54d2c63693db6a764e6aebed89d7158d5251280065b888a15a4c711cec" },
-    { "file": "docs/ai-screen/rules.md", "digest": "sha256:577d74e4847cff4f0c7c8d625a1073722e66bfcee9d297a0d2c9b449fe05d463" },
-    { "file": "docs/ai-screen/design-decisions.md", "digest": "sha256:a89d5218a84a64ebde46d00db5bac6e7be7702163048f59d3fc35c659044e895" },
-    { "file": "specs/spec-expense-matrix-screen.md", "digest": "sha256:ac4b1ffc91fb2594727bf259a9b0655f12d9fd804f8f016857601b6eb29dc0af" },
-    { "file": "specs/spec-subscriptions-screen.md", "digest": "sha256:7cc062d7d47d9bc34aaa59e444bcc67ae5797dc349d5faf4ef3b71183e02539c" }
+    {
+      "file": "specs/spec-ai-analysis-screen.md",
+      "digest": "sha256:db77a9d0ff6bd3a59f5ca29536df37fcc953c6ad10a0199c7abc13e0793efd5a"
+    },
+    {
+      "file": "features/feat-ai-analysis-screen.md",
+      "digest": "sha256:fd705a54d5f9c474dc904b5f08fd7deed772074dadf7f3f729d5882fa1b4f515"
+    },
+    {
+      "file": "system-spec/00-requirements-definition.md",
+      "digest": "sha256:29d1ab19bb45bce2141681efa823c5b7313b48e93c2cef05410b67044ab4d746"
+    },
+    {
+      "file": "system-spec/ui-ux.md",
+      "digest": "sha256:5c6788a52947b35f54ae87183aa1e3e6f17ed9ff5e8ff0b86f3192ca418f7a06"
+    },
+    {
+      "file": "system-spec/frontend.md",
+      "digest": "sha256:eba3e33334b9f5c6dcff8e1b78b8fff1804f2f52604edca0382f1a6158f36ef4"
+    },
+    {
+      "file": "system-spec/backend.md",
+      "digest": "sha256:e39b090e33900452ae1d5ce73e97bb80e02c65be0deb210278f19af238dafca4"
+    },
+    {
+      "file": "system-spec/database.md",
+      "digest": "sha256:1a0540e072013253e364b82ad4a3f1e91124019fd5baba6c85772025d47dcbfb"
+    },
+    {
+      "file": "architecture/ai-analysis-frontend.md",
+      "digest": "sha256:e9cdf95dea1e7c443cf2f707058b1dfae068b0abf3fcf929ae4655b41e193a0e"
+    },
+    {
+      "file": "architecture/ai-analysis-backend.md",
+      "digest": "sha256:f5a7364bf8b077687f76ac20aa6b1d85e18805dcce817365437769810b1def22"
+    },
+    {
+      "file": "architecture/ai-analysis-database.md",
+      "digest": "sha256:ee507a54d2c63693db6a764e6aebed89d7158d5251280065b888a15a4c711cec"
+    },
+    {
+      "file": "docs/ai-screen/rules.md",
+      "digest": "sha256:3ae66e1d780c425eb8a0c22fd2679278df8cdd6e552b3feb028980201ba7155d"
+    },
+    {
+      "file": "docs/ai-screen/design-decisions.md",
+      "digest": "sha256:1cc82b64ebc6d3f6dece7f359568cdd16f828e63a145c366d39a18d6e86ed89c"
+    },
+    {
+      "file": "specs/spec-expense-matrix-screen.md",
+      "digest": "sha256:ac4b1ffc91fb2594727bf259a9b0655f12d9fd804f8f016857601b6eb29dc0af"
+    },
+    {
+      "file": "specs/spec-subscriptions-screen.md",
+      "digest": "sha256:7cc062d7d47d9bc34aaa59e444bcc67ae5797dc349d5faf4ef3b71183e02539c"
+    }
   ],
   "gates": {
     "typecheck": "PASS",
-    "lint": "PASS (biome 560 files / graph-lineage 118 nodes / real-data guard OK)",
-    "test": { "core": 909, "api": 722, "web": 809, "failed": 0, "exit": 0 }
+    "lint": "PASS (biome / check-graph-lineage 134 nodes / design tokens / real-data guard OK)",
+    "test": {
+      "core": 973,
+      "api": 806,
+      "web": 875,
+      "skipped": 6,
+      "failed": 0,
+      "exit": 0
+    },
+    "measured_at": "2026-09-21T23:35:00+09:00",
+    "note": "origin/main (8f72ff0) 取り込み後の実測値。api は 61 files 806 tests。"
   },
   "result": "PASS",
   "open_items": [
     "P13 の本番 Migrate / Deploy は未実施 (保留)。PR 作成までを本ブランチの範囲とする。",
     "共通シェルのフッター文言の折り返しを継続的に見る常設ゲートが無い (check:mobile-layout のフィクスチャは偽フッター)。follow-up。",
     "check:financial-routes の Household 罫線検査が 60 計測中 1 回だけ落ちる。原因未特定のため、合否条件は変えずセル単位の実測値を失敗メッセージへ残す診断だけを足した。"
-  ]
+  ],
+  "merge_note": "origin/main (8f72ff0) を取り込んだ際に 21 ファイルが衝突した。migration は main が 0046_liability_status / 0047_classify_workbench を先に取っていたため、未マージで凍結されていない 本ブランチの 2 本だけを 0048_ai_task_stages / 0049_ai_report_invariants へ繰り下げた (main 側の番号は据え置き)。system-spec/ 直下は『現行 1 世代』運用のため、main の現行世代 (明細仕分け) を system-spec/archive/2026-09-21-classify-screen/ へ 14 ファイル退避し、直下は本サイクル (AI分析) を残した。architecture/graph.json は双方追記だったので両方の node を union し、退避した arch-classify-* 8 件の source_lineage.source_path を退避先へ付け替えた (内容は同一のため digest は打ち直していない)。先例は main 自身が決算書サイクルを退避した 8f72ff0 と同じ手順。"
 }

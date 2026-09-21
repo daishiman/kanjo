@@ -82,6 +82,15 @@ export const rules = sqliteTable('rules', {
   owner: text('owner', { enum: ['business', 'spouse', 'family'] }),
   sortOrder: integer('sort_order').notNull(),
   createdAt: text('created_at').$defaultFn(nowIso),
+  /**
+   * 0046: 取引先キー・適用範囲・分割の型。
+   * ALTER TABLE は列を末尾に足すので、宣言の並びも物理の並びに合わせる。
+   */
+  payee: text('payee'),
+  scope: text('scope', { enum: ['all', 'unconfirmed'] })
+    .notNull()
+    .default('all'),
+  splitTemplateJson: text('split_template_json'),
 });
 
 /** 旧・手動判定(0001 で tx_edits へ移行済み。読み書きしない) */
@@ -121,6 +130,10 @@ export const txEdits = sqliteTable('tx_edits', {
    * ALTER TABLE は列を末尾に足すので、宣言の並びも物理の並びに合わせて末尾に置く。
    */
   institution: text('institution'),
+  /** 0046: 支払方法の手動上書き。'unknown' は導出結果なので保存値にしない */
+  paymentMethod: text('payment_method', { enum: ['cash', 'card', 'account'] }),
+  /** 0046: 保存時に提案と全一致していたか(1/0)。NULL は列が無かった時期の行 */
+  matchedProposal: integer('matched_proposal'),
 });
 
 /**
@@ -505,6 +518,10 @@ export const balanceEntries = sqliteTable(
     category: text('category').notNull(),
     amount: integer('amount').notNull(),
     source: text('source', { enum: ['mf', 'manual'] }).notNull(),
+    /** 0046: 手入力の負債で 0円 (zero) か金額 (amount) か。未入力は行を持たない。取込の行と旧行は 'amount' */
+    status: text('status', { enum: ['zero', 'amount'] })
+      .notNull()
+      .default('amount'),
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
     updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
   },
@@ -513,6 +530,23 @@ export const balanceEntries = sqliteTable(
     uniqueIndex('uq_balance_entries').on(t.userId, t.month, t.side, t.category),
     index('idx_balance_entries_month').on(t.userId, t.month),
   ],
+);
+
+/**
+ * 0046: 負債の手入力の保存ごとに 1 行。changed_json は項目ごとの状態遷移と件数だけで、金額を持たない。
+ * audit_log の action を広げると表の再構築が要るため、別表にしている。
+ */
+export const liabilityAuditLog = sqliteTable(
+  'liability_audit_log',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    userId: text('user_id').notNull(),
+    actorUserId: text('actor_user_id').notNull(),
+    month: text('month').notNull(),
+    changedJson: text('changed_json').notNull(),
+    occurredAt: text('occurred_at').notNull(),
+  },
+  (t) => [index('idx_liability_audit_log_user').on(t.userId, t.occurredAt)],
 );
 
 /** 0039: 認証主体。業務データの共有tenantとは分離し、利用者と一時資格情報だけを持つ。 */
@@ -891,3 +925,37 @@ export const diagnosisActionStates = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.userId, t.actionKey] })],
 );
+
+/**
+ * 0046: 絞り込み条件に名前を付けて残す。条件は JSON 1 列で持つ。
+ * 画面の都合で項目が増減するため列に割らない(検索条件であって集計の鍵ではない)。
+ */
+export const savedFilters = sqliteTable('saved_filters', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  name: text('name').notNull(),
+  queryJson: text('query_json').notNull(),
+  createdAt: text('created_at').notNull().$defaultFn(nowIso),
+  updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
+});
+
+/**
+ * 0046: 明細1件の変更履歴。変わった項目ごとに 1 行、同じ要求は同じ op_id。
+ * 値は文字列で持ち、どう読ませるかは field を見て画面が決める。
+ */
+export const txHistory = sqliteTable('tx_history', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  txId: text('tx_id').notNull(),
+  changedAt: text('changed_at').notNull(),
+  field: text('field', {
+    enum: ['cls', 'category', 'owner', 'payment_method', 'note', 'split', 'deleted'],
+  }).notNull(),
+  beforeValue: text('before_value'),
+  afterValue: text('after_value'),
+  source: text('source', {
+    enum: ['auto', 'manual', 'rule', 'bulk', 'split', 'delete', 'undo'],
+  }).notNull(),
+  confidence: integer('confidence'),
+  opId: text('op_id').notNull(),
+});

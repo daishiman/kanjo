@@ -1,0 +1,113 @@
+{
+  "feature_id": "feat-classify-screen",
+  "nodes": [
+    {
+      "graph_node_id": "feat-classify-screen",
+      "bd_issue_id": "kanjo-d6m",
+      "graph_status": "active",
+      "depends_on": []
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P01",
+      "bd_issue_id": "kanjo-d6m.1",
+      "graph_status": "active",
+      "depends_on": []
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P02",
+      "bd_issue_id": "kanjo-d6m.2",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P01"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P03",
+      "bd_issue_id": "kanjo-d6m.3",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P02"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P04",
+      "bd_issue_id": "kanjo-d6m.4",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P03"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P05",
+      "bd_issue_id": "kanjo-d6m.5",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P04"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P06",
+      "bd_issue_id": "kanjo-d6m.6",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P05"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P07",
+      "bd_issue_id": "kanjo-d6m.7",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P06"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P08",
+      "bd_issue_id": "kanjo-d6m.8",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P07"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P09",
+      "bd_issue_id": "kanjo-d6m.9",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P08"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P10",
+      "bd_issue_id": "kanjo-d6m.10",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P09"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P11",
+      "bd_issue_id": "kanjo-d6m.11",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P10"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P12",
+      "bd_issue_id": "kanjo-d6m.12",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P11"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-P13",
+      "bd_issue_id": "kanjo-d6m.13",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-CLASSIFY-P12"
+      ]
+    }
+  ]
+}
