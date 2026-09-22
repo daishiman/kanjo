@@ -9,6 +9,7 @@ import type { Candidates, ClassifyCounts, Owner } from '@kanjo/core';
 import { useId, useState } from 'react';
 import type { SavedFilterRow } from '../../api.js';
 import { Button } from '../../components/Button.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { useOwnerLabels } from '../../owner-labels.js';
 import { type ClassifyFilters, FILTER_STATUS_LABEL, type FilterStatus, countText } from './view-model.js';
 
@@ -97,16 +98,17 @@ export function FilterPanel({
           <fieldset className="classify-filter-group">
             <legend>分類ステータス</legend>
             {STATUS_ORDER.map((s) => (
-              <label key={s} className="classify-check">
-                <input
-                  type="checkbox"
-                  checked={filters.status.includes(s)}
-                  onChange={() => toggleStatus(s)}
-                />
-                <span>
-                  {FILTER_STATUS_LABEL[s]} {countText(kpi[s])}
-                </span>
-              </label>
+              <SelectionCheckbox
+                key={s}
+                className="classify-check"
+                label={
+                  <span>
+                    {FILTER_STATUS_LABEL[s]} {countText(kpi[s])}
+                  </span>
+                }
+                checked={filters.status.includes(s)}
+                onChange={() => toggleStatus(s)}
+              />
             ))}
           </fieldset>
 
@@ -160,14 +162,12 @@ export function FilterPanel({
             </select>
           </div>
 
-          <label className="classify-check">
-            <input
-              type="checkbox"
-              checked={filters.manual}
-              onChange={(e) => onChange({ ...filters, manual: e.target.checked, page: 1 })}
-            />
-            <span>手動変更された明細のみ</span>
-          </label>
+          <SelectionCheckbox
+            className="classify-check"
+            label={<span>手動変更された明細のみ</span>}
+            checked={filters.manual}
+            onChange={(e) => onChange({ ...filters, manual: e.target.checked, page: 1 })}
+          />
 
           <div className="classify-filter-group">
             <label htmlFor={ids.q}>キーワード</label>

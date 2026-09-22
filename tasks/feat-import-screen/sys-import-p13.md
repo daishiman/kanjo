@@ -2,7 +2,7 @@
 graph_node_id: "SYS-IMPORT-P13"
 artifact_kind: "task"
 artifact_subtypes: []
-title: "単一 PR での配信と migration 0050 の適用とクローズアウト"
+title: "単一 PR での配信と migration 0051 の適用とクローズアウト"
 project_id: "feature-package-feat-import-screen"
 domain: "operations"
 status: "active"
@@ -47,7 +47,7 @@ completion_evidence: {"completed_at": null, "evidence_refs": [], "policy": "link
 implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sections": [], "status": "complete"}
 ---
 
-# 単一 PR での配信と migration 0050 の適用とクローズアウト
+# 単一 PR での配信と migration 0051 の適用とクローズアウト
 
 ## Machine-readable registration fields
 
@@ -66,11 +66,11 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 
 ## 目的
 
-本 feature の変更を単一 PR で配信し、Migrate → Deploy の順で 0050 を適用して、完了を記録する。
+本 feature の変更を単一 PR で配信し、Migrate → Deploy の順で 0051 を適用して、完了を記録する。
 
 ## 背景
 
-0050 は表と列の追加のみで既存行を書き換えないため、Migrate を先に行っても旧 Worker は動く。配信後に既存行の更新 0 件と、夜間保守の片づけが動くことを確かめる。
+0051 は表と列の追加のみで既存行を書き換えないため、Migrate を先に行っても旧 Worker は動く。配信後に既存行の更新 0 件と、夜間保守の片づけが動くことを確かめる。
 
 ## 前提条件
 
@@ -84,7 +84,7 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 - Frontend: N/A: 本 phase では扱わない
 - Backend: N/A: 本 phase では扱わない
 - API: N/A: 本 phase では扱わない
-- Data: applicable: migration 0050 を適用する
+- Data: applicable: migration 0051 を適用する
 - Infrastructure: applicable: Migrate → Deploy の順で配信する
 - Security: N/A: 本 phase では扱わない
 - Quality: applicable: 配信後の確認を行う
@@ -95,7 +95,7 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 
 - Architecture decisions: arch-import-screen-auth, arch-import-screen-backend, arch-import-screen-database, arch-import-screen-frontend, arch-import-screen-infrastructure, arch-import-screen-maintenance-ops, arch-import-screen-security, arch-import-screen-ui-ux, spec-import-screen
 - Deploy unit/environment: web ビルドと Worker と D1 migration (単一 PR で同時に配信する)
-- Compatibility/migration/backfill: 0050 は追加のみ。表と列は削除しない
+- Compatibility/migration/backfill: 0051 は追加のみ。表と列は削除しない
 
 ## 成果物
 
@@ -103,7 +103,7 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 - docs/import-screen/design-decisions.md
 - Consumed artifacts:
 - docs/import-screen/design-decisions.md
-- migrations/0050_import_inspections.sql
+- migrations/0051_import_inspections.sql
 - Write scope/touches:
 - docs/import-screen/design-decisions.md
 
@@ -144,7 +144,7 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 ## Rollout and rollback
 
 - Rollout: 単一の PR で配信し、default branch への merge をもって反映する
-- Rollback trigger and steps: PR を revert して直前のビルドへ戻す。0050 は追加のみの表と列なので削除しない。
+- Rollback trigger and steps: PR を revert して直前のビルドへ戻す。0051 は追加のみの表と列なので削除しない。
 
 ## Handoff
 

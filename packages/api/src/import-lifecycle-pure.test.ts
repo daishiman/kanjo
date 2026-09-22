@@ -280,7 +280,7 @@ describe('D1 statement budget', () => {
     expect(planRestoreImportQueries(50 - restoreBase)).toMatchObject({ total: 50, accepted: false });
   });
 
-  it('実builderがfreee/MF/restoreすべて49未満のenvelopeに収まる', () => {
+  it('実builderがfreee/MF/restoreすべて上限50のenvelopeに収まる', () => {
     const wide = '幅'.repeat(20_000);
     const data = emptyDataset();
     const common = {
@@ -360,7 +360,8 @@ describe('D1 statement budget', () => {
       contentHash: common.contentHash,
       targetKeys: ['json:global'],
     }).length;
-    expect(planRestoreImportQueries(restoreCount)).toMatchObject({ total: 48, accepted: true });
+    // 0050: 移行先に budget_plans の行があると DELETE が 1 本増える (上限 50 に対して 49)
+    expect(planRestoreImportQueries(restoreCount)).toMatchObject({ total: 49, accepted: true });
   });
 
   /**
@@ -697,6 +698,7 @@ describe('JSON pointer invalidation consumers', () => {
       'tx_splits',
       'institution_owners',
       'budgets',
+      'budget_plans',
       'account_norm_map',
       'unrecorded_months',
       'cash_overrides',
@@ -759,6 +761,8 @@ describe('canonical mutation lease predicate', () => {
       ['DELETE', '/api/rules/1'],
       ['PATCH', '/api/rules'],
       ['PUT', '/api/budgets'],
+      // 0050: 予算対象の期間別の年額。復元の write-set に入る
+      ['PUT', '/api/budget-plans'],
       ['PUT', '/api/settings'],
       ['POST', '/api/category-options'],
       ['PUT', '/api/category-options'],

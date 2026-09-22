@@ -1,0 +1,60 @@
+{
+  "receipt_kind": "spec-reflection",
+  "parent_feature": "feat-import-screen",
+  "graph_node_id": "feat-import-screen",
+  "beads_epic": "kanjo-y7q",
+  "recorded_at": "2026-09-22T09:30:00Z",
+  "verdict": "IMPACTED_AND_REFLECTED",
+  "summary": "データ取込画面 (16-import) の作り直しは仕様・設計へ影響があると判定し、system-spec/ specs/ architecture/ features/ tasks/ docs/ へ反映した。PR 前の main 取込で予算画面 (#67) と migration 番号が衝突したため取込側を 0050 → 0051 へ繰り上げ、予算サイクルの確定章を system-spec/archive/2026-09-22-budget-screen/ へ退避した。新画面の checkbox を共通 SelectionCheckbox へ寄せた変更は main の既存方針の適用であり、仕様の変更は不要と判定した。",
+  "impacts": [
+    {
+      "id": "I1",
+      "finding": "複数ファイルの検査 (inspection)・確定・取り消し・履歴を 1 画面で進める正本が無い。",
+      "action": "specs/spec-import-screen.md を新設し、FR・UI表・API契約・データモデル・業務規則・受入テストを確定した。features/feat-import-screen.md と context.json を置いた。",
+      "files": ["specs/spec-import-screen.md", "features/feat-import-screen.md", "features/feat-import-screen.context.json"]
+    },
+    {
+      "id": "I2",
+      "finding": "system-spec のカテゴリ章に取込の検査・上限・所有者境界・保持期限の決定が無い。",
+      "action": "system-spec-harness の正規フロー (elicit → doc-fetch → compile → completeness evaluator) で要件定義書と 8 章を更新した。architecture/import-screen-*.md 8 件を新設し architecture/graph.json に登録した。",
+      "files": ["system-spec/00-requirements-definition.md", "system-spec/ui-ux.md", "system-spec/frontend.md", "system-spec/backend.md", "system-spec/database.md", "system-spec/auth.md", "system-spec/security.md", "system-spec/infrastructure.md", "system-spec/maintenance-ops.md", "system-spec/index.md", "system-spec/spec-state.json", "system-spec/fetched-references.json", "system-spec/completeness-findings.json", "architecture/graph.json"]
+    },
+    {
+      "id": "I3",
+      "finding": "main 取込で system-spec/ 直下の現行世代が予算サイクル (U1: 実績に合う予算へ、どこを調整しますか？) と衝突した。",
+      "action": "直下は取込サイクルを現行世代とし、main (0ed2d8c) の予算サイクル 14 ファイルをバイト同一で system-spec/archive/2026-09-22-budget-screen/ へ退避して README を置いた。architecture/graph.json は 150 ノードの和集合にし、arch-budget-* 8 件の source_lineage.source_path を退避先へ付け替えた (digest は内容同一のため不変、check-graph-lineage PASS)。",
+      "files": ["system-spec/archive/2026-09-22-budget-screen/", "architecture/graph.json"]
+    },
+    {
+      "id": "I4",
+      "finding": "予定していた migration 0050 は main の 0050_budget_plans.sql (#67) が先に使った。",
+      "action": "0051_import_inspections.sql に繰り上げ、schema-guard・migration テスト・specs・tasks・docs の参照を統一した。system-spec/ と .dev-graph/plans/ と features/*.context.json は digest 追跡下の計画時点の証跡のため予定番号 0050 のまま据え置いた。architecture/import-screen-*.md は『0050 以降』の表現で正しいため据え置いた。",
+      "files": ["migrations/0051_import_inspections.sql", "packages/api/src/schema-guard.ts", "packages/api/src/import-migration-0051.test.ts", "specs/spec-import-screen.md", "docs/data-schema.md", "docs/import-screen/", "tasks/feat-import-screen/"]
+    },
+    {
+      "id": "I5",
+      "finding": "画面の決定の経緯・未決事項 (OI-01〜)・証跡索引・業務規則の読み物が無い。",
+      "action": "docs/import-screen/{design-decisions,evidence,rules}.md を置き、docs/ui-decisions.md と docs/data-schema.md に取込の節を追記した。",
+      "files": ["docs/import-screen/design-decisions.md", "docs/import-screen/evidence.md", "docs/import-screen/rules.md", "docs/ui-decisions.md", "docs/data-schema.md"]
+    }
+  ],
+  "no_impact": [
+    {
+      "id": "N1",
+      "change": "新しい取込画面の checkbox 5 箇所 (ファイル表の全選択・行、履歴の一括削除、強制再取込、前回データを残す) を共通 SelectionCheckbox へ寄せた。",
+      "reason": "main (#67) が決めた『全画面の checkbox を SelectionCheckbox に寄せる』方針と、docs/design-system/requirements-baseline.md の size.tapTargetMin の適用であり、選択の意味・accessible name・フォーム挙動は変えない。新しい要件を足していないため system-spec/specs の変更は不要。"
+    }
+  ],
+  "open_items": [
+    {
+      "id": "OI-03",
+      "item": "xlsx 展開時のメモリ 128MB の完了条件が実測で満たせない (展開後およそ 15MB まで)。A案: xlsx だけ展開後上限 15MB / B案: xlsx は 1 要求 1 ファイル、の利用者判断待ちで P09〜P12 を保留した。判断後に specs/spec-import-screen.md の上限表と system-spec/backend.md を正規フローで更新する。"
+    }
+  ],
+  "not_committed": [
+    {
+      "path": ".gitignore / biome.json",
+      "reason": "`.improve` の除外追加は本 feature と無関係なローカル変更。"
+    }
+  ]
+}

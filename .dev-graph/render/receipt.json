@@ -9,20 +9,20 @@
     "nodes": 23,
     "edges": 21,
     "feature_progress": {
-      "feat-classify-screen": {
+      "feat-budget-screen": {
         "done": 0,
         "total": 13
       }
     }
   },
   "registration": {
-    "feature_package_id": "feature-package/feat-classify-screen",
-    "path": ".dev-graph/plans/feature-package-feat-classify-screen/dev-graph-registration-receipt.json",
+    "feature_package_id": "feature-package/feat-budget-screen",
+    "path": ".dev-graph/plans/feature-package-feat-budget-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:7c218fe0d853660e36f0514a16a73caf263ddd8dfe8c20e45ab7eb46dd88d6ce"
+    "source_digest": "sha256:feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067"
   },
-  "input_sha256": "8e286b2edd96fafae112aa7bff02fc99d164e1dc93f404fa39db5bc46b86cc46",
-  "output_sha256": "fbdd639cf0f9f4f19e3465ceba44448ea15a98d2ba5bbc7c0dea7a95011d4ad5",
-  "rendered_at": "2026-09-19T15:08:58Z"
+  "input_sha256": "a9d3664bd8ad31888f6721a7fb7b9806b4aea3d25b6b6fab5ed64d66b5cfadcd",
+  "output_sha256": "5dc60435799558ba62a547173654770816df58cc6bddc3f36a2985d6374c0c81",
+  "rendered_at": "2026-09-21T15:00:09Z"
 }

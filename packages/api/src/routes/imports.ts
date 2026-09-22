@@ -70,6 +70,7 @@ import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import { AuditValidationError } from '../audit-log.js';
 import type { AuthEnv, AuthVariables } from '../auth.js';
+import { budgetPlansBackupSchema } from '../budget-plan-schema.js';
 import * as s from '../db/schema.js';
 import {
   DELETION_UNDO_RETENTION_DAYS,
@@ -921,6 +922,14 @@ const prepareJsonApplication = async (args: {
   // source and rebuild derived aggregates from the authoritative raw sources.
   // 旧snapshotにtxSplitsが無い場合も、移行先の現在値を残さずcanonical集合を空へ置換する。
   candidate.txSplits = [];
+  // 0050: budgetPlans の無い旧バックアップは、budgets と同じく移行先の行を残さない (BR-24)
+  if (
+    Object.prototype.hasOwnProperty.call(args.json, 'budgetPlans') &&
+    !budgetPlansBackupSchema.safeParse(args.json.budgetPlans).success
+  ) {
+    throw new InvalidRestoreSettingsError();
+  }
+  candidate.budgetPlans = [];
   importJSON(candidate, structuredClone(args.json));
   const sourceVendorNames = new Set(candidate.subs.vendors);
   if (
@@ -1608,6 +1617,7 @@ export async function runMultipartImport(
       txEdits: 0,
       institutionOwners: 0,
       budgets: 0,
+      budgetPlans: 0,
       cashOverrides: 0,
     },
   };
@@ -2189,6 +2199,7 @@ importsRoute.post('/restore', async (c) => {
       txEdits: 0,
       institutionOwners: 0,
       budgets: 0,
+      budgetPlans: 0,
       cashOverrides: 0,
     },
   };

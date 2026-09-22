@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import type { DeletionResult } from '../../api.js';
 import { Button } from '../../components/Button.js';
 import { DeletedNotice, ImportReplacementButton } from '../../components/ImportDeletion.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { Term } from '../../components/Term.js';
 import { importKeepPreviousDescription } from './view-model.js';
 
@@ -186,24 +187,26 @@ export function ImportSelectStep({
 
       <details className="import-options">
         <summary>詳細設定（任意）</summary>
-        <label>
-          <input type="checkbox" checked={force} onChange={(event) => onForceChange(event.target.checked)} />
-          <span>
-            <strong>強制再取込</strong>
-            <small>同じ内容のファイルでも再取込を行います。</small>
-          </span>
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={keepPrevious}
-            onChange={(event) => onKeepPreviousChange(event.target.checked)}
-          />
-          <span>
-            <strong>前回データを残す</strong>
-            <small>{importKeepPreviousDescription(keepPrevious)}</small>
-          </span>
-        </label>
+        <SelectionCheckbox
+          checked={force}
+          onChange={(event) => onForceChange(event.target.checked)}
+          label={
+            <span>
+              <strong>強制再取込</strong>
+              <small>同じ内容のファイルでも再取込を行います。</small>
+            </span>
+          }
+        />
+        <SelectionCheckbox
+          checked={keepPrevious}
+          onChange={(event) => onKeepPreviousChange(event.target.checked)}
+          label={
+            <span>
+              <strong>前回データを残す</strong>
+              <small>{importKeepPreviousDescription(keepPrevious)}</small>
+            </span>
+          }
+        />
       </details>
     </section>
   );

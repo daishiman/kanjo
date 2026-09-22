@@ -49,7 +49,7 @@ feature `feat-import-screen`(Beads epic `kanjo-y7q`)の検査記録。受入の�
 | S5-c 既存の取り消し・破棄・置換・削除と 30 日の期限 | PASS | E1・E2 の統合テスト「取り消しは確認した指紋で…」「置換は保存した原本で…」、既存の `Import.*.test.tsx`、`import-reimport.dom.test.tsx` |
 | S6-a 新旧の取込経路の上限・Origin・レート制限の拒否 | PASS | E1・E2 の統合テスト「413」「403」「429」、共通境界表(core・web・api が同じ表を読む)、互換 `POST /imports` の 5 回許可・6 回目 429 |
 | S6-b 取込経路から外部ホストへの送信が 0 件 | PASS | E1・E2 の統合テスト「検査から確定・履歴まで、localhost 以外への要求は 0 件」 |
-| S6-c migration は追加だけで、既存の取込履歴が読める | PASS | E1・E2 の `import-migration-0050.test.ts` |
+| S6-c migration は追加だけで、既存の取込履歴が読める | PASS | E1・E2 の `import-migration-0051.test.ts` |
 
 ## 3. P08 重複の監査(E3)
 
@@ -73,7 +73,7 @@ feature `feat-import-screen`(Beads epic `kanjo-y7q`)の検査記録。受入の�
 
 ## 6. P13 配信
 
-**未実施(保留)**。commit・push・PR の作成・merge と、本番の Migrate / Deploy は、この作業では行っていない。`migrations/0050_import_inspections.sql` も本番には適用していない。配信は Migrate → Deploy の順(rules R30)。
+**未実施(保留)**。commit・push・PR の作成・merge と、本番の Migrate / Deploy は、この作業では行っていない。`migrations/0051_import_inspections.sql` も本番には適用していない。配信は Migrate → Deploy の順(rules R30)。
 
 ## 7. 範囲外で見つけたこと
 
@@ -138,3 +138,17 @@ feature `feat-import-screen`(Beads epic `kanjo-y7q`)の検査記録。受入の�
 | 漏れなし | PASS | MF・選択解除・エラー自動除外・確定後・履歴詳細・狭幅を契約テストで追加した |
 | 整合性あり | PASS | 追加/月次置換の文言を純関数1か所に集約し、coreの状態判定とwebの表示を維持した |
 | 依存関係整合 | PASS | 検査 ID→確定→receipt→結果→履歴の依存と、UI→view-model→hook→APIの単一経路をテストした。API分割と旧API廃止は独立した後続課題に分離した |
+
+## 11. main 取込後の検証（2026-09-22）
+
+PR 前に `origin/main` (0ed2d8c、#67 予算画面まで) を本ブランチへマージした。衝突 25 ファイルの解き方と結果を残す。
+
+| # | 実行 | 結果 |
+|---|---|---|
+| E14 | 衝突の解消 | migration を `0051_import_inspections.sql` へ繰り上げ (main の `0050_budget_plans.sql` が先着)。`schema-guard`・migration テスト・specs・tasks・docs を 0051 に統一。`routes/imports.ts` は main の budgetPlans バックアップ対応と取込の import を両立。`core/index.ts` は両 export を保持 |
+| E15 | 仕様の世代交代 | `system-spec/` 直下は取込サイクルを現行世代とし、main の予算サイクル 14 ファイルをバイト同一で `system-spec/archive/2026-09-22-budget-screen/` へ退避。`architecture/graph.json` は 150 ノードの和集合、`arch-budget-*` 8 件の lineage を退避先へ付け替え |
+| E16 | checkbox の共通化 | main の方針に合わせ、新画面の checkbox 5 箇所を `SelectionCheckbox` に置換 (accessible name は従来の aria-label と同文) |
+| E17 | `pnpm lint` | PASS。biome 644 files、check-graph-lineage 150 ノード一致・孤児0、デザイントークン直書き0、公開文書の実データ参照OK |
+| E18 | `pnpm typecheck` | PASS (全 package) |
+| E19 | `pnpm test` | PASS。core 1070 (skip 6)、api 913、web 932、test:aux EXIT 0 |
+| E20 | render 再生成 | `.dev-graph/render/index.html` の output_sha256 `50e791e8…` が既存 receipt と一致 |

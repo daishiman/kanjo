@@ -38,6 +38,7 @@ import {
   ImportUndoButton,
 } from '../../components/ImportDeletion.js';
 import { PageState, describeError } from '../../components/Page.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { useConfirmDialog } from '../../components/use-confirm-dialog.js';
 import { ImportConfirm } from './ImportConfirm.js';
 import { importCommitErrorText, importMonthsText } from './view-model.js';
@@ -307,8 +308,9 @@ export function ImportHistory({
                   return (
                     <tr key={run.id} aria-current={run.id === selectedRunId ? 'true' : undefined}>
                       <td className="import-col-check">
-                        <input
-                          type="checkbox"
+                        <SelectionCheckbox
+                          label={`${formatImportDateTime(run.createdAt)} の履歴を一括削除に含める`}
+                          labelHidden
                           disabled={!canHide || disabled}
                           checked={canHide && checked.has(run.id)}
                           onChange={(event) =>
@@ -319,7 +321,6 @@ export function ImportHistory({
                               return next;
                             })
                           }
-                          aria-label={`${formatImportDateTime(run.createdAt)} の履歴を一括削除に含める`}
                         />
                       </td>
                       <th scope="row" className="import-nowrap">

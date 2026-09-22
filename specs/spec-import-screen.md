@@ -797,7 +797,7 @@ N/A: 変更要求。成功後に web は履歴と review-queue のキーを無�
 
 ## データモデル
 
-migration は追加のみ (新表と新列)。行を書き換える migration は作らない (C3)。番号は既存の最終 `0049_ai_report_invariants.sql` の次で、`0050` から始める (qa-imp-database-web-004 = agent 推定)。表と列の名前は database 章 (qa-imp-database-web-004 = agent 推定) に従い、章に名前の無い列は **agent 推定・利用者未確認** である。
+migration は追加のみ (新表と新列)。行を書き換える migration は作らない (C3)。番号は着手時の最終 `0049_ai_report_invariants.sql` の次の `0050` を予定したが、main に `0050_budget_plans.sql` (#67) が先に入ったため `0051` とする (qa-imp-database-web-004 = agent 推定)。表と列の名前は database 章 (qa-imp-database-web-004 = agent 推定) に従い、章に名前の無い列は **agent 推定・利用者未確認** である。
 
 `import_inspections` (新表):
 
@@ -888,7 +888,7 @@ migration は追加のみ (新表と新列)。行を書き換える migration �
 
 ## 互換性・移行・リリース
 
-- 反映の順序は既存の Migrate → Deploy (qa-imp-infrastructure-web-002 = agent 推定)。0050 以降は表と列の追加だけなので、適用後に旧 Worker が動いていても新しい表と列を読まないだけで壊れない。巻き戻しは Worker を戻すだけでよい。
+- 反映の順序は既存の Migrate → Deploy (qa-imp-infrastructure-web-002 = agent 推定)。0051 以降は表と列の追加だけなので、適用後に旧 Worker が動いていても新しい表と列を読まないだけで壊れない。巻き戻しは Worker を戻すだけでよい。
 - 既存の取込履歴 (ファイル単位の記録) は作り直し後も履歴と詳細で読める。影響の 3 数値は既存の行では NULL で、画面は「-」を出す (S6)。
 - 既存の取り消し・破棄・置換・削除と 30 日の取り消し期限は作り直し後も同じ結果になる (S5)。
 - 既存の取込形式 (ZIP・JSON 復元・MF 資産推移) の受け付けは維持する。
@@ -915,7 +915,7 @@ API テスト (O2・O4・O5・O6):
 - O6: 合計 30MB+1 byte が Content-Length ありと無しの両方で本文を読む前に 413、ファイル数と 1 ファイルの大きさの超過がパースより前に 413、Origin 不一致が 403、検査 30 / 31 回目 (ファイル追加を含めて数える) と確定 5 / 6 回目が 429、ファイル名 255 / 256 文字。
 - 夜間保守: 期限切れの仮置きと古い時間枠が 1 回 500 件まで消え、残りが翌日に回る。R2 と D1 に期限切れの仮置きが残らない。
 - 取込経路から外部ホストへの送信が 0 件。
-- migration 0050 以降の適用で既存行の更新が 0 件。
+- migration 0051 以降の適用で既存行の更新が 0 件。
 
 DOM テスト (O1):
 

@@ -15,6 +15,7 @@ import {
   importValidationLabel,
 } from '@kanjo/core';
 import { Button } from '../../components/Button.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { IMPORT_STATE_ICON, type ImportItem, importItemStatus, importItemStatusLabel } from './view-model.js';
 
 const DUPLICATE_TONE = { none: 'calm', possible: 'warn', identical: 'neutral' } as const;
@@ -72,16 +73,14 @@ export function ImportFileTable({
             <thead>
               <tr>
                 <th scope="col" className="import-col-check">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={allChecked}
-                      disabled={selectable.length === 0}
-                      onChange={(event) => onToggleAll(event.target.checked)}
-                      aria-label="取込準備完了のファイルをすべて選ぶ"
-                    />
-                    <span aria-hidden="true">#</span>
-                  </label>
+                  <SelectionCheckbox
+                    label="取込準備完了のファイルをすべて選ぶ"
+                    labelHidden
+                    checked={allChecked}
+                    disabled={selectable.length === 0}
+                    onChange={(event) => onToggleAll(event.target.checked)}
+                  />
+                  <span aria-hidden="true">#</span>
                 </th>
                 <th scope="col">ファイル名</th>
                 <th scope="col">取込元</th>
@@ -101,16 +100,14 @@ export function ImportFileTable({
                 return (
                   <tr key={item.key} data-state={status.state}>
                     <td className="import-col-check">
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={item.checked}
-                          disabled={!canCheck}
-                          onChange={(event) => onToggle(item.key, event.target.checked)}
-                          aria-label={`${item.file.name} を取り込む`}
-                        />
-                        <span>{index + 1}</span>
-                      </label>
+                      <SelectionCheckbox
+                        label={`${item.file.name} を取り込む`}
+                        labelHidden
+                        checked={item.checked}
+                        disabled={!canCheck}
+                        onChange={(event) => onToggle(item.key, event.target.checked)}
+                      />
+                      <span>{index + 1}</span>
                     </td>
                     <th scope="row" className="import-filename">
                       {item.file.name}

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "promoted",
+  "promoted_at": "2026-09-21T14:49:37Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067",
+  "evaluated_digest": "sha256:feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067",
+  "published_digest": "sha256:feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067",
+  "implementation_readiness": "complete",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS"
+  },
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-budget-screen/dev-graph-registration.json"
+}

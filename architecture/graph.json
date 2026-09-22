@@ -3074,6 +3074,190 @@
       ]
     },
     {
+      "id": "arch-budget-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "予算 — 既存の認証とフェンスの内側に置く取得・保存と利用者単位の区切り",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "8bac5a1830455e332c0527f6ffc5c1aa3d6d49387e3d8b3ec611a14c17fd101f",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "予算 — 予算画面の算出と予算の読み出しを担う core 純関数 1 か所と取得・保存の 2 経路",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "cd68f3959122014af143291a3f5a61039e84bbe13f348a0b7cd3a106585725d1",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "予算 — 期間別の年額表 budget_plans を足す追加のみの migration とバックアップ・復元への編入",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "a27bde88c9d11399fcacdf470fb1e1a25db503a875d1b5b26b5ee648721353d3",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "予算 — pages/budget への分割と URL・サーバ状態・端末下書きの分離",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "c555b213773f5d2a3bea4d0f51d770d843672c6cf70ba55a1d50827c63badf66",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "予算 — 基盤を変えず行数上限と 1 回の D1 batch で無料枠に収める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "d69bafe2c6f37b37fd1c18513b3e15eeb609d7830c50a59b0f9c67adbf1570fb",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "予算 — 式と整合を core の単体テストで固定し旧実装で落ちる検算を受入の根拠にする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "8cfbe5fbed898db6065b9c6529a6018d9e1ac7edeb7bbb5c1c7b05306cf48019",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "予算 — zod の型と範囲・行数上限・フェンス登録・外部送信なし・下書きの消去",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "b796b626b18f8470e2c88875dca536473b2a7b53652fc411602769c7900057d2",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "予算 — KPI と過不足から一覧と科目パネルを往復し保存バーで確定する 1 画面",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "cdcb7210699bd4c8fedd6a834ad74b55bed23a17a36441417b285fdbd14665c1",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
       "id": "arch-import-screen-ui-ux",
       "artifact_kind": "architecture",
       "artifact_subtypes": [

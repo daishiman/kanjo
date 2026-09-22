@@ -155,6 +155,7 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   { method: 'PUT', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },
   { method: 'DELETE', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },
   { method: 'PUT', path: /^\/api\/budgets$/, consumers: ['budgets'] },
+  { method: 'PUT', path: /^\/api\/budget-plans$/, consumers: ['budget_plans'] },
   {
     method: 'PUT',
     path: /^\/api\/settings$/,
