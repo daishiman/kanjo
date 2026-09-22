@@ -951,6 +951,8 @@ export interface RestoreWriteSet {
   editRows: unknown[][];
   ownerRows: unknown[][];
   budgetRows: unknown[][];
+  /** 0050: 期間別の年額予算。(period_start, account) 順で指紋を安定させる */
+  budgetPlanRows: unknown[][];
   cashOverrideRows: unknown[][];
   restoredAggRows: unknown[][];
   unrecordedMonths: string[];
@@ -991,6 +993,7 @@ export interface RestoreWriteSet {
   txEditsDestinationEmpty: boolean;
   institutionOwnersDestinationEmpty: boolean;
   budgetsDestinationEmpty: boolean;
+  budgetPlansDestinationEmpty: boolean;
   cashOverridesDestinationEmpty: boolean;
 }
 
@@ -1091,6 +1094,7 @@ export function prepareRestoreWriteSet(args: {
     txEdits: number;
     institutionOwners: number;
     budgets: number;
+    budgetPlans?: number;
     cashOverrides: number;
   };
 }): RestoreWriteSet {
@@ -1147,6 +1151,17 @@ export function prepareRestoreWriteSet(args: {
     editRows: editRows(args.data.edits).sort(([a], [b]) => String(a).localeCompare(String(b))),
     ownerRows: Object.entries(args.data.institutionOwners).sort(([a], [b]) => a.localeCompare(b)),
     budgetRows: Object.entries(args.data.budgets).sort(([a], [b]) => a.localeCompare(b)),
+    budgetPlanRows: [...(args.data.budgetPlans ?? [])]
+      .sort((a, b) => a.periodStart.localeCompare(b.periodStart) || a.account.localeCompare(b.account))
+      .map((plan) => [
+        plan.periodStart,
+        plan.account,
+        plan.kind,
+        plan.annualAmount,
+        plan.planAdjustment,
+        plan.planReason,
+        plan.updatedAt,
+      ]),
     cashOverrideRows: Object.entries(args.data.cashOverride)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([month, value]) => [month, value.revenue, value.expense]),
@@ -1190,7 +1205,7 @@ export function prepareRestoreWriteSet(args: {
         entry.transitTo ?? null,
         entry.transitRound ? 1 : 0,
         entry.receiptWaived ? 1 : 0,
-        // 0050。旧バックアップ由来は null(未設定)のまま入れる
+        // 0051。旧バックアップ由来は null(未設定)のまま入れる
         entry.owner ?? null,
         entry.transitPurpose ?? null,
       ]),
@@ -1248,6 +1263,7 @@ export function prepareRestoreWriteSet(args: {
     txEditsDestinationEmpty: args.existingDestinationRowCounts?.txEdits === 0,
     institutionOwnersDestinationEmpty: args.existingDestinationRowCounts?.institutionOwners === 0,
     budgetsDestinationEmpty: args.existingDestinationRowCounts?.budgets === 0,
+    budgetPlansDestinationEmpty: args.existingDestinationRowCounts?.budgetPlans === 0,
     cashOverridesDestinationEmpty: args.existingDestinationRowCounts?.cashOverrides === 0,
   };
 }
@@ -1267,6 +1283,7 @@ export async function restoreWriteSetFingerprint(writeSet: RestoreWriteSet): Pro
     txEditsDestinationEmpty: _editsEmpty,
     institutionOwnersDestinationEmpty: _ownersEmpty,
     budgetsDestinationEmpty: _budgetsEmpty,
+    budgetPlansDestinationEmpty: _budgetPlansEmpty,
     cashOverridesDestinationEmpty: _overridesEmpty,
     ...rows
   } = writeSet;
@@ -1517,6 +1534,16 @@ export function restoreCommitStatements(args: {
     ...insertJsonRows(database, 'budgets', ['account', 'monthly_amount'], writeSet.budgetRows, [
       { column: 'user_id', value: userId },
     ]),
+    ...(writeSet.budgetPlansDestinationEmpty
+      ? []
+      : [database.prepare('DELETE FROM budget_plans WHERE user_id=?').bind(userId)]),
+    ...insertJsonRows(
+      database,
+      'budget_plans',
+      ['period_start', 'account', 'kind', 'annual_amount', 'plan_adjustment', 'plan_reason', 'updated_at'],
+      writeSet.budgetPlanRows,
+      [{ column: 'user_id', value: userId }],
+    ),
     ...(writeSet.cashOverridesDestinationEmpty
       ? []
       : [database.prepare('DELETE FROM cash_overrides WHERE user_id=?').bind(userId)]),

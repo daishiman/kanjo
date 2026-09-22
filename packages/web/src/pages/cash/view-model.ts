@@ -300,7 +300,7 @@ export function transitError(n: CashNormalDraft, t: CashTransitDraft): string | 
 
 /**
  * 編集: 行の値を入力欄の形へ戻す。交通費の行は交通費カードへ、片道運賃は往復なら半分に戻す。
- * 名義が未設定 (0050 より前の行) は未選択にして、保存の前に選ばせる。
+ * 名義が未設定 (0051 より前の行) は未選択にして、保存の前に選ばせる。
  */
 export function entryToForms(
   e: CashEntry,

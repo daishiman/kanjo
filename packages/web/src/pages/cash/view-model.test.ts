@@ -112,7 +112,7 @@ describe('入力欄', () => {
     expect(transitError({ ...per, categoryMajor: '交通費' }, t)).toBeNull();
   });
 
-  it('担当者が未設定の行 (0050 より前) は未選択で編集に入る', () => {
+  it('担当者が未設定の行 (0051 より前) は未選択で編集に入る', () => {
     const forms = entryToForms(entry({ owner: null }), emptyNormalDraft('2026-08-26'));
     expect(forms.tab).toBe('normal');
     expect(forms.normal.owner).toBe('');

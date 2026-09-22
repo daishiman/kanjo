@@ -37,7 +37,7 @@
 | S4-b | PASS | `pnpm test`(api 統合) | 18:13:27–18:48:18 | bulk-delete と bulk-restore に他人の id を 1 件混ぜる 2 件が合格 |
 | S4-c | PASS | `pnpm test`(api 統合、core) | 18:13:27–18:48:18 | 「不正な入力は 400」と、core「allowUnset(API の互換)は…」が合格。後者は、担当者と業務の目的を API で任意にしても値の検査は画面と同じであることを確かめる |
 | S4-d | PASS | `pnpm test`(api 統合) | 18:13:27–18:48:18 | 「PUT: 削除中の行は編集できず 404 で、編集で復活もしない」が合格 |
-| S5-a | PASS | `pnpm test`(api `cash-migration-0050.test.ts`) | 18:13:27–18:48:18 | 既存行の更新 0 件で合格 |
+| S5-a | PASS | `pnpm test`(api `cash-migration-0051.test.ts`) | 18:13:27–18:48:18 | 既存行の更新 0 件で合格 |
 | S5-b | PASS | `pnpm test`(api `scheduled-maintenance-budget.test.ts`) | 18:13:27–18:48:18 | `total === PLAN_MAX (49)` で合格 |
 | S5-c | PASS | `verify:full` の各段、`pnpm skills:test`、`build:bundle` の直後の `check:js-budget` | 17:50:38–18:58:40 | 全段が合格(下の「品質ゲート」)。打ち切られた 2 件は単独で合格 |
 | S5-d | PASS | `pnpm test`(web `cash-duplicate.dom.test.tsx`・`cash-transit-regression.test.ts`・DOM) | 18:13:27–18:48:18 | 重複の確認、交通費の入替と往復、編集の保存が合格 |
@@ -63,6 +63,18 @@ S1〜S5 のすべての項目が PASS で、一部だけ満たした項目は無
 | `check:mobile-layout` / `check:financial-routes` / `check:ai-screen` / `check:analysis-hub` | 17:50:38–18:07:16 | 合格 |
 | `check:cash-screen` | 18:11:51–18:12:11 | 合格(1 回目の不合格と原因は design-decisions §8) |
 | `pnpm run preview:smoke` | 18:07:57–18:09:33 | 合格 |
+
+## main との merge 後の再検証(P13)
+
+`main`(0ed2d8c、予算画面 #67 を含む)を merge した後に、衝突を解いた箇所へ当たる検査だけを流し直した(MVP のため最小限)。
+
+| 見つけたこと | 直し方 | 流し直した検査 |
+|---|---|---|
+| migration 0050 を予算(`0050_budget_plans.sql`)が先に使っていた | 現金を `0051_cash_entry_owner_soft_delete.sql` へ繰り上げた(design-decisions OI-01) | `cash-migration-0051.test.ts`・`budget-migration-0050.test.ts`・`deletion-schema.test.ts`・`schema-guard.test.ts` |
+| 復元 snapshot の束縛数を予算と現金が別々に 20 にし、merge で衝突せず ? 21 個に 20 個を渡していた(取込と復元が 500) | 束縛数を SQL の `?` から数える形にした(design-decisions §5) | `import-lifecycle.test.ts`・`cash-screen.integration.test.ts` 106 件 |
+| main の checkbox 契約(`type="checkbox"` は `SelectionCheckbox.tsx` だけ) | 往復・ページ全選択・行選択を `SelectionCheckbox` へ寄せた | `selection-checkbox-source-contract.test.ts` と `pages/cash`・`components` の 109 件 |
+
+このほか `pnpm typecheck`・`pnpm lint`(graph-lineage 150 ノードを含む)・core 1,046 件・web の予算と Layout の 50 件・api 全件(65 ファイル・907 件)が合格した。
 
 ## phase ごとの記録の置き場所
 

@@ -104,7 +104,7 @@ P05 の実装後に、全テスト・型検査・lint・skill テストを実行
 - Consumed artifacts:
 - packages/core/src/cash-screen.ts
 - packages/api/src/routes/cash.ts
-- migrations/0050_cash_entry_owner_soft_delete.sql
+- migrations/0051_cash_entry_owner_soft_delete.sql
 - packages/web/src/pages/cash/
 - Write scope/touches:
 - docs/cash-screen/design-decisions.md

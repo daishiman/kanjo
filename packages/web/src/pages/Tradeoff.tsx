@@ -9,6 +9,7 @@ import { Button } from '../components/Button.js';
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { PageHeader, PageState } from '../components/Page.js';
+import { SelectionCheckbox } from '../components/SelectionCheckbox.js';
 import { Term } from '../components/Term.js';
 import { yen, yenS } from '../format.js';
 import { usePeriod } from '../period.js';
@@ -127,9 +128,10 @@ export function TradeoffPage() {
           <tbody>
             {d.candidates.map((c) => (
               <tr key={c.id}>
-                <td style={{ width: 30 }}>
-                  <input
-                    type="checkbox"
+                <td className="selection-cell">
+                  <SelectionCheckbox
+                    label={`${c.label}を選択`}
+                    labelHidden
                     checked={checked.has(c.id)}
                     onChange={(e) => {
                       const next = new Set(checked);

@@ -478,7 +478,7 @@ describe('不正な入力は 400', () => {
   });
 });
 
-describe('0050 より前の SPA の本文(担当者・業務の目的を持たない)を通す互換', () => {
+describe('0051 より前の SPA の本文(担当者・業務の目的を持たない)を通す互換', () => {
   const stored = async (id: number) =>
     d1.prepare('SELECT owner, transit_purpose FROM cash_entries WHERE id = ?').bind(id).first();
   const transit = { transitFrom: '架空駅A', transitTo: '架空駅B' };

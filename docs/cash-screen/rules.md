@@ -22,8 +22,8 @@
 
 | # | 規則 | 実装 | テスト |
 |---|---|---|---|
-| R10 | 担当者が `NULL` の既存行(0050 より前)は「未設定」と出し、編集では未選択にして保存の前に選ばせる | `CASH_OWNER_UNSET_LABEL` / web `entryToForms` | view-model「担当者が未設定の行 (0050 より前) は未選択で編集に入る」 |
-| R11 | 担当者の既定は事業なら `business`、個人なら未選択。事業 / 個人を切り替えたら、既定のままの担当者だけを寄せる。画面では必須。API では担当者と業務の目的を任意にする(0050 より前の SPA の本文を通す互換)。送られれば画面と同じ規則で検査し、POST で無ければ NULL(R10 の「未設定」)、PUT で無ければ今の値を保つ | web `defaultOwnerFor` / `changeSide`。core `validateCashInput(input, { allowUnset })`。API は `z.enum(OWNER_VALUES).optional()` と `keepUnsent` | view-model「事業 / 個人を切り替えると…」、core「allowUnset(API の互換)は…」、統合「0050 より前の SPA の本文…を通す互換」 |
+| R10 | 担当者が `NULL` の既存行(0051 より前)は「未設定」と出し、編集では未選択にして保存の前に選ばせる | `CASH_OWNER_UNSET_LABEL` / web `entryToForms` | view-model「担当者が未設定の行 (0051 より前) は未選択で編集に入る」 |
+| R11 | 担当者の既定は事業なら `business`、個人なら未選択。事業 / 個人を切り替えたら、既定のままの担当者だけを寄せる。画面では必須。API では担当者と業務の目的を任意にする(0051 より前の SPA の本文を通す互換)。送られれば画面と同じ規則で検査し、POST で無ければ NULL(R10 の「未設定」)、PUT で無ければ今の値を保つ | web `defaultOwnerFor` / `changeSide`。core `validateCashInput(input, { allowUnset })`。API は `z.enum(OWNER_VALUES).optional()` と `keepUnsent` | view-model「事業 / 個人を切り替えると…」、core「allowUnset(API の互換)は…」、統合「0051 より前の SPA の本文…を通す互換」 |
 
 ## 削除と戻し(API)
 

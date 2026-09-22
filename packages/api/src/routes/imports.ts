@@ -41,6 +41,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { AuditValidationError } from '../audit-log.js';
 import type { AuthEnv } from '../auth.js';
+import { budgetPlansBackupSchema } from '../budget-plan-schema.js';
 import * as s from '../db/schema.js';
 import { computeImportDiff, diffBaselineFromDataset, importResolutionFingerprint } from '../import-diff.js';
 import {
@@ -115,7 +116,7 @@ const restoredCashEntrySchema = z
     transitTo: z.string().nullable().default(null),
     transitRound: z.boolean().default(false),
     receiptWaived: z.boolean().default(false),
-    // 0050 の名義と業務の目的。旧バックアップには無いので「未設定」で補う
+    // 0051 の名義と業務の目的。旧バックアップには無いので「未設定」で補う
     owner: z.enum(OWNER_VALUES).nullable().default(null),
     transitPurpose: z.string().max(60).nullable().default(null),
   })
@@ -888,6 +889,14 @@ const prepareJsonApplication = async (args: {
   // source and rebuild derived aggregates from the authoritative raw sources.
   // 旧snapshotにtxSplitsが無い場合も、移行先の現在値を残さずcanonical集合を空へ置換する。
   candidate.txSplits = [];
+  // 0050: budgetPlans の無い旧バックアップは、budgets と同じく移行先の行を残さない (BR-24)
+  if (
+    Object.prototype.hasOwnProperty.call(args.json, 'budgetPlans') &&
+    !budgetPlansBackupSchema.safeParse(args.json.budgetPlans).success
+  ) {
+    throw new InvalidRestoreSettingsError();
+  }
+  candidate.budgetPlans = [];
   importJSON(candidate, structuredClone(args.json));
   const sourceVendorNames = new Set(candidate.subs.vendors);
   if (
@@ -1456,6 +1465,7 @@ importsRoute.post('/imports', async (c) => {
       txEdits: 0,
       institutionOwners: 0,
       budgets: 0,
+      budgetPlans: 0,
       cashOverrides: 0,
       cashEntries: 0,
     },
@@ -1987,6 +1997,7 @@ importsRoute.post('/restore', async (c) => {
       txEdits: 0,
       institutionOwners: 0,
       budgets: 0,
+      budgetPlans: 0,
       cashOverrides: 0,
       cashEntries: 0,
     },

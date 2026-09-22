@@ -132,7 +132,7 @@ N/A: 本章は計算資源と保存先を持たない。夜間の D1 予算は `
 
 #### IaC and delivery
 
-検証の入口は既存の CI と `verify:full` だけで、`packages/web/package.json` に `check:cash-screen` (`KANJO_VISUAL_SCOPE=cash node scripts/check-financial-visuals.mjs`) を足し、ルートの `verify:full` の検査列に加える。migration 0050 の反映は既存の Migrate → Deploy の手順に載せる。
+検証の入口は既存の CI と `verify:full` だけで、`packages/web/package.json` に `check:cash-screen` (`KANJO_VISUAL_SCOPE=cash node scripts/check-financial-visuals.mjs`) を足し、ルートの `verify:full` の検査列に加える。migration 0051 の反映は既存の Migrate → Deploy の手順に載せる。
 
 #### Secrets and access
 
@@ -140,11 +140,11 @@ N/A: 検証と記録に秘密情報は要らない。テストのセッション
 
 #### Reliability and recovery
 
-既存のテスト・`skills:test`・初期 JS 予算・`check:cash-screen` のどれかが赤になったら差し戻す。差し戻しは Worker と web の配信を戻すだけで、0050 の列は落とさない。
+既存のテスト・`skills:test`・初期 JS 予算・`check:cash-screen` のどれかが赤になったら差し戻す。差し戻しは Worker と web の配信を戻すだけで、0051 の列は落とさない。
 
 #### Infrastructure verification
 
-`verify:full` の緑と、Migrate の手順で 0050 が `d1_migrations` に記録されることを確かめる。夜間ログに `cash_soft_delete_purge` の件数が出ることを本番の初回実行で確かめる。
+`verify:full` の緑と、Migrate の手順で 0051 が `d1_migrations` に記録されることを確かめる。夜間ログに `cash_soft_delete_purge` の件数が出ることを本番の初回実行で確かめる。
 
 ## Architecture decisions
 

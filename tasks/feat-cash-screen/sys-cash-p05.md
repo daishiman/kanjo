@@ -2,7 +2,7 @@
 graph_node_id: "SYS-CASH-P05"
 artifact_kind: "task"
 artifact_subtypes: []
-title: "cash-screen 純関数・論理削除と復元の 4 経路・migration 0050・夜間の完全消去・現金入力画面の分割と旧操作の移設の最終実装"
+title: "cash-screen 純関数・論理削除と復元の 4 経路・migration 0051・夜間の完全消去・現金入力画面の分割と旧操作の移設の最終実装"
 project_id: "feature-package-feat-cash-screen"
 domain: "frontend"
 status: "active"
@@ -23,7 +23,7 @@ created_at: "2026-09-22T01:43:10Z"
 updated_at: "2026-09-22T01:43:10Z"
 depends_on: ["SYS-CASH-P04"]
 related_nodes: ["arch-cash-auth", "arch-cash-backend", "arch-cash-database", "arch-cash-frontend", "arch-cash-infrastructure", "arch-cash-maintenance-ops", "arch-cash-security", "arch-cash-ui-ux", "spec-cash-screen"]
-resource_scope: ["packages/core/src/cash-screen.ts", "packages/core/src/cash.ts", "packages/core/src/dataset.ts", "packages/core/src/deletion.ts", "packages/core/src/index.ts", "packages/api/src/routes/cash.ts", "packages/api/src/routes/imports.ts", "packages/api/src/routes/settings.ts", "packages/api/src/import-lifecycle.ts", "packages/api/src/store.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/index.ts", "packages/api/src/scheduled-maintenance-budget.ts", "packages/api/src/deletion-lifecycle.ts", "packages/api/src/canonical-mutation-fence.ts", "packages/api/src/audit-log.ts", "migrations/0050_cash_entry_owner_soft_delete.sql", "packages/web/src/api.ts", "packages/web/src/pages/Cash.tsx", "packages/web/src/pages/cash/", "packages/web/src/AuthenticatedApp.tsx", "packages/web/src/routeMetadata.ts", "packages/web/src/styles.css", "packages/web/package.json", "packages/web/src/cash-duplicate.dom.test.tsx", "packages/web/src/cash-transit-regression.test.ts", "packages/web/src/backup-restore.dom.test.tsx", "packages/web/src/settings-restore.dom.test.tsx", "package.json"]
+resource_scope: ["packages/core/src/cash-screen.ts", "packages/core/src/cash.ts", "packages/core/src/dataset.ts", "packages/core/src/deletion.ts", "packages/core/src/index.ts", "packages/api/src/routes/cash.ts", "packages/api/src/routes/imports.ts", "packages/api/src/routes/settings.ts", "packages/api/src/import-lifecycle.ts", "packages/api/src/store.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/index.ts", "packages/api/src/scheduled-maintenance-budget.ts", "packages/api/src/deletion-lifecycle.ts", "packages/api/src/canonical-mutation-fence.ts", "packages/api/src/audit-log.ts", "migrations/0051_cash_entry_owner_soft_delete.sql", "packages/web/src/api.ts", "packages/web/src/pages/Cash.tsx", "packages/web/src/pages/cash/", "packages/web/src/AuthenticatedApp.tsx", "packages/web/src/routeMetadata.ts", "packages/web/src/styles.css", "packages/web/package.json", "packages/web/src/cash-duplicate.dom.test.tsx", "packages/web/src/cash-transit-regression.test.ts", "packages/web/src/backup-restore.dom.test.tsx", "packages/web/src/settings-restore.dom.test.tsx", "package.json"]
 purpose: null
 goal: null
 scope_in: null
@@ -47,7 +47,7 @@ completion_evidence: {"completed_at": null, "evidence_refs": [], "policy": "link
 implementation_readiness: {"checked_at": "2026-09-22T00:48:20Z", "missing_sections": [], "status": "complete"}
 ---
 
-# cash-screen 純関数・論理削除と復元の 4 経路・migration 0050・夜間の完全消去・現金入力画面の分割と旧操作の移設の最終実装
+# cash-screen 純関数・論理削除と復元の 4 経路・migration 0051・夜間の完全消去・現金入力画面の分割と旧操作の移設の最終実装
 
 ## Machine-readable registration fields
 
@@ -84,7 +84,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Frontend: applicable: 17-cash.png の全構成要素 (領収書欄を除く)・下書き・インライン削除確認・元に戻すトースト・下部固定バーを実装する
 - Backend: applicable: cash-screen 純関数と夜間の完全消去 job を実装する
 - API: applicable: restore / bulk-delete / bulk-restore の新設と GET / POST / PUT / DELETE の変更を実装する
-- Data: applicable: migration 0050 と schema.ts と runtimeSchemaGuard と読取経路 5 本の条件を揃える
+- Data: applicable: migration 0051 と schema.ts と runtimeSchemaGuard と読取経路 5 本の条件を揃える
 - Infrastructure: N/A: binding と配信構成は据え置き
 - Security: applicable: 他人の id の 404 と zod の入力検証 400 を実装する
 - Quality: applicable: P04 の失敗テストがすべて緑になる
@@ -94,7 +94,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 ## Architecture and deploy unit
 
 - Architecture decisions: arch-cash-auth, arch-cash-backend, arch-cash-database, arch-cash-frontend, arch-cash-infrastructure, arch-cash-maintenance-ops, arch-cash-security, arch-cash-ui-ux, spec-cash-screen
-- Deploy unit/environment: web ビルドと Worker と D1 migration (0050 の列と索引の追加のみ)
+- Deploy unit/environment: web ビルドと Worker と D1 migration (0051 の列と索引の追加のみ)
 - Compatibility/migration/backfill: cash_entries への owner・transit_purpose・deleted_at と索引の追加のみ。既存行の書き換えと backfill は 0 件。番号は着手時に origin/main を fetch して確定する
 
 ## 成果物
@@ -102,13 +102,13 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Produced artifacts:
 - packages/core/src/cash-screen.ts
 - packages/api/src/routes/cash.ts
-- migrations/0050_cash_entry_owner_soft_delete.sql
+- migrations/0051_cash_entry_owner_soft_delete.sql
 - packages/web/src/pages/cash/
 - Consumed artifacts:
 - docs/cash-screen/design-decisions.md
 - packages/core/test/cash-screen.test.ts
 - packages/api/src/cash-screen.integration.test.ts
-- packages/api/src/cash-migration-0050.test.ts
+- packages/api/src/cash-migration-0051.test.ts
 - packages/web/src/pages/cash/cash-screen.dom.test.tsx
 - Write scope/touches:
 - packages/core/src/cash-screen.ts
@@ -128,7 +128,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - packages/api/src/deletion-lifecycle.ts
 - packages/api/src/canonical-mutation-fence.ts
 - packages/api/src/audit-log.ts
-- migrations/0050_cash_entry_owner_soft_delete.sql
+- migrations/0051_cash_entry_owner_soft_delete.sql
 - packages/web/src/api.ts
 - packages/web/src/pages/Cash.tsx
 - packages/web/src/pages/cash/
@@ -171,7 +171,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - cash-screen 純関数が P04 の core テストの境界値をすべて満たす。
 - DELETE が論理削除になり、restore / bulk-restore で同じ id のまま戻り、一括は 1 件でも他人の id を含めば何も変えない。
 - 削除中の行が読取経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) から外れ、JSON 復元の件数判定だけは削除中も数え、import-lifecycle.ts の restoreCashEntryStatements が owner と transit_purpose を復元する。
-- migration 0050 が追加のみで runtimeSchemaGuard の期待 head が 0050 になり、夜間の完全消去 job が SCHEDULED_D1_QUERY_PLAN_MAX 49 の内に収まる。
+- migration 0051 が追加のみで runtimeSchemaGuard の期待 head が 0051 になり、夜間の完全消去 job が SCHEDULED_D1_QUERY_PLAN_MAX 49 の内に収まる。
 - 現金入力画面が参照画像の構成要素 (領収書欄を除く) をすべて描画し、選択中のタブ・月・絞り込み・ページが URL から復元される。
 - 旧 Cash.tsx の操作 (通常入力・交通費の入替と往復・重複の確認・編集・削除) がすべて新しい構成から実行でき、package.json の verify:full に check:cash-screen が入っている。
 - Automated commands:
@@ -182,13 +182,13 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Required evidence:
 - packages/core/src/cash-screen.ts
 - packages/api/src/routes/cash.ts
-- migrations/0050_cash_entry_owner_soft_delete.sql
+- migrations/0051_cash_entry_owner_soft_delete.sql
 - packages/web/src/pages/cash/
 
 ## Rollout and rollback
 
 - Rollout: 単一の PR で配信し、default branch への merge をもって反映する
-- Rollback trigger and steps: 本 task のコミットを revert する。0050 は列と索引の追加のみで既存行を書き換えないため、列が残っても旧画面は動く。巻き戻しは対称でなく、旧 Worker では削除中の行が一覧と集計に戻って見えるので、巻き戻す前に削除中の行が無いことを確かめる。列の削除は行わない。
+- Rollback trigger and steps: 本 task のコミットを revert する。0051 は列と索引の追加のみで既存行を書き換えないため、列が残っても旧画面は動く。巻き戻しは対称でなく、旧 Worker では削除中の行が一覧と集計に戻って見えるので、巻き戻す前に削除中の行が無いことを確かめる。列の削除は行わない。
 
 ## Handoff
 

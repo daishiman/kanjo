@@ -11,6 +11,7 @@ import {
   api,
 } from '../api.js';
 import { monthLabel, yen } from '../format.js';
+import { clearAllBudgetDrafts } from '../pages/budget/draft.js';
 import { clearAllCashDrafts } from '../pages/cash/draft.js';
 import { clearAllLiabilityDrafts } from '../pages/statements/liability-draft.js';
 import { PeriodPicker, usePeriod } from '../period.js';
@@ -149,6 +150,7 @@ function UserMenu() {
       await api('/auth/logout', { method: 'POST' });
       // 同じブラウザを次に使う人へ負債・現金の下書きを残さない (spec-statements-screen §4 / spec-cash-screen FR-8)
       clearAllLiabilityDrafts();
+      clearAllBudgetDrafts();
       clearAllCashDrafts();
       window.dispatchEvent(new Event(AUTH_EVENT));
     } catch {

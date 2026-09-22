@@ -151,7 +151,7 @@ const entrySchema = z
       .nullable()
       .default(null)
       .transform((v) => (v === null || v.trim() === '' ? null : v.trim())),
-    /** 任意(0050 より前の SPA の本文を通す互換)。無ければ POST は NULL、PUT は今の値を保つ */
+    /** 任意(0051 より前の SPA の本文を通す互換)。無ければ POST は NULL、PUT は今の値を保つ */
     owner: z.enum(OWNER_VALUES, { message: '担当者を選んでください' }).optional(),
     /** 交通費の区間(任意)。片方だけの入力は validateCashInput が弾く */
     transitFrom: z.string().nullable().default(null),
@@ -289,7 +289,7 @@ const NEW_CASH_ENTRY_PLAN_ID = 0;
 
 /**
  * PUT で担当者・業務の目的が送られなかったときは今の値を保つ。
- * 古い SPA が編集しただけで、0050 以後に付けた値が NULL に戻らないようにする。
+ * 古い SPA が編集しただけで、0051 以後に付けた値が NULL に戻らないようにする。
  */
 const keepUnsent = (b: EntryInput, cur: typeof s.cashEntries.$inferSelect) => ({
   owner: b.owner ?? cur.owner,

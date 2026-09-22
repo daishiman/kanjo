@@ -6,6 +6,7 @@
  * - 同月に原本CSVがあればそちらを正とし、原本が無い月だけ baseline + 現金とする。
  */
 import {
+  type BudgetPlanRow,
   type CashEntry,
   DEFAULT_RULES,
   DEFAULT_STAT_MIN_MONTHS,
@@ -355,11 +356,65 @@ export const LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT = 10;
 /** 分割の内訳まで読むloadDatasetのSELECT数。集計を書き直す経路はこちら。 */
 export const LOAD_DATASET_QUERY_COUNT_WITH_SPLITS = LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT + 1;
 
+/** 要求時刻の日本時間の年月 (`YYYY-MM`)。予算の「今月」(BR-23) に使う */
+export function jstMonth(now: Date): string {
+  return new Date(now.getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 7);
+}
+
+/**
+ * 月額の予算 (budgets) と期間別の年額 (budget_plans, 0050) を 1 statement で読む。
+ * loadDataset の SELECT 数は取込の D1 query 上限に効くので、表を足しても本数は増やさない。
+ */
+async function loadBudgetRows(
+  db: Db,
+  userId: string,
+): Promise<{ budgets: Dataset['budgets']; plans: BudgetPlanRow[] }> {
+  const result = await db.$client
+    .prepare(
+      `SELECT 'budget' AS source, account, monthly_amount AS amount, NULL AS period_start, NULL AS kind,
+              NULL AS plan_adjustment, NULL AS plan_reason, NULL AS updated_at
+         FROM budgets WHERE user_id=?
+       UNION ALL
+       SELECT 'plan', account, annual_amount, period_start, kind, plan_adjustment, plan_reason, updated_at
+         FROM budget_plans WHERE user_id=?
+       ORDER BY source, period_start, account`,
+    )
+    .bind(userId, userId)
+    .all<{
+      source: string;
+      account: string;
+      amount: number | null;
+      period_start: string | null;
+      kind: string | null;
+      plan_adjustment: number | null;
+      plan_reason: string | null;
+      updated_at: string | null;
+    }>();
+  const budgets: Dataset['budgets'] = {};
+  const plans: BudgetPlanRow[] = [];
+  for (const row of result.results) {
+    if (row.source === 'budget') {
+      if (row.amount != null) budgets[row.account] = row.amount;
+      continue;
+    }
+    plans.push({
+      periodStart: row.period_start ?? '',
+      account: row.account,
+      kind: row.kind === 'income' ? 'income' : 'expense',
+      annualAmount: row.amount ?? 0,
+      planAdjustment: row.plan_adjustment ?? 0,
+      planReason: row.plan_reason,
+      updatedAt: row.updated_at ?? '',
+    });
+  }
+  return { budgets, plans };
+}
+
 export async function loadDataset(
   db: Db,
   userId: string,
   cashEntriesSnapshot?: ReadonlyArray<CashEntry>,
-  options: { withSplits?: boolean; loadSplitRows?: boolean } = {},
+  options: { withSplits?: boolean; loadSplitRows?: boolean; now?: Date } = {},
 ): Promise<Dataset> {
   const withSplits = options.withSplits ?? true;
   // canonical mutationの事前計画は、生の親明細を保ったまま分割metadataも要る。
@@ -388,7 +443,7 @@ export async function loadDataset(
       .orderBy(asc(s.mfTransactions.month), asc(s.mfTransactions.date)),
     loadOrderedRuleRows(db, userId),
     db.select().from(s.txEdits).where(eq(s.txEdits.userId, userId)),
-    db.select().from(s.budgets).where(eq(s.budgets.userId, userId)),
+    loadBudgetRows(db, userId),
     db.select().from(s.cashOverrides).where(eq(s.cashOverrides.userId, userId)),
     db.select().from(s.unrecordedMonths).where(eq(s.unrecordedMonths.userId, userId)),
     db.select().from(s.institutionOwners).where(eq(s.institutionOwners.userId, userId)),
@@ -476,9 +531,9 @@ export async function loadDataset(
   instRows.forEach((r) => {
     data.institutionOwners[r.institution] = r.owner;
   });
-  budgetRows.forEach((r) => {
-    if (r.monthlyAmount != null) data.budgets[r.account] = r.monthlyAmount;
-  });
+  data.budgets = budgetRows.budgets;
+  data.budgetPlans = budgetRows.plans;
+  data.budgetAsOf = jstMonth(options.now ?? new Date());
   cashRows.forEach((r) => {
     data.cashOverride[r.month] = { revenue: r.revenue ?? 0, expense: r.expense ?? 0 };
   });
@@ -629,6 +684,8 @@ interface BackupSourceSnapshot {
   institutionOwners: Dataset['institutionOwners'];
   vendors: SubVendorWithReview[];
   budgets: Dataset['budgets'];
+  /** 0050: 期間別の年額予算。月額の budgets とは別の正本 */
+  budgetPlans: BudgetPlanRow[];
   cashOverride: Dataset['cashOverride'];
   unrecordedExpMonths: string[];
   cashEntries: CashEntry[];
@@ -722,8 +779,9 @@ export interface ImportRestoreSettingsSnapshot {
     txEdits: number;
     institutionOwners: number;
     budgets: number;
+    budgetPlans: number;
     cashOverrides: number;
-    /** 0050: 論理削除中を含む現金明細の件数。JSON 復元で現金明細を入れてよいかの判定に使う */
+    /** 0051: 論理削除中を含む現金明細の件数。JSON 復元で現金明細を入れてよいかの判定に使う */
     cashEntries: number;
   };
 }
@@ -821,6 +879,10 @@ UNION ALL
 SELECT 'sub_vendor_exclusion', id, NULL, NULL,
        partner, vendor_key, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendor_exclusions WHERE user_id = ?
+UNION ALL
+SELECT 'budget_plan', NULL, plan_adjustment, annual_amount,
+       account, period_start, kind, plan_reason, updated_at, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM budget_plans WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
@@ -848,7 +910,7 @@ ORDER BY source, rank, id, v1, v2`;
 
 /** export用canonical rowsを、単一D1 read statementから型付きsnapshotへ変換する。 */
 async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupSourceSnapshot> {
-  const params = Array.from({ length: 21 }, () => userId);
+  const params = Array.from({ length: 22 }, () => userId);
   const result = await db.$client
     .prepare(BACKUP_SNAPSHOT_SQL)
     .bind(...params)
@@ -951,6 +1013,15 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     }));
   const budgets: Dataset['budgets'] = {};
   for (const row of bySource('budget')) if (row.amount != null) budgets[row.v1 ?? ''] = row.amount;
+  const budgetPlans: BudgetPlanRow[] = bySource('budget_plan').map((row) => ({
+    periodStart: row.v2 ?? '',
+    account: row.v1 ?? '',
+    kind: row.v3 === 'income' ? 'income' : 'expense',
+    annualAmount: row.amount ?? 0,
+    planAdjustment: row.rank ?? 0,
+    planReason: row.v4,
+    updatedAt: row.v5 ?? '',
+  }));
   const cashOverride: Dataset['cashOverride'] = {};
   for (const row of bySource('cash_override')) {
     cashOverride[row.v1 ?? ''] = { revenue: row.amount ?? 0, expense: row.rank ?? 0 };
@@ -975,7 +1046,7 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
         transitTo: row.v11,
         transitRound: row.v12 === 1,
         receiptWaived: row.v13 === 1,
-        // 0050。cash 行で未使用だった v14/v15 に載せ、snapshot の列数を増やさない
+        // 0051。cash 行で未使用だった v14/v15 に載せ、snapshot の列数を増やさない
         owner: normalizeOwner(row.v14 == null ? null : String(row.v14)),
         transitPurpose: row.v15 ?? null,
       }),
@@ -1062,6 +1133,7 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     institutionOwners,
     vendors,
     budgets,
+    budgetPlans,
     cashOverride,
     unrecordedExpMonths,
     cashEntries,
@@ -1083,9 +1155,7 @@ export async function loadImportRestoreSettingsSnapshot(
   db: Db,
   userId: string,
 ): Promise<ImportRestoreSettingsSnapshot> {
-  const result = await db.$client
-    .prepare(
-      `SELECT * FROM (
+  const sql = `SELECT * FROM (
        SELECT 'norm' AS source, raw AS v1, norm AS v2, NULL AS amount
          FROM account_norm_map WHERE user_id=?
        UNION ALL
@@ -1148,15 +1218,18 @@ export async function loadImportRestoreSettingsSnapshot(
          'txEdits', (SELECT count(*) FROM tx_edits WHERE user_id=?),
          'institutionOwners', (SELECT count(*) FROM institution_owners WHERE user_id=?),
          'budgets', (SELECT count(*) FROM budgets WHERE user_id=?),
+         'budgetPlans', (SELECT count(*) FROM budget_plans WHERE user_id=?),
          'cashOverrides', (SELECT count(*) FROM cash_overrides WHERE user_id=?),
          -- 論理削除中も数える。id が残っているので、復元で同じ id を入れると衝突する
          'cashEntries', (SELECT count(*) FROM cash_entries WHERE user_id=?)
        ), NULL, NULL
        )
-       ORDER BY source, v1, v2`,
-    )
-    // 上の SELECT が ? を置いた順と同じ数だけ渡す。数え間違いは実行時まで出ない
-    .bind(...Array.from({ length: 20 }, () => userId))
+       ORDER BY source, v1, v2`;
+  // ? はすべて user_id なので、SQL から数えて同じ数だけ渡す。件数を手で書くと、
+  // 別々のブランチが同じ数へ増やしたときに merge が衝突せず、実行時まで壊れに気づけない
+  const result = await db.$client
+    .prepare(sql)
+    .bind(...Array.from({ length: sql.split('?').length - 1 }, () => userId))
     .all<{ source: string; v1: string | null; v2: string | null; amount: number | null }>();
   const normMap: Record<string, string> = {};
   for (const row of result.results.filter((row) => row.source === 'norm')) {
@@ -1231,6 +1304,7 @@ export async function loadImportRestoreSettingsSnapshot(
     txEdits: 0,
     institutionOwners: 0,
     budgets: 0,
+    budgetPlans: 0,
     cashOverrides: 0,
     cashEntries: 0,
   };
@@ -1258,6 +1332,7 @@ function datasetFromBackupSnapshot(snapshot: BackupSourceSnapshot): Dataset {
   data.edits = snapshot.edits;
   data.institutionOwners = snapshot.institutionOwners;
   data.budgets = snapshot.budgets;
+  data.budgetPlans = snapshot.budgetPlans;
   data.cashOverride = snapshot.cashOverride;
   data.unrecordedExpMonths = [...snapshot.unrecordedExpMonths];
   data.txSplits = [...snapshot.txSplits];

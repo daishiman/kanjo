@@ -9,6 +9,7 @@ import type { CashEntry, Owner } from '../../api.js';
 import { Button } from '../../components/Button.js';
 import { DataTable } from '../../components/DataTable.js';
 import { PageState } from '../../components/Page.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import {
   CASH_LIMITS,
   CASH_OWNER_UNSET_LABEL,
@@ -268,9 +269,9 @@ export function CashList(p: CashListProps) {
                     columns={[
                       {
                         label: (
-                          <input
-                            type="checkbox"
-                            aria-label="このページをすべて選択"
+                          <SelectionCheckbox
+                            label="このページをすべて選択"
+                            labelHidden
                             checked={allOnPage}
                             disabled={selectable.length === 0}
                             onChange={(e) => p.onTogglePage(selectable, e.target.checked)}
@@ -294,9 +295,9 @@ export function CashList(p: CashListProps) {
                       return (
                         <tr key={e.id} className={p.editingId === e.id ? 'is-editing' : undefined}>
                           <td>
-                            <input
-                              type="checkbox"
-                              aria-label={`${row.date} ${row.description} を選択`}
+                            <SelectionCheckbox
+                              label={`${row.date} ${row.description} を選択`}
+                              labelHidden
                               disabled={sample}
                               checked={p.selected.has(e.id)}
                               onChange={(ev) => p.onToggle(e.id, ev.target.checked)}

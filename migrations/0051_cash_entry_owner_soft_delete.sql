@@ -1,4 +1,4 @@
--- Migration number: 0050  現金明細の名義・業務の目的・論理削除
+-- Migration number: 0051  現金明細の名義・業務の目的・論理削除
 --
 -- 追加だけを行う。既存行は1件も書き換えない(backfill 0件)。
 -- owner           : 名義。NULL は「未設定」(旧画面で記帳した行)。値は OWNER_VALUES の3値だけ。

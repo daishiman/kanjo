@@ -8,6 +8,7 @@
 import { type FormEvent, useId } from 'react';
 import type { Candidates } from '../../api.js';
 import { Button } from '../../components/Button.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { Term } from '../../components/Term.js';
 import {
   type CandidatesState,
@@ -162,10 +163,12 @@ export function TransitEntryCard({
               onChange={(e) => set({ oneWay: e.target.value.replace(/[^\d]/g, '').slice(0, AMOUNT_DIGITS) })}
             />
           </div>
-          <label className="check cash-round">
-            <input type="checkbox" checked={value.round} onChange={(e) => set({ round: e.target.checked })} />
-            往復
-          </label>
+          <SelectionCheckbox
+            className="check cash-round"
+            label="往復"
+            checked={value.round}
+            onChange={(e) => set({ round: e.target.checked })}
+          />
           <div className="cash-field">
             <label htmlFor={`${id}-total`}>合計金額（円）</label>
             <output id={`${id}-total`} className="cash-total num" aria-live="polite">

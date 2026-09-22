@@ -742,7 +742,7 @@ describe('active target duplicate', () => {
     expect(await d1.prepare('SELECT COUNT(*) AS n FROM cash_entries').first()).toEqual({ n: 1 });
   });
 
-  it('0050 の担当者と業務の目的を、書き出した JSON から同じ値で復元する', async () => {
+  it('0051 の担当者と業務の目的を、書き出した JSON から同じ値で復元する', async () => {
     const body = {
       ...structuredClone(restoreBody),
       biz: { revenue: [0], categories: ['架空旅費'], expense: { 架空旅費: [560] } },

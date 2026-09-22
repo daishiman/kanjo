@@ -10,6 +10,7 @@ import type {
   Benchmark,
   BudgetOutlook,
   BudgetRow,
+  BudgetScreen,
   Candidates,
   CashFlow,
   ClassificationProgress,
@@ -963,7 +964,7 @@ export interface CashEntry {
   transitRound: boolean;
   /** 領収書が構造上出ない支出(電車代など) */
   receiptWaived: boolean;
-  /** 担当者(名義)。0050 より前の行は null(画面は「未設定」) */
+  /** 担当者(名義)。0051 より前の行は null(画面は「未設定」) */
   owner: Owner | null;
   /** 業務の目的(保存形)。交通費以外は null */
   transitPurpose: string | null;
@@ -1063,6 +1064,18 @@ export interface StatementsResponse {
 export interface LiabilitiesSaveResponse {
   ok: true;
   bs: StatementsScreen['bs'];
+}
+
+/** GET /api/budget-screen の応答 (spec-budget-screen §API契約)。数値は core の budgetScreen がそのまま出す */
+export type BudgetScreenResponse = BudgetScreen & { period: PeriodMeta };
+
+/** PUT /api/budget-plans の応答。dirty row patch を反映した新しいrevision */
+export interface BudgetPlansSaveResponse {
+  ok: true;
+  start: string;
+  count: number;
+  savedAt: string | null;
+  revision: string | null;
 }
 
 export type {

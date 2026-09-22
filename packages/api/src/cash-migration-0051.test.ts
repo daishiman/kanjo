@@ -1,7 +1,7 @@
 /**
- * 0050 現金明細の担当者・業務の目的・論理削除 (spec-cash-screen 受入 S5-a)。
+ * 0051 現金明細の担当者・業務の目的・論理削除 (spec-cash-screen 受入 S5-a)。
  *
- * 0049 までを実際に流した DB に旧画面の行を置き、そこへ 0050 を当てる。
+ * 0050 (予算) までを実際に流した DB に旧画面の行を置き、そこへ 0051 を当てる。
  * 追加だけの migration なので、既存行は1文字も変えない (backfill 0件) ことを固定する。
  */
 import { readFileSync, readdirSync } from 'node:fs';
@@ -12,7 +12,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { splitMigrationStatements } from './migration-test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
-const TARGET = '0050_cash_entry_owner_soft_delete.sql';
+const TARGET = '0051_cash_entry_owner_soft_delete.sql';
 
 let mf: Miniflare;
 let d1: D1Database;
@@ -35,7 +35,7 @@ const selectLegacy = () =>
 beforeAll(async () => {
   mf = new Miniflare(
     convertV4MiniflareOptions({
-      name: 'cash-migration-0050',
+      name: 'cash-migration-0051',
       modules: true,
       script: 'export default { fetch() { return new Response("test") } }',
       d1Databases: ['DB'],
@@ -67,7 +67,7 @@ beforeAll(async () => {
 
 afterAll(async () => mf?.dispose());
 
-describe('0050 現金明細の担当者・業務の目的・論理削除', () => {
+describe('0051 現金明細の担当者・業務の目的・論理削除', () => {
   it('既存行の列を1つも書き換えない', async () => {
     expect(before).toHaveLength(2);
     expect((await selectLegacy()).results).toEqual(before);

@@ -2,7 +2,7 @@
 graph_node_id: "SYS-CASH-P02"
 artifact_kind: "task"
 artifact_subtypes: []
-title: "cash-screen 純関数・論理削除と復元の 4 経路・migration 0050・夜間消去・画面分割のワークストリーム設計決定記録"
+title: "cash-screen 純関数・論理削除と復元の 4 経路・migration 0051・夜間消去・画面分割のワークストリーム設計決定記録"
 project_id: "feature-package-feat-cash-screen"
 domain: "documentation"
 status: "active"
@@ -47,7 +47,7 @@ completion_evidence: {"completed_at": null, "evidence_refs": [], "policy": "link
 implementation_readiness: {"checked_at": "2026-09-22T00:48:20Z", "missing_sections": [], "status": "complete"}
 ---
 
-# cash-screen 純関数・論理削除と復元の 4 経路・migration 0050・夜間消去・画面分割のワークストリーム設計決定記録
+# cash-screen 純関数・論理削除と復元の 4 経路・migration 0051・夜間消去・画面分割のワークストリーム設計決定記録
 
 ## Machine-readable registration fields
 
@@ -66,7 +66,7 @@ implementation_readiness: {"checked_at": "2026-09-22T00:48:20Z", "missing_sectio
 
 ## 目的
 
-core の cash-screen 純関数の入出力、論理削除・復元・一括の経路、読取経路 5 本の条件、migration 0050、夜間の完全消去、画面の分割単位を 1 つの決定記録にまとめる。
+core の cash-screen 純関数の入出力、論理削除・復元・一括の経路、読取経路 5 本の条件、migration 0051、夜間の完全消去、画面の分割単位を 1 つの決定記録にまとめる。
 
 ## 背景
 
@@ -84,7 +84,7 @@ core の cash-screen 純関数の入出力、論理削除・復元・一括の�
 - Frontend: applicable: pages/cash/ の分割単位と URL のキーを決める
 - Backend: applicable: cash-screen 純関数の入出力を決める
 - API: applicable: restore / bulk-delete / bulk-restore と既存経路の変更点を決める
-- Data: applicable: 0050 の列と索引、読取経路 5 本の条件を決める
+- Data: applicable: 0051 の列と索引、読取経路 5 本の条件を決める
 - Infrastructure: N/A: binding と配信構成は据え置き
 - Security: applicable: 他人の id の 404 と入力検証の 400 の方針を決める
 - Quality: N/A: テストは P04
@@ -95,7 +95,7 @@ core の cash-screen 純関数の入出力、論理削除・復元・一括の�
 
 - Architecture decisions: arch-cash-auth, arch-cash-backend, arch-cash-database, arch-cash-frontend, arch-cash-infrastructure, arch-cash-maintenance-ops, arch-cash-security, arch-cash-ui-ux, spec-cash-screen
 - Deploy unit/environment: N/A: 文書のみで配布物を持たない
-- Compatibility/migration/backfill: N/A: 設計のみ。0050 は追加のみで既存行の更新 0 件であることを設計として明記する
+- Compatibility/migration/backfill: N/A: 設計のみ。0051 は追加のみで既存行の更新 0 件であることを設計として明記する
 
 ## 成果物
 
@@ -142,7 +142,7 @@ core の cash-screen 純関数の入出力、論理削除・復元・一括の�
 - Acceptance:
 - 合計・絞り込み・ページング・入力経路・交通費合計・入力検証の関数の入出力が決定記録にある。
 - restore / bulk-delete / bulk-restore と DELETE の論理削除化、読取経路 5 本の deleted_at IS NULL と JSON 復元の件数の例外が決定記録にある。
-- migration 0050 が追加のみで既存行の更新 0 件であり、夜間の完全消去が 1 晩 500 行で tx_edits も同じ batch で消すことが設計として明記されている。
+- migration 0051 が追加のみで既存行の更新 0 件であり、夜間の完全消去が 1 晩 500 行で tx_edits も同じ batch で消すことが設計として明記されている。
 - Automated commands:
 - pnpm lint
 - Required evidence:

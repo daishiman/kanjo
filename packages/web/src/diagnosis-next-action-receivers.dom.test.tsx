@@ -16,6 +16,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { BudgetPage } from './pages/Budget.js';
 import { SubscriptionsPage } from './pages/Subscriptions.js';
 import { PeriodProvider } from './period.js';
+import { budgetScreenResponse } from './test-support/budget-screen-fixture.js';
 
 vi.mock('react-chartjs-2', async () => ({
   Chart: (await import('./test-support/chart-test-doubles.js')).SilentChart,
@@ -95,41 +96,7 @@ const cloudDetail: SubscriptionVendorDetail = {
   related: null,
 };
 
-const budgetPayload = {
-  budgets: { 広告宣伝費: 10_000, 通信費: 5_000 },
-  table: [
-    { account: '広告宣伝費', type: '変動費', recentAvg: 30_000, budget: 10_000, diff: 20_000, judge: '超過' },
-    { account: '通信費', type: '固定費', recentAvg: 5_000, budget: 5_000, diff: 0, judge: '範囲内' },
-  ],
-  outlook: {
-    year: '2026',
-    recordedMonths: 6,
-    remainingMonths: 6,
-    rows: [
-      {
-        account: '広告宣伝費',
-        budget: 10_000,
-        annualBudget: 120_000,
-        ytd: 90_000,
-        recentAvg: 30_000,
-        landing: 270_000,
-        diff: 150_000,
-        judge: '超過',
-      },
-      {
-        account: '通信費',
-        budget: 5_000,
-        annualBudget: 60_000,
-        ytd: 30_000,
-        recentAvg: 5_000,
-        landing: 60_000,
-        diff: 0,
-        judge: '範囲内',
-      },
-    ],
-    totals: { annualBudget: 180_000, ytd: 120_000, landing: 330_000, diff: 150_000 },
-  },
-};
+const budgetPayload = budgetScreenResponse();
 
 function LocationProbe() {
   const location = useLocation();
@@ -148,7 +115,7 @@ function renderAt(page: 'subscriptions' | 'budget', path: string) {
       if ((init?.method ?? 'GET') !== 'GET') return json({ ok: true, aliases: [] });
       if (url.includes('/api/subscriptions/vendors/')) return json(cloudDetail);
       if (url.includes('/api/subscriptions')) return json(subscriptionsScreen);
-      if (url.includes('/api/budgets')) return json(budgetPayload);
+      if (url.includes('/api/budget-screen')) return json(budgetPayload);
       if (url.includes('/api/sub-vendors/candidates'))
         return json({ candidates: [], excluded: [], dealRows: 0 });
       return json({ vendors: [], accountOptions: [], review: [] });
@@ -197,14 +164,15 @@ describe('診断 nextAction の受信契約', () => {
     renderAt('budget', '/budget?account=%E5%BA%83%E5%91%8A%E5%AE%A3%E4%BC%9D%E8%B2%BB');
     const status = await screen.findByRole('status', { name: '診断からの絞り込み' });
     expect(status.textContent).toContain('広告宣伝費');
-    const table = screen.getByRole('table', { name: '科目別の月次予算' });
+    const table = screen.getByRole('table', { name: '予算一覧' });
     expect(within(table).getByText('広告宣伝費')).toBeTruthy();
     expect(within(table).queryByText('通信費')).toBeNull();
 
     cleanup();
     renderAt('budget', '/budget?account=%E5%AD%98%E5%9C%A8%E3%81%97%E3%81%AA%E3%81%84');
-    const full = await screen.findByRole('table', { name: '科目別の月次予算' });
+    const full = await screen.findByRole('table', { name: '予算一覧' });
     expect(within(full).getByText('広告宣伝費')).toBeTruthy();
     expect(within(full).getByText('通信費')).toBeTruthy();
+    await waitFor(() => expect(location()).toBe('/budget'));
   });
 });
