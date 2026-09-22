@@ -2,6 +2,7 @@ import type { TradeoffScreenCandidate } from '@kanjo/core';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/Button.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { yen } from '../../format.js';
 import {
   NEED_LABEL,
@@ -56,7 +57,7 @@ export function CandidateRow({
   return (
     <tr className={selected ? 'is-selected' : undefined}>
       <td>
-        <input type="checkbox" aria-label={`${name}を選ぶ`} checked={selected} onChange={onToggle} />
+        <SelectionCheckbox label={`${name}を選ぶ`} labelHidden checked={selected} onChange={onToggle} />
       </td>
       <td className="num">{index + 1}</td>
       <td className="left">
