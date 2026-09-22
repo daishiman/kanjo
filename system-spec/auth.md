@@ -3,7 +3,7 @@ status: confirmed
 category: auth
 aggregate: 確定
 spec_cells: [auth.web, auth.mobile, auth.tablet, auth.desktop-windows, auth.desktop-linux, auth.desktop-macos]
-serves_goals: [G3, G5]
+serves_goals: [G3]
 ---
 
 # 認証(ログイン) (auth)
@@ -15,12 +15,12 @@ serves_goals: [G3, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-ai-auth-web-001。裏付け質疑 (`qa_refs`): `qa-ai-auth-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、auth では端末の生体認証とセッションの結び付け、依頼トークンを端末に残さない方法を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、auth では家族で共有するタブレットでの利用者切替とセッションの分離を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、auth ではWindows 資格情報マネージャへのセッション保存の可否を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、auth ではSecret Service が無い環境でのセッション保存の代替を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、auth ではKeychain へのセッション保存と、コピーした依頼トークンの扱いを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-budget-auth-web-001。資するゴール: G3 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、認証・認可ではスマートフォンの生体認証やトークン保管をどう組み込むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、認証・認可では共有されがちなタブレットで利用者の切替えをどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、認証・認可ではWindows の資格情報マネージャにセッションをどう保存するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、認証・認可ではLinux のキーリングにセッションをどう保存するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、認証・認可ではmacOS のキーチェーンにセッションをどう保存するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G3, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | キャンセル・再実行・使用するデータの 3 経路に、既存のセッション cookie による認証をそのまま効かせる形へ反映した。エージェント経路は既存のトークン認証のままで、キャンセル済みの判定を agentGuard に足す。新しいログイン手段や長期トークンは設けない。 |
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 利用者単位でデータを閉じる規則を、キャンセル・再実行・削除・使用するデータの全経路に反映した。どれも c.get('userId') で自分の依頼と明細だけを扱い、他の利用者の依頼 id を渡されたときは 404 を返すことを API テストで確かめる。 |
+| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 予算画面では新しいログイン経路を足さず、既存のセッション Cookie と session_generation による無効化にそのまま乗せる形へ反映した。パスワード変更が必要な利用者は mustChangePasswordFence で予算の保存に届かない。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 予算画面の認可では、予算の取得と保存の全 SQL を利用者で区切り、利用者 id を要求の本文から受け取らない形へ反映した。ログアウトで端末の予算の下書きも消し、共有端末に他人の入力を残さない。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,31 +37,19 @@ serves_goals: [G3, G5]
 
 ### Web (web)
 
-- 資するゴール: G3, G5
+- 資するゴール: G3
 
-#### 主たる接地根拠: `qa-ai-auth-web-001`
-
-**問**
-
-AI分析画面の新しい経路は、誰がどの条件で読み書きできるか。
-
-**答**
-
-利用者向けの新経路 (キャンセル・再実行・使用するデータ) は既存の aiRoute と同じく /api/* の authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence の内側に置き、c.get('userId') で自分の依頼だけを扱う。エージェント経路は従来どおり依頼ごとの使い捨てトークン (SHA-256 保存・24 時間) だけで認証し、キャンセル済みの依頼のトークンを期限切れ・受信済みと同じく 401 で拒否する (qa-ai-decision-003)。再実行は新しいトークンを発行し、元のトークンは生かさない。新しい役割や長期トークンは設けない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-auth-web-evidence-001`
+#### 主たる接地根拠: `qa-budget-auth-web-001`
 
 **問**
 
-auth 章の裏付けとして、AI の利用者経路とエージェント経路の認証について何を観測したか。
+web の予算画面の認証・認可要件は何か。
 
 **答**
 
-packages/api/src/index.ts は aiAgentRoute を /api/* のフェンスより前 (index.ts:95) に載せ、利用者向けの aiRoute を authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence (index.ts:102-106) の後 (index.ts:108) に載せる。エージェント経路は agentGuard (ai.ts:445-470) が Authorization: Bearer kjo_… を SHA-256 で ai_tasks.token_hash と照合し、期限切れと受信済みを 401 で拒否する。トークンの寿命は 24 時間 (ai.ts:36)。
+新しい認証方式は作らない。予算画面の取得と保存の API は /api/* の authGuard と mustChangePasswordFence の内側に置き、利用者 id はセッションから取り、要求の本文や URL からは受け取らない。予算の表は利用者で区切り、他の利用者の予算を読み書きできない。下書きは端末の localStorage に置くため、保存成功とログアウトで消す (qa-budget-decision-001)。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T13:35:48Z)
 
 ## To-Be / Delta
 
@@ -69,24 +57,23 @@ packages/api/src/index.ts は aiAgentRoute を /api/* のフェンスより前 (
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: 依頼の操作を画面で決着できるようにする。キャンセルはトークンを無効にして行を残し、再実行は同じ期間と補足指示で新しい依頼を発行し、削除は結果の無い依頼だけを消す (受信済みは削除不可)。依頼の発行とプロンプトのコピーを 1 操作にする。
-- **G5**: データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。
+- **G3**: 予算を予算対象の 12 か月 (開始月 YYYY-MM) ごとに科目別の年額・計画による調整額・調整の理由で保存する表を D1 に追加のみの migration で設け、同じ期間は上書きし版は持たない。保存済みの行が無い期間を開いたときは既存 budgets の月額 × 12 を初期値として示す (既存行は書き換えない)。GET /api/budget-plans?start=YYYY-MM と PUT /api/budget-plans を設け、PUT は canonicalMutationFence に登録する。診断の予算カバー率と予算の着地見込みなど既存の budgets の読み手は、今月を含む予算対象の年額 ÷ 12 を返す core の関数を経由して同じ値を読む。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | キャンセル・再実行・削除が規則どおりに効く。 | API テストで、キャンセル後のトークンがデータ取得とレポート送信で拒否され行が残ること、再実行が同じ期間と補足指示の新しい依頼を作ること、受信済みの依頼の削除が拒否されることを確かめる。 |
-| O5 | データの件数が実データと一致し、外部へ出るのは集計値だけである。 | API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。 |
+| O3 | 予算が期間ごとに保存され、既存の読み手が同じ値を読む。 | API 統合テストで、PUT が期間ごとに保存し同じ期間は上書きされ、未認証 401・フェンス違反の拒否・不正値の 400 を確かめる。migration が既存行を 1 行も書き換えないことを検査し、保存行の無い期間で既存月額 × 12 が初期値になること、診断の予算カバー率が新しい表の値から出ることを確かめる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I3**: キャンセル (トークン無効化・行を残す) と再実行 (同じ期間と補足指示で新規発行) の API を足し、実行中の表の操作列から呼ぶ。発行とコピーを 1 操作にする。
-- **I6**: 使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。
+- **I3**: 予算対象の期間別の年額表を追加のみの migration で設け、GET / PUT /api/budget-plans と fence 登録を行い、診断の予算カバー率など既存の budgets の読み手を同じ読み出し関数へ寄せる。
 
 ### 本章に効く確定意思決定
 
-- (本章ゴールに効く確定 decision なし)
+- **dec-budget-storage-unit**: 予算の保存単位をどうするか (期間を持たない科目別の月額 1 つか、予算対象の 12 か月ごとの年額か)。
+  - 採択: 期間別の年額表を追加 (`opt-period-annual-table`)
+  - 目的適合: 画像の予算対象 12 か月・年額入力と一致し、既存の月額を初期値に引き継げる。
 
 ## 適用された設計知識
 
@@ -94,9 +81,9 @@ packages/api/src/index.ts は aiAgentRoute を /api/* のフェンスより前 (
 
 ### 本章での適用
 
-Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、利用者経路とエージェント経路の 2 系統の配置に適用した。キャンセル・再実行・使用するデータは利用者の操作なので /api/* のフェンスの内側に載せ、route の中で個別の認可判定を書かない。エージェント経路は依頼ごとのトークンだけを受け、agentGuard 1 か所で期限切れ・受信済み・キャンセル済みを同じ 401 で拒否する。取り消しをトークンの削除ではなく canceled_at の記録で表すため、拒否の理由を利用者の画面にも残せる。
+Least privilege と resource ownership の card を予算画面に適用した。新しい表は利用者を主キーの先頭に持たせ、route は WHERE user_id = ? を必ず付ける。他の利用者の予算は存在しないものとして扱い、保存も自分の予算対象の行だけを置き換える。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T13:35:48Z)
 
 ### Secure by Design — deep knowledge card
 

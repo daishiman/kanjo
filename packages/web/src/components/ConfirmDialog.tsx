@@ -45,6 +45,7 @@ export function ConfirmDialog({
   title,
   confirmLabel,
   busyLabel,
+  dismissLabel = 'やめる',
   onConfirm,
   onDismiss,
   className,
@@ -60,6 +61,8 @@ export function ConfirmDialog({
   confirmLabel: string;
   /** 実行中の語。既定を置かないのは、待たせている中身が画面ごとに違うため */
   busyLabel: string;
+  /** 閉じた後の行き先が分かる場合は画面固有の語を渡す。 */
+  dismissLabel?: string;
   onConfirm: () => void;
   onDismiss: () => void;
   className?: string;
@@ -88,7 +91,7 @@ export function ConfirmDialog({
             {dialog.busy ? busyLabel : confirmLabel}
           </Button>
           <Button type="button" variant="secondary" disabled={dialog.busy} onClick={onDismiss}>
-            やめる
+            {dismissLabel}
           </Button>
         </div>
       </div>

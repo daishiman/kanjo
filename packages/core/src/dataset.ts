@@ -2,6 +2,7 @@
  * データセット操作（取込の洗い替え・月枠の確保・JSON入出力）。
  * HTML版 ensureMonth / importFreee / importMF / importJSON の挙動を忠実に移植。
  */
+import type { BudgetPlanRow } from './budget-screen.js';
 import { isCashTxId } from './cash.js';
 import { applyClassification, overridesFromEdits } from './classify.js';
 import { applySplits, reconcileTxSplits, txSplitsFromSnapshot, txSplitsSnapshot } from './splits.js';
@@ -188,6 +189,7 @@ export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
   }
   if (obj.personal) data.personal = obj.personal as Dataset['personal'];
   if (obj.budgets) data.budgets = obj.budgets as Record<string, number>;
+  if (Array.isArray(obj.budgetPlans)) data.budgetPlans = obj.budgetPlans as BudgetPlanRow[];
   if (obj.cashOverride) data.cashOverride = obj.cashOverride as Dataset['cashOverride'];
   if (obj.mfTx) data.mfTx = obj.mfTx as MfTx[];
   if (Object.prototype.hasOwnProperty.call(obj, 'txSplits'))
@@ -251,6 +253,7 @@ export function exportJSON(data: Dataset): Record<string, unknown> {
     personalByOwner: data.personalByOwner,
     ownerSchemaVersion: OWNER_SCHEMA_VERSION,
     budgets: data.budgets,
+    budgetPlans: data.budgetPlans ?? [],
     cashOverride: data.cashOverride,
     unrecordedExpMonths: data.unrecordedExpMonths,
     exportedAt: new Date().toISOString(),

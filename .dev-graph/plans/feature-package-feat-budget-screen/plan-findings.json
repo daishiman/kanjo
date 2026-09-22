@@ -1,0 +1,186 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/run-feat-budget-screen-20260921T142755Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "feature-package.json / workstream-inventory.json / task-graph.json / system-build-handoff.json は同一 feature_package_id (feature-package/feat-budget-screen) と parent_feature (feat-budget-screen) を一貫して持つ。goal-spec.json の open_items 7 件 (Q-7 保存batch文数、収入行差額の色、年額下限、snapshot consumer/バックアップ write-set整合、その他収入manualOnly行、Q-5増減率季節性、migration 0048予定番号) はP01で前提条件/持ち越しリスクとして明示され、P02〜P05/P12/P13の各 resolution_owner と矛盾なく対応する。P08の監査対象 (旧Budget.tsx参照・重複判定ロジック・budgets表書き換え有無) はgoal-specのscope_outおよびP05の削除方針・追加のみmigration方針と矛盾しない。P09のCSP/外部送信ゼロの保証確認はarchitecture/budget-security.mdのConstraints (外部LLM不使用・取込データ非送信) と一致する。P13は単一PR配信・migration 0048適用前のorigin/main再確認を前提とし、P12のdocs同期完了を前提としており矛盾は検出されなかった。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "task-specs/phase-01-requirements.md#前提条件",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-09-quality-assurance.md",
+        "task-specs/phase-13-release-deploy.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "P01..P13 exact-13 が揃い (validator phase_refs=P01..P13, violations=[])、各 task-spec は 109〜161 行の実質記述を持ち、Workstream applicability の N/A はいずれも理由付きで空section・placeholder・title+1文の擬似taskは検出されなかった。P08/P13はnodeを省略せず、非該当workstreamにも理由付きのN/Aが付く。goal-spec.jsonの受入S1〜S5・AT-01〜AT-22 (specs/spec-budget-screen.md §テストと受入条件に AT-01〜AT-22 の22件を確認) はP07 (受入検証)・P11 (証跡索引)・P12 (docs最終同期) へ写像され、open_items 7件も全件がP01の前提条件/blockerとして明示的に写像されている (推測による早期解決なし)。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-13-release-deploy.md",
+        "task-specs/phase-07-acceptance.md#Verification and evidence",
+        "workstream-inventory.json"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "feature-package.json / task-graph.json / workstream-inventory.json / system-build-handoff.json は同一feature_package_id・parent_feature・repository_id (github:daishiman/kanjo) を持ち、task_node_ids と task-graph.json の node id が SYS-BUDGET-P01..P13 で完全一致する。staging-manifest.json記載17ファイルおよびstaging-manifest.json自身のsha256を独立に再計算し全件一致した (shasum -a 256 による再算出、差分0件)。staging-manifest.json#canonical_digest とvalidatorのvalidated_digestも一致する。goal-spec.jsonのsource_lineage 12件 (feature_context/feature_document/specification/system_spec_requirements/completeness_evaluation/architecture 8件) のsha256を全件独立に再計算し全て一致した (差分0件)。core算出の単一化 (packages/core/src/budget-screen.ts 新設、api/webは再実装しない) がgoal-spec notesとarchitecture/budget-backend.mdで一貫して宣言され、P08がその重複再実装の不在を監査する構造になっている。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "system-build-handoff.json#source_inputs",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の13 nodeはP01→P02→...→P13の単一直鎖 (depends_onは常に直前phase_refのみ1件、P01のdepends_on=[])。循環・後方edge・cross-feature task参照は検出されず、全edgeが同一feature_package_id/parent_feature (feature-package/feat-budget-screen) 内に閉じている。system-build-handoff.jsonのexecution_tasksも同じ直鎖を再掲しており矛盾はない。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<harness>/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<repo-root>",
+        "--staging",
+        ".dev-graph/staging/run-feat-budget-screen-20260921T142755Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067\",\n  \"feature_package_id\": \"feature-package/feat-budget-screen\",\n  \"parent_feature\": \"feat-budget-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "b32e5efdc8ca4654ce4289dee73fef6d8ce79fd7cf4b72d15b922e26853a79eb"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "b842468584c8de36cdfbd564d9e8ce811de1007c5e540ffcd522f6cdf3fdd43f"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "436ba0568228aaf451de3fd3ec12b960396f61c90e7a3d8c7fa2ad520a94dfef"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "3b489ca4d590139a04ac5eeb6aac53b680a5c62aab1aa6eb019c1f014f5d4d14"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "09725e19c2ffdb60c406bb6db20bf86d097447b08750e692180bedef6acd8e94"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "dc1614984ce641fb7147c00c67525ee5beca994bced44db65f1861b2a677bda7"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "20082eec2b7d5c8668f8e73b9f97fb50a49b38273c07f1a62b80f250cfaf9307"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "3f8947475ef4b9042b070d054a4b4fa6d421871980db39a6cb77cd4459be50f4"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "28003dfe5259b9a281dfd9aeb2cc88763c1dbcc12eb401e0b88e02186082e974"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "5327d694ef76ea39fa3a397a91cf46d7aea355c260c06cc8d4ce1454f997b9e0"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "7e3d3a6a746ce072e001f595451caa2bb78744bfac4e160f4c37a9ebe23d75a2"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "57dbf30f9c965f5ae1b161d0b109593ec9fc95f89790eb670238db47608f3ed0"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "6abeacf728e33f664523a60cf34937386904e432c0e29b31e21eb3a0bb71e988"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "e075bc915d761b3527cc2a7d6df8d006090ce95b28d1985bf313c7bf8aa11cd9"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "c3913dc9fe9fc0bd5a50277433d8c9740bce9ea4d0b19be62c7d405428272ad8"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "a30b1a0ae4545372dbe8594728b182985180a29b21c96ee4c8ceea586f1c405e"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "9fc1ccafa7c04f13fc4f07b102e01e5c2fdaaad61b5de0d8d7e261afdd98d8e6"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "f4658da32317267454d8b56f0572d33ac8fa2b576530e6cbc5127714f1633e1d"
+    }
+  ],
+  "staleness_rule": "promotion直前にstaging-manifest.json#files記載17ファイルおよびstaging-manifest.json自身のcurrent-byte SHA-256を再計算し、本evaluated_inputsの記録値・本evaluated_digest (validated_digest)・staging-manifest.json#canonical_digestの三者へ再照合する。1バイトでもcurrent-byteがevaluated_inputsの記録値と異なれば、本plan-findingsはstaleとして無効化し、evaluatorを再起動して新しいvalidated_digestに対するverdictを再発行する。別digestに対する古いverdictはpromotion gateで破棄する。",
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "C1/goal-spec-identity-check-note-inconsistency",
+      "observation": "goal-spec.json の identity_check.resolved_by は『本セッションにハッシュ計算ツールが無いため独自の再計算はできず、提示値をそのまま引用した』と記すが、同じ digest 値 (44192d5e...) を持つ source_lineage.feature_context エントリの note は『sha256 は main context がファイル本体のバイト列から実測した値』としており、同一 digest の取得経緯について2つの記述が矛盾する。独立に shasum -a 256 で再計算した結果、値自体 (44192d5e369fcafbaf0427a9f91d5abdf0ebcc4f76f85072844c159e09053a71) は features/feat-budget-screen.context.json の実バイト列と一致し、verdict を左右する誤りではないが、生成物内の自己記述の不整合として次サイクルで解消する余地がある。",
+      "evidence": [
+        "goal-spec.json#identity_check.resolved_by",
+        "goal-spec.json#source_lineage"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "C2/P13-close-out-receipt",
+      "observation": "feature-execution-package-contract.md はP13に『実デプロイ不要でも N/A: reason と close-out receipt を持つ』ことを求めるが、本featureは実デプロイが必要なケースであり、task-specs/phase-13-release-deploy.md の Required evidence は PR merge / CI Migrate・Deploy ログを想定した記述にとどまり、close-out receipt という独立成果物名としての明記は無い。既存の PR/CI ログをそのまま充当する運用と読めるため verdict には影響しないが、promotion 前に明記すると監査性が上がる。",
+      "evidence": [
+        "task-specs/phase-13-release-deploy.md",
+        "../../references/feature-execution-package-contract.md#3"
+      ]
+    }
+  ]
+}

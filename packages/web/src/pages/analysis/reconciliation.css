@@ -366,26 +366,6 @@
   outline: 2px solid var(--biz);
   outline-offset: 2px;
 }
-.recon-control-native[type="checkbox"]:checked + .recon-control-indicator,
-.recon-control-native[type="checkbox"]:indeterminate + .recon-control-indicator {
-  border-color: var(--biz);
-  background: var(--biz);
-}
-.recon-control-native[type="checkbox"]:checked + .recon-control-indicator::after {
-  inline-size: 8px;
-  block-size: 4px;
-  border-bottom: 2px solid var(--on-primary);
-  border-left: 2px solid var(--on-primary);
-  content: "";
-  transform: translateY(-1px) rotate(-45deg);
-}
-.recon-control-native[type="checkbox"]:indeterminate + .recon-control-indicator::after {
-  inline-size: 8px;
-  block-size: 2px;
-  border-radius: 999px;
-  background: var(--on-primary);
-  content: "";
-}
 .recon-control-native[type="radio"]:checked + .recon-control-indicator {
   border-color: var(--biz);
 }

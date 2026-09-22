@@ -2152,7 +2152,7 @@ try {
 
           // 1行選択 → indeterminate → 表示中を全選択 → 全解除を、すべて実マウスで通す。
           await mouseClick(
-            '.recon-table tbody tr:first-child .recon-selection-hit',
+            '.recon-table tbody tr:first-child .selection-checkbox',
             `${tag} Reconciliation 行選択`,
           );
           await waitFor(
@@ -2168,7 +2168,7 @@ try {
               selectionCount: document.querySelector('.recon-selection-count')?.textContent?.trim() ?? '',
             }))())`),
           );
-          await mouseClick('.recon-table thead .recon-selection-hit', `${tag} Reconciliation 表示中を全選択`);
+          await mouseClick('.recon-table thead .selection-checkbox', `${tag} Reconciliation 表示中を全選択`);
           await waitFor(
             'document.querySelector(\'.recon-table thead input[type="checkbox"]\')?.checked === true',
             `${tag} Reconciliation 全選択`,
@@ -2182,7 +2182,7 @@ try {
               selectionCount: document.querySelector('.recon-selection-count')?.textContent?.trim() ?? '',
             }))())`),
           );
-          await mouseClick('.recon-table thead .recon-selection-hit', `${tag} Reconciliation 表示中を全解除`);
+          await mouseClick('.recon-table thead .selection-checkbox', `${tag} Reconciliation 表示中を全解除`);
           await waitFor(
             "document.querySelectorAll('.recon-table tbody input[type=\"checkbox\"]:checked').length === 0 && !document.querySelector('.recon-selection')",
             `${tag} Reconciliation 全解除`,
@@ -2247,7 +2247,7 @@ try {
                 selectionCellsConsistent: rows.every((row) => {
                   const cell = row.cells[0];
                   const pending = row.querySelector('.recon-badge--review, .recon-badge--unprocessed') !== null;
-                  const selectable = cell?.querySelectorAll('.recon-selection-hit:not(.recon-selection-hit--unavailable) input[type="checkbox"]').length === 1;
+                  const selectable = cell?.querySelectorAll('.selection-checkbox input[type="checkbox"]').length === 1;
                   const unavailable = cell?.querySelectorAll('.recon-selection-hit--unavailable .recon-selection-placeholder').length === 1;
                   return Boolean(cell) && (pending ? selectable && !unavailable : unavailable && !selectable);
                 }),
@@ -2371,6 +2371,24 @@ try {
           await evaluate(`JSON.stringify((() => ({
         pageWidth: document.documentElement.scrollWidth,
         viewportWidth: document.documentElement.clientWidth,
+        reconciliationDensity: (() => {
+          const input = document.querySelector('.recon-table tbody input[type="checkbox"]');
+          if (!input) return null;
+          const box = (node) => {
+            const rect = node?.getBoundingClientRect();
+            return rect ? { width: rect.width, height: rect.height } : null;
+          };
+          const label = input.closest('label');
+          const row = input.closest('tr');
+          const text = row?.querySelector('.recon-row-open') ?? row?.querySelector('td');
+          return {
+            native: box(input),
+            visual: box(input.nextElementSibling),
+            hitArea: box(label),
+            row: box(row),
+            textFontPx: text ? Number.parseFloat(getComputedStyle(text).fontSize) : null,
+          };
+        })(),
         shell: (() => {
           const box = (node) => {
             const value = node?.getBoundingClientRect();
@@ -2976,7 +2994,9 @@ try {
             ...document.querySelectorAll('.recon input[type="checkbox"], .recon input[type="radio"]'),
           ].filter(visible);
           const controlContract = choiceControls.map((control) => {
-            const indicator = control.nextElementSibling?.matches('.recon-control-indicator')
+            const indicator = control.nextElementSibling?.matches(
+              '.recon-control-indicator, .selection-checkbox__indicator',
+            )
               ? control.nextElementSibling
               : null;
             const box = indicator?.getBoundingClientRect();
@@ -3037,7 +3057,7 @@ try {
               selectionCells.every(
                 (cell) => {
                   const available = cell.querySelectorAll(
-                    '.recon-selection-hit:not(.recon-selection-hit--unavailable) input[type="checkbox"]',
+                    '.selection-checkbox input[type="checkbox"]',
                   ).length;
                   const unavailable = cell.querySelectorAll(
                     '.recon-selection-hit--unavailable .recon-selection-placeholder',
@@ -3489,7 +3509,13 @@ try {
             join(OUTPUT_DIR, `reconciliation-${width}.png`),
             Buffer.from(routeShot.data, 'base64'),
           );
+          writeFileSync(
+            join(OUTPUT_DIR, `reconciliation-checkbox-density-${width}.json`),
+            `${JSON.stringify(routeMetrics.reconciliationDensity, null, 2)}\n`,
+          );
         }
+        if (route.name === 'Reconciliation')
+          console.log(`${tag} Reconciliation checkbox=${JSON.stringify(routeMetrics.reconciliationDensity)}`);
         console.log(
           `${tag} ${route.name} 図=${routeMetrics.figures.length} 本体=${routeMetrics.pageWidth}/${routeMetrics.viewportWidth}px${route.name === 'Subscriptions' ? ` Chart.js系列=${routeMetrics.subscriptionDatasetCount}` : ''}`,
         );

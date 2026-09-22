@@ -123,6 +123,7 @@
      行が多い表はこの中で縦スクロールさせ、見出し行を箱の上端に留める。
      画面の高さから固定ヘッダーと余白を引いた分。短い表はこの値に達しないので影響しない。 */
   --table-max-h: calc(100vh - var(--header-h) - 96px);
+  --selection-control-size: 20px;
   scroll-padding-top: calc(var(--header-h) + 8px);
 }
 
@@ -171,6 +172,83 @@ body {
 :where(a[href], button, input:not([type="hidden"]), textarea, select, summary) {
   min-width: var(--tap-target-min);
   min-height: var(--tap-target-min);
+}
+
+/* 選択checkboxは20pxの表示と44pxの操作領域を分け、全画面で同じnative意味を使う。 */
+.selection-checkbox {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: var(--selection-control-size) minmax(0, auto);
+  align-items: center;
+  gap: 6px;
+  min-inline-size: var(--tap-target-min);
+  min-block-size: var(--tap-target-min);
+  cursor: pointer;
+}
+.selection-checkbox--icon-only {
+  grid-template-columns: var(--selection-control-size);
+  place-items: center;
+  inline-size: var(--tap-target-min);
+  block-size: var(--tap-target-min);
+}
+.selection-checkbox__native {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  inline-size: 100%;
+  block-size: 100%;
+  min-inline-size: 100%;
+  min-block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.selection-checkbox__indicator {
+  display: inline-grid;
+  inline-size: var(--selection-control-size);
+  block-size: var(--selection-control-size);
+  place-items: center;
+  border: 1px solid var(--control-border);
+  border-radius: 4px;
+  background: var(--surface);
+  pointer-events: none;
+}
+.selection-checkbox__native:hover:not(:disabled) + .selection-checkbox__indicator {
+  border-color: var(--control-border-hover);
+}
+.selection-checkbox__native:focus-visible {
+  outline: 0;
+}
+.selection-checkbox__native:focus-visible + .selection-checkbox__indicator {
+  outline: 2px solid var(--biz);
+  outline-offset: 2px;
+}
+.selection-checkbox__native:checked + .selection-checkbox__indicator,
+.selection-checkbox__native:indeterminate + .selection-checkbox__indicator {
+  border-color: var(--biz);
+  background: var(--biz);
+}
+.selection-checkbox__native:checked + .selection-checkbox__indicator::after {
+  inline-size: 9px;
+  block-size: 5px;
+  border-bottom: 2px solid var(--on-primary);
+  border-left: 2px solid var(--on-primary);
+  content: "";
+  transform: translateY(-1px) rotate(-45deg);
+}
+.selection-checkbox__native:indeterminate + .selection-checkbox__indicator::after {
+  inline-size: 10px;
+  block-size: 2px;
+  border-radius: 999px;
+  background: var(--on-primary);
+  content: "";
+}
+.selection-checkbox:has(.selection-checkbox__native:disabled) {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.selection-checkbox__native:disabled {
+  cursor: not-allowed;
 }
 a[href] {
   display: inline-flex;
@@ -1515,6 +1593,11 @@ table.data th.left,
 table.data td.left {
   text-align: left;
 }
+table.data :is(th, td).selection-cell {
+  inline-size: var(--tap-target-min);
+  padding: 0;
+  text-align: center;
+}
 /* 特別な行は縞より優先する。塗りは --row-bg に入れて、固定した先頭列とも色を合わせる */
 table.data tbody tr.total {
   --row-bg: var(--row-total);
@@ -2600,15 +2683,13 @@ kbd {
   margin-top: 2px;
 }
 .login-remember {
-  display: flex;
   align-items: flex-start;
   gap: 8px;
 }
-.login-remember input {
+.login-remember .selection-checkbox__indicator {
   margin-top: 3px;
-  flex: none;
 }
-.login-remember label {
+.login-remember .selection-checkbox__label {
   font-size: var(--fs-sm);
   display: grid;
   gap: 2px;
@@ -4255,10 +4336,10 @@ label.check {
   align-items: flex-start;
   gap: 10px;
 }
-.import-options input {
+.import-options .selection-checkbox__indicator {
   margin-top: 4px;
 }
-.import-options label > span {
+.import-options .selection-checkbox__label > span {
   display: grid;
   gap: 1px;
 }

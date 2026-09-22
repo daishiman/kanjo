@@ -2,6 +2,7 @@ import { type AccountKind, SUB_VENDOR_NAME_MAX, type SubscriptionVendorDetail } 
 import { useEffect, useId, useRef, useState } from 'react';
 import { ApiError } from '../../api.js';
 import { Button } from '../../components/Button.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { UiIcon } from '../../components/UiIcon.js';
 import { yen } from '../../format.js';
 import { ReviewDecisionActions } from './ReviewDecisionActions.js';
@@ -153,14 +154,11 @@ export function DetailOverview({
         <ul>
           {detail.rawNames.map((raw) => (
             <li key={rawNameKey(raw.name, raw.source)}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={checked.has(rawNameKey(raw.name, raw.source))}
-                  onChange={() => onToggleRaw({ name: raw.name, source: raw.source })}
-                />
-                <span>{raw.name}</span>
-              </label>
+              <SelectionCheckbox
+                label={raw.name}
+                checked={checked.has(rawNameKey(raw.name, raw.source))}
+                onChange={() => onToggleRaw({ name: raw.name, source: raw.source })}
+              />
               <span className="subs-raw-source">{SOURCE_LABEL[raw.source]}</span>
             </li>
           ))}

@@ -3,7 +3,7 @@ status: confirmed
 category: database
 aggregate: 確定
 spec_cells: [database.web, database.mobile, database.tablet, database.desktop-windows, database.desktop-linux, database.desktop-macos]
-serves_goals: [G2, G5]
+serves_goals: [G3, G5]
 ---
 
 # データベース (database)
@@ -15,12 +15,12 @@ serves_goals: [G2, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-ai-database-web-001。裏付け質疑 (`qa_refs`): `qa-ai-database-web-evidence-001`, `qa-ai-database-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、database では端末内に依頼とレポートを持つ場合のローカル DB と D1 の同期規則を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、database では共有端末に残るレポート本文のキャッシュ期限を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、database ではオフライン時に貼り付けたレポートを保留する端末内の保存形を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、database では端末内に保留したレポートの保存先のファイル権限を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、database では端末内に保留したレポートを Keychain とファイルのどちらに置くかを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-budget-database-web-001。資するゴール: G3, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、データベースでは端末内のデータベースへ予算を複製し、サーバとどう同期するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、データベースでは端末内のデータベースへ予算を複製し、サーバとどう同期するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、データベースではWindows のローカル保存先に予算をどう置き、暗号化するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、データベースではLinux のローカル保存先に予算をどう置き、暗号化するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、データベースではmacOS のローカル保存先に予算をどう置き、暗号化するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G2, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | ai_tasks の新しい列の書き込みを、それぞれの出来事の経路 1 か所にだけ置く形へ反映した。データ取得時刻はエージェントのデータ取得、差し戻しはレポートの契約違反、取消時刻はキャンセル経路で書き、段階の導出側は読むだけにする。 |
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration 0046 を列の追加だけにすることで、既存の依頼とレポートを 1 行も書き換えず、巻き戻しが新しい列を読まないことだけで済む形へ反映した。runtimeSchemaGuard の必須列に新しい列を加え、migration 前の Worker で新経路が動かないようにする。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 予算画面の D1 では、利用者・予算対象の開始月・科目の主キーで、1 期間ぶんの予算を 1 回の読取りで返せる形へ反映した。計画による調整額と理由を同じ行に持たせ、根拠の表示のために別表を結合しない。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | 予算画面の D1 では、追加のみの migration 1 本に留めて Migrate の失敗時に行の巻き戻しが要らない形へ反映した。新しい表を JSON の書き出しと復元に含め、毎晩のバックアップから予算が戻るようにした。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,43 +37,19 @@ serves_goals: [G2, G5]
 
 ### Web (web)
 
-- 資するゴール: G2, G5
+- 資するゴール: G3, G5
 
-#### 主たる接地根拠: `qa-ai-database-web-001`
-
-**問**
-
-AI 依頼の段階を導くために D1 のスキーマをどう変えるか。
-
-**答**
-
-追加のみの migration 0046 で ai_tasks に 連番 (seq)・データ取得時刻 (data_fetched_at)・差し戻し時刻 (rejected_at)・差し戻し回数 (reject_count、既定 0)・取消時刻 (canceled_at) を足す。既存行は書き換えない。段階・進捗・版の説明は保存せず記録から導く。ai_reports は変えない。runtimeSchemaGuard の必須列に新しい列を加え、migration 適用前の Worker が新しい経路を中途半端に動かさないようにする。具体の採番は qa-ai-database-web-003 (agent 推定) を参照。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-database-web-evidence-001`
+#### 主たる接地根拠: `qa-budget-database-web-001`
 
 **問**
 
-database 章の裏付けとして、AI 依頼とレポートの保存形について何を観測したか。
+web の予算画面のデータベース要件は何か。保存単位・移行・既存表との関係・復元をどうするか。
 
 **答**
 
-ai_tasks (packages/api/src/db/schema.ts:589-611) は id・user_id・period_from/to・report_type・supplement・parent_report_id・token_hash・expires_at・used_at・copied_at・copied_target・report_id・created_at を持ち、連番・データ取得時刻・差し戻し・取消の列は無い。ai_reports (schema.ts:620-640) は version (同じ期間・型の通し番号)・parent_report_id・title・summary・body_json・archived_at を持つ。migration は migrations/ 直下の連番で、最新は 0045_owner_labels.sql である。
+予算を予算対象の 12 か月 (開始月) ×科目の単位で、年額・収入 / 支出の区別・計画による調整額・調整の理由・更新時刻とともに保存する新しい表を、追加のみの migration 1 本で設ける (qa-budget-decision-001〜003)。同じ期間は上書きで、版は持たない。主キーの先頭は利用者とし、利用者で区切る。既存の budgets 表は残し、1 行も書き換えない。保存行の無い期間を開いたときの初期値は既存 budgets の月額 × 12 を読み出して示すだけで、表へは書かない。新しい表は JSON の書き出しと復元 (Dataset・import-lifecycle) と JSON snapshot の無効化の対象に加え、毎晩のバックアップから予算が戻るようにする。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-database-web-003`
-
-**問**
-
-web の AI分析画面で、利用者が決めていない 依頼の連番の採番方法と、既存行の番号の扱い を何にするか。
-
-**答**
-
-連番は利用者ごとに max(seq)+1 で採番し、(user_id, seq) に一意索引を張って衝突時は 1 回だけ採番し直す。既存行は seq が NULL のままで、ID 欄には T-番号の代わりに『旧』と作成日を表示する (行は書き換えない)。 これは agent の推定で、利用者は未確認である。画像と決定 001〜008 のどれにも値が無いため、実装で決定論を保つために置いた。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T13:35:48Z)
 
 ## To-Be / Delta
 
@@ -81,24 +57,28 @@ web の AI分析画面で、利用者が決めていない 依頼の連番の採
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 依頼の段階と進捗を core の純関数 1 か所で記録から導く。発行済みでデータ未取得 = 待機中 0%、データ取得済み = 実行中 50%、形式エラーで差し戻し = 実行中 75%、受信 = 完了 100%、結果なしで期限切れ = 失敗、取り消し = キャンセル。依頼には利用者ごとの連番から T-0001 形式の ID を振る。
-- **G5**: データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。
+- **G3**: 予算を予算対象の 12 か月 (開始月 YYYY-MM) ごとに科目別の年額・計画による調整額・調整の理由で保存する表を D1 に追加のみの migration で設け、同じ期間は上書きし版は持たない。保存済みの行が無い期間を開いたときは既存 budgets の月額 × 12 を初期値として示す (既存行は書き換えない)。GET /api/budget-plans?start=YYYY-MM と PUT /api/budget-plans を設け、PUT は canonicalMutationFence に登録する。診断の予算カバー率と予算の着地見込みなど既存の budgets の読み手は、今月を含む予算対象の年額 ÷ 12 を返す core の関数を経由して同じ値を読む。
+- **G5**: 予算の数値が他画面とずれない。ヘッダの防衛ラインと防衛ライン余裕は同じ defenseLine、診断の予算カバー率と予算画面の設定済み科目は同じ予算の読み出し関数から導き、既存の診断・概要・家計収支・総収支・決算書の数値テストが緑のままである。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | 依頼の段階と進捗が記録から一意に決まる。 | core の単体テストで、6 つの段階 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル) が記録の組合せから toBe で導かれ、期限切れと受信・取消の優先順位が境界ケースで固定される。 |
-| O5 | データの件数が実データと一致し、外部へ出るのは集計値だけである。 | API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。 |
+| O2 | KPI・一覧・グラフ・見通しの数値が core の 1 か所から出て互いに一致する。 | core の単体テストで、同じ Dataset・実績期間・予算対象に対し 年間収入予算 + (−年間支出予算) = 予算純収支、一覧の来期予算の和 = KPI、グラフの月次予算の年合計 = KPI、防衛ライン余裕 = 年間収入予算 − defenseLine().line × 12、自動提案 = 千円丸め(前期実績 × (1 + 増減率) + 季節性補正 + 計画による調整) の各項、過不足カテゴリの差額 = 見通し − 来期予算、調整によるインパクト = Σ(来期予算 − 自動提案) が固定される。 |
+| O3 | 予算が期間ごとに保存され、既存の読み手が同じ値を読む。 | API 統合テストで、PUT が期間ごとに保存し同じ期間は上書きされ、未認証 401・フェンス違反の拒否・不正値の 400 を確かめる。migration が既存行を 1 行も書き換えないことを検査し、保存行の無い期間で既存月額 × 12 が初期値になること、診断の予算カバー率が新しい表の値から出ることを確かめる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I2**: core に依頼の段階と進捗を導く純関数と T-番号の整形を新設し、api の taskStatus と web の表示をこれに寄せる。
-- **I6**: 使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。
+- **I3**: 予算対象の期間別の年額表を追加のみの migration で設け、GET / PUT /api/budget-plans と fence 登録を行い、診断の予算カバー率など既存の budgets の読み手を同じ読み出し関数へ寄せる。
 
 ### 本章に効く確定意思決定
 
-- (本章ゴールに効く確定 decision なし)
+- **dec-budget-storage-unit**: 予算の保存単位をどうするか (期間を持たない科目別の月額 1 つか、予算対象の 12 か月ごとの年額か)。
+  - 採択: 期間別の年額表を追加 (`opt-period-annual-table`)
+  - 目的適合: 画像の予算対象 12 か月・年額入力と一致し、既存の月額を初期値に引き継げる。
+- **dec-budget-defense-margin**: KPI の『防衛ライン余裕』を何で数えるか。
+  - 採択: 収入予算 − 防衛ライン × 12 (`opt-income-minus-line`)
+  - 目的適合: ヘッダと同じ defenseLine を使い、年間収入予算が 1 年の防衛ラインをどれだけ上回るかを示す。
 
 ## 適用された設計知識
 
@@ -106,9 +86,9 @@ web の AI分析画面で、利用者が決めていない 依頼の連番の採
 
 ### 本章での適用
 
-DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、ai_tasks に足す列の選び方に適用した。進捗 % や段階名は記録から導けるので保存しない。一方でエージェントがデータを取りに来た時刻、形式エラーで差し戻した時刻と回数、利用者が取り消した時刻は、後から導けない出来事なので列として持つ。T-番号の元になる連番も採番時にしか決まらないので保存する。ai_reports は版と親子関係をすでに持っており、版の説明は依頼の補足指示から導けるので列を足さない。
+Schema evolution の card (expand のみで contract しない) を予算画面に適用した。予算対象ごとの新しい表を足し、既存の budgets 表は読むだけで書き換えない。保存行の無い期間の初期値も読み出し時に月額 × 12 で作るので、C3 の『既存行の書き換え 0 件』を migration 1 本で守れる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T13:35:48Z)
 
 ### Domain-Driven Design — deep knowledge card
 
@@ -155,4 +135,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
+| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-21T13:39:51Z | 2026-09-21T13:39:51Z |

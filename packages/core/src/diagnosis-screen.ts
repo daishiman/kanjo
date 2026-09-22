@@ -13,6 +13,7 @@ import {
   personalExplainability,
   personalMonths,
 } from './analysis.js';
+import { budgetsInEffect } from './budget-screen.js';
 import {
   type DiagnosisActionStatus,
   type DiagnosisDetector,
@@ -368,7 +369,7 @@ export function diagnosisEvidence(data: Dataset): DiagnosisEvidenceRow[] {
       source: '予算設定',
       period,
       coverage: null,
-      summary: `予算を設定した科目 ${Object.keys(data.budgets).length} 件。`,
+      summary: `予算を設定した科目 ${Object.keys(budgetsInEffect(data)).length} 件。`,
       to: '/budget',
     },
   ];

@@ -176,6 +176,7 @@ const reconciliationCss = readFileSync(
   resolve(process.cwd(), 'src/pages/analysis/reconciliation.css'),
   'utf8',
 );
+const sharedCss = readFileSync(resolve(process.cwd(), 'src/styles.css'), 'utf8');
 
 describe('照合画面の構成', () => {
   it('KPI 4 枚を画像の順で出し、解消済みは割合と件数を示す', async () => {
@@ -285,30 +286,30 @@ describe('照合画面の構成', () => {
     const selectHeader = within(table()).getAllByRole('columnheader')[0]!;
     const selectableCell = within(bodyRows()[0]!).getAllByRole('cell')[0]!;
     const unavailableCell = within(bodyRows()[1]!).getAllByRole('cell')[0]!;
-    for (const cell of [selectHeader, selectableCell, unavailableCell]) {
+    for (const cell of [selectHeader, selectableCell]) {
       expect(cell.className).toContain('recon-select-column');
-      expect(cell.querySelector('.recon-selection-hit')).not.toBeNull();
+      expect(cell.querySelector('.selection-checkbox')).not.toBeNull();
     }
-    expect(within(selectableCell).getByRole('checkbox').className).toContain('recon-control-native');
-    expect(selectableCell.querySelector('.recon-control-indicator')).not.toBeNull();
+    expect(unavailableCell.className).toContain('recon-select-column');
+    expect(unavailableCell.querySelector('.recon-selection-hit')).not.toBeNull();
+    expect(within(selectableCell).getByRole('checkbox').className).toContain('selection-checkbox__native');
+    expect(selectableCell.querySelector('.selection-checkbox__indicator')).not.toBeNull();
     expect(unavailableCell.querySelector('.recon-selection-placeholder')).not.toBeNull();
   });
 
-  it('選択コントロールは44pxの操作面と18pxの視覚部品を分ける', async () => {
+  it('選択checkboxは共通の44px操作面と20px表示、radioは意味別部品を使う', async () => {
     renderPage();
     await screen.findByRole('table', { name: '照合候補一覧' });
 
     const firstRow = bodyRows()[0]!;
-    expect(within(firstRow).getByRole('checkbox').className).toContain('recon-control-native');
+    expect(within(firstRow).getByRole('checkbox').className).toContain('selection-checkbox__native');
     expect(screen.getAllByRole('radio', { name: 'すべて' })[0]!.className).toContain('recon-control-native');
-    expect(reconciliationCss).toMatch(
-      /\.recon-selection-hit\s*\{[^}]*min-inline-size:\s*var\(--tap-target-min\);[^}]*min-block-size:\s*var\(--tap-target-min\);/s,
+    expect(sharedCss).toMatch(/--selection-control-size:\s*20px;/);
+    expect(sharedCss).toMatch(
+      /\.selection-checkbox\s*\{[^}]*min-inline-size:\s*var\(--tap-target-min\);[^}]*min-block-size:\s*var\(--tap-target-min\);/s,
     );
-    expect(reconciliationCss).toMatch(
-      /\.recon-control-indicator\s*\{[^}]*inline-size:\s*18px;[^}]*block-size:\s*18px;/s,
-    );
-    expect(reconciliationCss).toMatch(
-      /\.recon-control-native\s*\{[^}]*position:\s*absolute;[^}]*inset:\s*0;[^}]*opacity:\s*0;/s,
+    expect(sharedCss).toMatch(
+      /\.selection-checkbox__indicator\s*\{[^}]*inline-size:\s*var\(--selection-control-size\);[^}]*block-size:\s*var\(--selection-control-size\);/s,
     );
   });
 
@@ -336,7 +337,7 @@ describe('照合画面の構成', () => {
       name: '表示中の対応対象2件をすべて選択',
     }) as HTMLInputElement;
     const rowChecks = bodyRows().map((current) => within(current).getByRole('checkbox') as HTMLInputElement);
-    expect(selectAll.closest('.recon-selection-hit')).not.toBeNull();
+    expect(selectAll.closest('.selection-checkbox')).not.toBeNull();
 
     fireEvent.click(rowChecks[0]!);
     expect(selectAll.indeterminate).toBe(true);

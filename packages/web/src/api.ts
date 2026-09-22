@@ -10,6 +10,7 @@ import type {
   Benchmark,
   BudgetOutlook,
   BudgetRow,
+  BudgetScreen,
   Candidates,
   CashFlow,
   ClassificationProgress,
@@ -1041,6 +1042,18 @@ export interface StatementsResponse {
 export interface LiabilitiesSaveResponse {
   ok: true;
   bs: StatementsScreen['bs'];
+}
+
+/** GET /api/budget-screen の応答 (spec-budget-screen §API契約)。数値は core の budgetScreen がそのまま出す */
+export type BudgetScreenResponse = BudgetScreen & { period: PeriodMeta };
+
+/** PUT /api/budget-plans の応答。dirty row patch を反映した新しいrevision */
+export interface BudgetPlansSaveResponse {
+  ok: true;
+  start: string;
+  count: number;
+  savedAt: string | null;
+  revision: string | null;
 }
 
 export type {
