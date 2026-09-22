@@ -3,7 +3,7 @@ status: confirmed
 category: database
 aggregate: 確定
 spec_cells: [database.web, database.mobile, database.tablet, database.desktop-windows, database.desktop-linux, database.desktop-macos]
-serves_goals: [G2, G5]
+serves_goals: [G3, G5]
 ---
 
 # データベース (database)
@@ -15,12 +15,12 @@ serves_goals: [G2, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-ai-database-web-001。裏付け質疑 (`qa_refs`): `qa-ai-database-web-evidence-001`, `qa-ai-database-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、database では端末内に依頼とレポートを持つ場合のローカル DB と D1 の同期規則を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、database では共有端末に残るレポート本文のキャッシュ期限を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、database ではオフライン時に貼り付けたレポートを保留する端末内の保存形を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、database では端末内に保留したレポートの保存先のファイル権限を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、database では端末内に保留したレポートを Keychain とファイルのどちらに置くかを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-tradeoff-database-web-001。裏付け質疑 (`qa_refs`): `qa-tradeoff-database-web-evidence-001`, `qa-tradeoff-database-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、database では端末内に試算条件を持つオフライン保存と D1 との同期規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、database ではタブレットと web で同じ試算を同時に編集したときの行の競合規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、database では端末内データベースへの候補のキャッシュと失効の規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、database では端末内データベースの版の移行手順を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、database では端末内データベースと D1 の差分の取り込み規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G2, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | ai_tasks の新しい列の書き込みを、それぞれの出来事の経路 1 か所にだけ置く形へ反映した。データ取得時刻はエージェントのデータ取得、差し戻しはレポートの契約違反、取消時刻はキャンセル経路で書き、段階の導出側は読むだけにする。 |
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration 0046 を列の追加だけにすることで、既存の依頼とレポートを 1 行も書き換えず、巻き戻しが新しい列を読まないことだけで済む形へ反映した。runtimeSchemaGuard の必須列に新しい列を加え、migration 前の Worker で新経路が動かないようにする。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 上書きの読み書きを (user_id, candidate_key) の一意キー 1 本で行う形へ反映した。GET では利用者の上書きを 1 回で読み、候補に重ねるのは core 側で行う。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration を追加のみ (CREATE TABLE と ADD COLUMN) に限り、既存の tradeoff_plans の行を書き換えない形へ反映した。途中で Deploy が止まっても既存の行と突合の関数は読めるままになる。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,43 +37,43 @@ serves_goals: [G2, G5]
 
 ### Web (web)
 
-- 資するゴール: G2, G5
+- 資するゴール: G3, G5
 
-#### 主たる接地根拠: `qa-ai-database-web-001`
-
-**問**
-
-AI 依頼の段階を導くために D1 のスキーマをどう変えるか。
-
-**答**
-
-追加のみの migration 0046 で ai_tasks に 連番 (seq)・データ取得時刻 (data_fetched_at)・差し戻し時刻 (rejected_at)・差し戻し回数 (reject_count、既定 0)・取消時刻 (canceled_at) を足す。既存行は書き換えない。段階・進捗・版の説明は保存せず記録から導く。ai_reports は変えない。runtimeSchemaGuard の必須列に新しい列を加え、migration 適用前の Worker が新しい経路を中途半端に動かさないようにする。具体の採番は qa-ai-database-web-003 (agent 推定) を参照。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-database-web-evidence-001`
+#### 主たる接地根拠: `qa-tradeoff-database-web-001`
 
 **問**
 
-database 章の裏付けとして、AI 依頼とレポートの保存形について何を観測したか。
+web のトレードオフ画面が要する永続化は何か。
 
 **答**
 
-ai_tasks (packages/api/src/db/schema.ts:589-611) は id・user_id・period_from/to・report_type・supplement・parent_report_id・token_hash・expires_at・used_at・copied_at・copied_target・report_id・created_at を持ち、連番・データ取得時刻・差し戻し・取消の列は無い。ai_reports (schema.ts:620-640) は version (同じ期間・型の通し番号)・parent_report_id・title・summary・body_json・archived_at を持つ。migration は migrations/ 直下の連番で、最新は 0045_owner_labels.sql である。
+追加のみの migration (予定番号 0050) で、tradeoff_plans に開始月とメモの列を足し、候補ごとの上書き (必要度とメモ) を置く新表を作る (qa-tradeoff-decision-002, 006, 007)。『この条件で試算』のたびに tradeoff_plans へ 1 行を追加し (qa-tradeoff-decision-008)、最新の 1 件を復元に使う。既存の行と列は書き換えず、保存一覧と突合の表示は外すがデータは残す (qa-tradeoff-decision-004)。全行を user_id で分ける。候補は freee_deals から読み、候補そのものは保存しない。具体の形と上限は qa-tradeoff-database-web-003 (agent 推定) を参照。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:19:22Z)
 
-#### 裏付け質疑: `qa-ai-database-web-003`
+#### 裏付け質疑: `qa-tradeoff-database-web-evidence-001`
 
 **問**
 
-web の AI分析画面で、利用者が決めていない 依頼の連番の採番方法と、既存行の番号の扱い を何にするか。
+database 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。
 
 **答**
 
-連番は利用者ごとに max(seq)+1 で採番し、(user_id, seq) に一意索引を張って衝突時は 1 回だけ採番し直す。既存行は seq が NULL のままで、ID 欄には T-番号の代わりに『旧』と作成日を表示する (行は書き換えない)。 これは agent の推定で、利用者は未確認である。画像と決定 001〜008 のどれにも値が無いため、実装で決定論を保つために置いた。
+D1 の tradeoff_plans (migrations/0000_init.sql:85-95、packages/api/src/db/schema.ts:610-620) は id, user_id, title, amount, recurring, selected (JSON 文字列), covered, verdict, created_at を持ち、開始月とメモの列が無い。候補ごとの上書きを置く表は無い。freee_deals (schema.ts:47) は user_id, month, date, io (income / expense), partner, account_raw, account_norm, amount を持ち、科目×取引先の集計に必要な列がそろっている。最新の migration は 0049_ai_report_invariants.sql で、schema-guard.ts の EXPECTED_D1_MIGRATION も 0049 を指す。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-21T15:19:22Z)
+
+#### 裏付け質疑: `qa-tradeoff-database-web-003`
+
+**問**
+
+web のトレードオフ画面で、利用者が決めていない 候補キーと上書きの表の形・文字数の上限 を何にするか。
+
+**答**
+
+候補キーは『account_norm + 区切り文字 + partner (空なら空文字)』の文字列。上書きは新表 tradeoff_candidate_notes (user_id, candidate_key, need は low / mid / high か NULL, memo は NULL 可, updated_at) で (user_id, candidate_key) を一意にし upsert する。need と memo が両方 NULL になったら行を消して自動へ戻す。tradeoff_plans には start_month (YYYY-MM、NULL 可) と memo (NULL 可) を ADD COLUMN で足し、selected の JSON に候補キーを含める。既存行は NULL のまま読む。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:19:22Z)
 
 ## To-Be / Delta
 
@@ -81,20 +81,20 @@ web の AI分析画面で、利用者が決めていない 依頼の連番の採
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 依頼の段階と進捗を core の純関数 1 か所で記録から導く。発行済みでデータ未取得 = 待機中 0%、データ取得済み = 実行中 50%、形式エラーで差し戻し = 実行中 75%、受信 = 完了 100%、結果なしで期限切れ = 失敗、取り消し = キャンセル。依頼には利用者ごとの連番から T-0001 形式の ID を振る。
-- **G5**: データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。
+- **G3**: 見直し候補を事業経費の科目×取引先ごとに直近 3 か月の平均月額で作る。必要度 (低 / 中 / 高) と直近の推移 (過去 3 か月の減少 / 横ばい / 増加) を core が推定し、『損益・メモ』には検知器の改善案や推移から作る自動の理由を出す。利用者は必要度を上書きしメモを書け、それらは D1 に保存して自動の値より優先する。
+- **G5**: 試算条件と候補ごとの上書きを安全に記録する。『この条件で試算』を押すたびに条件 (支出名・金額・単発 / 毎月・開始月・メモ・選んだ候補・差額) を既存 tradeoff_plans へ履歴として追加し、画面は最新の 1 件を復元する。保存一覧と翌月の突合は画面から外すが、既存の行と突合の関数は消さない。列と表は追加のみの migration で足し、入力は zod で検証し文字数に上限を設け、利用者ごとに分離する。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | 依頼の段階と進捗が記録から一意に決まる。 | core の単体テストで、6 つの段階 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル) が記録の組合せから toBe で導かれ、期限切れと受信・取消の優先順位が境界ケースで固定される。 |
-| O5 | データの件数が実データと一致し、外部へ出るのは集計値だけである。 | API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。 |
+| O3 | 候補と必要度・推移・理由が決定論で出て、上書きが優先される。 | core の契約テストで、科目×取引先の集計・直近 3 か月平均・推移の 3 区分・必要度の推定・理由の文を固定入力で検査し、api テストで上書きの保存と読み戻し、利用者間の分離を検査する。 |
+| O5 | 試算条件と上書きの記録が追加のみで安全に行われる。 | migration が CREATE TABLE / ALTER TABLE ADD COLUMN だけで、api テストで zod の上限・認証・利用者分離・最新 1 件の復元を検査し、既存の tradeoff_plans の行と tradeoffReview の契約テストが緑のままである。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I2**: core に依頼の段階と進捗を導く純関数と T-番号の整形を新設し、api の taskStatus と web の表示をこれに寄せる。
-- **I6**: 使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。
+- **I3**: core に科目×取引先の候補集計・推移・必要度・自動の理由を新設し、上書きの新表と保存 API を足す。
+- **I5**: tradeoff_plans に開始月・メモ列を足し、POST で履歴を追加、GET で最新 1 件を返して画面で復元する。保存一覧と突合の表示を外す。
 
 ### 本章に効く確定意思決定
 
@@ -106,9 +106,9 @@ web の AI分析画面で、利用者が決めていない 依頼の連番の採
 
 ### 本章での適用
 
-DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、ai_tasks に足す列の選び方に適用した。進捗 % や段階名は記録から導けるので保存しない。一方でエージェントがデータを取りに来た時刻、形式エラーで差し戻した時刻と回数、利用者が取り消した時刻は、後から導けない出来事なので列として持つ。T-番号の元になる連番も採番時にしか決まらないので保存する。ai_reports は版と親子関係をすでに持っており、版の説明は依頼の補足指示から導けるので列を足さない。
+追加のみの schema 進化の原則を、上書きと試算条件の置き場所に適用した。上書きは候補ごとに 1 行の新表とし (user_id, candidate_key) の一意制約で upsert するため、同じ候補に上書きが重複しない。試算条件は tradeoff_plans に ADD COLUMN で開始月とメモを足し、既存行は NULL として読むので、突合の関数 tradeoffReview と既存の行が壊れない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:19:22Z)
 
 ### Domain-Driven Design — deep knowledge card
 
@@ -155,4 +155,5 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
+| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |
+| sqlite-upsert | 2024-04-11 | SQLite Consortium (sqlite.org) (sqlite.org) | https://sqlite.org/lang_upsert.html | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |

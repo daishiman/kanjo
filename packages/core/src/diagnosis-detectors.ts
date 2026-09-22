@@ -109,7 +109,7 @@ export const DIAGNOSIS_NOTE_MAX = 500;
 
 const COMMS_CATEGORY = 'サブスク・通信';
 
-const claimPart = (value: string): string => value.trim().normalize('NFKC').toLocaleLowerCase('ja');
+export const claimPart = (value: string): string => value.trim().normalize('NFKC').toLocaleLowerCase('ja');
 
 const withQuery = (path: string, params: Record<string, string | number>): string => {
   const query = Object.entries(params)

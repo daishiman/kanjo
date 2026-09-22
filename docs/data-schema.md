@@ -594,3 +594,31 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 索引: `uq_ai_tasks_user_seq`(`user_id`, `seq`)の一意索引。SQLite は NULL どうしを重複とみなさないので、`seq` の無い既存行は何行あっても衝突しない。
 - **段階名(待機中 / 実行中 / 完了 / 失敗 / キャンセル)と進捗 % は保存しない**。core の `aiTaskStage` が `canceled_at` → `used_at` → `expires_at` → `rejected_at` → `data_fetched_at` の順に時刻から毎回導く。列に持つと、期限切れのような「時間が経っただけで変わる段階」を更新し忘れて表示と食い違う。
 - **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE UNIQUE INDEX` のみ)。`ai_reports` は変えない。`packages/api/src/ai-migration-0048.test.ts` が、当てても行の更新が 0 件であることと既存列の値が変わらないことを固定する。
+
+## トレードオフ画面の開始月・メモと必要度の上書き(0050)
+
+`migrations/0050_tradeoff_notes.sql` が `tradeoff_plans` に 2 列を足し、`tradeoff_candidate_notes` を作る。画面仕様の正本は `specs/spec-tradeoff-screen.md`、規則の一覧は `docs/spec-v1.1.md` の FR-09。
+
+`tradeoff_plans` の追加列:
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `start_month` | TEXT | 新しい支出の開始月(`YYYY-MM`)。記録と復元のためだけに持ち、試算の年額には効かない |
+| `memo` | TEXT | 新しい支出のメモ(500 字まで)。空は NULL で保存する |
+
+- 0050 以降の POST は `selected` に `[{key, label, value}]`(候補キー、「科目 / 取引先」の表示名、保存時のサーバの月額)を、`covered` に選んだ候補の月額合計を入れる。covered と verdict は本文を信用せず、サーバーが現在の候補から再計算する。現在の候補に無いキーが 1 つでもあれば 422 で 1 行も増やさない。
+- 画面が読むのは最新の 1 行だけ。旧形式の `selected`(`{label, value}`)の行は `key` が無いので、復元される候補は 0 件になる。
+
+`tradeoff_candidate_notes`:
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT NOT NULL | 利用者 |
+| `candidate_key` | TEXT NOT NULL | 候補キー `科目\|取引先`(科目は正規化後) |
+| `need` | TEXT | 利用者が上書きした必要度 `low` / `mid` / `high`。NULL なら core の推定を使う |
+| `memo` | TEXT | 候補のメモ(500 字まで)。あれば理由の欄にメモを出す |
+| `updated_at` | TEXT NOT NULL | 最後に上書きした時刻 |
+
+- 索引: `tradeoff_candidate_notes_user_key`(`user_id`, `candidate_key`)の一意索引。PUT は UPSERT なので、同じ本文を繰り返しても行は増えない。`need` と `memo` の両方が NULL の PUT はその行を消し、自動の推定へ戻す。
+- `need` の値域は既存表の流儀に合わせて CHECK 制約ではなく API の zod で守る。
+- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE TABLE` / `CREATE UNIQUE INDEX` のみ)。`packages/api/src/tradeoff-migration-0050.test.ts` が、当てても既存行の更新が 0 件であることと既存列の値が変わらないことを固定する。

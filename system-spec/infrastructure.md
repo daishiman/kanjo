@@ -3,7 +3,7 @@ status: confirmed
 category: infrastructure
 aggregate: 確定
 spec_cells: [infrastructure.web, infrastructure.mobile, infrastructure.tablet, infrastructure.desktop-windows, infrastructure.desktop-linux, infrastructure.desktop-macos]
-serves_goals: [G5]
+serves_goals: [G1, G5]
 ---
 
 # インフラ (infrastructure)
@@ -15,12 +15,12 @@ serves_goals: [G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-ai-infrastructure-web-001。裏付け質疑 (`qa_refs`): `qa-ai-infrastructure-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、infrastructure ではApp Store / Google Play の配布と審査、プッシュ通知の基盤を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、infrastructure ではタブレット向けビルドの配布経路と対応 OS 版を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、infrastructure ではMSI / MSIX の配布と自動更新サーバを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、infrastructure ではdeb / rpm / AppImage のどれで配るかと更新の経路を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、infrastructure ではdmg の配布と Sparkle などの自動更新を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-tradeoff-infrastructure-web-001。裏付け質疑 (`qa_refs`): `qa-tradeoff-infrastructure-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、infrastructure ではアプリストアへの配布と審査の手順を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、infrastructure ではタブレット向けの配布物の分割を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、infrastructure ではWindows のインストーラと更新サーバを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、infrastructure ではLinux の配布形式 (AppImage など) の選定を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、infrastructure ではmacOS の配布と更新サーバを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | 反映の順序を Migrate → Deploy に固定する形へ反映した。migration 0046 は列の追加だけなので、適用後に旧 Worker が動いていても新しい列を読まないだけで壊れない。 |
-| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | 基盤の変更が D1 の列追加だけであることを、既存の deploy.yml と migrate.yml をそのまま使う形へ反映した。新しい secret・キュー・外部サービスの登録は発生しない。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | runtimeSchemaGuard の期待 head を 0050 (予定) へ進め、migration が未適用の環境では tradeoff を含む API が schema_unavailable で止まる形へ反映した。 |
+| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | 本番反映を既存の Migrate → Deploy の順とゲートに乗せ、新しい手順を足さない形へ反映した。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,31 +37,31 @@ serves_goals: [G5]
 
 ### Web (web)
 
-- 資するゴール: G5
+- 資するゴール: G1, G5
 
-#### 主たる接地根拠: `qa-ai-infrastructure-web-001`
-
-**問**
-
-AI分析画面のために配信・実行・DB 反映の基盤をどう変えるか。
-
-**答**
-
-基盤は変えない。既存の Cloudflare Worker と D1 のまま、migration 0046 を既存の Migrate の手順とゲートで適用してから Deploy する。アプリから LLM を呼ぶ経路・キュー・外部ストレージは足さない (scope.out)。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-infrastructure-web-evidence-001`
+#### 主たる接地根拠: `qa-tradeoff-infrastructure-web-001`
 
 **問**
 
-infrastructure 章の裏付けとして、既存の配信と反映の仕組みについて何を観測したか。
+web のトレードオフ画面のインフラ要件は何か。
 
 **答**
 
-API は Cloudflare Worker (Hono) と D1 で、配信は .github/workflows/deploy.yml、D1 の migration 適用は .github/workflows/migrate.yml が担う。ルートの build は web の build と wrangler deploy --dry-run を行う (package.json:16)。AI 分析はアプリから LLM を呼ばず、外部の Claude Code / Codex がトークンで API を呼ぶ構成である。
+既存の構成 (Cloudflare Worker の api と D1、静的配信の web) を変えない。画面は lazy import のまま初期 JS 予算 (check:js-budget の CI 実測) を超えない。migration を足すので runtimeSchemaGuard の EXPECTED_D1_MIGRATION を同じ変更で進め、本番反映は既存の Migrate → Deploy の手順とゲートに従う。新しい binding や外部サービスは足さない。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:19:22Z)
+
+#### 裏付け質疑: `qa-tradeoff-infrastructure-web-evidence-001`
+
+**問**
+
+infrastructure 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。
+
+**答**
+
+トレードオフ画面は packages/web/src/AuthenticatedApp.tsx:35 で lazy import され、初期 JS に入らない。web の build は build:bundle → check:js-budget (scripts/check-initial-js-budget.mjs) → strip:manifest の順 (packages/web/package.json:9)。api は Cloudflare Worker で D1 を binding する。runtimeSchemaGuard は D1 の d1_migrations の head を EXPECTED_D1_MIGRATION と照合し、遅れていれば schema_unavailable を返す。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-21T15:19:22Z)
 
 ## To-Be / Delta
 
@@ -69,17 +69,21 @@ API は Cloudflare Worker (Hono) と D1 で、配信は .github/workflows/deploy
 
 ### 到達すべき状態 (To-Be)
 
-- **G5**: データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。
+- **G1**: /tradeoff を 15-tradeoff.png どおりの画面にする。見出し『トレードオフ』と問い『新しい支出を増やすなら、何を見直しますか？』と説明文、分析期間 (グローバル) のカード、1.新しい支出を設定 (支出名・金額・単発 / 毎月・開始月・メモ)、2.見直し候補の選択 (検索・カテゴリ絞込・選択をすべてクリア、# / カテゴリ・取引先 / 月額 / 年額 / 必要度 / 直近の推移 / 損益・メモ の表と件数表示)、3.推奨の組み合わせ (内容・年間削減額・充足度・実行のしやすさ・リスクの表と、選択中の組み合わせの理由・関連ページへのリンク)、計算例 (毎月と単発)、右側の試算結果 (新しい支出・見直しによる削減額・年間の差額と警告・防衛ラインへの影響・計算の前提)、下部の選択中バー (件数・年間削減額・年間差額・選択をクリア・この条件で試算) を、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。
+- **G5**: 試算条件と候補ごとの上書きを安全に記録する。『この条件で試算』を押すたびに条件 (支出名・金額・単発 / 毎月・開始月・メモ・選んだ候補・差額) を既存 tradeoff_plans へ履歴として追加し、画面は最新の 1 件を復元する。保存一覧と翌月の突合は画面から外すが、既存の行と突合の関数は消さない。列と表は追加のみの migration で足し、入力は zod で検証し文字数に上限を設け、利用者ごとに分離する。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O5 | データの件数が実データと一致し、外部へ出るのは集計値だけである。 | API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。 |
+| O1 | トレードオフ画面が画像の全構成要素を描画する。 | DOM テストで、見出しと問い・分析期間カード・1.新しい支出の 5 入力・2.候補表の 8 列と検索とカテゴリ絞込と全クリア・3.推奨の表と理由とリンク・計算例 2 種・右側の試算結果と防衛ラインへの影響と計算の前提・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。 |
+| O5 | 試算条件と上書きの記録が追加のみで安全に行われる。 | migration が CREATE TABLE / ALTER TABLE ADD COLUMN だけで、api テストで zod の上限・認証・利用者分離・最新 1 件の復元を検査し、既存の tradeoff_plans の行と tradeoffReview の契約テストが緑のままである。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I6**: 使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。
+- **I1**: Tradeoff.tsx を pages/tradeoff/ 配下へ分割し、見出しと問い・分析期間カード・1.新しい支出・2.見直し候補・3.推奨の組み合わせと計算例・右側の試算結果・下部の選択中バーの構成に作り直す。
+- **I3**: core に科目×取引先の候補集計・推移・必要度・自動の理由を新設し、上書きの新表と保存 API を足す。
+- **I5**: tradeoff_plans に開始月・メモ列を足し、POST で履歴を追加、GET で最新 1 件を返して画面で復元する。保存一覧と突合の表示を外す。
 
 ### 本章に効く確定意思決定
 
@@ -91,9 +95,9 @@ API は Cloudflare Worker (Hono) と D1 で、配信は .github/workflows/deploy
 
 ### 本章での適用
 
-本章へ引く card は 0 件である。配信構成 (Worker・Workers Assets・D1) と binding を変えない判断を記録する。AI 分析はアプリが LLM を呼ばず、外部のエージェントがトークンで既存の API を呼ぶ構成なので、キュー・外部ストレージ・LLM の鍵を Worker に持たせない。変更は D1 の列追加だけで、既存の Migrate → Deploy の順序で反映できる。
+既存の構成を変えずに機能を足す原則を適用した。新しい binding や外部サービスは足さず、migration 1 本と EXPECTED_D1_MIGRATION の更新だけでデプロイ手順に乗せる。画面は lazy import のまま初期 JS 予算の外に置く。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:19:22Z)
 
 - `ref-system-design-knowledge/references/resource-map.yaml` (本章へ引く card は 0 件。未着手ではなく、上の適用記述で0 件である理由を述べた上での確定である)
 
@@ -101,4 +105,4 @@ API は Cloudflare Worker (Hono) と D1 で、配信は .github/workflows/deploy
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-workers-limits | 2026-09-05 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/workers/platform/limits/ | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
+| cloudflare-workers-limits | 2026-09-05 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/workers/platform/limits/ | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |

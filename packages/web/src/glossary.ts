@@ -420,18 +420,6 @@ export const GLOSSARY = {
     bench: '着地見込みが年間予算を超えていれば、残り月で調整する余地がまだある',
     aliases: ['着地見込み', '着地予測'],
   },
-  budgetOver: {
-    term: '予算超過',
-    short: '直近3ヶ月平均が予算の1.1倍を超えた科目。超えた分がそのまま削減候補の金額になる。',
-    bench: '超過額を予算まで戻すのが最初の削減目標',
-    aliases: ['予算超過', '予算オーバー'],
-  },
-  unexplained: {
-    term: '精査期待値',
-    short: '中身が分かっていない支出を調べれば、これくらいは減らせそう、という見積もり額。確定額ではない。',
-    desc: '「未分類」「使途不明」に溜まった金額の一部は、見直せば削れることが多い。あくまで期待値なので、選ぶ前に明細を確認する。',
-    aliases: ['精査期待値'],
-  },
   vendor: {
     term: 'ベンダー',
     short: 'サービスの提供元(Adobe・Googleなど)。明細の摘要から名前を拾って同じ会社にまとめている。',
@@ -507,16 +495,7 @@ export const GUIDE_SECTIONS: readonly GuideSection[] = [
   {
     title: '画面が出す判断',
     lead: 'アプリが数字を見て先に付けた札。何を根拠にその言葉が出ているかを書いてある。',
-    ids: [
-      'judge',
-      'signal',
-      'classification',
-      'fixedCost',
-      'variance',
-      'landing',
-      'budgetOver',
-      'unexplained',
-    ],
+    ids: ['judge', 'signal', 'classification', 'fixedCost', 'variance', 'landing'],
   },
   {
     title: 'サブスクと家計',

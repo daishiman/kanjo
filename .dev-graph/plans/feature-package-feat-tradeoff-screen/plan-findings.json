@@ -1,0 +1,196 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/run-tradeoff-20260921T2250Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "13 件の task-specs と goal-spec.json (manifest 非対象の付随ファイル) の記述を突合し、矛盾を確認しなかった。migration 0050 の性質 (追加のみ・既存行書換 0 件・予定番号で着手時と merge 直前に origin/main を fetch して最新+1へ付け替える) は phase-02/05/13 で一貫し、OI-03 (tradeoff-review.dom.test.tsx の意図の置き換え) は phase-04 で具体化され、他 phase と矛盾する記述はない。goal-spec.json 自体は staging-manifest.json の files に含まれない付随ファイルのため evidence には計上せず、task-specs の記述内容で裏付ける。",
+      "evidence": [
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-13-release-deploy.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "exact-13 の phase_ref (P01..P13) と task_id (SYS-TRADEOFF-P01..P13) が feature-package.json / task-graph.json / workstream-inventory.json / system-build-handoff.json の全4箇所で一致し、欠落・余剰がない。受入 S1〜S6 (goal-spec.json に記載、manifest 非対象) は phase-07-acceptance.md (受入基準 S1 から S6 の検証) を主体に、phase-04 (失敗テスト先行)・phase-05 (実装)・phase-09 (QA) が個別項目を分担して回収しており、未写像の受入項目はない。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "task-specs/phase-07-acceptance.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "staging-manifest.json の files 17件全ての実測 sha256 が記録値と一致し、staging-manifest.json 自身の実測 sha256 も評価対象として確定した。system-build-handoff.json の source_inputs (feature-package.json / workstream-inventory.json / task-graph.json / task-specs 13件 = 16件) は staging-manifest.json の files の対応値と全件一致する。digest_contract の final_manifest_digest_scope (handoff を含む全 manifest ファイル、manifest 自身は除外) の定義どおりに canonical_digest スコープが整合し、gate の validated_digest も evaluated_digest と一致する。staging 外の正本との突き合わせ (manifest 非対象ファイルのため evidence には計上しない): goal-spec.json#source_lineage に記載された features/feat-tradeoff-screen.context.json, features/feat-tradeoff-screen.md, specs/spec-tradeoff-screen.md, system-spec/00-requirements-definition.md, system-spec/completeness-findings.json, architecture/tradeoff-{ui-ux,frontend,backend,database,auth,security,infrastructure,maintenance-ops}.md 計13件の sha256 を shasum -a 256 で実測し、記録値と全件一致した。system-build-handoff.json#identity.source_feature_digest (sha256:fefc4915...) も features/feat-tradeoff-screen.context.json の実測 sha256 と一致した。system-build-handoff.json#identity.repository_id (github:daishiman/kanjo) は goal-spec.json#repository_id と一致し、repository boundary の越境はない。registration_request の promotion_receipt (owner=system-dev-planner/C11) と registration_receipt (owner=dev-graph/C02) はいずれも status=not-emitted で先行発行がなく、owner 境界の越境もない。",
+      "evidence": [
+        "staging-manifest.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の depends_on は P01→P02→...→P13 の単鎖 (各ノード直前1件のみに依存) であり、前方参照や循環がない。system-build-handoff.json#execution_tasks と workstream-inventory.json#tasks の depends_on も同一の単鎖であり、task-specs 各ファイルの『前提条件/Dependencies』節の記述とも一致する。write_scope は phase-01/02/03/06/07/08/09/10/13 が docs/tradeoff-screen/design-decisions.md、phase-04 がテストファイルのみ、phase-05 のみ packages/core・packages/api・packages/web・migrations/ の実装ファイル、phase-11 が docs/tradeoff-screen/evidence.md、phase-12 が docs/ 配下複数文書であり、docs/tradeoff-screen/design-decisions.md への write_scope 重複は複数 phase にまたがるが、依存関係が単鎖で並行実行がないため衝突しない。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "workstream-inventory.json",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-13-release-deploy.md",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "${CLAUDE_PLUGIN_CACHE}/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        ".",
+        "--staging",
+        ".dev-graph/staging/run-tradeoff-20260921T2250Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\"schema_version\": \"1.0.0\", \"status\": \"pass\", \"validated_digest\": \"sha256:385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748\", \"feature_package_id\": \"feature-package/feat-tradeoff-screen\", \"parent_feature\": \"feat-tradeoff-screen\", \"phase_refs\": [\"P01\", \"P02\", \"P03\", \"P04\", \"P05\", \"P06\", \"P07\", \"P08\", \"P09\", \"P10\", \"P11\", \"P12\", \"P13\"], \"violations\": []}",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "staging-manifest.json",
+      "sha256": "3dd62172ea9d67d40f50a72e18ff68d63f0bf5fc1265cdfd633e812d7912ca92"
+    },
+    {
+      "path": "feature-package.json",
+      "sha256": "aba9bbe420495bb7c7e604d5ced7824367962d0952b4bed3dbc4cae1ccd479c6"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "109fd6db5637a40af6a99e488eb14438b0ac9ef4f7b761620a26258626a7916f"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "b1208cdca97af6ca050031b54a40aaf292655d24dcceed53b16484e6bb285e17"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "12b1a4f790c66e750b2dfe55f28c57fbbf87c0912ab89107b5af4de56062ec3c"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "31f15daddd36929754ffb90444f01247fc647f469bcd7af165cd45f56066ae5b"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "728567584393d8cd11a04a55b0070b3140d03527ad8f9a7114c7a461c0420656"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "e2ae340fef8f9dae0909dc1922e60b57dd0de4eb62c9413dd31df9304922b6c0"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "91e9f57c5253b105701e94a4ae35b1f8e6f8e5df8db77df73b37fe71d561658b"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "fcadbe7de49f8e5eb85407a95a5aca588d1a73146d02f5729fdbc817c3d221db"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "55d759bcc877a6bf47a48b259ff81262570bb6b75b73a39129bbb216e0939a72"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "168e3c4cf641df6f7eec9a712dc7576ed94ae20b83592df6d109a853b51f8a40"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "91ccf22a56d22f34574022cda6e144bf11afcc9a878d074f9d5c8a17d2838e10"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "1eb4af28047942cffda0c45d35fef01035cd773c8afc7367796d1fe5e96f85c2"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "a14ddc96c4aa2fe6d2d535a42b6f57e1dfb48bf1ff84bc4f2a389b2c64660525"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "e3742746e87308cb6b902665afb57526021db657003e9c38af70a44f322e4e33"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "e2f27c1e90074a5378544ad798fc4fe0932fc6127ddca4f91f5a34e9a6bfef7a"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "f48f7aed741345d319a03bfde6d0d9a8ec013ea0617147f542e1c47329005105"
+    }
+  ],
+  "staleness_rule": "本 findings は evaluated_digest (staging-manifest.json#canonical_digest = sha256:385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748) に束縛される。staging-manifest.json の canonical_digest、files 配下いずれかの sha256、または staging-manifest.json 自身の sha256 が再生成等で変化した場合、本 findings は無効 (stale) であり、C11 promotion gate は evaluated_digest と promotion 対象 digest の完全一致、および evaluated_inputs (manifest files 全17件 + staging-manifest.json 自身の計18件) の exact-set 一致を要求し、不一致時は本 findings を採用してはならない。別 run_id/別 digest に対する verdict は本 findings の根拠として再利用できない。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "digest-integrity",
+      "observation": "staging-manifest.json の files 17件および staging-manifest.json 自身の sha256 を実ファイルから再計算し、記録値と完全一致することを確認した。canonical_digest は validate-system-plan.py の validated_digest と一致する。",
+      "evidence": [
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "source-lineage",
+      "observation": "staging 外の正本との突き合わせ (staging-manifest.json の files には含まれない付随情報): goal-spec.json#source_lineage に記載された features/architecture/specs/system-spec 計13件の sha256 を shasum -a 256 で再計算し、全件一致を確認した。system-spec/00-requirements-definition.md と system-spec/completeness-findings.json の2件も本 fork context から直接 hash 検証でき、遮断は発生しなかった。",
+      "evidence": [
+        "gate:deterministic-validation"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "repository-boundary",
+      "observation": "system-build-handoff.json#identity.repository_id = github:daishiman/kanjo が呼び出し元 repository_id と一致し、registration_request の promotion_receipt (owner=system-dev-planner/C11) と registration_receipt (owner=dev-graph/C02) はいずれも status=not-emitted で先行発行がなく、owner 境界の越境がない。",
+      "evidence": [
+        "system-build-handoff.json"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "write-scope-overlap",
+      "observation": "docs/tradeoff-screen/design-decisions.md が phase-01/02/03/06/07/08/09/10/13 の write_scope に重複して現れる。task-graph.json の depends_on が P01→...→P13 の単鎖であり並行実行が起きないため C4 の衝突判定上は FAIL としないが、将来 worktree lease の並行化ポリシーが変わった場合は再評価が必要である。",
+      "evidence": [
+        "task-graph.json",
+        "task-specs/phase-13-release-deploy.md",
+        "gate:deterministic-validation"
+      ]
+    }
+  ]
+}

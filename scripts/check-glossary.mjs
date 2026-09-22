@@ -3,6 +3,8 @@
 // 2) 画面で使っている id が辞書に存在する(型検査でも弾けるが、文字列検索でも二重に確認する)
 // 「使われている」の形は2つある。自由文やラベルに置く <Term id="…"> と、
 // 表の見出しに置く termColumn('…')。後者は見出しの文言も辞書から引くので、同じく画面に出る。
+// 加えて、ページヘッダーの task / taskDetail(routeMetadata.ts)は PageHeader が linkTerms に通すので、
+// そこに別名が出る用語も画面でホバーが出る。4) で別名どうしの包含を禁じているため、部分一致で判定してよい。
 // 3) short が空でない・全角120字以内(ホバーで読める長さ)
 // 4) 別名(aliases)が空でなく、別々の用語で取り合いにならない(同じ表記の重複・別用語の別名を丸ごと含む表記を禁じる)
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -40,11 +42,32 @@ for (const f of files) {
     }
 }
 
+const starts = [...body.matchAll(/^ {2}(\w+): \{/gm)];
+/** id -> その用語が自由文で拾う表記の一覧(aliases 未指定なら term 1件) */
+const aliasesById = new Map();
+for (const [index, start] of starts.entries()) {
+  const src = body.slice(start.index, starts[index + 1]?.index ?? body.length);
+  const term = /\bterm: '([^']*)'/.exec(src)?.[1] ?? '';
+  const aliasBlock = /\baliases: \[([\s\S]*?)\]/.exec(src)?.[1];
+  const list = aliasBlock ? [...aliasBlock.matchAll(/'([^']*)'/g)].map((m) => m[1]) : [term];
+  aliasesById.set(start[1], list);
+}
+
+/** ページヘッダーの文。PageHeader が linkTerms に通す */
+const headers = [
+  ...readFileSync(join(root, 'routeMetadata.ts'), 'utf8').matchAll(/\btask(?:Detail)?:\s*'([^']*)'/g),
+].map((m) => m[1]);
+for (const [id, list] of aliasesById)
+  if (list.some((text) => text.trim() && headers.some((header) => header.includes(text)))) {
+    if (!used.has(id)) used.set(id, []);
+    used.get(id).push('routeMetadata.ts (ヘッダーの linkTerms)');
+  }
+
 const errors = [];
 for (const id of ids)
   if (!used.has(id))
     errors.push(
-      `辞書の「${id}」はどの画面でも <Term id="${id}"> / termColumn('${id}') として使われていません。画面に出ない用語は辞書から外してください。`,
+      `辞書の「${id}」はどの画面でも <Term id="${id}"> / termColumn('${id}') として使われておらず、ページヘッダーの文にも別名が出ません。画面に出ない用語は辞書から外してください。`,
     );
 for (const id of used.keys())
   if (!ids.includes(id))
@@ -61,17 +84,6 @@ for (const m of body.matchAll(/^ {2}(\w+): \{[\s\S]*?short: '([^']*)'/gm)) {
 // --- 別名(表記ゆれ)の検査 ---
 // 自由文のホバー化(linkTerms)は「長い表記から順に、いちばん左に出たもの」を採るため、
 // 別名が別の用語の別名を丸ごと含むと、どちらの説明が出るかが表記ゆれ次第で変わってしまう。
-const starts = [...body.matchAll(/^ {2}(\w+): \{/gm)];
-/** id -> その用語が自由文で拾う表記の一覧(aliases 未指定なら term 1件) */
-const aliasesById = new Map();
-for (const [index, start] of starts.entries()) {
-  const src = body.slice(start.index, starts[index + 1]?.index ?? body.length);
-  const term = /\bterm: '([^']*)'/.exec(src)?.[1] ?? '';
-  const aliasBlock = /\baliases: \[([\s\S]*?)\]/.exec(src)?.[1];
-  const list = aliasBlock ? [...aliasBlock.matchAll(/'([^']*)'/g)].map((m) => m[1]) : [term];
-  aliasesById.set(start[1], list);
-}
-
 const aliasOwner = new Map();
 for (const [id, list] of aliasesById) {
   if (!list.length) errors.push(`「${id}」の aliases が空です。省略するか、1件以上の表記を入れてください。`);

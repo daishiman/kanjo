@@ -1696,7 +1696,7 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": "ca1a7d4ebc7c4a05a480ce8604fbab86d9eeb13738395bcf4aefaee4124e2579",
+        "source_digest": "5338c847c18d192e18271d8d4582fe232f07197c8f2a1c72291396b66de8b02e",
         "imported_at": "2026-09-18T00:00:00Z"
       },
       "referenced_by": [
@@ -2552,7 +2552,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "5c6788a52947b35f54ae87183aa1e3e6f17ed9ff5e8ff0b86f3192ca418f7a06",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2575,7 +2575,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "eba3e33334b9f5c6dcff8e1b78b8fff1804f2f52604edca0382f1a6158f36ef4",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2598,7 +2598,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "e39b090e33900452ae1d5ce73e97bb80e02c65be0deb210278f19af238dafca4",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2621,7 +2621,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "1a0540e072013253e364b82ad4a3f1e91124019fd5baba6c85772025d47dcbfb",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2644,7 +2644,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "43dfdc557b5f5aaf98b06b941235ed93dba451d3a240fd2721a898a582678f37",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2667,7 +2667,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "8f446762dac8ac8a6d4309890f85c19832143ab42e22e3bc11914f39c88a8831",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2690,7 +2690,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "2dd60db420ad646ddde4503af53e0162b59f324570faa0ddfe547fc7b417fd88",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2713,7 +2713,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "2b3f704b5a4f10f10bf1f37852d1094d0c80cb21fbe1ec9470a3b9fa1f01ee08",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -3071,6 +3071,190 @@
       },
       "referenced_by": [
         "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "トレードオフ — 画像の構成要素を 1 画面に並べ、差額と防衛ラインを文字で伝える",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2682e1d737675bd52781e250e8d536b0b04dc4c1189477e902a9778332afe050",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "トレードオフ — pages/tradeoff/ へ分割し、数字は core の試算関数の結果だけを読む",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8b1f93d9cb74bac83fab5cc5db7d9f5f3320b4b55152f486e05b2939ecf2a386",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "トレードオフ — 候補・必要度・試算・推奨を core の純関数に置き、POST はサーバで再計算する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "bea33a5eda7582bf617c4e922dede268af508d3701b261f70dc7f23961f01164",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "トレードオフ — 追加のみの migration で試算条件の列と候補ごとの上書きの表を足す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f83a4e3de0ac081a8399e78ef1a668a510a56fa1757973a401ed8834ddae0c26",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "トレードオフ — 既存の /api/* フェンスの内側に置き、全経路を user_id で絞る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "cca5fd48cb1d938da9b371d40412023e78e6017563c1b9768f077aa650609ea8",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "トレードオフ — zod の上限とサーバ再計算でクライアントの計算値を信用しない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8da2d2e7da29edfc641f8cf35d24f685165fe0f323749a7b78a769ac70d5274e",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "トレードオフ — 構成を変えず、EXPECTED_D1_MIGRATION と Migrate → Deploy に従う",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "ecbe51bb97c8d67d6a6bf138061ee63143b09d1c24a47b8f6542a5e1d8c4fd04",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "トレードオフ — 規則を FR-09 の表と core の契約テストの期待値に 1 対 1 で置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e10c770f84aef936d92cf9a5beace59448148b1a1df69e7b5dc2bfdaa928614a",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
       ]
     }
   ]

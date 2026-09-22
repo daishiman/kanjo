@@ -90,8 +90,6 @@ export const GUIDE_CURRENT = {
   fixedCost: metric(({ diagnosis }) => (diagnosis ? yen(diagnosis.kpi.fixedCost) : null)),
   variance: location('予算ページで表示'),
   landing: location('予算ページで表示'),
-  budgetOver: location('トレードオフページで表示'),
-  unexplained: location('トレードオフページで表示'),
   subsDup: location('サブスクページで表示'),
   subsSpike: location('サブスクページで表示'),
   vendor: location('サブスクページで表示'),

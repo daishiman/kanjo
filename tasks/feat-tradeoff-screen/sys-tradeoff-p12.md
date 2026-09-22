@@ -1,0 +1,169 @@
+---
+artifact_kind: "task"
+artifact_subtypes: []
+beads_linkage: null
+classification_candidates: [{"artifact_kind": "task", "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p12.md", "confidence": 0.95}]
+classification_confidence: 0.95
+classification_reason: "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+completion_evidence: {"completed_at": null, "evidence_refs": [], "policy": "linked_pr_merged_all", "reconciled_at": null, "source": null, "status": "in_progress"}
+confirmation_evidence: {"evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748", "evaluator": "system-dev-plan-evaluator", "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json"}
+confirmation_status: "confirmed"
+created_at: "2026-09-21T22:58:32Z"
+depends_on: ["SYS-TRADEOFF-P11"]
+domain: "documentation"
+evaluation_status: "pass"
+execution_contexts: []
+feature_package_id: "feature-package/feat-tradeoff-screen"
+file_path: "tasks/feat-tradeoff-screen/sys-tradeoff-p12.md"
+github_project_linkages: []
+github_publication: {"labels": [], "milestone": null, "mode": "local_only", "project_aliases": []}
+graph_node_id: "SYS-TRADEOFF-P12"
+implementation_readiness: {"checked_at": "2026-09-21T22:55:00Z", "missing_sections": [], "status": "complete"}
+issue_linkage: null
+iteration: null
+owners: ["daishiman"]
+parent_feature: "feat-tradeoff-screen"
+phase_ref: "P12"
+priority: null
+project_id: "feature-package-feat-tradeoff-screen"
+pull_request_linkages: []
+related_nodes: ["arch-tradeoff-auth", "arch-tradeoff-backend", "arch-tradeoff-database", "arch-tradeoff-frontend", "arch-tradeoff-infrastructure", "arch-tradeoff-maintenance-ops", "arch-tradeoff-security", "arch-tradeoff-ui-ux", "spec-tradeoff-screen"]
+resource_scope: ["docs/spec-v1.1.md", "docs/tradeoff-screen/design-decisions.md", "docs/data-schema.md", "docs/ui-decisions.md"]
+purpose: null
+goal: null
+scope_in: null
+scope_out: null
+acceptance: null
+architecture_refs: null
+source_lineage: {"imported_at": "2026-09-21T22:58:32Z", "origin_kind": "system-dev-planner", "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748", "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-12-documentation-operations.md", "source_plugin": "system-dev-planner", "source_version": "0.1.0"}
+start_date: null
+status: "active"
+tags: ["tradeoff", "p12", "documentation-sync"]
+target_date: null
+template_id: "task"
+template_version: "1.0.0"
+title: "候補・推移・必要度・理由・推奨の順位・防衛ラインへの影響の規則表の docs 最終同期"
+tracker_binding: "beads"
+updated_at: "2026-09-21T22:58:32Z"
+---
+
+# 候補・推移・必要度・理由・推奨の順位・防衛ラインへの影響の規則表の docs 最終同期
+
+## Machine-readable registration fields
+
+本 task の frontmatter が唯一の正本。
+
+- feature_package_id: feature-package/feat-tradeoff-screen
+- owners: ["daishiman"]
+- tags: ["tradeoff", "p12", "documentation-sync"]
+- related_nodes: ["arch-tradeoff-auth", "arch-tradeoff-backend", "arch-tradeoff-database", "arch-tradeoff-frontend", "arch-tradeoff-infrastructure", "arch-tradeoff-maintenance-ops", "arch-tradeoff-security", "arch-tradeoff-ui-ux", "spec-tradeoff-screen"]
+- parent_feature: feat-tradeoff-screen
+- phase_ref: P12
+- classification: confidence 0.95、reason 単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない、candidate tasks/feat-tradeoff-screen/sys-tradeoff-p12.md
+- tracker_binding_intent: beads
+- github_publication: mode local_only、project_aliases []、labels []、milestone null
+- branch_policy: one-task-one-branch + worktree lease required + default-branch reconciliation + assignment_owner=dev-graph-scheduler
+
+## 目的
+
+docs/spec-v1.1.md の FR-09 に規則表を明記し、データスキーマと UI の決定記録を最終同期する。
+
+## 背景
+
+『agent 推定・利用者未確認』の値が利用者確認で変わった場合は、FR-09 の表と core のテストの期待値を同時に直す。docs とテストが別々に動かないよう、同じ変更で揃える。
+
+## 前提条件
+
+- Required spec/architecture/phase/task nodes: arch-tradeoff-auth, arch-tradeoff-backend, arch-tradeoff-database, arch-tradeoff-frontend, arch-tradeoff-infrastructure, arch-tradeoff-maintenance-ops, arch-tradeoff-security, arch-tradeoff-ui-ux, spec-tradeoff-screen, SYS-TRADEOFF-P11
+- Entry gate: staging run run-tradeoff-20260921T2250Z の goal-spec.json が readiness_pin.status=complete であること
+- Source pin: system-spec-harness v0.1.14 / run-system-spec-compile / assign-system-spec-completeness-evaluator (evidence: system-spec/completeness-findings.json)
+- Repository context: repo_identity github:daishiman/kanjo / root_resolution_source git / .dev-graph/config.json
+
+## Workstream applicability
+
+- Frontend: N/A: 文書のみ
+- Backend: N/A: 文書のみ
+- API: N/A: 文書のみ
+- Data: N/A: 文書のみ
+- Infrastructure: N/A: 文書のみ
+- Security: N/A: 文書のみ
+- Quality: applicable: docs の規則表と core のテストの期待値の一致を確認する
+- Documentation: applicable: FR-09 の規則表・data-schema・ui-decisions を同期する
+- Operations: applicable: migration 0050 の反映順 (Migrate → Deploy) を運用手順に記す
+
+## Architecture and deploy unit
+
+- Architecture decisions: arch-tradeoff-auth, arch-tradeoff-backend, arch-tradeoff-database, arch-tradeoff-frontend, arch-tradeoff-infrastructure, arch-tradeoff-maintenance-ops, arch-tradeoff-security, arch-tradeoff-ui-ux, spec-tradeoff-screen
+- Deploy unit/environment: N/A: 文書のみで配布物を持たない
+- Compatibility/migration/backfill: N/A: 文書のみ
+
+## 成果物
+
+- Produced artifacts:
+- docs/spec-v1.1.md
+- docs/data-schema.md
+- docs/ui-decisions.md
+- Consumed artifacts:
+- docs/tradeoff-screen/design-decisions.md
+- specs/spec-tradeoff-screen.md
+- Write scope/touches:
+- docs/spec-v1.1.md
+- docs/tradeoff-screen/design-decisions.md
+- docs/data-schema.md
+- docs/ui-decisions.md
+
+## Tracker publication and completion
+
+本 spec は tracker_binding_intent と GitHub 公開 intent だけを宣言し、永続 binding の解決・起票・完了収束は dev-graph が所有する。
+
+- Tracker binding intent: beads
+- Publication mode: local_only
+- Project aliases / labels / milestone: いずれも値なし (local_only のため)
+- PR completion policy: linked_pr_merged_all
+- PR body contract: dev-graph graph_node_id SYS-TRADEOFF-P12 を本文に記載し、default branch を対象にする
+- Ownership boundary: system-dev-planner は intent を宣言するのみで、dev-graph が実際の mutation/reconciliation を行う
+
+## Branch and worktree execution
+
+- Branch: dev-graph 登録後に C15 が devgraph/SYS-TRADEOFF-P12 として割り当てる。system-dev-planner は事前割り当てを行わない
+- Worktree lease: 実装着手前に SYS-TRADEOFF-P12 の worktree lease を claim し、heartbeat/release を行う
+- Parallel safety: depends_on (SYS-TRADEOFF-P11) が完了し、write_scope が他の active lease と重複しないこと
+- Completion projection: feature branch は pending event のみを記録し、default branch へのクリーンな書き込みが durable な done を確定する
+
+## スコープ外
+
+- goal-spec.json の scope_out (共通シェルの作り直し、保存済みの試算の一覧と翌月の突合の画面表示、アプリからの LLM 呼び出し、既存の tradeoff_plans の行やテーブルの削除・書換、既存の defenseLine・tradeoffCandidates・診断検知器の数字の変更、画像の数値の再現と web 以外のプラットフォーム)
+- 本 phase の責務外にある他 phase の成果物への書込み
+
+## Verification and evidence
+
+- Acceptance:
+- docs/spec-v1.1.md の FR-09 に規則表 (候補・推移・必要度・理由・推奨の順位・防衛ラインへの影響) がある。
+- data-schema に tradeoff_plans の新しい列と tradeoff_candidate_notes がある。
+- 規則表の値と core のテストの期待値が一致している。
+- Automated commands:
+- pnpm lint
+- pnpm test
+- Required evidence:
+- docs/spec-v1.1.md
+- docs/data-schema.md
+- docs/ui-decisions.md
+
+## Rollout and rollback
+
+- Rollout: 単一の PR で配信し、default branch への merge をもって反映する
+- Rollback trigger and steps: docs の追記を revert する。
+
+## Handoff
+
+- Executor: task-graph build / capability-build への application-code handoff (build_target_kind=application-code)
+- Ready when: confirmed かつ evaluation pass かつ implementation_readiness complete かつ promoted digest かつ dev-graph registration complete
+
+## 参照情報
+
+- System specification: system-spec/00-requirements-definition.md (system-spec-harness v0.1.14 出力)
+- Screen specification: specs/spec-tradeoff-screen.md
+- Architecture: arch-tradeoff-auth, arch-tradeoff-backend, arch-tradeoff-database, arch-tradeoff-frontend, arch-tradeoff-infrastructure, arch-tradeoff-maintenance-ops, arch-tradeoff-security, arch-tradeoff-ui-ux, spec-tradeoff-screen
+- Feature: feat-tradeoff-screen
+- Phase doc: 別文書は生成しない (references/feature-execution-package-contract.md により本 task spec 自体が phase の実行単位)
+- Dependencies: SYS-TRADEOFF-P11

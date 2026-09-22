@@ -3,7 +3,7 @@ status: confirmed
 category: security
 aggregate: 確定
 spec_cells: [security.web, security.mobile, security.tablet, security.desktop-windows, security.desktop-linux, security.desktop-macos]
-serves_goals: [G4, G5]
+serves_goals: [G5]
 ---
 
 # セキュリティ (security)
@@ -15,12 +15,12 @@ serves_goals: [G4, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-ai-security-web-001。裏付け質疑 (`qa_refs`): `qa-ai-security-web-evidence-001`, `qa-ai-security-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、security では端末紛失時にレポートを消す手段と、画面の録画・スクリーンショット対策を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、security では共有端末にレポートと下書きが残らないようにするキャッシュ方針を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、security ではインストーラの署名と自動更新の改ざん対策を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、security では配布パッケージの署名検証とサンドボックス権限を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、security では公証 (notarization) とサンドボックスの権限範囲を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-tradeoff-security-web-001。裏付け質疑 (`qa_refs`): `qa-tradeoff-security-web-evidence-001`, `qa-tradeoff-security-web-003`, `qa-tradeoff-security-web-004`, `qa-tradeoff-security-web-005` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、security では端末の画面共有やスクリーンショットから金額を守る規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、security では共有端末に試算条件を残さない規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、security ではWindows のアプリ署名と自動更新の検証を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、security ではLinux の配布パッケージの署名検証を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、security ではmacOS の公証と自動更新の検証を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,7 +28,7 @@ serves_goals: [G4, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 入力の大きさの制限・契約検証・出力の無害化・外部送信なしの 4 点を、AI分析画面で増える入出力に反映した。レポート送信と貼り付けは body 上限の後で zod 契約を通し、レポートの文字列は React のエスケープで描き、AI へ渡すのは集計値だけで、アプリからの自動送信は無い。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | ASVS の入力検証の要求を、tradeoffSchema と上書きの schema の上限 (文字数・件数・金額範囲・YYYY-MM) へ反映した。covered と selected.value に範囲を課し、極端な値で差額の表示を壊す入力を拒否する。 |
 
 ## 確定内容 (質疑録)
 
@@ -36,43 +36,67 @@ serves_goals: [G4, G5]
 
 ### Web (web)
 
-- 資するゴール: G4, G5
+- 資するゴール: G5
 
-#### 主たる接地根拠: `qa-ai-security-web-001`
-
-**問**
-
-AI分析画面で新しく生じる入力・出力・外部送信のリスクにどう備えるか。
-
-**答**
-
-エージェント経路のレポート送信と利用者経路の貼り付けに body の上限を設け、超過は 413 で止める。キャンセル・再実行・使用するデータの経路の id と期間は zod で書式を検証する。AI へ渡すのは集計値だけで、明細行と摘要は渡さない (qa-ai-decision-004)。アプリは外部へ自動送信せず、データは利用者が依頼をコピーしたときだけ外へ出る。レポートの文字列と補足指示は React の既定のエスケープで描き、dangerouslySetInnerHTML を使わない。取り込みの JSON は構文検査と契約検査を通ったものだけを保存し、失敗しても入力は画面に保持する。下書きはブラウザ内だけに置く (qa-ai-decision-006)。具体の上限値は qa-ai-security-web-003 (agent 推定) を参照。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-security-web-evidence-001`
+#### 主たる接地根拠: `qa-tradeoff-security-web-001`
 
 **問**
 
-security 章の裏付けとして、AI 経路の入力の大きさと検証について何を観測したか。
+web のトレードオフ画面のセキュリティ要件は何か。
 
 **答**
 
-bodyLimit は /api/auth/* にだけ 16KB で掛かっており (index.ts:84-92)、エージェント経路の POST /ai/tasks/:id/report と利用者経路の POST /ai/tasks/:id/paste には body の上限が無い。レポート本文は reportInputSchema (packages/api/src/ai/contract.ts) の zod で検証し、sanitizeText で文字列を整える。リポジトリの lint には security:content (scripts/hooks/guard-real-data.sh --scan-public-docs) が組み込まれ、公開文書への実データ混入を検査している。
+入力はすべて zod で検証し、文字数・件数・金額に上限を設ける (現行の covered と selected.value の無制限を塞ぐ)。全クエリを user_id で絞り、候補キーは利用者自身の freee_deals から導いたものだけを受け付ける前提で、上書きの保存も user_id で分ける。利用者の文字列 (支出名・メモ・取引先名) は React の既定エスケープで描画し dangerouslySetInnerHTML を使わない。アプリは LLM を呼ばず外部へ送信しない (qa-tradeoff-decision-003)。migration は追加のみ。具体の上限は qa-tradeoff-security-web-003 (agent 推定) を参照。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:19:22Z)
 
-#### 裏付け質疑: `qa-ai-security-web-003`
+#### 裏付け質疑: `qa-tradeoff-security-web-evidence-001`
 
 **問**
 
-web の AI分析画面で、利用者が決めていない エージェント経路と貼り付け経路の body の上限値 を何にするか。
+security 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。
 
 **答**
 
-POST /ai/tasks/:id/report と POST /ai/tasks/:id/paste の request body 上限は固定 4 MiB (4,194,304 bytes) とし、1 byte でも超えたら JSON 読み込み前に 413 payload_too_large を返す。これは転送量を抑える request budget であり、個別 field・配列の妥当性は reportInputSchema と normalizeReport が別に検証する。キャンセル・再実行は 4KB。下書きは利用者別キーで1000文字までとする。AI用SELECTは集計に必要な列へ限定し、明細ID・摘要・memoを応答へ含めない。
+packages/api/src/index.ts:89 で bodyLimit が全体に掛かる。POST /api/tradeoff の zod (routes/analytics.ts:805 付近の tradeoffSchema) は title ≤200、amount 正の整数、selected の label ≤200 と件数 ≤50 を課すが、covered と selected.value には上下限が無い。利用者の文字列は React の既定エスケープで描画しており dangerouslySetInnerHTML は使っていない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-21T15:19:22Z)
+
+#### 裏付け質疑: `qa-tradeoff-security-web-003`
+
+**問**
+
+web のトレードオフ画面で、利用者が決めていない 入力の上限値 を何にするか。
+
+**答**
+
+支出名 100 文字、メモ 500 文字、候補のメモ 500 文字、候補キー 300 文字、金額は 1〜100,000,000 円の整数、開始月は YYYY-MM、選んだ候補は最大 50 件、候補の value は 0〜100,000,000 の整数、covered は −10,000,000,000〜10,000,000,000 の整数とする。上書きの保存は 1 回に 1 候補。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:19:22Z)
+
+#### 裏付け質疑: `qa-tradeoff-security-web-004`
+
+**問**
+
+web のトレードオフ画面で、クライアントが送る試算値をどう扱うか。
+
+**答**
+
+POST /api/tradeoff の covered・判定・候補の月額はサーバが core で再計算した値だけを保存し、送られた値は使わない (qa-tradeoff-backend-web-004 の (6))。候補キーはその利用者の現在の候補にあるものだけを受け付け、無いものは 422 で拒否する。上書きの PUT は user_id で行を分け、他の利用者の候補キーには書けない。これは agent の推定で、利用者は未確認である。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: completeness evaluator の medium 指摘 (POST の covered / verdict / selected.value をサーバで再計算するかが未確定) を受けて agent が補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:39:50Z)
+
+#### 裏付け質疑: `qa-tradeoff-security-web-005`
+
+**問**
+
+qa-tradeoff-security-web-003 の covered の範囲 (±1e10 の符号付き) と、クライアント値への範囲検査の記述を、サーバ再計算 (qa-tradeoff-security-web-004) とどう整合させるか。
+
+**答**
+
+POST /api/tradeoff の zod スキーマから covered・verdict・selected.value を外し、受け取るのは支出名・金額・単発 / 毎月・開始月・メモ・候補キーの配列だけにする。003 の covered ±1e10 と value 0〜1e8 の範囲は入力検査ではなく、サーバが計算した値の保存前の不変条件 (covered は 0 以上 1e10 以下の整数) として core のテストで守る。候補キーは長さ 300 以下の文字列で、その利用者の現在の候補に存在することを検証する (無ければ 422)。これは agent の推定で、利用者は未確認である。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: completeness evaluator の low 指摘 (security 章の covered ±1e10 とクライアント値への範囲検査の記述が -004 と食い違う) を受けて agent が補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T22:24:40Z)
 
 ## To-Be / Delta
 
@@ -80,21 +104,18 @@ POST /ai/tasks/:id/report と POST /ai/tasks/:id/paste の request body 上限�
 
 ### 到達すべき状態 (To-Be)
 
-- **G4**: 結果の取り込みとレポートの読み方を整える。取り込み先は選択中の依頼 (結果待ちが 1 件なら自動選択・無ければ無効)、JSON の構文エラーは行と位置を、契約違反は項目名を日本語で示し、入力は保持する。レポートは 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、版履歴は補足指示の 1 行目 (無ければ既定文) を説明にし、2 つの版を並べて比較できる。一覧は名前で検索でき、アーカイブの表示を切り替えられる。
-- **G5**: データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。
+- **G5**: 試算条件と候補ごとの上書きを安全に記録する。『この条件で試算』を押すたびに条件 (支出名・金額・単発 / 毎月・開始月・メモ・選んだ候補・差額) を既存 tradeoff_plans へ履歴として追加し、画面は最新の 1 件を復元する。保存一覧と翌月の突合は画面から外すが、既存の行と突合の関数は消さない。列と表は追加のみの migration で足し、入力は zod で検証し文字数に上限を設け、利用者ごとに分離する。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O4 | 取り込みの誤りが直せる形で示され、レポートがタブと版で読める。 | DOM と core のテストで、構文エラーの行・列の表示と入力の保持、契約違反の項目名表示、選択中の依頼への取り込み、4 タブへの振り分け、版の説明の導出、2 版比較、一覧の検索とアーカイブ切替を確かめる。 |
-| O5 | データの件数が実データと一致し、外部へ出るのは集計値だけである。 | API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。 |
+| O5 | 試算条件と上書きの記録が追加のみで安全に行われる。 | migration が CREATE TABLE / ALTER TABLE ADD COLUMN だけで、api テストで zod の上限・認証・利用者分離・最新 1 件の復元を検査し、既存の tradeoff_plans の行と tradeoffReview の契約テストが緑のままである。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I4**: 結果の取り込みを選択中の依頼へ向け、JSON の構文エラーの行・位置と契約違反の項目名を示し、入力を保持する。
-- **I5**: レポート詳細を 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、要約の下に関連ページのリンクと版履歴 (補足指示の 1 行目から説明) と 2 版比較を置く。一覧に検索とアーカイブ切替を付ける。
-- **I6**: 使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。
+- **I3**: core に科目×取引先の候補集計・推移・必要度・自動の理由を新設し、上書きの新表と保存 API を足す。
+- **I5**: tradeoff_plans に開始月・メモ列を足し、POST で履歴を追加、GET で最新 1 件を返して画面で復元する。保存一覧と突合の表示を外す。
 
 ### 本章に効く確定意思決定
 
@@ -106,9 +127,9 @@ POST /ai/tasks/:id/report と POST /ai/tasks/:id/paste の request body 上限�
 
 ### 本章での適用
 
-Secure by Design card の『入力を許可リストで検証し、大きさを境界で制限する』を、本サイクルで外から入る 2 つの大きな入力 (エージェントのレポート送信と利用者の貼り付け) に適用した。どちらも JSON を読み込む前に body の上限で止め、読み込んだ後は既存の reportInputSchema で契約を検証する。取り込み欄の構文エラーは保存せず、行と位置だけを返して入力を画面に残す。AI へ渡すデータは dataset.ts の集計値だけという既存の境界を、使用するデータのカードの注記として利用者にも見える形にする。
+入力検証を境界に置く原則を、試算の保存と上書きの保存に適用した。zod で支出名・メモ・候補キーの文字数、金額・件数・covered の範囲を課し、現行で上限の無かった covered と selected.value を塞ぐ。利用者の文字列は React の既定エスケープで描画し、アプリは LLM を呼ばないので、プロンプト注入や外部送信の経路が無い。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:19:22Z)
 
 ### Secure by Design — deep knowledge card
 
@@ -155,5 +176,5 @@ Secure by Design card の『入力を許可リストで検証し、大きさを�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| hono-body-limit | 4.13.8 | Hono (honojs) (github.com) | https://github.com/honojs/hono/releases/latest | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
-| owasp-asvs | 5.0.0 | OWASP Foundation (github.com) | https://github.com/OWASP/ASVS/blob/master/README.md | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
+| hono-body-limit | 4.13.8 | Hono (honojs) (github.com) | https://github.com/honojs/hono/releases/latest | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |
+| owasp-asvs | 5.0.0 | OWASP Foundation (github.com) | https://github.com/OWASP/ASVS/blob/master/README.md | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |
