@@ -3,7 +3,7 @@ status: confirmed
 category: maintenance-ops
 aggregate: 確定
 spec_cells: [maintenance-ops.web, maintenance-ops.mobile, maintenance-ops.tablet, maintenance-ops.desktop-windows, maintenance-ops.desktop-linux, maintenance-ops.desktop-macos]
-serves_goals: [G1, G2, G5]
+serves_goals: [G1, G2, G4]
 ---
 
 # 保守運用管理 (maintenance-ops)
@@ -15,12 +15,12 @@ serves_goals: [G1, G2, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-ai-maintenance-ops-web-001。裏付け質疑 (`qa_refs`): `qa-ai-maintenance-ops-web-evidence-001`, `qa-ai-maintenance-ops-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、maintenance-ops ではストア審査に合わせたリリース手順とクラッシュ収集を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、maintenance-ops ではタブレット実機での表示回帰の確認手順を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、maintenance-ops ではWindows 実機での回帰確認とクラッシュ収集を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、maintenance-ops では主要ディストリビューションでの回帰確認を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、maintenance-ops ではmacOS 版ごとの回帰確認と公証の更新手順を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-cash-maintenance-ops-web-001。裏付け質疑 (`qa_refs`): `qa-cash-maintenance-ops-web-evidence-001`, `qa-cash-maintenance-ops-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、maintenance-ops ではストア審査と、古い版が残ることを前提にした障害切り分けを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、maintenance-ops ではタブレット実機での回帰テストを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、maintenance-ops ではWindows 実機での回帰テストとクラッシュ収集を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、maintenance-ops では複数ディストリビューションでの回帰テストを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、maintenance-ops ではmacOS の版ごとの回帰テストとクラッシュ収集を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,7 +28,7 @@ serves_goals: [G1, G2, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | 検証の入口を verify:full と CI に一本化する形へ反映した。AI分析画面の core・API・DOM テストを既存の test に載せ、skills:test と初期 JS 予算を緑のまま保つことを完了条件にする。 |
+| operations | Google SRE | 運用手順・障害対応・トイル削減・ポストモーテムの上流指針 | https://sre.google/workbook/ | 2026-07-12 | 夜間の完全消去が消した件数を JSON ログに出し、上限に達した夜は warn にする形へ反映した。画面の描画検査 check:cash-screen を verify:full に組み込み、作り直しの回帰を CI で止める。 |
 
 ## 確定内容 (質疑録)
 
@@ -36,43 +36,43 @@ serves_goals: [G1, G2, G5]
 
 ### Web (web)
 
-- 資するゴール: G1, G2, G5
+- 資するゴール: G1, G2, G4
 
-#### 主たる接地根拠: `qa-ai-maintenance-ops-web-001`
-
-**問**
-
-AI分析画面の品質をどう保ち、規則をどこに残すか。
-
-**答**
-
-段階の導出・版の説明・タブの振り分け・使用するデータの数え方・持ち出し範囲を docs/ai-screen/ に明記し、core の単体テスト・API テスト・DOM テストで固定する。既存の AI の API テストと DOM テスト、skills:test (skill 不変の確認)、初期 JS 予算 (CI 実測)、verify:full を緑のまま保つ。境界テストの具体は qa-ai-maintenance-ops-web-003 (agent 推定) を参照。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-maintenance-ops-web-evidence-001`
+#### 主たる接地根拠: `qa-cash-maintenance-ops-web-001`
 
 **問**
 
-maintenance-ops 章の裏付けとして、既存の検証コマンドと記録の場所について何を観測したか。
+現金入力の作り直しを何で検証し、運用で何を見るか。
 
 **答**
 
-package.json の verify:full (package.json:40) は test・typecheck・lint・build と web の check 群・preview:smoke を順に走らせる。lint は biome と glossary・design-tokens・graph-lineage などの検査を含む (package.json:24)。test:aux は skills:test を含み、skill (skills/run-kanjo-accounting-report、.claude/skills と .agents/skills に同期) の検査を行う。画面ごとの作業記録は docs/<name>-screen/ に置く慣行がある。
+core の cash-screen の単体テスト、API テスト (論理削除・復元・一括削除・利用者分離・入力検証・削除中の行が集計に出ない不変条件)、DOM テスト (画像の構成要素・下書き復元・元に戻す・空状態) を足し、web に check:cash-screen を加えて verify:full に組み込む。夜間の完全消去は消した件数を JSON ログに出す。既存の lint・typecheck・test・skills:test・初期 JS 予算・verify:full を緑に保つ。具体値は qa-cash-maintenance-ops-web-003 (agent 推定) を参照。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:20:56Z)
 
-#### 裏付け質疑: `qa-ai-maintenance-ops-web-003`
+#### 裏付け質疑: `qa-cash-maintenance-ops-web-evidence-001`
 
 **問**
 
-web の AI分析画面で、利用者が決めていない 段階の判定を固定する境界テスト を何にするか。
+maintenance-ops 章の裏付けとして、現行実装について何を観測したか。
 
 **答**
 
-core の単体テストで、期限切れと受信が同時に成り立つ行 (完了が勝つ)、キャンセル後に期限が切れた行 (キャンセルが勝つ)、差し戻し後にデータを再取得した行 (75% のまま)、期限ちょうどの時刻 (待機中) の 4 境界を toBe で固定する。 これは agent の推定で、利用者は未確認である。画像と決定 001〜008 のどれにも値が無いため、実装で決定論を保つために置いた。
+ルートの package.json の verify:full は test・typecheck・lint・build と web の check:thead / mobile-layout / financial-figure / financial-routes / ai-screen / analysis-hub、preview:smoke を順に実行する。現金入力の画面専用の描画検査は無い。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-21T15:20:56Z)
+
+#### 裏付け質疑: `qa-cash-maintenance-ops-web-003`
+
+**問**
+
+web の現金入力画面で、利用者が決めていない 運用で見る閾値を何にするか。
+
+**答**
+
+夜間の完全消去が 1 晩の上限 500 行に達したら warn ログを出し、翌晩に続きを消す。check:cash-screen は既存の check-financial-visuals.mjs に KANJO_VISUAL_SCOPE=cash を渡して実行する。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:20:56Z)
 
 ## To-Be / Delta
 
@@ -80,25 +80,25 @@ core の単体テストで、期限切れと受信が同時に成り立つ行 (�
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: /ai を 12-ai.png どおりの画面にする。問いの見出し『AIに分析を依頼し、根拠と版を確認しますか？』と説明文、共通の期間タブ (1年 / 2年 / 3年 / 任意と範囲の送り)、1.依頼 (期間・補足指示 0/1000 と下書き自動保存・Claude Code 用 / Codex 用のコピー・使用するデータのカード・自動送信しない注記)、2.実行中の表 (ID・ステータス・依頼期間・作成日時・進捗・依頼内容・操作)、3.レポート (一覧の検索とアーカイブ表示・結果の取り込み・詳細のタブと版履歴と版比較)、下部の選択中バーを、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。
-- **G2**: 依頼の段階と進捗を core の純関数 1 か所で記録から導く。発行済みでデータ未取得 = 待機中 0%、データ取得済み = 実行中 50%、形式エラーで差し戻し = 実行中 75%、受信 = 完了 100%、結果なしで期限切れ = 失敗、取り消し = キャンセル。依頼には利用者ごとの連番から T-0001 形式の ID を振る。
-- **G5**: データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。
+- **G1**: /cash を 17-cash.png どおりの画面にする。問いの見出しと説明、共通の期間 (1年 / 2年 / 3年 / 任意) と対象期間カード、通常入力 / 交通費入力のタブ、現金明細の入力 (日付・事業/個人・収支・金額・内容・カテゴリ・担当者・メモ 0/200・入力をクリア・現金明細を追加・下書き自動保存の表示)、交通費の入力 (出発駅・到着駅・入替・片道運賃・往復・合計金額・業務の目的・メモ・交通費として追加)、現金明細の一覧 (月送り・キーワード検索・4 種の絞り込み・詳細検索・収入/支出/差額の合計・選択・編集/削除・ページング)、インラインの削除確認と元に戻す、空状態、下部固定の追加バーを描く。
+- **G2**: 記録が消えない。入力途中の内容はブラウザ内に自動保存して復元でき、削除は論理削除として一覧と集計から外したうえで『元に戻す』で同じ行を復活でき、30 日後に夜間処理で完全に消える。
+- **G4**: 現金明細の入力と変更を安全に保つ。利用者ごとの分離、入力検証、削除・復元の権限確認、削除済み行を集計へ混ぜない不変条件を API と DB の両方で守る。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | AI分析画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出し・期間タブ・1.依頼 (補足指示の文字数と下書き復元・コピー 2 種・使用するデータ・注記)・2.実行中の表の 7 列・3.レポートの一覧と取り込みと詳細 4 タブと版履歴・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。 |
-| O2 | 依頼の段階と進捗が記録から一意に決まる。 | core の単体テストで、6 つの段階 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル) が記録の組合せから toBe で導かれ、期限切れと受信・取消の優先順位が境界ケースで固定される。 |
-| O5 | データの件数が実データと一致し、外部へ出るのは集計値だけである。 | API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。 |
+| O1 | 現金入力画面が画像の全構成要素を描画する (領収書欄を除く)。 | DOM テストで、問いの見出し・対象期間カード・2 つのタブ・通常入力の全項目とメモの文字数・交通費入力の全項目と入替・合計金額の自動計算・一覧の月送り/検索/4 種の絞り込み/合計 3 枚/表/ページング・インライン削除確認・元に戻すトースト・空状態・下部固定バーの存在を確認し、全て通る。 |
+| O2 | 下書きと論理削除で記録が欠けない。 | DOM テストで入力→再描画後に下書きが復元されること、API テストで削除→元に戻すで同じ id が一覧に戻ること、削除中の行が集計 (cashToDeal / cashToTx の入力) に 0 件であることが通る。 |
+| O4 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: Ai.tsx を pages/ai/ 配下へ分割し、問いの見出し・期間タブ・1.依頼・2.実行中・3.レポート・下部の選択中バーの構成に作り直す。選択中の依頼とレポートとタブを URL に保つ。
-- **I2**: core に依頼の段階と進捗を導く純関数と T-番号の整形を新設し、api の taskStatus と web の表示をこれに寄せる。
-- **I5**: レポート詳細を 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、要約の下に関連ページのリンクと版履歴 (補足指示の 1 行目から説明) と 2 版比較を置く。一覧に検索とアーカイブ切替を付ける。
-- **I6**: 使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。
-- **I7**: 補足指示の下書きを localStorage に自動保存し、発行時に消す。
+- **I1**: Cash.tsx を pages/cash/ 配下へ分割し、問いの見出し・対象期間カード・タブ・入力 2 枚・一覧・下部固定バーの構成に作り直す。選択中のタブ・月・絞り込み・ページを URL に保つ。
+- **I3**: cash_entries に owner・transit_purpose・deleted_at を足す追加のみの migration 0050 (入力経路は列を持たず交通費の区間の有無から導く) と、削除・復元・一括削除・一括復元の API、削除中の行を読まない条件を cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に掛けること、夜間の完全消去を実装する。 JSON 復元の『空か』判定だけは削除中の行も数え、削除中の行が残る間は現金明細を復元しない (qa-cash-decision-009)。
+- **I4**: 入力途中の内容をブラウザ内に自動保存し、保存時刻を表示し、復元する。『入力をクリア』で下書きも消す。
+- **I5**: 削除をインライン確認にし、削除完了トーストの『元に戻す』で同じ行を復活させる。空状態では画面内だけのサンプル表示と『はじめての明細を入力』を出す。
+- **I6**: 入力検証 (名義・業務の目的・カテゴリの候補、文字数、金額の範囲) を core と API の zod で揃え、他の利用者の行を 404 にする。
 
 ### 本章に効く確定意思決定
 
@@ -110,9 +110,9 @@ core の単体テストで、期限切れと受信が同時に成り立つ行 (�
 
 ### 本章での適用
 
-Clean Code card の『規則は名前と境界値テストで読めるようにする』を、段階の導出と持ち出し範囲の保守に適用した。段階の優先順位は core の名前付きの順序表 1 か所に置き、段階の優先順位・版の説明の既定文・タブの振り分け・使用するデータの数え方を docs/ai-screen/ に表で残し、同じ表を core の単体テストの期待値にする。skill (run-kanjo-accounting-report) とレポート JSON 契約を変えないことは skills:test と契約テストが緑のままであることで確かめる。
+Clean Code card の『規則は名前と境界値テストで読めるようにする』を、現金入力の保守に適用した。削除中の行を集計へ出さない規則は、cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に同じ条件を掛けたうえで、経路ごとに削除 → 読み取り → 復元 → 読み取りの往復を固定する API テストを 1 件ずつ置いて読めるようにする。経路を 1 本足したときに条件を忘れないためである。30 日の期限は 29 日と 31 日の境界値で固定し、夜間予算は計画上限 49 を予算テストで固定する。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T22:28:41Z)
 
 ### Clean Code — deep knowledge card
 
@@ -159,4 +159,4 @@ codeを、次の変更者が意図・制約・failureを短時間で理解し、
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| vitest-expect | 5.0.1 | Vitest (VoidZero) (vitest.dev) | https://vitest.dev/api/expect.html | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
+| vitest-expect | 5.0.1 | Vitest (VoidZero) (vitest.dev) | https://vitest.dev/api/expect.html | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |

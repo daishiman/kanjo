@@ -2,7 +2,7 @@
  * 夜間 scheduledMaintenance 全体の D1 query 予算。
  *
  * Cloudflare Workers Free は 1 invocation 50 queries が上限である。各 job が個別に
- * 「50未満」を名乗っても同じ invocation では合算されるため、ここで7 jobを一度だけ
+ * 「50未満」を名乗っても同じ invocation では合算されるため、ここで8 jobを一度だけ
  * 合成する。batch() も中の statement 数で数える。
  */
 
@@ -11,7 +11,7 @@ export const SCHEDULED_D1_QUERY_LIMIT = 50;
 export const SCHEDULED_D1_QUERY_ACCEPTED_MAX = SCHEDULED_D1_QUERY_LIMIT - 1;
 
 /** 現行 job 群の安全側上限。新規 job は既存枠を再配分しない限り追加できない。 */
-export const SCHEDULED_D1_QUERY_PLAN_MAX = 47;
+export const SCHEDULED_D1_QUERY_PLAN_MAX = 49;
 
 export const SCHEDULED_MAINTENANCE_JOB_NAMES = [
   'nightly_backup',
@@ -21,6 +21,7 @@ export const SCHEDULED_MAINTENANCE_JOB_NAMES = [
   'deletion_undo_retention',
   'audit_header_retention',
   'audit_detail_retention',
+  'cash_soft_delete_purge',
 ] as const;
 
 export type ScheduledMaintenanceJobName = (typeof SCHEDULED_MAINTENANCE_JOB_NAMES)[number];
@@ -90,4 +91,6 @@ export const SCHEDULED_MAINTENANCE_D1_PLAN = planScheduledMaintenanceD1Queries({
   audit_header_retention: 3,
   // headerと同じ3本 + capacity候補 + delete + final metrics。
   audit_detail_retention: 6,
+  // 手動編集の削除 + 30日超の現金明細の削除(1 batch 2文)。
+  cash_soft_delete_purge: 2,
 });

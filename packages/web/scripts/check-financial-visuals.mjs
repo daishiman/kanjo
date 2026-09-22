@@ -1423,6 +1423,47 @@ const totalCashflow = {
   },
 };
 
+// 現金入力 (KANJO_VISUAL_SCOPE=cash)。1 ページ 20 件を超える 23 件で、ページ送り・交通費・担当者の未設定・長い摘要を同時に描く
+const cashMonth = months.at(-1);
+const cashEntries = {
+  entries: Array.from({ length: 23 }, (_, index) => {
+    const transit = index % 7 === 3;
+    const io = index % 5 === 4 ? 'income' : 'expense';
+    return {
+      id: index + 1,
+      date: `${cashMonth}-${String((index % 28) + 1).padStart(2, '0')}`,
+      month: cashMonth,
+      side: index % 3 === 2 ? 'per' : 'biz',
+      io,
+      amount: transit ? 1_240 : 1_000 + index * 3_700,
+      description:
+        index === 0
+          ? '匿名の打合せで使った会議室の利用料と、その場で買った文具と飲み物をまとめた支払い'
+          : transit
+            ? '匿名駅A → 匿名駅B'
+            : `匿名の現金明細 ${index + 1}`,
+      categoryMajor: transit ? '旅費交通費' : index % 3 === 2 ? '食費' : '消耗品費',
+      categoryMid: '',
+      memo: null,
+      transitFrom: transit ? '匿名駅A' : null,
+      transitTo: transit ? '匿名駅B' : null,
+      transitRound: transit,
+      receiptWaived: transit,
+      owner: index === 1 ? null : index % 3 === 2 ? 'family' : 'business',
+      transitPurpose: transit ? '客先訪問' : null,
+    };
+  }),
+  candidates: {
+    biz: [
+      { name: '消耗品費', source: 'freee', mids: [] },
+      { name: '旅費交通費', source: 'freee', mids: [] },
+    ],
+    per: [{ name: '食費', source: 'mf', mids: [] }],
+  },
+  months: [cashMonth],
+  duplicates: [],
+};
+
 const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64');
 const responseFor = (url) => {
   const requestUrl = new URL(url);
@@ -1462,6 +1503,10 @@ const responseFor = (url) => {
     };
   if (path === '/api/ai/reports/anonymous-report-1') return aiReportDetail;
   if (path === '/api/ai/reports') return { reports: [aiReportRow], archivedCount: 0 };
+  if (path === '/api/cash-entries') return cashEntries;
+  // 現金入力は担当者の表示名を読む。fixture に無いと proxy 先の API が Cookie 無しで 401 を返し、
+  // 画面がログインへ切り替わる(描画の途中で切り替わるので、落ち方が実行ごとに変わる)
+  if (path === '/api/settings/owner-labels') return { labels: {} };
   return undefined;
 };
 
@@ -1733,6 +1778,233 @@ try {
     console.log(
       `1280px→834px Statements 参照状態 本体=${metrics.scrollWidth}/${metrics.width}px CSS高=${metrics.height}px ${metrics.unsaved}`,
     );
+  }
+  if (VISUAL_SCOPE === 'cash') {
+    // 現金入力は図を持たないので、画面の構成要素・横のはみ出し・下部固定バー・行内の削除確認を実ブラウザで測る。
+    // DOM テストでは見えない幅ごとの崩れを止める (qa-cash-maintenance-ops-web-001)
+    const cashViewports = VIEWPORTS.filter(
+      ({ label, width, zoom }) =>
+        (zoom === 1 && [360, 390, 768, 1024, 1280].includes(width)) || label === 'zoom200',
+    );
+    for (const { label: viewportLabel, width, zoom } of cashViewports) {
+      const tag = zoom === 1 ? `${width}px` : viewportLabel;
+      await send('Emulation.setDeviceMetricsOverride', {
+        width,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: width < 640,
+      });
+      await send('Emulation.setPageScaleFactor', { pageScaleFactor: zoom });
+      runtimeProblems.length = 0;
+      await send('Page.navigate', { url: `${BASE_URL}/cash?month=${cashMonth}` });
+      await waitFor(
+        "document.querySelectorAll('.cash-table tbody tr').length > 0 && Boolean(document.querySelector('.cash-sticky'))",
+        `${tag} Cash`,
+      );
+      const metrics = JSON.parse(
+        await evaluate(`JSON.stringify((() => {
+          const box = (node) => {
+            const value = node?.getBoundingClientRect();
+            return value && value.width > 0 && value.height > 0 ? value : null;
+          };
+          const viewportWidth = document.documentElement.clientWidth;
+          const sticky = box(document.querySelector('.cash-sticky'));
+          const tabs = [...document.querySelectorAll('.cash-tabs [role="tab"]')];
+          return {
+            viewportWidth,
+            viewportHeight: window.innerHeight,
+            pageWidth: document.documentElement.scrollWidth,
+            title: document.querySelector('main h1')?.textContent?.trim() ?? '',
+            question: document.querySelector('main h2.page-question')?.textContent?.trim() ?? '',
+            period: Boolean(box(document.querySelector('.cash-period'))),
+            tabs: tabs.map((tab) => tab.querySelector('.cash-tab-label')?.textContent?.trim() ?? ''),
+            tabHeights: tabs.map((tab) => Math.round(box(tab)?.height ?? 0)),
+            form: Boolean(box(document.querySelector('.cash-form'))),
+            receiptNote: Boolean(box(document.querySelector('.cash-receipt-note'))),
+            fileInputs: document.querySelectorAll('input[type="file"]').length,
+            rows: document.querySelectorAll('.cash-table tbody tr').length,
+            pager: Boolean(box(document.querySelector('.cash-pager'))),
+            totals: document.querySelectorAll('.cash-totals .cash-total-card').length,
+            sticky: sticky
+              ? { left: sticky.left, right: sticky.right, bottom: sticky.bottom, height: sticky.height }
+              : null,
+            overflowing: [...document.querySelectorAll('main *')]
+              .filter((node) => !node.closest('.scroll-x'))
+              .filter((node) => {
+                const value = box(node);
+                return value && (value.left < -1 || value.right > viewportWidth + 1);
+              })
+              .slice(0, 3)
+              .map((node) => node.className || node.tagName),
+          };
+        })())`),
+      );
+      if (metrics.pageWidth > metrics.viewportWidth + 1)
+        failures.push(`${tag} Cash の本体が横にはみ出す(${metrics.pageWidth}/${metrics.viewportWidth}px)`);
+      if (metrics.overflowing.length)
+        failures.push(`${tag} Cash の要素が画面の外へ出る: ${metrics.overflowing.join(', ')}`);
+      if (metrics.title !== '現金入力')
+        failures.push(`${tag} Cash のタイトルが「現金入力」ではない: ${metrics.title}`);
+      if (metrics.question !== '現金と交通費を、漏れなく記録しますか？')
+        failures.push(`${tag} Cash の問いの見出しが一致しない: ${metrics.question}`);
+      if (!metrics.period) failures.push(`${tag} Cash の対象期間カードが描画されない`);
+      if (JSON.stringify(metrics.tabs) !== JSON.stringify(['通常入力', '交通費入力']))
+        failures.push(`${tag} Cash のタブが「通常入力」「交通費入力」ではない: ${metrics.tabs.join(' / ')}`);
+      if (metrics.tabHeights.some((height) => height < 43))
+        failures.push(`${tag} Cash のタブの高さが 44px に届かない: ${metrics.tabHeights.join(', ')}`);
+      if (!metrics.form || !metrics.receiptNote || metrics.fileInputs !== 0)
+        failures.push(`${tag} Cash の入力欄か領収書の案内が無い、または領収書のファイル欄がある`);
+      if (metrics.rows !== 20 || !metrics.pager)
+        failures.push(`${tag} Cash の一覧が 1 ページ 20 件とページ送りで描画されない(${metrics.rows} 行)`);
+      if (metrics.totals !== 3) failures.push(`${tag} Cash の合計が収入・支出・差額の 3 枚ではない`);
+      if (
+        !metrics.sticky ||
+        metrics.sticky.bottom > metrics.viewportHeight + 1 ||
+        metrics.sticky.left < -1 ||
+        metrics.sticky.right > metrics.viewportWidth + 1
+      )
+        failures.push(`${tag} Cash の下部固定バーが画面内に収まらない: ${JSON.stringify(metrics.sticky)}`);
+
+      if (zoom === 1 && [360, 390].includes(width)) {
+        await mouseClick('.cash-tabs [role="tab"]:nth-child(2)', `${tag} Cash 交通費タブ`);
+        await waitFor(
+          "document.querySelector('.cash-tabs [role=\"tab\"]:nth-child(2)')?.getAttribute('aria-selected') === 'true'",
+          `${tag} Cash 交通費タブの選択`,
+        );
+        await mouseClick(
+          '[data-cash-card="transit"] .cash-transit-shared input[type="radio"][value="per"]',
+          `${tag} Cash 個人区分`,
+        );
+        await waitFor(
+          'Boolean(document.querySelector(\'[data-cash-card="transit"] .cash-transit-shared .cat-current\'))',
+          `${tag} Cash 個人カテゴリ`,
+        );
+        const shared = JSON.parse(
+          await evaluate(`(async () => {
+            const root = document.querySelector('[data-cash-card="transit"] .cash-transit-shared');
+            const selectors = {
+              date: 'input[type="date"]',
+              side: 'input[type="radio"][value="per"]',
+              owner: 'select[id$="-owner"]',
+              category: '.cat-current',
+            };
+            const fields = {};
+            for (const [name, selector] of Object.entries(selectors)) {
+              const node = root?.querySelector(selector);
+              node?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+              await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+              const box = node?.getBoundingClientRect();
+              const style = node ? getComputedStyle(node) : null;
+              const x = box ? Math.min(innerWidth - 1, Math.max(0, box.left + box.width / 2)) : -1;
+              const y = box ? Math.min(innerHeight - 1, Math.max(0, box.top + box.height / 2)) : -1;
+              const hit = box ? document.elementFromPoint(x, y) : null;
+              fields[name] = {
+                display: style?.display ?? 'missing',
+                visibility: style?.visibility ?? 'missing',
+                disabled: Boolean(node?.disabled),
+                inViewport: Boolean(
+                  box && box.width > 0 && box.height > 0 && box.left >= -1 && box.right <= innerWidth + 1 &&
+                    box.top >= -1 && box.bottom <= innerHeight + 1
+                ),
+                hitWithin: Boolean(node && hit && (hit === node || node.contains(hit))),
+              };
+            }
+            return JSON.stringify({
+              rootDisplay: root ? getComputedStyle(root).display : 'missing',
+              fields,
+            });
+          })()`),
+        );
+        const unavailable = Object.entries(shared.fields)
+          .filter(
+            ([, field]) =>
+              field.display === 'none' ||
+              field.visibility === 'hidden' ||
+              field.disabled ||
+              !field.inViewport ||
+              !field.hitWithin,
+          )
+          .map(([name]) => name);
+        if (shared.rootDisplay === 'none' || unavailable.length)
+          failures.push(
+            `${tag} Cash 交通費の共有欄が表示・操作できない: root=${shared.rootDisplay}, fields=${unavailable.join(',')}`,
+          );
+        await mouseClick(
+          '[data-cash-card="transit"] .cash-transit-shared .cat-current',
+          `${tag} Cash 個人カテゴリ選択`,
+        );
+        await waitFor(
+          "document.querySelector('[data-cash-card=\"transit\"] .cash-transit-shared .cat-current')?.getAttribute('aria-expanded') === 'true'",
+          `${tag} Cash 個人カテゴリ選択の展開`,
+        );
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key: 'Escape',
+          code: 'Escape',
+          windowsVirtualKeyCode: 27,
+        });
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyUp',
+          key: 'Escape',
+          code: 'Escape',
+          windowsVirtualKeyCode: 27,
+        });
+      }
+
+      // 行内の削除確認は、開くと「キャンセル」にフォーカスが移り、画面幅に収まる
+      await mouseClick(
+        '.cash-table tbody tr:first-child .cash-row-actions button:last-child',
+        `${tag} Cash 削除`,
+      );
+      await waitFor("Boolean(document.querySelector('.cash-confirm'))", `${tag} Cash 削除確認`);
+      const confirm = JSON.parse(
+        await evaluate(`JSON.stringify((() => {
+          const value = document.querySelector('.cash-confirm')?.getBoundingClientRect();
+          return {
+            left: value?.left ?? -1,
+            right: value?.right ?? 0,
+            viewportWidth: document.documentElement.clientWidth,
+            focused: document.activeElement?.textContent?.trim() ?? '',
+          };
+        })())`),
+      );
+      if (confirm.left < -1 || confirm.right > confirm.viewportWidth + 1)
+        failures.push(
+          `${tag} Cash の削除確認が画面幅に収まらない(${Math.round(confirm.left)}-${Math.round(confirm.right)}px)`,
+        );
+      if (confirm.focused !== 'キャンセル')
+        failures.push(`${tag} Cash の削除確認を開いてもフォーカスが「キャンセル」に無い: ${confirm.focused}`);
+      const screenshot = await send('Page.captureScreenshot', {
+        format: 'png',
+        fromSurface: true,
+        captureBeyondViewport: true,
+      });
+      writeFileSync(join(OUTPUT_DIR, `cash-${tag}.png`), Buffer.from(screenshot.data, 'base64'));
+      await send('Input.dispatchKeyEvent', {
+        type: 'keyDown',
+        key: 'Escape',
+        code: 'Escape',
+        windowsVirtualKeyCode: 27,
+      });
+      await send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key: 'Escape',
+        code: 'Escape',
+        windowsVirtualKeyCode: 27,
+      });
+      // 閉じないときも先に記録したフォーカスの不合格まで報告するため、ここでは止めない
+      try {
+        await waitFor("!document.querySelector('.cash-confirm')", `${tag} Cash 削除確認を Escape で閉じる`);
+      } catch {
+        failures.push(`${tag} Cash の削除確認が Escape で閉じない`);
+      }
+      await evaluate("localStorage.removeItem('kanjo:cash-draft:v1:visual-user')");
+      if (runtimeProblems.length)
+        failures.push(`${tag} Cash で実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`);
+      console.log(
+        `${tag} Cash 行=${metrics.rows} 本体=${metrics.pageWidth}/${metrics.viewportWidth}px タブ高=${metrics.tabHeights.join(',')}px`,
+      );
+    }
   }
   if (VISUAL_SCOPE === 'all' || VISUAL_SCOPE === 'core') {
     for (const { label: viewportLabel, width, zoom } of VIEWPORTS) {

@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G1, G3, G4]
+serves_goals: [G1, G2, G3]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G1, G3, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-ai-frontend-web-001。裏付け質疑 (`qa_refs`): `qa-ai-frontend-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G3, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、frontend ではReact Native などへの移植と、web と共有できる部品の範囲を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、frontend ではタブレット向けの分割表示の部品と、画面回転時の状態保持を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、frontend ではElectron / Tauri などの殻の選定と、web 版との差分管理を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、frontend では殻の選定と、Linux のフォント・DPI 差の吸収を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、frontend では殻の選定と、macOS のウィンドウ復元時の状態保持を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-cash-frontend-web-001。裏付け質疑 (`qa_refs`): `qa-cash-frontend-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G3 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、frontend ではReact Native などの別実装と、core の純関数の共有方法を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、frontend ではタブレット用レイアウトの分岐とタッチ操作の当たり判定を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、frontend ではElectron などの殻と Web 版の差分管理を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、frontend では殻の描画エンジンの差による表示崩れを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、frontend ではネイティブメニューと Web 側の操作の二重実装を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G1, G3, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 表示の共通部品を使う規則を、AI分析画面の表・タブ・ボタン・選択中バーに反映した。表と選択中バーはサブスク・診断画面の既存部品と同じ流儀で組み、ボタンは共通 Button、色はトークンだけにする。 |
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | サーバー状態と画面状態を分ける規則を、依頼一覧・レポート一覧・レポート詳細・使用するデータの 4 つの取得と、選択中の依頼・レポート・タブ (URL) と下書き (localStorage) の分離に反映した。操作の後は該当する取得だけを無効化し、選択は URL から復元する。 |
+| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 下部固定の追加バーに安全領域の余白を足し、狭い画面では入力と一覧を縦に積み、表は横スクロールの容器に入れる形へ反映した。下書きの保存時刻は文で示す。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | pages/cash/ の画面本体を view-model・draft・入力 2 種・一覧・ResultNotices に分け、view-model だけが core を呼ぶ形へ反映した。部品は描画と入力の受け渡しだけを持つ。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,31 +37,31 @@ serves_goals: [G1, G3, G4]
 
 ### Web (web)
 
-- 資するゴール: G1, G3, G4
+- 資するゴール: G1, G2, G3
 
-#### 主たる接地根拠: `qa-ai-frontend-web-001`
-
-**問**
-
-web の AI分析画面のフロントエンド構成 (ファイル分割・状態・取得・部品) をどう作るか。
-
-**答**
-
-Ai.tsx を packages/web/src/pages/ai/ 配下へ分割し (依頼・実行中・レポート一覧・取り込み・詳細・版履歴・版比較・選択中バー)、段階・進捗・版の説明・タブの振り分け・JSON エラー位置は core の純関数の結果を描くだけにする。期間は usePeriod から取り旧 PRESETS を消す (qa-ai-decision-001)。取得は TanStack Query で依頼一覧・レポート一覧・レポート詳細・使用するデータを分け、キャンセル・再実行・削除・取り込み・アーカイブの mutation 後に該当キーを無効化する。選択中の依頼・レポート・タブは URL の検索パラメータに持つ。補足指示の下書きは localStorage に自動保存し発行時に消す (qa-ai-decision-006)。色はトークン、ボタンは共通 Button、ページは PageShell。画面は遅延読み込みのまま。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-frontend-web-evidence-001`
+#### 主たる接地根拠: `qa-cash-frontend-web-001`
 
 **問**
 
-frontend 章の裏付けとして、現行の AI 画面と共通部品について何を観測したか。
+web の現金入力画面をどう分割し、状態をどこに持つか。
 
 **答**
 
-AI 画面は AuthenticatedApp.tsx:23 で lazy(() => import('./pages/Ai.js')) により遅延読み込みされる。Ai.tsx は AiPage・PromptCard・RunCard・ReportDetail・CompareView・ReportToc・FindingList を 1 ファイルに持ち、useQuery で /summary・/ai/tasks・/ai/reports を取得する (Ai.tsx:98-101)。既存の DOM テスト (ai-copy-log / ai-report-structure / ai-report-archive / ai-task-collapse の各 .dom.test.tsx) が RunCard・FindingList・ReportText・AiPage を Ai.js から直接 import している。共通の期間は packages/web/src/period.tsx の usePeriod / PeriodPicker が担う。
+Cash.tsx を pages/cash/ 配下 (画面本体・view-model.ts・draft.ts・通常入力・交通費入力・一覧・ResultNotices) に分け、view-model は core の cash-screen を呼んで描くだけにする。タブ・月・絞り込み・ページは URL の検索パラメータに持ち、再読込と共有で同じ表示に戻す。入力途中の値は draft.ts が localStorage に自動保存して保存時刻を示し、追加成功と『入力をクリア』で消す。追加・更新・削除・復元の後は TanStack Query の現金明細と集計の query を無効化する。初期 JS 予算に収まるよう画面は既存どおり遅延読込する。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:20:56Z)
+
+#### 裏付け質疑: `qa-cash-frontend-web-evidence-001`
+
+**問**
+
+frontend 章の裏付けとして、現行実装について何を観測したか。
+
+**答**
+
+ルートは packages/web/src/routeMetadata.ts:33-44 の id 'cash' / path '/cash'。他の作り直し済み画面は pages/<screen>/ に分割され、明細仕分けは packages/web/src/pages/classify/draft.ts (localStorage の下書き) と ResultNotices.tsx (元に戻すトースト) を持つ。画面ごとの描画検査は packages/web/package.json の check:ai-screen などの KANJO_VISUAL_SCOPE 付き check-financial-visuals.mjs で行う。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-21T15:20:56Z)
 
 ## To-Be / Delta
 
@@ -69,25 +69,26 @@ AI 画面は AuthenticatedApp.tsx:23 で lazy(() => import('./pages/Ai.js')) に
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: /ai を 12-ai.png どおりの画面にする。問いの見出し『AIに分析を依頼し、根拠と版を確認しますか？』と説明文、共通の期間タブ (1年 / 2年 / 3年 / 任意と範囲の送り)、1.依頼 (期間・補足指示 0/1000 と下書き自動保存・Claude Code 用 / Codex 用のコピー・使用するデータのカード・自動送信しない注記)、2.実行中の表 (ID・ステータス・依頼期間・作成日時・進捗・依頼内容・操作)、3.レポート (一覧の検索とアーカイブ表示・結果の取り込み・詳細のタブと版履歴と版比較)、下部の選択中バーを、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。
-- **G3**: 依頼の操作を画面で決着できるようにする。キャンセルはトークンを無効にして行を残し、再実行は同じ期間と補足指示で新しい依頼を発行し、削除は結果の無い依頼だけを消す (受信済みは削除不可)。依頼の発行とプロンプトのコピーを 1 操作にする。
-- **G4**: 結果の取り込みとレポートの読み方を整える。取り込み先は選択中の依頼 (結果待ちが 1 件なら自動選択・無ければ無効)、JSON の構文エラーは行と位置を、契約違反は項目名を日本語で示し、入力は保持する。レポートは 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、版履歴は補足指示の 1 行目 (無ければ既定文) を説明にし、2 つの版を並べて比較できる。一覧は名前で検索でき、アーカイブの表示を切り替えられる。
+- **G1**: /cash を 17-cash.png どおりの画面にする。問いの見出しと説明、共通の期間 (1年 / 2年 / 3年 / 任意) と対象期間カード、通常入力 / 交通費入力のタブ、現金明細の入力 (日付・事業/個人・収支・金額・内容・カテゴリ・担当者・メモ 0/200・入力をクリア・現金明細を追加・下書き自動保存の表示)、交通費の入力 (出発駅・到着駅・入替・片道運賃・往復・合計金額・業務の目的・メモ・交通費として追加)、現金明細の一覧 (月送り・キーワード検索・4 種の絞り込み・詳細検索・収入/支出/差額の合計・選択・編集/削除・ページング)、インラインの削除確認と元に戻す、空状態、下部固定の追加バーを描く。
+- **G2**: 記録が消えない。入力途中の内容はブラウザ内に自動保存して復元でき、削除は論理削除として一覧と集計から外したうえで『元に戻す』で同じ行を復活でき、30 日後に夜間処理で完全に消える。
+- **G3**: 画面の数字と判定を core の 1 か所から導く。合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を core の純関数に置き、API は JSON に写すだけ、web は描くだけにする。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | AI分析画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出し・期間タブ・1.依頼 (補足指示の文字数と下書き復元・コピー 2 種・使用するデータ・注記)・2.実行中の表の 7 列・3.レポートの一覧と取り込みと詳細 4 タブと版履歴・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。 |
-| O3 | キャンセル・再実行・削除が規則どおりに効く。 | API テストで、キャンセル後のトークンがデータ取得とレポート送信で拒否され行が残ること、再実行が同じ期間と補足指示の新しい依頼を作ること、受信済みの依頼の削除が拒否されることを確かめる。 |
-| O4 | 取り込みの誤りが直せる形で示され、レポートがタブと版で読める。 | DOM と core のテストで、構文エラーの行・列の表示と入力の保持、契約違反の項目名表示、選択中の依頼への取り込み、4 タブへの振り分け、版の説明の導出、2 版比較、一覧の検索とアーカイブ切替を確かめる。 |
+| O1 | 現金入力画面が画像の全構成要素を描画する (領収書欄を除く)。 | DOM テストで、問いの見出し・対象期間カード・2 つのタブ・通常入力の全項目とメモの文字数・交通費入力の全項目と入替・合計金額の自動計算・一覧の月送り/検索/4 種の絞り込み/合計 3 枚/表/ページング・インライン削除確認・元に戻すトースト・空状態・下部固定バーの存在を確認し、全て通る。 |
+| O2 | 下書きと論理削除で記録が欠けない。 | DOM テストで入力→再描画後に下書きが復元されること、API テストで削除→元に戻すで同じ id が一覧に戻ること、削除中の行が集計 (cashToDeal / cashToTx の入力) に 0 件であることが通る。 |
+| O3 | 画面の導出が core の 1 か所に集まる。 | core の cash-screen の単体テストが合計・絞り込み・ページング・入力経路・交通費合計を固定し、web と api に同じ計算の重複が無い (grep で 0 件)。 |
+| O4 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: Ai.tsx を pages/ai/ 配下へ分割し、問いの見出し・期間タブ・1.依頼・2.実行中・3.レポート・下部の選択中バーの構成に作り直す。選択中の依頼とレポートとタブを URL に保つ。
-- **I3**: キャンセル (トークン無効化・行を残す) と再実行 (同じ期間と補足指示で新規発行) の API を足し、実行中の表の操作列から呼ぶ。発行とコピーを 1 操作にする。
-- **I4**: 結果の取り込みを選択中の依頼へ向け、JSON の構文エラーの行・位置と契約違反の項目名を示し、入力を保持する。
-- **I5**: レポート詳細を 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、要約の下に関連ページのリンクと版履歴 (補足指示の 1 行目から説明) と 2 版比較を置く。一覧に検索とアーカイブ切替を付ける。
-- **I7**: 補足指示の下書きを localStorage に自動保存し、発行時に消す。
+- **I1**: Cash.tsx を pages/cash/ 配下へ分割し、問いの見出し・対象期間カード・タブ・入力 2 枚・一覧・下部固定バーの構成に作り直す。選択中のタブ・月・絞り込み・ページを URL に保つ。
+- **I2**: core に cash-screen を新設し、合計 (収入・支出・差額)、絞り込み (キーワード・収支・カテゴリ・名義・入力経路・金額と日付の範囲)、ページング、入力経路、交通費合計を純関数で導く。
+- **I3**: cash_entries に owner・transit_purpose・deleted_at を足す追加のみの migration 0050 (入力経路は列を持たず交通費の区間の有無から導く) と、削除・復元・一括削除・一括復元の API、削除中の行を読まない条件を cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に掛けること、夜間の完全消去を実装する。 JSON 復元の『空か』判定だけは削除中の行も数え、削除中の行が残る間は現金明細を復元しない (qa-cash-decision-009)。
+- **I4**: 入力途中の内容をブラウザ内に自動保存し、保存時刻を表示し、復元する。『入力をクリア』で下書きも消す。
+- **I5**: 削除をインライン確認にし、削除完了トーストの『元に戻す』で同じ行を復活させる。空状態では画面内だけのサンプル表示と『はじめての明細を入力』を出す。
 
 ### 本章に効く確定意思決定
 
@@ -99,9 +100,9 @@ AI 画面は AuthenticatedApp.tsx:23 で lazy(() => import('./pages/Ai.js')) に
 
 ### 本章での適用
 
-Clean Architecture card の依存方向を、web が段階の判定を持たない構成に適用した。現行 Ai.tsx は 1277 行の 1 ファイルで、状態の文言や期限の判定を画面側で組んでいるが、新しい構成では api が返す段階・進捗・T-番号・版の説明をそのまま描く部品群 (依頼・実行中の表・レポート一覧・取り込み・詳細・版履歴・版比較・選択中バー) に分ける。画面が持つ状態は選択中の依頼・レポート・タブ (URL) と補足指示の下書き (localStorage) だけにする。
+Clean Architecture card の依存方向を、web が合計と絞り込みの計算を持たない構成に適用した。現行 Cash.tsx は 724 行に入力・表・月の集計を抱えているので、pages/cash/ の view-model が core の cash-screen を呼んで描画用の形へ写すだけにし、下書きの保存は draft.ts、元に戻すの表示は ResultNotices に分ける。URL の検索パラメータを表示条件の正本にするので、同じ URL を開けば同じ一覧と合計になる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:23:17Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -195,6 +196,6 @@ Clean Architecture card の依存方向を、web が段階の判定を持たな�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| tanstack-query-invalidation | 5.103.1 | TanStack (github.com) | https://github.com/TanStack/query/releases/latest | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
-| react-router-searchparams | 8.4.0 | React Router (Shopify / Remix team) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
-| mdn-localstorage | 2026-07-28 | Mozilla (MDN Web Docs) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
+| tanstack-query-invalidation | 5.103.2 | TanStack (github.com) | https://github.com/TanStack/query/blob/main/packages/react-query/package.json | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |
+| react-router-searchparams | 8.4.0 | React Router (Shopify / Remix team) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |
+| mdn-localstorage | 2026-07-28 | Mozilla (MDN Web Docs) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |

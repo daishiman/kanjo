@@ -4,7 +4,7 @@
  * 個人分(per)は口座「現金」の MF 明細として仕分け・家計集計へ合流する。
  * 取込値とは別テーブルで持つため、CSV/Excel の再取込で消えない。
  */
-import type { FreeeDeal, MfTx } from './types.js';
+import type { FreeeDeal, MfTx, Owner } from './types.js';
 
 export type CashSide = 'biz' | 'per';
 export type CashIo = 'income' | 'expense';
@@ -33,6 +33,10 @@ export interface CashEntry {
   transitRound: boolean;
   /** 領収書が構造上出ない支出(電車代など)。未添付の警告対象から外す */
   receiptWaived: boolean;
+  /** 担当者(名義)。0050 より前の行は null(画面は「未設定」) */
+  owner: Owner | null;
+  /** 交通費の業務の目的。1列の保存形(formatTransitPurpose)。区間が無ければ null */
+  transitPurpose: string | null;
 }
 
 /** 個人分の現金明細を MF 明細として扱うときの ID 接頭辞 */

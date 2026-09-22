@@ -9,6 +9,7 @@ import {
   type Dataset,
   FINGERPRINT_VERSION,
   type FreeeDeal,
+  OWNER_VALUES,
   OwnerValidationError,
   SUB_VENDOR_NAME_MAX,
   TX_EDIT_BASE_BITS,
@@ -114,6 +115,9 @@ const restoredCashEntrySchema = z
     transitTo: z.string().nullable().default(null),
     transitRound: z.boolean().default(false),
     receiptWaived: z.boolean().default(false),
+    // 0050 の名義と業務の目的。旧バックアップには無いので「未設定」で補う
+    owner: z.enum(OWNER_VALUES).nullable().default(null),
+    transitPurpose: z.string().max(60).nullable().default(null),
   })
   .strict();
 
@@ -430,14 +434,19 @@ const projectedCashRows = (
  *
  * 移行先に記帳が1件でもあれば空を返す。この経路は初期移行であり、いま使っている記帳を
  * バックアップ時点へ巻き戻すことは意図していない。idも重なるため、混ぜると宛先が壊れる。
+ * 件数は論理削除中の行も数える(`destinationRowCounts.cashEntries`)。削除中の行も id を持ち続けるため。
  */
-const restorableCashEntries = (
-  obj: Record<string, unknown>,
-  destination: ReadonlyArray<CashEntry>,
-): CashEntry[] => {
-  if (destination.length > 0) return [];
+const restorableCashEntries = (obj: Record<string, unknown>, destinationCashCount: number): CashEntry[] => {
+  if (destinationCashCount > 0) return [];
   const parsed = z.array(restoredCashEntrySchema).safeParse(obj.cashEntries);
   return parsed.success ? parsed.data : [];
+};
+
+/** 現金明細を復元しなかった理由。入れた(または移行先が空だった)ときは null */
+export const cashKeptReason = (activeCount: number, totalCount: number): string | null => {
+  if (activeCount > 0) return '移行先に現金明細があるため、現金明細は復元しませんでした';
+  if (totalCount > 0) return '削除中(30日以内)の現金明細が残っているため、現金明細は復元しませんでした';
+  return null;
 };
 
 const badCashProjection = {
@@ -1448,6 +1457,7 @@ importsRoute.post('/imports', async (c) => {
       institutionOwners: 0,
       budgets: 0,
       cashOverrides: 0,
+      cashEntries: 0,
     },
   };
   let cashEntries: CashEntry[] = [];
@@ -1507,7 +1517,10 @@ importsRoute.post('/imports', async (c) => {
     // 現金の記帳ごと復元するのは、移行先に記帳が1件も無いときだけ(初期移行)
     for (const prepared of preparedFiles.flatMap((preparedFile) => preparedFile.units)) {
       if (prepared.unit.kind === 'json') {
-        prepared.restoredCash = restorableCashEntries(prepared.unit.json, cashEntries);
+        prepared.restoredCash = restorableCashEntries(
+          prepared.unit.json,
+          restoreSettings.destinationRowCounts.cashEntries,
+        );
       }
     }
     data = await loadDataset(db, userId, cashEntries, { withSplits: false });
@@ -1975,6 +1988,7 @@ importsRoute.post('/restore', async (c) => {
       institutionOwners: 0,
       budgets: 0,
       cashOverrides: 0,
+      cashEntries: 0,
     },
   };
   let freeeDeals: FreeeDeal[] = [];
@@ -1986,7 +2000,7 @@ importsRoute.post('/restore', async (c) => {
     // multipartと同じく、claim取得後のauthoritative snapshotで計画と実行を行う。
     restoreSettings = await loadImportRestoreSettingsSnapshot(db, userId);
     cashEntries = restoreSettings.cashEntries;
-    prepared.restoredCash = restorableCashEntries(body, cashEntries);
+    prepared.restoredCash = restorableCashEntries(body, restoreSettings.destinationRowCounts.cashEntries);
     data = await loadDataset(db, userId, cashEntries, { withSplits: false });
     data.txSplits = restoreSettings.txSplits;
     normMap = restoreSettings.normMap;
@@ -2104,6 +2118,8 @@ importsRoute.post('/restore', async (c) => {
       // 意味が違うため、後者は cashKept で区別する
       cashEntries: executed.result.status === 'duplicate' ? 0 : prepared.restoredCash.length,
       cashKept: cashEntries.length,
+      // 有効な記帳が0件でも、論理削除中の記帳が残っていれば入れない。その理由を画面に出す
+      cashKeptReason: cashKeptReason(cashEntries.length, restoreSettings.destinationRowCounts.cashEntries),
       // 予算(49 queries)に載らず記帳だけ見送った件数。0なら見送りは無い
       cashSkipped,
       runId,

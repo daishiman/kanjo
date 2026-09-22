@@ -1,0 +1,554 @@
+/*
+ * 現金入力画面の体裁 (spec-cash-screen 7.x)。
+ *
+ * 広い画面では入力カード 2 枚を並べて選んだ方を強調し、狭い画面では選んだ 1 枚だけを出す。
+ * 色・余白・角丸は共通のトークンを使い、この画面だけの色を作らない。
+ */
+
+.cash-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  /* 下部固定バーに最後の行が隠れないだけの余白 */
+  padding-bottom: 72px;
+}
+
+/* grid / flex の子が表の min-content 幅まで親を押し広げないための共通境界 */
+.cash-page > *,
+.cash-entry-grid > *,
+.cash-head > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.cash-page .card {
+  margin: 0;
+}
+
+/* -------- 見出しと対象期間 -------- */
+
+.cash-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
+  align-items: start;
+  gap: 16px;
+}
+
+.cash-head .page-question {
+  margin: 4px 0;
+  color: var(--ink);
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.cash-head .page-task {
+  margin-bottom: 0;
+}
+
+.cash-period h2 {
+  margin: 0 0 4px;
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+
+.cash-period-range {
+  margin: 0 0 4px;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cash-period .sub {
+  margin: 0;
+}
+
+.cash-period-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* -------- タブ -------- */
+
+.cash-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cash-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: var(--tap-target-min);
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease-standard);
+}
+
+.cash-tab:hover:not(:disabled) {
+  border-color: var(--control-border-hover);
+}
+
+.cash-tab.is-active {
+  border-color: var(--accent);
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+
+.cash-tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.cash-tab-label {
+  font-weight: 600;
+}
+
+.cash-tab .sub {
+  font-size: var(--fs-2xs);
+}
+
+/* -------- 入力カード -------- */
+
+.cash-entry-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.cash-entry-card {
+  border: 1px solid var(--line);
+  transition: border-color var(--motion-fast) var(--ease-standard);
+}
+
+.cash-entry-card.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.cash-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cash-card-head h2 {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+
+.cash-draft-time {
+  font-size: var(--fs-2xs);
+}
+
+.cash-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cash-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.cash-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 9rem;
+}
+
+.cash-field-wide {
+  flex: 2 1 16rem;
+}
+
+.cash-field label,
+.cash-field legend,
+.cash-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cash-field input,
+.cash-field select,
+.cash-field textarea {
+  width: 100%;
+  min-height: var(--tap-target-min);
+  box-sizing: border-box;
+}
+
+.cash-choice {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.cash-choice legend {
+  width: 100%;
+  margin-bottom: 4px;
+  padding: 0;
+}
+
+.cash-req {
+  margin-left: 4px;
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.cash-count {
+  align-self: flex-end;
+  font-size: var(--fs-2xs);
+}
+
+.cash-inline-note,
+.cash-receipt-note {
+  margin: 0;
+  font-size: var(--fs-xs);
+}
+
+/* PC では隣の通常入力カードが見える。SP だけ交通費カード内で編集可能にする */
+.cash-transit-shared {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cash-shared-value {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-target-min);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.cash-route-row .cash-swap {
+  align-self: flex-end;
+  min-height: var(--tap-target-min);
+}
+
+.cash-round {
+  align-self: center;
+  min-height: var(--tap-target-min);
+}
+
+.cash-total {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-target-min);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.cash-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+
+.cash-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* -------- 二重計上の疑い -------- */
+
+.cash-duplicates {
+  margin: 0;
+  border-color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.cash-duplicates h2 {
+  margin: 0 0 4px;
+  font-size: var(--fs-md);
+}
+
+.cash-duplicates ul {
+  margin: 8px 0 0;
+  padding-left: 1.2em;
+}
+
+/* -------- 一覧 -------- */
+
+.cash-month-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cash-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cash-search {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cash-filters input,
+.cash-filters select {
+  min-height: var(--tap-target-min);
+  min-width: 0;
+}
+
+.cash-search input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: var(--tap-target-min);
+}
+
+.cash-month-label {
+  min-width: 7em;
+  font-weight: 600;
+  text-align: center;
+}
+
+.cash-total-label {
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+
+.cash-purpose,
+.cash-sample {
+  margin-left: 4px;
+}
+
+.cash-table tr.is-editing td {
+  background: var(--biz-soft);
+}
+
+.cash-advanced {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.cash-totals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.cash-total-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.cash-total-card .num {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+}
+
+.cash-total-card.is-income .num {
+  color: var(--good);
+}
+
+.cash-total-card.is-expense .num {
+  color: var(--danger);
+}
+
+.cash-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cash-table td.num,
+.cash-table th.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cash-io-income {
+  color: var(--good);
+  background: var(--good-soft);
+}
+
+.cash-io-expense {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.cash-row-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cash-row-actions > * + * {
+  margin-left: 4px;
+}
+
+.cash-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* -------- 空状態・確認欄・結果の通知 -------- */
+
+.cash-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 12px;
+  text-align: center;
+}
+
+.cash-empty p {
+  margin: 0;
+}
+
+.cash-empty-title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+.cash-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+}
+
+.cash-confirm p {
+  margin: 0;
+}
+
+.cash-confirm-title {
+  font-weight: 600;
+}
+
+.cash-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.cash-notice.is-ok {
+  border-color: var(--good);
+  background: var(--good-soft);
+}
+
+.cash-notice.is-ng {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+/* -------- 下部固定バー -------- */
+
+.cash-sticky {
+  position: sticky;
+  bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-popover);
+}
+
+.cash-sticky .sub {
+  margin: 0;
+  font-size: var(--fs-xs);
+}
+
+/* -------- 狭い画面 -------- */
+
+@media (max-width: 900px) {
+  .cash-head,
+  .cash-entry-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  /* 選んでいないカードは隠す。タブで切り替える */
+  .cash-entry-card:not(.is-active) {
+    display: none;
+  }
+
+  .cash-entry-card.is-active {
+    box-shadow: none;
+  }
+
+  .cash-transit-shared {
+    display: flex;
+  }
+
+  .cash-transit-shared-note {
+    display: none;
+  }
+
+  .cash-totals {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* 下部タブバーと重ならない位置に置く */
+  .cash-sticky {
+    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  }
+}

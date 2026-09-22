@@ -24,6 +24,8 @@ const entry = (over: Partial<CashEntry> = {}): CashEntry => ({
   transitTo: null,
   transitRound: false,
   receiptWaived: false,
+  owner: null,
+  transitPurpose: null,
   ...over,
 });
 

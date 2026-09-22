@@ -35,7 +35,7 @@ import {
   recomputeClassification,
   subVendorDefs,
 } from '@kanjo/core';
-import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import * as s from './db/schema.js';
 import { invalidateJsonSnapshotQuery } from './import-active.js';
@@ -515,14 +515,16 @@ export const cashFromRow = (r: typeof s.cashEntries.$inferSelect): CashEntry => 
   transitTo: r.transitTo ?? null,
   transitRound: r.transitRound === 1,
   receiptWaived: r.receiptWaived === 1,
+  owner: normalizeOwner(r.owner),
+  transitPurpose: r.transitPurpose ?? null,
 });
 
-/** 日付の新しい順(同日はIDの新しい順) */
+/** 有効な(論理削除されていない)現金明細を、日付の新しい順(同日はIDの新しい順)で返す */
 export async function loadCashEntries(db: Db, userId: string): Promise<CashEntry[]> {
   const rows = await db
     .select()
     .from(s.cashEntries)
-    .where(eq(s.cashEntries.userId, userId))
+    .where(and(eq(s.cashEntries.userId, userId), isNull(s.cashEntries.deletedAt)))
     .orderBy(desc(s.cashEntries.date), desc(s.cashEntries.id));
   return rows.map(cashFromRow);
 }
@@ -721,6 +723,8 @@ export interface ImportRestoreSettingsSnapshot {
     institutionOwners: number;
     budgets: number;
     cashOverrides: number;
+    /** 0050: 論理削除中を含む現金明細の件数。JSON 復元で現金明細を入れてよいかの判定に使う */
+    cashEntries: number;
   };
 }
 
@@ -763,6 +767,11 @@ SELECT 'edit', payment_method, matched_proposal, NULL,
        tx_id, cls, category_major, category_mid, owner, base_major, base_mid, note, updated_at,
        base_cls, base_owner, stable_key, CAST(fingerprint_version AS TEXT), base_known, institution
 FROM tx_edits WHERE user_id = ?
+  -- 論理削除中の現金明細を指す手動編集は写さない。明細本体を写さないので、残すと宙に浮く
+  AND NOT EXISTS (
+    SELECT 1 FROM cash_entries ce
+    WHERE ce.user_id = tx_edits.user_id AND ce.deleted_at IS NOT NULL AND tx_edits.tx_id = 'cash:' || ce.id
+  )
 UNION ALL
 SELECT 'budget', NULL, NULL, monthly_amount,
        account, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
@@ -791,8 +800,8 @@ SELECT 'sub_vendor_review_decision', id, NULL, NULL,
 FROM sub_vendor_review_decisions WHERE user_id = ?
 UNION ALL
 SELECT 'cash', id, NULL, amount,
-       date, month, side, io, description, category_major, category_mid, memo, NULL, transit_from, transit_to, transit_round, receipt_waived, NULL, NULL
-FROM cash_entries WHERE user_id = ?
+       date, month, side, io, description, category_major, category_mid, memo, NULL, transit_from, transit_to, transit_round, receipt_waived, owner, transit_purpose
+FROM cash_entries WHERE user_id = ? AND deleted_at IS NULL
 UNION ALL
 SELECT 'split', id, seq, amount,
        tx_id, line_id, cls, category_major, category_mid, memo, created_at, updated_at,
@@ -966,6 +975,9 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
         transitTo: row.v11,
         transitRound: row.v12 === 1,
         receiptWaived: row.v13 === 1,
+        // 0050。cash 行で未使用だった v14/v15 に載せ、snapshot の列数を増やさない
+        owner: normalizeOwner(row.v14 == null ? null : String(row.v14)),
+        transitPurpose: row.v15 ?? null,
       }),
     )
     .sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
@@ -1099,8 +1111,9 @@ export async function loadImportRestoreSettingsSnapshot(
          'id',id,'date',date,'month',month,'side',side,'io',io,'amount',amount,
          'description',description,'categoryMajor',category_major,'categoryMid',category_mid,
          'memo',memo,'transitFrom',transit_from,'transitTo',transit_to,
-         'transitRound',transit_round,'receiptWaived',receipt_waived), NULL, NULL
-         FROM cash_entries WHERE user_id=?
+         'transitRound',transit_round,'receiptWaived',receipt_waived,
+         'owner',owner,'transitPurpose',transit_purpose), NULL, NULL
+         FROM cash_entries WHERE user_id=? AND deleted_at IS NULL
        UNION ALL
        SELECT 'freee', json_object(
          'month',month,'date',date,'io',io,'partner',partner,'accountRaw',account_raw,
@@ -1135,13 +1148,15 @@ export async function loadImportRestoreSettingsSnapshot(
          'txEdits', (SELECT count(*) FROM tx_edits WHERE user_id=?),
          'institutionOwners', (SELECT count(*) FROM institution_owners WHERE user_id=?),
          'budgets', (SELECT count(*) FROM budgets WHERE user_id=?),
-         'cashOverrides', (SELECT count(*) FROM cash_overrides WHERE user_id=?)
+         'cashOverrides', (SELECT count(*) FROM cash_overrides WHERE user_id=?),
+         -- 論理削除中も数える。id が残っているので、復元で同じ id を入れると衝突する
+         'cashEntries', (SELECT count(*) FROM cash_entries WHERE user_id=?)
        ), NULL, NULL
        )
        ORDER BY source, v1, v2`,
     )
     // 上の SELECT が ? を置いた順と同じ数だけ渡す。数え間違いは実行時まで出ない
-    .bind(...Array.from({ length: 19 }, () => userId))
+    .bind(...Array.from({ length: 20 }, () => userId))
     .all<{ source: string; v1: string | null; v2: string | null; amount: number | null }>();
   const normMap: Record<string, string> = {};
   for (const row of result.results.filter((row) => row.source === 'norm')) {
@@ -1157,6 +1172,8 @@ export async function loadImportRestoreSettingsSnapshot(
     ...row,
     transitRound: row.transitRound === 1,
     receiptWaived: row.receiptWaived === 1,
+    owner: normalizeOwner(row.owner),
+    transitPurpose: row.transitPurpose ?? null,
   }));
   const freeeDeals = payloads<
     Omit<FreeeDeal, 'partner' | 'accountRaw' | 'accountNorm'> & {
@@ -1215,6 +1232,7 @@ export async function loadImportRestoreSettingsSnapshot(
     institutionOwners: 0,
     budgets: 0,
     cashOverrides: 0,
+    cashEntries: 0,
   };
   destinationRowCounts.subVendorReviewDecisions = subVendorReviewDecisions.length;
   return {

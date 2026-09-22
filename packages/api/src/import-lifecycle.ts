@@ -1190,6 +1190,9 @@ export function prepareRestoreWriteSet(args: {
         entry.transitTo ?? null,
         entry.transitRound ? 1 : 0,
         entry.receiptWaived ? 1 : 0,
+        // 0050。旧バックアップ由来は null(未設定)のまま入れる
+        entry.owner ?? null,
+        entry.transitPurpose ?? null,
       ]),
     // DBでは (kind,itemKey) / month を主キーとする集合。配列順を指紋へ混ぜない
     reviewSnoozeRows: args.reviewSnoozes
@@ -1574,6 +1577,8 @@ function restoreCashEntryStatements(
       'transit_to',
       'transit_round',
       'receipt_waived',
+      'owner',
+      'transit_purpose',
     ],
     rows,
     [

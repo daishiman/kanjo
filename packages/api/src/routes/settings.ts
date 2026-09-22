@@ -19,7 +19,7 @@ import {
   suggestBudgets,
   validateOwnerLabels,
 } from '@kanjo/core';
-import { and, eq, inArray, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
@@ -376,7 +376,11 @@ async function loadCategoryUsageContext(db: Db, userId: string): Promise<Categor
     db.select().from(s.categoryOptions).where(eq(s.categoryOptions.userId, userId)),
     db.select().from(s.txEdits).where(eq(s.txEdits.userId, userId)),
     loadOrderedRuleRows(db, userId),
-    db.select().from(s.cashEntries).where(eq(s.cashEntries.userId, userId)),
+    // 論理削除中の現金明細はカテゴリの使用中として数えない(一覧にも集計にも出ない)
+    db
+      .select()
+      .from(s.cashEntries)
+      .where(and(eq(s.cashEntries.userId, userId), isNull(s.cashEntries.deletedAt))),
     db
       .selectDistinct({ major: s.freeeDeals.accountRaw })
       .from(s.freeeDeals)

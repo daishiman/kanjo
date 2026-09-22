@@ -19,7 +19,8 @@
     "check:financial-figure": "node scripts/check-mobile-financial-layout.mjs",
     "check:financial-routes": "node scripts/check-financial-visuals.mjs",
     "check:ai-screen": "KANJO_VISUAL_SCOPE=ai node scripts/check-financial-visuals.mjs",
-    "check:analysis-hub": "node scripts/check-analysis-hub-visuals.mjs"
+    "check:analysis-hub": "node scripts/check-analysis-hub-visuals.mjs",
+    "check:cash-screen": "KANJO_VISUAL_SCOPE=cash node scripts/check-financial-visuals.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.1.0",

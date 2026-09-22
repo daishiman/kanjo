@@ -60,7 +60,7 @@ describe('現行migrationの適用', () => {
       .sort()
       .at(-1);
     expect(latest).toBe(EXPECTED_D1_MIGRATION);
-    expect(EXPECTED_D1_MIGRATION).toBe('0049_ai_report_invariants.sql');
+    expect(EXPECTED_D1_MIGRATION).toBe('0050_cash_entry_owner_soft_delete.sql');
   });
 
   it('Release Aは共有R2 cleanupを追加し、退役表を互換性のため残す', async () => {

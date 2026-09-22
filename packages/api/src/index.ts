@@ -12,6 +12,7 @@ import { secureHeaders } from 'hono/secure-headers';
 import { runAuditDetailRetention, runAuditHeaderRetention } from './audit-log.js';
 import { type AuthEnv, type AuthVariables, authGuard, mustChangePasswordFence } from './auth.js';
 import { canonicalMutationFence } from './canonical-mutation-fence.js';
+import { cashPurgeLogLine, runCashSoftDeletePurge } from './cash-purge.js';
 import { runDeletionRetention } from './deletion-retention.js';
 import { cleanupStalePasswordLoginRateLimits } from './login-rate-limit.js';
 import { runR2Cleanup } from './r2-cleanup.js';
@@ -210,6 +211,7 @@ export async function scheduledMaintenance(
     deletion_undo_retention: runDeletionRetention(env),
     audit_header_retention: runAuditHeaderRetention(env),
     audit_detail_retention: runAuditDetailRetention(env),
+    cash_soft_delete_purge: runCashSoftDeletePurge(env),
   } satisfies Record<ConcurrentJobName, Promise<unknown>>;
   const [
     r2Cleanup,
@@ -218,6 +220,7 @@ export async function scheduledMaintenance(
     deletionRetention,
     auditHeaderRetention,
     auditDetailRetention,
+    cashPurge,
   ] = await Promise.allSettled([
     concurrentJobs.r2_cleanup,
     concurrentJobs.password_login_rate_limit_cleanup,
@@ -225,6 +228,7 @@ export async function scheduledMaintenance(
     concurrentJobs.deletion_undo_retention,
     concurrentJobs.audit_header_retention,
     concurrentJobs.audit_detail_retention,
+    concurrentJobs.cash_soft_delete_purge,
   ]);
   console.log(
     JSON.stringify({
@@ -366,6 +370,15 @@ export async function scheduledMaintenance(
       }),
     );
   }
+  if (cashPurge.status === 'fulfilled') {
+    const line = cashPurgeLogLine(cashPurge.value);
+    if (cashPurge.value.limitReached) console.warn(JSON.stringify(line));
+    else console.log(JSON.stringify(line));
+  } else {
+    console.error(
+      JSON.stringify({ level: 'error', job: 'cash_soft_delete_purge', name: errorName(cashPurge.reason) }),
+    );
+  }
   // 全jobを完走・個別記録してからCronへ失敗を返す。飲み込むとPast Eventsが成功になり、
   // 後始末が止まった事実を運用から観測できない。元errorのmessageは外へ出さない。
   if (
@@ -377,6 +390,7 @@ export async function scheduledMaintenance(
       deletionRetention,
       auditHeaderRetention,
       auditDetailRetention,
+      cashPurge,
     ].some((result) => result.status === 'rejected')
   ) {
     throw new Error('scheduled_maintenance_failed');

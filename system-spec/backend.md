@@ -3,7 +3,7 @@ status: confirmed
 category: backend
 aggregate: 確定
 spec_cells: [backend.web, backend.mobile, backend.tablet, backend.desktop-windows, backend.desktop-linux, backend.desktop-macos]
-serves_goals: [G2, G3, G5]
+serves_goals: [G2, G3, G4]
 ---
 
 # バックエンド (backend)
@@ -15,12 +15,12 @@ serves_goals: [G2, G3, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-ai-backend-web-001。裏付け質疑 (`qa_refs`): `qa-ai-backend-web-evidence-001`, `qa-ai-backend-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、backend では端末からの長いポーリングを避けるための依頼の状態変化の通知 APIを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、backend ではタブレットと web で同じ依頼を同時に操作したときの競合規則を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリ向けの API 版管理と後方互換の期間を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリ向けの API 版管理と、古い版からの呼び出しの拒否を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリから AI エージェントを直接起動する経路の要否を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-cash-backend-web-005。裏付け質疑 (`qa_refs`): `qa-cash-backend-web-evidence-001`, `qa-cash-backend-web-003`, `qa-cash-decision-006`, `qa-cash-decision-009` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、backend ではオフラインで作られた明細の後着と、論理削除・復元の競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、backend では複数端末から同じ明細を同時に編集したときの競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、backend では端末ごとの同期カーソルを返す APIを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、backend では端末ごとの同期カーソルの失効規則を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、backend ではバックグラウンド同期用の差分取得 APIを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G2, G3, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 依存方向を core (段階の導出・T-番号・版の説明・タブの振り分け・JSON エラー位置) ← api (ai route と agent route) ← web (AI分析画面) の一方向へ反映した。api の taskStatus と web の状態文言を削除し、両者が同じ純関数の結果を使う。 |
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側に閉じ、段階の純関数は D1 を知らない依頼の記録 (時刻列と現在時刻) だけを受け取る形へ反映した。使用するデータの件数は期間で絞った既存の表の件数読み取りで作り、AI 用の SQL を増やさない。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | api の cash 経路から集計・絞り込みの計算を外し、core の cash-screen を唯一の計算元にする形へ反映した。論理削除・復元・一括削除・一括復元の各経路は、行の状態を変えて取引と集計を作り直すことだけを担い、canonical-mutation-fence に登録して既存の書込と同じ順序保証に乗せる。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 削除中の行を読まない条件を、cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に同じ deleted_at IS NULL として掛ける形へ反映した。読み取りの正本が 1 か所に集まっていないため、経路の一覧を仕様に持ち、経路ごとの API テストで条件の抜けを検出する。削除・復元・一括削除・一括復元の書き込みは、それぞれの経路 1 か所の D1 batch でだけ行う。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,43 +37,67 @@ serves_goals: [G2, G3, G5]
 
 ### Web (web)
 
-- 資するゴール: G2, G3, G5
+- 資するゴール: G2, G3, G4
 
-#### 主たる接地根拠: `qa-ai-backend-web-001`
-
-**問**
-
-AI 依頼の段階・操作・使用するデータの規則をどこに置き、どの契約で返すか。
-
-**答**
-
-段階と進捗の導出 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル、qa-ai-decision-002)、T-番号の整形、版の説明の導出 (qa-ai-decision-007)、レポートのタブへの振り分け (qa-ai-decision-008)、JSON 取り込みエラーの行・位置の算出を packages/core の純関数に置き、api の taskStatus はこれに置き換える。GET /ai/tasks は段階・進捗・T-番号を返す。POST /ai/tasks/:id/cancel はトークンを無効にして行を残し、POST /ai/tasks/:id/retry は同じ期間と補足指示で新しい依頼とトークンを返す。DELETE /ai/tasks/:id は結果の無い依頼だけを消す (qa-ai-decision-003)。GET /ai/inventory は期間の使用するデータ (freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を返す (qa-ai-decision-004)。エージェントのデータ取得で取得時刻を、形式エラーの差し戻しで差し戻し時刻と回数を記録する。期間は usePeriod の範囲をそのまま受け、前年比較に要る範囲は API が導く (qa-ai-decision-001)。レポート JSON 契約 v3 と skill は変えない。具体の優先順位と数え方は qa-ai-backend-web-003 (agent 推定) を参照。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-backend-web-evidence-001`
+#### 主たる接地根拠: `qa-cash-backend-web-005`
 
 **問**
 
-backend 章の裏付けとして、現行の AI 依頼の状態判定と経路について何を観測したか。
+削除中の行を読まない条件と一括復元を含めて、API は何を返し何を拒否するか。
 
 **答**
 
-packages/api/src/routes/ai.ts の taskStatus (ai.ts:68-72) は used_at があれば done、expires_at を過ぎれば expired、それ以外 waiting の 3 値だけを返す。レポートの形式エラーは reportValidator (ai.ts:40-56) が 400 invalid_report と issues 最大 20 件で返すが、差し戻しの事実は記録しない。エージェントのデータ取得 GET /ai/tasks/:id/data (ai.ts:476) も取得時刻を記録しない。DELETE /ai/tasks/:id (ai.ts:373-411) は結果待ちの依頼を行ごと削除し (画面では『取り消し』と呼ぶ)、受信済みは 409 already_done で拒否する。再実行の経路は無い。AI へ渡すデータは packages/api/src/ai/dataset.ts が組み、冒頭 (dataset.ts:2) に『集計値だけ。明細行・摘要・ルール・編集は含めない』とある。
+core の cash-screen.ts が合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を導き、API は JSON に写すだけにする。DELETE /api/cash-entries/:id は論理削除 (deleted_at を付けて同じ batch で取引と集計を作り直す)、POST /api/cash-entries/:id/restore は同じ id を戻し、POST /api/cash-entries/bulk-delete と POST /api/cash-entries/bulk-restore は 100 件までの id 配列を 1 batch で処理し、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にする。削除中の行を読まない条件 (deleted_at IS NULL) を cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、PUT は削除中の行を 404 にする。新しい restore / bulk-delete / bulk-restore の経路は canonical-mutation-fence に登録し、既存の POST / PUT / DELETE と同じ書込の順序保証に乗せる。POST / PUT は owner と transit_purpose を受ける。例外は 1 つだけで、JSON 復元の『移行先の現金明細が 0 件か』の判定だけは削除中の行も数える (loadImportRestoreSettingsSnapshot の destination_counts に、削除中を含む現金明細の件数を 1 つ足す)。削除中の行が残っている間は現金明細を復元せず、理由を表示する。バックアップの id をそのまま INSERT して主キーが衝突し、復元全体が失敗することを防ぐためである。件数のほかに、削除中の行の中身はどの出力にも出さない (qa-cash-decision-009)。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者の承認 (appr-foundation-cash-004、qa-cash-decision-010) と、決定 qa-cash-decision-006 (一括復元) / 009 (JSON 復元の件数の例外) の範囲に収まる確定内容。前回の確定 (qa-cash-backend-web-004) に例外の記述を足した。JSON 復元の判定は routes/imports.ts と store.ts の現物で確認した。 / 回答時刻: 2026-09-21T22:45:23Z)
 
-#### 裏付け質疑: `qa-ai-backend-web-003`
+#### 裏付け質疑: `qa-cash-backend-web-evidence-001`
 
 **問**
 
-web の AI分析画面で、利用者が決めていない 段階の判定の優先順位と、使用するデータの数え方 を何にするか。
+backend 章の裏付けとして、現行実装について何を観測したか。
 
 **答**
 
-段階は キャンセル (canceled_at あり) → 完了 (used_at あり) → 失敗 (期限切れ) → 実行中 75% (rejected_at あり) → 実行中 50% (data_fetched_at あり) → 待機中 0% の順で最初に当たったものとする。使用するデータは、期間内の freee 取引の件数、期間内で集計対象の MF 明細の件数 (振替と除外を除く)、期間内に出現した科目の種類数、期間内に出現した取引先の種類数とする。 これは agent の推定で、利用者は未確認である。画像と決定 001〜008 のどれにも値が無いため、実装で決定論を保つために置いた。
+cash の API は packages/api/src/routes/cash.ts の GET/POST /api/cash-entries と PUT/DELETE /api/cash-entries/:id。書込後は recomputeFromDeals / planRecomputeFromDeals で現金明細から導く取引と集計を同じ D1 batch で作り直し、JSON スナップショットを無効化する (:198-275)。導出の純関数は packages/core/src/cash.ts (309 行: cashToDeal・cashToTx・buildTransitEntry・findCashDealDuplicates など) にある。名義の語彙は packages/core/src/types.ts:114 の OWNER_VALUES (business / spouse / family) で、未設定 (null) を許す。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-21T15:20:56Z)
+
+#### 裏付け質疑: `qa-cash-backend-web-003`
+
+**問**
+
+web の現金入力画面で、利用者が決めていない 復元・一括削除の具体の上限と期限切れの扱いを何にするか。
+
+**答**
+
+一括削除は 1 回 100 件まで。完全消去済みの id の復元は 404 にする。復元時の科目が科目表から消えていても行は戻し、科目の検証は次の編集時に行う。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:20:56Z)
+
+#### 裏付け質疑: `qa-cash-decision-006`
+
+**問**
+
+一覧の選択から一括削除した行を、削除完了トーストの『元に戻す』でどう戻すか。現行の仕様には 1 件ずつの復元しか無い。
+
+**答**
+
+一括復元の API を足す。POST /api/cash-entries/bulk-restore が一括削除と同じ id の配列 (100 件まで) を受け、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にして何も戻さず、全件を 1 つの D1 batch で deleted_at を外して取引と集計を作り直す。トーストの『元に戻す』は一括削除した id をそのまま渡す。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢 (一括復元の API を足す・1 件ずつ復元を繰り返す・一括削除では元に戻すを出さない) と推奨案を提示し、利用者が「一括復元の API を足す (推奨)」を選択。answered_at は選択時刻の上界。 / 回答時刻: 2026-09-21T15:34:28Z)
+
+#### 裏付け質疑: `qa-cash-decision-009`
+
+**問**
+
+JSON 復元は移行先の現金明細が 0 件のときだけバックアップの明細を id のまま入れる。削除中の行だけが残る利用者は 0 件と判定され、主キーが衝突して復元全体が失敗する。どう扱うか。
+
+**答**
+
+削除中も件数に数える。『空か』の判定だけは削除中の行を数え、削除中の行が残る間は現金明細を復元せず理由を表示する。削除中の行を他のどの出力にも出さない不変条件の例外は、この件数 1 つだけとする。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢 3 件 (削除中も件数に数える・復元前に削除中の行を消す・衝突した行だけ飛ばす) と推奨案を提示し、利用者が「削除中も件数に数える (推奨)」を選択。answered_at は選択時刻の上界。 / 回答時刻: 2026-09-21T22:44:32Z)
 
 ## To-Be / Delta
 
@@ -81,23 +105,25 @@ web の AI分析画面で、利用者が決めていない 段階の判定の優
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 依頼の段階と進捗を core の純関数 1 か所で記録から導く。発行済みでデータ未取得 = 待機中 0%、データ取得済み = 実行中 50%、形式エラーで差し戻し = 実行中 75%、受信 = 完了 100%、結果なしで期限切れ = 失敗、取り消し = キャンセル。依頼には利用者ごとの連番から T-0001 形式の ID を振る。
-- **G3**: 依頼の操作を画面で決着できるようにする。キャンセルはトークンを無効にして行を残し、再実行は同じ期間と補足指示で新しい依頼を発行し、削除は結果の無い依頼だけを消す (受信済みは削除不可)。依頼の発行とプロンプトのコピーを 1 操作にする。
-- **G5**: データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。
+- **G2**: 記録が消えない。入力途中の内容はブラウザ内に自動保存して復元でき、削除は論理削除として一覧と集計から外したうえで『元に戻す』で同じ行を復活でき、30 日後に夜間処理で完全に消える。
+- **G3**: 画面の数字と判定を core の 1 か所から導く。合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を core の純関数に置き、API は JSON に写すだけ、web は描くだけにする。
+- **G4**: 現金明細の入力と変更を安全に保つ。利用者ごとの分離、入力検証、削除・復元の権限確認、削除済み行を集計へ混ぜない不変条件を API と DB の両方で守る。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | 依頼の段階と進捗が記録から一意に決まる。 | core の単体テストで、6 つの段階 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル) が記録の組合せから toBe で導かれ、期限切れと受信・取消の優先順位が境界ケースで固定される。 |
-| O3 | キャンセル・再実行・削除が規則どおりに効く。 | API テストで、キャンセル後のトークンがデータ取得とレポート送信で拒否され行が残ること、再実行が同じ期間と補足指示の新しい依頼を作ること、受信済みの依頼の削除が拒否されることを確かめる。 |
-| O5 | データの件数が実データと一致し、外部へ出るのは集計値だけである。 | API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。 |
+| O2 | 下書きと論理削除で記録が欠けない。 | DOM テストで入力→再描画後に下書きが復元されること、API テストで削除→元に戻すで同じ id が一覧に戻ること、削除中の行が集計 (cashToDeal / cashToTx の入力) に 0 件であることが通る。 |
+| O3 | 画面の導出が core の 1 か所に集まる。 | core の cash-screen の単体テストが合計・絞り込み・ページング・入力経路・交通費合計を固定し、web と api に同じ計算の重複が無い (grep で 0 件)。 |
+| O4 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I2**: core に依頼の段階と進捗を導く純関数と T-番号の整形を新設し、api の taskStatus と web の表示をこれに寄せる。
-- **I3**: キャンセル (トークン無効化・行を残す) と再実行 (同じ期間と補足指示で新規発行) の API を足し、実行中の表の操作列から呼ぶ。発行とコピーを 1 操作にする。
-- **I6**: 使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。
+- **I2**: core に cash-screen を新設し、合計 (収入・支出・差額)、絞り込み (キーワード・収支・カテゴリ・名義・入力経路・金額と日付の範囲)、ページング、入力経路、交通費合計を純関数で導く。
+- **I3**: cash_entries に owner・transit_purpose・deleted_at を足す追加のみの migration 0050 (入力経路は列を持たず交通費の区間の有無から導く) と、削除・復元・一括削除・一括復元の API、削除中の行を読まない条件を cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に掛けること、夜間の完全消去を実装する。 JSON 復元の『空か』判定だけは削除中の行も数え、削除中の行が残る間は現金明細を復元しない (qa-cash-decision-009)。
+- **I4**: 入力途中の内容をブラウザ内に自動保存し、保存時刻を表示し、復元する。『入力をクリア』で下書きも消す。
+- **I5**: 削除をインライン確認にし、削除完了トーストの『元に戻す』で同じ行を復活させる。空状態では画面内だけのサンプル表示と『はじめての明細を入力』を出す。
+- **I6**: 入力検証 (名義・業務の目的・カテゴリの候補、文字数、金額の範囲) を core と API の zod で揃え、他の利用者の行を 404 にする。
 
 ### 本章に効く確定意思決定
 
@@ -109,9 +135,9 @@ web の AI分析画面で、利用者が決めていない 段階の判定の優
 
 ### 本章での適用
 
-Clean Architecture card の Dependency Rule を、依頼の段階と進捗の置き場所に適用した。段階 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル) は ai_tasks の時刻列と現在時刻だけから決まる入出力のない計算なので core の純関数 1 か所に置き、api の taskStatus (done / expired / waiting の 3 値) はこれに置き換える。T-番号の整形・版の説明 (補足指示の 1 行目か既定文)・レポートのタブへの振り分け・JSON 取り込みエラーの行と位置も同じく core に置く。api はキャンセル・再実行・使用するデータの経路で D1 を読み書きし、判定は純関数へ渡して JSON に写すだけにする。こうすると画面の表示と agentGuard の拒否が同じ判定から出るため、キャンセル済みなのに画面では実行中に見えるといったずれを単体テストで塞げる。
+Clean Architecture card の Dependency Rule を、現金入力の合計・絞り込み・入力経路・交通費合計の置き場所に適用した。これらは明細の配列と条件だけから決まる入出力のない計算なので core の cash-screen 1 か所に置き、api は D1 の読み書き (論理削除・復元・一括削除・一括復元と、同じ batch での取引と集計の作り直し) だけを担って判定を持たない。画面の合計と API の応答が同じ関数から出るので、差額が画面と集計でずれることを単体テストで塞げる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:38:32Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -242,4 +268,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| hono-zod-validator | 0.9.1 | Hono (honojs) (github.com) | https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
+| hono-zod-validator | 0.9.1 | Hono (honojs) (github.com) | https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |

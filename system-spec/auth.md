@@ -3,7 +3,7 @@ status: confirmed
 category: auth
 aggregate: 確定
 spec_cells: [auth.web, auth.mobile, auth.tablet, auth.desktop-windows, auth.desktop-linux, auth.desktop-macos]
-serves_goals: [G3, G5]
+serves_goals: [G4]
 ---
 
 # 認証(ログイン) (auth)
@@ -15,12 +15,12 @@ serves_goals: [G3, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-ai-auth-web-001。裏付け質疑 (`qa_refs`): `qa-ai-auth-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、auth では端末の生体認証とセッションの結び付け、依頼トークンを端末に残さない方法を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、auth では家族で共有するタブレットでの利用者切替とセッションの分離を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、auth ではWindows 資格情報マネージャへのセッション保存の可否を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、auth ではSecret Service が無い環境でのセッション保存の代替を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、auth ではKeychain へのセッション保存と、コピーした依頼トークンの扱いを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-cash-auth-web-001。裏付け質疑 (`qa_refs`): `qa-cash-auth-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、auth では生体認証でのアプリ再開と、セッション Cookie に代わるトークンの保管を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、auth では家族と共有するタブレットでの利用者切替を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、auth ではWindows 資格情報マネージャーへのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、auth ではSecret Service が無い環境でのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、auth ではKeychain へのトークン保管とアプリ署名を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G3, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | キャンセル・再実行・使用するデータの 3 経路に、既存のセッション cookie による認証をそのまま効かせる形へ反映した。エージェント経路は既存のトークン認証のままで、キャンセル済みの判定を agentGuard に足す。新しいログイン手段や長期トークンは設けない。 |
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 利用者単位でデータを閉じる規則を、キャンセル・再実行・削除・使用するデータの全経路に反映した。どれも c.get('userId') で自分の依頼と明細だけを扱い、他の利用者の依頼 id を渡されたときは 404 を返すことを API テストで確かめる。 |
+| authentication | OWASP ASVS + Secrets Management Cheat Sheet | 認証方式・セッション・資格情報/シークレット/API キーの取扱いの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 復元と一括削除も既存のセッション Cookie (HttpOnly・Secure・SameSite=Strict) の認証だけで通す形へ反映した。現金入力のために新しい資格情報やトークンを発行しない。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 他の利用者の明細を指す id を、取得・変更・削除・復元・一括削除・一括復元のどれでも 404 にそろえる形へ反映した。一括削除と一括復元は他人の id を 1 件でも含めば何も変えない。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,31 +37,31 @@ serves_goals: [G3, G5]
 
 ### Web (web)
 
-- 資するゴール: G3, G5
+- 資するゴール: G4
 
-#### 主たる接地根拠: `qa-ai-auth-web-001`
-
-**問**
-
-AI分析画面の新しい経路は、誰がどの条件で読み書きできるか。
-
-**答**
-
-利用者向けの新経路 (キャンセル・再実行・使用するデータ) は既存の aiRoute と同じく /api/* の authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence の内側に置き、c.get('userId') で自分の依頼だけを扱う。エージェント経路は従来どおり依頼ごとの使い捨てトークン (SHA-256 保存・24 時間) だけで認証し、キャンセル済みの依頼のトークンを期限切れ・受信済みと同じく 401 で拒否する (qa-ai-decision-003)。再実行は新しいトークンを発行し、元のトークンは生かさない。新しい役割や長期トークンは設けない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-auth-web-evidence-001`
+#### 主たる接地根拠: `qa-cash-auth-web-001`
 
 **問**
 
-auth 章の裏付けとして、AI の利用者経路とエージェント経路の認証について何を観測したか。
+新しい復元・一括削除の経路を誰に許すか。
 
 **答**
 
-packages/api/src/index.ts は aiAgentRoute を /api/* のフェンスより前 (index.ts:95) に載せ、利用者向けの aiRoute を authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence (index.ts:102-106) の後 (index.ts:108) に載せる。エージェント経路は agentGuard (ai.ts:445-470) が Authorization: Bearer kjo_… を SHA-256 で ai_tasks.token_hash と照合し、期限切れと受信済みを 401 で拒否する。トークンの寿命は 24 時間 (ai.ts:36)。
+既存のセッション認証 (authGuard 配下、HttpOnly・SameSite=Strict の Cookie) をそのまま使い、新しい経路もすべて /api/* に置いて userId を条件に読み書きする。他の利用者の明細の取得・変更・削除・復元は存在を明かさず 404 にする。新しい権限や役割は作らない (単一利用者の運用)。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:20:56Z)
+
+#### 裏付け質疑: `qa-cash-auth-web-evidence-001`
+
+**問**
+
+auth 章の裏付けとして、現行実装について何を観測したか。
+
+**答**
+
+/api/* は packages/api/src/index.ts:104 の authGuard() 配下で、cash の各経路 (packages/api/src/routes/cash.ts:175-275) は c.get('userId') を条件に読み書きし、他人の id は not_found (404) を返す。セッション Cookie は HttpOnly・Secure・SameSite=Strict (packages/api/src/auth.ts:131)。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-21T15:20:56Z)
 
 ## To-Be / Delta
 
@@ -69,20 +69,18 @@ packages/api/src/index.ts は aiAgentRoute を /api/* のフェンスより前 (
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: 依頼の操作を画面で決着できるようにする。キャンセルはトークンを無効にして行を残し、再実行は同じ期間と補足指示で新しい依頼を発行し、削除は結果の無い依頼だけを消す (受信済みは削除不可)。依頼の発行とプロンプトのコピーを 1 操作にする。
-- **G5**: データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。
+- **G4**: 現金明細の入力と変更を安全に保つ。利用者ごとの分離、入力検証、削除・復元の権限確認、削除済み行を集計へ混ぜない不変条件を API と DB の両方で守る。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | キャンセル・再実行・削除が規則どおりに効く。 | API テストで、キャンセル後のトークンがデータ取得とレポート送信で拒否され行が残ること、再実行が同じ期間と補足指示の新しい依頼を作ること、受信済みの依頼の削除が拒否されることを確かめる。 |
-| O5 | データの件数が実データと一致し、外部へ出るのは集計値だけである。 | API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。 |
+| O4 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I3**: キャンセル (トークン無効化・行を残す) と再実行 (同じ期間と補足指示で新規発行) の API を足し、実行中の表の操作列から呼ぶ。発行とコピーを 1 操作にする。
-- **I6**: 使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。
+- **I3**: cash_entries に owner・transit_purpose・deleted_at を足す追加のみの migration 0050 (入力経路は列を持たず交通費の区間の有無から導く) と、削除・復元・一括削除・一括復元の API、削除中の行を読まない条件を cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に掛けること、夜間の完全消去を実装する。 JSON 復元の『空か』判定だけは削除中の行も数え、削除中の行が残る間は現金明細を復元しない (qa-cash-decision-009)。
+- **I6**: 入力検証 (名義・業務の目的・カテゴリの候補、文字数、金額の範囲) を core と API の zod で揃え、他の利用者の行を 404 にする。
 
 ### 本章に効く確定意思決定
 
@@ -94,9 +92,9 @@ packages/api/src/index.ts は aiAgentRoute を /api/* のフェンスより前 (
 
 ### 本章での適用
 
-Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、利用者経路とエージェント経路の 2 系統の配置に適用した。キャンセル・再実行・使用するデータは利用者の操作なので /api/* のフェンスの内側に載せ、route の中で個別の認可判定を書かない。エージェント経路は依頼ごとのトークンだけを受け、agentGuard 1 か所で期限切れ・受信済み・キャンセル済みを同じ 401 で拒否する。取り消しをトークンの削除ではなく canceled_at の記録で表すため、拒否の理由を利用者の画面にも残せる。
+Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、新しい復元・一括削除の経路の置き場所に適用した。新経路をすべて authGuard 配下の /api/* に置き、各クエリの条件に userId を必ず含めることで、経路ごとに認可を書き足す必要をなくす。他人の id は存在を明かさない 404 にそろえる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:23:17Z)
 
 ### Secure by Design — deep knowledge card
 

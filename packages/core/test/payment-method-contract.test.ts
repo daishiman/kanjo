@@ -20,6 +20,8 @@ const cash: CashEntry = {
   transitTo: null,
   transitRound: false,
   receiptWaived: false,
+  owner: null,
+  transitPurpose: null,
 };
 
 describe('支払手段の判定', () => {
