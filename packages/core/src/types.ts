@@ -1,3 +1,4 @@
+import type { BudgetPlanRow } from './budget-screen.js';
 /** 公私判定の区分 */
 export type Cls = 'biz' | 'per';
 
@@ -301,6 +302,10 @@ export interface Dataset {
   /** 個人分の名義別(事業/妻/家族/未設定)の月別 収入・支出（edits/rules/institutionOwners から導出） */
   personalByOwner: Record<string, Record<OwnerKey, OwnerMonth>>;
   budgets: Record<string, number>;
+  /** 予算対象の期間ごとの年額 (budget_plans)。読み手は monthlyBudgetsAt 経由で読む */
+  budgetPlans?: BudgetPlanRow[];
+  /** 予算の基準月 (今月・日本時間 'YYYY-MM')。api が要求時刻から入れる (BR-23) */
+  budgetAsOf?: string;
   cashOverride: Record<string, { revenue: number; expense: number }>;
   unrecordedExpMonths: string[];
 }
@@ -335,6 +340,7 @@ export function emptyDataset(): Dataset {
     institutionOwners: {},
     personalByOwner: {},
     budgets: {},
+    budgetPlans: [],
     cashOverride: {},
     unrecordedExpMonths: [],
   };

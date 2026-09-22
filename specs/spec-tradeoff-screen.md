@@ -85,7 +85,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
 - トレードオフ画面の作り直し。`packages/web/src/pages/Tradeoff.tsx` は入口だけを持ち、実体を `packages/web/src/pages/tradeoff/` 配下の部品 (ページ本体・新しい支出のフォーム・候補表・推奨の表・試算結果パネル・計算例・選択中バー) へ分割する (qa-tradeoff-frontend-web-001)。
 - `packages/core` の純関数: 科目×取引先の候補集計と直近 3 か月平均、推移の 3 区分、必要度の推定、自動の理由の文と関連ページ、試算 (年額・差額・単発の計上)、防衛ラインへの影響、推奨の組み合わせの列挙と評価と順位と理由、候補キーの組み立て、`claimPart` 正規化の export。
 - API: `GET /api/tradeoff` の応答の作り直し、`POST /api/tradeoff` の入力の作り直しとサーバでの再計算、`PUT /api/tradeoff/candidates/:key` の新設。
-- 追加のみの migration (予定番号 `0050`): `tradeoff_plans` への `start_month`・`memo` 列の追加と、新表 `tradeoff_candidate_notes`。
+- 追加のみの migration (番号 `0051`。予定番号 0050 は #67 の `0050_budget_plans.sql` が先に使ったため、main 取り込み時に繰り上げた): `tradeoff_plans` への `start_month`・`memo` 列の追加と、新表 `tradeoff_candidate_notes`。
 - 選択中バー、候補表の検索・カテゴリ絞込・全クリア・『すべて表示』、推奨の理由と関連ページへのリンク、計算例。
 - `docs/spec-v1.1.md` の FR-09 への規則の明記と、core・API・DOM のテスト。
 
@@ -106,7 +106,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
 | --- | --- |
 | 新しい支出 | 利用者が画面で置く 支出名・金額・単発 / 毎月・開始月・メモ の 1 組。保存するまでは画面の状態。 |
 | 候補 | 分析期間の終了月から遡る 3 か月の freee 事業経費を 科目 (`account_norm`) × 取引先 (`partner`) で集計した 1 行。保存しない (qa-tradeoff-decision-001)。 |
-| 候補キー | `tradeoffCandidateKey(account_norm, partner)` が返す `v1:${JSON.stringify([account_norm, partner])}`。`parseTradeoffCandidateKey(key)` で `{ account, partner }` に可逆解析でき、候補と上書きを結ぶ。0050 は未公開・未適用のため旧 `account|partner` 形式との互換は持たない。 |
+| 候補キー | `tradeoffCandidateKey(account_norm, partner)` が返す `v1:${JSON.stringify([account_norm, partner])}`。`parseTradeoffCandidateKey(key)` で `{ account, partner }` に可逆解析でき、候補と上書きを結ぶ。0051 は未公開・未適用のため旧 `account|partner` 形式との互換は持たない。 |
 | 月額 | 候補の直近 3 か月の平均月額 (円、整数へ丸め)。 |
 | 必要度 | 低 / 中 / 高 (`low` / `mid` / `high`)。core が推定し、利用者の上書きがあればそちらを使う (qa-tradeoff-decision-002 / 010 / 011)。 |
 | 推移 | 直近 3 か月の 減少 / 横ばい / 増加。 |
@@ -154,7 +154,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
 ## 非機能要件
 
 - 性能: 画面は遅延読み込み (`AuthenticatedApp.tsx:35` の lazy import) のままにし、初期 JS 予算 (`check:js-budget` の CI 実測) を超えない。組み合わせの列挙は上位 12 件からの 2〜4 件 (最大 66 + 220 + 495 = 781 通り) に限り計算量を抑える (C6、qa-tradeoff-backend-web-003)。
-- 可用性: migration 0050 の適用前に新しい Worker が動いても壊れないよう、`packages/api/src/schema-guard.ts` の `EXPECTED_D1_MIGRATION` を同じ変更で進める。
+- 可用性: migration 0051 の適用前に新しい Worker が動いても壊れないよう、`packages/api/src/schema-guard.ts` の `EXPECTED_D1_MIGRATION` を同じ変更で進める。
 - アクセシビリティ: 状態を色だけで伝えない。必要度は文字 (低 / 中 / 高) に色を添え、推移は矢印と文字、差額の警告と防衛ラインの判定は文で示す (WCAG 2.2 SC 1.4.1)。
 - 保守性: 候補の作り方・推移・必要度・理由・推奨の順位・防衛ラインへの影響を `docs/spec-v1.1.md` の FR-09 に表で残し、同じ表を core の単体テストの期待値にする (qa-tradeoff-maintenance-ops-web-003)。
 - 見た目: 直書き色 0。色は `design-tokens.ts` 由来のトークン、ボタンは共通 Button、ページは PageShell / PageHeader / PageState / PageActions。選択中バーはサブスク・診断の SelectionBar の流儀に揃える (C2)。
@@ -424,7 +424,7 @@ N/A。成功後 web は tradeoff の query だけを無効化する (TanStack Qu
 
 ## データモデル
 
-migration `migrations/0050_tradeoff_notes.sql` (予定番号。マージ時点の最新 +1 に付け替える、qa-tradeoff-maintenance-ops-web-003)。追加のみ (C3)。
+migration `migrations/0051_tradeoff_notes.sql` (予定番号 0050 を main 取り込み時点の最新 +1 へ付け替えた、qa-tradeoff-maintenance-ops-web-003)。追加のみ (C3)。
 
 | 対象 | 変更 |
 | --- | --- |
@@ -464,8 +464,8 @@ migration `migrations/0050_tradeoff_notes.sql` (予定番号。マージ時点�
 
 ## 互換性・移行・リリース
 
-- 反映の順序は既存の Migrate → Deploy (qa-tradeoff-infrastructure-web-001)。0050 は列と表の追加だけなので、適用後に旧 Worker が動いても新しい列を読まないだけで壊れない。
-- `EXPECTED_D1_MIGRATION` (現在 `'0049_ai_report_invariants.sql'`) とそのテストを同じ変更で 0050 へ進める。
+- 反映の順序は既存の Migrate → Deploy (qa-tradeoff-infrastructure-web-001)。0051 は列と表の追加だけなので、適用後に旧 Worker が動いても新しい列を読まないだけで壊れない。
+- `EXPECTED_D1_MIGRATION` (現在 `'0051_budget_plans.sql'`) とそのテストを同じ変更で 0051 へ進める。
 - `POST /api/tradeoff` の入力の形が変わる。呼び出し元は web のトレードオフ画面だけなので同時に置き換える。
 - 既存の `tradeoffCandidates`・`defenseLine`・`/api/defense-line`・`tradeoffReview` の数字と既存テストは変えない (C5)。core の `packages/core/test/tradeoff-review-contract.test.ts` と `diagnosis-detectors-contract.test.ts` は緑のまま残す。
 - 例外: `packages/web/src/tradeoff-review.dom.test.tsx` (3 件) は画面に翌月の突合が出ることを確かめるテストで、qa-tradeoff-decision-004 (突合を画面から外す) と両立しない。突合の数字の契約は上の core テストが持ち続けるので、この DOM テストは『突合の表示が無いこと』を確かめる形へ書き換える。消すのではなく意図を置き換えることを変更の説明に明記する (**agent 推定・利用者未確認**)。
@@ -486,7 +486,7 @@ core 単体テスト (vitest):
 API テスト:
 
 - 3 経路の Contract tests (各節)。zod の上限 +1 で 400、認証なしで 401、利用者 A / B の分離、最新 1 件の復元。
-- migration 0050 の適用で既存の `tradeoff_plans` 行の更新が 0 件。
+- migration 0051 の適用で既存の `tradeoff_plans` 行の更新が 0 件。
 
 DOM テスト:
 
@@ -504,4 +504,4 @@ DOM テスト:
 ## 未決事項
 
 - 本文で「agent 推定・利用者未確認」と注記した値 (候補表の 10 件と『すべて表示』、文言、開始月と単発 / 毎月の既定、防衛ラインが無いときの文、推移の初月 0 の扱い、同額の並び、組み合わせの列挙範囲と順位、充足度の丸め、しやすさ・リスクの写し方、推奨の理由の文、関連ページの選び方、新表の形、文字数と金額の上限、keys の下限、PUT の経路と空メモの扱い、GET から `budgets`・`plans`・`review` を外すこと、422 の文、`tradeoff-review.dom.test.tsx` の書き換え) は、利用者の確認で変わり得る。変わった場合は `docs/spec-v1.1.md` FR-09 の表と core のテストの期待値を同時に直す。
-- migration の番号 0050 は予定番号で、マージ時点の最新 +1 に付け替える。
+- migration の番号は予定番号 0050 を main 取り込み時点 (0ed2d8c、最新 0050_budget_plans.sql) の最新 +1 の 0051 へ付け替えた。merge 直前にもう一度 fetch して空きを確かめる。

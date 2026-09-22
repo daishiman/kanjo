@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { splitMigrationStatements } from './migration-test-support.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../../');
-const source = readFileSync(resolve(root, 'migrations/0050_tradeoff_notes.sql'), 'utf8');
+const source = readFileSync(resolve(root, 'migrations/0051_tradeoff_notes.sql'), 'utf8');
 const statements = splitMigrationStatements(source);
 
 let mf: Miniflare;
@@ -47,7 +47,7 @@ beforeAll(async () => {
     }),
   );
   d1 = (await mf.getD1Database('DB')) as D1Database;
-  // 0050 直前の tradeoff_plans (0000_init の形)
+  // 0051 直前の tradeoff_plans (0000_init の形)
   await d1
     .prepare(
       `CREATE TABLE tradeoff_plans (
@@ -70,7 +70,7 @@ beforeAll(async () => {
 
 afterAll(async () => mf?.dispose());
 
-describe('0050 トレードオフの上書きと記録の列', () => {
+describe('0051 トレードオフの上書きと記録の列', () => {
   it('追加だけで、既存行を書き換える文を持たない', () => {
     const code = source.replace(/--.*$/gm, '');
     expect(code).not.toMatch(/\b(UPDATE|DELETE|DROP|REPLACE)\b/i);

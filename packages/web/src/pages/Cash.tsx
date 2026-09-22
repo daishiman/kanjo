@@ -28,6 +28,7 @@ import { ConfirmDialog, usePendingConfirm } from '../components/ConfirmDialog.js
 import { DataTable, termColumn } from '../components/DataTable.js';
 import { HowTo } from '../components/HowTo.js';
 import { PageHeader, PageState } from '../components/Page.js';
+import { SelectionCheckbox } from '../components/SelectionCheckbox.js';
 import { Term } from '../components/Term.js';
 import { monthLabel, yen } from '../format.js';
 
@@ -313,10 +314,12 @@ function TransitFields({
         onChange={(e) => setTransit({ oneWayAmount: Math.floor(Number(e.target.value) || 0) })}
         style={{ width: 110 }}
       />
-      <label className="check">
-        <input type="checkbox" checked={t.round} onChange={(e) => setTransit({ round: e.target.checked })} />
-        往復
-      </label>
+      <SelectionCheckbox
+        className="check"
+        label="往復"
+        checked={t.round}
+        onChange={(event) => setTransit({ round: event.target.checked })}
+      />
       <CategoryPicker
         candidates={candidates}
         scope={value.side}

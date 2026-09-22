@@ -28,7 +28,7 @@ priority: null
 project_id: "feature-package-feat-tradeoff-screen"
 pull_request_linkages: []
 related_nodes: ["arch-tradeoff-auth", "arch-tradeoff-backend", "arch-tradeoff-database", "arch-tradeoff-frontend", "arch-tradeoff-infrastructure", "arch-tradeoff-maintenance-ops", "arch-tradeoff-security", "arch-tradeoff-ui-ux", "spec-tradeoff-screen"]
-resource_scope: ["packages/core/src/tradeoff-screen.ts", "packages/core/src/diagnosis-detectors.ts", "packages/core/src/index.ts", "packages/api/src/routes/analytics.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/schema-guard.test.ts", "migrations/0050_tradeoff_notes.sql", "packages/web/src/api.ts", "packages/web/src/pages/Tradeoff.tsx", "packages/web/src/pages/tradeoff/", "packages/web/src/AuthenticatedApp.tsx", "packages/web/src/analysis-query-invalidation.ts"]
+resource_scope: ["packages/core/src/tradeoff-screen.ts", "packages/core/src/diagnosis-detectors.ts", "packages/core/src/index.ts", "packages/api/src/routes/analytics.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/schema-guard.test.ts", "migrations/0051_tradeoff_notes.sql", "packages/web/src/api.ts", "packages/web/src/pages/Tradeoff.tsx", "packages/web/src/pages/tradeoff/", "packages/web/src/AuthenticatedApp.tsx", "packages/web/src/analysis-query-invalidation.ts"]
 purpose: null
 goal: null
 scope_in: null
@@ -42,12 +42,12 @@ tags: ["tradeoff", "p05", "mutation"]
 target_date: null
 template_id: "task"
 template_version: "1.0.0"
-title: "tradeoff-screen 純関数・3 経路 API・migration 0050・トレードオフ画面の分割の最終実装"
+title: "tradeoff-screen 純関数・3 経路 API・migration 0051・トレードオフ画面の分割の最終実装"
 tracker_binding: "beads"
 updated_at: "2026-09-21T22:58:32Z"
 ---
 
-# tradeoff-screen 純関数・3 経路 API・migration 0050・トレードオフ画面の分割の最終実装
+# tradeoff-screen 純関数・3 経路 API・migration 0051・トレードオフ画面の分割の最終実装
 
 ## Machine-readable registration fields
 
@@ -84,7 +84,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Frontend: applicable: 15-tradeoff.png の全構成要素・選択中バー・計算例・防衛ラインの文を実装する
 - Backend: applicable: tradeoff-screen 純関数と claimPart の export を実装する
 - API: applicable: GET の作り直し・POST のサーバ再計算・PUT の新設を実装する
-- Data: applicable: migration 0050 と schema.ts と EXPECTED_D1_MIGRATION を揃える
+- Data: applicable: migration 0051 と schema.ts と EXPECTED_D1_MIGRATION を揃える
 - Infrastructure: N/A: binding と配信構成は据え置き
 - Security: applicable: 未知キー 422・zod 上限・user_id 分離を実装する
 - Quality: applicable: P04 の失敗テストがすべて緑になる
@@ -94,7 +94,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 ## Architecture and deploy unit
 
 - Architecture decisions: arch-tradeoff-auth, arch-tradeoff-backend, arch-tradeoff-database, arch-tradeoff-frontend, arch-tradeoff-infrastructure, arch-tradeoff-maintenance-ops, arch-tradeoff-security, arch-tradeoff-ui-ux, spec-tradeoff-screen
-- Deploy unit/environment: web ビルドと Worker と D1 migration (0050 の列追加と新表のみ)
+- Deploy unit/environment: web ビルドと Worker と D1 migration (0051 の列追加と新表のみ)
 - Compatibility/migration/backfill: tradeoff_plans への start_month・memo 列の追加と新表 tradeoff_candidate_notes (一意索引 (user_id, candidate_key)) のみ。既存行の書き換えと backfill は 0 件。番号は着手時に origin/main を fetch してマージ時点の最新 +1 に付け替える
 
 ## 成果物
@@ -102,13 +102,13 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Produced artifacts:
 - packages/core/src/tradeoff-screen.ts
 - packages/api/src/routes/analytics.ts
-- migrations/0050_tradeoff_notes.sql
+- migrations/0051_tradeoff_notes.sql
 - packages/web/src/pages/tradeoff/
 - Consumed artifacts:
 - docs/tradeoff-screen/design-decisions.md
 - packages/core/test/tradeoff-screen-contract.test.ts
 - packages/api/src/tradeoff-screen.integration.test.ts
-- packages/api/src/tradeoff-migration-0050.test.ts
+- packages/api/src/tradeoff-migration-0051.test.ts
 - packages/web/src/pages/tradeoff/tradeoff-screen.dom.test.tsx
 - Write scope/touches:
 - packages/core/src/tradeoff-screen.ts
@@ -118,7 +118,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - packages/api/src/db/schema.ts
 - packages/api/src/schema-guard.ts
 - packages/api/src/schema-guard.test.ts
-- migrations/0050_tradeoff_notes.sql
+- migrations/0051_tradeoff_notes.sql
 - packages/web/src/api.ts
 - packages/web/src/pages/Tradeoff.tsx
 - packages/web/src/pages/tradeoff/
@@ -153,7 +153,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Acceptance:
 - tradeoff-screen 純関数が P04 の core テスト (試算・候補・推移・必要度・理由・推奨・covered の不変条件) をすべて満たす。
 - 3 経路が既存 /api/* のフェンスの内側にあり、POST がサーバで再計算した covered と verdict だけを保存し、未知の候補キーを 422 で拒否する。
-- migration 0050 が追加のみで、schema.ts と EXPECTED_D1_MIGRATION が同じ変更で進んでいる。
+- migration 0051 が追加のみで、schema.ts と EXPECTED_D1_MIGRATION が同じ変更で進んでいる。
 - トレードオフ画面が参照画像の構成要素をすべて描画し、保存一覧と突合の表示が無い。
 - web と api に ×12・差額の式の重複が無い (grep で 0 件)。
 - Automated commands:
@@ -164,13 +164,13 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Required evidence:
 - packages/core/src/tradeoff-screen.ts
 - packages/api/src/routes/analytics.ts
-- migrations/0050_tradeoff_notes.sql
+- migrations/0051_tradeoff_notes.sql
 - packages/web/src/pages/tradeoff/
 
 ## Rollout and rollback
 
 - Rollout: 単一の PR で配信し、default branch への merge をもって反映する
-- Rollback trigger and steps: 本 task のコミットを revert する。0050 は列と表の追加のみで既存行を書き換えないため、列と表が残っても旧画面は動く。配信済みなら直前のビルドへ戻し、列と表の削除は行わない。
+- Rollback trigger and steps: 本 task のコミットを revert する。0051 は列と表の追加のみで既存行を書き換えないため、列と表が残っても旧画面は動く。配信済みなら直前のビルドへ戻し、列と表の削除は行わない。
 
 ## Handoff
 

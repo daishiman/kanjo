@@ -28,6 +28,7 @@ feature `feat-tradeoff-screen`(Beads epic `kanjo-4ib`)の日時付き検査記�
 | E9 | `pnpm --filter @kanjo/web test` と切り分け再実行 | 2026-09-22T07:04Z頃 → 07:22Z頃 | 全件一括 PASS には未到達。全体は worker が長時間停止。描画テスト 1 本を除いた実行は 82 files 中 81 passed / 1 failed、905 tests passed / 1 failed に加え worker 起動 timeout 1 件。対象外の `Import.discard` の失敗例は単独で PASS、`classify-split` も単独で PASS。除外した `mobile-financial-visualization-render` は単独 240 秒で無出力 timeout。トレードオフ対象は E7 で 44/44 PASS |
 | E10 | 生成物の実画面キャプチャと画像基準の構造比較 | 2026-09-22T07:22Z頃 → 07:24Z頃 | **PASS**: 1440 / 1024 / 375px の 3 枚で、上部説明、期間、Step 1〜3、試算結果、計算例、下部 CTA、2 列→1 列、横 overflow なし、mobile 44px 操作面を確認。共通 shell は既存仕様を維持 |
 | E11 | `pnpm test:aux` と `git diff --check` | 2026-09-22T07:25Z頃 → 07:26Z頃 | **PASS**: runbook、実データ guard、GitHub script、初期 admin、会計 report Skill、設計システム配信の補助テストが全件 PASS。差分の空白エラーなし |
+| E12 | main(0ed2d8c)の取り込み後の `pnpm lint`・`pnpm typecheck`・関連テスト | 2026-09-22T07:50Z頃 → 07:54Z頃 | **PASS**: lint(graph-lineage 150 node 一致を含む)と typecheck が EXIT 0。core 1052 passed / 6 skipped、api のトレードオフ・migration 0051・schema-guard・deletion-schema 5 files 64 passed、web のトレードオフ 2 files 44 passed。main 側で 0050 が `0050_budget_plans.sql` に使われたため、本機能の migration を `0051_tradeoff_notes.sql` へ繰り上げた |
 
 補足: E1 より前に 2 回 `verify:full` を通したときは、どちらも lint だけが落ちた(EXIT 1)。1 回目は `check-glossary` の未使用語 4 件、2 回目は `security:content` の絶対パス 3 件。テスト 3 パッケージはどちらの回も緑(core 1016 passed / 6 skipped、api 835 passed、web 908 passed)。直し方は design-decisions §8「範囲外の変更」。
 
@@ -90,4 +91,6 @@ feature `feat-tradeoff-screen`(Beads epic `kanjo-4ib`)の日時付き検査記�
 
 ## 6. P13 配信
 
-**未実施(保留)**。commit・push・PR の作成・merge と、本番の Migrate / Deploy は、この作業では行っていない。`0050_tradeoff_notes.sql` も本番には適用していない。merge の前に `origin/main` を fetch し直して、0050 がまだ空いていることを確かめる。
+- main(0ed2d8c)を取り込み、衝突を解決した(解決表は design-decisions「main の取り込み(P13 準備)」)。取り込み後の検証は E12。
+- migration は `0051_tradeoff_notes.sql` に繰り上げた。§4 と §3 の「0050」は E3・E1 時点の履歴として残す。
+- commit・push・draft PR の作成まで行う。merge と本番の Migrate / Deploy は行わない。merge の前に `origin/main` を fetch し直して、0051 がまだ空いていることを確かめる。

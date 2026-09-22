@@ -81,7 +81,7 @@ serves_goals: ["G3", "G5"]
 | `tradeoff_plans` (+ start_month, memo) | 試算の記録 (履歴) | D1 表 | packages/api | D1 |
 | `tradeoff_candidate_notes` | 候補ごとの上書き | D1 表 | packages/api | D1 |
 | `freee_deals` | 候補の元 (読むだけ) | D1 表 | packages/api | D1 |
-| migration 0050 (予定番号) | 列と表の追加 | SQL | migrations | D1 |
+| migration 0051 (予定番号 0050 から繰り上げ) | 列と表の追加 | SQL | migrations | D1 |
 
 ## Cross-cutting contracts
 
@@ -107,7 +107,7 @@ serves_goals: ["G3", "G5"]
 
 #### Logical and physical model
 
-`tradeoff_candidate_notes(user_id TEXT NOT NULL, candidate_key TEXT NOT NULL, need TEXT NULL (low/mid/high), memo TEXT NULL, updated_at TEXT NOT NULL)`、一意索引 `(user_id, candidate_key)`。`tradeoff_plans.start_month TEXT NULL (YYYY-MM)`、`tradeoff_plans.memo TEXT NULL`。候補キーは core の `tradeoffCandidateKey(account_norm, partner)` が作る `v1:${JSON.stringify([account_norm, partner])}` とし、`parseTradeoffCandidateKey` で可逆解析する。0050 は未公開・未適用のため旧 `account|partner` 形式は保存・移行しない。
+`tradeoff_candidate_notes(user_id TEXT NOT NULL, candidate_key TEXT NOT NULL, need TEXT NULL (low/mid/high), memo TEXT NULL, updated_at TEXT NOT NULL)`、一意索引 `(user_id, candidate_key)`。`tradeoff_plans.start_month TEXT NULL (YYYY-MM)`、`tradeoff_plans.memo TEXT NULL`。候補キーは core の `tradeoffCandidateKey(account_norm, partner)` が作る `v1:${JSON.stringify([account_norm, partner])}` とし、`parseTradeoffCandidateKey` で可逆解析する。0051 は未公開・未適用のため旧 `account|partner` 形式は保存・移行しない。
 
 #### Access and consistency
 
@@ -119,11 +119,11 @@ serves_goals: ["G3", "G5"]
 
 #### Migration and recovery
 
-0050 は CREATE TABLE と ALTER TABLE ADD COLUMN だけ。番号はマージ時点の最新 +1 に付け替える (qa-tradeoff-maintenance-ops-web-003)。`EXPECTED_D1_MIGRATION` を同じ変更で進める。
+0051 は CREATE TABLE と ALTER TABLE ADD COLUMN だけ。番号はマージ時点の最新 +1 に付け替える (qa-tradeoff-maintenance-ops-web-003)。`EXPECTED_D1_MIGRATION` を同じ変更で進める。
 
 #### Data verification
 
-api テストで 0050 適用後の既存行の更新 0 件、upsert の一意、両方 NULL で削除、利用者の分離を確かめる。
+api テストで 0051 適用後の既存行の更新 0 件、upsert の一意、両方 NULL で削除、利用者の分離を確かめる。
 
 ## Architecture decisions
 
@@ -136,11 +136,11 @@ api テストで 0050 適用後の既存行の更新 0 件、upsert の一意、
 ## Delivery, migration and rollback
 
 - Build/deploy topology: D1。
-- Migration sequence: 0050 を Migrate → Deploy (`architecture/tradeoff-infrastructure.md`)。
+- Migration sequence: 0051 を Migrate → Deploy (`architecture/tradeoff-infrastructure.md`)。
 - Rollback trigger/procedure: 追加だけなので Worker を戻すだけでよい。
 
 ## Risks and verification
 
 - Risk/assumption: 番号の衝突。マージ時点の最新 +1 に付け替え、lineage の追跡下は据え置く。
-- Architecture fitness test: 0050 に UPDATE / DELETE / DROP が無い。
+- Architecture fitness test: 0051 に UPDATE / DELETE / DROP が無い。
 - Load/failure/security validation: 候補キー 300 字以下 (`architecture/tradeoff-security.md`)。

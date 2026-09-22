@@ -42,12 +42,12 @@ tags: ["tradeoff", "p02", "preparation"]
 target_date: null
 template_id: "task"
 template_version: "1.0.0"
-title: "tradeoff-screen 純関数・3 経路 API・migration 0050・画面分割のワークストリーム設計決定記録"
+title: "tradeoff-screen 純関数・3 経路 API・migration 0051・画面分割のワークストリーム設計決定記録"
 tracker_binding: "beads"
 updated_at: "2026-09-21T22:58:32Z"
 ---
 
-# tradeoff-screen 純関数・3 経路 API・migration 0050・画面分割のワークストリーム設計決定記録
+# tradeoff-screen 純関数・3 経路 API・migration 0051・画面分割のワークストリーム設計決定記録
 
 ## Machine-readable registration fields
 
@@ -66,7 +66,7 @@ updated_at: "2026-09-21T22:58:32Z"
 
 ## 目的
 
-core の tradeoff-screen 純関数の返り値型、GET / POST / PUT の 3 経路の入出力、migration 0050 の列と新表、Tradeoff.tsx の部品分割の境界を、P04 のテストが書ける粒度で決定記録に固定する。
+core の tradeoff-screen 純関数の返り値型、GET / POST / PUT の 3 経路の入出力、migration 0051 の列と新表、Tradeoff.tsx の部品分割の境界を、P04 のテストが書ける粒度で決定記録に固定する。
 
 ## 背景
 
@@ -84,7 +84,7 @@ core の tradeoff-screen 純関数の返り値型、GET / POST / PUT の 3 経�
 - Frontend: applicable: pages/tradeoff/ の部品境界 (ページ本体・フォーム・候補表・推奨の表・試算結果パネル・計算例・選択中バー) を決める
 - Backend: applicable: core 純関数の入出力型を決める
 - API: applicable: 3 経路の zod スキーマと応答形を決める
-- Data: applicable: migration 0050 の列と新表 tradeoff_candidate_notes を決める
+- Data: applicable: migration 0051 の列と新表 tradeoff_candidate_notes を決める
 - Infrastructure: N/A: 基盤は変更しない
 - Security: N/A: security の確定は P03 のレビュー
 - Quality: N/A: テスト設計は P04
@@ -141,7 +141,7 @@ core の tradeoff-screen 純関数の返り値型、GET / POST / PUT の 3 経�
 
 - Acceptance:
 - core の純関数 (候補集計・推移・必要度・理由・試算・防衛ラインへの影響・推奨・候補キー・claimPart 正規化) の入出力型が決定記録にある。
-- 3 経路の Request / Response / Error contract と migration 0050 の DDL 案が決定記録にある。
+- 3 経路の Request / Response / Error contract と migration 0051 の DDL 案が決定記録にある。
 - Tradeoff.tsx の分割先の部品と、各部品が読む core の返り値の対応が決定記録にある。
 - Automated commands:
 - pnpm lint

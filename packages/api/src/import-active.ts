@@ -14,6 +14,8 @@ export const JSON_SNAPSHOT_MUTATION_CONSUMERS = [
   'tx_splits',
   'institution_owners',
   'budgets',
+  // 0050: 期間別の年額予算。budgets と同じく JSON 復元の write-set に入る
+  'budget_plans',
   'account_norm_map',
   'unrecorded_months',
   'cash_overrides',

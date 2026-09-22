@@ -55,7 +55,7 @@ serves_goals: ["G1", "G5"]
 
 ## Context and drivers
 
-- Business/technical context: api は Cloudflare Worker と D1、web は静的配信。`EXPECTED_D1_MIGRATION` は `'0049_ai_report_invariants.sql'` (`packages/api/src/schema-guard.ts:4`)。Migrate と Deploy は `.github/workflows/migrate.yml` / `deploy.yml` (qa-tradeoff-infrastructure-web-evidence-001)。
+- Business/technical context: api は Cloudflare Worker と D1、web は静的配信。`EXPECTED_D1_MIGRATION` は `'0051_budget_plans.sql'` (`packages/api/src/schema-guard.ts:4`)。Migrate と Deploy は `.github/workflows/migrate.yml` / `deploy.yml` (qa-tradeoff-infrastructure-web-evidence-001)。
 - Quality attribute priorities: G1・G5。既存構成の維持。
 - Constraints: 新しい binding や外部サービスを足さない (qa-tradeoff-infrastructure-web-001)。
 
@@ -63,7 +63,7 @@ serves_goals: ["G1", "G5"]
 
 - Goals:
   - G1: lazy import のまま初期 JS 予算 (`check:js-budget` の CI 実測) を超えない。
-  - G5: migration 0050 と `EXPECTED_D1_MIGRATION` を同じ変更で進め、Migrate → Deploy に従う。
+  - G5: migration 0051 と `EXPECTED_D1_MIGRATION` を同じ変更で進め、Migrate → Deploy に従う。
 - Non-goals:
   - 構成・binding・secret の追加
 
@@ -88,7 +88,7 @@ serves_goals: ["G1", "G5"]
 - Errors/resilience: runtimeSchemaGuard が migration の未適用を検出する。
 - Observability/audit: 既存。
 - Configuration/secrets: 追加なし。
-- Compatibility/versioning: 0050 は追加だけで旧 Worker と両立する。
+- Compatibility/versioning: 0051 は追加だけで旧 Worker と両立する。
 
 ## Subtype architecture
 
@@ -118,11 +118,11 @@ serves_goals: ["G1", "G5"]
 
 #### Reliability and recovery
 
-0050 は追加だけなので Worker の巻き戻しで戻せる。
+0051 は追加だけなので Worker の巻き戻しで戻せる。
 
 #### Infrastructure verification
 
-`schema-guard.test.ts` の期待値を 0050 に進める。初期 JS 予算の CI 実測。
+`schema-guard.test.ts` の期待値を 0051 に進める。初期 JS 予算の CI 実測。
 
 ## Architecture decisions
 
@@ -134,8 +134,8 @@ serves_goals: ["G1", "G5"]
 ## Delivery, migration and rollback
 
 - Build/deploy topology: 既存。
-- Migration sequence: Migrate (0050) → Deploy。
-- Rollback trigger/procedure: Deploy 後の不具合は Worker を戻す。0050 はそのまま残してよい。
+- Migration sequence: Migrate (0051) → Deploy。
+- Rollback trigger/procedure: Deploy 後の不具合は Worker を戻す。0051 はそのまま残してよい。
 
 ## Risks and verification
 

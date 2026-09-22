@@ -9,6 +9,7 @@
 import { type FormEvent, type KeyboardEvent, type ReactNode, useId, useState } from 'react';
 import { ApiError, api } from '../api.js';
 import { Button } from '../components/Button.js';
+import { SelectionCheckbox } from '../components/SelectionCheckbox.js';
 
 /**
  * Lucide stroke icon の geometry を必要な分だけ写したもの (lucide-static v1.37.0 / ISC)。
@@ -225,19 +226,19 @@ export function LoginPage({ onSuccess }: { onSuccess: (result: LoginSuccess) => 
                 <span>{error}</span>
               </p>
             )}
-            <div className="login-remember">
-              <input
-                id={rememberId}
-                type="checkbox"
-                checked={remember}
-                onChange={(event) => setRemember(event.target.checked)}
-              />
-              <label htmlFor={rememberId}>
-                次回からもログイン状態を保持する
-                {/* 既定ONの帰結を隠さない。30日という長さは開示した上で選んでもらう */}
-                <small>保持する場合は30日間、しない場合は12時間でログイン状態が切れます</small>
-              </label>
-            </div>
+            <SelectionCheckbox
+              id={rememberId}
+              className="login-remember"
+              checked={remember}
+              onChange={(event) => setRemember(event.target.checked)}
+              label={
+                <>
+                  次回からもログイン状態を保持する
+                  {/* 既定ONの帰結を隠さない。30日という長さは開示した上で選んでもらう */}
+                  <small>保持する場合は30日間、しない場合は12時間でログイン状態が切れます</small>
+                </>
+              }
+            />
             <Button
               type="submit"
               variant="primary"

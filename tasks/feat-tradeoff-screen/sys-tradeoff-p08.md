@@ -66,7 +66,7 @@ updated_at: "2026-09-21T22:58:32Z"
 
 ## 目的
 
-web と api に試算の式 (×12・差額) の重複が無いこと、旧 Tradeoff.tsx の参照と保存一覧・突合の UI が残っていないこと、migration 0050 が追加のみであることを読取専用で監査する。
+web と api に試算の式 (×12・差額) の重複が無いこと、旧 Tradeoff.tsx の参照と保存一覧・突合の UI が残っていないこと、migration 0051 が追加のみであることを読取専用で監査する。
 
 ## 背景
 
@@ -104,7 +104,7 @@ core を唯一の計算源にするのが O2 の条件で、重複は実装中�
 - Consumed artifacts:
 - packages/core/src/tradeoff-screen.ts
 - packages/api/src/routes/analytics.ts
-- migrations/0050_tradeoff_notes.sql
+- migrations/0051_tradeoff_notes.sql
 - Write scope/touches:
 - docs/tradeoff-screen/design-decisions.md
 
@@ -136,7 +136,7 @@ core を唯一の計算源にするのが O2 の条件で、重複は実装中�
 - Acceptance:
 - rg で web と api の ×12・差額の式が 0 件であることが記録されている。
 - 既存の tradeoffCandidates・defenseLine・tradeoffReview の数字と既存テストに差分が無いことが git diff と照合されている。
-- migration 0050 に UPDATE / DELETE / DROP が無いことが記録されている。
+- migration 0051 に UPDATE / DELETE / DROP が無いことが記録されている。
 - Automated commands:
 - rg による試算の式の重複・旧参照の検査
 - P06 / P07 の証跡と git diff の照合

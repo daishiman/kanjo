@@ -28,7 +28,7 @@ priority: null
 project_id: "feature-package-feat-tradeoff-screen"
 pull_request_linkages: []
 related_nodes: ["arch-tradeoff-auth", "arch-tradeoff-backend", "arch-tradeoff-database", "arch-tradeoff-frontend", "arch-tradeoff-infrastructure", "arch-tradeoff-maintenance-ops", "arch-tradeoff-security", "arch-tradeoff-ui-ux", "spec-tradeoff-screen"]
-resource_scope: ["packages/core/test/tradeoff-screen-contract.test.ts", "packages/api/src/tradeoff-screen.integration.test.ts", "packages/api/src/tradeoff-migration-0050.test.ts", "packages/web/src/pages/tradeoff/tradeoff-screen.dom.test.tsx", "packages/web/src/tradeoff-review.dom.test.tsx"]
+resource_scope: ["packages/core/test/tradeoff-screen-contract.test.ts", "packages/api/src/tradeoff-screen.integration.test.ts", "packages/api/src/tradeoff-migration-0051.test.ts", "packages/web/src/pages/tradeoff/tradeoff-screen.dom.test.tsx", "packages/web/src/tradeoff-review.dom.test.tsx"]
 purpose: null
 goal: null
 scope_in: null
@@ -84,7 +84,7 @@ spec の『テストと受入条件』を、実装前に失敗するテストと
 - Frontend: applicable: DOM テスト (構成要素・読込 / 空 / 失敗・選択中バー・直書き色 0・保存一覧と突合が無い) を書く
 - Backend: applicable: core の境界値テストを書く
 - API: applicable: 3 経路の Contract tests を書く
-- Data: applicable: migration 0050 で既存行の更新 0 件のテストを書く
+- Data: applicable: migration 0051 で既存行の更新 0 件のテストを書く
 - Infrastructure: N/A: 基盤は変更しない
 - Security: applicable: 401 / 422 / 400 と利用者 A / B の分離のテストを書く
 - Quality: applicable: 失敗テストが実装前に赤であることを確認する
@@ -102,7 +102,7 @@ spec の『テストと受入条件』を、実装前に失敗するテストと
 - Produced artifacts:
 - packages/core/test/tradeoff-screen-contract.test.ts
 - packages/api/src/tradeoff-screen.integration.test.ts
-- packages/api/src/tradeoff-migration-0050.test.ts
+- packages/api/src/tradeoff-migration-0051.test.ts
 - packages/web/src/pages/tradeoff/tradeoff-screen.dom.test.tsx
 - packages/web/src/tradeoff-review.dom.test.tsx
 - Consumed artifacts:
@@ -111,7 +111,7 @@ spec の『テストと受入条件』を、実装前に失敗するテストと
 - Write scope/touches:
 - packages/core/test/tradeoff-screen-contract.test.ts
 - packages/api/src/tradeoff-screen.integration.test.ts
-- packages/api/src/tradeoff-migration-0050.test.ts
+- packages/api/src/tradeoff-migration-0051.test.ts
 - packages/web/src/pages/tradeoff/tradeoff-screen.dom.test.tsx
 - packages/web/src/tradeoff-review.dom.test.tsx
 
@@ -151,7 +151,7 @@ spec の『テストと受入条件』を、実装前に失敗するテストと
 - Required evidence:
 - packages/core/test/tradeoff-screen-contract.test.ts
 - packages/api/src/tradeoff-screen.integration.test.ts
-- packages/api/src/tradeoff-migration-0050.test.ts
+- packages/api/src/tradeoff-migration-0051.test.ts
 - packages/web/src/pages/tradeoff/tradeoff-screen.dom.test.tsx
 - packages/web/src/tradeoff-review.dom.test.tsx
 

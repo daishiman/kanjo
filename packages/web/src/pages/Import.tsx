@@ -27,6 +27,7 @@ import {
 } from '../components/ImportDeletion.js';
 import { type ConflictDecision, DiffPreview } from '../components/ImportDiff.js';
 import { PageHeader, PageState, describeError } from '../components/Page.js';
+import { SelectionCheckbox } from '../components/SelectionCheckbox.js';
 import { Term } from '../components/Term.js';
 import { useConfirmDialog } from '../components/use-confirm-dialog.js';
 import { dateTime } from '../format.js';
@@ -607,24 +608,26 @@ export function ImportPage() {
 
             <details className="import-options">
               <summary>詳細設定</summary>
-              <label>
-                <input type="checkbox" checked={force} onChange={(event) => setForce(event.target.checked)} />
-                <span>
-                  <strong>同じ内容でも再適用する</strong>
-                  <small>通常はオフのままで問題ありません</small>
-                </span>
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={keepOnShrink}
-                  onChange={(event) => setKeepOnShrink(event.target.checked)}
-                />
-                <span>
-                  <strong>件数が減る月は前回の内容を残す</strong>
-                  <small>月途中のファイルか判断できないときに使います</small>
-                </span>
-              </label>
+              <SelectionCheckbox
+                checked={force}
+                onChange={(event) => setForce(event.target.checked)}
+                label={
+                  <span>
+                    <strong>同じ内容でも再適用する</strong>
+                    <small>通常はオフのままで問題ありません</small>
+                  </span>
+                }
+              />
+              <SelectionCheckbox
+                checked={keepOnShrink}
+                onChange={(event) => setKeepOnShrink(event.target.checked)}
+                label={
+                  <span>
+                    <strong>件数が減る月は前回の内容を残す</strong>
+                    <small>月途中のファイルか判断できないときに使います</small>
+                  </span>
+                }
+              />
             </details>
 
             <DiffPreview

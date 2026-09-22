@@ -90,7 +90,7 @@ async function loadTradeoffCandidates(c: Context<Ctx>, data: Dataset) {
   });
 }
 
-/** 保存行を画面の復元に使う形へ。0050 より前の行は候補キーを持たないので keys は空。 */
+/** 保存行を画面の復元に使う形へ。0051 より前の行は候補キーを持たないので keys は空。 */
 function tradeoffPlanFromRow(p: typeof s.tradeoffPlans.$inferSelect): TradeoffLatestPlan {
   let keys: string[] = [];
   try {

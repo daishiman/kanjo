@@ -89,7 +89,7 @@ docs/spec-v1.1.md の FR-09 に規則表を明記し、データスキーマと 
 - Security: N/A: 文書のみ
 - Quality: applicable: docs の規則表と core のテストの期待値の一致を確認する
 - Documentation: applicable: FR-09 の規則表・data-schema・ui-decisions を同期する
-- Operations: applicable: migration 0050 の反映順 (Migrate → Deploy) を運用手順に記す
+- Operations: applicable: migration 0051 の反映順 (Migrate → Deploy) を運用手順に記す
 
 ## Architecture and deploy unit
 

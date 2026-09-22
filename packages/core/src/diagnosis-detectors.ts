@@ -17,6 +17,7 @@ import {
   personalExplainability,
   subscriptions,
 } from './analysis.js';
+import { budgetsInEffect } from './budget-screen.js';
 import { sum } from './stats.js';
 import { vendorKey } from './subs.js';
 import type { Dataset } from './types.js';
@@ -252,6 +253,7 @@ const spike: DiagnosisDetector = {
   label: '急増した費目',
   detect(data) {
     const out: DiagnosisImprovement[] = [];
+    const budgets = budgetsInEffect(data);
     // (a) 予算あり
     for (const r of budgetTable(data)) {
       if (r.judge !== '超過' || r.diff == null) continue;
@@ -280,7 +282,7 @@ const spike: DiagnosisDetector = {
     }
     // (b) 予算なし
     for (const account of activeCategories(data)) {
-      if (data.budgets[account] != null) continue;
+      if (budgets[account] != null) continue;
       const p = catProfile(data, account);
       const judge = p.z >= 2 ? '要確認' : p.z >= 1 ? 'やや高い' : null;
       if (!judge) continue;
@@ -721,7 +723,7 @@ function tradeoffOf(row: DiagnosisImprovement, data: Dataset): TradeoffCandidate
   if (row.target.startsWith('vendor:'))
     return { ...base, id: `subs:${row.target.slice('vendor:'.length)}`, kind: 'subs_spike' };
   const account = row.target.slice('cat:'.length);
-  return data.budgets[account] != null
+  return budgetsInEffect(data)[account] != null
     ? { ...base, id: `budget:${account}`, kind: 'budget_over' }
     : { ...base, id: `range:${account}`, kind: 'above_range' };
 }

@@ -42,12 +42,12 @@ tags: ["tradeoff", "p13", "release"]
 target_date: null
 template_id: "task"
 template_version: "1.0.0"
-title: "単一 PR での配信と migration 0050 の適用とクローズアウト"
+title: "単一 PR での配信と migration 0051 の適用とクローズアウト"
 tracker_binding: "beads"
 updated_at: "2026-09-21T22:58:32Z"
 ---
 
-# 単一 PR での配信と migration 0050 の適用とクローズアウト
+# 単一 PR での配信と migration 0051 の適用とクローズアウト
 
 ## Machine-readable registration fields
 
@@ -66,11 +66,11 @@ updated_at: "2026-09-21T22:58:32Z"
 
 ## 目的
 
-単一の PR で web・Worker・migration 0050 を配信し、Migrate → Deploy の順で反映し、feature をクローズする。
+単一の PR で web・Worker・migration 0051 を配信し、Migrate → Deploy の順で反映し、feature をクローズする。
 
 ## 背景
 
-0050 は列と表の追加だけなので、適用後に旧 Worker が動いても新しい列を読まないだけで壊れない。migration 番号はマージ時点の最新 +1 に付け替え、EXPECTED_D1_MIGRATION も同じ値にする。
+0051 は列と表の追加だけなので、適用後に旧 Worker が動いても新しい列を読まないだけで壊れない。migration 番号はマージ時点の最新 +1 に付け替え、EXPECTED_D1_MIGRATION も同じ値にする。
 
 ## 前提条件
 
@@ -84,7 +84,7 @@ updated_at: "2026-09-21T22:58:32Z"
 - Frontend: N/A: 配信のみ
 - Backend: N/A: 配信のみ
 - API: N/A: 配信のみ
-- Data: applicable: migration 0050 を Migrate で適用する
+- Data: applicable: migration 0051 を Migrate で適用する
 - Infrastructure: applicable: 既存の Migrate → Deploy の順で反映する
 - Security: N/A: 配信のみ
 - Quality: applicable: 配信後に全テストが緑であることを確認する
@@ -95,7 +95,7 @@ updated_at: "2026-09-21T22:58:32Z"
 
 - Architecture decisions: arch-tradeoff-auth, arch-tradeoff-backend, arch-tradeoff-database, arch-tradeoff-frontend, arch-tradeoff-infrastructure, arch-tradeoff-maintenance-ops, arch-tradeoff-security, arch-tradeoff-ui-ux, spec-tradeoff-screen
 - Deploy unit/environment: web ビルドと Worker と D1 migration (単一 PR で同時に配信する)
-- Compatibility/migration/backfill: 0050 は追加のみ。番号の付け替えはマージ直前に origin/main を fetch して行う
+- Compatibility/migration/backfill: 0051 は追加のみ。番号の付け替えはマージ直前に origin/main を fetch して行う
 
 ## 成果物
 
@@ -134,7 +134,7 @@ updated_at: "2026-09-21T22:58:32Z"
 
 - Acceptance:
 - PR が default branch へ merge され、Migrate と Deploy が成功している。
-- migration 0050 の適用で既存の tradeoff_plans 行の更新が 0 件である。
+- migration 0051 の適用で既存の tradeoff_plans 行の更新が 0 件である。
 - feature の受入 S1〜S6 がすべて PASS の証跡で揃っている。
 - Automated commands:
 - pnpm test
@@ -145,7 +145,7 @@ updated_at: "2026-09-21T22:58:32Z"
 ## Rollout and rollback
 
 - Rollout: 単一の PR で配信し、default branch への merge をもって反映する
-- Rollback trigger and steps: PR を revert して直前のビルドへ戻す。0050 は追加のみの列と表なので削除しない。
+- Rollback trigger and steps: PR を revert して直前のビルドへ戻す。0051 は追加のみの列と表なので削除しない。
 
 ## Handoff
 

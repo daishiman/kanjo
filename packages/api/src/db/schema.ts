@@ -348,6 +348,22 @@ export const budgets = sqliteTable('budgets', {
   monthlyAmount: integer('monthly_amount'),
 });
 
+/** 0050: 予算対象の期間別の年額表。同じ期間は上書きで、版は持たない (spec-budget-screen) */
+export const budgetPlans = sqliteTable(
+  'budget_plans',
+  {
+    userId: text('user_id').notNull(),
+    periodStart: text('period_start').notNull(),
+    account: text('account').notNull(),
+    kind: text('kind', { enum: ['income', 'expense'] }).notNull(),
+    annualAmount: integer('annual_amount').notNull(),
+    planAdjustment: integer('plan_adjustment').notNull().default(0),
+    planReason: text('plan_reason'),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.periodStart, t.account] })],
+);
+
 export const cashOverrides = sqliteTable('cash_overrides', {
   userId: text('user_id').notNull(),
   month: text('month').notNull(),
@@ -617,12 +633,12 @@ export const tradeoffPlans = sqliteTable('tradeoff_plans', {
   covered: integer('covered'),
   verdict: text('verdict'),
   createdAt: text('created_at').$defaultFn(nowIso),
-  /* 0050。試算に使う新しい支出の開始月 (YYYY-MM) とメモ。既存行は NULL */
+  /* 0051。試算に使う新しい支出の開始月 (YYYY-MM) とメモ。既存行は NULL */
   startMonth: text('start_month'),
   memo: text('memo'),
 });
 
-/** 見直し候補ごとの必要度とメモの上書き (0050)。need が NULL なら必要度は推定のまま */
+/** 見直し候補ごとの必要度とメモの上書き (0051)。need が NULL なら必要度は推定のまま */
 export const tradeoffCandidateNotes = sqliteTable(
   'tradeoff_candidate_notes',
   {

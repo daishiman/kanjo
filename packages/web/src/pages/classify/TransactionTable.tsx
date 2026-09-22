@@ -7,6 +7,7 @@
  */
 import type { ClassifyRow } from '../../api.js';
 import { Button } from '../../components/Button.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { SortableTableHeader } from '../../components/SortableTableHeader.js';
 import type { TableSort } from '../../table-sort.js';
 import {
@@ -70,21 +71,20 @@ export function TransactionTable({
         <table className="classify-transactions stack-sm" data-table-kind="sortable">
           <thead>
             <tr>
-              <th scope="col">
-                <label className="classify-check">
-                  <input
-                    type="checkbox"
-                    aria-label="表示中の明細をすべて選択"
-                    checked={allChecked}
-                    onChange={() =>
-                      onSelect(
-                        allChecked
-                          ? selected.filter((k) => !pageKeys.includes(k))
-                          : [...new Set([...selected, ...pageKeys])].slice(0, MAX_SELECTION),
-                      )
-                    }
-                  />
-                </label>
+              <th scope="col" className="selection-cell">
+                <SelectionCheckbox
+                  className="classify-check"
+                  labelHidden
+                  label="表示中の明細をすべて選択"
+                  checked={allChecked}
+                  onChange={() =>
+                    onSelect(
+                      allChecked
+                        ? selected.filter((k) => !pageKeys.includes(k))
+                        : [...new Set([...selected, ...pageKeys])].slice(0, MAX_SELECTION),
+                    )
+                  }
+                />
               </th>
               <SortableTableHeader
                 column="date"
@@ -112,16 +112,15 @@ export function TransactionTable({
                 className={`${row.rowKey === openTxKey ? 'is-open' : ''}${row.needsReview ? ' is-review' : ''}`}
                 onClick={() => onOpen(row)}
               >
-                <td data-label="選択">
-                  <label className="classify-check">
-                    <input
-                      type="checkbox"
-                      aria-label={`${dateText(row.date)} ${row.payee} を選択`}
-                      checked={selected.includes(row.rowKey)}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={() => toggleRow(row.rowKey)}
-                    />
-                  </label>
+                <td data-label="選択" className="selection-cell">
+                  <SelectionCheckbox
+                    className="classify-check"
+                    labelHidden
+                    label={`${dateText(row.date)} ${row.payee} を選択`}
+                    checked={selected.includes(row.rowKey)}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => toggleRow(row.rowKey)}
+                  />
                 </td>
                 <td data-label="日付">{dateText(row.date)}</td>
                 <td data-label="取引先">{row.payee}</td>

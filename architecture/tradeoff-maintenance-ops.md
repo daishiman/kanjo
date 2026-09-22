@@ -78,7 +78,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
 | Container/Component | Responsibility | Interface | Data owner | Deployment unit |
 |---|---|---|---|---|
 | core 契約テスト | 試算・候補・推移・必要度・理由・推奨 | vitest | packages/core | CI |
-| api テスト | 3 経路・上限・分離・復元・0050 | vitest | packages/api | CI |
+| api テスト | 3 経路・上限・分離・復元・0051 | vitest | packages/api | CI |
 | DOM テスト | 全構成要素・状態 | vitest + Testing Library | packages/web | CI |
 | `docs/spec-v1.1.md` FR-09 | 規則の表 | Markdown | docs | リポジトリ |
 
@@ -130,7 +130,7 @@ N/A。
 
 #### IaC and delivery
 
-migration の番号は 0050 を予定番号とし、マージ時点の最新 +1 に付け替える。
+migration の番号は予定番号 0050 を main 取り込み時点の最新 +1 の 0051 へ付け替えた。merge 直前にもう一度確かめる。
 
 #### Secrets and access
 

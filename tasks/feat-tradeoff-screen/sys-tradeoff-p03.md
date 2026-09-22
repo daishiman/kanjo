@@ -70,7 +70,7 @@ P02 の決定記録を spec と architecture 8 領域に照らして独立にレ
 
 ## 背景
 
-候補キーは科目×取引先から `v1:${JSON.stringify([account_norm, partner])}` として組み立て、`parseTradeoffCandidateKey` で可逆解析する。PUT の経路パラメータと POST の keys の両方に現れるため、形式と長さ上限 (300) が揺れると 422 の判定と保存済みの上書きの照合が壊れる。0050 は未公開・未適用なので旧 `account|partner` 互換は持たない。保存するのは条件と上書きだけで、候補・推定値・差額は保存しない。
+候補キーは科目×取引先から `v1:${JSON.stringify([account_norm, partner])}` として組み立て、`parseTradeoffCandidateKey` で可逆解析する。PUT の経路パラメータと POST の keys の両方に現れるため、形式と長さ上限 (300) が揺れると 422 の判定と保存済みの上書きの照合が壊れる。0051 は未公開・未適用なので旧 `account|partner` 互換は持たない。保存するのは条件と上書きだけで、候補・推定値・差額は保存しない。
 
 ## 前提条件
 

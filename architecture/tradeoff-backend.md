@@ -148,7 +148,7 @@ core の契約テスト (O2 の 3 例、推移の境界、必要度の 4 行、�
 ## Delivery, migration and rollback
 
 - Build/deploy topology: 既存 Worker と packages/core のビルド。
-- Migration sequence: core の関数 → migration 0050 → GET / PUT / POST の置き換え → web。
+- Migration sequence: core の関数 → migration 0051 → GET / PUT / POST の置き換え → web。
 - Rollback trigger/procedure: core / api テストが落ちたら差し戻す。列と表は追加だけなので旧 Worker に戻しても壊れない。
 
 ## Risks and verification
