@@ -236,6 +236,44 @@ function parseJsonUnit(filename: string, text: string): ParsedUnit {
   }
 }
 
+/**
+ * ZIP (xlsx を含む) の中央ディレクトリだけを読み、展開せずにエントリ数と展開後の合計を返す。
+ * ZIP でなければ null。中央ディレクトリが壊れている・ZIP64 で 4GB 表記を超えるものは
+ * 展開後の大きさが分からないので Infinity にして、上限判定で取込不可へ倒す。
+ */
+export function zipCentralDirectoryStats(buf: Uint8Array): { entries: number; expandedBytes: number } | null {
+  if (!isZipMagic(buf)) return null;
+  const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  const broken = { entries: Number.POSITIVE_INFINITY, expandedBytes: Number.POSITIVE_INFINITY };
+  // End of Central Directory は末尾 22 byte + コメント (最大 65535 byte) の中にある
+  const minEocd = Math.max(0, buf.byteLength - 22 - 0xffff);
+  let eocd = -1;
+  for (let i = buf.byteLength - 22; i >= minEocd; i -= 1) {
+    if (view.getUint32(i, true) === 0x06054b50) {
+      eocd = i;
+      break;
+    }
+  }
+  if (eocd < 0) return broken;
+  const entries = view.getUint16(eocd + 10, true);
+  const cdOffset = view.getUint32(eocd + 16, true);
+  if (entries === 0xffff || cdOffset === 0xffffffff) return broken;
+  let offset = cdOffset;
+  let expandedBytes = 0;
+  for (let index = 0; index < entries; index += 1) {
+    if (offset + 46 > buf.byteLength || view.getUint32(offset, true) !== 0x02014b50) return broken;
+    const size = view.getUint32(offset + 24, true);
+    if (size === 0xffffffff) return broken;
+    expandedBytes += size;
+    offset +=
+      46 +
+      view.getUint16(offset + 28, true) +
+      view.getUint16(offset + 30, true) +
+      view.getUint16(offset + 32, true);
+  }
+  return { entries, expandedBytes };
+}
+
 /** 1ファイルを取込単位の配列へ展開する(ZIPは再帰展開) */
 export function parseUpload(
   filename: string,

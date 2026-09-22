@@ -13,6 +13,7 @@ import { runAuditDetailRetention, runAuditHeaderRetention } from './audit-log.js
 import { type AuthEnv, type AuthVariables, authGuard, mustChangePasswordFence } from './auth.js';
 import { canonicalMutationFence } from './canonical-mutation-fence.js';
 import { runDeletionRetention } from './deletion-retention.js';
+import { importOriginGuard, runImportStagingCleanup } from './import-rate-limit.js';
 import { cleanupStalePasswordLoginRateLimits } from './login-rate-limit.js';
 import { runR2Cleanup } from './r2-cleanup.js';
 import { adminUsersRoute } from './routes/admin-users.js';
@@ -106,6 +107,9 @@ app.use('/api/*', authGuard());
 app.use('/api/*', mustChangePasswordFence());
 app.use('/api/*', runtimeSchemaGuard);
 app.use('/api/*', canonicalMutationFence());
+// 取込の変更要求は Origin を自サイトに限る (security 章)。GET は対象外
+app.use('/api/imports', importOriginGuard());
+app.use('/api/imports/*', importOriginGuard());
 app.route('/api', adminUsersRoute);
 app.route('/api', aiRoute);
 // 差分は importsRoute より先に載せる。/imports/:id 形のルートに /imports/diff を拾わせない
@@ -210,6 +214,7 @@ export async function scheduledMaintenance(
     deletion_undo_retention: runDeletionRetention(env),
     audit_header_retention: runAuditHeaderRetention(env),
     audit_detail_retention: runAuditDetailRetention(env),
+    import_staging_cleanup: runImportStagingCleanup(env),
   } satisfies Record<ConcurrentJobName, Promise<unknown>>;
   const [
     r2Cleanup,
@@ -218,6 +223,7 @@ export async function scheduledMaintenance(
     deletionRetention,
     auditHeaderRetention,
     auditDetailRetention,
+    importStaging,
   ] = await Promise.allSettled([
     concurrentJobs.r2_cleanup,
     concurrentJobs.password_login_rate_limit_cleanup,
@@ -225,6 +231,7 @@ export async function scheduledMaintenance(
     concurrentJobs.deletion_undo_retention,
     concurrentJobs.audit_header_retention,
     concurrentJobs.audit_detail_retention,
+    concurrentJobs.import_staging_cleanup,
   ]);
   console.log(
     JSON.stringify({
@@ -366,6 +373,25 @@ export async function scheduledMaintenance(
       }),
     );
   }
+  if (importStaging.status === 'fulfilled') {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        job: 'import_staging_cleanup',
+        inspections: importStaging.value.inspections,
+        staged: importStaging.value.staged,
+        rateWindows: importStaging.value.rateWindows,
+      }),
+    );
+  } else {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        job: 'import_staging_cleanup',
+        name: errorName(importStaging.reason),
+      }),
+    );
+  }
   // 全jobを完走・個別記録してからCronへ失敗を返す。飲み込むとPast Eventsが成功になり、
   // 後始末が止まった事実を運用から観測できない。元errorのmessageは外へ出さない。
   if (
@@ -377,6 +403,7 @@ export async function scheduledMaintenance(
       deletionRetention,
       auditHeaderRetention,
       auditDetailRetention,
+      importStaging,
     ].some((result) => result.status === 'rejected')
   ) {
     throw new Error('scheduled_maintenance_failed');

@@ -1,0 +1,113 @@
+{
+ "feature_id": "feat-import-screen",
+ "nodes": [
+  {
+   "graph_node_id": "feat-import-screen",
+   "bd_issue_id": "kanjo-y7q",
+   "graph_status": "active",
+   "depends_on": []
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P01",
+   "bd_issue_id": "kanjo-y7q.1",
+   "graph_status": "active",
+   "depends_on": []
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P02",
+   "bd_issue_id": "kanjo-y7q.2",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P01"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P03",
+   "bd_issue_id": "kanjo-y7q.3",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P02"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P04",
+   "bd_issue_id": "kanjo-y7q.4",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P03"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P05",
+   "bd_issue_id": "kanjo-y7q.5",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P04"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P06",
+   "bd_issue_id": "kanjo-y7q.6",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P05"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P07",
+   "bd_issue_id": "kanjo-y7q.7",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P06"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P08",
+   "bd_issue_id": "kanjo-y7q.8",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P07"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P09",
+   "bd_issue_id": "kanjo-y7q.9",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P08"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P10",
+   "bd_issue_id": "kanjo-y7q.10",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P09"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P11",
+   "bd_issue_id": "kanjo-y7q.11",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P10"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P12",
+   "bd_issue_id": "kanjo-y7q.12",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P11"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P13",
+   "bd_issue_id": "kanjo-y7q.13",
+   "graph_status": "active",
+   "depends_on": [
+    "SYS-IMPORT-P12"
+   ]
+  }
+ ]
+}

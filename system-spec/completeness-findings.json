@@ -7,88 +7,122 @@
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "U1-U9 は確定済みで、approval_ref=appr-foundation-ai-analysis-001 は approval_log に実在する。G1-G5 は O1-O5・I1-I7・確定 8 セルの serves_goals で被覆され、dangling は無い。--require-foundation・--require-basis・validate-spec-doc-sync はいずれも exit 0。セッション記録と照合し、scratchpad/foundation-ai.json は承認の質問 (12:33:25Z) より前の 12:33:07Z に書かれ、現在の requirements_foundation とは confirmed と approval_ref 以外の 9 フィールドが同一だった (承認後の書き足しは無い)。ただし承認の質問が示したのは要約だけで、O1-O5・S1-S6・C1-C8・I1-I7 の本文も全文ファイルの場所も示していない (medium)。",
-      "evidence": [
-        "validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit 0",
-        "validate-spec-doc-sync.py exit 0",
-        "セッション jsonl: Write foundation-ai.json 12:33:07Z → AskUserQuestion 12:33:25Z → 承認 12:34:47Z (qa-ai-decision-009 answered_at 12:34:50Z)",
-        "foundation-ai.json と spec-state.json requirements_foundation の 9 フィールド一致"
-      ]
+      "summary": "U1-U9 と O6 の承認 (appr-foundation-import-screen-001/-002) は前回から変わっていない。今回の再確定 4 セルは G3/S3 (取込可否は core の関数だけが決め、api と web に重複実装 0 件) を上限値にも当てはめたもので、上位概念をたどれる。validate-coverage-matrix --require-foundation と validate-spec-doc-sync はどちらも exit 0。",
+      "evidence": ["validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit 0", "validate-spec-doc-sync.py exit 0"]
     },
     "decision_guidance": {
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "decisions[] は 0 件。spec-state-contract.md:169-178 は decisions[] を『R5 が公式一次情報に接地した候補を組み立てる技術選定』に限り、業務規則や画面の決定は qa_log の basis=user-decision に置くと定めている。本サイクルの 8 決定 (qa-ai-decision-001〜008) はいずれも画面と業務規則の決定で、基盤は変えない (infrastructure-web-001)。技術選定の needs_guidance は発生していない。8 決定はセッション記録で 2〜3 択と推奨の提示を確認し、利用者が明示選択していた (12:27:04Z / 12:28:50Z)。AI 推奨だけで confirmed にした決定は無い。0 件は契約どおりで、調べ漏れによる 0 件ではない。",
-      "evidence": [
-        "spec-state-contract.md:169-178 (decisions[] の登録基準)",
-        "セッション jsonl AskUserQuestion 12:23:43Z (4 問・各 2〜3 択) / 12:27:58Z (4 問・各 2 択)",
-        "qa-ai-decision-001〜008 basis=user-decision, answered_at は実回答の 4〜5 秒後"
-      ]
+      "summary": "decisions[] は 0 件のまま。今回は新しい選択を伴わない agent-inference の具体化だけで、利用者決定の provenance (008/009/011 は 2〜3 案・推奨・理由つき) は変わっていない。010 の 2 択問題は matrix_coverage の C06 F-1 (medium・繰越) として扱う。",
+      "evidence": ["qa-imp-*-web-005/004 basis=agent-inference"]
     },
     "matrix_coverage": {
       "verdict": "PASS",
       "auditor": "system-spec-matrix-auditor",
       "component": "C07",
-      "summary": "C07 は PASS。48 セルの内訳は確定 8 (web) と対象外 40 で、未収集は 0。対象外 40 件の理由は、どれもカテゴリとプラットフォームに固有の内容で、web の使い回しは無い。qa_ref の dangling は 0、集約の真理値表は一致、canonical 6 行もすべてある。block の必須情報 6 項目はすべて確定に接地している (ungrounded_blocking_items=[])。sub-input の C06 は FAIL を返し、agent-inference の 5 件 (-003) を『早期停止』として high に挙げた。しかし C06 自身の SSOT (hearing-auditor.md:54) は、早期停止を『未収集セルが残るのに complete=true』と定義しており、未収集は 0 である。さらに spec-state-contract.md:81-87 は、推定が確定セルの唯一の根拠でない限り許容している (--require-basis exit 0)。このため C05 は high を medium と裁定した。C06 の原判定は証跡に残す。旧推定上限と契約の不整合は、その後 qa-ai-security-web-003 を固定 4 MiB の request budget へ同期して解消した。-001 の basis 表示が実態より強いことは medium で記録する。",
-      "evidence": [
-        "C07: validate-coverage-matrix.py loop / --require-complete / --require-foundation すべて exit 0、aggregate-completeness.py --knowledge-graph 4 profile すべて exit 0",
-        "validate-knowledge-graph.py --profile required-info --state: ungrounded_blocking_items=[] (blocking 6 件すべて grounded)",
-        "C06 原判定: FAIL (high 1 = 5 件の agent-inference を早期停止と判定 / medium 1 = -001 から -003 への委任 / low 1 = 一括承認)。C05 の裁定: high を medium に (SSOT の定義外のため)",
-        "hearing-auditor.md:54 (早期停止の定義) / spec-state-contract.md:81-87 (basis=agent-inference の扱い)"
-      ]
+      "summary": "C07 は PASS (loop_pass / final_ready)。4 種のゲートと required-info は exit 0、ungrounded_blocking_items は空、48 セルの内訳は確定 8・対象外 40・未収集 0。reopen_log (22:40:55Z) と新しい qa 4 件は対応が取れ、4 件とも basis=agent-inference を正しく宣言している。利用者決定を装ったものは 0 件。sub-input の C06 も PASS で、新しい数値は足していない (25/10/30/60/1,000 はすべて decision-006/007/009 の値)。C06 F-1 (decision-010 の 4 論点一括確認、medium) と F-2 (low) は未対処のまま繰り越している。前回と同じく、F-1 は接地を崩していないので観点は FAIL にしない。",
+      "evidence": ["C07 verdict PASS (FAIL 相当の finding なし)", "C06 verdict PASS (新規分 4 軸すべて問題なし、繰越 F-1 medium / F-2 low)", "validate-knowledge-graph --profile required-info status ok"]
     },
     "design_knowledge_reflection": {
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "8 章すべてに、章固有の『本章での適用』と doctrine の反映がある。ポインタの存在ではなく、確定セルへの具体適用を確認した。backend は Dependency Rule で段階の導出を core に置き taskStatus を置き換える。database は DDD で、導けない出来事 (取得・差し戻し・取消の時刻と連番) だけを列にし、進捗は保存しない。auth は Secure by Design で、agentGuard 1 か所で期限切れ・受信済み・キャンセル済みを拒否する。security は、body 上限を zod の前に置く順序を定める。ui-ux は Information Design (頻度と失敗コスト) で段の順と問い順のタブを決める。frontend は、サーバー状態と URL・localStorage の分離を定める。maintenance-ops は Clean Code で、名前付きの順序表と境界テストを置く。infrastructure は card 0 件で、その理由 (基盤を変えない) を記述している。doctrine 表は章ごとに違う文で書かれ、同じ文の写しは無い。C13-C16 の機械層 (knowledge / doctrine / required-info / cross) はすべて exit 0。適用文は basis=agent-inference と正直に表示されている。",
-      "evidence": [
-        "system-spec/{backend,database,auth,security,ui-ux,frontend,maintenance-ops,infrastructure}.md『本章での適用』節と『上流指針』表",
-        "aggregate-completeness.py --knowledge-graph 全 subgate exit_code 0"
-      ]
+      "summary": "前回 FAIL の原因だった、frontend の適用記述と送信前判定の確定セルの食い違いは解消した。frontend (web-005 と L182 の適用記述)、ui-ux (web-004)、backend (web-005 と application-architecture の doctrine 行) の 3 章が同じことを書いている。上限値は core の import-screen.ts の IMPORT_LIMITS に置き、超過の理由を返す判定関数も core に置く。web の送信前判定と api の 413 (hono/body-limit の maxSize を含む) はどちらもそれを import する。maintenance-ops は、数値リテラルが無いことの字面検査と、web と api が同じ境界表を読むテストでこれを固定する。Dependency Rule を確定セルの具体的な置き場所まで当てはめており、ポインタがあるだけの状態ではない。web と api はすでに @kanjo/core に依存しており (package.json)、core に上限定数を置く前例 (DIAGNOSTIC_MAX_BYTES) もあるので実現できる。残りは low 2 件 (frontend の doctrine 表の行が未更新、リテラル検査の指紋があいまい)。機械層 (knowledge/doctrine/required-info/cross) はすべて exit 0。",
+      "evidence": ["frontend.md:74, :182", "ui-ux.md:73", "backend.md:31, :74", "maintenance-ops.md:73", "aggregate-completeness.py --knowledge-graph exit 0"]
     },
     "doc_freshness": {
       "verdict": "PASS",
       "auditor": "system-spec-doc-freshness-auditor",
       "component": "C08",
-      "summary": "C08 は PASS。validate-source-citation.py は exit 0。targets 10 件と references 10 件は 1 対 1 で対応する。10 件すべてを WebFetch / WebSearch で公式ページに再照合し、version と更新日が現行版と一致した (TanStack Query 5.103.1、React Router 8.4.0、Hono 4.13.8、@hono/zod-validator 0.9.1、Vitest 5.0.1、OWASP ASVS 5.0.0、MDN・WCAG・Cloudflare の更新日)。非公式 host・未来日付・到達不能はいずれも 0 件。章の出典表の記載も fetched-references.json と逐語で一致した。",
-      "evidence": [
-        "validate-source-citation.py exit 0",
-        "retrieved_at=latest_checked_at=2026-09-19T12:40:44Z (監査時刻 13:03Z より前)"
-      ]
+      "summary": "形式層の validate-source-citation は exit 0 (12/12 件が 1 対 1 で対応)。内容鮮度層では hono body-limit を WebFetch で再照合した。maxSize: number に import した定数を渡す設計、および onError 未指定時の既定の 413 は公式仕様と矛盾しない。hono は 4.13.8 のままで、これが最新。残る 11 件も変化なし。前回の low (『宣言と実長のずれは Workers ランタイムに任せる』に一次出典が無い) は継続している。Cloudflare 側にも、この挙動が未文書化であることを扱う open issue がある。",
+      "evidence": ["validate-source-citation.py exit 0", "C08 verdict PASS (low 1 継続)"]
     },
     "prompt_quality": {
       "verdict": "PASS",
       "auditor": "assign-system-spec-completeness-evaluator",
       "component": "C05",
-      "summary": "installPath (system-spec-harness 0.1.14) の prompt 18 本すべてで、prompt-creator 2.1.7 の validate-prompt.py --input と verify-completeness.py --input を実行し、すべて exit 0 だった。今日付けで変更された prompt は 0 本で、前サイクルの独立評価から変化は無い。",
-      "evidence": [
-        "validate-prompt.py --input: 18/18 exit 0",
-        "verify-completeness.py --input: 18/18 exit 0"
-      ]
+      "summary": "system-spec-harness の prompt 21 本 (skills/*/prompts 18 本 + agents 3 本) で、validate-prompt.py --input と verify-completeness.py --input が全件 exit 0。",
+      "evidence": ["prompt-creator run-prompt-creator-7layer validate-prompt.py / verify-completeness.py 21/21 exit 0"]
     }
   },
   "gate_results": [
-    {"id": "G-matrix", "name": "validate-coverage-matrix --require-complete --require-basis --require-foundation", "conditions": ["matrix_coverage", "foundation_trace", "decision_guidance"], "exit_code": 0, "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす"},
-    {"id": "G-docsync", "name": "validate-spec-doc-sync", "conditions": ["foundation_trace"], "exit_code": 0},
-    {"id": "G-kg", "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)", "conditions": ["design_knowledge_reflection", "matrix_coverage"], "exit_code": 0},
-    {"id": "G-required-info-state", "name": "validate-knowledge-graph --profile required-info --state", "conditions": ["matrix_coverage"], "exit_code": 0, "stdout": "ungrounded_blocking_items=[]"},
-    {"id": "G-citation", "name": "validate-source-citation (C08)", "conditions": ["doc_freshness"], "exit_code": 0},
-    {"id": "G-prompt", "name": "validate-prompt --input + verify-completeness --input (18 prompts)", "conditions": ["prompt_quality"], "exit_code": 0}
+    {"id": "G-matrix-complete-basis-foundation", "name": "validate-coverage-matrix --require-complete --require-basis --require-foundation", "exit_code": 0, "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす"},
+    {"id": "G-matrix-loop", "name": "validate-coverage-matrix", "exit_code": 0},
+    {"id": "G-spec-doc-sync", "name": "validate-spec-doc-sync", "exit_code": 0, "stdout": "OK: 正本 spec-state.json の goal・根拠・出典が章へ投影されている"},
+    {"id": "G-knowledge-graph", "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)", "exit_code": 0},
+    {"id": "G-source-citation", "name": "validate-source-citation (C08 実行)", "exit_code": 0},
+    {"id": "G-prompt", "name": "validate-prompt + verify-completeness (21 prompts)", "exit_code": 0}
   ],
   "findings": [
-    {"severity": "medium", "bucket": "matrix_coverage", "observation": "(C06 F1、high を medium と裁定) 利用者が確認していない agent-inference が 5 件ある。qa-ai-{database,security,backend,ui-ux,maintenance-ops}-web-003 で、中身は採番方式、固定 4 MiB の report/paste request budget と 4KB の action budget、段階の優先順位と使用データの数え方、選択の既定値と比較の既定、境界テスト 4 件である。5 件とも承認 (12:34:50Z) の後の 12:36:49Z に記録され、確定セルの qa_refs に並んでいる。basis は正直に宣言され、各セルの主たる根拠は -001 なので、契約違反ではない。", "suggested_fix": "C01 R3-reask で、5 件のうち少なくとも security-web-003 (上限値) と backend-web-003 (優先順位・数え方) を AskUserQuestion で確認する。確認後は -004 (user-decision) に置き換える。dev-graph へ渡すときは、-003 を『未確認の既定値』として扱うよう明記する。", "evidence": ["spec-state.json qa_log[qa-ai-*-web-003] basis=agent-inference", "C06 finding #1"]},
-    {"severity": "resolved", "bucket": "matrix_coverage", "observation": "qa-ai-security-web-003 の旧推定上限は契約適合レポートを転送境界で拒否しうる不整合があった。その後、実装と仕様を固定 4 MiB (4,194,304 bytes) の request budget に同期し、1 byte 超過を JSON 読み込み前に 413 とし、個別 field・配列は contract validator が別に検証する責務へ統一した。", "suggested_fix": "解消済み。固定 4 MiB の境界テストと contract validator のテストを維持する。", "evidence": ["system-spec/spec-state.json qa_log[qa-ai-security-web-003]", "system-spec/security.md", "packages/api/src/ai/contract.ts", "packages/api/src/ai-screen.integration.test.ts"]},
-    {"severity": "medium", "bucket": "matrix_coverage", "observation": "(C06 F2) 確定セルの主たる根拠 qa-ai-*-web-001 は basis=user-decision で、章には『利用者が代替案を見たうえで明示選択した決定』と表示される。しかし実態は、承認の 2 分後 (12:36:49Z) に agent が承認と決定の範囲で具体化したものである。runtimeSchemaGuard の必須列への追加、他人の id に 404 を返すこと、キャンセル済みトークンの 401、TanStack Query の無効化の単位などは、利用者が選んだ値ではない。前サイクルでも同じ型が low で挙がっており、今回も解消していない。", "suggested_fix": "plugin 側の課題。spec-state-contract の basis に『決定から具体化した』区分 (例: decision-derived) を足し、C03 の描画文言を分ける。それまでは -001 の provenance を、章の『根拠の性質』欄にも併記する。", "evidence": ["system-spec/00-requirements-definition.md:103-199『根拠の性質』行", "C06 finding #2"]},
-    {"severity": "medium", "bucket": "foundation_trace", "observation": "U1-U9 承認の質問 (12:33:25Z) が示したのは要約で、U4『O1-O5 (各ゴールのテスト測定)』、U8『制約 C1-C8』、U9『具体策 I1-I7』は見出しだけだった。前サイクルでは全文ファイルの場所も示していたが、今回はそれも無い。書き足しが無いことは検算した (foundation-ai.json と同一) が、C1-C8 と I1-I7 と O/S の本文を、利用者が見て承認したとは言えない。", "suggested_fix": "C01 R0-foundation の承認手順で、全文 (または全文ファイルのパス) の提示を必須にする。本サイクルでは、plan に進む前に C1-C8・I1-I7・O1-O5・S1-S6 の本文を利用者に一度見せ、異論が無いことを approval_log に追記すると確実になる。", "evidence": ["セッション jsonl AskUserQuestion 12:33:25Z の question 本文", "scratchpad/foundation-ai.json mtime 12:33:07Z"]},
-    {"severity": "low", "bucket": "foundation_trace", "observation": "キャンセル済みトークンを拒否するときの状態コードが章ごとに揃っていない。S3 は『401 / 410 相当』で、auth.md と auth-web-001 は『期限切れ・受信済みと同じ 401』に固定している。", "suggested_fix": "C01 で S3 の文言を 401 に揃える (既存の agentGuard と一致させる) か、410 を採るなら auth-web-001 を直し、C03 で章を作り直す。", "evidence": ["requirements_foundation.success_criteria S3", "system-spec/auth.md 『本章での適用』"]},
-    {"severity": "low", "bucket": "decision_guidance", "observation": "qa-ai-decision-001〜008 の provenance は『選択肢と推奨案・preview 提示あり』と書くだけで、退けた案の名前を残していない。『AI が進捗を送る API』『キャンセル=削除』『依頼なしで取り込み』などである。一部は scope.out から逆算できるが、そこに無い案 (例: 既存 3 状態の名前だけ変える) は失われている。", "suggested_fix": "C01 R2 で、user-decision の qa entry に提示した選択肢のラベルを残す (question 本文への追記か、options フィールドの追加)。", "evidence": ["セッション jsonl AskUserQuestion 12:23:43Z / 12:27:58Z", "spec-state.json qa_log[qa-ai-decision-00x].provenance"]},
-    {"severity": "low", "bucket": "evaluator_io", "observation": "system-spec/completeness-findings.json に残っているのは前サイクル (家計収支、appr-foundation-household-cashflow-001) の PASS レポートで、本サイクルの評価ではない。同じ内容が archive/2026-09-19-household-screen/ に保存されている。", "suggested_fix": "本レポートで system-spec/completeness-findings.json を置き換える (writer は caller)。", "evidence": ["system-spec/completeness-findings.json foundation_trace.summary"]},
-    {"severity": "info", "bucket": "decision_guidance", "observation": "確認した観点: decisions[]=0 は spec-state-contract.md:169-178 の登録基準どおりである。本サイクルに技術選定の needs_guidance は無い。8 決定はすべて、利用者が 2〜3 択から明示選択したものだった。", "suggested_fix": "対応不要。"},
-    {"severity": "info", "bucket": "design_knowledge_reflection", "observation": "確認した観点: 8 章の『本章での適用』と doctrine 表が、どれも章固有の確定内容 (列の選定・guard の位置・段の順・境界テスト) に具体的に接地していた。汎用ポインタだけの章は 0。", "suggested_fix": "対応不要。"},
-    {"severity": "info", "bucket": "doc_freshness", "observation": "確認した観点: C08 が 10/10 件を公式の現行版と照合し、一致した。", "suggested_fix": "対応不要。"},
-    {"severity": "info", "bucket": "prompt_quality", "observation": "確認した観点: prompt 18 本の validator がすべて exit 0。", "suggested_fix": "対応不要。"}
+    {
+      "severity": "medium",
+      "bucket": "matrix_coverage (C06 F-1 誘導質問・繰越)",
+      "observation": "qa-imp-decision-010 は、一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404 統一という 4 論点を、1 つの『確定する / 修正する』に束ねたままである。今回は任意として未対処。4 つの値は質問本文に具体的に示されていたので、接地そのものは崩れていない。観点は FAIL にしない。",
+      "suggested_fix": "任意。次の elicit の回で、認可方針 (404 に統一するか、403/410 を分けるか) だけを数値パラメータから切り離し、案ごとの利点と欠点を対で示して単独で再確認する。今後、補完値を確定するときは論点ごとに分けて問う。",
+      "evidence": ["spec-state.json qa_log qa-imp-decision-010", "matrix.auth.web.qa_ref"]
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage (トレース)",
+      "observation": "今回の再確定セルの本文には、上限の数値が IMPORT_LIMITS の中身として並んでいる。しかし、その数値を決めた利用者決定 qa が qa_refs に入っていないセルがある。backend.web は 25MB・10 ファイル (decision-006) とエントリ 1,000 件 (decision-009) を書いているのに、qa_refs に 006 と 009 が無い。ui-ux.web は合計 30MB (decision-007) を書いているのに、qa_refs に 007 が無い。新しい qa の provenance は『数値は decision-006/-009 のまま』と述べているが、そのセルからはたどれない。dangling ではないので、R7 SSOT の基準では FAIL にならない。",
+      "suggested_fix": "apply-spec-transition.py add-qa-ref で backend.web に qa-imp-decision-006 と -009、ui-ux.web に qa-imp-decision-007 を足す (reopen は不要)。",
+      "evidence": ["matrix.backend.web.qa_refs", "matrix.ui-ux.web.qa_refs", "backend.md:74", "ui-ux.md:73"]
+    },
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection",
+      "observation": "frontend.md の doctrine 表の application-architecture 行 (L32) は、Dependency Rule をサーバー状態と画面状態の分離にしか当てはめていない。『web は判定を持たず、core の IMPORT_LIMITS と判定関数を import する』という今回の具体化が載っていない。同じ章の適用記述 (L182) と backend の doctrine 行には反映されているので、食い違いではなく書き漏れである。",
+      "suggested_fix": "次に frontend を compile し直すとき、doctrine_application に『上限値と超過の判定は core から import し、web に判定を書かない』を 1 文足す。",
+      "evidence": ["frontend.md:32", "frontend.md:182", "backend.md:31"]
+    },
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection",
+      "observation": "maintenance-ops の字面検査は『上限の数値リテラル (25MB・30MB・60MB・10 ファイル・1,000 件) が無い』ことを固定するとしているが、何を指紋として探すかが決まっていない。10 や 1000 はありふれた値なので、素朴に grep すると誤検出が多い。一方で、26214400 や 25 * 1024 * 1024 のような書き方の揺れは見逃しうる。テストは旧実装で落ちることを確かめるという原則に照らすと、指紋の定義が要る。",
+      "suggested_fix": "実装計画 (dev-graph / system-dev-plan) の段階で、指紋を定める。バイト値の 3 表記 (MB 乗算式・10 進の積・リテラル) と、取込経路のファイルにある maxSize: / .size > の比較式が対象。現行の imports.ts:1410 の 25MB 判定でこの検査が落ちることも確かめる。仕様書の差し戻しは不要。",
+      "evidence": ["maintenance-ops.md:73", "security.md:61 (imports.ts:1410)"]
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage (C06 F-2・繰越)",
+      "observation": "qa-imp-decision-009 の選択肢は、推奨の 1,000 件に欠点が書かれておらず、非推奨の 2 案には欠点しか書かれていない。提示が非対称で、未対処。",
+      "suggested_fix": "数値上限の選択肢は、案ごとに利点と欠点を対で示す。"
+    },
+    {
+      "severity": "low",
+      "bucket": "doc_freshness (C08・繰越)",
+      "observation": "security の hono-body-limit にある『宣言と実長のずれは HTTP の枠組み (Workers ランタイム) に任せる』には、hono.dev にも Cloudflare 公式にも裏付けとなる記述が無い。Cloudflare docs には、この挙動が未文書化であることを扱う open issue がある。",
+      "suggested_fix": "この一文を、出典の無い設計判断 (agent-inference) だと明示する。または、ずれた要求を実測するテストを maintenance-ops に足す。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace (繰越)",
+      "observation": "O6 の『本文を読む前に 413』は、Content-Length の無い要求には厳密には成り立たない。maintenance-ops の境界テストは有無の両方を挙げているが、『無い場合は上限 +1 byte を読んだ時点で止まる』という注記が今回も入っていない。",
+      "suggested_fix": "maintenance-ops の境界テストの節に 1 文注記する。O6 の再承認は不要。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace (繰越)",
+      "observation": "今回の reopen 4 件と再確定 qa 4 件は、すべて 2026-09-21T22:40:55Z の同じ 1 秒に記録されている。reopen → 再確定の順序を時刻から復元できない。C06 は、agent が一括で処理したことを示す情報事項として扱った。",
+      "suggested_fix": "C01 の writer が、reopen の時刻と再確定の時刻をそれぞれ実測して記録する。"
+    },
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection (繰越)",
+      "observation": "infrastructure の『ピーク約 90MB で 128MB に収まる』は、展開後 60MB の xlsx をパースしたときの膨張を数えていない推定である。実測の手順も後退策も書かれていない。infrastructure は今回 reopen の対象外だった。",
+      "suggested_fix": "maintenance-ops に、Workers ランタイムで展開後 60MB 近くのファイルを通す実測テストと、収まらない場合の後退策 (展開後の上限を下げる) を足す。"
+    },
+    {
+      "severity": "info",
+      "bucket": "design_knowledge_reflection / matrix_coverage",
+      "observation": "前回 gaps[0] への対処を確認した。上限値を core の IMPORT_LIMITS と判定関数の 1 か所に置き、web の送信前判定と api の 413 (bodyLimit の maxSize を含む) がどちらも import することが、frontend・ui-ux・backend の 3 章で揃っている。ui-ux には、同じ検査 ID への追加と累計 10 ファイル・30MB の事前判定が入った (前回の low『ui-ux 本文に累計が無い』も解消)。maintenance-ops には、数値リテラルの字面検査と共通境界表のテストが入った。4 件とも basis=agent-inference で、新しい具体値は 0 件。"
+    },
+    {
+      "severity": "info",
+      "bucket": "prompt_quality",
+      "observation": "確認した観点: prompt 21 本の validate-prompt.py --input と verify-completeness.py --input が全件 exit 0。"
+    }
   ],
   "gaps": []
 }

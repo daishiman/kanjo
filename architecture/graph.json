@@ -2552,7 +2552,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "5c6788a52947b35f54ae87183aa1e3e6f17ed9ff5e8ff0b86f3192ca418f7a06",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2575,7 +2575,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "eba3e33334b9f5c6dcff8e1b78b8fff1804f2f52604edca0382f1a6158f36ef4",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2598,7 +2598,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "e39b090e33900452ae1d5ce73e97bb80e02c65be0deb210278f19af238dafca4",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2621,7 +2621,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "1a0540e072013253e364b82ad4a3f1e91124019fd5baba6c85772025d47dcbfb",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2644,7 +2644,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "43dfdc557b5f5aaf98b06b941235ed93dba451d3a240fd2721a898a582678f37",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2667,7 +2667,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "8f446762dac8ac8a6d4309890f85c19832143ab42e22e3bc11914f39c88a8831",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2690,7 +2690,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "2dd60db420ad646ddde4503af53e0162b59f324570faa0ddfe547fc7b417fd88",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2713,7 +2713,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "2b3f704b5a4f10f10bf1f37852d1094d0c80cb21fbe1ec9470a3b9fa1f01ee08",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -3071,6 +3071,190 @@
       },
       "referenced_by": [
         "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "データ取込 — 選択・一覧・内容確認・結果・履歴の 5 段を問いの見出しの下に並べ、取り込む前に何が入るかを必ず見せる",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f14062b5b29edd57c4d2b9795cf43de5db309be4bcb263dc47cab8187ed1b26e",
+        "source_path": "system-spec/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "データ取込 — Import.tsx を pages/import/ へ分割し、上限の判定も含めて core の結果を描くだけにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "a7e3437bf267934ab3c6b44de73a738606c8af419fba667ca59ef8e2f536cf31",
+        "source_path": "system-spec/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "データ取込 — 検査と確定を 2 経路に分け、状態・要約・結果・上限値を core の import-screen.ts 1 か所で導く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f1e820c99e3f8424452e73decb691a16873c228b6f14aff5b491081f07d05755",
+        "source_path": "system-spec/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "データ取込 — 検査・ファイル項目・レート制限の 3 表と import_runs の列を 0050 以降の追加だけで持つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "4b40739265566acb82504749214ed94e5071bf84a5375a7a1f898d1d3a1acd64",
+        "source_path": "system-spec/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "データ取込 — 全経路を既存のセッションのフェンスの内側に置き、他人・期限切れ・別検査の ID はすべて 404 にそろえる",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f1a1572295b16d6fc096c4b441d4f72748a1460b078fbb5f85e0562dc15adf25",
+        "source_path": "system-spec/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "データ取込 — 合計・ファイル単位・展開前の 3 段で大きさを止め、レート制限と同一オリジンの検査を入口に置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "7d2806984e761ff45eddfa2cae491f0c9c4338f30709d2cc955ec21f33d0cd8f",
+        "source_path": "system-spec/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "データ取込 — 仮置きを既存 R2 の専用接頭辞に置き、片づけを既存の夜間保守に載せて、基盤は D1 の表の追加だけにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2e050c28b0a7fc383a43286e8c150e1d4551196f7a0b6f57310c26f729ff084c",
+        "source_path": "system-spec/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "データ取込 — 規則を docs/import-screen/ と境界表のテストで固定し、上限の数値リテラルを字面の検査で core の 1 か所に閉じ込める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0e03da0aed7e1bed0f3e37eafeb8df1e8e76a249f5f35465d0b4060fae426293",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
       ]
     }
   ]

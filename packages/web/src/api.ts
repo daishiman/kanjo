@@ -77,7 +77,7 @@ import type {
   ReviewItemKind,
   ReviewQueueItem,
 } from '@kanjo/core';
-import { api, apiUpload } from './api-client.js';
+import { AUTH_EVENT, ApiError, api, apiUpload } from './api-client.js';
 export { AUTH_EVENT, ApiError, type ApiRequestPolicy, api, apiUpload } from './api-client.js';
 
 /**
@@ -190,6 +190,15 @@ export const unmarkMonthlyCloseReviewed = (month: string) =>
 
 // API が返す値の型は core が正本。ここで同じ union を書き直すと、片方だけ増えても型検査に映らない
 import type { AiTaskStage, ExpenseScope } from '@kanjo/core';
+import type {
+  ImportDuplicate,
+  ImportFileState,
+  ImportHistoryResult,
+  ImportInspectionSummary,
+  ImportRunResult,
+  ImportSource,
+  ImportValidation,
+} from '@kanjo/core';
 export type { ExpenseScope };
 export type TrendDirection = '増加' | '減少' | '横ばい' | '判定不可';
 export type PriorityAction = '削減を検討' | '継続監視' | '記録を整える' | '対応不要';
@@ -850,53 +859,164 @@ export interface UndoResult {
   months: string[];
 }
 
-/* -------- 取込の差分プレビュー -------- */
+/* -------- データ取込画面 (spec-import-screen: 検査 → 確定 → 履歴) -------- */
 
-/** 3点比較で食い違った属性1つぶんの値。空文字は「指定なし」 */
-export interface ImportDiffAttrConflict {
-  base: string | null;
-  current: string | null;
-  incoming: string | null;
+/** POST /imports/inspections・/:id/files・DELETE /:id/files/:fileId が返す検査の 1 ファイル */
+export interface ImportInspectionFile {
+  id: string;
+  filename: string;
+  source: ImportSource | null;
+  periodFrom: string | null;
+  periodTo: string | null;
+  size: number;
+  rowCount: number;
+  duplicate: ImportDuplicate;
+  validation: ImportValidation;
+  /** 強制再取込オフで計算した状態。オンのときは画面が core `importFileState` で計算し直す */
+  state: ImportFileState;
+  reason: string | null;
 }
 
-/** 行として出す明細。属性ごとに、どこが食い違ったかだけを持つ */
-export interface ImportDiffConflict {
-  txId: string;
-  attrs: Partial<Record<'cls' | 'big' | 'mid' | 'owner', ImportDiffAttrConflict>>;
+export interface ImportInspectionView {
+  id: string;
+  expiresAt: string;
+  files: ImportInspectionFile[];
+  summary: ImportInspectionSummary;
 }
 
-/** 今回preview内で低確信だった明細と候補。全memory一覧ではない。 */
-export interface ImportVendorCandidate {
-  txId: string;
-  vendorKey: string;
-  vendorLabel: string;
-  cls: Cls | null;
-  big: string | null;
-  mid: string | null;
-  owner: Owner | null;
-  reason: string;
+export interface ImportInspectionResponse {
+  inspection: ImportInspectionView;
 }
 
-export interface ImportDiffResult {
-  supported: true;
-  /** previewと確定の対象・入力が同一であることをサーバが再検証する鍵 */
-  fingerprint: string;
+export interface ImportRunFileResult {
+  id: string;
+  filename: string;
+  state: 'imported' | 'failed';
+  rowCount: number;
+  reason: string | null;
+}
+
+export interface ImportRunImpact {
+  added: number;
+  skipped: number;
+  subsCandidates: number;
+}
+
+/** POST /imports/runs・/imports/runs/:id/reimport。1 要求 1 ファイルで、残りは `remaining` */
+export interface ImportRunCommitResponse {
+  run: {
+    id: string;
+    result: ImportRunResult;
+    files: ImportRunFileResult[];
+    /** 親の取込 1 回の累計 */
+    impact: ImportRunImpact;
+    /** この要求の分だけ。画面で合計する */
+    duplicateCandidates: number;
+  };
+  remaining: string[];
+}
+
+/** GET /imports/runs の 1 行 (取込 1 回) */
+export interface ImportRunRowView {
+  id: string;
+  createdAt: string;
+  sources: ImportSource[];
+  fileCount: number;
+  rowCount: number;
+  result: ImportHistoryResult;
+  detail: { succeeded: number; failed: number; failureSummary: string | null };
+  undoable: boolean;
+  replaceable: boolean;
+  undoDeadline: string;
+  canHide: boolean;
+  hasOriginal: boolean;
+}
+
+export interface ImportRunDetailFile {
+  importId: number;
+  filename: string | null;
+  source: ImportSource | null;
+  state: ImportFileState;
+  status: string | null;
+  rowCount: number;
   months: string[];
-  counts: { added: number; changed: number; deleted: number; unchanged: number };
-  conflicts: ImportDiffConflict[];
-  backfilled: number;
-  automation: { autoApplied: number; candidates: number; learned: number };
-  candidates: ImportVendorCandidate[];
-  queries: { planned: number; limit: number };
+  reason: string | null;
+  hasOriginal: boolean;
+  generationState: ImportHistoryRow['generationState'];
+  cancelable: boolean;
+  discardable: boolean;
 }
 
-/** freee・資産推移・JSONなど、3点比較をしない正常な取込形式。 */
-export interface ImportDiffUnavailable {
-  supported: false;
-  message: string;
+/** GET /imports/runs/:id */
+export interface ImportRunDetail extends ImportRunRowView {
+  periodFrom: string | null;
+  periodTo: string | null;
+  keepPrevious: boolean | null;
+  /** 確定時の記録。0050 より前の取込は null */
+  impact: ImportRunImpact | null;
+  files: ImportRunDetailFile[];
 }
 
-export type ImportDiffResponse = ImportDiffResult | ImportDiffUnavailable;
+export interface ImportRunUndoPreflight {
+  imports: Array<{ importId: number; fingerprint: string; counts: DeletionCounts; months: string[] }>;
+  counts: DeletionCounts;
+  months: string[];
+  undoRetentionDays: number;
+}
+
+/**
+ * 進捗つきの multipart 送信。fetch は送信の進み具合を返さないので XMLHttpRequest を使う。
+ * 失敗は api と同じ ApiError に揃え、401 は認証失効として通知する。`signal` で中断すると AbortError。
+ */
+export function uploadWithProgress<T>(
+  path: string,
+  form: FormData,
+  onProgress: (percent: number) => void,
+  signal?: AbortSignal,
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const abort = () => xhr.abort();
+    xhr.open('POST', `/api${path}`);
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && event.total > 0)
+        onProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+    };
+    xhr.onload = () => {
+      signal?.removeEventListener('abort', abort);
+      let body: unknown = null;
+      try {
+        body = xhr.responseText ? JSON.parse(xhr.responseText) : null;
+      } catch {
+        body = null;
+      }
+      if (xhr.status >= 200 && xhr.status < 300) {
+        onProgress(100);
+        resolve(body as T);
+        return;
+      }
+      if (xhr.status === 401) window.dispatchEvent(new Event(AUTH_EVENT));
+      const error = (body as { error?: { code?: string; message?: string } } | null)?.error;
+      reject(
+        new ApiError(xhr.status, error?.code ?? 'error', error?.message ?? `エラー(${xhr.status})`, body),
+      );
+    };
+    xhr.onerror = () => {
+      signal?.removeEventListener('abort', abort);
+      reject(new TypeError('通信できませんでした'));
+    };
+    xhr.onabort = () => {
+      signal?.removeEventListener('abort', abort);
+      reject(new DOMException('送信を中断しました', 'AbortError'));
+    };
+    if (signal?.aborted) {
+      xhr.abort();
+      return;
+    }
+    signal?.addEventListener('abort', abort);
+    xhr.send(form);
+  });
+}
 
 /* -------- 取引先ごとの決め事 -------- */
 
