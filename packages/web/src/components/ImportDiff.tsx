@@ -37,6 +37,7 @@ import {
 import { useOwnerLabels } from '../owner-labels.js';
 import { Button } from './Button.js';
 import { describeError } from './Page.js';
+import { SelectionCheckbox } from './SelectionCheckbox.js';
 
 /** 手当ての3属性の呼び名。画面に出す語はここだけで決める */
 const ATTR_LABEL = { cls: '公私', big: '大項目', mid: '中項目', owner: '名義' } as const;
@@ -235,14 +236,12 @@ function ConflictCard({
         </label>
       </div>
       {group.vendorKey && (
-        <label className="import-remember-choice">
-          <input
-            type="checkbox"
-            checked={decision.remember}
-            onChange={(e) => set({ remember: e.target.checked })}
-          />
-          <span>次からもこの取引先はこの内容にする（決め事として覚える）</span>
-        </label>
+        <SelectionCheckbox
+          className="import-remember-choice"
+          label="次からもこの取引先はこの内容にする（決め事として覚える）"
+          checked={decision.remember}
+          onChange={(e) => set({ remember: e.target.checked })}
+        />
       )}
     </div>
   );

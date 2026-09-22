@@ -11,6 +11,7 @@ import {
   api,
 } from '../api.js';
 import { monthLabel, yen } from '../format.js';
+import { clearAllBudgetDrafts } from '../pages/budget/draft.js';
 import { clearAllLiabilityDrafts } from '../pages/statements/liability-draft.js';
 import { PeriodPicker, usePeriod } from '../period.js';
 import {
@@ -148,6 +149,7 @@ function UserMenu() {
       await api('/auth/logout', { method: 'POST' });
       // 同じブラウザを次に使う人へ負債の下書きを残さない (spec-statements-screen §4)
       clearAllLiabilityDrafts();
+      clearAllBudgetDrafts();
       window.dispatchEvent(new Event(AUTH_EVENT));
     } catch {
       setError('ログアウトできません。もう一度お試しください。');

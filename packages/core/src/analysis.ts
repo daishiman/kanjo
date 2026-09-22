@@ -2,6 +2,7 @@
  * 集計・統計・診断。HTML版の計算仕様（spec §8、変更禁止16項目）を移植。
  * 年次比較はHTML版の '2025'/'2026' 固定を「前年/当年（データ最終月の年）」に一般化した。
  */
+import { budgetsInEffect } from './budget-screen.js';
 import { mean, median, movingAvg, std, sum, yearOf } from './stats.js';
 import {
   type CatProfile,
@@ -935,11 +936,12 @@ export function judgeBudget(recentAvg: number, budget: number | null): Pick<Budg
 }
 
 export function budgetTable(data: Dataset): BudgetRow[] {
+  const budgets = budgetsInEffect(data);
   return data.biz.categories
     .filter((c) => sum(catSeries(data, c)) > 0)
     .map((c) => {
       const p = catProfile(data, c);
-      const b = data.budgets[c] ?? null;
+      const b = budgets[c] ?? null;
       return { account: c, type: p.type, recentAvg: p.rAvg, budget: b, ...judgeBudget(p.rAvg, b) };
     });
 }
@@ -1026,6 +1028,7 @@ export interface BudgetOutlook {
  */
 export function budgetOutlook(data: Dataset): BudgetOutlook {
   const { curr } = yearPair(data);
+  const budgets = budgetsInEffect(data);
   const un = new Set(data.unrecordedExpMonths);
   const currIdx = data.months.map((_, i) => i).filter((i) => yearOf(data.months[i]) === curr);
   const recordedIdx = currIdx.filter((i) => !un.has(data.months[i]));
@@ -1038,7 +1041,7 @@ export function budgetOutlook(data: Dataset): BudgetOutlook {
       const series = catSeries(data, c);
       const ytd = sum(recordedIdx.map((i) => series[i] || 0));
       const recentAvg = catProfile(data, c).rAvg;
-      const budget = data.budgets[c] ?? null;
+      const budget = budgets[c] ?? null;
       const annualBudget = budget == null ? null : budget * 12;
       const landing = ytd + recentAvg * remainingMonths;
       const judged = judgeBudget(landing, annualBudget);

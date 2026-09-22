@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G1, G3, G4]
+serves_goals: [G1, G4]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G1, G3, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-ai-frontend-web-001。裏付け質疑 (`qa_refs`): `qa-ai-frontend-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G3, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、frontend ではReact Native などへの移植と、web と共有できる部品の範囲を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、frontend ではタブレット向けの分割表示の部品と、画面回転時の状態保持を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、frontend ではElectron / Tauri などの殻の選定と、web 版との差分管理を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、frontend では殻の選定と、Linux のフォント・DPI 差の吸収を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、frontend では殻の選定と、macOS のウィンドウ復元時の状態保持を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-budget-frontend-web-001。資するゴール: G1, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、フロントエンドではスマートフォンのブラウザ外で下書きと問い合わせのキャッシュをどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、フロントエンドではタブレットの専用アプリで入力表のフォーカス移動とソフトキーボードをどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、フロントエンドではWindows 向けのネイティブ UI 部品でグラフと入力表をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、フロントエンドではLinux 向けのネイティブ UI 部品でグラフと入力表をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、フロントエンドではmacOS 向けのネイティブ UI 部品でグラフと入力表をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G1, G3, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 表示の共通部品を使う規則を、AI分析画面の表・タブ・ボタン・選択中バーに反映した。表と選択中バーはサブスク・診断画面の既存部品と同じ流儀で組み、ボタンは共通 Button、色はトークンだけにする。 |
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | サーバー状態と画面状態を分ける規則を、依頼一覧・レポート一覧・レポート詳細・使用するデータの 4 つの取得と、選択中の依頼・レポート・タブ (URL) と下書き (localStorage) の分離に反映した。操作の後は該当する取得だけを無効化し、選択は URL から復元する。 |
+| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 予算画面のフロントエンドでは、部品が色を直書きせず design-tokens.ts のトークンだけを使い、金額・率・符号の文字列は view-model.ts で作ってから描く形へ反映した。グラフは既存と同じ SVG の自前描画に揃え、新しいライブラリで初期 JS を増やさない。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 予算画面のフロントエンドでは、算出 (KPI・自動提案・見通し) を core に、取得と保存と無効化を container に、整形を view-model.ts に置く三層へ反映した。下書きだけは端末の localStorage に予算対象の期間単位で閉じ、サーバの状態と混ぜないため問い合わせのキャッシュに入れない。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,31 +37,19 @@ serves_goals: [G1, G3, G4]
 
 ### Web (web)
 
-- 資するゴール: G1, G3, G4
+- 資するゴール: G1, G4
 
-#### 主たる接地根拠: `qa-ai-frontend-web-001`
-
-**問**
-
-web の AI分析画面のフロントエンド構成 (ファイル分割・状態・取得・部品) をどう作るか。
-
-**答**
-
-Ai.tsx を packages/web/src/pages/ai/ 配下へ分割し (依頼・実行中・レポート一覧・取り込み・詳細・版履歴・版比較・選択中バー)、段階・進捗・版の説明・タブの振り分け・JSON エラー位置は core の純関数の結果を描くだけにする。期間は usePeriod から取り旧 PRESETS を消す (qa-ai-decision-001)。取得は TanStack Query で依頼一覧・レポート一覧・レポート詳細・使用するデータを分け、キャンセル・再実行・削除・取り込み・アーカイブの mutation 後に該当キーを無効化する。選択中の依頼・レポート・タブは URL の検索パラメータに持つ。補足指示の下書きは localStorage に自動保存し発行時に消す (qa-ai-decision-006)。色はトークン、ボタンは共通 Button、ページは PageShell。画面は遅延読み込みのまま。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-19T12:36:49Z)
-
-#### 裏付け質疑: `qa-ai-frontend-web-evidence-001`
+#### 主たる接地根拠: `qa-budget-frontend-web-001`
 
 **問**
 
-frontend 章の裏付けとして、現行の AI 画面と共通部品について何を観測したか。
+web の予算画面のフロントエンド要件は何か。構成・状態・取得と更新・下書き・URL をどうするか。
 
 **答**
 
-AI 画面は AuthenticatedApp.tsx:23 で lazy(() => import('./pages/Ai.js')) により遅延読み込みされる。Ai.tsx は AiPage・PromptCard・RunCard・ReportDetail・CompareView・ReportToc・FindingList を 1 ファイルに持ち、useQuery で /summary・/ai/tasks・/ai/reports を取得する (Ai.tsx:98-101)。既存の DOM テスト (ai-copy-log / ai-report-structure / ai-report-archive / ai-task-collapse の各 .dom.test.tsx) が RunCard・FindingList・ReportText・AiPage を Ai.js から直接 import している。共通の期間は packages/web/src/period.tsx の usePeriod / PeriodPicker が担う。
+Budget.tsx を pages/budget/ 配下の container と画面専用の部品に分け、pages/Budget.tsx は互換の re-export だけを残す。数値の算出は core の予算画面の関数に任せ、web の view-model.ts は書式 (円・万円・符号・率) と文言の組立てだけを持ち、core の計算を書き直さない。取得は TanStack Query で実績期間 (usePeriod) と予算対象の開始月を鍵に 1 本の画面用 API から受け、保存は PUT で予算対象の全行をまとめて送り、成功で画面と分析派生の問い合わせを無効化する。入力・この値を適用・実績から提案・計画による調整は下書きとして localStorage に予算対象ごとに自動保存し、保存成功とログアウトで消し、次回に復元する。未保存の項目数は保存済みの値との差分から数え、未保存のまま画面を離れる (ルート遷移・再読込) ときは確認する。色は design-tokens.ts のトークンだけを使い、共通部品 (PageHeader・KpiCard・PageState・Button・ConfirmDialog・PeriodPicker) を使う。グラフは新しいライブラリを足さず既存の描画方式に揃え、初期 JS 予算を超えない。予算対象の開始月と選んだ科目は URL に持ち、診断からの ?account= を受け付ける (qa-budget-decision-001, 003)。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-19T12:36:49Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T13:35:48Z)
 
 ## To-Be / Delta
 
@@ -69,29 +57,26 @@ AI 画面は AuthenticatedApp.tsx:23 で lazy(() => import('./pages/Ai.js')) に
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: /ai を 12-ai.png どおりの画面にする。問いの見出し『AIに分析を依頼し、根拠と版を確認しますか？』と説明文、共通の期間タブ (1年 / 2年 / 3年 / 任意と範囲の送り)、1.依頼 (期間・補足指示 0/1000 と下書き自動保存・Claude Code 用 / Codex 用のコピー・使用するデータのカード・自動送信しない注記)、2.実行中の表 (ID・ステータス・依頼期間・作成日時・進捗・依頼内容・操作)、3.レポート (一覧の検索とアーカイブ表示・結果の取り込み・詳細のタブと版履歴と版比較)、下部の選択中バーを、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。
-- **G3**: 依頼の操作を画面で決着できるようにする。キャンセルはトークンを無効にして行を残し、再実行は同じ期間と補足指示で新しい依頼を発行し、削除は結果の無い依頼だけを消す (受信済みは削除不可)。依頼の発行とプロンプトのコピーを 1 操作にする。
-- **G4**: 結果の取り込みとレポートの読み方を整える。取り込み先は選択中の依頼 (結果待ちが 1 件なら自動選択・無ければ無効)、JSON の構文エラーは行と位置を、契約違反は項目名を日本語で示し、入力は保持する。レポートは 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、版履歴は補足指示の 1 行目 (無ければ既定文) を説明にし、2 つの版を並べて比較できる。一覧は名前で検索でき、アーカイブの表示を切り替えられる。
+- **G1**: /budget を 14-budget.png どおりの画面にする。パンくず『計画 / 予算』、期間タブ (usePeriod の 1年 / 2年 / 3年 / 任意と期間送り)、見出し『予算』と問い『実績に合う予算へ、どこを調整しますか？』と説明文、予算対象 (12 か月の開始月の選択と『来期の12か月の予算を編集できます。』)、KPI 4 枚 (年間収入予算・年間支出予算・予算純収支・防衛ライン余裕と説明の ? )、月次の実績・予算・見通しのグラフ (収入 実績 / 収入 予算 / 支出 実績 / 支出 予算の棒と見通し (収支) の折れ線、実績と見通しの境目の縦線と期間の注記)、今後の見通し (累計収入・累計支出・累計純収支と見通しコメント)、予算一覧 (カテゴリ検索 Ctrl+K・実績から提案・すべてリセット・選択チェック・# ・カテゴリ・前期実績・来期予算・自動提案・差額・見通し・来期予算 (入力))、右の科目パネル (提案の根拠 / 関連データのタブ、自動提案の値と前期差、この値を適用、推奨の根拠、計算の詳細 (前期実績・増減率・計画による調整・季節性補正・推奨値)、月別の実績推移 (過去 12 か月)、主な根拠データ、適用前の値、この行を元に戻す、閉じる)、予算の過不足カテゴリ (支出の増加が見込まれる / 支出の減少が見込まれる のタブと件数、# ・カテゴリ・見通し・差額・要因)、調整によるインパクト (自動提案と比べた年間の支出差・予算純収支・増加要因の科目と注意書き)、下部の保存バー (未保存 N 項目・最終保存時刻と下書きの自動保存・リセット・予算を保存) を、既存のデザイントークン・共通部品 (PageHeader・KpiCard・Button・ConfirmDialog・PeriodPicker) の上に組み、画面専用の部品は pages/budget/ に置く。画像の『AI・統計推奨』は外部推論をしないため『自動提案』と表示する。読込・空 (実績 0 か月)・失敗の各状態を持つ。
+- **G4**: 予算の編集作業を失わない。来期予算の入力・この値を適用・実績から提案 (全行に自動提案を入れる)・計画による調整の入力は下書きとして端末の localStorage に予算対象の期間単位で自動保存し、下書きを自動保存した時刻と最終保存時刻を示し、保存に成功したら消し、次回に復元できる。未保存の項目数を保存バーに出し、この行を元に戻す (保存済みの値へ) ・すべてリセット / リセット (全行を保存済みの値へ、確認つき) を持ち、未保存のまま離れるときは確認する。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | AI分析画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出し・期間タブ・1.依頼 (補足指示の文字数と下書き復元・コピー 2 種・使用するデータ・注記)・2.実行中の表の 7 列・3.レポートの一覧と取り込みと詳細 4 タブと版履歴・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。 |
-| O3 | キャンセル・再実行・削除が規則どおりに効く。 | API テストで、キャンセル後のトークンがデータ取得とレポート送信で拒否され行が残ること、再実行が同じ期間と補足指示の新しい依頼を作ること、受信済みの依頼の削除が拒否されることを確かめる。 |
-| O4 | 取り込みの誤りが直せる形で示され、レポートがタブと版で読める。 | DOM と core のテストで、構文エラーの行・列の表示と入力の保持、契約違反の項目名表示、選択中の依頼への取り込み、4 タブへの振り分け、版の説明の導出、2 版比較、一覧の検索とアーカイブ切替を確かめる。 |
+| O1 | 予算画面が画像の全構成要素を描画する。 | DOM テストで、パンくず・期間タブ・問いの見出し・予算対象・KPI 4 枚・月次グラフ (凡例 5 種と境目)・今後の見通し・予算一覧の全列と操作・科目パネルの 2 タブと全欄・過不足カテゴリの 2 タブ・調整によるインパクト・保存バーが描画され、『AI』の語が無く『自動提案』がある。読込・空・失敗の状態テストが緑である。 |
+| O4 | 編集中の作業が失われない。 | DOM テストで下書きの自動保存・復元・保存成功での消去・未保存 N 項目の件数・この行を元に戻す・すべてリセットの確認・離脱確認を確かめる。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: Ai.tsx を pages/ai/ 配下へ分割し、問いの見出し・期間タブ・1.依頼・2.実行中・3.レポート・下部の選択中バーの構成に作り直す。選択中の依頼とレポートとタブを URL に保つ。
-- **I3**: キャンセル (トークン無効化・行を残す) と再実行 (同じ期間と補足指示で新規発行) の API を足し、実行中の表の操作列から呼ぶ。発行とコピーを 1 操作にする。
-- **I4**: 結果の取り込みを選択中の依頼へ向け、JSON の構文エラーの行・位置と契約違反の項目名を示し、入力を保持する。
-- **I5**: レポート詳細を 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、要約の下に関連ページのリンクと版履歴 (補足指示の 1 行目から説明) と 2 版比較を置く。一覧に検索とアーカイブ切替を付ける。
-- **I7**: 補足指示の下書きを localStorage に自動保存し、発行時に消す。
+- **I1**: Budget.tsx を pages/budget/ 配下へ分割し、見出し・期間タブ・予算対象・KPI 4 枚・月次グラフ・今後の見通し・予算一覧・科目パネル・過不足カテゴリ・調整によるインパクト・保存バーの構成に作り直す。期間タブを 2年 にすると前期実績と自動提案が過去 2 年の実績から計算し直される。
+- **I4**: 来期予算を自動提案より下げると、調整によるインパクトに年間の支出抑制額と予算純収支が即座に出る。入力の途中で別画面へ移って戻ると、下書きが復元され未保存の項目数が出る。
 
 ### 本章に効く確定意思決定
 
-- (本章ゴールに効く確定 decision なし)
+- **dec-budget-income-scope**: 収入 (売上高・その他収入) も予算の対象にするか。
+  - 採択: 収入も予算にする (`opt-include-income`)
+  - 目的適合: 画像の売上高・その他収入の行と、年間収入予算・予算純収支・防衛ライン余裕の KPI を満たす。
 
 ## 適用された設計知識
 
@@ -99,9 +84,9 @@ AI 画面は AuthenticatedApp.tsx:23 で lazy(() => import('./pages/Ai.js')) に
 
 ### 本章での適用
 
-Clean Architecture card の依存方向を、web が段階の判定を持たない構成に適用した。現行 Ai.tsx は 1277 行の 1 ファイルで、状態の文言や期限の判定を画面側で組んでいるが、新しい構成では api が返す段階・進捗・T-番号・版の説明をそのまま描く部品群 (依頼・実行中の表・レポート一覧・取り込み・詳細・版履歴・版比較・選択中バー) に分ける。画面が持つ状態は選択中の依頼・レポート・タブ (URL) と補足指示の下書き (localStorage) だけにする。
+Container / Presentational の分離と view-model の card を予算画面に適用した。取得と保存と下書きは pages/budget の container 1 か所に置き、各部品は view-model.ts が作った表示用の値だけを受け取る。こうすると KPI・一覧・グラフの一致を DOM テストなしに core と view-model の純関数テストで固定でき、core の算出を web で書き直す余地が無くなる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-19T12:38:49Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T13:35:48Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -195,6 +180,5 @@ Clean Architecture card の依存方向を、web が段階の判定を持たな�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| tanstack-query-invalidation | 5.103.1 | TanStack (github.com) | https://github.com/TanStack/query/releases/latest | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
-| react-router-searchparams | 8.4.0 | React Router (Shopify / Remix team) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
-| mdn-localstorage | 2026-07-28 | Mozilla (MDN Web Docs) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage | 2026-09-19T12:40:44Z | 2026-09-19T12:40:44Z |
+| tanstack-query-invalidation | 6.2.3 | TanStack (tanstack.com) | https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation | 2026-09-21T13:39:51Z | 2026-09-21T13:39:51Z |
+| react-router-searchparams | 8.4.0 | React Router (Remix / Shopify) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-21T13:39:51Z | 2026-09-21T13:39:51Z |

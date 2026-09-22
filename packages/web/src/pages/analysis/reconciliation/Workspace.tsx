@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { Button } from '../../../components/Button.js';
 import { DataTable } from '../../../components/DataTable.js';
+import { SelectionCheckbox } from '../../../components/SelectionCheckbox.js';
 import { UiIcon } from '../../../components/UiIcon.js';
 import { monthLabel, yen } from '../../../format.js';
 import type { ReconciliationResponse } from './api.js';
@@ -193,7 +194,9 @@ export const ReconciliationWorkspace = forwardRef<
                     <span className="visually-hidden">選択</span>
                     {selectableVisible.length ? (
                       <SelectionCheckbox
-                        label={`表示中の対応対象${selectableVisible.length}件をすべて選択`}
+                        labelHidden
+                        label=""
+                        aria-label={`表示中の対応対象${selectableVisible.length}件をすべて選択`}
                         checked={allVisibleSelected}
                         indeterminate={someVisibleSelected && !allVisibleSelected}
                         onChange={onToggleVisible}
@@ -219,7 +222,9 @@ export const ReconciliationWorkspace = forwardRef<
                 <td className="recon-select-column">
                   {isPending(row) ? (
                     <SelectionCheckbox
-                      label={`${row.mf.content}を選択`}
+                      labelHidden
+                      label=""
+                      aria-label={`${row.mf.content}を選択`}
                       checked={selected.has(row.txId)}
                       onChange={() => onToggleSelected(row.txId)}
                     />
@@ -337,34 +342,6 @@ function QueueList({
         </li>
       ))}
     </ul>
-  );
-}
-
-function SelectionCheckbox({
-  label,
-  checked,
-  indeterminate = false,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  indeterminate?: boolean;
-  onChange: () => void;
-}) {
-  return (
-    <label className="recon-selection-hit">
-      <input
-        type="checkbox"
-        className="recon-control-native"
-        aria-label={label}
-        checked={checked}
-        ref={(node) => {
-          if (node) node.indeterminate = indeterminate;
-        }}
-        onChange={onChange}
-      />
-      <span className="recon-control-indicator" aria-hidden="true" />
-    </label>
   );
 }
 

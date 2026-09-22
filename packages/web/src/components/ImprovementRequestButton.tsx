@@ -19,6 +19,7 @@ import { diagnosticsSnapshot } from '../diagnostics-buffer.js';
 import { Button } from './Button.js';
 import { DeferredUiIcon as UiIcon } from './DeferredUiIcon.js';
 import { ScreenshotAnnotator } from './ScreenshotAnnotator.js';
+import { SelectionCheckbox } from './SelectionCheckbox.js';
 
 type Phase = 'idle' | 'capturing' | 'form' | 'sending' | 'done';
 
@@ -268,14 +269,11 @@ export function ImprovementRequestButton({
                             alt="送信されるスクリーンショットのプレビュー"
                           />
                         ))}
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={attach}
-                          onChange={(e) => setAttach(e.target.checked)}
-                        />
-                        このスクリーンショットを添付する
-                      </label>
+                      <SelectionCheckbox
+                        label="このスクリーンショットを添付する"
+                        checked={attach}
+                        onChange={(e) => setAttach(e.target.checked)}
+                      />
                     </>
                   )}
                 </section>

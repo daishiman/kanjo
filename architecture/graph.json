@@ -2552,7 +2552,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "5c6788a52947b35f54ae87183aa1e3e6f17ed9ff5e8ff0b86f3192ca418f7a06",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2575,7 +2575,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "eba3e33334b9f5c6dcff8e1b78b8fff1804f2f52604edca0382f1a6158f36ef4",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2598,7 +2598,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "e39b090e33900452ae1d5ce73e97bb80e02c65be0deb210278f19af238dafca4",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2621,7 +2621,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "1a0540e072013253e364b82ad4a3f1e91124019fd5baba6c85772025d47dcbfb",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2644,7 +2644,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "43dfdc557b5f5aaf98b06b941235ed93dba451d3a240fd2721a898a582678f37",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2667,7 +2667,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "8f446762dac8ac8a6d4309890f85c19832143ab42e22e3bc11914f39c88a8831",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2690,7 +2690,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "2dd60db420ad646ddde4503af53e0162b59f324570faa0ddfe547fc7b417fd88",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2713,7 +2713,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "2b3f704b5a4f10f10bf1f37852d1094d0c80cb21fbe1ec9470a3b9fa1f01ee08",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -3071,6 +3071,190 @@
       },
       "referenced_by": [
         "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "予算 — 既存の認証とフェンスの内側に置く取得・保存と利用者単位の区切り",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "8bac5a1830455e332c0527f6ffc5c1aa3d6d49387e3d8b3ec611a14c17fd101f",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "予算 — 予算画面の算出と予算の読み出しを担う core 純関数 1 か所と取得・保存の 2 経路",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "cd68f3959122014af143291a3f5a61039e84bbe13f348a0b7cd3a106585725d1",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "予算 — 期間別の年額表 budget_plans を足す追加のみの migration とバックアップ・復元への編入",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "a27bde88c9d11399fcacdf470fb1e1a25db503a875d1b5b26b5ee648721353d3",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "予算 — pages/budget への分割と URL・サーバ状態・端末下書きの分離",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "c555b213773f5d2a3bea4d0f51d770d843672c6cf70ba55a1d50827c63badf66",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "予算 — 基盤を変えず行数上限と 1 回の D1 batch で無料枠に収める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "d69bafe2c6f37b37fd1c18513b3e15eeb609d7830c50a59b0f9c67adbf1570fb",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "予算 — 式と整合を core の単体テストで固定し旧実装で落ちる検算を受入の根拠にする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "8cfbe5fbed898db6065b9c6529a6018d9e1ac7edeb7bbb5c1c7b05306cf48019",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "予算 — zod の型と範囲・行数上限・フェンス登録・外部送信なし・下書きの消去",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "b796b626b18f8470e2c88875dca536473b2a7b53652fc411602769c7900057d2",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "予算 — KPI と過不足から一覧と科目パネルを往復し保存バーで確定する 1 画面",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "cdcb7210699bd4c8fedd6a834ad74b55bed23a17a36441417b285fdbd14665c1",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
       ]
     }
   ]

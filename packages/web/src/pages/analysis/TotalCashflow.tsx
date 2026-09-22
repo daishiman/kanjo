@@ -36,6 +36,7 @@ import { DataTable } from '../../components/DataTable.js';
 import { FinancialFigure } from '../../components/FinancialFigure.js';
 import { KpiCard, PageState } from '../../components/Page.js';
 import { REVIEW_QUEUE_KEY } from '../../components/ReviewQueue.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { UiIcon } from '../../components/UiIcon.js';
 import { tooltipOptions } from '../../components/chart-tooltip.js';
 import { COLORS, baseChartOptions, chartSeriesColor, yenTick } from '../../components/charts.js';
@@ -745,14 +746,12 @@ function ExcludedWorkbenchTable({
   return (
     <>
       <div className="tcf-bulk">
-        <label className="tcf-pick-all">
-          <input
-            type="checkbox"
-            checked={allPicked}
-            onChange={() => setPicked(allPicked ? new Set() : new Set(excluded.map((r) => r.freeeKey)))}
-          />
-          すべて選択
-        </label>
+        <SelectionCheckbox
+          className="tcf-pick-all"
+          label="すべて選択"
+          checked={allPicked}
+          onChange={() => setPicked(allPicked ? new Set() : new Set(excluded.map((r) => r.freeeKey)))}
+        />
         <span className="tcf-bulk-count">{selected.length} 件を選択中</span>
         <label>
           一括で理由を設定
@@ -802,11 +801,12 @@ function ExcludedWorkbenchTable({
         {excluded.map((row) => (
           <tr key={row.freeeKey}>
             <td data-label="選択" className="tcf-pick">
-              <input
-                type="checkbox"
+              <SelectionCheckbox
+                labelHidden
+                label=""
+                aria-label={`${row.date} ${row.partner} を選ぶ`}
                 checked={picked.has(row.freeeKey)}
                 onChange={() => toggle(row.freeeKey)}
-                aria-label={`${row.date} ${row.partner} を選ぶ`}
               />
             </td>
             <td data-label="発生日">{row.date}</td>
@@ -983,18 +983,16 @@ function WorkbenchSection({
                     <option value="undecided">未判定</option>
                   </select>
                 </label>
-                <label className="tcf-pick-all">
-                  <input
-                    type="checkbox"
-                    checked={allVisiblePicked}
-                    disabled={visibleRows.length === 0}
-                    onChange={() =>
-                      setPicked(allVisiblePicked ? new Set() : new Set(visibleRows.map((item) => item.txId)))
-                    }
-                    aria-label={`表示中の${visibleRows.length}件をすべて選択`}
-                  />
-                  表示中をすべて選択
-                </label>
+                <SelectionCheckbox
+                  className="tcf-pick-all"
+                  label="表示中をすべて選択"
+                  aria-label={`表示中の${visibleRows.length}件をすべて選択`}
+                  checked={allVisiblePicked}
+                  disabled={visibleRows.length === 0}
+                  onChange={() =>
+                    setPicked(allVisiblePicked ? new Set() : new Set(visibleRows.map((item) => item.txId)))
+                  }
+                />
               </div>
               {visibleRows.length === 0 ? (
                 <p className="sub">検索条件に合う明細はありません。</p>
@@ -1018,11 +1016,12 @@ function WorkbenchSection({
                           .join(' ')}
                       >
                         <td data-label="選択" className="tcf-pick">
-                          <input
-                            type="checkbox"
+                          <SelectionCheckbox
+                            labelHidden
+                            label=""
+                            aria-label={`${item.mf.date} ${item.mf.content} を選ぶ`}
                             checked={picked.has(item.txId)}
                             onChange={() => toggle(item.txId)}
-                            aria-label={`${item.mf.date} ${item.mf.content} を選ぶ`}
                           />
                         </td>
                         <td data-label="発生日">
@@ -1155,10 +1154,12 @@ function AutoMatchSection({
         「その組が正しいか」の記録になります。
       </p>
       <div className="tcf-bulk">
-        <label className="tcf-pick-all">
-          <input type="checkbox" checked={undecidedOnly} onChange={() => setUndecidedOnly((cur) => !cur)} />
-          未判定だけを表示
-        </label>
+        <SelectionCheckbox
+          className="tcf-pick-all"
+          label="未判定だけを表示"
+          checked={undecidedOnly}
+          onChange={() => setUndecidedOnly((cur) => !cur)}
+        />
         <span className="tcf-bulk-count">{selected.length} 件を選択中</span>
         <Button
           variant="primary"
@@ -1186,8 +1187,10 @@ function AutoMatchSection({
         {rows.map((row) => (
           <tr key={`${row.txId}:${row.freeeKey}`}>
             <td data-label="選択" className="tcf-pick">
-              <input
-                type="checkbox"
+              <SelectionCheckbox
+                labelHidden
+                label=""
+                aria-label={`${row.mf.date} ${row.mf.content} を選ぶ`}
                 checked={picked.has(row.txId)}
                 onChange={() =>
                   setPicked((cur) => {
@@ -1196,7 +1199,6 @@ function AutoMatchSection({
                     return next;
                   })
                 }
-                aria-label={`${row.mf.date} ${row.mf.content} を選ぶ`}
               />
             </td>
             <td data-label="発生日">{row.mf.date}</td>

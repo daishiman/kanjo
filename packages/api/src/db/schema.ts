@@ -348,6 +348,22 @@ export const budgets = sqliteTable('budgets', {
   monthlyAmount: integer('monthly_amount'),
 });
 
+/** 0050: 予算対象の期間別の年額表。同じ期間は上書きで、版は持たない (spec-budget-screen) */
+export const budgetPlans = sqliteTable(
+  'budget_plans',
+  {
+    userId: text('user_id').notNull(),
+    periodStart: text('period_start').notNull(),
+    account: text('account').notNull(),
+    kind: text('kind', { enum: ['income', 'expense'] }).notNull(),
+    annualAmount: integer('annual_amount').notNull(),
+    planAdjustment: integer('plan_adjustment').notNull().default(0),
+    planReason: text('plan_reason'),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.periodStart, t.account] })],
+);
+
 export const cashOverrides = sqliteTable('cash_overrides', {
   userId: text('user_id').notNull(),
   month: text('month').notNull(),

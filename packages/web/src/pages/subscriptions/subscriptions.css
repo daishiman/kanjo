@@ -574,12 +574,6 @@
   overflow-wrap: anywhere;
   min-block-size: var(--tap-target-min);
 }
-.subs-raw-names input[type="checkbox"] {
-  min-inline-size: 18px;
-  min-block-size: 18px;
-  inline-size: 18px;
-  block-size: 18px;
-}
 .subs-raw-source {
   flex: none;
   color: var(--ink-soft);

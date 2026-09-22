@@ -594,3 +594,35 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 索引: `uq_ai_tasks_user_seq`(`user_id`, `seq`)の一意索引。SQLite は NULL どうしを重複とみなさないので、`seq` の無い既存行は何行あっても衝突しない。
 - **段階名(待機中 / 実行中 / 完了 / 失敗 / キャンセル)と進捗 % は保存しない**。core の `aiTaskStage` が `canceled_at` → `used_at` → `expires_at` → `rejected_at` → `data_fetched_at` の順に時刻から毎回導く。列に持つと、期限切れのような「時間が経っただけで変わる段階」を更新し忘れて表示と食い違う。
 - **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE UNIQUE INDEX` のみ)。`ai_reports` は変えない。`packages/api/src/ai-migration-0048.test.ts` が、当てても行の更新が 0 件であることと既存列の値が変わらないことを固定する。
+
+## 予算対象の期間別の年額(0050 / feat-budget-screen)
+
+`migrations/0050_budget_plans.sql` が `budget_plans` を足す。画面仕様の正本は `specs/spec-budget-screen.md`、判断の経緯は [`budget-screen/design-decisions.md`](budget-screen/design-decisions.md)。仕様とタスク仕様の予定番号は 0048 だったが、main で 0048・0049 が AI 分析に使われたため 0050 に繰り上げた。
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT | 業務テナントの利用者 |
+| `period_start` | TEXT | 予算対象の開始月 `YYYY-MM`(CHECK は `GLOB`)。予算対象はここから 12 か月 |
+| `account` | TEXT | 科目名。1〜60 字(CHECK) |
+| `kind` | TEXT | `income`(売上高・その他収入)/ `expense`(CHECK) |
+| `annual_amount` | INTEGER | 来期予算の年額(円) |
+| `plan_adjustment` | INTEGER NOT NULL DEFAULT 0 | 計画による調整(円)。自動提案に足す |
+| `plan_reason` | TEXT | 調整の理由。NULL か 1〜100 字(CHECK) |
+| `updated_at` | TEXT | 保存時刻 |
+
+- 主キーは `(user_id, period_start, account)`。版は持たず、同じ期間を保存すると置き換える。期間の読取りは主キーの前方一致で引くので、索引は足さない。
+- 金額の範囲(±10,000,000,000)は API の zod だけで検査し、DB の CHECK には置かない。JSON の復元で古い値を入れられるようにするため。
+- **既存の `budgets`(科目ごとの月額)は 1 行も書き換えない**。0050 は表を足すだけ。`packages/api/src/budget-migration-0050.test.ts` が、当てても既存の `budgets` が変わらないことと、本文に既存の行を書き換える文が無いことを固定する。
+- 保存(`PUT /api/budget-plans`)は、期間の行の DELETE、`json_each` による INSERT、JSON snapshot の無効化を 1 回の batch で送る(3〜4 文)。
+
+### 読み出しの規則(BR-22・BR-23)
+
+- `monthlyBudgetsAt(data, month)` は、`period_start ≦ month` かつ `month` が予算対象の 12 か月に入る期間を探す。複数あれば `period_start` が最も新しい期間を採り、各行の 年額 ÷ 12(円未満四捨五入)を科目 → 月額で返す。該当が無ければ既存の `data.budgets` をそのまま返す。収入の行も含む(既存の読み手は支出の科目しか引かないので影響しない)。
+- `budgetsInEffect(data)` は、既存の読み手(`analysis.ts` の予算表と着地見込み、診断の予算の検出と予算カバー率)が読む月額。基準月は `data.budgetAsOf`(api が要求時刻の日本時間の年月を入れる)で、無ければ最終実績月の翌月。core は現在時刻を読まない。
+- 期間の切り出し(`applyPeriod` / `sliceDataset`)は `budgetPlans` と `budgetAsOf` を落とさずに引き継ぐ(BR-25。設定類は期間で切らない)。
+
+### 書き出し・復元と snapshot(BR-24)
+
+- Dataset の JSON に `budgetPlans`(行の配列)を足した。指紋(`fingerprint.ts`)にも含める。
+- 復元は `budget_plans` の利用者の行を消してから JSON の行を入れる。`budgetPlans` の無い古いバックアップを復元すると、既存 `budgets` と同じく `budget_plans` を消す。消した後は、既存 budgets の月額 × 12 が初期値に戻る。
+- `budget_plans` は、変更系フェンスの consumer(`canonical-mutation-fence.ts`)と取込中の表の一覧(`import-active.ts`)に入れた。保存の batch では JSON snapshot を無効化する。snapshot の無効化と復元の write-set の片方だけに入れると、snapshot が古い予算を返すため、両方に入れた。

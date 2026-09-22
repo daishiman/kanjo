@@ -2,6 +2,7 @@ import { SUBS_CATEGORIES, type SubscriptionVendorDetail } from '@kanjo/core';
 import { type KeyboardEvent, forwardRef, useEffect, useId, useRef, useState } from 'react';
 import { Button } from '../../components/Button.js';
 import { ConfirmDialog } from '../../components/ConfirmDialog.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { UiIcon } from '../../components/UiIcon.js';
 import { useConfirmDialog } from '../../components/use-confirm-dialog.js';
 import { yen } from '../../format.js';
@@ -475,15 +476,13 @@ function RegisteredRelated({
         )}
         {accounts.length ? (
           accounts.map((account) => (
-            <label key={account}>
-              <input
-                type="checkbox"
-                checked={related.accounts.includes(account)}
-                disabled={busy}
-                onChange={(event) => setAccount(account, event.target.checked)}
-              />
-              {account}
-            </label>
+            <SelectionCheckbox
+              key={account}
+              label={account}
+              checked={related.accounts.includes(account)}
+              disabled={busy}
+              onChange={(event) => setAccount(account, event.target.checked)}
+            />
           ))
         ) : (
           <p className="sub">選べる科目がありません。</p>

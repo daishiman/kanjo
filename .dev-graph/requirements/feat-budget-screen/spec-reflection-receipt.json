@@ -1,0 +1,54 @@
+{
+  "receipt_kind": "spec-reflection",
+  "parent_feature": "feat-budget-screen",
+  "graph_node_id": "feat-budget-screen",
+  "beads_epic": "kanjo-inc",
+  "recorded_at": "2026-09-22T04:20:00Z",
+  "verdict": "IMPACTED_AND_REFLECTED",
+  "summary": "予算画面 (14-budget) の作り直しは仕様・設計へ影響があると判定し、system-spec/ specs/ architecture/ features/ tasks/ docs/ へ反映した。実装中に変わった保存方式 (全行置換 → base revision つき dirty row patch) と migration 番号 (0048 → 0050) も正本へ戻した。全画面の checkbox を共通部品へ寄せた変更は既存要件の適用であり、仕様の変更は不要と判定して docs に記録した。",
+  "impacts": [
+    {
+      "id": "I1",
+      "finding": "予算画面 (期間別の年額表・収入の行・自動提案・防衛ライン余裕) の正本が無い。",
+      "action": "specs/spec-budget-screen.md を新設し、FR・UI表・API契約・データモデル・BR-01〜BR-25・AT-01〜AT-22 を確定した。features/feat-budget-screen.md と context.json を置いた。",
+      "files": ["specs/spec-budget-screen.md", "features/feat-budget-screen.md", "features/feat-budget-screen.context.json"]
+    },
+    {
+      "id": "I2",
+      "finding": "system-spec のカテゴリ章に予算の期間別年額・下書き・既存読み手への波及 (budgetsInEffect) の決定が無い。",
+      "action": "system-spec-harness の正規フロー (elicit → compile → completeness evaluator) で要件定義書と 8 章を更新し、旧版を system-spec/archive/2026-09-22-ai-analysis-screen/ へ退避した。architecture/budget-*.md 8 件を新設し architecture/graph.json に登録した。",
+      "files": ["system-spec/00-requirements-definition.md", "system-spec/ui-ux.md", "system-spec/frontend.md", "system-spec/backend.md", "system-spec/database.md", "system-spec/auth.md", "system-spec/security.md", "system-spec/infrastructure.md", "system-spec/maintenance-ops.md", "system-spec/index.md", "system-spec/spec-state.json", "architecture/graph.json"]
+    },
+    {
+      "id": "I3",
+      "finding": "保存 (Q-7) を実装で全行置換から baseSavedAt つき dirty row patch へ変え、競合時 409 budget_plan_conflict を返すようにした。",
+      "action": "specs/spec-budget-screen.md の API 契約と architecture/budget-backend.md・budget-database.md・budget-frontend.md の決定表 (qa-budget-decision-001) を実装に合わせた。",
+      "files": ["specs/spec-budget-screen.md", "architecture/budget-backend.md", "architecture/budget-database.md", "architecture/budget-frontend.md"]
+    },
+    {
+      "id": "I4",
+      "finding": "計画時の migration 予定番号 0048 は AI 分析 (0048・0049) で使用済みだった。",
+      "action": "0050_budget_plans.sql に繰り上げ、schema-guard・仕様・feature・architecture・task の参照を統一した。promotion receipt は計画時点の不変証跡として 0048 のまま保持した。",
+      "files": ["migrations/0050_budget_plans.sql", "packages/api/src/schema-guard.ts", "docs/data-schema.md", "tasks/feat-budget-screen/"]
+    },
+    {
+      "id": "I5",
+      "finding": "画面の決定の経緯・未決事項・証跡索引・独立レビューの読み物が無い。",
+      "action": "docs/budget-screen/design-decisions.md (§1〜§9) と evidence/ を置き、docs/ui-decisions.md と docs/data-schema.md に予算の節を追記した。",
+      "files": ["docs/budget-screen/design-decisions.md", "docs/budget-screen/evidence/", "docs/ui-decisions.md", "docs/data-schema.md"]
+    }
+  ],
+  "no_impact": [
+    {
+      "id": "N1",
+      "change": "全画面の native checkbox を共通 SelectionCheckbox へ寄せ、ConfirmDialog に dismissLabel を足した。",
+      "reason": "操作領域 44px は docs/design-system/requirements-baseline.md の size.tapTargetMin として既存の要件であり、native input の意味・フォーカス・フォーム挙動は変えない。新しい振る舞いや要件を足していないため system-spec/specs の変更は不要。決定は docs/ui-decisions.md に記録し、selection-checkbox-source-contract.test.ts が再流入を止める。"
+    }
+  ],
+  "not_committed": [
+    {
+      "path": "docs/design-system/evidence/acceptance-worktree-*-gate.stdout.txt",
+      "reason": "design-system ゲート再実行でパス表記が変わっただけの副産物で、本 feature と無関係。"
+    }
+  ]
+}

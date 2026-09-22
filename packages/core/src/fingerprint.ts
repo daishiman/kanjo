@@ -121,6 +121,7 @@ export function canonicalJsonSnapshot(snapshot: Record<string, unknown>): string
     'bizPersonal',
     'mfTx',
     'budgets',
+    'budgetPlans',
     'cashOverride',
     'unrecordedExpMonths',
     'cashProjection',
