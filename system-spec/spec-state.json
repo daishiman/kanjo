@@ -46,361 +46,327 @@
     "database": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-tradeoff-database-web-001",
+        "qa_ref": "qa-cash-database-web-005",
         "serves_goals": [
-          "G3",
-          "G5"
+          "G2",
+          "G4"
         ],
         "qa_refs": [
-          "qa-tradeoff-database-web-evidence-001",
-          "qa-tradeoff-database-web-003"
+          "qa-cash-database-web-evidence-001",
+          "qa-cash-database-web-003",
+          "qa-cash-decision-009"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、database では端末内に試算条件を持つオフライン保存と D1 との同期規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、database では外出先で入力した現金明細を端末内 DB に溜めて D1 と同期する規則 (論理削除の伝播を含む)を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、database ではタブレットと web で同じ試算を同時に編集したときの行の競合規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、database では共有端末に残る現金明細のキャッシュの保持期限を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、database では端末内データベースへの候補のキャッシュと失効の規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、database ではオフライン時に入力した明細を保留する端末内の保存形を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、database では端末内データベースの版の移行手順を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、database では端末内に保留した明細ファイルの権限を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、database では端末内データベースと D1 の差分の取り込み規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、database では端末内に保留した明細を Keychain とファイルのどちらに置くかを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       }
     },
     "auth": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-tradeoff-auth-web-001",
+        "qa_ref": "qa-cash-auth-web-001",
         "serves_goals": [
-          "G5"
+          "G4"
         ],
         "qa_refs": [
-          "qa-tradeoff-auth-web-evidence-001"
+          "qa-cash-auth-web-evidence-001"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、auth では端末の生体認証で試算を開く規則とトークンの保管場所を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、auth では生体認証でのアプリ再開と、セッション Cookie に代わるトークンの保管を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、auth では家族で共有するタブレットの利用者切替の規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、auth では家族と共有するタブレットでの利用者切替を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、auth ではWindows の資格情報マネージャへのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、auth ではWindows 資格情報マネージャーへのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、auth ではLinux の鍵束へのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、auth ではSecret Service が無い環境でのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、auth ではmacOS のキーチェーンへのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、auth ではKeychain へのトークン保管とアプリ署名を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       }
     },
     "ui-ux": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-tradeoff-ui-ux-web-001",
+        "qa_ref": "qa-cash-ui-ux-web-001",
         "serves_goals": [
           "G1",
-          "G2",
-          "G3",
-          "G4"
+          "G2"
         ],
         "qa_refs": [
-          "qa-tradeoff-ui-ux-web-evidence-001",
-          "qa-tradeoff-ui-ux-web-003",
-          "qa-tradeoff-ui-ux-web-004"
+          "qa-cash-ui-ux-web-evidence-001",
+          "qa-cash-ui-ux-web-003"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、ui-ux では片手操作向けの候補の選択と、選択中バーを下部タブと重ねない配置を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、ui-ux では片手で入力できる入力順と、下部固定バーとソフトキーボードの重なりを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、ui-ux では横向きで候補表と試算結果を 2 画面に並べる配置を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、ui-ux では横向きで入力と一覧を左右に並べる 2 ペイン構成を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、ui-ux ではWindows のメニューとショートカットでの試算の操作を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、ui-ux ではWindows のメニュー・ショートカット規約に沿った追加と削除の操作を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、ui-ux ではLinux のデスクトップ環境ごとの配色とフォントの差を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、ui-ux ではデスクトップ環境ごとに異なるテーマへの追従を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、ui-ux ではmacOS のメニューバーとショートカットでの試算の操作を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、ui-ux ではmacOS のメニューバーと Command キーの操作体系を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       }
     },
     "security": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-tradeoff-security-web-001",
+        "qa_ref": "qa-cash-security-web-005",
         "serves_goals": [
-          "G5"
+          "G4"
         ],
         "qa_refs": [
-          "qa-tradeoff-security-web-evidence-001",
-          "qa-tradeoff-security-web-003",
-          "qa-tradeoff-security-web-004",
-          "qa-tradeoff-security-web-005"
+          "qa-cash-security-web-evidence-001",
+          "qa-cash-security-web-003",
+          "qa-cash-decision-006",
+          "qa-cash-decision-009"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、security では端末の画面共有やスクリーンショットから金額を守る規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、security では端末紛失時に下書きと明細キャッシュを遠隔で消す手段を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、security では共有端末に試算条件を残さない規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、security では共有端末で下書きに残る金額と内容の見え方を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、security ではWindows のアプリ署名と自動更新の検証を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、security では配布バイナリの署名と自動更新経路の改ざん対策を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、security ではLinux の配布パッケージの署名検証を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、security ではパッケージ配布経路 (deb / rpm / AppImage) の署名を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、security ではmacOS の公証と自動更新の検証を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、security では公証 (notarization) とサンドボックスの権限を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       }
     },
     "infrastructure": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-tradeoff-infrastructure-web-001",
+        "qa_ref": "qa-cash-infrastructure-web-002",
         "serves_goals": [
-          "G1",
-          "G5"
+          "G2"
         ],
         "qa_refs": [
-          "qa-tradeoff-infrastructure-web-evidence-001"
+          "qa-cash-infrastructure-web-evidence-001",
+          "qa-cash-decision-008"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、infrastructure ではアプリストアへの配布と審査の手順を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、infrastructure ではストア配信と、API の後方互換を保つ版の並行運用を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、infrastructure ではタブレット向けの配布物の分割を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、infrastructure ではタブレット向けビルドの配信経路を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、infrastructure ではWindows のインストーラと更新サーバを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、infrastructure ではインストーラーと自動更新サーバーを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、infrastructure ではLinux の配布形式 (AppImage など) の選定を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、infrastructure ではディストリビューションごとのパッケージ配信を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、infrastructure ではmacOS の配布と更新サーバを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、infrastructure ではdmg の配布と Sparkle などの更新配信を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       }
     },
     "backend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-tradeoff-backend-web-001",
+        "qa_ref": "qa-cash-backend-web-005",
         "serves_goals": [
-          "G2",
-          "G3",
-          "G4",
-          "G5"
-        ],
-        "qa_refs": [
-          "qa-tradeoff-backend-web-evidence-001",
-          "qa-tradeoff-backend-web-003",
-          "qa-tradeoff-backend-web-004",
-          "qa-tradeoff-decision-010",
-          "qa-tradeoff-decision-011",
-          "qa-tradeoff-backend-web-005"
-        ]
-      },
-      "mobile": {
-        "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、backend では端末からの試算の差分同期 APIを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
-      },
-      "tablet": {
-        "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、backend ではタブレットと web の同時操作の競合を解く APIを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
-      },
-      "desktop-windows": {
-        "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリ向けの API の版管理と後方互換の期間を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
-      },
-      "desktop-linux": {
-        "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、backend では古い版のデスクトップアプリからの呼び出しの拒否を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
-      },
-      "desktop-macos": {
-        "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリへの通知の APIを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
-      }
-    },
-    "frontend": {
-      "web": {
-        "state": "確定",
-        "qa_ref": "qa-tradeoff-frontend-web-001",
-        "serves_goals": [
-          "G1",
           "G2",
           "G3",
           "G4"
         ],
         "qa_refs": [
-          "qa-tradeoff-frontend-web-evidence-001"
+          "qa-cash-backend-web-evidence-001",
+          "qa-cash-backend-web-003",
+          "qa-cash-decision-006",
+          "qa-cash-decision-009"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、frontend ではネイティブの表部品での候補表の実装を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、backend ではオフラインで作られた明細の後着と、論理削除・復元の競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、frontend ではタブレットの分割表示での状態の共有を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、backend では複数端末から同じ明細を同時に編集したときの競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、frontend ではWindows のウィンドウ状態の保存を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、backend では端末ごとの同期カーソルを返す APIを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、frontend ではLinux のウィンドウ管理との整合を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、backend では端末ごとの同期カーソルの失効規則を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、frontend ではmacOS のウィンドウ状態の保存を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、backend ではバックグラウンド同期用の差分取得 APIを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-cash-frontend-web-001",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-cash-frontend-web-evidence-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、frontend ではReact Native などの別実装と、core の純関数の共有方法を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、frontend ではタブレット用レイアウトの分岐とタッチ操作の当たり判定を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、frontend ではElectron などの殻と Web 版の差分管理を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、frontend では殻の描画エンジンの差による表示崩れを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、frontend ではネイティブメニューと Web 側の操作の二重実装を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       }
     },
     "maintenance-ops": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-tradeoff-maintenance-ops-web-001",
+        "qa_ref": "qa-cash-maintenance-ops-web-001",
         "serves_goals": [
           "G1",
           "G2",
-          "G3",
-          "G4",
-          "G5"
+          "G4"
         ],
         "qa_refs": [
-          "qa-tradeoff-maintenance-ops-web-evidence-001",
-          "qa-tradeoff-maintenance-ops-web-003",
-          "qa-tradeoff-decision-012"
+          "qa-cash-maintenance-ops-web-evidence-001",
+          "qa-cash-maintenance-ops-web-003"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、maintenance-ops では端末の機種ごとの動作確認と障害時の版の取り下げを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、maintenance-ops ではストア審査と、古い版が残ることを前提にした障害切り分けを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、maintenance-ops ではタブレットの画面寸法ごとの回帰確認を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、maintenance-ops ではタブレット実機での回帰テストを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、maintenance-ops ではWindows の版ごとの回帰確認を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、maintenance-ops ではWindows 実機での回帰テストとクラッシュ収集を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、maintenance-ops ではLinux のディストリビューションごとの回帰確認を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、maintenance-ops では複数ディストリビューションでの回帰テストを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、maintenance-ops ではmacOS の版ごとの回帰確認を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-tradeoff-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、maintenance-ops ではmacOS の版ごとの回帰テストとクラッシュ収集を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-cash-target-platforms-001"
       }
     }
   },
   "qa_log": [
     {
-      "id": "qa-tradeoff-decision-001",
-      "question": "見直し候補の元を何にするか (現行は診断の検知器の改善案だけを写す)。",
-      "answer": "事業経費を科目×取引先ごとに集計した全体を候補にする。直近 3 か月の平均月額で並べ、検知器の改善案は候補の『損益・メモ』の理由として使う。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案の提示あり。利用者本人が選択。",
+      "id": "qa-cash-decision-001",
+      "question": "画像の「領収書（ファイルを選択 / D&D、PDF・JPG・PNG 最大10MB）」をどう扱うか。証憑の保管機能は以前に廃止し、仕様で対象外 (税務上の正本は freee) と決めている。",
+      "answer": "対象外のまま。領収書の欄は出さず、代わりに「領収書は freee に保管してください」と案内する。過去の廃止決定と整合させ、ファイル保管のセキュリティ・容量・削除責任を負わない。",
+      "provenance": "AskUserQuestion / 選択肢 3 件 (対象外のまま・復活して保存する・添付した印だけ残す) と推奨案を提示し、利用者が「対象外のまま (推奨)」を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:07:07Z",
-      "required_info_items": [
-        "context-of-use",
-        "domain-model",
-        "product-goal"
-      ]
-    },
-    {
-      "id": "qa-tradeoff-decision-002",
-      "question": "候補の必要度 (低 / 中 / 高) を誰が決めるか。",
-      "answer": "core が自動で推定し、利用者が画面で上書きできる。上書きは自動の値より優先する。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案の提示あり。利用者本人が選択。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:07:07Z",
-      "required_info_items": [
-        "context-of-use",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-tradeoff-decision-003",
-      "question": "推奨の組み合わせを何で出すか (core のルール / AI分析レポートの取り込み)。",
-      "answer": "core の決まったルールで算出する。アプリは LLM を呼ばず、同じ入力には同じ推奨を返す。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案の提示あり。利用者本人が選択。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:07:07Z",
+      "answered_at": "2026-09-21T15:13:26Z",
       "required_info_items": [
         "domain-model",
         "product-goal",
@@ -408,368 +374,533 @@
       ]
     },
     {
-      "id": "qa-tradeoff-decision-004",
-      "question": "現行の保存済み試算の一覧と翌月の突合をどうするか。",
-      "answer": "画面から外し、データ (tradeoff_plans の行) と tradeoffReview の関数は残す。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案の提示あり。利用者本人が選択。",
+      "id": "qa-cash-decision-002",
+      "question": "画像の「担当者（社内）」列・入力欄を何で表すか。現行 DB に担当者の列は無く、近い概念は明細仕分けの名義 (business / spouse / family) である。",
+      "answer": "既存の名義を使う。担当者 = 名義として cash_entries に列を足し、明細仕分けと同じ語彙で集計する。表示名は利用者が設定した名義ラベルに従う (画像の「社内」は事業名義のラベル)。",
+      "provenance": "AskUserQuestion / 選択肢 3 件 (既存の名義を使う・自由に登録できる担当者・担当者は出さない) と推奨案を提示し、利用者が「既存の名義を使う (推奨)」を選択。answered_at は選択時刻の上界。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:07:07Z",
-      "required_info_items": [
-        "domain-model",
-        "product-goal"
-      ]
-    },
-    {
-      "id": "qa-tradeoff-decision-005",
-      "question": "防衛ラインへの影響をどう計算するか。",
-      "answer": "既存 defenseLine の月の余裕 (収入見込み − 防衛ライン) ×12 を防衛ライン余裕とし、そこから年間の差額を引いた値を試算後の余裕とする。0 以上で維持、負で割れる。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案の提示あり。利用者本人が選択。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:12:43Z",
-      "required_info_items": [
-        "domain-model",
-        "product-goal"
-      ]
-    },
-    {
-      "id": "qa-tradeoff-decision-006",
-      "question": "入力した試算条件をどこに保持するか。",
-      "answer": "D1 に保存する (ブラウザ保存にしない)。再訪時は最新の条件を復元する。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案の提示あり。利用者本人が選択。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:12:43Z",
-      "required_info_items": [
-        "context-of-use",
-        "domain-model",
-        "security-posture"
-      ]
-    },
-    {
-      "id": "qa-tradeoff-decision-007",
-      "question": "候補の『損益・メモ』に何を出すか。",
-      "answer": "自動の理由 (検知器の改善案や推移から作る文) を出し、利用者のメモがあればそちらを優先して出す。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案の提示あり。利用者本人が選択。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:12:43Z",
+      "answered_at": "2026-09-21T15:13:26Z",
       "required_info_items": [
         "context-of-use",
         "domain-model"
       ]
     },
     {
-      "id": "qa-tradeoff-decision-008",
-      "question": "『この条件で試算』を押したときの保存の形をどうするか。",
-      "answer": "押すたびに履歴として tradeoff_plans へ追加する (上書きしない)。画面は最新の 1 件を復元する。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案の提示あり。利用者本人が選択。",
+      "id": "qa-cash-decision-003",
+      "question": "削除と「元に戻す」をどう実現するか。現行は物理削除で戻す手段が無い。",
+      "answer": "論理削除で戻せるようにする。deleted_at を付けて一覧・集計から外し、「元に戻す」で同じ行 (同じ ID) を復活させる。一定期間後に物理削除する。集計が削除済み行を拾わない不変条件をテストで固定する。",
+      "provenance": "AskUserQuestion / 選択肢 2 件 (論理削除で戻せる・物理削除＋再作成で戻す) と推奨案を提示し、利用者が「論理削除で戻せる (推奨)」を選択。answered_at は選択時刻の上界。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:12:43Z",
-      "required_info_items": [
-        "domain-model",
-        "security-posture"
-      ]
-    },
-    {
-      "id": "qa-tradeoff-decision-009",
-      "question": "年間の差額の符号をどうするか (画像のモックは 960,000 − 1,020,000 を『+60,000 支出増』と表示し矛盾している)。",
-      "answer": "差額 = 新しい支出の年額 − 削減の年額 とし、正は支出増 (警告)、負は捻出できる、と表示する。画像の符号表示は誤りとして扱う。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案の提示あり。利用者本人が選択。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:16:00Z",
+      "answered_at": "2026-09-21T15:13:26Z",
       "required_info_items": [
         "domain-model",
         "product-goal"
       ]
     },
     {
-      "id": "qa-tradeoff-target-platforms-001",
-      "question": "トレードオフ画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
-      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ』を置き、利用者が U1-U9 をこの内容で承認した (appr-foundation-tradeoff-001)。狭い画面は既存 web のレスポンシブ規約 (段の縦積み、表の横スクロール) の中で扱う。",
-      "provenance": "AskUserQuestion / U1-U9 承認 (scope.out に web 以外を明記)",
+      "id": "qa-cash-decision-004",
+      "question": "一覧の「取込元」列・フィルタは何を区別するか。画像では交通費の行も含め全て「手入力」である。",
+      "answer": "入力経路を区別する。現金明細は全て手入力なので、取込元は「通常入力 / 交通費入力」の経路として表示・絞り込む。一覧の対象は現金入力の明細だけで、取込明細は混ぜない。",
+      "provenance": "AskUserQuestion / 選択肢 3 件 (入力経路を区別・取込の現金明細も並べる・手入力で固定表示) と推奨案を提示し、利用者が「入力経路を区別 (推奨)」を選択。answered_at は選択時刻の上界。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:16:00Z",
+      "answered_at": "2026-09-21T15:13:26Z",
+      "required_info_items": [
+        "context-of-use",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-cash-target-platforms-001",
+      "question": "現金入力画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
+      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『モバイル・タブレット・デスクトップ専用アプリ』を置き、利用者が U1-U9 をこの内容で承認した (appr-foundation-cash-001)。外出先からの入力は既存 web のレスポンシブ規約 (段の縦積み、表の横スクロール、下部固定バーの安全領域) の中で扱う。",
+      "provenance": "利用者承認 appr-foundation-cash-001 の scope.out に明記した範囲。承認時刻の上界は 2026-09-21T15:16:08Z。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:20:56Z",
       "required_info_items": [
         "target-platforms"
       ]
     },
     {
-      "id": "qa-tradeoff-database-web-evidence-001",
-      "question": "database 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。",
-      "answer": "D1 の tradeoff_plans (migrations/0000_init.sql:85-95、packages/api/src/db/schema.ts:610-620) は id, user_id, title, amount, recurring, selected (JSON 文字列), covered, verdict, created_at を持ち、開始月とメモの列が無い。候補ごとの上書きを置く表は無い。freee_deals (schema.ts:47) は user_id, month, date, io (income / expense), partner, account_raw, account_norm, amount を持ち、科目×取引先の集計に必要な列がそろっている。最新の migration は 0049_ai_report_invariants.sql で、schema-guard.ts の EXPECTED_D1_MIGRATION も 0049 を指す。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-cash-database-web-evidence-001",
+      "question": "database 章の裏付けとして、現行実装について何を観測したか。",
+      "answer": "cash_entries (packages/api/src/db/schema.ts:439-464) は id・user_id・date・month・side (biz/per)・io・amount・description・category_major/mid・memo・transit_from/to・transit_round・receipt_waived・created_at・updated_at を持ち、名義・業務の目的・削除時刻の列は無い。索引は idx_cash_month (user_id, month) だけ。読み取りは loadCashEntries (packages/api/src/store.ts:521-528) の 1 か所で user_id だけで絞る。migration は migrations/ 直下の連番で最新は 0049_ai_report_invariants.sql。取込・期間の一括削除には tombstone 方式の取り消し (packages/api/src/deletion-retention.ts:87) が別にあり、1 行を同じ id で戻す用途ではない。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-auth-web-evidence-001",
-      "question": "auth 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。",
-      "answer": "packages/api/src/index.ts:104-108 で /api/* に authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence が掛かり、analyticsRoute (index.ts:116) はその内側にある。GET / POST /api/tradeoff (routes/analytics.ts:759-821) は c.get('userId') で user_id を取り、読み書きをその利用者に絞っている。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-cash-auth-web-evidence-001",
+      "question": "auth 章の裏付けとして、現行実装について何を観測したか。",
+      "answer": "/api/* は packages/api/src/index.ts:104 の authGuard() 配下で、cash の各経路 (packages/api/src/routes/cash.ts:175-275) は c.get('userId') を条件に読み書きし、他人の id は not_found (404) を返す。セッション Cookie は HttpOnly・Secure・SameSite=Strict (packages/api/src/auth.ts:131)。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-ui-ux-web-evidence-001",
-      "question": "ui-ux 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。",
-      "answer": "packages/web/src/pages/Tradeoff.tsx (257 行) は内容・金額・単発 / 毎月の入力、検知器の改善案を写した候補のチェック一覧、『捻出合計 − 予定支出』の月額同士の 2 値判定 (Tradeoff.tsx:66 の covered >= amt)、保存済み試算の一覧と翌月の突合 (ReviewCell) を持つ。15-tradeoff.png にある開始月・メモ、候補表の列見出しと検索・カテゴリ絞込・全クリア、必要度と直近の推移、推奨の組み合わせ、右側の試算結果と年額の差額、防衛ラインへの影響、計算の前提と計算例、下部の選択中バーは無い。画面への導線は概要画面 (Overview.tsx:95) からの 1 本。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-cash-ui-ux-web-evidence-001",
+      "question": "ui-ux 章の裏付けとして、現行実装について何を観測したか。",
+      "answer": "現行の /cash は packages/web/src/pages/Cash.tsx の 1 ファイル (724 行) で、入力フォームと月別の表だけを持つ。事業/家計と収支は select、科目は 2 段の CategoryPicker、削除はモーダル確認、月は select で切り替える。キーワード検索・絞り込み・合計カード・選択・ページング・下書き・元に戻すトースト・空状態の導線・下部固定バーは無い。画像 design/FINAL-UI/images/17-cash.png はこれらと領収書欄を 1 画面に並べている。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-security-web-evidence-001",
-      "question": "security 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。",
-      "answer": "packages/api/src/index.ts:89 で bodyLimit が全体に掛かる。POST /api/tradeoff の zod (routes/analytics.ts:805 付近の tradeoffSchema) は title ≤200、amount 正の整数、selected の label ≤200 と件数 ≤50 を課すが、covered と selected.value には上下限が無い。利用者の文字列は React の既定エスケープで描画しており dangerouslySetInnerHTML は使っていない。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-cash-security-web-evidence-001",
+      "question": "security 章の裏付けとして、現行実装について何を観測したか。",
+      "answer": "packages/api/src/index.ts:58 で secureHeaders、:108 で canonicalMutationFence を全 /api/* に掛ける。cash の入力は zod (packages/api/src/routes/cash.ts:57-73) で side/io の列挙、金額の上限 1,000,000,000、内容 60 字、科目 60 字、メモ 200 字、駅名 40 字を検証し、科目は checkCategory (:146) で利用者の科目表と照合する。cash 経路に専用のレート制限は無い。削除は物理削除 (:268) で、取り消しの記録は残らない。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-infrastructure-web-evidence-001",
-      "question": "infrastructure 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。",
-      "answer": "トレードオフ画面は packages/web/src/AuthenticatedApp.tsx:35 で lazy import され、初期 JS に入らない。web の build は build:bundle → check:js-budget (scripts/check-initial-js-budget.mjs) → strip:manifest の順 (packages/web/package.json:9)。api は Cloudflare Worker で D1 を binding する。runtimeSchemaGuard は D1 の d1_migrations の head を EXPECTED_D1_MIGRATION と照合し、遅れていれば schema_unavailable を返す。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-cash-infrastructure-web-evidence-001",
+      "question": "infrastructure 章の裏付けとして、現行実装について何を観測したか。",
+      "answer": "Worker の cron は packages/api/wrangler.jsonc:31 の \"0 18 * * *\" 1 本で、scheduledMaintenance (packages/api/src/index.ts:196) がバックアップの後に 6 本の独立 job を並行実行する。job と D1 のクエリ予算は packages/api/src/scheduled-maintenance-budget.ts:77 の SCHEDULED_MAINTENANCE_D1_PLAN と Record 型で結ばれ、宣言漏れは typecheck で止まる。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-backend-web-evidence-001",
-      "question": "backend 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。",
-      "answer": "GET /api/tradeoff (routes/analytics.ts:759-794) は {candidates, budgets, plans (最大 50), review} を返し、candidates は core の tradeoffCandidates (diagnosis-detectors.ts:735。kinds は subs_dup / subs_spike / budget_over / above_range / unexplained、amount は月額) の結果である。POST /api/tradeoff (analytics.ts:805-821) は試算を 1 行追加する。防衛ラインは core の defenseLine (analysis.ts:1076-1114、line = 個人平均 + 事業固定費平均、diff = 収入見込み − line の月額、status は ok / tight / danger / nodata) と GET /api/defense-line (analytics.ts:752) にある。core の Dataset.biz.expense は科目ごとの月次合計だけで取引先を持たないが、FreeeDeal 型 (types.ts:238 以降) は partner と accountNorm を持つ。試算の計算は core に無く画面内のインラインにある。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-cash-backend-web-evidence-001",
+      "question": "backend 章の裏付けとして、現行実装について何を観測したか。",
+      "answer": "cash の API は packages/api/src/routes/cash.ts の GET/POST /api/cash-entries と PUT/DELETE /api/cash-entries/:id。書込後は recomputeFromDeals / planRecomputeFromDeals で現金明細から導く取引と集計を同じ D1 batch で作り直し、JSON スナップショットを無効化する (:198-275)。導出の純関数は packages/core/src/cash.ts (309 行: cashToDeal・cashToTx・buildTransitEntry・findCashDealDuplicates など) にある。名義の語彙は packages/core/src/types.ts:114 の OWNER_VALUES (business / spouse / family) で、未設定 (null) を許す。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-frontend-web-evidence-001",
-      "question": "frontend 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。",
-      "answer": "Tradeoff.tsx は usePeriod を読むが URL state を持たず、TanStack Query の useQuery / useMutation で /api/tradeoff を読み書きする。下部の選択中バーの前例は pages/subscriptions/SelectionBar.tsx と pages/analysis/diagnosis/SelectionBar.tsx (PageActions を使う) と pages/classify/BulkActionBar.tsx にあり、共通部品は components/Page.tsx (PageShell / PageActions / PageHeader / PageState / KpiCard)、components/Button.tsx、period.tsx の PeriodPicker である。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-cash-frontend-web-evidence-001",
+      "question": "frontend 章の裏付けとして、現行実装について何を観測したか。",
+      "answer": "ルートは packages/web/src/routeMetadata.ts:33-44 の id 'cash' / path '/cash'。他の作り直し済み画面は pages/<screen>/ に分割され、明細仕分けは packages/web/src/pages/classify/draft.ts (localStorage の下書き) と ResultNotices.tsx (元に戻すトースト) を持つ。画面ごとの描画検査は packages/web/package.json の check:ai-screen などの KANJO_VISUAL_SCOPE 付き check-financial-visuals.mjs で行う。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-maintenance-ops-web-evidence-001",
-      "question": "maintenance-ops 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。",
-      "answer": "既存テストは packages/core/test/tradeoff-review-contract.test.ts、packages/core/test/diagnosis-detectors-contract.test.ts:534-590 (tradeoffCandidates)、packages/web/src/tradeoff-review.dom.test.tsx。ルート package.json の lint は biome と glossary・design-tokens・design-system の各検査を連ね、verify:full は test・typecheck・lint・build と web の各 check を実行する。FR-09 の仕様は docs/spec-v1.1.md:193-203 にあり、design/FINAL-UI/spec/AUDIT.md:21 は保存版の除去を記している。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "id": "qa-cash-maintenance-ops-web-evidence-001",
+      "question": "maintenance-ops 章の裏付けとして、現行実装について何を観測したか。",
+      "answer": "ルートの package.json の verify:full は test・typecheck・lint・build と web の check:thead / mobile-layout / financial-figure / financial-routes / ai-screen / analysis-hub、preview:smoke を順に実行する。現金入力の画面専用の描画検査は無い。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-ui-ux-web-003",
-      "question": "web のトレードオフ画面で、利用者が決めていない 表示件数・状態の文言・既定値 を何にするか。",
-      "answer": "候補表は金額の大きい順に最初の 10 件を出し『N 件中 M 件を表示』と『すべて表示』を置く。必要度は 低 / 中 / 高 の文字に色を添え、上書き済みは『手動』の印を付ける。推移は矢印と 減少 / 横ばい / 増加 の文字で示す。年間の差額が正なら赤の警告『年間 X 円の支出増になります』、0 以下なら『年間 X 円を捻出できます』。防衛ラインは『維持』/『割れる』を文字で出す。選択中バーは 1 件以上選んだときだけ出す。開始月の既定は今日の翌月、単発 / 毎月の既定は毎月。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "id": "qa-cash-database-web-003",
+      "question": "web の現金入力画面で、利用者が決めていない 名義・入力経路・完全消去の具体を何にするか。",
+      "answer": "入力経路は列を持たず transit_from IS NOT NULL で交通費入力、それ以外を通常入力と導く (既存行を書き換えずに全行へ経路が付く)。既存行の owner は NULL (未設定) のままとし、画面は『未設定』と表示する。新規入力の担当者の既定は事業なら business、個人なら未選択とする。完全消去は deleted_at が 30 日より前の行を 1 晩あたり最大 500 行消す。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
       "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-backend-web-003",
-      "question": "web のトレードオフ画面で、利用者が決めていない 候補の範囲・推移と必要度の推定規則・組み合わせの列挙と順位 を何にするか。",
-      "answer": "候補は分析期間の終了月から遡る 3 か月の freee 事業経費 (io=expense) を account_norm×partner で集計し、3 か月平均月額が 1,000 円以上のものを金額降順に最大 50 件とする。取引先が空なら『取引先なし』。推移は 3 か月の最初の月に対し最後の月が +10% 超で増加、−10% 未満で減少、それ以外は横ばい。必要度は科目の既定 (地代家賃・通信費・水道光熱費・租税公課・保険料・支払利息 = 高、外注費・支払手数料・消耗品費・荷造運賃 = 中、広告宣伝費・接待交際費・会議費・新聞図書費・研修費・旅費交通費・諸会費 = 低、その他 = 中) を置き、検知器の改善案に当たる候補は 1 段下げる。組み合わせは月額上位 12 件から 2〜4 件を列挙し (最大 781 通り)、年間削減額 ≥ 新しい支出の年額のものだけを残して、リスク (必要度 高 の件数) の昇順 → 実行のしやすさ (必要度 低 の件数) の降順 → 超過額の昇順 → 件数の昇順 → 候補キーの辞書順で並べ上位 4 件を返す。充足度は 削減の年額 ÷ 新しい支出の年額 の百分率。単発の新しい支出は年額 = 金額 (発生月だけ計上)。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "id": "qa-cash-ui-ux-web-003",
+      "question": "web の現金入力画面で、利用者が決めていない 画像に値の無い表示の具体を何にするか。",
+      "answer": "一覧は 1 ページ 20 件。業務の目的の選択肢は『客先訪問』『打ち合わせ』『仕入れ・買い出し』『研修・セミナー』『その他 (40 字までの自由記述)』。一括削除も 1 つのトーストの『元に戻す』で選んだ全件を戻す。元に戻すトーストの表示時間は既存の ResultNotices の既定に従う。サンプル表示は保存されず、集計にも入らない。月送りは共通の期間の範囲を越えない。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
       "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-database-web-003",
-      "question": "web のトレードオフ画面で、利用者が決めていない 候補キーと上書きの表の形・文字数の上限 を何にするか。",
-      "answer": "候補キーは『account_norm + 区切り文字 + partner (空なら空文字)』の文字列。上書きは新表 tradeoff_candidate_notes (user_id, candidate_key, need は low / mid / high か NULL, memo は NULL 可, updated_at) で (user_id, candidate_key) を一意にし upsert する。need と memo が両方 NULL になったら行を消して自動へ戻す。tradeoff_plans には start_month (YYYY-MM、NULL 可) と memo (NULL 可) を ADD COLUMN で足し、selected の JSON に候補キーを含める。既存行は NULL のまま読む。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "id": "qa-cash-security-web-003",
+      "question": "web の現金入力画面で、利用者が決めていない 下書きをブラウザ内にどう保持するか。",
+      "answer": "下書きのキーに利用者 id を含めて他の利用者と混ざらないようにし、ログアウト時に消す。保存するのは入力途中の項目値だけで、一覧の内容やサーバーの応答は保存しない。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
       "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-security-web-003",
-      "question": "web のトレードオフ画面で、利用者が決めていない 入力の上限値 を何にするか。",
-      "answer": "支出名 100 文字、メモ 500 文字、候補のメモ 500 文字、候補キー 300 文字、金額は 1〜100,000,000 円の整数、開始月は YYYY-MM、選んだ候補は最大 50 件、候補の value は 0〜100,000,000 の整数、covered は −10,000,000,000〜10,000,000,000 の整数とする。上書きの保存は 1 回に 1 候補。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "id": "qa-cash-backend-web-003",
+      "question": "web の現金入力画面で、利用者が決めていない 復元・一括削除の具体の上限と期限切れの扱いを何にするか。",
+      "answer": "一括削除は 1 回 100 件まで。完全消去済みの id の復元は 404 にする。復元時の科目が科目表から消えていても行は戻し、科目の検証は次の編集時に行う。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
       "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-maintenance-ops-web-003",
-      "question": "web のトレードオフ画面で、利用者が決めていない 規則の記載先と migration の番号 を何にするか。",
-      "answer": "規則 (候補の作り方・推移・必要度・推奨の順位・防衛ラインへの影響・符号) は docs/spec-v1.1.md の FR-09 を改訂して書く。migration は 0050 を予定番号とし、マージ時点の main の最新 +1 に合わせて付け替える (並行 worktree の 14予算・16データ取り込み・17現金入力には 0050 以上の予定が無いことを確認済み)。schema-guard.ts の EXPECTED_D1_MIGRATION とそのテストを同じ変更で更新する。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "id": "qa-cash-maintenance-ops-web-003",
+      "question": "web の現金入力画面で、利用者が決めていない 運用で見る閾値を何にするか。",
+      "answer": "夜間の完全消去が 1 晩の上限 500 行に達したら warn ログを出し、翌晩に続きを消す。check:cash-screen は既存の check-financial-visuals.mjs に KANJO_VISUAL_SCOPE=cash を渡して実行する。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
       "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:19:22Z"
+      "answered_at": "2026-09-21T15:20:56Z"
     },
     {
-      "id": "qa-tradeoff-database-web-001",
-      "question": "web のトレードオフ画面が要する永続化は何か。",
-      "answer": "追加のみの migration (予定番号 0050) で、tradeoff_plans に開始月とメモの列を足し、候補ごとの上書き (必要度とメモ) を置く新表を作る (qa-tradeoff-decision-002, 006, 007)。『この条件で試算』のたびに tradeoff_plans へ 1 行を追加し (qa-tradeoff-decision-008)、最新の 1 件を復元に使う。既存の行と列は書き換えず、保存一覧と突合の表示は外すがデータは残す (qa-tradeoff-decision-004)。全行を user_id で分ける。候補は freee_deals から読み、候補そのものは保存しない。具体の形と上限は qa-tradeoff-database-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-cash-database-web-001",
+      "question": "現金明細の名義・業務の目的・論理削除を D1 にどう持つか。",
+      "answer": "追加のみの migration 0050 で cash_entries に owner (TEXT NULL、business / spouse / family の CHECK)、transit_purpose (TEXT NULL)、deleted_at (TEXT NULL) を足し、(user_id, deleted_at) の索引を張る。既存行は書き換えない。読み取りの正本 loadCashEntries で deleted_at IS NULL を課し、集計・取引の導出は削除中の行を一切読まない。runtimeSchemaGuard の必須列に新しい列を加える。具体の既定値と完全消去の単位は qa-cash-database-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:19:22Z",
+      "answered_at": "2026-09-21T15:20:56Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
       ]
     },
     {
-      "id": "qa-tradeoff-auth-web-001",
-      "question": "web のトレードオフ画面の認証と認可をどうするか。",
-      "answer": "新しい認証方式は作らない。GET / POST /api/tradeoff と上書きの保存 API はすべて /api/* の authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence の内側に置き、利用者は Cookie のセッションで識別する。読み書きはすべて c.get('userId') の user_id に絞り、他の利用者の試算と上書きは読めず書けない。",
-      "provenance": "利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-cash-auth-web-001",
+      "question": "新しい復元・一括削除の経路を誰に許すか。",
+      "answer": "既存のセッション認証 (authGuard 配下、HttpOnly・SameSite=Strict の Cookie) をそのまま使い、新しい経路もすべて /api/* に置いて userId を条件に読み書きする。他の利用者の明細の取得・変更・削除・復元は存在を明かさず 404 にする。新しい権限や役割は作らない (単一利用者の運用)。",
+      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:19:22Z",
+      "answered_at": "2026-09-21T15:20:56Z",
       "required_info_items": [
-        "auth-model"
-      ]
-    },
-    {
-      "id": "qa-tradeoff-ui-ux-web-001",
-      "question": "web のトレードオフ画面 (/tradeoff) の UI-UX 要件は何か。構成要素・文言・状態・選択をどうするか。",
-      "answer": "15-tradeoff.png の構成にする。見出し『トレードオフ』と問い『新しい支出を増やすなら、何を見直しますか？』と説明文、分析期間 (グローバルの usePeriod) のカードを上に置く。左に 1.新しい支出を設定 (支出名・金額・単発 / 毎月・開始月・メモ)、2.見直し候補の選択 (検索・カテゴリ絞込・選択をすべてクリア、# / カテゴリ・取引先 / 月額 / 年額 / 必要度 / 直近の推移 / 損益・メモ の表と件数表示。必要度とメモは行から上書きできる)、3.推奨の組み合わせ (内容・年間削減額・充足度・実行のしやすさ・リスクの表と、選んだ組み合わせの理由と関連ページ サブスク / 予算 / 明細 へのリンク)、計算例 (毎月と単発) を並べる。右に試算結果 (新しい支出の年額・見直しによる削減の年額・年間の差額と警告・防衛ラインへの影響 余裕→試算後と維持 / 割れる・計算の前提) を置く。下部に選択中バー (件数・年間削減額・年間差額・選択をクリア・この条件で試算) を置く。差額の符号は qa-tradeoff-decision-009、保存一覧と突合は出さない (qa-tradeoff-decision-004)。読込・空・失敗の状態を持ち、状態は色だけで伝えず文字を添える。狭い画面では段を縦に積み表を横スクロールにする。具体の既定値は qa-tradeoff-ui-ux-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:19:22Z",
-      "required_info_items": [
-        "context-of-use",
-        "information-priority",
-        "product-goal",
-        "target-platforms"
-      ]
-    },
-    {
-      "id": "qa-tradeoff-security-web-001",
-      "question": "web のトレードオフ画面のセキュリティ要件は何か。",
-      "answer": "入力はすべて zod で検証し、文字数・件数・金額に上限を設ける (現行の covered と selected.value の無制限を塞ぐ)。全クエリを user_id で絞り、候補キーは利用者自身の freee_deals から導いたものだけを受け付ける前提で、上書きの保存も user_id で分ける。利用者の文字列 (支出名・メモ・取引先名) は React の既定エスケープで描画し dangerouslySetInnerHTML を使わない。アプリは LLM を呼ばず外部へ送信しない (qa-tradeoff-decision-003)。migration は追加のみ。具体の上限は qa-tradeoff-security-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:19:22Z",
-      "required_info_items": [
+        "auth-model",
         "security-posture"
       ]
     },
     {
-      "id": "qa-tradeoff-infrastructure-web-001",
-      "question": "web のトレードオフ画面のインフラ要件は何か。",
-      "answer": "既存の構成 (Cloudflare Worker の api と D1、静的配信の web) を変えない。画面は lazy import のまま初期 JS 予算 (check:js-budget の CI 実測) を超えない。migration を足すので runtimeSchemaGuard の EXPECTED_D1_MIGRATION を同じ変更で進め、本番反映は既存の Migrate → Deploy の手順とゲートに従う。新しい binding や外部サービスは足さない。",
-      "provenance": "利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-cash-ui-ux-web-001",
+      "question": "web の現金入力画面に何をどの順で置くか。",
+      "answer": "17-cash.png の順に、問いの見出し『現金と交通費を、漏れなく記録しますか？』と説明、共通の期間 (1年 / 2年 / 3年 / 任意) と対象期間カード、通常入力 / 交通費入力のタブ、入力 (日付・事業 / 個人のラジオ・収支のラジオ・金額・内容・カテゴリ・担当者 = 名義・メモ 0/200・入力をクリア・現金明細を追加・下書き自動保存の時刻)、交通費 (出発駅・到着駅・入替・片道運賃・往復・合計金額・業務の目的・メモ・交通費として追加)、一覧 (月送り・キーワード・収支 / カテゴリ / 担当者 / 取込元の絞り込み・詳細検索・収入 / 支出 / 差額の合計・選択と一括削除・編集 / 削除・ページング)、下部固定の追加バーを置く。削除は行内で確認し、完了後のトーストの『元に戻す』で戻す。領収書欄は出さず『領収書は freee に保管してください』と案内する。取込元は通常入力 / 交通費入力の経路を文字で示す。空のときは画面内だけのサンプル表示と『はじめての明細を入力』を出す。状態と区分は色だけでなく文字で伝える。具体値は qa-cash-ui-ux-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:19:22Z",
+      "answered_at": "2026-09-21T15:20:56Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-cash-security-web-001",
+      "question": "現金明細の入力・削除・復元で何を拒否し、何を守るか。",
+      "answer": "API の zod で名義・業務の目的・収支・事業 / 個人を候補に限り、実在しない日付、金額の範囲外、長すぎる文字列 (内容 60 字・メモ 200 字・駅名 40 字・その他の目的 40 字) を 400 で拒否する。一括削除の id 配列は上限付きで、他人の id を 1 件でも含めば全体を 404 にする。削除中の行が一覧・合計・取引・集計のどこにも出ない不変条件を API テストで固定する。下書きはブラウザ内だけに置きサーバーへ送らない。領収書ファイルは受け取らない。下書きの保持規則は qa-cash-security-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:20:56Z",
+      "required_info_items": [
+        "domain-model",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-cash-infrastructure-web-001",
+      "question": "論理削除した明細の完全消去をどこで動かすか。",
+      "answer": "既存の夜間 cron (0 18 * * *) の scheduledMaintenance に独立 job cash_soft_delete_purge を 1 本足し、deleted_at から 30 日を過ぎた行を物理削除する。job と D1 クエリ予算を SCHEDULED_MAINTENANCE_D1_PLAN に宣言して型で結ぶ。新しい binding・cron・外部サービスは足さない。",
+      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:20:56Z",
       "required_info_items": [
         "infra-topology"
       ]
     },
     {
-      "id": "qa-tradeoff-backend-web-001",
-      "question": "web のトレードオフ画面の規則をどこに置き、どの契約で返すか。",
-      "answer": "試算 (毎月は月額×12、単発は発生月だけ計上、削減は選んだ候補の月額合計×12、年間の差額 = 新しい支出の年額 − 削減の年額)、防衛ラインへの影響 (defenseLine の月の余裕×12 から年間の差額を引き、0 以上で維持)、科目×取引先の候補集計と直近 3 か月平均・推移・必要度の推定・自動の理由、推奨の組み合わせの列挙・評価・順位・理由を packages/core の純関数に置く (qa-tradeoff-decision-001〜003, 005, 007, 009)。GET /api/tradeoff は候補 (上書き済みの必要度とメモを重ねたもの)・防衛ラインの月の余裕・最新の試算条件を返す。候補ごとの上書き (必要度・メモ) を保存する API を新設する (qa-tradeoff-decision-002)。POST /api/tradeoff は開始月・メモ・候補キーを受け、履歴として 1 行を追加する (qa-tradeoff-decision-008)。既存の defenseLine・/api/defense-line・tradeoffCandidates・tradeoffReview の数字は変えない。具体の規則は qa-tradeoff-backend-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-cash-backend-web-001",
+      "question": "画面の数字と削除・復元をどこで導き、API は何を返すか。",
+      "answer": "packages/core に cash-screen.ts を新設し、合計 (収入・支出・差額)、絞り込み (キーワード・収支・カテゴリ・名義・入力経路・金額と日付の範囲)、ページング、入力経路、交通費の合計 (片道 × 往復なら 2)、入力検証の純関数を置いて index.ts から export する。API は GET で対象期間の削除中でない明細を返し、DELETE /api/cash-entries/:id を論理削除 (deleted_at を付けて同じ batch で取引と集計を作り直す) に変え、POST /api/cash-entries/:id/restore で同じ id を戻し、POST /api/cash-entries/bulk-delete で選択分を 1 batch で論理削除する。POST / PUT は owner と transit_purpose を受ける。判定は core に渡して JSON に写すだけにする。具体の上限と期限切れの扱いは qa-cash-backend-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:19:22Z",
+      "answered_at": "2026-09-21T15:20:56Z",
       "required_info_items": [
         "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-tradeoff-frontend-web-001",
-      "question": "web のトレードオフ画面のフロントエンド構成をどうするか。",
-      "answer": "Tradeoff.tsx を pages/tradeoff/ 配下へ分割する (ページ本体・新しい支出のフォーム・候補表・推奨の表・試算結果パネル・計算例・選択中バー)。数字は core の試算関数の結果だけを読み、画面内で計算しない。データは TanStack Query で GET /api/tradeoff を読み、上書きと試算の保存は useMutation で行い成功時に同じ query を無効化する。期間は usePeriod を読む。部品は PageShell / PageHeader / PageState / PageActions と共通 Button、色は design-tokens のトークンだけを使い、選択中バーはサブスク・診断の SelectionBar の流儀に揃える。lazy import は維持する。",
-      "provenance": "利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-cash-frontend-web-001",
+      "question": "web の現金入力画面をどう分割し、状態をどこに持つか。",
+      "answer": "Cash.tsx を pages/cash/ 配下 (画面本体・view-model.ts・draft.ts・通常入力・交通費入力・一覧・ResultNotices) に分け、view-model は core の cash-screen を呼んで描くだけにする。タブ・月・絞り込み・ページは URL の検索パラメータに持ち、再読込と共有で同じ表示に戻す。入力途中の値は draft.ts が localStorage に自動保存して保存時刻を示し、追加成功と『入力をクリア』で消す。追加・更新・削除・復元の後は TanStack Query の現金明細と集計の query を無効化する。初期 JS 予算に収まるよう画面は既存どおり遅延読込する。",
+      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:19:22Z",
+      "answered_at": "2026-09-21T15:20:56Z",
       "required_info_items": [
-        "frontend-arch",
-        "target-platforms"
+        "context-of-use",
+        "frontend-arch"
       ]
     },
     {
-      "id": "qa-tradeoff-maintenance-ops-web-001",
-      "question": "web のトレードオフ画面の保守と運用の要件は何か。",
-      "answer": "core の契約テスト (試算・防衛ラインへの影響・候補集計・推移・必要度・推奨の順位) を固定入力で置き、api テスト (上書きの保存と読み戻し・利用者の分離・zod の上限・最新 1 件の復元) と web の DOM テスト (全構成要素と読込 / 空 / 失敗) を足す。既存の tradeoff-review・diagnosis-detectors の契約テストは緑のまま残す。規則は FR-09 の仕様書へ書く。typecheck・lint・テスト・初期 JS 予算を CI で緑にする。具体の記載先と番号は qa-tradeoff-maintenance-ops-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-cash-maintenance-ops-web-001",
+      "question": "現金入力の作り直しを何で検証し、運用で何を見るか。",
+      "answer": "core の cash-screen の単体テスト、API テスト (論理削除・復元・一括削除・利用者分離・入力検証・削除中の行が集計に出ない不変条件)、DOM テスト (画像の構成要素・下書き復元・元に戻す・空状態) を足し、web に check:cash-screen を加えて verify:full に組み込む。夜間の完全消去は消した件数を JSON ログに出す。既存の lint・typecheck・test・skills:test・初期 JS 予算・verify:full を緑に保つ。具体値は qa-cash-maintenance-ops-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:19:22Z",
+      "answered_at": "2026-09-21T15:20:56Z",
       "required_info_items": [
         "ops-runbook"
       ]
     },
     {
-      "id": "qa-tradeoff-backend-web-004",
-      "question": "qa-tradeoff-backend-web-003 の必要度の規則は、利用者が選んだ選択肢の説明 (qa-tradeoff-decision-002: 固定費で推移が横ばいなら高、スポットや減少傾向なら低) と食い違っている。これを利用者の選択に沿う規則へ直し、あわせて未確定だった covered の意味・サーバでの再計算・理由の文・検知器との対応付け・上書き保存の経路を決定論にするには何を置くか。",
-      "answer": "003 の必要度の規則 (科目名の固定表) は本 qa で置き換え、003 の他の規則 (候補の範囲・推移・組み合わせの列挙と順位・充足度・単発の年額) はそのまま使う。(1) 必要度の推定: 候補の科目 (account_norm) に既存の core の catProfile を当て、type と候補の推移 (003 の 3 か月の初月比) から決める。固定費で推移が横ばいか増加なら 高、スポットか推移が減少なら 低、それ以外 (準変動、または固定費で減少以外の組み合わせに当たらないもの) は 中。検知器の改善案に当たる候補は 1 段下げる (高→中、中→低、低は低のまま)。利用者が上書きした必要度があれば推定より優先する。(2) 検知器との対応付け: diagnosis-detectors の改善案の claimKeys に含まれる business:category:<科目> と候補の account_norm が一致すれば当たりとする (取引先は見ない)。(3) 関連ページ: 当たった改善案の nextAction.to をそのまま候補の関連ページにし、当たりが無い候補は関連ページを持たない。(4) 自動の理由の文: 『<type>・直近 3 か月は<推移>』を基本とし、当たりがあれば『・<改善案の label>』を続ける。利用者メモがあればメモを優先して表示する。(5) covered の意味: tradeoff_plans.covered は選んだ候補の月額合計 (円/月) とし、既存の tradeoffReview が翌月の経費の減少額 (月額) と比べる意味と揃える。(6) サーバでの再計算: POST /api/tradeoff はクライアントが送る covered・判定・候補の月額を信用せず、受け取った候補キーと開始月・支出の条件から core の同じ純関数で試算をやり直し、その結果を保存する。受け取った候補キーのうち現在の候補に無いものは 422 で拒否する。(7) 上書き保存の経路: PUT /api/tradeoff/candidates/:key (key は URL エンコードした候補キー) で必要度 (low/mid/high、または null で推定へ戻す) とメモを upsert し、成功後に web は tradeoff の query だけを無効化する。これは agent の推定で、利用者は未確認である。(1) は利用者が選んだ選択肢の説明文をそのまま規則に落としたもので、閾値 (catProfile の cv<0.6 / <1.5) は既存の core の値を使う。",
-      "provenance": "completeness evaluator の medium 指摘 (必要度の規則が利用者の選択と食い違う、covered の意味とサーバ再計算が未確定、理由・対応付け・関連ページ・上書き経路が未確定) を受けて、agent が既存コード (packages/core/src/analysis.ts の catProfile と tradeoffReview、diagnosis-detectors.ts の claimKeys と nextAction) に合わせて補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:39:50Z"
-    },
-    {
-      "id": "qa-tradeoff-ui-ux-web-004",
-      "question": "web のトレードオフ画面で、防衛ラインのデータが無いとき (記帳済みの月が無く月の余裕が出せないとき) と、関連ページの有無をどう表示するか。",
-      "answer": "防衛ラインの月の余裕が出せないときは、防衛ラインへの影響の欄に『記帳済みの月が無いため、防衛ラインへの影響は計算できません』と文字で出し、維持 / 割れる の判定と色は出さない。試算 (年額・差額) と推奨は防衛ラインが無くても出す。関連ページは qa-tradeoff-backend-web-004 の (3) で当たりがある候補にだけリンクを出し、当たりが無い候補はリンクの欄を空にする。これは agent の推定で、利用者は未確認である。",
-      "provenance": "completeness evaluator の medium 指摘 (防衛ラインのデータが無いときの表示・関連ページの振り分けが未確定) を受けて agent が補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:39:50Z"
-    },
-    {
-      "id": "qa-tradeoff-security-web-004",
-      "question": "web のトレードオフ画面で、クライアントが送る試算値をどう扱うか。",
-      "answer": "POST /api/tradeoff の covered・判定・候補の月額はサーバが core で再計算した値だけを保存し、送られた値は使わない (qa-tradeoff-backend-web-004 の (6))。候補キーはその利用者の現在の候補にあるものだけを受け付け、無いものは 422 で拒否する。上書きの PUT は user_id で行を分け、他の利用者の候補キーには書けない。これは agent の推定で、利用者は未確認である。",
-      "provenance": "completeness evaluator の medium 指摘 (POST の covered / verdict / selected.value をサーバで再計算するかが未確定) を受けて agent が補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:39:50Z"
-    },
-    {
-      "id": "qa-tradeoff-decision-010",
-      "question": "候補の必要度 (低 / 中 / 高) を自動で推定する規則はどれにするか。固定費 / 準変動 / スポットは既存 core の catProfile が月ごとのばらつきで判定する。選択肢: (a) 固定費で推移が横ばいか増加なら高、スポットか減少なら低、それ以外 (準変動など) は中 [推奨] / (b) 固定費で横ばいのときだけ高、スポットか減少なら低、それ以外 (固定費で増加、準変動) は中 / (c) 推移を見ず、固定費は高・準変動は中・スポットは低。",
-      "answer": "(a) を選ぶ。固定費で推移が横ばいか増加なら高、スポットか推移が減少なら低、それ以外 (準変動など) は中とする。qa-tradeoff-backend-web-004 の (1) の規則は本決定で利用者が確定した。同 qa の『選択肢の説明文をそのまま規則に落とした』という記述は正確でなく、『増加も高』『準変動は中』は本 qa で利用者が決めた。",
-      "provenance": "AskUserQuestion / 3 案と推奨案を提示し、利用者本人が (a) を選択。completeness evaluator の差し戻し (R3-reask) による追補。",
+      "id": "qa-cash-decision-005",
+      "question": "承認 (appr-foundation-cash-001) の後に書き足した上位概念 (G4・S1〜S4・SH2・C1〜C4・I1〜I6 と、web 以外の専用アプリを範囲外とすること) を含め、要件定義の全文をこのまま確定してよいか。",
+      "answer": "この全文で承認する。本質的目的、G1〜G4、S1〜S4、SH1・SH2、範囲外 (領収書の保存・取込明細の混在・共通シェルの文言・担当者の自由登録・モバイル / タブレット / デスクトップ専用アプリ)、C1〜C4、I1〜I6 (I3 は削除中の行を読まない条件を cash_entries を読む全経路に掛けることと一括復元の API を含む) を確定とする。",
+      "provenance": "AskUserQuestion / 全文を preview に示して選択肢 2 件 (この全文で承認・修正して再提示) を提示し、利用者が「この全文で承認 (推奨)」を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T22:24:40Z",
+      "answered_at": "2026-09-21T15:34:28Z",
       "required_info_items": [
+        "context-of-use",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-cash-decision-006",
+      "question": "一覧の選択から一括削除した行を、削除完了トーストの『元に戻す』でどう戻すか。現行の仕様には 1 件ずつの復元しか無い。",
+      "answer": "一括復元の API を足す。POST /api/cash-entries/bulk-restore が一括削除と同じ id の配列 (100 件まで) を受け、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にして何も戻さず、全件を 1 つの D1 batch で deleted_at を外して取引と集計を作り直す。トーストの『元に戻す』は一括削除した id をそのまま渡す。",
+      "provenance": "AskUserQuestion / 選択肢 (一括復元の API を足す・1 件ずつ復元を繰り返す・一括削除では元に戻すを出さない) と推奨案を提示し、利用者が「一括復元の API を足す (推奨)」を選択。answered_at は選択時刻の上界。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:34:28Z",
+      "required_info_items": [
+        "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-tradeoff-decision-011",
-      "question": "診断の検知器が改善案を出した候補の必要度をどう扱うか。固定費見直しの検知器 (fixed_cost_review) は月 3 万円を超える固定費すべてに当たる。選択肢: (a) 必要度は下げず、理由の文と関連ページに改善案を添えるだけにする [推奨] / (b) 固定費見直しと通信費見直し以外の検知器に当たったときだけ 1 段下げる / (c) どの検知器でも 1 段下げる (qa-tradeoff-backend-web-004 の推定)。",
-      "answer": "(a) を選ぶ。検知器の改善案に当たっても必要度は下げない。当たった改善案は『損益・メモ』の自動の理由の文 (label) と関連ページ (nextAction.to) にだけ使う。qa-tradeoff-backend-web-004 の『検知器の改善案に当たる候補は 1 段下げる』と qa-tradeoff-backend-web-003 の同趣旨の規則は本決定で取り消す。必要度は qa-tradeoff-decision-010 の規則と利用者の上書きだけで決まる。",
-      "provenance": "AskUserQuestion / 3 案と推奨案を提示し、利用者本人が (a) を選択。completeness evaluator の差し戻し (R3-reask) による追補。",
+      "id": "qa-cash-backend-web-002",
+      "question": "削除中の行を読まない条件と一括復元を含めて、API は何を返し何を拒否するか。",
+      "answer": "core の cash-screen.ts が合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を導き、API は JSON に写すだけにする。DELETE /api/cash-entries/:id は論理削除 (deleted_at を付けて同じ batch で取引と集計を作り直す)、POST /api/cash-entries/:id/restore は同じ id を戻し、POST /api/cash-entries/bulk-delete と POST /api/cash-entries/bulk-restore は 100 件までの id 配列を 1 batch で処理し、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にする。削除中の行を読まない条件 (deleted_at IS NULL) を cash_entries を読む全経路 — loadCashEntries (store.ts)、loadDataset の UNION SQL (store.ts)、JSON スナップショットの json_object SQL (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、PUT は削除中の行を 404 にする。新しい restore / bulk-delete / bulk-restore の経路は canonical-mutation-fence に登録し、既存の POST / PUT / DELETE と同じ書込の順序保証に乗せる。POST / PUT は owner と transit_purpose を受ける。",
+      "provenance": "利用者の全文承認 (appr-foundation-cash-002、qa-cash-decision-005) と一括復元の決定 (qa-cash-decision-006) の範囲に収まる確定内容。reopen の理由に挙げた読み取り経路は、リポジトリの現物で確認した。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T22:24:40Z",
+      "answered_at": "2026-09-21T15:38:03Z",
       "required_info_items": [
+        "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-tradeoff-decision-012",
-      "question": "要件定義の O1〜O5 (測れる目標) と S1〜S6 (成功基準) を、提示した本文のまま承認するか。O1: 画像の全構成要素を描画する (DOM テスト) / O2: 試算の数字を core の 1 関数から出す (毎月 80,000・削減 85,000/月 で差額 −60,000 などの契約テスト) / O3: 候補・必要度・推移・理由を決定論で出し、上書きを優先する / O4: 推奨の上位 4 件を決定論で並べ、届かない組み合わせは入れない / O5: 記録は追加のみの migration と zod 上限・利用者分離で安全に行う。S1: トークンと共通部品で描画し、直書き色 0 件・期間は usePeriod / S2: 年額・差額・防衛ラインは core だけが決め、3 か所の表示が一致 / S3: 上書きとメモが再読込後も残る / S4: 同じ入力で同じ上位 4 件と理由・リンクが出る / S5: 押すたびに履歴を追加し、再訪時に最新を復元 / S6: typecheck・lint・テスト・JS 予算が CI で緑。",
-      "answer": "この本文で承認する。appr-foundation-tradeoff-001 の承認時に本文を見せていなかった O1〜O5 と S1〜S6 を、本 qa で本文を示したうえで利用者が承認した。",
-      "provenance": "AskUserQuestion / O・S の本文を提示し、利用者本人が『この本文で承認』を選択。completeness evaluator の持ち越し指摘 (承認時に O/S/I の本文を見せていない) への対応。",
+      "id": "qa-cash-database-web-002",
+      "question": "現金明細の名義・業務の目的・論理削除を D1 にどう持ち、どの読み取り経路で削除中の行を外すか。",
+      "answer": "追加のみの migration 0050 で cash_entries に owner (TEXT NULL、business / spouse / family の CHECK)、transit_purpose (TEXT NULL)、deleted_at (TEXT NULL) を足し、(user_id, deleted_at) の索引を張る。既存行は書き換えない。削除中の行を読まない条件 (deleted_at IS NULL) は cash_entries を読む全経路 — loadCashEntries (store.ts)、loadDataset の UNION SQL (store.ts)、JSON スナップショットの json_object SQL (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、集計・取引の導出と JSON スナップショットは削除中の行を一切読まない。JSON 復元の INSERT は新しい列を持つ形に合わせる。runtimeSchemaGuard の必須列に新しい列を加える。",
+      "provenance": "利用者の全文承認 (appr-foundation-cash-002、qa-cash-decision-005) と一括復元の決定 (qa-cash-decision-006) の範囲に収まる確定内容。reopen の理由に挙げた読み取り経路は、リポジトリの現物で確認した。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T22:24:40Z",
+      "answered_at": "2026-09-21T15:38:03Z",
       "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-cash-security-web-002",
+      "question": "現金明細の入力・削除・復元・一括操作で何を拒否し、何を守るか。",
+      "answer": "API の zod で名義・業務の目的・収支・事業 / 個人を候補に限り、実在しない日付、金額の範囲外、長すぎる文字列 (内容 60 字・メモ 200 字・駅名 40 字・その他の目的 40 字) を 400 で拒否する。一括削除と一括復元の id 配列は 100 件までで、他の利用者の id を 1 件でも含めば全体を 404 にして何も変えない。削除中の行は PUT でも 404 にし、編集で復活させない。新しい restore / bulk-delete / bulk-restore は canonical-mutation-fence に登録する。削除中の行が一覧・合計・取引・集計・JSON スナップショット・科目使用状況のどこにも出ない不変条件を API テストで固定する。下書きはブラウザ内だけに置きサーバーへ送らない。領収書ファイルは受け取らない。",
+      "provenance": "利用者の全文承認 (appr-foundation-cash-002、qa-cash-decision-005) と一括復元の決定 (qa-cash-decision-006) の範囲に収まる確定内容。reopen の理由に挙げた読み取り経路は、リポジトリの現物で確認した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:38:03Z",
+      "required_info_items": [
+        "domain-model",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-cash-decision-007",
+      "question": "承認 appr-foundation-cash-002 の画面に載せていなかった U2 背景・U4 目標 (O1〜O4 と測定方法)・U7 範囲 (scope.in) を含めて、要件定義を確定してよいか。",
+      "answer": "この全文で承認する。U2 背景、U4 の O1〜O4 と各測定方法、U7 の scope.in 7 項目を確定とする。",
+      "provenance": "AskUserQuestion / preview に U2 (本文どおり)・U4 (O1〜O4 の本文と測定方法を項目ごとに縮めた形)・scope.in (7 項目を同じ順で縮めた形) を示し、選択肢 (この全文で承認・修正して再提示) から利用者が「この全文で承認 (推奨)」を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:26:35Z",
+      "required_info_items": [
+        "context-of-use",
         "product-goal"
       ]
     },
     {
-      "id": "qa-tradeoff-backend-web-005",
-      "question": "web のトレードオフ画面で、判定 (verdict) の条件、検知器との対応付けで使う科目の正規化、差額の扱いをどう決めるか。",
-      "answer": "判定は年間の差額 (新しい支出の年額 − 削減の年額) が 0 以下なら covered (捻出できる)、正なら insufficient (不足) とし、既存 tradeoff_plans.verdict の enum をそのまま使う。検知器との対応付けは、候補の account_norm に diagnosis-detectors.ts の claimPart と同じ正規化 (trim → NFKC → 小文字化) を掛けてから、改善案の claimKeys の business:category:<科目> と比べる。正規化の関数は core から export して 1 か所にする。差額・判定・covered (選んだ候補の月額合計) はどれも導出値で、POST の本文では受け取らず、サーバが core で計算して保存する (qa-tradeoff-backend-web-004 の (6))。これは agent の推定で、利用者は未確認である。",
-      "provenance": "completeness evaluator の low 指摘 (verdict の条件・claimPart 正規化・差額が導出値であること) を受けて、agent が既存コード (packages/core/src/diagnosis-detectors.ts:112 の claimPart、packages/api/src/routes/analytics.ts の verdict enum) に合わせて補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:24:40Z"
+      "id": "qa-cash-decision-008",
+      "question": "夜間処理の D1 クエリ予算は計画 47 本に対して計画上限 SCHEDULED_D1_QUERY_PLAN_MAX も 47 本で空きが無い (受理上限 49・ハード上限 50)。現金明細の完全消去 (2 本) をどう収めるか。",
+      "answer": "計画上限を 49 へ上げる。受理上限 49 の内側に収め、ハード上限 50 まで 1 本の余裕を残す。既存 job の枠は変えず、新しい cron も足さない (C3 の範囲内)。",
+      "provenance": "AskUserQuestion / 選択肢 3 件 (計画上限を 49 へ上げる・既存 job の枠を割り直す・別の cron を足す) と推奨案を提示し、利用者が「計画上限を 49 へ上げる (推奨)」を選択。answered_at は選択時刻の上界。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:26:35Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
     },
     {
-      "id": "qa-tradeoff-security-web-005",
-      "question": "qa-tradeoff-security-web-003 の covered の範囲 (±1e10 の符号付き) と、クライアント値への範囲検査の記述を、サーバ再計算 (qa-tradeoff-security-web-004) とどう整合させるか。",
-      "answer": "POST /api/tradeoff の zod スキーマから covered・verdict・selected.value を外し、受け取るのは支出名・金額・単発 / 毎月・開始月・メモ・候補キーの配列だけにする。003 の covered ±1e10 と value 0〜1e8 の範囲は入力検査ではなく、サーバが計算した値の保存前の不変条件 (covered は 0 以上 1e10 以下の整数) として core のテストで守る。候補キーは長さ 300 以下の文字列で、その利用者の現在の候補に存在することを検証する (無ければ 422)。これは agent の推定で、利用者は未確認である。",
-      "provenance": "completeness evaluator の low 指摘 (security 章の covered ±1e10 とクライアント値への範囲検査の記述が -004 と食い違う) を受けて agent が補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:24:40Z"
+      "id": "qa-cash-backend-web-004",
+      "question": "削除中の行を読まない条件と一括復元を含めて、API は何を返し何を拒否するか。",
+      "answer": "core の cash-screen.ts が合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を導き、API は JSON に写すだけにする。DELETE /api/cash-entries/:id は論理削除 (deleted_at を付けて同じ batch で取引と集計を作り直す)、POST /api/cash-entries/:id/restore は同じ id を戻し、POST /api/cash-entries/bulk-delete と POST /api/cash-entries/bulk-restore は 100 件までの id 配列を 1 batch で処理し、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にする。削除中の行を読まない条件 (deleted_at IS NULL) を cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、PUT は削除中の行を 404 にする。新しい restore / bulk-delete / bulk-restore の経路は canonical-mutation-fence に登録し、既存の POST / PUT / DELETE と同じ書込の順序保証に乗せる。POST / PUT は owner と transit_purpose を受ける。",
+      "provenance": "利用者の承認 (appr-foundation-cash-003、qa-cash-decision-007) と決定 qa-cash-decision-006 / 008 の範囲に収まる確定内容。経路名・定数名・現在値はリポジトリの現物 (store.ts・routes/settings.ts・routes/cash.ts・schema-guard.ts・scheduled-maintenance-budget.ts) で確認した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:28:41Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-cash-database-web-004",
+      "question": "現金明細の名義・業務の目的・論理削除を D1 にどう持ち、どの読み取り経路で削除中の行を外すか。",
+      "answer": "追加のみの migration 0050 で cash_entries に owner (TEXT NULL、business / spouse / family の CHECK)、transit_purpose (TEXT NULL)、deleted_at (TEXT NULL) を足し、(user_id, deleted_at) の索引を張る。既存行は書き換えない。削除中の行を読まない条件 (deleted_at IS NULL) は cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、集計・取引の導出、バックアップ、取込時の設定スナップショットは削除中の行を一切読まない。JSON 復元の INSERT は新しい列を持つ形に合わせる。schema-guard.ts の EXPECTED_D1_MIGRATION を 0050 の migration ファイル名へ進め、migration 前の D1 では Worker が論理削除の経路を動かさないようにする。",
+      "provenance": "利用者の承認 (appr-foundation-cash-003、qa-cash-decision-007) と決定 qa-cash-decision-006 / 008 の範囲に収まる確定内容。経路名・定数名・現在値はリポジトリの現物 (store.ts・routes/settings.ts・routes/cash.ts・schema-guard.ts・scheduled-maintenance-budget.ts) で確認した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:28:41Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-cash-security-web-004",
+      "question": "現金明細の入力・削除・復元・一括操作で何を拒否し、何を守るか。",
+      "answer": "API の zod で名義・業務の目的・収支・事業 / 個人を候補に限り、実在しない日付、金額の範囲外、長すぎる文字列 (内容 60 字・メモ 200 字・駅名 40 字・その他の目的 40 字) を 400 で拒否する。一括削除と一括復元の id 配列は 100 件までで、他の利用者の id を 1 件でも含めば全体を 404 にして何も変えない。削除中の行は PUT でも 404 にし、編集で復活させない。新しい restore / bulk-delete / bulk-restore は canonical-mutation-fence に登録する。削除中の行が一覧・合計・取引・集計・バックアップ (BACKUP_SNAPSHOT_SQL)・取込時の設定スナップショット (loadImportRestoreSettingsSnapshot)・科目使用状況のどこにも出ない不変条件を API テストで固定する。下書きはブラウザ内だけに置きサーバーへ送らない。領収書ファイルは受け取らない。",
+      "provenance": "利用者の承認 (appr-foundation-cash-003、qa-cash-decision-007) と決定 qa-cash-decision-006 / 008 の範囲に収まる確定内容。経路名・定数名・現在値はリポジトリの現物 (store.ts・routes/settings.ts・routes/cash.ts・schema-guard.ts・scheduled-maintenance-budget.ts) で確認した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:28:41Z",
+      "required_info_items": [
+        "domain-model",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-cash-infrastructure-web-002",
+      "question": "論理削除の完全消去を、夜間処理のどこでどの予算で動かすか。",
+      "answer": "既存の夜間 cron (0 18 * * *) の scheduledMaintenance に独立 job cash_soft_delete_purge を 1 本足し、deleted_at から 30 日を過ぎた行を物理削除する。job の D1 クエリ 2 本を SCHEDULED_MAINTENANCE_D1_PLAN に宣言して型で結び、計画の合計は 47 から 49 になる。これに合わせて計画上限 SCHEDULED_D1_QUERY_PLAN_MAX を 47 から 49 へ上げ、受理上限 SCHEDULED_D1_QUERY_ACCEPTED_MAX (49) の内側、ハード上限 SCHEDULED_D1_QUERY_LIMIT (50) まで 1 本の余裕を残す。既存 job の枠は変えない。新しい binding・cron・外部サービスは足さない。",
+      "provenance": "利用者の承認 (appr-foundation-cash-003、qa-cash-decision-007) と決定 qa-cash-decision-006 / 008 の範囲に収まる確定内容。経路名・定数名・現在値はリポジトリの現物 (store.ts・routes/settings.ts・routes/cash.ts・schema-guard.ts・scheduled-maintenance-budget.ts) で確認した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:28:41Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-cash-decision-009",
+      "question": "JSON 復元は移行先の現金明細が 0 件のときだけバックアップの明細を id のまま入れる。削除中の行だけが残る利用者は 0 件と判定され、主キーが衝突して復元全体が失敗する。どう扱うか。",
+      "answer": "削除中も件数に数える。『空か』の判定だけは削除中の行を数え、削除中の行が残る間は現金明細を復元せず理由を表示する。削除中の行を他のどの出力にも出さない不変条件の例外は、この件数 1 つだけとする。",
+      "provenance": "AskUserQuestion / 選択肢 3 件 (削除中も件数に数える・復元前に削除中の行を消す・衝突した行だけ飛ばす) と推奨案を提示し、利用者が「削除中も件数に数える (推奨)」を選択。answered_at は選択時刻の上界。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:44:32Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-cash-decision-010",
+      "question": "U4 の O1〜O4 と各測定方法、U7 の scope.in 7 項目を、保存済みの文面のまま示す。この逐語で確定してよいか。",
+      "answer": "この逐語で承認する。",
+      "provenance": "AskUserQuestion / preview に spec-state.json の requirements_foundation.objectives (O1〜O4 の text と measure) と scope.in (7 項目) を保存済みの文面のまま、縮めずに示し、選択肢 (この逐語で承認・修正して再提示) から利用者が「この逐語で承認 (推奨)」を選択。answered_at は選択時刻の上界。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:44:32Z",
+      "required_info_items": [
+        "context-of-use",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-cash-backend-web-005",
+      "question": "削除中の行を読まない条件と一括復元を含めて、API は何を返し何を拒否するか。",
+      "answer": "core の cash-screen.ts が合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を導き、API は JSON に写すだけにする。DELETE /api/cash-entries/:id は論理削除 (deleted_at を付けて同じ batch で取引と集計を作り直す)、POST /api/cash-entries/:id/restore は同じ id を戻し、POST /api/cash-entries/bulk-delete と POST /api/cash-entries/bulk-restore は 100 件までの id 配列を 1 batch で処理し、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にする。削除中の行を読まない条件 (deleted_at IS NULL) を cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、PUT は削除中の行を 404 にする。新しい restore / bulk-delete / bulk-restore の経路は canonical-mutation-fence に登録し、既存の POST / PUT / DELETE と同じ書込の順序保証に乗せる。POST / PUT は owner と transit_purpose を受ける。例外は 1 つだけで、JSON 復元の『移行先の現金明細が 0 件か』の判定だけは削除中の行も数える (loadImportRestoreSettingsSnapshot の destination_counts に、削除中を含む現金明細の件数を 1 つ足す)。削除中の行が残っている間は現金明細を復元せず、理由を表示する。バックアップの id をそのまま INSERT して主キーが衝突し、復元全体が失敗することを防ぐためである。件数のほかに、削除中の行の中身はどの出力にも出さない (qa-cash-decision-009)。",
+      "provenance": "利用者の承認 (appr-foundation-cash-004、qa-cash-decision-010) と、決定 qa-cash-decision-006 (一括復元) / 009 (JSON 復元の件数の例外) の範囲に収まる確定内容。前回の確定 (qa-cash-backend-web-004) に例外の記述を足した。JSON 復元の判定は routes/imports.ts と store.ts の現物で確認した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:45:23Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-cash-database-web-005",
+      "question": "現金明細の名義・業務の目的・論理削除を D1 にどう持ち、どの読み取り経路で削除中の行を外すか。",
+      "answer": "追加のみの migration 0050 で cash_entries に owner (TEXT NULL、business / spouse / family の CHECK)、transit_purpose (TEXT NULL)、deleted_at (TEXT NULL) を足し、(user_id, deleted_at) の索引を張る。既存行は書き換えない。削除中の行を読まない条件 (deleted_at IS NULL) は cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、集計・取引の導出、バックアップ、取込時の設定スナップショットは削除中の行を一切読まない。JSON 復元の INSERT は新しい列を持つ形に合わせる。schema-guard.ts の EXPECTED_D1_MIGRATION を 0050 の migration ファイル名へ進め、migration 前の D1 では Worker が論理削除の経路を動かさないようにする。例外は 1 つだけで、JSON 復元の『移行先の現金明細が 0 件か』の判定だけは削除中の行も数える (loadImportRestoreSettingsSnapshot の destination_counts に、削除中を含む現金明細の件数を 1 つ足す)。削除中の行が残っている間は現金明細を復元せず、理由を表示する。バックアップの id をそのまま INSERT して主キーが衝突し、復元全体が失敗することを防ぐためである。件数のほかに、削除中の行の中身はどの出力にも出さない (qa-cash-decision-009)。夜間 cron の完全消去 job は /api/* に掛かる schema guard の外で動くため、migration 0050 の適用 (Migrate) を Worker の配備 (Deploy) より先に行う既存の順序で守る。",
+      "provenance": "利用者の承認 (appr-foundation-cash-004、qa-cash-decision-010) と、決定 qa-cash-decision-009 (JSON 復元の件数の例外) の範囲に収まる確定内容。前回の確定 (qa-cash-database-web-004) に例外の記述を足した。JSON 復元の判定は routes/imports.ts と store.ts の現物で確認した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:45:23Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-cash-security-web-005",
+      "question": "現金明細の入力・削除・復元・一括操作で何を拒否し、何を守るか。",
+      "answer": "API の zod で名義・業務の目的・収支・事業 / 個人を候補に限り、実在しない日付、金額の範囲外、長すぎる文字列 (内容 60 字・メモ 200 字・駅名 40 字・その他の目的 40 字) を 400 で拒否する。一括削除と一括復元の id 配列は 100 件までで、他の利用者の id を 1 件でも含めば全体を 404 にして何も変えない。削除中の行は PUT でも 404 にし、編集で復活させない。新しい restore / bulk-delete / bulk-restore は canonical-mutation-fence に登録する。削除中の行が一覧・合計・取引・集計・バックアップ (BACKUP_SNAPSHOT_SQL)・取込時の設定スナップショット (loadImportRestoreSettingsSnapshot)・科目使用状況のどこにも出ない不変条件を API テストで固定する。下書きはブラウザ内だけに置きサーバーへ送らない。領収書ファイルは受け取らない。例外は 1 つだけで、JSON 復元の『移行先の現金明細が 0 件か』の判定だけは削除中の行も数える (loadImportRestoreSettingsSnapshot の destination_counts に、削除中を含む現金明細の件数を 1 つ足す)。削除中の行が残っている間は現金明細を復元せず、理由を表示する。バックアップの id をそのまま INSERT して主キーが衝突し、復元全体が失敗することを防ぐためである。件数のほかに、削除中の行の中身はどの出力にも出さない (qa-cash-decision-009)。",
+      "provenance": "利用者の承認 (appr-foundation-cash-004、qa-cash-decision-010) と、決定 qa-cash-decision-006 (一括復元) / 009 (JSON 復元の件数の例外) の範囲に収まる確定内容。前回の確定 (qa-cash-security-web-004) に例外の記述を足した。JSON 復元の判定は routes/imports.ts と store.ts の現物で確認した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:45:23Z",
+      "required_info_items": [
+        "domain-model",
+        "security-posture"
+      ]
     }
   ],
   "approval_log": [
     {
-      "id": "appr-foundation-tradeoff-001",
-      "note": "トレードオフ画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/15-tradeoff.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択。先立つ 9 決定 (候補=科目×取引先の経費全体 / 必要度=自動推定と利用者の上書き / 推奨=core の決定論ルール / 保存一覧と突合=画面から外しデータは残す / 防衛ライン=月の余裕×12 から年間差額を引く / 試算条件=D1 に保存 / 候補のメモ=自動の理由と利用者メモの優先 / 保存の形=押すたびに履歴追加 / 差額の符号=新しい支出 − 削減で正は支出増) を含む。実測時刻 2026-09-21T15:16:00Z。basis=user-decision。"
+      "id": "appr-foundation-cash-001",
+      "note": "現金入力画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/17-cash.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択。先立つ 4 決定 (領収書=対象外のまま / 担当者=既存の名義 / 削除=論理削除で戻せる / 取込元=入力経路を区別) と、要約に明記した範囲 (論理削除は 30 日後に夜間処理で完全消去、業務の目的は固定選択肢＋その他、下書きはブラウザ内、サンプル表示は画面内だけ、共通シェルの文言は変えない) を含む。承認の受領直後に実測した時刻 2026-09-21T15:16:08Z (承認時刻の上界)。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-cash-002",
+      "note": "現金入力画面サイクルの要件定義の全文 (U1-U9) を利用者が承認。appr-foundation-cash-001 の後に書き足した G4・S1〜S4・SH2・C1〜C4・I1〜I6 と、web 以外の専用アプリ (モバイル・タブレット・Windows / Linux / macOS デスクトップ) を範囲外とすることを全文で提示し、選択肢『この全文で承認 / 修正して再提示』から承認を選択。I3 は削除中の行を読まない条件を cash_entries を読む全経路へ掛けることと、一括復元の API (qa-cash-decision-006) を含む。承認の受領直後に実測した時刻 2026-09-21T15:34:28Z (承認時刻の上界)。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-cash-003",
+      "note": "現金入力画面サイクルの要件定義について、appr-foundation-cash-002 で示した範囲 (本質的目的、G1〜G4、S1〜S4、SH1・SH2、範囲外、C1〜C4、I1〜I6) に加えて、今回 U2 背景 (本文どおり)・U4 の O1〜O4 と測定方法 (項目ごとに縮めた形)・U7 scope.in の 7 項目 (同じ順で縮めた形) を示し、利用者が『この全文で承認』を選択。これで U1〜U9 の全項目を利用者に示したことになる。I3 の経路名は完成度評価の指摘を受けて repo の実名 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に直した。経路の数 5 と、全経路へ削除中の行を読まない条件を掛けるという承認済みの内容は変えていない。承認の受領直後に実測した時刻 2026-09-21T22:26:35Z (承認時刻の上界)。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-cash-004",
+      "note": "現金入力画面サイクルの要件定義について、appr-foundation-cash-003 で縮めた形で示した U4 の O1〜O4 と各測定方法、U7 scope.in の 7 項目を、今回は spec-state.json に保存済みの文面のまま (逐語・省略なし) 示し、利用者が『この逐語で承認』を選択。同時に JSON 復元の件数の例外 (qa-cash-decision-009) を決定し、I3 に 1 文足した。U1〜U3・U5・U6・U8・U9 のその他の文面は appr-foundation-cash-002 / 003 から変えていない。承認の受領直後に実測した時刻 2026-09-21T22:44:32Z (承認時刻の上界)。basis=user-decision。"
     }
   ],
-  "reopen_log": [],
+  "reopen_log": [
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度評価 (completeness-findings) の指摘: 削除中の行を読まない条件を loadCashEntries の 1 か所としていたが、cash_entries を読む経路は loadDataset の UNION・JSON スナップショット・科目使用状況・PUT の既存行取得にもある。加えて利用者が一括復元の API を足すと決めた (qa-cash-decision-006)。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T15:37:49Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "完成度評価の指摘: 読み取りの正本を loadCashEntries 1 か所としていたが、SQL で cash_entries を直接読む経路 (loadDataset の UNION・JSON スナップショット) と Drizzle で読む経路 (科目使用状況・PUT の既存行取得) が別にある。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T15:37:49Z"
+    },
+    {
+      "category": "security",
+      "platform": "web",
+      "reason": "完成度評価の指摘: 削除中の行を編集できる経路 (PUT の既存行取得) と、一括復元 (qa-cash-decision-006) の拒否条件、canonical-mutation-fence への新経路の登録が仕様に無い。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T15:37:49Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "2 回目の完成度評価の指摘: 読み取り経路 5 本のうち 2 本の名前が repo と違う (『loadDataset の UNION SQL』は BACKUP_SNAPSHOT_SQL、『JSON スナップショットの json_object SQL』は loadImportRestoreSettingsSnapshot)。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:27:31Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "2 回目の完成度評価の指摘と同じ経路名の誤り。加えて runtimeSchemaGuard は列の一覧を持たず EXPECTED_D1_MIGRATION の migration 名で判定しており、『必須列に新しい列を加える』は現物と合わない。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:27:31Z"
+    },
+    {
+      "category": "security",
+      "platform": "web",
+      "reason": "削除中の行が現れてはならない場所として挙げた『JSON スナップショット』が、repo のどの経路かを指していない (バックアップと取込時の設定スナップショットの 2 つがある)。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:27:31Z"
+    },
+    {
+      "category": "infrastructure",
+      "platform": "web",
+      "reason": "夜間処理の D1 クエリ予算に空きが無く (計画 47 = 計画上限 47)、完全消去の job を宣言するだけでは予算テストが落ちる。利用者が計画上限を 49 へ上げると決めた (qa-cash-decision-008)。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:27:31Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "3 回目の完成度評価の指摘: 削除中の行を読まない不変条件に、JSON 復元の『空か』判定の例外が無く、削除中の行だけが残る利用者で主キーが衝突する。利用者が削除中も件数に数えると決めた (qa-cash-decision-009)。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:45:09Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "3 回目の完成度評価の指摘と同じ JSON 復元の主キー衝突。加えて夜間 cron の完全消去 job が schema guard の外で動くことの守り方が書かれていない。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:45:09Z"
+    },
+    {
+      "category": "security",
+      "platform": "web",
+      "reason": "削除中の行がどこにも出ない不変条件に、JSON 復元の件数の例外 (qa-cash-decision-009) を明記する必要がある。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:45:09Z"
+    }
+  ],
   "category_aggregate": {
     "database": "確定",
     "auth": "確定",
@@ -790,12 +921,16 @@
       "category": "frontend"
     },
     {
-      "target_id": "hono-zod-validator",
-      "category": "backend"
+      "target_id": "react-router-searchparams",
+      "category": "frontend"
     },
     {
-      "target_id": "hono-body-limit",
-      "category": "security"
+      "target_id": "mdn-localstorage",
+      "category": "frontend"
+    },
+    {
+      "target_id": "hono-zod-validator",
+      "category": "backend"
     },
     {
       "target_id": "owasp-asvs",
@@ -806,11 +941,11 @@
       "category": "database"
     },
     {
-      "target_id": "sqlite-upsert",
+      "target_id": "sqlite-alter-table",
       "category": "database"
     },
     {
-      "target_id": "cloudflare-workers-limits",
+      "target_id": "cloudflare-workers-cron-triggers",
       "category": "infrastructure"
     },
     {
@@ -819,298 +954,285 @@
     }
   ],
   "requirements_foundation": {
-    "essential_purpose": "トレードオフ画面を、『新しい支出を増やすなら、何を見直しますか？』という問いに 1 画面で答え切る場にする。利用者が新しい支出 (支出名・金額・単発 / 毎月・開始月・メモ) を置くと、事業経費を科目×取引先ごとに並べた見直し候補 (月額・年額・必要度・直近の推移・理由) から削減先を選べ、core が決まったルールで出す推奨の組み合わせと理由を参考に、年間の差額と防衛ラインへの影響を確かめてから、その条件を記録して予算・サブスク・明細の画面で手を打てる状態にする。アプリ自身は LLM を呼ばず、試算の数字はすべて core の 1 か所から導く。",
-    "background": "現行の /tradeoff (packages/web/src/pages/Tradeoff.tsx、257 行) は FR-09 やりくり試算として、内容・金額・単発 / 毎月の入力と、診断の検知器の改善案 (サブスク重複・急増・予算超過・レンジ超過・説明不能) を写した候補の選択、『捻出合計 − 予定支出』の月額同士の 2 値判定、試算の保存と翌月の突合を持つ。15-tradeoff.png と比べると、開始月・メモ、候補表の列見出しと検索・カテゴリ絞込、科目×取引先の経費全体からの候補、必要度・直近の推移・理由の列、推奨の組み合わせ、右側の試算結果と年額の差額、防衛ラインへの影響、計算の前提と計算例、下部の選択中バーが無い。単発の支出も月額として比べており、単発は発生月だけに計上するという画像の前提と合わない。計算は画面内のインラインで、core に試算関数が無い。防衛ライン (defenseLine) は core と /api/defense-line にあるが、試算がそれにどう効くかを出す場所が無い。",
+    "essential_purpose": "現金入力画面を、『現金と交通費を、漏れなく記録しますか？』という問いに 1 画面で答え切る場にする。銀行・カードの取込に乗らない現金の支払い・受け取りと交通費を、外出から戻ったその場で入力し、同じ画面で一覧・合計を見て訂正まで済ませる。入力途中の離脱や誤削除で記録が欠けないこと (下書きの自動保存と、論理削除による元に戻す) を通じて、集計・月次クローズ・AI分析の入力である台帳から現金の欠けを無くす。",
+    "background": "現行の /cash (packages/web/src/pages/Cash.tsx、724 行の 1 ファイル) は入力フォームと月別の表だけで、キーワード検索・収支/カテゴリ/名義/入力経路の絞り込み・収入/支出/差額の合計・ページングが無い。削除はモーダル確認のうえ物理削除 (DELETE) で戻す手段が無く、入力途中の内容はページを離れると消える。事業/家計・収支は select で、交通費に入替ボタンと業務の目的が無い。担当者 (名義) と入力経路は DB に列が無い。一方、証憑 (領収書) の保管は以前に廃止し『税務上の正本は freee』と決めている。design/FINAL-UI/images/17-cash.png がこれらを 1 画面に並べた完成形を示したため、画面を作り直す。",
     "goals": [
       {
         "id": "G1",
-        "text": "/tradeoff を 15-tradeoff.png どおりの画面にする。見出し『トレードオフ』と問い『新しい支出を増やすなら、何を見直しますか？』と説明文、分析期間 (グローバル) のカード、1.新しい支出を設定 (支出名・金額・単発 / 毎月・開始月・メモ)、2.見直し候補の選択 (検索・カテゴリ絞込・選択をすべてクリア、# / カテゴリ・取引先 / 月額 / 年額 / 必要度 / 直近の推移 / 損益・メモ の表と件数表示)、3.推奨の組み合わせ (内容・年間削減額・充足度・実行のしやすさ・リスクの表と、選択中の組み合わせの理由・関連ページへのリンク)、計算例 (毎月と単発)、右側の試算結果 (新しい支出・見直しによる削減額・年間の差額と警告・防衛ラインへの影響・計算の前提)、下部の選択中バー (件数・年間削減額・年間差額・選択をクリア・この条件で試算) を、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。"
+        "text": "/cash を 17-cash.png どおりの画面にする。問いの見出しと説明、共通の期間 (1年 / 2年 / 3年 / 任意) と対象期間カード、通常入力 / 交通費入力のタブ、現金明細の入力 (日付・事業/個人・収支・金額・内容・カテゴリ・担当者・メモ 0/200・入力をクリア・現金明細を追加・下書き自動保存の表示)、交通費の入力 (出発駅・到着駅・入替・片道運賃・往復・合計金額・業務の目的・メモ・交通費として追加)、現金明細の一覧 (月送り・キーワード検索・4 種の絞り込み・詳細検索・収入/支出/差額の合計・選択・編集/削除・ページング)、インラインの削除確認と元に戻す、空状態、下部固定の追加バーを描く。"
       },
       {
         "id": "G2",
-        "text": "試算の数字を core の純関数 1 か所で導く。毎月の支出は月額×12、単発の支出は発生月だけに計上し、見直しの削減は選択した候補の月額合計×12 で年額にする。年間の差額 = 新しい支出の年額 − 削減の年額。防衛ラインへの影響は、既存 defenseLine の月の余裕×12 を『防衛ライン余裕』、そこから年間の差額を引いた値を『試算後の余裕』とし、試算後が 0 以上なら維持、負なら割れると文字で示す。 差額の符号は『新しい支出の年額 − 削減の年額』で、正は支出増 (赤の警告)、負は捻出できる。"
+        "text": "記録が消えない。入力途中の内容はブラウザ内に自動保存して復元でき、削除は論理削除として一覧と集計から外したうえで『元に戻す』で同じ行を復活でき、30 日後に夜間処理で完全に消える。"
       },
       {
         "id": "G3",
-        "text": "見直し候補を事業経費の科目×取引先ごとに直近 3 か月の平均月額で作る。必要度 (低 / 中 / 高) と直近の推移 (過去 3 か月の減少 / 横ばい / 増加) を core が推定し、『損益・メモ』には検知器の改善案や推移から作る自動の理由を出す。利用者は必要度を上書きしメモを書け、それらは D1 に保存して自動の値より優先する。"
+        "text": "画面の数字と判定を core の 1 か所から導く。合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を core の純関数に置き、API は JSON に写すだけ、web は描くだけにする。"
       },
       {
         "id": "G4",
-        "text": "推奨の組み合わせを core の決まったルールで出す。候補 2〜4 件の組み合わせのうち年間削減額が新しい支出の年額以上になるものを選び、充足度・実行のしやすさ (必要度の低い候補が多いほど易しい)・リスク (必要度の高い候補を含むほど高い) で順位を付けて上位 4 件を示し、選んだ組み合わせの理由の文と関連ページ (サブスク・予算・明細) へのリンクを添える。アプリは LLM を呼ばない。"
-      },
-      {
-        "id": "G5",
-        "text": "試算条件と候補ごとの上書きを安全に記録する。『この条件で試算』を押すたびに条件 (支出名・金額・単発 / 毎月・開始月・メモ・選んだ候補・差額) を既存 tradeoff_plans へ履歴として追加し、画面は最新の 1 件を復元する。保存一覧と翌月の突合は画面から外すが、既存の行と突合の関数は消さない。列と表は追加のみの migration で足し、入力は zod で検証し文字数に上限を設け、利用者ごとに分離する。"
+        "text": "現金明細の入力と変更を安全に保つ。利用者ごとの分離、入力検証、削除・復元の権限確認、削除済み行を集計へ混ぜない不変条件を API と DB の両方で守る。"
       }
     ],
     "objectives": [
       {
         "id": "O1",
-        "text": "トレードオフ画面が画像の全構成要素を描画する。",
+        "text": "現金入力画面が画像の全構成要素を描画する (領収書欄を除く)。",
         "serves": [
           "G1"
         ],
         "serves_goals": [
           "G1"
         ],
-        "measure": "DOM テストで、見出しと問い・分析期間カード・1.新しい支出の 5 入力・2.候補表の 8 列と検索とカテゴリ絞込と全クリア・3.推奨の表と理由とリンク・計算例 2 種・右側の試算結果と防衛ラインへの影響と計算の前提・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。"
+        "measure": "DOM テストで、問いの見出し・対象期間カード・2 つのタブ・通常入力の全項目とメモの文字数・交通費入力の全項目と入替・合計金額の自動計算・一覧の月送り/検索/4 種の絞り込み/合計 3 枚/表/ページング・インライン削除確認・元に戻すトースト・空状態・下部固定バーの存在を確認し、全て通る。"
       },
       {
         "id": "O2",
-        "text": "試算の数字が core の 1 関数から出る。",
+        "text": "下書きと論理削除で記録が欠けない。",
         "serves": [
           "G2"
         ],
         "serves_goals": [
           "G2"
         ],
-        "measure": "core の契約テストで、毎月 80,000 と削減 85,000/月 のとき 年額 960,000 / 1,020,000 / 年間の差額 −60,000 (捻出できる)、単発 300,000 と削減 50,000/月 のとき 年間の差額 −300,000、毎月 100,000 と削減 50,000/月 のとき +600,000 (支出増) が出ること、防衛ライン余裕と試算後の余裕と維持 / 割れるの境界 (0) を検査し、web と api に同じ計算が無いことを grep で確かめる。"
+        "measure": "DOM テストで入力→再描画後に下書きが復元されること、API テストで削除→元に戻すで同じ id が一覧に戻ること、削除中の行が集計 (cashToDeal / cashToTx の入力) に 0 件であることが通る。"
       },
       {
         "id": "O3",
-        "text": "候補と必要度・推移・理由が決定論で出て、上書きが優先される。",
+        "text": "画面の導出が core の 1 か所に集まる。",
         "serves": [
           "G3"
         ],
         "serves_goals": [
           "G3"
         ],
-        "measure": "core の契約テストで、科目×取引先の集計・直近 3 か月平均・推移の 3 区分・必要度の推定・理由の文を固定入力で検査し、api テストで上書きの保存と読み戻し、利用者間の分離を検査する。"
+        "measure": "core の cash-screen の単体テストが合計・絞り込み・ページング・入力経路・交通費合計を固定し、web と api に同じ計算の重複が無い (grep で 0 件)。"
       },
       {
         "id": "O4",
-        "text": "推奨の組み合わせが決定論で並ぶ。",
+        "text": "既存の品質ゲートを緑のまま保つ。",
         "serves": [
+          "G1",
           "G4"
         ],
         "serves_goals": [
+          "G1",
           "G4"
         ],
-        "measure": "core の契約テストで、同じ入力に同じ上位 4 件と同じ順位・評価・理由が返り、年間削減額が新しい支出の年額に届かない組み合わせが入らないことを検査する。"
-      },
-      {
-        "id": "O5",
-        "text": "試算条件と上書きの記録が追加のみで安全に行われる。",
-        "serves": [
-          "G5"
-        ],
-        "serves_goals": [
-          "G5"
-        ],
-        "measure": "migration が CREATE TABLE / ALTER TABLE ADD COLUMN だけで、api テストで zod の上限・認証・利用者分離・最新 1 件の復元を検査し、既存の tradeoff_plans の行と tradeoffReview の契約テストが緑のままである。"
+        "measure": "pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。"
       }
     ],
     "success_criteria": [
-      "S1 (G1): /tradeoff で 15-tradeoff.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件である。期間は usePeriod から来る。",
-      "S2 (G2): 年額・差額・防衛ラインへの影響は core の 1 関数だけが決め、画面の右パネル・選択中バー・計算例が同じ値を示す。単発は発生月だけに計上される。",
-      "S3 (G3): 候補は科目×取引先の経費全体から出て、必要度と推移と理由が全行に付き、利用者の上書きとメモが再読込後も残る。",
-      "S4 (G4): 推奨の組み合わせは同じ入力で同じ上位 4 件を返し、選ぶと理由の文と関連ページへのリンクが出る。",
-      "S5 (G5): 『この条件で試算』で条件が履歴として追加され、再訪時に最新の条件が復元される。migration は追加のみで、既存の試算の行は変わらない。",
-      "S6 (全体): typecheck・lint・core / api / web のテスト・初期 JS 予算の CI 実測が緑である。"
+      "S1 (G1): /cash で 17-cash.png の構成要素 (領収書欄を除く) がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件である。",
+      "S2 (G2): 削除した現金明細が『元に戻す』で同じ id のまま一覧に戻り、削除中は一覧・合計・集計のどこにも現れない。入力途中の内容は再読込後に復元される。",
+      "S3 (G3): 合計・絞り込み・ページング・入力経路・交通費合計が core の cash-screen だけで計算され、API と web はその結果を写すだけである。",
+      "S4 (G4): 他の利用者の明細の取得・変更・削除・復元が 404 になり、不正な入力 (実在しない日付、範囲外の金額、候補外の名義・カテゴリ・業務の目的、長すぎる文字列) が 400 になる。"
     ],
     "stakeholders": [
-      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 新しいツールや外注を増やしたいとき、どの支出をどれだけ減らせば釣り合うかを 1 画面で試し、防衛ラインを割らないことを確かめてから決めたい。候補の必要度は自分の感覚で直したい。",
-      "SH2 家族 (同じ家計を見る閲覧者): 試算の結論と理由を、数字の出どころが分かる形で読みたい。",
-      "SH3 開発者 (本人): 計算を core の 1 か所に集め、画面・API・テストで重複させず、既存の防衛ライン・診断の検知器・試算の履歴を壊さずに作り直したい。"
+      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 外出先で使った現金や電車代を、戻ったその場で漏れなく記録し、月次クローズの前に今月の現金の出入りを一覧と合計で確かめたい。途中で離れても入力が消えず、消してしまっても戻せることを期待している。",
+      "SH2 家族 (配偶者・家族の名義で支出する): 利用者が名義 (担当者) を付けて記録することで、誰の支出かが集計で区別される。"
     ],
     "scope": {
       "in": [
-        "トレードオフ画面 (15-tradeoff.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと、Tradeoff.tsx の pages/tradeoff/ 配下への分割",
-        "core の純関数: 科目×取引先の候補集計と直近 3 か月平均、推移の区分、必要度の推定、自動の理由、試算 (年額・差額・単発の計上)、防衛ラインへの影響、推奨の組み合わせの列挙と評価と理由",
-        "GET /api/tradeoff の応答の作り直し (候補・上書き・防衛ラインの月の余裕・最新の試算条件) と、候補ごとの上書き (必要度・メモ) の保存 API",
-        "POST /api/tradeoff の入力に開始月・メモ・候補キーを足した履歴の追加と、最新 1 件の復元",
-        "追加のみの migration (tradeoff_plans への開始月・メモ列、候補ごとの上書きの新表)",
-        "下部の選択中バー、候補表の検索・カテゴリ絞込・全クリア、推奨の理由と関連ページへのリンク、計算例",
-        "docs への規則 (候補の作り方・必要度・推移・推奨の順位・防衛ラインへの影響) の明記と回帰テスト"
+        "現金入力画面 (17-cash.png の構成要素と読込 / 空 / 失敗の各状態) の作り直しと、Cash.tsx の pages/cash/ 配下への分割",
+        "通常入力と交通費入力の 2 タブ。交通費は出発駅・到着駅の入替、往復の自動計算、業務の目的 (固定選択肢＋その他)",
+        "一覧の月送り (共通の期間の範囲内)、キーワード検索、収支・カテゴリ・担当者・入力経路の絞り込み、詳細検索 (金額と日付の範囲)、収入/支出/差額の合計、選択と一括削除、ページング",
+        "インラインの削除確認と、削除完了トーストの『元に戻す』。論理削除 (deleted_at) と 30 日後の夜間完全消去",
+        "担当者 = 既存の名義 (business / spouse / family) の列、業務の目的の列、論理削除の列を cash_entries へ追加する migration (入力経路は交通費の区間の有無から導く)",
+        "core の純関数 cash-screen (合計・絞り込み・ページング・入力経路・交通費合計・入力検証) と API の拡張",
+        "下書きのブラウザ内自動保存と保存時刻の表示、画面内だけのサンプル表示、下部固定の追加バー"
       ],
       "out": [
-        "共通シェル (ヘッダーの取引ライン・検索・ダウンロード・ヘルプ、サイドバー、フッター、月次クローズの進捗、改善を送る) の作り直し: 既存実装をそのまま使う",
-        "保存済みの試算の一覧と翌月の突合の画面表示: 画面から外す (利用者決定)。既存の行と tradeoffReview は残す",
-        "アプリから LLM を呼ぶこと・AI分析レポートからの推奨の取り込み: 推奨は core のルールで出す (利用者決定)",
-        "既存の tradeoff_plans の行やテーブルの削除・書換",
-        "税・手数料の考慮: 画像の計算の前提どおり考慮しない",
-        "スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ (既存方針)",
-        "画像の数値 (金額・件数・取引先名) の再現: モックであり実データを正とする"
+        "領収書ファイルの保存 (以前の廃止決定を維持し、欄の代わりに freee への保管を案内する。qa-cash-decision-001)",
+        "取込 (MF / freee) の現金明細を一覧に混ぜること (qa-cash-decision-004)",
+        "共通シェルの文言 (取引ライン / 防衛ライン、フッター) の変更。画像の文言は期待値にしない",
+        "担当者の自由登録と管理画面 (qa-cash-decision-002)",
+        "モバイル・タブレット・デスクトップ専用アプリ"
       ]
     },
     "constraints": [
-      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。判定と導出は core に置き api/web へ重複実装しない。",
-      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、ボタンは共通 Button、ページは PageShell。表・選択中バーは既存画面 (サブスク・診断) の部品と流儀に揃える。",
-      "C3 migration: D1 の migration は追加のみ (新カラム・新表) とし、行を書き換える migration は作らない。本番反映は既存の Deploy / Migrate の手順とゲートに従う。",
-      "C4 セキュリティ: API は /api/* の authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence の内側に置き、入力は zod で検証して文字数と件数に上限を設け、全クエリを user_id で絞る。利用者の文字列は React の既定エスケープで描画する。",
-      "C5 互換: 既存の防衛ライン (defenseLine・/api/defense-line・ヘッダーのバッジ・概要画面) と、診断の検知器 (tradeoffCandidates を使う分析ハブの改善余地) の数字を変えない。",
-      "C6 性能: 初期 JS 予算 (CI 実測) を超えない。トレードオフ画面は遅延読み込みのままにする。組み合わせの列挙は候補数に上限を設けて計算量を抑える。",
-      "C7 数値の正本: 15-tradeoff.png の金額・取引先名はモックで、実データを正とする。"
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。判定と導出は core に置き api/web は写すだけにする。",
+      "C2 データ: D1 の migration は 0050 から採番する。既存の cash_entries の行と集計結果 (cashToDeal / cashToTx) を変えない。論理削除の列を足した後、全ての読み取り経路が deleted_at IS NULL で絞る。",
+      "C3 運用: 夜間の scheduled 処理 (0 18 * * *) の予算内に完全消去を相乗りさせる。単一利用者の運用で、マルチテナントは対象外。",
+      "C4 品質: 初期 JS 予算・verify:full・skills:test を緑のまま保つ。税務上の正本は freee であり、本画面は税務判断をしない。"
     ],
     "concrete_intents": [
       {
         "id": "I1",
-        "text": "Tradeoff.tsx を pages/tradeoff/ 配下へ分割し、見出しと問い・分析期間カード・1.新しい支出・2.見直し候補・3.推奨の組み合わせと計算例・右側の試算結果・下部の選択中バーの構成に作り直す。",
+        "text": "Cash.tsx を pages/cash/ 配下へ分割し、問いの見出し・対象期間カード・タブ・入力 2 枚・一覧・下部固定バーの構成に作り直す。選択中のタブ・月・絞り込み・ページを URL に保つ。",
         "serves": [
           "G1"
         ]
       },
       {
         "id": "I2",
-        "text": "core に試算関数 (年額・差額・単発の計上・防衛ラインへの影響) を新設し、画面の右パネル・選択中バー・計算例がそれだけを読む。",
+        "text": "core に cash-screen を新設し、合計 (収入・支出・差額)、絞り込み (キーワード・収支・カテゴリ・名義・入力経路・金額と日付の範囲)、ページング、入力経路、交通費合計を純関数で導く。",
+        "serves": [
+          "G3"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "cash_entries に owner・transit_purpose・deleted_at を足す追加のみの migration 0050 (入力経路は列を持たず交通費の区間の有無から導く) と、削除・復元・一括削除・一括復元の API、削除中の行を読まない条件を cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に掛けること、夜間の完全消去を実装する。 JSON 復元の『空か』判定だけは削除中の行も数え、削除中の行が残る間は現金明細を復元しない (qa-cash-decision-009)。",
+        "serves": [
+          "G2",
+          "G4"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "入力途中の内容をブラウザ内に自動保存し、保存時刻を表示し、復元する。『入力をクリア』で下書きも消す。",
         "serves": [
           "G2"
         ]
       },
       {
-        "id": "I3",
-        "text": "core に科目×取引先の候補集計・推移・必要度・自動の理由を新設し、上書きの新表と保存 API を足す。",
+        "id": "I5",
+        "text": "削除をインライン確認にし、削除完了トーストの『元に戻す』で同じ行を復活させる。空状態では画面内だけのサンプル表示と『はじめての明細を入力』を出す。",
         "serves": [
-          "G3",
-          "G5"
+          "G1",
+          "G2"
         ]
       },
       {
-        "id": "I4",
-        "text": "core に推奨の組み合わせの列挙・評価・順位・理由を新設し、関連ページへのリンクを出す。",
+        "id": "I6",
+        "text": "入力検証 (名義・業務の目的・カテゴリの候補、文字数、金額の範囲) を core と API の zod で揃え、他の利用者の行を 404 にする。",
         "serves": [
           "G4"
-        ]
-      },
-      {
-        "id": "I5",
-        "text": "tradeoff_plans に開始月・メモ列を足し、POST で履歴を追加、GET で最新 1 件を返して画面で復元する。保存一覧と突合の表示を外す。",
-        "serves": [
-          "G5"
         ]
       }
     ],
     "confirmed": true,
-    "approval_ref": "appr-foundation-tradeoff-001"
+    "approval_ref": "appr-foundation-cash-004"
   },
   "decisions": [],
   "knowledge_candidates": [],
   "design_applications": {
-    "database": {
-      "text": "追加のみの schema 進化の原則を、上書きと試算条件の置き場所に適用した。上書きは候補ごとに 1 行の新表とし (user_id, candidate_key) の一意制約で upsert するため、同じ候補に上書きが重複しない。試算条件は tradeoff_plans に ADD COLUMN で開始月とメモを足し、既存行は NULL として読むので、突合の関数 tradeoffReview と既存の行が壊れない。",
-      "recorded_at": "2026-09-21T15:19:22Z",
-      "basis": "agent-inference"
-    },
-    "auth": {
-      "text": "既存のセッション認証を再利用する原則を適用した。トレードオフ画面の新しい経路 (上書きの保存) も /api/* のガード連鎖の内側に置き、認証済みの user_id だけを鍵に読み書きする。新しい資格情報や共有リンクを作らないので、試算と上書きが他の利用者に漏れる経路が増えない。",
-      "recorded_at": "2026-09-21T15:19:22Z",
-      "basis": "agent-inference"
-    },
     "ui-ux": {
-      "text": "information-design card の『問いに答える順に並べる』原則を適用した。画面の上から 1.新しい支出 → 2.見直し候補 → 3.推奨 と利用者の決定の順に段を置き、答え (年間の差額と防衛ラインへの影響) は右に常に見えるようにする。候補表は金額の大きい順で上位 10 件を先に見せ、必要度・推移は文字を添えて色だけに頼らない。",
-      "recorded_at": "2026-09-21T15:19:22Z",
+      "text": "Information Design card の『task 頻度 × 失敗コストで束に順位を付ける』を現金入力画面の段の順序に適用した。最も頻度が高いのは『外出から戻ってその場で 1 件入れる』なので入力を一覧より上に置き、画面を下へ送っても下部固定の追加バーから同じ追加に届くようにする。失敗コストが最も高いのは『誤って消す』と『入力途中で離れて消える』なので、削除は行内で確認させたうえで完了トーストに元に戻すを置き、入力欄の下に下書きの保存時刻を常に出して、消えていないことを目で確かめられるようにする。合計 3 枚は一覧の直上に置き、絞り込みの結果と合計が同じ条件から出ていることを並びで示す。",
+      "recorded_at": "2026-09-21T15:23:17Z",
       "basis": "agent-inference"
     },
-    "security": {
-      "text": "入力検証を境界に置く原則を、試算の保存と上書きの保存に適用した。zod で支出名・メモ・候補キーの文字数、金額・件数・covered の範囲を課し、現行で上限の無かった covered と selected.value を塞ぐ。利用者の文字列は React の既定エスケープで描画し、アプリは LLM を呼ばないので、プロンプト注入や外部送信の経路が無い。",
-      "recorded_at": "2026-09-21T15:19:22Z",
-      "basis": "agent-inference"
-    },
-    "infrastructure": {
-      "text": "既存の構成を変えずに機能を足す原則を適用した。新しい binding や外部サービスは足さず、migration 1 本と EXPECTED_D1_MIGRATION の更新だけでデプロイ手順に乗せる。画面は lazy import のまま初期 JS 予算の外に置く。",
-      "recorded_at": "2026-09-21T15:19:22Z",
+    "database": {
+      "text": "DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、cash_entries に足す列の選び方に適用した。名義・業務の目的・削除時刻は利用者が決めた事実なので列に持つ。入力経路は交通費の区間があるかどうかで決まる導出値なので列を持たず、合計や件数も保存しない。こうして既存行を 1 行も書き換えずに、全行へ経路が付く。",
+      "recorded_at": "2026-09-21T15:23:17Z",
       "basis": "agent-inference"
     },
     "backend": {
-      "text": "Clean Architecture card の Dependency Rule を、試算と推奨の置き場所に適用した。年額・差額・防衛ラインへの影響・候補の推移と必要度・組み合わせの順位は、freee の経費行と上書きと月の余裕だけから決まる入出力のない計算なので core の純関数に置き、api は D1 から経費行・上書き・最新の試算を読んで純関数へ渡し JSON に写すだけにする。こうすると右パネル・選択中バー・計算例が同じ関数の結果を示し、画面ごとに符号や丸めがずれる事故を単体テストで塞げる。",
-      "recorded_at": "2026-09-21T15:19:22Z",
+      "text": "Clean Architecture card の Dependency Rule を、現金入力の合計・絞り込み・入力経路・交通費合計の置き場所に適用した。これらは明細の配列と条件だけから決まる入出力のない計算なので core の cash-screen 1 か所に置き、api は D1 の読み書き (論理削除・復元・一括削除・一括復元と、同じ batch での取引と集計の作り直し) だけを担って判定を持たない。画面の合計と API の応答が同じ関数から出るので、差額が画面と集計でずれることを単体テストで塞げる。",
+      "recorded_at": "2026-09-21T15:38:32Z",
       "basis": "agent-inference"
     },
     "frontend": {
-      "text": "コンポーネントを責務で分ける原則を適用した。ページ本体は query と選択状態を持ち、フォーム・候補表・推奨の表・試算結果・計算例・選択中バーは props だけで描く部品に分ける。数字は core の試算関数の結果を 1 回計算して各部品へ配るので、同じ値を部品ごとに再計算しない。",
-      "recorded_at": "2026-09-21T15:19:22Z",
+      "text": "Clean Architecture card の依存方向を、web が合計と絞り込みの計算を持たない構成に適用した。現行 Cash.tsx は 724 行に入力・表・月の集計を抱えているので、pages/cash/ の view-model が core の cash-screen を呼んで描画用の形へ写すだけにし、下書きの保存は draft.ts、元に戻すの表示は ResultNotices に分ける。URL の検索パラメータを表示条件の正本にするので、同じ URL を開けば同じ一覧と合計になる。",
+      "recorded_at": "2026-09-21T15:23:17Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、新しい復元・一括削除の経路の置き場所に適用した。新経路をすべて authGuard 配下の /api/* に置き、各クエリの条件に userId を必ず含めることで、経路ごとに認可を書き足す必要をなくす。他人の id は存在を明かさない 404 にそろえる。",
+      "recorded_at": "2026-09-21T15:23:17Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "Secure by Design card の『入力を許可リストで検証し、大きさを境界で制限する』を、現金明細の入力と一括削除に適用した。名義・業務の目的・収支・事業 / 個人は列挙に限り、文字列は字数、金額は範囲、一括削除の id 配列は件数で境界を切る。下書きはサーバーへ送らないので、サーバー側で守る入力面を増やさない。",
+      "recorded_at": "2026-09-21T15:23:17Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "本章へ引く card は 0 件である。配信構成 (Worker・Workers Assets・D1) と binding を変えず、完全消去を既存の夜間 cron に相乗りさせる判断は、Operations の上流指針 (doctrine) の側で記録した。",
+      "recorded_at": "2026-09-21T15:23:17Z",
       "basis": "agent-inference"
     },
     "maintenance-ops": {
-      "text": "回帰を契約テストで守る原則を適用した。試算・推奨の規則を固定入力の core テストで固め、既存の tradeoffReview と tradeoffCandidates のテストを残すことで、作り直しで既存の数字が動いたら CI で落ちるようにする。",
-      "recorded_at": "2026-09-21T15:19:22Z",
+      "text": "Clean Code card の『規則は名前と境界値テストで読めるようにする』を、現金入力の保守に適用した。削除中の行を集計へ出さない規則は、cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に同じ条件を掛けたうえで、経路ごとに削除 → 読み取り → 復元 → 読み取りの往復を固定する API テストを 1 件ずつ置いて読めるようにする。経路を 1 本足したときに条件を忘れないためである。30 日の期限は 29 日と 31 日の境界値で固定し、夜間予算は計画上限 49 を予算テストで固定する。",
+      "recorded_at": "2026-09-21T22:28:41Z",
       "basis": "agent-inference"
     }
   },
   "hearing_progress": {
-    "loop_count": 2,
+    "loop_count": 3,
     "next_question": null,
     "complete": true
   },
   "doctrine_applications": {
+    "backend": {
+      "application-architecture": {
+        "text": "api の cash 経路から集計・絞り込みの計算を外し、core の cash-screen を唯一の計算元にする形へ反映した。論理削除・復元・一括削除・一括復元の各経路は、行の状態を変えて取引と集計を作り直すことだけを担い、canonical-mutation-fence に登録して既存の書込と同じ順序保証に乗せる。",
+        "recorded_at": "2026-09-21T15:38:32Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "削除中の行を読まない条件を、cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に同じ deleted_at IS NULL として掛ける形へ反映した。読み取りの正本が 1 か所に集まっていないため、経路の一覧を仕様に持ち、経路ごとの API テストで条件の抜けを検出する。削除・復元・一括削除・一括復元の書き込みは、それぞれの経路 1 か所の D1 batch でだけ行う。",
+        "recorded_at": "2026-09-21T22:28:41Z",
+        "basis": "agent-inference"
+      }
+    },
     "database": {
       "data-access": {
-        "text": "上書きの読み書きを (user_id, candidate_key) の一意キー 1 本で行う形へ反映した。GET では利用者の上書きを 1 回で読み、候補に重ねるのは core 側で行う。",
-        "recorded_at": "2026-09-21T15:19:22Z",
+        "text": "cash_entries の新しい列の書き込み元を 1 経路ずつに限る形へ反映した。deleted_at は削除と一括削除で付け、復元と一括復元でだけ外し、夜間の完全消去は読むだけで行ごと消す。owner と transit_purpose は追加と更新でだけ書く。JSON 復元の INSERT は新しい列を持つ形に合わせる。",
+        "recorded_at": "2026-09-21T15:38:32Z",
         "basis": "agent-inference"
       },
       "reliability": {
-        "text": "migration を追加のみ (CREATE TABLE と ADD COLUMN) に限り、既存の tradeoff_plans の行を書き換えない形へ反映した。途中で Deploy が止まっても既存の行と突合の関数は読めるままになる。",
-        "recorded_at": "2026-09-21T15:19:22Z",
+        "text": "migration 0050 を列の追加と索引だけにすることで、既存の現金明細を 1 行も書き換えず、巻き戻しが新しい列を読まないことだけで済む形へ反映した。schema-guard.ts の EXPECTED_D1_MIGRATION を 0050 の migration ファイル名へ進め、migration 前の D1 では Worker が論理削除の経路を動かさないようにする。",
+        "recorded_at": "2026-09-21T22:28:41Z",
         "basis": "agent-inference"
       }
     },
     "auth": {
       "authentication": {
-        "text": "上書きの保存経路を含む新しい経路をすべて authGuard と mustChangePasswordFence の内側に置く形へ反映した。パスワード変更が要る利用者は試算を保存できない。",
-        "recorded_at": "2026-09-21T15:19:22Z",
+        "text": "復元と一括削除も既存のセッション Cookie (HttpOnly・Secure・SameSite=Strict) の認証だけで通す形へ反映した。現金入力のために新しい資格情報やトークンを発行しない。",
+        "recorded_at": "2026-09-21T15:23:17Z",
         "basis": "agent-inference"
       },
       "security": {
-        "text": "認可を user_id の一致だけで判定し、上書きの行と試算の行はどちらも作成者の user_id を鍵に持つ形へ反映した。他人の candidate_key を指定しても自分の行としてしか保存されない。",
-        "recorded_at": "2026-09-21T15:19:22Z",
-        "basis": "agent-inference"
-      }
-    },
-    "ui-ux": {
-      "presentation": {
-        "text": "色だけに頼らない表示を、必要度 (低 / 中 / 高の文字)・推移 (矢印と文字)・差額の警告 (支出増 / 捻出できるの文)・防衛ライン (維持 / 割れるの文) へ反映した。",
-        "recorded_at": "2026-09-21T15:19:22Z",
+        "text": "他の利用者の明細を指す id を、取得・変更・削除・復元・一括削除・一括復元のどれでも 404 にそろえる形へ反映した。一括削除と一括復元は他人の id を 1 件でも含めば何も変えない。",
+        "recorded_at": "2026-09-21T15:38:32Z",
         "basis": "agent-inference"
       }
     },
     "security": {
       "security": {
-        "text": "ASVS の入力検証の要求を、tradeoffSchema と上書きの schema の上限 (文字数・件数・金額範囲・YYYY-MM) へ反映した。covered と selected.value に範囲を課し、極端な値で差額の表示を壊す入力を拒否する。",
-        "recorded_at": "2026-09-21T15:19:22Z",
+        "text": "現金明細の入力面を、許可リスト (名義・業務の目的・収支・事業 / 個人)、字数、金額の範囲、一括削除と一括復元の件数 (100 件) の 4 つの境界で閉じる形へ反映した。削除中の行は PUT でも 404 にし、編集で復活させない。領収書ファイルを受け取らないので、ファイルの検査と保管の責任を持たない。",
+        "recorded_at": "2026-09-21T15:38:32Z",
         "basis": "agent-inference"
       }
     },
-    "infrastructure": {
-      "reliability": {
-        "text": "runtimeSchemaGuard の期待 head を 0050 (予定) へ進め、migration が未適用の環境では tradeoff を含む API が schema_unavailable で止まる形へ反映した。",
-        "recorded_at": "2026-09-21T15:19:22Z",
-        "basis": "agent-inference"
-      },
-      "operations": {
-        "text": "本番反映を既存の Migrate → Deploy の順とゲートに乗せ、新しい手順を足さない形へ反映した。",
-        "recorded_at": "2026-09-21T15:19:22Z",
-        "basis": "agent-inference"
-      }
-    },
-    "backend": {
-      "application-architecture": {
-        "text": "依存方向を core (試算・防衛ラインへの影響・候補集計・推奨) ← api (analytics route の tradeoff 経路と上書きの保存経路) ← web (トレードオフ画面) の一方向へ反映した。画面内のインライン計算 (Tradeoff.tsx:66) を削除し、api と web が同じ純関数の結果を使う。",
-        "recorded_at": "2026-09-21T15:19:22Z",
-        "basis": "agent-inference"
-      },
-      "data-access": {
-        "text": "データアクセスを route 側に閉じ、純関数は D1 を知らない経費行・上書き・月の余裕だけを受け取る形へ反映した。候補の集計は freee_deals を期間と io=expense で絞った 1 回の読み取りで作る。",
-        "recorded_at": "2026-09-21T15:19:22Z",
+    "ui-ux": {
+      "presentation": {
+        "text": "区分を色だけで伝えない規則を、収支 (収入 / 支出)・取込元 (通常入力 / 交通費入力)・担当者の表示と合計 3 枚に反映した。収入と支出は必ず文字を添え、差額の正負は符号でも示す。削除の確認と元に戻すは文で結果を伝える。",
+        "recorded_at": "2026-09-21T15:23:17Z",
         "basis": "agent-inference"
       }
     },
     "frontend": {
-      "presentation": {
-        "text": "表示の部品を PageShell と共通 Button とトークンに限り、選択中バーをサブスク・診断の SelectionBar と同じ配置にする形へ反映した。",
-        "recorded_at": "2026-09-21T15:19:22Z",
+      "application-architecture": {
+        "text": "pages/cash/ の画面本体を view-model・draft・入力 2 種・一覧・ResultNotices に分け、view-model だけが core を呼ぶ形へ反映した。部品は描画と入力の受け渡しだけを持つ。",
+        "recorded_at": "2026-09-21T15:23:17Z",
         "basis": "agent-inference"
       },
-      "application-architecture": {
-        "text": "画面の状態を、サーバの状態 (TanStack Query の tradeoff query) と画面の選択状態 (選んだ候補と入力中の条件) に分け、保存成功時は query の無効化だけで最新条件を取り直す形へ反映した。",
-        "recorded_at": "2026-09-21T15:19:22Z",
+      "presentation": {
+        "text": "下部固定の追加バーに安全領域の余白を足し、狭い画面では入力と一覧を縦に積み、表は横スクロールの容器に入れる形へ反映した。下書きの保存時刻は文で示す。",
+        "recorded_at": "2026-09-21T15:23:17Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "operations": {
+        "text": "論理削除の完全消去を、新しい cron を足さず既存の 0 18 * * * の scheduledMaintenance に独立 job として相乗りさせ、D1 クエリ 2 本を SCHEDULED_MAINTENANCE_D1_PLAN に宣言する形へ反映した。計画の合計 49 に合わせて計画上限を 49 へ上げ、ハード上限 50 との間に 1 本の余裕を残す (qa-cash-decision-008)。",
+        "recorded_at": "2026-09-21T22:28:41Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "完全消去の job を他の夜間 job と Promise.allSettled で独立させ、失敗しても他の job とバックアップを止めない形へ反映した。1 晩の上限を超えた分は翌晩に続けて消す。",
+        "recorded_at": "2026-09-21T15:23:17Z",
         "basis": "agent-inference"
       }
     },
     "maintenance-ops": {
       "operations": {
-        "text": "試算と推奨の規則を FR-09 の仕様書へ書き、契約テストの固定入力と同じ例 (毎月 80,000 と削減 85,000/月 で −60,000 など) を載せて、仕様と実装のずれを CI で見つける形へ反映した。",
-        "recorded_at": "2026-09-21T15:19:22Z",
+        "text": "夜間の完全消去が消した件数を JSON ログに出し、上限に達した夜は warn にする形へ反映した。画面の描画検査 check:cash-screen を verify:full に組み込み、作り直しの回帰を CI で止める。",
+        "recorded_at": "2026-09-21T15:23:17Z",
         "basis": "agent-inference"
       }
     }

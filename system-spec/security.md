@@ -3,7 +3,7 @@ status: confirmed
 category: security
 aggregate: 確定
 spec_cells: [security.web, security.mobile, security.tablet, security.desktop-windows, security.desktop-linux, security.desktop-macos]
-serves_goals: [G5]
+serves_goals: [G4]
 ---
 
 # セキュリティ (security)
@@ -15,12 +15,12 @@ serves_goals: [G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-tradeoff-security-web-001。裏付け質疑 (`qa_refs`): `qa-tradeoff-security-web-evidence-001`, `qa-tradeoff-security-web-003`, `qa-tradeoff-security-web-004`, `qa-tradeoff-security-web-005` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、security では端末の画面共有やスクリーンショットから金額を守る規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、security では共有端末に試算条件を残さない規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、security ではWindows のアプリ署名と自動更新の検証を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、security ではLinux の配布パッケージの署名検証を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、security ではmacOS の公証と自動更新の検証を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-cash-security-web-005。裏付け質疑 (`qa_refs`): `qa-cash-security-web-evidence-001`, `qa-cash-security-web-003`, `qa-cash-decision-006`, `qa-cash-decision-009` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、security では端末紛失時に下書きと明細キャッシュを遠隔で消す手段を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、security では共有端末で下書きに残る金額と内容の見え方を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、security では配布バイナリの署名と自動更新経路の改ざん対策を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、security ではパッケージ配布経路 (deb / rpm / AppImage) の署名を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、security では公証 (notarization) とサンドボックスの権限を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,7 +28,7 @@ serves_goals: [G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | ASVS の入力検証の要求を、tradeoffSchema と上書きの schema の上限 (文字数・件数・金額範囲・YYYY-MM) へ反映した。covered と selected.value に範囲を課し、極端な値で差額の表示を壊す入力を拒否する。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 現金明細の入力面を、許可リスト (名義・業務の目的・収支・事業 / 個人)、字数、金額の範囲、一括削除と一括復元の件数 (100 件) の 4 つの境界で閉じる形へ反映した。削除中の行は PUT でも 404 にし、編集で復活させない。領収書ファイルを受け取らないので、ファイルの検査と保管の責任を持たない。 |
 
 ## 確定内容 (質疑録)
 
@@ -36,67 +36,67 @@ serves_goals: [G5]
 
 ### Web (web)
 
-- 資するゴール: G5
+- 資するゴール: G4
 
-#### 主たる接地根拠: `qa-tradeoff-security-web-001`
-
-**問**
-
-web のトレードオフ画面のセキュリティ要件は何か。
-
-**答**
-
-入力はすべて zod で検証し、文字数・件数・金額に上限を設ける (現行の covered と selected.value の無制限を塞ぐ)。全クエリを user_id で絞り、候補キーは利用者自身の freee_deals から導いたものだけを受け付ける前提で、上書きの保存も user_id で分ける。利用者の文字列 (支出名・メモ・取引先名) は React の既定エスケープで描画し dangerouslySetInnerHTML を使わない。アプリは LLM を呼ばず外部へ送信しない (qa-tradeoff-decision-003)。migration は追加のみ。具体の上限は qa-tradeoff-security-web-003 (agent 推定) を参照。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:19:22Z)
-
-#### 裏付け質疑: `qa-tradeoff-security-web-evidence-001`
+#### 主たる接地根拠: `qa-cash-security-web-005`
 
 **問**
 
-security 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。
+現金明細の入力・削除・復元・一括操作で何を拒否し、何を守るか。
 
 **答**
 
-packages/api/src/index.ts:89 で bodyLimit が全体に掛かる。POST /api/tradeoff の zod (routes/analytics.ts:805 付近の tradeoffSchema) は title ≤200、amount 正の整数、selected の label ≤200 と件数 ≤50 を課すが、covered と selected.value には上下限が無い。利用者の文字列は React の既定エスケープで描画しており dangerouslySetInnerHTML は使っていない。
+API の zod で名義・業務の目的・収支・事業 / 個人を候補に限り、実在しない日付、金額の範囲外、長すぎる文字列 (内容 60 字・メモ 200 字・駅名 40 字・その他の目的 40 字) を 400 で拒否する。一括削除と一括復元の id 配列は 100 件までで、他の利用者の id を 1 件でも含めば全体を 404 にして何も変えない。削除中の行は PUT でも 404 にし、編集で復活させない。新しい restore / bulk-delete / bulk-restore は canonical-mutation-fence に登録する。削除中の行が一覧・合計・取引・集計・バックアップ (BACKUP_SNAPSHOT_SQL)・取込時の設定スナップショット (loadImportRestoreSettingsSnapshot)・科目使用状況のどこにも出ない不変条件を API テストで固定する。下書きはブラウザ内だけに置きサーバーへ送らない。領収書ファイルは受け取らない。例外は 1 つだけで、JSON 復元の『移行先の現金明細が 0 件か』の判定だけは削除中の行も数える (loadImportRestoreSettingsSnapshot の destination_counts に、削除中を含む現金明細の件数を 1 つ足す)。削除中の行が残っている間は現金明細を復元せず、理由を表示する。バックアップの id をそのまま INSERT して主キーが衝突し、復元全体が失敗することを防ぐためである。件数のほかに、削除中の行の中身はどの出力にも出さない (qa-cash-decision-009)。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者の承認 (appr-foundation-cash-004、qa-cash-decision-010) と、決定 qa-cash-decision-006 (一括復元) / 009 (JSON 復元の件数の例外) の範囲に収まる確定内容。前回の確定 (qa-cash-security-web-004) に例外の記述を足した。JSON 復元の判定は routes/imports.ts と store.ts の現物で確認した。 / 回答時刻: 2026-09-21T22:45:23Z)
 
-#### 裏付け質疑: `qa-tradeoff-security-web-003`
+#### 裏付け質疑: `qa-cash-security-web-evidence-001`
 
 **問**
 
-web のトレードオフ画面で、利用者が決めていない 入力の上限値 を何にするか。
+security 章の裏付けとして、現行実装について何を観測したか。
 
 **答**
 
-支出名 100 文字、メモ 500 文字、候補のメモ 500 文字、候補キー 300 文字、金額は 1〜100,000,000 円の整数、開始月は YYYY-MM、選んだ候補は最大 50 件、候補の value は 0〜100,000,000 の整数、covered は −10,000,000,000〜10,000,000,000 の整数とする。上書きの保存は 1 回に 1 候補。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。
+packages/api/src/index.ts:58 で secureHeaders、:108 で canonicalMutationFence を全 /api/* に掛ける。cash の入力は zod (packages/api/src/routes/cash.ts:57-73) で side/io の列挙、金額の上限 1,000,000,000、内容 60 字、科目 60 字、メモ 200 字、駅名 40 字を検証し、科目は checkCategory (:146) で利用者の科目表と照合する。cash 経路に専用のレート制限は無い。削除は物理削除 (:268) で、取り消しの記録は残らない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-21T15:20:56Z)
 
-#### 裏付け質疑: `qa-tradeoff-security-web-004`
+#### 裏付け質疑: `qa-cash-security-web-003`
 
 **問**
 
-web のトレードオフ画面で、クライアントが送る試算値をどう扱うか。
+web の現金入力画面で、利用者が決めていない 下書きをブラウザ内にどう保持するか。
 
 **答**
 
-POST /api/tradeoff の covered・判定・候補の月額はサーバが core で再計算した値だけを保存し、送られた値は使わない (qa-tradeoff-backend-web-004 の (6))。候補キーはその利用者の現在の候補にあるものだけを受け付け、無いものは 422 で拒否する。上書きの PUT は user_id で行を分け、他の利用者の候補キーには書けない。これは agent の推定で、利用者は未確認である。
+下書きのキーに利用者 id を含めて他の利用者と混ざらないようにし、ログアウト時に消す。保存するのは入力途中の項目値だけで、一覧の内容やサーバーの応答は保存しない。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: completeness evaluator の medium 指摘 (POST の covered / verdict / selected.value をサーバで再計算するかが未確定) を受けて agent が補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:39:50Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:20:56Z)
 
-#### 裏付け質疑: `qa-tradeoff-security-web-005`
+#### 裏付け質疑: `qa-cash-decision-006`
 
 **問**
 
-qa-tradeoff-security-web-003 の covered の範囲 (±1e10 の符号付き) と、クライアント値への範囲検査の記述を、サーバ再計算 (qa-tradeoff-security-web-004) とどう整合させるか。
+一覧の選択から一括削除した行を、削除完了トーストの『元に戻す』でどう戻すか。現行の仕様には 1 件ずつの復元しか無い。
 
 **答**
 
-POST /api/tradeoff の zod スキーマから covered・verdict・selected.value を外し、受け取るのは支出名・金額・単発 / 毎月・開始月・メモ・候補キーの配列だけにする。003 の covered ±1e10 と value 0〜1e8 の範囲は入力検査ではなく、サーバが計算した値の保存前の不変条件 (covered は 0 以上 1e10 以下の整数) として core のテストで守る。候補キーは長さ 300 以下の文字列で、その利用者の現在の候補に存在することを検証する (無ければ 422)。これは agent の推定で、利用者は未確認である。
+一括復元の API を足す。POST /api/cash-entries/bulk-restore が一括削除と同じ id の配列 (100 件まで) を受け、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にして何も戻さず、全件を 1 つの D1 batch で deleted_at を外して取引と集計を作り直す。トーストの『元に戻す』は一括削除した id をそのまま渡す。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: completeness evaluator の low 指摘 (security 章の covered ±1e10 とクライアント値への範囲検査の記述が -004 と食い違う) を受けて agent が補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T22:24:40Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢 (一括復元の API を足す・1 件ずつ復元を繰り返す・一括削除では元に戻すを出さない) と推奨案を提示し、利用者が「一括復元の API を足す (推奨)」を選択。answered_at は選択時刻の上界。 / 回答時刻: 2026-09-21T15:34:28Z)
+
+#### 裏付け質疑: `qa-cash-decision-009`
+
+**問**
+
+JSON 復元は移行先の現金明細が 0 件のときだけバックアップの明細を id のまま入れる。削除中の行だけが残る利用者は 0 件と判定され、主キーが衝突して復元全体が失敗する。どう扱うか。
+
+**答**
+
+削除中も件数に数える。『空か』の判定だけは削除中の行を数え、削除中の行が残る間は現金明細を復元せず理由を表示する。削除中の行を他のどの出力にも出さない不変条件の例外は、この件数 1 つだけとする。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢 3 件 (削除中も件数に数える・復元前に削除中の行を消す・衝突した行だけ飛ばす) と推奨案を提示し、利用者が「削除中も件数に数える (推奨)」を選択。answered_at は選択時刻の上界。 / 回答時刻: 2026-09-21T22:44:32Z)
 
 ## To-Be / Delta
 
@@ -104,18 +104,18 @@ POST /api/tradeoff の zod スキーマから covered・verdict・selected.value
 
 ### 到達すべき状態 (To-Be)
 
-- **G5**: 試算条件と候補ごとの上書きを安全に記録する。『この条件で試算』を押すたびに条件 (支出名・金額・単発 / 毎月・開始月・メモ・選んだ候補・差額) を既存 tradeoff_plans へ履歴として追加し、画面は最新の 1 件を復元する。保存一覧と翌月の突合は画面から外すが、既存の行と突合の関数は消さない。列と表は追加のみの migration で足し、入力は zod で検証し文字数に上限を設け、利用者ごとに分離する。
+- **G4**: 現金明細の入力と変更を安全に保つ。利用者ごとの分離、入力検証、削除・復元の権限確認、削除済み行を集計へ混ぜない不変条件を API と DB の両方で守る。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O5 | 試算条件と上書きの記録が追加のみで安全に行われる。 | migration が CREATE TABLE / ALTER TABLE ADD COLUMN だけで、api テストで zod の上限・認証・利用者分離・最新 1 件の復元を検査し、既存の tradeoff_plans の行と tradeoffReview の契約テストが緑のままである。 |
+| O4 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I3**: core に科目×取引先の候補集計・推移・必要度・自動の理由を新設し、上書きの新表と保存 API を足す。
-- **I5**: tradeoff_plans に開始月・メモ列を足し、POST で履歴を追加、GET で最新 1 件を返して画面で復元する。保存一覧と突合の表示を外す。
+- **I3**: cash_entries に owner・transit_purpose・deleted_at を足す追加のみの migration 0050 (入力経路は列を持たず交通費の区間の有無から導く) と、削除・復元・一括削除・一括復元の API、削除中の行を読まない条件を cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に掛けること、夜間の完全消去を実装する。 JSON 復元の『空か』判定だけは削除中の行も数え、削除中の行が残る間は現金明細を復元しない (qa-cash-decision-009)。
+- **I6**: 入力検証 (名義・業務の目的・カテゴリの候補、文字数、金額の範囲) を core と API の zod で揃え、他の利用者の行を 404 にする。
 
 ### 本章に効く確定意思決定
 
@@ -127,9 +127,9 @@ POST /api/tradeoff の zod スキーマから covered・verdict・selected.value
 
 ### 本章での適用
 
-入力検証を境界に置く原則を、試算の保存と上書きの保存に適用した。zod で支出名・メモ・候補キーの文字数、金額・件数・covered の範囲を課し、現行で上限の無かった covered と selected.value を塞ぐ。利用者の文字列は React の既定エスケープで描画し、アプリは LLM を呼ばないので、プロンプト注入や外部送信の経路が無い。
+Secure by Design card の『入力を許可リストで検証し、大きさを境界で制限する』を、現金明細の入力と一括削除に適用した。名義・業務の目的・収支・事業 / 個人は列挙に限り、文字列は字数、金額は範囲、一括削除の id 配列は件数で境界を切る。下書きはサーバーへ送らないので、サーバー側で守る入力面を増やさない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:23:17Z)
 
 ### Secure by Design — deep knowledge card
 
@@ -176,5 +176,4 @@ POST /api/tradeoff の zod スキーマから covered・verdict・selected.value
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| hono-body-limit | 4.13.8 | Hono (honojs) (github.com) | https://github.com/honojs/hono/releases/latest | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |
-| owasp-asvs | 5.0.0 | OWASP Foundation (github.com) | https://github.com/OWASP/ASVS/blob/master/README.md | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |
+| owasp-asvs | 5.0.0 | OWASP Foundation (github.com) | https://github.com/OWASP/ASVS/blob/master/README.md | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |

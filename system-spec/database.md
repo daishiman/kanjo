@@ -3,7 +3,7 @@ status: confirmed
 category: database
 aggregate: 確定
 spec_cells: [database.web, database.mobile, database.tablet, database.desktop-windows, database.desktop-linux, database.desktop-macos]
-serves_goals: [G3, G5]
+serves_goals: [G2, G4]
 ---
 
 # データベース (database)
@@ -15,12 +15,12 @@ serves_goals: [G3, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-tradeoff-database-web-001。裏付け質疑 (`qa_refs`): `qa-tradeoff-database-web-evidence-001`, `qa-tradeoff-database-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、database では端末内に試算条件を持つオフライン保存と D1 との同期規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、database ではタブレットと web で同じ試算を同時に編集したときの行の競合規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、database では端末内データベースへの候補のキャッシュと失効の規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、database では端末内データベースの版の移行手順を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、database では端末内データベースと D1 の差分の取り込み規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-cash-database-web-005。裏付け質疑 (`qa_refs`): `qa-cash-database-web-evidence-001`, `qa-cash-database-web-003`, `qa-cash-decision-009` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、database では外出先で入力した現金明細を端末内 DB に溜めて D1 と同期する規則 (論理削除の伝播を含む)を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、database では共有端末に残る現金明細のキャッシュの保持期限を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、database ではオフライン時に入力した明細を保留する端末内の保存形を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、database では端末内に保留した明細ファイルの権限を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、database では端末内に保留した明細を Keychain とファイルのどちらに置くかを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G3, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 上書きの読み書きを (user_id, candidate_key) の一意キー 1 本で行う形へ反映した。GET では利用者の上書きを 1 回で読み、候補に重ねるのは core 側で行う。 |
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration を追加のみ (CREATE TABLE と ADD COLUMN) に限り、既存の tradeoff_plans の行を書き換えない形へ反映した。途中で Deploy が止まっても既存の行と突合の関数は読めるままになる。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | cash_entries の新しい列の書き込み元を 1 経路ずつに限る形へ反映した。deleted_at は削除と一括削除で付け、復元と一括復元でだけ外し、夜間の完全消去は読むだけで行ごと消す。owner と transit_purpose は追加と更新でだけ書く。JSON 復元の INSERT は新しい列を持つ形に合わせる。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration 0050 を列の追加と索引だけにすることで、既存の現金明細を 1 行も書き換えず、巻き戻しが新しい列を読まないことだけで済む形へ反映した。schema-guard.ts の EXPECTED_D1_MIGRATION を 0050 の migration ファイル名へ進め、migration 前の D1 では Worker が論理削除の経路を動かさないようにする。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,43 +37,55 @@ serves_goals: [G3, G5]
 
 ### Web (web)
 
-- 資するゴール: G3, G5
+- 資するゴール: G2, G4
 
-#### 主たる接地根拠: `qa-tradeoff-database-web-001`
-
-**問**
-
-web のトレードオフ画面が要する永続化は何か。
-
-**答**
-
-追加のみの migration (予定番号 0050) で、tradeoff_plans に開始月とメモの列を足し、候補ごとの上書き (必要度とメモ) を置く新表を作る (qa-tradeoff-decision-002, 006, 007)。『この条件で試算』のたびに tradeoff_plans へ 1 行を追加し (qa-tradeoff-decision-008)、最新の 1 件を復元に使う。既存の行と列は書き換えず、保存一覧と突合の表示は外すがデータは残す (qa-tradeoff-decision-004)。全行を user_id で分ける。候補は freee_deals から読み、候補そのものは保存しない。具体の形と上限は qa-tradeoff-database-web-003 (agent 推定) を参照。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:19:22Z)
-
-#### 裏付け質疑: `qa-tradeoff-database-web-evidence-001`
+#### 主たる接地根拠: `qa-cash-database-web-005`
 
 **問**
 
-database 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。
+現金明細の名義・業務の目的・論理削除を D1 にどう持ち、どの読み取り経路で削除中の行を外すか。
 
 **答**
 
-D1 の tradeoff_plans (migrations/0000_init.sql:85-95、packages/api/src/db/schema.ts:610-620) は id, user_id, title, amount, recurring, selected (JSON 文字列), covered, verdict, created_at を持ち、開始月とメモの列が無い。候補ごとの上書きを置く表は無い。freee_deals (schema.ts:47) は user_id, month, date, io (income / expense), partner, account_raw, account_norm, amount を持ち、科目×取引先の集計に必要な列がそろっている。最新の migration は 0049_ai_report_invariants.sql で、schema-guard.ts の EXPECTED_D1_MIGRATION も 0049 を指す。
+追加のみの migration 0050 で cash_entries に owner (TEXT NULL、business / spouse / family の CHECK)、transit_purpose (TEXT NULL)、deleted_at (TEXT NULL) を足し、(user_id, deleted_at) の索引を張る。既存行は書き換えない。削除中の行を読まない条件 (deleted_at IS NULL) は cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、集計・取引の導出、バックアップ、取込時の設定スナップショットは削除中の行を一切読まない。JSON 復元の INSERT は新しい列を持つ形に合わせる。schema-guard.ts の EXPECTED_D1_MIGRATION を 0050 の migration ファイル名へ進め、migration 前の D1 では Worker が論理削除の経路を動かさないようにする。例外は 1 つだけで、JSON 復元の『移行先の現金明細が 0 件か』の判定だけは削除中の行も数える (loadImportRestoreSettingsSnapshot の destination_counts に、削除中を含む現金明細の件数を 1 つ足す)。削除中の行が残っている間は現金明細を復元せず、理由を表示する。バックアップの id をそのまま INSERT して主キーが衝突し、復元全体が失敗することを防ぐためである。件数のほかに、削除中の行の中身はどの出力にも出さない (qa-cash-decision-009)。夜間 cron の完全消去 job は /api/* に掛かる schema guard の外で動くため、migration 0050 の適用 (Migrate) を Worker の配備 (Deploy) より先に行う既存の順序で守る。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者の承認 (appr-foundation-cash-004、qa-cash-decision-010) と、決定 qa-cash-decision-009 (JSON 復元の件数の例外) の範囲に収まる確定内容。前回の確定 (qa-cash-database-web-004) に例外の記述を足した。JSON 復元の判定は routes/imports.ts と store.ts の現物で確認した。 / 回答時刻: 2026-09-21T22:45:23Z)
 
-#### 裏付け質疑: `qa-tradeoff-database-web-003`
+#### 裏付け質疑: `qa-cash-database-web-evidence-001`
 
 **問**
 
-web のトレードオフ画面で、利用者が決めていない 候補キーと上書きの表の形・文字数の上限 を何にするか。
+database 章の裏付けとして、現行実装について何を観測したか。
 
 **答**
 
-候補キーは『account_norm + 区切り文字 + partner (空なら空文字)』の文字列。上書きは新表 tradeoff_candidate_notes (user_id, candidate_key, need は low / mid / high か NULL, memo は NULL 可, updated_at) で (user_id, candidate_key) を一意にし upsert する。need と memo が両方 NULL になったら行を消して自動へ戻す。tradeoff_plans には start_month (YYYY-MM、NULL 可) と memo (NULL 可) を ADD COLUMN で足し、selected の JSON に候補キーを含める。既存行は NULL のまま読む。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。
+cash_entries (packages/api/src/db/schema.ts:439-464) は id・user_id・date・month・side (biz/per)・io・amount・description・category_major/mid・memo・transit_from/to・transit_round・receipt_waived・created_at・updated_at を持ち、名義・業務の目的・削除時刻の列は無い。索引は idx_cash_month (user_id, month) だけ。読み取りは loadCashEntries (packages/api/src/store.ts:521-528) の 1 か所で user_id だけで絞る。migration は migrations/ 直下の連番で最新は 0049_ai_report_invariants.sql。取込・期間の一括削除には tombstone 方式の取り消し (packages/api/src/deletion-retention.ts:87) が別にあり、1 行を同じ id で戻す用途ではない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-21T15:20:56Z)
+
+#### 裏付け質疑: `qa-cash-database-web-003`
+
+**問**
+
+web の現金入力画面で、利用者が決めていない 名義・入力経路・完全消去の具体を何にするか。
+
+**答**
+
+入力経路は列を持たず transit_from IS NOT NULL で交通費入力、それ以外を通常入力と導く (既存行を書き換えずに全行へ経路が付く)。既存行の owner は NULL (未設定) のままとし、画面は『未設定』と表示する。新規入力の担当者の既定は事業なら business、個人なら未選択とする。完全消去は deleted_at が 30 日より前の行を 1 晩あたり最大 500 行消す。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:20:56Z)
+
+#### 裏付け質疑: `qa-cash-decision-009`
+
+**問**
+
+JSON 復元は移行先の現金明細が 0 件のときだけバックアップの明細を id のまま入れる。削除中の行だけが残る利用者は 0 件と判定され、主キーが衝突して復元全体が失敗する。どう扱うか。
+
+**答**
+
+削除中も件数に数える。『空か』の判定だけは削除中の行を数え、削除中の行が残る間は現金明細を復元せず理由を表示する。削除中の行を他のどの出力にも出さない不変条件の例外は、この件数 1 つだけとする。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢 3 件 (削除中も件数に数える・復元前に削除中の行を消す・衝突した行だけ飛ばす) と推奨案を提示し、利用者が「削除中も件数に数える (推奨)」を選択。answered_at は選択時刻の上界。 / 回答時刻: 2026-09-21T22:44:32Z)
 
 ## To-Be / Delta
 
@@ -81,20 +93,22 @@ web のトレードオフ画面で、利用者が決めていない 候補キー
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: 見直し候補を事業経費の科目×取引先ごとに直近 3 か月の平均月額で作る。必要度 (低 / 中 / 高) と直近の推移 (過去 3 か月の減少 / 横ばい / 増加) を core が推定し、『損益・メモ』には検知器の改善案や推移から作る自動の理由を出す。利用者は必要度を上書きしメモを書け、それらは D1 に保存して自動の値より優先する。
-- **G5**: 試算条件と候補ごとの上書きを安全に記録する。『この条件で試算』を押すたびに条件 (支出名・金額・単発 / 毎月・開始月・メモ・選んだ候補・差額) を既存 tradeoff_plans へ履歴として追加し、画面は最新の 1 件を復元する。保存一覧と翌月の突合は画面から外すが、既存の行と突合の関数は消さない。列と表は追加のみの migration で足し、入力は zod で検証し文字数に上限を設け、利用者ごとに分離する。
+- **G2**: 記録が消えない。入力途中の内容はブラウザ内に自動保存して復元でき、削除は論理削除として一覧と集計から外したうえで『元に戻す』で同じ行を復活でき、30 日後に夜間処理で完全に消える。
+- **G4**: 現金明細の入力と変更を安全に保つ。利用者ごとの分離、入力検証、削除・復元の権限確認、削除済み行を集計へ混ぜない不変条件を API と DB の両方で守る。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | 候補と必要度・推移・理由が決定論で出て、上書きが優先される。 | core の契約テストで、科目×取引先の集計・直近 3 か月平均・推移の 3 区分・必要度の推定・理由の文を固定入力で検査し、api テストで上書きの保存と読み戻し、利用者間の分離を検査する。 |
-| O5 | 試算条件と上書きの記録が追加のみで安全に行われる。 | migration が CREATE TABLE / ALTER TABLE ADD COLUMN だけで、api テストで zod の上限・認証・利用者分離・最新 1 件の復元を検査し、既存の tradeoff_plans の行と tradeoffReview の契約テストが緑のままである。 |
+| O2 | 下書きと論理削除で記録が欠けない。 | DOM テストで入力→再描画後に下書きが復元されること、API テストで削除→元に戻すで同じ id が一覧に戻ること、削除中の行が集計 (cashToDeal / cashToTx の入力) に 0 件であることが通る。 |
+| O4 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I3**: core に科目×取引先の候補集計・推移・必要度・自動の理由を新設し、上書きの新表と保存 API を足す。
-- **I5**: tradeoff_plans に開始月・メモ列を足し、POST で履歴を追加、GET で最新 1 件を返して画面で復元する。保存一覧と突合の表示を外す。
+- **I3**: cash_entries に owner・transit_purpose・deleted_at を足す追加のみの migration 0050 (入力経路は列を持たず交通費の区間の有無から導く) と、削除・復元・一括削除・一括復元の API、削除中の行を読まない条件を cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に掛けること、夜間の完全消去を実装する。 JSON 復元の『空か』判定だけは削除中の行も数え、削除中の行が残る間は現金明細を復元しない (qa-cash-decision-009)。
+- **I4**: 入力途中の内容をブラウザ内に自動保存し、保存時刻を表示し、復元する。『入力をクリア』で下書きも消す。
+- **I5**: 削除をインライン確認にし、削除完了トーストの『元に戻す』で同じ行を復活させる。空状態では画面内だけのサンプル表示と『はじめての明細を入力』を出す。
+- **I6**: 入力検証 (名義・業務の目的・カテゴリの候補、文字数、金額の範囲) を core と API の zod で揃え、他の利用者の行を 404 にする。
 
 ### 本章に効く確定意思決定
 
@@ -106,9 +120,9 @@ web のトレードオフ画面で、利用者が決めていない 候補キー
 
 ### 本章での適用
 
-追加のみの schema 進化の原則を、上書きと試算条件の置き場所に適用した。上書きは候補ごとに 1 行の新表とし (user_id, candidate_key) の一意制約で upsert するため、同じ候補に上書きが重複しない。試算条件は tradeoff_plans に ADD COLUMN で開始月とメモを足し、既存行は NULL として読むので、突合の関数 tradeoffReview と既存の行が壊れない。
+DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、cash_entries に足す列の選び方に適用した。名義・業務の目的・削除時刻は利用者が決めた事実なので列に持つ。入力経路は交通費の区間があるかどうかで決まる導出値なので列を持たず、合計や件数も保存しない。こうして既存行を 1 行も書き換えずに、全行へ経路が付く。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:23:17Z)
 
 ### Domain-Driven Design — deep knowledge card
 
@@ -155,5 +169,5 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |
-| sqlite-upsert | 2024-04-11 | SQLite Consortium (sqlite.org) (sqlite.org) | https://sqlite.org/lang_upsert.html | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |
+| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |
+| sqlite-alter-table | 2026-06-04 | SQLite (www.sqlite.org) | https://www.sqlite.org/lang_altertable.html | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |

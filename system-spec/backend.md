@@ -3,7 +3,7 @@ status: confirmed
 category: backend
 aggregate: 確定
 spec_cells: [backend.web, backend.mobile, backend.tablet, backend.desktop-windows, backend.desktop-linux, backend.desktop-macos]
-serves_goals: [G2, G3, G4, G5]
+serves_goals: [G2, G3, G4]
 ---
 
 # バックエンド (backend)
@@ -15,12 +15,12 @@ serves_goals: [G2, G3, G4, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-tradeoff-backend-web-001。裏付け質疑 (`qa_refs`): `qa-tradeoff-backend-web-evidence-001`, `qa-tradeoff-backend-web-003`, `qa-tradeoff-backend-web-004`, `qa-tradeoff-decision-010`, `qa-tradeoff-decision-011`, `qa-tradeoff-backend-web-005` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G4, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、backend では端末からの試算の差分同期 APIを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、backend ではタブレットと web の同時操作の競合を解く APIを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリ向けの API の版管理と後方互換の期間を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、backend では古い版のデスクトップアプリからの呼び出しの拒否を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリへの通知の APIを決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-cash-backend-web-005。裏付け質疑 (`qa_refs`): `qa-cash-backend-web-evidence-001`, `qa-cash-backend-web-003`, `qa-cash-decision-006`, `qa-cash-decision-009` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3, G4 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、backend ではオフラインで作られた明細の後着と、論理削除・復元の競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、backend では複数端末から同じ明細を同時に編集したときの競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、backend では端末ごとの同期カーソルを返す APIを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、backend では端末ごとの同期カーソルの失効規則を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、backend ではバックグラウンド同期用の差分取得 APIを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G2, G3, G4, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 依存方向を core (試算・防衛ラインへの影響・候補集計・推奨) ← api (analytics route の tradeoff 経路と上書きの保存経路) ← web (トレードオフ画面) の一方向へ反映した。画面内のインライン計算 (Tradeoff.tsx:66) を削除し、api と web が同じ純関数の結果を使う。 |
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | データアクセスを route 側に閉じ、純関数は D1 を知らない経費行・上書き・月の余裕だけを受け取る形へ反映した。候補の集計は freee_deals を期間と io=expense で絞った 1 回の読み取りで作る。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | api の cash 経路から集計・絞り込みの計算を外し、core の cash-screen を唯一の計算元にする形へ反映した。論理削除・復元・一括削除・一括復元の各経路は、行の状態を変えて取引と集計を作り直すことだけを担い、canonical-mutation-fence に登録して既存の書込と同じ順序保証に乗せる。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 削除中の行を読まない条件を、cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に同じ deleted_at IS NULL として掛ける形へ反映した。読み取りの正本が 1 か所に集まっていないため、経路の一覧を仕様に持ち、経路ごとの API テストで条件の抜けを検出する。削除・復元・一括削除・一括復元の書き込みは、それぞれの経路 1 か所の D1 batch でだけ行う。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,91 +37,67 @@ serves_goals: [G2, G3, G4, G5]
 
 ### Web (web)
 
-- 資するゴール: G2, G3, G4, G5
+- 資するゴール: G2, G3, G4
 
-#### 主たる接地根拠: `qa-tradeoff-backend-web-001`
-
-**問**
-
-web のトレードオフ画面の規則をどこに置き、どの契約で返すか。
-
-**答**
-
-試算 (毎月は月額×12、単発は発生月だけ計上、削減は選んだ候補の月額合計×12、年間の差額 = 新しい支出の年額 − 削減の年額)、防衛ラインへの影響 (defenseLine の月の余裕×12 から年間の差額を引き、0 以上で維持)、科目×取引先の候補集計と直近 3 か月平均・推移・必要度の推定・自動の理由、推奨の組み合わせの列挙・評価・順位・理由を packages/core の純関数に置く (qa-tradeoff-decision-001〜003, 005, 007, 009)。GET /api/tradeoff は候補 (上書き済みの必要度とメモを重ねたもの)・防衛ラインの月の余裕・最新の試算条件を返す。候補ごとの上書き (必要度・メモ) を保存する API を新設する (qa-tradeoff-decision-002)。POST /api/tradeoff は開始月・メモ・候補キーを受け、履歴として 1 行を追加する (qa-tradeoff-decision-008)。既存の defenseLine・/api/defense-line・tradeoffCandidates・tradeoffReview の数字は変えない。具体の規則は qa-tradeoff-backend-web-003 (agent 推定) を参照。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:19:22Z)
-
-#### 裏付け質疑: `qa-tradeoff-backend-web-evidence-001`
+#### 主たる接地根拠: `qa-cash-backend-web-005`
 
 **問**
 
-backend 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。
+削除中の行を読まない条件と一括復元を含めて、API は何を返し何を拒否するか。
 
 **答**
 
-GET /api/tradeoff (routes/analytics.ts:759-794) は {candidates, budgets, plans (最大 50), review} を返し、candidates は core の tradeoffCandidates (diagnosis-detectors.ts:735。kinds は subs_dup / subs_spike / budget_over / above_range / unexplained、amount は月額) の結果である。POST /api/tradeoff (analytics.ts:805-821) は試算を 1 行追加する。防衛ラインは core の defenseLine (analysis.ts:1076-1114、line = 個人平均 + 事業固定費平均、diff = 収入見込み − line の月額、status は ok / tight / danger / nodata) と GET /api/defense-line (analytics.ts:752) にある。core の Dataset.biz.expense は科目ごとの月次合計だけで取引先を持たないが、FreeeDeal 型 (types.ts:238 以降) は partner と accountNorm を持つ。試算の計算は core に無く画面内のインラインにある。
+core の cash-screen.ts が合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を導き、API は JSON に写すだけにする。DELETE /api/cash-entries/:id は論理削除 (deleted_at を付けて同じ batch で取引と集計を作り直す)、POST /api/cash-entries/:id/restore は同じ id を戻し、POST /api/cash-entries/bulk-delete と POST /api/cash-entries/bulk-restore は 100 件までの id 配列を 1 batch で処理し、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にする。削除中の行を読まない条件 (deleted_at IS NULL) を cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、PUT は削除中の行を 404 にする。新しい restore / bulk-delete / bulk-restore の経路は canonical-mutation-fence に登録し、既存の POST / PUT / DELETE と同じ書込の順序保証に乗せる。POST / PUT は owner と transit_purpose を受ける。例外は 1 つだけで、JSON 復元の『移行先の現金明細が 0 件か』の判定だけは削除中の行も数える (loadImportRestoreSettingsSnapshot の destination_counts に、削除中を含む現金明細の件数を 1 つ足す)。削除中の行が残っている間は現金明細を復元せず、理由を表示する。バックアップの id をそのまま INSERT して主キーが衝突し、復元全体が失敗することを防ぐためである。件数のほかに、削除中の行の中身はどの出力にも出さない (qa-cash-decision-009)。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者の承認 (appr-foundation-cash-004、qa-cash-decision-010) と、決定 qa-cash-decision-006 (一括復元) / 009 (JSON 復元の件数の例外) の範囲に収まる確定内容。前回の確定 (qa-cash-backend-web-004) に例外の記述を足した。JSON 復元の判定は routes/imports.ts と store.ts の現物で確認した。 / 回答時刻: 2026-09-21T22:45:23Z)
 
-#### 裏付け質疑: `qa-tradeoff-backend-web-003`
+#### 裏付け質疑: `qa-cash-backend-web-evidence-001`
 
 **問**
 
-web のトレードオフ画面で、利用者が決めていない 候補の範囲・推移と必要度の推定規則・組み合わせの列挙と順位 を何にするか。
+backend 章の裏付けとして、現行実装について何を観測したか。
 
 **答**
 
-候補は分析期間の終了月から遡る 3 か月の freee 事業経費 (io=expense) を account_norm×partner で集計し、3 か月平均月額が 1,000 円以上のものを金額降順に最大 50 件とする。取引先が空なら『取引先なし』。推移は 3 か月の最初の月に対し最後の月が +10% 超で増加、−10% 未満で減少、それ以外は横ばい。必要度は科目の既定 (地代家賃・通信費・水道光熱費・租税公課・保険料・支払利息 = 高、外注費・支払手数料・消耗品費・荷造運賃 = 中、広告宣伝費・接待交際費・会議費・新聞図書費・研修費・旅費交通費・諸会費 = 低、その他 = 中) を置き、検知器の改善案に当たる候補は 1 段下げる。組み合わせは月額上位 12 件から 2〜4 件を列挙し (最大 781 通り)、年間削減額 ≥ 新しい支出の年額のものだけを残して、リスク (必要度 高 の件数) の昇順 → 実行のしやすさ (必要度 低 の件数) の降順 → 超過額の昇順 → 件数の昇順 → 候補キーの辞書順で並べ上位 4 件を返す。充足度は 削減の年額 ÷ 新しい支出の年額 の百分率。単発の新しい支出は年額 = 金額 (発生月だけ計上)。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。
+cash の API は packages/api/src/routes/cash.ts の GET/POST /api/cash-entries と PUT/DELETE /api/cash-entries/:id。書込後は recomputeFromDeals / planRecomputeFromDeals で現金明細から導く取引と集計を同じ D1 batch で作り直し、JSON スナップショットを無効化する (:198-275)。導出の純関数は packages/core/src/cash.ts (309 行: cashToDeal・cashToTx・buildTransitEntry・findCashDealDuplicates など) にある。名義の語彙は packages/core/src/types.ts:114 の OWNER_VALUES (business / spouse / family) で、未設定 (null) を許す。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-21T15:20:56Z)
 
-#### 裏付け質疑: `qa-tradeoff-backend-web-004`
+#### 裏付け質疑: `qa-cash-backend-web-003`
 
 **問**
 
-qa-tradeoff-backend-web-003 の必要度の規則は、利用者が選んだ選択肢の説明 (qa-tradeoff-decision-002: 固定費で推移が横ばいなら高、スポットや減少傾向なら低) と食い違っている。これを利用者の選択に沿う規則へ直し、あわせて未確定だった covered の意味・サーバでの再計算・理由の文・検知器との対応付け・上書き保存の経路を決定論にするには何を置くか。
+web の現金入力画面で、利用者が決めていない 復元・一括削除の具体の上限と期限切れの扱いを何にするか。
 
 **答**
 
-003 の必要度の規則 (科目名の固定表) は本 qa で置き換え、003 の他の規則 (候補の範囲・推移・組み合わせの列挙と順位・充足度・単発の年額) はそのまま使う。(1) 必要度の推定: 候補の科目 (account_norm) に既存の core の catProfile を当て、type と候補の推移 (003 の 3 か月の初月比) から決める。固定費で推移が横ばいか増加なら 高、スポットか推移が減少なら 低、それ以外 (準変動、または固定費で減少以外の組み合わせに当たらないもの) は 中。検知器の改善案に当たる候補は 1 段下げる (高→中、中→低、低は低のまま)。利用者が上書きした必要度があれば推定より優先する。(2) 検知器との対応付け: diagnosis-detectors の改善案の claimKeys に含まれる business:category:<科目> と候補の account_norm が一致すれば当たりとする (取引先は見ない)。(3) 関連ページ: 当たった改善案の nextAction.to をそのまま候補の関連ページにし、当たりが無い候補は関連ページを持たない。(4) 自動の理由の文: 『<type>・直近 3 か月は<推移>』を基本とし、当たりがあれば『・<改善案の label>』を続ける。利用者メモがあればメモを優先して表示する。(5) covered の意味: tradeoff_plans.covered は選んだ候補の月額合計 (円/月) とし、既存の tradeoffReview が翌月の経費の減少額 (月額) と比べる意味と揃える。(6) サーバでの再計算: POST /api/tradeoff はクライアントが送る covered・判定・候補の月額を信用せず、受け取った候補キーと開始月・支出の条件から core の同じ純関数で試算をやり直し、その結果を保存する。受け取った候補キーのうち現在の候補に無いものは 422 で拒否する。(7) 上書き保存の経路: PUT /api/tradeoff/candidates/:key (key は URL エンコードした候補キー) で必要度 (low/mid/high、または null で推定へ戻す) とメモを upsert し、成功後に web は tradeoff の query だけを無効化する。これは agent の推定で、利用者は未確認である。(1) は利用者が選んだ選択肢の説明文をそのまま規則に落としたもので、閾値 (catProfile の cv<0.6 / <1.5) は既存の core の値を使う。
+一括削除は 1 回 100 件まで。完全消去済みの id の復元は 404 にする。復元時の科目が科目表から消えていても行は戻し、科目の検証は次の編集時に行う。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: completeness evaluator の medium 指摘 (必要度の規則が利用者の選択と食い違う、covered の意味とサーバ再計算が未確定、理由・対応付け・関連ページ・上書き経路が未確定) を受けて、agent が既存コード (packages/core/src/analysis.ts の catProfile と tradeoffReview、diagnosis-detectors.ts の claimKeys と nextAction) に合わせて補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:39:50Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:20:56Z)
 
-#### 裏付け質疑: `qa-tradeoff-decision-010`
+#### 裏付け質疑: `qa-cash-decision-006`
 
 **問**
 
-候補の必要度 (低 / 中 / 高) を自動で推定する規則はどれにするか。固定費 / 準変動 / スポットは既存 core の catProfile が月ごとのばらつきで判定する。選択肢: (a) 固定費で推移が横ばいか増加なら高、スポットか減少なら低、それ以外 (準変動など) は中 [推奨] / (b) 固定費で横ばいのときだけ高、スポットか減少なら低、それ以外 (固定費で増加、準変動) は中 / (c) 推移を見ず、固定費は高・準変動は中・スポットは低。
+一覧の選択から一括削除した行を、削除完了トーストの『元に戻す』でどう戻すか。現行の仕様には 1 件ずつの復元しか無い。
 
 **答**
 
-(a) を選ぶ。固定費で推移が横ばいか増加なら高、スポットか推移が減少なら低、それ以外 (準変動など) は中とする。qa-tradeoff-backend-web-004 の (1) の規則は本決定で利用者が確定した。同 qa の『選択肢の説明文をそのまま規則に落とした』という記述は正確でなく、『増加も高』『準変動は中』は本 qa で利用者が決めた。
+一括復元の API を足す。POST /api/cash-entries/bulk-restore が一括削除と同じ id の配列 (100 件まで) を受け、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にして何も戻さず、全件を 1 つの D1 batch で deleted_at を外して取引と集計を作り直す。トーストの『元に戻す』は一括削除した id をそのまま渡す。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 3 案と推奨案を提示し、利用者本人が (a) を選択。completeness evaluator の差し戻し (R3-reask) による追補。 / 回答時刻: 2026-09-21T22:24:40Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢 (一括復元の API を足す・1 件ずつ復元を繰り返す・一括削除では元に戻すを出さない) と推奨案を提示し、利用者が「一括復元の API を足す (推奨)」を選択。answered_at は選択時刻の上界。 / 回答時刻: 2026-09-21T15:34:28Z)
 
-#### 裏付け質疑: `qa-tradeoff-decision-011`
+#### 裏付け質疑: `qa-cash-decision-009`
 
 **問**
 
-診断の検知器が改善案を出した候補の必要度をどう扱うか。固定費見直しの検知器 (fixed_cost_review) は月 3 万円を超える固定費すべてに当たる。選択肢: (a) 必要度は下げず、理由の文と関連ページに改善案を添えるだけにする [推奨] / (b) 固定費見直しと通信費見直し以外の検知器に当たったときだけ 1 段下げる / (c) どの検知器でも 1 段下げる (qa-tradeoff-backend-web-004 の推定)。
+JSON 復元は移行先の現金明細が 0 件のときだけバックアップの明細を id のまま入れる。削除中の行だけが残る利用者は 0 件と判定され、主キーが衝突して復元全体が失敗する。どう扱うか。
 
 **答**
 
-(a) を選ぶ。検知器の改善案に当たっても必要度は下げない。当たった改善案は『損益・メモ』の自動の理由の文 (label) と関連ページ (nextAction.to) にだけ使う。qa-tradeoff-backend-web-004 の『検知器の改善案に当たる候補は 1 段下げる』と qa-tradeoff-backend-web-003 の同趣旨の規則は本決定で取り消す。必要度は qa-tradeoff-decision-010 の規則と利用者の上書きだけで決まる。
+削除中も件数に数える。『空か』の判定だけは削除中の行を数え、削除中の行が残る間は現金明細を復元せず理由を表示する。削除中の行を他のどの出力にも出さない不変条件の例外は、この件数 1 つだけとする。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 3 案と推奨案を提示し、利用者本人が (a) を選択。completeness evaluator の差し戻し (R3-reask) による追補。 / 回答時刻: 2026-09-21T22:24:40Z)
-
-#### 裏付け質疑: `qa-tradeoff-backend-web-005`
-
-**問**
-
-web のトレードオフ画面で、判定 (verdict) の条件、検知器との対応付けで使う科目の正規化、差額の扱いをどう決めるか。
-
-**答**
-
-判定は年間の差額 (新しい支出の年額 − 削減の年額) が 0 以下なら covered (捻出できる)、正なら insufficient (不足) とし、既存 tradeoff_plans.verdict の enum をそのまま使う。検知器との対応付けは、候補の account_norm に diagnosis-detectors.ts の claimPart と同じ正規化 (trim → NFKC → 小文字化) を掛けてから、改善案の claimKeys の business:category:<科目> と比べる。正規化の関数は core から export して 1 か所にする。差額・判定・covered (選んだ候補の月額合計) はどれも導出値で、POST の本文では受け取らず、サーバが core で計算して保存する (qa-tradeoff-backend-web-004 の (6))。これは agent の推定で、利用者は未確認である。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: completeness evaluator の low 指摘 (verdict の条件・claimPart 正規化・差額が導出値であること) を受けて、agent が既存コード (packages/core/src/diagnosis-detectors.ts:112 の claimPart、packages/api/src/routes/analytics.ts の verdict enum) に合わせて補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T22:24:40Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢 3 件 (削除中も件数に数える・復元前に削除中の行を消す・衝突した行だけ飛ばす) と推奨案を提示し、利用者が「削除中も件数に数える (推奨)」を選択。answered_at は選択時刻の上界。 / 回答時刻: 2026-09-21T22:44:32Z)
 
 ## To-Be / Delta
 
@@ -129,26 +105,25 @@ web のトレードオフ画面で、判定 (verdict) の条件、検知器と�
 
 ### 到達すべき状態 (To-Be)
 
-- **G2**: 試算の数字を core の純関数 1 か所で導く。毎月の支出は月額×12、単発の支出は発生月だけに計上し、見直しの削減は選択した候補の月額合計×12 で年額にする。年間の差額 = 新しい支出の年額 − 削減の年額。防衛ラインへの影響は、既存 defenseLine の月の余裕×12 を『防衛ライン余裕』、そこから年間の差額を引いた値を『試算後の余裕』とし、試算後が 0 以上なら維持、負なら割れると文字で示す。 差額の符号は『新しい支出の年額 − 削減の年額』で、正は支出増 (赤の警告)、負は捻出できる。
-- **G3**: 見直し候補を事業経費の科目×取引先ごとに直近 3 か月の平均月額で作る。必要度 (低 / 中 / 高) と直近の推移 (過去 3 か月の減少 / 横ばい / 増加) を core が推定し、『損益・メモ』には検知器の改善案や推移から作る自動の理由を出す。利用者は必要度を上書きしメモを書け、それらは D1 に保存して自動の値より優先する。
-- **G4**: 推奨の組み合わせを core の決まったルールで出す。候補 2〜4 件の組み合わせのうち年間削減額が新しい支出の年額以上になるものを選び、充足度・実行のしやすさ (必要度の低い候補が多いほど易しい)・リスク (必要度の高い候補を含むほど高い) で順位を付けて上位 4 件を示し、選んだ組み合わせの理由の文と関連ページ (サブスク・予算・明細) へのリンクを添える。アプリは LLM を呼ばない。
-- **G5**: 試算条件と候補ごとの上書きを安全に記録する。『この条件で試算』を押すたびに条件 (支出名・金額・単発 / 毎月・開始月・メモ・選んだ候補・差額) を既存 tradeoff_plans へ履歴として追加し、画面は最新の 1 件を復元する。保存一覧と翌月の突合は画面から外すが、既存の行と突合の関数は消さない。列と表は追加のみの migration で足し、入力は zod で検証し文字数に上限を設け、利用者ごとに分離する。
+- **G2**: 記録が消えない。入力途中の内容はブラウザ内に自動保存して復元でき、削除は論理削除として一覧と集計から外したうえで『元に戻す』で同じ行を復活でき、30 日後に夜間処理で完全に消える。
+- **G3**: 画面の数字と判定を core の 1 か所から導く。合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を core の純関数に置き、API は JSON に写すだけ、web は描くだけにする。
+- **G4**: 現金明細の入力と変更を安全に保つ。利用者ごとの分離、入力検証、削除・復元の権限確認、削除済み行を集計へ混ぜない不変条件を API と DB の両方で守る。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | 試算の数字が core の 1 関数から出る。 | core の契約テストで、毎月 80,000 と削減 85,000/月 のとき 年額 960,000 / 1,020,000 / 年間の差額 −60,000 (捻出できる)、単発 300,000 と削減 50,000/月 のとき 年間の差額 −300,000、毎月 100,000 と削減 50,000/月 のとき +600,000 (支出増) が出ること、防衛ライン余裕と試算後の余裕と維持 / 割れるの境界 (0) を検査し、web と api に同じ計算が無いことを grep で確かめる。 |
-| O3 | 候補と必要度・推移・理由が決定論で出て、上書きが優先される。 | core の契約テストで、科目×取引先の集計・直近 3 か月平均・推移の 3 区分・必要度の推定・理由の文を固定入力で検査し、api テストで上書きの保存と読み戻し、利用者間の分離を検査する。 |
-| O4 | 推奨の組み合わせが決定論で並ぶ。 | core の契約テストで、同じ入力に同じ上位 4 件と同じ順位・評価・理由が返り、年間削減額が新しい支出の年額に届かない組み合わせが入らないことを検査する。 |
-| O5 | 試算条件と上書きの記録が追加のみで安全に行われる。 | migration が CREATE TABLE / ALTER TABLE ADD COLUMN だけで、api テストで zod の上限・認証・利用者分離・最新 1 件の復元を検査し、既存の tradeoff_plans の行と tradeoffReview の契約テストが緑のままである。 |
+| O2 | 下書きと論理削除で記録が欠けない。 | DOM テストで入力→再描画後に下書きが復元されること、API テストで削除→元に戻すで同じ id が一覧に戻ること、削除中の行が集計 (cashToDeal / cashToTx の入力) に 0 件であることが通る。 |
+| O3 | 画面の導出が core の 1 か所に集まる。 | core の cash-screen の単体テストが合計・絞り込み・ページング・入力経路・交通費合計を固定し、web と api に同じ計算の重複が無い (grep で 0 件)。 |
+| O4 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I2**: core に試算関数 (年額・差額・単発の計上・防衛ラインへの影響) を新設し、画面の右パネル・選択中バー・計算例がそれだけを読む。
-- **I3**: core に科目×取引先の候補集計・推移・必要度・自動の理由を新設し、上書きの新表と保存 API を足す。
-- **I4**: core に推奨の組み合わせの列挙・評価・順位・理由を新設し、関連ページへのリンクを出す。
-- **I5**: tradeoff_plans に開始月・メモ列を足し、POST で履歴を追加、GET で最新 1 件を返して画面で復元する。保存一覧と突合の表示を外す。
+- **I2**: core に cash-screen を新設し、合計 (収入・支出・差額)、絞り込み (キーワード・収支・カテゴリ・名義・入力経路・金額と日付の範囲)、ページング、入力経路、交通費合計を純関数で導く。
+- **I3**: cash_entries に owner・transit_purpose・deleted_at を足す追加のみの migration 0050 (入力経路は列を持たず交通費の区間の有無から導く) と、削除・復元・一括削除・一括復元の API、削除中の行を読まない条件を cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に掛けること、夜間の完全消去を実装する。 JSON 復元の『空か』判定だけは削除中の行も数え、削除中の行が残る間は現金明細を復元しない (qa-cash-decision-009)。
+- **I4**: 入力途中の内容をブラウザ内に自動保存し、保存時刻を表示し、復元する。『入力をクリア』で下書きも消す。
+- **I5**: 削除をインライン確認にし、削除完了トーストの『元に戻す』で同じ行を復活させる。空状態では画面内だけのサンプル表示と『はじめての明細を入力』を出す。
+- **I6**: 入力検証 (名義・業務の目的・カテゴリの候補、文字数、金額の範囲) を core と API の zod で揃え、他の利用者の行を 404 にする。
 
 ### 本章に効く確定意思決定
 
@@ -160,9 +135,9 @@ web のトレードオフ画面で、判定 (verdict) の条件、検知器と�
 
 ### 本章での適用
 
-Clean Architecture card の Dependency Rule を、試算と推奨の置き場所に適用した。年額・差額・防衛ラインへの影響・候補の推移と必要度・組み合わせの順位は、freee の経費行と上書きと月の余裕だけから決まる入出力のない計算なので core の純関数に置き、api は D1 から経費行・上書き・最新の試算を読んで純関数へ渡し JSON に写すだけにする。こうすると右パネル・選択中バー・計算例が同じ関数の結果を示し、画面ごとに符号や丸めがずれる事故を単体テストで塞げる。
+Clean Architecture card の Dependency Rule を、現金入力の合計・絞り込み・入力経路・交通費合計の置き場所に適用した。これらは明細の配列と条件だけから決まる入出力のない計算なので core の cash-screen 1 か所に置き、api は D1 の読み書き (論理削除・復元・一括削除・一括復元と、同じ batch での取引と集計の作り直し) だけを担って判定を持たない。画面の合計と API の応答が同じ関数から出るので、差額が画面と集計でずれることを単体テストで塞げる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:38:32Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -293,4 +268,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| hono-zod-validator | 0.9.1 | Hono (honojs) (github.com) | https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |
+| hono-zod-validator | 0.9.1 | Hono (honojs) (github.com) | https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |

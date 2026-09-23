@@ -1,16 +1,16 @@
 {
   "renderer": "render-graph-html.py (dev-graph 0.1.11)",
-  "rendered_at": "2026-09-21T15:00:09Z",
+  "rendered_at": "2026-09-22T04:10:57Z",
   "scope": "all nodes",
-  "graph_revision": 4,
+  "graph_revision": 5,
   "input": ".dev-graph/state/graph.json",
-  "input_sha256": "a9d3664bd8ad31888f6721a7fb7b9806b4aea3d25b6b6fab5ed64d66b5cfadcd",
+  "input_sha256": "92a3cabd52b7ba2f8325650301ebe0f9da4cf7077d982720d456c04f9ed2e82c",
   "output": ".dev-graph/render/index.html",
-  "output_sha256": "5dc60435799558ba62a547173654770816df58cc6bddc3f36a2985d6374c0c81",
+  "output_sha256": "7519ae22a042072db049e57bbea27f6d4aa205c05660a7ccc667b8aa7782b10e",
   "nodes": 23,
   "edges": 21,
   "feature_progress": {
-    "feat-budget-screen": {
+    "feat-cash-screen": {
       "done": 0,
       "total": 13
     }
@@ -19,10 +19,23 @@
   "svg": 1,
   "inline_scripts": 2,
   "registration_receipt": {
-    "path": ".dev-graph/plans/feature-package-feat-budget-screen/dev-graph-registration-receipt.json",
+    "path": ".dev-graph/plans/feature-package-feat-cash-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067"
+    "source_digest": "sha256:67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
   },
-  "browser_trial": "headless Chrome 1600x1000 で SVG 描画を目視確認"
+  "beads_linked_nodes": 14,
+  "live_trial": "headless Chrome (--headless=new) screenshot で SVG DAG と SYS-CASH-P01..P13・arch-cash-* 8 件・spec-cash-screen・'active · feature · 0/13' の表示を確認",
+  "known_display_issue": "長い title (P02/P05/P12 等) がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
+  "checks": {
+    "input_digest": true,
+    "output_digest": true,
+    "nodes": true,
+    "edges": true,
+    "progress": true,
+    "external_refs_zero": true,
+    "svg": true,
+    "inline_script": true
+  },
+  "note": "renderer は receipt を書かないため、本 receipt は render-graph-html.py の stdout と registration receipt から再作成し digest を実ファイルと照合した"
 }

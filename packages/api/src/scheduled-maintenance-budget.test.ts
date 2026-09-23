@@ -18,7 +18,7 @@ const normalize = (sql: string): string => sql.replace(/\s+/g, ' ').trim().toLow
 type CountedDatabase = D1Database & { actual: () => number; events: () => readonly string[] };
 
 /**
- * 7 jobすべてをworst branchへ通すcounting fake。prepare回数ではなく、実行methodを1、
+ * 8 jobすべてをworst branchへ通すcounting fake。prepare回数ではなく、実行methodを1、
  * batchは渡されたstatement数として数える。
  */
 function worstPathDatabase(
@@ -169,7 +169,7 @@ function fakeFiles(events: string[]): R2Bucket {
 afterEach(() => vi.restoreAllMocks());
 
 describe('scheduled maintenance D1 plan', () => {
-  it('7 jobを一度ずつ合成し、Free上限50に3本の余白を残す', () => {
+  it('8 jobを一度ずつ合成し、Free上限50に1本の余白を残す', () => {
     expect(Object.keys(SCHEDULED_MAINTENANCE_D1_PLAN.jobs)).toEqual([...SCHEDULED_MAINTENANCE_JOB_NAMES]);
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.jobs).toEqual({
       nightly_backup: 1,
@@ -179,6 +179,7 @@ describe('scheduled maintenance D1 plan', () => {
       deletion_undo_retention: 12,
       audit_header_retention: 3,
       audit_detail_retention: 6,
+      cash_soft_delete_purge: 2,
     });
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBe(SCHEDULED_D1_QUERY_PLAN_MAX);
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBeLessThanOrEqual(SCHEDULED_D1_QUERY_ACCEPTED_MAX);
@@ -197,7 +198,7 @@ describe('scheduled maintenance D1 plan', () => {
     );
   });
 
-  it('backupを先に確定後、R2期限enqueue・資格情報cleanup・両undo sweepでもactual=planned=47', async () => {
+  it('backupを先に確定後、R2期限enqueue・資格情報cleanup・両undo sweep・現金の完全消去でもactual=planned=49', async () => {
     const chronology: string[] = [];
     const database = worstPathDatabase(chronology);
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
@@ -212,7 +213,7 @@ describe('scheduled maintenance D1 plan', () => {
     expect(records.find((entry) => entry.job === 'scheduled_maintenance_budget')).toEqual({
       level: 'info',
       job: 'scheduled_maintenance_budget',
-      plannedQueries: 47,
+      plannedQueries: 49,
       limit: 50,
     });
     expect(records.find((entry) => entry.job === 'r2_cleanup')).toEqual({

@@ -25,12 +25,15 @@ export function PageActions({ className, ...props }: HTMLAttributes<HTMLDivEleme
 export function PageHeader({
   route,
   title,
+  question,
   showTask = true,
   lead,
 }: {
   route: AppRouteId;
-  /** ナビの短い名称と、画面で答える問いが異なる場合のみ上書きする。 */
+  /** ナビの短い名称と、画面名が異なる場合のみ上書きする。 */
   title?: ReactNode;
+  /** 画面名とは別に、利用者がこの画面で答える問いを見出しとして示す。 */
+  question?: ReactNode;
   /** 問い自体が十分に場面を伝える画面では、汎用説明の重複を避ける。 */
   showTask?: boolean;
   /** 問いに添える 1 文。汎用説明の代わりに見出しの直下へ出す。 */
@@ -40,6 +43,7 @@ export function PageHeader({
   return (
     <header className="page-heading">
       <h1 className="page-title">{title ?? metadata.label}</h1>
+      {question && <h2 className="page-question">{question}</h2>}
       {lead && <p className="page-task">{lead}</p>}
       {/* 段階表示: 見出しは1文に保ちつつ、判定基準・色の意味・免責といった
           「知らないと誤読する情報」は畳んで残す。<details> なのでJSなしで開閉でき、

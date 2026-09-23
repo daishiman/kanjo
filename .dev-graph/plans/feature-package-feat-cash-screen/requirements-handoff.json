@@ -1,0 +1,48 @@
+{
+  "feature_id": "feat-cash-screen",
+  "feature_package_id": "feature-package/feat-cash-screen",
+  "graph_revision": 4,
+  "graph_snapshot_digest": "e1163ef5c3a6044800229aaaf5c2b15a8f2a82aa324214039b2bcc06ff50c394",
+  "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-cash-screen/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-cash-screen/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-cash-screen/task-graph.json"
+  },
+  "plan_validated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-CASH-P01",
+    "SYS-CASH-P02",
+    "SYS-CASH-P03",
+    "SYS-CASH-P04",
+    "SYS-CASH-P05",
+    "SYS-CASH-P06",
+    "SYS-CASH-P07",
+    "SYS-CASH-P08",
+    "SYS-CASH-P09",
+    "SYS-CASH-P10",
+    "SYS-CASH-P11",
+    "SYS-CASH-P12",
+    "SYS-CASH-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0",
+  "task_artifacts": [
+    "tasks/feat-cash-screen/sys-cash-p01.md",
+    "tasks/feat-cash-screen/sys-cash-p02.md",
+    "tasks/feat-cash-screen/sys-cash-p03.md",
+    "tasks/feat-cash-screen/sys-cash-p04.md",
+    "tasks/feat-cash-screen/sys-cash-p05.md",
+    "tasks/feat-cash-screen/sys-cash-p06.md",
+    "tasks/feat-cash-screen/sys-cash-p07.md",
+    "tasks/feat-cash-screen/sys-cash-p08.md",
+    "tasks/feat-cash-screen/sys-cash-p09.md",
+    "tasks/feat-cash-screen/sys-cash-p10.md",
+    "tasks/feat-cash-screen/sys-cash-p11.md",
+    "tasks/feat-cash-screen/sys-cash-p12.md",
+    "tasks/feat-cash-screen/sys-cash-p13.md"
+  ]
+}

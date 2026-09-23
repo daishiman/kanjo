@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G1, G2, G3, G4]
+serves_goals: [G1, G2, G3]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G1, G2, G3, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-tradeoff-frontend-web-001。裏付け質疑 (`qa_refs`): `qa-tradeoff-frontend-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G3, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、frontend ではネイティブの表部品での候補表の実装を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、frontend ではタブレットの分割表示での状態の共有を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、frontend ではWindows のウィンドウ状態の保存を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、frontend ではLinux のウィンドウ管理との整合を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、frontend ではmacOS のウィンドウ状態の保存を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-cash-frontend-web-001。裏付け質疑 (`qa_refs`): `qa-cash-frontend-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G3 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、frontend ではReact Native などの別実装と、core の純関数の共有方法を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、frontend ではタブレット用レイアウトの分岐とタッチ操作の当たり判定を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、frontend ではElectron などの殻と Web 版の差分管理を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、frontend では殻の描画エンジンの差による表示崩れを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、frontend ではネイティブメニューと Web 側の操作の二重実装を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G1, G2, G3, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 表示の部品を PageShell と共通 Button とトークンに限り、選択中バーをサブスク・診断の SelectionBar と同じ配置にする形へ反映した。 |
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | 画面の状態を、サーバの状態 (TanStack Query の tradeoff query) と画面の選択状態 (選んだ候補と入力中の条件) に分け、保存成功時は query の無効化だけで最新条件を取り直す形へ反映した。 |
+| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 下部固定の追加バーに安全領域の余白を足し、狭い画面では入力と一覧を縦に積み、表は横スクロールの容器に入れる形へ反映した。下書きの保存時刻は文で示す。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | pages/cash/ の画面本体を view-model・draft・入力 2 種・一覧・ResultNotices に分け、view-model だけが core を呼ぶ形へ反映した。部品は描画と入力の受け渡しだけを持つ。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,31 +37,31 @@ serves_goals: [G1, G2, G3, G4]
 
 ### Web (web)
 
-- 資するゴール: G1, G2, G3, G4
+- 資するゴール: G1, G2, G3
 
-#### 主たる接地根拠: `qa-tradeoff-frontend-web-001`
-
-**問**
-
-web のトレードオフ画面のフロントエンド構成をどうするか。
-
-**答**
-
-Tradeoff.tsx を pages/tradeoff/ 配下へ分割する (ページ本体・新しい支出のフォーム・候補表・推奨の表・試算結果パネル・計算例・選択中バー)。数字は core の試算関数の結果だけを読み、画面内で計算しない。データは TanStack Query で GET /api/tradeoff を読み、上書きと試算の保存は useMutation で行い成功時に同じ query を無効化する。期間は usePeriod を読む。部品は PageShell / PageHeader / PageState / PageActions と共通 Button、色は design-tokens のトークンだけを使い、選択中バーはサブスク・診断の SelectionBar の流儀に揃える。lazy import は維持する。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:19:22Z)
-
-#### 裏付け質疑: `qa-tradeoff-frontend-web-evidence-001`
+#### 主たる接地根拠: `qa-cash-frontend-web-001`
 
 **問**
 
-frontend 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。
+web の現金入力画面をどう分割し、状態をどこに持つか。
 
 **答**
 
-Tradeoff.tsx は usePeriod を読むが URL state を持たず、TanStack Query の useQuery / useMutation で /api/tradeoff を読み書きする。下部の選択中バーの前例は pages/subscriptions/SelectionBar.tsx と pages/analysis/diagnosis/SelectionBar.tsx (PageActions を使う) と pages/classify/BulkActionBar.tsx にあり、共通部品は components/Page.tsx (PageShell / PageActions / PageHeader / PageState / KpiCard)、components/Button.tsx、period.tsx の PeriodPicker である。
+Cash.tsx を pages/cash/ 配下 (画面本体・view-model.ts・draft.ts・通常入力・交通費入力・一覧・ResultNotices) に分け、view-model は core の cash-screen を呼んで描くだけにする。タブ・月・絞り込み・ページは URL の検索パラメータに持ち、再読込と共有で同じ表示に戻す。入力途中の値は draft.ts が localStorage に自動保存して保存時刻を示し、追加成功と『入力をクリア』で消す。追加・更新・削除・復元の後は TanStack Query の現金明細と集計の query を無効化する。初期 JS 予算に収まるよう画面は既存どおり遅延読込する。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:20:56Z)
+
+#### 裏付け質疑: `qa-cash-frontend-web-evidence-001`
+
+**問**
+
+frontend 章の裏付けとして、現行実装について何を観測したか。
+
+**答**
+
+ルートは packages/web/src/routeMetadata.ts:33-44 の id 'cash' / path '/cash'。他の作り直し済み画面は pages/<screen>/ に分割され、明細仕分けは packages/web/src/pages/classify/draft.ts (localStorage の下書き) と ResultNotices.tsx (元に戻すトースト) を持つ。画面ごとの描画検査は packages/web/package.json の check:ai-screen などの KANJO_VISUAL_SCOPE 付き check-financial-visuals.mjs で行う。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-21T15:20:56Z)
 
 ## To-Be / Delta
 
@@ -69,26 +69,26 @@ Tradeoff.tsx は usePeriod を読むが URL state を持たず、TanStack Query 
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: /tradeoff を 15-tradeoff.png どおりの画面にする。見出し『トレードオフ』と問い『新しい支出を増やすなら、何を見直しますか？』と説明文、分析期間 (グローバル) のカード、1.新しい支出を設定 (支出名・金額・単発 / 毎月・開始月・メモ)、2.見直し候補の選択 (検索・カテゴリ絞込・選択をすべてクリア、# / カテゴリ・取引先 / 月額 / 年額 / 必要度 / 直近の推移 / 損益・メモ の表と件数表示)、3.推奨の組み合わせ (内容・年間削減額・充足度・実行のしやすさ・リスクの表と、選択中の組み合わせの理由・関連ページへのリンク)、計算例 (毎月と単発)、右側の試算結果 (新しい支出・見直しによる削減額・年間の差額と警告・防衛ラインへの影響・計算の前提)、下部の選択中バー (件数・年間削減額・年間差額・選択をクリア・この条件で試算) を、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。
-- **G2**: 試算の数字を core の純関数 1 か所で導く。毎月の支出は月額×12、単発の支出は発生月だけに計上し、見直しの削減は選択した候補の月額合計×12 で年額にする。年間の差額 = 新しい支出の年額 − 削減の年額。防衛ラインへの影響は、既存 defenseLine の月の余裕×12 を『防衛ライン余裕』、そこから年間の差額を引いた値を『試算後の余裕』とし、試算後が 0 以上なら維持、負なら割れると文字で示す。 差額の符号は『新しい支出の年額 − 削減の年額』で、正は支出増 (赤の警告)、負は捻出できる。
-- **G3**: 見直し候補を事業経費の科目×取引先ごとに直近 3 か月の平均月額で作る。必要度 (低 / 中 / 高) と直近の推移 (過去 3 か月の減少 / 横ばい / 増加) を core が推定し、『損益・メモ』には検知器の改善案や推移から作る自動の理由を出す。利用者は必要度を上書きしメモを書け、それらは D1 に保存して自動の値より優先する。
-- **G4**: 推奨の組み合わせを core の決まったルールで出す。候補 2〜4 件の組み合わせのうち年間削減額が新しい支出の年額以上になるものを選び、充足度・実行のしやすさ (必要度の低い候補が多いほど易しい)・リスク (必要度の高い候補を含むほど高い) で順位を付けて上位 4 件を示し、選んだ組み合わせの理由の文と関連ページ (サブスク・予算・明細) へのリンクを添える。アプリは LLM を呼ばない。
+- **G1**: /cash を 17-cash.png どおりの画面にする。問いの見出しと説明、共通の期間 (1年 / 2年 / 3年 / 任意) と対象期間カード、通常入力 / 交通費入力のタブ、現金明細の入力 (日付・事業/個人・収支・金額・内容・カテゴリ・担当者・メモ 0/200・入力をクリア・現金明細を追加・下書き自動保存の表示)、交通費の入力 (出発駅・到着駅・入替・片道運賃・往復・合計金額・業務の目的・メモ・交通費として追加)、現金明細の一覧 (月送り・キーワード検索・4 種の絞り込み・詳細検索・収入/支出/差額の合計・選択・編集/削除・ページング)、インラインの削除確認と元に戻す、空状態、下部固定の追加バーを描く。
+- **G2**: 記録が消えない。入力途中の内容はブラウザ内に自動保存して復元でき、削除は論理削除として一覧と集計から外したうえで『元に戻す』で同じ行を復活でき、30 日後に夜間処理で完全に消える。
+- **G3**: 画面の数字と判定を core の 1 か所から導く。合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を core の純関数に置き、API は JSON に写すだけ、web は描くだけにする。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | トレードオフ画面が画像の全構成要素を描画する。 | DOM テストで、見出しと問い・分析期間カード・1.新しい支出の 5 入力・2.候補表の 8 列と検索とカテゴリ絞込と全クリア・3.推奨の表と理由とリンク・計算例 2 種・右側の試算結果と防衛ラインへの影響と計算の前提・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。 |
-| O2 | 試算の数字が core の 1 関数から出る。 | core の契約テストで、毎月 80,000 と削減 85,000/月 のとき 年額 960,000 / 1,020,000 / 年間の差額 −60,000 (捻出できる)、単発 300,000 と削減 50,000/月 のとき 年間の差額 −300,000、毎月 100,000 と削減 50,000/月 のとき +600,000 (支出増) が出ること、防衛ライン余裕と試算後の余裕と維持 / 割れるの境界 (0) を検査し、web と api に同じ計算が無いことを grep で確かめる。 |
-| O3 | 候補と必要度・推移・理由が決定論で出て、上書きが優先される。 | core の契約テストで、科目×取引先の集計・直近 3 か月平均・推移の 3 区分・必要度の推定・理由の文を固定入力で検査し、api テストで上書きの保存と読み戻し、利用者間の分離を検査する。 |
-| O4 | 推奨の組み合わせが決定論で並ぶ。 | core の契約テストで、同じ入力に同じ上位 4 件と同じ順位・評価・理由が返り、年間削減額が新しい支出の年額に届かない組み合わせが入らないことを検査する。 |
+| O1 | 現金入力画面が画像の全構成要素を描画する (領収書欄を除く)。 | DOM テストで、問いの見出し・対象期間カード・2 つのタブ・通常入力の全項目とメモの文字数・交通費入力の全項目と入替・合計金額の自動計算・一覧の月送り/検索/4 種の絞り込み/合計 3 枚/表/ページング・インライン削除確認・元に戻すトースト・空状態・下部固定バーの存在を確認し、全て通る。 |
+| O2 | 下書きと論理削除で記録が欠けない。 | DOM テストで入力→再描画後に下書きが復元されること、API テストで削除→元に戻すで同じ id が一覧に戻ること、削除中の行が集計 (cashToDeal / cashToTx の入力) に 0 件であることが通る。 |
+| O3 | 画面の導出が core の 1 か所に集まる。 | core の cash-screen の単体テストが合計・絞り込み・ページング・入力経路・交通費合計を固定し、web と api に同じ計算の重複が無い (grep で 0 件)。 |
+| O4 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: Tradeoff.tsx を pages/tradeoff/ 配下へ分割し、見出しと問い・分析期間カード・1.新しい支出・2.見直し候補・3.推奨の組み合わせと計算例・右側の試算結果・下部の選択中バーの構成に作り直す。
-- **I2**: core に試算関数 (年額・差額・単発の計上・防衛ラインへの影響) を新設し、画面の右パネル・選択中バー・計算例がそれだけを読む。
-- **I3**: core に科目×取引先の候補集計・推移・必要度・自動の理由を新設し、上書きの新表と保存 API を足す。
-- **I4**: core に推奨の組み合わせの列挙・評価・順位・理由を新設し、関連ページへのリンクを出す。
+- **I1**: Cash.tsx を pages/cash/ 配下へ分割し、問いの見出し・対象期間カード・タブ・入力 2 枚・一覧・下部固定バーの構成に作り直す。選択中のタブ・月・絞り込み・ページを URL に保つ。
+- **I2**: core に cash-screen を新設し、合計 (収入・支出・差額)、絞り込み (キーワード・収支・カテゴリ・名義・入力経路・金額と日付の範囲)、ページング、入力経路、交通費合計を純関数で導く。
+- **I3**: cash_entries に owner・transit_purpose・deleted_at を足す追加のみの migration 0050 (入力経路は列を持たず交通費の区間の有無から導く) と、削除・復元・一括削除・一括復元の API、削除中の行を読まない条件を cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に掛けること、夜間の完全消去を実装する。 JSON 復元の『空か』判定だけは削除中の行も数え、削除中の行が残る間は現金明細を復元しない (qa-cash-decision-009)。
+- **I4**: 入力途中の内容をブラウザ内に自動保存し、保存時刻を表示し、復元する。『入力をクリア』で下書きも消す。
+- **I5**: 削除をインライン確認にし、削除完了トーストの『元に戻す』で同じ行を復活させる。空状態では画面内だけのサンプル表示と『はじめての明細を入力』を出す。
 
 ### 本章に効く確定意思決定
 
@@ -100,9 +100,9 @@ Tradeoff.tsx は usePeriod を読むが URL state を持たず、TanStack Query 
 
 ### 本章での適用
 
-コンポーネントを責務で分ける原則を適用した。ページ本体は query と選択状態を持ち、フォーム・候補表・推奨の表・試算結果・計算例・選択中バーは props だけで描く部品に分ける。数字は core の試算関数の結果を 1 回計算して各部品へ配るので、同じ値を部品ごとに再計算しない。
+Clean Architecture card の依存方向を、web が合計と絞り込みの計算を持たない構成に適用した。現行 Cash.tsx は 724 行に入力・表・月の集計を抱えているので、pages/cash/ の view-model が core の cash-screen を呼んで描画用の形へ写すだけにし、下書きの保存は draft.ts、元に戻すの表示は ResultNotices に分ける。URL の検索パラメータを表示条件の正本にするので、同じ URL を開けば同じ一覧と合計になる。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:19:22Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:23:17Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -196,4 +196,6 @@ Tradeoff.tsx は usePeriod を読むが URL state を持たず、TanStack Query 
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| tanstack-query-invalidation | 5.103.2 | TanStack (github.com) | https://github.com/TanStack/query/blob/main/docs/framework/react/guides/invalidations-from-mutations.md | 2026-09-21T15:38:54Z | 2026-09-21T15:38:54Z |
+| tanstack-query-invalidation | 5.103.2 | TanStack (github.com) | https://github.com/TanStack/query/blob/main/packages/react-query/package.json | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |
+| react-router-searchparams | 8.4.0 | React Router (Shopify / Remix team) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |
+| mdn-localstorage | 2026-07-28 | Mozilla (MDN Web Docs) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage | 2026-09-21T15:25:02Z | 2026-09-21T15:25:02Z |
